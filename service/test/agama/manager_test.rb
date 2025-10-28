@@ -57,8 +57,8 @@ describe Agama::Manager do
   let(:network) { instance_double(Agama::Network, install: nil, startup: nil) }
   let(:storage) do
     instance_double(
-      Agama::DBus::Clients::Storage, probe: nil, reprobe: nil, install: nil, finish: nil,
-      on_service_status_change: nil, errors?: false
+      Agama::DBus::Clients::Storage, probe: nil, install: nil, finish: nil,
+      :product= => nil, errors?: false
     )
   end
   let(:scripts) do
@@ -115,27 +115,28 @@ describe Agama::Manager do
   end
 
   describe "#config_phase" do
+    let(:product) { "Geecko" }
+
     it "sets the installation phase to config" do
       subject.config_phase
       expect(subject.installation_phase.config?).to eq(true)
     end
 
-    it "calls #probe method of each module" do
-      expect(storage).to receive(:probe)
-      expect(software).to receive(:probe)
+    it "sets the product for the storage module" do
+      expect(storage).to receive(:product=).with product
       subject.config_phase
     end
 
-    context "if reprobe is requested" do
-      it "calls #reprobe method of the storage module" do
-        expect(storage).to receive(:reprobe)
-        subject.config_phase(reprobe: true)
-      end
+    it "calls #probe method for both software and storage modules if reprobe is requested" do
+      expect(storage).to receive(:probe)
+      expect(software).to receive(:probe)
+      subject.config_phase(reprobe: true)
+    end
 
-      it "calls #probe method of the software module" do
-        expect(software).to receive(:probe)
-        subject.config_phase(reprobe: true)
-      end
+    it "calls #probe method only for the software module if reprobe is not requested" do
+      expect(software).to receive(:probe)
+      expect(storage).to_not receive(:probe)
+      subject.config_phase(reprobe: false)
     end
   end
 
