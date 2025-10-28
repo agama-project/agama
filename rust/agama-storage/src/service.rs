@@ -20,7 +20,10 @@
 
 use crate::client::{self, Client};
 use crate::message;
-use agama_utils::actor::{self, Actor, MessageHandler};
+use agama_utils::{
+    actor::{self, Actor, MessageHandler},
+    api::storage::Config,
+};
 use async_trait::async_trait;
 use serde_json::value::RawValue;
 
@@ -50,18 +53,114 @@ impl Actor for Service {
 }
 
 #[async_trait]
-impl MessageHandler<message::GetModel> for Service {
-    async fn handle(&mut self, _message: message::GetModel) -> Result<Box<RawValue>, Error> {
+impl MessageHandler<message::Activate> for Service {
+    async fn handle(&mut self, _message: message::Activate) -> Result<(), Error> {
+        self.client.activate().await?;
+        Ok(())
+    }
+}
+
+#[async_trait]
+impl MessageHandler<message::Probe> for Service {
+    async fn handle(&mut self, _message: message::Probe) -> Result<(), Error> {
+        self.client.probe().await?;
+        Ok(())
+    }
+}
+
+#[async_trait]
+impl MessageHandler<message::Install> for Service {
+    async fn handle(&mut self, _message: message::Install) -> Result<(), Error> {
+        self.client.install().await?;
+        Ok(())
+    }
+}
+
+#[async_trait]
+impl MessageHandler<message::Finish> for Service {
+    async fn handle(&mut self, _message: message::Finish) -> Result<(), Error> {
+        self.client.finish().await?;
+        Ok(())
+    }
+}
+
+#[async_trait]
+impl MessageHandler<message::GetSystem> for Service {
+    async fn handle(
+        &mut self,
+        _message: message::GetSystem,
+    ) -> Result<Option<Box<RawValue>>, Error> {
+        self.client.get_system().await.map_err(|e| e.into())
+    }
+}
+
+#[async_trait]
+impl MessageHandler<message::GetConfig> for Service {
+    async fn handle(&mut self, _message: message::GetConfig) -> Result<Option<Config>, Error> {
+        self.client.get_config().await.map_err(|e| e.into())
+    }
+}
+
+#[async_trait]
+impl MessageHandler<message::GetConfigModel> for Service {
+    async fn handle(
+        &mut self,
+        _message: message::GetConfigModel,
+    ) -> Result<Option<Box<RawValue>>, Error> {
         self.client.get_config_model().await.map_err(|e| e.into())
     }
 }
 
 #[async_trait]
-impl MessageHandler<message::SetModel> for Service {
-    async fn handle(&mut self, message: message::SetModel) -> Result<(), Error> {
+impl MessageHandler<message::GetProposal> for Service {
+    async fn handle(
+        &mut self,
+        _message: message::GetProposal,
+    ) -> Result<Option<Box<RawValue>>, Error> {
+        self.client.get_proposal().await.map_err(|e| e.into())
+    }
+}
+
+#[async_trait]
+impl MessageHandler<message::SetProduct> for Service {
+    async fn handle(&mut self, message: message::SetProduct) -> Result<(), Error> {
+        self.client.set_product(message.id).await?;
+        Ok(())
+    }
+}
+
+#[async_trait]
+impl MessageHandler<message::SetConfig> for Service {
+    async fn handle(&mut self, message: message::SetConfig) -> Result<(), Error> {
+        self.client.set_config(message.config).await?;
+        Ok(())
+    }
+}
+
+#[async_trait]
+impl MessageHandler<message::SetConfigModel> for Service {
+    async fn handle(&mut self, message: message::SetConfigModel) -> Result<(), Error> {
+        self.client.set_config_model(message.model).await?;
+        Ok(())
+    }
+}
+#[async_trait]
+impl MessageHandler<message::SolveConfigModel> for Service {
+    async fn handle(
+        &mut self,
+        message: message::SolveConfigModel,
+    ) -> Result<Option<Box<RawValue>>, Error> {
         self.client
-            .set_config_model(message.model)
+            .solve_config_model(message.model)
             .await
             .map_err(|e| e.into())
+    }
+}
+
+#[async_trait]
+impl MessageHandler<message::SetLocale> for Service {
+    async fn handle(&mut self, message: message::SetLocale) -> Result<(), Error> {
+        self.client.set_locale(message.locale).await?;
+        Ok(())
     }
 }

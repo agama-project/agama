@@ -18,27 +18,138 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use agama_utils::actor::Message;
+use agama_utils::{actor::Message, api::storage::Config};
 use serde_json::value::RawValue;
 
 #[derive(Clone)]
-pub struct GetModel;
+pub struct Activate;
 
-impl Message for GetModel {
-    type Reply = Box<RawValue>;
+impl Message for Activate {
+    type Reply = ();
 }
 
 #[derive(Clone)]
-pub struct SetModel {
+pub struct Probe;
+
+impl Message for Probe {
+    type Reply = ();
+}
+
+#[derive(Clone)]
+pub struct Install;
+
+impl Message for Install {
+    type Reply = ();
+}
+
+#[derive(Clone)]
+pub struct Finish;
+
+impl Message for Finish {
+    type Reply = ();
+}
+
+#[derive(Clone)]
+pub struct GetSystem;
+
+impl Message for GetSystem {
+    type Reply = Option<Box<RawValue>>;
+}
+
+#[derive(Clone)]
+pub struct GetConfig;
+
+impl Message for GetConfig {
+    type Reply = Option<Config>;
+}
+
+#[derive(Clone)]
+pub struct GetConfigModel;
+
+impl Message for GetConfigModel {
+    type Reply = Option<Box<RawValue>>;
+}
+
+#[derive(Clone)]
+pub struct GetProposal;
+
+impl Message for GetProposal {
+    type Reply = Option<Box<RawValue>>;
+}
+
+#[derive(Clone)]
+pub struct SetProduct {
+    pub id: String,
+}
+
+impl SetProduct {
+    pub fn new(id: &str) -> Self {
+        Self { id: id.to_string() }
+    }
+}
+
+impl Message for SetProduct {
+    type Reply = ();
+}
+
+#[derive(Clone)]
+pub struct SetConfig {
+    pub config: Box<RawValue>,
+}
+
+impl SetConfig {
+    pub fn new(config: Box<RawValue>) -> Self {
+        Self { config }
+    }
+}
+
+impl Message for SetConfig {
+    type Reply = ();
+}
+
+#[derive(Clone)]
+pub struct SetConfigModel {
     pub model: Box<RawValue>,
 }
 
-impl SetModel {
+impl SetConfigModel {
     pub fn new(model: Box<RawValue>) -> Self {
         Self { model }
     }
 }
 
-impl Message for SetModel {
+impl Message for SetConfigModel {
+    type Reply = ();
+}
+
+#[derive(Clone)]
+pub struct SolveConfigModel {
+    pub model: Box<RawValue>,
+}
+
+impl SolveConfigModel {
+    pub fn new(model: Box<RawValue>) -> Self {
+        Self { model }
+    }
+}
+
+impl Message for SolveConfigModel {
+    type Reply = Option<Box<RawValue>>;
+}
+
+#[derive(Clone)]
+pub struct SetLocale {
+    pub locale: String,
+}
+
+impl SetLocale {
+    pub fn new(locale: &str) -> Self {
+        Self {
+            locale: locale.to_string(),
+        }
+    }
+}
+
+impl Message for SetLocale {
     type Reply = ();
 }
