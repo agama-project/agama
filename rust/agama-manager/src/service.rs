@@ -137,9 +137,11 @@ impl MessageHandler<message::GetExtendedConfig> for Service {
     async fn handle(&mut self, _message: message::GetExtendedConfig) -> Result<Config, Error> {
         let l10n = self.l10n.call(l10n::message::GetConfig).await?;
         let questions = self.questions.call(question::message::GetConfig).await?;
+        let storage = self.storage.call(storage::message::GetConfig).await?;
         Ok(Config {
             l10n: Some(l10n),
             questions: Some(questions),
+            storage,
         })
     }
 }
