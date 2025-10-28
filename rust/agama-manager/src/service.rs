@@ -227,8 +227,11 @@ impl MessageHandler<message::RunAction> for Service {
 #[async_trait]
 impl MessageHandler<message::GetStorageModel> for Service {
     /// It returns the storage model.
-    async fn handle(&mut self, _message: message::GetStorageModel) -> Result<Box<RawValue>, Error> {
-        Ok(self.storage.call(storage::message::GetModel).await?)
+    async fn handle(
+        &mut self,
+        _message: message::GetStorageModel,
+    ) -> Result<Option<Box<RawValue>>, Error> {
+        Ok(self.storage.call(storage::message::GetConfigModel).await?)
     }
 }
 
@@ -238,7 +241,7 @@ impl MessageHandler<message::SetStorageModel> for Service {
     async fn handle(&mut self, message: message::SetStorageModel) -> Result<(), Error> {
         Ok(self
             .storage
-            .call(storage::message::SetModel::new(message.model))
+            .call(storage::message::SetConfigModel::new(message.model))
             .await?)
     }
 }

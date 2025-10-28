@@ -124,7 +124,7 @@ impl Message for RunAction {
 pub struct GetStorageModel;
 
 impl Message for GetStorageModel {
-    type Reply = Box<RawValue>;
+    type Reply = Option<Box<RawValue>>;
 }
 
 // Sets the storage model.
