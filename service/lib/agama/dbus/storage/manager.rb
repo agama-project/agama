@@ -166,6 +166,8 @@ module Agama
         # NOTE: memoization of the values?
         # @return [String]
         def recover_system
+          return nil.to_json unless backend.probed?
+
           json = {
             devices:            json_devices(:probed),
             availableDrives:    available_drives,
@@ -246,6 +248,8 @@ module Agama
         # NOTE: memoization of the values?
         # @return [String]
         def recover_proposal
+          return nil.to_json unless backend.proposal.calculated?
+
           json = {
             devices: json_devices(:staging),
             actions: actions

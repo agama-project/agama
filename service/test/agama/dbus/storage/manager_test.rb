@@ -83,102 +83,129 @@ describe Agama::DBus::Storage::Manager do
   end
 
   describe "#recover_proposal" do
-    describe "recover_proposal[:actions]" do
+    context "if no proposal has been calculated" do
       before do
-        allow(backend).to receive(:actions).and_return(actions)
+        allow(proposal).to receive(:calculated?).and_return false
       end
 
-      context "if there are no actions" do
-        let(:actions) { [] }
+      it "returns 'null'" do
+        expect(subject.recover_proposal).to eq("null")
+      end
+    end
 
-        it "returns an empty list" do
-          expect(parse(subject.recover_proposal)[:actions]).to eq([])
-        end
+    context "if a proposal was already calculated" do
+      before do
+        allow(proposal).to receive(:calculated?).and_return true
       end
 
-      context "if there are actions" do
-        let(:actions) { [action1, action2, action3, action4] }
-
-        let(:action1) do
-          instance_double(Agama::Storage::Action,
-            text:                "test1",
-            device_sid:          1,
-            on_btrfs_subvolume?: false,
-            delete?:             false,
-            resize?:             false)
+      describe "recover_proposal[:actions]" do
+        before do
+          allow(backend).to receive(:actions).and_return(actions)
         end
 
-        let(:action2) do
-          instance_double(Agama::Storage::Action,
-            text:                "test2",
-            device_sid:          2,
-            on_btrfs_subvolume?: false,
-            delete?:             true,
-            resize?:             false)
+        context "if there are no actions" do
+          let(:actions) { [] }
+
+          it "returns an empty list" do
+            expect(parse(subject.recover_proposal)[:actions]).to eq([])
+          end
         end
 
-        let(:action3) do
-          instance_double(Agama::Storage::Action,
-            text:                "test3",
-            device_sid:          3,
-            on_btrfs_subvolume?: false,
-            delete?:             false,
-            resize?:             true)
-        end
+        context "if there are actions" do
+          let(:actions) { [action1, action2, action3, action4] }
 
-        let(:action4) do
-          instance_double(Agama::Storage::Action,
-            text:                "test4",
-            device_sid:          4,
-            on_btrfs_subvolume?: true,
-            delete?:             false,
-            resize?:             false)
-        end
+          let(:action1) do
+            instance_double(Agama::Storage::Action,
+              text:                "test1",
+              device_sid:          1,
+              on_btrfs_subvolume?: false,
+              delete?:             false,
+              resize?:             false)
+          end
 
-        it "returns a list with a hash for each action" do
-          all_actions = parse(subject.recover_proposal)[:actions]
-          expect(all_actions.size).to eq(4)
-          expect(all_actions).to all(be_a(Hash))
+          let(:action2) do
+            instance_double(Agama::Storage::Action,
+              text:                "test2",
+              device_sid:          2,
+              on_btrfs_subvolume?: false,
+              delete?:             true,
+              resize?:             false)
+          end
 
-          action1, action2, action3, action4 = all_actions
+          let(:action3) do
+            instance_double(Agama::Storage::Action,
+              text:                "test3",
+              device_sid:          3,
+              on_btrfs_subvolume?: false,
+              delete?:             false,
+              resize?:             true)
+          end
 
-          expect(action1).to eq({
-            device: 1,
-            text:   "test1",
-            subvol: false,
-            delete: false,
-            resize: false
-          })
+          let(:action4) do
+            instance_double(Agama::Storage::Action,
+              text:                "test4",
+              device_sid:          4,
+              on_btrfs_subvolume?: true,
+              delete?:             false,
+              resize?:             false)
+          end
 
-          expect(action2).to eq({
-            device: 2,
-            text:   "test2",
-            subvol: false,
-            delete: true,
-            resize: false
-          })
+          it "returns a list with a hash for each action" do
+            all_actions = parse(subject.recover_proposal)[:actions]
+            expect(all_actions.size).to eq(4)
+            expect(all_actions).to all(be_a(Hash))
 
-          expect(action3).to eq({
-            device: 3,
-            text:   "test3",
-            subvol: false,
-            delete: false,
-            resize: true
-          })
-          expect(action4).to eq({
-            device: 4,
-            text:   "test4",
-            subvol: true,
-            delete: false,
-            resize: false
-          })
+            action1, action2, action3, action4 = all_actions
+
+            expect(action1).to eq({
+              device: 1,
+              text:   "test1",
+              subvol: false,
+              delete: false,
+              resize: false
+            })
+
+            expect(action2).to eq({
+              device: 2,
+              text:   "test2",
+              subvol: false,
+              delete: true,
+              resize: false
+            })
+
+            expect(action3).to eq({
+              device: 3,
+              text:   "test3",
+              subvol: false,
+              delete: false,
+              resize: true
+            })
+            expect(action4).to eq({
+              device: 4,
+              text:   "test4",
+              subvol: true,
+              delete: false,
+              resize: false
+            })
+          end
         end
       end
     end
   end
 
   describe "#recover_system" do
+    context "if the system has not been probed yet" do
+      before do
+        allow(Y2Storage::StorageManager.instance).to receive(:probed?).and_return(false)
+      end
+
+      it "returns 'null'" do
+        expect(subject.recover_system).to eq("null")
+      end
+    end
+
     before do
+      allow(Y2Storage::StorageManager.instance).to receive(:probed?).and_return(true)
       allow(proposal.storage_system).to receive(:available_drives).and_return(available_drives)
       allow(proposal.storage_system).to receive(:candidate_drives).and_return(candidate_drives)
       allow(proposal.storage_system).to receive(:available_md_raids).and_return(available_raids)
