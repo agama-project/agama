@@ -29,7 +29,7 @@ use zypp_agama::ZyppError;
 use crate::model::{
     packages::{Repository, ResolvableType},
     pattern::Pattern,
-    products::RepositorySpec,
+    state::{self, SoftwareState},
 };
 const TARGET_DIR: &str = "/run/agama/software_ng_zypp";
 const GPG_KEYS: &str = "/usr/lib/rpm/gnupg/keys/gpg-*";
@@ -102,6 +102,10 @@ pub enum SoftwareAction {
         r#type: ResolvableType,
         optional: bool,
     },
+    Write {
+        state: SoftwareState,
+        tx: oneshot::Sender<ZyppServerResult<()>>,
+    },
 }
 
 /// Software service server.
@@ -167,6 +171,9 @@ impl ZyppServer {
         zypp: &zypp_agama::Zypp,
     ) -> Result<(), ZyppDispatchError> {
         match action {
+            SoftwareAction::Write { state, tx } => {
+                self.write(state, tx, zypp).await?;
+            }
             SoftwareAction::AddRepositories(repos, tx) => {
                 self.add_repositories(repos, tx, zypp).await?;
             }
@@ -279,6 +286,104 @@ impl ZyppServer {
         let result = zypp.commit()?;
         tracing::info!("libzypp commit ends with {}", result);
         Ok(result)
+    }
+
+    fn read(&self, zypp: &zypp_agama::Zypp) -> Result<SoftwareState, ZyppDispatchError> {
+        let repositories = zypp
+            .list_repositories()
+            .unwrap()
+            .into_iter()
+            .map(|repo| state::Repository {
+                name: repo.user_name,
+                alias: repo.alias,
+                url: repo.url,
+                enabled: repo.enabled,
+            })
+            .collect();
+
+        let state = SoftwareState {
+            // FIXME: read the real product.
+            product: "SLES".to_string(),
+            repositories,
+            patterns: vec![],
+            packages: vec![],
+            options: Default::default(),
+        };
+        Ok(state)
+    }
+
+    async fn write(
+        &self,
+        state: SoftwareState,
+        tx: oneshot::Sender<ZyppServerResult<()>>,
+        zypp: &zypp_agama::Zypp,
+    ) -> Result<(), ZyppDispatchError> {
+        // FIXME:
+        // 1. add and remove the repositories.
+        // 2. select the patterns.
+        // 3. select the packages.
+        // 4. return the proposal and the issues.
+        // self.add_repositories(state.repositories, tx, &zypp).await?;
+
+        let old_state = self.read(zypp).unwrap();
+        let old_aliases: Vec<_> = old_state
+            .repositories
+            .iter()
+            .map(|r| r.alias.clone())
+            .collect();
+        let aliases: Vec<_> = state.repositories.iter().map(|r| r.alias.clone()).collect();
+
+        let to_add: Vec<_> = state
+            .repositories
+            .iter()
+            .filter(|r| !old_aliases.contains(&r.alias))
+            .collect();
+
+        let to_remove: Vec<_> = state
+            .repositories
+            .iter()
+            .filter(|r| !aliases.contains(&r.alias))
+            .collect();
+
+        for repo in &to_add {
+            _ = zypp.add_repository(&repo.alias, &repo.url, |percent, alias| {
+                tracing::info!("Adding repository {} ({}%)", alias, percent);
+                true
+            });
+            // Add an issue if it was not possible to add the repository.
+        }
+
+        for repo in &to_remove {
+            _ = zypp.remove_repository(&repo.alias, |percent, alias| {
+                tracing::info!("Removing repository {} ({}%)", alias, percent);
+                true
+            });
+        }
+
+        if to_add.is_empty() || to_remove.is_empty() {
+            _ = zypp.load_source(|percent, alias| {
+                tracing::info!("Refreshing repositories: {} ({}%)", alias, percent);
+                true
+            });
+        }
+
+        for pattern in &state.patterns {
+            // FIXME: we need to distinguish who is selecting the pattern.
+            // and register an issue if it is not found and it was not optional.
+            _ = zypp.select_resolvable(
+                &pattern.name,
+                zypp_agama::ResolvableKind::Pattern,
+                zypp_agama::ResolvableSelected::Installation,
+            );
+        }
+
+        match zypp.run_solver() {
+            Ok(result) => println!("Solver result: {result}"),
+            Err(error) => println!("Solver failed: {error}"),
+        };
+
+        tx.send(Ok(())).unwrap();
+        Ok(())
     }
 
     async fn add_repositories(

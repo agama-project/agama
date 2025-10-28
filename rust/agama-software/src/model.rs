@@ -29,6 +29,7 @@ use crate::{
         products::{ProductSpec, UserPattern},
         registration::{AddonProperties, RegistrationInfo},
         software_selection::SoftwareSelection,
+        state::SoftwareState,
     },
     service,
     zypp_server::SoftwareAction,
@@ -92,6 +93,12 @@ pub trait ModelAdapter: Send + Sync + 'static {
 
     /// Finalizes system like disabling local repositories
     async fn finish(&self) -> Result<(), service::Error>;
+
+    /// Applies the configuration to the system.
+    ///
+    /// It does not perform the installation, just update the repositories and
+    /// the software selection.
+    async fn write(&mut self, software: SoftwareState) -> Result<(), service::Error>;
 }
 
 /// [ModelAdapter] implementation for libzypp systems.
@@ -115,6 +122,15 @@ impl Model {
 
 #[async_trait]
 impl ModelAdapter for Model {
+    async fn write(&mut self, software: SoftwareState) -> Result<(), service::Error> {
+        let (tx, rx) = oneshot::channel();
+        self.zypp_sender.send(SoftwareAction::Write {
+            state: software,
+            tx,
+        })?;
+        Ok(rx.await??)
+    }
+
     async fn patterns(&self) -> Result<Vec<Pattern>, service::Error> {
         let Some(product) = &self.selected_product else {
             return Err(service::Error::MissingProduct);

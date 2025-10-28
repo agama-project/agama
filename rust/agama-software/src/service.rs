@@ -24,8 +24,10 @@ use crate::{
     message,
     model::{
         license::{Error as LicenseError, LicensesRepo},
-        packages::ResolvableType,
-        products::{ProductsRegistry, ProductsRegistryError},
+        packages::{Repository, ResolvableType},
+        products::{ProductSpec, ProductsRegistry, ProductsRegistryError},
+        software_selection::SoftwareSelection,
+        state::SoftwareState,
         ModelAdapter,
     },
     proposal::Proposal,
@@ -36,10 +38,10 @@ use agama_utils::{
     actor::{self, Actor, Handler, MessageHandler},
     api::{
         event::{self, Event},
-        software::Config,
+        software::{Config, ProductConfig, RepositoryParams},
         Scope,
     },
-    issue::{self},
+    issue,
 };
 use async_trait::async_trait;
 use tokio::sync::{broadcast, Mutex, RwLock};
@@ -183,31 +185,29 @@ impl MessageHandler<message::GetConfig> for Service {
 #[async_trait]
 impl MessageHandler<message::SetConfig<Config>> for Service {
     async fn handle(&mut self, message: message::SetConfig<Config>) -> Result<(), Error> {
-        let new_product = message.config.product.as_ref().and_then(|c| c.id.as_ref());
-        let need_probe = new_product
-            != self
-                .state
-                .config
-                .product
-                .as_ref()
-                .and_then(|c| c.id.as_ref());
-        let new_product_spec =
-            new_product.and_then(|id| self.products.find(id).and_then(|p| Some(p.clone())));
+        let product = message.config.product.as_ref();
+
+        // handle product
+        let Some(new_product_id) = &product.and_then(|p| p.id.as_ref()) else {
+            return Ok(());
+        };
+
+        let Some(new_product) = self.products.find(new_product_id.as_str()) else {
+            // FIXME: return an error.
+            return Ok(());
+        };
 
         self.state.config = message.config.clone();
         self.events.send(Event::ConfigChanged {
             scope: Scope::Software,
         })?;
+
+        let software = SoftwareState::build_from(new_product, &message.config);
+
         let model = self.model.clone();
         tokio::task::spawn(async move {
             let mut my_model = model.lock().await;
-            // FIXME: convert unwraps to sending issues
-            if need_probe {
-                my_model.probe(&new_product_spec.unwrap()).await.unwrap();
-            }
-            Self::apply_config(&message.config, my_model.deref_mut())
-                .await
-                .unwrap();
+            my_model.write(software).await.unwrap();
         });
 
         Ok(())
