@@ -66,9 +66,11 @@ module Agama
         !!@activated
       end
 
+      # Resets any information regarding activation of devices that may be cached by Y2Storage.
+      #
+      # Note this does NOT deactivate any device. There is not way to revert a previous activation.
       def reset_activation
         Y2Storage::Luks.reset_activation_infos
-        @activated = false
       end
 
       # Activates the devices.
