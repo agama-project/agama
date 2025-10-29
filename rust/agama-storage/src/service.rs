@@ -18,12 +18,12 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::client::{self, Client};
-use crate::message;
-use agama_utils::{
-    actor::{self, Actor, MessageHandler},
-    api::storage::Config,
+use crate::{
+    client::{self, Client},
+    config::Config,
+    message,
 };
+use agama_utils::actor::{self, Actor, MessageHandler};
 use async_trait::async_trait;
 use serde_json::value::RawValue;
 

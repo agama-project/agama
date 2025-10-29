@@ -18,7 +18,8 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use agama_utils::{actor::Message, api::storage::Config};
+use crate::config::Config;
+use agama_utils::actor::Message;
 use serde_json::value::RawValue;
 
 #[derive(Clone)]
@@ -94,12 +95,18 @@ impl Message for SetProduct {
 
 #[derive(Clone)]
 pub struct SetConfig {
-    pub config: Box<RawValue>,
+    pub config: Option<Config>,
 }
 
 impl SetConfig {
-    pub fn new(config: Box<RawValue>) -> Self {
+    pub fn new(config: Option<Config>) -> Self {
         Self { config }
+    }
+
+    pub fn with(config: Config) -> Self {
+        Self {
+            config: Some(config),
+        }
     }
 }
 

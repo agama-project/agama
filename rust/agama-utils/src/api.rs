@@ -50,4 +50,3 @@ pub use action::Action;
 
 pub mod l10n;
 pub mod question;
-pub mod storage;

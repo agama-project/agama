@@ -153,7 +153,8 @@ impl MessageHandler<message::GetExtendedConfig> for Service {
         Ok(Config {
             l10n: Some(l10n),
             questions: Some(questions),
-            storage,
+            storage: storage.as_ref().and_then(|c| c.storage.clone()),
+            legacy_autoyast_storage: storage.and_then(|c| c.legacy_autoyast_storage),
         })
     }
 }
@@ -172,17 +173,21 @@ impl MessageHandler<message::GetConfig> for Service {
 impl MessageHandler<message::SetConfig> for Service {
     /// Sets the config.
     async fn handle(&mut self, message: message::SetConfig) -> Result<(), Error> {
+        let config = message.config;
+
         self.l10n
-            .call(l10n::message::SetConfig::new(message.config.l10n.clone()))
+            .call(l10n::message::SetConfig::new(config.l10n.clone()))
             .await?;
 
         self.questions
-            .call(question::message::SetConfig::new(
-                message.config.questions.clone(),
-            ))
+            .call(question::message::SetConfig::new(config.questions.clone()))
             .await?;
 
-        self.config = message.config;
+        self.storage
+            .call(storage::message::SetConfig::new((&config).try_into().ok()))
+            .await?;
+
+        self.config = config;
         Ok(())
     }
 }
@@ -205,6 +210,12 @@ impl MessageHandler<message::UpdateConfig> for Service {
         if let Some(questions) = &config.questions {
             self.questions
                 .call(question::message::SetConfig::with(questions.clone()))
+                .await?;
+        }
+
+        if let Some(storage) = (&config).try_into().ok() {
+            self.storage
+                .call(storage::message::SetConfig::with(storage))
                 .await?;
         }
 

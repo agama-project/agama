@@ -20,7 +20,7 @@
 
 //! Implements a client to access Agama's storage service.
 
-use agama_utils::api::storage::Config;
+use crate::config::Config;
 use serde_json::{value::RawValue, Value};
 use zbus::{names::BusName, zvariant::OwnedObjectPath, Connection, Message};
 
@@ -78,9 +78,7 @@ impl Client {
 
     pub async fn get_config(&self) -> Result<Option<Config>, Error> {
         let message = self.call("GetConfig", &()).await?;
-        let value: String = message.body().deserialize()?;
-        let config = serde_json::from_str(value.as_str())?;
-        Ok(config)
+        self.json_from(message)
     }
 
     pub async fn get_config_model(&self) -> Result<Option<Box<RawValue>>, Error> {
@@ -104,8 +102,10 @@ impl Client {
         Ok(())
     }
 
-    pub async fn set_config(&self, config: Box<RawValue>) -> Result<(), Error> {
-        self.call("SetConfig", &(config.to_string())).await?;
+    pub async fn set_config(&self, config: Option<Config>) -> Result<(), Error> {
+        let config = config.filter(|c| c.is_some());
+        let json = serde_json::to_string(&config)?;
+        self.call("SetConfig", &(json)).await?;
         Ok(())
     }
 
@@ -140,17 +140,21 @@ impl Client {
             .map_err(|e| e.into())
     }
 
-    fn json_from(&self, message: Message) -> Result<Option<Box<RawValue>>, Error> {
+    fn json_from<T: serde::de::DeserializeOwned>(
+        &self,
+        message: Message,
+    ) -> Result<Option<T>, Error> {
         let value: String = message.body().deserialize()?;
         if self.is_null(value.as_str()) {
             return Ok(None);
         }
-        let json = RawValue::from_string(value)?;
+        let json = serde_json::from_str(value.as_str())?;
         Ok(Some(json))
     }
 
     fn is_null(&self, value: &str) -> bool {
-        match serde_json::from_str::<Value>(value) {
+        let value = serde_json::from_str::<Value>(value);
+        match value {
             Ok(Value::Null) => true,
             Ok(_) => false,
             Err(_) => false,
