@@ -47,6 +47,31 @@ pub struct Issue {
     pub kind: String,
 }
 
+impl Issue {
+    /// Creates a new issue.
+    pub fn new(kind: &str, description: &str, severity: IssueSeverity) -> Self {
+        Self {
+            description: description.to_string(),
+            kind: kind.to_string(),
+            source: IssueSource::Config,
+            severity,
+            details: None,
+        }
+    }
+
+    /// Sets the details for the issue.
+    pub fn with_details(mut self, details: &str) -> Self {
+        self.details = Some(details.to_string());
+        self
+    }
+
+    /// Sets the source for the issue.
+    pub fn with_source(mut self, source: IssueSource) -> Self {
+        self.source = source;
+        self
+    }
+}
+
 #[derive(
     Clone, Copy, Debug, Deserialize, Serialize, FromRepr, PartialEq, Eq, Hash, utoipa::ToSchema,
 )]

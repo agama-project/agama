@@ -18,7 +18,7 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use agama_utils::api::software::RepositoryParams;
+use agama_utils::api::{issue, software::RepositoryParams, Issue, IssueSeverity, IssueSource};
 use std::path::Path;
 use tokio::sync::{
     mpsc::{self, UnboundedSender},
@@ -104,7 +104,7 @@ pub enum SoftwareAction {
     },
     Write {
         state: SoftwareState,
-        tx: oneshot::Sender<ZyppServerResult<()>>,
+        tx: oneshot::Sender<ZyppServerResult<Vec<Issue>>>,
     },
 }
 
@@ -315,9 +315,10 @@ impl ZyppServer {
     async fn write(
         &self,
         state: SoftwareState,
-        tx: oneshot::Sender<ZyppServerResult<()>>,
+        tx: oneshot::Sender<ZyppServerResult<Vec<Issue>>>,
         zypp: &zypp_agama::Zypp,
     ) -> Result<(), ZyppDispatchError> {
+        let mut issues: Vec<Issue> = vec![];
         // FIXME:
         // 1. add and remove the repositories.
         // 2. select the patterns.
@@ -346,35 +347,67 @@ impl ZyppServer {
             .collect();
 
         for repo in &to_add {
-            _ = zypp.add_repository(&repo.alias, &repo.url, |percent, alias| {
+            let result = zypp.add_repository(&repo.alias, &repo.url, |percent, alias| {
                 tracing::info!("Adding repository {} ({}%)", alias, percent);
                 true
             });
+
+            if let Err(error) = result {
+                let message = format!("Could not add the repository {}", repo.alias);
+                issues.push(
+                    Issue::new("software.add_repo", &message, IssueSeverity::Error)
+                        .with_details(&error.to_string()),
+                );
+            }
             // Add an issue if it was not possible to add the repository.
         }
 
         for repo in &to_remove {
-            _ = zypp.remove_repository(&repo.alias, |percent, alias| {
+            let result = zypp.remove_repository(&repo.alias, |percent, alias| {
                 tracing::info!("Removing repository {} ({}%)", alias, percent);
                 true
             });
+
+            if let Err(error) = result {
+                let message = format!("Could not remove the repository {}", repo.alias);
+                issues.push(
+                    Issue::new("software.remove_repo", &message, IssueSeverity::Error)
+                        .with_details(&error.to_string()),
+                );
+            }
         }
 
         if to_add.is_empty() || to_remove.is_empty() {
-            _ = zypp.load_source(|percent, alias| {
+            let result = zypp.load_source(|percent, alias| {
                 tracing::info!("Refreshing repositories: {} ({}%)", alias, percent);
                 true
             });
+
+            if let Err(error) = result {
+                let message = format!("Could not read the repositories");
+                issues.push(
+                    Issue::new("software.load_source", &message, IssueSeverity::Error)
+                        .with_details(&error.to_string()),
+                );
+            }
         }
 
         for pattern in &state.patterns {
             // FIXME: we need to distinguish who is selecting the pattern.
             // and register an issue if it is not found and it was not optional.
-            _ = zypp.select_resolvable(
+            let result = zypp.select_resolvable(
                 &pattern.name,
                 zypp_agama::ResolvableKind::Pattern,
                 zypp_agama::ResolvableSelected::Installation,
             );
+
+            if let Err(error) = result {
+                let message = format!("Could not select pattern '{}'", &pattern.name);
+                issues.push(
+                    Issue::new("software.select_pattern", &message, IssueSeverity::Error)
+                        .with_details(&error.to_string()),
+                );
+            }
         }
 
         match zypp.run_solver() {
@@ -382,7 +415,7 @@ impl ZyppServer {
             Err(error) => println!("Solver failed: {error}"),
         };
 
-        tx.send(Ok(())).unwrap();
+        tx.send(Ok(issues)).unwrap();
         Ok(())
     }
 

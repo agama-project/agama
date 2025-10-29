@@ -205,9 +205,13 @@ impl MessageHandler<message::SetConfig<Config>> for Service {
         let software = SoftwareState::build_from(new_product, &message.config);
 
         let model = self.model.clone();
+        let issues = self.issues.clone();
         tokio::task::spawn(async move {
             let mut my_model = model.lock().await;
-            my_model.write(software).await.unwrap();
+            let found_issues = my_model.write(software).await.unwrap();
+            if !found_issues.is_empty() {
+                issues.cast(issue::message::Update::new(Scope::Software, found_issues));
+            }
         });
 
         Ok(())
