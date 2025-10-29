@@ -36,8 +36,6 @@ pub enum Error {
     #[error(transparent)]
     Storage(#[from] storage::start::Error),
     #[error(transparent)]
-    NetworkAdapter(#[from] network::NetworkAdapterError),
-    #[error(transparent)]
     NetworkSystem(#[from] network::NetworkSystemError),
 }
 

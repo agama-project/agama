@@ -29,7 +29,7 @@ use agama_utils::{
 };
 use async_trait::async_trait;
 use merge_struct::merge;
-use network::{error::NetworkStateError, types, NetworkSystemClient, NetworkSystemError};
+use network::{types, NetworkSystemClient, NetworkSystemError};
 use serde_json::Value;
 use tokio::sync::broadcast;
 
@@ -53,8 +53,6 @@ pub enum Error {
     Progress(#[from] progress::service::Error),
     #[error(transparent)]
     NetworkSystemError(#[from] NetworkSystemError),
-    #[error(transparent)]
-    NetworkStateError(#[from] NetworkStateError),
 }
 
 pub struct Service {
@@ -180,7 +178,7 @@ impl MessageHandler<message::GetExtendedConfig> for Service {
 
         Ok(Config {
             l10n: Some(l10n),
-            questions: Some(questions),
+            questions: questions,
             network: Some(network),
             storage,
         })
