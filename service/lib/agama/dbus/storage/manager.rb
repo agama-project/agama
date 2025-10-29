@@ -56,7 +56,6 @@ module Agama
           super(PATH, logger: logger)
           @backend = backend
 
-          register_storage_callbacks
           register_progress_callbacks
           register_iscsi_callbacks
 
@@ -525,10 +524,6 @@ module Agama
         # @return [Agama::Storage::Proposal]
         def proposal
           backend.proposal
-        end
-
-        def register_storage_callbacks
-          backend.on_issues_change { issues_properties_changed }
         end
 
         def register_iscsi_callbacks
