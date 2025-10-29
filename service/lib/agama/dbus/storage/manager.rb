@@ -79,7 +79,7 @@ module Agama
           dbus_method(:GetProposal, "out proposal:s") { recover_proposal }
           dbus_method(:GetIssues, "out issues:s") { recover_issues }
           dbus_signal(:SystemChanged, "system:s")
-          dbus_signal(:ProposalChanged)
+          dbus_signal(:ProposalChanged, "proposal:s")
           dbus_signal(:IssuesChanged)
           dbus_signal(:ProgressChanged, "progress:s")
           dbus_signal(:ProgressFinished)
@@ -130,10 +130,7 @@ module Agama
           end
 
           next_progress_step(CONFIGURING_STEP)
-          backend.configure
-          self.ProposalChanged
-
-          finish_progress
+          calculate_proposal
         end
 
         # Implementation for the API method #Install.
@@ -208,10 +205,7 @@ module Agama
           start_progress(1, CONFIGURING_STEP)
 
           config_json = JSON.parse(serialized_config, symbolize_names: true)
-          backend.configure(config_json)
-          self.ProposalChanged
-
-          finish_progress
+          calculate_proposal(config_json)
         end
 
         # Applies the given serialized config model according to the JSON schema.
@@ -227,10 +221,7 @@ module Agama
             storage_system: proposal.storage_system
           ).convert
           config_json = { storage: Agama::Storage::ConfigConversions::ToJSON.new(config).convert }
-          backend.configure(config_json)
-          self.ProposalChanged
-
-          finish_progress
+          calculate_proposal(config_json)
         end
 
         # Solves the given serialized config model.
@@ -400,7 +391,16 @@ module Agama
           return unless config_json
 
           configure(config_json)
-          self.ProposalChanged
+        end
+
+        # @see #configure
+        # @see #configure_with_model
+        #
+        # @param config_json [Hash, nil] see Agama::Storage::Manager#configure
+        def calculate_proposal(config_json = nil)
+          backend.configure(config_json)
+          self.ProposalChanged(recover_proposal)
+          finish_progress
         end
 
         # JSON representation of the given devicegraph from StorageManager

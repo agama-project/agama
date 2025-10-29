@@ -851,7 +851,6 @@ describe Agama::DBus::Storage::Manager do
       before do
         allow(proposal).to receive(:storage_json).and_return config_json.to_json
         allow(subject).to receive(:ProposalChanged)
-        allow(backend).to receive(:configure)
       end
 
       let(:config_json) do
@@ -859,7 +858,10 @@ describe Agama::DBus::Storage::Manager do
           storage: {
             drives: [
               {
-                partitions: [{ generate: "defaults" }]
+                partitions: [
+                  { search: "*", delete: true },
+                  { filesystem: { path: "/" }, size: { min: "5 GiB" } }
+                ]
               }
             ]
           }
@@ -878,7 +880,11 @@ describe Agama::DBus::Storage::Manager do
           expect(device[:name]).to eq "/dev/sda"
           expect(system[:availableDrives]).to eq [device[:sid]]
         end
-        expect(subject).to receive(:ProposalChanged)
+        expect(subject).to receive(:ProposalChanged) do |proposal_str|
+          proposal = parse(proposal_str)
+          expect(proposal[:devices]).to be_a Array
+          expect(proposal[:actions]).to be_a Array
+        end
         expect(subject).to receive(:ProgressChanged).with(/storage configuration/i)
         expect(subject).to receive(:ProgressFinished)
 
