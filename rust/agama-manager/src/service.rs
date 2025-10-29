@@ -31,7 +31,7 @@ use agama_utils::{
 };
 use async_trait::async_trait;
 use merge_struct::merge;
-use network::{error::NetworkStateError, types, NetworkSystemClient, NetworkSystemError};
+use network::{types, NetworkSystemClient, NetworkSystemError};
 use tokio::sync::broadcast;
 
 #[derive(Debug, thiserror::Error)]
@@ -52,8 +52,6 @@ pub enum Error {
     Questions(#[from] question::service::Error),
     #[error(transparent)]
     NetworkSystemError(#[from] NetworkSystemError),
-    #[error(transparent)]
-    NetworkStateError(#[from] NetworkStateError),
 }
 
 pub struct Service {

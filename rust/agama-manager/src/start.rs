@@ -36,8 +36,6 @@ pub enum Error {
     #[error(transparent)]
     Issues(#[from] issue::start::Error),
     #[error(transparent)]
-    NetworkAdapter(#[from] network::NetworkAdapterError),
-    #[error(transparent)]
     NetworkSystem(#[from] network::NetworkSystemError),
 }
 
