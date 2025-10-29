@@ -18,13 +18,18 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-#![allow(dead_code)]
+//! This module implements a mechanism to build the wanted software
+//! configuration and a mechanism to build it starting from the product
+//! definition, the user configuration, etc.
 
 use agama_utils::api::software::{Config, PatternsConfig};
 
 use crate::model::products::{ProductSpec, UserPattern};
 
 /// Represents the wanted software configuration.
+///
+/// It includes the list of repositories, selected resolvables, configuration
+/// options, etc. This configuration is later applied by a model adapter.
 #[derive(Debug)]
 pub struct SoftwareState {
     pub product: String,
@@ -35,12 +40,15 @@ pub struct SoftwareState {
     pub options: SoftwareOptions,
 }
 
+/// Builder to create a [SoftwareState] struct from the other sources like the
+/// product specification, the user configuration, etc.
 pub struct SoftwareStateBuilder<'a> {
     product: &'a ProductSpec,
     config: Option<&'a Config>,
 }
 
 impl<'a> SoftwareStateBuilder<'a> {
+    /// Creates a builder for the given product specification.
     pub fn for_product(product: &'a ProductSpec) -> Self {
         Self {
             product,
@@ -48,11 +56,14 @@ impl<'a> SoftwareStateBuilder<'a> {
         }
     }
 
+    /// Adds the user configuration to use.
     pub fn with_config(mut self, config: &'a Config) -> Self {
         self.config = Some(config);
         self
     }
 
+    /// Builds the [SoftwareState] by merging the product specification and the
+    /// user configuration.
     pub fn build(self) -> SoftwareState {
         let mut state = self.from_product_spec();
 
@@ -163,6 +174,7 @@ impl SoftwareState {
     }
 }
 
+/// Defines a repository.
 #[derive(Debug)]
 pub struct Repository {
     pub alias: String,
@@ -171,9 +183,12 @@ pub struct Repository {
     pub enabled: bool,
 }
 
+/// Defines a resolvable to be selected.
 #[derive(Debug, PartialEq)]
 pub struct Resolvable {
+    /// Resolvable name.
     pub name: String,
+    /// Whether this resolvable is optional or not.
     pub optional: bool,
 }
 
@@ -186,8 +201,10 @@ impl Resolvable {
     }
 }
 
+/// Software system options.
 #[derive(Default, Debug)]
 pub struct SoftwareOptions {
+    /// Install only required packages (not recommended ones).
     only_required: bool,
 }
 
