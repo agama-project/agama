@@ -100,7 +100,11 @@ impl<'a> SoftwareStateBuilder<'a> {
                     }
 
                     if let Some(remove) = &map.remove {
-                        state.patterns.retain(|p| !remove.contains(&p.name))
+                        // NOTE: should we notify when a user wants to remove a
+                        // pattern which is not optional?
+                        state
+                            .patterns
+                            .retain(|p| !(p.optional && remove.contains(&p.name)));
                     }
                 }
             }
@@ -325,6 +329,25 @@ mod tests {
         assert_eq!(
             state.patterns,
             vec![Resolvable::new("enhanced_base", false),]
+        );
+    }
+
+    #[test]
+    fn test_remove_mandatory_patterns() {
+        let product = build_product_spec();
+        let patterns = PatternsConfig::PatternsMap(PatternsMap {
+            add: None,
+            remove: Some(vec!["enhanced_base".to_string()]),
+        });
+        let config = build_user_config(Some(patterns));
+
+        let state = SoftwareState::build_from(&product, &config);
+        assert_eq!(
+            state.patterns,
+            vec![
+                Resolvable::new("enhanced_base", false),
+                Resolvable::new("selinux", true)
+            ]
         );
     }
 
