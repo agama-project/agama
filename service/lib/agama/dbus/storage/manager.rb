@@ -44,7 +44,6 @@ module Agama
         include Yast::I18n
         include Agama::WithProgress
         include ::DBus::ObjectManager
-        include DBus::Interfaces::Issues
 
         PATH = "/org/opensuse/Agama/Storage1"
         private_constant :PATH
@@ -248,7 +247,7 @@ module Agama
         # NOTE: memoization of the values?
         # @return [String]
         def recover_proposal
-          return nil.to_json unless backend.proposal.calculated?
+          return nil.to_json unless backend.proposal.success?
 
           json = {
             devices: json_devices(:staging),

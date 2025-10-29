@@ -157,7 +157,7 @@ describe Agama::Storage::Manager do
     context "if there are available devices" do
       let(:devices) { [disk1] }
 
-      it "does not an issue for available devices" do
+      it "does not include an issue for available devices" do
         expect(storage.system_issues).to_not include(
           an_object_having_attributes(description: /no suitable device/)
         )

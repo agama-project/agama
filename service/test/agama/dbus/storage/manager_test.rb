@@ -83,9 +83,9 @@ describe Agama::DBus::Storage::Manager do
   end
 
   describe "#recover_proposal" do
-    context "if no proposal has been calculated" do
+    context "if no proposal has been successfully calculated" do
       before do
-        allow(proposal).to receive(:calculated?).and_return false
+        allow(proposal).to receive(:success?).and_return false
       end
 
       it "returns 'null'" do
@@ -93,9 +93,9 @@ describe Agama::DBus::Storage::Manager do
       end
     end
 
-    context "if a proposal was already calculated" do
+    context "if a proposal was successfully calculated" do
       before do
-        allow(proposal).to receive(:calculated?).and_return true
+        allow(proposal).to receive(:success?).and_return true
       end
 
       describe "recover_proposal[:actions]" do
@@ -836,7 +836,7 @@ describe Agama::DBus::Storage::Manager do
         }
       end
 
-      it "returns an empty array" do
+      it "returns the list of proposal issues" do
         result = parse(subject.recover_issues)
         expect(result).to include(
           a_hash_including(
