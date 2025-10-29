@@ -23,11 +23,12 @@
 //! * This module contains the types that represent the network concepts. They are supposed to be
 //!   agnostic from the real network service (e.g., NetworkManager).
 use crate::error::NetworkStateError;
-use crate::settings::{
-    BondSettings, BridgeSettings, IEEE8021XSettings, NetworkConnection, VlanSettings,
-    WirelessSettings,
+use crate::types::{
+    BondMode, BondSettings, BridgeSettings, Config, ConnectionState, DeviceState, DeviceType,
+    IEEE8021XSettings, NetworkConnection, NetworkConnectionsCollection, NetworkSettings, Proposal,
+    Status, SystemInfo, VlanSettings, WirelessSettings, SSID,
 };
-use crate::types::{BondMode, ConnectionState, DeviceState, DeviceType, Status, SSID};
+
 use agama_utils::openapi::schemas;
 use cidr::IpInet;
 use macaddr::MacAddr6;
@@ -1754,6 +1755,70 @@ impl fmt::Display for BondOptions {
 pub struct BondConfig {
     pub mode: BondMode,
     pub options: BondOptions,
+}
+
+impl TryFrom<NetworkState> for NetworkConnectionsCollection {
+    type Error = NetworkStateError;
+
+    fn try_from(state: NetworkState) -> Result<Self, Self::Error> {
+        let network_connections = state
+            .connections
+            .iter()
+            .filter(|c| c.controller.is_none())
+            .map(|c| {
+                let mut conn = NetworkConnection::try_from(c.clone()).unwrap();
+                if let Some(ref mut bond) = conn.bond {
+                    bond.ports = state.ports_for(c.uuid);
+                }
+                if let Some(ref mut bridge) = conn.bridge {
+                    bridge.ports = state.ports_for(c.uuid);
+                };
+                conn
+            })
+            .collect();
+
+        Ok(NetworkConnectionsCollection(network_connections))
+    }
+}
+
+impl TryFrom<NetworkState> for NetworkSettings {
+    type Error = NetworkStateError;
+
+    fn try_from(state: NetworkState) -> Result<Self, Self::Error> {
+        let connections: NetworkConnectionsCollection = state.try_into()?;
+
+        Ok(NetworkSettings { connections })
+    }
+}
+
+impl TryFrom<NetworkState> for Config {
+    type Error = NetworkStateError;
+
+    fn try_from(state: NetworkState) -> Result<Self, Self::Error> {
+        Ok(Config {
+            connections: state.clone().try_into()?,
+        })
+    }
+}
+
+impl TryFrom<NetworkState> for SystemInfo {
+    type Error = NetworkStateError;
+
+    fn try_from(state: NetworkState) -> Result<Self, Self::Error> {
+        Ok(SystemInfo {
+            connections: state.try_into()?,
+        })
+    }
+}
+
+impl TryFrom<NetworkState> for Proposal {
+    type Error = NetworkStateError;
+
+    fn try_from(state: NetworkState) -> Result<Self, Self::Error> {
+        Ok(Proposal {
+            connections: state.try_into()?,
+        })
+    }
 }
 
 impl TryFrom<ConnectionConfig> for BondConfig {

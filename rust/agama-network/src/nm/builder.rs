@@ -20,13 +20,13 @@
 
 //! Conversion mechanism between proxies and model structs.
 
-use crate::types::{DeviceState, DeviceType};
 use crate::{
     model::{Device, IpConfig, IpRoute, MacAddress},
     nm::{
         model::NmDeviceType,
         proxies::{DeviceProxy, IP4ConfigProxy, IP6ConfigProxy},
     },
+    types::{DeviceState, DeviceType},
 };
 use cidr::IpInet;
 use std::{collections::HashMap, net::IpAddr, str::FromStr};

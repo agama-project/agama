@@ -20,9 +20,8 @@
 
 use crate::l10n;
 use crate::message;
+use crate::network;
 
-use agama_lib::network::{NetworkSettings, NetworkSystemClient, NetworkSystemError};
-use agama_network::error::NetworkStateError;
 use agama_utils::{
     actor::{self, Actor, Handler, MessageHandler},
     api::{
@@ -32,6 +31,7 @@ use agama_utils::{
 };
 use async_trait::async_trait;
 use merge_struct::merge;
+use network::{error::NetworkStateError, types, NetworkSystemClient, NetworkSystemError};
 use tokio::sync::broadcast;
 
 #[derive(Debug, thiserror::Error)]
@@ -142,16 +142,15 @@ impl MessageHandler<message::GetExtendedConfig> for Service {
     async fn handle(&mut self, _message: message::GetExtendedConfig) -> Result<Config, Error> {
         let l10n = self.l10n.call(l10n::message::GetConfig).await?;
         let questions = self.questions.call(question::message::GetConfig).await?;
-        let network_config: agama_network::SystemInfo =
-            self.network.get_extended_config().await?.try_into()?;
-        let network = Some(NetworkSettings {
+        let network_config: network::types::Proposal = self.network.get_extended_config().await?;
+        let network = agama_network::types::Config {
             connections: network_config.connections,
-        });
+        };
 
         Ok(Config {
             l10n: Some(l10n),
             questions: Some(questions),
-            network,
+            network: Some(network),
         })
     }
 }
@@ -208,11 +207,10 @@ impl MessageHandler<message::GetProposal> for Service {
     /// It returns the current proposal, if any.
     async fn handle(&mut self, _message: message::GetProposal) -> Result<Option<Proposal>, Error> {
         let l10n = self.l10n.call(l10n::message::GetProposal).await?;
-        let network_config: agama_network::SystemInfo =
-            self.network.get_extended_config().await?.try_into()?;
-        let network = Some(NetworkSettings {
+        let network_config: types::Proposal = self.network.get_extended_config().await?;
+        let network = types::Proposal {
             connections: network_config.connections,
-        });
+        };
 
         Ok(Some(Proposal { l10n, network }))
     }

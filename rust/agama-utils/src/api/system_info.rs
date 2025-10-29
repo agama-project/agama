@@ -19,7 +19,7 @@
 // find current contact information at www.suse.com.
 
 use crate::api::l10n;
-use crate::network;
+use crate::api::network;
 use serde::Serialize;
 
 #[derive(Clone, Debug, Serialize, utoipa::ToSchema)]

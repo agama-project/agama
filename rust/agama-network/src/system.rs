@@ -24,8 +24,8 @@ use crate::{
     model::{
         AccessPoint, Connection, Device, GeneralState, NetworkChange, NetworkState, StateConfig,
     },
-    types::DeviceType,
-    Adapter, NetworkAdapterError, SystemInfo,
+    types::{DeviceType, Proposal, SystemInfo},
+    Adapter, NetworkAdapterError,
 };
 use std::error::Error;
 use tokio::sync::{
@@ -163,7 +163,7 @@ impl NetworkSystemClient {
         self.actions.send(Action::GetConnections(tx))?;
         Ok(rx.await?)
     }
-    pub async fn get_extended_config(&self) -> Result<NetworkState, NetworkSystemError> {
+    pub async fn get_extended_config(&self) -> Result<Proposal, NetworkSystemError> {
         let (tx, rx) = oneshot::channel();
         self.actions.send(Action::GetExtendedConfig(tx))?;
         Ok(rx.await?)
@@ -326,7 +326,8 @@ impl<T: Adapter> NetworkSystemServer<T> {
                 tx.send(result).unwrap();
             }
             Action::GetExtendedConfig(tx) => {
-                tx.send(self.state.clone()).unwrap();
+                let config: Proposal = self.state.clone().try_into()?;
+                tx.send(config).unwrap();
             }
             Action::GetConnections(tx) => {
                 let connections = self
