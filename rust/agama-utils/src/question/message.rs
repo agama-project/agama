@@ -32,12 +32,18 @@ impl Message for GetConfig {
 
 /// Sets questions configuration (policy, pre-defined answers, etc.).
 pub struct SetConfig {
-    pub config: Config,
+    pub config: Option<Config>,
 }
 
 impl SetConfig {
-    pub fn new(config: Config) -> Self {
+    pub fn new(config: Option<Config>) -> Self {
         Self { config }
+    }
+
+    pub fn with(config: Config) -> Self {
+        Self {
+            config: Some(config),
+        }
     }
 }
 

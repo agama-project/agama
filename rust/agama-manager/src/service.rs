@@ -170,25 +170,18 @@ impl MessageHandler<message::GetConfig> for Service {
 
 #[async_trait]
 impl MessageHandler<message::SetConfig> for Service {
-    /// Sets the user configuration with the given values.
-    ///
-    /// It merges the values in the top-level. Therefore, if the configuration
-    /// for a scope is not given, it keeps the previous one.
-    ///
-    /// FIXME: We should replace not given sections with the default ones.
-    /// After all, now we have config/user/:scope URLs.
+    /// Sets the config.
     async fn handle(&mut self, message: message::SetConfig) -> Result<(), Error> {
-        if let Some(l10n) = &message.config.l10n {
-            self.l10n
-                .call(l10n::message::SetConfig::new(l10n.clone()))
-                .await?;
-        }
+        self.l10n
+            .call(l10n::message::SetConfig::new(message.config.l10n.clone()))
+            .await?;
 
-        if let Some(questions) = &message.config.questions {
-            self.questions
-                .call(question::message::SetConfig::new(questions.clone()))
-                .await?;
-        }
+        self.questions
+            .call(question::message::SetConfig::new(
+                message.config.questions.clone(),
+            ))
+            .await?;
+
         self.config = message.config;
         Ok(())
     }
@@ -196,12 +189,27 @@ impl MessageHandler<message::SetConfig> for Service {
 
 #[async_trait]
 impl MessageHandler<message::UpdateConfig> for Service {
-    /// Patches the user configuration with the given values.
+    /// Patches the config.
     ///
-    /// It merges the current configuration with the given one.
+    /// It merges the current config with the given one. If some scope is missing in the given
+    /// config, then it keeps the values from the current config.
     async fn handle(&mut self, message: message::UpdateConfig) -> Result<(), Error> {
         let config = merge(&self.config, &message.config).map_err(|_| Error::MergeConfig)?;
-        self.handle(message::SetConfig::new(config)).await
+
+        if let Some(l10n) = &config.l10n {
+            self.l10n
+                .call(l10n::message::SetConfig::with(l10n.clone()))
+                .await?;
+        }
+
+        if let Some(questions) = &config.questions {
+            self.questions
+                .call(question::message::SetConfig::with(questions.clone()))
+                .await?;
+        }
+
+        self.config = config;
+        Ok(())
     }
 }
 

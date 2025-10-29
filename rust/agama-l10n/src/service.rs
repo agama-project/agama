@@ -195,13 +195,19 @@ impl MessageHandler<message::SetConfig<api::l10n::Config>> for Service {
         &mut self,
         message: message::SetConfig<api::l10n::Config>,
     ) -> Result<(), Error> {
-        let config = Config::new_from(&self.system);
-        let merged = config.merge(&message.config)?;
-        if merged == self.config {
+        let base_config = Config::new_from(&self.system);
+
+        let config = if let Some(config) = &message.config {
+            base_config.merge(config)?
+        } else {
+            base_config
+        };
+
+        if config == self.config {
             return Ok(());
         }
 
-        self.config = merged;
+        self.config = config;
         let issues = self.find_issues();
         self.issues
             .cast(issue::message::Update::new(Scope::L10n, issues))?;

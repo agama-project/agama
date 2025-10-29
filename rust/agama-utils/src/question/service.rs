@@ -97,7 +97,11 @@ impl MessageHandler<message::GetConfig> for Service {
 #[async_trait]
 impl MessageHandler<message::SetConfig> for Service {
     async fn handle(&mut self, message: message::SetConfig) -> Result<(), Error> {
-        self.config = message.config;
+        if let Some(config) = message.config {
+            self.config = config;
+        } else {
+            self.config = Config::default();
+        }
         Ok(())
     }
 }
