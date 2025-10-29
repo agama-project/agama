@@ -22,7 +22,7 @@
 //! configuration and a mechanism to build it starting from the product
 //! definition, the user configuration, etc.
 
-use agama_utils::api::software::{Config, PatternsConfig};
+use agama_utils::api::software::{Config, PatternsConfig, RepositoryParams};
 
 use crate::model::products::{ProductSpec, UserPattern};
 
@@ -80,14 +80,7 @@ impl<'a> SoftwareStateBuilder<'a> {
         };
 
         if let Some(repositories) = &software.extra_repositories {
-            let extra = repositories.iter().map(|r|
-                // TODO: implement From<RepositoryParams>
-                Repository {
-                    name: r.name.as_ref().unwrap_or(&r.alias).clone(),
-                    alias: r.alias.clone(),
-                    url: r.url.clone(),
-                    enabled: r.enabled.unwrap_or(true),
-                });
+            let extra = repositories.iter().map(Repository::from);
             state.repositories.extend(extra);
         }
 
@@ -181,6 +174,17 @@ pub struct Repository {
     pub name: String,
     pub url: String,
     pub enabled: bool,
+}
+
+impl From<&RepositoryParams> for Repository {
+    fn from(value: &RepositoryParams) -> Self {
+        Repository {
+            name: value.name.as_ref().unwrap_or(&value.alias).clone(),
+            alias: value.alias.clone(),
+            url: value.url.clone(),
+            enabled: value.enabled.unwrap_or(true),
+        }
+    }
 }
 
 /// Defines a resolvable to be selected.
