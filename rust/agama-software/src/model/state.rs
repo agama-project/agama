@@ -109,6 +109,10 @@ impl<'a> SoftwareStateBuilder<'a> {
                 }
             }
         }
+
+        if let Some(only_required) = software.only_required {
+            state.options.only_required = only_required;
+        }
     }
 
     fn from_product_spec(&self) -> SoftwareState {
