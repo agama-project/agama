@@ -31,7 +31,7 @@ jobs:
     steps:
       - name: Configure and refresh repositories
         # disable unused repositories to have a faster refresh
-        run: zypper modifyrepo -d openSUSE:repo-openh264 && zypper ref
+        run: zypper ref
 
       - name: Install Default Ruby
         run: zypper --non-interactive install --no-recommends ruby
