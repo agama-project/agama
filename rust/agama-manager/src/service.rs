@@ -18,9 +18,7 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::{l10n, message, storage};
-
-use agama_network::{error::NetworkStateError, NetworkSystemClient, NetworkSystemError};
+use crate::{l10n, message, network, storage};
 use agama_utils::{
     actor::{self, Actor, Handler, MessageHandler},
     api::{
@@ -31,6 +29,7 @@ use agama_utils::{
 };
 use async_trait::async_trait;
 use merge_struct::merge;
+use network::{error::NetworkStateError, types, NetworkSystemClient, NetworkSystemError};
 use serde_json::Value;
 use tokio::sync::broadcast;
 
@@ -173,17 +172,16 @@ impl MessageHandler<message::GetExtendedConfig> for Service {
     async fn handle(&mut self, _message: message::GetExtendedConfig) -> Result<Config, Error> {
         let l10n = self.l10n.call(l10n::message::GetConfig).await?;
         let questions = self.questions.call(question::message::GetConfig).await?;
-        let network_config: agama_network::SystemInfo =
-            self.network.get_extended_config().await?.try_into()?;
-        let network = Some(NetworkSettings {
+        let network_config: network::types::Proposal = self.network.get_extended_config().await?;
+        let network = agama_network::types::Config {
             connections: network_config.connections,
-        });
+        };
         let storage = self.storage.call(storage::message::GetConfig).await?;
 
         Ok(Config {
             l10n: Some(l10n),
             questions: Some(questions),
-            network,
+            network: Some(network),
             storage,
         })
     }
@@ -260,11 +258,10 @@ impl MessageHandler<message::GetProposal> for Service {
     async fn handle(&mut self, _message: message::GetProposal) -> Result<Option<Proposal>, Error> {
         let l10n = self.l10n.call(l10n::message::GetProposal).await?;
         let storage = self.storage.call(storage::message::GetProposal).await?;
-        let network_config: agama_network::SystemInfo =
-            self.network.get_extended_config().await?.try_into()?;
-        let network = Some(NetworkSettings {
+        let network_config: types::Proposal = self.network.get_extended_config().await?;
+        let network = types::Proposal {
             connections: network_config.connections,
-        });
+        };
 
         Ok(Some(Proposal {
             l10n,

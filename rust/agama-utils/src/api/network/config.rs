@@ -1,4 +1,4 @@
-// Copyright (c) [2025] SUSE LLC
+// Copyright (c) [2024] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -18,20 +18,16 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-//! Network configuration service for Agama
-//!
-//! This library implements the network configuration service for Agama.
+//! Representation of the network settings
 
-pub mod action;
-pub mod adapter;
-pub mod error;
-pub mod model;
-mod nm;
-mod system;
-pub mod types;
+use crate::api::network::NetworkConnectionsCollection;
+use serde::{Deserialize, Serialize};
+use std::default::Default;
 
-pub use action::Action;
-pub use adapter::{Adapter, NetworkAdapterError};
-pub use model::NetworkState;
-pub use nm::NetworkManagerAdapter;
-pub use system::{NetworkSystem, NetworkSystemClient, NetworkSystemError};
+/// Network config settings for installation
+#[derive(Clone, Debug, Default, Serialize, Deserialize, utoipa::ToSchema)]
+#[serde(rename_all = "camelCase")]
+pub struct Config {
+    /// Connections to use in the installation
+    pub connections: NetworkConnectionsCollection,
+}

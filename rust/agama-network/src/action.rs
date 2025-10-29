@@ -19,9 +19,7 @@
 // find current contact information at www.suse.com.
 
 use crate::model::{AccessPoint, Connection, Device};
-use crate::system_info::SystemInfo;
-use crate::types::{ConnectionState, DeviceType};
-use crate::NetworkState;
+use crate::types::{ConnectionState, DeviceType, Proposal, SystemInfo};
 use tokio::sync::oneshot;
 use uuid::Uuid;
 
@@ -44,7 +42,7 @@ pub enum Action {
     GetConnection(String, Responder<Option<Connection>>),
     /// Gets a connection by its Uuid
     GetConnectionByUuid(Uuid, Responder<Option<Connection>>),
-    GetExtendedConfig(Responder<NetworkState>),
+    GetExtendedConfig(Responder<Proposal>),
     GetSystemConfig(Responder<SystemInfo>),
     /// Gets a connection
     GetConnections(Responder<Vec<Connection>>),

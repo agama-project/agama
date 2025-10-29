@@ -18,20 +18,17 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-//! Network configuration service for Agama
-//!
-//! This library implements the network configuration service for Agama.
+//! This module contains all Agama public types that might be available over
+//! the HTTP and WebSocket API.
 
-pub mod action;
-pub mod adapter;
-pub mod error;
-pub mod model;
-mod nm;
-mod system;
-pub mod types;
+mod config;
+pub use config::Config;
+mod proposal;
+pub use proposal::Proposal;
+mod settings;
+mod system_info;
+pub use system_info::SystemInfo;
 
-pub use action::Action;
-pub use adapter::{Adapter, NetworkAdapterError};
-pub use model::NetworkState;
-pub use nm::NetworkManagerAdapter;
-pub use system::{NetworkSystem, NetworkSystemClient, NetworkSystemError};
+mod types;
+pub use settings::*;
+pub use types::*;

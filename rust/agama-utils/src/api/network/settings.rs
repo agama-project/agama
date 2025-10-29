@@ -20,48 +20,24 @@
 
 //! Representation of the network settings
 
-use super::types::{DeviceState, DeviceType, Status};
-use crate::{error::NetworkStateError, NetworkState};
-use agama_utils::openapi::schemas;
+use super::types::{ConnectionState, DeviceState, DeviceType, Status};
+use crate::openapi::schemas;
 use cidr::IpInet;
 use serde::{Deserialize, Serialize};
 use std::default::Default;
 use std::net::IpAddr;
+
+#[derive(Clone, Debug, Default, Serialize, Deserialize, utoipa::ToSchema)]
+pub struct NetworkConnectionsCollection(pub Vec<NetworkConnection>);
 
 /// Network settings for installation
 #[derive(Clone, Debug, Default, Serialize, Deserialize, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct NetworkSettings {
     /// Connections to use in the installation
-    pub connections: Vec<NetworkConnection>,
+    pub connections: NetworkConnectionsCollection,
 }
 
-impl TryFrom<NetworkState> for NetworkSettings {
-    type Error = NetworkStateError;
-
-    fn try_from(state: NetworkState) -> Result<Self, Self::Error> {
-        let connections = &state.connections;
-
-        let network_connections = connections
-            .iter()
-            .filter(|c| c.controller.is_none())
-            .map(|c| {
-                let mut conn = NetworkConnection::try_from(c.clone()).unwrap();
-                if let Some(ref mut bond) = conn.bond {
-                    bond.ports = state.ports_for(c.uuid);
-                }
-                if let Some(ref mut bridge) = conn.bridge {
-                    bridge.ports = state.ports_for(c.uuid);
-                };
-                conn
-            })
-            .collect();
-
-        Ok(NetworkSettings {
-            connections: network_connections,
-        })
-    }
-}
 #[derive(Clone, Debug, Default, Serialize, Deserialize, utoipa::ToSchema)]
 pub struct MatchSettings {
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
@@ -328,4 +304,15 @@ impl NetworkConnection {
             DeviceType::Ethernet
         }
     }
+}
+
+// FIXME: found a better place for the HTTP types.
+//
+// TODO: If the client ignores the additional "state" field, this struct
+// does not need to be here.
+#[derive(Debug, Clone, Serialize, Deserialize, utoipa::ToSchema)]
+pub struct NetworkConnectionWithState {
+    #[serde(flatten)]
+    pub connection: NetworkConnection,
+    pub state: ConnectionState,
 }

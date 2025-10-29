@@ -240,6 +240,7 @@ version = "0.1.0"
 dependencies = [
  "agama-locale-data",
  "async-trait",
+ "cidr",
  "gettext-rs",
  "serde",
  "serde_json",
