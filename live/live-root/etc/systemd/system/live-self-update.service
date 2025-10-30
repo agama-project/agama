@@ -11,9 +11,8 @@ After=network-online.target
 After=initrd-fs.target
 # before running the pre-pivot dracut hooks (before the driver update)
 Before=dracut-pre-pivot.service
-# the file contains list of the self-update repositories,
-# it is created by a dracut hook while parsing the command line parameters
-ConditionPathExists=/run/live-self-update/repositories
+# flag to skip the self-update
+ConditionPathExists=!/run/live-self-update/skip
 
 [Service]
 Type=oneshot

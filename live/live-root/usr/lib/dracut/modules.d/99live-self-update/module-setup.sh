@@ -24,10 +24,23 @@ install() {
   inst_hook cmdline 99 "$moddir/live-self-update-parser.sh"
 
   # needed by the live-self-update-parser.sh script
-  inst_multiple systemd-cat dirname
+  inst_multiple systemd-cat dirname /usr/lib/live-self-update/conf.sh jq
 
   # install the systemd service and the self-update script to the initramfs
   inst_multiple "$systemdsystemconfdir"/live-self-update.service live-self-update
+
+  # include the self-update configuration if present
+  if [ -d /etc/live-self-update ]; then
+    . /usr/lib/live-self-update/conf.sh
+
+    if [ -f "$CONFIG_DEFAULT_REG_SERVER_FILE" ]; then
+      inst_simple "$CONFIG_DEFAULT_REG_SERVER_FILE"
+    fi
+
+    if [ -f "$CONFIG_FALLBACK_FILE" ]; then
+      inst_simple "$CONFIG_FALLBACK_FILE"
+    fi
+  fi
 
   # enable the self-update service in the initramfs
   $SYSTEMCTL -q --root "$initdir" enable live-self-update.service
