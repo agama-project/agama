@@ -29,8 +29,8 @@ use crate::hostname::model::HostnameSettings;
 use crate::security::settings::SecuritySettings;
 use crate::storage::settings::zfcp::ZFCPConfig;
 use crate::{
-    network::NetworkSettings, product::ProductSettings, scripts::ScriptsConfig,
-    software::SoftwareSettings, storage::settings::dasd::DASDConfig, users::UserSettings,
+    network::NetworkSettings, scripts::ScriptsConfig,
+    storage::settings::dasd::DASDConfig, users::UserSettings,
 };
 use fluent_uri::Uri;
 use serde::{Deserialize, Serialize};
@@ -70,10 +70,6 @@ pub struct InstallSettings {
     pub user: Option<UserSettings>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub security: Option<SecuritySettings>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub software: Option<SoftwareSettings>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub product: Option<ProductSettings>,
     #[serde(skip_serializing_if = "Option::is_none")]
     #[schema(value_type = Object)]
     pub storage: Option<Box<RawValue>>,

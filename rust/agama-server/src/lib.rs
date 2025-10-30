@@ -31,7 +31,6 @@ pub mod products;
 pub mod profile;
 pub mod scripts;
 pub mod security;
-pub mod software;
 pub mod storage;
 pub mod users;
 pub mod web;
