@@ -175,6 +175,7 @@ dependencies = [
  "agama-lib",
  "agama-locale-data",
  "agama-manager",
+ "agama-software",
  "agama-utils",
  "anyhow",
  "async-trait",
