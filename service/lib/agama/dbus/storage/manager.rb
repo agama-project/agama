@@ -80,7 +80,6 @@ module Agama
           dbus_method(:GetIssues, "out issues:s") { recover_issues }
           dbus_signal(:SystemChanged, "system:s")
           dbus_signal(:ProposalChanged, "proposal:s")
-          dbus_signal(:IssuesChanged)
           dbus_signal(:ProgressChanged, "progress:s")
           dbus_signal(:ProgressFinished)
         end
