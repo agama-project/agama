@@ -70,8 +70,11 @@ describe Agama::DBus::Storage::Manager do
   end
 
   before do
-    # Speed up tests by avoding real check of TPM presence.
+    # Speed up tests by avoiding real check of TPM presence.
     allow(Y2Storage::EncryptionMethod::TPM_FDE).to receive(:possible?).and_return(true)
+    # Speed up tests by avoiding looking up by name in the system
+    allow(Y2Storage::BlkDevice).to receive(:find_by_any_name)
+
     allow(Yast::Arch).to receive(:s390).and_return false
     allow(backend).to receive(:on_configure)
     allow(backend).to receive(:on_issues_change)
