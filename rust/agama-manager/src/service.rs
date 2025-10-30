@@ -84,6 +84,27 @@ impl Service {
         }
     }
 
+    async fn configure_l10n(&self, config: api::l10n::SystemConfig) -> Result<(), Error> {
+        self.l10n
+            .call(l10n::message::SetSystem::new(config.clone()))
+            .await?;
+        if let Some(locale) = config.locale {
+            self.storage
+                .cast(storage::message::SetLocale::new(locale.as_str()))?;
+        }
+        Ok(())
+    }
+
+    async fn activate_storage(&self) -> Result<(), Error> {
+        self.storage.call(storage::message::Activate).await?;
+        Ok(())
+    }
+
+    async fn probe_storage(&self) -> Result<(), Error> {
+        self.storage.call(storage::message::Probe).await?;
+        Ok(())
+    }
+
     async fn install(&mut self) -> Result<(), Error> {
         self.state = State::Installing;
         self.events.send(Event::StateChanged)?;
@@ -100,17 +121,6 @@ impl Service {
             .await?;
         self.state = State::Finished;
         self.events.send(Event::StateChanged)?;
-        Ok(())
-    }
-
-    async fn configure_l10n(&self, config: api::l10n::SystemConfig) -> Result<(), Error> {
-        self.l10n
-            .call(l10n::message::SetSystem::new(config.clone()))
-            .await?;
-        if let Some(locale) = config.locale {
-            self.storage
-                .cast(storage::message::SetLocale::new(locale.as_str()))?;
-        }
         Ok(())
     }
 }
@@ -249,6 +259,12 @@ impl MessageHandler<message::RunAction> for Service {
         match message.action {
             Action::ConfigureL10n(config) => {
                 self.configure_l10n(config).await?;
+            }
+            Action::ActivateStorage => {
+                self.activate_storage().await?;
+            }
+            Action::ProbeStorage => {
+                self.probe_storage().await?;
             }
             Action::Install => {
                 self.install().await?;
