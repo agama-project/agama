@@ -26,6 +26,9 @@ use std::{fs, io::Write, path::Path, process::Command};
 use tempfile::{tempdir, TempDir};
 use url::Url;
 
+pub mod http_client;
+pub use http_client::ProfileHTTPClient;
+
 /// Downloads and converts autoyast profile.
 pub struct AutoyastProfileImporter {
     pub content: String,
