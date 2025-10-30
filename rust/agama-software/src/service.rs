@@ -18,16 +18,16 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use std::{ops::DerefMut, sync::Arc};
+use std::{ops::DerefMut, process::Command, sync::Arc};
 
 use crate::{
     message,
     model::{
         license::{Error as LicenseError, LicensesRepo},
-        packages::{Repository, ResolvableType},
+        packages::{self, Repository, ResolvableType},
         products::{ProductSpec, ProductsRegistry, ProductsRegistryError},
         software_selection::SoftwareSelection,
-        state::SoftwareState,
+        state::{self, SoftwareState},
         ModelAdapter,
     },
     proposal::Proposal,
@@ -113,9 +113,16 @@ impl Service {
         }
     }
 
-    pub fn read(&mut self) -> Result<(), Error> {
+    pub async fn read(&mut self) -> Result<(), Error> {
         self.licenses.read()?;
         self.products.read()?;
+        let mut system = self.state.system.write().await;
+        system.licenses = self.licenses.licenses().into_iter().cloned().collect();
+        system.products = self.products.products();
+        if let Some(install_repo) = find_install_repository() {
+            tracing::info!("Found repository at {}", install_repo.url);
+            system.repositories.push(install_repo);
+        }
         Ok(())
     }
 
@@ -202,7 +209,10 @@ impl MessageHandler<message::SetConfig<Config>> for Service {
             scope: Scope::Software,
         })?;
 
-        let software = SoftwareState::build_from(new_product, &message.config);
+        let system = self.state.system.read().await.clone();
+
+        // NOTE: we should read the system to get the local repositories.
+        let software = SoftwareState::build_from(new_product, &message.config, &system);
 
         let model = self.model.clone();
         let issues = self.issues.clone();
@@ -210,7 +220,7 @@ impl MessageHandler<message::SetConfig<Config>> for Service {
             let mut my_model = model.lock().await;
             let found_issues = my_model.write(software).await.unwrap();
             if !found_issues.is_empty() {
-                issues.cast(issue::message::Update::new(Scope::Software, found_issues));
+                _ = issues.cast(issue::message::Update::new(Scope::Software, found_issues));
             }
         });
 
@@ -237,7 +247,7 @@ impl MessageHandler<message::Probe> for Service {
         };
 
         self.model.lock().await.probe(product).await?;
-        self.update_system();
+        self.update_system().await?;
         Ok(())
     }
 }
@@ -254,5 +264,53 @@ impl MessageHandler<message::Finish> for Service {
     async fn handle(&mut self, _message: message::Finish) -> Result<(), Error> {
         self.model.lock().await.finish().await?;
         Ok(())
+    }
+}
+
+const LIVE_REPO_DIR: &str = "/run/initramfs/live/install";
+
+fn find_install_repository() -> Option<packages::Repository> {
+    if !std::fs::exists(LIVE_REPO_DIR).is_ok_and(|e| e) {
+        return None;
+    }
+
+    normalize_repository_url(LIVE_REPO_DIR, "/install").map(|url| packages::Repository {
+        id: None,
+        alias: "install".to_string(),
+        name: "install".to_string(),
+        url,
+        product_dir: "".to_string(),
+        loaded: false,
+        enabled: true,
+        mandatory: true,
+    })
+}
+
+fn normalize_repository_url(mount_point: &str, path: &str) -> Option<String> {
+    let live_device = Command::new("findmnt")
+        .args(["-o", "SOURCE", "--noheadings", "--target", mount_point])
+        .output()
+        .ok()?;
+    let live_device = String::from_utf8(live_device.stdout)
+        .map(|d| d.trim().to_string())
+        .ok()?;
+
+    // check against /\A/dev/sr[0-9]+\z/
+    if live_device.starts_with("/dev/sr") {
+        return Some(format!("dvd:{path}?devices={live_device}"));
+    }
+
+    let by_id_devices = Command::new("find")
+        .args(["-L", "/dev/disk/by-id", "-samefile", &live_device])
+        .output()
+        .ok()?;
+    let by_id_devices = String::from_utf8(by_id_devices.stdout).ok()?;
+    let mut by_id_devices = by_id_devices.trim().split("\n");
+
+    let device = by_id_devices.next().unwrap_or_default();
+    if device.is_empty() {
+        Some(format!("hd:{mount_point}?device={live_device}"))
+    } else {
+        Some(format!("hd:{mount_point}?device={device}"))
     }
 }

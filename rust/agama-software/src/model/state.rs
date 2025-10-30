@@ -24,7 +24,13 @@
 
 use agama_utils::api::software::{Config, PatternsConfig, RepositoryParams};
 
-use crate::model::products::{ProductSpec, UserPattern};
+use crate::{
+    model::{
+        packages,
+        products::{ProductSpec, UserPattern},
+    },
+    SystemInfo,
+};
 
 /// Represents the wanted software configuration.
 ///
@@ -45,6 +51,7 @@ pub struct SoftwareState {
 pub struct SoftwareStateBuilder<'a> {
     product: &'a ProductSpec,
     config: Option<&'a Config>,
+    system: Option<&'a SystemInfo>,
 }
 
 impl<'a> SoftwareStateBuilder<'a> {
@@ -53,6 +60,7 @@ impl<'a> SoftwareStateBuilder<'a> {
         Self {
             product,
             config: None,
+            system: None,
         }
     }
 
@@ -62,16 +70,34 @@ impl<'a> SoftwareStateBuilder<'a> {
         self
     }
 
+    pub fn with_system(mut self, system: &'a SystemInfo) -> Self {
+        self.system = Some(system);
+        self
+    }
+
     /// Builds the [SoftwareState] by merging the product specification and the
     /// user configuration.
     pub fn build(self) -> SoftwareState {
         let mut state = self.from_product_spec();
+
+        if let Some(system) = self.system {
+            self.add_system_config(&mut state, &system);
+        }
 
         if let Some(config) = self.config {
             self.add_user_config(&mut state, &config);
         }
 
         state
+    }
+
+    fn add_system_config(&self, state: &mut SoftwareState, system: &SystemInfo) {
+        let repositories = system
+            .repositories
+            .iter()
+            .filter(|r| r.mandatory)
+            .map(Repository::from);
+        state.repositories.extend(repositories);
     }
 
     fn add_user_config(&self, state: &mut SoftwareState, config: &Config) {
@@ -168,9 +194,10 @@ impl<'a> SoftwareStateBuilder<'a> {
 
 impl SoftwareState {
     // TODO: Add SoftwareSelection as additional argument.
-    pub fn build_from(product: &ProductSpec, config: &Config) -> Self {
+    pub fn build_from(product: &ProductSpec, config: &Config, system: &SystemInfo) -> Self {
         SoftwareStateBuilder::for_product(product)
             .with_config(config)
+            .with_system(system)
             .build()
     }
 }
@@ -191,6 +218,17 @@ impl From<&RepositoryParams> for Repository {
             alias: value.alias.clone(),
             url: value.url.clone(),
             enabled: value.enabled.unwrap_or(true),
+        }
+    }
+}
+
+impl From<&packages::Repository> for Repository {
+    fn from(value: &packages::Repository) -> Self {
+        Repository {
+            name: value.name.clone(),
+            alias: value.alias.clone(),
+            url: value.url.clone(),
+            enabled: value.enabled,
         }
     }
 }
@@ -227,6 +265,8 @@ mod tests {
     use agama_utils::api::software::{
         PatternsConfig, PatternsMap, RepositoryParams, SoftwareConfig,
     };
+
+    use crate::model::packages::Repository;
 
     use super::*;
 
@@ -265,7 +305,9 @@ mod tests {
     fn test_build_state() {
         let product = build_product_spec();
         let config = Config::default();
-        let state = SoftwareState::build_from(&product, &config);
+        let state = SoftwareStateBuilder::for_product(&product)
+            .with_config(&config)
+            .build();
 
         assert_eq!(state.repositories.len(), 3);
         let aliases: Vec<_> = state.repositories.iter().map(|r| r.alias.clone()).collect();
@@ -291,7 +333,9 @@ mod tests {
     fn test_add_user_repositories() {
         let product = build_product_spec();
         let config = build_user_config(None);
-        let state = SoftwareState::build_from(&product, &config);
+        let state = SoftwareStateBuilder::for_product(&product)
+            .with_config(&config)
+            .build();
 
         assert_eq!(state.repositories.len(), 4);
         let aliases: Vec<_> = state.repositories.iter().map(|r| r.alias.clone()).collect();
@@ -313,7 +357,9 @@ mod tests {
         });
         let config = build_user_config(Some(patterns));
 
-        let state = SoftwareState::build_from(&product, &config);
+        let state = SoftwareStateBuilder::for_product(&product)
+            .with_config(&config)
+            .build();
         assert_eq!(
             state.patterns,
             vec![
@@ -333,7 +379,9 @@ mod tests {
         });
         let config = build_user_config(Some(patterns));
 
-        let state = SoftwareState::build_from(&product, &config);
+        let state = SoftwareStateBuilder::for_product(&product)
+            .with_config(&config)
+            .build();
         assert_eq!(
             state.patterns,
             vec![Resolvable::new("enhanced_base", false),]
@@ -349,7 +397,9 @@ mod tests {
         });
         let config = build_user_config(Some(patterns));
 
-        let state = SoftwareState::build_from(&product, &config);
+        let state = SoftwareStateBuilder::for_product(&product)
+            .with_config(&config)
+            .build();
         assert_eq!(
             state.patterns,
             vec![
@@ -365,7 +415,9 @@ mod tests {
         let patterns = PatternsConfig::PatternsList(vec!["gnome".to_string()]);
         let config = build_user_config(Some(patterns));
 
-        let state = SoftwareState::build_from(&product, &config);
+        let state = SoftwareStateBuilder::for_product(&product)
+            .with_config(&config)
+            .build();
         assert_eq!(
             state.patterns,
             vec![
@@ -373,5 +425,54 @@ mod tests {
                 Resolvable::new("gnome", false)
             ]
         );
+    }
+
+    #[test]
+    fn test_use_base_repositories() {
+        let product = build_product_spec();
+        let patterns = PatternsConfig::PatternsList(vec!["gnome".to_string()]);
+        let config = build_user_config(Some(patterns));
+
+        let base_repo = Repository {
+            id: None,
+            alias: "install".to_string(),
+            name: "install".to_string(),
+            url: "hd:/run/initramfs/install".to_string(),
+            enabled: false,
+            loaded: false,
+            mandatory: true,
+            product_dir: "".to_string(),
+        };
+
+        let another_repo = Repository {
+            id: None,
+            alias: "another".to_string(),
+            name: "another".to_string(),
+            url: "https://example.lan/SLES/".to_string(),
+            enabled: false,
+            loaded: false,
+            mandatory: false,
+            product_dir: "".to_string(),
+        };
+
+        let system = SystemInfo {
+            repositories: vec![base_repo, another_repo],
+            ..Default::default()
+        };
+
+        let state = SoftwareStateBuilder::for_product(&product)
+            .with_config(&config)
+            .with_system(&system)
+            .build();
+
+        let aliases: Vec<_> = state.repositories.iter().map(|r| r.alias.clone()).collect();
+        let expected_aliases = vec![
+            "agama-0".to_string(),
+            "agama-1".to_string(),
+            "agama-2".to_string(),
+            "install".to_string(),
+            "user-repo-0".to_string(),
+        ];
+        assert_eq!(expected_aliases, aliases);
     }
 }

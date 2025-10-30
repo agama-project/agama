@@ -54,7 +54,7 @@ pub async fn start(
     let zypp_sender = ZyppServer::start()?;
     let model = Model::new(zypp_sender)?;
     let mut service = Service::new(model, issues, events);
-    service.read()?;
+    service.read().await?;
     let handler = actor::spawn(service);
     Ok(handler)
 }
