@@ -222,6 +222,8 @@ pub struct SoftwareOptions {
 
 #[cfg(test)]
 mod tests {
+    use std::path::PathBuf;
+
     use agama_utils::api::software::{
         PatternsConfig, PatternsMap, RepositoryParams, SoftwareConfig,
     };
@@ -253,7 +255,9 @@ mod tests {
     }
 
     fn build_product_spec() -> ProductSpec {
-        let product = std::fs::read_to_string("test/share/products.d/tumbleweed.yaml").unwrap();
+        let path = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+            .join("../test/share/products.d/tumbleweed.yaml");
+        let product = std::fs::read_to_string(&path).unwrap();
         serde_yaml::from_str(&product).unwrap()
     }
 

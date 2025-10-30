@@ -29,10 +29,14 @@ use axum::{
 };
 use common::body_to_string;
 use std::error::Error;
+use std::path::PathBuf;
 use tokio::{sync::broadcast::channel, test};
 use tower::ServiceExt;
 
 async fn build_server_service() -> Result<Router, ServiceError> {
+    let share_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../test/share");
+    std::env::set_var("AGAMA_SHARE_DIR", share_dir.display().to_string());
+
     let (tx, mut rx) = channel(16);
 
     tokio::spawn(async move {

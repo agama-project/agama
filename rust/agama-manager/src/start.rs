@@ -74,6 +74,7 @@ mod test {
     use agama_utils::api::l10n;
     use agama_utils::api::{Config, Event};
     use agama_utils::question;
+    use std::path::PathBuf;
     use tokio::sync::broadcast;
 
     async fn start_service() -> Handler<Service> {
@@ -94,6 +95,9 @@ mod test {
     #[tokio::test]
     #[cfg(not(ci))]
     async fn test_update_config() -> Result<(), Box<dyn std::error::Error>> {
+        let share_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../test/share");
+        std::env::set_var("AGAMA_SHARE_DIR", share_dir.display().to_string());
+
         let handler = start_service().await;
 
         let input_config = Config {
