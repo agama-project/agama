@@ -1,4 +1,30 @@
 -------------------------------------------------------------------
+Fri Oct 24 11:09:56 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Dump some Live ISO root image data directly to the ISO image,
+  added files:
+  /LiveOS/.info - a copy of the /var/log/build/info file from
+    the root image
+  /LiveOS/.packages.gz - list of installed package (plain text,
+    basically a `rpm -qa` dump)
+  /LiveOS/.packages.json.gz - list of installed packages (JSON
+    format, better suitable for processing by scripts or tools)
+  (gh#agama-project/agama#2717)
+
+-------------------------------------------------------------------
+Wed Oct 22 05:34:43 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Remove kernel-default-extra and kernel-default-optional from
+  SLES 16 images (bsc#1249690).
+
+-------------------------------------------------------------------
+Tue Oct 21 20:10:44 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
+
+- Enable plymouth bootsplash for agama and also propose it for
+  target systems if user keep it for agama on kernel command line
+  (bsc#1248507)
+
+-------------------------------------------------------------------
 Tue Oct 14 08:19:36 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Properly unload files in module.order file (bsc#1251898).
