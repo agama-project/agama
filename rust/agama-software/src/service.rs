@@ -94,7 +94,7 @@ pub struct Service {
 #[derive(Default)]
 struct State {
     config: Config,
-    system: Arc<RwLock<SystemInfo>>,
+    system: SystemInfo,
 }
 
 impl Service {
@@ -116,23 +116,21 @@ impl Service {
     pub async fn read(&mut self) -> Result<(), Error> {
         self.licenses.read()?;
         self.products.read()?;
-        let mut system = self.state.system.write().await;
-        system.licenses = self.licenses.licenses().into_iter().cloned().collect();
-        system.products = self.products.products();
+        self.state.system.licenses = self.licenses.licenses().into_iter().cloned().collect();
+        self.state.system.products = self.products.products();
         if let Some(install_repo) = find_install_repository() {
             tracing::info!("Found repository at {}", install_repo.url);
-            system.repositories.push(install_repo);
+            self.state.system.repositories.push(install_repo);
         }
         Ok(())
     }
 
-    async fn update_system(&self) -> Result<(), Error> {
+    async fn update_system(&mut self) -> Result<(), Error> {
         let licenses = self.licenses.licenses().into_iter().cloned().collect();
         let products = self.products.products();
 
-        let mut system = self.state.system.write().await;
-        system.licenses = licenses;
-        system.products = products;
+        self.state.system.licenses = licenses;
+        self.state.system.products = products;
 
         self.events.send(Event::SystemChanged {
             scope: Scope::Software,
@@ -178,7 +176,7 @@ impl Actor for Service {
 #[async_trait]
 impl MessageHandler<message::GetSystem> for Service {
     async fn handle(&mut self, _message: message::GetSystem) -> Result<SystemInfo, Error> {
-        Ok(self.state.system.read().await.clone())
+        Ok(self.state.system.clone())
     }
 }
 
@@ -209,10 +207,7 @@ impl MessageHandler<message::SetConfig<Config>> for Service {
             scope: Scope::Software,
         })?;
 
-        let system = self.state.system.read().await.clone();
-
-        // NOTE: we should read the system to get the local repositories.
-        let software = SoftwareState::build_from(new_product, &message.config, &system);
+        let software = SoftwareState::build_from(new_product, &message.config, &self.state.system);
 
         let model = self.model.clone();
         let issues = self.issues.clone();
