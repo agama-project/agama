@@ -132,9 +132,10 @@ add_update_repos() {
   done < "$1"
 }
 
-# read the configured fallback repository, the URL might contain several placeholders
-# so it works is multiple architectures and does not contain hardcoded version
-# (the fallback URL should work with SLES-16.0, SLES-16.1, SLES-16.2...)
+# Reads the configured fallback repository, the URL might contain several
+# placeholders. This way, it works across multiple architectures and does not
+# contain a hardcoded version (the fallback URL should work with SLES-16.0,
+# SLES-16.1, SLES-16.2...)
 read_fallback_repos() {
   # Substituting $arch pattern with the architecture of the current system.
   # Substituting these variables with the /etc/os-release content:
