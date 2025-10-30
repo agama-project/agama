@@ -62,7 +62,7 @@ mod tests {
     fn build_issue() -> Issue {
         Issue {
             description: "Product not selected".to_string(),
-            kind: "missing_product".to_string(),
+            class: "missing_product".to_string(),
             details: Some("A product is required.".to_string()),
             source: IssueSource::Config,
             severity: IssueSeverity::Error,
@@ -79,7 +79,7 @@ mod tests {
 
         let issue = build_issue();
         _ = issues
-            .cast(message::Update::new(Scope::Manager, vec![issue]))
+            .cast(message::Set::new(Scope::Manager, vec![issue]))
             .unwrap();
 
         let issues_list = issues.call(message::Get).await.unwrap();
@@ -99,7 +99,7 @@ mod tests {
         assert!(issues_list.is_empty());
 
         let issue = build_issue();
-        let update = message::Update::new(Scope::Manager, vec![issue]).notify(false);
+        let update = message::Set::new(Scope::Manager, vec![issue]).notify(false);
         _ = issues.cast(update).unwrap();
 
         let issues_list = issues.call(message::Get).await.unwrap();
@@ -116,11 +116,11 @@ mod tests {
         let issues = issue::start(events_tx, dbus).await.unwrap();
 
         let issue = build_issue();
-        let update = message::Update::new(Scope::Manager, vec![issue.clone()]);
+        let update = message::Set::new(Scope::Manager, vec![issue.clone()]);
         issues.call(update).await.unwrap();
         assert!(events_rx.try_recv().is_ok());
 
-        let update = message::Update::new(Scope::Manager, vec![issue]);
+        let update = message::Set::new(Scope::Manager, vec![issue]);
         issues.call(update).await.unwrap();
         assert!(matches!(events_rx.try_recv(), Err(TryRecvError::Empty)));
         Ok(())

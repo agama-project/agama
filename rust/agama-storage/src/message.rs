@@ -19,7 +19,7 @@
 // find current contact information at www.suse.com.
 
 use crate::config::Config;
-use agama_utils::actor::Message;
+use agama_utils::{actor::Message, api::Issue};
 use serde_json::value::RawValue;
 
 #[derive(Clone)]
@@ -76,6 +76,13 @@ pub struct GetProposal;
 
 impl Message for GetProposal {
     type Reply = Option<Box<RawValue>>;
+}
+
+#[derive(Clone)]
+pub struct GetIssues;
+
+impl Message for GetIssues {
+    type Reply = Vec<Issue>;
 }
 
 #[derive(Clone)]

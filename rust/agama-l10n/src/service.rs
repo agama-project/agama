@@ -123,7 +123,7 @@ impl Service {
                 details: None,
                 source: IssueSource::Config,
                 severity: IssueSeverity::Error,
-                kind: "unknown_locale".to_string(),
+                class: "unknown_locale".to_string(),
             });
         }
 
@@ -133,7 +133,7 @@ impl Service {
                 details: None,
                 source: IssueSource::Config,
                 severity: IssueSeverity::Error,
-                kind: "unknown_keymap".to_string(),
+                class: "unknown_keymap".to_string(),
             });
         }
 
@@ -143,7 +143,7 @@ impl Service {
                 details: None,
                 source: IssueSource::Config,
                 severity: IssueSeverity::Error,
-                kind: "unknown_timezone".to_string(),
+                class: "unknown_timezone".to_string(),
             });
         }
 
@@ -210,7 +210,7 @@ impl MessageHandler<message::SetConfig<api::l10n::Config>> for Service {
         self.config = config;
         let issues = self.find_issues();
         self.issues
-            .cast(issue::message::Update::new(Scope::L10n, issues))?;
+            .cast(issue::message::Set::new(Scope::L10n, issues))?;
         self.events
             .send(Event::ProposalChanged { scope: Scope::L10n })?;
         Ok(())

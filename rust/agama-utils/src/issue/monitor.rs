@@ -165,7 +165,7 @@ impl Monitor {
         match Self::scope_from_path(path) {
             Some(scope) => {
                 self.handler
-                    .cast(message::Update::new(scope, issues).notify(notify))?;
+                    .cast(message::Set::new(scope, issues).notify(notify))?;
             }
             None => {
                 eprintln!("Unknown issues object {}", path);

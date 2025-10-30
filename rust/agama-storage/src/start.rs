@@ -20,32 +20,34 @@
 
 use crate::{
     monitor::{self, Monitor},
-    service::Service,
+    service::{self, Service},
 };
 use agama_utils::{
     actor::{self, Handler},
     api::event,
-    progress,
+    issue, progress,
 };
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
     #[error(transparent)]
     Monitor(#[from] monitor::Error),
+    #[error(transparent)]
+    Service(#[from] service::Error),
 }
 
 /// Starts the storage service.
-///
-/// * `dbus`: connection to Agama's D-Bus server.
 pub async fn start(
     progress: Handler<progress::Service>,
+    issues: Handler<issue::Service>,
     events: event::Sender,
     dbus: zbus::Connection,
 ) -> Result<Handler<Service>, Error> {
-    let monitor = Monitor::new(progress, events, dbus.clone());
+    let service = Service::new(issues.clone(), dbus.clone()).start().await?;
+    let handler = actor::spawn(service);
+
+    let monitor = Monitor::new(handler.clone(), progress, issues, events, dbus);
     monitor::spawn(monitor)?;
 
-    let service = Service::new(dbus);
-    let handler = actor::spawn(service);
     Ok(handler)
 }

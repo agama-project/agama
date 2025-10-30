@@ -18,13 +18,17 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
+use crate::{
+    message,
+    service::{self, Service},
+};
 use agama_utils::{
     actor::Handler,
     api::{
         event::{self, Event},
         Progress, Scope,
     },
-    progress::{self, message},
+    issue, progress,
 };
 use serde::Deserialize;
 use serde_json;
@@ -39,6 +43,10 @@ pub enum Error {
     ProgressChangedArgs,
     #[error("Wrong signal data")]
     ProgressChangedData,
+    #[error(transparent)]
+    Service(#[from] service::Error),
+    #[error(transparent)]
+    Issue(#[from] issue::service::Error),
     #[error(transparent)]
     Progress(#[from] progress::service::Error),
     #[error(transparent)]
@@ -96,19 +104,25 @@ impl From<ProgressData> for Progress {
 }
 
 pub struct Monitor {
+    storage: Handler<Service>,
     progress: Handler<progress::Service>,
+    issues: Handler<issue::Service>,
     events: event::Sender,
     connection: Connection,
 }
 
 impl Monitor {
     pub fn new(
+        storage: Handler<Service>,
         progress: Handler<progress::Service>,
+        issues: Handler<issue::Service>,
         events: event::Sender,
         connection: Connection,
     ) -> Self {
         Self {
+            storage,
             progress,
+            issues,
             events,
             connection,
         }
@@ -124,16 +138,16 @@ impl Monitor {
         tokio::pin!(streams);
 
         while let Some((_, signal)) = streams.next().await {
-            self.handle_signal(signal)?;
+            self.handle_signal(signal).await?;
         }
 
         Ok(())
     }
 
-    fn handle_signal(&self, signal: Signal) -> Result<(), Error> {
+    async fn handle_signal(&self, signal: Signal) -> Result<(), Error> {
         match signal {
             Signal::SystemChanged(signal) => self.handle_system_changed(signal)?,
-            Signal::ProposalChanged(signal) => self.handle_proposal_changed(signal)?,
+            Signal::ProposalChanged(signal) => self.handle_proposal_changed(signal).await?,
             Signal::ProgressChanged(signal) => self.handle_progress_changed(signal)?,
             Signal::ProgressFinished(signal) => self.handle_progress_finished(signal)?,
         }
@@ -147,10 +161,16 @@ impl Monitor {
         Ok(())
     }
 
-    fn handle_proposal_changed(&self, _signal: ProposalChanged) -> Result<(), Error> {
+    async fn handle_proposal_changed(&self, _signal: ProposalChanged) -> Result<(), Error> {
         self.events.send(Event::ProposalChanged {
             scope: Scope::Storage,
         })?;
+
+        let issues = self.storage.call(message::GetIssues).await?;
+        self.issues
+            .call(issue::message::Set::new(Scope::Storage, issues))
+            .await?;
+
         Ok(())
     }
 
@@ -162,13 +182,14 @@ impl Monitor {
             return Err(Error::ProgressChangedData);
         };
         self.progress
-            .cast(message::Set::new(progress_data.into()))?;
+            .cast(progress::message::Set::new(progress_data.into()))?;
 
         Ok(())
     }
 
     fn handle_progress_finished(&self, _signal: ProgressFinished) -> Result<(), Error> {
-        self.progress.cast(message::Finish::new(Scope::Storage))?;
+        self.progress
+            .cast(progress::message::Finish::new(Scope::Storage))?;
         Ok(())
     }
 

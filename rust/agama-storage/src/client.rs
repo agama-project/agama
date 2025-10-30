@@ -21,6 +21,7 @@
 //! Implements a client to access Agama's storage service.
 
 use crate::config::Config;
+use agama_utils::api::Issue;
 use serde_json::{value::RawValue, Value};
 use zbus::{names::BusName, zvariant::OwnedObjectPath, Connection, Message};
 
@@ -73,27 +74,27 @@ impl Client {
 
     pub async fn get_system(&self) -> Result<Option<Box<RawValue>>, Error> {
         let message = self.call("GetSystem", &()).await?;
-        self.json_from(message)
+        try_from_message(message)
     }
 
     pub async fn get_config(&self) -> Result<Option<Config>, Error> {
         let message = self.call("GetConfig", &()).await?;
-        self.json_from(message)
+        try_from_message(message)
     }
 
     pub async fn get_config_model(&self) -> Result<Option<Box<RawValue>>, Error> {
         let message = self.call("GetConfigModel", &()).await?;
-        self.json_from(message)
+        try_from_message(message)
     }
 
     pub async fn get_proposal(&self) -> Result<Option<Box<RawValue>>, Error> {
         let message = self.call("GetProposal", &()).await?;
-        self.json_from(message)
+        try_from_message(message)
     }
 
-    pub async fn get_issues(&self) -> Result<Option<Box<RawValue>>, Error> {
+    pub async fn get_issues(&self) -> Result<Vec<Issue>, Error> {
         let message = self.call("GetIssues", &()).await?;
-        self.json_from(message)
+        try_from_message(message)
     }
 
     //TODO: send a product config instead of an id.
@@ -119,7 +120,7 @@ impl Client {
         model: Box<RawValue>,
     ) -> Result<Option<Box<RawValue>>, Error> {
         let message = self.call("SolveConfigModel", &(model.to_string())).await?;
-        self.json_from(message)
+        try_from_message(message)
     }
 
     pub async fn set_locale(&self, locale: String) -> Result<(), Error> {
@@ -139,25 +140,24 @@ impl Client {
             .await
             .map_err(|e| e.into())
     }
+}
 
-    fn json_from<T: serde::de::DeserializeOwned>(
-        &self,
-        message: Message,
-    ) -> Result<Option<T>, Error> {
-        let value: String = message.body().deserialize()?;
-        if self.is_null(value.as_str()) {
-            return Ok(None);
-        }
-        let json = serde_json::from_str(value.as_str())?;
-        Ok(Some(json))
+fn try_from_message<T: serde::de::DeserializeOwned + Default>(
+    message: Message,
+) -> Result<T, Error> {
+    let json: String = message.body().deserialize()?;
+    if is_json_null(&json) {
+        return Ok(T::default());
     }
+    let value = serde_json::from_str(&json)?;
+    Ok(value)
+}
 
-    fn is_null(&self, value: &str) -> bool {
-        let value = serde_json::from_str::<Value>(value);
-        match value {
-            Ok(Value::Null) => true,
-            Ok(_) => false,
-            Err(_) => false,
-        }
+fn is_json_null(value: &str) -> bool {
+    let value = serde_json::from_str::<Value>(value);
+    match value {
+        Ok(Value::Null) => true,
+        Ok(_) => false,
+        Err(_) => false,
     }
 }

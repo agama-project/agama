@@ -23,7 +23,11 @@ use crate::{
     config::Config,
     message,
 };
-use agama_utils::actor::{self, Actor, MessageHandler};
+use agama_utils::{
+    actor::{self, Actor, Handler, MessageHandler},
+    api::{Issue, Scope},
+    issue,
+};
 use async_trait::async_trait;
 use serde_json::value::RawValue;
 
@@ -33,18 +37,30 @@ pub enum Error {
     Actor(#[from] actor::Error),
     #[error(transparent)]
     Client(#[from] client::Error),
+    #[error(transparent)]
+    Issue(#[from] issue::service::Error),
 }
 
 /// Storage service.
 pub struct Service {
+    issues: Handler<issue::Service>,
     client: Client,
 }
 
 impl Service {
-    pub fn new(connection: zbus::Connection) -> Service {
+    pub fn new(issues: Handler<issue::Service>, connection: zbus::Connection) -> Service {
         Self {
+            issues,
             client: Client::new(connection),
         }
+    }
+
+    pub async fn start(self) -> Result<Self, Error> {
+        let issues = self.client.get_issues().await?;
+        self.issues
+            .call(issue::message::Set::new(Scope::Storage, issues))
+            .await?;
+        Ok(self)
     }
 }
 
@@ -118,6 +134,13 @@ impl MessageHandler<message::GetProposal> for Service {
         _message: message::GetProposal,
     ) -> Result<Option<Box<RawValue>>, Error> {
         self.client.get_proposal().await.map_err(|e| e.into())
+    }
+}
+
+#[async_trait]
+impl MessageHandler<message::GetIssues> for Service {
+    async fn handle(&mut self, _message: message::GetIssues) -> Result<Vec<Issue>, Error> {
+        self.client.get_issues().await.map_err(|e| e.into())
     }
 }
 
