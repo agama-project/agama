@@ -789,6 +789,104 @@ describe Agama::DBus::Storage::Manager do
     end
   end
 
+  describe "#probe" do
+    before do
+      allow(subject).to receive(:SystemChanged)
+      allow(subject).to receive(:ProgressChanged)
+      allow(subject).to receive(:ProgressFinished)
+
+      allow(backend).to receive(:activated?).and_return activated
+      allow(backend).to receive(:probe)
+    end
+
+    let(:activated) { true }
+
+    it "triggers a new probing" do
+      expect(backend).to receive(:probe)
+      subject.probe
+    end
+
+    context "when storage devices are already activated" do
+      it "does not activate devices" do
+        expect(backend).to_not receive(:activate)
+        subject.probe
+      end
+    end
+
+    context "when storage devices are not yet activated" do
+      let(:activated) { false }
+
+      it "activates the devices" do
+        expect(backend).to receive(:activate)
+        subject.probe
+      end
+    end
+
+    context "when no storage configuration has been set" do
+      it "does not calculate a new proposal" do
+        expect(backend).to_not receive(:configure)
+        subject.probe
+      end
+
+      it "does not emit a ProposalChanged signal" do
+        expect(subject).to_not receive(:ProposalChanged)
+        subject.probe
+      end
+
+      it "emits signals for SystemChanged, ProgressChanged and ProgressFinished" do
+        expect(subject).to receive(:SystemChanged) do |system_str|
+          system = parse(system_str)
+          device = system[:devices].first
+          expect(device[:name]).to eq "/dev/sda"
+          expect(system[:availableDrives]).to eq [device[:sid]]
+        end
+        expect(subject).to receive(:ProgressChanged).with(/storage configuration/i)
+        expect(subject).to receive(:ProgressFinished)
+
+        subject.probe
+      end
+    end
+
+    context "when a storage configuration was previously set" do
+      before do
+        allow(proposal).to receive(:storage_json).and_return config_json.to_json
+        allow(subject).to receive(:ProposalChanged)
+        allow(backend).to receive(:configure)
+      end
+
+      let(:config_json) do
+        {
+          storage: {
+            drives: [
+              {
+                partitions: [{ generate: "defaults" }]
+              }
+            ]
+          }
+        }
+      end
+
+      it "re-calculates the proposal" do
+        expect(backend).to receive(:configure).with(config_json)
+        subject.probe
+      end
+
+      it "emits signals for ProposalChanged, SystemChanged, ProgressChanged and ProgressFinished" do
+        expect(subject).to receive(:SystemChanged) do |system_str|
+          system = parse(system_str)
+          device = system[:devices].first
+          expect(device[:name]).to eq "/dev/sda"
+          expect(system[:availableDrives]).to eq [device[:sid]]
+        end
+        expect(subject).to receive(:ProposalChanged)
+        expect(subject).to receive(:ProgressChanged).with(/storage configuration/i)
+        expect(subject).to receive(:ProgressFinished)
+
+        subject.probe
+      end
+    end
+  end
+
   describe "#recover_issues" do
     context "if no proposal has been calculated" do
       it "returns an empty array" do

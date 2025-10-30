@@ -78,7 +78,7 @@ module Agama
           dbus_method(:SolveConfigModel, "in model:s, out result:s") { |m| solve_config_model(m) }
           dbus_method(:GetProposal, "out proposal:s") { recover_proposal }
           dbus_method(:GetIssues, "out issues:s") { recover_issues }
-          dbus_signal(:SystemChanged)
+          dbus_signal(:SystemChanged, "system:s")
           dbus_signal(:ProposalChanged)
           dbus_signal(:IssuesChanged)
           dbus_signal(:ProgressChanged, "progress:s")
@@ -93,7 +93,7 @@ module Agama
 
           next_progress_step(PROBING_STEP)
           backend.probe
-          self.SystemChanged
+          emit_system_changed
 
           next_progress_step(CONFIGURING_STEP)
           configure_with_current
@@ -108,7 +108,7 @@ module Agama
 
           next_progress_step(PROBING_STEP)
           backend.probe
-          self.SystemChanged
+          emit_system_changed
 
           next_progress_step(CONFIGURING_STEP)
           configure_with_current
@@ -126,7 +126,7 @@ module Agama
           next_progress_step(PROBING_STEP)
           if !backend.probed?
             backend.probe
-            self.SystemChanged
+            emit_system_changed
           end
 
           next_progress_step(CONFIGURING_STEP)
@@ -508,6 +508,11 @@ module Agama
           volumes.map do |vol|
             Agama::Storage::VolumeConversions::ToJSON.new(vol).convert
           end
+        end
+
+        # Emits the SystemChanged signal
+        def emit_system_changed
+          self.SystemChanged(recover_system)
         end
 
         def add_s390_interfaces
