@@ -70,8 +70,11 @@ describe Agama::DBus::Storage::Manager do
   end
 
   before do
-    # Speed up tests by avoding real check of TPM presence.
+    # Speed up tests by avoiding real check of TPM presence.
     allow(Y2Storage::EncryptionMethod::TPM_FDE).to receive(:possible?).and_return(true)
+    # Speed up tests by avoiding looking up by name in the system
+    allow(Y2Storage::BlkDevice).to receive(:find_by_any_name)
+
     allow(Yast::Arch).to receive(:s390).and_return false
     allow(backend).to receive(:on_configure)
     allow(backend).to receive(:on_issues_change)
@@ -782,6 +785,110 @@ describe Agama::DBus::Storage::Manager do
       it "returns 'null'" do
         result = subject.solve_config_model(model.to_json)
         expect(result).to eq("null")
+      end
+    end
+  end
+
+  describe "#probe" do
+    before do
+      allow(subject).to receive(:SystemChanged)
+      allow(subject).to receive(:ProgressChanged)
+      allow(subject).to receive(:ProgressFinished)
+
+      allow(backend).to receive(:activated?).and_return activated
+      allow(backend).to receive(:probe)
+    end
+
+    let(:activated) { true }
+
+    it "triggers a new probing" do
+      expect(backend).to receive(:probe)
+      subject.probe
+    end
+
+    context "when storage devices are already activated" do
+      it "does not activate devices" do
+        expect(backend).to_not receive(:activate)
+        subject.probe
+      end
+    end
+
+    context "when storage devices are not yet activated" do
+      let(:activated) { false }
+
+      it "activates the devices" do
+        expect(backend).to receive(:activate)
+        subject.probe
+      end
+    end
+
+    context "when no storage configuration has been set" do
+      it "does not calculate a new proposal" do
+        expect(backend).to_not receive(:configure)
+        subject.probe
+      end
+
+      it "does not emit a ProposalChanged signal" do
+        expect(subject).to_not receive(:ProposalChanged)
+        subject.probe
+      end
+
+      it "emits signals for SystemChanged, ProgressChanged and ProgressFinished" do
+        expect(subject).to receive(:SystemChanged) do |system_str|
+          system = parse(system_str)
+          device = system[:devices].first
+          expect(device[:name]).to eq "/dev/sda"
+          expect(system[:availableDrives]).to eq [device[:sid]]
+        end
+        expect(subject).to receive(:ProgressChanged).with(/storage configuration/i)
+        expect(subject).to receive(:ProgressFinished)
+
+        subject.probe
+      end
+    end
+
+    context "when a storage configuration was previously set" do
+      before do
+        allow(proposal).to receive(:storage_json).and_return config_json.to_json
+        allow(subject).to receive(:ProposalChanged)
+      end
+
+      let(:config_json) do
+        {
+          storage: {
+            drives: [
+              {
+                partitions: [
+                  { search: "*", delete: true },
+                  { filesystem: { path: "/" }, size: { min: "5 GiB" } }
+                ]
+              }
+            ]
+          }
+        }
+      end
+
+      it "re-calculates the proposal" do
+        expect(backend).to receive(:configure).with(config_json)
+        subject.probe
+      end
+
+      it "emits signals for ProposalChanged, SystemChanged, ProgressChanged and ProgressFinished" do
+        expect(subject).to receive(:SystemChanged) do |system_str|
+          system = parse(system_str)
+          device = system[:devices].first
+          expect(device[:name]).to eq "/dev/sda"
+          expect(system[:availableDrives]).to eq [device[:sid]]
+        end
+        expect(subject).to receive(:ProposalChanged) do |proposal_str|
+          proposal = parse(proposal_str)
+          expect(proposal[:devices]).to be_a Array
+          expect(proposal[:actions]).to be_a Array
+        end
+        expect(subject).to receive(:ProgressChanged).with(/storage configuration/i)
+        expect(subject).to receive(:ProgressFinished)
+
+        subject.probe
       end
     end
   end

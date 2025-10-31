@@ -78,9 +78,8 @@ module Agama
           dbus_method(:SolveConfigModel, "in model:s, out result:s") { |m| solve_config_model(m) }
           dbus_method(:GetProposal, "out proposal:s") { recover_proposal }
           dbus_method(:GetIssues, "out issues:s") { recover_issues }
-          dbus_signal(:SystemChanged)
-          dbus_signal(:ProposalChanged)
-          dbus_signal(:IssuesChanged)
+          dbus_signal(:SystemChanged, "system:s")
+          dbus_signal(:ProposalChanged, "proposal:s")
           dbus_signal(:ProgressChanged, "progress:s")
           dbus_signal(:ProgressFinished)
         end
@@ -93,7 +92,7 @@ module Agama
 
           next_progress_step(PROBING_STEP)
           backend.probe
-          self.SystemChanged
+          emit_system_changed
 
           next_progress_step(CONFIGURING_STEP)
           configure_with_current
@@ -108,7 +107,7 @@ module Agama
 
           next_progress_step(PROBING_STEP)
           backend.probe
-          self.SystemChanged
+          emit_system_changed
 
           next_progress_step(CONFIGURING_STEP)
           configure_with_current
@@ -126,12 +125,11 @@ module Agama
           next_progress_step(PROBING_STEP)
           if !backend.probed?
             backend.probe
-            self.SystemChanged
+            emit_system_changed
           end
 
           next_progress_step(CONFIGURING_STEP)
-          backend.configure
-          self.ProposalChanged
+          calculate_proposal
 
           finish_progress
         end
@@ -208,8 +206,7 @@ module Agama
           start_progress(1, CONFIGURING_STEP)
 
           config_json = JSON.parse(serialized_config, symbolize_names: true)
-          backend.configure(config_json)
-          self.ProposalChanged
+          calculate_proposal(config_json)
 
           finish_progress
         end
@@ -227,8 +224,7 @@ module Agama
             storage_system: proposal.storage_system
           ).convert
           config_json = { storage: Agama::Storage::ConfigConversions::ToJSON.new(config).convert }
-          backend.configure(config_json)
-          self.ProposalChanged
+          calculate_proposal(config_json)
 
           finish_progress
         end
@@ -400,7 +396,15 @@ module Agama
           return unless config_json
 
           configure(config_json)
-          self.ProposalChanged
+        end
+
+        # @see #configure
+        # @see #configure_with_model
+        #
+        # @param config_json [Hash, nil] see Agama::Storage::Manager#configure
+        def calculate_proposal(config_json = nil)
+          backend.configure(config_json)
+          self.ProposalChanged(recover_proposal)
         end
 
         # JSON representation of the given devicegraph from StorageManager
@@ -508,6 +512,11 @@ module Agama
           volumes.map do |vol|
             Agama::Storage::VolumeConversions::ToJSON.new(vol).convert
           end
+        end
+
+        # Emits the SystemChanged signal
+        def emit_system_changed
+          self.SystemChanged(recover_system)
         end
 
         def add_s390_interfaces
