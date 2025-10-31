@@ -52,7 +52,6 @@ describe Agama::Storage::ISCSI::Manager do
     allow(Yast::IscsiClientLib).to receive(:getStartupStatus)
     allow(Yast::IscsiClientLib).to receive(:discover_from_portal)
     allow(Yast::Service).to receive(:restart)
-    allow(Yast::Execute).to receive(:locally).with(/udevadm/, any_args)
     allow(subject).to receive(:adapter).and_return(adapter)
     allow(subject).to receive(:sleep)
   end
@@ -76,12 +75,6 @@ describe Agama::Storage::ISCSI::Manager do
       expect(Yast::Service).to receive(:restart).with("iscsi").ordered
       expect(Yast::Service).to receive(:restart).with("iscsid").ordered
       expect(Yast::Service).to receive(:restart).with("iscsiuio").ordered
-
-      subject.activate
-    end
-
-    it "waits for udev events queue to be empty" do
-      expect(Yast::Execute).to receive(:locally).with(/udevadm/, "settle", any_args)
 
       subject.activate
     end
