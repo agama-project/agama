@@ -18,23 +18,432 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use cidr::errors::NetworkParseError;
+use crate::openapi::schemas;
+use cidr::{errors::NetworkParseError, IpInet};
 use serde::{Deserialize, Serialize};
+use serde_with::{serde_as, skip_serializing_none, DisplayFromStr};
 use std::{
+    collections::HashMap,
     fmt,
+    net::IpAddr,
     str::{self, FromStr},
 };
 use thiserror::Error;
+use zbus::zvariant::Value;
+
+/// Network state
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize, utoipa::ToSchema)]
+#[serde(rename_all = "camelCase")]
+pub struct GeneralState {
+    pub hostname: String,
+    pub connectivity: bool,
+    pub copy_network: bool,
+    pub wireless_enabled: bool,
+    pub networking_enabled: bool, // pub network_state: NMSTATE
+}
 
 /// Network device
-#[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(tag = "type")]
+#[serde_as]
+#[skip_serializing_none]
+#[derive(Default, Debug, Clone, PartialEq, Deserialize, Serialize, utoipa::ToSchema)]
+#[serde(rename_all = "camelCase")]
 pub struct Device {
     pub name: String,
+    #[serde(rename = "type")]
     pub type_: DeviceType,
+    #[serde_as(as = "DisplayFromStr")]
+    pub mac_address: MacAddress,
+    pub ip_config: Option<IpConfig>,
+    // Connection.id
+    pub connection: Option<String>,
     pub state: DeviceState,
 }
 
+#[derive(Debug, Default, Clone, PartialEq, Serialize, utoipa::ToSchema)]
+pub enum MacAddress {
+    #[schema(value_type = String, format = "MAC address in EUI-48 format")]
+    MacAddress(macaddr::MacAddr6),
+    Preserve,
+    Permanent,
+    Random,
+    Stable,
+    #[default]
+    Unset,
+}
+
+impl fmt::Display for MacAddress {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let output = match &self {
+            Self::MacAddress(mac) => mac.to_string(),
+            Self::Preserve => "preserve".to_string(),
+            Self::Permanent => "permanent".to_string(),
+            Self::Random => "random".to_string(),
+            Self::Stable => "stable".to_string(),
+            Self::Unset => "".to_string(),
+        };
+        write!(f, "{}", output)
+    }
+}
+
+#[derive(Debug, Error)]
+#[error("Invalid MAC address: {0}")]
+pub struct InvalidMacAddress(String);
+
+impl FromStr for MacAddress {
+    type Err = InvalidMacAddress;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "preserve" => Ok(Self::Preserve),
+            "permanent" => Ok(Self::Permanent),
+            "random" => Ok(Self::Random),
+            "stable" => Ok(Self::Stable),
+            "" => Ok(Self::Unset),
+            _ => Ok(Self::MacAddress(match macaddr::MacAddr6::from_str(s) {
+                Ok(mac) => mac,
+                Err(e) => return Err(InvalidMacAddress(e.to_string())),
+            })),
+        }
+    }
+}
+
+impl TryFrom<&Option<String>> for MacAddress {
+    type Error = InvalidMacAddress;
+
+    fn try_from(value: &Option<String>) -> Result<Self, Self::Error> {
+        match &value {
+            Some(str) => MacAddress::from_str(str),
+            None => Ok(Self::Unset),
+        }
+    }
+}
+
+impl From<InvalidMacAddress> for zbus::fdo::Error {
+    fn from(value: InvalidMacAddress) -> Self {
+        zbus::fdo::Error::Failed(value.to_string())
+    }
+}
+
+#[skip_serializing_none]
+#[derive(Default, Debug, PartialEq, Clone, Deserialize, Serialize, utoipa::ToSchema)]
+#[serde(rename_all = "camelCase")]
+pub struct IpConfig {
+    pub method4: Ipv4Method,
+    pub method6: Ipv6Method,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    #[schema(schema_with = schemas::ip_inet_array)]
+    pub addresses: Vec<IpInet>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    #[schema(schema_with = schemas::ip_addr_array)]
+    pub nameservers: Vec<IpAddr>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub dns_searchlist: Vec<String>,
+    pub ignore_auto_dns: bool,
+    #[schema(schema_with = schemas::ip_addr)]
+    pub gateway4: Option<IpAddr>,
+    #[schema(schema_with = schemas::ip_addr)]
+    pub gateway6: Option<IpAddr>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub routes4: Vec<IpRoute>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub routes6: Vec<IpRoute>,
+    pub dhcp4_settings: Option<Dhcp4Settings>,
+    pub dhcp6_settings: Option<Dhcp6Settings>,
+    pub ip6_privacy: Option<i32>,
+    pub dns_priority4: Option<i32>,
+    pub dns_priority6: Option<i32>,
+}
+
+#[skip_serializing_none]
+#[derive(Debug, Default, PartialEq, Clone, Deserialize, Serialize, utoipa::ToSchema)]
+pub struct Dhcp4Settings {
+    pub send_hostname: Option<bool>,
+    pub hostname: Option<String>,
+    pub send_release: Option<bool>,
+    pub client_id: DhcpClientId,
+    pub iaid: DhcpIaid,
+}
+
+#[skip_serializing_none]
+#[derive(Debug, Default, PartialEq, Clone, Deserialize, Serialize, utoipa::ToSchema)]
+pub struct Dhcp6Settings {
+    pub send_hostname: Option<bool>,
+    pub hostname: Option<String>,
+    pub send_release: Option<bool>,
+    pub duid: DhcpDuid,
+    pub iaid: DhcpIaid,
+}
+#[derive(Debug, Default, Clone, PartialEq, Deserialize, Serialize, utoipa::ToSchema)]
+pub enum DhcpClientId {
+    Id(String),
+    Mac,
+    PermMac,
+    Ipv6Duid,
+    Duid,
+    Stable,
+    None,
+    #[default]
+    Unset,
+}
+
+impl From<&str> for DhcpClientId {
+    fn from(s: &str) -> Self {
+        match s {
+            "mac" => Self::Mac,
+            "perm-mac" => Self::PermMac,
+            "ipv6-duid" => Self::Ipv6Duid,
+            "duid" => Self::Duid,
+            "stable" => Self::Stable,
+            "none" => Self::None,
+            "" => Self::Unset,
+            _ => Self::Id(s.to_string()),
+        }
+    }
+}
+
+impl From<Option<String>> for DhcpClientId {
+    fn from(value: Option<String>) -> Self {
+        match &value {
+            Some(str) => Self::from(str.as_str()),
+            None => Self::Unset,
+        }
+    }
+}
+
+impl fmt::Display for DhcpClientId {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let output = match &self {
+            Self::Id(id) => id.to_string(),
+            Self::Mac => "mac".to_string(),
+            Self::PermMac => "perm-mac".to_string(),
+            Self::Ipv6Duid => "ipv6-duid".to_string(),
+            Self::Duid => "duid".to_string(),
+            Self::Stable => "stable".to_string(),
+            Self::None => "none".to_string(),
+            Self::Unset => "".to_string(),
+        };
+        write!(f, "{}", output)
+    }
+}
+
+#[derive(Debug, Default, Clone, PartialEq, Deserialize, Serialize, utoipa::ToSchema)]
+pub enum DhcpDuid {
+    Id(String),
+    Lease,
+    Llt,
+    Ll,
+    StableLlt,
+    StableLl,
+    StableUuid,
+    #[default]
+    Unset,
+}
+
+impl From<&str> for DhcpDuid {
+    fn from(s: &str) -> Self {
+        match s {
+            "lease" => Self::Lease,
+            "llt" => Self::Llt,
+            "ll" => Self::Ll,
+            "stable-llt" => Self::StableLlt,
+            "stable-ll" => Self::StableLl,
+            "stable-uuid" => Self::StableUuid,
+            "" => Self::Unset,
+            _ => Self::Id(s.to_string()),
+        }
+    }
+}
+
+impl From<Option<String>> for DhcpDuid {
+    fn from(value: Option<String>) -> Self {
+        match &value {
+            Some(str) => Self::from(str.as_str()),
+            None => Self::Unset,
+        }
+    }
+}
+
+impl fmt::Display for DhcpDuid {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let output = match &self {
+            Self::Id(id) => id.to_string(),
+            Self::Lease => "lease".to_string(),
+            Self::Llt => "llt".to_string(),
+            Self::Ll => "ll".to_string(),
+            Self::StableLlt => "stable-llt".to_string(),
+            Self::StableLl => "stable-ll".to_string(),
+            Self::StableUuid => "stable-uuid".to_string(),
+            Self::Unset => "".to_string(),
+        };
+        write!(f, "{}", output)
+    }
+}
+
+#[derive(Debug, Default, Clone, PartialEq, Deserialize, Serialize, utoipa::ToSchema)]
+pub enum DhcpIaid {
+    Id(String),
+    Mac,
+    PermMac,
+    Ifname,
+    Stable,
+    #[default]
+    Unset,
+}
+
+impl From<&str> for DhcpIaid {
+    fn from(s: &str) -> Self {
+        match s {
+            "mac" => Self::Mac,
+            "perm-mac" => Self::PermMac,
+            "ifname" => Self::Ifname,
+            "stable" => Self::Stable,
+            "" => Self::Unset,
+            _ => Self::Id(s.to_string()),
+        }
+    }
+}
+
+impl From<Option<String>> for DhcpIaid {
+    fn from(value: Option<String>) -> Self {
+        match value {
+            Some(str) => Self::from(str.as_str()),
+            None => Self::Unset,
+        }
+    }
+}
+
+impl fmt::Display for DhcpIaid {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let output = match &self {
+            Self::Id(id) => id.to_string(),
+            Self::Mac => "mac".to_string(),
+            Self::PermMac => "perm-mac".to_string(),
+            Self::Ifname => "ifname".to_string(),
+            Self::Stable => "stable".to_string(),
+            Self::Unset => "".to_string(),
+        };
+        write!(f, "{}", output)
+    }
+}
+
+#[derive(Debug, PartialEq, Clone, Deserialize, Serialize, utoipa::ToSchema)]
+#[serde(rename_all = "camelCase")]
+pub struct IpRoute {
+    #[schema(schema_with = schemas::ip_inet_ref)]
+    pub destination: IpInet,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[schema(schema_with = schemas::ip_addr)]
+    pub next_hop: Option<IpAddr>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub metric: Option<u32>,
+}
+
+impl From<&IpRoute> for HashMap<&str, Value<'_>> {
+    fn from(route: &IpRoute) -> Self {
+        let mut map: HashMap<&str, Value> = HashMap::from([
+            ("dest", Value::new(route.destination.address().to_string())),
+            (
+                "prefix",
+                Value::new(route.destination.network_length() as u32),
+            ),
+        ]);
+        if let Some(next_hop) = route.next_hop {
+            map.insert("next-hop", Value::new(next_hop.to_string()));
+        }
+        if let Some(metric) = route.metric {
+            map.insert("metric", Value::new(metric));
+        }
+        map
+    }
+}
+
+#[derive(Debug, Error)]
+#[error("Unknown IP configuration method name: {0}")]
+pub struct UnknownIpMethod(String);
+
+#[derive(Debug, Default, Copy, Clone, PartialEq, Deserialize, Serialize, utoipa::ToSchema)]
+#[serde(rename_all = "camelCase")]
+pub enum Ipv4Method {
+    Disabled = 0,
+    #[default]
+    Auto = 1,
+    Manual = 2,
+    LinkLocal = 3,
+}
+
+impl fmt::Display for Ipv4Method {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let name = match &self {
+            Ipv4Method::Disabled => "disabled",
+            Ipv4Method::Auto => "auto",
+            Ipv4Method::Manual => "manual",
+            Ipv4Method::LinkLocal => "link-local",
+        };
+        write!(f, "{}", name)
+    }
+}
+
+impl FromStr for Ipv4Method {
+    type Err = UnknownIpMethod;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "disabled" => Ok(Ipv4Method::Disabled),
+            "auto" => Ok(Ipv4Method::Auto),
+            "manual" => Ok(Ipv4Method::Manual),
+            "link-local" => Ok(Ipv4Method::LinkLocal),
+            _ => Err(UnknownIpMethod(s.to_string())),
+        }
+    }
+}
+
+#[derive(Debug, Default, Copy, Clone, PartialEq, Deserialize, Serialize, utoipa::ToSchema)]
+#[serde(rename_all = "camelCase")]
+pub enum Ipv6Method {
+    Disabled = 0,
+    #[default]
+    Auto = 1,
+    Manual = 2,
+    LinkLocal = 3,
+    Ignore = 4,
+    Dhcp = 5,
+}
+
+impl fmt::Display for Ipv6Method {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let name = match &self {
+            Ipv6Method::Disabled => "disabled",
+            Ipv6Method::Auto => "auto",
+            Ipv6Method::Manual => "manual",
+            Ipv6Method::LinkLocal => "link-local",
+            Ipv6Method::Ignore => "ignore",
+            Ipv6Method::Dhcp => "dhcp",
+        };
+        write!(f, "{}", name)
+    }
+}
+
+impl FromStr for Ipv6Method {
+    type Err = UnknownIpMethod;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "disabled" => Ok(Ipv6Method::Disabled),
+            "auto" => Ok(Ipv6Method::Auto),
+            "manual" => Ok(Ipv6Method::Manual),
+            "link-local" => Ok(Ipv6Method::LinkLocal),
+            "ignore" => Ok(Ipv6Method::Ignore),
+            "dhcp" => Ok(Ipv6Method::Dhcp),
+            _ => Err(UnknownIpMethod(s.to_string())),
+        }
+    }
+}
+
+impl From<UnknownIpMethod> for zbus::fdo::Error {
+    fn from(value: UnknownIpMethod) -> zbus::fdo::Error {
+        zbus::fdo::Error::Failed(value.to_string())
+    }
+}
 #[derive(Debug, Default, PartialEq, Clone, Serialize, Deserialize, utoipa::ToSchema)]
 pub struct SSID(pub Vec<u8>);
 

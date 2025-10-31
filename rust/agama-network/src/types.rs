@@ -23,15 +23,6 @@ use serde::{Deserialize, Serialize};
 use std::str::{self};
 use thiserror::Error;
 
-/// Network device
-#[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(tag = "type")]
-pub struct Device {
-    pub name: String,
-    pub type_: DeviceType,
-    pub state: DeviceState,
-}
-
 // https://networkmanager.dev/docs/api/latest/nm-dbus-types.html#NMSettingsConnectionFlags
 #[derive(Serialize, Deserialize, Debug, PartialEq, Eq, Clone, Copy, utoipa::ToSchema)]
 pub enum ConnectionFlags {

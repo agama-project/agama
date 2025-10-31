@@ -30,13 +30,14 @@ import {
   EmptyStateFooter,
 } from "@patternfly/react-core";
 import { Link, Page } from "~/components/core";
-import { useConnections, useNetworkChanges } from "~/queries/network";
+import { useNetworkChanges } from "~/queries/network";
 import { _ } from "~/i18n";
 import { sprintf } from "sprintf-js";
 import WiredConnectionDetails from "./WiredConnectionDetails";
 import { Icon } from "../layout";
 import { NETWORK } from "~/routes/paths";
 import NoPersistentConnectionsAlert from "./NoPersistentConnectionsAlert";
+import { useNetworkProposal } from "~/queries/proposal";
 
 const ConnectionNotFound = ({ id }) => {
   // TRANSLATORS: %s will be replaced with connection id
@@ -62,8 +63,8 @@ const ConnectionNotFound = ({ id }) => {
 
 export default function WiredConnectionPage() {
   useNetworkChanges();
+  const { connections } = useNetworkProposal();
   const { id } = useParams();
-  const connections = useConnections();
   const connection = connections.find((c) => c.id === id);
 
   const title = _("Connection details");

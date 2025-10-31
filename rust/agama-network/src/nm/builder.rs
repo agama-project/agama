@@ -21,12 +21,11 @@
 //! Conversion mechanism between proxies and model structs.
 
 use crate::{
-    model::{Device, IpConfig, IpRoute, MacAddress},
     nm::{
         model::NmDeviceType,
         proxies::{DeviceProxy, IP4ConfigProxy, IP6ConfigProxy},
     },
-    types::{DeviceState, DeviceType},
+    types::{Device, DeviceState, DeviceType, IpConfig, IpRoute, MacAddress},
 };
 use cidr::IpInet;
 use std::{collections::HashMap, net::IpAddr, str::FromStr};

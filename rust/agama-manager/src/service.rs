@@ -31,7 +31,7 @@ use agama_utils::{
 };
 use async_trait::async_trait;
 use merge_struct::merge;
-use network::{types, NetworkSystemClient, NetworkSystemError};
+use network::{NetworkSystemClient, NetworkSystemError};
 use tokio::sync::broadcast;
 
 #[derive(Debug, thiserror::Error)]
@@ -142,7 +142,8 @@ impl MessageHandler<message::GetExtendedConfig> for Service {
         let questions = self.questions.call(question::message::GetConfig).await?;
         let network_config: network::types::Proposal = self.network.get_extended_config().await?;
         let network = agama_network::types::Config {
-            connections: network_config.connections,
+            connections: Some(network_config.connections),
+            general_state: Some(network_config.general_state),
         };
 
         Ok(Config {
@@ -184,6 +185,10 @@ impl MessageHandler<message::SetConfig> for Service {
                 .call(question::message::SetConfig::new(questions.clone()))
                 .await?;
         }
+        if let Some(network) = &message.config.network {
+            self.network.update_config(network.clone()).await?;
+            self.network.apply().await?;
+        }
         self.config = message.config;
         Ok(())
     }
@@ -205,10 +210,7 @@ impl MessageHandler<message::GetProposal> for Service {
     /// It returns the current proposal, if any.
     async fn handle(&mut self, _message: message::GetProposal) -> Result<Option<Proposal>, Error> {
         let l10n = self.l10n.call(l10n::message::GetProposal).await?;
-        let network_config: types::Proposal = self.network.get_extended_config().await?;
-        let network = types::Proposal {
-            connections: network_config.connections,
-        };
+        let network = self.network.get_extended_config().await?;
 
         Ok(Some(Proposal { l10n, network }))
     }

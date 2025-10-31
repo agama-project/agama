@@ -45,6 +45,8 @@ import {
   persist,
   updateConnection,
 } from "~/api/network";
+import { useNetworkProposal } from "./proposal";
+import { useNetworkSystem } from "./system";
 
 /**
  * Returns a query for retrieving the general network configuration
@@ -133,8 +135,7 @@ const useAddConnectionMutation = () => {
 const useConnectionMutation = () => {
   const queryClient = useQueryClient();
   const query = {
-    mutationFn: (newConnection: Connection) =>
-      updateConnection(newConnection.toApi()).then(() => applyChanges()),
+    mutationFn: updateConnection,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["network", "connections"] });
       queryClient.invalidateQueries({ queryKey: ["network", "devices"] });
@@ -287,8 +288,10 @@ const useNetworkChanges = () => {
 };
 
 const useConnection = (name: string) => {
-  const { data } = useSuspenseQuery(connectionQuery(name));
-  return data;
+  const { connections } = useNetworkProposal();
+  const connection = connections.find((c) => c.id === name);
+
+  return connection;
 };
 
 /**
@@ -303,16 +306,18 @@ const useNetworkState = (): NetworkGeneralState => {
  * Returns the network devices.
  */
 const useNetworkDevices = (): Device[] => {
-  const { data } = useSuspenseQuery(devicesQuery());
-  return data;
+  const { devices } = useNetworkSystem();
+
+  return devices;
 };
 
 /**
  * Returns the network connections.
  */
 const useConnections = (): Connection[] => {
-  const { data } = useSuspenseQuery(connectionsQuery());
-  return data;
+  const { connections } = useNetworkProposal();
+
+  return connections;
 };
 
 /**

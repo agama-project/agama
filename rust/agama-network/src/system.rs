@@ -21,10 +21,8 @@
 use crate::{
     action::Action,
     error::NetworkStateError,
-    model::{
-        AccessPoint, Connection, Device, GeneralState, NetworkChange, NetworkState, StateConfig,
-    },
-    types::{DeviceType, Proposal, SystemInfo},
+    model::{AccessPoint, Connection, NetworkChange, NetworkState, StateConfig},
+    types::{Config, Device, DeviceType, GeneralState, Proposal, SystemInfo},
     Adapter, NetworkAdapterError,
 };
 use std::error::Error;
@@ -167,6 +165,14 @@ impl NetworkSystemClient {
         let (tx, rx) = oneshot::channel();
         self.actions.send(Action::GetExtendedConfig(tx))?;
         Ok(rx.await?)
+    }
+
+    pub async fn update_config(&self, config: Config) -> Result<(), NetworkSystemError> {
+        let (tx, rx) = oneshot::channel();
+        self.actions
+            .send(Action::UpdateConfig(Box::new(config.clone()), tx))?;
+        let result = rx.await?;
+        Ok(result?)
     }
 
     pub async fn get_system_config(&self) -> Result<SystemInfo, NetworkSystemError> {
@@ -328,6 +334,11 @@ impl<T: Adapter> NetworkSystemServer<T> {
             Action::GetExtendedConfig(tx) => {
                 let config: Proposal = self.state.clone().try_into()?;
                 tx.send(config).unwrap();
+            }
+            Action::UpdateConfig(config, tx) => {
+                let result = self.state.update_state(*config);
+
+                tx.send(result).unwrap();
             }
             Action::GetConnections(tx) => {
                 let connections = self

@@ -48,7 +48,10 @@ impl NetworkStore {
     pub async fn load(&self) -> NetworkStoreResult<NetworkSettings> {
         let connections = NetworkConnectionsCollection(self.network_client.connections().await?);
 
-        Ok(NetworkSettings { connections })
+        Ok(NetworkSettings {
+            connections,
+            ..Default::default()
+        })
     }
 
     pub async fn store(&self, settings: &NetworkSettings) -> NetworkStoreResult<()> {

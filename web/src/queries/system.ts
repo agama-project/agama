@@ -25,7 +25,7 @@ import { tzOffset } from "@date-fns/tz/tzOffset";
 import { useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { useInstallerClient } from "~/context/installer";
 import { fetchSystem } from "~/api/api";
-import { System } from "~/types/system";
+import { NetworkSystem } from "~/types/network";
 
 const transformLocales = (locales) =>
   locales.map(({ id, language: name, territory }) => ({ id, name, territory }));
@@ -77,6 +77,18 @@ const useSystem = () => {
   return system;
 };
 
+const useNetworkSystem = () => {
+  const { data: config } = useSuspenseQuery(systemQuery());
+
+  return NetworkSystem.fromApi(config.network);
+};
+
+const useNetworkDevices = () => {
+  const { devices } = useNetworkSystem();
+
+  return devices;
+};
+
 const useSystemChanges = () => {
   const queryClient = useQueryClient();
   const client = useInstallerClient();
@@ -92,4 +104,4 @@ const useSystemChanges = () => {
   }, [client, queryClient]);
 };
 
-export { useSystem, useSystemChanges };
+export { useSystem, useSystemChanges, useNetworkSystem, useNetworkDevices };

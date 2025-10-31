@@ -18,12 +18,13 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::model::{AccessPoint, Connection, Device};
-use crate::types::{ConnectionState, DeviceType, Proposal, SystemInfo};
+use crate::model::{AccessPoint, Connection};
+use crate::types::{ConnectionState, Device, DeviceType, GeneralState, Proposal, SystemInfo};
+use agama_utils::api::network::Config;
 use tokio::sync::oneshot;
 use uuid::Uuid;
 
-use super::{error::NetworkStateError, model::GeneralState, NetworkAdapterError};
+use super::{error::NetworkStateError, NetworkAdapterError};
 
 pub type Responder<T> = oneshot::Sender<T>;
 pub type ControllerConnection = (Connection, Vec<String>);
@@ -42,7 +43,12 @@ pub enum Action {
     GetConnection(String, Responder<Option<Connection>>),
     /// Gets a connection by its Uuid
     GetConnectionByUuid(Uuid, Responder<Option<Connection>>),
+    /// Gets the internal state of the network configuration
     GetExtendedConfig(Responder<Proposal>),
+    /// Updates th internal state of the network configuration
+    UpdateConfig(Box<Config>, Responder<Result<(), NetworkStateError>>),
+    /// Gets the current network configuration containing connections, devices, access_points and
+    /// also the general state
     GetSystemConfig(Responder<SystemInfo>),
     /// Gets a connection
     GetConnections(Responder<Vec<Connection>>),

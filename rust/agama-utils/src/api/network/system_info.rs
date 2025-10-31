@@ -20,7 +20,7 @@
 
 //! Representation of the network settings
 
-use crate::api::network::NetworkConnectionsCollection;
+use crate::api::network::{Device, GeneralState, NetworkConnectionsCollection};
 use serde::{Deserialize, Serialize};
 use std::default::Default;
 
@@ -30,4 +30,7 @@ use std::default::Default;
 pub struct SystemInfo {
     /// Connections to use in the installation
     pub connections: NetworkConnectionsCollection,
+    pub devices: Vec<Device>,
+    pub general_state: GeneralState,
+    // networks or access_points shold be returned
 }
