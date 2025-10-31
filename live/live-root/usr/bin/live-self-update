@@ -14,6 +14,7 @@ RESPONSE_FILE="$RUN_DIR/server_response"
 REG_REPO_FILE="$RUN_DIR/reg_repos"
 OSR="/etc/os-release"
 ARCH=$(uname -m)
+PROXY=$(get_proxy)
 
 # do the cleanup at the end, trap ensures it runs even if something fails
 trap cleanup_chroot EXIT
@@ -122,12 +123,25 @@ query_reg_server() {
       curl_options="--insecure"
     fi
 
-    curl $curl_options --silent --globoff --location --retry 3 --retry-connrefused \
-      --connect-timeout 20 --max-time 10 --fail --show-error --output "$RESPONSE_FILE" \
-      -- "$query"
+    if [ -n "$PROXY" ]; then
+      milestone "Using proxy $PROXY for connecting the registration server"
+      curl_options="$curl_options --proxy $PROXY"
+    fi
 
-    info "Found self-update repository: $(jq -r ".[] | select(.installer_updates==true) | .description" "$RESPONSE_FILE") "
-    jq -r ".[] | select(.installer_updates==true) | .url" "$RESPONSE_FILE" > "$REG_REPO_FILE"
+    if curl $curl_options --silent --globoff --location --retry 3 --retry-connrefused \
+      --connect-timeout 20 --max-time 10 --fail --show-error --output "$RESPONSE_FILE" \
+      -- "$query"; then
+
+      info "Found self-update repository: $(jq -r ".[] | select(.installer_updates==true) | .description" "$RESPONSE_FILE") "
+      jq -r ".[] | select(.installer_updates==true) | .url" "$RESPONSE_FILE" > "$REG_REPO_FILE"
+    else
+      warning "Contacting the registration server failed"
+      # SCC/RMT query failed and no fallback configured
+      if [ ! -s "$CONFIG_FALLBACK_FILE" ]; then
+        error "Cannot obtain the self-update repository"
+        exit 1
+      fi
+    fi
   else
     milestone "Registration server not defined"
   fi
@@ -144,24 +158,14 @@ add_update_repos() {
 
       if grep -q "\binst.self_update_ssl=0\b" /run/agama/cmdline.d/agama.conf; then
         warning "Disabling SSL check for repository $update_url"
+        # add "ssl_verify=no" query to the repository URL
+        update_url=$(url_add_query "$update_url" "ssl_verify=no")
+      fi
 
-        # add the "ssl_verify=no" query to the repository URL for libzypp
-        # NOTE: there is a "trurl" (https://github.com/curl/trurl) tool for processing
-        # URLs in CLI and scripts, but it is not included in the distribution :-/
-        local base
-        local query
-        # split the string at the "?" separator
-        query="${update_url#*\?}"
-        base="${update_url%\?*}"
-
-        # if the "?" separator is missing then "$query" equals to "$base"
-        if [ -z "$query" ] || [ "$query" = "$base" ]; then
-          # no query present, add a query part to the URL
-          update_url="${base}?ssl_verify=no"
-        else
-          # a query is already present, append the new part
-          update_url="${base}?${query}&ssl_verify=no"
-        fi
+      if [ -n "$PROXY" ]; then
+        milestone "Using proxy $PROXY for the self-update repository"
+        # add "proxy=<URL>" query to the repository URL
+        update_url=$(url_add_query "$update_url" "proxy=$PROXY")
       fi
 
       local zypper_options
@@ -264,6 +268,35 @@ install_updates() {
   for repo in "${self_update_repos[@]}"; do
     run_command zypper modifyrepo --disable "$repo"
   done
+}
+
+# get the configured network proxy (empty string if not configured)
+get_proxy() {
+  # see ../lib/dracut/modules.d/98dracut-menu/dracut-cmdline-menu.sh
+  # get the last found, it has the highest priority
+  grep "\bproxy=" /proc/cmdline /etc/cmdline.d/*  | tail -n 1 | sed "s/.*\bproxy=\([^ \t]*\).*/\1/"
+}
+
+# add a query parameter to URL
+# $1 - base URL ("http://example.com")
+# $2 - the query part ("foo=bar")
+# returns "http://example.com?foo=bar"
+url_add_query() {
+  local base
+  local query
+
+  # split the string at the "?" separator
+  query="${1#*\?}"
+  base="${1%\?*}"
+
+  # if the "?" separator is missing then "$query" equals to "$base"
+  if [ -z "$query" ] || [ "$query" = "$base" ]; then
+    # no query present, add a query part to the URL
+    echo "${base}?${2}"
+  else
+    # a query is already present, append the new part
+    echo "${base}?${query}&${2}"
+  fi
 }
 
 install_updates
