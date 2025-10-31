@@ -138,35 +138,6 @@ impl Service {
 
         Ok(())
     }
-
-    async fn apply_config(config: &Config, model: &mut dyn ModelAdapter) -> Result<(), Error> {
-        if let Some(software) = &config.software {
-            let user_id = "user";
-            let patterns = software.patterns.clone().unwrap_or_default();
-            let packages = software.packages.clone().unwrap_or_default();
-            let extra_repositories = software.extra_repositories.clone().unwrap_or_default();
-            // TODO: patterns as it as it can be either set or add/remove set
-            model
-                .set_resolvables(user_id, ResolvableType::Package, packages, false)
-                .await?;
-            // for repositories we should allow also to remove previously defined one, but now for simplicity just check if it there and if not, then add it
-            // TODO: replace it with future repository registry
-            let existing_repositories = model.repositories().await?;
-            let new_repos = extra_repositories
-                .iter()
-                .filter(|r| {
-                    existing_repositories
-                        .iter()
-                        .find(|repo| repo.alias == r.alias)
-                        .is_none()
-                })
-                .cloned()
-                .collect();
-            model.add_repositories(new_repos).await?;
-        }
-
-        Ok(())
-    }
 }
 
 impl Actor for Service {
@@ -233,15 +204,7 @@ impl MessageHandler<message::GetProposal> for Service {
 #[async_trait]
 impl MessageHandler<message::Probe> for Service {
     async fn handle(&mut self, _message: message::Probe) -> Result<(), Error> {
-        let Some(product_id) = self.state.config.product.clone().and_then(|c| c.id) else {
-            return Err(Error::MissingProduct);
-        };
-
-        let Some(product) = self.products.find(&product_id) else {
-            return Err(Error::WrongProduct(product_id));
-        };
-
-        self.model.lock().await.probe(product).await?;
+        self.model.lock().await.probe().await?;
         self.update_system().await?;
         Ok(())
     }

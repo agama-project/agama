@@ -29,8 +29,8 @@ use crate::hostname::model::HostnameSettings;
 use crate::security::settings::SecuritySettings;
 use crate::storage::settings::zfcp::ZFCPConfig;
 use crate::{
-    network::NetworkSettings, scripts::ScriptsConfig,
-    storage::settings::dasd::DASDConfig, users::UserSettings,
+    network::NetworkSettings, scripts::ScriptsConfig, storage::settings::dasd::DASDConfig,
+    users::UserSettings,
 };
 use fluent_uri::Uri;
 use serde::{Deserialize, Serialize};

@@ -18,7 +18,7 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use agama_utils::api::{issue, software::RepositoryParams, Issue, IssueSeverity, IssueSource};
+use agama_utils::api::{Issue, IssueSeverity};
 use std::path::Path;
 use tokio::sync::{
     mpsc::{self, UnboundedSender},
@@ -27,7 +27,7 @@ use tokio::sync::{
 use zypp_agama::ZyppError;
 
 use crate::model::{
-    packages::{Repository, ResolvableType},
+    packages::ResolvableType,
     pattern::Pattern,
     state::{self, SoftwareState},
 };
@@ -81,15 +81,9 @@ pub type ZyppServerResult<R> = Result<R, ZyppServerError>;
 
 #[derive(Debug)]
 pub enum SoftwareAction {
-    AddRepositories(Vec<RepositoryParams>, oneshot::Sender<ZyppServerResult<()>>),
-    RemoveRepositories(Vec<String>, oneshot::Sender<ZyppServerResult<()>>),
     Install(oneshot::Sender<ZyppServerResult<bool>>),
     Finish(oneshot::Sender<ZyppServerResult<()>>),
-    ListRepositories(oneshot::Sender<ZyppServerResult<Vec<Repository>>>),
     GetPatternsMetadata(Vec<String>, oneshot::Sender<ZyppServerResult<Vec<Pattern>>>),
-    PackageAvailable(String, oneshot::Sender<Result<bool, ZyppError>>),
-    PackageSelected(String, oneshot::Sender<Result<bool, ZyppError>>),
-    Solve(oneshot::Sender<Result<bool, ZyppError>>),
     SetResolvables {
         tx: oneshot::Sender<Result<(), ZyppError>>,
         resolvables: Vec<String>,
@@ -174,24 +168,9 @@ impl ZyppServer {
             SoftwareAction::Write { state, tx } => {
                 self.write(state, tx, zypp).await?;
             }
-            SoftwareAction::AddRepositories(repos, tx) => {
-                self.add_repositories(repos, tx, zypp).await?;
-            }
-
-            SoftwareAction::RemoveRepositories(repos, tx) => {
-                self.remove_repositories(repos, tx, zypp).await?;
-            }
 
             SoftwareAction::GetPatternsMetadata(names, tx) => {
                 self.get_patterns(names, tx, zypp).await?;
-            }
-
-            SoftwareAction::PackageSelected(tag, tx) => {
-                self.package_selected(zypp, tag, tx).await?;
-            }
-
-            SoftwareAction::PackageAvailable(tag, tx) => {
-                self.package_available(zypp, tag, tx).await?;
             }
 
             SoftwareAction::Install(tx) => {
@@ -243,35 +222,6 @@ impl ZyppServer {
                         break;
                     }
                 }
-            }
-
-            SoftwareAction::Solve(tx) => {
-                let res = zypp.run_solver();
-                tx.send(res)
-                    .map_err(|_| ZyppDispatchError::ResponseChannelClosed)?;
-            }
-
-            SoftwareAction::ListRepositories(tx) => {
-                let repos_res = zypp.list_repositories();
-                let result = repos_res
-                    .map(|repos| {
-                        repos
-                            .into_iter()
-                            .enumerate()
-                            .map(|(index, repo)| Repository {
-                                url: repo.url,
-                                // unwrap here is ok, as number of repos are low
-                                alias: repo.alias,
-                                name: repo.user_name,
-                                enabled: repo.enabled,
-                                mandatory: false,
-                            })
-                            .collect()
-                    })
-                    .map_err(|e| e.into());
-
-                tx.send(result)
-                    .map_err(|_| ZyppDispatchError::ResponseChannelClosed)?;
             }
         }
         Ok(())
@@ -417,60 +367,6 @@ impl ZyppServer {
         Ok(())
     }
 
-    async fn add_repositories(
-        &self,
-        repos: Vec<RepositoryParams>,
-        tx: oneshot::Sender<ZyppServerResult<()>>,
-        zypp: &zypp_agama::Zypp,
-    ) -> Result<(), ZyppDispatchError> {
-        for (idx, repo) in repos.iter().enumerate() {
-            // TODO: we should add a repository ID in the configuration file.
-            let name = format!("agama-{}", idx);
-            let res = zypp
-                .add_repository(&name, &repo.url, |percent, alias| {
-                    tracing::info!("Adding repository {} ({}%)", alias, percent);
-                    true
-                })
-                .map_err(ZyppServerError::AddRepositoryFailed);
-            if res.is_err() {
-                tx.send(res)
-                    .map_err(|_| ZyppDispatchError::ResponseChannelClosed)?;
-                return Ok(());
-            }
-        }
-
-        let res = zypp
-            .load_source(|percent, alias| {
-                tracing::info!("Refreshing repositories: {} ({}%)", alias, percent);
-                true
-            })
-            .map_err(ZyppServerError::LoadSourcesFailed);
-        if res.is_err() {
-            tx.send(res)
-                .map_err(|_| ZyppDispatchError::ResponseChannelClosed)?;
-        }
-
-        Ok(())
-    }
-
-    async fn remove_repositories(
-        &self,
-        repos: Vec<String>,
-        tx: oneshot::Sender<ZyppServerResult<()>>,
-        zypp: &zypp_agama::Zypp,
-    ) -> Result<(), ZyppDispatchError> {
-        for repo in repos {
-            let res = zypp.remove_repository(&repo, |_, _| true);
-            if res.is_err() {
-                tx.send(res.map_err(|e| e.into()))
-                    .map_err(|_| ZyppDispatchError::ResponseChannelClosed)?;
-                return Ok(());
-            }
-        }
-
-        Ok(())
-    }
-
     async fn finish(
         &mut self,
         zypp: &zypp_agama::Zypp,
@@ -536,30 +432,6 @@ impl ZyppServer {
 
     fn modify_zypp_conf(&self) -> ZyppServerResult<()> {
         // TODO: implement when requireOnly is implemented
-        Ok(())
-    }
-
-    async fn package_available(
-        &self,
-        zypp: &zypp_agama::Zypp,
-        tag: String,
-        tx: oneshot::Sender<Result<bool, ZyppError>>,
-    ) -> Result<(), ZyppDispatchError> {
-        let result = zypp.is_package_available(&tag);
-        tx.send(result)
-            .map_err(|_| ZyppDispatchError::ResponseChannelClosed)?;
-        Ok(())
-    }
-
-    async fn package_selected(
-        &self,
-        zypp: &zypp_agama::Zypp,
-        tag: String,
-        tx: oneshot::Sender<Result<bool, ZyppError>>,
-    ) -> Result<(), ZyppDispatchError> {
-        let result = zypp.is_package_selected(&tag);
-        tx.send(result)
-            .map_err(|_| ZyppDispatchError::ResponseChannelClosed)?;
         Ok(())
     }
 
