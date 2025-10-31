@@ -62,7 +62,6 @@ const STORAGE_SERVICE: &str = "org.opensuse.Agama.Storage1";
 const ISCSI_PATH: &str = "/org/opensuse/Agama/Storage1/ISCSI";
 const PRODUCT_PATH: &str = "/org/opensuse/Agama/Software1/Product";
 const SOFTWARE_PATH: &str = "/org/opensuse/Agama/Software1";
-const STORAGE_PATH: &str = "/org/opensuse/Agama/Storage1";
 const USERS_PATH: &str = "/org/opensuse/Agama/Users1";
 
 impl Monitor {
@@ -78,8 +77,6 @@ impl Monitor {
         self.initialize_issues(SOFTWARE_SERVICE, SOFTWARE_PATH)
             .await?;
         self.initialize_issues(SOFTWARE_SERVICE, PRODUCT_PATH)
-            .await?;
-        self.initialize_issues(STORAGE_SERVICE, STORAGE_PATH)
             .await?;
         self.initialize_issues(STORAGE_SERVICE, ISCSI_PATH).await?;
 
@@ -179,7 +176,6 @@ impl Monitor {
         match path {
             SOFTWARE_PATH => Some(Scope::Software),
             PRODUCT_PATH => Some(Scope::Product),
-            STORAGE_PATH => Some(Scope::Storage),
             USERS_PATH => Some(Scope::Users),
             ISCSI_PATH => Some(Scope::Iscsi),
             _ => None,
