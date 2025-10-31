@@ -2,7 +2,7 @@
   "localization": {
     "keyboard": "es",
     "language": "es_ES.UTF-8",
-    "keymap": "es_ES.UTF-8"
+    "timezone": "Europe/Berlin"
   },
   "software": {
     "patterns": ["gnome"],
