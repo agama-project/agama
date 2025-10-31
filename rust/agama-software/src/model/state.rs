@@ -41,8 +41,8 @@ pub struct SoftwareState {
     pub product: String,
     pub repositories: Vec<Repository>,
     // TODO: consider implementing a list to make easier working with them.
-    pub patterns: Vec<Resolvable>,
-    pub packages: Vec<Resolvable>,
+    pub patterns: Vec<ResolvableName>,
+    pub packages: Vec<ResolvableName>,
     pub options: SoftwareOptions,
 }
 
@@ -116,13 +116,13 @@ impl<'a> SoftwareStateBuilder<'a> {
                     state.patterns.retain(|p| p.optional == false);
                     state
                         .patterns
-                        .extend(list.iter().map(|n| Resolvable::new(n, false)));
+                        .extend(list.iter().map(|n| ResolvableName::new(n, false)));
                 }
                 PatternsConfig::PatternsMap(map) => {
                     if let Some(add) = &map.add {
                         state
                             .patterns
-                            .extend(add.iter().map(|n| Resolvable::new(n, false)));
+                            .extend(add.iter().map(|n| ResolvableName::new(n, false)));
                     }
 
                     if let Some(remove) = &map.remove {
@@ -158,24 +158,24 @@ impl<'a> SoftwareStateBuilder<'a> {
             })
             .collect();
 
-        let mut patterns: Vec<Resolvable> = software
+        let mut patterns: Vec<ResolvableName> = software
             .mandatory_patterns
             .iter()
-            .map(|p| Resolvable::new(p, false))
+            .map(|p| ResolvableName::new(p, false))
             .collect();
 
         patterns.extend(
             software
                 .optional_patterns
                 .iter()
-                .map(|p| Resolvable::new(p, true)),
+                .map(|p| ResolvableName::new(p, true)),
         );
 
         patterns.extend(software.user_patterns.iter().filter_map(|p| match p {
             UserPattern::Plain(_) => None,
             UserPattern::Preselected(pattern) => {
                 if pattern.selected {
-                    Some(Resolvable::new(&pattern.name, true))
+                    Some(ResolvableName::new(&pattern.name, true))
                 } else {
                     None
                 }
@@ -235,14 +235,14 @@ impl From<&packages::Repository> for Repository {
 
 /// Defines a resolvable to be selected.
 #[derive(Debug, PartialEq)]
-pub struct Resolvable {
+pub struct ResolvableName {
     /// Resolvable name.
     pub name: String,
     /// Whether this resolvable is optional or not.
     pub optional: bool,
 }
 
-impl Resolvable {
+impl ResolvableName {
     pub fn new(name: &str, optional: bool) -> Self {
         Self {
             name: name.to_string(),
@@ -323,8 +323,8 @@ mod tests {
         assert_eq!(
             state.patterns,
             vec![
-                Resolvable::new("enhanced_base", false),
-                Resolvable::new("selinux", true),
+                ResolvableName::new("enhanced_base", false),
+                ResolvableName::new("selinux", true),
             ]
         );
     }
@@ -363,9 +363,9 @@ mod tests {
         assert_eq!(
             state.patterns,
             vec![
-                Resolvable::new("enhanced_base", false),
-                Resolvable::new("selinux", true),
-                Resolvable::new("gnome", false)
+                ResolvableName::new("enhanced_base", false),
+                ResolvableName::new("selinux", true),
+                ResolvableName::new("gnome", false)
             ]
         );
     }
@@ -384,7 +384,7 @@ mod tests {
             .build();
         assert_eq!(
             state.patterns,
-            vec![Resolvable::new("enhanced_base", false),]
+            vec![ResolvableName::new("enhanced_base", false),]
         );
     }
 
@@ -403,8 +403,8 @@ mod tests {
         assert_eq!(
             state.patterns,
             vec![
-                Resolvable::new("enhanced_base", false),
-                Resolvable::new("selinux", true)
+                ResolvableName::new("enhanced_base", false),
+                ResolvableName::new("selinux", true)
             ]
         );
     }
@@ -421,8 +421,8 @@ mod tests {
         assert_eq!(
             state.patterns,
             vec![
-                Resolvable::new("enhanced_base", false),
-                Resolvable::new("gnome", false)
+                ResolvableName::new("enhanced_base", false),
+                ResolvableName::new("gnome", false)
             ]
         );
     }
