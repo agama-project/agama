@@ -42,7 +42,7 @@ import InstallationOnlySwitch from "./InstallationOnlySwitch";
 import { Connection, Device } from "~/types/network";
 import { connectionBindingMode, formatIp } from "~/utils/network";
 import { NETWORK } from "~/routes/paths";
-import { useNetworkDevices } from "~/queries/network";
+import { useNetworkDevices } from "~/queries/system";
 import { generateEncodedPath } from "~/utils";
 import { isEmpty } from "radashi";
 import { sprintf } from "sprintf-js";

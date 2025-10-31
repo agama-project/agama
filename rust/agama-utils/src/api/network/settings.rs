@@ -34,7 +34,6 @@ pub struct NetworkConnectionsCollection(pub Vec<NetworkConnection>);
 #[derive(Clone, Debug, Default, Serialize, Deserialize, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct NetworkSettings {
-    /// Connections to use in the installation
     pub connections: NetworkConnectionsCollection,
 }
 
@@ -199,7 +198,7 @@ pub struct IEEE8021XSettings {
     pub peap_label: bool,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, utoipa::ToSchema)]
 pub struct NetworkDevice {
     pub id: String,
     pub type_: DeviceType,

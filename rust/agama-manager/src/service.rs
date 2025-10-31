@@ -29,8 +29,8 @@ use agama_utils::{
 };
 use async_trait::async_trait;
 use merge_struct::merge;
-use network::{types, NetworkSystemClient, NetworkSystemError};
 use serde_json::Value;
+use network::{NetworkSystemClient, NetworkSystemError};
 use tokio::sync::broadcast;
 
 #[derive(Debug, thiserror::Error)]
@@ -172,7 +172,8 @@ impl MessageHandler<message::GetExtendedConfig> for Service {
         let questions = self.questions.call(question::message::GetConfig).await?;
         let network_config: network::types::Proposal = self.network.get_extended_config().await?;
         let network = agama_network::types::Config {
-            connections: network_config.connections,
+            connections: Some(network_config.connections),
+            general_state: Some(network_config.general_state),
         };
         let storage = self.storage.call(storage::message::GetConfig).await?;
 
@@ -212,6 +213,11 @@ impl MessageHandler<message::SetConfig> for Service {
         self.storage
             .call(storage::message::SetConfig::new(config.storage.clone()))
             .await?;
+
+        if let Some(network) = config.network.clone() {
+            self.network.update_config(network).await?;
+            self.network.apply().await?;
+        }
 
         self.config = config;
         Ok(())
@@ -255,11 +261,15 @@ impl MessageHandler<message::GetProposal> for Service {
     /// It returns the current proposal, if any.
     async fn handle(&mut self, _message: message::GetProposal) -> Result<Option<Proposal>, Error> {
         let l10n = self.l10n.call(l10n::message::GetProposal).await?;
+<<<<<<< HEAD
         let storage = self.storage.call(storage::message::GetProposal).await?;
         let network_config: types::Proposal = self.network.get_extended_config().await?;
         let network = types::Proposal {
             connections: network_config.connections,
         };
+=======
+        let network = self.network.get_extended_config().await?;
+>>>>>>> c91270e0d (Moved network types to agama utils and adapt for new API changes)
 
         Ok(Some(Proposal {
             l10n,

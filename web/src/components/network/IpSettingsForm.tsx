@@ -41,8 +41,9 @@ import AddressesDataList from "~/components/network/AddressesDataList";
 import DnsDataList from "~/components/network/DnsDataList";
 import { _ } from "~/i18n";
 import { sprintf } from "sprintf-js";
-import { useConnection, useConnectionMutation } from "~/queries/network";
+import { useConnection } from "~/queries/network";
 import { IPAddress, Connection, ConnectionMethod } from "~/types/network";
+import { updateConnection } from "~/api/network";
 
 const usingDHCP = (method: ConnectionMethod) => method === ConnectionMethod.AUTO;
 
@@ -51,7 +52,6 @@ const usingDHCP = (method: ConnectionMethod) => method === ConnectionMethod.AUTO
 export default function IpSettingsForm() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { mutateAsync: updateConnection } = useConnectionMutation();
   const connection = useConnection(id);
   const [addresses, setAddresses] = useState<IPAddress[]>(connection.addresses);
   const [nameservers, setNameservers] = useState(
@@ -62,7 +62,7 @@ export default function IpSettingsForm() {
   const [method, setMethod] = useState<ConnectionMethod>(connection.method4);
   const [gateway, setGateway] = useState<string>(connection.gateway4);
   const [fieldErrors, setFieldErrors] = useState<object>({});
-  const [requestError, setRequestError] = useState<string | undefined>();
+  const [requestError] = useState<string | undefined>();
 
   const isSetAsInvalid = (field: string) => Object.keys(fieldErrors).includes(field);
   const isGatewayDisabled = addresses.length === 0;
@@ -127,11 +127,8 @@ export default function IpSettingsForm() {
       nameservers: sanitizedNameservers.map((s) => s.address),
     });
 
-    updateConnection(updatedConnection)
-      .then(() => navigate(-1))
-      .catch((error) => {
-        setRequestError(error.message);
-      });
+    updateConnection(updatedConnection);
+    navigate(-1);
   };
 
   const renderError = (field: string) => {

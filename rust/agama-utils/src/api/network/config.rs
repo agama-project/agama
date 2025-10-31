@@ -20,7 +20,8 @@
 
 //! Representation of the network settings
 
-use crate::api::network::NetworkConnectionsCollection;
+use crate::api::network;
+use network::{GeneralState, NetworkConnectionsCollection};
 use serde::{Deserialize, Serialize};
 use std::default::Default;
 
@@ -29,5 +30,6 @@ use std::default::Default;
 #[serde(rename_all = "camelCase")]
 pub struct Config {
     /// Connections to use in the installation
-    pub connections: NetworkConnectionsCollection,
+    pub connections: Option<NetworkConnectionsCollection>,
+    pub general_state: Option<GeneralState>,
 }

@@ -35,10 +35,11 @@ use super::proxies::{
     SettingsProxy, WirelessProxy,
 };
 use crate::model::{
-    AccessPoint, Connection, ConnectionConfig, Device, GeneralState, SecurityProtocol,
-    NOT_COPY_NETWORK_PATH,
+    AccessPoint, Connection, ConnectionConfig, SecurityProtocol, NOT_COPY_NETWORK_PATH,
 };
-use crate::types::{AddFlags, ConnectionFlags, DeviceType, UpdateFlags, SSID};
+use crate::types::{
+    AddFlags, ConnectionFlags, Device, DeviceType, GeneralState, UpdateFlags, SSID,
+};
 use agama_utils::dbus::get_optional_property;
 use semver::Version;
 use uuid::Uuid;

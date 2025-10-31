@@ -242,6 +242,7 @@ dependencies = [
  "async-trait",
  "cidr",
  "gettext-rs",
+ "macaddr",
  "serde",
  "serde_json",
  "serde_with",

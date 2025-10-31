@@ -92,6 +92,7 @@ enum DeviceState {
 enum ConnectionStatus {
   UP = "up",
   DOWN = "down",
+  DELETE = "delete",
 }
 
 // Current state of the connection.
@@ -360,6 +361,74 @@ type NetworkGeneralState = {
   wirelessEnabled: boolean;
 };
 
+class NetworkSystem {
+  connections: Connection[];
+  accessPoints: AccessPoint[];
+  devices: Device[];
+  state: NetworkGeneralState;
+
+  constructor(
+    connections?: Connection[],
+    accessPoints?: AccessPoint[],
+    devices?: Device[],
+    state?: NetworkGeneralState,
+  ) {
+    if (connections !== undefined) this.connections = connections;
+    if (accessPoints !== undefined) this.accessPoints = accessPoints;
+    if (devices !== undefined) this.devices = devices;
+    if (state !== undefined) this.state = state;
+  }
+
+  static fromApi(options: APINetworkSystem) {
+    const { connections: conns, accessPoints: aps, devices: devs, state } = options;
+    const connections = conns.map(Connection.fromApi);
+    const accessPoints = aps.map(AccessPoint.fromApi).sort((a, b) => b.strength - a.strength);
+    const devices = devs.map(Device.fromApi);
+
+    return new NetworkSystem(connections, accessPoints, devices, state);
+  }
+}
+
+class NetworkProposal {
+  connections: Connection[];
+  //accessPoints: AccessPoint[];
+  //devices: Device[];
+  state: NetworkGeneralState;
+
+  constructor(
+    connections?: Connection[],
+    //accessPoints?: AccessPoint[],
+    //devices?: Device[],
+    state?: NetworkGeneralState,
+  ) {
+    if (connections !== undefined) this.connections = connections;
+    //if (accessPoints !== undefined) this.accessPoints = accessPoints;
+    //if (devices !== undefined) this.devices = devices;
+    if (state !== undefined) this.state = state;
+  }
+
+  static fromApi(options: APINetworkProposal) {
+    const { connections, state } = options;
+    const conns = connections.map((c) => Connection.fromApi(c));
+
+    return new NetworkProposal(conns, state);
+  }
+}
+
+type APINetworkSystem = {
+  connections: APIConnection[];
+  accessPoints: APIAccessPoint[];
+  devices: APIDevice[];
+  state: NetworkGeneralState;
+};
+
+type APINetworkProposal = {
+  connections?: APIConnection[];
+  //accessPoints?: APIAccessPoint[];
+  //devices?: APIDevice[];
+  state?: NetworkGeneralState;
+};
+
 export {
   AccessPoint,
   ApFlags,
@@ -373,6 +442,8 @@ export {
   DeviceState,
   DeviceType,
   NetworkState,
+  NetworkProposal,
+  NetworkSystem,
   SecurityProtocols,
   WifiNetworkStatus,
   Wireless,
@@ -385,6 +456,7 @@ export type {
   ConnectionOptions,
   APIDevice,
   IPAddress,
+  APINetworkProposal,
   NetworkGeneralState,
   Route,
   APIRoute,

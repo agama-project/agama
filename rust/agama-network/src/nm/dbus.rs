@@ -24,7 +24,7 @@
 //! with nested hash maps (see [NestedHash] and [OwnedNestedHash]).
 use super::{error::NmError, model::*};
 use crate::model::*;
-use crate::types::{BondMode, SSID};
+use crate::types::*;
 use agama_utils::dbus::{
     get_optional_property, get_property, to_owned_hash, NestedHash, OwnedNestedHash,
 };
