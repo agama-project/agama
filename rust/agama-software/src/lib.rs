@@ -41,18 +41,14 @@ pub use start::start;
 pub mod service;
 pub use service::Service;
 
-mod model;
+pub mod model;
 pub use model::{Model, ModelAdapter};
 
 mod event;
 pub use event::Event;
 
-mod system_info;
-pub use system_info::SystemInfo;
-
 mod proposal;
 pub use proposal::Proposal;
 
-mod extended_config;
 pub mod message;
 mod zypp_server;

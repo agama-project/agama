@@ -18,11 +18,7 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::{
-    file_source::FileSourceError,
-    http::BaseHTTPClient,
-    software::{model::ResolvableType, SoftwareHTTPClient, SoftwareHTTPClientError},
-};
+use crate::{file_source::FileSourceError, http::BaseHTTPClient};
 
 use super::{
     client::{ScriptsClient, ScriptsClientError},
@@ -34,8 +30,6 @@ use super::{
 pub enum ScriptsStoreError {
     #[error("Error processing script settings: {0}")]
     Script(#[from] ScriptsClientError),
-    #[error("Error selecting software: {0}")]
-    Software(#[from] SoftwareHTTPClientError),
     #[error(transparent)]
     FileSourceError(#[from] FileSourceError),
 }
@@ -44,14 +38,12 @@ type ScriptStoreResult<T> = Result<T, ScriptsStoreError>;
 
 pub struct ScriptsStore {
     scripts: ScriptsClient,
-    software: SoftwareHTTPClient,
 }
 
 impl ScriptsStore {
     pub fn new(client: BaseHTTPClient) -> Self {
         Self {
             scripts: ScriptsClient::new(client.clone()),
-            software: SoftwareHTTPClient::new(client),
         }
     }
 
@@ -94,9 +86,10 @@ impl ScriptsStore {
             }
             packages.push("agama-scripts");
         }
-        self.software
-            .set_resolvables("agama-scripts", ResolvableType::Package, &packages, true)
-            .await?;
+        // TODO: use the new API.
+        // self.software
+        //     .set_resolvables("agama-scripts", ResolvableType::Package, &packages, true)
+        //     .await?;
 
         Ok(())
     }
