@@ -18,7 +18,7 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use agama_utils::api::{Issue, IssueSeverity};
+use agama_utils::api::{software::Pattern, Issue, IssueSeverity};
 use std::path::Path;
 use tokio::sync::{
     mpsc::{self, UnboundedSender},
@@ -28,7 +28,6 @@ use zypp_agama::ZyppError;
 
 use crate::model::{
     packages::ResolvableType,
-    pattern::Pattern,
     state::{self, SoftwareState},
 };
 const TARGET_DIR: &str = "/run/agama/software_ng_zypp";
