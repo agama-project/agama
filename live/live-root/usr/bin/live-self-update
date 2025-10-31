@@ -21,8 +21,15 @@ trap cleanup_chroot EXIT
 # helper function to log important steps (highlighted in the journalctl output)
 # use "set +x" to avoid logging the message again (it is already logged in the
 # original caller place so it would be actually logged three times...)
+# see https://www.freedesktop.org/software/systemd/man/latest/sd-daemon.html
+# for the log level numbers
 milestone() {
   ({ set +x; } 2>/dev/null; echo "<5>$1")
+}
+
+# log warning
+warning() {
+  ({ set +x; } 2>/dev/null; echo "<4>$1")
 }
 
 # log error
@@ -57,6 +64,8 @@ prepare_chroot() {
     mount -o bind /dev "$NEWROOT"/dev
     [ -f /run/NetworkManager/resolv.conf ] && cp /run/NetworkManager/resolv.conf "$NEWROOT"/etc/resolv.conf
   fi
+  # remove any existing self-update repositories, probably left-overs from the previous run
+  rm -f "$NEWROOT"/etc/zypp/repos.d/self-update-*.repo
 }
 
 # Revert the changes done by prepare_chroot() and restore the system to the
@@ -94,10 +103,10 @@ query_reg_server() {
   local server
   # custom server (RMT)
   if [ -f "$SERVER_FILE" ]; then
-    server=$(cat "$SERVER_FILE")
+    server=$(< "$SERVER_FILE")
   # default server (SCC)
   elif  [ -f "$CONFIG_DEFAULT_REG_SERVER_FILE" ]; then
-    server=$(cat "$CONFIG_DEFAULT_REG_SERVER_FILE")
+    server=$(< "$CONFIG_DEFAULT_REG_SERVER_FILE")
   fi
 
   if [ -n "$server" ]; then
@@ -107,7 +116,15 @@ query_reg_server() {
     query="$server/connect/repositories/installer?identifier=$NAME&version=$VERSION_ID&arch=$ARCH"
     info "Running query $query...."
 
-    curl --silent --globoff --location --retry 3 --connect-timeout 20 --max-time 10 --fail --show-error --output "$RESPONSE_FILE" -- "$query"
+    local curl_options
+    if grep -q "\binst.self_update_ssl=0\b" /run/agama/cmdline.d/agama.conf; then
+      warning "Disabling SSL check for $server"
+      curl_options="--insecure"
+    fi
+
+    curl $curl_options --silent --globoff --location --retry 3 --retry-connrefused \
+      --connect-timeout 20 --max-time 10 --fail --show-error --output "$RESPONSE_FILE" \
+      -- "$query"
 
     info "Found self-update repository: $(jq -r ".[] | select(.installer_updates==true) | .description" "$RESPONSE_FILE") "
     jq -r ".[] | select(.installer_updates==true) | .url" "$RESPONSE_FILE" > "$REG_REPO_FILE"
@@ -122,10 +139,46 @@ add_update_repos() {
   # add the self-update repositories
   while read -r update_url; do
     if [ -n "$update_url" ]; then
+      local repo
       repo="self-update-$index"
-      # try removing the repo, it might be a leftover from the previous run
-      run_command zypper removerepo "$repo" || true
-      run_command zypper addrepo -f "$update_url" "$repo"
+
+      if grep -q "\binst.self_update_ssl=0\b" /run/agama/cmdline.d/agama.conf; then
+        warning "Disabling SSL check for repository $update_url"
+
+        # add the "ssl_verify=no" query to the repository URL for libzypp
+        # NOTE: there is a "trurl" (https://github.com/curl/trurl) tool for processing
+        # URLs in CLI and scripts, but it is not included in the distribution :-/
+        local base
+        local query
+        # split the string at the "?" separator
+        query="${update_url#*\?}"
+        base="${update_url%\?*}"
+
+        # if the "?" separator is missing then "$query" equals to "$base"
+        if [ -z "$query" ] || [ "$query" = "$base" ]; then
+          # no query present, add a query part to the URL
+          update_url="${base}?ssl_verify=no"
+        else
+          # a query is already present, append the new part
+          update_url="${base}?${query}&ssl_verify=no"
+        fi
+      fi
+
+      local zypper_options
+      # allow using unsigned repository
+      if grep -q "\binst.self_update_unsigned_repo=1\b" /run/agama/cmdline.d/agama.conf; then
+        warning "Unsigned repository is allowed"
+        zypper_options="--gpgcheck-allow-unsigned-repo"
+      fi
+
+      # completely disable GPG checks, not recommended, if possible the options
+      # above should be preferred
+      if grep -q "\binst.self_update_gpg=0\b" /run/agama/cmdline.d/agama.conf; then
+        warning "Disabling all GPG checks!"
+        zypper_options="$zypper_options --no-gpgcheck"
+      fi
+
+      run_command zypper addrepo $zypper_options -f "$update_url" "$repo"
       self_update_repos+=("$repo")
       ((++index))
     fi
@@ -182,8 +235,15 @@ install_updates() {
     fi
   fi
 
+  local zypper_options
+  # automatically import the repository GPG key
+  if grep -q "\binst.self_update_import_key=1\b" /run/agama/cmdline.d/agama.conf; then
+    warning "Enabled GPG key autoimport"
+    zypper_options="--gpg-auto-import-keys"
+  fi
+
   milestone "Loading repositories..."
-  run_command zypper refresh "${self_update_repos[@]}"
+  run_command zypper $zypper_options refresh "${self_update_repos[@]}"
 
   # build the list of repository options passed to zypper
   repo_options=()
