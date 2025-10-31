@@ -130,6 +130,8 @@ module Agama
 
           next_progress_step(CONFIGURING_STEP)
           calculate_proposal
+
+          finish_progress
         end
 
         # Implementation for the API method #Install.
@@ -205,6 +207,8 @@ module Agama
 
           config_json = JSON.parse(serialized_config, symbolize_names: true)
           calculate_proposal(config_json)
+
+          finish_progress
         end
 
         # Applies the given serialized config model according to the JSON schema.
@@ -221,6 +225,8 @@ module Agama
           ).convert
           config_json = { storage: Agama::Storage::ConfigConversions::ToJSON.new(config).convert }
           calculate_proposal(config_json)
+
+          finish_progress
         end
 
         # Solves the given serialized config model.
@@ -399,7 +405,6 @@ module Agama
         def calculate_proposal(config_json = nil)
           backend.configure(config_json)
           self.ProposalChanged(recover_proposal)
-          finish_progress
         end
 
         # JSON representation of the given devicegraph from StorageManager
