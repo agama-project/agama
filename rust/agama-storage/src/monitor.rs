@@ -63,10 +63,10 @@ pub enum Error {
 )]
 pub trait Storage1 {
     #[zbus(signal)]
-    fn system_changed(&self) -> zbus::Result<()>;
+    fn system_changed(&self, system: &str) -> zbus::Result<()>;
 
     #[zbus(signal)]
-    fn proposal_changed(&self) -> zbus::Result<()>;
+    fn proposal_changed(&self, proposal: &str) -> zbus::Result<()>;
 
     #[zbus(signal)]
     fn progress_changed(&self, progress: &str) -> zbus::Result<()>;
@@ -154,6 +154,7 @@ impl Monitor {
         Ok(())
     }
 
+    // TODO: add system info to the event.
     fn handle_system_changed(&self, _signal: SystemChanged) -> Result<(), Error> {
         self.events.send(Event::SystemChanged {
             scope: Scope::Storage,
@@ -161,6 +162,7 @@ impl Monitor {
         Ok(())
     }
 
+    // TODO: add proposal to the event.
     async fn handle_proposal_changed(&self, _signal: ProposalChanged) -> Result<(), Error> {
         self.events.send(Event::ProposalChanged {
             scope: Scope::Storage,
