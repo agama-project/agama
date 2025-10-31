@@ -18,14 +18,13 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use agama_utils::api::Issue;
+use agama_utils::api::{software::Pattern, Issue};
 use async_trait::async_trait;
 use tokio::sync::{mpsc, oneshot};
 
 use crate::{
     model::{
         packages::ResolvableType,
-        pattern::Pattern,
         products::{ProductSpec, UserPattern},
         software_selection::SoftwareSelection,
         state::SoftwareState,
@@ -37,8 +36,6 @@ use crate::{
 pub mod conflict;
 pub mod license;
 pub mod packages;
-pub mod pattern;
-pub mod product;
 pub mod products;
 pub mod registration;
 pub mod software_selection;

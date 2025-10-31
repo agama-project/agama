@@ -18,6 +18,7 @@ zbus = "5.7.1"
 zvariant = "5.5.2"
 gettext-rs = { version = "0.7.2", features = ["gettext-system"] }
 agama-locale-data = { path = "../agama-locale-data" }
+regex = "1.12.2"
 
 [dev-dependencies]
 tokio-test = "0.4.4"

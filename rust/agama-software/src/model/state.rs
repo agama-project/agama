@@ -22,15 +22,9 @@
 //! configuration and a mechanism to build it starting from the product
 //! definition, the user configuration, etc.
 
-use agama_utils::api::software::{Config, PatternsConfig, RepositoryParams};
+use agama_utils::api::software::{Config, PatternsConfig, RepositoryConfig, SystemInfo};
 
-use crate::{
-    model::{
-        packages,
-        products::{ProductSpec, UserPattern},
-    },
-    SystemInfo,
-};
+use crate::model::products::{ProductSpec, UserPattern};
 
 /// Represents the wanted software configuration.
 ///
@@ -81,11 +75,11 @@ impl<'a> SoftwareStateBuilder<'a> {
         let mut state = self.from_product_spec();
 
         if let Some(system) = self.system {
-            self.add_system_config(&mut state, &system);
+            self.add_system_config(&mut state, system);
         }
 
         if let Some(config) = self.config {
-            self.add_user_config(&mut state, &config);
+            self.add_user_config(&mut state, config);
         }
 
         state
@@ -211,8 +205,8 @@ pub struct Repository {
     pub enabled: bool,
 }
 
-impl From<&RepositoryParams> for Repository {
-    fn from(value: &RepositoryParams) -> Self {
+impl From<&RepositoryConfig> for Repository {
+    fn from(value: &RepositoryConfig) -> Self {
         Repository {
             name: value.name.as_ref().unwrap_or(&value.alias).clone(),
             alias: value.alias.clone(),
@@ -222,8 +216,8 @@ impl From<&RepositoryParams> for Repository {
     }
 }
 
-impl From<&packages::Repository> for Repository {
-    fn from(value: &packages::Repository) -> Self {
+impl From<&agama_utils::api::software::Repository> for Repository {
+    fn from(value: &agama_utils::api::software::Repository) -> Self {
         Repository {
             name: value.name.clone(),
             alias: value.alias.clone(),
@@ -263,15 +257,17 @@ mod tests {
     use std::path::PathBuf;
 
     use agama_utils::api::software::{
-        PatternsConfig, PatternsMap, RepositoryParams, SoftwareConfig,
+        Config, PatternsConfig, PatternsMap, Repository, RepositoryConfig, SoftwareConfig,
+        SystemInfo,
     };
 
-    use crate::model::packages::Repository;
-
-    use super::*;
+    use crate::model::{
+        products::ProductSpec,
+        state::{ResolvableName, SoftwareStateBuilder},
+    };
 
     fn build_user_config(patterns: Option<PatternsConfig>) -> Config {
-        let repo = RepositoryParams {
+        let repo = RepositoryConfig {
             alias: "user-repo-0".to_string(),
             url: "http://example.net/repo".to_string(),
             name: None,

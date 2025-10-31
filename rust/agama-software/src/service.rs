@@ -18,33 +18,30 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use std::{ops::DerefMut, process::Command, sync::Arc};
+use std::{process::Command, sync::Arc};
 
 use crate::{
     message,
     model::{
         license::{Error as LicenseError, LicensesRepo},
-        packages::{self, Repository, ResolvableType},
-        products::{ProductSpec, ProductsRegistry, ProductsRegistryError},
-        software_selection::SoftwareSelection,
-        state::{self, SoftwareState},
+        products::{ProductsRegistry, ProductsRegistryError},
+        state::SoftwareState,
         ModelAdapter,
     },
     proposal::Proposal,
-    system_info::SystemInfo,
     zypp_server::{self, SoftwareAction},
 };
 use agama_utils::{
     actor::{self, Actor, Handler, MessageHandler},
     api::{
         event::{self, Event},
-        software::{Config, ProductConfig, RepositoryParams},
+        software::{Config, Repository, SystemInfo},
         Scope,
     },
     issue,
 };
 use async_trait::async_trait;
-use tokio::sync::{broadcast, Mutex, RwLock};
+use tokio::sync::{broadcast, Mutex};
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
@@ -227,12 +224,12 @@ impl MessageHandler<message::Finish> for Service {
 
 const LIVE_REPO_DIR: &str = "/run/initramfs/live/install";
 
-fn find_install_repository() -> Option<packages::Repository> {
+fn find_install_repository() -> Option<Repository> {
     if !std::fs::exists(LIVE_REPO_DIR).is_ok_and(|e| e) {
         return None;
     }
 
-    normalize_repository_url(LIVE_REPO_DIR, "/install").map(|url| packages::Repository {
+    normalize_repository_url(LIVE_REPO_DIR, "/install").map(|url| Repository {
         alias: "install".to_string(),
         name: "install".to_string(),
         url,
