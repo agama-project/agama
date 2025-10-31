@@ -39,12 +39,18 @@ pub async fn start(events: event::Sender) -> Result<Handler<Service>, Error> {
 
 #[cfg(test)]
 mod tests {
-    use crate::actor::{self, Handler};
-    use crate::api::event::{self, Event};
-    use crate::api::progress;
-    use crate::api::scope::Scope;
-    use crate::progress::message;
-    use crate::progress::service::{self, Service};
+    use crate::{
+        actor::{self, Handler},
+        api::{
+            event::{self, Event},
+            progress::{self, Progress},
+            scope::Scope,
+        },
+        progress::{
+            message,
+            service::{self, Service},
+        },
+    };
     use tokio::sync::broadcast;
 
     fn start_testing_service() -> (event::Receiver, Handler<Service>) {
@@ -65,16 +71,7 @@ mod tests {
             .await?;
 
         let event = receiver.recv().await.unwrap();
-        assert!(matches!(
-            event,
-            Event::ProgressChanged {
-                scope: Scope::L10n,
-                progress: _
-            }
-        ));
-
         let Event::ProgressChanged {
-            scope: _,
             progress: event_progress,
         } = event
         else {
@@ -99,13 +96,7 @@ mod tests {
             .await?;
 
         let event = receiver.recv().await.unwrap();
-        assert!(matches!(
-            event,
-            Event::ProgressChanged {
-                scope: Scope::L10n,
-                progress: _
-            }
-        ));
+        assert!(matches!(event, Event::ProgressChanged { progress: _ }));
 
         let progresses = handler.call(message::Get).await.unwrap();
         let progress = progresses.first().unwrap();
@@ -119,13 +110,7 @@ mod tests {
         handler.call(message::Next::new(Scope::L10n)).await?;
 
         let event = receiver.recv().await.unwrap();
-        assert!(matches!(
-            event,
-            Event::ProgressChanged {
-                scope: Scope::L10n,
-                progress: _
-            }
-        ));
+        assert!(matches!(event, Event::ProgressChanged { progress: _ }));
 
         let progresses = handler.call(message::Get).await.unwrap();
         let progress = progresses.first().unwrap();
@@ -146,6 +131,61 @@ mod tests {
 
         let progresses = handler.call(message::Get).await.unwrap();
         assert!(progresses.is_empty());
+
+        Ok(())
+    }
+
+    #[tokio::test]
+    async fn test_set_progress() -> Result<(), Box<dyn std::error::Error>> {
+        let (mut receiver, handler) = start_testing_service();
+
+        // Set first progress.
+        let progress = Progress::new(Scope::Storage, 3, "first step".to_string());
+        handler.call(message::Set::new(progress)).await?;
+
+        let event = receiver.recv().await.unwrap();
+        let Event::ProgressChanged {
+            progress: event_progress,
+        } = event
+        else {
+            panic!("Unexpected event: {:?}", event);
+        };
+
+        assert_eq!(event_progress.scope, Scope::Storage);
+        assert_eq!(event_progress.size, 3);
+        assert!(event_progress.steps.is_empty());
+        assert_eq!(event_progress.step, "first step");
+        assert_eq!(event_progress.index, 1);
+
+        let progresses = handler.call(message::Get).await?;
+        assert_eq!(progresses.len(), 1);
+
+        let progress = progresses.first().unwrap();
+        assert_eq!(*progress, event_progress);
+
+        // Set second progress
+        let progress = Progress::new(Scope::Storage, 3, "second step".to_string());
+        handler.call(message::Set::new(progress)).await?;
+
+        let event = receiver.recv().await.unwrap();
+        let Event::ProgressChanged {
+            progress: event_progress,
+        } = event
+        else {
+            panic!("Unexpected event: {:?}", event);
+        };
+
+        assert_eq!(event_progress.scope, Scope::Storage);
+        assert_eq!(event_progress.size, 3);
+        assert!(event_progress.steps.is_empty());
+        assert_eq!(event_progress.step, "second step");
+        assert_eq!(event_progress.index, 1);
+
+        let progresses = handler.call(message::Get).await?;
+        assert_eq!(progresses.len(), 1);
+
+        let progress = progresses.first().unwrap();
+        assert_eq!(*progress, event_progress);
 
         Ok(())
     }

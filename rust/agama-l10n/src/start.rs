@@ -71,12 +71,16 @@ mod tests {
     use crate::model::{KeymapsDatabase, LocalesDatabase, ModelAdapter, TimezonesDatabase};
     use crate::service::{self, Service};
     use agama_locale_data::{KeymapId, LocaleId};
-    use agama_utils::actor::{self, Handler};
-    use agama_utils::api;
-    use agama_utils::api::event::{self, Event};
-    use agama_utils::api::l10n::{Keymap, LocaleEntry, TimezoneEntry};
-    use agama_utils::api::scope::Scope;
-    use agama_utils::issue;
+    use agama_utils::{
+        actor::{self, Handler},
+        api::{
+            self,
+            event::{self, Event},
+            l10n::{Keymap, LocaleEntry, TimezoneEntry},
+            scope::Scope,
+        },
+        issue, test,
+    };
     use tokio::sync::broadcast;
 
     pub struct TestModel {
@@ -145,7 +149,8 @@ mod tests {
     async fn start_testing_service() -> (event::Receiver, Handler<Service>, Handler<issue::Service>)
     {
         let (events_tx, events_rx) = broadcast::channel::<Event>(16);
-        let issues = issue::start(events_tx.clone(), None).await.unwrap();
+        let dbus = test::dbus::connection().await.unwrap();
+        let issues = issue::start(events_tx.clone(), dbus).await.unwrap();
 
         let model = build_adapter();
         let service = Service::new(model, issues.clone(), events_tx);
@@ -167,7 +172,7 @@ mod tests {
             timezone: Some("Atlantic/Canary".to_string()),
         };
         handler
-            .call(message::SetConfig::new(input_config.clone()))
+            .call(message::SetConfig::with(input_config.clone()))
             .await?;
 
         let updated = handler.call(message::GetConfig).await?;
@@ -190,7 +195,7 @@ mod tests {
 
         // Use system info for missing values.
         handler
-            .call(message::SetConfig::new(input_config.clone()))
+            .call(message::SetConfig::with(input_config.clone()))
             .await?;
 
         let updated = handler.call(message::GetConfig).await?;
@@ -199,6 +204,25 @@ mod tests {
             api::l10n::Config {
                 locale: Some("en_US.UTF-8".to_string()),
                 keymap: Some("es".to_string()),
+                timezone: Some("Europe/Berlin".to_string()),
+            }
+        );
+
+        Ok(())
+    }
+
+    #[tokio::test]
+    async fn test_reset_config() -> Result<(), Box<dyn std::error::Error>> {
+        let (mut _events_rx, handler, _issues) = start_testing_service().await;
+
+        handler.call(message::SetConfig::new(None)).await?;
+
+        let config = handler.call(message::GetConfig).await?;
+        assert_eq!(
+            config,
+            api::l10n::Config {
+                locale: Some("en_US.UTF-8".to_string()),
+                keymap: Some("us".to_string()),
                 timezone: Some("Europe/Berlin".to_string()),
             }
         );
@@ -216,7 +240,7 @@ mod tests {
         };
 
         let result = handler
-            .call(message::SetConfig::new(input_config.clone()))
+            .call(message::SetConfig::with(input_config.clone()))
             .await;
         assert!(matches!(result, Err(service::Error::InvalidLocale(_))));
         Ok(())
@@ -228,7 +252,7 @@ mod tests {
 
         let config = handler.call(message::GetConfig).await?;
         assert_eq!(config.locale, Some("en_US.UTF-8".to_string()));
-        let message = message::SetConfig::new(config.clone());
+        let message = message::SetConfig::with(config.clone());
         handler.call(message).await?;
         // Wait until the action is dispatched.
         let _ = handler.call(message::GetConfig).await?;
@@ -247,7 +271,7 @@ mod tests {
             locale: Some("xx_XX.UTF-8".to_string()),
             timezone: Some("Unknown/Unknown".to_string()),
         };
-        let _ = handler.call(message::SetConfig::new(config)).await?;
+        let _ = handler.call(message::SetConfig::with(config)).await?;
 
         let found_issues = issues.call(issue::message::Get).await?;
         let l10n_issues = found_issues.get(&Scope::L10n).unwrap();
@@ -277,7 +301,7 @@ mod tests {
             keymap: Some("es".to_string()),
             timezone: Some("Atlantic/Canary".to_string()),
         };
-        let message = message::SetConfig::new(input_config.clone());
+        let message = message::SetConfig::with(input_config.clone());
         handler.call(message).await?;
 
         let proposal = handler

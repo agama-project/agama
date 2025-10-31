@@ -23,6 +23,10 @@ use serde::Deserialize;
 
 #[derive(Debug, Deserialize, utoipa::ToSchema)]
 pub enum Action {
+    #[serde(rename = "activateStorage")]
+    ActivateStorage,
+    #[serde(rename = "probeStorage")]
+    ProbeStorage,
     #[serde(rename = "configureL10n")]
     ConfigureL10n(l10n::SystemConfig),
     #[serde(rename = "install")]

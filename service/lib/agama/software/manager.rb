@@ -37,7 +37,7 @@ require "agama/software/product_builder"
 require "agama/software/proposal"
 require "agama/software/repositories_manager"
 require "agama/with_locale"
-require "agama/with_progress"
+require "agama/with_progress_manager"
 require "agama/with_issues"
 
 Yast.import "Installation"
@@ -64,7 +64,7 @@ module Agama
       include Helpers
       include WithLocale
       include WithIssues
-      include WithProgress
+      include WithProgressManager
       include Yast::I18n
 
       GPG_KEYS_GLOB = "/usr/lib/rpm/gnupg/keys/gpg-*"

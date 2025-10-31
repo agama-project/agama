@@ -21,11 +21,11 @@
 
 require "dbus"
 require "agama/dbus/bus"
-require "agama/dbus/service_status"
 require "agama/dbus/storage/iscsi"
 require "agama/dbus/storage/manager"
 require "agama/storage"
 require "y2storage/inhibitors"
+require "y2storage/storage_env"
 
 module Agama
   module DBus
@@ -56,6 +56,13 @@ module Agama
         # Inhibits various storage subsystem (udisk, systemd mounts, raid auto-assembly) that
         # interfere with the operation of yast-storage-ng and libstorage-ng.
         Y2Storage::Inhibitors.new.inhibit
+
+        # Underlying yast-storage-ng has own mechanism for proposing boot strategies.
+        # However, we don't always want to use BLS when it proposes so. Currently
+        # we want to use BLS only for Tumbleweed / Slowroll
+        prohibit_bls_boot if !config.boot_strategy&.casecmp("BLS")
+
+        check_multipath
         export
       end
 
@@ -84,6 +91,30 @@ module Agama
       # @return [Logger]
       attr_reader :logger
 
+      def prohibit_bls_boot
+        ENV["YAST_NO_BLS_BOOT"] = "1"
+        # avoiding problems with cached values
+        Y2Storage::StorageEnv.instance.reset_cache
+      end
+
+      MULTIPATH_CONFIG = "/etc/multipath.conf"
+      private_constant :MULTIPATH_CONFIG
+
+      # Checks if all requirement for multipath probing is correct and if not then log it.
+      def check_multipath
+        # check if kernel module is loaded
+        mods = `lsmod`.lines.grep(/dm_multipath/)
+        logger.warn("dm_multipath modules is not loaded") if mods.empty?
+
+        binary = system("which multipath")
+        if binary
+          conf = `multipath -t`.lines.grep(/find_multipaths "smart"/)
+          logger.warn("multipath: find_multipaths is not set to 'smart'") if conf.empty?
+        else
+          logger.warn("multipath is not installed.")
+        end
+      end
+
       # @return [::DBus::ObjectServer]
       def service
         @service ||= bus.request_service(SERVICE_NAME)
@@ -96,31 +127,17 @@ module Agama
 
       # @return [Agama::DBus::Storage::Manager]
       def manager_object
-        @manager_object ||= Agama::DBus::Storage::Manager.new(
-          manager,
-          service_status: service_status,
-          logger:         logger
-        )
+        @manager_object ||= Agama::DBus::Storage::Manager.new(manager, logger: logger)
       end
 
       # @return [Agama::DBus::Storage::ISCSI]
       def iscsi_object
-        # Uses the same service status as the manager D-Bus object.
-        @iscsi_object ||= Agama::DBus::Storage::ISCSI.new(
-          manager.iscsi,
-          service_status: service_status,
-          logger:         logger
-        )
+        @iscsi_object ||= Agama::DBus::Storage::ISCSI.new(manager.iscsi, logger: logger)
       end
 
       # @return [Agama::Storage::Manager]
       def manager
         @manager ||= Agama::Storage::Manager.new(config, logger: logger)
-      end
-
-      # @return [Agama::DBus::ServiceStatus]
-      def service_status
-        @service_status ||= Agama::DBus::ServiceStatus.new
       end
     end
   end

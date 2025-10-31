@@ -766,9 +766,33 @@
         }
       }
     },
-    "localization": {
+    "l10n": {
       "title": "Localization settings",
       "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "locale": {
+          "title": "Locale ID",
+          "type": "string",
+          "examples": ["en_US.UTF-8", "en_US"]
+        },
+        "keymap": {
+          "title": "Keymap ID",
+          "type": "string",
+          "examples": ["us", "en", "es"]
+        },
+        "timezone": {
+          "title": "Time zone ID",
+          "type": "string",
+          "examples": ["Europe/Berlin"]
+        }
+      }
+    },
+    "localization": {
+      "deprecated": true,
+      "title": "Localization settings (old schema)",
+      "type": "object",
+      "additionalProperties": false,
       "properties": {
         "language": {
           "title": "System language ID",

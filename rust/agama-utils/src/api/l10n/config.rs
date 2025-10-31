@@ -22,7 +22,6 @@ use serde::{Deserialize, Serialize};
 
 /// Localization config.
 #[derive(Clone, Debug, Default, Serialize, Deserialize, PartialEq, utoipa::ToSchema)]
-#[schema(as = l10n::UserConfig)]
 #[serde(rename_all = "camelCase")]
 pub struct Config {
     /// Locale (e.g., "en_US.UTF-8").

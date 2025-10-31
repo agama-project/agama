@@ -28,6 +28,20 @@ impl Message for Get {
     type Reply = Vec<Progress>;
 }
 
+pub struct Set {
+    pub progress: Progress,
+}
+
+impl Set {
+    pub fn new(progress: Progress) -> Self {
+        Self { progress }
+    }
+}
+
+impl Message for Set {
+    type Reply = ();
+}
+
 pub struct Start {
     pub scope: Scope,
     pub size: usize,

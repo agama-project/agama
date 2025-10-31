@@ -20,19 +20,20 @@
 
 use crate::api::{l10n, question};
 use serde::{Deserialize, Serialize};
+use serde_json::value::RawValue;
 
 #[derive(Clone, Debug, Default, Deserialize, Serialize, utoipa::ToSchema)]
+#[serde(rename_all = "camelCase")]
 pub struct Config {
     #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(alias = "localization")]
     pub l10n: Option<l10n::Config>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub questions: Option<question::Config>,
-}
-
-/// Patch for the config.
-#[derive(Deserialize, Serialize, utoipa::ToSchema)]
-pub struct Patch {
-    /// Update for the current config.
-    pub update: Option<Config>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[schema(value_type = Object)]
+    pub storage: Option<Box<RawValue>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[schema(value_type = Object)]
+    pub legacy_autoyast_storage: Option<Box<RawValue>>,
 }

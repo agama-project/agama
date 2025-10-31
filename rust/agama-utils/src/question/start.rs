@@ -99,7 +99,7 @@ mod tests {
             policy: Some(Policy::Auto),
             ..Default::default()
         };
-        questions.call(message::SetConfig::new(config)).await?;
+        questions.call(message::SetConfig::with(config)).await?;
 
         // Ask the question
         let question = questions
@@ -134,7 +134,7 @@ mod tests {
             policy: Some(Policy::User),
             answers: vec![rule_by_class],
         };
-        questions.call(message::SetConfig::new(config)).await?;
+        questions.call(message::SetConfig::with(config)).await?;
 
         // Ask the question
         let question = questions

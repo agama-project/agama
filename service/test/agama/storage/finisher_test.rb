@@ -41,7 +41,7 @@ describe Agama::Storage::Finisher do
   let(:config) { Agama::Config.from_file(config_path) }
   let(:security) { instance_double(Agama::Security, write: nil) }
   let(:copy_files) { Agama::Storage::Finisher::CopyFilesStep.new(logger) }
-  let(:progress) { instance_double(Agama::Progress, step: nil) }
+  let(:progress) { instance_double(Agama::OldProgress, step: nil) }
 
   describe "#run" do
     before do

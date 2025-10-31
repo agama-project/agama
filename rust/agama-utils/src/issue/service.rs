@@ -64,8 +64,8 @@ impl MessageHandler<message::Get> for Service {
 }
 
 #[async_trait]
-impl MessageHandler<message::Update> for Service {
-    async fn handle(&mut self, message: message::Update) -> Result<(), Error> {
+impl MessageHandler<message::Set> for Service {
+    async fn handle(&mut self, message: message::Set) -> Result<(), Error> {
         // Compare whether the issues has changed.
         let old_issues_hash: HashSet<_> = self
             .issues

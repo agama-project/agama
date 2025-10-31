@@ -64,6 +64,11 @@ impl Service {
     fn get_progress_index(&self, scope: Scope) -> Option<usize> {
         self.progresses.iter().position(|p| p.scope == scope)
     }
+
+    fn send_progress_changed(&self, progress: Progress) -> Result<(), Error> {
+        self.events.send(Event::ProgressChanged { progress })?;
+        Ok(())
+    }
 }
 
 impl Actor for Service {
@@ -78,6 +83,20 @@ impl MessageHandler<message::Get> for Service {
 }
 
 #[async_trait]
+impl MessageHandler<message::Set> for Service {
+    async fn handle(&mut self, message: message::Set) -> Result<(), Error> {
+        let progress = message.progress;
+        if let Some(index) = self.get_progress_index(progress.scope) {
+            self.progresses[index] = progress.clone();
+        } else {
+            self.progresses.push(progress.clone());
+        }
+        self.send_progress_changed(progress)?;
+        Ok(())
+    }
+}
+
+#[async_trait]
 impl MessageHandler<message::Start> for Service {
     async fn handle(&mut self, message: message::Start) -> Result<(), Error> {
         if self.get_progress(message.scope).is_some() {
@@ -85,10 +104,7 @@ impl MessageHandler<message::Start> for Service {
         }
         let progress = Progress::new(message.scope, message.size, message.step);
         self.progresses.push(progress.clone());
-        self.events.send(Event::ProgressChanged {
-            scope: message.scope,
-            progress,
-        })?;
+        self.send_progress_changed(progress)?;
         Ok(())
     }
 }
@@ -101,10 +117,7 @@ impl MessageHandler<message::StartWithSteps> for Service {
         }
         let progress = Progress::new_with_steps(message.scope, message.steps);
         self.progresses.push(progress.clone());
-        self.events.send(Event::ProgressChanged {
-            scope: message.scope,
-            progress,
-        })?;
+        self.send_progress_changed(progress)?;
         Ok(())
     }
 }
@@ -117,10 +130,7 @@ impl MessageHandler<message::Next> for Service {
         };
         progress.next()?;
         let progress = progress.clone();
-        self.events.send(Event::ProgressChanged {
-            scope: message.scope,
-            progress,
-        })?;
+        self.send_progress_changed(progress)?;
         Ok(())
     }
 }
@@ -133,10 +143,7 @@ impl MessageHandler<message::NextWithStep> for Service {
         };
         progress.next_with_step(message.step)?;
         let progress = progress.clone();
-        self.events.send(Event::ProgressChanged {
-            scope: message.scope,
-            progress,
-        })?;
+        self.send_progress_changed(progress)?;
         Ok(())
     }
 }
