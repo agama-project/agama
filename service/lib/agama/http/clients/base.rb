@@ -29,7 +29,7 @@ module Agama
       # Base for HTTP clients.
       class Base
         def initialize(logger)
-          @base_url = "http://localhost/api/"
+          @base_url = "http://localhost/api/v2/"
           @logger = logger
         end
 

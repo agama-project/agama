@@ -21,9 +21,11 @@
  */
 
 import { Localization } from "./l10n";
+import { NetworkSystem } from "./network";
 
 type System = {
   l10n?: Localization;
+  network?: NetworkSystem;
 };
 
 export type { System };

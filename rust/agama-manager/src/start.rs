@@ -19,6 +19,7 @@
 // find current contact information at www.suse.com.
 
 use crate::l10n;
+use crate::network;
 use crate::service::Service;
 use agama_utils::{
     actor::{self, Handler},
@@ -34,6 +35,8 @@ pub enum Error {
     L10n(#[from] l10n::start::Error),
     #[error(transparent)]
     Issues(#[from] issue::start::Error),
+    #[error(transparent)]
+    NetworkSystem(#[from] network::NetworkSystemError),
 }
 
 /// Starts the manager service.
@@ -57,8 +60,12 @@ pub async fn start(
     let issues = issue::start(events.clone(), dbus).await?;
     let progress = progress::start(events.clone()).await?;
     let l10n = l10n::start(issues.clone(), events.clone()).await?;
+    let network_adapter = network::NetworkManagerAdapter::from_system()
+        .await
+        .expect("Could not connect to NetworkManager");
+    let network = network::NetworkSystem::new(network_adapter).start().await?;
 
-    let service = Service::new(l10n, issues, progress, questions, events.clone());
+    let service = Service::new(l10n, network, issues, progress, questions, events.clone());
     let handler = actor::spawn(service);
     Ok(handler)
 }

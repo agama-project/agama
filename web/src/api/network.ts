@@ -20,8 +20,18 @@
  * find current contact information at www.suse.com.
  */
 
-import { del, get, post, put } from "~/api/http";
-import { APIAccessPoint, APIConnection, APIDevice, NetworkGeneralState } from "~/types/network";
+import { get, patch, post } from "~/api/http";
+import {
+  APIAccessPoint,
+  APIConnection,
+  APIDevice,
+  APINetworkProposal,
+  Connection,
+  ConnectionStatus,
+  NetworkGeneralState,
+  NetworkProposal,
+} from "~/types/network";
+import { Proposal } from "~/types/proposal";
 
 /**
  * Returns the network configuration
@@ -61,14 +71,25 @@ const addConnection = (connection: APIConnection) => post("/api/network/connecti
  *
  * @param connection - connection to be updated
  */
-const updateConnection = (connection: APIConnection) =>
-  put(`/api/network/connections/${encodeURIComponent(connection.id)}`, connection);
+const updateConnection = (connection: Connection) => {
+  const network: APINetworkProposal = { connections: [connection.toApi()] };
+  const config: Proposal = { network };
+  console.log("Updating");
+  console.log(config);
+
+  patch(`/api/v2/config`, { config });
+};
 
 /**
  * Deletes the connection matching given name
  */
-const deleteConnection = (name: string) =>
-  del(`/api/network/connections/${encodeURIComponent(name)}`);
+const deleteConnection = (name: string) => {
+  const connection = new Connection(name);
+  connection.status = ConnectionStatus.DELETE;
+  const network = new NetworkProposal([connection]);
+
+  patch(`/api/v2/config`, { network });
+};
 
 /**
  * Apply network changes

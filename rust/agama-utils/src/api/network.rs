@@ -1,4 +1,4 @@
-// Copyright (c) [2024] SUSE LLC
+// Copyright (c) [2025] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -18,20 +18,17 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-pub mod bootloader;
-pub mod cert;
-pub mod dbus;
-pub mod error;
-pub mod files;
-pub mod hostname;
-pub mod logs;
-pub mod manager;
-pub mod profile;
-pub mod scripts;
-pub mod security;
-pub mod software;
-pub mod storage;
-pub mod users;
-pub mod web;
-pub use web::service;
-pub mod server;
+//! This module contains all Agama public types that might be available over
+//! the HTTP and WebSocket API.
+
+mod config;
+pub use config::Config;
+mod proposal;
+pub use proposal::Proposal;
+mod settings;
+mod system_info;
+pub use system_info::SystemInfo;
+
+mod types;
+pub use settings::*;
+pub use types::*;

@@ -18,11 +18,13 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use super::{settings::NetworkConnection, NetworkClientError};
+use super::NetworkClientError;
 use crate::{
     http::BaseHTTPClient,
     network::{NetworkClient, NetworkSettings},
 };
+use agama_network::types::NetworkConnectionsCollection;
+use agama_utils::api::network::NetworkConnection;
 
 #[derive(Debug, thiserror::Error)]
 #[error("Error processing network settings: {0}")]
@@ -44,15 +46,20 @@ impl NetworkStore {
 
     // TODO: read the settings from the service
     pub async fn load(&self) -> NetworkStoreResult<NetworkSettings> {
-        let connections = self.network_client.connections().await?;
-        Ok(NetworkSettings { connections })
+        let connections = NetworkConnectionsCollection(self.network_client.connections().await?);
+
+        Ok(NetworkSettings {
+            connections,
+            ..Default::default()
+        })
     }
 
     pub async fn store(&self, settings: &NetworkSettings) -> NetworkStoreResult<()> {
-        for id in ordered_connections(&settings.connections) {
+        let connections = &settings.connections.0;
+        for id in ordered_connections(connections) {
             let id = id.as_str();
             let fallback = default_connection(id);
-            let conn = find_connection(id, &settings.connections).unwrap_or(&fallback);
+            let conn = find_connection(id, connections).unwrap_or(&fallback);
             self.network_client
                 .add_or_update_connection(conn.clone())
                 .await?;
@@ -129,7 +136,7 @@ fn default_connection(id: &str) -> NetworkConnection {
 #[cfg(test)]
 mod tests {
     use super::ordered_connections;
-    use crate::network::settings::{BondSettings, BridgeSettings, NetworkConnection};
+    use crate::network::{BondSettings, BridgeSettings, NetworkConnection};
 
     #[test]
     fn test_ordered_connections() {

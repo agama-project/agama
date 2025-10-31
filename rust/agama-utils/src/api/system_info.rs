@@ -19,9 +19,11 @@
 // find current contact information at www.suse.com.
 
 use crate::api::l10n;
+use crate::api::network;
 use serde::Serialize;
 
 #[derive(Clone, Debug, Serialize, utoipa::ToSchema)]
 pub struct SystemInfo {
     pub l10n: l10n::SystemInfo,
+    pub network: network::SystemInfo,
 }

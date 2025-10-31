@@ -20,6 +20,8 @@
 
 use crate::l10n;
 use crate::message;
+use crate::network;
+
 use agama_utils::{
     actor::{self, Actor, Handler, MessageHandler},
     api::{
@@ -29,6 +31,7 @@ use agama_utils::{
 };
 use async_trait::async_trait;
 use merge_struct::merge;
+use network::{NetworkSystemClient, NetworkSystemError};
 use tokio::sync::broadcast;
 
 #[derive(Debug, thiserror::Error)]
@@ -47,10 +50,13 @@ pub enum Error {
     Issues(#[from] issue::service::Error),
     #[error(transparent)]
     Questions(#[from] question::service::Error),
+    #[error(transparent)]
+    NetworkSystemError(#[from] NetworkSystemError),
 }
 
 pub struct Service {
     l10n: Handler<l10n::service::Service>,
+    network: NetworkSystemClient,
     issues: Handler<issue::Service>,
     progress: Handler<progress::Service>,
     questions: Handler<question::Service>,
@@ -62,6 +68,7 @@ pub struct Service {
 impl Service {
     pub fn new(
         l10n: Handler<l10n::Service>,
+        network: NetworkSystemClient,
         issues: Handler<issue::Service>,
         progress: Handler<progress::Service>,
         questions: Handler<question::Service>,
@@ -69,6 +76,7 @@ impl Service {
     ) -> Self {
         Self {
             l10n,
+            network,
             issues,
             progress,
             questions,
@@ -119,7 +127,8 @@ impl MessageHandler<message::GetSystem> for Service {
     /// It returns the information of the underlying system.
     async fn handle(&mut self, _message: message::GetSystem) -> Result<SystemInfo, Error> {
         let l10n = self.l10n.call(l10n::message::GetSystem).await?;
-        Ok(SystemInfo { l10n })
+        let network = self.network.get_system_config().await?;
+        Ok(SystemInfo { l10n, network })
     }
 }
 
@@ -131,9 +140,16 @@ impl MessageHandler<message::GetExtendedConfig> for Service {
     async fn handle(&mut self, _message: message::GetExtendedConfig) -> Result<Config, Error> {
         let l10n = self.l10n.call(l10n::message::GetConfig).await?;
         let questions = self.questions.call(question::message::GetConfig).await?;
+        let network_config: network::types::Proposal = self.network.get_extended_config().await?;
+        let network = agama_network::types::Config {
+            connections: Some(network_config.connections),
+            general_state: Some(network_config.general_state),
+        };
+
         Ok(Config {
             l10n: Some(l10n),
             questions: Some(questions),
+            network: Some(network),
         })
     }
 }
@@ -169,6 +185,10 @@ impl MessageHandler<message::SetConfig> for Service {
                 .call(question::message::SetConfig::new(questions.clone()))
                 .await?;
         }
+        if let Some(network) = &message.config.network {
+            self.network.update_config(network.clone()).await?;
+            self.network.apply().await?;
+        }
         self.config = message.config;
         Ok(())
     }
@@ -190,7 +210,9 @@ impl MessageHandler<message::GetProposal> for Service {
     /// It returns the current proposal, if any.
     async fn handle(&mut self, _message: message::GetProposal) -> Result<Option<Proposal>, Error> {
         let l10n = self.l10n.call(l10n::message::GetProposal).await?;
-        Ok(Some(Proposal { l10n }))
+        let network = self.network.get_extended_config().await?;
+
+        Ok(Some(Proposal { l10n, network }))
     }
 }
 

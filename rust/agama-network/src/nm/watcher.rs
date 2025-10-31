@@ -25,9 +25,8 @@
 
 use std::collections::{hash_map::Entry, HashMap};
 
-use crate::{
-    adapter::Watcher, model::Device, nm::proxies::DeviceProxy, Action, NetworkAdapterError,
-};
+use crate::types::Device;
+use crate::{adapter::Watcher, nm::proxies::DeviceProxy, Action, NetworkAdapterError};
 use anyhow::anyhow;
 use async_trait::async_trait;
 use tokio::sync::mpsc::{unbounded_channel, UnboundedReceiver, UnboundedSender};

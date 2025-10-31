@@ -69,7 +69,7 @@ pub enum NmError {
     #[error("Invalid infiniband transport mode: '{0}'")]
     InvalidInfinibandTranportMode(#[from] crate::model::InvalidInfinibandTransportMode),
     #[error("Invalid MAC address: '{0}'")]
-    InvalidMACAddress(#[from] crate::model::InvalidMacAddress),
+    InvalidMACAddress(#[from] crate::types::InvalidMacAddress),
     #[error("Invalid network prefix: '{0}'")]
     InvalidNetworkPrefix(#[from] NetworkLengthTooLongError),
     #[error("Invalid network address: '{0}'")]
