@@ -63,10 +63,9 @@ pub enum Modes {
 }
 
 async fn set_mode(client: HTTPClient, value: Modes) -> anyhow::Result<()> {
-    let policy = if value == Modes::Interactive {
-        Policy::User
-    } else {
-        Policy::Auto
+    let policy = match value {
+        Modes::Interactive => Policy::User,
+        Modes::NonInteractive => Policy::Auto,
     };
 
     client.set_mode(policy).await?;
