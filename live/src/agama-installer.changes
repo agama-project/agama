@@ -1,4 +1,13 @@
 -------------------------------------------------------------------
+Fri Oct 31 10:17:41 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Added installer self-update support (jsc#PED-12506)
+  - Supports SCC/RMT server (SCC is the default, RMT via
+    inst.register_url=<URL> option)
+  - Custom repository is supported (inst.self_update=<URL>)
+  - Can be skipped optionally (inst.self_update=0)
+
+-------------------------------------------------------------------
 Fri Oct 24 11:09:56 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
 
 - Dump some Live ISO root image data directly to the ISO image,

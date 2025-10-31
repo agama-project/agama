@@ -69,7 +69,6 @@ systemctl enable agama-welcome-issue.service
 systemctl enable agama-avahi-issue.service
 systemctl enable agama-url-issue.service
 systemctl enable agama-ssh-issue.service
-systemctl enable agama-self-update.service
 systemctl enable live-free-space.service
 systemctl enable live-password.service
 systemctl enable live-root-shell.service
@@ -106,6 +105,18 @@ touch /etc/udev/rules.d/64-md-raid-assembly.rules
 # the "eurlatgr" is the default font for the English locale
 echo -e "\nFONT=eurlatgr.psfu" >> /etc/vconsole.conf
 
+# configure self-update in SLES
+if [[ "$kiwi_profiles" == *SLE* ]]; then
+  echo "Configuring the installer self-update..."
+  # read the self-update configuration variables
+  . /usr/lib/live-self-update/conf.sh
+  mkdir -p  "$CONFIG_DIR"
+  # the default registration server (SCC) if RMT is not set
+  echo "https://scc.suse.com" > "$CONFIG_DEFAULT_REG_SERVER_FILE"
+  # fallback URL when contacting SCC/RMT fails or no self-update is returned
+  echo 'https://installer-updates.suse.com/SUSE/Products/SLE-INSTALLER/$os_release_version_id/$arch/product/' > "$CONFIG_FALLBACK_FILE"
+fi
+
 ### setup dracut for live system
 arch=$(uname -m)
 # keep in sync with ISO Volume ID set in the fix_bootconfig script
@@ -117,7 +128,7 @@ mkdir /etc/cmdline.d
 echo "root=live:LABEL=$label" >/etc/cmdline.d/10-liveroot.conf
 echo "root_disk=live:LABEL=$label" >>/etc/cmdline.d/10-liveroot.conf
 echo 'install_items+=" /etc/cmdline.d/10-liveroot.conf "' >/etc/dracut.conf.d/10-liveroot-file.conf
-echo 'add_dracutmodules+=" dracut-menu agama-cmdline agama-dud "' >>/etc/dracut.conf.d/10-liveroot-file.conf
+echo 'add_dracutmodules+=" dracut-menu agama-cmdline agama-dud live-self-update "' >>/etc/dracut.conf.d/10-liveroot-file.conf
 
 # decrease the kernel logging on the console, use a dracut module to do it early in the boot process
 echo 'add_dracutmodules+=" agama-logging "' > /etc/dracut.conf.d/10-agama-logging.conf
