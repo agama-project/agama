@@ -18,6 +18,7 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
+use agama_utils::api::{issue, software::RepositoryParams, Issue, IssueSeverity, IssueSource};
 use std::path::Path;
 use tokio::sync::{
     mpsc::{self, UnboundedSender},
@@ -26,9 +27,9 @@ use tokio::sync::{
 use zypp_agama::ZyppError;
 
 use crate::model::{
-    packages::{Repository, RepositoryParams, ResolvableType},
+    packages::{Repository, ResolvableType},
     pattern::Pattern,
-    products::RepositorySpec,
+    state::{self, SoftwareState},
 };
 const TARGET_DIR: &str = "/run/agama/software_ng_zypp";
 const GPG_KEYS: &str = "/usr/lib/rpm/gnupg/keys/gpg-*";
@@ -101,6 +102,10 @@ pub enum SoftwareAction {
         r#type: ResolvableType,
         optional: bool,
     },
+    Write {
+        state: SoftwareState,
+        tx: oneshot::Sender<ZyppServerResult<Vec<Issue>>>,
+    },
 }
 
 /// Software service server.
@@ -166,6 +171,9 @@ impl ZyppServer {
         zypp: &zypp_agama::Zypp,
     ) -> Result<(), ZyppDispatchError> {
         match action {
+            SoftwareAction::Write { state, tx } => {
+                self.write(state, tx, zypp).await?;
+            }
             SoftwareAction::AddRepositories(repos, tx) => {
                 self.add_repositories(repos, tx, zypp).await?;
             }
@@ -253,12 +261,10 @@ impl ZyppServer {
                             .map(|(index, repo)| Repository {
                                 url: repo.url,
                                 // unwrap here is ok, as number of repos are low
-                                id: index.try_into().unwrap(), // TODO: remove it when not needed, DBus relict, alias should be always unique
                                 alias: repo.alias,
                                 name: repo.user_name,
-                                product_dir: "/".to_string(), // TODO: get it from zypp
                                 enabled: repo.enabled,
-                                loaded: true,
+                                mandatory: false,
                             })
                             .collect()
                     })
@@ -278,6 +284,137 @@ impl ZyppServer {
         let result = zypp.commit()?;
         tracing::info!("libzypp commit ends with {}", result);
         Ok(result)
+    }
+
+    fn read(&self, zypp: &zypp_agama::Zypp) -> Result<SoftwareState, ZyppDispatchError> {
+        let repositories = zypp
+            .list_repositories()
+            .unwrap()
+            .into_iter()
+            .map(|repo| state::Repository {
+                name: repo.user_name,
+                alias: repo.alias,
+                url: repo.url,
+                enabled: repo.enabled,
+            })
+            .collect();
+
+        let state = SoftwareState {
+            // FIXME: read the real product.
+            product: "SLES".to_string(),
+            repositories,
+            patterns: vec![],
+            packages: vec![],
+            options: Default::default(),
+        };
+        Ok(state)
+    }
+
+    async fn write(
+        &self,
+        state: SoftwareState,
+        tx: oneshot::Sender<ZyppServerResult<Vec<Issue>>>,
+        zypp: &zypp_agama::Zypp,
+    ) -> Result<(), ZyppDispatchError> {
+        let mut issues: Vec<Issue> = vec![];
+        // FIXME:
+        // 1. add and remove the repositories.
+        // 2. select the patterns.
+        // 3. select the packages.
+        // 4. return the proposal and the issues.
+        // self.add_repositories(state.repositories, tx, &zypp).await?;
+
+        let old_state = self.read(zypp).unwrap();
+        let old_aliases: Vec<_> = old_state
+            .repositories
+            .iter()
+            .map(|r| r.alias.clone())
+            .collect();
+        let aliases: Vec<_> = state.repositories.iter().map(|r| r.alias.clone()).collect();
+
+        let to_add: Vec<_> = state
+            .repositories
+            .iter()
+            .filter(|r| !old_aliases.contains(&r.alias))
+            .collect();
+
+        let to_remove: Vec<_> = state
+            .repositories
+            .iter()
+            .filter(|r| !aliases.contains(&r.alias))
+            .collect();
+
+        for repo in &to_add {
+            let result = zypp.add_repository(&repo.alias, &repo.url, |percent, alias| {
+                tracing::info!("Adding repository {} ({}%)", alias, percent);
+                true
+            });
+
+            if let Err(error) = result {
+                let message = format!("Could not add the repository {}", repo.alias);
+                issues.push(
+                    Issue::new("software.add_repo", &message, IssueSeverity::Error)
+                        .with_details(&error.to_string()),
+                );
+            }
+            // Add an issue if it was not possible to add the repository.
+        }
+
+        for repo in &to_remove {
+            let result = zypp.remove_repository(&repo.alias, |percent, alias| {
+                tracing::info!("Removing repository {} ({}%)", alias, percent);
+                true
+            });
+
+            if let Err(error) = result {
+                let message = format!("Could not remove the repository {}", repo.alias);
+                issues.push(
+                    Issue::new("software.remove_repo", &message, IssueSeverity::Error)
+                        .with_details(&error.to_string()),
+                );
+            }
+        }
+
+        if to_add.is_empty() || to_remove.is_empty() {
+            let result = zypp.load_source(|percent, alias| {
+                tracing::info!("Refreshing repositories: {} ({}%)", alias, percent);
+                true
+            });
+
+            if let Err(error) = result {
+                let message = format!("Could not read the repositories");
+                issues.push(
+                    Issue::new("software.load_source", &message, IssueSeverity::Error)
+                        .with_details(&error.to_string()),
+                );
+            }
+        }
+
+        for pattern in &state.patterns {
+            // FIXME: we need to distinguish who is selecting the pattern.
+            // and register an issue if it is not found and it was not optional.
+            let result = zypp.select_resolvable(
+                &pattern.name,
+                zypp_agama::ResolvableKind::Pattern,
+                zypp_agama::ResolvableSelected::Installation,
+            );
+
+            if let Err(error) = result {
+                let message = format!("Could not select pattern '{}'", &pattern.name);
+                issues.push(
+                    Issue::new("software.select_pattern", &message, IssueSeverity::Error)
+                        .with_details(&error.to_string()),
+                );
+            }
+        }
+
+        match zypp.run_solver() {
+            Ok(result) => println!("Solver result: {result}"),
+            Err(error) => println!("Solver failed: {error}"),
+        };
+
+        tx.send(Ok(issues)).unwrap();
+        Ok(())
     }
 
     async fn add_repositories(

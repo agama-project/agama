@@ -19,7 +19,8 @@
 // find current contact information at www.suse.com.
 
 use crate::actor::Message;
-use crate::progress::model::Progress;
+use crate::api::progress::Progress;
+use crate::api::scope::Scope;
 
 pub struct Get;
 
@@ -28,15 +29,15 @@ impl Message for Get {
 }
 
 pub struct Start {
-    pub scope: String,
+    pub scope: Scope,
     pub size: usize,
     pub step: String,
 }
 
 impl Start {
-    pub fn new(scope: &str, size: usize, step: &str) -> Self {
+    pub fn new(scope: Scope, size: usize, step: &str) -> Self {
         Self {
-            scope: scope.to_string(),
+            scope,
             size,
             step: step.to_string(),
         }
@@ -48,14 +49,14 @@ impl Message for Start {
 }
 
 pub struct StartWithSteps {
-    pub scope: String,
+    pub scope: Scope,
     pub steps: Vec<String>,
 }
 
 impl StartWithSteps {
-    pub fn new(scope: &str, steps: &[&str]) -> Self {
+    pub fn new(scope: Scope, steps: &[&str]) -> Self {
         Self {
-            scope: scope.to_string(),
+            scope,
             steps: steps.into_iter().map(ToString::to_string).collect(),
         }
     }
@@ -66,14 +67,12 @@ impl Message for StartWithSteps {
 }
 
 pub struct Next {
-    pub scope: String,
+    pub scope: Scope,
 }
 
 impl Next {
-    pub fn new(scope: &str) -> Self {
-        Self {
-            scope: scope.to_string(),
-        }
+    pub fn new(scope: Scope) -> Self {
+        Self { scope }
     }
 }
 
@@ -81,33 +80,31 @@ impl Message for Next {
     type Reply = ();
 }
 
-pub struct NextStep {
-    pub scope: String,
+pub struct NextWithStep {
+    pub scope: Scope,
     pub step: String,
 }
 
-impl NextStep {
-    pub fn new(scope: &str, step: &str) -> Self {
+impl NextWithStep {
+    pub fn new(scope: Scope, step: &str) -> Self {
         Self {
-            scope: scope.to_string(),
+            scope,
             step: step.to_string(),
         }
     }
 }
 
-impl Message for NextStep {
+impl Message for NextWithStep {
     type Reply = ();
 }
 
 pub struct Finish {
-    pub scope: String,
+    pub scope: Scope,
 }
 
 impl Finish {
-    pub fn new(scope: &str) -> Self {
-        Self {
-            scope: scope.to_string(),
-        }
+    pub fn new(scope: Scope) -> Self {
+        Self { scope }
     }
 }
 

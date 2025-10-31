@@ -21,25 +21,9 @@
 //! This module provides support for reading the locales database.
 
 use agama_locale_data::LocaleId;
+use agama_utils::api::l10n::LocaleEntry;
 use anyhow::Context;
-use serde::Serialize;
-use serde_with::{serde_as, DisplayFromStr};
 use std::{fs, process::Command};
-
-/// Represents a locale, including the localized language and territory.
-#[serde_as]
-#[derive(Debug, Serialize, Clone, utoipa::ToSchema)]
-pub struct LocaleEntry {
-    /// The locale code (e.g., "es_ES.UTF-8").
-    #[serde_as(as = "DisplayFromStr")]
-    pub id: LocaleId,
-    /// Localized language name (e.g., "Spanish", "Español", etc.)
-    pub language: String,
-    /// Localized territory name (e.g., "Spain", "España", etc.)
-    pub territory: String,
-    /// Console font
-    pub consolefont: Option<String>,
-}
 
 /// Represents the locales database.
 ///

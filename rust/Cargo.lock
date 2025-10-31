@@ -22,6 +22,7 @@ name = "agama-autoinstall"
 version = "0.1.0"
 dependencies = [
  "agama-lib",
+ "agama-utils",
  "anyhow",
  "tempfile",
  "thiserror 2.0.16",
@@ -34,6 +35,7 @@ name = "agama-cli"
 version = "1.0.0"
 dependencies = [
  "agama-lib",
+ "agama-utils",
  "anyhow",
  "async-trait",
  "chrono",
@@ -61,17 +63,12 @@ dependencies = [
  "anyhow",
  "async-trait",
  "gettext-rs",
- "merge-struct",
  "regex",
- "serde",
- "serde_json",
- "serde_with",
  "thiserror 2.0.16",
  "tokio",
  "tokio-stream",
  "tokio-test",
  "tracing",
- "utoipa",
  "zbus",
 ]
 
@@ -135,19 +132,13 @@ name = "agama-manager"
 version = "0.1.0"
 dependencies = [
  "agama-l10n",
- "agama-lib",
+ "agama-software",
  "agama-utils",
  "async-trait",
  "merge-struct",
- "serde",
- "serde_json",
- "strum",
  "thiserror 2.0.16",
  "tokio",
- "tokio-stream",
  "tokio-test",
- "tracing",
- "utoipa",
  "zbus",
 ]
 
@@ -182,6 +173,7 @@ version = "0.1.0"
 dependencies = [
  "agama-l10n",
  "agama-lib",
+ "agama-locale-data",
  "agama-manager",
  "agama-utils",
  "anyhow",
@@ -255,9 +247,12 @@ dependencies = [
 name = "agama-utils"
 version = "0.1.0"
 dependencies = [
+ "agama-locale-data",
  "async-trait",
+ "gettext-rs",
  "serde",
  "serde_json",
+ "serde_with",
  "strum",
  "thiserror 2.0.16",
  "tokio",
@@ -2574,7 +2569,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "07033963ba89ebaf1584d767badaa2e8fcec21aedea6b8c0346d487d49c28667"
 dependencies = [
  "cfg-if",
- "windows-targets 0.48.5",
+ "windows-targets 0.53.3",
 ]
 
 [[package]]
@@ -3920,14 +3915,15 @@ dependencies = [
 
 [[package]]
 name = "serde_json"
-version = "1.0.143"
+version = "1.0.145"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d401abef1d108fbd9cbaebc3e46611f4b1021f714a0597a71f41ee463f5f4a5a"
+checksum = "402a6f66d8c709116cf22f558eab210f5a50187f702eb4d7e5ef38d9a7f1c79c"
 dependencies = [
  "itoa",
  "memchr",
  "ryu",
  "serde",
+ "serde_core",
 ]
 
 [[package]]

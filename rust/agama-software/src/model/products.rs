@@ -41,7 +41,8 @@ pub enum ProductsRegistryError {
 /// Products registry.
 ///
 /// It holds the products specifications. At runtime it is possible to change the `products.d`
-/// location by setting the `AGAMA_PRODUCTS_DIR` environment variable.
+/// location by setting the `AGAMA_SHARE_DIR` environment variable. This variable points to
+/// the parent of `products.d`.
 ///
 /// Dynamic behavior, like filtering by architecture, is not supported yet.
 #[derive(Clone, Debug, Deserialize)]
@@ -110,12 +111,8 @@ impl ProductsRegistry {
 
 impl Default for ProductsRegistry {
     fn default() -> Self {
-        let products_dir = if let Ok(dir) = std::env::var("AGAMA_PRODUCTS_DIR") {
-            PathBuf::from(dir)
-        } else {
-            PathBuf::from("/usr/share/agama/products.d")
-        };
-
+        let share_dir = std::env::var("AGAMA_SHARE_DIR").unwrap_or("/usr/share/agama".to_string());
+        let products_dir = PathBuf::from(share_dir).join("products.d");
         Self::new(products_dir)
     }
 }
@@ -173,12 +170,13 @@ impl SoftwareSpec {
         let arch = std::env::consts::ARCH.to_string();
         self.installation_repositories
             .iter()
-            .filter(|r| r.archs.contains(&arch))
+            .filter(|r| r.archs.is_empty() || r.archs.contains(&arch))
             .collect()
     }
 }
 
 #[derive(Clone, Debug, Deserialize, PartialEq)]
+#[serde(untagged)]
 pub enum UserPattern {
     Plain(String),
     Preselected(PreselectedPattern),
@@ -215,7 +213,7 @@ mod test {
 
     #[test]
     fn test_load_registry() {
-        let path = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("tests/share/products.d");
+        let path = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../test/share/products.d");
         let mut repo = ProductsRegistry::new(path.as_path());
         repo.read().unwrap();
         // ensuring that we can load all products from tests
@@ -224,7 +222,7 @@ mod test {
 
     #[test]
     fn test_find_product() {
-        let path = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("tests/share/products.d");
+        let path = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../test/share/products.d");
         let mut repo = ProductsRegistry::new(path.as_path());
         repo.read().unwrap();
         let tw = repo.find("Tumbleweed").unwrap();

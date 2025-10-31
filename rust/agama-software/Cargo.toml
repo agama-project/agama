@@ -20,3 +20,6 @@ tokio-stream = "0.1.16"
 tracing = "0.1.41"
 utoipa = { version = "5.2.0", features = ["axum_extras", "uuid"] }
 zypp-agama = { path = "../zypp-agama" }
+
+[dev-dependencies]
+serde_yaml = "0.9.34"

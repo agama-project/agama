@@ -18,24 +18,13 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::{l10n, proposal::Proposal, service, system_info::SystemInfo};
-use agama_lib::{install_settings::InstallSettings, issue::Issue};
-use agama_utils::{actor::Message, progress::Progress};
-use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
+use agama_utils::{
+    actor::Message,
+    api::{Action, Config, IssueMap, Proposal, Status, SystemInfo},
+};
 
 /// Gets the installation status.
 pub struct GetStatus;
-
-#[derive(Serialize, utoipa::ToSchema)]
-#[serde(rename_all = "camelCase")]
-pub struct Status {
-    /// State of the installation
-    pub state: service::State,
-    #[serde(skip_serializing_if = "Vec::is_empty")]
-    /// Active progresses
-    pub progresses: Vec<Progress>,
-}
 
 impl Message for GetStatus {
     type Reply = Status;
@@ -56,7 +45,7 @@ impl Message for GetSystem {
 pub struct GetExtendedConfig;
 
 impl Message for GetExtendedConfig {
-    type Reply = InstallSettings;
+    type Reply = Config;
 }
 
 /// Gets the current config set by the user.
@@ -64,17 +53,17 @@ impl Message for GetExtendedConfig {
 pub struct GetConfig;
 
 impl Message for GetConfig {
-    type Reply = InstallSettings;
+    type Reply = Config;
 }
 
 /// Replaces the config.
 #[derive(Debug)]
 pub struct SetConfig {
-    pub config: InstallSettings,
+    pub config: Config,
 }
 
 impl SetConfig {
-    pub fn new(config: InstallSettings) -> Self {
+    pub fn new(config: Config) -> Self {
         Self { config }
     }
 }
@@ -86,11 +75,11 @@ impl Message for SetConfig {
 /// Updates the config.
 #[derive(Debug)]
 pub struct UpdateConfig {
-    pub config: InstallSettings,
+    pub config: Config,
 }
 
 impl UpdateConfig {
-    pub fn new(config: InstallSettings) -> Self {
+    pub fn new(config: Config) -> Self {
         Self { config }
     }
 }
@@ -111,7 +100,7 @@ impl Message for GetProposal {
 pub struct GetIssues;
 
 impl Message for GetIssues {
-    type Reply = HashMap<String, Vec<Issue>>;
+    type Reply = IssueMap;
 }
 
 /// Runs the given action.
@@ -128,12 +117,4 @@ impl RunAction {
 
 impl Message for RunAction {
     type Reply = ();
-}
-
-#[derive(Debug, Deserialize, utoipa::ToSchema)]
-pub enum Action {
-    #[serde(rename = "configureL10n")]
-    ConfigureL10n(l10n::message::SystemConfig),
-    #[serde(rename = "install")]
-    Install,
 }

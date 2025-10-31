@@ -137,7 +137,7 @@ module Agama
     end
 
     def default_path
-      Dir.exist?(GIT_DIR) ? GIT_PATH : SYSTEM_PATH
+      File.exist?(GIT_DIR) ? GIT_PATH : SYSTEM_PATH
     end
 
     def config_paths

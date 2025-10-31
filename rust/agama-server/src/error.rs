@@ -18,7 +18,7 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use agama_lib::{error::ServiceError, questions::QuestionsError};
+use agama_lib::error::ServiceError;
 use axum::{
     http::StatusCode,
     response::{IntoResponse, Response},
@@ -26,10 +26,7 @@ use axum::{
 };
 use serde_json::json;
 
-use crate::{
-    software_ng::SoftwareServiceError, users::password::PasswordCheckerError,
-    web::common::ProgressServiceError,
-};
+use crate::{users::password::PasswordCheckerError, web::common::ProgressServiceError};
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
@@ -39,10 +36,6 @@ pub enum Error {
     Anyhow(String),
     #[error("Agama service error: {0}")]
     Service(#[from] ServiceError),
-    #[error("Questions service error: {0}")]
-    Questions(QuestionsError),
-    #[error("Software service error: {0}")]
-    SoftwareServiceError(#[from] SoftwareServiceError),
     #[error("Progress service error: {0}")]
     Progress(#[from] ProgressServiceError),
     #[error("Could not check the password")]

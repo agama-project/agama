@@ -18,9 +18,8 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::{
-    config::{Config, PatternsConfig, ProductConfig, SoftwareConfig},
-    model::packages::RepositoryParams,
+use agama_utils::api::software::{
+    Config, PatternsConfig, ProductConfig, RepositoryParams, SoftwareConfig,
 };
 use serde::Serialize;
 

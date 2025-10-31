@@ -18,14 +18,12 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::{
-    event,
-    model::Model,
-    monitor::{self, Monitor},
-    service::{self, Service},
-};
+use crate::model::Model;
+use crate::monitor::{self, Monitor};
+use crate::service::{self, Service};
 use agama_utils::{
     actor::{self, Handler},
+    api::event,
     issue,
 };
 
@@ -33,8 +31,6 @@ use agama_utils::{
 pub enum Error {
     #[error(transparent)]
     Service(#[from] service::Error),
-    #[error(transparent)]
-    Monitor(#[from] monitor::Error),
 }
 
 /// Starts the localization service.
@@ -55,28 +51,33 @@ pub async fn start(
     let model = Model::from_system()?;
     let service = Service::new(model, issues, events);
     let handler = actor::spawn(service);
-    let monitor = Monitor::new(handler.clone()).await?;
-    monitor::spawn(monitor);
+
+    match Monitor::new(handler.clone()).await {
+        Ok(monitor) => monitor::spawn(monitor),
+        Err(error) => {
+            tracing::error!(
+                "Could not launch the l10n monitor, therefore changes from systemd will be ignored. \
+                 The original error was {error}"
+            );
+        }
+    }
+
     Ok(handler)
 }
 
 #[cfg(test)]
 mod tests {
-    use crate::{
-        event::Receiver,
-        message,
-        model::{
-            Keymap, KeymapsDatabase, LocaleEntry, LocalesDatabase, ModelAdapter, TimezoneEntry,
-            TimezonesDatabase,
-        },
-        service, Config, Event, Service,
-    };
+    use crate::message;
+    use crate::model::{KeymapsDatabase, LocalesDatabase, ModelAdapter, TimezonesDatabase};
+    use crate::service::{self, Service};
     use agama_locale_data::{KeymapId, LocaleId};
-    use agama_utils::{
-        actor::{self, Handler},
-        issue,
-    };
-    use tokio::sync::mpsc;
+    use agama_utils::actor::{self, Handler};
+    use agama_utils::api;
+    use agama_utils::api::event::{self, Event};
+    use agama_utils::api::l10n::{Keymap, LocaleEntry, TimezoneEntry};
+    use agama_utils::api::scope::Scope;
+    use agama_utils::issue;
+    use tokio::sync::broadcast;
 
     pub struct TestModel {
         pub locales: LocalesDatabase,
@@ -141,11 +142,11 @@ mod tests {
         }
     }
 
-    async fn start_testing_service() -> (Receiver, Handler<Service>, Handler<issue::Service>) {
-        let (events_tx, _events_rx) = mpsc::unbounded_channel::<issue::Event>();
-        let issues = issue::start(events_tx, None).await.unwrap();
+    async fn start_testing_service() -> (event::Receiver, Handler<Service>, Handler<issue::Service>)
+    {
+        let (events_tx, events_rx) = broadcast::channel::<Event>(16);
+        let issues = issue::start(events_tx.clone(), None).await.unwrap();
 
-        let (events_tx, events_rx) = mpsc::unbounded_channel::<Event>();
         let model = build_adapter();
         let service = Service::new(model, issues.clone(), events_tx);
 
@@ -160,7 +161,7 @@ mod tests {
         let config = handler.call(message::GetConfig).await.unwrap();
         assert_eq!(config.locale, Some("en_US.UTF-8".to_string()));
 
-        let input_config = Config {
+        let input_config = api::l10n::Config {
             locale: Some("es_ES.UTF-8".to_string()),
             keymap: Some("es".to_string()),
             timezone: Some("Atlantic/Canary".to_string()),
@@ -176,7 +177,32 @@ mod tests {
         assert!(proposal.is_some());
 
         let event = events_rx.recv().await.expect("Did not receive the event");
-        assert!(matches!(event, Event::ProposalChanged));
+        assert!(matches!(
+            event,
+            Event::ProposalChanged { scope: Scope::L10n }
+        ));
+
+        let input_config = api::l10n::Config {
+            locale: None,
+            keymap: Some("es".to_string()),
+            timezone: None,
+        };
+
+        // Use system info for missing values.
+        handler
+            .call(message::SetConfig::new(input_config.clone()))
+            .await?;
+
+        let updated = handler.call(message::GetConfig).await?;
+        assert_eq!(
+            updated,
+            api::l10n::Config {
+                locale: Some("en_US.UTF-8".to_string()),
+                keymap: Some("es".to_string()),
+                timezone: Some("Europe/Berlin".to_string()),
+            }
+        );
+
         Ok(())
     }
 
@@ -184,7 +210,7 @@ mod tests {
     async fn test_set_invalid_config() -> Result<(), Box<dyn std::error::Error>> {
         let (_events_rx, handler, _issues) = start_testing_service().await;
 
-        let input_config = Config {
+        let input_config = api::l10n::Config {
             locale: Some("es-ES.UTF-8".to_string()),
             ..Default::default()
         };
@@ -192,10 +218,7 @@ mod tests {
         let result = handler
             .call(message::SetConfig::new(input_config.clone()))
             .await;
-        assert!(matches!(
-            result,
-            Err(crate::service::Error::InvalidLocale(_))
-        ));
+        assert!(matches!(result, Err(service::Error::InvalidLocale(_))));
         Ok(())
     }
 
@@ -211,7 +234,7 @@ mod tests {
         let _ = handler.call(message::GetConfig).await?;
 
         let event = events_rx.try_recv();
-        assert!(matches!(event, Err(mpsc::error::TryRecvError::Empty)));
+        assert!(matches!(event, Err(broadcast::error::TryRecvError::Empty)));
         Ok(())
     }
 
@@ -219,7 +242,7 @@ mod tests {
     async fn test_set_config_unknown_values() -> Result<(), Box<dyn std::error::Error>> {
         let (mut _events_rx, handler, issues) = start_testing_service().await;
 
-        let config = Config {
+        let config = api::l10n::Config {
             keymap: Some("jk".to_string()),
             locale: Some("xx_XX.UTF-8".to_string()),
             timezone: Some("Unknown/Unknown".to_string()),
@@ -227,7 +250,7 @@ mod tests {
         let _ = handler.call(message::SetConfig::new(config)).await?;
 
         let found_issues = issues.call(issue::message::Get).await?;
-        let l10n_issues = found_issues.get("localization").unwrap();
+        let l10n_issues = found_issues.get(&Scope::L10n).unwrap();
         assert_eq!(l10n_issues.len(), 3);
 
         let proposal = handler.call(message::GetProposal).await?;
@@ -249,7 +272,7 @@ mod tests {
     async fn test_get_proposal() -> Result<(), Box<dyn std::error::Error>> {
         let (_events_rx, handler, _issues) = start_testing_service().await;
 
-        let input_config = Config {
+        let input_config = api::l10n::Config {
             locale: Some("es_ES.UTF-8".to_string()),
             keymap: Some("es".to_string()),
             timezone: Some("Atlantic/Canary".to_string()),

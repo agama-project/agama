@@ -1,4 +1,16 @@
 -------------------------------------------------------------------
+Fri Oct 17 13:14:31 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Add a new HTTP resource to register questions (gh#agama-project/agama#2813).
+
+-------------------------------------------------------------------
+Thu Oct 16 04:46:20 UTC 2025 - José Iván López González <jlopez@suse.com>
+
+- Move API types to agama-utils, simplify events code, emit event
+  when the installation state changes, and add progress information
+  to the progress changed event (gh#agama-project/agama#2801).
+
+-------------------------------------------------------------------
 Thu Oct  9 10:24:03 UTC 2025 - José Iván López González <jlopez@suse.com>
 
 - Extract supervisor to agama-manager package (gh#agama-project/agama#2793).

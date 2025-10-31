@@ -19,10 +19,10 @@
 // find current contact information at www.suse.com.
 
 use super::{
-    model::{Conflict, ConflictSolve, Repository, RepositoryParams, ResolvableType},
+    model::{Conflict, ConflictSolve, Repository, ResolvableType},
     proxies::{ProposalProxy, Software1Proxy},
 };
-use crate::error::ServiceError;
+use crate::{error::ServiceError, software::model::RepositoryParams};
 use agama_utils::dbus::{get_optional_property, get_property};
 use serde::Serialize;
 use serde_repr::{Deserialize_repr, Serialize_repr};

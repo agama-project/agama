@@ -5,18 +5,12 @@ rust-version.workspace = true
 edition.workspace = true
 
 [dependencies]
-agama-lib = { path = "../agama-lib" }
 agama-utils = { path = "../agama-utils" }
 agama-l10n = { path = "../agama-l10n" }
+agama-software = { path = "../agama-software" }
 thiserror = "2.0.12"
-serde = { version = "1.0.210", features = ["derive"] }
 tokio = { version = "1.40.0", features = ["macros", "rt-multi-thread", "sync"] }
-tokio-stream = "0.1.16"
 async-trait = "0.1.83"
-serde_json = "1.0.128"
-utoipa = { version = "5.2.0", features = ["axum_extras", "uuid"] }
-strum = { version = "0.27.2", features = ["derive"] }
-tracing = "0.1.40"
 zbus = { version = "5", default-features = false, features = ["tokio"] }
 merge-struct = "0.1.0"
 

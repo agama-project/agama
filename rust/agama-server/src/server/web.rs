@@ -20,11 +20,17 @@
 
 //! This module implements Agama's HTTP API.
 
-use crate::server::types::{ConfigPatch, IssuesMap};
-use agama_lib::{error::ServiceError, http, install_settings::InstallSettings};
-use agama_manager::{self as manager, message, SystemInfo};
-use agama_utils::actor::Handler;
-use anyhow;
+use agama_lib::error::ServiceError;
+use agama_manager::{self as manager, message};
+use agama_utils::{
+    actor::Handler,
+    api::{
+        config, event,
+        question::{Question, QuestionSpec, UpdateQuestion},
+        Action, Config, IssueMap, Status, SystemInfo,
+    },
+    question,
+};
 use axum::{
     extract::State,
     response::{IntoResponse, Response},
@@ -39,6 +45,8 @@ use serde_json::json;
 pub enum Error {
     #[error(transparent)]
     Manager(#[from] manager::service::Error),
+    #[error(transparent)]
+    Questions(#[from] question::service::Error),
 }
 
 impl IntoResponse for Error {
@@ -54,6 +62,7 @@ impl IntoResponse for Error {
 #[derive(Clone)]
 pub struct ServerState {
     manager: Handler<manager::Service>,
+    questions: Handler<question::Service>,
 }
 
 type ServerResult<T> = Result<T, Error>;
@@ -62,16 +71,19 @@ type ServerResult<T> = Result<T, Error>;
 ///
 /// * `events`: channel to send events to the websocket.
 /// * `dbus`: connection to Agama's D-Bus server. If it is not given, those features
-///           that require to connect to the Agama's D-Bus server won't work.
+///   that require to connect to the Agama's D-Bus server won't work.
 pub async fn server_service(
-    events: http::event::Sender,
+    events: event::Sender,
     dbus: Option<zbus::Connection>,
 ) -> Result<Router, ServiceError> {
-    let manager = manager::start(events, dbus)
+    let questions = question::start(events.clone())
         .await
-        .map_err(|e| anyhow::Error::new(e))?;
+        .map_err(anyhow::Error::msg)?;
+    let manager = manager::start(questions.clone(), events, dbus)
+        .await
+        .map_err(anyhow::Error::msg)?;
 
-    let state = ServerState { manager };
+    let state = ServerState { manager, questions };
 
     Ok(Router::new()
         .route("/status", get(get_status))
@@ -84,6 +96,10 @@ pub async fn server_service(
         .route("/proposal", get(get_proposal))
         .route("/action", post(run_action))
         .route("/issues", get(get_issues))
+        .route(
+            "/questions",
+            get(get_questions).post(ask_question).patch(update_question),
+        )
         .with_state(state))
 }
 
@@ -97,7 +113,7 @@ pub async fn server_service(
         (status = 400, description = "Not possible to retrieve the status of the installation.")
     )
 )]
-async fn get_status(State(state): State<ServerState>) -> ServerResult<Json<message::Status>> {
+async fn get_status(State(state): State<ServerState>) -> ServerResult<Json<Status>> {
     let status = state.manager.call(message::GetStatus).await?;
     Ok(Json(status))
 }
@@ -127,9 +143,7 @@ async fn get_system(State(state): State<ServerState>) -> ServerResult<Json<Syste
         (status = 400, description = "Not possible to retrieve the configuration.")
     )
 )]
-async fn get_extended_config(
-    State(state): State<ServerState>,
-) -> ServerResult<Json<InstallSettings>> {
+async fn get_extended_config(State(state): State<ServerState>) -> ServerResult<Json<Config>> {
     let config = state.manager.call(message::GetExtendedConfig).await?;
     Ok(Json(config))
 }
@@ -144,7 +158,7 @@ async fn get_extended_config(
         (status = 400, description = "Not possible to retrieve the configuration.")
     )
 )]
-async fn get_config(State(state): State<ServerState>) -> ServerResult<Json<InstallSettings>> {
+async fn get_config(State(state): State<ServerState>) -> ServerResult<Json<Config>> {
     let config = state.manager.call(message::GetConfig).await?;
     Ok(Json(config))
 }
@@ -161,12 +175,12 @@ async fn get_config(State(state): State<ServerState>) -> ServerResult<Json<Insta
         (status = 400, description = "Not possible to replace the configuration.")
     ),
     params(
-        ("config" = InstallSettings, description = "Configuration to apply.")
+        ("config" = Config, description = "Configuration to apply.")
     )
 )]
 async fn put_config(
     State(state): State<ServerState>,
-    Json(config): Json<InstallSettings>,
+    Json(config): Json<Config>,
 ) -> ServerResult<()> {
     state.manager.call(message::SetConfig::new(config)).await?;
     Ok(())
@@ -184,12 +198,12 @@ async fn put_config(
         (status = 400, description = "Not possible to patch the configuration.")
     ),
     params(
-        ("config" = InstallSettings, description = "Changes in the configuration.")
+        ("config" = Config, description = "Changes in the configuration.")
     )
 )]
 async fn patch_config(
     State(state): State<ServerState>,
-    Json(patch): Json<ConfigPatch>,
+    Json(patch): Json<config::Patch>,
 ) -> ServerResult<()> {
     if let Some(config) = patch.update {
         state
@@ -221,14 +235,82 @@ async fn get_proposal(State(state): State<ServerState>) -> ServerResult<Response
     path = "/issues",
     context_path = "/api/v2",
     responses(
-        (status = 200, description = "Agama issues", body = IssuesMap),
+        (status = 200, description = "Agama issues", body = IssueMap),
         (status = 400, description = "Not possible to retrieve the issues")
     )
 )]
-async fn get_issues(State(state): State<ServerState>) -> ServerResult<Json<IssuesMap>> {
+async fn get_issues(State(state): State<ServerState>) -> ServerResult<Json<IssueMap>> {
     let issues = state.manager.call(message::GetIssues).await?;
-    let issues_map: IssuesMap = issues.into();
+    let issues_map: IssueMap = issues.into();
     Ok(Json(issues_map))
+}
+
+/// Returns the issues for each scope.
+#[utoipa::path(
+    get,
+    path = "/questions",
+    context_path = "/api/v2",
+    responses(
+        (status = 200, description = "Agama questions", body = HashMap<u32, QuestionSpec>),
+        (status = 400, description = "Not possible to retrieve the questions")
+    )
+)]
+async fn get_questions(State(state): State<ServerState>) -> ServerResult<Json<Vec<Question>>> {
+    let questions = state.questions.call(question::message::Get).await?;
+    Ok(Json(questions))
+}
+
+/// Registers a new question.
+#[utoipa::path(
+    post,
+    path = "/questions",
+    context_path = "/api/v2",
+    responses(
+        (status = 200, description = "New question's ID", body = u32),
+        (status = 400, description = "Not possible to register the question")
+    )
+)]
+async fn ask_question(
+    State(state): State<ServerState>,
+    Json(question): Json<QuestionSpec>,
+) -> ServerResult<Json<Question>> {
+    let question = state
+        .questions
+        .call(question::message::Ask::new(question))
+        .await?;
+    Ok(Json(question))
+}
+
+/// Updates the question collection by answering or removing a question.
+#[utoipa::path(
+    patch,
+    path = "/questions",
+    context_path = "/api/v2",
+    request_body = UpdateQuestion,
+    responses(
+        (status = 200, description = "The question was answered or deleted"),
+        (status = 400, description = "It was not possible to update the question")
+    )
+)]
+async fn update_question(
+    State(state): State<ServerState>,
+    Json(operation): Json<UpdateQuestion>,
+) -> ServerResult<()> {
+    match operation {
+        UpdateQuestion::Answer { id, answer } => {
+            state
+                .questions
+                .call(question::message::Answer { id, answer })
+                .await?;
+        }
+        UpdateQuestion::Delete { id } => {
+            state
+                .questions
+                .call(question::message::Delete { id })
+                .await?;
+        }
+    }
+    Ok(())
 }
 
 #[utoipa::path(
@@ -240,12 +322,12 @@ async fn get_issues(State(state): State<ServerState>) -> ServerResult<Json<Issue
         (status = 400, description = "Not possible to run the action.", body = Object)
     ),
     params(
-        ("action" = message::Action, description = "Description of the action to run."),
+        ("action" = Action, description = "Description of the action to run."),
     )
 )]
 async fn run_action(
     State(state): State<ServerState>,
-    Json(action): Json<message::Action>,
+    Json(action): Json<Action>,
 ) -> ServerResult<()> {
     state.manager.call(message::RunAction::new(action)).await?;
     Ok(())

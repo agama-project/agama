@@ -89,7 +89,7 @@ const LangaugeFormInput = ({ value, onChange }: SelectProps) => (
  */
 const KeyboardFormInput = ({ value, onChange }: SelectProps) => {
   const {
-    localization: { keymaps },
+    l10n: { keymaps },
   } = useSystem();
 
   if (!localConnection()) {
@@ -553,7 +553,7 @@ export default function InstallerOptions({
 }: InstallerOptionsProps) {
   const location = useLocation();
   const {
-    localization: { locales },
+    l10n: { locales },
   } = useSystem();
   const { language, keymap, changeLanguage, changeKeymap } = useInstallerL10n();
   const { phase } = useInstallerStatus({ suspense: true });
@@ -593,7 +593,7 @@ export default function InstallerOptions({
     if (variant !== "keyboard") systemL10n.locale = systemLocale?.id;
     if (variant !== "language" && localConnection()) systemL10n.keymap = formState.keymap;
 
-    updateConfig({ localization: systemL10n });
+    updateConfig({ l10n: systemL10n });
   };
 
   const close = () => {

@@ -18,16 +18,18 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
+use agama_utils::api::{software::RepositoryParams, Issue};
 use async_trait::async_trait;
 use tokio::sync::{mpsc, oneshot};
 
 use crate::{
     model::{
-        packages::{Repository, RepositoryParams, ResolvableType},
+        packages::{Repository, ResolvableType},
         pattern::Pattern,
         products::{ProductSpec, UserPattern},
         registration::{AddonProperties, RegistrationInfo},
         software_selection::SoftwareSelection,
+        state::SoftwareState,
     },
     service,
     zypp_server::SoftwareAction,
@@ -41,6 +43,7 @@ pub mod product;
 pub mod products;
 pub mod registration;
 pub mod software_selection;
+pub mod state;
 
 /// Abstract the software-related configuration from the underlying system.
 ///
@@ -90,6 +93,12 @@ pub trait ModelAdapter: Send + Sync + 'static {
 
     /// Finalizes system like disabling local repositories
     async fn finish(&self) -> Result<(), service::Error>;
+
+    /// Applies the configuration to the system.
+    ///
+    /// It does not perform the installation, just update the repositories and
+    /// the software selection.
+    async fn write(&mut self, software: SoftwareState) -> Result<Vec<Issue>, service::Error>;
 }
 
 /// [ModelAdapter] implementation for libzypp systems.
@@ -113,6 +122,15 @@ impl Model {
 
 #[async_trait]
 impl ModelAdapter for Model {
+    async fn write(&mut self, software: SoftwareState) -> Result<Vec<Issue>, service::Error> {
+        let (tx, rx) = oneshot::channel();
+        self.zypp_sender.send(SoftwareAction::Write {
+            state: software,
+            tx,
+        })?;
+        Ok(rx.await??)
+    }
+
     async fn patterns(&self) -> Result<Vec<Pattern>, service::Error> {
         let Some(product) = &self.selected_product else {
             return Err(service::Error::MissingProduct);

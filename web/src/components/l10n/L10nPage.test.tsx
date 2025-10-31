@@ -61,7 +61,7 @@ jest.mock("~/queries/proposal", () => ({
 
 beforeEach(() => {
   mockSystemData = {
-    localization: {
+    l10n: {
       locales,
       keymaps,
       timezones,
@@ -69,7 +69,7 @@ beforeEach(() => {
   };
 
   mockProposedData = {
-    localization: {
+    l10n: {
       locales,
       keymaps,
       timezones,
@@ -96,7 +96,7 @@ it("renders a section for configuring the language", () => {
 
 describe("if the language selected is wrong", () => {
   beforeEach(() => {
-    mockProposedData.localization.locale = "us_US.UTF-8";
+    mockProposedData.l10n.locale = "us_US.UTF-8";
   });
 
   it("renders a button for selecting a language", () => {
@@ -116,7 +116,7 @@ it("renders a section for configuring the keyboard", () => {
 
 describe("if the keyboard selected is wrong", () => {
   beforeEach(() => {
-    mockProposedData.localization.keymap = "ess";
+    mockProposedData.l10n.keymap = "ess";
   });
 
   it("renders a button for selecting a keyboard", () => {
@@ -136,7 +136,7 @@ it("renders a section for configuring the time zone", () => {
 
 describe("if the time zone selected is wrong", () => {
   beforeEach(() => {
-    mockProposedData.localization.timezone = "Europee/Beeerlin";
+    mockProposedData.l10n.timezone = "Europee/Beeerlin";
   });
 
   it("renders a button for selecting a time zone", () => {

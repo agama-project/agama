@@ -19,13 +19,13 @@
 // find current contact information at www.suse.com.
 
 use crate::{
-    event,
     model::Model,
     service::{self, Service},
     zypp_server::{ZyppServer, ZyppServerError},
 };
 use agama_utils::{
     actor::{self, Handler},
+    api::event,
     issue,
 };
 
@@ -54,7 +54,7 @@ pub async fn start(
     let zypp_sender = ZyppServer::start()?;
     let model = Model::new(zypp_sender)?;
     let mut service = Service::new(model, issues, events);
-    service.read()?;
+    service.read().await?;
     let handler = actor::spawn(service);
     Ok(handler)
 }

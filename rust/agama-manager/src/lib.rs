@@ -24,12 +24,7 @@ pub use start::start;
 pub mod service;
 pub use service::Service;
 
-mod system_info;
-pub use system_info::SystemInfo;
-
 pub mod message;
 
-mod listener;
-mod proposal;
-
 pub use agama_l10n as l10n;
+pub use agama_software as software;

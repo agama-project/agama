@@ -237,11 +237,13 @@ impl LicensesRepo {
 
 impl Default for LicensesRepo {
     fn default() -> Self {
-        let relative_path = Path::new("share/eula");
+        let relative_path = PathBuf::from("share/eula");
         let path = if relative_path.exists() {
             relative_path
         } else {
-            Path::new("/usr/share/agama/eula")
+            let share_dir =
+                std::env::var("AGAMA_SHARE_DIR").unwrap_or("/usr/share/agama".to_string());
+            PathBuf::from(share_dir).join("eula")
         };
         Self::new(path)
     }

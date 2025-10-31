@@ -30,7 +30,7 @@ describe Agama::Commands::AgamaAutoYaST do
   let(:fetcher) { instance_double(Agama::AutoYaST::ProfileFetcher) }
   let(:checker) { Agama::AutoYaST::ProfileChecker.new }
   let(:reporter) { instance_double(Agama::AutoYaST::ProfileReporter, report: true) }
-  let(:questions) { instance_double(Agama::DBus::Clients::Questions) }
+  let(:questions) { instance_double(Agama::HTTP::Clients::Questions) }
   let(:profile) do
     Yast::ProfileHash.new({ "software" => { "products" => ["openSUSE"] } })
   end
@@ -42,7 +42,7 @@ describe Agama::Commands::AgamaAutoYaST do
     allow(Agama::AutoYaST::ProfileFetcher).to receive(:new).with(url).and_return(fetcher)
     allow(Agama::AutoYaST::ProfileChecker).to receive(:new).and_return(checker)
     allow(Agama::AutoYaST::ProfileReporter).to receive(:new).and_return(reporter)
-    allow(Agama::DBus::Clients::Questions).to receive(:new).and_return(questions)
+    allow(Agama::HTTP::Clients::Questions).to receive(:new).and_return(questions)
     allow(Agama::CmdlineArgs).to receive(:read_from).and_return(cmdline_args)
     allow(fetcher).to receive(:fetch).and_return(profile)
   end

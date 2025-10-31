@@ -18,10 +18,14 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::{config::Config, proposal::Proposal, system_info::SystemInfo};
 use agama_locale_data::{KeymapId, LocaleId};
-use agama_utils::actor::Message;
-use serde::Deserialize;
+use agama_utils::{
+    actor::Message,
+    api::{
+        self,
+        l10n::{Proposal, SystemInfo},
+    },
+};
 
 #[derive(Clone)]
 pub struct GetSystem;
@@ -44,16 +48,10 @@ impl<T> SetSystem<T> {
     }
 }
 
-#[derive(Clone, Debug, Deserialize, utoipa::ToSchema)]
-pub struct SystemConfig {
-    pub locale: Option<String>,
-    pub keymap: Option<String>,
-}
-
 pub struct GetConfig;
 
 impl Message for GetConfig {
-    type Reply = Config;
+    type Reply = api::l10n::Config;
 }
 
 pub struct SetConfig<T> {
