@@ -26,9 +26,9 @@ use agama_manager::{self as manager, message};
 use agama_utils::{
     actor::Handler,
     api::{
-        config, event,
+        event,
         question::{Question, QuestionSpec, UpdateQuestion},
-        Action, Config, IssueMap, Status, SystemInfo,
+        Action, Config, IssueMap, Patch, Status, SystemInfo,
     },
     question,
 };
@@ -206,12 +206,12 @@ async fn put_config(State(state): State<ServerState>, Json(json): Json<Value>) -
         (status = 400, description = "Not possible to patch the configuration.")
     ),
     params(
-        ("config" = config::Patch, description = "Changes in the configuration.")
+        ("patch" = Patch, description = "Changes in the configuration.")
     )
 )]
 async fn patch_config(
     State(state): State<ServerState>,
-    Json(patch): Json<config::Patch>,
+    Json(patch): Json<Patch>,
 ) -> ServerResult<()> {
     if let Some(json) = patch.update {
         config_schema::check(&json)?;
