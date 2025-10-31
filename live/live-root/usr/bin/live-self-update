@@ -171,19 +171,6 @@ add_update_repos() {
         zypper_options="--gpgcheck-allow-unsigned-repo"
       fi
 
-      # allow using unsigned packages
-      if grep -q "\binst.self_update_unsigned_package=1\b" /run/agama/cmdline.d/agama.conf; then
-        warning "Unsigned packages are allowed"
-        zypper_options="$zypper_options --gpgcheck-allow-unsigned-package"
-      fi
-
-      # allow using unsigned repository and packages (for some reason zypper complains when using
-      # both options above together and implements a special switch for this)
-      if grep -q "\binst.self_update_unsigned=1\b" /run/agama/cmdline.d/agama.conf; then
-        warning "Unsigned repository and packages are allowed"
-        zypper_options="$zypper_options --gpgcheck-allow-unsigned"
-      fi
-
       # completely disable GPG checks, not recommended, if possible the options
       # above should be preferred
       if grep -q "\binst.self_update_gpg=0\b" /run/agama/cmdline.d/agama.conf; then
