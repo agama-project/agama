@@ -29,6 +29,9 @@ install() {
   # install the systemd service and the self-update script to the initramfs
   inst_multiple "$systemdsystemconfdir"/live-self-update.service live-self-update
 
+  # needed by the live-self-update script
+  inst_multiple grep tail sed
+
   # include the self-update configuration if present
   if [ -d /etc/live-self-update ]; then
     . /usr/lib/live-self-update/conf.sh

@@ -1,4 +1,14 @@
 -------------------------------------------------------------------
+Mon Nov  3 07:54:50 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Improved installer self-update (jsc#PED-12506):
+  - Enable using an HTTP proxy for the self-update process
+    (specified via the "proxy=" boot parameter or configured
+    interactively using the "rd.cmdline=menu")
+  - Fixed fallback to the default self-update URL when contacting
+    the registration server (SCC/RMT) fails
+
+-------------------------------------------------------------------
 Fri Oct 31 10:17:41 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
 
 - Added installer self-update support (jsc#PED-12506)
