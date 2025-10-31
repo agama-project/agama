@@ -75,20 +75,14 @@ pub struct ResolvableParams {
 #[derive(Clone, Debug, Deserialize, Serialize, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct Repository {
-    /// Repository identifier
-    pub id: Option<i32>,
     /// Repository alias. It has to be unique.
     pub alias: String,
     /// Repository name
     pub name: String,
     /// Repository URL (raw format without expanded variables)
     pub url: String,
-    /// Product directory (currently not used, valid only for multiproduct DVDs)
-    pub product_dir: String, // FIXME: needed?
     /// Whether the repository is enabled
     pub enabled: bool,
-    /// Whether the repository is loaded
-    pub loaded: bool, // FIXME: needed?
     /// Whether the repository is mandatory (offline base repo, DUD repositories, etc.)
     pub mandatory: bool,
 }

@@ -434,25 +434,19 @@ mod tests {
         let config = build_user_config(Some(patterns));
 
         let base_repo = Repository {
-            id: None,
             alias: "install".to_string(),
             name: "install".to_string(),
             url: "hd:/run/initramfs/install".to_string(),
             enabled: false,
-            loaded: false,
             mandatory: true,
-            product_dir: "".to_string(),
         };
 
         let another_repo = Repository {
-            id: None,
             alias: "another".to_string(),
             name: "another".to_string(),
             url: "https://example.lan/SLES/".to_string(),
             enabled: false,
-            loaded: false,
             mandatory: false,
-            product_dir: "".to_string(),
         };
 
         let system = SystemInfo {

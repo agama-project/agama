@@ -270,12 +270,9 @@ fn find_install_repository() -> Option<packages::Repository> {
     }
 
     normalize_repository_url(LIVE_REPO_DIR, "/install").map(|url| packages::Repository {
-        id: None,
         alias: "install".to_string(),
         name: "install".to_string(),
         url,
-        product_dir: "".to_string(),
-        loaded: false,
         enabled: true,
         mandatory: true,
     })

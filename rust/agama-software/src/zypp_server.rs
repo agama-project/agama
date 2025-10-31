@@ -261,12 +261,9 @@ impl ZyppServer {
                             .map(|(index, repo)| Repository {
                                 url: repo.url,
                                 // unwrap here is ok, as number of repos are low
-                                id: Some(index.try_into().unwrap()), // TODO: remove it when not needed, DBus relict, alias should be always unique
                                 alias: repo.alias,
                                 name: repo.user_name,
-                                product_dir: "/".to_string(), // TODO: get it from zypp
                                 enabled: repo.enabled,
-                                loaded: true,
                                 mandatory: false,
                             })
                             .collect()
