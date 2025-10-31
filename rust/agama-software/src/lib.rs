@@ -53,6 +53,5 @@ pub use system_info::SystemInfo;
 mod proposal;
 pub use proposal::Proposal;
 
-mod extended_config;
 pub mod message;
 mod zypp_server;
