@@ -20,7 +20,7 @@
 
 use crate::api::{l10n, question};
 use serde::{Deserialize, Serialize};
-use serde_json::value::RawValue;
+use serde_json::{value::RawValue, Value};
 
 #[derive(Clone, Debug, Default, Deserialize, Serialize, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
@@ -43,5 +43,5 @@ pub struct Config {
 #[serde(rename_all = "camelCase")]
 pub struct Patch {
     /// Update for the current config.
-    pub update: Option<Config>,
+    pub update: Option<Value>,
 }

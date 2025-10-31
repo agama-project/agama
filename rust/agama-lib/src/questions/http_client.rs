@@ -38,6 +38,8 @@ pub enum QuestionsHTTPClientError {
     HTTP(#[from] BaseHTTPClientError),
     #[error("Unknown question with ID {0}")]
     UnknownQuestion(u32),
+    #[error(transparent)]
+    Json(#[from] serde_json::Error),
 }
 
 pub struct HTTPClient {
@@ -100,7 +102,7 @@ impl HTTPClient {
         };
 
         let patch = Patch {
-            update: Some(config),
+            update: Some(serde_json::to_value(config)?),
         };
 
         _ = self.client.patch_void("/v2/config", &patch).await?;
@@ -121,7 +123,7 @@ impl HTTPClient {
         };
 
         let patch = Patch {
-            update: Some(config),
+            update: Some(serde_json::to_value(config)?),
         };
         self.client.patch_void("/v2/config", &patch).await?;
         Ok(())

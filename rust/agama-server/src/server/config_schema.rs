@@ -18,7 +18,28 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-pub mod web;
-pub use web::server_service;
+//! This module provides utilities to check the config schema.
 
-mod config_schema;
+use agama_lib::{
+    error::ProfileError,
+    profile::{ProfileValidator, ValidationOutcome},
+};
+
+#[derive(thiserror::Error, Debug)]
+pub enum Error {
+    #[error("The config does not match the schema: {0}")]
+    Schema(String),
+    #[error(transparent)]
+    ProfileValidator(#[from] ProfileError),
+    #[error(transparent)]
+    Json(#[from] serde_json::Error),
+}
+
+pub fn check(json: &serde_json::Value) -> Result<(), Error> {
+    let raw_json = serde_json::to_string(json)?;
+    let result = ProfileValidator::default_schema()?.validate_str(&raw_json)?;
+    match result {
+        ValidationOutcome::Valid => Ok(()),
+        ValidationOutcome::NotValid(reasons) => Err(Error::Schema(reasons.join(", "))),
+    }
+}

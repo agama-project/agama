@@ -20,6 +20,7 @@
 
 //! This module implements Agama's HTTP API.
 
+use crate::server::config_schema;
 use agama_lib::error::ServiceError;
 use agama_manager::{self as manager, message};
 use agama_utils::{
@@ -39,7 +40,7 @@ use axum::{
 };
 use hyper::StatusCode;
 use serde::Serialize;
-use serde_json::{json, value::RawValue};
+use serde_json::{json, value::RawValue, Value};
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
@@ -47,6 +48,10 @@ pub enum Error {
     Manager(#[from] manager::service::Error),
     #[error(transparent)]
     Questions(#[from] question::service::Error),
+    #[error(transparent)]
+    ConfigSchema(#[from] config_schema::Error),
+    #[error(transparent)]
+    Json(#[from] serde_json::Error),
 }
 
 impl IntoResponse for Error {
@@ -179,13 +184,12 @@ async fn get_config(State(state): State<ServerState>) -> ServerResult<Json<Confi
         (status = 400, description = "Not possible to replace the configuration.")
     ),
     params(
-        ("config" = Config, description = "Configuration to apply.")
+        ("config" = Value, description = "Configuration to apply.")
     )
 )]
-async fn put_config(
-    State(state): State<ServerState>,
-    Json(config): Json<Config>,
-) -> ServerResult<()> {
+async fn put_config(State(state): State<ServerState>, Json(json): Json<Value>) -> ServerResult<()> {
+    config_schema::check(&json)?;
+    let config = serde_json::from_value(json)?;
     state.manager.call(message::SetConfig::new(config)).await?;
     Ok(())
 }
@@ -202,14 +206,16 @@ async fn put_config(
         (status = 400, description = "Not possible to patch the configuration.")
     ),
     params(
-        ("config" = Config, description = "Changes in the configuration.")
+        ("config" = config::Patch, description = "Changes in the configuration.")
     )
 )]
 async fn patch_config(
     State(state): State<ServerState>,
     Json(patch): Json<config::Patch>,
 ) -> ServerResult<()> {
-    if let Some(config) = patch.update {
+    if let Some(json) = patch.update {
+        config_schema::check(&json)?;
+        let config = serde_json::from_value(json)?;
         state
             .manager
             .call(message::UpdateConfig::new(config))
