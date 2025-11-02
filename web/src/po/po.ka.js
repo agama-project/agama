@@ -139,9 +139,6 @@ export default {
   "Add another address": [
     "სხვა მისამართის დამატება"
   ],
-  "Add another partition or mount an existing one": [
-    "დაამატეთ კიდევ ერთი დანაყოფი ან მიამაგრეთ არსებული"
-  ],
   "Add device menu": [
     "მოწყობილობის მენიუს დამატება"
   ],
@@ -327,9 +324,6 @@ export default {
   "Change Language": [
     "ენის შეცვლა"
   ],
-  "Change boot options": [
-    "ჩატვირთვის პარამეტრების შეცვლა"
-  ],
   "Change device menu": [
     "მოწყობილობის მენიუს შეცვლა"
   ],
@@ -357,11 +351,11 @@ export default {
   "Change the file system or mount point": [
     "ფილური სისტემის ან მიმაგრების წერტილის შეცვლა"
   ],
+  "Changes in these settings will immediately update the 'Result' section below.": [
+    ""
+  ],
   "Channel ID": [
     "არხის ID"
-  ],
-  "Check the %d planned actions": [
-    "%d დაგეგმილი ქმედების შემოწმება"
   ],
   "Check the authentication parameters.": [
     "შეამოწმეთ ავთენტიკაციის პარამეტრები."
@@ -395,9 +389,6 @@ export default {
   ],
   "Close": [
     "დახურვა"
-  ],
-  "Collapse the list of planned actions": [
-    "დაგეგმილი ქმედებების ჩამოშლა"
   ],
   "Configuration out of sync": [
     "კონფიგურაციის სინქრონიზაცია დარღვეულია"
@@ -609,9 +600,6 @@ export default {
   "Details": [
     "დეტალები"
   ],
-  "Details for %s": [
-    "%s-ის დეტალები"
-  ],
   "Details will appear after the connection is successfully established.": [
     "დეტალები გამოჩნდება კავშირის წარმატებულად დამყარების შემდეგ."
   ],
@@ -665,9 +653,6 @@ export default {
   ],
   "Download logs": [
     "ჟურნალის გადმოწერა"
-  ],
-  "During installation, several actions will be performed to setup the layout shown at the table below.": [
-    ""
   ],
   "Edit": [
     "ჩასწორება"
@@ -732,8 +717,8 @@ export default {
   "ExFAT": [
     "ExFAT"
   ],
-  "Example: https://myserver.com": [
-    "მაგ: https://ჩემისერვერი.ცომ"
+  "Example: %s": [
+    "მაგ: %s"
   ],
   "Excellent signal": [
     "ძალიან კარგი სიგნალი"
@@ -791,8 +776,8 @@ export default {
   "Filter by territory, time zone code or UTC offset": [
     "გაფილტვრა ტერიტორიით, დროის სარტყლით, ან UTC წანაცვლებით"
   ],
-  "Find space": [
-    "ადგილის პოვნა"
+  "Final layout": [
+    "საბოლოო განლაგება"
   ],
   "Find space in %s": [
     "ადგილის პოვნა %s-ში"
@@ -977,9 +962,6 @@ export default {
   ],
   "Install using several devices without modifying existing partitions.": [
     "დაყენება რამდენიმე მოწყობილობის გამოყენებით არსებული დანაყოფების შეცვლის გარეშე."
-  ],
-  "Installation Devices": [
-    "დაყენების მოწყობილობები"
   ],
   "Installation will take %s.": [
     "დაყენებას დასჭირდება %s."
@@ -1346,12 +1328,6 @@ export default {
   "Options toggle": [
     "პარამეტრის გადართვა"
   ],
-  "Other options": [
-    "სხვა პარამეტრები"
-  ],
-  "Other options toggle": [
-    "სხვა პარამეტრის გადართვა"
-  ],
   "Overview": [
     "გადახედვა"
   ],
@@ -1360,6 +1336,9 @@ export default {
   ],
   "Partition Info": [
     "დანაყოფის ინფორმაცია"
+  ],
+  "Partitions": [
+    "დანაყოფები"
   ],
   "Partitions needed for booting will also be adapted": [
     "ასევე მოხდება ჩასატვირთად საჭირო დანაყოფების მორგება"
@@ -1376,14 +1355,11 @@ export default {
   "Partitions that are not reused would be resized if needed.": [
     "დანაყოფები, რომლებიც თავიდან არ გამოიყენება, შეიძლება, ზომა საჭიროებისამებრ შეეცვალოს."
   ],
-  "Partitions to boot will be allocated at the following device.": [
-    "ჩატვირთვადი დანაყოფები გამოიყოფა შემდეგი მოწყობილობიდან."
+  "Partitions to boot will be set up if needed at the installation disk.         Currently %1$s, based on the location of the %2$s file system.": [
+    ""
   ],
-  "Partitions to boot will be allocated at the installation disk %s.": [
-    "ჩატვირთვადი დანაყოფები გამოიყოფა დაყენების დისკზე %s."
-  ],
-  "Partitions to boot will be allocated at the installation disk.": [
-    "ჩატვირთვადი დანაყოფები დაყენების დისკზე გამოიყოფა."
+  "Partitions to boot will be set up if needed at the installation disk.       Currently %1$s, based on the location of the %2$s file system.": [
+    ""
   ],
   "Partitions will be used and created for %s": [
     "დანაყოფები, რომლებიც გამოყენებული და შექმნილი იქნება '%s'-სთვის"
@@ -1448,7 +1424,7 @@ export default {
   "Product is already registered": [
     "პროდუქტი უკვე რეგისტრირებულია"
   ],
-  "Protection for the information stored at the new file systems, including data, programs, and system files.": [
+  "Protection for the information stored at           the new file systems, including data, programs, and system files.": [
     ""
   ],
   "Provide email address": [
@@ -1538,6 +1514,9 @@ export default {
   "Result": [
     "შედეგი"
   ],
+  "Result of applying the configuration described at the 'Settings' section above.": [
+    ""
+  ],
   "Reused partitions will not be shrunk": [
     "თავიდან გამოყენებული დანაყოფების დაპატარავება შეუძლებელია"
   ],
@@ -1598,20 +1577,8 @@ export default {
   "Select a disk": [
     "აირჩიეთ დისკი"
   ],
-  "Select a disk to configure": [
-    "აირჩიეთ დისკი მოსარგებად"
-  ],
-  "Select a disk to create %s": [
-    "აირჩიეთ დისკი %s-ის შესაქმნელად"
-  ],
   "Select a disk to define partitions or to mount": [
     "აირჩიეთ დისკი დანაყოფების აღწერისთვის, ან მიმაგრებისთვის"
-  ],
-  "Select a disk to format as %s": [
-    "აირჩიეთ დისკი, რომელიც დაფორმატდება, როგორც %s"
-  ],
-  "Select a disk to install the system": [
-    "აირჩიეთ დისკი სისტემის დასაყენებლად"
   ],
   "Select a product": [
     "აირჩიეთ პროდუქტი"
@@ -1639,9 +1606,6 @@ export default {
   ],
   "Select or enter a valid mount point": [
     "აირჩიეთ, ან შეიყვანეთ სწორი მიმაგრების წერტილი"
-  ],
-  "Select the disk to configure partitions for booting": [
-    "აირჩიეთ დისკი ჩატვირთვადი დანაყოფების მოსარგებად"
   ],
   "Select what to do with each partition in order to find space for allocating the new system.": [
     ""
@@ -2074,6 +2038,9 @@ export default {
   ],
   "Tmpfs": [
     "Tmpfs"
+  ],
+  "To ensure the new system is able to boot, the installer may need to create or configure some           partitions in the appropriate disk.": [
+    ""
   ],
   "To ensure the new system is able to boot, the installer may need to create or configure some partitions in the appropriate disk.": [
     ""

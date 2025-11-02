@@ -139,9 +139,6 @@ export default {
   "Add another address": [
     "Lägg till en annan adress"
   ],
-  "Add another partition or mount an existing one": [
-    "Lägg till ytterligare en partition eller montera en befintlig"
-  ],
   "Add device menu": [
     "Lägg till enhetsmeny"
   ],
@@ -327,9 +324,6 @@ export default {
   "Change Language": [
     "Ändra språk"
   ],
-  "Change boot options": [
-    "Ändra uppstartsalternativ"
-  ],
   "Change device menu": [
     "Ändra enhetsmeny"
   ],
@@ -357,11 +351,11 @@ export default {
   "Change the file system or mount point": [
     "Ändra filsystemet eller monteringspunkten"
   ],
+  "Changes in these settings will immediately update the 'Result' section below.": [
+    ""
+  ],
   "Channel ID": [
     "Kanal-ID"
-  ],
-  "Check the %d planned actions": [
-    "Kontrollera det %d planerade åtgärderna"
   ],
   "Check the authentication parameters.": [
     "Kontrollera autentiseringsparametrarna."
@@ -395,9 +389,6 @@ export default {
   ],
   "Close": [
     "Stäng"
-  ],
-  "Collapse the list of planned actions": [
-    "Dölj listan över planerade åtgärder"
   ],
   "Configuration out of sync": [
     "Konfigurationen är inte synkroniserad"
@@ -609,9 +600,6 @@ export default {
   "Details": [
     "Detaljer"
   ],
-  "Details for %s": [
-    "Detaljer för %s"
-  ],
   "Details will appear after the connection is successfully established.": [
     "Detaljer kommer att visas efter att anslutningen har upprättats."
   ],
@@ -665,9 +653,6 @@ export default {
   ],
   "Download logs": [
     "Ladda ner loggar"
-  ],
-  "During installation, several actions will be performed to setup the layout shown at the table below.": [
-    "Under installationen kommer flera åtgärder att utföras för att ställa in layouten som visas i tabellen nedan."
   ],
   "Edit": [
     "Redigera"
@@ -732,8 +717,8 @@ export default {
   "ExFAT": [
     "ExFAT"
   ],
-  "Example: https://myserver.com": [
-    "Exempel: https://minserver.com"
+  "Example: %s": [
+    "Exempel: %s"
   ],
   "Excellent signal": [
     "Utmärkt signal"
@@ -791,8 +776,8 @@ export default {
   "Filter by territory, time zone code or UTC offset": [
     "Filtrera efter område, tidszonskod eller UTC-förskjutning"
   ],
-  "Find space": [
-    "Hitta utrymme"
+  "Final layout": [
+    "Slutgiltig layout"
   ],
   "Find space in %s": [
     "Hitta utrymme på %s"
@@ -977,9 +962,6 @@ export default {
   ],
   "Install using several devices without modifying existing partitions.": [
     "Installera med flera enheter utan att ändra befintliga partitioner."
-  ],
-  "Installation Devices": [
-    "Installationsenheter"
   ],
   "Installation will take %s.": [
     "Installationen kommer att ta %s."
@@ -1346,12 +1328,6 @@ export default {
   "Options toggle": [
     "Växla mellan alternativ"
   ],
-  "Other options": [
-    "Andra alternativ"
-  ],
-  "Other options toggle": [
-    "Andra alternativ växel"
-  ],
   "Overview": [
     "Översikt"
   ],
@@ -1360,6 +1336,9 @@ export default {
   ],
   "Partition Info": [
     "Partitionsinformation"
+  ],
+  "Partitions": [
+    "Partitioner"
   ],
   "Partitions needed for booting will also be adapted": [
     "Partitioner som behövs för uppstart kommer också att anpassas"
@@ -1376,14 +1355,11 @@ export default {
   "Partitions that are not reused would be resized if needed.": [
     "Partitioner som inte återanvänds kan ändras i storlek vid behov."
   ],
-  "Partitions to boot will be allocated at the following device.": [
-    "Partitioner för att uppstart kommer att tilldelas på följande enhet."
+  "Partitions to boot will be set up if needed at the installation disk.         Currently %1$s, based on the location of the %2$s file system.": [
+    ""
   ],
-  "Partitions to boot will be allocated at the installation disk %s.": [
-    "Partitioner att starta kommer att allokeras på installationsdisken %s."
-  ],
-  "Partitions to boot will be allocated at the installation disk.": [
-    "Partitioner som ska startas upp kommer att tilldelas på installationsdisken."
+  "Partitions to boot will be set up if needed at the installation disk.       Currently %1$s, based on the location of the %2$s file system.": [
+    ""
   ],
   "Partitions will be used and created for %s": [
     "Partitioner kommer att användas och skapas för %s"
@@ -1447,9 +1423,6 @@ export default {
   ],
   "Product is already registered": [
     "Produkten är redan registrerad"
-  ],
-  "Protection for the information stored at the new file systems, including data, programs, and system files.": [
-    "Skydd för informationen som lagras i de nya filsystemen, inklusive data, program och systemfiler."
   ],
   "Provide email address": [
     "Ange en e-postadress"
@@ -1538,6 +1511,9 @@ export default {
   "Result": [
     "Resultat"
   ],
+  "Result of applying the configuration described at the 'Settings' section above.": [
+    ""
+  ],
   "Reused partitions will not be shrunk": [
     "Återanvända partitioner kommer inte att krympas"
   ],
@@ -1598,20 +1574,8 @@ export default {
   "Select a disk": [
     "Välj en disk"
   ],
-  "Select a disk to configure": [
-    "Välj en disk att konfigurera"
-  ],
-  "Select a disk to create %s": [
-    "Välj en disk för att skapa %s"
-  ],
   "Select a disk to define partitions or to mount": [
     "Välj en disk för att definiera partitioner eller för att montera"
-  ],
-  "Select a disk to format as %s": [
-    "Välj en disk att formatera som %s"
-  ],
-  "Select a disk to install the system": [
-    "Välj en disk för att installera systemet"
   ],
   "Select a product": [
     "Välj en produkt"
@@ -1639,9 +1603,6 @@ export default {
   ],
   "Select or enter a valid mount point": [
     "Välj eller ange en giltig monteringspunkt"
-  ],
-  "Select the disk to configure partitions for booting": [
-    "Välj disk för att konfigurera partitionerna för uppstart"
   ],
   "Select what to do with each partition in order to find space for allocating the new system.": [
     "Välj vad som ska göras med varje partition för att hitta utrymme för att allokera det nya systemet."

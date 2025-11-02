@@ -143,9 +143,6 @@ export default {
   "Add another address": [
     "Додати іншу адресу"
   ],
-  "Add another partition or mount an existing one": [
-    "Додати новий розділ або змонтувати наявний"
-  ],
   "Add device menu": [
     "Меню додавання пристроїв"
   ],
@@ -333,9 +330,6 @@ export default {
   "Change Language": [
     "Змінити мову"
   ],
-  "Change boot options": [
-    "Змінити параметри завантаження"
-  ],
   "Change device menu": [
     "Меню зміни пристрою"
   ],
@@ -363,11 +357,11 @@ export default {
   "Change the file system or mount point": [
     "Змінити файлову систему або точку монтування"
   ],
+  "Changes in these settings will immediately update the 'Result' section below.": [
+    ""
+  ],
   "Channel ID": [
     "Ідентифікатор каналу"
-  ],
-  "Check the %d planned actions": [
-    "Перевірити %d заплановані дії"
   ],
   "Check the authentication parameters.": [
     "Перевірте параметри автентифікації."
@@ -401,9 +395,6 @@ export default {
   ],
   "Close": [
     "Закрити"
-  ],
-  "Collapse the list of planned actions": [
-    "Згорнути список запланованих дій"
   ],
   "Configuration out of sync": [
     "Конфігурація не синхронізована"
@@ -615,9 +606,6 @@ export default {
   "Details": [
     "Подробиці"
   ],
-  "Details for %s": [
-    "Подробиці для %s"
-  ],
   "Details will appear after the connection is successfully established.": [
     "Подробиці з'являться після того як з'єднання буде успішно встановлено."
   ],
@@ -671,9 +659,6 @@ export default {
   ],
   "Download logs": [
     "Завантажити журнали"
-  ],
-  "During installation, several actions will be performed to setup the layout shown at the table below.": [
-    "Під час інсталяції буде виконано кілька дій, щоб налаштувати схему, як показано в таблиці нижче."
   ],
   "Edit": [
     "Редагувати"
@@ -738,8 +723,8 @@ export default {
   "ExFAT": [
     "ExFAT"
   ],
-  "Example: https://myserver.com": [
-    "Приклад: https://myserver.com"
+  "Example: %s": [
+    "Приклад: %s"
   ],
   "Excellent signal": [
     "Відмінний сигнал"
@@ -799,8 +784,8 @@ export default {
   "Filter by territory, time zone code or UTC offset": [
     "Фільтр за територією, коду часового пояса або зміщенню UTC"
   ],
-  "Find space": [
-    "Знайти місце"
+  "Final layout": [
+    "Кінцевий варіант"
   ],
   "Find space in %s": [
     "Знайти місце в %s"
@@ -986,9 +971,6 @@ export default {
   ],
   "Install using several devices without modifying existing partitions.": [
     "Встановлення з використанням кількох пристроїв без зміни наявних розділів."
-  ],
-  "Installation Devices": [
-    "Пристрої для встановлення"
   ],
   "Installation will take %s.": [
     "Встановлення займе %s."
@@ -1357,12 +1339,6 @@ export default {
   "Options toggle": [
     "Показ налаштувань"
   ],
-  "Other options": [
-    "Інші опції"
-  ],
-  "Other options toggle": [
-    "Показати інші налаштування"
-  ],
   "Overview": [
     "Огляд"
   ],
@@ -1371,6 +1347,9 @@ export default {
   ],
   "Partition Info": [
     "Інформація про розділ"
+  ],
+  "Partitions": [
+    "Розділи"
   ],
   "Partitions needed for booting will also be adapted": [
     "Розділи, необхідні для завантаження, також будуть адаптовані"
@@ -1387,14 +1366,11 @@ export default {
   "Partitions that are not reused would be resized if needed.": [
     "Розділи, які не використовуються повторно, за необхідності будуть змінені в розмірах."
   ],
-  "Partitions to boot will be allocated at the following device.": [
-    "Розділи для завантаження буде виділено на наступному пристрої."
+  "Partitions to boot will be set up if needed at the installation disk.         Currently %1$s, based on the location of the %2$s file system.": [
+    ""
   ],
-  "Partitions to boot will be allocated at the installation disk %s.": [
-    "Розділи для завантаження буде виділено на інсталяційному диску %s."
-  ],
-  "Partitions to boot will be allocated at the installation disk.": [
-    "Розділи для завантаження буде виділено на інсталяційному диску."
+  "Partitions to boot will be set up if needed at the installation disk.       Currently %1$s, based on the location of the %2$s file system.": [
+    ""
   ],
   "Partitions will be used and created for %s": [
     "Буде використано та створено розділи для %s"
@@ -1458,9 +1434,6 @@ export default {
   ],
   "Product is already registered": [
     "Продукт вже зареєстровано"
-  ],
-  "Protection for the information stored at the new file systems, including data, programs, and system files.": [
-    "Захист інформації, що зберігається на нових файлових системах, включно з даними, програмами та системними файлами."
   ],
   "Provide email address": [
     "Вкажіть адресу електронної пошти"
@@ -1549,6 +1522,9 @@ export default {
   "Result": [
     "Результат"
   ],
+  "Result of applying the configuration described at the 'Settings' section above.": [
+    ""
+  ],
   "Reused partitions will not be shrunk": [
     "Повторно використані розділи не будуть зменшені"
   ],
@@ -1609,20 +1585,8 @@ export default {
   "Select a disk": [
     "Оберіть диск"
   ],
-  "Select a disk to configure": [
-    "Виберіть диск для налаштування"
-  ],
-  "Select a disk to create %s": [
-    "Виберіть диск для створення %s"
-  ],
   "Select a disk to define partitions or to mount": [
     "Виберіть диск для визначення розділів або монтування"
-  ],
-  "Select a disk to format as %s": [
-    "Виберіть диск для форматування як %s"
-  ],
-  "Select a disk to install the system": [
-    "Оберіть диск для встановлення системи"
   ],
   "Select a product": [
     "Оберіть продукт"
@@ -1650,9 +1614,6 @@ export default {
   ],
   "Select or enter a valid mount point": [
     "Виберіть або введіть дійсну точку монтування"
-  ],
-  "Select the disk to configure partitions for booting": [
-    "Виберіть диск для налаштування розділів для завантаження"
   ],
   "Select what to do with each partition in order to find space for allocating the new system.": [
     "Виберіть, що робити з кожним розділом, щоб знайти місце для розміщення нової системи."

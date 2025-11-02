@@ -139,9 +139,6 @@ export default {
   "Add another address": [
     "Ajouter une autre adresse"
   ],
-  "Add another partition or mount an existing one": [
-    "Ajouter une autre partition ou en monter une existante"
-  ],
   "Add device menu": [
     "Ajouter le menu du périphérique"
   ],
@@ -327,9 +324,6 @@ export default {
   "Change Language": [
     "Modifier la langue"
   ],
-  "Change boot options": [
-    "Modifier les options d'amorçage"
-  ],
   "Change device menu": [
     "Modifier le menu du périphérique"
   ],
@@ -357,11 +351,11 @@ export default {
   "Change the file system or mount point": [
     "Modifier le système de fichiers ou le point de montage"
   ],
+  "Changes in these settings will immediately update the 'Result' section below.": [
+    ""
+  ],
   "Channel ID": [
     "ID du canal"
-  ],
-  "Check the %d planned actions": [
-    "Vérifier les %d actions planifiées"
   ],
   "Check the authentication parameters.": [
     "Vérifiez les paramètres d'authentification."
@@ -395,9 +389,6 @@ export default {
   ],
   "Close": [
     "Fermer"
-  ],
-  "Collapse the list of planned actions": [
-    "Réduire la liste des actions planifiées"
   ],
   "Configuration out of sync": [
     "Configuration désynchronisée"
@@ -609,9 +600,6 @@ export default {
   "Details": [
     "Détails"
   ],
-  "Details for %s": [
-    "Détails pour %s"
-  ],
   "Details will appear after the connection is successfully established.": [
     "Les détails s'afficheront une fois la connexion établie avec succès."
   ],
@@ -665,9 +653,6 @@ export default {
   ],
   "Download logs": [
     "Télécharger les journaux"
-  ],
-  "During installation, several actions will be performed to setup the layout shown at the table below.": [
-    "Au cours de l'installation, plusieurs actions seront effectuées pour configurer la disposition indiquée dans le tableau ci-dessous."
   ],
   "Edit": [
     "Modifier"
@@ -732,8 +717,8 @@ export default {
   "ExFAT": [
     "ExFAT"
   ],
-  "Example: https://myserver.com": [
-    "Exemple : https://monserveur.com"
+  "Example: %s": [
+    "Exemple : %s"
   ],
   "Excellent signal": [
     "Signal excellent"
@@ -791,8 +776,8 @@ export default {
   "Filter by territory, time zone code or UTC offset": [
     "Filtrer par territoire, code de fuseau horaire ou décalage UTC"
   ],
-  "Find space": [
-    "Trouver de l'espace"
+  "Final layout": [
+    ""
   ],
   "Find space in %s": [
     "Trouver de l'espace dans %s"
@@ -977,9 +962,6 @@ export default {
   ],
   "Install using several devices without modifying existing partitions.": [
     "Effectuez l'installation à l'aide de plusieurs périphériques sans modifier les partitions existantes."
-  ],
-  "Installation Devices": [
-    "Périphériques d'installation"
   ],
   "Installation will take %s.": [
     "L'installation utilisera %s."
@@ -1346,12 +1328,6 @@ export default {
   "Options toggle": [
     "Bouton de bascule des options"
   ],
-  "Other options": [
-    "Autres options"
-  ],
-  "Other options toggle": [
-    "Bouton de bascule Autres options"
-  ],
   "Overview": [
     "Aperçu"
   ],
@@ -1360,6 +1336,9 @@ export default {
   ],
   "Partition Info": [
     "Informations sur la partition"
+  ],
+  "Partitions": [
+    "Partitions"
   ],
   "Partitions needed for booting will also be adapted": [
     "Les partitions nécessaires au démarrage seront également adaptées"
@@ -1376,14 +1355,11 @@ export default {
   "Partitions that are not reused would be resized if needed.": [
     "Les partitions qui ne sont pas réutilisées seraient redimensionnées si nécessaire."
   ],
-  "Partitions to boot will be allocated at the following device.": [
-    "Les partitions à amorcer seront attribuées au périphérique suivant."
+  "Partitions to boot will be set up if needed at the installation disk.         Currently %1$s, based on the location of the %2$s file system.": [
+    ""
   ],
-  "Partitions to boot will be allocated at the installation disk %s.": [
-    "Les partitions de démarrage seront allouées sur le disque d'installation %s."
-  ],
-  "Partitions to boot will be allocated at the installation disk.": [
-    "Les partitions pour le démarrage seront allouées sur le disque d'installation."
+  "Partitions to boot will be set up if needed at the installation disk.       Currently %1$s, based on the location of the %2$s file system.": [
+    ""
   ],
   "Partitions will be used and created for %s": [
     "Des partitions seront créées et utilisées pour %s"
@@ -1447,9 +1423,6 @@ export default {
   ],
   "Product is already registered": [
     "Le produit est déjà enregistré"
-  ],
-  "Protection for the information stored at the new file systems, including data, programs, and system files.": [
-    "Protection des informations stockées dans les nouveaux systèmes de fichiers, y compris les données, les programmes et les fichiers système."
   ],
   "Provide email address": [
     "Fournir une adresse électronique"
@@ -1538,6 +1511,9 @@ export default {
   "Result": [
     "Résultat"
   ],
+  "Result of applying the configuration described at the 'Settings' section above.": [
+    ""
+  ],
   "Reused partitions will not be shrunk": [
     "Les partitions réutilisées ne seront pas réduites"
   ],
@@ -1598,20 +1574,8 @@ export default {
   "Select a disk": [
     "Sélectionner un disque"
   ],
-  "Select a disk to configure": [
-    "Sélectionner un disque à configurer"
-  ],
-  "Select a disk to create %s": [
-    "Sélectionner un disque pour créer %s"
-  ],
   "Select a disk to define partitions or to mount": [
     "Sélectionner un disque pour définir des partitions ou effectuer le montage"
-  ],
-  "Select a disk to format as %s": [
-    "Sélectionner un disque pour à formater en tant que %s"
-  ],
-  "Select a disk to install the system": [
-    "Sélectionner un disque pour installer le système"
   ],
   "Select a product": [
     "Sélectionner un produit"
@@ -1639,9 +1603,6 @@ export default {
   ],
   "Select or enter a valid mount point": [
     "Sélectionner ou entrer un point de montage valide"
-  ],
-  "Select the disk to configure partitions for booting": [
-    "Sélectionnez le disque afin de configurer les partitions pour le démarrage"
   ],
   "Select what to do with each partition in order to find space for allocating the new system.": [
     "Sélectionnez ce qu'il faut faire avec chaque partition afin de trouver de l'espace pour allouer le nouveau système."
