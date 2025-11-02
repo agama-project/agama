@@ -6,6 +6,12 @@ export default {
   " Timezone selection": [
     " დროის სარტყლის არჩევანი"
   ],
+  "\"%s\"": [
+    ""
+  ],
+  "\"%s\" does not exist or is no longer available.": [
+    ""
+  ],
   "%1$s (%2$s)": [
     "%1$s (%2$s)"
   ],
@@ -732,8 +738,8 @@ export default {
   "ExFAT": [
     "ExFAT"
   ],
-  "Example: https://myserver.com": [
-    "მაგ: https://ჩემისერვერი.ცომ"
+  "Example: %s": [
+    ""
   ],
   "Excellent signal": [
     "ძალიან კარგი სიგნალი"
@@ -916,6 +922,9 @@ export default {
     ""
   ],
   "If you continue, partitions on your hard disk will be modified according to the provided installation settings.": [
+    ""
+  ],
+  "If you want to disable this check, please specify \"inst.ay_check=0\" at kernel's command-line": [
     ""
   ],
   "In progress": [
@@ -1945,6 +1954,9 @@ export default {
     "პაროლი სუსტია"
   ],
   "The password will not be needed to boot and access the data if the TPM can verify the integrity of the system. TPM sealing requires the new system to be booted directly on its first run.": [
+    ""
+  ],
+  "The product will be registered with \"%s\" hostname": [
     ""
   ],
   "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of a separate file system for %2$s.": [

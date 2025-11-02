@@ -6,6 +6,12 @@ export default {
   " Timezone selection": [
     " Pemilihan zona waktu"
   ],
+  "\"%s\"": [
+    "\"%s\""
+  ],
+  "\"%s\" does not exist or is no longer available.": [
+    "\"%s\" tidak ada atau tidak lagi tersedia."
+  ],
   "%1$s (%2$s)": [
     "%1$s (%2$s)"
   ],
@@ -726,8 +732,8 @@ export default {
   "ExFAT": [
     "ExFAT"
   ],
-  "Example: https://myserver.com": [
-    "Contoh: https://myserver.com"
+  "Example: %s": [
+    "Contoh: %s"
   ],
   "Excellent signal": [
     "Sinyal sangat baik"
@@ -748,7 +754,7 @@ export default {
     "Perluas instalasi melampaui perangkat %d yang saat ini dipilih"
   ],
   "Extend the installation beyond the currently selected disk": [
-    "Perluas instalasi melampaui disk %d yang saat ini dipilih."
+    "Perluas instalasi melampaui disk %d yang saat ini dipilih"
   ],
   "Extensions": [
     "Ekstensi"
@@ -908,6 +914,9 @@ export default {
   ],
   "If you continue, partitions on your hard disk will be modified according to the provided installation settings.": [
     "Jika Anda melanjutkan, partisi pada hard disk Anda akan dimodifikasi sesuai dengan pengaturan instalasi yang disediakan."
+  ],
+  "If you want to disable this check, please specify \"inst.ay_check=0\" at kernel's command-line": [
+    "Jika Anda ingin menonaktifkan pemeriksaan ini, silakan tetapkan \"inst.ay_check=0\" di baris perintah kernel"
   ],
   "In progress": [
     "Dalam proses"
@@ -1373,6 +1382,9 @@ export default {
   ],
   "Partitions to boot will be allocated at the installation disk.": [
     "Partisi untuk boot akan dialokasikan pada disk instalasi."
+  ],
+  "Partitions to host \"system\" will be created if needed.": [
+    "Partisi untuk menjadi host \"system\" akan dibuat jika diperlukan."
   ],
   "Partitions will be used and created for %s": [
     "Partisi akan digunakan dan dibuat untuk %s"
@@ -1928,6 +1940,9 @@ export default {
   ],
   "The password will not be needed to boot and access the data if the TPM can verify the integrity of the system. TPM sealing requires the new system to be booted directly on its first run.": [
     "Kata sandi tidak akan diperlukan untuk mem-boot dan mengakses data jika TPM dapat memverifikasi integritas sistem. Penyegelan TPM mengharuskan sistem baru untuk di-boot secara langsung saat pertama kali dijalankan."
+  ],
+  "The product will be registered with \"%s\" hostname": [
+    "Produk akan didaftarkan dengan nama host \"%s\""
   ],
   "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of a separate file system for %2$s.": [
     "Ukuran untuk %1$s akan disesuaikan secara dinamis berdasarkan jumlah RAM dalam sistem dan keberadaan sistem berkas yang terpisah untuk %2$s."
