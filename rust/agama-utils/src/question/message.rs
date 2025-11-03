@@ -27,7 +27,7 @@ use crate::{
 pub struct GetConfig;
 
 impl Message for GetConfig {
-    type Reply = Config;
+    type Reply = Option<Config>;
 }
 
 /// Sets questions configuration (policy, pre-defined answers, etc.).

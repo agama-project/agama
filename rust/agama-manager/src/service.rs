@@ -162,7 +162,7 @@ impl MessageHandler<message::GetExtendedConfig> for Service {
         let storage = self.storage.call(storage::message::GetConfig).await?;
         Ok(Config {
             l10n: Some(l10n),
-            questions: Some(questions),
+            questions,
             storage,
         })
     }
