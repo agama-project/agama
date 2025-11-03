@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Nov  3 14:36:55 UTC 2025 - José Iván López González <jlopez@suse.com>
+
+- Add storage service to support the new HTTP API
+  (gh#agama-project/agama#2816).
+
+-------------------------------------------------------------------
 Fri Oct 17 13:14:31 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Add a new HTTP resource to register questions (gh#agama-project/agama#2813).
