@@ -1573,7 +1573,6 @@ mod test {
         connection_from_dbus, connection_to_dbus, merge_dbus_connections, NestedHash,
         OwnedNestedHash,
     };
-    use crate::types::{BondMode, SSID};
     use crate::{
         model::*,
         nm::{
@@ -1583,6 +1582,7 @@ mod test {
             },
             error::NmError,
         },
+        types::*,
     };
     use cidr::IpInet;
     use macaddr::MacAddr6;
