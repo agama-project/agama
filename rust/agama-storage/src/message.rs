@@ -18,9 +18,11 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::config::Config;
-use agama_utils::{actor::Message, api::Issue};
-use serde_json::value::RawValue;
+use agama_utils::{
+    actor::Message,
+    api::{storage::Config, Issue},
+};
+use serde_json::Value;
 
 #[derive(Clone)]
 pub struct Activate;
@@ -54,7 +56,7 @@ impl Message for Finish {
 pub struct GetSystem;
 
 impl Message for GetSystem {
-    type Reply = Option<Box<RawValue>>;
+    type Reply = Option<Value>;
 }
 
 #[derive(Clone)]
@@ -68,14 +70,14 @@ impl Message for GetConfig {
 pub struct GetConfigModel;
 
 impl Message for GetConfigModel {
-    type Reply = Option<Box<RawValue>>;
+    type Reply = Option<Value>;
 }
 
 #[derive(Clone)]
 pub struct GetProposal;
 
 impl Message for GetProposal {
-    type Reply = Option<Box<RawValue>>;
+    type Reply = Option<Value>;
 }
 
 #[derive(Clone)]
@@ -123,11 +125,11 @@ impl Message for SetConfig {
 
 #[derive(Clone)]
 pub struct SetConfigModel {
-    pub model: Box<RawValue>,
+    pub model: Value,
 }
 
 impl SetConfigModel {
-    pub fn new(model: Box<RawValue>) -> Self {
+    pub fn new(model: Value) -> Self {
         Self { model }
     }
 }
@@ -138,17 +140,17 @@ impl Message for SetConfigModel {
 
 #[derive(Clone)]
 pub struct SolveConfigModel {
-    pub model: Box<RawValue>,
+    pub model: Value,
 }
 
 impl SolveConfigModel {
-    pub fn new(model: Box<RawValue>) -> Self {
+    pub fn new(model: Value) -> Self {
         Self { model }
     }
 }
 
 impl Message for SolveConfigModel {
-    type Reply = Option<Box<RawValue>>;
+    type Reply = Option<Value>;
 }
 
 #[derive(Clone)]

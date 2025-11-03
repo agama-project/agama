@@ -20,16 +20,15 @@
 
 use crate::{
     client::{self, Client},
-    config::Config,
     message,
 };
 use agama_utils::{
     actor::{self, Actor, Handler, MessageHandler},
-    api::{Issue, Scope},
+    api::{storage::Config, Issue, Scope},
     issue,
 };
 use async_trait::async_trait;
-use serde_json::value::RawValue;
+use serde_json::Value;
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
@@ -102,10 +101,7 @@ impl MessageHandler<message::Finish> for Service {
 
 #[async_trait]
 impl MessageHandler<message::GetSystem> for Service {
-    async fn handle(
-        &mut self,
-        _message: message::GetSystem,
-    ) -> Result<Option<Box<RawValue>>, Error> {
+    async fn handle(&mut self, _message: message::GetSystem) -> Result<Option<Value>, Error> {
         self.client.get_system().await.map_err(|e| e.into())
     }
 }
@@ -119,20 +115,14 @@ impl MessageHandler<message::GetConfig> for Service {
 
 #[async_trait]
 impl MessageHandler<message::GetConfigModel> for Service {
-    async fn handle(
-        &mut self,
-        _message: message::GetConfigModel,
-    ) -> Result<Option<Box<RawValue>>, Error> {
+    async fn handle(&mut self, _message: message::GetConfigModel) -> Result<Option<Value>, Error> {
         self.client.get_config_model().await.map_err(|e| e.into())
     }
 }
 
 #[async_trait]
 impl MessageHandler<message::GetProposal> for Service {
-    async fn handle(
-        &mut self,
-        _message: message::GetProposal,
-    ) -> Result<Option<Box<RawValue>>, Error> {
+    async fn handle(&mut self, _message: message::GetProposal) -> Result<Option<Value>, Error> {
         self.client.get_proposal().await.map_err(|e| e.into())
     }
 }
@@ -169,10 +159,7 @@ impl MessageHandler<message::SetConfigModel> for Service {
 }
 #[async_trait]
 impl MessageHandler<message::SolveConfigModel> for Service {
-    async fn handle(
-        &mut self,
-        message: message::SolveConfigModel,
-    ) -> Result<Option<Box<RawValue>>, Error> {
+    async fn handle(&mut self, message: message::SolveConfigModel) -> Result<Option<Value>, Error> {
         self.client
             .solve_config_model(message.model)
             .await

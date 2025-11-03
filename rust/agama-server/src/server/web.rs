@@ -40,7 +40,7 @@ use axum::{
 };
 use hyper::StatusCode;
 use serde::Serialize;
-use serde_json::{json, value::RawValue, Value};
+use serde_json::{json, Value};
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
@@ -352,9 +352,7 @@ async fn run_action(
         (status = 400, description = "Not possible to retrieve the storage model.")
     )
 )]
-async fn get_storage_model(
-    State(state): State<ServerState>,
-) -> ServerResult<Json<Option<Box<RawValue>>>> {
+async fn get_storage_model(State(state): State<ServerState>) -> ServerResult<Json<Option<Value>>> {
     let model = state.manager.call(message::GetStorageModel).await?;
     Ok(Json(model))
 }
@@ -371,7 +369,7 @@ async fn get_storage_model(
 )]
 async fn set_storage_model(
     State(state): State<ServerState>,
-    Json(model): Json<Box<RawValue>>,
+    Json(model): Json<Value>,
 ) -> ServerResult<()> {
     state
         .manager

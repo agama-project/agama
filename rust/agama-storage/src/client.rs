@@ -20,9 +20,8 @@
 
 //! Implements a client to access Agama's storage service.
 
-use crate::config::Config;
-use agama_utils::api::Issue;
-use serde_json::{value::RawValue, Value};
+use agama_utils::api::{storage::Config, Issue};
+use serde_json::Value;
 use zbus::{names::BusName, zvariant::OwnedObjectPath, Connection, Message};
 
 const SERVICE_NAME: &str = "org.opensuse.Agama.Storage1";
@@ -72,7 +71,7 @@ impl Client {
         Ok(())
     }
 
-    pub async fn get_system(&self) -> Result<Option<Box<RawValue>>, Error> {
+    pub async fn get_system(&self) -> Result<Option<Value>, Error> {
         let message = self.call("GetSystem", &()).await?;
         try_from_message(message)
     }
@@ -82,12 +81,12 @@ impl Client {
         try_from_message(message)
     }
 
-    pub async fn get_config_model(&self) -> Result<Option<Box<RawValue>>, Error> {
+    pub async fn get_config_model(&self) -> Result<Option<Value>, Error> {
         let message = self.call("GetConfigModel", &()).await?;
         try_from_message(message)
     }
 
-    pub async fn get_proposal(&self) -> Result<Option<Box<RawValue>>, Error> {
+    pub async fn get_proposal(&self) -> Result<Option<Value>, Error> {
         let message = self.call("GetProposal", &()).await?;
         try_from_message(message)
     }
@@ -104,21 +103,18 @@ impl Client {
     }
 
     pub async fn set_config(&self, config: Option<Config>) -> Result<(), Error> {
-        let config = config.filter(|c| c.is_some());
+        let config = config.filter(|c| c.has_value());
         let json = serde_json::to_string(&config)?;
         self.call("SetConfig", &(json)).await?;
         Ok(())
     }
 
-    pub async fn set_config_model(&self, model: Box<RawValue>) -> Result<(), Error> {
+    pub async fn set_config_model(&self, model: Value) -> Result<(), Error> {
         self.call("SetConfigModel", &(model.to_string())).await?;
         Ok(())
     }
 
-    pub async fn solve_config_model(
-        &self,
-        model: Box<RawValue>,
-    ) -> Result<Option<Box<RawValue>>, Error> {
+    pub async fn solve_config_model(&self, model: Value) -> Result<Option<Value>, Error> {
         let message = self.call("SolveConfigModel", &(model.to_string())).await?;
         try_from_message(message)
     }
@@ -145,19 +141,11 @@ impl Client {
 fn try_from_message<T: serde::de::DeserializeOwned + Default>(
     message: Message,
 ) -> Result<T, Error> {
-    let json: String = message.body().deserialize()?;
-    if is_json_null(&json) {
+    let raw_json: String = message.body().deserialize()?;
+    let json: Value = serde_json::from_str(&raw_json)?;
+    if json.is_null() {
         return Ok(T::default());
     }
-    let value = serde_json::from_str(&json)?;
+    let value = serde_json::from_value(json)?;
     Ok(value)
-}
-
-fn is_json_null(value: &str) -> bool {
-    let value = serde_json::from_str::<Value>(value);
-    match value {
-        Ok(Value::Null) => true,
-        Ok(_) => false,
-        Err(_) => false,
-    }
 }

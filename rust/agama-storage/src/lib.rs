@@ -24,9 +24,6 @@ pub use start::start;
 pub mod service;
 pub use service::Service;
 
-mod config;
-pub use config::Config;
-
 mod client;
 pub mod message;
 mod monitor;

@@ -12,4 +12,4 @@ zbus = "5.7.1"
 tokio = { version = "1.47.1", features = ["macros", "rt-multi-thread", "sync"] }
 tokio-stream = "0.1.16"
 serde = { version = "1.0.228" }
-serde_json = { version = "1.0.140", features = ["raw_value"] }
+serde_json = "1.0.140"

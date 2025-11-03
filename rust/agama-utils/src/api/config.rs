@@ -18,9 +18,8 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::api::{l10n, question};
+use crate::api::{l10n, question, storage};
 use serde::{Deserialize, Serialize};
-use serde_json::value::RawValue;
 
 #[derive(Clone, Debug, Default, Deserialize, Serialize, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
@@ -31,9 +30,6 @@ pub struct Config {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub questions: Option<question::Config>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    #[schema(value_type = Object)]
-    pub storage: Option<Box<RawValue>>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    #[schema(value_type = Object)]
-    pub legacy_autoyast_storage: Option<Box<RawValue>>,
+    #[serde(flatten)]
+    pub storage: Option<storage::Config>,
 }

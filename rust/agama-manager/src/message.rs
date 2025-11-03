@@ -22,7 +22,7 @@ use agama_utils::{
     actor::Message,
     api::{Action, Config, IssueMap, Proposal, Status, SystemInfo},
 };
-use serde_json::value::RawValue;
+use serde_json::Value;
 
 /// Gets the installation status.
 pub struct GetStatus;
@@ -124,16 +124,16 @@ impl Message for RunAction {
 pub struct GetStorageModel;
 
 impl Message for GetStorageModel {
-    type Reply = Option<Box<RawValue>>;
+    type Reply = Option<Value>;
 }
 
 // Sets the storage model.
 pub struct SetStorageModel {
-    pub model: Box<RawValue>,
+    pub model: Value,
 }
 
 impl SetStorageModel {
-    pub fn new(model: Box<RawValue>) -> Self {
+    pub fn new(model: Value) -> Self {
         Self { model }
     }
 }

@@ -20,16 +20,13 @@
 
 use crate::api::l10n;
 use serde::Serialize;
-use serde_json::value::RawValue;
+use serde_json::Value;
 
 #[derive(Clone, Debug, Serialize, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct Proposal {
-    #[serde(default)]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub l10n: Option<l10n::Proposal>,
-    #[serde(default)]
     #[serde(skip_serializing_if = "Option::is_none")]
-    #[schema(value_type = Object)]
-    pub storage: Option<Box<RawValue>>,
+    pub storage: Option<Value>,
 }

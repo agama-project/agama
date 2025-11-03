@@ -29,7 +29,7 @@ use agama_utils::{
 };
 use async_trait::async_trait;
 use merge_struct::merge;
-use serde_json::value::RawValue;
+use serde_json::Value;
 use tokio::sync::broadcast;
 
 #[derive(Debug, thiserror::Error)]
@@ -163,8 +163,7 @@ impl MessageHandler<message::GetExtendedConfig> for Service {
         Ok(Config {
             l10n: Some(l10n),
             questions: Some(questions),
-            storage: storage.as_ref().and_then(|c| c.storage.clone()),
-            legacy_autoyast_storage: storage.and_then(|c| c.legacy_autoyast_storage),
+            storage,
         })
     }
 }
@@ -194,7 +193,7 @@ impl MessageHandler<message::SetConfig> for Service {
             .await?;
 
         self.storage
-            .call(storage::message::SetConfig::new((&config).try_into().ok()))
+            .call(storage::message::SetConfig::new(config.storage.clone()))
             .await?;
 
         self.config = config;
@@ -223,9 +222,9 @@ impl MessageHandler<message::UpdateConfig> for Service {
                 .await?;
         }
 
-        if let Some(storage) = (&config).try_into().ok() {
+        if let Some(storage) = &config.storage {
             self.storage
-                .call(storage::message::SetConfig::with(storage))
+                .call(storage::message::SetConfig::with(storage.clone()))
                 .await?;
         }
 
@@ -277,10 +276,7 @@ impl MessageHandler<message::RunAction> for Service {
 #[async_trait]
 impl MessageHandler<message::GetStorageModel> for Service {
     /// It returns the storage model.
-    async fn handle(
-        &mut self,
-        _message: message::GetStorageModel,
-    ) -> Result<Option<Box<RawValue>>, Error> {
+    async fn handle(&mut self, _message: message::GetStorageModel) -> Result<Option<Value>, Error> {
         Ok(self.storage.call(storage::message::GetConfigModel).await?)
     }
 }

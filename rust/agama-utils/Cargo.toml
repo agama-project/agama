@@ -8,7 +8,7 @@ edition.workspace = true
 agama-locale-data = { path = "../agama-locale-data" }
 async-trait = "0.1.89"
 serde = { version = "1.0.228", features = ["derive"] }
-serde_json = { version = "1.0.140", features = ["raw_value"] }
+serde_json = "1.0.140"
 serde_with = "3.14.0"
 strum = { version = "0.27.2", features = ["derive"] }
 thiserror = "2.0.16"
