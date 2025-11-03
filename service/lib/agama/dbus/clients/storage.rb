@@ -21,8 +21,6 @@
 
 require "agama/dbus/clients/base"
 require "agama/dbus/clients/with_locale"
-require "agama/dbus/clients/with_progress"
-require "agama/dbus/clients/with_issues"
 require "json"
 
 module Agama
@@ -31,8 +29,6 @@ module Agama
       # D-Bus client for storage configuration
       class Storage < Base
         include WithLocale
-        include WithProgress
-        include WithIssues
 
         STORAGE_IFACE = "org.opensuse.Agama.Storage1"
         private_constant :STORAGE_IFACE
