@@ -5,6 +5,7 @@ RUN_DIR="/run/live-self-update"
 REPO_FILE="$RUN_DIR/repositories"
 SERVER_FILE="$RUN_DIR/server"
 SKIP_FILE="$RUN_DIR/skip"
+RESULT_FILE="$RUN_DIR/result"
 
 CONFIG_DIR="/etc/live-self-update"
 # file with fallback repositories (template URLs)

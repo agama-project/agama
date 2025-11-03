@@ -76,11 +76,18 @@ prepare_chroot() {
 # Revert the changes done by prepare_chroot() and restore the system to the
 # original state, called from bash "trap" handler
 cleanup_chroot() {
-  if [ "$?" != "0" ]; then
-    error "Error: Self update failed!"
+  local result
+  result="$?"
+
+  if [ "$result" != "0" ]; then
+    error "Error: Self update failed! (exit status: $result)"
   else
     milestone "Self update successfully finished"
   fi
+
+  # log the result to be checked by openQA or Agama itself
+  # unfortunately systemd loses the service exit status after switching root :-/
+  echo "$result" > "$RESULT_FILE"
 
   if [ -n "$NEWROOT" ]; then
     rm -f "$NEWROOT"/etc/resolv.conf
