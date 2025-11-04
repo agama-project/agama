@@ -108,7 +108,6 @@ cleanup_chroot() {
   fi
 
   # log the result to be checked by openQA or Agama itself
-  # unfortunately systemd loses the service exit status after switching root :-/
   echo "$result" > "$RESULT_FILE"
 
   if [ -n "$NEWROOT" ]; then
