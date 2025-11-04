@@ -58,7 +58,7 @@ pub async fn start(
     let issues = issue::start(events.clone(), dbus).await?;
     let progress = progress::start(events.clone()).await?;
     let l10n = l10n::start(issues.clone(), events.clone()).await?;
-    let software = software::start(issues.clone(), events.clone()).await?;
+    let software = software::start(issues.clone(), progress.clone(), events.clone()).await?;
 
     let service = Service::new(l10n, software, issues, progress, questions, events.clone());
     let handler = actor::spawn(service);

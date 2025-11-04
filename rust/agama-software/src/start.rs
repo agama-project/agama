@@ -26,7 +26,7 @@ use crate::{
 use agama_utils::{
     actor::{self, Handler},
     api::event,
-    issue,
+    issue, progress,
 };
 
 #[derive(thiserror::Error, Debug)]
@@ -49,11 +49,12 @@ pub enum Error {
 /// * `issues`: handler to the issues service.
 pub async fn start(
     issues: Handler<issue::Service>,
+    progress: Handler<progress::Service>,
     events: event::Sender,
 ) -> Result<Handler<Service>, Error> {
     let zypp_sender = ZyppServer::start()?;
     let model = Model::new(zypp_sender)?;
-    let mut service = Service::new(model, issues, events);
+    let mut service = Service::new(model, issues, progress, events);
     service.read().await?;
     let handler = actor::spawn(service);
     Ok(handler)

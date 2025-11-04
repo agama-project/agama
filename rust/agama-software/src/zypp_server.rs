@@ -18,9 +18,13 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use agama_utils::api::{
-    software::{Pattern, SelectedBy, SoftwareProposal},
-    Issue, IssueSeverity,
+use agama_utils::{
+    actor::Handler,
+    api::{
+        software::{Pattern, SelectedBy, SoftwareProposal},
+        Issue, IssueSeverity, Scope,
+    },
+    progress,
 };
 use std::path::Path;
 use tokio::sync::{
@@ -82,7 +86,6 @@ pub enum ZyppServerError {
 
 pub type ZyppServerResult<R> = Result<R, ZyppServerError>;
 
-#[derive(Debug)]
 pub enum SoftwareAction {
     Install(oneshot::Sender<ZyppServerResult<bool>>),
     Finish(oneshot::Sender<ZyppServerResult<()>>),
@@ -105,6 +108,7 @@ pub enum SoftwareAction {
     },
     Write {
         state: SoftwareState,
+        progress: Handler<progress::Service>,
         tx: oneshot::Sender<ZyppServerResult<Vec<Issue>>>,
     },
 }
@@ -151,7 +155,6 @@ impl ZyppServer {
 
         loop {
             let action = self.receiver.recv().await;
-            tracing::debug!("software dispatching action: {:?}", action);
             let Some(action) = action else {
                 tracing::error!("Software action channel closed");
                 break;
@@ -172,8 +175,12 @@ impl ZyppServer {
         zypp: &zypp_agama::Zypp,
     ) -> Result<(), ZyppDispatchError> {
         match action {
-            SoftwareAction::Write { state, tx } => {
-                self.write(state, tx, zypp).await?;
+            SoftwareAction::Write {
+                state,
+                progress,
+                tx,
+            } => {
+                self.write(state, progress, tx, zypp).await?;
             }
             SoftwareAction::GetPatternsMetadata(names, tx) => {
                 self.get_patterns(names, tx, zypp).await?;
@@ -268,6 +275,7 @@ impl ZyppServer {
     async fn write(
         &self,
         state: SoftwareState,
+        progress: Handler<progress::Service>,
         tx: oneshot::Sender<ZyppServerResult<Vec<Issue>>>,
         zypp: &zypp_agama::Zypp,
     ) -> Result<(), ZyppDispatchError> {
@@ -279,6 +287,14 @@ impl ZyppServer {
         // 4. return the proposal and the issues.
         // self.add_repositories(state.repositories, tx, &zypp).await?;
 
+        _ = progress.cast(progress::message::StartWithSteps::new(
+            Scope::Software,
+            &[
+                "Updating the list of repositories",
+                "Refreshing metadata from the repositories",
+                "Calculating the software proposal",
+            ],
+        ));
         let old_state = self.read(zypp).unwrap();
         let old_aliases: Vec<_> = old_state
             .repositories
@@ -330,6 +346,7 @@ impl ZyppServer {
             }
         }
 
+        _ = progress.cast(progress::message::Next::new(Scope::Software));
         if to_add.is_empty() || to_remove.is_empty() {
             let result = zypp.load_source(|percent, alias| {
                 tracing::info!("Refreshing repositories: {} ({}%)", alias, percent);
@@ -345,6 +362,7 @@ impl ZyppServer {
             }
         }
 
+        _ = progress.cast(progress::message::Next::new(Scope::Software));
         for pattern in &state.patterns {
             // FIXME: we need to distinguish who is selecting the pattern.
             // and register an issue if it is not found and it was not optional.
@@ -363,6 +381,7 @@ impl ZyppServer {
             }
         }
 
+        _ = progress.cast(progress::message::Finish::new(Scope::Software));
         match zypp.run_solver() {
             Ok(result) => println!("Solver result: {result}"),
             Err(error) => println!("Solver failed: {error}"),

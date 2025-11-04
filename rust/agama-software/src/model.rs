@@ -18,9 +18,13 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use agama_utils::api::{
-    software::{Pattern, SoftwareProposal},
-    Issue,
+use agama_utils::{
+    actor::Handler,
+    api::{
+        software::{Pattern, SoftwareProposal},
+        Issue,
+    },
+    progress,
 };
 use async_trait::async_trait;
 use tokio::sync::{mpsc, oneshot};
@@ -81,7 +85,11 @@ pub trait ModelAdapter: Send + Sync + 'static {
     ///
     /// It does not perform the installation, just update the repositories and
     /// the software selection.
-    async fn write(&mut self, software: SoftwareState) -> Result<Vec<Issue>, service::Error>;
+    async fn write(
+        &mut self,
+        software: SoftwareState,
+        progress: Handler<progress::Service>,
+    ) -> Result<Vec<Issue>, service::Error>;
 }
 
 /// [ModelAdapter] implementation for libzypp systems.
@@ -105,10 +113,15 @@ impl Model {
 
 #[async_trait]
 impl ModelAdapter for Model {
-    async fn write(&mut self, software: SoftwareState) -> Result<Vec<Issue>, service::Error> {
+    async fn write(
+        &mut self,
+        software: SoftwareState,
+        progress: Handler<progress::Service>,
+    ) -> Result<Vec<Issue>, service::Error> {
         let (tx, rx) = oneshot::channel();
         self.zypp_sender.send(SoftwareAction::Write {
             state: software,
+            progress,
             tx,
         })?;
         Ok(rx.await??)

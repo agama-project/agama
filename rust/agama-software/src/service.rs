@@ -37,7 +37,7 @@ use agama_utils::{
         software::{Config, Proposal, Repository, SystemInfo},
         Scope,
     },
-    issue,
+    issue, progress,
 };
 use async_trait::async_trait;
 use tokio::sync::{broadcast, Mutex, RwLock};
@@ -83,6 +83,7 @@ pub struct Service {
     products: ProductsRegistry,
     licenses: LicensesRepo,
     issues: Handler<issue::Service>,
+    progress: Handler<progress::Service>,
     events: event::Sender,
     state: State,
 }
@@ -98,11 +99,13 @@ impl Service {
     pub fn new<T: ModelAdapter>(
         model: T,
         issues: Handler<issue::Service>,
+        progress: Handler<progress::Service>,
         events: event::Sender,
     ) -> Service {
         Self {
             model: Arc::new(Mutex::new(model)),
             issues,
+            progress,
             events,
             licenses: LicensesRepo::default(),
             products: ProductsRegistry::default(),
@@ -180,10 +183,11 @@ impl MessageHandler<message::SetConfig<Config>> for Service {
         let model = self.model.clone();
         let issues = self.issues.clone();
         let events = self.events.clone();
+        let progress = self.progress.clone();
         let proposal = self.state.proposal.clone();
         tokio::task::spawn(async move {
             let mut my_model = model.lock().await;
-            let found_issues = my_model.write(software).await.unwrap();
+            let found_issues = my_model.write(software, progress).await.unwrap();
             if !found_issues.is_empty() {
                 _ = issues.cast(issue::message::Update::new(Scope::Software, found_issues));
             }
