@@ -23,3 +23,4 @@
 export * from "./types/openapi";
 export * as config from "./types/config";
 export * as apiModel from "./types/model";
+export * as system from "./types/system";
