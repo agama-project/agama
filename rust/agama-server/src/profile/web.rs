@@ -26,7 +26,6 @@ use agama_lib::{
     profile::{AutoyastProfileImporter, ProfileEvaluator, ProfileValidator, ValidationOutcome},
 };
 use axum::{
-    extract::Query,
     http::StatusCode,
     response::{IntoResponse, Response},
     routing::post,
@@ -113,12 +112,10 @@ impl ProfileBody {
         // because of the post body creation / extraction.
         let content = string.trim_start_matches("\"").trim_end_matches("\"");
 
-        eprintln!("ProfileBody::from_string content={:?}", content);
-
         Self {
             path: content.strip_prefix("path=").map(|s| String::from(s)),
             url: content.strip_prefix("url=").map(|s| String::from(s)),
-            json: content.strip_prefix("profile=").map(|s| String::from(s))
+            json: content.strip_prefix("profile=").map(|s| String::from(s)),
         }
     }
 
@@ -150,20 +147,18 @@ impl ProfileBody {
         (status = 400, description = "Some error has occurred")
     )
 )]
-async fn validate(
-    body: String,
-) -> Result<Json<ValidationOutcome>, ProfileServiceError> {
+async fn validate(body: String) -> Result<Json<ValidationOutcome>, ProfileServiceError> {
     let profile = ProfileBody::from_string(body);
     let profile_string = match profile.retrieve_profile()? {
         Some(retrieved) => retrieved,
         None => profile.json.expect("Missing profile"),
     };
-
     let validator = ProfileValidator::default_schema().context("Setting up profile validator")?;
     let result = validator
         .validate_str(&profile_string)
         .context(format!("Could not validate the profile"))
         .map_err(make_internal)?;
+
     Ok(Json(result))
 }
 
@@ -176,19 +171,17 @@ async fn validate(
         (status = 400, description = "Some error has occurred")
     )
 )]
-async fn evaluate(
-    body: String,
-) -> Result<String, ProfileServiceError> {
+async fn evaluate(body: String) -> Result<String, ProfileServiceError> {
     let profile = ProfileBody::from_string(body);
     let profile_string = match profile.retrieve_profile()? {
         Some(retrieved) => retrieved,
         None => profile.json.expect("Missing profile"),
     };
-
     let evaluator = ProfileEvaluator {};
     let output = evaluator
         .evaluate_string(&profile_string)
         .context("Could not evaluate the profile".to_string())?;
+
     Ok(output)
 }
 
@@ -201,9 +194,7 @@ async fn evaluate(
         (status = 400, description = "Some error has occurred")
     )
 )]
-async fn autoyast(
-    body: String
-) -> Result<String, ProfileServiceError> {
+async fn autoyast(body: String) -> Result<String, ProfileServiceError> {
     let profile = ProfileBody::from_string(body);
     if profile.url.is_none() || profile.path.is_some() || profile.json.is_some() {
         return Err(anyhow::anyhow!(

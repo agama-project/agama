@@ -18,7 +18,6 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::error;
 use crate::http::BaseHTTPClient;
 use crate::profile::ValidationOutcome;
 use fluent_uri::Uri;
@@ -63,7 +62,8 @@ impl ProfileHTTPClient {
         } else {
             format!("profile={body}")
         };
-        let output: Box<serde_json::value::RawValue> = self.client.post("profile/evaluate", &request).await?;
+        let output: Box<serde_json::value::RawValue> =
+            self.client.post("profile/evaluate", &request).await?;
 
         Ok(output.to_string())
     }
@@ -74,7 +74,10 @@ impl ProfileHTTPClient {
     /// Return well-formed Agama JSON on success.
     pub async fn from_autoyast(&self, url: &Uri<String>) -> anyhow::Result<String> {
         // FIXME: how to escape it?
-        let output: Box<serde_json::value::RawValue> = self.client.post("/profile/autoyast", &format!("url={url}")).await?;
+        let output: Box<serde_json::value::RawValue> = self
+            .client
+            .post("/profile/autoyast", &format!("url={url}"))
+            .await?;
         let config_string = format!("{}", output);
         Ok(config_string)
     }
