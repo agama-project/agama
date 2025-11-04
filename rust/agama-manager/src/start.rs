@@ -18,8 +18,7 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::l10n;
-use crate::service::Service;
+use crate::{l10n, service::Service, storage};
 use agama_utils::{
     actor::{self, Handler},
     api::event,
@@ -31,20 +30,14 @@ pub enum Error {
     #[error(transparent)]
     Progress(#[from] progress::start::Error),
     #[error(transparent)]
+    Issues(#[from] issue::start::Error),
+    #[error(transparent)]
     L10n(#[from] l10n::start::Error),
     #[error(transparent)]
-    Issues(#[from] issue::start::Error),
+    Storage(#[from] storage::start::Error),
 }
 
 /// Starts the manager service.
-///
-/// It starts two Tokio tasks:
-///
-/// * The main service, called "Manager", which coordinates the rest of services
-///   an entry point for the HTTP API.
-/// * An events listener which retransmit the events from all the services.
-///
-/// It receives the following argument:
 ///
 /// * `events`: channel to emit the [events](agama_utils::Event).
 /// * `dbus`: connection to Agama's D-Bus server. If it is not given, those features
@@ -52,30 +45,31 @@ pub enum Error {
 pub async fn start(
     questions: Handler<question::Service>,
     events: event::Sender,
-    dbus: Option<zbus::Connection>,
+    dbus: zbus::Connection,
 ) -> Result<Handler<Service>, Error> {
-    let issues = issue::start(events.clone(), dbus).await?;
+    let issues = issue::start(events.clone(), dbus.clone()).await?;
     let progress = progress::start(events.clone()).await?;
     let l10n = l10n::start(issues.clone(), events.clone()).await?;
+    let storage = storage::start(progress.clone(), issues.clone(), events.clone(), dbus).await?;
 
-    let service = Service::new(l10n, issues, progress, questions, events.clone());
+    let service = Service::new(l10n, storage, issues, progress, questions, events);
     let handler = actor::spawn(service);
     Ok(handler)
 }
 
 #[cfg(test)]
 mod test {
-    use crate as manager;
-    use crate::message;
-    use crate::service::Service;
-    use agama_utils::actor::Handler;
-    use agama_utils::api::l10n;
-    use agama_utils::api::{Config, Event};
-    use agama_utils::question;
+    use crate::{self as manager, message, service::Service};
+    use agama_utils::{
+        actor::Handler,
+        api::{l10n, Config, Event},
+        question, test,
+    };
     use tokio::sync::broadcast;
 
     async fn start_service() -> Handler<Service> {
         let (events_sender, mut events_receiver) = broadcast::channel::<Event>(16);
+        let dbus = test::dbus::connection().await.unwrap();
 
         tokio::spawn(async move {
             while let Ok(event) = events_receiver.recv().await {
@@ -84,7 +78,7 @@ mod test {
         });
 
         let questions = question::start(events_sender.clone()).await.unwrap();
-        manager::start(questions, events_sender, None)
+        manager::start(questions, events_sender, dbus)
             .await
             .unwrap()
     }

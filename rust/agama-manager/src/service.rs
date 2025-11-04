@@ -18,17 +18,18 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::l10n;
-use crate::message;
+use crate::{l10n, message, storage};
 use agama_utils::{
     actor::{self, Actor, Handler, MessageHandler},
     api::{
-        event, status::State, Action, Config, Event, IssueMap, Proposal, Scope, Status, SystemInfo,
+        self, event, status::State, Action, Config, Event, IssueMap, Proposal, Scope, Status,
+        SystemInfo,
     },
     issue, progress, question,
 };
 use async_trait::async_trait;
 use merge_struct::merge;
+use serde_json::Value;
 use tokio::sync::broadcast;
 
 #[derive(Debug, thiserror::Error)]
@@ -40,17 +41,20 @@ pub enum Error {
     #[error(transparent)]
     Actor(#[from] actor::Error),
     #[error(transparent)]
-    Progress(#[from] progress::service::Error),
-    #[error(transparent)]
     L10n(#[from] l10n::service::Error),
+    #[error(transparent)]
+    Storage(#[from] storage::service::Error),
     #[error(transparent)]
     Issues(#[from] issue::service::Error),
     #[error(transparent)]
     Questions(#[from] question::service::Error),
+    #[error(transparent)]
+    Progress(#[from] progress::service::Error),
 }
 
 pub struct Service {
-    l10n: Handler<l10n::service::Service>,
+    l10n: Handler<l10n::Service>,
+    storage: Handler<storage::Service>,
     issues: Handler<issue::Service>,
     progress: Handler<progress::Service>,
     questions: Handler<question::Service>,
@@ -62,6 +66,7 @@ pub struct Service {
 impl Service {
     pub fn new(
         l10n: Handler<l10n::Service>,
+        storage: Handler<storage::Service>,
         issues: Handler<issue::Service>,
         progress: Handler<progress::Service>,
         questions: Handler<question::Service>,
@@ -69,6 +74,7 @@ impl Service {
     ) -> Self {
         Self {
             l10n,
+            storage,
             issues,
             progress,
             questions,
@@ -76,6 +82,27 @@ impl Service {
             state: State::Configuring,
             config: Config::default(),
         }
+    }
+
+    async fn configure_l10n(&self, config: api::l10n::SystemConfig) -> Result<(), Error> {
+        self.l10n
+            .call(l10n::message::SetSystem::new(config.clone()))
+            .await?;
+        if let Some(locale) = config.locale {
+            self.storage
+                .cast(storage::message::SetLocale::new(locale.as_str()))?;
+        }
+        Ok(())
+    }
+
+    async fn activate_storage(&self) -> Result<(), Error> {
+        self.storage.call(storage::message::Activate).await?;
+        Ok(())
+    }
+
+    async fn probe_storage(&self) -> Result<(), Error> {
+        self.storage.call(storage::message::Probe).await?;
+        Ok(())
     }
 
     async fn install(&mut self) -> Result<(), Error> {
@@ -119,7 +146,8 @@ impl MessageHandler<message::GetSystem> for Service {
     /// It returns the information of the underlying system.
     async fn handle(&mut self, _message: message::GetSystem) -> Result<SystemInfo, Error> {
         let l10n = self.l10n.call(l10n::message::GetSystem).await?;
-        Ok(SystemInfo { l10n })
+        let storage = self.storage.call(storage::message::GetSystem).await?;
+        Ok(SystemInfo { l10n, storage })
     }
 }
 
@@ -131,9 +159,11 @@ impl MessageHandler<message::GetExtendedConfig> for Service {
     async fn handle(&mut self, _message: message::GetExtendedConfig) -> Result<Config, Error> {
         let l10n = self.l10n.call(l10n::message::GetConfig).await?;
         let questions = self.questions.call(question::message::GetConfig).await?;
+        let storage = self.storage.call(storage::message::GetConfig).await?;
         Ok(Config {
             l10n: Some(l10n),
-            questions: Some(questions),
+            questions,
+            storage,
         })
     }
 }
@@ -150,38 +180,56 @@ impl MessageHandler<message::GetConfig> for Service {
 
 #[async_trait]
 impl MessageHandler<message::SetConfig> for Service {
-    /// Sets the user configuration with the given values.
-    ///
-    /// It merges the values in the top-level. Therefore, if the configuration
-    /// for a scope is not given, it keeps the previous one.
-    ///
-    /// FIXME: We should replace not given sections with the default ones.
-    /// After all, now we have config/user/:scope URLs.
+    /// Sets the config.
     async fn handle(&mut self, message: message::SetConfig) -> Result<(), Error> {
-        if let Some(l10n) = &message.config.l10n {
-            self.l10n
-                .call(l10n::message::SetConfig::new(l10n.clone()))
-                .await?;
-        }
+        let config = message.config;
 
-        if let Some(questions) = &message.config.questions {
-            self.questions
-                .call(question::message::SetConfig::new(questions.clone()))
-                .await?;
-        }
-        self.config = message.config;
+        self.l10n
+            .call(l10n::message::SetConfig::new(config.l10n.clone()))
+            .await?;
+
+        self.questions
+            .call(question::message::SetConfig::new(config.questions.clone()))
+            .await?;
+
+        self.storage
+            .call(storage::message::SetConfig::new(config.storage.clone()))
+            .await?;
+
+        self.config = config;
         Ok(())
     }
 }
 
 #[async_trait]
 impl MessageHandler<message::UpdateConfig> for Service {
-    /// Patches the user configuration with the given values.
+    /// Patches the config.
     ///
-    /// It merges the current configuration with the given one.
+    /// It merges the current config with the given one. If some scope is missing in the given
+    /// config, then it keeps the values from the current config.
     async fn handle(&mut self, message: message::UpdateConfig) -> Result<(), Error> {
         let config = merge(&self.config, &message.config).map_err(|_| Error::MergeConfig)?;
-        self.handle(message::SetConfig::new(config)).await
+
+        if let Some(l10n) = &config.l10n {
+            self.l10n
+                .call(l10n::message::SetConfig::with(l10n.clone()))
+                .await?;
+        }
+
+        if let Some(questions) = &config.questions {
+            self.questions
+                .call(question::message::SetConfig::with(questions.clone()))
+                .await?;
+        }
+
+        if let Some(storage) = &config.storage {
+            self.storage
+                .call(storage::message::SetConfig::with(storage.clone()))
+                .await?;
+        }
+
+        self.config = config;
+        Ok(())
     }
 }
 
@@ -190,7 +238,8 @@ impl MessageHandler<message::GetProposal> for Service {
     /// It returns the current proposal, if any.
     async fn handle(&mut self, _message: message::GetProposal) -> Result<Option<Proposal>, Error> {
         let l10n = self.l10n.call(l10n::message::GetProposal).await?;
-        Ok(Some(Proposal { l10n }))
+        let storage = self.storage.call(storage::message::GetProposal).await?;
+        Ok(Some(Proposal { l10n, storage }))
     }
 }
 
@@ -208,13 +257,37 @@ impl MessageHandler<message::RunAction> for Service {
     async fn handle(&mut self, message: message::RunAction) -> Result<(), Error> {
         match message.action {
             Action::ConfigureL10n(config) => {
-                let l10n_message = l10n::message::SetSystem::new(config);
-                self.l10n.call(l10n_message).await?;
+                self.configure_l10n(config).await?;
+            }
+            Action::ActivateStorage => {
+                self.activate_storage().await?;
+            }
+            Action::ProbeStorage => {
+                self.probe_storage().await?;
             }
             Action::Install => {
                 self.install().await?;
             }
         }
         Ok(())
+    }
+}
+
+#[async_trait]
+impl MessageHandler<message::GetStorageModel> for Service {
+    /// It returns the storage model.
+    async fn handle(&mut self, _message: message::GetStorageModel) -> Result<Option<Value>, Error> {
+        Ok(self.storage.call(storage::message::GetConfigModel).await?)
+    }
+}
+
+#[async_trait]
+impl MessageHandler<message::SetStorageModel> for Service {
+    /// It sets the storage model.
+    async fn handle(&mut self, message: message::SetStorageModel) -> Result<(), Error> {
+        Ok(self
+            .storage
+            .call(storage::message::SetConfigModel::new(message.model))
+            .await?)
     }
 }

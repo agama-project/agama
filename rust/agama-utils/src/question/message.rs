@@ -20,27 +20,30 @@
 
 use crate::{
     actor::Message,
-    api::{
-        self,
-        question::{self, Config, Question},
-    },
+    api::question::{self, Config, Question},
 };
 
 /// Gets questions configuration (policy, pre-defined answers, etc.).
 pub struct GetConfig;
 
 impl Message for GetConfig {
-    type Reply = Config;
+    type Reply = Option<Config>;
 }
 
 /// Sets questions configuration (policy, pre-defined answers, etc.).
 pub struct SetConfig {
-    pub config: Config,
+    pub config: Option<Config>,
 }
 
 impl SetConfig {
-    pub fn new(config: Config) -> Self {
+    pub fn new(config: Option<Config>) -> Self {
         Self { config }
+    }
+
+    pub fn with(config: Config) -> Self {
+        Self {
+            config: Some(config),
+        }
     }
 }
 

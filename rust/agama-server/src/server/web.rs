@@ -20,14 +20,15 @@
 
 //! This module implements Agama's HTTP API.
 
+use crate::server::config_schema;
 use agama_lib::error::ServiceError;
 use agama_manager::{self as manager, message};
 use agama_utils::{
     actor::Handler,
     api::{
-        config, event,
+        event,
         question::{Question, QuestionSpec, UpdateQuestion},
-        Action, Config, IssueMap, Status, SystemInfo,
+        Action, Config, IssueMap, Patch, Status, SystemInfo,
     },
     question,
 };
@@ -39,7 +40,7 @@ use axum::{
 };
 use hyper::StatusCode;
 use serde::Serialize;
-use serde_json::json;
+use serde_json::{json, Value};
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
@@ -47,6 +48,10 @@ pub enum Error {
     Manager(#[from] manager::service::Error),
     #[error(transparent)]
     Questions(#[from] question::service::Error),
+    #[error(transparent)]
+    ConfigSchema(#[from] config_schema::Error),
+    #[error(transparent)]
+    Json(#[from] serde_json::Error),
 }
 
 impl IntoResponse for Error {
@@ -74,7 +79,7 @@ type ServerResult<T> = Result<T, Error>;
 ///   that require to connect to the Agama's D-Bus server won't work.
 pub async fn server_service(
     events: event::Sender,
-    dbus: Option<zbus::Connection>,
+    dbus: zbus::Connection,
 ) -> Result<Router, ServiceError> {
     let questions = question::start(events.clone())
         .await
@@ -99,6 +104,10 @@ pub async fn server_service(
         .route(
             "/questions",
             get(get_questions).post(ask_question).patch(update_question),
+        )
+        .route(
+            "/private/storage_model",
+            get(get_storage_model).put(set_storage_model),
         )
         .with_state(state))
 }
@@ -175,13 +184,12 @@ async fn get_config(State(state): State<ServerState>) -> ServerResult<Json<Confi
         (status = 400, description = "Not possible to replace the configuration.")
     ),
     params(
-        ("config" = Config, description = "Configuration to apply.")
+        ("config" = Value, description = "Configuration to apply.")
     )
 )]
-async fn put_config(
-    State(state): State<ServerState>,
-    Json(config): Json<Config>,
-) -> ServerResult<()> {
+async fn put_config(State(state): State<ServerState>, Json(json): Json<Value>) -> ServerResult<()> {
+    config_schema::check(&json)?;
+    let config = serde_json::from_value(json)?;
     state.manager.call(message::SetConfig::new(config)).await?;
     Ok(())
 }
@@ -198,14 +206,16 @@ async fn put_config(
         (status = 400, description = "Not possible to patch the configuration.")
     ),
     params(
-        ("config" = Config, description = "Changes in the configuration.")
+        ("patch" = Patch, description = "Changes in the configuration.")
     )
 )]
 async fn patch_config(
     State(state): State<ServerState>,
-    Json(patch): Json<config::Patch>,
+    Json(patch): Json<Patch>,
 ) -> ServerResult<()> {
-    if let Some(config) = patch.update {
+    if let Some(json) = patch.update {
+        config_schema::check(&json)?;
+        let config = serde_json::from_value(json)?;
         state
             .manager
             .call(message::UpdateConfig::new(config))
@@ -241,8 +251,7 @@ async fn get_proposal(State(state): State<ServerState>) -> ServerResult<Response
 )]
 async fn get_issues(State(state): State<ServerState>) -> ServerResult<Json<IssueMap>> {
     let issues = state.manager.call(message::GetIssues).await?;
-    let issues_map: IssueMap = issues.into();
-    Ok(Json(issues_map))
+    Ok(Json(issues))
 }
 
 /// Returns the issues for each scope.
@@ -330,6 +339,42 @@ async fn run_action(
     Json(action): Json<Action>,
 ) -> ServerResult<()> {
     state.manager.call(message::RunAction::new(action)).await?;
+    Ok(())
+}
+
+/// Returns how the target system is configured (proposal).
+#[utoipa::path(
+    get,
+    path = "/private/storage_model",
+    context_path = "/api/v2",
+    responses(
+        (status = 200, description = "Storage model was successfully retrieved."),
+        (status = 400, description = "Not possible to retrieve the storage model.")
+    )
+)]
+async fn get_storage_model(State(state): State<ServerState>) -> ServerResult<Json<Option<Value>>> {
+    let model = state.manager.call(message::GetStorageModel).await?;
+    Ok(Json(model))
+}
+
+#[utoipa::path(
+    put,
+    request_body = String,
+    path = "/private/storage_model",
+    context_path = "/api/v2",
+    responses(
+        (status = 200, description = "Set the storage model"),
+        (status = 400, description = "Not possible to set the storage model")
+    )
+)]
+async fn set_storage_model(
+    State(state): State<ServerState>,
+    Json(model): Json<Value>,
+) -> ServerResult<()> {
+    state
+        .manager
+        .call(message::SetStorageModel::new(model))
+        .await?;
     Ok(())
 }
 

@@ -21,7 +21,7 @@
 use std::time::Duration;
 
 use agama_utils::api::{
-    config::Patch,
+    patch::{self, Patch},
     question::{
         Answer, AnswerRule, Config as QuestionsConfig, Policy, Question, QuestionSpec,
         UpdateQuestion,
@@ -38,6 +38,8 @@ pub enum QuestionsHTTPClientError {
     HTTP(#[from] BaseHTTPClientError),
     #[error("Unknown question with ID {0}")]
     UnknownQuestion(u32),
+    #[error(transparent)]
+    Patch(#[from] patch::Error),
 }
 
 pub struct HTTPClient {
@@ -99,9 +101,7 @@ impl HTTPClient {
             ..Default::default()
         };
 
-        let patch = Patch {
-            update: Some(config),
-        };
+        let patch = Patch::with_update(&config)?;
 
         _ = self.client.patch_void("/v2/config", &patch).await?;
         Ok(())
@@ -120,9 +120,7 @@ impl HTTPClient {
             ..Default::default()
         };
 
-        let patch = Patch {
-            update: Some(config),
-        };
+        let patch = Patch::with_update(&config)?;
         self.client.patch_void("/v2/config", &patch).await?;
         Ok(())
     }

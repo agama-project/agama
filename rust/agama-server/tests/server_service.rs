@@ -21,7 +21,7 @@
 pub mod common;
 use agama_lib::error::ServiceError;
 use agama_server::server::server_service;
-use agama_utils::api;
+use agama_utils::{api, test};
 use axum::{
     body::Body,
     http::{Method, Request, StatusCode},
@@ -34,6 +34,7 @@ use tower::ServiceExt;
 
 async fn build_server_service() -> Result<Router, ServiceError> {
     let (tx, mut rx) = channel(16);
+    let dbus = test::dbus::connection().await.unwrap();
 
     tokio::spawn(async move {
         while let Ok(event) = rx.recv().await {
@@ -41,7 +42,7 @@ async fn build_server_service() -> Result<Router, ServiceError> {
         }
     });
 
-    server_service(tx, None).await
+    server_service(tx, dbus).await
 }
 
 #[test]
