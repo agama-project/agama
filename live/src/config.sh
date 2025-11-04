@@ -72,6 +72,12 @@ systemctl enable agama-ssh-issue.service
 systemctl enable live-free-space.service
 systemctl enable live-password.service
 systemctl enable live-root-shell.service
+
+# the self-update actually runs in the initramfs system, but the exit status
+# is lost if it is not enabled in the root image as well,
+# it runs only once in the initramfs because of "WantedBy=initrd.target"
+systemctl enable live-self-update.service
+
 systemctl enable checkmedia.service
 systemctl enable qemu-guest-agent.service
 systemctl enable setup-systemd-proxy-env.path

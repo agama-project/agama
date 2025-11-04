@@ -1,12 +1,13 @@
 #! /bin/bash
 
 shopt -s nullglob
+
+[ -e /dracut-state.sh ] && . /dracut-state.sh
+
 # Later we could disable "-x" or enable it on request, let's be more verbose in
 # the initial implementation. Since we have enabled using the plymouth splash
 # screen the verbose details will not be visible to users by default.
 set -ex
-
-[ -e /dracut-state.sh ] && . /dracut-state.sh
 
 . "$(dirname "$0")"/../lib/live-self-update/conf.sh
 
@@ -42,6 +43,33 @@ info() {
   ({ set +x; } 2>/dev/null; echo "<6>$1")
 }
 
+# the proxy might contain a password, make sure it is not displayed or logged
+# when processing it
+set +x
+# get the configured network proxy (empty string if not configured)
+# see ../lib/dracut/modules.d/98dracut-menu/dracut-cmdline-menu.sh
+# get the last found, it has the highest priority
+PROXY=$(grep "\bproxy=" /proc/cmdline /etc/cmdline.d/*  | tail -n 1 | sed "s/.*\bproxy=\([^ \t]*\).*/\1/")
+
+if [ -n "$PROXY" ]; then
+  if [[ "$PROXY" == *@* ]]; then
+    # looks like there is a username or password in the URL, do not print it
+    milestone "Using authenticated HTTP proxy"
+  else
+    milestone "Using proxy server $PROXY"
+  fi
+
+  # set the proxy for all zypper and curl calls, for security reasons curl
+  # uses only the lower case name, zypper accepts that as well,
+  # see https://everything.curl.dev/usingcurl/proxies/env.html
+  export http_proxy="$PROXY"
+  export https_proxy="$PROXY"
+
+  # hide the original URL to avoid leaking the password in URL later
+  PROXY=1
+fi
+set -x
+
 # helper for running a command in the live root system, works both when running
 # in initramfs ($NEWROOT is set) and in already mounted root ($NEWROOT unset)
 run_command() {
@@ -71,11 +99,16 @@ prepare_chroot() {
 # Revert the changes done by prepare_chroot() and restore the system to the
 # original state, called from bash "trap" handler
 cleanup_chroot() {
-  if [ "$?" != "0" ]; then
-    error "Error: Self update failed!"
+  local result="$?"
+
+  if [ "$result" != "0" ]; then
+    error "Error: Self update failed! (exit status: $result)"
   else
     milestone "Self update successfully finished"
   fi
+
+  # log the result to be checked by openQA or Agama itself
+  echo "$result" > "$RESULT_FILE"
 
   if [ -n "$NEWROOT" ]; then
     rm -f "$NEWROOT"/etc/resolv.conf
@@ -117,17 +150,30 @@ query_reg_server() {
     info "Running query $query...."
 
     local curl_options
+    curl_options=(--silent --globoff --location --retry 3 --retry-connrefused \
+      --connect-timeout 20 --max-time 10 --fail --show-error --output "$RESPONSE_FILE")
+
     if grep -q "\binst.self_update_ssl=0\b" /run/agama/cmdline.d/agama.conf; then
       warning "Disabling SSL check for $server"
-      curl_options="--insecure"
+      curl_options+=("--insecure")
     fi
 
-    curl $curl_options --silent --globoff --location --retry 3 --retry-connrefused \
-      --connect-timeout 20 --max-time 10 --fail --show-error --output "$RESPONSE_FILE" \
-      -- "$query"
+    if [ -n "$PROXY" ]; then
+      # automatically detect the proxy authentication method (basic/digest)
+      curl_options+=("--proxy-anyauth")
+    fi
 
-    info "Found self-update repository: $(jq -r ".[] | select(.installer_updates==true) | .description" "$RESPONSE_FILE") "
-    jq -r ".[] | select(.installer_updates==true) | .url" "$RESPONSE_FILE" > "$REG_REPO_FILE"
+    if curl "${curl_options[@]}" -- "$query" && [ -s "$RESPONSE_FILE" ]; then
+      info "Found self-update repository: $(jq -r ".[] | select(.installer_updates==true) | .description" "$RESPONSE_FILE") "
+      jq -r ".[] | select(.installer_updates==true) | .url" "$RESPONSE_FILE" > "$REG_REPO_FILE"
+    else
+      warning "Contacting the registration server failed"
+      # SCC/RMT query failed and no fallback configured
+      if [ ! -s "$CONFIG_FALLBACK_FILE" ]; then
+        error "Cannot obtain the self-update repository"
+        exit 1
+      fi
+    fi
   else
     milestone "Registration server not defined"
   fi
@@ -144,41 +190,26 @@ add_update_repos() {
 
       if grep -q "\binst.self_update_ssl=0\b" /run/agama/cmdline.d/agama.conf; then
         warning "Disabling SSL check for repository $update_url"
-
-        # add the "ssl_verify=no" query to the repository URL for libzypp
-        # NOTE: there is a "trurl" (https://github.com/curl/trurl) tool for processing
-        # URLs in CLI and scripts, but it is not included in the distribution :-/
-        local base
-        local query
-        # split the string at the "?" separator
-        query="${update_url#*\?}"
-        base="${update_url%\?*}"
-
-        # if the "?" separator is missing then "$query" equals to "$base"
-        if [ -z "$query" ] || [ "$query" = "$base" ]; then
-          # no query present, add a query part to the URL
-          update_url="${base}?ssl_verify=no"
-        else
-          # a query is already present, append the new part
-          update_url="${base}?${query}&ssl_verify=no"
-        fi
+        # add "ssl_verify=no" query to the repository URL
+        update_url=$(url_add_query "$update_url" "ssl_verify=no")
       fi
 
       local zypper_options
+      zypper_options=()
       # allow using unsigned repository
       if grep -q "\binst.self_update_unsigned_repo=1\b" /run/agama/cmdline.d/agama.conf; then
         warning "Unsigned repository is allowed"
-        zypper_options="--gpgcheck-allow-unsigned-repo"
+        zypper_options+=("--gpgcheck-allow-unsigned-repo")
       fi
 
       # completely disable GPG checks, not recommended, if possible the options
       # above should be preferred
       if grep -q "\binst.self_update_gpg=0\b" /run/agama/cmdline.d/agama.conf; then
         warning "Disabling all GPG checks!"
-        zypper_options="$zypper_options --no-gpgcheck"
+        zypper_options+=("--no-gpgcheck")
       fi
 
-      run_command zypper addrepo $zypper_options -f "$update_url" "$repo"
+      run_command zypper addrepo "${zypper_options[@]}" -f "$update_url" "$repo"
       self_update_repos+=("$repo")
       ((++index))
     fi
@@ -264,6 +295,28 @@ install_updates() {
   for repo in "${self_update_repos[@]}"; do
     run_command zypper modifyrepo --disable "$repo"
   done
+}
+
+# add a query parameter to URL
+# $1 - base URL ("http://example.com")
+# $2 - the query part ("foo=bar")
+# returns "http://example.com?foo=bar"
+url_add_query() {
+  local base
+  local query
+
+  # split the string at the "?" separator
+  query="${1#*\?}"
+  base="${1%\?*}"
+
+  # if the "?" separator is missing then "$query" equals to "$base"
+  if [ -z "$query" ] || [ "$query" = "$base" ]; then
+    # no query present, add a query part to the URL
+    echo "${base}?${2}"
+  else
+    # a query is already present, append the new part
+    echo "${base}?${query}&${2}"
+  fi
 }
 
 install_updates
