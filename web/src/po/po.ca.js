@@ -139,9 +139,6 @@ export default {
   "Add another address": [
     "Afegeix-hi una altra adreça"
   ],
-  "Add another partition or mount an existing one": [
-    "Afegiu-hi una altra partició o munteu-ne una d'existent"
-  ],
   "Add device menu": [
     "Afegeix el menú del dispositiu"
   ],
@@ -327,9 +324,6 @@ export default {
   "Change Language": [
     "Canvia'n la llengua"
   ],
-  "Change boot options": [
-    "Canvia les opcions d'arrencada"
-  ],
   "Change device menu": [
     "Canvia el menú del dispositiu"
   ],
@@ -354,14 +348,26 @@ export default {
   "Change selection": [
     "Canvia la selecció"
   ],
+  "Change the disk to configure": [
+    "Canvieu el disc per configurar"
+  ],
+  "Change the disk to create %s": [
+    "Canvieu el disc per crear-hi %s"
+  ],
+  "Change the disk to format as %s": [
+    "Canvia el disc per formatar com a %s"
+  ],
+  "Change the disk to install the system": [
+    "Canvieu el disc per instal·lar-hi el sistema"
+  ],
   "Change the file system or mount point": [
     "Canvia'n el sistema de fitxers o el punt de muntatge"
   ],
+  "Changes in these settings will immediately update the 'Result' section below.": [
+    "Els canvis en aquesta configuració actualitzaran immediatament la secció de Resultat que hi ha a continuació."
+  ],
   "Channel ID": [
     "Identificador del canal"
-  ],
-  "Check the %d planned actions": [
-    "Comproveu les %d accions planificades"
   ],
   "Check the authentication parameters.": [
     "Comproveu els paràmetres d'autenticació."
@@ -395,9 +401,6 @@ export default {
   ],
   "Close": [
     "Tanca"
-  ],
-  "Collapse the list of planned actions": [
-    "Replega la llista d'accions previstes"
   ],
   "Configuration out of sync": [
     "Configuració no sincronitzada"
@@ -609,9 +612,6 @@ export default {
   "Details": [
     "Detalls"
   ],
-  "Details for %s": [
-    "Detalls per a %s"
-  ],
   "Details will appear after the connection is successfully established.": [
     "Els detalls apareixeran quan la connexió s'hagi establert correctament."
   ],
@@ -665,9 +665,6 @@ export default {
   ],
   "Download logs": [
     "Baixa els registres"
-  ],
-  "During installation, several actions will be performed to setup the layout shown at the table below.": [
-    "Durant la instal·lació, es fan diverses accions per configurar el disseny que es mostra a la taula següent."
   ],
   "Edit": [
     "Edita"
@@ -732,8 +729,8 @@ export default {
   "ExFAT": [
     "ExFAT"
   ],
-  "Example: https://myserver.com": [
-    "Exemple: https://elmeuservidor.com"
+  "Example: %s": [
+    "Exemple: %s"
   ],
   "Excellent signal": [
     "Senyal excel·lent"
@@ -791,8 +788,11 @@ export default {
   "Filter by territory, time zone code or UTC offset": [
     "Filtra per territori, codi de zona horària o desplaçament d'UTC"
   ],
-  "Find space": [
-    "Aconsegueix espai"
+  "Final layout": [
+    "Disposició final"
+  ],
+  "Final structure of the system after installation.": [
+    "Estructura final del sistema després de la instal·lació:"
   ],
   "Find space in %s": [
     "Cerca espai a %s"
@@ -978,8 +978,8 @@ export default {
   "Install using several devices without modifying existing partitions.": [
     "Instal·la a dispositius diversos sense modificar-ne les particions existents."
   ],
-  "Installation Devices": [
-    "Dispositius d'instal·lació"
+  "Installation devices": [
+    "Dispositius per a la instal·lació"
   ],
   "Installation will take %s.": [
     "La instal·lació necessitarà %s."
@@ -1158,6 +1158,9 @@ export default {
   "More languages might be available for the selected product at [Localization] page": [
     "És possible que hi hagi més llengües disponibles per al producte seleccionat a la pàgina [Localitzation]"
   ],
+  "More storage options": [
+    "Més opcions d'emmagatzematge"
+  ],
   "Moreover, the following partition will be created.": [
     "A més a més, es crearà la partició següent:",
     "A més a més, es crearan les particions següents:"
@@ -1271,6 +1274,9 @@ export default {
   "No logical volumes are defined yet": [
     "Encara no s'ha definit cap volum lògic"
   ],
+  "No partitions will be automatically configured for booting.": [
+    "No es configurarà cap partició per a l'arrencada automàticament."
+  ],
   "No partitions will be automatically configured for booting. Use with caution.": [
     "No es configurarà automàticament cap partició per a l'arrencada. Useu-ho amb precaució."
   ],
@@ -1343,14 +1349,11 @@ export default {
   "Only reused partitions will be used.": [
     "Només s'usaran particions reutilitzades."
   ],
+  "Options for partition %s": [
+    "Opcions per a la partició %s"
+  ],
   "Options toggle": [
     "Canvi d'opcions"
-  ],
-  "Other options": [
-    "Altres opcions"
-  ],
-  "Other options toggle": [
-    "Canvi d'altres opcions"
   ],
   "Overview": [
     "Resum"
@@ -1358,8 +1361,14 @@ export default {
   "Package installation failed": [
     "Ha fallat la instal·lació del paquet."
   ],
+  "Partition %s": [
+    "Partició %s"
+  ],
   "Partition Info": [
     "Informació de la partició"
+  ],
+  "Partitions": [
+    "Particions"
   ],
   "Partitions needed for booting will also be adapted": [
     "També s'adaptaran les particions necessàries per a l'arrencada"
@@ -1376,14 +1385,23 @@ export default {
   "Partitions that are not reused would be resized if needed.": [
     "Es canviarà la mida de les particions que no es reutilitzin, si cal."
   ],
-  "Partitions to boot will be allocated at the following device.": [
-    "Les particions per a l'arrencada s'assignaran al dispositiu següent."
+  "Partitions to boot will be set up if needed at %s.": [
+    "Les particions per arrencar s'establiran, si cal, a %s."
   ],
-  "Partitions to boot will be allocated at the installation disk %s.": [
-    "Les particions per a l'arrencada s'assignaran al disc d'instal·lació %s."
+  "Partitions to boot will be set up if needed at the following device.": [
+    "Les particions per arrencar s'establiran, si cal, al dispositiu següent:"
   ],
-  "Partitions to boot will be allocated at the installation disk.": [
-    "Les particions per a l'arrencada s'assignaran al disc d'instal·lació."
+  "Partitions to boot will be set up if needed at the installation disk,           based on the location of the %s file system.": [
+    "Les particions per arrencar s'establiran, si cal, al disc d'instal·lació,            segons la ubicació del sistema de fitxers %s."
+  ],
+  "Partitions to boot will be set up if needed at the installation disk,         based on the location of the %s file system.": [
+    "Les particions per arrencar s'establiran, si cal, al disc d'instal·lació,          segons la ubicació del sistema de fitxers %s."
+  ],
+  "Partitions to boot will be set up if needed at the installation disk.         Currently %1$s, based on the location of the %2$s file system.": [
+    "Les particions per arrencar s'establiran, si cal, al disc d'instal·lació.          Actualment és %1$s, segons la ubicació del sistema de fitxers %2$s."
+  ],
+  "Partitions to boot will be set up if needed at the installation disk.       Currently %1$s, based on the location of the %2$s file system.": [
+    "Les particions per arrencar s'establiran, si cal, al disc d'instal·lació.        Actualment és %1$s, segons la ubicació del sistema de fitxers %2$s."
   ],
   "Partitions will be used and created for %s": [
     "Les particions s'usaran i es crearan per a %s"
@@ -1448,8 +1466,8 @@ export default {
   "Product is already registered": [
     "El producte ja està registrat."
   ],
-  "Protection for the information stored at the new file systems, including data, programs, and system files.": [
-    "Protecció de la informació emmagatzemada als sistemes de fitxers nous, incloses dades, programes i fitxers del sistema."
+  "Protection for the information stored at           the new file systems, including data, programs, and system files.": [
+    "Protecció de la informació emmagatzemada            als nous sistemes de fitxers, incloses dades, programes i fitxers del sistema."
   ],
   "Provide email address": [
     "Proporcioneu una adreça de correu electrònic."
@@ -1538,6 +1556,9 @@ export default {
   "Result": [
     "Resultat"
   ],
+  "Result of applying the configuration described at the 'Settings' section above.": [
+    "Resultat d'aplicar la configuració descrita a la secció de Configuració anterior."
+  ],
   "Reused partitions will not be shrunk": [
     "Les particions reutilitzades no s'encongiran"
   ],
@@ -1598,20 +1619,8 @@ export default {
   "Select a disk": [
     "Seleccioneu un disc"
   ],
-  "Select a disk to configure": [
-    "Seleccioneu un disc per configurar-lo"
-  ],
-  "Select a disk to create %s": [
-    "Seleccioneu un disc per crear-hi el punt de muntatge %s"
-  ],
   "Select a disk to define partitions or to mount": [
     "Seleccioneu un disc per definir-ne les particions o per muntar-lo"
-  ],
-  "Select a disk to format as %s": [
-    "Seleccioneu un disc per formatar-lo com a %s"
-  ],
-  "Select a disk to install the system": [
-    "Seleccioneu un disc per instal·lar-hi el sistema"
   ],
   "Select a product": [
     "Seleccioneu un producte"
@@ -1639,9 +1648,6 @@ export default {
   ],
   "Select or enter a valid mount point": [
     "Seleccioneu o introduïu un punt de muntatge vàlid"
-  ],
-  "Select the disk to configure partitions for booting": [
-    "Seleccioneu el disc per configurar-hi les particions per a arrencar"
   ],
   "Select what to do with each partition in order to find space for allocating the new system.": [
     "Seleccioneu què fer de cada partició per trobar espai per assignar-hi el sistema nou."
@@ -1880,6 +1886,9 @@ export default {
   "The final step to configure the Trusted Platform Module (TPM) to automatically open encrypted devices will take place during the first boot of the new system. For that to work, the machine needs to boot directly to the new boot loader.": [
     "El pas final per configurar el Mòdul de plataforma de confiança (TPM) per obrir automàticament dispositius encriptats es farà durant la primera arrencada del nou sistema. Perquè això funcioni, la màquina ha d'arrencar directament amb el carregador d'arrencada nou."
   ],
+  "The following actions will be performed in the system during installation.": [
+    "Es faran les accions següents al sistema durant la instal·lació:"
+  ],
   "The following logical volume will be created": [
     "Es crearà el volum lògic següent:",
     "Es crearan els volums lògics següents:"
@@ -2075,6 +2084,9 @@ export default {
   "Tmpfs": [
     "Tmpfs"
   ],
+  "To ensure the new system is able to boot, the installer may need to create or configure some           partitions in the appropriate disk.": [
+    "Per assegurar que el nou sistema pugui arrencar, l'instal·lador potser haurà de crear o configurar algunes            particions al disc apropiat."
+  ],
   "To ensure the new system is able to boot, the installer may need to create or configure some partitions in the appropriate disk.": [
     "Per garantir que el sistema nou pugui arrencar, és possible que l'instal·lador hagi de crear o configurar algunes particions al disc adequat."
   ],
@@ -2263,6 +2275,9 @@ export default {
   ],
   "Using transient hostname: %s": [
     "S'usa un nom d'amfitrió transitori: %s"
+  ],
+  "Volume group %s": [
+    "Grup de volums %s"
   ],
   "Volume group '%s' already exists. Enter a different name.": [
     "El grup de volums %s ja existeix. Introduïu un nom diferent."

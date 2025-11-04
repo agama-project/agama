@@ -143,9 +143,6 @@ export default {
   "Add another address": [
     "Добавить другой адрес"
   ],
-  "Add another partition or mount an existing one": [
-    "Добавьте еще один раздел или смонтируйте существующий"
-  ],
   "Add device menu": [
     "Меню добавления устройств"
   ],
@@ -333,9 +330,6 @@ export default {
   "Change Language": [
     "Изменить язык"
   ],
-  "Change boot options": [
-    "Изменение параметров загрузки"
-  ],
   "Change device menu": [
     "Меню изменения устройства"
   ],
@@ -363,11 +357,11 @@ export default {
   "Change the file system or mount point": [
     "Изменить файловую систему или точку монтирования"
   ],
+  "Changes in these settings will immediately update the 'Result' section below.": [
+    ""
+  ],
   "Channel ID": [
     "Идентификатор канала"
-  ],
-  "Check the %d planned actions": [
-    "Показать запланированные действия: %d"
   ],
   "Check the authentication parameters.": [
     "Проверьте параметры аутентификации."
@@ -401,9 +395,6 @@ export default {
   ],
   "Close": [
     "Закрыть"
-  ],
-  "Collapse the list of planned actions": [
-    "Свернуть список запланированных действий"
   ],
   "Configuration out of sync": [
     "Конфигурация рассинхронизирована"
@@ -615,9 +606,6 @@ export default {
   "Details": [
     "Сведения"
   ],
-  "Details for %s": [
-    "Сведения для %s"
-  ],
   "Details will appear after the connection is successfully established.": [
     "После успешной установки подключения появится подробная информация."
   ],
@@ -671,9 +659,6 @@ export default {
   ],
   "Download logs": [
     "Скачать журналы"
-  ],
-  "During installation, several actions will be performed to setup the layout shown at the table below.": [
-    "В процессе установки будут произведены действия для создания структуры разделов, указанной в таблице ниже."
   ],
   "Edit": [
     "Изменить"
@@ -738,8 +723,8 @@ export default {
   "ExFAT": [
     "ExFAT"
   ],
-  "Example: https://myserver.com": [
-    "Пример: https://myserver.com"
+  "Example: %s": [
+    "Пример: %s"
   ],
   "Excellent signal": [
     "Отличный сигнал"
@@ -799,8 +784,8 @@ export default {
   "Filter by territory, time zone code or UTC offset": [
     "Фильтр по территории, коду часового пояса или смещению UTC"
   ],
-  "Find space": [
-    "Найти пространство"
+  "Final layout": [
+    "Окончательный вариант"
   ],
   "Find space in %s": [
     "Найти пространство в %s"
@@ -986,9 +971,6 @@ export default {
   ],
   "Install using several devices without modifying existing partitions.": [
     "Установка с использованием нескольких устройств без изменения существующих разделов."
-  ],
-  "Installation Devices": [
-    "Устройства для установки"
   ],
   "Installation will take %s.": [
     "Установка займёт %s."
@@ -1357,12 +1339,6 @@ export default {
   "Options toggle": [
     "Показ настроек"
   ],
-  "Other options": [
-    "Другие опции"
-  ],
-  "Other options toggle": [
-    "Показ других опций"
-  ],
   "Overview": [
     "Обзор"
   ],
@@ -1371,6 +1347,9 @@ export default {
   ],
   "Partition Info": [
     "Информация о разделе"
+  ],
+  "Partitions": [
+    "Разделы"
   ],
   "Partitions needed for booting will also be adapted": [
     "Разделы, необходимые для загрузки, также будут адаптированы"
@@ -1387,14 +1366,11 @@ export default {
   "Partitions that are not reused would be resized if needed.": [
     "Разделы, которые не используются повторно, при необходимости будут изменены в размерах."
   ],
-  "Partitions to boot will be allocated at the following device.": [
-    "Загрузочные разделы будут выделены на следующем устройстве."
+  "Partitions to boot will be set up if needed at the installation disk.         Currently %1$s, based on the location of the %2$s file system.": [
+    ""
   ],
-  "Partitions to boot will be allocated at the installation disk %s.": [
-    "Загрузочные разделы будут выделены на установочном диске %s."
-  ],
-  "Partitions to boot will be allocated at the installation disk.": [
-    "Загрузочные разделы будут выделены на установочном диске."
+  "Partitions to boot will be set up if needed at the installation disk.       Currently %1$s, based on the location of the %2$s file system.": [
+    ""
   ],
   "Partitions will be used and created for %s": [
     "Разделы будут использоваться и создаваться для %s"
@@ -1458,9 +1434,6 @@ export default {
   ],
   "Product is already registered": [
     "Продукт уже зарегистрирован"
-  ],
-  "Protection for the information stored at the new file systems, including data, programs, and system files.": [
-    "Защита информации, хранящейся в новых файловых системах, включая данные, программы и системные файлы."
   ],
   "Provide email address": [
     "Укажите адрес эл. почты"
@@ -1549,6 +1522,9 @@ export default {
   "Result": [
     "Результат"
   ],
+  "Result of applying the configuration described at the 'Settings' section above.": [
+    ""
+  ],
   "Reused partitions will not be shrunk": [
     "Повторно используемые разделы не будут уменьшены"
   ],
@@ -1609,20 +1585,8 @@ export default {
   "Select a disk": [
     "Выберите диск"
   ],
-  "Select a disk to configure": [
-    "Выберите диск для настройки"
-  ],
-  "Select a disk to create %s": [
-    "Выберите диск для создания %s"
-  ],
   "Select a disk to define partitions or to mount": [
     "Выберите диск для определения разделов или монтирования"
-  ],
-  "Select a disk to format as %s": [
-    "Выберите диск для форматирования как %s"
-  ],
-  "Select a disk to install the system": [
-    "Выберите диск для установки системы"
   ],
   "Select a product": [
     "Выберите продукт"
@@ -1650,9 +1614,6 @@ export default {
   ],
   "Select or enter a valid mount point": [
     "Выберите или введите правильную точку монтирования"
-  ],
-  "Select the disk to configure partitions for booting": [
-    "Выберите диск для настройки разделов для загрузки"
   ],
   "Select what to do with each partition in order to find space for allocating the new system.": [
     "Выберите, что нужно сделать с каждым разделом, чтобы найти место для размещения новой системы."

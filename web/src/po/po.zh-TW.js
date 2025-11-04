@@ -135,9 +135,6 @@ export default {
   "Add another address": [
     "新增另一個位址"
   ],
-  "Add another partition or mount an existing one": [
-    "新增另一個分割區或掛接一個現有分割區"
-  ],
   "Add device menu": [
     "新增裝置功能表"
   ],
@@ -321,9 +318,6 @@ export default {
   "Change Language": [
     "變更語言"
   ],
-  "Change boot options": [
-    "變更開機選項"
-  ],
   "Change device menu": [
     "變更裝置功能表"
   ],
@@ -351,11 +345,11 @@ export default {
   "Change the file system or mount point": [
     "變更檔案系統或掛接點"
   ],
+  "Changes in these settings will immediately update the 'Result' section below.": [
+    ""
+  ],
   "Channel ID": [
     "通道 ID"
-  ],
-  "Check the %d planned actions": [
-    "檢查 %d 項計劃的動作"
   ],
   "Check the authentication parameters.": [
     "請檢查驗證參數。"
@@ -389,9 +383,6 @@ export default {
   ],
   "Close": [
     "關閉"
-  ],
-  "Collapse the list of planned actions": [
-    "收起計劃的動作清單"
   ],
   "Configuration out of sync": [
     "組態未同步"
@@ -603,9 +594,6 @@ export default {
   "Details": [
     "詳細資料"
   ],
-  "Details for %s": [
-    "%s 的詳細資料"
-  ],
   "Details will appear after the connection is successfully established.": [
     "成功建立連接後將會顯示詳細資料。"
   ],
@@ -659,9 +647,6 @@ export default {
   ],
   "Download logs": [
     "下載記錄"
-  ],
-  "During installation, several actions will be performed to setup the layout shown at the table below.": [
-    "安裝期間，將執行多項動作以設定配置 (如下表所示)。"
   ],
   "Edit": [
     "編輯"
@@ -726,8 +711,8 @@ export default {
   "ExFAT": [
     "ExFAT"
   ],
-  "Example: https://myserver.com": [
-    "範例：https://myserver.com"
+  "Example: %s": [
+    "範例：%s"
   ],
   "Excellent signal": [
     "訊號極佳"
@@ -783,8 +768,11 @@ export default {
   "Filter by territory, time zone code or UTC offset": [
     "依地區、時區代碼或 UTC 偏移過濾"
   ],
-  "Find space": [
-    "尋找空間"
+  "Final layout": [
+    ""
+  ],
+  "Final structure of the system after installation.": [
+    ""
   ],
   "Find space in %s": [
     "在 %s 中尋找可用空間"
@@ -968,9 +956,6 @@ export default {
   ],
   "Install using several devices without modifying existing partitions.": [
     "使用多部裝置進行安裝，不修改現有分割區。"
-  ],
-  "Installation Devices": [
-    "安裝裝置"
   ],
   "Installation will take %s.": [
     "安裝將會佔用 %s。"
@@ -1335,12 +1320,6 @@ export default {
   "Options toggle": [
     "選項切換鈕"
   ],
-  "Other options": [
-    "其他選項"
-  ],
-  "Other options toggle": [
-    "其他選項切換鈕"
-  ],
   "Overview": [
     "綜覽"
   ],
@@ -1349,6 +1328,9 @@ export default {
   ],
   "Partition Info": [
     "分割區資訊"
+  ],
+  "Partitions": [
+    "分割區"
   ],
   "Partitions needed for booting will also be adapted": [
     "開機所需的分割區也將進行調整"
@@ -1365,14 +1347,11 @@ export default {
   "Partitions that are not reused would be resized if needed.": [
     "將視需要調整不重複使用的分割區的大小。"
   ],
-  "Partitions to boot will be allocated at the following device.": [
-    "將會在以下裝置上配置開機分割區。"
+  "Partitions to boot will be set up if needed at the installation disk.         Currently %1$s, based on the location of the %2$s file system.": [
+    ""
   ],
-  "Partitions to boot will be allocated at the installation disk %s.": [
-    "將會在安裝磁碟 %s 上配置開機分割區。"
-  ],
-  "Partitions to boot will be allocated at the installation disk.": [
-    "將會在安裝磁碟上配置開機分割區。"
+  "Partitions to boot will be set up if needed at the installation disk.       Currently %1$s, based on the location of the %2$s file system.": [
+    ""
   ],
   "Partitions will be used and created for %s": [
     "將會為 %s 使用和建立多個分割區"
@@ -1436,9 +1415,6 @@ export default {
   ],
   "Product is already registered": [
     "產品已註冊"
-  ],
-  "Protection for the information stored at the new file systems, including data, programs, and system files.": [
-    "該機制用於保護儲存在新檔案系統中的資訊，包括資料、程式以及系統檔案。"
   ],
   "Provide email address": [
     "提供電子郵件地址"
@@ -1527,6 +1503,9 @@ export default {
   "Result": [
     "結果"
   ],
+  "Result of applying the configuration described at the 'Settings' section above.": [
+    ""
+  ],
   "Reused partitions will not be shrunk": [
     "將不縮小重複使用的分割區"
   ],
@@ -1587,20 +1566,8 @@ export default {
   "Select a disk": [
     "選取一個磁碟"
   ],
-  "Select a disk to configure": [
-    "選取要設定的磁碟"
-  ],
-  "Select a disk to create %s": [
-    "選取用於建立 %s 的磁碟"
-  ],
   "Select a disk to define partitions or to mount": [
     "選取一個要定義分割區或要掛接的磁碟"
-  ],
-  "Select a disk to format as %s": [
-    "選取一個要格式化為 %s 的磁碟"
-  ],
-  "Select a disk to install the system": [
-    "選取用於安裝系統的磁碟"
   ],
   "Select a product": [
     "請選取產品"
@@ -1628,9 +1595,6 @@ export default {
   ],
   "Select or enter a valid mount point": [
     "請選取或輸入有效的掛接點"
-  ],
-  "Select the disk to configure partitions for booting": [
-    "選取要設定開機分割區的磁碟"
   ],
   "Select what to do with each partition in order to find space for allocating the new system.": [
     "選擇如何處理每個分割區，以便為新系統配置空間。"

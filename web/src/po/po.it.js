@@ -139,9 +139,6 @@ export default {
   "Add another address": [
     "Aggiungi un altro indirizzo"
   ],
-  "Add another partition or mount an existing one": [
-    "Aggiungi un'altra partizione o montane una esistente"
-  ],
   "Add device menu": [
     "Aggiungi menu del dispositivo"
   ],
@@ -327,9 +324,6 @@ export default {
   "Change Language": [
     "Cambia lingua"
   ],
-  "Change boot options": [
-    "Cambia le opzioni di boot"
-  ],
   "Change device menu": [
     "Cambia menu del dispositivo"
   ],
@@ -357,11 +351,11 @@ export default {
   "Change the file system or mount point": [
     "Modifica il file system o il punto di montaggio"
   ],
+  "Changes in these settings will immediately update the 'Result' section below.": [
+    ""
+  ],
   "Channel ID": [
     "ID canale"
-  ],
-  "Check the %d planned actions": [
-    "Verifica le azioni pianificate %d"
   ],
   "Check the authentication parameters.": [
     "Verificare i parametri di autenticazione."
@@ -395,9 +389,6 @@ export default {
   ],
   "Close": [
     "Esci"
-  ],
-  "Collapse the list of planned actions": [
-    "Riduci l'elenco delle azioni pianificate"
   ],
   "Configuration out of sync": [
     "Configurazione fuori sincronizzazione"
@@ -609,9 +600,6 @@ export default {
   "Details": [
     "Dettagli"
   ],
-  "Details for %s": [
-    "Dettagli di %s"
-  ],
   "Details will appear after the connection is successfully established.": [
     "I dettagli saranno visualizzati una volta stabilita la connessione."
   ],
@@ -665,9 +653,6 @@ export default {
   ],
   "Download logs": [
     "Scarica i logs"
-  ],
-  "During installation, several actions will be performed to setup the layout shown at the table below.": [
-    "Durante l'installazione verranno eseguite diverse azioni per configurare il layout mostrato nella tabella seguente."
   ],
   "Edit": [
     "Modifica"
@@ -732,8 +717,8 @@ export default {
   "ExFAT": [
     "ExFAT"
   ],
-  "Example: https://myserver.com": [
-    "Esempio: https://mioserver.com"
+  "Example: %s": [
+    "Esempio: %s"
   ],
   "Excellent signal": [
     "Segnale eccellente"
@@ -791,8 +776,11 @@ export default {
   "Filter by territory, time zone code or UTC offset": [
     "Filtra per territorio, codice di fuso orario o differenza da UTC"
   ],
-  "Find space": [
-    "Trova spazio"
+  "Final layout": [
+    ""
+  ],
+  "Final structure of the system after installation.": [
+    ""
   ],
   "Find space in %s": [
     "Trova spazio in %s"
@@ -977,9 +965,6 @@ export default {
   ],
   "Install using several devices without modifying existing partitions.": [
     "Installa utilizzando il dispositivo %s senza modificare le partizioni esistenti."
-  ],
-  "Installation Devices": [
-    "Dispositivi di installazione"
   ],
   "Installation will take %s.": [
     "L'installazione richiederà %s."
@@ -1346,12 +1331,6 @@ export default {
   "Options toggle": [
     "Abilita opzioni"
   ],
-  "Other options": [
-    "Altre opzioni"
-  ],
-  "Other options toggle": [
-    "Commutazione di altre opzioni"
-  ],
   "Overview": [
     "Panoramica"
   ],
@@ -1360,6 +1339,9 @@ export default {
   ],
   "Partition Info": [
     "Informazioni sulla partizione"
+  ],
+  "Partitions": [
+    "Partizioni"
   ],
   "Partitions needed for booting will also be adapted": [
     "Le partizioni necessarie per l'avvio saranno anche adattate"
@@ -1376,14 +1358,11 @@ export default {
   "Partitions that are not reused would be resized if needed.": [
     "Le partizioni che non vengono riutilizzate verranno ridimensionate se necessario."
   ],
-  "Partitions to boot will be allocated at the following device.": [
-    "Le partizioni per l'avvio saranno allocate sul seguente dispositivo."
+  "Partitions to boot will be set up if needed at the installation disk.         Currently %1$s, based on the location of the %2$s file system.": [
+    ""
   ],
-  "Partitions to boot will be allocated at the installation disk %s.": [
-    "Le partizioni di avvio verranno allocate nel disco di installazione %s."
-  ],
-  "Partitions to boot will be allocated at the installation disk.": [
-    "Le partizioni di avvio verranno allocate sul disco di installazione."
+  "Partitions to boot will be set up if needed at the installation disk.       Currently %1$s, based on the location of the %2$s file system.": [
+    ""
   ],
   "Partitions will be used and created for %s": [
     "Le partizioni verranno utilizze e create per %s"
@@ -1447,9 +1426,6 @@ export default {
   ],
   "Product is already registered": [
     "Il prodotto è già registrato"
-  ],
-  "Protection for the information stored at the new file systems, including data, programs, and system files.": [
-    "Protezione per le informazoini memorizzate nei nuovi file system, tra cui dati, programmi e file di sistema."
   ],
   "Provide email address": [
     "Fornire un indirizzo e-mail"
@@ -1538,6 +1514,9 @@ export default {
   "Result": [
     "Risultato"
   ],
+  "Result of applying the configuration described at the 'Settings' section above.": [
+    ""
+  ],
   "Reused partitions will not be shrunk": [
     "Le partizioni riutilizzate non verranno ridotte"
   ],
@@ -1598,20 +1577,8 @@ export default {
   "Select a disk": [
     "Seleziona un disco"
   ],
-  "Select a disk to configure": [
-    "Seleziona un disco da configurare"
-  ],
-  "Select a disk to create %s": [
-    "Seleziona un disco per creare %s"
-  ],
   "Select a disk to define partitions or to mount": [
     "Seleziona un disco per definire le partizioni o montare"
-  ],
-  "Select a disk to format as %s": [
-    "Seleziona un disco da formattare come %s"
-  ],
-  "Select a disk to install the system": [
-    "Seleziona un disco su cui installare il sistema"
   ],
   "Select a product": [
     "Seleziona un prodotto"
@@ -1639,9 +1606,6 @@ export default {
   ],
   "Select or enter a valid mount point": [
     "Seleziona o immetti un punto di montaggio valido"
-  ],
-  "Select the disk to configure partitions for booting": [
-    "L'installazione non provvederà a configurare le partizioni per l'avvio"
   ],
   "Select what to do with each partition in order to find space for allocating the new system.": [
     "Selezionare le azioni da eseguire con ogni partizione per trovare lo spazio per allocare il nuovo sistema."

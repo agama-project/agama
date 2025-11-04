@@ -139,9 +139,6 @@ export default {
   "Add another address": [
     "Lisää toinen osoite"
   ],
-  "Add another partition or mount an existing one": [
-    "Lisää ylimääräinen osio tai liitä olemassa oleva"
-  ],
   "Add device menu": [
     "Lisää laitevalikko"
   ],
@@ -327,9 +324,6 @@ export default {
   "Change Language": [
     "Vaihda kieltä"
   ],
-  "Change boot options": [
-    "Muuta käynnistysvalintoja"
-  ],
   "Change device menu": [
     "Laitteen valintavalikko"
   ],
@@ -357,11 +351,11 @@ export default {
   "Change the file system or mount point": [
     "Vaihda tiedostojärjestelmää tai liitoskohtaa"
   ],
+  "Changes in these settings will immediately update the 'Result' section below.": [
+    ""
+  ],
   "Channel ID": [
     "Kanavatunniste"
-  ],
-  "Check the %d planned actions": [
-    "Tarkista %d suunniteltua toimintoa"
   ],
   "Check the authentication parameters.": [
     "Tarkista tunnistautumisasetukset."
@@ -395,9 +389,6 @@ export default {
   ],
   "Close": [
     "Sulje"
-  ],
-  "Collapse the list of planned actions": [
-    "Supista suunniteltujen toimintojen luettelo"
   ],
   "Configuration out of sync": [
     "Asetukset eivät ajan tasalla"
@@ -609,9 +600,6 @@ export default {
   "Details": [
     "Tiedot"
   ],
-  "Details for %s": [
-    "Tiedot kohteelle %s"
-  ],
   "Details will appear after the connection is successfully established.": [
     "Kun yhteys on muodostettu, näet lisätietoja."
   ],
@@ -665,9 +653,6 @@ export default {
   ],
   "Download logs": [
     "Lataa lokit"
-  ],
-  "During installation, several actions will be performed to setup the layout shown at the table below.": [
-    "Useita toimintoja tullaan suorittamaan asennuksen aikana alla olevan taulukon mukaisesti."
   ],
   "Edit": [
     "Muokkaa"
@@ -732,8 +717,8 @@ export default {
   "ExFAT": [
     "ExFAT"
   ],
-  "Example: https://myserver.com": [
-    "Esimerkki: https://minunpalvelin.fi"
+  "Example: %s": [
+    "Esimerkki: %s"
   ],
   "Excellent signal": [
     "Erinomainen signaali"
@@ -791,8 +776,11 @@ export default {
   "Filter by territory, time zone code or UTC offset": [
     "Suodata alueen, aikavyöhykoodin tai UTC-aikaeron mukaan"
   ],
-  "Find space": [
-    "Vapauta tilaa"
+  "Final layout": [
+    ""
+  ],
+  "Final structure of the system after installation.": [
+    ""
   ],
   "Find space in %s": [
     "Vapauta tilaa kohteessa %s"
@@ -977,9 +965,6 @@ export default {
   ],
   "Install using several devices without modifying existing partitions.": [
     "Asenna käyttäen useita laitteita, muuttamatta olevia osioita."
-  ],
-  "Installation Devices": [
-    "Asennuslaitteet"
   ],
   "Installation will take %s.": [
     "Asennus vie tilaa %s."
@@ -1346,12 +1331,6 @@ export default {
   "Options toggle": [
     "Valinnat-tila"
   ],
-  "Other options": [
-    "Muut valinnat"
-  ],
-  "Other options toggle": [
-    "Muiden valintojen tila"
-  ],
   "Overview": [
     "Yleiskuva"
   ],
@@ -1376,14 +1355,11 @@ export default {
   "Partitions that are not reused would be resized if needed.": [
     "Osioiden, joita ei uudelleenkäytetä, kokoja muutetaan tarpeen mukaan."
   ],
-  "Partitions to boot will be allocated at the following device.": [
-    "Käynnistämiseen tarvittavat osiot otetaan käyttöön seuraavalta laitteelta."
+  "Partitions to boot will be set up if needed at the installation disk.         Currently %1$s, based on the location of the %2$s file system.": [
+    ""
   ],
-  "Partitions to boot will be allocated at the installation disk %s.": [
-    "Käynnistämiseen tarvittavat osiot otetaan käyttöön asennuslevyltä %s."
-  ],
-  "Partitions to boot will be allocated at the installation disk.": [
-    "Käynnistämiseen tarvittavat osiot otetaan käyttöön asennuslevyltä."
+  "Partitions to boot will be set up if needed at the installation disk.       Currently %1$s, based on the location of the %2$s file system.": [
+    ""
   ],
   "Partitions will be used and created for %s": [
     "Osioita tullaan luomaan ja käyttämään liitoskohdalle %s"
@@ -1447,9 +1423,6 @@ export default {
   ],
   "Product is already registered": [
     "Tuote on jo rekisteröity"
-  ],
-  "Protection for the information stored at the new file systems, including data, programs, and system files.": [
-    "Uusien tiedostojärjestelmien tietojen turvaaminen, mukaanlukien data, ohjelmistot ja järjestelmätiedostot."
   ],
   "Provide email address": [
     "Kirjoita sähköpostiosoite"
@@ -1538,6 +1511,9 @@ export default {
   "Result": [
     "Tulos"
   ],
+  "Result of applying the configuration described at the 'Settings' section above.": [
+    ""
+  ],
   "Reused partitions will not be shrunk": [
     "Uudelleenkäytettyjä osioita ei tulla pienentämään"
   ],
@@ -1598,20 +1574,8 @@ export default {
   "Select a disk": [
     "Valitse levy"
   ],
-  "Select a disk to configure": [
-    "Valitse levy jonka asetukset tehdään"
-  ],
-  "Select a disk to create %s": [
-    "Valitse levy jolle luodaan liitoskohta %s"
-  ],
   "Select a disk to define partitions or to mount": [
     "Valitse levy osioiden määrittämiseen tai liittämiseen"
-  ],
-  "Select a disk to format as %s": [
-    "Valitse levy joka alustetaan liitoskohtaan %s"
-  ],
-  "Select a disk to install the system": [
-    "Valitse levy jolle järjestelmä asennetaan"
   ],
   "Select a product": [
     "Valitse tuote"
@@ -1639,9 +1603,6 @@ export default {
   ],
   "Select or enter a valid mount point": [
     "Valitse tai syötä kelvollinen liitoskohtaa"
-  ],
-  "Select the disk to configure partitions for booting": [
-    "Valitse levy käynnistysosioiden määrittämiseksi"
   ],
   "Select what to do with each partition in order to find space for allocating the new system.": [
     "Valitse mitä jokaiselle osiolle tehdään, jotta uuden järjestelmän käyttöön vapautuisi tilaa."
