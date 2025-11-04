@@ -276,15 +276,10 @@ async fn generate(
         from_json_or_jsonnet(client, url_or_path, insecure).await?
     };
 
-    let validity = validate_client(client, CliInput::Full(profile_json.clone())).await?;
-    match validity {
-        ValidationOutcome::NotValid(_) => {
-            // invalid before InstallSettings processing: print profile and validation result
-            println!("{}", &profile_json);
-            eprintln!("{} {}", style("\u{2717}").bold().red(), validity);
-            return Ok(());
-        }
-        ValidationOutcome::Valid => {}
+    let validity = validate(client, CliInput::Full(profile_json.clone())).await?;
+
+    if matches!(validity, ValidationOutcome::Valid) {
+        return Ok(());
     }
 
     // resolves relative URL references
@@ -292,19 +287,13 @@ async fn generate(
     let config_json = serde_json::to_string_pretty(&model)?;
 
     println!("{}", &config_json);
-    let validity = validate_client(client, CliInput::Full(config_json.clone())).await?;
-    match validity {
-        ValidationOutcome::Valid => {
-            eprintln!("{} {}", style("\u{2713}").bold().green(), validity);
-        }
-        ValidationOutcome::NotValid(_) => {
-            let red_x = style("\u{2717}").bold().red();
-            eprintln!("{} {}", red_x, validity);
-            eprintln!(
-                "{} Internal error: the profile was made invalid by InstallSettings round trip",
-                red_x
-            );
-        }
+    let validity = validate(client, CliInput::Full(config_json.clone())).await?;
+
+    if matches!(validity, ValidationOutcome::NotValid(_)) {
+        eprintln!(
+            "{} Internal error: the profile was made invalid by InstallSettings round trip",
+            style("\u{2717}").bold().red()
+        );
     }
 
     Ok(())
