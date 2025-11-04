@@ -334,9 +334,6 @@ if [ "$(arch)" == "aarch64" ]; then
 	echo 'install_items+=" /lib/firmware/qcom/sc8280xp/LENOVO/21BX/qcadsp8280.mbn.xz /lib/firmware/qcom/sc8280xp/LENOVO/21BX/qccdsp8280.mbn.xz "' >> /etc/dracut.conf.d/x13s_modules.conf
 fi
 
-# delete some AMD GPU firmware
-rm -rf /lib/firmware/amdgpu/{gc_,isp,psp}*
-
 # Decompress kernel modules, better for squashfs (boo#1192457)
 find /lib/modules/*/kernel -name '*.ko.xz' -exec xz -d {} +
 find /lib/modules/*/kernel -name '*.ko.zst' -exec zstd --rm -d {} +

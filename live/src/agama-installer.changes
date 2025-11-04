@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Wed Nov  5 09:17:43 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Include the AMD GPU firmware files (bsc#1250952)
+
+-------------------------------------------------------------------
 Mon Nov  3 07:54:50 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
 
 - Improved installer self-update (jsc#PED-12506):
