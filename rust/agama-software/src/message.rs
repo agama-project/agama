@@ -18,8 +18,11 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::{proposal::Proposal, system_info::SystemInfo};
-use agama_utils::{actor::Message, api::software::Config};
+use crate::proposal::Proposal;
+use agama_utils::{
+    actor::Message,
+    api::software::{Config, SystemInfo},
+};
 
 #[derive(Clone)]
 pub struct GetSystem;
@@ -74,9 +77,9 @@ impl Message for Install {
     type Reply = bool;
 }
 
-pub struct Probe;
+pub struct Refresh;
 
-impl Message for Probe {
+impl Message for Refresh {
     type Reply = ();
 }
 

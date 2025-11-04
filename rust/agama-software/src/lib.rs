@@ -47,12 +47,8 @@ pub use model::{Model, ModelAdapter};
 mod event;
 pub use event::Event;
 
-mod system_info;
-pub use system_info::SystemInfo;
-
 mod proposal;
 pub use proposal::Proposal;
 
-mod extended_config;
 pub mod message;
 mod zypp_server;

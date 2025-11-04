@@ -18,25 +18,7 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use agama_utils::api::software::RepositoryParams;
 use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
-
-/// Software service configuration (product, patterns, etc.).
-#[derive(Clone, Debug, Serialize, Deserialize, utoipa::ToSchema)]
-#[serde(rename_all = "camelCase")]
-pub struct SoftwareConfig {
-    /// A map where the keys are the pattern names and the values whether to install them or not.
-    pub patterns: Option<HashMap<String, bool>>,
-    /// Packages to install.
-    pub packages: Option<Vec<String>>,
-    /// Name of the product to install.
-    pub product: Option<String>,
-    /// Extra repositories defined by user.
-    pub extra_repositories: Option<Vec<RepositoryParams>>,
-    /// Flag if solver should use only hard dependencies.
-    pub only_required: Option<bool>,
-}
 
 /// Software resolvable type (package or pattern).
 #[derive(
@@ -69,20 +51,4 @@ pub struct ResolvableParams {
     pub r#type: ResolvableType,
     /// Whether the resolvables are optional or not.
     pub optional: bool,
-}
-
-/// Repository specification.
-#[derive(Clone, Debug, Deserialize, Serialize, utoipa::ToSchema)]
-#[serde(rename_all = "camelCase")]
-pub struct Repository {
-    /// Repository alias. It has to be unique.
-    pub alias: String,
-    /// Repository name
-    pub name: String,
-    /// Repository URL (raw format without expanded variables)
-    pub url: String,
-    /// Whether the repository is enabled
-    pub enabled: bool,
-    /// Whether the repository is mandatory (offline base repo, DUD repositories, etc.)
-    pub mandatory: bool,
 }

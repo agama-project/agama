@@ -41,30 +41,6 @@ pub struct AddonParams {
     pub registration_code: Option<String>,
 }
 
-/// Addon registration
-#[derive(Clone, Debug, Serialize, Deserialize, utoipa::ToSchema)]
-#[serde(rename_all = "camelCase")]
-pub struct AddonProperties {
-    /// Addon identifier
-    pub id: String,
-    /// Version of the addon
-    pub version: String,
-    /// User visible name
-    pub label: String,
-    /// Whether the addon is mirrored on the RMT server, on SCC it is always `true`
-    pub available: bool,
-    /// Whether a registration code is required for registering the addon
-    pub free: bool,
-    /// Whether the addon is recommended for the users
-    pub recommended: bool,
-    /// Short description of the addon (translated)
-    pub description: String,
-    /// Type of the addon, like "extension" or "module"
-    pub r#type: String,
-    /// Release status of the addon, e.g. "beta"
-    pub release: String,
-}
-
 /// Information about registration configuration (product, patterns, etc.).
 #[derive(Clone, Serialize, Deserialize, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]

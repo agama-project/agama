@@ -30,8 +30,6 @@ mod storage;
 pub use storage::StorageApiDocBuilder;
 mod bootloader;
 pub use bootloader::BootloaderApiDocBuilder;
-mod software;
-pub use software::SoftwareApiDocBuilder;
 mod profile;
 pub use profile::ProfileApiDocBuilder;
 mod manager;

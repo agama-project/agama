@@ -21,12 +21,11 @@
 //! Implements support for reading software licenses.
 
 use agama_locale_data::get_territories;
-use regex::Regex;
+use agama_utils::api::software::{InvalidLanguageCode, LanguageTag, License};
 use serde::Serialize;
 use serde_with::{serde_as, DisplayFromStr};
 use std::{
     collections::HashMap,
-    fmt::Display,
     fs::read_dir,
     path::{Path, PathBuf},
 };
@@ -35,22 +34,9 @@ use thiserror::Error;
 #[derive(Error, Debug)]
 pub enum Error {
     #[error("Not a valid language code: {0}")]
-    InvalidLanguageCode(String),
+    InvalidLanguageCode(#[from] InvalidLanguageCode),
     #[error("I/O error")]
     IO(#[from] std::io::Error),
-}
-
-/// Represents a product license.
-///
-/// It contains the license ID and the list of languages that with a translation.
-#[serde_as]
-#[derive(Clone, Debug, Serialize, utoipa::ToSchema)]
-pub struct License {
-    /// License ID.
-    pub id: String,
-    /// Languages in which the license is translated.
-    #[serde_as(as = "Vec<DisplayFromStr>")]
-    pub languages: Vec<LanguageTag>,
 }
 
 /// Represents a license content.
@@ -249,60 +235,11 @@ impl Default for LicensesRepo {
     }
 }
 
-/// Simplified representation of the RFC 5646 language code.
-///
-/// It only considers xx and xx-XX formats.
-#[derive(Clone, Debug, Serialize, PartialEq, utoipa::ToSchema)]
-pub struct LanguageTag {
-    // ISO-639
-    pub language: String,
-    // ISO-3166
-    pub territory: Option<String>,
-}
-
-impl Default for LanguageTag {
-    fn default() -> Self {
-        LanguageTag {
-            language: "en".to_string(),
-            territory: None,
-        }
-    }
-}
-
-impl Display for LanguageTag {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        if let Some(territory) = &self.territory {
-            write!(f, "{}-{}", &self.language, territory)
-        } else {
-            write!(f, "{}", &self.language)
-        }
-    }
-}
-
-#[derive(Error, Debug)]
-#[error("Not a valid language code: {0}")]
-pub struct InvalidLanguageCode(String);
-
-impl TryFrom<&str> for LanguageTag {
-    type Error = Error;
-
-    fn try_from(value: &str) -> Result<Self, Self::Error> {
-        let language_regexp: Regex = Regex::new(r"^([[:alpha:]]+)(?:[_-]([A-Z]+))?").unwrap();
-
-        let captures = language_regexp
-            .captures(value)
-            .ok_or_else(|| Error::InvalidLanguageCode(value.to_string()))?;
-
-        Ok(Self {
-            language: captures.get(1).unwrap().as_str().to_string(),
-            territory: captures.get(2).map(|e| e.as_str().to_string()),
-        })
-    }
-}
-
 #[cfg(test)]
 mod test {
-    use super::{LanguageTag, LicensesRepo};
+    use agama_utils::api::software::LanguageTag;
+
+    use super::LicensesRepo;
     use std::path::Path;
 
     fn build_repo() -> LicensesRepo {
