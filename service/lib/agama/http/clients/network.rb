@@ -39,11 +39,16 @@ module Agama
         end
 
         def persist_connections
-          post("network/connections/persist", { value: true })
+          conns = connections.map do |c|
+            c["persistent"] = true
+            c
+          end
+
+          put("config", { "network" => { "connections" => conns, "generalState" => state } })
         end
 
         def state
-          proposal.fetch("network", {}).fetch("state", {})
+          proposal.fetch("network", {}).fetch("generalState", {})
         end
       end
     end

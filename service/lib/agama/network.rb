@@ -153,7 +153,6 @@ module Agama
     end
 
     def copy_connections?
-      false
       http_client.state["copyNetwork"]
     end
 
