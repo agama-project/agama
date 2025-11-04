@@ -6,6 +6,12 @@ export default {
   " Timezone selection": [
     " 時區選擇"
   ],
+  "\"%s\"": [
+    ""
+  ],
+  "\"%s\" does not exist or is no longer available.": [
+    ""
+  ],
   "%1$s (%2$s)": [
     "%1$s (%2$s)"
   ],
@@ -726,8 +732,8 @@ export default {
   "ExFAT": [
     "ExFAT"
   ],
-  "Example: https://myserver.com": [
-    "範例：https://myserver.com"
+  "Example: %s": [
+    ""
   ],
   "Excellent signal": [
     "訊號極佳"
@@ -908,6 +914,9 @@ export default {
   ],
   "If you continue, partitions on your hard disk will be modified according to the provided installation settings.": [
     "如果繼續操作，系統將依照提供的安裝設定修改硬碟上的分割區。"
+  ],
+  "If you want to disable this check, please specify \"inst.ay_check=0\" at kernel's command-line": [
+    ""
   ],
   "In progress": [
     "進行中"
@@ -1928,6 +1937,9 @@ export default {
   ],
   "The password will not be needed to boot and access the data if the TPM can verify the integrity of the system. TPM sealing requires the new system to be booted directly on its first run.": [
     "如果 TPM 可以驗證系統的完整性，則開機和存取資料時將無需輸入密碼。TPM 封存功能要求新系統在首次執行時直接開機。"
+  ],
+  "The product will be registered with \"%s\" hostname": [
+    ""
   ],
   "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of a separate file system for %2$s.": [
     "%1$s 的大小將會動態調整，考量因素包括系統中的 RAM 容量以及 %2$s 是否存在單獨的檔案系統。"

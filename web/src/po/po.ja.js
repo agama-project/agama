@@ -6,6 +6,12 @@ export default {
   " Timezone selection": [
     " タイムゾーンの選択"
   ],
+  "\"%s\"": [
+    "\"%s\""
+  ],
+  "\"%s\" does not exist or is no longer available.": [
+    "\"%s\" は存在していないか、利用できなくなっています。"
+  ],
   "%1$s (%2$s)": [
     "%1$s (%2$s)"
   ],
@@ -61,7 +67,7 @@ export default {
     "可能であれば、 %2$s から %3$s までの範囲で %1$s を %4$s 向けに作成します"
   ],
   "A file system will be used for the whole device": [
-    "ファイルシステムはデバイス全体を使用します"
+    "ファイルシステムはデバイス全体を使用する"
   ],
   "A generic minimum size of %1$s will be used for the new %2$s": [
     "新しい %2$s に対しては少なくとも %1$s を使用します"
@@ -73,7 +79,7 @@ export default {
     "新しい %3$s に対しては一般的なサイズ %1$s から %2$s の範囲を使用します"
   ],
   "A new partition will be created for %s": [
-    "%s に対しては新しいパーティションを作成します"
+    "%s に対して新しいパーティションを作成する"
   ],
   "A new volume will be created for %s": [
     "%s に対しては新しいボリュームを作成します"
@@ -85,7 +91,7 @@ export default {
     "パーティションを縮小するかもしれません"
   ],
   "A partition will be deleted": [
-    "パーティションを削除します"
+    "パーティションを削除する"
   ],
   "Accept": [
     "受け入れる"
@@ -163,7 +169,7 @@ export default {
     "すべての競合が解決されたか、競合が検出されませんでした。セットアップを安全に続行できます。"
   ],
   "All content not configured to be mounted will be deleted": [
-    "マウントするように設定していない全ての内容を削除します"
+    "マウントするように設定していない全ての内容を削除する"
   ],
   "All content will be deleted": [
     "全ての内容を削除する"
@@ -187,7 +193,7 @@ export default {
     "既に利用可能な全てのディスクを使用しています"
   ],
   "An existing partition will be used for %s": [
-    "%s に対しては既存のパーティションを使用します"
+    "%s に対して既存のパーティションを使用する"
   ],
   "Any existing partition will be removed and all data in the disk will be lost.": [
     "全てのパーティションを削除し、ディスク内に存在するデータを全て消去します。"
@@ -211,7 +217,7 @@ export default {
     "選択しているモードの場合、 1 つ以上のアドレスを設定しなければなりません"
   ],
   "At least one partition will be deleted": [
-    "少なくとも 1 つのパーティションを削除します"
+    "少なくとも 1 つのパーティションを削除する"
   ],
   "At this point you can power off the machine.": [
     "マシンの電源を切って問題ありません。"
@@ -529,7 +535,7 @@ export default {
     "現在の内容"
   ],
   "Current partitions will be kept": [
-    "現在のパーティションを維持します"
+    "現在のパーティションを維持する"
   ],
   "Custom": [
     "独自設定"
@@ -726,8 +732,8 @@ export default {
   "ExFAT": [
     "ExFAT"
   ],
-  "Example: https://myserver.com": [
-    "例: https://myserver.com"
+  "Example: %s": [
+    "例: %s"
   ],
   "Excellent signal": [
     "優良な信号強度"
@@ -908,6 +914,9 @@ export default {
   ],
   "If you continue, partitions on your hard disk will be modified according to the provided installation settings.": [
     "続行すると、お使いのコンピュータのハードディスクにあるパーティションは、ここまでのダイアログで設定したとおりに変更されます。"
+  ],
+  "If you want to disable this check, please specify \"inst.ay_check=0\" at kernel's command-line": [
+    "このチェックを無効化したい場合は、カーネルのコマンドラインに \"inst.ay_check=0\" を指定してください"
   ],
   "In progress": [
     "処理中"
@@ -1225,7 +1234,7 @@ export default {
     "検出された Wi-Fi ネットワークはありません"
   ],
   "No additional partitions will be created": [
-    "追加パーティションは作成しません"
+    "追加パーティションは作成しない"
   ],
   "No additional software was selected.": [
     "追加のソフトウエアは何も選択していません。"
@@ -1374,8 +1383,11 @@ export default {
   "Partitions to boot will be allocated at the installation disk.": [
     "インストール先のディスク内に起動用のパーティションを割り当てます。"
   ],
+  "Partitions to host \"system\" will be created if needed.": [
+    "必要に応じて、 \"システム\" を保持するためのパーティションを作成します。"
+  ],
   "Partitions will be used and created for %s": [
-    "パーティションを使用し、 %s 向けに作成します"
+    "%s 向けにパーティションを使用して作成する"
   ],
   "Password": [
     "パスワード"
@@ -1528,7 +1540,7 @@ export default {
     "結果"
   ],
   "Reused partitions will not be shrunk": [
-    "再利用したパーティションは縮小しません"
+    "再利用したパーティションは縮小しない"
   ],
   "Review and fix": [
     "確認と修正"
@@ -1669,7 +1681,7 @@ export default {
     "設定"
   ],
   "Several partitions will be deleted": [
-    "いくつかのパーティションを削除します"
+    "いくつかのパーティションを削除する"
   ],
   "Show": [
     "表示"
@@ -1798,7 +1810,7 @@ export default {
     "接続時に利用可能な任意のデバイスを使用するようにします。"
   ],
   "The connection will be used only during installation and not available in the installed system.": [
-    "接続はインストール時にのみ使用され、インストールされたシステムでは利用できません。"
+    "接続をインストール時にのみ使用するものとし、インストール後は削除します。"
   ],
   "The content may be deleted": [
     "内容が削除されるかもしれません"
@@ -1929,6 +1941,9 @@ export default {
   "The password will not be needed to boot and access the data if the TPM can verify the integrity of the system. TPM sealing requires the new system to be booted directly on its first run.": [
     "TPM 側でシステムの一貫性検証が成功すると、起動とデータへのアクセス処理に際してパスワードが不要になります。 TPM シーリングを使用するには、新しいシステムの初回起動時に直接起動を行う必要があります。"
   ],
+  "The product will be registered with \"%s\" hostname": [
+    "製品をホスト名 \"%s\" で登録します"
+  ],
   "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of a separate file system for %2$s.": [
     "システムのメモリサイズと %2$s 向けの個別ファイルシステムの存在に応じて、 %1$s 向けのサイズを動的に調整します。"
   ],
@@ -1978,7 +1993,7 @@ export default {
     "システムは %s を既定の言語として使用します。"
   ],
   "The whole device will be used for %s": [
-    "デバイス全体を %s 向けに使用します"
+    "デバイス全体を %s 向けに使用する"
   ],
   "The zFCP disk was not activated.": [
     "zFCP ディスクは有効化されませんでした。"
