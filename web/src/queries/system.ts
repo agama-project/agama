@@ -26,6 +26,7 @@ import { useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { useInstallerClient } from "~/context/installer";
 import { fetchSystem } from "~/api/api";
 import { NetworkSystem } from "~/types/network";
+import { System } from "~/types/system";
 
 const transformLocales = (locales) =>
   locales.map(({ id, language: name, territory }) => ({ id, name, territory }));
@@ -78,9 +79,12 @@ const useSystem = () => {
 };
 
 const useNetworkSystem = () => {
-  const { data: config } = useSuspenseQuery(systemQuery());
+  const { data } = useSuspenseQuery({
+    ...systemQuery(),
+    select: (d) => NetworkSystem.fromApi(d.network),
+  });
 
-  return NetworkSystem.fromApi(config.network);
+  return data;
 };
 
 const useNetworkDevices = () => {

@@ -37,14 +37,18 @@ const proposalQuery = () => {
 };
 
 const useNetworkProposal = () => {
-  const { data: config } = useSuspenseQuery(proposalQuery());
+  const { data } = useSuspenseQuery({
+    ...proposalQuery(),
+    select: (d) => NetworkProposal.fromApi(d.network),
+  });
 
-  return NetworkProposal.fromApi(config.network);
+  return data;
 };
 
 const useProposal = () => {
-  const { data: config } = useSuspenseQuery(proposalQuery());
-  return config;
+  const { data } = useSuspenseQuery(proposalQuery());
+
+  return data;
 };
 
 const useProposalChanges = () => {

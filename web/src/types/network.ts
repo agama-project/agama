@@ -457,6 +457,7 @@ export type {
   APIDevice,
   IPAddress,
   APINetworkProposal,
+  APINetworkSystem,
   NetworkGeneralState,
   Route,
   APIRoute,
