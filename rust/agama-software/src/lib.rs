@@ -41,7 +41,7 @@ pub use start::start;
 pub mod service;
 pub use service::Service;
 
-pub mod model;
+mod model;
 pub use model::{Model, ModelAdapter};
 
 mod event;
