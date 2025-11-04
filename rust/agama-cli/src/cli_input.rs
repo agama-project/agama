@@ -21,11 +21,9 @@
 use agama_lib::utils::Transfer;
 use anyhow::Context;
 use std::{
-    io,
     io::Read,
     path::{Path, PathBuf},
 };
-use url::Url;
 
 /// Represents the ways user can specify the input on the command line
 /// and passes appropriate representations to the web API
@@ -58,18 +56,6 @@ impl From<String> for CliInput {
 }
 
 impl CliInput {
-    /// If *self* has a path or URL value, append a `path=...` or `url=...`
-    /// query parameter to *url*, properly escaped. The path is made absolute
-    /// so that it works (on localhost) even if server's working directory is different.
-    /// See also: [`body_for_web`](Self::body_for_web).
-    pub fn add_query(&self, base_url: &mut Url) -> io::Result<()> {
-        if let Some(pair) = self.get_query() {
-            base_url.query_pairs_mut().append_pair(&pair.0, &pair.1);
-        }
-
-        Ok(())
-    }
-
     /// Prepares *self* for use as an url query. So in case of "url" or "path" it
     /// returns ("url", url_value) resp ("path", absolute_path) tuplle
     pub fn get_query(&self) -> Option<(String, String)> {
@@ -97,7 +83,6 @@ impl CliInput {
     }
 
     /// If *self* is stdin or the full text, provide it as String.
-    /// See also: `add_query`
     ///
     /// NOTE that this will consume the standard input
     /// if self is `Stdin`
