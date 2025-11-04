@@ -58,7 +58,7 @@ describe Agama::Manager do
   let(:storage) do
     instance_double(
       Agama::DBus::Clients::Storage, probe: nil, install: nil, finish: nil,
-      :product= => nil, errors?: false
+      :product= => nil
     )
   end
   let(:scripts) do
@@ -213,16 +213,6 @@ describe Agama::Manager do
     context "when the users configuration is not valid" do
       before do
         allow(users).to receive(:issues).and_return([instance_double(Agama::Issue)])
-      end
-
-      it "returns false" do
-        expect(subject.valid?).to eq(false)
-      end
-    end
-
-    context "when there are storage errors" do
-      before do
-        allow(storage).to receive(:errors?).and_return(true)
       end
 
       it "returns false" do
