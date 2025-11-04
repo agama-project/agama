@@ -63,8 +63,8 @@ pub trait ModelAdapter: Send + Sync + 'static {
         optional: bool,
     ) -> Result<(), service::Error>;
 
-    /// Probes system and updates info about it.
-    async fn probe(&mut self) -> Result<(), service::Error>;
+    /// Refresh repositories information.
+    async fn refresh(&mut self) -> Result<(), service::Error>;
 
     /// install rpms to target system
     async fn install(&self) -> Result<bool, service::Error>;
@@ -136,7 +136,7 @@ impl ModelAdapter for Model {
             .unwrap_or_default()
     }
 
-    async fn probe(&mut self) -> Result<(), service::Error> {
+    async fn refresh(&mut self) -> Result<(), service::Error> {
         unimplemented!()
     }
 

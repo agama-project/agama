@@ -77,9 +77,9 @@ impl Message for Install {
     type Reply = bool;
 }
 
-pub struct Probe;
+pub struct Refresh;
 
-impl Message for Probe {
+impl Message for Refresh {
     type Reply = ();
 }
 

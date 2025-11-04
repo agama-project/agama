@@ -199,9 +199,9 @@ impl MessageHandler<message::GetProposal> for Service {
 }
 
 #[async_trait]
-impl MessageHandler<message::Probe> for Service {
-    async fn handle(&mut self, _message: message::Probe) -> Result<(), Error> {
-        self.model.lock().await.probe().await?;
+impl MessageHandler<message::Refresh> for Service {
+    async fn handle(&mut self, _message: message::Refresh) -> Result<(), Error> {
+        self.model.lock().await.refresh().await?;
         self.update_system().await?;
         Ok(())
     }
