@@ -5,25 +5,7 @@
  * and run json-schema-to-typescript to regenerate this file.
  */
 
-export type FilesystemType =
-  | "bcachefs"
-  | "btrfs"
-  | "exfat"
-  | "ext2"
-  | "ext3"
-  | "ext4"
-  | "f2fs"
-  | "jfs"
-  | "nfs"
-  | "nilfs2"
-  | "ntfs"
-  | "reiserfs"
-  | "swap"
-  | "tmpfs"
-  | "vfat"
-  | "xfs";
 export type MDLevel = "raid0" | "raid1" | "raid5" | "raid6" | "raid10";
-export type PtableType = "gpt" | "msdos" | "dasd";
 
 /**
  * API description of the system
@@ -32,7 +14,7 @@ export interface System {
   /**
    * All relevant devices on the system
    */
-  devices?: Device[];
+  devices?: StorageDevice[];
   /**
    * SIDs of the available drives
    */
@@ -63,7 +45,10 @@ export interface System {
   volumeTemplates?: Volume[];
   issues?: Issue[];
 }
-export interface Device {
+/**
+ * Schema to describe a device both in 'system' and 'proposal'.
+ */
+export interface StorageDevice {
   sid: number;
   name: string;
   description?: string;
@@ -74,9 +59,9 @@ export interface Device {
   multipath?: Multipath;
   partitionTable?: PartitionTable;
   partition?: Partition;
-  partitions?: Device[];
+  partitions?: StorageDevice[];
   volumeGroup?: VolumeGroup;
-  logicalVolumes?: Device[];
+  logicalVolumes?: StorageDevice[];
 }
 export interface Block {
   start: number;
@@ -110,7 +95,23 @@ export interface DriveInfo {
 }
 export interface Filesystem {
   sid: number;
-  type: FilesystemType;
+  type:
+    | "bcachefs"
+    | "btrfs"
+    | "exfat"
+    | "ext2"
+    | "ext3"
+    | "ext4"
+    | "f2fs"
+    | "jfs"
+    | "nfs"
+    | "nilfs2"
+    | "ntfs"
+    | "reiserfs"
+    | "swap"
+    | "tmpfs"
+    | "vfat"
+    | "xfs";
   mountPath?: string;
   label?: string;
 }
@@ -123,7 +124,7 @@ export interface Multipath {
   wireNames: string[];
 }
 export interface PartitionTable {
-  type: PtableType;
+  type: "gpt" | "msdos" | "dasd";
   unusedSlots: number[][];
 }
 export interface Partition {
@@ -136,7 +137,23 @@ export interface VolumeGroup {
 export interface Volume {
   mountPath: string;
   mountOptions?: string[];
-  fsType?: FilesystemType;
+  fsType?:
+    | "bcachefs"
+    | "btrfs"
+    | "exfat"
+    | "ext2"
+    | "ext3"
+    | "ext4"
+    | "f2fs"
+    | "jfs"
+    | "nfs"
+    | "nilfs2"
+    | "ntfs"
+    | "reiserfs"
+    | "swap"
+    | "tmpfs"
+    | "vfat"
+    | "xfs";
   autoSize: boolean;
   minSize: number;
   maxSize?: number;
@@ -147,7 +164,24 @@ export interface Volume {
 export interface VolumeOutline {
   required: boolean;
   supportAutoSize: boolean;
-  fsTypes?: FilesystemType[];
+  fsTypes?: (
+    | "bcachefs"
+    | "btrfs"
+    | "exfat"
+    | "ext2"
+    | "ext3"
+    | "ext4"
+    | "f2fs"
+    | "jfs"
+    | "nfs"
+    | "nilfs2"
+    | "ntfs"
+    | "reiserfs"
+    | "swap"
+    | "tmpfs"
+    | "vfat"
+    | "xfs"
+  )[];
   adjustByRam?: boolean;
   snapshotsConfigurable?: boolean;
   snapshotsAffectSizes?: boolean;
