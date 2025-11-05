@@ -193,21 +193,13 @@ fn validate_local(url_or_path: CliInput, insecure: bool) -> anyhow::Result<Valid
     }
 }
 
-/// Validate a JSON profile, by doing a HTTP client request.
-async fn validate_client(
-    client: &BaseHTTPClient,
-    url_or_path: CliInput,
-) -> anyhow::Result<ValidationOutcome> {
-    ProfileHTTPClient::new(client.clone())
-        .validate(url_or_path.get_query(), url_or_path.body_for_web()?)
-        .await
-}
-
 async fn validate(
     client: &BaseHTTPClient,
     url_or_path: CliInput,
 ) -> anyhow::Result<ValidationOutcome> {
-    let validity = validate_client(client, url_or_path).await?;
+    let validity = ProfileHTTPClient::new(client.clone())
+        .validate(url_or_path.get_query(), url_or_path.body_for_web()?)
+        .await?;
     let _ = validation_msg(&validity);
 
     Ok(validity)
@@ -261,13 +253,19 @@ async fn generate(
         let config_string = match url_or_path {
             CliInput::Url(url_string) => {
                 let url = Uri::parse(url_string)?;
-                autoyast_client(client, &url).await?
+
+                ProfileHTTPClient::new(client.clone())
+                    .from_autoyast(&url)
+                    .await?
             }
             CliInput::Path(pathbuf) => {
                 let canon_path = pathbuf.canonicalize()?;
                 let url_string = format!("file://{}", canon_path.display());
                 let url = Uri::parse(url_string)?;
-                autoyast_client(client, &url).await?
+
+                ProfileHTTPClient::new(client.clone())
+                    .from_autoyast(&url)
+                    .await?
             }
             _ => panic!("is_autoyast returned true on unnamed input"),
         };
@@ -299,22 +297,12 @@ async fn generate(
     Ok(())
 }
 
-/// Process AutoYaST profile (*url* ending with .xml, .erb, or dir/) by doing a HTTP client request.
-/// Note that this client does not act on this *url*, it passes it as a parameter
-/// to our web backend.
-/// Return well-formed Agama JSON on success.
-async fn autoyast_client(client: &BaseHTTPClient, url: &Uri<String>) -> anyhow::Result<String> {
-    ProfileHTTPClient::new(client.clone())
-        .from_autoyast(url)
-        .await
-}
-
-// Retrieve and preprocess the profile.
-//
-// The profile can be a JSON or a Jsonnet file.
-//
-// * If it is a JSON file, no preprocessing is needed.
-// * If it is a Jsonnet file, it is converted to JSON.
+/// Retrieve and preprocess the profile.
+///
+/// The profile can be a JSON or a Jsonnet file.
+///
+/// * If it is a JSON file, no preprocessing is needed.
+/// * If it is a Jsonnet file, it is converted to JSON.
 async fn from_json_or_jsonnet(
     client: &BaseHTTPClient,
     url_or_path: CliInput,
@@ -324,7 +312,11 @@ async fn from_json_or_jsonnet(
 
     match FileFormat::from_string(&any_profile) {
         FileFormat::Jsonnet => {
-            let json_string = evaluate_client(client, CliInput::Full(any_profile)).await?;
+            let full_profile = CliInput::Full(any_profile);
+            let json_string = ProfileHTTPClient::new(client.clone())
+                .from_jsonnet(full_profile.get_query(), full_profile.body_for_web()?)
+                .await?;
+
             Ok(json_string)
         }
         FileFormat::Json => Ok(any_profile),
@@ -332,14 +324,6 @@ async fn from_json_or_jsonnet(
             "Unsupported file format. Expected JSON, or Jsonnet",
         )),
     }
-}
-
-/// Evaluate a Jsonnet profile, by doing a HTTP client request.
-/// Return well-formed Agama JSON on success.
-async fn evaluate_client(client: &BaseHTTPClient, url_or_path: CliInput) -> anyhow::Result<String> {
-    ProfileHTTPClient::new(client.clone())
-        .from_jsonnet(url_or_path.get_query(), url_or_path.body_for_web()?)
-        .await
 }
 
 /// Edit the installation settings using an external editor.
