@@ -9,6 +9,7 @@
 #include <exception>
 #include <zypp-core/Pathname.h>
 #include <zypp-core/Url.h>
+#include <zypp/DiskUsageCounter.h>
 #include <zypp/Pattern.h>
 #include <zypp/PublicKey.h>
 #include <zypp/RepoInfo.h>
@@ -199,9 +200,9 @@ struct Zypp *init_target(const char *root, struct Status *status,
       progress("Initializing the Target System", 0, 2, user_data);
     the_zypp.zypp_pointer = zypp_ptr();
     if (the_zypp.zypp_pointer == NULL) {
-        STATUS_ERROR(status, "Failed to obtain zypp pointer. "
-                         "See journalctl for details.");
-        return NULL;
+      STATUS_ERROR(status, "Failed to obtain zypp pointer. "
+                           "See journalctl for details.");
+      return NULL;
     }
     zypp = &the_zypp;
     zypp->zypp_pointer->initializeTarget(root_str, false);
@@ -628,4 +629,40 @@ void import_gpg_key(struct Zypp *zypp, const char *const pathname,
     STATUS_EXCEPT(status, excpt);
   }
 }
+
+void get_space_usage(struct Zypp *zypp, struct Status *status,
+                     struct MountPoint *mount_points,
+                     unsigned mount_points_size) noexcept {
+  try {
+    zypp::DiskUsageCounter::MountPointSet mount_points_set;
+    for (unsigned i = 0; i < mount_points_size; ++i) {
+      enum zypp::DiskUsageCounter::MountPoint::Hint hint =
+          mount_points[i].grow_only
+              ? zypp::DiskUsageCounter::MountPoint::Hint::Hint_growonly
+              : zypp::DiskUsageCounter::MountPoint::Hint::NoHint;
+      zypp::DiskUsageCounter::MountPoint mp(mount_points[i].directory,
+                                            mount_points[i].filesystem, 0, 0, 0,
+                                            0, hint);
+      mount_points_set.insert(mp);
+    }
+    zypp->zypp_pointer->setPartitions(mount_points_set);
+    zypp::DiskUsageCounter::MountPointSet computed_set =
+        zypp->zypp_pointer->diskUsage();
+    for (unsigned i = 0; i < mount_points_size; ++i) {
+      auto mp =
+          std::find_if(mount_points_set.begin(), mount_points_set.end(),
+                       [mount_points, i](zypp::DiskUsageCounter::MountPoint m) {
+                         m.dir == mount_points[i].directory;
+                       });
+      if (mp == mount_points_set.end()) {
+        // mount point not found. Should not happen.
+        STATUS_ERROR(status, "Internal Error:Mount point not found.");
+        return;
+      }
+      mount_points[i].used_size = mp->pkg_size;
+    }
+    STATUS_OK(status);
+  } catch (zypp::Exception &excpt) {
+    STATUS_EXCEPT(status, excpt);
+  }
 }
