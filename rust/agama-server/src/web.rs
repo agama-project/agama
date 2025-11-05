@@ -31,7 +31,6 @@ use crate::{
     hostname::web::hostname_service,
     manager::web::{manager_service, manager_stream},
     network::{web::network_service, NetworkManagerAdapter},
-    products::ProductsRegistry,
     profile::web::profile_service,
     scripts::web::scripts_service,
     security::security_service,
@@ -58,8 +57,7 @@ use agama_lib::http::event::{OldEvent, OldSender};
 use common::ProgressService;
 pub use config::ServiceConfig;
 pub use service::MainServiceBuilder;
-use std::{path::Path, sync::Arc};
-use tokio::sync::Mutex;
+use std::{path::Path};
 use tokio_stream::{StreamExt, StreamMap};
 
 /// Returns a service that implements the web-based Agama API.
@@ -82,8 +80,6 @@ where
         .await
         .expect("Could not connect to NetworkManager to read the configuration");
 
-    let products = ProductsRegistry::load().expect("Could not load the products registry.");
-    let products = Arc::new(Mutex::new(products));
     let progress = ProgressService::start(dbus.clone(), old_events.clone()).await;
 
     let router = MainServiceBuilder::new(events.clone(), old_events.clone(), web_ui_dir)

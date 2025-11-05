@@ -27,7 +27,6 @@ pub mod hostname;
 pub mod logs;
 pub mod manager;
 pub mod network;
-pub mod products;
 pub mod profile;
 pub mod scripts;
 pub mod security;
