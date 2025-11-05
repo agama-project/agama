@@ -41,6 +41,8 @@ export default [
   {
     rules: {
       "agama-i18n/string-literals": "error",
+      // TODO: enable this check after fixing all top level translations (bsc#1250059)
+      // "agama-i18n/top-level-translation": "error",
       "i18next/no-literal-string": "error",
       "no-var": "error",
       "no-multi-str": "off",
