@@ -18,40 +18,11 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-//! This module contains all Agama public types that might be available over
-//! the HTTP and WebSocket API.
+use serde::Deserialize;
+use serde_json::Value;
 
-pub mod event;
-pub use event::Event;
-
-pub mod progress;
-pub use progress::Progress;
-
-pub mod scope;
-pub use scope::Scope;
-
-pub mod status;
-pub use status::Status;
-
-pub mod issue;
-pub use issue::{Issue, IssueMap, IssueSeverity, IssueSource};
-
-mod system_info;
-pub use system_info::SystemInfo;
-
-pub mod config;
-pub use config::Config;
-
-pub mod patch;
-pub use patch::Patch;
-
-mod proposal;
-pub use proposal::Proposal;
-
-mod action;
-pub use action::Action;
-
-pub mod l10n;
-pub mod query;
-pub mod question;
-pub mod storage;
+#[derive(Deserialize, utoipa::IntoParams, utoipa::ToSchema)]
+pub struct SolveStorageModel {
+    /// Serialized storage model.
+    pub model: Value,
+}

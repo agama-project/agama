@@ -291,3 +291,17 @@ impl MessageHandler<message::SetStorageModel> for Service {
             .await?)
     }
 }
+
+#[async_trait]
+impl MessageHandler<message::SolveStorageModel> for Service {
+    /// It solves the storage model.
+    async fn handle(
+        &mut self,
+        message: message::SolveStorageModel,
+    ) -> Result<Option<Value>, Error> {
+        Ok(self
+            .storage
+            .call(storage::message::SolveConfigModel::new(message.model))
+            .await?)
+    }
+}

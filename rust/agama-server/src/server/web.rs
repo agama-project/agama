@@ -26,14 +26,14 @@ use agama_manager::{self as manager, message};
 use agama_utils::{
     actor::Handler,
     api::{
-        event,
+        event, query,
         question::{Question, QuestionSpec, UpdateQuestion},
         Action, Config, IssueMap, Patch, Status, SystemInfo,
     },
     question,
 };
 use axum::{
-    extract::State,
+    extract::{Query, State},
     response::{IntoResponse, Response},
     routing::{get, post},
     Json, Router,
@@ -109,6 +109,7 @@ pub async fn server_service(
             "/private/storage_model",
             get(get_storage_model).put(set_storage_model),
         )
+        .route("/private/solve_storage_model", get(solve_storage_model))
         .with_state(state))
 }
 
@@ -376,6 +377,28 @@ async fn set_storage_model(
         .call(message::SetStorageModel::new(model))
         .await?;
     Ok(())
+}
+
+/// Solves a storage config model.
+#[utoipa::path(
+    get,
+    path = "/private/solve_storage_model",
+    context_path = "/api/v2",
+    params(query::SolveStorageModel),
+    responses(
+        (status = 200, description = "Solve the storage model", body = String),
+        (status = 400, description = "Not possible to solve the storage model")
+    )
+)]
+async fn solve_storage_model(
+    State(state): State<ServerState>,
+    Query(params): Query<query::SolveStorageModel>,
+) -> Result<Json<Option<Value>>, Error> {
+    let solved_model = state
+        .manager
+        .call(message::SolveStorageModel::new(params.model))
+        .await?;
+    Ok(Json(solved_model))
 }
 
 fn to_option_response<T: Serialize>(value: Option<T>) -> Response {
