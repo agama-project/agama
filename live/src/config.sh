@@ -69,10 +69,15 @@ systemctl enable agama-welcome-issue.service
 systemctl enable agama-avahi-issue.service
 systemctl enable agama-url-issue.service
 systemctl enable agama-ssh-issue.service
-systemctl enable agama-self-update.service
 systemctl enable live-free-space.service
 systemctl enable live-password.service
 systemctl enable live-root-shell.service
+
+# the self-update actually runs in the initramfs system, but the exit status
+# is lost if it is not enabled in the root image as well,
+# it runs only once in the initramfs because of "WantedBy=initrd.target"
+systemctl enable live-self-update.service
+
 systemctl enable checkmedia.service
 systemctl enable qemu-guest-agent.service
 systemctl enable setup-systemd-proxy-env.path
@@ -106,6 +111,18 @@ touch /etc/udev/rules.d/64-md-raid-assembly.rules
 # the "eurlatgr" is the default font for the English locale
 echo -e "\nFONT=eurlatgr.psfu" >> /etc/vconsole.conf
 
+# configure self-update in SLES
+if [[ "$kiwi_profiles" == *SLE* ]]; then
+  echo "Configuring the installer self-update..."
+  # read the self-update configuration variables
+  . /usr/lib/live-self-update/conf.sh
+  mkdir -p  "$CONFIG_DIR"
+  # the default registration server (SCC) if RMT is not set
+  echo "https://scc.suse.com" > "$CONFIG_DEFAULT_REG_SERVER_FILE"
+  # fallback URL when contacting SCC/RMT fails or no self-update is returned
+  echo 'https://installer-updates.suse.com/SUSE/Products/SLE-INSTALLER/$os_release_version_id/$arch/product/' > "$CONFIG_FALLBACK_FILE"
+fi
+
 ### setup dracut for live system
 arch=$(uname -m)
 # keep in sync with ISO Volume ID set in the fix_bootconfig script
@@ -117,7 +134,7 @@ mkdir /etc/cmdline.d
 echo "root=live:LABEL=$label" >/etc/cmdline.d/10-liveroot.conf
 echo "root_disk=live:LABEL=$label" >>/etc/cmdline.d/10-liveroot.conf
 echo 'install_items+=" /etc/cmdline.d/10-liveroot.conf "' >/etc/dracut.conf.d/10-liveroot-file.conf
-echo 'add_dracutmodules+=" dracut-menu agama-cmdline agama-dud "' >>/etc/dracut.conf.d/10-liveroot-file.conf
+echo 'add_dracutmodules+=" dracut-menu agama-cmdline agama-dud live-self-update "' >>/etc/dracut.conf.d/10-liveroot-file.conf
 
 # decrease the kernel logging on the console, use a dracut module to do it early in the boot process
 echo 'add_dracutmodules+=" agama-logging "' > /etc/dracut.conf.d/10-agama-logging.conf
@@ -316,9 +333,6 @@ if [ "$(arch)" == "aarch64" ]; then
 	echo 'add_drivers+=" nvme phy_qcom_qmp_pcie pcie-qcom-ep i2c_hid_of i2c_qcom_geni leds-qcom-lpg pwm_bl qrtr pmic_glink_altmode gpio_sbu_mux phy_qcom_qmp_combo panel-edp msm phy_qcom_edp "' >> /etc/dracut.conf.d/x13s_modules.conf
 	echo 'install_items+=" /lib/firmware/qcom/sc8280xp/LENOVO/21BX/qcadsp8280.mbn.xz /lib/firmware/qcom/sc8280xp/LENOVO/21BX/qccdsp8280.mbn.xz "' >> /etc/dracut.conf.d/x13s_modules.conf
 fi
-
-# delete some AMD GPU firmware
-rm -rf /lib/firmware/amdgpu/{gc_,isp,psp}*
 
 # Decompress kernel modules, better for squashfs (boo#1192457)
 find /lib/modules/*/kernel -name '*.ko.xz' -exec xz -d {} +

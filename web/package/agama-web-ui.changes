@@ -5,6 +5,12 @@ Tue Oct 28 16:34:22 UTC 2025 - Ancor Gonzalez Sosa <ancor@suse.com>
   (gh#agama-project/agama#2767).
 
 -------------------------------------------------------------------
+Mon Oct 27 15:51:48 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Use the JavaScript/TypeScript parser to extract strings for
+  translation (gh#agama-project/agama#2748).
+
+-------------------------------------------------------------------
 Fri Oct 17 12:30:56 UTC 2025 - David Diaz <dgonzalez@suse.com>
 
 - Preserve installer options values after successful submission
