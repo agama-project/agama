@@ -141,6 +141,7 @@ type Route = {
 };
 
 type APIAccessPoint = {
+  device: string;
   ssid: string;
   strength: number;
   hwAddress: string;
@@ -150,12 +151,20 @@ type APIAccessPoint = {
 };
 
 class AccessPoint {
+  device: string;
   ssid: string;
   strength: number;
   hwAddress: string;
   security: SecurityProtocols[];
 
-  constructor(ssid: string, strength: number, hwAddress: string, security: SecurityProtocols[]) {
+  constructor(
+    device: string,
+    ssid: string,
+    strength: number,
+    hwAddress: string,
+    security: SecurityProtocols[],
+  ) {
+    this.device = device;
     this.ssid = ssid;
     this.strength = strength;
     this.hwAddress = hwAddress;
@@ -163,9 +172,15 @@ class AccessPoint {
   }
 
   static fromApi(options: APIAccessPoint) {
-    const { ssid, strength, hwAddress, flags, wpaFlags, rsnFlags } = options;
+    const { device, ssid, strength, hwAddress, flags, wpaFlags, rsnFlags } = options;
 
-    return new AccessPoint(ssid, strength, hwAddress, securityFromFlags(flags, wpaFlags, rsnFlags));
+    return new AccessPoint(
+      device,
+      ssid,
+      strength,
+      hwAddress,
+      securityFromFlags(flags, wpaFlags, rsnFlags),
+    );
   }
 }
 

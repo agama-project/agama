@@ -42,6 +42,21 @@ pub struct GeneralState {
     pub networking_enabled: bool, // pub network_state: NMSTATE
 }
 
+/// Access Point
+#[serde_as]
+#[derive(Default, Debug, Clone, Serialize, Deserialize, utoipa::ToSchema)]
+#[serde(rename_all = "camelCase")]
+pub struct AccessPoint {
+    pub device: String,
+    #[serde_as(as = "DisplayFromStr")]
+    pub ssid: SSID,
+    pub hw_address: String,
+    pub strength: u8,
+    pub flags: u32,
+    pub rsn_flags: u32,
+    pub wpa_flags: u32,
+}
+
 /// Network device
 #[serde_as]
 #[skip_serializing_none]

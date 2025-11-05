@@ -358,14 +358,14 @@ impl<'a> ProxiesRegistry<'a> {
     pub fn remove_active_connection(
         &mut self,
         path: &OwnedObjectPath,
-    ) -> Option<ActiveConnectionProxy> {
+    ) -> Option<ActiveConnectionProxy<'_>> {
         self.active_connections.remove(path)
     }
 
     /// Removes a device from the registry.
     ///
     /// * `path`: D-Bus object path.
-    pub fn remove_device(&mut self, path: &OwnedObjectPath) -> Option<(String, DeviceProxy)> {
+    pub fn remove_device(&mut self, path: &OwnedObjectPath) -> Option<(String, DeviceProxy<'_>)> {
         self.devices.remove(path)
     }
 

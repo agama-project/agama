@@ -34,11 +34,9 @@ use super::proxies::{
     AccessPointProxy, ActiveConnectionProxy, ConnectionProxy, DeviceProxy, NetworkManagerProxy,
     SettingsProxy, WirelessProxy,
 };
-use crate::model::{
-    AccessPoint, Connection, ConnectionConfig, SecurityProtocol, NOT_COPY_NETWORK_PATH,
-};
+use crate::model::{Connection, ConnectionConfig, SecurityProtocol, NOT_COPY_NETWORK_PATH};
 use crate::types::{
-    AddFlags, ConnectionFlags, Device, DeviceType, GeneralState, UpdateFlags, SSID,
+    AccessPoint, AddFlags, ConnectionFlags, Device, DeviceType, GeneralState, UpdateFlags, SSID,
 };
 use agama_utils::dbus::get_optional_property;
 use semver::Version;
@@ -160,6 +158,7 @@ impl<'a> NetworkManagerClient<'a> {
                         .build()
                         .await?;
 
+                    let device = proxy.interface().await?;
                     let ssid = SSID(wproxy.ssid().await?);
                     let hw_address = wproxy.hw_address().await?;
                     let strength = wproxy.strength().await?;
@@ -168,6 +167,7 @@ impl<'a> NetworkManagerClient<'a> {
                     let wpa_flags = wproxy.wpa_flags().await?;
 
                     points.push(AccessPoint {
+                        device,
                         ssid,
                         hw_address,
                         strength,
@@ -440,7 +440,7 @@ impl<'a> NetworkManagerClient<'a> {
         Ok(())
     }
 
-    async fn get_connection_proxy(&self, uuid: Uuid) -> Result<ConnectionProxy, NmError> {
+    async fn get_connection_proxy(&self, uuid: Uuid) -> Result<ConnectionProxy<'_>, NmError> {
         let proxy = SettingsProxy::new(&self.connection).await?;
         let uuid_s = uuid.to_string();
         let path = proxy.get_connection_by_uuid(uuid_s.as_str()).await?;
@@ -454,7 +454,7 @@ impl<'a> NetworkManagerClient<'a> {
     // Returns the DeviceProxy for the given device name
     //
     /// * `name`: Device name.
-    async fn get_device_proxy(&self, name: String) -> Result<DeviceProxy, NmError> {
+    async fn get_device_proxy(&self, name: String) -> Result<DeviceProxy<'_>, NmError> {
         let mut device_path: Option<OwnedObjectPath> = None;
         for path in &self.nm_proxy.get_all_devices().await? {
             let proxy = DeviceProxy::builder(&self.connection)

@@ -428,20 +428,6 @@ mod tests {
 
 pub const NOT_COPY_NETWORK_PATH: &str = "/run/agama/not_copy_network";
 
-/// Access Point
-#[serde_as]
-#[derive(Default, Debug, Clone, Serialize, Deserialize, utoipa::ToSchema)]
-#[serde(rename_all = "camelCase")]
-pub struct AccessPoint {
-    #[serde_as(as = "DisplayFromStr")]
-    pub ssid: SSID,
-    pub hw_address: String,
-    pub strength: u8,
-    pub flags: u32,
-    pub rsn_flags: u32,
-    pub wpa_flags: u32,
-}
-
 /// Represents a known network connection.
 #[serde_as]
 #[skip_serializing_none]
@@ -1407,6 +1393,7 @@ impl TryFrom<NetworkState> for SystemInfo {
             ConnectionCollection(state.connections).try_into()?;
 
         Ok(SystemInfo {
+            access_points: state.access_points,
             connections,
             devices: state.devices,
             general_state: state.general_state,

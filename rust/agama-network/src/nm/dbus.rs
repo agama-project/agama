@@ -693,13 +693,13 @@ fn wireless_config_to_dbus(config: &'_ WirelessConfig) -> NestedHash<'_> {
     NestedHash::from([(WIRELESS_KEY, wireless), (WIRELESS_SECURITY_KEY, security)])
 }
 
-fn bond_config_to_dbus(config: &BondConfig) -> HashMap<&str, zvariant::Value> {
+fn bond_config_to_dbus(config: &BondConfig) -> HashMap<&str, zvariant::Value<'_>> {
     let mut options = config.options.0.clone();
     options.insert("mode".to_string(), config.mode.to_string());
     HashMap::from([("options", Value::new(options))])
 }
 
-fn bridge_config_to_dbus(bridge: &BridgeConfig) -> HashMap<&str, zvariant::Value> {
+fn bridge_config_to_dbus(bridge: &BridgeConfig) -> HashMap<&str, zvariant::Value<'_>> {
     let mut hash = HashMap::new();
 
     if let Some(stp) = bridge.stp {
@@ -739,7 +739,9 @@ fn bridge_config_from_dbus(conn: &OwnedNestedHash) -> Result<Option<BridgeConfig
     }))
 }
 
-fn bridge_port_config_to_dbus(bridge_port: &BridgePortConfig) -> HashMap<&str, zvariant::Value> {
+fn bridge_port_config_to_dbus(
+    bridge_port: &BridgePortConfig,
+) -> HashMap<&str, zvariant::Value<'_>> {
     let mut hash = HashMap::new();
 
     if let Some(prio) = bridge_port.priority {
@@ -765,7 +767,7 @@ fn bridge_port_config_from_dbus(
     }))
 }
 
-fn infiniband_config_to_dbus(config: &InfinibandConfig) -> HashMap<&str, zvariant::Value> {
+fn infiniband_config_to_dbus(config: &InfinibandConfig) -> HashMap<&str, zvariant::Value<'_>> {
     let mut infiniband_config: HashMap<&str, zvariant::Value> = HashMap::from([
         (
             "transport-mode",
@@ -801,7 +803,7 @@ fn infiniband_config_from_dbus(
     Ok(Some(config))
 }
 
-fn tun_config_to_dbus(config: &TunConfig) -> HashMap<&str, zvariant::Value> {
+fn tun_config_to_dbus(config: &TunConfig) -> HashMap<&str, zvariant::Value<'_>> {
     let mut tun_config: HashMap<&str, zvariant::Value> =
         HashMap::from([("mode", Value::new(config.mode.clone() as u32))]);
 
@@ -833,7 +835,7 @@ fn tun_config_from_dbus(conn: &OwnedNestedHash) -> Result<Option<TunConfig>, NmE
     }))
 }
 
-fn ovs_bridge_config_to_dbus(br: &OvsBridgeConfig) -> HashMap<&str, zvariant::Value> {
+fn ovs_bridge_config_to_dbus(br: &OvsBridgeConfig) -> HashMap<&str, zvariant::Value<'_>> {
     let mut br_config: HashMap<&str, zvariant::Value> = HashMap::new();
 
     if let Some(mcast_snooping) = br.mcast_snooping_enable {
@@ -863,7 +865,7 @@ fn ovs_bridge_from_dbus(conn: &OwnedNestedHash) -> Result<Option<OvsBridgeConfig
     }))
 }
 
-fn ovs_port_config_to_dbus(config: &OvsPortConfig) -> HashMap<&str, zvariant::Value> {
+fn ovs_port_config_to_dbus(config: &OvsPortConfig) -> HashMap<&str, zvariant::Value<'_>> {
     let mut port_config: HashMap<&str, zvariant::Value> = HashMap::new();
 
     if let Some(tag) = &config.tag {
@@ -883,7 +885,7 @@ fn ovs_port_from_dbus(conn: &OwnedNestedHash) -> Result<Option<OvsPortConfig>, N
     }))
 }
 
-fn ovs_interface_config_to_dbus(config: &OvsInterfaceConfig) -> HashMap<&str, zvariant::Value> {
+fn ovs_interface_config_to_dbus(config: &OvsInterfaceConfig) -> HashMap<&str, zvariant::Value<'_>> {
     let mut ifc_config: HashMap<&str, zvariant::Value> = HashMap::new();
 
     ifc_config.insert("type", config.interface_type.to_string().clone().into());
@@ -905,7 +907,7 @@ fn ovs_interface_from_dbus(conn: &OwnedNestedHash) -> Result<Option<OvsInterface
 /// Converts a MatchConfig struct into a HashMap that can be sent over D-Bus.
 ///
 /// * `match_config`: MatchConfig to convert.
-fn match_config_to_dbus(match_config: &MatchConfig) -> HashMap<&str, zvariant::Value> {
+fn match_config_to_dbus(match_config: &MatchConfig) -> HashMap<&str, zvariant::Value<'_>> {
     let drivers: Value = match_config.driver.to_vec().into();
 
     let kernels: Value = match_config.kernel.to_vec().into();
@@ -1374,7 +1376,7 @@ fn bond_config_from_dbus(conn: &OwnedNestedHash) -> Result<Option<BondConfig>, N
     Ok(Some(bond))
 }
 
-fn vlan_config_to_dbus(cfg: &VlanConfig) -> NestedHash {
+fn vlan_config_to_dbus(cfg: &VlanConfig) -> NestedHash<'_> {
     let vlan: HashMap<&str, zvariant::Value> = HashMap::from([
         ("id", cfg.id.into()),
         ("parent", cfg.parent.clone().into()),
@@ -1401,7 +1403,7 @@ fn vlan_config_from_dbus(conn: &OwnedNestedHash) -> Result<Option<VlanConfig>, N
     }))
 }
 
-fn ieee_8021x_config_to_dbus(config: &IEEE8021XConfig) -> HashMap<&str, zvariant::Value> {
+fn ieee_8021x_config_to_dbus(config: &IEEE8021XConfig) -> HashMap<&str, zvariant::Value<'_>> {
     let mut ieee_8021x_config: HashMap<&str, zvariant::Value> = HashMap::from([(
         "eap",
         config

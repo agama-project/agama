@@ -21,8 +21,8 @@
 use crate::{
     action::Action,
     error::NetworkStateError,
-    model::{AccessPoint, Connection, NetworkChange, NetworkState, StateConfig},
-    types::{Config, Device, DeviceType, GeneralState, Proposal, SystemInfo},
+    model::{Connection, NetworkChange, NetworkState, StateConfig},
+    types::{AccessPoint, Config, Device, DeviceType, GeneralState, Proposal, SystemInfo},
     Adapter, NetworkAdapterError,
 };
 use std::error::Error;
