@@ -102,7 +102,7 @@ impl Service {
         }
     }
 
-    pub async fn read(&mut self) -> Result<(), Error> {
+    pub async fn setup(&mut self) -> Result<(), Error> {
         if let Some(install_repo) = find_install_repository() {
             tracing::info!("Found repository at {}", install_repo.url);
             self.state.system.repositories.push(install_repo);

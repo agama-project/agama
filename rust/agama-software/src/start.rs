@@ -55,7 +55,8 @@ pub async fn start(
     let zypp_sender = ZyppServer::start()?;
     let model = Model::new(zypp_sender)?;
     let mut service = Service::new(model, issues, progress, events);
-    service.read().await?;
+    // FIXME: this should happen after spawning the task.
+    service.setup().await?;
     let handler = actor::spawn(service);
     Ok(handler)
 }
