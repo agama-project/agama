@@ -48,7 +48,7 @@ pub struct SoftwareProposal {
 #[derive(Clone, Default, Debug, Serialize, utoipa::ToSchema)]
 pub struct Proposal {
     /// Software specific proposal
-    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(flatten, skip_serializing_if = "Option::is_none")]
     pub software: Option<SoftwareProposal>,
     /// Registration proposal. Maybe same as config?
     /// TODO: implement it
