@@ -18,18 +18,24 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
+use std::sync::Arc;
+
 use crate::message;
 use crate::{l10n, software};
 use agama_utils::{
     actor::{self, Actor, Handler, MessageHandler},
     api::{
-        event, status::State, Action, Config, Event, IssueMap, Proposal, Scope, Status, SystemInfo,
+        event, manager, status::State, Action, Config, Event, Issue, IssueMap, IssueSeverity,
+        Proposal, Scope, Status, SystemInfo,
     },
-    issue, progress, question,
+    issue,
+    license::{Error as LicenseError, LicensesRepo},
+    products::{ProductSpec, ProductsRegistry, ProductsRegistryError},
+    progress, question,
 };
 use async_trait::async_trait;
 use merge_struct::merge;
-use tokio::sync::broadcast;
+use tokio::sync::{broadcast, RwLock};
 
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
@@ -49,6 +55,10 @@ pub enum Error {
     Issues(#[from] issue::service::Error),
     #[error(transparent)]
     Questions(#[from] question::service::Error),
+    #[error(transparent)]
+    ProductsRegistry(#[from] ProductsRegistryError),
+    #[error(transparent)]
+    License(#[from] LicenseError),
 }
 
 pub struct Service {
@@ -57,8 +67,12 @@ pub struct Service {
     issues: Handler<issue::Service>,
     progress: Handler<progress::Service>,
     questions: Handler<question::Service>,
+    products: ProductsRegistry,
+    licenses: LicensesRepo,
+    product: Option<Arc<RwLock<ProductSpec>>>,
     state: State,
     config: Config,
+    system: manager::SystemInfo,
     events: event::Sender,
 }
 
@@ -77,10 +91,35 @@ impl Service {
             issues,
             progress,
             questions,
-            events,
+            products: ProductsRegistry::default(),
+            licenses: LicensesRepo::default(),
+            // FIXME: state is already used for service state.
             state: State::Configuring,
             config: Config::default(),
+            system: manager::SystemInfo::default(),
+            product: None,
+            events,
         }
+    }
+
+    pub async fn setup(&mut self) -> Result<(), Error> {
+        self.read_registries().await?;
+        if let Some(product) = self.products.default_product() {
+            self.product = Some(Arc::new(RwLock::new(product.clone())));
+        }
+
+        if self.product.is_none() {
+            self.notify_no_product()
+        }
+        Ok(())
+    }
+
+    pub async fn read_registries(&mut self) -> Result<(), Error> {
+        self.licenses.read()?;
+        self.products.read()?;
+        self.system.licenses = self.licenses.licenses().into_iter().cloned().collect();
+        self.system.products = self.products.products();
+        Ok(())
     }
 
     async fn install(&mut self) -> Result<(), Error> {
@@ -100,6 +139,17 @@ impl Service {
         self.state = State::Finished;
         self.events.send(Event::StateChanged)?;
         Ok(())
+    }
+
+    fn notify_no_product(&self) {
+        let issue = Issue::new(
+            "no_product",
+            "No product has been selected.",
+            IssueSeverity::Error,
+        );
+        _ = self
+            .issues
+            .cast(issue::message::Update::new(Scope::Manager, vec![issue]));
     }
 }
 
@@ -124,7 +174,8 @@ impl MessageHandler<message::GetSystem> for Service {
     /// It returns the information of the underlying system.
     async fn handle(&mut self, _message: message::GetSystem) -> Result<SystemInfo, Error> {
         let l10n = self.l10n.call(l10n::message::GetSystem).await?;
-        Ok(SystemInfo { l10n })
+        let manager = self.system.clone();
+        Ok(SystemInfo { manager, l10n })
     }
 }
 
@@ -158,13 +209,24 @@ impl MessageHandler<message::GetConfig> for Service {
 #[async_trait]
 impl MessageHandler<message::SetConfig> for Service {
     /// Sets the user configuration with the given values.
-    ///
-    /// It merges the values in the top-level. Therefore, if the configuration
-    /// for a scope is not given, it keeps the previous one.
-    ///
-    /// FIXME: We should replace not given sections with the default ones.
-    /// After all, now we have config/user/:scope URLs.
     async fn handle(&mut self, message: message::SetConfig) -> Result<(), Error> {
+        let product_id = message
+            .config
+            .software
+            .as_ref()
+            .and_then(|s| s.product.as_ref())
+            .and_then(|p| p.id.as_ref());
+
+        if let Some(id) = product_id {
+            if let Some(product_spec) = self.products.find(&id) {
+                let product = RwLock::new(product_spec.clone());
+                self.product = Some(Arc::new(product));
+                _ = self.issues.cast(issue::message::Clear::new(Scope::Manager));
+            }
+        }
+
+        self.config = message.config.clone();
+
         if let Some(l10n) = &message.config.l10n {
             self.l10n
                 .call(l10n::message::SetConfig::new(l10n.clone()))
@@ -177,12 +239,16 @@ impl MessageHandler<message::SetConfig> for Service {
                 .await?;
         }
 
-        if let Some(software) = &message.config.software {
+        if let Some(product) = &self.product {
             self.software
-                .call(software::message::SetConfig::new(software.clone()))
+                .call(software::message::SetConfig::new(
+                    message.config.software.clone(),
+                    Arc::clone(&product),
+                ))
                 .await?;
+        } else {
+            self.notify_no_product();
         }
-        self.config = message.config;
         Ok(())
     }
 }

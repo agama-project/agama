@@ -67,7 +67,7 @@ pub async fn start(
     let software = software::start(issues.clone(), progress.clone(), events.clone()).await?;
 
     let mut service = Service::new(l10n, software, issues, progress, questions, events.clone());
-    service.read().await?;
+    service.setup().await?;
     let handler = actor::spawn(service);
     Ok(handler)
 }

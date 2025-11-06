@@ -21,7 +21,10 @@
 use agama_utils::{
     actor::Message,
     api::software::{Config, Proposal, SystemInfo},
+    products::ProductSpec,
 };
+use std::sync::Arc;
+use tokio::sync::RwLock;
 
 #[derive(Clone)]
 pub struct GetSystem;
@@ -51,7 +54,8 @@ impl Message for GetConfig {
 }
 
 pub struct SetConfig<T> {
-    pub config: T,
+    pub config: Option<T>,
+    pub product: Arc<RwLock<ProductSpec>>,
 }
 
 impl<T: Send + 'static> Message for SetConfig<T> {
@@ -59,8 +63,8 @@ impl<T: Send + 'static> Message for SetConfig<T> {
 }
 
 impl<T> SetConfig<T> {
-    pub fn new(config: T) -> Self {
-        Self { config }
+    pub fn new(config: Option<T>, product: Arc<RwLock<ProductSpec>>) -> Self {
+        Self { config, product }
     }
 }
 

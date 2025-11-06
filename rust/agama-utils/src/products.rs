@@ -80,9 +80,15 @@ impl ProductsRegistry {
         Ok(())
     }
 
-    /// Determines whether the are are multiple products.
-    pub fn is_multiproduct(&self) -> bool {
-        self.products.len() > 1
+    /// Returns the default product.
+    ///
+    /// If there is a single product, it is considered the "default product".
+    pub fn default_product(&self) -> Option<&ProductSpec> {
+        if self.products.len() == 1 {
+            self.products.first()
+        } else {
+            None
+        }
     }
 
     /// Finds a product by its ID.

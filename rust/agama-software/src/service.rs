@@ -139,24 +139,14 @@ impl MessageHandler<message::GetConfig> for Service {
 #[async_trait]
 impl MessageHandler<message::SetConfig<Config>> for Service {
     async fn handle(&mut self, message: message::SetConfig<Config>) -> Result<(), Error> {
-        let product = message.config.product.as_ref();
+        let product = message.product.read().await;
 
-        // handle product
-        let Some(new_product_id) = &product.and_then(|p| p.id.as_ref()) else {
-            return Ok(());
-        };
-
-        let Some(new_product) = self.products.find(new_product_id.as_str()) else {
-            // FIXME: return an error.
-            return Ok(());
-        };
-
-        self.state.config = message.config.clone();
+        self.state.config = message.config.clone().unwrap_or_default();
         self.events.send(Event::ConfigChanged {
             scope: Scope::Software,
         })?;
 
-        let software = SoftwareState::build_from(new_product, &message.config, &self.state.system);
+        let software = SoftwareState::build_from(&product, &self.state.config, &self.state.system);
 
         let model = self.model.clone();
         let issues = self.issues.clone();
