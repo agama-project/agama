@@ -20,8 +20,8 @@
 
 //! Implements support for reading software licenses.
 
+use crate::api::manager::{InvalidLanguageCode, LanguageTag, License};
 use agama_locale_data::get_territories;
-use agama_utils::api::software::{InvalidLanguageCode, LanguageTag, License};
 use serde::Serialize;
 use serde_with::{serde_as, DisplayFromStr};
 use std::{
@@ -84,7 +84,7 @@ impl LicensesRepo {
     }
 
     /// Reads the licenses from the repository.
-    pub fn read(&mut self) -> Result<(), std::io::Error> {
+    pub fn read(&mut self) -> Result<(), Error> {
         let entries = read_dir(self.path.as_path())?;
 
         for entry in entries {
@@ -237,9 +237,7 @@ impl Default for LicensesRepo {
 
 #[cfg(test)]
 mod test {
-    use agama_utils::api::software::LanguageTag;
-
-    use super::LicensesRepo;
+    use super::{LanguageTag, LicensesRepo};
     use std::path::Path;
 
     fn build_repo() -> LicensesRepo {

@@ -24,6 +24,7 @@ use agama_utils::{
         software::{Pattern, SelectedBy, SoftwareProposal},
         Issue, IssueSeverity, Scope,
     },
+    products::ProductSpec,
     progress,
 };
 use std::path::Path;
@@ -35,7 +36,6 @@ use zypp_agama::ZyppError;
 
 use crate::model::{
     packages::ResolvableType,
-    products::ProductSpec,
     state::{self, SoftwareState},
 };
 const TARGET_DIR: &str = "/run/agama/software_ng_zypp";

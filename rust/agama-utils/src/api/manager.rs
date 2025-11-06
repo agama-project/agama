@@ -17,12 +17,9 @@
 //
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
-//
-mod config;
-pub use config::*;
+
+mod license;
+pub use license::{InvalidLanguageCode, LanguageTag, License, LicenseContent};
 
 mod system_info;
-pub use system_info::*;
-
-mod proposal;
-pub use proposal::{Proposal, SelectedBy, SoftwareProposal};
+pub use system_info::{SystemInfo, Product};

@@ -24,7 +24,7 @@
 //! It reads the list of products from the `products.d` directory (usually,
 //! `/usr/share/agama/products.d`).
 
-use agama_utils::api::software::Product;
+use crate::api::manager::Product;
 use serde::{Deserialize, Deserializer};
 use serde_with::{formats::CommaSeparator, serde_as, StringWithSeparator};
 use std::path::{Path, PathBuf};

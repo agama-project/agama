@@ -18,7 +18,11 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::{l10n, service::Service, software};
+use crate::{
+    l10n,
+    service::{self, Service},
+    software,
+};
 use agama_utils::{
     actor::{self, Handler},
     api::event,
@@ -35,6 +39,8 @@ pub enum Error {
     Software(#[from] software::start::Error),
     #[error(transparent)]
     Issues(#[from] issue::start::Error),
+    #[error(transparent)]
+    Service(#[from] service::Error),
 }
 
 /// Starts the manager service.
@@ -60,7 +66,8 @@ pub async fn start(
     let l10n = l10n::start(issues.clone(), events.clone()).await?;
     let software = software::start(issues.clone(), progress.clone(), events.clone()).await?;
 
-    let service = Service::new(l10n, software, issues, progress, questions, events.clone());
+    let mut service = Service::new(l10n, software, issues, progress, questions, events.clone());
+    service.read().await?;
     let handler = actor::spawn(service);
     Ok(handler)
 }

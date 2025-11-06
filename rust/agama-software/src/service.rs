@@ -22,12 +22,7 @@ use std::{process::Command, sync::Arc};
 
 use crate::{
     message,
-    model::{
-        license::{Error as LicenseError, LicensesRepo},
-        products::{ProductsRegistry, ProductsRegistryError},
-        state::SoftwareState,
-        ModelAdapter,
-    },
+    model::{state::SoftwareState, ModelAdapter},
     zypp_server::{self, SoftwareAction},
 };
 use agama_utils::{
@@ -61,10 +56,6 @@ pub enum Error {
     #[error("There is no {0} product")]
     WrongProduct(String),
     #[error(transparent)]
-    ProductsRegistry(#[from] ProductsRegistryError),
-    #[error(transparent)]
-    License(#[from] LicenseError),
-    #[error(transparent)]
     ZyppServerError(#[from] zypp_server::ZyppServerError),
     #[error(transparent)]
     ZyppError(#[from] zypp_agama::errors::ZyppError),
@@ -80,8 +71,6 @@ pub enum Error {
 /// * Applies the user configuration at the end of the installation.
 pub struct Service {
     model: Arc<Mutex<dyn ModelAdapter + Send + 'static>>,
-    products: ProductsRegistry,
-    licenses: LicensesRepo,
     issues: Handler<issue::Service>,
     progress: Handler<progress::Service>,
     events: event::Sender,
@@ -107,17 +96,11 @@ impl Service {
             issues,
             progress,
             events,
-            licenses: LicensesRepo::default(),
-            products: ProductsRegistry::default(),
             state: Default::default(),
         }
     }
 
     pub async fn read(&mut self) -> Result<(), Error> {
-        self.licenses.read()?;
-        self.products.read()?;
-        self.state.system.licenses = self.licenses.licenses().into_iter().cloned().collect();
-        self.state.system.products = self.products.products();
         if let Some(install_repo) = find_install_repository() {
             tracing::info!("Found repository at {}", install_repo.url);
             self.state.system.repositories.push(install_repo);
@@ -126,12 +109,7 @@ impl Service {
     }
 
     async fn update_system(&mut self) -> Result<(), Error> {
-        let licenses = self.licenses.licenses().into_iter().cloned().collect();
-        let products = self.products.products();
-
-        self.state.system.licenses = licenses;
-        self.state.system.products = products;
-
+        // TODO: add system information (repositories, patterns, etc.).
         self.events.send(Event::SystemChanged {
             scope: Scope::Software,
         })?;

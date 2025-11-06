@@ -18,7 +18,6 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::api::software::License;
 use serde::Serialize;
 
 /// Localization-related information of the system where the installer
@@ -29,10 +28,6 @@ pub struct SystemInfo {
     pub patterns: Vec<Pattern>,
     /// List of known repositories.
     pub repositories: Vec<Repository>,
-    /// List of known products.
-    pub products: Vec<Product>,
-    /// List of known licenses
-    pub licenses: Vec<License>,
     /// List of available addons to register
     pub addons: Vec<AddonProperties>,
 }
@@ -67,24 +62,6 @@ pub struct Pattern {
     pub summary: String,
     /// Pattern order
     pub order: String,
-}
-
-/// Represents a software product
-#[derive(Clone, Default, Debug, Serialize, utoipa::ToSchema)]
-#[serde(rename_all = "camelCase")]
-pub struct Product {
-    /// Product ID (eg., "ALP", "Tumbleweed", etc.)
-    pub id: String,
-    /// Product name (e.g., "openSUSE Tumbleweed")
-    pub name: String,
-    /// Product description
-    pub description: String,
-    /// Product icon (e.g., "default.svg")
-    pub icon: String,
-    /// Registration requirement
-    pub registration: bool,
-    /// License ID
-    pub license: Option<String>,
 }
 
 /// Addon registration

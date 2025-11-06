@@ -31,19 +31,14 @@ use tokio::sync::{mpsc, oneshot};
 
 use crate::{
     model::{
-        packages::ResolvableType,
-        products::{ProductSpec, UserPattern},
-        software_selection::SoftwareSelection,
-        state::SoftwareState,
+        packages::ResolvableType, software_selection::SoftwareSelection, state::SoftwareState,
     },
     service,
     zypp_server::SoftwareAction,
 };
 
 pub mod conflict;
-pub mod license;
 pub mod packages;
-pub mod products;
 pub mod registration;
 pub mod software_selection;
 pub mod state;
