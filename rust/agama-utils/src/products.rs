@@ -228,18 +228,18 @@ mod test {
     #[test]
     fn test_load_registry() {
         let path = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../test/share/products.d");
-        let mut repo = ProductsRegistry::new(path.as_path());
-        repo.read().unwrap();
+        let mut registry = ProductsRegistry::new(path.as_path());
+        registry.read().unwrap();
         // ensuring that we can load all products from tests
-        assert_eq!(repo.products.len(), 8);
+        assert_eq!(registry.products.len(), 8);
     }
 
     #[test]
     fn test_find_product() {
         let path = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../test/share/products.d");
-        let mut repo = ProductsRegistry::new(path.as_path());
-        repo.read().unwrap();
-        let tw = repo.find("Tumbleweed").unwrap();
+        let mut registry = ProductsRegistry::new(path.as_path());
+        registry.read().unwrap();
+        let tw = registry.find("Tumbleweed").unwrap();
         assert_eq!(tw.id, "Tumbleweed");
         assert_eq!(tw.name, "openSUSE Tumbleweed");
         assert_eq!(tw.icon, "Tumbleweed.svg");
@@ -264,7 +264,21 @@ mod test {
             Some(&UserPattern::Preselected(expected_pattern))
         );
 
-        let missing = repo.find("Missing");
+        let missing = registry.find("Missing");
         assert!(missing.is_none());
+    }
+
+    #[test]
+    fn test_default_product() {
+        let path =
+            PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../test/share/products.d-single");
+        let mut registry = ProductsRegistry::new(path.as_path());
+        registry.read().unwrap();
+        assert!(registry.default_product().is_some());
+
+        let path = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../test/share/products.d");
+        let mut registry = ProductsRegistry::new(path.as_path());
+        registry.read().unwrap();
+        assert!(registry.default_product().is_none());
     }
 }
