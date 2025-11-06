@@ -203,7 +203,8 @@ impl MessageHandler<message::GetProposal> for Service {
     /// It returns the current proposal, if any.
     async fn handle(&mut self, _message: message::GetProposal) -> Result<Option<Proposal>, Error> {
         let l10n = self.l10n.call(l10n::message::GetProposal).await?;
-        Ok(Some(Proposal { l10n }))
+        let software = self.software.call(software::message::GetProposal).await?;
+        Ok(Some(Proposal { l10n, software }))
     }
 }
 

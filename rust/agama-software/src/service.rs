@@ -28,14 +28,13 @@ use crate::{
         state::SoftwareState,
         ModelAdapter,
     },
-    proposal::Proposal,
     zypp_server::{self, SoftwareAction},
 };
 use agama_utils::{
     actor::{self, Actor, Handler, MessageHandler},
     api::{
         event::{self, Event},
-        software::{Config, Repository, SystemInfo},
+        software::{Config, Proposal, Repository, SystemInfo},
         Scope,
     },
     issue,

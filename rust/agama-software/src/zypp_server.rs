@@ -18,7 +18,10 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use agama_utils::api::{software::Pattern, Issue, IssueSeverity};
+use agama_utils::api::{
+    software::{Pattern, SelectedBy, SoftwareProposal},
+    Issue, IssueSeverity,
+};
 use std::path::Path;
 use tokio::sync::{
     mpsc::{self, UnboundedSender},
@@ -26,13 +29,10 @@ use tokio::sync::{
 };
 use zypp_agama::ZyppError;
 
-use crate::{
-    model::{
-        packages::ResolvableType,
-        products::ProductSpec,
-        state::{self, SoftwareState},
-    },
-    proposal::SelectedBy,
+use crate::model::{
+    packages::ResolvableType,
+    products::ProductSpec,
+    state::{self, SoftwareState},
 };
 const TARGET_DIR: &str = "/run/agama/software_ng_zypp";
 const GPG_KEYS: &str = "/usr/lib/rpm/gnupg/keys/gpg-*";
@@ -89,7 +89,7 @@ pub enum SoftwareAction {
     GetPatternsMetadata(Vec<String>, oneshot::Sender<ZyppServerResult<Vec<Pattern>>>),
     ComputeProposal(
         ProductSpec,
-        oneshot::Sender<ZyppServerResult<crate::proposal::SoftwareProposal>>,
+        oneshot::Sender<ZyppServerResult<SoftwareProposal>>,
     ),
     SetResolvables {
         tx: oneshot::Sender<Result<(), ZyppError>>,
@@ -510,7 +510,7 @@ impl ZyppServer {
     async fn compute_proposal(
         &self,
         product_spec: ProductSpec,
-        sender: oneshot::Sender<Result<crate::proposal::SoftwareProposal, ZyppServerError>>,
+        sender: oneshot::Sender<Result<SoftwareProposal, ZyppServerError>>,
         zypp: &zypp_agama::Zypp,
     ) -> Result<(), ZyppDispatchError> {
         // TODO: for now it just compute total size, but it can get info about partitions from storage and pass it to libzypp
@@ -556,7 +556,7 @@ impl ZyppServer {
             return Ok(());
         };
 
-        let proposal = crate::proposal::SoftwareProposal {
+        let proposal = SoftwareProposal {
             size: size_str,
             patterns: selected_patterns,
         };

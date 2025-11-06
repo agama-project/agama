@@ -45,7 +45,7 @@ pub struct SoftwareProposal {
 }
 
 /// Describes what Agama proposes for the target system.
-#[derive(Clone, Default, Debug, Serialize)]
+#[derive(Clone, Default, Debug, Serialize, utoipa::ToSchema)]
 pub struct Proposal {
     /// Software specific proposal
     #[serde(skip_serializing_if = "Option::is_none")]
