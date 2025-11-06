@@ -138,6 +138,7 @@ mod test {
                                 "class": "foo",
                                 "text": "Shape",
                                 "options": ["bouba","kiki"],
+                                "optionLabels": ["buba","kyky"],
                                 "defaultOption": "bouba",
                                 "data": { "a": "A" }
                             },
@@ -153,6 +154,7 @@ mod test {
                 class: "foo".to_owned(),
                 text: "Shape".to_owned(),
                 options: vec!["bouba".to_owned(), "kiki".to_owned()],
+                option_labels: vec!["buba".to_owned(), "kyky".to_owned()],
                 default_option: "bouba".to_owned(),
                 data: HashMap::from([("a".to_owned(), "A".to_owned())]),
             },
@@ -173,7 +175,7 @@ mod test {
                 .path("/api/questions")
                 .header("content-type", "application/json")
                 .body(
-                    r#"{"generic":{"id":null,"class":"fiction.hamlet","text":"To be or not to be","options":["to be","not to be"],"defaultOption":"to be","data":{"a":"A"}},"withPassword":null}"#
+                    r#"{"generic":{"id":null,"class":"fiction.hamlet","text":"To be or not to be","options":["to be","not to be"],"optionLabels":["být","nebýt"],"defaultOption":"to be","data":{"a":"A"}},"withPassword":null}"#
                 );
             then.status(200)
                 .header("content-type", "application/json")
@@ -184,6 +186,7 @@ mod test {
                             "class": "fiction.hamlet",
                             "text": "To be or not to be",
                             "options": ["to be","not to be"],
+                            "optionLabels": ["být","nebýt"],
                             "defaultOption": "to be",
                             "data": { "a": "A" }
                         },
@@ -199,6 +202,7 @@ mod test {
                 class: "fiction.hamlet".to_owned(),
                 text: "To be or not to be".to_owned(),
                 options: vec!["to be".to_owned(), "not to be".to_owned()],
+                option_labels: vec!["být".to_owned(), "nebýt".to_owned()],
                 default_option: "to be".to_owned(),
                 data: HashMap::from([("a".to_owned(), "A".to_owned())]),
             },

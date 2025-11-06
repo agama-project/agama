@@ -64,9 +64,16 @@ Sensitive answers or params will be replaced, so the user has to explicitly spec
 | class  | description  | possible answers  | available data  | notes  |
 |---     |---           |---                |---              |---     |
 | `autoyast.unsupported` | When there are unsupported elements in an AutoYaST profile | `Abort` `Continue` | `planned` elements to be supported in the future, `unsupported` unsupported elements | |
-| `software.medium_error` | When there is issue with access to medium  | `Retry` `Skip`  | `url` with url where failed access happen  |   |
-| `software.unsigned_file`  | When file from repository is not digitally signed. If it should be used  | `Yes` `No`  | `filename` with name of file  |   |
+| `load.retry` | When loading the config at autoinstallation time | `Yes` `No` | | |
+| `registration.certificate` | Self-signed certificate encountered | `Trust` `Reject` | `url` `issuer_name` `issuer_date` `expiration_date` `sha1_fingerprint` `sha256_fingerprint` | |
+| `software.digest.no_digest` | desc | `Yes` `No` | - | |
 | `software.import_gpg`  | When signature is sign with unknown GPG key  | `Trust` `Skip`  | `id` of key `name` of key and `fingerprint` of key |   |
+| `software.package_error.install_error` | When there is issue with installing a downloaded package | `Retry` `Continue`  | `package` |   |
+| `software.package_error.medium_error` | When there is issue with access to medium  | `Retry` `Continue`  | `url` with url where failed access happen  |   |
+| `software.package_error.provide_error` | Package download failed | `Retry` `Continue` | `package`: name, `error_code`: `IO_ERROR` or `INVALID` | |
+| `software.script_problem` | Problem running a package script | `Retry` `Continue` | `details`: description | |
+| `software.unknown_gpg`  | Use a file signed with an unknown GPG key  | `Yes` `No`  | `id` of key, `filename` |   |
+| `software.unsigned_file`  | When file from repository is not digitally signed. If it should be used  | `Yes` `No`  | `filename` with name of file  |   |
 | `storage.activate_multipath` | When it looks like system has multipath and if it should be activated | `yes` `no` |  | Here it is used lower case. It should be unified. |
 | `storage.commit_error` | When some storage actions failed and if it should continue | `yes` `no` |  | Also here it is lowercase |
 | `storage.luks_activation` | When LUKS encrypted device is detected and it needs password to probe it | `skip` `decrypt` | `device` name, `label` of device, `size` of device and `attempt` the number of attempt | Answer contain additional field password that has to be filled if answer is `decrypt`. Attempt data can be used to limit passing wrong password. |

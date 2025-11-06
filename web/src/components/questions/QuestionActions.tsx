@@ -25,13 +25,6 @@ import { Popup } from "~/components/core";
 import { fork } from "radashi";
 
 /**
- * Returns given text capitalized
- *
- * TODO: make it work with i18n
- */
-const label = (text: string): string => `${text[0].toUpperCase()}${text.slice(1)}`;
-
-/**
  * A component for building a Question actions, using the defaultAction
  * as the Popup.PrimaryAction
  *
@@ -40,18 +33,21 @@ const label = (text: string): string => `${text[0].toUpperCase()}${text.slice(1)
  * React.Fragment (aka <>) here for wrapping the actions instead of directly using the Popup.Actions.
  *
  * @param {object} props - component props
- * @param props.actions - the actions show
- * @param props.defaultAction - the action to show as primary
+ * @param props.actions - the actions (untranslated, passed to actionCallback)
+ * @param props.actionLabels - the actions to show (translated)
+ * @param props.defaultAction - the action to show as primary (untranslated)
  * @param props.actionCallback - the function to call when the user clicks on the action
  * @param props.conditions={} - an object holding conditions, like when an action is disabled
  */
 export default function QuestionActions({
   actions,
+  actionLabels,
   defaultAction,
   actionCallback,
   conditions = {},
 }: {
   actions: string[];
+  actionLabels: string[];
   defaultAction?: string;
   actionCallback: (action: string) => void;
   conditions?: { disable?: { [key: string]: boolean } };
@@ -61,6 +57,13 @@ export default function QuestionActions({
   // Ensure there is always a primary action
   if (!primaryAction) [primaryAction, ...secondaryActions] = secondaryActions;
 
+  const actionsToLabels = {};
+  for (let i = 0; i < actions.length; i++) {
+    const action: string = actions[i];
+    const label: string = actionLabels[i];
+    actionsToLabels[action] = label;
+  }
+
   return (
     <>
       <Popup.PrimaryAction
@@ -68,7 +71,7 @@ export default function QuestionActions({
         onClick={() => actionCallback(primaryAction)}
         isDisabled={conditions?.disable?.[primaryAction]}
       >
-        {label(primaryAction)}
+        {actionsToLabels[primaryAction]}
       </Popup.PrimaryAction>
       {secondaryActions.map((action) => (
         <Popup.SecondaryAction
@@ -76,7 +79,7 @@ export default function QuestionActions({
           onClick={() => actionCallback(action)}
           isDisabled={conditions?.disable?.[action]}
         >
-          {label(action)}
+          {actionsToLabels[action]}
         </Popup.SecondaryAction>
       ))}
     </>

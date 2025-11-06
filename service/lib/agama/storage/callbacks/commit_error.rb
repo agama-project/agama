@@ -70,12 +70,14 @@ module Agama
         #
         # @return [Question]
         def question(message, details)
-          text = "There was an error performing the following action: #{message}. " \
-                 "Do you want to continue with the rest of storage actions?"
+          # TODO: declare _()
+          text = format(_("There was an error performing the following action: %s. " \
+                          "Do you want to continue with the rest of storage actions?"), message)
 
           Question.new(
             qclass:         "storage.commit_error",
             text:           text,
+            # FIXME: can we change yes to Yes now?
             options:        [:yes, :no],
             default_option: :no,
             data:           { "details" => details }

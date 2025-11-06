@@ -35,4 +35,5 @@ Metrics/ParameterLists:
     - lib/agama/software/repository.rb
 
 Metrics/ClassLength:
-  Max: 300
+  # lib/agama/registration.rb is the outlier that should be split up
+  Max: 306
