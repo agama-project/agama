@@ -40,6 +40,14 @@ impl Repository {
     }
 }
 
+#[derive(Debug)]
+pub struct MountPoint {
+    pub directory: String,
+    pub filesystem: String,
+    pub grow_only: bool,
+    pub used_size: i64,
+}
+
 // TODO: should we add also e.g. serd serializers here?
 #[derive(Debug)]
 pub struct PatternInfo {
@@ -151,6 +159,54 @@ impl Zypp {
         unsafe {
             let res = zypp_agama_sys::commit(self.ptr, status_ptr);
             helpers::status_to_result(status, res)
+        }
+    }
+
+    pub fn count_disk_usage(
+        &self,
+        mut mount_points: Vec<MountPoint>,
+    ) -> ZyppResult<Vec<MountPoint>> {
+        let mut status: Status = Status::default();
+        let status_ptr = &mut status as *mut _;
+        unsafe {
+            // we need to hold dirs and fss here to ensure that CString lives long enough
+            let dirs: Vec<CString> = mount_points
+                .iter()
+                .map(|mp| {
+                    CString::new(mp.directory.as_str())
+                        .expect("CString must not contain internal NUL")
+                })
+                .collect();
+            let fss: Vec<CString> = mount_points
+                .iter()
+                .map(|mp| {
+                    CString::new(mp.filesystem.as_str())
+                        .expect("CString must not contain internal NUL")
+                })
+                .collect();
+            let libzypp_mps: Vec<_> = mount_points
+                .iter()
+                .enumerate()
+                .map(|(i, mp)| zypp_agama_sys::MountPoint {
+                    directory: dirs[i].as_ptr(),
+                    filesystem: fss[i].as_ptr(),
+                    grow_only: mp.grow_only,
+                    used_size: 0,
+                })
+                .collect();
+            zypp_agama_sys::get_space_usage(
+                self.ptr,
+                status_ptr,
+                libzypp_mps.as_ptr() as *mut _,
+                libzypp_mps.len() as u32,
+            );
+            helpers::status_to_result_void(status)?;
+
+            libzypp_mps.iter().enumerate().for_each(|(i, mp)| {
+                mount_points[i].used_size = mp.used_size;
+            });
+
+            return Ok(mount_points);
         }
     }
 

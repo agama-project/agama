@@ -124,6 +124,31 @@ pub type ProgressCallback = ::std::option::Option<
         user_data: *mut ::std::os::raw::c_void,
     ),
 >;
+#[doc = " Represents a single mount point and its space usage.\n The string pointers are not owned by this struct."]
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct MountPoint {
+    #[doc = "< The path where the filesystem is mounted."]
+    pub directory: *const ::std::os::raw::c_char,
+    #[doc = "< The filesystem type (e.g., \"btrfs\", \"xfs\")."]
+    pub filesystem: *const ::std::os::raw::c_char,
+    pub grow_only: bool,
+    #[doc = "< The used space in kilobytes. This is an output field."]
+    pub used_size: ::std::os::raw::c_longlong,
+}
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of MountPoint"][::std::mem::size_of::<MountPoint>() - 32usize];
+    ["Alignment of MountPoint"][::std::mem::align_of::<MountPoint>() - 8usize];
+    ["Offset of field: MountPoint::directory"]
+        [::std::mem::offset_of!(MountPoint, directory) - 0usize];
+    ["Offset of field: MountPoint::filesystem"]
+        [::std::mem::offset_of!(MountPoint, filesystem) - 8usize];
+    ["Offset of field: MountPoint::grow_only"]
+        [::std::mem::offset_of!(MountPoint, grow_only) - 16usize];
+    ["Offset of field: MountPoint::used_size"]
+        [::std::mem::offset_of!(MountPoint, used_size) - 24usize];
+};
 pub const RESOLVABLE_KIND_RESOLVABLE_PRODUCT: RESOLVABLE_KIND = 0;
 pub const RESOLVABLE_KIND_RESOLVABLE_PATCH: RESOLVABLE_KIND = 1;
 pub const RESOLVABLE_KIND_RESOLVABLE_PACKAGE: RESOLVABLE_KIND = 2;
@@ -257,6 +282,13 @@ unsafe extern "C" {
     pub fn switch_target(zypp: *mut Zypp, root: *const ::std::os::raw::c_char, status: *mut Status);
     #[doc = " Commit zypp settings and install\n TODO: callbacks\n @param zypp\n @param status\n @return true if there is no error"]
     pub fn commit(zypp: *mut Zypp, status: *mut Status) -> bool;
+    #[doc = " Calculates the space usage for a given list of mount points.\n This function populates the `used_size` field for each element in the\n provided `mount_points` array.\n\n @param zypp The Zypp context.\n @param[out] status Output status object.\n @param[in,out] mount_points An array of mount points to be evaluated.\n @param mount_points_size The number of elements in the `mount_points` array."]
+    pub fn get_space_usage(
+        zypp: *mut Zypp,
+        status: *mut Status,
+        mount_points: *mut MountPoint,
+        mount_points_size: ::std::os::raw::c_uint,
+    );
     #[doc = " Marks resolvable for installation\n @param zypp see \\ref init_target\n @param name resolvable name\n @param kind kind of resolvable\n @param who who do selection. If NOT_SELECTED is used, it will be empty\n operation.\n @param[out] status (will overwrite existing contents)"]
     pub fn resolvable_select(
         zypp: *mut Zypp,

@@ -63,6 +63,10 @@ pub trait ModelAdapter: Send + Sync + 'static {
         optional: bool,
     ) -> Result<(), service::Error>;
 
+    async fn compute_proposal(
+        &self,
+    ) -> Result<Option<crate::proposal::SoftwareProposal>, service::Error>;
+
     /// Refresh repositories information.
     async fn refresh(&mut self) -> Result<(), service::Error>;
 
@@ -163,5 +167,18 @@ impl ModelAdapter for Model {
         let (tx, rx) = oneshot::channel();
         self.zypp_sender.send(SoftwareAction::Install(tx))?;
         Ok(rx.await??)
+    }
+
+    async fn compute_proposal(
+        &self,
+    ) -> Result<Option<crate::proposal::SoftwareProposal>, service::Error> {
+        let Some(product_spec) = self.selected_product.clone() else {
+            return Ok(None);
+        };
+
+        let (tx, rx) = oneshot::channel();
+        self.zypp_sender
+            .send(SoftwareAction::ComputeProposal(product_spec, tx))?;
+        Ok(Some(rx.await??))
     }
 }

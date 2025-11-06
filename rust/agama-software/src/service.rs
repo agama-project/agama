@@ -41,7 +41,7 @@ use agama_utils::{
     issue,
 };
 use async_trait::async_trait;
-use tokio::sync::{broadcast, Mutex};
+use tokio::sync::{broadcast, Mutex, RwLock};
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
@@ -92,6 +92,7 @@ pub struct Service {
 struct State {
     config: Config,
     system: SystemInfo,
+    proposal: Arc<RwLock<Proposal>>,
 }
 
 impl Service {
@@ -179,12 +180,22 @@ impl MessageHandler<message::SetConfig<Config>> for Service {
 
         let model = self.model.clone();
         let issues = self.issues.clone();
+        let events = self.events.clone();
+        let proposal = self.state.proposal.clone();
         tokio::task::spawn(async move {
             let mut my_model = model.lock().await;
             let found_issues = my_model.write(software).await.unwrap();
             if !found_issues.is_empty() {
                 _ = issues.cast(issue::message::Update::new(Scope::Software, found_issues));
             }
+            // update proposal with new config
+            // TODO: how to handle errors here? Own issue?
+            let software_proposal = my_model.compute_proposal().await.unwrap();
+            proposal.write().await.software = software_proposal;
+
+            _ = events.send(Event::ProposalChanged {
+                scope: Scope::Software,
+            });
         });
 
         Ok(())
@@ -194,7 +205,7 @@ impl MessageHandler<message::SetConfig<Config>> for Service {
 #[async_trait]
 impl MessageHandler<message::GetProposal> for Service {
     async fn handle(&mut self, _message: message::GetProposal) -> Result<Option<Proposal>, Error> {
-        todo!();
+        Ok(self.state.proposal.read().await.clone().into_option())
     }
 }
 

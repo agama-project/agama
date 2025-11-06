@@ -45,13 +45,22 @@ pub struct SoftwareProposal {
 }
 
 /// Describes what Agama proposes for the target system.
-#[derive(Clone, Debug, Serialize)]
+#[derive(Clone, Default, Debug, Serialize)]
 pub struct Proposal {
     /// Software specific proposal
     #[serde(skip_serializing_if = "Option::is_none")]
-    software: Option<SoftwareProposal>,
+    pub software: Option<SoftwareProposal>,
     /// Registration proposal. Maybe same as config?
     /// TODO: implement it
     #[serde(skip_serializing_if = "Option::is_none")]
-    registration: Option<()>,
+    pub registration: Option<()>,
+}
+
+impl Proposal {
+    pub fn into_option(self) -> Option<Self> {
+        if self.software.is_none() && self.registration.is_none() {
+            return None;
+        }
+        Some(self)
+    }
 }
