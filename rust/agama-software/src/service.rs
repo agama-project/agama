@@ -29,10 +29,12 @@ use agama_utils::{
     actor::{self, Actor, Handler, MessageHandler},
     api::{
         event::{self, Event},
-        software::{Config, Proposal, Repository, SystemInfo},
-        Scope,
+        software::{Config, Proposal, Repository, SoftwareProposal, SystemInfo},
+        Issue, IssueSeverity, Scope,
     },
-    issue, progress,
+    issue,
+    products::ProductSpec,
+    progress,
 };
 use async_trait::async_trait;
 use tokio::sync::{broadcast, Mutex, RwLock};
@@ -155,17 +157,21 @@ impl MessageHandler<message::SetConfig<Config>> for Service {
         let proposal = self.state.proposal.clone();
         let product_spec = product.clone();
         tokio::task::spawn(async move {
-            let mut my_model = model.lock().await;
-            my_model.set_product(product_spec);
-            let found_issues = my_model.write(software, progress).await.unwrap();
-            if !found_issues.is_empty() {
-                _ = issues.cast(issue::message::Update::new(Scope::Software, found_issues));
-            }
-            // update proposal with new config
-            // TODO: how to handle errors here? Own issue?
-            let software_proposal = my_model.compute_proposal().await.unwrap();
-            proposal.write().await.software = software_proposal;
-
+            let (new_proposal, found_issues) =
+                match compute_proposal(model, product_spec, software, progress).await {
+                    Ok((new_proposal, found_issues)) => (Some(new_proposal), found_issues),
+                    Err(error) => {
+                        let new_issue = Issue::new(
+                            "software.proposal_failed",
+                            "It was not possible to create a software proposal",
+                            IssueSeverity::Error,
+                        )
+                        .with_details(&error.to_string());
+                        (None, vec![new_issue])
+                    }
+                };
+            proposal.write().await.software = new_proposal;
+            _ = issues.cast(issue::message::Update::new(Scope::Software, found_issues));
             _ = events.send(Event::ProposalChanged {
                 scope: Scope::Software,
             });
@@ -173,6 +179,19 @@ impl MessageHandler<message::SetConfig<Config>> for Service {
 
         Ok(())
     }
+}
+
+async fn compute_proposal(
+    model: Arc<Mutex<dyn ModelAdapter + Send + 'static>>,
+    product_spec: ProductSpec,
+    wanted: SoftwareState,
+    progress: Handler<progress::Service>,
+) -> Result<(SoftwareProposal, Vec<Issue>), Error> {
+    let mut my_model = model.lock().await;
+    my_model.set_product(product_spec);
+    let issues = my_model.write(wanted, progress).await?;
+    let proposal = my_model.compute_proposal().await?;
+    Ok((proposal, issues))
 }
 
 #[async_trait]
