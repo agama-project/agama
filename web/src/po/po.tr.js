@@ -139,9 +139,6 @@ export default {
   "Add another address": [
     "Başka Bir Adres Ekle"
   ],
-  "Add another partition or mount an existing one": [
-    "Başka bir bölüm ekleyin veya mevcut bir bölümü bağlayın"
-  ],
   "Add device menu": [
     "Cihaz menüsü ekle"
   ],
@@ -327,9 +324,6 @@ export default {
   "Change Language": [
     "Dili değiştir"
   ],
-  "Change boot options": [
-    "Önyükleme seçeneklerini değiştir"
-  ],
   "Change device menu": [
     "Cihaz menüsünü değiştir"
   ],
@@ -357,11 +351,11 @@ export default {
   "Change the file system or mount point": [
     "Dosya sistemini veya bağlama noktasını değiştirin"
   ],
+  "Changes in these settings will immediately update the 'Result' section below.": [
+    ""
+  ],
   "Channel ID": [
     "Kanal Kimliği"
-  ],
-  "Check the %d planned actions": [
-    "%d planlanan eylemi kontrol edin"
   ],
   "Check the authentication parameters.": [
     "Kimlik doğrulama parametrelerini kontrol edin."
@@ -395,9 +389,6 @@ export default {
   ],
   "Close": [
     "Kapat"
-  ],
-  "Collapse the list of planned actions": [
-    "Planlanan eylemlerin listesini daraltın"
   ],
   "Configuration out of sync": [
     "Yapılandırma senkronize değil"
@@ -609,9 +600,6 @@ export default {
   "Details": [
     "Ayrıntılar"
   ],
-  "Details for %s": [
-    "%s için ayrıntılar"
-  ],
   "Details will appear after the connection is successfully established.": [
     "Bağlantı başarıyla kurulduktan sonra ayrıntılar görünecektir."
   ],
@@ -665,9 +653,6 @@ export default {
   ],
   "Download logs": [
     "Günlükleri indir"
-  ],
-  "During installation, several actions will be performed to setup the layout shown at the table below.": [
-    "Kurulum sırasında aşağıdaki tabloda gösterilen düzeni oluşturmak için çeşitli işlemler gerçekleştirilecektir."
   ],
   "Edit": [
     "Düzenle"
@@ -732,8 +717,8 @@ export default {
   "ExFAT": [
     "ExFAT"
   ],
-  "Example: https://myserver.com": [
-    "Örnek: https://sunucum.com"
+  "Example: %s": [
+    "Örnek: %s"
   ],
   "Excellent signal": [
     "Mükemmel sinyal"
@@ -791,8 +776,8 @@ export default {
   "Filter by territory, time zone code or UTC offset": [
     "Bölgeye, saat dilimi koduna veya UTC farkına göre filtreleyin"
   ],
-  "Find space": [
-    "Boşluk bul"
+  "Final layout": [
+    "Son düzen"
   ],
   "Find space in %s": [
     "%s'de boşluk bul"
@@ -977,9 +962,6 @@ export default {
   ],
   "Install using several devices without modifying existing partitions.": [
     "Mevcut bölümleri değiştirmeden %s aygıtını kullanarak yükleyin."
-  ],
-  "Installation Devices": [
-    "Kurulum Aygıtları"
   ],
   "Installation will take %s.": [
     "Kurulum %s kadar olacak."
@@ -1346,12 +1328,6 @@ export default {
   "Options toggle": [
     "Seçenekler geçişi"
   ],
-  "Other options": [
-    "Diğer seçenekler"
-  ],
-  "Other options toggle": [
-    "Diğer seçenekler arasında geçiş"
-  ],
   "Overview": [
     "Genel bakış"
   ],
@@ -1360,6 +1336,9 @@ export default {
   ],
   "Partition Info": [
     "Bölüm Bilgisi"
+  ],
+  "Partitions": [
+    "Bölümler"
   ],
   "Partitions needed for booting will also be adapted": [
     "Önyükleme için gereken bölümler de uyarlanacak"
@@ -1376,14 +1355,11 @@ export default {
   "Partitions that are not reused would be resized if needed.": [
     "Tekrar kullanılmayan bölümler gerektiğinde yeniden boyutlandırılacaktır."
   ],
-  "Partitions to boot will be allocated at the following device.": [
-    "Önyükleme için bölümler aşağıdaki aygıtta ayrılacaktır."
+  "Partitions to boot will be set up if needed at the installation disk.         Currently %1$s, based on the location of the %2$s file system.": [
+    ""
   ],
-  "Partitions to boot will be allocated at the installation disk %s.": [
-    "Önyükleme için bölümler kurulum diski %s'de ayrılacaktır."
-  ],
-  "Partitions to boot will be allocated at the installation disk.": [
-    "Önyükleme için gerekli bölümler kurulum diskinde ayrılacaktır."
+  "Partitions to boot will be set up if needed at the installation disk.       Currently %1$s, based on the location of the %2$s file system.": [
+    ""
   ],
   "Partitions will be used and created for %s": [
     "Bölümler %s için kullanılacak ve oluşturulacak"
@@ -1447,9 +1423,6 @@ export default {
   ],
   "Product is already registered": [
     "Ürün zaten kayıtlı"
-  ],
-  "Protection for the information stored at the new file systems, including data, programs, and system files.": [
-    "Yeni dosya sistemlerinde depolanan veri, program ve sistem dosyaları gibi bilgilerin korunması."
   ],
   "Provide email address": [
     "E-posta adresini belirtin"
@@ -1538,6 +1511,9 @@ export default {
   "Result": [
     "Sonuç"
   ],
+  "Result of applying the configuration described at the 'Settings' section above.": [
+    ""
+  ],
   "Reused partitions will not be shrunk": [
     "Yeniden kullanılan bölümler küçültülmeyecektir"
   ],
@@ -1598,20 +1574,8 @@ export default {
   "Select a disk": [
     "Bir disk seçin"
   ],
-  "Select a disk to configure": [
-    "Yapılandırılacak disk seç"
-  ],
-  "Select a disk to create %s": [
-    "%s oluşturmak için disk seç"
-  ],
   "Select a disk to define partitions or to mount": [
     "Bölümleri tanımlamak veya bağlamak için disk seç"
-  ],
-  "Select a disk to format as %s": [
-    "%s olarak biçimlendirilecek disk seç"
-  ],
-  "Select a disk to install the system": [
-    "Sistemi kurmak için disk seç"
   ],
   "Select a product": [
     "Bir ürün seçin"
@@ -1639,9 +1603,6 @@ export default {
   ],
   "Select or enter a valid mount point": [
     "Geçerli bir bağlama noktası seçin veya girin"
-  ],
-  "Select the disk to configure partitions for booting": [
-    "Önyükleme için bölümleri yapılandırmak üzere diski seçin"
   ],
   "Select what to do with each partition in order to find space for allocating the new system.": [
     "Yeni sisteme yer açmak için her bölümle ne yapılacağını seçin."

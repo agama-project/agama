@@ -92,9 +92,6 @@ export default {
   "Add another address": [
     "Přidat další adresu"
   ],
-  "Add another partition or mount an existing one": [
-    "Přidat další oddíl nebo připojit stávající"
-  ],
   "Add device menu": [
     "Nabídka přidat zařízení"
   ],
@@ -239,9 +236,6 @@ export default {
   "Change Language": [
     "Změnit jazyk"
   ],
-  "Change boot options": [
-    "Změnit možnosti zavádění systému"
-  ],
   "Change device menu": [
     "Nabídka změny zařízení"
   ],
@@ -268,6 +262,9 @@ export default {
   ],
   "Change the file system or mount point": [
     "Změnit systém souborů nebo přípojný bod"
+  ],
+  "Changes in these settings will immediately update the 'Result' section below.": [
+    ""
   ],
   "Channel ID": [
     "ID kanálu"
@@ -458,9 +455,6 @@ export default {
   "Details": [
     "Podrobnosti"
   ],
-  "Details for %s": [
-    "Detaily zařízení %s"
-  ],
   "Details will appear after the connection is successfully established.": [
     "Podrobnosti se zobrazí poté, co bude spojení úspěšně sestaveno."
   ],
@@ -505,9 +499,6 @@ export default {
   ],
   "Download logs": [
     "Stáhnout protokoly"
-  ],
-  "During installation, several actions will be performed to setup the layout shown at the table below.": [
-    "Během instalace bude provedeno několik akcí, aby bylo dosaženo návrhu uvedeného v tabulce níže."
   ],
   "Edit": [
     "Upravit"
@@ -557,8 +548,8 @@ export default {
   "ExFAT": [
     ""
   ],
-  "Example: https://myserver.com": [
-    "Například: https://mujserver.cz"
+  "Example: %s": [
+    "Například: %s"
   ],
   "Excellent signal": [
     "Výborný signál"
@@ -614,6 +605,9 @@ export default {
   ],
   "Filter by territory, time zone code or UTC offset": [
     "Filtrování podle území, kódu časového pásma nebo posunu od UTC"
+  ],
+  "Final layout": [
+    "Konečné rozvržení"
   ],
   "Find space in %s": [
     "Najít místo na %s"
@@ -1100,11 +1094,11 @@ export default {
   "Partitions that are not reused would be resized if needed.": [
     ""
   ],
-  "Partitions to boot will be allocated at the following device.": [
-    "Oddíly pro zavádění budou přiděleny na tomto zařízení."
+  "Partitions to boot will be set up if needed at the installation disk.         Currently %1$s, based on the location of the %2$s file system.": [
+    ""
   ],
-  "Partitions to boot will be allocated at the installation disk.": [
-    "Oddíly pro zavádění budou přiděleny na instalačním disku."
+  "Partitions to boot will be set up if needed at the installation disk.       Currently %1$s, based on the location of the %2$s file system.": [
+    ""
   ],
   "Partitions will be used and created for %s": [
     ""
@@ -1168,9 +1162,6 @@ export default {
   ],
   "Product is already registered": [
     ""
-  ],
-  "Protection for the information stored at the new file systems, including data, programs, and system files.": [
-    "Ochrana informací uložených na nových souborových systémech, včetně dat, programů a systémových souborů."
   ],
   "Provide email address": [
     "Zadejte emailovou adresu"
@@ -1243,6 +1234,9 @@ export default {
   ],
   "Result": [
     "Výsledek"
+  ],
+  "Result of applying the configuration described at the 'Settings' section above.": [
+    ""
   ],
   "Review and fix": [
     "Zkontrolovat a opravit"
@@ -1321,9 +1315,6 @@ export default {
   ],
   "Select or enter a valid mount point": [
     "Vyber nebo zadej platný bod připojení"
-  ],
-  "Select the disk to configure partitions for booting": [
-    "Vyberte disk pro nastavení oddílů pro zavádění systému"
   ],
   "Select what to do with each partition in order to find space for allocating the new system.": [
     "Vybrat pro každý oddíl co dělat, aby se podařilo najít místo pro vyhrazení novému systému."

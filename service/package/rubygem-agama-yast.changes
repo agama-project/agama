@@ -1,8 +1,14 @@
 -------------------------------------------------------------------
-Fri Oct 24 06:53:48 UTC 2025 - Imobach González Sosa <igonzalezsosa@suse.com>
+Thu Nov  6 22:26:46 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Fix systemd target import from AutoYaST profiles
   (gh#agama-project/agama#2826).
+  
+-------------------------------------------------------------------
+Fri Oct 31 13:48:46 UTC 2025 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Use a version of yast2-iscsi-client that fixes the errors
+  reported at bsc#1247711.
 
 -------------------------------------------------------------------
 Mon Sep 15 13:50:54 UTC 2025 - José Iván López González <jlopez@suse.com>

@@ -21,16 +21,14 @@
  */
 
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { ActionGroup, Content, Form, FormGroup, Radio, Stack } from "@patternfly/react-core";
 import { DevicesFormSelect } from "~/components/storage";
 import { Page, SubtleContent } from "~/components/core";
-import { deviceLabel } from "~/components/storage/utils";
+import { deviceLabel, formattedPath } from "~/components/storage/utils";
 import { StorageDevice } from "~/types/storage";
 import { useCandidateDevices } from "~/hooks/storage/system";
-import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import { sprintf } from "sprintf-js";
-import { _ } from "~/i18n";
 import { useDevices } from "~/queries/storage";
 import { useModel } from "~/hooks/storage/model";
 import {
@@ -38,6 +36,8 @@ import {
   useSetDefaultBootDevice,
   useDisableBootConfig,
 } from "~/hooks/storage/boot";
+import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
+import { _ } from "~/i18n";
 
 const filteredCandidates = (candidates, model): StorageDevice[] => {
   return candidates.filter((candidate) => {
@@ -67,6 +67,7 @@ type BootSelectionState = {
  * Allows the user to select the boot configuration.
  */
 export default function BootSelectionDialog() {
+  const location = useLocation();
   const [state, setState] = useState<BootSelectionState>({ load: false });
   const navigate = useNavigate();
   const devices = useDevices("system");
@@ -124,7 +125,7 @@ export default function BootSelectionDialog() {
         setBootDevice(state.bootDevice?.name);
     }
 
-    navigate("..");
+    navigate({ pathname: "..", search: location.search });
   };
 
   const isAcceptDisabled = () => {
@@ -138,13 +139,25 @@ partitions in the appropriate disk.",
 
   const automaticText = () => {
     if (!state.defaultBootDevice) {
-      return _("Partitions to boot will be allocated at the installation disk.");
+      return sprintf(
+        // TRANSLATORS: %s is replaced by the formatted path of the root file system (eg. "/")
+        _(
+          "Partitions to boot will be set up if needed at the installation disk, \
+          based on the location of the %s file system.",
+        ),
+        formattedPath("/"),
+      );
     }
 
     return sprintf(
-      // TRANSLATORS: %s is replaced by a device name and size (e.g., "/dev/sda, 500GiB")
-      _("Partitions to boot will be allocated at the installation disk %s."),
+      // TRANSLATORS: %1$s is replaced by a device name and size (e.g., sda (500GiB)), %2$s is
+      // replaced by the formatted path of the root file system (eg. "/")
+      _(
+        "Partitions to boot will be set up if needed at the installation disk. \
+        Currently %1$s, based on the location of the %2$s file system.",
+      ),
       deviceLabel(state.defaultBootDevice),
+      formattedPath("/"),
     );
   };
 
@@ -202,7 +215,7 @@ partitions in the appropriate disk.",
               }
               body={
                 <Stack hasGutter>
-                  <p>{_("Partitions to boot will be allocated at the following device.")}</p>
+                  <p>{_("Partitions to boot will be set up if needed at the following device.")}</p>
                   <DevicesFormSelect
                     aria-label={_("Choose a disk for placing the boot loader")}
                     name="bootDevice"

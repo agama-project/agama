@@ -20,19 +20,56 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
+import React, { forwardRef } from "react";
+import Icon from "~/components/layout/Icon";
 import ConfigEditorItem from "~/components/storage/ConfigEditorItem";
 import DriveHeader from "~/components/storage/DriveHeader";
 import DeviceEditorContent from "~/components/storage/DeviceEditorContent";
 import SearchedDeviceMenu from "~/components/storage/SearchedDeviceMenu";
+import { CustomToggleProps } from "~/components/core/MenuButton";
 import { Drive } from "~/types/storage/model";
 import { model, StorageDevice } from "~/types/storage";
 import { useDeleteDrive } from "~/hooks/storage/drive";
+import { Button, Flex, FlexItem } from "@patternfly/react-core";
+import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 
 type DriveDeviceMenuProps = {
   drive: model.Drive;
   selected: StorageDevice;
 };
+
+type DriveDeviceMenuToggleProps = CustomToggleProps & {
+  drive: model.Drive | model.MdRaid;
+  device: StorageDevice;
+};
+
+const DriveDeviceMenuToggle = forwardRef(
+  ({ drive, device, ...props }: DriveDeviceMenuToggleProps, ref) => {
+    return (
+      <Button
+        variant="link"
+        ref={ref}
+        style={{ display: "inline", width: "fit-content" }}
+        className={[textStyles.fontFamilyHeading, textStyles.fontSizeMd].join(" ")}
+        {...props}
+      >
+        <Flex
+          alignItems={{ default: "alignItemsCenter" }}
+          gap={{ default: "gapSm" }}
+          flexWrap={{ default: "nowrap" }}
+          style={{ whiteSpace: "normal", textAlign: "start" }}
+        >
+          <FlexItem>
+            <DriveHeader drive={drive} device={device} {...props} />
+          </FlexItem>
+          <FlexItem>
+            <Icon name="keyboard_arrow_down" style={{ verticalAlign: "middle" }} />
+          </FlexItem>
+        </Flex>
+      </Button>
+    );
+  },
+);
 
 /**
  * Internal component that renders generic actions available for a Drive device.
@@ -41,7 +78,14 @@ const DriveDeviceMenu = ({ drive, selected }: DriveDeviceMenuProps) => {
   const deleteDrive = useDeleteDrive();
   const deleteFn = (device: model.Drive) => deleteDrive(device.name);
 
-  return <SearchedDeviceMenu modelDevice={drive} selected={selected} deleteFn={deleteFn} />;
+  return (
+    <SearchedDeviceMenu
+      modelDevice={drive}
+      selected={selected}
+      deleteFn={deleteFn}
+      toggle={<DriveDeviceMenuToggle drive={drive} device={selected} />}
+    />
+  );
 };
 
 export type DriveEditorProps = { drive: Drive; driveDevice: StorageDevice };
@@ -52,10 +96,8 @@ export type DriveEditorProps = { drive: Drive; driveDevice: StorageDevice };
  */
 export default function DriveEditor({ drive, driveDevice }: DriveEditorProps) {
   return (
-    <ConfigEditorItem
-      header={<DriveHeader drive={drive} device={driveDevice} />}
-      content={<DeviceEditorContent deviceModel={drive} device={driveDevice} />}
-      actions={<DriveDeviceMenu drive={drive} selected={driveDevice} />}
-    />
+    <ConfigEditorItem header={<DriveDeviceMenu drive={drive} selected={driveDevice} />}>
+      <DeviceEditorContent deviceModel={drive} device={driveDevice} />
+    </ConfigEditorItem>
   );
 }

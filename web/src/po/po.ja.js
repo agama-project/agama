@@ -61,7 +61,7 @@ export default {
     "可能であれば、 %2$s から %3$s までの範囲で %1$s を %4$s 向けに作成します"
   ],
   "A file system will be used for the whole device": [
-    "ファイルシステムはデバイス全体を使用します"
+    "ファイルシステムはデバイス全体を使用する"
   ],
   "A generic minimum size of %1$s will be used for the new %2$s": [
     "新しい %2$s に対しては少なくとも %1$s を使用します"
@@ -73,7 +73,7 @@ export default {
     "新しい %3$s に対しては一般的なサイズ %1$s から %2$s の範囲を使用します"
   ],
   "A new partition will be created for %s": [
-    "%s に対しては新しいパーティションを作成します"
+    "%s に対して新しいパーティションを作成する"
   ],
   "A new volume will be created for %s": [
     "%s に対しては新しいボリュームを作成します"
@@ -85,7 +85,7 @@ export default {
     "パーティションを縮小するかもしれません"
   ],
   "A partition will be deleted": [
-    "パーティションを削除します"
+    "パーティションを削除する"
   ],
   "Accept": [
     "受け入れる"
@@ -135,9 +135,6 @@ export default {
   "Add another address": [
     "その他のアドレスの追加"
   ],
-  "Add another partition or mount an existing one": [
-    "他のパーティションの追加または既存のパーティションのマウント"
-  ],
   "Add device menu": [
     "デバイスメニューの追加"
   ],
@@ -163,7 +160,7 @@ export default {
     "すべての競合が解決されたか、競合が検出されませんでした。セットアップを安全に続行できます。"
   ],
   "All content not configured to be mounted will be deleted": [
-    "マウントするように設定していない全ての内容を削除します"
+    "マウントするように設定していない全ての内容を削除する"
   ],
   "All content will be deleted": [
     "全ての内容を削除する"
@@ -187,7 +184,7 @@ export default {
     "既に利用可能な全てのディスクを使用しています"
   ],
   "An existing partition will be used for %s": [
-    "%s に対しては既存のパーティションを使用します"
+    "%s に対して既存のパーティションを使用する"
   ],
   "Any existing partition will be removed and all data in the disk will be lost.": [
     "全てのパーティションを削除し、ディスク内に存在するデータを全て消去します。"
@@ -211,7 +208,7 @@ export default {
     "選択しているモードの場合、 1 つ以上のアドレスを設定しなければなりません"
   ],
   "At least one partition will be deleted": [
-    "少なくとも 1 つのパーティションを削除します"
+    "少なくとも 1 つのパーティションを削除する"
   ],
   "At this point you can power off the machine.": [
     "マシンの電源を切って問題ありません。"
@@ -321,9 +318,6 @@ export default {
   "Change Language": [
     "言語の変更"
   ],
-  "Change boot options": [
-    "起動オプションの変更"
-  ],
   "Change device menu": [
     "デバイスメニューの変更"
   ],
@@ -348,14 +342,26 @@ export default {
   "Change selection": [
     "選択の変更"
   ],
+  "Change the disk to configure": [
+    "設定したいディスクの変更"
+  ],
+  "Change the disk to create %s": [
+    "%s を作成するディスクの変更"
+  ],
+  "Change the disk to format as %s": [
+    "%s としてフォーマットするディスクの変更"
+  ],
+  "Change the disk to install the system": [
+    "システムのインストール先となるディスクの変更"
+  ],
   "Change the file system or mount point": [
     "ファイルシステムまたはマウントポイントの変更"
   ],
+  "Changes in these settings will immediately update the 'Result' section below.": [
+    "これらの設定を変更すると、下記の '結果' セクションに即時に反映されます。"
+  ],
   "Channel ID": [
     "チャネル ID"
-  ],
-  "Check the %d planned actions": [
-    "%d 個の処理計画を確認する"
   ],
   "Check the authentication parameters.": [
     "認証パラメータをご確認ください。"
@@ -389,9 +395,6 @@ export default {
   ],
   "Close": [
     "閉じる"
-  ],
-  "Collapse the list of planned actions": [
-    "処理計画の一覧を巻き取る"
   ],
   "Configuration out of sync": [
     "設定が同期できていません"
@@ -529,7 +532,7 @@ export default {
     "現在の内容"
   ],
   "Current partitions will be kept": [
-    "現在のパーティションを維持します"
+    "現在のパーティションを維持する"
   ],
   "Custom": [
     "独自設定"
@@ -603,9 +606,6 @@ export default {
   "Details": [
     "詳細"
   ],
-  "Details for %s": [
-    "%s の詳細"
-  ],
   "Details will appear after the connection is successfully established.": [
     "詳細は接続成功後に表示されます。"
   ],
@@ -659,9 +659,6 @@ export default {
   ],
   "Download logs": [
     "ログのダウンロード"
-  ],
-  "During installation, several actions will be performed to setup the layout shown at the table below.": [
-    "インストールの際、下記の表に示した配置を設定するためにいくつかの処理が行われます。"
   ],
   "Edit": [
     "編集"
@@ -726,8 +723,8 @@ export default {
   "ExFAT": [
     "ExFAT"
   ],
-  "Example: https://myserver.com": [
-    "例: https://myserver.com"
+  "Example: %s": [
+    "例: %s"
   ],
   "Excellent signal": [
     "優良な信号強度"
@@ -783,8 +780,11 @@ export default {
   "Filter by territory, time zone code or UTC offset": [
     "地域／タイムゾーンコード／UTC オフセット値でフィルタ"
   ],
-  "Find space": [
-    "領域の検出"
+  "Final layout": [
+    "最終形態"
+  ],
+  "Final structure of the system after installation.": [
+    "インストール後のシステムの最終形です。"
   ],
   "Find space in %s": [
     "%s 内での領域検出"
@@ -969,7 +969,7 @@ export default {
   "Install using several devices without modifying existing partitions.": [
     "複数のデバイスの既存パーティションを変更せずにインストールします。"
   ],
-  "Installation Devices": [
+  "Installation devices": [
     "インストール先のデバイス"
   ],
   "Installation will take %s.": [
@@ -1149,6 +1149,9 @@ export default {
   "More languages might be available for the selected product at [Localization] page": [
     "選択した製品に対する言語の詳細な設定は、 [ローカライゼーション] のページにあります"
   ],
+  "More storage options": [
+    "さらなるストレージオプション"
+  ],
   "Moreover, the following partition will be created.": [
     "このほか、下記のパーティションを作成します。"
   ],
@@ -1225,7 +1228,7 @@ export default {
     "検出された Wi-Fi ネットワークはありません"
   ],
   "No additional partitions will be created": [
-    "追加パーティションは作成しません"
+    "追加パーティションは作成しない"
   ],
   "No additional software was selected.": [
     "追加のソフトウエアは何も選択していません。"
@@ -1259,6 +1262,9 @@ export default {
   ],
   "No logical volumes are defined yet": [
     "何も論理ボリュームを設定していません"
+  ],
+  "No partitions will be automatically configured for booting.": [
+    "起動用のパーティションを自動設定しません。"
   ],
   "No partitions will be automatically configured for booting. Use with caution.": [
     "起動用のパーティションを自動設定しません。注意してお使いください。"
@@ -1332,14 +1338,11 @@ export default {
   "Only reused partitions will be used.": [
     "再利用するよう設定したパーティションのみを使用します。"
   ],
+  "Options for partition %s": [
+    "パーティション %s のオプション"
+  ],
   "Options toggle": [
     "オプションの切り替え"
-  ],
-  "Other options": [
-    "その他のオプション"
-  ],
-  "Other options toggle": [
-    "その他のオプションの切り替え"
   ],
   "Overview": [
     "概要"
@@ -1347,8 +1350,14 @@ export default {
   "Package installation failed": [
     "インストールのインストール失敗"
   ],
+  "Partition %s": [
+    "パーティション %s"
+  ],
   "Partition Info": [
     "パーティション情報"
+  ],
+  "Partitions": [
+    "パーティション"
   ],
   "Partitions needed for booting will also be adapted": [
     "起動に必要なパーティションについても調整を行います"
@@ -1365,17 +1374,26 @@ export default {
   "Partitions that are not reused would be resized if needed.": [
     "再利用するように設定していないパーティションは、必要に応じてサイズ変更されます。"
   ],
-  "Partitions to boot will be allocated at the following device.": [
-    "下記のデバイス内に起動用パーティションを割り当てます。"
+  "Partitions to boot will be set up if needed at %s.": [
+    "%s 内に起動用のパーティションを設定します。"
   ],
-  "Partitions to boot will be allocated at the installation disk %s.": [
-    "インストール先のディスク %s 内で起動用のパーティションを割り当てます。"
+  "Partitions to boot will be set up if needed at the following device.": [
+    "下記のデバイス内に必要に応じて起動用のパーティションを割り当てます。"
   ],
-  "Partitions to boot will be allocated at the installation disk.": [
-    "インストール先のディスク内に起動用のパーティションを割り当てます。"
+  "Partitions to boot will be set up if needed at the installation disk,           based on the location of the %s file system.": [
+    "ファイルシステム %s の配置場所に応じて 、         必要であればインストール先のディスク内に起動用のパーティションを割り当てます。"
+  ],
+  "Partitions to boot will be set up if needed at the installation disk,         based on the location of the %s file system.": [
+    "ファイルシステム %s の配置場所に応じて、         必要であればインストール先のディスク内に起動用のパーティションを割り当てます。"
+  ],
+  "Partitions to boot will be set up if needed at the installation disk.         Currently %1$s, based on the location of the %2$s file system.": [
+    "ファイルシステム %2$s の配置場所に応じて (現時点では %1$s) 、         必要であればインストール先のディスク内に起動用のパーティションを割り当てます。"
+  ],
+  "Partitions to boot will be set up if needed at the installation disk.       Currently %1$s, based on the location of the %2$s file system.": [
+    "ファイルシステム %2$s の配置場所に応じて (現時点では %1$s) 、         必要であればインストール先のディスク内に起動用のパーティションを割り当てます。"
   ],
   "Partitions will be used and created for %s": [
-    "パーティションを使用し、 %s 向けに作成します"
+    "%s 向けにパーティションを使用して作成する"
   ],
   "Password": [
     "パスワード"
@@ -1437,8 +1455,8 @@ export default {
   "Product is already registered": [
     "製品は既に登録済みです"
   ],
-  "Protection for the information stored at the new file systems, including data, programs, and system files.": [
-    "データやプログラム、システムファイルなど、新しく作成するファイルシステム内に配置される情報への保護を行います。"
+  "Protection for the information stored at           the new file systems, including data, programs, and system files.": [
+    "データやプログラム、システムファイルなど、           新しく作成するファイルシステム内に配置される情報への保護を行います。"
   ],
   "Provide email address": [
     "電子メールアドレスを入力する"
@@ -1527,8 +1545,11 @@ export default {
   "Result": [
     "結果"
   ],
+  "Result of applying the configuration described at the 'Settings' section above.": [
+    "上記の '設定' セクションに示された設定を適用した結果です。"
+  ],
   "Reused partitions will not be shrunk": [
-    "再利用したパーティションは縮小しません"
+    "再利用したパーティションは縮小しない"
   ],
   "Review and fix": [
     "確認と修正"
@@ -1587,20 +1608,8 @@ export default {
   "Select a disk": [
     "ディスクの選択"
   ],
-  "Select a disk to configure": [
-    "設定したいディスクの選択"
-  ],
-  "Select a disk to create %s": [
-    "%s を作成するディスクの選択"
-  ],
   "Select a disk to define partitions or to mount": [
     "パーティションの設定またはマウントを行うディスクを選択してください"
-  ],
-  "Select a disk to format as %s": [
-    "%s としてフォーマットするディスクの選択"
-  ],
-  "Select a disk to install the system": [
-    "システムのインストール先となるディスクの選択"
   ],
   "Select a product": [
     "製品の選択"
@@ -1628,9 +1637,6 @@ export default {
   ],
   "Select or enter a valid mount point": [
     "正しいマウントポイントを選択または入力してください"
-  ],
-  "Select the disk to configure partitions for booting": [
-    "起動用のパーティションを設定するディスクの選択"
   ],
   "Select what to do with each partition in order to find space for allocating the new system.": [
     "新しいシステムのインストール先となる領域を確保するため、各パーティションに対してすべきことを選択します。"
@@ -1669,7 +1675,7 @@ export default {
     "設定"
   ],
   "Several partitions will be deleted": [
-    "いくつかのパーティションを削除します"
+    "いくつかのパーティションを削除する"
   ],
   "Show": [
     "表示"
@@ -1798,7 +1804,7 @@ export default {
     "接続時に利用可能な任意のデバイスを使用するようにします。"
   ],
   "The connection will be used only during installation and not available in the installed system.": [
-    "接続はインストール時にのみ使用され、インストールされたシステムでは利用できません。"
+    "接続をインストール時にのみ使用するものとし、インストール後は削除します。"
   ],
   "The content may be deleted": [
     "内容が削除されるかもしれません"
@@ -1865,6 +1871,9 @@ export default {
   ],
   "The final step to configure the Trusted Platform Module (TPM) to automatically open encrypted devices will take place during the first boot of the new system. For that to work, the machine needs to boot directly to the new boot loader.": [
     "Trusted Platform Module (TPM) の設定の最後では、新しいシステムの初回起動時に暗号化されたデバイスを自動で解除するよう設定します。これを動作させるためには、マシンが新しいブートローダを直接起動するように設定しておく必要があります。"
+  ],
+  "The following actions will be performed in the system during installation.": [
+    "インストールの際に、システムに対して下記の処理が実施されます。"
   ],
   "The following logical volume will be created": [
     "下記の論理ボリュームを作成します"
@@ -1978,7 +1987,7 @@ export default {
     "システムは %s を既定の言語として使用します。"
   ],
   "The whole device will be used for %s": [
-    "デバイス全体を %s 向けに使用します"
+    "デバイス全体を %s 向けに使用する"
   ],
   "The zFCP disk was not activated.": [
     "zFCP ディスクは有効化されませんでした。"
@@ -2054,6 +2063,9 @@ export default {
   ],
   "Tmpfs": [
     "tmpfs"
+  ],
+  "To ensure the new system is able to boot, the installer may need to create or configure some           partitions in the appropriate disk.": [
+    "システムを起動できるようにするため、インストーラは適切なディスク内にいくつかの追加パーティションを作成もしくは設定する必要があるかもしれません。"
   ],
   "To ensure the new system is able to boot, the installer may need to create or configure some partitions in the appropriate disk.": [
     "システムを起動できるようにするため、インストーラはディスク内にいくつかの追加パーティションを作成もしくは設定する必要があるかもしれません。"
@@ -2243,6 +2255,9 @@ export default {
   ],
   "Using transient hostname: %s": [
     "暫定的なホスト名を使用しています: %s"
+  ],
+  "Volume group %s": [
+    "ボリュームグループ %s"
   ],
   "Volume group '%s' already exists. Enter a different name.": [
     "ボリュームグループ '%s' は既に存在しています。別の名前を入力してください。"
