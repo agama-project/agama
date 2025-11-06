@@ -25,12 +25,20 @@ import { useQueryClient, useMutation, useSuspenseQueries } from "@tanstack/react
 import { useInstallerClient } from "~/context/installer";
 import { fetchConfig, fetchKeymaps, fetchLocales, fetchTimezones, updateConfig } from "~/api/l10n";
 
+const l10nKeys = {
+  all: () => ["l10n"] as const,
+  config: () => [...l10nKeys.all(), "config"] as const,
+  locales: () => [...l10nKeys.all(), "locales"] as const,
+  keymaps: () => [...l10nKeys.all(), "keymaps"] as const,
+  timezones: () => [...l10nKeys.all(), "timezones"] as const,
+};
+
 /**
  * Returns a query for retrieving the localization configuration
  */
 const configQuery = () => {
   return {
-    queryKey: ["l10n", "config"],
+    queryKey: l10nKeys.config(),
     queryFn: fetchConfig,
   };
 };
@@ -39,7 +47,7 @@ const configQuery = () => {
  * Returns a query for retrieving the list of known locales
  */
 const localesQuery = () => ({
-  queryKey: ["l10n", "locales"],
+  queryKey: l10nKeys.locales(),
   queryFn: fetchLocales,
   staleTime: Infinity,
 });
@@ -48,7 +56,7 @@ const localesQuery = () => ({
  * Returns a query for retrieving the list of known timezones
  */
 const timezonesQuery = () => ({
-  queryKey: ["l10n", "timezones"],
+  queryKey: l10nKeys.timezones(),
   queryFn: fetchTimezones,
   staleTime: Infinity,
 });
@@ -57,7 +65,7 @@ const timezonesQuery = () => ({
  * Returns a query for retrieving the list of known keymaps
  */
 const keymapsQuery = () => ({
-  queryKey: ["l10n", "keymaps"],
+  queryKey: l10nKeys.keymaps(),
   queryFn: fetchKeymaps,
   staleTime: Infinity,
 });
@@ -88,7 +96,7 @@ const useL10nConfigChanges = () => {
 
     return client.onEvent((event) => {
       if (event.type === "L10nConfigChanged") {
-        queryClient.invalidateQueries({ queryKey: ["l10n"] });
+        queryClient.invalidateQueries({ queryKey: l10nKeys.all() });
       }
     });
   }, [client, queryClient]);

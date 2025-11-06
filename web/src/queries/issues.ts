@@ -33,9 +33,14 @@ const scopesFromPath = {
   "/org/opensuse/Agama/Users1": "users",
 };
 
+const issuesKeys = {
+  all: () => ["issues"] as const,
+  byScope: (scope: IssuesScope) => [...issuesKeys.all(), scope] as const,
+};
+
 const issuesQuery = (scope: IssuesScope) => {
   return {
-    queryKey: ["issues", scope],
+    queryKey: issuesKeys.byScope(scope),
     queryFn: () => fetchIssues(scope),
   };
 };
@@ -77,7 +82,7 @@ const useIssuesChanges = () => {
         const scope = scopesFromPath[path];
         // TODO: use setQueryData because all the issues are included in the event
         if (scope) {
-          queryClient.invalidateQueries({ queryKey: ["issues", scope] });
+          queryClient.invalidateQueries({ queryKey: issuesKeys.byScope(scope) });
         } else {
           console.warn(`Unknown scope ${path}`);
         }

@@ -23,11 +23,16 @@
 import { useMutation, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { fetchHostname, updateHostname } from "~/api/system";
 
+const systemKeys = {
+  all: () => ["system"] as const,
+  hostname: () => [...systemKeys.all(), "hostname"] as const,
+};
+
 /**
  * Returns a query for retrieving the hostname configuration
  */
 const hostnameQuery = () => ({
-  queryKey: ["system", "hostname"],
+  queryKey: systemKeys.hostname(),
   queryFn: fetchHostname,
 });
 
@@ -46,7 +51,7 @@ const useHostnameMutation = () => {
   const queryClient = useQueryClient();
   const query = {
     mutationFn: updateHostname,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["system", "hostname"] }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: systemKeys.hostname() }),
   };
   return useMutation(query);
 };
