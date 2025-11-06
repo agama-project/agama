@@ -181,6 +181,15 @@ pub enum UserPattern {
     Preselected(PreselectedPattern),
 }
 
+impl UserPattern {
+    pub fn name(&self) -> &str {
+        match self {
+            UserPattern::Plain(name) => name,
+            UserPattern::Preselected(pattern) => &pattern.name,
+        }
+    }
+}
+
 #[derive(Clone, Debug, Deserialize, PartialEq)]
 pub struct PreselectedPattern {
     pub name: String,

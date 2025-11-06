@@ -18,7 +18,10 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use agama_utils::api::{software::Pattern, Issue};
+use agama_utils::api::{
+    software::{Pattern, SoftwareProposal},
+    Issue,
+};
 use async_trait::async_trait;
 use tokio::sync::{mpsc, oneshot};
 
@@ -62,6 +65,8 @@ pub trait ModelAdapter: Send + Sync + 'static {
         resolvables: Vec<String>,
         optional: bool,
     ) -> Result<(), service::Error>;
+
+    async fn compute_proposal(&self) -> Result<Option<SoftwareProposal>, service::Error>;
 
     /// Refresh repositories information.
     async fn refresh(&mut self) -> Result<(), service::Error>;
@@ -163,5 +168,16 @@ impl ModelAdapter for Model {
         let (tx, rx) = oneshot::channel();
         self.zypp_sender.send(SoftwareAction::Install(tx))?;
         Ok(rx.await??)
+    }
+
+    async fn compute_proposal(&self) -> Result<Option<SoftwareProposal>, service::Error> {
+        let Some(product_spec) = self.selected_product.clone() else {
+            return Ok(None);
+        };
+
+        let (tx, rx) = oneshot::channel();
+        self.zypp_sender
+            .send(SoftwareAction::ComputeProposal(product_spec, tx))?;
+        Ok(Some(rx.await??))
     }
 }

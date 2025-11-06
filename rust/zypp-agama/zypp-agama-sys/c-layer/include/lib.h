@@ -67,6 +67,28 @@ void switch_target(struct Zypp *zypp, const char *root,
 /// @return true if there is no error
 bool commit(struct Zypp *zypp, struct Status *status) noexcept;
 
+/// Represents a single mount point and its space usage.
+/// The string pointers are not owned by this struct.
+struct MountPoint {
+  const char *directory;  ///< The path where the filesystem is mounted.
+  const char *filesystem; ///< The filesystem type (e.g., "btrfs", "xfs").
+  bool grow_only;
+  long long
+      used_size; ///< The used space in kilobytes. This is an output field.
+};
+
+/// Calculates the space usage for a given list of mount points.
+/// This function populates the `used_size` field for each element in the
+/// provided `mount_points` array.
+///
+/// @param zypp The Zypp context.
+/// @param[out] status Output status object.
+/// @param[in,out] mount_points An array of mount points to be evaluated.
+/// @param mount_points_size The number of elements in the `mount_points` array.
+void get_space_usage(struct Zypp *zypp, struct Status *status,
+                     struct MountPoint *mount_points,
+                     unsigned mount_points_size) noexcept;
+
 enum RESOLVABLE_KIND {
   RESOLVABLE_PRODUCT,
   RESOLVABLE_PATCH,

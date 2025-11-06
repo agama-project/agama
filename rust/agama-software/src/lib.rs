@@ -47,8 +47,5 @@ pub use model::{Model, ModelAdapter};
 mod event;
 pub use event::Event;
 
-mod proposal;
-pub use proposal::Proposal;
-
 pub mod message;
 mod zypp_server;

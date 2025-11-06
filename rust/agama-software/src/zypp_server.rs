@@ -18,7 +18,10 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use agama_utils::api::{software::Pattern, Issue, IssueSeverity};
+use agama_utils::api::{
+    software::{Pattern, SelectedBy, SoftwareProposal},
+    Issue, IssueSeverity,
+};
 use std::path::Path;
 use tokio::sync::{
     mpsc::{self, UnboundedSender},
@@ -28,6 +31,7 @@ use zypp_agama::ZyppError;
 
 use crate::model::{
     packages::ResolvableType,
+    products::ProductSpec,
     state::{self, SoftwareState},
 };
 const TARGET_DIR: &str = "/run/agama/software_ng_zypp";
@@ -83,6 +87,10 @@ pub enum SoftwareAction {
     Install(oneshot::Sender<ZyppServerResult<bool>>),
     Finish(oneshot::Sender<ZyppServerResult<()>>),
     GetPatternsMetadata(Vec<String>, oneshot::Sender<ZyppServerResult<Vec<Pattern>>>),
+    ComputeProposal(
+        ProductSpec,
+        oneshot::Sender<ZyppServerResult<SoftwareProposal>>,
+    ),
     SetResolvables {
         tx: oneshot::Sender<Result<(), ZyppError>>,
         resolvables: Vec<String>,
@@ -167,20 +175,16 @@ impl ZyppServer {
             SoftwareAction::Write { state, tx } => {
                 self.write(state, tx, zypp).await?;
             }
-
             SoftwareAction::GetPatternsMetadata(names, tx) => {
                 self.get_patterns(names, tx, zypp).await?;
             }
-
             SoftwareAction::Install(tx) => {
                 tx.send(self.install(zypp))
                     .map_err(|_| ZyppDispatchError::ResponseChannelClosed)?;
             }
-
             SoftwareAction::Finish(tx) => {
                 self.finish(zypp, tx).await?;
             }
-
             SoftwareAction::SetResolvables {
                 tx,
                 r#type,
@@ -201,7 +205,6 @@ impl ZyppServer {
                     }
                 }
             }
-
             SoftwareAction::UnsetResolvables {
                 tx,
                 r#type,
@@ -221,6 +224,9 @@ impl ZyppServer {
                         break;
                     }
                 }
+            }
+            SoftwareAction::ComputeProposal(product_spec, sender) => {
+                self.compute_proposal(product_spec, sender, zypp).await?
             }
         }
         Ok(())
@@ -499,5 +505,65 @@ impl ZyppServer {
                 }
             }
         }
+    }
+
+    async fn compute_proposal(
+        &self,
+        product_spec: ProductSpec,
+        sender: oneshot::Sender<Result<SoftwareProposal, ZyppServerError>>,
+        zypp: &zypp_agama::Zypp,
+    ) -> Result<(), ZyppDispatchError> {
+        // TODO: for now it just compute total size, but it can get info about partitions from storage and pass it to libzypp
+        let mount_points = vec![zypp_agama::MountPoint {
+            directory: "/".to_string(),
+            filesystem: "btrfs".to_string(),
+            grow_only: false, // not sure if it has effect as we install everything fresh
+            used_size: 0,
+        }];
+        let disk_usage = zypp.count_disk_usage(mount_points);
+        let Ok(computed_mount_points) = disk_usage else {
+            sender
+                .send(Err(disk_usage.unwrap_err().into()))
+                .map_err(|_| ZyppDispatchError::ResponseChannelClosed)?;
+            return Ok(());
+        };
+        let size = computed_mount_points.first().unwrap().used_size;
+        // TODO: format size
+        let size_str = format!("{size} KiB");
+
+        let selected_patterns: Result<
+            std::collections::HashMap<String, SelectedBy>,
+            ZyppServerError,
+        > = product_spec
+            .software
+            .user_patterns
+            .iter()
+            .map(|p| p.name())
+            .map(|name| {
+                let selected = zypp.is_package_selected(name)?;
+                let tag = if selected {
+                    SelectedBy::User
+                } else {
+                    SelectedBy::None
+                };
+                Ok((name.to_string(), tag))
+            })
+            .collect();
+        let Ok(selected_patterns) = selected_patterns else {
+            sender
+                .send(Err(selected_patterns.unwrap_err()))
+                .map_err(|_| ZyppDispatchError::ResponseChannelClosed)?;
+            return Ok(());
+        };
+
+        let proposal = SoftwareProposal {
+            size: size_str,
+            patterns: selected_patterns,
+        };
+
+        sender
+            .send(Ok(proposal))
+            .map_err(|_| ZyppDispatchError::ResponseChannelClosed)?;
+        Ok(())
     }
 }
