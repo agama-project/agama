@@ -29,7 +29,7 @@ use agama_utils::{
         Proposal, Scope, Status, SystemInfo,
     },
     issue,
-    license::{Error as LicenseError, LicensesRepo},
+    license::{Error as LicenseError, LicensesRegistry},
     products::{ProductSpec, ProductsRegistry, ProductsRegistryError},
     progress, question,
 };
@@ -68,7 +68,7 @@ pub struct Service {
     progress: Handler<progress::Service>,
     questions: Handler<question::Service>,
     products: ProductsRegistry,
-    licenses: LicensesRepo,
+    licenses: LicensesRegistry,
     product: Option<Arc<RwLock<ProductSpec>>>,
     state: State,
     config: Config,
@@ -92,7 +92,7 @@ impl Service {
             progress,
             questions,
             products: ProductsRegistry::default(),
-            licenses: LicensesRepo::default(),
+            licenses: LicensesRegistry::default(),
             // FIXME: state is already used for service state.
             state: State::Configuring,
             config: Config::default(),

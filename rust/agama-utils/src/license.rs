@@ -65,7 +65,7 @@ pub struct LicenseContent {
 /// The license diectory contains the default text (license.txt) and a set of translations (e.g.,
 /// "license.es.txt", "license.zh_CH.txt", etc.).
 #[derive(Clone)]
-pub struct LicensesRepo {
+pub struct LicensesRegistry {
     /// Repository path.
     path: std::path::PathBuf,
     /// Licenses in the repository.
@@ -74,7 +74,7 @@ pub struct LicensesRepo {
     fallback: HashMap<String, LanguageTag>,
 }
 
-impl LicensesRepo {
+impl LicensesRegistry {
     pub fn new<P: AsRef<Path>>(path: P) -> Self {
         Self {
             path: path.as_ref().to_owned(),
@@ -221,7 +221,7 @@ impl LicensesRepo {
     }
 }
 
-impl Default for LicensesRepo {
+impl Default for LicensesRegistry {
     fn default() -> Self {
         let relative_path = PathBuf::from("share/eula");
         let path = if relative_path.exists() {
@@ -237,25 +237,25 @@ impl Default for LicensesRepo {
 
 #[cfg(test)]
 mod test {
-    use super::{LanguageTag, LicensesRepo};
+    use super::{LanguageTag, LicensesRegistry};
     use std::path::Path;
 
-    fn build_repo() -> LicensesRepo {
-        let mut repo = LicensesRepo::new(Path::new("../share/eula"));
+    fn build_registry() -> LicensesRegistry {
+        let mut repo = LicensesRegistry::new(Path::new("../share/eula"));
         repo.read().unwrap();
         repo
     }
 
     #[test]
     fn test_read_licenses_repository() {
-        let repo = build_repo();
+        let repo = build_registry();
         let license = repo.licenses.first().unwrap();
         assert_eq!(&license.id, "license.final");
     }
 
     #[test]
     fn test_find_license() {
-        let repo = build_repo();
+        let repo = build_registry();
         let es_language: LanguageTag = "es".try_into().unwrap();
         let license = repo.find("license.final", &es_language).unwrap();
         assert!(license.body.starts_with("Acuerdo de licencia"));
@@ -279,7 +279,7 @@ mod test {
 
     #[test]
     fn test_find_alternate_license() {
-        let repo = build_repo();
+        let repo = build_registry();
 
         // Tries to use the main language for the territory.
         let ca_language: LanguageTag = "ca-ES".try_into().unwrap();
