@@ -63,7 +63,7 @@ impl<T: Send + 'static> Message for SetConfig<T> {
 }
 
 impl<T> SetConfig<T> {
-    pub fn new(config: Option<T>, product: Arc<RwLock<ProductSpec>>) -> Self {
+    pub fn new(product: Arc<RwLock<ProductSpec>>, config: Option<T>) -> Self {
         Self { config, product }
     }
 }

@@ -102,19 +102,25 @@ impl Service {
         }
     }
 
+    /// Set up the service by reading the registries and determining the default product.
+    ///
+    /// If a default product is set, it asks the other services to initialize their configurations.
     pub async fn setup(&mut self) -> Result<(), Error> {
         self.read_registries().await?;
         if let Some(product) = self.products.default_product() {
-            self.product = Some(Arc::new(RwLock::new(product.clone())));
-        }
-
-        if self.product.is_none() {
+            let product = Arc::new(RwLock::new(product.clone()));
+            _ = self.software.cast(software::message::SetConfig::new(
+                Arc::clone(&product),
+                None,
+            ));
+            self.product = Some(product);
+        } else {
             self.notify_no_product()
         }
         Ok(())
     }
 
-    pub async fn read_registries(&mut self) -> Result<(), Error> {
+    async fn read_registries(&mut self) -> Result<(), Error> {
         self.licenses.read()?;
         self.products.read()?;
         self.system.licenses = self.licenses.licenses().into_iter().cloned().collect();
@@ -242,8 +248,8 @@ impl MessageHandler<message::SetConfig> for Service {
         if let Some(product) = &self.product {
             self.software
                 .call(software::message::SetConfig::new(
-                    message.config.software.clone(),
                     Arc::clone(&product),
+                    message.config.software.clone(),
                 ))
                 .await?;
         } else {
