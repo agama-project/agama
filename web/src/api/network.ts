@@ -25,13 +25,11 @@ import {
   APIAccessPoint,
   APIConnection,
   APIDevice,
-  APINetworkProposal,
   Connection,
   ConnectionStatus,
   NetworkGeneralState,
   NetworkProposal,
 } from "~/types/network";
-import { Proposal } from "~/types/proposal";
 
 /**
  * Returns the network configuration
@@ -65,20 +63,6 @@ const fetchAccessPoints = (): Promise<APIAccessPoint[]> => get("/api/network/wif
  * @param connection - connection to be added
  */
 const addConnection = (connection: APIConnection) => post("/api/network/connections", connection);
-
-/**
- * Updates given connection
- *
- * @param connection - connection to be updated
- */
-const updateConnection = (connection: Connection) => {
-  const network: APINetworkProposal = { connections: [connection.toApi()] };
-  const config: Proposal = { network };
-  console.log("Updating");
-  console.log(config);
-
-  patch(`/api/v2/config`, { config });
-};
 
 /**
  * Deletes the connection matching given name
@@ -122,7 +106,6 @@ export {
   fetchAccessPoints,
   applyChanges,
   addConnection,
-  updateConnection,
   deleteConnection,
   connect,
   disconnect,

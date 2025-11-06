@@ -160,7 +160,12 @@ impl NetworkState {
 
     pub fn update_state(&mut self, config: Config) -> Result<(), NetworkStateError> {
         if let Some(connections) = config.connections {
-            let collection: ConnectionCollection = connections.try_into()?;
+            let mut collection: ConnectionCollection = connections.try_into()?;
+            collection.0.iter_mut().for_each(|conn| {
+                if let Some(current_conn) = self.get_connection(conn.id.as_str()) {
+                    conn.uuid = current_conn.uuid;
+                }
+            });
             self.connections = collection.0;
         }
         if let Some(general_state) = config.general_state {

@@ -406,8 +406,6 @@ class NetworkSystem {
 
 class NetworkProposal {
   connections: Connection[];
-  //accessPoints: AccessPoint[];
-  //devices: Device[];
   state: NetworkGeneralState;
 
   constructor(
@@ -417,8 +415,6 @@ class NetworkProposal {
     state?: NetworkGeneralState,
   ) {
     if (connections !== undefined) this.connections = connections;
-    //if (accessPoints !== undefined) this.accessPoints = accessPoints;
-    //if (devices !== undefined) this.devices = devices;
     if (state !== undefined) this.state = state;
   }
 
@@ -427,6 +423,17 @@ class NetworkProposal {
     const conns = connections.map((c) => Connection.fromApi(c));
 
     return new NetworkProposal(conns, state);
+  }
+
+  addOrUpdateConnection(connection: Connection) {
+    const connections = this.connections.map((c) => (c.id === connection.id ? connection : c));
+    this.connections = connections;
+  }
+
+  toApi(): APINetworkProposal {
+    const connections = this.connections.map((c) => c.toApi());
+
+    return { connections, state: this.state };
   }
 }
 
@@ -439,8 +446,6 @@ type APINetworkSystem = {
 
 type APINetworkProposal = {
   connections?: APIConnection[];
-  //accessPoints?: APIAccessPoint[];
-  //devices?: APIDevice[];
   state?: NetworkGeneralState;
 };
 

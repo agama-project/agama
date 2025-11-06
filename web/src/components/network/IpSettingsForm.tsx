@@ -41,15 +41,18 @@ import AddressesDataList from "~/components/network/AddressesDataList";
 import DnsDataList from "~/components/network/DnsDataList";
 import { _ } from "~/i18n";
 import { sprintf } from "sprintf-js";
-import { useConnection } from "~/queries/network";
+import { useConnection, useConfigMutation } from "~/queries/network";
+import { useNetworkProposal } from "~/queries/proposal";
 import { IPAddress, Connection, ConnectionMethod } from "~/types/network";
-import { updateConnection } from "~/api/network";
+import { Config } from "~/types/config";
 
 const usingDHCP = (method: ConnectionMethod) => method === ConnectionMethod.AUTO;
 
 // FIXME: rename to connedtioneditpage or so?
 // FIXME: improve the layout a bit.
 export default function IpSettingsForm() {
+  const proposal = useNetworkProposal();
+  const { mutateAsync: updateConfig } = useConfigMutation();
   const { id } = useParams();
   const navigate = useNavigate();
   const connection = useConnection(id);
@@ -127,8 +130,12 @@ export default function IpSettingsForm() {
       nameservers: sanitizedNameservers.map((s) => s.address),
     });
 
-    updateConnection(updatedConnection);
-    navigate(-1);
+    proposal.addOrUpdateConnection(updatedConnection);
+    const config: Config = { network: proposal.toApi() };
+
+    updateConfig(config)
+      .then(() => navigate(-1))
+      .catch(console.error);
   };
 
   const renderError = (field: string) => {

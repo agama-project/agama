@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import { get, patch, post } from "~/api/http";
+import { get, patch, post, put } from "~/api/http";
 import { Config } from "~/types/config";
 import { Proposal } from "~/types/proposal";
 import { System } from "~/types/system";
@@ -39,9 +39,11 @@ const fetchProposal = (): Promise<Proposal> => get("/api/v2/proposal");
  * Updates configuration
  */
 const updateConfig = (config: Config) => patch("/api/v2/config", { update: config });
+
+const setConfig = (config: Config) => put("/api/v2/config", config);
 /**
  * Triggers an action
  */
 const trigger = (action) => post("/api/v2/action", action);
 
-export { fetchSystem, fetchProposal, updateConfig, trigger };
+export { fetchSystem, fetchProposal, updateConfig, setConfig, trigger };

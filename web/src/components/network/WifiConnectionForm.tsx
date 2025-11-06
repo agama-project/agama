@@ -32,11 +32,12 @@ import {
   Spinner,
 } from "@patternfly/react-core";
 import { Page, PasswordInput } from "~/components/core";
-import { useAddConnectionMutation, useConnectionMutation, useConnections } from "~/queries/network";
+import { useConfigMutation } from "~/queries/network";
 import { Connection, ConnectionState, WifiNetwork, Wireless } from "~/types/network";
 import { isEmpty } from "radashi";
 import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
+import { useNetworkProposal } from "~/queries/proposal";
 
 const securityOptions = [
   // TRANSLATORS: WiFi authentication mode
@@ -91,8 +92,8 @@ const ConnectionError = ({ ssid, isPublicNetwork }) => {
 // FIXME: improve error handling. The errors props should have a key/value error
 //  and the component should show all of them, if any
 export default function WifiConnectionForm({ network }: { network: WifiNetwork }) {
-  const connections = useConnections();
-  const connection = connections.find((c) => c.id === network.ssid);
+  const proposal = useNetworkProposal();
+  const connection = proposal.connections.find((c) => c.id === network.ssid);
   const settings = network.settings?.wireless || new Wireless();
   const [error, setError] = useState(false);
   const [security, setSecurity] = useState<string>(
@@ -103,8 +104,7 @@ export default function WifiConnectionForm({ network }: { network: WifiNetwork }
   const [isConnecting, setIsConnecting] = useState<boolean>(
     connection?.state === ConnectionState.activating,
   );
-  const { mutateAsync: addConnection } = useAddConnectionMutation();
-  const { mutateAsync: updateConnection } = useConnectionMutation();
+  const { mutateAsync: updateConfig } = useConfigMutation();
 
   useEffect(() => {
     if (!isActivating) return;
@@ -132,8 +132,9 @@ export default function WifiConnectionForm({ network }: { network: WifiNetwork }
       password,
       hidden: false,
     });
-    const action = network.settings ? updateConnection : addConnection;
-    action(nextConnection).catch(() => setError(true));
+    proposal.addOrUpdateConnection(nextConnection);
+    const config: Config = { network: proposal.toApi() };
+    updateConfig(config).catch(() => setError(true));
     setError(false);
     setIsConnecting(true);
   };

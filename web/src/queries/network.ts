@@ -43,10 +43,10 @@ import {
   fetchDevices,
   fetchState,
   persist,
-  updateConnection,
 } from "~/api/network";
 import { useNetworkProposal } from "./proposal";
 import { useNetworkSystem } from "./system";
+import { updateConfig } from "~/api/api";
 
 /**
  * Returns a query for retrieving the general network configuration
@@ -132,13 +132,12 @@ const useAddConnectionMutation = () => {
  *
  * It does not require to call `useMutation`.
  */
-const useConnectionMutation = () => {
+const useConfigMutation = () => {
   const queryClient = useQueryClient();
   const query = {
-    mutationFn: updateConnection,
+    mutationFn: updateConfig,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["network", "connections"] });
-      queryClient.invalidateQueries({ queryKey: ["network", "devices"] });
+      queryClient.invalidateQueries({ queryKey: ["proposal"] });
     },
   };
   return useMutation(query);
@@ -369,7 +368,7 @@ export {
   accessPointsQuery,
   useAddConnectionMutation,
   useConnections,
-  useConnectionMutation,
+  useConfigMutation,
   useConnectionPersistMutation,
   useRemoveConnectionMutation,
   useConnection,

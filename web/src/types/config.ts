@@ -21,9 +21,11 @@
  */
 
 import { Localization } from "./l10n";
+import { APINetworkProposal } from "./network";
 
 type Config = {
   l10n?: Localization;
+  network?: APINetworkProposal;
 };
 
 export type { Config };

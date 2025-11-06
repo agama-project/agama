@@ -33,12 +33,14 @@ import {
   Stack,
 } from "@patternfly/react-core";
 import { Page, SubtleContent } from "~/components/core";
-import { useConnection, useConnectionMutation, useNetworkDevices } from "~/queries/network";
+import { useConnection, useConfigMutation, useNetworkDevices } from "~/queries/network";
 import { Connection, ConnectionBindingMode, Device } from "~/types/network";
+import { Config } from "~/types/config";
 import Radio from "~/components/core/RadioEnhanced";
 import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
 import { connectionBindingMode } from "~/utils/network";
+import { useNetworkProposal } from "~/queries/proposal";
 
 type DevicesSelectProps = Omit<FormSelectProps, "children" | "ref"> & {
   /**
@@ -126,8 +128,9 @@ const formReducer = (state: FormState, action: FormAction): FormState => {
  * connection on any interface.
  */
 export default function BindingSettingsForm() {
+  const proposal = useNetworkProposal();
   const { id } = useParams();
-  const { mutateAsync: updateConnection } = useConnectionMutation();
+  const { mutateAsync: updateConfig } = useConfigMutation();
   const connection = useConnection(id);
   const devices = useNetworkDevices();
   const navigate = useNavigate();
@@ -148,7 +151,10 @@ export default function BindingSettingsForm() {
       macAddress: state.mode === "mac" ? state.mac : undefined,
     });
 
-    updateConnection(updatedConnection)
+    proposal.addOrUpdateConnection(updatedConnection);
+    const config: Config = { network: proposal.toApi() };
+
+    updateConfig(config)
       .then(() => navigate(-1))
       .catch(console.error);
   };

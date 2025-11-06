@@ -18,7 +18,15 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
+<<<<<<< HEAD
 use crate::{l10n, message, network, storage};
+=======
+use crate::l10n;
+use crate::message;
+use crate::message::UpdateConfig;
+use crate::network;
+
+>>>>>>> 89e85ab2d (Some fixes for networking config update)
 use agama_utils::{
     actor::{self, Actor, Handler, MessageHandler},
     api::{
@@ -32,6 +40,7 @@ use merge_struct::merge;
 use serde_json::Value;
 use network::{NetworkSystemClient, NetworkSystemError};
 use tokio::sync::broadcast;
+use zbus::conn;
 
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
@@ -224,6 +233,18 @@ impl MessageHandler<message::SetConfig> for Service {
     }
 }
 
+fn merge_network(mut config: Config, update_config: Config) -> Config {
+    if let Some(network) = &update_config.network {
+        if let Some(connections) = &network.connections {
+            if let Some(ref mut config_network) = config.network {
+                config_network.connections = Some(connections.clone());
+            }
+        }
+    }
+
+    config
+}
+
 #[async_trait]
 impl MessageHandler<message::UpdateConfig> for Service {
     /// Patches the config.
@@ -232,6 +253,7 @@ impl MessageHandler<message::UpdateConfig> for Service {
     /// config, then it keeps the values from the current config.
     async fn handle(&mut self, message: message::UpdateConfig) -> Result<(), Error> {
         let config = merge(&self.config, &message.config).map_err(|_| Error::MergeConfig)?;
+<<<<<<< HEAD
 
         if let Some(l10n) = &config.l10n {
             self.l10n
@@ -253,6 +275,10 @@ impl MessageHandler<message::UpdateConfig> for Service {
 
         self.config = config;
         Ok(())
+=======
+        let config = merge_network(config, message.config);
+        self.handle(message::SetConfig::new(config)).await
+>>>>>>> 89e85ab2d (Some fixes for networking config update)
     }
 }
 
