@@ -57,7 +57,7 @@ use agama_lib::http::event::{OldEvent, OldSender};
 use common::ProgressService;
 pub use config::ServiceConfig;
 pub use service::MainServiceBuilder;
-use std::{path::Path};
+use std::path::Path;
 use tokio_stream::{StreamExt, StreamMap};
 
 /// Returns a service that implements the web-based Agama API.

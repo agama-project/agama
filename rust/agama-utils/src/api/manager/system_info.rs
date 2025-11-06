@@ -47,4 +47,3 @@ pub struct Product {
     /// License ID
     pub license: Option<String>,
 }
-

@@ -23,8 +23,8 @@
 //! definition, the user configuration, etc.
 
 use agama_utils::{
+    api::software::{Config, PatternsConfig, RepositoryConfig, SystemInfo},
     products::{ProductSpec, UserPattern},
-    api::software::{Config, PatternsConfig, RepositoryConfig, SystemInfo}
 };
 
 /// Represents the wanted software configuration.
@@ -258,16 +258,14 @@ mod tests {
     use std::path::PathBuf;
 
     use agama_utils::{
-        products::ProductSpec,
         api::software::{
-        Config, PatternsConfig, PatternsMap, Repository, RepositoryConfig, SoftwareConfig,
-        SystemInfo
-        }
+            Config, PatternsConfig, PatternsMap, Repository, RepositoryConfig, SoftwareConfig,
+            SystemInfo,
+        },
+        products::ProductSpec,
     };
 
-    use crate::model::{
-        state::{ResolvableName, SoftwareStateBuilder},
-    };
+    use crate::model::state::{ResolvableName, SoftwareStateBuilder};
 
     fn build_user_config(patterns: Option<PatternsConfig>) -> Config {
         let repo = RepositoryConfig {
