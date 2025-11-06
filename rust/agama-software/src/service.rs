@@ -153,8 +153,10 @@ impl MessageHandler<message::SetConfig<Config>> for Service {
         let events = self.events.clone();
         let progress = self.progress.clone();
         let proposal = self.state.proposal.clone();
+        let product_spec = product.clone();
         tokio::task::spawn(async move {
             let mut my_model = model.lock().await;
+            my_model.set_product(product_spec);
             let found_issues = my_model.write(software, progress).await.unwrap();
             if !found_issues.is_empty() {
                 _ = issues.cast(issue::message::Update::new(Scope::Software, found_issues));

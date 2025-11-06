@@ -77,6 +77,8 @@ pub trait ModelAdapter: Send + Sync + 'static {
     /// Finalizes system like disabling local repositories
     async fn finish(&self) -> Result<(), service::Error>;
 
+    fn set_product(&mut self, product_spec: ProductSpec);
+
     /// Applies the configuration to the system.
     ///
     /// It does not perform the installation, just update the repositories and
@@ -109,6 +111,10 @@ impl Model {
 
 #[async_trait]
 impl ModelAdapter for Model {
+    fn set_product(&mut self, product_spec: ProductSpec) {
+        self.selected_product = Some(product_spec);
+    }
+
     async fn write(
         &mut self,
         software: SoftwareState,
