@@ -38,7 +38,15 @@ export interface System {
   /**
    * Possible encryption methods for the current system and product
    */
-  encryptionMethods?: string[];
+  encryptionMethods?: (
+    | "luks1"
+    | "luks2"
+    | "pervasiveLuks2"
+    | "tmpFde"
+    | "protectedSwap"
+    | "secureSwap"
+    | "randomSwap"
+  )[];
   /**
    * Volumes defined by the product as templates
    */

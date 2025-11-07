@@ -39,7 +39,11 @@
     "encryptionMethods": {
       "description": "Possible encryption methods for the current system and product",
       "type": "array",
-      "items": { "type": "string" }
+      "items": {
+        "enum": [
+          "luks1", "luks2", "pervasiveLuks2", "tmpFde", "protectedSwap", "secureSwap", "randomSwap"
+        ]
+      }
     },
     "volumeTemplates": {
       "description": "Volumes defined by the product as templates",
