@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import * as config from "./config";
+import * as config from "../config";
 
 // Type guards.
 

@@ -27,7 +27,8 @@ import DevicesManager from "~/components/storage/DevicesManager";
 import ProposalResultTable from "~/components/storage/ProposalResultTable";
 import { ProposalActionsDialog } from "~/components/storage";
 import { _, n_, formatList } from "~/i18n";
-import { useActions, useDevices } from "~/queries/storage";
+import { useDevices } from "~/hooks/storage/system";
+import { useActions } from "~/hooks/storage/proposal";
 import { sprintf } from "sprintf-js";
 
 /**

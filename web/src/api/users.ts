@@ -21,7 +21,7 @@
  */
 
 import { AxiosResponse } from "axios";
-import { del, get, patch, post, put } from "~/api/http";
+import { del, get, patch, post, put } from "~/http";
 import { FirstUser, PasswordCheckResult, RootUser } from "~/types/users";
 
 /**

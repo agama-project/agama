@@ -25,7 +25,7 @@ import TimezoneSelection from "./TimezoneSelection";
 import userEvent from "@testing-library/user-event";
 import { screen } from "@testing-library/react";
 import { mockNavigateFn, installerRender } from "~/test-utils";
-import { Timezone } from "~/types/l10n";
+import { Timezone } from "~/api/system";
 
 jest.mock("~/components/product/ProductRegistrationAlert", () => () => (
   <div>ProductRegistrationAlert Mock</div>

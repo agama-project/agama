@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024] SUSE LLC
+ * Copyright (c) [2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -20,25 +20,17 @@
  * find current contact information at www.suse.com.
  */
 
-import { get, patch } from "~/http";
-import { Question } from "~/types/questions";
+import { System, Device } from "~/api/storage/system";
 
-/**
- * Returns the list of questions
- */
-const fetchQuestions = async (): Promise<Question[]> => await get("/api/v2/questions");
+function findDevice(system: System, sid: number): Device | undefined {
+  const device = system.devices.find((d) => d.sid === sid);
+  if (device === undefined) console.warn("Device not found:", sid);
 
-/**
- * Update a questions' answer
- *
- * The answer is part of the Question object.
- */
-const updateAnswer = async (question: Question): Promise<void> => {
-  const {
-    id,
-    answer: { action, value },
-  } = question;
-  await patch(`/api/v2/questions`, { answer: { id, action, value } });
-};
+  return device;
+}
 
-export { fetchQuestions, updateAnswer };
+function findDevices(system: System, sids: number[]): Device[] {
+  return sids.map((sid) => findDevice(system, sid)).filter((d) => d);
+}
+
+export { findDevice, findDevices };

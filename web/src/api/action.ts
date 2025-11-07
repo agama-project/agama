@@ -20,10 +20,30 @@
  * find current contact information at www.suse.com.
  */
 
-import { Localization } from "./l10n";
+type Action = ConfigureL10n | ActivateStorage | ProbeStorage;
 
-type Config = {
-  l10n?: Localization;
+type ConfigureL10n = {
+  configureL10n: L10nSystemConfig;
 };
 
-export type { Config };
+type L10nSystemConfig = {
+  locale?: string;
+  keymap?: string;
+};
+
+type ActivateStorage = {
+  activateStorage: null;
+};
+
+type ProbeStorage = {
+  probeStorage: null;
+};
+
+const configureL10n = (config: L10nSystemConfig): ConfigureL10n => ({ configureL10n: config });
+
+const activateStorage = (): ActivateStorage => ({ activateStorage: null });
+
+const probeStorage = (): ProbeStorage => ({ probeStorage: null });
+
+export { configureL10n, activateStorage, probeStorage };
+export type { Action, L10nSystemConfig };

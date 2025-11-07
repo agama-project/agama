@@ -20,120 +20,186 @@
  * find current contact information at www.suse.com.
  */
 
-import { useSuspenseQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { useMemo } from "react";
-import {
-  useDevices,
-  availableDrivesQuery,
-  candidateDrivesQuery,
-  availableMdRaidsQuery,
-  candidateMdRaidsQuery,
-} from "~/queries/storage";
-import { reactivate } from "~/api/storage";
-import { StorageDevice } from "~/types/storage";
+import { useCallback } from "react";
+import { useSuspenseQuery, useQuery } from "@tanstack/react-query";
+import { System, storage } from "~/api/system";
+import { QueryHookOptions } from "~/types/queries";
+import { systemQuery } from "~/hooks/api";
+import { findDevices } from "~/helpers/storage/system";
 
-function findDevice(devices: StorageDevice[], sid: number): StorageDevice | undefined {
-  const device = devices.find((d) => d.sid === sid);
-  if (device === undefined) console.warn("Device not found:", sid);
+const selectSystem = (data: System | null): storage.System => data?.storage;
 
-  return device;
+function useSystem(options?: QueryHookOptions): storage.System {
+  const func = options?.suspense ? useSuspenseQuery : useQuery;
+  const { data } = func({
+    ...systemQuery(),
+    select: selectSystem,
+  });
+  return data;
 }
+
+const selectEncryptionMethods = (data: System | null): storage.EncryptionMethod[] =>
+  data?.storage?.encryptionMethods || [];
+
+function useEncryptionMethods(options?: QueryHookOptions): storage.EncryptionMethod[] {
+  const func = options?.suspense ? useSuspenseQuery : useQuery;
+  const { data } = func({
+    ...systemQuery(),
+    select: selectEncryptionMethods,
+  });
+  return data;
+}
+
+const enum DeviceGroup {
+  AvailableDrives = "availableDrives",
+  CandidateDrives = "candidateDrives",
+  AvailableMdRaids = "availableMdRaids",
+  CandidateMdRaids = "candidateMdRaids",
+}
+
+function selectDeviceGroups(data: System | null, groups: DeviceGroup[]): storage.Device[] {
+  if (!data?.storage) return [];
+  const sids = groups.flatMap((g) => data.storage[g]);
+  return findDevices(data.storage, sids);
+}
+
+const selectAvailableDrives = (data: System | null) =>
+  selectDeviceGroups(data, [DeviceGroup.AvailableDrives]);
 
 /**
  * Hook that returns the list of available drives for installation.
  */
-const useAvailableDrives = (): StorageDevice[] => {
-  const devices = useDevices("system", { suspense: true });
-  const { data: sids } = useSuspenseQuery(availableDrivesQuery());
+function useAvailableDrives(options?: QueryHookOptions): storage.Device[] {
+  const func = options?.suspense ? useSuspenseQuery : useQuery;
+  const { data } = func({
+    ...systemQuery(),
+    select: selectAvailableDrives,
+  });
+  return data;
+}
 
-  return useMemo(() => {
-    return sids.map((sid: number) => findDevice(devices, sid)).filter((d) => d);
-  }, [devices, sids]);
-};
+const selectCandidateDrives = (data: System | null) =>
+  selectDeviceGroups(data, [DeviceGroup.CandidateDrives]);
 
 /**
  * Hook that returns the list of candidate drives for installation.
  */
-const useCandidateDrives = (): StorageDevice[] => {
-  const devices = useDevices("system", { suspense: true });
-  const { data: sids } = useSuspenseQuery(candidateDrivesQuery());
+function useCandidateDrives(options?: QueryHookOptions): storage.Device[] {
+  const func = options?.suspense ? useSuspenseQuery : useQuery;
+  const { data } = func({
+    ...systemQuery(),
+    select: selectCandidateDrives,
+  });
+  return data;
+}
 
-  return useMemo(() => {
-    return sids.map((sid: number) => findDevice(devices, sid)).filter((d) => d);
-  }, [devices, sids]);
-};
-
-/**
- * Hook that returns the list of available MD RAIDs for installation.
- */
-const useAvailableMdRaids = (): StorageDevice[] => {
-  const devices = useDevices("system", { suspense: true });
-  const { data: sids } = useSuspenseQuery(availableMdRaidsQuery());
-
-  return useMemo(() => {
-    return sids.map((sid: number) => findDevice(devices, sid)).filter((d) => d);
-  }, [devices, sids]);
-};
+const selectAvailableMdRaids = (data: System | null) =>
+  selectDeviceGroups(data, [DeviceGroup.AvailableMdRaids]);
 
 /**
  * Hook that returns the list of available MD RAIDs for installation.
  */
-const useCandidateMdRaids = (): StorageDevice[] => {
-  const devices = useDevices("system", { suspense: true });
-  const { data: sids } = useSuspenseQuery(candidateMdRaidsQuery());
+function useAvailableMdRaids(options?: QueryHookOptions): storage.Device[] {
+  const func = options?.suspense ? useSuspenseQuery : useQuery;
+  const { data } = func({
+    ...systemQuery(),
+    select: selectAvailableMdRaids,
+  });
+  return data;
+}
 
-  return useMemo(() => {
-    return sids.map((sid: number) => findDevice(devices, sid)).filter((d) => d);
-  }, [devices, sids]);
-};
+const selectCandidateMdRaids = (data: System | null) =>
+  selectDeviceGroups(data, [DeviceGroup.CandidateMdRaids]);
+
+/**
+ * Hook that returns the list of available MD RAIDs for installation.
+ */
+function useCandidateMdRaids(options?: QueryHookOptions): storage.Device[] {
+  const func = options?.suspense ? useSuspenseQuery : useQuery;
+  const { data } = func({
+    ...systemQuery(),
+    select: selectCandidateMdRaids,
+  });
+  return data;
+}
+
+const selectAvailableDevices = (data: System | null) =>
+  selectDeviceGroups(data, [DeviceGroup.AvailableDrives, DeviceGroup.AvailableMdRaids]);
 
 /**
  * Hook that returns the list of available devices for installation.
  */
-const useAvailableDevices = (): StorageDevice[] => {
-  const availableDrives = useAvailableDrives();
-  const availableMdRaids = useAvailableMdRaids();
+function useAvailableDevices(options?: QueryHookOptions): storage.Device[] {
+  const func = options?.suspense ? useSuspenseQuery : useQuery;
+  const { data } = func({
+    ...systemQuery(),
+    select: selectAvailableDevices,
+  });
+  return data;
+}
 
-  return useMemo(
-    () => [...availableDrives, ...availableMdRaids],
-    [availableDrives, availableMdRaids],
-  );
-};
+const selectCandidateDevices = (data: System | null) =>
+  selectDeviceGroups(data, [DeviceGroup.CandidateDrives, DeviceGroup.CandidateMdRaids]);
 
 /**
  * Hook that returns the list of candidate devices for installation.
  */
-const useCandidateDevices = (): StorageDevice[] => {
-  const candidateDrives = useCandidateDrives();
-  const candidateMdRaids = useCandidateMdRaids();
+function useCandidateDevices(options?: QueryHookOptions): storage.Device[] {
+  const func = options?.suspense ? useSuspenseQuery : useQuery;
+  const { data } = func({
+    ...systemQuery(),
+    select: selectCandidateDevices,
+  });
+  return data;
+}
 
-  return useMemo(
-    () => [...candidateMdRaids, ...candidateDrives],
-    [candidateDrives, candidateMdRaids],
-  );
+const selectDevices = (data: System | null): storage.Device[] => data?.storage?.devices || [];
+
+function useDevices(options?: QueryHookOptions): storage.Device[] {
+  const func = options?.suspense ? useSuspenseQuery : useQuery;
+  const { data } = func({
+    ...systemQuery(),
+    select: selectDevices,
+  });
+  return data;
+}
+
+const selectVolumeTemplates = (data: System | null): storage.Volume[] =>
+  data?.storage?.volumeTemplates || [];
+
+function useVolumeTemplates(options?: QueryHookOptions): storage.Volume[] {
+  const func = options?.suspense ? useSuspenseQuery : useQuery;
+  const { data } = func({
+    ...systemQuery(),
+    select: selectVolumeTemplates,
+  });
+  return data;
+}
+
+const selectVolumeTemplate = (data: System | null, mountPath: string): storage.Volume | null => {
+  const volumes = data?.storage?.volumeTemplates || [];
+  return volumes.find((v) => v.mountPath === mountPath);
 };
 
-type ReactivateSystemFn = () => void;
-
-function useReactivateSystem(): ReactivateSystemFn {
-  const queryClient = useQueryClient();
-  const query = {
-    mutationFn: reactivate,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["storage"] }),
-  };
-
-  const { mutate } = useMutation(query);
-  return mutate;
+function useVolumeTemplate(mountPath: string, options?: QueryHookOptions): storage.Volume | null {
+  const func = options?.suspense ? useSuspenseQuery : useQuery;
+  const { data } = func({
+    ...systemQuery(),
+    select: useCallback((data) => selectVolumeTemplate(data, mountPath), [mountPath]),
+  });
+  return data;
 }
 
 export {
+  useSystem,
+  useEncryptionMethods,
   useAvailableDrives,
   useCandidateDrives,
   useAvailableMdRaids,
   useCandidateMdRaids,
   useAvailableDevices,
   useCandidateDevices,
-  useReactivateSystem,
+  useDevices,
+  useVolumeTemplates,
+  useVolumeTemplate,
 };
-
-export type { ReactivateSystemFn };

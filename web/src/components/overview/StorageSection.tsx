@@ -23,21 +23,20 @@
 import React from "react";
 import { Content } from "@patternfly/react-core";
 import { deviceLabel } from "~/components/storage/utils";
-import { useDevices } from "~/queries/storage";
-import { useAvailableDevices } from "~/hooks/storage/system";
+import { useAvailableDevices, useDevices } from "~/hooks/storage/system";
 import { useConfigModel } from "~/queries/storage/config-model";
 import { useSystemErrors } from "~/queries/issues";
-import { StorageDevice } from "~/types/storage";
-import { apiModel } from "~/api/storage/types";
+import { storage } from "~/api/system";
+import { apiModel } from "~/api/storage";
 import { _ } from "~/i18n";
 
-const findDriveDevice = (drive: apiModel.Drive, devices: StorageDevice[]) =>
+const findDriveDevice = (drive: apiModel.Drive, devices: storage.Device[]) =>
   devices.find((d) => d.name === drive.name);
 
 const NoDeviceSummary = () => _("No device selected yet");
 
 const SingleDiskSummary = ({ drive }: { drive: apiModel.Drive }) => {
-  const devices = useDevices("system", { suspense: true });
+  const devices = useDevices({ suspense: true });
   const device = findDriveDevice(drive, devices);
   const options = {
     // TRANSLATORS: %s will be replaced by the device name and its size,
@@ -81,7 +80,7 @@ const MultipleDisksSummary = ({ drives }: { drives: apiModel.Drive[] }): string 
 };
 
 const ModelSummary = ({ model }: { model: apiModel.Config }): React.ReactNode => {
-  const devices = useDevices("system", { suspense: true });
+  const devices = useDevices({ suspense: true });
   const drives = model?.drives || [];
   const existDevice = (name: string) => devices.some((d) => d.name === name);
   const noDrive = drives.length === 0 || drives.some((d) => !existDevice(d.name));

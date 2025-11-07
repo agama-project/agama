@@ -20,10 +20,20 @@
  * find current contact information at www.suse.com.
  */
 
-import { Localization } from "./l10n";
+import { useSuspenseQuery, useQuery } from "@tanstack/react-query";
+import { System, l10n } from "~/api/system";
+import { QueryHookOptions } from "~/types/queries";
+import { systemQuery } from "~/hooks/api";
 
-type Proposal = {
-  l10n?: Localization;
-};
+const selectSystem = (data: System | null): l10n.System | null => data?.l10n;
 
-export type { Proposal };
+function useSystem(options?: QueryHookOptions): l10n.System | null {
+  const func = options?.suspense ? useSuspenseQuery : useQuery;
+  const { data } = func({
+    ...systemQuery(),
+    select: selectSystem,
+  });
+  return data;
+}
+
+export { useSystem };

@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import { get, put } from "~/api/http";
+import { get, put } from "~/http";
 import { Hostname } from "~/types/hostname";
 
 /**

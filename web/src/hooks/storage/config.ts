@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024] SUSE LLC
+ * Copyright (c) [2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -20,25 +20,24 @@
  * find current contact information at www.suse.com.
  */
 
-import { get, patch } from "~/http";
-import { Question } from "~/types/questions";
+import { useSuspenseQuery, useQuery } from "@tanstack/react-query";
+import { QueryHookOptions } from "~/types/queries";
+import { extendedConfigQuery } from "~/hooks/api";
+import { putConfig, Response } from "~/api";
+import { Config } from "~/api/config";
 
-/**
- * Returns the list of questions
- */
-const fetchQuestions = async (): Promise<Question[]> => await get("/api/v2/questions");
+const resetConfig = (data: Config | null): Config => (!data ? {} : { ...data, storage: null });
 
-/**
- * Update a questions' answer
- *
- * The answer is part of the Question object.
- */
-const updateAnswer = async (question: Question): Promise<void> => {
-  const {
-    id,
-    answer: { action, value },
-  } = question;
-  await patch(`/api/v2/questions`, { answer: { id, action, value } });
-};
+type ResetConfigFn = () => Response;
 
-export { fetchQuestions, updateAnswer };
+function useResetConfig(options?: QueryHookOptions): ResetConfigFn {
+  const func = options?.suspense ? useSuspenseQuery : useQuery;
+  const { data } = func({
+    ...extendedConfigQuery(),
+    select: resetConfig,
+  });
+  return () => putConfig(data);
+}
+
+export { useResetConfig };
+export type { ResetConfigFn };

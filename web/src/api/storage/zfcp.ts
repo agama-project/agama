@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import { post, get } from "~/api/http";
+import { post, get } from "~/http";
 import { ZFCPDisk, ZFCPController, ZFCPConfig } from "~/types/zfcp";
 
 /**

@@ -30,7 +30,8 @@
 import xbytes from "xbytes";
 import { _, N_ } from "~/i18n";
 import { PartitionSlot, StorageDevice, model } from "~/types/storage";
-import { apiModel, Volume } from "~/api/storage/types";
+import { Volume } from "~/api/storage/system";
+import { apiModel } from "~/api/storage";
 import { sprintf } from "sprintf-js";
 
 /**

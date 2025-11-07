@@ -34,7 +34,7 @@ import {
   SoftwareConfig,
   SoftwareProposal,
 } from "~/types/software";
-import { get, patch, post, put } from "~/api/http";
+import { get, patch, post, put } from "~/http";
 
 /**
  * Returns the software configuration

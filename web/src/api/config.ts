@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024] SUSE LLC
+ * Copyright (c) [2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -20,25 +20,11 @@
  * find current contact information at www.suse.com.
  */
 
-import { get, patch } from "~/http";
-import { Question } from "~/types/questions";
+import * as storage from "~/api/storage/config";
 
-/**
- * Returns the list of questions
- */
-const fetchQuestions = async (): Promise<Question[]> => await get("/api/v2/questions");
-
-/**
- * Update a questions' answer
- *
- * The answer is part of the Question object.
- */
-const updateAnswer = async (question: Question): Promise<void> => {
-  const {
-    id,
-    answer: { action, value },
-  } = question;
-  await patch(`/api/v2/questions`, { answer: { id, action, value } });
+type Config = {
+  storage?: storage.Config;
 };
 
-export { fetchQuestions, updateAnswer };
+export { storage };
+export type { Config };

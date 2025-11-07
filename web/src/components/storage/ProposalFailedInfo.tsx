@@ -23,14 +23,14 @@
 import React from "react";
 import { Alert, Content } from "@patternfly/react-core";
 import { IssueSeverity } from "~/types/issues";
-import { useApiModel } from "~/hooks/storage/api-model";
+import { useStorageModel } from "~/hooks/api";
 import { useIssues, useConfigErrors } from "~/queries/issues";
 import * as partitionUtils from "~/components/storage/utils/partition";
 import { _, formatList } from "~/i18n";
 import { sprintf } from "sprintf-js";
 
 const Description = () => {
-  const model = useApiModel({ suspense: true });
+  const model = useStorageModel({ suspense: true });
   const partitions = model.drives.flatMap((d) => d.partitions || []);
   const logicalVolumes = model.volumeGroups.flatMap((vg) => vg.logicalVolumes || []);
 

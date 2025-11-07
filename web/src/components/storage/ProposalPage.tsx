@@ -35,7 +35,7 @@ import {
   ListItem,
 } from "@patternfly/react-core";
 import { Page, Link } from "~/components/core/";
-import { Icon, Loading } from "~/components/layout";
+import { Icon } from "~/components/layout";
 import ConfigEditor from "./ConfigEditor";
 import ConfigEditorMenu from "./ConfigEditorMenu";
 import ConfigureDeviceMenu from "./ConfigureDeviceMenu";
@@ -46,12 +46,7 @@ import ProposalResultSection from "./ProposalResultSection";
 import ProposalTransactionalInfo from "./ProposalTransactionalInfo";
 import UnsupportedModelInfo from "./UnsupportedModelInfo";
 import { useAvailableDevices } from "~/hooks/storage/system";
-import {
-  useResetConfigMutation,
-  useDeprecated,
-  useDeprecatedChanges,
-  useReprobeMutation,
-} from "~/queries/storage";
+import { useResetConfig } from "~/hooks/storage/config";
 import { useConfigModel } from "~/queries/storage/config-model";
 import { useZFCPSupported } from "~/queries/storage/zfcp";
 import { useDASDSupported } from "~/queries/storage/dasd";
@@ -63,7 +58,7 @@ import { useNavigate } from "react-router-dom";
 
 function InvalidConfigEmptyState(): React.ReactNode {
   const errors = useConfigErrors("storage");
-  const { mutate: reset } = useResetConfigMutation();
+  const reset = useResetConfig();
 
   return (
     <EmptyState
@@ -100,7 +95,7 @@ function InvalidConfigEmptyState(): React.ReactNode {
 }
 
 function UnknowConfigEmptyState(): React.ReactNode {
-  const { mutate: reset } = useResetConfigMutation();
+  const reset = useResetConfig();
 
   return (
     <EmptyState
@@ -226,21 +221,14 @@ function ProposalSections(): React.ReactNode {
  *  and test them individually. The proposal page should simply mount all those components.
  */
 export default function ProposalPage(): React.ReactNode {
-  const isDeprecated = useDeprecated();
   const model = useConfigModel({ suspense: true });
   const availableDevices = useAvailableDevices();
   const systemErrors = useSystemErrors("storage");
   const configErrors = useConfigErrors("storage");
-  const { mutateAsync: reprobe } = useReprobeMutation();
   const progress = useProgress("storage");
   const navigate = useNavigate();
 
   useProgressChanges();
-  useDeprecatedChanges();
-
-  React.useEffect(() => {
-    if (isDeprecated) reprobe().catch(console.log);
-  }, [isDeprecated, reprobe]);
 
   React.useEffect(() => {
     if (progress && !progress.finished) navigate(PATHS.progress);
@@ -259,9 +247,8 @@ export default function ProposalPage(): React.ReactNode {
         <Content component="h2">{_("Storage")}</Content>
       </Page.Header>
       <Page.Content>
-        {isDeprecated && <Loading text={_("Reloading data, please wait...")} />}
-        {!isDeprecated && !showSections && <ProposalEmptyState />}
-        {!isDeprecated && showSections && <ProposalSections />}
+        {!showSections && <ProposalEmptyState />}
+        {showSections && <ProposalSections />}
       </Page.Content>
     </Page>
   );

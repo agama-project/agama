@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import { get } from "~/api/http";
+import { get } from "~/http";
 import {
   Component,
   Device,

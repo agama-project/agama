@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import { get } from "~/api/http";
+import { get } from "~/http";
 import { InstallerStatus } from "~/types/status";
 
 /**
@@ -31,4 +31,9 @@ const fetchInstallerStatus = async (): Promise<InstallerStatus> => {
   return { phase, isBusy, useIguana, canInstall };
 };
 
+// TODO: remove
 export { fetchInstallerStatus };
+
+type Status = object;
+
+export type { Status };

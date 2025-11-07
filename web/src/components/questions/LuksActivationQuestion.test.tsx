@@ -27,7 +27,7 @@ import { AnswerCallback, Question, FieldType } from "~/types/questions";
 import { InstallationPhase } from "~/types/status";
 import { Product } from "~/types/software";
 import LuksActivationQuestion from "~/components/questions/LuksActivationQuestion";
-import { Locale, Keymap } from "~/types/l10n";
+import { Locale, Keymap } from "~/api/system";
 
 let question: Question;
 const questionMock: Question = {

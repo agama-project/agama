@@ -34,7 +34,7 @@ import { useInstallerClient } from "~/context/installer";
 import React from "react";
 import { hex } from "~/utils";
 import { DASDDevice, FormatJob } from "~/types/dasd";
-import { fetchStorageJobs } from "~/api/storage";
+import { getStorageJobs } from "~/api";
 
 /**
  * Returns a query for retrieving the dasd devices
@@ -71,9 +71,7 @@ const useDASDSupported = (): boolean => {
 const dasdRunningFormatJobsQuery = () => ({
   queryKey: ["dasd", "formatJobs", "running"],
   queryFn: () =>
-    fetchStorageJobs().then((jobs) =>
-      jobs.filter((j) => j.running).map(({ id }) => ({ jobId: id })),
-    ),
+    getStorageJobs().then((jobs) => jobs.filter((j) => j.running).map(({ id }) => ({ jobId: id }))),
   staleTime: 200,
 });
 

@@ -24,9 +24,8 @@ import React, { useState } from "react";
 import { Content, Flex, Form, FormGroup, Radio } from "@patternfly/react-core";
 import { useNavigate } from "react-router-dom";
 import { ListSearch, Page } from "~/components/core";
-import { updateConfig } from "~/api/api";
-import { useSystem } from "~/queries/system";
-import { useProposal } from "~/queries/proposal";
+import { patchConfig } from "~/api";
+import { useSystem, useProposal } from "~/hooks/api";
 import { _ } from "~/i18n";
 
 // TODO: Add documentation
@@ -51,7 +50,7 @@ export default function KeyboardSelection() {
   const onSubmit = async (e: React.SyntheticEvent) => {
     e.preventDefault();
     // FIXME: udpate when new API is ready
-    updateConfig({ l10n: { keymap: selected } });
+    patchConfig({ l10n: { keymap: selected } });
     navigate(-1);
   };
 

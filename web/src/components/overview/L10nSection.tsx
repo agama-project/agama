@@ -22,10 +22,9 @@
 
 import React from "react";
 import { Content } from "@patternfly/react-core";
-import { useProposal } from "~/queries/proposal";
-import { useSystem } from "~/queries/system";
+import { useSystem, useProposal } from "~/hooks/api";
 import { _ } from "~/i18n";
-import { Locale } from "~/types/l10n";
+import { Locale } from "~/api/l10n/system";
 
 export default function L10nSection() {
   const { l10n: l10nProposal } = useProposal();

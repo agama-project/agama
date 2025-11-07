@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import { get, post } from "~/api/http";
+import { get, post } from "~/http";
 
 /**
  * Starts the probing process.

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024-2025] SUSE LLC
+ * Copyright (c) [2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -20,6 +20,11 @@
  * find current contact information at www.suse.com.
  */
 
-export * from "./types/openapi";
-export * as config from "./types/config";
-export * as apiModel from "./types/model";
+import { tzOffset } from "@date-fns/tz/tzOffset";
+import { Timezone } from "~/api/l10n/system";
+
+function timezoneOffset(timezone: Timezone) {
+  return tzOffset(timezone.id, new Date());
+}
+
+export { timezoneOffset };

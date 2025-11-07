@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import { del, get, patch, post } from "~/api/http";
+import { del, get, patch, post } from "~/http";
 import { ISCSIInitiator, ISCSINode } from "~/api/storage/types";
 
 const ISCSI_NODES_NAMESPACE = "/api/storage/iscsi/nodes";

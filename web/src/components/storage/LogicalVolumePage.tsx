@@ -51,14 +51,14 @@ import { SelectWrapperProps as SelectProps } from "~/components/core/SelectWrapp
 import SelectTypeaheadCreatable from "~/components/core/SelectTypeaheadCreatable";
 import AutoSizeText from "~/components/storage/AutoSizeText";
 import { deviceSize, filesystemLabel, parseToBytes } from "~/components/storage/utils";
-import { useApiModel, useSolvedApiModel } from "~/hooks/storage/api-model";
-import { useModel } from "~/hooks/storage/model";
-import { useMissingMountPaths, useVolume } from "~/hooks/storage/product";
+import { useSolvedStorageModel, useStorageModel } from "~/hooks/api";
+import { useModel, useMissingMountPaths } from "~/hooks/storage/model";
+import { useVolumeTemplate } from "~/hooks/storage/system";
 import { useVolumeGroup } from "~/hooks/storage/volume-group";
 import { useAddLogicalVolume, useEditLogicalVolume } from "~/hooks/storage/logical-volume";
 import { addLogicalVolume, editLogicalVolume } from "~/helpers/storage/logical-volume";
 import { buildLogicalVolumeName } from "~/helpers/storage/api-model";
-import { apiModel } from "~/api/storage/types";
+import { apiModel } from "~/api/storage";
 import { data } from "~/types/storage";
 import { STORAGE as PATHS } from "~/routes/paths";
 import { unique } from "radashi";
@@ -172,7 +172,7 @@ function toFormValue(logicalVolume: apiModel.LogicalVolume): FormValue {
 }
 
 function useDefaultFilesystem(mountPoint: string): string {
-  const volume = useVolume(mountPoint, { suspense: true });
+  const volume = useVolumeTemplate(mountPoint, { suspense: true });
   return volume.mountPath === "/" && volume.snapshots ? BTRFS_SNAPSHOTS : volume.fsType;
 }
 
@@ -200,7 +200,7 @@ function useUnusedMountPoints(): string[] {
 }
 
 function useUsableFilesystems(mountPoint: string): string[] {
-  const volume = useVolume(mountPoint);
+  const volume = useVolumeTemplate(mountPoint);
   const defaultFilesystem = useDefaultFilesystem(mountPoint);
 
   const usableFilesystems = useMemo(() => {
@@ -339,7 +339,7 @@ function useErrors(value: FormValue): ErrorsHandler {
 
 function useSolvedModel(value: FormValue): apiModel.Config | null {
   const { id: vgName, logicalVolumeId: mountPath } = useParams();
-  const apiModel = useApiModel();
+  const apiModel = useStorageModel();
   const { getError } = useErrors(value);
   const mountPointError = getError("mountPoint");
   const data = toData(value);
@@ -358,7 +358,7 @@ function useSolvedModel(value: FormValue): apiModel.Config | null {
     }
   }
 
-  const solvedModel = useSolvedApiModel(sparseModel);
+  const solvedModel = useSolvedStorageModel(sparseModel);
   return solvedModel;
 }
 
@@ -476,7 +476,7 @@ type FilesystemOptionsProps = {
 function FilesystemOptions({ mountPoint }: FilesystemOptionsProps): React.ReactNode {
   const defaultFilesystem = useDefaultFilesystem(mountPoint);
   const usableFilesystems = useUsableFilesystems(mountPoint);
-  const volume = useVolume(mountPoint);
+  const volume = useVolumeTemplate(mountPoint);
 
   const defaultOptText =
     mountPoint !== NO_VALUE && volume.mountPath
@@ -561,7 +561,7 @@ type AutoSizeInfoProps = {
 };
 
 function AutoSizeInfo({ value }: AutoSizeInfoProps): React.ReactNode {
-  const volume = useVolume(value.mountPoint);
+  const volume = useVolumeTemplate(value.mountPoint);
   const logicalVolume = useSolvedLogicalVolume(value);
   const size = logicalVolume?.size;
 

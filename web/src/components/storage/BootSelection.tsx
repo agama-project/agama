@@ -27,11 +27,10 @@ import { DevicesFormSelect } from "~/components/storage";
 import { Page, SubtleContent } from "~/components/core";
 import { deviceLabel } from "~/components/storage/utils";
 import { StorageDevice } from "~/types/storage";
-import { useCandidateDevices } from "~/hooks/storage/system";
+import { useCandidateDevices, useDevices } from "~/hooks/storage/system";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
-import { useDevices } from "~/queries/storage";
 import { useModel } from "~/hooks/storage/model";
 import {
   useSetBootDevice,
@@ -69,7 +68,7 @@ type BootSelectionState = {
 export default function BootSelectionDialog() {
   const [state, setState] = useState<BootSelectionState>({ load: false });
   const navigate = useNavigate();
-  const devices = useDevices("system");
+  const devices = useDevices();
   const model = useModel({ suspense: true });
   const candidateDevices = filteredCandidates(useCandidateDevices(), model);
   const setBootDevice = useSetBootDevice();

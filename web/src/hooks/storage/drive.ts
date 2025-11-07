@@ -20,7 +20,8 @@
  * find current contact information at www.suse.com.
  */
 
-import { useApiModel, useUpdateApiModel } from "~/hooks/storage/api-model";
+import { useStorageModel } from "~/hooks/api";
+import { putStorageModel } from "~/api";
 import { addDrive, deleteDrive, switchToDrive } from "~/helpers/storage/drive";
 import { QueryHookOptions } from "~/types/queries";
 import { model, data } from "~/types/storage";
@@ -35,30 +36,27 @@ function useDrive(name: string, options?: QueryHookOptions): model.Drive | null 
 type AddDriveFn = (data: data.Drive) => void;
 
 function useAddDrive(options?: QueryHookOptions): AddDriveFn {
-  const apiModel = useApiModel(options);
-  const updateApiModel = useUpdateApiModel();
+  const apiModel = useStorageModel(options);
   return (data: data.Drive) => {
-    updateApiModel(addDrive(apiModel, data));
+    putStorageModel(addDrive(apiModel, data));
   };
 }
 
 type DeleteDriveFn = (name: string) => void;
 
 function useDeleteDrive(options?: QueryHookOptions): DeleteDriveFn {
-  const apiModel = useApiModel(options);
-  const updateApiModel = useUpdateApiModel();
+  const apiModel = useStorageModel(options);
   return (name: string) => {
-    updateApiModel(deleteDrive(apiModel, name));
+    putStorageModel(deleteDrive(apiModel, name));
   };
 }
 
 type SwitchToDriveFn = (oldName: string, drive: data.Drive) => void;
 
 function useSwitchToDrive(options?: QueryHookOptions): SwitchToDriveFn {
-  const apiModel = useApiModel(options);
-  const updateApiModel = useUpdateApiModel();
+  const apiModel = useStorageModel(options);
   return (oldName: string, drive: data.Drive) => {
-    updateApiModel(switchToDrive(apiModel, oldName, drive));
+    putStorageModel(switchToDrive(apiModel, oldName, drive));
   };
 }
 

@@ -20,10 +20,6 @@
  * find current contact information at www.suse.com.
  */
 
-import { Localization } from "./l10n";
+type Issue = object;
 
-type System = {
-  l10n?: Localization;
-};
-
-export type { System };
+export type { Issue };

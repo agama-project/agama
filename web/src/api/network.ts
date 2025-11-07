@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import { del, get, post, put } from "~/api/http";
+import { del, get, post, put } from "~/http";
 import { APIAccessPoint, APIConnection, APIDevice, NetworkGeneralState } from "~/types/network";
 
 /**
