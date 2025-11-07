@@ -24,7 +24,7 @@ import React, { useState } from "react";
 import { Content, Form, FormGroup, Stack } from "@patternfly/react-core";
 import { Icon } from "~/components/layout";
 import { InstallerOptions, PasswordInput, Popup } from "~/components/core";
-import { AnswerCallback, Question } from "~/types/questions";
+import { AnswerCallback, Question } from "~/api/question";
 import QuestionActions from "~/components/questions/QuestionActions";
 import { _ } from "~/i18n";
 

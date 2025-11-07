@@ -28,12 +28,14 @@ import {
   getExtendedConfig,
   solveStorageModel,
   getStorageModel,
+  getQuestions,
 } from "~/api";
 import { useInstallerClient } from "~/context/installer";
 import { System } from "~/api/system";
 import { Proposal } from "~/api/proposal";
 import { Config } from "~/api/config";
 import { apiModel } from "~/api/storage";
+import { Question } from "~/api/question";
 import { QueryHookOptions } from "~/types/queries";
 
 const systemQuery = () => ({
@@ -105,6 +107,39 @@ function useExtendedConfig(options?: QueryHookOptions): Config | null {
   return func(query)?.data;
 }
 
+const questionsQuery = () => ({
+  queryKey: ["questions"],
+  queryFn: getQuestions,
+});
+
+const useQuestions = (options?: QueryHookOptions): Question[] => {
+  const func = options?.suspense ? useSuspenseQuery : useQuery;
+  return func(questionsQuery())?.data || [];
+};
+
+const useQuestionsChanges = () => {
+  const queryClient = useQueryClient();
+  const client = useInstallerClient();
+
+  React.useEffect(() => {
+    if (!client) return;
+
+    return client.onEvent((event) => {
+      if (event.type === "QuestionAdded" || event.type === "QuestionAnswered") {
+        queryClient.invalidateQueries({ queryKey: ["questions"] });
+      }
+    });
+  }, [client, queryClient]);
+
+  React.useEffect(() => {
+    if (!client) return;
+
+    return client.onConnect(() => {
+      queryClient.invalidateQueries({ queryKey: ["questions"] });
+    });
+  }, [client, queryClient]);
+};
+
 const storageModelQuery = () => ({
   queryKey: ["storageModel"],
   queryFn: getStorageModel,
@@ -141,6 +176,8 @@ export {
   useProposal,
   useProposalChanges,
   useExtendedConfig,
+  useQuestions,
+  useQuestionsChanges,
   useStorageModel,
   useSolvedStorageModel,
 };

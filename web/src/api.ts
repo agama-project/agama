@@ -52,7 +52,7 @@ const getProposal = (): Promise<Proposal | null> => get("/api/v2/proposal");
 
 const getIssues = (): Promise<Issue | null> => get("/api/v2/issues");
 
-const getQuestions = (): Promise<Question | null> => get("/api/v2/questions");
+const getQuestions = (): Promise<Question[]> => get("/api/v2/questions");
 
 const getStorageModel = (): Promise<apiModel.Config | null> => get("/api/v2/private/storage_model");
 
@@ -66,6 +66,14 @@ const putConfig = (config: Config): Response => put("/api/v2/config", config);
 const putStorageModel = (model: apiModel.Config) => put("/api/v2/private/storage_model", model);
 
 const patchConfig = (config: Config) => patch("/api/v2/config", { update: config });
+
+const patchQuestion = (question: Question): Response => {
+  const {
+    id,
+    answer: { action, value },
+  } = question;
+  return patch(`/api/v2/questions`, { answer: { id, action, value } });
+};
 
 const postAction = (action: Action) => post("/api/v2/action", action);
 
@@ -93,6 +101,7 @@ export {
   putConfig,
   putStorageModel,
   patchConfig,
+  patchQuestion,
   configureL10nAction,
   activateStorageAction,
   probeStorageAction,

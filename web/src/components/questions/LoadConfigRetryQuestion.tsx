@@ -23,7 +23,7 @@
 import React from "react";
 import { Content, Stack } from "@patternfly/react-core";
 import { NestedContent, Popup } from "~/components/core";
-import { AnswerCallback, Question } from "~/types/questions";
+import { AnswerCallback, Question } from "~/api/question";
 import QuestionActions from "~/components/questions/QuestionActions";
 import { _ } from "~/i18n";
 
