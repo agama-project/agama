@@ -18,15 +18,7 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-<<<<<<< HEAD
 use crate::{l10n, message, network, storage};
-=======
-use crate::l10n;
-use crate::message;
-use crate::message::UpdateConfig;
-use crate::network;
-
->>>>>>> 89e85ab2d (Some fixes for networking config update)
 use agama_utils::{
     actor::{self, Actor, Handler, MessageHandler},
     api::{
@@ -37,10 +29,9 @@ use agama_utils::{
 };
 use async_trait::async_trait;
 use merge_struct::merge;
-use serde_json::Value;
 use network::{NetworkSystemClient, NetworkSystemError};
+use serde_json::Value;
 use tokio::sync::broadcast;
-use zbus::conn;
 
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
@@ -253,7 +244,7 @@ impl MessageHandler<message::UpdateConfig> for Service {
     /// config, then it keeps the values from the current config.
     async fn handle(&mut self, message: message::UpdateConfig) -> Result<(), Error> {
         let config = merge(&self.config, &message.config).map_err(|_| Error::MergeConfig)?;
-<<<<<<< HEAD
+        let config = merge_network(config, message.config);
 
         if let Some(l10n) = &config.l10n {
             self.l10n
@@ -273,12 +264,12 @@ impl MessageHandler<message::UpdateConfig> for Service {
                 .await?;
         }
 
+        if let Some(network) = &config.network {
+            self.network.update_config(network.clone()).await?;
+        }
+
         self.config = config;
         Ok(())
-=======
-        let config = merge_network(config, message.config);
-        self.handle(message::SetConfig::new(config)).await
->>>>>>> 89e85ab2d (Some fixes for networking config update)
     }
 }
 
@@ -287,15 +278,8 @@ impl MessageHandler<message::GetProposal> for Service {
     /// It returns the current proposal, if any.
     async fn handle(&mut self, _message: message::GetProposal) -> Result<Option<Proposal>, Error> {
         let l10n = self.l10n.call(l10n::message::GetProposal).await?;
-<<<<<<< HEAD
         let storage = self.storage.call(storage::message::GetProposal).await?;
-        let network_config: types::Proposal = self.network.get_extended_config().await?;
-        let network = types::Proposal {
-            connections: network_config.connections,
-        };
-=======
         let network = self.network.get_extended_config().await?;
->>>>>>> c91270e0d (Moved network types to agama utils and adapt for new API changes)
 
         Ok(Some(Proposal {
             l10n,

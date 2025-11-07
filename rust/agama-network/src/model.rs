@@ -160,14 +160,32 @@ impl NetworkState {
 
     pub fn update_state(&mut self, config: Config) -> Result<(), NetworkStateError> {
         if let Some(connections) = config.connections {
-            let mut collection: ConnectionCollection = connections.try_into()?;
-            collection.0.iter_mut().for_each(|conn| {
+            let mut collection: ConnectionCollection = connections.clone().try_into()?;
+            for conn in collection.0.iter_mut() {
                 if let Some(current_conn) = self.get_connection(conn.id.as_str()) {
+                    // Replaced the UUID with a real one
                     conn.uuid = current_conn.uuid;
+                    self.update_connection(conn.to_owned())?;
+                } else {
+                    self.add_connection(conn.to_owned())?;
                 }
-            });
-            self.connections = collection.0;
+            }
+
+            for conn in connections.0 {
+                let mut ports = vec![];
+                if let Some(model) = conn.bridge {
+                    ports = model.ports;
+                }
+                if let Some(model) = conn.bond {
+                    ports = model.ports;
+                }
+
+                if let Some(controller) = self.get_connection(conn.id.as_str()) {
+                    self.set_ports(&controller.clone(), ports)?;
+                }
+            }
         }
+
         if let Some(general_state) = config.general_state {
             self.general_state = general_state;
         }
@@ -1332,13 +1350,38 @@ impl TryFrom<NetworkConnectionsCollection> for ConnectionCollection {
     type Error = NetworkStateError;
 
     fn try_from(collection: NetworkConnectionsCollection) -> Result<Self, Self::Error> {
-        let network_connections = collection
-            .0
-            .iter()
-            .map(|c| Connection::try_from(c.clone()).unwrap())
-            .collect();
+        let mut conns: Vec<Connection> = vec![];
+        let mut controller_ports: HashMap<String, Uuid> = HashMap::new();
 
-        Ok(ConnectionCollection(network_connections))
+        for net_conn in &collection.0 {
+            let mut conn = Connection::try_from(net_conn.clone())?;
+            conn.uuid = Uuid::new_v4();
+            let mut ports = vec![];
+            if let Some(bridge) = &net_conn.bridge {
+                ports = bridge.ports.clone();
+            }
+            if let Some(bond) = &net_conn.bond {
+                ports = bond.ports.clone();
+            }
+            for port in &ports {
+                controller_ports.insert(port.to_string(), conn.uuid);
+            }
+
+            conns.push(conn);
+        }
+
+        for (port, uuid) in controller_ports {
+            let default = Connection::new(port.clone(), DeviceType::Ethernet);
+            let mut conn = conns
+                .iter()
+                .find(|&c| c.id == port || c.interface == Some(port.to_string()))
+                .unwrap_or(&default)
+                .to_owned();
+            conn.controller = Some(uuid);
+            conns.push(conn);
+        }
+
+        Ok(ConnectionCollection(conns))
     }
 }
 
