@@ -20,10 +20,15 @@
 
 use crate::api::{l10n, manager};
 use serde::Serialize;
+use serde_json::Value;
 
 #[derive(Clone, Debug, Serialize, utoipa::ToSchema)]
+#[serde(rename_all = "camelCase")]
 pub struct SystemInfo {
     #[serde(flatten)]
     pub manager: manager::SystemInfo,
     pub l10n: l10n::SystemInfo,
+    #[serde(default)]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub storage: Option<Value>,
 }

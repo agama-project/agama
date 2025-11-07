@@ -55,7 +55,7 @@ impl Message for GetConfig {
 }
 
 pub struct SetConfig<T> {
-    pub config: T,
+    pub config: Option<T>,
 }
 
 impl<T: Send + 'static> Message for SetConfig<T> {
@@ -63,8 +63,14 @@ impl<T: Send + 'static> Message for SetConfig<T> {
 }
 
 impl<T> SetConfig<T> {
-    pub fn new(config: T) -> Self {
+    pub fn new(config: Option<T>) -> Self {
         Self { config }
+    }
+
+    pub fn with(config: T) -> Self {
+        Self {
+            config: Some(config),
+        }
     }
 }
 

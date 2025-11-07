@@ -44,7 +44,7 @@ pub enum Error {
 }
 
 pub struct Service {
-    config: Config,
+    config: Option<Config>,
     questions: Vec<Question>,
     current_id: u32,
     events: event::Sender,
@@ -61,25 +61,28 @@ impl Service {
     }
 
     pub fn find_answer(&self, spec: &QuestionSpec) -> Option<Answer> {
-        let answer = self
-            .config
-            .answers
-            .iter()
-            .find(|a| a.answers_to(&spec))
-            .map(|r| r.answer.clone());
+        let answer = self.config.as_ref().and_then(|config| {
+            config
+                .answers
+                .iter()
+                .find(|a| a.answers_to(&spec))
+                .map(|r| r.answer.clone())
+        });
 
         if answer.is_some() {
             return answer;
         }
 
-        if let Some(Policy::Auto) = self.config.policy {
-            spec.default_action.clone().map(|action| Answer {
-                action,
-                value: None,
-            })
-        } else {
-            None
-        }
+        self.config.as_ref().and_then(|config| {
+            if let Some(Policy::Auto) = config.policy {
+                spec.default_action.clone().map(|action| Answer {
+                    action,
+                    value: None,
+                })
+            } else {
+                None
+            }
+        })
     }
 }
 
@@ -89,7 +92,7 @@ impl Actor for Service {
 
 #[async_trait]
 impl MessageHandler<message::GetConfig> for Service {
-    async fn handle(&mut self, _message: message::GetConfig) -> Result<Config, Error> {
+    async fn handle(&mut self, _message: message::GetConfig) -> Result<Option<Config>, Error> {
         Ok(self.config.clone())
     }
 }

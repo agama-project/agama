@@ -20,7 +20,7 @@
 # find current contact information at www.suse.com.
 
 require_relative "../test_helper"
-require "agama/progress"
+require "agama/old_progress"
 require "agama/progress_manager"
 
 shared_examples "unfinished progress" do |action|
@@ -72,7 +72,7 @@ describe Agama::ProgressManager do
       end
 
       it "returns the progress object" do
-        expect(subject.progress).to be_a(Agama::Progress)
+        expect(subject.progress).to be_a(Agama::OldProgress)
       end
     end
   end

@@ -42,6 +42,9 @@ pub use system_info::SystemInfo;
 pub mod config;
 pub use config::Config;
 
+pub mod patch;
+pub use patch::Patch;
+
 mod proposal;
 pub use proposal::Proposal;
 
@@ -52,3 +55,4 @@ pub mod l10n;
 pub mod manager;
 pub mod question;
 pub mod software;
+pub mod storage;

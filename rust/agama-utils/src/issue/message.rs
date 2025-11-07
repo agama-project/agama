@@ -30,13 +30,13 @@ impl Message for Get {
 
 // FIXME: consider an alternative approach to avoid pub(crate),
 // making it only visible to the service.
-pub struct Update {
+pub struct Set {
     pub(crate) scope: Scope,
     pub(crate) issues: Vec<Issue>,
     pub(crate) notify: bool,
 }
 
-impl Update {
+impl Set {
     pub fn new(scope: Scope, issues: Vec<Issue>) -> Self {
         Self {
             scope,
@@ -51,7 +51,7 @@ impl Update {
     }
 }
 
-impl Message for Update {
+impl Message for Set {
     type Reply = ();
 }
 

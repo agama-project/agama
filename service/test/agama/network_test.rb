@@ -22,7 +22,6 @@
 require_relative "../test_helper"
 require "tmpdir"
 require "agama/network"
-require "agama/progress"
 
 describe Agama::Network do
   subject(:network) { described_class.new(logger) }

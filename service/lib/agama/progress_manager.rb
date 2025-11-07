@@ -19,7 +19,7 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "agama/progress"
+require "agama/old_progress"
 
 module Agama
   # There is an unfinished progress.
@@ -86,7 +86,7 @@ module Agama
     def start_progress(args)
       raise NotFinishedProgress if progress && !progress.finished?
 
-      @progress = Progress.new(**args).tap do |progress|
+      @progress = OldProgress.new(**args).tap do |progress|
         progress.on_change { on_change_callbacks.each(&:call) }
         progress.on_finish { on_finish_callbacks.each(&:call) }
       end

@@ -25,24 +25,6 @@ require "agama/storage/volume"
 require "y2storage/volume_specification"
 
 describe Agama::Storage::Volume do
-  describe ".new_from_json" do
-    let(:config) { Agama::Config.new }
-
-    let(:volume_json) do
-      {
-        mount: {
-          path: "/test"
-        }
-      }
-    end
-
-    it "generates a volume from JSON according to schema" do
-      result = described_class.new_from_json(volume_json, config: config)
-      expect(result).to be_a(Agama::Storage::Volume)
-      expect(result.mount_path).to eq("/test")
-    end
-  end
-
   describe "#to_json_settngs" do
     let(:volume) { Agama::Storage::Volume.new("/test") }
 
