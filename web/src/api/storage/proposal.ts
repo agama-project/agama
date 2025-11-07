@@ -13,7 +13,7 @@ export interface Proposal {
   /**
    * Expected layout of the system after the commit phase.
    */
-  devices?: StorageDevice[];
+  devices?: Device[];
   /**
    * Sorted list of actions to execute during the commit phase.
    */
@@ -22,7 +22,7 @@ export interface Proposal {
 /**
  * Schema to describe a device both in 'system' and 'proposal'.
  */
-export interface StorageDevice {
+export interface Device {
   sid: number;
   name: string;
   description?: string;
@@ -33,9 +33,9 @@ export interface StorageDevice {
   multipath?: Multipath;
   partitionTable?: PartitionTable;
   partition?: Partition;
-  partitions?: StorageDevice[];
+  partitions?: Device[];
   volumeGroup?: VolumeGroup;
-  logicalVolumes?: StorageDevice[];
+  logicalVolumes?: Device[];
 }
 export interface Block {
   start: number;

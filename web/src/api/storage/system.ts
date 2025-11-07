@@ -13,7 +13,7 @@ export interface System {
   /**
    * All relevant devices on the system
    */
-  devices?: StorageDevice[];
+  devices?: Device[];
   /**
    * SIDs of the available drives
    */
@@ -55,7 +55,7 @@ export interface System {
 /**
  * Schema to describe a device both in 'system' and 'proposal'.
  */
-export interface StorageDevice {
+export interface Device {
   sid: number;
   name: string;
   description?: string;
@@ -66,9 +66,9 @@ export interface StorageDevice {
   multipath?: Multipath;
   partitionTable?: PartitionTable;
   partition?: Partition;
-  partitions?: StorageDevice[];
+  partitions?: Device[];
   volumeGroup?: VolumeGroup;
-  logicalVolumes?: StorageDevice[];
+  logicalVolumes?: Device[];
 }
 export interface Block {
   start: number;
