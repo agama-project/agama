@@ -22,9 +22,10 @@
 //! configuration and a mechanism to build it starting from the product
 //! definition, the user configuration, etc.
 
-use agama_utils::api::software::{Config, PatternsConfig, RepositoryConfig, SystemInfo};
-
-use crate::model::products::{ProductSpec, UserPattern};
+use agama_utils::{
+    api::software::{Config, PatternsConfig, RepositoryConfig, SystemInfo},
+    products::{ProductSpec, UserPattern},
+};
 
 /// Represents the wanted software configuration.
 ///
@@ -256,15 +257,15 @@ pub struct SoftwareOptions {
 mod tests {
     use std::path::PathBuf;
 
-    use agama_utils::api::software::{
-        Config, PatternsConfig, PatternsMap, Repository, RepositoryConfig, SoftwareConfig,
-        SystemInfo,
+    use agama_utils::{
+        api::software::{
+            Config, PatternsConfig, PatternsMap, Repository, RepositoryConfig, SoftwareConfig,
+            SystemInfo,
+        },
+        products::ProductSpec,
     };
 
-    use crate::model::{
-        products::ProductSpec,
-        state::{ResolvableName, SoftwareStateBuilder},
-    };
+    use crate::model::state::{ResolvableName, SoftwareStateBuilder};
 
     fn build_user_config(patterns: Option<PatternsConfig>) -> Config {
         let repo = RepositoryConfig {

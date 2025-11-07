@@ -18,28 +18,28 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use agama_utils::api::{
-    software::{Pattern, SoftwareProposal},
-    Issue,
+use agama_utils::{
+    actor::Handler,
+    api::{
+        software::{Pattern, SoftwareProposal},
+        Issue,
+    },
+    products::{ProductSpec, UserPattern},
+    progress,
 };
 use async_trait::async_trait;
 use tokio::sync::{mpsc, oneshot};
 
 use crate::{
     model::{
-        packages::ResolvableType,
-        products::{ProductSpec, UserPattern},
-        software_selection::SoftwareSelection,
-        state::SoftwareState,
+        packages::ResolvableType, software_selection::SoftwareSelection, state::SoftwareState,
     },
     service,
     zypp_server::SoftwareAction,
 };
 
 pub mod conflict;
-pub mod license;
 pub mod packages;
-pub mod products;
 pub mod registration;
 pub mod software_selection;
 pub mod state;
@@ -66,7 +66,7 @@ pub trait ModelAdapter: Send + Sync + 'static {
         optional: bool,
     ) -> Result<(), service::Error>;
 
-    async fn compute_proposal(&self) -> Result<Option<SoftwareProposal>, service::Error>;
+    async fn compute_proposal(&self) -> Result<SoftwareProposal, service::Error>;
 
     /// Refresh repositories information.
     async fn refresh(&mut self) -> Result<(), service::Error>;
@@ -77,11 +77,17 @@ pub trait ModelAdapter: Send + Sync + 'static {
     /// Finalizes system like disabling local repositories
     async fn finish(&self) -> Result<(), service::Error>;
 
+    fn set_product(&mut self, product_spec: ProductSpec);
+
     /// Applies the configuration to the system.
     ///
     /// It does not perform the installation, just update the repositories and
     /// the software selection.
-    async fn write(&mut self, software: SoftwareState) -> Result<Vec<Issue>, service::Error>;
+    async fn write(
+        &mut self,
+        software: SoftwareState,
+        progress: Handler<progress::Service>,
+    ) -> Result<Vec<Issue>, service::Error>;
 }
 
 /// [ModelAdapter] implementation for libzypp systems.
@@ -105,10 +111,19 @@ impl Model {
 
 #[async_trait]
 impl ModelAdapter for Model {
-    async fn write(&mut self, software: SoftwareState) -> Result<Vec<Issue>, service::Error> {
+    fn set_product(&mut self, product_spec: ProductSpec) {
+        self.selected_product = Some(product_spec);
+    }
+
+    async fn write(
+        &mut self,
+        software: SoftwareState,
+        progress: Handler<progress::Service>,
+    ) -> Result<Vec<Issue>, service::Error> {
         let (tx, rx) = oneshot::channel();
         self.zypp_sender.send(SoftwareAction::Write {
             state: software,
+            progress,
             tx,
         })?;
         Ok(rx.await??)
@@ -170,14 +185,14 @@ impl ModelAdapter for Model {
         Ok(rx.await??)
     }
 
-    async fn compute_proposal(&self) -> Result<Option<SoftwareProposal>, service::Error> {
+    async fn compute_proposal(&self) -> Result<SoftwareProposal, service::Error> {
         let Some(product_spec) = self.selected_product.clone() else {
-            return Ok(None);
+            return Err(service::Error::MissingProduct);
         };
 
         let (tx, rx) = oneshot::channel();
         self.zypp_sender
             .send(SoftwareAction::ComputeProposal(product_spec, tx))?;
-        Ok(Some(rx.await??))
+        Ok(rx.await??)
     }
 }

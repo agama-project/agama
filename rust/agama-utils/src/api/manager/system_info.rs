@@ -18,12 +18,32 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::api::{l10n, manager};
+use crate::api::manager::License;
 use serde::Serialize;
 
-#[derive(Clone, Debug, Serialize, utoipa::ToSchema)]
+/// Global information of the system where the installer is running.
+#[derive(Clone, Debug, Default, Serialize, utoipa::ToSchema)]
 pub struct SystemInfo {
-    #[serde(flatten)]
-    pub manager: manager::SystemInfo,
-    pub l10n: l10n::SystemInfo,
+    /// List of known products.
+    pub products: Vec<Product>,
+    /// List of known licenses
+    pub licenses: Vec<License>,
+}
+
+/// Represents a software product
+#[derive(Clone, Default, Debug, Serialize, utoipa::ToSchema)]
+#[serde(rename_all = "camelCase")]
+pub struct Product {
+    /// Product ID (eg., "ALP", "Tumbleweed", etc.)
+    pub id: String,
+    /// Product name (e.g., "openSUSE Tumbleweed")
+    pub name: String,
+    /// Product description
+    pub description: String,
+    /// Product icon (e.g., "default.svg")
+    pub icon: String,
+    /// Registration requirement
+    pub registration: bool,
+    /// License ID
+    pub license: Option<String>,
 }

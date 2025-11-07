@@ -19,6 +19,8 @@ zvariant = "5.5.2"
 gettext-rs = { version = "0.7.2", features = ["gettext-system"] }
 agama-locale-data = { path = "../agama-locale-data" }
 regex = "1.12.2"
+tracing = "0.1.41"
+serde_yaml = "0.9.34"
 
 [dev-dependencies]
 tokio-test = "0.4.4"

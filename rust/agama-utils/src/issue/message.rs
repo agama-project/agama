@@ -54,3 +54,17 @@ impl Update {
 impl Message for Update {
     type Reply = ();
 }
+
+pub struct Clear {
+    pub scope: Scope,
+}
+
+impl Clear {
+    pub fn new(scope: Scope) -> Self {
+        Self { scope }
+    }
+}
+
+impl Message for Clear {
+    type Reply = ();
+}

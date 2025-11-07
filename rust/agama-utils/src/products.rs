@@ -24,6 +24,7 @@
 //! It reads the list of products from the `products.d` directory (usually,
 //! `/usr/share/agama/products.d`).
 
+use crate::api::manager::Product;
 use serde::{Deserialize, Deserializer};
 use serde_with::{formats::CommaSeparator, serde_as, StringWithSeparator};
 use std::path::{Path, PathBuf};
@@ -43,31 +44,24 @@ pub enum ProductsRegistryError {
 /// the parent of `products.d`.
 ///
 /// Dynamic behavior, like filtering by architecture, is not supported yet.
-#[derive(Clone, Default, Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize)]
 pub struct ProductsRegistry {
-    pub products: Vec<ProductSpec>,
+    path: std::path::PathBuf,
+    products: Vec<ProductSpec>,
 }
 
 impl ProductsRegistry {
-    /// Creates a registry loading the products from the default location.
-    pub fn load() -> Result<Self, ProductsRegistryError> {
-        let share_dir = std::env::var("AGAMA_SHARE_DIR").unwrap_or("/usr/share/agama".to_string());
-        let products_dir = PathBuf::from(share_dir).join("products.d");
-
-        if !products_dir.exists() {
-            return Err(ProductsRegistryError::IO(std::io::Error::new(
-                std::io::ErrorKind::NotFound,
-                "products.d directory does not exist",
-            )));
+    pub fn new<P: AsRef<Path>>(path: P) -> Self {
+        Self {
+            path: path.as_ref().to_owned(),
+            products: vec![],
         }
-
-        Self::load_from(products_dir)
     }
 
-    /// Creates a registry loading the products from the given location.
-    pub fn load_from<P: AsRef<Path>>(products_path: P) -> Result<Self, ProductsRegistryError> {
-        let entries = std::fs::read_dir(products_path)?;
-        let mut products = vec![];
+    /// Creates a registry loading the products from its location.
+    pub fn read(&mut self) -> Result<(), ProductsRegistryError> {
+        let entries = std::fs::read_dir(&self.path)?;
+        self.products.clear();
 
         for entry in entries {
             let entry = entry?;
@@ -79,16 +73,22 @@ impl ProductsRegistry {
 
             if path.is_file() && (ext == "yaml" || ext == "yml") {
                 let product = ProductSpec::load_from(path)?;
-                products.push(product);
+                self.products.push(product);
             }
         }
 
-        Ok(Self { products })
+        Ok(())
     }
 
-    /// Determines whether the are are multiple products.
-    pub fn is_multiproduct(&self) -> bool {
-        self.products.len() > 1
+    /// Returns the default product.
+    ///
+    /// If there is a single product, it is considered the "default product".
+    pub fn default_product(&self) -> Option<&ProductSpec> {
+        if self.products.len() == 1 {
+            self.products.first()
+        } else {
+            None
+        }
     }
 
     /// Finds a product by its ID.
@@ -96,6 +96,29 @@ impl ProductsRegistry {
     /// * `id`: product ID.
     pub fn find(&self, id: &str) -> Option<&ProductSpec> {
         self.products.iter().find(|p| p.id == id)
+    }
+
+    /// Returns a vector with the licenses from the repository.
+    pub fn products(&self) -> Vec<Product> {
+        self.products
+            .iter()
+            .map(|p| Product {
+                id: p.id.clone(),
+                name: p.name.clone(),
+                description: p.description.clone(),
+                icon: p.icon.clone(),
+                registration: p.registration,
+                license: None,
+            })
+            .collect()
+    }
+}
+
+impl Default for ProductsRegistry {
+    fn default() -> Self {
+        let share_dir = std::env::var("AGAMA_SHARE_DIR").unwrap_or("/usr/share/agama".to_string());
+        let products_dir = PathBuf::from(share_dir).join("products.d");
+        Self::new(products_dir)
     }
 }
 
@@ -134,6 +157,8 @@ pub struct SoftwareSpec {
     #[serde(default)]
     pub installation_labels: Vec<LabelSpec>,
     #[serde(default)]
+    pub user_patterns: Vec<UserPattern>,
+    #[serde(default)]
     pub mandatory_patterns: Vec<String>,
     #[serde(default)]
     pub mandatory_packages: Vec<String>,
@@ -150,9 +175,31 @@ impl SoftwareSpec {
         let arch = std::env::consts::ARCH.to_string();
         self.installation_repositories
             .iter()
-            .filter(|r| r.archs.contains(&arch))
+            .filter(|r| r.archs.is_empty() || r.archs.contains(&arch))
             .collect()
     }
+}
+
+#[derive(Clone, Debug, Deserialize, PartialEq)]
+#[serde(untagged)]
+pub enum UserPattern {
+    Plain(String),
+    Preselected(PreselectedPattern),
+}
+
+impl UserPattern {
+    pub fn name(&self) -> &str {
+        match self {
+            UserPattern::Plain(name) => name,
+            UserPattern::Preselected(pattern) => &pattern.name,
+        }
+    }
+}
+
+#[derive(Clone, Debug, Deserialize, PartialEq)]
+pub struct PreselectedPattern {
+    pub name: String,
+    pub selected: bool,
 }
 
 #[serde_as]
@@ -181,16 +228,18 @@ mod test {
     #[test]
     fn test_load_registry() {
         let path = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../test/share/products.d");
-        let config = ProductsRegistry::load_from(path.as_path()).unwrap();
+        let mut registry = ProductsRegistry::new(path.as_path());
+        registry.read().unwrap();
         // ensuring that we can load all products from tests
-        assert_eq!(config.products.len(), 8);
+        assert_eq!(registry.products.len(), 8);
     }
 
     #[test]
     fn test_find_product() {
         let path = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../test/share/products.d");
-        let products = ProductsRegistry::load_from(path.as_path()).unwrap();
-        let tw = products.find("Tumbleweed").unwrap();
+        let mut registry = ProductsRegistry::new(path.as_path());
+        registry.read().unwrap();
+        let tw = registry.find("Tumbleweed").unwrap();
         assert_eq!(tw.id, "Tumbleweed");
         assert_eq!(tw.name, "openSUSE Tumbleweed");
         assert_eq!(tw.icon, "Tumbleweed.svg");
@@ -200,8 +249,36 @@ mod test {
         assert_eq!(software.installation_repositories.len(), 12);
         assert_eq!(software.installation_labels.len(), 4);
         assert_eq!(software.base_product, "openSUSE");
+        assert_eq!(software.user_patterns.len(), 11);
 
-        let missing = products.find("Missing");
+        let preselected = software
+            .user_patterns
+            .iter()
+            .find(|p| matches!(p, UserPattern::Preselected(_)));
+        let expected_pattern = PreselectedPattern {
+            name: "selinux".to_string(),
+            selected: true,
+        };
+        assert_eq!(
+            preselected,
+            Some(&UserPattern::Preselected(expected_pattern))
+        );
+
+        let missing = registry.find("Missing");
         assert!(missing.is_none());
+    }
+
+    #[test]
+    fn test_default_product() {
+        let path =
+            PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../test/share/products.d-single");
+        let mut registry = ProductsRegistry::new(path.as_path());
+        registry.read().unwrap();
+        assert!(registry.default_product().is_some());
+
+        let path = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../test/share/products.d");
+        let mut registry = ProductsRegistry::new(path.as_path());
+        registry.read().unwrap();
+        assert!(registry.default_product().is_none());
     }
 }

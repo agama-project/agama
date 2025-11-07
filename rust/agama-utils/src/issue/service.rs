@@ -91,3 +91,11 @@ impl MessageHandler<message::Update> for Service {
         Ok(())
     }
 }
+
+#[async_trait]
+impl MessageHandler<message::Clear> for Service {
+    async fn handle(&mut self, message: message::Clear) -> Result<(), Error> {
+        _ = self.issues.remove(&message.scope);
+        Ok(())
+    }
+}

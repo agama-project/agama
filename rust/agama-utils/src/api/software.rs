@@ -24,8 +24,5 @@ pub use config::*;
 mod system_info;
 pub use system_info::*;
 
-mod license;
-pub use license::{InvalidLanguageCode, LanguageTag, License, LicenseContent};
-
 mod proposal;
 pub use proposal::{Proposal, SelectedBy, SoftwareProposal};

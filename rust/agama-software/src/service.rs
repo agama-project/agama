@@ -22,22 +22,19 @@ use std::{process::Command, sync::Arc};
 
 use crate::{
     message,
-    model::{
-        license::{Error as LicenseError, LicensesRepo},
-        products::{ProductsRegistry, ProductsRegistryError},
-        state::SoftwareState,
-        ModelAdapter,
-    },
+    model::{state::SoftwareState, ModelAdapter},
     zypp_server::{self, SoftwareAction},
 };
 use agama_utils::{
     actor::{self, Actor, Handler, MessageHandler},
     api::{
         event::{self, Event},
-        software::{Config, Proposal, Repository, SystemInfo},
-        Scope,
+        software::{Config, Proposal, Repository, SoftwareProposal, SystemInfo},
+        Issue, IssueSeverity, Scope,
     },
     issue,
+    products::ProductSpec,
+    progress,
 };
 use async_trait::async_trait;
 use tokio::sync::{broadcast, Mutex, RwLock};
@@ -61,10 +58,6 @@ pub enum Error {
     #[error("There is no {0} product")]
     WrongProduct(String),
     #[error(transparent)]
-    ProductsRegistry(#[from] ProductsRegistryError),
-    #[error(transparent)]
-    License(#[from] LicenseError),
-    #[error(transparent)]
     ZyppServerError(#[from] zypp_server::ZyppServerError),
     #[error(transparent)]
     ZyppError(#[from] zypp_agama::errors::ZyppError),
@@ -80,9 +73,8 @@ pub enum Error {
 /// * Applies the user configuration at the end of the installation.
 pub struct Service {
     model: Arc<Mutex<dyn ModelAdapter + Send + 'static>>,
-    products: ProductsRegistry,
-    licenses: LicensesRepo,
     issues: Handler<issue::Service>,
+    progress: Handler<progress::Service>,
     events: event::Sender,
     state: State,
 }
@@ -98,23 +90,19 @@ impl Service {
     pub fn new<T: ModelAdapter>(
         model: T,
         issues: Handler<issue::Service>,
+        progress: Handler<progress::Service>,
         events: event::Sender,
     ) -> Service {
         Self {
             model: Arc::new(Mutex::new(model)),
             issues,
+            progress,
             events,
-            licenses: LicensesRepo::default(),
-            products: ProductsRegistry::default(),
             state: Default::default(),
         }
     }
 
-    pub async fn read(&mut self) -> Result<(), Error> {
-        self.licenses.read()?;
-        self.products.read()?;
-        self.state.system.licenses = self.licenses.licenses().into_iter().cloned().collect();
-        self.state.system.products = self.products.products();
+    pub async fn setup(&mut self) -> Result<(), Error> {
         if let Some(install_repo) = find_install_repository() {
             tracing::info!("Found repository at {}", install_repo.url);
             self.state.system.repositories.push(install_repo);
@@ -123,12 +111,7 @@ impl Service {
     }
 
     async fn update_system(&mut self) -> Result<(), Error> {
-        let licenses = self.licenses.licenses().into_iter().cloned().collect();
-        let products = self.products.products();
-
-        self.state.system.licenses = licenses;
-        self.state.system.products = products;
-
+        // TODO: add system information (repositories, patterns, etc.).
         self.events.send(Event::SystemChanged {
             scope: Scope::Software,
         })?;
@@ -158,40 +141,37 @@ impl MessageHandler<message::GetConfig> for Service {
 #[async_trait]
 impl MessageHandler<message::SetConfig<Config>> for Service {
     async fn handle(&mut self, message: message::SetConfig<Config>) -> Result<(), Error> {
-        let product = message.config.product.as_ref();
+        let product = message.product.read().await;
 
-        // handle product
-        let Some(new_product_id) = &product.and_then(|p| p.id.as_ref()) else {
-            return Ok(());
-        };
-
-        let Some(new_product) = self.products.find(new_product_id.as_str()) else {
-            // FIXME: return an error.
-            return Ok(());
-        };
-
-        self.state.config = message.config.clone();
+        self.state.config = message.config.clone().unwrap_or_default();
         self.events.send(Event::ConfigChanged {
             scope: Scope::Software,
         })?;
 
-        let software = SoftwareState::build_from(new_product, &message.config, &self.state.system);
+        let software = SoftwareState::build_from(&product, &self.state.config, &self.state.system);
 
         let model = self.model.clone();
         let issues = self.issues.clone();
         let events = self.events.clone();
+        let progress = self.progress.clone();
         let proposal = self.state.proposal.clone();
+        let product_spec = product.clone();
         tokio::task::spawn(async move {
-            let mut my_model = model.lock().await;
-            let found_issues = my_model.write(software).await.unwrap();
-            if !found_issues.is_empty() {
-                _ = issues.cast(issue::message::Update::new(Scope::Software, found_issues));
-            }
-            // update proposal with new config
-            // TODO: how to handle errors here? Own issue?
-            let software_proposal = my_model.compute_proposal().await.unwrap();
-            proposal.write().await.software = software_proposal;
-
+            let (new_proposal, found_issues) =
+                match compute_proposal(model, product_spec, software, progress).await {
+                    Ok((new_proposal, found_issues)) => (Some(new_proposal), found_issues),
+                    Err(error) => {
+                        let new_issue = Issue::new(
+                            "software.proposal_failed",
+                            "It was not possible to create a software proposal",
+                            IssueSeverity::Error,
+                        )
+                        .with_details(&error.to_string());
+                        (None, vec![new_issue])
+                    }
+                };
+            proposal.write().await.software = new_proposal;
+            _ = issues.cast(issue::message::Update::new(Scope::Software, found_issues));
             _ = events.send(Event::ProposalChanged {
                 scope: Scope::Software,
             });
@@ -199,6 +179,19 @@ impl MessageHandler<message::SetConfig<Config>> for Service {
 
         Ok(())
     }
+}
+
+async fn compute_proposal(
+    model: Arc<Mutex<dyn ModelAdapter + Send + 'static>>,
+    product_spec: ProductSpec,
+    wanted: SoftwareState,
+    progress: Handler<progress::Service>,
+) -> Result<(SoftwareProposal, Vec<Issue>), Error> {
+    let mut my_model = model.lock().await;
+    my_model.set_product(product_spec);
+    let issues = my_model.write(wanted, progress).await?;
+    let proposal = my_model.compute_proposal().await?;
+    Ok((proposal, issues))
 }
 
 #[async_trait]
