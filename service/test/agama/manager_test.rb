@@ -45,7 +45,8 @@ describe Agama::Manager do
     instance_double(
       Agama::HTTP::Clients::Software,
       probe: nil, install: nil, propose: nil, finish: nil,
-      config: { "product" => product }, errors?: false
+      config: { "product" => { "id" => product } }, errors?: false,
+      selected_product: product
     )
   end
   let(:users) do

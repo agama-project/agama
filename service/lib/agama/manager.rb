@@ -83,7 +83,7 @@ module Agama
       installation_phase.startup
       # FIXME: hot-fix for decision taken at bsc#1224868 (RC1)
       network.startup
-      config_phase if software.config["product"]
+      config_phase if software.config.dig("product", "id")
 
       logger.info("Startup phase done")
       service_status.idle
