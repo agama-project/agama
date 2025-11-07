@@ -49,6 +49,8 @@ pub enum ZyppDispatchError {
     ResponseChannelClosed,
     #[error("Target creation failed: {0}")]
     TargetCreationFailed(#[source] std::io::Error),
+    #[error(transparent)]
+    Progress(#[from] progress::service::Error),
 }
 
 #[derive(thiserror::Error, Debug)]
