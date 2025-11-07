@@ -21,7 +21,7 @@
 pub mod common;
 use agama_lib::error::ServiceError;
 use agama_server::server::server_service;
-use agama_utils::api;
+use agama_utils::{api, test};
 use axum::{
     body::Body,
     http::{Method, Request, StatusCode},
@@ -38,6 +38,7 @@ async fn build_server_service() -> Result<Router, ServiceError> {
     std::env::set_var("AGAMA_SHARE_DIR", share_dir.display().to_string());
 
     let (tx, mut rx) = channel(16);
+    let dbus = test::dbus::connection().await.unwrap();
 
     tokio::spawn(async move {
         while let Ok(event) = rx.recv().await {
@@ -45,7 +46,7 @@ async fn build_server_service() -> Result<Router, ServiceError> {
         }
     });
 
-    server_service(tx, None).await
+    server_service(tx, dbus).await
 }
 
 #[test]
@@ -179,16 +180,15 @@ async fn test_patch_config() -> Result<(), Box<dyn Error>> {
     let response = server_service.clone().oneshot(request).await.unwrap();
     assert_eq!(response.status(), StatusCode::OK);
 
-    let patch = api::config::Patch {
-        update: Some(api::Config {
-            l10n: Some(api::l10n::Config {
-                locale: None,
-                keymap: Some("en".to_string()),
-                timezone: None,
-            }),
-            ..Default::default()
+    let config = api::Config {
+        l10n: Some(api::l10n::Config {
+            locale: None,
+            keymap: Some("en".to_string()),
+            timezone: None,
         }),
+        ..Default::default()
     };
+    let patch = agama_utils::api::Patch::with_update(&config).unwrap();
 
     let request = Request::builder()
         .uri("/config")

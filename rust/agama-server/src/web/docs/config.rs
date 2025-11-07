@@ -155,7 +155,7 @@ impl ApiDocBuilder for ConfigApiDocBuilder {
             .schema_from::<agama_utils::api::Scope>()
             .schema_from::<agama_utils::api::Status>()
             .schema_from::<agama_utils::api::SystemInfo>()
-            .schema_from::<agama_utils::api::config::Patch>()
+            .schema_from::<agama_utils::api::Patch>()
             .schema_from::<agama_utils::api::l10n::Config>()
             .schema_from::<agama_utils::api::l10n::Keymap>()
             .schema_from::<agama_utils::api::l10n::LocaleEntry>()

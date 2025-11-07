@@ -18,10 +18,11 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::api::{l10n, question, software};
+use crate::api::{l10n, question, software, storage};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, Default, Deserialize, Serialize, utoipa::ToSchema)]
+#[serde(rename_all = "camelCase")]
 pub struct Config {
     #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(alias = "localization")]
@@ -30,11 +31,7 @@ pub struct Config {
     pub software: Option<software::Config>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub questions: Option<question::Config>,
-}
-
-/// Patch for the config.
-#[derive(Deserialize, Serialize, utoipa::ToSchema)]
-pub struct Patch {
-    /// Update for the current config.
-    pub update: Option<Config>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(flatten)]
+    pub storage: Option<storage::Config>,
 }

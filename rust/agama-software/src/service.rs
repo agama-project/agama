@@ -171,7 +171,7 @@ impl MessageHandler<message::SetConfig<Config>> for Service {
                     }
                 };
             proposal.write().await.software = new_proposal;
-            _ = issues.cast(issue::message::Update::new(Scope::Software, found_issues));
+            _ = issues.cast(issue::message::Set::new(Scope::Software, found_issues));
             _ = events.send(Event::ProposalChanged {
                 scope: Scope::Software,
             });

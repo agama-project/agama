@@ -20,10 +20,7 @@
 # find current contact information at www.suse.com.
 
 require "agama/dbus/clients/base"
-require "agama/dbus/clients/with_service_status"
 require "agama/dbus/clients/with_locale"
-require "agama/dbus/clients/with_progress"
-require "agama/dbus/clients/with_issues"
 require "json"
 
 module Agama
@@ -32,9 +29,6 @@ module Agama
       # D-Bus client for storage configuration
       class Storage < Base
         include WithLocale
-        include WithServiceStatus
-        include WithProgress
-        include WithIssues
 
         STORAGE_IFACE = "org.opensuse.Agama.Storage1"
         private_constant :STORAGE_IFACE
@@ -43,22 +37,18 @@ module Agama
           @service_name ||= "org.opensuse.Agama.Storage1"
         end
 
+        def product=(id)
+          dbus_object.SetProduct(id)
+        end
+
         # Starts the probing process
         #
         # If a block is given, the method returns immediately and the probing is performed in an
         # asynchronous way.
         #
-        # @param data [Hash] Extra data provided to the D-Bus call.
         # @param done [Proc] Block to execute once the probing is done
-        def probe(data = {}, &done)
-          dbus_object[STORAGE_IFACE].Probe(data, &done)
-        end
-
-        # Reprobes (keeps the current settings).
-        #
-        # @param data [Hash] Extra data provided to the D-Bus call.
-        def reprobe(data = {})
-          dbus_object.Reprobe(data)
+        def probe(&done)
+          dbus_object.Probe(&done)
         end
 
         # Performs the packages installation

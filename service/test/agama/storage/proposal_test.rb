@@ -166,33 +166,6 @@ describe Agama::Storage::Proposal do
       end
     end
 
-    context "if a proposal was calculated with the guided strategy" do
-      before do
-        subject.calculate_guided(Agama::Storage::ProposalSettings.new)
-      end
-
-      it "returns the solved guided JSON config" do
-        expected_json = {
-          storage: {
-            guided: {
-              boot:    {
-                configure: true
-              },
-              space:   {
-                policy: "keep"
-              },
-              target:  {
-                disk: "/dev/sda"
-              },
-              volumes: []
-            }
-          }
-        }
-
-        expect(subject.storage_json).to eq(expected_json)
-      end
-    end
-
     context "if a proposal was calculated with the agama strategy" do
       before do
         subject.calculate_agama(achivable_config)
@@ -261,45 +234,6 @@ describe Agama::Storage::Proposal do
       end
     end
 
-    context "if a proposal was calculated from guided JSON config" do
-      before do
-        subject.calculate_from_json(config_json)
-      end
-
-      let(:config_json) do
-        {
-          storage: {
-            guided: {
-              target: {
-                disk: "/dev/vda"
-              }
-            }
-          }
-        }
-      end
-
-      it "returns the solved guided JSON config" do
-        expected_json = {
-          storage: {
-            guided: {
-              boot:    {
-                configure: true
-              },
-              space:   {
-                policy: "keep"
-              },
-              target:  {
-                disk: "/dev/vda"
-              },
-              volumes: []
-            }
-          }
-        }
-
-        expect(subject.storage_json).to eq(expected_json)
-      end
-    end
-
     context "if a proposal was calculated from storage JSON config" do
       before do
         subject.calculate_from_json(config_json)
@@ -353,26 +287,6 @@ describe Agama::Storage::Proposal do
 
   describe "#model_json" do
     context "if no proposal has been calculated yet" do
-      it "returns nil" do
-        expect(subject.model_json).to be_nil
-      end
-    end
-
-    context "if a guided proposal has been calculated" do
-      before do
-        subject.calculate_from_json(settings_json)
-      end
-
-      let(:settings_json) do
-        {
-          storage: {
-            guided: {
-              target: { disk: "/dev/vda" }
-            }
-          }
-        }
-      end
-
       it "returns nil" do
         expect(subject.model_json).to be_nil
       end
@@ -620,88 +534,6 @@ describe Agama::Storage::Proposal do
     end
   end
 
-  describe "#calculate_guided" do
-    before do
-      mock_storage(devicegraph: "partitioned_md.yml")
-    end
-
-    let(:achivable_settings) do
-      Agama::Storage::ProposalSettings.new.tap do |settings|
-        settings.device.name = "/dev/sdb"
-        settings.boot.device = "/dev/sda"
-        settings.volumes = [Agama::Storage::Volume.new("/")]
-      end
-    end
-
-    let(:impossible_settings) do
-      Agama::Storage::ProposalSettings.new.tap do |settings|
-        settings.device.name = "/dev/sdb"
-        settings.volumes = [
-          # The boot disk size is 500 GiB, so it cannot accomodate a 1 TiB volume.
-          Agama::Storage::Volume.new("/").tap { |v| v.min_size = Y2Storage::DiskSize.TiB(1) }
-        ]
-      end
-    end
-
-    it "calculates a proposal with the guided strategy and with the given settings" do
-      expect(Y2Storage::StorageManager.instance.proposal).to be_nil
-
-      subject.calculate_guided(achivable_settings)
-
-      expect(Y2Storage::StorageManager.instance.proposal).to_not be_nil
-      y2storage_settings = Y2Storage::StorageManager.instance.proposal.settings
-      expect(y2storage_settings.root_device).to eq("/dev/sda")
-      expect(y2storage_settings.volumes).to contain_exactly(
-        an_object_having_attributes(mount_point: "/", device: "/dev/sdb")
-      )
-    end
-
-    include_examples "check proposal return",
-      :calculate_guided, :achivable_settings, :impossible_settings
-
-    include_examples "check early proposal", :calculate_guided, :achivable_settings
-
-    context "if the given device settings sets a disk as target" do
-      before do
-        achivable_settings.device = Agama::Storage::DeviceSettings::Disk.new
-      end
-
-      context "and the target disk is not indicated" do
-        before do
-          achivable_settings.device.name = nil
-        end
-
-        it "sets the first available device as target device for volumes" do
-          subject.calculate_guided(achivable_settings)
-          y2storage_settings = Y2Storage::StorageManager.instance.proposal.settings
-
-          expect(y2storage_settings.volumes).to contain_exactly(
-            an_object_having_attributes(mount_point: "/", device: "/dev/sda")
-          )
-        end
-      end
-    end
-
-    context "if the given device settings sets a new LVM volume group as target" do
-      before do
-        achivable_settings.device = Agama::Storage::DeviceSettings::NewLvmVg.new
-      end
-
-      context "and the target disks for physical volumes are not indicated" do
-        before do
-          achivable_settings.device.candidate_pv_devices = []
-        end
-
-        it "sets the first available device as candidate device" do
-          subject.calculate_guided(achivable_settings)
-          y2storage_settings = Y2Storage::StorageManager.instance.proposal.settings
-
-          expect(y2storage_settings.candidate_devices).to contain_exactly("/dev/sda")
-        end
-      end
-    end
-  end
-
   describe "#calculate_agama" do
     it "calculates a proposal with the agama strategy and with the given config" do
       expect(Y2Storage::StorageManager.instance.proposal).to be_nil
@@ -759,29 +591,6 @@ describe Agama::Storage::Proposal do
   end
 
   describe "#calculate_from_json" do
-    context "if the JSON contains storage guided settings" do
-      let(:config_json) do
-        {
-          storage: {
-            guided: {
-              target: {
-                disk: "/dev/vda"
-              }
-            }
-          }
-        }
-      end
-
-      it "calculates a proposal with the guided strategy and with the expected settings" do
-        expect(subject).to receive(:calculate_guided) do |settings|
-          expect(settings).to be_a(Agama::Storage::ProposalSettings)
-          expect(settings.device.name).to eq("/dev/vda")
-        end
-
-        subject.calculate_from_json(config_json)
-      end
-    end
-
     context "if the JSON contains storage settings" do
       let(:config_json) do
         {
@@ -894,60 +703,6 @@ describe Agama::Storage::Proposal do
         )
       end
     end
-
-    context "if the proposal was calculated with the guided strategy" do
-      before do
-        mock_storage(devicegraph: "partitioned_md.yml")
-      end
-
-      let(:impossible_settings) do
-        Agama::Storage::ProposalSettings.new.tap do |settings|
-          settings.device.name = "/dev/sdb"
-          settings.volumes = [
-            # The boot disk size is 500 GiB, so it cannot accomodate a 1 TiB volume.
-            Agama::Storage::Volume.new("/").tap { |v| v.min_size = Y2Storage::DiskSize.TiB(1) }
-          ]
-        end
-      end
-
-      context "and the settings does not indicate a target device" do
-        before do
-          # Avoid to automatically set the first device
-          allow(Y2Storage::StorageManager.instance.probed_disk_analyzer)
-            .to receive(:candidate_disks).and_return([])
-        end
-
-        let(:settings) { impossible_settings.tap { |s| s.device.name = nil } }
-
-        it "includes an error because a device is not selected" do
-          subject.calculate_guided(settings)
-
-          expect(subject.issues).to include(
-            an_object_having_attributes(description: /No device selected/)
-          )
-
-          expect(subject.issues).to_not include(
-            an_object_having_attributes(description: /is not found/)
-          )
-
-          expect(subject.issues).to_not include(
-            an_object_having_attributes(description: /are not found/)
-          )
-        end
-      end
-
-      context "and some installation device is missing in the system" do
-        let(:settings) { impossible_settings.tap { |s| s.device.name = "/dev/vdz" } }
-
-        it "includes an error because the device is not found" do
-          subject.calculate_guided(settings)
-
-          expect(subject.issues).to include(
-            an_object_having_attributes(description: /is not found/)
-          )
-        end
-      end
-    end
   end
 
   describe "#guided?" do
@@ -958,17 +713,6 @@ describe Agama::Storage::Proposal do
       end
     end
 
-    context "if the proposal was calculated with the guided strategy" do
-      before do
-        settings = Agama::Storage::ProposalSettings.new
-        subject.calculate_guided(settings)
-      end
-
-      it "returns true" do
-        expect(subject.guided?).to eq(true)
-      end
-    end
-
     context "if the proposal was calculated with any other strategy" do
       before do
         subject.calculate_agama(achivable_config)
@@ -976,36 +720,6 @@ describe Agama::Storage::Proposal do
 
       it "returns false" do
         expect(subject.guided?).to eq(false)
-      end
-    end
-  end
-
-  describe "#guided_settings" do
-    context "if no proposal has been calculated yet" do
-      it "returns nil" do
-        expect(subject.calculated?).to eq(false)
-        expect(subject.guided_settings).to be_nil
-      end
-    end
-
-    context "if the proposal was calculated with the guided strategy" do
-      before do
-        settings = Agama::Storage::ProposalSettings.new
-        subject.calculate_guided(settings)
-      end
-
-      it "returns the guided settings" do
-        expect(subject.guided_settings).to be_a(Agama::Storage::ProposalSettings)
-      end
-    end
-
-    context "if the proposal was calculated with any other strategy" do
-      before do
-        subject.calculate_agama(achivable_config)
-      end
-
-      it "returns nil" do
-        expect(subject.guided_settings).to be_nil
       end
     end
   end

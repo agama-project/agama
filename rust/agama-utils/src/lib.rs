@@ -21,9 +21,6 @@
 //! This crate offers a set of utility struct and functions to be used accross
 //! other Agama's crates.
 
-pub mod service;
-pub use service::Service;
-
 pub mod actor;
 pub mod api;
 pub mod dbus;
@@ -33,3 +30,4 @@ pub mod openapi;
 pub mod products;
 pub mod progress;
 pub mod question;
+pub mod test;

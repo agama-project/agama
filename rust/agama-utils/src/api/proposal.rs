@@ -20,11 +20,15 @@
 
 use crate::api::{l10n, software};
 use serde::Serialize;
+use serde_json::Value;
 
 #[derive(Clone, Debug, Serialize, utoipa::ToSchema)]
+#[serde(rename_all = "camelCase")]
 pub struct Proposal {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub l10n: Option<l10n::Proposal>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub software: Option<software::Proposal>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub storage: Option<Value>,
 }

@@ -20,8 +20,6 @@
 # find current contact information at www.suse.com.
 
 require_relative "../../../test_helper"
-require_relative "with_issues_examples"
-require_relative "with_progress_examples"
 require "agama/dbus/clients/storage"
 require "dbus"
 
@@ -31,22 +29,19 @@ describe Agama::DBus::Clients::Storage do
     allow(bus).to receive(:service).with("org.opensuse.Agama.Storage1").and_return(service)
     allow(service).to receive(:[]).with("/org/opensuse/Agama/Storage1").and_return(dbus_object)
     allow(dbus_object).to receive(:introspect)
-    allow(dbus_object).to receive(:[]).with("org.opensuse.Agama.Storage1").and_return(storage_iface)
   end
 
   let(:bus) { instance_double(Agama::DBus::Bus) }
   let(:service) { instance_double(::DBus::ProxyService) }
-
   let(:dbus_object) { instance_double(::DBus::ProxyObject) }
-  let(:storage_iface) { instance_double(::DBus::ProxyObjectInterface) }
 
   subject { described_class.new }
 
   describe "#probe" do
-    let(:storage_iface) { double(::DBus::ProxyObjectInterface, Probe: nil) }
+    let(:dbus_object) { double(::DBus::ProxyObject, Probe: nil) }
 
     it "calls the D-Bus Probe method" do
-      expect(storage_iface).to receive(:Probe)
+      expect(dbus_object).to receive(:Probe)
 
       subject.probe
     end
@@ -54,7 +49,7 @@ describe Agama::DBus::Clients::Storage do
     context "when a block is given" do
       it "passes the block to the Probe method (async)" do
         callback = proc {}
-        expect(storage_iface).to receive(:Probe) do |&block|
+        expect(dbus_object).to receive(:Probe) do |&block|
           expect(block).to be(callback)
         end
 
@@ -82,7 +77,4 @@ describe Agama::DBus::Clients::Storage do
       subject.finish
     end
   end
-
-  include_examples "issues"
-  include_examples "progress"
 end

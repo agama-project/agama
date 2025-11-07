@@ -26,23 +26,6 @@
 //!
 //! The service can be started calling the [start] function, which returns an
 //! [agama_utils::actors::ActorHandler] to interact with it.
-//!
-//! # Example
-//!
-//! ```no_run
-//! use agama_utils::issue::{self, message};
-//! use agama_utils::api::Scope;
-//! use tokio::sync::broadcast;
-//!
-//! # tokio_test::block_on(async {
-//! async fn use_issues_service() {
-//!     let (events_tx, _events_rx) = broadcast::channel(16);
-//!     let issues = issue::start(events_tx, None).await.unwrap();
-//!     _ = issues.call(message::Update::new(Scope::Manager, vec![]));
-//! }
-//! # });
-//!
-//! ```
 
 pub mod service;
 pub use service::Service;

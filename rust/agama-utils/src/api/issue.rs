@@ -44,15 +44,15 @@ pub struct Issue {
     pub details: Option<String>,
     pub source: IssueSource,
     pub severity: IssueSeverity,
-    pub kind: String,
+    pub class: String,
 }
 
 impl Issue {
     /// Creates a new issue.
-    pub fn new(kind: &str, description: &str, severity: IssueSeverity) -> Self {
+    pub fn new(class: &str, description: &str, severity: IssueSeverity) -> Self {
         Self {
             description: description.to_string(),
-            kind: kind.to_string(),
+            class: class.to_string(),
             source: IssueSource::Config,
             severity,
             details: None,
@@ -100,14 +100,14 @@ impl TryFrom<&zbus::zvariant::Value<'_>> for Issue {
         let value = value.downcast_ref::<zbus::zvariant::Structure>()?;
         let fields = value.fields();
 
-        let Some([description, kind, details, source, severity]) = fields.get(0..5) else {
+        let Some([description, class, details, source, severity]) = fields.get(0..5) else {
             return Err(zbus::zvariant::Error::Message(
                 "Not enough elements for building an Issue.".to_string(),
             ))?;
         };
 
         let description: String = description.try_into()?;
-        let kind: String = kind.try_into()?;
+        let class: String = class.try_into()?;
         let details: String = details.try_into()?;
         let source: u32 = source.try_into()?;
         let source = source as u8;
@@ -120,7 +120,7 @@ impl TryFrom<&zbus::zvariant::Value<'_>> for Issue {
 
         Ok(Issue {
             description,
-            kind,
+            class,
             details: if details.is_empty() {
                 None
             } else {
@@ -150,7 +150,7 @@ mod tests {
 
         let issue = Issue::try_from(&Value::Structure(dbus_issue)).unwrap();
         assert_eq!(&issue.description, "Product not selected");
-        assert_eq!(&issue.kind, "missing_product");
+        assert_eq!(&issue.class, "missing_product");
         assert_eq!(issue.details, Some("A product is required.".to_string()));
         assert_eq!(issue.source, IssueSource::System);
         assert_eq!(issue.severity, IssueSeverity::Warn);

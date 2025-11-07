@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024] SUSE LLC
+# Copyright (c) [2024-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -22,6 +22,7 @@
 require "yast"
 require "json"
 require "bootloader/bootloader_factory"
+require "bootloader/proposal_client"
 
 module Agama
   module Storage
@@ -94,6 +95,22 @@ module Agama
         @logger = logger
       end
 
+      # Calculates proposal.
+      def configure
+        # first make bootloader proposal to be sure that required packages are installed
+        proposal = ::Bootloader::ProposalClient.new.make_proposal({})
+        # then also apply changes to that proposal
+        write_config
+        @logger.debug "Bootloader proposal #{proposal.inspect}"
+      end
+
+      # Installs bootloader.
+      def install
+        Yast::WFM.CallFunction("inst_bootloader", [])
+      end
+
+    private
+
       def write_config
         bootloader = ::Bootloader::BootloaderFactory.current
         write_stop_on_boot(bootloader) if @config.keys_to_export.include?(:stop_on_boot_menu)
@@ -104,8 +121,6 @@ module Agama
 
         bootloader
       end
-
-    private
 
       def write_extra_kernel_params(bootloader)
         # no systemd boot support for now
