@@ -64,7 +64,11 @@ module Agama
         end
 
         def config
-          JSON.parse(get("software/config"))
+          JSON.parse(get("v2/config"))
+        end
+
+        def selected_product
+          config.dig("product", "id")
         end
 
         def errors?
