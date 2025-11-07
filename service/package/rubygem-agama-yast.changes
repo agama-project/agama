@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Nov  7 15:14:51 UTC 2025 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Fixed an error in the calculation of partitions when several
+  MD RAIDs are created (bsc#1253145).
+
+-------------------------------------------------------------------
 Mon Sep 15 13:50:54 UTC 2025 - José Iván López González <jlopez@suse.com>
 
 - Fix JSON conversion for not configured sizes (bsc#1249591).
