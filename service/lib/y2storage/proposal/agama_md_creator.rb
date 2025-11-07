@@ -52,7 +52,13 @@ module Y2Storage
         devices = md_members(planned)
         devices.map(&:remove_descendants)
         md.sorted_devices = devices
-        planned.format!(md) if planned.partitions.empty?
+        if planned.partitions.empty?
+          planned.format!(md)
+        else
+          # FIXME: This modifies the original planned device object. That looks like the safer
+          # approach as a hotfix for bsc#1253145.
+          planned.partitions.each { |p| p.disk = md.name }
+        end
 
         creator_result.merge!(CreatorResult.new(devicegraph, md.name => planned))
 
