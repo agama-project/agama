@@ -172,16 +172,18 @@ impl NetworkState {
             }
 
             for conn in connections.0 {
-                let mut ports = vec![];
-                if let Some(model) = conn.bridge {
-                    ports = model.ports;
-                }
-                if let Some(model) = conn.bond {
-                    ports = model.ports;
-                }
+                if conn.bridge.is_some() | conn.bond.is_some() {
+                    let mut ports = vec![];
+                    if let Some(model) = conn.bridge {
+                        ports = model.ports;
+                    }
+                    if let Some(model) = conn.bond {
+                        ports = model.ports;
+                    }
 
-                if let Some(controller) = self.get_connection(conn.id.as_str()) {
-                    self.set_ports(&controller.clone(), ports)?;
+                    if let Some(controller) = self.get_connection(conn.id.as_str()) {
+                        self.set_ports(&controller.clone(), ports)?;
+                    }
                 }
             }
         }

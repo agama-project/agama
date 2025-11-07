@@ -336,6 +336,20 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
+        "generalState": {
+          "title": "Network general state settings",
+          "type": "object",
+          "properties": {
+            "wirelessEnabled": {
+              "title": "Whether the wireless should be enabled",
+              "type": "boolean"
+            },
+            "networkingEnabled": {
+              "title": "Whether the network should be enabled",
+              "type": "boolean"
+            }
+          }
+        },
         "connections": {
           "title": "Network connections to be defined",
           "type": "array",
