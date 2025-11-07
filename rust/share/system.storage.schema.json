@@ -1,0 +1,111 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "$id": "https://github.com/openSUSE/agama/blob/master/rust/share/system.storage.schema.json",
+  "title": "System",
+  "description": "API description of the system",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "devices": {
+      "description": "All relevant devices on the system",
+      "type": "array",
+      "items": { "$ref": "device.storage.schema.json" }
+    },
+    "availableDrives": {
+      "description": "SIDs of the available drives",
+      "type": "array",
+      "items": { "type": "integer" }
+    },
+    "availableMdRaids": {
+      "description": "SIDs of the available MD RAIDs",
+      "type": "array",
+      "items": { "type": "integer" }
+    },
+    "candidateDrives": {
+      "description": "SIDs of the drives that are candidate for installation",
+      "type": "array",
+      "items": { "type": "integer" }
+    },
+    "candidateMdRaids": {
+      "description": "SIDs of the MD RAIDs that are candidate for installation",
+      "type": "array",
+      "items": { "type": "integer" }
+    },
+    "productMountPoints": {
+      "description": "Meaningful mount points for the current product",
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "encryptionMethods": {
+      "description": "Possible encryption methods for the current system and product",
+      "type": "array",
+      "items": {
+        "enum": [
+          "luks1", "luks2", "pervasiveLuks2", "tmpFde", "protectedSwap", "secureSwap", "randomSwap"
+        ]
+      }
+    },
+    "volumeTemplates": {
+      "description": "Volumes defined by the product as templates",
+      "type": "array",
+      "items": { "$ref": "#/$defs/volume" }
+    },
+    "issues": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/issue" }
+    }
+  },
+  "$defs": {
+    "volume": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mountPath", "minSize", "autoSize"],
+      "properties": {
+        "mountPath": { "type": "string" },
+        "mountOptions": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "fsType": { "$ref": "device.storage.schema.json#/$defs/filesystemType" },
+        "autoSize": { "type": "boolean" },
+        "minSize": { "type": "integer" },
+        "maxSize": { "type": "integer" },
+        "snapshots": { "type": "boolean" },
+        "transactional": { "type": "boolean" },
+        "outline": { "$ref": "#/$defs/volumeOutline" }
+      }
+    },
+    "volumeOutline": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["required", "supportAutoSize"],
+      "properties": {
+        "required": { "type": "boolean" },
+        "supportAutoSize": { "type": "boolean" },
+        "fsTypes": {
+          "type": "array",
+          "items": { "$ref": "device.storage.schema.json#/$defs/filesystemType" }
+        },
+        "adjustByRam": { "type": "boolean" },
+        "snapshotsConfigurable": { "type": "boolean" },
+        "snapshotsAffectSizes": { "type": "boolean" },
+        "sizeRelevantVolumes": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "issue": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["description"],
+      "properties": {
+        "description": { "type": "string" },
+        "class": { "type": "string" },
+        "details": { "type": "string" },
+        "source": { "enum": ["config", "system"] },
+        "severity": { "enum": ["warn", "error"] }
+      }
+    }
+  }
+}
