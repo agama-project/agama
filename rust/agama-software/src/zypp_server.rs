@@ -346,7 +346,7 @@ impl ZyppServer {
             }
         }
 
-        _ = progress.cast(progress::message::Next::new(Scope::Software));
+        progress.cast(progress::message::Next::new(Scope::Software))?;
         if to_add.is_empty() || to_remove.is_empty() {
             let result = zypp.load_source(|percent, alias| {
                 tracing::info!("Refreshing repositories: {} ({}%)", alias, percent);
