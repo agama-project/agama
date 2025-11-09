@@ -6,6 +6,12 @@ export default {
   " Timezone selection": [
     " Výběr časového pásma"
   ],
+  "\"%s\"": [
+    ""
+  ],
+  "\"%s\" does not exist or is no longer available.": [
+    ""
+  ],
   "%1$s will still contain the LVM group '%2$s' and any partition needed to boot": [
     "%1$s bude nadále obsahovat LVM skupinu '%2$s’ a nějaký oddíl potřebný pro spuštění systému"
   ],
@@ -721,6 +727,9 @@ export default {
   ],
   "If you continue, partitions on your hard disk will be modified according to the provided installation settings.": [
     "Budete-li pokračovat, oddíly na pevném disku budou upraveny podle zadaných instalačních nastavení."
+  ],
+  "If you want to disable this check, please specify \"inst.ay_check=0\" at kernel's command-line": [
+    ""
   ],
   "In progress": [
     "Probíhá"
@@ -1561,6 +1570,9 @@ export default {
   ],
   "The password will not be needed to boot and access the data if the TPM can verify the integrity of the system. TPM sealing requires the new system to be booted directly on its first run.": [
     "Dokáže-li čip TPM ověřit integritu systému, nebude heslo pro spuštění systému a přístup k datům potřebné. Zapečetění TPM vyžaduje, aby byl nový systém spuštěn hned při prvním použití."
+  ],
+  "The product will be registered with \"%s\" hostname": [
+    ""
   ],
   "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of a separate file system for %2$s.": [
     "Velikost %1$s bude dynamicky upravena na základě množství paměti RAM v systému a přítomnosti zvláštního souborového systému pro %2$s."

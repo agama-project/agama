@@ -6,6 +6,12 @@ export default {
   " Timezone selection": [
     " タイムゾーンの選択"
   ],
+  "\"%s\"": [
+    "\"%s\""
+  ],
+  "\"%s\" does not exist or is no longer available.": [
+    "\"%s\" は存在していないか、利用できなくなっています。"
+  ],
   "%1$s (%2$s)": [
     "%1$s (%2$s)"
   ],
@@ -909,6 +915,9 @@ export default {
   "If you continue, partitions on your hard disk will be modified according to the provided installation settings.": [
     "続行すると、お使いのコンピュータのハードディスクにあるパーティションは、ここまでのダイアログで設定したとおりに変更されます。"
   ],
+  "If you want to disable this check, please specify \"inst.ay_check=0\" at kernel's command-line": [
+    "このチェックを無効化したい場合は、カーネルのコマンドラインに \"inst.ay_check=0\" を指定してください"
+  ],
   "In progress": [
     "処理中"
   ],
@@ -1391,6 +1400,9 @@ export default {
   ],
   "Partitions to boot will be set up if needed at the installation disk.       Currently %1$s, based on the location of the %2$s file system.": [
     "ファイルシステム %2$s の配置場所に応じて (現時点では %1$s) 、         必要であればインストール先のディスク内に起動用のパーティションを割り当てます。"
+  ],
+  "Partitions to host \"system\" will be created if needed.": [
+    "必要に応じて、 \"システム\" を保持するためのパーティションを作成します。"
   ],
   "Partitions will be used and created for %s": [
     "%s 向けにパーティションを使用して作成する"
@@ -1937,6 +1949,9 @@ export default {
   ],
   "The password will not be needed to boot and access the data if the TPM can verify the integrity of the system. TPM sealing requires the new system to be booted directly on its first run.": [
     "TPM 側でシステムの一貫性検証が成功すると、起動とデータへのアクセス処理に際してパスワードが不要になります。 TPM シーリングを使用するには、新しいシステムの初回起動時に直接起動を行う必要があります。"
+  ],
+  "The product will be registered with \"%s\" hostname": [
+    "製品をホスト名 \"%s\" で登録します"
   ],
   "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of a separate file system for %2$s.": [
     "システムのメモリサイズと %2$s 向けの個別ファイルシステムの存在に応じて、 %1$s 向けのサイズを動的に調整します。"

@@ -6,6 +6,12 @@ export default {
   " Timezone selection": [
     " Aikavyöhykkeen valinta"
   ],
+  "\"%s\"": [
+    "\"%s\""
+  ],
+  "\"%s\" does not exist or is no longer available.": [
+    "”%s” ei ole enää olemassa tai saatavilla."
+  ],
   "%1$s (%2$s)": [
     "%1$s (koko %2$s)"
   ],
@@ -347,6 +353,18 @@ export default {
   ],
   "Change selection": [
     "Muuta valintoja"
+  ],
+  "Change the disk to configure": [
+    "Valitse levy jolle tehdään asetukset"
+  ],
+  "Change the disk to create %s": [
+    "Valitse levy jolle luodaan \"%s\""
+  ],
+  "Change the disk to format as %s": [
+    "Valitse levy joka alustetaan liitoskohtaan ”%s”"
+  ],
+  "Change the disk to install the system": [
+    "Valitse levy jolle järjestelmän asennus tehdään"
   ],
   "Change the file system or mount point": [
     "Vaihda tiedostojärjestelmää tai liitoskohtaa"
@@ -777,10 +795,10 @@ export default {
     "Suodata alueen, aikavyöhykoodin tai UTC-aikaeron mukaan"
   ],
   "Final layout": [
-    ""
+    "Lopullinen asettelu"
   ],
   "Final structure of the system after installation.": [
-    ""
+    "Järjestelmän lopullinen rakenne asennuksen jälkeen."
   ],
   "Find space in %s": [
     "Vapauta tilaa kohteessa %s"
@@ -906,6 +924,9 @@ export default {
   "If you continue, partitions on your hard disk will be modified according to the provided installation settings.": [
     "Jos jatkat, kiintolevyn osioita muokataan asennusasetusten mukaisesti."
   ],
+  "If you want to disable this check, please specify \"inst.ay_check=0\" at kernel's command-line": [
+    "Jos haluat poistaa tämän tarkistuksen, määritä \"inst.ay_check=0\" Linux-ytimen komentoriville"
+  ],
   "In progress": [
     "Käynnissä"
   ],
@@ -965,6 +986,9 @@ export default {
   ],
   "Install using several devices without modifying existing partitions.": [
     "Asenna käyttäen useita laitteita, muuttamatta olevia osioita."
+  ],
+  "Installation devices": [
+    "Asennuslaitteet"
   ],
   "Installation will take %s.": [
     "Asennus vie tilaa %s."
@@ -1143,6 +1167,9 @@ export default {
   "More languages might be available for the selected product at [Localization] page": [
     "Lisää kieliä valitulle tuotteelle saattaa olla tarjolla [Kotoistaminen]-sivulla"
   ],
+  "More storage options": [
+    "Lisää tallenustilavalintoja"
+  ],
   "Moreover, the following partition will be created.": [
     "Lisäksi seuraava osio luodaan.",
     "Lisäksi seuraavat osiot luodaan."
@@ -1256,6 +1283,9 @@ export default {
   "No logical volumes are defined yet": [
     "Loogisia taltioita ei ole vielä määritetty"
   ],
+  "No partitions will be automatically configured for booting.": [
+    "Käynnistämiseen käytettäviä osioita ei ole automaattisesti otettu käyttöön."
+  ],
   "No partitions will be automatically configured for booting. Use with caution.": [
     "Käynnistämiseen käytettäviä osioita ei ole automaattisesti otettu käyttöön. Käytä tällaisia asetuksia varoen."
   ],
@@ -1328,6 +1358,9 @@ export default {
   "Only reused partitions will be used.": [
     "Vain uudelleenkäytettyjä osioita tullaan käyttämään."
   ],
+  "Options for partition %s": [
+    "Osion %s valinnat"
+  ],
   "Options toggle": [
     "Valinnat-tila"
   ],
@@ -1337,8 +1370,14 @@ export default {
   "Package installation failed": [
     "Paketin asennus epäonnistui"
   ],
+  "Partition %s": [
+    "Osio %s"
+  ],
   "Partition Info": [
     "Osion tiedot"
+  ],
+  "Partitions": [
+    "Osiot"
   ],
   "Partitions needed for booting will also be adapted": [
     "Myös käynnistämiseen tarvittavia osioita mukautetaan"
@@ -1355,11 +1394,23 @@ export default {
   "Partitions that are not reused would be resized if needed.": [
     "Osioiden, joita ei uudelleenkäytetä, kokoja muutetaan tarpeen mukaan."
   ],
+  "Partitions to boot will be set up if needed at %s.": [
+    "Käynnistämiseen tarvittavat osiot otetaan käyttöön tarvittaessa kohteessa %s."
+  ],
+  "Partitions to boot will be set up if needed at the following device.": [
+    "Käynnistämiseen tarvittavat osiot otetaan tarvittaessa käyttöön seuraavalta laitteelta."
+  ],
+  "Partitions to boot will be set up if needed at the installation disk,           based on the location of the %s file system.": [
+    "Käynnistämiseen tarvittavat osiot otetaan käyttöön tarvittaessa asennuslevyltä,           perustuen %s-tiedostojärjestelmän sijaintiin."
+  ],
+  "Partitions to boot will be set up if needed at the installation disk,         based on the location of the %s file system.": [
+    "Käynnistämiseen tarvittavat osiot otetaan tarvittaessa käyttöön asennuslevyltä,          perustuen %s-tiedostojärjestelmän sijaintiin."
+  ],
   "Partitions to boot will be set up if needed at the installation disk.         Currently %1$s, based on the location of the %2$s file system.": [
     ""
   ],
   "Partitions to boot will be set up if needed at the installation disk.       Currently %1$s, based on the location of the %2$s file system.": [
-    ""
+    "Käynnistämiseen tarvittavat osiot otetaan tarvittaessa käyttöön asennuslevyltä.      Tällä hetkellä kyseessä on %1$s, perustuen%2$s-tiedostojärjestelmän sijaintiin."
   ],
   "Partitions will be used and created for %s": [
     "Osioita tullaan luomaan ja käyttämään liitoskohdalle %s"
@@ -1841,6 +1892,9 @@ export default {
   "The final step to configure the Trusted Platform Module (TPM) to automatically open encrypted devices will take place during the first boot of the new system. For that to work, the machine needs to boot directly to the new boot loader.": [
     "Viimeinen kohta on tehdä Trusted Platform Module (TPM) -asetukset, jotta salattujen laitteiden aukaisu automaattisesti tapahtuu uuteen järjestelmään ensimmäistä kertaa käytettäessä. Jotta tämä toimisi, laite tulee käynnistää suoraan uudeen käynnistyslataimeen."
   ],
+  "The following actions will be performed in the system during installation.": [
+    "Seuraavat toiminnot tehdään järjestelmään asennuksen aikana."
+  ],
   "The following logical volume will be created": [
     "Seuraava looginen taltio luodaan",
     "Seuraavat loogiset taltiot luodaan"
@@ -1907,6 +1961,9 @@ export default {
   ],
   "The password will not be needed to boot and access the data if the TPM can verify the integrity of the system. TPM sealing requires the new system to be booted directly on its first run.": [
     "Salasanaa ei tarvita käynnistämiseen ja tietoihin pääsyyn, jos TPM onnistuu varmistamaan järjestelmän eheyden. TPM-sinetöinti vaatii, että uuteen järjestelmään käynnistetään suoraan ensimmäisellä kerralla."
+  ],
+  "The product will be registered with \"%s\" hostname": [
+    "Tuote rekisteröidään isäntänimellä ”%s”"
   ],
   "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of a separate file system for %2$s.": [
     "Kohteen %1$s koko määritellään dynaamisesti järjestelmä RAM-muistin ja kohteen %2$s erillisen tiedostojärjestelmän olemassa olon perusteella."
@@ -2035,6 +2092,9 @@ export default {
   ],
   "Tmpfs": [
     "Tmpfs"
+  ],
+  "To ensure the new system is able to boot, the installer may need to create or configure some           partitions in the appropriate disk.": [
+    "Jotta järjestelmä käynnistyisi, asennusohjelman saattaa täytyä luoda tai tehdä           osioiden asetusmuutoksia soveltuvalla levyllä."
   ],
   "To ensure the new system is able to boot, the installer may need to create or configure some partitions in the appropriate disk.": [
     "Jotta järjestelmä käynnistyisi, asennusohjelman saattaa täytyä luoda tai tehdä osioiden asetusmuutoksia soveltuvalla levyllä."
@@ -2224,6 +2284,9 @@ export default {
   ],
   "Using transient hostname: %s": [
     "Käytetään tilapäistä verkkonimeä: %s"
+  ],
+  "Volume group %s": [
+    "Taltioryhmä %s"
   ],
   "Volume group '%s' already exists. Enter a different name.": [
     "Taltioryhmä ”%s” on jo olemassa, syötä toinen nimi."

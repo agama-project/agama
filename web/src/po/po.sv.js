@@ -6,6 +6,12 @@ export default {
   " Timezone selection": [
     " Tidszon val"
   ],
+  "\"%s\"": [
+    "\"%s\""
+  ],
+  "\"%s\" does not exist or is no longer available.": [
+    "\"%s\" existrerar inte eller är inte längre tillgänglig."
+  ],
   "%1$s (%2$s)": [
     "%1$s (%2$s)"
   ],
@@ -348,11 +354,23 @@ export default {
   "Change selection": [
     "Ändra val"
   ],
+  "Change the disk to configure": [
+    "Ändra disken som ska konfigureras"
+  ],
+  "Change the disk to create %s": [
+    "Ändra disk för att skapa %s"
+  ],
+  "Change the disk to format as %s": [
+    "Ändra disken till att formateras som %s"
+  ],
+  "Change the disk to install the system": [
+    "Ändra disk för att installera systemet"
+  ],
   "Change the file system or mount point": [
     "Ändra filsystemet eller monteringspunkten"
   ],
   "Changes in these settings will immediately update the 'Result' section below.": [
-    ""
+    "Ändringar i dessa inställningar kommer omedelbart att uppdatera avsnittet \"Resultat\" nedan."
   ],
   "Channel ID": [
     "Kanal-ID"
@@ -779,6 +797,9 @@ export default {
   "Final layout": [
     "Slutgiltig layout"
   ],
+  "Final structure of the system after installation.": [
+    "Systemets slutgiltiga struktur efter installation."
+  ],
   "Find space in %s": [
     "Hitta utrymme på %s"
   ],
@@ -903,6 +924,9 @@ export default {
   "If you continue, partitions on your hard disk will be modified according to the provided installation settings.": [
     "Om du fortsätter kommer partitionerna på din hårddisk att modifieras enligt de medföljande installationsinställningarna."
   ],
+  "If you want to disable this check, please specify \"inst.ay_check=0\" at kernel's command-line": [
+    "Om du vill inaktivera den här kontrollen, ange \"inst.ay_check=0\" för kärnans kommandorad"
+  ],
   "In progress": [
     "Pågår"
   ],
@@ -962,6 +986,9 @@ export default {
   ],
   "Install using several devices without modifying existing partitions.": [
     "Installera med flera enheter utan att ändra befintliga partitioner."
+  ],
+  "Installation devices": [
+    "Installations enheter"
   ],
   "Installation will take %s.": [
     "Installationen kommer att ta %s."
@@ -1140,6 +1167,9 @@ export default {
   "More languages might be available for the selected product at [Localization] page": [
     "Fler språk kan vara tillgängliga för den valda produkten på [Lokalisering] sidan"
   ],
+  "More storage options": [
+    "Mer lagringsalternativ"
+  ],
   "Moreover, the following partition will be created.": [
     "Dessutom kommer följande partition att skapas.",
     "Dessutom kommer följande partitioner att skapas."
@@ -1253,6 +1283,9 @@ export default {
   "No logical volumes are defined yet": [
     "Inga logiska volymer är definierade ännu"
   ],
+  "No partitions will be automatically configured for booting.": [
+    "Inga partitioner kommer att konfigureras automatiskt för uppstart."
+  ],
   "No partitions will be automatically configured for booting. Use with caution.": [
     "Inga partitioner kommer att konfigureras automatiskt för uppstart. Använd med försiktighet."
   ],
@@ -1325,6 +1358,9 @@ export default {
   "Only reused partitions will be used.": [
     "Endast återanvända partitioner kommer att användas."
   ],
+  "Options for partition %s": [
+    "Alternativ för partition %s"
+  ],
   "Options toggle": [
     "Växla mellan alternativ"
   ],
@@ -1333,6 +1369,9 @@ export default {
   ],
   "Package installation failed": [
     "Paket installation misslyckades"
+  ],
+  "Partition %s": [
+    "Partition %s"
   ],
   "Partition Info": [
     "Partitionsinformation"
@@ -1355,11 +1394,26 @@ export default {
   "Partitions that are not reused would be resized if needed.": [
     "Partitioner som inte återanvänds kan ändras i storlek vid behov."
   ],
+  "Partitions to boot will be set up if needed at %s.": [
+    "Partitioner att starta kommer att konfigureras vid behov på %s."
+  ],
+  "Partitions to boot will be set up if needed at the following device.": [
+    "Partitioner att starta från kommer att konfigureras om det behövs på följande enhet."
+  ],
+  "Partitions to boot will be set up if needed at the installation disk,           based on the location of the %s file system.": [
+    "Partitioner att starta från kommer att konfigureras vid behov på installationsdisken, baserat på platsen för filsystemet %s."
+  ],
+  "Partitions to boot will be set up if needed at the installation disk,         based on the location of the %s file system.": [
+    "Partitioner att starta från kommer att konfigureras vid behov på installationsdisken, baserat på platsen för filsystemet %s."
+  ],
   "Partitions to boot will be set up if needed at the installation disk.         Currently %1$s, based on the location of the %2$s file system.": [
-    ""
+    "Partitioner att starta från kommer att konfigureras vid behov på installationsdisken. För närvarande %1$s, baserat på platsen för filsystemet %2$s."
   ],
   "Partitions to boot will be set up if needed at the installation disk.       Currently %1$s, based on the location of the %2$s file system.": [
-    ""
+    "Partitioner att starta från kommer att konfigureras vid behov på installationsdisken. För närvarande %1$s, baserat på platsen för filsystemet %2$s."
+  ],
+  "Partitions to host \"system\" will be created if needed.": [
+    "Partitioner för att vara värd för \"systemet\" kommer att skapas vid behov."
   ],
   "Partitions will be used and created for %s": [
     "Partitioner kommer att användas och skapas för %s"
@@ -1423,6 +1477,9 @@ export default {
   ],
   "Product is already registered": [
     "Produkten är redan registrerad"
+  ],
+  "Protection for the information stored at           the new file systems, including data, programs, and system files.": [
+    "Skydd för informationen som lagras i de nya filsystemen, inklusive data, program och systemfiler."
   ],
   "Provide email address": [
     "Ange en e-postadress"
@@ -1512,7 +1569,7 @@ export default {
     "Resultat"
   ],
   "Result of applying the configuration described at the 'Settings' section above.": [
-    ""
+    "Resultat av att tillämpa konfigurationen som beskrivs i avsnittet \"Inställningar\" ovan."
   ],
   "Reused partitions will not be shrunk": [
     "Återanvända partitioner kommer inte att krympas"
@@ -1841,6 +1898,9 @@ export default {
   "The final step to configure the Trusted Platform Module (TPM) to automatically open encrypted devices will take place during the first boot of the new system. For that to work, the machine needs to boot directly to the new boot loader.": [
     "Det sista steget för att konfigurera Trusted Platform Module (TPM) för att automatiskt öppna krypterade enheter kommer att ske under den första uppstarten av det nya systemet. För att det ska fungera måste maskinen startas direkt till den nya uppstartshanteraren."
   ],
+  "The following actions will be performed in the system during installation.": [
+    "Följande åtgärder kommer att utföras i systemet under installationen."
+  ],
   "The following logical volume will be created": [
     "Följande logiska volym kommer att skapas",
     "Följande logiska volymer kommer också att skapas"
@@ -1907,6 +1967,9 @@ export default {
   ],
   "The password will not be needed to boot and access the data if the TPM can verify the integrity of the system. TPM sealing requires the new system to be booted directly on its first run.": [
     "Lösenordet kommer inte att behövas för att starta och komma åt data om TPM kan verifiera systemets integritet. TPM-försegling kräver att det nya systemet startas upp direkt vid första körningen."
+  ],
+  "The product will be registered with \"%s\" hostname": [
+    "Produkten kommer att registreras med \"%s\" värdnamn"
   ],
   "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of a separate file system for %2$s.": [
     "Storleken för %1$s kommer att justeras dynamiskt baserat på mängden RAM i systemet och förekomsten av ett separat filsystem för %2$s."
@@ -2035,6 +2098,9 @@ export default {
   ],
   "Tmpfs": [
     "Tmpfs"
+  ],
+  "To ensure the new system is able to boot, the installer may need to create or configure some           partitions in the appropriate disk.": [
+    "För att säkerställa att det nya systemet kan starta kan installationsprogrammet behöva skapa eller konfigurera några partitioner på lämplig disk."
   ],
   "To ensure the new system is able to boot, the installer may need to create or configure some partitions in the appropriate disk.": [
     "För att säkerställa att det nya systemet kan starta kan installationsprogrammet behöva skapa eller konfigurera vissa partitioner på lämplig disk."
@@ -2224,6 +2290,9 @@ export default {
   ],
   "Using transient hostname: %s": [
     "Använder transient värdnamn: %s"
+  ],
+  "Volume group %s": [
+    "Volymgrupp %s"
   ],
   "Volume group '%s' already exists. Enter a different name.": [
     "Volymgrupp '%s' existerar redan. Ange ett annat namn."
