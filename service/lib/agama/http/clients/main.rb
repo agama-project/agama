@@ -29,6 +29,18 @@ module Agama
         def install
           post("v2/action", '"install"')
         end
+
+        # Sets a list of resolvables for installation.
+        #
+        # @param unique_id [String] Unique ID to identify the list.
+        # @param type [String] Resolvable type (e.g., "package" or "pattern").
+        # @param resolvables [Array<String>] Resolvables names.
+        def set_resolvables(unique_id, type, resolvables)
+          data = resolvables.map do |name|
+            { "name" => name, "type" => type }
+          end
+          put("v2/private/resolvables/#{unique_id}", data)
+        end
       end
     end
   end
