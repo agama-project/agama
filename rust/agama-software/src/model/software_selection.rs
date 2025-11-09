@@ -22,12 +22,6 @@ use std::collections::HashMap;
 
 use crate::Resolvable;
 
-pub struct ResolvablesSelection {
-    id: String,
-    optional: bool,
-    resolvables: Vec<Resolvable>,
-}
-
 /// A selection of resolvables to be installed.
 ///
 /// It holds a selection of patterns and packages to be installed and whether they are optional or

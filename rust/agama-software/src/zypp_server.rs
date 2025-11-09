@@ -34,10 +34,7 @@ use tokio::sync::{
 };
 use zypp_agama::ZyppError;
 
-use crate::model::{
-    packages::ResolvableType,
-    state::{self, SoftwareState},
-};
+use crate::model::state::{self, SoftwareState};
 const TARGET_DIR: &str = "/run/agama/software_ng_zypp";
 const GPG_KEYS: &str = "/usr/lib/rpm/gnupg/keys/gpg-*";
 
@@ -96,18 +93,6 @@ pub enum SoftwareAction {
         ProductSpec,
         oneshot::Sender<ZyppServerResult<SoftwareProposal>>,
     ),
-    SetResolvables {
-        tx: oneshot::Sender<Result<(), ZyppError>>,
-        resolvables: Vec<String>,
-        r#type: ResolvableType,
-        optional: bool,
-    },
-    UnsetResolvables {
-        tx: oneshot::Sender<Result<(), ZyppError>>,
-        resolvables: Vec<String>,
-        r#type: ResolvableType,
-        optional: bool,
-    },
     Write {
         state: SoftwareState,
         progress: Handler<progress::Service>,
@@ -193,46 +178,6 @@ impl ZyppServer {
             }
             SoftwareAction::Finish(tx) => {
                 self.finish(zypp, tx).await?;
-            }
-            SoftwareAction::SetResolvables {
-                tx,
-                r#type,
-                resolvables,
-                optional,
-            } => {
-                // TODO: support optional with check if resolvable is available
-                for res in resolvables {
-                    let result = zypp.select_resolvable(
-                        &res,
-                        r#type.into(),
-                        zypp_agama::ResolvableSelected::Installation,
-                    );
-                    if let Err(e) = result {
-                        tx.send(Err(e))
-                            .map_err(|_| ZyppDispatchError::ResponseChannelClosed)?;
-                        break;
-                    }
-                }
-            }
-            SoftwareAction::UnsetResolvables {
-                tx,
-                r#type,
-                resolvables,
-                optional,
-            } => {
-                // TODO: support optional with check if resolvable is available
-                for res in resolvables {
-                    let result = zypp.unselect_resolvable(
-                        &res,
-                        r#type.into(),
-                        zypp_agama::ResolvableSelected::Installation,
-                    );
-                    if let Err(e) = result {
-                        tx.send(Err(e))
-                            .map_err(|_| ZyppDispatchError::ResponseChannelClosed)?;
-                        break;
-                    }
-                }
             }
             SoftwareAction::ComputeProposal(product_spec, sender) => {
                 self.compute_proposal(product_spec, sender, zypp).await?

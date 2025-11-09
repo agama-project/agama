@@ -58,14 +58,3 @@ impl From<ResolvableType> for zypp_agama::ResolvableKind {
         }
     }
 }
-
-/// Resolvable list specification.
-#[derive(Deserialize, Serialize, utoipa::ToSchema)]
-pub struct ResolvableParams {
-    /// List of resolvables.
-    pub names: Vec<String>,
-    /// Resolvable type.
-    pub r#type: ResolvableType,
-    /// Whether the resolvables are optional or not.
-    pub optional: bool,
-}
