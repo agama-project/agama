@@ -20,6 +20,22 @@
 
 use serde::{Deserialize, Serialize};
 
+/// Represents a software resolvable.
+#[derive(Debug, Deserialize, PartialEq)]
+pub struct Resolvable {
+    pub name: String,
+    pub r#type: ResolvableType,
+}
+
+impl Resolvable {
+    pub fn new(name: &str, r#type: ResolvableType) -> Self {
+        Self {
+            name: name.to_string(),
+            r#type,
+        }
+    }
+}
+
 /// Software resolvable type (package or pattern).
 #[derive(
     Clone, Copy, Debug, Deserialize, Serialize, strum::Display, utoipa::ToSchema, PartialEq,

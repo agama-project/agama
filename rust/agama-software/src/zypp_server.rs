@@ -252,8 +252,7 @@ impl ZyppServer {
 
     fn read(&self, zypp: &zypp_agama::Zypp) -> Result<SoftwareState, ZyppDispatchError> {
         let repositories = zypp
-            .list_repositories()
-            .unwrap()
+            .list_repositories()?
             .into_iter()
             .map(|repo| state::Repository {
                 name: repo.user_name,
@@ -267,8 +266,7 @@ impl ZyppServer {
             // FIXME: read the real product.
             product: "SLES".to_string(),
             repositories,
-            patterns: vec![],
-            packages: vec![],
+            resolvables: vec![],
             options: Default::default(),
         };
         Ok(state)
@@ -365,17 +363,18 @@ impl ZyppServer {
         }
 
         _ = progress.cast(progress::message::Next::new(Scope::Software));
-        for pattern in &state.patterns {
+        for resolvable_state in &state.resolvables {
+            let resolvable = &resolvable_state.resolvable;
             // FIXME: we need to distinguish who is selecting the pattern.
             // and register an issue if it is not found and it was not optional.
             let result = zypp.select_resolvable(
-                &pattern.name,
-                zypp_agama::ResolvableKind::Pattern,
+                &resolvable.name,
+                resolvable.r#type.into(),
                 zypp_agama::ResolvableSelected::Installation,
             );
 
             if let Err(error) = result {
-                let message = format!("Could not select pattern '{}'", &pattern.name);
+                let message = format!("Could not select pattern '{}'", &resolvable.name);
                 issues.push(
                     Issue::new("software.select_pattern", &message, IssueSeverity::Error)
                         .with_details(&error.to_string()),

@@ -30,19 +30,15 @@ use agama_utils::{
 use async_trait::async_trait;
 use tokio::sync::{mpsc, oneshot};
 
-use crate::{
-    model::{
-        packages::ResolvableType, software_selection::SoftwareSelection, state::SoftwareState,
-    },
-    service,
-    zypp_server::SoftwareAction,
-};
+use crate::{model::state::SoftwareState, service, zypp_server::SoftwareAction};
 
 pub mod conflict;
 pub mod packages;
 pub mod registration;
 pub mod software_selection;
 pub mod state;
+
+pub use packages::{Resolvable, ResolvableType};
 
 /// Abstract the software-related configuration from the underlying system.
 ///

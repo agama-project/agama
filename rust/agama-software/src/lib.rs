@@ -42,7 +42,7 @@ pub mod service;
 pub use service::Service;
 
 mod model;
-pub use model::{Model, ModelAdapter};
+pub use model::{Model, ModelAdapter, Resolvable, ResolvableType};
 
 mod event;
 pub use event::Event;
