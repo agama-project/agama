@@ -236,9 +236,7 @@ impl MessageHandler<message::Finish> for Service {
 #[async_trait]
 impl MessageHandler<message::SetResolvables> for Service {
     async fn handle(&mut self, message: message::SetResolvables) -> Result<(), Error> {
-        self.selection
-            .set(&message.id, false, message.resolvables)
-            .await?;
+        self.selection.set(&message.id, message.resolvables);
         Ok(())
     }
 }
