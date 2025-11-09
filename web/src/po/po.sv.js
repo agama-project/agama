@@ -7,10 +7,10 @@ export default {
     " Tidszon val"
   ],
   "\"%s\"": [
-    ""
+    "\"%s\""
   ],
   "\"%s\" does not exist or is no longer available.": [
-    ""
+    "\"%s\" existrerar inte eller är inte längre tillgänglig."
   ],
   "%1$s (%2$s)": [
     "%1$s (%2$s)"
@@ -739,7 +739,7 @@ export default {
     "ExFAT"
   ],
   "Example: %s": [
-    ""
+    "Exempel: %s"
   ],
   "Excellent signal": [
     "Utmärkt signal"
@@ -925,7 +925,7 @@ export default {
     "Om du fortsätter kommer partitionerna på din hårddisk att modifieras enligt de medföljande installationsinställningarna."
   ],
   "If you want to disable this check, please specify \"inst.ay_check=0\" at kernel's command-line": [
-    ""
+    "Om du vill inaktivera den här kontrollen, ange \"inst.ay_check=0\" för kärnans kommandorad"
   ],
   "In progress": [
     "Pågår"
@@ -1393,6 +1393,9 @@ export default {
   ],
   "Partitions to boot will be allocated at the installation disk.": [
     "Partitioner som ska startas upp kommer att tilldelas på installationsdisken."
+  ],
+  "Partitions to host \"system\" will be created if needed.": [
+    "Partitioner för att vara värd för \"systemet\" kommer att skapas vid behov."
   ],
   "Partitions will be used and created for %s": [
     "Partitioner kommer att användas och skapas för %s"
@@ -1957,7 +1960,7 @@ export default {
     "Lösenordet kommer inte att behövas för att starta och komma åt data om TPM kan verifiera systemets integritet. TPM-försegling kräver att det nya systemet startas upp direkt vid första körningen."
   ],
   "The product will be registered with \"%s\" hostname": [
-    ""
+    "Produkten kommer att registreras med \"%s\" värdnamn"
   ],
   "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of a separate file system for %2$s.": [
     "Storleken för %1$s kommer att justeras dynamiskt baserat på mängden RAM i systemet och förekomsten av ett separat filsystem för %2$s."

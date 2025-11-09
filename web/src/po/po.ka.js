@@ -7,10 +7,10 @@ export default {
     " დროის სარტყლის არჩევანი"
   ],
   "\"%s\"": [
-    ""
+    "\"%s\""
   ],
   "\"%s\" does not exist or is no longer available.": [
-    ""
+    "\"%s\" არ არსებობს, ან ხელმისაწვდომი აღარაა."
   ],
   "%1$s (%2$s)": [
     "%1$s (%2$s)"
@@ -50,8 +50,8 @@ export default {
     "%s-ის ლოგო"
   ],
   "%s will be created as a logical volume": [
-    "",
-    ""
+    "%s შეიქმნება ლოგიკური ტომის სახით",
+    "%s შეიქმნება ლოგიკური ტომების სახით"
   ],
   "%s will still contain the configured LVM groups and any partition needed to boot": [
     ""
@@ -739,7 +739,7 @@ export default {
     "ExFAT"
   ],
   "Example: %s": [
-    ""
+    "მაგ: %s"
   ],
   "Excellent signal": [
     "ძალიან კარგი სიგნალი"
@@ -757,12 +757,12 @@ export default {
     "Ext4"
   ],
   "Extend the installation beyond the currently selected device": [
-    "",
-    ""
+    "დაყენების გაფართოება ამჟამად არჩეული მოწყობილობის მიღმა",
+    "დაყენების გაფართოება ამჟამად არჩეული %d მოწყობილობის მიღმა"
   ],
   "Extend the installation beyond the currently selected disk": [
-    "",
-    ""
+    "დაყენების გაფართოება ამჟამად არჩეული დისკის მიღმა",
+    "დაყენების გაფართოება ამჟამად არჩეული %d დისკის მიღმა"
   ],
   "Extensions": [
     "გაფართოებები"
@@ -1394,6 +1394,9 @@ export default {
   "Partitions to boot will be allocated at the installation disk.": [
     "ჩატვირთვადი დანაყოფები დაყენების დისკზე გამოიყოფა."
   ],
+  "Partitions to host \"system\" will be created if needed.": [
+    "დანაყოფები \"სისტემისთვის\" საჭიროებისამებრ შეიქმნება."
+  ],
   "Partitions will be used and created for %s": [
     "დანაყოფები, რომლებიც გამოყენებული და შექმნილი იქნება '%s'-სთვის"
   ],
@@ -1957,7 +1960,7 @@ export default {
     ""
   ],
   "The product will be registered with \"%s\" hostname": [
-    ""
+    "პროდუქტი დარეგისტრირდება ჰოსტის სახელით \"%s\""
   ],
   "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of a separate file system for %2$s.": [
     ""
@@ -2027,8 +2030,8 @@ export default {
     "დაგეგმილია %d გამანადგურებელი ქმედება"
   ],
   "There is %d destructive action planned affecting %s": [
-    "",
-    ""
+    "დაგეგმილია %d დამანგრეველი ქმედება, რომელიც ეხება %s-ს",
+    "დაგეგმილია %d დამანგრეველი ქმედება რომელიც ეხება %s-ს"
   ],
   "These are the most relevant installation settings. Feel free to browse the sections in the menu for further details.": [
     "ეს ყველაზე ხშირად არჩეული დაყენების პარამეტრებია. ნუ შეშინდებით, დაათვალიეროთ მენიუს სექციები დამატებითი დეტალებისთვის."
