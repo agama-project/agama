@@ -21,9 +21,10 @@
 use serde::{Deserialize, Serialize};
 
 /// Represents a software resolvable.
-#[derive(Debug, Deserialize, PartialEq)]
+#[derive(Clone, Debug, Deserialize, PartialEq, utoipa::ToSchema)]
 pub struct Resolvable {
     pub name: String,
+    #[serde(rename = "type")]
     pub r#type: ResolvableType,
 }
 

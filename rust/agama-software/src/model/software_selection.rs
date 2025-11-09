@@ -18,15 +18,12 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use tokio::sync::{mpsc, oneshot};
-
-use crate::{model::packages::ResolvableType, service, zypp_server::SoftwareAction};
+use crate::{service, Resolvable};
 
 pub struct ResolvablesSelection {
     id: String,
     optional: bool,
-    resolvables: Vec<String>,
-    r#type: ResolvableType,
+    resolvables: Vec<Resolvable>,
 }
 
 /// A selection of resolvables to be installed.
@@ -41,39 +38,17 @@ pub struct SoftwareSelection {
 impl SoftwareSelection {
     /// Updates a set of resolvables.
     ///
-    /// * `zypp` - pointer to message bus to zypp thread  to do real action
     /// * `id` - The id of the set.
-    /// * `r#type` - The type of the resolvables (patterns or packages).
     /// * `optional` - Whether the selection is optional or not.
     /// * `resolvables` - The resolvables included in the set.
     pub async fn set(
         &mut self,
-        zypp: &mpsc::UnboundedSender<SoftwareAction>,
         id: &str,
-        r#type: ResolvableType,
         optional: bool,
-        resolvables: Vec<String>,
+        resolvables: Vec<Resolvable>,
     ) -> Result<(), service::Error> {
-        let list = self.find_or_create_selection(id, r#type, optional);
-        // FIXME: use reference counting here, if multiple ids require some package, to not unselect it
-        let (tx, rx) = oneshot::channel();
-        zypp.send(SoftwareAction::UnsetResolvables {
-            tx,
-            resolvables: list.resolvables.clone(),
-            r#type: r#type.into(),
-            optional,
-        })?;
-        rx.await??;
-
+        let list = self.find_or_create_selection(id, optional);
         list.resolvables = resolvables;
-        let (tx, rx) = oneshot::channel();
-        zypp.send(SoftwareAction::UnsetResolvables {
-            tx,
-            resolvables: list.resolvables.clone(),
-            r#type: r#type.into(),
-            optional,
-        })?;
-        rx.await??;
         Ok(())
     }
 
@@ -82,30 +57,31 @@ impl SoftwareSelection {
     /// * `id` - The id of the set.
     /// * `r#type` - The type of the resolvables (patterns or packages).
     /// * `optional` - Whether the selection is optional or not.
-    pub fn get(&self, id: &str, r#type: ResolvableType, optional: bool) -> Option<Vec<String>> {
+    pub fn get(&self, id: &str, optional: bool) -> Option<Vec<Resolvable>> {
         self.selections
             .iter()
-            .find(|l| l.id == id && l.r#type == r#type && l.optional == optional)
+            .find(|l| l.id == id && l.optional == optional)
             .map(|l| l.resolvables.clone())
     }
 
-    fn find_or_create_selection(
-        &mut self,
-        id: &str,
-        r#type: ResolvableType,
-        optional: bool,
-    ) -> &mut ResolvablesSelection {
+    pub fn resolvables<'a>(&'a self) -> impl Iterator<Item = Resolvable> + 'a {
+        self.selections
+            .iter()
+            .map(|s| s.resolvables.clone())
+            .flatten()
+    }
+
+    fn find_or_create_selection(&mut self, id: &str, optional: bool) -> &mut ResolvablesSelection {
         let found = self
             .selections
             .iter()
-            .position(|l| l.id == id && l.r#type == r#type && l.optional == optional);
+            .position(|l| l.id == id && l.optional == optional);
 
         if let Some(index) = found {
             &mut self.selections[index]
         } else {
             let selection = ResolvablesSelection {
                 id: id.to_string(),
-                r#type,
                 optional,
                 resolvables: vec![],
             };

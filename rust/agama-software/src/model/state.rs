@@ -27,7 +27,7 @@ use agama_utils::{
     products::{ProductSpec, UserPattern},
 };
 
-use crate::{Resolvable, ResolvableType};
+use crate::{model::software_selection::SoftwareSelection, Resolvable, ResolvableType};
 
 /// Represents the wanted software configuration.
 ///
@@ -52,9 +52,14 @@ pub struct SoftwareState {
 /// * [Software user configuration](Config).
 /// * [System information](agama_utils::api::software::SystemInfo).
 pub struct SoftwareStateBuilder<'a> {
+    /// Product specification.
     product: &'a ProductSpec,
+    /// Configuration.
     config: Option<&'a Config>,
+    /// Information from the underlying system.
     system: Option<&'a SystemInfo>,
+    /// Agama's software selection.
+    selection: Option<&'a SoftwareSelection>,
 }
 
 impl<'a> SoftwareStateBuilder<'a> {
@@ -64,6 +69,7 @@ impl<'a> SoftwareStateBuilder<'a> {
             product,
             config: None,
             system: None,
+            selection: None,
         }
     }
 
@@ -78,6 +84,11 @@ impl<'a> SoftwareStateBuilder<'a> {
         self
     }
 
+    pub fn with_selection(mut self, selection: &'a SoftwareSelection) -> Self {
+        self.selection = Some(selection);
+        self
+    }
+
     /// Builds the [SoftwareState] by merging the product specification and the
     /// user configuration.
     pub fn build(self) -> SoftwareState {
@@ -89,6 +100,10 @@ impl<'a> SoftwareStateBuilder<'a> {
 
         if let Some(config) = self.config {
             self.add_user_config(&mut state, config);
+        }
+
+        if let Some(selection) = self.selection {
+            self.add_selection(&mut state, selection);
         }
 
         state
@@ -153,6 +168,14 @@ impl<'a> SoftwareStateBuilder<'a> {
         }
     }
 
+    /// It adds the software selection from Agama modules.
+    fn add_selection(&self, state: &mut SoftwareState, selection: &SoftwareSelection) {
+        let resolvables = selection
+            .resolvables()
+            .map(|r| ResolvableState::new_with_resolvable(&r, false));
+        state.resolvables.extend(resolvables)
+    }
+
     fn from_product_spec(&self) -> SoftwareState {
         let software = &self.product.software;
         let repositories = software
@@ -209,10 +232,16 @@ impl<'a> SoftwareStateBuilder<'a> {
 
 impl SoftwareState {
     // TODO: Add SoftwareSelection as additional argument.
-    pub fn build_from(product: &ProductSpec, config: &Config, system: &SystemInfo) -> Self {
+    pub fn build_from(
+        product: &ProductSpec,
+        config: &Config,
+        system: &SystemInfo,
+        selection: &SoftwareSelection,
+    ) -> Self {
         SoftwareStateBuilder::for_product(product)
             .with_config(config)
             .with_system(system)
+            .with_selection(selection)
             .build()
     }
 }
@@ -259,8 +288,12 @@ pub struct ResolvableState {
 
 impl ResolvableState {
     pub fn new(name: &str, r#type: ResolvableType, optional: bool) -> Self {
+        Self::new_with_resolvable(&Resolvable::new(name, r#type), optional)
+    }
+
+    pub fn new_with_resolvable(resolvable: &Resolvable, optional: bool) -> Self {
         Self {
-            resolvable: Resolvable::new(name, r#type),
+            resolvable: resolvable.clone(),
             optional,
         }
     }

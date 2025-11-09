@@ -26,6 +26,8 @@ use agama_utils::{
 use std::sync::Arc;
 use tokio::sync::RwLock;
 
+use crate::Resolvable;
+
 #[derive(Clone)]
 pub struct GetSystem;
 
@@ -66,6 +68,13 @@ impl<T> SetConfig<T> {
     pub fn new(product: Arc<RwLock<ProductSpec>>, config: Option<T>) -> Self {
         Self { config, product }
     }
+
+    pub fn with(product: Arc<RwLock<ProductSpec>>, config: T) -> Self {
+        Self {
+            config: Some(config),
+            product,
+        }
+    }
 }
 
 pub struct GetProposal;
@@ -89,5 +98,21 @@ impl Message for Refresh {
 pub struct Finish;
 
 impl Message for Finish {
+    type Reply = ();
+}
+
+// Sets a resolvables list
+pub struct SetResolvables {
+    pub id: String,
+    pub resolvables: Vec<Resolvable>,
+}
+
+impl SetResolvables {
+    pub fn new(id: String, resolvables: Vec<Resolvable>) -> Self {
+        Self { id, resolvables }
+    }
+}
+
+impl Message for SetResolvables {
     type Reply = ();
 }

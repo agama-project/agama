@@ -18,6 +18,7 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
+use agama_software::Resolvable;
 use agama_utils::{
     actor::Message,
     api::{Action, Config, IssueMap, Proposal, Status, SystemInfo},

@@ -23,6 +23,7 @@
 use crate::server::config_schema;
 use agama_lib::error::ServiceError;
 use agama_manager::{self as manager, message};
+use agama_software::Resolvable;
 use agama_utils::{
     actor::Handler,
     api::{
@@ -33,9 +34,9 @@ use agama_utils::{
     question,
 };
 use axum::{
-    extract::State,
+    extract::{Path, State},
     response::{IntoResponse, Response},
-    routing::{get, post},
+    routing::{get, post, put},
     Json, Router,
 };
 use hyper::StatusCode;
@@ -109,6 +110,7 @@ pub async fn server_service(
             "/private/storage_model",
             get(get_storage_model).put(set_storage_model),
         )
+        .route("/private/resolvables/:id", put(set_resolvables))
         .with_state(state))
 }
 
@@ -374,6 +376,29 @@ async fn set_storage_model(
     state
         .manager
         .call(message::SetStorageModel::new(model))
+        .await?;
+    Ok(())
+}
+
+#[utoipa::path(
+    put,
+    path = "/resolvables/:id",
+    context_path = "/api/v2",
+    responses(
+        (status = 200, description = "The resolvables list was updated.")
+    )
+)]
+async fn set_resolvables(
+    State(state): State<ServerState>,
+    Path(id): Path<String>,
+    Json(resolvables): Json<Vec<Resolvable>>,
+) -> ServerResult<()> {
+    state
+        .manager
+        .call(agama_software::message::SetResolvables::new(
+            id,
+            resolvables,
+        ))
         .await?;
     Ok(())
 }

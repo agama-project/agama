@@ -408,3 +408,13 @@ impl MessageHandler<message::SetStorageModel> for Service {
             .await?)
     }
 }
+
+// FIXME: write a macro to forward a message.
+#[async_trait]
+impl MessageHandler<software::message::SetResolvables> for Service {
+    /// It sets the software resolvables.
+    async fn handle(&mut self, message: software::message::SetResolvables) -> Result<(), Error> {
+        self.software.call(message).await?;
+        Ok(())
+    }
+}
