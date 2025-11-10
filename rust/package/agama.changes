@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Nov 10 14:35:25 UTC 2025 - Michal Filka <mfilka@suse.com>
+
+- Created ProfileClient based on HTTP API base client for profile
+  validation requests and refactored / cleaned relevant code
+
+-------------------------------------------------------------------
 Tue Oct 14 10:36:49 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Do not log errors when retrieving NetworkManager secrets to prevent
