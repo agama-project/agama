@@ -185,6 +185,8 @@ impl Service {
             if let Some(product_spec) = self.products.find(&id) {
                 let product = RwLock::new(product_spec.clone());
                 self.product = Some(Arc::new(product));
+            } else {
+                tracing::warn!("Unknown product '{id}'");
             }
         }
     }
