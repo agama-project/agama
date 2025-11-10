@@ -20,6 +20,23 @@
 
 use serde::{Deserialize, Serialize};
 
+/// Represents a software resolvable.
+#[derive(Clone, Debug, Deserialize, PartialEq, utoipa::ToSchema)]
+pub struct Resolvable {
+    pub name: String,
+    #[serde(rename = "type")]
+    pub r#type: ResolvableType,
+}
+
+impl Resolvable {
+    pub fn new(name: &str, r#type: ResolvableType) -> Self {
+        Self {
+            name: name.to_string(),
+            r#type,
+        }
+    }
+}
+
 /// Software resolvable type (package or pattern).
 #[derive(
     Clone, Copy, Debug, Deserialize, Serialize, strum::Display, utoipa::ToSchema, PartialEq,
@@ -40,15 +57,4 @@ impl From<ResolvableType> for zypp_agama::ResolvableKind {
             ResolvableType::Pattern => zypp_agama::ResolvableKind::Pattern,
         }
     }
-}
-
-/// Resolvable list specification.
-#[derive(Deserialize, Serialize, utoipa::ToSchema)]
-pub struct ResolvableParams {
-    /// List of resolvables.
-    pub names: Vec<String>,
-    /// Resolvable type.
-    pub r#type: ResolvableType,
-    /// Whether the resolvables are optional or not.
-    pub optional: bool,
 }

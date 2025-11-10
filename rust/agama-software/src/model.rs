@@ -30,19 +30,15 @@ use agama_utils::{
 use async_trait::async_trait;
 use tokio::sync::{mpsc, oneshot};
 
-use crate::{
-    model::{
-        packages::ResolvableType, software_selection::SoftwareSelection, state::SoftwareState,
-    },
-    service,
-    zypp_server::SoftwareAction,
-};
+use crate::{model::state::SoftwareState, service, zypp_server::SoftwareAction};
 
 pub mod conflict;
 pub mod packages;
 pub mod registration;
 pub mod software_selection;
 pub mod state;
+
+pub use packages::{Resolvable, ResolvableType};
 
 /// Abstract the software-related configuration from the underlying system.
 ///
@@ -53,18 +49,6 @@ pub mod state;
 pub trait ModelAdapter: Send + Sync + 'static {
     /// List of available patterns.
     async fn patterns(&self) -> Result<Vec<Pattern>, service::Error>;
-
-    /// Gets resolvables set for given combination of id, type and optional flag
-    fn get_resolvables(&self, id: &str, r#type: ResolvableType, optional: bool) -> Vec<String>;
-
-    /// Sets resolvables set for given combination of id, type and optional flag
-    async fn set_resolvables(
-        &mut self,
-        id: &str,
-        r#type: ResolvableType,
-        resolvables: Vec<String>,
-        optional: bool,
-    ) -> Result<(), service::Error>;
 
     async fn compute_proposal(&self) -> Result<SoftwareProposal, service::Error>;
 
@@ -95,7 +79,6 @@ pub struct Model {
     zypp_sender: mpsc::UnboundedSender<SoftwareAction>,
     // FIXME: what about having a SoftwareServiceState to keep business logic state?
     selected_product: Option<ProductSpec>,
-    software_selection: SoftwareSelection,
 }
 
 impl Model {
@@ -104,7 +87,6 @@ impl Model {
         Ok(Self {
             zypp_sender,
             selected_product: None,
-            software_selection: SoftwareSelection::default(),
         })
     }
 }
@@ -150,27 +132,8 @@ impl ModelAdapter for Model {
         Ok(rx.await??)
     }
 
-    fn get_resolvables(&self, id: &str, r#type: ResolvableType, optional: bool) -> Vec<String> {
-        self.software_selection
-            .get(id, r#type, optional)
-            .unwrap_or_default()
-    }
-
     async fn refresh(&mut self) -> Result<(), service::Error> {
         unimplemented!()
-    }
-
-    async fn set_resolvables(
-        &mut self,
-        id: &str,
-        r#type: ResolvableType,
-        resolvables: Vec<String>,
-        optional: bool,
-    ) -> Result<(), service::Error> {
-        self.software_selection
-            .set(&self.zypp_sender, id, r#type, optional, resolvables)
-            .await?;
-        Ok(())
     }
 
     async fn finish(&self) -> Result<(), service::Error> {

@@ -18,127 +18,67 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use tokio::sync::{mpsc, oneshot};
+use std::collections::HashMap;
 
-use crate::{model::packages::ResolvableType, service, zypp_server::SoftwareAction};
-
-pub struct ResolvablesSelection {
-    id: String,
-    optional: bool,
-    resolvables: Vec<String>,
-    r#type: ResolvableType,
-}
+use crate::Resolvable;
 
 /// A selection of resolvables to be installed.
 ///
 /// It holds a selection of patterns and packages to be installed and whether they are optional or
 /// not. This class is similar to the `PackagesProposal` YaST module.
 #[derive(Default)]
-pub struct SoftwareSelection {
-    selections: Vec<ResolvablesSelection>,
-}
+pub struct SoftwareSelection(HashMap<String, Vec<Resolvable>>);
 
 impl SoftwareSelection {
     /// Updates a set of resolvables.
     ///
-    /// * `zypp` - pointer to message bus to zypp thread  to do real action
     /// * `id` - The id of the set.
-    /// * `r#type` - The type of the resolvables (patterns or packages).
     /// * `optional` - Whether the selection is optional or not.
     /// * `resolvables` - The resolvables included in the set.
-    pub async fn set(
-        &mut self,
-        zypp: &mpsc::UnboundedSender<SoftwareAction>,
-        id: &str,
-        r#type: ResolvableType,
-        optional: bool,
-        resolvables: Vec<String>,
-    ) -> Result<(), service::Error> {
-        let list = self.find_or_create_selection(id, r#type, optional);
-        // FIXME: use reference counting here, if multiple ids require some package, to not unselect it
-        let (tx, rx) = oneshot::channel();
-        zypp.send(SoftwareAction::UnsetResolvables {
-            tx,
-            resolvables: list.resolvables.clone(),
-            r#type: r#type.into(),
-            optional,
-        })?;
-        rx.await??;
-
-        list.resolvables = resolvables;
-        let (tx, rx) = oneshot::channel();
-        zypp.send(SoftwareAction::UnsetResolvables {
-            tx,
-            resolvables: list.resolvables.clone(),
-            r#type: r#type.into(),
-            optional,
-        })?;
-        rx.await??;
-        Ok(())
+    pub fn set(&mut self, id: &str, resolvables: Vec<Resolvable>) {
+        self.0.insert(id.to_string(), resolvables);
     }
 
-    /// Returns a set of resolvables.
-    ///
-    /// * `id` - The id of the set.
-    /// * `r#type` - The type of the resolvables (patterns or packages).
-    /// * `optional` - Whether the selection is optional or not.
-    pub fn get(&self, id: &str, r#type: ResolvableType, optional: bool) -> Option<Vec<String>> {
-        self.selections
-            .iter()
-            .find(|l| l.id == id && l.r#type == r#type && l.optional == optional)
-            .map(|l| l.resolvables.clone())
+    /// Remove the selection list with the given ID.
+    pub fn remove(&mut self, id: &str) {
+        self.0.remove(id);
     }
 
-    fn find_or_create_selection(
-        &mut self,
-        id: &str,
-        r#type: ResolvableType,
-        optional: bool,
-    ) -> &mut ResolvablesSelection {
-        let found = self
-            .selections
-            .iter()
-            .position(|l| l.id == id && l.r#type == r#type && l.optional == optional);
-
-        if let Some(index) = found {
-            &mut self.selections[index]
-        } else {
-            let selection = ResolvablesSelection {
-                id: id.to_string(),
-                r#type,
-                optional,
-                resolvables: vec![],
-            };
-            self.selections.push(selection);
-            self.selections.last_mut().unwrap()
-        }
+    /// Returns all the resolvables.
+    pub fn resolvables<'a>(&'a self) -> impl Iterator<Item = Resolvable> + 'a {
+        self.0.values().flatten().cloned()
     }
 }
 
-/* TODO: Fix tests with real mock of libzypp
 #[cfg(test)]
 mod tests {
-    use super::*;
+    use crate::ResolvableType;
+
+    use super::{Resolvable, SoftwareSelection};
 
     #[test]
     fn test_set_selection() {
-        let mut selection = SoftwareSelection::new();
-        selection.add("agama", ResolvableType::Package, false, &["agama-scripts"]);
-        selection.set("agama", ResolvableType::Package, false, &["suse"]);
+        let mut selection = SoftwareSelection::default();
+        let resolvable = Resolvable::new("agama-scripts", ResolvableType::Package);
+        selection.set("agama", vec![resolvable]);
+        let resolvable = Resolvable::new("btrfsprogs", ResolvableType::Pattern);
+        selection.set("software", vec![resolvable]);
 
-        let packages = selection
-            .get("agama", ResolvableType::Package, false)
-            .unwrap();
-        assert_eq!(packages.len(), 1);
+        let all_resolvables: Vec<_> = selection.resolvables().collect();
+        assert_eq!(all_resolvables.len(), 2);
     }
 
     #[test]
     fn test_remove_selection() {
-        let mut selection = SoftwareSelection::new();
-        selection.add("agama", ResolvableType::Package, true, &["agama-scripts"]);
-        selection.remove("agama", ResolvableType::Package, true);
-        let packages = selection.get("agama", ResolvableType::Package, true);
-        assert_eq!(packages, None);
+        let mut selection = SoftwareSelection::default();
+        let resolvable = Resolvable::new("agama-scripts", ResolvableType::Package);
+        selection.set("agama", vec![resolvable]);
+
+        let all_resolvables: Vec<_> = selection.resolvables().collect();
+        assert_eq!(all_resolvables.len(), 1);
+
+        selection.remove("agama");
+        let all_resolvables: Vec<_> = selection.resolvables().collect();
+        assert!(all_resolvables.is_empty());
     }
 }
-    */

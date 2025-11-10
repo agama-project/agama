@@ -22,7 +22,7 @@ use std::{process::Command, sync::Arc};
 
 use crate::{
     message,
-    model::{state::SoftwareState, ModelAdapter},
+    model::{software_selection::SoftwareSelection, state::SoftwareState, ModelAdapter},
     zypp_server::{self, SoftwareAction},
 };
 use agama_utils::{
@@ -77,6 +77,7 @@ pub struct Service {
     progress: Handler<progress::Service>,
     events: event::Sender,
     state: State,
+    selection: SoftwareSelection,
 }
 
 #[derive(Default)]
@@ -99,6 +100,7 @@ impl Service {
             progress,
             events,
             state: Default::default(),
+            selection: Default::default(),
         }
     }
 
@@ -148,7 +150,13 @@ impl MessageHandler<message::SetConfig<Config>> for Service {
             scope: Scope::Software,
         })?;
 
-        let software = SoftwareState::build_from(&product, &self.state.config, &self.state.system);
+        let software = SoftwareState::build_from(
+            &product,
+            &self.state.config,
+            &self.state.system,
+            &self.selection,
+        );
+        tracing::info!("Wanted software state: {software:?}");
 
         let model = self.model.clone();
         let issues = self.issues.clone();
@@ -221,6 +229,14 @@ impl MessageHandler<message::Install> for Service {
 impl MessageHandler<message::Finish> for Service {
     async fn handle(&mut self, _message: message::Finish) -> Result<(), Error> {
         self.model.lock().await.finish().await?;
+        Ok(())
+    }
+}
+
+#[async_trait]
+impl MessageHandler<message::SetResolvables> for Service {
+    async fn handle(&mut self, message: message::SetResolvables) -> Result<(), Error> {
+        self.selection.set(&message.id, message.resolvables);
         Ok(())
     }
 }

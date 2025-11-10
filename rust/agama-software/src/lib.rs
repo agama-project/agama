@@ -42,10 +42,7 @@ pub mod service;
 pub use service::Service;
 
 mod model;
-pub use model::{Model, ModelAdapter};
-
-mod event;
-pub use event::Event;
+pub use model::{Model, ModelAdapter, Resolvable, ResolvableType};
 
 pub mod message;
 mod zypp_server;

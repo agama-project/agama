@@ -1024,16 +1024,13 @@
           "title": "Question class",
           "description": "Each question has a \"class\" which works as an identifier.",
           "type": "string",
-          "examples": ["storage.activate_multipath"]
+          "examples": [
+            "storage.activate_multipath"
+          ]
         },
         "text": {
           "title": "Question text",
           "description": "Question full text",
-          "type": "string"
-        },
-        "answer": {
-          "title": "Question answer",
-          "description": "Answer to use for the question.",
           "type": "string"
         },
         "password": {
@@ -1044,7 +1041,21 @@
           "title": "Additional data for matching questions",
           "description": "Additional data for matching questions and answers",
           "type": "object",
-          "examples": [{ "device": "/dev/sda" }]
+          "examples": [
+            {
+              "device": "/dev/sda"
+            }
+          ]
+        },
+        "action": {
+          "title": "Predefined question action",
+          "description": "Action to use for the question.",
+          "type": "string"
+        },
+        "value": {
+          "title": "Predefined question value",
+          "description": "Value to use for the question.",
+          "type": "string"
         }
       }
     },

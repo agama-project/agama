@@ -34,10 +34,7 @@ use tokio::sync::{
 };
 use zypp_agama::ZyppError;
 
-use crate::model::{
-    packages::ResolvableType,
-    state::{self, SoftwareState},
-};
+use crate::model::state::{self, SoftwareState};
 const TARGET_DIR: &str = "/run/agama/software_ng_zypp";
 const GPG_KEYS: &str = "/usr/lib/rpm/gnupg/keys/gpg-*";
 
@@ -96,18 +93,6 @@ pub enum SoftwareAction {
         ProductSpec,
         oneshot::Sender<ZyppServerResult<SoftwareProposal>>,
     ),
-    SetResolvables {
-        tx: oneshot::Sender<Result<(), ZyppError>>,
-        resolvables: Vec<String>,
-        r#type: ResolvableType,
-        optional: bool,
-    },
-    UnsetResolvables {
-        tx: oneshot::Sender<Result<(), ZyppError>>,
-        resolvables: Vec<String>,
-        r#type: ResolvableType,
-        optional: bool,
-    },
     Write {
         state: SoftwareState,
         progress: Handler<progress::Service>,
@@ -194,46 +179,6 @@ impl ZyppServer {
             SoftwareAction::Finish(tx) => {
                 self.finish(zypp, tx).await?;
             }
-            SoftwareAction::SetResolvables {
-                tx,
-                r#type,
-                resolvables,
-                optional,
-            } => {
-                // TODO: support optional with check if resolvable is available
-                for res in resolvables {
-                    let result = zypp.select_resolvable(
-                        &res,
-                        r#type.into(),
-                        zypp_agama::ResolvableSelected::Installation,
-                    );
-                    if let Err(e) = result {
-                        tx.send(Err(e))
-                            .map_err(|_| ZyppDispatchError::ResponseChannelClosed)?;
-                        break;
-                    }
-                }
-            }
-            SoftwareAction::UnsetResolvables {
-                tx,
-                r#type,
-                resolvables,
-                optional,
-            } => {
-                // TODO: support optional with check if resolvable is available
-                for res in resolvables {
-                    let result = zypp.unselect_resolvable(
-                        &res,
-                        r#type.into(),
-                        zypp_agama::ResolvableSelected::Installation,
-                    );
-                    if let Err(e) = result {
-                        tx.send(Err(e))
-                            .map_err(|_| ZyppDispatchError::ResponseChannelClosed)?;
-                        break;
-                    }
-                }
-            }
             SoftwareAction::ComputeProposal(product_spec, sender) => {
                 self.compute_proposal(product_spec, sender, zypp).await?
             }
@@ -252,8 +197,7 @@ impl ZyppServer {
 
     fn read(&self, zypp: &zypp_agama::Zypp) -> Result<SoftwareState, ZyppDispatchError> {
         let repositories = zypp
-            .list_repositories()
-            .unwrap()
+            .list_repositories()?
             .into_iter()
             .map(|repo| state::Repository {
                 name: repo.user_name,
@@ -267,8 +211,7 @@ impl ZyppServer {
             // FIXME: read the real product.
             product: "SLES".to_string(),
             repositories,
-            patterns: vec![],
-            packages: vec![],
+            resolvables: vec![],
             options: Default::default(),
         };
         Ok(state)
@@ -365,17 +308,18 @@ impl ZyppServer {
         }
 
         _ = progress.cast(progress::message::Next::new(Scope::Software));
-        for pattern in &state.patterns {
+        for resolvable_state in &state.resolvables {
+            let resolvable = &resolvable_state.resolvable;
             // FIXME: we need to distinguish who is selecting the pattern.
             // and register an issue if it is not found and it was not optional.
             let result = zypp.select_resolvable(
-                &pattern.name,
-                zypp_agama::ResolvableKind::Pattern,
+                &resolvable.name,
+                resolvable.r#type.into(),
                 zypp_agama::ResolvableSelected::Installation,
             );
 
             if let Err(error) = result {
-                let message = format!("Could not select pattern '{}'", &pattern.name);
+                let message = format!("Could not select pattern '{}'", &resolvable.name);
                 issues.push(
                     Issue::new("software.select_pattern", &message, IssueSeverity::Error)
                         .with_details(&error.to_string()),

@@ -18,7 +18,7 @@
 # find current contact information at www.suse.com.
 
 require "yast"
-require "agama/http/clients/software"
+require "agama/http/clients/main"
 
 # :nodoc:
 module Yast
@@ -26,7 +26,7 @@ module Yast
   class PackagesProposalClass < Module
     def main
       puts "Loading mocked module #{__FILE__}"
-      @client = Agama::HTTP::Clients::Software.new(::Logger.new($stdout))
+      @client = Agama::HTTP::Clients::Main.new(::Logger.new($stdout))
     end
 
     # @see https://github.com/yast/yast-yast2/blob/b8cd178b7f341f6e3438782cb703f4a3ab0529ed/library/general/src/modules/PackagesProposal.rb#L118
@@ -40,7 +40,7 @@ module Yast
 
     # @see https://github.com/yast/yast-yast2/blob/b8cd178b7f341f6e3438782cb703f4a3ab0529ed/library/general/src/modules/PackagesProposal.rb#L145
     def SetResolvables(unique_id, type, resolvables, optional: false)
-      client.set_resolvables(unique_id, type, resolvables || [], optional)
+      client.set_resolvables(unique_id, type, resolvables || [])
       true
     end
 

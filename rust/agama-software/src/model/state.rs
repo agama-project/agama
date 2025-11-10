@@ -27,26 +27,40 @@ use agama_utils::{
     products::{ProductSpec, UserPattern},
 };
 
+use crate::{model::software_selection::SoftwareSelection, Resolvable, ResolvableType};
+
 /// Represents the wanted software configuration.
 ///
 /// It includes the list of repositories, selected resolvables, configuration
 /// options, etc. This configuration is later applied by a model adapter.
+///
+/// The SoftwareState is built by the [SoftwareStateBuilder] using different
+/// sources (the product specification, the user configuration, etc.).
 #[derive(Debug)]
 pub struct SoftwareState {
     pub product: String,
     pub repositories: Vec<Repository>,
-    // TODO: consider implementing a list to make easier working with them.
-    pub patterns: Vec<ResolvableName>,
-    pub packages: Vec<ResolvableName>,
+    pub resolvables: Vec<ResolvableState>,
     pub options: SoftwareOptions,
 }
 
-/// Builder to create a [SoftwareState] struct from the other sources like the
-/// product specification, the user configuration, etc.
+/// Builder to create a [SoftwareState] struct from different sources.
+///
+/// At this point it uses the following sources:
+///
+/// * [Product specification](ProductSpec).
+/// * [Software user configuration](Config).
+/// * [System information](SystemInfo).
+/// * [Agama software selection](SoftwareSelection).
 pub struct SoftwareStateBuilder<'a> {
+    /// Product specification.
     product: &'a ProductSpec,
+    /// Configuration.
     config: Option<&'a Config>,
+    /// Information from the underlying system.
     system: Option<&'a SystemInfo>,
+    /// Agama's software selection.
+    selection: Option<&'a SoftwareSelection>,
 }
 
 impl<'a> SoftwareStateBuilder<'a> {
@@ -56,6 +70,7 @@ impl<'a> SoftwareStateBuilder<'a> {
             product,
             config: None,
             system: None,
+            selection: None,
         }
     }
 
@@ -67,6 +82,11 @@ impl<'a> SoftwareStateBuilder<'a> {
 
     pub fn with_system(mut self, system: &'a SystemInfo) -> Self {
         self.system = Some(system);
+        self
+    }
+
+    pub fn with_selection(mut self, selection: &'a SoftwareSelection) -> Self {
+        self.selection = Some(selection);
         self
     }
 
@@ -83,9 +103,17 @@ impl<'a> SoftwareStateBuilder<'a> {
             self.add_user_config(&mut state, config);
         }
 
+        if let Some(selection) = self.selection {
+            self.add_selection(&mut state, selection);
+        }
+
         state
     }
 
+    /// Adds the elements from the underlying system.
+    ///
+    /// It searches for repositories in the underlying system. The idea is to
+    /// use the repositories for off-line installation.
     fn add_system_config(&self, state: &mut SoftwareState, system: &SystemInfo) {
         let repositories = system
             .repositories
@@ -95,6 +123,7 @@ impl<'a> SoftwareStateBuilder<'a> {
         state.repositories.extend(repositories);
     }
 
+    /// Adds the elements from the user configuration.
     fn add_user_config(&self, state: &mut SoftwareState, config: &Config) {
         let Some(software) = &config.software else {
             return;
@@ -108,24 +137,28 @@ impl<'a> SoftwareStateBuilder<'a> {
         if let Some(patterns) = &software.patterns {
             match patterns {
                 PatternsConfig::PatternsList(list) => {
-                    state.patterns.retain(|p| p.optional == false);
-                    state
-                        .patterns
-                        .extend(list.iter().map(|n| ResolvableName::new(n, false)));
+                    // Replaces the list, keeping only the non-optional elements.
+                    state.resolvables.retain(|p| p.optional == false);
+                    state.resolvables.extend(
+                        list.iter()
+                            .map(|n| ResolvableState::new(n, ResolvableType::Pattern, false)),
+                    );
                 }
                 PatternsConfig::PatternsMap(map) => {
+                    // Adds or removes elements to the list
                     if let Some(add) = &map.add {
-                        state
-                            .patterns
-                            .extend(add.iter().map(|n| ResolvableName::new(n, false)));
+                        state.resolvables.extend(
+                            add.iter()
+                                .map(|n| ResolvableState::new(n, ResolvableType::Pattern, false)),
+                        );
                     }
 
                     if let Some(remove) = &map.remove {
                         // NOTE: should we notify when a user wants to remove a
                         // pattern which is not optional?
                         state
-                            .patterns
-                            .retain(|p| !(p.optional && remove.contains(&p.name)));
+                            .resolvables
+                            .retain(|p| !(p.optional && remove.contains(&p.resolvable.name)));
                     }
                 }
             }
@@ -134,6 +167,14 @@ impl<'a> SoftwareStateBuilder<'a> {
         if let Some(only_required) = software.only_required {
             state.options.only_required = only_required;
         }
+    }
+
+    /// It adds the software selection from Agama modules.
+    fn add_selection(&self, state: &mut SoftwareState, selection: &SoftwareSelection) {
+        let resolvables = selection
+            .resolvables()
+            .map(|r| ResolvableState::new_with_resolvable(&r, false));
+        state.resolvables.extend(resolvables)
     }
 
     fn from_product_spec(&self) -> SoftwareState {
@@ -153,24 +194,28 @@ impl<'a> SoftwareStateBuilder<'a> {
             })
             .collect();
 
-        let mut patterns: Vec<ResolvableName> = software
+        let mut resolvables: Vec<ResolvableState> = software
             .mandatory_patterns
             .iter()
-            .map(|p| ResolvableName::new(p, false))
+            .map(|p| ResolvableState::new(p, ResolvableType::Pattern, false))
             .collect();
 
-        patterns.extend(
+        resolvables.extend(
             software
                 .optional_patterns
                 .iter()
-                .map(|p| ResolvableName::new(p, true)),
+                .map(|p| ResolvableState::new(p, ResolvableType::Pattern, true)),
         );
 
-        patterns.extend(software.user_patterns.iter().filter_map(|p| match p {
+        resolvables.extend(software.user_patterns.iter().filter_map(|p| match p {
             UserPattern::Plain(_) => None,
             UserPattern::Preselected(pattern) => {
                 if pattern.selected {
-                    Some(ResolvableName::new(&pattern.name, true))
+                    Some(ResolvableState::new(
+                        &pattern.name,
+                        ResolvableType::Pattern,
+                        true,
+                    ))
                 } else {
                     None
                 }
@@ -180,19 +225,23 @@ impl<'a> SoftwareStateBuilder<'a> {
         SoftwareState {
             product: software.base_product.clone(),
             repositories,
-            patterns,
-            packages: vec![],
+            resolvables,
             options: Default::default(),
         }
     }
 }
 
 impl SoftwareState {
-    // TODO: Add SoftwareSelection as additional argument.
-    pub fn build_from(product: &ProductSpec, config: &Config, system: &SystemInfo) -> Self {
+    pub fn build_from(
+        product: &ProductSpec,
+        config: &Config,
+        system: &SystemInfo,
+        selection: &SoftwareSelection,
+    ) -> Self {
         SoftwareStateBuilder::for_product(product)
             .with_config(config)
             .with_system(system)
+            .with_selection(selection)
             .build()
     }
 }
@@ -230,17 +279,21 @@ impl From<&agama_utils::api::software::Repository> for Repository {
 
 /// Defines a resolvable to be selected.
 #[derive(Debug, PartialEq)]
-pub struct ResolvableName {
+pub struct ResolvableState {
     /// Resolvable name.
-    pub name: String,
+    pub resolvable: Resolvable,
     /// Whether this resolvable is optional or not.
     pub optional: bool,
 }
 
-impl ResolvableName {
-    pub fn new(name: &str, optional: bool) -> Self {
+impl ResolvableState {
+    pub fn new(name: &str, r#type: ResolvableType, optional: bool) -> Self {
+        Self::new_with_resolvable(&Resolvable::new(name, r#type), optional)
+    }
+
+    pub fn new_with_resolvable(resolvable: &Resolvable, optional: bool) -> Self {
         Self {
-            name: name.to_string(),
+            resolvable: resolvable.clone(),
             optional,
         }
     }
@@ -265,7 +318,10 @@ mod tests {
         products::ProductSpec,
     };
 
-    use crate::model::state::{ResolvableName, SoftwareStateBuilder};
+    use crate::model::{
+        packages::ResolvableType,
+        state::{ResolvableState, SoftwareStateBuilder},
+    };
 
     fn build_user_config(patterns: Option<PatternsConfig>) -> Config {
         let repo = RepositoryConfig {
@@ -318,10 +374,10 @@ mod tests {
         assert_eq!(state.product, "openSUSE".to_string());
 
         assert_eq!(
-            state.patterns,
+            state.resolvables,
             vec![
-                ResolvableName::new("enhanced_base", false),
-                ResolvableName::new("selinux", true),
+                ResolvableState::new("enhanced_base", ResolvableType::Pattern, false),
+                ResolvableState::new("selinux", ResolvableType::Pattern, true),
             ]
         );
     }
@@ -358,11 +414,11 @@ mod tests {
             .with_config(&config)
             .build();
         assert_eq!(
-            state.patterns,
+            state.resolvables,
             vec![
-                ResolvableName::new("enhanced_base", false),
-                ResolvableName::new("selinux", true),
-                ResolvableName::new("gnome", false)
+                ResolvableState::new("enhanced_base", ResolvableType::Pattern, false),
+                ResolvableState::new("selinux", ResolvableType::Pattern, true),
+                ResolvableState::new("gnome", ResolvableType::Pattern, false)
             ]
         );
     }
@@ -380,8 +436,12 @@ mod tests {
             .with_config(&config)
             .build();
         assert_eq!(
-            state.patterns,
-            vec![ResolvableName::new("enhanced_base", false),]
+            state.resolvables,
+            vec![ResolvableState::new(
+                "enhanced_base",
+                ResolvableType::Pattern,
+                false
+            ),]
         );
     }
 
@@ -398,10 +458,10 @@ mod tests {
             .with_config(&config)
             .build();
         assert_eq!(
-            state.patterns,
+            state.resolvables,
             vec![
-                ResolvableName::new("enhanced_base", false),
-                ResolvableName::new("selinux", true)
+                ResolvableState::new("enhanced_base", ResolvableType::Pattern, false),
+                ResolvableState::new("selinux", ResolvableType::Pattern, true)
             ]
         );
     }
@@ -416,10 +476,10 @@ mod tests {
             .with_config(&config)
             .build();
         assert_eq!(
-            state.patterns,
+            state.resolvables,
             vec![
-                ResolvableName::new("enhanced_base", false),
-                ResolvableName::new("gnome", false)
+                ResolvableState::new("enhanced_base", ResolvableType::Pattern, false),
+                ResolvableState::new("gnome", ResolvableType::Pattern, false)
             ]
         );
     }
