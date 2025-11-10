@@ -21,7 +21,7 @@
  */
 
 import React from "react";
-import { redirect } from "react-router-dom";
+import { redirect } from "react-router";
 import { N_ } from "~/i18n";
 import { Route } from "~/types/routes";
 import BootSelection from "~/components/storage/BootSelection";

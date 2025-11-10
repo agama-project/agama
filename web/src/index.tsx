@@ -22,7 +22,7 @@
 
 import React from "react";
 import { createRoot } from "react-dom/client";
-import { RouterProvider } from "react-router-dom";
+import { RouterProvider } from "react-router/dom";
 import { RootProviders } from "~/context/root";
 import { router } from "~/router";
 

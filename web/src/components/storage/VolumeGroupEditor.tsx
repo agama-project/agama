@@ -22,7 +22,7 @@
 
 import React, { useId } from "react";
 import { Divider, Flex, Title } from "@patternfly/react-core";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import Link from "~/components/core/Link";
 import Text from "~/components/core/Text";
 import MenuButton from "~/components/core/MenuButton";
