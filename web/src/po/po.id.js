@@ -6,6 +6,12 @@ export default {
   " Timezone selection": [
     " Pemilihan zona waktu"
   ],
+  "\"%s\"": [
+    ""
+  ],
+  "\"%s\" does not exist or is no longer available.": [
+    ""
+  ],
   "%1$s (%2$s)": [
     "%1$s (%2$s)"
   ],
@@ -908,6 +914,9 @@ export default {
   ],
   "If you continue, partitions on your hard disk will be modified according to the provided installation settings.": [
     "Jika Anda melanjutkan, partisi pada hard disk Anda akan dimodifikasi sesuai dengan pengaturan instalasi yang disediakan."
+  ],
+  "If you want to disable this check, please specify \"inst.ay_check=0\" at kernel's command-line": [
+    ""
   ],
   "In progress": [
     "Dalam proses"
@@ -1937,6 +1946,9 @@ export default {
   ],
   "The password will not be needed to boot and access the data if the TPM can verify the integrity of the system. TPM sealing requires the new system to be booted directly on its first run.": [
     "Kata sandi tidak akan diperlukan untuk mem-boot dan mengakses data jika TPM dapat memverifikasi integritas sistem. Penyegelan TPM mengharuskan sistem baru untuk di-boot secara langsung saat pertama kali dijalankan."
+  ],
+  "The product will be registered with \"%s\" hostname": [
+    ""
   ],
   "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of a separate file system for %2$s.": [
     "Ukuran untuk %1$s akan disesuaikan secara dinamis berdasarkan jumlah RAM dalam sistem dan keberadaan sistem berkas yang terpisah untuk %2$s."

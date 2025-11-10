@@ -6,6 +6,12 @@ export default {
   " Timezone selection": [
     " Выбор часового пояса"
   ],
+  "\"%s\"": [
+    ""
+  ],
+  "\"%s\" does not exist or is no longer available.": [
+    ""
+  ],
   "%1$s (%2$s)": [
     "%1$s (%2$s)"
   ],
@@ -354,11 +360,23 @@ export default {
   "Change selection": [
     "Изменить выбор"
   ],
+  "Change the disk to configure": [
+    "Измените диск для настройки"
+  ],
+  "Change the disk to create %s": [
+    "Измените диск для создания %s"
+  ],
+  "Change the disk to format as %s": [
+    "Измените диск для форматирования как %s"
+  ],
+  "Change the disk to install the system": [
+    "Измените диск для установки системы"
+  ],
   "Change the file system or mount point": [
     "Изменить файловую систему или точку монтирования"
   ],
   "Changes in these settings will immediately update the 'Result' section below.": [
-    ""
+    "Изменения этих настроек немедленно обновят секцию «Результат» ниже."
   ],
   "Channel ID": [
     "Идентификатор канала"
@@ -787,6 +805,9 @@ export default {
   "Final layout": [
     "Окончательный вариант"
   ],
+  "Final structure of the system after installation.": [
+    "Окончательная структура системы после установки."
+  ],
   "Find space in %s": [
     "Найти пространство в %s"
   ],
@@ -912,6 +933,9 @@ export default {
   "If you continue, partitions on your hard disk will be modified according to the provided installation settings.": [
     "Если продолжите, разделы на жестком диске будут изменены в соответствии с заданными настройками установки."
   ],
+  "If you want to disable this check, please specify \"inst.ay_check=0\" at kernel's command-line": [
+    ""
+  ],
   "In progress": [
     "В процессе"
   ],
@@ -971,6 +995,9 @@ export default {
   ],
   "Install using several devices without modifying existing partitions.": [
     "Установка с использованием нескольких устройств без изменения существующих разделов."
+  ],
+  "Installation devices": [
+    "Устройства для установки"
   ],
   "Installation will take %s.": [
     "Установка займёт %s."
@@ -1149,6 +1176,9 @@ export default {
   "More languages might be available for the selected product at [Localization] page": [
     "Для выбранного продукта могут быть доступны другие языки в разделе [Локализации]"
   ],
+  "More storage options": [
+    "Дополнительные параметры хранилища"
+  ],
   "Moreover, the following partition will be created.": [
     "Кроме того, будет создан следующий раздел.",
     "Кроме того, будут созданы следующие разделы.",
@@ -1264,6 +1294,9 @@ export default {
   "No logical volumes are defined yet": [
     "Логические тома еще не определены"
   ],
+  "No partitions will be automatically configured for booting.": [
+    "Ни один раздел не будет автоматически настроен для загрузки."
+  ],
   "No partitions will be automatically configured for booting. Use with caution.": [
     "Ни один раздел не будет автоматически настроен для загрузки. Используйте с осторожностью."
   ],
@@ -1336,6 +1369,9 @@ export default {
   "Only reused partitions will be used.": [
     "Будут использоваться только повторно используемые разделы."
   ],
+  "Options for partition %s": [
+    "Параметры для раздела %s"
+  ],
   "Options toggle": [
     "Показ настроек"
   ],
@@ -1344,6 +1380,9 @@ export default {
   ],
   "Package installation failed": [
     "Не удалось установить пакет"
+  ],
+  "Partition %s": [
+    "Раздел %s"
   ],
   "Partition Info": [
     "Информация о разделе"
@@ -1366,11 +1405,23 @@ export default {
   "Partitions that are not reused would be resized if needed.": [
     "Разделы, которые не используются повторно, при необходимости будут изменены в размерах."
   ],
+  "Partitions to boot will be set up if needed at %s.": [
+    "Разделы для загрузки будут настроены при необходимости на %s."
+  ],
+  "Partitions to boot will be set up if needed at the following device.": [
+    "При необходимости разделы для загрузки будут созданы на следующем устройстве."
+  ],
+  "Partitions to boot will be set up if needed at the installation disk,           based on the location of the %s file system.": [
+    "При необходимости на установочном диске будут созданы разделы для загрузки в зависимости от расположения файловой системы %s."
+  ],
+  "Partitions to boot will be set up if needed at the installation disk,         based on the location of the %s file system.": [
+    "Разделы для загрузки будут настроены при необходимости на установочном диске,         исходя из расположения файловой системы %s."
+  ],
   "Partitions to boot will be set up if needed at the installation disk.         Currently %1$s, based on the location of the %2$s file system.": [
-    ""
+    "При необходимости на установочном диске будут созданы загрузочные разделы. В настоящее время это %1$s, в зависимости от расположения файловой системы %2$s."
   ],
   "Partitions to boot will be set up if needed at the installation disk.       Currently %1$s, based on the location of the %2$s file system.": [
-    ""
+    "Разделы для загрузки будут настроены при необходимости на установочном диске.       В настоящее время %1$s, исходя из расположения файловой системы %2$s."
   ],
   "Partitions will be used and created for %s": [
     "Разделы будут использоваться и создаваться для %s"
@@ -1434,6 +1485,9 @@ export default {
   ],
   "Product is already registered": [
     "Продукт уже зарегистрирован"
+  ],
+  "Protection for the information stored at           the new file systems, including data, programs, and system files.": [
+    "Защита информации, хранящейся в новых файловых системах, включая данные, программы и системные файлы."
   ],
   "Provide email address": [
     "Укажите адрес эл. почты"
@@ -1523,7 +1577,7 @@ export default {
     "Результат"
   ],
   "Result of applying the configuration described at the 'Settings' section above.": [
-    ""
+    "Результат применения конфигурации, описанной в секции «Настройки» выше."
   ],
   "Reused partitions will not be shrunk": [
     "Повторно используемые разделы не будут уменьшены"
@@ -1855,6 +1909,9 @@ export default {
   "The final step to configure the Trusted Platform Module (TPM) to automatically open encrypted devices will take place during the first boot of the new system. For that to work, the machine needs to boot directly to the new boot loader.": [
     "Последний шаг по настройке Доверенного платформенного модуля (TPM) на автоматическое открытие зашифрованных устройств будет выполнен во время первой загрузки новой системы. Чтобы это сработало, машина должна загрузиться непосредственно в новый загрузчик."
   ],
+  "The following actions will be performed in the system during installation.": [
+    "В процессе установки в системе будут выполнены следующие действия."
+  ],
   "The following logical volume will be created": [
     "Будет создан следующий логический том",
     "Будут созданы следующие логические тома",
@@ -1925,6 +1982,9 @@ export default {
   ],
   "The password will not be needed to boot and access the data if the TPM can verify the integrity of the system. TPM sealing requires the new system to be booted directly on its first run.": [
     "Пароль не понадобится для загрузки и доступа к данным, если TPM может проверить целостность системы. Запечатывание TPM требует непосредственной загрузки новой системы при первом запуске."
+  ],
+  "The product will be registered with \"%s\" hostname": [
+    ""
   ],
   "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of a separate file system for %2$s.": [
     "Размер для %1$s будет динамически корректироваться в зависимости от объема оперативной памяти в системе и наличия отдельной файловой системы для %2$s."
@@ -2055,6 +2115,9 @@ export default {
   ],
   "Tmpfs": [
     "Tmpfs"
+  ],
+  "To ensure the new system is able to boot, the installer may need to create or configure some           partitions in the appropriate disk.": [
+    "Чтобы обеспечить загрузку новой системы, программе установки может потребоваться создать или настроить некоторые             разделы на соответствующем диске."
   ],
   "To ensure the new system is able to boot, the installer may need to create or configure some partitions in the appropriate disk.": [
     "Чтобы обеспечить загрузку новой системы, программе установки может потребоваться создать или настроить некоторые разделы на соответствующем диске."
@@ -2244,6 +2307,9 @@ export default {
   ],
   "Using transient hostname: %s": [
     "Использование переходного имени узла: %s"
+  ],
+  "Volume group %s": [
+    "Группа томов %s"
   ],
   "Volume group '%s' already exists. Enter a different name.": [
     "Группа томов „%s“ уже существует. Введите другое имя."

@@ -6,6 +6,12 @@ export default {
   " Timezone selection": [
     " Selecció de la zona horària"
   ],
+  "\"%s\"": [
+    "%s"
+  ],
+  "\"%s\" does not exist or is no longer available.": [
+    "La xarxa %s no existeix o ja no està disponible."
+  ],
   "%1$s (%2$s)": [
     "%1$s (%2$s)"
   ],
@@ -918,6 +924,9 @@ export default {
   "If you continue, partitions on your hard disk will be modified according to the provided installation settings.": [
     "Si continueu, les particions del disc dur es modificaran segons la configuració d'instal·lació proporcionada."
   ],
+  "If you want to disable this check, please specify \"inst.ay_check=0\" at kernel's command-line": [
+    "Si voleu desactivar aquesta comprovació, especifiqueu \"inst.ay_check=0\" a la línia d'ordres del nucli."
+  ],
   "In progress": [
     "En curs"
   ],
@@ -1402,6 +1411,9 @@ export default {
   ],
   "Partitions to boot will be set up if needed at the installation disk.       Currently %1$s, based on the location of the %2$s file system.": [
     "Les particions per arrencar s'establiran, si cal, al disc d'instal·lació.        Actualment és %1$s, segons la ubicació del sistema de fitxers %2$s."
+  ],
+  "Partitions to host \"system\" will be created if needed.": [
+    "Si cal, es crearan particions per allotjar-hi el sistema."
   ],
   "Partitions will be used and created for %s": [
     "Les particions s'usaran i es crearan per a %s"
@@ -1955,6 +1967,9 @@ export default {
   ],
   "The password will not be needed to boot and access the data if the TPM can verify the integrity of the system. TPM sealing requires the new system to be booted directly on its first run.": [
     "La contrasenya no caldrà per arrencar i accedir a les dades si el TPM pot verificar la integritat del sistema. El segellat de TPM requereix que el nou sistema s'iniciï directament a la primera execució."
+  ],
+  "The product will be registered with \"%s\" hostname": [
+    "El producte es registrarà amb el nom d'amfitrió %s."
   ],
   "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of a separate file system for %2$s.": [
     "La mida de %1$s s'ajustarà dinàmicament segons la quantitat de RAM del sistema i de la presència d'un sistema de fitxers separat per a %2$s."
