@@ -34,9 +34,6 @@ import {
   WifiNetworkStatus,
 } from "~/types/network";
 import {
-  addConnection,
-  applyChanges,
-  deleteConnection,
   fetchAccessPoints,
   fetchConnection,
   fetchConnections,
@@ -109,25 +106,6 @@ const accessPointsQuery = () => ({
 });
 
 /**
- * Hook that builds a mutation to add a new network connection
- *
- * It does not require to call `useMutation`.
- */
-const useAddConnectionMutation = () => {
-  const queryClient = useQueryClient();
-  const query = {
-    mutationFn: (newConnection: Connection) =>
-      addConnection(newConnection.toApi()).then(() => applyChanges()),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["network", "connections"] });
-      queryClient.invalidateQueries({ queryKey: ["network", "devices"] });
-      queryClient.invalidateQueries({ queryKey: ["network", "accessPoints"] });
-    },
-  };
-  return useMutation(query);
-};
-
-/**
  * Hook that builds a mutation to update a network connection
  *
  * It does not require to call `useMutation`.
@@ -183,30 +161,11 @@ const useConnectionPersistMutation = () => {
      * Called if the mutation fails for whatever reason. Rolls back the cache to
      * the previous state.
      */
-    onError: (_, connection: Connection, context: { previousConnections: Connection[] }) => {
+    onError: (context: { previousConnections: Connection[] }) => {
       queryClient.setQueryData(["network", "connections"], context.previousConnections);
     },
   };
 
-  return useMutation(query);
-};
-/**
- * Hook that builds a mutation to remove a network connection
- *
- * It does not require to call `useMutation`.
- */
-const useRemoveConnectionMutation = () => {
-  const queryClient = useQueryClient();
-  const query = {
-    mutationFn: (name: string) =>
-      deleteConnection(name)
-        .then(() => applyChanges())
-        .catch((e) => console.log(e)),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["network", "connections"] });
-      queryClient.invalidateQueries({ queryKey: ["network", "devices"] });
-    },
-  };
   return useMutation(query);
 };
 
@@ -366,11 +325,9 @@ export {
   connectionQuery,
   connectionsQuery,
   accessPointsQuery,
-  useAddConnectionMutation,
   useConnections,
   useConfigMutation,
   useConnectionPersistMutation,
-  useRemoveConnectionMutation,
   useConnection,
   useNetworkDevices,
   useNetworkState,

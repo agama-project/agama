@@ -32,9 +32,6 @@ const mockUpdateConnection = jest.fn();
 jest.mock("~/queries/network", () => ({
   ...jest.requireActual("~/queries/network"),
   useNetworkChanges: jest.fn(),
-  useAddConnectionMutation: () => ({
-    mutateAsync: mockAddConnection,
-  }),
   useConnectionMutation: () => ({
     mutateAsync: mockUpdateConnection,
   }),
