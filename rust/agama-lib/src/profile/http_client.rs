@@ -21,6 +21,7 @@
 use crate::http::BaseHTTPClient;
 use crate::profile::ValidationOutcome;
 use fluent_uri::Uri;
+use serde::Serialize;
 
 pub struct ProfileHTTPClient {
     client: BaseHTTPClient,
@@ -34,36 +35,19 @@ impl ProfileHTTPClient {
     /// Validate a JSON profile, by doing a HTTP client request.
     pub async fn validate(
         &self,
-        query: Option<(String, String)>,
-        body: String,
+        request: &impl Serialize,
     ) -> anyhow::Result<ValidationOutcome> {
-        // Create body for request.
-        // Format is {"path"|"url"|"profile"=<whatever String as the content>}
-        // Only one of path / url / profile is valid. If query is given
-        // then it is used, otherwise use body as json.
-        let request = if let Some(query) = query {
-            format!("{0}={1}", query.0, query.1)
-        } else {
-            format!("profile={body}")
-        };
-
-        Ok(self.client.post("profile/validate", &request).await?)
+        Ok(self.client.post("profile/validate", request).await?)
     }
 
     /// Evaluate a Jsonnet profile, by doing a HTTP client request.
     /// Return well-formed Agama JSON on success.
     pub async fn from_jsonnet(
         &self,
-        query: Option<(String, String)>,
-        body: String,
+        request: &impl Serialize,
     ) -> anyhow::Result<String> {
-        let request = if let Some(query) = query {
-            format!("{0}={1}", query.0, query.1)
-        } else {
-            format!("profile={body}")
-        };
         let output: Box<serde_json::value::RawValue> =
-            self.client.post("profile/evaluate", &request).await?;
+            self.client.post("profile/evaluate", request).await?;
 
         Ok(output.to_string())
     }

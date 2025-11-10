@@ -197,8 +197,9 @@ async fn validate(
     client: &BaseHTTPClient,
     url_or_path: CliInput,
 ) -> anyhow::Result<ValidationOutcome> {
+    let request = url_or_path.to_map();
     let validity = ProfileHTTPClient::new(client.clone())
-        .validate(url_or_path.get_query(), url_or_path.body_for_web()?)
+        .validate(&request)
         .await?;
     let _ = validation_msg(&validity);
 
@@ -313,8 +314,9 @@ async fn from_json_or_jsonnet(
     match FileFormat::from_string(&any_profile) {
         FileFormat::Jsonnet => {
             let full_profile = CliInput::Full(any_profile);
+            let request = full_profile.to_map();
             let json_string = ProfileHTTPClient::new(client.clone())
-                .from_jsonnet(full_profile.get_query(), full_profile.body_for_web()?)
+                .from_jsonnet(&request)
                 .await?;
 
             Ok(json_string)

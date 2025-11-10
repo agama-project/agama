@@ -23,6 +23,7 @@ use anyhow::Context;
 use std::{
     io::Read,
     path::{Path, PathBuf},
+    collections::HashMap,
 };
 
 /// Represents the ways user can specify the input on the command line
@@ -56,18 +57,22 @@ impl From<String> for CliInput {
 }
 
 impl CliInput {
-    /// Prepares *self* for use as an url query. So in case of "url" or "path" it
-    /// returns ("url", url_value) resp ("path", absolute_path) tuplle
-    pub fn get_query(&self) -> Option<(String, String)> {
+    /// Creates a HashMap from *self* content.
+    /// If *self* is stdin or the full text, provide it as String.
+    ///
+    /// NOTE that this will consume the standard input
+    /// if self is `Stdin`
+    pub fn to_map(&self) -> HashMap<String, String> {
+        let mut map = HashMap::new();
+
         match self {
-            Self::Url(url) => Some((String::from("url"), url.clone())),
-            Self::Path(path) => Some((
-                String::from("path"),
-                Self::absolute(path).unwrap().display().to_string(),
-            )),
-            Self::Stdin => None,
-            Self::Full(_) => None,
-        }
+            Self::Url(url) => map.insert(String::from("url"), url.to_string()),
+            Self::Path(path) => map.insert(String::from("path"), Self::absolute(path).unwrap().display().to_string()),
+            Self::Stdin => map.insert(String::from("profile"), Self::stdin_to_string().expect("Reading profile from stdin failed")),
+            Self::Full(s) => map.insert(String::from("profile"), s.to_string()),
+        };
+
+        map
     }
 
     /// Make *path* absolute by prepending the current directory
@@ -79,18 +84,6 @@ impl CliInput {
         } else {
             let current_dir = std::env::current_dir()?;
             Ok(current_dir.join(path))
-        }
-    }
-
-    /// If *self* is stdin or the full text, provide it as String.
-    ///
-    /// NOTE that this will consume the standard input
-    /// if self is `Stdin`
-    pub fn body_for_web(self) -> std::io::Result<String> {
-        match self {
-            Self::Stdin => Self::stdin_to_string(),
-            Self::Full(s) => Ok(s),
-            _ => Ok("".to_owned()),
         }
     }
 

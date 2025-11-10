@@ -33,6 +33,7 @@ use axum::{
 };
 use serde::Deserialize;
 use serde_json::json;
+use std::collections::HashMap;
 use thiserror::Error;
 use url::Url;
 
@@ -105,17 +106,17 @@ struct ProfileBody {
 }
 
 impl ProfileBody {
+    /// Parses given string as a JSON and fills ProfileBody accordingly
+    ///
+    /// Expected format is a HashMap<String, String>, expecte keys are
+    /// path, url or profile
     fn from_string(string: String) -> Self {
-        // FIXME:
-        // For whatever reason earlier request body parsing gives us
-        // string in quotes e.g. string="\"path=...\"" most probably
-        // because of the post body creation / extraction.
-        let content = string.trim_start_matches("\"").trim_end_matches("\"");
+        let map: HashMap<String, String> = serde_json::from_str(&string).unwrap();
 
         Self {
-            path: content.strip_prefix("path=").map(|s| String::from(s)),
-            url: content.strip_prefix("url=").map(|s| String::from(s)),
-            json: content.strip_prefix("profile=").map(|s| String::from(s)),
+            path: map.get("path").cloned(),
+            url: map.get("url").cloned(),
+            json: map.get("profile").cloned(),
         }
     }
 
