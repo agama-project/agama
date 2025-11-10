@@ -22,6 +22,7 @@ use crate::http::BaseHTTPClient;
 use crate::profile::ValidationOutcome;
 use fluent_uri::Uri;
 use serde::Serialize;
+use std::collections::HashMap;
 
 pub struct ProfileHTTPClient {
     client: BaseHTTPClient,
@@ -51,10 +52,12 @@ impl ProfileHTTPClient {
     /// to our web backend.
     /// Return well-formed Agama JSON on success.
     pub async fn from_autoyast(&self, url: &Uri<String>) -> anyhow::Result<String> {
+        let map = HashMap::new().insert(String::from("url"), url.to_string());
+
         // FIXME: how to escape it?
         let output: Box<serde_json::value::RawValue> = self
             .client
-            .post("/profile/autoyast", &format!("url={url}"))
+            .post("/profile/autoyast", &map)
             .await?;
         let config_string = format!("{}", output);
         Ok(config_string)
