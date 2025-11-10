@@ -38,27 +38,17 @@ impl ProfileHTTPClient {
         query: Option<(String, String)>,
         body: String,
     ) -> anyhow::Result<ValidationOutcome> {
-        // we use plain text .body instead of .json
-        let mut url = self
-            .client
-            .base_url
-            .join("profile/validate")
-            // unwrap OK: joining a parsable constant to a valid Url
-            .unwrap();
+        // Create body for request.
+        // Format is {"path"|"url"|"profile"=<whatever String as the content>}
+        // Only one of path / url / profile is valid. If query is given
+        // then it is used, otherwise use body as json.
+        let request = if let Some(query) = query {
+            format!("{0}={1}", query.0, query.1)
+        } else {
+            format!("profile={body}")
+        };
 
-        if let Some(query) = query {
-            url.query_pairs_mut().append_pair(&query.0, &query.1);
-        }
-
-        let response = self
-            .client
-            .client
-            .request(reqwest::Method::POST, url)
-            .body(body)
-            .send()
-            .await?;
-
-        Ok(self.client.deserialize_or_error(response).await?)
+        Ok(self.client.post("profile/validate", &request).await?)
     }
 
     /// Evaluate a Jsonnet profile, by doing a HTTP client request.
@@ -68,25 +58,13 @@ impl ProfileHTTPClient {
         query: Option<(String, String)>,
         body: String,
     ) -> anyhow::Result<String> {
-        // unwrap OK: joining a parsable constant to a valid Url
-        let mut url = self.client.base_url.join("profile/evaluate").unwrap();
+        let request = if let Some(query) = query {
+            format!("{0}={1}", query.0, query.1)
+        } else {
+            format!("profile={body}")
+        };
+        let output: Box<serde_json::value::RawValue> = self.client.post("profile/evaluate", &request).await?;
 
-        if let Some(query) = query {
-            url.query_pairs_mut().append_pair(&query.0, &query.1);
-        }
-
-        // we use plain text .body instead of .json
-        let response: Result<reqwest::Response, error::ServiceError> = self
-            .client
-            .client
-            .request(reqwest::Method::POST, url)
-            .body(body)
-            .send()
-            .await
-            .map_err(|e| e.into());
-
-        let output: Box<serde_json::value::RawValue> =
-            self.client.deserialize_or_error(response?).await?;
         Ok(output.to_string())
     }
 
@@ -96,8 +74,7 @@ impl ProfileHTTPClient {
     /// Return well-formed Agama JSON on success.
     pub async fn from_autoyast(&self, url: &Uri<String>) -> anyhow::Result<String> {
         // FIXME: how to escape it?
-        let api_url = format!("/profile/autoyast?url={}", url);
-        let output: Box<serde_json::value::RawValue> = self.client.post(&api_url, &()).await?;
+        let output: Box<serde_json::value::RawValue> = self.client.post("/profile/autoyast", &format!("url={url}")).await?;
         let config_string = format!("{}", output);
         Ok(config_string)
     }
