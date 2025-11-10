@@ -7,10 +7,10 @@ export default {
     " Aikavyöhykkeen valinta"
   ],
   "\"%s\"": [
-    ""
+    "\"%s\""
   ],
   "\"%s\" does not exist or is no longer available.": [
-    ""
+    "”%s” ei ole enää olemassa tai saatavilla."
   ],
   "%1$s (%2$s)": [
     "%1$s (koko %2$s)"
@@ -739,7 +739,7 @@ export default {
     "ExFAT"
   ],
   "Example: %s": [
-    ""
+    "Esimerkki: %s"
   ],
   "Excellent signal": [
     "Erinomainen signaali"
@@ -925,7 +925,7 @@ export default {
     "Jos jatkat, kiintolevyn osioita muokataan asennusasetusten mukaisesti."
   ],
   "If you want to disable this check, please specify \"inst.ay_check=0\" at kernel's command-line": [
-    ""
+    "Jos haluat poistaa tämän tarkistuksen, määritä \"inst.ay_check=0\" Linux-ytimen komentoriville"
   ],
   "In progress": [
     "Käynnissä"
@@ -1393,6 +1393,9 @@ export default {
   ],
   "Partitions to boot will be allocated at the installation disk.": [
     "Käynnistämiseen tarvittavat osiot otetaan käyttöön asennuslevyltä."
+  ],
+  "Partitions to host \"system\" will be created if needed.": [
+    "Osiot joilla \"järjestelmä\" toimii luodaan tarvittaessa."
   ],
   "Partitions will be used and created for %s": [
     "Osioita tullaan luomaan ja käyttämään liitoskohdalle %s"
@@ -1957,7 +1960,7 @@ export default {
     "Salasanaa ei tarvita käynnistämiseen ja tietoihin pääsyyn, jos TPM onnistuu varmistamaan järjestelmän eheyden. TPM-sinetöinti vaatii, että uuteen järjestelmään käynnistetään suoraan ensimmäisellä kerralla."
   ],
   "The product will be registered with \"%s\" hostname": [
-    ""
+    "Tuote rekisteröidään isäntänimellä ”%s”"
   ],
   "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of a separate file system for %2$s.": [
     "Kohteen %1$s koko määritellään dynaamisesti järjestelmä RAM-muistin ja kohteen %2$s erillisen tiedostojärjestelmän olemassa olon perusteella."

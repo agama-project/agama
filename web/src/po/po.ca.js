@@ -925,7 +925,7 @@ export default {
     "Si continueu, les particions del disc dur es modificaran segons la configuració d'instal·lació proporcionada."
   ],
   "If you want to disable this check, please specify \"inst.ay_check=0\" at kernel's command-line": [
-    "Si voleu inhabilitar aquesta comprovació, especifiqueu inst.ay_check=0 a la línia d'ordres del nucli."
+    "Si voleu desactivar aquesta comprovació, especifiqueu \"inst.ay_check=0\" a la línia d'ordres del nucli."
   ],
   "In progress": [
     "En curs"
@@ -1395,7 +1395,7 @@ export default {
     "Les particions per a l'arrencada s'assignaran al disc d'instal·lació."
   ],
   "Partitions to host \"system\" will be created if needed.": [
-    "Si cal, es crearan particions per allotjar el sistema."
+    "Si cal, es crearan particions per allotjar-hi el sistema."
   ],
   "Partitions will be used and created for %s": [
     "Les particions s'usaran i es crearan per a %s"
