@@ -55,10 +55,8 @@ impl ProfileHTTPClient {
         let map = HashMap::new().insert(String::from("url"), url.to_string());
 
         // FIXME: how to escape it?
-        let output: Box<serde_json::value::RawValue> = self
-            .client
-            .post("/profile/autoyast", &map)
-            .await?;
+        let output: Box<serde_json::value::RawValue> =
+            self.client.post("/profile/autoyast", &map).await?;
         let config_string = format!("{}", output);
         Ok(config_string)
     }
