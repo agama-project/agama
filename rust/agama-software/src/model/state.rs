@@ -50,7 +50,8 @@ pub struct SoftwareState {
 ///
 /// * [Product specification](ProductSpec).
 /// * [Software user configuration](Config).
-/// * [System information](agama_utils::api::software::SystemInfo).
+/// * [System information](SystemInfo).
+/// * [Agama software selection](SoftwareSelection).
 pub struct SoftwareStateBuilder<'a> {
     /// Product specification.
     product: &'a ProductSpec,
@@ -231,7 +232,6 @@ impl<'a> SoftwareStateBuilder<'a> {
 }
 
 impl SoftwareState {
-    // TODO: Add SoftwareSelection as additional argument.
     pub fn build_from(
         product: &ProductSpec,
         config: &Config,
