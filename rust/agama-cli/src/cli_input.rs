@@ -21,9 +21,9 @@
 use agama_lib::utils::Transfer;
 use anyhow::Context;
 use std::{
+    collections::HashMap,
     io::Read,
     path::{Path, PathBuf},
-    collections::HashMap,
 };
 
 /// Represents the ways user can specify the input on the command line
@@ -67,8 +67,14 @@ impl CliInput {
 
         match self {
             Self::Url(url) => map.insert(String::from("url"), url.to_string()),
-            Self::Path(path) => map.insert(String::from("path"), Self::absolute(path).unwrap().display().to_string()),
-            Self::Stdin => map.insert(String::from("profile"), Self::stdin_to_string().expect("Reading profile from stdin failed")),
+            Self::Path(path) => map.insert(
+                String::from("path"),
+                Self::absolute(path).unwrap().display().to_string(),
+            ),
+            Self::Stdin => map.insert(
+                String::from("profile"),
+                Self::stdin_to_string().expect("Reading profile from stdin failed"),
+            ),
             Self::Full(s) => map.insert(String::from("profile"), s.to_string()),
         };
 

@@ -33,19 +33,13 @@ impl ProfileHTTPClient {
     }
 
     /// Validate a JSON profile, by doing a HTTP client request.
-    pub async fn validate(
-        &self,
-        request: &impl Serialize,
-    ) -> anyhow::Result<ValidationOutcome> {
+    pub async fn validate(&self, request: &impl Serialize) -> anyhow::Result<ValidationOutcome> {
         Ok(self.client.post("profile/validate", request).await?)
     }
 
     /// Evaluate a Jsonnet profile, by doing a HTTP client request.
     /// Return well-formed Agama JSON on success.
-    pub async fn from_jsonnet(
-        &self,
-        request: &impl Serialize,
-    ) -> anyhow::Result<String> {
+    pub async fn from_jsonnet(&self, request: &impl Serialize) -> anyhow::Result<String> {
         let output: Box<serde_json::value::RawValue> =
             self.client.post("profile/evaluate", request).await?;
 
