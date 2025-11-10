@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
+import React, { useCallback } from "react";
 import { useQuery, useSuspenseQuery, useQueryClient } from "@tanstack/react-query";
 import {
   getSystem,
@@ -29,6 +29,7 @@ import {
   solveStorageModel,
   getStorageModel,
   getQuestions,
+  getIssues,
 } from "~/api";
 import { useInstallerClient } from "~/context/installer";
 import { System } from "~/api/system";
@@ -36,6 +37,7 @@ import { Proposal } from "~/api/proposal";
 import { Config } from "~/api/config";
 import { apiModel } from "~/api/storage";
 import { Question } from "~/api/question";
+import { IssuesScope, Issue, IssuesMap } from "~/api/issue";
 import { QueryHookOptions } from "~/types/queries";
 
 const systemQuery = () => ({
@@ -60,6 +62,8 @@ function useSystemChanges() {
     return client.onEvent((event) => {
       if (event.type === "SystemChanged") {
         queryClient.invalidateQueries({ queryKey: ["system"] });
+        if (event.scope === "storage")
+          queryClient.invalidateQueries({ queryKey: ["solvedStorageModel"] });
       }
     });
   }, [client, queryClient]);
@@ -166,11 +170,66 @@ function useSolvedStorageModel(
   return func(query)?.data;
 }
 
+const issuesQuery = () => {
+  return {
+    queryKey: ["issues"],
+    queryFn: getIssues,
+  };
+};
+
+const selectIssues = (data: IssuesMap | null): Issue[] => {
+  if (!data) return [];
+
+  return Object.keys(data).reduce((all: Issue[], key: IssuesScope) => {
+    const scoped = data[key].map((i) => ({ ...i, scope: key }));
+    return all.concat(scoped);
+  }, []);
+};
+
+function useIssues(options?: QueryHookOptions): Issue[] {
+  const func = options?.suspense ? useSuspenseQuery : useQuery;
+  const { data } = func({
+    ...issuesQuery(),
+    select: selectIssues,
+  });
+  return data;
+}
+
+const useIssuesChanges = () => {
+  const queryClient = useQueryClient();
+  const client = useInstallerClient();
+
+  React.useEffect(() => {
+    if (!client) return;
+
+    return client.onEvent((event) => {
+      if (event.type === "IssuesChanged") {
+        queryClient.invalidateQueries({ queryKey: ["issues"] });
+      }
+    });
+  }, [client, queryClient]);
+};
+
+function useScopeIssues(scope: IssuesScope, options?: QueryHookOptions): Issue[] {
+  const func = options?.suspense ? useSuspenseQuery : useQuery;
+  const { data } = func({
+    ...issuesQuery(),
+    select: useCallback(
+      (data: IssuesMap | null): Issue[] =>
+        selectIssues(data).filter((i: Issue) => i.scope === scope),
+      [scope],
+    ),
+  });
+  return data;
+}
+
 export {
   systemQuery,
   proposalQuery,
   extendedConfigQuery,
   storageModelQuery,
+  issuesQuery,
+  selectIssues,
   useSystem,
   useSystemChanges,
   useProposal,
@@ -180,4 +239,7 @@ export {
   useQuestionsChanges,
   useStorageModel,
   useSolvedStorageModel,
+  useIssues,
+  useScopeIssues,
+  useIssuesChanges,
 };

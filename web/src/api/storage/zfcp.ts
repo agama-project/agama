@@ -20,6 +20,8 @@
  * find current contact information at www.suse.com.
  */
 
+// @todo Move to the new API.
+
 import { post, get } from "~/http";
 import { ZFCPDisk, ZFCPController, ZFCPConfig } from "~/types/zfcp";
 

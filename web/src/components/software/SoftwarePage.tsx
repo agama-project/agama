@@ -36,7 +36,7 @@ import {
 } from "@patternfly/react-core";
 import { Link, Page, IssuesAlert } from "~/components/core";
 import UsedSize from "./UsedSize";
-import { useIssues } from "~/queries/issues";
+import { useScopeIssues } from "~/hooks/api";
 import {
   usePatterns,
   useSoftwareProposal,
@@ -133,7 +133,7 @@ const ReloadSection = ({
  * Software page component
  */
 function SoftwarePage(): React.ReactNode {
-  const issues = useIssues("software");
+  const issues = useScopeIssues("software");
   const proposal = useSoftwareProposal();
   const patterns = usePatterns();
   const repos = useRepositories();

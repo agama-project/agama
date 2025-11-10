@@ -23,7 +23,7 @@
 import React from "react";
 import { Alert, List, ListItem } from "@patternfly/react-core";
 import { _ } from "~/i18n";
-import { Issue } from "~/types/issues";
+import { Issue } from "~/api/issue";
 import Link from "./Link";
 import { PATHS } from "~/routes/software";
 

@@ -24,11 +24,11 @@ import React from "react";
 import { Content, Grid, GridItem } from "@patternfly/react-core";
 import { IssuesAlert, Page } from "~/components/core";
 import { FirstUser, RootUser } from "~/components/users";
-import { useIssues } from "~/queries/issues";
+import { useScopeIssues } from "~/hooks/api";
 import { _ } from "~/i18n";
 
 export default function UsersPage() {
-  const issues = useIssues("users");
+  const issues = useScopeIssues("users");
 
   return (
     <Page>

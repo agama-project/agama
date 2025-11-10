@@ -190,6 +190,17 @@ function useVolumeTemplate(mountPath: string, options?: QueryHookOptions): stora
   return data;
 }
 
+const selectIssues = (data: System | null): storage.Issue[] => data?.storage?.issues || [];
+
+function useIssues(options?: QueryHookOptions) {
+  const func = options?.suspense ? useSuspenseQuery : useQuery;
+  const { data } = func({
+    ...systemQuery(),
+    select: selectIssues,
+  });
+  return data;
+}
+
 export {
   useSystem,
   useEncryptionMethods,
@@ -202,4 +213,5 @@ export {
   useDevices,
   useVolumeTemplates,
   useVolumeTemplate,
+  useIssues,
 };

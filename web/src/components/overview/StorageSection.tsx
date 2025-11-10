@@ -23,9 +23,8 @@
 import React from "react";
 import { Content } from "@patternfly/react-core";
 import { deviceLabel } from "~/components/storage/utils";
-import { useAvailableDevices, useDevices } from "~/hooks/storage/system";
+import { useAvailableDevices, useDevices, useIssues } from "~/hooks/storage/system";
 import { useConfigModel } from "~/queries/storage/config-model";
-import { useSystemErrors } from "~/queries/issues";
 import { storage } from "~/api/system";
 import { apiModel } from "~/api/storage";
 import { _ } from "~/i18n";
@@ -92,7 +91,7 @@ const ModelSummary = ({ model }: { model: apiModel.Config }): React.ReactNode =>
 
 const NoModelSummary = (): React.ReactNode => {
   const availableDevices = useAvailableDevices();
-  const systemErrors = useSystemErrors("storage");
+  const systemErrors = useIssues();
   const hasDisks = !!availableDevices.length;
   const hasResult = !systemErrors.length;
 

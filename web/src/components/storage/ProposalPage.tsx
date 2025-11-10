@@ -50,14 +50,14 @@ import { useResetConfig } from "~/hooks/storage/config";
 import { useConfigModel } from "~/queries/storage/config-model";
 import { useZFCPSupported } from "~/queries/storage/zfcp";
 import { useDASDSupported } from "~/queries/storage/dasd";
-import { useSystemErrors, useConfigErrors } from "~/queries/issues";
+import { useSystemIssues, useConfigIssues } from "~/hooks/storage/issues";
 import { STORAGE as PATHS } from "~/routes/paths";
 import { _, n_ } from "~/i18n";
 import { useProgress, useProgressChanges } from "~/queries/progress";
 import { useNavigate } from "react-router-dom";
 
 function InvalidConfigEmptyState(): React.ReactNode {
-  const errors = useConfigErrors("storage");
+  const errors = useConfigIssues();
   const reset = useResetConfig();
 
   return (
@@ -175,7 +175,7 @@ function ProposalEmptyState(): React.ReactNode {
 
 function ProposalSections(): React.ReactNode {
   const model = useConfigModel({ suspense: true });
-  const systemErrors = useSystemErrors("storage");
+  const systemErrors = useSystemIssues();
   const hasResult = !systemErrors.length;
 
   return (
@@ -223,8 +223,8 @@ function ProposalSections(): React.ReactNode {
 export default function ProposalPage(): React.ReactNode {
   const model = useConfigModel({ suspense: true });
   const availableDevices = useAvailableDevices();
-  const systemErrors = useSystemErrors("storage");
-  const configErrors = useConfigErrors("storage");
+  const systemErrors = useSystemIssues();
+  const configErrors = useConfigIssues();
   const progress = useProgress("storage");
   const navigate = useNavigate();
 

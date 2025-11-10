@@ -28,7 +28,7 @@ import { useProduct } from "~/queries/software";
 import { REGISTRATION, SIDE_PATHS } from "~/routes/paths";
 import { _ } from "~/i18n";
 import { sprintf } from "sprintf-js";
-import { useIssues } from "~/queries/issues";
+import { useScopeIssues } from "~/hooks/api";
 
 const LinkToRegistration = ({ text }: { text: string }) => {
   const location = useLocation();
@@ -45,7 +45,8 @@ const LinkToRegistration = ({ text }: { text: string }) => {
 export default function ProductRegistrationAlert() {
   const location = useLocation();
   const { selectedProduct: product } = useProduct();
-  const issues = useIssues("product");
+  // FIXME: what scope reports these issues with the new API?
+  const issues = useScopeIssues("product");
   const registrationRequired = issues.find((i) => i.kind === "missing_registration");
 
   // NOTE: it shouldn't be mounted in these paths, but let's prevent rendering
