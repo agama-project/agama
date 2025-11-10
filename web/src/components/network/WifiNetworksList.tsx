@@ -21,7 +21,7 @@
  */
 
 import React, { useId } from "react";
-import { useNavigate } from "react-router-dom";
+import { generatePath, useNavigate } from "react-router";
 import {
   Content,
   DataList,
@@ -41,7 +41,6 @@ import { Connection, ConnectionState, WifiNetwork, WifiNetworkStatus } from "~/t
 import { useConnections, useNetworkChanges, useWifiNetworks } from "~/queries/network";
 import { NETWORK as PATHS } from "~/routes/paths";
 import { isEmpty } from "radashi";
-import { generateEncodedPath } from "~/utils";
 import { formatIp } from "~/utils/network";
 import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
@@ -190,7 +189,7 @@ function WifiNetworksList({ showIp = true, ...props }: WifiNetworksListProps) {
 
   return (
     <DataList
-      onSelectDataListItem={(_, ssid) => navigate(generateEncodedPath(PATHS.wifiNetwork, { ssid }))}
+      onSelectDataListItem={(_, ssid) => navigate(generatePath(PATHS.wifiNetwork, { ssid }))}
       {...props}
     >
       {networks.map((n) => (
