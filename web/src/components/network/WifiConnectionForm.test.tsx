@@ -44,6 +44,7 @@ jest.mock("~/queries/network", () => ({
 const networkMock = {
   ssid: "Visible Network",
   hidden: false,
+  device_name: "wlan0",
   status: WifiNetworkStatus.NOT_CONFIGURED,
   hwAddress: "00:EB:D8:17:6B:56",
   security: [SecurityProtocols.WPA],

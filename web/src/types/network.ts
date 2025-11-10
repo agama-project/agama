@@ -151,7 +151,7 @@ type APIAccessPoint = {
 };
 
 class AccessPoint {
-  device: string;
+  device_name: string;
   ssid: string;
   strength: number;
   hwAddress: string;
@@ -164,7 +164,7 @@ class AccessPoint {
     hwAddress: string,
     security: SecurityProtocols[],
   ) {
-    this.device = device;
+    this.device_name = device;
     this.ssid = ssid;
     this.strength = strength;
     this.hwAddress = hwAddress;

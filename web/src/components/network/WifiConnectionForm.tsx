@@ -34,6 +34,7 @@ import {
 import { Page, PasswordInput } from "~/components/core";
 import { useConfigMutation } from "~/queries/network";
 import { Connection, ConnectionState, WifiNetwork, Wireless } from "~/types/network";
+import { Config } from "~/types/config";
 import { isEmpty } from "radashi";
 import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
@@ -132,6 +133,7 @@ export default function WifiConnectionForm({ network }: { network: WifiNetwork }
       password,
       hidden: false,
     });
+
     proposal.addOrUpdateConnection(nextConnection);
     const config: Config = { network: proposal.toApi() };
     updateConfig(config).catch(() => setError(true));

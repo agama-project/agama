@@ -63,7 +63,7 @@ export default function NetworkPage() {
             </Page.Section>
           </GridItem>
           <GridItem sm={12} xl={6}>
-            {networkSystem.wirelessEnabled ? (
+            {networkSystem.state.wirelessEnabled ? (
               <Page.Section title={_("Wi-Fi networks")}>
                 <WifiNetworksList aria-label={_("Wi-Fi networks")} />
               </Page.Section>

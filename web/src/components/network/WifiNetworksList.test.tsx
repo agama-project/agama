@@ -94,6 +94,7 @@ describe("WifiNetworksList", () => {
             iface: "wlan0",
             addresses: [{ address: "192.168.69.201", prefix: 24 }],
           }),
+          device_name: "wlan0",
           status: WifiNetworkStatus.CONNECTED,
         },
         {
@@ -105,6 +106,7 @@ describe("WifiNetworksList", () => {
             iface: "wlan1",
             addresses: [{ address: "192.168.69.202", prefix: 24 }],
           }),
+          device_name: "wlan1",
           status: WifiNetworkStatus.CONFIGURED,
         },
         {
@@ -112,6 +114,7 @@ describe("WifiNetworksList", () => {
           strength: 66,
           hwAddress: "??",
           security: [],
+          device_name: "wlan0",
           status: WifiNetworkStatus.NOT_CONFIGURED,
         },
       ];
@@ -168,6 +171,7 @@ describe("WifiNetworksList", () => {
               iface: "wlan1",
               addresses: [{ address: "192.168.69.202", prefix: 24 }],
             }),
+            device_name: "wlan1",
             status: WifiNetworkStatus.CONFIGURED,
           },
         ];
@@ -206,6 +210,7 @@ describe("WifiNetworksList", () => {
               iface: "wlan1",
               addresses: [{ address: "192.168.69.202", prefix: 24 }],
             }),
+            device_name: "wlan1",
             status: WifiNetworkStatus.CONFIGURED,
           },
         ];

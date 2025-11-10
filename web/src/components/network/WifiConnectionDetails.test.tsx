@@ -59,6 +59,7 @@ const mockNetwork = {
   strength: 25,
   hwAddress: "??",
   security: [SecurityProtocols.RSN],
+  device_name: "wlan0",
   device: wlan0,
   settings: new Connection("Network 1", {
     iface: "wlan0",
