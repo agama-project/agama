@@ -18,10 +18,8 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::model::Connection;
-use crate::types::{
-    AccessPoint, ConnectionState, Device, DeviceType, GeneralState, Proposal, SystemInfo,
-};
+use crate::model::{Connection, GeneralState};
+use crate::types::{AccessPoint, ConnectionState, Device, DeviceType, Proposal, SystemInfo};
 use agama_utils::api::network::Config;
 use tokio::sync::oneshot;
 use uuid::Uuid;
@@ -46,7 +44,9 @@ pub enum Action {
     /// Gets a connection by its Uuid
     GetConnectionByUuid(Uuid, Responder<Option<Connection>>),
     /// Gets the internal state of the network configuration
-    GetExtendedConfig(Responder<Proposal>),
+    GetConfig(Responder<Config>),
+    /// Gets the internal state of the network configuration proposal
+    GetProposal(Responder<Proposal>),
     /// Updates th internal state of the network configuration
     UpdateConfig(Box<Config>, Responder<Result<(), NetworkStateError>>),
     /// Gets the current network configuration containing connections, devices, access_points and

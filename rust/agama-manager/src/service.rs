@@ -170,11 +170,7 @@ impl MessageHandler<message::GetExtendedConfig> for Service {
     async fn handle(&mut self, _message: message::GetExtendedConfig) -> Result<Config, Error> {
         let l10n = self.l10n.call(l10n::message::GetConfig).await?;
         let questions = self.questions.call(question::message::GetConfig).await?;
-        let network_config: network::types::Proposal = self.network.get_extended_config().await?;
-        let network = agama_network::types::Config {
-            connections: Some(network_config.connections),
-            general_state: Some(network_config.general_state),
-        };
+        let network = self.network.get_config().await?;
         let storage = self.storage.call(storage::message::GetConfig).await?;
 
         Ok(Config {
@@ -279,7 +275,7 @@ impl MessageHandler<message::GetProposal> for Service {
     async fn handle(&mut self, _message: message::GetProposal) -> Result<Option<Proposal>, Error> {
         let l10n = self.l10n.call(l10n::message::GetProposal).await?;
         let storage = self.storage.call(storage::message::GetProposal).await?;
-        let network = self.network.get_extended_config().await?;
+        let network = self.network.get_proposal().await?;
 
         Ok(Some(Proposal {
             l10n,

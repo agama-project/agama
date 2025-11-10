@@ -20,7 +20,7 @@
 
 //! Representation of the network settings
 
-use crate::api::network::{GeneralState, NetworkConnectionsCollection};
+use crate::api::network::{NetworkConnectionsCollection, StateSettings};
 use serde::{Deserialize, Serialize};
 use std::default::Default;
 
@@ -30,5 +30,5 @@ use std::default::Default;
 pub struct Proposal {
     /// Connections to use in the installation
     pub connections: NetworkConnectionsCollection,
-    pub general_state: GeneralState,
+    pub state: StateSettings,
 }

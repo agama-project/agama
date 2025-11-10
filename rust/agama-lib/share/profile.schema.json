@@ -340,12 +340,21 @@
           "title": "Network general state settings",
           "type": "object",
           "properties": {
-            "wirelessEnabled": {
-              "title": "Whether the wireless should be enabled",
+            "connectivity": {
+              "title": "Determines whether the user is able to access the Internet",
+              "type": "boolean",
+              "readOnly": true
+            },
+            "copyNetwork": {
+              "title": "Whether the network configuration should be copied to the target system",
               "type": "boolean"
             },
             "networkingEnabled": {
               "title": "Whether the network should be enabled",
+              "type": "boolean"
+            },
+            "wirelessEnabled": {
+              "title": "Whether the wireless should be enabled",
               "type": "boolean"
             }
           }

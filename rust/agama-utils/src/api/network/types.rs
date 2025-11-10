@@ -31,17 +31,6 @@ use std::{
 use thiserror::Error;
 use zbus::zvariant::Value;
 
-/// Network state
-#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize, utoipa::ToSchema)]
-#[serde(rename_all = "camelCase")]
-pub struct GeneralState {
-    pub hostname: String,
-    pub connectivity: bool,
-    pub copy_network: bool,
-    pub wireless_enabled: bool,
-    pub networking_enabled: bool, // pub network_state: NMSTATE
-}
-
 /// Access Point
 #[serde_as]
 #[derive(Default, Debug, Clone, Serialize, Deserialize, utoipa::ToSchema)]

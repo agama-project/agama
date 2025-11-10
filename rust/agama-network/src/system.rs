@@ -21,8 +21,8 @@
 use crate::{
     action::Action,
     error::NetworkStateError,
-    model::{Connection, NetworkChange, NetworkState, StateConfig},
-    types::{AccessPoint, Config, Device, DeviceType, GeneralState, Proposal, SystemInfo},
+    model::{Connection, GeneralState, NetworkChange, NetworkState, StateConfig},
+    types::{AccessPoint, Config, Device, DeviceType, Proposal, SystemInfo},
     Adapter, NetworkAdapterError,
 };
 use std::error::Error;
@@ -161,9 +161,15 @@ impl NetworkSystemClient {
         self.actions.send(Action::GetConnections(tx))?;
         Ok(rx.await?)
     }
-    pub async fn get_extended_config(&self) -> Result<Proposal, NetworkSystemError> {
+    pub async fn get_config(&self) -> Result<Config, NetworkSystemError> {
         let (tx, rx) = oneshot::channel();
-        self.actions.send(Action::GetExtendedConfig(tx))?;
+        self.actions.send(Action::GetConfig(tx))?;
+        Ok(rx.await?)
+    }
+
+    pub async fn get_proposal(&self) -> Result<Proposal, NetworkSystemError> {
+        let (tx, rx) = oneshot::channel();
+        self.actions.send(Action::GetProposal(tx))?;
         Ok(rx.await?)
     }
 
@@ -331,7 +337,11 @@ impl<T: Adapter> NetworkSystemServer<T> {
                 let result = self.read().await?.try_into()?;
                 tx.send(result).unwrap();
             }
-            Action::GetExtendedConfig(tx) => {
+            Action::GetConfig(tx) => {
+                let config: Config = self.state.clone().try_into()?;
+                tx.send(config).unwrap();
+            }
+            Action::GetProposal(tx) => {
                 let config: Proposal = self.state.clone().try_into()?;
                 tx.send(config).unwrap();
             }

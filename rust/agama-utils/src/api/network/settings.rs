@@ -38,6 +38,19 @@ pub struct NetworkSettings {
 }
 
 #[derive(Clone, Debug, Default, Serialize, Deserialize, utoipa::ToSchema)]
+#[serde(rename_all = "camelCase")]
+pub struct StateSettings {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub connectivity: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub wireless_enabled: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub networking_enabled: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub copy_network: Option<bool>,
+}
+
+#[derive(Clone, Debug, Default, Serialize, Deserialize, utoipa::ToSchema)]
 pub struct MatchSettings {
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
     pub driver: Vec<String>,

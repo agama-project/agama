@@ -188,8 +188,18 @@ impl NetworkState {
             }
         }
 
-        if let Some(general_state) = config.general_state {
-            self.general_state = general_state;
+        if let Some(state) = config.state {
+            if let Some(wireless_enabled) = state.wireless_enabled {
+                self.general_state.wireless_enabled = wireless_enabled;
+            }
+
+            if let Some(networking_enabled) = state.networking_enabled {
+                self.general_state.networking_enabled = networking_enabled;
+            }
+
+            if let Some(copy_network) = state.copy_network {
+                self.general_state.copy_network = copy_network;
+            }
         }
         Ok(())
     }
@@ -452,6 +462,16 @@ mod tests {
 }
 
 pub const NOT_COPY_NETWORK_PATH: &str = "/run/agama/not_copy_network";
+
+/// Network state
+#[derive(Clone, Debug, Default)]
+pub struct GeneralState {
+    pub hostname: String,
+    pub connectivity: bool,
+    pub copy_network: bool,
+    pub wireless_enabled: bool,
+    pub networking_enabled: bool, // pub network_state: NMSTATE
+}
 
 /// Represents a known network connection.
 #[serde_as]
@@ -1411,6 +1431,19 @@ impl TryFrom<NetworkState> for NetworkConnectionsCollection {
     }
 }
 
+impl TryFrom<GeneralState> for StateSettings {
+    type Error = NetworkStateError;
+
+    fn try_from(state: GeneralState) -> Result<Self, Self::Error> {
+        Ok(StateSettings {
+            connectivity: Some(state.connectivity),
+            copy_network: Some(state.copy_network),
+            wireless_enabled: Some(state.wireless_enabled),
+            networking_enabled: Some(state.networking_enabled),
+        })
+    }
+}
+
 impl TryFrom<NetworkState> for NetworkSettings {
     type Error = NetworkStateError;
 
@@ -1430,7 +1463,7 @@ impl TryFrom<NetworkState> for Config {
 
         Ok(Config {
             connections: Some(connections),
-            general_state: Some(state.general_state),
+            state: Some(state.general_state.try_into()?),
         })
     }
 }
@@ -1446,7 +1479,7 @@ impl TryFrom<NetworkState> for SystemInfo {
             access_points: state.access_points,
             connections,
             devices: state.devices,
-            general_state: state.general_state,
+            state: state.general_state.try_into()?,
         })
     }
 }
@@ -1460,7 +1493,7 @@ impl TryFrom<NetworkState> for Proposal {
 
         Ok(Proposal {
             connections,
-            general_state: state.general_state,
+            state: state.general_state.try_into()?,
         })
     }
 }
