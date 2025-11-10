@@ -25,6 +25,17 @@ import { Proposal, storage } from "~/api/proposal";
 import { QueryHookOptions } from "~/types/queries";
 import { proposalQuery } from "~/hooks/api";
 
+const selectDevices = (data: Proposal | null): storage.Device[] => data?.storage?.devices || [];
+
+function useDevices(options?: QueryHookOptions): storage.Device[] {
+  const func = options?.suspense ? useSuspenseQuery : useQuery;
+  const { data } = func({
+    ...proposalQuery(),
+    select: selectDevices,
+  });
+  return data;
+}
+
 const selectActions = (data: Proposal | null): storage.Action[] => data?.storage?.actions || [];
 
 function useActions(options?: QueryHookOptions): storage.Action[] {
@@ -36,4 +47,4 @@ function useActions(options?: QueryHookOptions): storage.Action[] {
   return data;
 }
 
-export { useActions };
+export { useDevices, useActions };

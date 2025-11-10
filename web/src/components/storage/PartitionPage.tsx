@@ -204,7 +204,7 @@ function usePartition(target: string): system.Device | null {
 
   if (target === NEW_PARTITION) return null;
 
-  const partitions = device.partitionTable?.partitions || [];
+  const partitions = device.partitions || [];
   return partitions.find((p: system.Device) => p.name === target);
 }
 
@@ -247,7 +247,7 @@ function useUnusedMountPoints(): string[] {
 /** Unused partitions. Includes the currently used partition when editing (if any). */
 function useUnusedPartitions(): system.Device[] {
   const device = useDevice();
-  const allPartitions = device.partitionTable?.partitions || [];
+  const allPartitions = device.partitions || [];
   const initialPartitionConfig = useInitialPartitionConfig();
   const configuredPartitionConfigs = useModelDevice()
     .getConfiguredExistingPartitions()

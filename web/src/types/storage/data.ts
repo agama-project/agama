@@ -27,7 +27,7 @@
  * typically used by forms and mutation hooks.
  */
 
-import { apiModel } from "~/api/storage/types";
+import { apiModel } from "~/api/storage";
 
 interface Partition extends Partial<Omit<apiModel.Partition, "filesystem" | "size">> {
   filesystem?: Filesystem;

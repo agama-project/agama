@@ -20,22 +20,10 @@
  * find current contact information at www.suse.com.
  */
 
-import { Device } from "~/api/storage/types/openapi";
+type Config = {
+  locale?: string;
+  keymap?: string;
+  timezone?: string;
+};
 
-function generate({ name, size, sid }): Device {
-  return {
-    deviceInfo: { sid, name, description: "" },
-    blockDevice: {
-      active: true,
-      encrypted: false,
-      shrinking: { unsupported: [] },
-      size,
-      start: 0,
-      systems: [],
-      udevIds: [],
-      udevPaths: [],
-    },
-  };
-}
-
-export { generate };
+export type { Config };

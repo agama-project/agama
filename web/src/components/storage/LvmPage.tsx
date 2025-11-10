@@ -36,7 +36,8 @@ import {
 } from "@patternfly/react-core";
 import { Page, SubtleContent } from "~/components/core";
 import { useAvailableDevices } from "~/hooks/storage/system";
-import { StorageDevice, model, data } from "~/types/storage";
+import { model, data } from "~/types/storage";
+import { storage } from "~/api/system";
 import { useModel } from "~/hooks/storage/model";
 import {
   useVolumeGroup,
@@ -48,19 +49,20 @@ import { contentDescription, filesystemLabels, typeDescription } from "./utils/d
 import { STORAGE as PATHS } from "~/routes/paths";
 import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
+import { deviceSystems, isDrive } from "~/helpers/storage/device";
 
 /**
  * Hook that returns the devices that can be selected as target to automatically create LVM PVs.
  *
  * Filters out devices that are going to be directly formatted.
  */
-function useLvmTargetDevices(): StorageDevice[] {
+function useLvmTargetDevices(): storage.Device[] {
   const availableDevices = useAvailableDevices();
   const model = useModel({ suspense: true });
 
   const targetDevices = useMemo(() => {
     return availableDevices.filter((candidate) => {
-      const collection = candidate.isDrive ? model.drives : model.mdRaids;
+      const collection = isDrive(candidate) ? model.drives : model.mdRaids;
       const device = collection.find((d) => d.name === candidate.name);
       return !device || !device.filesystem;
     });
@@ -81,7 +83,7 @@ function vgNameError(
     return sprintf(_("Volume group '%s' already exists. Enter a different name."), vgName);
 }
 
-function targetDevicesError(targetDevices: StorageDevice[]): string | undefined {
+function targetDevicesError(targetDevices: storage.Device[]): string | undefined {
   if (!targetDevices.length) return _("Select at least one disk.");
 }
 
@@ -100,7 +102,7 @@ export default function LvmPage() {
   const editVolumeGroup = useEditVolumeGroup();
   const allDevices = useLvmTargetDevices();
   const [name, setName] = useState("");
-  const [selectedDevices, setSelectedDevices] = useState<StorageDevice[]>([]);
+  const [selectedDevices, setSelectedDevices] = useState<storage.Device[]>([]);
   const [moveMountPoints, setMoveMountPoints] = useState(true);
   const [errors, setErrors] = useState<string[]>([]);
 
@@ -199,7 +201,7 @@ export default function LvmPage() {
                           {s}
                         </Label>
                       ))}
-                      {device.systems.map((s, i) => (
+                      {deviceSystems(device).map((s, i) => (
                         <Label key={i} isCompact>
                           {s}
                         </Label>

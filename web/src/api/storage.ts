@@ -23,3 +23,4 @@
 export * as config from "~/api/storage/config";
 export * as apiModel from "~/api/storage/model";
 export * as system from "~/api/storage/system";
+export * as proposal from "~/api/storage/proposal";

@@ -29,9 +29,9 @@
 
 import xbytes from "xbytes";
 import { _, N_ } from "~/i18n";
-import { PartitionSlot, StorageDevice, model } from "~/types/storage";
+import { model } from "~/types/storage";
 import { Volume } from "~/api/storage/system";
-import { apiModel } from "~/api/storage";
+import { system, proposal, apiModel } from "~/api/storage";
 import { sprintf } from "sprintf-js";
 
 /**
@@ -219,7 +219,7 @@ const baseName = (name: string, truncate?: boolean): string => {
   return base.slice(0, limit1) + "…" + base.slice(limit2);
 };
 
-type DeviceWithName = StorageDevice | model.Drive | model.MdRaid;
+type DeviceWithName = system.Device | model.Drive | model.MdRaid;
 
 /**
  * Base name of a device.
@@ -235,33 +235,34 @@ const deviceBaseName = (device: DeviceWithName, truncate?: boolean): string => {
  *
  * FIXME: See note at baseName about the usage of truncate.
  */
-const deviceLabel = (device: StorageDevice, truncate?: boolean): string => {
+const deviceLabel = (device: system.Device, truncate?: boolean): string => {
   const name = deviceBaseName(device, truncate);
-  const size = device.size;
+  const size = device.block?.size;
 
   return size ? `${name} (${deviceSize(size)})` : name;
 };
 
+type PartitionTableContent = (proposal.Device | proposal.PartitionSlot)[];
+
+function partitionTableContent(device: proposal.Device): PartitionTableContent {
+  const partitions: [number, proposal.Device][] =
+    device.partitions?.map((p) => [p.partition.start, p]) || [];
+  const unusedSlots: [number, proposal.PartitionSlot][] = device.partitionTable?.unusedSlots?.map(
+    (s) => [s.start, s],
+  );
+  return [...partitions, ...unusedSlots].sort((a, b) => (a[0] < b[0] ? -1 : 1)).map((i) => i[1]);
+}
+
+function volumeGroupContent(device: proposal.Device): proposal.Device[] {
+  return device?.logicalVolumes.sort((a, b) => (a.name < b.name ? -1 : 1)) || [];
+}
+
 /**
  * Sorted list of children devices (i.e., partitions and unused slots or logical volumes).
- *
- * @note This method could be directly provided by the device object. For now, the method is kept
- * here because the elements considered as children (e.g., partitions + unused slots) is not a
- * semantic storage concept but a helper for UI components.
  */
-const deviceChildren = (device: StorageDevice): (StorageDevice | PartitionSlot)[] => {
-  const partitionTableChildren = (partitionTable) => {
-    const { partitions, unusedSlots } = partitionTable;
-    const children = partitions.concat(unusedSlots).filter((i) => !!i);
-    return children.sort((a, b) => (a.start < b.start ? -1 : 1));
-  };
-
-  const lvmVgChildren = (lvmVg) => {
-    return lvmVg.logicalVolumes.sort((a, b) => (a.name < b.name ? -1 : 1));
-  };
-
-  if (device.partitionTable) return partitionTableChildren(device.partitionTable);
-  if (device.type === "lvmVg") return lvmVgChildren(device);
+const deviceChildren = (device: proposal.Device): PartitionTableContent | proposal.Device[] => {
+  if (device.partitionTable) return partitionTableContent(device);
+  if (device.logicalVolumes) return volumeGroupContent(device);
   return [];
 };
 
@@ -298,17 +299,6 @@ const isTransactionalRoot = (volume: Volume): boolean => {
 const isTransactionalSystem = (volumes: Volume[] = []): boolean => {
   return volumes.find((v) => isTransactionalRoot(v)) !== undefined;
 };
-
-/**
- * Checks whether the given volume is configured to mount an existing file system.
- */
-const mountFilesystem = (volume: Volume): boolean => volume.target === "filesystem";
-
-/**
- * Checks whether the given volume is configured to reuse a device (format or mount a file system).
- */
-const reuseDevice = (volume: Volume): boolean =>
-  volume.target === "filesystem" || volume.target === "device";
 
 /**
  * Generates a label for the given volume.
@@ -395,7 +385,5 @@ export {
   hasSnapshots,
   isTransactionalRoot,
   isTransactionalSystem,
-  mountFilesystem,
-  reuseDevice,
   volumeLabel,
 };

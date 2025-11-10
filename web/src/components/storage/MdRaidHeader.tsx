@@ -20,12 +20,13 @@
  * find current contact information at www.suse.com.
  */
 
-import { model, StorageDevice } from "~/types/storage";
+import { model } from "~/types/storage";
+import { storage } from "~/api/system";
 import { sprintf } from "sprintf-js";
 import { deviceLabel } from "./utils";
 import { _ } from "~/i18n";
 
-export type MdRaidHeaderProps = { raid: model.MdRaid; device: StorageDevice };
+export type MdRaidHeaderProps = { raid: model.MdRaid; device: storage.Device };
 
 const text = (raid: model.MdRaid): string => {
   if (raid.filesystem) {

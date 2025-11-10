@@ -20,6 +20,10 @@
  * find current contact information at www.suse.com.
  */
 
-type Proposal = object;
+type Proposal = {
+  locale?: string;
+  keymap?: string;
+  timezone?: string;
+};
 
 export type { Proposal };

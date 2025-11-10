@@ -27,10 +27,11 @@ import { _ } from "~/i18n";
 import { Locale } from "~/api/l10n/system";
 
 export default function L10nSection() {
-  const { l10n: l10nProposal } = useProposal();
-  const { l10n: l10nSystem } = useSystem();
+  const proposal = useProposal({ suspense: true });
+  const system = useSystem({ suspense: true });
   const locale =
-    l10nProposal.locale && l10nSystem.locales.find((l: Locale) => l.id === l10nProposal.locale);
+    proposal?.l10n?.locale &&
+    system?.l10n?.locales?.find((l: Locale) => l.id === proposal.l10n.locale);
 
   // TRANSLATORS: %s will be replaced by a language name and territory, example:
   // "English (United States)".

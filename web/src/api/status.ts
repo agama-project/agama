@@ -20,6 +20,8 @@
  * find current contact information at www.suse.com.
  */
 
+// @todo Move to the new API.
+
 import { get } from "~/http";
 import { InstallerStatus } from "~/types/status";
 

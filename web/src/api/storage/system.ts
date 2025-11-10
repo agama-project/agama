@@ -130,12 +130,17 @@ export interface Md {
 export interface Multipath {
   wireNames: string[];
 }
+export type PartitionSlot = {
+  start: number;
+  size: number;
+};
 export interface PartitionTable {
   type: "gpt" | "msdos" | "dasd";
-  unusedSlots: number[][];
+  unusedSlots: PartitionSlot[];
 }
 export interface Partition {
   efi: boolean;
+  start: number;
 }
 export interface VolumeGroup {
   size: number;

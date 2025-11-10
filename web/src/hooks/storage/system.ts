@@ -27,6 +27,16 @@ import { QueryHookOptions } from "~/types/queries";
 import { systemQuery } from "~/hooks/api";
 import { findDevices } from "~/helpers/storage/system";
 
+// FIXME
+type EncryptionMethod =
+  | "luks1"
+  | "luks2"
+  | "pervasiveLuks2"
+  | "tmpFde"
+  | "protectedSwap"
+  | "secureSwap"
+  | "randomSwap";
+
 const selectSystem = (data: System | null): storage.System => data?.storage;
 
 function useSystem(options?: QueryHookOptions): storage.System {
@@ -38,10 +48,10 @@ function useSystem(options?: QueryHookOptions): storage.System {
   return data;
 }
 
-const selectEncryptionMethods = (data: System | null): storage.EncryptionMethod[] =>
+const selectEncryptionMethods = (data: System | null): EncryptionMethod[] =>
   data?.storage?.encryptionMethods || [];
 
-function useEncryptionMethods(options?: QueryHookOptions): storage.EncryptionMethod[] {
+function useEncryptionMethods(options?: QueryHookOptions): EncryptionMethod[] {
   const func = options?.suspense ? useSuspenseQuery : useQuery;
   const { data } = func({
     ...systemQuery(),

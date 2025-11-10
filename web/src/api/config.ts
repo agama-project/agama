@@ -20,11 +20,13 @@
  * find current contact information at www.suse.com.
  */
 
+import * as l10n from "~/api/l10n/config";
 import * as storage from "~/api/storage/config";
 
 type Config = {
+  l10n?: l10n.Config;
   storage?: storage.Config;
 };
 
-export { storage };
+export { l10n, storage };
 export type { Config };

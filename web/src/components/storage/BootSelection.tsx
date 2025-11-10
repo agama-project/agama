@@ -26,21 +26,23 @@ import { ActionGroup, Content, Form, FormGroup, Radio, Stack } from "@patternfly
 import { DevicesFormSelect } from "~/components/storage";
 import { Page, SubtleContent } from "~/components/core";
 import { deviceLabel } from "~/components/storage/utils";
-import { StorageDevice } from "~/types/storage";
+import { storage } from "~/api/system";
 import { useCandidateDevices, useDevices } from "~/hooks/storage/system";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
 import { useModel } from "~/hooks/storage/model";
+import { Model } from "~/types/storage/model";
+import { isDrive } from "~/helpers/storage/device";
 import {
   useSetBootDevice,
   useSetDefaultBootDevice,
   useDisableBootConfig,
 } from "~/hooks/storage/boot";
 
-const filteredCandidates = (candidates, model): StorageDevice[] => {
+const filteredCandidates = (candidates: storage.Device[], model: Model): storage.Device[] => {
   return candidates.filter((candidate) => {
-    const collection = candidate.isDrive ? model.drives : model.mdRaids;
+    const collection = isDrive(candidate) ? model.drives : model.mdRaids;
     const device = collection.find((d) => d.name === candidate.name);
     return !device || !device.filesystem;
   });
@@ -57,9 +59,9 @@ type BootSelectionState = {
   load: boolean;
   selectedOption?: string;
   configureBoot?: boolean;
-  bootDevice?: StorageDevice;
-  defaultBootDevice?: StorageDevice;
-  candidateDevices?: StorageDevice[];
+  bootDevice?: storage.Device;
+  defaultBootDevice?: storage.Device;
+  candidateDevices?: storage.Device[];
 };
 
 /**
