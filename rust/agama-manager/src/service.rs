@@ -29,7 +29,7 @@ use agama_utils::{
 };
 use async_trait::async_trait;
 use merge_struct::merge;
-use network::{NetworkSystemClient, NetworkSystemError};
+use network::NetworkSystemClient;
 use serde_json::Value;
 use tokio::sync::broadcast;
 
@@ -52,7 +52,7 @@ pub enum Error {
     #[error(transparent)]
     Progress(#[from] progress::service::Error),
     #[error(transparent)]
-    NetworkSystemError(#[from] NetworkSystemError),
+    Network(#[from] network::NetworkSystemError),
 }
 
 pub struct Service {
@@ -153,7 +153,8 @@ impl MessageHandler<message::GetSystem> for Service {
     async fn handle(&mut self, _message: message::GetSystem) -> Result<SystemInfo, Error> {
         let l10n = self.l10n.call(l10n::message::GetSystem).await?;
         let storage = self.storage.call(storage::message::GetSystem).await?;
-        let network = self.network.get_system_config().await?;
+        let network = self.network.get_system().await?;
+
         Ok(SystemInfo {
             l10n,
             network,

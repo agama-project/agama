@@ -23,7 +23,7 @@ use crate::{
     error::NetworkStateError,
     model::{Connection, GeneralState, NetworkChange, NetworkState, StateConfig},
     types::{AccessPoint, Config, Device, DeviceType, Proposal, SystemInfo},
-    Adapter, NetworkAdapterError,
+    Adapter, NetworkAdapterError, NetworkManagerAdapter,
 };
 use std::error::Error;
 use tokio::sync::{
@@ -83,6 +83,15 @@ impl<T: Adapter + Send + Sync + 'static> NetworkSystem<T> {
     /// * `adapter`: networking configuration adapter.
     pub fn new(adapter: T) -> Self {
         Self { adapter }
+    }
+
+    /// Returns a new instance of the network configuration system using the [NetworkManagerAdapter] for the system.
+    pub async fn for_network_manager() -> NetworkSystem<NetworkManagerAdapter<'static>> {
+        let adapter = NetworkManagerAdapter::from_system()
+            .await
+            .expect("Could not connect to NetworkManager");
+
+        NetworkSystem::new(adapter)
     }
 
     /// Starts the network configuration service and returns a client for communication purposes.
@@ -181,9 +190,9 @@ impl NetworkSystemClient {
         Ok(result?)
     }
 
-    pub async fn get_system_config(&self) -> Result<SystemInfo, NetworkSystemError> {
+    pub async fn get_system(&self) -> Result<SystemInfo, NetworkSystemError> {
         let (tx, rx) = oneshot::channel();
-        self.actions.send(Action::GetSystemConfig(tx))?;
+        self.actions.send(Action::GetSystem(tx))?;
         Ok(rx.await?)
     }
 
@@ -333,7 +342,7 @@ impl<T: Adapter> NetworkSystemServer<T> {
                 let conn = self.state.get_connection_by_uuid(uuid);
                 tx.send(conn.cloned()).unwrap();
             }
-            Action::GetSystemConfig(tx) => {
+            Action::GetSystem(tx) => {
                 let result = self.read().await?.try_into()?;
                 tx.send(result).unwrap();
             }
