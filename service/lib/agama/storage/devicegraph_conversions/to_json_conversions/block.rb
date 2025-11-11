@@ -98,9 +98,15 @@ module Agama
             shrinking = Agama::Storage::DeviceShrinking.new(storage_device)
 
             if shrinking.supported?
-              { supported: shrinking.min_size.to_i }
+              {
+                supported: true,
+                minSize:   shrinking.min_size.to_i
+              }
             else
-              { unsupported: shrinking.unsupported_reasons }
+              {
+                supported: false,
+                reasons:   shrinking.unsupported_reasons
+              }
             end
           end
 

@@ -5,7 +5,27 @@
  * and run json-schema-to-typescript to regenerate this file.
  */
 
+export type DeviceClass = "drive" | "mdRaid" | "partition" | "volumeGroup" | "logicalVolume";
+export type DriveType = "disk" | "raid" | "multipath" | "dasd";
+export type FilesystemType =
+  | "bcachefs"
+  | "btrfs"
+  | "exfat"
+  | "ext2"
+  | "ext3"
+  | "ext4"
+  | "f2fs"
+  | "jfs"
+  | "nfs"
+  | "nilfs2"
+  | "ntfs"
+  | "reiserfs"
+  | "swap"
+  | "tmpfs"
+  | "vfat"
+  | "xfs";
 export type MDLevel = "raid0" | "raid1" | "raid5" | "raid6" | "raid10";
+export type PartitionTableType = "gpt" | "msdos" | "dasd";
 
 /**
  * API description of the storage proposal.
@@ -27,6 +47,7 @@ export interface StorageDevice {
   sid: number;
   name: string;
   description?: string;
+  class?: DeviceClass;
   block?: Block;
   drive?: Drive;
   filesystem?: Filesystem;
@@ -46,16 +67,15 @@ export interface Block {
   udevIds?: string[];
   udevPaths?: string[];
   systems?: string[];
-  shrinking: ShrinkingSupported | ShrinkingUnsupported;
+  shrinking: ShrinkInfo;
 }
-export interface ShrinkingSupported {
-  supported?: number;
-}
-export interface ShrinkingUnsupported {
-  unsupported?: string[];
+export interface ShrinkInfo {
+  supported: boolean;
+  minSize?: number;
+  reasons?: string[];
 }
 export interface Drive {
-  type?: "disk" | "raid" | "multipath" | "dasd";
+  type?: DriveType;
   vendor?: string;
   model?: string;
   transport?: string;
@@ -70,23 +90,7 @@ export interface DriveInfo {
 }
 export interface Filesystem {
   sid: number;
-  type:
-    | "bcachefs"
-    | "btrfs"
-    | "exfat"
-    | "ext2"
-    | "ext3"
-    | "ext4"
-    | "f2fs"
-    | "jfs"
-    | "nfs"
-    | "nilfs2"
-    | "ntfs"
-    | "reiserfs"
-    | "swap"
-    | "tmpfs"
-    | "vfat"
-    | "xfs";
+  type: FilesystemType;
   mountPath?: string;
   label?: string;
 }
@@ -99,8 +103,12 @@ export interface Multipath {
   wireNames: string[];
 }
 export interface PartitionTable {
-  type: "gpt" | "msdos" | "dasd";
-  unusedSlots: number[][];
+  type: PartitionTableType;
+  unusedSlots: UnusedSlot[];
+}
+export interface UnusedSlot {
+  start: number;
+  size: number;
 }
 export interface Partition {
   efi: boolean;

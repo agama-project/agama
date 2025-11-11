@@ -54,10 +54,10 @@ module Agama
           # Available slots within a partition table, that is, the spaces that can be used to
           # create a new partition.
           #
-          # @return [Array<Array(Integer, Integer)>] The first block and the size of each slot.
+          # @return [Array<Hash>] Each hash contains the first block and the size of the slot.
           def partition_table_unused_slots
             storage_device.partition_table.unused_partition_slots.map do |slot|
-              [slot.region.start, slot.region.size.to_i]
+              { start: slot.region.start, size: slot.region.size.to_i }
             end
           end
         end
