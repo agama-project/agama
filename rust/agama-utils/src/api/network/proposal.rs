@@ -30,5 +30,6 @@ use std::default::Default;
 pub struct Proposal {
     /// Connections to use in the installation
     pub connections: NetworkConnectionsCollection,
+    /// General network settings
     pub state: StateSettings,
 }

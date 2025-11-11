@@ -66,7 +66,8 @@ pub struct NetworkState {
 }
 
 impl NetworkState {
-    /// Returns a NetworkState struct with the given devices and connections.
+    /// Returns a NetworkState struct with the given general_state, access_points, devices
+    /// and connections.
     ///
     /// * `general_state`: General network configuration
     /// * `access_points`: Access points to include in the state.
@@ -138,6 +139,7 @@ impl NetworkState {
         self.devices.iter_mut().find(|c| c.name == name)
     }
 
+    /// Returns the controller's connection for the givne connection Uuid.
     pub fn get_controlled_by(&mut self, uuid: Uuid) -> Vec<&Connection> {
         let uuid = Some(uuid);
         self.connections
@@ -158,6 +160,12 @@ impl NetworkState {
         Ok(())
     }
 
+    /// Updates the current [NetworkState] with the configuration provided.
+    ///
+    /// The config could contain a [NetworkConnectionsCollection] to be updated, in case of
+    /// provided it will iterate over the connections adding or updating them.
+    ///
+    /// If the general state is provided it will sets the options given.
     pub fn update_state(&mut self, config: Config) -> Result<(), NetworkStateError> {
         if let Some(connections) = config.connections {
             let mut collection: ConnectionCollection = connections.clone().try_into()?;

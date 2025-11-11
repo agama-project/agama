@@ -170,18 +170,22 @@ impl NetworkSystemClient {
         self.actions.send(Action::GetConnections(tx))?;
         Ok(rx.await?)
     }
+
+    /// Returns the cofiguration from the current network state as a [Config].
     pub async fn get_config(&self) -> Result<Config, NetworkSystemError> {
         let (tx, rx) = oneshot::channel();
         self.actions.send(Action::GetConfig(tx))?;
         Ok(rx.await?)
     }
 
+    /// Returns the cofiguration from the current network state as a [Proposal].
     pub async fn get_proposal(&self) -> Result<Proposal, NetworkSystemError> {
         let (tx, rx) = oneshot::channel();
         self.actions.send(Action::GetProposal(tx))?;
         Ok(rx.await?)
     }
 
+    /// Updates the current network state based on the configuration given.
     pub async fn update_config(&self, config: Config) -> Result<(), NetworkSystemError> {
         let (tx, rx) = oneshot::channel();
         self.actions
@@ -190,6 +194,7 @@ impl NetworkSystemClient {
         Ok(result?)
     }
 
+    /// Reads the current system network configuration returning it directly
     pub async fn get_system(&self) -> Result<SystemInfo, NetworkSystemError> {
         let (tx, rx) = oneshot::channel();
         self.actions.send(Action::GetSystem(tx))?;
