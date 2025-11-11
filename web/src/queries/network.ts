@@ -21,7 +21,7 @@
  */
 
 import React, { useCallback } from "react";
-import { useQueryClient, useMutation, useSuspenseQuery } from "@tanstack/react-query";
+import { useQueryClient, useMutation } from "@tanstack/react-query";
 import { useInstallerClient } from "~/context/installer";
 import {
   AccessPoint,
@@ -33,77 +33,9 @@ import {
   WifiNetwork,
   WifiNetworkStatus,
 } from "~/types/network";
-import {
-  fetchAccessPoints,
-  fetchConnection,
-  fetchConnections,
-  fetchDevices,
-  fetchState,
-  persist,
-} from "~/api/network";
 import { useNetworkProposal } from "./proposal";
 import { useNetworkSystem } from "./system";
 import { updateConfig } from "~/api/api";
-
-/**
- * Returns a query for retrieving the general network configuration
- */
-const stateQuery = () => {
-  return {
-    queryKey: ["network", "state"],
-    queryFn: fetchState,
-  };
-};
-
-/**
- * Returns a query for retrieving the list of known devices
- */
-const devicesQuery = () => ({
-  queryKey: ["network", "devices"],
-  queryFn: async () => {
-    const devices = await fetchDevices();
-    return devices.map(Device.fromApi);
-  },
-  staleTime: Infinity,
-});
-
-/**
- * Returns a query for retrieving data for the given connection name
- */
-const connectionQuery = (name: string) => ({
-  queryKey: ["network", "connections", name],
-  queryFn: async () => {
-    const connection = await fetchConnection(name);
-    return Connection.fromApi(connection);
-  },
-  staleTime: Infinity,
-});
-
-/**
- * Returns a query for retrieving the list of known connections
- */
-const connectionsQuery = () => ({
-  queryKey: ["network", "connections"],
-  queryFn: async () => {
-    const connections = await fetchConnections();
-    return connections.map(Connection.fromApi);
-  },
-  staleTime: Infinity,
-});
-
-/**
- * Returns a query for retrieving the list of known access points sortered by
- * the signal strength.
- */
-const accessPointsQuery = () => ({
-  queryKey: ["network", "accessPoints"],
-  queryFn: async (): Promise<AccessPoint[]> => {
-    const accessPoints = await fetchAccessPoints();
-    return accessPoints.map(AccessPoint.fromApi).sort((a, b) => b.strength - a.strength);
-  },
-  // FIXME: Infinity vs 1second
-  staleTime: 1000,
-});
 
 /**
  * Hook that builds a mutation to update a network connection
@@ -118,54 +50,6 @@ const useConfigMutation = () => {
       queryClient.invalidateQueries({ queryKey: ["proposal"] });
     },
   };
-  return useMutation(query);
-};
-
-/**
- * Hook that provides a mutation for toggling the "persistent" state of a network
- * connection.
- *
- * This hook uses optimistic updates to immediately reflect the change in the UI
- * before the mutation completes. If the mutation fails, it will rollback to the
- * previous state.
- */
-const useConnectionPersistMutation = () => {
-  const queryClient = useQueryClient();
-  const query = {
-    mutationFn: (connection: Connection) => {
-      return persist(connection.id, !connection.persistent);
-    },
-    onMutate: async (connection: Connection) => {
-      // Get the current list of cached connections
-      const previousConnections: Connection[] = queryClient.getQueryData([
-        "network",
-        "connections",
-      ]);
-
-      // Optimistically toggle the 'persistent' status of the matching connection
-      const updatedConnections = previousConnections.map((cachedConnection) => {
-        if (connection.id !== cachedConnection.id) return cachedConnection;
-
-        const { id, ...nextConnection } = cachedConnection;
-        return new Connection(id, { ...nextConnection, persistent: !cachedConnection.persistent });
-      });
-
-      // Update the cached data with the optimistically updated connections
-      queryClient.setQueryData(["network", "connections"], updatedConnections);
-
-      // Return the previous state for potential rollback
-      return { previousConnections };
-    },
-
-    /**
-     * Called if the mutation fails for whatever reason. Rolls back the cache to
-     * the previous state.
-     */
-    onError: (context: { previousConnections: Connection[] }) => {
-      queryClient.setQueryData(["network", "connections"], context.previousConnections);
-    },
-  };
-
   return useMutation(query);
 };
 
@@ -256,8 +140,9 @@ const useConnection = (name: string) => {
  * Returns the general state of the network.
  */
 const useNetworkState = (): NetworkGeneralState => {
-  const { data } = useSuspenseQuery(stateQuery());
-  return data;
+  const { state } = useNetworkProposal();
+
+  return state;
 };
 
 /**
@@ -284,9 +169,8 @@ const useConnections = (): Connection[] => {
 const useWifiNetworks = () => {
   const knownSsids: string[] = [];
 
-  const devices = useNetworkDevices();
+  const { devices, accessPoints } = useNetworkSystem();
   const connections = useConnections();
-  const { data: accessPoints } = useSuspenseQuery(accessPointsQuery());
 
   return accessPoints
     .filter((ap: AccessPoint) => {
@@ -320,14 +204,8 @@ const useWifiNetworks = () => {
 };
 
 export {
-  stateQuery,
-  devicesQuery,
-  connectionQuery,
-  connectionsQuery,
-  accessPointsQuery,
   useConnections,
   useConfigMutation,
-  useConnectionPersistMutation,
   useConnection,
   useNetworkDevices,
   useNetworkState,

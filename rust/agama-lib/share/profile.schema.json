@@ -336,7 +336,7 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "generalState": {
+        "state": {
           "title": "Network general state settings",
           "type": "object",
           "properties": {
