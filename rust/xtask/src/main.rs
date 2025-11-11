@@ -7,7 +7,7 @@ mod tasks {
     use agama_server::web::docs::{
         ApiDocBuilder, ConfigApiDocBuilder, HostnameApiDocBuilder, ManagerApiDocBuilder,
         MiscApiDocBuilder, NetworkApiDocBuilder, ProfileApiDocBuilder, ScriptsApiDocBuilder,
-        SoftwareApiDocBuilder, StorageApiDocBuilder, UsersApiDocBuilder,
+        StorageApiDocBuilder, UsersApiDocBuilder,
     };
     use clap::CommandFactory;
     use clap_complete::aot;
@@ -71,7 +71,6 @@ mod tasks {
         write_openapi(NetworkApiDocBuilder {}, out_dir.join("network.json"))?;
         write_openapi(ProfileApiDocBuilder {}, out_dir.join("profile.json"))?;
         write_openapi(ScriptsApiDocBuilder {}, out_dir.join("scripts.json"))?;
-        write_openapi(SoftwareApiDocBuilder {}, out_dir.join("software.json"))?;
         write_openapi(StorageApiDocBuilder {}, out_dir.join("storage.json"))?;
         write_openapi(UsersApiDocBuilder {}, out_dir.join("users.json"))?;
         println!(
