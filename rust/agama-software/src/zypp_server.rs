@@ -32,7 +32,7 @@ use tokio::sync::{
     mpsc::{self, UnboundedSender},
     oneshot,
 };
-use zypp_agama::{ZyppError, callbacks::EmptyPkgDownloadCallbacks};
+use zypp_agama::{callbacks::EmptyPkgDownloadCallbacks, ZyppError};
 
 use crate::model::state::{self, SoftwareState};
 const TARGET_DIR: &str = "/run/agama/software_ng_zypp";

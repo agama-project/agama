@@ -159,9 +159,8 @@ impl Zypp {
         let mut status: Status = Status::default();
         let status_ptr = &mut status as *mut _;
         unsafe {
-            let mut commit_fn = |mut callbacks| {
-                zypp_agama_sys::commit(self.ptr, status_ptr, &mut callbacks)
-            };
+            let mut commit_fn =
+                |mut callbacks| zypp_agama_sys::commit(self.ptr, status_ptr, &mut callbacks);
             let res = callbacks::with_c_commit_download_callbacks(report, &mut commit_fn);
             helpers::status_to_result(status, res)
         }

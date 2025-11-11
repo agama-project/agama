@@ -155,15 +155,19 @@ where
 pub enum DownloadResolvableError {
     NoError,
     NotFound, // the requested Url was not found
-    IO, // IO error
-    Invalid, // the downloaded file is invalid
+    IO,       // IO error
+    Invalid,  // the downloaded file is invalid
 }
 
 impl From<zypp_agama_sys::DownloadResolvableError> for DownloadResolvableError {
     fn from(error: zypp_agama_sys::DownloadResolvableError) -> Self {
         match error {
-            zypp_agama_sys::DownloadResolvableError_DRE_NO_ERROR => DownloadResolvableError::NoError,
-            zypp_agama_sys::DownloadResolvableError_DRE_NOT_FOUND => DownloadResolvableError::NotFound,
+            zypp_agama_sys::DownloadResolvableError_DRE_NO_ERROR => {
+                DownloadResolvableError::NoError
+            }
+            zypp_agama_sys::DownloadResolvableError_DRE_NOT_FOUND => {
+                DownloadResolvableError::NotFound
+            }
             zypp_agama_sys::DownloadResolvableError_DRE_IO => DownloadResolvableError::IO,
             zypp_agama_sys::DownloadResolvableError_DRE_INVALID => DownloadResolvableError::Invalid,
             _ => {
@@ -175,13 +179,13 @@ impl From<zypp_agama_sys::DownloadResolvableError> for DownloadResolvableError {
 }
 
 pub enum GPGCheckPackageResult {
-    Ok, // Signature is OK.
-    NotFound, // Signature is unknown type.
-    Fail, // Signature does not verify.
+    Ok,         // Signature is OK.
+    NotFound,   // Signature is unknown type.
+    Fail,       // Signature does not verify.
     NotTrusted, // Signature is OK, but key is not trusted.
-    NoKey, // Public key is unavailable.
-    Error, // File does not exist or can't be opened.
-    NoSig, // File has no gpg signature (only digests).
+    NoKey,      // Public key is unavailable.
+    Error,      // File does not exist or can't be opened.
+    NoSig,      // File has no gpg signature (only digests).
 }
 
 impl From<zypp_agama_sys::GPGCheckPackageResult> for GPGCheckPackageResult {
@@ -190,7 +194,9 @@ impl From<zypp_agama_sys::GPGCheckPackageResult> for GPGCheckPackageResult {
             zypp_agama_sys::GPGCheckPackageResult_CHK_OK => GPGCheckPackageResult::Ok,
             zypp_agama_sys::GPGCheckPackageResult_CHK_NOTFOUND => GPGCheckPackageResult::NotFound,
             zypp_agama_sys::GPGCheckPackageResult_CHK_FAIL => GPGCheckPackageResult::Fail,
-            zypp_agama_sys::GPGCheckPackageResult_CHK_NOTTRUSTED => GPGCheckPackageResult::NotTrusted,
+            zypp_agama_sys::GPGCheckPackageResult_CHK_NOTTRUSTED => {
+                GPGCheckPackageResult::NotTrusted
+            }
             zypp_agama_sys::GPGCheckPackageResult_CHK_NOKEY => GPGCheckPackageResult::NoKey,
             zypp_agama_sys::GPGCheckPackageResult_CHK_ERROR => GPGCheckPackageResult::Error,
             zypp_agama_sys::GPGCheckPackageResult_CHK_NOSIG => GPGCheckPackageResult::NoSig,
@@ -204,24 +210,32 @@ impl From<zypp_agama_sys::GPGCheckPackageResult> for GPGCheckPackageResult {
 
 pub enum DownloadResolvableFileError {
     NoError,
-    NotFound, // the requested Url was not found
-    IO, // IO error
+    NotFound,     // the requested Url was not found
+    IO,           // IO error
     AccessDenied, // user authent. failed while accessing restricted file
-    Error, // other error
+    Error,        // other error
 }
 
 impl From<zypp_agama_sys::DownloadResolvableFileError> for DownloadResolvableFileError {
     fn from(error: zypp_agama_sys::DownloadResolvableFileError) -> Self {
         match error {
-            zypp_agama_sys::DownloadResolvableFileError_DRFE_NO_ERROR => DownloadResolvableFileError::NoError,
-            zypp_agama_sys::DownloadResolvableFileError_DRFE_NOT_FOUND => DownloadResolvableFileError::NotFound,
+            zypp_agama_sys::DownloadResolvableFileError_DRFE_NO_ERROR => {
+                DownloadResolvableFileError::NoError
+            }
+            zypp_agama_sys::DownloadResolvableFileError_DRFE_NOT_FOUND => {
+                DownloadResolvableFileError::NotFound
+            }
             zypp_agama_sys::DownloadResolvableFileError_DRFE_IO => DownloadResolvableFileError::IO,
-            zypp_agama_sys::DownloadResolvableFileError_DRFE_ACCESS_DENIED => DownloadResolvableFileError::AccessDenied,
-            zypp_agama_sys::DownloadResolvableFileError_DRFE_ERROR => DownloadResolvableFileError::Error,
+            zypp_agama_sys::DownloadResolvableFileError_DRFE_ACCESS_DENIED => {
+                DownloadResolvableFileError::AccessDenied
+            }
+            zypp_agama_sys::DownloadResolvableFileError_DRFE_ERROR => {
+                DownloadResolvableFileError::Error
+            }
             _ => {
                 tracing::error!("Unknown error code {:?}", error);
                 DownloadResolvableFileError::Error
-            },
+            }
         }
     }
 }
@@ -231,31 +245,49 @@ pub trait PkgDownloadCallbacks {
     // callback when start preloading packages during commit phase
     fn start_preload(&self) {}
     // callback when problem occurs during download of resolvable
-    fn problem(&self, _name: &str, _error: DownloadResolvableError, _description: &str) -> ProblemResponse {
+    fn problem(
+        &self,
+        _name: &str,
+        _error: DownloadResolvableError,
+        _description: &str,
+    ) -> ProblemResponse {
         ProblemResponse::ABORT
     }
     // callback after gpg check is done
-    fn gpg_check(&self, _resolvable_name: &str, _repo_url: &str, _check_result: GPGCheckPackageResult) -> ProblemResponse {
+    fn gpg_check(
+        &self,
+        _resolvable_name: &str,
+        _repo_url: &str,
+        _check_result: GPGCheckPackageResult,
+    ) -> ProblemResponse {
         ProblemResponse::ABORT
     }
     // callback when download finishes either successfully or with error
-    fn finish(&self, _url: &str, _local_path: &str, _error: DownloadResolvableFileError, _error_details: &str) {}
+    fn finish(
+        &self,
+        _url: &str,
+        _local_path: &str,
+        _error: DownloadResolvableFileError,
+        _error_details: &str,
+    ) {
+    }
 }
 
 // Default progress that do nothing
 pub struct EmptyPkgDownloadCallbacks;
 impl PkgDownloadCallbacks for EmptyPkgDownloadCallbacks {}
 
-unsafe extern "C" fn pkg_download_progress_start_preload<F>(
-    user_data: *mut c_void,
-) where
+unsafe extern "C" fn pkg_download_progress_start_preload<F>(user_data: *mut c_void)
+where
     F: FnMut(),
 {
     let user_data = &mut *(user_data as *mut F);
     user_data();
 }
 
-fn get_pkg_download_progress_start_preload<F>(_closure: &F) -> zypp_agama_sys::ZyppDownloadResolvableStartCallback
+fn get_pkg_download_progress_start_preload<F>(
+    _closure: &F,
+) -> zypp_agama_sys::ZyppDownloadResolvableStartCallback
 where
     F: FnMut(),
 {
@@ -267,7 +299,8 @@ unsafe extern "C" fn pkg_download_progress_problem<F>(
     error: zypp_agama_sys::DownloadResolvableError,
     description: *const c_char,
     user_data: *mut c_void,
-) -> zypp_agama_sys::PROBLEM_RESPONSE where
+) -> zypp_agama_sys::PROBLEM_RESPONSE
+where
     F: FnMut(String, DownloadResolvableError, String) -> ProblemResponse,
 {
     let user_data = &mut *(user_data as *mut F);
@@ -279,7 +312,9 @@ unsafe extern "C" fn pkg_download_progress_problem<F>(
     res.into()
 }
 
-fn get_pkg_download_problem<F>(_closure: &F) -> zypp_agama_sys::ZyppDownloadResolvableProblemCallback
+fn get_pkg_download_problem<F>(
+    _closure: &F,
+) -> zypp_agama_sys::ZyppDownloadResolvableProblemCallback
 where
     F: FnMut(String, DownloadResolvableError, String) -> ProblemResponse,
 {
@@ -291,7 +326,8 @@ unsafe extern "C" fn pkg_download_gpg_check<F>(
     repo_url: *const c_char,
     check_result: zypp_agama_sys::GPGCheckPackageResult,
     user_data: *mut c_void,
-) -> zypp_agama_sys::PROBLEM_RESPONSE where
+) -> zypp_agama_sys::PROBLEM_RESPONSE
+where
     F: FnMut(String, String, GPGCheckPackageResult) -> ProblemResponse,
 {
     let user_data = &mut *(user_data as *mut F);
@@ -303,7 +339,9 @@ unsafe extern "C" fn pkg_download_gpg_check<F>(
     res.into()
 }
 
-fn get_pkg_download_gpg_check<F>(_closure: &F) -> zypp_agama_sys::ZyppDownloadResolvableGpgCheckCallback
+fn get_pkg_download_gpg_check<F>(
+    _closure: &F,
+) -> zypp_agama_sys::ZyppDownloadResolvableGpgCheckCallback
 where
     F: FnMut(String, String, GPGCheckPackageResult) -> ProblemResponse,
 {
@@ -320,17 +358,27 @@ unsafe extern "C" fn pkg_download_file_finish<F>(
     F: FnMut(String, String, DownloadResolvableFileError, String),
 {
     let user_data = &mut *(user_data as *mut F);
-    user_data(string_from_ptr(url), string_from_ptr(local_path), error.into(), string_from_ptr(details));
+    user_data(
+        string_from_ptr(url),
+        string_from_ptr(local_path),
+        error.into(),
+        string_from_ptr(details),
+    );
 }
 
-fn get_pkg_download_file_finish<F>(_closure: &F) -> zypp_agama_sys::ZyppDownloadResolvableFileFinishCallback
+fn get_pkg_download_file_finish<F>(
+    _closure: &F,
+) -> zypp_agama_sys::ZyppDownloadResolvableFileFinishCallback
 where
     F: FnMut(String, String, DownloadResolvableFileError, String),
 {
     Some(pkg_download_file_finish::<F>)
 }
 
-pub(crate) fn with_c_commit_download_callbacks<R, F>(callbacks: &impl PkgDownloadCallbacks, block: &mut F) -> R
+pub(crate) fn with_c_commit_download_callbacks<R, F>(
+    callbacks: &impl PkgDownloadCallbacks,
+    block: &mut F,
+) -> R
 where
     F: FnMut(zypp_agama_sys::DownloadResolvableCallbacks) -> R,
 {
@@ -339,11 +387,13 @@ where
     let mut problem_call =
         |name: String, error, description: String| callbacks.problem(&name, error, &description);
     let cb_problem = get_pkg_download_problem(&problem_call);
-    let mut gpg_check =
-        |name: String, url: String, check_result: GPGCheckPackageResult| callbacks.gpg_check(&name, &url, check_result);
+    let mut gpg_check = |name: String, url: String, check_result: GPGCheckPackageResult| {
+        callbacks.gpg_check(&name, &url, check_result)
+    };
     let cb_gpg_check = get_pkg_download_gpg_check(&gpg_check);
-    let mut finish_call =
-        |url: String, local_path: String, error, details: String| callbacks.finish(&url, &local_path, error, &details);
+    let mut finish_call = |url: String, local_path: String, error, details: String| {
+        callbacks.finish(&url, &local_path, error, &details)
+    };
     let cb_finish = get_pkg_download_file_finish(&finish_call);
 
     let callbacks = zypp_agama_sys::DownloadResolvableCallbacks {
