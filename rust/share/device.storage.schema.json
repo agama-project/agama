@@ -10,9 +10,7 @@
     "sid": { "type": "integer" },
     "name": { "type": "string" },
     "description": { "type": "string" },
-    "class": {
-      "enum": ["drive", "mdRaid", "partition", "volumeGroup", "logicalVolume"]
-    },
+    "class": { "$ref": "#/$defs/deviceClass" },
     "block": { "$ref": "#/$defs/block" },
     "drive": { "$ref": "#/$defs/drive" },
     "filesystem": { "$ref": "#/$defs/filesystem" },
@@ -31,6 +29,10 @@
     }
   },
   "$defs": {
+    "deviceClass": {
+      "title": "Device class",
+      "enum": ["drive", "mdRaid", "partition", "volumeGroup", "logicalVolume"]
+    },
     "block": {
       "type": "object",
       "additionalProperties": false,
@@ -72,7 +74,7 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "type": { "enum": ["disk", "raid", "multipath", "dasd"] },
+        "type": { "$ref": "#/$defs/driveType" },
         "vendor": { "type": "string" },
         "model": { "type": "string" },
         "transport": { "type": "string" },
@@ -84,6 +86,10 @@
         },
         "info": { "$ref": "#/$defs/driveInfo" }
       }
+    },
+    "driveType": {
+      "title": "Drive type",
+      "enum": ["disk", "raid", "multipath", "dasd"]
     },
     "driveInfo": {
       "type": "object",
@@ -105,6 +111,7 @@
       }
     },
     "filesystemType": {
+      "title": "Filesystem type",
       "enum": [
         "bcachefs",
         "btrfs",
@@ -171,6 +178,7 @@
       }
     },
     "ptableType": {
+      "title": "Partition table type",
       "enum": ["gpt", "msdos", "dasd"]
     },
     "unusedSlot": {

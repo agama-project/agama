@@ -5,7 +5,36 @@
  * and run json-schema-to-typescript to regenerate this file.
  */
 
+export type DeviceClass = "drive" | "mdRaid" | "partition" | "volumeGroup" | "logicalVolume";
+export type DriveType = "disk" | "raid" | "multipath" | "dasd";
+export type FilesystemType =
+  | "bcachefs"
+  | "btrfs"
+  | "exfat"
+  | "ext2"
+  | "ext3"
+  | "ext4"
+  | "f2fs"
+  | "jfs"
+  | "nfs"
+  | "nilfs2"
+  | "ntfs"
+  | "reiserfs"
+  | "swap"
+  | "tmpfs"
+  | "vfat"
+  | "xfs";
 export type MDLevel = "raid0" | "raid1" | "raid5" | "raid6" | "raid10";
+export type PartitionTableType = "gpt" | "msdos" | "dasd";
+export type EncryptionMethod =
+  | "luks1"
+  | "luks2"
+  | "pervasiveLuks2"
+  | "tmpFde"
+  | "protectedSwap"
+  | "secureSwap"
+  | "randomSwap";
+export type SystemIssueSource = "config" | "system";
 
 /**
  * API description of the system
@@ -38,15 +67,7 @@ export interface System {
   /**
    * Possible encryption methods for the current system and product
    */
-  encryptionMethods?: (
-    | "luks1"
-    | "luks2"
-    | "pervasiveLuks2"
-    | "tmpFde"
-    | "protectedSwap"
-    | "secureSwap"
-    | "randomSwap"
-  )[];
+  encryptionMethods?: EncryptionMethod[];
   /**
    * Volumes defined by the product as templates
    */
@@ -60,7 +81,7 @@ export interface StorageDevice {
   sid: number;
   name: string;
   description?: string;
-  class?: "drive" | "mdRaid" | "partition" | "volumeGroup" | "logicalVolume";
+  class?: DeviceClass;
   block?: Block;
   drive?: Drive;
   filesystem?: Filesystem;
@@ -88,7 +109,7 @@ export interface ShrinkInfo {
   reasons?: string[];
 }
 export interface Drive {
-  type?: "disk" | "raid" | "multipath" | "dasd";
+  type?: DriveType;
   vendor?: string;
   model?: string;
   transport?: string;
@@ -103,23 +124,7 @@ export interface DriveInfo {
 }
 export interface Filesystem {
   sid: number;
-  type:
-    | "bcachefs"
-    | "btrfs"
-    | "exfat"
-    | "ext2"
-    | "ext3"
-    | "ext4"
-    | "f2fs"
-    | "jfs"
-    | "nfs"
-    | "nilfs2"
-    | "ntfs"
-    | "reiserfs"
-    | "swap"
-    | "tmpfs"
-    | "vfat"
-    | "xfs";
+  type: FilesystemType;
   mountPath?: string;
   label?: string;
 }
@@ -132,7 +137,7 @@ export interface Multipath {
   wireNames: string[];
 }
 export interface PartitionTable {
-  type: "gpt" | "msdos" | "dasd";
+  type: PartitionTableType;
   unusedSlots: UnusedSlot[];
 }
 export interface UnusedSlot {
@@ -149,23 +154,7 @@ export interface VolumeGroup {
 export interface Volume {
   mountPath: string;
   mountOptions?: string[];
-  fsType?:
-    | "bcachefs"
-    | "btrfs"
-    | "exfat"
-    | "ext2"
-    | "ext3"
-    | "ext4"
-    | "f2fs"
-    | "jfs"
-    | "nfs"
-    | "nilfs2"
-    | "ntfs"
-    | "reiserfs"
-    | "swap"
-    | "tmpfs"
-    | "vfat"
-    | "xfs";
+  fsType?: FilesystemType;
   autoSize: boolean;
   minSize: number;
   maxSize?: number;
@@ -176,24 +165,7 @@ export interface Volume {
 export interface VolumeOutline {
   required: boolean;
   supportAutoSize: boolean;
-  fsTypes?: (
-    | "bcachefs"
-    | "btrfs"
-    | "exfat"
-    | "ext2"
-    | "ext3"
-    | "ext4"
-    | "f2fs"
-    | "jfs"
-    | "nfs"
-    | "nilfs2"
-    | "ntfs"
-    | "reiserfs"
-    | "swap"
-    | "tmpfs"
-    | "vfat"
-    | "xfs"
-  )[];
+  fsTypes?: FilesystemType[];
   adjustByRam?: boolean;
   snapshotsConfigurable?: boolean;
   snapshotsAffectSizes?: boolean;
@@ -203,6 +175,6 @@ export interface Issue {
   description: string;
   class?: string;
   details?: string;
-  source?: "config" | "system";
+  source?: SystemIssueSource;
   severity?: "warn" | "error";
 }
