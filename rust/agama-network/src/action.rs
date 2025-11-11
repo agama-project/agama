@@ -47,7 +47,7 @@ pub enum Action {
     GetConfig(Responder<Config>),
     /// Gets the internal state of the network configuration proposal
     GetProposal(Responder<Proposal>),
-    /// Updates th internal state of the network configuration
+    /// Updates the internal state of the network configuration
     UpdateConfig(Box<Config>, Responder<Result<(), NetworkStateError>>),
     /// Gets the current network configuration containing connections, devices, access_points and
     /// also the general state
