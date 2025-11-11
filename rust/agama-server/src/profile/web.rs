@@ -26,7 +26,6 @@ use agama_lib::{
     profile::{AutoyastProfileImporter, ProfileEvaluator, ProfileValidator, ValidationOutcome},
 };
 use axum::{
-    extract::Query,
     http::StatusCode,
     response::{IntoResponse, Response},
     routing::post,
@@ -34,6 +33,7 @@ use axum::{
 };
 use serde::Deserialize;
 use serde_json::json;
+use std::collections::HashMap;
 use thiserror::Error;
 use url::Url;
 
@@ -99,28 +99,29 @@ pub async fn profile_service() -> Result<Router, ServiceError> {
 /// 2. pathname (server side)
 /// 3. URL
 #[derive(Deserialize, utoipa::IntoParams, Debug)]
-struct ProfileQuery {
+struct ProfileBody {
     path: Option<String>,
     url: Option<String>,
+    json: Option<String>,
 }
 
-impl ProfileQuery {
-    /// Check that exactly one of url=, path=, request body, has been provided.
-    fn check(&self, request_has_body: bool) -> Result<(), ProfileServiceError> {
-        // `^` is called Bitwise Xor but it does work correctly on bools
-        if request_has_body ^ self.path.is_some() ^ self.url.is_some() {
-            return Ok(());
+impl ProfileBody {
+    /// Parses given string as a JSON and fills ProfileBody accordingly
+    ///
+    /// Expected format is a HashMap<String, String>, expecte keys are
+    /// path, url or profile
+    fn from_string(string: String) -> Self {
+        let map: HashMap<String, String> = serde_json::from_str(&string).unwrap();
+
+        Self {
+            path: map.get("path").cloned(),
+            url: map.get("url").cloned(),
+            json: map.get("profile").cloned(),
         }
-        Err(anyhow::anyhow!(
-            "Only one of (url=, path=, request body) is expected. Seen: url {}, path {}, body {}",
-            self.url.is_some(),
-            self.path.is_some(),
-            request_has_body
-        )
-        .into())
     }
 
-    /// Retrieve a profile if specified by one of *url*, *path*
+    /// Retrieve a profile if specified by one of *url*, *path* or
+    /// pass already obtained *json* file content
     fn retrieve_profile(&self) -> Result<Option<String>, ProfileServiceError> {
         if let Some(url_string) = &self.url {
             let mut bytebuf = Vec::new();
@@ -133,7 +134,7 @@ impl ProfileQuery {
             let s = std::fs::read_to_string(path).context(format!("Reading from file {}", path))?;
             Ok(Some(s))
         } else {
-            Ok(None)
+            Ok(self.json.clone())
         }
     }
 }
@@ -142,28 +143,23 @@ impl ProfileQuery {
     post,
     path = "/validate",
     context_path = "/api/profile",
-    params(ProfileQuery),
     responses(
         (status = 200, description = "Validation result", body = ValidationOutcome),
         (status = 400, description = "Some error has occurred")
     )
 )]
-async fn validate(
-    query: Query<ProfileQuery>,
-    profile: String, // json_or_empty
-) -> Result<Json<ValidationOutcome>, ProfileServiceError> {
-    let request_has_body = !profile.is_empty() && profile != "null";
-    query.check(request_has_body)?;
-    let profile_string = match query.retrieve_profile()? {
+async fn validate(body: String) -> Result<Json<ValidationOutcome>, ProfileServiceError> {
+    let profile = ProfileBody::from_string(body);
+    let profile_string = match profile.retrieve_profile()? {
         Some(retrieved) => retrieved,
-        None => profile,
+        None => profile.json.expect("Missing profile"),
     };
-
     let validator = ProfileValidator::default_schema().context("Setting up profile validator")?;
     let result = validator
         .validate_str(&profile_string)
-        .context(format!("Could not validate the profile {:?}", *query))
+        .context(format!("Could not validate the profile"))
         .map_err(make_internal)?;
+
     Ok(Json(result))
 }
 
@@ -171,27 +167,22 @@ async fn validate(
     post,
     path = "/evaluate",
     context_path = "/api/profile",
-    params(ProfileQuery),
     responses(
         (status = 200, description = "Evaluated profile", body = String, content_type = "application/json"),
         (status = 400, description = "Some error has occurred")
     )
 )]
-async fn evaluate(
-    query: Query<ProfileQuery>,
-    profile: String, // jsonnet_or_empty
-) -> Result<String, ProfileServiceError> {
-    let request_has_body = !profile.is_empty() && profile != "null";
-    query.check(request_has_body)?;
-    let profile_string = match query.retrieve_profile()? {
+async fn evaluate(body: String) -> Result<String, ProfileServiceError> {
+    let profile = ProfileBody::from_string(body);
+    let profile_string = match profile.retrieve_profile()? {
         Some(retrieved) => retrieved,
-        None => profile,
+        None => profile.json.expect("Missing profile"),
     };
-
     let evaluator = ProfileEvaluator {};
     let output = evaluator
         .evaluate_string(&profile_string)
         .context("Could not evaluate the profile".to_string())?;
+
     Ok(output)
 }
 
@@ -199,28 +190,24 @@ async fn evaluate(
     post,
     path = "/autoyast",
     context_path = "/api/profile",
-    params(ProfileQuery),
     responses(
         (status = 200, description = "AutoYaST profile conversion", body = String, content_type = "application/json"),
         (status = 400, description = "Some error has occurred")
     )
 )]
-async fn autoyast(
-    query: Query<ProfileQuery>,
-    profile: String, // xml_or_erb_or_empty
-) -> Result<String, ProfileServiceError> {
-    let request_has_body = !profile.is_empty() && profile != "null";
-    if query.url.is_none() || query.path.is_some() || request_has_body {
+async fn autoyast(body: String) -> Result<String, ProfileServiceError> {
+    let profile = ProfileBody::from_string(body);
+    if profile.url.is_none() || profile.path.is_some() || profile.json.is_some() {
         return Err(anyhow::anyhow!(
             "Only url= is expected, no path= or request body. Seen: url {}, path {}, body {}",
-            query.url.is_some(),
-            query.path.is_some(),
-            request_has_body
+            profile.url.is_some(),
+            profile.path.is_some(),
+            profile.json.is_some()
         )
         .into());
     }
 
-    let url = Url::parse(query.url.as_ref().unwrap()).map_err(anyhow::Error::new)?;
+    let url = Url::parse(profile.url.as_ref().unwrap()).map_err(anyhow::Error::new)?;
     let importer_res = AutoyastProfileImporter::read(&url).await;
     match importer_res {
         Ok(importer) => Ok(importer.content),
