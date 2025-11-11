@@ -182,6 +182,7 @@ impl ApiDocBuilder for ConfigApiDocBuilder {
             .schema_from::<agama_utils::api::question::SelectionOption>()
             .schema_from::<agama_utils::api::question::UpdateQuestion>()
             .schema_from::<agama_utils::api::status::State>()
+            .schema_from::<agama_utils::api::storage::Config>()
             .schema_from::<crate::software::web::SoftwareProposal>()
             .build()
     }
