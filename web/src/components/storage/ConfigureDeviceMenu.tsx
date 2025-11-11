@@ -21,7 +21,7 @@
  */
 
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import MenuButton, { MenuButtonItem } from "~/components/core/MenuButton";
 import { Divider, MenuItemProps } from "@patternfly/react-core";
 import { useAvailableDevices } from "~/hooks/storage/system";

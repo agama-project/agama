@@ -21,7 +21,7 @@
  */
 
 import React from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import * as partitionUtils from "~/components/storage/utils/partition";
 import { Icon } from "~/components/layout";
 import { MenuItem, MenuItemAction } from "@patternfly/react-core";

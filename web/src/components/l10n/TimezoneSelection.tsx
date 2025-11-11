@@ -22,7 +22,7 @@
 
 import React, { useState } from "react";
 import { Content, Flex, Form, FormGroup, Radio } from "@patternfly/react-core";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { ListSearch, Page } from "~/components/core";
 import { Timezone } from "~/api/l10n/system";
 import { patchConfig } from "~/api";

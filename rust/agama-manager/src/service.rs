@@ -18,7 +18,7 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::{l10n, message, storage};
+use crate::{l10n, message, network, storage};
 use agama_utils::{
     actor::{self, Actor, Handler, MessageHandler},
     api::{
@@ -29,6 +29,7 @@ use agama_utils::{
 };
 use async_trait::async_trait;
 use merge_struct::merge;
+use network::NetworkSystemClient;
 use serde_json::Value;
 use tokio::sync::broadcast;
 
@@ -50,10 +51,13 @@ pub enum Error {
     Questions(#[from] question::service::Error),
     #[error(transparent)]
     Progress(#[from] progress::service::Error),
+    #[error(transparent)]
+    Network(#[from] network::NetworkSystemError),
 }
 
 pub struct Service {
     l10n: Handler<l10n::Service>,
+    network: NetworkSystemClient,
     storage: Handler<storage::Service>,
     issues: Handler<issue::Service>,
     progress: Handler<progress::Service>,
@@ -66,6 +70,7 @@ pub struct Service {
 impl Service {
     pub fn new(
         l10n: Handler<l10n::Service>,
+        network: NetworkSystemClient,
         storage: Handler<storage::Service>,
         issues: Handler<issue::Service>,
         progress: Handler<progress::Service>,
@@ -74,6 +79,7 @@ impl Service {
     ) -> Self {
         Self {
             l10n,
+            network,
             storage,
             issues,
             progress,
@@ -147,7 +153,13 @@ impl MessageHandler<message::GetSystem> for Service {
     async fn handle(&mut self, _message: message::GetSystem) -> Result<SystemInfo, Error> {
         let l10n = self.l10n.call(l10n::message::GetSystem).await?;
         let storage = self.storage.call(storage::message::GetSystem).await?;
-        Ok(SystemInfo { l10n, storage })
+        let network = self.network.get_system().await?;
+
+        Ok(SystemInfo {
+            l10n,
+            network,
+            storage,
+        })
     }
 }
 
@@ -159,10 +171,13 @@ impl MessageHandler<message::GetExtendedConfig> for Service {
     async fn handle(&mut self, _message: message::GetExtendedConfig) -> Result<Config, Error> {
         let l10n = self.l10n.call(l10n::message::GetConfig).await?;
         let questions = self.questions.call(question::message::GetConfig).await?;
+        let network = self.network.get_config().await?;
         let storage = self.storage.call(storage::message::GetConfig).await?;
+
         Ok(Config {
             l10n: Some(l10n),
-            questions,
+            questions: questions,
+            network: Some(network),
             storage,
         })
     }
@@ -196,9 +211,26 @@ impl MessageHandler<message::SetConfig> for Service {
             .call(storage::message::SetConfig::new(config.storage.clone()))
             .await?;
 
+        if let Some(network) = config.network.clone() {
+            self.network.update_config(network).await?;
+            self.network.apply().await?;
+        }
+
         self.config = config;
         Ok(())
     }
+}
+
+fn merge_network(mut config: Config, update_config: Config) -> Config {
+    if let Some(network) = &update_config.network {
+        if let Some(connections) = &network.connections {
+            if let Some(ref mut config_network) = config.network {
+                config_network.connections = Some(connections.clone());
+            }
+        }
+    }
+
+    config
 }
 
 #[async_trait]
@@ -209,6 +241,7 @@ impl MessageHandler<message::UpdateConfig> for Service {
     /// config, then it keeps the values from the current config.
     async fn handle(&mut self, message: message::UpdateConfig) -> Result<(), Error> {
         let config = merge(&self.config, &message.config).map_err(|_| Error::MergeConfig)?;
+        let config = merge_network(config, message.config);
 
         if let Some(l10n) = &config.l10n {
             self.l10n
@@ -228,6 +261,10 @@ impl MessageHandler<message::UpdateConfig> for Service {
                 .await?;
         }
 
+        if let Some(network) = &config.network {
+            self.network.update_config(network.clone()).await?;
+        }
+
         self.config = config;
         Ok(())
     }
@@ -239,7 +276,13 @@ impl MessageHandler<message::GetProposal> for Service {
     async fn handle(&mut self, _message: message::GetProposal) -> Result<Option<Proposal>, Error> {
         let l10n = self.l10n.call(l10n::message::GetProposal).await?;
         let storage = self.storage.call(storage::message::GetProposal).await?;
-        Ok(Some(Proposal { l10n, storage }))
+        let network = self.network.get_proposal().await?;
+
+        Ok(Some(Proposal {
+            l10n,
+            network,
+            storage,
+        }))
     }
 }
 

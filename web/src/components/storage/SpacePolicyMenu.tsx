@@ -24,13 +24,12 @@ import React from "react";
 import { Flex } from "@patternfly/react-core";
 import MenuButton from "~/components/core/MenuButton";
 import Text from "~/components/core/Text";
-import { useNavigate } from "react-router-dom";
+import { generatePath, useNavigate } from "react-router";
 import { useSetSpacePolicy } from "~/hooks/storage/space-policy";
 import { SPACE_POLICIES } from "~/components/storage/utils";
 import { apiModel, system } from "~/api/storage";
 import { STORAGE as PATHS } from "~/routes/paths";
 import * as driveUtils from "~/components/storage/utils/drive";
-import { generateEncodedPath } from "~/utils";
 import { isEmpty } from "radashi";
 import { _ } from "~/i18n";
 import { model } from "~/types/storage";
@@ -63,7 +62,7 @@ export default function SpacePolicyMenu({ modelDevice, device }: SpacePolicyMenu
 
   const onSpacePolicyChange = (spacePolicy: apiModel.SpacePolicy) => {
     if (spacePolicy === "custom") {
-      return navigate(generateEncodedPath(PATHS.editSpacePolicy, { list, listIndex }));
+      return navigate(generatePath(PATHS.editSpacePolicy, { list, listIndex }));
     } else {
       setSpacePolicy(list, listIndex, { type: spacePolicy });
     }

@@ -22,7 +22,7 @@
 
 import React, { useId } from "react";
 import { Divider, Stack, Flex } from "@patternfly/react-core";
-import { useNavigate } from "react-router-dom";
+import { generatePath, useNavigate } from "react-router";
 import Text from "~/components/core/Text";
 import MenuButton from "~/components/core/MenuButton";
 import MenuHeader from "~/components/core/MenuHeader";
@@ -31,14 +31,13 @@ import { Partition } from "~/api/storage/model";
 import { STORAGE as PATHS } from "~/routes/paths";
 import { useDeletePartition } from "~/hooks/storage/partition";
 import * as driveUtils from "~/components/storage/utils/drive";
-import { generateEncodedPath } from "~/utils";
 import { sprintf } from "sprintf-js";
 import { _, n_ } from "~/i18n";
 
 const PartitionMenuItem = ({ device, mountPath }) => {
   const partition = device.getPartition(mountPath);
   const { list, listIndex } = device;
-  const editPath = generateEncodedPath(PATHS.editPartition, {
+  const editPath = generatePath(PATHS.editPartition, {
     list,
     listIndex,
     partitionId: mountPath,
@@ -140,7 +139,7 @@ export default function PartitionsMenu({ device }) {
   const ariaLabelId = useId();
   const toggleTextId = useId();
   const { list, listIndex } = device;
-  const newPartitionPath = generateEncodedPath(PATHS.addPartition, { list, listIndex });
+  const newPartitionPath = generatePath(PATHS.addPartition, { list, listIndex });
   // TRANSLATORS: %s is the name of device, like '/dev/sda'.
   const detailsAriaLabel = sprintf(_("Details for %s"), device.name);
   const hasPartitions = device.partitions.some((p: Partition) => p.mountPath);

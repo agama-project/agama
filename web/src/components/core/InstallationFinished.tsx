@@ -37,7 +37,7 @@ import {
   GridItem,
   Stack,
 } from "@patternfly/react-core";
-import { Navigate, useNavigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router";
 import { Icon } from "~/components/layout";
 import alignmentStyles from "@patternfly/react-styles/css/utilities/Alignment/alignment";
 import { useInstallerStatus } from "~/queries/status";

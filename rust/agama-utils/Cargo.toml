@@ -19,6 +19,8 @@ zbus = "5.7.1"
 zvariant = "5.5.2"
 gettext-rs = { version = "0.7.2", features = ["gettext-system"] }
 uuid = { version = "1.10.0", features = ["v4"] }
+cidr = { version = "0.3.1", features = ["serde"] }
+macaddr = { version = "1.0.1", features = ["serde_std"] }
 
 [dev-dependencies]
 tokio-test = "0.4.4"
