@@ -101,7 +101,11 @@ export interface Multipath {
 }
 export interface PartitionTable {
   type: "gpt" | "msdos" | "dasd";
-  unusedSlots: number[][];
+  unusedSlots: UnusedSlot[];
+}
+export interface UnusedSlot {
+  start: number;
+  size: number;
 }
 export interface Partition {
   efi: boolean;

@@ -66,6 +66,9 @@ describe Agama::Storage::DevicegraphConversions::ToJSON do
         expect(vda[:partitions].size).to eq 3
         expect(vda[:partitions].map { |p| p[:class] }).to all(eq "partition")
         expect(vda[:partitionTable][:type]).to eq "gpt"
+        expect(vda[:partitionTable][:unusedSlots]).to contain_exactly(
+          a_hash_including(start: Integer, size: Integer)
+        )
 
         vdb = json.find { |d| d[:name] == "/dev/vdb" }
         expect(vdb.keys).to_not include :partitions

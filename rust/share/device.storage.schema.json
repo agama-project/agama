@@ -175,15 +175,21 @@
         "type": { "$ref": "#/$defs/ptableType" },
         "unusedSlots": {
           "type": "array",
-          "items": {
-            "type": "array",
-            "items": { "type": "integer" }
-          }
+          "items": { "$ref": "#/$defs/unusedSlot" }
         }
       }
     },
     "ptableType": {
       "enum": ["gpt", "msdos", "dasd"]
+    },
+    "unusedSlot": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["start", "size"],
+      "properties": {
+        "start": { "type": "integer" },
+        "size": { "type": "integer" }
+      }
     },
     "partition": {
       "type": "object",
