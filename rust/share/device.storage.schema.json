@@ -52,26 +52,17 @@
           "type": "array",
           "items": { "type": "string" }
         },
-        "shrinking": {
-          "anyOf": [
-            { "$ref": "#/$defs/shrinkingSupported" },
-            { "$ref": "#/$defs/shrinkingUnsupported" }
-          ]
-        }
+        "shrinking": { "$ref": "#/$defs/shrinkInfo" }
       }
     },
-    "shrinkingSupported": {
+    "shrinkInfo": {
       "type": "object",
       "additionalProperties": false,
+      "required": ["supported"],
       "properties": {
-        "supported": { "type": "integer" }
-      }
-    },
-    "shrinkingUnsupported": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "unsupported": {
+        "supported": { "type": "boolean" },
+        "minSize": { "type": "integer" },
+        "reasons": {
           "type": "array",
           "items": { "type": "string" }
         }

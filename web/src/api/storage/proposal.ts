@@ -47,13 +47,12 @@ export interface Block {
   udevIds?: string[];
   udevPaths?: string[];
   systems?: string[];
-  shrinking: ShrinkingSupported | ShrinkingUnsupported;
+  shrinking: ShrinkInfo;
 }
-export interface ShrinkingSupported {
-  supported?: number;
-}
-export interface ShrinkingUnsupported {
-  unsupported?: string[];
+export interface ShrinkInfo {
+  supported: boolean;
+  minSize?: number;
+  reasons?: string[];
 }
 export interface Drive {
   type?: "disk" | "raid" | "multipath" | "dasd";
