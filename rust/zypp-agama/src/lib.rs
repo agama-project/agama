@@ -16,6 +16,8 @@ pub use errors::ZyppError;
 mod helpers;
 use helpers::{status_to_result, status_to_result_void, string_from_ptr};
 
+use crate::callbacks::PkgDownloadCallbacks;
+
 pub mod callbacks;
 
 #[derive(Debug)]
@@ -153,11 +155,14 @@ impl Zypp {
         }
     }
 
-    pub fn commit(&self) -> ZyppResult<bool> {
+    pub fn commit(&self, report: &impl PkgDownloadCallbacks) -> ZyppResult<bool> {
         let mut status: Status = Status::default();
         let status_ptr = &mut status as *mut _;
         unsafe {
-            let res = zypp_agama_sys::commit(self.ptr, status_ptr);
+            let mut commit_fn = |mut callbacks| {
+                zypp_agama_sys::commit(self.ptr, status_ptr, &mut callbacks)
+            };
+            let res = callbacks::with_c_commit_download_callbacks(report, &mut commit_fn);
             helpers::status_to_result(status, res)
         }
     }

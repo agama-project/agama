@@ -91,6 +91,94 @@ const _: () = {
     ["Offset of field: DownloadProgressCallbacks::finish_data"]
         [::std::mem::offset_of!(DownloadProgressCallbacks, finish_data) - 56usize];
 };
+pub const DownloadResolvableError_DRE_NO_ERROR: DownloadResolvableError = 0;
+pub const DownloadResolvableError_DRE_NOT_FOUND: DownloadResolvableError = 1;
+pub const DownloadResolvableError_DRE_IO: DownloadResolvableError = 2;
+pub const DownloadResolvableError_DRE_INVALID: DownloadResolvableError = 3;
+pub type DownloadResolvableError = ::std::os::raw::c_uint;
+pub const DownloadResolvableFileError_DRFE_NO_ERROR: DownloadResolvableFileError = 0;
+pub const DownloadResolvableFileError_DRFE_NOT_FOUND: DownloadResolvableFileError = 1;
+pub const DownloadResolvableFileError_DRFE_IO: DownloadResolvableFileError = 2;
+pub const DownloadResolvableFileError_DRFE_ACCESS_DENIED: DownloadResolvableFileError = 3;
+pub const DownloadResolvableFileError_DRFE_ERROR: DownloadResolvableFileError = 4;
+pub type DownloadResolvableFileError = ::std::os::raw::c_uint;
+#[doc = "< Signature is OK."]
+pub const GPGCheckPackageResult_CHK_OK: GPGCheckPackageResult = 0;
+#[doc = "< Signature is unknown type."]
+pub const GPGCheckPackageResult_CHK_NOTFOUND: GPGCheckPackageResult = 1;
+#[doc = "< Signature does not verify."]
+pub const GPGCheckPackageResult_CHK_FAIL: GPGCheckPackageResult = 2;
+#[doc = "< Signature is OK, but key is not trusted."]
+pub const GPGCheckPackageResult_CHK_NOTTRUSTED: GPGCheckPackageResult = 3;
+#[doc = "< Public key is unavailable."]
+pub const GPGCheckPackageResult_CHK_NOKEY: GPGCheckPackageResult = 4;
+#[doc = "< File does not exist or can't be opened."]
+pub const GPGCheckPackageResult_CHK_ERROR: GPGCheckPackageResult = 5;
+#[doc = "< File has no gpg signature (only digests)."]
+pub const GPGCheckPackageResult_CHK_NOSIG: GPGCheckPackageResult = 6;
+pub type GPGCheckPackageResult = ::std::os::raw::c_uint;
+pub type ZyppDownloadResolvableStartCallback =
+    ::std::option::Option<unsafe extern "C" fn(user_data: *mut ::std::os::raw::c_void)>;
+pub type ZyppDownloadResolvableProblemCallback = ::std::option::Option<
+    unsafe extern "C" fn(
+        resolvable_name: *const ::std::os::raw::c_char,
+        error: DownloadResolvableError,
+        description: *const ::std::os::raw::c_char,
+        user_data: *mut ::std::os::raw::c_void,
+    ) -> PROBLEM_RESPONSE,
+>;
+pub type ZyppDownloadResolvableGpgCheckCallback = ::std::option::Option<
+    unsafe extern "C" fn(
+        resolvable_name: *const ::std::os::raw::c_char,
+        repo_url: *const ::std::os::raw::c_char,
+        check_result: GPGCheckPackageResult,
+        user_data: *mut ::std::os::raw::c_void,
+    ) -> PROBLEM_RESPONSE,
+>;
+pub type ZyppDownloadResolvableFileFinishCallback = ::std::option::Option<
+    unsafe extern "C" fn(
+        url: *const ::std::os::raw::c_char,
+        local_path: *const ::std::os::raw::c_char,
+        error: DownloadResolvableFileError,
+        error_details: *const ::std::os::raw::c_char,
+        user_data: *mut ::std::os::raw::c_void,
+    ),
+>;
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct DownloadResolvableCallbacks {
+    pub start_preload: ZyppDownloadResolvableStartCallback,
+    pub start_preload_data: *mut ::std::os::raw::c_void,
+    pub problem: ZyppDownloadResolvableProblemCallback,
+    pub problem_data: *mut ::std::os::raw::c_void,
+    pub gpg_check: ZyppDownloadResolvableGpgCheckCallback,
+    pub gpg_check_data: *mut ::std::os::raw::c_void,
+    pub file_finish: ZyppDownloadResolvableFileFinishCallback,
+    pub file_finish_data: *mut ::std::os::raw::c_void,
+}
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of DownloadResolvableCallbacks"]
+        [::std::mem::size_of::<DownloadResolvableCallbacks>() - 64usize];
+    ["Alignment of DownloadResolvableCallbacks"]
+        [::std::mem::align_of::<DownloadResolvableCallbacks>() - 8usize];
+    ["Offset of field: DownloadResolvableCallbacks::start_preload"]
+        [::std::mem::offset_of!(DownloadResolvableCallbacks, start_preload) - 0usize];
+    ["Offset of field: DownloadResolvableCallbacks::start_preload_data"]
+        [::std::mem::offset_of!(DownloadResolvableCallbacks, start_preload_data) - 8usize];
+    ["Offset of field: DownloadResolvableCallbacks::problem"]
+        [::std::mem::offset_of!(DownloadResolvableCallbacks, problem) - 16usize];
+    ["Offset of field: DownloadResolvableCallbacks::problem_data"]
+        [::std::mem::offset_of!(DownloadResolvableCallbacks, problem_data) - 24usize];
+    ["Offset of field: DownloadResolvableCallbacks::gpg_check"]
+        [::std::mem::offset_of!(DownloadResolvableCallbacks, gpg_check) - 32usize];
+    ["Offset of field: DownloadResolvableCallbacks::gpg_check_data"]
+        [::std::mem::offset_of!(DownloadResolvableCallbacks, gpg_check_data) - 40usize];
+    ["Offset of field: DownloadResolvableCallbacks::file_finish"]
+        [::std::mem::offset_of!(DownloadResolvableCallbacks, file_finish) - 48usize];
+    ["Offset of field: DownloadResolvableCallbacks::file_finish_data"]
+        [::std::mem::offset_of!(DownloadResolvableCallbacks, file_finish_data) - 56usize];
+};
 #[doc = " status struct to pass and obtain from calls that can fail.\n After usage free with \\ref free_status function.\n\n Most functions act as *constructors* for this, taking a pointer\n to it as an output parameter, disregarding the struct current contents\n and filling it in. Thus, if you reuse a `Status` without \\ref free_status\n in between, `error` will leak."]
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
@@ -280,8 +368,12 @@ unsafe extern "C" {
     ) -> *mut Zypp;
     #[doc = " Switch Zypp target (where to install packages to).\n @param root\n @param[out] status"]
     pub fn switch_target(zypp: *mut Zypp, root: *const ::std::os::raw::c_char, status: *mut Status);
-    #[doc = " Commit zypp settings and install\n TODO: callbacks\n @param zypp\n @param status\n @return true if there is no error"]
-    pub fn commit(zypp: *mut Zypp, status: *mut Status) -> bool;
+    #[doc = " Commit zypp settings and install\n TODO: install callbacks\n @param zypp\n @param status\n @param download_callbacks\n @return true if there is no error"]
+    pub fn commit(
+        zypp: *mut Zypp,
+        status: *mut Status,
+        download_callbacks: *mut DownloadResolvableCallbacks,
+    ) -> bool;
     #[doc = " Calculates the space usage for a given list of mount points.\n This function populates the `used_size` field for each element in the\n provided `mount_points` array.\n\n @param zypp The Zypp context.\n @param[out] status Output status object.\n @param[in,out] mount_points An array of mount points to be evaluated.\n @param mount_points_size The number of elements in the `mount_points` array."]
     pub fn get_space_usage(
         zypp: *mut Zypp,

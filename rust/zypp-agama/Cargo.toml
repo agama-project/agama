@@ -6,3 +6,4 @@ edition = "2021"
 [dependencies]
 zypp-agama-sys = { path="./zypp-agama-sys" }
 url = "2.5.7"
+tracing = "0.1.41"
