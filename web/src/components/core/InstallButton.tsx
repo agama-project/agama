@@ -26,7 +26,7 @@ import { Popup } from "~/components/core";
 import { startInstallation } from "~/api/manager";
 import { useAllIssues } from "~/queries/issues";
 import { IssueSeverity } from "~/types/issues";
-import { useLocation } from "react-router-dom";
+import { useLocation } from "react-router";
 import { SIDE_PATHS } from "~/routes/paths";
 import { _ } from "~/i18n";
 import { Icon } from "../layout";

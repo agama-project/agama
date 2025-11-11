@@ -18,7 +18,7 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::api::{l10n, question, software, storage};
+use crate::api::{l10n, network, question, software, storage};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, Default, Deserialize, Serialize, utoipa::ToSchema)]
@@ -29,6 +29,8 @@ pub struct Config {
     pub l10n: Option<l10n::Config>,
     #[serde(flatten, skip_serializing_if = "Option::is_none")]
     pub software: Option<software::Config>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub network: Option<network::Config>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub questions: Option<question::Config>,
     #[serde(skip_serializing_if = "Option::is_none")]

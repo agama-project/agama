@@ -22,7 +22,7 @@
 
 import React, { useState } from "react";
 import { ActionGroup, Content, Form } from "@patternfly/react-core";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router";
 import { Page } from "~/components/core";
 import { SpaceActionsTable } from "~/components/storage";
 import { deviceChildren } from "~/components/storage/utils";

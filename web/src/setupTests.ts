@@ -3,3 +3,11 @@
 // expect(element).toHaveTextContent(/react/i)
 // learn more: https://github.com/testing-library/jest-dom
 import "@testing-library/jest-dom";
+import { TextDecoder as NodeTextDecoder, TextEncoder as NodeTextEncoder } from "util";
+
+globalThis.IS_REACT_ACT_ENVIRONMENT = true;
+
+if (!globalThis.TextEncoder || !globalThis.TextDecoder) {
+  globalThis.TextEncoder = NodeTextEncoder as typeof TextEncoder;
+  globalThis.TextDecoder = NodeTextDecoder as typeof TextDecoder;
+}

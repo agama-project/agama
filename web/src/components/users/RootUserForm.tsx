@@ -31,7 +31,7 @@ import {
   Form,
   FormGroup,
 } from "@patternfly/react-core";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { NestedContent, Page, PasswordAndConfirmationInput } from "~/components/core";
 import { useRootUser, useRootUserMutation } from "~/queries/users";
 import { RootUser } from "~/types/users";

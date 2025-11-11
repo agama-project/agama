@@ -21,7 +21,7 @@
  */
 
 import React from "react";
-import { createHashRouter, Outlet } from "react-router-dom";
+import { createHashRouter, Outlet } from "react-router";
 import App from "~/App";
 import Protected from "~/Protected";
 import { FullLayout, PlainLayout } from "~/components/layout";
