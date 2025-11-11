@@ -27,7 +27,8 @@ pub mod adapter;
 pub mod error;
 pub mod model;
 mod nm;
-pub mod settings;
+pub mod start;
+pub use start::start;
 mod system;
 pub mod types;
 

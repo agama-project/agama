@@ -21,6 +21,16 @@
 //! Error types.
 use thiserror::Error;
 
+use crate::NetworkSystemError;
+
+#[derive(thiserror::Error, Debug)]
+pub enum Error {
+    #[error(transparent)]
+    NetworkStateError(#[from] NetworkStateError),
+    #[error(transparent)]
+    NetworkSystemError(#[from] NetworkSystemError),
+}
+
 /// Errors that are related to the network configuration.
 #[derive(Error, Debug)]
 pub enum NetworkStateError {
