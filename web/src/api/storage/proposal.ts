@@ -27,6 +27,7 @@ export interface StorageDevice {
   sid: number;
   name: string;
   description?: string;
+  class?: "drive" | "mdRaid" | "partition" | "volumeGroup" | "logicalVolume";
   block?: Block;
   drive?: Drive;
   filesystem?: Filesystem;

@@ -51,6 +51,7 @@ describe Agama::Storage::DevicegraphConversions::ToJSON do
       it "generates an entry for each disk" do
         json = subject.convert
         expect(json.map { |e| e[:name] }).to contain_exactly("/dev/vda", "/dev/vdb", "/dev/vdc")
+        expect(json.map { |e| e[:class] }).to all(eq "drive")
       end
 
       it "exports the block device sizes in bytes" do
@@ -63,6 +64,7 @@ describe Agama::Storage::DevicegraphConversions::ToJSON do
 
         vda = json.find { |d| d[:name] == "/dev/vda" }
         expect(vda[:partitions].size).to eq 3
+        expect(vda[:partitions].map { |p| p[:class] }).to all(eq "partition")
         expect(vda[:partitionTable][:type]).to eq "gpt"
 
         vdb = json.find { |d| d[:name] == "/dev/vdb" }
@@ -94,7 +96,10 @@ describe Agama::Storage::DevicegraphConversions::ToJSON do
 
       it "generates an entry for each disk and volume group" do
         json = subject.convert
-        expect(json.map { |e| e[:name] }).to contain_exactly("/dev/sda", "/dev/vg0")
+        expect(json).to contain_exactly(
+          a_hash_including(name: "/dev/sda", class: "drive"),
+          a_hash_including(name: "/dev/vg0", class: "volumeGroup")
+        )
       end
 
       it "exports the size and physical volumes of the LVM volume group" do
@@ -116,6 +121,7 @@ describe Agama::Storage::DevicegraphConversions::ToJSON do
         lvs = vg0[:logicalVolumes]
         expect(lvs.map { |lv| lv[:name] }).to eq ["/dev/vg0/lv1"]
         expect(lvs.first[:block].keys).to include :size
+        expect(lvs.first[:class]).to eq "logicalVolume"
       end
 
       it "generates the :filesystem entry for formatted logical volumes" do
@@ -133,7 +139,11 @@ describe Agama::Storage::DevicegraphConversions::ToJSON do
 
       it "generates an entry for each disk and MD RAID" do
         json = subject.convert
-        expect(json.map { |e| e[:name] }).to contain_exactly("/dev/vda", "/dev/vdb", "/dev/md0")
+        expect(json).to contain_exactly(
+          a_hash_including(name: "/dev/vda", class: "drive"),
+          a_hash_including(name: "/dev/vdb", class: "drive"),
+          a_hash_including(name: "/dev/md0", class: "mdRaid")
+        )
       end
 
       it "exports the level and members of the MD RAIDs" do

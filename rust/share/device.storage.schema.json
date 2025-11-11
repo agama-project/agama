@@ -10,6 +10,9 @@
     "sid": { "type": "integer" },
     "name": { "type": "string" },
     "description": { "type": "string" },
+    "class": {
+      "enum": ["drive", "mdRaid", "partition", "volumeGroup", "logicalVolume"]
+    },
     "block": { "$ref": "#/$defs/block" },
     "drive": { "$ref": "#/$defs/drive" },
     "filesystem": { "$ref": "#/$defs/filesystem" },

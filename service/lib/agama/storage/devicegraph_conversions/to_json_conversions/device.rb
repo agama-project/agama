@@ -40,7 +40,8 @@ module Agama
             result = {
               sid:         device_sid,
               name:        device_name,
-              description: device_description
+              description: device_description,
+              class:       device_class
             }
             add_sections(result)
             add_nested_devices(result)
@@ -72,6 +73,18 @@ module Agama
           # @return [String] e.g., "EXT4 Partition".
           def device_description
             Y2Storage::DeviceDescription.new(storage_device, include_encryption: true).to_s
+          end
+
+          # Type of device.
+          #
+          # @return [String] "drive", "mdRaid", "volumeGroup", "partition" or "logicalVolume"
+          def device_class
+            return "partition" if storage_device.is?(:partition)
+            return "logicalVolume" if storage_device.is?(:lvm_lv)
+            return "volumeGroup" if storage_device.is?(:lvm_vg)
+            return "mdRaid" if storage_device.is?(:software_raid)
+
+            "drive"
           end
 
           # Adds the required sub-sections according to the storage object.
