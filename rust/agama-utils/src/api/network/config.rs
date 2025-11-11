@@ -1,4 +1,4 @@
-// Copyright (c) [2024] SUSE LLC
+// Copyright (c) [2025] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -18,20 +18,17 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-pub mod bootloader;
-pub mod cert;
-pub mod dbus;
-pub mod error;
-pub mod files;
-pub mod hostname;
-pub mod logs;
-pub mod manager;
-pub mod profile;
-pub mod scripts;
-pub mod security;
-pub mod software;
-pub mod storage;
-pub mod users;
-pub mod web;
-pub use web::service;
-pub mod server;
+//! Representation of the network settings
+
+use crate::api::network::{NetworkConnectionsCollection, StateSettings};
+use serde::{Deserialize, Serialize};
+use std::default::Default;
+
+/// Network config settings for installation
+#[derive(Clone, Debug, Default, Serialize, Deserialize, utoipa::ToSchema)]
+#[serde(rename_all = "camelCase")]
+pub struct Config {
+    /// Connections to use in the installation
+    pub connections: Option<NetworkConnectionsCollection>,
+    pub state: Option<StateSettings>,
+}

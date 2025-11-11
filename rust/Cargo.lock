@@ -131,6 +131,7 @@ name = "agama-manager"
 version = "0.1.0"
 dependencies = [
  "agama-l10n",
+ "agama-network",
  "agama-storage",
  "agama-utils",
  "async-trait",
@@ -175,6 +176,7 @@ dependencies = [
  "agama-lib",
  "agama-locale-data",
  "agama-manager",
+ "agama-network",
  "agama-utils",
  "anyhow",
  "async-trait",
@@ -238,7 +240,9 @@ version = "0.1.0"
 dependencies = [
  "agama-locale-data",
  "async-trait",
+ "cidr",
  "gettext-rs",
+ "macaddr",
  "serde",
  "serde_json",
  "serde_with",

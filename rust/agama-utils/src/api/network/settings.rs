@@ -20,19 +20,34 @@
 
 //! Representation of the network settings
 
-use super::types::{DeviceState, DeviceType, Status};
-use agama_utils::openapi::schemas;
+use super::types::{ConnectionState, DeviceState, DeviceType, Status};
+use crate::openapi::schemas;
 use cidr::IpInet;
 use serde::{Deserialize, Serialize};
 use std::default::Default;
 use std::net::IpAddr;
 
+#[derive(Clone, Debug, Default, Serialize, Deserialize, utoipa::ToSchema)]
+pub struct NetworkConnectionsCollection(pub Vec<NetworkConnection>);
+
 /// Network settings for installation
 #[derive(Clone, Debug, Default, Serialize, Deserialize, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct NetworkSettings {
-    /// Connections to use in the installation
-    pub connections: Vec<NetworkConnection>,
+    pub connections: NetworkConnectionsCollection,
+}
+
+#[derive(Clone, Debug, Default, Serialize, Deserialize, utoipa::ToSchema)]
+#[serde(rename_all = "camelCase")]
+pub struct StateSettings {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub connectivity: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub wireless_enabled: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub networking_enabled: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub copy_network: Option<bool>,
 }
 
 #[derive(Clone, Debug, Default, Serialize, Deserialize, utoipa::ToSchema)]
@@ -196,7 +211,7 @@ pub struct IEEE8021XSettings {
     pub peap_label: bool,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, utoipa::ToSchema)]
 pub struct NetworkDevice {
     pub id: String,
     pub type_: DeviceType,
@@ -301,4 +316,15 @@ impl NetworkConnection {
             DeviceType::Ethernet
         }
     }
+}
+
+// FIXME: found a better place for the HTTP types.
+//
+// TODO: If the client ignores the additional "state" field, this struct
+// does not need to be here.
+#[derive(Debug, Clone, Serialize, Deserialize, utoipa::ToSchema)]
+pub struct NetworkConnectionWithState {
+    #[serde(flatten)]
+    pub connection: NetworkConnection,
+    pub state: ConnectionState,
 }

@@ -21,10 +21,8 @@
 use crate::{
     action::Action,
     error::NetworkStateError,
-    model::{
-        AccessPoint, Connection, Device, GeneralState, NetworkChange, NetworkState, StateConfig,
-    },
-    types::DeviceType,
+    model::{Connection, GeneralState, NetworkChange, NetworkState, StateConfig},
+    types::{AccessPoint, Config, Device, DeviceType, Proposal, SystemInfo},
     Adapter, NetworkAdapterError,
 };
 use std::error::Error;
@@ -161,6 +159,31 @@ impl NetworkSystemClient {
     pub async fn get_connections(&self) -> Result<Vec<Connection>, NetworkSystemError> {
         let (tx, rx) = oneshot::channel();
         self.actions.send(Action::GetConnections(tx))?;
+        Ok(rx.await?)
+    }
+    pub async fn get_config(&self) -> Result<Config, NetworkSystemError> {
+        let (tx, rx) = oneshot::channel();
+        self.actions.send(Action::GetConfig(tx))?;
+        Ok(rx.await?)
+    }
+
+    pub async fn get_proposal(&self) -> Result<Proposal, NetworkSystemError> {
+        let (tx, rx) = oneshot::channel();
+        self.actions.send(Action::GetProposal(tx))?;
+        Ok(rx.await?)
+    }
+
+    pub async fn update_config(&self, config: Config) -> Result<(), NetworkSystemError> {
+        let (tx, rx) = oneshot::channel();
+        self.actions
+            .send(Action::UpdateConfig(Box::new(config.clone()), tx))?;
+        let result = rx.await?;
+        Ok(result?)
+    }
+
+    pub async fn get_system_config(&self) -> Result<SystemInfo, NetworkSystemError> {
+        let (tx, rx) = oneshot::channel();
+        self.actions.send(Action::GetSystemConfig(tx))?;
         Ok(rx.await?)
     }
 
@@ -310,6 +333,23 @@ impl<T: Adapter> NetworkSystemServer<T> {
                 let conn = self.state.get_connection_by_uuid(uuid);
                 tx.send(conn.cloned()).unwrap();
             }
+            Action::GetSystemConfig(tx) => {
+                let result = self.read().await?.try_into()?;
+                tx.send(result).unwrap();
+            }
+            Action::GetConfig(tx) => {
+                let config: Config = self.state.clone().try_into()?;
+                tx.send(config).unwrap();
+            }
+            Action::GetProposal(tx) => {
+                let config: Proposal = self.state.clone().try_into()?;
+                tx.send(config).unwrap();
+            }
+            Action::UpdateConfig(config, tx) => {
+                let result = self.state.update_state(*config);
+
+                tx.send(result).unwrap();
+            }
             Action::GetConnections(tx) => {
                 let connections = self
                     .state
@@ -422,6 +462,11 @@ impl<T: Adapter> NetworkSystemServer<T> {
             .collect::<Vec<_>>();
 
         Ok((conn, controlled))
+    }
+
+    /// Reads the system network configuration.
+    pub async fn read(&mut self) -> Result<NetworkState, NetworkAdapterError> {
+        self.adapter.read(StateConfig::default()).await
     }
 
     /// Writes the network configuration.

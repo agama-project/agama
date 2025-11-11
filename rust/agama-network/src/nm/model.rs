@@ -27,9 +27,9 @@
 /// Using the newtype pattern around an String is enough. For proper support, we might replace this
 /// struct with an enum.
 use crate::{
-    model::{Ipv4Method, Ipv6Method, SecurityProtocol, WirelessMode},
+    model::{SecurityProtocol, WirelessMode},
     nm::error::NmError,
-    types::{ConnectionState, DeviceType},
+    types::{ConnectionState, DeviceType, Ipv4Method, Ipv6Method},
 };
 use std::fmt;
 use std::str::FromStr;

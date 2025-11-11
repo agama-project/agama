@@ -1,4 +1,4 @@
-// Copyright (c) [2024] SUSE LLC
+// Copyright (c) [2025] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -18,8 +18,17 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-pub mod web;
+//! Representation of the network settings
 
-pub use agama_lib::network::{
-    model::NetworkState, Action, Adapter, NetworkAdapterError, NetworkManagerAdapter, NetworkSystem,
-};
+use crate::api::network::{NetworkConnectionsCollection, StateSettings};
+use serde::{Deserialize, Serialize};
+use std::default::Default;
+
+/// Network proposal settings for installation
+#[derive(Clone, Debug, Default, Serialize, Deserialize, utoipa::ToSchema)]
+#[serde(rename_all = "camelCase")]
+pub struct Proposal {
+    /// Connections to use in the installation
+    pub connections: NetworkConnectionsCollection,
+    pub state: StateSettings,
+}
