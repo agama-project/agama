@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Nov  7 15:14:51 UTC 2025 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Fixed an error in the calculation of partitions when several
+  MD RAIDs are created (bsc#1253145).
+
+-------------------------------------------------------------------
 Fri Oct 31 13:48:46 UTC 2025 - Ancor Gonzalez Sosa <ancor@suse.com>
 
 - Use a version of yast2-iscsi-client that fixes the errors
