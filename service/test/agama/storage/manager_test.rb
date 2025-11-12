@@ -50,9 +50,6 @@ describe Agama::Storage::Manager do
     File.join(FIXTURES_PATH, "root_dir", "etc", "agama.yaml")
   end
   let(:config) { Agama::Config.from_file(config_path) }
-  let(:files_client) { instance_double(Agama::HTTP::Clients::Files, write: nil) }
-  let(:scripts_client) { instance_double(Agama::HTTP::Clients::Scripts, run: nil) }
-  let(:scripts_dir) { File.join(tmp_dir, "run", "agama", "scripts") }
   let(:tmp_dir) { Dir.mktmpdir }
   let(:http_client) { instance_double(Agama::HTTP::Clients::Main) }
 
@@ -65,9 +62,6 @@ describe Agama::Storage::Manager do
     allow(Agama::Security).to receive(:new).and_return(security)
     # mock writting config as proposal call can do storage probing, which fails in CI
     allow_any_instance_of(Agama::Storage::Bootloader).to receive(:write_config)
-    allow(Agama::HTTP::Clients::Files).to receive(:new).and_return(files_client)
-    allow(Agama::HTTP::Clients::Scripts).to receive(:new).and_return(scripts_client)
-    allow(Agama::Network).to receive(:new).and_return(network)
     allow(Yast::Installation).to receive(:destdir).and_return(File.join(tmp_dir, "mnt"))
     stub_const("Agama::Storage::Finisher::CopyLogsStep::SCRIPTS_DIR",
       File.join(tmp_dir, "run", "agama", "scripts"))
@@ -80,7 +74,6 @@ describe Agama::Storage::Manager do
   let(:y2storage_manager) { Y2Storage::StorageManager.instance }
   let(:proposal) { Agama::Storage::Proposal.new(config, logger: logger) }
   let(:questions_client) { instance_double(Agama::HTTP::Clients::Questions) }
-  let(:network) { instance_double(Agama::Network, link_resolv: nil, unlink_resolv: nil) }
   let(:bootloader_finish) { instance_double(Bootloader::FinishClient, write: nil) }
   let(:security) { instance_double(Agama::Security, write: nil) }
   let(:scenario) { "empty-hd-50GiB.yaml" }
@@ -359,31 +352,11 @@ describe Agama::Storage::Manager do
       expect(Yast::WFM).to receive(:CallFunction).with("storage_finish", ["Write"])
       expect(Yast::WFM).to receive(:CallFunction).with("iscsi-client_finish", ["Write"])
       expect(Yast2::FsSnapshot).to receive(:configure_snapper)
-      expect(network).to receive(:link_resolv)
-      expect(scripts_client).to receive(:run).with("post")
-      expect(files_client).to receive(:write)
-      expect(network).to receive(:unlink_resolv)
-      expect(Yast::Execute).to receive(:on_target!)
-        .with("systemctl", "enable", "agama-scripts", allowed_exitstatus: [0, 1])
       expect(Yast::WFM).to receive(:CallFunction).with("umount_finish", ["Write"])
       expect(Yast::Execute).to receive(:locally).with(
         "agama", "logs", "store", "--destination", /\/var\/log\/agama-installation\/logs/
       )
       storage.finish
-    end
-
-    context "when scripts artifacts exist" do
-      before do
-        FileUtils.mkdir_p(scripts_dir)
-        FileUtils.touch(File.join(scripts_dir, "test.sh"))
-        allow(Yast::Execute).to receive("locally").with("agama", "logs", "store", any_args)
-      end
-
-      it "copies the artifacts to the installed system" do
-        storage.finish
-        expect(File).to exist(File.join(tmp_dir, "mnt", "var", "log", "agama-installation",
-          "scripts"))
-      end
     end
   end
 

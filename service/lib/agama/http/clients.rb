@@ -30,4 +30,3 @@ end
 require "agama/http/clients/base"
 require "agama/http/clients/main"
 require "agama/http/clients/questions"
-require "agama/http/clients/scripts"

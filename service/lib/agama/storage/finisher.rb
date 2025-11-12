@@ -28,8 +28,6 @@ require "bootloader/finish_client"
 require "y2storage/storage_manager"
 require "agama/with_progress_manager"
 require "agama/helpers"
-require "agama/http"
-require "agama/network"
 require "abstract_method"
 require "fileutils"
 
@@ -87,8 +85,6 @@ module Agama
           IscsiStep.new(logger),
           BootloaderStep.new(logger),
           SnapshotsStep.new(logger),
-          FilesStep.new(logger),
-          PostScripts.new(logger),
           CopyLogsStep.new(logger),
           UnmountStep.new(logger)
         ]
@@ -279,64 +275,6 @@ module Agama
           @logs_dir ||= File.join(
             Yast::Installation.destdir, "var", "log", "agama-installation"
           )
-        end
-      end
-
-      # Executes post-installation scripts
-      class PostScripts < Step
-        def label
-          _("Running user-defined scripts")
-        end
-
-        def run
-          run_post_scripts
-          enable_init_scripts
-        end
-
-      private
-
-        # Run the post scripts
-        def run_post_scripts
-          network.link_resolv
-          client = Agama::HTTP::Clients::Scripts.new(logger)
-          client.run("post")
-        ensure
-          network.unlink_resolv
-        end
-
-        def network
-          @network ||= Agama::Network.new(logger)
-        end
-
-        # Enables the agama-scripts service to run init scripts
-        #
-        # The package agama-scripts is only installed when needed.
-        # So this method just tries to enable the service.
-        def enable_init_scripts
-          # systemctl will return 1 if the service does not exist.
-          Yast::Execute.on_target!(
-            "systemctl", "enable", "agama-scripts",
-            allowed_exitstatus: [0, 1]
-          )
-        end
-      end
-
-      # Executes post-installation scripts
-      class FilesStep < Step
-        def label
-          _("Deploying user-defined files")
-        end
-
-        def run
-          deploy_files
-        end
-
-      private
-
-        def deploy_files
-          require "agama/http"
-          client = Agama::HTTP::Clients::Files.new(logger)
-          client.write
         end
       end
 
