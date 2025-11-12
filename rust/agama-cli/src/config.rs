@@ -205,7 +205,6 @@ async fn validate_silently(
     Ok(validity)
 }
 
-
 async fn validate(
     client: &BaseHTTPClient,
     url_or_path: CliInput,
