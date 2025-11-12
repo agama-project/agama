@@ -41,6 +41,16 @@ Fri Oct  3 20:11:26 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
   following the new actors-based approach.
 
 -------------------------------------------------------------------
+Wed Oct  1 13:45:23 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Autoinstallation schema improvements (gh#agama-project/agama#2773):
+  - Added product name examples
+  - Allow using "$schema" key for linking the schema definition,
+    some editors like VSCode uses that for validaing the file
+    automatically
+  - Use "agama-project" in the GitHub URLs
+
+-------------------------------------------------------------------
 Mon Sep 15 21:09:06 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Do not log the events to prevent leaking passwords (bsc#1249622).

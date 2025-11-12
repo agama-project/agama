@@ -47,6 +47,7 @@ tokio-tungstenite = { version = "0.26.2", features = ["native-tls"] }
 tokio-native-tls = "0.3.1"
 percent-encoding = "2.3.1"
 uuid = { version = "1.17.0", features = ["serde", "v4"] }
+zypp-agama = { path = "../zypp-agama" }
 
 [dev-dependencies]
 httpmock = "0.7.0"

@@ -24,7 +24,6 @@ use crate::{
     manager::InstallationPhase,
     network::model::NetworkChange,
     progress::Progress,
-    software::{model::Conflict, SelectedBy},
     storage::{
         model::{
             dasd::{DASDDevice, DASDFormatSummary},
@@ -104,14 +103,6 @@ pub enum EventPayload {
         change: NetworkChange,
     },
     StorageChanged,
-    // TODO: it should include the full software proposal or, at least,
-    // all the relevant changes.
-    SoftwareProposalChanged {
-        patterns: HashMap<String, SelectedBy>,
-    },
-    ConflictsChanged {
-        conflicts: Vec<Conflict>,
-    },
     QuestionsChanged,
     InstallationPhaseChanged {
         phase: InstallationPhase,
