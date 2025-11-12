@@ -1,7 +1,7 @@
 id: SLES
-name: SUSE Linux Enterprise Server 16.0
+name: SUSE Linux Enterprise Server 16.1
 registration: true
-version: "16.0"
+version: "16.1"
 license: "license.final"
 # ------------------------------------------------------------------------------
 # WARNING: When changing the product description delete the translations located
