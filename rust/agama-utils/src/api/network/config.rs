@@ -18,15 +18,18 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-mod start;
-pub use start::start;
+//! Representation of the network settings
 
-pub mod service;
-pub use service::Service;
+use crate::api::network::{NetworkConnectionsCollection, StateSettings};
+use serde::{Deserialize, Serialize};
+use std::default::Default;
 
-pub mod message;
-
-pub use agama_l10n as l10n;
-pub use agama_network as network;
-pub use agama_software as software;
-pub use agama_storage as storage;
+/// Network config settings for installation
+#[derive(Clone, Debug, Default, Serialize, Deserialize, utoipa::ToSchema)]
+#[serde(rename_all = "camelCase")]
+pub struct Config {
+    /// Connections to use in the installation
+    pub connections: Option<NetworkConnectionsCollection>,
+    /// Network general settings
+    pub state: Option<StateSettings>,
+}

@@ -37,7 +37,7 @@ import {
   Stack,
   StackItem,
 } from "@patternfly/react-core";
-import { Navigate, useNavigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router";
 import { Page } from "~/components/core";
 import { useConfigMutation, useProduct, useRegistration } from "~/queries/software";
 import pfTextStyles from "@patternfly/react-styles/css/utilities/Text/text";

@@ -21,7 +21,7 @@
  */
 
 import React from "react";
-import { Navigate } from "react-router-dom";
+import { Navigate } from "react-router";
 import { Page, ProgressReport } from "~/components/core";
 import { useProduct } from "~/queries/software";
 import { useInstallerStatus } from "~/queries/status";

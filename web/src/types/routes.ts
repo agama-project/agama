@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import { RouteObject } from "react-router-dom";
+import { RouteObject } from "react-router";
 
 type RouteHandle = {
   /** Text to be used as label when building a link from route information */

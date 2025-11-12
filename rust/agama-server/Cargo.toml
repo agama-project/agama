@@ -13,6 +13,7 @@ agama-utils = { path = "../agama-utils" }
 agama-l10n = { path = "../agama-l10n" }
 agama-locale-data = { path = "../agama-locale-data" }
 agama-manager = { path = "../agama-manager" }
+agama-network = { path = "../agama-network" }
 agama-software = { path = "../agama-software" }
 zbus = { version = "5", default-features = false, features = ["tokio"] }
 uuid = { version = "1.10.0", features = ["v4"] }

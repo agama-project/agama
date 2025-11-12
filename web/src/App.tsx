@@ -21,7 +21,7 @@
  */
 
 import React, { useEffect } from "react";
-import { Navigate, Outlet, useLocation } from "react-router-dom";
+import { Navigate, Outlet, useLocation } from "react-router";
 import { Loading } from "~/components/layout";
 import { useProduct, useProductChanges } from "~/queries/software";
 import { useProposalChanges } from "~/queries/proposal";

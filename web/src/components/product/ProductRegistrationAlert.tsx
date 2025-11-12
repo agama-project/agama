@@ -22,7 +22,7 @@
 
 import React from "react";
 import { Alert } from "@patternfly/react-core";
-import { useLocation } from "react-router-dom";
+import { useLocation } from "react-router";
 import { Link } from "~/components/core";
 import { useProduct } from "~/queries/software";
 import { REGISTRATION, SIDE_PATHS } from "~/routes/paths";

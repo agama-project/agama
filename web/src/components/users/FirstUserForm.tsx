@@ -34,7 +34,7 @@ import {
   ActionGroup,
   Button,
 } from "@patternfly/react-core";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { Loading } from "~/components/layout";
 import { PasswordAndConfirmationInput, Page } from "~/components/core";
 import PasswordCheck from "~/components/users/PasswordCheck";

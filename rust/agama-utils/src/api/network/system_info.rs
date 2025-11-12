@@ -18,15 +18,19 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-mod start;
-pub use start::start;
+//! Representation of the network settings
 
-pub mod service;
-pub use service::Service;
+use crate::api::network::{AccessPoint, Device, NetworkConnectionsCollection, StateSettings};
+use serde::{Deserialize, Serialize};
+use std::default::Default;
 
-pub mod message;
-
-pub use agama_l10n as l10n;
-pub use agama_network as network;
-pub use agama_software as software;
-pub use agama_storage as storage;
+/// Network settings for installation
+#[derive(Clone, Debug, Default, Serialize, Deserialize, utoipa::ToSchema)]
+#[serde(rename_all = "camelCase")]
+pub struct SystemInfo {
+    pub access_points: Vec<AccessPoint>, // networks or access_points shold be returned
+    /// Connections to use in the installation
+    pub connections: NetworkConnectionsCollection,
+    pub devices: Vec<Device>,
+    pub state: StateSettings,
+}

@@ -18,15 +18,17 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-mod start;
-pub use start::start;
+//! This module contains all Agama public types that might be available over
+//! the HTTP and WebSocket API.
 
-pub mod service;
-pub use service::Service;
+mod config;
+pub use config::Config;
+mod proposal;
+pub use proposal::Proposal;
+mod settings;
+mod system_info;
+pub use system_info::SystemInfo;
 
-pub mod message;
-
-pub use agama_l10n as l10n;
-pub use agama_network as network;
-pub use agama_software as software;
-pub use agama_storage as storage;
+mod types;
+pub use settings::*;
+pub use types::*;

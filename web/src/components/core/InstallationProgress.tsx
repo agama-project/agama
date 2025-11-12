@@ -25,7 +25,7 @@ import { _ } from "~/i18n";
 import ProgressReport from "./ProgressReport";
 import { InstallationPhase } from "~/types/status";
 import { ROOT as PATHS } from "~/routes/paths";
-import { Navigate } from "react-router-dom";
+import { Navigate } from "react-router";
 import { useInstallerStatus, useInstallerStatusChanges } from "~/queries/status";
 
 function InstallationProgress() {

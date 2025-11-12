@@ -7,6 +7,7 @@ edition.workspace = true
 [dependencies]
 agama-utils = { path = "../agama-utils" }
 agama-l10n = { path = "../agama-l10n" }
+agama-network = { path = "../agama-network" }
 agama-software = { path = "../agama-software" }
 agama-storage = { path = "../agama-storage" }
 thiserror = "2.0.12"

@@ -44,7 +44,7 @@ import { ProductRegistrationAlert } from "~/components/product";
 import Link, { LinkProps } from "~/components/core/Link";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import flexStyles from "@patternfly/react-styles/css/utilities/Flex/flex";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router";
 import { isEmpty, isObject } from "radashi";
 import { SIDE_PATHS } from "~/routes/paths";
 import { _ } from "~/i18n";
