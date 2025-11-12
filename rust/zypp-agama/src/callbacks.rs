@@ -1,4 +1,7 @@
-use std::os::raw::{c_char, c_int, c_void};
+use std::{
+    os::raw::{c_char, c_int, c_void},
+    str::FromStr,
+};
 
 use crate::helpers::string_from_ptr;
 
@@ -19,6 +22,29 @@ impl From<ProblemResponse> for zypp_agama_sys::PROBLEM_RESPONSE {
             ProblemResponse::ABORT => zypp_agama_sys::PROBLEM_RESPONSE_PROBLEM_ABORT,
             ProblemResponse::IGNORE => zypp_agama_sys::PROBLEM_RESPONSE_PROBLEM_IGNORE,
             ProblemResponse::RETRY => zypp_agama_sys::PROBLEM_RESPONSE_PROBLEM_RETRY,
+        }
+    }
+}
+
+impl FromStr for ProblemResponse {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "Retry" => Ok(ProblemResponse::RETRY),
+            "Ignore" => Ok(ProblemResponse::IGNORE),
+            "Abort" => Ok(ProblemResponse::ABORT),
+            _ => Err(format!("Unknown action {:?}", s)),
+        }
+    }
+}
+
+impl ToString for ProblemResponse {
+    fn to_string(&self) -> String {
+        match self {
+            ProblemResponse::ABORT => "Abort".to_string(),
+            ProblemResponse::IGNORE => "Ignore".to_string(),
+            ProblemResponse::RETRY => "Retry".to_string(),
         }
     }
 }
@@ -174,6 +200,17 @@ impl From<zypp_agama_sys::DownloadResolvableError> for DownloadResolvableError {
                 tracing::error!("Unknown error code {:?}", error);
                 DownloadResolvableError::Invalid
             }
+        }
+    }
+}
+
+impl ToString for DownloadResolvableError {
+    fn to_string(&self) -> String {
+        match self {
+            DownloadResolvableError::NoError => "NoError".to_string(),
+            DownloadResolvableError::NotFound => "NotFound".to_string(),
+            DownloadResolvableError::IO => "IO".to_string(),
+            DownloadResolvableError::Invalid => "Invalid".to_string(),
         }
     }
 }
