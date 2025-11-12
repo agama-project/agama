@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Wed Nov 12 15:42:26 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 18
+
+-------------------------------------------------------------------
 Fri Nov  7 15:14:51 UTC 2025 - Ancor Gonzalez Sosa <ancor@suse.com>
 
 - Fixed an error in the calculation of partitions when several

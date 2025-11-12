@@ -17,7 +17,7 @@
         <profile name="SUSE_SLE_16" description="SLE-based image" import="true" />
     </profiles>
     <preferences>
-        <version>18.pre.0.0</version>
+        <version>18.0.0</version>
         <packagemanager>zypper</packagemanager>
         <locale>en_US</locale>
         <keytable>us</keytable>
