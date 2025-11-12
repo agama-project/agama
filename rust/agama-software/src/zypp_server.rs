@@ -32,7 +32,7 @@ use tokio::sync::{
     mpsc::{self, UnboundedSender},
     oneshot,
 };
-use zypp_agama::{callbacks::EmptyPkgDownloadCallbacks, ZyppError};
+use zypp_agama::{ZyppError, callbacks::pkg_download::EmptyCallback};
 
 use crate::model::state::{self, SoftwareState};
 const TARGET_DIR: &str = "/run/agama/software_ng_zypp";
@@ -191,7 +191,7 @@ impl ZyppServer {
         let target = "/mnt";
         zypp.switch_target(target)?;
         // TODO: write real callbacks
-        let result = zypp.commit(&EmptyPkgDownloadCallbacks)?;
+        let result = zypp.commit(&EmptyCallback)?;
         tracing::info!("libzypp commit ends with {}", result);
         Ok(result)
     }

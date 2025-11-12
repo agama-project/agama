@@ -233,6 +233,7 @@ dependencies = [
  "agama-locale-data",
  "agama-utils",
  "async-trait",
+ "gettext-rs",
  "glob",
  "regex",
  "serde",

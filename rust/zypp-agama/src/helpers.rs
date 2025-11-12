@@ -1,6 +1,13 @@
+use std::os::raw::c_void;
+
 // Safety requirements: inherited from https://doc.rust-lang.org/std/ffi/struct.CStr.html#method.from_ptr
 pub(crate) unsafe fn string_from_ptr(c_ptr: *const i8) -> String {
     String::from_utf8_lossy(std::ffi::CStr::from_ptr(c_ptr).to_bytes()).into_owned()
+}
+
+// Safety requirements: reference has to live long enough
+pub(crate) fn as_c_void<F>(data: &mut F) -> *mut c_void {
+    data as *mut _ as *mut c_void
 }
 
 // Safety requirements: ...

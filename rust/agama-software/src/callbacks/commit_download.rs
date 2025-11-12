@@ -1,6 +1,7 @@
 use agama_utils::{actor::Handler, api::question::QuestionSpec, progress, question};
+use gettextrs::gettext;
 use tokio::runtime::Handle;
-use zypp_agama::callbacks::PkgDownloadCallbacks;
+use zypp_agama::callbacks::pkg_download::{Callback, DownloadError};
 
 struct CommitDownload {
     progress: Handler<progress::Service>,
@@ -16,7 +17,7 @@ impl CommitDownload {
     }
 }
 
-impl PkgDownloadCallbacks for CommitDownload {
+impl Callback for CommitDownload {
     fn start_preload(&self) {
         // TODO: report progress that we start preloading packages
         tracing::info!("Start preload");
@@ -25,12 +26,12 @@ impl PkgDownloadCallbacks for CommitDownload {
     fn problem(
         &self,
         name: &str,
-        error: zypp_agama::callbacks::DownloadResolvableError,
+        error: DownloadError,
         description: &str,
     ) -> zypp_agama::callbacks::ProblemResponse {
-        // TODO: make it generic for any problem questions
-        // TODO: localization
-        let actions = [("Retry", "Retry"), ("Ignore", "Ignore")];
+        // TODO: make it generic for any problemResponse questions
+        let labels = [gettext("Retry"), gettext("Ignore")];
+        let actions = [("Retry", labels[0].as_str()), ("Ignore", labels[1].as_str())];
         let error_str = error.to_string();
         let data = [("package", name), ("error_code", error_str.as_str())];
         let question = QuestionSpec::new(description, "software.package_error.provide_error")
@@ -50,7 +51,7 @@ impl PkgDownloadCallbacks for CommitDownload {
             tracing::warn!("No answer provided");
             return zypp_agama::callbacks::ProblemResponse::ABORT;
         };
-        // TODO: add to ProblemResolve enum also from_str method
+
         answer_str
             .action
             .as_str()
