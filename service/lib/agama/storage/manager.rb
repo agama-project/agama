@@ -38,8 +38,6 @@ require "y2storage/clients/inst_prepdisk"
 require "y2storage/luks"
 require "y2storage/storage_manager"
 
-Yast.import "PackagesProposal"
-
 module Agama
   module Storage
     # Manager to handle storage configuration
@@ -121,7 +119,7 @@ module Agama
         return if packages.empty?
 
         logger.info "Selecting these packages for installation: #{packages}"
-        Yast::PackagesProposal.SetResolvables(PROPOSAL_ID, :package, packages)
+        http_client.set_resolvables(PROPOSAL_ID, :package, packages)
       end
 
       # Performs the final steps on the target file system(s).
@@ -236,6 +234,10 @@ module Agama
       # @return [Agama::HTTP::Clients::Questions]
       def questions_client
         @questions_client ||= Agama::HTTP::Clients::Questions.new(logger)
+      end
+
+      def http_client
+        @http_client = Agama::HTTP::Clients::Main.new(::Logger.new($stdout))
       end
     end
   end
