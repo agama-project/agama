@@ -29,7 +29,7 @@
  */
 
 import React from "react";
-import { MemoryRouter, useParams } from "react-router-dom";
+import { MemoryRouter, useParams } from "react-router";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import userEvent from "@testing-library/user-event";
 import { render, within } from "@testing-library/react";
@@ -87,9 +87,9 @@ const mockRoutes = (...routes) => initialRoutes.mockReturnValueOnce(routes);
  */
 const mockParams = (params: ReturnType<typeof useParams>) => (paramsMock = params);
 
-// Centralize the react-router-dom mock here
-jest.mock("react-router-dom", () => ({
-  ...jest.requireActual("react-router-dom"),
+// Centralize the react-router mock here
+jest.mock("react-router", () => ({
+  ...jest.requireActual("react-router"),
   useHref: (to) => to,
   useNavigate: () => mockNavigateFn,
   useMatches: () => [],

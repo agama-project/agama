@@ -37,6 +37,9 @@ pub struct NetworkSettings {
     pub connections: NetworkConnectionsCollection,
 }
 
+/// Network general settings for the installation like enabling wireless, networking and
+/// allowing to enable or disable the copy of the network settings to the
+/// target system
 #[derive(Clone, Debug, Default, Serialize, Deserialize, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct StateSettings {

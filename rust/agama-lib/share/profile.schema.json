@@ -337,11 +337,11 @@
       "additionalProperties": false,
       "properties": {
         "state": {
-          "title": "Network general state settings",
+          "title": "Network general settings",
           "type": "object",
           "properties": {
             "connectivity": {
-              "title": "Determines whether the user is able to access the Internet",
+              "title": "Whether the user is able to access the Internet",
               "type": "boolean",
               "readOnly": true
             },

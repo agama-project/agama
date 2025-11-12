@@ -66,7 +66,8 @@ pub struct NetworkState {
 }
 
 impl NetworkState {
-    /// Returns a NetworkState struct with the given devices and connections.
+    /// Returns a NetworkState struct with the given general_state, access_points, devices
+    /// and connections.
     ///
     /// * `general_state`: General network configuration
     /// * `access_points`: Access points to include in the state.
@@ -138,6 +139,7 @@ impl NetworkState {
         self.devices.iter_mut().find(|c| c.name == name)
     }
 
+    /// Returns the controller's connection for the givne connection Uuid.
     pub fn get_controlled_by(&mut self, uuid: Uuid) -> Vec<&Connection> {
         let uuid = Some(uuid);
         self.connections
@@ -158,10 +160,16 @@ impl NetworkState {
         Ok(())
     }
 
+    /// Updates the current [NetworkState] with the configuration provided.
+    ///
+    /// The config could contain a [NetworkConnectionsCollection] to be updated, in case of
+    /// provided it will iterate over the connections adding or updating them.
+    ///
+    /// If the general state is provided it will sets the options given.
     pub fn update_state(&mut self, config: Config) -> Result<(), NetworkStateError> {
         if let Some(connections) = config.connections {
             let mut collection: ConnectionCollection = connections.clone().try_into()?;
-            for conn in collection.0.iter_mut() {
+            for conn in collection.iter_mut() {
                 if let Some(current_conn) = self.get_connection(conn.id.as_str()) {
                     // Replaced the UUID with a real one
                     conn.uuid = current_conn.uuid;
@@ -1330,17 +1338,18 @@ pub struct ConnectionCollection(pub Vec<Connection>);
 
 impl ConnectionCollection {
     pub fn ports_for(&self, uuid: Uuid) -> Vec<String> {
-        self.0
-            .iter()
+        self.iter()
             .filter(|c| c.controller == Some(uuid))
-            .map(|c| {
-                if let Some(interface) = c.interface.to_owned() {
-                    interface
-                } else {
-                    c.clone().id
-                }
-            })
+            .map(|c| c.interface.as_ref().unwrap_or(&c.id).clone())
             .collect()
+    }
+
+    fn iter(&self) -> impl Iterator<Item = &Connection> {
+        self.0.iter()
+    }
+
+    fn iter_mut(&mut self) -> impl Iterator<Item = &mut Connection> {
+        self.0.iter_mut()
     }
 }
 
@@ -1349,7 +1358,6 @@ impl TryFrom<ConnectionCollection> for NetworkConnectionsCollection {
 
     fn try_from(collection: ConnectionCollection) -> Result<Self, Self::Error> {
         let network_connections = collection
-            .0
             .iter()
             .filter(|c| c.controller.is_none())
             .map(|c| {
@@ -1393,41 +1401,16 @@ impl TryFrom<NetworkConnectionsCollection> for ConnectionCollection {
         }
 
         for (port, uuid) in controller_ports {
-            let default = Connection::new(port.clone(), DeviceType::Ethernet);
             let mut conn = conns
                 .iter()
-                .find(|&c| c.id == port || c.interface == Some(port.to_string()))
-                .unwrap_or(&default)
-                .to_owned();
+                .find(|c| c.id == port || c.interface.as_ref() == Some(&port))
+                .cloned()
+                .unwrap_or_else(|| Connection::new(port, DeviceType::Ethernet));
             conn.controller = Some(uuid);
             conns.push(conn);
         }
 
         Ok(ConnectionCollection(conns))
-    }
-}
-
-impl TryFrom<NetworkState> for NetworkConnectionsCollection {
-    type Error = NetworkStateError;
-
-    fn try_from(state: NetworkState) -> Result<Self, Self::Error> {
-        let network_connections = state
-            .connections
-            .iter()
-            .filter(|c| c.controller.is_none())
-            .map(|c| {
-                let mut conn = NetworkConnection::try_from(c.clone()).unwrap();
-                if let Some(ref mut bond) = conn.bond {
-                    bond.ports = state.ports_for(c.uuid);
-                }
-                if let Some(ref mut bridge) = conn.bridge {
-                    bridge.ports = state.ports_for(c.uuid);
-                };
-                conn
-            })
-            .collect();
-
-        Ok(NetworkConnectionsCollection(network_connections))
     }
 }
 
@@ -1441,16 +1424,6 @@ impl TryFrom<GeneralState> for StateSettings {
             wireless_enabled: Some(state.wireless_enabled),
             networking_enabled: Some(state.networking_enabled),
         })
-    }
-}
-
-impl TryFrom<NetworkState> for NetworkSettings {
-    type Error = NetworkStateError;
-
-    fn try_from(state: NetworkState) -> Result<Self, Self::Error> {
-        let connections: NetworkConnectionsCollection = state.try_into()?;
-
-        Ok(NetworkSettings { connections })
     }
 }
 

@@ -22,7 +22,7 @@
 
 import React from "react";
 import { DropdownItem, DropdownItemProps } from "@patternfly/react-core";
-import { useHref, useLocation } from "react-router-dom";
+import { useHref, useLocation } from "react-router";
 import { useProduct, useRegistration } from "~/queries/software";
 import { PRODUCT as PATHS, SIDE_PATHS } from "~/routes/paths";
 import { _ } from "~/i18n";

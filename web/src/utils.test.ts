@@ -20,15 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import {
-  compact,
-  localConnection,
-  hex,
-  mask,
-  timezoneTime,
-  generateEncodedPath,
-  sortCollection,
-} from "./utils";
+import { compact, localConnection, hex, mask, timezoneTime, sortCollection } from "./utils";
 
 describe("compact", () => {
   it("removes null and undefined values", () => {
@@ -194,49 +186,6 @@ describe("localConnection", () => {
     it("returns true for non-local hostnames", () => {
       expect(localConnection(remoteURL)).toBe(true);
     });
-  });
-});
-
-describe("generateEncodedPath", () => {
-  it("encodes special characters in parameters", () => {
-    const path = "/network/:id";
-    const params = { id: "Wired #1" };
-
-    const result = generateEncodedPath(path, params);
-
-    expect(result).toBe("/network/Wired%20%231");
-  });
-
-  it("handles multiple parameters", () => {
-    const path = "/network/:id/bridge/:bridge";
-    const params = { id: "Wired #1", bridge: "br $0" };
-
-    const result = generateEncodedPath(path, params);
-
-    expect(result).toBe("/network/Wired%20%231/bridge/br%20%240");
-  });
-
-  it("leaves safe characters unchanged", () => {
-    const path = "/product/:id";
-    const params = { id: "12345" };
-
-    const result = generateEncodedPath(path, params);
-
-    expect(result).toBe("/product/12345");
-  });
-
-  it("works with empty params", () => {
-    const path = "/static/path";
-
-    const result = generateEncodedPath(path, {});
-
-    expect(result).toBe("/static/path");
-  });
-
-  it("throws if a param is missing", () => {
-    const path = "/network/:id";
-
-    expect(() => generateEncodedPath(path, {})).toThrow();
   });
 });
 

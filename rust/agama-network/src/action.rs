@@ -47,11 +47,11 @@ pub enum Action {
     GetConfig(Responder<Config>),
     /// Gets the internal state of the network configuration proposal
     GetProposal(Responder<Proposal>),
-    /// Updates th internal state of the network configuration
+    /// Updates the internal state of the network configuration applying the changes to the system
     UpdateConfig(Box<Config>, Responder<Result<(), NetworkStateError>>),
-    /// Gets the current network configuration containing connections, devices, access_points and
+    /// Gets the current network system configuration containing connections, devices, access_points and
     /// also the general state
-    GetSystemConfig(Responder<SystemInfo>),
+    GetSystem(Responder<SystemInfo>),
     /// Gets a connection
     GetConnections(Responder<Vec<Connection>>),
     /// Gets a controller connection

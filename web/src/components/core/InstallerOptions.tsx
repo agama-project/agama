@@ -32,7 +32,7 @@
  */
 
 import React, { useReducer } from "react";
-import { useHref, useLocation } from "react-router-dom";
+import { useHref, useLocation } from "react-router";
 import {
   Button,
   ButtonProps,

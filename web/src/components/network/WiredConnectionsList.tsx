@@ -21,7 +21,7 @@
  */
 
 import React, { useId } from "react";
-import { useNavigate } from "react-router-dom";
+import { generatePath, useNavigate } from "react-router";
 import {
   Content,
   DataList,
@@ -38,7 +38,6 @@ import { Connection } from "~/types/network";
 import { NETWORK as PATHS } from "~/routes/paths";
 import { formatIp } from "~/utils/network";
 import { _ } from "~/i18n";
-import { generateEncodedPath } from "~/utils";
 import { useNetworkSystem } from "~/queries/system";
 import { useNetworkProposal } from "~/queries/proposal";
 
@@ -94,7 +93,7 @@ function WiredConnectionsList(props: DataListProps) {
 
   return (
     <DataList
-      onSelectDataListItem={(_, id) => navigate(generateEncodedPath(PATHS.wiredConnection, { id }))}
+      onSelectDataListItem={(_, id) => navigate(generatePath(PATHS.wiredConnection, { id }))}
       {...props}
     >
       {wiredConnections.map((c: Connection) => (

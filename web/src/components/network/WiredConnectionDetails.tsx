@@ -37,13 +37,13 @@ import {
   Tabs,
   TabTitleText,
 } from "@patternfly/react-core";
+import { generatePath } from "react-router";
 import { Link, Page } from "~/components/core";
 import InstallationOnlySwitch from "./InstallationOnlySwitch";
 import { Connection, Device } from "~/types/network";
 import { connectionBindingMode, formatIp } from "~/utils/network";
 import { NETWORK } from "~/routes/paths";
-import { useNetworkDevices } from "~/queries/system";
-import { generateEncodedPath } from "~/utils";
+import { useNetworkDevices } from "~/queries/network";
 import { isEmpty } from "radashi";
 import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
@@ -73,7 +73,7 @@ const BindingSettings = ({ connection }: { connection: Connection }) => {
       pfCardProps={{ isPlain: false, isFullHeight: false }}
       actions={
         <Link
-          to={generateEncodedPath(NETWORK.editBindingSettings, {
+          to={generatePath(NETWORK.editBindingSettings, {
             id: connection.id,
           })}
         >
@@ -203,7 +203,7 @@ const ConnectionDetails = ({ connection }: { connection: Connection }) => {
       title={_("Settings")}
       pfCardProps={{ isPlain: false, isFullHeight: false }}
       actions={
-        <Link to={generateEncodedPath(NETWORK.editConnection, { id: connection.id })}>
+        <Link to={generatePath(NETWORK.editConnection, { id: connection.id })}>
           {_("Edit connection settings")}
         </Link>
       }
