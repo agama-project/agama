@@ -28,15 +28,17 @@ import { useModel } from "~/hooks/storage/model";
 import { useSwitchToDrive } from "~/hooks/storage/drive";
 import { useSwitchToMdRaid } from "~/hooks/storage/md-raid";
 import { deviceBaseName, formattedPath } from "~/components/storage/utils";
-import * as model from "~/types/storage/model";
-import { StorageDevice } from "~/types/storage";
+import { model } from "~/types/storage";
+import { Model } from "~/types/storage/model";
+import { storage } from "~/api/system";
 import { sprintf } from "sprintf-js";
 import { _, formatList } from "~/i18n";
 import DeviceSelectorModal from "./DeviceSelectorModal";
 import { MenuItemProps } from "@patternfly/react-core";
 import { Icon } from "../layout";
+import { isDrive } from "~/helpers/storage/device";
 
-const baseName = (device: StorageDevice): string => deviceBaseName(device, true);
+const baseName = (device: storage.Device): string => deviceBaseName(device, true);
 
 const useOnlyOneOption = (device: model.Drive | model.MdRaid): boolean => {
   if (device.filesystem && device.filesystem.reuse) return true;
@@ -49,7 +51,7 @@ const useOnlyOneOption = (device: model.Drive | model.MdRaid): boolean => {
 
 type ChangeDeviceMenuItemProps = {
   modelDevice: model.Drive | model.MdRaid;
-  device: StorageDevice;
+  device: storage.Device;
 } & MenuItemProps;
 
 const ChangeDeviceTitle = ({ modelDevice }) => {
@@ -259,11 +261,15 @@ const RemoveEntryOption = ({ device, onClick }: RemoveEntryOptionProps): React.R
   );
 };
 
-const targetDevices = (modelDevice, model, availableDevices): StorageDevice[] => {
+const targetDevices = (
+  modelDevice: model.Drive | model.MdRaid,
+  model: Model,
+  availableDevices: storage.Device[],
+): storage.Device[] => {
   return availableDevices.filter((availableDev) => {
     if (modelDevice.name === availableDev.name) return true;
 
-    const collection = availableDev.isDrive ? model.drives : model.mdRaids;
+    const collection = isDrive(availableDev) ? model.drives : model.mdRaids;
     const device = collection.find((d) => d.name === availableDev.name);
     if (!device) return true;
 
@@ -273,7 +279,7 @@ const targetDevices = (modelDevice, model, availableDevices): StorageDevice[] =>
 
 export type SearchedDeviceMenuProps = {
   modelDevice: model.Drive | model.MdRaid;
-  selected: StorageDevice;
+  selected: storage.Device;
   deleteFn: (device: model.Drive | model.MdRaid) => void;
 };
 
@@ -290,13 +296,13 @@ export default function SearchedDeviceMenu({
   const [isSelectorOpen, setIsSelectorOpen] = useState(false);
   const switchToDrive = useSwitchToDrive();
   const switchToMdRaid = useSwitchToMdRaid();
-  const changeTargetFn = (device: StorageDevice) => {
-    const hook = device.isDrive ? switchToDrive : switchToMdRaid;
+  const changeTargetFn = (device: storage.Device) => {
+    const hook = isDrive(device) ? switchToDrive : switchToMdRaid;
     hook(modelDevice.name, { name: device.name });
   };
   const devices = targetDevices(modelDevice, useModel(), useAvailableDevices());
 
-  const onDeviceChange = ([drive]: StorageDevice[]) => {
+  const onDeviceChange = ([drive]: storage.Device[]) => {
     setIsSelectorOpen(false);
     changeTargetFn(drive);
   };

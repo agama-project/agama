@@ -20,7 +20,8 @@
  * find current contact information at www.suse.com.
  */
 
-import { useApiModel, useUpdateApiModel } from "~/hooks/storage/api-model";
+import { useStorageModel } from "~/hooks/api";
+import { putStorageModel } from "~/api";
 import { QueryHookOptions } from "~/types/queries";
 import { data } from "~/types/storage";
 import { setSpacePolicy } from "~/helpers/storage/space-policy";
@@ -28,10 +29,9 @@ import { setSpacePolicy } from "~/helpers/storage/space-policy";
 type setSpacePolicyFn = (list: string, listIndex: number | string, data: data.SpacePolicy) => void;
 
 function useSetSpacePolicy(options?: QueryHookOptions): setSpacePolicyFn {
-  const apiModel = useApiModel(options);
-  const updateApiModel = useUpdateApiModel();
+  const apiModel = useStorageModel(options);
   return (list: string, listIndex: number | string, data: data.SpacePolicy) => {
-    updateApiModel(setSpacePolicy(apiModel, list, listIndex, data));
+    putStorageModel(setSpacePolicy(apiModel, list, listIndex, data));
   };
 }
 

@@ -24,15 +24,15 @@ import React from "react";
 import { Flex } from "@patternfly/react-core";
 import MenuButton from "~/components/core/MenuButton";
 import Text from "~/components/core/Text";
-import { useNavigate } from "react-router-dom";
+import { generatePath, useNavigate } from "react-router";
 import { useSetSpacePolicy } from "~/hooks/storage/space-policy";
 import { SPACE_POLICIES } from "~/components/storage/utils";
-import { apiModel } from "~/api/storage/types";
+import { apiModel, system } from "~/api/storage";
 import { STORAGE as PATHS } from "~/routes/paths";
 import * as driveUtils from "~/components/storage/utils/drive";
-import { generateEncodedPath } from "~/utils";
 import { isEmpty } from "radashi";
 import { _ } from "~/i18n";
+import { model } from "~/types/storage";
 
 const PolicyItem = ({ policy, modelDevice, isSelected, onClick }) => {
   return (
@@ -47,17 +47,22 @@ const PolicyItem = ({ policy, modelDevice, isSelected, onClick }) => {
   );
 };
 
-export default function SpacePolicyMenu({ modelDevice, device }) {
+type SpacePolicyMenuProps = {
+  modelDevice: model.Drive;
+  device: system.Device;
+};
+
+export default function SpacePolicyMenu({ modelDevice, device }: SpacePolicyMenuProps) {
   const navigate = useNavigate();
   const setSpacePolicy = useSetSpacePolicy();
   const { list, listIndex } = modelDevice;
-  const existingPartitions = device.partitionTable?.partitions.length;
+  const existingPartitions = device.partitions?.length;
 
   if (isEmpty(existingPartitions)) return;
 
   const onSpacePolicyChange = (spacePolicy: apiModel.SpacePolicy) => {
     if (spacePolicy === "custom") {
-      return navigate(generateEncodedPath(PATHS.editSpacePolicy, { list, listIndex }));
+      return navigate(generatePath(PATHS.editSpacePolicy, { list, listIndex }));
     } else {
       setSpacePolicy(list, listIndex, { type: spacePolicy });
     }

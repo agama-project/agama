@@ -26,7 +26,7 @@
  * Types that extend the apiModel by adding calculated properties and methods.
  */
 
-import { apiModel } from "~/api/storage/types";
+import { apiModel } from "~/api/storage";
 
 type Model = {
   boot: Boot;

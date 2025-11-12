@@ -25,7 +25,7 @@ import KeyboardSelection from "./KeyboardSelection";
 import userEvent from "@testing-library/user-event";
 import { screen } from "@testing-library/react";
 import { mockNavigateFn, installerRender } from "~/test-utils";
-import { Keymap } from "~/types/l10n";
+import { Keymap } from "~/api/system";
 
 const keymaps: Keymap[] = [
   { id: "us", name: "English" },
@@ -53,8 +53,8 @@ jest.mock("~/api/api", () => ({
   updateConfig: (config) => mockUpdateConfigFn(config),
 }));
 
-jest.mock("react-router-dom", () => ({
-  ...jest.requireActual("react-router-dom"),
+jest.mock("react-router", () => ({
+  ...jest.requireActual("react-router"),
   useNavigate: () => mockNavigateFn,
 }));
 

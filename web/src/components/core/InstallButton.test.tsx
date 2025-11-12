@@ -25,7 +25,7 @@ import { screen, waitFor, within } from "@testing-library/react";
 import { installerRender, mockRoutes } from "~/test-utils";
 import { InstallButton } from "~/components/core";
 import { PRODUCT, ROOT } from "~/routes/paths";
-import { Issue, IssueSeverity, IssueSource } from "~/types/issues";
+import { Issue, IssueSeverity, IssueSource } from "~/api/issue";
 
 const mockStartInstallationFn = jest.fn();
 let mockIssuesList: Issue[];

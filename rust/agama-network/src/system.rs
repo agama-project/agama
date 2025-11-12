@@ -21,11 +21,9 @@
 use crate::{
     action::Action,
     error::NetworkStateError,
-    model::{
-        AccessPoint, Connection, Device, GeneralState, NetworkChange, NetworkState, StateConfig,
-    },
-    types::DeviceType,
-    Adapter, NetworkAdapterError,
+    model::{Connection, GeneralState, NetworkChange, NetworkState, StateConfig},
+    types::{AccessPoint, Config, Device, DeviceType, Proposal, SystemInfo},
+    Adapter, NetworkAdapterError, NetworkManagerAdapter,
 };
 use std::error::Error;
 use tokio::sync::{
@@ -85,6 +83,15 @@ impl<T: Adapter + Send + Sync + 'static> NetworkSystem<T> {
     /// * `adapter`: networking configuration adapter.
     pub fn new(adapter: T) -> Self {
         Self { adapter }
+    }
+
+    /// Returns a new instance of the network configuration system using the [NetworkManagerAdapter] for the system.
+    pub async fn for_network_manager() -> NetworkSystem<NetworkManagerAdapter<'static>> {
+        let adapter = NetworkManagerAdapter::from_system()
+            .await
+            .expect("Could not connect to NetworkManager");
+
+        NetworkSystem::new(adapter)
     }
 
     /// Starts the network configuration service and returns a client for communication purposes.
@@ -161,6 +168,36 @@ impl NetworkSystemClient {
     pub async fn get_connections(&self) -> Result<Vec<Connection>, NetworkSystemError> {
         let (tx, rx) = oneshot::channel();
         self.actions.send(Action::GetConnections(tx))?;
+        Ok(rx.await?)
+    }
+
+    /// Returns the cofiguration from the current network state as a [Config].
+    pub async fn get_config(&self) -> Result<Config, NetworkSystemError> {
+        let (tx, rx) = oneshot::channel();
+        self.actions.send(Action::GetConfig(tx))?;
+        Ok(rx.await?)
+    }
+
+    /// Returns the cofiguration from the current network state as a [Proposal].
+    pub async fn get_proposal(&self) -> Result<Proposal, NetworkSystemError> {
+        let (tx, rx) = oneshot::channel();
+        self.actions.send(Action::GetProposal(tx))?;
+        Ok(rx.await?)
+    }
+
+    /// Updates the current network state based on the configuration given.
+    pub async fn update_config(&self, config: Config) -> Result<(), NetworkSystemError> {
+        let (tx, rx) = oneshot::channel();
+        self.actions
+            .send(Action::UpdateConfig(Box::new(config.clone()), tx))?;
+        let result = rx.await?;
+        Ok(result?)
+    }
+
+    /// Reads the current system network configuration returning it directly
+    pub async fn get_system(&self) -> Result<SystemInfo, NetworkSystemError> {
+        let (tx, rx) = oneshot::channel();
+        self.actions.send(Action::GetSystem(tx))?;
         Ok(rx.await?)
     }
 
@@ -310,6 +347,23 @@ impl<T: Adapter> NetworkSystemServer<T> {
                 let conn = self.state.get_connection_by_uuid(uuid);
                 tx.send(conn.cloned()).unwrap();
             }
+            Action::GetSystem(tx) => {
+                let result = self.read().await?.try_into()?;
+                tx.send(result).unwrap();
+            }
+            Action::GetConfig(tx) => {
+                let config: Config = self.state.clone().try_into()?;
+                tx.send(config).unwrap();
+            }
+            Action::GetProposal(tx) => {
+                let config: Proposal = self.state.clone().try_into()?;
+                tx.send(config).unwrap();
+            }
+            Action::UpdateConfig(config, tx) => {
+                let result = self.state.update_state(*config);
+
+                tx.send(result).unwrap();
+            }
             Action::GetConnections(tx) => {
                 let connections = self
                     .state
@@ -422,6 +476,11 @@ impl<T: Adapter> NetworkSystemServer<T> {
             .collect::<Vec<_>>();
 
         Ok((conn, controlled))
+    }
+
+    /// Reads the system network configuration.
+    pub async fn read(&mut self) -> Result<NetworkState, NetworkAdapterError> {
+        self.adapter.read(StateConfig::default()).await
     }
 
     /// Writes the network configuration.

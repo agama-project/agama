@@ -26,7 +26,7 @@
  */
 
 import React, { useId } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate } from "react-router";
 import {
   ActionGroup,
   Content,
@@ -48,15 +48,14 @@ import {
 import { Page, SelectWrapper as Select } from "~/components/core/";
 import { SelectWrapperProps as SelectProps } from "~/components/core/SelectWrapper";
 import SelectTypeaheadCreatable from "~/components/core/SelectTypeaheadCreatable";
-import { useMissingMountPaths, useVolume } from "~/hooks/storage/product";
 import { useAddFilesystem } from "~/hooks/storage/filesystem";
-import { useModel } from "~/hooks/storage/model";
-import { useDevices } from "~/queries/storage";
-import { data, model, StorageDevice } from "~/types/storage";
+import { useModel, useMissingMountPaths } from "~/hooks/storage/model";
+import { useDevices, useVolumeTemplate } from "~/hooks/storage/system";
+import { data, model } from "~/types/storage";
 import { deviceBaseName, filesystemLabel } from "~/components/storage/utils";
 import { _ } from "~/i18n";
 import { sprintf } from "sprintf-js";
-import { apiModel } from "~/api/storage/types";
+import { apiModel, system } from "~/api/storage";
 import { STORAGE as PATHS } from "~/routes/paths";
 import { unique } from "radashi";
 import { compact } from "~/utils";
@@ -144,9 +143,9 @@ function useDeviceModel(): DeviceModel {
   return model[list].at(listIndex);
 }
 
-function useDevice(): StorageDevice {
+function useDevice(): system.Device {
   const deviceModel = useDeviceModel();
-  const devices = useDevices("system", { suspense: true });
+  const devices = useDevices({ suspense: true });
   return devices.find((d) => d.name === deviceModel.name);
 }
 
@@ -156,7 +155,7 @@ function useCurrentFilesystem(): string | null {
 }
 
 function useDefaultFilesystem(mountPoint: string): string {
-  const volume = useVolume(mountPoint, { suspense: true });
+  const volume = useVolumeTemplate(mountPoint, { suspense: true });
   return volume.mountPath === "/" && volume.snapshots ? BTRFS_SNAPSHOTS : volume.fsType;
 }
 
@@ -173,7 +172,7 @@ function useUnusedMountPoints(): string[] {
 }
 
 function useUsableFilesystems(mountPoint: string): string[] {
-  const volume = useVolume(mountPoint);
+  const volume = useVolumeTemplate(mountPoint);
   const defaultFilesystem = useDefaultFilesystem(mountPoint);
 
   const usableFilesystems = React.useMemo(() => {
@@ -292,7 +291,7 @@ type FilesystemOptionsProps = {
 
 function FilesystemOptions({ mountPoint }: FilesystemOptionsProps): React.ReactNode {
   const device = useDevice();
-  const volume = useVolume(mountPoint);
+  const volume = useVolumeTemplate(mountPoint);
   const defaultFilesystem = useDefaultFilesystem(mountPoint);
   const usableFilesystems = useUsableFilesystems(mountPoint);
   const currentFilesystem = useCurrentFilesystem();

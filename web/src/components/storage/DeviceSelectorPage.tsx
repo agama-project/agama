@@ -23,7 +23,7 @@
 import React, { useState } from "react";
 import { Content } from "@patternfly/react-core";
 import { SelectableDataTable, Page } from "~/components/core/";
-import { StorageDevice } from "~/types/storage";
+import { storage } from "~/api/system";
 import { useAvailableDevices } from "~/hooks/storage/system";
 import { _ } from "~/i18n";
 import { SelectableDataTableProps } from "../core/SelectableDataTable";
@@ -34,8 +34,8 @@ import {
 } from "~/components/storage/utils/device";
 
 type DeviceSelectorProps = {
-  devices: StorageDevice[];
-  selectedDevices?: StorageDevice[];
+  devices: storage.Device[];
+  selectedDevices?: storage.Device[];
   onSelectionChange: SelectableDataTableProps["onSelectionChange"];
   selectionMode?: SelectableDataTableProps["selectionMode"];
 };
@@ -51,7 +51,7 @@ const DeviceSelector = ({
       <SelectableDataTable
         columns={[
           { name: _("Type"), value: typeDescription, pfThProps: { width: 10 } },
-          { name: _("Name"), value: (device: StorageDevice) => device.name },
+          { name: _("Name"), value: (device: storage.Device) => device.name },
           { name: _("Content"), value: contentDescription },
           { name: _("Filesystems"), value: filesystemLabels },
         ]}

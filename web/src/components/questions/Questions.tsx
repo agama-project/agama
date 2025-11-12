@@ -28,19 +28,19 @@ import PackageErrorQuestion from "~/components/questions/PackageErrorQuestion";
 import UnsupportedAutoYaST from "~/components/questions/UnsupportedAutoYaST";
 import RegistrationCertificateQuestion from "~/components/questions/RegistrationCertificateQuestion";
 import LoadConfigRetryQuestion from "~/components/questions/LoadConfigRetryQuestion";
-import { useQuestions, useQuestionsConfig, useQuestionsChanges } from "~/queries/questions";
-import { AnswerCallback, FieldType } from "~/types/questions";
+import { useQuestions, useQuestionsChanges } from "~/hooks/api";
+import { patchQuestion } from "~/api";
+import { AnswerCallback, FieldType } from "~/api/question";
 
 export default function Questions(): React.ReactNode {
   useQuestionsChanges();
   const allQuestions = useQuestions();
-  const questionsConfig = useQuestionsConfig();
 
   const pendingQuestions = allQuestions.filter((q) => !q.answer);
   if (pendingQuestions.length === 0) return null;
 
-  const answerQuestion: AnswerCallback = (answeredQuestion) =>
-    questionsConfig.mutate(answeredQuestion);
+  const answerQuestion: AnswerCallback = async (answeredQuestion) =>
+    await patchQuestion(answeredQuestion);
 
   // Renders the first pending question
   const [currentQuestion] = pendingQuestions;

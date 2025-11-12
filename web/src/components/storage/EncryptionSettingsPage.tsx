@@ -21,13 +21,13 @@
  */
 
 import React, { useEffect, useState, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { ActionGroup, Alert, Checkbox, Content, Form } from "@patternfly/react-core";
 import { NestedContent, Page, PasswordAndConfirmationInput } from "~/components/core";
 import PasswordCheck from "~/components/users/PasswordCheck";
-import { useEncryptionMethods } from "~/queries/storage";
+import { useEncryptionMethods } from "~/hooks/storage/system";
 import { useEncryption } from "~/queries/storage/config-model";
-import { apiModel } from "~/api/storage/types";
+import { apiModel } from "~/api/storage";
 import { isEmpty } from "radashi";
 import { _ } from "~/i18n";
 
@@ -55,9 +55,9 @@ export default function EncryptionSettingsPage() {
     }
   }, [encryptionConfig]);
 
-  const changePassword = (_, v) => setPassword(v);
+  const changePassword = (_, v: string) => setPassword(v);
 
-  const changeMethod = (_, useTPM) => {
+  const changeMethod = (_, useTPM: boolean) => {
     const method = useTPM ? "tpmFde" : "luks2";
     setMethod(method);
   };

@@ -21,27 +21,28 @@
  */
 
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { ActionGroup, Content, Form, FormGroup, Radio, Stack } from "@patternfly/react-core";
 import { DevicesFormSelect } from "~/components/storage";
 import { Page, SubtleContent } from "~/components/core";
 import { deviceLabel } from "~/components/storage/utils";
-import { StorageDevice } from "~/types/storage";
-import { useCandidateDevices } from "~/hooks/storage/system";
+import { storage } from "~/api/system";
+import { useCandidateDevices, useDevices } from "~/hooks/storage/system";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
-import { useDevices } from "~/queries/storage";
 import { useModel } from "~/hooks/storage/model";
+import { Model } from "~/types/storage/model";
+import { isDrive } from "~/helpers/storage/device";
 import {
   useSetBootDevice,
   useSetDefaultBootDevice,
   useDisableBootConfig,
 } from "~/hooks/storage/boot";
 
-const filteredCandidates = (candidates, model): StorageDevice[] => {
+const filteredCandidates = (candidates: storage.Device[], model: Model): storage.Device[] => {
   return candidates.filter((candidate) => {
-    const collection = candidate.isDrive ? model.drives : model.mdRaids;
+    const collection = isDrive(candidate) ? model.drives : model.mdRaids;
     const device = collection.find((d) => d.name === candidate.name);
     return !device || !device.filesystem;
   });
@@ -58,9 +59,9 @@ type BootSelectionState = {
   load: boolean;
   selectedOption?: string;
   configureBoot?: boolean;
-  bootDevice?: StorageDevice;
-  defaultBootDevice?: StorageDevice;
-  candidateDevices?: StorageDevice[];
+  bootDevice?: storage.Device;
+  defaultBootDevice?: storage.Device;
+  candidateDevices?: storage.Device[];
 };
 
 /**
@@ -69,7 +70,7 @@ type BootSelectionState = {
 export default function BootSelectionDialog() {
   const [state, setState] = useState<BootSelectionState>({ load: false });
   const navigate = useNavigate();
-  const devices = useDevices("system");
+  const devices = useDevices();
   const model = useModel({ suspense: true });
   const candidateDevices = filteredCandidates(useCandidateDevices(), model);
   const setBootDevice = useSetBootDevice();

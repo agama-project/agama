@@ -25,7 +25,7 @@ import LocaleSelection from "./LocaleSelection";
 import userEvent from "@testing-library/user-event";
 import { screen } from "@testing-library/react";
 import { mockNavigateFn, installerRender } from "~/test-utils";
-import { Locale } from "~/types/l10n";
+import { Locale } from "~/api/system";
 
 const locales: Locale[] = [
   { id: "en_US.UTF-8", name: "English", territory: "United States" },
@@ -53,8 +53,8 @@ jest.mock("~/api/api", () => ({
   updateConfig: (config) => mockUpdateConfigFn(config),
 }));
 
-jest.mock("react-router-dom", () => ({
-  ...jest.requireActual("react-router-dom"),
+jest.mock("react-router", () => ({
+  ...jest.requireActual("react-router"),
   useNavigate: () => mockNavigateFn,
 }));
 

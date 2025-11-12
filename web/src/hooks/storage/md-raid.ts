@@ -20,7 +20,8 @@
  * find current contact information at www.suse.com.
  */
 
-import { useApiModel, useUpdateApiModel } from "~/hooks/storage/api-model";
+import { useStorageModel } from "~/hooks/api";
+import { putStorageModel } from "~/api";
 import { addReusedMdRaid, deleteMdRaid, switchToMdRaid } from "~/helpers/storage/md-raid";
 import { QueryHookOptions } from "~/types/queries";
 import { data } from "~/types/storage";
@@ -28,30 +29,27 @@ import { data } from "~/types/storage";
 type AddReusedMdRaidFn = (data: data.MdRaid) => void;
 
 function useAddReusedMdRaid(options?: QueryHookOptions): AddReusedMdRaidFn {
-  const apiModel = useApiModel(options);
-  const updateApiModel = useUpdateApiModel();
+  const apiModel = useStorageModel(options);
   return (data: data.MdRaid) => {
-    updateApiModel(addReusedMdRaid(apiModel, data));
+    putStorageModel(addReusedMdRaid(apiModel, data));
   };
 }
 
 type DeleteMdRaidFn = (name: string) => void;
 
 function useDeleteMdRaid(options?: QueryHookOptions): DeleteMdRaidFn {
-  const apiModel = useApiModel(options);
-  const updateApiModel = useUpdateApiModel();
+  const apiModel = useStorageModel(options);
   return (name: string) => {
-    updateApiModel(deleteMdRaid(apiModel, name));
+    putStorageModel(deleteMdRaid(apiModel, name));
   };
 }
 
 type SwitchToMdRaidFn = (oldName: string, raid: data.MdRaid) => void;
 
 function useSwitchToMdRaid(options?: QueryHookOptions): SwitchToMdRaidFn {
-  const apiModel = useApiModel(options);
-  const updateApiModel = useUpdateApiModel();
+  const apiModel = useStorageModel(options);
   return (oldName: string, raid: data.MdRaid) => {
-    updateApiModel(switchToMdRaid(apiModel, oldName, raid));
+    putStorageModel(switchToMdRaid(apiModel, oldName, raid));
   };
 }
 

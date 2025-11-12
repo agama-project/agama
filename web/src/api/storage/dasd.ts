@@ -20,7 +20,9 @@
  * find current contact information at www.suse.com.
  */
 
-import { post, get, put } from "~/api/http";
+// @todo Move to the new API.
+
+import { post, get, put } from "~/http";
 import { DASDDevice } from "~/types/dasd";
 
 /**

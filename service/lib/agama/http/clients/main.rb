@@ -37,7 +37,7 @@ module Agama
         # @param resolvables [Array<String>] Resolvables names.
         def set_resolvables(unique_id, type, resolvables)
           data = resolvables.map do |name|
-            { "name" => name, "type" => type }
+            { "name" => name, "type" => type.to_s }
           end
           put("v2/private/resolvables/#{unique_id}", data)
         end

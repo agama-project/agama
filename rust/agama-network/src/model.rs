@@ -23,13 +23,9 @@
 //! * This module contains the types that represent the network concepts. They are supposed to be
 //!   agnostic from the real network service (e.g., NetworkManager).
 use crate::error::NetworkStateError;
-use crate::settings::{
-    BondSettings, BridgeSettings, IEEE8021XSettings, NetworkConnection, VlanSettings,
-    WirelessSettings,
-};
-use crate::types::{BondMode, ConnectionState, DeviceState, DeviceType, Status, SSID};
+use crate::types::*;
+
 use agama_utils::openapi::schemas;
-use cidr::IpInet;
 use macaddr::MacAddr6;
 use serde::{Deserialize, Serialize};
 use serde_with::{serde_as, skip_serializing_none, DisplayFromStr};
@@ -37,12 +33,10 @@ use std::{
     collections::HashMap,
     default::Default,
     fmt,
-    net::IpAddr,
     str::{self, FromStr},
 };
 use thiserror::Error;
 use uuid::Uuid;
-use zbus::zvariant::Value;
 
 #[derive(PartialEq)]
 pub struct StateConfig {
@@ -72,7 +66,8 @@ pub struct NetworkState {
 }
 
 impl NetworkState {
-    /// Returns a NetworkState struct with the given devices and connections.
+    /// Returns a NetworkState struct with the given general_state, access_points, devices
+    /// and connections.
     ///
     /// * `general_state`: General network configuration
     /// * `access_points`: Access points to include in the state.
@@ -144,6 +139,7 @@ impl NetworkState {
         self.devices.iter_mut().find(|c| c.name == name)
     }
 
+    /// Returns the controller's connection for the givne connection Uuid.
     pub fn get_controlled_by(&mut self, uuid: Uuid) -> Vec<&Connection> {
         let uuid = Some(uuid);
         self.connections
@@ -161,6 +157,58 @@ impl NetworkState {
         }
         self.connections.push(conn);
 
+        Ok(())
+    }
+
+    /// Updates the current [NetworkState] with the configuration provided.
+    ///
+    /// The config could contain a [NetworkConnectionsCollection] to be updated, in case of
+    /// provided it will iterate over the connections adding or updating them.
+    ///
+    /// If the general state is provided it will sets the options given.
+    pub fn update_state(&mut self, config: Config) -> Result<(), NetworkStateError> {
+        if let Some(connections) = config.connections {
+            let mut collection: ConnectionCollection = connections.clone().try_into()?;
+            for conn in collection.iter_mut() {
+                if let Some(current_conn) = self.get_connection(conn.id.as_str()) {
+                    // Replaced the UUID with a real one
+                    conn.uuid = current_conn.uuid;
+                    self.update_connection(conn.to_owned())?;
+                } else {
+                    self.add_connection(conn.to_owned())?;
+                }
+            }
+
+            for conn in connections.0 {
+                if conn.bridge.is_some() | conn.bond.is_some() {
+                    let mut ports = vec![];
+                    if let Some(model) = conn.bridge {
+                        ports = model.ports;
+                    }
+                    if let Some(model) = conn.bond {
+                        ports = model.ports;
+                    }
+
+                    if let Some(controller) = self.get_connection(conn.id.as_str()) {
+                        self.set_ports(&controller.clone(), ports)?;
+                    }
+                }
+            }
+        }
+
+        if let Some(state) = config.state {
+            if let Some(wireless_enabled) = state.wireless_enabled {
+                self.general_state.wireless_enabled = wireless_enabled;
+            }
+
+            if let Some(networking_enabled) = state.networking_enabled {
+                self.general_state.networking_enabled = networking_enabled;
+            }
+
+            if let Some(copy_network) = state.copy_network {
+                self.general_state.copy_network = copy_network;
+            }
+        }
         Ok(())
     }
 
@@ -259,57 +307,6 @@ mod tests {
     use super::*;
     use crate::error::NetworkStateError;
     use uuid::Uuid;
-
-    #[test]
-    fn test_macaddress() {
-        let mut val: Option<String> = None;
-        assert!(matches!(
-            MacAddress::try_from(&val).unwrap(),
-            MacAddress::Unset
-        ));
-
-        val = Some(String::from(""));
-        assert!(matches!(
-            MacAddress::try_from(&val).unwrap(),
-            MacAddress::Unset
-        ));
-
-        val = Some(String::from("preserve"));
-        assert!(matches!(
-            MacAddress::try_from(&val).unwrap(),
-            MacAddress::Preserve
-        ));
-
-        val = Some(String::from("permanent"));
-        assert!(matches!(
-            MacAddress::try_from(&val).unwrap(),
-            MacAddress::Permanent
-        ));
-
-        val = Some(String::from("random"));
-        assert!(matches!(
-            MacAddress::try_from(&val).unwrap(),
-            MacAddress::Random
-        ));
-
-        val = Some(String::from("stable"));
-        assert!(matches!(
-            MacAddress::try_from(&val).unwrap(),
-            MacAddress::Stable
-        ));
-
-        val = Some(String::from("This is not a MACAddr"));
-        assert!(matches!(
-            MacAddress::try_from(&val),
-            Err(InvalidMacAddress(_))
-        ));
-
-        val = Some(String::from("de:ad:be:ef:2b:ad"));
-        assert_eq!(
-            MacAddress::try_from(&val).unwrap().to_string(),
-            String::from("de:ad:be:ef:2b:ad").to_uppercase()
-        );
-    }
 
     #[test]
     fn test_add_connection() {
@@ -461,46 +458,13 @@ mod tests {
 pub const NOT_COPY_NETWORK_PATH: &str = "/run/agama/not_copy_network";
 
 /// Network state
-#[serde_as]
-#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize, utoipa::ToSchema)]
-#[serde(rename_all = "camelCase")]
+#[derive(Clone, Debug, Default)]
 pub struct GeneralState {
     pub hostname: String,
     pub connectivity: bool,
     pub copy_network: bool,
     pub wireless_enabled: bool,
     pub networking_enabled: bool, // pub network_state: NMSTATE
-}
-
-/// Access Point
-#[serde_as]
-#[derive(Default, Debug, Clone, Serialize, utoipa::ToSchema)]
-#[serde(rename_all = "camelCase")]
-pub struct AccessPoint {
-    #[serde_as(as = "DisplayFromStr")]
-    pub ssid: SSID,
-    pub hw_address: String,
-    pub strength: u8,
-    pub flags: u32,
-    pub rsn_flags: u32,
-    pub wpa_flags: u32,
-}
-
-/// Network device
-#[serde_as]
-#[skip_serializing_none]
-#[derive(Default, Debug, Clone, PartialEq, Deserialize, Serialize, utoipa::ToSchema)]
-#[serde(rename_all = "camelCase")]
-pub struct Device {
-    pub name: String,
-    #[serde(rename = "type")]
-    pub type_: DeviceType,
-    #[serde_as(as = "DisplayFromStr")]
-    pub mac_address: MacAddress,
-    pub ip_config: Option<IpConfig>,
-    // Connection.id
-    pub connection: Option<String>,
-    pub state: DeviceState,
 }
 
 /// Represents a known network connection.
@@ -806,274 +770,6 @@ impl From<WirelessConfig> for ConnectionConfig {
     }
 }
 
-#[derive(Debug, Error)]
-#[error("Invalid MAC address: {0}")]
-pub struct InvalidMacAddress(String);
-
-#[derive(Debug, Default, Clone, PartialEq, Serialize, utoipa::ToSchema)]
-pub enum MacAddress {
-    #[schema(value_type = String, format = "MAC address in EUI-48 format")]
-    MacAddress(macaddr::MacAddr6),
-    Preserve,
-    Permanent,
-    Random,
-    Stable,
-    #[default]
-    Unset,
-}
-
-impl FromStr for MacAddress {
-    type Err = InvalidMacAddress;
-
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        match s {
-            "preserve" => Ok(Self::Preserve),
-            "permanent" => Ok(Self::Permanent),
-            "random" => Ok(Self::Random),
-            "stable" => Ok(Self::Stable),
-            "" => Ok(Self::Unset),
-            _ => Ok(Self::MacAddress(match macaddr::MacAddr6::from_str(s) {
-                Ok(mac) => mac,
-                Err(e) => return Err(InvalidMacAddress(e.to_string())),
-            })),
-        }
-    }
-}
-
-impl TryFrom<&Option<String>> for MacAddress {
-    type Error = InvalidMacAddress;
-
-    fn try_from(value: &Option<String>) -> Result<Self, Self::Error> {
-        match &value {
-            Some(str) => MacAddress::from_str(str),
-            None => Ok(Self::Unset),
-        }
-    }
-}
-
-impl fmt::Display for MacAddress {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        let output = match &self {
-            Self::MacAddress(mac) => mac.to_string(),
-            Self::Preserve => "preserve".to_string(),
-            Self::Permanent => "permanent".to_string(),
-            Self::Random => "random".to_string(),
-            Self::Stable => "stable".to_string(),
-            Self::Unset => "".to_string(),
-        };
-        write!(f, "{}", output)
-    }
-}
-
-impl From<InvalidMacAddress> for zbus::fdo::Error {
-    fn from(value: InvalidMacAddress) -> Self {
-        zbus::fdo::Error::Failed(value.to_string())
-    }
-}
-
-#[skip_serializing_none]
-#[derive(Default, Debug, PartialEq, Clone, Deserialize, Serialize, utoipa::ToSchema)]
-#[serde(rename_all = "camelCase")]
-pub struct IpConfig {
-    pub method4: Ipv4Method,
-    pub method6: Ipv6Method,
-    #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    #[schema(schema_with = schemas::ip_inet_array)]
-    pub addresses: Vec<IpInet>,
-    #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    #[schema(schema_with = schemas::ip_addr_array)]
-    pub nameservers: Vec<IpAddr>,
-    #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub dns_searchlist: Vec<String>,
-    pub ignore_auto_dns: bool,
-    #[schema(schema_with = schemas::ip_addr)]
-    pub gateway4: Option<IpAddr>,
-    #[schema(schema_with = schemas::ip_addr)]
-    pub gateway6: Option<IpAddr>,
-    #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub routes4: Vec<IpRoute>,
-    #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub routes6: Vec<IpRoute>,
-    pub dhcp4_settings: Option<Dhcp4Settings>,
-    pub dhcp6_settings: Option<Dhcp6Settings>,
-    pub ip6_privacy: Option<i32>,
-    pub dns_priority4: Option<i32>,
-    pub dns_priority6: Option<i32>,
-}
-
-#[skip_serializing_none]
-#[derive(Debug, Default, PartialEq, Clone, Deserialize, Serialize, utoipa::ToSchema)]
-pub struct Dhcp4Settings {
-    pub send_hostname: Option<bool>,
-    pub hostname: Option<String>,
-    pub send_release: Option<bool>,
-    pub client_id: DhcpClientId,
-    pub iaid: DhcpIaid,
-}
-
-#[derive(Debug, Default, Clone, PartialEq, Deserialize, Serialize, utoipa::ToSchema)]
-pub enum DhcpClientId {
-    Id(String),
-    Mac,
-    PermMac,
-    Ipv6Duid,
-    Duid,
-    Stable,
-    None,
-    #[default]
-    Unset,
-}
-
-impl From<&str> for DhcpClientId {
-    fn from(s: &str) -> Self {
-        match s {
-            "mac" => Self::Mac,
-            "perm-mac" => Self::PermMac,
-            "ipv6-duid" => Self::Ipv6Duid,
-            "duid" => Self::Duid,
-            "stable" => Self::Stable,
-            "none" => Self::None,
-            "" => Self::Unset,
-            _ => Self::Id(s.to_string()),
-        }
-    }
-}
-
-impl From<Option<String>> for DhcpClientId {
-    fn from(value: Option<String>) -> Self {
-        match &value {
-            Some(str) => Self::from(str.as_str()),
-            None => Self::Unset,
-        }
-    }
-}
-
-impl fmt::Display for DhcpClientId {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        let output = match &self {
-            Self::Id(id) => id.to_string(),
-            Self::Mac => "mac".to_string(),
-            Self::PermMac => "perm-mac".to_string(),
-            Self::Ipv6Duid => "ipv6-duid".to_string(),
-            Self::Duid => "duid".to_string(),
-            Self::Stable => "stable".to_string(),
-            Self::None => "none".to_string(),
-            Self::Unset => "".to_string(),
-        };
-        write!(f, "{}", output)
-    }
-}
-
-#[derive(Debug, Default, Clone, PartialEq, Deserialize, Serialize, utoipa::ToSchema)]
-pub enum DhcpIaid {
-    Id(String),
-    Mac,
-    PermMac,
-    Ifname,
-    Stable,
-    #[default]
-    Unset,
-}
-
-impl From<&str> for DhcpIaid {
-    fn from(s: &str) -> Self {
-        match s {
-            "mac" => Self::Mac,
-            "perm-mac" => Self::PermMac,
-            "ifname" => Self::Ifname,
-            "stable" => Self::Stable,
-            "" => Self::Unset,
-            _ => Self::Id(s.to_string()),
-        }
-    }
-}
-
-impl From<Option<String>> for DhcpIaid {
-    fn from(value: Option<String>) -> Self {
-        match value {
-            Some(str) => Self::from(str.as_str()),
-            None => Self::Unset,
-        }
-    }
-}
-
-impl fmt::Display for DhcpIaid {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        let output = match &self {
-            Self::Id(id) => id.to_string(),
-            Self::Mac => "mac".to_string(),
-            Self::PermMac => "perm-mac".to_string(),
-            Self::Ifname => "ifname".to_string(),
-            Self::Stable => "stable".to_string(),
-            Self::Unset => "".to_string(),
-        };
-        write!(f, "{}", output)
-    }
-}
-
-#[skip_serializing_none]
-#[derive(Debug, Default, PartialEq, Clone, Deserialize, Serialize, utoipa::ToSchema)]
-pub struct Dhcp6Settings {
-    pub send_hostname: Option<bool>,
-    pub hostname: Option<String>,
-    pub send_release: Option<bool>,
-    pub duid: DhcpDuid,
-    pub iaid: DhcpIaid,
-}
-
-#[derive(Debug, Default, Clone, PartialEq, Deserialize, Serialize, utoipa::ToSchema)]
-pub enum DhcpDuid {
-    Id(String),
-    Lease,
-    Llt,
-    Ll,
-    StableLlt,
-    StableLl,
-    StableUuid,
-    #[default]
-    Unset,
-}
-
-impl From<&str> for DhcpDuid {
-    fn from(s: &str) -> Self {
-        match s {
-            "lease" => Self::Lease,
-            "llt" => Self::Llt,
-            "ll" => Self::Ll,
-            "stable-llt" => Self::StableLlt,
-            "stable-ll" => Self::StableLl,
-            "stable-uuid" => Self::StableUuid,
-            "" => Self::Unset,
-            _ => Self::Id(s.to_string()),
-        }
-    }
-}
-
-impl From<Option<String>> for DhcpDuid {
-    fn from(value: Option<String>) -> Self {
-        match &value {
-            Some(str) => Self::from(str.as_str()),
-            None => Self::Unset,
-        }
-    }
-}
-
-impl fmt::Display for DhcpDuid {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        let output = match &self {
-            Self::Id(id) => id.to_string(),
-            Self::Lease => "lease".to_string(),
-            Self::Llt => "llt".to_string(),
-            Self::Ll => "ll".to_string(),
-            Self::StableLlt => "stable-llt".to_string(),
-            Self::StableLl => "stable-ll".to_string(),
-            Self::StableUuid => "stable-uuid".to_string(),
-            Self::Unset => "".to_string(),
-        };
-        write!(f, "{}", output)
-    }
-}
-
 #[skip_serializing_none]
 #[derive(Debug, Default, PartialEq, Clone, Serialize, utoipa::ToSchema)]
 pub struct MatchConfig {
@@ -1085,125 +781,6 @@ pub struct MatchConfig {
     pub path: Vec<String>,
     #[serde(skip_serializing_if = "Vec::is_empty")]
     pub kernel: Vec<String>,
-}
-
-#[derive(Debug, Error)]
-#[error("Unknown IP configuration method name: {0}")]
-pub struct UnknownIpMethod(String);
-
-#[derive(Debug, Default, Copy, Clone, PartialEq, Deserialize, Serialize, utoipa::ToSchema)]
-#[serde(rename_all = "camelCase")]
-pub enum Ipv4Method {
-    Disabled = 0,
-    #[default]
-    Auto = 1,
-    Manual = 2,
-    LinkLocal = 3,
-}
-
-impl fmt::Display for Ipv4Method {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        let name = match &self {
-            Ipv4Method::Disabled => "disabled",
-            Ipv4Method::Auto => "auto",
-            Ipv4Method::Manual => "manual",
-            Ipv4Method::LinkLocal => "link-local",
-        };
-        write!(f, "{}", name)
-    }
-}
-
-impl FromStr for Ipv4Method {
-    type Err = UnknownIpMethod;
-
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        match s {
-            "disabled" => Ok(Ipv4Method::Disabled),
-            "auto" => Ok(Ipv4Method::Auto),
-            "manual" => Ok(Ipv4Method::Manual),
-            "link-local" => Ok(Ipv4Method::LinkLocal),
-            _ => Err(UnknownIpMethod(s.to_string())),
-        }
-    }
-}
-
-#[derive(Debug, Default, Copy, Clone, PartialEq, Deserialize, Serialize, utoipa::ToSchema)]
-#[serde(rename_all = "camelCase")]
-pub enum Ipv6Method {
-    Disabled = 0,
-    #[default]
-    Auto = 1,
-    Manual = 2,
-    LinkLocal = 3,
-    Ignore = 4,
-    Dhcp = 5,
-}
-
-impl fmt::Display for Ipv6Method {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        let name = match &self {
-            Ipv6Method::Disabled => "disabled",
-            Ipv6Method::Auto => "auto",
-            Ipv6Method::Manual => "manual",
-            Ipv6Method::LinkLocal => "link-local",
-            Ipv6Method::Ignore => "ignore",
-            Ipv6Method::Dhcp => "dhcp",
-        };
-        write!(f, "{}", name)
-    }
-}
-
-impl FromStr for Ipv6Method {
-    type Err = UnknownIpMethod;
-
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        match s {
-            "disabled" => Ok(Ipv6Method::Disabled),
-            "auto" => Ok(Ipv6Method::Auto),
-            "manual" => Ok(Ipv6Method::Manual),
-            "link-local" => Ok(Ipv6Method::LinkLocal),
-            "ignore" => Ok(Ipv6Method::Ignore),
-            "dhcp" => Ok(Ipv6Method::Dhcp),
-            _ => Err(UnknownIpMethod(s.to_string())),
-        }
-    }
-}
-
-impl From<UnknownIpMethod> for zbus::fdo::Error {
-    fn from(value: UnknownIpMethod) -> zbus::fdo::Error {
-        zbus::fdo::Error::Failed(value.to_string())
-    }
-}
-
-#[derive(Debug, PartialEq, Clone, Deserialize, Serialize, utoipa::ToSchema)]
-#[serde(rename_all = "camelCase")]
-pub struct IpRoute {
-    #[schema(schema_with = schemas::ip_inet_ref)]
-    pub destination: IpInet,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    #[schema(schema_with = schemas::ip_addr)]
-    pub next_hop: Option<IpAddr>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub metric: Option<u32>,
-}
-
-impl From<&IpRoute> for HashMap<&str, Value<'_>> {
-    fn from(route: &IpRoute) -> Self {
-        let mut map: HashMap<&str, Value> = HashMap::from([
-            ("dest", Value::new(route.destination.address().to_string())),
-            (
-                "prefix",
-                Value::new(route.destination.network_length() as u32),
-            ),
-        ]);
-        if let Some(next_hop) = route.next_hop {
-            map.insert("next-hop", Value::new(next_hop.to_string()));
-        }
-        if let Some(metric) = route.metric {
-            map.insert("metric", Value::new(metric));
-        }
-        map
-    }
 }
 
 #[derive(Debug, Default, PartialEq, Clone, Serialize, utoipa::ToSchema)]
@@ -1740,6 +1317,144 @@ impl fmt::Display for BondOptions {
 pub struct BondConfig {
     pub mode: BondMode,
     pub options: BondOptions,
+}
+
+#[derive(Clone, Debug, Default)]
+pub struct ConnectionCollection(pub Vec<Connection>);
+
+impl ConnectionCollection {
+    pub fn ports_for(&self, uuid: Uuid) -> Vec<String> {
+        self.iter()
+            .filter(|c| c.controller == Some(uuid))
+            .map(|c| c.interface.as_ref().unwrap_or(&c.id).clone())
+            .collect()
+    }
+
+    fn iter(&self) -> impl Iterator<Item = &Connection> {
+        self.0.iter()
+    }
+
+    fn iter_mut(&mut self) -> impl Iterator<Item = &mut Connection> {
+        self.0.iter_mut()
+    }
+}
+
+impl TryFrom<ConnectionCollection> for NetworkConnectionsCollection {
+    type Error = NetworkStateError;
+
+    fn try_from(collection: ConnectionCollection) -> Result<Self, Self::Error> {
+        let network_connections = collection
+            .iter()
+            .filter(|c| c.controller.is_none())
+            .map(|c| {
+                let mut conn = NetworkConnection::try_from(c.clone()).unwrap();
+                if let Some(ref mut bond) = conn.bond {
+                    bond.ports = collection.ports_for(c.uuid);
+                }
+                if let Some(ref mut bridge) = conn.bridge {
+                    bridge.ports = collection.ports_for(c.uuid);
+                };
+                conn
+            })
+            .collect();
+
+        Ok(NetworkConnectionsCollection(network_connections))
+    }
+}
+
+impl TryFrom<NetworkConnectionsCollection> for ConnectionCollection {
+    type Error = NetworkStateError;
+
+    fn try_from(collection: NetworkConnectionsCollection) -> Result<Self, Self::Error> {
+        let mut conns: Vec<Connection> = vec![];
+        let mut controller_ports: HashMap<String, Uuid> = HashMap::new();
+
+        for net_conn in &collection.0 {
+            let mut conn = Connection::try_from(net_conn.clone())?;
+            conn.uuid = Uuid::new_v4();
+            let mut ports = vec![];
+            if let Some(bridge) = &net_conn.bridge {
+                ports = bridge.ports.clone();
+            }
+            if let Some(bond) = &net_conn.bond {
+                ports = bond.ports.clone();
+            }
+            for port in &ports {
+                controller_ports.insert(port.to_string(), conn.uuid);
+            }
+
+            conns.push(conn);
+        }
+
+        for (port, uuid) in controller_ports {
+            let mut conn = conns
+                .iter()
+                .find(|c| c.id == port || c.interface.as_ref() == Some(&port))
+                .cloned()
+                .unwrap_or_else(|| Connection::new(port, DeviceType::Ethernet));
+            conn.controller = Some(uuid);
+            conns.push(conn);
+        }
+
+        Ok(ConnectionCollection(conns))
+    }
+}
+
+impl TryFrom<GeneralState> for StateSettings {
+    type Error = NetworkStateError;
+
+    fn try_from(state: GeneralState) -> Result<Self, Self::Error> {
+        Ok(StateSettings {
+            connectivity: Some(state.connectivity),
+            copy_network: Some(state.copy_network),
+            wireless_enabled: Some(state.wireless_enabled),
+            networking_enabled: Some(state.networking_enabled),
+        })
+    }
+}
+
+impl TryFrom<NetworkState> for Config {
+    type Error = NetworkStateError;
+
+    fn try_from(state: NetworkState) -> Result<Self, Self::Error> {
+        let connections: NetworkConnectionsCollection =
+            ConnectionCollection(state.connections).try_into()?;
+
+        Ok(Config {
+            connections: Some(connections),
+            state: Some(state.general_state.try_into()?),
+        })
+    }
+}
+
+impl TryFrom<NetworkState> for SystemInfo {
+    type Error = NetworkStateError;
+
+    fn try_from(state: NetworkState) -> Result<Self, Self::Error> {
+        let connections: NetworkConnectionsCollection =
+            ConnectionCollection(state.connections).try_into()?;
+
+        Ok(SystemInfo {
+            access_points: state.access_points,
+            connections,
+            devices: state.devices,
+            state: state.general_state.try_into()?,
+        })
+    }
+}
+
+impl TryFrom<NetworkState> for Proposal {
+    type Error = NetworkStateError;
+
+    fn try_from(state: NetworkState) -> Result<Self, Self::Error> {
+        let connections: NetworkConnectionsCollection =
+            ConnectionCollection(state.connections).try_into()?;
+
+        Ok(Proposal {
+            connections,
+            state: state.general_state.try_into()?,
+        })
+    }
 }
 
 impl TryFrom<ConnectionConfig> for BondConfig {

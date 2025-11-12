@@ -29,7 +29,7 @@
  */
 
 import React from "react";
-import { MemoryRouter, useParams } from "react-router-dom";
+import { MemoryRouter, useParams } from "react-router";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import userEvent from "@testing-library/user-event";
 import { render, within } from "@testing-library/react";
@@ -38,7 +38,6 @@ import { InstallerClientProvider } from "~/context/installer";
 import { InstallerL10nProvider } from "~/context/installerL10n";
 import { isObject, noop } from "radashi";
 import { DummyWSClient } from "./client/ws";
-import { System } from "./types/system";
 
 /**
  * Internal mock for manipulating routes, using ["/"] by default
@@ -87,9 +86,9 @@ const mockRoutes = (...routes) => initialRoutes.mockReturnValueOnce(routes);
  */
 const mockParams = (params: ReturnType<typeof useParams>) => (paramsMock = params);
 
-// Centralize the react-router-dom mock here
-jest.mock("react-router-dom", () => ({
-  ...jest.requireActual("react-router-dom"),
+// Centralize the react-router mock here
+jest.mock("react-router", () => ({
+  ...jest.requireActual("react-router"),
   useHref: (to) => to,
   useNavigate: () => mockNavigateFn,
   useMatches: () => [],
@@ -119,18 +118,17 @@ const Providers = ({ children, withL10n }) => {
   }
 
   if (withL10n) {
-    const fetchConfig = async (): Promise<System> => ({
-      l10n: {
-        keymap: "us",
-        timezone: "Europe/Berlin",
-        locale: "en_US",
-      },
-    });
+    // FIXME
+    // const fetchConfig = async (): Promise<System> => ({
+    //   l10n: {
+    //     keymap: "us",
+    //     timezone: "Europe/Berlin",
+    //     locale: "en_US",
+    //   },
+    // });
     return (
       <InstallerClientProvider client={client}>
-        <InstallerL10nProvider initialLanguage="en-US" fetchConfigFn={fetchConfig}>
-          {children}
-        </InstallerL10nProvider>
+        <InstallerL10nProvider initialLanguage="en-US">{children}</InstallerL10nProvider>
       </InstallerClientProvider>
     );
   }

@@ -25,13 +25,13 @@ import ConfigEditorItem from "~/components/storage/ConfigEditorItem";
 import DriveHeader from "~/components/storage/DriveHeader";
 import DeviceEditorContent from "~/components/storage/DeviceEditorContent";
 import SearchedDeviceMenu from "~/components/storage/SearchedDeviceMenu";
-import { Drive } from "~/types/storage/model";
-import { model, StorageDevice } from "~/types/storage";
+import { model } from "~/types/storage";
+import { storage } from "~/api/system";
 import { useDeleteDrive } from "~/hooks/storage/drive";
 
 type DriveDeviceMenuProps = {
   drive: model.Drive;
-  selected: StorageDevice;
+  selected: storage.Device;
 };
 
 /**
@@ -44,7 +44,7 @@ const DriveDeviceMenu = ({ drive, selected }: DriveDeviceMenuProps) => {
   return <SearchedDeviceMenu modelDevice={drive} selected={selected} deleteFn={deleteFn} />;
 };
 
-export type DriveEditorProps = { drive: Drive; driveDevice: StorageDevice };
+export type DriveEditorProps = { drive: model.Drive; driveDevice: storage.Device };
 
 /**
  * Component responsible for displaying detailed information and available actions

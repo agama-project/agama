@@ -23,7 +23,7 @@
 import React from "react";
 import { screen } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
-import { Question, FieldType } from "~/types/questions";
+import { Question, FieldType } from "~/api/question";
 import RegistrationCertificateQuestion from "~/components/questions/RegistrationCertificateQuestion";
 
 const question: Question = {

@@ -21,14 +21,11 @@
  */
 
 import React, { useEffect } from "react";
-import { Navigate, Outlet, useLocation } from "react-router-dom";
+import { Navigate, Outlet, useLocation } from "react-router";
 import { Loading } from "~/components/layout";
 import { useProduct, useProductChanges } from "~/queries/software";
-import { useProposalChanges } from "~/queries/proposal";
-import { useSystemChanges } from "~/queries/system";
-import { useIssuesChanges } from "~/queries/issues";
+import { useSystemChanges, useProposalChanges, useIssuesChanges } from "~/hooks/api";
 import { useInstallerStatus, useInstallerStatusChanges } from "~/queries/status";
-import { useDeprecatedChanges } from "~/queries/storage";
 import { ROOT, PRODUCT } from "~/routes/paths";
 import { InstallationPhase } from "~/types/status";
 import { useQueryClient } from "@tanstack/react-query";
@@ -43,7 +40,6 @@ function App() {
   useProductChanges();
   useIssuesChanges();
   useInstallerStatusChanges();
-  useDeprecatedChanges();
 
   const location = useLocation();
   const { isBusy, phase } = useInstallerStatus({ suspense: true });

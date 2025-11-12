@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2019-09/schema",
   "$id": "https://github.com/openSUSE/agama/blob/master/rust/share/device.storage.schema.json",
-  "title": "Storage device",
+  "title": "Device",
   "description": "Schema to describe a device both in 'system' and 'proposal'.",
   "type": "object",
   "additionalProperties": false,
@@ -10,6 +10,7 @@
     "sid": { "type": "integer" },
     "name": { "type": "string" },
     "description": { "type": "string" },
+    "class": { "$ref": "#/$defs/deviceClass" },
     "block": { "$ref": "#/$defs/block" },
     "drive": { "$ref": "#/$defs/drive" },
     "filesystem": { "$ref": "#/$defs/filesystem" },
@@ -28,6 +29,10 @@
     }
   },
   "$defs": {
+    "deviceClass": {
+      "title": "Device class",
+      "enum": ["drive", "mdRaid", "partition", "volumeGroup", "logicalVolume"]
+    },
     "block": {
       "type": "object",
       "additionalProperties": false,
@@ -49,26 +54,17 @@
           "type": "array",
           "items": { "type": "string" }
         },
-        "shrinking": {
-          "anyOf": [
-            { "$ref": "#/$defs/shrinkingSupported" },
-            { "$ref": "#/$defs/shrinkingUnsupported" }
-          ]
-        }
+        "shrinking": { "$ref": "#/$defs/shrinkInfo" }
       }
     },
-    "shrinkingSupported": {
+    "shrinkInfo": {
       "type": "object",
       "additionalProperties": false,
+      "required": ["supported"],
       "properties": {
-        "supported": { "type": "integer" }
-      }
-    },
-    "shrinkingUnsupported": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "unsupported": {
+        "supported": { "type": "boolean" },
+        "minSize": { "type": "integer" },
+        "reasons": {
           "type": "array",
           "items": { "type": "string" }
         }
@@ -78,7 +74,7 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "type": { "enum": ["disk", "raid", "multipath", "dasd"] },
+        "type": { "$ref": "#/$defs/driveType" },
         "vendor": { "type": "string" },
         "model": { "type": "string" },
         "transport": { "type": "string" },
@@ -90,6 +86,10 @@
         },
         "info": { "$ref": "#/$defs/driveInfo" }
       }
+    },
+    "driveType": {
+      "title": "Drive type",
+      "enum": ["disk", "raid", "multipath", "dasd"]
     },
     "driveInfo": {
       "type": "object",
@@ -111,6 +111,7 @@
       }
     },
     "filesystemType": {
+      "title": "Filesystem type",
       "enum": [
         "bcachefs",
         "btrfs",
@@ -172,15 +173,22 @@
         "type": { "$ref": "#/$defs/ptableType" },
         "unusedSlots": {
           "type": "array",
-          "items": {
-            "type": "array",
-            "items": { "type": "integer" }
-          }
+          "items": { "$ref": "#/$defs/unusedSlot" }
         }
       }
     },
     "ptableType": {
+      "title": "Partition table type",
       "enum": ["gpt", "msdos", "dasd"]
+    },
+    "unusedSlot": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["start", "size"],
+      "properties": {
+        "start": { "type": "integer" },
+        "size": { "type": "integer" }
+      }
     },
     "partition": {
       "type": "object",

@@ -22,11 +22,13 @@
 
 /** @deprecated These hooks will be replaced by new hooks at ~/hooks/storage/ */
 
-import { useMutation, useQuery, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
-import { setConfigModel, solveConfigModel } from "~/api/storage";
-import { apiModel, Volume } from "~/api/storage/types";
+import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
+import { putStorageModel, solveStorageModel } from "~/api";
+import { apiModel } from "~/api/storage";
+import { Volume } from "~/api/storage/system";
 import { QueryHookOptions } from "~/types/queries";
-import { apiModelQuery, useVolumes } from "~/queries/storage";
+import { storageModelQuery } from "~/hooks/api";
+import { useVolumeTemplates } from "~/hooks/storage/system";
 
 function copyModel(model: apiModel.Config): apiModel.Config {
   return JSON.parse(JSON.stringify(model));
@@ -111,30 +113,17 @@ function unusedMountPaths(model: apiModel.Config, volumes: Volume[]): string[] {
 
 /** @deprecated Use useApiModel from ~/hooks/storage/api-model. */
 export function useConfigModel(options?: QueryHookOptions): apiModel.Config {
-  const query = apiModelQuery;
+  const query = storageModelQuery();
   const func = options?.suspense ? useSuspenseQuery : useQuery;
   const { data } = func(query);
   return data;
-}
-
-/**
- * Hook for setting a new config model.
- */
-export function useConfigModelMutation() {
-  const queryClient = useQueryClient();
-  const query = {
-    mutationFn: (model: apiModel.Config) => setConfigModel(model),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["storage"] }),
-  };
-
-  return useMutation(query);
 }
 
 /** @deprecated Use useSolvedApiModel from ~/hooks/storage/api-model. */
 export function useSolvedConfigModel(model?: apiModel.Config): apiModel.Config | null {
   const query = useSuspenseQuery({
     queryKey: ["storage", "solvedConfigModel", JSON.stringify(model)],
-    queryFn: () => (model ? solveConfigModel(model) : Promise.resolve(null)),
+    queryFn: () => (model ? solveStorageModel(model) : Promise.resolve(null)),
     staleTime: Infinity,
   });
 
@@ -149,13 +138,12 @@ export type EncryptionHook = {
 
 export function useEncryption(): EncryptionHook {
   const model = useConfigModel();
-  const { mutate } = useConfigModelMutation();
 
   return {
     encryption: model?.encryption,
     enable: (method: apiModel.EncryptionMethod, password: string) =>
-      mutate(setEncryption(model, method, password)),
-    disable: () => mutate(disableEncryption(model)),
+      putStorageModel(setEncryption(model, method, password)),
+    disable: () => putStorageModel(disableEncryption(model)),
   };
 }
 
@@ -194,12 +182,11 @@ export type ModelHook = {
  */
 export function useModel(): ModelHook {
   const model = useConfigModel();
-  const { mutate } = useConfigModelMutation();
-  const volumes = useVolumes();
+  const volumes = useVolumeTemplates();
 
   return {
     model,
-    addDrive: (driveName) => mutate(addDrive(model, driveName)),
+    addDrive: (driveName) => putStorageModel(addDrive(model, driveName)),
     usedMountPaths: model ? usedMountPaths(model) : [],
     unusedMountPaths: model ? unusedMountPaths(model, volumes) : [],
   };

@@ -355,6 +355,29 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
+        "state": {
+          "title": "Network general settings",
+          "type": "object",
+          "properties": {
+            "connectivity": {
+              "title": "Whether the user is able to access the Internet",
+              "type": "boolean",
+              "readOnly": true
+            },
+            "copyNetwork": {
+              "title": "Whether the network configuration should be copied to the target system",
+              "type": "boolean"
+            },
+            "networkingEnabled": {
+              "title": "Whether the network should be enabled",
+              "type": "boolean"
+            },
+            "wirelessEnabled": {
+              "title": "Whether the wireless should be enabled",
+              "type": "boolean"
+            }
+          }
+        },
         "connections": {
           "title": "Network connections to be defined",
           "type": "array",

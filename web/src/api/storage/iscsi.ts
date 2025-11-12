@@ -20,8 +20,87 @@
  * find current contact information at www.suse.com.
  */
 
-import { del, get, patch, post } from "~/api/http";
-import { ISCSIInitiator, ISCSINode } from "~/api/storage/types";
+// @todo Move to the new API.
+
+import { del, get, patch, post } from "~/http";
+
+export type ISCSIAuth = {
+  /**
+   * Password for authentication by target.
+   */
+  password?: string | null;
+  /**
+   * Password for authentication by initiator.
+   */
+  reverse_password?: string | null;
+  /**
+   * Username for authentication by initiator.
+   */
+  reverse_username?: string | null;
+  /**
+   * Username for authentication by target.
+   */
+  username?: string | null;
+};
+
+export type ISCSIInitiator = {
+  ibft: boolean;
+  name: string;
+};
+
+/**
+ * ISCSI node
+ */
+export type ISCSINode = {
+  /**
+   * Target IP address (in string-like form).
+   */
+  address: string;
+  /**
+   * Whether the node is connected (there is a session).
+   */
+  connected: boolean;
+  /**
+   * Whether the node was initiated by iBFT
+   */
+  ibft: boolean;
+  /**
+   * Artificial ID to match it against the D-Bus backend.
+   */
+  id: number;
+  /**
+   * Interface name.
+   */
+  interface: string;
+  /**
+   * Target port.
+   */
+  port: number;
+  /**
+   * Startup status (TODO: document better)
+   */
+  startup: string;
+  /**
+   * Target name.
+   */
+  target: string;
+};
+
+export type InitiatorParams = {
+  /**
+   * iSCSI initiator name.
+   */
+  name: string;
+};
+
+export type LoginParams = ISCSIAuth & {
+  /**
+   * Startup value.
+   */
+  startup: string;
+};
+
+export type LoginResult = "Success" | "InvalidStartup" | "Failed";
 
 const ISCSI_NODES_NAMESPACE = "/api/storage/iscsi/nodes";
 

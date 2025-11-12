@@ -21,7 +21,7 @@
  */
 
 import React, { useId } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate } from "react-router";
 import {
   ActionGroup,
   Content,
@@ -51,20 +51,18 @@ import SizeModeSelect, { SizeMode, SizeRange } from "~/components/storage/SizeMo
 import AlertOutOfSync from "~/components/core/AlertOutOfSync";
 import ResourceNotFound from "~/components/core/ResourceNotFound";
 import { useAddPartition, useEditPartition } from "~/hooks/storage/partition";
-import { useMissingMountPaths } from "~/hooks/storage/product";
-import { useModel } from "~/hooks/storage/model";
+import { useModel, useMissingMountPaths } from "~/hooks/storage/model";
 import {
   addPartition as addPartitionHelper,
   editPartition as editPartitionHelper,
 } from "~/helpers/storage/partition";
-import { useDevices, useVolume } from "~/queries/storage";
+import { useDevices, useVolumeTemplate } from "~/hooks/storage/system";
 import { useConfigModel, useSolvedConfigModel } from "~/queries/storage/config-model";
 import { findDevice } from "~/helpers/storage/api-model";
-import { StorageDevice } from "~/types/storage";
 import { deviceSize, deviceLabel, filesystemLabel, parseToBytes } from "~/components/storage/utils";
 import { _ } from "~/i18n";
 import { sprintf } from "sprintf-js";
-import { apiModel } from "~/api/storage/types";
+import { apiModel, system } from "~/api/storage";
 import { STORAGE as PATHS, STORAGE } from "~/routes/paths";
 import { isUndefined, unique } from "radashi";
 import { compact } from "~/utils";
@@ -195,19 +193,19 @@ function useModelDevice() {
   return model[list].at(listIndex);
 }
 
-function useDevice(): StorageDevice {
+function useDevice(): system.Device {
   const modelDevice = useModelDevice();
-  const devices = useDevices("system", { suspense: true });
+  const devices = useDevices({ suspense: true });
   return devices.find((d) => d.name === modelDevice.name);
 }
 
-function usePartition(target: string): StorageDevice | null {
+function usePartition(target: string): system.Device | null {
   const device = useDevice();
 
   if (target === NEW_PARTITION) return null;
 
-  const partitions = device.partitionTable?.partitions || [];
-  return partitions.find((p: StorageDevice) => p.name === target);
+  const partitions = device.partitions || [];
+  return partitions.find((p: system.Device) => p.name === target);
 }
 
 function usePartitionFilesystem(target: string): string | null {
@@ -216,7 +214,7 @@ function usePartitionFilesystem(target: string): string | null {
 }
 
 function useDefaultFilesystem(mountPoint: string): string {
-  const volume = useVolume(mountPoint);
+  const volume = useVolumeTemplate(mountPoint);
 
   return volume.mountPath === "/" && volume.snapshots ? BTRFS_SNAPSHOTS : volume.fsType;
 }
@@ -247,9 +245,9 @@ function useUnusedMountPoints(): string[] {
 }
 
 /** Unused partitions. Includes the currently used partition when editing (if any). */
-function useUnusedPartitions(): StorageDevice[] {
+function useUnusedPartitions(): system.Device[] {
   const device = useDevice();
-  const allPartitions = device.partitionTable?.partitions || [];
+  const allPartitions = device.partitions || [];
   const initialPartitionConfig = useInitialPartitionConfig();
   const configuredPartitionConfigs = useModelDevice()
     .getConfiguredExistingPartitions()
@@ -260,7 +258,7 @@ function useUnusedPartitions(): StorageDevice[] {
 }
 
 function useUsableFilesystems(mountPoint: string): string[] {
-  const volume = useVolume(mountPoint);
+  const volume = useVolumeTemplate(mountPoint);
   const defaultFilesystem = useDefaultFilesystem(mountPoint);
 
   const usableFilesystems = React.useMemo(() => {
@@ -502,7 +500,7 @@ function TargetOptionLabel({ value }: TargetOptionLabelProps): React.ReactNode {
 }
 
 type PartitionDescriptionProps = {
-  partition: StorageDevice;
+  partition: system.Device;
 };
 
 function PartitionDescription({ partition }: PartitionDescriptionProps): React.ReactNode {
@@ -572,7 +570,7 @@ type FilesystemOptionsProps = {
 };
 
 function FilesystemOptions({ mountPoint, target }: FilesystemOptionsProps): React.ReactNode {
-  const volume = useVolume(mountPoint);
+  const volume = useVolumeTemplate(mountPoint);
   const defaultFilesystem = useDefaultFilesystem(mountPoint);
   const usableFilesystems = useUsableFilesystems(mountPoint);
   const partitionFilesystem = usePartitionFilesystem(target);
@@ -673,7 +671,7 @@ type AutoSizeInfoProps = {
 };
 
 function AutoSizeInfo({ value }: AutoSizeInfoProps): React.ReactNode {
-  const volume = useVolume(value.mountPoint);
+  const volume = useVolumeTemplate(value.mountPoint);
   const solvedPartitionConfig = useSolvedPartitionConfig(value);
   const size = solvedPartitionConfig?.size;
 

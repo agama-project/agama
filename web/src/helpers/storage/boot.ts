@@ -21,7 +21,7 @@
  */
 
 import { model } from "~/types/storage";
-import { apiModel } from "~/api/storage/types";
+import { apiModel } from "~/api/storage";
 import { copyApiModel } from "~/helpers/storage/api-model";
 
 function isUsed(device: model.Drive | model.MdRaid): boolean {

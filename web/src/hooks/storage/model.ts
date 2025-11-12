@@ -20,20 +20,42 @@
  * find current contact information at www.suse.com.
  */
 
-import { useMemo } from "react";
-import { useApiModel } from "~/hooks/storage/api-model";
+import { useCallback } from "react";
+import { useSuspenseQuery, useQuery } from "@tanstack/react-query";
+import { storageModelQuery } from "~/hooks/api";
+import { useSystem } from "~/hooks/storage/system";
+import { apiModel } from "~/api/storage";
 import { buildModel } from "~/helpers/storage/model";
 import { QueryHookOptions } from "~/types/queries";
 import { model } from "~/types/storage";
 
+const modelFromData = (data: apiModel.Config | null): model.Model | null =>
+  data ? buildModel(data) : null;
+
 function useModel(options?: QueryHookOptions): model.Model | null {
-  const apiModel = useApiModel(options);
-
-  const model = useMemo((): model.Model | null => {
-    return apiModel ? buildModel(apiModel) : null;
-  }, [apiModel]);
-
-  return model;
+  const func = options?.suspense ? useSuspenseQuery : useQuery;
+  const { data } = func({
+    ...storageModelQuery(),
+    select: modelFromData,
+  });
+  return data;
 }
 
-export { useModel };
+function useMissingMountPaths(options?: QueryHookOptions): string[] {
+  const productMountPoints = useSystem()?.productMountPoints;
+  const func = options?.suspense ? useSuspenseQuery : useQuery;
+  const { data } = func({
+    ...storageModelQuery(),
+    select: useCallback(
+      (data: apiModel.Config | null): string[] => {
+        const model = modelFromData(data);
+        const currentMountPaths = model?.getMountPaths() || [];
+        return (productMountPoints || []).filter((p) => !currentMountPaths.includes(p));
+      },
+      [productMountPoints],
+    ),
+  });
+  return data;
+}
+
+export { useModel, useMissingMountPaths };

@@ -22,11 +22,10 @@
 
 import React, { useState } from "react";
 import { Content, Flex, Form, FormGroup, Radio } from "@patternfly/react-core";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { ListSearch, Page } from "~/components/core";
-import { updateConfig } from "~/api/api";
-import { useSystem } from "~/queries/system";
-import { useProposal } from "~/queries/proposal";
+import { patchConfig } from "~/api";
+import { useSystem, useProposal } from "~/hooks/api";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import { _ } from "~/i18n";
 
@@ -47,7 +46,7 @@ export default function LocaleSelection() {
 
   const onSubmit = async (e: React.SyntheticEvent) => {
     e.preventDefault();
-    updateConfig({ l10n: { locale: selected } });
+    patchConfig({ l10n: { locale: selected } });
     navigate(-1);
   };
 

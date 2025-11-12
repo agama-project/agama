@@ -24,7 +24,7 @@ import React from "react";
 import { screen } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
 import { IssuesAlert } from "~/components/core";
-import { Issue, IssueSeverity, IssueSource } from "~/types/issues";
+import { Issue, IssueSeverity, IssueSource } from "~/api/issue";
 import { SOFTWARE } from "~/routes/paths";
 
 describe("IssueAlert", () => {

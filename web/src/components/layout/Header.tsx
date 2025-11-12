@@ -39,7 +39,7 @@ import {
   ToolbarGroup,
   ToolbarItem,
 } from "@patternfly/react-core";
-import { useMatches } from "react-router-dom";
+import { useMatches } from "react-router";
 import { Icon } from "~/components/layout";
 import { useProduct } from "~/queries/software";
 import { Route } from "~/types/routes";

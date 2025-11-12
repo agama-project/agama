@@ -39,11 +39,7 @@
     "encryptionMethods": {
       "description": "Possible encryption methods for the current system and product",
       "type": "array",
-      "items": {
-        "enum": [
-          "luks1", "luks2", "pervasiveLuks2", "tmpFde", "protectedSwap", "secureSwap", "randomSwap"
-        ]
-      }
+      "items": { "$ref": "#/$defs/encryptionMethod" }
     },
     "volumeTemplates": {
       "description": "Volumes defined by the product as templates",
@@ -56,6 +52,12 @@
     }
   },
   "$defs": {
+    "encryptionMethod": {
+      "title": "Encryption method",
+      "enum": [
+        "luks1", "luks2", "pervasiveLuks2", "tpmFde", "protectedSwap", "secureSwap", "randomSwap"
+      ]
+    },
     "volume": {
       "type": "object",
       "additionalProperties": false,
@@ -103,9 +105,13 @@
         "description": { "type": "string" },
         "class": { "type": "string" },
         "details": { "type": "string" },
-        "source": { "enum": ["config", "system"] },
+        "source": { "$ref": "#/$defs/issueSource" },
         "severity": { "enum": ["warn", "error"] }
       }
+    },
+    "issueSource": {
+      "title": "System issue source",
+      "enum": ["config", "system"]
     }
   }
 }

@@ -30,7 +30,7 @@ import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import ProposalPage from "~/components/storage/ProposalPage";
 import { StorageDevice } from "~/types/storage";
-import { Issue, IssueSeverity, IssueSource } from "~/types/issues";
+import { Issue, IssueSeverity, IssueSource } from "~/api/issue";
 
 const disk: StorageDevice = {
   sid: 60,

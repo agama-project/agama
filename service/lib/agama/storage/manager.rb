@@ -21,7 +21,6 @@
 
 require "agama/http/clients"
 require "agama/issue"
-require "agama/security"
 require "agama/storage/actions_generator"
 require "agama/storage/bootloader"
 require "agama/storage/callbacks"
@@ -37,8 +36,6 @@ require "yast"
 require "y2storage/clients/inst_prepdisk"
 require "y2storage/luks"
 require "y2storage/storage_manager"
-
-Yast.import "PackagesProposal"
 
 module Agama
   module Storage
@@ -121,12 +118,12 @@ module Agama
         return if packages.empty?
 
         logger.info "Selecting these packages for installation: #{packages}"
-        Yast::PackagesProposal.SetResolvables(PROPOSAL_ID, :package, packages)
+        http_client.set_resolvables(PROPOSAL_ID, :package, packages)
       end
 
       # Performs the final steps on the target file system(s).
       def finish
-        Finisher.new(logger, product_config, security).run
+        Finisher.new(logger, product_config).run
       end
 
       # Storage proposal manager
@@ -162,13 +159,6 @@ module Agama
       def configure_locale(locale)
         change_process_locale(locale)
         update_issues
-      end
-
-      # Security manager
-      #
-      # @return [Security]
-      def security
-        @security ||= Security.new(logger, product_config)
       end
 
       # Issues from the system
@@ -236,6 +226,10 @@ module Agama
       # @return [Agama::HTTP::Clients::Questions]
       def questions_client
         @questions_client ||= Agama::HTTP::Clients::Questions.new(logger)
+      end
+
+      def http_client
+        @http_client = Agama::HTTP::Clients::Main.new(::Logger.new($stdout))
       end
     end
   end
