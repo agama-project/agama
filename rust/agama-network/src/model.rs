@@ -300,20 +300,6 @@ impl NetworkState {
             )),
         }
     }
-
-    pub fn ports_for(&self, uuid: Uuid) -> Vec<String> {
-        self.connections
-            .iter()
-            .filter(|c| c.controller == Some(uuid))
-            .map(|c| {
-                if let Some(interface) = c.interface.to_owned() {
-                    interface
-                } else {
-                    c.clone().id
-                }
-            })
-            .collect()
-    }
 }
 
 #[cfg(test)]
