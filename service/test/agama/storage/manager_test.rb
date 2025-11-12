@@ -59,7 +59,6 @@ describe Agama::Storage::Manager do
     allow(Agama::HTTP::Clients::Questions).to receive(:new).and_return(questions_client)
     allow(Agama::HTTP::Clients::Main).to receive(:new).and_return(http_client)
     allow(Bootloader::FinishClient).to receive(:new).and_return(bootloader_finish)
-    allow(Agama::Security).to receive(:new).and_return(security)
     # mock writting config as proposal call can do storage probing, which fails in CI
     allow_any_instance_of(Agama::Storage::Bootloader).to receive(:write_config)
     allow(Yast::Installation).to receive(:destdir).and_return(File.join(tmp_dir, "mnt"))
@@ -75,7 +74,6 @@ describe Agama::Storage::Manager do
   let(:proposal) { Agama::Storage::Proposal.new(config, logger: logger) }
   let(:questions_client) { instance_double(Agama::HTTP::Clients::Questions) }
   let(:bootloader_finish) { instance_double(Bootloader::FinishClient, write: nil) }
-  let(:security) { instance_double(Agama::Security, write: nil) }
   let(:scenario) { "empty-hd-50GiB.yaml" }
 
   describe "#activate" do
@@ -346,7 +344,6 @@ describe Agama::Storage::Manager do
     it "copy needed files, installs the bootloader, sets up the snapshots, " \
        "copy logs, symlink resolv.conf, runs the post-installation scripts, " \
        "unlink resolv.conf, and umounts the file systems" do
-      expect(security).to receive(:write)
       expect(copy_files).to receive(:run)
       expect(bootloader_finish).to receive(:write)
       expect(Yast::WFM).to receive(:CallFunction).with("storage_finish", ["Write"])

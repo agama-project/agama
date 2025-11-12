@@ -44,11 +44,9 @@ module Agama
       # Constructor
       # @param logger [Logger]
       # @param config [Config]
-      # @param security [Security]
-      def initialize(logger, config, security)
+      def initialize(logger, config)
         @logger = logger
         @config = config
-        @security = security
       end
 
       # Execute the final storage actions, reporting the progress
@@ -73,13 +71,9 @@ module Agama
       # @return [Config]
       attr_reader :config
 
-      # @return [Security]
-      attr_reader :security
-
       # All possible steps, that may or not need to be executed
       def possible_steps
         [
-          SecurityStep.new(logger, security),
           CopyFilesStep.new(logger),
           StorageStep.new(logger),
           IscsiStep.new(logger),
@@ -167,23 +161,6 @@ module Agama
 
         def glob_files
           Dir.glob(FILES.map { |f| File.join(root_dir, f[:dir], f[:file]) })
-        end
-      end
-
-      # Step to write the security settings
-      class SecurityStep < Step
-        # Constructor
-        def initialize(logger, security)
-          super(logger)
-          @security = security
-        end
-
-        def label
-          _("Writing Linux Security Modules configuration")
-        end
-
-        def run
-          @security.write
         end
       end
 

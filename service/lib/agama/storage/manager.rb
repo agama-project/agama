@@ -21,7 +21,6 @@
 
 require "agama/http/clients"
 require "agama/issue"
-require "agama/security"
 require "agama/storage/actions_generator"
 require "agama/storage/bootloader"
 require "agama/storage/callbacks"
@@ -124,7 +123,7 @@ module Agama
 
       # Performs the final steps on the target file system(s).
       def finish
-        Finisher.new(logger, product_config, security).run
+        Finisher.new(logger, product_config).run
       end
 
       # Storage proposal manager
@@ -160,13 +159,6 @@ module Agama
       def configure_locale(locale)
         change_process_locale(locale)
         update_issues
-      end
-
-      # Security manager
-      #
-      # @return [Security]
-      def security
-        @security ||= Security.new(logger, product_config)
       end
 
       # Issues from the system
