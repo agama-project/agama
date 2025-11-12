@@ -90,7 +90,7 @@ Definition of SLE-based products (e.g., SUSE Linux Enterprise Server) for the Ag
 %license LICENSE
 %dir %{_datadir}/agama
 %dir %{_datadir}/agama/products.d
-%{_datadir}/agama/products.d/sles_160.yaml
-%{_datadir}/agama/products.d/sles_sap_160.yaml
+%{_datadir}/agama/products.d/sles_161.yaml
+%{_datadir}/agama/products.d/sles_sap_161.yaml
 
 %changelog

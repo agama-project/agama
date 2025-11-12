@@ -1,8 +1,8 @@
 id: SLES_SAP
-name: SUSE Linux Enterprise Server for SAP applications 16.0
+name: SUSE Linux Enterprise Server for SAP applications 16.1
 archs: x86_64,ppc
 registration: true
-version: "16.0"
+version: "16.1"
 license: "license.final"
 # ------------------------------------------------------------------------------
 # WARNING: When changing the product description delete the translations located
