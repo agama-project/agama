@@ -47,6 +47,31 @@ pub struct Issue {
     pub class: String,
 }
 
+impl Issue {
+    /// Creates a new issue.
+    pub fn new(class: &str, description: &str, severity: IssueSeverity) -> Self {
+        Self {
+            description: description.to_string(),
+            class: class.to_string(),
+            source: IssueSource::Config,
+            severity,
+            details: None,
+        }
+    }
+
+    /// Sets the details for the issue.
+    pub fn with_details(mut self, details: &str) -> Self {
+        self.details = Some(details.to_string());
+        self
+    }
+
+    /// Sets the source for the issue.
+    pub fn with_source(mut self, source: IssueSource) -> Self {
+        self.source = source;
+        self
+    }
+}
+
 #[derive(
     Clone, Copy, Debug, Deserialize, Serialize, FromRepr, PartialEq, Eq, Hash, utoipa::ToSchema,
 )]
@@ -75,14 +100,14 @@ impl TryFrom<&zbus::zvariant::Value<'_>> for Issue {
         let value = value.downcast_ref::<zbus::zvariant::Structure>()?;
         let fields = value.fields();
 
-        let Some([description, kind, details, source, severity]) = fields.get(0..5) else {
+        let Some([description, class, details, source, severity]) = fields.get(0..5) else {
             return Err(zbus::zvariant::Error::Message(
                 "Not enough elements for building an Issue.".to_string(),
             ))?;
         };
 
         let description: String = description.try_into()?;
-        let kind: String = kind.try_into()?;
+        let class: String = class.try_into()?;
         let details: String = details.try_into()?;
         let source: u32 = source.try_into()?;
         let source = source as u8;
@@ -95,7 +120,7 @@ impl TryFrom<&zbus::zvariant::Value<'_>> for Issue {
 
         Ok(Issue {
             description,
-            class: kind,
+            class,
             details: if details.is_empty() {
                 None
             } else {

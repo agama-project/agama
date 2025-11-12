@@ -82,7 +82,8 @@ if [ -n "\$target_dir" ]; then
   # array and also for formatting the final JSON output
   rpm --root "\$mount_dir2" -qa --queryformat \\
     '\\{"name":"%{NAME}","version":"%{VERSION}","release":"%{RELEASE}","arch":"%{ARCH}"\\}' \\
-    | jq -s 'sort_by(.name|ascii_downcase)' | gzip > "\$target_dir/LiveOS/.packages.json.gz"
+    | chroot "\$mount_dir2" /usr/bin/jq -s 'sort_by(.name|ascii_downcase)' \\
+    | gzip > "\$target_dir/LiveOS/.packages.json.gz"
 
   # copy the build info file if present
   if [ -f "\$mount_dir2"/var/log/build/info ]; then

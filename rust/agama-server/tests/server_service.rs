@@ -29,10 +29,14 @@ use axum::{
 };
 use common::body_to_string;
 use std::error::Error;
+use std::path::PathBuf;
 use tokio::{sync::broadcast::channel, test};
 use tower::ServiceExt;
 
 async fn build_server_service() -> Result<Router, ServiceError> {
+    let share_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../test/share");
+    std::env::set_var("AGAMA_SHARE_DIR", share_dir.display().to_string());
+
     let (tx, mut rx) = channel(16);
     let dbus = test::dbus::connection().await.unwrap();
 
@@ -176,16 +180,15 @@ async fn test_patch_config() -> Result<(), Box<dyn Error>> {
     let response = server_service.clone().oneshot(request).await.unwrap();
     assert_eq!(response.status(), StatusCode::OK);
 
-    let patch = api::config::Patch {
-        update: Some(api::Config {
-            l10n: Some(api::l10n::Config {
-                locale: None,
-                keymap: Some("en".to_string()),
-                timezone: None,
-            }),
-            ..Default::default()
+    let config = api::Config {
+        l10n: Some(api::l10n::Config {
+            locale: None,
+            keymap: Some("en".to_string()),
+            timezone: None,
         }),
+        ..Default::default()
     };
+    let patch = agama_utils::api::Patch::with_update(&config).unwrap();
 
     let request = Request::builder()
         .uri("/config")
