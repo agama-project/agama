@@ -193,7 +193,7 @@ fn validate_local(url_or_path: CliInput, insecure: bool) -> anyhow::Result<Valid
     }
 }
 
-async fn validate(
+async fn validate_silently(
     client: &BaseHTTPClient,
     url_or_path: CliInput,
 ) -> anyhow::Result<ValidationOutcome> {
@@ -201,6 +201,16 @@ async fn validate(
     let validity = ProfileHTTPClient::new(client.clone())
         .validate(&request)
         .await?;
+
+    Ok(validity)
+}
+
+
+async fn validate(
+    client: &BaseHTTPClient,
+    url_or_path: CliInput,
+) -> anyhow::Result<ValidationOutcome> {
+    let validity = validate_silently(client, url_or_path).await?;
     let _ = validation_msg(&validity);
 
     Ok(validity)
@@ -275,9 +285,12 @@ async fn generate(
         from_json_or_jsonnet(client, url_or_path, insecure).await?
     };
 
-    let validity = validate(client, CliInput::Full(profile_json.clone())).await?;
+    let validity = validate_silently(client, CliInput::Full(profile_json.clone())).await?;
 
-    if matches!(validity, ValidationOutcome::Valid) {
+    if matches!(validity, ValidationOutcome::NotValid(_)) {
+        println!("{}", &profile_json);
+        let _ = validation_msg(&validity);
+
         return Ok(());
     }
 
