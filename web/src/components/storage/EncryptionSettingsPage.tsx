@@ -55,9 +55,9 @@ export default function EncryptionSettingsPage() {
     }
   }, [encryptionConfig]);
 
-  const changePassword = (_, v) => setPassword(v);
+  const changePassword = (_, v: string) => setPassword(v);
 
-  const changeMethod = (_, useTPM) => {
+  const changeMethod = (_, useTPM: boolean) => {
     const method = useTPM ? "tpmFde" : "luks2";
     setMethod(method);
   };

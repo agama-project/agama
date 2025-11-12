@@ -27,67 +27,31 @@ import { system, proposal } from "~/api/storage";
 type Device = system.Device | proposal.Device;
 
 function isDrive(device: Device): boolean {
-  return device.drive !== undefined;
+  return device.class === "drive";
 }
 
 function isVolumeGroup(device: Device): boolean {
-  return device.volumeGroup !== undefined;
+  return device.class === "volumeGroup";
 }
 
 function isMd(device: Device): boolean {
-  return device.md !== undefined;
-}
-
-function isMultipath(device: Device): boolean {
-  return device.multipath !== undefined;
+  return device.class === "mdRaid";
 }
 
 function isPartition(device: Device): boolean {
-  return device.partition !== undefined;
+  return device.class === "partition";
 }
 
 function isLogicalVolume(device: Device): boolean {
-  return !(
-    isDrive(device) ||
-    isVolumeGroup(device) ||
-    isMd(device) ||
-    isMultipath(device) ||
-    isPartition(device)
-  );
-}
-
-enum DeviceType {
-  Drive,
-  VolumeGroup,
-  Md,
-  Multipath,
-  Partition,
-  LogicalVolume,
-}
-
-function deviceType(device: Device): DeviceType | undefined {
-  if (isDrive(device)) return DeviceType.Drive;
-  if (isVolumeGroup(device)) return DeviceType.VolumeGroup;
-  if (isMd(device)) return DeviceType.Md;
-  if (isMultipath(device)) return DeviceType.Multipath;
-  if (isPartition(device)) return DeviceType.Partition;
-  if (isLogicalVolume(device)) return DeviceType.LogicalVolume;
-
-  return undefined;
+  return device.class === "logicalVolume";
 }
 
 function deviceSystems(device: Device): string[] {
-  return device?.block?.systems || [];
+  return device.block?.systems || [];
 }
 
-export {
-  DeviceType,
-  isDrive,
-  isVolumeGroup,
-  isMd,
-  isMultipath,
-  isPartition,
-  isLogicalVolume,
-  deviceType,
-  deviceSystems,
-};
+function supportShrink(device: Device): boolean {
+  return device.block?.shrinking?.supported || false;
+}
+
+export { isDrive, isVolumeGroup, isMd, isPartition, isLogicalVolume, deviceSystems, supportShrink };

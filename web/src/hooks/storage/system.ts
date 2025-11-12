@@ -23,19 +23,10 @@
 import { useCallback } from "react";
 import { useSuspenseQuery, useQuery } from "@tanstack/react-query";
 import { System, storage } from "~/api/system";
+import { EncryptionMethod } from "~/api/storage/system";
 import { QueryHookOptions } from "~/types/queries";
 import { systemQuery } from "~/hooks/api";
 import { findDevices } from "~/helpers/storage/system";
-
-// FIXME
-type EncryptionMethod =
-  | "luks1"
-  | "luks2"
-  | "pervasiveLuks2"
-  | "tmpFde"
-  | "protectedSwap"
-  | "secureSwap"
-  | "randomSwap";
 
 const selectSystem = (data: System | null): storage.System => data?.storage;
 

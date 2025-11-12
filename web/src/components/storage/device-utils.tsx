@@ -31,18 +31,18 @@ import { system, proposal } from "~/api/storage";
 import { deviceSystems, isLogicalVolume, isMd, isPartition } from "~/helpers/storage/device";
 
 type Device = system.Device | proposal.Device;
-type PartitionSlot = system.PartitionSlot | proposal.PartitionSlot;
+type UnusedSlot = system.UnusedSlot | proposal.UnusedSlot;
 
 /**
  * Ensures the given item is a Device.
  */
-const toDevice = (item: PartitionSlot | Device): Device | undefined => {
+const toDevice = (item: UnusedSlot | Device): Device | undefined => {
   if ("sid" in item) {
     return item;
   }
 };
 
-const toPartitionSlot = (item: PartitionSlot | Device): PartitionSlot | undefined => {
+const toPartitionSlot = (item: UnusedSlot | Device): UnusedSlot | undefined => {
   if ("sid" in item) return undefined;
   return item;
 };
@@ -50,7 +50,7 @@ const toPartitionSlot = (item: PartitionSlot | Device): PartitionSlot | undefine
 /**
  * @component
  */
-const FilesystemLabel = ({ item }: { item: PartitionSlot | Device }) => {
+const FilesystemLabel = ({ item }: { item: UnusedSlot | Device }) => {
   const device = toDevice(item);
   if (!device) return null;
 
@@ -67,7 +67,7 @@ const FilesystemLabel = ({ item }: { item: PartitionSlot | Device }) => {
 /**
  * @component
  */
-const DeviceName = ({ item }: { item: PartitionSlot | Device }) => {
+const DeviceName = ({ item }: { item: UnusedSlot | Device }) => {
   const device = toDevice(item);
   if (!device) return null;
 
@@ -79,7 +79,7 @@ const DeviceName = ({ item }: { item: PartitionSlot | Device }) => {
 /**
  * @component
  */
-const DeviceDetails = ({ item }: { item: PartitionSlot | Device }) => {
+const DeviceDetails = ({ item }: { item: UnusedSlot | Device }) => {
   const device = toDevice(item);
   if (!device) return _("Unused space");
 
@@ -111,7 +111,7 @@ const DeviceDetails = ({ item }: { item: PartitionSlot | Device }) => {
 /**
  * @component
  */
-const DeviceSize = ({ item }: { item: PartitionSlot | Device }) => {
+const DeviceSize = ({ item }: { item: UnusedSlot | Device }) => {
   const partitionSlot = toPartitionSlot(item);
   const device = toDevice(item);
   return deviceSize(partitionSlot?.size || device?.block.size);

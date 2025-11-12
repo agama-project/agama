@@ -27,7 +27,7 @@ import { Page } from "~/components/core";
 import SpaceActionsTable, { SpacePolicyAction } from "~/components/storage/SpaceActionsTable";
 import { deviceChildren } from "~/components/storage/utils";
 import { _ } from "~/i18n";
-import { PartitionSlot, Device } from "~/api/storage/proposal";
+import { UnusedSlot, Device } from "~/api/storage/proposal";
 import { apiModel } from "~/api/storage";
 import { useDevices } from "~/hooks/storage/system";
 import { useModel } from "~/hooks/storage/model";
@@ -74,7 +74,7 @@ export default function SpacePolicySelection() {
 
   const navigate = useNavigate();
 
-  const deviceAction = (device: Device | PartitionSlot) => {
+  const deviceAction = (device: Device | UnusedSlot) => {
     if (toDevice(device) === undefined) return "keep";
 
     return actions.find((a) => a.deviceName === toDevice(device).name)?.value || "keep";

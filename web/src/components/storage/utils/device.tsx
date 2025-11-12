@@ -20,44 +20,47 @@
  * find current contact information at www.suse.com.
  */
 
-// @ts-check
-
 import { _ } from "~/i18n";
 import { sprintf } from "sprintf-js";
-import { storage } from "~/api/system";
+import { system } from "~/api/storage";
 import { compact } from "~/utils";
-import { deviceType, DeviceType } from "~/helpers/storage/device";
+
+const driveTypeDescription = (device: system.Device): string => {
+  if (device.drive.type === "multipath") {
+    // TRANSLATORS: multipath device type
+    return _("Multipath");
+  }
+
+  if (device.drive.type === "dasd") {
+    // TRANSLATORS: %s is replaced by the device bus ID
+    return sprintf(_("DASD %s"), device.drive.busId);
+  }
+
+  if (device.drive.info.sdCard) {
+    return _("SD Card");
+  }
+
+  const technology = device.drive.transport || device.drive.bus;
+  return technology
+    ? // TRANSLATORS: %s is substituted by the type of disk like "iSCSI" or "SATA"
+      sprintf(_("%s disk"), technology)
+    : _("Disk");
+};
 
 /*
  * Description of the device type.
  */
-const typeDescription = (device: storage.Device): string | undefined => {
+const typeDescription = (device: system.Device): string | undefined => {
   let type: string;
 
-  switch (deviceType(device)) {
-    case DeviceType.Multipath: {
-      // TRANSLATORS: multipath device type
-      type = _("Multipath");
-      break;
-    }
-    case DeviceType.Md: {
+  switch (device.class) {
+    case "mdRaid": {
       // TRANSLATORS: software RAID device, %s is replaced by the RAID level, e.g. RAID-1
       type = sprintf(_("Software %s"), device.md.level.toUpperCase());
       break;
     }
-    case DeviceType.Drive: {
-      if (device.drive.type === "dasd") {
-        // TRANSLATORS: %s is replaced by the device bus ID
-        type = sprintf(_("DASD %s"), device.drive.busId);
-      } else if (device.drive.info.sdCard) {
-        type = _("SD Card");
-      } else {
-        const technology = device.drive.transport || device.drive.bus;
-        type = technology
-          ? // TRANSLATORS: %s is substituted by the type of disk like "iSCSI" or "SATA"
-            sprintf(_("%s disk"), technology)
-          : _("Disk");
-      }
+    case "drive": {
+      type = driveTypeDescription(device);
     }
   }
 
@@ -70,7 +73,7 @@ const typeDescription = (device: storage.Device): string | undefined => {
  * TODO: there is a lot of room for improvement here, but first we would need
  * device.description (comes from YaST) to be way more granular
  */
-const contentDescription = (device: storage.Device): string => {
+const contentDescription = (device: system.Device): string => {
   if (device.partitionTable) {
     const type = device.partitionTable.type.toUpperCase();
     const numPartitions = device.partitions.length;
@@ -95,7 +98,7 @@ const contentDescription = (device: storage.Device): string => {
 /*
  * Labels of the filesystems included at the device
  */
-const filesystemLabels = (device: storage.Device): string[] => {
+const filesystemLabels = (device: system.Device): string[] => {
   if (device.partitionTable) {
     return compact(device.partitions.map((p) => p.filesystem?.label));
   }

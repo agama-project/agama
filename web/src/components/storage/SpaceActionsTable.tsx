@@ -37,12 +37,12 @@ import { _ } from "~/i18n";
 import { deviceSize, formattedPath } from "~/components/storage/utils";
 import { DeviceName, DeviceDetails, DeviceSize, toDevice } from "~/components/storage/device-utils";
 import { Icon } from "~/components/layout";
-import { Device, PartitionSlot } from "~/api/storage/proposal";
+import { Device, UnusedSlot } from "~/api/storage/proposal";
 import { apiModel } from "~/api/storage";
 import { TreeTableColumn } from "~/components/core/TreeTable";
 import { Table, Td, Th, Tr, Thead, Tbody } from "@patternfly/react-table";
 import { useConfigModel } from "~/queries/storage/config-model";
-import { isPartition } from "~/helpers/storage/device";
+import { isPartition, supportShrink } from "~/helpers/storage/device";
 
 export type SpacePolicyAction = {
   deviceName: string;
@@ -69,8 +69,7 @@ const useReusedPartition = (name: string): apiModel.Partition | undefined => {
  * @component
  */
 const DeviceInfoContent = ({ device }: { device: Device }) => {
-  // FIXME
-  const minSize = device.block?.shrinking?.min;
+  const minSize = device.block?.shrinking?.minSize;
 
   const reused = useReusedPartition(device.name);
   if (reused) {
@@ -88,8 +87,7 @@ const DeviceInfoContent = ({ device }: { device: Device }) => {
     );
   }
 
-  // FXIME
-  const reasons = device.shrinking.unsupportedReasons;
+  const reasons = device.block?.shrinking?.reasons || [];
 
   return (
     <>
@@ -144,9 +142,9 @@ const DeviceActionSelector = ({
 
   const forceKeep = !!useReusedPartition(device.name);
   // FIXME
-  const isResizeDisabled = forceKeep || device.shrinking?.supported === undefined;
+  const isResizeDisabled = forceKeep || !supportShrink(device);
   const isDeleteDisabled = forceKeep;
-  const hasInfo = forceKeep || device.shrinking !== undefined;
+  const hasInfo = forceKeep || device.block?.shrinking !== undefined;
   const adjustedAction = forceKeep ? "keep" : action;
 
   return (
@@ -198,7 +196,7 @@ const DeviceAction = ({
   action,
   onChange,
 }: {
-  item: PartitionSlot | Device;
+  item: UnusedSlot | Device;
   action: string;
   onChange?: (action: SpacePolicyAction) => void;
 }) => {
@@ -218,8 +216,8 @@ const DeviceAction = ({
 };
 
 export type SpaceActionsTableProps = {
-  devices: (PartitionSlot | Device)[];
-  deviceAction: (item: PartitionSlot | Device) => string;
+  devices: (UnusedSlot | Device)[];
+  deviceAction: (item: UnusedSlot | Device) => string;
   onActionChange: (action: SpacePolicyAction) => void;
 };
 
@@ -235,16 +233,16 @@ export default function SpaceActionsTable({
   const columns: TreeTableColumn[] = [
     {
       name: _("Device"),
-      value: (item: PartitionSlot | Device) => <DeviceName item={item} />,
+      value: (item: UnusedSlot | Device) => <DeviceName item={item} />,
     },
     {
       name: _("Details"),
-      value: (item: PartitionSlot | Device) => <DeviceDetails item={item} />,
+      value: (item: UnusedSlot | Device) => <DeviceDetails item={item} />,
     },
-    { name: _("Size"), value: (item: PartitionSlot | Device) => <DeviceSize item={item} /> },
+    { name: _("Size"), value: (item: UnusedSlot | Device) => <DeviceSize item={item} /> },
     {
       name: _("Action"),
-      value: (item: PartitionSlot | Device) => (
+      value: (item: UnusedSlot | Device) => (
         <DeviceAction item={item} action={deviceAction(item)} onChange={onActionChange} />
       ),
     },

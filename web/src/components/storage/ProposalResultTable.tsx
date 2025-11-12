@@ -38,7 +38,7 @@ import { proposal } from "~/api/storage";
 import { TreeTableColumn } from "~/components/core/TreeTable";
 import { useConfigModel } from "~/queries/storage/config-model";
 
-type TableItem = proposal.Device | proposal.PartitionSlot;
+type TableItem = proposal.Device | proposal.UnusedSlot;
 
 /**
  * @component

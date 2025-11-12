@@ -242,12 +242,12 @@ const deviceLabel = (device: system.Device, truncate?: boolean): string => {
   return size ? `${name} (${deviceSize(size)})` : name;
 };
 
-type PartitionTableContent = (proposal.Device | proposal.PartitionSlot)[];
+type PartitionTableContent = (proposal.Device | proposal.UnusedSlot)[];
 
 function partitionTableContent(device: proposal.Device): PartitionTableContent {
   const partitions: [number, proposal.Device][] =
-    device.partitions?.map((p) => [p.partition.start, p]) || [];
-  const unusedSlots: [number, proposal.PartitionSlot][] = device.partitionTable?.unusedSlots?.map(
+    device.partitions?.map((p) => [p.block.start, p]) || [];
+  const unusedSlots: [number, proposal.UnusedSlot][] = device.partitionTable?.unusedSlots?.map(
     (s) => [s.start, s],
   );
   return [...partitions, ...unusedSlots].sort((a, b) => (a[0] < b[0] ? -1 : 1)).map((i) => i[1]);
