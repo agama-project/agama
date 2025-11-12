@@ -28,8 +28,6 @@ require "bootloader/finish_client"
 require "y2storage/storage_manager"
 require "agama/with_progress_manager"
 require "agama/helpers"
-require "agama/http"
-require "agama/network"
 require "abstract_method"
 require "fileutils"
 
@@ -46,11 +44,9 @@ module Agama
       # Constructor
       # @param logger [Logger]
       # @param config [Config]
-      # @param security [Security]
-      def initialize(logger, config, security)
+      def initialize(logger, config)
         @logger = logger
         @config = config
-        @security = security
       end
 
       # Execute the final storage actions, reporting the progress
@@ -75,20 +71,14 @@ module Agama
       # @return [Config]
       attr_reader :config
 
-      # @return [Security]
-      attr_reader :security
-
       # All possible steps, that may or not need to be executed
       def possible_steps
         [
-          SecurityStep.new(logger, security),
           CopyFilesStep.new(logger),
           StorageStep.new(logger),
           IscsiStep.new(logger),
           BootloaderStep.new(logger),
           SnapshotsStep.new(logger),
-          FilesStep.new(logger),
-          PostScripts.new(logger),
           CopyLogsStep.new(logger),
           UnmountStep.new(logger)
         ]
@@ -171,23 +161,6 @@ module Agama
 
         def glob_files
           Dir.glob(FILES.map { |f| File.join(root_dir, f[:dir], f[:file]) })
-        end
-      end
-
-      # Step to write the security settings
-      class SecurityStep < Step
-        # Constructor
-        def initialize(logger, security)
-          super(logger)
-          @security = security
-        end
-
-        def label
-          _("Writing Linux Security Modules configuration")
-        end
-
-        def run
-          @security.write
         end
       end
 
@@ -279,64 +252,6 @@ module Agama
           @logs_dir ||= File.join(
             Yast::Installation.destdir, "var", "log", "agama-installation"
           )
-        end
-      end
-
-      # Executes post-installation scripts
-      class PostScripts < Step
-        def label
-          _("Running user-defined scripts")
-        end
-
-        def run
-          run_post_scripts
-          enable_init_scripts
-        end
-
-      private
-
-        # Run the post scripts
-        def run_post_scripts
-          network.link_resolv
-          client = Agama::HTTP::Clients::Scripts.new(logger)
-          client.run("post")
-        ensure
-          network.unlink_resolv
-        end
-
-        def network
-          @network ||= Agama::Network.new(logger)
-        end
-
-        # Enables the agama-scripts service to run init scripts
-        #
-        # The package agama-scripts is only installed when needed.
-        # So this method just tries to enable the service.
-        def enable_init_scripts
-          # systemctl will return 1 if the service does not exist.
-          Yast::Execute.on_target!(
-            "systemctl", "enable", "agama-scripts",
-            allowed_exitstatus: [0, 1]
-          )
-        end
-      end
-
-      # Executes post-installation scripts
-      class FilesStep < Step
-        def label
-          _("Deploying user-defined files")
-        end
-
-        def run
-          deploy_files
-        end
-
-      private
-
-        def deploy_files
-          require "agama/http"
-          client = Agama::HTTP::Clients::Files.new(logger)
-          client.write
         end
       end
 

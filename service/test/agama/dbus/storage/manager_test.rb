@@ -31,7 +31,6 @@ require "agama/storage/volume"
 require "agama/storage/iscsi/manager"
 require "agama/storage/dasd/manager"
 require "agama/dbus/storage/dasds_tree"
-require "agama/dbus/clients/software"
 require "y2storage"
 require "dbus"
 
@@ -65,10 +64,6 @@ describe Agama::DBus::Storage::Manager do
       on_sessions_change: nil)
   end
 
-  let(:software) do
-    instance_double(Agama::DBus::Clients::Software, on_probe_finished: nil)
-  end
-
   before do
     # Speed up tests by avoiding real check of TPM presence.
     allow(Y2Storage::EncryptionMethod::TPM_FDE).to receive(:possible?).and_return(true)
@@ -80,7 +75,6 @@ describe Agama::DBus::Storage::Manager do
     allow(backend).to receive(:on_issues_change)
     allow(backend).to receive(:actions).and_return([])
     allow(backend).to receive(:iscsi).and_return(iscsi)
-    allow(backend).to receive(:software).and_return(software)
     allow(backend).to receive(:proposal).and_return(proposal)
     mock_storage(devicegraph: "empty-hd-50GiB.yaml")
   end

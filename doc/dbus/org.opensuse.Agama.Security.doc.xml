@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<node name="/org/opensuse/Agama/Software1">
-  <node name="Product"></node>
-  <node name="Proposal"></node>
-  <interface name="org.opensuse.Agama.Security">
-    <property type="a(ss)" name="SslFingerprints" access="readwrite"/>
-  </interface>
-</node>

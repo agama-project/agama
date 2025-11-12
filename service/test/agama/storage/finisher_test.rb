@@ -24,13 +24,12 @@ require_relative "storage_helpers"
 require_relative "../with_progress_examples"
 require "agama/helpers"
 require "agama/config"
-require "agama/security"
 require "agama/storage/finisher"
 
 describe Agama::Storage::Finisher do
   include Agama::RSpec::StorageHelpers
 
-  subject(:storage) { described_class.new(logger, config, security) }
+  subject(:storage) { described_class.new(logger, config) }
 
   let(:logger) { Logger.new($stdout, level: :warn) }
   let(:config_path) do
@@ -39,7 +38,6 @@ describe Agama::Storage::Finisher do
 
   let(:destdir) { File.join(FIXTURES_PATH, "target_dir") }
   let(:config) { Agama::Config.from_file(config_path) }
-  let(:security) { instance_double(Agama::Security, write: nil) }
   let(:copy_files) { Agama::Storage::Finisher::CopyFilesStep.new(logger) }
   let(:progress) { instance_double(Agama::OldProgress, step: nil) }
 

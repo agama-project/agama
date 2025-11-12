@@ -11,7 +11,6 @@
     BuildRequires:  dbus-1-common
     Requires:       dbus-1-common
     Requires:       dbus-1-daemon
-    Requires:       suseconnect-ruby-bindings
     # YaST dependencies
     Requires:       autoyast2-installation
     # ArchFilter
@@ -24,7 +23,6 @@
     Requires:       yast2-network
     Requires:       yast2-proxy
     Requires:       yast2-storage-ng >= 5.0.31
-    Requires:       yast2-users
     %ifarch s390 s390x
     Requires:       yast2-s390 >= 4.6.4
     Requires:       yast2-reipl
