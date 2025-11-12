@@ -18,20 +18,25 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::{l10n, message, network, storage};
+use std::sync::Arc;
+
+use crate::{l10n, message, network, software, storage};
 use agama_utils::{
     actor::{self, Actor, Handler, MessageHandler},
     api::{
-        self, event, status::State, Action, Config, Event, IssueMap, Proposal, Scope, Status,
-        SystemInfo,
+        self, event, manager, status::State, Action, Config, Event, Issue, IssueMap, IssueSeverity,
+        Proposal, Scope, Status, SystemInfo,
     },
-    issue, progress, question,
+    issue,
+    license::{Error as LicenseError, LicensesRegistry},
+    products::{ProductSpec, ProductsRegistry, ProductsRegistryError},
+    progress, question,
 };
 use async_trait::async_trait;
 use merge_struct::merge;
 use network::NetworkSystemClient;
 use serde_json::Value;
-use tokio::sync::broadcast;
+use tokio::sync::{broadcast, RwLock};
 
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
@@ -44,11 +49,17 @@ pub enum Error {
     #[error(transparent)]
     L10n(#[from] l10n::service::Error),
     #[error(transparent)]
+    Software(#[from] software::service::Error),
+    #[error(transparent)]
     Storage(#[from] storage::service::Error),
     #[error(transparent)]
     Issues(#[from] issue::service::Error),
     #[error(transparent)]
     Questions(#[from] question::service::Error),
+    #[error(transparent)]
+    ProductsRegistry(#[from] ProductsRegistryError),
+    #[error(transparent)]
+    License(#[from] LicenseError),
     #[error(transparent)]
     Progress(#[from] progress::service::Error),
     #[error(transparent)]
@@ -57,13 +68,18 @@ pub enum Error {
 
 pub struct Service {
     l10n: Handler<l10n::Service>,
+    software: Handler<software::Service>,
     network: NetworkSystemClient,
     storage: Handler<storage::Service>,
     issues: Handler<issue::Service>,
     progress: Handler<progress::Service>,
     questions: Handler<question::Service>,
+    products: ProductsRegistry,
+    licenses: LicensesRegistry,
+    product: Option<Arc<RwLock<ProductSpec>>>,
     state: State,
     config: Config,
+    system: manager::SystemInfo,
     events: event::Sender,
 }
 
@@ -71,6 +87,7 @@ impl Service {
     pub fn new(
         l10n: Handler<l10n::Service>,
         network: NetworkSystemClient,
+        software: Handler<software::Service>,
         storage: Handler<storage::Service>,
         issues: Handler<issue::Service>,
         progress: Handler<progress::Service>,
@@ -80,14 +97,47 @@ impl Service {
         Self {
             l10n,
             network,
+            software,
             storage,
             issues,
             progress,
             questions,
-            events,
+            products: ProductsRegistry::default(),
+            licenses: LicensesRegistry::default(),
+            // FIXME: state is already used for service state.
             state: State::Configuring,
             config: Config::default(),
+            system: manager::SystemInfo::default(),
+            product: None,
+            events,
         }
+    }
+
+    /// Set up the service by reading the registries and determining the default product.
+    ///
+    /// If a default product is set, it asks the other services to initialize their configurations.
+    pub async fn setup(&mut self) -> Result<(), Error> {
+        self.read_registries().await?;
+
+        if let Some(product) = self.products.default_product() {
+            let product = Arc::new(RwLock::new(product.clone()));
+            _ = self.software.cast(software::message::SetConfig::new(
+                Arc::clone(&product),
+                None,
+            ));
+            self.product = Some(product);
+        }
+
+        self.update_issues();
+        Ok(())
+    }
+
+    async fn read_registries(&mut self) -> Result<(), Error> {
+        self.licenses.read()?;
+        self.products.read()?;
+        self.system.licenses = self.licenses.licenses().into_iter().cloned().collect();
+        self.system.products = self.products.products();
+        Ok(())
     }
 
     async fn configure_l10n(&self, config: api::l10n::SystemConfig) -> Result<(), Error> {
@@ -129,6 +179,38 @@ impl Service {
         self.events.send(Event::StateChanged)?;
         Ok(())
     }
+
+    fn set_product_from_config(&mut self, config: &Config) {
+        let product_id = config
+            .software
+            .as_ref()
+            .and_then(|s| s.product.as_ref())
+            .and_then(|p| p.id.as_ref());
+
+        if let Some(id) = product_id {
+            if let Some(product_spec) = self.products.find(&id) {
+                let product = RwLock::new(product_spec.clone());
+                self.product = Some(Arc::new(product));
+            } else {
+                tracing::warn!("Unknown product '{id}'");
+            }
+        }
+    }
+
+    fn update_issues(&self) {
+        if self.product.is_some() {
+            _ = self.issues.cast(issue::message::Clear::new(Scope::Manager));
+        } else {
+            let issue = Issue::new(
+                "no_product",
+                "No product has been selected.",
+                IssueSeverity::Error,
+            );
+            _ = self
+                .issues
+                .cast(issue::message::Set::new(Scope::Manager, vec![issue]));
+        }
+    }
 }
 
 impl Actor for Service {
@@ -152,11 +234,12 @@ impl MessageHandler<message::GetSystem> for Service {
     /// It returns the information of the underlying system.
     async fn handle(&mut self, _message: message::GetSystem) -> Result<SystemInfo, Error> {
         let l10n = self.l10n.call(l10n::message::GetSystem).await?;
+        let manager = self.system.clone();
         let storage = self.storage.call(storage::message::GetSystem).await?;
         let network = self.network.get_system().await?;
-
         Ok(SystemInfo {
             l10n,
+            manager,
             network,
             storage,
         })
@@ -170,6 +253,7 @@ impl MessageHandler<message::GetExtendedConfig> for Service {
     /// It includes user and default values.
     async fn handle(&mut self, _message: message::GetExtendedConfig) -> Result<Config, Error> {
         let l10n = self.l10n.call(l10n::message::GetConfig).await?;
+        let software = self.software.call(software::message::GetConfig).await?;
         let questions = self.questions.call(question::message::GetConfig).await?;
         let network = self.network.get_config().await?;
         let storage = self.storage.call(storage::message::GetConfig).await?;
@@ -178,6 +262,7 @@ impl MessageHandler<message::GetExtendedConfig> for Service {
             l10n: Some(l10n),
             questions: questions,
             network: Some(network),
+            software: Some(software),
             storage,
         })
     }
@@ -195,16 +280,28 @@ impl MessageHandler<message::GetConfig> for Service {
 
 #[async_trait]
 impl MessageHandler<message::SetConfig> for Service {
-    /// Sets the config.
+    /// Sets the user configuration with the given values.
     async fn handle(&mut self, message: message::SetConfig) -> Result<(), Error> {
-        let config = message.config;
+        self.set_product_from_config(&message.config);
 
-        self.l10n
-            .call(l10n::message::SetConfig::new(config.l10n.clone()))
-            .await?;
+        self.config = message.config.clone();
+        let config = message.config;
 
         self.questions
             .call(question::message::SetConfig::new(config.questions.clone()))
+            .await?;
+
+        if let Some(product) = &self.product {
+            self.software
+                .call(software::message::SetConfig::new(
+                    Arc::clone(&product),
+                    config.software.clone(),
+                ))
+                .await?;
+        }
+
+        self.l10n
+            .call(l10n::message::SetConfig::new(config.l10n.clone()))
             .await?;
 
         self.storage
@@ -216,6 +313,7 @@ impl MessageHandler<message::SetConfig> for Service {
             self.network.apply().await?;
         }
 
+        self.update_issues();
         self.config = config;
         Ok(())
     }
@@ -243,6 +341,8 @@ impl MessageHandler<message::UpdateConfig> for Service {
         let config = merge(&self.config, &message.config).map_err(|_| Error::MergeConfig)?;
         let config = merge_network(config, message.config);
 
+        self.set_product_from_config(&config);
+
         if let Some(l10n) = &config.l10n {
             self.l10n
                 .call(l10n::message::SetConfig::with(l10n.clone()))
@@ -261,11 +361,23 @@ impl MessageHandler<message::UpdateConfig> for Service {
                 .await?;
         }
 
+        if let Some(product) = &self.product {
+            if let Some(software) = &config.software {
+                self.software
+                    .call(software::message::SetConfig::with(
+                        Arc::clone(&product),
+                        software.clone(),
+                    ))
+                    .await?;
+            }
+        }
+
         if let Some(network) = &config.network {
             self.network.update_config(network.clone()).await?;
         }
 
         self.config = config;
+        self.update_issues();
         Ok(())
     }
 }
@@ -275,12 +387,14 @@ impl MessageHandler<message::GetProposal> for Service {
     /// It returns the current proposal, if any.
     async fn handle(&mut self, _message: message::GetProposal) -> Result<Option<Proposal>, Error> {
         let l10n = self.l10n.call(l10n::message::GetProposal).await?;
+        let software = self.software.call(software::message::GetProposal).await?;
         let storage = self.storage.call(storage::message::GetProposal).await?;
         let network = self.network.get_proposal().await?;
 
         Ok(Some(Proposal {
             l10n,
             network,
+            software,
             storage,
         }))
     }
@@ -346,5 +460,15 @@ impl MessageHandler<message::SolveStorageModel> for Service {
             .storage
             .call(storage::message::SolveConfigModel::new(message.model))
             .await?)
+    }
+}
+
+// FIXME: write a macro to forward a message.
+#[async_trait]
+impl MessageHandler<software::message::SetResolvables> for Service {
+    /// It sets the software resolvables.
+    async fn handle(&mut self, message: software::message::SetResolvables) -> Result<(), Error> {
+        self.software.call(message).await?;
+        Ok(())
     }
 }

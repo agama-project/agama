@@ -7,9 +7,13 @@ members = [
     "agama-locale-data",
     "agama-manager",
     "agama-network",
-    "agama-server", "agama-storage",
+    "agama-server",
+    "agama-software",
+    "agama-storage",
     "agama-utils",
     "xtask",
+    "zypp-agama",
+    "zypp-agama/zypp-agama-sys",
 ]
 resolver = "2"
 

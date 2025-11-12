@@ -34,7 +34,6 @@ use crate::{
     scripts::web::scripts_service,
     security::security_service,
     server::server_service,
-    software::web::{software_service, software_streams},
     storage::web::{iscsi::iscsi_service, storage_service, storage_streams},
     users::web::{users_service, users_streams},
     web::common::{jobs_stream, service_status_stream},
@@ -85,10 +84,6 @@ where
         )
         .add_service("/v2", server_service(events, dbus.clone()).await?)
         .add_service("/security", security_service(dbus.clone()).await?)
-        .add_service(
-            "/software",
-            software_service(dbus.clone(), old_events.subscribe(), progress.clone()).await?,
-        )
         .add_service("/storage", storage_service(dbus.clone(), progress).await?)
         .add_service("/iscsi", iscsi_service(dbus.clone()).await?)
         .add_service("/bootloader", bootloader_service(dbus.clone()).await?)
@@ -137,9 +132,6 @@ async fn run_events_monitor(dbus: zbus::Connection, events: OldSender) -> Result
     for (id, storage_stream) in storage_streams(dbus.clone()).await? {
         stream.insert(id, storage_stream);
     }
-    for (id, software_stream) in software_streams(dbus.clone()).await? {
-        stream.insert(id, software_stream);
-    }
     stream.insert(
         "storage-status",
         service_status_stream(
@@ -156,15 +148,6 @@ async fn run_events_monitor(dbus: zbus::Connection, events: OldSender) -> Result
             "org.opensuse.Agama.Storage1",
             "/org/opensuse/Agama/Storage1",
             "/org/opensuse/Agama/Storage1/jobs",
-        )
-        .await?,
-    );
-    stream.insert(
-        "software-status",
-        service_status_stream(
-            dbus.clone(),
-            "org.opensuse.Agama.Software1",
-            "/org/opensuse/Agama/Software1",
         )
         .await?,
     );

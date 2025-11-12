@@ -43,9 +43,10 @@ describe Agama::Manager do
 
   let(:software) do
     instance_double(
-      Agama::DBus::Clients::Software,
-      probe: nil, install: nil, propose: nil, finish: nil, on_product_selected: nil,
-      on_service_status_change: nil, selected_product: product, errors?: false
+      Agama::HTTP::Clients::Software,
+      probe: nil, install: nil, propose: nil, finish: nil,
+      config: { "product" => { "id" => product } }, errors?: false,
+      selected_product: product
     )
   end
   let(:users) do
@@ -73,7 +74,7 @@ describe Agama::Manager do
     allow(Agama::Network).to receive(:new).and_return(network)
     allow(Agama::ProxySetup).to receive(:instance).and_return(proxy)
     allow(Agama::HTTP::Clients::Main).to receive(:new).and_return(http_client)
-    allow(Agama::DBus::Clients::Software).to receive(:new).and_return(software)
+    allow(Agama::HTTP::Clients::Software).to receive(:new).and_return(software)
     allow(Agama::DBus::Clients::Storage).to receive(:new).and_return(storage)
     allow(Agama::Users).to receive(:new).and_return(users)
     allow(Agama::HTTP::Clients::Scripts).to receive(:new)

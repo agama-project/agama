@@ -41,7 +41,6 @@ import {
   usePatterns,
   useSoftwareProposal,
   useSoftwareProposalChanges,
-  useRepositories,
   useRepositoryMutation,
 } from "~/queries/software";
 import { Pattern, SelectedBy } from "~/types/software";
@@ -136,7 +135,8 @@ function SoftwarePage(): React.ReactNode {
   const issues = useScopeIssues("software");
   const proposal = useSoftwareProposal();
   const patterns = usePatterns();
-  const repos = useRepositories();
+  // FIXME: temporarily disabled, the API end point is not implemented yet
+  const repos = []; // useRepositories();
 
   const [loading, setLoading] = useState(false);
   const { mutate: probe } = useRepositoryMutation(() => setLoading(false));

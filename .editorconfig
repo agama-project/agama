@@ -7,3 +7,11 @@ root = true
 [*.sh]
 indent_style = space
 indent_size = 2
+
+[*.{c,h,cxx,hxx}]
+indent_style = space
+indent_size = 2
+tab_width = 8
+
+[Makefile]
+indent_style = tab

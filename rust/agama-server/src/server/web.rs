@@ -23,6 +23,7 @@
 use crate::server::config_schema;
 use agama_lib::error::ServiceError;
 use agama_manager::{self as manager, message};
+use agama_software::Resolvable;
 use agama_utils::{
     actor::Handler,
     api::{
@@ -33,9 +34,9 @@ use agama_utils::{
     question,
 };
 use axum::{
-    extract::{Query, State},
+    extract::{Path, Query, State},
     response::{IntoResponse, Response},
-    routing::{get, post},
+    routing::{get, post, put},
     Json, Router,
 };
 use hyper::StatusCode;
@@ -110,10 +111,10 @@ pub async fn server_service(
             get(get_storage_model).put(set_storage_model),
         )
         .route("/private/solve_storage_model", get(solve_storage_model))
+        .route("/private/resolvables/:id", put(set_resolvables))
         .with_state(state))
 }
 
-/// Returns the status of the installation.
 #[utoipa::path(
     get,
     path = "/status",
@@ -399,6 +400,29 @@ async fn solve_storage_model(
         .call(message::SolveStorageModel::new(params.model))
         .await?;
     Ok(Json(solved_model))
+}
+
+#[utoipa::path(
+    put,
+    path = "/resolvables/:id",
+    context_path = "/api/v2",
+    responses(
+        (status = 200, description = "The resolvables list was updated.")
+    )
+)]
+async fn set_resolvables(
+    State(state): State<ServerState>,
+    Path(id): Path<String>,
+    Json(resolvables): Json<Vec<Resolvable>>,
+) -> ServerResult<()> {
+    state
+        .manager
+        .call(agama_software::message::SetResolvables::new(
+            id,
+            resolvables,
+        ))
+        .await?;
+    Ok(())
 }
 
 fn to_option_response<T: Serialize>(value: Option<T>) -> Response {

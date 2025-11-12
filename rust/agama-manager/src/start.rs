@@ -18,7 +18,7 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::{l10n, network, service::Service, storage};
+use crate::{l10n, network, service::Service, software, storage};
 use agama_utils::{
     actor::{self, Handler},
     api::event,
@@ -30,13 +30,17 @@ pub enum Error {
     #[error(transparent)]
     Progress(#[from] progress::start::Error),
     #[error(transparent)]
-    Issues(#[from] issue::start::Error),
-    #[error(transparent)]
     L10n(#[from] l10n::start::Error),
+    #[error(transparent)]
+    Manager(#[from] crate::service::Error),
+    #[error(transparent)]
+    Network(#[from] network::start::Error),
+    #[error(transparent)]
+    Software(#[from] software::start::Error),
     #[error(transparent)]
     Storage(#[from] storage::start::Error),
     #[error(transparent)]
-    Network(#[from] network::start::Error),
+    Issues(#[from] issue::start::Error),
 }
 
 /// Starts the manager service.
@@ -52,9 +56,22 @@ pub async fn start(
     let issues = issue::start(events.clone(), dbus.clone()).await?;
     let progress = progress::start(events.clone()).await?;
     let l10n = l10n::start(issues.clone(), events.clone()).await?;
-    let storage = storage::start(progress.clone(), issues.clone(), events.clone(), dbus).await?;
     let network = network::start().await?;
-    let service = Service::new(l10n, network, storage, issues, progress, questions, events);
+    let software = software::start(issues.clone(), progress.clone(), events.clone()).await?;
+    let storage = storage::start(progress.clone(), issues.clone(), events.clone(), dbus).await?;
+
+    let mut service = Service::new(
+        l10n,
+        network,
+        software,
+        storage,
+        issues,
+        progress,
+        questions,
+        events.clone(),
+    );
+    service.setup().await?;
+
     let handler = actor::spawn(service);
     Ok(handler)
 }
@@ -67,6 +84,7 @@ mod test {
         api::{l10n, Config, Event},
         question, test,
     };
+    use std::path::PathBuf;
     use tokio::sync::broadcast;
 
     async fn start_service() -> Handler<Service> {
@@ -88,6 +106,9 @@ mod test {
     #[tokio::test]
     #[cfg(not(ci))]
     async fn test_update_config() -> Result<(), Box<dyn std::error::Error>> {
+        let share_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../test/share");
+        std::env::set_var("AGAMA_SHARE_DIR", share_dir.display().to_string());
+
         let handler = start_service().await;
 
         let input_config = Config {
