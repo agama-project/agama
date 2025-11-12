@@ -24,6 +24,7 @@ import React from "react";
 import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import NetworkPage from "~/components/network/NetworkPage";
+import { NetworkProposal } from "~/types/network";
 
 jest.mock(
   "~/components/product/ProductRegistrationAlert",
@@ -41,12 +42,21 @@ jest.mock("~/components/network/NoPersistentConnectionsAlert", () => () => (
 ));
 
 const mockNetworkState = {
+  connectivity: true,
+  hostname: "Agama",
+  networkingEnabled: true,
   wirelessEnabled: true,
+};
+
+const mockNetworkProposal = {
+  connections: [],
+  state: mockNetworkState,
 };
 
 jest.mock("~/queries/network", () => ({
   useNetworkChanges: jest.fn(),
-  useNetworkState: () => mockNetworkState,
+  useNetworkProposal: () =>
+    new NetworkProposal(mockNetworkProposal.connections, mockNetworkProposal.state),
 }));
 
 describe("NetworkPage", () => {

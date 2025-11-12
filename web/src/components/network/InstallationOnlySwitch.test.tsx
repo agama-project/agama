@@ -24,9 +24,15 @@ import React from "react";
 import { screen } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
 import InstallationOnlySwitch from "./InstallationOnlySwitch";
-import { Connection, ConnectionMethod, ConnectionOptions, ConnectionState } from "~/types/network";
+import {
+  Connection,
+  ConnectionMethod,
+  ConnectionOptions,
+  ConnectionState,
+  NetworkProposal,
+} from "~/types/network";
 
-const mockPersistMutation = jest.fn();
+const mockUpdateConfig = jest.fn();
 const mockConnection = (options: Partial<ConnectionOptions> = {}) =>
   new Connection("Newtwork 2", {
     method4: ConnectionMethod.AUTO,
@@ -39,11 +45,19 @@ const mockConnection = (options: Partial<ConnectionOptions> = {}) =>
     state: ConnectionState.activating,
     ...options,
   });
+const mockProposal = () => {
+  new NetworkProposal([mockConnection({ persistent: true })]);
+};
+
+jest.mock("~/queries/proposal", () => ({
+  ...jest.requireActual("~/queries/proposal"),
+  useNetworkProposal: () => mockProposal(),
+}));
 
 jest.mock("~/queries/network", () => ({
   ...jest.requireActual("~/queries/network"),
-  useConnectionPersistMutation: () => ({
-    mutateAsync: mockPersistMutation,
+  useConfigMutation: () => ({
+    mutateAsync: mockUpdateConfig,
   }),
 }));
 
@@ -74,6 +88,6 @@ describe("InstallationOnlySwitch", () => {
     const { user } = plainRender(<InstallationOnlySwitch connection={connection} />);
     const switchInput = screen.getByRole("switch", { name: "Use for installation only" });
     await user.click(switchInput);
-    expect(mockPersistMutation).toHaveBeenCalledWith(connection);
+    expect(mockUpdateConfig).toHaveBeenCalledWith(connection);
   });
 });

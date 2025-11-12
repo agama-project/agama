@@ -22,16 +22,17 @@
 
 import React from "react";
 import { Alert } from "@patternfly/react-core";
-import { useConnections } from "~/queries/network";
 import { Connection } from "~/types/network";
 import { _ } from "~/i18n";
+import { useNetworkProposal } from "~/queries/proposal";
 
 /**
  * Displays a warning alert when no network connections are set to persist in
  * the installed system.
  */
 export default function NoPersistentConnectionsAlert() {
-  const connections: Connection[] = useConnections();
+  const proposal = useNetworkProposal();
+  const connections: Connection[] = proposal.connections;
   const persistentConnections: number = connections.filter((c) => c.persistent).length;
 
   if (persistentConnections !== 0) return;

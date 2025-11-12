@@ -41,17 +41,20 @@ import AddressesDataList from "~/components/network/AddressesDataList";
 import DnsDataList from "~/components/network/DnsDataList";
 import { _ } from "~/i18n";
 import { sprintf } from "sprintf-js";
-import { useConnection, useConnectionMutation } from "~/queries/network";
+import { useConnection, useConfigMutation } from "~/queries/network";
+import { useNetworkProposal } from "~/queries/proposal";
 import { IPAddress, Connection, ConnectionMethod } from "~/types/network";
+import { Config } from "~/types/config";
 
 const usingDHCP = (method: ConnectionMethod) => method === ConnectionMethod.AUTO;
 
 // FIXME: rename to connedtioneditpage or so?
 // FIXME: improve the layout a bit.
 export default function IpSettingsForm() {
+  const proposal = useNetworkProposal();
+  const { mutateAsync: updateConfig } = useConfigMutation();
   const { id } = useParams();
   const navigate = useNavigate();
-  const { mutateAsync: updateConnection } = useConnectionMutation();
   const connection = useConnection(id);
   const [addresses, setAddresses] = useState<IPAddress[]>(connection.addresses);
   const [nameservers, setNameservers] = useState(
@@ -62,7 +65,7 @@ export default function IpSettingsForm() {
   const [method, setMethod] = useState<ConnectionMethod>(connection.method4);
   const [gateway, setGateway] = useState<string>(connection.gateway4);
   const [fieldErrors, setFieldErrors] = useState<object>({});
-  const [requestError, setRequestError] = useState<string | undefined>();
+  const [requestError] = useState<string | undefined>();
 
   const isSetAsInvalid = (field: string) => Object.keys(fieldErrors).includes(field);
   const isGatewayDisabled = addresses.length === 0;
@@ -127,11 +130,12 @@ export default function IpSettingsForm() {
       nameservers: sanitizedNameservers.map((s) => s.address),
     });
 
-    updateConnection(updatedConnection)
+    proposal.addOrUpdateConnection(updatedConnection);
+    const config: Config = { network: proposal.toApi() };
+
+    updateConfig(config)
       .then(() => navigate(-1))
-      .catch((error) => {
-        setRequestError(error.message);
-      });
+      .catch(console.error);
   };
 
   const renderError = (field: string) => {

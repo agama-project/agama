@@ -24,6 +24,7 @@ import React from "react";
 import { useSuspenseQuery, useQueryClient } from "@tanstack/react-query";
 import { useInstallerClient } from "~/context/installer";
 import { fetchProposal } from "~/api/api";
+import { NetworkProposal } from "~/types/network";
 
 /**
  * Returns a query for retrieving the proposal
@@ -35,9 +36,19 @@ const proposalQuery = () => {
   };
 };
 
+const useNetworkProposal = () => {
+  const { data } = useSuspenseQuery({
+    ...proposalQuery(),
+    select: (d) => NetworkProposal.fromApi(d.network),
+  });
+
+  return data;
+};
+
 const useProposal = () => {
-  const { data: config } = useSuspenseQuery(proposalQuery());
-  return config;
+  const { data } = useSuspenseQuery(proposalQuery());
+
+  return data;
 };
 
 const useProposalChanges = () => {
@@ -48,10 +59,11 @@ const useProposalChanges = () => {
     if (!client) return;
 
     return client.onEvent((event) => {
-      if (event.type === "ProposalChanged" && event.scope === "localization") {
+      const invalidateEvents = ["l10n", "network"];
+      if (invalidateEvents.includes(event.type) && event.name === "ProposalChanged") {
         queryClient.invalidateQueries({ queryKey: ["proposal"] });
       }
     });
   }, [client, queryClient]);
 };
-export { useProposal, useProposalChanges };
+export { useProposal, useProposalChanges, useNetworkProposal };

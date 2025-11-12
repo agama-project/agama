@@ -49,20 +49,12 @@ const wlan0: Device = {
   macAddress: "AA:11:22:33:44::FF",
 };
 
-const mockConnectionRemoval = jest.fn();
-const mockAddConnection = jest.fn();
 let mockWifiNetworks: WifiNetwork[];
 let mockWifiConnections: Connection[];
 
 jest.mock("~/queries/network", () => ({
   ...jest.requireActual("~/queries/network"),
   useNetworkChanges: jest.fn(),
-  useRemoveConnectionMutation: () => ({
-    mutate: mockConnectionRemoval,
-  }),
-  useAddConnectionMutation: () => ({
-    mutate: mockAddConnection,
-  }),
   useWifiNetworks: () => mockWifiNetworks,
   useConnections: () => mockWifiConnections,
 }));
@@ -94,6 +86,7 @@ describe("WifiNetworksList", () => {
             iface: "wlan0",
             addresses: [{ address: "192.168.69.201", prefix: 24 }],
           }),
+          device_name: "wlan0",
           status: WifiNetworkStatus.CONNECTED,
         },
         {
@@ -105,6 +98,7 @@ describe("WifiNetworksList", () => {
             iface: "wlan1",
             addresses: [{ address: "192.168.69.202", prefix: 24 }],
           }),
+          device_name: "wlan1",
           status: WifiNetworkStatus.CONFIGURED,
         },
         {
@@ -112,6 +106,7 @@ describe("WifiNetworksList", () => {
           strength: 66,
           hwAddress: "??",
           security: [],
+          device_name: "wlan0",
           status: WifiNetworkStatus.NOT_CONFIGURED,
         },
       ];
@@ -168,6 +163,7 @@ describe("WifiNetworksList", () => {
               iface: "wlan1",
               addresses: [{ address: "192.168.69.202", prefix: 24 }],
             }),
+            device_name: "wlan1",
             status: WifiNetworkStatus.CONFIGURED,
           },
         ];
@@ -206,6 +202,7 @@ describe("WifiNetworksList", () => {
               iface: "wlan1",
               addresses: [{ address: "192.168.69.202", prefix: 24 }],
             }),
+            device_name: "wlan1",
             status: WifiNetworkStatus.CONFIGURED,
           },
         ];

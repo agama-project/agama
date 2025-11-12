@@ -32,9 +32,6 @@ const mockUpdateConnection = jest.fn();
 jest.mock("~/queries/network", () => ({
   ...jest.requireActual("~/queries/network"),
   useNetworkChanges: jest.fn(),
-  useAddConnectionMutation: () => ({
-    mutateAsync: mockAddConnection,
-  }),
   useConnectionMutation: () => ({
     mutateAsync: mockUpdateConnection,
   }),
@@ -44,6 +41,7 @@ jest.mock("~/queries/network", () => ({
 const networkMock = {
   ssid: "Visible Network",
   hidden: false,
+  device_name: "wlan0",
   status: WifiNetworkStatus.NOT_CONFIGURED,
   hwAddress: "00:EB:D8:17:6B:56",
   security: [SecurityProtocols.WPA],
