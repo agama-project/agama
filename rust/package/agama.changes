@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Wed Nov 12 15:42:27 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 18
+
+-------------------------------------------------------------------
 Wed Nov 12 13:14:21 UTC 2025 - Michal Filka <mfilka@suse.com>
 
 - Fixed output of "agama config generate" 
