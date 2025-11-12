@@ -29,7 +29,7 @@ export type EncryptionMethod =
   | "luks1"
   | "luks2"
   | "pervasiveLuks2"
-  | "tmpFde"
+  | "tpmFde"
   | "protectedSwap"
   | "secureSwap"
   | "randomSwap";

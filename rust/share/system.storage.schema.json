@@ -55,7 +55,7 @@
     "encryptionMethod": {
       "title": "Encryption method",
       "enum": [
-        "luks1", "luks2", "pervasiveLuks2", "tmpFde", "protectedSwap", "secureSwap", "randomSwap"
+        "luks1", "luks2", "pervasiveLuks2", "tpmFde", "protectedSwap", "secureSwap", "randomSwap"
       ]
     },
     "volume": {
