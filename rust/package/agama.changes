@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Wed Nov 12 13:14:21 UTC 2025 - Michal Filka <mfilka@suse.com>
+
+- Fixed output of "agama config generate" 
+
+-------------------------------------------------------------------
 Mon Nov 10 14:35:25 UTC 2025 - Michal Filka <mfilka@suse.com>
 
 - Created ProfileClient based on HTTP API base client for profile
