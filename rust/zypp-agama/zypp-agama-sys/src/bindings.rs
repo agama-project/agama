@@ -24,6 +24,11 @@ pub const PROBLEM_RESPONSE_PROBLEM_RETRY: PROBLEM_RESPONSE = 0;
 pub const PROBLEM_RESPONSE_PROBLEM_ABORT: PROBLEM_RESPONSE = 1;
 pub const PROBLEM_RESPONSE_PROBLEM_IGNORE: PROBLEM_RESPONSE = 2;
 pub type PROBLEM_RESPONSE = ::std::os::raw::c_uint;
+pub const OPTIONAL_PROBLEM_RESPONSE_OPROBLEM_RETRY: OPTIONAL_PROBLEM_RESPONSE = 0;
+pub const OPTIONAL_PROBLEM_RESPONSE_OPROBLEM_ABORT: OPTIONAL_PROBLEM_RESPONSE = 1;
+pub const OPTIONAL_PROBLEM_RESPONSE_OPROBLEM_IGNORE: OPTIONAL_PROBLEM_RESPONSE = 2;
+pub const OPTIONAL_PROBLEM_RESPONSE_OPROBLEM_NONE: OPTIONAL_PROBLEM_RESPONSE = 3;
+pub type OPTIONAL_PROBLEM_RESPONSE = ::std::os::raw::c_uint;
 pub type ZyppDownloadStartCallback = ::std::option::Option<
     unsafe extern "C" fn(
         url: *const ::std::os::raw::c_char,
@@ -133,7 +138,7 @@ pub type ZyppDownloadResolvableGpgCheckCallback = ::std::option::Option<
         repo_url: *const ::std::os::raw::c_char,
         check_result: GPGCheckPackageResult,
         user_data: *mut ::std::os::raw::c_void,
-    ) -> PROBLEM_RESPONSE,
+    ) -> OPTIONAL_PROBLEM_RESPONSE,
 >;
 pub type ZyppDownloadResolvableFileFinishCallback = ::std::option::Option<
     unsafe extern "C" fn(

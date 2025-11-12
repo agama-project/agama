@@ -1,10 +1,7 @@
-use std::
-    str::FromStr
-;
+use std::str::FromStr;
 
 pub mod download_progress;
 pub mod pkg_download;
-
 
 // empty progress callback
 pub fn empty_progress(_value: i64, _text: String) -> bool {
@@ -49,4 +46,3 @@ impl ToString for ProblemResponse {
         }
     }
 }
-

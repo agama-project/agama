@@ -26,6 +26,14 @@ typedef bool (*ZyppProgressCallback)(struct ProgressData zypp_data,
 void set_zypp_progress_callback(ZyppProgressCallback progress, void *user_data);
 
 enum PROBLEM_RESPONSE { PROBLEM_RETRY, PROBLEM_ABORT, PROBLEM_IGNORE };
+// NOTE: ensure that order are identical as PROBLEM_RESPONSE and NONE is at the
+// end
+enum OPTIONAL_PROBLEM_RESPONSE {
+  OPROBLEM_RETRY,
+  OPROBLEM_ABORT,
+  OPROBLEM_IGNORE,
+  OPROBLEM_NONE
+};
 typedef void (*ZyppDownloadStartCallback)(const char *url,
                                           const char *localfile,
                                           void *user_data);
@@ -69,28 +77,28 @@ enum DownloadResolvableFileError {
   DRFE_ERROR          // other error
 };
 
-// keep in sync with https://github.com/openSUSE/libzypp/blob/master/zypp-logic/zypp/target/rpm/RpmDb.h#L376
+// keep in sync with
+// https://github.com/openSUSE/libzypp/blob/master/zypp-logic/zypp/target/rpm/RpmDb.h#L376
 // maybe there is a better way to export it to C?
-enum GPGCheckPackageResult
-  {
-    CHK_OK            = 0, /*!< Signature is OK. */
-    CHK_NOTFOUND      = 1, /*!< Signature is unknown type. */
-    CHK_FAIL          = 2, /*!< Signature does not verify. */
-    CHK_NOTTRUSTED    = 3, /*!< Signature is OK, but key is not trusted. */
-    CHK_NOKEY         = 4, /*!< Public key is unavailable. */
-    CHK_ERROR         = 5, /*!< File does not exist or can't be opened. */
-    CHK_NOSIG         = 6, /*!< File has no gpg signature (only digests). */
-  };
+enum GPGCheckPackageResult {
+  CHK_OK = 0,         /*!< Signature is OK. */
+  CHK_NOTFOUND = 1,   /*!< Signature is unknown type. */
+  CHK_FAIL = 2,       /*!< Signature does not verify. */
+  CHK_NOTTRUSTED = 3, /*!< Signature is OK, but key is not trusted. */
+  CHK_NOKEY = 4,      /*!< Public key is unavailable. */
+  CHK_ERROR = 5,      /*!< File does not exist or can't be opened. */
+  CHK_NOSIG = 6,      /*!< File has no gpg signature (only digests). */
+};
 
 typedef void (*ZyppDownloadResolvableStartCallback)(void *user_data);
 // TODO: do we need more resolvable details? for now just use name and url
 typedef enum PROBLEM_RESPONSE (*ZyppDownloadResolvableProblemCallback)(
     const char *resolvable_name, enum DownloadResolvableError error,
     const char *description, void *user_data);
-typedef enum PROBLEM_RESPONSE (*ZyppDownloadResolvableGpgCheckCallback)(
+typedef enum OPTIONAL_PROBLEM_RESPONSE (
+    *ZyppDownloadResolvableGpgCheckCallback)(
     const char *resolvable_name, const char *repo_url,
-    enum GPGCheckPackageResult check_result,
-    void *user_data);
+    enum GPGCheckPackageResult check_result, void *user_data);
 typedef void (*ZyppDownloadResolvableFileFinishCallback)(
     const char *url, const char *local_path,
     enum DownloadResolvableFileError error, const char *error_details,

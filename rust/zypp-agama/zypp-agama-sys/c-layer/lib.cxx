@@ -155,7 +155,8 @@ void switch_target(struct Zypp *zypp, const char *root,
   STATUS_OK(status);
 }
 
-bool commit(struct Zypp *zypp, struct Status *status, struct DownloadResolvableCallbacks *download_callbacks) noexcept {
+bool commit(struct Zypp *zypp, struct Status *status,
+            struct DownloadResolvableCallbacks *download_callbacks) noexcept {
   try {
     set_zypp_resolvable_download_callbacks(download_callbacks);
     zypp::ZYppCommitPolicy policy;

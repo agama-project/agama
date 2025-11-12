@@ -1,6 +1,9 @@
 use std::os::raw::{c_char, c_void};
 
-use crate::{callbacks::ProblemResponse, helpers::{as_c_void, string_from_ptr}};
+use crate::{
+    callbacks::ProblemResponse,
+    helpers::{as_c_void, string_from_ptr},
+};
 
 pub enum DownloadError {
     NoError,
@@ -12,12 +15,8 @@ pub enum DownloadError {
 impl From<zypp_agama_sys::DownloadResolvableError> for DownloadError {
     fn from(error: zypp_agama_sys::DownloadResolvableError) -> Self {
         match error {
-            zypp_agama_sys::DownloadResolvableError_DRE_NO_ERROR => {
-                DownloadError::NoError
-            }
-            zypp_agama_sys::DownloadResolvableError_DRE_NOT_FOUND => {
-                DownloadError::NotFound
-            }
+            zypp_agama_sys::DownloadResolvableError_DRE_NO_ERROR => DownloadError::NoError,
+            zypp_agama_sys::DownloadResolvableError_DRE_NOT_FOUND => DownloadError::NotFound,
             zypp_agama_sys::DownloadResolvableError_DRE_IO => DownloadError::IO,
             zypp_agama_sys::DownloadResolvableError_DRE_INVALID => DownloadError::Invalid,
             _ => {
@@ -55,9 +54,7 @@ impl From<zypp_agama_sys::GPGCheckPackageResult> for GPGCheckResult {
             zypp_agama_sys::GPGCheckPackageResult_CHK_OK => GPGCheckResult::Ok,
             zypp_agama_sys::GPGCheckPackageResult_CHK_NOTFOUND => GPGCheckResult::NotFound,
             zypp_agama_sys::GPGCheckPackageResult_CHK_FAIL => GPGCheckResult::Fail,
-            zypp_agama_sys::GPGCheckPackageResult_CHK_NOTTRUSTED => {
-                GPGCheckResult::NotTrusted
-            }
+            zypp_agama_sys::GPGCheckPackageResult_CHK_NOTTRUSTED => GPGCheckResult::NotTrusted,
             zypp_agama_sys::GPGCheckPackageResult_CHK_NOKEY => GPGCheckResult::NoKey,
             zypp_agama_sys::GPGCheckPackageResult_CHK_ERROR => GPGCheckResult::Error,
             zypp_agama_sys::GPGCheckPackageResult_CHK_NOSIG => GPGCheckResult::NoSig,
@@ -80,19 +77,13 @@ pub enum PreloadError {
 impl From<zypp_agama_sys::DownloadResolvableFileError> for PreloadError {
     fn from(error: zypp_agama_sys::DownloadResolvableFileError) -> Self {
         match error {
-            zypp_agama_sys::DownloadResolvableFileError_DRFE_NO_ERROR => {
-                PreloadError::NoError
-            }
-            zypp_agama_sys::DownloadResolvableFileError_DRFE_NOT_FOUND => {
-                PreloadError::NotFound
-            }
+            zypp_agama_sys::DownloadResolvableFileError_DRFE_NO_ERROR => PreloadError::NoError,
+            zypp_agama_sys::DownloadResolvableFileError_DRFE_NOT_FOUND => PreloadError::NotFound,
             zypp_agama_sys::DownloadResolvableFileError_DRFE_IO => PreloadError::IO,
             zypp_agama_sys::DownloadResolvableFileError_DRFE_ACCESS_DENIED => {
                 PreloadError::AccessDenied
             }
-            zypp_agama_sys::DownloadResolvableFileError_DRFE_ERROR => {
-                PreloadError::Error
-            }
+            zypp_agama_sys::DownloadResolvableFileError_DRFE_ERROR => PreloadError::Error,
             _ => {
                 tracing::error!("Unknown error code {:?}", error);
                 PreloadError::Error
@@ -106,12 +97,7 @@ pub trait Callback {
     // callback when start preloading packages during commit phase
     fn start_preload(&self) {}
     // callback when problem occurs during download of resolvable
-    fn problem(
-        &self,
-        _name: &str,
-        _error: DownloadError,
-        _description: &str,
-    ) -> ProblemResponse {
+    fn problem(&self, _name: &str, _error: DownloadError, _description: &str) -> ProblemResponse {
         ProblemResponse::ABORT
     }
     // callback after gpg check is done
@@ -120,8 +106,8 @@ pub trait Callback {
         _resolvable_name: &str,
         _repo_url: &str,
         _check_result: GPGCheckResult,
-    ) -> ProblemResponse {
-        ProblemResponse::ABORT
+    ) -> Option<ProblemResponse> {
+        None
     }
     // callback when preload finishes with file either successfully or with error
     fn finish_preload(
@@ -146,9 +132,7 @@ where
     user_data();
 }
 
-fn get_start_preload<F>(
-    _closure: &F,
-) -> zypp_agama_sys::ZyppDownloadResolvableStartCallback
+fn get_start_preload<F>(_closure: &F) -> zypp_agama_sys::ZyppDownloadResolvableStartCallback
 where
     F: FnMut(),
 {
@@ -173,9 +157,7 @@ where
     res.into()
 }
 
-fn get_problem<F>(
-    _closure: &F,
-) -> zypp_agama_sys::ZyppDownloadResolvableProblemCallback
+fn get_problem<F>(_closure: &F) -> zypp_agama_sys::ZyppDownloadResolvableProblemCallback
 where
     F: FnMut(String, DownloadError, String) -> ProblemResponse,
 {
@@ -187,9 +169,9 @@ unsafe extern "C" fn gpg_check<F>(
     repo_url: *const c_char,
     check_result: zypp_agama_sys::GPGCheckPackageResult,
     user_data: *mut c_void,
-) -> zypp_agama_sys::PROBLEM_RESPONSE
+) -> zypp_agama_sys::OPTIONAL_PROBLEM_RESPONSE
 where
-    F: FnMut(String, String, GPGCheckResult) -> ProblemResponse,
+    F: FnMut(String, String, GPGCheckResult) -> Option<ProblemResponse>,
 {
     let user_data = &mut *(user_data as *mut F);
     let res = user_data(
@@ -197,14 +179,15 @@ where
         string_from_ptr(repo_url),
         check_result.into(),
     );
-    res.into()
+    match res {
+        Some(response) => response.into(),
+        None => zypp_agama_sys::OPTIONAL_PROBLEM_RESPONSE_OPROBLEM_NONE,
+    }
 }
 
-fn get_gpg_check<F>(
-    _closure: &F,
-) -> zypp_agama_sys::ZyppDownloadResolvableGpgCheckCallback
+fn get_gpg_check<F>(_closure: &F) -> zypp_agama_sys::ZyppDownloadResolvableGpgCheckCallback
 where
-    F: FnMut(String, String, GPGCheckResult) -> ProblemResponse,
+    F: FnMut(String, String, GPGCheckResult) -> Option<ProblemResponse>,
 {
     Some(gpg_check::<F>)
 }
@@ -227,19 +210,14 @@ unsafe extern "C" fn preload_finish<F>(
     );
 }
 
-fn get_preload_finish<F>(
-    _closure: &F,
-) -> zypp_agama_sys::ZyppDownloadResolvableFileFinishCallback
+fn get_preload_finish<F>(_closure: &F) -> zypp_agama_sys::ZyppDownloadResolvableFileFinishCallback
 where
     F: FnMut(String, String, PreloadError, String),
 {
     Some(preload_finish::<F>)
 }
 
-pub(crate) fn with_callback<R, F>(
-    callback: &impl Callback,
-    block: &mut F,
-) -> R
+pub(crate) fn with_callback<R, F>(callback: &impl Callback, block: &mut F) -> R
 where
     F: FnMut(zypp_agama_sys::DownloadResolvableCallbacks) -> R,
 {

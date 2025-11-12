@@ -1,7 +1,7 @@
+#include "zypp/target/rpm/RpmDb.h"
 #include <boost/bind.hpp>
 #include <zypp/Callback.h>
 #include <zypp/ZYppCallbacks.h>
-#include "zypp/target/rpm/RpmDb.h"
 
 #include "callbacks.h"
 
@@ -165,54 +165,59 @@ struct DownloadResolvableReport : public zypp::callback::ReceiveReport<
                                                          description);
   }
 
-  virtual void pkgGpgCheck(const UserData & userData_r = UserData() )
-    {
-      if (callbacks == NULL || callbacks->gpg_check == NULL) {
-        return;
-      }
-      zypp::ResObject::constPtr resobject = userData_r.get<zypp::ResObject::constPtr>("ResObject");
-      const zypp::RepoInfo repo = resobject->repoInfo();
-      const std::string repo_url = repo.rawUrl().asString();
-      typedef zypp::target::rpm::RpmDb RpmDb;
-      enum GPGCheckPackageResult result;
-      switch (userData_r.get<RpmDb::CheckPackageResult>("CheckPackageResult")){
-        case RpmDb::CHK_OK:
-          result = GPGCheckPackageResult::CHK_OK;
-          break;
-          case RpmDb::CHK_NOTFOUND:
-          result = GPGCheckPackageResult::CHK_NOTFOUND;
-          break;
-          case RpmDb::CHK_FAIL:
-          result = GPGCheckPackageResult::CHK_FAIL;
-          break;
-          case RpmDb::CHK_NOTTRUSTED:
-          result = GPGCheckPackageResult::CHK_NOTTRUSTED;
-          break;
-          case RpmDb::CHK_NOKEY:
-          result = GPGCheckPackageResult::CHK_NOKEY;
-          break;
-          case RpmDb::CHK_ERROR:
-          result = GPGCheckPackageResult::CHK_ERROR;
-          break;
-          case RpmDb::CHK_NOSIG:
-          result = GPGCheckPackageResult::CHK_NOSIG;
-          break;
-      };
-      PROBLEM_RESPONSE response = callbacks->gpg_check(resobject->name().c_str(), repo_url.c_str(), result, callbacks->gpg_check_data);
-      DownloadResolvableReport::Action zypp_action;
-      switch (response) {
-        case PROBLEM_RETRY:
-          zypp_action = zypp::repo::DownloadResolvableReport::RETRY;
-          break;
-        case PROBLEM_ABORT:
-          zypp_action = zypp::repo::DownloadResolvableReport::ABORT;
-          break;
-        case PROBLEM_IGNORE:
-          zypp_action = zypp::repo::DownloadResolvableReport::IGNORE;
-          break;
-      };
-      userData_r.set("Action", zypp_action);
+  virtual void pkgGpgCheck(const UserData &userData_r = UserData()) {
+    if (callbacks == NULL || callbacks->gpg_check == NULL) {
+      return;
     }
+    zypp::ResObject::constPtr resobject =
+        userData_r.get<zypp::ResObject::constPtr>("ResObject");
+    const zypp::RepoInfo repo = resobject->repoInfo();
+    const std::string repo_url = repo.rawUrl().asString();
+    typedef zypp::target::rpm::RpmDb RpmDb;
+    enum GPGCheckPackageResult result;
+    switch (userData_r.get<RpmDb::CheckPackageResult>("CheckPackageResult")) {
+    case RpmDb::CHK_OK:
+      result = GPGCheckPackageResult::CHK_OK;
+      break;
+    case RpmDb::CHK_NOTFOUND:
+      result = GPGCheckPackageResult::CHK_NOTFOUND;
+      break;
+    case RpmDb::CHK_FAIL:
+      result = GPGCheckPackageResult::CHK_FAIL;
+      break;
+    case RpmDb::CHK_NOTTRUSTED:
+      result = GPGCheckPackageResult::CHK_NOTTRUSTED;
+      break;
+    case RpmDb::CHK_NOKEY:
+      result = GPGCheckPackageResult::CHK_NOKEY;
+      break;
+    case RpmDb::CHK_ERROR:
+      result = GPGCheckPackageResult::CHK_ERROR;
+      break;
+    case RpmDb::CHK_NOSIG:
+      result = GPGCheckPackageResult::CHK_NOSIG;
+      break;
+    };
+    OPTIONAL_PROBLEM_RESPONSE response =
+        callbacks->gpg_check(resobject->name().c_str(), repo_url.c_str(),
+                             result, callbacks->gpg_check_data);
+    DownloadResolvableReport::Action zypp_action;
+    switch (response) {
+    case OPROBLEM_RETRY:
+      zypp_action = zypp::repo::DownloadResolvableReport::RETRY;
+      break;
+    case OPROBLEM_ABORT:
+      zypp_action = zypp::repo::DownloadResolvableReport::ABORT;
+      break;
+    case OPROBLEM_IGNORE:
+      zypp_action = zypp::repo::DownloadResolvableReport::IGNORE;
+      break;
+    // do not set action and it will let fail it later in Done Provide
+    case OPROBLEM_NONE:
+      return;
+    };
+    userData_r.set("Action", zypp_action);
+  }
 };
 
 static DownloadResolvableReport download_resolvable_receive;

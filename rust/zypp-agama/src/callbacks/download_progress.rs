@@ -1,6 +1,9 @@
 use std::os::raw::{c_char, c_int, c_void};
 
-use crate::{callbacks::ProblemResponse, helpers::{as_c_void, string_from_ptr}};
+use crate::{
+    callbacks::ProblemResponse,
+    helpers::{as_c_void, string_from_ptr},
+};
 
 // generic trait to
 pub trait Callback {
@@ -22,11 +25,8 @@ pub trait Callback {
 pub struct EmptyCallback;
 impl Callback for EmptyCallback {}
 
-unsafe extern "C" fn start<F>(
-    url: *const c_char,
-    localfile: *const c_char,
-    user_data: *mut c_void,
-) where
+unsafe extern "C" fn start<F>(url: *const c_char, localfile: *const c_char, user_data: *mut c_void)
+where
     F: FnMut(String, String),
 {
     let user_data = &mut *(user_data as *mut F);

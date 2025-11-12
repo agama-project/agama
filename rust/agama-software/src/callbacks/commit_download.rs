@@ -3,6 +3,7 @@ use gettextrs::gettext;
 use tokio::runtime::Handle;
 use zypp_agama::callbacks::pkg_download::{Callback, DownloadError};
 
+#[derive(Clone)]
 struct CommitDownload {
     progress: Handler<progress::Service>,
     questions: Handler<question::Service>,
@@ -31,7 +32,10 @@ impl Callback for CommitDownload {
     ) -> zypp_agama::callbacks::ProblemResponse {
         // TODO: make it generic for any problemResponse questions
         let labels = [gettext("Retry"), gettext("Ignore")];
-        let actions = [("Retry", labels[0].as_str()), ("Ignore", labels[1].as_str())];
+        let actions = [
+            ("Retry", labels[0].as_str()),
+            ("Ignore", labels[1].as_str()),
+        ];
         let error_str = error.to_string();
         let data = [("package", name), ("error_code", error_str.as_str())];
         let question = QuestionSpec::new(description, "software.package_error.provide_error")
@@ -57,5 +61,15 @@ impl Callback for CommitDownload {
             .as_str()
             .parse::<zypp_agama::callbacks::ProblemResponse>()
             .unwrap_or(zypp_agama::callbacks::ProblemResponse::ABORT)
+    }
+
+    fn gpg_check(
+        &self,
+        _resolvable_name: &str,
+        _repo_url: &str,
+        _check_result: zypp_agama::callbacks::pkg_download::GPGCheckResult,
+    ) -> Option<zypp_agama::callbacks::ProblemResponse> {
+        // TODO: check if repo_url is DUD repo and kernel specify insecure dud option.
+        None
     }
 }
