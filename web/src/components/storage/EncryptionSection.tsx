@@ -24,7 +24,7 @@ import React from "react";
 import { Card, CardBody, Content } from "@patternfly/react-core";
 import { Link, Page } from "~/components/core";
 import { useEncryption } from "~/queries/storage/config-model";
-import { apiModel } from "~/api/storage/types";
+import { apiModel } from "~/api/storage";
 import { STORAGE } from "~/routes/paths";
 import { _ } from "~/i18n";
 import PasswordCheck from "~/components/users/PasswordCheck";

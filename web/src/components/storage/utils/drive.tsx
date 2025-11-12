@@ -21,7 +21,7 @@
  */
 
 import { _, n_, formatList } from "~/i18n";
-import { apiModel } from "~/api/storage/types";
+import { apiModel } from "~/api/storage";
 import { Drive } from "~/types/storage/model";
 import { SpacePolicy, SPACE_POLICIES, baseName, formattedPath } from "~/components/storage/utils";
 import { sprintf } from "sprintf-js";

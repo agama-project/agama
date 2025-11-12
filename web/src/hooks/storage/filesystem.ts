@@ -20,7 +20,8 @@
  * find current contact information at www.suse.com.
  */
 
-import { useApiModel, useUpdateApiModel } from "~/hooks/storage/api-model";
+import { useStorageModel } from "~/hooks/api";
+import { putStorageModel } from "~/api";
 import { configureFilesystem } from "~/helpers/storage/filesystem";
 import { QueryHookOptions } from "~/types/queries";
 import { data } from "~/types/storage";
@@ -28,20 +29,18 @@ import { data } from "~/types/storage";
 type AddFilesystemFn = (list: string, index: number, data: data.Formattable) => void;
 
 function useAddFilesystem(options?: QueryHookOptions): AddFilesystemFn {
-  const apiModel = useApiModel(options);
-  const updateApiModel = useUpdateApiModel();
+  const apiModel = useStorageModel(options);
   return (list: string, index: number, data: data.Formattable) => {
-    updateApiModel(configureFilesystem(apiModel, list, index, data));
+    putStorageModel(configureFilesystem(apiModel, list, index, data));
   };
 }
 
 type DeleteFilesystemFn = (list: string, index: number) => void;
 
 function useDeleteFilesystem(options?: QueryHookOptions): DeleteFilesystemFn {
-  const apiModel = useApiModel(options);
-  const updateApiModel = useUpdateApiModel();
+  const apiModel = useStorageModel(options);
   return (list: string, index: number) => {
-    updateApiModel(configureFilesystem(apiModel, list, index, {}));
+    putStorageModel(configureFilesystem(apiModel, list, index, {}));
   };
 }
 

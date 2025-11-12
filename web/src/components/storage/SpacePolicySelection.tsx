@@ -24,15 +24,15 @@ import React, { useState } from "react";
 import { ActionGroup, Content, Form } from "@patternfly/react-core";
 import { useNavigate, useParams } from "react-router";
 import { Page } from "~/components/core";
-import { SpaceActionsTable } from "~/components/storage";
+import SpaceActionsTable, { SpacePolicyAction } from "~/components/storage/SpaceActionsTable";
 import { deviceChildren } from "~/components/storage/utils";
 import { _ } from "~/i18n";
-import { PartitionSlot, SpacePolicyAction, StorageDevice } from "~/types/storage";
-import { apiModel } from "~/api/storage/types";
-import { useDevices } from "~/queries/storage";
+import { UnusedSlot, Device } from "~/api/storage/proposal";
+import { apiModel } from "~/api/storage";
+import { useDevices } from "~/hooks/storage/system";
 import { useModel } from "~/hooks/storage/model";
 import { useSetSpacePolicy } from "~/hooks/storage/space-policy";
-import { toStorageDevice } from "./device-utils";
+import { toDevice } from "./device-utils";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import { sprintf } from "sprintf-js";
 
@@ -50,12 +50,12 @@ export default function SpacePolicySelection() {
   const { list, listIndex } = useParams();
   const model = useModel({ suspense: true });
   const deviceModel = model[list][listIndex];
-  const devices = useDevices("system", { suspense: true });
+  const devices = useDevices({ suspense: true });
   const device = devices.find((d) => d.name === deviceModel.name);
   const children = deviceChildren(device);
   const setSpacePolicy = useSetSpacePolicy();
 
-  const partitionDeviceAction = (device: StorageDevice) => {
+  const partitionDeviceAction = (device: Device) => {
     const partition = deviceModel.partitions?.find((p) => p.name === device.name);
 
     return partition ? partitionAction(partition) : undefined;
@@ -63,21 +63,21 @@ export default function SpacePolicySelection() {
 
   const [actions, setActions] = useState(
     children
-      .filter((d) => toStorageDevice(d) && partitionDeviceAction(toStorageDevice(d)))
+      .filter((d) => toDevice(d) && partitionDeviceAction(toDevice(d)))
       .map(
-        (d: StorageDevice): SpacePolicyAction => ({
-          deviceName: toStorageDevice(d).name,
-          value: partitionDeviceAction(toStorageDevice(d)),
+        (d: Device): SpacePolicyAction => ({
+          deviceName: toDevice(d).name,
+          value: partitionDeviceAction(toDevice(d)),
         }),
       ),
   );
 
   const navigate = useNavigate();
 
-  const deviceAction = (device: StorageDevice | PartitionSlot) => {
-    if (toStorageDevice(device) === undefined) return "keep";
+  const deviceAction = (device: Device | UnusedSlot) => {
+    if (toDevice(device) === undefined) return "keep";
 
-    return actions.find((a) => a.deviceName === toStorageDevice(device).name)?.value || "keep";
+    return actions.find((a) => a.deviceName === toDevice(device).name)?.value || "keep";
   };
 
   const changeActions = (spaceAction: SpacePolicyAction) => {

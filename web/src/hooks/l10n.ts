@@ -20,22 +20,20 @@
  * find current contact information at www.suse.com.
  */
 
-import { Device } from "~/api/storage/types/openapi";
+import { useSuspenseQuery, useQuery } from "@tanstack/react-query";
+import { System, l10n } from "~/api/system";
+import { QueryHookOptions } from "~/types/queries";
+import { systemQuery } from "~/hooks/api";
 
-function generate({ name, size, sid }): Device {
-  return {
-    deviceInfo: { sid, name, description: "" },
-    blockDevice: {
-      active: true,
-      encrypted: false,
-      shrinking: { unsupported: [] },
-      size,
-      start: 0,
-      systems: [],
-      udevIds: [],
-      udevPaths: [],
-    },
-  };
+const selectSystem = (data: System | null): l10n.System | null => data?.l10n;
+
+function useSystem(options?: QueryHookOptions): l10n.System | null {
+  const func = options?.suspense ? useSuspenseQuery : useQuery;
+  const { data } = func({
+    ...systemQuery(),
+    select: selectSystem,
+  });
+  return data;
 }
 
-export { generate };
+export { useSystem };

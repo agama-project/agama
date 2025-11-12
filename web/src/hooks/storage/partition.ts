@@ -20,7 +20,8 @@
  * find current contact information at www.suse.com.
  */
 
-import { useApiModel, useUpdateApiModel } from "~/hooks/storage/api-model";
+import { useStorageModel } from "~/hooks/api";
+import { putStorageModel } from "~/api";
 import { QueryHookOptions } from "~/types/queries";
 import { data } from "~/types/storage";
 import { addPartition, editPartition, deletePartition } from "~/helpers/storage/partition";
@@ -32,10 +33,9 @@ type AddPartitionFn = (
 ) => void;
 
 function useAddPartition(options?: QueryHookOptions): AddPartitionFn {
-  const apiModel = useApiModel(options);
-  const updateApiModel = useUpdateApiModel();
+  const apiModel = useStorageModel(options);
   return (list: "drives" | "mdRaids", listIndex: number | string, data: data.Partition) => {
-    updateApiModel(addPartition(apiModel, list, listIndex, data));
+    putStorageModel(addPartition(apiModel, list, listIndex, data));
   };
 }
 
@@ -47,15 +47,14 @@ type EditPartitionFn = (
 ) => void;
 
 function useEditPartition(options?: QueryHookOptions): EditPartitionFn {
-  const apiModel = useApiModel(options);
-  const updateApiModel = useUpdateApiModel();
+  const apiModel = useStorageModel(options);
   return (
     list: "drives" | "mdRaids",
     listIndex: number | string,
     mountPath: string,
     data: data.Partition,
   ) => {
-    updateApiModel(editPartition(apiModel, list, listIndex, mountPath, data));
+    putStorageModel(editPartition(apiModel, list, listIndex, mountPath, data));
   };
 }
 
@@ -66,10 +65,9 @@ type DeletePartitionFn = (
 ) => void;
 
 function useDeletePartition(options?: QueryHookOptions): DeletePartitionFn {
-  const apiModel = useApiModel(options);
-  const updateApiModel = useUpdateApiModel();
+  const apiModel = useStorageModel(options);
   return (list: "drives" | "mdRaids", listIndex: number | string, mountPath: string) =>
-    updateApiModel(deletePartition(apiModel, list, listIndex, mountPath));
+    putStorageModel(deletePartition(apiModel, list, listIndex, mountPath));
 }
 
 export { useAddPartition, useEditPartition, useDeletePartition };

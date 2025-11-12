@@ -30,9 +30,9 @@ import {
   Stack,
 } from "@patternfly/react-core";
 import Link from "~/components/core/Link";
-import { useAllIssues } from "~/queries/issues";
+import { useIssues } from "~/hooks/api";
 import { useInstallerStatus } from "~/queries/status";
-import { IssueSeverity } from "~/types/issues";
+import { IssueSeverity } from "~/api/issue";
 import { InstallationPhase } from "~/types/status";
 import { _ } from "~/i18n";
 
@@ -40,7 +40,7 @@ import { _ } from "~/i18n";
  * Drawer for displaying installation issues
  */
 const IssuesDrawer = forwardRef(({ onClose }: { onClose: () => void }, ref) => {
-  const issues = useAllIssues().filter((i) => i.severity === IssueSeverity.Error);
+  const issues = useIssues().filter((i) => i.severity === IssueSeverity.Error);
   const { phase } = useInstallerStatus({ suspense: true });
 
   // FIXME: share below headers with navigation menu

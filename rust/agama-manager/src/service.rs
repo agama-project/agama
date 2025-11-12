@@ -449,6 +449,20 @@ impl MessageHandler<message::SetStorageModel> for Service {
     }
 }
 
+#[async_trait]
+impl MessageHandler<message::SolveStorageModel> for Service {
+    /// It solves the storage model.
+    async fn handle(
+        &mut self,
+        message: message::SolveStorageModel,
+    ) -> Result<Option<Value>, Error> {
+        Ok(self
+            .storage
+            .call(storage::message::SolveConfigModel::new(message.model))
+            .await?)
+    }
+}
+
 // FIXME: write a macro to forward a message.
 #[async_trait]
 impl MessageHandler<software::message::SetResolvables> for Service {

@@ -54,6 +54,7 @@ pub use action::Action;
 pub mod l10n;
 pub mod manager;
 pub mod network;
+pub mod query;
 pub mod question;
 pub mod software;
 pub mod storage;

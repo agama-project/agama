@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024] SUSE LLC
+ * Copyright (c) [2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -65,7 +65,7 @@ type Timezone = {
   utcOffset: number;
 };
 
-type Localization = {
+type System = {
   locales?: Locale[];
   keymaps?: Keymap[];
   timezones?: Timezone[];
@@ -74,23 +74,4 @@ type Localization = {
   timezone?: string;
 };
 
-type LocaleConfig = {
-  /**
-   * Selected locale for installation (e.g, "en_US.UTF-8")
-   */
-  locale?: string;
-  /**
-   * List of locales to install (e.g., ["en_US.UTF-8"]).
-   */
-  locales?: string[];
-  /**
-   * Selected keymap for installation (e.g., "en").
-   */
-  keymap?: string;
-  /**
-   * Selected timezone for installation (e.g., "Atlantic/Canary").
-   */
-  timezone?: string;
-};
-
-export type { Keymap, Locale, Timezone, LocaleConfig, Localization };
+export type { System, Keymap, Locale, Timezone };

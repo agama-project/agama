@@ -24,26 +24,34 @@
 
 import React from "react";
 import { Label } from "@patternfly/react-core";
-
 import { _ } from "~/i18n";
 import { sprintf } from "sprintf-js";
 import { deviceBaseName, deviceSize } from "~/components/storage/utils";
-import { PartitionSlot, StorageDevice } from "~/types/storage";
+import { system, proposal } from "~/api/storage";
+import { deviceSystems, isLogicalVolume, isMd, isPartition } from "~/helpers/storage/device";
+
+type Device = system.Device | proposal.Device;
+type UnusedSlot = system.UnusedSlot | proposal.UnusedSlot;
 
 /**
- * Ensures the given item is a StorageDevice.
+ * Ensures the given item is a Device.
  */
-const toStorageDevice = (item: PartitionSlot | StorageDevice): StorageDevice | undefined => {
+const toDevice = (item: UnusedSlot | Device): Device | undefined => {
   if ("sid" in item) {
     return item;
   }
 };
 
+const toPartitionSlot = (item: UnusedSlot | Device): UnusedSlot | undefined => {
+  if ("sid" in item) return undefined;
+  return item;
+};
+
 /**
  * @component
  */
-const FilesystemLabel = ({ item }: { item: PartitionSlot | StorageDevice }) => {
-  const device = toStorageDevice(item);
+const FilesystemLabel = ({ item }: { item: UnusedSlot | Device }) => {
+  const device = toDevice(item);
   if (!device) return null;
 
   const label = device.filesystem?.label;
@@ -59,11 +67,11 @@ const FilesystemLabel = ({ item }: { item: PartitionSlot | StorageDevice }) => {
 /**
  * @component
  */
-const DeviceName = ({ item }: { item: PartitionSlot | StorageDevice }) => {
-  const device = toStorageDevice(item);
+const DeviceName = ({ item }: { item: UnusedSlot | Device }) => {
+  const device = toDevice(item);
   if (!device) return null;
 
-  if (["partition", "lvmLv"].includes(device.type)) return deviceBaseName(device);
+  if (isPartition(device) || isLogicalVolume(device)) return deviceBaseName(device);
 
   return device.name;
 };
@@ -71,23 +79,24 @@ const DeviceName = ({ item }: { item: PartitionSlot | StorageDevice }) => {
 /**
  * @component
  */
-const DeviceDetails = ({ item }: { item: PartitionSlot | StorageDevice }) => {
-  const device = toStorageDevice(item);
+const DeviceDetails = ({ item }: { item: UnusedSlot | Device }) => {
+  const device = toDevice(item);
   if (!device) return _("Unused space");
 
-  const renderContent = (device: StorageDevice) => {
-    if (!device.partitionTable && device.systems?.length > 0) return device.systems.join(", ");
+  const renderContent = (device: Device) => {
+    const systems = deviceSystems(device);
+    if (!device.partitionTable && systems.length > 0) return systems.join(", ");
 
-    if (device.type === "md") {
+    if (isMd(device)) {
       // TRANSLATORS: %1$s is a description of the device (eg. "Encrypted XFS RAID") and %2$s is
       // the RAID level (eg. "RAID0")
-      return sprintf(_("%1$s (%2$s)"), device.description, device.level.toUpperCase());
+      return sprintf(_("%1$s (%2$s)"), device.description, device.md.level.toUpperCase());
     }
 
     return device.description;
   };
 
-  const renderPTableType = (device: StorageDevice) => {
+  const renderPTableType = (device: Device) => {
     const type = device.partitionTable?.type;
     if (type) return <Label isCompact>{type.toUpperCase()}</Label>;
   };
@@ -102,8 +111,10 @@ const DeviceDetails = ({ item }: { item: PartitionSlot | StorageDevice }) => {
 /**
  * @component
  */
-const DeviceSize = ({ item }: { item: PartitionSlot | StorageDevice }) => {
-  return deviceSize(item.size);
+const DeviceSize = ({ item }: { item: UnusedSlot | Device }) => {
+  const partitionSlot = toPartitionSlot(item);
+  const device = toDevice(item);
+  return deviceSize(partitionSlot?.size || device?.block.size);
 };
 
-export { toStorageDevice, DeviceName, DeviceDetails, DeviceSize, FilesystemLabel };
+export { toDevice, toPartitionSlot, DeviceName, DeviceDetails, DeviceSize, FilesystemLabel };

@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import { apiModel } from "~/api/storage/types";
+import { apiModel } from "~/api/storage";
 import { isUsed, deleteIfUnused } from "~/helpers/storage/search";
 import {
   copyApiModel,

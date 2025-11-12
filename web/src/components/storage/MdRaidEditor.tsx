@@ -25,13 +25,13 @@ import ConfigEditorItem from "~/components/storage/ConfigEditorItem";
 import MdRaidHeader from "~/components/storage/MdRaidHeader";
 import DeviceEditorContent from "~/components/storage/DeviceEditorContent";
 import SearchedDeviceMenu from "~/components/storage/SearchedDeviceMenu";
-import { model, StorageDevice } from "~/types/storage";
-import { MdRaid } from "~/types/storage/model";
+import { model } from "~/types/storage";
+import { storage } from "~/api/system";
 import { useDeleteMdRaid } from "~/hooks/storage/md-raid";
 
 type MdRaidDeviceMenuProps = {
   raid: model.MdRaid;
-  selected: StorageDevice;
+  selected: storage.Device;
 };
 
 /**
@@ -44,7 +44,7 @@ const MdRaidDeviceMenu = ({ raid, selected }: MdRaidDeviceMenuProps): React.Reac
   return <SearchedDeviceMenu modelDevice={raid} selected={selected} deleteFn={deleteFn} />;
 };
 
-type MdRaidEditorProps = { raid: MdRaid; raidDevice: StorageDevice };
+type MdRaidEditorProps = { raid: model.MdRaid; raidDevice: storage.Device };
 
 /**
  * Component responsible for displaying detailed information and available

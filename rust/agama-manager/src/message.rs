@@ -141,3 +141,18 @@ impl SetStorageModel {
 impl Message for SetStorageModel {
     type Reply = ();
 }
+
+#[derive(Clone)]
+pub struct SolveStorageModel {
+    pub model: Value,
+}
+
+impl SolveStorageModel {
+    pub fn new(model: Value) -> Self {
+        Self { model }
+    }
+}
+
+impl Message for SolveStorageModel {
+    type Reply = Option<Value>;
+}

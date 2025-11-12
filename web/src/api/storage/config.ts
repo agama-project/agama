@@ -9,16 +9,40 @@
  */
 export type Alias = string;
 export type DriveElement = NonPartitionedDrive | PartitionedDrive;
-export type SearchElement = SimpleSearchAll | SimpleSearchByName | AdvancedSearch;
+export type DriveSearch = SearchAll | SearchName | DriveAdvancedSearch;
 /**
  * Shortcut to match all devices if there is any (equivalent to specify no conditions and to skip the entry if no device is found).
  */
-export type SimpleSearchAll = "*";
-export type SimpleSearchByName = string;
+export type SearchAll = "*";
+/**
+ * Search by device name
+ */
+export type SearchName = string;
+export type DriveSearchCondition = SearchConditionName | SearchConditionSize;
+export type SizeValue = SizeString | SizeBytes;
+/**
+ * Human readable size.
+ */
+export type SizeString = string;
+/**
+ * Size in bytes.
+ */
+export type SizeBytes = number;
+export type DriveSearchSort = DriveSearchSortCriterion | DriveSearchSortCriterion[];
+export type DriveSearchSortCriterion = DriveSearchSortCriterionShort | DriveSearchSortCriterionFull;
+export type DriveSearchSortCriterionShort = "name" | "size";
+/**
+ * Direction of sorting at the search results
+ */
+export type SearchSortCriterionOrder = "asc" | "desc";
+/**
+ * Maximum devices to match.
+ */
+export type SearchMax = number;
 /**
  * How to handle the section if the device is not found.
  */
-export type SearchAction = "skip" | "error";
+export type SearchActions = "skip" | "error";
 export type Encryption =
   | EncryptionLuks1
   | EncryptionLuks2
@@ -74,17 +98,22 @@ export type PartitionElement =
   | RegularPartition
   | PartitionToDelete
   | PartitionToDeleteIfNeeded;
+export type PartitionSearch = SearchAll | SearchName | PartitionAdvancedSearch;
+export type PartitionSearchCondition =
+  | SearchConditionName
+  | SearchConditionSize
+  | SearchConditionPartitionNumber;
+export type PartitionSearchSort = PartitionSearchSortCriterion | PartitionSearchSortCriterion[];
+export type PartitionSearchSortCriterion =
+  | PartitionSearchSortCriterionShort
+  | PartitionSearchSortCriterionFull;
+export type PartitionSearchSortCriterionShort = "name" | "size" | "number";
+/**
+ * How to handle the section if the device is not found.
+ */
+export type SearchCreatableActions = "skip" | "error" | "create";
 export type PartitionId = "linux" | "swap" | "lvm" | "raid" | "esp" | "prep" | "bios_boot";
 export type Size = SizeValue | SizeTuple | SizeRange;
-export type SizeValue = SizeString | SizeBytes;
-/**
- * Human readable size.
- */
-export type SizeString = string;
-/**
- * Size in bytes.
- */
-export type SizeBytes = number;
 /**
  * Lower size limit and optionally upper size limit.
  *
@@ -97,6 +126,11 @@ export type SizeValueWithCurrent = SizeValue | SizeCurrent;
  * The current size of the device.
  */
 export type SizeCurrent = "current";
+export type DeletePartitionSearch = SearchAll | SearchName | DeletePartitionAdvancedSearch;
+/**
+ * Device base name.
+ */
+export type BaseName = string;
 export type PhysicalVolumeElement =
   | Alias
   | SimplePhysicalVolumesGenerator
@@ -112,10 +146,13 @@ export type LogicalVolumeElement =
  */
 export type LogicalVolumeStripes = number;
 export type MdRaidElement = NonPartitionedMdRaid | PartitionedMdRaid;
-/**
- * MD base name.
- */
-export type MdRaidName = string;
+export type MdRaidSearch = SearchAll | SearchName | MdRaidAdvancedSearch;
+export type MdRaidSearchCondition = SearchConditionName | SearchConditionSize;
+export type MdRaidSearchSort = MdRaidSearchSortCriterion | MdRaidSearchSortCriterion[];
+export type MdRaidSearchSortCriterion =
+  | MdRaidSearchSortCriterionShort
+  | MdRaidSearchSortCriterionFull;
+export type MdRaidSearchSortCriterionShort = "name" | "size";
 export type MDLevel = "raid0" | "raid1" | "raid5" | "raid6" | "raid10";
 /**
  * Only applies to raid5, raid6 and raid10
@@ -170,24 +207,35 @@ export interface Boot {
  * Drive without a partition table (e.g., directly formatted).
  */
 export interface NonPartitionedDrive {
-  search?: SearchElement;
+  search?: DriveSearch;
   alias?: Alias;
   encryption?: Encryption;
   filesystem?: Filesystem;
 }
-/**
- * Advanced options for searching devices.
- */
-export interface AdvancedSearch {
-  condition?: SearchCondition;
-  /**
-   * Maximum devices to match.
-   */
-  max?: number;
-  ifNotFound?: SearchAction;
+export interface DriveAdvancedSearch {
+  condition?: DriveSearchCondition;
+  sort?: DriveSearchSort;
+  max?: SearchMax;
+  ifNotFound?: SearchActions;
 }
-export interface SearchCondition {
-  name: SimpleSearchByName;
+export interface SearchConditionName {
+  name: SearchName;
+}
+export interface SearchConditionSize {
+  size: SizeValue | SearchConditionSizeEqual | SearchConditionSizeGreater | SearchConditionSizeLess;
+}
+export interface SearchConditionSizeEqual {
+  equal: SizeValue;
+}
+export interface SearchConditionSizeGreater {
+  greater: SizeValue;
+}
+export interface SearchConditionSizeLess {
+  less: SizeValue;
+}
+export interface DriveSearchSortCriterionFull {
+  name?: SearchSortCriterionOrder;
+  size?: SearchSortCriterionOrder;
 }
 /**
  * LUKS1 encryption.
@@ -223,7 +271,7 @@ export interface EncryptionPervasiveLuks2 {
   };
 }
 /**
- * TPM-Based Full Disk Encrytion.
+ * TPM-Based Full Disk Encryption.
  */
 export interface EncryptionTPM {
   tpmFde: {
@@ -266,7 +314,7 @@ export interface FilesystemTypeBtrfs {
   };
 }
 export interface PartitionedDrive {
-  search?: SearchElement;
+  search?: DriveSearch;
   alias?: Alias;
   ptableType?: PtableType;
   partitions: PartitionElement[];
@@ -287,12 +335,29 @@ export interface AdvancedPartitionsGenerator {
   };
 }
 export interface RegularPartition {
-  search?: SearchElement;
+  search?: PartitionSearch;
   alias?: Alias;
   id?: PartitionId;
   size?: Size;
   encryption?: Encryption;
   filesystem?: Filesystem;
+}
+export interface PartitionAdvancedSearch {
+  condition?: PartitionSearchCondition;
+  sort?: PartitionSearchSort;
+  max?: SearchMax;
+  ifNotFound?: SearchCreatableActions;
+}
+export interface SearchConditionPartitionNumber {
+  /**
+   * Partition number (e.g., 1 for vda1).
+   */
+  number: number;
+}
+export interface PartitionSearchSortCriterionFull {
+  name?: SearchSortCriterionOrder;
+  size?: SearchSortCriterionOrder;
+  number?: SearchSortCriterionOrder;
 }
 /**
  * Size range.
@@ -302,14 +367,20 @@ export interface SizeRange {
   max?: SizeValueWithCurrent;
 }
 export interface PartitionToDelete {
-  search: SearchElement;
+  search: DeletePartitionSearch;
   /**
    * Delete the partition.
    */
   delete: true;
 }
+export interface DeletePartitionAdvancedSearch {
+  condition?: PartitionSearchCondition;
+  sort?: PartitionSearchSort;
+  max?: SearchMax;
+  ifNotFound?: SearchActions;
+}
 export interface PartitionToDeleteIfNeeded {
-  search: SearchElement;
+  search: DeletePartitionSearch;
   /**
    * Delete the partition if needed to make space.
    */
@@ -320,10 +391,7 @@ export interface PartitionToDeleteIfNeeded {
  * LVM volume group.
  */
 export interface VolumeGroup {
-  /**
-   * Volume group name.
-   */
-  name: string;
+  name: BaseName;
   extentSize?: SizeValue;
   /**
    * Devices to use as physical volumes.
@@ -358,10 +426,7 @@ export interface AdvancedLogicalVolumesGenerator {
   };
 }
 export interface LogicalVolume {
-  /**
-   * Logical volume name.
-   */
-  name?: string;
+  name?: BaseName;
   size?: Size;
   stripes?: LogicalVolumeStripes;
   stripeSize?: SizeValue;
@@ -374,20 +439,14 @@ export interface ThinPoolLogicalVolume {
    */
   pool: true;
   alias?: Alias;
-  /**
-   * Logical volume name.
-   */
-  name?: string;
+  name?: BaseName;
   size?: Size;
   stripes?: LogicalVolumeStripes;
   stripeSize?: SizeValue;
   encryption?: Encryption;
 }
 export interface ThinLogicalVolume {
-  /**
-   * Thin logical volume name.
-   */
-  name?: string;
+  name?: BaseName;
   size?: Size;
   usedPool: Alias;
   encryption?: Encryption;
@@ -397,9 +456,9 @@ export interface ThinLogicalVolume {
  * MD RAID without a partition table (e.g., directly formatted).
  */
 export interface NonPartitionedMdRaid {
-  search?: SearchElement;
+  search?: MdRaidSearch;
   alias?: Alias;
-  name?: MdRaidName;
+  name?: BaseName;
   level?: MDLevel;
   parity?: MDParity;
   chunkSize?: SizeValue;
@@ -407,10 +466,20 @@ export interface NonPartitionedMdRaid {
   encryption?: Encryption;
   filesystem?: Filesystem;
 }
+export interface MdRaidAdvancedSearch {
+  condition?: MdRaidSearchCondition;
+  sort?: MdRaidSearchSort;
+  max?: SearchMax;
+  ifNotFound?: SearchCreatableActions;
+}
+export interface MdRaidSearchSortCriterionFull {
+  name?: SearchSortCriterionOrder;
+  size?: SearchSortCriterionOrder;
+}
 export interface PartitionedMdRaid {
-  search?: SearchElement;
+  search?: MdRaidSearch;
   alias?: Alias;
-  name?: MdRaidName;
+  name?: BaseName;
   level?: MDLevel;
   parity?: MDParity;
   chunkSize?: SizeValue;

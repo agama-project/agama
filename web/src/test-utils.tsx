@@ -38,7 +38,6 @@ import { InstallerClientProvider } from "~/context/installer";
 import { InstallerL10nProvider } from "~/context/installerL10n";
 import { isObject, noop } from "radashi";
 import { DummyWSClient } from "./client/ws";
-import { System } from "./types/system";
 
 /**
  * Internal mock for manipulating routes, using ["/"] by default
@@ -119,18 +118,17 @@ const Providers = ({ children, withL10n }) => {
   }
 
   if (withL10n) {
-    const fetchConfig = async (): Promise<System> => ({
-      l10n: {
-        keymap: "us",
-        timezone: "Europe/Berlin",
-        locale: "en_US",
-      },
-    });
+    // FIXME
+    // const fetchConfig = async (): Promise<System> => ({
+    //   l10n: {
+    //     keymap: "us",
+    //     timezone: "Europe/Berlin",
+    //     locale: "en_US",
+    //   },
+    // });
     return (
       <InstallerClientProvider client={client}>
-        <InstallerL10nProvider initialLanguage="en-US" fetchConfigFn={fetchConfig}>
-          {children}
-        </InstallerL10nProvider>
+        <InstallerL10nProvider initialLanguage="en-US">{children}</InstallerL10nProvider>
       </InstallerClientProvider>
     );
   }

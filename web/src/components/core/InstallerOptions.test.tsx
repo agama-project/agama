@@ -28,7 +28,7 @@ import * as utils from "~/utils";
 import { PRODUCT, ROOT } from "~/routes/paths";
 import InstallerOptions, { InstallerOptionsProps } from "./InstallerOptions";
 import { Product } from "~/types/software";
-import { Keymap, Locale } from "~/types/l10n";
+import { Keymap, Locale } from "~/api/system";
 
 let phase: InstallationPhase;
 let isBusy: boolean;

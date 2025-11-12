@@ -20,34 +20,27 @@
  * find current contact information at www.suse.com.
  */
 
-// @ts-check
-
 import React from "react";
-import { FormSelect, FormSelectOption } from "@patternfly/react-core";
+import { FormSelectProps, FormSelect, FormSelectOption } from "@patternfly/react-core";
+
 import { deviceLabel } from "~/components/storage/utils";
+import { storage } from "~/api/system";
 
-/**
- * @typedef {import ("@patternfly/react-core").FormSelectProps} PFFormSelectProps
- * @typedef {import ("~/types/storage").StorageDevice} StorageDevice
- */
+type DevicesFormSelectBaseProps = {
+  devices: storage.Device[];
+  selectedDevice: storage.Device;
+  onChange: (device: storage.Device) => void;
+};
 
-/**
- * A PF/Select for simple device selection
- * @component
- *
- * @example <caption>Simple usage</caption>
- *   import { devices, selected } from "somewhere";
- *
- *   <DevicesFormSelect devices={devices} selected={selected} />
- *
- * @typedef {object} DevicesFormSelectBaseProps
- * @property {StorageDevice[]} props.devices - Devices to show in the selector.
- * @property {StorageDevice} [props.selectedDevice] - Currently selected device. In case of
- * @property {(StorageDevice) => void} props.onChange - Callback to be called when the selection changes
- *
- * @param {DevicesFormSelectBaseProps & Omit<PFFormSelectProps, "value" | "onChange" | "children">} props
- */
-export default function DevicesFormSelect({ devices, selectedDevice, onChange, ...otherProps }) {
+type DevicesFormSelectProps = DevicesFormSelectBaseProps &
+  Omit<FormSelectProps, "value" | "onChange" | "children">;
+
+export default function DevicesFormSelect({
+  devices,
+  selectedDevice,
+  onChange,
+  ...otherProps
+}: DevicesFormSelectProps) {
   return (
     /** @ts-expect-error: for some reason using otherProps makes TS complain */
     <FormSelect

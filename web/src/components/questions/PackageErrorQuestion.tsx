@@ -24,7 +24,7 @@ import React from "react";
 import { Content, Stack } from "@patternfly/react-core";
 import { Popup } from "~/components/core";
 import { Icon } from "~/components/layout";
-import { AnswerCallback, Question } from "~/types/questions";
+import { AnswerCallback, Question } from "~/api/question";
 import QuestionActions from "~/components/questions/QuestionActions";
 import { _ } from "~/i18n";
 

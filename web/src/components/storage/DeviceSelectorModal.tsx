@@ -27,7 +27,7 @@ import SelectableDataTable, {
   SortedBy,
   SelectableDataTableProps,
 } from "~/components/core/SelectableDataTable";
-import { StorageDevice } from "~/types/storage";
+import { storage } from "~/api/system";
 import {
   typeDescription,
   contentDescription,
@@ -36,29 +36,31 @@ import {
 import { deviceSize } from "~/components/storage/utils";
 import { sortCollection } from "~/utils";
 import { _ } from "~/i18n";
+import { deviceSystems } from "~/helpers/storage/device";
 
 type DeviceSelectorProps = {
-  devices: StorageDevice[];
-  selectedDevices?: StorageDevice[];
-  onSelectionChange: SelectableDataTableProps<StorageDevice>["onSelectionChange"];
-  selectionMode?: SelectableDataTableProps<StorageDevice>["selectionMode"];
+  devices: storage.Device[];
+  selectedDevices?: storage.Device[];
+  onSelectionChange: SelectableDataTableProps<storage.Device>["onSelectionChange"];
+  selectionMode?: SelectableDataTableProps<storage.Device>["selectionMode"];
 };
 
-const size = (device: StorageDevice) => {
-  return deviceSize(device.size);
+const size = (device: storage.Device) => {
+  return deviceSize(device.block.size);
 };
 
-const description = (device: StorageDevice) => {
-  if (device.model && device.model.length) return device.model;
+const description = (device: storage.Device) => {
+  const model = device.drive?.model;
+  if (model && model.length) return model;
 
   return typeDescription(device);
 };
 
-const details = (device: StorageDevice) => {
+const details = (device: storage.Device) => {
   return (
     <Flex columnGap={{ default: "columnGapXs" }}>
       {contentDescription(device)}
-      {device.systems.map((s, i) => (
+      {deviceSystems(device).map((s, i) => (
         <Label key={`system-${i}`} isCompact>
           {s}
         </Label>
@@ -82,7 +84,7 @@ const DeviceSelector = ({
   const [sortedBy, setSortedBy] = useState<SortedBy>({ index: 0, direction: "asc" });
 
   const columns = [
-    { name: _("Device"), value: (device: StorageDevice) => device.name, sortingKey: "name" },
+    { name: _("Device"), value: (device: storage.Device) => device.name, sortingKey: "name" },
     {
       name: _("Size"),
       value: size,
@@ -114,9 +116,9 @@ const DeviceSelector = ({
 };
 
 type DeviceSelectorModalProps = Omit<PopupProps, "children" | "selected"> & {
-  selected?: StorageDevice;
-  devices: StorageDevice[];
-  onConfirm: (selection: StorageDevice[]) => void;
+  selected?: storage.Device;
+  devices: storage.Device[];
+  onConfirm: (selection: storage.Device[]) => void;
   onCancel: ButtonProps["onClick"];
 };
 
@@ -128,7 +130,7 @@ export default function DeviceSelectorModal({
   ...popupProps
 }: DeviceSelectorModalProps): React.ReactNode {
   // FIXME: improve initial selection handling
-  const [selectedDevices, setSelectedDevices] = useState<StorageDevice[]>(
+  const [selectedDevices, setSelectedDevices] = useState<storage.Device[]>(
     selected ? [selected] : [devices[0]],
   );
 

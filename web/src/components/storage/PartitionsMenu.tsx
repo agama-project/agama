@@ -27,7 +27,7 @@ import Text from "~/components/core/Text";
 import MenuButton from "~/components/core/MenuButton";
 import MenuHeader from "~/components/core/MenuHeader";
 import MountPathMenuItem from "~/components/storage/MountPathMenuItem";
-import { Partition } from "~/api/storage/types/model";
+import { Partition } from "~/api/storage/model";
 import { STORAGE as PATHS } from "~/routes/paths";
 import { useDeletePartition } from "~/hooks/storage/partition";
 import * as driveUtils from "~/components/storage/utils/drive";

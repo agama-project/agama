@@ -41,7 +41,7 @@ import { Navigate, useNavigate } from "react-router";
 import { Icon } from "~/components/layout";
 import alignmentStyles from "@patternfly/react-styles/css/utilities/Alignment/alignment";
 import { useInstallerStatus } from "~/queries/status";
-import { useConfig } from "~/queries/storage";
+import { useExtendedConfig } from "~/hooks/api";
 import { finishInstallation } from "~/api/manager";
 import { InstallationPhase } from "~/types/status";
 import { ROOT as PATHS } from "~/routes/paths";
@@ -83,11 +83,8 @@ function usingTpm(config): boolean {
     return null;
   }
 
-  const { guided, drives = [], volumeGroups = [] } = config;
+  const { drives = [], volumeGroups = [] } = config;
 
-  if (guided !== undefined) {
-    return guided.encryption?.method === "tpm_fde";
-  }
   const devices = [
     ...drives,
     ...drives.flatMap((d) => d.partitions || []),
@@ -100,7 +97,7 @@ function usingTpm(config): boolean {
 }
 
 function InstallationFinished() {
-  const config = useConfig();
+  const config = useExtendedConfig();
   const { phase, useIguana } = useInstallerStatus({ suspense: true });
   const navigate = useNavigate();
 

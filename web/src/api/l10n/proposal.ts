@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024] SUSE LLC
+ * Copyright (c) [2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -20,18 +20,10 @@
  * find current contact information at www.suse.com.
  */
 
-import { get } from "~/api/http";
-import { Issue, IssuesMap, IssuesScope } from "~/types/issues";
-
-/**
- * Return the issues of the given scope.
- */
-const fetchIssues = async (): Promise<Issue[]> => {
-  const issues = (await get(`/api/v2/issues`)) as IssuesMap;
-  return Object.keys(issues).reduce((all: Issue[], key: IssuesScope) => {
-    const scoped = issues[key].map((i) => ({ ...i, scope: key }));
-    return all.concat(scoped);
-  }, []);
+type Proposal = {
+  locale?: string;
+  keymap?: string;
+  timezone?: string;
 };
 
-export { fetchIssues };
+export type { Proposal };

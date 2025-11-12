@@ -47,7 +47,7 @@ import {
 } from "@patternfly/react-core";
 import { Popup } from "~/components/core";
 import { Icon } from "~/components/layout";
-import { Keymap, Locale } from "~/types/l10n";
+import { Keymap, Locale } from "~/api/l10n/system";
 import { InstallationPhase } from "~/types/status";
 import { useInstallerL10n } from "~/context/installerL10n";
 import { useInstallerStatus } from "~/queries/status";
@@ -56,8 +56,8 @@ import { _ } from "~/i18n";
 import supportedLanguages from "~/languages.json";
 import { PRODUCT, ROOT, L10N } from "~/routes/paths";
 import { useProduct } from "~/queries/software";
-import { useSystem } from "~/queries/system";
-import { updateConfig } from "~/api/api";
+import { useSystem } from "~/hooks/api";
+import { patchConfig } from "~/api";
 
 /**
  * Props for select inputs
@@ -90,7 +90,7 @@ const LangaugeFormInput = ({ value, onChange }: SelectProps) => (
 const KeyboardFormInput = ({ value, onChange }: SelectProps) => {
   const {
     l10n: { keymaps },
-  } = useSystem();
+  } = useSystem({ suspense: true });
 
   if (!localConnection()) {
     return (
@@ -554,7 +554,7 @@ export default function InstallerOptions({
   const location = useLocation();
   const {
     l10n: { locales },
-  } = useSystem();
+  } = useSystem({ suspense: true });
   const { language, keymap, changeLanguage, changeKeymap } = useInstallerL10n();
   const { phase } = useInstallerStatus({ suspense: true });
   const { selectedProduct } = useProduct({ suspense: true });
@@ -593,7 +593,7 @@ export default function InstallerOptions({
     if (variant !== "keyboard") systemL10n.locale = systemLocale?.id;
     if (variant !== "language" && localConnection()) systemL10n.keymap = formState.keymap;
 
-    updateConfig({ l10n: systemL10n });
+    patchConfig({ l10n: systemL10n });
   };
 
   const close = () => {

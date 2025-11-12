@@ -20,10 +20,13 @@
  * find current contact information at www.suse.com.
  */
 
-import { Localization } from "./l10n";
+import * as l10n from "~/api/l10n/system";
+import * as storage from "~/api/storage/system";
 
-type Config = {
-  l10n?: Localization;
+type System = {
+  l10n?: l10n.System;
+  storage?: storage.System;
 };
 
-export type { Config };
+export { l10n, storage };
+export type { System };

@@ -20,8 +20,10 @@
  * find current contact information at www.suse.com.
  */
 
+// @todo Move to the new API.
+
 import { AxiosResponse } from "axios";
-import { del, get, patch, post, put } from "~/api/http";
+import { del, get, patch, post, put } from "~/http";
 import { FirstUser, PasswordCheckResult, RootUser } from "~/types/users";
 
 /**

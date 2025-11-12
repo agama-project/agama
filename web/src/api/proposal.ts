@@ -20,28 +20,13 @@
  * find current contact information at www.suse.com.
  */
 
-import { get, patch, post } from "~/api/http";
-import { Config } from "~/types/config";
-import { Proposal } from "~/types/proposal";
-import { System } from "~/types/system";
+import * as l10n from "~/api/l10n/proposal";
+import * as storage from "~/api/storage/proposal";
 
-/**
- * Returns the system config
- */
-const fetchSystem = (): Promise<System> => get("/api/v2/system");
+type Proposal = {
+  l10n?: l10n.Proposal;
+  storage?: storage.Proposal;
+};
 
-/**
- * Returns the proposal
- */
-const fetchProposal = (): Promise<Proposal> => get("/api/v2/proposal");
-
-/**
- * Updates configuration
- */
-const updateConfig = (config: Config) => patch("/api/v2/config", { update: config });
-/**
- * Triggers an action
- */
-const trigger = (action) => post("/api/v2/action", action);
-
-export { fetchSystem, fetchProposal, updateConfig, trigger };
+export { l10n, storage };
+export type { Proposal };

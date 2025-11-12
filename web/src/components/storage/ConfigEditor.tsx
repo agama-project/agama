@@ -26,12 +26,13 @@ import Text from "~/components/core/Text";
 import DriveEditor from "~/components/storage/DriveEditor";
 import VolumeGroupEditor from "~/components/storage/VolumeGroupEditor";
 import MdRaidEditor from "~/components/storage/MdRaidEditor";
-import { useDevices, useResetConfigMutation } from "~/queries/storage";
+import { useDevices } from "~/hooks/storage/system";
+import { useResetConfig } from "~/hooks/storage/config";
 import { useModel } from "~/hooks/storage/model";
 import { _ } from "~/i18n";
 
 const NoDevicesConfiguredAlert = () => {
-  const { mutate: reset } = useResetConfigMutation();
+  const reset = useResetConfig();
   const title = _("No devices configured yet");
   // TRANSLATORS: %s will be replaced by a "reset to default" button
   const body = _(
@@ -72,7 +73,7 @@ const NoDevicesConfiguredAlert = () => {
  */
 export default function ConfigEditor() {
   const model = useModel();
-  const devices = useDevices("system", { suspense: true });
+  const devices = useDevices({ suspense: true });
   const drives = model.drives;
   const mdRaids = model.mdRaids;
   const volumeGroups = model.volumeGroups;

@@ -27,7 +27,8 @@ import DevicesManager from "~/components/storage/DevicesManager";
 import ProposalResultTable from "~/components/storage/ProposalResultTable";
 import { ProposalActionsDialog } from "~/components/storage";
 import { _, n_, formatList } from "~/i18n";
-import { useActions, useDevices } from "~/queries/storage";
+import { useDevices as useSystemDevices } from "~/hooks/storage/system";
+import { useDevices as useProposalDevices, useActions } from "~/hooks/storage/proposal";
 import { sprintf } from "sprintf-js";
 
 /**
@@ -114,8 +115,8 @@ export type ProposalResultSectionProps = {
 };
 
 export default function ProposalResultSection({ isLoading = false }: ProposalResultSectionProps) {
-  const system = useDevices("system", { suspense: true });
-  const staging = useDevices("result", { suspense: true });
+  const system = useSystemDevices({ suspense: true });
+  const staging = useProposalDevices({ suspense: true });
   const actions = useActions();
   const devicesManager = new DevicesManager(system, staging, actions);
 

@@ -22,10 +22,14 @@
 
 import React from "react";
 import { useMutation, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
-import { fetchInitiator, fetchNodes, updateInitiator } from "~/api/storage/iscsi";
-import { ISCSIInitiator } from "~/types/storage";
+import {
+  fetchInitiator,
+  fetchNodes,
+  updateInitiator,
+  ISCSIInitiator,
+  ISCSINode,
+} from "~/api/storage/iscsi";
 import { useInstallerClient } from "~/context/installer";
-import { ISCSINode } from "~/api/storage/types";
 
 const initiatorQuery = {
   queryKey: ["storage", "iscsi", "initiator"],

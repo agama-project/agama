@@ -26,9 +26,9 @@ import { installerRender, mockRoutes } from "~/test-utils";
 import ProductRegistrationAlert from "./ProductRegistrationAlert";
 import { Product } from "~/types/software";
 import { useProduct } from "~/queries/software";
-import { useIssues } from "~/queries/issues";
+import { useScopeIssues } from "~/hooks/issues";
 import { PRODUCT, REGISTRATION, ROOT } from "~/routes/paths";
-import { Issue, IssueSeverity, IssueSource } from "~/types/issues";
+import { Issue, IssueSeverity, IssueSource } from "~/api/issue";
 
 const tw: Product = {
   id: "Tumbleweed",
@@ -66,7 +66,7 @@ const registrationIssue: Issue = {
 
 jest.mock("~/queries/issues", () => ({
   ...jest.requireActual("~/queries/issues"),
-  useIssues: (): ReturnType<typeof useIssues> => issues,
+  useIssues: (): ReturnType<typeof useScopeIssues> => issues,
 }));
 
 const rendersNothingInSomePaths = () => {

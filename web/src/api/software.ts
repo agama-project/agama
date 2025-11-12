@@ -20,6 +20,8 @@
  * find current contact information at www.suse.com.
  */
 
+// @todo Move to the new API.
+
 import {
   AddonInfo,
   Conflict,
@@ -34,7 +36,7 @@ import {
   SoftwareConfig,
   SoftwareProposal,
 } from "~/types/software";
-import { get, patch, post, put } from "~/api/http";
+import { get, patch, post, put } from "~/http";
 
 /**
  * Returns the software configuration

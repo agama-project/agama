@@ -23,11 +23,11 @@
 import React from "react";
 import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
-import { AnswerCallback, Question, FieldType } from "~/types/questions";
+import { AnswerCallback, Question, FieldType } from "~/api/question";
 import { InstallationPhase } from "~/types/status";
 import { Product } from "~/types/software";
 import LuksActivationQuestion from "~/components/questions/LuksActivationQuestion";
-import { Locale, Keymap } from "~/types/l10n";
+import { Locale, Keymap } from "~/api/system";
 
 let question: Question;
 const questionMock: Question = {

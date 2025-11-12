@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024-2025] SUSE LLC
+ * Copyright (c) [2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -20,6 +20,44 @@
  * find current contact information at www.suse.com.
  */
 
-export * from "./types/openapi";
-export * as config from "./types/config";
-export * as apiModel from "./types/model";
+type Question = {
+  id: number;
+  text: string;
+  class: string;
+  field: SelectionField | Field;
+  actions: Action[];
+  defaultAction?: string;
+  data?: { [key: string]: string };
+  answer?: Answer;
+};
+
+type Field = {
+  type: FieldType;
+};
+
+type SelectionField = {
+  type: FieldType.Select;
+  options: object;
+};
+
+type Action = {
+  id: string;
+  label: string;
+};
+
+type Answer = {
+  action: string;
+  value?: string;
+};
+
+enum FieldType {
+  None = "none",
+  Password = "password",
+  String = "string",
+  Select = "select",
+}
+
+type AnswerCallback = (answeredQuestion: Question) => void;
+
+export { FieldType };
+export type { Question, Action, AnswerCallback };

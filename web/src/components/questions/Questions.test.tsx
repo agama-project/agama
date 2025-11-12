@@ -23,7 +23,7 @@
 import React from "react";
 import { screen } from "@testing-library/react";
 import { installerRender, plainRender } from "~/test-utils";
-import { Question, FieldType } from "~/types/questions";
+import { Question, FieldType } from "~/api/question";
 import Questions from "~/components/questions/Questions";
 import * as GenericQuestionComponent from "~/components/questions/GenericQuestion";
 

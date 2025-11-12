@@ -28,7 +28,7 @@ import {
   DeviceName,
   DeviceSize,
   FilesystemLabel,
-  toStorageDevice,
+  toDevice,
 } from "~/components/storage/device-utils";
 import { PartitionSlot, StorageDevice } from "~/types/storage";
 
@@ -133,7 +133,7 @@ describe("DeviceDetails", () => {
 
     describe("and it has a file system", () => {
       beforeEach(() => {
-        item = toStorageDevice(item);
+        item = toDevice(item);
         item.filesystem = { sid: 100, type: "ext4", mountPath: "/test", label: "data" };
       });
 
@@ -145,7 +145,7 @@ describe("DeviceDetails", () => {
 
     describe("and it has a partition table", () => {
       beforeEach(() => {
-        item = toStorageDevice(item);
+        item = toDevice(item);
         item.partitionTable = {
           type: "gpt",
           partitions: [],
@@ -162,14 +162,14 @@ describe("DeviceDetails", () => {
 
     describe("and it has no partition table", () => {
       beforeEach(() => {
-        item = toStorageDevice(item);
+        item = toDevice(item);
         item.partitionTable = undefined;
         item.description = "Ext4 disk";
       });
 
       describe("and it has systems", () => {
         beforeEach(() => {
-          item = toStorageDevice(item);
+          item = toDevice(item);
           item.systems = ["Tumbleweed", "Leap"];
         });
 
@@ -182,7 +182,7 @@ describe("DeviceDetails", () => {
 
       describe("and it has no systems", () => {
         beforeEach(() => {
-          item = toStorageDevice(item);
+          item = toDevice(item);
           item.systems = [];
         });
 

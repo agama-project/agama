@@ -20,10 +20,11 @@
  * find current contact information at www.suse.com.
  */
 
-import { Localization } from "./l10n";
+import { tzOffset } from "@date-fns/tz/tzOffset";
+import { Timezone } from "~/api/l10n/system";
 
-type Proposal = {
-  l10n?: Localization;
-};
+function timezoneOffset(timezone: Timezone) {
+  return tzOffset(timezone.id, new Date());
+}
 
-export type { Proposal };
+export { timezoneOffset };

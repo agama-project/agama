@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import { apiModel } from "~/api/storage/types";
+import { apiModel } from "~/api/storage";
 import { copyApiModel, findDevice } from "~/helpers/storage/api-model";
 import { data } from "~/types/storage";
 
