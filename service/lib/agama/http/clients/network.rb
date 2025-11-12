@@ -26,20 +26,31 @@ module Agama
     module Clients
       # HTTP client to interact with the network API.
       class Network < Base
+        def proposal
+          JSON.parse(get("proposal"))
+        end
+
         def connections
-          JSON.parse(get("network/connections"))
+          proposal.fetch("network", {}).fetch("connections", [])
         end
 
         def devices
-          JSON.parse(get("network/devices"))
+          proposal.fetch("network", {}).fetch("devices", [])
         end
 
         def persist_connections
-          post("network/connections/persist", { value: true })
+          conns = connections.map do |c|
+            c["persistent"] = true
+            c
+          end
+          # FIXME: This will create a configuration although it was not explicitly given,
+          # so maybe we should consider to add an action to persist the connections keeping
+          # also the actual status.
+          patch("config", { "update" => { "network" => { "connections" => conns } } })
         end
 
         def state
-          JSON.parse(get("network/state"))
+          proposal.fetch("network", {}).fetch("state", {})
         end
       end
     end
