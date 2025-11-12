@@ -23,6 +23,7 @@ use serde_json::Value;
 
 #[derive(Clone, Debug, Default, Serialize, Deserialize, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
+#[schema(as = storage::Config)]
 pub struct Config {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub storage: Option<Value>,
