@@ -43,7 +43,7 @@ pub async fn start(
     events: event::Sender,
     dbus: zbus::Connection,
 ) -> Result<Handler<Service>, Error> {
-    let service = Service::new(issues.clone(), dbus.clone()).start().await?;
+    let service = Service::new(issues.clone(), dbus.clone()).setup().await?;
     let handler = actor::spawn(service);
 
     let monitor = Monitor::new(handler.clone(), progress, issues, events, dbus);

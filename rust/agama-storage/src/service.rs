@@ -54,7 +54,7 @@ impl Service {
         }
     }
 
-    pub async fn start(self) -> Result<Self, Error> {
+    pub async fn setup(self) -> Result<Self, Error> {
         let issues = self.client.get_issues().await?;
         self.issues
             .call(issue::message::Set::new(Scope::Storage, issues))
