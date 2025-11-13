@@ -25,7 +25,7 @@
 //! `/usr/share/agama/products.d`).
 
 use crate::api::manager::Product;
-use serde::{Deserialize, Deserializer};
+use serde::{Deserialize, Deserializer, Serialize};
 use serde_with::{formats::CommaSeparator, serde_as, StringWithSeparator};
 use std::path::{Path, PathBuf};
 
@@ -124,7 +124,7 @@ impl Default for ProductsRegistry {
 
 // TODO: ideally, part of this code could be auto-generated from a JSON schema definition.
 /// Product specification (e.g., Tumbleweed).
-#[derive(Clone, Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct ProductSpec {
     pub id: String,
     pub name: String,
@@ -151,7 +151,7 @@ where
     Deserialize::deserialize(d).map(|x: Option<_>| x.unwrap_or_default())
 }
 
-#[derive(Clone, Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct SoftwareSpec {
     installation_repositories: Vec<RepositorySpec>,
     #[serde(default)]
@@ -180,7 +180,7 @@ impl SoftwareSpec {
     }
 }
 
-#[derive(Clone, Debug, Deserialize, PartialEq)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 #[serde(untagged)]
 pub enum UserPattern {
     Plain(String),
@@ -196,14 +196,14 @@ impl UserPattern {
     }
 }
 
-#[derive(Clone, Debug, Deserialize, PartialEq)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 pub struct PreselectedPattern {
     pub name: String,
     pub selected: bool,
 }
 
 #[serde_as]
-#[derive(Clone, Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct RepositorySpec {
     pub url: String,
     #[serde(default)]
@@ -212,7 +212,7 @@ pub struct RepositorySpec {
 }
 
 #[serde_as]
-#[derive(Clone, Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct LabelSpec {
     pub label: String,
     #[serde(default)]

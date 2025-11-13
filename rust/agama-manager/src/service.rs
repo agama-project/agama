@@ -317,7 +317,10 @@ impl MessageHandler<message::SetConfig> for Service {
             .await?;
 
         self.storage
-            .call(storage::message::SetConfig::new(config.storage.clone()))
+            .call(storage::message::SetConfig::new(
+                Arc::clone(product),
+                config.storage.clone(),
+            ))
             .await?;
 
         if let Some(network) = config.network.clone() {
@@ -371,7 +374,10 @@ impl MessageHandler<message::UpdateConfig> for Service {
 
         if let Some(storage) = &config.storage {
             self.storage
-                .call(storage::message::SetConfig::with(storage.clone()))
+                .call(storage::message::SetConfig::with(
+                    Arc::clone(product),
+                    storage.clone(),
+                ))
                 .await?;
         }
 
