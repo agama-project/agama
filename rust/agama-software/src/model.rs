@@ -21,11 +21,10 @@
 use agama_utils::{
     actor::Handler,
     api::{
-        software::{Pattern, SoftwareProposal},
-        Issue,
+        Issue, software::{Pattern, SoftwareProposal}
     },
     products::{ProductSpec, UserPattern},
-    progress,
+    progress, question,
 };
 use async_trait::async_trait;
 use tokio::sync::{mpsc, oneshot};
@@ -79,14 +78,18 @@ pub struct Model {
     zypp_sender: mpsc::UnboundedSender<SoftwareAction>,
     // FIXME: what about having a SoftwareServiceState to keep business logic state?
     selected_product: Option<ProductSpec>,
+    progress: Handler<progress::Service>,
+    question: Handler<question::Service>,
 }
 
 impl Model {
     /// Initializes the struct with the information from the underlying system.
-    pub fn new(zypp_sender: mpsc::UnboundedSender<SoftwareAction>) -> Result<Self, service::Error> {
+    pub fn new(zypp_sender: mpsc::UnboundedSender<SoftwareAction>, progress: Handler<progress::Service>, question: Handler<question::Service>) -> Result<Self, service::Error> {
         Ok(Self {
             zypp_sender,
             selected_product: None,
+            progress,
+            question,
         })
     }
 }
@@ -144,7 +147,7 @@ impl ModelAdapter for Model {
 
     async fn install(&self) -> Result<bool, service::Error> {
         let (tx, rx) = oneshot::channel();
-        self.zypp_sender.send(SoftwareAction::Install(tx))?;
+        self.zypp_sender.send(SoftwareAction::Install(tx, self.progress.clone(), self.question.clone()))?;
         Ok(rx.await??)
     }
 

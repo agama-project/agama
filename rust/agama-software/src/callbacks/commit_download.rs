@@ -4,13 +4,13 @@ use tokio::runtime::Handle;
 use zypp_agama::callbacks::pkg_download::{Callback, DownloadError};
 
 #[derive(Clone)]
-struct CommitDownload {
+pub struct CommitDownload {
     progress: Handler<progress::Service>,
     questions: Handler<question::Service>,
 }
 
 impl CommitDownload {
-    fn new(progress: Handler<progress::Service>, questions: Handler<question::Service>) -> Self {
+    pub fn new(progress: Handler<progress::Service>, questions: Handler<question::Service>) -> Self {
         Self {
             progress,
             questions,
