@@ -76,15 +76,15 @@ pub struct Service {
     issues: Handler<issue::Service>,
     progress: Handler<progress::Service>,
     events: event::Sender,
-    state: State,
+    state: Arc<RwLock<ServiceState>>,
     selection: SoftwareSelection,
 }
 
 #[derive(Default)]
-struct State {
+struct ServiceState {
     config: Config,
     system: SystemInfo,
-    proposal: Arc<RwLock<Proposal>>,
+    proposal: Proposal,
 }
 
 impl Service {
@@ -94,12 +94,13 @@ impl Service {
         progress: Handler<progress::Service>,
         events: event::Sender,
     ) -> Service {
+        let state = Arc::new(RwLock::new(Default::default()));
         Self {
             model: Arc::new(Mutex::new(model)),
             issues,
             progress,
             events,
-            state: Default::default(),
+            state,
             selection: Default::default(),
         }
     }
@@ -107,7 +108,8 @@ impl Service {
     pub async fn setup(&mut self) -> Result<(), Error> {
         if let Some(install_repo) = find_install_repository() {
             tracing::info!("Found repository at {}", install_repo.url);
-            self.state.system.repositories.push(install_repo);
+            let mut state = self.state.write().await;
+            state.system.repositories.push(install_repo);
         }
         Ok(())
     }
@@ -129,14 +131,16 @@ impl Actor for Service {
 #[async_trait]
 impl MessageHandler<message::GetSystem> for Service {
     async fn handle(&mut self, _message: message::GetSystem) -> Result<SystemInfo, Error> {
-        Ok(self.state.system.clone())
+        let state = self.state.read().await;
+        Ok(state.system.clone())
     }
 }
 
 #[async_trait]
 impl MessageHandler<message::GetConfig> for Service {
     async fn handle(&mut self, _message: message::GetConfig) -> Result<Config, Error> {
-        Ok(self.state.config.clone())
+        let state = self.state.read().await;
+        Ok(state.config.clone())
     }
 }
 
@@ -145,40 +149,46 @@ impl MessageHandler<message::SetConfig<Config>> for Service {
     async fn handle(&mut self, message: message::SetConfig<Config>) -> Result<(), Error> {
         let product = message.product.read().await;
 
-        self.state.config = message.config.clone().unwrap_or_default();
+        let software = {
+            let mut state = self.state.write().await;
+            state.config = message.config.clone().unwrap_or_default();
+            SoftwareState::build_from(&product, &state.config, &state.system, &self.selection)
+        };
+
         self.events.send(Event::ConfigChanged {
             scope: Scope::Software,
         })?;
 
-        let software = SoftwareState::build_from(
-            &product,
-            &self.state.config,
-            &self.state.system,
-            &self.selection,
-        );
         tracing::info!("Wanted software state: {software:?}");
 
         let model = self.model.clone();
         let issues = self.issues.clone();
         let events = self.events.clone();
         let progress = self.progress.clone();
-        let proposal = self.state.proposal.clone();
         let product_spec = product.clone();
+        let state = self.state.clone();
         tokio::task::spawn(async move {
-            let (new_proposal, found_issues) =
-                match compute_proposal(model, product_spec, software, progress).await {
-                    Ok((new_proposal, found_issues)) => (Some(new_proposal), found_issues),
-                    Err(error) => {
-                        let new_issue = Issue::new(
-                            "software.proposal_failed",
-                            "It was not possible to create a software proposal",
-                            IssueSeverity::Error,
-                        )
-                        .with_details(&error.to_string());
-                        (None, vec![new_issue])
-                    }
-                };
-            proposal.write().await.software = new_proposal;
+            let found_issues = match compute_proposal(model, product_spec, software, progress).await
+            {
+                Ok((new_proposal, system_info, found_issues)) => {
+                    let mut state = state.write().await;
+                    state.proposal.software = Some(new_proposal);
+                    state.system = system_info;
+                    found_issues
+                }
+                Err(error) => {
+                    let new_issue = Issue::new(
+                        "software.proposal_failed",
+                        "It was not possible to create a software proposal",
+                        IssueSeverity::Error,
+                    )
+                    .with_details(&error.to_string());
+                    let mut state = state.write().await;
+                    state.proposal.software = None;
+                    vec![new_issue]
+                }
+            };
+
             _ = issues.cast(issue::message::Set::new(Scope::Software, found_issues));
             _ = events.send(Event::ProposalChanged {
                 scope: Scope::Software,
@@ -194,18 +204,20 @@ async fn compute_proposal(
     product_spec: ProductSpec,
     wanted: SoftwareState,
     progress: Handler<progress::Service>,
-) -> Result<(SoftwareProposal, Vec<Issue>), Error> {
+) -> Result<(SoftwareProposal, SystemInfo, Vec<Issue>), Error> {
     let mut my_model = model.lock().await;
     my_model.set_product(product_spec);
     let issues = my_model.write(wanted, progress).await?;
     let proposal = my_model.compute_proposal().await?;
-    Ok((proposal, issues))
+    let system = my_model.system_info().await?;
+    Ok((proposal, system, issues))
 }
 
 #[async_trait]
 impl MessageHandler<message::GetProposal> for Service {
     async fn handle(&mut self, _message: message::GetProposal) -> Result<Option<Proposal>, Error> {
-        Ok(self.state.proposal.read().await.clone().into_option())
+        let state = self.state.read().await;
+        Ok(state.proposal.clone().into_option())
     }
 }
 
