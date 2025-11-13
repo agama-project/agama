@@ -239,11 +239,13 @@ impl MessageHandler<message::GetSystem> for Service {
         let manager = self.system.clone();
         let storage = self.storage.call(storage::message::GetSystem).await?;
         let network = self.network.get_system().await?;
+        let software = self.software.call(l10n::message::GetSystem).await?;
         Ok(SystemInfo {
             l10n,
             manager,
             network,
             storage,
+            software,
         })
     }
 }
