@@ -26,6 +26,9 @@ URL:            https://github.com/agama-project/agama
 BuildArch:      noarch
 Source0:        agama.tar
 
+# do not include in the 32bit repos, the Agama is 64bit only
+ExcludeArch:    %ix86 s390 ppc64
+
 %description
 Products definition for Agama installer.
 

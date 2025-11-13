@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Nov 13 13:30:58 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Do not build on 32bit arches (like i586) and PPC64-BE,
+  the dependant libsuseconnect is 64bit only (bsc#1251846)
+
+-------------------------------------------------------------------
 Thu Nov 13 09:39:58 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
 
 - Fix removal of kalpa to work also in SLE

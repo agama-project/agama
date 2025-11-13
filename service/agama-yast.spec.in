@@ -27,6 +27,9 @@ BuildRequires:  gettext-runtime
 Requires:       dbus-1-common
 Requires:       rubygem(agama-yast)
 
+# do not build on 32bits, the dependant libsuseconnect is 64bit only
+ExcludeArch:    %ix86 s390 ppc64
+
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
 BuildRequires:  ruby-macros >= 5
 
