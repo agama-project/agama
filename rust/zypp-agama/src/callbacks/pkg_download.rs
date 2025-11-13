@@ -92,7 +92,16 @@ impl From<zypp_agama_sys::DownloadResolvableFileError> for PreloadError {
     }
 }
 
-// generic trait to
+/// Callbacks for the download phase of a zypp commit.
+///
+/// This trait provides hooks into the package download process, which consists of two main phases:
+///
+/// 1.  A parallel preload phase that attempts to download all required packages.
+/// 2.  A verification phase that checks the downloaded content, including GPG signatures.
+///     In this phase it should also allow to retry of download of specific package ( TODO: verify it )
+///
+/// These callbacks are a combination of libzypp's `DownloadResolvableReport` and
+/// `CommitPreloadReport`. If more callbacks are needed, it can be extended as need arise.
 pub trait Callback {
     // callback when start preloading packages during commit phase
     fn start_preload(&self) {}
