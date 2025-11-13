@@ -18,8 +18,6 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use std::sync::Arc;
-
 use crate::{l10n, message, network, software, storage};
 use agama_utils::{
     actor::{self, Actor, Handler, MessageHandler},
@@ -28,14 +26,15 @@ use agama_utils::{
         Proposal, Scope, Status, SystemInfo,
     },
     issue,
-    license::{Error as LicenseError, LicensesRegistry},
-    products::{ProductSpec, ProductsRegistry, ProductsRegistryError},
+    licenses_registry::{self, LicensesRegistry},
+    products_registry::{self, ProductSpec, ProductsRegistry},
     progress, question,
 };
 use async_trait::async_trait;
 use merge_struct::merge;
 use network::NetworkSystemClient;
 use serde_json::Value;
+use std::sync::Arc;
 use tokio::sync::{broadcast, RwLock};
 
 #[derive(Debug, thiserror::Error)]
@@ -59,9 +58,9 @@ pub enum Error {
     #[error(transparent)]
     Questions(#[from] question::service::Error),
     #[error(transparent)]
-    ProductsRegistry(#[from] ProductsRegistryError),
+    ProductsRegistry(#[from] products_registry::Error),
     #[error(transparent)]
-    License(#[from] LicenseError),
+    LicensesRegistry(#[from] licenses_registry::Error),
     #[error(transparent)]
     Progress(#[from] progress::service::Error),
     #[error(transparent)]

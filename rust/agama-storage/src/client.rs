@@ -22,7 +22,7 @@
 
 use agama_utils::{
     api::{storage::Config, Issue},
-    products::ProductSpec,
+    products_registry::ProductSpec,
 };
 use serde_json::Value;
 use std::sync::Arc;

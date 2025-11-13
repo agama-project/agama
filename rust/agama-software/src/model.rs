@@ -24,7 +24,7 @@ use agama_utils::{
         software::{Pattern, SoftwareProposal},
         Issue,
     },
-    products::{ProductSpec, UserPattern},
+    products_registry::{ProductSpec, UserPattern},
     progress,
 };
 use async_trait::async_trait;

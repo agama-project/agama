@@ -21,7 +21,7 @@
 use agama_utils::{
     actor::Message,
     api::software::{Config, Proposal, SystemInfo},
-    products::ProductSpec,
+    products_registry::ProductSpec,
 };
 use std::sync::Arc;
 use tokio::sync::RwLock;

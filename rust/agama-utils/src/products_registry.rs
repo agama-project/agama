@@ -30,7 +30,7 @@ use serde_with::{formats::CommaSeparator, serde_as, StringWithSeparator};
 use std::path::{Path, PathBuf};
 
 #[derive(thiserror::Error, Debug)]
-pub enum ProductsRegistryError {
+pub enum Error {
     #[error("Could not read the products registry: {0}")]
     IO(#[from] std::io::Error),
     #[error("Could not deserialize a product specification: {0}")]
@@ -59,7 +59,7 @@ impl ProductsRegistry {
     }
 
     /// Creates a registry loading the products from its location.
-    pub fn read(&mut self) -> Result<(), ProductsRegistryError> {
+    pub fn read(&mut self) -> Result<(), Error> {
         let entries = std::fs::read_dir(&self.path)?;
         self.products.clear();
 
@@ -137,7 +137,7 @@ pub struct ProductSpec {
 }
 
 impl ProductSpec {
-    pub fn load_from<P: AsRef<Path>>(path: P) -> Result<Self, ProductsRegistryError> {
+    pub fn load_from<P: AsRef<Path>>(path: P) -> Result<Self, Error> {
         let contents = std::fs::read_to_string(path)?;
         let product: ProductSpec = serde_yaml::from_str(&contents)?;
         Ok(product)

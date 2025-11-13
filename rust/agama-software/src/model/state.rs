@@ -24,7 +24,7 @@
 
 use agama_utils::{
     api::software::{Config, PatternsConfig, RepositoryConfig, SystemInfo},
-    products::{ProductSpec, UserPattern},
+    products_registry::{ProductSpec, UserPattern},
 };
 
 use crate::{model::software_selection::SoftwareSelection, Resolvable, ResolvableType};
@@ -315,7 +315,7 @@ mod tests {
             Config, PatternsConfig, PatternsMap, Repository, RepositoryConfig, SoftwareConfig,
             SystemInfo,
         },
-        products::ProductSpec,
+        products_registry::ProductSpec,
     };
 
     use crate::model::{
