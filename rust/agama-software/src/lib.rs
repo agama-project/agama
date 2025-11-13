@@ -36,7 +36,7 @@
 //! and also creates own separate thread for libzypp to satisfy its requirements.
 
 pub mod start;
-pub use start::start;
+pub use start::{start, start_mock};
 
 pub mod service;
 pub use service::Service;

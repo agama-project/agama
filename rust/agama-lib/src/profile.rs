@@ -116,14 +116,10 @@ pub struct ProfileValidator {
 
 impl ProfileValidator {
     pub fn default_schema() -> Result<Self, ProfileError> {
-        let relative_path = Path::new("agama-lib/share/profile.schema.json");
-        let path = if relative_path.exists() {
-            relative_path
-        } else {
-            Path::new("/usr/share/agama-cli/profile.schema.json")
-        };
+        let path = Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("share/profile.schema.json");
         info!("Validation with path {:?}", path);
-        Self::new(path)
+        Self::new(&path)
     }
 
     pub fn new(schema_path: &Path) -> Result<Self, ProfileError> {

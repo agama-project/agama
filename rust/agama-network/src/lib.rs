@@ -28,12 +28,13 @@ pub mod error;
 pub mod model;
 mod nm;
 pub mod start;
-pub use start::start;
+pub use start::{start, start_mock};
 mod system;
 pub mod types;
 
 pub use action::Action;
 pub use adapter::{Adapter, NetworkAdapterError};
+pub use error::Error;
 pub use model::NetworkState;
 pub use nm::NetworkManagerAdapter;
 pub use system::{NetworkSystem, NetworkSystemClient, NetworkSystemError};

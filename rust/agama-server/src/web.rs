@@ -76,13 +76,21 @@ where
     P: AsRef<Path>,
 {
     let progress = ProgressService::start(dbus.clone(), old_events.clone()).await;
+    let questions =
+        agama_utils::question::start(events.clone())
+            .await
+            .map_err(anyhow::Error::msg)?;
+    let manager =
+        agama_manager::start(questions.clone(), events.clone(), dbus.clone())
+            .await
+            .map_err(anyhow::Error::msg)?;
 
     let router = MainServiceBuilder::new(events.clone(), old_events.clone(), web_ui_dir)
         .add_service(
             "/manager",
             manager_service(dbus.clone(), progress.clone()).await?,
         )
-        .add_service("/v2", server_service(events, dbus.clone()).await?)
+        .add_service("/v2", server_service(events, manager).await?)
         .add_service("/security", security_service(dbus.clone()).await?)
         .add_service("/storage", storage_service(dbus.clone(), progress).await?)
         .add_service("/iscsi", iscsi_service(dbus.clone()).await?)

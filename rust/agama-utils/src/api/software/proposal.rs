@@ -33,7 +33,7 @@ pub enum SelectedBy {
     None,
 }
 
-#[derive(Clone, Debug, Serialize, utoipa::ToSchema)]
+#[derive(Clone, Debug, Default, Serialize, utoipa::ToSchema)]
 /// Software proposal information.
 pub struct SoftwareProposal {
     /// Space required for installation. It is returned as a formatted string which includes

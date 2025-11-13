@@ -19,15 +19,22 @@
 // find current contact information at www.suse.com.
 
 use crate::{
-    model::Model,
+    model::{Model, ModelAdapter},
     service::{self, Service},
     zypp_server::{ZyppServer, ZyppServerError},
 };
 use agama_utils::{
     actor::{self, Handler},
-    api::event,
-    issue, progress,
+    api::{
+        event,
+        software::{SoftwareProposal, SystemInfo},
+        Issue,
+    },
+    issue,
+    products::ProductSpec,
+    progress,
 };
+use async_trait::async_trait;
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
@@ -56,6 +63,54 @@ pub async fn start(
     let model = Model::new(zypp_sender)?;
     let mut service = Service::new(model, issues, progress, events);
     // FIXME: this should happen after spawning the task.
+    service.setup().await?;
+    let handler = actor::spawn(service);
+    Ok(handler)
+}
+
+#[derive(Clone, Default)]
+pub struct MockModel;
+
+#[async_trait]
+impl ModelAdapter for MockModel {
+    async fn system_info(&self) -> Result<SystemInfo, service::Error> {
+        Ok(SystemInfo::default())
+    }
+
+    async fn compute_proposal(&self) -> Result<SoftwareProposal, service::Error> {
+        Ok(SoftwareProposal::default())
+    }
+
+    async fn refresh(&mut self) -> Result<(), service::Error> {
+        Ok(())
+    }
+
+    async fn install(&self) -> Result<bool, service::Error> {
+        Ok(true)
+    }
+
+    async fn finish(&self) -> Result<(), service::Error> {
+        Ok(())
+    }
+
+    fn set_product(&mut self, _product_spec: ProductSpec) {}
+
+    async fn write(
+        &mut self,
+        _software: crate::model::state::SoftwareState,
+        _progress: Handler<progress::Service>,
+    ) -> Result<Vec<Issue>, service::Error> {
+        Ok(vec![])
+    }
+}
+
+pub async fn start_mock(
+    issues: Handler<issue::Service>,
+    progress: Handler<progress::Service>,
+    events: event::Sender,
+) -> Result<Handler<Service>, Error> {
+    let model = MockModel::default();
+    let mut service = Service::new(model, issues, progress, events);
     service.setup().await?;
     let handler = actor::spawn(service);
     Ok(handler)

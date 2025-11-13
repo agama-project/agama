@@ -33,6 +33,6 @@ pub use service::Service;
 pub mod message;
 
 pub mod start;
-pub use start::start;
+pub use start::{start, start_mock};
 
 mod monitor;

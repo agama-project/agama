@@ -21,6 +21,7 @@
 use agama_utils::{
     actor::Message,
     api::{
+        event,
         manager::{LanguageTag, LicenseContent},
         Action, Config, IssueMap, Proposal, Status, SystemInfo,
     },
@@ -173,4 +174,10 @@ impl SolveStorageModel {
 
 impl Message for SolveStorageModel {
     type Reply = Option<Value>;
+}
+
+pub struct GetEvents;
+
+impl Message for GetEvents {
+    type Reply = event::Receiver;
 }

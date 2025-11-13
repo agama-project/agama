@@ -233,3 +233,32 @@ impl ModelAdapter for Model {
         Ok(())
     }
 }
+
+#[derive(Default)]
+pub struct MockModel {
+    pub timezones_db: TimezonesDatabase,
+    pub locales_db: LocalesDatabase,
+    pub keymaps_db: KeymapsDatabase,
+}
+
+impl ModelAdapter for MockModel {
+    fn locales_db(&self) -> &LocalesDatabase {
+        &self.locales_db
+    }
+
+    fn timezones_db(&self) -> &TimezonesDatabase {
+        &self.timezones_db
+    }
+
+    fn keymaps_db(&self) -> &KeymapsDatabase {
+        &self.keymaps_db
+    }
+
+    fn locale(&self) -> LocaleId {
+        "en_US.UTF-8".parse().unwrap()
+    }
+
+    fn keymap(&self) -> Result<KeymapId, service::Error> {
+        Ok("us".parse().unwrap())
+    }
+}

@@ -51,3 +51,13 @@ pub async fn start(
 
     Ok(handler)
 }
+
+pub async fn start_mock(
+    progress: Handler<progress::Service>,
+    issues: Handler<issue::Service>,
+    _events: event::Sender,
+) -> Result<Handler<Service>, Error> {
+    let service = Service::new_mock(issues.clone()).start().await?;
+    let handler = actor::spawn(service);
+    Ok(handler)
+}

@@ -19,7 +19,7 @@
 // find current contact information at www.suse.com.
 
 use crate::{
-    client::{self, Client},
+    client::{dbus, mock, Error as ClientError, StorageClient},
     message,
 };
 use agama_utils::{
@@ -29,13 +29,14 @@ use agama_utils::{
 };
 use async_trait::async_trait;
 use serde_json::Value;
+use std::sync::Arc;
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
     #[error(transparent)]
     Actor(#[from] actor::Error),
     #[error(transparent)]
-    Client(#[from] client::Error),
+    Client(#[from] ClientError),
     #[error(transparent)]
     Issue(#[from] issue::service::Error),
 }
@@ -43,14 +44,21 @@ pub enum Error {
 /// Storage service.
 pub struct Service {
     issues: Handler<issue::Service>,
-    client: Client,
+    client: Arc<dyn StorageClient>,
 }
 
 impl Service {
     pub fn new(issues: Handler<issue::Service>, connection: zbus::Connection) -> Service {
         Self {
             issues,
-            client: Client::new(connection),
+            client: Arc::new(dbus::Client::new(connection)),
+        }
+    }
+
+    pub fn new_mock(issues: Handler<issue::Service>) -> Service {
+        Self {
+            issues,
+            client: Arc::new(mock::MockClient::default()),
         }
     }
 
@@ -145,7 +153,9 @@ impl MessageHandler<message::SetProduct> for Service {
 #[async_trait]
 impl MessageHandler<message::SetConfig> for Service {
     async fn handle(&mut self, message: message::SetConfig) -> Result<(), Error> {
-        self.client.set_config(message.config).await?;
+        if let Some(config) = message.config {
+            self.client.set_config(config).await?;
+        }
         Ok(())
     }
 }

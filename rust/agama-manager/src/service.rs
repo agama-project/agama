@@ -115,6 +115,106 @@ impl Service {
         }
     }
 
+    pub fn events(&self) -> event::Sender {
+        self.events.clone()
+    }
+
+    
+
+        pub async fn new_mock(events: event::Sender) -> Self {
+
+            let (issues_tx, _) = broadcast::channel(16);
+
+            let (progress_tx, _) = broadcast::channel(16);
+
+            let (questions_tx, _) = broadcast::channel(16);
+
+    
+
+            let l10n = actor::spawn(l10n::Service::new(
+
+                l10n::model::MockModel::default(),
+
+                actor::spawn(issue::Service::new(issues_tx.clone())),
+
+                events.clone(),
+
+            ));
+
+            let network = network::start_mock().await.unwrap();
+
+            let software = actor::spawn(software::Service::new(
+
+                software::start::MockModel::default(),
+
+                actor::spawn(issue::Service::new(issues_tx.clone())),
+
+                actor::spawn(progress::Service::new(progress_tx.clone())),
+
+                events.clone(),
+
+            ));
+
+            let storage = actor::spawn(
+
+                storage::Service::new_mock(actor::spawn(issue::Service::new(issues_tx.clone())))
+
+                    .start()
+
+                    .await
+
+                    .unwrap(),
+
+            );
+
+            let issues = actor::spawn(issue::Service::new(issues_tx));
+
+            let progress = actor::spawn(progress::Service::new(progress_tx));
+
+            let questions = actor::spawn(question::Service::new(questions_tx));
+
+    
+
+            let mut service = Self::new(
+
+                l10n,
+
+                network,
+
+                software,
+
+                storage,
+
+                issues,
+
+                progress,
+
+                questions,
+
+                events,
+
+            );
+
+            let manifest_dir = std::env::var("CARGO_MANIFEST_DIR").unwrap();
+
+            let products_path =
+
+                std::path::Path::new(&manifest_dir).join("tests/fixtures/products.d");
+
+            let licenses_path =
+
+                std::path::Path::new(&manifest_dir).join("tests/fixtures/eula");
+
+            service.products = ProductsRegistry::new(products_path);
+
+            service.licenses = LicensesRegistry::new(licenses_path);
+
+            service
+
+        }
+
+    
+
     /// Set up the service by reading the registries and determining the default product.
     ///
     /// If a default product is set, it asks the other services to initialize their configurations.
@@ -217,6 +317,13 @@ impl Service {
 
 impl Actor for Service {
     type Error = Error;
+}
+
+#[async_trait]
+impl MessageHandler<message::GetEvents> for Service {
+    async fn handle(&mut self, _message: message::GetEvents) -> Result<event::Receiver, Error> {
+        Ok(self.events.subscribe())
+    }
 }
 
 #[async_trait]

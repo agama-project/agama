@@ -46,6 +46,12 @@ pub async fn start(
     Ok(handler)
 }
 
+pub async fn start_mock(events: event::Sender) -> Result<Handler<Service>, Error> {
+    let service = Service::new(events);
+    let handler = actor::spawn(service);
+    Ok(handler)
+}
+
 #[cfg(test)]
 mod tests {
     use crate::{

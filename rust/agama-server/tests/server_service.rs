@@ -19,38 +19,18 @@
 // find current contact information at www.suse.com.
 
 pub mod common;
-use agama_lib::error::ServiceError;
-use agama_server::server::server_service;
-use agama_utils::{api, test};
+
+use agama_utils::api;
 use axum::{
     body::Body,
     http::{Method, Request, StatusCode},
-    Router,
 };
-use common::body_to_string;
+use common::{body_to_string, build_server_service};
 use std::error::Error;
-use std::path::PathBuf;
-use tokio::{sync::broadcast::channel, test};
+use tokio::test;
 use tower::ServiceExt;
 
-async fn build_server_service() -> Result<Router, ServiceError> {
-    let share_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../test/share");
-    std::env::set_var("AGAMA_SHARE_DIR", share_dir.display().to_string());
-
-    let (tx, mut rx) = channel(16);
-    let dbus = test::dbus::connection().await.unwrap();
-
-    tokio::spawn(async move {
-        while let Ok(event) = rx.recv().await {
-            println!("{:?}", event);
-        }
-    });
-
-    server_service(tx, dbus).await
-}
-
 #[test]
-#[cfg(not(ci))]
 async fn test_get_extended_config() -> Result<(), Box<dyn Error>> {
     let server_service = build_server_service().await?;
     let request = Request::builder()
@@ -70,7 +50,6 @@ async fn test_get_extended_config() -> Result<(), Box<dyn Error>> {
 }
 
 #[test]
-#[cfg(not(ci))]
 async fn test_get_empty_config() -> Result<(), Box<dyn Error>> {
     let server_service = build_server_service().await?;
     let request = Request::builder()
@@ -88,7 +67,6 @@ async fn test_get_empty_config() -> Result<(), Box<dyn Error>> {
 }
 
 #[test]
-#[cfg(not(ci))]
 async fn test_put_config() -> Result<(), Box<dyn Error>> {
     let config = api::Config {
         l10n: Some(api::l10n::Config {
@@ -156,7 +134,6 @@ async fn test_put_config() -> Result<(), Box<dyn Error>> {
 }
 
 #[test]
-#[cfg(not(ci))]
 async fn test_patch_config() -> Result<(), Box<dyn Error>> {
     let l10n = api::l10n::Config {
         locale: Some("es_ES.UTF-8".to_string()),

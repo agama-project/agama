@@ -19,7 +19,7 @@
 // find current contact information at www.suse.com.
 
 pub mod start;
-pub use start::start;
+pub use start::{start, start_mock};
 
 pub mod service;
 pub use service::Service;
