@@ -20,7 +20,10 @@
 
 use agama_utils::{
     actor::Message,
-    api::{Action, Config, IssueMap, Proposal, Status, SystemInfo},
+    api::{
+        manager::{LanguageTag, LicenseContent},
+        Action, Config, IssueMap, Proposal, Status, SystemInfo,
+    },
 };
 use serde_json::Value;
 
@@ -102,6 +105,21 @@ pub struct GetIssues;
 
 impl Message for GetIssues {
     type Reply = IssueMap;
+}
+
+pub struct GetLicense {
+    pub id: String,
+    pub lang: LanguageTag,
+}
+
+impl Message for GetLicense {
+    type Reply = Option<LicenseContent>;
+}
+
+impl GetLicense {
+    pub fn new(id: String, lang: LanguageTag) -> Self {
+        Self { id, lang }
+    }
 }
 
 /// Runs the given action.

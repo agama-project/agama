@@ -20,10 +20,8 @@
 
 //! Implements support for reading software licenses.
 
-use crate::api::manager::{InvalidLanguageCode, LanguageTag, License};
+use crate::api::manager::{InvalidLanguageCode, LanguageTag, License, LicenseContent};
 use agama_locale_data::get_territories;
-use serde::Serialize;
-use serde_with::{serde_as, DisplayFromStr};
 use std::{
     collections::HashMap,
     fs::read_dir,
@@ -37,23 +35,6 @@ pub enum Error {
     InvalidLanguageCode(#[from] InvalidLanguageCode),
     #[error("I/O error")]
     IO(#[from] std::io::Error),
-}
-
-/// Represents a license content.
-///
-/// It contains the license ID and the body.
-///
-/// TODO: in the future it might contain a title, extracted from the text.
-#[serde_as]
-#[derive(Clone, Debug, Serialize, utoipa::ToSchema)]
-pub struct LicenseContent {
-    /// License ID.
-    pub id: String,
-    /// License text.
-    pub body: String,
-    /// License language.
-    #[serde_as(as = "DisplayFromStr")]
-    pub language: LanguageTag,
 }
 
 /// Represents a repository of software licenses.
