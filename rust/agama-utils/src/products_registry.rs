@@ -134,6 +134,7 @@ pub struct ProductSpec {
     pub registration: bool,
     pub version: Option<String>,
     pub software: SoftwareSpec,
+    pub storage: StorageSpec,
 }
 
 impl ProductSpec {
@@ -218,6 +219,80 @@ pub struct LabelSpec {
     #[serde(default)]
     #[serde_as(as = "StringWithSeparator::<CommaSeparator, String>")]
     pub archs: Vec<String>,
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+pub struct StorageSpec {
+    #[serde(default)]
+    boot_strategy: Option<String>,
+    #[serde(default)]
+    space_policy: Option<String>,
+    #[serde(default)]
+    volumes: Vec<String>,
+    #[serde(default)]
+    pub volume_templates: Vec<VolumeSpec>,
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+pub struct VolumeSpec {
+    #[serde(default)]
+    mount_path: Option<String>,
+    #[serde(default)]
+    filesystem: Option<String>,
+    #[serde(default)]
+    btrfs: Option<BtrfsSpec>,
+    size: SizeSpec,
+    outline: VolumeOutlineSpec,
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+pub struct BtrfsSpec {
+    snapshots: bool,
+    read_only: bool,
+    default_subvolume: String,
+    #[serde(default)]
+    subvolumes: Vec<BtrfsSubvolSpec>,
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+pub struct BtrfsSubvolSpec {
+    path: String,
+    #[serde(default)]
+    copy_on_write: Option<bool>,
+    #[serde(default)]
+    archs: Option<String>,
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+pub struct SizeSpec {
+    #[serde(default)]
+    auto: Option<bool>,
+    #[serde(default)]
+    min: Option<String>,
+    #[serde(default)]
+    max: Option<String>,
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+pub struct VolumeOutlineSpec {
+    required: bool,
+    filesystems: Vec<String>,
+    #[serde(default)]
+    auto_size: Option<AutoSizeSpec>,
+    #[serde(default)]
+    snapshots_configurable: Option<bool>,
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+pub struct AutoSizeSpec {
+    base_min: String,
+    base_max: String,
+    #[serde(default)]
+    snapshots_increment: Option<String>,
+    #[serde(default)]
+    max_fallback_for: Option<Vec<String>>,
+    #[serde(default)]
+    min_fallback_for: Option<Vec<String>>,
 }
 
 #[cfg(test)]
