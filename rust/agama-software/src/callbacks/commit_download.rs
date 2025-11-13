@@ -10,7 +10,10 @@ pub struct CommitDownload {
 }
 
 impl CommitDownload {
-    pub fn new(progress: Handler<progress::Service>, questions: Handler<question::Service>) -> Self {
+    pub fn new(
+        progress: Handler<progress::Service>,
+        questions: Handler<question::Service>,
+    ) -> Self {
         Self {
             progress,
             questions,

@@ -21,7 +21,8 @@
 use agama_utils::{
     actor::Handler,
     api::{
-        Issue, IssueSeverity, Scope, software::{Pattern, SelectedBy, SoftwareProposal}
+        software::{Pattern, SelectedBy, SoftwareProposal},
+        Issue, IssueSeverity, Scope,
     },
     products::ProductSpec,
     progress, question,
@@ -33,7 +34,10 @@ use tokio::sync::{
 };
 use zypp_agama::ZyppError;
 
-use crate::{callbacks::commit_download, model::state::{self, SoftwareState}};
+use crate::{
+    callbacks::commit_download,
+    model::state::{self, SoftwareState},
+};
 
 const TARGET_DIR: &str = "/run/agama/software_ng_zypp";
 const GPG_KEYS: &str = "/usr/lib/rpm/gnupg/keys/gpg-*";
@@ -86,7 +90,11 @@ pub enum ZyppServerError {
 pub type ZyppServerResult<R> = Result<R, ZyppServerError>;
 
 pub enum SoftwareAction {
-    Install(oneshot::Sender<ZyppServerResult<bool>>, Handler<progress::Service>, Handler<question::Service>),
+    Install(
+        oneshot::Sender<ZyppServerResult<bool>>,
+        Handler<progress::Service>,
+        Handler<question::Service>,
+    ),
     Finish(oneshot::Sender<ZyppServerResult<()>>),
     GetPatternsMetadata(Vec<String>, oneshot::Sender<ZyppServerResult<Vec<Pattern>>>),
     ComputeProposal(
@@ -188,7 +196,11 @@ impl ZyppServer {
     }
 
     // Install rpms
-    fn install(&self, zypp: &zypp_agama::Zypp, download_callback: &commit_download::CommitDownload) -> ZyppServerResult<bool> {
+    fn install(
+        &self,
+        zypp: &zypp_agama::Zypp,
+        download_callback: &commit_download::CommitDownload,
+    ) -> ZyppServerResult<bool> {
         let target = "/mnt";
         zypp.switch_target(target)?;
         // TODO: write real install callbacks beside download ones
