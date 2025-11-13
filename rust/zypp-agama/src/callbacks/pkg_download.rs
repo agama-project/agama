@@ -100,7 +100,15 @@ pub trait Callback {
     fn problem(&self, _name: &str, _error: DownloadError, _description: &str) -> ProblemResponse {
         ProblemResponse::ABORT
     }
-    // callback after gpg check is done
+    /// Callback after a GPG check is performed on a package.
+    ///
+    /// This method is called for every package after its GPG signature has been checked,
+    /// including when the check is successful (`GPGCheckResult::Ok`). The result of the
+    /// check is passed in the `check_result` parameter.
+    ///
+    /// The implementation can return an `Option<ProblemResponse>` to decide how to proceed.
+    /// If `None` is returned, any potential issue (like a failed GPG check) might be
+    /// propagated and handled by other callbacks or mechanisms within libzypp.
     fn gpg_check(
         &self,
         _resolvable_name: &str,
