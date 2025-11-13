@@ -27,6 +27,9 @@ Url:            https://github.com/agama-project/agama
 Source0:        agama.tar
 Source1:        vendor.tar.zst
 
+# do not build on 32bits, the dependant libsuseconnect is 64bit only
+ExcludeArch:    %ix86 s390 ppc64
+
 # defines the "limit_build" macro used in the "build" section below
 BuildRequires:  memory-constraints
 BuildRequires:  cargo-packaging
