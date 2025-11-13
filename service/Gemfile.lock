@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    agama-yast (17.devel904.666a28170)
+    agama-yast (19.pre)
       cfa (~> 1.0.2)
       cfa_grub2 (~> 2.0.0)
       cheetah (~> 1.0.0)
