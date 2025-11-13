@@ -103,9 +103,13 @@ impl From<zypp_agama_sys::DownloadResolvableFileError> for PreloadError {
 /// These callbacks are a combination of libzypp's `DownloadResolvableReport` and
 /// `CommitPreloadReport`. If more callbacks are needed, it can be extended as need arise.
 pub trait Callback {
-    // callback when start preloading packages during commit phase
+    /// callback when start preloading packages during commit phase
+    /// 
+    /// Corresponding libzypp callback name: DownloadResolvableReport::pkgGpgCheck
     fn start_preload(&self) {}
-    // callback when problem occurs during download of resolvable
+    /// callback when problem occurs during download of resolvable
+    /// 
+    /// Corresponding libzypp callback name: DownloadResolvableReport::problem
     fn problem(&self, _name: &str, _error: DownloadError, _description: &str) -> ProblemResponse {
         ProblemResponse::ABORT
     }
@@ -118,6 +122,8 @@ pub trait Callback {
     /// The implementation can return an `Option<ProblemResponse>` to decide how to proceed.
     /// If `None` is returned, any potential issue (like a failed GPG check) might be
     /// propagated and handled by other callbacks or mechanisms within libzypp.
+    /// 
+    /// Corresponding libzypp callback name: DownloadResolvableReport::pkgGpgCheck
     fn gpg_check(
         &self,
         _resolvable_name: &str,
@@ -126,7 +132,18 @@ pub trait Callback {
     ) -> Option<ProblemResponse> {
         None
     }
-    // callback when preload finishes with file either successfully or with error
+    
+    /// Callback executed when the preload of a single file finishes.
+    ///
+    /// This method is called for each file after the preload attempt is complete,
+    /// regardless of whether it succeeded or failed.
+    ///
+    /// Since this callback does not return a value, it cannot be used to request a
+    /// retry if the download fails. It is libzypp feature to move forward with failure.
+    /// TODO: For failures it is probably need to check if we require a different callback 
+    /// or `problem` here is enough.
+    /// 
+    /// Corresponding libzypp callback name: CommitPreloadReport::fileDone
     fn finish_preload(
         &self,
         _url: &str,
