@@ -40,6 +40,8 @@ use tokio::sync::{broadcast, RwLock};
 
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
+    #[error("Missing product")]
+    Product,
     #[error("Cannot merge the configuration")]
     MergeConfig,
     #[error(transparent)]
@@ -128,7 +130,7 @@ impl Service {
             self.product = Some(product);
         }
 
-        self.update_issues();
+        self.update_issues()?;
         Ok(())
     }
 
@@ -180,7 +182,12 @@ impl Service {
         Ok(())
     }
 
-    fn set_product_from_config(&mut self, config: &Config) {
+    fn set_product(&mut self, config: &Config) -> Result<(), Error> {
+        self.product = None;
+        self.update_product(config)
+    }
+
+    fn update_product(&mut self, config: &Config) -> Result<(), Error> {
         let product_id = config
             .software
             .as_ref()
@@ -192,24 +199,29 @@ impl Service {
                 let product = RwLock::new(product_spec.clone());
                 self.product = Some(Arc::new(product));
             } else {
+                self.product = None;
                 tracing::warn!("Unknown product '{id}'");
             }
         }
+
+        self.update_issues()?;
+        Ok(())
     }
 
-    fn update_issues(&self) {
+    fn update_issues(&self) -> Result<(), Error> {
         if self.product.is_some() {
-            _ = self.issues.cast(issue::message::Clear::new(Scope::Manager));
+            self.issues
+                .cast(issue::message::Clear::new(Scope::Manager))?;
         } else {
             let issue = Issue::new(
                 "no_product",
                 "No product has been selected.",
                 IssueSeverity::Error,
             );
-            _ = self
-                .issues
-                .cast(issue::message::Set::new(Scope::Manager, vec![issue]));
+            self.issues
+                .cast(issue::message::Set::new(Scope::Manager, vec![issue]))?;
         }
+        Ok(())
     }
 }
 
@@ -282,23 +294,23 @@ impl MessageHandler<message::GetConfig> for Service {
 impl MessageHandler<message::SetConfig> for Service {
     /// Sets the user configuration with the given values.
     async fn handle(&mut self, message: message::SetConfig) -> Result<(), Error> {
-        self.set_product_from_config(&message.config);
-
-        self.config = message.config.clone();
         let config = message.config;
+        self.set_product(&config)?;
+
+        let Some(product) = &self.product else {
+            return Err(Error::Product);
+        };
 
         self.questions
             .call(question::message::SetConfig::new(config.questions.clone()))
             .await?;
 
-        if let Some(product) = &self.product {
-            self.software
-                .call(software::message::SetConfig::new(
-                    Arc::clone(&product),
-                    config.software.clone(),
-                ))
-                .await?;
-        }
+        self.software
+            .call(software::message::SetConfig::new(
+                Arc::clone(product),
+                config.software.clone(),
+            ))
+            .await?;
 
         self.l10n
             .call(l10n::message::SetConfig::new(config.l10n.clone()))
@@ -313,7 +325,6 @@ impl MessageHandler<message::SetConfig> for Service {
             self.network.apply().await?;
         }
 
-        self.update_issues();
         self.config = config;
         Ok(())
     }
@@ -340,8 +351,11 @@ impl MessageHandler<message::UpdateConfig> for Service {
     async fn handle(&mut self, message: message::UpdateConfig) -> Result<(), Error> {
         let config = merge(&self.config, &message.config).map_err(|_| Error::MergeConfig)?;
         let config = merge_network(config, message.config);
+        self.set_product(&config)?;
 
-        self.set_product_from_config(&config);
+        let Some(product) = &self.product else {
+            return Err(Error::Product);
+        };
 
         if let Some(l10n) = &config.l10n {
             self.l10n
@@ -361,15 +375,13 @@ impl MessageHandler<message::UpdateConfig> for Service {
                 .await?;
         }
 
-        if let Some(product) = &self.product {
-            if let Some(software) = &config.software {
-                self.software
-                    .call(software::message::SetConfig::with(
-                        Arc::clone(&product),
-                        software.clone(),
-                    ))
-                    .await?;
-            }
+        if let Some(software) = &config.software {
+            self.software
+                .call(software::message::SetConfig::with(
+                    Arc::clone(product),
+                    software.clone(),
+                ))
+                .await?;
         }
 
         if let Some(network) = &config.network {
@@ -377,7 +389,6 @@ impl MessageHandler<message::UpdateConfig> for Service {
         }
 
         self.config = config;
-        self.update_issues();
         Ok(())
     }
 }
