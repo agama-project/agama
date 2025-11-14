@@ -275,7 +275,7 @@ impl<'a> ISCSIClient<'a> {
         Ok(())
     }
 
-    pub async fn get_node_proxy(&self, id: u32) -> Result<NodeProxy, ServiceError> {
+    pub async fn get_node_proxy(&'a self, id: u32) -> Result<NodeProxy<'a>, ServiceError> {
         let proxy = NodeProxy::builder(&self.connection)
             .path(format!("/org/opensuse/Agama/Storage1/iscsi_nodes/{}", id))?
             .build()
