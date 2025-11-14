@@ -155,14 +155,18 @@ void switch_target(struct Zypp *zypp, const char *root,
   STATUS_OK(status);
 }
 
-bool commit(struct Zypp *zypp, struct Status *status) noexcept {
+bool commit(struct Zypp *zypp, struct Status *status,
+            struct DownloadResolvableCallbacks *download_callbacks) noexcept {
   try {
+    set_zypp_resolvable_download_callbacks(download_callbacks);
     zypp::ZYppCommitPolicy policy;
     zypp::ZYppCommitResult result = zypp->zypp_pointer->commit(policy);
     STATUS_OK(status);
+    unset_zypp_resolvable_download_callbacks();
     return result.noError();
   } catch (zypp::Exception &excpt) {
     STATUS_EXCEPT(status, excpt);
+    unset_zypp_resolvable_download_callbacks();
     return false;
   }
 }
@@ -666,5 +670,4 @@ void get_space_usage(struct Zypp *zypp, struct Status *status,
     STATUS_EXCEPT(status, excpt);
   }
 }
-
 }

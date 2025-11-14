@@ -4,7 +4,6 @@ use std::{
     sync::Mutex,
 };
 
-pub use callbacks::DownloadProgress;
 use errors::ZyppResult;
 use zypp_agama_sys::{
     get_patterns_info, PatternNames, ProgressCallback, ProgressData, Status, ZyppProgressCallback,
@@ -153,11 +152,13 @@ impl Zypp {
         }
     }
 
-    pub fn commit(&self) -> ZyppResult<bool> {
+    pub fn commit(&self, report: &impl callbacks::pkg_download::Callback) -> ZyppResult<bool> {
         let mut status: Status = Status::default();
         let status_ptr = &mut status as *mut _;
         unsafe {
-            let res = zypp_agama_sys::commit(self.ptr, status_ptr);
+            let mut commit_fn =
+                |mut callbacks| zypp_agama_sys::commit(self.ptr, status_ptr, &mut callbacks);
+            let res = callbacks::pkg_download::with_callback(report, &mut commit_fn);
             helpers::status_to_result(status, res)
         }
     }
@@ -354,7 +355,7 @@ impl Zypp {
     pub fn refresh_repository(
         &self,
         alias: &str,
-        progress: &impl DownloadProgress,
+        progress: &impl callbacks::download_progress::Callback,
     ) -> ZyppResult<()> {
         unsafe {
             let mut status: Status = Status::default();
@@ -368,7 +369,7 @@ impl Zypp {
                     &mut callbacks,
                 )
             };
-            callbacks::with_c_download_callbacks(progress, &mut refresh_fn);
+            callbacks::download_progress::with_callback(progress, &mut refresh_fn);
 
             helpers::status_to_result_void(status)
         }
@@ -510,7 +511,7 @@ impl Zypp {
             if !cont {
                 return abort_err;
             }
-            self.refresh_repository(&i.alias, &callbacks::EmptyDownloadProgress)?;
+            self.refresh_repository(&i.alias, &callbacks::download_progress::EmptyCallback)?;
             percent += percent_step;
             cont = progress(
                 percent.floor() as i64,

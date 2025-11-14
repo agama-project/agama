@@ -8,6 +8,7 @@ edition.workspace = true
 agama-locale-data = { path = "../agama-locale-data" }
 agama-utils = { path = "../agama-utils" }
 async-trait = "0.1.89"
+gettext-rs = { version = "0.7.1", features = ["gettext-system"] }
 glob = "0.3.1"
 regex = "1.11.0"
 serde = { version = "1.0.210", features = ["derive"] }

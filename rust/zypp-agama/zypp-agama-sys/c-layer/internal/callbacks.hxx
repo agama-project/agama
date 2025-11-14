@@ -13,4 +13,11 @@ create_progress_callback(ZyppProgressCallback progress, void *user_data);
 void set_zypp_download_callbacks(struct DownloadProgressCallbacks *callbacks);
 void unset_zypp_download_callbacks();
 
+// pair of set/unset callbacks used during commit when download packages.
+// Uses mixture of ResolvableDownloadReport and also CommitPreloadReport
+// to capture related parts of commit download reports.
+void set_zypp_resolvable_download_callbacks(
+    struct DownloadResolvableCallbacks *callbacks);
+void unset_zypp_resolvable_download_callbacks();
+
 #endif
