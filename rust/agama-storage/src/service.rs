@@ -21,11 +21,12 @@
 use crate::{
     client::{self, Client},
     message,
+    monitor::{self, Monitor},
 };
 use agama_utils::{
     actor::{self, Actor, Handler, MessageHandler},
-    api::{storage::Config, Issue, Scope},
-    issue,
+    api::{event, storage::Config, Issue, Scope},
+    issue, progress,
 };
 use async_trait::async_trait;
 use serde_json::Value;
@@ -38,6 +39,54 @@ pub enum Error {
     Client(#[from] client::Error),
     #[error(transparent)]
     Issue(#[from] issue::service::Error),
+    #[error(transparent)]
+    Monitor(#[from] monitor::Error),
+}
+
+/// Builds and spawns the storage service.
+//
+// TODO: Allow replacing the client for testing purposes.
+pub struct Builder {
+    events: event::Sender,
+    issues: Handler<issue::Service>,
+    progress: Handler<progress::Service>,
+    dbus: zbus::Connection,
+}
+
+impl Builder {
+    pub fn new(
+        events: event::Sender,
+        issues: Handler<issue::Service>,
+        progress: Handler<progress::Service>,
+        dbus: zbus::Connection,
+    ) -> Self {
+        Self {
+            events,
+            issues,
+            progress,
+            dbus,
+        }
+    }
+
+    /// Spawns the storage service.
+    pub async fn spawn(self) -> Result<Handler<Service>, Error> {
+        let client = Client::new(self.dbus.clone());
+        let service = Service {
+            issues: self.issues.clone(),
+            client: client.clone(),
+        };
+        let handler = actor::spawn(service);
+
+        let monitor = Monitor::new(
+            self.progress,
+            self.issues,
+            self.events,
+            self.dbus,
+            client.clone(),
+        );
+        monitor::spawn(monitor)?;
+        Ok(handler)
+    }
 }
 
 /// Storage service.
@@ -47,11 +96,13 @@ pub struct Service {
 }
 
 impl Service {
-    pub fn new(issues: Handler<issue::Service>, connection: zbus::Connection) -> Service {
-        Self {
-            issues,
-            client: Client::new(connection),
-        }
+    pub fn builder(
+        events: event::Sender,
+        issues: Handler<issue::Service>,
+        progress: Handler<progress::Service>,
+        dbus: zbus::Connection,
+    ) -> Builder {
+        Builder::new(events, issues, progress, dbus)
     }
 
     pub async fn setup(self) -> Result<Self, Error> {
