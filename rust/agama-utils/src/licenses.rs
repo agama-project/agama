@@ -65,7 +65,7 @@ pub struct LicenseContent {
 /// The license diectory contains the default text (license.txt) and a set of translations (e.g.,
 /// "license.es.txt", "license.zh_CH.txt", etc.).
 #[derive(Clone)]
-pub struct LicensesRegistry {
+pub struct Registry {
     /// Repository path.
     path: std::path::PathBuf,
     /// Licenses in the repository.
@@ -74,7 +74,7 @@ pub struct LicensesRegistry {
     fallback: HashMap<String, LanguageTag>,
 }
 
-impl LicensesRegistry {
+impl Registry {
     pub fn new<P: AsRef<Path>>(path: P) -> Self {
         Self {
             path: path.as_ref().to_owned(),
@@ -221,7 +221,7 @@ impl LicensesRegistry {
     }
 }
 
-impl Default for LicensesRegistry {
+impl Default for Registry {
     fn default() -> Self {
         let relative_path = PathBuf::from("share/eula");
         let path = if relative_path.exists() {
@@ -237,11 +237,11 @@ impl Default for LicensesRegistry {
 
 #[cfg(test)]
 mod test {
-    use super::{LanguageTag, LicensesRegistry};
+    use super::{LanguageTag, Registry};
     use std::path::Path;
 
-    fn build_registry() -> LicensesRegistry {
-        let mut repo = LicensesRegistry::new(Path::new("../share/eula"));
+    fn build_registry() -> Registry {
+        let mut repo = Registry::new(Path::new("../share/eula"));
         repo.read().unwrap();
         repo
     }

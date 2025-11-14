@@ -25,9 +25,8 @@ use agama_utils::{
         self, event, manager, status::State, Action, Config, Event, Issue, IssueMap, IssueSeverity,
         Proposal, Scope, Status, SystemInfo,
     },
-    issue,
-    licenses_registry::{self, LicensesRegistry},
-    products_registry::{self, ProductSpec, ProductsRegistry},
+    issue, licenses,
+    products::{self, ProductSpec},
     progress, question,
 };
 use async_trait::async_trait;
@@ -40,7 +39,7 @@ use tokio::sync::{broadcast, RwLock};
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
     #[error("Missing product")]
-    Product,
+    MissingProduct,
     #[error("Cannot merge the configuration")]
     MergeConfig,
     #[error(transparent)]
@@ -58,9 +57,9 @@ pub enum Error {
     #[error(transparent)]
     Questions(#[from] question::service::Error),
     #[error(transparent)]
-    ProductsRegistry(#[from] products_registry::Error),
+    Products(#[from] products::Error),
     #[error(transparent)]
-    LicensesRegistry(#[from] licenses_registry::Error),
+    Licenses(#[from] licenses::Error),
     #[error(transparent)]
     Progress(#[from] progress::service::Error),
     #[error(transparent)]
@@ -75,8 +74,8 @@ pub struct Service {
     issues: Handler<issue::Service>,
     progress: Handler<progress::Service>,
     questions: Handler<question::Service>,
-    products: ProductsRegistry,
-    licenses: LicensesRegistry,
+    products: products::Registry,
+    licenses: licenses::Registry,
     product: Option<Arc<RwLock<ProductSpec>>>,
     state: State,
     config: Config,
@@ -103,8 +102,8 @@ impl Service {
             issues,
             progress,
             questions,
-            products: ProductsRegistry::default(),
-            licenses: LicensesRegistry::default(),
+            products: products::Registry::default(),
+            licenses: licenses::Registry::default(),
             // FIXME: state is already used for service state.
             state: State::Configuring,
             config: Config::default(),
@@ -140,7 +139,7 @@ impl Service {
         self.set_product(&config)?;
 
         let Some(product) = &self.product else {
-            return Err(Error::Product);
+            return Err(Error::MissingProduct);
         };
 
         self.questions
@@ -178,7 +177,7 @@ impl Service {
         self.set_product(&config)?;
 
         let Some(product) = &self.product else {
-            return Err(Error::Product);
+            return Err(Error::MissingProduct);
         };
 
         if let Some(l10n) = &config.l10n {

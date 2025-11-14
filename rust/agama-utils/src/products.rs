@@ -45,12 +45,12 @@ pub enum Error {
 ///
 /// Dynamic behavior, like filtering by architecture, is not supported yet.
 #[derive(Clone, Debug, Deserialize)]
-pub struct ProductsRegistry {
+pub struct Registry {
     path: std::path::PathBuf,
     products: Vec<ProductSpec>,
 }
 
-impl ProductsRegistry {
+impl Registry {
     pub fn new<P: AsRef<Path>>(path: P) -> Self {
         Self {
             path: path.as_ref().to_owned(),
@@ -114,7 +114,7 @@ impl ProductsRegistry {
     }
 }
 
-impl Default for ProductsRegistry {
+impl Default for Registry {
     fn default() -> Self {
         let share_dir = std::env::var("AGAMA_SHARE_DIR").unwrap_or("/usr/share/agama".to_string());
         let products_dir = PathBuf::from(share_dir).join("products.d");
@@ -303,7 +303,7 @@ mod test {
     #[test]
     fn test_load_registry() {
         let path = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../test/share/products.d");
-        let mut registry = ProductsRegistry::new(path.as_path());
+        let mut registry = Registry::new(path.as_path());
         registry.read().unwrap();
         // ensuring that we can load all products from tests
         assert_eq!(registry.products.len(), 8);
@@ -312,7 +312,7 @@ mod test {
     #[test]
     fn test_find_product() {
         let path = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../test/share/products.d");
-        let mut registry = ProductsRegistry::new(path.as_path());
+        let mut registry = Registry::new(path.as_path());
         registry.read().unwrap();
         let tw = registry.find("Tumbleweed").unwrap();
         assert_eq!(tw.id, "Tumbleweed");
@@ -347,12 +347,12 @@ mod test {
     fn test_default_product() {
         let path =
             PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../test/share/products.d-single");
-        let mut registry = ProductsRegistry::new(path.as_path());
+        let mut registry = Registry::new(path.as_path());
         registry.read().unwrap();
         assert!(registry.default_product().is_some());
 
         let path = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../test/share/products.d");
-        let mut registry = ProductsRegistry::new(path.as_path());
+        let mut registry = Registry::new(path.as_path());
         registry.read().unwrap();
         assert!(registry.default_product().is_none());
     }

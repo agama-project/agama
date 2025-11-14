@@ -33,7 +33,7 @@ use agama_utils::{
         Issue, IssueSeverity, Scope,
     },
     issue,
-    products_registry::ProductSpec,
+    products::ProductSpec,
     progress,
 };
 use async_trait::async_trait;

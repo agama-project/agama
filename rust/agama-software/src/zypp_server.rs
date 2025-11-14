@@ -24,7 +24,7 @@ use agama_utils::{
         software::{Pattern, SelectedBy, SoftwareProposal},
         Issue, IssueSeverity, Scope,
     },
-    products_registry::ProductSpec,
+    products::ProductSpec,
     progress,
 };
 use std::path::Path;

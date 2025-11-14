@@ -21,7 +21,7 @@
 use agama_utils::{
     actor::Message,
     api::{storage::Config, Issue},
-    products_registry::ProductSpec,
+    products::ProductSpec,
 };
 use serde_json::Value;
 use std::sync::Arc;
