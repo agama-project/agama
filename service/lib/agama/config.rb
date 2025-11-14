@@ -20,7 +20,6 @@
 # find current contact information at www.suse.com.
 
 require "agama/copyable"
-require "yast2/equatable"
 
 module Agama
   # Class representing the current product configuration.
@@ -31,13 +30,31 @@ module Agama
     # @return [Hash] configuration data
     attr_reader :data
 
-    eql_attr :data
-
     # Constructor
     #
     # @param config_data [Hash] configuration data
     def initialize(config_data = {})
       @data = config_data
+    end
+
+    # Updates the internal values if needed
+    #
+    # This update mechanism exists because the current implementation of Agama relies on the
+    # previous behavior of this class, in which a single shared Config object was constructed only
+    # once (when the configuration files were read) and the values returned by that object were
+    # later adjusted by subsequent calls to #pick_product on that shared object.
+    #
+    # To keep a similar behavior, this method provides a way to update the configuration values
+    # without creating a new Config object.
+    #
+    # @param new_config_data [Hash] new values for the configuration data
+    # @return [boolean] true if the internal values were really modified, false if there was no need
+    #   to do so because the values are the same
+    def update(new_config_data)
+      return false if new_config_data == @data
+
+      @data = new_config_data
+      true
     end
 
     # Default paths to be created for the product.

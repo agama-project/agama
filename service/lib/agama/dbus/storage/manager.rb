@@ -184,14 +184,9 @@ module Agama
         # @param serialized_product [String] Serialized product config.
         # @param serialized_config [String] Serialized storage config.
         def configure(serialized_product, serialized_config)
-          system_changed = false
-
-          new_product_config = Config.new(JSON.parse(serialized_product))
-          if new_product_config != backend.product_config
-            backend.product_config = new_product_config
-            # Potential change in system - productMountPoints, encryptionMethods, volumeTemplates
-            system_changed = true
-          end
+          new_product_data = JSON.parse(serialized_product)
+          # Potential change in system - productMountPoints, encryptionMethods, volumeTemplates
+          system_changed = product_config.update(new_product_data)
 
           start_progress(3, ACTIVATING_STEP)
           if !backend.activated?

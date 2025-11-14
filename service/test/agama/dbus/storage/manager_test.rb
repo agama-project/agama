@@ -483,10 +483,9 @@ describe Agama::DBus::Storage::Manager do
 
     RSpec.shared_examples "update product configuration" do |mount_paths|
       it "updates the backend product configuration" do
-        expect(backend).to receive(:product_config=) do |config|
-          expect(config.default_paths).to contain_exactly(*mount_paths)
-        end
+        expect(backend.product_config.default_paths).to_not contain_exactly(*mount_paths)
         subject.configure(serialized_product, serialized_config)
+        expect(backend.product_config.default_paths).to contain_exactly(*mount_paths)
       end
 
       it "emits signals for SystemChanged, ProgressChanged and ProgressFinished" do
@@ -503,8 +502,9 @@ describe Agama::DBus::Storage::Manager do
 
     RSpec.shared_examples "do not update product configuration" do
       it "does not update the backend product configuration" do
-        expect(backend).to_not receive(:product_config=)
+        data = backend.product_config.data.dup
         subject.configure(serialized_product, serialized_config)
+        expect(backend.product_config.data).to eq data
       end
 
       it "emits signals for ProgressChanged and ProgressFinished" do
