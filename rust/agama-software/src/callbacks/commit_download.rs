@@ -68,11 +68,32 @@ impl Callback for CommitDownload {
 
     fn gpg_check(
         &self,
-        _resolvable_name: &str,
+        resolvable_name: &str,
         _repo_url: &str,
-        _check_result: zypp_agama::callbacks::pkg_download::GPGCheckResult,
+        check_result: zypp_agama::callbacks::pkg_download::GPGCheckResult,
     ) -> Option<zypp_agama::callbacks::ProblemResponse> {
-        // TODO: check if repo_url is DUD repo and kernel specify insecure dud option.
+        if check_result == zypp_agama::callbacks::pkg_download::GPGCheckResult::Ok {
+            // GPG is happy, so we are also happy and lets just continue
+            return None;
+        }
+
+        // do not log URL here as it can contain sensitive info and it is visible from other logs
+        tracing::warn!(
+            "GPG check failed for {:?} with {:?}",
+            resolvable_name,
+            check_result
+        );
+
+        // TODO: implement the DUD case:
+        // DUD (Driver Update Disk)
+        // ignore the error when the package comes from the DUD repository and
+        // the DUD package GPG checks are disabled via a boot option
+        //
+        // if repo_url == Agama::Software::Manager.dud_repository_url && ignore_dud_packages_gpg_errors? {
+        //   logger.info "Ignoring the GPG check failure for a DUD package"
+        //   return Ok(ProblemResponse::IGNORE);
+        // }
+
         None
     }
 }

@@ -38,6 +38,7 @@ impl ToString for DownloadError {
     }
 }
 
+#[derive(Debug, PartialEq, Eq)]
 pub enum GPGCheckResult {
     Ok,         // Signature is OK.
     NotFound,   // Signature is unknown type.
