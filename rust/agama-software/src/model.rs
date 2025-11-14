@@ -21,7 +21,7 @@
 use agama_utils::{
     actor::Handler,
     api::{
-        software::{Pattern, SoftwareProposal},
+        software::{Pattern, SoftwareProposal, SystemInfo},
         Issue,
     },
     products::{ProductSpec, UserPattern},
@@ -47,8 +47,8 @@ pub use packages::{Resolvable, ResolvableType};
 /// tests.
 #[async_trait]
 pub trait ModelAdapter: Send + Sync + 'static {
-    /// List of available patterns.
-    async fn patterns(&self) -> Result<Vec<Pattern>, service::Error>;
+    /// Returns the software system information.
+    async fn system_info(&self) -> Result<SystemInfo, service::Error>;
 
     async fn compute_proposal(&self) -> Result<SoftwareProposal, service::Error>;
 
@@ -89,6 +89,27 @@ impl Model {
             selected_product: None,
         })
     }
+
+    async fn patterns(&self) -> Result<Vec<Pattern>, service::Error> {
+        let Some(product) = &self.selected_product else {
+            return Err(service::Error::MissingProduct);
+        };
+
+        let names = product
+            .software
+            .user_patterns
+            .iter()
+            .map(|user_pattern| match user_pattern {
+                UserPattern::Plain(name) => name.clone(),
+                UserPattern::Preselected(preselected) => preselected.name.clone(),
+            })
+            .collect();
+
+        let (tx, rx) = oneshot::channel();
+        self.zypp_sender
+            .send(SoftwareAction::GetPatternsMetadata(names, tx))?;
+        Ok(rx.await??)
+    }
 }
 
 #[async_trait]
@@ -111,25 +132,13 @@ impl ModelAdapter for Model {
         Ok(rx.await??)
     }
 
-    async fn patterns(&self) -> Result<Vec<Pattern>, service::Error> {
-        let Some(product) = &self.selected_product else {
-            return Err(service::Error::MissingProduct);
-        };
-
-        let names = product
-            .software
-            .user_patterns
-            .iter()
-            .map(|user_pattern| match user_pattern {
-                UserPattern::Plain(name) => name.clone(),
-                UserPattern::Preselected(preselected) => preselected.name.clone(),
-            })
-            .collect();
-
-        let (tx, rx) = oneshot::channel();
-        self.zypp_sender
-            .send(SoftwareAction::GetPatternsMetadata(names, tx))?;
-        Ok(rx.await??)
+    /// Returns the software system information.
+    async fn system_info(&self) -> Result<SystemInfo, service::Error> {
+        Ok(SystemInfo {
+            patterns: self.patterns().await?,
+            repositories: vec![],
+            addons: vec![],
+        })
     }
 
     async fn refresh(&mut self) -> Result<(), service::Error> {

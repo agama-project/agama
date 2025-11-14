@@ -108,7 +108,7 @@ impl ProductsRegistry {
                 description: p.description.clone(),
                 icon: p.icon.clone(),
                 registration: p.registration,
-                license: None,
+                license: p.license.clone(),
             })
             .collect()
     }
@@ -133,6 +133,7 @@ pub struct ProductSpec {
     #[serde(default)]
     pub registration: bool,
     pub version: Option<String>,
+    pub license: Option<String>,
     pub software: SoftwareSpec,
 }
 

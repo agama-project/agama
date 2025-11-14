@@ -37,17 +37,18 @@ import {
   Stack,
   StackItem,
 } from "@patternfly/react-core";
-import { Navigate, useNavigate } from "react-router";
+import { useNavigate } from "react-router";
 import { Page } from "~/components/core";
-import { useConfigMutation, useProduct, useRegistration } from "~/queries/software";
 import pfTextStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import pfRadioStyles from "@patternfly/react-styles/css/components/Radio/radio";
-import { PATHS } from "~/router";
+// import { PATHS } from "~/router";
 import { Product } from "~/types/software";
 import { isEmpty } from "radashi";
 import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
 import LicenseDialog from "./LicenseDialog";
+import { useSelectedProduct, useSystem } from "~/hooks/api";
+import { patchConfig } from "~/api";
 
 const ResponsiveGridItem = ({ children }) => (
   <GridItem sm={10} smOffset={1} lg={8} lgOffset={2} xl={6} xlOffset={3}>
@@ -102,9 +103,9 @@ const BackLink = () => {
 };
 
 function ProductSelectionPage() {
-  const setConfig = useConfigMutation();
-  const registration = useRegistration();
-  const { products, selectedProduct } = useProduct({ suspense: true });
+  // const registration = useRegistration();
+  const { products } = useSystem({ suspense: true });
+  const selectedProduct = useSelectedProduct();
   const [nextProduct, setNextProduct] = useState(selectedProduct);
   // FIXME: should not be accepted by default first selectedProduct is accepted
   // because it's a singleProduct iso.
@@ -112,13 +113,13 @@ function ProductSelectionPage() {
   const [showLicense, setShowLicense] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  if (registration?.registered && selectedProduct) return <Navigate to={PATHS.root} />;
+  // if (registration?.registered && selectedProduct) return <Navigate to={PATHS.root} />;
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (nextProduct) {
-      setConfig.mutate({ product: nextProduct.id });
+      patchConfig({ product: { id: nextProduct.id } });
       setIsLoading(true);
     }
   };

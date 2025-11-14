@@ -22,7 +22,7 @@ use serde::Serialize;
 
 /// Localization-related information of the system where the installer
 /// is running.
-#[derive(Clone, Debug, Default, Serialize)]
+#[derive(Clone, Debug, Default, Serialize, utoipa::ToSchema)]
 pub struct SystemInfo {
     /// List of known patterns.
     pub patterns: Vec<Pattern>,

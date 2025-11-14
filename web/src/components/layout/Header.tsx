@@ -41,11 +41,11 @@ import {
 } from "@patternfly/react-core";
 import { useMatches } from "react-router";
 import { Icon } from "~/components/layout";
-import { useProduct } from "~/queries/software";
 import { Route } from "~/types/routes";
 import { ChangeProductOption, InstallButton, InstallerOptions, SkipTo } from "~/components/core";
 import { ROOT } from "~/routes/paths";
 import { _ } from "~/i18n";
+import { useSelectedProduct } from "~/hooks/api";
 
 export type HeaderProps = {
   /** Whether the application sidebar should be mounted or not */
@@ -111,11 +111,11 @@ export default function Header({
   isSidebarOpen,
   toggleSidebar,
 }: HeaderProps): React.ReactNode {
-  const { selectedProduct } = useProduct();
+  const product = useSelectedProduct();
   const routeMatches = useMatches() as Route[];
   const currentRoute = routeMatches.at(-1);
   // TODO: translate title
-  const title = (showProductName && selectedProduct?.name) || currentRoute?.handle?.title;
+  const title = (showProductName && product?.name) || currentRoute?.handle?.title;
 
   return (
     <Masthead>

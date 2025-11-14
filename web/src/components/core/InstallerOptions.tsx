@@ -48,15 +48,12 @@ import {
 import { Popup } from "~/components/core";
 import { Icon } from "~/components/layout";
 import { Keymap, Locale } from "~/api/l10n/system";
-import { InstallationPhase } from "~/types/status";
 import { useInstallerL10n } from "~/context/installerL10n";
-import { useInstallerStatus } from "~/queries/status";
 import { localConnection } from "~/utils";
 import { _ } from "~/i18n";
 import supportedLanguages from "~/languages.json";
 import { PRODUCT, ROOT, L10N } from "~/routes/paths";
-import { useProduct } from "~/queries/software";
-import { useSystem } from "~/hooks/api";
+import { useSelectedProduct, useStatus, useSystem } from "~/hooks/api";
 import { patchConfig } from "~/api";
 
 /**
@@ -556,8 +553,8 @@ export default function InstallerOptions({
     l10n: { locales },
   } = useSystem({ suspense: true });
   const { language, keymap, changeLanguage, changeKeymap } = useInstallerL10n();
-  const { phase } = useInstallerStatus({ suspense: true });
-  const { selectedProduct } = useProduct({ suspense: true });
+  const { state } = useStatus({ suspense: true });
+  const selectedProduct = useSelectedProduct();
   const initialFormState = {
     language,
     keymap,
@@ -573,7 +570,7 @@ export default function InstallerOptions({
   // Skip rendering if any of the following conditions are met
   const skip =
     (variant === "keyboard" && !localConnection()) ||
-    phase === InstallationPhase.Install ||
+    state === "installing" ||
     // FIXME: below condition could be a problem for a question appearing while
     // product progress
     [ROOT.login, ROOT.installationProgress, ROOT.installationFinished, PRODUCT.progress].includes(

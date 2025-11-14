@@ -23,15 +23,13 @@
 import React from "react";
 import { Content, List, ListItem } from "@patternfly/react-core";
 import { SelectedBy } from "~/types/software";
-import { usePatterns, useSoftwareProposal, useSoftwareProposalChanges } from "~/queries/software";
 import { isEmpty } from "radashi";
 import { _ } from "~/i18n";
+import { useProposal, useSystem } from "~/hooks/api";
 
 export default function SoftwareSection(): React.ReactNode {
-  const proposal = useSoftwareProposal();
-  const patterns = usePatterns();
-
-  useSoftwareProposalChanges();
+  const { software: proposal } = useProposal({ suspense: true });
+  const { patterns = [] } = useSystem();
 
   if (isEmpty(proposal.patterns)) return;
 

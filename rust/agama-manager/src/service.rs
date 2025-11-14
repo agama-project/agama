@@ -24,8 +24,10 @@ use crate::{l10n, message, network, software, storage};
 use agama_utils::{
     actor::{self, Actor, Handler, MessageHandler},
     api::{
-        self, event, manager, status::State, Action, Config, Event, Issue, IssueMap, IssueSeverity,
-        Proposal, Scope, Status, SystemInfo,
+        self, event,
+        manager::{self, LicenseContent},
+        status::State,
+        Action, Config, Event, Issue, IssueMap, IssueSeverity, Proposal, Scope, Status, SystemInfo,
     },
     issue,
     license::{Error as LicenseError, LicensesRegistry},
@@ -237,11 +239,13 @@ impl MessageHandler<message::GetSystem> for Service {
         let manager = self.system.clone();
         let storage = self.storage.call(storage::message::GetSystem).await?;
         let network = self.network.get_system().await?;
+        let software = self.software.call(software::message::GetSystem).await?;
         Ok(SystemInfo {
             l10n,
             manager,
             network,
             storage,
+            software,
         })
     }
 }
@@ -405,6 +409,16 @@ impl MessageHandler<message::GetIssues> for Service {
     /// It returns the current proposal, if any.
     async fn handle(&mut self, _message: message::GetIssues) -> Result<IssueMap, Error> {
         Ok(self.issues.call(issue::message::Get).await?)
+    }
+}
+
+#[async_trait]
+impl MessageHandler<message::GetLicense> for Service {
+    async fn handle(
+        &mut self,
+        message: message::GetLicense,
+    ) -> Result<Option<LicenseContent>, Error> {
+        Ok(self.licenses.find(&message.id, &message.lang))
     }
 }
 

@@ -62,7 +62,7 @@ const fetchLicenses = (): Promise<License[]> => get("/api/software/licenses");
  * Returns the content for given license id
  */
 const fetchLicense = (id: string, lang: string = "en"): Promise<LicenseContent> =>
-  get(`/api/software/licenses/${id}?lang=${lang}`);
+  get(`/api/v2/licenses/${id}?lang=${lang}`);
 
 /**
  * Returns an object with the registration info

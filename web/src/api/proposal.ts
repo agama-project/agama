@@ -22,10 +22,12 @@
 
 import * as l10n from "~/api/l10n/proposal";
 import * as storage from "~/api/storage/proposal";
+import * as software from "~/api/software/proposal";
 
 type Proposal = {
   l10n?: l10n.Proposal;
   storage?: storage.Proposal;
+  software?: software.Proposal;
 };
 
 export { l10n, storage };

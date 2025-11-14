@@ -24,7 +24,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import { locationReload, setLocationSearch } from "~/utils";
 import agama from "~/agama";
 import supportedLanguages from "~/languages.json";
-import { useSystem } from "~/hooks/l10n";
+import { useSystem } from "~/hooks/api";
 import { configureL10nAction } from "~/api";
 
 const L10nContext = React.createContext(null);
@@ -228,15 +228,15 @@ function InstallerL10nProvider({
   initialLanguage?: string;
   children?: React.ReactNode;
 }) {
-  const system = useSystem();
+  const { l10n } = useSystem({ suspense: true });
   const [language, setLanguage] = useState(initialLanguage);
   const [keymap, setKeymap] = useState(undefined);
 
-  const locale = system?.locale;
+  const locale = l10n?.locale;
   const backendLanguage = locale ? languageFromLocale(locale) : null;
 
   const syncBackendLanguage = useCallback(async () => {
-    if (!backendLanguage || backendLanguage === language) return;
+    if (backendLanguage === language) return;
 
     // FIXME: fallback to en-US if the language is not supported.
     await configureL10nAction({ locale: languageToLocale(language) });
@@ -293,8 +293,8 @@ function InstallerL10nProvider({
   }, [language, syncBackendLanguage]);
 
   useEffect(() => {
-    setKeymap(system?.keymap);
-  }, [setKeymap, system]);
+    setKeymap(l10n?.keymap);
+  }, [setKeymap, l10n]);
 
   const value = { language, changeLanguage, keymap, changeKeymap };
 

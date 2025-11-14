@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2024] SUSE LLC
+ * Copyright (c) [2022-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -22,14 +22,19 @@
 
 import React, { useEffect } from "react";
 import { Navigate, Outlet, useLocation } from "react-router";
-import { Loading } from "~/components/layout";
-import { useProduct, useProductChanges } from "~/queries/software";
-import { useSystemChanges, useProposalChanges, useIssuesChanges } from "~/hooks/api";
-import { useInstallerStatus, useInstallerStatusChanges } from "~/queries/status";
+import { useProductChanges } from "~/queries/software";
+import {
+  useSystemChanges,
+  useProposalChanges,
+  useIssuesChanges,
+  useStatus,
+  useExtendedConfig,
+} from "~/hooks/api";
+import { useInstallerStatusChanges } from "~/queries/status";
 import { ROOT, PRODUCT } from "~/routes/paths";
-import { InstallationPhase } from "~/types/status";
 import { useQueryClient } from "@tanstack/react-query";
 import AlertOutOfSync from "~/components/core/AlertOutOfSync";
+import { isEmpty } from "radashi";
 
 /**
  * Main application component.
@@ -42,12 +47,12 @@ function App() {
   useInstallerStatusChanges();
 
   const location = useLocation();
-  const { isBusy, phase } = useInstallerStatus({ suspense: true });
-  const { selectedProduct, products } = useProduct({
-    suspense: phase !== InstallationPhase.Install,
-  });
+  const { product } = useExtendedConfig({ suspense: true });
+  const { progresses, state } = useStatus({ suspense: true });
   const queryClient = useQueryClient();
+  const isBusy = !isEmpty(progresses);
 
+  // FIXME: check if still needed
   useEffect(() => {
     // Invalidate the queries when unmounting this component.
     return () => {
@@ -56,41 +61,26 @@ function App() {
   }, [queryClient]);
 
   console.log("App component", {
-    phase,
-    isBusy,
-    products,
-    selectedProduct,
+    progresses,
+    state,
+    product,
     location: location.pathname,
   });
 
   const Content = () => {
-    if (phase === InstallationPhase.Install) {
+    if (state === "installing") {
       console.log("Navigating to the installation progress page");
       return <Navigate to={ROOT.installationProgress} />;
     }
 
-    if (phase === InstallationPhase.Finish) {
+    if (state === "finished") {
       console.log("Navigating to the finished page");
       return <Navigate to={ROOT.installationFinished} />;
     }
 
-    if (!products) {
-      return <Loading listenQuestions />;
-    }
-
-    if (phase === InstallationPhase.Startup && isBusy) {
-      console.log("Loading screen: Installer start phase");
-      return <Loading listenQuestions />;
-    }
-
-    if (selectedProduct === undefined && !isBusy && location.pathname !== PRODUCT.root) {
+    if (product?.id === undefined && !isBusy && location.pathname !== PRODUCT.root) {
       console.log("Navigating to the product selection page");
       return <Navigate to={PRODUCT.root} />;
-    }
-
-    if (phase === InstallationPhase.Config && isBusy && location.pathname !== PRODUCT.progress) {
-      console.log("Navigating to the probing progress page");
-      return <Navigate to={PRODUCT.progress} />;
     }
 
     return <Outlet />;
