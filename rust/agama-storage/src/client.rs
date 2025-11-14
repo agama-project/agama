@@ -20,8 +20,13 @@
 
 //! Implements a client to access Agama's storage service.
 
-use agama_utils::api::{storage::Config, Issue};
+use agama_utils::{
+    api::{storage::Config, Issue},
+    products::ProductSpec,
+};
 use serde_json::Value;
+use std::sync::Arc;
+use tokio::sync::RwLock;
 use zbus::{names::BusName, zvariant::OwnedObjectPath, Connection, Message};
 
 const SERVICE_NAME: &str = "org.opensuse.Agama.Storage1";
@@ -102,10 +107,16 @@ impl Client {
         Ok(())
     }
 
-    pub async fn set_config(&self, config: Option<Config>) -> Result<(), Error> {
+    pub async fn set_config(
+        &self,
+        product: Arc<RwLock<ProductSpec>>,
+        config: Option<Config>,
+    ) -> Result<(), Error> {
+        let product_guard = product.read().await;
+        let product_json = serde_json::to_string(&*product_guard)?;
         let config = config.filter(|c| c.has_value());
-        let json = serde_json::to_string(&config)?;
-        self.call("SetConfig", &(json)).await?;
+        let config_json = serde_json::to_string(&config)?;
+        self.call("SetConfig", &(product_json, config_json)).await?;
         Ok(())
     }
 

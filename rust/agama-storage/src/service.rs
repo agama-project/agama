@@ -54,7 +54,7 @@ impl Service {
         }
     }
 
-    pub async fn start(self) -> Result<Self, Error> {
+    pub async fn setup(self) -> Result<Self, Error> {
         let issues = self.client.get_issues().await?;
         self.issues
             .call(issue::message::Set::new(Scope::Storage, issues))
@@ -145,7 +145,9 @@ impl MessageHandler<message::SetProduct> for Service {
 #[async_trait]
 impl MessageHandler<message::SetConfig> for Service {
     async fn handle(&mut self, message: message::SetConfig) -> Result<(), Error> {
-        self.client.set_config(message.config).await?;
+        self.client
+            .set_config(message.product, message.config)
+            .await?;
         Ok(())
     }
 }
