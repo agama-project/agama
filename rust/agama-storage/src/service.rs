@@ -179,13 +179,6 @@ impl MessageHandler<message::GetProposal> for Service {
 }
 
 #[async_trait]
-impl MessageHandler<message::GetIssues> for Service {
-    async fn handle(&mut self, _message: message::GetIssues) -> Result<Vec<Issue>, Error> {
-        self.client.get_issues().await.map_err(|e| e.into())
-    }
-}
-
-#[async_trait]
 impl MessageHandler<message::SetProduct> for Service {
     async fn handle(&mut self, message: message::SetProduct) -> Result<(), Error> {
         self.client.set_product(message.id).await?;

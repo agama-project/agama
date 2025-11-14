@@ -84,13 +84,6 @@ impl Message for GetProposal {
 }
 
 #[derive(Clone)]
-pub struct GetIssues;
-
-impl Message for GetIssues {
-    type Reply = Vec<Issue>;
-}
-
-#[derive(Clone)]
 pub struct SetProduct {
     pub id: String,
 }
