@@ -50,7 +50,7 @@ pub struct ZFCPClient<'a> {
     introspectable_proxy: IntrospectableProxy<'a>,
 }
 
-impl ZFCPClient<'_> {
+impl<'a> ZFCPClient<'a> {
     pub async fn new(connection: Connection) -> Result<Self, ServiceError> {
         let manager_proxy = ManagerProxy::new(&connection).await?;
         let object_manager_proxy = ObjectManagerProxy::builder(&connection)
@@ -130,9 +130,9 @@ impl ZFCPClient<'_> {
     }
 
     async fn get_controller_proxy(
-        &self,
+        &'a self,
         controller_id: &str,
-    ) -> Result<ControllerProxy, ServiceError> {
+    ) -> Result<ControllerProxy<'a>, ServiceError> {
         let dbus = ControllerProxy::builder(&self.connection)
             .path(ZFCP_CONTROLLER_PREFIX.to_string() + "/" + controller_id)?
             .build()

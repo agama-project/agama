@@ -1,9 +1,12 @@
 #include "zypp/target/rpm/RpmDb.h"
-#include <boost/bind.hpp>
+#include <boost/bind/bind.hpp>
 #include <zypp/Callback.h>
 #include <zypp/ZYppCallbacks.h>
 
 #include "callbacks.h"
+
+// _1
+using namespace boost::placeholders;
 
 struct ProgressReceive : zypp::callback::ReceiveReport<zypp::ProgressReport> {
   ZyppProgressCallback callback;
