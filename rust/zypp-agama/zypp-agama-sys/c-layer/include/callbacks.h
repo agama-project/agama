@@ -25,6 +25,8 @@ typedef bool (*ZyppProgressCallback)(struct ProgressData zypp_data,
                                      void *user_data);
 void set_zypp_progress_callback(ZyppProgressCallback progress, void *user_data);
 
+// keep in sync with below enum to ensure all entries here is also at the below
+// one to allow 1:1 matching.
 enum PROBLEM_RESPONSE { PROBLEM_RETRY, PROBLEM_ABORT, PROBLEM_IGNORE };
 // NOTE: ensure that order are identical as PROBLEM_RESPONSE and NONE is at the
 // end
@@ -34,6 +36,14 @@ enum OPTIONAL_PROBLEM_RESPONSE {
   OPROBLEM_IGNORE,
   OPROBLEM_NONE
 };
+
+enum DownloadProgressError {
+  DPE_NO_ERROR,
+  DPE_NOT_FOUND,     // the requested Url was not found
+  DPE_IO,            // IO error
+  DPE_ACCESS_DENIED, // user authent. failed while accessing restricted file
+  DPE_ERROR          // other error
+};
 typedef void (*ZyppDownloadStartCallback)(const char *url,
                                           const char *localfile,
                                           void *user_data);
@@ -41,8 +51,10 @@ typedef bool (*ZyppDownloadProgressCallback)(int value, const char *url,
                                              double bps_avg, double bps_current,
                                              void *user_data);
 typedef enum PROBLEM_RESPONSE (*ZyppDownloadProblemCallback)(
-    const char *url, int error, const char *description, void *user_data);
-typedef void (*ZyppDownloadFinishCallback)(const char *url, int error,
+    const char *url, enum DownloadProgressError error, const char *description,
+    void *user_data);
+typedef void (*ZyppDownloadFinishCallback)(const char *url,
+                                           enum DownloadProgressError error,
                                            const char *reason, void *user_data);
 
 // progress for downloading files. There are 4 callbacks:

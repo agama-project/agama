@@ -1,4 +1,7 @@
-use std::os::raw::{c_char, c_void};
+use std::{
+    fmt::Display,
+    os::raw::{c_char, c_void},
+};
 
 use crate::{
     callbacks::ProblemResponse,
@@ -27,14 +30,15 @@ impl From<zypp_agama_sys::DownloadResolvableError> for DownloadError {
     }
 }
 
-impl ToString for DownloadError {
-    fn to_string(&self) -> String {
-        match self {
-            DownloadError::NoError => "NoError".to_string(),
-            DownloadError::NotFound => "NotFound".to_string(),
-            DownloadError::IO => "IO".to_string(),
-            DownloadError::Invalid => "Invalid".to_string(),
-        }
+impl Display for DownloadError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let str = match self {
+            DownloadError::NoError => "NoError",
+            DownloadError::NotFound => "NotFound",
+            DownloadError::IO => "IO",
+            DownloadError::Invalid => "Invalid",
+        };
+        write!(f, "{}", str)
     }
 }
 

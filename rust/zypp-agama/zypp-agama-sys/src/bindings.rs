@@ -29,6 +29,12 @@ pub const OPTIONAL_PROBLEM_RESPONSE_OPROBLEM_ABORT: OPTIONAL_PROBLEM_RESPONSE = 
 pub const OPTIONAL_PROBLEM_RESPONSE_OPROBLEM_IGNORE: OPTIONAL_PROBLEM_RESPONSE = 2;
 pub const OPTIONAL_PROBLEM_RESPONSE_OPROBLEM_NONE: OPTIONAL_PROBLEM_RESPONSE = 3;
 pub type OPTIONAL_PROBLEM_RESPONSE = ::std::os::raw::c_uint;
+pub const DownloadProgressError_DPE_NO_ERROR: DownloadProgressError = 0;
+pub const DownloadProgressError_DPE_NOT_FOUND: DownloadProgressError = 1;
+pub const DownloadProgressError_DPE_IO: DownloadProgressError = 2;
+pub const DownloadProgressError_DPE_ACCESS_DENIED: DownloadProgressError = 3;
+pub const DownloadProgressError_DPE_ERROR: DownloadProgressError = 4;
+pub type DownloadProgressError = ::std::os::raw::c_uint;
 pub type ZyppDownloadStartCallback = ::std::option::Option<
     unsafe extern "C" fn(
         url: *const ::std::os::raw::c_char,
@@ -48,7 +54,7 @@ pub type ZyppDownloadProgressCallback = ::std::option::Option<
 pub type ZyppDownloadProblemCallback = ::std::option::Option<
     unsafe extern "C" fn(
         url: *const ::std::os::raw::c_char,
-        error: ::std::os::raw::c_int,
+        error: DownloadProgressError,
         description: *const ::std::os::raw::c_char,
         user_data: *mut ::std::os::raw::c_void,
     ) -> PROBLEM_RESPONSE,
@@ -56,7 +62,7 @@ pub type ZyppDownloadProblemCallback = ::std::option::Option<
 pub type ZyppDownloadFinishCallback = ::std::option::Option<
     unsafe extern "C" fn(
         url: *const ::std::os::raw::c_char,
-        error: ::std::os::raw::c_int,
+        error: DownloadProgressError,
         reason: *const ::std::os::raw::c_char,
         user_data: *mut ::std::os::raw::c_void,
     ),
