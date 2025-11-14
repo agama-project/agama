@@ -121,15 +121,10 @@ impl Service {
         self.read_registries().await?;
 
         if let Some(product) = self.products.default_product() {
-            let product = Arc::new(RwLock::new(product.clone()));
-            _ = self.software.cast(software::message::SetConfig::new(
-                Arc::clone(&product),
-                None,
-            ));
-            self.product = Some(product);
+            let config = Config::with_product(product.id.clone());
+            self.set_config(config).await?;
         }
 
-        self.update_issues()?;
         Ok(())
     }
 
@@ -138,6 +133,89 @@ impl Service {
         self.products.read()?;
         self.system.licenses = self.licenses.licenses().into_iter().cloned().collect();
         self.system.products = self.products.products();
+        Ok(())
+    }
+
+    async fn set_config(&mut self, config: Config) -> Result<(), Error> {
+        self.set_product(&config)?;
+
+        let Some(product) = &self.product else {
+            return Err(Error::Product);
+        };
+
+        self.questions
+            .call(question::message::SetConfig::new(config.questions.clone()))
+            .await?;
+
+        self.software
+            .call(software::message::SetConfig::new(
+                Arc::clone(product),
+                config.software.clone(),
+            ))
+            .await?;
+
+        self.l10n
+            .call(l10n::message::SetConfig::new(config.l10n.clone()))
+            .await?;
+
+        self.storage
+            .call(storage::message::SetConfig::new(
+                Arc::clone(product),
+                config.storage.clone(),
+            ))
+            .await?;
+
+        if let Some(network) = config.network.clone() {
+            self.network.update_config(network).await?;
+            self.network.apply().await?;
+        }
+
+        self.config = config;
+        Ok(())
+    }
+
+    async fn update_config(&mut self, config: Config) -> Result<(), Error> {
+        self.set_product(&config)?;
+
+        let Some(product) = &self.product else {
+            return Err(Error::Product);
+        };
+
+        if let Some(l10n) = &config.l10n {
+            self.l10n
+                .call(l10n::message::SetConfig::with(l10n.clone()))
+                .await?;
+        }
+
+        if let Some(questions) = &config.questions {
+            self.questions
+                .call(question::message::SetConfig::with(questions.clone()))
+                .await?;
+        }
+
+        if let Some(storage) = &config.storage {
+            self.storage
+                .call(storage::message::SetConfig::with(
+                    Arc::clone(product),
+                    storage.clone(),
+                ))
+                .await?;
+        }
+
+        if let Some(software) = &config.software {
+            self.software
+                .call(software::message::SetConfig::with(
+                    Arc::clone(product),
+                    software.clone(),
+                ))
+                .await?;
+        }
+
+        if let Some(network) = &config.network {
+            self.network.update_config(network.clone()).await?;
+        }
+
+        self.config = config;
         Ok(())
     }
 
@@ -293,42 +371,7 @@ impl MessageHandler<message::GetConfig> for Service {
 impl MessageHandler<message::SetConfig> for Service {
     /// Sets the user configuration with the given values.
     async fn handle(&mut self, message: message::SetConfig) -> Result<(), Error> {
-        let config = message.config;
-        self.set_product(&config)?;
-
-        let Some(product) = &self.product else {
-            return Err(Error::Product);
-        };
-
-        self.questions
-            .call(question::message::SetConfig::new(config.questions.clone()))
-            .await?;
-
-        self.software
-            .call(software::message::SetConfig::new(
-                Arc::clone(product),
-                config.software.clone(),
-            ))
-            .await?;
-
-        self.l10n
-            .call(l10n::message::SetConfig::new(config.l10n.clone()))
-            .await?;
-
-        self.storage
-            .call(storage::message::SetConfig::new(
-                Arc::clone(product),
-                config.storage.clone(),
-            ))
-            .await?;
-
-        if let Some(network) = config.network.clone() {
-            self.network.update_config(network).await?;
-            self.network.apply().await?;
-        }
-
-        self.config = config;
-        Ok(())
+        self.set_config(message.config).await
     }
 }
 
@@ -353,48 +396,7 @@ impl MessageHandler<message::UpdateConfig> for Service {
     async fn handle(&mut self, message: message::UpdateConfig) -> Result<(), Error> {
         let config = merge(&self.config, &message.config).map_err(|_| Error::MergeConfig)?;
         let config = merge_network(config, message.config);
-        self.set_product(&config)?;
-
-        let Some(product) = &self.product else {
-            return Err(Error::Product);
-        };
-
-        if let Some(l10n) = &config.l10n {
-            self.l10n
-                .call(l10n::message::SetConfig::with(l10n.clone()))
-                .await?;
-        }
-
-        if let Some(questions) = &config.questions {
-            self.questions
-                .call(question::message::SetConfig::with(questions.clone()))
-                .await?;
-        }
-
-        if let Some(storage) = &config.storage {
-            self.storage
-                .call(storage::message::SetConfig::with(
-                    Arc::clone(product),
-                    storage.clone(),
-                ))
-                .await?;
-        }
-
-        if let Some(software) = &config.software {
-            self.software
-                .call(software::message::SetConfig::with(
-                    Arc::clone(product),
-                    software.clone(),
-                ))
-                .await?;
-        }
-
-        if let Some(network) = &config.network {
-            self.network.update_config(network.clone()).await?;
-        }
-
-        self.config = config;
-        Ok(())
+        self.update_config(config).await
     }
 }
 

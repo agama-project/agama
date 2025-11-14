@@ -18,7 +18,11 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::api::{l10n, network, question, software, storage};
+use crate::api::{
+    l10n, network, question,
+    software::{self, ProductConfig},
+    storage,
+};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, Default, Deserialize, Serialize, utoipa::ToSchema)]
@@ -36,4 +40,19 @@ pub struct Config {
     #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(flatten)]
     pub storage: Option<storage::Config>,
+}
+
+impl Config {
+    pub fn with_product(product_id: String) -> Self {
+        Self {
+            software: Some(software::Config {
+                product: Some(ProductConfig {
+                    id: Some(product_id),
+                    ..Default::default()
+                }),
+                ..Default::default()
+            }),
+            ..Default::default()
+        }
+    }
 }
