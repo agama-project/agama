@@ -551,7 +551,7 @@ describe Agama::DBus::Storage::Manager do
     end
 
     context "if no storage configuration is given" do
-      let(:serialized_config) { "" }
+      let(:serialized_config) { nil.to_json }
 
       before do
         allow(backend).to receive(:configure)

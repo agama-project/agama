@@ -210,12 +210,7 @@ module Agama
           emit_system_changed if system_changed
 
           next_progress_step(CONFIGURING_STEP)
-          config_json =
-            if serialized_config.empty?
-              nil
-            else
-              JSON.parse(serialized_config, symbolize_names: true)
-            end
+          config_json = JSON.parse(serialized_config, symbolize_names: true)
 
           # If config_json is nil, calculate_proposal re-calculates the proposal with the current
           # config. We could skip that re-calculation if system_changed is false, but that's a
