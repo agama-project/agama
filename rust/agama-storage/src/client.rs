@@ -21,9 +21,10 @@
 //! Implements a client to access Agama's storage service.
 
 use agama_utils::{
-    api::{storage::Config, Issue},
+    api::{storage::Config, Issue, IssueSeverity, IssueSource},
     products::ProductSpec,
 };
+use serde::Deserialize;
 use serde_json::Value;
 use std::sync::Arc;
 use tokio::sync::RwLock;
@@ -43,6 +44,28 @@ pub enum Error {
     DBusVariant(#[from] zbus::zvariant::Error),
     #[error(transparent)]
     Json(#[from] serde_json::Error),
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase")]
+struct RawIssue {
+    pub class: String,
+    pub description: String,
+    pub details: Option<String>,
+}
+
+impl From<RawIssue> for Issue {
+    fn from(raw_issue: RawIssue) -> Self {
+        Self {
+            class: raw_issue.class,
+            description: raw_issue.description,
+            details: raw_issue.details,
+            // TODO: remove
+            source: IssueSource::Config,
+            // TODO: remove
+            severity: IssueSeverity::Error,
+        }
+    }
 }
 
 /// D-Bus client for the storage service
@@ -97,6 +120,12 @@ impl Client {
     }
 
     pub async fn get_issues(&self) -> Result<Vec<Issue>, Error> {
+        self.get_raw_issues()
+            .await
+            .map(|v| v.into_iter().map(Issue::from).collect())
+    }
+
+    async fn get_raw_issues(&self) -> Result<Vec<RawIssue>, Error> {
         let message = self.call("GetIssues", &()).await?;
         try_from_message(message)
     }
