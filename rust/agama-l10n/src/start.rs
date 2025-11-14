@@ -149,8 +149,7 @@ mod tests {
     async fn start_testing_service() -> (event::Receiver, Handler<Service>, Handler<issue::Service>)
     {
         let (events_tx, events_rx) = broadcast::channel::<Event>(16);
-        let dbus = test::dbus::connection().await.unwrap();
-        let issues = issue::start(events_tx.clone(), dbus).await.unwrap();
+        let issues = issue::start(events_tx.clone()).await.unwrap();
 
         let model = build_adapter();
         let service = Service::new(model, issues.clone(), events_tx);
