@@ -29,15 +29,6 @@ Yast.import "Arch"
 describe Agama::Config do
   let(:config) { described_class.new("web" => { "ssl" => "SOMETHING" }) }
 
-  describe ".from_file" do
-    it "builds a new instance from a given file" do
-      config = described_class.from_file(
-        File.join(FIXTURES_PATH, "root_dir", "etc", "agama.yaml")
-      )
-      expect(config).to be_a(described_class)
-    end
-  end
-
   describe "#data" do
     it "returns memoized configuration data" do
       expect(config.data).to eql("web" => { "ssl" => "SOMETHING" })

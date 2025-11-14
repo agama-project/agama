@@ -37,6 +37,7 @@ require "agama/dbus"
 require "y2storage/issue"
 require "y2storage/luks"
 require "yast2/fs_snapshot"
+require "yaml"
 
 Yast.import "Installation"
 
@@ -49,7 +50,7 @@ describe Agama::Storage::Manager do
   let(:config_path) do
     File.join(FIXTURES_PATH, "root_dir", "etc", "agama.yaml")
   end
-  let(:config) { Agama::Config.from_file(config_path) }
+  let(:config) { Agama::Config.new(YAML.load_file(config_path)) }
   let(:tmp_dir) { Dir.mktmpdir }
   let(:http_client) { instance_double(Agama::HTTP::Clients::Main) }
 

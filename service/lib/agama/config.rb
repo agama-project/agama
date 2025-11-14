@@ -19,7 +19,6 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "yaml"
 require "agama/copyable"
 require "yast2/equatable"
 
@@ -39,13 +38,6 @@ module Agama
     # @param config_data [Hash] configuration data
     def initialize(config_data = {})
       @data = config_data
-    end
-
-    # Loads the configuration from a given file
-    #
-    # @param path [String|Pathname] File path
-    def self.from_file(path)
-      new(YAML.safe_load(File.read(path.to_s)))
     end
 
     # Default paths to be created for the product.

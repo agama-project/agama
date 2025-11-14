@@ -25,6 +25,7 @@ require_relative "../with_progress_examples"
 require "agama/helpers"
 require "agama/config"
 require "agama/storage/finisher"
+require "yaml"
 
 describe Agama::Storage::Finisher do
   include Agama::RSpec::StorageHelpers
@@ -37,7 +38,7 @@ describe Agama::Storage::Finisher do
   end
 
   let(:destdir) { File.join(FIXTURES_PATH, "target_dir") }
-  let(:config) { Agama::Config.from_file(config_path) }
+  let(:config) { Agama::Config.new(YAML.load_file(config_path)) }
   let(:copy_files) { Agama::Storage::Finisher::CopyFilesStep.new(logger) }
   let(:progress) { instance_double(Agama::OldProgress, step: nil) }
 
