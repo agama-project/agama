@@ -23,10 +23,10 @@
 import React from "react";
 import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
+import { useSystem } from "~/hooks/api";
 import { PRODUCT as PATHS } from "~/routes/paths";
 import { Product, RegistrationInfo } from "~/types/software";
 import ChangeProductOption from "./ChangeProductOption";
-import { useRegistration } from "~/queries/software";
 
 const tumbleweed: Product = {
   id: "Tumbleweed",
@@ -43,18 +43,20 @@ const microos: Product = {
   registration: false,
 };
 
-let mockUseProduct: { products: Product[]; selectedProduct?: Product };
 let registrationInfoMock: RegistrationInfo;
+const mockSystemProducts: jest.Mock<Product[]> = jest.fn();
 
-jest.mock("~/queries/software", () => ({
-  useProduct: () => mockUseProduct,
-  useRegistration: (): ReturnType<typeof useRegistration> => registrationInfoMock,
+jest.mock("~/hooks/api", () => ({
+  ...jest.requireActual("~/hooks/api"),
+  useSystem: (): ReturnType<typeof useSystem> => ({
+    products: mockSystemProducts(),
+  }),
 }));
 
 describe("ChangeProductOption", () => {
   describe("when there is more than one product available", () => {
     beforeEach(() => {
-      mockUseProduct = { products: [tumbleweed, microos] };
+      mockSystemProducts.mockReturnValue([tumbleweed, microos]);
     });
 
     it("renders a menu item for navigating to product selection page", () => {
@@ -63,7 +65,8 @@ describe("ChangeProductOption", () => {
       expect(link).toHaveAttribute("href", PATHS.changeProduct);
     });
 
-    describe("but a product is registered", () => {
+    // FIXME: activate it again when registration is ready in api v2
+    describe.skip("but a product is registered", () => {
       beforeEach(() => {
         registrationInfoMock = {
           registered: true,
@@ -82,7 +85,7 @@ describe("ChangeProductOption", () => {
 
   describe("when there is only one product available", () => {
     beforeEach(() => {
-      mockUseProduct = { products: [tumbleweed] };
+      mockSystemProducts.mockReturnValue([tumbleweed]);
     });
 
     it("renders nothing", () => {

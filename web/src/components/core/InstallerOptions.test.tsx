@@ -23,15 +23,13 @@
 import React from "react";
 import { screen, within } from "@testing-library/react";
 import { installerRender, mockRoutes } from "~/test-utils";
-import { InstallationPhase } from "~/types/status";
+import { useSelectedProduct, useStatus, useSystem } from "~/hooks/api";
+import { Product } from "~/types/software";
+import { Keymap, Locale } from "~/api/l10n/system";
+import { Progress, State } from "~/api/status";
 import * as utils from "~/utils";
 import { PRODUCT, ROOT } from "~/routes/paths";
 import InstallerOptions, { InstallerOptionsProps } from "./InstallerOptions";
-import { Product } from "~/types/software";
-import { Keymap, Locale } from "~/api/system";
-
-let phase: InstallationPhase;
-let isBusy: boolean;
 
 const locales: Locale[] = [
   { id: "en_US.UTF-8", name: "English", territory: "United States" },
@@ -51,28 +49,30 @@ const tumbleweed: Product = {
   registration: false,
 };
 
-let mockSelectedProduct: Product;
-
-const mockUpdateConfigFn = jest.fn();
-
 const mockChangeUIKeymap = jest.fn();
 const mockChangeUILanguage = jest.fn();
+const mockPatchConfigFn = jest.fn();
+const mockConfigureL10nActionFn = jest.fn();
+const mockStateFn: jest.Mock<State> = jest.fn();
+const mockProgressesFn: jest.Mock<Progress[]> = jest.fn();
+const mockSelectedProductFn: jest.Mock<Product> = jest.fn();
 
-jest.mock("~/queries/system", () => ({
-  ...jest.requireActual("~/queries/system"),
-  useSystem: () => ({ l10n: { locales, keymaps, locale: "us_US.UTF-8", keymap: "us" } }),
+jest.mock("~/api", () => ({
+  ...jest.requireActual("~/api"),
+  configureL10nAction: (payload) => mockConfigureL10nActionFn(payload),
+  patchConfig: (payload) => mockPatchConfigFn(payload),
 }));
 
-jest.mock("~/api/api", () => ({
-  ...jest.requireActual("~/api/api"),
-  updateConfig: (config) => mockUpdateConfigFn(config),
-}));
-
-jest.mock("~/queries/status", () => ({
-  useInstallerStatus: () => ({
-    phase,
-    isBusy,
+jest.mock("~/hooks/api", () => ({
+  ...jest.requireActual("~/hooks/api"),
+  useSystem: (): ReturnType<typeof useSystem> => ({
+    l10n: { locales, keymaps, locale: "us_US.UTF-8", keymap: "us" },
   }),
+  useStatus: (): ReturnType<typeof useStatus> => ({
+    state: mockStateFn(),
+    progresses: mockProgressesFn(),
+  }),
+  useSelectedProduct: (): ReturnType<typeof useSelectedProduct> => mockSelectedProductFn(),
 }));
 
 jest.mock("~/context/installerL10n", () => ({
@@ -85,16 +85,6 @@ jest.mock("~/context/installerL10n", () => ({
   }),
 }));
 
-jest.mock("~/queries/software", () => ({
-  ...jest.requireActual("~/queries/software"),
-  useProduct: () => {
-    return {
-      products: [tumbleweed],
-      selectedProduct: mockSelectedProduct,
-    };
-  },
-}));
-
 const renderAndOpen = async (props: InstallerOptionsProps = {}) => {
   const { user } = installerRender(<InstallerOptions {...props} />, { withL10n: true });
   const toggle = screen.getByRole("button");
@@ -105,9 +95,9 @@ const renderAndOpen = async (props: InstallerOptionsProps = {}) => {
 describe("InstallerOptions", () => {
   beforeEach(() => {
     jest.spyOn(utils, "localConnection").mockReturnValue(true);
-    mockSelectedProduct = tumbleweed;
-    phase = InstallationPhase.Config;
-    isBusy = false;
+    mockProgressesFn.mockReturnValue([]);
+    mockStateFn.mockReturnValue("configuring");
+    mockSelectedProductFn.mockReturnValue(tumbleweed);
   });
 
   it("allows custom toggle", async () => {
@@ -187,7 +177,7 @@ describe("InstallerOptions", () => {
       await user.selectOptions(keymapSelector, "English (UK)");
 
       await user.click(acceptButton);
-      expect(mockUpdateConfigFn).toHaveBeenCalledWith({
+      expect(mockPatchConfigFn).toHaveBeenCalledWith({
         l10n: {
           locale: "es_ES.UTF-8",
           keymap: "gb",
@@ -213,7 +203,7 @@ describe("InstallerOptions", () => {
       await user.selectOptions(languageSelector, "Español");
       await user.selectOptions(keymapSelector, "English (UK)");
       await user.click(acceptButton);
-      expect(mockUpdateConfigFn).not.toHaveBeenCalled();
+      expect(mockPatchConfigFn).not.toHaveBeenCalled();
     });
 
     it("includes a link to localization page", async () => {
@@ -223,7 +213,7 @@ describe("InstallerOptions", () => {
 
     describe("but a product is not selected yet", () => {
       beforeEach(() => {
-        mockSelectedProduct = undefined;
+        mockSelectedProductFn.mockReturnValue(undefined);
       });
 
       it("does not allow reusing setting", async () => {
@@ -308,7 +298,7 @@ describe("InstallerOptions", () => {
       await user.selectOptions(languageSelector, "Español");
 
       await user.click(acceptButton);
-      expect(mockUpdateConfigFn).toHaveBeenCalledWith({
+      expect(mockPatchConfigFn).toHaveBeenCalledWith({
         l10n: {
           locale: "es_ES.UTF-8",
         },
@@ -329,7 +319,7 @@ describe("InstallerOptions", () => {
       expect(reuseSettings).not.toBeChecked();
       await user.selectOptions(languageSelector, "Español");
       await user.click(acceptButton);
-      expect(mockUpdateConfigFn).not.toHaveBeenCalled();
+      expect(mockPatchConfigFn).not.toHaveBeenCalled();
     });
 
     it("includes a link to localization page", async () => {
@@ -339,7 +329,7 @@ describe("InstallerOptions", () => {
 
     describe("but a product is not selected yet", () => {
       beforeEach(() => {
-        mockSelectedProduct = undefined;
+        mockSelectedProductFn.mockReturnValue(undefined);
       });
 
       it("does not allow reusing setting", async () => {
@@ -399,7 +389,7 @@ describe("InstallerOptions", () => {
       await user.selectOptions(keymapSelector, "English (UK)");
 
       await user.click(acceptButton);
-      expect(mockUpdateConfigFn).toHaveBeenCalledWith({
+      expect(mockPatchConfigFn).toHaveBeenCalledWith({
         l10n: {
           keymap: "gb",
         },
@@ -422,7 +412,7 @@ describe("InstallerOptions", () => {
       expect(reuseSettings).not.toBeChecked();
       await user.selectOptions(keymapSelector, "English (UK)");
       await user.click(acceptButton);
-      expect(mockUpdateConfigFn).not.toHaveBeenCalled();
+      expect(mockPatchConfigFn).not.toHaveBeenCalled();
     });
 
     it("includes a link to localization page", async () => {
@@ -445,7 +435,7 @@ describe("InstallerOptions", () => {
 
     describe("but a product is not selected yet", () => {
       beforeEach(() => {
-        mockSelectedProduct = undefined;
+        mockSelectedProductFn.mockReturnValue(undefined);
       });
 
       it("does not allow reusing setting", async () => {

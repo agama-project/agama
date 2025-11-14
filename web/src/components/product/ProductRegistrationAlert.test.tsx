@@ -23,12 +23,11 @@
 import React from "react";
 import { screen } from "@testing-library/react";
 import { installerRender, mockRoutes } from "~/test-utils";
-import ProductRegistrationAlert from "./ProductRegistrationAlert";
-import { Product } from "~/types/software";
-import { useProduct } from "~/queries/software";
-import { useScopeIssues } from "~/hooks/issues";
-import { PRODUCT, REGISTRATION, ROOT } from "~/routes/paths";
+import { useScopeIssues, useSelectedProduct, useSystem } from "~/hooks/api";
 import { Issue, IssueSeverity, IssueSource } from "~/api/issue";
+import { PRODUCT, REGISTRATION, ROOT } from "~/routes/paths";
+import { Product } from "~/types/software";
+import ProductRegistrationAlert from "./ProductRegistrationAlert";
 
 const tw: Product = {
   id: "Tumbleweed",
@@ -42,19 +41,18 @@ const sle: Product = {
   registration: true,
 };
 
-let selectedProduct: Product;
+const mockSelectedProduct: jest.Mock<Product> = jest.fn();
+const mockIssues: jest.Mock<Issue[]> = jest.fn();
 
-jest.mock("~/queries/software", () => ({
-  ...jest.requireActual("~/queries/software"),
-  useProduct: (): ReturnType<typeof useProduct> => {
-    return {
-      products: [tw, sle],
-      selectedProduct,
-    };
-  },
+jest.mock("~/hooks/api", () => ({
+  ...jest.requireActual("~/hooks/api"),
+  useSystem: (): ReturnType<typeof useSystem> => ({
+    products: [tw, sle],
+  }),
+  useSelectedProduct: (): ReturnType<typeof useSelectedProduct> => mockSelectedProduct(),
+  useScopeIssues: (): ReturnType<typeof useScopeIssues> => mockIssues(),
 }));
 
-let issues: Issue[] = [];
 const registrationIssue: Issue = {
   description: "Product must be registered",
   details: "",
@@ -63,11 +61,6 @@ const registrationIssue: Issue = {
   severity: IssueSeverity.Warn,
   scope: "storage",
 };
-
-jest.mock("~/queries/issues", () => ({
-  ...jest.requireActual("~/queries/issues"),
-  useIssues: (): ReturnType<typeof useScopeIssues> => issues,
-}));
 
 const rendersNothingInSomePaths = () => {
   describe.each([
@@ -91,8 +84,8 @@ const rendersNothingInSomePaths = () => {
 describe("ProductRegistrationAlert", () => {
   describe("when the registration is missing", () => {
     beforeEach(() => {
-      issues = [registrationIssue];
-      selectedProduct = sle;
+      mockSelectedProduct.mockReturnValue(sle);
+      mockIssues.mockReturnValue([registrationIssue]);
     });
 
     rendersNothingInSomePaths();
@@ -123,8 +116,8 @@ describe("ProductRegistrationAlert", () => {
 
   describe("when the registration is not needed", () => {
     beforeEach(() => {
-      issues = [];
-      selectedProduct = sle;
+      mockSelectedProduct.mockReturnValue(tw);
+      mockIssues.mockReturnValue([]);
     });
 
     it("renders nothing", () => {
