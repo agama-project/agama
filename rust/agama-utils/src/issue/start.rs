@@ -21,23 +21,13 @@
 use crate::{
     actor::{self, Handler},
     api::event,
-    issue::{
-        monitor::{self, Monitor},
-        service::{self, Service},
-    },
+    issue::service::{self, Service},
 };
 
 // FIXME: replace this start function with a service builder.
-pub async fn start(
-    events: event::Sender,
-    dbus: zbus::Connection,
-) -> Result<Handler<Service>, service::Error> {
+pub async fn start(events: event::Sender) -> Result<Handler<Service>, service::Error> {
     let service = Service::new(events);
     let handler = actor::spawn(service);
-
-    let dbus_monitor = Monitor::new(handler.clone(), dbus);
-    monitor::spawn(dbus_monitor);
-
     Ok(handler)
 }
 
@@ -50,7 +40,6 @@ mod tests {
             scope::Scope,
         },
         issue::{self, message},
-        test,
     };
     use tokio::sync::broadcast::{self, error::TryRecvError};
 
@@ -67,8 +56,7 @@ mod tests {
     #[tokio::test]
     async fn test_get_and_update_issues() -> Result<(), Box<dyn std::error::Error>> {
         let (events_tx, mut events_rx) = broadcast::channel::<Event>(16);
-        let dbus = test::dbus::connection().await.unwrap();
-        let issues = issue::start(events_tx, dbus).await.unwrap();
+        let issues = issue::start(events_tx).await.unwrap();
         let issues_list = issues.call(message::Get).await.unwrap();
         assert!(issues_list.is_empty());
 
@@ -87,8 +75,7 @@ mod tests {
     #[tokio::test]
     async fn test_update_without_event() -> Result<(), Box<dyn std::error::Error>> {
         let (events_tx, mut events_rx) = broadcast::channel::<Event>(16);
-        let dbus = test::dbus::connection().await.unwrap();
-        let issues = issue::start(events_tx, dbus).await.unwrap();
+        let issues = issue::start(events_tx).await.unwrap();
 
         let issues_list = issues.call(message::Get).await.unwrap();
         assert!(issues_list.is_empty());
@@ -107,8 +94,7 @@ mod tests {
     #[tokio::test]
     async fn test_update_without_change() -> Result<(), Box<dyn std::error::Error>> {
         let (events_tx, mut events_rx) = broadcast::channel::<Event>(16);
-        let dbus = test::dbus::connection().await.unwrap();
-        let issues = issue::start(events_tx, dbus).await.unwrap();
+        let issues = issue::start(events_tx).await.unwrap();
 
         let issue = build_issue();
         let update = message::Set::new(Scope::Manager, vec![issue.clone()]);

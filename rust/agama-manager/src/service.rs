@@ -137,7 +137,7 @@ impl Starter {
     pub async fn start(self) -> Result<Handler<Service>, Error> {
         let issues = match self.issues {
             Some(issues) => issues,
-            None => issue::start(self.events.clone(), self.dbus.clone()).await?,
+            None => issue::start(self.events.clone()).await?,
         };
 
         let progress = match self.progress {

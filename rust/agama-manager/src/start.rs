@@ -53,7 +53,7 @@ pub async fn start(
     events: event::Sender,
     dbus: zbus::Connection,
 ) -> Result<Handler<Service>, Error> {
-    let issues = issue::start(events.clone(), dbus.clone()).await?;
+    let issues = issue::start(events.clone()).await?;
     let progress = progress::start(events.clone()).await?;
     let l10n = l10n::start(issues.clone(), events.clone()).await?;
     let network = network::start().await?;
