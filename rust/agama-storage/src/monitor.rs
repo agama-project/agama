@@ -18,10 +18,7 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::{
-    message,
-    service::{self, Service},
-};
+use crate::client;
 use agama_utils::{
     actor::Handler,
     api::{
@@ -44,8 +41,6 @@ pub enum Error {
     #[error("Wrong signal data")]
     ProgressChangedData,
     #[error(transparent)]
-    Service(#[from] service::Error),
-    #[error(transparent)]
     Issue(#[from] issue::service::Error),
     #[error(transparent)]
     Progress(#[from] progress::service::Error),
@@ -53,6 +48,8 @@ pub enum Error {
     DBus(#[from] zbus::Error),
     #[error(transparent)]
     Event(#[from] broadcast::error::SendError<Event>),
+    #[error(transparent)]
+    Client(#[from] client::Error),
 }
 
 #[proxy(
@@ -104,27 +101,27 @@ impl From<ProgressData> for Progress {
 }
 
 pub struct Monitor {
-    storage: Handler<Service>,
     progress: Handler<progress::Service>,
     issues: Handler<issue::Service>,
     events: event::Sender,
     connection: Connection,
+    client: client::Client,
 }
 
 impl Monitor {
     pub fn new(
-        storage: Handler<Service>,
         progress: Handler<progress::Service>,
         issues: Handler<issue::Service>,
         events: event::Sender,
         connection: Connection,
+        client: client::Client,
     ) -> Self {
         Self {
-            storage,
             progress,
             issues,
             events,
             connection,
+            client,
         }
     }
 
@@ -168,7 +165,7 @@ impl Monitor {
             scope: Scope::Storage,
         })?;
 
-        let issues = self.storage.call(message::GetIssues).await?;
+        let issues = self.client.get_issues().await?;
         self.issues
             .call(issue::message::Set::new(Scope::Storage, issues))
             .await?;
