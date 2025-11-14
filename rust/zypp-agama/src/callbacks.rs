@@ -1,4 +1,4 @@
-use std::str::FromStr;
+use std::{fmt, str::FromStr};
 
 pub mod download_progress;
 pub mod pkg_download;
@@ -37,12 +37,13 @@ impl FromStr for ProblemResponse {
     }
 }
 
-impl ToString for ProblemResponse {
-    fn to_string(&self) -> String {
-        match self {
-            ProblemResponse::ABORT => "Abort".to_string(),
-            ProblemResponse::IGNORE => "Ignore".to_string(),
-            ProblemResponse::RETRY => "Retry".to_string(),
-        }
+impl fmt::Display for ProblemResponse {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let s = match self {
+            ProblemResponse::ABORT => "Abort",
+            ProblemResponse::IGNORE => "Ignore",
+            ProblemResponse::RETRY => "Retry",
+        };
+        write!(f, "{}", s)
     }
 }
