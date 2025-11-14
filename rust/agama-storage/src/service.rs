@@ -19,13 +19,13 @@
 // find current contact information at www.suse.com.
 
 use crate::{
-    client::{self, Client},
+    client::{self, Client, StorageClient},
     message,
     monitor::{self, Monitor},
 };
 use agama_utils::{
     actor::{self, Actor, Handler, MessageHandler},
-    api::{event, storage::Config, Issue, Scope},
+    api::{event, storage::Config, Scope},
     issue, progress,
 };
 use async_trait::async_trait;
@@ -51,6 +51,7 @@ pub struct Builder {
     issues: Handler<issue::Service>,
     progress: Handler<progress::Service>,
     dbus: zbus::Connection,
+    client: Option<Box<dyn StorageClient + Send + 'static>>,
 }
 
 impl Builder {
@@ -65,24 +66,35 @@ impl Builder {
             issues,
             progress,
             dbus,
+            client: None,
         }
+    }
+
+    pub fn with_client<T: StorageClient + Send + 'static>(mut self, client: T) -> Self {
+        self.client = Some(Box::new(client));
+        self
     }
 
     /// Spawns the storage service.
     pub async fn spawn(self) -> Result<Handler<Service>, Error> {
-        let client = Client::new(self.dbus.clone());
+        let client = match self.client {
+            Some(client) => client,
+            None => Box::new(Client::new(self.dbus.clone())),
+        };
+
         let service = Service {
             issues: self.issues.clone(),
-            client: client.clone(),
+            client,
         };
         let handler = actor::spawn(service);
 
+        let monitor_client = Client::new(self.dbus.clone());
         let monitor = Monitor::new(
             self.progress,
             self.issues,
             self.events,
             self.dbus,
-            client.clone(),
+            monitor_client,
         );
         monitor::spawn(monitor)?;
         Ok(handler)
@@ -92,7 +104,7 @@ impl Builder {
 /// Storage service.
 pub struct Service {
     issues: Handler<issue::Service>,
-    client: Client,
+    client: Box<dyn StorageClient + Send + 'static>,
 }
 
 impl Service {
