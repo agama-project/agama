@@ -29,16 +29,12 @@ describe Agama::DBus::ServiceRunner do
   describe "#run" do
     subject(:runner) { Agama::DBus::ServiceRunner.new(:storage) }
 
-    let(:config) { Agama::Config.new }
-    let(:logger) { Logger.new($stdout) }
     let(:storage) { instance_double(Agama::Storage::Manager) }
     let(:service) { instance_double(Agama::DBus::StorageService, start: nil) }
 
     before do
-      allow(Agama::Config).to receive(:current).and_return(config)
-      allow(Agama::Storage::Manager).to receive(:new).with(config).and_return(storage)
-      allow(Agama::DBus::StorageService).to receive(:new).with(config, Logger)
-        .and_return(service)
+      allow(Agama::Storage::Manager).to receive(:new).and_return(storage)
+      allow(Agama::DBus::StorageService).to receive(:new).and_return(service)
     end
 
     it "starts the given service" do

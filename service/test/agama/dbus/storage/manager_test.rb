@@ -445,14 +445,183 @@ describe Agama::DBus::Storage::Manager do
   describe "#configure" do
     before do
       allow(subject).to receive(:ProposalChanged)
+      allow(subject).to receive(:SystemChanged)
       allow(subject).to receive(:ProgressChanged)
       allow(subject).to receive(:ProgressFinished)
+
+      allow(backend).to receive(:activated?).and_return activated
+      allow(backend).to receive(:probed?).and_return probed
+
+      allow(backend).to receive(:activate)
+      allow(backend).to receive(:probe)
     end
 
+    # Set some known initial product configuration for the backend
+    let(:config_data) do
+      { "storage" => { "volumes" => ["/"], "volume_templates" => [{ "mount_path" => "/" }] } }
+    end
+
+    let(:activated) { true }
+    let(:probed) { true }
+
+    let(:serialized_product) { config_data.to_json }
     let(:serialized_config) { config_json.to_json }
 
-    context "if the serialized config contains storage settings" do
-      let(:config_json) do
+    RSpec.shared_examples "emit SystemChanged" do
+      it "emits the signal SystemChanged" do
+        expect(subject).to receive(:SystemChanged)
+        subject.configure(serialized_product, serialized_config)
+      end
+    end
+
+    RSpec.shared_examples "do not emit SystemChanged" do
+      it "does not emit the signal SystemChanged" do
+        expect(subject).to_not receive(:SystemChanged)
+        subject.configure(serialized_product, serialized_config)
+      end
+    end
+
+    RSpec.shared_examples "update product configuration" do |mount_paths|
+      it "updates the backend product configuration" do
+        expect(backend.product_config.default_paths).to_not contain_exactly(*mount_paths)
+        subject.configure(serialized_product, serialized_config)
+        expect(backend.product_config.default_paths).to contain_exactly(*mount_paths)
+      end
+
+      it "emits signals for SystemChanged, ProgressChanged and ProgressFinished" do
+        expect(subject).to receive(:SystemChanged) do |system_str|
+          system = parse(system_str)
+          expect(system[:productMountPoints]).to contain_exactly(*mount_paths)
+        end
+        expect(subject).to receive(:ProgressChanged).with(/storage configuration/i)
+        expect(subject).to receive(:ProgressFinished)
+
+        subject.configure(serialized_product, serialized_config)
+      end
+    end
+
+    RSpec.shared_examples "do not update product configuration" do
+      it "does not update the backend product configuration" do
+        data = backend.product_config.data.dup
+        subject.configure(serialized_product, serialized_config)
+        expect(backend.product_config.data).to eq data
+      end
+
+      it "emits signals for ProgressChanged and ProgressFinished" do
+        expect(subject).to receive(:ProgressChanged).with(/storage configuration/i)
+        expect(subject).to receive(:ProgressFinished)
+        subject.configure(serialized_product, serialized_config)
+      end
+    end
+
+    RSpec.shared_examples "activate and probe" do
+      it "activates the storage devices" do
+        expect(backend).to receive(:activate)
+        subject.configure(serialized_product, serialized_config)
+      end
+
+      it "runs a storage probbing process" do
+        expect(backend).to receive(:probe)
+        subject.configure(serialized_product, serialized_config)
+      end
+    end
+
+    RSpec.shared_examples "do not activate or probe" do
+      it "does not activate devices" do
+        expect(backend).to_not receive(:activate)
+        subject.configure(serialized_product, serialized_config)
+      end
+
+      it "does not run a probbing process" do
+        expect(backend).to_not receive(:probe)
+        subject.configure(serialized_product, serialized_config)
+      end
+    end
+
+    RSpec.shared_examples "re-calculate proposal" do
+      it "re-calculates the proposal with the previous configuration" do
+        expect(backend).to receive(:configure).with(nil)
+        subject.configure(serialized_product, serialized_config)
+      end
+
+      it "emits the signal ProposalChanged" do
+        expect(subject).to receive(:ProposalChanged)
+        subject.configure(serialized_product, serialized_config)
+      end
+    end
+
+    context "if no storage configuration is given" do
+      let(:serialized_config) { nil.to_json }
+
+      before do
+        allow(backend).to receive(:configure)
+      end
+
+      context "when storage devices are already activated and probed" do
+        before do
+          allow(backend).to receive(:activated?).and_return true
+          allow(backend).to receive(:probed?).and_return true
+        end
+
+        context "if the product configuration has changed" do
+          let(:serialized_product) { new_config_data.to_json }
+          let(:new_config_data) do
+            {
+              "storage" => {
+                "volumes"          => ["/", "swap"],
+                "volume_templates" => [{ "mount_path" => "/" }, { "mount_path" => "swap" }]
+              }
+            }
+          end
+
+          include_examples "do not activate or probe"
+          include_examples "update product configuration", ["/", "swap"]
+          include_examples "re-calculate proposal"
+          include_examples "emit SystemChanged"
+        end
+
+        context "if the product configuration is equal to the current one" do
+          include_examples "do not activate or probe"
+          include_examples "do not update product configuration"
+          include_examples "do not emit SystemChanged"
+        end
+      end
+
+      context "when storage devices are not activated and probed" do
+        before do
+          allow(backend).to receive(:activated?).and_return(false, true)
+          allow(backend).to receive(:probed?).and_return(false, true)
+        end
+
+        context "if the product configuration has changed" do
+          let(:serialized_product) { new_config_data.to_json }
+          let(:new_config_data) do
+            {
+              "storage" => {
+                "volumes"          => ["/", "swap"],
+                "volume_templates" => [{ "mount_path" => "/" }, { "mount_path" => "swap" }]
+              }
+            }
+          end
+
+          include_examples "activate and probe"
+          include_examples "update product configuration", ["/", "swap"]
+          include_examples "emit SystemChanged"
+          include_examples "re-calculate proposal"
+        end
+
+        context "if the product configuration is equal to the current one" do
+          include_examples "activate and probe"
+          include_examples "do not update product configuration"
+          include_examples "emit SystemChanged"
+          include_examples "re-calculate proposal"
+        end
+      end
+    end
+
+    context "if an Agama storage configuration is given" do
+      let(:serialized_config) { config_hash.to_json }
+      let(:config_hash) do
         {
           storage: {
             drives: [
@@ -470,59 +639,115 @@ describe Agama::DBus::Storage::Manager do
         }
       end
 
-      it "calculates an agama proposal with the given config" do
-        expect(proposal).to receive(:calculate_agama) do |config|
-          expect(config).to be_a(Agama::Storage::Config)
-          expect(config.drives.size).to eq(1)
+      RSpec.shared_examples "calculate new proposal" do
+        it "calculates an agama proposal with the given config" do
+          expect(proposal).to receive(:calculate_agama) do |config|
+            expect(config).to be_a(Agama::Storage::Config)
+            expect(config.drives.size).to eq(1)
 
-          drive = config.drives.first
-          expect(drive.ptable_type).to eq(Y2Storage::PartitionTables::Type::GPT)
-          expect(drive.partitions.size).to eq(1)
+            drive = config.drives.first
+            expect(drive.ptable_type).to eq(Y2Storage::PartitionTables::Type::GPT)
+            expect(drive.partitions.size).to eq(1)
 
-          partition = drive.partitions.first
-          expect(partition.filesystem.type.fs_type).to eq(Y2Storage::Filesystems::Type::BTRFS)
-          expect(partition.filesystem.path).to eq("/")
+            partition = drive.partitions.first
+            expect(partition.filesystem.type.fs_type).to eq(Y2Storage::Filesystems::Type::BTRFS)
+            expect(partition.filesystem.path).to eq("/")
+          end
+
+          subject.configure(serialized_product, serialized_config)
         end
 
-        subject.configure(serialized_config)
-      end
-
-      it "emits signals for ProposalChanged, ProgressChanged and ProgressFinished" do
-        allow(proposal).to receive(:calculate_agama)
-
-        expect(subject).to receive(:ProposalChanged)
-        expect(subject).to receive(:ProgressChanged).with(/storage configuration/i)
-        expect(subject).to receive(:ProgressFinished)
-
-        subject.configure(serialized_config)
-      end
-    end
-
-    context "if the serialized config contains legacy AutoYaST settings" do
-      let(:config_json) do
-        {
-          legacyAutoyastStorage: [
-            { device: "/dev/vda" }
-          ]
-        }
-      end
-
-      it "calculates an AutoYaST proposal with the given settings" do
-        expect(proposal).to receive(:calculate_autoyast) do |settings|
-          expect(settings).to eq(config_json[:legacyAutoyastStorage])
+        it "emits the signal ProposalChanged" do
+          allow(proposal).to receive(:calculate_agama)
+          expect(subject).to receive(:ProposalChanged)
+          subject.configure(serialized_product, serialized_config)
         end
 
-        subject.configure(serialized_config)
+        context "if the serialized config contains legacy AutoYaST settings" do
+          let(:config_hash) do
+            {
+              legacyAutoyastStorage: [
+                { device: "/dev/vda" }
+              ]
+            }
+          end
+
+          it "calculates an AutoYaST proposal with the given settings" do
+            expect(proposal).to receive(:calculate_autoyast) do |settings|
+              expect(settings).to eq(config_hash[:legacyAutoyastStorage])
+            end
+
+            subject.configure(serialized_product, serialized_config)
+          end
+
+          it "emits the signal ProposalChanged" do
+            allow(proposal).to receive(:calculate_agama)
+            expect(subject).to receive(:ProposalChanged)
+            subject.configure(serialized_product, serialized_config)
+          end
+        end
       end
 
-      it "emits signals for ProposalChanged, ProgressChanged and ProgressFinished" do
-        allow(proposal).to receive(:calculate_autoyast)
+      context "when storage devices are already activated and probed" do
+        before do
+          allow(backend).to receive(:activated?).and_return true
+          allow(backend).to receive(:probed?).and_return true
+        end
 
-        expect(subject).to receive(:ProposalChanged)
-        expect(subject).to receive(:ProgressChanged).with(/storage configuration/i)
-        expect(subject).to receive(:ProgressFinished)
+        context "if the product configuration has changed" do
+          let(:serialized_product) { new_config_data.to_json }
+          let(:new_config_data) do
+            {
+              "storage" => {
+                "volumes"          => ["/", "swap"],
+                "volume_templates" => [{ "mount_path" => "/" }, { "mount_path" => "swap" }]
+              }
+            }
+          end
 
-        subject.configure(serialized_config)
+          include_examples "do not activate or probe"
+          include_examples "update product configuration", ["/", "swap"]
+          include_examples "emit SystemChanged"
+          include_examples "calculate new proposal"
+        end
+
+        context "if the product configuration is equal to the current one" do
+          include_examples "do not activate or probe"
+          include_examples "do not update product configuration"
+          include_examples "do not emit SystemChanged"
+          include_examples "calculate new proposal"
+        end
+      end
+
+      context "when storage devices are not activated and probed" do
+        before do
+          allow(backend).to receive(:activated?).and_return(false, true)
+          allow(backend).to receive(:probed?).and_return(false, true)
+        end
+
+        context "if the product configuration has changed" do
+          let(:serialized_product) { new_config_data.to_json }
+          let(:new_config_data) do
+            {
+              "storage" => {
+                "volumes"          => ["/", "swap"],
+                "volume_templates" => [{ "mount_path" => "/" }, { "mount_path" => "swap" }]
+              }
+            }
+          end
+
+          include_examples "activate and probe"
+          include_examples "update product configuration", ["/", "swap"]
+          include_examples "emit SystemChanged"
+          include_examples "calculate new proposal"
+        end
+
+        context "if the product configuration is equal to the current one" do
+          include_examples "activate and probe"
+          include_examples "do not update product configuration"
+          include_examples "emit SystemChanged"
+          include_examples "calculate new proposal"
+        end
       end
     end
   end
@@ -843,7 +1068,7 @@ describe Agama::DBus::Storage::Manager do
 
     context "when a storage configuration was previously set" do
       before do
-        allow(proposal).to receive(:storage_json).and_return config_json.to_json
+        allow(proposal).to receive(:storage_json).and_return config_json
         allow(subject).to receive(:ProposalChanged)
       end
 
