@@ -18,10 +18,6 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::{
-    message,
-    service::{self, Service},
-};
 use agama_utils::{
     actor::Handler,
     api::{
@@ -43,10 +39,6 @@ pub enum Error {
     ProgressChangedArgs,
     #[error("Wrong signal data")]
     ProgressChangedData,
-    #[error(transparent)]
-    Service(#[from] service::Error),
-    #[error(transparent)]
-    Issue(#[from] issue::service::Error),
     #[error(transparent)]
     Progress(#[from] progress::service::Error),
     #[error(transparent)]
@@ -104,7 +96,6 @@ impl From<ProgressData> for Progress {
 }
 
 pub struct Monitor {
-    storage: Handler<Service>,
     progress: Handler<progress::Service>,
     issues: Handler<issue::Service>,
     events: event::Sender,
@@ -113,14 +104,12 @@ pub struct Monitor {
 
 impl Monitor {
     pub fn new(
-        storage: Handler<Service>,
         progress: Handler<progress::Service>,
         issues: Handler<issue::Service>,
         events: event::Sender,
         connection: Connection,
     ) -> Self {
         Self {
-            storage,
             progress,
             issues,
             events,
@@ -138,6 +127,7 @@ impl Monitor {
         tokio::pin!(streams);
 
         while let Some((_, signal)) = streams.next().await {
+            // TODO: initialize issues
             self.handle_signal(signal).await?;
         }
 
@@ -167,12 +157,7 @@ impl Monitor {
         self.events.send(Event::ProposalChanged {
             scope: Scope::Storage,
         })?;
-
-        let issues = self.storage.call(message::GetIssues).await?;
-        self.issues
-            .call(issue::message::Set::new(Scope::Storage, issues))
-            .await?;
-
+        // TODO: read issues
         Ok(())
     }
 
