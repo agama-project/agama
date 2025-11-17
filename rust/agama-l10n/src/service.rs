@@ -29,7 +29,7 @@ use agama_utils::{
         self,
         event::{self, Event},
         l10n::{Proposal, SystemConfig, SystemInfo},
-        Issue, IssueSeverity, IssueSource, Scope,
+        Issue, IssueSeverity, Scope,
     },
     issue,
 };
@@ -186,33 +186,27 @@ impl Service {
         let config = &self.config;
         let mut issues = vec![];
         if !self.model.locales_db().exists(&config.locale) {
-            issues.push(Issue {
-                description: format!("Locale '{}' is unknown", &config.locale),
-                details: None,
-                source: IssueSource::Config,
-                severity: IssueSeverity::Error,
-                class: "unknown_locale".to_string(),
-            });
+            issues.push(Issue::new(
+                "unknown_locale",
+                &format!("Locale '{}' is unknown", config.locale),
+                IssueSeverity::Error,
+            ));
         }
 
         if !self.model.keymaps_db().exists(&config.keymap) {
-            issues.push(Issue {
-                description: format!("Keymap '{}' is unknown", &config.keymap),
-                details: None,
-                source: IssueSource::Config,
-                severity: IssueSeverity::Error,
-                class: "unknown_keymap".to_string(),
-            });
+            issues.push(Issue::new(
+                "unknown_keymap",
+                &format!("Keymap '{}' is unknown", config.keymap),
+                IssueSeverity::Error,
+            ));
         }
 
         if !self.model.timezones_db().exists(&config.timezone) {
-            issues.push(Issue {
-                description: format!("Timezone '{}' is unknown", &config.timezone),
-                details: None,
-                source: IssueSource::Config,
-                severity: IssueSeverity::Error,
-                class: "unknown_timezone".to_string(),
-            });
+            issues.push(Issue::new(
+                "unknown_timezone",
+                &format!("Timezone '{}' is unknown", config.timezone),
+                IssueSeverity::Error,
+            ));
         }
 
         issues

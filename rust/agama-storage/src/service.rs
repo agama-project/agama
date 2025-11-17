@@ -25,7 +25,7 @@ use crate::{
 };
 use agama_utils::{
     actor::{self, Actor, Handler, MessageHandler},
-    api::{event, storage::Config, Scope},
+    api::{event, storage::Config},
     issue, progress,
 };
 use async_trait::async_trait;
@@ -37,8 +37,6 @@ pub enum Error {
     Actor(#[from] actor::Error),
     #[error(transparent)]
     Client(#[from] client::Error),
-    #[error(transparent)]
-    Issue(#[from] issue::service::Error),
     #[error(transparent)]
     Monitor(#[from] monitor::Error),
 }
@@ -80,20 +78,10 @@ impl Starter {
             None => Box::new(Client::new(self.dbus.clone())),
         };
 
-        let service = Service {
-            issues: self.issues.clone(),
-            client,
-        };
+        let service = Service { client };
         let handler = actor::spawn(service);
 
-        let monitor_client = Client::new(self.dbus.clone());
-        let monitor = Monitor::new(
-            self.progress,
-            self.issues,
-            self.events,
-            self.dbus,
-            monitor_client,
-        );
+        let monitor = Monitor::new(self.progress, self.issues, self.events, self.dbus);
         monitor::spawn(monitor)?;
         Ok(handler)
     }
@@ -101,7 +89,6 @@ impl Starter {
 
 /// Storage service.
 pub struct Service {
-    issues: Handler<issue::Service>,
     client: Box<dyn StorageClient + Send + 'static>,
 }
 
@@ -113,14 +100,6 @@ impl Service {
         dbus: zbus::Connection,
     ) -> Starter {
         Starter::new(events, issues, progress, dbus)
-    }
-
-    pub async fn setup(self) -> Result<Self, Error> {
-        let issues = self.client.get_issues().await?;
-        self.issues
-            .call(issue::message::Set::new(Scope::Storage, issues))
-            .await?;
-        Ok(self)
     }
 }
 

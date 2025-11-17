@@ -18,11 +18,7 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use agama_utils::{
-    actor::Message,
-    api::{storage::Config, Issue},
-    products::ProductSpec,
-};
+use agama_utils::{actor::Message, api::storage::Config, products::ProductSpec};
 use serde_json::Value;
 use std::sync::Arc;
 use tokio::sync::RwLock;

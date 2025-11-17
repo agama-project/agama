@@ -18,7 +18,7 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::client::{self, StorageClient};
+use crate::client::{self, Client, StorageClient};
 use agama_utils::{
     actor::Handler,
     api::{
@@ -105,7 +105,7 @@ pub struct Monitor {
     issues: Handler<issue::Service>,
     events: event::Sender,
     connection: Connection,
-    client: client::Client,
+    client: Client,
 }
 
 impl Monitor {
@@ -114,14 +114,13 @@ impl Monitor {
         issues: Handler<issue::Service>,
         events: event::Sender,
         connection: Connection,
-        client: client::Client,
     ) -> Self {
         Self {
             progress,
             issues,
             events,
-            connection,
-            client,
+            connection: connection.clone(),
+            client: Client::new(connection),
         }
     }
 
@@ -135,6 +134,7 @@ impl Monitor {
         tokio::pin!(streams);
 
         while let Some((_, signal)) = streams.next().await {
+            // TODO: initialize issues
             self.handle_signal(signal).await?;
         }
 
