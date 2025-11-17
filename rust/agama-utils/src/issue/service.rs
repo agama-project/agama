@@ -19,10 +19,10 @@
 // find current contact information at www.suse.com.
 
 use crate::actor::{self, Actor, MessageHandler};
-use crate::api::event;
-use crate::api::event::Event;
-use crate::api::issue;
-use crate::api::issue::IssueMap;
+use crate::api::{
+    event::{self, Event},
+    issue::IssueMap,
+};
 use crate::issue::message;
 use async_trait::async_trait;
 use std::collections::HashSet;
@@ -34,8 +34,6 @@ pub enum Error {
     Event(#[from] broadcast::error::SendError<Event>),
     #[error(transparent)]
     Actor(#[from] actor::Error),
-    #[error(transparent)]
-    Issue(#[from] issue::Error),
 }
 
 pub struct Service {

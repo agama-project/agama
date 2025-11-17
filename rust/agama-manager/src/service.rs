@@ -25,7 +25,7 @@ use agama_utils::{
         self, event,
         manager::{self, LicenseContent},
         status::State,
-        Action, Config, Event, Issue, IssueMap, IssueSeverity, Proposal, Scope, Status, SystemInfo,
+        Action, Config, Event, Issue, IssueMap, Proposal, Scope, Status, SystemInfo,
     },
     issue, licenses,
     products::{self, ProductSpec},
@@ -414,11 +414,7 @@ impl Service {
             self.issues
                 .cast(issue::message::Clear::new(Scope::Manager))?;
         } else {
-            let issue = Issue::new(
-                "no_product",
-                "No product has been selected.",
-                IssueSeverity::Error,
-            );
+            let issue = Issue::new("no_product", "No product has been selected.");
             self.issues
                 .cast(issue::message::Set::new(Scope::Manager, vec![issue]))?;
         }

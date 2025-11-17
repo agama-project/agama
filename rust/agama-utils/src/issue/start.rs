@@ -34,11 +34,7 @@ pub async fn start(events: event::Sender) -> Result<Handler<Service>, service::E
 #[cfg(test)]
 mod tests {
     use crate::{
-        api::{
-            event::Event,
-            issue::{Issue, IssueSeverity, IssueSource},
-            scope::Scope,
-        },
+        api::{event::Event, issue::Issue, scope::Scope},
         issue::{self, message},
     };
     use tokio::sync::broadcast::{self, error::TryRecvError};
@@ -48,8 +44,6 @@ mod tests {
             description: "Product not selected".to_string(),
             class: "missing_product".to_string(),
             details: Some("A product is required.".to_string()),
-            source: IssueSource::Config,
-            severity: IssueSeverity::Error,
         }
     }
 

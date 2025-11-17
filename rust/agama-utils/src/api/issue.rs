@@ -21,7 +21,6 @@
 use crate::api::scope::Scope;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
-use strum::FromRepr;
 
 #[derive(Clone, Debug, Serialize, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
@@ -33,34 +32,22 @@ pub struct IssueWithScope {
 
 pub type IssueMap = HashMap<Scope, Vec<Issue>>;
 
-#[derive(thiserror::Error, Debug)]
-pub enum Error {
-    #[error("Unknown issue source: {0}")]
-    UnknownSource(u8),
-    #[error("Unknown issue severity: {0}")]
-    UnknownSeverity(u8),
-}
-
 // NOTE: in order to compare two issues, it should be enough to compare the description
 // and the details.
 #[derive(Clone, Debug, Deserialize, Serialize, PartialEq, Eq, Hash, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct Issue {
+    pub class: String,
     pub description: String,
     pub details: Option<String>,
-    pub source: IssueSource,
-    pub severity: IssueSeverity,
-    pub class: String,
 }
 
 impl Issue {
     /// Creates a new issue.
-    pub fn new(class: &str, description: &str, severity: IssueSeverity) -> Self {
+    pub fn new(class: &str, description: &str) -> Self {
         Self {
             description: description.to_string(),
             class: class.to_string(),
-            source: IssueSource::Config,
-            severity,
             details: None,
         }
     }
@@ -70,31 +57,4 @@ impl Issue {
         self.details = Some(details.to_string());
         self
     }
-
-    /// Sets the source for the issue.
-    pub fn with_source(mut self, source: IssueSource) -> Self {
-        self.source = source;
-        self
-    }
-}
-
-#[derive(
-    Clone, Copy, Debug, Deserialize, Serialize, FromRepr, PartialEq, Eq, Hash, utoipa::ToSchema,
-)]
-#[repr(u8)]
-#[serde(rename_all = "camelCase")]
-pub enum IssueSource {
-    Unknown = 0,
-    System = 1,
-    Config = 2,
-}
-
-#[derive(
-    Clone, Copy, Debug, Deserialize, Serialize, FromRepr, PartialEq, Eq, Hash, utoipa::ToSchema,
-)]
-#[repr(u8)]
-#[serde(rename_all = "camelCase")]
-pub enum IssueSeverity {
-    Warn = 0,
-    Error = 1,
 }

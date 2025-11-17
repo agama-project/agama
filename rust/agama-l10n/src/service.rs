@@ -29,7 +29,7 @@ use agama_utils::{
         self,
         event::{self, Event},
         l10n::{Proposal, SystemConfig, SystemInfo},
-        Issue, IssueSeverity, Scope,
+        Issue, Scope,
     },
     issue,
 };
@@ -52,8 +52,6 @@ pub enum Error {
     InvalidTimezone(#[from] InvalidTimezoneId),
     #[error(transparent)]
     Event(#[from] broadcast::error::SendError<Event>),
-    #[error(transparent)]
-    Issue(#[from] api::issue::Error),
     #[error(transparent)]
     IssueService(#[from] issue::service::Error),
     #[error(transparent)]
@@ -189,7 +187,6 @@ impl Service {
             issues.push(Issue::new(
                 "unknown_locale",
                 &format!("Locale '{}' is unknown", config.locale),
-                IssueSeverity::Error,
             ));
         }
 
@@ -197,7 +194,6 @@ impl Service {
             issues.push(Issue::new(
                 "unknown_keymap",
                 &format!("Keymap '{}' is unknown", config.keymap),
-                IssueSeverity::Error,
             ));
         }
 
@@ -205,7 +201,6 @@ impl Service {
             issues.push(Issue::new(
                 "unknown_timezone",
                 &format!("Timezone '{}' is unknown", config.timezone),
-                IssueSeverity::Error,
             ));
         }
 

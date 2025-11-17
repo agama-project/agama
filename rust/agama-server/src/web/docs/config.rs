@@ -126,8 +126,6 @@ impl ApiDocBuilder for ConfigApiDocBuilder {
             .schema_from::<agama_utils::api::Config>()
             .schema_from::<agama_utils::api::IssueWithScope>()
             .schema_from::<agama_utils::api::Issue>()
-            .schema_from::<agama_utils::api::IssueSeverity>()
-            .schema_from::<agama_utils::api::IssueSource>()
             .schema_from::<agama_utils::api::Progress>()
             .schema_from::<agama_utils::api::Proposal>()
             .schema_from::<agama_utils::api::Scope>()
