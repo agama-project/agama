@@ -140,6 +140,7 @@ dependencies = [
  "async-trait",
  "merge-struct",
  "serde_json",
+ "test-context",
  "thiserror 2.0.16",
  "tokio",
  "tokio-test",
