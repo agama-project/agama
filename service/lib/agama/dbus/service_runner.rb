@@ -80,8 +80,7 @@ module Agama
       def config
         # TODO: do not require "yast" until it is needed
         require "agama/config"
-        Config.load(logger) unless Config.current
-        Config.current
+        Config.new
       end
 
       # Set up a service

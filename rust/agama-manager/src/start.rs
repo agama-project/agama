@@ -57,7 +57,7 @@ pub async fn start(
     let progress = progress::start(events.clone()).await?;
     let l10n = l10n::start(issues.clone(), events.clone()).await?;
     let network = network::start().await?;
-    let software = software::start(issues.clone(), progress.clone(), events.clone()).await?;
+    let software = software::start(issues.clone(), &progress, &questions, events.clone()).await?;
     let storage = storage::start(progress.clone(), issues.clone(), events.clone(), dbus).await?;
 
     let mut service = Service::new(

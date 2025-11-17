@@ -46,7 +46,7 @@ module Agama
       include WithProgressManager
 
       # @return [Agama::Config]
-      attr_reader :product_config
+      attr_accessor :product_config
 
       # @return [Bootloader]
       attr_reader :bootloader

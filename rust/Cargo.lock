@@ -235,6 +235,7 @@ dependencies = [
  "agama-locale-data",
  "agama-utils",
  "async-trait",
+ "gettext-rs",
  "glob",
  "regex",
  "serde",
@@ -5729,6 +5730,7 @@ dependencies = [
 name = "zypp-agama"
 version = "0.1.0"
 dependencies = [
+ "tracing",
  "url",
  "zypp-agama-sys",
 ]
@@ -5738,4 +5740,5 @@ name = "zypp-agama-sys"
 version = "0.1.0"
 dependencies = [
  "bindgen 0.72.1",
+ "tracing",
 ]

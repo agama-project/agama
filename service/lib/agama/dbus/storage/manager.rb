@@ -65,14 +65,13 @@ module Agama
         dbus_interface "org.opensuse.Agama.Storage1" do
           dbus_method(:Activate) { activate }
           dbus_method(:Probe) { probe }
-          dbus_method(:SetProduct, "in id:s") { |id| configure_product(id) }
           dbus_method(:Install) { install }
           dbus_method(:Finish) { finish }
           dbus_method(:SetLocale, "in locale:s") { |locale| backend.configure_locale(locale) }
           # TODO: receive a product_config instead of an id.
           dbus_method(:GetSystem, "out system:s") { recover_system }
           dbus_method(:GetConfig, "out config:s") { recover_config }
-          dbus_method(:SetConfig, "in config:s") { |c| configure(c) }
+          dbus_method(:SetConfig, "in product:s, in config:s") { |p, c| configure(p, c) }
           dbus_method(:GetConfigModel, "out model:s") { recover_config_model }
           dbus_method(:SetConfigModel, "in model:s") { |m| configure_with_model(m) }
           dbus_method(:SolveConfigModel, "in model:s, out result:s") { |m| solve_config_model(m) }
@@ -111,25 +110,6 @@ module Agama
 
           next_progress_step(CONFIGURING_STEP)
           configure_with_current
-
-          finish_progress
-        end
-
-        # Implementation for the API method #SetProduct.
-        def configure_product(id)
-          backend.product_config.pick_product(id)
-
-          start_progress(3, ACTIVATING_STEP)
-          backend.activate unless backend.activated?
-
-          next_progress_step(PROBING_STEP)
-          if !backend.probed?
-            backend.probe
-            emit_system_changed
-          end
-
-          next_progress_step(CONFIGURING_STEP)
-          calculate_proposal
 
           finish_progress
         end
@@ -201,11 +181,36 @@ module Agama
         #
         # @raise If the config is not valid.
         #
+        # @param serialized_product [String] Serialized product config.
         # @param serialized_config [String] Serialized storage config.
-        def configure(serialized_config)
-          start_progress(1, CONFIGURING_STEP)
+        def configure(serialized_product, serialized_config)
+          new_product_data = JSON.parse(serialized_product)
+          # Potential change in system - productMountPoints, encryptionMethods, volumeTemplates
+          system_changed = product_config.update(new_product_data)
 
+          start_progress(3, ACTIVATING_STEP)
+          if !backend.activated?
+            backend.activate
+            # Potential change in system - issues
+            system_changed = true
+          end
+
+          next_progress_step(PROBING_STEP)
+          if !backend.probed?
+            backend.probe
+            # Potential change in system - devices, issues, candidateX, availableX
+            system_changed = true
+          end
+
+          emit_system_changed if system_changed
+
+          next_progress_step(CONFIGURING_STEP)
           config_json = JSON.parse(serialized_config, symbolize_names: true)
+
+          # If config_json is nil, calculate_proposal re-calculates the proposal with the current
+          # config. We could skip that re-calculation if system_changed is false, but that's a
+          # pretty theoretical case (the method was called with an unchanged product configuration
+          # and with no storage configuration).
           calculate_proposal(config_json)
 
           finish_progress
@@ -395,7 +400,7 @@ module Agama
           config_json = proposal.storage_json
           return unless config_json
 
-          configure(config_json)
+          calculate_proposal(config_json)
         end
 
         # @see #configure

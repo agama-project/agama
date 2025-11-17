@@ -18,8 +18,6 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use std::sync::Arc;
-
 use crate::{l10n, message, network, software, storage};
 use agama_utils::{
     actor::{self, Actor, Handler, MessageHandler},
@@ -29,19 +27,21 @@ use agama_utils::{
         status::State,
         Action, Config, Event, Issue, IssueMap, IssueSeverity, Proposal, Scope, Status, SystemInfo,
     },
-    issue,
-    license::{Error as LicenseError, LicensesRegistry},
-    products::{ProductSpec, ProductsRegistry, ProductsRegistryError},
+    issue, licenses,
+    products::{self, ProductSpec},
     progress, question,
 };
 use async_trait::async_trait;
 use merge_struct::merge;
 use network::NetworkSystemClient;
 use serde_json::Value;
+use std::sync::Arc;
 use tokio::sync::{broadcast, RwLock};
 
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
+    #[error("Missing product")]
+    MissingProduct,
     #[error("Cannot merge the configuration")]
     MergeConfig,
     #[error(transparent)]
@@ -59,9 +59,9 @@ pub enum Error {
     #[error(transparent)]
     Questions(#[from] question::service::Error),
     #[error(transparent)]
-    ProductsRegistry(#[from] ProductsRegistryError),
+    Products(#[from] products::Error),
     #[error(transparent)]
-    License(#[from] LicenseError),
+    Licenses(#[from] licenses::Error),
     #[error(transparent)]
     Progress(#[from] progress::service::Error),
     #[error(transparent)]
@@ -76,8 +76,8 @@ pub struct Service {
     issues: Handler<issue::Service>,
     progress: Handler<progress::Service>,
     questions: Handler<question::Service>,
-    products: ProductsRegistry,
-    licenses: LicensesRegistry,
+    products: products::Registry,
+    licenses: licenses::Registry,
     product: Option<Arc<RwLock<ProductSpec>>>,
     state: State,
     config: Config,
@@ -104,8 +104,8 @@ impl Service {
             issues,
             progress,
             questions,
-            products: ProductsRegistry::default(),
-            licenses: LicensesRegistry::default(),
+            products: products::Registry::default(),
+            licenses: licenses::Registry::default(),
             // FIXME: state is already used for service state.
             state: State::Configuring,
             config: Config::default(),
@@ -122,15 +122,10 @@ impl Service {
         self.read_registries().await?;
 
         if let Some(product) = self.products.default_product() {
-            let product = Arc::new(RwLock::new(product.clone()));
-            _ = self.software.cast(software::message::SetConfig::new(
-                Arc::clone(&product),
-                None,
-            ));
-            self.product = Some(product);
+            let config = Config::with_product(product.id.clone());
+            self.set_config(config).await?;
         }
 
-        self.update_issues();
         Ok(())
     }
 
@@ -139,6 +134,89 @@ impl Service {
         self.products.read()?;
         self.system.licenses = self.licenses.licenses().into_iter().cloned().collect();
         self.system.products = self.products.products();
+        Ok(())
+    }
+
+    async fn set_config(&mut self, config: Config) -> Result<(), Error> {
+        self.set_product(&config)?;
+
+        let Some(product) = &self.product else {
+            return Err(Error::MissingProduct);
+        };
+
+        self.questions
+            .call(question::message::SetConfig::new(config.questions.clone()))
+            .await?;
+
+        self.software
+            .call(software::message::SetConfig::new(
+                Arc::clone(product),
+                config.software.clone(),
+            ))
+            .await?;
+
+        self.l10n
+            .call(l10n::message::SetConfig::new(config.l10n.clone()))
+            .await?;
+
+        self.storage
+            .call(storage::message::SetConfig::new(
+                Arc::clone(product),
+                config.storage.clone(),
+            ))
+            .await?;
+
+        if let Some(network) = config.network.clone() {
+            self.network.update_config(network).await?;
+            self.network.apply().await?;
+        }
+
+        self.config = config;
+        Ok(())
+    }
+
+    async fn update_config(&mut self, config: Config) -> Result<(), Error> {
+        self.set_product(&config)?;
+
+        let Some(product) = &self.product else {
+            return Err(Error::MissingProduct);
+        };
+
+        if let Some(l10n) = &config.l10n {
+            self.l10n
+                .call(l10n::message::SetConfig::with(l10n.clone()))
+                .await?;
+        }
+
+        if let Some(questions) = &config.questions {
+            self.questions
+                .call(question::message::SetConfig::with(questions.clone()))
+                .await?;
+        }
+
+        if let Some(storage) = &config.storage {
+            self.storage
+                .call(storage::message::SetConfig::with(
+                    Arc::clone(product),
+                    storage.clone(),
+                ))
+                .await?;
+        }
+
+        if let Some(software) = &config.software {
+            self.software
+                .call(software::message::SetConfig::with(
+                    Arc::clone(product),
+                    software.clone(),
+                ))
+                .await?;
+        }
+
+        if let Some(network) = &config.network {
+            self.network.update_config(network.clone()).await?;
+        }
+
+        self.config = config;
         Ok(())
     }
 
@@ -182,7 +260,12 @@ impl Service {
         Ok(())
     }
 
-    fn set_product_from_config(&mut self, config: &Config) {
+    fn set_product(&mut self, config: &Config) -> Result<(), Error> {
+        self.product = None;
+        self.update_product(config)
+    }
+
+    fn update_product(&mut self, config: &Config) -> Result<(), Error> {
         let product_id = config
             .software
             .as_ref()
@@ -194,24 +277,29 @@ impl Service {
                 let product = RwLock::new(product_spec.clone());
                 self.product = Some(Arc::new(product));
             } else {
+                self.product = None;
                 tracing::warn!("Unknown product '{id}'");
             }
         }
+
+        self.update_issues()?;
+        Ok(())
     }
 
-    fn update_issues(&self) {
+    fn update_issues(&self) -> Result<(), Error> {
         if self.product.is_some() {
-            _ = self.issues.cast(issue::message::Clear::new(Scope::Manager));
+            self.issues
+                .cast(issue::message::Clear::new(Scope::Manager))?;
         } else {
             let issue = Issue::new(
                 "no_product",
                 "No product has been selected.",
                 IssueSeverity::Error,
             );
-            _ = self
-                .issues
-                .cast(issue::message::Set::new(Scope::Manager, vec![issue]));
+            self.issues
+                .cast(issue::message::Set::new(Scope::Manager, vec![issue]))?;
         }
+        Ok(())
     }
 }
 
@@ -286,40 +374,7 @@ impl MessageHandler<message::GetConfig> for Service {
 impl MessageHandler<message::SetConfig> for Service {
     /// Sets the user configuration with the given values.
     async fn handle(&mut self, message: message::SetConfig) -> Result<(), Error> {
-        self.set_product_from_config(&message.config);
-
-        self.config = message.config.clone();
-        let config = message.config;
-
-        self.questions
-            .call(question::message::SetConfig::new(config.questions.clone()))
-            .await?;
-
-        if let Some(product) = &self.product {
-            self.software
-                .call(software::message::SetConfig::new(
-                    Arc::clone(&product),
-                    config.software.clone(),
-                ))
-                .await?;
-        }
-
-        self.l10n
-            .call(l10n::message::SetConfig::new(config.l10n.clone()))
-            .await?;
-
-        self.storage
-            .call(storage::message::SetConfig::new(config.storage.clone()))
-            .await?;
-
-        if let Some(network) = config.network.clone() {
-            self.network.update_config(network).await?;
-            self.network.apply().await?;
-        }
-
-        self.update_issues();
-        self.config = config;
-        Ok(())
+        self.set_config(message.config).await
     }
 }
 
@@ -344,45 +399,7 @@ impl MessageHandler<message::UpdateConfig> for Service {
     async fn handle(&mut self, message: message::UpdateConfig) -> Result<(), Error> {
         let config = merge(&self.config, &message.config).map_err(|_| Error::MergeConfig)?;
         let config = merge_network(config, message.config);
-
-        self.set_product_from_config(&config);
-
-        if let Some(l10n) = &config.l10n {
-            self.l10n
-                .call(l10n::message::SetConfig::with(l10n.clone()))
-                .await?;
-        }
-
-        if let Some(questions) = &config.questions {
-            self.questions
-                .call(question::message::SetConfig::with(questions.clone()))
-                .await?;
-        }
-
-        if let Some(storage) = &config.storage {
-            self.storage
-                .call(storage::message::SetConfig::with(storage.clone()))
-                .await?;
-        }
-
-        if let Some(product) = &self.product {
-            if let Some(software) = &config.software {
-                self.software
-                    .call(software::message::SetConfig::with(
-                        Arc::clone(&product),
-                        software.clone(),
-                    ))
-                    .await?;
-            }
-        }
-
-        if let Some(network) = &config.network {
-            self.network.update_config(network.clone()).await?;
-        }
-
-        self.config = config;
-        self.update_issues();
-        Ok(())
+        self.update_config(config).await
     }
 }
 

@@ -1,8 +1,12 @@
-#include <boost/bind.hpp>
+#include "zypp/target/rpm/RpmDb.h"
+#include <boost/bind/bind.hpp>
 #include <zypp/Callback.h>
 #include <zypp/ZYppCallbacks.h>
 
 #include "callbacks.h"
+
+// _1
+using namespace boost::placeholders;
 
 struct ProgressReceive : zypp::callback::ReceiveReport<zypp::ProgressReport> {
   ZyppProgressCallback callback;
@@ -89,17 +93,10 @@ struct DownloadProgressReceive : public zypp::callback::ReceiveReport<
                          const std::string &description) {
     if (callbacks != NULL && callbacks->problem != NULL) {
       PROBLEM_RESPONSE response =
-          callbacks->problem(file.asString().c_str(), error,
+          callbacks->problem(file.asString().c_str(), convert_error(error),
                              description.c_str(), callbacks->problem_data);
 
-      switch (response) {
-      case PROBLEM_RETRY:
-        return zypp::media::DownloadProgressReport::RETRY;
-      case PROBLEM_ABORT:
-        return zypp::media::DownloadProgressReport::ABORT;
-      case PROBLEM_IGNORE:
-        return zypp::media::DownloadProgressReport::IGNORE;
-      }
+      return convert_action(response);
     }
     // otherwise return the default value from the parent class
     return zypp::media::DownloadProgressReport::problem(file, error,
@@ -110,13 +107,214 @@ struct DownloadProgressReceive : public zypp::callback::ReceiveReport<
                       zypp::media::DownloadProgressReport::Error error,
                       const std::string &reason) {
     if (callbacks != NULL && callbacks->finish != NULL) {
-      callbacks->finish(file.asString().c_str(), error, reason.c_str(),
-                        callbacks->finish_data);
+      callbacks->finish(file.asString().c_str(), convert_error(error),
+                        reason.c_str(), callbacks->finish_data);
     }
+  }
+
+private:
+  inline DownloadProgressError
+  convert_error(zypp::media::DownloadProgressReport::Error error) noexcept {
+    switch (error) {
+    case zypp::media::DownloadProgressReport::NO_ERROR:
+      return DPE_NO_ERROR;
+    case zypp::media::DownloadProgressReport::NOT_FOUND:
+      return DPE_NOT_FOUND;
+    case zypp::media::DownloadProgressReport::IO:
+      return DPE_IO;
+    case zypp::media::DownloadProgressReport::ACCESS_DENIED:
+      return DPE_ACCESS_DENIED;
+    case zypp::media::DownloadProgressReport::ERROR:
+      return DPE_ERROR;
+    }
+    return DPE_ERROR;
+  }
+
+  inline zypp::media::DownloadProgressReport::Action
+  convert_action(PROBLEM_RESPONSE response) {
+    switch (response) {
+    case PROBLEM_RETRY:
+      return zypp::media::DownloadProgressReport::RETRY;
+    case PROBLEM_ABORT:
+      return zypp::media::DownloadProgressReport::ABORT;
+    case PROBLEM_IGNORE:
+      return zypp::media::DownloadProgressReport::IGNORE;
+    }
+    return zypp::media::DownloadProgressReport::ABORT;
   }
 };
 
 static DownloadProgressReceive download_progress_receive;
+
+struct DownloadResolvableReport : public zypp::callback::ReceiveReport<
+                                      zypp::repo::DownloadResolvableReport> {
+  struct DownloadResolvableCallbacks *callbacks;
+
+  DownloadResolvableReport() { callbacks = NULL; }
+
+  void set_callbacks(DownloadResolvableCallbacks *callbacks_) {
+    callbacks = callbacks_;
+  }
+
+  virtual Action problem(zypp::Resolvable::constPtr resolvable_ptr, Error error,
+                         const std::string &description) {
+    // return the default value from the parent class if not defined
+    if (callbacks == NULL || callbacks->problem == NULL)
+      return zypp::repo::DownloadResolvableReport::problem(resolvable_ptr,
+                                                           error, description);
+
+    PROBLEM_RESPONSE response = callbacks->problem(
+        resolvable_ptr->name().c_str(), from_dre_error(error),
+        description.c_str(), callbacks->problem_data);
+    return from_response(response);
+  }
+
+  virtual void pkgGpgCheck(const UserData &userData_r = UserData()) {
+    if (callbacks == NULL || callbacks->gpg_check == NULL) {
+      return;
+    }
+    zypp::ResObject::constPtr resobject =
+        userData_r.get<zypp::ResObject::constPtr>("ResObject");
+    const zypp::RepoInfo repo = resobject->repoInfo();
+    const std::string repo_url = repo.rawUrl().asString();
+    enum GPGCheckPackageResult result = from_rpm_result(
+        userData_r.get<zypp::target::rpm::RpmDb::CheckPackageResult>(
+            "CheckPackageResult"));
+    OPTIONAL_PROBLEM_RESPONSE response =
+        callbacks->gpg_check(resobject->name().c_str(), repo_url.c_str(),
+                             result, callbacks->gpg_check_data);
+    set_response(userData_r, response);
+  }
+
+private:
+  inline void set_response(const UserData &userData_r,
+                           OPTIONAL_PROBLEM_RESPONSE response) {
+    DownloadResolvableReport::Action zypp_action;
+    switch (response) {
+    case OPROBLEM_RETRY:
+      zypp_action = zypp::repo::DownloadResolvableReport::RETRY;
+      break;
+    case OPROBLEM_ABORT:
+      zypp_action = zypp::repo::DownloadResolvableReport::ABORT;
+      break;
+    case OPROBLEM_IGNORE:
+      zypp_action = zypp::repo::DownloadResolvableReport::IGNORE;
+      break;
+    // do not set action and it will let fail it later in Done Provide
+    case OPROBLEM_NONE:
+      return;
+    };
+    userData_r.set("Action", zypp_action);
+  }
+
+  inline DownloadResolvableError
+  from_dre_error(zypp::repo::DownloadResolvableReport::Error error) {
+    switch (error) {
+    case zypp::repo::DownloadResolvableReport::NO_ERROR:
+      return DownloadResolvableError::DRE_NO_ERROR;
+    case zypp::repo::DownloadResolvableReport::NOT_FOUND:
+      return DownloadResolvableError::DRE_NOT_FOUND;
+    case zypp::repo::DownloadResolvableReport::IO:
+      return DownloadResolvableError::DRE_IO;
+    case zypp::repo::DownloadResolvableReport::INVALID:
+      return DownloadResolvableError::DRE_INVALID;
+    }
+    // fallback that should not happen
+    return DownloadResolvableError::DRE_NO_ERROR;
+  }
+
+  inline Action from_response(PROBLEM_RESPONSE response) {
+    switch (response) {
+    case PROBLEM_RETRY:
+      return zypp::repo::DownloadResolvableReport::RETRY;
+    case PROBLEM_ABORT:
+      return zypp::repo::DownloadResolvableReport::ABORT;
+    case PROBLEM_IGNORE:
+      return zypp::repo::DownloadResolvableReport::IGNORE;
+    }
+    // fallback that should not happen
+    return zypp::repo::DownloadResolvableReport::ABORT;
+  }
+
+  inline GPGCheckPackageResult
+  from_rpm_result(zypp::target::rpm::RpmDb::CheckPackageResult result) {
+    switch (result) {
+    case zypp::target::rpm::RpmDb::CHK_OK:
+      return GPGCheckPackageResult::CHK_OK;
+    case zypp::target::rpm::RpmDb::CHK_NOTFOUND:
+      return GPGCheckPackageResult::CHK_NOTFOUND;
+    case zypp::target::rpm::RpmDb::CHK_FAIL:
+      return GPGCheckPackageResult::CHK_FAIL;
+    case zypp::target::rpm::RpmDb::CHK_NOTTRUSTED:
+      return GPGCheckPackageResult::CHK_NOTTRUSTED;
+    case zypp::target::rpm::RpmDb::CHK_NOKEY:
+      return GPGCheckPackageResult::CHK_NOKEY;
+    case zypp::target::rpm::RpmDb::CHK_ERROR:
+      return GPGCheckPackageResult::CHK_ERROR;
+    case zypp::target::rpm::RpmDb::CHK_NOSIG:
+      return GPGCheckPackageResult::CHK_NOSIG;
+    }
+    // fallback that should not happen
+    return GPGCheckPackageResult::CHK_ERROR;
+  }
+};
+
+static DownloadResolvableReport download_resolvable_receive;
+
+struct CommitPreloadReport
+    : public zypp::callback::ReceiveReport<zypp::media::CommitPreloadReport> {
+
+  struct DownloadResolvableCallbacks *callbacks;
+
+  CommitPreloadReport() { callbacks = NULL; }
+
+  void set_callbacks(DownloadResolvableCallbacks *callbacks_) {
+    callbacks = callbacks_;
+  }
+  virtual void start(const UserData &userData = UserData()) {
+    if (callbacks != NULL && callbacks->start_preload != NULL) {
+      callbacks->start_preload(callbacks->start_preload_data);
+    }
+  }
+
+  virtual void fileDone(const zypp::Pathname &localfile, Error error,
+                        const UserData &userData = UserData()) {
+    if (callbacks != NULL && callbacks->file_finish != NULL) {
+      const char *url = "";
+      if (userData.hasvalue("url")) {
+        url = userData.get<zypp::Url>("url").asString().c_str();
+      }
+      const char *local_path = localfile.c_str();
+      const char *error_details = "";
+      if (userData.hasvalue("description")) {
+        error_details = userData.get<std::string>("description").c_str();
+      }
+      callbacks->file_finish(url, local_path, from_dre_error(error),
+                             error_details, callbacks->file_finish_data);
+    }
+  }
+
+private:
+  inline DownloadResolvableFileError
+  from_dre_error(zypp::media::CommitPreloadReport::Error error) {
+    switch (error) {
+    case zypp::media::CommitPreloadReport::NO_ERROR:
+      return DownloadResolvableFileError::DRFE_NO_ERROR;
+    case zypp::media::CommitPreloadReport::NOT_FOUND:
+      return DownloadResolvableFileError::DRFE_NOT_FOUND;
+    case zypp::media::CommitPreloadReport::IO:
+      return DownloadResolvableFileError::DRFE_IO;
+    case zypp::media::CommitPreloadReport::ACCESS_DENIED:
+      return DownloadResolvableFileError::DRFE_ACCESS_DENIED;
+    case zypp::media::CommitPreloadReport::ERROR:
+      return DownloadResolvableFileError::DRFE_ERROR;
+    }
+    // fallback that should not happen
+    return DownloadResolvableFileError::DRFE_NO_ERROR;
+  }
+};
+
+static CommitPreloadReport commit_preload_report;
 
 extern "C" {
 void set_zypp_progress_callback(ZyppProgressCallback progress,
@@ -135,6 +333,24 @@ void unset_zypp_download_callbacks() {
   // NULL pointer to struct to be sure it is not called
   download_progress_receive.set_callbacks(NULL);
   download_progress_receive.disconnect();
+}
+
+// Sets both reports as we consolidate download resolvables
+// and commitPreload into one set for easier hooking
+void set_zypp_resolvable_download_callbacks(
+    struct DownloadResolvableCallbacks *callbacks) {
+  download_resolvable_receive.set_callbacks(callbacks);
+  download_resolvable_receive.connect();
+  commit_preload_report.set_callbacks(callbacks);
+  commit_preload_report.connect();
+}
+
+void unset_zypp_resolvable_download_callbacks() {
+  // NULL pointer to struct to be sure it is not called
+  download_resolvable_receive.set_callbacks(NULL);
+  download_resolvable_receive.disconnect();
+  commit_preload_report.set_callbacks(NULL);
+  commit_preload_report.disconnect();
 }
 
 #ifdef __cplusplus

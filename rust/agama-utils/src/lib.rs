@@ -25,7 +25,7 @@ pub mod actor;
 pub mod api;
 pub mod dbus;
 pub mod issue;
-pub mod license;
+pub mod licenses;
 pub mod openapi;
 pub mod products;
 pub mod progress;

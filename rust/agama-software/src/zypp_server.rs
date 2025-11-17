@@ -25,7 +25,7 @@ use agama_utils::{
         Issue, IssueSeverity, Scope,
     },
     products::ProductSpec,
-    progress,
+    progress, question,
 };
 use std::path::Path;
 use tokio::sync::{
@@ -34,7 +34,11 @@ use tokio::sync::{
 };
 use zypp_agama::ZyppError;
 
-use crate::model::state::{self, SoftwareState};
+use crate::{
+    callbacks::commit_download,
+    model::state::{self, SoftwareState},
+};
+
 const TARGET_DIR: &str = "/run/agama/software_ng_zypp";
 const GPG_KEYS: &str = "/usr/lib/rpm/gnupg/keys/gpg-*";
 
@@ -86,7 +90,11 @@ pub enum ZyppServerError {
 pub type ZyppServerResult<R> = Result<R, ZyppServerError>;
 
 pub enum SoftwareAction {
-    Install(oneshot::Sender<ZyppServerResult<bool>>),
+    Install(
+        oneshot::Sender<ZyppServerResult<bool>>,
+        Handler<progress::Service>,
+        Handler<question::Service>,
+    ),
     Finish(oneshot::Sender<ZyppServerResult<()>>),
     GetPatternsMetadata(Vec<String>, oneshot::Sender<ZyppServerResult<Vec<Pattern>>>),
     ComputeProposal(
@@ -172,8 +180,9 @@ impl ZyppServer {
             SoftwareAction::GetPatternsMetadata(names, tx) => {
                 self.get_patterns(names, tx, zypp).await?;
             }
-            SoftwareAction::Install(tx) => {
-                tx.send(self.install(zypp))
+            SoftwareAction::Install(tx, progress, question) => {
+                let callback = commit_download::CommitDownload::new(progress, question);
+                tx.send(self.install(zypp, &callback))
                     .map_err(|_| ZyppDispatchError::ResponseChannelClosed)?;
             }
             SoftwareAction::Finish(tx) => {
@@ -187,10 +196,15 @@ impl ZyppServer {
     }
 
     // Install rpms
-    fn install(&self, zypp: &zypp_agama::Zypp) -> ZyppServerResult<bool> {
+    fn install(
+        &self,
+        zypp: &zypp_agama::Zypp,
+        download_callback: &commit_download::CommitDownload,
+    ) -> ZyppServerResult<bool> {
         let target = "/mnt";
         zypp.switch_target(target)?;
-        let result = zypp.commit()?;
+        // TODO: write real install callbacks beside download ones
+        let result = zypp.commit(download_callback)?;
         tracing::info!("libzypp commit ends with {}", result);
         Ok(result)
     }

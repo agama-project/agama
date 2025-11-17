@@ -21,8 +21,11 @@
 use agama_utils::{
     actor::Message,
     api::{storage::Config, Issue},
+    products::ProductSpec,
 };
 use serde_json::Value;
+use std::sync::Arc;
+use tokio::sync::RwLock;
 
 #[derive(Clone)]
 pub struct Activate;
@@ -104,16 +107,18 @@ impl Message for SetProduct {
 
 #[derive(Clone)]
 pub struct SetConfig {
+    pub product: Arc<RwLock<ProductSpec>>,
     pub config: Option<Config>,
 }
 
 impl SetConfig {
-    pub fn new(config: Option<Config>) -> Self {
-        Self { config }
+    pub fn new(product: Arc<RwLock<ProductSpec>>, config: Option<Config>) -> Self {
+        Self { product, config }
     }
 
-    pub fn with(config: Config) -> Self {
+    pub fn with(product: Arc<RwLock<ProductSpec>>, config: Config) -> Self {
         Self {
+            product,
             config: Some(config),
         }
     }

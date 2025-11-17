@@ -25,12 +25,12 @@
 //! `/usr/share/agama/products.d`).
 
 use crate::api::manager::Product;
-use serde::{Deserialize, Deserializer};
+use serde::{Deserialize, Deserializer, Serialize};
 use serde_with::{formats::CommaSeparator, serde_as, StringWithSeparator};
 use std::path::{Path, PathBuf};
 
 #[derive(thiserror::Error, Debug)]
-pub enum ProductsRegistryError {
+pub enum Error {
     #[error("Could not read the products registry: {0}")]
     IO(#[from] std::io::Error),
     #[error("Could not deserialize a product specification: {0}")]
@@ -45,12 +45,12 @@ pub enum ProductsRegistryError {
 ///
 /// Dynamic behavior, like filtering by architecture, is not supported yet.
 #[derive(Clone, Debug, Deserialize)]
-pub struct ProductsRegistry {
+pub struct Registry {
     path: std::path::PathBuf,
     products: Vec<ProductSpec>,
 }
 
-impl ProductsRegistry {
+impl Registry {
     pub fn new<P: AsRef<Path>>(path: P) -> Self {
         Self {
             path: path.as_ref().to_owned(),
@@ -59,7 +59,7 @@ impl ProductsRegistry {
     }
 
     /// Creates a registry loading the products from its location.
-    pub fn read(&mut self) -> Result<(), ProductsRegistryError> {
+    pub fn read(&mut self) -> Result<(), Error> {
         let entries = std::fs::read_dir(&self.path)?;
         self.products.clear();
 
@@ -114,7 +114,7 @@ impl ProductsRegistry {
     }
 }
 
-impl Default for ProductsRegistry {
+impl Default for Registry {
     fn default() -> Self {
         let share_dir = std::env::var("AGAMA_SHARE_DIR").unwrap_or("/usr/share/agama".to_string());
         let products_dir = PathBuf::from(share_dir).join("products.d");
@@ -124,7 +124,7 @@ impl Default for ProductsRegistry {
 
 // TODO: ideally, part of this code could be auto-generated from a JSON schema definition.
 /// Product specification (e.g., Tumbleweed).
-#[derive(Clone, Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct ProductSpec {
     pub id: String,
     pub name: String,
@@ -135,10 +135,11 @@ pub struct ProductSpec {
     pub version: Option<String>,
     pub license: Option<String>,
     pub software: SoftwareSpec,
+    pub storage: StorageSpec,
 }
 
 impl ProductSpec {
-    pub fn load_from<P: AsRef<Path>>(path: P) -> Result<Self, ProductsRegistryError> {
+    pub fn load_from<P: AsRef<Path>>(path: P) -> Result<Self, Error> {
         let contents = std::fs::read_to_string(path)?;
         let product: ProductSpec = serde_yaml::from_str(&contents)?;
         Ok(product)
@@ -152,7 +153,7 @@ where
     Deserialize::deserialize(d).map(|x: Option<_>| x.unwrap_or_default())
 }
 
-#[derive(Clone, Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct SoftwareSpec {
     installation_repositories: Vec<RepositorySpec>,
     #[serde(default)]
@@ -181,7 +182,7 @@ impl SoftwareSpec {
     }
 }
 
-#[derive(Clone, Debug, Deserialize, PartialEq)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 #[serde(untagged)]
 pub enum UserPattern {
     Plain(String),
@@ -197,14 +198,14 @@ impl UserPattern {
     }
 }
 
-#[derive(Clone, Debug, Deserialize, PartialEq)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 pub struct PreselectedPattern {
     pub name: String,
     pub selected: bool,
 }
 
 #[serde_as]
-#[derive(Clone, Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct RepositorySpec {
     pub url: String,
     #[serde(default)]
@@ -213,12 +214,86 @@ pub struct RepositorySpec {
 }
 
 #[serde_as]
-#[derive(Clone, Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct LabelSpec {
     pub label: String,
     #[serde(default)]
     #[serde_as(as = "StringWithSeparator::<CommaSeparator, String>")]
     pub archs: Vec<String>,
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+pub struct StorageSpec {
+    #[serde(default)]
+    boot_strategy: Option<String>,
+    #[serde(default)]
+    space_policy: Option<String>,
+    #[serde(default)]
+    volumes: Vec<String>,
+    #[serde(default)]
+    pub volume_templates: Vec<VolumeSpec>,
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+pub struct VolumeSpec {
+    #[serde(default)]
+    mount_path: Option<String>,
+    #[serde(default)]
+    filesystem: Option<String>,
+    #[serde(default)]
+    btrfs: Option<BtrfsSpec>,
+    size: SizeSpec,
+    outline: VolumeOutlineSpec,
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+pub struct BtrfsSpec {
+    snapshots: bool,
+    read_only: bool,
+    default_subvolume: String,
+    #[serde(default)]
+    subvolumes: Vec<BtrfsSubvolSpec>,
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+pub struct BtrfsSubvolSpec {
+    path: String,
+    #[serde(default)]
+    copy_on_write: Option<bool>,
+    #[serde(default)]
+    archs: Option<String>,
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+pub struct SizeSpec {
+    #[serde(default)]
+    auto: Option<bool>,
+    #[serde(default)]
+    min: Option<String>,
+    #[serde(default)]
+    max: Option<String>,
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+pub struct VolumeOutlineSpec {
+    required: bool,
+    filesystems: Vec<String>,
+    #[serde(default)]
+    auto_size: Option<AutoSizeSpec>,
+    #[serde(default)]
+    snapshots_configurable: Option<bool>,
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+pub struct AutoSizeSpec {
+    base_min: String,
+    base_max: String,
+    #[serde(default)]
+    snapshots_increment: Option<String>,
+    #[serde(default)]
+    max_fallback_for: Option<Vec<String>>,
+    #[serde(default)]
+    min_fallback_for: Option<Vec<String>>,
 }
 
 #[cfg(test)]
@@ -229,7 +304,7 @@ mod test {
     #[test]
     fn test_load_registry() {
         let path = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../test/share/products.d");
-        let mut registry = ProductsRegistry::new(path.as_path());
+        let mut registry = Registry::new(path.as_path());
         registry.read().unwrap();
         // ensuring that we can load all products from tests
         assert_eq!(registry.products.len(), 8);
@@ -238,7 +313,7 @@ mod test {
     #[test]
     fn test_find_product() {
         let path = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../test/share/products.d");
-        let mut registry = ProductsRegistry::new(path.as_path());
+        let mut registry = Registry::new(path.as_path());
         registry.read().unwrap();
         let tw = registry.find("Tumbleweed").unwrap();
         assert_eq!(tw.id, "Tumbleweed");
@@ -273,12 +348,12 @@ mod test {
     fn test_default_product() {
         let path =
             PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../test/share/products.d-single");
-        let mut registry = ProductsRegistry::new(path.as_path());
+        let mut registry = Registry::new(path.as_path());
         registry.read().unwrap();
         assert!(registry.default_product().is_some());
 
         let path = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../test/share/products.d");
-        let mut registry = ProductsRegistry::new(path.as_path());
+        let mut registry = Registry::new(path.as_path());
         registry.read().unwrap();
         assert!(registry.default_product().is_none());
     }

@@ -25,6 +25,7 @@ require "agama/config"
 require "agama/storage/proposal"
 require "agama/issue"
 require "y2storage"
+require "yaml"
 
 describe Agama::Storage::Proposal do
   include Agama::RSpec::StorageHelpers
@@ -37,6 +38,8 @@ describe Agama::Storage::Proposal do
   before do
     mock_storage(devicegraph: scenario)
     allow(Y2Storage::Arch).to receive(:new).and_return(arch)
+    # This environment is enforced by Agama
+    allow(Y2Storage::StorageEnv.instance).to receive(:no_bls_bootloader).and_return true
   end
 
   let(:scenario) { "windows-linux-pc.yml" }
@@ -48,7 +51,7 @@ describe Agama::Storage::Proposal do
   let(:config_path) do
     File.join(FIXTURES_PATH, "storage.yaml")
   end
-  let(:config) { Agama::Config.from_file(config_path) }
+  let(:config) { Agama::Config.new(YAML.load_file(config_path)) }
 
   ROOT_PART = {
     "filesystem" => :ext4, "mount" => "/", "size" => "25%", "label" => "new_root"
