@@ -30,20 +30,33 @@ import {
   getStorageModel,
   getQuestions,
   getIssues,
+  getStatus,
 } from "~/api";
 import { useInstallerClient } from "~/context/installer";
 import { System } from "~/api/system";
 import { Proposal } from "~/api/proposal";
+import { Status } from "~/api/status";
 import { Config } from "~/api/config";
 import { apiModel } from "~/api/storage";
 import { Question } from "~/api/question";
 import { IssuesScope, Issue, IssuesMap } from "~/api/issue";
 import { QueryHookOptions } from "~/types/queries";
 
+const statusQuery = () => ({
+  queryKey: ["status"],
+  queryFn: getStatus,
+});
+
 const systemQuery = () => ({
   queryKey: ["system"],
   queryFn: getSystem,
 });
+
+function useStatus(options?: QueryHookOptions): Status | null {
+  const func = options?.suspense ? useSuspenseQuery : useQuery;
+  const { data } = func(statusQuery());
+  return data;
+}
 
 function useSystem(options?: QueryHookOptions): System | null {
   const func = options?.suspense ? useSuspenseQuery : useQuery;
@@ -144,6 +157,15 @@ const useQuestionsChanges = () => {
   }, [client, queryClient]);
 };
 
+const useSelectedProduct = (options: QueryHookOptions = { suspense: true }) => {
+  const { products } = useSystem(options);
+  const { product } = useExtendedConfig(options);
+
+  if (!product) return undefined;
+
+  return products.find((p) => (p.id = product.id));
+};
+
 const storageModelQuery = () => ({
   queryKey: ["storageModel"],
   queryFn: getStorageModel,
@@ -231,6 +253,7 @@ export {
   issuesQuery,
   selectIssues,
   useSystem,
+  useStatus,
   useSystemChanges,
   useProposal,
   useProposalChanges,
@@ -242,4 +265,5 @@ export {
   useIssues,
   useScopeIssues,
   useIssuesChanges,
+  useSelectedProduct,
 };

@@ -23,9 +23,9 @@
 import React from "react";
 import { screen, within } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
-import Sidebar from "./Sidebar";
+import { useSystem } from "~/hooks/api";
 import { Product } from "~/types/software";
-import { useProduct } from "~/queries/software";
+import Sidebar from "./Sidebar";
 
 const tw: Product = {
   id: "Tumbleweed",
@@ -39,16 +39,12 @@ const sle: Product = {
   registration: true,
 };
 
-let selectedProduct: Product;
+const mockSelectedProduct: jest.Mock<Product> = jest.fn();
 
-jest.mock("~/queries/software", () => ({
-  ...jest.requireActual("~/queries/software"),
-  useProduct: (): ReturnType<typeof useProduct> => {
-    return {
-      products: [tw, sle],
-      selectedProduct,
-    };
-  },
+jest.mock("~/hooks/api", () => ({
+  ...jest.requireActual("~/hooks/api"),
+  useSystem: (): ReturnType<typeof useSystem> => ({ products: [tw, sle] }),
+  useSelectedProduct: (): Product => mockSelectedProduct(),
 }));
 
 jest.mock("~/router", () => ({
@@ -67,7 +63,7 @@ jest.mock("~/router", () => ({
 describe("Sidebar", () => {
   describe("when product is registrable", () => {
     beforeEach(() => {
-      selectedProduct = sle;
+      mockSelectedProduct.mockReturnValue(sle);
     });
 
     it("renders a navigation including all root routes with handle object", () => {
@@ -83,7 +79,7 @@ describe("Sidebar", () => {
 
   describe("when product is not registrable", () => {
     beforeEach(() => {
-      selectedProduct = tw;
+      mockSelectedProduct.mockReturnValue(tw);
     });
 
     it("renders a navigation including all root routes with handle object, except ones set as needsRegistrableProduct", () => {

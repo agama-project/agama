@@ -22,10 +22,12 @@
 
 import * as l10n from "~/api/l10n/system";
 import * as storage from "~/api/storage/system";
+import { Product } from "~/types/software";
 
 type System = {
   l10n?: l10n.System;
   storage?: storage.System;
+  products?: Product[];
 };
 
 export { l10n, storage };

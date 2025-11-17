@@ -27,7 +27,9 @@ use agama_software::Resolvable;
 use agama_utils::{
     actor::Handler,
     api::{
-        event, query,
+        event,
+        manager::LicenseContent,
+        query,
         question::{Question, QuestionSpec, UpdateQuestion},
         Action, Config, IssueMap, Patch, Status, SystemInfo,
     },
@@ -40,7 +42,7 @@ use axum::{
     Json, Router,
 };
 use hyper::StatusCode;
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
 
 #[derive(thiserror::Error, Debug)]
@@ -106,6 +108,7 @@ pub async fn server_service(
             "/questions",
             get(get_questions).post(ask_question).patch(update_question),
         )
+        .route("/licenses/:id", get(get_license))
         .route(
             "/private/storage_model",
             get(get_storage_model).put(set_storage_model),
@@ -322,6 +325,48 @@ async fn update_question(
         }
     }
     Ok(())
+}
+
+#[derive(Deserialize, utoipa::IntoParams)]
+struct LicenseQuery {
+    lang: Option<String>,
+}
+
+/// Returns the license content.
+///
+/// Optionally it can receive a language tag (RFC 5646). Otherwise, it returns
+/// the license in English.
+#[utoipa::path(
+    get,
+    path = "/licenses/:id",
+    context_path = "/api/software",
+    params(LicenseQuery),
+    responses(
+        (status = 200, description = "License with the given ID", body = LicenseContent),
+        (status = 400, description = "The specified language tag is not valid"),
+        (status = 404, description = "There is not license with the given ID")
+    )
+)]
+async fn get_license(
+    State(state): State<ServerState>,
+    Path(id): Path<String>,
+    Query(query): Query<LicenseQuery>,
+) -> Result<Response, Error> {
+    let lang = query.lang.unwrap_or("en".to_string());
+
+    let Ok(lang) = lang.as_str().try_into() else {
+        return Ok(StatusCode::BAD_REQUEST.into_response());
+    };
+
+    let license = state
+        .manager
+        .call(message::GetLicense::new(id.to_string(), lang))
+        .await?;
+    if let Some(license) = license {
+        Ok(Json(license).into_response())
+    } else {
+        Ok(StatusCode::NOT_FOUND.into_response())
+    }
 }
 
 #[utoipa::path(

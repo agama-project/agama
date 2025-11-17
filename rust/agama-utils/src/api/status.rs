@@ -27,7 +27,6 @@ use serde::Serialize;
 pub struct Status {
     /// State of the installation
     pub state: State,
-    #[serde(skip_serializing_if = "Vec::is_empty")]
     /// Active progresses
     pub progresses: Vec<Progress>,
 }

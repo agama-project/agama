@@ -23,6 +23,7 @@
 import React from "react";
 import { screen, within } from "@testing-library/react";
 import { plainRender, installerRender } from "~/test-utils";
+import { useSystem } from "~/hooks/api";
 import { Product } from "~/types/software";
 import Header from "./Header";
 
@@ -43,12 +44,10 @@ const microos: Product = {
 jest.mock("~/components/core/InstallerOptions", () => () => <div>Installer Options Mock</div>);
 jest.mock("~/components/core/InstallButton", () => () => <div>Install Button Mock</div>);
 
-jest.mock("~/queries/software", () => ({
-  useProduct: () => ({
-    products: [tumbleweed, microos],
-    selectedProduct: tumbleweed,
-  }),
-  useRegistration: () => undefined,
+jest.mock("~/hooks/api", () => ({
+  ...jest.requireActual("~/hooks/api"),
+  useSystem: (): ReturnType<typeof useSystem> => ({ products: [tumbleweed, microos] }),
+  useSelectedProduct: (): Product => tumbleweed,
 }));
 
 describe("Header", () => {
@@ -86,7 +85,7 @@ describe("Header", () => {
     expect(screen.queryByRole("menu")).toBeNull();
     const toggler = screen.getByRole("button", { name: "Options toggle" });
     await user.click(toggler);
-    const menu = screen.getByRole("menu");
+    const menu = await screen.findByRole("menu");
     within(menu).getByRole("menuitem", { name: "Change product" });
     within(menu).getByRole("menuitem", { name: "Download logs" });
   });

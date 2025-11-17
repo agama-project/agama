@@ -22,10 +22,12 @@
 
 import * as l10n from "~/api/l10n/config";
 import * as storage from "~/api/storage/config";
+import * as product from "~/api/product/config";
 
 type Config = {
   l10n?: l10n.Config;
   storage?: storage.Config;
+  product?: product.Config;
 };
 
 export { l10n, storage };

@@ -24,11 +24,10 @@ import React from "react";
 import { Alert } from "@patternfly/react-core";
 import { useLocation } from "react-router";
 import { Link } from "~/components/core";
-import { useProduct } from "~/queries/software";
 import { REGISTRATION, SIDE_PATHS } from "~/routes/paths";
 import { _ } from "~/i18n";
 import { sprintf } from "sprintf-js";
-import { useScopeIssues } from "~/hooks/api";
+import { useScopeIssues, useSelectedProduct } from "~/hooks/api";
 
 const LinkToRegistration = ({ text }: { text: string }) => {
   const location = useLocation();
@@ -44,10 +43,10 @@ const LinkToRegistration = ({ text }: { text: string }) => {
 
 export default function ProductRegistrationAlert() {
   const location = useLocation();
-  const { selectedProduct: product } = useProduct();
+  const product = useSelectedProduct();
   // FIXME: what scope reports these issues with the new API?
   const issues = useScopeIssues("product");
-  const registrationRequired = issues.find((i) => i.kind === "missing_registration");
+  const registrationRequired = issues?.find((i) => i.kind === "missing_registration");
 
   // NOTE: it shouldn't be mounted in these paths, but let's prevent rendering
   // if so just in case.
