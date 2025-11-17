@@ -225,8 +225,10 @@ pub struct LabelSpec {
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct StorageSpec {
     #[serde(default)]
+    #[serde(skip_serializing_if = "Option::is_none")]
     boot_strategy: Option<String>,
     #[serde(default)]
+    #[serde(skip_serializing_if = "Option::is_none")]
     space_policy: Option<String>,
     #[serde(default)]
     volumes: Vec<String>,
@@ -237,10 +239,13 @@ pub struct StorageSpec {
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct VolumeSpec {
     #[serde(default)]
+    #[serde(skip_serializing_if = "Option::is_none")]
     mount_path: Option<String>,
     #[serde(default)]
+    #[serde(skip_serializing_if = "Option::is_none")]
     filesystem: Option<String>,
     #[serde(default)]
+    #[serde(skip_serializing_if = "Option::is_none")]
     btrfs: Option<BtrfsSpec>,
     size: SizeSpec,
     outline: VolumeOutlineSpec,
@@ -259,18 +264,23 @@ pub struct BtrfsSpec {
 pub struct BtrfsSubvolSpec {
     path: String,
     #[serde(default)]
+    #[serde(skip_serializing_if = "Option::is_none")]
     copy_on_write: Option<bool>,
     #[serde(default)]
+    #[serde(skip_serializing_if = "Option::is_none")]
     archs: Option<String>,
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct SizeSpec {
     #[serde(default)]
+    #[serde(skip_serializing_if = "Option::is_none")]
     auto: Option<bool>,
     #[serde(default)]
+    #[serde(skip_serializing_if = "Option::is_none")]
     min: Option<String>,
     #[serde(default)]
+    #[serde(skip_serializing_if = "Option::is_none")]
     max: Option<String>,
 }
 
@@ -279,8 +289,10 @@ pub struct VolumeOutlineSpec {
     required: bool,
     filesystems: Vec<String>,
     #[serde(default)]
+    #[serde(skip_serializing_if = "Option::is_none")]
     auto_size: Option<AutoSizeSpec>,
     #[serde(default)]
+    #[serde(skip_serializing_if = "Option::is_none")]
     snapshots_configurable: Option<bool>,
 }
 
@@ -289,10 +301,13 @@ pub struct AutoSizeSpec {
     base_min: String,
     base_max: String,
     #[serde(default)]
+    #[serde(skip_serializing_if = "Option::is_none")]
     snapshots_increment: Option<String>,
     #[serde(default)]
+    #[serde(skip_serializing_if = "Option::is_none")]
     max_fallback_for: Option<Vec<String>>,
     #[serde(default)]
+    #[serde(skip_serializing_if = "Option::is_none")]
     min_fallback_for: Option<Vec<String>>,
 }
 
