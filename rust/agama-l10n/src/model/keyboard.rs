@@ -39,7 +39,6 @@ impl KeymapsDatabase {
         Self::default()
     }
 
-    #[cfg(test)]
     pub fn with_entries(data: &[Keymap]) -> Self {
         Self {
             keymaps: data.to_vec(),

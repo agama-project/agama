@@ -39,7 +39,7 @@ pub mod service;
 pub use service::{Builder, Service};
 
 mod model;
-pub use model::{Model, ModelAdapter};
+pub use model::{KeymapsDatabase, LocalesDatabase, Model, ModelAdapter, TimezonesDatabase};
 
 mod config;
 mod dbus;
@@ -47,89 +47,23 @@ pub mod helpers;
 pub mod message;
 mod monitor;
 
+pub mod test_utils;
+
 #[cfg(test)]
 mod tests {
     use crate::{
         message,
-        model::{KeymapsDatabase, LocalesDatabase, ModelAdapter, TimezonesDatabase},
         service::{self, Service},
+        test_utils::TestModel,
     };
-    use agama_locale_data::{KeymapId, LocaleId};
+
     use agama_utils::{
         actor::Handler,
-        api::{
-            self,
-            event::Event,
-            l10n::{Keymap, LocaleEntry, TimezoneEntry},
-            scope::Scope,
-        },
+        api::{self, event::Event, scope::Scope},
         issue, test,
     };
     use test_context::{test_context, AsyncTestContext};
     use tokio::sync::broadcast;
-
-    pub struct TestModel {
-        pub locales: LocalesDatabase,
-        pub keymaps: KeymapsDatabase,
-        pub timezones: TimezonesDatabase,
-    }
-
-    impl ModelAdapter for TestModel {
-        fn locales_db(&self) -> &LocalesDatabase {
-            &self.locales
-        }
-
-        fn keymaps_db(&self) -> &KeymapsDatabase {
-            &self.keymaps
-        }
-
-        fn timezones_db(&self) -> &TimezonesDatabase {
-            &self.timezones
-        }
-
-        fn locale(&self) -> LocaleId {
-            LocaleId::default()
-        }
-
-        fn keymap(&self) -> Result<KeymapId, service::Error> {
-            Ok(KeymapId::default())
-        }
-    }
-
-    fn build_adapter() -> TestModel {
-        TestModel {
-            locales: LocalesDatabase::with_entries(&[
-                LocaleEntry {
-                    id: "en_US.UTF-8".parse().unwrap(),
-                    language: "English".to_string(),
-                    territory: "United States".to_string(),
-                    consolefont: None,
-                },
-                LocaleEntry {
-                    id: "es_ES.UTF-8".parse().unwrap(),
-                    language: "Spanish".to_string(),
-                    territory: "Spain".to_string(),
-                    consolefont: None,
-                },
-            ]),
-            keymaps: KeymapsDatabase::with_entries(&[
-                Keymap::new("us".parse().unwrap(), "English"),
-                Keymap::new("es".parse().unwrap(), "Spanish"),
-            ]),
-            timezones: TimezonesDatabase::with_entries(&[
-                TimezoneEntry {
-                    id: "Europe/Berlin".parse().unwrap(),
-                    parts: vec!["Europe".to_string(), "Berlin".to_string()],
-                    country: Some("Germany".to_string()),
-                },
-                TimezoneEntry {
-                    id: "Atlantic/Canary".parse().unwrap(),
-                    parts: vec!["Atlantic".to_string(), "Canary".to_string()],
-                    country: Some("Spain".to_string()),
-                },
-            ]),
-        }
-    }
 
     struct Context {
         events_rx: broadcast::Receiver<Event>,
@@ -143,7 +77,7 @@ mod tests {
             let dbus = test::dbus::connection().await.unwrap();
             let issues = issue::start(events_tx.clone(), dbus).await.unwrap();
 
-            let model = build_adapter();
+            let model = TestModel::with_sample_data();
             let handler = Service::builder(events_tx, issues.clone())
                 .with_model(model)
                 .spawn()

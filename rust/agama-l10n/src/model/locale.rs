@@ -40,7 +40,6 @@ impl LocalesDatabase {
         Self::default()
     }
 
-    #[cfg(test)]
     pub fn with_entries(data: &[LocaleEntry]) -> Self {
         Self {
             known_locales: data.iter().map(|l| l.id.clone()).collect(),
