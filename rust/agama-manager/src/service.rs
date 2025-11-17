@@ -245,7 +245,9 @@ impl Service {
         if let Some(product) = self.products.default_product() {
             let config = Config::with_product(product.id.clone());
             self.set_config(config).await?;
-        }
+        } else {
+            self.update_issues()?;
+        };
 
         Ok(())
     }

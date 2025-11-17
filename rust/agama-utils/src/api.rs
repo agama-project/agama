@@ -34,7 +34,7 @@ pub mod status;
 pub use status::Status;
 
 pub mod issue;
-pub use issue::{Issue, IssueMap, IssueSeverity, IssueSource};
+pub use issue::{Issue, IssueMap, IssueSeverity, IssueSource, IssueWithScope};
 
 mod system_info;
 pub use system_info::SystemInfo;

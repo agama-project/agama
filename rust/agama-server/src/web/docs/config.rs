@@ -124,6 +124,7 @@ impl ApiDocBuilder for ConfigApiDocBuilder {
             .schema_from::<agama_locale_data::TimezoneId>()
             .schema_from::<agama_utils::api::Action>()
             .schema_from::<agama_utils::api::Config>()
+            .schema_from::<agama_utils::api::IssueWithScope>()
             .schema_from::<agama_utils::api::Issue>()
             .schema_from::<agama_utils::api::IssueSeverity>()
             .schema_from::<agama_utils::api::IssueSource>()

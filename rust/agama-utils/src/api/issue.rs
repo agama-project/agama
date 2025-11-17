@@ -23,6 +23,14 @@ use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use strum::FromRepr;
 
+#[derive(Clone, Debug, Serialize, utoipa::ToSchema)]
+#[serde(rename_all = "camelCase")]
+pub struct IssueWithScope {
+    pub scope: Scope,
+    #[serde(flatten)]
+    pub issue: Issue,
+}
+
 pub type IssueMap = HashMap<Scope, Vec<Issue>>;
 
 #[derive(thiserror::Error, Debug)]
