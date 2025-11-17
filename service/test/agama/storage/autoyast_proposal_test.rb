@@ -294,14 +294,21 @@ describe Agama::Storage::Proposal do
           expect(partitions.map(&:id)).to_not include Y2Storage::PartitionId::ESP
         end
 
-        it "register a non-fatal issue" do
+        it "does not register an issue" do
           subject.calculate_autoyast(partitioning)
-          expect(subject.issues).to include(
+          expect(subject.issues).to_not include(
             an_object_having_attributes(
-              description: /partitions recommended for booting/,
-              severity:    Agama::Issue::Severity::WARN
+              description: /partitions recommended for booting/
             )
           )
+        end
+
+        it "logs a warning" do
+          allow(logger).to receive(:info)
+          expect(logger).to receive(:warn) do |issue|
+            expect(issue.message).to match(/partitions recommended for booting/)
+          end
+          subject.calculate_autoyast(partitioning)
         end
       end
     end
