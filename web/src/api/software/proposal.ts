@@ -20,16 +20,11 @@
  * find current contact information at www.suse.com.
  */
 
-import * as l10n from "~/api/l10n/system";
-import * as storage from "~/api/storage/system";
-import { AddonInfo, Pattern, Product, Repository } from "~/types/software";
+import { PatternsSelection } from "~/types/software";
 
-type System = {
-  l10n?: l10n.System;
-  storage?: storage.System;
-  products?: Product[];
-  software?: { addons: AddonInfo[]; patterns: Pattern[]; repositories: Repository[] };
+type Proposal = {
+  size: string;
+  patterns: PatternsSelection;
 };
 
-export { l10n, storage };
-export type { System };
+export type { Proposal };
