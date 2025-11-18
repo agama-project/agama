@@ -28,7 +28,7 @@ type Keymap = {
   /**
    * Keyboard name (e.g., "English (US)").
    */
-  name: string;
+  description: string;
 };
 
 type Locale = {
@@ -39,7 +39,7 @@ type Locale = {
   /**
    * Language name (e.g., "English").
    */
-  name: string;
+  language: string;
   /**
    * Territory name (e.g., "United States").
    */

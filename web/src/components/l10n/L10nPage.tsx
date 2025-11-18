@@ -96,7 +96,7 @@ export default function L10nPage() {
               }
             >
               <Content isEditorial>
-                {locale ? `${locale.name} - ${locale.territory}` : _("Wrong selection")}
+                {locale ? `${locale.language} - ${locale.territory}` : _("Wrong selection")}
               </Content>
             </Page.Section>
           </GridItem>
@@ -109,7 +109,7 @@ export default function L10nPage() {
                 </Link>
               }
             >
-              <Content isEditorial>{keymap ? keymap.name : _("Wrong selection")}</Content>
+              <Content isEditorial>{keymap ? keymap.description : _("Wrong selection")}</Content>
             </Page.Section>
           </GridItem>
           <GridItem md={4}>

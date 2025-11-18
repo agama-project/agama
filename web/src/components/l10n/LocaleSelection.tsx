@@ -50,7 +50,7 @@ export default function LocaleSelection() {
     navigate(-1);
   };
 
-  let localesList = filteredLocales.map(({ id, name, territory }) => {
+  let localesList = filteredLocales.map(({ id, language, territory }) => {
     return (
       <Radio
         id={id}
@@ -59,7 +59,7 @@ export default function LocaleSelection() {
         onChange={() => setSelected(id)}
         label={
           <Flex gap={{ default: "gapSm" }}>
-            <Content isEditorial>{name}</Content>
+            <Content isEditorial>{language}</Content>
             <Content className={`${textStyles.textColorPlaceholder}`}>{territory}</Content>
             <Content className={`${textStyles.textColorSubtle}`}>{id}</Content>
           </Flex>
