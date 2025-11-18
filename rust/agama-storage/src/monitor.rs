@@ -133,11 +133,19 @@ impl Monitor {
 
         tokio::pin!(streams);
 
+        self.update_issues().await?;
+
         while let Some((_, signal)) = streams.next().await {
-            // TODO: initialize issues
             self.handle_signal(signal).await?;
         }
 
+        Ok(())
+    }
+
+    async fn update_issues(&self) -> Result<(), Error> {
+        let issues = self.client.get_issues().await?;
+        self.issues
+            .cast(issue::message::Set::new(Scope::Storage, issues))?;
         Ok(())
     }
 
@@ -159,18 +167,12 @@ impl Monitor {
         Ok(())
     }
 
-    // TODO: add proposal to the event.
     async fn handle_proposal_changed(&self, _signal: ProposalChanged) -> Result<(), Error> {
         self.events.send(Event::ProposalChanged {
             scope: Scope::Storage,
         })?;
 
-        let issues = self.client.get_issues().await?;
-        self.issues
-            .call(issue::message::Set::new(Scope::Storage, issues))
-            .await?;
-
-        Ok(())
+        self.update_issues().await
     }
 
     fn handle_progress_changed(&self, signal: ProgressChanged) -> Result<(), Error> {
