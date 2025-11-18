@@ -30,6 +30,7 @@ const question: Question = {
   id: 1,
   text: "Do you write unit tests?",
   options: ["always", "sometimes", "never"],
+  optionLabels: ["Always", "Sometimes", "Never"],
   defaultOption: "sometimes",
 };
 

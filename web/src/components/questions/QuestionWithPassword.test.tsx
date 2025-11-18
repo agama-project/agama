@@ -34,6 +34,7 @@ const question: Question = {
   class: "question.password",
   text: "Random question. Will you provide random password?",
   options: ["ok", "cancel"],
+  optionLabels: ["Ok", "Cancel"],
   defaultOption: "cancel",
 };
 
