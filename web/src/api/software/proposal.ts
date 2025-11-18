@@ -23,8 +23,8 @@
 import { PatternsSelection } from "~/types/software";
 
 type Proposal = {
-  size?: string;
-  patterns?: PatternsSelection;
+  size: string;
+  patterns: PatternsSelection;
 };
 
 export type { Proposal };

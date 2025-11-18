@@ -22,12 +22,13 @@
 
 import * as l10n from "~/api/l10n/system";
 import * as storage from "~/api/storage/system";
-import { Product } from "~/types/software";
+import { AddonInfo, Pattern, Product, Repository } from "~/types/software";
 
 type System = {
   l10n?: l10n.System;
   storage?: storage.System;
   products?: Product[];
+  software?: { addons: AddonInfo[]; patterns: Pattern[]; repositories: Repository[] };
 };
 
 export { l10n, storage };
