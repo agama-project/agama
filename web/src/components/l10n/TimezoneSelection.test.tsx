@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024] SUSE LLC
+ * Copyright (c) [2024-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -25,13 +25,9 @@ import TimezoneSelection from "./TimezoneSelection";
 import userEvent from "@testing-library/user-event";
 import { screen } from "@testing-library/react";
 import { mockNavigateFn, installerRender } from "~/test-utils";
-import { Timezone } from "~/api/system";
+import { Timezone } from "~/api/l10n/system";
 
-jest.mock("~/components/product/ProductRegistrationAlert", () => () => (
-  <div>ProductRegistrationAlert Mock</div>
-));
-
-const mockUpdateConfigFn = jest.fn();
+const mockPatchConfigFn = jest.fn();
 
 const timezones: Timezone[] = [
   { id: "Europe/Berlin", parts: ["Europe", "Berlin"], country: "Germany", utcOffset: 120 },
@@ -50,24 +46,24 @@ const timezones: Timezone[] = [
   },
 ];
 
-jest.mock("~/queries/system", () => ({
-  ...jest.requireActual("~/queries/system"),
+jest.mock("~/components/product/ProductRegistrationAlert", () => () => (
+  <div>ProductRegistrationAlert Mock</div>
+));
+
+jest.mock("~/hooks/api", () => ({
+  ...jest.requireActual("~/hooks/api"),
   useSystem: () => ({ l10n: { timezones } }),
+  useProposal: () => ({ l10n: { timezones, timezone: "Europe/Berlin" } }),
 }));
 
-jest.mock("~/queries/proposal", () => ({
-  ...jest.requireActual("~/queries/proposal"),
-  useProposal: () => ({ l10n: { timezones, timezone: "Europe/Berlin" } }),
+jest.mock("~/api", () => ({
+  ...jest.requireActual("~/api"),
+  patchConfig: (config) => mockPatchConfigFn(config),
 }));
 
 jest.mock("react-router", () => ({
   ...jest.requireActual("react-router"),
   useNavigate: () => mockNavigateFn,
-}));
-
-jest.mock("~/api/api", () => ({
-  ...jest.requireActual("~/api/api"),
-  updateConfig: (config) => mockUpdateConfigFn(config),
 }));
 
 beforeEach(() => {
@@ -89,7 +85,7 @@ it("allows changing the timezone", async () => {
   await user.click(option);
   const button = await screen.findByRole("button", { name: "Select" });
   await user.click(button);
-  expect(mockUpdateConfigFn).toHaveBeenCalledWith({ l10n: { timezone: "Europe/Madrid" } });
+  expect(mockPatchConfigFn).toHaveBeenCalledWith({ l10n: { timezone: "Europe/Madrid" } });
   expect(mockNavigateFn).toHaveBeenCalledWith(-1);
 });
 

@@ -24,19 +24,20 @@ import React from "react";
 import { screen, within } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import L10nPage from "~/components/l10n/L10nPage";
-import { System, Keymap, Locale, Timezone } from "~/api/system";
-import { Proposal } from "~/api/proposal";
+import { Keymap, Locale, Timezone } from "~/api/l10n/system";
+import { useProposal, useSystem } from "~/hooks/api";
 
-let mockSystemData: System;
-let mockProposedData: Proposal;
+let mockSystemData: ReturnType<typeof useSystem>;
+let mockProposedData: ReturnType<typeof useProposal>;
+
 const locales: Locale[] = [
-  { id: "en_US.UTF-8", name: "English", territory: "United States" },
-  { id: "es_ES.UTF-8", name: "Spanish", territory: "Spain" },
+  { id: "en_US.UTF-8", language: "English", territory: "United States" },
+  { id: "es_ES.UTF-8", language: "Spanish", territory: "Spain" },
 ];
 
 const keymaps: Keymap[] = [
-  { id: "us", name: "English" },
-  { id: "es", name: "Spanish" },
+  { id: "us", description: "English" },
+  { id: "es", description: "Spanish" },
 ];
 
 const timezones: Timezone[] = [
@@ -50,11 +51,8 @@ jest.mock("~/components/product/ProductRegistrationAlert", () => () => (
 
 jest.mock("~/components/core/InstallerOptions", () => () => <div>InstallerOptions Mock</div>);
 
-jest.mock("~/queries/system", () => ({
+jest.mock("~/hooks/api", () => ({
   useSystem: () => mockSystemData,
-}));
-
-jest.mock("~/queries/proposal", () => ({
   useProposal: () => mockProposedData,
 }));
 
@@ -69,9 +67,6 @@ beforeEach(() => {
 
   mockProposedData = {
     l10n: {
-      locales,
-      keymaps,
-      timezones,
       locale: "en_US.UTF-8",
       keymap: "us",
       timezone: "Europe/Berlin",
