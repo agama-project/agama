@@ -111,7 +111,7 @@ impl ProfileBody {
     /// Expected format is a HashMap<String, String>, expecte keys are
     /// path, url or profile
     fn from_string(string: String) -> Self {
-        let map: HashMap<String, String> = serde_json::from_str(&string).unwrap_or(HashMap::new());
+        let map: HashMap<String, String> = serde_json::from_str(&string).unwrap_or_default();
 
         Self {
             path: map.get("path").cloned(),
