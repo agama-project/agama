@@ -67,9 +67,8 @@ const InstallerL10nSettingsInfo = () => {
  */
 export default function L10nPage() {
   // FIXME: retrieve selection from config when ready
-  const { l10n: l10nProposal } = useProposal();
-  const { l10n: l10nSystem } = useSystem();
-  console.log(l10nProposal);
+  const { l10n: l10nProposal } = useProposal({ suspense: true });
+  const { l10n: l10nSystem } = useSystem({ suspense: true });
 
   const locale =
     l10nProposal.locale && l10nSystem.locales.find((l) => l.id === l10nProposal.locale);

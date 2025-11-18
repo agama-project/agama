@@ -34,10 +34,10 @@ export default function KeyboardSelection() {
   const navigate = useNavigate();
   const {
     l10n: { keymaps },
-  } = useSystem();
+  } = useSystem({ suspense: true });
   const {
     l10n: { keymap: currentKeymap },
-  } = useProposal();
+  } = useProposal({ suspense: true });
 
   // FIXME: get current keymap from either, proposal or config
   const [selected, setSelected] = useState(currentKeymap);

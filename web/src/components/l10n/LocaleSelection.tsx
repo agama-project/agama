@@ -35,10 +35,10 @@ export default function LocaleSelection() {
   const navigate = useNavigate();
   const {
     l10n: { locales },
-  } = useSystem();
+  } = useSystem({ suspense: true });
   const {
     l10n: { locale: currentLocale },
-  } = useProposal();
+  } = useProposal({ suspense: true });
   const [selected, setSelected] = useState(currentLocale);
   const [filteredLocales, setFilteredLocales] = useState(locales);
 
