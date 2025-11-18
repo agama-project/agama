@@ -28,15 +28,15 @@ pub use agama_network as network;
 pub use agama_software as software;
 pub use agama_storage as storage;
 
+pub mod test_utils;
+
 #[cfg(test)]
 mod test {
     use crate::{
         message,
         service::{Error, Service},
+        test_utils,
     };
-    use agama_l10n::test_utils::build_service as build_l10n_service;
-    use agama_network::test_utils::build_service as build_network_service;
-    use agama_storage::test_utils::build_service as build_storage_service;
     use agama_utils::{
         actor::Handler,
         api::{
@@ -44,7 +44,7 @@ mod test {
             software::{self, ProductConfig},
             Config, Event,
         },
-        issue, progress, question, test,
+        test,
     };
     use std::path::PathBuf;
     use test_context::{test_context, AsyncTestContext};
@@ -79,29 +79,16 @@ mod test {
             let share_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../test/share");
             std::env::set_var("AGAMA_SHARE_DIR", share_dir.display().to_string());
 
-            let (events_sender, mut events_receiver) = broadcast::channel::<Event>(16);
+            let (events_tx, mut events_rx) = broadcast::channel::<Event>(16);
             let dbus = test::dbus::connection().await.unwrap();
 
             tokio::spawn(async move {
-                while let Ok(event) = events_receiver.recv().await {
+                while let Ok(event) = events_rx.recv().await {
                     println!("{:?}", event);
                 }
             });
 
-            let issues = issue::start(events_sender.clone(), dbus.clone())
-                .await
-                .unwrap();
-            let questions = question::start(events_sender.clone()).await.unwrap();
-            let progress = progress::Service::builder(events_sender.clone()).build();
-
-            let handler = Service::builder(questions, events_sender.clone(), dbus.clone())
-                .with_l10n(build_l10n_service(events_sender.clone(), issues.clone()).await)
-                .with_storage(build_storage_service(events_sender, issues, progress, dbus).await)
-                .with_network(build_network_service().await)
-                .spawn()
-                .await
-                .unwrap();
-
+            let handler = test_utils::spawn_service(events_tx, dbus).await;
             Context { handler }
         }
     }

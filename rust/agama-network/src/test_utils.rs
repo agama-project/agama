@@ -48,11 +48,11 @@ impl Adapter for TestAdapter {
     }
 }
 
-pub async fn build_service() -> NetworkSystemClient {
+pub async fn spawn_service() -> NetworkSystemClient {
     let adapter = TestAdapter;
     let system = NetworkSystem::new(adapter);
     system
         .start()
         .await
-        .expect("Could not start the testing network system")
+        .expect("Could not spawn a testing network service")
 }

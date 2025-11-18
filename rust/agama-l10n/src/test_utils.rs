@@ -120,8 +120,8 @@ impl ModelAdapter for TestModel {
     }
 }
 
-/// Builds a sample service.
-pub async fn build_service(
+/// Spawns a testing l10n service.
+pub async fn spawn_service(
     events: event::Sender,
     issues: Handler<issue::Service>,
 ) -> Handler<Service> {
@@ -130,5 +130,5 @@ pub async fn build_service(
         .with_model(model)
         .spawn()
         .await
-        .unwrap()
+        .expect("Could not spawn a testing l10n service")
 }

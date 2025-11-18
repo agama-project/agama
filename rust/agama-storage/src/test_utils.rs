@@ -152,8 +152,8 @@ impl StorageClient for TestClient {
     }
 }
 
-/// Builds a sample service.
-pub async fn build_service(
+/// Spawns a testing storage service.
+pub async fn spawn_service(
     events: event::Sender,
     issues: Handler<issue::Service>,
     progress: Handler<progress::Service>,
@@ -164,5 +164,5 @@ pub async fn build_service(
         .with_client(client)
         .spawn()
         .await
-        .unwrap()
+        .expect("Could not spawn a testing storage service")
 }
