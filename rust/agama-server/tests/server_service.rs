@@ -21,7 +21,7 @@
 pub mod common;
 use agama_manager::test_utils::spawn_service;
 use agama_server::server::web::{server_with_state, ServerState};
-use agama_utils::{api, question, test};
+use agama_utils::{question, test};
 use axum::http::{Method, Request, StatusCode};
 use common::body_to_string;
 use std::{error::Error, path::PathBuf};
@@ -62,23 +62,12 @@ impl AsyncTestContext for Context {
 }
 
 async fn select_product(client: &Client) -> Result<(), Box<dyn Error>> {
-    let software = api::software::Config {
-        product: Some(api::software::ProductConfig {
-            id: Some("SLES".to_string()),
-            ..Default::default()
-        }),
-        ..Default::default()
-    };
-    let config = api::Config {
-        software: Some(software),
-        ..Default::default()
-    };
-
+    let json = r#"{"product": {"id": "SLES"}}"#;
     let request = Request::builder()
         .uri("/config")
         .header("Content-Type", "application/json")
         .method(Method::PUT)
-        .body(serde_json::to_string(&config)?)?;
+        .body(json.to_string())?;
     let response = client.send_request(request).await;
     assert_eq!(
         response.status(),
@@ -127,29 +116,20 @@ async fn test_get_empty_config(ctx: &mut Context) -> Result<(), Box<dyn Error>> 
 #[test_context(Context)]
 #[test]
 async fn test_put_config_success(ctx: &mut Context) -> Result<(), Box<dyn Error>> {
-    let software = api::software::Config {
-        product: Some(api::software::ProductConfig {
-            id: Some("SLES".to_string()),
-            ..Default::default()
-        }),
-        ..Default::default()
-    };
-
-    let input_config = api::Config {
-        software: Some(software),
-        l10n: Some(api::l10n::Config {
-            locale: Some("es_ES.UTF-8".to_string()),
-            keymap: Some("es".to_string()),
-            timezone: Some("Atlantic/Canary".to_string()),
-        }),
-        ..Default::default()
-    };
+    let json = r#"
+        {
+          "product": { "id": "SLES" },
+          "l10n": {
+            "locale": "es_ES.UTF-8", "keymap": "es", "timezone": "Atlantic/Canary"
+          }
+        }
+    "#;
 
     let request = Request::builder()
         .uri("/config")
         .header("Content-Type", "application/json")
         .method(Method::PUT)
-        .body(serde_json::to_string(&input_config)?)
+        .body(json.to_string())
         .unwrap();
 
     let response = ctx.client.send_request(request).await;
@@ -173,20 +153,19 @@ async fn test_put_config_success(ctx: &mut Context) -> Result<(), Box<dyn Error>
 #[test_context(Context)]
 #[test]
 async fn test_put_config_without_product(ctx: &mut Context) -> Result<(), Box<dyn Error>> {
-    let config = api::Config {
-        l10n: Some(api::l10n::Config {
-            locale: Some("es_ES.UTF-8".to_string()),
-            keymap: Some("es".to_string()),
-            timezone: Some("Atlantic/Canary".to_string()),
-        }),
-        ..Default::default()
-    };
+    let json = r#"
+        {
+          "l10n": {
+            "locale": "es_ES.UTF-8", "keymap": "es", "timezone": "Atlantic/Canary"
+          }
+        }
+    "#;
 
     let request = Request::builder()
         .uri("/config")
         .header("Content-Type", "application/json")
         .method(Method::PUT)
-        .body(serde_json::to_string(&config)?)
+        .body(json.to_string())
         .unwrap();
 
     let response = ctx.client.send_request(request).await;
@@ -217,42 +196,30 @@ async fn test_put_config_invalid_json(ctx: &mut Context) -> Result<(), Box<dyn E
 async fn test_patch_config_success(ctx: &mut Context) -> Result<(), Box<dyn Error>> {
     select_product(&ctx.client).await?;
 
-    let l10n = api::l10n::Config {
-        locale: Some("es_ES.UTF-8".to_string()),
-        keymap: Some("es".to_string()),
-        timezone: Some("Atlantic/Canary".to_string()),
-    };
-
-    let config = api::Config {
-        l10n: Some(l10n),
-        ..Default::default()
-    };
+    let json = r#"
+        {
+          "l10n": {
+            "locale": "es_ES.UTF-8", "keymap": "es", "timezone": "Atlantic/Canary"
+          }
+        }
+    "#;
 
     let request = Request::builder()
         .uri("/config")
         .header("Content-Type", "application/json")
         .method(Method::PATCH)
-        .body(serde_json::to_string(&config)?)
+        .body(json.to_string())
         .unwrap();
 
     let response = ctx.client.send_request(request).await;
     assert_eq!(response.status(), StatusCode::OK);
 
-    let config = api::Config {
-        l10n: Some(api::l10n::Config {
-            locale: None,
-            keymap: Some("en".to_string()),
-            timezone: None,
-        }),
-        ..Default::default()
-    };
-    let patch = agama_utils::api::Patch::with_update(&config).unwrap();
-
+    let json = r#"{ "update": { "l10n": { "keymap": "en" } } }"#;
     let request = Request::builder()
         .uri("/config")
         .header("Content-Type", "application/json")
         .method(Method::PATCH)
-        .body(serde_json::to_string(&patch)?)
+        .body(json.to_string())
         .unwrap();
 
     let response = ctx.client.send_request(request).await;
@@ -277,23 +244,12 @@ async fn test_patch_config_success(ctx: &mut Context) -> Result<(), Box<dyn Erro
 async fn test_patch_config_without_selected_product(
     ctx: &mut Context,
 ) -> Result<(), Box<dyn Error>> {
-    let l10n = api::l10n::Config {
-        keymap: Some("es".to_string()),
-        ..Default::default()
-    };
-
-    let config = api::Config {
-        l10n: Some(l10n),
-        ..Default::default()
-    };
-
-    let patch = agama_utils::api::Patch::with_update(&config).unwrap();
-
+    let json = r#"{ "update": { "l10n": { "keymap": "en" } } }"#;
     let request = Request::builder()
         .uri("/config")
         .header("Content-Type", "application/json")
         .method(Method::PATCH)
-        .body(serde_json::to_string(&patch)?)
+        .body(json.to_string())
         .unwrap();
 
     let response = ctx.client.send_request(request).await;
