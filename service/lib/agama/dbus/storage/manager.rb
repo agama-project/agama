@@ -21,7 +21,6 @@
 
 require "y2storage/storage_manager"
 require "agama/dbus/base_object"
-require "agama/dbus/interfaces/issues"
 require "agama/dbus/storage/iscsi_nodes_tree"
 require "agama/storage/config_conversions"
 require "agama/storage/encryption_settings"
