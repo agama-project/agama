@@ -212,6 +212,7 @@ dependencies = [
  "strum",
  "subprocess",
  "tempfile",
+ "test-context",
  "thiserror 2.0.16",
  "tokio",
  "tokio-openssl",
