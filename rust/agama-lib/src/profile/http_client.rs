@@ -52,7 +52,9 @@ impl ProfileHTTPClient {
     /// to our web backend.
     /// Return well-formed Agama JSON on success.
     pub async fn from_autoyast(&self, url: &Uri<String>) -> anyhow::Result<String> {
-        let map = HashMap::new().insert(String::from("url"), url.to_string());
+        let mut map = HashMap::new();
+
+        map.insert(String::from("url"), url.to_string());
 
         // FIXME: how to escape it?
         let output: Box<serde_json::value::RawValue> =
