@@ -189,6 +189,12 @@ describe Y2Storage::AgamaProposal do
 
   let(:scenario) { "empty-hd-50GiB.yaml" }
 
+  before do
+    # To speed-up the tests
+    allow(Y2Storage::BootRequirementsStrategies::Analyzer)
+      .to receive(:bls_bootloader_proposed?).and_return(false)
+  end
+
   describe "#propose" do
     context "when only the root partition is specified" do
       let(:config) { default_config }

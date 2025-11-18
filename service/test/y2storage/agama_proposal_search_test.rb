@@ -51,6 +51,8 @@ describe Y2Storage::AgamaProposal do
     mock_storage(devicegraph: scenario)
     # To speed-up the tests
     allow(Y2Storage::EncryptionMethod::TPM_FDE).to receive(:possible?).and_return(true)
+    allow(Y2Storage::BootRequirementsStrategies::Analyzer)
+      .to receive(:bls_bootloader_proposed?).and_return(false)
   end
 
   let(:scenario) { "disks.yaml" }
