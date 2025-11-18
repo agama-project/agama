@@ -48,12 +48,12 @@ mod tests {
             let (events_tx, _events_rx) = broadcast::channel::<Event>(16);
             let dbus = test::dbus::connection().await.unwrap();
             let issues = issue::start(events_tx.clone(), dbus.clone()).await.unwrap();
-            let progress = progress::Service::builder(events_tx.clone()).build();
+            let progress = progress::Service::starter(events_tx.clone()).start();
 
             let client = TestClient::new();
-            let handler = Service::builder(events_tx, issues.clone(), progress, dbus)
+            let handler = Service::starter(events_tx, issues.clone(), progress, dbus)
                 .with_client(client.clone())
-                .spawn()
+                .start()
                 .await
                 .expect("Could not start the storage service");
 

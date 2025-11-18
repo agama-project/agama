@@ -20,24 +20,24 @@
 
 //! This module implements a set of utilities for tests.
 
-use agama_l10n::test_utils::spawn_service as spawn_l10n_service;
-use agama_network::test_utils::spawn_service as spawn_network_service;
-use agama_storage::test_utils::spawn_service as spawn_storage_service;
+use agama_l10n::test_utils::start_service as start_l10n_service;
+use agama_network::test_utils::start_service as start_network_service;
+use agama_storage::test_utils::start_service as start_storage_service;
 use agama_utils::{actor::Handler, api::event, issue, progress, question};
 
 use crate::Service;
 
-/// Spawns a testing manager service.
-pub async fn spawn_service(events: event::Sender, dbus: zbus::Connection) -> Handler<Service> {
+/// Starts a testing manager service.
+pub async fn start_service(events: event::Sender, dbus: zbus::Connection) -> Handler<Service> {
     let issues = issue::start(events.clone(), dbus.clone()).await.unwrap();
     let questions = question::start(events.clone()).await.unwrap();
-    let progress = progress::Service::builder(events.clone()).build();
+    let progress = progress::Service::starter(events.clone()).start();
 
-    Service::builder(questions, events.clone(), dbus.clone())
-        .with_l10n(spawn_l10n_service(events.clone(), issues.clone()).await)
-        .with_storage(spawn_storage_service(events, issues, progress, dbus).await)
-        .with_network(spawn_network_service().await)
-        .spawn()
+    Service::starter(questions, events.clone(), dbus.clone())
+        .with_l10n(start_l10n_service(events.clone(), issues.clone()).await)
+        .with_storage(start_storage_service(events, issues, progress, dbus).await)
+        .with_network(start_network_service().await)
+        .start()
         .await
         .expect("Could not spawn a testing manager service")
 }

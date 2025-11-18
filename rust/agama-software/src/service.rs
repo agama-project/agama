@@ -64,8 +64,8 @@ pub enum Error {
     ZyppError(#[from] zypp_agama::errors::ZyppError),
 }
 
-/// Builds and spawns the software service.
-pub struct Builder {
+/// Starts the software service.
+pub struct Starter {
     model: Option<Arc<Mutex<dyn ModelAdapter + Send + 'static>>>,
     events: event::Sender,
     issues: Handler<issue::Service>,
@@ -73,7 +73,7 @@ pub struct Builder {
     questions: Handler<question::Service>,
 }
 
-impl Builder {
+impl Starter {
     pub fn new(
         events: event::Sender,
         issues: Handler<issue::Service>,
@@ -100,8 +100,8 @@ impl Builder {
         self
     }
 
-    /// Spawns the software service.
-    pub async fn spawn(self) -> Result<Handler<Service>, Error> {
+    /// Starts the service and returns a handler to communicate with it.
+    pub async fn start(self) -> Result<Handler<Service>, Error> {
         let model = match self.model {
             Some(model) => model,
             None => {
@@ -157,8 +157,8 @@ impl Service {
         issues: Handler<issue::Service>,
         progress: Handler<progress::Service>,
         questions: Handler<question::Service>,
-    ) -> Builder {
-        Builder::new(events, issues, progress, questions)
+    ) -> Starter {
+        Starter::new(events, issues, progress, questions)
     }
 
     pub async fn setup(&mut self) -> Result<(), Error> {

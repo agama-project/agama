@@ -19,7 +19,7 @@
 // find current contact information at www.suse.com.
 
 pub mod common;
-use agama_manager::test_utils::spawn_service;
+use agama_manager::test_utils::start_service;
 use agama_server::server::web::{server_with_state, ServerState};
 use agama_utils::{question, test};
 use axum::http::{Method, Request, StatusCode};
@@ -51,7 +51,7 @@ impl AsyncTestContext for Context {
         });
 
         let questions = question::start(events_tx.clone()).await.unwrap();
-        let manager = spawn_service(events_tx, dbus).await;
+        let manager = start_service(events_tx, dbus).await;
 
         let service = server_with_state(ServerState::new(manager, questions))
             .expect("Could not create the testing router");

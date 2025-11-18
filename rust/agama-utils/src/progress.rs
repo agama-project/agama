@@ -41,7 +41,7 @@ mod tests {
 
     fn start_testing_service() -> (event::Receiver, Handler<Service>) {
         let (events, receiver) = broadcast::channel::<Event>(16);
-        let handler = Service::builder(events).build();
+        let handler = Service::starter(events).start();
         (receiver, handler)
     }
 

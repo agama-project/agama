@@ -93,8 +93,8 @@ pub async fn server_service(
     let questions = question::start(events.clone())
         .await
         .map_err(anyhow::Error::msg)?;
-    let manager = manager::Service::builder(questions.clone(), events, dbus)
-        .spawn()
+    let manager = manager::Service::starter(questions.clone(), events, dbus)
+        .start()
         .await
         .map_err(anyhow::Error::msg)?;
     let state = ServerState::new(manager, questions);

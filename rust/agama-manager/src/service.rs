@@ -72,7 +72,7 @@ pub enum Error {
     NetworkSystem(#[from] network::NetworkSystemError),
 }
 
-pub struct Builder {
+pub struct Starter {
     questions: Handler<question::Service>,
     events: event::Sender,
     dbus: zbus::Connection,
@@ -84,7 +84,7 @@ pub struct Builder {
     progress: Option<Handler<progress::Service>>,
 }
 
-impl Builder {
+impl Starter {
     pub fn new(
         questions: Handler<question::Service>,
         events: event::Sender,
@@ -133,8 +133,8 @@ impl Builder {
         self
     }
 
-    /// Spawns the manager service.
-    pub async fn spawn(self) -> Result<Handler<Service>, Error> {
+    /// Starts the service and returns a handler to communicate with it.
+    pub async fn start(self) -> Result<Handler<Service>, Error> {
         let issues = match self.issues {
             Some(issues) => issues,
             None => issue::start(self.events.clone(), self.dbus.clone()).await?,
@@ -142,14 +142,14 @@ impl Builder {
 
         let progress = match self.progress {
             Some(progress) => progress,
-            None => progress::Service::builder(self.events.clone()).build(),
+            None => progress::Service::starter(self.events.clone()).start(),
         };
 
         let l10n = match self.l10n {
             Some(l10n) => l10n,
             None => {
-                l10n::Service::builder(self.events.clone(), issues.clone())
-                    .spawn()
+                l10n::Service::starter(self.events.clone(), issues.clone())
+                    .start()
                     .await?
             }
         };
@@ -163,7 +163,7 @@ impl Builder {
                     progress.clone(),
                     self.questions.clone(),
                 )
-                .spawn()
+                .start()
                 .await?
             }
         };
@@ -171,13 +171,13 @@ impl Builder {
         let storage = match self.storage {
             Some(storage) => storage,
             None => {
-                storage::Service::builder(
+                storage::Service::starter(
                     self.events.clone(),
                     issues.clone(),
                     progress.clone(),
                     self.dbus.clone(),
                 )
-                .spawn()
+                .start()
                 .await?
             }
         };
@@ -228,12 +228,12 @@ pub struct Service {
 }
 
 impl Service {
-    pub fn builder(
+    pub fn starter(
         questions: Handler<question::Service>,
         events: event::Sender,
         dbus: zbus::Connection,
-    ) -> Builder {
-        Builder::new(questions, events, dbus)
+    ) -> Starter {
+        Starter::new(questions, events, dbus)
     }
 
     /// Set up the service by reading the registries and determining the default product.

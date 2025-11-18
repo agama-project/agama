@@ -32,7 +32,7 @@ use agama_utils::{
 
 use crate::{
     model::{KeymapsDatabase, LocalesDatabase, TimezonesDatabase},
-    service, Builder, ModelAdapter, Service,
+    service, ModelAdapter, Service, Starter,
 };
 
 /// Test adapter.
@@ -120,15 +120,15 @@ impl ModelAdapter for TestModel {
     }
 }
 
-/// Spawns a testing l10n service.
-pub async fn spawn_service(
+/// Starts a testing l10n service.
+pub async fn start_service(
     events: event::Sender,
     issues: Handler<issue::Service>,
 ) -> Handler<Service> {
     let model = TestModel::with_sample_data();
-    Builder::new(events, issues)
+    Starter::new(events, issues)
         .with_model(model)
-        .spawn()
+        .start()
         .await
         .expect("Could not spawn a testing l10n service")
 }

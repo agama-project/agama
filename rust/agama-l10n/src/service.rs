@@ -77,14 +77,14 @@ pub enum Error {
 /// - A monitor which checks for changes in the underlying system (e.g., changing the keymap)
 ///   and signals the main service accordingly.
 /// - It depends on the issues service to keep the installation issues.
-pub struct Builder {
+pub struct Starter {
     model: Option<Box<dyn ModelAdapter + Send + 'static>>,
     issues: Handler<issue::Service>,
     events: event::Sender,
 }
 
-impl Builder {
-    /// Creates a new builder.
+impl Starter {
+    /// Creates a new starter.
     ///
     /// * `events`: channel to emit the [localization-specific events](crate::Event).
     /// * `issues`: handler to the issues service.
@@ -108,8 +108,11 @@ impl Builder {
         self
     }
 
-    /// Spawns the l10n service and the D-Bus monitor.
-    pub async fn spawn(self) -> Result<Handler<Service>, Error> {
+    /// Starts the service and returns a handler to communicate with it.
+    ///
+    /// The service uses a separate monitor to listen to system configuration
+    /// changes.
+    pub async fn start(self) -> Result<Handler<Service>, Error> {
         let model = match self.model {
             Some(model) => model,
             None => Box::new(Model::from_system()?),
@@ -126,11 +129,11 @@ impl Builder {
             events: self.events,
         };
         let handler = actor::spawn(service);
-        Self::spawn_monitor(handler.clone()).await;
+        Self::start_monitor(handler.clone()).await;
         Ok(handler)
     }
 
-    pub async fn spawn_monitor(handler: Handler<Service>) {
+    pub async fn start_monitor(handler: Handler<Service>) {
         match Monitor::new(handler.clone()).await {
             Ok(monitor) => monitor::spawn(monitor),
             Err(error) => {
@@ -160,8 +163,8 @@ pub struct Service {
 }
 
 impl Service {
-    pub fn builder(events: event::Sender, issues: Handler<issue::Service>) -> Builder {
-        Builder::new(events, issues)
+    pub fn starter(events: event::Sender, issues: Handler<issue::Service>) -> Starter {
+        Starter::new(events, issues)
     }
 
     fn get_proposal(&self) -> Option<Proposal> {

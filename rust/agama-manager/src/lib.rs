@@ -88,7 +88,7 @@ mod test {
                 }
             });
 
-            let handler = test_utils::spawn_service(events_tx, dbus).await;
+            let handler = test_utils::start_service(events_tx, dbus).await;
             Context { handler }
         }
     }

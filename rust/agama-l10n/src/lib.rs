@@ -36,7 +36,7 @@
 //! returns a [agama_utils::actors::ActorHandler] to interact with the system.
 
 pub mod service;
-pub use service::{Builder, Service};
+pub use service::{Service, Starter};
 
 mod model;
 pub use model::{KeymapsDatabase, LocalesDatabase, Model, ModelAdapter, TimezonesDatabase};
@@ -78,9 +78,9 @@ mod tests {
             let issues = issue::start(events_tx.clone(), dbus).await.unwrap();
 
             let model = TestModel::with_sample_data();
-            let handler = Service::builder(events_tx, issues.clone())
+            let handler = Service::starter(events_tx, issues.clone())
                 .with_model(model)
-                .spawn()
+                .start()
                 .await
                 .expect("Could not start the l10n service");
 

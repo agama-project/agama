@@ -35,7 +35,7 @@ use tokio::sync::{Mutex, RwLock};
 
 use crate::{
     client::{Error, StorageClient},
-    service::Builder,
+    service::Starter,
     Service,
 };
 
@@ -152,17 +152,17 @@ impl StorageClient for TestClient {
     }
 }
 
-/// Spawns a testing storage service.
-pub async fn spawn_service(
+/// Starts a testing storage service.
+pub async fn start_service(
     events: event::Sender,
     issues: Handler<issue::Service>,
     progress: Handler<progress::Service>,
     dbus: zbus::Connection,
 ) -> Handler<Service> {
     let client = TestClient::new();
-    Builder::new(events, issues, progress, dbus)
+    Starter::new(events, issues, progress, dbus)
         .with_client(client)
-        .spawn()
+        .start()
         .await
-        .expect("Could not spawn a testing storage service")
+        .expect("Could not start a testing storage service")
 }

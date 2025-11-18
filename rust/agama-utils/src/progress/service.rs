@@ -44,16 +44,17 @@ pub enum Error {
 
 // NOTE: this service does not need a builder, but we decided to implement one just for
 // consistency.
-pub struct Builder {
+pub struct Starter {
     event: event::Sender,
 }
 
-impl Builder {
+impl Starter {
     pub fn new(event: event::Sender) -> Self {
         Self { event }
     }
 
-    pub fn build(self) -> Handler<Service> {
+    /// Starts the service and returns a handler to communicate with it.
+    pub fn start(self) -> Handler<Service> {
         let service = Service {
             events: self.event,
             progresses: vec![],
@@ -70,8 +71,8 @@ pub struct Service {
 }
 
 impl Service {
-    pub fn builder(events: event::Sender) -> Builder {
-        Builder::new(events)
+    pub fn starter(events: event::Sender) -> Starter {
+        Starter::new(events)
     }
 
     fn get_progress(&self, scope: Scope) -> Option<&Progress> {

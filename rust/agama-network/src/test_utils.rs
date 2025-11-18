@@ -48,7 +48,8 @@ impl Adapter for TestAdapter {
     }
 }
 
-pub async fn spawn_service() -> NetworkSystemClient {
+/// Starts a testing network service.
+pub async fn start_service() -> NetworkSystemClient {
     let adapter = TestAdapter;
     let system = NetworkSystem::new(adapter);
     system

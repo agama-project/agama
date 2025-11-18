@@ -43,8 +43,8 @@ pub enum Error {
     Monitor(#[from] monitor::Error),
 }
 
-/// Builds and spawns the storage service.
-pub struct Builder {
+/// Starts the storage service.
+pub struct Starter {
     events: event::Sender,
     issues: Handler<issue::Service>,
     progress: Handler<progress::Service>,
@@ -52,7 +52,7 @@ pub struct Builder {
     client: Option<Box<dyn StorageClient + Send + 'static>>,
 }
 
-impl Builder {
+impl Starter {
     pub fn new(
         events: event::Sender,
         issues: Handler<issue::Service>,
@@ -73,8 +73,8 @@ impl Builder {
         self
     }
 
-    /// Spawns the storage service.
-    pub async fn spawn(self) -> Result<Handler<Service>, Error> {
+    /// Starts the service and returns a handler to communicate with it.
+    pub async fn start(self) -> Result<Handler<Service>, Error> {
         let client = match self.client {
             Some(client) => client,
             None => Box::new(Client::new(self.dbus.clone())),
@@ -106,13 +106,13 @@ pub struct Service {
 }
 
 impl Service {
-    pub fn builder(
+    pub fn starter(
         events: event::Sender,
         issues: Handler<issue::Service>,
         progress: Handler<progress::Service>,
         dbus: zbus::Connection,
-    ) -> Builder {
-        Builder::new(events, issues, progress, dbus)
+    ) -> Starter {
+        Starter::new(events, issues, progress, dbus)
     }
 
     pub async fn setup(self) -> Result<Self, Error> {
