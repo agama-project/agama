@@ -34,6 +34,7 @@ impl Callback for CommitDownload {
         description: &str,
     ) -> zypp_agama::callbacks::ProblemResponse {
         // TODO: make it generic for any problemResponse questions
+        // TODO: we need support for abort and make it default action
         let labels = [gettext("Retry"), gettext("Ignore")];
         let actions = [
             ("Retry", labels[0].as_str()),

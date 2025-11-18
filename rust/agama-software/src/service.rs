@@ -28,9 +28,7 @@ use crate::{
 use agama_utils::{
     actor::{self, Actor, Handler, MessageHandler},
     api::{
-        event::{self, Event},
-        software::{Config, Proposal, Repository, SoftwareProposal, SystemInfo},
-        Issue, IssueSeverity, Scope,
+        Issue, IssueSeverity, Scope, event::{self, Event}, software::{Config, Proposal, Repository, SoftwareProposal, SystemInfo}
     },
     issue,
     products::ProductSpec,

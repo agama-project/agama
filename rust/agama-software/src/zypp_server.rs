@@ -35,7 +35,7 @@ use tokio::sync::{
 use zypp_agama::ZyppError;
 
 use crate::{
-    callbacks::commit_download,
+    callbacks::{commit_download, security},
     model::state::{self, SoftwareState},
 };
 
@@ -104,6 +104,7 @@ pub enum SoftwareAction {
     Write {
         state: SoftwareState,
         progress: Handler<progress::Service>,
+        question: Handler<question::Service>,
         tx: oneshot::Sender<ZyppServerResult<Vec<Issue>>>,
     },
 }
@@ -173,16 +174,19 @@ impl ZyppServer {
             SoftwareAction::Write {
                 state,
                 progress,
+                question,
                 tx,
             } => {
-                self.write(state, progress, tx, zypp).await?;
+                let mut security_callback = security::Security::new(question);
+                self.write(state, progress, &mut security_callback, tx, zypp).await?;
             }
             SoftwareAction::GetPatternsMetadata(names, tx) => {
                 self.get_patterns(names, tx, zypp).await?;
             }
             SoftwareAction::Install(tx, progress, question) => {
-                let callback = commit_download::CommitDownload::new(progress, question);
-                tx.send(self.install(zypp, &callback))
+                let download_callback = commit_download::CommitDownload::new(progress, question.clone());
+                let mut security_callback = security::Security::new(question);
+                tx.send(self.install(zypp, &download_callback, &mut security_callback))
                     .map_err(|_| ZyppDispatchError::ResponseChannelClosed)?;
             }
             SoftwareAction::Finish(tx) => {
@@ -200,11 +204,12 @@ impl ZyppServer {
         &self,
         zypp: &zypp_agama::Zypp,
         download_callback: &commit_download::CommitDownload,
+        security_callback: &mut security::Security,
     ) -> ZyppServerResult<bool> {
         let target = "/mnt";
         zypp.switch_target(target)?;
         // TODO: write real install callbacks beside download ones
-        let result = zypp.commit(download_callback)?;
+        let result = zypp.commit(download_callback, security_callback)?;
         tracing::info!("libzypp commit ends with {}", result);
         Ok(result)
     }
@@ -235,6 +240,7 @@ impl ZyppServer {
         &self,
         state: SoftwareState,
         progress: Handler<progress::Service>,
+        security: &mut security::Security,
         tx: oneshot::Sender<ZyppServerResult<Vec<Issue>>>,
         zypp: &zypp_agama::Zypp,
     ) -> Result<(), ZyppDispatchError> {
@@ -310,7 +316,7 @@ impl ZyppServer {
             let result = zypp.load_source(|percent, alias| {
                 tracing::info!("Refreshing repositories: {} ({}%)", alias, percent);
                 true
-            });
+            }, security);
 
             if let Err(error) = result {
                 let message = format!("Could not read the repositories");
