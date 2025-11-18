@@ -22,7 +22,12 @@ use crate::error::ProfileError;
 use anyhow::Context;
 use log::info;
 use serde_json;
-use std::{fs, io::Write, path::Path, process::Command};
+use std::{
+    fs,
+    io::Write,
+    path::{Path, PathBuf},
+    process::Command,
+};
 use tempfile::{tempdir, TempDir};
 use url::Url;
 
@@ -116,19 +121,23 @@ pub struct ProfileValidator {
 
 impl ProfileValidator {
     pub fn default_schema() -> Result<Self, ProfileError> {
-        let relative_path = Path::new("agama-lib/share/profile.schema.json");
+        let relative_path = PathBuf::from("agama-lib/share/profile.schema.json");
         let path = if relative_path.exists() {
             relative_path
         } else {
-            Path::new("/usr/share/agama-cli/profile.schema.json")
+            let schema_dir =
+                std::env::var("AGAMA_SCHEMA_DIR").unwrap_or("/usr/share/agama-cli".to_string());
+            PathBuf::from(schema_dir).join("profile.schema.json")
         };
         info!("Validation with path {:?}", path);
         Self::new(path)
     }
 
-    pub fn new(schema_path: &Path) -> Result<Self, ProfileError> {
-        let contents = fs::read_to_string(schema_path)
-            .context(format!("Failed to read schema at {:?}", schema_path))?;
+    pub fn new<P: AsRef<Path>>(schema_path: P) -> Result<Self, ProfileError> {
+        let contents = fs::read_to_string(&schema_path).context(format!(
+            "Failed to read schema at {}",
+            schema_path.as_ref().to_string_lossy()
+        ))?;
         let mut schema: serde_json::Value = serde_json::from_str(&contents)?;
 
         // Set $id of the main schema file to allow retrieving subschema files by using relative
