@@ -43,8 +43,8 @@ export default function SoftwareSection(): React.ReactNode {
   const TextWithList = () => {
     // TRANSLATORS: %s will be replaced with the installation size, example: "5GiB".
     const [msg1, msg2] = _("The installation will take %s including:").split("%s");
-    const availablePatterns = Object.keys(proposal.patterns);
-    const selectedPatterns = available.patterns.filter((p) => availablePatterns.includes(p.name));
+    const selectedPatternsIds = Object.keys(proposal.patterns);
+    const selectedPatterns = available.patterns.filter((p) => selectedPatternsIds.includes(p.name));
 
     return (
       <>
