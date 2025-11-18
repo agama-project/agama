@@ -69,10 +69,10 @@ export default function TimezoneSelection() {
   const navigate = useNavigate();
   const {
     l10n: { timezones },
-  } = useSystem();
+  } = useSystem({ suspense: true });
   const {
     l10n: { timezone: currentTimezone },
-  } = useProposal();
+  } = useProposal({ suspense: true });
 
   const displayTimezones = timezones.map(timezoneWithDetails);
   const [selected, setSelected] = useState(currentTimezone);

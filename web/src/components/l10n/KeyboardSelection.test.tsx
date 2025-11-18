@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024] SUSE LLC
+ * Copyright (c) [2024-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -25,32 +25,28 @@ import KeyboardSelection from "./KeyboardSelection";
 import userEvent from "@testing-library/user-event";
 import { screen } from "@testing-library/react";
 import { mockNavigateFn, installerRender } from "~/test-utils";
-import { Keymap } from "~/api/system";
+import { Keymap } from "~/api/l10n/system";
+
+const mockPatchConfigFn = jest.fn();
 
 const keymaps: Keymap[] = [
-  { id: "us", name: "English" },
-  { id: "es", name: "Spanish" },
+  { id: "us", description: "English" },
+  { id: "es", description: "Spanish" },
 ];
-
-const mockUpdateConfigFn = jest.fn();
 
 jest.mock("~/components/product/ProductRegistrationAlert", () => () => (
   <div>ProductRegistrationAlert Mock</div>
 ));
 
-jest.mock("~/queries/system", () => ({
-  ...jest.requireActual("~/queries/system"),
+jest.mock("~/hooks/api", () => ({
+  ...jest.requireActual("~/hooks/api"),
   useSystem: () => ({ l10n: { keymaps } }),
-}));
-
-jest.mock("~/queries/proposal", () => ({
-  ...jest.requireActual("~/queries/proposal"),
   useProposal: () => ({ l10n: { keymap: "us" } }),
 }));
 
-jest.mock("~/api/api", () => ({
-  ...jest.requireActual("~/api/api"),
-  updateConfig: (config) => mockUpdateConfigFn(config),
+jest.mock("~/api", () => ({
+  ...jest.requireActual("~/api"),
+  patchConfig: (config) => mockPatchConfigFn(config),
 }));
 
 jest.mock("react-router", () => ({
@@ -65,6 +61,6 @@ it("allows changing the keyboard", async () => {
   await userEvent.click(option);
   const button = await screen.findByRole("button", { name: "Select" });
   await userEvent.click(button);
-  expect(mockUpdateConfigFn).toHaveBeenCalledWith({ l10n: { keymap: "es" } });
+  expect(mockPatchConfigFn).toHaveBeenCalledWith({ l10n: { keymap: "es" } });
   expect(mockNavigateFn).toHaveBeenCalledWith(-1);
 });

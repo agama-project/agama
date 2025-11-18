@@ -107,7 +107,7 @@ const KeyboardFormInput = ({ value, onChange }: SelectProps) => {
         onChange={onChange}
       >
         {keymaps.map((keymap, index) => (
-          <FormSelectOption key={index} value={keymap.id} label={keymap.name} />
+          <FormSelectOption key={index} value={keymap.id} label={keymap.description} />
         ))}
       </FormSelect>
     </FormGroup>

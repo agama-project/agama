@@ -67,9 +67,8 @@ const InstallerL10nSettingsInfo = () => {
  */
 export default function L10nPage() {
   // FIXME: retrieve selection from config when ready
-  const { l10n: l10nProposal } = useProposal();
-  const { l10n: l10nSystem } = useSystem();
-  console.log(l10nProposal);
+  const { l10n: l10nProposal } = useProposal({ suspense: true });
+  const { l10n: l10nSystem } = useSystem({ suspense: true });
 
   const locale =
     l10nProposal.locale && l10nSystem.locales.find((l) => l.id === l10nProposal.locale);
@@ -96,7 +95,7 @@ export default function L10nPage() {
               }
             >
               <Content isEditorial>
-                {locale ? `${locale.name} - ${locale.territory}` : _("Wrong selection")}
+                {locale ? `${locale.language} - ${locale.territory}` : _("Wrong selection")}
               </Content>
             </Page.Section>
           </GridItem>
@@ -109,7 +108,7 @@ export default function L10nPage() {
                 </Link>
               }
             >
-              <Content isEditorial>{keymap ? keymap.name : _("Wrong selection")}</Content>
+              <Content isEditorial>{keymap ? keymap.description : _("Wrong selection")}</Content>
             </Page.Section>
           </GridItem>
           <GridItem md={4}>
