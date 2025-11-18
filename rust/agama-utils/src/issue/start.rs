@@ -27,16 +27,11 @@ use crate::{
     },
 };
 
-#[derive(thiserror::Error, Debug)]
-pub enum Error {
-    #[error(transparent)]
-    Service(#[from] service::Error),
-}
-
+// FIXME: replace this start function with a service builder.
 pub async fn start(
     events: event::Sender,
     dbus: zbus::Connection,
-) -> Result<Handler<Service>, Error> {
+) -> Result<Handler<Service>, service::Error> {
     let service = Service::new(events);
     let handler = actor::spawn(service);
 

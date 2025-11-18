@@ -64,6 +64,7 @@ dependencies = [
  "async-trait",
  "gettext-rs",
  "regex",
+ "test-context",
  "thiserror 2.0.16",
  "tokio",
  "tokio-stream",
@@ -139,6 +140,7 @@ dependencies = [
  "async-trait",
  "merge-struct",
  "serde_json",
+ "test-context",
  "thiserror 2.0.16",
  "tokio",
  "tokio-test",
@@ -210,6 +212,7 @@ dependencies = [
  "strum",
  "subprocess",
  "tempfile",
+ "test-context",
  "thiserror 2.0.16",
  "tokio",
  "tokio-openssl",
@@ -258,9 +261,11 @@ dependencies = [
  "async-trait",
  "serde",
  "serde_json",
+ "test-context",
  "thiserror 2.0.16",
  "tokio",
  "tokio-stream",
+ "tokio-test",
  "zbus",
 ]
 
@@ -1695,12 +1700,28 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "42703706b716c37f96a77aea830392ad231f44c9e9a67872fa5548707e11b11c"
 
 [[package]]
+name = "futures"
+version = "0.3.31"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "65bc07b1a8bc7c85c5f2e110c476c7389b4554ba72af57d8445ea63a576b0876"
+dependencies = [
+ "futures-channel",
+ "futures-core",
+ "futures-executor",
+ "futures-io",
+ "futures-sink",
+ "futures-task",
+ "futures-util",
+]
+
+[[package]]
 name = "futures-channel"
 version = "0.3.31"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "2dff15bf788c671c1934e366d07e30c1814a8ef514e1af724a602e8a2fbe1b10"
 dependencies = [
  "futures-core",
+ "futures-sink",
 ]
 
 [[package]]
@@ -1708,6 +1729,17 @@ name = "futures-core"
 version = "0.3.31"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "05f29059c0c2090612e8d742178b0580d2dc940c837851ad723096f87af6663e"
+
+[[package]]
+name = "futures-executor"
+version = "0.3.31"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1e28d1d997f585e54aebc3f97d39e72338912123a67330d723fdbb564d646c9f"
+dependencies = [
+ "futures-core",
+ "futures-task",
+ "futures-util",
+]
 
 [[package]]
 name = "futures-io"
@@ -1757,10 +1789,13 @@ version = "0.3.31"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "9fa08315bb612088cc391249efdc3bc77536f16c91f6cf495e6fbe85b20a4a81"
 dependencies = [
+ "futures-channel",
  "futures-core",
+ "futures-io",
  "futures-macro",
  "futures-sink",
  "futures-task",
+ "memchr",
  "pin-project-lite",
  "pin-utils",
  "slab",
@@ -4350,6 +4385,27 @@ checksum = "45c6481c4829e4cc63825e62c49186a34538b7b2750b73b266581ffb612fb5ed"
 dependencies = [
  "rustix 1.0.5",
  "windows-sys 0.59.0",
+]
+
+[[package]]
+name = "test-context"
+version = "0.4.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "cb69cce03e432993e2dc1f93f7899b952300fcb6dc44191a1b830b60b8c3c8aa"
+dependencies = [
+ "futures",
+ "test-context-macros",
+]
+
+[[package]]
+name = "test-context-macros"
+version = "0.4.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "97e0639209021e54dbe19cafabfc0b5574b078c37358945e6d473eabe39bb974"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 2.0.101",
 ]
 
 [[package]]

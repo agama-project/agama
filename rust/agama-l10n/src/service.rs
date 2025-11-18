@@ -18,9 +18,10 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::config::Config;
-use crate::message;
 use crate::model::ModelAdapter;
+use crate::monitor::Monitor;
+use crate::{config::Config, Model};
+use crate::{message, monitor};
 use agama_locale_data::{InvalidKeymapId, InvalidLocaleId, InvalidTimezoneId, KeymapId, LocaleId};
 use agama_utils::{
     actor::{self, Actor, Handler, MessageHandler},
@@ -65,6 +66,86 @@ pub enum Error {
     MissingProposal,
 }
 
+/// Builds and spawns the l10n service.
+///
+/// This struct allows to build a l10n service. It allows replacing
+/// the "model" for a custom one.
+///
+/// It spawns two Tokio tasks:
+///
+/// - The main service, which is reponsible for holding and applying the configuration.
+/// - A monitor which checks for changes in the underlying system (e.g., changing the keymap)
+///   and signals the main service accordingly.
+/// - It depends on the issues service to keep the installation issues.
+pub struct Starter {
+    model: Option<Box<dyn ModelAdapter + Send + 'static>>,
+    issues: Handler<issue::Service>,
+    events: event::Sender,
+}
+
+impl Starter {
+    /// Creates a new starter.
+    ///
+    /// * `events`: channel to emit the [localization-specific events](crate::Event).
+    /// * `issues`: handler to the issues service.
+    pub fn new(events: event::Sender, issues: Handler<issue::Service>) -> Self {
+        Self {
+            // FIXME: rename to "adapter"
+            model: None,
+            events,
+            issues,
+        }
+    }
+
+    /// Uses the given model.
+    ///
+    /// By default, the l10n service relies on systemd. However, it might be useful
+    /// to replace it in some scenarios (e.g., when testing).
+    ///
+    /// * `model`: model to use. It must implement the [ModelAdapter] trait.
+    pub fn with_model<T: ModelAdapter + Send + 'static>(mut self, model: T) -> Self {
+        self.model = Some(Box::new(model));
+        self
+    }
+
+    /// Starts the service and returns a handler to communicate with it.
+    ///
+    /// The service uses a separate monitor to listen to system configuration
+    /// changes.
+    pub async fn start(self) -> Result<Handler<Service>, Error> {
+        let model = match self.model {
+            Some(model) => model,
+            None => Box::new(Model::from_system()?),
+        };
+
+        let system = model.read_system_info();
+        let config = Config::new_from(&system);
+
+        let service = Service {
+            system,
+            config,
+            model,
+            issues: self.issues,
+            events: self.events,
+        };
+        let handler = actor::spawn(service);
+        Self::start_monitor(handler.clone()).await;
+        Ok(handler)
+    }
+
+    pub async fn start_monitor(handler: Handler<Service>) {
+        match Monitor::new(handler.clone()).await {
+            Ok(monitor) => monitor::spawn(monitor),
+            Err(error) => {
+                tracing::error!(
+                "Could not launch the l10n monitor, therefore changes from systemd will be ignored. \
+                 The original error was {error}"
+            );
+            }
+        }
+    }
+}
+
 /// Localization service.
 ///
 /// It is responsible for handling the localization part of the installation:
@@ -82,21 +163,8 @@ pub struct Service {
 }
 
 impl Service {
-    pub fn new<T: ModelAdapter + Send + 'static>(
-        model: T,
-        issues: Handler<issue::Service>,
-        events: event::Sender,
-    ) -> Service {
-        let system = model.read_system_info();
-        let config = Config::new_from(&system);
-
-        Self {
-            system,
-            config,
-            model: Box::new(model),
-            issues,
-            events,
-        }
+    pub fn starter(events: event::Sender, issues: Handler<issue::Service>) -> Starter {
+        Starter::new(events, issues)
     }
 
     fn get_proposal(&self) -> Option<Proposal> {

@@ -73,6 +73,12 @@ pub struct ServerState {
     questions: Handler<question::Service>,
 }
 
+impl ServerState {
+    pub fn new(manager: Handler<manager::Service>, questions: Handler<question::Service>) -> Self {
+        Self { manager, questions }
+    }
+}
+
 type ServerResult<T> = Result<T, Error>;
 
 /// Sets up and returns the axum service for the manager module
@@ -87,12 +93,14 @@ pub async fn server_service(
     let questions = question::start(events.clone())
         .await
         .map_err(anyhow::Error::msg)?;
-    let manager = manager::start(questions.clone(), events, dbus)
+    let manager = manager::Service::starter(questions.clone(), events, dbus)
+        .start()
         .await
         .map_err(anyhow::Error::msg)?;
-
-    let state = ServerState { manager, questions };
-
+    let state = ServerState::new(manager, questions);
+    server_with_state(state)
+}
+pub fn server_with_state(state: ServerState) -> Result<Router, ServiceError> {
     Ok(Router::new()
         .route("/status", get(get_status))
         .route("/system", get(get_system))

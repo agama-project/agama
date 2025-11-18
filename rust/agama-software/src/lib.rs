@@ -35,9 +35,6 @@
 //! returns a [agama_utils::actors::ActorHandler] to interact with the system
 //! and also creates own separate thread for libzypp to satisfy its requirements.
 
-pub mod start;
-pub use start::start;
-
 pub mod service;
 pub use service::Service;
 

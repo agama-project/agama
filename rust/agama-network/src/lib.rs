@@ -37,3 +37,5 @@ pub use adapter::{Adapter, NetworkAdapterError};
 pub use model::NetworkState;
 pub use nm::NetworkManagerAdapter;
 pub use system::{NetworkSystem, NetworkSystemClient, NetworkSystemError};
+
+pub mod test_utils;

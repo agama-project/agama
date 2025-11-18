@@ -71,6 +71,7 @@ path = "src/agama-web-server.rs"
 
 [dev-dependencies]
 http-body-util = "0.1.2"
+test-context = "0.4.1"
 tokio-test = "0.4.4"
 
 [lints.rust]

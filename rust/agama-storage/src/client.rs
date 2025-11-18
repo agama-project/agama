@@ -24,6 +24,7 @@ use agama_utils::{
     api::{storage::Config, Issue},
     products::ProductSpec,
 };
+use async_trait::async_trait;
 use serde_json::Value;
 use std::sync::Arc;
 use tokio::sync::RwLock;
@@ -45,6 +46,28 @@ pub enum Error {
     Json(#[from] serde_json::Error),
 }
 
+#[async_trait]
+pub trait StorageClient {
+    async fn activate(&self) -> Result<(), Error>;
+    async fn probe(&self) -> Result<(), Error>;
+    async fn install(&self) -> Result<(), Error>;
+    async fn finish(&self) -> Result<(), Error>;
+    async fn get_system(&self) -> Result<Option<Value>, Error>;
+    async fn get_config(&self) -> Result<Option<Config>, Error>;
+    async fn get_config_model(&self) -> Result<Option<Value>, Error>;
+    async fn get_proposal(&self) -> Result<Option<Value>, Error>;
+    async fn get_issues(&self) -> Result<Vec<Issue>, Error>;
+    async fn set_product(&self, id: String) -> Result<(), Error>;
+    async fn set_config(
+        &self,
+        product: Arc<RwLock<ProductSpec>>,
+        config: Option<Config>,
+    ) -> Result<(), Error>;
+    async fn set_config_model(&self, model: Value) -> Result<(), Error>;
+    async fn solve_config_model(&self, model: Value) -> Result<Option<Value>, Error>;
+    async fn set_locale(&self, locale: String) -> Result<(), Error>;
+}
+
 /// D-Bus client for the storage service
 #[derive(Clone)]
 pub struct Client {
@@ -54,85 +77,6 @@ pub struct Client {
 impl Client {
     pub fn new(connection: Connection) -> Self {
         Self { connection }
-    }
-
-    pub async fn activate(&self) -> Result<(), Error> {
-        self.call("Activate", &()).await?;
-        Ok(())
-    }
-
-    pub async fn probe(&self) -> Result<(), Error> {
-        self.call("Probe", &()).await?;
-        Ok(())
-    }
-
-    pub async fn install(&self) -> Result<(), Error> {
-        self.call("Install", &()).await?;
-        Ok(())
-    }
-
-    pub async fn finish(&self) -> Result<(), Error> {
-        self.call("Finish", &()).await?;
-        Ok(())
-    }
-
-    pub async fn get_system(&self) -> Result<Option<Value>, Error> {
-        let message = self.call("GetSystem", &()).await?;
-        try_from_message(message)
-    }
-
-    pub async fn get_config(&self) -> Result<Option<Config>, Error> {
-        let message = self.call("GetConfig", &()).await?;
-        try_from_message(message)
-    }
-
-    pub async fn get_config_model(&self) -> Result<Option<Value>, Error> {
-        let message = self.call("GetConfigModel", &()).await?;
-        try_from_message(message)
-    }
-
-    pub async fn get_proposal(&self) -> Result<Option<Value>, Error> {
-        let message = self.call("GetProposal", &()).await?;
-        try_from_message(message)
-    }
-
-    pub async fn get_issues(&self) -> Result<Vec<Issue>, Error> {
-        let message = self.call("GetIssues", &()).await?;
-        try_from_message(message)
-    }
-
-    //TODO: send a product config instead of an id.
-    pub async fn set_product(&self, id: String) -> Result<(), Error> {
-        self.call("SetProduct", &(id)).await?;
-        Ok(())
-    }
-
-    pub async fn set_config(
-        &self,
-        product: Arc<RwLock<ProductSpec>>,
-        config: Option<Config>,
-    ) -> Result<(), Error> {
-        let product_guard = product.read().await;
-        let product_json = serde_json::to_string(&*product_guard)?;
-        let config = config.filter(|c| c.has_value());
-        let config_json = serde_json::to_string(&config)?;
-        self.call("SetConfig", &(product_json, config_json)).await?;
-        Ok(())
-    }
-
-    pub async fn set_config_model(&self, model: Value) -> Result<(), Error> {
-        self.call("SetConfigModel", &(model.to_string())).await?;
-        Ok(())
-    }
-
-    pub async fn solve_config_model(&self, model: Value) -> Result<Option<Value>, Error> {
-        let message = self.call("SolveConfigModel", &(model.to_string())).await?;
-        try_from_message(message)
-    }
-
-    pub async fn set_locale(&self, locale: String) -> Result<(), Error> {
-        self.call("SetLocale", &(locale)).await?;
-        Ok(())
     }
 
     async fn call<T: serde::ser::Serialize + zbus::zvariant::DynamicType>(
@@ -146,6 +90,88 @@ impl Client {
             .call_method(Some(&bus), &path, Some(INTERFACE), method, body)
             .await
             .map_err(|e| e.into())
+    }
+}
+
+#[async_trait]
+impl StorageClient for Client {
+    async fn activate(&self) -> Result<(), Error> {
+        self.call("Activate", &()).await?;
+        Ok(())
+    }
+
+    async fn probe(&self) -> Result<(), Error> {
+        self.call("Probe", &()).await?;
+        Ok(())
+    }
+
+    async fn install(&self) -> Result<(), Error> {
+        self.call("Install", &()).await?;
+        Ok(())
+    }
+
+    async fn finish(&self) -> Result<(), Error> {
+        self.call("Finish", &()).await?;
+        Ok(())
+    }
+
+    async fn get_system(&self) -> Result<Option<Value>, Error> {
+        let message = self.call("GetSystem", &()).await?;
+        try_from_message(message)
+    }
+
+    async fn get_config(&self) -> Result<Option<Config>, Error> {
+        let message = self.call("GetConfig", &()).await?;
+        try_from_message(message)
+    }
+
+    async fn get_config_model(&self) -> Result<Option<Value>, Error> {
+        let message = self.call("GetConfigModel", &()).await?;
+        try_from_message(message)
+    }
+
+    async fn get_proposal(&self) -> Result<Option<Value>, Error> {
+        let message = self.call("GetProposal", &()).await?;
+        try_from_message(message)
+    }
+
+    async fn get_issues(&self) -> Result<Vec<Issue>, Error> {
+        let message = self.call("GetIssues", &()).await?;
+        try_from_message(message)
+    }
+
+    //TODO: send a product config instead of an id.
+    async fn set_product(&self, id: String) -> Result<(), Error> {
+        self.call("SetProduct", &(id)).await?;
+        Ok(())
+    }
+
+    async fn set_config(
+        &self,
+        product: Arc<RwLock<ProductSpec>>,
+        config: Option<Config>,
+    ) -> Result<(), Error> {
+        let product_guard = product.read().await;
+        let product_json = serde_json::to_string(&*product_guard)?;
+        let config = config.filter(|c| c.has_value());
+        let config_json = serde_json::to_string(&config)?;
+        self.call("SetConfig", &(product_json, config_json)).await?;
+        Ok(())
+    }
+
+    async fn set_config_model(&self, model: Value) -> Result<(), Error> {
+        self.call("SetConfigModel", &(model.to_string())).await?;
+        Ok(())
+    }
+
+    async fn solve_config_model(&self, model: Value) -> Result<Option<Value>, Error> {
+        let message = self.call("SolveConfigModel", &(model.to_string())).await?;
+        try_from_message(message)
+    }
+
+    async fn set_locale(&self, locale: String) -> Result<(), Error> {
+        self.call("SetLocale", &(locale)).await?;
+        Ok(())
     }
 }
 

@@ -34,7 +34,6 @@ impl TimezonesDatabase {
         Self::default()
     }
 
-    #[cfg(test)]
     pub fn with_entries(data: &[TimezoneEntry]) -> Self {
         Self {
             timezones: data.to_vec(),

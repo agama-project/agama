@@ -19,13 +19,14 @@
 // find current contact information at www.suse.com.
 
 use crate::{
-    client::{self, Client},
+    client::{self, Client, StorageClient},
     message,
+    monitor::{self, Monitor},
 };
 use agama_utils::{
     actor::{self, Actor, Handler, MessageHandler},
-    api::{storage::Config, Issue, Scope},
-    issue,
+    api::{event, storage::Config, Scope},
+    issue, progress,
 };
 use async_trait::async_trait;
 use serde_json::Value;
@@ -38,20 +39,80 @@ pub enum Error {
     Client(#[from] client::Error),
     #[error(transparent)]
     Issue(#[from] issue::service::Error),
+    #[error(transparent)]
+    Monitor(#[from] monitor::Error),
+}
+
+/// Starts the storage service.
+pub struct Starter {
+    events: event::Sender,
+    issues: Handler<issue::Service>,
+    progress: Handler<progress::Service>,
+    dbus: zbus::Connection,
+    client: Option<Box<dyn StorageClient + Send + 'static>>,
+}
+
+impl Starter {
+    pub fn new(
+        events: event::Sender,
+        issues: Handler<issue::Service>,
+        progress: Handler<progress::Service>,
+        dbus: zbus::Connection,
+    ) -> Self {
+        Self {
+            events,
+            issues,
+            progress,
+            dbus,
+            client: None,
+        }
+    }
+
+    pub fn with_client<T: StorageClient + Send + 'static>(mut self, client: T) -> Self {
+        self.client = Some(Box::new(client));
+        self
+    }
+
+    /// Starts the service and returns a handler to communicate with it.
+    pub async fn start(self) -> Result<Handler<Service>, Error> {
+        let client = match self.client {
+            Some(client) => client,
+            None => Box::new(Client::new(self.dbus.clone())),
+        };
+
+        let service = Service {
+            issues: self.issues.clone(),
+            client,
+        };
+        let handler = actor::spawn(service);
+
+        let monitor_client = Client::new(self.dbus.clone());
+        let monitor = Monitor::new(
+            self.progress,
+            self.issues,
+            self.events,
+            self.dbus,
+            monitor_client,
+        );
+        monitor::spawn(monitor)?;
+        Ok(handler)
+    }
 }
 
 /// Storage service.
 pub struct Service {
     issues: Handler<issue::Service>,
-    client: Client,
+    client: Box<dyn StorageClient + Send + 'static>,
 }
 
 impl Service {
-    pub fn new(issues: Handler<issue::Service>, connection: zbus::Connection) -> Service {
-        Self {
-            issues,
-            client: Client::new(connection),
-        }
+    pub fn starter(
+        events: event::Sender,
+        issues: Handler<issue::Service>,
+        progress: Handler<progress::Service>,
+        dbus: zbus::Connection,
+    ) -> Starter {
+        Starter::new(events, issues, progress, dbus)
     }
 
     pub async fn setup(self) -> Result<Self, Error> {
@@ -124,13 +185,6 @@ impl MessageHandler<message::GetConfigModel> for Service {
 impl MessageHandler<message::GetProposal> for Service {
     async fn handle(&mut self, _message: message::GetProposal) -> Result<Option<Value>, Error> {
         self.client.get_proposal().await.map_err(|e| e.into())
-    }
-}
-
-#[async_trait]
-impl MessageHandler<message::GetIssues> for Service {
-    async fn handle(&mut self, _message: message::GetIssues) -> Result<Vec<Issue>, Error> {
-        self.client.get_issues().await.map_err(|e| e.into())
     }
 }
 

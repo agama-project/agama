@@ -23,7 +23,8 @@ use std::{process::Command, sync::Arc};
 use crate::{
     message,
     model::{software_selection::SoftwareSelection, state::SoftwareState, ModelAdapter},
-    zypp_server::{self, SoftwareAction},
+    zypp_server::{self, SoftwareAction, ZyppServer},
+    Model,
 };
 use agama_utils::{
     actor::{self, Actor, Handler, MessageHandler},
@@ -34,7 +35,7 @@ use agama_utils::{
     },
     issue,
     products::ProductSpec,
-    progress,
+    progress, question,
 };
 use async_trait::async_trait;
 use tokio::sync::{broadcast, Mutex, RwLock};
@@ -63,14 +64,77 @@ pub enum Error {
     ZyppError(#[from] zypp_agama::errors::ZyppError),
 }
 
-/// Localization service.
+/// Starts the software service.
+pub struct Starter {
+    model: Option<Arc<Mutex<dyn ModelAdapter + Send + 'static>>>,
+    events: event::Sender,
+    issues: Handler<issue::Service>,
+    progress: Handler<progress::Service>,
+    questions: Handler<question::Service>,
+}
+
+impl Starter {
+    pub fn new(
+        events: event::Sender,
+        issues: Handler<issue::Service>,
+        progress: Handler<progress::Service>,
+        questions: Handler<question::Service>,
+    ) -> Self {
+        Self {
+            model: None,
+            events,
+            issues,
+            progress,
+            questions,
+        }
+    }
+
+    /// Use the given model.
+    ///
+    /// By default, the software service relies on libzypp (through the zypp-agama crate).
+    /// However, it might be useful to replace it in some scenarios (e.g., when testing).
+    ///
+    /// * `model`: model to use. It must implement the [ModelAdapter] trait.
+    pub fn with_model<T: ModelAdapter + Send + 'static>(mut self, model: T) -> Self {
+        self.model = Some(Arc::new(Mutex::new(model)));
+        self
+    }
+
+    /// Starts the service and returns a handler to communicate with it.
+    pub async fn start(self) -> Result<Handler<Service>, Error> {
+        let model = match self.model {
+            Some(model) => model,
+            None => {
+                let zypp_sender = ZyppServer::start()?;
+                Arc::new(Mutex::new(Model::new(
+                    zypp_sender,
+                    self.progress.clone(),
+                    self.questions.clone(),
+                )?))
+            }
+        };
+
+        let state = Arc::new(RwLock::new(Default::default()));
+        let mut service = Service {
+            model,
+            selection: Default::default(),
+            state,
+            events: self.events,
+            issues: self.issues,
+            progress: self.progress,
+        };
+        service.setup().await?;
+        Ok(actor::spawn(service))
+    }
+}
+
+/// Software service.
 ///
-/// It is responsible for handling the localization part of the installation:
+/// It is responsible for handling the software part of the installation:
 ///
-/// * Reads the list of known locales, keymaps and timezones.
-/// * Keeps track of the localization settings of the underlying system (the installer).
+/// * Reads the list of known products, patterns, etc.
 /// * Holds the user configuration.
-/// * Applies the user configuration at the end of the installation.
+/// * Selects and installs the software.
 pub struct Service {
     model: Arc<Mutex<dyn ModelAdapter + Send + 'static>>,
     issues: Handler<issue::Service>,
@@ -88,21 +152,13 @@ struct ServiceState {
 }
 
 impl Service {
-    pub fn new<T: ModelAdapter>(
-        model: T,
+    pub fn builder(
+        events: event::Sender,
         issues: Handler<issue::Service>,
         progress: Handler<progress::Service>,
-        events: event::Sender,
-    ) -> Service {
-        let state = Arc::new(RwLock::new(Default::default()));
-        Self {
-            model: Arc::new(Mutex::new(model)),
-            issues,
-            progress,
-            events,
-            state,
-            selection: Default::default(),
-        }
+        questions: Handler<question::Service>,
+    ) -> Starter {
+        Starter::new(events, issues, progress, questions)
     }
 
     pub async fn setup(&mut self) -> Result<(), Error> {
