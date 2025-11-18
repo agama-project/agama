@@ -23,13 +23,15 @@ use anyhow::Context;
 use log::info;
 use serde_json;
 use std::{
-    fs,
+    env, fs,
     io::Write,
     path::{Path, PathBuf},
     process::Command,
 };
 use tempfile::{tempdir, TempDir};
 use url::Url;
+
+pub const DEFAULT_SCHEMA_DIR: &str = "/usr/share/agama-cli";
 
 /// Downloads and converts autoyast profile.
 pub struct AutoyastProfileImporter {
@@ -125,8 +127,7 @@ impl ProfileValidator {
         let path = if relative_path.exists() {
             relative_path
         } else {
-            let schema_dir =
-                std::env::var("AGAMA_SCHEMA_DIR").unwrap_or("/usr/share/agama-cli".to_string());
+            let schema_dir = env::var("AGAMA_SCHEMA_DIR").unwrap_or(DEFAULT_SCHEMA_DIR.to_string());
             PathBuf::from(schema_dir).join("profile.schema.json")
         };
         info!("Validation with path {:?}", path);
