@@ -64,7 +64,7 @@ pub enum Error {
     ZyppError(#[from] zypp_agama::errors::ZyppError),
 }
 
-/// Budils and spawns the software service.
+/// Builds and spawns the software service.
 pub struct Builder {
     model: Option<Arc<Mutex<dyn ModelAdapter + Send + 'static>>>,
     events: event::Sender,

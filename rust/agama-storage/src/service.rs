@@ -44,8 +44,6 @@ pub enum Error {
 }
 
 /// Builds and spawns the storage service.
-//
-// TODO: Allow replacing the client for testing purposes.
 pub struct Builder {
     events: event::Sender,
     issues: Handler<issue::Service>,
