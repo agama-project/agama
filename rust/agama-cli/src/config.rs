@@ -117,7 +117,7 @@ pub async fn run(subcommand: ConfigCommands, opts: GlobalOpts) -> anyhow::Result
             destination.write(&json)?;
 
             eprintln!();
-            validate(&http_client, CliInput::Full(json.clone())).await?;
+            validate(&http_client, CliInput::Full(json.clone()), false).await?;
             Ok(())
         }
         ConfigCommands::Load { url_or_path } => {
@@ -125,7 +125,7 @@ pub async fn run(subcommand: ConfigCommands, opts: GlobalOpts) -> anyhow::Result
             let store = SettingsStore::new(http_client.clone()).await?;
             let url_or_path = url_or_path.unwrap_or(CliInput::Stdin);
             let contents = url_or_path.read_to_string(opts.insecure)?;
-            let valid = validate(&http_client, CliInput::Full(contents.clone())).await?;
+            let valid = validate(&http_client, CliInput::Full(contents.clone()), false).await?;
 
             if matches!(valid, ValidationOutcome::Valid) {
                 let result =
@@ -141,7 +141,7 @@ pub async fn run(subcommand: ConfigCommands, opts: GlobalOpts) -> anyhow::Result
         ConfigCommands::Validate { url_or_path, local } => {
             let _ = if !local {
                 let (http_client, _monitor) = build_clients(api_url, opts.insecure).await?;
-                validate(&http_client, url_or_path).await
+                validate(&http_client, url_or_path, false).await
             } else {
                 validate_local(url_or_path, opts.insecure)
             };
@@ -193,24 +193,19 @@ fn validate_local(url_or_path: CliInput, insecure: bool) -> anyhow::Result<Valid
     }
 }
 
-async fn validate_silently(
+async fn validate(
     client: &BaseHTTPClient,
     url_or_path: CliInput,
+    silent: bool,
 ) -> anyhow::Result<ValidationOutcome> {
     let request = url_or_path.to_map();
     let validity = ProfileHTTPClient::new(client.clone())
         .validate(&request)
         .await?;
 
-    Ok(validity)
-}
-
-async fn validate(
-    client: &BaseHTTPClient,
-    url_or_path: CliInput,
-) -> anyhow::Result<ValidationOutcome> {
-    let validity = validate_silently(client, url_or_path).await?;
-    let _ = validation_msg(&validity);
+    if !silent {
+        let _ = validation_msg(&validity);
+    }
 
     Ok(validity)
 }
@@ -284,7 +279,7 @@ async fn generate(
         from_json_or_jsonnet(client, url_or_path, insecure).await?
     };
 
-    let validity = validate_silently(client, CliInput::Full(profile_json.clone())).await?;
+    let validity = validate(client, CliInput::Full(profile_json.clone()), true).await?;
 
     if matches!(validity, ValidationOutcome::NotValid(_)) {
         println!("{}", &profile_json);
@@ -298,7 +293,7 @@ async fn generate(
     let config_json = serde_json::to_string_pretty(&model)?;
 
     println!("{}", &config_json);
-    let validity = validate(client, CliInput::Full(config_json.clone())).await?;
+    let validity = validate(client, CliInput::Full(config_json.clone()), false).await?;
 
     if matches!(validity, ValidationOutcome::NotValid(_)) {
         eprintln!(
@@ -365,7 +360,7 @@ async fn edit(
         // FIXME: invalid profile still gets loaded
         let contents =
             std::fs::read_to_string(&path).context(format!("Reading from file {:?}", path))?;
-        validate(&http_client, CliInput::Full(contents)).await?;
+        validate(&http_client, CliInput::Full(contents), false).await?;
         return Ok(InstallSettings::from_file(
             path,
             &InstallationContext::from_env()?,
