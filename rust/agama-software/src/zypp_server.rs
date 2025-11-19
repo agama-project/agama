@@ -492,6 +492,7 @@ impl ZyppServer {
         sender: oneshot::Sender<Result<SoftwareProposal, ZyppServerError>>,
         zypp: &zypp_agama::Zypp,
     ) -> Result<(), ZyppDispatchError> {
+        tracing::info!("Computing software proposal");
         // TODO: for now it just compute total size, but it can get info about partitions from storage and pass it to libzypp
         let mount_points = vec![zypp_agama::MountPoint {
             directory: "/".to_string(),
@@ -509,25 +510,37 @@ impl ZyppServer {
         let size = computed_mount_points.first().unwrap().used_size;
         // TODO: format size
         let size_str = format!("{size} KiB");
+        tracing::info!("Software size: {size_str}");
 
-        let selected_patterns: Result<
-            std::collections::HashMap<String, SelectedBy>,
-            ZyppServerError,
-        > = product_spec
+        let pattern_names = product_spec
             .software
             .user_patterns
             .iter()
             .map(|p| p.name())
-            .map(|name| {
-                let selected = zypp.is_package_selected(name)?;
-                let tag = if selected {
-                    SelectedBy::User
-                } else {
-                    SelectedBy::None
-                };
-                Ok((name.to_string(), tag))
-            })
             .collect();
+        let patterns_info = zypp.patterns_info(pattern_names);
+
+        let selected_patterns: Result<
+            std::collections::HashMap<String, SelectedBy>,
+            ZyppServerError,
+        > = patterns_info
+            .map(|patterns| {
+                patterns
+                    .iter()
+                    .map(|pattern| {
+                        let tag = match pattern.selected {
+                            zypp_agama::ResolvableSelected::Installation => SelectedBy::Auto,
+                            zypp_agama::ResolvableSelected::Not => SelectedBy::None,
+                            zypp_agama::ResolvableSelected::Solver => SelectedBy::Auto,
+                            zypp_agama::ResolvableSelected::User => SelectedBy::User,
+                        };
+                        (pattern.name.clone(), tag)
+                    })
+                    .collect()
+            })
+            .map_err(|e| e.into());
+
+        tracing::info!("Selected patterns: {selected_patterns:?}");
         let Ok(selected_patterns) = selected_patterns else {
             sender
                 .send(Err(selected_patterns.unwrap_err()))
