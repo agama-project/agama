@@ -408,7 +408,7 @@ unsafe extern "C" {
         who: RESOLVABLE_SELECTED,
         status: *mut Status,
     );
-    #[doc = " Reset status of all resolvables, unselects selected packages, patterns..."]
+    #[doc = " Reset status of all resolvables, unselects selected packages, patterns...\n Note: this also resets the user locks (\"taboo\" or \"keep installed\")"]
     pub fn resolvable_reset_all(_zypp: *mut Zypp);
     #[doc = " Get Pattern details.\n Unknown patterns are simply omitted from the result. Match by\n PatternInfo.name, not by index."]
     pub fn get_patterns_info(
