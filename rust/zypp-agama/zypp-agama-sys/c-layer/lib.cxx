@@ -654,7 +654,7 @@ void get_space_usage(struct Zypp *zypp, struct Status *status,
         zypp->zypp_pointer->diskUsage();
     for (unsigned i = 0; i < mount_points_size; ++i) {
       auto mp =
-          std::find_if(mount_points_set.begin(), mount_points_set.end(),
+          std::find_if(computed_set.begin(), computed_set.end(),
                        [mount_points, i](zypp::DiskUsageCounter::MountPoint m) {
                          return m.dir == mount_points[i].directory;
                        });
