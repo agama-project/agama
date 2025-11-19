@@ -138,6 +138,9 @@ void resolvable_unselect(struct Zypp *zypp, const char *name,
                          enum RESOLVABLE_SELECTED who,
                          struct Status *status) noexcept;
 
+/// Reset status of all resolvables, unselects selected packages, patterns...
+void resolvable_reset_all(struct Zypp *_zypp) noexcept;
+
 struct PatternNames {
   /// names of patterns
   const char *const *const names;
