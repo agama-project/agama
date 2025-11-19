@@ -323,7 +323,7 @@ void resolvable_unselect(struct Zypp *_zypp, const char *name,
 
 void resolvable_reset_all(struct Zypp *_zypp) noexcept {
   MIL << "Resetting status of all resolvables" << std::endl;
-  for (auto &item: zypp::ResPool::instance()) item.statusReinit();
+  for (auto &item: zypp::ResPool::instance()) item.statusReset();
 }
 
 struct PatternInfos get_patterns_info(struct Zypp *_zypp,
