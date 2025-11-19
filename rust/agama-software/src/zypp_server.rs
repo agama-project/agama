@@ -318,6 +318,9 @@ impl ZyppServer {
             }
         }
 
+        // reset everything to start from scratch
+        zypp.reset_resolvables();
+
         _ = progress.cast(progress::message::Next::new(Scope::Software));
         for resolvable_state in &state.resolvables {
             let resolvable = &resolvable_state.resolvable;
