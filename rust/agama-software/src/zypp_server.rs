@@ -22,7 +22,7 @@ use agama_utils::{
     actor::Handler,
     api::{
         software::{Pattern, SelectedBy, SoftwareProposal},
-        Issue, IssueSeverity, Scope,
+        Issue, Scope,
     },
     products::ProductSpec,
     progress, question,
@@ -283,8 +283,7 @@ impl ZyppServer {
             if let Err(error) = result {
                 let message = format!("Could not add the repository {}", repo.alias);
                 issues.push(
-                    Issue::new("software.add_repo", &message, IssueSeverity::Error)
-                        .with_details(&error.to_string()),
+                    Issue::new("software.add_repo", &message).with_details(&error.to_string()),
                 );
             }
             // Add an issue if it was not possible to add the repository.
@@ -299,8 +298,7 @@ impl ZyppServer {
             if let Err(error) = result {
                 let message = format!("Could not remove the repository {}", repo.alias);
                 issues.push(
-                    Issue::new("software.remove_repo", &message, IssueSeverity::Error)
-                        .with_details(&error.to_string()),
+                    Issue::new("software.remove_repo", &message).with_details(&error.to_string()),
                 );
             }
         }
@@ -315,8 +313,7 @@ impl ZyppServer {
             if let Err(error) = result {
                 let message = format!("Could not read the repositories");
                 issues.push(
-                    Issue::new("software.load_source", &message, IssueSeverity::Error)
-                        .with_details(&error.to_string()),
+                    Issue::new("software.load_source", &message).with_details(&error.to_string()),
                 );
             }
         }
@@ -338,7 +335,7 @@ impl ZyppServer {
             if let Err(error) = result {
                 let message = format!("Could not select pattern '{}'", &resolvable.name);
                 issues.push(
-                    Issue::new("software.select_pattern", &message, IssueSeverity::Error)
+                    Issue::new("software.select_pattern", &message)
                         .with_details(&error.to_string()),
                 );
             }

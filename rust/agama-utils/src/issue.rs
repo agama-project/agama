@@ -32,7 +32,89 @@ pub use service::Service;
 
 pub mod message;
 
-pub mod start;
-pub use start::start;
+#[cfg(test)]
+mod tests {
+    use crate::{
+        actor::Handler,
+        api::{
+            event::{Event, Receiver},
+            issue::Issue,
+            scope::Scope,
+        },
+        issue::{
+            message,
+            service::{Error, Service},
+        },
+    };
+    use test_context::{test_context, AsyncTestContext};
+    use tokio::sync::broadcast::{self, error::TryRecvError};
 
-mod monitor;
+    fn build_issue() -> Issue {
+        Issue {
+            description: "Product not selected".to_string(),
+            class: "missing_product".to_string(),
+            details: Some("A product is required.".to_string()),
+        }
+    }
+
+    struct Context {
+        handler: Handler<Service>,
+        receiver: Receiver,
+    }
+
+    impl AsyncTestContext for Context {
+        async fn setup() -> Context {
+            let (sender, receiver) = broadcast::channel::<Event>(16);
+            let handler = Service::starter(sender).start();
+            Self { handler, receiver }
+        }
+    }
+
+    #[test_context(Context)]
+    #[tokio::test]
+    async fn test_get_and_update_issues(ctx: &mut Context) -> Result<(), Error> {
+        let issues = ctx.handler.call(message::Get).await.unwrap();
+        assert!(issues.is_empty());
+
+        let issue = build_issue();
+        ctx.handler
+            .cast(message::Set::new(Scope::Manager, vec![issue]))?;
+
+        let issues = ctx.handler.call(message::Get).await?;
+        assert_eq!(issues.len(), 1);
+
+        assert!(ctx.receiver.recv().await.is_ok());
+        Ok(())
+    }
+
+    #[test_context(Context)]
+    #[tokio::test]
+    async fn test_update_without_event(ctx: &mut Context) -> Result<(), Error> {
+        let issues = ctx.handler.call(message::Get).await?;
+        assert!(issues.is_empty());
+
+        let issue = build_issue();
+        let update = message::Set::new(Scope::Manager, vec![issue]).notify(false);
+        ctx.handler.cast(update)?;
+
+        let issues = ctx.handler.call(message::Get).await?;
+        assert_eq!(issues.len(), 1);
+
+        assert!(matches!(ctx.receiver.try_recv(), Err(TryRecvError::Empty)));
+        Ok(())
+    }
+
+    #[test_context(Context)]
+    #[tokio::test]
+    async fn test_update_without_change(ctx: &mut Context) -> Result<(), Error> {
+        let issue = build_issue();
+        let update = message::Set::new(Scope::Manager, vec![issue.clone()]);
+        ctx.handler.call(update).await?;
+        assert!(ctx.receiver.try_recv().is_ok());
+
+        let update = message::Set::new(Scope::Manager, vec![issue]);
+        ctx.handler.call(update).await?;
+        assert!(matches!(ctx.receiver.try_recv(), Err(TryRecvError::Empty)));
+        Ok(())
+    }
+}

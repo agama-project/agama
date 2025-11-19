@@ -284,6 +284,7 @@ dependencies = [
  "serde_with",
  "serde_yaml",
  "strum",
+ "test-context",
  "thiserror 2.0.16",
  "tokio",
  "tokio-stream",

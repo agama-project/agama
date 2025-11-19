@@ -126,9 +126,7 @@ impl StorageClient for TestClient {
     async fn get_issues(&self) -> Result<Vec<Issue>, Error> {
         Ok(vec![])
     }
-    async fn set_product(&self, _id: String) -> Result<(), Error> {
-        Ok(())
-    }
+
     async fn set_config(
         &self,
         _product: Arc<RwLock<ProductSpec>>,

@@ -20,6 +20,7 @@
 # find current contact information at www.suse.com.
 
 require "agama/copyable"
+require "yast2/equatable"
 
 module Agama
   # Class representing the current product configuration.

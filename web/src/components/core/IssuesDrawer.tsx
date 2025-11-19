@@ -32,7 +32,6 @@ import {
 import Link from "~/components/core/Link";
 import { useIssues } from "~/hooks/api";
 import { useInstallerStatus } from "~/queries/status";
-import { IssueSeverity } from "~/api/issue";
 import { InstallationPhase } from "~/types/status";
 import { _ } from "~/i18n";
 
@@ -40,7 +39,7 @@ import { _ } from "~/i18n";
  * Drawer for displaying installation issues
  */
 const IssuesDrawer = forwardRef(({ onClose }: { onClose: () => void }, ref) => {
-  const issues = useIssues().filter((i) => i.severity === IssueSeverity.Error);
+  const issues = useIssues();
   const { phase } = useInstallerStatus({ suspense: true });
 
   // FIXME: share below headers with navigation menu
@@ -83,13 +82,10 @@ const IssuesDrawer = forwardRef(({ onClose }: { onClose: () => void }, ref) => {
                   </h4>
                   <ul>
                     {scopeIssues.map((issue, subIdx) => {
-                      const variant = issue.severity === IssueSeverity.Error ? "warning" : "info";
-
                       return (
                         <li key={subIdx}>
                           <HelperText>
-                            {/** @ts-expect-error TS complain about variant, let's fix it after PF6 migration */}
-                            <HelperTextItem variant={variant} screenReaderText="">
+                            <HelperTextItem variant={"warning"} screenReaderText="">
                               {issue.description}
                             </HelperTextItem>
                           </HelperText>

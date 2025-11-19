@@ -51,6 +51,8 @@ describe Y2Storage::AgamaProposal do
     mock_storage(devicegraph: scenario)
     # To speed-up the tests
     allow(Y2Storage::EncryptionMethod::TPM_FDE).to receive(:possible?).and_return(true)
+    allow(Y2Storage::BootRequirementsStrategies::Analyzer)
+      .to receive(:bls_bootloader_proposed?).and_return(false)
   end
 
   let(:scenario) { "empty-hd-50GiB.yaml" }
@@ -244,8 +246,7 @@ describe Y2Storage::AgamaProposal do
       it "reports the corresponding error" do
         proposal.propose
         expect(proposal.issues_list).to include an_object_having_attributes(
-          description: /no LVM physical volume with alias 'pv2'/,
-          severity:    Agama::Issue::Severity::ERROR
+          description: /no LVM physical volume with alias 'pv2'/
         )
       end
     end
@@ -296,8 +297,7 @@ describe Y2Storage::AgamaProposal do
       it "reports the corresponding error" do
         proposal.propose
         expect(proposal.issues_list).to include an_object_having_attributes(
-          description: /no LVM thin pool volume with alias 'pool'/,
-          severity:    Agama::Issue::Severity::ERROR
+          description: /no LVM thin pool volume with alias 'pool'/
         )
       end
     end
