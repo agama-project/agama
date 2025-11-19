@@ -39,6 +39,7 @@ pub type IssueMap = HashMap<Scope, Vec<Issue>>;
 pub struct Issue {
     pub class: String,
     pub description: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub details: Option<String>,
 }
 
