@@ -24,6 +24,7 @@ use serde::Serialize;
 
 /// Represents the reason why a pattern is selected.
 #[derive(Clone, Copy, Debug, PartialEq, Serialize, utoipa::ToSchema)]
+#[serde(rename_all = "camelCase")]
 pub enum SelectedBy {
     /// The pattern was selected by the user.
     User,
