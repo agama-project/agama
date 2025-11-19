@@ -18,7 +18,7 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::actor::{self, Actor, MessageHandler};
+use crate::actor::{self, Actor, Handler, MessageHandler};
 use crate::api::{
     event::{self, Event},
     issue::IssueMap,
@@ -36,13 +36,32 @@ pub enum Error {
     Actor(#[from] actor::Error),
 }
 
+pub struct Starter {
+    events: event::Sender,
+}
+
+impl Starter {
+    pub fn new(events: event::Sender) -> Self {
+        Self { events }
+    }
+
+    pub fn start(self) -> Handler<Service> {
+        let service = Service::new(self.events);
+        actor::spawn(service)
+    }
+}
+
 pub struct Service {
     issues: IssueMap,
     events: event::Sender,
 }
 
 impl Service {
-    pub fn new(events: event::Sender) -> Self {
+    pub fn starter(events: event::Sender) -> Starter {
+        Starter::new(events)
+    }
+
+    fn new(events: event::Sender) -> Self {
         Self {
             issues: IssueMap::new(),
             events,

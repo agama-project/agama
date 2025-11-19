@@ -47,7 +47,7 @@ mod tests {
         async fn setup() -> Context {
             let (events_tx, _events_rx) = broadcast::channel::<Event>(16);
             let dbus = test::dbus::connection().await.unwrap();
-            let issues = issue::start(events_tx.clone()).await.unwrap();
+            let issues = issue::Service::starter(events_tx.clone()).start();
             let progress = progress::Service::starter(events_tx.clone()).start();
 
             let client = TestClient::new();

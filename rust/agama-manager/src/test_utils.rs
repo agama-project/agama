@@ -29,7 +29,7 @@ use crate::Service;
 
 /// Starts a testing manager service.
 pub async fn start_service(events: event::Sender, dbus: zbus::Connection) -> Handler<Service> {
-    let issues = issue::start(events.clone()).await.unwrap();
+    let issues = issue::Service::starter(events.clone()).start();
     let questions = question::start(events.clone()).await.unwrap();
     let progress = progress::Service::starter(events.clone()).start();
 

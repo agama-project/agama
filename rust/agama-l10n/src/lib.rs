@@ -74,7 +74,7 @@ mod tests {
     impl AsyncTestContext for Context {
         async fn setup() -> Context {
             let (events_tx, events_rx) = broadcast::channel::<Event>(16);
-            let issues = issue::start(events_tx.clone()).await.unwrap();
+            let issues = issue::Service::starter(events_tx.clone()).start();
 
             let model = TestModel::with_sample_data();
             let handler = Service::starter(events_tx, issues.clone())
