@@ -80,21 +80,6 @@ impl Message for GetProposal {
 }
 
 #[derive(Clone)]
-pub struct SetProduct {
-    pub id: String,
-}
-
-impl SetProduct {
-    pub fn new(id: &str) -> Self {
-        Self { id: id.to_string() }
-    }
-}
-
-impl Message for SetProduct {
-    type Reply = ();
-}
-
-#[derive(Clone)]
 pub struct SetConfig {
     pub product: Arc<RwLock<ProductSpec>>,
     pub config: Option<Config>,

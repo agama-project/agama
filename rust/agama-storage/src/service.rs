@@ -168,14 +168,6 @@ impl MessageHandler<message::GetProposal> for Service {
 }
 
 #[async_trait]
-impl MessageHandler<message::SetProduct> for Service {
-    async fn handle(&mut self, message: message::SetProduct) -> Result<(), Error> {
-        self.client.set_product(message.id).await?;
-        Ok(())
-    }
-}
-
-#[async_trait]
 impl MessageHandler<message::SetConfig> for Service {
     async fn handle(&mut self, message: message::SetConfig) -> Result<(), Error> {
         self.client

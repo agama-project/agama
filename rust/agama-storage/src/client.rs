@@ -57,7 +57,6 @@ pub trait StorageClient {
     async fn get_config_model(&self) -> Result<Option<Value>, Error>;
     async fn get_proposal(&self) -> Result<Option<Value>, Error>;
     async fn get_issues(&self) -> Result<Vec<Issue>, Error>;
-    async fn set_product(&self, id: String) -> Result<(), Error>;
     async fn set_config(
         &self,
         product: Arc<RwLock<ProductSpec>>,
@@ -138,12 +137,6 @@ impl StorageClient for Client {
     async fn get_issues(&self) -> Result<Vec<Issue>, Error> {
         let message = self.call("GetIssues", &()).await?;
         try_from_message(message)
-    }
-
-    //TODO: send a product config instead of an id.
-    async fn set_product(&self, id: String) -> Result<(), Error> {
-        self.call("SetProduct", &(id)).await?;
-        Ok(())
     }
 
     async fn set_config(
