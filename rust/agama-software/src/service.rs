@@ -18,8 +18,6 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use std::{process::Command, sync::Arc};
-
 use crate::{
     message,
     model::{software_selection::SoftwareSelection, state::SoftwareState, ModelAdapter},
@@ -31,13 +29,14 @@ use agama_utils::{
     api::{
         event::{self, Event},
         software::{Config, Proposal, Repository, SoftwareProposal, SystemInfo},
-        Issue, IssueSeverity, Scope,
+        Issue, Scope,
     },
     issue,
     products::ProductSpec,
     progress, question,
 };
 use async_trait::async_trait;
+use std::{process::Command, sync::Arc};
 use tokio::sync::{broadcast, Mutex, RwLock};
 
 #[derive(thiserror::Error, Debug)]
@@ -236,7 +235,6 @@ impl MessageHandler<message::SetConfig<Config>> for Service {
                     let new_issue = Issue::new(
                         "software.proposal_failed",
                         "It was not possible to create a software proposal",
-                        IssueSeverity::Error,
                     )
                     .with_details(&error.to_string());
                     let mut state = state.write().await;

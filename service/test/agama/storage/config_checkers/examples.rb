@@ -31,7 +31,6 @@ shared_examples "search issues" do
     it "includes the search issues" do
       issues = subject.issues
       expect(issues).to include an_object_having_attributes(
-        error?:      true,
         kind:        :search,
         description: "Mandatory device /test not found"
       )
@@ -48,7 +47,6 @@ shared_examples "filesystem issues" do
     it "includes the filesystem issues" do
       issues = subject.issues
       expect(issues).to include an_object_having_attributes(
-        error?:      true,
         kind:        :filesystem,
         description: "Missing file system type for '/'"
       )
@@ -65,7 +63,6 @@ shared_examples "encryption issues" do
     it "includes the encryption issues" do
       issues = subject.issues
       expect(issues).to include an_object_having_attributes(
-        error?:      true,
         kind:        :encryption,
         description: /No passphrase .*/
       )
@@ -88,7 +85,6 @@ shared_examples "partitions issues" do
     it "includes the partition issues" do
       issues = subject.issues
       expect(issues).to include an_object_having_attributes(
-        error?:      true,
         kind:        :search,
         description: "Mandatory partition not found"
       )
@@ -110,7 +106,6 @@ shared_examples "alias issues" do
     it "includes the alias issues" do
       issues = subject.issues
       expect(issues).to include an_object_having_attributes(
-        error?:      true,
         kind:        :overused_alias,
         description: /alias '#{device_alias}' is used by more than one/
       )

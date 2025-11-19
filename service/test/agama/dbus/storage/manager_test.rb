@@ -69,6 +69,8 @@ describe Agama::DBus::Storage::Manager do
     allow(Y2Storage::EncryptionMethod::TPM_FDE).to receive(:possible?).and_return(true)
     # Speed up tests by avoiding looking up by name in the system
     allow(Y2Storage::BlkDevice).to receive(:find_by_any_name)
+    allow(Y2Storage::BootRequirementsStrategies::Analyzer)
+      .to receive(:bls_bootloader_proposed?).and_return(false)
 
     allow(Yast::Arch).to receive(:s390).and_return false
     allow(backend).to receive(:on_configure)
@@ -1166,10 +1168,10 @@ describe Agama::DBus::Storage::Manager do
         result = parse(subject.recover_issues)
         expect(result).to include(
           a_hash_including(
-            description: /cannot calculate a valid storage setup/i, severity: "error"
+            description: /cannot calculate a valid storage setup/i
           ),
           a_hash_including(
-            description: /boot device cannot be automatically/i, severity: "error"
+            description: /boot device cannot be automatically/i
           )
         )
       end

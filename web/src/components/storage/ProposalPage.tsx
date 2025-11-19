@@ -46,18 +46,19 @@ import ProposalResultSection from "./ProposalResultSection";
 import ProposalTransactionalInfo from "./ProposalTransactionalInfo";
 import UnsupportedModelInfo from "./UnsupportedModelInfo";
 import { useAvailableDevices } from "~/hooks/storage/system";
+import { useScopeIssues } from "~/hooks/api";
 import { useResetConfig } from "~/hooks/storage/config";
+import { useProposal } from "~/hooks/storage/proposal";
 import { useConfigModel } from "~/queries/storage/config-model";
 import { useZFCPSupported } from "~/queries/storage/zfcp";
 import { useDASDSupported } from "~/queries/storage/dasd";
-import { useSystemIssues, useConfigIssues } from "~/hooks/storage/issues";
 import { STORAGE as PATHS } from "~/routes/paths";
 import { _, n_ } from "~/i18n";
 import { useProgress, useProgressChanges } from "~/queries/progress";
 import { useNavigate } from "react-router";
 
 function InvalidConfigEmptyState(): React.ReactNode {
-  const errors = useConfigIssues();
+  const errors = useScopeIssues("storage");
   const reset = useResetConfig();
 
   return (
@@ -175,8 +176,7 @@ function ProposalEmptyState(): React.ReactNode {
 
 function ProposalSections(): React.ReactNode {
   const model = useConfigModel({ suspense: true });
-  const systemErrors = useSystemIssues();
-  const hasResult = !systemErrors.length;
+  const proposal = useProposal();
 
   return (
     <Grid hasGutter>
@@ -211,7 +211,7 @@ function ProposalSections(): React.ReactNode {
           </GridItem>
         </>
       )}
-      {hasResult && <ProposalResultSection />}
+      {proposal && <ProposalResultSection />}
     </Grid>
   );
 }
@@ -223,8 +223,8 @@ function ProposalSections(): React.ReactNode {
 export default function ProposalPage(): React.ReactNode {
   const model = useConfigModel({ suspense: true });
   const availableDevices = useAvailableDevices();
-  const systemErrors = useSystemIssues();
-  const configErrors = useConfigIssues();
+  const proposal = useProposal();
+  const issues = useScopeIssues("storage");
   const progress = useProgress("storage");
   const navigate = useNavigate();
 
@@ -235,10 +235,10 @@ export default function ProposalPage(): React.ReactNode {
   }, [progress, navigate]);
 
   const fixable = ["no_root", "required_filesystems", "vg_target_devices", "reused_md_member"];
-  const unfixableErrors = configErrors.filter((e) => !fixable.includes(e.kind));
+  const unfixableErrors = issues.filter((e) => !fixable.includes(e.kind));
   const isModelEditable = model && !unfixableErrors.length;
   const hasDevices = !!availableDevices.length;
-  const hasResult = !systemErrors.length;
+  const hasResult = proposal !== null;
   const showSections = hasDevices && (isModelEditable || hasResult);
 
   return (

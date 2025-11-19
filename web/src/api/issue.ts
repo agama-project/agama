@@ -20,76 +20,13 @@
  * find current contact information at www.suse.com.
  */
 
-/**
- * Known scopes for issues.
- */
-type IssuesScope = "localization" | "product" | "software" | "storage" | "users" | "iscsi";
+type Scope = "localization" | "product" | "software" | "storage" | "users" | "iscsi";
 
-/**
- * Source of the issue
- *
- * Which is the origin of the issue (the system, the configuration or unknown).
- */
-enum IssueSource {
-  /** Unknown source (it is kind of a fallback value) */
-  Unknown = "unknown",
-  /** An unexpected situation in the system (e.g., missing device). */
-  System = "system",
-  /** Wrong or incomplete configuration (e.g., an authentication mechanism is not set) */
-  Config = "config",
-}
-
-/**
- * Issue severity
- *
- * It indicates how severe the problem is.
- */
-enum IssueSeverity {
-  /** Just a warning, the installation can start */
-  Warn = "warn",
-  /** An important problem that makes the installation not possible */
-  Error = "error",
-}
-
-/**
- * Pre-installation issue as they come from the API.
- */
-type ApiIssue = {
-  /** Issue description */
+type Issue = {
+  scope: Scope;
   description: string;
-  /** Issue kind **/
   kind: string;
-  /** Issue details */
   details?: string;
-  /** Where the issue comes from */
-  source: IssueSource;
-  /** How severe is the issue */
-  severity: IssueSeverity;
 };
 
-/**
- * Issues grouped by scope as they come from the API.
- */
-type IssuesMap = {
-  localization?: ApiIssue[];
-  software?: ApiIssue[];
-  product?: ApiIssue[];
-  storage?: ApiIssue[];
-  iscsi?: ApiIssue[];
-  users?: ApiIssue[];
-};
-
-/**
- * Pre-installation issue augmented with the scope.
- */
-type Issue = ApiIssue & { scope: IssuesScope };
-
-/**
- * Validation error
- */
-type ValidationError = {
-  message: string;
-};
-
-export { IssueSource, IssueSeverity };
-export type { ApiIssue, IssuesMap, IssuesScope, Issue, ValidationError };
+export type { Issue, Scope };

@@ -363,9 +363,7 @@ module Agama
         # @param target [ISCSI::Configs::Target]
         # @return [Issue]
         def login_issue(target)
-          Issue.new(format(_("Cannot login to iSCSI target %s"), target.name),
-            source:   Issue::Source::CONFIG,
-            severity: Issue::Severity::ERROR)
+          Issue.new(format(_("Cannot login to iSCSI target %s"), target.name))
         end
       end
     end

@@ -34,23 +34,10 @@ module Agama
 
         # Issues with the D-Bus format
         #
-        # @return [Array<Array(String, String, Integer, Integer)>] The description, details, source
-        #   and severity of each issue.
-        #   Source: 1 for system, 2 for config and 0 for unknown.
-        #   Severity: 0 for warn and 1 for error.
+        # @return [Array<Array(String, String)>] The description, kind and details of each issue.
         def dbus_issues
           issues.map do |issue|
-            source = case issue.source
-            when Agama::Issue::Source::SYSTEM
-              1
-            when Agama::Issue::Source::CONFIG
-              2
-            else
-              0
-            end
-            severity = (issue.severity == Agama::Issue::Severity::WARN) ? 0 : 1
-
-            [issue.description, issue.kind.to_s, issue.details.to_s, source, severity]
+            [issue.description, issue.kind.to_s, issue.details.to_s]
           end
         end
 
@@ -64,7 +51,7 @@ module Agama
           base.class_eval do
             dbus_interface ISSUES_INTERFACE do
               # @see {#dbus_issues}
-              dbus_reader :dbus_issues, "a(sssuu)", dbus_name: "All"
+              dbus_reader :dbus_issues, "a(sss)", dbus_name: "All"
             end
           end
         end

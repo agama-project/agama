@@ -25,7 +25,7 @@ import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import { useSystem } from "~/hooks/api";
 import { PRODUCT as PATHS } from "~/routes/paths";
-import { Product, RegistrationInfo } from "~/types/software";
+import { Product } from "~/types/software";
 import ChangeProductOption from "./ChangeProductOption";
 
 const tumbleweed: Product = {
@@ -43,7 +43,7 @@ const microos: Product = {
   registration: false,
 };
 
-let registrationInfoMock: RegistrationInfo;
+// let registrationInfoMock: RegistrationInfo;
 const mockSystemProducts: jest.Mock<Product[]> = jest.fn();
 
 jest.mock("~/hooks/api", () => ({
@@ -67,14 +67,14 @@ describe("ChangeProductOption", () => {
 
     // FIXME: activate it again when registration is ready in api v2
     describe.skip("but a product is registered", () => {
-      beforeEach(() => {
-        registrationInfoMock = {
-          registered: true,
-          key: "INTERNAL-USE-ONLY-1234-5678",
-          email: "",
-          url: "",
-        };
-      });
+      // beforeEach(() => {
+      //   registrationInfoMock = {
+      //     registered: true,
+      //     key: "INTERNAL-USE-ONLY-1234-5678",
+      //     email: "",
+      //     url: "",
+      //   };
+      // });
 
       it("renders nothing", () => {
         const { container } = installerRender(<ChangeProductOption />);

@@ -21,7 +21,6 @@
 
 require "y2storage/storage_manager"
 require "agama/dbus/base_object"
-require "agama/dbus/interfaces/issues"
 require "agama/dbus/storage/iscsi_nodes_tree"
 require "agama/storage/config_conversions"
 require "agama/storage/encryption_settings"
@@ -429,9 +428,7 @@ module Agama
           {
             description: issue.description,
             class:       issue.kind&.to_s,
-            details:     issue.details&.to_s,
-            source:      issue.source&.to_s,
-            severity:    issue.severity&.to_s
+            details:     issue.details&.to_s
           }.compact
         end
 
