@@ -10,7 +10,7 @@ export default {
     "\"%s\""
   ],
   "\"%s\" does not exist or is no longer available.": [
-    "\"%s\" tidak ada atau tidak lagi tersedia."
+    "\"%s\" tidak ditemukan atau tidak lagi tersedia."
   ],
   "%1$s (%2$s)": [
     "%1$s (%2$s)"
@@ -916,7 +916,7 @@ export default {
     "Jika Anda melanjutkan, partisi pada hard disk Anda akan dimodifikasi sesuai dengan pengaturan instalasi yang disediakan."
   ],
   "If you want to disable this check, please specify \"inst.ay_check=0\" at kernel's command-line": [
-    "Jika Anda ingin menonaktifkan pemeriksaan ini, silakan tetapkan \"inst.ay_check=0\" di baris perintah kernel"
+    "Jika anda ingin menonaktifkan check ini, harap masukkan \"inst.ay_check=0\" di command-line kernel"
   ],
   "In progress": [
     "Dalam proses"
@@ -1174,7 +1174,7 @@ export default {
     "Mount RAID %s"
   ],
   "Mount disk %s": [
-    "Mount disk %s"
+    "Kait diska %s"
   ],
   "Mount point": [
     "Titik pemasangan"
@@ -1384,7 +1384,7 @@ export default {
     "Partisi untuk boot akan dialokasikan pada disk instalasi."
   ],
   "Partitions to host \"system\" will be created if needed.": [
-    "Partisi untuk menjadi host \"system\" akan dibuat jika diperlukan."
+    "Partisi untuk menampung “sistem” akan dibuat jika diperlukan."
   ],
   "Partitions will be used and created for %s": [
     "Partisi akan digunakan dan dibuat untuk %s"
@@ -1942,7 +1942,7 @@ export default {
     "Kata sandi tidak akan diperlukan untuk mem-boot dan mengakses data jika TPM dapat memverifikasi integritas sistem. Penyegelan TPM mengharuskan sistem baru untuk di-boot secara langsung saat pertama kali dijalankan."
   ],
   "The product will be registered with \"%s\" hostname": [
-    "Produk akan didaftarkan dengan nama host \"%s\""
+    "Produk akan di-registrasi dengan hostname \"%s\""
   ],
   "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of a separate file system for %2$s.": [
     "Ukuran untuk %1$s akan disesuaikan secara dinamis berdasarkan jumlah RAM dalam sistem dan keberadaan sistem berkas yang terpisah untuk %2$s."

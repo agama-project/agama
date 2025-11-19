@@ -1395,7 +1395,7 @@ export default {
     "Käynnistämiseen tarvittavat osiot otetaan käyttöön asennuslevyltä."
   ],
   "Partitions to host \"system\" will be created if needed.": [
-    "Osiot joilla \"järjestelmä\" toimii luodaan tarvittaessa."
+    "Järjestelmätiedostojen tarvitsemat osiot luodaan tarvittaessa."
   ],
   "Partitions will be used and created for %s": [
     "Osioita tullaan luomaan ja käyttämään liitoskohdalle %s"
