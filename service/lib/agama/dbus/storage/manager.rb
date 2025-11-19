@@ -428,9 +428,7 @@ module Agama
           {
             description: issue.description,
             class:       issue.kind&.to_s,
-            details:     issue.details&.to_s,
-            source:      issue.source&.to_s,
-            severity:    issue.severity&.to_s
+            details:     issue.details&.to_s
           }.compact
         end
 

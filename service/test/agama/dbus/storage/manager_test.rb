@@ -1168,10 +1168,10 @@ describe Agama::DBus::Storage::Manager do
         result = parse(subject.recover_issues)
         expect(result).to include(
           a_hash_including(
-            description: /cannot calculate a valid storage setup/i, severity: "error"
+            description: /cannot calculate a valid storage setup/i
           ),
           a_hash_including(
-            description: /boot device cannot be automatically/i, severity: "error"
+            description: /boot device cannot be automatically/i
           )
         )
       end

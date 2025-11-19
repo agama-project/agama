@@ -26,7 +26,6 @@ shared_examples "overused alias issue" do
   it "includes the expected issue" do
     issues = subject.issues
     expect(issues).to include an_object_having_attributes(
-      error?:      true,
       kind:        :overused_alias,
       description: /alias '#{device_alias}' is used by more than one/
     )
@@ -146,7 +145,6 @@ shared_examples "formatted and used issue" do
   it "includes the expected issue" do
     issues = subject.issues
     expect(issues).to include an_object_having_attributes(
-      error?:      true,
       kind:        :formatted_with_user,
       description: /alias '#{device_alias}' cannot be formatted because it is used/
     )
@@ -222,7 +220,6 @@ shared_examples "partitioned and used issue" do
   it "includes the expected issue" do
     issues = subject.issues
     expect(issues).to include an_object_having_attributes(
-      error?:      true,
       kind:        :partitioned_with_user,
       description: /alias '#{device_alias}' cannot be partitioned because it is used/
     )

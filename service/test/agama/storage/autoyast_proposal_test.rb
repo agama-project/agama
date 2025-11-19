@@ -169,9 +169,7 @@ describe Agama::Storage::Proposal do
         it "registers a fatal issue due to the lack of root" do
           subject.calculate_autoyast(partitioning)
           expect(subject.issues).to include(
-            an_object_having_attributes(
-              description: /No root/, severity: Agama::Issue::Severity::ERROR
-            )
+            an_object_having_attributes(description: /No root/)
           )
         end
       end
@@ -191,7 +189,7 @@ describe Agama::Storage::Proposal do
         subject.calculate_autoyast(partitioning)
         expect(subject.issues).to include(
           an_object_having_attributes(
-            description: /Missing element 'use'/, severity: Agama::Issue::Severity::ERROR
+            description: /Missing element 'use'/
           )
         )
       end
@@ -224,7 +222,7 @@ describe Agama::Storage::Proposal do
           subject.calculate_autoyast(partitioning)
           expect(subject.issues).to include(
             an_object_having_attributes(
-              description: /Cannot calculate/, severity: Agama::Issue::Severity::ERROR
+              description: /Cannot calculate/
             )
           )
         end
@@ -359,7 +357,7 @@ describe Agama::Storage::Proposal do
           subject.calculate_autoyast(partitioning)
           expect(subject.issues).to include(
             an_object_having_attributes(
-              description: /Cannot calculate/, severity: Agama::Issue::Severity::ERROR
+              description: /Cannot calculate/
             )
           )
         end

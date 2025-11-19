@@ -103,11 +103,7 @@ module Agama
 
         # Agama issue equivalent to the given AutoYaST issue
         def agama_issue(ay_issue)
-          Issue.new(
-            ay_issue.message,
-            source:   Issue::Source::CONFIG,
-            severity: ay_issue.warn? ? Issue::Severity::WARN : Issue::Severity::ERROR
-          )
+          Issue.new(ay_issue.message)
         end
       end
     end

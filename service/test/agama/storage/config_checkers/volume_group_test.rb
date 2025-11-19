@@ -53,7 +53,6 @@ describe Agama::Storage::ConfigCheckers::VolumeGroup do
       it "includes the expected issue" do
         issues = subject.issues
         expect(issues).to include an_object_having_attributes(
-          error?:      true,
           description: /without name/
         )
       end
@@ -65,7 +64,6 @@ describe Agama::Storage::ConfigCheckers::VolumeGroup do
       it "includes the expected issue" do
         issues = subject.issues
         expect(issues).to include an_object_having_attributes(
-          error?:      true,
           kind:        :no_such_alias,
           description: /no LVM physical volume with alias 'pv1'/
         )
@@ -86,7 +84,6 @@ describe Agama::Storage::ConfigCheckers::VolumeGroup do
       it "includes the expected issue" do
         issues = subject.issues
         expect(issues).to include an_object_having_attributes(
-          error?:      true,
           kind:        :no_such_alias,
           description: /no target device for LVM physical volumes with alias 'second-disk'/
         )
@@ -113,7 +110,6 @@ describe Agama::Storage::ConfigCheckers::VolumeGroup do
         it "includes the expected issue" do
           issues = subject.issues
           expect(issues).to include an_object_having_attributes(
-            error?:      true,
             kind:        :encryption,
             description: /No passphrase/
           )
@@ -138,7 +134,6 @@ describe Agama::Storage::ConfigCheckers::VolumeGroup do
         it "includes the expected issue" do
           issues = subject.issues
           expect(issues).to include an_object_having_attributes(
-            error?:      true,
             kind:        :encryption,
             description: /'Regular LUKS2' is not available/
           )
@@ -151,7 +146,6 @@ describe Agama::Storage::ConfigCheckers::VolumeGroup do
         it "includes the expected issue" do
           issues = subject.issues
           expect(issues).to include an_object_having_attributes(
-            error?:      true,
             kind:        :encryption,
             description: /'Encryption with Volatile Random Key' is not a suitable method/
           )
@@ -225,7 +219,6 @@ describe Agama::Storage::ConfigCheckers::VolumeGroup do
         it "includes the expected issue" do
           issues = subject.issues
           expect(issues).to include an_object_having_attributes(
-            error?:      true,
             kind:        :incompatible_pv_targets,
             description: /'system' is mixing reused devices and new devices/
           )
