@@ -36,7 +36,7 @@ use zypp_agama::ZyppError;
 
 use crate::{
     callbacks,
-    model::state::{self, SoftwareState},
+    model::state::{self, SelectedReason, SoftwareState},
 };
 
 const TARGET_DIR: &str = "/run/agama/software_ng_zypp";
@@ -348,18 +348,23 @@ impl ZyppServer {
             let resolvable = &resolvable_state.resolvable;
             // FIXME: we need to distinguish who is selecting the pattern.
             // and register an issue if it is not found and it was not optional.
-            let result = zypp.select_resolvable(
-                &resolvable.name,
-                resolvable.r#type.into(),
-                zypp_agama::ResolvableSelected::Installation,
-            );
+            let reason = match resolvable_state.reason {
+                SelectedReason::User => zypp_agama::ResolvableSelected::User,
+                SelectedReason::Installer { optional: _ } => {
+                    zypp_agama::ResolvableSelected::Installation
+                }
+            };
+
+            let result = zypp.select_resolvable(&resolvable.name, resolvable.r#type.into(), reason);
 
             if let Err(error) = result {
-                let message = format!("Could not select pattern '{}'", &resolvable.name);
-                issues.push(
-                    Issue::new("software.select_pattern", &message)
-                        .with_details(&error.to_string()),
-                );
+                if !resolvable_state.reason.is_optional() {
+                    let message = format!("Could not select '{}'", &resolvable.name);
+                    issues.push(
+                        Issue::new("software.select_resolvable", &message)
+                            .with_details(&error.to_string()),
+                    );
+                }
             }
         }
 
