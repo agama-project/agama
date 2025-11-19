@@ -333,6 +333,17 @@ impl ZyppServer {
         zypp.reset_resolvables();
 
         _ = progress.cast(progress::message::Next::new(Scope::Software));
+        let result = zypp.select_resolvable(
+            &state.product,
+            zypp_agama::ResolvableKind::Product,
+            zypp_agama::ResolvableSelected::Installation,
+        );
+        if let Err(error) = result {
+            let message = format!("Could not select the product '{}'", &state.product);
+            issues.push(
+                Issue::new("software.select_product", &message).with_details(&error.to_string()),
+            );
+        }
         for resolvable_state in &state.resolvables {
             let resolvable = &resolvable_state.resolvable;
             // FIXME: we need to distinguish who is selecting the pattern.
