@@ -20,18 +20,13 @@
  * find current contact information at www.suse.com.
  */
 
-import * as l10n from "~/api/l10n/system";
-import * as storage from "~/api/storage/system";
-import { AddonInfo, Pattern, Product, Repository } from "~/types/software";
-import * as network from "~/api/network/system";
+import { APIConnection, APIAccessPoint, APIDevice, GeneralState } from "~/types/network";
 
 type System = {
-  l10n?: l10n.System;
-  network: network.System;
-  products?: Product[];
-  software?: { addons: AddonInfo[]; patterns: Pattern[]; repositories: Repository[] };
-  storage?: storage.System;
+  connections: APIConnection[];
+  state: GeneralState;
+  devices: APIDevice[];
+  accessPoints: APIAccessPoint[];
 };
 
-export { l10n, storage, network };
 export type { System };

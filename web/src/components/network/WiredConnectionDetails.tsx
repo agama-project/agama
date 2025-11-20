@@ -43,7 +43,7 @@ import InstallationOnlySwitch from "./InstallationOnlySwitch";
 import { Connection, Device } from "~/types/network";
 import { connectionBindingMode, formatIp } from "~/utils/network";
 import { NETWORK } from "~/routes/paths";
-import { useNetworkDevices } from "~/queries/network";
+import { useDevices } from "~/hooks/network/system";
 import { isEmpty } from "radashi";
 import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
@@ -150,7 +150,7 @@ const DeviceDetails = ({ device }: { device: Device }) => {
 };
 
 const DevicesDetails = ({ connection }: { connection: Connection }) => {
-  const devices = useNetworkDevices();
+  const devices = useDevices();
   const [active, setActive] = useState(0);
   const handleTabClick = (
     event: React.MouseEvent | React.KeyboardEvent | MouseEvent,

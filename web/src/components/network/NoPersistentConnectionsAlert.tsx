@@ -22,7 +22,7 @@
 
 import React from "react";
 import { Alert } from "@patternfly/react-core";
-import { useConnections } from "~/queries/network";
+import { useConnections } from "~/hooks/network/proposal";
 import { Connection } from "~/types/network";
 import { _ } from "~/i18n";
 
@@ -31,7 +31,7 @@ import { _ } from "~/i18n";
  * the installed system.
  */
 export default function NoPersistentConnectionsAlert() {
-  const connections: Connection[] = useConnections();
+  const connections: Connection[] = useConnections({ suspense: true });
   const persistentConnections: number = connections.filter((c) => c.persistent).length;
 
   if (persistentConnections !== 0) return;

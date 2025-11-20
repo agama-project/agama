@@ -35,7 +35,8 @@ import {
 import a11yStyles from "@patternfly/react-styles/css/utilities/Accessibility/accessibility";
 import { Annotation, EmptyState } from "~/components/core";
 import { Connection } from "~/types/network";
-import { useConnections, useNetworkDevices } from "~/queries/network";
+import { useConnections } from "~/hooks/network/proposal";
+import { useDevices } from "~/hooks/network/system";
 import { NETWORK as PATHS } from "~/routes/paths";
 import { formatIp } from "~/utils/network";
 import { _ } from "~/i18n";
@@ -45,7 +46,7 @@ type ConnectionListItemProps = { connection: Connection };
 const ConnectionListItem = ({ connection }: ConnectionListItemProps) => {
   const nameId = useId();
   const ipId = useId();
-  const devices = useNetworkDevices();
+  const devices = useDevices();
 
   const device = devices.find(
     ({ connection: deviceConnectionId }) => deviceConnectionId === connection.id,
@@ -83,7 +84,7 @@ const ConnectionListItem = ({ connection }: ConnectionListItemProps) => {
  */
 function WiredConnectionsList(props: DataListProps) {
   const navigate = useNavigate();
-  const connections = useConnections();
+  const connections = useConnections({ suspense: true });
   const wiredConnections = connections.filter((c) => !c.wireless);
 
   if (wiredConnections.length === 0) {

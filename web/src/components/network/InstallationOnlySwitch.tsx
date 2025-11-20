@@ -23,8 +23,8 @@
 import React from "react";
 import { Connection } from "~/types/network";
 import { SwitchEnhanced } from "~/components/core";
-import { useConnectionPersistMutation } from "~/queries/network";
 import { _ } from "~/i18n";
+import { useConnectionMutation } from "~/hooks/network/config";
 
 type InstallationOnlySwitchProps = {
   /** The connection to configure as installation-only or not */
@@ -39,8 +39,14 @@ type InstallationOnlySwitchProps = {
  *
  */
 export default function InstallationOnlySwitch({ connection }: InstallationOnlySwitchProps) {
-  const { mutateAsync: togglePersist } = useConnectionPersistMutation();
-  const onChange = () => togglePersist(connection);
+  const updatedConnection = new Connection(connection.id, {
+    ...connection,
+    persistent: !connection.persistent,
+  });
+  const { mutateAsync: updateConnection } = useConnectionMutation();
+  const onChange = () => {
+    updateConnection(updatedConnection);
+  };
 
   return (
     <SwitchEnhanced

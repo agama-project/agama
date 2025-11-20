@@ -23,12 +23,14 @@
 import * as l10n from "~/api/l10n/proposal";
 import * as storage from "~/api/storage/proposal";
 import * as software from "~/api/software/proposal";
+import * as network from "~/api/network/proposal";
 
 type Proposal = {
   l10n?: l10n.Proposal;
   storage?: storage.Proposal;
   software?: software.Proposal;
+  network: network.Proposal;
 };
 
-export { l10n, storage };
+export { l10n, storage, software, network };
 export type { Proposal };

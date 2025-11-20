@@ -23,6 +23,7 @@
 import React, { useCallback } from "react";
 import { useQuery, useSuspenseQuery, useQueryClient } from "@tanstack/react-query";
 import {
+  getConfig,
   getSystem,
   getProposal,
   getExtendedConfig,
@@ -111,6 +112,17 @@ function useProposalChanges() {
       }
     });
   }, [client, queryClient]);
+}
+
+const configQuery = () => ({
+  queryKey: ["configQuery"],
+  queryFn: getConfig,
+});
+
+function useConfig(options?: QueryHookOptions): Config | null {
+  const query = configQuery();
+  const func = options?.suspense ? useSuspenseQuery : useQuery;
+  return func(query)?.data;
 }
 
 const extendedConfigQuery = () => ({
@@ -252,6 +264,7 @@ export {
   storageModelQuery,
   issuesQuery,
   selectIssues,
+  useConfig,
   useSystem,
   useStatus,
   useSystemChanges,

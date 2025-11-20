@@ -33,7 +33,7 @@ import { Link, Page } from "~/components/core";
 import { Icon } from "~/components/layout";
 import WifiConnectionForm from "./WifiConnectionForm";
 import WifiConnectionDetails from "./WifiConnectionDetails";
-import { useNetworkChanges, useWifiNetworks } from "~/queries/network";
+import { useNetworkChanges, useWifiNetworks } from "~/hooks/network/system";
 import { DeviceState } from "~/types/network";
 import { PATHS } from "~/routes/network";
 import { _ } from "~/i18n";
@@ -63,7 +63,7 @@ const NetworkNotFound = ({ ssid }) => {
 export default function WifiNetworkPage() {
   useNetworkChanges();
   const { ssid } = useParams();
-  const networks = useWifiNetworks();
+  const networks = useWifiNetworks({ suspense: true });
   const network = networks.find((c) => c.ssid === ssid);
 
   const connected = network?.device?.state === DeviceState.CONNECTED;

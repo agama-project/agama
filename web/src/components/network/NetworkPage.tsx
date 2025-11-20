@@ -23,11 +23,11 @@
 import React from "react";
 import { Content, Grid, GridItem } from "@patternfly/react-core";
 import { EmptyState, Page } from "~/components/core";
-import { useNetworkChanges, useNetworkState } from "~/queries/network";
 import WifiNetworksList from "./WifiNetworksList";
 import WiredConnectionsList from "./WiredConnectionsList";
 import NoPersistentConnectionsAlert from "./NoPersistentConnectionsAlert";
 import { _ } from "~/i18n";
+import { useNetworkChanges, useSystem } from "~/hooks/network/system";
 
 const NoWifiAvailable = () => (
   <Page.Section>
@@ -44,7 +44,7 @@ const NoWifiAvailable = () => (
  */
 export default function NetworkPage() {
   useNetworkChanges();
-  const networkState = useNetworkState();
+  const { state: networkState } = useSystem({ suspense: true });
 
   return (
     <Page>
