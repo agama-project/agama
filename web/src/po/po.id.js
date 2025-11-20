@@ -6,6 +6,12 @@ export default {
   " Timezone selection": [
     " Pemilihan zona waktu"
   ],
+  "\"%s\"": [
+    ""
+  ],
+  "\"%s\" does not exist or is no longer available.": [
+    ""
+  ],
   "%1$s (%2$s)": [
     "%1$s (%2$s)"
   ],
@@ -134,9 +140,6 @@ export default {
   ],
   "Add another address": [
     "Tambahkan alamat lain"
-  ],
-  "Add another partition or mount an existing one": [
-    "Tambahkan partisi lain atau pasang partisi yang sudah ada"
   ],
   "Add device menu": [
     "Tambahkan menu perangkat"
@@ -321,9 +324,6 @@ export default {
   "Change Language": [
     "Ubah Bahasa"
   ],
-  "Change boot options": [
-    "Mengubah opsi boot"
-  ],
   "Change device menu": [
     "Ubah menu perangkat"
   ],
@@ -348,14 +348,26 @@ export default {
   "Change selection": [
     "Mengubah pilihan"
   ],
+  "Change the disk to configure": [
+    "Ganti disk untuk konfigurasi"
+  ],
+  "Change the disk to create %s": [
+    "Ganti disk untuk membuat %s"
+  ],
+  "Change the disk to format as %s": [
+    "Ganti disk untuk diformat sebagai %s"
+  ],
+  "Change the disk to install the system": [
+    "Ganti disk untuk menginstal sistem"
+  ],
   "Change the file system or mount point": [
     "Ubah sistem berkas atau titik mount"
   ],
+  "Changes in these settings will immediately update the 'Result' section below.": [
+    "Perubahan pada pengaturan ini akan segera memperbarui bagian 'Hasil' di bawah ini."
+  ],
   "Channel ID": [
     "ID saluran"
-  ],
-  "Check the %d planned actions": [
-    "Periksa %d tindakan yang direncanakan"
   ],
   "Check the authentication parameters.": [
     "Periksa parameter otentikasi."
@@ -389,9 +401,6 @@ export default {
   ],
   "Close": [
     "Tutup"
-  ],
-  "Collapse the list of planned actions": [
-    "Lipat daftar tindakan yang direncanakan"
   ],
   "Configuration out of sync": [
     "Konfigurasi tidak sinkron"
@@ -603,9 +612,6 @@ export default {
   "Details": [
     "Detail"
   ],
-  "Details for %s": [
-    "Rincian untuk %s"
-  ],
   "Details will appear after the connection is successfully established.": [
     "Rincian akan ditampilkan setelah koneksi berhasil terhubung."
   ],
@@ -659,9 +665,6 @@ export default {
   ],
   "Download logs": [
     "Unduh log"
-  ],
-  "During installation, several actions will be performed to setup the layout shown at the table below.": [
-    "Selama pemasangan, beberapa tindakan akan dilakukan untuk mengatur tata letak yang ditunjukkan pada tabel di bawah ini."
   ],
   "Edit": [
     "Edit"
@@ -726,8 +729,8 @@ export default {
   "ExFAT": [
     "ExFAT"
   ],
-  "Example: https://myserver.com": [
-    "Contoh: https://myserver.com"
+  "Example: %s": [
+    "Contoh: %s"
   ],
   "Excellent signal": [
     "Sinyal sangat baik"
@@ -748,7 +751,7 @@ export default {
     "Perluas instalasi melampaui perangkat %d yang saat ini dipilih"
   ],
   "Extend the installation beyond the currently selected disk": [
-    "Perluas instalasi melampaui disk %d yang saat ini dipilih."
+    "Perluas instalasi melampaui disk %d yang saat ini dipilih"
   ],
   "Extensions": [
     "Ekstensi"
@@ -783,8 +786,11 @@ export default {
   "Filter by territory, time zone code or UTC offset": [
     "Memfilter berdasarkan wilayah, kode zona waktu, atau offset UTC"
   ],
-  "Find space": [
-    "Temukan ruang"
+  "Final layout": [
+    "Tata letak akhir"
+  ],
+  "Final structure of the system after installation.": [
+    "Struktur akhir sistem setelah pemasangan."
   ],
   "Find space in %s": [
     "Temukan ruang di %s"
@@ -909,6 +915,9 @@ export default {
   "If you continue, partitions on your hard disk will be modified according to the provided installation settings.": [
     "Jika Anda melanjutkan, partisi pada hard disk Anda akan dimodifikasi sesuai dengan pengaturan instalasi yang disediakan."
   ],
+  "If you want to disable this check, please specify \"inst.ay_check=0\" at kernel's command-line": [
+    ""
+  ],
   "In progress": [
     "Dalam proses"
   ],
@@ -969,8 +978,8 @@ export default {
   "Install using several devices without modifying existing partitions.": [
     "Pasang menggunakan beberapa perangkat tanpa mengubah partisi yang ada."
   ],
-  "Installation Devices": [
-    "Perangkat Pemasangan"
+  "Installation devices": [
+    "Perangkat pemasangan"
   ],
   "Installation will take %s.": [
     "Penginstalan akan memakan waktu %s."
@@ -1149,6 +1158,9 @@ export default {
   "More languages might be available for the selected product at [Localization] page": [
     "Bahasa lain mungkin tersedia untuk produk yang dipilih di halaman [Localization]"
   ],
+  "More storage options": [
+    "Lebih banyak opsi penyimpanan"
+  ],
   "Moreover, the following partition will be created.": [
     "Selain itu, partisi berikut akan dibuat."
   ],
@@ -1260,6 +1272,9 @@ export default {
   "No logical volumes are defined yet": [
     "Belum ada volume logis yang didefinisikan"
   ],
+  "No partitions will be automatically configured for booting.": [
+    "Partisi tidak akan dikonfigurasi secara otomatis untuk booting."
+  ],
   "No partitions will be automatically configured for booting. Use with caution.": [
     "Tidak ada partisi yang akan dikonfigurasi secara otomatis untuk booting. Gunakan dengan hati-hati."
   ],
@@ -1332,14 +1347,11 @@ export default {
   "Only reused partitions will be used.": [
     "Hanya partisi yang telah digunakan kembali yang akan digunakan."
   ],
+  "Options for partition %s": [
+    "Opsi untuk partisi %s"
+  ],
   "Options toggle": [
     "Sakelar opsi"
-  ],
-  "Other options": [
-    "Opsi lain"
-  ],
-  "Other options toggle": [
-    "Tombol opsi lain"
   ],
   "Overview": [
     "Ikhtisar"
@@ -1347,8 +1359,14 @@ export default {
   "Package installation failed": [
     "Pemasangan paket gagal"
   ],
+  "Partition %s": [
+    "Partisi %s"
+  ],
   "Partition Info": [
     "Info Partisi"
+  ],
+  "Partitions": [
+    "Partisi"
   ],
   "Partitions needed for booting will also be adapted": [
     "Partisi yang diperlukan untuk booting juga akan disesuaikan"
@@ -1365,14 +1383,23 @@ export default {
   "Partitions that are not reused would be resized if needed.": [
     "Partisi yang tidak digunakan ulang akan diubah ukurannya jika diperlukan."
   ],
-  "Partitions to boot will be allocated at the following device.": [
-    "Partisi untuk boot akan dialokasikan pada perangkat berikut."
+  "Partitions to boot will be set up if needed at %s.": [
+    "Partisi untuk booting akan disiapkan jika diperlukan di %s."
   ],
-  "Partitions to boot will be allocated at the installation disk %s.": [
-    "Partisi untuk boot akan dialokasikan pada disk instalasi %s."
+  "Partitions to boot will be set up if needed at the following device.": [
+    "Partisi untuk booting akan disiapkan jika diperlukan pada perangkat berikut."
   ],
-  "Partitions to boot will be allocated at the installation disk.": [
-    "Partisi untuk boot akan dialokasikan pada disk instalasi."
+  "Partitions to boot will be set up if needed at the installation disk,           based on the location of the %s file system.": [
+    "Partisi untuk booting akan dibuat jika diperlukan pada disk instalasi,           berdasarkan lokasi sistem berkas %s."
+  ],
+  "Partitions to boot will be set up if needed at the installation disk,         based on the location of the %s file system.": [
+    "Partisi untuk booting akan dibuat jika diperlukan pada disk instalasi,         berdasarkan lokasi sistem berkas %s."
+  ],
+  "Partitions to boot will be set up if needed at the installation disk.         Currently %1$s, based on the location of the %2$s file system.": [
+    "Partisi untuk booting akan dibuat jika diperlukan pada disk instalasi.         Saat ini %1$s, berdasarkan lokasi sistem berkas %2$s."
+  ],
+  "Partitions to boot will be set up if needed at the installation disk.       Currently %1$s, based on the location of the %2$s file system.": [
+    "Partisi untuk booting akan dibuat jika diperlukan pada disk instalasi.       Saat ini %1$s, berdasarkan lokasi sistem berkas %2$s."
   ],
   "Partitions will be used and created for %s": [
     "Partisi akan digunakan dan dibuat untuk %s"
@@ -1437,8 +1464,8 @@ export default {
   "Product is already registered": [
     "Produk sudah terdaftar"
   ],
-  "Protection for the information stored at the new file systems, including data, programs, and system files.": [
-    "Perlindungan untuk informasi yang disimpan di sistem berkas baru, termasuk data, program, dan berkas sistem."
+  "Protection for the information stored at           the new file systems, including data, programs, and system files.": [
+    "Pemeliharaan keamanan informasi yang disimpan pada sistem berkas baru, termasuk data, program, dan berkas sistem."
   ],
   "Provide email address": [
     "Berikan alamat email"
@@ -1527,6 +1554,9 @@ export default {
   "Result": [
     "Hasil"
   ],
+  "Result of applying the configuration described at the 'Settings' section above.": [
+    "Hasil penerapan konfigurasi yang dijelaskan pada bagian 'Pengaturan' di atas."
+  ],
   "Reused partitions will not be shrunk": [
     "Partisi yang digunakan kembali tidak akan diperkecil"
   ],
@@ -1587,20 +1617,8 @@ export default {
   "Select a disk": [
     "Pilih disk"
   ],
-  "Select a disk to configure": [
-    "Pilih disk yang akan dikonfigurasi"
-  ],
-  "Select a disk to create %s": [
-    "Pilih disk untuk membuat %s"
-  ],
   "Select a disk to define partitions or to mount": [
     "Pilih perangkat lain untuk mendefinisikan partisi atau untuk mount"
-  ],
-  "Select a disk to format as %s": [
-    "Pilih disk yang akan diformat sebagai %s"
-  ],
-  "Select a disk to install the system": [
-    "Pilih disk untuk memasang sistem"
   ],
   "Select a product": [
     "Pilih produk"
@@ -1628,9 +1646,6 @@ export default {
   ],
   "Select or enter a valid mount point": [
     "Pilih atau masukkan titik mount yang valid"
-  ],
-  "Select the disk to configure partitions for booting": [
-    "Pilih disk yang akan dikonfigurasi partisi untuk booting"
   ],
   "Select what to do with each partition in order to find space for allocating the new system.": [
     "Pilih tindakan yang akan dilakukan pada setiap partisi untuk menemukan ruang yang cukup untuk mengalokasikan sistem baru."
@@ -1866,6 +1881,9 @@ export default {
   "The final step to configure the Trusted Platform Module (TPM) to automatically open encrypted devices will take place during the first boot of the new system. For that to work, the machine needs to boot directly to the new boot loader.": [
     "Langkah terakhir untuk mengonfigurasi Trusted Platform Module (TPM) agar dapat membuka perangkat yang dienkripsi secara otomatis selama booting pertama dari sistem yang baru. Agar dapat berfungsi, mesin harus melakukan booting secara langsung ke boot loader yang baru."
   ],
+  "The following actions will be performed in the system during installation.": [
+    "Tindakan berikut akan dilakukan dalam sistem selama proses instalasi."
+  ],
   "The following logical volume will be created": [
     "Volume logis berikut akan dibuat"
   ],
@@ -1928,6 +1946,9 @@ export default {
   ],
   "The password will not be needed to boot and access the data if the TPM can verify the integrity of the system. TPM sealing requires the new system to be booted directly on its first run.": [
     "Kata sandi tidak akan diperlukan untuk mem-boot dan mengakses data jika TPM dapat memverifikasi integritas sistem. Penyegelan TPM mengharuskan sistem baru untuk di-boot secara langsung saat pertama kali dijalankan."
+  ],
+  "The product will be registered with \"%s\" hostname": [
+    ""
   ],
   "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of a separate file system for %2$s.": [
     "Ukuran untuk %1$s akan disesuaikan secara dinamis berdasarkan jumlah RAM dalam sistem dan keberadaan sistem berkas yang terpisah untuk %2$s."
@@ -2054,6 +2075,9 @@ export default {
   ],
   "Tmpfs": [
     "Tmpfs"
+  ],
+  "To ensure the new system is able to boot, the installer may need to create or configure some           partitions in the appropriate disk.": [
+    "Untuk memastikan sistem baru dapat booting, penginstal mungkin perlu membuat atau mengonfigurasi beberapa partisi di disk yang sesuai."
   ],
   "To ensure the new system is able to boot, the installer may need to create or configure some partitions in the appropriate disk.": [
     "Untuk memastikan sistem baru dapat melakukan booting, penginstal mungkin perlu membuat atau mengonfigurasi beberapa partisi di disk yang sesuai."
@@ -2243,6 +2267,9 @@ export default {
   ],
   "Using transient hostname: %s": [
     "Menggunakan nama host sementara: %s"
+  ],
+  "Volume group %s": [
+    "Grup volume %s"
   ],
   "Volume group '%s' already exists. Enter a different name.": [
     "Grup volume ‘%s’ sudah ada. Masukkan nama yang berbeda."

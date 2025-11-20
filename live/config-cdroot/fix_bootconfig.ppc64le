@@ -101,7 +101,7 @@ menuentry "Boot from Hard Disk" --class opensuse --class gnu-linux --class gnu -
 
 menuentry "Install $label" --class os --unrestricted {
   echo 'Loading kernel...'
-  linux /boot/ppc64le/linux
+  linux /boot/ppc64le/linux splash=silent
   echo 'Loading initrd...'
   initrd /boot/ppc64le/initrd
 }

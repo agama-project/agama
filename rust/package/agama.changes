@@ -1,44 +1,39 @@
 -------------------------------------------------------------------
-Mon Nov  3 14:36:55 UTC 2025 - José Iván López González <jlopez@suse.com>
+Tue Nov 18 08:47:11 UTC 2025 - Michal Filka <mfilka@suse.com>
 
-- Add storage service to support the new HTTP API
-  (gh#agama-project/agama#2816).
-
--------------------------------------------------------------------
-Fri Oct 17 13:14:31 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
-
-- Add a new HTTP resource to register questions (gh#agama-project/agama#2813).
+- Fixed passing arguments when "agama config generate" with an
+  AutoYast profile.
+- Removed unhandled unwrap, reorganized validation result reporting
+  (gh#agama-project/agama#2893).
 
 -------------------------------------------------------------------
-Thu Oct 16 04:46:20 UTC 2025 - José Iván López González <jlopez@suse.com>
+Wed Nov 12 15:42:27 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
-- Move API types to agama-utils, simplify events code, emit event
-  when the installation state changes, and add progress information
-  to the progress changed event (gh#agama-project/agama#2801).
+- Version 18
 
 -------------------------------------------------------------------
-Thu Oct  9 10:24:03 UTC 2025 - José Iván López González <jlopez@suse.com>
+Wed Nov 12 13:14:21 UTC 2025 - Michal Filka <mfilka@suse.com>
 
-- Extract supervisor to agama-manager package (gh#agama-project/agama#2793).
-
--------------------------------------------------------------------
-Wed Oct  8 06:48:47 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
-
-- Introduce a new "installation issues" API. The issues for all
-  services are exposed through a /issues resource (gh#agama-project/agama#2775).
+- Fixed output of "agama config generate"
 
 -------------------------------------------------------------------
-Wed Oct  8 06:27:14 UTC 2025 - José Iván López González <jlopez@suse.com>
+Mon Nov 10 14:35:25 UTC 2025 - Michal Filka <mfilka@suse.com>
 
-- Add service for reporting progress and extend HTTP API to allow
-  getting the installation status (gh#agama-project/agama#2787).
+- Created ProfileClient based on HTTP API base client for profile
+  validation requests and refactored / cleaned relevant code
+  (gh#agama-project/agaam#2778).
 
 -------------------------------------------------------------------
-Fri Oct  3 20:11:26 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+Tue Oct 14 10:36:49 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
-- Introduce the new HTTP API (gh#agama-project/agama#2715).
-- Reimplement the localization service as part of the new API,
-  following the new actors-based approach.
+- Do not log errors when retrieving NetworkManager secrets to prevent
+  leaking them (bsc#1251898).
+
+-------------------------------------------------------------------
+Tue Oct  7 09:55:46 UTC 2025 - Clemens Famulla-Conrad <cfamullaconrad@suse.com>
+
+- Add IpConfig.link_local4 to specify ZeroConf/AutoIP behavior.
+  (gh#agama-project/agama#2792).
 
 -------------------------------------------------------------------
 Wed Oct  1 13:45:23 UTC 2025 - Ladislav Slezák <lslezak@suse.com>

@@ -20,7 +20,7 @@ translations:
       Pro doručování aplikací používá Flatpak, dále má základ systému pouze pro
       čtení s atomickými aktualizacemi, které probíhají automaticky
     de: Ein rollierend veröffentlichtes unveränderliches Desktop-Produkt, welches
-      den Plasma Desktop und Flatpak für die Anwendungsbereitstellung nutzt,
+      den Plasma-Desktop und Flatpak für die Anwendungsbereitstellung nutzt,
       eine Basis mit ausschließlich Lesezugriff besitzt und atomare
       Aktualisierungen durchführt.
     es: Un producto inmutable de escritorio de actualización continua, utilizando el

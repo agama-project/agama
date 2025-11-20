@@ -23,7 +23,7 @@
 import React from "react";
 import UnusedMenu from "~/components/storage/UnusedMenu";
 import FilesystemMenu from "~/components/storage/FilesystemMenu";
-import PartitionsMenu from "~/components/storage/PartitionsMenu";
+import PartitionsSection from "~/components/storage/PartitionsSection";
 import SpacePolicyMenu from "~/components/storage/SpacePolicyMenu";
 import { model } from "~/types/storage";
 import { system } from "~/api/storage";
@@ -39,7 +39,7 @@ export default function DeviceEditorContent({
   return (
     <>
       {deviceModel.filesystem && <FilesystemMenu deviceModel={deviceModel} />}
-      {!deviceModel.filesystem && <PartitionsMenu device={deviceModel} />}
+      {!deviceModel.filesystem && <PartitionsSection device={deviceModel} />}
       {!deviceModel.filesystem && <SpacePolicyMenu modelDevice={deviceModel} device={device} />}
     </>
   );
