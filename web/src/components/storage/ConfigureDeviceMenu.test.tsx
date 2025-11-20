@@ -22,7 +22,7 @@
 
 import React from "react";
 import { screen, within } from "@testing-library/react";
-import { mockNavigateFn, plainRender } from "~/test-utils";
+import { mockNavigateFn, installerRender } from "~/test-utils";
 import ConfigureDeviceMenu from "./ConfigureDeviceMenu";
 import { StorageDevice } from "~/types/storage";
 import { apiModel } from "~/api/storage/types";
@@ -92,7 +92,7 @@ describe("ConfigureDeviceMenu", () => {
   });
 
   it("renders an initially closed menu ", async () => {
-    const { user } = plainRender(<ConfigureDeviceMenu />);
+    const { user } = installerRender(<ConfigureDeviceMenu />);
     const toggler = screen.getByRole("button", { name: "More devices", expanded: false });
     expect(screen.queryAllByRole("menu").length).toBe(0);
     await user.click(toggler);
@@ -101,7 +101,7 @@ describe("ConfigureDeviceMenu", () => {
   });
 
   it("allows users to add a new LVM volume group", async () => {
-    const { user } = plainRender(<ConfigureDeviceMenu />);
+    const { user } = installerRender(<ConfigureDeviceMenu />);
     const toggler = screen.getByRole("button", { name: "More devices", expanded: false });
     await user.click(toggler);
     const lvmMenuItem = screen.getByRole("menuitem", { name: /LVM/ });
@@ -112,7 +112,7 @@ describe("ConfigureDeviceMenu", () => {
   describe("when there are unused disks", () => {
     describe("and no disks have been configured yet", () => {
       it("allows users to add a new drive", async () => {
-        const { user } = plainRender(<ConfigureDeviceMenu />);
+        const { user } = installerRender(<ConfigureDeviceMenu />);
         const toggler = screen.getByRole("button", { name: /More devices/ });
         await user.click(toggler);
         const disksMenuItem = screen.getByRole("menuitem", { name: "Add device menu" });
@@ -133,7 +133,7 @@ describe("ConfigureDeviceMenu", () => {
       });
 
       it("allows users to add a new drive to an unused disk", async () => {
-        const { user } = plainRender(<ConfigureDeviceMenu />);
+        const { user } = installerRender(<ConfigureDeviceMenu />);
         const toggler = screen.getByRole("button", { name: /More devices/ });
         await user.click(toggler);
         const disksMenuItem = screen.getByRole("menuitem", { name: "Add device menu" });
@@ -156,7 +156,7 @@ describe("ConfigureDeviceMenu", () => {
     });
 
     it("renders the disks menu as disabled with an informative label", async () => {
-      const { user } = plainRender(<ConfigureDeviceMenu />);
+      const { user } = installerRender(<ConfigureDeviceMenu />);
       const toggler = screen.getByRole("button", { name: /More devices/ });
       await user.click(toggler);
       const disksMenuItem = screen.getByRole("menuitem", { name: "Add device menu" });

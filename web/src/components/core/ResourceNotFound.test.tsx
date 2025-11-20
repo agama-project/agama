@@ -22,30 +22,30 @@
 
 import React from "react";
 import { screen } from "@testing-library/dom";
-import { plainRender } from "~/test-utils";
+import { installerRender } from "~/test-utils";
 import ResourceNotFound from "./ResourceNotFound";
 import { ROOT } from "~/routes/paths";
 
 describe("ResourceNotFound", () => {
   it("renders the default title when none is given", () => {
-    plainRender(<ResourceNotFound linkText={"Go to homepage"} linkPath={ROOT.root} />);
+    installerRender(<ResourceNotFound linkText={"Go to homepage"} linkPath={ROOT.root} />);
     screen.getByRole("heading", { name: "Resource not found or lost", level: 3 });
   });
 
   it("renders the given title", () => {
-    plainRender(
+    installerRender(
       <ResourceNotFound title="Not found" linkText={"Go to homepage"} linkPath={ROOT.root} />,
     );
     screen.getByRole("heading", { name: "Not found", level: 3 });
   });
 
   it("renders the default body when none is given", () => {
-    plainRender(<ResourceNotFound linkText={"Go to homepage"} linkPath={ROOT.root} />);
+    installerRender(<ResourceNotFound linkText={"Go to homepage"} linkPath={ROOT.root} />);
     screen.getByText("It doesn't exist or can't be reached.");
   });
 
   it("renders the given body", () => {
-    plainRender(
+    installerRender(
       <ResourceNotFound
         body="Unexpected path, nothing to show"
         linkText={"Go to homepage"}
@@ -56,7 +56,7 @@ describe("ResourceNotFound", () => {
   });
 
   it("renders a link with given text and path", () => {
-    plainRender(<ResourceNotFound linkText={"Go to homepage"} linkPath={ROOT.root} />);
+    installerRender(<ResourceNotFound linkText={"Go to homepage"} linkPath={ROOT.root} />);
     const link = screen.getByRole("link", { name: "Go to homepage" });
     expect(link).toHaveAttribute("href", ROOT.root);
   });

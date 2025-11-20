@@ -22,8 +22,8 @@
 
 import React from "react";
 import { screen, within } from "@testing-library/react";
-import { plainRender, mockNavigateFn } from "~/test-utils";
-import ConfigEditorMenu from "./ConfigEditorMenu";
+import { installerRender, mockNavigateFn } from "~/test-utils";
+import ConnectedDevicesMenu from "./ConnectedDevicesMenu";
 import { STORAGE as PATHS } from "~/routes/paths";
 
 const mockUseZFCPSupported = jest.fn();
@@ -38,50 +38,29 @@ jest.mock("~/queries/storage/dasd", () => ({
   useDASDSupported: () => mockUseDASDSupported(),
 }));
 
-const mockUseResetConfigMutation = jest.fn();
-jest.mock("~/queries/storage", () => ({
-  ...jest.requireActual("~/queries/storage"),
-  useResetConfigMutation: () => mockUseResetConfigMutation(),
-}));
-
 const mockReactivateSystem = jest.fn();
 jest.mock("~/hooks/storage/system", () => ({
   ...jest.requireActual("~/hooks/storage/system"),
   useReactivateSystem: () => mockReactivateSystem(),
 }));
 
-const mockReset = jest.fn();
 beforeEach(() => {
   mockUseZFCPSupported.mockReturnValue(false);
   mockUseDASDSupported.mockReturnValue(false);
-  mockUseResetConfigMutation.mockReturnValue({ mutate: mockReset });
 });
 
 async function openMenu() {
-  const { user } = plainRender(<ConfigEditorMenu />);
-  const button = screen.getByRole("button", { name: "Other options toggle" });
+  const { user } = installerRender(<ConnectedDevicesMenu />);
+  const button = screen.getByRole("button", { name: "More storage options" });
   await user.click(button);
   const menu = screen.getByRole("menu");
   return { user, menu };
 }
 
 it("renders the menu", () => {
-  plainRender(<ConfigEditorMenu />);
-  expect(screen.queryByText("Other options")).toBeInTheDocument();
-});
-
-it("allows users to change the boot options", async () => {
-  const { user, menu } = await openMenu();
-  const bootItem = within(menu).getByRole("menuitem", { name: /boot options/ });
-  await user.click(bootItem);
-  expect(mockNavigateFn).toHaveBeenCalledWith(PATHS.editBootDevice);
-});
-
-it("allows users to reset the config", async () => {
-  const { user, menu } = await openMenu();
-  const resetItem = within(menu).getByRole("menuitem", { name: /Reset to/ });
-  await user.click(resetItem);
-  expect(mockReset).toHaveBeenCalled();
+  const { container } = installerRender(<ConnectedDevicesMenu />);
+  const icon = container.querySelector("svg");
+  expect(icon).toHaveAttribute("data-icon-name", "more_horiz");
 });
 
 it("allows users to rescan devices", async () => {

@@ -82,7 +82,7 @@ menuentry "Boot from Hard Disk" --class opensuse --class gnu-linux --class gnu -
 menuentry "Install $label" --class os --unrestricted {
     set gfxpayload=keep
     echo Loading kernel...
-    linux (\$root)/boot/aarch64/loader/linux \${extra_cmdline} \${isoboot}
+    linux (\$root)/boot/aarch64/loader/linux \${extra_cmdline} \${isoboot} splash=silent
     echo Loading initrd...
     initrd (\$root)/boot/aarch64/loader/initrd
 }

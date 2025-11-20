@@ -31,6 +31,9 @@ use std::{
 use tempfile::{tempdir, TempDir};
 use url::Url;
 
+pub mod http_client;
+pub use http_client::ProfileHTTPClient;
+
 pub const DEFAULT_SCHEMA_DIR: &str = "/usr/share/agama-cli";
 
 /// Downloads and converts autoyast profile.
