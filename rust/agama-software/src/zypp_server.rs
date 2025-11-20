@@ -32,7 +32,7 @@ use tokio::sync::{
     mpsc::{self, UnboundedSender},
     oneshot,
 };
-use zypp_agama::ZyppError;
+use zypp_agama::{Repository, ZyppError};
 
 use crate::{
     callbacks::commit_download,
@@ -98,6 +98,7 @@ pub enum SoftwareAction {
     ),
     Finish(oneshot::Sender<ZyppServerResult<()>>),
     GetPatternsMetadata(Vec<String>, oneshot::Sender<ZyppServerResult<Vec<Pattern>>>),
+    GetRepositories(oneshot::Sender<ZyppServerResult<Vec<Repository>>>),
     ComputeProposal(
         ProductSpec,
         oneshot::Sender<ZyppServerResult<SoftwareProposal>>,
@@ -180,6 +181,9 @@ impl ZyppServer {
             }
             SoftwareAction::GetPatternsMetadata(names, tx) => {
                 self.get_patterns(names, tx, zypp).await?;
+            }
+            SoftwareAction::GetRepositories(tx) => {
+                self.get_repositories(tx, zypp).await?;
             }
             SoftwareAction::Install(tx, progress, question) => {
                 let callback = commit_download::CommitDownload::new(progress, question);
@@ -469,6 +473,17 @@ impl ZyppServer {
             }
         }
 
+        Ok(())
+    }
+
+    async fn get_repositories(
+        &self,
+        tx: oneshot::Sender<ZyppServerResult<Vec<Repository>>>,
+        zypp: &zypp_agama::Zypp,
+    ) -> Result<(), ZyppDispatchError> {
+        let repositories = zypp.list_repositories()?;
+        tx.send(Ok(repositories))
+            .map_err(|_| ZyppDispatchError::ResponseChannelClosed)?;
         Ok(())
     }
 
