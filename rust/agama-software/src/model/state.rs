@@ -75,23 +75,30 @@ impl<'a> SoftwareStateBuilder<'a> {
     }
 
     /// Adds the user configuration to use.
+    ///
+    /// The configuration may contain user-selected patterns and packages, extra repositories, etc.
     pub fn with_config(mut self, config: &'a Config) -> Self {
         self.config = Some(config);
         self
     }
 
+    /// Adds the information of the underlying system.
+    ///
+    /// The system may contain repositories, e.g. the off-line medium repository, DUD, etc.
     pub fn with_system(mut self, system: &'a SystemInfo) -> Self {
         self.system = Some(system);
         self
     }
 
+    /// Adds the software selection from the installer.
+    ///
+    /// Agama might require the installation of patterns and packages.
     pub fn with_selection(mut self, selection: &'a SoftwareSelection) -> Self {
         self.selection = Some(selection);
         self
     }
 
-    /// Builds the [SoftwareState] by merging the product specification and the
-    /// user configuration.
+    /// Builds the [SoftwareState] combining all the sources.
     pub fn build(self) -> SoftwareState {
         let mut state = self.from_product_spec();
 
