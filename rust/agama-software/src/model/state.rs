@@ -120,7 +120,7 @@ impl<'a> SoftwareStateBuilder<'a> {
     /// Adds the elements from the underlying system.
     ///
     /// It searches for repositories in the underlying system. The idea is to
-    /// use the repositories for off-line installation.
+    /// use the repositories for off-line installation or Driver Update Disks.
     fn add_system_config(&self, state: &mut SoftwareState, system: &SystemInfo) {
         let repositories = system
             .repositories

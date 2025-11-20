@@ -36,7 +36,11 @@ use agama_utils::{
     progress, question,
 };
 use async_trait::async_trait;
-use std::{process::Command, sync::Arc};
+use std::{
+    path::{Path, PathBuf},
+    process::Command,
+    sync::Arc,
+};
 use tokio::sync::{broadcast, Mutex, RwLock};
 
 #[derive(thiserror::Error, Debug)]
@@ -107,6 +111,7 @@ impl Starter {
                 let zypp_sender = ZyppServer::start()?;
                 Arc::new(Mutex::new(Model::new(
                     zypp_sender,
+                    find_mandatory_repositories("/"),
                     self.progress.clone(),
                     self.questions.clone(),
                 )?))
@@ -161,11 +166,6 @@ impl Service {
     }
 
     pub async fn setup(&mut self) -> Result<(), Error> {
-        if let Some(install_repo) = find_install_repository() {
-            tracing::info!("Found repository at {}", install_repo.url);
-            let mut state = self.state.write().await;
-            state.system.repositories.push(install_repo);
-        }
         Ok(())
     }
 
@@ -307,17 +307,45 @@ impl MessageHandler<message::SetResolvables> for Service {
     }
 }
 
-const LIVE_REPO_DIR: &str = "/run/initramfs/live/install";
+const LIVE_REPO_DIR: &str = "run/initramfs/live/install";
+const DUD_REPO_DIR: &str = "var/lib/agama/dud/repo";
 
-fn find_install_repository() -> Option<Repository> {
-    if !std::fs::exists(LIVE_REPO_DIR).is_ok_and(|e| e) {
+/// Returns the local repositories that will be used during installation.
+///
+/// By now it considers:
+///
+/// * Local repository from the off-line media.
+/// * Repository with packages from the Driver Update Disk.
+fn find_mandatory_repositories<P: Into<PathBuf>>(root: P) -> Vec<Repository> {
+    let base = root.into();
+    let mut repos = vec![];
+
+    let live_repo_dir = base.join(LIVE_REPO_DIR);
+    if let Some(mut install) = find_repository(&live_repo_dir, "Installation") {
+        let mount_point = live_repo_dir.display().to_string();
+        if let Some(normalized_url) = normalize_repository_url(&mount_point, "/install") {
+            install.url = normalized_url;
+        }
+        repos.push(install);
+    }
+
+    let dud_repo_dir = base.join(DUD_REPO_DIR);
+    if let Some(dud) = find_repository(&dud_repo_dir, "AgamaDriverUpdate") {
+        repos.push(dud)
+    }
+
+    repos
+}
+
+fn find_repository(dir: &PathBuf, name: &str) -> Option<Repository> {
+    if !std::fs::exists(dir).is_ok_and(|e| e) {
         return None;
     }
 
-    normalize_repository_url(LIVE_REPO_DIR, "/install").map(|url| Repository {
-        alias: "install".to_string(),
-        name: "install".to_string(),
-        url,
+    Some(Repository {
+        alias: name.to_string(),
+        name: name.to_string(),
+        url: format!("dir:{}", dir.display().to_string()),
         enabled: true,
         mandatory: true,
     })
@@ -349,5 +377,33 @@ fn normalize_repository_url(mount_point: &str, path: &str) -> Option<String> {
         Some(format!("hd:{mount_point}?device={live_device}"))
     } else {
         Some(format!("hd:{mount_point}?device={device}"))
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::service::{find_mandatory_repositories, DUD_REPO_DIR, LIVE_REPO_DIR};
+    use tempfile::TempDir;
+
+    #[test]
+    fn test_find_mandatory_repositories() -> Result<(), Box<dyn std::error::Error>> {
+        let tmp_dir = TempDir::with_prefix("test")?;
+        std::fs::create_dir_all(&tmp_dir.path().join(LIVE_REPO_DIR))?;
+        std::fs::create_dir_all(&tmp_dir.path().join(DUD_REPO_DIR))?;
+
+        let tmp_dir_str = tmp_dir.as_ref().to_str().unwrap();
+        let repositories = find_mandatory_repositories(tmp_dir.as_ref());
+        let install = repositories.first().unwrap();
+        assert_eq!(&install.alias, "Installation");
+        assert!(install
+            .url
+            .contains(&format!("hd:{}/{}", tmp_dir_str, LIVE_REPO_DIR)));
+        assert!(install.mandatory);
+
+        let dud = repositories.last().unwrap();
+        assert!(dud.url.contains(&format!("/{}", DUD_REPO_DIR)));
+        assert_eq!(&dud.alias, "AgamaDriverUpdate");
+        assert!(dud.mandatory);
+        Ok(())
     }
 }
