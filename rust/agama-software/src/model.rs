@@ -21,7 +21,7 @@
 use agama_utils::{
     actor::Handler,
     api::{
-        software::{Pattern, SoftwareProposal, SystemInfo},
+        software::{Pattern, Repository, SoftwareProposal, SystemInfo},
         Issue,
     },
     products::{ProductSpec, UserPattern},
@@ -118,6 +118,23 @@ impl Model {
             .send(SoftwareAction::GetPatternsMetadata(names, tx))?;
         Ok(rx.await??)
     }
+
+    async fn repositories(&self) -> Result<Vec<Repository>, service::Error> {
+        let (tx, rx) = oneshot::channel();
+        self.zypp_sender.send(SoftwareAction::GetRepositories(tx))?;
+        let zypp_repos = rx.await??;
+        let repos = zypp_repos
+            .into_iter()
+            .map(|r| Repository {
+                alias: r.alias.clone(),
+                name: r.alias,
+                url: r.url,
+                enabled: r.enabled,
+                mandatory: true,
+            })
+            .collect();
+        Ok(repos)
+    }
 }
 
 #[async_trait]
@@ -145,7 +162,7 @@ impl ModelAdapter for Model {
     async fn system_info(&self) -> Result<SystemInfo, service::Error> {
         Ok(SystemInfo {
             patterns: self.patterns().await?,
-            repositories: vec![],
+            repositories: self.repositories().await?,
             addons: vec![],
         })
     }
