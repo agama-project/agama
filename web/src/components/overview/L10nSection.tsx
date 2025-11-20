@@ -24,7 +24,7 @@ import React from "react";
 import { Content } from "@patternfly/react-core";
 import { useSystem, useProposal } from "~/hooks/api";
 import { _ } from "~/i18n";
-import { Locale } from "~/api/l10n/system";
+import { Locale } from "~/api/system/l10n";
 
 export default function L10nSection() {
   const proposal = useProposal({ suspense: true });

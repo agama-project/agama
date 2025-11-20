@@ -24,7 +24,7 @@ import React, { useState } from "react";
 import { Content, Flex, Form, FormGroup, Radio } from "@patternfly/react-core";
 import { useNavigate } from "react-router";
 import { ListSearch, Page } from "~/components/core";
-import { Timezone } from "~/api/l10n/system";
+import { Timezone } from "~/api/system/l10n";
 import { patchConfig } from "~/api";
 import { useSystem, useProposal } from "~/hooks/api";
 import { timezoneTime } from "~/utils";

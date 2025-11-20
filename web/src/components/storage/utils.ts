@@ -30,7 +30,7 @@
 import xbytes from "xbytes";
 import { _, N_ } from "~/i18n";
 import { model } from "~/types/storage";
-import { Volume } from "~/api/storage/system";
+import { Volume } from "~/api/system/storage";
 import { system, proposal, apiModel } from "~/api/storage";
 import { sprintf } from "sprintf-js";
 

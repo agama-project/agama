@@ -24,7 +24,7 @@ import React from "react";
 import { screen, within } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import L10nPage from "~/components/l10n/L10nPage";
-import { Keymap, Locale, Timezone } from "~/api/l10n/system";
+import { Keymap, Locale, Timezone } from "~/api/system/l10n";
 import { useProposal, useSystem } from "~/hooks/api";
 
 let mockSystemData: ReturnType<typeof useSystem>;

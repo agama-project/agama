@@ -20,11 +20,20 @@
  * find current contact information at www.suse.com.
  */
 
-import { PatternsSelection } from "~/types/software";
-
 type Proposal = {
   size: string;
   patterns: PatternsSelection;
 };
 
-export type { Proposal };
+type PatternsSelection = { [key: string]: SelectedBy };
+
+enum SelectedBy {
+  /** Selected by the user */
+  USER = 0,
+  /** Automatically selected as a dependency of another package */
+  AUTO = 1,
+  /** No selected */
+  NONE = 2,
+}
+
+export type { Proposal, PatternsSelection, SelectedBy };

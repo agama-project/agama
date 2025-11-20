@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import { System, Device } from "~/api/storage/system";
+import { System, Device } from "~/api/system/storage";
 
 function findDevice(system: System, sid: number): Device | undefined {
   const device = system.devices.find((d) => d.sid === sid);

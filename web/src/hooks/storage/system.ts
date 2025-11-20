@@ -23,7 +23,7 @@
 import { useCallback } from "react";
 import { useSuspenseQuery, useQuery } from "@tanstack/react-query";
 import { System, storage } from "~/api/system";
-import { EncryptionMethod } from "~/api/storage/system";
+import { EncryptionMethod } from "~/api/system/storage";
 import { QueryHookOptions } from "~/types/queries";
 import { systemQuery } from "~/hooks/api";
 import { findDevices } from "~/helpers/storage/system";

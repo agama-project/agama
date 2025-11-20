@@ -27,7 +27,7 @@ import { Page } from "~/components/core";
 import SpaceActionsTable, { SpacePolicyAction } from "~/components/storage/SpaceActionsTable";
 import { deviceChildren } from "~/components/storage/utils";
 import { _ } from "~/i18n";
-import { UnusedSlot, Device } from "~/api/storage/proposal";
+import { UnusedSlot, Device } from "~/api/proposal/storage";
 import { apiModel } from "~/api/storage";
 import { useDevices } from "~/hooks/storage/system";
 import { useModel } from "~/hooks/storage/model";

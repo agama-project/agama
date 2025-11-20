@@ -47,7 +47,7 @@ import {
 } from "@patternfly/react-core";
 import { Popup } from "~/components/core";
 import { Icon } from "~/components/layout";
-import { Keymap, Locale } from "~/api/l10n/system";
+import { Keymap, Locale } from "~/api/system/l10n";
 import { useInstallerL10n } from "~/context/installerL10n";
 import { localConnection } from "~/utils";
 import { _ } from "~/i18n";

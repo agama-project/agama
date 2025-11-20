@@ -37,7 +37,7 @@ import { _ } from "~/i18n";
 import { deviceSize, formattedPath } from "~/components/storage/utils";
 import { DeviceName, DeviceDetails, DeviceSize, toDevice } from "~/components/storage/device-utils";
 import { Icon } from "~/components/layout";
-import { Device, UnusedSlot } from "~/api/storage/proposal";
+import { Device, UnusedSlot } from "~/api/proposal/storage";
 import { apiModel } from "~/api/storage";
 import { TreeTableColumn } from "~/components/core/TreeTable";
 import { Table, Td, Th, Tr, Thead, Tbody } from "@patternfly/react-table";
