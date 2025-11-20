@@ -22,21 +22,21 @@
 
 import React from "react";
 import { Content, List, ListItem } from "@patternfly/react-core";
-import { SelectedBy } from "~/types/software";
 import { isEmpty } from "radashi";
 import { _ } from "~/i18n";
 import { useProposal, useSystem } from "~/hooks/api";
 
 export default function SoftwareSection(): React.ReactNode {
-  const { software: proposal } = useProposal({ suspense: true });
-  const { patterns = [] } = useSystem();
+  const { software: available } = useSystem({ suspense: true });
+  const { software: proposed } = useProposal({ suspense: true });
 
-  if (isEmpty(proposal.patterns)) return;
+  if (isEmpty(proposed.patterns)) return;
+  const selectedPatternsIds = Object.keys(proposed.patterns);
 
   const TextWithoutList = () => {
     return (
       <>
-        {_("The installation will take")} <b>{proposal.size}</b>
+        {_("The installation will take")} <b>{proposed.size}</b>
       </>
     );
   };
@@ -44,13 +44,13 @@ export default function SoftwareSection(): React.ReactNode {
   const TextWithList = () => {
     // TRANSLATORS: %s will be replaced with the installation size, example: "5GiB".
     const [msg1, msg2] = _("The installation will take %s including:").split("%s");
-    const selectedPatterns = patterns.filter((p) => p.selectedBy !== SelectedBy.NONE);
+    const selectedPatterns = available.patterns.filter((p) => selectedPatternsIds.includes(p.name));
 
     return (
       <>
         <Content>
           {msg1}
-          <b>{proposal.size}</b>
+          <b>{proposed.size}</b>
           {msg2}
         </Content>
         <List>
@@ -65,7 +65,7 @@ export default function SoftwareSection(): React.ReactNode {
   return (
     <Content>
       <Content component="h3">{_("Software")}</Content>
-      {patterns.length ? <TextWithList /> : <TextWithoutList />}
+      {selectedPatternsIds.length ? <TextWithList /> : <TextWithoutList />}
     </Content>
   );
 }

@@ -44,10 +44,6 @@ module Agama
           sleep(0.5)
           Yast::IscsiClientLib.getConfig
           Yast::IscsiClientLib.autoLogOn
-          # We are already logged into the iSCSI targets. But device detection in the kernel is
-          # asynchronous, so let's wait until the corresponding iSCSI devices really appear in
-          # the system (so yast-storage-ng can handle them).
-          Yast::Execute.locally("/usr/bin/udevadm", "settle", "--timeout=20")
         end
 
         # Performs an iSCSI discovery.

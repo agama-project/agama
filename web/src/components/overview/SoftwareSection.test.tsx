@@ -23,18 +23,18 @@
 import React from "react";
 import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
-import testingProposal from "~/components/software/proposal.test.json";
+// import testingProposal from "~/components/software/proposal.test.json";
 import SoftwareSection from "~/components/overview/SoftwareSection";
-import { SoftwareProposal } from "~/types/software";
+// import { SoftwareProposal } from "~/types/software";
 
-let mockTestingProposal: SoftwareProposal;
+// let mockTestingProposal: SoftwareProposal;
 
 // FIXME: redo this tests once new overview is done after api v2
 describe.skip("SoftwareSection", () => {
   describe("when the proposal does not have patterns to select", () => {
-    beforeEach(() => {
-      mockTestingProposal = { patterns: {}, size: "" };
-    });
+    // beforeEach(() => {
+    //   mockTestingProposal = { patterns: {}, size: "" };
+    // });
 
     it("renders nothing", () => {
       const { container } = installerRender(<SoftwareSection />);
@@ -43,9 +43,9 @@ describe.skip("SoftwareSection", () => {
   });
 
   describe("when the proposal has patterns to select", () => {
-    beforeEach(() => {
-      mockTestingProposal = testingProposal;
-    });
+    // beforeEach(() => {
+    //   mockTestingProposal = testingProposal;
+    // });
 
     it("renders the required space and the selected patterns", () => {
       installerRender(<SoftwareSection />);

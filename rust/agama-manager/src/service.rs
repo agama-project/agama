@@ -25,7 +25,7 @@ use agama_utils::{
         self, event,
         manager::{self, LicenseContent},
         status::State,
-        Action, Config, Event, Issue, IssueMap, IssueSeverity, Proposal, Scope, Status, SystemInfo,
+        Action, Config, Event, Issue, IssueMap, Proposal, Scope, Status, SystemInfo,
     },
     issue, licenses,
     products::{self, ProductSpec},
@@ -65,7 +65,149 @@ pub enum Error {
     #[error(transparent)]
     Progress(#[from] progress::service::Error),
     #[error(transparent)]
-    Network(#[from] network::NetworkSystemError),
+    Network(#[from] network::error::Error),
+    // TODO: we could unify network errors when we refactor the network service to work like the
+    // rest.
+    #[error(transparent)]
+    NetworkSystem(#[from] network::NetworkSystemError),
+}
+
+pub struct Starter {
+    questions: Handler<question::Service>,
+    events: event::Sender,
+    dbus: zbus::Connection,
+    l10n: Option<Handler<l10n::Service>>,
+    network: Option<NetworkSystemClient>,
+    software: Option<Handler<software::Service>>,
+    storage: Option<Handler<storage::Service>>,
+    issues: Option<Handler<issue::Service>>,
+    progress: Option<Handler<progress::Service>>,
+}
+
+impl Starter {
+    pub fn new(
+        questions: Handler<question::Service>,
+        events: event::Sender,
+        dbus: zbus::Connection,
+    ) -> Self {
+        Self {
+            events,
+            dbus,
+            questions,
+            l10n: None,
+            network: None,
+            software: None,
+            storage: None,
+            issues: None,
+            progress: None,
+        }
+    }
+
+    pub fn with_network(mut self, network: NetworkSystemClient) -> Self {
+        self.network = Some(network);
+        self
+    }
+
+    pub fn with_software(mut self, software: Handler<software::Service>) -> Self {
+        self.software = Some(software);
+        self
+    }
+
+    pub fn with_storage(mut self, storage: Handler<storage::Service>) -> Self {
+        self.storage = Some(storage);
+        self
+    }
+
+    pub fn with_l10n(mut self, l10n: Handler<l10n::Service>) -> Self {
+        self.l10n = Some(l10n);
+        self
+    }
+
+    pub fn with_issues(mut self, issues: Handler<issue::Service>) -> Self {
+        self.issues = Some(issues);
+        self
+    }
+
+    pub fn with_progress(mut self, progress: Handler<progress::Service>) -> Self {
+        self.progress = Some(progress);
+        self
+    }
+
+    /// Starts the service and returns a handler to communicate with it.
+    pub async fn start(self) -> Result<Handler<Service>, Error> {
+        let issues = match self.issues {
+            Some(issues) => issues,
+            None => issue::Service::starter(self.events.clone()).start(),
+        };
+
+        let progress = match self.progress {
+            Some(progress) => progress,
+            None => progress::Service::starter(self.events.clone()).start(),
+        };
+
+        let l10n = match self.l10n {
+            Some(l10n) => l10n,
+            None => {
+                l10n::Service::starter(self.events.clone(), issues.clone())
+                    .start()
+                    .await?
+            }
+        };
+
+        let software = match self.software {
+            Some(software) => software,
+            None => {
+                software::Service::builder(
+                    self.events.clone(),
+                    issues.clone(),
+                    progress.clone(),
+                    self.questions.clone(),
+                )
+                .start()
+                .await?
+            }
+        };
+
+        let storage = match self.storage {
+            Some(storage) => storage,
+            None => {
+                storage::Service::starter(
+                    self.events.clone(),
+                    issues.clone(),
+                    progress.clone(),
+                    self.dbus.clone(),
+                )
+                .start()
+                .await?
+            }
+        };
+
+        let network = match self.network {
+            Some(network) => network,
+            None => network::start().await?,
+        };
+
+        let mut service = Service {
+            events: self.events,
+            questions: self.questions,
+            progress,
+            issues,
+            l10n,
+            network,
+            software,
+            storage,
+            products: products::Registry::default(),
+            licenses: licenses::Registry::default(),
+            // FIXME: state is already used for service state.
+            state: State::Configuring,
+            config: Config::default(),
+            system: manager::SystemInfo::default(),
+            product: None,
+        };
+
+        service.setup().await?;
+        Ok(actor::spawn(service))
+    }
 }
 
 pub struct Service {
@@ -86,33 +228,12 @@ pub struct Service {
 }
 
 impl Service {
-    pub fn new(
-        l10n: Handler<l10n::Service>,
-        network: NetworkSystemClient,
-        software: Handler<software::Service>,
-        storage: Handler<storage::Service>,
-        issues: Handler<issue::Service>,
-        progress: Handler<progress::Service>,
+    pub fn starter(
         questions: Handler<question::Service>,
         events: event::Sender,
-    ) -> Self {
-        Self {
-            l10n,
-            network,
-            software,
-            storage,
-            issues,
-            progress,
-            questions,
-            products: products::Registry::default(),
-            licenses: licenses::Registry::default(),
-            // FIXME: state is already used for service state.
-            state: State::Configuring,
-            config: Config::default(),
-            system: manager::SystemInfo::default(),
-            product: None,
-            events,
-        }
+        dbus: zbus::Connection,
+    ) -> Starter {
+        Starter::new(questions, events, dbus)
     }
 
     /// Set up the service by reading the registries and determining the default product.
@@ -124,7 +245,9 @@ impl Service {
         if let Some(product) = self.products.default_product() {
             let config = Config::with_product(product.id.clone());
             self.set_config(config).await?;
-        }
+        } else {
+            self.update_issues()?;
+        };
 
         Ok(())
     }
@@ -291,11 +414,7 @@ impl Service {
             self.issues
                 .cast(issue::message::Clear::new(Scope::Manager))?;
         } else {
-            let issue = Issue::new(
-                "no_product",
-                "No product has been selected.",
-                IssueSeverity::Error,
-            );
+            let issue = Issue::new("no_product", "No product has been selected.");
             self.issues
                 .cast(issue::message::Set::new(Scope::Manager, vec![issue]))?;
         }

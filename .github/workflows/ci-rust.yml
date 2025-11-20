@@ -83,7 +83,7 @@ jobs:
       run: zypper modifyrepo -d repo-non-oss repo-openh264 repo-update && ( zypper ref || zypper ref || zypper ref )
 
     - name: Install required packages
-      run: zypper --non-interactive install
+      run: zypper --non-interactive install --allow-downgrade
         clang-devel
         libzypp-devel
         gcc-c++
@@ -139,7 +139,7 @@ jobs:
       run: zypper modifyrepo -d repo-non-oss repo-openh264 repo-update && ( zypper ref || zypper ref || zypper ref )
 
     - name: Install required packages
-      run: zypper --non-interactive install
+      run: zypper --non-interactive install --allow-downgrade
         clang-devel
         dbus-1-daemon
         libzypp-devel
@@ -248,7 +248,7 @@ jobs:
       run: zypper modifyrepo -d repo-non-oss repo-openh264 repo-update && ( zypper ref || zypper ref || zypper ref )
 
     - name: Install required packages
-      run: zypper --non-interactive install
+      run: zypper --non-interactive install --allow-downgrade
         clang-devel
         gcc-c++
         git

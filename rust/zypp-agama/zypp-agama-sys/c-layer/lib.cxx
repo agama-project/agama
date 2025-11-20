@@ -27,6 +27,8 @@
 
 #include <zypp/ui/Selectable.h>
 
+#define ZYPP_BASE_LOGGER_LOGGROUP "rust-bindings"
+
 extern "C" {
 
 #include <systemd/sd-journal.h>
@@ -323,12 +325,17 @@ void resolvable_unselect(struct Zypp *_zypp, const char *name,
   selectable->unset(value);
 }
 
+void resolvable_reset_all(struct Zypp *_zypp) noexcept {
+  MIL << "Resetting status of all resolvables" << std::endl;
+  for (auto &item: zypp::ResPool::instance()) item.statusReset();
+}
+
 struct PatternInfos get_patterns_info(struct Zypp *_zypp,
                                       struct PatternNames names,
                                       struct Status *status) noexcept {
   PatternInfos result = {
       (struct PatternInfo *)malloc(names.size * sizeof(PatternInfo)),
-      0 // initialize with zero and increase after each successfull add of
+      0 // initialize with zero and increase after each successful add of
         // pattern info
   };
 
@@ -662,7 +669,7 @@ void get_space_usage(struct Zypp *zypp, struct Status *status,
         zypp->zypp_pointer->diskUsage();
     for (unsigned i = 0; i < mount_points_size; ++i) {
       auto mp =
-          std::find_if(mount_points_set.begin(), mount_points_set.end(),
+          std::find_if(computed_set.begin(), computed_set.end(),
                        [mount_points, i](zypp::DiskUsageCounter::MountPoint m) {
                          return m.dir == mount_points[i].directory;
                        });

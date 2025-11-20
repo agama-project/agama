@@ -6,6 +6,12 @@ export default {
   " Timezone selection": [
     " Zeitzonenauswahl"
   ],
+  "\"%s\"": [
+    ""
+  ],
+  "\"%s\" does not exist or is no longer available.": [
+    ""
+  ],
   "%1$s (%2$s)": [
     "%1$s (%2$s)"
   ],
@@ -138,9 +144,6 @@ export default {
   ],
   "Add another address": [
     "Weitere Adresse hinzufügen"
-  ],
-  "Add another partition or mount an existing one": [
-    "Eine weitere Partition hinzufügen oder eine vorhandene Partition einhängen"
   ],
   "Add device menu": [
     "Gerätemenü hinzufügen"
@@ -327,9 +330,6 @@ export default {
   "Change Language": [
     "Sprache ändern"
   ],
-  "Change boot options": [
-    "Boot-Optionen ändern"
-  ],
   "Change device menu": [
     "Gerätemenü ändern"
   ],
@@ -357,11 +357,11 @@ export default {
   "Change the file system or mount point": [
     "Dateisystem oder Einhängepunkt ändern"
   ],
+  "Changes in these settings will immediately update the 'Result' section below.": [
+    ""
+  ],
   "Channel ID": [
     "Kanalkennung"
-  ],
-  "Check the %d planned actions": [
-    "%d geplante Aktionen prüfen"
   ],
   "Check the authentication parameters.": [
     "Überprüfen Sie die Authentifizierungsparameter."
@@ -395,9 +395,6 @@ export default {
   ],
   "Close": [
     "Schließen"
-  ],
-  "Collapse the list of planned actions": [
-    "Liste der geplanten Aktionen einklappen"
   ],
   "Configuration out of sync": [
     "Konfiguration nicht synchronisiert"
@@ -609,9 +606,6 @@ export default {
   "Details": [
     "Details"
   ],
-  "Details for %s": [
-    "Details für %s"
-  ],
   "Details will appear after the connection is successfully established.": [
     "Nachdem die Verbindung erfolgreich hergestellt wurde, werden Details angezeigt."
   ],
@@ -665,9 +659,6 @@ export default {
   ],
   "Download logs": [
     "Protokolle herunterladen"
-  ],
-  "During installation, several actions will be performed to setup the layout shown at the table below.": [
-    "Während der Installation werden mehrere Aktionen durchgeführt, um die in der Tabelle unten dargestellte Anordnung einzurichten."
   ],
   "Edit": [
     "Bearbeiten"
@@ -732,8 +723,8 @@ export default {
   "ExFAT": [
     "ExFAT"
   ],
-  "Example: https://myserver.com": [
-    "Beispiel: https://myserver.com"
+  "Example: %s": [
+    "Beispiel: %s"
   ],
   "Excellent signal": [
     "Ausgezeichnetes Signal"
@@ -791,8 +782,8 @@ export default {
   "Filter by territory, time zone code or UTC offset": [
     "Nach Gebiet, Zeitzonencode oder UTC-Abweichung filtern"
   ],
-  "Find space": [
-    "Speicherplatz ausfindig machen"
+  "Final layout": [
+    "Endgültige Anordnung"
   ],
   "Find space in %s": [
     "Speicherplatz in %s finden"
@@ -918,6 +909,9 @@ export default {
   "If you continue, partitions on your hard disk will be modified according to the provided installation settings.": [
     "Wenn Sie fortfahren, werden die Partitionen auf Ihrer Festplatte entsprechend den vorgegebenen Installationseinstellungen geändert."
   ],
+  "If you want to disable this check, please specify \"inst.ay_check=0\" at kernel's command-line": [
+    ""
+  ],
   "In progress": [
     "In Bearbeitung"
   ],
@@ -977,9 +971,6 @@ export default {
   ],
   "Install using several devices without modifying existing partitions.": [
     "Installieren unter Verwendung mehrerer Geräte ohne Änderung der vorhandenen Partitionen."
-  ],
-  "Installation Devices": [
-    "Installationsgeräte"
   ],
   "Installation will take %s.": [
     "Installation wird %s in Anspruch nehmen."
@@ -1346,12 +1337,6 @@ export default {
   "Options toggle": [
     "Optionen umschalten"
   ],
-  "Other options": [
-    "Andere Optionen"
-  ],
-  "Other options toggle": [
-    "Umschalter für andere Optionen"
-  ],
   "Overview": [
     "Übersicht"
   ],
@@ -1360,6 +1345,9 @@ export default {
   ],
   "Partition Info": [
     "Partitionierungsinformationen"
+  ],
+  "Partitions": [
+    "Partitionen"
   ],
   "Partitions needed for booting will also be adapted": [
     "Zum Booten benötigte Partitionen werden ebenfalls angepasst"
@@ -1376,14 +1364,11 @@ export default {
   "Partitions that are not reused would be resized if needed.": [
     "Die Größe von Partitionen, die nicht wiederverwendet werden, wird bei Bedarf angepasst."
   ],
-  "Partitions to boot will be allocated at the following device.": [
-    "Die zu bootenden Partitionen werden auf dem folgenden Gerät zugewiesen."
+  "Partitions to boot will be set up if needed at the installation disk.         Currently %1$s, based on the location of the %2$s file system.": [
+    ""
   ],
-  "Partitions to boot will be allocated at the installation disk %s.": [
-    "Die zu bootenden Partitionen werden auf der Installationsfestplatte %s zugewiesen."
-  ],
-  "Partitions to boot will be allocated at the installation disk.": [
-    "Die zu bootenden Partitionen werden auf der Installationsfestplatte zugewiesen."
+  "Partitions to boot will be set up if needed at the installation disk.       Currently %1$s, based on the location of the %2$s file system.": [
+    ""
   ],
   "Partitions will be used and created for %s": [
     "Partitionen werden für %s verwendet und erstellt"
@@ -1447,9 +1432,6 @@ export default {
   ],
   "Product is already registered": [
     "Produkt ist bereits registriert"
-  ],
-  "Protection for the information stored at the new file systems, including data, programs, and system files.": [
-    "Schutz für die in den neuen Dateisystemen gespeicherten Informationen, einschließlich Daten, Programme und Systemdateien."
   ],
   "Provide email address": [
     "E-Mail-Adresse angeben"
@@ -1538,6 +1520,9 @@ export default {
   "Result": [
     "Ergebnis"
   ],
+  "Result of applying the configuration described at the 'Settings' section above.": [
+    ""
+  ],
   "Reused partitions will not be shrunk": [
     "Wiederverwendete Partitionen werden nicht verkleinert"
   ],
@@ -1598,20 +1583,8 @@ export default {
   "Select a disk": [
     "Festplatte auswählen"
   ],
-  "Select a disk to configure": [
-    "Festplatte zum Konfigurieren auswählen"
-  ],
-  "Select a disk to create %s": [
-    "Festplatte zum Erstellen von %s auswählen"
-  ],
   "Select a disk to define partitions or to mount": [
     "Wählen Sie eine Festplatte aus, um Partitionen zu definieren oder einzuhängen"
-  ],
-  "Select a disk to format as %s": [
-    "Festplatte zum Formatieren als %s auswählen"
-  ],
-  "Select a disk to install the system": [
-    "Festplatte für die Installation des Systems auswählen"
   ],
   "Select a product": [
     "Wählen Sie ein Produkt aus"
@@ -1639,9 +1612,6 @@ export default {
   ],
   "Select or enter a valid mount point": [
     "Gültigen Einhängepunkt auswählen oder eingeben"
-  ],
-  "Select the disk to configure partitions for booting": [
-    "Festplatte zum Konfigurieren von Partitionen für das Booten auswählen"
   ],
   "Select what to do with each partition in order to find space for allocating the new system.": [
     "Wählen Sie aus, was mit jeder Partition geschehen soll, um Platz für das neue System zu finden."
@@ -1946,6 +1916,9 @@ export default {
   ],
   "The password will not be needed to boot and access the data if the TPM can verify the integrity of the system. TPM sealing requires the new system to be booted directly on its first run.": [
     "Das Passwort wird nicht benötigt, um zu booten und auf die Daten zuzugreifen, wenn das TPM die Integrität des Systems verifizieren kann. Die TPM-Versiegelung erfordert, dass das neue System bei seinem ersten Start direkt gebootet wird."
+  ],
+  "The product will be registered with \"%s\" hostname": [
+    ""
   ],
   "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of a separate file system for %2$s.": [
     "Die Größe für %1$s wird dynamisch angepasst, basierend auf der Menge an RAM im System und dem Vorhandensein eines separaten Dateisystems für %2$s."

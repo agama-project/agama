@@ -18,11 +18,7 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use agama_utils::{
-    actor::Message,
-    api::{storage::Config, Issue},
-    products::ProductSpec,
-};
+use agama_utils::{actor::Message, api::storage::Config, products::ProductSpec};
 use serde_json::Value;
 use std::sync::Arc;
 use tokio::sync::RwLock;
@@ -81,28 +77,6 @@ pub struct GetProposal;
 
 impl Message for GetProposal {
     type Reply = Option<Value>;
-}
-
-#[derive(Clone)]
-pub struct GetIssues;
-
-impl Message for GetIssues {
-    type Reply = Vec<Issue>;
-}
-
-#[derive(Clone)]
-pub struct SetProduct {
-    pub id: String,
-}
-
-impl SetProduct {
-    pub fn new(id: &str) -> Self {
-        Self { id: id.to_string() }
-    }
-}
-
-impl Message for SetProduct {
-    type Reply = ();
 }
 
 #[derive(Clone)]

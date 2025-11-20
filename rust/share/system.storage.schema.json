@@ -104,14 +104,8 @@
       "properties": {
         "description": { "type": "string" },
         "class": { "type": "string" },
-        "details": { "type": "string" },
-        "source": { "$ref": "#/$defs/issueSource" },
-        "severity": { "enum": ["warn", "error"] }
+        "details": { "type": "string" }
       }
-    },
-    "issueSource": {
-      "title": "System issue source",
-      "enum": ["config", "system"]
     }
   }
 }

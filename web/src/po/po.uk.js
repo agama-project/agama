@@ -6,6 +6,12 @@ export default {
   " Timezone selection": [
     " Вибір часового пояса"
   ],
+  "\"%s\"": [
+    ""
+  ],
+  "\"%s\" does not exist or is no longer available.": [
+    ""
+  ],
   "%1$s (%2$s)": [
     "%1$s (%2$s)"
   ],
@@ -142,9 +148,6 @@ export default {
   ],
   "Add another address": [
     "Додати іншу адресу"
-  ],
-  "Add another partition or mount an existing one": [
-    "Додати новий розділ або змонтувати наявний"
   ],
   "Add device menu": [
     "Меню додавання пристроїв"
@@ -333,9 +336,6 @@ export default {
   "Change Language": [
     "Змінити мову"
   ],
-  "Change boot options": [
-    "Змінити параметри завантаження"
-  ],
   "Change device menu": [
     "Меню зміни пристрою"
   ],
@@ -360,14 +360,26 @@ export default {
   "Change selection": [
     "Змінити вибір"
   ],
+  "Change the disk to configure": [
+    "Змініть диск для налаштування"
+  ],
+  "Change the disk to create %s": [
+    "Змініть диск для створення %s"
+  ],
+  "Change the disk to format as %s": [
+    "Змініть диск для форматування на %s"
+  ],
+  "Change the disk to install the system": [
+    "Змініть диск для встановлення системи"
+  ],
   "Change the file system or mount point": [
     "Змінити файлову систему або точку монтування"
   ],
+  "Changes in these settings will immediately update the 'Result' section below.": [
+    "Зміни в цих налаштуваннях негайно оновлять розділ «Результат» нижче."
+  ],
   "Channel ID": [
     "Ідентифікатор каналу"
-  ],
-  "Check the %d planned actions": [
-    "Перевірити %d заплановані дії"
   ],
   "Check the authentication parameters.": [
     "Перевірте параметри автентифікації."
@@ -401,9 +413,6 @@ export default {
   ],
   "Close": [
     "Закрити"
-  ],
-  "Collapse the list of planned actions": [
-    "Згорнути список запланованих дій"
   ],
   "Configuration out of sync": [
     "Конфігурація не синхронізована"
@@ -615,9 +624,6 @@ export default {
   "Details": [
     "Подробиці"
   ],
-  "Details for %s": [
-    "Подробиці для %s"
-  ],
   "Details will appear after the connection is successfully established.": [
     "Подробиці з'являться після того як з'єднання буде успішно встановлено."
   ],
@@ -671,9 +677,6 @@ export default {
   ],
   "Download logs": [
     "Завантажити журнали"
-  ],
-  "During installation, several actions will be performed to setup the layout shown at the table below.": [
-    "Під час інсталяції буде виконано кілька дій, щоб налаштувати схему, як показано в таблиці нижче."
   ],
   "Edit": [
     "Редагувати"
@@ -738,8 +741,8 @@ export default {
   "ExFAT": [
     "ExFAT"
   ],
-  "Example: https://myserver.com": [
-    "Приклад: https://myserver.com"
+  "Example: %s": [
+    "Приклад: %s"
   ],
   "Excellent signal": [
     "Відмінний сигнал"
@@ -799,8 +802,11 @@ export default {
   "Filter by territory, time zone code or UTC offset": [
     "Фільтр за територією, коду часового пояса або зміщенню UTC"
   ],
-  "Find space": [
-    "Знайти місце"
+  "Final layout": [
+    "Кінцевий варіант"
+  ],
+  "Final structure of the system after installation.": [
+    "Остаточна структура системи після встановлення."
   ],
   "Find space in %s": [
     "Знайти місце в %s"
@@ -927,6 +933,9 @@ export default {
   "If you continue, partitions on your hard disk will be modified according to the provided installation settings.": [
     "Якщо Ви продовжите, розділи на вашому жорсткому диску буде змінено відповідно до наданих налаштувань встановлення."
   ],
+  "If you want to disable this check, please specify \"inst.ay_check=0\" at kernel's command-line": [
+    ""
+  ],
   "In progress": [
     "В процесі"
   ],
@@ -987,8 +996,8 @@ export default {
   "Install using several devices without modifying existing partitions.": [
     "Встановлення з використанням кількох пристроїв без зміни наявних розділів."
   ],
-  "Installation Devices": [
-    "Пристрої для встановлення"
+  "Installation devices": [
+    "Пристрої встановлення"
   ],
   "Installation will take %s.": [
     "Встановлення займе %s."
@@ -1167,6 +1176,9 @@ export default {
   "More languages might be available for the selected product at [Localization] page": [
     "Більше мов може бути доступно на сторінці [Локалізації]"
   ],
+  "More storage options": [
+    "Більше варіантів зберігання"
+  ],
   "Moreover, the following partition will be created.": [
     "Крім того, буде створено такий розділ.",
     "Крім того, буде створено такі розділи.",
@@ -1282,6 +1294,9 @@ export default {
   "No logical volumes are defined yet": [
     "Логічні томи ще не задано"
   ],
+  "No partitions will be automatically configured for booting.": [
+    "Для завантаження автоматично не буде налаштовано жодних розділів."
+  ],
   "No partitions will be automatically configured for booting. Use with caution.": [
     "Жоден розділ не буде автоматично налаштовано для завантаження. Використовуйте з обережністю."
   ],
@@ -1354,14 +1369,11 @@ export default {
   "Only reused partitions will be used.": [
     "Буде використано лише повторно використовувані розділи."
   ],
+  "Options for partition %s": [
+    "Параметри розділу %s"
+  ],
   "Options toggle": [
     "Показ налаштувань"
-  ],
-  "Other options": [
-    "Інші опції"
-  ],
-  "Other options toggle": [
-    "Показати інші налаштування"
   ],
   "Overview": [
     "Огляд"
@@ -1369,8 +1381,14 @@ export default {
   "Package installation failed": [
     "Не вдалося встановити пакунок"
   ],
+  "Partition %s": [
+    "Розділ %s"
+  ],
   "Partition Info": [
     "Інформація про розділ"
+  ],
+  "Partitions": [
+    "Розділи"
   ],
   "Partitions needed for booting will also be adapted": [
     "Розділи, необхідні для завантаження, також будуть адаптовані"
@@ -1387,14 +1405,23 @@ export default {
   "Partitions that are not reused would be resized if needed.": [
     "Розділи, які не використовуються повторно, за необхідності будуть змінені в розмірах."
   ],
-  "Partitions to boot will be allocated at the following device.": [
-    "Розділи для завантаження буде виділено на наступному пристрої."
+  "Partitions to boot will be set up if needed at %s.": [
+    "Розділи для завантаження будуть налаштовані за необхідності в %s."
   ],
-  "Partitions to boot will be allocated at the installation disk %s.": [
-    "Розділи для завантаження буде виділено на інсталяційному диску %s."
+  "Partitions to boot will be set up if needed at the following device.": [
+    "Розділи для завантаження будуть налаштовані за необхідності на наступному пристрої."
   ],
-  "Partitions to boot will be allocated at the installation disk.": [
-    "Розділи для завантаження буде виділено на інсталяційному диску."
+  "Partitions to boot will be set up if needed at the installation disk,           based on the location of the %s file system.": [
+    "Розділи для завантаження будуть налаштовані за необхідності             на інсталяційному диску, виходячи з розташування файлової системи %s."
+  ],
+  "Partitions to boot will be set up if needed at the installation disk,         based on the location of the %s file system.": [
+    "Розділи для завантаження будуть налаштовані за необхідності          на інсталяційному диску, виходячи з розташування файлової системи %s."
+  ],
+  "Partitions to boot will be set up if needed at the installation disk.         Currently %1$s, based on the location of the %2$s file system.": [
+    "Розділи для завантаження будуть налаштовані за необхідності на інсталяційному диску.          Наразі %1$s, виходячи з розташування файлової системи %2$s."
+  ],
+  "Partitions to boot will be set up if needed at the installation disk.       Currently %1$s, based on the location of the %2$s file system.": [
+    "Розділи для завантаження будуть налаштовані за необхідності на інсталяційному диску.        Наразі %1$s, виходячи з розташування файлової системи %2$s."
   ],
   "Partitions will be used and created for %s": [
     "Буде використано та створено розділи для %s"
@@ -1459,8 +1486,8 @@ export default {
   "Product is already registered": [
     "Продукт вже зареєстровано"
   ],
-  "Protection for the information stored at the new file systems, including data, programs, and system files.": [
-    "Захист інформації, що зберігається на нових файлових системах, включно з даними, програмами та системними файлами."
+  "Protection for the information stored at           the new file systems, including data, programs, and system files.": [
+    "Захист інформації, що зберігається в нових файлових системах,             включаючи дані, програми та системні файли."
   ],
   "Provide email address": [
     "Вкажіть адресу електронної пошти"
@@ -1549,6 +1576,9 @@ export default {
   "Result": [
     "Результат"
   ],
+  "Result of applying the configuration described at the 'Settings' section above.": [
+    "Результат застосування конфігурації, описаної у розділі «Налаштування» вище."
+  ],
   "Reused partitions will not be shrunk": [
     "Повторно використані розділи не будуть зменшені"
   ],
@@ -1609,20 +1639,8 @@ export default {
   "Select a disk": [
     "Оберіть диск"
   ],
-  "Select a disk to configure": [
-    "Виберіть диск для налаштування"
-  ],
-  "Select a disk to create %s": [
-    "Виберіть диск для створення %s"
-  ],
   "Select a disk to define partitions or to mount": [
     "Виберіть диск для визначення розділів або монтування"
-  ],
-  "Select a disk to format as %s": [
-    "Виберіть диск для форматування як %s"
-  ],
-  "Select a disk to install the system": [
-    "Оберіть диск для встановлення системи"
   ],
   "Select a product": [
     "Оберіть продукт"
@@ -1650,9 +1668,6 @@ export default {
   ],
   "Select or enter a valid mount point": [
     "Виберіть або введіть дійсну точку монтування"
-  ],
-  "Select the disk to configure partitions for booting": [
-    "Виберіть диск для налаштування розділів для завантаження"
   ],
   "Select what to do with each partition in order to find space for allocating the new system.": [
     "Виберіть, що робити з кожним розділом, щоб знайти місце для розміщення нової системи."
@@ -1894,6 +1909,9 @@ export default {
   "The final step to configure the Trusted Platform Module (TPM) to automatically open encrypted devices will take place during the first boot of the new system. For that to work, the machine needs to boot directly to the new boot loader.": [
     "Останній крок з налаштування модуля довіреної платформи (TPM) для автоматичного відкриття зашифрованих пристроїв відбудеться під час першого завантаження нової системи. Щоб це спрацювало, комп'ютер повинен завантажитися безпосередньо з новим завантажувачем."
   ],
+  "The following actions will be performed in the system during installation.": [
+    "Під час інсталяції в системі будуть виконані наступні дії."
+  ],
   "The following logical volume will be created": [
     "Буде створено такий логічний том",
     "Будуть створені такі логічні томи",
@@ -1964,6 +1982,9 @@ export default {
   ],
   "The password will not be needed to boot and access the data if the TPM can verify the integrity of the system. TPM sealing requires the new system to be booted directly on its first run.": [
     "Пароль не знадобиться для завантаження та доступу до даних, якщо TPM зможе перевірити цілісність системи. Запечатування TPM вимагає, щоб нова система завантажувалася безпосередньо під час першого запуску."
+  ],
+  "The product will be registered with \"%s\" hostname": [
+    ""
   ],
   "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of a separate file system for %2$s.": [
     "Розмір для %1$s буде динамічно коригуватися залежно від обсягу оперативної пам'яті в системі та наявності окремої файлової системи для %2$s."
@@ -2094,6 +2115,9 @@ export default {
   ],
   "Tmpfs": [
     "Tmpfs"
+  ],
+  "To ensure the new system is able to boot, the installer may need to create or configure some           partitions in the appropriate disk.": [
+    "Щоб забезпечити можливість завантаження нової системи, інсталятору може знадобитися             створити або налаштувати деякі розділи на відповідному диску."
   ],
   "To ensure the new system is able to boot, the installer may need to create or configure some partitions in the appropriate disk.": [
     "Щоб забезпечити можливість завантаження нової системи, програмі встановлення може знадобитися створити або налаштувати деякі розділи на відповідному диску."
@@ -2283,6 +2307,9 @@ export default {
   ],
   "Using transient hostname: %s": [
     "Використання перехідного імені хоста: %s"
+  ],
+  "Volume group %s": [
+    "Група томів %s"
   ],
   "Volume group '%s' already exists. Enter a different name.": [
     "Група томів „%s“ вже існує. Введіть іншу назву."

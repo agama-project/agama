@@ -31,7 +31,7 @@ use agama_utils::{
         manager::LicenseContent,
         query,
         question::{Question, QuestionSpec, UpdateQuestion},
-        Action, Config, IssueMap, Patch, Status, SystemInfo,
+        Action, Config, IssueWithScope, Patch, Status, SystemInfo,
     },
     question,
 };
@@ -73,6 +73,12 @@ pub struct ServerState {
     questions: Handler<question::Service>,
 }
 
+impl ServerState {
+    pub fn new(manager: Handler<manager::Service>, questions: Handler<question::Service>) -> Self {
+        Self { manager, questions }
+    }
+}
+
 type ServerResult<T> = Result<T, Error>;
 
 /// Sets up and returns the axum service for the manager module
@@ -87,12 +93,14 @@ pub async fn server_service(
     let questions = question::start(events.clone())
         .await
         .map_err(anyhow::Error::msg)?;
-    let manager = manager::start(questions.clone(), events, dbus)
+    let manager = manager::Service::starter(questions.clone(), events, dbus)
+        .start()
         .await
         .map_err(anyhow::Error::msg)?;
-
-    let state = ServerState { manager, questions };
-
+    let state = ServerState::new(manager, questions);
+    server_with_state(state)
+}
+pub fn server_with_state(state: ServerState) -> Result<Router, ServiceError> {
     Ok(Router::new()
         .route("/status", get(get_status))
         .route("/system", get(get_system))
@@ -244,18 +252,29 @@ async fn get_proposal(State(state): State<ServerState>) -> ServerResult<Response
     Ok(to_option_response(proposal))
 }
 
-/// Returns the issues for each scope.
+/// Returns the list of issues.
 #[utoipa::path(
     get,
     path = "/issues",
     context_path = "/api/v2",
     responses(
-        (status = 200, description = "Agama issues", body = IssueMap),
+        (status = 200, description = "Agama issues", body = Vec<IssueWithScope>),
         (status = 400, description = "Not possible to retrieve the issues")
     )
 )]
-async fn get_issues(State(state): State<ServerState>) -> ServerResult<Json<IssueMap>> {
-    let issues = state.manager.call(message::GetIssues).await?;
+async fn get_issues(State(state): State<ServerState>) -> ServerResult<Json<Vec<IssueWithScope>>> {
+    let issue_groups = state.manager.call(message::GetIssues).await?;
+
+    let issues = issue_groups
+        .into_iter()
+        .flat_map(|(scope, issues)| -> Vec<IssueWithScope> {
+            issues
+                .into_iter()
+                .map(|issue| IssueWithScope { scope, issue })
+                .collect()
+        })
+        .collect();
+
     Ok(Json(issues))
 }
 

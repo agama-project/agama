@@ -18,11 +18,13 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::actor::{self, Actor, MessageHandler};
-use crate::api::event::{self, Event};
-use crate::api::progress::{self, Progress};
-use crate::api::scope::Scope;
-use crate::progress::message;
+use crate::actor::{self, Actor, Handler, MessageHandler};
+use crate::{
+    api::event::{self, Event},
+    api::progress::{self, Progress},
+    api::scope::Scope,
+    progress::message,
+};
 use async_trait::async_trait;
 use tokio::sync::broadcast;
 
@@ -40,17 +42,37 @@ pub enum Error {
     Actor(#[from] actor::Error),
 }
 
+// NOTE: this service does not need a builder, but we decided to implement one just for
+// consistency.
+pub struct Starter {
+    event: event::Sender,
+}
+
+impl Starter {
+    pub fn new(event: event::Sender) -> Self {
+        Self { event }
+    }
+
+    /// Starts the service and returns a handler to communicate with it.
+    pub fn start(self) -> Handler<Service> {
+        let service = Service {
+            events: self.event,
+            progresses: vec![],
+        };
+
+        let handler = actor::spawn(service);
+        handler
+    }
+}
+
 pub struct Service {
     events: event::Sender,
     progresses: Vec<Progress>,
 }
 
 impl Service {
-    pub fn new(events: event::Sender) -> Service {
-        Self {
-            events,
-            progresses: Vec::new(),
-        }
+    pub fn starter(events: event::Sender) -> Starter {
+        Starter::new(events)
     }
 
     fn get_progress(&self, scope: Scope) -> Option<&Progress> {

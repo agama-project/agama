@@ -29,7 +29,7 @@
 //!   implements [Actor]) when it receives a given message.
 //! * A generic struct [ActorHandler] which allows sending messages to a given
 //!   actor.
-//! * A [spawn_actor] function to run the actor on a separate thread. It returns
+//! * A [spawn] function to run the actor on a separate thread. It returns
 //!   an [ActorHandler] to interact with the actor.
 //!
 //! The approach ensures compile-time checks of the messages an actor can

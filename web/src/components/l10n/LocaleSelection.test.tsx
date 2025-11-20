@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2023-2024] SUSE LLC
+ * Copyright (c) [2023-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -25,32 +25,28 @@ import LocaleSelection from "./LocaleSelection";
 import userEvent from "@testing-library/user-event";
 import { screen } from "@testing-library/react";
 import { mockNavigateFn, installerRender } from "~/test-utils";
-import { Locale } from "~/api/system";
+import { Locale } from "~/api/l10n/system";
+
+const mockPatchConfigFn = jest.fn();
 
 const locales: Locale[] = [
-  { id: "en_US.UTF-8", name: "English", territory: "United States" },
-  { id: "es_ES.UTF-8", name: "Spanish", territory: "Spain" },
+  { id: "en_US.UTF-8", language: "English", territory: "United States" },
+  { id: "es_ES.UTF-8", language: "Spanish", territory: "Spain" },
 ];
-
-const mockUpdateConfigFn = jest.fn();
 
 jest.mock("~/components/product/ProductRegistrationAlert", () => () => (
   <div>ProductRegistrationAlert Mock</div>
 ));
 
-jest.mock("~/queries/system", () => ({
-  ...jest.requireActual("~/queries/system"),
+jest.mock("~/hooks/api", () => ({
+  ...jest.requireActual("~/hooks/api"),
   useSystem: () => ({ l10n: { locales } }),
-}));
-
-jest.mock("~/queries/proposal", () => ({
-  ...jest.requireActual("~/queries/proposal"),
   useProposal: () => ({ l10n: { locales, locale: "us_US.UTF-8", keymap: "us" } }),
 }));
 
-jest.mock("~/api/api", () => ({
-  ...jest.requireActual("~/api/api"),
-  updateConfig: (config) => mockUpdateConfigFn(config),
+jest.mock("~/api", () => ({
+  ...jest.requireActual("~/api"),
+  patchConfig: (config) => mockPatchConfigFn(config),
 }));
 
 jest.mock("react-router", () => ({
@@ -65,7 +61,7 @@ it("allows changing the keyboard", async () => {
   await userEvent.click(option);
   const button = await screen.findByRole("button", { name: "Select" });
   await userEvent.click(button);
-  expect(mockUpdateConfigFn).toHaveBeenCalledWith({
+  expect(mockPatchConfigFn).toHaveBeenCalledWith({
     l10n: { locale: "es_ES.UTF-8" },
   });
   expect(mockNavigateFn).toHaveBeenCalledWith(-1);

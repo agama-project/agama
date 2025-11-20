@@ -334,6 +334,12 @@ impl Zypp {
         }
     }
 
+    pub fn reset_resolvables(&self) {
+        unsafe {
+            zypp_agama_sys::resolvable_reset_all(self.ptr);
+        }
+    }
+
     pub fn is_package_selected(&self, tag: &str) -> ZyppResult<bool> {
         unsafe {
             let mut status: Status = Status::default();

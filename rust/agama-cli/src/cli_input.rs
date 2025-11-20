@@ -21,11 +21,10 @@
 use agama_lib::utils::Transfer;
 use anyhow::Context;
 use std::{
-    io,
+    collections::HashMap,
     io::Read,
     path::{Path, PathBuf},
 };
-use url::Url;
 
 /// Represents the ways user can specify the input on the command line
 /// and passes appropriate representations to the web API
@@ -58,26 +57,28 @@ impl From<String> for CliInput {
 }
 
 impl CliInput {
-    /// If *self* has a path or URL value, append a `path=...` or `url=...`
-    /// query parameter to *url*, properly escaped. The path is made absolute
-    /// so that it works (on localhost) even if server's working directory is different.
-    /// See also: [`body_for_web`](Self::body_for_web).
-    pub fn add_query(&self, base_url: &mut Url) -> io::Result<()> {
+    /// Creates a HashMap from *self* content.
+    /// If *self* is stdin or the full text, provide it as String.
+    ///
+    /// NOTE that this will consume the standard input
+    /// if self is `Stdin`
+    pub fn to_map(&self) -> HashMap<String, String> {
+        let mut map = HashMap::new();
+
         match self {
-            Self::Url(url) => {
-                base_url.query_pairs_mut().append_pair("url", url);
-            }
-            Self::Path(path) => {
-                let pathbuf = Self::absolute(Path::new(path))?;
-                let pathstr = pathbuf
-                    .to_str()
-                    .ok_or(std::io::Error::other("Stringifying current directory"))?;
-                base_url.query_pairs_mut().append_pair("path", pathstr);
-            }
-            Self::Stdin => (),
-            Self::Full(_) => (),
+            Self::Url(url) => map.insert(String::from("url"), url.to_string()),
+            Self::Path(path) => map.insert(
+                String::from("path"),
+                Self::absolute(path).unwrap().display().to_string(),
+            ),
+            Self::Stdin => map.insert(
+                String::from("profile"),
+                Self::stdin_to_string().expect("Reading profile from stdin failed"),
+            ),
+            Self::Full(s) => map.insert(String::from("profile"), s.to_string()),
         };
-        Ok(())
+
+        map
     }
 
     /// Make *path* absolute by prepending the current directory
@@ -89,19 +90,6 @@ impl CliInput {
         } else {
             let current_dir = std::env::current_dir()?;
             Ok(current_dir.join(path))
-        }
-    }
-
-    /// If *self* is stdin or the full text, provide it as String.
-    /// See also: `add_query`
-    ///
-    /// NOTE that this will consume the standard input
-    /// if self is `Stdin`
-    pub fn body_for_web(self) -> std::io::Result<String> {
-        match self {
-            Self::Stdin => Self::stdin_to_string(),
-            Self::Full(s) => Ok(s),
-            _ => Ok("".to_owned()),
         }
     }
 

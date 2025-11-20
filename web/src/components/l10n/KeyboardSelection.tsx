@@ -34,15 +34,15 @@ export default function KeyboardSelection() {
   const navigate = useNavigate();
   const {
     l10n: { keymaps },
-  } = useSystem();
+  } = useSystem({ suspense: true });
   const {
     l10n: { keymap: currentKeymap },
-  } = useProposal();
+  } = useProposal({ suspense: true });
 
   // FIXME: get current keymap from either, proposal or config
   const [selected, setSelected] = useState(currentKeymap);
   const [filteredKeymaps, setFilteredKeymaps] = useState(
-    keymaps.sort((k1, k2) => (k1.name > k2.name ? 1 : -1)),
+    keymaps.sort((k1, k2) => (k1.description > k2.description ? 1 : -1)),
   );
 
   const searchHelp = _("Filter by description or keymap code");
@@ -54,7 +54,7 @@ export default function KeyboardSelection() {
     navigate(-1);
   };
 
-  let keymapsList = filteredKeymaps.map(({ id, name }) => {
+  let keymapsList = filteredKeymaps.map(({ id, description }) => {
     return (
       <Radio
         id={id}
@@ -63,7 +63,7 @@ export default function KeyboardSelection() {
         onChange={() => setSelected(id)}
         label={
           <Flex columnGap={{ default: "columnGapSm" }}>
-            <Content isEditorial>{name}</Content>
+            <Content isEditorial>{description}</Content>
             <Content component="small">{id}</Content>
           </Flex>
         }

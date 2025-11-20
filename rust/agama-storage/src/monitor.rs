@@ -18,10 +18,7 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::{
-    message,
-    service::{self, Service},
-};
+use crate::client::{self, Client, StorageClient};
 use agama_utils::{
     actor::Handler,
     api::{
@@ -44,8 +41,6 @@ pub enum Error {
     #[error("Wrong signal data")]
     ProgressChangedData,
     #[error(transparent)]
-    Service(#[from] service::Error),
-    #[error(transparent)]
     Issue(#[from] issue::service::Error),
     #[error(transparent)]
     Progress(#[from] progress::service::Error),
@@ -53,6 +48,8 @@ pub enum Error {
     DBus(#[from] zbus::Error),
     #[error(transparent)]
     Event(#[from] broadcast::error::SendError<Event>),
+    #[error(transparent)]
+    Client(#[from] client::Error),
 }
 
 #[proxy(
@@ -104,27 +101,26 @@ impl From<ProgressData> for Progress {
 }
 
 pub struct Monitor {
-    storage: Handler<Service>,
     progress: Handler<progress::Service>,
     issues: Handler<issue::Service>,
     events: event::Sender,
     connection: Connection,
+    client: Client,
 }
 
 impl Monitor {
     pub fn new(
-        storage: Handler<Service>,
         progress: Handler<progress::Service>,
         issues: Handler<issue::Service>,
         events: event::Sender,
         connection: Connection,
     ) -> Self {
         Self {
-            storage,
             progress,
             issues,
             events,
-            connection,
+            connection: connection.clone(),
+            client: Client::new(connection),
         }
     }
 
@@ -137,10 +133,19 @@ impl Monitor {
 
         tokio::pin!(streams);
 
+        self.update_issues().await?;
+
         while let Some((_, signal)) = streams.next().await {
             self.handle_signal(signal).await?;
         }
 
+        Ok(())
+    }
+
+    async fn update_issues(&self) -> Result<(), Error> {
+        let issues = self.client.get_issues().await?;
+        self.issues
+            .cast(issue::message::Set::new(Scope::Storage, issues))?;
         Ok(())
     }
 
@@ -162,18 +167,12 @@ impl Monitor {
         Ok(())
     }
 
-    // TODO: add proposal to the event.
     async fn handle_proposal_changed(&self, _signal: ProposalChanged) -> Result<(), Error> {
         self.events.send(Event::ProposalChanged {
             scope: Scope::Storage,
         })?;
 
-        let issues = self.storage.call(message::GetIssues).await?;
-        self.issues
-            .call(issue::message::Set::new(Scope::Storage, issues))
-            .await?;
-
-        Ok(())
+        self.update_issues().await
     }
 
     fn handle_progress_changed(&self, signal: ProgressChanged) -> Result<(), Error> {
