@@ -81,12 +81,15 @@ pub struct Model {
     selected_product: Option<ProductSpec>,
     progress: Handler<progress::Service>,
     question: Handler<question::Service>,
+    /// Local repositories (from the off-line media and Driver Update Disks).
+    repositories: Vec<Repository>,
 }
 
 impl Model {
     /// Initializes the struct with the information from the underlying system.
     pub fn new(
         zypp_sender: mpsc::UnboundedSender<SoftwareAction>,
+        repositories: Vec<Repository>,
         progress: Handler<progress::Service>,
         question: Handler<question::Service>,
     ) -> Result<Self, service::Error> {
@@ -95,6 +98,7 @@ impl Model {
             selected_product: None,
             progress,
             question,
+            repositories,
         })
     }
 
@@ -123,16 +127,22 @@ impl Model {
         let (tx, rx) = oneshot::channel();
         self.zypp_sender.send(SoftwareAction::GetRepositories(tx))?;
         let zypp_repos = rx.await??;
-        let repos = zypp_repos
-            .into_iter()
-            .map(|r| Repository {
-                alias: r.alias.clone(),
-                name: r.alias,
-                url: r.url,
-                enabled: r.enabled,
-                mandatory: true,
-            })
-            .collect();
+
+        let mut repos = self.repositories.clone();
+        let local_urls: Vec<_> = self.repositories.iter().map(|r| r.url.as_str()).collect();
+
+        for repo in zypp_repos {
+            if !local_urls.contains(&repo.url.as_str()) {
+                let repo = Repository {
+                    alias: repo.alias.clone(),
+                    name: repo.alias,
+                    url: repo.url,
+                    enabled: repo.enabled,
+                    mandatory: false,
+                };
+                repos.push(repo);
+            }
+        }
         Ok(repos)
     }
 }
