@@ -20,18 +20,18 @@
  * find current contact information at www.suse.com.
  */
 
-import * as l10n from "~/api/config/l10n";
-import * as storage from "~/api/config/storage";
+import { useSuspenseQuery } from "@tanstack/react-query";
+import { Proposal, l10n } from "~/api/proposal";
+import { proposalQuery } from "~/hooks/api/proposal";
 
-type Config = {
-  product?: Product;
-  l10n?: l10n.Config;
-  storage?: storage.Config;
-};
+const selectProposal = (data: Proposal | null): l10n.Proposal | null => data?.l10n;
 
-type Product = {
-  id?: string;
-};
+function useProposal(): l10n.Proposal | null {
+  const { data } = useSuspenseQuery({
+    ...proposalQuery,
+    select: selectProposal,
+  });
+  return data;
+}
 
-export { l10n, storage };
-export type { Config, Product };
+export { useProposal };

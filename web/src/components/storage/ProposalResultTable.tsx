@@ -34,9 +34,9 @@ import { TreeTable } from "~/components/core";
 import { _ } from "~/i18n";
 import { sprintf } from "sprintf-js";
 import { deviceChildren, deviceSize } from "~/components/storage/utils";
-import { proposal } from "~/api/storage";
+import { storage as proposal } from "~/api/proposal";
 import { TreeTableColumn } from "~/components/core/TreeTable";
-import { useConfigModel } from "~/queries/storage/config-model";
+import { useStorageModel } from "~/hooks/api/storage";
 
 type TableItem = proposal.Device | proposal.UnusedSlot;
 
@@ -147,7 +147,7 @@ type ProposalResultTableProps = {
  * @component
  */
 export default function ProposalResultTable({ devicesManager }: ProposalResultTableProps) {
-  const model = useConfigModel({ suspense: true });
+  const model = useStorageModel();
   const devices = devicesManager.usedDevices(model?.drives.map((d) => d.name) || []);
 
   return (

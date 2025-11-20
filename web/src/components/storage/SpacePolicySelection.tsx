@@ -29,7 +29,7 @@ import { deviceChildren } from "~/components/storage/utils";
 import { _ } from "~/i18n";
 import { UnusedSlot, Device } from "~/api/proposal/storage";
 import { apiModel } from "~/api/storage";
-import { useDevices } from "~/hooks/storage/system";
+import { useDevices } from "~/hooks/api/system/storage";
 import { useModel } from "~/hooks/storage/model";
 import { useSetSpacePolicy } from "~/hooks/storage/space-policy";
 import { toDevice } from "./device-utils";
@@ -50,7 +50,7 @@ export default function SpacePolicySelection() {
   const { list, listIndex } = useParams();
   const model = useModel({ suspense: true });
   const deviceModel = model[list][listIndex];
-  const devices = useDevices({ suspense: true });
+  const devices = useDevices();
   const device = devices.find((d) => d.name === deviceModel.name);
   const children = deviceChildren(device);
   const setSpacePolicy = useSetSpacePolicy();

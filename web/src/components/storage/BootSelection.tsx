@@ -26,7 +26,7 @@ import { ActionGroup, Content, Form, FormGroup, Radio, Stack } from "@patternfly
 import { DevicesFormSelect } from "~/components/storage";
 import { Page, SubtleContent } from "~/components/core";
 import { deviceLabel, formattedPath } from "~/components/storage/utils";
-import { useCandidateDevices, useDevices } from "~/hooks/storage/system";
+import { useCandidateDevices, useDevices } from "~/hooks/api/system/storage";
 import { useModel } from "~/hooks/storage/model";
 import { storage } from "~/api/system";
 import { Model } from "~/types/storage/model";

@@ -56,13 +56,15 @@ import {
   addPartition as addPartitionHelper,
   editPartition as editPartitionHelper,
 } from "~/helpers/storage/partition";
-import { useDevices, useVolumeTemplate } from "~/hooks/storage/system";
-import { useConfigModel, useSolvedConfigModel } from "~/queries/storage/config-model";
+import { useDevices, useVolumeTemplate } from "~/hooks/api/system/storage";
+import { useSolvedConfigModel } from "~/queries/storage/config-model";
+import { useStorageModel } from "~/hooks/api/storage";
 import { findDevice } from "~/helpers/storage/api-model";
 import { deviceSize, deviceLabel, filesystemLabel, parseToBytes } from "~/components/storage/utils";
 import { _ } from "~/i18n";
 import { sprintf } from "sprintf-js";
-import { apiModel, system } from "~/api/storage";
+import { apiModel } from "~/api/storage";
+import { storage as system } from "~/api/system";
 import { STORAGE as PATHS, STORAGE } from "~/routes/paths";
 import { isUndefined, unique } from "radashi";
 import { compact } from "~/utils";
@@ -195,7 +197,7 @@ function useModelDevice() {
 
 function useDevice(): system.Device {
   const modelDevice = useModelDevice();
-  const devices = useDevices({ suspense: true });
+  const devices = useDevices();
   return devices.find((d) => d.name === modelDevice.name);
 }
 
@@ -386,7 +388,7 @@ function useErrors(value: FormValue): ErrorsHandler {
 
 function useSolvedModel(value: FormValue): apiModel.Config | null {
   const device = useModelDevice();
-  const model = useConfigModel();
+  const model = useStorageModel();
   const { errors } = useErrors(value);
   const initialPartitionConfig = useInitialPartitionConfig();
   const partitionConfig = toPartitionConfig(value);

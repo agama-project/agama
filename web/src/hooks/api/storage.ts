@@ -20,18 +20,27 @@
  * find current contact information at www.suse.com.
  */
 
-import * as l10n from "~/api/config/l10n";
-import * as storage from "~/api/config/storage";
+import { useSuspenseQuery } from "@tanstack/react-query";
+import { solveStorageModel, getStorageModel } from "~/api";
+import { apiModel } from "~/api/storage";
 
-type Config = {
-  product?: Product;
-  l10n?: l10n.Config;
-  storage?: storage.Config;
+const storageModelQuery = {
+  queryKey: ["storageModel"],
+  queryFn: getStorageModel,
 };
 
-type Product = {
-  id?: string;
-};
+function useStorageModel(): apiModel.Config | null {
+  return useSuspenseQuery(storageModelQuery)?.data;
+}
 
-export { l10n, storage };
-export type { Config, Product };
+const solvedStorageModelQuery = (apiModel?: apiModel.Config) => ({
+  queryKey: ["solvedStorageModel", JSON.stringify(apiModel)],
+  queryFn: () => (apiModel ? solveStorageModel(apiModel) : Promise.resolve(null)),
+  staleTime: Infinity,
+});
+
+function useSolvedStorageModel(model?: apiModel.Config): apiModel.Config | null {
+  return useSuspenseQuery(solvedStorageModelQuery(model))?.data;
+}
+
+export { storageModelQuery, useStorageModel, useSolvedStorageModel };

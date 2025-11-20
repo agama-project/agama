@@ -20,18 +20,23 @@
  * find current contact information at www.suse.com.
  */
 
-import * as l10n from "~/api/config/l10n";
-import * as storage from "~/api/config/storage";
+import { useSuspenseQuery } from "@tanstack/react-query";
+import { extendedConfigQuery } from "~/hooks/api/config";
+import { putConfig, Response } from "~/api";
+import { Config } from "~/api/config";
 
-type Config = {
-  product?: Product;
-  l10n?: l10n.Config;
-  storage?: storage.Config;
-};
+const removeStorageConfig = (data: Config | null): Config =>
+  !data ? {} : { ...data, storage: null };
 
-type Product = {
-  id?: string;
-};
+type ResetFn = () => Response;
 
-export { l10n, storage };
-export type { Config, Product };
+function useReset(): ResetFn {
+  const { data } = useSuspenseQuery({
+    ...extendedConfigQuery,
+    select: removeStorageConfig,
+  });
+  return () => putConfig(data);
+}
+
+export { useReset };
+export type { ResetFn as ResetConfigFn };

@@ -24,7 +24,7 @@ import React, { useState } from "react";
 import { Content } from "@patternfly/react-core";
 import { SelectableDataTable, Page } from "~/components/core/";
 import { storage } from "~/api/system";
-import { useAvailableDevices } from "~/hooks/storage/system";
+import { useAvailableDevices } from "~/hooks/api/system/storage";
 import { _ } from "~/i18n";
 import { SelectableDataTableProps } from "../core/SelectableDataTable";
 import {

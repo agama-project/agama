@@ -25,7 +25,7 @@ import { useLocation, useNavigate } from "react-router";
 import { ActionGroup, Alert, Checkbox, Content, Form } from "@patternfly/react-core";
 import { NestedContent, Page, PasswordAndConfirmationInput } from "~/components/core";
 import PasswordCheck from "~/components/users/PasswordCheck";
-import { useEncryptionMethods } from "~/hooks/storage/system";
+import { useEncryptionMethods } from "~/hooks/api/system/storage";
 import { useEncryption } from "~/queries/storage/config-model";
 import { apiModel } from "~/api/storage";
 import { isEmpty } from "radashi";

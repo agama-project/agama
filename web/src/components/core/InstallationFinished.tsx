@@ -41,7 +41,7 @@ import { Navigate, useNavigate } from "react-router";
 import { Icon } from "~/components/layout";
 import alignmentStyles from "@patternfly/react-styles/css/utilities/Alignment/alignment";
 import { useInstallerStatus } from "~/queries/status";
-import { useExtendedConfig } from "~/hooks/api";
+import { useExtendedConfig } from "~/hooks/api/config";
 import { finishInstallation } from "~/api/manager";
 import { InstallationPhase } from "~/types/status";
 import { ROOT as PATHS } from "~/routes/paths";

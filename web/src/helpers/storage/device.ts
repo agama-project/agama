@@ -20,9 +20,8 @@
  * find current contact information at www.suse.com.
  */
 
-// FIXME: the backend should provide the type.
-
-import { system, proposal } from "~/api/storage";
+import { storage as system } from "~/api/system";
+import { storage as proposal } from "~/api/proposal";
 
 type Device = system.Device | proposal.Device;
 

@@ -25,7 +25,7 @@ import { Alert } from "@patternfly/react-core";
 import { _ } from "~/i18n";
 import { sprintf } from "sprintf-js";
 import { useProduct } from "~/queries/software";
-import { useVolumeTemplates } from "~/hooks/storage/system";
+import { useVolumeTemplates } from "~/hooks/api/system/storage";
 import { isTransactionalSystem } from "~/components/storage/utils";
 
 /**

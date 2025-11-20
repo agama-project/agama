@@ -22,7 +22,7 @@
 
 import { _ } from "~/i18n";
 import { sprintf } from "sprintf-js";
-import { system } from "~/api/storage";
+import { storage as system } from "~/api/system";
 import { compact } from "~/utils";
 
 const driveTypeDescription = (device: system.Device): string => {

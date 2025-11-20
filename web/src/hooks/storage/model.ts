@@ -22,8 +22,8 @@
 
 import { useCallback } from "react";
 import { useSuspenseQuery, useQuery } from "@tanstack/react-query";
-import { storageModelQuery } from "~/hooks/api";
-import { useSystem } from "~/hooks/storage/system";
+import { storageModelQuery } from "~/hooks/api/storage";
+import { useSystem } from "~/hooks/api/system/storage";
 import { apiModel } from "~/api/storage";
 import { buildModel } from "~/helpers/storage/model";
 import { QueryHookOptions } from "~/types/queries";
@@ -35,7 +35,7 @@ const modelFromData = (data: apiModel.Config | null): model.Model | null =>
 function useModel(options?: QueryHookOptions): model.Model | null {
   const func = options?.suspense ? useSuspenseQuery : useQuery;
   const { data } = func({
-    ...storageModelQuery(),
+    ...storageModelQuery,
     select: modelFromData,
   });
   return data;
@@ -45,7 +45,7 @@ function useMissingMountPaths(options?: QueryHookOptions): string[] {
   const productMountPoints = useSystem()?.productMountPoints;
   const func = options?.suspense ? useSuspenseQuery : useQuery;
   const { data } = func({
-    ...storageModelQuery(),
+    ...storageModelQuery,
     select: useCallback(
       (data: apiModel.Config | null): string[] => {
         const model = modelFromData(data);

@@ -24,7 +24,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router";
 import MenuButton, { MenuButtonItem } from "~/components/core/MenuButton";
 import { Divider, Flex, MenuItemProps } from "@patternfly/react-core";
-import { useAvailableDevices } from "~/hooks/storage/system";
+import { useAvailableDevices } from "~/hooks/api/system/storage";
 import { useModel } from "~/hooks/storage/model";
 import { useAddDrive } from "~/hooks/storage/drive";
 import { useAddReusedMdRaid } from "~/hooks/storage/md-raid";

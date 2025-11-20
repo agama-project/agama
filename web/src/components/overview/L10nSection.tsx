@@ -22,16 +22,15 @@
 
 import React from "react";
 import { Content } from "@patternfly/react-core";
-import { useSystem, useProposal } from "~/hooks/api";
+import { useProposal } from "~/hooks/api/proposal/l10n";
+import { useSystem } from "~/hooks/api/system/l10n";
 import { _ } from "~/i18n";
 import { Locale } from "~/api/system/l10n";
 
 export default function L10nSection() {
-  const proposal = useProposal({ suspense: true });
-  const system = useSystem({ suspense: true });
-  const locale =
-    proposal?.l10n?.locale &&
-    system?.l10n?.locales?.find((l: Locale) => l.id === proposal.l10n.locale);
+  const proposal = useProposal();
+  const system = useSystem();
+  const locale = proposal?.locale && system?.locales?.find((l: Locale) => l.id === proposal.locale);
 
   // TRANSLATORS: %s will be replaced by a language name and territory, example:
   // "English (United States)".

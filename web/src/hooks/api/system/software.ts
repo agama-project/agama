@@ -20,18 +20,18 @@
  * find current contact information at www.suse.com.
  */
 
-import * as l10n from "~/api/config/l10n";
-import * as storage from "~/api/config/storage";
+import { useSuspenseQuery } from "@tanstack/react-query";
+import { System, software } from "~/api/system";
+import { systemQuery } from "~/hooks/api/system";
 
-type Config = {
-  product?: Product;
-  l10n?: l10n.Config;
-  storage?: storage.Config;
-};
+const selectSystem = (data: System | null): software.System => data?.software;
 
-type Product = {
-  id?: string;
-};
+function useSystem(): software.System | null {
+  const { data } = useSuspenseQuery({
+    ...systemQuery,
+    select: selectSystem,
+  });
+  return data;
+}
 
-export { l10n, storage };
-export type { Config, Product };
+export { useSystem };

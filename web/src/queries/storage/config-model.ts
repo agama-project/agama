@@ -22,13 +22,12 @@
 
 /** @deprecated These hooks will be replaced by new hooks at ~/hooks/storage/ */
 
-import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { putStorageModel, solveStorageModel } from "~/api";
 import { apiModel } from "~/api/storage";
 import { Volume } from "~/api/system/storage";
-import { QueryHookOptions } from "~/types/queries";
-import { storageModelQuery } from "~/hooks/api";
-import { useVolumeTemplates } from "~/hooks/storage/system";
+import { useStorageModel } from "~/hooks/api/storage";
+import { useVolumeTemplates } from "~/hooks/api/system/storage";
 
 function copyModel(model: apiModel.Config): apiModel.Config {
   return JSON.parse(JSON.stringify(model));
@@ -111,14 +110,6 @@ function unusedMountPaths(model: apiModel.Config, volumes: Volume[]): string[] {
   return volPaths.filter((p) => !assigned.includes(p));
 }
 
-/** @deprecated Use useApiModel from ~/hooks/storage/api-model. */
-export function useConfigModel(options?: QueryHookOptions): apiModel.Config {
-  const query = storageModelQuery();
-  const func = options?.suspense ? useSuspenseQuery : useQuery;
-  const { data } = func(query);
-  return data;
-}
-
 /** @deprecated Use useSolvedApiModel from ~/hooks/storage/api-model. */
 export function useSolvedConfigModel(model?: apiModel.Config): apiModel.Config | null {
   const query = useSuspenseQuery({
@@ -137,7 +128,7 @@ export type EncryptionHook = {
 };
 
 export function useEncryption(): EncryptionHook {
-  const model = useConfigModel();
+  const model = useStorageModel();
 
   return {
     encryption: model?.encryption,
@@ -156,7 +147,7 @@ export type DriveHook = {
 };
 
 export function useDrive(name: string): DriveHook | null {
-  const model = useConfigModel();
+  const model = useStorageModel();
   const drive = findDrive(model, name);
 
   if (drive === undefined) return null;
@@ -181,7 +172,7 @@ export type ModelHook = {
  * Hook for operating on the collections of the model.
  */
 export function useModel(): ModelHook {
-  const model = useConfigModel();
+  const model = useStorageModel();
   const volumes = useVolumeTemplates();
 
   return {

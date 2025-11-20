@@ -51,9 +51,9 @@ import { SelectWrapperProps as SelectProps } from "~/components/core/SelectWrapp
 import SelectTypeaheadCreatable from "~/components/core/SelectTypeaheadCreatable";
 import AutoSizeText from "~/components/storage/AutoSizeText";
 import { deviceSize, filesystemLabel, parseToBytes } from "~/components/storage/utils";
-import { useSolvedStorageModel, useStorageModel } from "~/hooks/api";
+import { useSolvedStorageModel, useStorageModel } from "~/hooks/api/storage";
 import { useModel, useMissingMountPaths } from "~/hooks/storage/model";
-import { useVolumeTemplate } from "~/hooks/storage/system";
+import { useVolumeTemplate } from "~/hooks/api/system/storage";
 import { useVolumeGroup } from "~/hooks/storage/volume-group";
 import { useAddLogicalVolume, useEditLogicalVolume } from "~/hooks/storage/logical-volume";
 import { addLogicalVolume, editLogicalVolume } from "~/helpers/storage/logical-volume";
@@ -172,7 +172,7 @@ function toFormValue(logicalVolume: apiModel.LogicalVolume): FormValue {
 }
 
 function useDefaultFilesystem(mountPoint: string): string {
-  const volume = useVolumeTemplate(mountPoint, { suspense: true });
+  const volume = useVolumeTemplate(mountPoint);
   return volume.mountPath === "/" && volume.snapshots ? BTRFS_SNAPSHOTS : volume.fsType;
 }
 

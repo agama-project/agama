@@ -23,8 +23,8 @@
 import React from "react";
 import { Content } from "@patternfly/react-core";
 import { deviceLabel } from "~/components/storage/utils";
-import { useAvailableDevices, useDevices, useIssues } from "~/hooks/storage/system";
-import { useConfigModel } from "~/queries/storage/config-model";
+import { useAvailableDevices, useDevices, useIssues } from "~/hooks/api/system/storage";
+import { useStorageModel } from "~/hooks/api/storage";
 import { storage } from "~/api/system";
 import { apiModel } from "~/api/storage";
 import { _ } from "~/i18n";
@@ -35,7 +35,7 @@ const findDriveDevice = (drive: apiModel.Drive, devices: storage.Device[]) =>
 const NoDeviceSummary = () => _("No device selected yet");
 
 const SingleDiskSummary = ({ drive }: { drive: apiModel.Drive }) => {
-  const devices = useDevices({ suspense: true });
+  const devices = useDevices();
   const device = findDriveDevice(drive, devices);
   const options = {
     // TRANSLATORS: %s will be replaced by the device name and its size,
@@ -79,7 +79,7 @@ const MultipleDisksSummary = ({ drives }: { drives: apiModel.Drive[] }): string 
 };
 
 const ModelSummary = ({ model }: { model: apiModel.Config }): React.ReactNode => {
-  const devices = useDevices({ suspense: true });
+  const devices = useDevices();
   const drives = model?.drives || [];
   const existDevice = (name: string) => devices.some((d) => d.name === name);
   const noDrive = drives.length === 0 || drives.some((d) => !existDevice(d.name));
@@ -103,7 +103,7 @@ const NoModelSummary = (): React.ReactNode => {
  * Text explaining the storage proposal
  */
 export default function StorageSection() {
-  const configModel = useConfigModel({ suspense: true });
+  const configModel = useStorageModel();
 
   return (
     <Content>

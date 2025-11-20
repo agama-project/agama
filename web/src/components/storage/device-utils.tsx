@@ -27,7 +27,8 @@ import { Label } from "@patternfly/react-core";
 import { _ } from "~/i18n";
 import { sprintf } from "sprintf-js";
 import { deviceBaseName, deviceSize } from "~/components/storage/utils";
-import { system, proposal } from "~/api/storage";
+import { storage as system } from "~/api/system";
+import { storage as proposal } from "~/api/proposal";
 import { deviceSystems, isLogicalVolume, isMd, isPartition } from "~/helpers/storage/device";
 
 type Device = system.Device | proposal.Device;

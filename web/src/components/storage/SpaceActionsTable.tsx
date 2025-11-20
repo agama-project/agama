@@ -41,7 +41,7 @@ import { Device, UnusedSlot } from "~/api/proposal/storage";
 import { apiModel } from "~/api/storage";
 import { TreeTableColumn } from "~/components/core/TreeTable";
 import { Table, Td, Th, Tr, Thead, Tbody } from "@patternfly/react-table";
-import { useConfigModel } from "~/queries/storage/config-model";
+import { useStorageModel } from "~/hooks/api/storage";
 import { isPartition, supportShrink } from "~/helpers/storage/device";
 
 export type SpacePolicyAction = {
@@ -56,7 +56,7 @@ const isUsedPartition = (partition: apiModel.Partition): boolean => {
 // FIXME: there is too much logic here. This is one of those cases that should be considered
 // when restructuring the hooks and queries.
 const useReusedPartition = (name: string): apiModel.Partition | undefined => {
-  const model = useConfigModel();
+  const model = useStorageModel();
 
   if (!model || !name) return;
 

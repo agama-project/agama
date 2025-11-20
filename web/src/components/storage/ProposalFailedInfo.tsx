@@ -22,13 +22,14 @@
 
 import React from "react";
 import { Alert, Content } from "@patternfly/react-core";
-import { useStorageModel, useScopeIssues } from "~/hooks/api";
+import { useStorageModel } from "~/hooks/api/storage";
+import { useIssues } from "~/hooks/api/issue";
 import * as partitionUtils from "~/components/storage/utils/partition";
 import { _, formatList } from "~/i18n";
 import { sprintf } from "sprintf-js";
 
 const Description = () => {
-  const model = useStorageModel({ suspense: true });
+  const model = useStorageModel();
   const partitions = model.drives.flatMap((d) => d.partitions || []);
   const logicalVolumes = model.volumeGroups.flatMap((vg) => vg.logicalVolumes || []);
 
@@ -86,7 +87,7 @@ const Description = () => {
  *   - The generated proposal contains no errors.
  */
 export default function ProposalFailedInfo() {
-  const issues = useScopeIssues("storage");
+  const issues = useIssues("storage");
   if (issues.length === 0) return;
 
   return (

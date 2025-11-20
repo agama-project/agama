@@ -20,9 +20,8 @@
  * find current contact information at www.suse.com.
  */
 
-import { useStorageModel } from "~/hooks/api";
+import { useStorageModel } from "~/hooks/api/storage";
 import { putStorageModel } from "~/api";
-import { QueryHookOptions } from "~/types/queries";
 import { data } from "~/types/storage";
 import { addPartition, editPartition, deletePartition } from "~/helpers/storage/partition";
 
@@ -32,8 +31,8 @@ type AddPartitionFn = (
   data: data.Partition,
 ) => void;
 
-function useAddPartition(options?: QueryHookOptions): AddPartitionFn {
-  const apiModel = useStorageModel(options);
+function useAddPartition(): AddPartitionFn {
+  const apiModel = useStorageModel();
   return (list: "drives" | "mdRaids", listIndex: number | string, data: data.Partition) => {
     putStorageModel(addPartition(apiModel, list, listIndex, data));
   };
@@ -46,8 +45,8 @@ type EditPartitionFn = (
   data: data.Partition,
 ) => void;
 
-function useEditPartition(options?: QueryHookOptions): EditPartitionFn {
-  const apiModel = useStorageModel(options);
+function useEditPartition(): EditPartitionFn {
+  const apiModel = useStorageModel();
   return (
     list: "drives" | "mdRaids",
     listIndex: number | string,
@@ -64,8 +63,8 @@ type DeletePartitionFn = (
   mountPath: string,
 ) => void;
 
-function useDeletePartition(options?: QueryHookOptions): DeletePartitionFn {
-  const apiModel = useStorageModel(options);
+function useDeletePartition(): DeletePartitionFn {
+  const apiModel = useStorageModel();
   return (list: "drives" | "mdRaids", listIndex: number | string, mountPath: string) =>
     putStorageModel(deletePartition(apiModel, list, listIndex, mountPath));
 }

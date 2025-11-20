@@ -23,7 +23,8 @@
 import { unique } from "radashi";
 import { compact } from "~/utils";
 import { Action } from "~/api/proposal/storage";
-import { system, proposal } from "~/api/storage";
+import { storage as system } from "~/api/system";
+import { storage as proposal } from "~/api/proposal";
 import { deviceSystems, isDrive, isMd, isVolumeGroup } from "~/helpers/storage/device";
 
 /**

@@ -20,24 +20,17 @@
  * find current contact information at www.suse.com.
  */
 
-import { useSuspenseQuery, useQuery } from "@tanstack/react-query";
-import { QueryHookOptions } from "~/types/queries";
-import { extendedConfigQuery } from "~/hooks/api";
-import { putConfig, Response } from "~/api";
-import { Config } from "~/api/config";
+import { useSuspenseQuery } from "@tanstack/react-query";
+import { getStatus } from "~/api";
+import { Status } from "~/api/status";
 
-const resetConfig = (data: Config | null): Config => (!data ? {} : { ...data, storage: null });
+const statusQuery = {
+  queryKey: ["status"],
+  queryFn: getStatus,
+};
 
-type ResetConfigFn = () => Response;
-
-function useResetConfig(options?: QueryHookOptions): ResetConfigFn {
-  const func = options?.suspense ? useSuspenseQuery : useQuery;
-  const { data } = func({
-    ...extendedConfigQuery(),
-    select: resetConfig,
-  });
-  return () => putConfig(data);
+function useStatus(): Status | null {
+  return useSuspenseQuery(statusQuery)?.data;
 }
 
-export { useResetConfig };
-export type { ResetConfigFn };
+export { useStatus };

@@ -50,12 +50,13 @@ import { SelectWrapperProps as SelectProps } from "~/components/core/SelectWrapp
 import SelectTypeaheadCreatable from "~/components/core/SelectTypeaheadCreatable";
 import { useAddFilesystem } from "~/hooks/storage/filesystem";
 import { useModel, useMissingMountPaths } from "~/hooks/storage/model";
-import { useDevices, useVolumeTemplate } from "~/hooks/storage/system";
+import { useDevices, useVolumeTemplate } from "~/hooks/api/system/storage";
 import { data, model } from "~/types/storage";
 import { deviceBaseName, filesystemLabel } from "~/components/storage/utils";
 import { _ } from "~/i18n";
 import { sprintf } from "sprintf-js";
-import { apiModel, system } from "~/api/storage";
+import { apiModel } from "~/api/storage";
+import { storage as system } from "~/api/system";
 import { STORAGE as PATHS } from "~/routes/paths";
 import { unique } from "radashi";
 import { compact } from "~/utils";
@@ -145,7 +146,7 @@ function useDeviceModel(): DeviceModel {
 
 function useDevice(): system.Device {
   const deviceModel = useDeviceModel();
-  const devices = useDevices({ suspense: true });
+  const devices = useDevices();
   return devices.find((d) => d.name === deviceModel.name);
 }
 
@@ -155,7 +156,7 @@ function useCurrentFilesystem(): string | null {
 }
 
 function useDefaultFilesystem(mountPoint: string): string {
-  const volume = useVolumeTemplate(mountPoint, { suspense: true });
+  const volume = useVolumeTemplate(mountPoint);
   return volume.mountPath === "/" && volume.snapshots ? BTRFS_SNAPSHOTS : volume.fsType;
 }
 

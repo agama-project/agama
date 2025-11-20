@@ -20,9 +20,8 @@
  * find current contact information at www.suse.com.
  */
 
-import { useStorageModel } from "~/hooks/api";
+import { useStorageModel } from "~/hooks/api/storage";
 import { putStorageModel } from "~/api";
-import { QueryHookOptions } from "~/types/queries";
 import { data } from "~/types/storage";
 import {
   addLogicalVolume,
@@ -32,8 +31,8 @@ import {
 
 type AddLogicalVolumeFn = (vgName: string, data: data.LogicalVolume) => void;
 
-function useAddLogicalVolume(options?: QueryHookOptions): AddLogicalVolumeFn {
-  const apiModel = useStorageModel(options);
+function useAddLogicalVolume(): AddLogicalVolumeFn {
+  const apiModel = useStorageModel();
   return (vgName: string, data: data.LogicalVolume) => {
     putStorageModel(addLogicalVolume(apiModel, vgName, data));
   };
@@ -41,8 +40,8 @@ function useAddLogicalVolume(options?: QueryHookOptions): AddLogicalVolumeFn {
 
 type EditLogicalVolumeFn = (vgName: string, mountPath: string, data: data.LogicalVolume) => void;
 
-function useEditLogicalVolume(options?: QueryHookOptions): EditLogicalVolumeFn {
-  const apiModel = useStorageModel(options);
+function useEditLogicalVolume(): EditLogicalVolumeFn {
+  const apiModel = useStorageModel();
   return (vgName: string, mountPath: string, data: data.LogicalVolume) => {
     putStorageModel(editLogicalVolume(apiModel, vgName, mountPath, data));
   };
@@ -50,8 +49,8 @@ function useEditLogicalVolume(options?: QueryHookOptions): EditLogicalVolumeFn {
 
 type DeleteLogicalVolumeFn = (vgName: string, mountPath: string) => void;
 
-function useDeleteLogicalVolume(options?: QueryHookOptions): DeleteLogicalVolumeFn {
-  const apiModel = useStorageModel(options);
+function useDeleteLogicalVolume(): DeleteLogicalVolumeFn {
+  const apiModel = useStorageModel();
   return (vgName: string, mountPath: string) =>
     putStorageModel(deleteLogicalVolume(apiModel, vgName, mountPath));
 }

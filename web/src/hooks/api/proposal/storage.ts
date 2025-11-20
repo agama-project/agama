@@ -20,17 +20,15 @@
  * find current contact information at www.suse.com.
  */
 
-import { useSuspenseQuery, useQuery } from "@tanstack/react-query";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { Proposal, storage } from "~/api/proposal";
-import { QueryHookOptions } from "~/types/queries";
-import { proposalQuery } from "~/hooks/api";
+import { proposalQuery } from "~/hooks/api/proposal";
 
 const selectProposal = (data: Proposal | null): storage.Proposal | null => data?.storage;
 
-function useProposal(options?: QueryHookOptions): storage.Proposal | null {
-  const func = options?.suspense ? useSuspenseQuery : useQuery;
-  const { data } = func({
-    ...proposalQuery(),
+function useProposal(): storage.Proposal | null {
+  const { data } = useSuspenseQuery({
+    ...proposalQuery,
     select: selectProposal,
   });
   return data;
@@ -38,10 +36,9 @@ function useProposal(options?: QueryHookOptions): storage.Proposal | null {
 
 const selectDevices = (data: Proposal | null): storage.Device[] => data?.storage?.devices || [];
 
-function useDevices(options?: QueryHookOptions): storage.Device[] {
-  const func = options?.suspense ? useSuspenseQuery : useQuery;
-  const { data } = func({
-    ...proposalQuery(),
+function useDevices(): storage.Device[] {
+  const { data } = useSuspenseQuery({
+    ...proposalQuery,
     select: selectDevices,
   });
   return data;
@@ -49,10 +46,9 @@ function useDevices(options?: QueryHookOptions): storage.Device[] {
 
 const selectActions = (data: Proposal | null): storage.Action[] => data?.storage?.actions || [];
 
-function useActions(options?: QueryHookOptions): storage.Action[] {
-  const func = options?.suspense ? useSuspenseQuery : useQuery;
-  const { data } = func({
-    ...proposalQuery(),
+function useActions(): storage.Action[] {
+  const { data } = useSuspenseQuery({
+    ...proposalQuery,
     select: selectActions,
   });
   return data;
