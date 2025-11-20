@@ -33,6 +33,9 @@ BuildArch:      noarch
 BuildRequires:  local-npm-registry
 BuildRequires:  appstream-glib
 
+# do not include in the 32bit repos, the Agama is 64bit only
+ExcludeArch:    %ix86 s390 ppc64
+
 %description
 Agama web UI for the experimental Agama installer.
 
