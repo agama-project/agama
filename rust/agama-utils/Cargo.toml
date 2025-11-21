@@ -24,6 +24,7 @@ serde_yaml = "0.9.34"
 uuid = { version = "1.10.0", features = ["v4"] }
 cidr = { version = "0.3.1", features = ["serde"] }
 macaddr = { version = "1.0.1", features = ["serde_std"] }
+fs-err = "3.2.0"
 
 [dev-dependencies]
 test-context = "0.4.1"
