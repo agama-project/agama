@@ -203,16 +203,7 @@ const DeviceAction = ({
   const device = toDevice(item);
   if (!device) return null;
 
-  if (isPartition(device)) {
-    return <DeviceActionSelector device={device} action={action} onChange={onChange} />;
-  }
-
-  // TODO: check if the device is used by other device (former #component attribute).
-  if (device.filesystem) return _("The content may be deleted");
-
-  if (!device.partitionTable || device.partitions.length === 0) return _("No content found");
-
-  return null;
+  return <DeviceActionSelector device={device} action={action} onChange={onChange} />;
 };
 
 export type SpaceActionsTableProps = {
