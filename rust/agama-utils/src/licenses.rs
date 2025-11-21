@@ -117,7 +117,7 @@ impl Registry {
     ///
     /// * `path`: directory to search translations.
     fn find_translations(path: &PathBuf) -> Result<Vec<LanguageTag>, std::io::Error> {
-        let entries = read_dir(path).unwrap().filter_map(|entry| entry.ok());
+        let entries = read_dir(path)?.filter_map(|entry| entry.ok());
 
         let files = entries
             .filter(|entry| entry.file_type().is_ok_and(|f| f.is_file()))
