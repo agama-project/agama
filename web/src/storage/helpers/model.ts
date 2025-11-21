@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import { apiModel } from "~/api/storage";
+import { model as apiModel } from "~/api/storage";
 import { model } from "~/storage";
 
 function buildBoot(apiModel: apiModel.Config, model: model.Model) {

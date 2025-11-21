@@ -20,11 +20,11 @@
  * find current contact information at www.suse.com.
  */
 
-import { apiModel } from "~/api/storage";
+import { model } from "~/api/storage";
 import { copyApiModel, findDevice } from "~/storage/helpers/api-model";
 import { data } from "~/storage";
 
-function setActions(device: apiModel.Drive, actions: data.SpacePolicyAction[]) {
+function setActions(device: model.Drive, actions: data.SpacePolicyAction[]) {
   device.partitions ||= [];
 
   // Reset resize/delete actions of all current partition configs.
@@ -57,11 +57,11 @@ function setActions(device: apiModel.Drive, actions: data.SpacePolicyAction[]) {
 }
 
 function setSpacePolicy(
-  apiModel: apiModel.Config,
+  apiModel: model.Config,
   list: string,
   listIndex: number | string,
   data: data.SpacePolicy,
-): apiModel.Config {
+): model.Config {
   apiModel = copyApiModel(apiModel);
   const apiDevice = findDevice(apiModel, list, listIndex);
 

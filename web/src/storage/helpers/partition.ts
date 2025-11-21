@@ -20,12 +20,12 @@
  * find current contact information at www.suse.com.
  */
 
-import { apiModel } from "~/api/storage";
+import { model } from "~/api/storage";
 import { copyApiModel, findDevice, buildPartition } from "~/storage/helpers/api-model";
 import { isUsed } from "~/storage/helpers/search";
 import { data } from "~/storage";
 
-type Partitionable = apiModel.Drive | apiModel.MdRaid;
+type Partitionable = model.Drive | model.MdRaid;
 
 function indexByName(device: Partitionable, name: string): number {
   return (device.partitions || []).findIndex((p) => p.name && p.name === name);
@@ -42,11 +42,11 @@ function indexByPath(device: Partitionable, path: string): number {
  * the partition is replaced.
  * */
 function addPartition(
-  apiModel: apiModel.Config,
+  apiModel: model.Config,
   list: "drives" | "mdRaids",
   listIndex: number | string,
   data: data.Partition,
-): apiModel.Config {
+): model.Config {
   apiModel = copyApiModel(apiModel);
   const device = findDevice(apiModel, list, listIndex);
 
@@ -66,12 +66,12 @@ function addPartition(
 }
 
 function editPartition(
-  apiModel: apiModel.Config,
+  apiModel: model.Config,
   list: "drives" | "mdRaids",
   listIndex: number | string,
   mountPath: string,
   data: data.Partition,
-): apiModel.Config {
+): model.Config {
   apiModel = copyApiModel(apiModel);
   const device = findDevice(apiModel, list, listIndex);
 
@@ -88,11 +88,11 @@ function editPartition(
 }
 
 function deletePartition(
-  apiModel: apiModel.Config,
+  apiModel: model.Config,
   list: "drives" | "mdRaids",
   listIndex: number | string,
   mountPath: string,
-): apiModel.Config {
+): model.Config {
   apiModel = copyApiModel(apiModel);
   const device = findDevice(apiModel, list, listIndex);
 

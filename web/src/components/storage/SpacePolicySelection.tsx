@@ -28,7 +28,7 @@ import SpaceActionsTable, { SpacePolicyAction } from "~/components/storage/Space
 import { deviceChildren } from "~/components/storage/utils";
 import { _ } from "~/i18n";
 import { UnusedSlot, Device } from "~/api/proposal/storage";
-import { apiModel } from "~/api/storage";
+import { model } from "~/api/storage";
 import { useDevices } from "~/hooks/api/system/storage";
 import { useModel } from "~/hooks/storage/model";
 import { useSetSpacePolicy } from "~/hooks/storage/space-policy";
@@ -36,7 +36,7 @@ import { toDevice } from "./device-utils";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import { sprintf } from "sprintf-js";
 
-const partitionAction = (partition: apiModel.Partition) => {
+const partitionAction = (partition: model.Partition) => {
   if (partition.delete) return "delete";
   if (partition.resizeIfNeeded) return "resizeIfNeeded";
 

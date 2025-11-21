@@ -55,7 +55,7 @@ import { data, model } from "~/storage";
 import { deviceBaseName, filesystemLabel } from "~/components/storage/utils";
 import { _ } from "~/i18n";
 import { sprintf } from "sprintf-js";
-import { apiModel } from "~/api/storage";
+import { model as apiModel } from "~/api/storage";
 import { storage as system } from "~/api/system";
 import { STORAGE as PATHS } from "~/routes/paths";
 import { unique } from "radashi";

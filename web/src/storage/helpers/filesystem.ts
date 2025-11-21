@@ -20,24 +20,24 @@
  * find current contact information at www.suse.com.
  */
 
-import { apiModel } from "~/api/storage";
+import { model } from "~/api/storage";
 import { data } from "~/storage";
 import { copyApiModel } from "~/storage/helpers/api-model";
 
 function findDevice(
-  apiModel: apiModel.Config,
+  apiModel: model.Config,
   list: string,
   index: number | string,
-): apiModel.Drive | apiModel.MdRaid | null {
+): model.Drive | model.MdRaid | null {
   return (apiModel[list] || []).at(index) || null;
 }
 
 function configureFilesystem(
-  apiModel: apiModel.Config,
+  apiModel: model.Config,
   list: string,
   index: number | string,
   data: data.Formattable,
-): apiModel.Config {
+): model.Config {
   apiModel = copyApiModel(apiModel);
 
   const device = findDevice(apiModel, list, index);

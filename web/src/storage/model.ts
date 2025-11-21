@@ -26,7 +26,7 @@
  * Types that extend the apiModel by adding calculated properties and methods.
  */
 
-import { apiModel } from "~/api/storage";
+import { model } from "~/api/storage";
 
 type Model = {
   boot: Boot;
@@ -36,7 +36,7 @@ type Model = {
   getMountPaths: () => string[];
 };
 
-interface Boot extends Omit<apiModel.Boot, "device"> {
+interface Boot extends Omit<model.Boot, "device"> {
   isDefault: boolean;
   getDevice: () => Drive | MdRaid | null;
 }
@@ -46,7 +46,7 @@ interface Boot extends Omit<apiModel.Boot, "device"> {
  * and an index instead of a device object. See ConfigEditor component.
  */
 
-interface Drive extends Omit<apiModel.Drive, "partitions"> {
+interface Drive extends Omit<model.Drive, "partitions"> {
   list: string;
   listIndex: number;
   isExplicitBoot: boolean;
@@ -62,7 +62,7 @@ interface Drive extends Omit<apiModel.Drive, "partitions"> {
   getConfiguredExistingPartitions: () => Partition[];
 }
 
-interface MdRaid extends Omit<apiModel.MdRaid, "partitions"> {
+interface MdRaid extends Omit<model.MdRaid, "partitions"> {
   list: string;
   listIndex: number;
   isExplicitBoot: boolean;
@@ -78,14 +78,14 @@ interface MdRaid extends Omit<apiModel.MdRaid, "partitions"> {
   getConfiguredExistingPartitions: () => Partition[];
 }
 
-interface Partition extends apiModel.Partition {
+interface Partition extends model.Partition {
   isNew: boolean;
   isUsed: boolean;
   isReused: boolean;
   isUsedBySpacePolicy: boolean;
 }
 
-interface VolumeGroup extends Omit<apiModel.VolumeGroup, "targetDevices" | "logicalVolumes"> {
+interface VolumeGroup extends Omit<model.VolumeGroup, "targetDevices" | "logicalVolumes"> {
   list: string;
   listIndex: number;
   logicalVolumes: LogicalVolume[];
@@ -93,7 +93,7 @@ interface VolumeGroup extends Omit<apiModel.VolumeGroup, "targetDevices" | "logi
   getMountPaths: () => string[];
 }
 
-type LogicalVolume = apiModel.LogicalVolume;
+type LogicalVolume = model.LogicalVolume;
 
 type Formattable = Drive | MdRaid | Partition | LogicalVolume;
 

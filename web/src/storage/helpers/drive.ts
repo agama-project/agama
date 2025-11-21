@@ -20,12 +20,12 @@
  * find current contact information at www.suse.com.
  */
 
-import { apiModel } from "~/api/storage";
+import { model } from "~/api/storage";
 import { data } from "~/storage";
 import { switchSearched } from "~/storage/helpers/search";
 import { copyApiModel } from "~/storage/helpers/api-model";
 
-function addDrive(apiModel: apiModel.Config, data: data.Drive): apiModel.Config {
+function addDrive(apiModel: model.Config, data: data.Drive): model.Config {
   apiModel = copyApiModel(apiModel);
   apiModel.drives ||= [];
   apiModel.drives.push(data);
@@ -33,18 +33,14 @@ function addDrive(apiModel: apiModel.Config, data: data.Drive): apiModel.Config 
   return apiModel;
 }
 
-function deleteDrive(apiModel: apiModel.Config, name: string): apiModel.Config {
+function deleteDrive(apiModel: model.Config, name: string): model.Config {
   apiModel = copyApiModel(apiModel);
   apiModel.drives = apiModel.drives.filter((d) => d.name !== name);
 
   return apiModel;
 }
 
-function switchToDrive(
-  apiModel: apiModel.Config,
-  oldName: string,
-  drive: data.Drive,
-): apiModel.Config {
+function switchToDrive(apiModel: model.Config, oldName: string, drive: data.Drive): model.Config {
   return switchSearched(apiModel, oldName, drive.name, "drives");
 }
 

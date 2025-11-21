@@ -20,12 +20,12 @@
  * find current contact information at www.suse.com.
  */
 
-import { apiModel } from "~/api/storage";
+import { model } from "~/api/storage";
 import { data } from "~/storage";
 import { switchSearched } from "~/storage/helpers/search";
 import { copyApiModel } from "~/storage/helpers/api-model";
 
-function addReusedMdRaid(apiModel: apiModel.Config, data: data.MdRaid): apiModel.Config {
+function addReusedMdRaid(apiModel: model.Config, data: data.MdRaid): model.Config {
   apiModel = copyApiModel(apiModel);
   apiModel.mdRaids ||= [];
   apiModel.mdRaids.push(data);
@@ -33,18 +33,14 @@ function addReusedMdRaid(apiModel: apiModel.Config, data: data.MdRaid): apiModel
   return apiModel;
 }
 
-function deleteMdRaid(apiModel: apiModel.Config, name: string): apiModel.Config {
+function deleteMdRaid(apiModel: model.Config, name: string): model.Config {
   apiModel = copyApiModel(apiModel);
   apiModel.mdRaids = apiModel.mdRaids.filter((d) => d.name !== name);
 
   return apiModel;
 }
 
-function switchToMdRaid(
-  apiModel: apiModel.Config,
-  oldName: string,
-  raid: data.MdRaid,
-): apiModel.Config {
+function switchToMdRaid(apiModel: model.Config, oldName: string, raid: data.MdRaid): model.Config {
   return switchSearched(apiModel, oldName, raid.name, "mdRaids");
 }
 

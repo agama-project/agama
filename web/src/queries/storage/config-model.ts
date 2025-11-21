@@ -24,25 +24,25 @@
 
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { putStorageModel, solveStorageModel } from "~/api";
-import { apiModel } from "~/api/storage";
+import { model } from "~/api/storage";
 import { Volume } from "~/api/system/storage";
 import { useStorageModel } from "~/hooks/api/storage";
 import { useVolumeTemplates } from "~/hooks/api/system/storage";
 
-function copyModel(model: apiModel.Config): apiModel.Config {
+function copyModel(model: model.Config): model.Config {
   return JSON.parse(JSON.stringify(model));
 }
 
-function findDrive(model: apiModel.Config, driveName: string): apiModel.Drive | undefined {
+function findDrive(model: model.Config, driveName: string): model.Drive | undefined {
   const drives = model?.drives || [];
   return drives.find((d) => d.name === driveName);
 }
 
 function findPartition(
-  model: apiModel.Config,
+  model: model.Config,
   driveName: string,
   mountPath: string,
-): apiModel.Partition | undefined {
+): model.Partition | undefined {
   const drive = findDrive(model, driveName);
   if (drive === undefined) return undefined;
 
@@ -50,43 +50,43 @@ function findPartition(
   return partitions.find((p) => p.mountPath === mountPath);
 }
 
-function isBoot(model: apiModel.Config, driveName: string): boolean {
+function isBoot(model: model.Config, driveName: string): boolean {
   return model.boot?.configure && driveName === model.boot?.device?.name;
 }
 
-function isExplicitBoot(model: apiModel.Config, driveName: string): boolean {
+function isExplicitBoot(model: model.Config, driveName: string): boolean {
   return !model.boot?.device?.default && driveName === model.boot?.device?.name;
 }
 
-function driveHasPv(model: apiModel.Config, name: string): boolean {
+function driveHasPv(model: model.Config, name: string): boolean {
   if (!name) return false;
 
   return model.volumeGroups.flatMap((g) => g.targetDevices).includes(name);
 }
 
-function allMountPaths(drive: apiModel.Drive): string[] {
+function allMountPaths(drive: model.Drive): string[] {
   if (drive.mountPath) return [drive.mountPath];
 
   return drive.partitions.map((p) => p.mountPath).filter((m) => m);
 }
 
 function setEncryption(
-  originalModel: apiModel.Config,
-  method: apiModel.EncryptionMethod,
+  originalModel: model.Config,
+  method: model.EncryptionMethod,
   password: string,
-): apiModel.Config {
+): model.Config {
   const model = copyModel(originalModel);
   model.encryption = { method, password };
   return model;
 }
 
-function disableEncryption(originalModel: apiModel.Config): apiModel.Config {
+function disableEncryption(originalModel: model.Config): model.Config {
   const model = copyModel(originalModel);
   model.encryption = null;
   return model;
 }
 
-function addDrive(originalModel: apiModel.Config, driveName: string): apiModel.Config {
+function addDrive(originalModel: model.Config, driveName: string): model.Config {
   if (findDrive(originalModel, driveName)) return;
 
   const model = copyModel(originalModel);
@@ -95,7 +95,7 @@ function addDrive(originalModel: apiModel.Config, driveName: string): apiModel.C
   return model;
 }
 
-function usedMountPaths(model: apiModel.Config): string[] {
+function usedMountPaths(model: model.Config): string[] {
   const drives = model.drives || [];
   const volumeGroups = model.volumeGroups || [];
   const logicalVolumes = volumeGroups.flatMap((v) => v.logicalVolumes || []);
@@ -104,14 +104,14 @@ function usedMountPaths(model: apiModel.Config): string[] {
 }
 
 /** @depreacted Use useMissingMountPaths from ~/hooks/storage/product. */
-function unusedMountPaths(model: apiModel.Config, volumes: Volume[]): string[] {
+function unusedMountPaths(model: model.Config, volumes: Volume[]): string[] {
   const volPaths = volumes.filter((v) => v.mountPath.length).map((v) => v.mountPath);
   const assigned = usedMountPaths(model);
   return volPaths.filter((p) => !assigned.includes(p));
 }
 
 /** @deprecated Use useSolvedApiModel from ~/hooks/storage/api-model. */
-export function useSolvedConfigModel(model?: apiModel.Config): apiModel.Config | null {
+export function useSolvedConfigModel(model?: model.Config): model.Config | null {
   const query = useSuspenseQuery({
     queryKey: ["storage", "solvedConfigModel", JSON.stringify(model)],
     queryFn: () => (model ? solveStorageModel(model) : Promise.resolve(null)),
@@ -122,8 +122,8 @@ export function useSolvedConfigModel(model?: apiModel.Config): apiModel.Config |
 }
 
 export type EncryptionHook = {
-  encryption?: apiModel.Encryption;
-  enable: (method: apiModel.EncryptionMethod, password: string) => void;
+  encryption?: model.Encryption;
+  enable: (method: model.EncryptionMethod, password: string) => void;
   disable: () => void;
 };
 
@@ -132,7 +132,7 @@ export function useEncryption(): EncryptionHook {
 
   return {
     encryption: model?.encryption,
-    enable: (method: apiModel.EncryptionMethod, password: string) =>
+    enable: (method: model.EncryptionMethod, password: string) =>
       putStorageModel(setEncryption(model, method, password)),
     disable: () => putStorageModel(disableEncryption(model)),
   };
@@ -143,7 +143,7 @@ export type DriveHook = {
   isExplicitBoot: boolean;
   hasPv: boolean;
   allMountPaths: string[];
-  getPartition: (mountPath: string) => apiModel.Partition | undefined;
+  getPartition: (mountPath: string) => model.Partition | undefined;
 };
 
 export function useDrive(name: string): DriveHook | null {
@@ -162,7 +162,7 @@ export function useDrive(name: string): DriveHook | null {
 }
 
 export type ModelHook = {
-  model: apiModel.Config;
+  model: model.Config;
   usedMountPaths: string[];
   unusedMountPaths: string[];
   addDrive: (driveName: string) => void;

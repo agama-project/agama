@@ -31,7 +31,7 @@ import xbytes from "xbytes";
 import { _, N_ } from "~/i18n";
 import { model } from "~/storage";
 import { Volume } from "~/api/system/storage";
-import { apiModel } from "~/api/storage";
+import { model as apiModel } from "~/api/storage";
 import { storage as system } from "~/api/system";
 import { storage as proposal } from "~/api/proposal";
 import { sprintf } from "sprintf-js";

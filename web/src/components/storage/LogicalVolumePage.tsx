@@ -58,7 +58,7 @@ import { useVolumeGroup } from "~/hooks/storage/volume-group";
 import { useAddLogicalVolume, useEditLogicalVolume } from "~/hooks/storage/logical-volume";
 import { addLogicalVolume, editLogicalVolume } from "~/storage/helpers/logical-volume";
 import { buildLogicalVolumeName } from "~/storage/helpers/api-model";
-import { apiModel } from "~/api/storage";
+import { model } from "~/api/storage";
 import { data } from "~/storage";
 import { STORAGE as PATHS } from "~/routes/paths";
 import { unique } from "radashi";
@@ -93,7 +93,7 @@ type ErrorsHandler = {
 };
 
 function toData(value: FormValue): data.LogicalVolume {
-  const filesystemType = (): apiModel.FilesystemType | undefined => {
+  const filesystemType = (): model.FilesystemType | undefined => {
     if (value.filesystem === NO_VALUE) return undefined;
     if (value.filesystem === BTRFS_SNAPSHOTS) return "btrfs";
 
@@ -104,7 +104,7 @@ function toData(value: FormValue): data.LogicalVolume {
      *  This will be fixed in the future by directly exporting the volumes as a JSON, similar to the
      *  config model. The schema for the volumes will define the explicit list of filesystem types.
      */
-    return value.filesystem as apiModel.FilesystemType;
+    return value.filesystem as model.FilesystemType;
   };
 
   const filesystem = (): data.Filesystem | undefined => {
@@ -118,7 +118,7 @@ function toData(value: FormValue): data.LogicalVolume {
     };
   };
 
-  const size = (): apiModel.Size | undefined => {
+  const size = (): model.Size | undefined => {
     if (value.sizeOption === "auto") return undefined;
     if (value.minSize === NO_VALUE) return undefined;
 
@@ -137,7 +137,7 @@ function toData(value: FormValue): data.LogicalVolume {
   };
 }
 
-function toFormValue(logicalVolume: apiModel.LogicalVolume): FormValue {
+function toFormValue(logicalVolume: model.LogicalVolume): FormValue {
   const mountPoint = (): string => logicalVolume.mountPath || NO_VALUE;
 
   const filesystem = (): string => {
@@ -176,7 +176,7 @@ function useDefaultFilesystem(mountPoint: string): string {
   return volume.mountPath === "/" && volume.snapshots ? BTRFS_SNAPSHOTS : volume.fsType;
 }
 
-function useInitialLogicalVolume(): apiModel.LogicalVolume | null {
+function useInitialLogicalVolume(): model.LogicalVolume | null {
   const { id: vgName, logicalVolumeId: mountPath } = useParams();
   const volumeGroup = useVolumeGroup(vgName);
 
@@ -337,7 +337,7 @@ function useErrors(value: FormValue): ErrorsHandler {
   return { errors, getError, getVisibleError };
 }
 
-function useSolvedModel(value: FormValue): apiModel.Config | null {
+function useSolvedModel(value: FormValue): model.Config | null {
   const { id: vgName, logicalVolumeId: mountPath } = useParams();
   const apiModel = useStorageModel();
   const { getError } = useErrors(value);
@@ -348,7 +348,7 @@ function useSolvedModel(value: FormValue): apiModel.Config | null {
   // Avoid recalculating the solved model because changes in name.
   data.lvName = undefined;
 
-  let sparseModel: apiModel.Config | undefined;
+  let sparseModel: model.Config | undefined;
 
   if (data.filesystem && !mountPointError) {
     if (mountPath) {
@@ -362,7 +362,7 @@ function useSolvedModel(value: FormValue): apiModel.Config | null {
   return solvedModel;
 }
 
-function useSolvedLogicalVolume(value: FormValue): apiModel.LogicalVolume | undefined {
+function useSolvedLogicalVolume(value: FormValue): model.LogicalVolume | undefined {
   const { id: vgName } = useParams();
   const apiModel = useSolvedModel(value);
   const volumeGroup = apiModel?.volumeGroups?.find((v) => v.vgName === vgName);

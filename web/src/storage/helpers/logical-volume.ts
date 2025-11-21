@@ -20,23 +20,23 @@
  * find current contact information at www.suse.com.
  */
 
-import { apiModel } from "~/api/storage";
+import { model } from "~/api/storage";
 import { copyApiModel, buildLogicalVolume } from "~/storage/helpers/api-model";
 import { data } from "~/storage";
 
-function findVolumeGroupIndex(apiModel: apiModel.Config, vgName: string): number {
+function findVolumeGroupIndex(apiModel: model.Config, vgName: string): number {
   return (apiModel.volumeGroups || []).findIndex((v) => v.vgName === vgName);
 }
 
-function findLogicalVolumeIndex(volumeGroup: apiModel.VolumeGroup, mountPath: string): number {
+function findLogicalVolumeIndex(volumeGroup: model.VolumeGroup, mountPath: string): number {
   return (volumeGroup.logicalVolumes || []).findIndex((l) => l.mountPath === mountPath);
 }
 
 function addLogicalVolume(
-  apiModel: apiModel.Config,
+  apiModel: model.Config,
   vgName: string,
   data: data.LogicalVolume,
-): apiModel.Config {
+): model.Config {
   apiModel = copyApiModel(apiModel);
 
   const vgIndex = findVolumeGroupIndex(apiModel, vgName);
@@ -52,11 +52,11 @@ function addLogicalVolume(
 }
 
 function editLogicalVolume(
-  apiModel: apiModel.Config,
+  apiModel: model.Config,
   vgName: string,
   mountPath: string,
   data: data.LogicalVolume,
-): apiModel.Config {
+): model.Config {
   apiModel = copyApiModel(apiModel);
 
   const vgIndex = findVolumeGroupIndex(apiModel, vgName);
@@ -76,10 +76,10 @@ function editLogicalVolume(
 }
 
 function deleteLogicalVolume(
-  apiModel: apiModel.Config,
+  apiModel: model.Config,
   vgName: string,
   mountPath: string,
-): apiModel.Config {
+): model.Config {
   apiModel = copyApiModel(apiModel);
 
   const vgIndex = findVolumeGroupIndex(apiModel, vgName);

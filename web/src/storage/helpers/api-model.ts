@@ -20,28 +20,28 @@
  * find current contact information at www.suse.com.
  */
 
-import { apiModel } from "~/api/storage";
+import { model } from "~/api/storage";
 import { data } from "~/storage";
 
-function copyApiModel(apiModel: apiModel.Config): apiModel.Config {
+function copyApiModel(apiModel: model.Config): model.Config {
   return JSON.parse(JSON.stringify(apiModel));
 }
 
-function findDevice(apiModel: apiModel.Config, list: string, index: number | string) {
+function findDevice(apiModel: model.Config, list: string, index: number | string) {
   const collection = apiModel[list] || [];
   return collection.at(index);
 }
 
-function findDeviceIndex(apiModel: apiModel.Config, list: string, name: string) {
+function findDeviceIndex(apiModel: model.Config, list: string, name: string) {
   const collection = apiModel[list] || [];
   return collection.findIndex((d) => d.name === name);
 }
 
-function partitionables(apiModel: apiModel.Config): (apiModel.Drive | apiModel.MdRaid)[] {
+function partitionables(apiModel: model.Config): (model.Drive | model.MdRaid)[] {
   return (apiModel.drives || []).concat(apiModel.mdRaids || []);
 }
 
-function buildFilesystem(data?: data.Filesystem): apiModel.Filesystem | undefined {
+function buildFilesystem(data?: data.Filesystem): model.Filesystem | undefined {
   if (!data) return;
 
   return {
@@ -50,7 +50,7 @@ function buildFilesystem(data?: data.Filesystem): apiModel.Filesystem | undefine
   };
 }
 
-function buildSize(data?: data.Size): apiModel.Size | undefined {
+function buildSize(data?: data.Size): model.Size | undefined {
   if (!data) return;
 
   return {
@@ -60,12 +60,12 @@ function buildSize(data?: data.Size): apiModel.Size | undefined {
   };
 }
 
-function buildVolumeGroup(data: data.VolumeGroup): apiModel.VolumeGroup {
+function buildVolumeGroup(data: data.VolumeGroup): model.VolumeGroup {
   const defaultVolumeGroup = { vgName: "system", targetDevices: [] };
   return { ...defaultVolumeGroup, ...data };
 }
 
-function buildLogicalVolume(data: data.LogicalVolume): apiModel.LogicalVolume {
+function buildLogicalVolume(data: data.LogicalVolume): model.LogicalVolume {
   return {
     ...data,
     filesystem: buildFilesystem(data.filesystem),
@@ -73,7 +73,7 @@ function buildLogicalVolume(data: data.LogicalVolume): apiModel.LogicalVolume {
   };
 }
 
-function buildPartition(data: data.Partition): apiModel.Partition {
+function buildPartition(data: data.Partition): model.Partition {
   return {
     ...data,
     filesystem: buildFilesystem(data.filesystem),
@@ -90,14 +90,14 @@ function buildLogicalVolumeName(mountPath?: string): string | undefined {
   return mountPath === "/" ? "root" : mountPath.split("/").pop();
 }
 
-function buildLogicalVolumeFromPartition(partition: apiModel.Partition): apiModel.LogicalVolume {
+function buildLogicalVolumeFromPartition(partition: model.Partition): model.LogicalVolume {
   return {
     ...partition,
     lvName: buildLogicalVolumeName(partition.mountPath),
   };
 }
 
-function buildPartitionFromLogicalVolume(lv: apiModel.LogicalVolume): apiModel.Partition {
+function buildPartitionFromLogicalVolume(lv: model.LogicalVolume): model.Partition {
   return {
     mountPath: lv.mountPath,
     filesystem: lv.filesystem,
