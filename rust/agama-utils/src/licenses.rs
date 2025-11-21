@@ -33,7 +33,7 @@ use thiserror::Error;
 pub enum Error {
     #[error("Not a valid language code: {0}")]
     InvalidLanguageCode(#[from] InvalidLanguageCode),
-    #[error("I/O error")]
+    #[error("I/O error: {0}")]
     IO(#[from] std::io::Error),
 }
 
