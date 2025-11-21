@@ -52,6 +52,9 @@ install6 -D -t "${DESTDIR}${unitdir}" "${SRCDIR}"/share/agama-autoinstall.servic
 install6 -D -t "${DESTDIR}${unitdir}" "${SRCDIR}"/share/agama-scripts.service
 install6 -D -t "${DESTDIR}${unitdir}" "${SRCDIR}"/share/agama-web-server.service
 
+# instal licenses
+install6 -D -t "${DESTDIR}${datadir}"/agama/eula/license.final "${SRCDIR}"/share/eula/license.final/*
+
 # install manpages
 install6 -D -t "${DESTDIR}${mandir}"/man1 "${SRCDIR}"/out/man/* 
 
