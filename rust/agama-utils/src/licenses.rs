@@ -22,9 +22,9 @@
 
 use crate::api::manager::{InvalidLanguageCode, LanguageTag, License, LicenseContent};
 use agama_locale_data::get_territories;
+use fs_err::read_dir;
 use std::{
     collections::HashMap,
-    fs::read_dir,
     path::{Path, PathBuf},
 };
 use thiserror::Error;
@@ -33,7 +33,7 @@ use thiserror::Error;
 pub enum Error {
     #[error("Not a valid language code: {0}")]
     InvalidLanguageCode(#[from] InvalidLanguageCode),
-    #[error("I/O error")]
+    #[error("I/O error: {0}")]
     IO(#[from] std::io::Error),
 }
 
@@ -117,7 +117,7 @@ impl Registry {
     ///
     /// * `path`: directory to search translations.
     fn find_translations(path: &PathBuf) -> Result<Vec<LanguageTag>, std::io::Error> {
-        let entries = read_dir(path).unwrap().filter_map(|entry| entry.ok());
+        let entries = read_dir(path)?.filter_map(|entry| entry.ok());
 
         let files = entries
             .filter(|entry| entry.file_type().is_ok_and(|f| f.is_file()))
