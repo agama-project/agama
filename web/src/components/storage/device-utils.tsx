@@ -113,9 +113,7 @@ const DeviceDetails = ({ item }: { item: UnusedSlot | Device }) => {
  * @component
  */
 const DeviceSize = ({ item }: { item: UnusedSlot | Device }) => {
-  const partitionSlot = toPartitionSlot(item);
-  const device = toDevice(item);
-  return deviceSize(partitionSlot?.size || device?.block.size);
+  return deviceSize(item.volumeGroup?.size || item.block?.size || item.size);
 };
 
 export { toDevice, toPartitionSlot, DeviceName, DeviceDetails, DeviceSize, FilesystemLabel };
