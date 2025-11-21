@@ -152,16 +152,19 @@ impl Zypp {
         }
     }
 
-    pub fn commit(&self, report: &impl callbacks::pkg_download::Callback, security: &mut impl callbacks::security::Callback) -> ZyppResult<bool> {
+    pub fn commit(
+        &self,
+        report: &impl callbacks::pkg_download::Callback,
+        security: &mut impl callbacks::security::Callback,
+    ) -> ZyppResult<bool> {
         let mut status: Status = Status::default();
         let status_ptr = &mut status as *mut _;
         unsafe {
-            let mut commit_fn =
-                |mut callbacks| {
-                        security.with(&mut |mut sec_callback| {
-                        zypp_agama_sys::commit(self.ptr, status_ptr, &mut callbacks, &mut sec_callback)
-                    })                    
-                };
+            let mut commit_fn = |mut callbacks| {
+                security.with(&mut |mut sec_callback| {
+                    zypp_agama_sys::commit(self.ptr, status_ptr, &mut callbacks, &mut sec_callback)
+                })
+            };
             let res = callbacks::pkg_download::with_callback(report, &mut commit_fn);
             helpers::status_to_result(status, res)
         }
@@ -376,10 +379,10 @@ impl Zypp {
                 security.with(&mut |mut sec_callback| {
                     zypp_agama_sys::refresh_repository(
                         self.ptr,
-                    c_alias.as_ptr(),
-                    status_ptr,
-                    &mut callbacks,
-                    &mut sec_callback,
+                        c_alias.as_ptr(),
+                        status_ptr,
+                        &mut callbacks,
+                        &mut sec_callback,
                     )
                 })
             };
@@ -506,7 +509,11 @@ impl Zypp {
     }
 
     // high level method to load source
-    pub fn load_source<F>(&self, progress: F, security: &mut impl callbacks::security::Callback) -> ZyppResult<()>
+    pub fn load_source<F>(
+        &self,
+        progress: F,
+        security: &mut impl callbacks::security::Callback,
+    ) -> ZyppResult<()>
     where
         F: Fn(i64, String) -> bool,
     {
@@ -526,7 +533,11 @@ impl Zypp {
                 return abort_err;
             }
 
-                self.refresh_repository(&i.alias, &callbacks::download_progress::EmptyCallback, security)?;
+            self.refresh_repository(
+                &i.alias,
+                &callbacks::download_progress::EmptyCallback,
+                security,
+            )?;
             percent += percent_step;
             cont = progress(
                 percent.floor() as i64,

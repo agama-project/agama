@@ -1,4 +1,7 @@
-use std::{os::raw::{c_char, c_void}, str::FromStr};
+use std::{
+    os::raw::{c_char, c_void},
+    str::FromStr,
+};
 
 use crate::helpers::{as_c_void, string_from_ptr};
 
@@ -121,57 +124,56 @@ pub trait Callback {
 
     /// block to use callbacks inside. Recommended to not redefine.
     fn with<R, F>(&mut self, block: &mut F) -> R
-where
-    F: FnMut(zypp_agama_sys::SecurityCallbacks) -> R,
-{
-    let mut accept_key_call = |key_id, key_name, key_fingerprint, repository_alias| {
-        self.accept_key(key_id, key_name, key_fingerprint, repository_alias)
-    };
-    let cb_accept_key = get_accept_key(&accept_key_call);
-
-    let mut unsigned_file_call =
-        |file, repository_alias| self.unsigned_file(file, repository_alias);
-    let cb_unsigned_file = get_unsigned_file(&unsigned_file_call);
-
-    let mut unknown_key_call =
-        |file, key_id, repository_alias| self.unknown_key(file, key_id, repository_alias);
-    let cb_unknown_key = get_unknown_key(&unknown_key_call);
-
-    let mut verification_failed_call =
-        |file, key_id, key_name, key_fingerprint, repository_alias| {
-            self.verification_failed(file, key_id, key_name, key_fingerprint, repository_alias)
+    where
+        F: FnMut(zypp_agama_sys::SecurityCallbacks) -> R,
+    {
+        let mut accept_key_call = |key_id, key_name, key_fingerprint, repository_alias| {
+            self.accept_key(key_id, key_name, key_fingerprint, repository_alias)
         };
-    let cb_verification_failed = get_verification_failed(&verification_failed_call);
+        let cb_accept_key = get_accept_key(&accept_key_call);
 
-    let mut checksum_missing_call = |file| self.checksum_missing(file);
-    let cb_checksum_missing = get_checksum_missing(&checksum_missing_call);
+        let mut unsigned_file_call =
+            |file, repository_alias| self.unsigned_file(file, repository_alias);
+        let cb_unsigned_file = get_unsigned_file(&unsigned_file_call);
 
-    let mut checksum_wrong_call =
-        |file, expected, actual| self.checksum_wrong(file, expected, actual);
-    let cb_checksum_wrong = get_checksum_wrong(&checksum_wrong_call);
+        let mut unknown_key_call =
+            |file, key_id, repository_alias| self.unknown_key(file, key_id, repository_alias);
+        let cb_unknown_key = get_unknown_key(&unknown_key_call);
 
-    let mut checksum_unknown_call =
-        |file, checksum| self.checksum_unknown(file, checksum);
-    let cb_checksum_unknown = get_checksum_unknown(&checksum_unknown_call);
+        let mut verification_failed_call =
+            |file, key_id, key_name, key_fingerprint, repository_alias| {
+                self.verification_failed(file, key_id, key_name, key_fingerprint, repository_alias)
+            };
+        let cb_verification_failed = get_verification_failed(&verification_failed_call);
 
-    let callbacks = zypp_agama_sys::SecurityCallbacks {
-        accept_key: cb_accept_key,
-        accept_key_data: as_c_void(&mut accept_key_call),
-        unsigned_file: cb_unsigned_file,
-        unsigned_file_data: as_c_void(&mut unsigned_file_call),
-        unknown_key: cb_unknown_key,
-        unknown_key_data: as_c_void(&mut unknown_key_call),
-        verification_failed: cb_verification_failed,
-        verification_failed_data: as_c_void(&mut verification_failed_call),
-        checksum_missing: cb_checksum_missing,
-        checksum_missing_data: as_c_void(&mut checksum_missing_call),
-        checksum_wrong: cb_checksum_wrong,
-        checksum_wrong_data: as_c_void(&mut checksum_wrong_call),
-        checksum_unknown: cb_checksum_unknown,
-        checksum_unknown_data: as_c_void(&mut checksum_unknown_call),
-    };
-    block(callbacks)
-}
+        let mut checksum_missing_call = |file| self.checksum_missing(file);
+        let cb_checksum_missing = get_checksum_missing(&checksum_missing_call);
+
+        let mut checksum_wrong_call =
+            |file, expected, actual| self.checksum_wrong(file, expected, actual);
+        let cb_checksum_wrong = get_checksum_wrong(&checksum_wrong_call);
+
+        let mut checksum_unknown_call = |file, checksum| self.checksum_unknown(file, checksum);
+        let cb_checksum_unknown = get_checksum_unknown(&checksum_unknown_call);
+
+        let callbacks = zypp_agama_sys::SecurityCallbacks {
+            accept_key: cb_accept_key,
+            accept_key_data: as_c_void(&mut accept_key_call),
+            unsigned_file: cb_unsigned_file,
+            unsigned_file_data: as_c_void(&mut unsigned_file_call),
+            unknown_key: cb_unknown_key,
+            unknown_key_data: as_c_void(&mut unknown_key_call),
+            verification_failed: cb_verification_failed,
+            verification_failed_data: as_c_void(&mut verification_failed_call),
+            checksum_missing: cb_checksum_missing,
+            checksum_missing_data: as_c_void(&mut checksum_missing_call),
+            checksum_wrong: cb_checksum_wrong,
+            checksum_wrong_data: as_c_void(&mut checksum_wrong_call),
+            checksum_unknown: cb_checksum_unknown,
+            checksum_unknown_data: as_c_void(&mut checksum_unknown_call),
+        };
+        block(callbacks)
+    }
 }
 
 /// Default implementation that does nothing and rejects all security risks.
@@ -333,4 +335,3 @@ where
 {
     Some(checksum_unknown::<F>)
 }
-

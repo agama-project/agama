@@ -1,4 +1,9 @@
-use agama_utils::{actor::Handler, api::question::QuestionSpec, progress, question};
+use agama_utils::{
+    actor::Handler,
+    api::question::QuestionSpec,
+    progress,
+    question::{self, ask_question},
+};
 use gettextrs::gettext;
 use tokio::runtime::Handle;
 use zypp_agama::callbacks::pkg_download::{Callback, DownloadError};
@@ -45,22 +50,14 @@ impl Callback for CommitDownload {
         let question = QuestionSpec::new(description, "software.package_error.provide_error")
             .with_actions(&actions)
             .with_data(&data);
-        let result = Handle::current().block_on(async move {
-            self.questions
-                .call(question::message::Ask::new(question))
-                .await
-        });
+        let result = Handle::current()
+            .block_on(async move { ask_question(&self.questions, question).await });
         let Ok(answer) = result else {
             tracing::warn!("Failed to ask question {:?}", result);
             return zypp_agama::callbacks::ProblemResponse::ABORT;
         };
 
-        let Some(answer_str) = answer.answer else {
-            tracing::warn!("No answer provided");
-            return zypp_agama::callbacks::ProblemResponse::ABORT;
-        };
-
-        answer_str
+        answer
             .action
             .as_str()
             .parse::<zypp_agama::callbacks::ProblemResponse>()

@@ -178,13 +178,15 @@ impl ZyppServer {
                 tx,
             } => {
                 let mut security_callback = security::Security::new(question);
-                self.write(state, progress, &mut security_callback, tx, zypp).await?;
+                self.write(state, progress, &mut security_callback, tx, zypp)
+                    .await?;
             }
             SoftwareAction::GetPatternsMetadata(names, tx) => {
                 self.get_patterns(names, tx, zypp).await?;
             }
             SoftwareAction::Install(tx, progress, question) => {
-                let download_callback = commit_download::CommitDownload::new(progress, question.clone());
+                let download_callback =
+                    commit_download::CommitDownload::new(progress, question.clone());
                 let mut security_callback = security::Security::new(question);
                 tx.send(self.install(zypp, &download_callback, &mut security_callback))
                     .map_err(|_| ZyppDispatchError::ResponseChannelClosed)?;
@@ -311,10 +313,13 @@ impl ZyppServer {
 
         progress.cast(progress::message::Next::new(Scope::Software))?;
         if to_add.is_empty() || to_remove.is_empty() {
-            let result = zypp.load_source(|percent, alias| {
-                tracing::info!("Refreshing repositories: {} ({}%)", alias, percent);
-                true
-            }, security);
+            let result = zypp.load_source(
+                |percent, alias| {
+                    tracing::info!("Refreshing repositories: {} ({}%)", alias, percent);
+                    true
+                },
+                security,
+            );
 
             if let Err(error) = result {
                 let message = format!("Could not read the repositories");
