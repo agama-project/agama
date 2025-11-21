@@ -432,7 +432,7 @@ const reducer = (state: DASDTableState, action: DASDTableAction): DASDTableState
  *
  * These columns are consumed by the core <SelectableDataTable> component.
  */
-const columns = [
+const createColumns = () => [
   {
     // TRANSLATORS: table header for a DASD devices table
     name: _("Channel ID"),
@@ -493,6 +493,8 @@ export default function DASDTable() {
   const devices = useDASDDevices();
   const { mutate: updateDASD } = useDASDMutation();
   const [state, dispatch] = useReducer(reducer, initialState);
+
+  const columns = createColumns();
 
   useEffect(() => {
     if (!client) return;

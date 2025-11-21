@@ -32,7 +32,7 @@ import {
 } from "@patternfly/react-core";
 import Text from "~/components/core/Text";
 import { DASDDevicesFilters } from "~/components/storage/dasd/DASDTable";
-import { _ } from "~/i18n";
+import { N_, _ } from "~/i18n";
 
 type FormatFilterProps = {
   value: DASDDevicesFilters["formatted"];
@@ -40,9 +40,9 @@ type FormatFilterProps = {
 };
 
 const options = {
-  all: _("all"),
-  yes: _("yes"),
-  no: _("no"),
+  all: N_("all"),
+  yes: N_("yes"),
+  no: N_("no"),
 };
 
 const ID = "dasd-format-filter";
@@ -67,7 +67,8 @@ export default function FormattedFilter({ value, onChange }: FormatFilterProps) 
 
   const toggle = (toggleRef: React.Ref<MenuToggleElement>) => (
     <MenuToggle id={ID} ref={toggleRef} onClick={onToggle} isExpanded={isOpen}>
-      {options[value]}
+      {/* eslint-disable agama-i18n/string-literals */}
+      {_(options[value])}
     </MenuToggle>
   );
 
@@ -91,7 +92,8 @@ export default function FormattedFilter({ value, onChange }: FormatFilterProps) 
         <SelectList>
           {Object.keys(options).map((key) => (
             <SelectOption key={key} value={key}>
-              {options[key]}
+              {/* eslint-disable agama-i18n/string-literals */}
+              {_(options[key])}
             </SelectOption>
           ))}
         </SelectList>

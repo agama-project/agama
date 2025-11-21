@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri Nov 21 08:17:06 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Fixed missing translations (error cases for software repos, iSCSI, DASD; bsc#1250059)
+
+-------------------------------------------------------------------
 Mon Oct 27 15:51:48 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
 
 - Use the JavaScript/TypeScript parser to extract strings for
