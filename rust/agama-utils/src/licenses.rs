@@ -22,9 +22,9 @@
 
 use crate::api::manager::{InvalidLanguageCode, LanguageTag, License, LicenseContent};
 use agama_locale_data::get_territories;
+use fs_err::read_dir;
 use std::{
     collections::HashMap,
-    fs::read_dir,
     path::{Path, PathBuf},
 };
 use thiserror::Error;
