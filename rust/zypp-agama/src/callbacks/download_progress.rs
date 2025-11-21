@@ -56,7 +56,7 @@ pub trait Callback {
     ///
     /// * `_url`: The URL of the file being downloaded.
     /// * `_localfile`: The local path where the file will be stored.
-    fn start(&self, _url: &str, _localfile: &str) {}
+    fn start(&self, _url: String, _localfile: String) {}
 
     /// Called periodically to report download progress.
     ///
@@ -70,7 +70,7 @@ pub trait Callback {
     /// # Returns
     ///
     /// `true` to continue the download, `false` to abort it.
-    fn progress(&self, _value: i32, _url: &str, _bps_avg: f64, _bps_current: f64) -> bool {
+    fn progress(&self, _value: i32, _url: String, _bps_avg: f64, _bps_current: f64) -> bool {
         true
     }
 
@@ -85,7 +85,12 @@ pub trait Callback {
     /// # Returns
     ///
     /// A [ProblemResponse] indicating how to proceed (e.g., abort, retry, ignore).
-    fn problem(&self, _url: &str, _error_id: DownloadError, _description: &str) -> ProblemResponse {
+    fn problem(
+        &self,
+        _url: String,
+        _error_id: DownloadError,
+        _description: String,
+    ) -> ProblemResponse {
         ProblemResponse::ABORT
     }
 
@@ -96,7 +101,7 @@ pub trait Callback {
     /// * `_url`: The URL of the downloaded file.
     /// * `_error_id`: [DownloadError::NoError] on success, or the specific error on failure.
     /// * `_reason`: A string providing more details about the finish status.
-    fn finish(&self, _url: &str, _error_id: DownloadError, _reason: &str) {}
+    fn finish(&self, _url: String, _error_id: DownloadError, _reason: String) {}
 }
 
 // Default progress that do nothing
@@ -187,17 +192,16 @@ pub(crate) fn with_callback<R, F>(callbacks: &impl Callback, block: &mut F) -> R
 where
     F: FnMut(zypp_agama_sys::DownloadProgressCallbacks) -> R,
 {
-    let mut start_call = |url: String, localfile: String| callbacks.start(&url, &localfile);
+    let mut start_call = |url: String, localfile: String| callbacks.start(url, localfile);
     let cb_start = get_start(&start_call);
     let mut progress_call = |value, url: String, bps_avg, bps_current| {
-        callbacks.progress(value, &url, bps_avg, bps_current)
+        callbacks.progress(value, url, bps_avg, bps_current)
     };
     let cb_progress = get_progress(&progress_call);
     let mut problem_call =
-        |url: String, error, description: String| callbacks.problem(&url, error, &description);
+        |url: String, error, description: String| callbacks.problem(url, error, description);
     let cb_problem = get_problem(&problem_call);
-    let mut finish_call =
-        |url: String, error, description: String| callbacks.finish(&url, error, &description);
+    let mut finish_call = |url: String, error, reason: String| callbacks.finish(url, error, reason);
     let cb_finish = get_finish(&finish_call);
 
     let callbacks = zypp_agama_sys::DownloadProgressCallbacks {

@@ -185,10 +185,10 @@ impl ZyppServer {
                 self.get_patterns(names, tx, zypp).await?;
             }
             SoftwareAction::Install(tx, progress, question) => {
-                let download_callback =
+                let mut download_callback =
                     commit_download::CommitDownload::new(progress, question.clone());
                 let mut security_callback = security::Security::new(question);
-                tx.send(self.install(zypp, &download_callback, &mut security_callback))
+                tx.send(self.install(zypp, &mut download_callback, &mut security_callback))
                     .map_err(|_| ZyppDispatchError::ResponseChannelClosed)?;
             }
             SoftwareAction::Finish(tx) => {
@@ -205,7 +205,7 @@ impl ZyppServer {
     fn install(
         &self,
         zypp: &zypp_agama::Zypp,
-        download_callback: &commit_download::CommitDownload,
+        download_callback: &mut commit_download::CommitDownload,
         security_callback: &mut security::Security,
     ) -> ZyppServerResult<bool> {
         let target = "/mnt";

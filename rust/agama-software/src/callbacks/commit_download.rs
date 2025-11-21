@@ -34,9 +34,9 @@ impl Callback for CommitDownload {
 
     fn problem(
         &self,
-        name: &str,
+        name: String,
         error: DownloadError,
-        description: &str,
+        description: String,
     ) -> zypp_agama::callbacks::ProblemResponse {
         // TODO: make it generic for any problemResponse questions
         // TODO: we need support for abort and make it default action
@@ -46,10 +46,14 @@ impl Callback for CommitDownload {
             ("Ignore", labels[1].as_str()),
         ];
         let error_str = error.to_string();
-        let data = [("package", name), ("error_code", error_str.as_str())];
-        let question = QuestionSpec::new(description, "software.package_error.provide_error")
-            .with_actions(&actions)
-            .with_data(&data);
+        let data = [
+            ("package", name.as_str()),
+            ("error_code", error_str.as_str()),
+        ];
+        let question =
+            QuestionSpec::new(description.as_str(), "software.package_error.provide_error")
+                .with_actions(&actions)
+                .with_data(&data);
         let result = Handle::current()
             .block_on(async move { ask_question(&self.questions, question).await });
         let Ok(answer) = result else {
@@ -66,8 +70,8 @@ impl Callback for CommitDownload {
 
     fn gpg_check(
         &self,
-        resolvable_name: &str,
-        _repo_url: &str,
+        resolvable_name: String,
+        _repo_url: String,
         check_result: zypp_agama::callbacks::pkg_download::GPGCheckResult,
     ) -> Option<zypp_agama::callbacks::ProblemResponse> {
         if check_result == zypp_agama::callbacks::pkg_download::GPGCheckResult::Ok {
