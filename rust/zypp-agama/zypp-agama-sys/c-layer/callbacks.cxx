@@ -2,6 +2,7 @@
 #include <boost/bind/bind.hpp>
 #include <zypp/Callback.h>
 #include <zypp/ZYppCallbacks.h>
+#include "zypp/Digest.h"
 
 #include "callbacks.h"
 
@@ -316,6 +317,113 @@ private:
 
 static CommitPreloadReport commit_preload_report;
 
+struct KeyRingReport
+    : public zypp::callback::ReceiveReport<zypp::KeyRingReport> {
+  struct SecurityCallbacks *callbacks;
+
+  KeyRingReport() { callbacks = NULL; }
+
+  void set_callbacks(SecurityCallbacks *callbacks_) {
+    callbacks = callbacks_;
+  }
+
+  zypp::KeyRingReport::KeyTrust
+  askUserToAcceptKey(const zypp::PublicKey &key,
+                     const zypp::KeyContext &context) {
+    if (callbacks == NULL || callbacks->accept_key == NULL) {
+      return zypp::KeyRingReport::askUserToAcceptKey(key, context);
+    }
+    enum GPGKeyTrust response = callbacks->accept_key(
+        key.id().c_str(), key.name().c_str(), key.fingerprint().c_str(),
+        context.repoInfo().alias().c_str(), callbacks->accept_key_data);
+
+    return convert_trust(response);
+  }
+
+  bool askUserToAcceptUnsignedFile(const std::string &file,
+                                   const zypp::KeyContext &context) {
+    if (callbacks == NULL || callbacks->unsigned_file == NULL) {
+      return zypp::KeyRingReport::askUserToAcceptUnsignedFile(file, context);
+    }
+    return callbacks->unsigned_file(file.c_str(),
+                                    context.repoInfo().alias().c_str(),
+                                    callbacks->unsigned_file_data);
+  }
+
+  bool askUserToAcceptUnknownKey(const std::string &file, const std::string &id,
+                                 const zypp::KeyContext &context) {
+    if (callbacks == NULL || callbacks->unknown_key == NULL) {
+      return zypp::KeyRingReport::askUserToAcceptUnknownKey(file, id, context);
+    }
+    return callbacks->unknown_key(file.c_str(), id.c_str(),
+                                  context.repoInfo().alias().c_str(),
+                                  callbacks->unknown_key_data);
+  }
+
+  bool askUserToAcceptVerificationFailed(const std::string &file,
+                                         const zypp::PublicKey &key,
+                                         const zypp::KeyContext &context) {
+    if (callbacks == NULL || callbacks->verification_failed == NULL) {
+      return zypp::KeyRingReport::askUserToAcceptVerificationFailed(file, key,
+                                                                    context);
+    }
+    return callbacks->verification_failed(
+        file.c_str(), key.id().c_str(), key.name().c_str(),
+        key.fingerprint().c_str(), context.repoInfo().alias().c_str(),
+        callbacks->verification_failed_data);
+  }
+
+private:
+  inline zypp::KeyRingReport::KeyTrust convert_trust(GPGKeyTrust response) {
+    switch (response) {
+    case GPGKT_REJECT:
+      return zypp::KeyRingReport::KEY_DONT_TRUST;
+    case GPGKT_TEMPORARY:
+      return zypp::KeyRingReport::KEY_TRUST_TEMPORARILY;
+    case GPGKT_IMPORT:
+      return zypp::KeyRingReport::KEY_TRUST_AND_IMPORT;
+    }
+    // fallback that should not happen
+    return zypp::KeyRingReport::KEY_DONT_TRUST;
+  }
+};
+
+static KeyRingReport key_ring_report;
+
+struct DigestReceive : public zypp::callback::ReceiveReport<zypp::DigestReport> {
+  struct SecurityCallbacks *callbacks;
+
+  DigestReceive() { callbacks = NULL; }
+
+  void set_callbacks(SecurityCallbacks *callbacks_) {
+    callbacks = callbacks_;
+  }
+
+  bool askUserToAcceptNoDigest( const zypp::Pathname &file ){
+    if (callbacks == NULL || callbacks->checksum_missing == NULL) {
+      return zypp::DigestReport::askUserToAcceptNoDigest(file);
+    }
+    return callbacks->checksum_missing(file.c_str(), callbacks->checksum_missing_data);
+  }
+
+  bool askUserToAccepUnknownDigest( const zypp::Pathname &file, const std::string &name ) {
+    if (callbacks == NULL || callbacks->checksum_unknown == NULL) {
+      return zypp::DigestReport::askUserToAccepUnknownDigest(file, name);
+    }
+    return callbacks->checksum_unknown(file.c_str(), name.c_str(), callbacks->checksum_unknown_data);
+  }
+
+  bool askUserToAcceptWrongDigest( const zypp::Pathname &file, const std::string &requested, const std::string &found ) {
+    if (callbacks == NULL || callbacks->checksum_wrong == NULL) {
+      return zypp::DigestReport::askUserToAcceptWrongDigest(file, requested, found);
+    }
+    return callbacks->checksum_wrong(file.c_str(), requested.c_str(), found.c_str(), callbacks->checksum_wrong_data);
+  }
+};
+
+static DigestReceive digest_receive;
+
+
 extern "C" {
 void set_zypp_progress_callback(ZyppProgressCallback progress,
                                 void *user_data) {
@@ -351,6 +459,21 @@ void unset_zypp_resolvable_download_callbacks() {
   download_resolvable_receive.disconnect();
   commit_preload_report.set_callbacks(NULL);
   commit_preload_report.disconnect();
+}
+
+void set_zypp_security_callbacks(struct SecurityCallbacks *callbacks) {
+  key_ring_report.set_callbacks(callbacks);
+  key_ring_report.connect();
+  digest_receive.set_callbacks(callbacks);
+  digest_receive.connect();
+}
+
+void unset_zypp_security_callbacks() {
+  // NULL pointer to struct to be sure it is not called
+  key_ring_report.set_callbacks(NULL);
+  key_ring_report.disconnect();
+  digest_receive.set_callbacks(NULL);
+  digest_receive.disconnect();
 }
 
 #ifdef __cplusplus

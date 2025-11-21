@@ -190,6 +190,139 @@ const _: () = {
     ["Offset of field: DownloadResolvableCallbacks::file_finish_data"]
         [::std::mem::offset_of!(DownloadResolvableCallbacks, file_finish_data) - 56usize];
 };
+#[doc = " Reject the key."]
+pub const GPGKeyTrust_GPGKT_REJECT: GPGKeyTrust = 0;
+#[doc = " Trust key temporary. Will be asked again when something is signed with it.\nEven within same session."]
+pub const GPGKeyTrust_GPGKT_TEMPORARY: GPGKeyTrust = 1;
+#[doc = " Import key and trust it."]
+pub const GPGKeyTrust_GPGKT_IMPORT: GPGKeyTrust = 2;
+#[doc = " @brief What to do with an unknown GPG key.\n @see KeyRingReport::KeyTrust in libzypp"]
+pub type GPGKeyTrust = ::std::os::raw::c_uint;
+#[doc = " @brief Callback to decide whether to accept an unknown GPG key.\n @param key_id The ID of the GPG key.\n @param key_name The name of the GPG key.\n @param key_fingerprint The fingerprint of the GPG key.\n @param repository_alias The alias of the repository providing the key. Can be\n an empty string if not available.\n @param user_data User-defined data.\n @return A GPGKeyTrust value indicating the action to take."]
+pub type GPGAcceptKeyCallback = ::std::option::Option<
+    unsafe extern "C" fn(
+        key_id: *const ::std::os::raw::c_char,
+        key_name: *const ::std::os::raw::c_char,
+        key_fingerprint: *const ::std::os::raw::c_char,
+        repository_alias: *const ::std::os::raw::c_char,
+        user_data: *mut ::std::os::raw::c_void,
+    ) -> GPGKeyTrust,
+>;
+#[doc = " @brief Callback for handling unsigned files.\n @param file The path to the unsigned file.\n @param repository_alias The alias of the repository. Can be an empty string\n if not available.\n @param user_data User-defined data.\n @return true to continue, false to abort."]
+pub type GPGUnsignedFile = ::std::option::Option<
+    unsafe extern "C" fn(
+        file: *const ::std::os::raw::c_char,
+        repository_alias: *const ::std::os::raw::c_char,
+        user_data: *mut ::std::os::raw::c_void,
+    ) -> bool,
+>;
+#[doc = " @brief Callback for handling a file signed by an unknown key.\n @param file The path to the file.\n @param key_id The ID of the unknown GPG key.\n @param repository_alias The alias of the repository. Can be an empty string\n if not available.\n @param user_data User-defined data.\n @return true to continue, false to abort."]
+pub type GPGUnknownKey = ::std::option::Option<
+    unsafe extern "C" fn(
+        file: *const ::std::os::raw::c_char,
+        key_id: *const ::std::os::raw::c_char,
+        repository_alias: *const ::std::os::raw::c_char,
+        user_data: *mut ::std::os::raw::c_void,
+    ) -> bool,
+>;
+#[doc = " @brief Callback for when GPG verification of a signed file fails.\n @param file The path to the file.\n @param key_id The ID of the GPG key.\n @param key_name The name of the GPG key.\n @param key_fingerprint The fingerprint of the GPG key.\n @param repository_alias The alias of the repository. Can be an empty string\n if not available.\n @param user_data User-defined data.\n @return true to continue, false to abort."]
+pub type GPGVerificationFailed = ::std::option::Option<
+    unsafe extern "C" fn(
+        file: *const ::std::os::raw::c_char,
+        key_id: *const ::std::os::raw::c_char,
+        key_name: *const ::std::os::raw::c_char,
+        key_fingerprint: *const ::std::os::raw::c_char,
+        repository_alias: *const ::std::os::raw::c_char,
+        user_data: *mut ::std::os::raw::c_void,
+    ) -> bool,
+>;
+pub type ChecksumMissing = ::std::option::Option<
+    unsafe extern "C" fn(
+        file: *const ::std::os::raw::c_char,
+        user_data: *mut ::std::os::raw::c_void,
+    ) -> bool,
+>;
+pub type ChecksumWrong = ::std::option::Option<
+    unsafe extern "C" fn(
+        file: *const ::std::os::raw::c_char,
+        expected: *const ::std::os::raw::c_char,
+        actual: *const ::std::os::raw::c_char,
+        user_data: *mut ::std::os::raw::c_void,
+    ) -> bool,
+>;
+pub type ChecksumUnknown = ::std::option::Option<
+    unsafe extern "C" fn(
+        file: *const ::std::os::raw::c_char,
+        checksum: *const ::std::os::raw::c_char,
+        user_data: *mut ::std::os::raw::c_void,
+    ) -> bool,
+>;
+#[doc = " @brief Callbacks for handling security related issues.\n\n This struct provides callbacks for handling various security-related events\n that can occur during libzypp operations, such as GPG key management and\n checksum verification.\n\n Each callback has a corresponding `_data` pointer that can be used to pass\n user-defined data to the callback function."]
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct SecurityCallbacks {
+    #[doc = " @brief Callback to decide whether to accept an unknown GPG key."]
+    pub accept_key: GPGAcceptKeyCallback,
+    #[doc = " @brief User data for the `accept_key` callback."]
+    pub accept_key_data: *mut ::std::os::raw::c_void,
+    #[doc = " @brief Callback for handling unsigned files."]
+    pub unsigned_file: GPGUnsignedFile,
+    #[doc = " @brief User data for the `unsigned_file` callback."]
+    pub unsigned_file_data: *mut ::std::os::raw::c_void,
+    #[doc = " @brief Callback for handling files signed with an unknown key."]
+    pub unknown_key: GPGUnknownKey,
+    #[doc = " @brief User data for the `unknown_key` callback."]
+    pub unknown_key_data: *mut ::std::os::raw::c_void,
+    #[doc = " @brief Callback for handling GPG verification failures."]
+    pub verification_failed: GPGVerificationFailed,
+    #[doc = " @brief User data for the `verification_failed` callback."]
+    pub verification_failed_data: *mut ::std::os::raw::c_void,
+    #[doc = " @brief Callback for when a checksum is missing."]
+    pub checksum_missing: ChecksumMissing,
+    #[doc = " @brief User data for the `checksum_missing` callback."]
+    pub checksum_missing_data: *mut ::std::os::raw::c_void,
+    #[doc = " @brief Callback for when a checksum is wrong."]
+    pub checksum_wrong: ChecksumWrong,
+    #[doc = " @brief User data for the `checksum_wrong` callback."]
+    pub checksum_wrong_data: *mut ::std::os::raw::c_void,
+    #[doc = " @brief Callback for when the checksum type is unknown."]
+    pub checksum_unknown: ChecksumUnknown,
+    #[doc = " @brief User data for the `checksum_unknown` callback."]
+    pub checksum_unknown_data: *mut ::std::os::raw::c_void,
+}
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of SecurityCallbacks"][::std::mem::size_of::<SecurityCallbacks>() - 112usize];
+    ["Alignment of SecurityCallbacks"][::std::mem::align_of::<SecurityCallbacks>() - 8usize];
+    ["Offset of field: SecurityCallbacks::accept_key"]
+        [::std::mem::offset_of!(SecurityCallbacks, accept_key) - 0usize];
+    ["Offset of field: SecurityCallbacks::accept_key_data"]
+        [::std::mem::offset_of!(SecurityCallbacks, accept_key_data) - 8usize];
+    ["Offset of field: SecurityCallbacks::unsigned_file"]
+        [::std::mem::offset_of!(SecurityCallbacks, unsigned_file) - 16usize];
+    ["Offset of field: SecurityCallbacks::unsigned_file_data"]
+        [::std::mem::offset_of!(SecurityCallbacks, unsigned_file_data) - 24usize];
+    ["Offset of field: SecurityCallbacks::unknown_key"]
+        [::std::mem::offset_of!(SecurityCallbacks, unknown_key) - 32usize];
+    ["Offset of field: SecurityCallbacks::unknown_key_data"]
+        [::std::mem::offset_of!(SecurityCallbacks, unknown_key_data) - 40usize];
+    ["Offset of field: SecurityCallbacks::verification_failed"]
+        [::std::mem::offset_of!(SecurityCallbacks, verification_failed) - 48usize];
+    ["Offset of field: SecurityCallbacks::verification_failed_data"]
+        [::std::mem::offset_of!(SecurityCallbacks, verification_failed_data) - 56usize];
+    ["Offset of field: SecurityCallbacks::checksum_missing"]
+        [::std::mem::offset_of!(SecurityCallbacks, checksum_missing) - 64usize];
+    ["Offset of field: SecurityCallbacks::checksum_missing_data"]
+        [::std::mem::offset_of!(SecurityCallbacks, checksum_missing_data) - 72usize];
+    ["Offset of field: SecurityCallbacks::checksum_wrong"]
+        [::std::mem::offset_of!(SecurityCallbacks, checksum_wrong) - 80usize];
+    ["Offset of field: SecurityCallbacks::checksum_wrong_data"]
+        [::std::mem::offset_of!(SecurityCallbacks, checksum_wrong_data) - 88usize];
+    ["Offset of field: SecurityCallbacks::checksum_unknown"]
+        [::std::mem::offset_of!(SecurityCallbacks, checksum_unknown) - 96usize];
+    ["Offset of field: SecurityCallbacks::checksum_unknown_data"]
+        [::std::mem::offset_of!(SecurityCallbacks, checksum_unknown_data) - 104usize];
+};
 #[doc = " status struct to pass and obtain from calls that can fail.\n After usage free with \\ref free_status function.\n\n Most functions act as *constructors* for this, taking a pointer\n to it as an output parameter, disregarding the struct current contents\n and filling it in. Thus, if you reuse a `Status` without \\ref free_status\n in between, `error` will leak."]
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
@@ -379,11 +512,12 @@ unsafe extern "C" {
     ) -> *mut Zypp;
     #[doc = " Switch Zypp target (where to install packages to).\n @param root\n @param[out] status"]
     pub fn switch_target(zypp: *mut Zypp, root: *const ::std::os::raw::c_char, status: *mut Status);
-    #[doc = " Commit zypp settings and install\n TODO: install callbacks\n @param zypp\n @param status\n @param download_callbacks\n @return true if there is no error"]
+    #[doc = " Commit zypp settings and install\n TODO: install callbacks\n @param zypp\n @param status\n @param download_callbacks\n @param security_callbacks\n @return true if there is no error"]
     pub fn commit(
         zypp: *mut Zypp,
         status: *mut Status,
         download_callbacks: *mut DownloadResolvableCallbacks,
+        security_callbacks: *mut SecurityCallbacks,
     ) -> bool;
     #[doc = " Calculates the space usage for a given list of mount points.\n This function populates the `used_size` field for each element in the\n provided `mount_points` array.\n\n @param zypp The Zypp context.\n @param[out] status Output status object.\n @param[in,out] mount_points An array of mount points to be evaluated.\n @param mount_points_size The number of elements in the `mount_points` array."]
     pub fn get_space_usage(
@@ -408,7 +542,7 @@ unsafe extern "C" {
         who: RESOLVABLE_SELECTED,
         status: *mut Status,
     );
-    #[doc = " Reset status of all resolvables, unselects selected packages, patterns..."]
+    #[doc = " Reset status of all resolvables, unselects selected packages, patterns...\n Note: this also resets the user locks (\"taboo\" or \"keep installed\")"]
     pub fn resolvable_reset_all(_zypp: *mut Zypp);
     #[doc = " Get Pattern details.\n Unknown patterns are simply omitted from the result. Match by\n PatternInfo.name, not by index."]
     pub fn get_patterns_info(
@@ -473,12 +607,13 @@ unsafe extern "C" {
         callback: ZyppProgressCallback,
         user_data: *mut ::std::os::raw::c_void,
     );
-    #[doc = "\n @param zypp see \\ref init_target\n @param alias alias of repository to refresh\n @param[out] status (will overwrite existing contents)\n @param callbacks pointer to struct with callbacks or NULL if no progress is\n needed"]
+    #[doc = "\n @param zypp see \\ref init_target\n @param alias alias of repository to refresh\n @param[out] status (will overwrite existing contents)\n @param progress pointer to struct with callbacks or NULL if no progress is\n needed\n @param security pointer to struct with security callbacks"]
     pub fn refresh_repository(
         zypp: *mut Zypp,
         alias: *const ::std::os::raw::c_char,
         status: *mut Status,
-        callbacks: *mut DownloadProgressCallbacks,
+        progress: *mut DownloadProgressCallbacks,
+        security: *mut SecurityCallbacks,
     );
     pub fn build_repository_cache(
         zypp: *mut Zypp,

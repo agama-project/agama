@@ -65,9 +65,11 @@ void switch_target(struct Zypp *zypp, const char *root,
 /// @param zypp
 /// @param status
 /// @param download_callbacks
+/// @param security_callbacks
 /// @return true if there is no error
 bool commit(struct Zypp *zypp, struct Status *status,
-            struct DownloadResolvableCallbacks *download_callbacks) noexcept;
+            struct DownloadResolvableCallbacks *download_callbacks,
+            struct SecurityCallbacks *security_callbacks) noexcept;
 
 /// Represents a single mount point and its space usage.
 /// The string pointers are not owned by this struct.

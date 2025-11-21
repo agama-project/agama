@@ -236,6 +236,29 @@ impl QuestionSpec {
         self
     }
 
+    /// Adds localized "Yes" and "No" actions to the question.
+    ///
+    /// This is a convenience method for creating questions that require a simple
+    /// yes or no answer. The action IDs will be "Yes" and "No", and their labels
+    /// will be localized.
+    ///
+    /// This method sets the default action to "No". If you need a different
+    /// default, you can override it with a subsequent call to `with_default_action()`.
+    ///
+    /// # Example
+    ///
+    /// ```
+    ///   use agama_utils::api::question::QuestionSpec;
+    ///   let q = QuestionSpec::new("Continue?", "q.continue").with_yes_no_actions();
+    ///   assert_eq!(q.default_action.as_deref(), Some("No"));
+    /// ```
+    pub fn with_yes_no_actions(self) -> Self {
+        // we have to always call fresh gettext to ensure it is properly localized after change of locale
+        let labels = [gettextrs::gettext("Yes"), gettextrs::gettext("No")];
+        let actions = [("Yes", labels[0].as_str()), ("No", labels[1].as_str())];
+        self.with_actions(&actions).with_default_action("No")
+    }
+
     /// Sets the additional data.
     ///
     /// * `data`: available actions in `(id, label)` format.

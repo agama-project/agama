@@ -135,6 +135,7 @@ impl ModelAdapter for Model {
         self.zypp_sender.send(SoftwareAction::Write {
             state: software,
             progress,
+            question: self.question.clone(),
             tx,
         })?;
         Ok(rx.await??)

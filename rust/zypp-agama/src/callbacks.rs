@@ -2,6 +2,7 @@ use std::{fmt, str::FromStr};
 
 pub mod download_progress;
 pub mod pkg_download;
+pub mod security;
 
 // empty progress callback
 pub fn empty_progress(_value: i64, _text: String) -> bool {
