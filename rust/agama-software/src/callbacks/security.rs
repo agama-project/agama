@@ -33,13 +33,10 @@ impl security::Callback for Security {
                 and integrity of the file cannot be verified. Use it anyway?"
             )
         };
-        let labels = [gettext("Yes"), gettext("No")];
-        let actions = [("Yes", labels[0].as_str()), ("No", labels[1].as_str())];
         let data = [("filename", file.as_str())];
         let question = QuestionSpec::new(&text, "software.unsigned_file")
-            .with_actions(&actions)
-            .with_data(&data)
-            .with_default_action("No");
+            .with_yes_no_actions()
+            .with_data(&data);
         let result = Handle::current()
             .block_on(async move { ask_question(&self.questions, question).await });
         let Ok(answer) = result else {
@@ -101,13 +98,10 @@ impl security::Callback for Security {
                 the following unknown GnuPG key: {key_id}. Use it anyway?"
             )
         };
-        let labels = [gettext("Yes"), gettext("No")];
-        let actions = [("Yes", labels[0].as_str()), ("No", labels[1].as_str())];
         let data = [("filename", file.as_str()), ("id", key_id.as_str())];
         let question = QuestionSpec::new(&text, "software.unknown_gpg")
-            .with_actions(&actions)
-            .with_data(&data)
-            .with_default_action("No");
+            .with_yes_no_actions()
+            .with_data(&data);
         let result = Handle::current()
             .block_on(async move { ask_question(&self.questions, question).await });
         let Ok(answer) = result else {
@@ -123,7 +117,7 @@ impl security::Callback for Security {
         file: String,
         key_id: String,
         key_name: String,
-        key_fingerprint: String,
+        _key_fingerprint: String,
         repository_alias: String,
     ) -> bool {
         // TODO: localization for text when parameters in gextext will be solved
@@ -141,13 +135,10 @@ impl security::Callback for Security {
                 Use it anyway?"
             )
         };
-        let labels = [gettext("Yes"), gettext("No")];
-        let actions = [("Yes", labels[0].as_str()), ("No", labels[1].as_str())];
         let data = [("filename", file.as_str())];
         let question = QuestionSpec::new(&text, "software.verification_failed")
-            .with_actions(&actions)
-            .with_data(&data)
-            .with_default_action("No");
+            .with_yes_no_actions()
+            .with_data(&data);
         let result = Handle::current()
             .block_on(async move { ask_question(&self.questions, question).await });
         let Ok(answer) = result else {
@@ -165,11 +156,7 @@ impl security::Callback for Security {
               although the file is part of the signed repository, the list of checksums \
               does not mention this file. Use it anyway?"
         );
-        let labels = [gettext("Yes"), gettext("No")];
-        let actions = [("Yes", labels[0].as_str()), ("No", labels[1].as_str())];
-        let question = QuestionSpec::new(&text, "software.digest.no_digest")
-            .with_actions(&actions)
-            .with_default_action("Yes");
+        let question = QuestionSpec::new(&text, "software.digest.no_digest").with_yes_no_actions();
         let result = Handle::current()
             .block_on(async move { ask_question(&self.questions, question).await });
         let Ok(answer) = result else {
@@ -186,11 +173,8 @@ impl security::Callback for Security {
               unknown. This means that the origin and integrity of the file cannot be verified. \
               Use it anyway?"
         );
-        let labels = [gettext("Yes"), gettext("No")];
-        let actions = [("Yes", labels[0].as_str()), ("No", labels[1].as_str())];
-        let question = QuestionSpec::new(&text, "software.digest.unknown_digest")
-            .with_actions(&actions)
-            .with_default_action("Yes");
+        let question =
+            QuestionSpec::new(&text, "software.digest.unknown_digest").with_yes_no_actions();
         let result = Handle::current()
             .block_on(async move { ask_question(&self.questions, question).await });
         let Ok(answer) = result else {
@@ -207,11 +191,9 @@ impl security::Callback for Security {
               \"%{expected}\". The file has changed by accident or by an attacker since the \
               creater signed it. Use it anyway?"
         );
-        let labels = [gettext("Yes"), gettext("No")];
-        let actions = [("Yes", labels[0].as_str()), ("No", labels[1].as_str())];
-        let question = QuestionSpec::new(&text, "software.digest.unknown_digest")
-            .with_actions(&actions)
-            .with_default_action("Yes");
+
+        let question =
+            QuestionSpec::new(&text, "software.digest.unknown_digest").with_yes_no_actions();
         let result = Handle::current()
             .block_on(async move { ask_question(&self.questions, question).await });
         let Ok(answer) = result else {
