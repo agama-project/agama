@@ -18,11 +18,19 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use serde::Deserialize;
+use serde::{de::Error, Deserialize, Deserializer};
 use serde_json::Value;
 
 #[derive(Deserialize, utoipa::IntoParams, utoipa::ToSchema)]
 pub struct SolveStorageModel {
-    /// Serialized storage model.
+    #[serde(deserialize_with = "deserialize_model")]
     pub model: Value,
+}
+
+fn deserialize_model<'de, D>(deserializer: D) -> Result<Value, D::Error>
+where
+    D: Deserializer<'de>,
+{
+    let json_string: String = String::deserialize(deserializer)?;
+    serde_json::from_str(&json_string).map_err(D::Error::custom)
 }
