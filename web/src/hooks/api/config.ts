@@ -39,7 +39,7 @@ function selectProduct(
   products: system.Product[],
   product: config.Product | null,
 ): system.Product | null {
-  return products.find((p) => (p.id = product?.id)) || null;
+  return products.find((p) => p.id === product?.id) || null;
 }
 
 function useProduct(): system.Product | null {
