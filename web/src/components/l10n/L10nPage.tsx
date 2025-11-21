@@ -25,7 +25,8 @@ import { Button, Content, Grid, GridItem } from "@patternfly/react-core";
 import { InstallerOptions, Link, Page } from "~/components/core";
 import { L10N as PATHS } from "~/routes/paths";
 import { localConnection } from "~/utils";
-import { useSystem, useProposal } from "~/hooks/api";
+import { useProposal } from "~/hooks/api/proposal/l10n";
+import { useSystem } from "~/hooks/api/system/l10n";
 import { _ } from "~/i18n";
 
 const InstallerL10nSettingsInfo = () => {
@@ -67,9 +68,8 @@ const InstallerL10nSettingsInfo = () => {
  */
 export default function L10nPage() {
   // FIXME: retrieve selection from config when ready
-  const { l10n: l10nProposal } = useProposal({ suspense: true });
-  const { l10n: l10nSystem } = useSystem({ suspense: true });
-
+  const l10nProposal = useProposal();
+  const l10nSystem = useSystem();
   const locale =
     l10nProposal.locale && l10nSystem.locales.find((l) => l.id === l10nProposal.locale);
   const keymap =

@@ -24,7 +24,7 @@ import React, { useId, useState } from "react";
 import { Button, ButtonProps, Stack, Tooltip, TooltipProps } from "@patternfly/react-core";
 import { Popup } from "~/components/core";
 import { startInstallation } from "~/api/manager";
-import { useIssues } from "~/hooks/api";
+import { useIssues } from "~/hooks/api/issue";
 import { useLocation } from "react-router";
 import { SIDE_PATHS } from "~/routes/paths";
 import { _ } from "~/i18n";
@@ -78,7 +78,7 @@ const InstallButton = (
 ) => {
   const labelId = useId();
   const tooltipId = useId();
-  const issues = useIssues({ suspense: true });
+  const issues = useIssues();
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
   const hasIssues = !isEmpty(issues);

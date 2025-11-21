@@ -47,7 +47,8 @@ import { isEmpty } from "radashi";
 import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
 import LicenseDialog from "./LicenseDialog";
-import { useSelectedProduct, useSystem } from "~/hooks/api";
+import { useProduct } from "~/hooks/api/config";
+import { useSystem } from "~/hooks/api/system";
 import { patchConfig } from "~/api";
 
 const ResponsiveGridItem = ({ children }) => (
@@ -104,8 +105,8 @@ const BackLink = () => {
 
 function ProductSelectionPage() {
   // const registration = useRegistration();
-  const { products } = useSystem({ suspense: true });
-  const selectedProduct = useSelectedProduct();
+  const { products } = useSystem();
+  const selectedProduct = useProduct();
   const [nextProduct, setNextProduct] = useState(selectedProduct);
   // FIXME: should not be accepted by default first selectedProduct is accepted
   // because it's a singleProduct iso.

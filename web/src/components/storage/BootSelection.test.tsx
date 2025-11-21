@@ -24,7 +24,7 @@ import React from "react";
 import { screen, within } from "@testing-library/react";
 import { installerRender, mockNavigateFn } from "~/test-utils";
 import BootSelection from "./BootSelection";
-import { StorageDevice } from "~/types/storage";
+import { StorageDevice } from "~/storage";
 
 // FIXME: drop this mock once a better solution for dealing with
 // ProductRegistrationAlert, which uses a query with suspense,

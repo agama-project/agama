@@ -28,8 +28,8 @@ import DevicesManager from "~/components/storage/DevicesManager";
 import ProposalResultTable from "~/components/storage/ProposalResultTable";
 import { ProposalActionsDialog } from "~/components/storage";
 import { _, n_, formatList } from "~/i18n";
-import { useDevices as useSystemDevices } from "~/hooks/storage/system";
-import { useDevices as useProposalDevices, useActions } from "~/hooks/storage/proposal";
+import { useDevices as useSystemDevices } from "~/hooks/api/system/storage";
+import { useDevices as useProposalDevices, useActions } from "~/hooks/api/proposal/storage";
 import { sprintf } from "sprintf-js";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import { useStorageUiState } from "~/context/storage-ui-state";
@@ -108,8 +108,8 @@ export type ProposalResultSectionProps = {
 
 export default function ProposalResultSection({ isLoading = false }: ProposalResultSectionProps) {
   const { uiState, setUiState } = useStorageUiState();
-  const system = useSystemDevices({ suspense: true });
-  const staging = useProposalDevices({ suspense: true });
+  const system = useSystemDevices();
+  const staging = useProposalDevices();
   const actions = useActions();
   const devicesManager = new DevicesManager(system, staging, actions);
   const handleTabClick = (

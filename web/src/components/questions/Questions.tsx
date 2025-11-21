@@ -28,7 +28,7 @@ import PackageErrorQuestion from "~/components/questions/PackageErrorQuestion";
 import UnsupportedAutoYaST from "~/components/questions/UnsupportedAutoYaST";
 import RegistrationCertificateQuestion from "~/components/questions/RegistrationCertificateQuestion";
 import LoadConfigRetryQuestion from "~/components/questions/LoadConfigRetryQuestion";
-import { useQuestions, useQuestionsChanges } from "~/hooks/api";
+import { useQuestions, useQuestionsChanges } from "~/hooks/api/question";
 import { patchQuestion } from "~/api";
 import { AnswerCallback, FieldType } from "~/api/question";
 

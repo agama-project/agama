@@ -25,7 +25,7 @@ import { Flex } from "@patternfly/react-core";
 import { MenuButtonItem } from "~/components/core/MenuButton";
 import { useConvertToVolumeGroup } from "~/hooks/storage/volume-group";
 import { deviceBaseName, formattedPath } from "~/components/storage/utils";
-import { model } from "~/types/storage";
+import { model } from "~/storage";
 import { sprintf } from "sprintf-js";
 import { _, n_, formatList } from "~/i18n";
 

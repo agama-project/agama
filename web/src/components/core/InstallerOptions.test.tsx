@@ -25,7 +25,7 @@ import { screen, within } from "@testing-library/react";
 import { installerRender, mockRoutes } from "~/test-utils";
 import { useSelectedProduct, useStatus, useSystem } from "~/hooks/api";
 import { Product } from "~/types/software";
-import { Keymap, Locale } from "~/api/l10n/system";
+import { Keymap, Locale } from "~/api/system/l10n";
 import { Progress, State } from "~/api/status";
 import * as utils from "~/utils";
 import { PRODUCT, ROOT } from "~/routes/paths";

@@ -24,19 +24,20 @@ import React from "react";
 import { Content, List, ListItem } from "@patternfly/react-core";
 import { isEmpty } from "radashi";
 import { _ } from "~/i18n";
-import { useProposal, useSystem } from "~/hooks/api";
+import { useProposal } from "~/hooks/api/proposal/software";
+import { useSystem } from "~/hooks/api/system/software";
 
 export default function SoftwareSection(): React.ReactNode {
-  const { software: available } = useSystem({ suspense: true });
-  const { software: proposed } = useProposal({ suspense: true });
+  const system = useSystem();
+  const proposal = useProposal();
 
-  if (isEmpty(proposed.patterns)) return;
-  const selectedPatternsIds = Object.keys(proposed.patterns);
+  if (isEmpty(proposal.patterns)) return;
+  const selectedPatternsIds = Object.keys(proposal.patterns);
 
   const TextWithoutList = () => {
     return (
       <>
-        {_("The installation will take")} <b>{proposed.size}</b>
+        {_("The installation will take")} <b>{proposal.size}</b>
       </>
     );
   };
@@ -44,13 +45,13 @@ export default function SoftwareSection(): React.ReactNode {
   const TextWithList = () => {
     // TRANSLATORS: %s will be replaced with the installation size, example: "5GiB".
     const [msg1, msg2] = _("The installation will take %s including:").split("%s");
-    const selectedPatterns = available.patterns.filter((p) => selectedPatternsIds.includes(p.name));
+    const selectedPatterns = system.patterns.filter((p) => selectedPatternsIds.includes(p.name));
 
     return (
       <>
         <Content>
           {msg1}
-          <b>{proposed.size}</b>
+          <b>{proposal.size}</b>
           {msg2}
         </Content>
         <List>

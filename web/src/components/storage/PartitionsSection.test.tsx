@@ -25,7 +25,7 @@ import { screen } from "@testing-library/react";
 import { installerRender, mockNavigateFn } from "~/test-utils";
 import PartitionsSection from "~/components/storage/PartitionsSection";
 import { apiModel } from "~/api/storage/types";
-import { model } from "~/types/storage";
+import { model } from "~/storage";
 
 const partition1: apiModel.Partition = {
   mountPath: "/",

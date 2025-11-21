@@ -24,7 +24,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router";
 import MenuButton, { MenuButtonItem } from "~/components/core/MenuButton";
 import { Divider, Flex, MenuItemProps } from "@patternfly/react-core";
-import { useAvailableDevices } from "~/hooks/storage/system";
+import { useAvailableDevices } from "~/hooks/api/system/storage";
 import { useModel } from "~/hooks/storage/model";
 import { useAddDrive } from "~/hooks/storage/drive";
 import { useAddReusedMdRaid } from "~/hooks/storage/md-raid";
@@ -33,7 +33,7 @@ import { sprintf } from "sprintf-js";
 import { _, n_ } from "~/i18n";
 import { storage } from "~/api/system";
 import DeviceSelectorModal from "./DeviceSelectorModal";
-import { isDrive } from "~/helpers/storage/device";
+import { isDrive } from "~/storage/helpers/device";
 import { Icon } from "../layout";
 
 type AddDeviceMenuItemProps = {
@@ -126,7 +126,7 @@ export default function ConfigureDeviceMenu(): React.ReactNode {
 
   const navigate = useNavigate();
 
-  const model = useModel({ suspense: true });
+  const model = useModel();
   const addDrive = useAddDrive();
   const addReusedMdRaid = useAddReusedMdRaid();
   const allDevices = useAvailableDevices();

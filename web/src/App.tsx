@@ -23,13 +23,11 @@
 import React, { useEffect } from "react";
 import { Navigate, Outlet, useLocation } from "react-router";
 import { useProductChanges } from "~/queries/software";
-import {
-  useSystemChanges,
-  useProposalChanges,
-  useIssuesChanges,
-  useStatus,
-  useExtendedConfig,
-} from "~/hooks/api";
+import { useIssuesChanges } from "~/hooks/api/issue";
+import { useProposalChanges } from "~/hooks/api/proposal";
+import { useStatus } from "~/hooks/api/status";
+import { useExtendedConfig } from "~/hooks/api/config";
+import { useSystemChanges } from "~/hooks/api/system";
 import { useInstallerStatusChanges } from "~/queries/status";
 import { ROOT, PRODUCT } from "~/routes/paths";
 import { useQueryClient } from "@tanstack/react-query";
@@ -47,8 +45,8 @@ function App() {
   useInstallerStatusChanges();
 
   const location = useLocation();
-  const { product } = useExtendedConfig({ suspense: true });
-  const { progresses, state } = useStatus({ suspense: true });
+  const { product } = useExtendedConfig();
+  const { progresses, state } = useStatus();
   const queryClient = useQueryClient();
   const isBusy = !isEmpty(progresses);
 

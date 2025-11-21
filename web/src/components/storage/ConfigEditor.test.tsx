@@ -24,7 +24,7 @@ import React from "react";
 import { screen } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
 import ConfigEditor from "~/components/storage/ConfigEditor";
-import { StorageDevice } from "~/types/storage";
+import { StorageDevice } from "~/storage";
 import { apiModel } from "~/api/storage/types";
 
 const disk: StorageDevice = {

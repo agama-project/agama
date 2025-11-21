@@ -20,6 +20,8 @@
  * find current contact information at www.suse.com.
  */
 
+/** @deprecated */
+
 /**
  * Enum for the reasons to select a pattern
  */

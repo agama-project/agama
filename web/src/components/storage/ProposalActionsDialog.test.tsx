@@ -24,7 +24,7 @@ import React from "react";
 import { screen, within, waitForElementToBeRemoved } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
 import { ProposalActionsDialog } from "~/components/storage";
-import { Action } from "~/types/storage";
+import { Action } from "~/storage";
 
 const actions: Action[] = [
   {

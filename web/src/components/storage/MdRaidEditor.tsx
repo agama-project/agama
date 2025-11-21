@@ -26,7 +26,7 @@ import ConfigEditorItem from "~/components/storage/ConfigEditorItem";
 import MdRaidHeader from "~/components/storage/MdRaidHeader";
 import DeviceEditorContent from "~/components/storage/DeviceEditorContent";
 import SearchedDeviceMenu from "~/components/storage/SearchedDeviceMenu";
-import { model } from "~/types/storage";
+import { model } from "~/storage";
 import { storage } from "~/api/system";
 import { CustomToggleProps } from "~/components/core/MenuButton";
 import { useDeleteMdRaid } from "~/hooks/storage/md-raid";

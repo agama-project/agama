@@ -24,7 +24,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import { locationReload, setLocationSearch } from "~/utils";
 import agama from "~/agama";
 import supportedLanguages from "~/languages.json";
-import { useSystem } from "~/hooks/api";
+import { useSystem } from "~/hooks/api/system";
 import { configureL10nAction } from "~/api";
 
 const L10nContext = React.createContext(null);
@@ -228,7 +228,7 @@ function InstallerL10nProvider({
   initialLanguage?: string;
   children?: React.ReactNode;
 }) {
-  const { l10n } = useSystem({ suspense: true });
+  const { l10n } = useSystem();
   const [language, setLanguage] = useState(initialLanguage);
   const [keymap, setKeymap] = useState(undefined);
 

@@ -30,7 +30,7 @@ import {
   Stack,
 } from "@patternfly/react-core";
 import Link from "~/components/core/Link";
-import { useIssues } from "~/hooks/api";
+import { useIssues } from "~/hooks/api/issue";
 import { useInstallerStatus } from "~/queries/status";
 import { InstallationPhase } from "~/types/status";
 import { _ } from "~/i18n";

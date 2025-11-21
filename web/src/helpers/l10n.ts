@@ -21,7 +21,7 @@
  */
 
 import { tzOffset } from "@date-fns/tz/tzOffset";
-import { Timezone } from "~/api/l10n/system";
+import { Timezone } from "~/api/system/l10n";
 
 function timezoneOffset(timezone: Timezone) {
   return tzOffset(timezone.id, new Date());

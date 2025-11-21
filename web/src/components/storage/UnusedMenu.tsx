@@ -26,7 +26,7 @@ import Icon from "~/components/layout/Icon";
 import { useNavigate } from "react-router";
 import MenuButton, { CustomToggleProps } from "~/components/core/MenuButton";
 import { STORAGE as PATHS } from "~/routes/paths";
-import { model } from "~/types/storage";
+import { model } from "~/storage";
 import { generateEncodedPath } from "~/utils";
 import { _ } from "~/i18n";
 

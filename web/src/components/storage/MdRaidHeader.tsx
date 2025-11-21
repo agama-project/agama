@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import { model } from "~/types/storage";
+import { model } from "~/storage";
 import { storage } from "~/api/system";
 import { sprintf } from "sprintf-js";
 import { deviceLabel } from "./utils";

@@ -29,9 +29,11 @@
 
 import xbytes from "xbytes";
 import { _, N_ } from "~/i18n";
-import { model } from "~/types/storage";
-import { Volume } from "~/api/storage/system";
-import { system, proposal, apiModel } from "~/api/storage";
+import { model } from "~/storage";
+import { Volume } from "~/api/system/storage";
+import { model as apiModel } from "~/api/storage";
+import { storage as system } from "~/api/system";
+import { storage as proposal } from "~/api/proposal";
 import { sprintf } from "sprintf-js";
 
 /**
