@@ -33,7 +33,7 @@ import { storage as system } from "~/api/system";
 import { STORAGE as PATHS } from "~/routes/paths";
 import * as driveUtils from "~/components/storage/utils/drive";
 import { generateEncodedPath } from "~/utils";
-import { model } from "~/types/storage";
+import { model } from "~/storage";
 import { isEmpty } from "radashi";
 
 const PolicyItem = ({ policy, modelDevice, isSelected, onClick }) => {

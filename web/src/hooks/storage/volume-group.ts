@@ -28,8 +28,8 @@ import {
   deleteVolumeGroup,
   volumeGroupToPartitions,
   deviceToVolumeGroup,
-} from "~/helpers/storage/volume-group";
-import { model, data } from "~/types/storage";
+} from "~/storage/helpers/volume-group";
+import { model, data } from "~/storage";
 import { useModel } from "~/hooks/storage/model";
 
 function useVolumeGroup(vgName: string): model.VolumeGroup | null {

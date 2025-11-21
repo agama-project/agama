@@ -55,11 +55,11 @@ import { useModel, useMissingMountPaths } from "~/hooks/storage/model";
 import {
   addPartition as addPartitionHelper,
   editPartition as editPartitionHelper,
-} from "~/helpers/storage/partition";
+} from "~/storage/helpers/partition";
 import { useDevices, useVolumeTemplate } from "~/hooks/api/system/storage";
 import { useSolvedConfigModel } from "~/queries/storage/config-model";
 import { useStorageModel } from "~/hooks/api/storage";
-import { findDevice } from "~/helpers/storage/api-model";
+import { findDevice } from "~/storage/helpers/api-model";
 import { deviceSize, deviceLabel, filesystemLabel, parseToBytes } from "~/components/storage/utils";
 import { _ } from "~/i18n";
 import { sprintf } from "sprintf-js";
@@ -191,7 +191,7 @@ function toFormValue(partitionConfig: apiModel.Partition): FormValue {
 
 function useModelDevice() {
   const { list, listIndex } = useParams();
-  const model = useModel({ suspense: true });
+  const model = useModel();
   return model[list].at(listIndex);
 }
 
@@ -289,7 +289,7 @@ function useUsableFilesystems(mountPoint: string): string[] {
 }
 
 function useMountPointError(value: FormValue): Error | undefined {
-  const model = useModel({ suspense: true });
+  const model = useModel();
   const mountPoints = model?.getMountPaths() || [];
   const initialPartitionConfig = useInitialPartitionConfig();
   const mountPoint = value.mountPoint;

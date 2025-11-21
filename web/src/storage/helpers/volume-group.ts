@@ -21,7 +21,7 @@
  */
 
 import { apiModel } from "~/api/storage";
-import { isUsed, deleteIfUnused } from "~/helpers/storage/search";
+import { isUsed, deleteIfUnused } from "~/storage/helpers/search";
 import {
   copyApiModel,
   partitionables,
@@ -29,8 +29,8 @@ import {
   buildVolumeGroup,
   buildLogicalVolumeFromPartition,
   buildPartitionFromLogicalVolume,
-} from "~/helpers/storage/api-model";
-import { data } from "~/types/storage";
+} from "~/storage/helpers/api-model";
+import { data } from "~/storage";
 
 function movePartitions(
   device: apiModel.Drive | apiModel.MdRaid,

@@ -42,7 +42,7 @@ import { apiModel } from "~/api/storage";
 import { TreeTableColumn } from "~/components/core/TreeTable";
 import { Table, Td, Th, Tr, Thead, Tbody } from "@patternfly/react-table";
 import { useStorageModel } from "~/hooks/api/storage";
-import { isPartition, supportShrink } from "~/helpers/storage/device";
+import { isPartition, supportShrink } from "~/storage/helpers/device";
 
 export type SpacePolicyAction = {
   deviceName: string;

@@ -21,8 +21,8 @@
  */
 
 import { apiModel } from "~/api/storage";
-import { copyApiModel, findDevice } from "~/helpers/storage/api-model";
-import { data } from "~/types/storage";
+import { copyApiModel, findDevice } from "~/storage/helpers/api-model";
+import { data } from "~/storage";
 
 function setActions(device: apiModel.Drive, actions: data.SpacePolicyAction[]) {
   device.partitions ||= [];

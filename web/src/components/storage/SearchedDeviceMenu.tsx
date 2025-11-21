@@ -28,14 +28,14 @@ import { useModel } from "~/hooks/storage/model";
 import { useSwitchToDrive } from "~/hooks/storage/drive";
 import { useSwitchToMdRaid } from "~/hooks/storage/md-raid";
 import { deviceBaseName, formattedPath } from "~/components/storage/utils";
-import { model } from "~/types/storage";
-import { Model } from "~/types/storage/model";
+import { model } from "~/storage";
+import { Model } from "~/storage/model";
 import { storage } from "~/api/system";
 import { sprintf } from "sprintf-js";
 import { _, formatList } from "~/i18n";
 import DeviceSelectorModal from "./DeviceSelectorModal";
 import { MenuItemProps } from "@patternfly/react-core";
-import { isDrive } from "~/helpers/storage/device";
+import { isDrive } from "~/storage/helpers/device";
 
 const baseName = (device: storage.Device): string => deviceBaseName(device, true);
 

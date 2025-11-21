@@ -33,7 +33,7 @@ import { sprintf } from "sprintf-js";
 import { _, n_ } from "~/i18n";
 import { storage } from "~/api/system";
 import DeviceSelectorModal from "./DeviceSelectorModal";
-import { isDrive } from "~/helpers/storage/device";
+import { isDrive } from "~/storage/helpers/device";
 import { Icon } from "../layout";
 
 type AddDeviceMenuItemProps = {
@@ -126,7 +126,7 @@ export default function ConfigureDeviceMenu(): React.ReactNode {
 
   const navigate = useNavigate();
 
-  const model = useModel({ suspense: true });
+  const model = useModel();
   const addDrive = useAddDrive();
   const addReusedMdRaid = useAddReusedMdRaid();
   const allDevices = useAvailableDevices();

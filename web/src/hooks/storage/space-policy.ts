@@ -22,8 +22,8 @@
 
 import { useStorageModel } from "~/hooks/api/storage";
 import { putStorageModel } from "~/api";
-import { data } from "~/types/storage";
-import { setSpacePolicy } from "~/helpers/storage/space-policy";
+import { data } from "~/storage";
+import { setSpacePolicy } from "~/storage/helpers/space-policy";
 
 type setSpacePolicyFn = (list: string, listIndex: number | string, data: data.SpacePolicy) => void;
 

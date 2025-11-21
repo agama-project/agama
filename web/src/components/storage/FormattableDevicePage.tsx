@@ -51,7 +51,7 @@ import SelectTypeaheadCreatable from "~/components/core/SelectTypeaheadCreatable
 import { useAddFilesystem } from "~/hooks/storage/filesystem";
 import { useModel, useMissingMountPaths } from "~/hooks/storage/model";
 import { useDevices, useVolumeTemplate } from "~/hooks/api/system/storage";
-import { data, model } from "~/types/storage";
+import { data, model } from "~/storage";
 import { deviceBaseName, filesystemLabel } from "~/components/storage/utils";
 import { _ } from "~/i18n";
 import { sprintf } from "sprintf-js";
@@ -140,7 +140,7 @@ function toFormValue(deviceModel: DeviceModel): FormValue {
 
 function useDeviceModel(): DeviceModel {
   const { list, listIndex } = useParams();
-  const model = useModel({ suspense: true });
+  const model = useModel();
   return model[list].at(listIndex);
 }
 
@@ -202,7 +202,7 @@ function useUsableFilesystems(mountPoint: string): string[] {
 }
 
 function useMountPointError(value: FormValue): Error | undefined {
-  const model = useModel({ suspense: true });
+  const model = useModel();
   const mountPoints = model?.getMountPaths() || [];
   const deviceModel = useDeviceModel();
   const mountPoint = value.mountPoint;

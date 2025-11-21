@@ -22,12 +22,12 @@
 
 import { useStorageModel } from "~/hooks/api/storage";
 import { putStorageModel } from "~/api";
-import { data } from "~/types/storage";
+import { data } from "~/storage";
 import {
   addLogicalVolume,
   editLogicalVolume,
   deleteLogicalVolume,
-} from "~/helpers/storage/logical-volume";
+} from "~/storage/helpers/logical-volume";
 
 type AddLogicalVolumeFn = (vgName: string, data: data.LogicalVolume) => void;
 

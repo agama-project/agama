@@ -20,9 +20,9 @@
  * find current contact information at www.suse.com.
  */
 
-import { model } from "~/types/storage";
+import { model } from "~/storage";
 import { apiModel } from "~/api/storage";
-import { copyApiModel } from "~/helpers/storage/api-model";
+import { copyApiModel } from "~/storage/helpers/api-model";
 
 function isUsed(device: model.Drive | model.MdRaid): boolean {
   return device.isTargetDevice || device.getMountPaths().length > 0;

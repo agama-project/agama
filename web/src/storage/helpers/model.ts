@@ -21,7 +21,7 @@
  */
 
 import { apiModel } from "~/api/storage";
-import { model } from "~/types/storage";
+import { model } from "~/storage";
 
 function buildBoot(apiModel: apiModel.Config, model: model.Model) {
   const getDevice = (): model.Drive | model.MdRaid | null => {

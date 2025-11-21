@@ -23,7 +23,7 @@
 import React from "react";
 import { screen, within } from "@testing-library/react";
 import { getColumnValues, plainRender } from "~/test-utils";
-import { StorageDevice } from "~/types/storage";
+import { StorageDevice } from "~/storage";
 import DeviceSelectorModal from "./DeviceSelectorModal";
 
 const sda: StorageDevice = {

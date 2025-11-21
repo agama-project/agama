@@ -23,29 +23,28 @@
 import { useModel } from "~/hooks/storage/model";
 import { useStorageModel } from "~/hooks/api/storage";
 import { putStorageModel } from "~/api";
-import { QueryHookOptions } from "~/types/queries";
-import { setBootDevice, setDefaultBootDevice, disableBootConfig } from "~/helpers/storage/boot";
+import { setBootDevice, setDefaultBootDevice, disableBootConfig } from "~/storage/helpers/boot";
 
 type SetBootDeviceFn = (deviceName: string) => void;
 
-function useSetBootDevice(options?: QueryHookOptions): SetBootDeviceFn {
-  const model = useModel(options);
+function useSetBootDevice(): SetBootDeviceFn {
+  const model = useModel();
   const apiModel = useStorageModel();
   return (deviceName: string) => putStorageModel(setBootDevice(model, apiModel, deviceName));
 }
 
 type SetDefaultBootDeviceFn = () => void;
 
-function useSetDefaultBootDevice(options?: QueryHookOptions): SetDefaultBootDeviceFn {
-  const model = useModel(options);
+function useSetDefaultBootDevice(): SetDefaultBootDeviceFn {
+  const model = useModel();
   const apiModel = useStorageModel();
   return () => putStorageModel(setDefaultBootDevice(model, apiModel));
 }
 
 type DisableBootConfigFn = () => void;
 
-function useDisableBootConfig(options?: QueryHookOptions): DisableBootConfigFn {
-  const model = useModel(options);
+function useDisableBootConfig(): DisableBootConfigFn {
+  const model = useModel();
   const apiModel = useStorageModel();
   return () => putStorageModel(disableBootConfig(model, apiModel));
 }

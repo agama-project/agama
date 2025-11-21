@@ -48,7 +48,7 @@ const partitionAction = (partition: apiModel.Partition) => {
  */
 export default function SpacePolicySelection() {
   const { list, listIndex } = useParams();
-  const model = useModel({ suspense: true });
+  const model = useModel();
   const deviceModel = model[list][listIndex];
   const devices = useDevices();
   const device = devices.find((d) => d.name === deviceModel.name);

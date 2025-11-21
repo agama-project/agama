@@ -29,8 +29,8 @@ import { deviceLabel, formattedPath } from "~/components/storage/utils";
 import { useCandidateDevices, useDevices } from "~/hooks/api/system/storage";
 import { useModel } from "~/hooks/storage/model";
 import { storage } from "~/api/system";
-import { Model } from "~/types/storage/model";
-import { isDrive } from "~/helpers/storage/device";
+import { Model } from "~/storage/model";
+import { isDrive } from "~/storage/helpers/device";
 import {
   useSetBootDevice,
   useSetDefaultBootDevice,
@@ -72,7 +72,7 @@ export default function BootSelectionDialog() {
   const [state, setState] = useState<BootSelectionState>({ load: false });
   const navigate = useNavigate();
   const devices = useDevices();
-  const model = useModel({ suspense: true });
+  const model = useModel();
   const candidateDevices = filteredCandidates(useCandidateDevices(), model);
   const setBootDevice = useSetBootDevice();
   const setDefaultBootDevice = useSetDefaultBootDevice();

@@ -21,8 +21,8 @@
  */
 
 import { apiModel } from "~/api/storage";
-import { copyApiModel, buildLogicalVolume } from "~/helpers/storage/api-model";
-import { data } from "~/types/storage";
+import { copyApiModel, buildLogicalVolume } from "~/storage/helpers/api-model";
+import { data } from "~/storage";
 
 function findVolumeGroupIndex(apiModel: apiModel.Config, vgName: string): number {
   return (apiModel.volumeGroups || []).findIndex((v) => v.vgName === vgName);

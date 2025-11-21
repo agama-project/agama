@@ -30,7 +30,7 @@ import {
   FilesystemLabel,
   toDevice,
 } from "~/components/storage/device-utils";
-import { PartitionSlot, StorageDevice } from "~/types/storage";
+import { PartitionSlot, StorageDevice } from "~/storage";
 
 const slot: PartitionSlot = { start: 1234, size: 256 };
 

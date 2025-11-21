@@ -29,7 +29,7 @@
 
 import xbytes from "xbytes";
 import { _, N_ } from "~/i18n";
-import { model } from "~/types/storage";
+import { model } from "~/storage";
 import { Volume } from "~/api/system/storage";
 import { apiModel } from "~/api/storage";
 import { storage as system } from "~/api/system";

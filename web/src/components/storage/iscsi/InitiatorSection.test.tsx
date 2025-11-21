@@ -25,7 +25,7 @@ import { screen } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
 
 import InitiatorSection from "./InitiatorSection";
-import { ISCSIInitiator } from "~/types/storage";
+import { ISCSIInitiator } from "~/storage";
 
 let initiator: ISCSIInitiator;
 

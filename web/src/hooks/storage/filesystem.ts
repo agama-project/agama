@@ -22,8 +22,8 @@
 
 import { useStorageModel } from "~/hooks/api/storage";
 import { putStorageModel } from "~/api";
-import { configureFilesystem } from "~/helpers/storage/filesystem";
-import { data } from "~/types/storage";
+import { configureFilesystem } from "~/storage/helpers/filesystem";
+import { data } from "~/storage";
 
 type AddFilesystemFn = (list: string, index: number, data: data.Formattable) => void;
 

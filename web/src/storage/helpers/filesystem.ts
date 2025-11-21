@@ -21,8 +21,8 @@
  */
 
 import { apiModel } from "~/api/storage";
-import { data } from "~/types/storage";
-import { copyApiModel } from "~/helpers/storage/api-model";
+import { data } from "~/storage";
+import { copyApiModel } from "~/storage/helpers/api-model";
 
 function findDevice(
   apiModel: apiModel.Config,

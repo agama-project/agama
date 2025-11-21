@@ -21,7 +21,7 @@
  */
 
 import { apiModel } from "~/api/storage";
-import { data } from "~/types/storage";
+import { data } from "~/storage";
 
 function copyApiModel(apiModel: apiModel.Config): apiModel.Config {
   return JSON.parse(JSON.stringify(apiModel));

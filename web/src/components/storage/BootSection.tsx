@@ -72,7 +72,7 @@ function bootLabel(isDefault: boolean, device?: storage.Device) {
 }
 
 export default function BootSection() {
-  const model = useModel({ suspense: true });
+  const model = useModel();
   const boot = model.boot;
   const devices = useAvailableDrives();
   const device = devices.find((d) => d.name === boot.getDevice()?.name);

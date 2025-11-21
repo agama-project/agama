@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import { StorageDevice } from "~/types/storage";
+import { StorageDevice } from "~/storage";
 import { Volume } from "~/api/storage/types";
 import {
   deviceSize,

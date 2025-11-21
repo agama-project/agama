@@ -25,7 +25,7 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import { System, storage } from "~/api/system";
 import { EncryptionMethod } from "~/api/system/storage";
 import { systemQuery } from "~/hooks/api/system";
-import { findDevices } from "~/helpers/storage/system";
+import { findDevices } from "~/storage/helpers/system";
 
 const selectSystem = (data: System | null): storage.System => data?.storage;
 

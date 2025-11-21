@@ -22,13 +22,12 @@
 
 import { useStorageModel } from "~/hooks/api/storage";
 import { putStorageModel } from "~/api";
-import { addDrive, deleteDrive, switchToDrive } from "~/helpers/storage/drive";
-import { QueryHookOptions } from "~/types/queries";
-import { model, data } from "~/types/storage";
+import { addDrive, deleteDrive, switchToDrive } from "~/storage/helpers/drive";
+import { model, data } from "~/storage";
 import { useModel } from "~/hooks/storage/model";
 
-function useDrive(name: string, options?: QueryHookOptions): model.Drive | null {
-  const model = useModel(options);
+function useDrive(name: string): model.Drive | null {
+  const model = useModel();
   const drive = model?.drives?.find((d) => d.name === name);
   return drive || null;
 }
