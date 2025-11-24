@@ -48,9 +48,7 @@ const pathWithSize = (partition: model.Partition): string => {
  * @fixme Workaround to make possible to distinguish between partition and logical volume. Note that
  *  a logical volume has not the property 'name' yet, see {@link typeDescription}.
  */
-function isPartition(
-  device: model.Partition | model.LogicalVolume,
-): device is model.Partition {
+function isPartition(device: model.Partition | model.LogicalVolume): device is model.Partition {
   return Object.hasOwn(device, "name");
 }
 

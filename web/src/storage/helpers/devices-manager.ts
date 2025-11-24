@@ -138,7 +138,7 @@ export default class DevicesManager {
    * @note The devices are extracted from the actions.
    */
   deletedDevices(): system.Device[] {
-    return this.#deleteActionsDevice().filter((d) => !d.drive);
+    return this.#deleteActionsDevice().filter((d) => !isDrive(d));
   }
 
   /**
@@ -147,7 +147,7 @@ export default class DevicesManager {
    * @note The devices are extracted from the actions.
    */
   resizedDevices(): system.Device[] {
-    return this.#resizeActionsDevice().filter((d) => !d.drive);
+    return this.#resizeActionsDevice().filter((d) => !isDrive(d));
   }
 
   /**
