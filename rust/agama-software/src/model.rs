@@ -50,7 +50,7 @@ pub trait ModelAdapter: Send + Sync + 'static {
     /// Returns the software system information.
     async fn system_info(&self) -> Result<SystemInfo, service::Error>;
 
-    async fn compute_proposal(&self) -> Result<SoftwareProposal, service::Error>;
+    async fn proposal(&self) -> Result<SoftwareProposal, service::Error>;
 
     /// Refresh repositories information.
     async fn refresh(&mut self) -> Result<(), service::Error>;
@@ -166,14 +166,14 @@ impl ModelAdapter for Model {
         Ok(rx.await??)
     }
 
-    async fn compute_proposal(&self) -> Result<SoftwareProposal, service::Error> {
+    async fn proposal(&self) -> Result<SoftwareProposal, service::Error> {
         let Some(product_spec) = self.selected_product.clone() else {
             return Err(service::Error::MissingProduct);
         };
 
         let (tx, rx) = oneshot::channel();
         self.zypp_sender
-            .send(SoftwareAction::ComputeProposal(product_spec, tx))?;
+            .send(SoftwareAction::GetProposal(product_spec, tx))?;
         Ok(rx.await??)
     }
 }
