@@ -137,7 +137,7 @@ struct DownloadResolvableCallbacks {
 
 /**
  * @brief What to do with an unknown GPG key.
- * @see KeyRingReport::KeyTrust in libzypp
+ * @see zypp::KeyRingReport::KeyTrust in https://github.com/openSUSE/libzypp/blob/master/zypp-logic/zypp/KeyRing.h
  */
 enum GPGKeyTrust {
   /** Reject the key. */
@@ -158,6 +158,7 @@ enum GPGKeyTrust {
  * an empty string if not available.
  * @param user_data User-defined data.
  * @return A GPGKeyTrust value indicating the action to take.
+ *  @see zypp::KeyRingReport::askUserToAcceptKey in https://github.com/openSUSE/libzypp/blob/master/zypp-logic/zypp/KeyRing.h
  */
 typedef enum GPGKeyTrust (*GPGAcceptKeyCallback)(const char *key_id,
                                                  const char *key_name,
@@ -201,6 +202,9 @@ typedef bool (*GPGVerificationFailed)(const char *file, const char *key_id,
                                       const char *key_fingerprint,
                                       const char *repository_alias,
                                       void *user_data);
+/**
+ * @see zypp::DigestReport in https://github.com/openSUSE/libzypp/blob/master/zypp-logic/zypp/Digest.h
+ */
 typedef bool (*ChecksumMissing)(const char *file, void *user_data);
 typedef bool (*ChecksumWrong)(const char *file, const char *expected,
                               const char *actual, void *user_data);
