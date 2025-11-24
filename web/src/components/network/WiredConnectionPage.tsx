@@ -62,7 +62,7 @@ const ConnectionNotFound = ({ id }) => {
 
 export default function WiredConnectionPage() {
   const { id } = useParams();
-  const connections = useConnections();
+  const connections = useConnections({ suspense: true });
   const connection = connections.find((c) => c.id === id);
 
   const title = _("Connection details");

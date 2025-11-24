@@ -53,7 +53,7 @@ export default function IpSettingsForm() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { mutateAsync: updateConnection } = useConnectionMutation();
-  const connection = useConnection(id);
+  const connection = useConnection(id, { suspense: true });
   const [addresses, setAddresses] = useState<IPAddress[]>(connection.addresses);
   const [nameservers, setNameservers] = useState(
     connection.nameservers.map((a) => {

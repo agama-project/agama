@@ -60,8 +60,8 @@ const useConnections = (options?: QueryHookOptions): Connection[] => {
   return data;
 };
 
-const useConnection = (name: string) => {
-  const connection = useConnections().find((c) => c.id === name);
+const useConnection = (name: string, options?: QueryHookOptions) => {
+  const connection = useConnections(options).find((c) => c.id === name);
 
   return connection;
 };

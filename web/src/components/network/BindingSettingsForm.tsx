@@ -62,7 +62,7 @@ function DevicesSelect({
   valueKey,
   ...formSelectProps
 }: DevicesSelectProps): React.ReactNode {
-  const devices = useDevices();
+  const devices = useDevices({ suspense: true });
 
   const labelAttrs = valueKey === "macAddress" ? ["macAddress", "name"] : ["name", "macAddress"];
 
@@ -130,8 +130,8 @@ const formReducer = (state: FormState, action: FormAction): FormState => {
 export default function BindingSettingsForm() {
   const { id } = useParams();
   const { mutateAsync: updateConnection } = useConnectionMutation();
-  const connection = useConnection(id);
-  const devices = useDevices();
+  const connection = useConnection(id, { suspense: true });
+  const devices = useDevices({ suspense: true });
   const navigate = useNavigate();
   const [state, dispatch] = useReducer(formReducer, {
     mode: connectionBindingMode(connection),

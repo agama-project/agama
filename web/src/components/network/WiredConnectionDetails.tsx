@@ -150,7 +150,7 @@ const DeviceDetails = ({ device }: { device: Device }) => {
 };
 
 const DevicesDetails = ({ connection }: { connection: Connection }) => {
-  const devices = useDevices();
+  const devices = useDevices({ suspense: true });
   const [active, setActive] = useState(0);
   const handleTabClick = (
     event: React.MouseEvent | React.KeyboardEvent | MouseEvent,

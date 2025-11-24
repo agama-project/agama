@@ -52,8 +52,8 @@ function useSystem(options?: QueryHookOptions): NetworkSystem {
 /**
  * Returns the network connections.
  */
-const useConnections = (): Connection[] => {
-  const { connections } = useSystem();
+const useConnections = (options?: QueryHookOptions): Connection[] => {
+  const { connections } = useSystem(options);
 
   return connections;
 };
@@ -61,8 +61,8 @@ const useConnections = (): Connection[] => {
 /**
  * Returns the network devices.
  */
-const useDevices = (): Device[] => {
-  const { devices } = useSystem();
+const useDevices = (options?: QueryHookOptions): Device[] => {
+  const { devices } = useSystem(options);
 
   return devices;
 };
@@ -70,8 +70,8 @@ const useDevices = (): Device[] => {
 /**
  * Returns the network devices.
  */
-const useState = (): GeneralState => {
-  const { state } = useSystem();
+const useState = (options?: QueryHookOptions): GeneralState => {
+  const { state } = useSystem(options);
 
   return state;
 };

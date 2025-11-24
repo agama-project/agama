@@ -92,7 +92,7 @@ const ConnectionError = ({ ssid, isPublicNetwork }) => {
 // FIXME: improve error handling. The errors props should have a key/value error
 //  and the component should show all of them, if any
 export default function WifiConnectionForm({ network }: { network: WifiNetwork }) {
-  const connections = useConnections();
+  const connections = useConnections({ suspense: true });
   const connection = connections.find((c) => c.id === network.ssid);
   const settings = network.settings?.wireless || new Wireless();
   const [error, setError] = useState(false);
