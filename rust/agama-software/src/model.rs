@@ -101,54 +101,11 @@ impl Model {
             repositories,
         })
     }
-
-    async fn patterns(&self) -> Result<Vec<Pattern>, service::Error> {
-        let Some(product) = &self.selected_product else {
-            return Err(service::Error::MissingProduct);
-        };
-
-        let names = product
-            .software
-            .user_patterns
-            .iter()
-            .map(|user_pattern| match user_pattern {
-                UserPattern::Plain(name) => name.clone(),
-                UserPattern::Preselected(preselected) => preselected.name.clone(),
-            })
-            .collect();
-
-        let (tx, rx) = oneshot::channel();
-        self.zypp_sender
-            .send(SoftwareAction::GetPatternsMetadata(names, tx))?;
-        Ok(rx.await??)
-    }
-
-    async fn repositories(&self) -> Result<Vec<Repository>, service::Error> {
-        let (tx, rx) = oneshot::channel();
-        self.zypp_sender.send(SoftwareAction::GetRepositories(tx))?;
-        let zypp_repos = rx.await??;
-
-        let mut repos = self.repositories.clone();
-        let local_urls: Vec<_> = self.repositories.iter().map(|r| r.url.as_str()).collect();
-
-        for repo in zypp_repos {
-            if !local_urls.contains(&repo.url.as_str()) {
-                let repo = Repository {
-                    alias: repo.alias.clone(),
-                    name: repo.alias,
-                    url: repo.url,
-                    enabled: repo.enabled,
-                    mandatory: false,
-                };
-                repos.push(repo);
-            }
-        }
-        Ok(repos)
-    }
 }
 
 #[async_trait]
 impl ModelAdapter for Model {
+    // FIXME: the product should be mandatory.
     fn set_product(&mut self, product_spec: ProductSpec) {
         self.selected_product = Some(product_spec);
     }
@@ -170,11 +127,23 @@ impl ModelAdapter for Model {
 
     /// Returns the software system information.
     async fn system_info(&self) -> Result<SystemInfo, service::Error> {
-        Ok(SystemInfo {
-            patterns: self.patterns().await?,
-            repositories: self.repositories().await?,
-            addons: vec![],
-        })
+        let Some(product_spec) = self.selected_product.clone() else {
+            return Err(service::Error::MissingProduct);
+        };
+
+        let (tx, rx) = oneshot::channel();
+        self.zypp_sender
+            .send(SoftwareAction::GetSystemInfo(product_spec, tx))?;
+        let mut system_info = rx.await??;
+
+        // set "mandatory" field as the info to decide whether the repository is mandatory or not
+        // lives in this struct.
+        let local_urls: Vec<_> = self.repositories.iter().map(|r| r.url.as_str()).collect();
+        for repo in system_info.repositories.iter_mut() {
+            repo.mandatory = local_urls.contains(&repo.url.as_str());
+        }
+
+        Ok(system_info)
     }
 
     async fn refresh(&mut self) -> Result<(), service::Error> {

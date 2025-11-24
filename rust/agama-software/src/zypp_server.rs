@@ -21,10 +21,11 @@
 use agama_utils::{
     actor::Handler,
     api::{
-        software::{Pattern, SelectedBy, SoftwareProposal},
+        self,
+        software::{Pattern, SelectedBy, SoftwareProposal, SystemInfo},
         Issue, Scope,
     },
-    products::ProductSpec,
+    products::{ProductSpec, UserPattern},
     progress, question,
 };
 use std::path::Path;
@@ -32,7 +33,7 @@ use tokio::sync::{
     mpsc::{self, UnboundedSender},
     oneshot,
 };
-use zypp_agama::{Repository, ZyppError};
+use zypp_agama::ZyppError;
 
 use crate::{
     callbacks,
@@ -46,6 +47,8 @@ const GPG_KEYS: &str = "/usr/lib/rpm/gnupg/keys/gpg-*";
 pub enum ZyppDispatchError {
     #[error("Failed to initialize libzypp: {0}")]
     InitError(#[from] ZyppError),
+    #[error("libzypp error: {0}")]
+    ZyppServer(#[from] ZyppServerError),
     #[error("Response channel closed")]
     ResponseChannelClosed,
     #[error("Target creation failed: {0}")]
@@ -96,8 +99,7 @@ pub enum SoftwareAction {
         Handler<question::Service>,
     ),
     Finish(oneshot::Sender<ZyppServerResult<()>>),
-    GetPatternsMetadata(Vec<String>, oneshot::Sender<ZyppServerResult<Vec<Pattern>>>),
-    GetRepositories(oneshot::Sender<ZyppServerResult<Vec<Repository>>>),
+    GetSystemInfo(ProductSpec, oneshot::Sender<ZyppServerResult<SystemInfo>>),
     ComputeProposal(
         ProductSpec,
         oneshot::Sender<ZyppServerResult<SoftwareProposal>>,
@@ -182,11 +184,8 @@ impl ZyppServer {
                 self.write(state, progress, &mut security_callback, tx, zypp)
                     .await?;
             }
-            SoftwareAction::GetPatternsMetadata(names, tx) => {
-                self.get_patterns(names, tx, zypp).await?;
-            }
-            SoftwareAction::GetRepositories(tx) => {
-                self.get_repositories(tx, zypp).await?;
+            SoftwareAction::GetSystemInfo(product_spec, tx) => {
+                self.system_info(product_spec, tx, zypp).await?;
             }
             SoftwareAction::Install(tx, progress, question) => {
                 let mut download_callback =
@@ -450,51 +449,75 @@ impl ZyppServer {
         Ok(())
     }
 
-    async fn get_patterns(
+    async fn system_info(
         &self,
-        names: Vec<String>,
-        tx: oneshot::Sender<ZyppServerResult<Vec<Pattern>>>,
+        product: ProductSpec,
+        tx: oneshot::Sender<ZyppServerResult<SystemInfo>>,
         zypp: &zypp_agama::Zypp,
     ) -> Result<(), ZyppDispatchError> {
-        let pattern_names = names.iter().map(|n| n.as_str()).collect();
-        let patterns = zypp
-            .patterns_info(pattern_names)
-            .map_err(ZyppServerError::ListPatternsFailed);
-        match patterns {
-            Err(error) => {
-                tx.send(Err(error))
-                    .map_err(|_| ZyppDispatchError::ResponseChannelClosed)?;
-            }
-            Ok(patterns_info) => {
-                let patterns = patterns_info
-                    .into_iter()
-                    .map(|info| Pattern {
-                        name: info.name,
-                        category: info.category,
-                        description: info.description,
-                        icon: info.icon,
-                        summary: info.summary,
-                        order: info.order,
-                    })
-                    .collect();
+        let patterns = self.patterns(&product, zypp).await?;
+        let repositories = self.repositories(zypp).await?;
 
-                tx.send(Ok(patterns))
-                    .map_err(|_| ZyppDispatchError::ResponseChannelClosed)?;
-            }
-        }
+        let system_info = SystemInfo {
+            patterns,
+            repositories,
+            addons: vec![],
+        };
 
+        tx.send(Ok(system_info))
+            .map_err(|_| ZyppDispatchError::ResponseChannelClosed)?;
         Ok(())
     }
 
-    async fn get_repositories(
+    async fn patterns(
         &self,
-        tx: oneshot::Sender<ZyppServerResult<Vec<Repository>>>,
+        product: &ProductSpec,
         zypp: &zypp_agama::Zypp,
-    ) -> Result<(), ZyppDispatchError> {
-        let repositories = zypp.list_repositories()?;
-        tx.send(Ok(repositories))
-            .map_err(|_| ZyppDispatchError::ResponseChannelClosed)?;
-        Ok(())
+    ) -> Result<Vec<Pattern>, ZyppServerError> {
+        let pattern_names: Vec<_> = product
+            .software
+            .user_patterns
+            .iter()
+            .map(|p| match p {
+                UserPattern::Plain(name) => name.as_str(),
+                UserPattern::Preselected(preselected) => preselected.name.as_str(),
+            })
+            .collect();
+
+        let patterns = zypp
+            .patterns_info(pattern_names)
+            .map_err(ZyppServerError::ListPatternsFailed)?;
+
+        let patterns = patterns
+            .into_iter()
+            .map(|p| Pattern {
+                name: p.name,
+                category: p.category,
+                description: p.description,
+                icon: p.icon,
+                summary: p.summary,
+                order: p.order,
+            })
+            .collect();
+        Ok(patterns)
+    }
+
+    async fn repositories(
+        &self,
+        zypp: &zypp_agama::Zypp,
+    ) -> Result<Vec<api::software::Repository>, ZyppServerError> {
+        let result = zypp
+            .list_repositories()?
+            .into_iter()
+            .map(|r| api::software::Repository {
+                alias: r.alias.clone(),
+                name: r.alias,
+                url: r.url,
+                enabled: r.enabled,
+                mandatory: false,
+            })
+            .collect();
+        Ok(result)
     }
 
     fn initialize_target_dir(&self) -> Result<zypp_agama::Zypp, ZyppDispatchError> {
