@@ -1426,6 +1426,9 @@ export default {
   "Partitions to host \"system\" will be created if needed.": [
     "При необходимости будут созданы разделы для размещения «system»."
   ],
+  "Partitions to host \"system\" will be created if needed.": [
+    "При необходимости будут созданы разделы для размещения «system»."
+  ],
   "Partitions will be used and created for %s": [
     "Разделы будут использоваться и создаваться для %s"
   ],

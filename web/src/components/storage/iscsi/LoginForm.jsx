@@ -56,7 +56,8 @@ export default function LoginForm({ node, onSubmit: onSubmitProp, onCancel }) {
   };
 
   const startupFormOptions = Object.values(NodeStartupOptions).map((option, i) => (
-    <FormSelectOption key={i} value={option.value} label={option.label} />
+    /* eslint-disable agama-i18n/string-literals */
+    <FormSelectOption key={i} value={option.value} label={_(option.label)} />
   ));
 
   const id = "iscsiLogin";

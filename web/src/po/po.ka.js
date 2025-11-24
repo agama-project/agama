@@ -1415,6 +1415,9 @@ export default {
   "Partitions to host \"system\" will be created if needed.": [
     "დანაყოფები \"სისტემისთვის\" საჭიროებისამებრ შეიქმნება."
   ],
+  "Partitions to host \"system\" will be created if needed.": [
+    "დანაყოფები \"სისტემისთვის\" საჭიროებისამებრ შეიქმნება."
+  ],
   "Partitions will be used and created for %s": [
     "დანაყოფები, რომლებიც გამოყენებული და შექმნილი იქნება '%s'-სთვის"
   ],
