@@ -41,9 +41,7 @@ export default function L10nSection() {
     <Content>
       <Content component="h3">{_("Localization")}</Content>
       <Content>
-        <b>
-          {locale ? `${msg1}${locale.name} (${locale.territory})${msg2}` : _("Not selected yet")}
-        </b>
+        <b>{locale ? `${msg1}${locale.id} (${locale.territory})${msg2}` : _("Not selected yet")}</b>
       </Content>
     </Content>
   );

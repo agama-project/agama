@@ -115,7 +115,12 @@ pub trait Callback {
     /// callback when problem occurs during download of resolvable
     ///
     /// Corresponding libzypp callback name: DownloadResolvableReport::problem
-    fn problem(&self, _name: &str, _error: DownloadError, _description: &str) -> ProblemResponse {
+    fn problem(
+        &self,
+        _name: String,
+        _error: DownloadError,
+        _description: String,
+    ) -> ProblemResponse {
         ProblemResponse::ABORT
     }
     /// Callback after a GPG check is performed on a package.
@@ -131,8 +136,8 @@ pub trait Callback {
     /// Corresponding libzypp callback name: DownloadResolvableReport::pkgGpgCheck
     fn gpg_check(
         &self,
-        _resolvable_name: &str,
-        _repo_url: &str,
+        _resolvable_name: String,
+        _repo_url: String,
         _check_result: GPGCheckResult,
     ) -> Option<ProblemResponse> {
         None
@@ -151,11 +156,43 @@ pub trait Callback {
     /// Corresponding libzypp callback name: CommitPreloadReport::fileDone
     fn finish_preload(
         &self,
-        _url: &str,
-        _local_path: &str,
+        _url: String,
+        _local_path: String,
         _error: PreloadError,
-        _error_details: &str,
+        _error_details: String,
     ) {
+    }
+
+    /// block to use callbacks inside. Recommended to not redefine.
+    fn with<R, F>(&mut self, block: &mut F) -> R
+    where
+        F: FnMut(zypp_agama_sys::DownloadResolvableCallbacks) -> R,
+    {
+        let mut start_call = || self.start_preload();
+        let cb_start = get_start_preload(&start_call);
+        let mut problem_call =
+            |name: String, error, description: String| self.problem(name, error, description);
+        let cb_problem = get_problem(&problem_call);
+        let mut gpg_check = |name: String, url: String, check_result: GPGCheckResult| {
+            self.gpg_check(name, url, check_result)
+        };
+        let cb_gpg_check = get_gpg_check(&gpg_check);
+        let mut finish_call = |url: String, local_path: String, error, details: String| {
+            self.finish_preload(url, local_path, error, details)
+        };
+        let cb_finish = get_preload_finish(&finish_call);
+
+        let callbacks = zypp_agama_sys::DownloadResolvableCallbacks {
+            start_preload: cb_start,
+            start_preload_data: as_c_void(&mut start_call),
+            problem: cb_problem,
+            problem_data: as_c_void(&mut problem_call),
+            gpg_check: cb_gpg_check,
+            gpg_check_data: as_c_void(&mut gpg_check),
+            file_finish: cb_finish,
+            file_finish_data: as_c_void(&mut finish_call),
+        };
+        block(callbacks)
     }
 }
 
@@ -254,35 +291,4 @@ where
     F: FnMut(String, String, PreloadError, String),
 {
     Some(preload_finish::<F>)
-}
-
-pub(crate) fn with_callback<R, F>(callback: &impl Callback, block: &mut F) -> R
-where
-    F: FnMut(zypp_agama_sys::DownloadResolvableCallbacks) -> R,
-{
-    let mut start_call = || callback.start_preload();
-    let cb_start = get_start_preload(&start_call);
-    let mut problem_call =
-        |name: String, error, description: String| callback.problem(&name, error, &description);
-    let cb_problem = get_problem(&problem_call);
-    let mut gpg_check = |name: String, url: String, check_result: GPGCheckResult| {
-        callback.gpg_check(&name, &url, check_result)
-    };
-    let cb_gpg_check = get_gpg_check(&gpg_check);
-    let mut finish_call = |url: String, local_path: String, error, details: String| {
-        callback.finish_preload(&url, &local_path, error, &details)
-    };
-    let cb_finish = get_preload_finish(&finish_call);
-
-    let callbacks = zypp_agama_sys::DownloadResolvableCallbacks {
-        start_preload: cb_start,
-        start_preload_data: as_c_void(&mut start_call),
-        problem: cb_problem,
-        problem_data: as_c_void(&mut problem_call),
-        gpg_check: cb_gpg_check,
-        gpg_check_data: as_c_void(&mut gpg_check),
-        file_finish: cb_finish,
-        file_finish_data: as_c_void(&mut finish_call),
-    };
-    block(callbacks)
 }

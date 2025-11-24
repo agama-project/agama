@@ -32,6 +32,7 @@ import {
   getQuestions,
   getIssues,
   getStatus,
+  issue,
 } from "~/api";
 import { useInstallerClient } from "~/context/installer";
 import { System } from "~/api/system";
@@ -40,7 +41,7 @@ import { Status } from "~/api/status";
 import { Config } from "~/api/config";
 import { apiModel } from "~/api/storage";
 import { Question } from "~/api/question";
-import { IssuesScope, Issue, IssuesMap } from "~/api/issue";
+import { Issue } from "~/api/issue";
 import { QueryHookOptions } from "~/types/queries";
 
 const statusQuery = () => ({
@@ -211,22 +212,9 @@ const issuesQuery = () => {
   };
 };
 
-const selectIssues = (data: IssuesMap | null): Issue[] => {
-  if (!data) return [];
-
-  return Object.keys(data).reduce((all: Issue[], key: IssuesScope) => {
-    const scoped = data[key].map((i) => ({ ...i, scope: key }));
-    return all.concat(scoped);
-  }, []);
-};
-
 function useIssues(options?: QueryHookOptions): Issue[] {
   const func = options?.suspense ? useSuspenseQuery : useQuery;
-  const { data } = func({
-    ...issuesQuery(),
-    select: selectIssues,
-  });
-  return data;
+  return func(issuesQuery())?.data;
 }
 
 const useIssuesChanges = () => {
@@ -244,13 +232,12 @@ const useIssuesChanges = () => {
   }, [client, queryClient]);
 };
 
-function useScopeIssues(scope: IssuesScope, options?: QueryHookOptions): Issue[] {
+function useScopeIssues(scope: issue.Scope, options?: QueryHookOptions): Issue[] {
   const func = options?.suspense ? useSuspenseQuery : useQuery;
   const { data } = func({
     ...issuesQuery(),
     select: useCallback(
-      (data: IssuesMap | null): Issue[] =>
-        selectIssues(data).filter((i: Issue) => i.scope === scope),
+      (data: Issue[]): Issue[] => data.filter((i: Issue) => i.scope === scope),
       [scope],
     ),
   });
@@ -263,7 +250,6 @@ export {
   extendedConfigQuery,
   storageModelQuery,
   issuesQuery,
-  selectIssues,
   useConfig,
   useSystem,
   useStatus,

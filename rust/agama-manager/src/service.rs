@@ -25,7 +25,7 @@ use agama_utils::{
         self, event,
         manager::{self, LicenseContent},
         status::State,
-        Action, Config, Event, Issue, IssueMap, IssueSeverity, Proposal, Scope, Status, SystemInfo,
+        Action, Config, Event, Issue, IssueMap, Proposal, Scope, Status, SystemInfo,
     },
     issue, licenses,
     products::{self, ProductSpec},
@@ -137,7 +137,7 @@ impl Starter {
     pub async fn start(self) -> Result<Handler<Service>, Error> {
         let issues = match self.issues {
             Some(issues) => issues,
-            None => issue::start(self.events.clone(), self.dbus.clone()).await?,
+            None => issue::Service::starter(self.events.clone()).start(),
         };
 
         let progress = match self.progress {
@@ -245,7 +245,9 @@ impl Service {
         if let Some(product) = self.products.default_product() {
             let config = Config::with_product(product.id.clone());
             self.set_config(config).await?;
-        }
+        } else {
+            self.update_issues()?;
+        };
 
         Ok(())
     }
@@ -412,11 +414,7 @@ impl Service {
             self.issues
                 .cast(issue::message::Clear::new(Scope::Manager))?;
         } else {
-            let issue = Issue::new(
-                "no_product",
-                "No product has been selected.",
-                IssueSeverity::Error,
-            );
+            let issue = Issue::new("no_product", "No product has been selected.");
             self.issues
                 .cast(issue::message::Set::new(Scope::Manager, vec![issue]))?;
         }

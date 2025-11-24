@@ -20,19 +20,20 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
-import { Flex } from "@patternfly/react-core";
-import MenuButton from "~/components/core/MenuButton";
+import React, { forwardRef } from "react";
+import { Button, Flex, FlexItem } from "@patternfly/react-core";
+import MenuButton, { CustomToggleProps } from "~/components/core/MenuButton";
 import Text from "~/components/core/Text";
-import { generatePath, useNavigate } from "react-router";
+import Icon from "~/components/layout/Icon";
+import { useNavigate } from "react-router";
 import { useSetSpacePolicy } from "~/hooks/storage/space-policy";
 import { SPACE_POLICIES } from "~/components/storage/utils";
 import { apiModel, system } from "~/api/storage";
 import { STORAGE as PATHS } from "~/routes/paths";
 import * as driveUtils from "~/components/storage/utils/drive";
-import { isEmpty } from "radashi";
-import { _ } from "~/i18n";
+import { generateEncodedPath } from "~/utils";
 import { model } from "~/types/storage";
+import { isEmpty } from "radashi";
 
 const PolicyItem = ({ policy, modelDevice, isSelected, onClick }) => {
   return (
@@ -47,8 +48,30 @@ const PolicyItem = ({ policy, modelDevice, isSelected, onClick }) => {
   );
 };
 
+type SpacePolicyMenuToggleProps = CustomToggleProps & {
+  drive: model.Drive;
+};
+
+const SpacePolicyMenuToggle = forwardRef(({ drive, ...props }: SpacePolicyMenuToggleProps, ref) => {
+  return (
+    <Button variant="link" ref={ref} style={{ display: "inline", width: "fit-content" }} {...props}>
+      <Flex
+        alignItems={{ default: "alignItemsCenter" }}
+        gap={{ default: "gapSm" }}
+        flexWrap={{ default: "nowrap" }}
+        style={{ whiteSpace: "normal", textAlign: "start" }}
+      >
+        <FlexItem>{driveUtils.contentActionsSummary(drive)}</FlexItem>
+        <FlexItem>
+          <Icon name="keyboard_arrow_down" style={{ verticalAlign: "middle" }} />
+        </FlexItem>
+      </Flex>
+    </Button>
+  );
+});
+
 type SpacePolicyMenuProps = {
-  modelDevice: model.Drive;
+  modelDevice: model.Drive | model.MdRaid;
   device: system.Device;
 };
 
@@ -62,7 +85,7 @@ export default function SpacePolicyMenu({ modelDevice, device }: SpacePolicyMenu
 
   const onSpacePolicyChange = (spacePolicy: apiModel.SpacePolicy) => {
     if (spacePolicy === "custom") {
-      return navigate(generatePath(PATHS.editSpacePolicy, { list, listIndex }));
+      return navigate(generateEncodedPath(PATHS.editSpacePolicy, { list, listIndex }));
     } else {
       setSpacePolicy(list, listIndex, { type: spacePolicy });
     }
@@ -71,24 +94,20 @@ export default function SpacePolicyMenu({ modelDevice, device }: SpacePolicyMenu
   const currentPolicy = driveUtils.spacePolicyEntry(modelDevice);
 
   return (
-    <Flex gap={{ default: "gapXs" }}>
-      <strong>{_("Find space")}</strong>
-      <MenuButton
-        toggleProps={{
-          variant: "plainText",
-        }}
-        items={SPACE_POLICIES.map((policy) => (
-          <PolicyItem
-            key={policy.id}
-            policy={policy}
-            modelDevice={modelDevice}
-            isSelected={policy.id === currentPolicy.id}
-            onClick={onSpacePolicyChange}
-          />
-        ))}
-      >
-        {driveUtils.contentActionsSummary(modelDevice)}
-      </MenuButton>
-    </Flex>
+    <MenuButton
+      toggleProps={{
+        variant: "plainText",
+      }}
+      items={SPACE_POLICIES.map((policy) => (
+        <PolicyItem
+          key={policy.id}
+          policy={policy}
+          modelDevice={modelDevice}
+          isSelected={policy.id === currentPolicy.id}
+          onClick={onSpacePolicyChange}
+        />
+      ))}
+      customToggle={<SpacePolicyMenuToggle drive={modelDevice} />}
+    />
   );
 }

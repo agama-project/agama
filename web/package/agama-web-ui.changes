@@ -1,23 +1,30 @@
 -------------------------------------------------------------------
-Fri Oct 17 13:14:52 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+Wed Nov 12 15:42:28 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
-- Adapt to the new questions HTTP API (gh#agama-project/agama#2813).
-
--------------------------------------------------------------------
-Thu Oct 16 04:52:55 UTC 2025 - José Iván López González <jlopez@suse.com>
-
-- Adapt to the changes in the HTTP API (gh#agama-project/agama#2801).
+- Version 18
 
 -------------------------------------------------------------------
-Mon Oct  6 08:16:06 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+Tue Oct 28 16:34:22 UTC 2025 - Ancor Gonzalez Sosa <ancor@suse.com>
 
-- Adapt to the new "installation issues" API (gh#agama-project/agama#2775).
+- Rearrange the information in the storage page
+  (gh#agama-project/agama#2767).
 
 -------------------------------------------------------------------
-Fri Oct  3 20:11:40 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+Mon Oct 27 15:51:48 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
 
-- Start adapting the UI to the new HTTP API
-  (gh#agama-project/agama#2715).
+- Use the JavaScript/TypeScript parser to extract strings for
+  translation (gh#agama-project/agama#2748).
+
+-------------------------------------------------------------------
+Fri Oct 17 12:30:56 UTC 2025 - David Diaz <dgonzalez@suse.com>
+
+- Preserve installer options values after successful submission
+  (bsc#1249636).
+
+-------------------------------------------------------------------
+Tue Oct 14 14:01:15 UTC 2025 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Fixed the check about which DASDs can be formatted (bsc#1243795).
 
 -------------------------------------------------------------------
 Thu Sep 18 08:57:11 UTC 2025 - David Diaz <dgonzalez@suse.com>

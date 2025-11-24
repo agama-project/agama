@@ -31,7 +31,7 @@ use agama_utils::{
         manager::LicenseContent,
         query,
         question::{Question, QuestionSpec, UpdateQuestion},
-        Action, Config, IssueMap, Patch, Status, SystemInfo,
+        Action, Config, IssueWithScope, Patch, Status, SystemInfo,
     },
     question,
 };
@@ -252,18 +252,29 @@ async fn get_proposal(State(state): State<ServerState>) -> ServerResult<Response
     Ok(to_option_response(proposal))
 }
 
-/// Returns the issues for each scope.
+/// Returns the list of issues.
 #[utoipa::path(
     get,
     path = "/issues",
     context_path = "/api/v2",
     responses(
-        (status = 200, description = "Agama issues", body = IssueMap),
+        (status = 200, description = "Agama issues", body = Vec<IssueWithScope>),
         (status = 400, description = "Not possible to retrieve the issues")
     )
 )]
-async fn get_issues(State(state): State<ServerState>) -> ServerResult<Json<IssueMap>> {
-    let issues = state.manager.call(message::GetIssues).await?;
+async fn get_issues(State(state): State<ServerState>) -> ServerResult<Json<Vec<IssueWithScope>>> {
+    let issue_groups = state.manager.call(message::GetIssues).await?;
+
+    let issues = issue_groups
+        .into_iter()
+        .flat_map(|(scope, issues)| -> Vec<IssueWithScope> {
+            issues
+                .into_iter()
+                .map(|issue| IssueWithScope { scope, issue })
+                .collect()
+        })
+        .collect();
+
     Ok(Json(issues))
 }
 

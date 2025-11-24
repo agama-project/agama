@@ -21,7 +21,7 @@
  */
 
 import React, { useEffect, useState, useRef } from "react";
-import { useNavigate } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 import { ActionGroup, Alert, Checkbox, Content, Form } from "@patternfly/react-core";
 import { NestedContent, Page, PasswordAndConfirmationInput } from "~/components/core";
 import PasswordCheck from "~/components/users/PasswordCheck";
@@ -36,6 +36,7 @@ import { _ } from "~/i18n";
  */
 export default function EncryptionSettingsPage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { encryption: encryptionConfig, enable, disable } = useEncryption();
   const methods = useEncryptionMethods();
 
@@ -83,7 +84,7 @@ export default function EncryptionSettingsPage() {
     const commit = () => (isEnabled ? enable(method, password) : disable());
 
     commit();
-    navigate("..");
+    navigate({ pathname: "..", search: location.search });
   };
 
   // TRANSLATORS: "Trusted Platform Module" is the name of the technology and TPM its abbreviation

@@ -21,7 +21,7 @@
  */
 
 import React, { useState } from "react";
-import MenuButton, { MenuButtonItem } from "~/components/core/MenuButton";
+import MenuButton, { CustomToggleProps, MenuButtonItem } from "~/components/core/MenuButton";
 import NewVgMenuOption from "./NewVgMenuOption";
 import { useAvailableDevices } from "~/hooks/storage/system";
 import { useModel } from "~/hooks/storage/model";
@@ -35,7 +35,6 @@ import { sprintf } from "sprintf-js";
 import { _, formatList } from "~/i18n";
 import DeviceSelectorModal from "./DeviceSelectorModal";
 import { MenuItemProps } from "@patternfly/react-core";
-import { Icon } from "../layout";
 import { isDrive } from "~/helpers/storage/device";
 
 const baseName = (device: storage.Device): string => deviceBaseName(device, true);
@@ -62,18 +61,18 @@ const ChangeDeviceTitle = ({ modelDevice }) => {
 
   if (modelDevice.filesystem) {
     // TRANSLATORS: %s is a formatted mount point like '"/home"'
-    return sprintf(_("Select a disk to format as %s"), formattedPath(modelDevice.mountPath));
+    return sprintf(_("Change the disk to format as %s"), formattedPath(modelDevice.mountPath));
   }
 
   const mountPaths = modelDevice.getMountPaths();
   const hasMountPaths = mountPaths.length > 0;
 
   if (!hasMountPaths) {
-    return _("Select a disk to configure");
+    return _("Change the disk to configure");
   }
 
   if (mountPaths.includes("/")) {
-    return _("Select a disk to install the system");
+    return _("Change the disk to install the system");
   }
 
   const newMountPaths = modelDevice.partitions
@@ -83,7 +82,7 @@ const ChangeDeviceTitle = ({ modelDevice }) => {
   return sprintf(
     // TRANSLATORS: %s is a list of formatted mount points like '"/", "/var" and "swap"' (or a
     // single mount point in the singular case).
-    _("Select a disk to create %s"),
+    _("Change the disk to create %s"),
     formatList(newMountPaths),
   );
 };
@@ -276,10 +275,10 @@ const targetDevices = (
     return modelDevice.filesystem ? !device.isUsed : !device.filesystem;
   });
 };
-
 export type SearchedDeviceMenuProps = {
-  modelDevice: model.Drive | model.MdRaid;
   selected: storage.Device;
+  modelDevice: model.Drive | model.MdRaid;
+  toggle?: React.ReactElement<CustomToggleProps>;
   deleteFn: (device: model.Drive | model.MdRaid) => void;
 };
 
@@ -291,6 +290,7 @@ export type SearchedDeviceMenuProps = {
 export default function SearchedDeviceMenu({
   modelDevice,
   selected,
+  toggle,
   deleteFn,
 }: SearchedDeviceMenuProps): React.ReactNode {
   const [isSelectorOpen, setIsSelectorOpen] = useState(false);
@@ -312,11 +312,9 @@ export default function SearchedDeviceMenu({
       <MenuButton
         menuProps={{
           "aria-label": sprintf(_("Device %s menu"), modelDevice.name),
-          popperProps: { position: "end" },
+          popperProps: { position: "end", maxWidth: "fit-content", minWidth: "fit-content" },
         }}
-        toggleProps={{
-          variant: "plain",
-        }}
+        customToggle={toggle}
         items={[
           <ChangeDeviceMenuItem
             key="change"
@@ -327,10 +325,7 @@ export default function SearchedDeviceMenu({
           <NewVgMenuOption key="add-vg-option" device={modelDevice} />,
           <RemoveEntryOption key="delete-disk-option" device={modelDevice} onClick={deleteFn} />,
         ]}
-      >
-        <span className="action-text">{_("Change")}</span>{" "}
-        <Icon name="more_horiz" className="agm-strong-icon" />
-      </MenuButton>
+      />
       {isSelectorOpen && (
         <DeviceSelectorModal
           title={<ChangeDeviceTitle modelDevice={modelDevice} />}

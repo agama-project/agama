@@ -20,8 +20,8 @@
  * find current contact information at www.suse.com.
  */
 
-import { Alert } from "@patternfly/react-core";
 import React, { useEffect, useState } from "react";
+import SmallWarning from "~/components/core/SmallWarning";
 import { checkPassword } from "~/api/users";
 import { _ } from "~/i18n";
 
@@ -48,7 +48,7 @@ const PasswordCheck = ({ password }: { password: string }) => {
 
   return (
     <div aria-live="polite">
-      <Alert isPlain title={error} variant="warning" />
+      <SmallWarning text={error} />
     </div>
   );
 };

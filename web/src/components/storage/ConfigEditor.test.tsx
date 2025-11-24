@@ -55,6 +55,7 @@ jest.mock("~/hooks/storage/api-model", () => ({
 jest.mock("./DriveEditor", () => () => <div>drive editor</div>);
 jest.mock("./MdRaidEditor", () => () => <div>raid editor</div>);
 jest.mock("./VolumeGroupEditor", () => () => <div>volume group editor</div>);
+jest.mock("./ConfigureDeviceMenu", () => () => <div>add device</div>);
 
 const hasDrives: apiModel.Config = {
   drives: [{ name: "/dev/vda" }],

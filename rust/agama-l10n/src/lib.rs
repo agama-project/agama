@@ -60,7 +60,7 @@ mod tests {
     use agama_utils::{
         actor::Handler,
         api::{self, event::Event, scope::Scope},
-        issue, test,
+        issue,
     };
     use test_context::{test_context, AsyncTestContext};
     use tokio::sync::broadcast;
@@ -74,8 +74,7 @@ mod tests {
     impl AsyncTestContext for Context {
         async fn setup() -> Context {
             let (events_tx, events_rx) = broadcast::channel::<Event>(16);
-            let dbus = test::dbus::connection().await.unwrap();
-            let issues = issue::start(events_tx.clone(), dbus).await.unwrap();
+            let issues = issue::Service::starter(events_tx.clone()).start();
 
             let model = TestModel::with_sample_data();
             let handler = Service::starter(events_tx, issues.clone())

@@ -18,7 +18,7 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::client::{self, StorageClient};
+use crate::client::{self, Client, StorageClient};
 use agama_utils::{
     actor::Handler,
     api::{
@@ -105,7 +105,7 @@ pub struct Monitor {
     issues: Handler<issue::Service>,
     events: event::Sender,
     connection: Connection,
-    client: client::Client,
+    client: Client,
 }
 
 impl Monitor {
@@ -114,14 +114,13 @@ impl Monitor {
         issues: Handler<issue::Service>,
         events: event::Sender,
         connection: Connection,
-        client: client::Client,
     ) -> Self {
         Self {
             progress,
             issues,
             events,
-            connection,
-            client,
+            connection: connection.clone(),
+            client: Client::new(connection),
         }
     }
 
@@ -134,10 +133,19 @@ impl Monitor {
 
         tokio::pin!(streams);
 
+        self.update_issues().await?;
+
         while let Some((_, signal)) = streams.next().await {
             self.handle_signal(signal).await?;
         }
 
+        Ok(())
+    }
+
+    async fn update_issues(&self) -> Result<(), Error> {
+        let issues = self.client.get_issues().await?;
+        self.issues
+            .cast(issue::message::Set::new(Scope::Storage, issues))?;
         Ok(())
     }
 
@@ -159,18 +167,12 @@ impl Monitor {
         Ok(())
     }
 
-    // TODO: add proposal to the event.
     async fn handle_proposal_changed(&self, _signal: ProposalChanged) -> Result<(), Error> {
         self.events.send(Event::ProposalChanged {
             scope: Scope::Storage,
         })?;
 
-        let issues = self.client.get_issues().await?;
-        self.issues
-            .call(issue::message::Set::new(Scope::Storage, issues))
-            .await?;
-
-        Ok(())
+        self.update_issues().await
     }
 
     fn handle_progress_changed(&self, signal: ProgressChanged) -> Result<(), Error> {

@@ -21,13 +21,14 @@
  */
 
 import React from "react";
-import { Alert, Button, DataList } from "@patternfly/react-core";
+import { Alert, Button, DataList, Flex } from "@patternfly/react-core";
 import Text from "~/components/core/Text";
 import DriveEditor from "~/components/storage/DriveEditor";
 import VolumeGroupEditor from "~/components/storage/VolumeGroupEditor";
 import MdRaidEditor from "~/components/storage/MdRaidEditor";
 import { useDevices } from "~/hooks/storage/system";
 import { useResetConfig } from "~/hooks/storage/config";
+import ConfigureDeviceMenu from "./ConfigureDeviceMenu";
 import { useModel } from "~/hooks/storage/model";
 import { _ } from "~/i18n";
 
@@ -83,26 +84,31 @@ export default function ConfigEditor() {
   }
 
   return (
-    <DataList aria-label={_("[FIXME]")} isCompact className="storage-structure">
-      {volumeGroups.map((vg, i) => {
-        return <VolumeGroupEditor key={`vg-${i}`} vg={vg} />;
-      })}
-      {mdRaids.map((raid, i) => {
-        const device = devices.find((d) => d.name === raid.name);
+    <>
+      <DataList aria-label={_("[FIXME]")} isCompact className="storage-structure">
+        {volumeGroups.map((vg, i) => {
+          return <VolumeGroupEditor key={`vg-${i}`} vg={vg} />;
+        })}
+        {mdRaids.map((raid, i) => {
+          const device = devices.find((d) => d.name === raid.name);
 
-        return <MdRaidEditor key={`md-${i}`} raid={raid} raidDevice={device} />;
-      })}
-      {drives.map((drive, i) => {
-        const device = devices.find((d) => d.name === drive.name);
+          return <MdRaidEditor key={`md-${i}`} raid={raid} raidDevice={device} />;
+        })}
+        {drives.map((drive, i) => {
+          const device = devices.find((d) => d.name === drive.name);
 
-        /**
-         * @fixme Make DriveEditor to work when the device is not found (e.g., after disabling
-         * a iSCSI device).
-         */
-        if (device === undefined) return null;
+          /**
+           * @fixme Make DriveEditor to work when the device is not found (e.g., after disabling
+           * a iSCSI device).
+           */
+          if (device === undefined) return null;
 
-        return <DriveEditor key={`drive-${i}`} drive={drive} driveDevice={device} />;
-      })}
-    </DataList>
+          return <DriveEditor key={`drive-${i}`} drive={drive} driveDevice={device} />;
+        })}
+      </DataList>
+      <Flex>
+        <ConfigureDeviceMenu />
+      </Flex>
+    </>
   );
 }

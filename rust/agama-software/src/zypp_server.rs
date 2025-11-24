@@ -22,7 +22,7 @@ use agama_utils::{
     actor::Handler,
     api::{
         software::{Pattern, SelectedBy, SoftwareProposal},
-        Issue, IssueSeverity, Scope,
+        Issue, Scope,
     },
     products::ProductSpec,
     progress, question,
@@ -35,7 +35,7 @@ use tokio::sync::{
 use zypp_agama::ZyppError;
 
 use crate::{
-    callbacks::commit_download,
+    callbacks,
     model::state::{self, SoftwareState},
 };
 
@@ -104,6 +104,7 @@ pub enum SoftwareAction {
     Write {
         state: SoftwareState,
         progress: Handler<progress::Service>,
+        question: Handler<question::Service>,
         tx: oneshot::Sender<ZyppServerResult<Vec<Issue>>>,
     },
 }
@@ -173,16 +174,21 @@ impl ZyppServer {
             SoftwareAction::Write {
                 state,
                 progress,
+                question,
                 tx,
             } => {
-                self.write(state, progress, tx, zypp).await?;
+                let mut security_callback = callbacks::Security::new(question);
+                self.write(state, progress, &mut security_callback, tx, zypp)
+                    .await?;
             }
             SoftwareAction::GetPatternsMetadata(names, tx) => {
                 self.get_patterns(names, tx, zypp).await?;
             }
             SoftwareAction::Install(tx, progress, question) => {
-                let callback = commit_download::CommitDownload::new(progress, question);
-                tx.send(self.install(zypp, &callback))
+                let mut download_callback =
+                    callbacks::CommitDownload::new(progress, question.clone());
+                let mut security_callback = callbacks::Security::new(question);
+                tx.send(self.install(zypp, &mut download_callback, &mut security_callback))
                     .map_err(|_| ZyppDispatchError::ResponseChannelClosed)?;
             }
             SoftwareAction::Finish(tx) => {
@@ -199,12 +205,13 @@ impl ZyppServer {
     fn install(
         &self,
         zypp: &zypp_agama::Zypp,
-        download_callback: &commit_download::CommitDownload,
+        download_callback: &mut callbacks::CommitDownload,
+        security_callback: &mut callbacks::Security,
     ) -> ZyppServerResult<bool> {
         let target = "/mnt";
         zypp.switch_target(target)?;
         // TODO: write real install callbacks beside download ones
-        let result = zypp.commit(download_callback)?;
+        let result = zypp.commit(download_callback, security_callback)?;
         tracing::info!("libzypp commit ends with {}", result);
         Ok(result)
     }
@@ -235,6 +242,7 @@ impl ZyppServer {
         &self,
         state: SoftwareState,
         progress: Handler<progress::Service>,
+        security: &mut callbacks::Security,
         tx: oneshot::Sender<ZyppServerResult<Vec<Issue>>>,
         zypp: &zypp_agama::Zypp,
     ) -> Result<(), ZyppDispatchError> {
@@ -283,8 +291,7 @@ impl ZyppServer {
             if let Err(error) = result {
                 let message = format!("Could not add the repository {}", repo.alias);
                 issues.push(
-                    Issue::new("software.add_repo", &message, IssueSeverity::Error)
-                        .with_details(&error.to_string()),
+                    Issue::new("software.add_repo", &message).with_details(&error.to_string()),
                 );
             }
             // Add an issue if it was not possible to add the repository.
@@ -299,27 +306,31 @@ impl ZyppServer {
             if let Err(error) = result {
                 let message = format!("Could not remove the repository {}", repo.alias);
                 issues.push(
-                    Issue::new("software.remove_repo", &message, IssueSeverity::Error)
-                        .with_details(&error.to_string()),
+                    Issue::new("software.remove_repo", &message).with_details(&error.to_string()),
                 );
             }
         }
 
         progress.cast(progress::message::Next::new(Scope::Software))?;
         if to_add.is_empty() || to_remove.is_empty() {
-            let result = zypp.load_source(|percent, alias| {
-                tracing::info!("Refreshing repositories: {} ({}%)", alias, percent);
-                true
-            });
+            let result = zypp.load_source(
+                |percent, alias| {
+                    tracing::info!("Refreshing repositories: {} ({}%)", alias, percent);
+                    true
+                },
+                security,
+            );
 
             if let Err(error) = result {
                 let message = format!("Could not read the repositories");
                 issues.push(
-                    Issue::new("software.load_source", &message, IssueSeverity::Error)
-                        .with_details(&error.to_string()),
+                    Issue::new("software.load_source", &message).with_details(&error.to_string()),
                 );
             }
         }
+
+        // reset everything to start from scratch
+        zypp.reset_resolvables();
 
         _ = progress.cast(progress::message::Next::new(Scope::Software));
         for resolvable_state in &state.resolvables {
@@ -335,7 +346,7 @@ impl ZyppServer {
             if let Err(error) = result {
                 let message = format!("Could not select pattern '{}'", &resolvable.name);
                 issues.push(
-                    Issue::new("software.select_pattern", &message, IssueSeverity::Error)
+                    Issue::new("software.select_pattern", &message)
                         .with_details(&error.to_string()),
                 );
             }
@@ -366,8 +377,8 @@ impl ZyppServer {
                 .map_err(|_| ZyppDispatchError::ResponseChannelClosed)?;
             return Ok(());
         }
-        self.registration_finish(); // TODO: move it outside of zypp server as it do not need zypp lock
-        self.modify_zypp_conf(); // TODO: move it outside of zypp server as it do not need zypp lock
+        let _ = self.registration_finish(); // TODO: move it outside of zypp server as it do not need zypp lock
+        let _ = self.modify_zypp_conf(); // TODO: move it outside of zypp server as it do not need zypp lock
 
         if let Err(error) = self.modify_full_repo(zypp) {
             tx.send(Err(error.into()))

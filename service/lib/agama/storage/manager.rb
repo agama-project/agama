@@ -28,7 +28,6 @@ require "agama/storage/configurator"
 require "agama/storage/finisher"
 require "agama/storage/iscsi/manager"
 require "agama/storage/proposal"
-require "agama/storage/proposal_settings"
 require "agama/with_issues"
 require "agama/with_locale"
 require "agama/with_progress_manager"
@@ -203,10 +202,7 @@ module Agama
         return [] if y2storage_issues.nil?
 
         y2storage_issues.map do |y2storage_issue|
-          Issue.new(y2storage_issue.message,
-            details:  y2storage_issue.details,
-            source:   Issue::Source::SYSTEM,
-            severity: Issue::Severity::WARN)
+          Issue.new(y2storage_issue.message, details: y2storage_issue.details)
         end
       end
 
@@ -216,9 +212,7 @@ module Agama
       def candidate_devices_issue
         return if proposal.storage_system.candidate_devices.any?
 
-        Issue.new("There is no suitable device for installation",
-          source:   Issue::Source::SYSTEM,
-          severity: Issue::Severity::ERROR)
+        Issue.new("There is no suitable device for installation")
       end
 
       # Returns the client to ask questions

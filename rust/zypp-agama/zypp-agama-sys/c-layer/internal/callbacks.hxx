@@ -20,4 +20,9 @@ void set_zypp_resolvable_download_callbacks(
     struct DownloadResolvableCallbacks *callbacks);
 void unset_zypp_resolvable_download_callbacks();
 
+// pair of set/unset callbacks used for security reports.
+// Uses mixture of KeyRingReport and DigestReport
+void set_zypp_security_callbacks(struct SecurityCallbacks *callbacks);
+void unset_zypp_security_callbacks();
+
 #endif

@@ -27,6 +27,8 @@
 
 #include <zypp/ui/Selectable.h>
 
+#define ZYPP_BASE_LOGGER_LOGGROUP "rust-bindings"
+
 extern "C" {
 
 #include <systemd/sd-journal.h>
@@ -156,17 +158,21 @@ void switch_target(struct Zypp *zypp, const char *root,
 }
 
 bool commit(struct Zypp *zypp, struct Status *status,
-            struct DownloadResolvableCallbacks *download_callbacks) noexcept {
+            struct DownloadResolvableCallbacks *download_callbacks,
+            struct SecurityCallbacks *security_callbacks) noexcept {
   try {
     set_zypp_resolvable_download_callbacks(download_callbacks);
+    set_zypp_security_callbacks(security_callbacks);
     zypp::ZYppCommitPolicy policy;
     zypp::ZYppCommitResult result = zypp->zypp_pointer->commit(policy);
     STATUS_OK(status);
     unset_zypp_resolvable_download_callbacks();
+    unset_zypp_security_callbacks();
     return result.noError();
   } catch (zypp::Exception &excpt) {
     STATUS_EXCEPT(status, excpt);
     unset_zypp_resolvable_download_callbacks();
+    unset_zypp_security_callbacks();
     return false;
   }
 }
@@ -319,12 +325,17 @@ void resolvable_unselect(struct Zypp *_zypp, const char *name,
   selectable->unset(value);
 }
 
+void resolvable_reset_all(struct Zypp *_zypp) noexcept {
+  MIL << "Resetting status of all resolvables" << std::endl;
+  for (auto &item: zypp::ResPool::instance()) item.statusReset();
+}
+
 struct PatternInfos get_patterns_info(struct Zypp *_zypp,
                                       struct PatternNames names,
                                       struct Status *status) noexcept {
   PatternInfos result = {
       (struct PatternInfo *)malloc(names.size * sizeof(PatternInfo)),
-      0 // initialize with zero and increase after each successfull add of
+      0 // initialize with zero and increase after each successful add of
         // pattern info
   };
 
@@ -393,7 +404,8 @@ bool run_solver(struct Zypp *zypp, struct Status *status) noexcept {
 
 void refresh_repository(struct Zypp *zypp, const char *alias,
                         struct Status *status,
-                        struct DownloadProgressCallbacks *callbacks) noexcept {
+                        struct DownloadProgressCallbacks *callbacks,
+                        struct SecurityCallbacks *security_callbacks) noexcept {
   if (zypp->repo_manager == NULL) {
     STATUS_ERROR(status, "Internal Error: Repo manager is not initialized.");
     return;
@@ -407,13 +419,16 @@ void refresh_repository(struct Zypp *zypp, const char *alias,
     }
 
     set_zypp_download_callbacks(callbacks);
+    set_zypp_security_callbacks(security_callbacks);
     zypp->repo_manager->refreshMetadata(
         zypp_repo,
         zypp::RepoManager::RawMetadataRefreshPolicy::RefreshIfNeeded);
     STATUS_OK(status);
     unset_zypp_download_callbacks();
+    unset_zypp_security_callbacks();
   } catch (zypp::Exception &excpt) {
     STATUS_EXCEPT(status, excpt);
+    unset_zypp_security_callbacks();
     unset_zypp_download_callbacks(); // TODO: we can add C++ final action helper
                                      // if it is more common
   }

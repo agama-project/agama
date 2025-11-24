@@ -542,8 +542,8 @@ impl<'a> NetworkManagerClient<'a> {
                         wireless.password = get_optional_property(&secret, "psk")?;
                     }
                 }
-                Err(error) => {
-                    tracing::error!("Could not read connection secrets: {:?}", error);
+                Err(_) => {
+                    tracing::error!("Could not read connection secrets");
                 }
             }
         }
