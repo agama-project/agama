@@ -1415,9 +1415,6 @@ export default {
   "Partitions to host \"system\" will be created if needed.": [
     "Järjestelmätiedostojen tarvitsemat osiot luodaan tarvittaessa."
   ],
-  "Partitions to host \"system\" will be created if needed.": [
-    "Järjestelmätiedostojen tarvitsemat osiot luodaan tarvittaessa."
-  ],
   "Partitions will be used and created for %s": [
     "Osioita tullaan luomaan ja käyttämään liitoskohdalle %s"
   ],
