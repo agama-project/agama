@@ -7,10 +7,10 @@ export default {
     " · Selección de zona horaria"
   ],
   "\"%s\"": [
-    ""
+    "\"%s\""
   ],
   "\"%s\" does not exist or is no longer available.": [
-    ""
+    "\"%s\" no existe o ya no está disponible."
   ],
   "%1$s (%2$s)": [
     "%1$s (%2$s)"
@@ -925,7 +925,7 @@ export default {
     "Si continúa, las particiones del disco duro se modificarán de acuerdo con la configuración de instalación proporcionada."
   ],
   "If you want to disable this check, please specify \"inst.ay_check=0\" at kernel's command-line": [
-    ""
+    "Si desea desactivar esta comprobación, especifique \"inst.ay_check=0\" en la línea de comandos del kernel"
   ],
   "In progress": [
     "En curso"
@@ -1393,6 +1393,9 @@ export default {
   ],
   "Partitions to boot will be allocated at the installation disk.": [
     "Las particiones para arrancar se asignarán en el disco de instalación."
+  ],
+  "Partitions to host \"system\" will be created if needed.": [
+    "Si es necesario, se crearán particiones para alojar el \"sistema\"."
   ],
   "Partitions will be used and created for %s": [
     "Las particiones se utilizarán y crearán para %s"
@@ -1957,7 +1960,7 @@ export default {
     "La contraseña no será necesaria para arrancar y acceder a los datos si TPM puede verificar la integridad del sistema. El sellado TPM requiere que el nuevo sistema se arranque directamente en su primera ejecución."
   ],
   "The product will be registered with \"%s\" hostname": [
-    ""
+    "El producto se registrará con el nombre de host \"%s\""
   ],
   "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of a separate file system for %2$s.": [
     "El tamaño para %1$s se ajustará dinámicamente según el total de RAM del sistema y la presencia de un sistema de archivos independiente para %2$s."
