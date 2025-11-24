@@ -42,6 +42,9 @@ Requires:       dbus-1-common
 BuildRequires:  dbus-1-daemon
 BuildRequires:  clang-devel
 BuildRequires:  pkgconfig(pam)
+# includes findmnt
+BuildRequires:  util-linux-systemd
+Requires:       util-linux-systemd
 # required by autoinstallation
 BuildRequires:  jsonnet
 Requires:       jsonnet
