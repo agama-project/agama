@@ -208,11 +208,16 @@ const useQuestionsChanges = () => {
 
 const useSelectedProduct = (options: QueryHookOptions = { suspense: true }) => {
   const { products } = useSystem(options);
-  const { product } = useExtendedConfig(options);
-
-  if (!product) return undefined;
-
-  return products.find((p) => (p.id = product.id));
+  const { data } = useSuspenseQuery({
+    ...extendedConfigQuery(),
+    select: useCallback(
+      (data) => {
+        return products.find((p) => p.id === data?.product?.id);
+      },
+      [products],
+    ),
+  });
+  return data;
 };
 
 const storageModelQuery = () => ({
