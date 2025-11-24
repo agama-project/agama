@@ -35,7 +35,7 @@ use tokio::sync::{
 use zypp_agama::ZyppError;
 
 use crate::{
-    callbacks::{commit_download, security},
+    callbacks,
     model::state::{self, SoftwareState},
 };
 
@@ -177,7 +177,7 @@ impl ZyppServer {
                 question,
                 tx,
             } => {
-                let mut security_callback = security::Security::new(question);
+                let mut security_callback = callbacks::Security::new(question);
                 self.write(state, progress, &mut security_callback, tx, zypp)
                     .await?;
             }
@@ -186,8 +186,8 @@ impl ZyppServer {
             }
             SoftwareAction::Install(tx, progress, question) => {
                 let mut download_callback =
-                    commit_download::CommitDownload::new(progress, question.clone());
-                let mut security_callback = security::Security::new(question);
+                    callbacks::CommitDownload::new(progress, question.clone());
+                let mut security_callback = callbacks::Security::new(question);
                 tx.send(self.install(zypp, &mut download_callback, &mut security_callback))
                     .map_err(|_| ZyppDispatchError::ResponseChannelClosed)?;
             }
@@ -205,8 +205,8 @@ impl ZyppServer {
     fn install(
         &self,
         zypp: &zypp_agama::Zypp,
-        download_callback: &mut commit_download::CommitDownload,
-        security_callback: &mut security::Security,
+        download_callback: &mut callbacks::CommitDownload,
+        security_callback: &mut callbacks::Security,
     ) -> ZyppServerResult<bool> {
         let target = "/mnt";
         zypp.switch_target(target)?;
@@ -242,7 +242,7 @@ impl ZyppServer {
         &self,
         state: SoftwareState,
         progress: Handler<progress::Service>,
-        security: &mut security::Security,
+        security: &mut callbacks::Security,
         tx: oneshot::Sender<ZyppServerResult<Vec<Issue>>>,
         zypp: &zypp_agama::Zypp,
     ) -> Result<(), ZyppDispatchError> {

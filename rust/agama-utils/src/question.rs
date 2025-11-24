@@ -81,25 +81,25 @@ pub enum AskError {
 /// Asks a question and waits until it is answered.
 ///
 /// This is a helper function for internal Rust services that have a direct handler to the
-/// `question::Service` and need to ask a question and wait for the answer in a
+/// [question::Service] and need to ask a question and wait for the answer in a
 /// synchronous-like manner within an `async` context. It simplifies the process by
 /// abstracting away the need to listen for events or poll the API, which would
 /// typically be done by an external client (like a web UI).
 ///
-/// The function sends the question to the `question::Service` and then polls for an
+/// The function sends the question to the [question::Service] and then polls for an
 /// answer. Once the question is answered (either by a user, a pre-configured rule,
 /// or a default policy), the function returns the answer and deletes the question
 /// from the service to clean up.
 ///
 /// # Arguments
-/// * `handler` - A handler to the `question::Service`.
-/// * `question` - The `QuestionSpec` defining the question to be asked.
+/// * `handler` - A handler to the [question::Service].
+/// * `question` - The [QuestionSpec] defining the question to be asked.
 ///
 /// # Errors
 /// This function can return the following errors:
-/// * `AskError::QuestionNotFound`: If the question is deleted by another process before it can be answered.
-/// * `AskError::Service`: If there is an error within the `question::Service` actor.
-/// * `AskError::Actor`: If there is a communication error with the actor system (e.g., the actor task has terminated).
+/// * [AskError::QuestionNotFound]: If the question is deleted by another process before it can be answered.
+/// * [AskError::Service]: If there is an error within the [question::Service] actor.
+/// * [AskError::Actor]: If there is a communication error with the actor system (e.g., the actor task has terminated).
 pub async fn ask_question(
     handler: &Handler<question::Service>,
     question: QuestionSpec,

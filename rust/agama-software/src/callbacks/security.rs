@@ -33,10 +33,9 @@ impl security::Callback for Security {
                 and integrity of the file cannot be verified. Use it anyway?"
             )
         };
-        let data = [("filename", file.as_str())];
         let question = QuestionSpec::new(&text, "software.unsigned_file")
             .with_yes_no_actions()
-            .with_data(&data);
+            .with_data(&[("filename", file.as_str())]);
         let result = Handle::current()
             .block_on(async move { ask_question(&self.questions, question).await });
         let Ok(answer) = result else {
@@ -62,14 +61,13 @@ impl security::Callback for Security {
         );
         let labels = [gettext("Trust"), gettext("Skip")];
         let actions = [("Trust", labels[0].as_str()), ("Skip", labels[1].as_str())];
-        let data = [
-            ("id", key_id.as_str()),
-            ("name", key_name.as_str()),
-            ("fingerprint", key_fingerprint.as_str()),
-        ];
         let question = QuestionSpec::new(&text, "software.import_gpg")
             .with_actions(&actions)
-            .with_data(&data)
+            .with_data(&[
+                ("id", key_id.as_str()),
+                ("name", key_name.as_str()),
+                ("fingerprint", key_fingerprint.as_str()),
+            ])
             .with_default_action("Skip");
         let result = Handle::current()
             .block_on(async move { ask_question(&self.questions, question).await });
@@ -98,10 +96,9 @@ impl security::Callback for Security {
                 the following unknown GnuPG key: {key_id}. Use it anyway?"
             )
         };
-        let data = [("filename", file.as_str()), ("id", key_id.as_str())];
         let question = QuestionSpec::new(&text, "software.unknown_gpg")
             .with_yes_no_actions()
-            .with_data(&data);
+            .with_data(&[("filename", file.as_str()), ("id", key_id.as_str())]);
         let result = Handle::current()
             .block_on(async move { ask_question(&self.questions, question).await });
         let Ok(answer) = result else {
@@ -135,10 +132,9 @@ impl security::Callback for Security {
                 Use it anyway?"
             )
         };
-        let data = [("filename", file.as_str())];
         let question = QuestionSpec::new(&text, "software.verification_failed")
             .with_yes_no_actions()
-            .with_data(&data);
+            .with_data(&[("filename", file.as_str())]);
         let result = Handle::current()
             .block_on(async move { ask_question(&self.questions, question).await });
         let Ok(answer) = result else {

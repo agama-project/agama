@@ -243,7 +243,7 @@ impl QuestionSpec {
     /// will be localized.
     ///
     /// This method sets the default action to "No". If you need a different
-    /// default, you can override it with a subsequent call to `with_default_action()`.
+    /// default, you can override it with a subsequent call to [QuestionSpec::with_default_action].
     ///
     /// # Example
     ///
@@ -251,6 +251,12 @@ impl QuestionSpec {
     ///   use agama_utils::api::question::QuestionSpec;
     ///   let q = QuestionSpec::new("Continue?", "q.continue").with_yes_no_actions();
     ///   assert_eq!(q.default_action.as_deref(), Some("No"));
+    ///   assert_eq!(q.actions.len(), 2);
+    ///   assert_eq!(q.actions[0].id, "Yes");
+    ///   assert_eq!(q.actions[1].id, "No");
+    ///   // localized labels
+    ///   assert_eq!(q.actions[0].label, "Yes");
+    ///   assert_eq!(q.actions[1].label, "No");
     /// ```
     pub fn with_yes_no_actions(self) -> Self {
         // we have to always call fresh gettext to ensure it is properly localized after change of locale

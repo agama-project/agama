@@ -8,6 +8,8 @@ use gettextrs::gettext;
 use tokio::runtime::Handle;
 use zypp_agama::callbacks::pkg_download::{Callback, DownloadError};
 
+use crate::callbacks::ask_software_question;
+
 #[derive(Clone)]
 pub struct CommitDownload {
     progress: Handler<progress::Service>,
@@ -46,16 +48,14 @@ impl Callback for CommitDownload {
             ("Ignore", labels[1].as_str()),
         ];
         let error_str = error.to_string();
-        let data = [
-            ("package", name.as_str()),
-            ("error_code", error_str.as_str()),
-        ];
         let question =
             QuestionSpec::new(description.as_str(), "software.package_error.provide_error")
                 .with_actions(&actions)
-                .with_data(&data);
-        let result = Handle::current()
-            .block_on(async move { ask_question(&self.questions, question).await });
+                .with_data(&[
+                    ("package", name.as_str()),
+                    ("error_code", error_str.as_str()),
+                ]);
+        let result = ask_software_question(&self.questions, question);
         let Ok(answer) = result else {
             tracing::warn!("Failed to ask question {:?}", result);
             return zypp_agama::callbacks::ProblemResponse::ABORT;
