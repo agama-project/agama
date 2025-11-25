@@ -74,7 +74,7 @@ describe Agama::Storage::ConfigChecker do
       it "includes the drive issues" do
         issues = subject.issues
         expect(issues).to include an_object_having_attributes(
-          kind:        :search,
+          kind:        Agama::Storage::IssueClasses::Config::SEARCH,
           description: "Mandatory device /dev/vda not found"
         )
       end
@@ -94,7 +94,7 @@ describe Agama::Storage::ConfigChecker do
       it "includes the partition issues" do
         issues = subject.issues
         expect(issues).to include an_object_having_attributes(
-          kind:        :filesystem,
+          kind:        Agama::Storage::IssueClasses::Config::FILESYSTEM,
           description: "Missing file system type for '/'"
         )
       end
@@ -110,7 +110,7 @@ describe Agama::Storage::ConfigChecker do
       it "includes the MD RAID issues" do
         issues = subject.issues
         expect(issues).to include an_object_having_attributes(
-          kind:        :no_such_alias,
+          kind:        Agama::Storage::IssueClasses::Config::ALIAS,
           description: /no MD RAID member device with alias 'disk1'/
         )
       end
@@ -130,7 +130,7 @@ describe Agama::Storage::ConfigChecker do
       it "includes the partition issues" do
         issues = subject.issues
         expect(issues).to include an_object_having_attributes(
-          kind:        :filesystem,
+          kind:        Agama::Storage::IssueClasses::Config::FILESYSTEM,
           description: "Missing file system type for '/'"
         )
       end
@@ -165,7 +165,7 @@ describe Agama::Storage::ConfigChecker do
       it "includes the logical volume issues" do
         issues = subject.issues
         expect(issues).to include an_object_having_attributes(
-          kind:        :filesystem,
+          kind:        Agama::Storage::IssueClasses::Config::FILESYSTEM,
           description: "Missing file system type for '/'"
         )
       end
@@ -203,7 +203,7 @@ describe Agama::Storage::ConfigChecker do
         it "includes an issue for the missing mount path" do
           issues = subject.issues
           expect(issues).to include an_object_having_attributes(
-            kind:        :required_filesystems,
+            kind:        Agama::Storage::IssueClasses::Config::REQUIRED_PATHS,
             description: /file system for \/ is/
           )
         end
@@ -211,7 +211,7 @@ describe Agama::Storage::ConfigChecker do
         it "does not include an issue for the present mount path" do
           issues = subject.issues
           expect(issues).to_not include an_object_having_attributes(
-            kind:        :required_filesystems,
+            kind:        Agama::Storage::IssueClasses::Config::REQUIRED_PATHS,
             description: /file system for swap/
           )
         end
@@ -265,7 +265,7 @@ describe Agama::Storage::ConfigChecker do
       it "includes the expected issues" do
         issues = subject.issues
         expect(issues).to include an_object_having_attributes(
-          kind:        :vg_target_devices,
+          kind:        Agama::Storage::IssueClasses::Config::OVERUSED_PV_TARGET,
           description: /The device 'disk1' is used several times/
         )
       end
