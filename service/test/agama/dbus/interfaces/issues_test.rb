@@ -33,15 +33,8 @@ class DBusObjectWithIssuesInterface < DBus::Object
 
   def issues
     [
-      Agama::Issue.new("Issue 1",
-        details:  "Details 1",
-        source:   Agama::Issue::Source::SYSTEM,
-        severity: Agama::Issue::Severity::WARN),
-      Agama::Issue.new("Issue 2",
-        details:  "Details 2",
-        source:   Agama::Issue::Source::CONFIG,
-        severity: Agama::Issue::Severity::ERROR,
-        kind:     :missing_product)
+      Agama::Issue.new("Issue 1", details: "Details 1"),
+      Agama::Issue.new("Issue 2", details: "Details 2", kind: :missing_product)
     ]
   end
 end
@@ -60,8 +53,8 @@ describe DBusObjectWithIssuesInterface do
       result = subject.dbus_issues
 
       expect(result).to contain_exactly(
-        ["Issue 1", "generic", "Details 1", 1, 0],
-        ["Issue 2", "missing_product", "Details 2", 2, 1]
+        ["Issue 1", "generic", "Details 1"],
+        ["Issue 2", "missing_product", "Details 2"]
       )
     end
   end

@@ -23,7 +23,7 @@
 import { get, patch, post, put } from "~/http";
 import { apiModel } from "~/api/storage";
 import { Config } from "~/api/config";
-import { IssuesMap } from "~/api/issue";
+import { Issue } from "~/api/issue";
 import { Proposal } from "~/api/proposal";
 import { Question } from "~/api/question";
 import { Status } from "~/api/status";
@@ -50,7 +50,7 @@ const getSystem = (): Promise<System | null> => get("/api/v2/system");
 
 const getProposal = (): Promise<Proposal | null> => get("/api/v2/proposal");
 
-const getIssues = (): Promise<IssuesMap | null> => get("/api/v2/issues");
+const getIssues = (): Promise<Issue[]> => get("/api/v2/issues");
 
 const getQuestions = (): Promise<Question[]> => get("/api/v2/questions");
 
@@ -112,3 +112,4 @@ export type { Response, System, Config, Proposal };
 export * as system from "~/api/system";
 export * as config from "~/api/config";
 export * as proposal from "~/api/proposal";
+export * as issue from "~/api/issue";

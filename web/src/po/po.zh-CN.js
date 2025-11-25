@@ -6,6 +6,12 @@ export default {
   " Timezone selection": [
     " 时区选择"
   ],
+  "\"%s\"": [
+    ""
+  ],
+  "\"%s\" does not exist or is no longer available.": [
+    ""
+  ],
   "%1$s (%2$s)": [
     "%1$s (%2$s)"
   ],
@@ -134,9 +140,6 @@ export default {
   ],
   "Add another address": [
     "添加另一个地址"
-  ],
-  "Add another partition or mount an existing one": [
-    "添加另一个分区或挂载一个现有分区"
   ],
   "Add device menu": [
     "添加设备菜单"
@@ -321,9 +324,6 @@ export default {
   "Change Language": [
     "更改语言"
   ],
-  "Change boot options": [
-    "更改启动选项"
-  ],
   "Change device menu": [
     "更改设备菜单"
   ],
@@ -351,11 +351,11 @@ export default {
   "Change the file system or mount point": [
     "更改文件系统或挂载点"
   ],
+  "Changes in these settings will immediately update the 'Result' section below.": [
+    ""
+  ],
   "Channel ID": [
     "通道 ID"
-  ],
-  "Check the %d planned actions": [
-    "检查 %d 项已计划的操作"
   ],
   "Check the authentication parameters.": [
     "请检查身份验证参数。"
@@ -389,9 +389,6 @@ export default {
   ],
   "Close": [
     "关闭"
-  ],
-  "Collapse the list of planned actions": [
-    "收起已计划操作列表"
   ],
   "Configuration out of sync": [
     "配置未同步"
@@ -603,9 +600,6 @@ export default {
   "Details": [
     "细节"
   ],
-  "Details for %s": [
-    "%s 的细节"
-  ],
   "Details will appear after the connection is successfully established.": [
     "成功建立连接后将会显示详细信息。"
   ],
@@ -659,9 +653,6 @@ export default {
   ],
   "Download logs": [
     "下载日志"
-  ],
-  "During installation, several actions will be performed to setup the layout shown at the table below.": [
-    "安装期间，将执行多项操作以设置布局（如下表所示）。"
   ],
   "Edit": [
     "编辑"
@@ -726,8 +717,8 @@ export default {
   "ExFAT": [
     "ExFAT"
   ],
-  "Example: https://myserver.com": [
-    "示例：https://myserver.com"
+  "Example: %s": [
+    "示例：%s"
   ],
   "Excellent signal": [
     "信号极佳"
@@ -783,8 +774,8 @@ export default {
   "Filter by territory, time zone code or UTC offset": [
     "按地区、时区代码或 UTC 偏移量过滤"
   ],
-  "Find space": [
-    "查找空间"
+  "Final layout": [
+    "最终布局"
   ],
   "Find space in %s": [
     "在 %s 中查找可用空间"
@@ -909,6 +900,9 @@ export default {
   "If you continue, partitions on your hard disk will be modified according to the provided installation settings.": [
     "如果继续，硬盘上的分区将会根据已提供的安装设置进行修改。"
   ],
+  "If you want to disable this check, please specify \"inst.ay_check=0\" at kernel's command-line": [
+    ""
+  ],
   "In progress": [
     "进行中"
   ],
@@ -968,9 +962,6 @@ export default {
   ],
   "Install using several devices without modifying existing partitions.": [
     "使用多个设备进行安装，不修改现有分区。"
-  ],
-  "Installation Devices": [
-    "安装设备"
   ],
   "Installation will take %s.": [
     "安装将会占用 %s。"
@@ -1335,12 +1326,6 @@ export default {
   "Options toggle": [
     "选项切换开关"
   ],
-  "Other options": [
-    "其他选项"
-  ],
-  "Other options toggle": [
-    "其他选项切换开关"
-  ],
   "Overview": [
     "概览"
   ],
@@ -1349,6 +1334,9 @@ export default {
   ],
   "Partition Info": [
     "分区信息"
+  ],
+  "Partitions": [
+    "分区"
   ],
   "Partitions needed for booting will also be adapted": [
     "引导所需的分区也会进行调整"
@@ -1365,14 +1353,11 @@ export default {
   "Partitions that are not reused would be resized if needed.": [
     "不重复使用的分区将根据需要调整大小。"
   ],
-  "Partitions to boot will be allocated at the following device.": [
-    "引导分区将在以下设备上分配。"
+  "Partitions to boot will be set up if needed at the installation disk.         Currently %1$s, based on the location of the %2$s file system.": [
+    ""
   ],
-  "Partitions to boot will be allocated at the installation disk %s.": [
-    "引导分区将在安装磁盘 %s 上进行分配。"
-  ],
-  "Partitions to boot will be allocated at the installation disk.": [
-    "引导分区将会分配在安装磁盘上。"
+  "Partitions to boot will be set up if needed at the installation disk.       Currently %1$s, based on the location of the %2$s file system.": [
+    ""
   ],
   "Partitions will be used and created for %s": [
     "将会为 %s 使用和创建多个分区"
@@ -1436,9 +1421,6 @@ export default {
   ],
   "Product is already registered": [
     "产品已注册"
-  ],
-  "Protection for the information stored at the new file systems, including data, programs, and system files.": [
-    "用于保护存储在新文件系统中的信息（包括数据、程序以及系统文件）的机制。"
   ],
   "Provide email address": [
     "提供电子邮件地址"
@@ -1527,6 +1509,9 @@ export default {
   "Result": [
     "结果"
   ],
+  "Result of applying the configuration described at the 'Settings' section above.": [
+    ""
+  ],
   "Reused partitions will not be shrunk": [
     "将不收缩重复使用的分区"
   ],
@@ -1587,20 +1572,8 @@ export default {
   "Select a disk": [
     "选择一个磁盘"
   ],
-  "Select a disk to configure": [
-    "选择要配置的磁盘"
-  ],
-  "Select a disk to create %s": [
-    "选择用于创建 %s 的磁盘"
-  ],
   "Select a disk to define partitions or to mount": [
     "选择一个要定义分区或要挂载的磁盘"
-  ],
-  "Select a disk to format as %s": [
-    "选择一个要格式化为 %s 的磁盘"
-  ],
-  "Select a disk to install the system": [
-    "选择用于安装系统的磁盘"
   ],
   "Select a product": [
     "请选择产品"
@@ -1628,9 +1601,6 @@ export default {
   ],
   "Select or enter a valid mount point": [
     "请选择或输入有效的挂载点"
-  ],
-  "Select the disk to configure partitions for booting": [
-    "选择要配置引导分区的磁盘"
   ],
   "Select what to do with each partition in order to find space for allocating the new system.": [
     "选择如何处理每个分区，以便为新系统分配空间。"
@@ -1928,6 +1898,9 @@ export default {
   ],
   "The password will not be needed to boot and access the data if the TPM can verify the integrity of the system. TPM sealing requires the new system to be booted directly on its first run.": [
     "若 TPM 可以验证系统的完整性，启动和访问数据的时候将无需使用密码。 TPM 密封要求新系统在首次启动时直接开始引导。"
+  ],
+  "The product will be registered with \"%s\" hostname": [
+    ""
   ],
   "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of a separate file system for %2$s.": [
     "%1$s 的大小将会动态调整，考量因素包括系统中的 RAM 容量以及 %2$s 是否存在单独的文件系统。"

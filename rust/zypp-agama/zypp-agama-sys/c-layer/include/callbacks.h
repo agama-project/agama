@@ -134,6 +134,124 @@ struct DownloadResolvableCallbacks {
   ZyppDownloadResolvableFileFinishCallback file_finish;
   void *file_finish_data;
 };
+
+/**
+ * @brief What to do with an unknown GPG key.
+ * @see zypp::KeyRingReport::KeyTrust in https://github.com/openSUSE/libzypp/blob/master/zypp-logic/zypp/KeyRing.h
+ */
+enum GPGKeyTrust {
+  /** Reject the key. */
+  GPGKT_REJECT,
+  /** Trust key temporary. Will be asked again when something is signed with it.
+     Even within same session. */
+  GPGKT_TEMPORARY,
+  /** Import key and trust it. */
+  GPGKT_IMPORT
+};
+
+/**
+ * @brief Callback to decide whether to accept an unknown GPG key.
+ * @param key_id The ID of the GPG key.
+ * @param key_name The name of the GPG key.
+ * @param key_fingerprint The fingerprint of the GPG key.
+ * @param repository_alias The alias of the repository providing the key. Can be
+ * an empty string if not available.
+ * @param user_data User-defined data.
+ * @return A GPGKeyTrust value indicating the action to take.
+ *  @see zypp::KeyRingReport::askUserToAcceptKey in https://github.com/openSUSE/libzypp/blob/master/zypp-logic/zypp/KeyRing.h
+ */
+typedef enum GPGKeyTrust (*GPGAcceptKeyCallback)(const char *key_id,
+                                                 const char *key_name,
+                                                 const char *key_fingerprint,
+                                                 const char *repository_alias,
+                                                 void *user_data);
+/**
+ * @brief Callback for handling unsigned files.
+ * @param file The path to the unsigned file.
+ * @param repository_alias The alias of the repository. Can be an empty string
+ * if not available.
+ * @param user_data User-defined data.
+ * @return true to continue, false to abort.
+ */
+typedef bool (*GPGUnsignedFile)(const char *file, const char *repository_alias,
+                                void *user_data);
+/**
+ * @brief Callback for handling a file signed by an unknown key.
+ * @param file The path to the file.
+ * @param key_id The ID of the unknown GPG key.
+ * @param repository_alias The alias of the repository. Can be an empty string
+ * if not available.
+ * @param user_data User-defined data.
+ * @return true to continue, false to abort.
+ */
+typedef bool (*GPGUnknownKey)(const char *file, const char *key_id,
+                              const char *repository_alias, void *user_data);
+/**
+ * @brief Callback for when GPG verification of a signed file fails.
+ * @param file The path to the file.
+ * @param key_id The ID of the GPG key.
+ * @param key_name The name of the GPG key.
+ * @param key_fingerprint The fingerprint of the GPG key.
+ * @param repository_alias The alias of the repository. Can be an empty string
+ * if not available.
+ * @param user_data User-defined data.
+ * @return true to continue, false to abort.
+ */
+typedef bool (*GPGVerificationFailed)(const char *file, const char *key_id,
+                                      const char *key_name,
+                                      const char *key_fingerprint,
+                                      const char *repository_alias,
+                                      void *user_data);
+/**
+ * @see zypp::DigestReport in https://github.com/openSUSE/libzypp/blob/master/zypp-logic/zypp/Digest.h
+ */
+typedef bool (*ChecksumMissing)(const char *file, void *user_data);
+typedef bool (*ChecksumWrong)(const char *file, const char *expected,
+                              const char *actual, void *user_data);
+typedef bool (*ChecksumUnknown)(const char *file, const char *checksum,
+                                void *user_data);
+
+/**
+ * @brief Callbacks for handling security related issues.
+ *
+ * This struct provides callbacks for handling various security-related events
+ * that can occur during libzypp operations, such as GPG key management and
+ * checksum verification.
+ *
+ * Each callback has a corresponding `_data` pointer that can be used to pass
+ * user-defined data to the callback function.
+ */
+struct SecurityCallbacks {
+  /** @brief Callback to decide whether to accept an unknown GPG key. */
+  GPGAcceptKeyCallback accept_key;
+  /** @brief User data for the `accept_key` callback. */
+  void *accept_key_data;
+  /** @brief Callback for handling unsigned files. */
+  GPGUnsignedFile unsigned_file;
+  /** @brief User data for the `unsigned_file` callback. */
+  void *unsigned_file_data;
+  /** @brief Callback for handling files signed with an unknown key. */
+  GPGUnknownKey unknown_key;
+  /** @brief User data for the `unknown_key` callback. */
+  void *unknown_key_data;
+  /** @brief Callback for handling GPG verification failures. */
+  GPGVerificationFailed verification_failed;
+  /** @brief User data for the `verification_failed` callback. */
+  void *verification_failed_data;
+  /** @brief Callback for when a checksum is missing. */
+  ChecksumMissing checksum_missing;
+  /** @brief User data for the `checksum_missing` callback. */
+  void *checksum_missing_data;
+  /** @brief Callback for when a checksum is wrong. */
+  ChecksumWrong checksum_wrong;
+  /** @brief User data for the `checksum_wrong` callback. */
+  void *checksum_wrong_data;
+  /** @brief Callback for when the checksum type is unknown. */
+  ChecksumUnknown checksum_unknown;
+  /** @brief User data for the `checksum_unknown` callback. */
+  void *checksum_unknown_data;
+};
+
 #ifdef __cplusplus
 }
 #endif

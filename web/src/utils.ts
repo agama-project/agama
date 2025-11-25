@@ -20,6 +20,8 @@
  * find current contact information at www.suse.com.
  */
 
+import { mapEntries } from "radashi";
+import { generatePath } from "react-router";
 import { ISortBy, sort } from "fast-sort";
 
 /**
@@ -159,6 +161,25 @@ const mask = (value: string, visible: number = 4, maskChar: string = "*"): strin
 };
 
 /**
+ * A wrapper around React Router's `generatePath` that ensures all path parameters
+ * are URI-encoded using `encodeURIComponent`. This prevents broken URLs caused by
+ * special characters such as spaces, `#`, `$`, and others.
+ *
+ * @example
+ * ```ts
+ *   // Returns "/network/Wired%20%231"
+ *   generateEncodedPath("/network/:id", { id: "Wired #1" });
+ * ```
+ */
+const generateEncodedPath = (...args: Parameters<typeof generatePath>) => {
+  const [path, params] = args;
+  return generatePath(
+    path,
+    mapEntries(params, (key, value) => [key, encodeURIComponent(value)]),
+  );
+};
+
+/**
  * A lightweight wrapper around `fast-sort`.
  *
  * Rather than using `fast-sort`'s method-chaining syntax, this function accepts
@@ -192,5 +213,6 @@ export {
   localConnection,
   timezoneTime,
   mask,
+  generateEncodedPath,
   sortCollection,
 };

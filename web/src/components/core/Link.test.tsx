@@ -22,80 +22,100 @@
 
 import React from "react";
 import { screen } from "@testing-library/react";
-import { plainRender } from "~/test-utils";
+import { installerRender } from "~/test-utils";
 import { Link } from "~/components/core";
 
 describe("Link", () => {
   it("renders an HTML `a` tag with the `href` attribute set to given `to` prop", () => {
-    plainRender(<Link to="somewhere">Agama Link</Link>);
+    installerRender(<Link to="somewhere">Agama Link</Link>);
     const link = screen.getByRole("link", { name: "Agama Link" }) as HTMLLinkElement;
     // NOTE: Link uses ReactRouter#useHref hook which is mocked in test-utils.js
     expect(link).toHaveAttribute("href", "somewhere");
   });
 
-  it("renders it as primary when either, using a truthy `isPrimary` prop or `variant` is set to primary", () => {
-    const { rerender } = plainRender(<Link to="somewhere">Agama Link</Link>);
+  it("does not render as primary when not using a truthy `isPrimary` prop or `variant` is set to primary", () => {
+    installerRender(<Link to="somewhere">Agama Link</Link>);
     const link = screen.getByRole("link", { name: "Agama Link" });
-
     expect(link.classList.contains("pf-m-primary")).not.toBe(true);
+  });
 
-    rerender(
+  it("renders as primary if `isPrimary` is given", () => {
+    installerRender(
       <Link to="somewhere" isPrimary>
         Agama Link
       </Link>,
     );
+    const link = screen.getByRole("link", { name: "Agama Link" });
     expect(link.classList.contains("pf-m-primary")).toBe(true);
+  });
 
-    rerender(
+  it("does not render as primary when `isPrimary` is false", () => {
+    installerRender(
       <Link to="somewhere" isPrimary={false}>
         {" "}
         Agama Link
       </Link>,
     );
+    const link = screen.getByRole("link", { name: "Agama Link" });
     expect(link.classList.contains("pf-m-primary")).not.toBe(true);
+  });
 
-    rerender(
+  it("renders as primary if `variant` is 'primary'", () => {
+    installerRender(
       <Link to="somewhere" variant="primary">
         Agama Link
       </Link>,
     );
+    const link = screen.getByRole("link", { name: "Agama Link" });
     expect(link.classList.contains("pf-m-primary")).toBe(true);
+  });
 
-    rerender(
+  it("render as primary `variant` is 'primary' even if isPrimary is false", () => {
+    installerRender(
       <Link to="somewhere" isPrimary={false} variant="primary">
         {" "}
         Agama Link
       </Link>,
     );
+    const link = screen.getByRole("link", { name: "Agama Link" });
     expect(link.classList.contains("pf-m-primary")).toBe(true);
   });
 
   it("renders it as secondary when neither is given, a truthy `isPrimary` nor `variant`", () => {
-    const { rerender } = plainRender(<Link to="somewhere">Agama Link</Link>);
+    installerRender(<Link to="somewhere">Agama Link</Link>);
     const link = screen.getByRole("link", { name: "Agama Link" });
 
     expect(link.classList.contains("pf-m-secondary")).toBe(true);
+  });
 
-    rerender(
+  it("renders it as secondary when isPrimary is false and variant primary is not given", () => {
+    installerRender(
       <Link to="somewhere" isPrimary={false}>
         Agama Link
       </Link>,
     );
+    const link = screen.getByRole("link", { name: "Agama Link" });
     expect(link.classList.contains("pf-m-secondary")).toBe(true);
+  });
 
-    rerender(
+  it("does not render it as secondary when variant is primary", () => {
+    installerRender(
       // Unexpected, but possible since isPrimary is just a "helper"
       <Link to="somewhere" isPrimary={false} variant="primary">
         Agama Link
       </Link>,
     );
+    const link = screen.getByRole("link", { name: "Agama Link" });
     expect(link.classList.contains("pf-m-secondary")).not.toBe(true);
+  });
 
-    rerender(
+  it("does not render it as secondary when variant is link", () => {
+    installerRender(
       <Link to="somewhere" variant="link">
         Agama Link
       </Link>,
     );
+    const link = screen.getByRole("link", { name: "Agama Link" });
     expect(link.classList.contains("pf-m-secondary")).not.toBe(true);
   });
 });

@@ -69,11 +69,13 @@ void remove_repository(struct Zypp *zypp, const char *alias,
 /// @param zypp see \ref init_target
 /// @param alias alias of repository to refresh
 /// @param[out] status (will overwrite existing contents)
-/// @param callbacks pointer to struct with callbacks or NULL if no progress is
+/// @param progress pointer to struct with callbacks or NULL if no progress is
 /// needed
+/// @param security pointer to struct with security callbacks
 void refresh_repository(struct Zypp *zypp, const char *alias,
                         struct Status *status,
-                        struct DownloadProgressCallbacks *callbacks) noexcept;
+                        struct DownloadProgressCallbacks *progress,
+                        struct SecurityCallbacks *security) noexcept;
 
 void build_repository_cache(struct Zypp *zypp, const char *alias,
                             struct Status *status,

@@ -58,7 +58,7 @@ module Agama
       #
       # @return [Boolean]
       def success?
-        calculated? && !proposal.failed? && issues.none?(&:error?)
+        calculated? && !proposal.failed? && issues.none?
       end
 
       # Default storage config according to the JSON schema.
@@ -302,8 +302,7 @@ module Agama
       def failed_issue
         Issue.new(
           _("Cannot calculate a valid storage setup with the current configuration"),
-          source:   Issue::Source::SYSTEM,
-          severity: Issue::Severity::ERROR
+          kind: :proposal
         )
       end
 
@@ -313,9 +312,8 @@ module Agama
       def exception_issue(error)
         Issue.new(
           _("A problem ocurred while calculating the storage setup"),
-          details:  error.message,
-          source:   Issue::Source::SYSTEM,
-          severity: Issue::Severity::ERROR
+          kind:    :proposal,
+          details: error.message
         )
       end
     end

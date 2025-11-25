@@ -36,6 +36,7 @@ import { render, within } from "@testing-library/react";
 import { createClient } from "~/client/index";
 import { InstallerClientProvider } from "~/context/installer";
 import { InstallerL10nProvider } from "~/context/installerL10n";
+import { StorageUiStateProvider } from "~/context/storage-ui-state";
 import { isObject, noop } from "radashi";
 import { DummyWSClient } from "./client/ws";
 
@@ -128,12 +129,18 @@ const Providers = ({ children, withL10n }) => {
     // });
     return (
       <InstallerClientProvider client={client}>
-        <InstallerL10nProvider initialLanguage="en-US">{children}</InstallerL10nProvider>
+        <InstallerL10nProvider initialLanguage="en-US">
+          <StorageUiStateProvider>{children}</StorageUiStateProvider>
+        </InstallerL10nProvider>
       </InstallerClientProvider>
     );
   }
 
-  return <InstallerClientProvider client={client}>{children}</InstallerClientProvider>;
+  return (
+    <InstallerClientProvider client={client}>
+      <StorageUiStateProvider>{children}</StorageUiStateProvider>
+    </InstallerClientProvider>
+  );
 };
 
 /**

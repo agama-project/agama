@@ -22,7 +22,7 @@
 
 import React from "react";
 import { screen } from "@testing-library/react";
-import { plainRender } from "~/test-utils";
+import { installerRender } from "~/test-utils";
 import EncryptionSection from "./EncryptionSection";
 import { STORAGE } from "~/routes/paths";
 
@@ -46,7 +46,7 @@ describe("EncryptionSection", () => {
     });
 
     it("renders encryption as enabled", () => {
-      plainRender(<EncryptionSection />);
+      installerRender(<EncryptionSection />);
       screen.getByText(/is enabled/);
     });
 
@@ -61,7 +61,7 @@ describe("EncryptionSection", () => {
       });
 
       it("renders encryption as TPM enabled", () => {
-        plainRender(<EncryptionSection />);
+        installerRender(<EncryptionSection />);
         screen.getByText(/using TPM/);
       });
     });
@@ -73,14 +73,14 @@ describe("EncryptionSection", () => {
     });
 
     it("renders encryption as disabled", () => {
-      plainRender(<EncryptionSection />);
+      installerRender(<EncryptionSection />);
       screen.getByText(/is disabled/);
     });
   });
 
   it("renders a link for navigating to encryption settings", () => {
-    plainRender(<EncryptionSection />);
-    const editLink = screen.getByRole("link", { name: "Edit" });
+    installerRender(<EncryptionSection />);
+    const editLink = screen.getByRole("link", { name: "Change" });
     expect(editLink).toHaveAttribute("href", STORAGE.editEncryption);
   });
 });

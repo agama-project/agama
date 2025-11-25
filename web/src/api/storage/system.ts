@@ -33,7 +33,6 @@ export type EncryptionMethod =
   | "protectedSwap"
   | "secureSwap"
   | "randomSwap";
-export type SystemIssueSource = "config" | "system";
 
 /**
  * API description of the system
@@ -174,6 +173,4 @@ export interface Issue {
   description: string;
   class?: string;
   details?: string;
-  source?: SystemIssueSource;
-  severity?: "warn" | "error";
 }
