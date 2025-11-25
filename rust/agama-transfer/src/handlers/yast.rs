@@ -22,9 +22,8 @@ use std::io::Write;
 
 use url::Url;
 
-use crate::utils::{
-    transfer::{file_finder::FileFinder, file_systems::FileSystemsList},
-    TransferError, TransferResult,
+use crate::{
+    file_finder::FileFinder, file_systems::FileSystemsList, TransferError, TransferResult,
 };
 
 /// Handler for the cd:, dvd: and hd: schemes

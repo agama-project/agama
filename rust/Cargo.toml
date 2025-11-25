@@ -10,6 +10,7 @@ members = [
     "agama-server",
     "agama-software",
     "agama-storage",
+    "agama-transfer",
     "agama-utils",
     "xtask",
     "zypp-agama",

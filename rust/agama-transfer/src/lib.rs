@@ -39,7 +39,7 @@
 //! Requires working localectl.
 //!
 //! ```no_run
-//! use agama_lib::utils::Transfer;
+//! use agama_transfer::Transfer;
 //! Transfer::get("label://OEMDRV/autoinst.xml", &mut std::io::stdout(), false).unwrap();
 //! ````
 
