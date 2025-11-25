@@ -36,8 +36,6 @@ mod users;
 pub use users::UsersApiDocBuilder;
 mod misc;
 pub use misc::MiscApiDocBuilder;
-mod scripts;
-pub use scripts::ScriptsApiDocBuilder;
 pub mod common;
 
 pub trait ApiDocBuilder {
