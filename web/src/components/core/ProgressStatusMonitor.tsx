@@ -34,6 +34,7 @@ import { useStatus } from "~/hooks/api";
 import { Progress as StatusProgress } from "~/api/status";
 import { sprintf } from "sprintf-js";
 import { _, N_, n_ } from "~/i18n";
+import displayStyles from "@patternfly/react-styles/css/utilities/Display/display";
 
 type DetailProps = {
   tasks: StatusProgress[];
@@ -55,10 +56,7 @@ const SCOPE_NAMES = {
  */
 const DetailsHeader = ({ tasks }: DetailProps) => {
   const total = tasks.length;
-
-  return total
-    ? sprintf(n_("%s task active", "%s tasks active", total), total)
-    : _("No tasks active");
+  return sprintf(n_("%s task active", "%s tasks active", total), total);
 };
 
 /**
@@ -108,10 +106,9 @@ export default function ProgressStatusMonitor() {
 
   return (
     <Popover
-      showClose={idle}
+      showClose={false}
       minWidth="400px"
       position="bottom-end"
-      hideOnOutsideClick={!idle}
       headerContent={<DetailsHeader tasks={tasks} />}
       bodyContent={
         <Stack hasGutter>
@@ -119,7 +116,12 @@ export default function ProgressStatusMonitor() {
         </Stack>
       }
     >
-      <Button variant="plain" isDisabled={idle} isLoading={!idle} />
+      <Button
+        variant="plain"
+        className={idle ? displayStyles.displayNone : displayStyles.displayBlock}
+        isDisabled={idle}
+        isLoading={!idle}
+      />
     </Popover>
   );
 }
