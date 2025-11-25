@@ -1,10 +1,5 @@
-use agama_utils::{
-    actor::Handler,
-    api::question::QuestionSpec,
-    question::{self, ask_question},
-};
+use agama_utils::{actor::Handler, api::question::QuestionSpec, question};
 use gettextrs::gettext;
-use tokio::runtime::Handle;
 use zypp_agama::callbacks::security;
 
 use crate::callbacks::ask_software_question;

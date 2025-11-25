@@ -196,7 +196,7 @@ impl ZyppServer {
                     &mut install_callback,
                     &mut security_callback,
                 ))
-                    .map_err(|_| ZyppDispatchError::ResponseChannelClosed)?;
+                .map_err(|_| ZyppDispatchError::ResponseChannelClosed)?;
             }
             SoftwareAction::Finish(tx) => {
                 self.finish(zypp, tx).await?;
@@ -218,11 +218,7 @@ impl ZyppServer {
     ) -> ZyppServerResult<bool> {
         let target = "/mnt";
         zypp.switch_target(target)?;
-        let result = zypp.commit(
-            download_callback,
-            install_callback,
-            security_callback,
-        )?;
+        let result = zypp.commit(download_callback, install_callback, security_callback)?;
         tracing::info!("libzypp commit ends with {}", result);
         Ok(result)
     }

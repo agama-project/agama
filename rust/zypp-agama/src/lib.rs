@@ -222,7 +222,7 @@ impl Zypp {
                 mount_points[i].used_size = mp.used_size;
             });
 
-            return Ok(mount_points);
+            Ok(mount_points)
         }
     }
 

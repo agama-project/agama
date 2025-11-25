@@ -16,7 +16,10 @@ pub struct Install {
 }
 
 impl Install {
-    pub fn new(progress: Handler<progress::Service>, questions: Handler<question::Service>) -> Self {
+    pub fn new(
+        progress: Handler<progress::Service>,
+        questions: Handler<question::Service>,
+    ) -> Self {
         Self {
             progress,
             questions,
@@ -49,16 +52,16 @@ impl install::Callback for Install {
             ("Retry", labels[0].as_str()),
             ("Ignore", labels[1].as_str()),
         ];
-        let question =
-            QuestionSpec::new(&description, "software.package_error.install_error")
-                .with_actions(&actions)
-                .with_data(&[
-                    ("package", package_name.as_str()),
-                ]);
+        let question = QuestionSpec::new(&description, "software.package_error.install_error")
+            .with_actions(&actions)
+            .with_data(&[("package", package_name.as_str())]);
 
         let result = ask_software_question(&self.questions, question);
         let Ok(answer) = result else {
-            tracing::warn!("Failed to ask question about package install error: {:?}", result);
+            tracing::warn!(
+                "Failed to ask question about package install error: {:?}",
+                result
+            );
             return ProblemResponse::ABORT;
         };
 
@@ -72,7 +75,6 @@ impl install::Callback for Install {
     fn script_problem(&self, description: String) -> ProblemResponse {
         tracing::error!("Problem running install script: {}", description);
 
-
         let labels = [gettext("Retry"), gettext("Continue")];
         let actions = [
             ("Retry", labels[0].as_str()),
@@ -82,9 +84,7 @@ impl install::Callback for Install {
         let full_message = message + "\n\n" + &description;
         let question = QuestionSpec::new(&full_message, "software.script_problem")
             .with_actions(&actions)
-            .with_data(&[
-                ("details", &description),
-            ]);
+            .with_data(&[("details", &description)]);
 
         let result = ask_software_question(&self.questions, question);
         let Ok(answer) = result else {
