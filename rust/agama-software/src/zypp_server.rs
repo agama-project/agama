@@ -33,7 +33,7 @@ use tokio::sync::{
     mpsc::{self, UnboundedSender},
     oneshot,
 };
-use zypp_agama::ZyppError;
+use zypp_agama::{errors::ZyppResult, ZyppError};
 
 use crate::{
     callbacks,
@@ -45,8 +45,8 @@ const GPG_KEYS: &str = "/usr/lib/rpm/gnupg/keys/gpg-*";
 
 #[derive(thiserror::Error, Debug)]
 pub enum ZyppDispatchError {
-    #[error("Failed to initialize libzypp: {0}")]
-    InitError(#[from] ZyppError),
+    #[error(transparent)]
+    Zypp(#[from] ZyppError),
     #[error("libzypp error: {0}")]
     ZyppServer(#[from] ZyppServerError),
     #[error("Response channel closed")]
@@ -67,24 +67,6 @@ pub enum ZyppServerError {
 
     #[error("Sender error: {0}")]
     SendError(#[from] mpsc::error::SendError<SoftwareAction>),
-
-    #[error("Unknown product: {0}")]
-    UnknownProduct(String),
-
-    #[error("No selected product")]
-    NoSelectedProduct,
-
-    #[error("Failed to initialize target directory: {0}")]
-    TargetInitFailed(#[source] ZyppError),
-
-    #[error("Failed to add a repository: {0}")]
-    AddRepositoryFailed(#[source] ZyppError),
-
-    #[error("Failed to load the repositories: {0}")]
-    LoadSourcesFailed(#[source] ZyppError),
-
-    #[error("Listing patterns failed: {0}")]
-    ListPatternsFailed(#[source] ZyppError),
 
     #[error("Error from libzypp: {0}")]
     ZyppError(#[from] zypp_agama::ZyppError),
@@ -473,7 +455,7 @@ impl ZyppServer {
         &self,
         product: &ProductSpec,
         zypp: &zypp_agama::Zypp,
-    ) -> Result<Vec<Pattern>, ZyppServerError> {
+    ) -> ZyppResult<Vec<Pattern>> {
         let pattern_names: Vec<_> = product
             .software
             .user_patterns
@@ -484,9 +466,7 @@ impl ZyppServer {
             })
             .collect();
 
-        let patterns = zypp
-            .patterns_info(pattern_names)
-            .map_err(ZyppServerError::ListPatternsFailed)?;
+        let patterns = zypp.patterns_info(pattern_names)?;
 
         let patterns = patterns
             .into_iter()
@@ -505,7 +485,7 @@ impl ZyppServer {
     async fn repositories(
         &self,
         zypp: &zypp_agama::Zypp,
-    ) -> Result<Vec<api::software::Repository>, ZyppServerError> {
+    ) -> ZyppResult<Vec<api::software::Repository>> {
         let result = zypp
             .list_repositories()?
             .into_iter()
