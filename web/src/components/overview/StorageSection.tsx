@@ -91,7 +91,7 @@ const ModelSummary = ({ model }: { model: model.Config }): React.ReactNode => {
 
 const NoModelSummary = (): React.ReactNode => {
   const availableDevices = useAvailableDevices();
-  const systemErrors = useIssues("storage");
+  const systemErrors = useIssues();
   const hasDisks = !!availableDevices.length;
   const hasResult = !systemErrors.length;
 
