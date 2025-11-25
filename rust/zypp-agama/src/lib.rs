@@ -155,19 +155,23 @@ impl Zypp {
     pub fn commit(
         &self,
         report: &mut impl callbacks::pkg_download::Callback,
+        install: &mut impl callbacks::install::Callback,
         security: &mut impl callbacks::security::Callback,
     ) -> ZyppResult<bool> {
         let mut status: Status = Status::default();
         let status_ptr = &mut status as *mut _;
         unsafe {
             let res = report.with(&mut |mut report_callback| {
-                security.with(&mut |mut sec_callback| {
-                    zypp_agama_sys::commit(
-                        self.ptr,
-                        status_ptr,
-                        &mut report_callback,
-                        &mut sec_callback,
-                    )
+                install.with(&mut |mut install_callback| {
+                    security.with(&mut |mut sec_callback| {
+                        zypp_agama_sys::commit(
+                            self.ptr,
+                            status_ptr,
+                            &mut report_callback,
+                            &mut sec_callback,
+                            &mut install_callback,
+                        )
+                    })
                 })
             });
             helpers::status_to_result(status, res)

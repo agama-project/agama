@@ -1,8 +1,8 @@
+#include "zypp/Digest.h"
 #include "zypp/target/rpm/RpmDb.h"
 #include <boost/bind/bind.hpp>
 #include <zypp/Callback.h>
 #include <zypp/ZYppCallbacks.h>
-#include "zypp/Digest.h"
 
 #include "callbacks.h"
 
@@ -323,9 +323,7 @@ struct KeyRingReport
 
   KeyRingReport() { callbacks = NULL; }
 
-  void set_callbacks(SecurityCallbacks *callbacks_) {
-    callbacks = callbacks_;
-  }
+  void set_callbacks(SecurityCallbacks *callbacks_) { callbacks = callbacks_; }
 
   zypp::KeyRingReport::KeyTrust
   askUserToAcceptKey(const zypp::PublicKey &key,
@@ -390,39 +388,157 @@ private:
 
 static KeyRingReport key_ring_report;
 
-struct DigestReceive : public zypp::callback::ReceiveReport<zypp::DigestReport> {
+struct DigestReceive
+    : public zypp::callback::ReceiveReport<zypp::DigestReport> {
   struct SecurityCallbacks *callbacks;
 
   DigestReceive() { callbacks = NULL; }
 
-  void set_callbacks(SecurityCallbacks *callbacks_) {
-    callbacks = callbacks_;
-  }
+  void set_callbacks(SecurityCallbacks *callbacks_) { callbacks = callbacks_; }
 
-  bool askUserToAcceptNoDigest( const zypp::Pathname &file ){
+  bool askUserToAcceptNoDigest(const zypp::Pathname &file) {
     if (callbacks == NULL || callbacks->checksum_missing == NULL) {
       return zypp::DigestReport::askUserToAcceptNoDigest(file);
     }
-    return callbacks->checksum_missing(file.c_str(), callbacks->checksum_missing_data);
+    return callbacks->checksum_missing(file.c_str(),
+                                       callbacks->checksum_missing_data);
   }
 
-  bool askUserToAccepUnknownDigest( const zypp::Pathname &file, const std::string &name ) {
+  bool askUserToAccepUnknownDigest(const zypp::Pathname &file,
+                                   const std::string &name) {
     if (callbacks == NULL || callbacks->checksum_unknown == NULL) {
       return zypp::DigestReport::askUserToAccepUnknownDigest(file, name);
     }
-    return callbacks->checksum_unknown(file.c_str(), name.c_str(), callbacks->checksum_unknown_data);
+    return callbacks->checksum_unknown(file.c_str(), name.c_str(),
+                                       callbacks->checksum_unknown_data);
   }
 
-  bool askUserToAcceptWrongDigest( const zypp::Pathname &file, const std::string &requested, const std::string &found ) {
+  bool askUserToAcceptWrongDigest(const zypp::Pathname &file,
+                                  const std::string &requested,
+                                  const std::string &found) {
     if (callbacks == NULL || callbacks->checksum_wrong == NULL) {
-      return zypp::DigestReport::askUserToAcceptWrongDigest(file, requested, found);
+      return zypp::DigestReport::askUserToAcceptWrongDigest(file, requested,
+                                                            found);
     }
-    return callbacks->checksum_wrong(file.c_str(), requested.c_str(), found.c_str(), callbacks->checksum_wrong_data);
+    return callbacks->checksum_wrong(file.c_str(), requested.c_str(),
+                                     found.c_str(),
+                                     callbacks->checksum_wrong_data);
   }
 };
 
 static DigestReceive digest_receive;
 
+struct PatchScriptReport
+    : public zypp::callback::ReceiveReport<zypp::target::PatchScriptReport> {
+  struct InstallCallbacks *callbacks;
+
+  PatchScriptReport() { callbacks = NULL; }
+
+  void set_callbacks(InstallCallbacks *callbacks_) { callbacks = callbacks_; }
+
+  zypp::target::PatchScriptReport::Action
+  problem(const std::string &description) {
+    if (callbacks == NULL || callbacks->script_problem == NULL) {
+      return zypp::target::PatchScriptReport::problem(description);
+    }
+    PROBLEM_RESPONSE response = callbacks->script_problem(
+        description.c_str(), callbacks->script_problem_data);
+    return convert_action(response);
+  }
+
+private:
+  inline zypp::target::PatchScriptReport::Action
+  convert_action(PROBLEM_RESPONSE response) {
+    switch (response) {
+    case PROBLEM_RETRY:
+      return zypp::target::PatchScriptReport::RETRY;
+    case PROBLEM_ABORT:
+      return zypp::target::PatchScriptReport::ABORT;
+    case PROBLEM_IGNORE:
+      return zypp::target::PatchScriptReport::IGNORE;
+    }
+    // fallback that should not happen
+    return zypp::target::PatchScriptReport::ABORT;
+  }
+};
+
+static PatchScriptReport patch_script_report;
+
+struct InstallResolvableReport
+    : public zypp::callback::ReceiveReport<
+          zypp::target::rpm::InstallResolvableReport> {
+  struct InstallCallbacks *callbacks;
+
+  InstallResolvableReport() { callbacks = NULL; }
+
+  void set_callbacks(InstallCallbacks *callbacks_) { callbacks = callbacks_; }
+
+  void start(zypp::Resolvable::constPtr resolvable) {
+    if (callbacks == NULL || callbacks->package_start == NULL) {
+      return;
+    }
+    callbacks->package_start(resolvable->name().c_str(),
+                             callbacks->package_start_data);
+  }
+
+  Action problem(zypp::Resolvable::constPtr resolvable,
+                 zypp::target::rpm::InstallResolvableReport::Error error,
+                 const std::string &description
+                 // note: the RpmLevel argument is not used anymore, ignore it
+                 ,
+                 zypp::target::rpm::InstallResolvableReport::RpmLevel _level) {
+    if (callbacks == NULL || callbacks->package_problem == NULL) {
+      return zypp::target::rpm::InstallResolvableReport::problem(
+          resolvable, error, description, _level);
+    }
+    PROBLEM_RESPONSE response = callbacks->package_problem(
+        resolvable->name().c_str(), convert_error(error), description.c_str(),
+        callbacks->package_problem_data);
+    return convert_action(response);
+  }
+
+  void finish(zypp::Resolvable::constPtr resolvable, Error error,
+              const std::string &install_info,
+              zypp::target::rpm::InstallResolvableReport::RpmLevel /*level*/) {
+    if (callbacks == NULL || callbacks->package_finish == NULL) {
+      return;
+    }
+    callbacks->package_finish(resolvable->name().c_str(),
+                              callbacks->package_finish_data);
+  }
+
+private:
+  inline ZyppInstallPackageError
+  convert_error(zypp::target::rpm::InstallResolvableReport::Error error) {
+    switch (error) {
+    case zypp::target::rpm::InstallResolvableReport::Error::NO_ERROR:
+      return ZyppInstallPackageError::PI_NO_ERROR;
+    case zypp::target::rpm::InstallResolvableReport::Error::NOT_FOUND:
+      return ZyppInstallPackageError::PI_NOT_FOUND;
+    case zypp::target::rpm::InstallResolvableReport::Error::IO:
+      return ZyppInstallPackageError::PI_IO;
+    case zypp::target::rpm::InstallResolvableReport::Error::INVALID:
+      return ZyppInstallPackageError::PI_INVALID;
+    }
+    return ZyppInstallPackageError::PI_NO_ERROR;
+  }
+
+  inline zypp::target::rpm::InstallResolvableReport::Action
+  convert_action(PROBLEM_RESPONSE response) {
+    switch (response) {
+    case PROBLEM_RETRY:
+      return zypp::target::rpm::InstallResolvableReport::RETRY;
+    case PROBLEM_ABORT:
+      return zypp::target::rpm::InstallResolvableReport::ABORT;
+    case PROBLEM_IGNORE:
+      return zypp::target::rpm::InstallResolvableReport::IGNORE;
+    }
+    // fallback that should not happen
+    return zypp::target::rpm::InstallResolvableReport::ABORT;
+  }
+};
+
+static InstallResolvableReport install_resolvable_report;
 
 extern "C" {
 void set_zypp_progress_callback(ZyppProgressCallback progress,
@@ -474,6 +590,20 @@ void unset_zypp_security_callbacks() {
   key_ring_report.disconnect();
   digest_receive.set_callbacks(NULL);
   digest_receive.disconnect();
+}
+
+void set_zypp_install_callbacks(struct InstallCallbacks *callbacks) {
+  patch_script_report.set_callbacks(callbacks);
+  patch_script_report.connect();
+  install_resolvable_report.set_callbacks(callbacks);
+  install_resolvable_report.connect();
+}
+
+void unset_zypp_install_callbacks() {
+  patch_script_report.set_callbacks(NULL);
+  patch_script_report.disconnect();
+  install_resolvable_report.set_callbacks(NULL);
+  install_resolvable_report.disconnect();
 }
 
 #ifdef __cplusplus

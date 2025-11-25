@@ -7,6 +7,8 @@ use gettextrs::gettext;
 use tokio::runtime::Handle;
 use zypp_agama::callbacks::security;
 
+use crate::callbacks::ask_software_question;
+
 #[derive(Clone)]
 pub struct Security {
     questions: Handler<question::Service>,
@@ -36,8 +38,7 @@ impl security::Callback for Security {
         let question = QuestionSpec::new(&text, "software.unsigned_file")
             .with_yes_no_actions()
             .with_data(&[("filename", file.as_str())]);
-        let result = Handle::current()
-            .block_on(async move { ask_question(&self.questions, question).await });
+        let result = ask_software_question(&self.questions, question);
         let Ok(answer) = result else {
             tracing::warn!("Failed to ask question {:?}", result);
             return false;
@@ -69,8 +70,7 @@ impl security::Callback for Security {
                 ("fingerprint", key_fingerprint.as_str()),
             ])
             .with_default_action("Skip");
-        let result = Handle::current()
-            .block_on(async move { ask_question(&self.questions, question).await });
+        let result = ask_software_question(&self.questions, question);
         let Ok(answer) = result else {
             tracing::warn!("Failed to ask question {:?}", result);
             return security::GpgKeyTrust::Reject;
@@ -99,8 +99,7 @@ impl security::Callback for Security {
         let question = QuestionSpec::new(&text, "software.unknown_gpg")
             .with_yes_no_actions()
             .with_data(&[("filename", file.as_str()), ("id", key_id.as_str())]);
-        let result = Handle::current()
-            .block_on(async move { ask_question(&self.questions, question).await });
+        let result = ask_software_question(&self.questions, question);
         let Ok(answer) = result else {
             tracing::warn!("Failed to ask question {:?}", result);
             return false;
@@ -135,8 +134,7 @@ impl security::Callback for Security {
         let question = QuestionSpec::new(&text, "software.verification_failed")
             .with_yes_no_actions()
             .with_data(&[("filename", file.as_str())]);
-        let result = Handle::current()
-            .block_on(async move { ask_question(&self.questions, question).await });
+        let result = ask_software_question(&self.questions, question);
         let Ok(answer) = result else {
             tracing::warn!("Failed to ask question {:?}", result);
             return false;
@@ -153,8 +151,7 @@ impl security::Callback for Security {
               does not mention this file. Use it anyway?"
         );
         let question = QuestionSpec::new(&text, "software.digest.no_digest").with_yes_no_actions();
-        let result = Handle::current()
-            .block_on(async move { ask_question(&self.questions, question).await });
+        let result = ask_software_question(&self.questions, question);
         let Ok(answer) = result else {
             tracing::warn!("Failed to ask question {:?}", result);
             return false;
@@ -171,8 +168,7 @@ impl security::Callback for Security {
         );
         let question =
             QuestionSpec::new(&text, "software.digest.unknown_digest").with_yes_no_actions();
-        let result = Handle::current()
-            .block_on(async move { ask_question(&self.questions, question).await });
+        let result = ask_software_question(&self.questions, question);
         let Ok(answer) = result else {
             tracing::warn!("Failed to ask question {:?}", result);
             return false;
@@ -190,8 +186,7 @@ impl security::Callback for Security {
 
         let question =
             QuestionSpec::new(&text, "software.digest.unknown_digest").with_yes_no_actions();
-        let result = Handle::current()
-            .block_on(async move { ask_question(&self.questions, question).await });
+        let result = ask_software_question(&self.questions, question);
         let Ok(answer) = result else {
             tracing::warn!("Failed to ask question {:?}", result);
             return false;

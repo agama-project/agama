@@ -186,9 +186,16 @@ impl ZyppServer {
             }
             SoftwareAction::Install(tx, progress, question) => {
                 let mut download_callback =
-                    callbacks::CommitDownload::new(progress, question.clone());
+                    callbacks::CommitDownload::new(progress.clone(), question.clone());
+                let mut install_callback =
+                    callbacks::Install::new(progress.clone(), question.clone());
                 let mut security_callback = callbacks::Security::new(question);
-                tx.send(self.install(zypp, &mut download_callback, &mut security_callback))
+                tx.send(self.install(
+                    zypp,
+                    &mut download_callback,
+                    &mut install_callback,
+                    &mut security_callback,
+                ))
                     .map_err(|_| ZyppDispatchError::ResponseChannelClosed)?;
             }
             SoftwareAction::Finish(tx) => {
@@ -206,12 +213,16 @@ impl ZyppServer {
         &self,
         zypp: &zypp_agama::Zypp,
         download_callback: &mut callbacks::CommitDownload,
+        install_callback: &mut callbacks::Install,
         security_callback: &mut callbacks::Security,
     ) -> ZyppServerResult<bool> {
         let target = "/mnt";
         zypp.switch_target(target)?;
-        // TODO: write real install callbacks beside download ones
-        let result = zypp.commit(download_callback, security_callback)?;
+        let result = zypp.commit(
+            download_callback,
+            install_callback,
+            security_callback,
+        )?;
         tracing::info!("libzypp commit ends with {}", result);
         Ok(result)
     }
