@@ -55,11 +55,11 @@ import { useModel, useMissingMountPaths } from "~/hooks/storage/model";
 import {
   addPartition as addPartitionHelper,
   editPartition as editPartitionHelper,
-} from "~/storage/helpers/partition";
+} from "~/storage/partition";
 import { useDevices, useVolumeTemplate } from "~/hooks/api/system/storage";
 import { useSolvedConfigModel } from "~/queries/storage/config-model";
 import { useStorageModel } from "~/hooks/api/storage";
-import { findDevice } from "~/storage/helpers/api-model";
+import { findDevice } from "~/storage/api-model";
 import { deviceSize, deviceLabel, filesystemLabel, parseToBytes } from "~/components/storage/utils";
 import { _ } from "~/i18n";
 import { sprintf } from "sprintf-js";

@@ -36,7 +36,7 @@ import {
 import { deviceSize } from "~/components/storage/utils";
 import { sortCollection } from "~/utils";
 import { _ } from "~/i18n";
-import { deviceSystems } from "~/storage/helpers/device";
+import { deviceSystems } from "~/storage/device";
 
 type DeviceSelectorProps = {
   devices: storage.Device[];

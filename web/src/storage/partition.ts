@@ -21,8 +21,8 @@
  */
 
 import { model } from "~/api/storage";
-import { copyApiModel, findDevice, buildPartition } from "~/storage/helpers/api-model";
-import { isUsed } from "~/storage/helpers/search";
+import { copyApiModel, findDevice, buildPartition } from "~/storage/api-model";
+import { isUsed } from "~/storage/search";
 import { data } from "~/storage";
 
 type Partitionable = model.Drive | model.MdRaid;

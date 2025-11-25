@@ -22,26 +22,39 @@
 
 import { model } from "~/api/storage";
 import { data } from "~/storage";
-import { switchSearched } from "~/storage/helpers/search";
-import { copyApiModel } from "~/storage/helpers/api-model";
+import { copyApiModel } from "~/storage/api-model";
 
-function addDrive(apiModel: model.Config, data: data.Drive): model.Config {
+function findDevice(
+  apiModel: model.Config,
+  list: string,
+  index: number | string,
+): model.Drive | model.MdRaid | null {
+  return (apiModel[list] || []).at(index) || null;
+}
+
+function configureFilesystem(
+  apiModel: model.Config,
+  list: string,
+  index: number | string,
+  data: data.Formattable,
+): model.Config {
   apiModel = copyApiModel(apiModel);
-  apiModel.drives ||= [];
-  apiModel.drives.push(data);
+
+  const device = findDevice(apiModel, list, index);
+  if (!device) return apiModel;
+
+  device.mountPath = data.mountPath;
+
+  if (data.filesystem) {
+    device.filesystem = {
+      default: false,
+      ...data.filesystem,
+    };
+  } else {
+    device.filesystem = undefined;
+  }
 
   return apiModel;
 }
 
-function deleteDrive(apiModel: model.Config, name: string): model.Config {
-  apiModel = copyApiModel(apiModel);
-  apiModel.drives = apiModel.drives.filter((d) => d.name !== name);
-
-  return apiModel;
-}
-
-function switchToDrive(apiModel: model.Config, oldName: string, drive: data.Drive): model.Config {
-  return switchSearched(apiModel, oldName, drive.name, "drives");
-}
-
-export { addDrive, deleteDrive, switchToDrive };
+export { configureFilesystem };

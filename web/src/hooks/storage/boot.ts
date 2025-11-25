@@ -23,7 +23,7 @@
 import { useModel } from "~/hooks/storage/model";
 import { useStorageModel } from "~/hooks/api/storage";
 import { putStorageModel } from "~/api";
-import { setBootDevice, setDefaultBootDevice, disableBootConfig } from "~/storage/helpers/boot";
+import { setBootDevice, setDefaultBootDevice, disableBootConfig } from "~/storage/boot";
 
 type SetBootDeviceFn = (deviceName: string) => void;
 

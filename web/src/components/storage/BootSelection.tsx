@@ -30,7 +30,7 @@ import { useCandidateDevices, useDevices } from "~/hooks/api/system/storage";
 import { useModel } from "~/hooks/storage/model";
 import { storage } from "~/api/system";
 import { Model } from "~/storage/model";
-import { isDrive } from "~/storage/helpers/device";
+import { isDrive } from "~/storage/device";
 import {
   useSetBootDevice,
   useSetDefaultBootDevice,

@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import DevicesManager from "~/storage/helpers/devices-manager";
+import DevicesManager from "~/storage/devices-manager";
 import { storage as system } from "~/api/system";
 import { storage as proposal } from "~/api/proposal";
 

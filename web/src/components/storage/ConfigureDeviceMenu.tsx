@@ -33,7 +33,7 @@ import { sprintf } from "sprintf-js";
 import { _, n_ } from "~/i18n";
 import { storage } from "~/api/system";
 import DeviceSelectorModal from "./DeviceSelectorModal";
-import { isDrive } from "~/storage/helpers/device";
+import { isDrive } from "~/storage/device";
 import { Icon } from "../layout";
 
 type AddDeviceMenuItemProps = {

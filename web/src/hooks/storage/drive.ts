@@ -22,7 +22,7 @@
 
 import { useStorageModel } from "~/hooks/api/storage";
 import { putStorageModel } from "~/api";
-import { addDrive, deleteDrive, switchToDrive } from "~/storage/helpers/drive";
+import { addDrive, deleteDrive, switchToDrive } from "~/storage/drive";
 import { model, data } from "~/storage";
 import { useModel } from "~/hooks/storage/model";
 

@@ -22,8 +22,8 @@
 
 import { model } from "~/api/storage";
 import { data } from "~/storage";
-import { switchSearched } from "~/storage/helpers/search";
-import { copyApiModel } from "~/storage/helpers/api-model";
+import { switchSearched } from "~/storage/search";
+import { copyApiModel } from "~/storage/api-model";
 
 function addReusedMdRaid(apiModel: model.Config, data: data.MdRaid): model.Config {
   apiModel = copyApiModel(apiModel);

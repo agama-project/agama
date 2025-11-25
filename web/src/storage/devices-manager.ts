@@ -25,7 +25,7 @@ import { compact } from "~/utils";
 import { Action } from "~/api/proposal/storage";
 import { storage as system } from "~/api/system";
 import { storage as proposal } from "~/api/proposal";
-import { deviceSystems, isDrive, isMd, isVolumeGroup } from "~/storage/helpers/device";
+import { deviceSystems, isDrive, isMd, isVolumeGroup } from "~/storage/device";
 
 /**
  * Class for managing storage devices.

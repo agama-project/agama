@@ -49,7 +49,7 @@ import { contentDescription, filesystemLabels, typeDescription } from "./utils/d
 import { STORAGE as PATHS } from "~/routes/paths";
 import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
-import { deviceSystems, isDrive } from "~/storage/helpers/device";
+import { deviceSystems, isDrive } from "~/storage/device";
 
 /**
  * Hook that returns the devices that can be selected as target to automatically create LVM PVs.

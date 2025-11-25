@@ -23,7 +23,7 @@
 import { useStorageModel } from "~/hooks/api/storage";
 import { putStorageModel } from "~/api";
 import { data } from "~/storage";
-import { addPartition, editPartition, deletePartition } from "~/storage/helpers/partition";
+import { addPartition, editPartition, deletePartition } from "~/storage/partition";
 
 type AddPartitionFn = (
   list: "drives" | "mdRaids",

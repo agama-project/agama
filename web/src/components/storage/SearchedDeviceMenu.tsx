@@ -35,7 +35,7 @@ import { sprintf } from "sprintf-js";
 import { _, formatList } from "~/i18n";
 import DeviceSelectorModal from "./DeviceSelectorModal";
 import { MenuItemProps } from "@patternfly/react-core";
-import { isDrive } from "~/storage/helpers/device";
+import { isDrive } from "~/storage/device";
 
 const baseName = (device: storage.Device): string => deviceBaseName(device, true);
 

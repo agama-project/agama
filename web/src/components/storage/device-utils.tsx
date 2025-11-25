@@ -29,7 +29,7 @@ import { sprintf } from "sprintf-js";
 import { deviceBaseName, deviceSize } from "~/components/storage/utils";
 import { storage as system } from "~/api/system";
 import { storage as proposal } from "~/api/proposal";
-import { deviceSystems, isLogicalVolume, isMd, isPartition } from "~/storage/helpers/device";
+import { deviceSystems, isLogicalVolume, isMd, isPartition } from "~/storage/device";
 
 type Device = system.Device | proposal.Device;
 type UnusedSlot = system.UnusedSlot | proposal.UnusedSlot;

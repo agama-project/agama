@@ -28,7 +28,7 @@ import {
   deleteVolumeGroup,
   volumeGroupToPartitions,
   deviceToVolumeGroup,
-} from "~/storage/helpers/volume-group";
+} from "~/storage/volume-group";
 import { model, data } from "~/storage";
 import { useModel } from "~/hooks/storage/model";
 

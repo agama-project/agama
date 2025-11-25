@@ -21,7 +21,7 @@
  */
 
 import { model } from "~/api/storage";
-import { copyApiModel, findDevice } from "~/storage/helpers/api-model";
+import { copyApiModel, findDevice } from "~/storage/api-model";
 import { data } from "~/storage";
 
 function setActions(device: model.Drive, actions: data.SpacePolicyAction[]) {
