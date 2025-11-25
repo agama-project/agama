@@ -19,10 +19,13 @@
 // find current contact information at www.suse.com.
 
 mod config;
-pub use config::Config;
+pub use config::{Config, FilesConfig, ScriptsConfig};
 
-mod user_file;
+pub mod user_file;
 pub use user_file::UserFile;
+
+pub mod scripts;
+pub use scripts::{BaseScript, InitScript, PostPartitioningScript, PostScript, PreScript, Script};
 
 mod file_source;
 pub use file_source::{FileSource, FileSourceError, WithFileSource};

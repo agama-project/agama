@@ -28,7 +28,6 @@ use crate::{
     install_settings::InstallSettings,
     manager::{http_client::ManagerHTTPClientError, InstallationPhase, ManagerHTTPClient},
     network::{NetworkStore, NetworkStoreError},
-    scripts::{ScriptsClient, ScriptsClientError, ScriptsGroup, ScriptsStore, ScriptsStoreError},
     security::store::{SecurityStore, SecurityStoreError},
     storage::{
         http_client::{
@@ -63,11 +62,6 @@ pub enum StoreError {
     #[error(transparent)]
     ISCSI(#[from] ISCSIHTTPClientError),
     #[error(transparent)]
-    Scripts(#[from] ScriptsStoreError),
-    // FIXME: it uses the client instead of the store.
-    #[error(transparent)]
-    ScriptsClient(#[from] ScriptsClientError),
-    #[error(transparent)]
     Manager(#[from] ManagerHTTPClientError),
     #[error(transparent)]
     ZFCP(#[from] ZFCPStoreError),
@@ -89,7 +83,6 @@ pub struct Store {
     network: NetworkStore,
     security: SecurityStore,
     storage: StorageStore,
-    scripts: ScriptsStore,
     iscsi_client: ISCSIHTTPClient,
     manager_client: ManagerHTTPClient,
     http_client: BaseHTTPClient,
@@ -106,7 +99,6 @@ impl Store {
             network: NetworkStore::new(http_client.clone()),
             security: SecurityStore::new(http_client.clone()),
             storage: StorageStore::new(http_client.clone()),
-            scripts: ScriptsStore::new(http_client.clone()),
             manager_client: ManagerHTTPClient::new(http_client.clone()),
             iscsi_client: ISCSIHTTPClient::new(http_client.clone()),
             zfcp: ZFCPStore::new(http_client.clone()),
@@ -123,7 +115,6 @@ impl Store {
             network: Some(self.network.load().await?),
             security: self.security.load().await?.to_option(),
             user: Some(self.users.load().await?),
-            scripts: self.scripts.load().await?.to_option(),
             zfcp: self.zfcp.load().await?,
             ..Default::default()
         };
@@ -139,20 +130,11 @@ impl Store {
 
     /// Stores the given installation settings in the Agama service
     ///
-    /// As part of the process it runs pre-scripts and forces a probe if the installation phase is
-    /// "config". It causes the storage proposal to be reset. This behavior should be revisited in
+    /// It causes the storage proposal to be reset. This behavior should be revisited in
     /// the future but it might be the storage service the responsible for dealing with this.
     ///
     /// * `settings`: installation settings.
     pub async fn store(&self, settings: &InstallSettings) -> Result<(), StoreError> {
-        if let Some(scripts) = &settings.scripts {
-            self.scripts.store(scripts).await?;
-
-            if scripts.pre.as_ref().is_some_and(|s| !s.is_empty()) {
-                self.run_pre_scripts().await?;
-            }
-        }
-
         if let Some(network) = &settings.network {
             self.network.store(network).await?;
         }
@@ -205,18 +187,6 @@ impl Store {
         let storage_client = StorageHTTPClient::new(self.http_client.clone());
         if storage_client.is_dirty().await? {
             storage_client.reprobe().await?;
-        }
-        Ok(())
-    }
-
-    /// Runs the pre-installation scripts and forces a probe if the installation phase is "config".
-    async fn run_pre_scripts(&self) -> Result<(), StoreError> {
-        let scripts_client = ScriptsClient::new(self.http_client.clone());
-        scripts_client.run_scripts(ScriptsGroup::Pre).await?;
-
-        let status = self.manager_client.status().await;
-        if status.is_ok_and(|s| s.phase == InstallationPhase::Config) {
-            self.manager_client.probe().await?;
         }
         Ok(())
     }

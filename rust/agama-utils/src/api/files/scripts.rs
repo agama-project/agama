@@ -1,4 +1,4 @@
-// Copyright (c) [2024] SUSE LLC
+// Copyright (c) [2024-2025] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -19,16 +19,27 @@
 // find current contact information at www.suse.com.
 
 use std::{
-    fs,
+    fs, io,
     path::{Path, PathBuf},
     process,
 };
 
+use crate::api::files::{FileSource, FileSourceError, WithFileSource};
+use agama_transfer::Error as TransferError;
 use serde::{Deserialize, Serialize};
 use strum::{EnumIter, IntoEnumIterator};
 
-use super::ScriptError;
-use crate::file_source::{FileSource, WithFileSource};
+#[derive(thiserror::Error, Debug)]
+pub enum Error {
+    #[error("Could not fetch the profile: '{0}'")]
+    Unreachable(#[from] TransferError),
+    #[error("I/O error: '{0}'")]
+    InputOutputError(#[from] io::Error),
+    #[error("Wrong script type")]
+    WrongScriptType,
+    #[error(transparent)]
+    FileSourceError(#[from] FileSourceError),
+}
 
 macro_rules! impl_with_file_source {
     ($struct:ident) => {
@@ -77,7 +88,7 @@ impl BaseScript {
     /// Writes the script to the given directory.
     ///
     /// * `workdir`: directory to write the script to.
-    fn write<P: AsRef<Path>>(&self, workdir: P) -> Result<(), ScriptError> {
+    fn write<P: AsRef<Path>>(&self, workdir: P) -> Result<(), Error> {
         let script_path = workdir.as_ref().join(&self.name);
         std::fs::create_dir_all(script_path.parent().unwrap())?;
         self.source.write(&script_path, 0o700)?;
@@ -115,7 +126,7 @@ impl Script {
     /// Writes the script to the given work directory.
     ///
     /// The name of the script depends on the work directory and the script's group.
-    pub fn write<P: AsRef<Path>>(&self, workdir: P) -> Result<(), ScriptError> {
+    pub fn write<P: AsRef<Path>>(&self, workdir: P) -> Result<(), Error> {
         let path = workdir.as_ref().join(self.group().to_string());
         self.base().write(&path)
     }
@@ -137,7 +148,7 @@ impl Script {
     /// It saves the logs and the exit status of the execution.
     ///
     /// * `workdir`: where to run the script.
-    pub fn run<P: AsRef<Path>>(&self, workdir: P) -> Result<(), ScriptError> {
+    pub fn run<P: AsRef<Path>>(&self, workdir: P) -> Result<(), Error> {
         let path = workdir
             .as_ref()
             .join(self.group().to_string())
@@ -150,7 +161,7 @@ impl Script {
         };
 
         let Some(runner) = runner else {
-            log::info!("No runner defined for script {:?}", &self);
+            tracing::info!("No runner defined for script {:?}", &self);
             return Ok(());
         };
 
@@ -180,12 +191,12 @@ impl From<PreScript> for Script {
 }
 
 impl TryFrom<Script> for PreScript {
-    type Error = ScriptError;
+    type Error = Error;
 
     fn try_from(value: Script) -> Result<Self, Self::Error> {
         match value {
             Script::Pre(inner) => Ok(inner),
-            _ => Err(ScriptError::WrongScriptType),
+            _ => Err(Error::WrongScriptType),
         }
     }
 }
@@ -208,12 +219,12 @@ impl From<PostPartitioningScript> for Script {
 }
 
 impl TryFrom<Script> for PostPartitioningScript {
-    type Error = ScriptError;
+    type Error = Error;
 
     fn try_from(value: Script) -> Result<Self, Self::Error> {
         match value {
             Script::PostPartitioning(inner) => Ok(inner),
-            _ => Err(ScriptError::WrongScriptType),
+            _ => Err(Error::WrongScriptType),
         }
     }
 }
@@ -239,12 +250,12 @@ impl From<PostScript> for Script {
 }
 
 impl TryFrom<Script> for PostScript {
-    type Error = ScriptError;
+    type Error = Error;
 
     fn try_from(value: Script) -> Result<Self, Self::Error> {
         match value {
             Script::Post(inner) => Ok(inner),
-            _ => Err(ScriptError::WrongScriptType),
+            _ => Err(Error::WrongScriptType),
         }
     }
 }
@@ -272,12 +283,12 @@ impl From<InitScript> for Script {
 }
 
 impl TryFrom<Script> for InitScript {
-    type Error = ScriptError;
+    type Error = Error;
 
     fn try_from(value: Script) -> Result<Self, Self::Error> {
         match value {
             Script::Init(inner) => Ok(inner),
-            _ => Err(ScriptError::WrongScriptType),
+            _ => Err(Error::WrongScriptType),
         }
     }
 }
@@ -313,14 +324,14 @@ impl ScriptsRepository {
     /// Adds a new script to the repository.
     ///
     /// * `script`: script to add.
-    pub fn add(&mut self, script: Script) -> Result<(), ScriptError> {
+    pub fn add(&mut self, script: Script) -> Result<(), Error> {
         script.write(&self.workdir)?;
         self.scripts.push(script);
         Ok(())
     }
 
     /// Removes all the scripts from the repository.
-    pub fn clear(&mut self) -> Result<(), ScriptError> {
+    pub fn clear(&mut self) -> Result<(), Error> {
         for group in ScriptsGroup::iter() {
             let path = self.workdir.join(group.to_string());
             if path.exists() {
@@ -335,11 +346,11 @@ impl ScriptsRepository {
     ///
     /// They run in the order they were added to the repository. If does not return an error
     /// if running a script fails, although it logs the problem.
-    pub fn run(&self, group: ScriptsGroup) -> Result<(), ScriptError> {
+    pub fn run(&self, group: ScriptsGroup) -> Result<(), Error> {
         let scripts: Vec<_> = self.scripts.iter().filter(|s| s.group() == group).collect();
         for script in scripts {
             if let Err(error) = script.run(&self.workdir) {
-                log::error!(
+                tracing::error!(
                     "Failed to run user-defined script '{}': {:?}",
                     &script.name(), // TODO: implement
                     error
@@ -378,7 +389,7 @@ impl ScriptRunner {
         self
     }
 
-    fn run<P: AsRef<Path>>(&self, path: P) -> Result<(), ScriptError> {
+    fn run<P: AsRef<Path>>(&self, path: P) -> Result<(), Error> {
         let path = path.as_ref();
         let output = if self.chroot {
             process::Command::new("chroot")
