@@ -52,7 +52,7 @@ const ResultSkeleton = () => (
  * Renders information about delete actions
  */
 const DeletionsInfo = ({ manager }: { manager: DevicesManager }) => {
-  let label;
+  let label: string;
   const systems = manager.deletedSystems();
   const deleteActions = manager.actions.filter((a) => a.delete && !a.subvol).length;
   const hasDeleteActions = deleteActions !== 0;
