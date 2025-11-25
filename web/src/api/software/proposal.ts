@@ -23,7 +23,7 @@
 import { PatternsSelection } from "~/types/software";
 
 type Proposal = {
-  /** Used space in human-readable form */
+  /** Used space in KiB */
   used_space: number;
   /** Selected patterns and the reason */
   patterns: PatternsSelection;

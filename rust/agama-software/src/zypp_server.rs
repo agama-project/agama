@@ -70,6 +70,9 @@ pub enum ZyppServerError {
 
     #[error("Error from libzypp: {0}")]
     ZyppError(#[from] zypp_agama::ZyppError),
+
+    #[error("Could not find a mount point to calculate the used space")]
+    MissingMountPoint,
 }
 
 pub type ZyppServerResult<R> = Result<R, ZyppServerError>;
@@ -232,12 +235,6 @@ impl ZyppServer {
         zypp: &zypp_agama::Zypp,
     ) -> Result<(), ZyppDispatchError> {
         let mut issues: Vec<Issue> = vec![];
-        // FIXME:
-        // 1. add and remove the repositories.
-        // 2. select the patterns.
-        // 3. select the packages.
-        // 4. return the proposal and the issues.
-        // self.add_repositories(state.repositories, tx, &zypp).await?;
 
         _ = progress.cast(progress::message::StartWithSteps::new(
             Scope::Software,
@@ -343,7 +340,12 @@ impl ZyppServer {
             let result = zypp.select_resolvable(&resolvable.name, resolvable.r#type.into(), reason);
 
             if let Err(error) = result {
-                if !resolvable_state.reason.is_optional() {
+                if resolvable_state.reason.is_optional() {
+                    tracing::info!(
+                        "Could not select '{}' but it is optional.",
+                        &resolvable.name
+                    );
+                } else {
                     let message = format!("Could not select '{}'", &resolvable.name);
                     issues.push(
                         Issue::new("software.select_resolvable", &message)
@@ -460,10 +462,7 @@ impl ZyppServer {
             .software
             .user_patterns
             .iter()
-            .map(|p| match p {
-                UserPattern::Plain(name) => name.as_str(),
-                UserPattern::Preselected(preselected) => preselected.name.as_str(),
-            })
+            .map(|p| p.name())
             .collect();
 
         let patterns = zypp.patterns_info(pattern_names)?;
@@ -494,6 +493,8 @@ impl ZyppServer {
                 name: r.alias,
                 url: r.url,
                 enabled: r.enabled,
+                // At this point, there is no way to determine if the repository is
+                // mandatory or not. It will be adjusted later.
                 mandatory: false,
             })
             .collect();
@@ -556,8 +557,10 @@ impl ZyppServer {
             used_size: 0,
         }];
         let computed_mount_points = zypp.count_disk_usage(mount_points)?;
-        let size = computed_mount_points.first().map(|m| m.used_size);
-        Ok(size.unwrap_or(0))
+        computed_mount_points
+            .first()
+            .map(|m| m.used_size)
+            .ok_or(ZyppServerError::MissingMountPoint)
     }
 
     async fn patterns_selection(

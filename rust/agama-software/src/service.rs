@@ -36,11 +36,7 @@ use agama_utils::{
     progress, question,
 };
 use async_trait::async_trait;
-use std::{
-    path::{Path, PathBuf},
-    process::Command,
-    sync::Arc,
-};
+use std::{path::PathBuf, process::Command, sync::Arc};
 use tokio::sync::{broadcast, Mutex, MutexGuard, RwLock};
 
 #[derive(thiserror::Error, Debug)]
@@ -306,8 +302,6 @@ impl MessageHandler<message::SetConfig<Config>> for Service {
         Ok(())
     }
 }
-
-impl Service {}
 
 async fn compute_proposal(
     model: Arc<Mutex<dyn ModelAdapter + Send + 'static>>,
