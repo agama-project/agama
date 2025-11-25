@@ -18,14 +18,50 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-mod config;
-pub use config::{Config, ScriptsConfig};
+use agama_utils::{
+    actor::Message,
+    api::files::{scripts::ScriptsGroup, Config},
+};
 
-pub mod user_file;
-pub use user_file::UserFile;
+#[derive(Clone)]
+pub struct SetConfig {
+    pub config: Option<Config>,
+}
 
-pub mod scripts;
-pub use scripts::{BaseScript, InitScript, PostPartitioningScript, PostScript, PreScript, Script};
+impl Message for SetConfig {
+    type Reply = ();
+}
 
-mod file_source;
-pub use file_source::{FileSource, FileSourceError, WithFileSource};
+impl SetConfig {
+    pub fn new(config: Option<Config>) -> Self {
+        Self { config }
+    }
+
+    pub fn with(config: Config) -> Self {
+        Self {
+            config: Some(config),
+        }
+    }
+}
+
+#[derive(Clone)]
+pub struct RunScripts {
+    pub group: ScriptsGroup,
+}
+
+impl RunScripts {
+    pub fn new(group: ScriptsGroup) -> Self {
+        RunScripts { group }
+    }
+}
+
+impl Message for RunScripts {
+    type Reply = ();
+}
+
+#[derive(Clone)]
+pub struct WriteFiles;
+
+impl Message for WriteFiles {
+    type Reply = ();
+}

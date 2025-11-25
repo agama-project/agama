@@ -412,10 +412,7 @@ mod test {
     use tempfile::TempDir;
     use tokio::test;
 
-    use crate::{
-        file_source::FileSource,
-        scripts::{BaseScript, PreScript, Script},
-    };
+    use crate::api::files::{BaseScript, FileSource, PreScript, Script};
 
     use super::{ScriptsGroup, ScriptsRepository};
 

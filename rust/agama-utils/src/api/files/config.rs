@@ -29,15 +29,10 @@ use crate::api::files::{
 
 #[derive(Clone, Debug, Default, Serialize, Deserialize, utoipa::ToSchema)]
 pub struct Config {
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub files: Option<FilesConfig>,
-}
-
-#[derive(Clone, Debug, Default, Serialize, Deserialize, utoipa::ToSchema)]
-#[serde(rename_all = "camelCase")]
-pub struct FilesConfig {
-    /// list of target files to deploy
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub files: Vec<UserFile>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub scripts: Option<ScriptsConfig>,
 }
 
 #[derive(Clone, Debug, Default, Serialize, Deserialize, utoipa::ToSchema)]

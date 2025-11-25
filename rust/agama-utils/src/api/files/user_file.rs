@@ -27,7 +27,7 @@ use crate::api::files::{FileSource, FileSourceError, WithFileSource};
 use agama_transfer::Error as TransferError;
 
 #[derive(thiserror::Error, Debug)]
-pub enum FileError {
+pub enum Error {
     #[error("Could not fetch the file: '{0}'")]
     Unreachable(#[from] TransferError),
     #[error("I/O error: '{0}'")]
@@ -91,16 +91,23 @@ impl Default for UserFile {
 }
 
 impl UserFile {
-    pub async fn write(&self) -> Result<(), FileError> {
+    /// Writes the file to the file system.
+    ///
+    /// * `prefix`: destination prefix (e.g., "/mnt").
+    pub async fn write<P: AsRef<Path>>(&self, prefix: P) -> Result<(), Error> {
         let int_mode = u32::from_str_radix(&self.permissions, 8)?;
-        let path_s = "/mnt".to_string() + &self.destination;
-        let path = Path::new(path_s.as_str());
+        let prefix = prefix.as_ref().to_path_buf();
+        let destination = &self
+            .destination
+            .strip_prefix("/")
+            .unwrap_or(&self.destination);
+        let path = prefix.join(destination);
         let target_path = Path::new(&self.destination);
         // at first ensure that path to file exists
         let fallback_root = Path::new("/");
         let mut cmd = process::Command::new("chroot");
         cmd.args([
-            "/mnt",
+            &prefix.display().to_string(),
             "install",
             "-d",
             "-o",
@@ -116,7 +123,7 @@ impl UserFile {
         ]);
         let output = cmd.output()?;
         if !output.status.success() {
-            return Err(FileError::MkdirError(
+            return Err(Error::MkdirError(
                 format!("{:?}", cmd),
                 String::from_utf8(output.stderr).unwrap(),
             ));
@@ -126,7 +133,7 @@ impl UserFile {
 
         let mut cmd2 = process::Command::new("chroot");
         cmd2.args([
-            "/mnt",
+            &prefix.display().to_string(),
             "chown",
             format!("{}:{}", &self.user, &self.group).as_str(),
             target_path.to_str().unwrap(),
@@ -134,7 +141,7 @@ impl UserFile {
         // so lets set user and group afterwards..it should not be security issue as original owner is root so it basically just reduce restriction
         let output2 = cmd2.output()?;
         if !output2.status.success() {
-            return Err(FileError::OwnerChangeError(
+            return Err(Error::OwnerChangeError(
                 format!("{:?}", cmd2),
                 String::from_utf8(output2.stderr).unwrap(),
             ));

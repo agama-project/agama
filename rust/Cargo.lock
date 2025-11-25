@@ -50,6 +50,17 @@ dependencies = [
 [[package]]
 name = "agama-files"
 version = "0.1.0"
+dependencies = [
+ "agama-software",
+ "agama-utils",
+ "async-trait",
+ "serde_json",
+ "tempfile",
+ "test-context",
+ "thiserror 2.0.17",
+ "tokio",
+ "tokio-test",
+]
 
 [[package]]
 name = "agama-l10n"
