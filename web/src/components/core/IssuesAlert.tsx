@@ -39,7 +39,7 @@ export default function IssuesAlert({ issues }) {
         {issues.map((i: Issue, idx: number) => (
           <ListItem key={idx}>
             {i.description}{" "}
-            {i.kind === "solver" && (
+            {i.class === "solver" && (
               <Link to={PATHS.conflicts} variant="link" isInline>
                 {
                   // TRANSLATORS: Clickable link to show and resolve package dependency conflicts

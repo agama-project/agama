@@ -53,7 +53,7 @@ describe Agama::Storage::ConfigCheckers::Filesystem do
         it "includes the expected issue" do
           issues = subject.issues
           expect(issues).to include an_object_having_attributes(
-            kind:        :filesystem,
+            kind:        Agama::Storage::IssueClasses::Config::FILESYSTEM,
             description: /type 'FAT' is not suitable for '\/'/
           )
         end
@@ -95,7 +95,7 @@ describe Agama::Storage::ConfigCheckers::Filesystem do
         it "includes the expected issue" do
           issues = subject.issues
           expect(issues).to include an_object_having_attributes(
-            kind:        :filesystem,
+            kind:        Agama::Storage::IssueClasses::Config::FILESYSTEM,
             description: /Missing file system type for '\/'/
           )
         end

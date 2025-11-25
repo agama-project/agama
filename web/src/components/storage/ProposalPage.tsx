@@ -53,7 +53,7 @@ import ProposalResultSection from "./ProposalResultSection";
 import ProposalTransactionalInfo from "./ProposalTransactionalInfo";
 import UnsupportedModelInfo from "./UnsupportedModelInfo";
 import { useAvailableDevices } from "~/hooks/api/system/storage";
-import { useIssues } from "~/hooks/api/issue";
+import { useConfigIssues } from "~/hooks/storage/issue";
 import { useReset } from "~/hooks/api/config/storage";
 import { useProposal } from "~/hooks/api/proposal/storage";
 import { useStorageModel } from "~/hooks/api/storage";
@@ -68,7 +68,7 @@ import MenuButton from "../core/MenuButton";
 import spacingStyles from "@patternfly/react-styles/css/utilities/Spacing/spacing";
 
 function InvalidConfigEmptyState(): React.ReactNode {
-  const errors = useIssues("storage");
+  const errors = useConfigIssues();
   const reset = useReset();
 
   return (
@@ -303,7 +303,7 @@ export default function ProposalPage(): React.ReactNode {
   const model = useStorageModel();
   const availableDevices = useAvailableDevices();
   const proposal = useProposal();
-  const issues = useIssues("storage");
+  const configErrors = useConfigIssues();
   const progress = useProgress("storage");
   const navigate = useNavigate();
   const location = useLocation();
@@ -324,11 +324,13 @@ export default function ProposalPage(): React.ReactNode {
     }
   }, [resetNeeded, setUiState]);
 
-  const fixable = ["no_root", "required_filesystems", "vg_target_devices", "reused_md_member"];
-  const unfixableErrors = issues.filter((e) => !fixable.includes(e.kind));
+  const fixable = [
+    "configNoRoot", "configRequiredPaths", "configOverusedPvTarget", "configOverusedMdMember"
+  ];
+  const unfixableErrors = configErrors.filter((e) => !fixable.includes(e.class));
   const isModelEditable = model && !unfixableErrors.length;
   const hasDevices = !!availableDevices.length;
-  const hasResult = proposal !== null;
+  const hasResult = !!proposal;
   const showSections = hasDevices && (isModelEditable || hasResult);
 
   if (resetNeeded) return;

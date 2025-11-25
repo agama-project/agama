@@ -57,4 +57,4 @@ const useIssuesChanges = () => {
   }, [client, queryClient]);
 };
 
-export { useIssues, useIssuesChanges };
+export { issuesQuery, useIssues, useIssuesChanges };

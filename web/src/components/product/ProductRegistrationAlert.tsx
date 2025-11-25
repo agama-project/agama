@@ -47,7 +47,7 @@ export default function ProductRegistrationAlert() {
   const product = useProduct();
   // FIXME: what scope reports these issues with the new API?
   const issues = useIssues("product");
-  const registrationRequired = issues?.find((i) => i.kind === "missing_registration");
+  const registrationRequired = issues?.find((i) => i.class === "missing_registration");
 
   // NOTE: it shouldn't be mounted in these paths, but let's prevent rendering
   // if so just in case.

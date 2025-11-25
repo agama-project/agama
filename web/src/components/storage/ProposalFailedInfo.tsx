@@ -24,6 +24,7 @@ import React from "react";
 import { Alert, Content } from "@patternfly/react-core";
 import { useStorageModel } from "~/hooks/api/storage";
 import { useIssues } from "~/hooks/api/issue";
+import { useConfigIssues } from "~/hooks/storage/issue";
 import * as partitionUtils from "~/components/storage/utils/partition";
 import { _, formatList } from "~/i18n";
 import { sprintf } from "sprintf-js";
@@ -87,8 +88,11 @@ const Description = () => {
  *   - The generated proposal contains no errors.
  */
 export default function ProposalFailedInfo() {
-  const issues = useIssues("storage");
-  if (issues.length === 0) return;
+  const configErrors = useConfigIssues();
+  const errors = useIssues("storage");
+
+  if (configErrors.length !== 0) return;
+  if (errors.length === 0) return;
 
   return (
     <Alert variant="warning" title={_("Failed to calculate a storage layout")}>
