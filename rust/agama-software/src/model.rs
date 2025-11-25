@@ -106,7 +106,6 @@ impl Model {
 
 #[async_trait]
 impl ModelAdapter for Model {
-    // FIXME: the product should be mandatory.
     fn set_product(&mut self, product_spec: ProductSpec) {
         self.selected_product = Some(product_spec);
     }
