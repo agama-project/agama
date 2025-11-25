@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024-2025] SUSE LLC
+ * Copyright (c) [2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -20,13 +20,21 @@
  * find current contact information at www.suse.com.
  */
 
-type Scope = "localization" | "product" | "software" | "storage" | "users" | "iscsi";
+import React from "react";
+import { useSuspenseQuery } from "@tanstack/react-query";
+import { issuesQuery } from "~/hooks/api/issue";
+import { Issue } from "~/api/issue";
 
-type Issue = {
-  scope: Scope;
-  description: string;
-  class: string;
-  details?: string;
-};
+function selectIssues(issues: Issue[]) {
+  return issues.filter((i: Issue) => i.scope === "storage" && i.class !== "proposal");
+}
 
-export type { Issue, Scope };
+function useConfigIssues(): Issue[] {
+  const { data } = useSuspenseQuery({
+    ...issuesQuery,
+    select: selectIssues
+  });
+  return data;
+}
+
+export { useConfigIssues };

@@ -23,7 +23,7 @@
 import React from "react";
 import { Alert, List, ListItem } from "@patternfly/react-core";
 import { n_ } from "~/i18n";
-import { useIssues } from "~/hooks/api/issue";
+import { useConfigIssues } from "~/hooks/storage/issue";
 
 const Description = ({ errors }) => {
   return (
@@ -40,7 +40,7 @@ const Description = ({ errors }) => {
  *
  */
 export default function FixableConfigInfo() {
-  const configErrors = useIssues("storage");
+  const configErrors = useConfigIssues();
 
   if (!configErrors.length) return;
 
