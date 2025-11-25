@@ -1,7 +1,14 @@
-use agama_utils::{actor::Handler, api::question::QuestionSpec, progress, question};
+use agama_utils::{
+    actor::Handler,
+    api::question::QuestionSpec,
+    progress,
+    question::{self, ask_question},
+};
 use gettextrs::gettext;
 use tokio::runtime::Handle;
 use zypp_agama::callbacks::pkg_download::{Callback, DownloadError};
+
+use crate::callbacks::ask_software_question;
 
 #[derive(Clone)]
 pub struct CommitDownload {
@@ -29,37 +36,32 @@ impl Callback for CommitDownload {
 
     fn problem(
         &self,
-        name: &str,
+        name: String,
         error: DownloadError,
-        description: &str,
+        description: String,
     ) -> zypp_agama::callbacks::ProblemResponse {
         // TODO: make it generic for any problemResponse questions
+        // TODO: we need support for abort and make it default action
         let labels = [gettext("Retry"), gettext("Ignore")];
         let actions = [
             ("Retry", labels[0].as_str()),
             ("Ignore", labels[1].as_str()),
         ];
         let error_str = error.to_string();
-        let data = [("package", name), ("error_code", error_str.as_str())];
-        let question = QuestionSpec::new(description, "software.package_error.provide_error")
-            .with_actions(&actions)
-            .with_data(&data);
-        let result = Handle::current().block_on(async move {
-            self.questions
-                .call(question::message::Ask::new(question))
-                .await
-        });
+        let question =
+            QuestionSpec::new(description.as_str(), "software.package_error.provide_error")
+                .with_actions(&actions)
+                .with_data(&[
+                    ("package", name.as_str()),
+                    ("error_code", error_str.as_str()),
+                ]);
+        let result = ask_software_question(&self.questions, question);
         let Ok(answer) = result else {
             tracing::warn!("Failed to ask question {:?}", result);
             return zypp_agama::callbacks::ProblemResponse::ABORT;
         };
 
-        let Some(answer_str) = answer.answer else {
-            tracing::warn!("No answer provided");
-            return zypp_agama::callbacks::ProblemResponse::ABORT;
-        };
-
-        answer_str
+        answer
             .action
             .as_str()
             .parse::<zypp_agama::callbacks::ProblemResponse>()
@@ -68,8 +70,8 @@ impl Callback for CommitDownload {
 
     fn gpg_check(
         &self,
-        resolvable_name: &str,
-        _repo_url: &str,
+        resolvable_name: String,
+        _repo_url: String,
         check_result: zypp_agama::callbacks::pkg_download::GPGCheckResult,
     ) -> Option<zypp_agama::callbacks::ProblemResponse> {
         if check_result == zypp_agama::callbacks::pkg_download::GPGCheckResult::Ok {

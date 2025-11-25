@@ -43,6 +43,7 @@ import { useMatches } from "react-router";
 import { Icon } from "~/components/layout";
 import { Route } from "~/types/routes";
 import { ChangeProductOption, InstallButton, InstallerOptions, SkipTo } from "~/components/core";
+import ProgressStatusMonitor from "../core/ProgressStatusMonitor";
 import { ROOT } from "~/routes/paths";
 import { _ } from "~/i18n";
 import { useProduct } from "~/hooks/api/config";
@@ -144,6 +145,9 @@ export default function Header({
         <Toolbar isFullHeight>
           <ToolbarContent>
             <ToolbarGroup align={{ default: "alignEnd" }} columnGap={{ default: "columnGapXs" }}>
+              <ToolbarItem>
+                <ProgressStatusMonitor />
+              </ToolbarItem>
               <ToolbarItem>
                 <InstallerOptions />
               </ToolbarItem>

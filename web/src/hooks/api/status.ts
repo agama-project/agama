@@ -20,9 +20,12 @@
  * find current contact information at www.suse.com.
  */
 
-import { useSuspenseQuery } from "@tanstack/react-query";
+import { useEffect } from "react";
+import { useSuspenseQuery, useQueryClient } from "@tanstack/react-query";
+import { useInstallerClient } from "~/context/installer";
 import { getStatus } from "~/api";
 import { Status } from "~/api/status";
+import { isEqual, remove, replaceOrAppend } from "radashi";
 
 const statusQuery = {
   queryKey: ["status"],
@@ -33,4 +36,52 @@ function useStatus(): Status | null {
   return useSuspenseQuery(statusQuery)?.data;
 }
 
-export { useStatus };
+// FIXME: Borrowed from radashi 12.7. Simply import it after updating the dependency.
+function isArrayEqual<T>(array1: T[], array2: T[]): boolean {
+  if (array1 !== array2) {
+    if (array1.length !== array2.length) {
+      return false;
+    }
+    for (let i = 0; i < array1.length; i++) {
+      if (!isEqual(array1[i], array2[i])) {
+        return false;
+      }
+    }
+  }
+  return true;
+}
+
+function useStatusChanges() {
+  const queryClient = useQueryClient();
+  const client = useInstallerClient();
+
+  useEffect(() => {
+    if (!client) return;
+
+    return client.onEvent(({ type, progress, scope }) => {
+      if (!progress && !scope) return;
+      queryClient.setQueryData(["status"], (data: Status) => {
+        let newProgresses: Progress[];
+
+        if (type === "ProgressChanged") {
+          newProgresses = replaceOrAppend(
+            data.progresses,
+            progress,
+            (p) => p.scope === progress.scope,
+          );
+        }
+
+        if (type === "ProgressFinished") {
+          newProgresses = remove(data.progresses, (p) => p.scope === scope);
+        }
+
+        // Only set query data if progresses have changed
+        if (newProgresses && !isArrayEqual(newProgresses, data.progresses)) {
+          return { ...data, progresses: newProgresses };
+        }
+      });
+    });
+  }, [client, queryClient]);
+}
+
+export { useStatus, useStatusChanges };
