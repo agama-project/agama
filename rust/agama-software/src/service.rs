@@ -400,7 +400,7 @@ fn find_repository(dir: &PathBuf, name: &str) -> Option<Repository> {
         name: name.to_string(),
         url: format!("dir:{}", dir.display().to_string()),
         enabled: true,
-        mandatory: true,
+        predefined: true,
     })
 }
 
@@ -451,12 +451,12 @@ mod tests {
         assert!(install
             .url
             .contains(&format!("hd:{}/{}", tmp_dir_str, LIVE_REPO_DIR)));
-        assert!(install.mandatory);
+        assert!(install.predefined);
 
         let dud = repositories.last().unwrap();
         assert!(dud.url.contains(&format!("/{}", DUD_REPO_DIR)));
         assert_eq!(&dud.alias, "AgamaDriverUpdate");
-        assert!(dud.mandatory);
+        assert!(dud.predefined);
         Ok(())
     }
 }

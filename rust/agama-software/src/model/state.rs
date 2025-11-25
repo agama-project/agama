@@ -125,7 +125,7 @@ impl<'a> SoftwareStateBuilder<'a> {
         let repositories = system
             .repositories
             .iter()
-            .filter(|r| r.mandatory)
+            .filter(|r| r.predefined)
             .map(Repository::from);
         state.repositories.extend(repositories);
     }
@@ -572,7 +572,7 @@ mod tests {
             name: "install".to_string(),
             url: "hd:/run/initramfs/install".to_string(),
             enabled: false,
-            mandatory: true,
+            predefined: true,
         };
 
         let another_repo = Repository {
@@ -580,7 +580,7 @@ mod tests {
             name: "another".to_string(),
             url: "https://example.lan/SLES/".to_string(),
             enabled: false,
-            mandatory: false,
+            predefined: false,
         };
 
         let system = SystemInfo {

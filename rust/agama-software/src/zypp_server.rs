@@ -489,8 +489,9 @@ impl ZyppServer {
                 url: r.url,
                 enabled: r.enabled,
                 // At this point, there is no way to determine if the repository is
-                // mandatory or not. It will be adjusted later.
-                mandatory: false,
+                // predefined or not. It will be adjusted in the Model::repositories
+                // function.
+                predefined: false,
             })
             .collect();
         Ok(result)

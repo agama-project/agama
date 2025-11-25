@@ -81,15 +81,16 @@ pub struct Model {
     selected_product: Option<ProductSpec>,
     progress: Handler<progress::Service>,
     question: Handler<question::Service>,
-    /// Local repositories (from the off-line media and Driver Update Disks).
-    repositories: Vec<Repository>,
+    /// Predefined repositories (from the off-line media and Driver Update Disks).
+    /// They cannot be altered through user configuration.
+    predefined_repositories: Vec<Repository>,
 }
 
 impl Model {
     /// Initializes the struct with the information from the underlying system.
     pub fn new(
         zypp_sender: mpsc::UnboundedSender<SoftwareAction>,
-        repositories: Vec<Repository>,
+        predefined_repositories: Vec<Repository>,
         progress: Handler<progress::Service>,
         question: Handler<question::Service>,
     ) -> Result<Self, service::Error> {
@@ -98,7 +99,7 @@ impl Model {
             selected_product: None,
             progress,
             question,
-            repositories,
+            predefined_repositories,
         })
     }
 }
@@ -136,11 +137,15 @@ impl ModelAdapter for Model {
             .send(SoftwareAction::GetSystemInfo(product_spec, tx))?;
         let mut system_info = rx.await??;
 
-        // set "mandatory" field as the info to decide whether the repository is mandatory or not
-        // lives in this struct.
-        let local_urls: Vec<_> = self.repositories.iter().map(|r| r.url.as_str()).collect();
+        // Set "predefined" field as this struct holds the information to determine
+        // which repositories are "predefined".
+        let predefined_urls: Vec<_> = self
+            .predefined_repositories
+            .iter()
+            .map(|r| r.url.as_str())
+            .collect();
         for repo in system_info.repositories.iter_mut() {
-            repo.mandatory = local_urls.contains(&repo.url.as_str());
+            repo.predefined = predefined_urls.contains(&repo.url.as_str());
         }
 
         Ok(system_info)
