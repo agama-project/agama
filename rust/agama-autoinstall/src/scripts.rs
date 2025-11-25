@@ -26,7 +26,8 @@ use std::{
     process::Output,
 };
 
-use agama_lib::{http::BaseHTTPClient, utils::Transfer};
+use agama_lib::http::BaseHTTPClient;
+use agama_transfer::Transfer;
 use anyhow::anyhow;
 use url::Url;
 

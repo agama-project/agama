@@ -13,6 +13,7 @@ name = "agama-autoinstall"
 version = "0.1.0"
 dependencies = [
  "agama-lib",
+ "agama-transfer",
  "agama-utils",
  "anyhow",
  "tempfile",
@@ -26,6 +27,7 @@ name = "agama-cli"
 version = "1.0.0"
 dependencies = [
  "agama-lib",
+ "agama-transfer",
  "agama-utils",
  "anyhow",
  "async-trait",
@@ -71,6 +73,7 @@ dependencies = [
  "agama-l10n",
  "agama-locale-data",
  "agama-network",
+ "agama-transfer",
  "agama-utils",
  "anyhow",
  "async-trait",
@@ -174,6 +177,7 @@ dependencies = [
  "agama-manager",
  "agama-network",
  "agama-software",
+ "agama-transfer",
  "agama-utils",
  "anyhow",
  "async-trait",
@@ -277,6 +281,7 @@ name = "agama-utils"
 version = "0.1.0"
 dependencies = [
  "agama-locale-data",
+ "agama-transfer",
  "async-trait",
  "cidr",
  "fs-err",

@@ -18,7 +18,7 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use agama_lib::utils::Transfer;
+use agama_transfer::Transfer;
 use anyhow::Context;
 use std::{
     collections::HashMap,
