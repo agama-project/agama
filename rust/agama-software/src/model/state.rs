@@ -337,6 +337,17 @@ impl SelectedReason {
     }
 }
 
+impl From<SelectedReason> for zypp_agama::ResolvableSelected {
+    fn from(value: SelectedReason) -> Self {
+        match value {
+            SelectedReason::User => zypp_agama::ResolvableSelected::User,
+            SelectedReason::Installer { optional: _ } => {
+                zypp_agama::ResolvableSelected::Installation
+            }
+        }
+    }
+}
+
 /// Software system options.
 #[derive(Default, Debug)]
 pub struct SoftwareOptions {

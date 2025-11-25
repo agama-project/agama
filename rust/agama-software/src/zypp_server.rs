@@ -328,16 +328,11 @@ impl ZyppServer {
         }
         for resolvable_state in &state.resolvables {
             let resolvable = &resolvable_state.resolvable;
-            // FIXME: we need to distinguish who is selecting the pattern.
-            // and register an issue if it is not found and it was not optional.
-            let reason = match resolvable_state.reason {
-                SelectedReason::User => zypp_agama::ResolvableSelected::User,
-                SelectedReason::Installer { optional: _ } => {
-                    zypp_agama::ResolvableSelected::Installation
-                }
-            };
-
-            let result = zypp.select_resolvable(&resolvable.name, resolvable.r#type.into(), reason);
+            let result = zypp.select_resolvable(
+                &resolvable.name,
+                resolvable.r#type.into(),
+                resolvable_state.reason.into(),
+            );
 
             if let Err(error) = result {
                 if resolvable_state.reason.is_optional() {
