@@ -40,12 +40,13 @@ import {
   ToolbarItem,
 } from "@patternfly/react-core";
 import { useMatches } from "react-router";
+import { useSelectedProduct } from "~/hooks/api";
 import { Icon } from "~/components/layout";
 import { Route } from "~/types/routes";
 import { ChangeProductOption, InstallButton, InstallerOptions, SkipTo } from "~/components/core";
+import ProgressStatusMonitor from "../core/ProgressStatusMonitor";
 import { ROOT } from "~/routes/paths";
 import { _ } from "~/i18n";
-import { useSelectedProduct } from "~/hooks/api";
 
 export type HeaderProps = {
   /** Whether the application sidebar should be mounted or not */
@@ -144,6 +145,9 @@ export default function Header({
         <Toolbar isFullHeight>
           <ToolbarContent>
             <ToolbarGroup align={{ default: "alignEnd" }} columnGap={{ default: "columnGapXs" }}>
+              <ToolbarItem>
+                <ProgressStatusMonitor />
+              </ToolbarItem>
               <ToolbarItem>
                 <InstallerOptions />
               </ToolbarItem>

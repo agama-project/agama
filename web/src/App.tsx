@@ -29,6 +29,7 @@ import {
   useIssuesChanges,
   useStatus,
   useExtendedConfig,
+  useStatusChanges,
 } from "~/hooks/api";
 import { useInstallerStatusChanges } from "~/queries/status";
 import { ROOT, PRODUCT } from "~/routes/paths";
@@ -94,6 +95,7 @@ function App() {
   useProductChanges();
   useIssuesChanges();
   useInstallerStatusChanges();
+  useStatusChanges();
   const queryClient = useQueryClient();
 
   // FIXME: check if still needed
