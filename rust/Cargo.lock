@@ -236,8 +236,8 @@ dependencies = [
  "serde_with",
  "serde_yaml",
  "strum",
- "thiserror 2.0.17",
  "tempfile",
+ "thiserror 2.0.17",
  "tokio",
  "tokio-stream",
  "tracing",
@@ -4309,7 +4309,7 @@ dependencies = [
  "getrandom 0.3.2",
  "once_cell",
  "rustix 1.0.5",
- "windows-sys 0.60.2",
+ "windows-sys 0.52.0",
 ]
 
 [[package]]
