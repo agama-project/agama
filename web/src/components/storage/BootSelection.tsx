@@ -67,7 +67,7 @@ type BootSelectionState = {
 /**
  * Allows the user to select the boot configuration.
  */
-export default function BootSelectionDialog() {
+export default function BootSelection() {
   const location = useLocation();
   const [state, setState] = useState<BootSelectionState>({ load: false });
   const navigate = useNavigate();
