@@ -558,7 +558,7 @@ impl ZyppServer {
         zypp: &zypp_agama::Zypp,
     ) -> Result<(), ZyppDispatchError> {
         let proposal = SoftwareProposal {
-            size: self.usage(&zypp).await?,
+            used_space: self.used_space(&zypp).await?,
             patterns: self.patterns_selection(&product, &zypp).await?,
         };
 
@@ -567,7 +567,7 @@ impl ZyppServer {
         Ok(())
     }
 
-    async fn usage(&self, zypp: &zypp_agama::Zypp) -> Result<i64, ZyppServerError> {
+    async fn used_space(&self, zypp: &zypp_agama::Zypp) -> Result<i64, ZyppServerError> {
         // TODO: for now it just compute total size, but it can get info about partitions from storage and pass it to libzypp
         let mount_points = vec![zypp_agama::MountPoint {
             directory: "/".to_string(),

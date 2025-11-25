@@ -38,7 +38,7 @@ pub enum SelectedBy {
 /// Software proposal information.
 pub struct SoftwareProposal {
     /// Space required for installation in KiB.
-    pub size: i64,
+    pub used_space: i64,
     /// Patterns selection. It is represented as a hash map where the key is the pattern's name
     /// and the value why the pattern is selected.
     pub patterns: HashMap<String, SelectedBy>,
