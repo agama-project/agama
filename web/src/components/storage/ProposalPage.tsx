@@ -325,7 +325,10 @@ export default function ProposalPage(): React.ReactNode {
   }, [resetNeeded, setUiState]);
 
   const fixable = [
-    "configNoRoot", "configRequiredPaths", "configOverusedPvTarget", "configOverusedMdMember"
+    "configNoRoot",
+    "configRequiredPaths",
+    "configOverusedPvTarget",
+    "configOverusedMdMember",
   ];
   const unfixableErrors = configErrors.filter((e) => !fixable.includes(e.class));
   const isModelEditable = model && !unfixableErrors.length;

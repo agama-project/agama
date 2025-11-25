@@ -20,7 +20,6 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { issuesQuery } from "~/hooks/api/issue";
 import { Issue } from "~/api/issue";
@@ -32,7 +31,7 @@ function selectIssues(issues: Issue[]) {
 function useConfigIssues(): Issue[] {
   const { data } = useSuspenseQuery({
     ...issuesQuery,
-    select: selectIssues
+    select: selectIssues,
   });
   return data;
 }
