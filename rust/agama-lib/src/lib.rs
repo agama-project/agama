@@ -47,8 +47,6 @@ pub mod auth;
 pub mod bootloader;
 pub mod context;
 pub mod error;
-pub mod file_source;
-pub mod files;
 pub mod hostname;
 pub mod http;
 pub mod install_settings;

@@ -34,7 +34,7 @@ dependencies = [
  "chrono",
  "clap",
  "console",
- "fluent-uri",
+ "fluent-uri 0.3.2",
  "home",
  "indicatif",
  "inquire",
@@ -80,7 +80,7 @@ dependencies = [
  "chrono",
  "curl",
  "env_logger",
- "fluent-uri",
+ "fluent-uri 0.3.2",
  "fs_extra",
  "futures-util",
  "home",
@@ -284,6 +284,7 @@ dependencies = [
  "agama-transfer",
  "async-trait",
  "cidr",
+ "fluent-uri 0.4.1",
  "fs-err",
  "gettext-rs",
  "macaddr",
@@ -293,6 +294,7 @@ dependencies = [
  "serde_with",
  "serde_yaml",
  "strum",
+ "tempfile",
  "test-context",
  "thiserror 2.0.17",
  "tokio",
@@ -928,9 +930,9 @@ dependencies = [
 
 [[package]]
 name = "borrow-or-share"
-version = "0.2.2"
+version = "0.2.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3eeab4423108c5d7c744f4d234de88d18d636100093ae04caf4825134b9c3a32"
+checksum = "dc0b364ead1874514c8c2855ab558056ebfeb775653e7ae45ff72f28f8f3166c"
 
 [[package]]
 name = "brotli"
@@ -1636,6 +1638,17 @@ name = "fluent-uri"
 version = "0.3.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1918b65d96df47d3591bed19c5cca17e3fa5d0707318e4b5ef2eae01764df7e5"
+dependencies = [
+ "borrow-or-share",
+ "ref-cast",
+ "serde",
+]
+
+[[package]]
+name = "fluent-uri"
+version = "0.4.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "bc74ac4d8359ae70623506d512209619e5cf8f347124910440dbc221714b328e"
 dependencies = [
  "borrow-or-share",
  "ref-cast",
@@ -3602,7 +3615,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c8eff4fa778b5c2a57e85c5f2fe3a709c52f0e60d23146e2151cbef5893f420e"
 dependencies = [
  "ahash",
- "fluent-uri",
+ "fluent-uri 0.3.2",
  "once_cell",
  "parking_lot",
  "percent-encoding",

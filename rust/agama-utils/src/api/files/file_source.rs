@@ -18,8 +18,8 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::utils::{Transfer, TransferError};
-use fluent_uri::{error::ResolveError, Uri, UriRef};
+use agama_transfer::{Error as TransferError, Transfer};
+use fluent_uri::{resolve::ResolveError, Uri, UriRef};
 use serde::{Deserialize, Serialize};
 use std::{fs::OpenOptions, io::Write, os::unix::fs::OpenOptionsExt, path::Path};
 

@@ -20,10 +20,27 @@
 
 //! Implements a data model for Files configuration.
 
-use super::error::FileError;
-use crate::file_source::{FileSource, WithFileSource};
 use serde::{Deserialize, Serialize};
-use std::{path::Path, process};
+use std::{io, num::ParseIntError, path::Path, process};
+
+use crate::api::files::{FileSource, FileSourceError, WithFileSource};
+use agama_transfer::Error as TransferError;
+
+#[derive(thiserror::Error, Debug)]
+pub enum FileError {
+    #[error("Could not fetch the file: '{0}'")]
+    Unreachable(#[from] TransferError),
+    #[error("I/O error: '{0}'")]
+    InputOutputError(#[from] io::Error),
+    #[error("Invalid permissions: '{0}'")]
+    PermissionsError(#[from] ParseIntError),
+    #[error("Failed to change owner: command '{0}' stderr '{1}'")]
+    OwnerChangeError(String, String),
+    #[error("Failed to create directories: command '{0}' stderr '{1}'")]
+    MkdirError(String, String),
+    #[error(transparent)]
+    FileSourceError(#[from] FileSourceError),
+}
 
 /// Represents individual settings for single file deployment
 #[derive(Clone, Debug, Serialize, Deserialize, utoipa::ToSchema)]

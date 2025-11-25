@@ -18,12 +18,11 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use super::model::UserFile;
-use serde::{Deserialize, Serialize};
+mod config;
+pub use config::Config;
 
-#[derive(Debug, Default, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct FilesConfig {
-    /// list of target files to deploy
-    pub files: Vec<UserFile>,
-}
+mod user_file;
+pub use user_file::UserFile;
+
+mod file_source;
+pub use file_source::{FileSource, FileSourceError, WithFileSource};

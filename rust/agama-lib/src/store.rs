@@ -23,7 +23,6 @@
 
 use crate::{
     bootloader::store::{BootloaderStore, BootloaderStoreError},
-    files::store::{FilesStore, FilesStoreError},
     hostname::store::{HostnameStore, HostnameStoreError},
     http::BaseHTTPClient,
     install_settings::InstallSettings,
@@ -51,8 +50,6 @@ pub enum StoreError {
     Bootloader(#[from] BootloaderStoreError),
     #[error(transparent)]
     DASD(#[from] DASDStoreError),
-    #[error(transparent)]
-    Files(#[from] FilesStoreError),
     #[error(transparent)]
     Hostname(#[from] HostnameStoreError),
     #[error(transparent)]
@@ -87,7 +84,6 @@ pub enum StoreError {
 pub struct Store {
     bootloader: BootloaderStore,
     dasd: DASDStore,
-    files: FilesStore,
     hostname: HostnameStore,
     users: UsersStore,
     network: NetworkStore,
@@ -105,7 +101,6 @@ impl Store {
         Ok(Self {
             bootloader: BootloaderStore::new(http_client.clone()),
             dasd: DASDStore::new(http_client.clone()),
-            files: FilesStore::new(http_client.clone()),
             hostname: HostnameStore::new(http_client.clone()),
             users: UsersStore::new(http_client.clone()),
             network: NetworkStore::new(http_client.clone()),
@@ -124,7 +119,6 @@ impl Store {
         let mut settings = InstallSettings {
             bootloader: self.bootloader.load().await?,
             dasd: self.dasd.load().await?,
-            files: self.files.load().await?,
             hostname: Some(self.hostname.load().await?),
             network: Some(self.network.load().await?),
             security: self.security.load().await?.to_option(),
@@ -201,9 +195,6 @@ impl Store {
         }
         if let Some(hostname) = &settings.hostname {
             self.hostname.store(hostname).await?;
-        }
-        if let Some(files) = &settings.files {
-            self.files.store(files).await?;
         }
 
         Ok(())
