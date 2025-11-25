@@ -41,7 +41,7 @@ use std::{
     process::Command,
     sync::Arc,
 };
-use tokio::sync::{broadcast, Mutex, RwLock};
+use tokio::sync::{broadcast, Mutex, MutexGuard, RwLock};
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
@@ -126,6 +126,7 @@ impl Starter {
             events: self.events,
             issues: self.issues,
             progress: self.progress,
+            product: None,
         };
         service.setup().await?;
         Ok(actor::spawn(service))
@@ -145,6 +146,7 @@ pub struct Service {
     progress: Handler<progress::Service>,
     events: event::Sender,
     state: Arc<RwLock<ServiceState>>,
+    product: Option<Arc<RwLock<ProductSpec>>>,
     selection: SoftwareSelection,
 }
 
@@ -177,6 +179,92 @@ impl Service {
 
         Ok(())
     }
+
+    /// Updates the proposal and the service state.
+    ///
+    /// This function performs the following actions:
+    ///
+    /// 1. Calculates the [wanted state](SoftwareState) using the current product, configuration,
+    ///    system information and product selection.
+    /// 2. Synchronizes the packaging system (through the model adapter).
+    /// 3. Emits issues if something is wrong.
+    /// 4. Updates the service state (system information and proposal).
+    ///
+    /// Options from 2 to 4 might take some time, so they run in a separate Tokio task.
+    async fn update_proposal(&mut self) -> Result<(), Error> {
+        let Some(product) = &self.product else {
+            return Ok(());
+        };
+
+        let product = product.read().await.clone();
+
+        let new_state = {
+            let state = self.state.read().await;
+            SoftwareState::build_from(&product, &state.config, &state.system, &self.selection)
+        };
+
+        tracing::info!("Wanted software state: {new_state:?}");
+        let model = self.model.clone();
+        let progress = self.progress.clone();
+        let issues = self.issues.clone();
+        let state = self.state.clone();
+        let events = self.events.clone();
+
+        tokio::task::spawn(async move {
+            let mut my_model = model.lock().await;
+            my_model.set_product(product);
+            let found_issues = my_model
+                .write(new_state, progress)
+                .await
+                .unwrap_or_else(|e| {
+                    let new_issue = Issue::new(
+                        "software.proposal_failed",
+                        "It was not possible to create a software proposal",
+                    )
+                    .with_details(&e.to_string());
+                    vec![new_issue]
+                });
+            _ = issues.cast(issue::message::Set::new(Scope::Software, found_issues));
+
+            Self::update_state(state, my_model, events).await;
+        });
+        Ok(())
+    }
+
+    /// Ancillary function to updates the service state with the information from the model.
+    ///
+    /// FIXME: emit events only when the proposal or the system information change.
+    async fn update_state(
+        state: Arc<RwLock<ServiceState>>,
+        model: MutexGuard<'_, dyn ModelAdapter + Send + 'static>,
+        events: event::Sender,
+    ) {
+        let mut state = state.write().await;
+
+        match model.proposal().await {
+            Ok(proposal) => {
+                state.proposal.software = Some(proposal);
+                _ = events.send(Event::ProposalChanged {
+                    scope: Scope::Software,
+                });
+            }
+            Err(error) => {
+                tracing::error!("Could not update the software proposal: {error}.")
+            }
+        }
+
+        match model.system_info().await {
+            Ok(system_info) => {
+                state.system = system_info;
+                _ = events.send(Event::SystemChanged {
+                    scope: Scope::Software,
+                });
+            }
+            Err(error) => {
+                tracing::error!("Could not update the software information: {error}.");
+            }
+        }
+    }
 }
 
 impl Actor for Service {
@@ -202,56 +290,24 @@ impl MessageHandler<message::GetConfig> for Service {
 #[async_trait]
 impl MessageHandler<message::SetConfig<Config>> for Service {
     async fn handle(&mut self, message: message::SetConfig<Config>) -> Result<(), Error> {
-        let product = message.product.read().await;
+        self.product = Some(message.product.clone());
 
-        let software = {
+        {
             let mut state = self.state.write().await;
             state.config = message.config.clone().unwrap_or_default();
-            SoftwareState::build_from(&product, &state.config, &state.system, &self.selection)
-        };
+        }
 
         self.events.send(Event::ConfigChanged {
             scope: Scope::Software,
         })?;
 
-        tracing::info!("Wanted software state: {software:?}");
-
-        let model = self.model.clone();
-        let issues = self.issues.clone();
-        let events = self.events.clone();
-        let progress = self.progress.clone();
-        let product_spec = product.clone();
-        let state = self.state.clone();
-        tokio::task::spawn(async move {
-            let found_issues = match compute_proposal(model, product_spec, software, progress).await
-            {
-                Ok((new_proposal, system_info, found_issues)) => {
-                    let mut state = state.write().await;
-                    state.proposal.software = Some(new_proposal);
-                    state.system = system_info;
-                    found_issues
-                }
-                Err(error) => {
-                    let new_issue = Issue::new(
-                        "software.proposal_failed",
-                        "It was not possible to create a software proposal",
-                    )
-                    .with_details(&error.to_string());
-                    let mut state = state.write().await;
-                    state.proposal.software = None;
-                    vec![new_issue]
-                }
-            };
-
-            _ = issues.cast(issue::message::Set::new(Scope::Software, found_issues));
-            _ = events.send(Event::ProposalChanged {
-                scope: Scope::Software,
-            });
-        });
+        self.update_proposal().await?;
 
         Ok(())
     }
 }
+
+impl Service {}
 
 async fn compute_proposal(
     model: Arc<Mutex<dyn ModelAdapter + Send + 'static>>,
@@ -303,6 +359,9 @@ impl MessageHandler<message::Finish> for Service {
 impl MessageHandler<message::SetResolvables> for Service {
     async fn handle(&mut self, message: message::SetResolvables) -> Result<(), Error> {
         self.selection.set(&message.id, message.resolvables);
+        if self.product.is_some() {
+            self.update_proposal().await?;
+        }
         Ok(())
     }
 }

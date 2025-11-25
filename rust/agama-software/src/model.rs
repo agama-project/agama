@@ -21,7 +21,7 @@
 use agama_utils::{
     actor::Handler,
     api::{
-        software::{Pattern, Repository, SoftwareProposal, SystemInfo},
+        software::{Repository, SoftwareProposal, SystemInfo},
         Issue,
     },
     products::{ProductSpec, UserPattern},

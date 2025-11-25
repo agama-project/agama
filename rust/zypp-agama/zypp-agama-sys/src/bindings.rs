@@ -196,9 +196,9 @@ pub const GPGKeyTrust_GPGKT_REJECT: GPGKeyTrust = 0;
 pub const GPGKeyTrust_GPGKT_TEMPORARY: GPGKeyTrust = 1;
 #[doc = " Import key and trust it."]
 pub const GPGKeyTrust_GPGKT_IMPORT: GPGKeyTrust = 2;
-#[doc = " @brief What to do with an unknown GPG key.\n @see KeyRingReport::KeyTrust in libzypp"]
+#[doc = " @brief What to do with an unknown GPG key.\n @see zypp::KeyRingReport::KeyTrust in https://github.com/openSUSE/libzypp/blob/master/zypp-logic/zypp/KeyRing.h"]
 pub type GPGKeyTrust = ::std::os::raw::c_uint;
-#[doc = " @brief Callback to decide whether to accept an unknown GPG key.\n @param key_id The ID of the GPG key.\n @param key_name The name of the GPG key.\n @param key_fingerprint The fingerprint of the GPG key.\n @param repository_alias The alias of the repository providing the key. Can be\n an empty string if not available.\n @param user_data User-defined data.\n @return A GPGKeyTrust value indicating the action to take."]
+#[doc = " @brief Callback to decide whether to accept an unknown GPG key.\n @param key_id The ID of the GPG key.\n @param key_name The name of the GPG key.\n @param key_fingerprint The fingerprint of the GPG key.\n @param repository_alias The alias of the repository providing the key. Can be\n an empty string if not available.\n @param user_data User-defined data.\n @return A GPGKeyTrust value indicating the action to take.\n  @see zypp::KeyRingReport::askUserToAcceptKey in https://github.com/openSUSE/libzypp/blob/master/zypp-logic/zypp/KeyRing.h"]
 pub type GPGAcceptKeyCallback = ::std::option::Option<
     unsafe extern "C" fn(
         key_id: *const ::std::os::raw::c_char,
@@ -236,6 +236,7 @@ pub type GPGVerificationFailed = ::std::option::Option<
         user_data: *mut ::std::os::raw::c_void,
     ) -> bool,
 >;
+#[doc = " @see zypp::DigestReport in https://github.com/openSUSE/libzypp/blob/master/zypp-logic/zypp/Digest.h"]
 pub type ChecksumMissing = ::std::option::Option<
     unsafe extern "C" fn(
         file: *const ::std::os::raw::c_char,
