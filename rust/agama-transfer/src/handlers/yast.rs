@@ -22,9 +22,7 @@ use std::io::Write;
 
 use url::Url;
 
-use crate::{
-    file_finder::FileFinder, file_systems::FileSystemsList, TransferError, TransferResult,
-};
+use crate::{file_finder::FileFinder, file_systems::FileSystemsList, Error, TransferResult};
 
 /// Handler for the cd:, dvd: and hd: schemes
 ///
@@ -37,7 +35,7 @@ impl HdHandler {
         let device = url.query_pairs().find(|(key, _value)| key == "devices");
 
         let Some((_, device_name)) = device else {
-            return Err(TransferError::MissingDevice(url));
+            return Err(Error::MissingDevice(url));
         };
         let device_name = device_name.strip_prefix("/dev/").unwrap_or(&device_name);
         let device_url = format!("device://{}{}", &device_name, url.path());
@@ -55,11 +53,11 @@ impl LabelHandler {
     pub fn get(&self, url: Url, out_fd: &mut impl Write) -> TransferResult<()> {
         let file_name = url.path();
         if file_name.is_empty() {
-            return Err(TransferError::MissingPath(url));
+            return Err(Error::MissingPath(url));
         }
 
         let Some(label) = url.host_str() else {
-            return Err(TransferError::MissingLabel(url));
+            return Err(Error::MissingLabel(url));
         };
 
         let file_systems = FileSystemsList::from_system().with_label(label);
@@ -78,7 +76,7 @@ pub struct DeviceHandler {}
 impl DeviceHandler {
     pub fn get(&self, url: Url, out_fd: &mut impl Write) -> TransferResult<()> {
         if url.path().is_empty() {
-            return Err(TransferError::MissingPath(url));
+            return Err(Error::MissingPath(url));
         }
 
         let mut file_systems = FileSystemsList::from_system();
@@ -135,7 +133,7 @@ impl DeviceHandler {
             }
             path = file_name.to_string();
         }
-        Err(TransferError::FileNotFound(full_path.to_string()))
+        Err(Error::FileNotFound(full_path.to_string()))
     }
 
     /// Try to search in all devices.
