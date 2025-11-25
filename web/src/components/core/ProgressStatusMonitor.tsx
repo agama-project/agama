@@ -57,7 +57,7 @@ const DetailsHeader = ({ tasks }: DetailProps) => {
   const total = tasks.length;
 
   return total
-    ? sprintf(n_("1 task active", "%s tasks active", total), total)
+    ? sprintf(n_("%s task active", "%s tasks active", total), total)
     : _("No tasks active");
 };
 
@@ -104,14 +104,14 @@ const DetailsBody = ({ tasks }: DetailProps) => {
 export default function ProgressStatusMonitor() {
   const { progresses: tasks } = useStatus();
 
-  const iddle = tasks.length === 0;
+  const idle = tasks.length === 0;
 
   return (
     <Popover
-      showClose={tasks.length === 0}
+      showClose={idle}
       minWidth="400px"
       position="bottom-end"
-      hideOnOutsideClick={!iddle}
+      hideOnOutsideClick={!idle}
       headerContent={<DetailsHeader tasks={tasks} />}
       bodyContent={
         <Stack hasGutter>
@@ -119,7 +119,7 @@ export default function ProgressStatusMonitor() {
         </Stack>
       }
     >
-      <Button variant="plain" isDisabled={iddle} isLoading={!iddle} />
+      <Button variant="plain" isDisabled={idle} isLoading={!idle} />
     </Popover>
   );
 }

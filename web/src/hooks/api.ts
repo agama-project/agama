@@ -60,7 +60,7 @@ function useStatus(options?: QueryHookOptions): Status | null {
   return data;
 }
 
-// Borrowed from radashi 12.7. Simply import it after updating the dependency.
+// FIXME: Borrowed from radashi 12.7. Simply import it after updating the dependency.
 function isArrayEqual<T>(array1: T[], array2: T[]): boolean {
   if (array1 !== array2) {
     if (array1.length !== array2.length) {
