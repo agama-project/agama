@@ -65,7 +65,7 @@ const DetailsHeader = ({ tasks }: DetailProps) => {
  * Renders a list of compact progress bars for each background task.
  */
 const DetailsBody = ({ tasks }: DetailProps) => {
-  return tasks.map((task) => {
+  return tasks.map((task, index) => {
     const value = (task.index / task.size) * 100;
     return (
       <React.Fragment key={task.scope}>
@@ -80,7 +80,7 @@ const DetailsBody = ({ tasks }: DetailProps) => {
             </HelperText>
           }
         />
-        <Divider />
+        {index < tasks.length - 1 && <Divider />}
       </React.Fragment>
     );
   });
