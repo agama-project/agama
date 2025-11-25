@@ -406,19 +406,19 @@ class NetworkSystem {
 
 class NetworkConfig {
   connections?: Connection[];
-  state?: GeneralState;
+  state?: GeneralStateConfig;
 
   constructor(
     connections?: Connection[],
     //accessPoints?: AccessPoint[],
     //devices?: Device[],
-    state?: GeneralState,
+    state?: GeneralStateConfig,
   ) {
     if (connections !== undefined) this.connections = connections;
     if (state !== undefined) this.state = state;
   }
 
-  static fromApi(options: APIProposal) {
+  static fromApi(options: APIConfig) {
     const { connections, state } = options;
     const conns = connections.map((c) => Connection.fromApi(c));
 
@@ -482,9 +482,15 @@ type APIProposal = {
   state: GeneralState;
 };
 
+type GeneralStateConfig = {
+  copyNetwork?: boolean;
+  networkingEnabled?: boolean;
+  wirelessEnabled?: boolean;
+};
+
 type APIConfig = {
   connections?: APIConnection[];
-  state?: GeneralState;
+  state?: GeneralStateConfig;
 };
 
 export {

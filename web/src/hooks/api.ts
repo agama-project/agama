@@ -245,11 +245,12 @@ function useScopeIssues(scope: issue.Scope, options?: QueryHookOptions): Issue[]
 }
 
 export {
-  systemQuery,
-  proposalQuery,
+  configQuery,
   extendedConfigQuery,
-  storageModelQuery,
   issuesQuery,
+  proposalQuery,
+  systemQuery,
+  storageModelQuery,
   useConfig,
   useSystem,
   useStatus,

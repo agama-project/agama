@@ -32,5 +32,5 @@ type Config = {
   network?: network.Config;
 };
 
-export { l10n, storage };
+export { l10n, network, storage };
 export type { Config };
