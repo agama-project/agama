@@ -52,7 +52,7 @@ describe Agama::Storage::ConfigCheckers::Search do
         it "includes the expected issue" do
           issues = subject.issues
           expect(issues).to include an_object_having_attributes(
-            kind:        :search,
+            kind:        Agama::Storage::IssueClasses::Config::SEARCH,
             description: "Mandatory drive not found"
           )
         end

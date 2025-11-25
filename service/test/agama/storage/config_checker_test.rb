@@ -53,7 +53,7 @@ describe Agama::Storage::ConfigChecker do
       it "includes the boot issues" do
         issues = subject.issues
         expect(issues).to include an_object_having_attributes(
-          kind:        :no_root,
+          kind:        Agama::Storage::IssueClasses::Config::NO_ROOT,
           description: "The boot device cannot be automatically selected"
         )
       end

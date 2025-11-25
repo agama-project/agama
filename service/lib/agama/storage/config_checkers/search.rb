@@ -62,7 +62,7 @@ module Agama
 
         # @see Base
         def error(message)
-          super(message, kind: :search)
+          super(message, kind: IssueClasses::Config::SEARCH)
         end
 
         # @return [Issue, nil]

@@ -64,7 +64,7 @@ module Agama
 
         # @see Base
         def error(message)
-          super(message, kind: :encryption)
+          super(message, kind: IssueClasses::Config::ENCRYPTION)
         end
 
         # @return [Issue, nil]

@@ -31,7 +31,7 @@ shared_examples "search issues" do
     it "includes the search issues" do
       issues = subject.issues
       expect(issues).to include an_object_having_attributes(
-        kind:        :search,
+        kind:        Agama::Storage::IssueClasses::Config::SEARCH,
         description: "Mandatory device /test not found"
       )
     end
@@ -47,7 +47,7 @@ shared_examples "filesystem issues" do
     it "includes the filesystem issues" do
       issues = subject.issues
       expect(issues).to include an_object_having_attributes(
-        kind:        :filesystem,
+        kind:        Agama::Storage::IssueClasses::Config::FILESYSTEM,
         description: "Missing file system type for '/'"
       )
     end
@@ -63,7 +63,7 @@ shared_examples "encryption issues" do
     it "includes the encryption issues" do
       issues = subject.issues
       expect(issues).to include an_object_having_attributes(
-        kind:        :encryption,
+        kind:        Agama::Storage::IssueClasses::Config::ENCRYPTION,
         description: /No passphrase .*/
       )
     end
@@ -85,7 +85,7 @@ shared_examples "partitions issues" do
     it "includes the partition issues" do
       issues = subject.issues
       expect(issues).to include an_object_having_attributes(
-        kind:        :search,
+        kind:        Agama::Storage::IssueClasses::Config::SEARCH,
         description: "Mandatory partition not found"
       )
     end
@@ -106,7 +106,7 @@ shared_examples "alias issues" do
     it "includes the alias issues" do
       issues = subject.issues
       expect(issues).to include an_object_having_attributes(
-        kind:        :overused_alias,
+        kind:        Agama::Storage::IssueClasses::Config::ALIAS,
         description: /alias '#{device_alias}' is used by more than one/
       )
     end

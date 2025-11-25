@@ -66,7 +66,7 @@ module Agama
                 _("The device '%s' is used several times as target device for physical volumes"),
                 device
               ),
-              kind: :vg_target_devices
+              kind: IssueClasses::Config::OVERUSED_PV_TARGET
             )
           end
         end
