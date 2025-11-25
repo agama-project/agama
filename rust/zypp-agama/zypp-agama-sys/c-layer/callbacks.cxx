@@ -22,23 +22,23 @@ struct ProgressReceive : zypp::callback::ReceiveReport<zypp::ProgressReport> {
 
   // TODO: should we distinguish start/finish? and if so, is enum param to
   // callback enough instead of having three callbacks?
-  virtual void start(const zypp::ProgressData &task) {
+  void start(const zypp::ProgressData &task) override {
     if (callback != NULL) {
       ProgressData data = {task.reportValue(), task.name().c_str()};
       callback(data, user_data);
     }
   }
 
-  bool progress(const zypp::ProgressData &task) {
+  bool progress(const zypp::ProgressData &task) override {
     if (callback != NULL) {
       ProgressData data = {task.reportValue(), task.name().c_str()};
       return callback(data, user_data);
     } else {
-      return zypp::ProgressReport::progress(task);
+      return true;
     }
   }
 
-  virtual void finish(const zypp::ProgressData &task) {
+  void finish(const zypp::ProgressData &task) override {
     if (callback != NULL) {
       ProgressData data = {task.reportValue(), task.name().c_str()};
       callback(data, user_data);
@@ -60,7 +60,7 @@ struct DownloadProgressReceive : public zypp::callback::ReceiveReport<
     callbacks = callbacks_;
   }
 
-  virtual void start(const zypp::Url &file, zypp::Pathname localfile) {
+  void start(const zypp::Url &file, zypp::Pathname localfile) override {
     last_reported = 0;
     last_reported_time = time(NULL);
 
@@ -70,8 +70,8 @@ struct DownloadProgressReceive : public zypp::callback::ReceiveReport<
     }
   }
 
-  virtual bool progress(int value, const zypp::Url &file, double bps_avg,
-                        double bps_current) {
+  bool progress(int value, const zypp::Url &file, double bps_avg,
+                double bps_current) override {
     // call the callback function only if the difference since the last call is
     // at least 5% or if 100% is reached or if at least 3 seconds have elapsed
     time_t current_time = time(NULL);
@@ -89,9 +89,9 @@ struct DownloadProgressReceive : public zypp::callback::ReceiveReport<
     return true;
   }
 
-  virtual Action problem(const zypp::Url &file,
-                         zypp::media::DownloadProgressReport::Error error,
-                         const std::string &description) {
+  Action problem(const zypp::Url &file,
+                 zypp::media::DownloadProgressReport::Error error,
+                 const std::string &description) override {
     if (callbacks != NULL && callbacks->problem != NULL) {
       PROBLEM_RESPONSE response =
           callbacks->problem(file.asString().c_str(), convert_error(error),
@@ -104,9 +104,9 @@ struct DownloadProgressReceive : public zypp::callback::ReceiveReport<
                                                         description);
   }
 
-  virtual void finish(const zypp::Url &file,
-                      zypp::media::DownloadProgressReport::Error error,
-                      const std::string &reason) {
+  void finish(const zypp::Url &file,
+              zypp::media::DownloadProgressReport::Error error,
+              const std::string &reason) override {
     if (callbacks != NULL && callbacks->finish != NULL) {
       callbacks->finish(file.asString().c_str(), convert_error(error),
                         reason.c_str(), callbacks->finish_data);
@@ -157,8 +157,8 @@ struct DownloadResolvableReport : public zypp::callback::ReceiveReport<
     callbacks = callbacks_;
   }
 
-  virtual Action problem(zypp::Resolvable::constPtr resolvable_ptr, Error error,
-                         const std::string &description) {
+  Action problem(zypp::Resolvable::constPtr resolvable_ptr, Error error,
+                 const std::string &description) override {
     // return the default value from the parent class if not defined
     if (callbacks == NULL || callbacks->problem == NULL)
       return zypp::repo::DownloadResolvableReport::problem(resolvable_ptr,
@@ -170,7 +170,7 @@ struct DownloadResolvableReport : public zypp::callback::ReceiveReport<
     return from_response(response);
   }
 
-  virtual void pkgGpgCheck(const UserData &userData_r = UserData()) {
+  void pkgGpgCheck(const UserData &userData_r = UserData()) override {
     if (callbacks == NULL || callbacks->gpg_check == NULL) {
       return;
     }
@@ -272,14 +272,14 @@ struct CommitPreloadReport
   void set_callbacks(DownloadResolvableCallbacks *callbacks_) {
     callbacks = callbacks_;
   }
-  virtual void start(const UserData &userData = UserData()) {
+  void start(const UserData &userData = UserData()) override {
     if (callbacks != NULL && callbacks->start_preload != NULL) {
       callbacks->start_preload(callbacks->start_preload_data);
     }
   }
 
-  virtual void fileDone(const zypp::Pathname &localfile, Error error,
-                        const UserData &userData = UserData()) {
+  void fileDone(const zypp::Pathname &localfile, Error error,
+                const UserData &userData = UserData()) override {
     if (callbacks != NULL && callbacks->file_finish != NULL) {
       const char *url = "";
       if (userData.hasvalue("url")) {
@@ -327,7 +327,7 @@ struct KeyRingReport
 
   zypp::KeyRingReport::KeyTrust
   askUserToAcceptKey(const zypp::PublicKey &key,
-                     const zypp::KeyContext &context) {
+                     const zypp::KeyContext &context) override {
     if (callbacks == NULL || callbacks->accept_key == NULL) {
       return zypp::KeyRingReport::askUserToAcceptKey(key, context);
     }
@@ -339,7 +339,7 @@ struct KeyRingReport
   }
 
   bool askUserToAcceptUnsignedFile(const std::string &file,
-                                   const zypp::KeyContext &context) {
+                                   const zypp::KeyContext &context) override {
     if (callbacks == NULL || callbacks->unsigned_file == NULL) {
       return zypp::KeyRingReport::askUserToAcceptUnsignedFile(file, context);
     }
@@ -349,7 +349,7 @@ struct KeyRingReport
   }
 
   bool askUserToAcceptUnknownKey(const std::string &file, const std::string &id,
-                                 const zypp::KeyContext &context) {
+                                 const zypp::KeyContext &context) override {
     if (callbacks == NULL || callbacks->unknown_key == NULL) {
       return zypp::KeyRingReport::askUserToAcceptUnknownKey(file, id, context);
     }
@@ -358,9 +358,10 @@ struct KeyRingReport
                                   callbacks->unknown_key_data);
   }
 
-  bool askUserToAcceptVerificationFailed(const std::string &file,
-                                         const zypp::PublicKey &key,
-                                         const zypp::KeyContext &context) {
+  bool
+  askUserToAcceptVerificationFailed(const std::string &file,
+                                    const zypp::PublicKey &key,
+                                    const zypp::KeyContext &context) override {
     if (callbacks == NULL || callbacks->verification_failed == NULL) {
       return zypp::KeyRingReport::askUserToAcceptVerificationFailed(file, key,
                                                                     context);
@@ -396,7 +397,7 @@ struct DigestReceive
 
   void set_callbacks(SecurityCallbacks *callbacks_) { callbacks = callbacks_; }
 
-  bool askUserToAcceptNoDigest(const zypp::Pathname &file) {
+  bool askUserToAcceptNoDigest(const zypp::Pathname &file) override {
     if (callbacks == NULL || callbacks->checksum_missing == NULL) {
       return zypp::DigestReport::askUserToAcceptNoDigest(file);
     }
@@ -405,7 +406,7 @@ struct DigestReceive
   }
 
   bool askUserToAccepUnknownDigest(const zypp::Pathname &file,
-                                   const std::string &name) {
+                                   const std::string &name) override {
     if (callbacks == NULL || callbacks->checksum_unknown == NULL) {
       return zypp::DigestReport::askUserToAccepUnknownDigest(file, name);
     }
@@ -415,7 +416,7 @@ struct DigestReceive
 
   bool askUserToAcceptWrongDigest(const zypp::Pathname &file,
                                   const std::string &requested,
-                                  const std::string &found) {
+                                  const std::string &found) override {
     if (callbacks == NULL || callbacks->checksum_wrong == NULL) {
       return zypp::DigestReport::askUserToAcceptWrongDigest(file, requested,
                                                             found);
@@ -437,7 +438,7 @@ struct PatchScriptReport
   void set_callbacks(InstallCallbacks *callbacks_) { callbacks = callbacks_; }
 
   zypp::target::PatchScriptReport::Action
-  problem(const std::string &description) {
+  problem(const std::string &description) override {
     if (callbacks == NULL || callbacks->script_problem == NULL) {
       return zypp::target::PatchScriptReport::problem(description);
     }
@@ -473,7 +474,7 @@ struct InstallResolvableReport
 
   void set_callbacks(InstallCallbacks *callbacks_) { callbacks = callbacks_; }
 
-  void start(zypp::Resolvable::constPtr resolvable) {
+  void start(zypp::Resolvable::constPtr resolvable) override {
     if (callbacks == NULL || callbacks->package_start == NULL) {
       return;
     }
@@ -481,12 +482,12 @@ struct InstallResolvableReport
                              callbacks->package_start_data);
   }
 
-  Action problem(zypp::Resolvable::constPtr resolvable,
-                 zypp::target::rpm::InstallResolvableReport::Error error,
-                 const std::string &description
-                 // note: the RpmLevel argument is not used anymore, ignore it
-                 ,
-                 zypp::target::rpm::InstallResolvableReport::RpmLevel _level) {
+  Action problem(
+      zypp::Resolvable::constPtr resolvable,
+      zypp::target::rpm::InstallResolvableReport::Error error,
+      const std::string &description,
+      // note: the RpmLevel argument is not used anymore, ignore it
+      zypp::target::rpm::InstallResolvableReport::RpmLevel _level) override {
     if (callbacks == NULL || callbacks->package_problem == NULL) {
       return zypp::target::rpm::InstallResolvableReport::problem(
           resolvable, error, description, _level);
@@ -497,9 +498,10 @@ struct InstallResolvableReport
     return convert_action(response);
   }
 
-  void finish(zypp::Resolvable::constPtr resolvable, Error error,
-              const std::string &install_info,
-              zypp::target::rpm::InstallResolvableReport::RpmLevel /*level*/) {
+  void finish(
+      zypp::Resolvable::constPtr resolvable, Error error,
+      const std::string &install_info,
+      zypp::target::rpm::InstallResolvableReport::RpmLevel /*level*/) override {
     if (callbacks == NULL || callbacks->package_finish == NULL) {
       return;
     }
