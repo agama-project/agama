@@ -22,10 +22,10 @@
 
 import { unique } from "radashi";
 import { compact } from "~/utils";
-import { Action } from "~/api/proposal/storage";
-import { storage as system } from "~/api/system";
-import { storage as proposal } from "~/api/proposal";
 import { deviceSystems, isDrive, isMd, isVolumeGroup } from "~/storage/device";
+import type { Action } from "~/api/proposal/storage";
+import type { storage as system } from "~/api/system";
+import type { storage as proposal } from "~/api/proposal";
 
 /**
  * Class for managing storage devices.

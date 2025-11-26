@@ -25,7 +25,7 @@ import { Content } from "@patternfly/react-core";
 import { useProposal } from "~/hooks/api/proposal/l10n";
 import { useSystem } from "~/hooks/api/system/l10n";
 import { _ } from "~/i18n";
-import { Locale } from "~/api/system/l10n";
+import type { Locale } from "~/api/system/l10n";
 
 export default function L10nSection() {
   const proposal = useProposal();

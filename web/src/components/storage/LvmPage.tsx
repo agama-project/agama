@@ -36,8 +36,6 @@ import {
 } from "@patternfly/react-core";
 import { Page, SubtleContent } from "~/components/core";
 import { useAvailableDevices } from "~/hooks/api/system/storage";
-import { model, data } from "~/storage";
-import { storage } from "~/api/system";
 import { useModel } from "~/hooks/storage/model";
 import {
   useVolumeGroup,
@@ -50,6 +48,8 @@ import { STORAGE as PATHS } from "~/routes/paths";
 import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
 import { deviceSystems, isDrive } from "~/storage/device";
+import type { model, data } from "~/storage";
+import type { storage } from "~/api/system";
 
 /**
  * Hook that returns the devices that can be selected as target to automatically create LVM PVs.

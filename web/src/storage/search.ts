@@ -20,11 +20,11 @@
  * find current contact information at www.suse.com.
  */
 
-import { model as apiModel } from "~/api/storage";
-import { model } from "~/storage";
-import { build as buildModel } from "~/storage/model";
 import { copyApiModel, findDevice, findDeviceIndex } from "~/storage/api-model";
+import { buildModel } from "~/storage/model";
 import { fork } from "radashi";
+import type { model as apiModel } from "~/api/storage";
+import type { model } from "~/storage";
 
 function deviceLocation(apiModel: apiModel.Config, name: string) {
   let index;

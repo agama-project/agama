@@ -20,8 +20,8 @@
  * find current contact information at www.suse.com.
  */
 
-import * as l10n from "~/api/config/l10n";
-import * as storage from "~/api/config/storage";
+import type * as l10n from "~/api/config/l10n";
+import type * as storage from "~/api/config/storage";
 
 type Config = {
   product?: Product;
@@ -33,5 +33,4 @@ type Product = {
   id?: string;
 };
 
-export { l10n, storage };
-export type { Config, Product };
+export type { Config, Product, l10n, storage };

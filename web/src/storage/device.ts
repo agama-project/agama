@@ -20,8 +20,8 @@
  * find current contact information at www.suse.com.
  */
 
-import { storage as system } from "~/api/system";
-import { storage as proposal } from "~/api/proposal";
+import type { storage as system } from "~/api/system";
+import type { storage as proposal } from "~/api/proposal";
 
 type Device = system.Device | proposal.Device;
 

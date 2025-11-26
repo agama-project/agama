@@ -22,7 +22,7 @@
 
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { issuesQuery } from "~/hooks/api/issue";
-import { Issue } from "~/api/issue";
+import type { Issue } from "~/api/issue";
 
 function selectIssues(issues: Issue[]) {
   return issues.filter((i: Issue) => i.scope === "storage" && i.class !== "proposal");

@@ -20,4 +20,4 @@
  * find current contact information at www.suse.com.
  */
 
-export * as model from "~/api/storage/model";
+export type * as model from "~/api/storage/model";

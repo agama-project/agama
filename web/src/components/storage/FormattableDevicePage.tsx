@@ -55,11 +55,11 @@ import { data, model } from "~/storage";
 import { deviceBaseName, filesystemLabel } from "~/components/storage/utils";
 import { _ } from "~/i18n";
 import { sprintf } from "sprintf-js";
-import { model as apiModel } from "~/api/storage";
-import { storage as system } from "~/api/system";
 import { STORAGE as PATHS } from "~/routes/paths";
 import { unique } from "radashi";
 import { compact } from "~/utils";
+import type { model as apiModel } from "~/api/storage";
+import type { storage as system } from "~/api/system";
 
 const NO_VALUE = "";
 const BTRFS_SNAPSHOTS = "btrfsSnapshots";

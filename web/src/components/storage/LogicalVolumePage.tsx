@@ -58,14 +58,14 @@ import { useVolumeGroup } from "~/hooks/storage/volume-group";
 import { useAddLogicalVolume, useEditLogicalVolume } from "~/hooks/storage/logical-volume";
 import { addLogicalVolume, editLogicalVolume } from "~/storage/logical-volume";
 import { buildLogicalVolumeName } from "~/storage/api-model";
-import { model } from "~/api/storage";
-import { data } from "~/storage";
 import { STORAGE as PATHS } from "~/routes/paths";
 import { unique } from "radashi";
 import { compact } from "~/utils";
 import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
 import SizeModeSelect, { SizeMode, SizeRange } from "~/components/storage/SizeModeSelect";
+import type { model } from "~/api/storage";
+import type { data } from "~/storage";
 
 const NO_VALUE = "";
 const BTRFS_SNAPSHOTS = "btrfsSnapshots";

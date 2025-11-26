@@ -28,8 +28,6 @@ import { Page, SubtleContent } from "~/components/core";
 import { deviceLabel, formattedPath } from "~/components/storage/utils";
 import { useCandidateDevices, useDevices } from "~/hooks/api/system/storage";
 import { useModel } from "~/hooks/storage/model";
-import { storage } from "~/api/system";
-import { Model } from "~/storage/model";
 import { isDrive } from "~/storage/device";
 import {
   useSetBootDevice,
@@ -39,6 +37,8 @@ import {
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
+import type { storage } from "~/api/system";
+import type { Model } from "~/storage/model";
 
 const filteredCandidates = (candidates: storage.Device[], model: Model): storage.Device[] => {
   return candidates.filter((candidate) => {

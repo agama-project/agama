@@ -20,7 +20,6 @@
  * find current contact information at www.suse.com.
  */
 
-import { model } from "~/api/storage";
 import { isUsed, deleteIfUnused } from "~/storage/search";
 import {
   copyApiModel,
@@ -30,7 +29,8 @@ import {
   buildLogicalVolumeFromPartition,
   buildPartitionFromLogicalVolume,
 } from "~/storage/api-model";
-import { data } from "~/storage";
+import type { model } from "~/api/storage";
+import type { data } from "~/storage";
 
 function movePartitions(device: model.Drive | model.MdRaid, volumeGroup: model.VolumeGroup) {
   if (!device.partitions) return;

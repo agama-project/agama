@@ -20,9 +20,9 @@
  * find current contact information at www.suse.com.
  */
 
-import { model } from "~/api/storage";
 import { copyApiModel, findDevice } from "~/storage/api-model";
-import { data } from "~/storage";
+import type { model } from "~/api/storage";
+import type { data } from "~/storage";
 
 function setActions(device: model.Drive, actions: data.SpacePolicyAction[]) {
   device.partitions ||= [];

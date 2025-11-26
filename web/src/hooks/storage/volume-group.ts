@@ -29,7 +29,7 @@ import {
   volumeGroupToPartitions,
   deviceToVolumeGroup,
 } from "~/storage/volume-group";
-import { model, data } from "~/storage";
+import type { model, data } from "~/storage";
 import { useModel } from "~/hooks/storage/model";
 
 function useVolumeGroup(vgName: string): model.VolumeGroup | null {

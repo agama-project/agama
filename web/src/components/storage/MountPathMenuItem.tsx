@@ -25,7 +25,7 @@ import { useNavigate } from "react-router";
 import * as partitionUtils from "~/components/storage/utils/partition";
 import { Icon } from "~/components/layout";
 import { MenuItem, MenuItemAction } from "@patternfly/react-core";
-import { model } from "~/api/storage";
+import type { model } from "~/api/storage";
 
 export type MountPathMenuItemProps = {
   device: model.Partition | model.LogicalVolume;

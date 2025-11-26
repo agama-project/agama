@@ -31,10 +31,10 @@ import { useAddReusedMdRaid } from "~/hooks/storage/md-raid";
 import { STORAGE as PATHS } from "~/routes/paths";
 import { sprintf } from "sprintf-js";
 import { _, n_ } from "~/i18n";
-import { storage } from "~/api/system";
 import DeviceSelectorModal from "./DeviceSelectorModal";
 import { isDrive } from "~/storage/device";
 import { Icon } from "../layout";
+import type { storage } from "~/api/system";
 
 type AddDeviceMenuItemProps = {
   /** Whether some of the available devices is an MD RAID */

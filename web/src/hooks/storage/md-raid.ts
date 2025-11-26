@@ -23,7 +23,7 @@
 import { useStorageModel } from "~/hooks/api/storage";
 import { putStorageModel } from "~/api";
 import { addReusedMdRaid, deleteMdRaid, switchToMdRaid } from "~/storage/md-raid";
-import { data } from "~/storage";
+import type { data } from "~/storage";
 
 type AddReusedMdRaidFn = (data: data.MdRaid) => void;
 

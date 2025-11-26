@@ -20,9 +20,9 @@
  * find current contact information at www.suse.com.
  */
 
-import * as l10n from "~/api/proposal/l10n";
-import * as storage from "~/api/proposal/storage";
-import * as software from "~/api/proposal/software";
+import type * as l10n from "~/api/proposal/l10n";
+import type * as storage from "~/api/proposal/storage";
+import type * as software from "~/api/proposal/software";
 
 type Proposal = {
   l10n?: l10n.Proposal;
@@ -30,5 +30,4 @@ type Proposal = {
   software?: software.Proposal;
 };
 
-export { l10n, storage, software };
-export type { Proposal };
+export type { Proposal, l10n, storage, software };

@@ -23,8 +23,8 @@
 import { useStorageModel } from "~/hooks/api/storage";
 import { putStorageModel } from "~/api";
 import { addDrive, deleteDrive, switchToDrive } from "~/storage/drive";
-import { model, data } from "~/storage";
 import { useModel } from "~/hooks/storage/model";
+import type { model, data } from "~/storage";
 
 function useDrive(name: string): model.Drive | null {
   const model = useModel();

@@ -24,10 +24,10 @@
 
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { putStorageModel, solveStorageModel } from "~/api";
-import { model } from "~/api/storage";
-import { Volume } from "~/api/system/storage";
 import { useStorageModel } from "~/hooks/api/storage";
 import { useVolumeTemplates } from "~/hooks/api/system/storage";
+import type { model } from "~/api/storage";
+import type { Volume } from "~/api/system/storage";
 
 function copyModel(model: model.Config): model.Config {
   return JSON.parse(JSON.stringify(model));

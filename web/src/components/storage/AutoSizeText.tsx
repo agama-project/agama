@@ -26,8 +26,8 @@ import { SubtleContent } from "~/components/core/";
 import { deviceSize } from "~/components/storage/utils";
 import { _, formatList } from "~/i18n";
 import { sprintf } from "sprintf-js";
-import { model } from "~/api/storage";
-import { Volume } from "~/api/system/storage";
+import type { model } from "~/api/storage";
+import type { Volume } from "~/api/system/storage";
 
 type DeviceType = "partition" | "logicalVolume";
 

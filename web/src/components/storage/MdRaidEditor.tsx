@@ -26,12 +26,12 @@ import ConfigEditorItem from "~/components/storage/ConfigEditorItem";
 import MdRaidHeader from "~/components/storage/MdRaidHeader";
 import DeviceEditorContent from "~/components/storage/DeviceEditorContent";
 import SearchedDeviceMenu from "~/components/storage/SearchedDeviceMenu";
-import { model } from "~/storage";
-import { storage } from "~/api/system";
 import { CustomToggleProps } from "~/components/core/MenuButton";
 import { useDeleteMdRaid } from "~/hooks/storage/md-raid";
 import { Button, Flex, FlexItem } from "@patternfly/react-core";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
+import type { model } from "~/storage";
+import type { storage } from "~/api/system";
 
 type MdRaidDeviceMenuProps = {
   raid: model.MdRaid;

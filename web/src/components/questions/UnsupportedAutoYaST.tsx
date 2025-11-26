@@ -30,11 +30,11 @@ import {
   ListVariant,
   Stack,
 } from "@patternfly/react-core";
-import { AnswerCallback, Question } from "~/api/question";
 import { Page, Popup } from "~/components/core";
 import QuestionActions from "~/components/questions/QuestionActions";
 import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
+import type { AnswerCallback, Question } from "~/api/question";
 
 const UnsupportedElements = ({
   elements,

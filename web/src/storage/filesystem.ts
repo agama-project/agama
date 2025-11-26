@@ -20,9 +20,9 @@
  * find current contact information at www.suse.com.
  */
 
-import { model } from "~/api/storage";
-import { data } from "~/storage";
 import { copyApiModel } from "~/storage/api-model";
+import type { model } from "~/api/storage";
+import type { data } from "~/storage";
 
 function findDevice(
   apiModel: model.Config,

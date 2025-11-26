@@ -27,14 +27,14 @@ import { Page } from "~/components/core";
 import SpaceActionsTable, { SpacePolicyAction } from "~/components/storage/SpaceActionsTable";
 import { deviceChildren } from "~/components/storage/utils";
 import { _ } from "~/i18n";
-import { UnusedSlot, Device } from "~/api/proposal/storage";
-import { model } from "~/api/storage";
 import { useDevices } from "~/hooks/api/system/storage";
 import { useModel } from "~/hooks/storage/model";
 import { useSetSpacePolicy } from "~/hooks/storage/space-policy";
 import { toDevice } from "./device-utils";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import { sprintf } from "sprintf-js";
+import type { UnusedSlot, Device } from "~/api/proposal/storage";
+import type { model } from "~/api/storage";
 
 const partitionAction = (partition: model.Partition) => {
   if (partition.delete) return "delete";

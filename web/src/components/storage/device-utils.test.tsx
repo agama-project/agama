@@ -31,7 +31,7 @@ import {
   toDevice,
 } from "~/components/storage/device-utils";
 import { UnusedSlot } from "~/api/system/storage";
-import { storage } from "~/api/system";
+import type { storage } from "~/api/system";
 
 const vda: storage.Device = {
   sid: 59,

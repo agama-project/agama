@@ -20,8 +20,8 @@
  * find current contact information at www.suse.com.
  */
 
-import { model } from "~/api/storage";
-import { data } from "~/storage";
+import type { model } from "~/api/storage";
+import type { data } from "~/storage";
 
 function copyApiModel(apiModel: model.Config): model.Config {
   return JSON.parse(JSON.stringify(apiModel));

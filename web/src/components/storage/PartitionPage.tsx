@@ -63,11 +63,11 @@ import { findDevice } from "~/storage/api-model";
 import { deviceSize, deviceLabel, filesystemLabel, parseToBytes } from "~/components/storage/utils";
 import { _ } from "~/i18n";
 import { sprintf } from "sprintf-js";
-import { model } from "~/api/storage";
-import { storage as system } from "~/api/system";
 import { STORAGE as PATHS, STORAGE } from "~/routes/paths";
 import { isUndefined, unique } from "radashi";
 import { compact } from "~/utils";
+import type { model } from "~/api/storage";
+import type { storage as system } from "~/api/system";
 
 const NO_VALUE = "";
 const NEW_PARTITION = "new";

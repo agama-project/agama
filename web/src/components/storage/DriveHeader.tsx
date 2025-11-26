@@ -20,11 +20,11 @@
  * find current contact information at www.suse.com.
  */
 
-import { model } from "~/storage";
-import { storage } from "~/api/system";
 import { sprintf } from "sprintf-js";
 import { deviceLabel } from "./utils";
 import { _ } from "~/i18n";
+import type { model } from "~/storage";
+import type { storage } from "~/api/system";
 
 export type DriveHeaderProps = { drive: model.Drive; device: storage.Device };
 

@@ -26,7 +26,7 @@
  * Types that extend the apiModel by adding calculated properties and methods.
  */
 
-import { model as apiModel } from "~/api/storage";
+import type { model as apiModel } from "~/api/storage";
 
 type Model = {
   boot: Boot;
@@ -278,7 +278,7 @@ function buildVolumeGroup(
   };
 }
 
-function build(apiModel: apiModel.Config): Model {
+function buildModel(apiModel: apiModel.Config): Model {
   const defaultBoot: Boot = {
     configure: false,
     isDefault: false,
@@ -323,4 +323,4 @@ function build(apiModel: apiModel.Config): Model {
 }
 
 export type { Model, Boot, Drive, MdRaid, Partition, VolumeGroup, LogicalVolume, Formattable };
-export { build };
+export { buildModel };

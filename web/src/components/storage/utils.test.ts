@@ -20,8 +20,6 @@
  * find current contact information at www.suse.com.
  */
 
-import { storage } from "~/api/system";
-import { Volume } from "~/api/system/storage";
 import {
   deviceSize,
   deviceBaseName,
@@ -34,6 +32,8 @@ import {
   isTransactionalRoot,
   isTransactionalSystem,
 } from "./utils";
+import type { storage } from "~/api/system";
+import type { Volume } from "~/api/system/storage";
 
 /**
  * Volume factory.

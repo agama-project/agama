@@ -24,7 +24,7 @@ import { useCallback } from "react";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { getExtendedConfig, system, config } from "~/api";
 import { useSystem } from "~/hooks/api/system";
-import { Config } from "~/api/config";
+import type { Config } from "~/api/config";
 
 const extendedConfigQuery = {
   queryKey: ["extendedConfig"],

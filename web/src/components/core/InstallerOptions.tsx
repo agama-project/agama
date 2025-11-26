@@ -47,7 +47,6 @@ import {
 } from "@patternfly/react-core";
 import { Popup } from "~/components/core";
 import { Icon } from "~/components/layout";
-import { Keymap, Locale } from "~/api/system/l10n";
 import { useInstallerL10n } from "~/context/installerL10n";
 import { localConnection } from "~/utils";
 import { _ } from "~/i18n";
@@ -57,6 +56,7 @@ import { useProduct } from "~/hooks/api/config";
 import { useSystem } from "~/hooks/api/system";
 import { useStatus } from "~/hooks/api/status";
 import { patchConfig } from "~/api";
+import type { Keymap, Locale } from "~/api/system/l10n";
 
 /**
  * Props for select inputs

@@ -23,7 +23,7 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { extendedConfigQuery } from "~/hooks/api/config";
 import { putConfig, Response } from "~/api";
-import { Config } from "~/api/config";
+import type { Config } from "~/api/config";
 
 const removeStorageConfig = (data: Config | null): Config =>
   !data ? {} : { ...data, storage: null };
@@ -39,4 +39,4 @@ function useReset(): ResetFn {
 }
 
 export { useReset };
-export type { ResetFn as ResetConfigFn };
+export type { ResetFn };

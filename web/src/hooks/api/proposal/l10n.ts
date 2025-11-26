@@ -21,8 +21,8 @@
  */
 
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { Proposal, l10n } from "~/api/proposal";
 import { proposalQuery } from "~/hooks/api/proposal";
+import type { Proposal, l10n } from "~/api/proposal";
 
 const selectProposal = (data: Proposal | null): l10n.Proposal | null => data?.l10n;
 

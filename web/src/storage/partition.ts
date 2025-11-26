@@ -20,10 +20,10 @@
  * find current contact information at www.suse.com.
  */
 
-import { model } from "~/api/storage";
 import { copyApiModel, findDevice, buildPartition } from "~/storage/api-model";
 import { isUsed } from "~/storage/search";
-import { data } from "~/storage";
+import type { model } from "~/api/storage";
+import type { data } from "~/storage";
 
 type Partitionable = model.Drive | model.MdRaid;
 

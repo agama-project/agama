@@ -20,10 +20,10 @@
  * find current contact information at www.suse.com.
  */
 
-import { model } from "~/api/storage";
-import { data } from "~/storage";
 import { switchSearched } from "~/storage/search";
 import { copyApiModel } from "~/storage/api-model";
+import type { model } from "~/api/storage";
+import type { data } from "~/storage";
 
 function addDrive(apiModel: model.Config, data: data.Drive): model.Config {
   apiModel = copyApiModel(apiModel);

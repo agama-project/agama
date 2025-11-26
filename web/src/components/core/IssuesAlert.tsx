@@ -23,9 +23,9 @@
 import React from "react";
 import { Alert, List, ListItem } from "@patternfly/react-core";
 import { _ } from "~/i18n";
-import { Issue } from "~/api/issue";
 import Link from "./Link";
 import { PATHS } from "~/routes/software";
+import type { Issue } from "~/api/issue";
 
 export default function IssuesAlert({ issues }) {
   if (issues === undefined || issues.length === 0) return;

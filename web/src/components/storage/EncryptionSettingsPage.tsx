@@ -27,9 +27,9 @@ import { NestedContent, Page, PasswordAndConfirmationInput } from "~/components/
 import PasswordCheck from "~/components/users/PasswordCheck";
 import { useEncryptionMethods } from "~/hooks/api/system/storage";
 import { useEncryption } from "~/queries/storage/config-model";
-import { model } from "~/api/storage";
 import { isEmpty } from "radashi";
 import { _ } from "~/i18n";
+import type { model } from "~/api/storage";
 
 /**
  * Renders a form that allows the user change encryption settings

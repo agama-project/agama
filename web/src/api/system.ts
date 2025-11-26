@@ -20,9 +20,9 @@
  * find current contact information at www.suse.com.
  */
 
-import * as l10n from "~/api/system/l10n";
-import * as storage from "~/api/system/storage";
-import * as software from "~/api/system/software";
+import type * as l10n from "~/api/system/l10n";
+import type * as storage from "~/api/system/storage";
+import type * as software from "~/api/system/software";
 
 type System = {
   products?: Product[];
@@ -46,5 +46,4 @@ type Product = {
   license?: string;
 };
 
-export { l10n, storage, software };
-export type { System, Product };
+export type { System, Product, l10n, storage, software };

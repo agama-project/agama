@@ -22,10 +22,10 @@
 
 import { useCallback } from "react";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { System, storage } from "~/api/system";
-import { EncryptionMethod } from "~/api/system/storage";
 import { systemQuery } from "~/hooks/api/system";
 import { findDevices } from "~/storage/system";
+import type { System, storage } from "~/api/system";
+import type { EncryptionMethod } from "~/api/system/storage";
 
 const selectSystem = (data: System | null): storage.System => data?.storage;
 

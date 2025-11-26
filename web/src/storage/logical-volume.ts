@@ -20,9 +20,9 @@
  * find current contact information at www.suse.com.
  */
 
-import { model } from "~/api/storage";
 import { copyApiModel, buildLogicalVolume } from "~/storage/api-model";
-import { data } from "~/storage";
+import type { model } from "~/api/storage";
+import type { data } from "~/storage";
 
 function findVolumeGroupIndex(apiModel: model.Config, vgName: string): number {
   return (apiModel.volumeGroups || []).findIndex((v) => v.vgName === vgName);

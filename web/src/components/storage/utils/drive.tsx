@@ -21,10 +21,10 @@
  */
 
 import { _, n_, formatList } from "~/i18n";
-import { model } from "~/api/storage";
-import { Drive } from "~/storage/model";
 import { SpacePolicy, SPACE_POLICIES, baseName, formattedPath } from "~/components/storage/utils";
 import { sprintf } from "sprintf-js";
+import type { model } from "~/api/storage";
+import type { Drive } from "~/storage/model";
 
 /**
  * String to identify the drive.
