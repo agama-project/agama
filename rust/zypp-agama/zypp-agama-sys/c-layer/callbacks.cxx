@@ -34,7 +34,7 @@ struct ProgressReceive : zypp::callback::ReceiveReport<zypp::ProgressReport> {
       ProgressData data = {task.reportValue(), task.name().c_str()};
       return callback(data, user_data);
     } else {
-      return true;
+      return zypp::ProgressReport::progress(task);
     }
   }
 
@@ -94,10 +94,10 @@ struct DownloadProgressReceive : public zypp::callback::ReceiveReport<
                  const std::string &description) override {
     if (callbacks != NULL && callbacks->problem != NULL) {
       PROBLEM_RESPONSE response =
-          callbacks->problem(file.asString().c_str(), convert_error(error),
+          callbacks->problem(file.asString().c_str(), from_zypp_error(error),
                              description.c_str(), callbacks->problem_data);
 
-      return convert_action(response);
+      return into_action(response);
     }
     // otherwise return the default value from the parent class
     return zypp::media::DownloadProgressReport::problem(file, error,
@@ -108,14 +108,14 @@ struct DownloadProgressReceive : public zypp::callback::ReceiveReport<
               zypp::media::DownloadProgressReport::Error error,
               const std::string &reason) override {
     if (callbacks != NULL && callbacks->finish != NULL) {
-      callbacks->finish(file.asString().c_str(), convert_error(error),
+      callbacks->finish(file.asString().c_str(), from_zypp_error(error),
                         reason.c_str(), callbacks->finish_data);
     }
   }
 
 private:
   inline DownloadProgressError
-  convert_error(zypp::media::DownloadProgressReport::Error error) noexcept {
+  from_zypp_error(zypp::media::DownloadProgressReport::Error error) noexcept {
     switch (error) {
     case zypp::media::DownloadProgressReport::NO_ERROR:
       return DPE_NO_ERROR;
@@ -132,7 +132,7 @@ private:
   }
 
   inline zypp::media::DownloadProgressReport::Action
-  convert_action(PROBLEM_RESPONSE response) {
+  into_action(PROBLEM_RESPONSE response) {
     switch (response) {
     case PROBLEM_RETRY:
       return zypp::media::DownloadProgressReport::RETRY;
@@ -165,9 +165,9 @@ struct DownloadResolvableReport : public zypp::callback::ReceiveReport<
                                                            error, description);
 
     PROBLEM_RESPONSE response = callbacks->problem(
-        resolvable_ptr->name().c_str(), from_dre_error(error),
+        resolvable_ptr->name().c_str(), from_libzypp_error(error),
         description.c_str(), callbacks->problem_data);
-    return from_response(response);
+    return into_action(response);
   }
 
   void pkgGpgCheck(const UserData &userData_r = UserData()) override {
@@ -178,7 +178,7 @@ struct DownloadResolvableReport : public zypp::callback::ReceiveReport<
         userData_r.get<zypp::ResObject::constPtr>("ResObject");
     const zypp::RepoInfo repo = resobject->repoInfo();
     const std::string repo_url = repo.rawUrl().asString();
-    enum GPGCheckPackageResult result = from_rpm_result(
+    enum GPGCheckPackageResult result = from_zypp_result(
         userData_r.get<zypp::target::rpm::RpmDb::CheckPackageResult>(
             "CheckPackageResult"));
     OPTIONAL_PROBLEM_RESPONSE response =
@@ -209,7 +209,7 @@ private:
   }
 
   inline DownloadResolvableError
-  from_dre_error(zypp::repo::DownloadResolvableReport::Error error) {
+  from_libzypp_error(zypp::repo::DownloadResolvableReport::Error error) {
     switch (error) {
     case zypp::repo::DownloadResolvableReport::NO_ERROR:
       return DownloadResolvableError::DRE_NO_ERROR;
@@ -224,7 +224,7 @@ private:
     return DownloadResolvableError::DRE_NO_ERROR;
   }
 
-  inline Action from_response(PROBLEM_RESPONSE response) {
+  inline Action into_action(PROBLEM_RESPONSE response) {
     switch (response) {
     case PROBLEM_RETRY:
       return zypp::repo::DownloadResolvableReport::RETRY;
@@ -238,7 +238,7 @@ private:
   }
 
   inline GPGCheckPackageResult
-  from_rpm_result(zypp::target::rpm::RpmDb::CheckPackageResult result) {
+  from_zypp_result(zypp::target::rpm::RpmDb::CheckPackageResult result) {
     switch (result) {
     case zypp::target::rpm::RpmDb::CHK_OK:
       return GPGCheckPackageResult::CHK_OK;
@@ -290,14 +290,14 @@ struct CommitPreloadReport
       if (userData.hasvalue("description")) {
         error_details = userData.get<std::string>("description").c_str();
       }
-      callbacks->file_finish(url, local_path, from_dre_error(error),
+      callbacks->file_finish(url, local_path, from_libzypp_error(error),
                              error_details, callbacks->file_finish_data);
     }
   }
 
 private:
   inline DownloadResolvableFileError
-  from_dre_error(zypp::media::CommitPreloadReport::Error error) {
+  from_libzypp_error(zypp::media::CommitPreloadReport::Error error) {
     switch (error) {
     case zypp::media::CommitPreloadReport::NO_ERROR:
       return DownloadResolvableFileError::DRFE_NO_ERROR;
@@ -335,7 +335,7 @@ struct KeyRingReport
         key.id().c_str(), key.name().c_str(), key.fingerprint().c_str(),
         context.repoInfo().alias().c_str(), callbacks->accept_key_data);
 
-    return convert_trust(response);
+    return from_zypp_trust(response);
   }
 
   bool askUserToAcceptUnsignedFile(const std::string &file,
@@ -373,7 +373,7 @@ struct KeyRingReport
   }
 
 private:
-  inline zypp::KeyRingReport::KeyTrust convert_trust(GPGKeyTrust response) {
+  inline zypp::KeyRingReport::KeyTrust from_zypp_trust(GPGKeyTrust response) {
     switch (response) {
     case GPGKT_REJECT:
       return zypp::KeyRingReport::KEY_DONT_TRUST;
@@ -444,12 +444,12 @@ struct PatchScriptReport
     }
     PROBLEM_RESPONSE response = callbacks->script_problem(
         description.c_str(), callbacks->script_problem_data);
-    return convert_action(response);
+    return into_action(response);
   }
 
 private:
   inline zypp::target::PatchScriptReport::Action
-  convert_action(PROBLEM_RESPONSE response) {
+  into_action(PROBLEM_RESPONSE response) {
     switch (response) {
     case PROBLEM_RETRY:
       return zypp::target::PatchScriptReport::RETRY;
@@ -493,9 +493,9 @@ struct InstallResolvableReport
           resolvable, error, description, _level);
     }
     PROBLEM_RESPONSE response = callbacks->package_problem(
-        resolvable->name().c_str(), convert_error(error), description.c_str(),
+        resolvable->name().c_str(), from_zypp_error(error), description.c_str(),
         callbacks->package_problem_data);
-    return convert_action(response);
+    return into_action(response);
   }
 
   void finish(
@@ -511,7 +511,7 @@ struct InstallResolvableReport
 
 private:
   inline ZyppInstallPackageError
-  convert_error(zypp::target::rpm::InstallResolvableReport::Error error) {
+  from_zypp_error(zypp::target::rpm::InstallResolvableReport::Error error) {
     switch (error) {
     case zypp::target::rpm::InstallResolvableReport::Error::NO_ERROR:
       return ZyppInstallPackageError::PI_NO_ERROR;
@@ -526,7 +526,7 @@ private:
   }
 
   inline zypp::target::rpm::InstallResolvableReport::Action
-  convert_action(PROBLEM_RESPONSE response) {
+  into_action(PROBLEM_RESPONSE response) {
     switch (response) {
     case PROBLEM_RETRY:
       return zypp::target::rpm::InstallResolvableReport::RETRY;
