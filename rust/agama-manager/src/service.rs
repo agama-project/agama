@@ -18,11 +18,12 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::{l10n, message, network, software, storage};
+use crate::{files, l10n, message, network, software, storage};
 use agama_utils::{
     actor::{self, Actor, Handler, MessageHandler},
     api::{
         self, event,
+        files::scripts::ScriptsGroup,
         manager::{self, LicenseContent},
         status::State,
         Action, Config, Event, Issue, IssueMap, Proposal, Scope, Status, SystemInfo,
@@ -55,6 +56,8 @@ pub enum Error {
     #[error(transparent)]
     Storage(#[from] storage::service::Error),
     #[error(transparent)]
+    Files(#[from] files::service::Error),
+    #[error(transparent)]
     Issues(#[from] issue::service::Error),
     #[error(transparent)]
     Questions(#[from] question::service::Error),
@@ -80,6 +83,7 @@ pub struct Starter {
     network: Option<NetworkSystemClient>,
     software: Option<Handler<software::Service>>,
     storage: Option<Handler<storage::Service>>,
+    files: Option<Handler<files::Service>>,
     issues: Option<Handler<issue::Service>>,
     progress: Option<Handler<progress::Service>>,
 }
@@ -98,6 +102,7 @@ impl Starter {
             network: None,
             software: None,
             storage: None,
+            files: None,
             issues: None,
             progress: None,
         }
@@ -115,6 +120,11 @@ impl Starter {
 
     pub fn with_storage(mut self, storage: Handler<storage::Service>) -> Self {
         self.storage = Some(storage);
+        self
+    }
+
+    pub fn with_files(mut self, files: Handler<files::Service>) -> Self {
+        self.files = Some(files);
         self
     }
 
@@ -182,6 +192,15 @@ impl Starter {
             }
         };
 
+        let files = match self.files {
+            Some(files) => files,
+            None => {
+                files::Service::starter(self.events.clone(), progress.clone(), software.clone())
+                    .start()
+                    .await?
+            }
+        };
+
         let network = match self.network {
             Some(network) => network,
             None => network::start().await?,
@@ -196,6 +215,7 @@ impl Starter {
             network,
             software,
             storage,
+            files,
             products: products::Registry::default(),
             licenses: licenses::Registry::default(),
             // FIXME: state is already used for service state.
@@ -215,6 +235,7 @@ pub struct Service {
     software: Handler<software::Service>,
     network: NetworkSystemClient,
     storage: Handler<storage::Service>,
+    files: Handler<files::Service>,
     issues: Handler<issue::Service>,
     progress: Handler<progress::Service>,
     questions: Handler<question::Service>,
@@ -267,6 +288,14 @@ impl Service {
             return Err(Error::MissingProduct);
         };
 
+        self.files
+            .call(files::message::SetConfig::new(config.files.clone()))
+            .await?;
+
+        self.files
+            .call(files::message::RunScripts::new(ScriptsGroup::Pre))
+            .await?;
+
         self.questions
             .call(question::message::SetConfig::new(config.questions.clone()))
             .await?;
@@ -304,6 +333,16 @@ impl Service {
         let Some(product) = &self.product else {
             return Err(Error::MissingProduct);
         };
+
+        if let Some(files) = &config.files {
+            self.files
+                .call(files::message::SetConfig::with(files.clone()))
+                .await?;
+
+            self.files
+                .call(files::message::RunScripts::new(ScriptsGroup::Pre))
+                .await?;
+        }
 
         if let Some(l10n) = &config.l10n {
             self.l10n
