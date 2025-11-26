@@ -22,8 +22,9 @@
 
 import { useCallback } from "react";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { getExtendedConfig, system, config } from "~/api";
+import { getExtendedConfig } from "~/api";
 import { useSystem } from "~/hooks/api/system";
+import type { system } from "~/api";
 import type { Config } from "~/api/config";
 
 const extendedConfigQuery = {
@@ -35,19 +36,16 @@ function useExtendedConfig(): Config | null {
   return useSuspenseQuery(extendedConfigQuery)?.data;
 }
 
-function selectProduct(
-  products: system.Product[],
-  product: config.Product | null,
-): system.Product | null {
-  return products.find((p) => p.id === product?.id) || null;
-}
-
+// Returns the information of the current selected product from the list of products provided by
+// the system.
 function useProduct(): system.Product | null {
   const products = useSystem()?.products;
   const { data } = useSuspenseQuery({
     ...extendedConfigQuery,
     select: useCallback(
-      (data: Config | null): system.Product | null => selectProduct(products || [], data?.product),
+      (data: Config | null): system.Product | null => {
+        return products?.find((p) => p.id === data?.product?.id) || null;
+      },
       [products],
     ),
   });

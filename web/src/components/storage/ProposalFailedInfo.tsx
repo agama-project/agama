@@ -88,11 +88,11 @@ const Description = () => {
  *   - The generated proposal contains no errors.
  */
 export default function ProposalFailedInfo() {
-  const configErrors = useConfigIssues();
-  const errors = useIssues("storage");
+  const configIssues = useConfigIssues();
+  const issues = useIssues("storage");
 
-  if (configErrors.length !== 0) return;
-  if (errors.length === 0) return;
+  if (configIssues.length !== 0) return;
+  if (issues.length === 0) return;
 
   return (
     <Alert variant="warning" title={_("Failed to calculate a storage layout")}>

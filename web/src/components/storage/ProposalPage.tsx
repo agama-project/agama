@@ -303,7 +303,7 @@ export default function ProposalPage(): React.ReactNode {
   const model = useStorageModel();
   const availableDevices = useAvailableDevices();
   const proposal = useProposal();
-  const configErrors = useConfigIssues();
+  const configIssues = useConfigIssues();
   const progress = useProgress("storage");
   const navigate = useNavigate();
   const location = useLocation();
@@ -330,8 +330,8 @@ export default function ProposalPage(): React.ReactNode {
     "configOverusedPvTarget",
     "configOverusedMdMember",
   ];
-  const unfixableErrors = configErrors.filter((e) => !fixable.includes(e.class));
-  const isModelEditable = model && !unfixableErrors.length;
+  const unfixableIssues = configIssues.filter((e) => !fixable.includes(e.class));
+  const isModelEditable = model && !unfixableIssues.length;
   const hasDevices = !!availableDevices.length;
   const hasResult = !!proposal;
   const showSections = hasDevices && (isModelEditable || hasResult);
