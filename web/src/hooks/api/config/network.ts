@@ -20,9 +20,8 @@
  * find current contact information at www.suse.com.
  */
 
-import { useSuspenseQuery, useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useSuspenseQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Connection, NetworkConfig } from "~/types/network";
-import { QueryHookOptions } from "~/types/queries";
 import { network, Proposal } from "~/api/proposal";
 import { Config } from "~/api/config";
 import { Config as APIConfig } from "~/api/config/network";
