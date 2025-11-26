@@ -22,12 +22,11 @@
 #include <zypp/ZYpp.h>
 #include <zypp/ZYppCommit.h>
 #include <zypp/ZYppFactory.h>
+#define ZYPP_BASE_LOGGER_LOGGROUP "rust-bindings"
 #include <zypp/base/LogControl.h>
 #include <zypp/base/Logger.h>
 
 #include <zypp/ui/Selectable.h>
-
-#define ZYPP_BASE_LOGGER_LOGGROUP "rust-bindings"
 
 extern "C" {
 
@@ -159,20 +158,24 @@ void switch_target(struct Zypp *zypp, const char *root,
 
 bool commit(struct Zypp *zypp, struct Status *status,
             struct DownloadResolvableCallbacks *download_callbacks,
-            struct SecurityCallbacks *security_callbacks) noexcept {
+            struct SecurityCallbacks *security_callbacks,
+            struct InstallCallbacks *install_callbacks) noexcept {
   try {
     set_zypp_resolvable_download_callbacks(download_callbacks);
     set_zypp_security_callbacks(security_callbacks);
+    set_zypp_install_callbacks(install_callbacks);
     zypp::ZYppCommitPolicy policy;
     zypp::ZYppCommitResult result = zypp->zypp_pointer->commit(policy);
     STATUS_OK(status);
     unset_zypp_resolvable_download_callbacks();
     unset_zypp_security_callbacks();
+    unset_zypp_install_callbacks();
     return result.noError();
   } catch (zypp::Exception &excpt) {
     STATUS_EXCEPT(status, excpt);
     unset_zypp_resolvable_download_callbacks();
     unset_zypp_security_callbacks();
+    unset_zypp_install_callbacks();
     return false;
   }
 }
@@ -327,7 +330,8 @@ void resolvable_unselect(struct Zypp *_zypp, const char *name,
 
 void resolvable_reset_all(struct Zypp *_zypp) noexcept {
   MIL << "Resetting status of all resolvables" << std::endl;
-  for (auto &item: zypp::ResPool::instance()) item.statusReset();
+  for (auto &item : zypp::ResPool::instance())
+    item.statusReset();
 }
 
 struct PatternInfos get_patterns_info(struct Zypp *_zypp,

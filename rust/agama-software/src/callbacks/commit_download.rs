@@ -2,10 +2,9 @@ use agama_utils::{
     actor::Handler,
     api::question::QuestionSpec,
     progress,
-    question::{self, ask_question},
+    question::{self},
 };
 use gettextrs::gettext;
-use tokio::runtime::Handle;
 use zypp_agama::callbacks::pkg_download::{Callback, DownloadError};
 
 use crate::callbacks::ask_software_question;
