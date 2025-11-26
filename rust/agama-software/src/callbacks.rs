@@ -7,6 +7,8 @@ use agama_utils::{
 pub use commit_download::CommitDownload;
 mod security;
 pub use security::Security;
+mod install;
+pub use install::Install;
 use tokio::runtime::Handle;
 
 fn ask_software_question(

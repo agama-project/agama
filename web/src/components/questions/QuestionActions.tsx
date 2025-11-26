@@ -23,7 +23,7 @@
 import React from "react";
 import { Popup } from "~/components/core";
 import { fork } from "radashi";
-import { Action } from "~/api/question";
+import type { Action } from "~/api/question";
 
 /**
  * A component for building a Question actions, using the defaultAction

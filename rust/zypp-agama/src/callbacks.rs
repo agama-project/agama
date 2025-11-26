@@ -1,6 +1,7 @@
 use std::{fmt, str::FromStr};
 
 pub mod download_progress;
+pub mod install;
 pub mod pkg_download;
 pub mod security;
 

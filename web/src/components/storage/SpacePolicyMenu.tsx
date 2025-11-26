@@ -28,12 +28,13 @@ import Icon from "~/components/layout/Icon";
 import { useNavigate } from "react-router";
 import { useSetSpacePolicy } from "~/hooks/storage/space-policy";
 import { SPACE_POLICIES } from "~/components/storage/utils";
-import { apiModel, system } from "~/api/storage";
 import { STORAGE as PATHS } from "~/routes/paths";
 import * as driveUtils from "~/components/storage/utils/drive";
 import { generateEncodedPath } from "~/utils";
-import { model } from "~/types/storage";
 import { isEmpty } from "radashi";
+import type { storage as system } from "~/api/system";
+import type { model as apiModel } from "~/api/storage";
+import type { model } from "~/storage";
 
 const PolicyItem = ({ policy, modelDevice, isSelected, onClick }) => {
   return (

@@ -1,0 +1,37 @@
+/*
+ * Copyright (c) [2025] SUSE LLC
+ *
+ * All Rights Reserved.
+ *
+ * This program is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License as published by the Free
+ * Software Foundation; either version 2 of the License, or (at your option)
+ * any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+ * more details.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, contact SUSE LLC.
+ *
+ * To contact SUSE LLC about this file by physical or electronic mail, you may
+ * find current contact information at www.suse.com.
+ */
+
+import { useSuspenseQuery } from "@tanstack/react-query";
+import { systemQuery } from "~/hooks/api/system";
+import type { System, l10n } from "~/api/system";
+
+const selectSystem = (data: System | null): l10n.System => data?.l10n;
+
+function useSystem(): l10n.System | null {
+  const { data } = useSuspenseQuery({
+    ...systemQuery,
+    select: selectSystem,
+  });
+  return data;
+}
+
+export { useSystem };

@@ -23,19 +23,19 @@
 import React from "react";
 import { Content } from "@patternfly/react-core";
 import { deviceLabel } from "~/components/storage/utils";
-import { useAvailableDevices, useDevices, useIssues } from "~/hooks/storage/system";
-import { useConfigModel } from "~/queries/storage/config-model";
-import { storage } from "~/api/system";
-import { apiModel } from "~/api/storage";
+import { useAvailableDevices, useDevices, useIssues } from "~/hooks/api/system/storage";
+import { useStorageModel } from "~/hooks/api/storage";
 import { _ } from "~/i18n";
+import type { storage } from "~/api/system";
+import type { model } from "~/api/storage";
 
-const findDriveDevice = (drive: apiModel.Drive, devices: storage.Device[]) =>
+const findDriveDevice = (drive: model.Drive, devices: storage.Device[]) =>
   devices.find((d) => d.name === drive.name);
 
 const NoDeviceSummary = () => _("No device selected yet");
 
-const SingleDiskSummary = ({ drive }: { drive: apiModel.Drive }) => {
-  const devices = useDevices({ suspense: true });
+const SingleDiskSummary = ({ drive }: { drive: model.Drive }) => {
+  const devices = useDevices();
   const device = findDriveDevice(drive, devices);
   const options = {
     // TRANSLATORS: %s will be replaced by the device name and its size,
@@ -63,7 +63,7 @@ const SingleDiskSummary = ({ drive }: { drive: apiModel.Drive }) => {
   );
 };
 
-const MultipleDisksSummary = ({ drives }: { drives: apiModel.Drive[] }): string => {
+const MultipleDisksSummary = ({ drives }: { drives: model.Drive[] }): string => {
   const options = {
     resize: _("Install using several devices shrinking existing partitions as needed."),
     keep: _("Install using several devices without modifying existing partitions."),
@@ -78,8 +78,8 @@ const MultipleDisksSummary = ({ drives }: { drives: apiModel.Drive[] }): string 
   return options[drives[0].spacePolicy];
 };
 
-const ModelSummary = ({ model }: { model: apiModel.Config }): React.ReactNode => {
-  const devices = useDevices({ suspense: true });
+const ModelSummary = ({ model }: { model: model.Config }): React.ReactNode => {
+  const devices = useDevices();
   const drives = model?.drives || [];
   const existDevice = (name: string) => devices.some((d) => d.name === name);
   const noDrive = drives.length === 0 || drives.some((d) => !existDevice(d.name));
@@ -103,7 +103,7 @@ const NoModelSummary = (): React.ReactNode => {
  * Text explaining the storage proposal
  */
 export default function StorageSection() {
-  const configModel = useConfigModel({ suspense: true });
+  const configModel = useStorageModel();
 
   return (
     <Content>

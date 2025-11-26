@@ -137,7 +137,8 @@ struct DownloadResolvableCallbacks {
 
 /**
  * @brief What to do with an unknown GPG key.
- * @see zypp::KeyRingReport::KeyTrust in https://github.com/openSUSE/libzypp/blob/master/zypp-logic/zypp/KeyRing.h
+ * @see zypp::KeyRingReport::KeyTrust in
+ * https://github.com/openSUSE/libzypp/blob/master/zypp-logic/zypp/KeyRing.h
  */
 enum GPGKeyTrust {
   /** Reject the key. */
@@ -158,7 +159,8 @@ enum GPGKeyTrust {
  * an empty string if not available.
  * @param user_data User-defined data.
  * @return A GPGKeyTrust value indicating the action to take.
- *  @see zypp::KeyRingReport::askUserToAcceptKey in https://github.com/openSUSE/libzypp/blob/master/zypp-logic/zypp/KeyRing.h
+ *  @see zypp::KeyRingReport::askUserToAcceptKey in
+ * https://github.com/openSUSE/libzypp/blob/master/zypp-logic/zypp/KeyRing.h
  */
 typedef enum GPGKeyTrust (*GPGAcceptKeyCallback)(const char *key_id,
                                                  const char *key_name,
@@ -203,7 +205,8 @@ typedef bool (*GPGVerificationFailed)(const char *file, const char *key_id,
                                       const char *repository_alias,
                                       void *user_data);
 /**
- * @see zypp::DigestReport in https://github.com/openSUSE/libzypp/blob/master/zypp-logic/zypp/Digest.h
+ * @see zypp::DigestReport in
+ * https://github.com/openSUSE/libzypp/blob/master/zypp-logic/zypp/Digest.h
  */
 typedef bool (*ChecksumMissing)(const char *file, void *user_data);
 typedef bool (*ChecksumWrong)(const char *file, const char *expected,
@@ -250,6 +253,71 @@ struct SecurityCallbacks {
   ChecksumUnknown checksum_unknown;
   /** @brief User data for the `checksum_unknown` callback. */
   void *checksum_unknown_data;
+};
+
+/**
+ * @brief Errors that can occur during package installation.
+ * @see zypp::target::rpm::InstallResolvableReport::Error in libzypp.
+ */
+enum ZyppInstallPackageError {
+  /** @brief No error occurred. */
+  PI_NO_ERROR,
+  /** @brief The requested URL was not found. */
+  PI_NOT_FOUND,
+  /** @brief An I/O error occurred. */
+  PI_IO,
+  /** @brief The resolvable is invalid. */
+  PI_INVALID
+};
+
+/**
+ * @brief Callback invoked when the installation of a package starts.
+ * @param package_name The name of the package being installed.
+ * @param user_data User-defined data.
+ */
+typedef void (*ZyppInstallPackageStartCallback)(const char *package_name,
+                                                void *user_data);
+/**
+ * @brief Callback for handling problems during package installation.
+ * @param package_name The name of the package that has a problem.
+ * @param error The type of error that occurred.
+ * @param description A description of the problem.
+ * @param user_data User-defined data.
+ * @return A PROBLEM_RESPONSE value indicating how to proceed.
+ */
+typedef enum PROBLEM_RESPONSE (*ZyppInstallPackageProblemCallback)(
+    const char *package_name, enum ZyppInstallPackageError error,
+    const char *description, void *user_data);
+/**
+ * @brief Callback invoked when the installation of a package finishes.
+ * @note We could add a finish message after package install, but YaST does not.
+ * Should we do it with Agama?
+ * @param user_data User-defined data.
+ */
+typedef void (*ZyppInstallPackageFinishCallback)(const char *package_name,
+                                                 void *user_data);
+/**
+ * @brief Callback for handling problems in package installation scripts (e.g.,
+ * post-install).
+ * @param description A description of the script problem.
+ * @param user_data User-defined data.
+ * @return A PROBLEM_RESPONSE value indicating how to proceed.
+ */
+typedef enum PROBLEM_RESPONSE (*ZyppInstallScriptProblemCallback)(
+    const char *description, void *user_data);
+
+/**
+ * @brief Callbacks for monitoring the progress of package installation.
+ */
+struct InstallCallbacks {
+  ZyppInstallPackageStartCallback package_start;
+  void *package_start_data;
+  ZyppInstallPackageProblemCallback package_problem;
+  void *package_problem_data;
+  ZyppInstallScriptProblemCallback script_problem;
+  void *script_problem_data;
+  ZyppInstallPackageFinishCallback package_finish;
+  void *package_finish_data;
 };
 
 #ifdef __cplusplus

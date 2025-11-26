@@ -26,12 +26,12 @@ import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import { Link } from "~/components/core";
 import Icon from "~/components/layout/Icon";
 import { useEncryption } from "~/queries/storage/config-model";
-import { apiModel } from "~/api/storage";
 import { STORAGE } from "~/routes/paths";
 import { _ } from "~/i18n";
 import PasswordCheck from "~/components/users/PasswordCheck";
+import type { model } from "~/api/storage";
 
-function encryptionLabel(method?: apiModel.EncryptionMethod) {
+function encryptionLabel(method?: model.EncryptionMethod) {
   if (!method) return _("Encryption is disabled");
   if (method === "tpmFde") return _("Encryption is enabled using TPM unlocking");
 

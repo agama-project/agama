@@ -27,7 +27,7 @@ import { screen, within } from "@testing-library/react";
 import { deviceChildren, gib } from "~/components/storage/utils";
 import { plainRender } from "~/test-utils";
 import SpaceActionsTable, { SpaceActionsTableProps } from "~/components/storage/SpaceActionsTable";
-import { StorageDevice } from "~/types/storage";
+import { StorageDevice } from "~/storage";
 import { apiModel } from "~/api/storage/types";
 
 const sda: StorageDevice = {

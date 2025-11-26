@@ -26,12 +26,12 @@ import ConfigEditorItem from "~/components/storage/ConfigEditorItem";
 import DriveHeader from "~/components/storage/DriveHeader";
 import DeviceEditorContent from "~/components/storage/DeviceEditorContent";
 import SearchedDeviceMenu from "~/components/storage/SearchedDeviceMenu";
-import { model } from "~/types/storage";
-import { storage } from "~/api/system";
 import { CustomToggleProps } from "~/components/core/MenuButton";
 import { useDeleteDrive } from "~/hooks/storage/drive";
 import { Button, Flex, FlexItem } from "@patternfly/react-core";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
+import type { model } from "~/storage";
+import type { storage } from "~/api/system";
 
 type DriveDeviceMenuProps = {
   drive: model.Drive;

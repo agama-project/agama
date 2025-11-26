@@ -47,14 +47,16 @@ import {
 } from "@patternfly/react-core";
 import { Popup } from "~/components/core";
 import { Icon } from "~/components/layout";
-import { Keymap, Locale } from "~/api/l10n/system";
 import { useInstallerL10n } from "~/context/installerL10n";
 import { localConnection } from "~/utils";
 import { _ } from "~/i18n";
 import supportedLanguages from "~/languages.json";
 import { PRODUCT, ROOT, L10N } from "~/routes/paths";
-import { useSelectedProduct, useStatus, useSystem } from "~/hooks/api";
+import { useProduct } from "~/hooks/api/config";
+import { useSystem } from "~/hooks/api/system";
+import { useStatus } from "~/hooks/api/status";
 import { patchConfig } from "~/api";
+import type { Keymap, Locale } from "~/api/system/l10n";
 
 /**
  * Props for select inputs
@@ -87,7 +89,7 @@ const LangaugeFormInput = ({ value, onChange }: SelectProps) => (
 const KeyboardFormInput = ({ value, onChange }: SelectProps) => {
   const {
     l10n: { keymaps },
-  } = useSystem({ suspense: true });
+  } = useSystem();
 
   if (!localConnection()) {
     return (
@@ -551,10 +553,10 @@ export default function InstallerOptions({
   const location = useLocation();
   const {
     l10n: { locales },
-  } = useSystem({ suspense: true });
+  } = useSystem();
   const { language, keymap, changeLanguage, changeKeymap } = useInstallerL10n();
-  const { state } = useStatus({ suspense: true });
-  const selectedProduct = useSelectedProduct();
+  const { state } = useStatus();
+  const selectedProduct = useProduct();
   const initialFormState = {
     language,
     keymap,

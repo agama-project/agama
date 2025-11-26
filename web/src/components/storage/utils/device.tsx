@@ -22,8 +22,8 @@
 
 import { _ } from "~/i18n";
 import { sprintf } from "sprintf-js";
-import { system } from "~/api/storage";
 import { compact } from "~/utils";
+import type { storage as system } from "~/api/system";
 
 const driveTypeDescription = (device: system.Device): string => {
   if (device.drive.type === "multipath") {

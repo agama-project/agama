@@ -25,7 +25,7 @@ type Scope = "localization" | "product" | "software" | "storage" | "users" | "is
 type Issue = {
   scope: Scope;
   description: string;
-  kind: string;
+  class: string;
   details?: string;
 };
 

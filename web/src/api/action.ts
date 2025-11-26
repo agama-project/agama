@@ -39,11 +39,4 @@ type ProbeStorage = {
   probeStorage: null;
 };
 
-const configureL10n = (config: L10nSystemConfig): ConfigureL10n => ({ configureL10n: config });
-
-const activateStorage = (): ActivateStorage => ({ activateStorage: null });
-
-const probeStorage = (): ProbeStorage => ({ probeStorage: null });
-
-export { configureL10n, activateStorage, probeStorage };
 export type { Action, L10nSystemConfig };

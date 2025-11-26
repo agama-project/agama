@@ -24,12 +24,14 @@ import React from "react";
 import { screen } from "@testing-library/react";
 import { installerRender, mockRoutes } from "~/test-utils";
 import { createClient } from "~/client";
-import { useExtendedConfig, useStatus, useSystem } from "~/hooks/api";
+import { useExtendedConfig } from "~/hooks/api/config";
+import { useStatus } from "~/hooks/api/status";
+import { useSystem } from "~/hooks/api/system";
 import { Product } from "~/types/software";
-import { Config } from "~/api";
-import { Progress, State } from "~/api/status";
 import { PATHS } from "~/router";
 import { PRODUCT } from "~/routes/paths";
+import type { Config } from "~/api";
+import type { Progress, State } from "~/api/status";
 import App from "./App";
 import { System } from "~/api/network/system";
 

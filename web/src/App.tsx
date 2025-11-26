@@ -22,16 +22,11 @@
 
 import React, { useEffect } from "react";
 import { Navigate, Outlet, useLocation } from "react-router";
-import { useProductChanges } from "~/queries/software";
-import {
-  useSystemChanges,
-  useProposalChanges,
-  useIssuesChanges,
-  useStatus,
-  useExtendedConfig,
-  useStatusChanges,
-} from "~/hooks/api";
-import { useInstallerStatusChanges } from "~/queries/status";
+import { useStatusChanges, useStatus } from "~/hooks/api/status";
+import { useSystemChanges } from "~/hooks/api/system";
+import { useProposalChanges } from "~/hooks/api/proposal";
+import { useIssuesChanges } from "~/hooks/api/issue";
+import { useProduct } from "~/hooks/api/config";
 import { ROOT, PRODUCT } from "~/routes/paths";
 import { useQueryClient } from "@tanstack/react-query";
 import AlertOutOfSync from "~/components/core/AlertOutOfSync";
@@ -45,8 +40,8 @@ import { isEmpty } from "radashi";
  */
 const Content = () => {
   const location = useLocation();
-  const { product } = useExtendedConfig({ suspense: true });
-  const { progresses, state } = useStatus({ suspense: true });
+  const product = useProduct();
+  const { progresses, state } = useStatus();
   const isBusy = !isEmpty(progresses);
 
   console.log("App Content component", {
@@ -92,9 +87,7 @@ const Content = () => {
 function App() {
   useProposalChanges();
   useSystemChanges();
-  useProductChanges();
   useIssuesChanges();
-  useInstallerStatusChanges();
   useStatusChanges();
   const queryClient = useQueryClient();
 

@@ -35,9 +35,7 @@ import {
   TextInput,
 } from "@patternfly/react-core";
 import { Page, SubtleContent } from "~/components/core";
-import { useAvailableDevices } from "~/hooks/storage/system";
-import { model, data } from "~/types/storage";
-import { storage } from "~/api/system";
+import { useAvailableDevices } from "~/hooks/api/system/storage";
 import { useModel } from "~/hooks/storage/model";
 import {
   useVolumeGroup,
@@ -49,7 +47,9 @@ import { contentDescription, filesystemLabels, typeDescription } from "./utils/d
 import { STORAGE as PATHS } from "~/routes/paths";
 import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
-import { deviceSystems, isDrive } from "~/helpers/storage/device";
+import { deviceSystems, isDrive } from "~/storage/device";
+import type { model, data } from "~/storage";
+import type { storage } from "~/api/system";
 
 /**
  * Hook that returns the devices that can be selected as target to automatically create LVM PVs.
@@ -58,7 +58,7 @@ import { deviceSystems, isDrive } from "~/helpers/storage/device";
  */
 function useLvmTargetDevices(): storage.Device[] {
   const availableDevices = useAvailableDevices();
-  const model = useModel({ suspense: true });
+  const model = useModel();
 
   const targetDevices = useMemo(() => {
     return availableDevices.filter((candidate) => {

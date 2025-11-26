@@ -70,7 +70,7 @@ module Agama
               ),
               missing_paths.join(", ")
             ),
-            kind: :required_filesystems
+            kind: IssueClasses::Config::REQUIRED_PATHS
           )
         end
 

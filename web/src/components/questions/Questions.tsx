@@ -28,9 +28,10 @@ import PackageErrorQuestion from "~/components/questions/PackageErrorQuestion";
 import UnsupportedAutoYaST from "~/components/questions/UnsupportedAutoYaST";
 import RegistrationCertificateQuestion from "~/components/questions/RegistrationCertificateQuestion";
 import LoadConfigRetryQuestion from "~/components/questions/LoadConfigRetryQuestion";
-import { useQuestions, useQuestionsChanges } from "~/hooks/api";
+import { useQuestions, useQuestionsChanges } from "~/hooks/api/question";
 import { patchQuestion } from "~/api";
-import { AnswerCallback, FieldType } from "~/api/question";
+import { FieldType } from "~/api/question";
+import type { AnswerCallback } from "~/api/question";
 
 export default function Questions(): React.ReactNode {
   useQuestionsChanges();

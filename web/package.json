@@ -88,7 +88,6 @@
     "webpack-dev-server": "^5.2.2"
   },
   "dependencies": {
-    "@date-fns/tz": "^1.4.1",
     "@material-symbols/svg-400": "^0.34.1",
     "@material-symbols/svg-700": "^0.34.1",
     "@patternfly/patternfly": "^6.3.1",

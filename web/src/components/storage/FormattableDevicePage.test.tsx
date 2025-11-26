@@ -24,7 +24,7 @@ import React from "react";
 import { screen, within } from "@testing-library/react";
 import { installerRender, mockParams } from "~/test-utils";
 import FormattableDevicePage from "~/components/storage/FormattableDevicePage";
-import { StorageDevice, model } from "~/types/storage";
+import { StorageDevice, model } from "~/storage";
 import { Volume } from "~/api/storage/types";
 import { gib } from "./utils";
 

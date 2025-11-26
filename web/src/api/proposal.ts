@@ -20,17 +20,16 @@
  * find current contact information at www.suse.com.
  */
 
-import * as l10n from "~/api/l10n/proposal";
-import * as storage from "~/api/storage/proposal";
-import * as software from "~/api/software/proposal";
-import * as network from "~/api/network/proposal";
+import type * as l10n from "~/api/proposal/l10n";
+import type * as network from "~/api/network/proposal";
+import type * as software from "~/api/proposal/software";
+import type * as storage from "~/api/proposal/storage";
 
 type Proposal = {
   l10n?: l10n.Proposal;
-  storage?: storage.Proposal;
-  software?: software.Proposal;
   network: network.Proposal;
+  software?: software.Proposal;
+  storage?: storage.Proposal;
 };
 
-export { l10n, storage, software, network };
-export type { Proposal };
+export type { Proposal, l10n, network, storage, software };

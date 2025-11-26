@@ -20,18 +20,32 @@
  * find current contact information at www.suse.com.
  */
 
-import * as l10n from "~/api/l10n/system";
-import * as storage from "~/api/storage/system";
-import { AddonInfo, Pattern, Product, Repository } from "~/types/software";
-import * as network from "~/api/network/system";
+import type * as l10n from "~/api/system/l10n";
+import type * as network from "~/api/network/system";
+import type * as software from "~/api/system/software";
+import type * as storage from "~/api/system/storage";
 
 type System = {
   l10n?: l10n.System;
   network: network.System;
   products?: Product[];
-  software?: { addons: AddonInfo[]; patterns: Pattern[]; repositories: Repository[] };
+  software?: software.System;
   storage?: storage.System;
 };
 
-export { l10n, storage, network };
-export type { System };
+type Product = {
+  /** Product ID (e.g., "Leap") */
+  id: string;
+  /** Product name (e.g., "openSUSE Leap 15.4") */
+  name: string;
+  /** Product description */
+  description?: string;
+  /** Product icon (e.g., "default.svg") */
+  icon?: string;
+  /** If product is registrable or not */
+  registration: boolean;
+  /** The product license id, if any */
+  license?: string;
+};
+
+export type { System, Product, l10n, network, software, storage };

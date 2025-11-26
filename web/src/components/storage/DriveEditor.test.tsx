@@ -24,7 +24,7 @@ import React from "react";
 import { screen, within } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import DriveEditor from "~/components/storage/DriveEditor";
-import { StorageDevice, model } from "~/types/storage";
+import { StorageDevice, model } from "~/storage";
 import { Volume } from "~/api/storage/types";
 
 const mockDeleteDrive = jest.fn();

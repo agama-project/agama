@@ -21,22 +21,16 @@
  */
 
 import { get, patch, post, put } from "~/http";
-import { apiModel } from "~/api/storage";
-import { Config } from "~/api/config";
-import { Issue } from "~/api/issue";
-import { Proposal } from "~/api/proposal";
-import { Question } from "~/api/question";
-import { Status } from "~/api/status";
-import { System } from "~/api/system";
-import {
-  Action,
-  L10nSystemConfig,
-  configureL10n,
-  activateStorage,
-  probeStorage,
-} from "~/api/action";
-import { AxiosResponse } from "axios";
-import { Job } from "~/types/job";
+import type { model } from "~/api/storage";
+import type { Config } from "~/api/config";
+import type { Issue } from "~/api/issue";
+import type { Proposal } from "~/api/proposal";
+import type { Question } from "~/api/question";
+import type { Status } from "~/api/status";
+import type { System } from "~/api/system";
+import type { Action, L10nSystemConfig } from "~/api/action";
+import type { AxiosResponse } from "axios";
+import type { Job } from "~/types/job";
 
 type Response = Promise<AxiosResponse>;
 
@@ -54,16 +48,16 @@ const getIssues = (): Promise<Issue[]> => get("/api/v2/issues");
 
 const getQuestions = (): Promise<Question[]> => get("/api/v2/questions");
 
-const getStorageModel = (): Promise<apiModel.Config | null> => get("/api/v2/private/storage_model");
+const getStorageModel = (): Promise<model.Config | null> => get("/api/v2/private/storage_model");
 
-const solveStorageModel = (model: apiModel.Config): Promise<apiModel.Config | null> => {
+const solveStorageModel = (model: model.Config): Promise<model.Config | null> => {
   const json = encodeURIComponent(JSON.stringify(model));
   return get(`/api/v2/private/solve_storage_model?model=${json}`);
 };
 
 const putConfig = (config: Config): Response => put("/api/v2/config", config);
 
-const putStorageModel = (model: apiModel.Config) => put("/api/v2/private/storage_model", model);
+const putStorageModel = (model: model.Config) => put("/api/v2/private/storage_model", model);
 
 const patchConfig = (config: Config) => patch("/api/v2/config", { update: config });
 
@@ -77,11 +71,11 @@ const patchQuestion = (question: Question): Response => {
 
 const postAction = (action: Action) => post("/api/v2/action", action);
 
-const configureL10nAction = (config: L10nSystemConfig) => postAction(configureL10n(config));
+const configureL10nAction = (config: L10nSystemConfig) => postAction({ configureL10n: config });
 
-const activateStorageAction = () => postAction(activateStorage());
+const activateStorageAction = () => postAction({ activateStorage: null });
 
-const probeStorageAction = () => postAction(probeStorage());
+const probeStorageAction = () => postAction({ probeStorage: null });
 
 /**
  * @todo Adapt jobs to the new API.
@@ -109,7 +103,7 @@ export {
 };
 
 export type { Response, System, Config, Proposal };
-export * as system from "~/api/system";
-export * as config from "~/api/config";
-export * as proposal from "~/api/proposal";
-export * as issue from "~/api/issue";
+export type * as system from "~/api/system";
+export type * as config from "~/api/config";
+export type * as proposal from "~/api/proposal";
+export type * as issue from "~/api/issue";

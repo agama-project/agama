@@ -20,7 +20,4 @@
  * find current contact information at www.suse.com.
  */
 
-export * as config from "~/api/storage/config";
-export * as apiModel from "~/api/storage/model";
-export * as system from "~/api/storage/system";
-export * as proposal from "~/api/storage/proposal";
+export type * as model from "~/api/storage/model";

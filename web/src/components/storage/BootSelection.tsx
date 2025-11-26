@@ -26,11 +26,9 @@ import { ActionGroup, Content, Form, FormGroup, Radio, Stack } from "@patternfly
 import { DevicesFormSelect } from "~/components/storage";
 import { Page, SubtleContent } from "~/components/core";
 import { deviceLabel, formattedPath } from "~/components/storage/utils";
-import { useCandidateDevices, useDevices } from "~/hooks/storage/system";
+import { useCandidateDevices, useDevices } from "~/hooks/api/system/storage";
 import { useModel } from "~/hooks/storage/model";
-import { storage } from "~/api/system";
-import { Model } from "~/types/storage/model";
-import { isDrive } from "~/helpers/storage/device";
+import { isDrive } from "~/storage/device";
 import {
   useSetBootDevice,
   useSetDefaultBootDevice,
@@ -39,6 +37,8 @@ import {
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
+import type { storage } from "~/api/system";
+import type { Model } from "~/storage/model";
 
 const filteredCandidates = (candidates: storage.Device[], model: Model): storage.Device[] => {
   return candidates.filter((candidate) => {
@@ -67,16 +67,18 @@ type BootSelectionState = {
 /**
  * Allows the user to select the boot configuration.
  */
-export default function BootSelectionDialog() {
+export default function BootSelection() {
   const location = useLocation();
   const [state, setState] = useState<BootSelectionState>({ load: false });
   const navigate = useNavigate();
   const devices = useDevices();
-  const model = useModel({ suspense: true });
-  const candidateDevices = filteredCandidates(useCandidateDevices(), model);
+  const model = useModel();
+  const allCandidateDevices = useCandidateDevices();
   const setBootDevice = useSetBootDevice();
   const setDefaultBootDevice = useSetDefaultBootDevice();
   const disableBootConfig = useDisableBootConfig();
+
+  const candidateDevices = filteredCandidates(allCandidateDevices, model);
 
   useEffect(() => {
     if (state.load || !model) return;

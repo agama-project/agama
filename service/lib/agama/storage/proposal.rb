@@ -27,6 +27,7 @@ require "agama/storage/config_json_generator"
 require "agama/storage/config_solver"
 require "agama/storage/model_support_checker"
 require "agama/storage/proposal_strategies"
+require "agama/storage/issue_classes"
 require "agama/storage/system"
 require "json"
 require "yast"
@@ -302,7 +303,7 @@ module Agama
       def failed_issue
         Issue.new(
           _("Cannot calculate a valid storage setup with the current configuration"),
-          kind: :proposal
+          kind: IssueClasses::PROPOSAL
         )
       end
 
@@ -312,7 +313,7 @@ module Agama
       def exception_issue(error)
         Issue.new(
           _("A problem ocurred while calculating the storage setup"),
-          kind:    :proposal,
+          kind:    IssueClasses::PROPOSAL,
           details: error.message
         )
       end
