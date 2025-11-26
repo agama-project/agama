@@ -44,8 +44,8 @@ pub struct Repository {
     pub url: String,
     /// Whether the repository is enabled
     pub enabled: bool,
-    /// Whether the repository is mandatory (offline base repo, DUD repositories, etc.)
-    pub mandatory: bool,
+    /// Whether the repository is predefined (offline base repo, DUD repositories, etc.)
+    pub predefined: bool,
 }
 
 #[derive(Clone, Debug, Serialize, utoipa::ToSchema)]
