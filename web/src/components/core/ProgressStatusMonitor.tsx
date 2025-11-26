@@ -30,11 +30,11 @@ import {
   Progress,
   Stack,
 } from "@patternfly/react-core";
-import { useStatus } from "~/hooks/api";
-import { Progress as StatusProgress } from "~/api/status";
+import { useStatus } from "~/hooks/api/status";
 import { sprintf } from "sprintf-js";
 import { _, N_, n_ } from "~/i18n";
 import displayStyles from "@patternfly/react-styles/css/utilities/Display/display";
+import type { Progress as StatusProgress } from "~/api/status";
 
 type DetailProps = {
   tasks: StatusProgress[];

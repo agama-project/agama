@@ -25,7 +25,8 @@ import { Content, Flex, Form, FormGroup, Radio } from "@patternfly/react-core";
 import { useNavigate } from "react-router";
 import { ListSearch, Page } from "~/components/core";
 import { patchConfig } from "~/api";
-import { useSystem, useProposal } from "~/hooks/api";
+import { useProposal } from "~/hooks/api/proposal/l10n";
+import { useSystem } from "~/hooks/api/system/l10n";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import { _ } from "~/i18n";
 
@@ -33,12 +34,8 @@ import { _ } from "~/i18n";
 // TODO: Evaluate if worth it extracting the selector
 export default function LocaleSelection() {
   const navigate = useNavigate();
-  const {
-    l10n: { locales },
-  } = useSystem({ suspense: true });
-  const {
-    l10n: { locale: currentLocale },
-  } = useProposal({ suspense: true });
+  const locales = useSystem()?.locales;
+  const currentLocale = useProposal()?.locale;
   const [selected, setSelected] = useState(currentLocale);
   const [filteredLocales, setFilteredLocales] = useState(locales);
 

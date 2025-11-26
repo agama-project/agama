@@ -50,15 +50,16 @@ import { SelectWrapperProps as SelectProps } from "~/components/core/SelectWrapp
 import SelectTypeaheadCreatable from "~/components/core/SelectTypeaheadCreatable";
 import { useAddFilesystem } from "~/hooks/storage/filesystem";
 import { useModel, useMissingMountPaths } from "~/hooks/storage/model";
-import { useDevices, useVolumeTemplate } from "~/hooks/storage/system";
-import { data, model } from "~/types/storage";
+import { useDevices, useVolumeTemplate } from "~/hooks/api/system/storage";
+import { data, model } from "~/storage";
 import { deviceBaseName, filesystemLabel } from "~/components/storage/utils";
 import { _ } from "~/i18n";
 import { sprintf } from "sprintf-js";
-import { apiModel, system } from "~/api/storage";
 import { STORAGE as PATHS } from "~/routes/paths";
 import { unique } from "radashi";
 import { compact } from "~/utils";
+import type { model as apiModel } from "~/api/storage";
+import type { storage as system } from "~/api/system";
 
 const NO_VALUE = "";
 const BTRFS_SNAPSHOTS = "btrfsSnapshots";
@@ -139,13 +140,13 @@ function toFormValue(deviceModel: DeviceModel): FormValue {
 
 function useDeviceModel(): DeviceModel {
   const { list, listIndex } = useParams();
-  const model = useModel({ suspense: true });
+  const model = useModel();
   return model[list].at(listIndex);
 }
 
 function useDevice(): system.Device {
   const deviceModel = useDeviceModel();
-  const devices = useDevices({ suspense: true });
+  const devices = useDevices();
   return devices.find((d) => d.name === deviceModel.name);
 }
 
@@ -155,7 +156,7 @@ function useCurrentFilesystem(): string | null {
 }
 
 function useDefaultFilesystem(mountPoint: string): string {
-  const volume = useVolumeTemplate(mountPoint, { suspense: true });
+  const volume = useVolumeTemplate(mountPoint);
   return volume.mountPath === "/" && volume.snapshots ? BTRFS_SNAPSHOTS : volume.fsType;
 }
 
@@ -201,7 +202,7 @@ function useUsableFilesystems(mountPoint: string): string[] {
 }
 
 function useMountPointError(value: FormValue): Error | undefined {
-  const model = useModel({ suspense: true });
+  const model = useModel();
   const mountPoints = model?.getMountPaths() || [];
   const deviceModel = useDeviceModel();
   const mountPoint = value.mountPoint;

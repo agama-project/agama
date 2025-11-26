@@ -20,6 +20,7 @@
 # find current contact information at www.suse.com.
 
 require "agama/issue"
+require "agama/storage/issue_classes"
 
 module Agama
   module Storage

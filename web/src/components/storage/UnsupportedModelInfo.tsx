@@ -23,15 +23,15 @@
 import React from "react";
 import { Alert, Button, Content, Stack, StackItem } from "@patternfly/react-core";
 import { _ } from "~/i18n";
-import { useConfigModel } from "~/queries/storage/config-model";
-import { useResetConfig } from "~/hooks/storage/config";
+import { useStorageModel } from "~/hooks/api/storage";
+import { useReset } from "~/hooks/api/config/storage";
 
 /**
  * Info about unsupported model.
  */
 export default function UnsupportedModelInfo(): React.ReactNode {
-  const model = useConfigModel({ suspense: true });
-  const reset = useResetConfig();
+  const model = useStorageModel();
+  const reset = useReset();
 
   if (model) return null;
 

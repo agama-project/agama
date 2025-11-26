@@ -55,17 +55,19 @@ import { useModel, useMissingMountPaths } from "~/hooks/storage/model";
 import {
   addPartition as addPartitionHelper,
   editPartition as editPartitionHelper,
-} from "~/helpers/storage/partition";
-import { useDevices, useVolumeTemplate } from "~/hooks/storage/system";
-import { useConfigModel, useSolvedConfigModel } from "~/queries/storage/config-model";
-import { findDevice } from "~/helpers/storage/api-model";
+} from "~/storage/partition";
+import { useDevices, useVolumeTemplate } from "~/hooks/api/system/storage";
+import { useSolvedConfigModel } from "~/queries/storage/config-model";
+import { useStorageModel } from "~/hooks/api/storage";
+import { findDevice } from "~/storage/api-model";
 import { deviceSize, deviceLabel, filesystemLabel, parseToBytes } from "~/components/storage/utils";
 import { _ } from "~/i18n";
 import { sprintf } from "sprintf-js";
-import { apiModel, system } from "~/api/storage";
 import { STORAGE as PATHS, STORAGE } from "~/routes/paths";
 import { isUndefined, unique } from "radashi";
 import { compact } from "~/utils";
+import type { model } from "~/api/storage";
+import type { storage as system } from "~/api/system";
 
 const NO_VALUE = "";
 const NEW_PARTITION = "new";
@@ -94,14 +96,14 @@ type ErrorsHandler = {
   getVisibleError: (id: string) => Error | undefined;
 };
 
-function toPartitionConfig(value: FormValue): apiModel.Partition {
+function toPartitionConfig(value: FormValue): model.Partition {
   const name = (): string | undefined => {
     if (value.target === NO_VALUE || value.target === NEW_PARTITION) return undefined;
 
     return value.target;
   };
 
-  const filesystemType = (): apiModel.FilesystemType | undefined => {
+  const filesystemType = (): model.FilesystemType | undefined => {
     if (value.filesystem === NO_VALUE) return undefined;
     if (value.filesystem === BTRFS_SNAPSHOTS) return "btrfs";
 
@@ -112,10 +114,10 @@ function toPartitionConfig(value: FormValue): apiModel.Partition {
      *  This will be fixed in the future by directly exporting the volumes as a JSON, similar to the
      *  config model. The schema for the volumes will define the explicit list of filesystem types.
      */
-    return value.filesystem as apiModel.FilesystemType;
+    return value.filesystem as model.FilesystemType;
   };
 
-  const filesystem = (): apiModel.Filesystem | undefined => {
+  const filesystem = (): model.Filesystem | undefined => {
     if (value.filesystem === REUSE_FILESYSTEM) return { reuse: true, default: true };
 
     const type = filesystemType();
@@ -129,7 +131,7 @@ function toPartitionConfig(value: FormValue): apiModel.Partition {
     };
   };
 
-  const size = (): apiModel.Size | undefined => {
+  const size = (): model.Size | undefined => {
     if (value.sizeOption === "auto") return undefined;
     if (value.minSize === NO_VALUE) return undefined;
 
@@ -148,7 +150,7 @@ function toPartitionConfig(value: FormValue): apiModel.Partition {
   };
 }
 
-function toFormValue(partitionConfig: apiModel.Partition): FormValue {
+function toFormValue(partitionConfig: model.Partition): FormValue {
   const mountPoint = (): string => partitionConfig.mountPath || NO_VALUE;
 
   const target = (): string => partitionConfig.name || NEW_PARTITION;
@@ -189,13 +191,13 @@ function toFormValue(partitionConfig: apiModel.Partition): FormValue {
 
 function useModelDevice() {
   const { list, listIndex } = useParams();
-  const model = useModel({ suspense: true });
+  const model = useModel();
   return model[list].at(listIndex);
 }
 
 function useDevice(): system.Device {
   const modelDevice = useModelDevice();
-  const devices = useDevices({ suspense: true });
+  const devices = useDevices();
   return devices.find((d) => d.name === modelDevice.name);
 }
 
@@ -219,7 +221,7 @@ function useDefaultFilesystem(mountPoint: string): string {
   return volume.mountPath === "/" && volume.snapshots ? BTRFS_SNAPSHOTS : volume.fsType;
 }
 
-function useInitialPartitionConfig(): apiModel.Partition | null {
+function useInitialPartitionConfig(): model.Partition | null {
   const { partitionId: mountPath } = useParams();
   const device = useModelDevice();
 
@@ -287,7 +289,7 @@ function useUsableFilesystems(mountPoint: string): string[] {
 }
 
 function useMountPointError(value: FormValue): Error | undefined {
-  const model = useModel({ suspense: true });
+  const model = useModel();
   const mountPoints = model?.getMountPaths() || [];
   const initialPartitionConfig = useInitialPartitionConfig();
   const mountPoint = value.mountPoint;
@@ -384,16 +386,16 @@ function useErrors(value: FormValue): ErrorsHandler {
   return { errors, getError, getVisibleError };
 }
 
-function useSolvedModel(value: FormValue): apiModel.Config | null {
+function useSolvedModel(value: FormValue): model.Config | null {
   const device = useModelDevice();
-  const model = useConfigModel();
+  const model = useStorageModel();
   const { errors } = useErrors(value);
   const initialPartitionConfig = useInitialPartitionConfig();
   const partitionConfig = toPartitionConfig(value);
   partitionConfig.size = undefined;
   if (partitionConfig.filesystem) partitionConfig.filesystem.label = undefined;
 
-  let sparseModel: apiModel.Config | undefined;
+  let sparseModel: model.Config | undefined;
 
   if (device && !errors.length && value.target === NEW_PARTITION && value.filesystem !== NO_VALUE) {
     if (initialPartitionConfig) {
@@ -413,7 +415,7 @@ function useSolvedModel(value: FormValue): apiModel.Config | null {
   return solvedModel;
 }
 
-function useSolvedPartitionConfig(value: FormValue): apiModel.Partition | undefined {
+function useSolvedPartitionConfig(value: FormValue): model.Partition | undefined {
   const model = useSolvedModel(value);
   const { list, listIndex } = useModelDevice();
   if (!model) return;

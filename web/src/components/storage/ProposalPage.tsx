@@ -52,11 +52,11 @@ import ProposalFailedInfo from "./ProposalFailedInfo";
 import ProposalResultSection from "./ProposalResultSection";
 import ProposalTransactionalInfo from "./ProposalTransactionalInfo";
 import UnsupportedModelInfo from "./UnsupportedModelInfo";
-import { useAvailableDevices } from "~/hooks/storage/system";
-import { useScopeIssues } from "~/hooks/api";
-import { useResetConfig } from "~/hooks/storage/config";
-import { useProposal } from "~/hooks/storage/proposal";
-import { useConfigModel } from "~/queries/storage/config-model";
+import { useAvailableDevices } from "~/hooks/api/system/storage";
+import { useConfigIssues } from "~/hooks/storage/issue";
+import { useReset } from "~/hooks/api/config/storage";
+import { useProposal } from "~/hooks/api/proposal/storage";
+import { useStorageModel } from "~/hooks/api/storage";
 import { useZFCPSupported } from "~/queries/storage/zfcp";
 import { useDASDSupported } from "~/queries/storage/dasd";
 import { STORAGE as PATHS } from "~/routes/paths";
@@ -68,8 +68,8 @@ import MenuButton from "../core/MenuButton";
 import spacingStyles from "@patternfly/react-styles/css/utilities/Spacing/spacing";
 
 function InvalidConfigEmptyState(): React.ReactNode {
-  const errors = useScopeIssues("storage");
-  const reset = useResetConfig();
+  const errors = useConfigIssues();
+  const reset = useReset();
 
   return (
     <EmptyState
@@ -106,7 +106,7 @@ function InvalidConfigEmptyState(): React.ReactNode {
 }
 
 function UnknowConfigEmptyState(): React.ReactNode {
-  const reset = useResetConfig();
+  const reset = useReset();
 
   return (
     <EmptyState
@@ -176,7 +176,7 @@ function UnavailableDevicesEmptyState(): React.ReactNode {
 }
 
 function ProposalEmptyState(): React.ReactNode {
-  const model = useConfigModel({ suspense: true });
+  const model = useStorageModel();
   const availableDevices = useAvailableDevices();
 
   if (!availableDevices.length) return <UnavailableDevicesEmptyState />;
@@ -186,9 +186,9 @@ function ProposalEmptyState(): React.ReactNode {
 
 function ProposalSections(): React.ReactNode {
   const { uiState, setUiState } = useStorageUiState();
-  const model = useConfigModel({ suspense: true });
+  const model = useStorageModel();
   const proposal = useProposal();
-  const reset = useResetConfig();
+  const reset = useReset();
   const handleTabClick = (
     event: React.MouseEvent | React.KeyboardEvent | MouseEvent,
     tabIndex: number,
@@ -300,10 +300,10 @@ function ProposalSections(): React.ReactNode {
  *  and test them individually. The proposal page should simply mount all those components.
  */
 export default function ProposalPage(): React.ReactNode {
-  const model = useConfigModel({ suspense: true });
+  const model = useStorageModel();
   const availableDevices = useAvailableDevices();
   const proposal = useProposal();
-  const issues = useScopeIssues("storage");
+  const configIssues = useConfigIssues();
   const progress = useProgress("storage");
   const navigate = useNavigate();
   const location = useLocation();
@@ -324,11 +324,16 @@ export default function ProposalPage(): React.ReactNode {
     }
   }, [resetNeeded, setUiState]);
 
-  const fixable = ["no_root", "required_filesystems", "vg_target_devices", "reused_md_member"];
-  const unfixableErrors = issues.filter((e) => !fixable.includes(e.kind));
-  const isModelEditable = model && !unfixableErrors.length;
+  const fixable = [
+    "configNoRoot",
+    "configRequiredPaths",
+    "configOverusedPvTarget",
+    "configOverusedMdMember",
+  ];
+  const unfixableIssues = configIssues.filter((e) => !fixable.includes(e.class));
+  const isModelEditable = model && !unfixableIssues.length;
   const hasDevices = !!availableDevices.length;
-  const hasResult = proposal !== null;
+  const hasResult = !!proposal;
   const showSections = hasDevices && (isModelEditable || hasResult);
 
   if (resetNeeded) return;

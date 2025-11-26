@@ -25,10 +25,10 @@ import UnusedMenu from "~/components/storage/UnusedMenu";
 import FilesystemMenu from "~/components/storage/FilesystemMenu";
 import PartitionsSection from "~/components/storage/PartitionsSection";
 import SpacePolicyMenu from "~/components/storage/SpacePolicyMenu";
-import { model } from "~/types/storage";
-import { system } from "~/api/storage";
+import type { model } from "~/storage";
+import type { storage } from "~/api/system";
 
-type DeviceEditorContentProps = { deviceModel: model.Drive | model.MdRaid; device: system.Device };
+type DeviceEditorContentProps = { deviceModel: model.Drive | model.MdRaid; device: storage.Device };
 
 export default function DeviceEditorContent({
   deviceModel,

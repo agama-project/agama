@@ -32,9 +32,9 @@ import {
   StackItem,
 } from "@patternfly/react-core";
 import { Popup } from "~/components/core";
-import { AnswerCallback, Question } from "~/api/question";
 import QuestionActions from "~/components/questions/QuestionActions";
 import { _ } from "~/i18n";
+import type { AnswerCallback, Question } from "~/api/question";
 
 type QuestionDataProps = {
   label: string;

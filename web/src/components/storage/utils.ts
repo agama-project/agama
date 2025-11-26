@@ -29,10 +29,12 @@
 
 import xbytes from "xbytes";
 import { _, N_ } from "~/i18n";
-import { model } from "~/types/storage";
-import { Volume } from "~/api/storage/system";
-import { system, proposal, apiModel } from "~/api/storage";
 import { sprintf } from "sprintf-js";
+import type { model } from "~/storage";
+import type { Volume } from "~/api/system/storage";
+import type { model as apiModel } from "~/api/storage";
+import type { storage as system } from "~/api/system";
+import type { storage as proposal } from "~/api/proposal";
 
 /**
  * @note undefined for either property means unknown

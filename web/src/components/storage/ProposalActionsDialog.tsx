@@ -25,7 +25,7 @@ import { List, ListItem, ExpandableSection } from "@patternfly/react-core";
 import { n_ } from "~/i18n";
 import { sprintf } from "sprintf-js";
 import { fork } from "radashi";
-import { Action } from "~/api/storage/proposal";
+import type { Action } from "~/api/proposal/storage";
 
 const ActionsList = ({ actions }: { actions: Action[] }) => {
   // Some actions (e.g., deleting a LV) are reported as several actions joined by a line break
