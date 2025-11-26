@@ -27,6 +27,9 @@ pub struct SolveStorageModel {
     pub model: Value,
 }
 
+// The JSON query, instead of containing a simple value (like a number or string) for the model
+// param, it contains a JSON string that needs a second round of deserialization to become a
+// structured Rust object. This requires a custom deserialization routine for that specific field.
 fn deserialize_model<'de, D>(deserializer: D) -> Result<Value, D::Error>
 where
     D: Deserializer<'de>,
