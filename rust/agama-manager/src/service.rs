@@ -157,7 +157,7 @@ impl Starter {
         let software = match self.software {
             Some(software) => software,
             None => {
-                software::Service::builder(
+                software::Service::starter(
                     self.events.clone(),
                     issues.clone(),
                     progress.clone(),
