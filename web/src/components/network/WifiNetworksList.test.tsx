@@ -49,20 +49,17 @@ const wlan0: Device = {
   macAddress: "AA:11:22:33:44::FF",
 };
 
-const mockConnectionRemoval = jest.fn();
-const mockAddConnection = jest.fn();
 let mockWifiNetworks: WifiNetwork[];
 let mockWifiConnections: Connection[];
 
-jest.mock("~/queries/network", () => ({
-  ...jest.requireActual("~/queries/network"),
+jest.mock("~/hooks/network/proposal", () => ({
+  ...jest.requireActual("~/hooks/network/proposal"),
+  useConnections: () => mockWifiConnections,
+}));
+
+jest.mock("~/hooks/network/system", () => ({
+  ...jest.requireActual("~/hooks/network/system"),
   useNetworkChanges: jest.fn(),
-  useRemoveConnectionMutation: () => ({
-    mutate: mockConnectionRemoval,
-  }),
-  useAddConnectionMutation: () => ({
-    mutate: mockAddConnection,
-  }),
   useWifiNetworks: () => mockWifiNetworks,
   useConnections: () => mockWifiConnections,
 }));

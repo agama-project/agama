@@ -40,13 +40,20 @@ jest.mock("~/components/network/NoPersistentConnectionsAlert", () => () => (
   <div>NoPersistentConnectionsAlert Mock</div>
 ));
 
-const mockNetworkState = {
-  wirelessEnabled: true,
+const mockSystem = {
+  connections: [],
+  state: {
+    connectivity: true,
+    wiredEnabled: true,
+    wirelessEnabled: false,
+    persistNetwork: true,
+    copyEnabled: false,
+  },
 };
 
-jest.mock("~/queries/network", () => ({
+jest.mock("~/hooks/network/system", () => ({
   useNetworkChanges: jest.fn(),
-  useNetworkState: () => mockNetworkState,
+  useSystem: () => mockSystem,
 }));
 
 describe("NetworkPage", () => {
@@ -62,7 +69,7 @@ describe("NetworkPage", () => {
 
   describe("when Wi-Fi support is enabled", () => {
     beforeEach(() => {
-      mockNetworkState.wirelessEnabled = true;
+      mockSystem.state.wirelessEnabled = true;
     });
 
     it("renders the list of Wi-Fi networks", () => {
@@ -73,7 +80,7 @@ describe("NetworkPage", () => {
 
   describe("when Wi-Fi support is disabled", () => {
     beforeEach(() => {
-      mockNetworkState.wirelessEnabled = false;
+      mockSystem.state.wirelessEnabled = false;
     });
 
     it("does not render the list of Wi-Fi networks", () => {

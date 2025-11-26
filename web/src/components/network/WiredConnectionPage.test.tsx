@@ -43,7 +43,7 @@ jest.mock("~/components/network/NoPersistentConnectionsAlert", () => () => (
   <div>NoPersistentConnectionsAlert Mock</div>
 ));
 
-jest.mock("~/queries/network", () => ({
+jest.mock("~/hooks/network/proposal", () => ({
   useNetworkChanges: jest.fn(),
   useConnections: () => [mockConnection],
 }));
