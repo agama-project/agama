@@ -52,6 +52,8 @@ struct DownloadProgressReceive : public zypp::callback::ReceiveReport<
                                      zypp::media::DownloadProgressReport> {
   int last_reported;
   time_t last_reported_time;
+  // lifetime of pointer is quite short. Only during operation which takes
+  // callbacks as parameter.
   struct DownloadProgressCallbacks *callbacks;
 
   DownloadProgressReceive() { callbacks = NULL; }
@@ -94,7 +96,7 @@ struct DownloadProgressReceive : public zypp::callback::ReceiveReport<
                  const std::string &description) override {
     if (callbacks != NULL && callbacks->problem != NULL) {
       PROBLEM_RESPONSE response =
-          callbacks->problem(file.asString().c_str(), from_zypp_error(error),
+          callbacks->problem(file.asString().c_str(), into_error(error),
                              description.c_str(), callbacks->problem_data);
 
       return into_action(response);
@@ -108,14 +110,14 @@ struct DownloadProgressReceive : public zypp::callback::ReceiveReport<
               zypp::media::DownloadProgressReport::Error error,
               const std::string &reason) override {
     if (callbacks != NULL && callbacks->finish != NULL) {
-      callbacks->finish(file.asString().c_str(), from_zypp_error(error),
+      callbacks->finish(file.asString().c_str(), into_error(error),
                         reason.c_str(), callbacks->finish_data);
     }
   }
 
 private:
   inline DownloadProgressError
-  from_zypp_error(zypp::media::DownloadProgressReport::Error error) noexcept {
+  into_error(zypp::media::DownloadProgressReport::Error error) noexcept {
     switch (error) {
     case zypp::media::DownloadProgressReport::NO_ERROR:
       return DPE_NO_ERROR;
@@ -149,6 +151,8 @@ static DownloadProgressReceive download_progress_receive;
 
 struct DownloadResolvableReport : public zypp::callback::ReceiveReport<
                                       zypp::repo::DownloadResolvableReport> {
+  // lifetime of pointer is quite short. Only during operation which takes
+  // callbacks as parameter.
   struct DownloadResolvableCallbacks *callbacks;
 
   DownloadResolvableReport() { callbacks = NULL; }
@@ -164,9 +168,9 @@ struct DownloadResolvableReport : public zypp::callback::ReceiveReport<
       return zypp::repo::DownloadResolvableReport::problem(resolvable_ptr,
                                                            error, description);
 
-    PROBLEM_RESPONSE response = callbacks->problem(
-        resolvable_ptr->name().c_str(), from_libzypp_error(error),
-        description.c_str(), callbacks->problem_data);
+    PROBLEM_RESPONSE response =
+        callbacks->problem(resolvable_ptr->name().c_str(), into_error(error),
+                           description.c_str(), callbacks->problem_data);
     return into_action(response);
   }
 
@@ -178,7 +182,7 @@ struct DownloadResolvableReport : public zypp::callback::ReceiveReport<
         userData_r.get<zypp::ResObject::constPtr>("ResObject");
     const zypp::RepoInfo repo = resobject->repoInfo();
     const std::string repo_url = repo.rawUrl().asString();
-    enum GPGCheckPackageResult result = from_zypp_result(
+    enum GPGCheckPackageResult result = into_result(
         userData_r.get<zypp::target::rpm::RpmDb::CheckPackageResult>(
             "CheckPackageResult"));
     OPTIONAL_PROBLEM_RESPONSE response =
@@ -209,7 +213,7 @@ private:
   }
 
   inline DownloadResolvableError
-  from_libzypp_error(zypp::repo::DownloadResolvableReport::Error error) {
+  into_error(zypp::repo::DownloadResolvableReport::Error error) {
     switch (error) {
     case zypp::repo::DownloadResolvableReport::NO_ERROR:
       return DownloadResolvableError::DRE_NO_ERROR;
@@ -238,7 +242,7 @@ private:
   }
 
   inline GPGCheckPackageResult
-  from_zypp_result(zypp::target::rpm::RpmDb::CheckPackageResult result) {
+  into_result(zypp::target::rpm::RpmDb::CheckPackageResult result) {
     switch (result) {
     case zypp::target::rpm::RpmDb::CHK_OK:
       return GPGCheckPackageResult::CHK_OK;
@@ -264,7 +268,8 @@ static DownloadResolvableReport download_resolvable_receive;
 
 struct CommitPreloadReport
     : public zypp::callback::ReceiveReport<zypp::media::CommitPreloadReport> {
-
+  // lifetime of pointer is quite short. Only during operation which takes
+  // callbacks as parameter.
   struct DownloadResolvableCallbacks *callbacks;
 
   CommitPreloadReport() { callbacks = NULL; }
@@ -290,14 +295,14 @@ struct CommitPreloadReport
       if (userData.hasvalue("description")) {
         error_details = userData.get<std::string>("description").c_str();
       }
-      callbacks->file_finish(url, local_path, from_libzypp_error(error),
-                             error_details, callbacks->file_finish_data);
+      callbacks->file_finish(url, local_path, into_error(error), error_details,
+                             callbacks->file_finish_data);
     }
   }
 
 private:
   inline DownloadResolvableFileError
-  from_libzypp_error(zypp::media::CommitPreloadReport::Error error) {
+  into_error(zypp::media::CommitPreloadReport::Error error) {
     switch (error) {
     case zypp::media::CommitPreloadReport::NO_ERROR:
       return DownloadResolvableFileError::DRFE_NO_ERROR;
@@ -319,6 +324,8 @@ static CommitPreloadReport commit_preload_report;
 
 struct KeyRingReport
     : public zypp::callback::ReceiveReport<zypp::KeyRingReport> {
+  // lifetime of pointer is quite short. Only during operation which takes
+  // callbacks as parameter.
   struct SecurityCallbacks *callbacks;
 
   KeyRingReport() { callbacks = NULL; }
@@ -335,7 +342,7 @@ struct KeyRingReport
         key.id().c_str(), key.name().c_str(), key.fingerprint().c_str(),
         context.repoInfo().alias().c_str(), callbacks->accept_key_data);
 
-    return from_zypp_trust(response);
+    return into_trust(response);
   }
 
   bool askUserToAcceptUnsignedFile(const std::string &file,
@@ -373,7 +380,7 @@ struct KeyRingReport
   }
 
 private:
-  inline zypp::KeyRingReport::KeyTrust from_zypp_trust(GPGKeyTrust response) {
+  inline zypp::KeyRingReport::KeyTrust into_trust(GPGKeyTrust response) {
     switch (response) {
     case GPGKT_REJECT:
       return zypp::KeyRingReport::KEY_DONT_TRUST;
@@ -391,6 +398,8 @@ static KeyRingReport key_ring_report;
 
 struct DigestReceive
     : public zypp::callback::ReceiveReport<zypp::DigestReport> {
+  // lifetime of pointer is quite short. Only during operation which takes
+  // callbacks as parameter.
   struct SecurityCallbacks *callbacks;
 
   DigestReceive() { callbacks = NULL; }
@@ -431,6 +440,8 @@ static DigestReceive digest_receive;
 
 struct PatchScriptReport
     : public zypp::callback::ReceiveReport<zypp::target::PatchScriptReport> {
+  // lifetime of pointer is quite short. Only during operation which takes
+  // callbacks as parameter.
   struct InstallCallbacks *callbacks;
 
   PatchScriptReport() { callbacks = NULL; }
@@ -468,6 +479,8 @@ static PatchScriptReport patch_script_report;
 struct InstallResolvableReport
     : public zypp::callback::ReceiveReport<
           zypp::target::rpm::InstallResolvableReport> {
+  // lifetime of pointer is quite short. Only during operation which takes
+  // callbacks as parameter.
   struct InstallCallbacks *callbacks;
 
   InstallResolvableReport() { callbacks = NULL; }
@@ -493,7 +506,7 @@ struct InstallResolvableReport
           resolvable, error, description, _level);
     }
     PROBLEM_RESPONSE response = callbacks->package_problem(
-        resolvable->name().c_str(), from_zypp_error(error), description.c_str(),
+        resolvable->name().c_str(), into_error(error), description.c_str(),
         callbacks->package_problem_data);
     return into_action(response);
   }
@@ -511,7 +524,7 @@ struct InstallResolvableReport
 
 private:
   inline ZyppInstallPackageError
-  from_zypp_error(zypp::target::rpm::InstallResolvableReport::Error error) {
+  into_error(zypp::target::rpm::InstallResolvableReport::Error error) {
     switch (error) {
     case zypp::target::rpm::InstallResolvableReport::Error::NO_ERROR:
       return ZyppInstallPackageError::PI_NO_ERROR;
