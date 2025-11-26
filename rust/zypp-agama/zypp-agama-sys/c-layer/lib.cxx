@@ -22,12 +22,11 @@
 #include <zypp/ZYpp.h>
 #include <zypp/ZYppCommit.h>
 #include <zypp/ZYppFactory.h>
+#define ZYPP_BASE_LOGGER_LOGGROUP "rust-bindings"
 #include <zypp/base/LogControl.h>
 #include <zypp/base/Logger.h>
 
 #include <zypp/ui/Selectable.h>
-
-#define ZYPP_BASE_LOGGER_LOGGROUP "rust-bindings"
 
 extern "C" {
 
