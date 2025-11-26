@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect } from "react";
 import { useQuery, useSuspenseQuery, useQueryClient } from "@tanstack/react-query";
 import {
   getConfig,
@@ -37,12 +37,13 @@ import {
 import { useInstallerClient } from "~/context/installer";
 import { System } from "~/api/system";
 import { Proposal } from "~/api/proposal";
-import { Status } from "~/api/status";
+import { Progress, Status } from "~/api/status";
 import { Config } from "~/api/config";
 import { apiModel } from "~/api/storage";
 import { Question } from "~/api/question";
 import { Issue } from "~/api/issue";
 import { QueryHookOptions } from "~/types/queries";
+import { isEqual, remove, replaceOrAppend } from "radashi";
 
 const statusQuery = () => ({
   queryKey: ["status"],
@@ -58,6 +59,54 @@ function useStatus(options?: QueryHookOptions): Status | null {
   const func = options?.suspense ? useSuspenseQuery : useQuery;
   const { data } = func(statusQuery());
   return data;
+}
+
+// FIXME: Borrowed from radashi 12.7. Simply import it after updating the dependency.
+function isArrayEqual<T>(array1: T[], array2: T[]): boolean {
+  if (array1 !== array2) {
+    if (array1.length !== array2.length) {
+      return false;
+    }
+    for (let i = 0; i < array1.length; i++) {
+      if (!isEqual(array1[i], array2[i])) {
+        return false;
+      }
+    }
+  }
+  return true;
+}
+
+function useStatusChanges() {
+  const queryClient = useQueryClient();
+  const client = useInstallerClient();
+
+  useEffect(() => {
+    if (!client) return;
+
+    return client.onEvent(({ type, progress, scope }) => {
+      if (!progress && !scope) return;
+      queryClient.setQueryData(["status"], (data: Status) => {
+        let newProgresses: Progress[];
+
+        if (type === "ProgressChanged") {
+          newProgresses = replaceOrAppend(
+            data.progresses,
+            progress,
+            (p) => p.scope === progress.scope,
+          );
+        }
+
+        if (type === "ProgressFinished") {
+          newProgresses = remove(data.progresses, (p) => p.scope === scope);
+        }
+
+        // Only set query data if progresses have changed
+        if (newProgresses && !isArrayEqual(newProgresses, data.progresses)) {
+          return { ...data, progresses: newProgresses };
+        }
+      });
+    });
+  }, [client, queryClient]);
 }
 
 function useSystem(options?: QueryHookOptions): System | null {
@@ -172,11 +221,16 @@ const useQuestionsChanges = () => {
 
 const useSelectedProduct = (options: QueryHookOptions = { suspense: true }) => {
   const { products } = useSystem(options);
-  const { product } = useExtendedConfig(options);
-
-  if (!product) return undefined;
-
-  return products.find((p) => (p.id = product.id));
+  const { data } = useSuspenseQuery({
+    ...extendedConfigQuery(),
+    select: useCallback(
+      (data) => {
+        return products.find((p) => p.id === data?.product?.id);
+      },
+      [products],
+    ),
+  });
+  return data;
 };
 
 const storageModelQuery = () => ({
@@ -254,6 +308,7 @@ export {
   useConfig,
   useSystem,
   useStatus,
+  useStatusChanges,
   useSystemChanges,
   useProposal,
   useProposalChanges,
