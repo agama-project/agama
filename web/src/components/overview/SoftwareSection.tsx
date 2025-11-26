@@ -31,7 +31,7 @@ import xbytes from "xbytes";
 export default function SoftwareSection(): React.ReactNode {
   const system = useSystem();
   const proposal = useProposal();
-  const used_space = xbytes(proposal.used_space * 1024);
+  const usedSpace = xbytes(proposal.usedSpace * 1024);
 
   if (isEmpty(proposal.patterns)) return;
   const selectedPatternsIds = Object.keys(proposal.patterns);
@@ -39,7 +39,7 @@ export default function SoftwareSection(): React.ReactNode {
   const TextWithoutList = () => {
     return (
       <>
-        {_("The installation will take")} <b>{used_space}</b>
+        {_("The installation will take")} <b>{usedSpace}</b>
       </>
     );
   };
@@ -53,7 +53,7 @@ export default function SoftwareSection(): React.ReactNode {
       <>
         <Content>
           {msg1}
-          <b>{used_space}</b>
+          <b>{usedSpace}</b>
           {msg2}
         </Content>
         <List>

@@ -22,7 +22,7 @@
 
 type Proposal = {
   /** Used space in KiB */
-  used_space: number;
+  usedSpace: number;
   /** Selected patterns and the reason */
   patterns: PatternsSelection;
 };
