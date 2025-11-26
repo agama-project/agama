@@ -86,6 +86,7 @@ describe("WifiNetworksList", () => {
           strength: 25,
           hwAddress: "??",
           security: [SecurityProtocols.RSN],
+          deviceName: "wlan0",
           device: wlan0,
           settings: new Connection("Network 1", {
             iface: "wlan0",
@@ -94,6 +95,7 @@ describe("WifiNetworksList", () => {
           status: WifiNetworkStatus.CONNECTED,
         },
         {
+          deviceName: "wlan1",
           ssid: "Network 2",
           strength: 88,
           hwAddress: "??",
@@ -105,6 +107,7 @@ describe("WifiNetworksList", () => {
           status: WifiNetworkStatus.CONFIGURED,
         },
         {
+          deviceName: "wlan0",
           ssid: "Network 3",
           strength: 66,
           hwAddress: "??",
@@ -157,6 +160,7 @@ describe("WifiNetworksList", () => {
 
         mockWifiNetworks = [
           {
+            deviceName: "wlan1",
             ssid: "Network 2",
             strength: 88,
             hwAddress: "??",
@@ -195,6 +199,7 @@ describe("WifiNetworksList", () => {
 
         mockWifiNetworks = [
           {
+            deviceName: "wlan1",
             ssid: "Network 2",
             strength: 88,
             hwAddress: "??",

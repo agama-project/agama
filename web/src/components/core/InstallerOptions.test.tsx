@@ -27,6 +27,7 @@ import { useSelectedProduct, useStatus, useSystem } from "~/hooks/api";
 import { Product } from "~/types/software";
 import { Keymap, Locale } from "~/api/l10n/system";
 import { Progress, State } from "~/api/status";
+import { System } from "~/api/network/system";
 import * as utils from "~/utils";
 import { PRODUCT, ROOT } from "~/routes/paths";
 import InstallerOptions, { InstallerOptionsProps } from "./InstallerOptions";
@@ -49,6 +50,18 @@ const tumbleweed: Product = {
   registration: false,
 };
 
+const network: System = {
+  connections: [],
+  devices: [],
+  state: {
+    connectivity: true,
+    copyNetwork: true,
+    networkingEnabled: true,
+    wirelessEnabled: true,
+  },
+  accessPoints: [],
+};
+
 const mockChangeUIKeymap = jest.fn();
 const mockChangeUILanguage = jest.fn();
 const mockPatchConfigFn = jest.fn();
@@ -67,6 +80,7 @@ jest.mock("~/hooks/api", () => ({
   ...jest.requireActual("~/hooks/api"),
   useSystem: (): ReturnType<typeof useSystem> => ({
     l10n: { locales, keymaps, locale: "us_US.UTF-8", keymap: "us" },
+    network,
   }),
   useStatus: (): ReturnType<typeof useStatus> => ({
     state: mockStateFn(),

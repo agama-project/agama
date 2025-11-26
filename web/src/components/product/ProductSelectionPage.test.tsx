@@ -26,6 +26,7 @@ import { installerRender, mockNavigateFn } from "~/test-utils";
 import { useSelectedProduct, useSystem } from "~/hooks/api";
 import { Product } from "~/types/software";
 import ProductSelectionPage from "./ProductSelectionPage";
+import { System } from "~/api/network/system";
 
 jest.mock("~/components/product/ProductRegistrationAlert", () => () => (
   <div>ProductRegistrationAlert Mock</div>
@@ -48,6 +49,18 @@ const microOs: Product = {
   license: "fake.license",
 };
 
+const network: System = {
+  connections: [],
+  devices: [],
+  state: {
+    connectivity: true,
+    copyNetwork: true,
+    networkingEnabled: true,
+    wirelessEnabled: true,
+  },
+  accessPoints: [],
+};
+
 const mockPatchConfigFn = jest.fn();
 const mockSelectedProduct: jest.Mock<Product> = jest.fn();
 
@@ -60,6 +73,7 @@ jest.mock("~/hooks/api", () => ({
   ...jest.requireActual("~/hooks/api"),
   useSystem: (): ReturnType<typeof useSystem> => ({
     products: [tumbleweed, microOs],
+    network,
   }),
   useSelectedProduct: (): ReturnType<typeof useSelectedProduct> => mockSelectedProduct(),
 }));

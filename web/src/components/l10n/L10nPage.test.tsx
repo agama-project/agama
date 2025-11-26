@@ -26,9 +26,33 @@ import { installerRender } from "~/test-utils";
 import L10nPage from "~/components/l10n/L10nPage";
 import { Keymap, Locale, Timezone } from "~/api/l10n/system";
 import { useProposal, useSystem } from "~/hooks/api";
+import { System } from "~/api/network/system";
+import { Proposal } from "~/api/network/proposal";
 
 let mockSystemData: ReturnType<typeof useSystem>;
 let mockProposedData: ReturnType<typeof useProposal>;
+
+const networkProposal: Proposal = {
+  connections: [],
+  state: {
+    connectivity: true,
+    copyNetwork: true,
+    networkingEnabled: true,
+    wirelessEnabled: true,
+  },
+};
+
+const network: System = {
+  connections: [],
+  devices: [],
+  state: {
+    connectivity: true,
+    copyNetwork: true,
+    networkingEnabled: true,
+    wirelessEnabled: true,
+  },
+  accessPoints: [],
+};
 
 const locales: Locale[] = [
   { id: "en_US.UTF-8", language: "English", territory: "United States" },
@@ -63,6 +87,7 @@ beforeEach(() => {
       keymaps,
       timezones,
     },
+    network,
   };
 
   mockProposedData = {
@@ -71,6 +96,7 @@ beforeEach(() => {
       keymap: "us",
       timezone: "Europe/Berlin",
     },
+    network: networkProposal,
   };
 });
 

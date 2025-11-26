@@ -25,6 +25,7 @@ import { screen, within } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import { useSystem } from "~/hooks/api";
 import { Product } from "~/types/software";
+import { System } from "~/api/network/system";
 import Sidebar from "./Sidebar";
 
 const tw: Product = {
@@ -39,11 +40,23 @@ const sle: Product = {
   registration: true,
 };
 
+const network: System = {
+  connections: [],
+  devices: [],
+  state: {
+    connectivity: true,
+    copyNetwork: true,
+    networkingEnabled: true,
+    wirelessEnabled: true,
+  },
+  accessPoints: [],
+};
+
 const mockSelectedProduct: jest.Mock<Product> = jest.fn();
 
 jest.mock("~/hooks/api", () => ({
   ...jest.requireActual("~/hooks/api"),
-  useSystem: (): ReturnType<typeof useSystem> => ({ products: [tw, sle] }),
+  useSystem: (): ReturnType<typeof useSystem> => ({ products: [tw, sle], network }),
   useSelectedProduct: (): Product => mockSelectedProduct(),
 }));
 

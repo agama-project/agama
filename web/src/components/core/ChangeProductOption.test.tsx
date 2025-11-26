@@ -27,6 +27,7 @@ import { useSystem } from "~/hooks/api";
 import { PRODUCT as PATHS } from "~/routes/paths";
 import { Product } from "~/types/software";
 import ChangeProductOption from "./ChangeProductOption";
+import { System } from "~/api/network/system";
 
 const tumbleweed: Product = {
   id: "Tumbleweed",
@@ -43,6 +44,18 @@ const microos: Product = {
   registration: false,
 };
 
+const network: System = {
+  connections: [],
+  devices: [],
+  state: {
+    connectivity: true,
+    copyNetwork: true,
+    networkingEnabled: true,
+    wirelessEnabled: true,
+  },
+  accessPoints: [],
+};
+
 // let registrationInfoMock: RegistrationInfo;
 const mockSystemProducts: jest.Mock<Product[]> = jest.fn();
 
@@ -50,6 +63,7 @@ jest.mock("~/hooks/api", () => ({
   ...jest.requireActual("~/hooks/api"),
   useSystem: (): ReturnType<typeof useSystem> => ({
     products: mockSystemProducts(),
+    network,
   }),
 }));
 
