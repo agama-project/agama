@@ -51,7 +51,7 @@ const mockSystem = {
   },
 };
 
-jest.mock("~/hooks/network/system", () => ({
+jest.mock("~/hooks/api/system/network", () => ({
   useNetworkChanges: jest.fn(),
   useSystem: () => mockSystem,
 }));

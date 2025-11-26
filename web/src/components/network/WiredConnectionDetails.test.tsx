@@ -78,8 +78,8 @@ const mockConnection: Connection = new Connection("Network #1", {
 let mockNetworkDevices = [mockDevice];
 const networkDevices = () => mockNetworkDevices;
 
-jest.mock("~/hooks/network/system", () => ({
-  ...jest.requireActual("~/hooks/network/system"),
+jest.mock("~/hooks/api/system/network", () => ({
+  ...jest.requireActual("~/hooks/api/system/network"),
   useDevices: () => networkDevices(),
 }));
 

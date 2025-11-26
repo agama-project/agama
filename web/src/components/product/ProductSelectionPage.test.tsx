@@ -23,10 +23,11 @@
 import React from "react";
 import { screen } from "@testing-library/react";
 import { installerRender, mockNavigateFn } from "~/test-utils";
-import { useSelectedProduct, useSystem } from "~/hooks/api";
+import { useSystem } from "~/hooks/api/system";
+import { useProduct } from "~/hooks/api/config";
 import { Product } from "~/types/software";
 import ProductSelectionPage from "./ProductSelectionPage";
-import { System } from "~/api/network/system";
+import { System } from "~/api/system/network";
 
 jest.mock("~/components/product/ProductRegistrationAlert", () => () => (
   <div>ProductRegistrationAlert Mock</div>
@@ -69,13 +70,17 @@ jest.mock("~/api", () => ({
   patchConfig: (payload) => mockPatchConfigFn(payload),
 }));
 
-jest.mock("~/hooks/api", () => ({
-  ...jest.requireActual("~/hooks/api"),
+jest.mock("~/hooks/api/system", () => ({
+  ...jest.requireActual("~/hooks/api/system"),
   useSystem: (): ReturnType<typeof useSystem> => ({
     products: [tumbleweed, microOs],
     network,
   }),
-  useSelectedProduct: (): ReturnType<typeof useSelectedProduct> => mockSelectedProduct(),
+}));
+
+jest.mock("~/hooks/api/config", () => ({
+  ...jest.requireActual("~/hooks/api/config"),
+  useProduct: (): ReturnType<typeof useProduct> => mockSelectedProduct(),
 }));
 
 describe("ProductSelectionPage", () => {

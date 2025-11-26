@@ -21,13 +21,14 @@
  */
 
 import { useSuspenseQuery, useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { configQuery, proposalQuery } from "~/hooks/api";
 import { Connection, NetworkConfig } from "~/types/network";
 import { QueryHookOptions } from "~/types/queries";
 import { network, Proposal } from "~/api/proposal";
 import { Config } from "~/api/config";
-import { Config as APIConfig } from "~/api/network/config";
+import { Config as APIConfig } from "~/api/config/network";
 import { patchConfig } from "~/api";
+import { configQuery } from "../config";
+import { proposalQuery } from "../proposal";
 
 /**
  * Hook that builds a mutation to update a network connection
@@ -69,20 +70,18 @@ const useConfigMutation = () => {
 const selectConnections = (data: network.Proposal): Connection[] =>
   data.connections.map((c) => Connection.fromApi(c));
 
-const useConfig = (options?: QueryHookOptions): NetworkConfig => {
-  const func = options?.suspense ? useSuspenseQuery : useQuery;
-  const { data } = func({
-    ...configQuery(),
+const useConfig = (): NetworkConfig => {
+  const { data } = useSuspenseQuery({
+    ...configQuery,
     select: (d: Config) => NetworkConfig.fromApi(d.network),
   });
 
   return data;
 };
 
-const useConnections = (options?: QueryHookOptions): Connection[] => {
-  const func = options?.suspense ? useSuspenseQuery : useQuery;
-  const { data } = func({
-    ...proposalQuery(),
+const useConnections = (): Connection[] => {
+  const { data } = useSuspenseQuery({
+    ...proposalQuery,
     select: (d: Proposal) => selectConnections(d.network),
   });
   return data;

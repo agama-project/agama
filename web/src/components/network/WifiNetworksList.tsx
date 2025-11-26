@@ -38,13 +38,13 @@ import a11yStyles from "@patternfly/react-styles/css/utilities/Accessibility/acc
 import { Annotation, EmptyState } from "~/components/core";
 import Icon, { IconProps } from "~/components/layout/Icon";
 import { Connection, ConnectionState, WifiNetwork, WifiNetworkStatus } from "~/types/network";
-import { useNetworkChanges, useWifiNetworks } from "~/hooks/network/system";
+import { useNetworkChanges, useWifiNetworks } from "~/hooks/api/system/network";
 import { NETWORK as PATHS } from "~/routes/paths";
 import { isEmpty } from "radashi";
 import { formatIp } from "~/utils/network";
 import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
-import { useConnections } from "~/hooks/network/proposal";
+import { useConnections } from "~/hooks/api/proposal/network";
 
 const NetworkSignal = ({ id, signal }) => {
   let label: string;
@@ -171,7 +171,7 @@ function WifiNetworksList({ showIp = true, ...props }: WifiNetworksListProps) {
   useNetworkChanges();
   const navigate = useNavigate();
   const networks: WifiNetwork[] = useWifiNetworks();
-  const connections = useConnections({ suspense: true });
+  const connections = useConnections();
 
   if (networks.length === 0)
     return <EmptyState title={_("No Wi-Fi networks were found")} icon="error" />;

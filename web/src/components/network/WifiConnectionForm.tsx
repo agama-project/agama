@@ -36,8 +36,8 @@ import { Connection, ConnectionState, WifiNetwork, Wireless } from "~/types/netw
 import { isEmpty } from "radashi";
 import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
-import { useConnections } from "~/hooks/network/system";
-import { useConnectionMutation } from "~/hooks/network/config";
+import { useConnections } from "~/hooks/api/system/network";
+import { useConnectionMutation } from "~/hooks/api/config/network";
 
 const securityOptions = [
   // TRANSLATORS: WiFi authentication mode
@@ -92,7 +92,7 @@ const ConnectionError = ({ ssid, isPublicNetwork }) => {
 // FIXME: improve error handling. The errors props should have a key/value error
 //  and the component should show all of them, if any
 export default function WifiConnectionForm({ network }: { network: WifiNetwork }) {
-  const connections = useConnections({ suspense: true });
+  const connections = useConnections();
   const connection = connections.find((c) => c.id === network.ssid);
   const settings = network.settings?.wireless || new Wireless();
   const [error, setError] = useState(false);

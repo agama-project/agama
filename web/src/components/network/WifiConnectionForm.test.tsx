@@ -28,8 +28,8 @@ import { Connection, SecurityProtocols, WifiNetworkStatus, Wireless } from "~/ty
 
 const mockUpdateConnection = jest.fn();
 
-jest.mock("~/hooks/network/config", () => ({
-  ...jest.requireActual("~/hooks/network/config"),
+jest.mock("~/hooks/api/config/network", () => ({
+  ...jest.requireActual("~/hooks/api/config/network"),
   useConnectionMutation: () => ({
     mutateAsync: mockUpdateConnection,
   }),
@@ -40,13 +40,13 @@ jest.mock("~/api", () => ({
   configureL10nAction: () => jest.fn(),
 }));
 
-jest.mock("~/hooks/api", () => ({
-  ...jest.requireActual("~/hooks/api"),
+jest.mock("~/hooks/api/system", () => ({
+  ...jest.requireActual("~/hooks/api/system"),
   useSystem: () => jest.fn(),
 }));
 
-jest.mock("~/hooks/network/system", () => ({
-  ...jest.requireActual("~/hooks/network/system"),
+jest.mock("~/hooks/api/system/network", () => ({
+  ...jest.requireActual("~/hooks/api/system/network"),
   useSystem: () => mockSystem,
   useConnections: () => mockSystem.connections,
 }));

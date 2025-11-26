@@ -22,10 +22,19 @@
 
 import { useCallback } from "react";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { getExtendedConfig } from "~/api";
+import { getConfig, getExtendedConfig } from "~/api";
 import { useSystem } from "~/hooks/api/system";
 import type { system } from "~/api";
 import type { Config } from "~/api/config";
+
+const configQuery = {
+  queryKey: ["Config"],
+  queryFn: getConfig,
+};
+
+function useConfig(): Config | null {
+  return useSuspenseQuery(configQuery)?.data;
+}
 
 const extendedConfigQuery = {
   queryKey: ["extendedConfig"],
@@ -52,5 +61,5 @@ function useProduct(): system.Product | null {
   return data;
 }
 
-export { extendedConfigQuery, useExtendedConfig, useProduct };
+export { configQuery, extendedConfigQuery, useConfig, useExtendedConfig, useProduct };
 export * as storage from "~/hooks/api/config/storage";

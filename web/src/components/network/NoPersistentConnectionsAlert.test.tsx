@@ -28,8 +28,8 @@ import NoPersistentConnectionsAlert from "./NoPersistentConnectionsAlert";
 
 let mockConnections: Connection[];
 
-jest.mock("~/hooks/network/proposal", () => ({
-  ...jest.requireActual("~/hooks/network/proposal"),
+jest.mock("~/hooks/api/proposal/network", () => ({
+  ...jest.requireActual("~/hooks/api/proposal/network"),
   useConnections: () => mockConnections,
 }));
 

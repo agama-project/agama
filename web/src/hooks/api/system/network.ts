@@ -20,10 +20,9 @@
  * find current contact information at www.suse.com.
  */
 
-import { useSuspenseQuery, useQuery, useQueryClient } from "@tanstack/react-query";
-import { QueryHookOptions } from "~/types/queries";
-import { systemQuery } from "~/hooks/api";
+import { useSuspenseQuery, useQueryClient } from "@tanstack/react-query";
 import { System } from "~/api/system";
+import { systemQuery } from "~/hooks/api/system";
 import {
   AccessPoint,
   Connection,
@@ -38,22 +37,23 @@ import {
 import { useInstallerClient } from "~/context/installer";
 import React, { useCallback } from "react";
 
-const selectSystem = (data: System): NetworkSystem => NetworkSystem.fromApi(data.network);
+const selectSystem = (data: System | null): NetworkSystem =>
+  data ? NetworkSystem.fromApi(data.network) : null;
 
-function useSystem(options?: QueryHookOptions): NetworkSystem {
-  const func = options?.suspense ? useSuspenseQuery : useQuery;
-  const { data } = func({
-    ...systemQuery(),
+function useSystem(): NetworkSystem {
+  const { data } = useSuspenseQuery({
+    ...systemQuery,
     select: selectSystem,
   });
+
   return data;
 }
 
 /**
  * Returns the network connections.
  */
-const useConnections = (options?: QueryHookOptions): Connection[] => {
-  const { connections } = useSystem(options);
+const useConnections = (): Connection[] => {
+  const { connections } = useSystem();
 
   return connections;
 };
@@ -61,8 +61,8 @@ const useConnections = (options?: QueryHookOptions): Connection[] => {
 /**
  * Returns the network devices.
  */
-const useDevices = (options?: QueryHookOptions): Device[] => {
-  const { devices } = useSystem(options);
+const useDevices = (): Device[] => {
+  const { devices } = useSystem();
 
   return devices;
 };
@@ -70,8 +70,8 @@ const useDevices = (options?: QueryHookOptions): Device[] => {
 /**
  * Returns the network devices.
  */
-const useState = (options?: QueryHookOptions): GeneralState => {
-  const { state } = useSystem(options);
+const useState = (): GeneralState => {
+  const { state } = useSystem();
 
   return state;
 };
@@ -79,10 +79,10 @@ const useState = (options?: QueryHookOptions): GeneralState => {
 /**
  * Return the list of Wi-Fi networks.
  */
-const useWifiNetworks = (options?: QueryHookOptions) => {
+const useWifiNetworks = () => {
   const knownSsids: string[] = [];
 
-  const { devices, connections, accessPoints } = useSystem(options);
+  const { devices, connections, accessPoints } = useSystem();
 
   return accessPoints
     .filter((ap: AccessPoint) => {

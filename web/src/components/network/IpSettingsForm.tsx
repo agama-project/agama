@@ -41,9 +41,9 @@ import AddressesDataList from "~/components/network/AddressesDataList";
 import DnsDataList from "~/components/network/DnsDataList";
 import { _ } from "~/i18n";
 import { sprintf } from "sprintf-js";
-import { useConnectionMutation } from "~/hooks/network/config";
 import { IPAddress, Connection, ConnectionMethod } from "~/types/network";
-import { useConnection } from "~/hooks/network/proposal";
+import { useConnectionMutation } from "~/hooks/api/config/network";
+import { useConnection } from "~/hooks/api/proposal/network";
 
 const usingDHCP = (method: ConnectionMethod) => method === ConnectionMethod.AUTO;
 
@@ -53,7 +53,7 @@ export default function IpSettingsForm() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { mutateAsync: updateConnection } = useConnectionMutation();
-  const connection = useConnection(id, { suspense: true });
+  const connection = useConnection(id);
   const [addresses, setAddresses] = useState<IPAddress[]>(connection.addresses);
   const [nameservers, setNameservers] = useState(
     connection.nameservers.map((a) => {

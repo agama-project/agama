@@ -40,8 +40,8 @@ const mockConnection = (options: Partial<ConnectionOptions> = {}) =>
     ...options,
   });
 
-jest.mock("~/hooks/network/config", () => ({
-  ...jest.requireActual("~/hooks/network/config"),
+jest.mock("~/hooks/api/config/network", () => ({
+  ...jest.requireActual("~/hooks/api/config/network"),
   useConnectionMutation: () => ({
     mutateAsync: mockConnectionMutation,
   }),

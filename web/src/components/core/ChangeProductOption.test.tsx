@@ -27,7 +27,7 @@ import { useSystem } from "~/hooks/api";
 import { PRODUCT as PATHS } from "~/routes/paths";
 import { Product } from "~/types/software";
 import ChangeProductOption from "./ChangeProductOption";
-import { System } from "~/api/network/system";
+import { System } from "~/api/system/network";
 
 const tumbleweed: Product = {
   id: "Tumbleweed",

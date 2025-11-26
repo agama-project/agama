@@ -20,16 +20,14 @@
  * find current contact information at www.suse.com.
  */
 
-import { useSuspenseQuery, useQuery } from "@tanstack/react-query";
-import { proposalQuery } from "~/hooks/api";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { Connection, NetworkProposal, GeneralState } from "~/types/network";
-import { QueryHookOptions } from "~/types/queries";
 import { network, Proposal } from "~/api/proposal";
+import { proposalQuery } from "~/hooks/api/proposal";
 
-const useState = (options?: QueryHookOptions): GeneralState => {
-  const func = options?.suspense ? useSuspenseQuery : useQuery;
-  const { data } = func({
-    ...proposalQuery(),
+const useState = (): GeneralState => {
+  const { data } = useSuspenseQuery({
+    ...proposalQuery,
     select: (d) => {
       return d.network.state;
     },
@@ -41,27 +39,25 @@ const useState = (options?: QueryHookOptions): GeneralState => {
 const selectConnections = (data: network.Proposal): Connection[] =>
   data.connections.map((c) => Connection.fromApi(c));
 
-const useProposal = (options?: QueryHookOptions): NetworkProposal => {
-  const func = options?.suspense ? useSuspenseQuery : useQuery;
-  const { data } = func({
-    ...proposalQuery(),
+const useProposal = (): NetworkProposal => {
+  const { data } = useSuspenseQuery({
+    ...proposalQuery,
     select: (d: Proposal) => NetworkProposal.fromApi(d.network),
   });
 
   return data;
 };
 
-const useConnections = (options?: QueryHookOptions): Connection[] => {
-  const func = options?.suspense ? useSuspenseQuery : useQuery;
-  const { data } = func({
-    ...proposalQuery(),
+const useConnections = (): Connection[] => {
+  const { data } = useSuspenseQuery({
+    ...proposalQuery,
     select: (d: Proposal) => selectConnections(d.network),
   });
   return data;
 };
 
-const useConnection = (name: string, options?: QueryHookOptions) => {
-  const connection = useConnections(options).find((c) => c.id === name);
+const useConnection = (name: string) => {
+  const connection = useConnections().find((c) => c.id === name);
 
   return connection;
 };

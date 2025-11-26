@@ -23,23 +23,25 @@
 import React from "react";
 import { screen, within } from "@testing-library/react";
 import { installerRender, mockRoutes } from "~/test-utils";
-import { useSelectedProduct, useStatus, useSystem } from "~/hooks/api";
+import { useSystem } from "~/hooks/api/system";
+import { useProduct } from "~/hooks/api/config";
 import { Product } from "~/types/software";
 import { Keymap, Locale } from "~/api/system/l10n";
 import { Progress, State } from "~/api/status";
-import { System } from "~/api/network/system";
+import { System } from "~/api/system/network";
 import * as utils from "~/utils";
 import { PRODUCT, ROOT } from "~/routes/paths";
 import InstallerOptions, { InstallerOptionsProps } from "./InstallerOptions";
+import { useStatus } from "~/hooks/api/status";
 
 const locales: Locale[] = [
-  { id: "en_US.UTF-8", name: "English", territory: "United States" },
-  { id: "es_ES.UTF-8", name: "Spanish", territory: "Spain" },
+  { id: "en_US.UTF-8", language: "English", territory: "United States" },
+  { id: "es_ES.UTF-8", language: "Spanish", territory: "Spain" },
 ];
 
 const keymaps: Keymap[] = [
-  { id: "us", name: "English (US)" },
-  { id: "gb", name: "English (UK)" },
+  { id: "us", description: "English (US)" },
+  { id: "gb", description: "English (UK)" },
 ];
 
 const tumbleweed: Product = {
@@ -86,7 +88,7 @@ jest.mock("~/hooks/api", () => ({
     state: mockStateFn(),
     progresses: mockProgressesFn(),
   }),
-  useSelectedProduct: (): ReturnType<typeof useSelectedProduct> => mockSelectedProductFn(),
+  useProduct: (): ReturnType<typeof useProduct> => mockSelectedProductFn(),
 }));
 
 jest.mock("~/context/installerL10n", () => ({

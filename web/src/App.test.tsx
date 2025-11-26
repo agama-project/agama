@@ -33,7 +33,7 @@ import { PRODUCT } from "~/routes/paths";
 import type { Config } from "~/api";
 import type { Progress, State } from "~/api/status";
 import App from "./App";
-import { System } from "~/api/network/system";
+import { System } from "~/api/system/network";
 
 jest.mock("~/client");
 

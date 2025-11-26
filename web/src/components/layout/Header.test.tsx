@@ -23,10 +23,10 @@
 import React from "react";
 import { screen, within } from "@testing-library/react";
 import { plainRender, installerRender } from "~/test-utils";
-import { useSystem } from "~/hooks/api";
 import { Product } from "~/types/software";
-import { System } from "~/api/network/system";
+import { System } from "~/api/system/network";
 import Header from "./Header";
+import { useSystem } from "~/hooks/api/system";
 
 const tumbleweed: Product = {
   id: "Tumbleweed",
@@ -57,10 +57,14 @@ const network: System = {
 jest.mock("~/components/core/InstallerOptions", () => () => <div>Installer Options Mock</div>);
 jest.mock("~/components/core/InstallButton", () => () => <div>Install Button Mock</div>);
 
-jest.mock("~/hooks/api", () => ({
-  ...jest.requireActual("~/hooks/api"),
+jest.mock("~/hooks/api/system", () => ({
+  ...jest.requireActual("~/hooks/api/system"),
   useSystem: (): ReturnType<typeof useSystem> => ({ products: [tumbleweed, microos], network }),
-  useSelectedProduct: (): Product => tumbleweed,
+}));
+
+jest.mock("~/hooks/api/config", () => ({
+  ...jest.requireActual("~/hooks/api/config"),
+  useProduct: (): Product => tumbleweed,
 }));
 
 describe("Header", () => {

@@ -35,8 +35,8 @@ import {
 import a11yStyles from "@patternfly/react-styles/css/utilities/Accessibility/accessibility";
 import { Annotation, EmptyState } from "~/components/core";
 import { Connection } from "~/types/network";
-import { useConnections } from "~/hooks/network/proposal";
-import { useDevices } from "~/hooks/network/system";
+import { useConnections } from "~/hooks/api/proposal/network";
+import { useDevices } from "~/hooks/api/system/network";
 import { NETWORK as PATHS } from "~/routes/paths";
 import { formatIp } from "~/utils/network";
 import { _ } from "~/i18n";
@@ -84,7 +84,7 @@ const ConnectionListItem = ({ connection }: ConnectionListItemProps) => {
  */
 function WiredConnectionsList(props: DataListProps) {
   const navigate = useNavigate();
-  const connections = useConnections({ suspense: true });
+  const connections = useConnections();
   const wiredConnections = connections.filter((c) => !c.wireless);
 
   if (wiredConnections.length === 0) {

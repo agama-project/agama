@@ -21,7 +21,7 @@
  */
 
 import type * as l10n from "~/api/proposal/l10n";
-import type * as network from "~/api/network/proposal";
+import type * as network from "~/api/proposal/network";
 import type * as software from "~/api/proposal/software";
 import type * as storage from "~/api/proposal/storage";
 

@@ -27,7 +27,7 @@ import WifiNetworksList from "./WifiNetworksList";
 import WiredConnectionsList from "./WiredConnectionsList";
 import NoPersistentConnectionsAlert from "./NoPersistentConnectionsAlert";
 import { _ } from "~/i18n";
-import { useNetworkChanges, useSystem } from "~/hooks/network/system";
+import { useNetworkChanges, useSystem } from "~/hooks/api/system/network";
 
 const NoWifiAvailable = () => (
   <Page.Section>
@@ -44,7 +44,7 @@ const NoWifiAvailable = () => (
  */
 export default function NetworkPage() {
   useNetworkChanges();
-  const { state: networkState } = useSystem({ suspense: true });
+  const { state: networkState } = useSystem();
 
   return (
     <Page>

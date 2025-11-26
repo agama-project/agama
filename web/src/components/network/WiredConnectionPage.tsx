@@ -30,7 +30,7 @@ import {
   EmptyStateFooter,
 } from "@patternfly/react-core";
 import { Link, Page } from "~/components/core";
-import { useConnections } from "~/hooks/network/proposal";
+import { useConnections } from "~/hooks/api/proposal/network";
 import { _ } from "~/i18n";
 import { sprintf } from "sprintf-js";
 import WiredConnectionDetails from "./WiredConnectionDetails";
@@ -62,7 +62,7 @@ const ConnectionNotFound = ({ id }) => {
 
 export default function WiredConnectionPage() {
   const { id } = useParams();
-  const connections = useConnections({ suspense: true });
+  const connections = useConnections();
   const connection = connections.find((c) => c.id === id);
 
   const title = _("Connection details");

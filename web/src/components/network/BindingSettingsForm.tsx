@@ -38,9 +38,9 @@ import Radio from "~/components/core/RadioEnhanced";
 import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
 import { connectionBindingMode } from "~/utils/network";
-import { useConnection } from "~/hooks/network/proposal";
-import { useConnectionMutation } from "~/hooks/network/config";
-import { useDevices } from "~/hooks/network/system";
+import { useConnection } from "~/hooks/api/proposal/network";
+import { useConnectionMutation } from "~/hooks/api/config/network";
+import { useDevices } from "~/hooks/api/system/network";
 
 type DevicesSelectProps = Omit<FormSelectProps, "children" | "ref"> & {
   /**
@@ -62,7 +62,7 @@ function DevicesSelect({
   valueKey,
   ...formSelectProps
 }: DevicesSelectProps): React.ReactNode {
-  const devices = useDevices({ suspense: true });
+  const devices = useDevices();
 
   const labelAttrs = valueKey === "macAddress" ? ["macAddress", "name"] : ["name", "macAddress"];
 
@@ -130,8 +130,8 @@ const formReducer = (state: FormState, action: FormAction): FormState => {
 export default function BindingSettingsForm() {
   const { id } = useParams();
   const { mutateAsync: updateConnection } = useConnectionMutation();
-  const connection = useConnection(id, { suspense: true });
-  const devices = useDevices({ suspense: true });
+  const connection = useConnection(id);
+  const devices = useDevices();
   const navigate = useNavigate();
   const [state, dispatch] = useReducer(formReducer, {
     mode: connectionBindingMode(connection),

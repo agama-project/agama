@@ -23,9 +23,9 @@
 import React from "react";
 import { screen, within } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
-import { useSystem } from "~/hooks/api";
+import { useSystem } from "~/hooks/api/system";
 import { Product } from "~/types/software";
-import { System } from "~/api/network/system";
+import { System } from "~/api/system/network";
 import Sidebar from "./Sidebar";
 
 const tw: Product = {
@@ -54,10 +54,14 @@ const network: System = {
 
 const mockSelectedProduct: jest.Mock<Product> = jest.fn();
 
-jest.mock("~/hooks/api", () => ({
-  ...jest.requireActual("~/hooks/api"),
+jest.mock("~/hooks/api/system", () => ({
+  ...jest.requireActual("~/hooks/api/system"),
   useSystem: (): ReturnType<typeof useSystem> => ({ products: [tw, sle], network }),
-  useSelectedProduct: (): Product => mockSelectedProduct(),
+}));
+
+jest.mock("~/hooks/api/config", () => ({
+  ...jest.requireActual("~/hooks/api/config"),
+  useProduct: (): Product => mockSelectedProduct(),
 }));
 
 jest.mock("~/router", () => ({
