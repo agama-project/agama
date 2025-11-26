@@ -21,7 +21,9 @@
  */
 
 type Proposal = {
-  size: string;
+  /** Used space in KiB */
+  used_space: number;
+  /** Selected patterns and the reason */
   patterns: PatternsSelection;
 };
 

@@ -26,10 +26,12 @@ import { isEmpty } from "radashi";
 import { _ } from "~/i18n";
 import { useProposal } from "~/hooks/api/proposal/software";
 import { useSystem } from "~/hooks/api/system/software";
+import xbytes from "xbytes";
 
 export default function SoftwareSection(): React.ReactNode {
   const system = useSystem();
   const proposal = useProposal();
+  const used_space = xbytes(proposal.used_space * 1024);
 
   if (isEmpty(proposal.patterns)) return;
   const selectedPatternsIds = Object.keys(proposal.patterns);
@@ -37,7 +39,7 @@ export default function SoftwareSection(): React.ReactNode {
   const TextWithoutList = () => {
     return (
       <>
-        {_("The installation will take")} <b>{proposal.size}</b>
+        {_("The installation will take")} <b>{used_space}</b>
       </>
     );
   };
@@ -51,7 +53,7 @@ export default function SoftwareSection(): React.ReactNode {
       <>
         <Content>
           {msg1}
-          <b>{proposal.size}</b>
+          <b>{used_space}</b>
           {msg2}
         </Content>
         <List>

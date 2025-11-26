@@ -85,10 +85,10 @@ jobs:
     - name: Install required packages
       run: zypper --non-interactive install --allow-downgrade
         clang-devel
-        libzypp-devel
         gcc-c++
         git
         libopenssl-3-devel
+        libzypp-devel
         make
         openssl-3
         pam-devel
@@ -142,13 +142,13 @@ jobs:
       run: zypper --non-interactive install --allow-downgrade
         clang-devel
         dbus-1-daemon
-        libzypp-devel
         gcc-c++
         git
         glibc-locale
         golang-github-google-jsonnet
         jq
         libopenssl-3-devel
+        libzypp-devel
         make
         openssl-3
         pam-devel
@@ -156,6 +156,7 @@ jobs:
         python3-openapi_spec_validator
         rustup
         timezone
+        util-linux-systemd
         xkeyboard-config
 
     - name: Configure git
