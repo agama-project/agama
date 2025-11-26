@@ -54,8 +54,9 @@ struct DownloadProgressReceive : public zypp::callback::ReceiveReport<
 
   int last_reported;
   time_t last_reported_time;
-  // lifetime of pointer is quite short. Only during operation which takes
-  // callbacks as parameter.
+  // Lifetime: this is set and unset
+  // by a set_zypp_*_callbacks + unset_zypp_*_callbacks pair
+  // around the zypp call using it
   struct DownloadProgressCallbacks *callbacks;
 
   DownloadProgressReceive() { callbacks = NULL; }
@@ -154,8 +155,9 @@ struct DownloadResolvableReport : public zypp::callback::ReceiveReport<
                                       zypp::repo::DownloadResolvableReport> {
   using Super = zypp::repo::DownloadResolvableReport;
 
-  // lifetime of pointer is quite short. Only during operation which takes
-  // callbacks as parameter.
+  // Lifetime: this is set and unset
+  // by a set_zypp_*_callbacks + unset_zypp_*_callbacks pair
+  // around the zypp call using it
   struct DownloadResolvableCallbacks *callbacks;
 
   DownloadResolvableReport() { callbacks = NULL; }
@@ -270,8 +272,9 @@ static DownloadResolvableReport download_resolvable_receive;
 
 struct CommitPreloadReport
     : public zypp::callback::ReceiveReport<zypp::media::CommitPreloadReport> {
-  // lifetime of pointer is quite short. Only during operation which takes
-  // callbacks as parameter.
+  // Lifetime: this is set and unset
+  // by a set_zypp_*_callbacks + unset_zypp_*_callbacks pair
+  // around the zypp call using it
   struct DownloadResolvableCallbacks *callbacks;
 
   CommitPreloadReport() { callbacks = NULL; }
@@ -326,8 +329,9 @@ static CommitPreloadReport commit_preload_report;
 
 struct KeyRingReport
     : public zypp::callback::ReceiveReport<zypp::KeyRingReport> {
-  // lifetime of pointer is quite short. Only during operation which takes
-  // callbacks as parameter.
+  // Lifetime: this is set and unset
+  // by a set_zypp_*_callbacks + unset_zypp_*_callbacks pair
+  // around the zypp call using it
   struct SecurityCallbacks *callbacks;
 
   KeyRingReport() { callbacks = NULL; }
@@ -400,8 +404,9 @@ static KeyRingReport key_ring_report;
 
 struct DigestReceive
     : public zypp::callback::ReceiveReport<zypp::DigestReport> {
-  // lifetime of pointer is quite short. Only during operation which takes
-  // callbacks as parameter.
+  // Lifetime: this is set and unset
+  // by a set_zypp_*_callbacks + unset_zypp_*_callbacks pair
+  // around the zypp call using it
   struct SecurityCallbacks *callbacks;
 
   DigestReceive() { callbacks = NULL; }
@@ -444,8 +449,9 @@ struct PatchScriptReport
     : public zypp::callback::ReceiveReport<zypp::target::PatchScriptReport> {
   using Super = zypp::target::PatchScriptReport;
 
-  // lifetime of pointer is quite short. Only during operation which takes
-  // callbacks as parameter.
+  // Lifetime: this is set and unset
+  // by a set_zypp_*_callbacks + unset_zypp_*_callbacks pair
+  // around the zypp call using it
   struct InstallCallbacks *callbacks;
 
   PatchScriptReport() { callbacks = NULL; }
@@ -483,8 +489,9 @@ static PatchScriptReport patch_script_report;
 struct InstallResolvableReport
     : public zypp::callback::ReceiveReport<
           zypp::target::rpm::InstallResolvableReport> {
-  // lifetime of pointer is quite short. Only during operation which takes
-  // callbacks as parameter.
+  // Lifetime: this is set and unset
+  // by a set_zypp_*_callbacks + unset_zypp_*_callbacks pair
+  // around the zypp call using it
   struct InstallCallbacks *callbacks;
 
   InstallResolvableReport() { callbacks = NULL; }
