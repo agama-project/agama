@@ -50,6 +50,8 @@ static ProgressReceive progress_receive;
 
 struct DownloadProgressReceive : public zypp::callback::ReceiveReport<
                                      zypp::media::DownloadProgressReport> {
+  using Super = zypp::media::DownloadProgressReport;
+
   int last_reported;
   time_t last_reported_time;
   // lifetime of pointer is quite short. Only during operation which takes
@@ -102,8 +104,7 @@ struct DownloadProgressReceive : public zypp::callback::ReceiveReport<
       return into_action(response);
     }
     // otherwise return the default value from the parent class
-    return zypp::media::DownloadProgressReport::problem(file, error,
-                                                        description);
+    return Super::problem(file, error, description);
   }
 
   void finish(const zypp::Url &file,
@@ -151,6 +152,8 @@ static DownloadProgressReceive download_progress_receive;
 
 struct DownloadResolvableReport : public zypp::callback::ReceiveReport<
                                       zypp::repo::DownloadResolvableReport> {
+  using Super = zypp::repo::DownloadResolvableReport;
+
   // lifetime of pointer is quite short. Only during operation which takes
   // callbacks as parameter.
   struct DownloadResolvableCallbacks *callbacks;
@@ -165,8 +168,7 @@ struct DownloadResolvableReport : public zypp::callback::ReceiveReport<
                  const std::string &description) override {
     // return the default value from the parent class if not defined
     if (callbacks == NULL || callbacks->problem == NULL)
-      return zypp::repo::DownloadResolvableReport::problem(resolvable_ptr,
-                                                           error, description);
+      return Super::problem(resolvable_ptr, error, description);
 
     PROBLEM_RESPONSE response =
         callbacks->problem(resolvable_ptr->name().c_str(), into_error(error),
@@ -440,6 +442,8 @@ static DigestReceive digest_receive;
 
 struct PatchScriptReport
     : public zypp::callback::ReceiveReport<zypp::target::PatchScriptReport> {
+  using Super = zypp::target::PatchScriptReport;
+
   // lifetime of pointer is quite short. Only during operation which takes
   // callbacks as parameter.
   struct InstallCallbacks *callbacks;
@@ -451,7 +455,7 @@ struct PatchScriptReport
   zypp::target::PatchScriptReport::Action
   problem(const std::string &description) override {
     if (callbacks == NULL || callbacks->script_problem == NULL) {
-      return zypp::target::PatchScriptReport::problem(description);
+      return Super::problem(description);
     }
     PROBLEM_RESPONSE response = callbacks->script_problem(
         description.c_str(), callbacks->script_problem_data);
