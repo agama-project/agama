@@ -73,10 +73,12 @@ export default function BootSelection() {
   const navigate = useNavigate();
   const devices = useDevices();
   const model = useModel();
-  const candidateDevices = filteredCandidates(useCandidateDevices(), model);
+  const allCandidateDevices = useCandidateDevices();
   const setBootDevice = useSetBootDevice();
   const setDefaultBootDevice = useSetDefaultBootDevice();
   const disableBootConfig = useDisableBootConfig();
+
+  const candidateDevices = filteredCandidates(allCandidateDevices, model);
 
   useEffect(() => {
     if (state.load || !model) return;
