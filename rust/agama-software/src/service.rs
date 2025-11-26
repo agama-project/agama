@@ -38,6 +38,7 @@ use agama_utils::{
 use async_trait::async_trait;
 use std::{path::PathBuf, process::Command, sync::Arc};
 use tokio::sync::{broadcast, Mutex, MutexGuard, RwLock};
+use url::Url;
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
@@ -390,15 +391,25 @@ fn find_mandatory_repositories<P: Into<PathBuf>>(root: P) -> Vec<Repository> {
     repos
 }
 
+/// Returns the repository for the given directory if it exists.
 fn find_repository(dir: &PathBuf, name: &str) -> Option<Repository> {
     if !std::fs::exists(dir).is_ok_and(|e| e) {
         return None;
     }
 
+    let url_string = format!("dir:{}", dir.display().to_string());
+    let Ok(url) = Url::parse(&url_string) else {
+        tracing::warn!(
+            "'{}' is not a valid URL. Ignoring the repository.",
+            url_string
+        );
+        return None;
+    };
+
     Some(Repository {
         alias: name.to_string(),
         name: name.to_string(),
-        url: format!("dir:{}", dir.display().to_string()),
+        url: url.to_string(),
         enabled: true,
         predefined: true,
     })
