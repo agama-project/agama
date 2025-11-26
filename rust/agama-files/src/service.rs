@@ -186,7 +186,7 @@ impl MessageHandler<message::SetConfig> for Service {
 #[async_trait]
 impl MessageHandler<message::RunScripts> for Service {
     async fn handle(&mut self, message: message::RunScripts) -> Result<(), Error> {
-        self.scripts.run(message.group)?;
+        self.scripts.run(message.group);
         Ok(())
     }
 }

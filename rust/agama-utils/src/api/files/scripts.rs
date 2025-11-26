@@ -346,8 +346,9 @@ impl ScriptsRepository {
     ///
     /// They run in the order they were added to the repository. If does not return an error
     /// if running a script fails, although it logs the problem.
-    pub fn run(&self, group: ScriptsGroup) -> Result<(), Error> {
+    pub fn run(&self, group: ScriptsGroup) {
         let scripts: Vec<_> = self.scripts.iter().filter(|s| s.group() == group).collect();
+        tracing::info!("Running {} scripts", scripts.len());
         for script in scripts {
             if let Err(error) = script.run(&self.workdir) {
                 tracing::error!(
@@ -357,7 +358,6 @@ impl ScriptsRepository {
                 );
             }
         }
-        Ok(())
     }
 }
 
@@ -394,11 +394,12 @@ impl ScriptRunner {
         let output = if self.chroot {
             process::Command::new("chroot")
                 .args(["/mnt", &path.to_string_lossy()])
-                .output()?
+                .output()
         } else {
-            process::Command::new(path).output()?
+            process::Command::new(path).output()
         };
 
+        let output = output.inspect_err(|e| tracing::error!("Error executing the script: {e}"))?;
         fs::write(path.with_extension("log"), output.stdout)?;
         fs::write(path.with_extension("err"), output.stderr)?;
         fs::write(path.with_extension("out"), output.status.to_string())?;
@@ -449,7 +450,7 @@ mod test {
         };
         let script = Script::Pre(PreScript { base });
         repo.add(script).unwrap();
-        repo.run(ScriptsGroup::Pre).unwrap();
+        repo.run(ScriptsGroup::Pre);
 
         repo.scripts.first().unwrap();
 
