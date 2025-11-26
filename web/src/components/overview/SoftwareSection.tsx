@@ -25,10 +25,12 @@ import { Content, List, ListItem } from "@patternfly/react-core";
 import { isEmpty } from "radashi";
 import { _ } from "~/i18n";
 import { useProposal, useSystem } from "~/hooks/api";
+import xbytes from "xbytes";
 
 export default function SoftwareSection(): React.ReactNode {
   const { software: available } = useSystem({ suspense: true });
   const { software: proposed } = useProposal({ suspense: true });
+  const used_space = xbytes(proposed.used_space * 1024);
 
   if (isEmpty(proposed.patterns)) return;
   const selectedPatternsIds = Object.keys(proposed.patterns);
@@ -36,7 +38,7 @@ export default function SoftwareSection(): React.ReactNode {
   const TextWithoutList = () => {
     return (
       <>
-        {_("The installation will take")} <b>{proposed.size}</b>
+        {_("The installation will take")} <b>{used_space}</b>
       </>
     );
   };
@@ -50,7 +52,7 @@ export default function SoftwareSection(): React.ReactNode {
       <>
         <Content>
           {msg1}
-          <b>{proposed.size}</b>
+          <b>{used_space}</b>
           {msg2}
         </Content>
         <List>

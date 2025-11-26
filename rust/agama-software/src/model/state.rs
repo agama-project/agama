@@ -40,7 +40,7 @@ use crate::{model::software_selection::SoftwareSelection, Resolvable, Resolvable
 pub struct SoftwareState {
     pub product: String,
     pub repositories: Vec<Repository>,
-    pub resolvables: Vec<ResolvableState>,
+    pub resolvables: Vec<SelectedResolvable>,
     pub options: SoftwareOptions,
 }
 
@@ -75,23 +75,30 @@ impl<'a> SoftwareStateBuilder<'a> {
     }
 
     /// Adds the user configuration to use.
+    ///
+    /// The configuration may contain user-selected patterns and packages, extra repositories, etc.
     pub fn with_config(mut self, config: &'a Config) -> Self {
         self.config = Some(config);
         self
     }
 
+    /// Adds the information of the underlying system.
+    ///
+    /// The system may contain repositories, e.g. the off-line medium repository, DUD, etc.
     pub fn with_system(mut self, system: &'a SystemInfo) -> Self {
         self.system = Some(system);
         self
     }
 
+    /// Adds the software selection from the installer.
+    ///
+    /// Agama might require the installation of patterns and packages.
     pub fn with_selection(mut self, selection: &'a SoftwareSelection) -> Self {
         self.selection = Some(selection);
         self
     }
 
-    /// Builds the [SoftwareState] by merging the product specification and the
-    /// user configuration.
+    /// Builds the [SoftwareState] combining all the sources.
     pub fn build(self) -> SoftwareState {
         let mut state = self.from_product_spec();
 
@@ -113,12 +120,12 @@ impl<'a> SoftwareStateBuilder<'a> {
     /// Adds the elements from the underlying system.
     ///
     /// It searches for repositories in the underlying system. The idea is to
-    /// use the repositories for off-line installation.
+    /// use the repositories for off-line installation or Driver Update Disks.
     fn add_system_config(&self, state: &mut SoftwareState, system: &SystemInfo) {
         let repositories = system
             .repositories
             .iter()
-            .filter(|r| r.mandatory)
+            .filter(|r| r.predefined)
             .map(Repository::from);
         state.repositories.extend(repositories);
     }
@@ -138,27 +145,29 @@ impl<'a> SoftwareStateBuilder<'a> {
             match patterns {
                 PatternsConfig::PatternsList(list) => {
                     // Replaces the list, keeping only the non-optional elements.
-                    state.resolvables.retain(|p| p.optional == false);
-                    state.resolvables.extend(
-                        list.iter()
-                            .map(|n| ResolvableState::new(n, ResolvableType::Pattern, false)),
-                    );
+                    state.resolvables.retain(|p| !p.reason.is_optional());
+                    state.resolvables.extend(list.iter().map(|n| {
+                        SelectedResolvable::new(n, ResolvableType::Pattern, SelectedReason::User)
+                    }));
                 }
                 PatternsConfig::PatternsMap(map) => {
                     // Adds or removes elements to the list
                     if let Some(add) = &map.add {
-                        state.resolvables.extend(
-                            add.iter()
-                                .map(|n| ResolvableState::new(n, ResolvableType::Pattern, false)),
-                        );
+                        state.resolvables.extend(add.iter().map(|n| {
+                            SelectedResolvable::new(
+                                n,
+                                ResolvableType::Pattern,
+                                SelectedReason::User,
+                            )
+                        }));
                     }
 
                     if let Some(remove) = &map.remove {
                         // NOTE: should we notify when a user wants to remove a
                         // pattern which is not optional?
-                        state
-                            .resolvables
-                            .retain(|p| !(p.optional && remove.contains(&p.resolvable.name)));
+                        state.resolvables.retain(|p| {
+                            !(p.reason.is_optional() && remove.contains(&p.resolvable.name))
+                        });
                     }
                 }
             }
@@ -171,9 +180,12 @@ impl<'a> SoftwareStateBuilder<'a> {
 
     /// It adds the software selection from Agama modules.
     fn add_selection(&self, state: &mut SoftwareState, selection: &SoftwareSelection) {
-        let resolvables = selection
-            .resolvables()
-            .map(|r| ResolvableState::new_with_resolvable(&r, false));
+        let resolvables = selection.resolvables().map(|r| {
+            SelectedResolvable::new_with_resolvable(
+                &r,
+                SelectedReason::Installer { optional: false },
+            )
+        });
         state.resolvables.extend(resolvables)
     }
 
@@ -194,27 +206,34 @@ impl<'a> SoftwareStateBuilder<'a> {
             })
             .collect();
 
-        let mut resolvables: Vec<ResolvableState> = software
+        let mut resolvables: Vec<SelectedResolvable> = software
             .mandatory_patterns
             .iter()
-            .map(|p| ResolvableState::new(p, ResolvableType::Pattern, false))
+            .map(|p| {
+                SelectedResolvable::new(
+                    p,
+                    ResolvableType::Pattern,
+                    SelectedReason::Installer { optional: false },
+                )
+            })
             .collect();
 
-        resolvables.extend(
-            software
-                .optional_patterns
-                .iter()
-                .map(|p| ResolvableState::new(p, ResolvableType::Pattern, true)),
-        );
+        resolvables.extend(software.optional_patterns.iter().map(|p| {
+            SelectedResolvable::new(
+                p,
+                ResolvableType::Pattern,
+                SelectedReason::Installer { optional: true },
+            )
+        }));
 
         resolvables.extend(software.user_patterns.iter().filter_map(|p| match p {
             UserPattern::Plain(_) => None,
             UserPattern::Preselected(pattern) => {
                 if pattern.selected {
-                    Some(ResolvableState::new(
+                    Some(SelectedResolvable::new(
                         &pattern.name,
                         ResolvableType::Pattern,
-                        true,
+                        SelectedReason::Installer { optional: true },
                     ))
                 } else {
                     None
@@ -279,22 +298,52 @@ impl From<&agama_utils::api::software::Repository> for Repository {
 
 /// Defines a resolvable to be selected.
 #[derive(Debug, PartialEq)]
-pub struct ResolvableState {
+pub struct SelectedResolvable {
     /// Resolvable name.
     pub resolvable: Resolvable,
-    /// Whether this resolvable is optional or not.
-    pub optional: bool,
+    /// The reason to select the resolvable.
+    pub reason: SelectedReason,
 }
 
-impl ResolvableState {
-    pub fn new(name: &str, r#type: ResolvableType, optional: bool) -> Self {
-        Self::new_with_resolvable(&Resolvable::new(name, r#type), optional)
+impl SelectedResolvable {
+    pub fn new(name: &str, r#type: ResolvableType, reason: SelectedReason) -> Self {
+        Self::new_with_resolvable(&Resolvable::new(name, r#type), reason)
     }
 
-    pub fn new_with_resolvable(resolvable: &Resolvable, optional: bool) -> Self {
+    pub fn new_with_resolvable(resolvable: &Resolvable, reason: SelectedReason) -> Self {
         Self {
             resolvable: resolvable.clone(),
-            optional,
+            reason,
+        }
+    }
+}
+
+/// Defines the reason to select a resolvable.
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub enum SelectedReason {
+    /// Selected by the user.
+    User,
+    /// Selected by the installer itself and whether it is optional or not.
+    Installer { optional: bool },
+}
+
+impl SelectedReason {
+    pub fn is_optional(&self) -> bool {
+        if let SelectedReason::Installer { optional } = self {
+            return *optional;
+        }
+
+        false
+    }
+}
+
+impl From<SelectedReason> for zypp_agama::ResolvableSelected {
+    fn from(value: SelectedReason) -> Self {
+        match value {
+            SelectedReason::User => zypp_agama::ResolvableSelected::User,
+            SelectedReason::Installer { optional: _ } => {
+                zypp_agama::ResolvableSelected::Installation
+            }
         }
     }
 }
@@ -320,7 +369,7 @@ mod tests {
 
     use crate::model::{
         packages::ResolvableType,
-        state::{ResolvableState, SoftwareStateBuilder},
+        state::{SelectedReason, SelectedResolvable, SoftwareStateBuilder},
     };
 
     fn build_user_config(patterns: Option<PatternsConfig>) -> Config {
@@ -376,8 +425,16 @@ mod tests {
         assert_eq!(
             state.resolvables,
             vec![
-                ResolvableState::new("enhanced_base", ResolvableType::Pattern, false),
-                ResolvableState::new("selinux", ResolvableType::Pattern, true),
+                SelectedResolvable::new(
+                    "enhanced_base",
+                    ResolvableType::Pattern,
+                    SelectedReason::Installer { optional: false }
+                ),
+                SelectedResolvable::new(
+                    "selinux",
+                    ResolvableType::Pattern,
+                    SelectedReason::Installer { optional: true }
+                ),
             ]
         );
     }
@@ -416,9 +473,17 @@ mod tests {
         assert_eq!(
             state.resolvables,
             vec![
-                ResolvableState::new("enhanced_base", ResolvableType::Pattern, false),
-                ResolvableState::new("selinux", ResolvableType::Pattern, true),
-                ResolvableState::new("gnome", ResolvableType::Pattern, false)
+                SelectedResolvable::new(
+                    "enhanced_base",
+                    ResolvableType::Pattern,
+                    SelectedReason::Installer { optional: false }
+                ),
+                SelectedResolvable::new(
+                    "selinux",
+                    ResolvableType::Pattern,
+                    SelectedReason::Installer { optional: true }
+                ),
+                SelectedResolvable::new("gnome", ResolvableType::Pattern, SelectedReason::User)
             ]
         );
     }
@@ -437,10 +502,10 @@ mod tests {
             .build();
         assert_eq!(
             state.resolvables,
-            vec![ResolvableState::new(
+            vec![SelectedResolvable::new(
                 "enhanced_base",
                 ResolvableType::Pattern,
-                false
+                SelectedReason::Installer { optional: false }
             ),]
         );
     }
@@ -460,8 +525,16 @@ mod tests {
         assert_eq!(
             state.resolvables,
             vec![
-                ResolvableState::new("enhanced_base", ResolvableType::Pattern, false),
-                ResolvableState::new("selinux", ResolvableType::Pattern, true)
+                SelectedResolvable::new(
+                    "enhanced_base",
+                    ResolvableType::Pattern,
+                    SelectedReason::Installer { optional: false }
+                ),
+                SelectedResolvable::new(
+                    "selinux",
+                    ResolvableType::Pattern,
+                    SelectedReason::Installer { optional: true }
+                )
             ]
         );
     }
@@ -478,8 +551,12 @@ mod tests {
         assert_eq!(
             state.resolvables,
             vec![
-                ResolvableState::new("enhanced_base", ResolvableType::Pattern, false),
-                ResolvableState::new("gnome", ResolvableType::Pattern, false)
+                SelectedResolvable::new(
+                    "enhanced_base",
+                    ResolvableType::Pattern,
+                    SelectedReason::Installer { optional: false }
+                ),
+                SelectedResolvable::new("gnome", ResolvableType::Pattern, SelectedReason::User,)
             ]
         );
     }
@@ -495,7 +572,7 @@ mod tests {
             name: "install".to_string(),
             url: "hd:/run/initramfs/install".to_string(),
             enabled: false,
-            mandatory: true,
+            predefined: true,
         };
 
         let another_repo = Repository {
@@ -503,7 +580,7 @@ mod tests {
             name: "another".to_string(),
             url: "https://example.lan/SLES/".to_string(),
             enabled: false,
-            mandatory: false,
+            predefined: false,
         };
 
         let system = SystemInfo {

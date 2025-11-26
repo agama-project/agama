@@ -24,6 +24,7 @@ use serde::Serialize;
 
 /// Represents the reason why a pattern is selected.
 #[derive(Clone, Copy, Debug, PartialEq, Serialize, utoipa::ToSchema)]
+#[serde(rename_all = "camelCase")]
 pub enum SelectedBy {
     /// The pattern was selected by the user.
     User,
@@ -36,9 +37,8 @@ pub enum SelectedBy {
 #[derive(Clone, Debug, Serialize, utoipa::ToSchema)]
 /// Software proposal information.
 pub struct SoftwareProposal {
-    /// Space required for installation. It is returned as a formatted string which includes
-    /// a number and a unit (e.g., "GiB").
-    pub size: String,
+    /// Space required for installation in KiB.
+    pub used_space: i64,
     /// Patterns selection. It is represented as a hash map where the key is the pattern's name
     /// and the value why the pattern is selected.
     pub patterns: HashMap<String, SelectedBy>,

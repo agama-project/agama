@@ -21,18 +21,19 @@
 use agama_utils::{
     actor::Handler,
     api::{
-        software::{Pattern, SelectedBy, SoftwareProposal},
+        self,
+        software::{Pattern, SelectedBy, SoftwareProposal, SystemInfo},
         Issue, Scope,
     },
     products::ProductSpec,
     progress, question,
 };
-use std::path::Path;
+use std::{collections::HashMap, path::Path};
 use tokio::sync::{
     mpsc::{self, UnboundedSender},
     oneshot,
 };
-use zypp_agama::ZyppError;
+use zypp_agama::{errors::ZyppResult, ZyppError};
 
 use crate::{
     callbacks,
@@ -44,8 +45,10 @@ const GPG_KEYS: &str = "/usr/lib/rpm/gnupg/keys/gpg-*";
 
 #[derive(thiserror::Error, Debug)]
 pub enum ZyppDispatchError {
-    #[error("Failed to initialize libzypp: {0}")]
-    InitError(#[from] ZyppError),
+    #[error(transparent)]
+    Zypp(#[from] ZyppError),
+    #[error("libzypp error: {0}")]
+    ZyppServer(#[from] ZyppServerError),
     #[error("Response channel closed")]
     ResponseChannelClosed,
     #[error("Target creation failed: {0}")]
@@ -65,26 +68,11 @@ pub enum ZyppServerError {
     #[error("Sender error: {0}")]
     SendError(#[from] mpsc::error::SendError<SoftwareAction>),
 
-    #[error("Unknown product: {0}")]
-    UnknownProduct(String),
-
-    #[error("No selected product")]
-    NoSelectedProduct,
-
-    #[error("Failed to initialize target directory: {0}")]
-    TargetInitFailed(#[source] ZyppError),
-
-    #[error("Failed to add a repository: {0}")]
-    AddRepositoryFailed(#[source] ZyppError),
-
-    #[error("Failed to load the repositories: {0}")]
-    LoadSourcesFailed(#[source] ZyppError),
-
-    #[error("Listing patterns failed: {0}")]
-    ListPatternsFailed(#[source] ZyppError),
-
     #[error("Error from libzypp: {0}")]
     ZyppError(#[from] zypp_agama::ZyppError),
+
+    #[error("Could not find a mount point to calculate the used space")]
+    MissingMountPoint,
 }
 
 pub type ZyppServerResult<R> = Result<R, ZyppServerError>;
@@ -96,8 +84,8 @@ pub enum SoftwareAction {
         Handler<question::Service>,
     ),
     Finish(oneshot::Sender<ZyppServerResult<()>>),
-    GetPatternsMetadata(Vec<String>, oneshot::Sender<ZyppServerResult<Vec<Pattern>>>),
-    ComputeProposal(
+    GetSystemInfo(ProductSpec, oneshot::Sender<ZyppServerResult<SystemInfo>>),
+    GetProposal(
         ProductSpec,
         oneshot::Sender<ZyppServerResult<SoftwareProposal>>,
     ),
@@ -181,8 +169,8 @@ impl ZyppServer {
                 self.write(state, progress, &mut security_callback, tx, zypp)
                     .await?;
             }
-            SoftwareAction::GetPatternsMetadata(names, tx) => {
-                self.get_patterns(names, tx, zypp).await?;
+            SoftwareAction::GetSystemInfo(product_spec, tx) => {
+                self.system_info(product_spec, tx, zypp).await?;
             }
             SoftwareAction::Install(tx, progress, question) => {
                 let mut download_callback =
@@ -201,8 +189,8 @@ impl ZyppServer {
             SoftwareAction::Finish(tx) => {
                 self.finish(zypp, tx).await?;
             }
-            SoftwareAction::ComputeProposal(product_spec, sender) => {
-                self.compute_proposal(product_spec, sender, zypp).await?
+            SoftwareAction::GetProposal(product_spec, sender) => {
+                self.proposal(product_spec, sender, zypp).await?
             }
         }
         Ok(())
@@ -223,7 +211,7 @@ impl ZyppServer {
         Ok(result)
     }
 
-    fn read(&self, zypp: &zypp_agama::Zypp) -> Result<SoftwareState, ZyppDispatchError> {
+    fn read(&self, zypp: &zypp_agama::Zypp) -> Result<SoftwareState, ZyppError> {
         let repositories = zypp
             .list_repositories()?
             .into_iter()
@@ -236,7 +224,8 @@ impl ZyppServer {
             .collect();
 
         let state = SoftwareState {
-            // FIXME: read the real product.
+            // FIXME: read the real product. It is not a problem because it is replaced
+            // later.
             product: "SLES".to_string(),
             repositories,
             resolvables: vec![],
@@ -254,12 +243,6 @@ impl ZyppServer {
         zypp: &zypp_agama::Zypp,
     ) -> Result<(), ZyppDispatchError> {
         let mut issues: Vec<Issue> = vec![];
-        // FIXME:
-        // 1. add and remove the repositories.
-        // 2. select the patterns.
-        // 3. select the packages.
-        // 4. return the proposal and the issues.
-        // self.add_repositories(state.repositories, tx, &zypp).await?;
 
         _ = progress.cast(progress::message::StartWithSteps::new(
             Scope::Software,
@@ -269,7 +252,7 @@ impl ZyppServer {
                 "Calculating the software proposal",
             ],
         ));
-        let old_state = self.read(zypp).unwrap();
+        let old_state = self.read(zypp)?;
         let old_aliases: Vec<_> = old_state
             .repositories
             .iter()
@@ -340,22 +323,38 @@ impl ZyppServer {
         zypp.reset_resolvables();
 
         _ = progress.cast(progress::message::Next::new(Scope::Software));
+        let result = zypp.select_resolvable(
+            &state.product,
+            zypp_agama::ResolvableKind::Product,
+            zypp_agama::ResolvableSelected::Installation,
+        );
+        if let Err(error) = result {
+            let message = format!("Could not select the product '{}'", &state.product);
+            issues.push(
+                Issue::new("software.select_product", &message).with_details(&error.to_string()),
+            );
+        }
         for resolvable_state in &state.resolvables {
             let resolvable = &resolvable_state.resolvable;
-            // FIXME: we need to distinguish who is selecting the pattern.
-            // and register an issue if it is not found and it was not optional.
             let result = zypp.select_resolvable(
                 &resolvable.name,
                 resolvable.r#type.into(),
-                zypp_agama::ResolvableSelected::Installation,
+                resolvable_state.reason.into(),
             );
 
             if let Err(error) = result {
-                let message = format!("Could not select pattern '{}'", &resolvable.name);
-                issues.push(
-                    Issue::new("software.select_pattern", &message)
-                        .with_details(&error.to_string()),
-                );
+                if resolvable_state.reason.is_optional() {
+                    tracing::info!(
+                        "Could not select '{}' but it is optional.",
+                        &resolvable.name
+                    );
+                } else {
+                    let message = format!("Could not select '{}'", &resolvable.name);
+                    issues.push(
+                        Issue::new("software.select_resolvable", &message)
+                            .with_details(&error.to_string()),
+                    );
+                }
             }
         }
 
@@ -437,40 +436,73 @@ impl ZyppServer {
         Ok(())
     }
 
-    async fn get_patterns(
+    async fn system_info(
         &self,
-        names: Vec<String>,
-        tx: oneshot::Sender<ZyppServerResult<Vec<Pattern>>>,
+        product: ProductSpec,
+        tx: oneshot::Sender<ZyppServerResult<SystemInfo>>,
         zypp: &zypp_agama::Zypp,
     ) -> Result<(), ZyppDispatchError> {
-        let pattern_names = names.iter().map(|n| n.as_str()).collect();
-        let patterns = zypp
-            .patterns_info(pattern_names)
-            .map_err(ZyppServerError::ListPatternsFailed);
-        match patterns {
-            Err(error) => {
-                tx.send(Err(error))
-                    .map_err(|_| ZyppDispatchError::ResponseChannelClosed)?;
-            }
-            Ok(patterns_info) => {
-                let patterns = patterns_info
-                    .into_iter()
-                    .map(|info| Pattern {
-                        name: info.name,
-                        category: info.category,
-                        description: info.description,
-                        icon: info.icon,
-                        summary: info.summary,
-                        order: info.order,
-                    })
-                    .collect();
+        let patterns = self.patterns(&product, zypp).await?;
+        let repositories = self.repositories(zypp).await?;
 
-                tx.send(Ok(patterns))
-                    .map_err(|_| ZyppDispatchError::ResponseChannelClosed)?;
-            }
-        }
+        let system_info = SystemInfo {
+            patterns,
+            repositories,
+            addons: vec![],
+        };
 
+        tx.send(Ok(system_info))
+            .map_err(|_| ZyppDispatchError::ResponseChannelClosed)?;
         Ok(())
+    }
+
+    async fn patterns(
+        &self,
+        product: &ProductSpec,
+        zypp: &zypp_agama::Zypp,
+    ) -> ZyppResult<Vec<Pattern>> {
+        let pattern_names: Vec<_> = product
+            .software
+            .user_patterns
+            .iter()
+            .map(|p| p.name())
+            .collect();
+
+        let patterns = zypp.patterns_info(pattern_names)?;
+
+        let patterns = patterns
+            .into_iter()
+            .map(|p| Pattern {
+                name: p.name,
+                category: p.category,
+                description: p.description,
+                icon: p.icon,
+                summary: p.summary,
+                order: p.order,
+            })
+            .collect();
+        Ok(patterns)
+    }
+
+    async fn repositories(
+        &self,
+        zypp: &zypp_agama::Zypp,
+    ) -> ZyppResult<Vec<api::software::Repository>> {
+        let result = zypp
+            .list_repositories()?
+            .into_iter()
+            .map(|r| api::software::Repository {
+                alias: r.alias.clone(),
+                name: r.alias,
+                url: r.url,
+                enabled: r.enabled,
+                // At this point, there is no way to determine if the repository is
+                // predefined or not. It will be adjusted in the Model::repositories
+                // function.
+                predefined: false,
+            })
+            .collect();
+        Ok(result)
     }
 
     fn initialize_target_dir(&self) -> Result<zypp_agama::Zypp, ZyppDispatchError> {
@@ -504,13 +536,23 @@ impl ZyppServer {
         }
     }
 
-    async fn compute_proposal(
+    async fn proposal(
         &self,
-        product_spec: ProductSpec,
-        sender: oneshot::Sender<Result<SoftwareProposal, ZyppServerError>>,
+        product: ProductSpec,
+        tx: oneshot::Sender<ZyppServerResult<SoftwareProposal>>,
         zypp: &zypp_agama::Zypp,
     ) -> Result<(), ZyppDispatchError> {
-        tracing::info!("Computing software proposal");
+        let proposal = SoftwareProposal {
+            used_space: self.used_space(&zypp).await?,
+            patterns: self.patterns_selection(&product, &zypp).await?,
+        };
+
+        tx.send(Ok(proposal))
+            .map_err(|_| ZyppDispatchError::ResponseChannelClosed)?;
+        Ok(())
+    }
+
+    async fn used_space(&self, zypp: &zypp_agama::Zypp) -> Result<i64, ZyppServerError> {
         // TODO: for now it just compute total size, but it can get info about partitions from storage and pass it to libzypp
         let mount_points = vec![zypp_agama::MountPoint {
             directory: "/".to_string(),
@@ -518,30 +560,26 @@ impl ZyppServer {
             grow_only: false, // not sure if it has effect as we install everything fresh
             used_size: 0,
         }];
-        let disk_usage = zypp.count_disk_usage(mount_points);
-        let Ok(computed_mount_points) = disk_usage else {
-            sender
-                .send(Err(disk_usage.unwrap_err().into()))
-                .map_err(|_| ZyppDispatchError::ResponseChannelClosed)?;
-            return Ok(());
-        };
-        let size = computed_mount_points.first().unwrap().used_size;
-        // TODO: format size
-        let size_str = format!("{size} KiB");
-        tracing::info!("Software size: {size_str}");
+        let computed_mount_points = zypp.count_disk_usage(mount_points)?;
+        computed_mount_points
+            .first()
+            .map(|m| m.used_size)
+            .ok_or(ZyppServerError::MissingMountPoint)
+    }
 
-        let pattern_names = product_spec
+    async fn patterns_selection(
+        &self,
+        product: &ProductSpec,
+        zypp: &zypp_agama::Zypp,
+    ) -> Result<HashMap<String, SelectedBy>, ZyppServerError> {
+        let pattern_names = product
             .software
             .user_patterns
             .iter()
             .map(|p| p.name())
             .collect();
         let patterns_info = zypp.patterns_info(pattern_names);
-
-        let selected_patterns: Result<
-            std::collections::HashMap<String, SelectedBy>,
-            ZyppServerError,
-        > = patterns_info
+        patterns_info
             .map(|patterns| {
                 patterns
                     .iter()
@@ -556,24 +594,6 @@ impl ZyppServer {
                     })
                     .collect()
             })
-            .map_err(|e| e.into());
-
-        tracing::info!("Selected patterns: {selected_patterns:?}");
-        let Ok(selected_patterns) = selected_patterns else {
-            sender
-                .send(Err(selected_patterns.unwrap_err()))
-                .map_err(|_| ZyppDispatchError::ResponseChannelClosed)?;
-            return Ok(());
-        };
-
-        let proposal = SoftwareProposal {
-            size: size_str,
-            patterns: selected_patterns,
-        };
-
-        sender
-            .send(Ok(proposal))
-            .map_err(|_| ZyppDispatchError::ResponseChannelClosed)?;
-        Ok(())
+            .map_err(|e| e.into())
     }
 }
