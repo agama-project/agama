@@ -204,7 +204,7 @@ impl ZyppServer {
         Ok(result)
     }
 
-    fn read(&self, zypp: &zypp_agama::Zypp) -> Result<SoftwareState, ZyppDispatchError> {
+    fn read(&self, zypp: &zypp_agama::Zypp) -> Result<SoftwareState, ZyppError> {
         let repositories = zypp
             .list_repositories()?
             .into_iter()
@@ -217,7 +217,8 @@ impl ZyppServer {
             .collect();
 
         let state = SoftwareState {
-            // FIXME: read the real product.
+            // FIXME: read the real product. It is not a problem because it is replaced
+            // later.
             product: "SLES".to_string(),
             repositories,
             resolvables: vec![],
@@ -244,7 +245,7 @@ impl ZyppServer {
                 "Calculating the software proposal",
             ],
         ));
-        let old_state = self.read(zypp).unwrap();
+        let old_state = self.read(zypp)?;
         let old_aliases: Vec<_> = old_state
             .repositories
             .iter()
