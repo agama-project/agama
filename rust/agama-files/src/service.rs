@@ -169,7 +169,6 @@ impl Actor for Service {
 impl MessageHandler<message::SetConfig> for Service {
     async fn handle(&mut self, message: message::SetConfig) -> Result<(), Error> {
         self.scripts.clear()?;
-        self.files.clear();
 
         let config = message.config.unwrap_or_default();
 
