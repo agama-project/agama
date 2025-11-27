@@ -18,23 +18,24 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use std::path::{Path, PathBuf};
+use std::{
+    path::{Path, PathBuf},
+    sync::Arc,
+};
 
 use agama_software::{self as software, Resolvable, ResolvableType};
 use agama_utils::{
     actor::{self, Actor, Handler, MessageHandler},
-    api::{
-        event,
-        files::{
-            scripts::{self, ScriptsRepository},
-            user_file, ScriptsConfig, UserFile,
-        },
+    api::files::{
+        scripts::{self, ScriptsRepository},
+        user_file, ScriptsConfig, UserFile,
     },
-    progress,
+    progress, question,
 };
 use async_trait::async_trait;
+use tokio::sync::Mutex;
 
-use crate::message;
+use crate::{message, ScriptsRunner};
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
@@ -55,11 +56,11 @@ const DEFAULT_INSTALL_DIR: &str = "/mnt";
 ///
 /// This structs allows to build a files service.
 pub struct Starter {
-    progress: Handler<progress::Service>,
-    events: event::Sender,
-    software: Handler<software::Service>,
     scripts_workdir: PathBuf,
     install_dir: PathBuf,
+    software: Handler<software::Service>,
+    progress: Handler<progress::Service>,
+    questions: Handler<question::Service>,
 }
 
 impl Starter {
@@ -67,14 +68,14 @@ impl Starter {
     ///
     /// * `events`: channel to emit the [localization-specific events](crate::Event).
     pub fn new(
-        events: event::Sender,
         progress: Handler<progress::Service>,
+        questions: Handler<question::Service>,
         software: Handler<software::Service>,
     ) -> Self {
         Self {
-            events,
-            progress,
             software,
+            progress,
+            questions,
             scripts_workdir: PathBuf::from(DEFAULT_SCRIPTS_DIR),
             install_dir: PathBuf::from(DEFAULT_INSTALL_DIR),
         }
@@ -85,9 +86,9 @@ impl Starter {
         let scripts = ScriptsRepository::new(self.scripts_workdir);
         let service = Service {
             progress: self.progress,
-            events: self.events,
+            questions: self.questions,
             software: self.software,
-            scripts,
+            scripts: Arc::new(Mutex::new(scripts)),
             files: vec![],
             install_dir: self.install_dir,
         };
@@ -107,46 +108,52 @@ impl Starter {
 }
 
 pub struct Service {
-    progress: Handler<progress::Service>,
-    events: event::Sender,
     software: Handler<software::Service>,
-    scripts: ScriptsRepository,
+    progress: Handler<progress::Service>,
+    questions: Handler<question::Service>,
+    scripts: Arc<Mutex<ScriptsRepository>>,
     files: Vec<UserFile>,
     install_dir: PathBuf,
 }
 
 impl Service {
     pub fn starter(
-        events: event::Sender,
         progress: Handler<progress::Service>,
+        questions: Handler<question::Service>,
         software: Handler<software::Service>,
     ) -> Starter {
-        Starter::new(events, progress, software)
+        Starter::new(progress, questions, software)
+    }
+
+    pub async fn clear_scripts(&mut self) {
+        let mut repo = self.scripts.lock().await;
+        repo.clear();
     }
 
     pub async fn add_scripts(&mut self, config: ScriptsConfig) -> Result<(), Error> {
+        let mut repo = self.scripts.lock().await;
         if let Some(scripts) = config.pre {
             for pre in scripts {
-                self.scripts.add(pre.into())?;
+                repo.add(pre.into())?;
             }
         }
 
         if let Some(scripts) = config.post_partitioning {
             for post in scripts {
-                self.scripts.add(post.into())?;
+                repo.add(post.into())?;
             }
         }
 
         if let Some(scripts) = config.post {
             for post in scripts {
-                self.scripts.add(post.into())?;
+                repo.add(post.into())?;
             }
         }
 
         let mut packages = vec![];
         if let Some(scripts) = config.init {
             for init in scripts {
-                self.scripts.add(init.into())?;
+                repo.add(init.into())?;
             }
             packages.push(Resolvable::new("agama-scripts", ResolvableType::Package));
         }
@@ -168,10 +175,9 @@ impl Actor for Service {
 #[async_trait]
 impl MessageHandler<message::SetConfig> for Service {
     async fn handle(&mut self, message: message::SetConfig) -> Result<(), Error> {
-        self.scripts.clear()?;
-
         let config = message.config.unwrap_or_default();
 
+        self.clear_scripts().await;
         if let Some(scripts) = config.scripts {
             self.add_scripts(scripts.clone()).await?;
         }
@@ -185,7 +191,18 @@ impl MessageHandler<message::SetConfig> for Service {
 #[async_trait]
 impl MessageHandler<message::RunScripts> for Service {
     async fn handle(&mut self, message: message::RunScripts) -> Result<(), Error> {
-        self.scripts.run(message.group).await;
+        let scripts = self.scripts.clone();
+        let install_dir = self.install_dir.clone();
+        let progress = self.progress.clone();
+        let questions = self.questions.clone();
+
+        tokio::task::spawn(async move {
+            let scripts = scripts.lock().await;
+            let workdir = scripts.workdir.clone();
+            let to_run = scripts.by_group(message.group).clone();
+            let runner = ScriptsRunner::new(install_dir, workdir, progress, questions);
+            runner.run(&to_run).await.unwrap();
+        });
         Ok(())
     }
 }

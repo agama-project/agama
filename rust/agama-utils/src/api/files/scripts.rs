@@ -24,8 +24,14 @@ use std::{
 };
 
 use crate::{
-    api::files::{FileSource, FileSourceError, WithFileSource},
+    actor::Handler,
+    api::{
+        files::{FileSource, FileSourceError, WithFileSource},
+        question::{Question, QuestionSpec},
+        Scope,
+    },
     command::run_with_retry,
+    progress, question,
 };
 use agama_transfer::Error as TransferError;
 use serde::{Deserialize, Serialize};
@@ -145,6 +151,13 @@ impl Script {
             Script::PostPartitioning(_) => ScriptsGroup::PostPartitioning,
             Script::Post(_) => ScriptsGroup::Post,
             Script::Init(_) => ScriptsGroup::Init,
+        }
+    }
+
+    pub fn chroot(&self) -> bool {
+        match self {
+            Script::Post(script) => script.chroot.unwrap_or_default(),
+            _ => false,
         }
     }
 
@@ -311,7 +324,7 @@ impl_with_file_source!(InitScript);
 ///
 /// It offers an API to add and execute installation scripts.
 pub struct ScriptsRepository {
-    workdir: PathBuf,
+    pub workdir: PathBuf,
     pub scripts: Vec<Script>,
 }
 
@@ -362,6 +375,10 @@ impl ScriptsRepository {
                 );
             }
         }
+    }
+
+    pub fn by_group(&self, group: ScriptsGroup) -> Vec<&Script> {
+        self.scripts.iter().filter(|s| s.group() == group).collect()
     }
 }
 

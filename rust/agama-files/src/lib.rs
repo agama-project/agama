@@ -24,6 +24,8 @@ pub mod service;
 pub use service::{Service, Starter};
 
 pub mod message;
+mod runner;
+pub use runner::ScriptsRunner;
 
 #[cfg(test)]
 mod tests {
@@ -66,10 +68,14 @@ mod tests {
             let issues = issue::Service::starter(events_tx.clone()).start();
             let progress = progress::Service::starter(events_tx.clone()).start();
             let questions = question::start(events_tx.clone()).await.unwrap();
-            let software =
-                start_software_service(events_tx.clone(), issues, progress.clone(), questions)
-                    .await;
-            let handler = Service::starter(events_tx.clone(), progress, software)
+            let software = start_software_service(
+                events_tx.clone(),
+                issues,
+                progress.clone(),
+                questions.clone(),
+            )
+            .await;
+            let handler = Service::starter(progress, questions, software)
                 .with_scripts_workdir(tmp_dir.path())
                 .with_install_dir(tmp_dir.path())
                 .start()
