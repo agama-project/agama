@@ -18,11 +18,10 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::model::{Connection, GeneralState};
-use crate::types::{AccessPoint, ConnectionState, Device, DeviceType, Proposal, SystemInfo};
+use crate::model::Connection;
+use crate::types::{ConnectionState, Device, DeviceType, Proposal, SystemInfo};
 use agama_utils::api::network::Config;
 use tokio::sync::oneshot;
-use uuid::Uuid;
 
 use super::{error::NetworkStateError, NetworkAdapterError};
 
@@ -39,10 +38,6 @@ pub enum Action {
     AddConnection(String, DeviceType, Responder<Result<(), NetworkStateError>>),
     /// Add a new connection
     NewConnection(Box<Connection>, Responder<Result<(), NetworkStateError>>),
-    /// Gets a connection by its id
-    GetConnection(String, Responder<Option<Connection>>),
-    /// Gets a connection by its Uuid
-    GetConnectionByUuid(Uuid, Responder<Option<Connection>>),
     /// Gets the internal state of the network configuration
     GetConfig(Responder<Config>),
     /// Gets the internal state of the network configuration proposal
@@ -52,39 +47,16 @@ pub enum Action {
     /// Gets the current network system configuration containing connections, devices, access_points and
     /// also the general state
     GetSystem(Responder<SystemInfo>),
-    /// Gets a connection
-    GetConnections(Responder<Vec<Connection>>),
-    /// Gets a controller connection
-    GetController(
-        Uuid,
-        Responder<Result<ControllerConnection, NetworkStateError>>,
-    ),
-    /// Gets all scanned access points
-    GetAccessPoints(Responder<Vec<AccessPoint>>),
     /// Adds a new device.
     AddDevice(Box<Device>),
     /// Updates a device by its `name`.
     UpdateDevice(String, Box<Device>),
     /// Removes a device by its `name`.
     RemoveDevice(String),
-    /// Gets a device by its name
-    GetDevice(String, Responder<Option<Device>>),
-    /// Gets all the existent devices
-    GetDevices(Responder<Vec<Device>>),
-    GetGeneralState(Responder<GeneralState>),
     /// Connection state changed
     ChangeConnectionState(String, ConnectionState),
-    /// Sets a controller's ports. It uses the Uuid of the controller and the IDs or interface names
-    /// of the ports.
-    SetPorts(
-        Uuid,
-        Box<Vec<String>>,
-        Responder<Result<(), NetworkStateError>>,
-    ),
     /// Updates a connection (replacing the old one).
     UpdateConnection(Box<Connection>, Responder<Result<(), NetworkStateError>>),
-    /// Updates the general network configuration
-    UpdateGeneralState(GeneralState),
     /// Forces a wireless networks scan refresh
     RefreshScan(Responder<Result<(), NetworkAdapterError>>),
     /// Remove the connection with the given Uuid.

@@ -21,8 +21,8 @@
 use crate::{
     action::Action,
     error::NetworkStateError,
-    model::{Connection, GeneralState, NetworkChange, NetworkState, StateConfig},
-    types::{AccessPoint, Config, Device, DeviceType, Proposal, SystemInfo},
+    model::{Connection, NetworkChange, NetworkState, StateConfig},
+    types::{Config, DeviceType, Proposal, SystemInfo},
     Adapter, NetworkAdapterError, NetworkManagerAdapter,
 };
 use std::error::Error;
@@ -31,7 +31,6 @@ use tokio::sync::{
     mpsc::{self, error::SendError, UnboundedReceiver, UnboundedSender},
     oneshot::{self, error::RecvError},
 };
-use uuid::Uuid;
 
 #[derive(thiserror::Error, Debug)]
 pub enum NetworkSystemError {
@@ -66,7 +65,7 @@ pub enum NetworkSystemError {
 ///     .expect("Could not start the networking configuration system.");
 ///
 /// // Perform some action, like getting the list of devices.
-/// let devices = client.get_devices().await
+/// let config = client.get_config().await
 ///     .expect("Could not get the list of devices.");
 /// # });
 /// ```
@@ -144,33 +143,6 @@ impl NetworkSystemClient {
         self.updates.subscribe()
     }
 
-    /// Returns the general state.
-    pub async fn get_state(&self) -> Result<GeneralState, NetworkSystemError> {
-        let (tx, rx) = oneshot::channel();
-        self.actions.send(Action::GetGeneralState(tx))?;
-        Ok(rx.await?)
-    }
-
-    /// Updates the network general state.
-    pub fn update_state(&self, state: GeneralState) -> Result<(), NetworkSystemError> {
-        self.actions.send(Action::UpdateGeneralState(state))?;
-        Ok(())
-    }
-
-    /// Returns the collection of network devices.
-    pub async fn get_devices(&self) -> Result<Vec<Device>, NetworkSystemError> {
-        let (tx, rx) = oneshot::channel();
-        self.actions.send(Action::GetDevices(tx))?;
-        Ok(rx.await?)
-    }
-
-    /// Returns the collection of network connections.
-    pub async fn get_connections(&self) -> Result<Vec<Connection>, NetworkSystemError> {
-        let (tx, rx) = oneshot::channel();
-        self.actions.send(Action::GetConnections(tx))?;
-        Ok(rx.await?)
-    }
-
     /// Returns the cofiguration from the current network state as a [Config].
     pub async fn get_config(&self) -> Result<Config, NetworkSystemError> {
         let (tx, rx) = oneshot::channel();
@@ -210,17 +182,6 @@ impl NetworkSystemClient {
         Ok(result?)
     }
 
-    /// Returns the connection with the given ID.
-    ///
-    /// * `id`: Connection ID.
-    pub async fn get_connection(&self, id: &str) -> Result<Option<Connection>, NetworkSystemError> {
-        let (tx, rx) = oneshot::channel();
-        self.actions
-            .send(Action::GetConnection(id.to_string(), tx))?;
-        let result = rx.await?;
-        Ok(result)
-    }
-
     /// Updates the connection.
     ///
     /// * `connection`: Updated connection.
@@ -246,32 +207,12 @@ impl NetworkSystemClient {
         Ok(result?)
     }
 
-    pub async fn set_ports(
-        &self,
-        uuid: Uuid,
-        ports: Vec<String>,
-    ) -> Result<(), NetworkSystemError> {
-        let (tx, rx) = oneshot::channel();
-        self.actions
-            .send(Action::SetPorts(uuid, Box::new(ports.clone()), tx))?;
-        let result = rx.await?;
-        Ok(result?)
-    }
-
     /// Applies the network configuration.
     pub async fn apply(&self) -> Result<(), NetworkSystemError> {
         let (tx, rx) = oneshot::channel();
         self.actions.send(Action::Apply(tx))?;
         let result = rx.await?;
         Ok(result?)
-    }
-
-    /// Returns the collection of access points.
-    pub async fn get_access_points(&self) -> Result<Vec<AccessPoint>, NetworkSystemError> {
-        let (tx, rx) = oneshot::channel();
-        self.actions.send(Action::GetAccessPoints(tx))?;
-        let access_points = rx.await?;
-        Ok(access_points)
     }
 
     pub async fn wifi_scan(&self) -> Result<(), NetworkSystemError> {
@@ -329,23 +270,8 @@ impl<T: Adapter> NetworkSystemServer<T> {
                 self.state.access_points = state.access_points;
                 tx.send(Ok(())).unwrap();
             }
-            Action::GetAccessPoints(tx) => {
-                tx.send(self.state.access_points.clone()).unwrap();
-            }
             Action::NewConnection(conn, tx) => {
                 tx.send(self.state.add_connection(*conn)).unwrap();
-            }
-            Action::GetGeneralState(tx) => {
-                let config = self.state.general_state.clone();
-                tx.send(config.clone()).unwrap();
-            }
-            Action::GetConnection(id, tx) => {
-                let conn = self.state.get_connection(id.as_ref());
-                tx.send(conn.cloned()).unwrap();
-            }
-            Action::GetConnectionByUuid(uuid, tx) => {
-                let conn = self.state.get_connection_by_uuid(uuid);
-                tx.send(conn.cloned()).unwrap();
             }
             Action::GetSystem(tx) => {
                 let result = self.read().await?.try_into()?;
@@ -364,26 +290,6 @@ impl<T: Adapter> NetworkSystemServer<T> {
 
                 tx.send(result).unwrap();
             }
-            Action::GetConnections(tx) => {
-                let connections = self
-                    .state
-                    .connections
-                    .clone()
-                    .into_iter()
-                    .filter(|c| !c.is_removed())
-                    .collect();
-
-                tx.send(connections).unwrap();
-            }
-
-            Action::GetController(uuid, tx) => {
-                let result = self.get_controller_action(uuid);
-                tx.send(result).unwrap()
-            }
-            Action::GetDevice(name, tx) => {
-                let device = self.state.get_device(name.as_str());
-                tx.send(device.cloned()).unwrap();
-            }
             Action::AddDevice(device) => {
                 self.state.add_device(*device.clone())?;
                 return Ok(Some(NetworkChange::DeviceAdded(*device)));
@@ -401,13 +307,6 @@ impl<T: Adapter> NetworkSystemServer<T> {
                 self.state.remove_device(&name)?;
                 return Ok(Some(NetworkChange::DeviceRemoved(name)));
             }
-            Action::GetDevices(tx) => {
-                tx.send(self.state.devices.clone()).unwrap();
-            }
-            Action::SetPorts(uuid, ports, rx) => {
-                let result = self.set_ports_action(uuid, *ports);
-                rx.send(result).unwrap();
-            }
             Action::UpdateConnection(conn, tx) => {
                 let result = self.state.update_connection(*conn);
                 tx.send(result).unwrap();
@@ -417,9 +316,6 @@ impl<T: Adapter> NetworkSystemServer<T> {
                     conn.state = state;
                     return Ok(Some(NetworkChange::ConnectionStateChanged { id, state }));
                 }
-            }
-            Action::UpdateGeneralState(general_state) => {
-                self.state.general_state = general_state;
             }
             Action::RemoveConnection(id, tx) => {
                 let result = self.state.remove_connection(id.as_str());
@@ -444,38 +340,6 @@ impl<T: Adapter> NetworkSystemServer<T> {
         // TODO: handle tree handling problems
         self.state.add_connection(conn.clone())?;
         Ok(())
-    }
-
-    fn set_ports_action(
-        &mut self,
-        uuid: Uuid,
-        ports: Vec<String>,
-    ) -> Result<(), NetworkStateError> {
-        let conn = self
-            .state
-            .get_connection_by_uuid(uuid)
-            .ok_or(NetworkStateError::UnknownConnection(uuid.to_string()))?;
-        self.state.set_ports(&conn.clone(), ports)
-    }
-
-    fn get_controller_action(
-        &mut self,
-        uuid: Uuid,
-    ) -> Result<(Connection, Vec<String>), NetworkStateError> {
-        let conn = self
-            .state
-            .get_connection_by_uuid(uuid)
-            .ok_or(NetworkStateError::UnknownConnection(uuid.to_string()))?;
-        let conn = conn.clone();
-
-        let controlled = self
-            .state
-            .get_controlled_by(uuid)
-            .iter()
-            .map(|c| c.interface.as_deref().unwrap_or(&c.id).to_string())
-            .collect::<Vec<_>>();
-
-        Ok((conn, controlled))
     }
 
     /// Reads the system network configuration.
