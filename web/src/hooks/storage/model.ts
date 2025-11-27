@@ -55,4 +55,41 @@ function useMissingMountPaths(): string[] {
   return data;
 }
 
-export { useModel, useMissingMountPaths };
+function useDevice(
+  collection: "drives" | "mdRaids",
+  index: number,
+): model.Drive | model.MdRaid | null {
+  const { data } = useSuspenseQuery({
+    ...storageModelQuery,
+    select: useCallback(
+      (data: apiModel.Config): model.Drive | model.MdRaid | null =>
+        build(data)?.[collection]?.at(index) || null,
+      [collection, index],
+    ),
+  });
+  return data;
+}
+
+function useDrive(index: number): model.Drive | null {
+  const { data } = useSuspenseQuery({
+    ...storageModelQuery,
+    select: useCallback(
+      (data: apiModel.Config): model.Drive | null => build(data)?.drives?.at(index) || null,
+      [index],
+    ),
+  });
+  return data;
+}
+
+function useMdRaid(index: number): model.MdRaid | null {
+  const { data } = useSuspenseQuery({
+    ...storageModelQuery,
+    select: useCallback(
+      (data: apiModel.Config): model.MdRaid | null => build(data)?.mdRaids?.at(index) || null,
+      [index],
+    ),
+  });
+  return data;
+}
+
+export { useModel, useMissingMountPaths, useDevice, useDrive, useMdRaid };

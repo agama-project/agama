@@ -26,21 +26,21 @@ import { data } from "~/storage";
 import { addPartition, editPartition, deletePartition } from "~/storage/partition";
 
 type AddPartitionFn = (
-  list: "drives" | "mdRaids",
-  listIndex: number | string,
+  collection: "drives" | "mdRaids",
+  index: number | string,
   data: data.Partition,
 ) => void;
 
 function useAddPartition(): AddPartitionFn {
   const apiModel = useStorageModel();
-  return (list: "drives" | "mdRaids", listIndex: number | string, data: data.Partition) => {
-    putStorageModel(addPartition(apiModel, list, listIndex, data));
+  return (collection: "drives" | "mdRaids", index: number | string, data: data.Partition) => {
+    putStorageModel(addPartition(apiModel, collection, index, data));
   };
 }
 
 type EditPartitionFn = (
-  list: "drives" | "mdRaids",
-  listIndex: number | string,
+  collection: "drives" | "mdRaids",
+  index: number | string,
   mountPath: string,
   data: data.Partition,
 ) => void;
@@ -48,25 +48,25 @@ type EditPartitionFn = (
 function useEditPartition(): EditPartitionFn {
   const apiModel = useStorageModel();
   return (
-    list: "drives" | "mdRaids",
-    listIndex: number | string,
+    collection: "drives" | "mdRaids",
+    index: number | string,
     mountPath: string,
     data: data.Partition,
   ) => {
-    putStorageModel(editPartition(apiModel, list, listIndex, mountPath, data));
+    putStorageModel(editPartition(apiModel, collection, index, mountPath, data));
   };
 }
 
 type DeletePartitionFn = (
-  list: "drives" | "mdRaids",
-  listIndex: number | string,
+  collection: "drives" | "mdRaids",
+  index: number | string,
   mountPath: string,
 ) => void;
 
 function useDeletePartition(): DeletePartitionFn {
   const apiModel = useStorageModel();
-  return (list: "drives" | "mdRaids", listIndex: number | string, mountPath: string) =>
-    putStorageModel(deletePartition(apiModel, list, listIndex, mountPath));
+  return (collection: "drives" | "mdRaids", index: number | string, mountPath: string) =>
+    putStorageModel(deletePartition(apiModel, collection, index, mountPath));
 }
 
 export { useAddPartition, useEditPartition, useDeletePartition };

@@ -23,7 +23,7 @@
 import { useCallback } from "react";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { systemQuery } from "~/hooks/api/system";
-import { findDevices } from "~/storage/system";
+import { findDevices, findDeviceByName } from "~/storage/system";
 import type { System, storage } from "~/api/system";
 import type { EncryptionMethod } from "~/api/system/storage";
 
@@ -155,6 +155,19 @@ function useDevices(): storage.Device[] {
   return data;
 }
 
+function useDevice(name: string): storage.Device | null {
+  const { data } = useSuspenseQuery({
+    ...systemQuery,
+    select: useCallback(
+      (data: System | null): storage.Device | null => {
+        return data.storage ? findDeviceByName(data.storage, name) : null;
+      },
+      [name],
+    ),
+  });
+  return data;
+}
+
 const selectVolumeTemplates = (data: System | null): storage.Volume[] =>
   data?.storage?.volumeTemplates || [];
 
@@ -199,6 +212,7 @@ export {
   useAvailableDevices,
   useCandidateDevices,
   useDevices,
+  useDevice,
   useVolumeTemplates,
   useVolumeTemplate,
   useIssues,

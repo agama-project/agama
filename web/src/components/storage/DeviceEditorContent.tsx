@@ -25,22 +25,25 @@ import UnusedMenu from "~/components/storage/UnusedMenu";
 import FilesystemMenu from "~/components/storage/FilesystemMenu";
 import PartitionsSection from "~/components/storage/PartitionsSection";
 import SpacePolicyMenu from "~/components/storage/SpacePolicyMenu";
-import type { model } from "~/storage";
-import type { storage } from "~/api/system";
+import { useDevice } from "~/hooks/storage/model";
 
-type DeviceEditorContentProps = { deviceModel: model.Drive | model.MdRaid; device: storage.Device };
+type DeviceEditorContentProps = {
+  collection: "drives" | "mdRaids";
+  index: number;
+};
 
 export default function DeviceEditorContent({
-  deviceModel,
-  device,
+  collection,
+  index,
 }: DeviceEditorContentProps): React.ReactNode {
-  if (!deviceModel.isUsed) return <UnusedMenu deviceModel={deviceModel} />;
+  const deviceModel = useDevice(collection, index);
+  if (!deviceModel.isUsed) return <UnusedMenu collection={collection} index={index} />;
 
   return (
     <>
-      {deviceModel.filesystem && <FilesystemMenu deviceModel={deviceModel} />}
-      {!deviceModel.filesystem && <PartitionsSection device={deviceModel} />}
-      {!deviceModel.filesystem && <SpacePolicyMenu modelDevice={deviceModel} device={device} />}
+      {deviceModel.filesystem && <FilesystemMenu collection={collection} index={index} />}
+      {!deviceModel.filesystem && <PartitionsSection collection={collection} index={index} />}
+      {!deviceModel.filesystem && <SpacePolicyMenu collection={collection} index={index} />}
     </>
   );
 }

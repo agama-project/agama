@@ -51,12 +51,18 @@ import SizeModeSelect, { SizeMode, SizeRange } from "~/components/storage/SizeMo
 import AlertOutOfSync from "~/components/core/AlertOutOfSync";
 import ResourceNotFound from "~/components/core/ResourceNotFound";
 import { useAddPartition, useEditPartition } from "~/hooks/storage/partition";
-import { useModel, useMissingMountPaths } from "~/hooks/storage/model";
+import {
+  useModel,
+  useMissingMountPaths,
+  useDrive as useDriveModel,
+  useMdRaid as useMdRaidModel,
+} from "~/hooks/storage/model";
 import {
   addPartition as addPartitionHelper,
   editPartition as editPartitionHelper,
 } from "~/storage/partition";
-import { useDevices, useVolumeTemplate } from "~/hooks/api/system/storage";
+import { useVolumeTemplate, useDevice } from "~/hooks/api/system/storage";
+
 import { useSolvedConfigModel } from "~/queries/storage/config-model";
 import { useStorageModel } from "~/hooks/api/storage";
 import { findDevice } from "~/storage/api-model";
@@ -189,20 +195,19 @@ function toFormValue(partitionConfig: model.Partition): FormValue {
   };
 }
 
-function useModelDevice() {
-  const { list, listIndex } = useParams();
-  const model = useModel();
-  return model[list].at(listIndex);
+function useDeviceModelFromParams() {
+  const { collection, index } = useParams();
+  const deviceModel = collection === "drives" ? useDriveModel : useMdRaidModel;
+  return deviceModel(Number(index));
 }
 
-function useDevice(): system.Device {
-  const modelDevice = useModelDevice();
-  const devices = useDevices();
-  return devices.find((d) => d.name === modelDevice.name);
+function useDeviceFromParams(): system.Device {
+  const deviceModel = useDeviceModelFromParams();
+  return useDevice(deviceModel.name);
 }
 
 function usePartition(target: string): system.Device | null {
-  const device = useDevice();
+  const device = useDeviceFromParams();
 
   if (target === NEW_PARTITION) return null;
 
@@ -223,7 +228,7 @@ function useDefaultFilesystem(mountPoint: string): string {
 
 function useInitialPartitionConfig(): model.Partition | null {
   const { partitionId: mountPath } = useParams();
-  const device = useModelDevice();
+  const device = useDeviceModelFromParams();
 
   return mountPath && device ? device.getPartition(mountPath) : null;
 }
@@ -248,10 +253,10 @@ function useUnusedMountPoints(): string[] {
 
 /** Unused partitions. Includes the currently used partition when editing (if any). */
 function useUnusedPartitions(): system.Device[] {
-  const device = useDevice();
+  const device = useDeviceFromParams();
   const allPartitions = device.partitions || [];
   const initialPartitionConfig = useInitialPartitionConfig();
-  const configuredPartitionConfigs = useModelDevice()
+  const configuredPartitionConfigs = useDeviceModelFromParams()
     .getConfiguredExistingPartitions()
     .filter((p) => p.name !== initialPartitionConfig?.name)
     .map((p) => p.name);
@@ -387,7 +392,8 @@ function useErrors(value: FormValue): ErrorsHandler {
 }
 
 function useSolvedModel(value: FormValue): model.Config | null {
-  const device = useModelDevice();
+  const { collection, index } = useParams();
+  const device = useDeviceModelFromParams();
   const model = useStorageModel();
   const { errors } = useErrors(value);
   const initialPartitionConfig = useInitialPartitionConfig();
@@ -395,19 +401,21 @@ function useSolvedModel(value: FormValue): model.Config | null {
   partitionConfig.size = undefined;
   if (partitionConfig.filesystem) partitionConfig.filesystem.label = undefined;
 
+  const modelCollection = collection === "drives" ? "drives" : "mdRaids";
+
   let sparseModel: model.Config | undefined;
 
   if (device && !errors.length && value.target === NEW_PARTITION && value.filesystem !== NO_VALUE) {
     if (initialPartitionConfig) {
       sparseModel = editPartitionHelper(
         model,
-        device.list,
-        device.listIndex,
+        modelCollection,
+        index,
         initialPartitionConfig.mountPath,
         partitionConfig,
       );
     } else {
-      sparseModel = addPartitionHelper(model, device.list, device.listIndex, partitionConfig);
+      sparseModel = addPartitionHelper(model, modelCollection, index, partitionConfig);
     }
   }
 
@@ -417,10 +425,10 @@ function useSolvedModel(value: FormValue): model.Config | null {
 
 function useSolvedPartitionConfig(value: FormValue): model.Partition | undefined {
   const model = useSolvedModel(value);
-  const { list, listIndex } = useModelDevice();
+  const { collection, index } = useParams();
   if (!model) return;
 
-  const container = findDevice(model, list, listIndex);
+  const container = findDevice(model, collection, index);
   return container?.partitions?.find((p) => p.mountPath === value.mountPoint);
 }
 
@@ -490,7 +498,7 @@ type TargetOptionLabelProps = {
 };
 
 function TargetOptionLabel({ value }: TargetOptionLabelProps): React.ReactNode {
-  const device = useDevice();
+  const device = useDeviceFromParams();
   const partition = usePartition(value);
 
   if (value === NEW_PARTITION) {
@@ -691,6 +699,7 @@ function AutoSizeInfo({ value }: AutoSizeInfoProps): React.ReactNode {
  * deprecated hooks from ~/queries/storage/config-model.
  */
 const PartitionPageForm = () => {
+  const { collection, index } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
   const headingId = useId();
@@ -710,7 +719,7 @@ const PartitionPageForm = () => {
   const value = { mountPoint, target, filesystem, filesystemLabel, sizeOption, minSize, maxSize };
   const { errors, getVisibleError } = useErrors(value);
 
-  const device = useModelDevice();
+  const device = useDeviceModelFromParams();
 
   const unusedMountPoints = useUnusedMountPoints();
 
@@ -792,10 +801,11 @@ const PartitionPageForm = () => {
 
   const onSubmit = () => {
     const partitionConfig = toPartitionConfig(value);
-    const { list, listIndex } = device;
+    const modelCollection = collection === "drives" ? "drives" : "mdRaids";
 
-    if (initialValue) editPartition(list, listIndex, initialValue.mountPoint, partitionConfig);
-    else addPartition(list, listIndex, partitionConfig);
+    if (initialValue)
+      editPartition(modelCollection, index, initialValue.mountPoint, partitionConfig);
+    else addPartition(modelCollection, index, partitionConfig);
 
     navigate({ pathname: PATHS.root, search: location.search });
   };
@@ -916,7 +926,7 @@ const PartitionPageForm = () => {
 };
 
 export default function PartitionPage() {
-  const device = useModelDevice();
+  const device = useDeviceModelFromParams();
 
   return isUndefined(device) ? (
     <ResourceNotFound linkText={_("Go to storage page")} linkPath={STORAGE.root} />

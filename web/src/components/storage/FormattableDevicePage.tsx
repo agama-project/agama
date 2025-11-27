@@ -49,8 +49,13 @@ import { Page, SelectWrapper as Select } from "~/components/core/";
 import { SelectWrapperProps as SelectProps } from "~/components/core/SelectWrapper";
 import SelectTypeaheadCreatable from "~/components/core/SelectTypeaheadCreatable";
 import { useAddFilesystem } from "~/hooks/storage/filesystem";
-import { useModel, useMissingMountPaths } from "~/hooks/storage/model";
-import { useDevices, useVolumeTemplate } from "~/hooks/api/system/storage";
+import {
+  useModel,
+  useMissingMountPaths,
+  useDrive as useDriveModel,
+  useMdRaid as useMdRaidModel,
+} from "~/hooks/storage/model";
+import { useDevice, useVolumeTemplate } from "~/hooks/api/system/storage";
 import { data, model } from "~/storage";
 import { deviceBaseName, filesystemLabel } from "~/components/storage/utils";
 import { _ } from "~/i18n";
@@ -138,20 +143,19 @@ function toFormValue(deviceModel: DeviceModel): FormValue {
   };
 }
 
-function useDeviceModel(): DeviceModel {
-  const { list, listIndex } = useParams();
-  const model = useModel();
-  return model[list].at(listIndex);
+function useDeviceModelFromParams(): model.Drive | model.MdRaid | null {
+  const { collection, index } = useParams();
+  const deviceModel = collection === "drives" ? useDriveModel : useMdRaidModel;
+  return deviceModel(Number(index));
 }
 
-function useDevice(): system.Device {
-  const deviceModel = useDeviceModel();
-  const devices = useDevices();
-  return devices.find((d) => d.name === deviceModel.name);
+function useDeviceFromParams(): system.Device {
+  const deviceModel = useDeviceModelFromParams();
+  return useDevice(deviceModel.name);
 }
 
 function useCurrentFilesystem(): string | null {
-  const device = useDevice();
+  const device = useDeviceFromParams();
   return device?.filesystem?.type || null;
 }
 
@@ -161,14 +165,14 @@ function useDefaultFilesystem(mountPoint: string): string {
 }
 
 function useInitialFormValue(): FormValue | null {
-  const deviceModel = useDeviceModel();
+  const deviceModel = useDeviceModelFromParams();
   return React.useMemo(() => (deviceModel ? toFormValue(deviceModel) : null), [deviceModel]);
 }
 
 /** Unused predefined mount points. Includes the currently used mount point when editing. */
 function useUnusedMountPoints(): string[] {
   const unusedMountPaths = useMissingMountPaths();
-  const deviceModel = useDeviceModel();
+  const deviceModel = useDeviceModelFromParams();
   return compact([deviceModel?.mountPath, ...unusedMountPaths]);
 }
 
@@ -204,7 +208,7 @@ function useUsableFilesystems(mountPoint: string): string[] {
 function useMountPointError(value: FormValue): Error | undefined {
   const model = useModel();
   const mountPoints = model?.getMountPaths() || [];
-  const deviceModel = useDeviceModel();
+  const deviceModel = useDeviceModelFromParams();
   const mountPoint = value.mountPoint;
 
   if (mountPoint === NO_VALUE) {
@@ -291,7 +295,7 @@ type FilesystemOptionsProps = {
 };
 
 function FilesystemOptions({ mountPoint }: FilesystemOptionsProps): React.ReactNode {
-  const device = useDevice();
+  const device = useDeviceFromParams();
   const volume = useVolumeTemplate(mountPoint);
   const defaultFilesystem = useDefaultFilesystem(mountPoint);
   const usableFilesystems = useUsableFilesystems(mountPoint);
@@ -402,7 +406,8 @@ export default function FormattableDevicePage() {
   const value = { mountPoint, filesystem, filesystemLabel };
   const { errors, getVisibleError } = useErrors(value);
 
-  const device = useDeviceModel();
+  const { collection, index } = useParams();
+  const device = useDeviceModelFromParams();
   const unusedMountPoints = useUnusedMountPoints();
   const addFilesystem = useAddFilesystem();
 
@@ -436,8 +441,7 @@ export default function FormattableDevicePage() {
 
   const onSubmit = () => {
     const data = toData(value);
-    const { list, listIndex } = device;
-    addFilesystem(list, listIndex, data);
+    addFilesystem(collection, Number(index), data);
     navigate(PATHS.root);
   };
 
