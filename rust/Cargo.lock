@@ -269,6 +269,7 @@ dependencies = [
  "agama-locale-data",
  "async-trait",
  "cidr",
+ "fs-err",
  "gettext-rs",
  "macaddr",
  "regex",
@@ -1670,6 +1671,15 @@ checksum = "0f158e3ff0a1b334408dc9fb811cd99b446986f4d8b741bb08f9df1604085ae7"
 dependencies = [
  "lazy_static",
  "num",
+]
+
+[[package]]
+name = "fs-err"
+version = "3.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "62d91fd049c123429b018c47887d3f75a265540dd3c30ba9cb7bae9197edb03a"
+dependencies = [
+ "autocfg",
 ]
 
 [[package]]

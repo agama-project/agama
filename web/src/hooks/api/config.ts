@@ -28,7 +28,7 @@ import type { system } from "~/api";
 import type { Config } from "~/api/config";
 
 const configQuery = {
-  queryKey: ["Config"],
+  queryKey: ["config"],
   queryFn: getConfig,
 };
 
