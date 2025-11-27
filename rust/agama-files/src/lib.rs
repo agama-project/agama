@@ -86,7 +86,7 @@ mod tests {
         let test_file_2 = ctx.tmp_dir.path().join("file-2.txt");
 
         let pre_script_json = format!(
-            "{{ \"name\": \"pre.sh\", \"content\": \"#!/usr/bin/bash\\ntouch {}\" }}",
+            "{{ \"name\": \"pre.sh\", \"content\": \"#!/usr/bin/bash\\nset -x\\ntouch {}\" }}",
             test_file_1.to_str().unwrap()
         );
 

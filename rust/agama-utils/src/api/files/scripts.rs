@@ -21,13 +21,16 @@
 use std::{
     fs, io,
     path::{Path, PathBuf},
-    process,
 };
 
-use crate::api::files::{FileSource, FileSourceError, WithFileSource};
+use crate::{
+    api::files::{FileSource, FileSourceError, WithFileSource},
+    command::run_with_retry,
+};
 use agama_transfer::Error as TransferError;
 use serde::{Deserialize, Serialize};
 use strum::{EnumIter, IntoEnumIterator};
+use tokio::process;
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
@@ -39,6 +42,8 @@ pub enum Error {
     WrongScriptType,
     #[error(transparent)]
     FileSourceError(#[from] FileSourceError),
+    #[error("Text file busy")]
+    TextFileBusy,
 }
 
 macro_rules! impl_with_file_source {
@@ -148,7 +153,7 @@ impl Script {
     /// It saves the logs and the exit status of the execution.
     ///
     /// * `workdir`: where to run the script.
-    pub fn run<P: AsRef<Path>>(&self, workdir: P) -> Result<(), Error> {
+    pub async fn run<P: AsRef<Path>>(&self, workdir: P) -> Result<(), Error> {
         let path = workdir
             .as_ref()
             .join(self.group().to_string())
@@ -165,7 +170,7 @@ impl Script {
             return Ok(());
         };
 
-        runner.run(&path)
+        runner.run(&path).await
     }
 }
 
@@ -346,11 +351,10 @@ impl ScriptsRepository {
     ///
     /// They run in the order they were added to the repository. If does not return an error
     /// if running a script fails, although it logs the problem.
-    pub fn run(&self, group: ScriptsGroup) {
+    pub async fn run(&self, group: ScriptsGroup) {
         let scripts: Vec<_> = self.scripts.iter().filter(|s| s.group() == group).collect();
-        tracing::info!("Running {} scripts", scripts.len());
         for script in scripts {
-            if let Err(error) = script.run(&self.workdir) {
+            if let Err(error) = script.run(&self.workdir).await {
                 tracing::error!(
                     "Failed to run user-defined script '{}': {:?}",
                     &script.name(), // TODO: implement
@@ -389,17 +393,20 @@ impl ScriptRunner {
         self
     }
 
-    fn run<P: AsRef<Path>>(&self, path: P) -> Result<(), Error> {
+    async fn run<P: AsRef<Path>>(&self, path: P) -> Result<(), Error> {
         let path = path.as_ref();
-        let output = if self.chroot {
-            process::Command::new("chroot")
-                .args(["/mnt", &path.to_string_lossy()])
-                .output()
+        let command = if self.chroot {
+            let mut command = process::Command::new("chroot");
+            command.args(["/mnt", &path.to_string_lossy()]);
+            command
         } else {
-            process::Command::new(path).output()
+            process::Command::new(path)
         };
 
-        let output = output.inspect_err(|e| tracing::error!("Error executing the script: {e}"))?;
+        let output = run_with_retry(command)
+            .await
+            .inspect_err(|e| tracing::error!("Error executing the script: {e}"))?;
+
         fs::write(path.with_extension("log"), output.stdout)?;
         fs::write(path.with_extension("err"), output.stderr)?;
         fs::write(path.with_extension("out"), output.status.to_string())?;
@@ -450,7 +457,7 @@ mod test {
         };
         let script = Script::Pre(PreScript { base });
         repo.add(script).unwrap();
-        repo.run(ScriptsGroup::Pre);
+        repo.run(ScriptsGroup::Pre).await;
 
         repo.scripts.first().unwrap();
 
