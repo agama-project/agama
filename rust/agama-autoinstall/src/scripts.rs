@@ -26,7 +26,9 @@ use std::{
     process::Output,
 };
 
-use agama_lib::{http::BaseHTTPClient, utils::Transfer};
+use agama_lib::http::BaseHTTPClient;
+use agama_transfer::Transfer;
+use agama_utils::command::run_with_retry;
 use anyhow::anyhow;
 use url::Url;
 
@@ -60,6 +62,8 @@ impl ScriptsRunner {
     /// It downloads the script from the given URL to the runner directory.
     /// It saves the stdout, stderr and exit code to separate files.
     ///
+    /// It will retry if it cannot run the script.
+    ///
     /// * url: script URL, supporting agama-specific schemes.
     pub async fn run(&mut self, url: &str) -> anyhow::Result<()> {
         create_dir_all(&self.path)?;
@@ -69,9 +73,9 @@ impl ScriptsRunner {
         let path = self.path.join(&file_name);
         self.save_script(url, &path).await?;
 
-        let output = std::process::Command::new(&path).output()?;
+        let command = tokio::process::Command::new(&path);
+        let output = run_with_retry(command).await?;
         self.save_logs(&path, output)?;
-
         Ok(())
     }
 
@@ -98,11 +102,12 @@ impl ScriptsRunner {
     async fn save_script(&self, url: &str, path: &PathBuf) -> anyhow::Result<()> {
         let mut file = Self::create_file(&path, 0o700)?;
         while let Err(error) = Transfer::get(url, &mut file, self.insecure) {
-            eprintln!("Could not load configuration from {url}: {error}");
+            eprintln!("Could not load the script from {url}: {error}");
             if !self.should_retry(&url, &error.to_string()).await? {
                 return Err(anyhow!(error));
             }
         }
+        file.sync_all()?;
         Ok(())
     }
 

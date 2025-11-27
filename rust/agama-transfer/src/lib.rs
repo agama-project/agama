@@ -39,13 +39,12 @@
 //! Requires working localectl.
 //!
 //! ```no_run
-//! use agama_lib::utils::Transfer;
+//! use agama_transfer::Transfer;
 //! Transfer::get("label://OEMDRV/autoinst.xml", &mut std::io::stdout(), false).unwrap();
 //! ````
 
 use std::io::Write;
 
-use thiserror::Error;
 use url::Url;
 
 mod file_finder;
@@ -54,8 +53,8 @@ mod handlers;
 
 use handlers::{DeviceHandler, GenericHandler, HdHandler, LabelHandler};
 
-#[derive(Error, Debug)]
-pub enum TransferError {
+#[derive(thiserror::Error, Debug)]
+pub enum Error {
     #[error("Could not retrieve the file")]
     CurlError(#[from] curl::Error),
     #[error("Could not retrieve {0}")]
@@ -75,7 +74,7 @@ pub enum TransferError {
     #[error("Missing file system label {0}")]
     MissingLabel(Url),
 }
-pub type TransferResult<T> = Result<T, TransferError>;
+pub type TransferResult<T> = Result<T, Error>;
 
 /// File transfer API
 pub struct Transfer {}

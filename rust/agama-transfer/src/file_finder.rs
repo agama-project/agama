@@ -25,7 +25,7 @@ use std::{
 
 use super::{
     file_systems::{FileSystem, FileSystemsList},
-    TransferError, TransferResult,
+    Error, TransferResult,
 };
 
 /// Finds a file in a set of file systems and copies its content.
@@ -49,7 +49,7 @@ impl FileFinder {
                 return Ok(());
             }
         }
-        Err(TransferError::FileNotFound(file_name.to_string()))
+        Err(Error::FileNotFound(file_name.to_string()))
     }
 
     /// Copies the file from the file system to the given writer.

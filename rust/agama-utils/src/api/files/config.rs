@@ -1,4 +1,4 @@
-// Copyright (c) [2024] SUSE LLC
+// Copyright (c) [2025] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -21,9 +21,19 @@
 use fluent_uri::Uri;
 use serde::{Deserialize, Serialize};
 
-use crate::file_source::{FileSourceError, WithFileSource};
+use crate::api::files::{
+    scripts::{InitScript, PostPartitioningScript, PostScript, PreScript},
+    user_file::UserFile,
+    FileSourceError, WithFileSource,
+};
 
-use super::{InitScript, PostPartitioningScript, PostScript, PreScript};
+#[derive(Clone, Debug, Default, Serialize, Deserialize, utoipa::ToSchema)]
+pub struct Config {
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub files: Vec<UserFile>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub scripts: Option<ScriptsConfig>,
+}
 
 #[derive(Clone, Debug, Default, Serialize, Deserialize, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]

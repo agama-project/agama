@@ -155,7 +155,7 @@ struct ServiceState {
 }
 
 impl Service {
-    pub fn builder(
+    pub fn starter(
         events: event::Sender,
         issues: Handler<issue::Service>,
         progress: Handler<progress::Service>,

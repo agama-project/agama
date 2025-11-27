@@ -27,11 +27,9 @@
 use crate::{
     bootloader::web::bootloader_service,
     error::Error,
-    files::web::files_service,
     hostname::web::hostname_service,
     manager::web::{manager_service, manager_stream},
     profile::web::profile_service,
-    scripts::web::scripts_service,
     security::security_service,
     server::server_service,
     storage::web::{iscsi::iscsi_service, storage_service, storage_streams},
@@ -88,8 +86,6 @@ where
         .add_service("/iscsi", iscsi_service(dbus.clone()).await?)
         .add_service("/bootloader", bootloader_service(dbus.clone()).await?)
         .add_service("/users", users_service(dbus.clone()).await?)
-        .add_service("/scripts", scripts_service().await?)
-        .add_service("/files", files_service().await?)
         .add_service("/hostname", hostname_service().await?)
         .add_service("/profile", profile_service().await?)
         .with_config(config)

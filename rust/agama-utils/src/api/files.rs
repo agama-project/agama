@@ -1,4 +1,4 @@
-// Copyright (c) [2024] SUSE LLC
+// Copyright (c) [2025] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -18,16 +18,14 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-//! Implements support for handling the user-defined scripts.
+mod config;
+pub use config::{Config, ScriptsConfig};
 
-mod client;
-mod error;
-mod model;
-mod settings;
-mod store;
+pub mod user_file;
+pub use user_file::UserFile;
 
-pub use client::{ScriptsClient, ScriptsClientError};
-pub use error::ScriptError;
-pub use model::*;
-pub use settings::*;
-pub use store::{ScriptsStore, ScriptsStoreError};
+pub mod scripts;
+pub use scripts::{BaseScript, InitScript, PostPartitioningScript, PostScript, PreScript, Script};
+
+mod file_source;
+pub use file_source::{FileSource, FileSourceError, WithFileSource};

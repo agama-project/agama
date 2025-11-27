@@ -18,4 +18,50 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-pub mod web;
+use agama_utils::{
+    actor::Message,
+    api::files::{scripts::ScriptsGroup, Config},
+};
+
+#[derive(Clone)]
+pub struct SetConfig {
+    pub config: Option<Config>,
+}
+
+impl Message for SetConfig {
+    type Reply = ();
+}
+
+impl SetConfig {
+    pub fn new(config: Option<Config>) -> Self {
+        Self { config }
+    }
+
+    pub fn with(config: Config) -> Self {
+        Self {
+            config: Some(config),
+        }
+    }
+}
+
+#[derive(Clone)]
+pub struct RunScripts {
+    pub group: ScriptsGroup,
+}
+
+impl RunScripts {
+    pub fn new(group: ScriptsGroup) -> Self {
+        RunScripts { group }
+    }
+}
+
+impl Message for RunScripts {
+    type Reply = ();
+}
+
+#[derive(Clone)]
+pub struct WriteFiles;
+
+impl Message for WriteFiles {
+    type Reply = ();
+}

@@ -23,7 +23,7 @@ use std::{path::PathBuf, process::Command};
 
 use regex::Regex;
 
-use super::{TransferError, TransferResult};
+use super::{Error, TransferResult};
 
 /// Represents a file system from the underlying system.
 ///
@@ -54,7 +54,7 @@ impl FileSystem {
     ///
     /// * `func`: function to run. It receives the mount point.
     ///
-    /// TODO: TransferResult and TransferError should not be visible from this
+    /// TODO: TransferResult and Error should not be visible from this
     /// struct.
     pub fn ensure_mounted<F>(&self, func: F) -> TransferResult<()>
     where
@@ -101,7 +101,7 @@ impl FileSystem {
             ])
             .output()?;
         if !output.status.success() {
-            return Err(TransferError::FileSystemMount(self.device()));
+            return Err(Error::FileSystemMount(self.device()));
         }
         Ok(())
     }
