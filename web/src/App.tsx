@@ -22,35 +22,74 @@
 
 import React, { useEffect } from "react";
 import { Navigate, Outlet, useLocation } from "react-router";
-import { useProductChanges } from "~/queries/software";
-import {
-  useSystemChanges,
-  useProposalChanges,
-  useIssuesChanges,
-  useStatus,
-  useExtendedConfig,
-} from "~/hooks/api";
-import { useInstallerStatusChanges } from "~/queries/status";
+import { useStatusChanges, useStatus } from "~/hooks/api/status";
+import { useSystemChanges } from "~/hooks/api/system";
+import { useProposalChanges } from "~/hooks/api/proposal";
+import { useIssuesChanges } from "~/hooks/api/issue";
+import { useProduct } from "~/hooks/api/config";
 import { ROOT, PRODUCT } from "~/routes/paths";
 import { useQueryClient } from "@tanstack/react-query";
 import AlertOutOfSync from "~/components/core/AlertOutOfSync";
 import { isEmpty } from "radashi";
 
 /**
- * Main application component.
+ * Content guard and flow control component.
+ *
+ * It consumes global state and determines if a status-driven redirect is
+ * necessary before rendering the nested route content via the <Outlet />.
+ */
+const Content = () => {
+  const location = useLocation();
+  const product = useProduct();
+  const { progresses, state } = useStatus();
+  const isBusy = !isEmpty(progresses);
+
+  console.log("App Content component", {
+    progresses,
+    state,
+    product,
+    location: location.pathname,
+  });
+
+  if (state === "installing") {
+    console.log("Navigating to the installation progress page");
+    return <Navigate to={ROOT.installationProgress} />;
+  }
+
+  if (state === "finished") {
+    console.log("Navigating to the finished page");
+    return <Navigate to={ROOT.installationFinished} />;
+  }
+
+  if (product?.id === undefined && !isBusy && location.pathname !== PRODUCT.root) {
+    console.log("Navigating to the product selection page");
+    return <Navigate to={PRODUCT.root} />;
+  }
+
+  return (
+    <>
+      {/* So far, only the storage backend is able to detect external changes.*/}
+      <AlertOutOfSync scope={"Storage"} />
+      <Outlet />;
+    </>
+  );
+};
+
+/**
+ * Structural wrapper of all protected routes responsible for initializing
+ * global background listeners (e.g., useXYZChanges hooks).
+ *
+ * @performance This component sits high in the route tree, directly wrapping
+ * the entire application layout. This makes it critical to avoid consuming
+ * application state directly within it to prevent unnecessary cascade layout
+ * re-renders.
  */
 function App() {
   useProposalChanges();
   useSystemChanges();
-  useProductChanges();
   useIssuesChanges();
-  useInstallerStatusChanges();
-
-  const location = useLocation();
-  const { product } = useExtendedConfig({ suspense: true });
-  const { progresses, state } = useStatus({ suspense: true });
+  useStatusChanges();
   const queryClient = useQueryClient();
-  const isBusy = !isEmpty(progresses);
 
   // FIXME: check if still needed
   useEffect(() => {
@@ -60,39 +99,7 @@ function App() {
     };
   }, [queryClient]);
 
-  console.log("App component", {
-    progresses,
-    state,
-    product,
-    location: location.pathname,
-  });
-
-  const Content = () => {
-    if (state === "installing") {
-      console.log("Navigating to the installation progress page");
-      return <Navigate to={ROOT.installationProgress} />;
-    }
-
-    if (state === "finished") {
-      console.log("Navigating to the finished page");
-      return <Navigate to={ROOT.installationFinished} />;
-    }
-
-    if (product?.id === undefined && !isBusy && location.pathname !== PRODUCT.root) {
-      console.log("Navigating to the product selection page");
-      return <Navigate to={PRODUCT.root} />;
-    }
-
-    return <Outlet />;
-  };
-
-  return (
-    <>
-      {/* So far, only the storage backend is able to detect external changes.*/}
-      <AlertOutOfSync scope={"Storage"} />
-      <Content />
-    </>
-  );
+  return <Content />;
 }
 
 export default App;

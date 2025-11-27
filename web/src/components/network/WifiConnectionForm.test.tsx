@@ -26,38 +26,61 @@ import { installerRender } from "~/test-utils";
 import WifiConnectionForm from "./WifiConnectionForm";
 import { Connection, SecurityProtocols, WifiNetworkStatus, Wireless } from "~/types/network";
 
-const mockAddConnection = jest.fn();
 const mockUpdateConnection = jest.fn();
 
-jest.mock("~/queries/network", () => ({
-  ...jest.requireActual("~/queries/network"),
-  useNetworkChanges: jest.fn(),
-  useAddConnectionMutation: () => ({
-    mutateAsync: mockAddConnection,
-  }),
+jest.mock("~/hooks/api/config/network", () => ({
+  ...jest.requireActual("~/hooks/api/config/network"),
   useConnectionMutation: () => ({
     mutateAsync: mockUpdateConnection,
   }),
-  useConnections: () => [],
 }));
+
+jest.mock("~/api", () => ({
+  ...jest.requireActual("~/api"),
+  configureL10nAction: () => jest.fn(),
+}));
+
+jest.mock("~/hooks/api/system", () => ({
+  ...jest.requireActual("~/hooks/api/system"),
+  useSystem: () => jest.fn(),
+}));
+
+jest.mock("~/hooks/api/system/network", () => ({
+  ...jest.requireActual("~/hooks/api/system/network"),
+  useSystem: () => mockSystem,
+  useConnections: () => mockSystem.connections,
+}));
+
+const mockConnection = new Connection("Visible Network", {
+  wireless: new Wireless({ ssid: "Visible Network" }),
+});
+
+const mockSystem = {
+  connections: [mockConnection],
+  state: {
+    connectivity: true,
+    wiredEnabled: true,
+    wirelessEnabled: false,
+    persistNetwork: true,
+    copyEnabled: false,
+  },
+};
 
 const networkMock = {
   ssid: "Visible Network",
   hidden: false,
+  deviceName: "wlan0",
   status: WifiNetworkStatus.NOT_CONFIGURED,
   hwAddress: "00:EB:D8:17:6B:56",
   security: [SecurityProtocols.WPA],
   strength: 85,
-  settings: new Connection("Visible Network", {
-    wireless: new Wireless({ ssid: "Visible Network" }),
-  }),
+  settings: mockConnection,
 };
 
 const publicNetworkMock = { ...networkMock, security: [] };
 
 describe("WifiConnectionForm", () => {
   beforeEach(() => {
-    mockAddConnection.mockResolvedValue(undefined);
     mockUpdateConnection.mockResolvedValue(undefined);
   });
 
@@ -103,8 +126,7 @@ describe("WifiConnectionForm", () => {
         await user.type(passwordInput, "wifi-password");
         await user.click(connectButton);
 
-        expect(mockUpdateConnection).not.toHaveBeenCalled();
-        expect(mockAddConnection).toHaveBeenCalledWith(
+        expect(mockUpdateConnection).toHaveBeenCalledWith(
           expect.objectContaining({
             wireless: expect.objectContaining({ security: "wpa-psk", password: "wifi-password" }),
           }),
@@ -134,7 +156,6 @@ describe("WifiConnectionForm", () => {
         await user.type(passwordInput, "right-wifi-password");
         await user.click(connectButton);
 
-        expect(mockAddConnection).not.toHaveBeenCalled();
         expect(mockUpdateConnection).toHaveBeenCalledWith(
           expect.objectContaining({
             id: networkMock.ssid,

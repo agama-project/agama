@@ -27,8 +27,9 @@ import { Label } from "@patternfly/react-core";
 import { _ } from "~/i18n";
 import { sprintf } from "sprintf-js";
 import { deviceBaseName, deviceSize } from "~/components/storage/utils";
-import { system, proposal } from "~/api/storage";
-import { deviceSystems, isLogicalVolume, isMd, isPartition } from "~/helpers/storage/device";
+import { deviceSystems, isLogicalVolume, isMd, isPartition } from "~/storage/device";
+import type { storage as system } from "~/api/system";
+import type { storage as proposal } from "~/api/proposal";
 
 type Device = system.Device | proposal.Device;
 type UnusedSlot = system.UnusedSlot | proposal.UnusedSlot;
@@ -111,10 +112,10 @@ const DeviceDetails = ({ item }: { item: UnusedSlot | Device }) => {
 /**
  * @component
  */
-const DeviceSize = ({ item }: { item: UnusedSlot | Device }) => {
+const DeviceSize = ({ item }: { item: UnusedSlot | Device }): string => {
   const partitionSlot = toPartitionSlot(item);
   const device = toDevice(item);
-  return deviceSize(partitionSlot?.size || device?.block.size);
+  return deviceSize(partitionSlot?.size || device?.volumeGroup?.size || device?.block?.size || 0);
 };
 
 export { toDevice, toPartitionSlot, DeviceName, DeviceDetails, DeviceSize, FilesystemLabel };

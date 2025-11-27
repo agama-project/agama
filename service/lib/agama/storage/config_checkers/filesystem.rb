@@ -67,7 +67,7 @@ module Agama
 
         # @see Base
         def error(message)
-          super(message, kind: :filesystem)
+          super(message, kind: IssueClasses::Config::FILESYSTEM)
         end
 
         # @return [Issue, nil]

@@ -27,16 +27,16 @@ import { Page } from "~/components/core";
 import SpaceActionsTable, { SpacePolicyAction } from "~/components/storage/SpaceActionsTable";
 import { deviceChildren } from "~/components/storage/utils";
 import { _ } from "~/i18n";
-import { UnusedSlot, Device } from "~/api/storage/proposal";
-import { apiModel } from "~/api/storage";
-import { useDevices } from "~/hooks/storage/system";
+import { useDevices } from "~/hooks/api/system/storage";
 import { useModel } from "~/hooks/storage/model";
 import { useSetSpacePolicy } from "~/hooks/storage/space-policy";
 import { toDevice } from "./device-utils";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import { sprintf } from "sprintf-js";
+import type { UnusedSlot, Device } from "~/api/proposal/storage";
+import type { model } from "~/api/storage";
 
-const partitionAction = (partition: apiModel.Partition) => {
+const partitionAction = (partition: model.Partition) => {
   if (partition.delete) return "delete";
   if (partition.resizeIfNeeded) return "resizeIfNeeded";
 
@@ -48,9 +48,9 @@ const partitionAction = (partition: apiModel.Partition) => {
  */
 export default function SpacePolicySelection() {
   const { list, listIndex } = useParams();
-  const model = useModel({ suspense: true });
+  const model = useModel();
   const deviceModel = model[list][listIndex];
-  const devices = useDevices({ suspense: true });
+  const devices = useDevices();
   const device = devices.find((d) => d.name === deviceModel.name);
   const children = deviceChildren(device);
   const setSpacePolicy = useSetSpacePolicy();

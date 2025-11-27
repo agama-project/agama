@@ -30,11 +30,11 @@ import {
   ListVariant,
   Stack,
 } from "@patternfly/react-core";
-import { AnswerCallback, Question } from "~/api/question";
 import { Page, Popup } from "~/components/core";
 import QuestionActions from "~/components/questions/QuestionActions";
 import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
+import type { AnswerCallback, Question } from "~/api/question";
 
 const UnsupportedElements = ({
   elements,
@@ -102,6 +102,7 @@ export default function UnsupportedAutoYaST({
         <Content component="small">
           {/* gettext v0.26 does not handle correctly escaped single quote inside */}
           {/* a single quote string ('foo\'s') so split it into several parts */}
+          {/* eslint-disable agama-i18n/string-literals */}
           {_(
             'If you want to disable this check, please specify "inst.ay_check=0" at kernel' +
               "'s command-line",

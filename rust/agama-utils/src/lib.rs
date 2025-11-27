@@ -23,6 +23,7 @@
 
 pub mod actor;
 pub mod api;
+pub mod command;
 pub mod dbus;
 pub mod issue;
 pub mod licenses;

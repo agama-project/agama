@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import { useStorageModel } from "~/hooks/api";
+import { useStorageModel } from "~/hooks/api/storage";
 import { putStorageModel } from "~/api";
 import {
   addVolumeGroup,
@@ -28,21 +28,20 @@ import {
   deleteVolumeGroup,
   volumeGroupToPartitions,
   deviceToVolumeGroup,
-} from "~/helpers/storage/volume-group";
-import { QueryHookOptions } from "~/types/queries";
-import { model, data } from "~/types/storage";
+} from "~/storage/volume-group";
+import type { model, data } from "~/storage";
 import { useModel } from "~/hooks/storage/model";
 
-function useVolumeGroup(vgName: string, options?: QueryHookOptions): model.VolumeGroup | null {
-  const model = useModel(options);
+function useVolumeGroup(vgName: string): model.VolumeGroup | null {
+  const model = useModel();
   const volumeGroup = model?.volumeGroups?.find((v) => v.vgName === vgName);
   return volumeGroup || null;
 }
 
 type AddVolumeGroupFn = (data: data.VolumeGroup, moveContent: boolean) => void;
 
-function useAddVolumeGroup(options?: QueryHookOptions): AddVolumeGroupFn {
-  const apiModel = useStorageModel(options);
+function useAddVolumeGroup(): AddVolumeGroupFn {
+  const apiModel = useStorageModel();
   return (data: data.VolumeGroup, moveContent: boolean) => {
     putStorageModel(addVolumeGroup(apiModel, data, moveContent));
   };
@@ -50,8 +49,8 @@ function useAddVolumeGroup(options?: QueryHookOptions): AddVolumeGroupFn {
 
 type EditVolumeGroupFn = (vgName: string, data: data.VolumeGroup) => void;
 
-function useEditVolumeGroup(options?: QueryHookOptions): EditVolumeGroupFn {
-  const apiModel = useStorageModel(options);
+function useEditVolumeGroup(): EditVolumeGroupFn {
+  const apiModel = useStorageModel();
   return (vgName: string, data: data.VolumeGroup) => {
     putStorageModel(editVolumeGroup(apiModel, vgName, data));
   };
@@ -59,8 +58,8 @@ function useEditVolumeGroup(options?: QueryHookOptions): EditVolumeGroupFn {
 
 type DeleteVolumeGroupFn = (vgName: string, moveToDrive: boolean) => void;
 
-function useDeleteVolumeGroup(options?: QueryHookOptions): DeleteVolumeGroupFn {
-  const apiModel = useStorageModel(options);
+function useDeleteVolumeGroup(): DeleteVolumeGroupFn {
+  const apiModel = useStorageModel();
   return (vgName: string, moveToDrive: boolean) => {
     putStorageModel(
       moveToDrive ? volumeGroupToPartitions(apiModel, vgName) : deleteVolumeGroup(apiModel, vgName),
@@ -70,8 +69,8 @@ function useDeleteVolumeGroup(options?: QueryHookOptions): DeleteVolumeGroupFn {
 
 type ConvertToVolumeGroupFn = (driveName: string) => void;
 
-function useConvertToVolumeGroup(options?: QueryHookOptions): ConvertToVolumeGroupFn {
-  const apiModel = useStorageModel(options);
+function useConvertToVolumeGroup(): ConvertToVolumeGroupFn {
+  const apiModel = useStorageModel();
   return (driveName: string) => {
     putStorageModel(deviceToVolumeGroup(apiModel, driveName));
   };

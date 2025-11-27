@@ -23,7 +23,7 @@
 import React from "react";
 import { screen, within } from "@testing-library/react";
 import { installerRender, mockParams } from "~/test-utils";
-import { model, StorageDevice } from "~/types/storage";
+import { model, StorageDevice } from "~/storage";
 import { gib } from "./utils";
 import LvmPage from "./LvmPage";
 

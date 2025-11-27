@@ -22,9 +22,8 @@
 
 import React from "react";
 import { FormSelectProps, FormSelect, FormSelectOption } from "@patternfly/react-core";
-
 import { deviceLabel } from "~/components/storage/utils";
-import { storage } from "~/api/system";
+import type { storage } from "~/api/system";
 
 type DevicesFormSelectBaseProps = {
   devices: storage.Device[];

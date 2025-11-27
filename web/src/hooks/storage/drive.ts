@@ -20,23 +20,22 @@
  * find current contact information at www.suse.com.
  */
 
-import { useStorageModel } from "~/hooks/api";
+import { useStorageModel } from "~/hooks/api/storage";
 import { putStorageModel } from "~/api";
-import { addDrive, deleteDrive, switchToDrive } from "~/helpers/storage/drive";
-import { QueryHookOptions } from "~/types/queries";
-import { model, data } from "~/types/storage";
+import { addDrive, deleteDrive, switchToDrive } from "~/storage/drive";
 import { useModel } from "~/hooks/storage/model";
+import type { model, data } from "~/storage";
 
-function useDrive(name: string, options?: QueryHookOptions): model.Drive | null {
-  const model = useModel(options);
+function useDrive(name: string): model.Drive | null {
+  const model = useModel();
   const drive = model?.drives?.find((d) => d.name === name);
   return drive || null;
 }
 
 type AddDriveFn = (data: data.Drive) => void;
 
-function useAddDrive(options?: QueryHookOptions): AddDriveFn {
-  const apiModel = useStorageModel(options);
+function useAddDrive(): AddDriveFn {
+  const apiModel = useStorageModel();
   return (data: data.Drive) => {
     putStorageModel(addDrive(apiModel, data));
   };
@@ -44,8 +43,8 @@ function useAddDrive(options?: QueryHookOptions): AddDriveFn {
 
 type DeleteDriveFn = (name: string) => void;
 
-function useDeleteDrive(options?: QueryHookOptions): DeleteDriveFn {
-  const apiModel = useStorageModel(options);
+function useDeleteDrive(): DeleteDriveFn {
+  const apiModel = useStorageModel();
   return (name: string) => {
     putStorageModel(deleteDrive(apiModel, name));
   };
@@ -53,8 +52,8 @@ function useDeleteDrive(options?: QueryHookOptions): DeleteDriveFn {
 
 type SwitchToDriveFn = (oldName: string, drive: data.Drive) => void;
 
-function useSwitchToDrive(options?: QueryHookOptions): SwitchToDriveFn {
-  const apiModel = useStorageModel(options);
+function useSwitchToDrive(): SwitchToDriveFn {
+  const apiModel = useStorageModel();
   return (oldName: string, drive: data.Drive) => {
     putStorageModel(switchToDrive(apiModel, oldName, drive));
   };

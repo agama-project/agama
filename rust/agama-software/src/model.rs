@@ -21,7 +21,7 @@
 use agama_utils::{
     actor::Handler,
     api::{
-        software::{Pattern, SoftwareProposal, SystemInfo},
+        software::{Repository, SoftwareProposal, SystemInfo},
         Issue,
     },
     products::{ProductSpec, UserPattern},
@@ -50,7 +50,7 @@ pub trait ModelAdapter: Send + Sync + 'static {
     /// Returns the software system information.
     async fn system_info(&self) -> Result<SystemInfo, service::Error>;
 
-    async fn compute_proposal(&self) -> Result<SoftwareProposal, service::Error>;
+    async fn proposal(&self) -> Result<SoftwareProposal, service::Error>;
 
     /// Refresh repositories information.
     async fn refresh(&mut self) -> Result<(), service::Error>;
@@ -81,12 +81,16 @@ pub struct Model {
     selected_product: Option<ProductSpec>,
     progress: Handler<progress::Service>,
     question: Handler<question::Service>,
+    /// Predefined repositories (from the off-line media and Driver Update Disks).
+    /// They cannot be altered through user configuration.
+    predefined_repositories: Vec<Repository>,
 }
 
 impl Model {
     /// Initializes the struct with the information from the underlying system.
     pub fn new(
         zypp_sender: mpsc::UnboundedSender<SoftwareAction>,
+        predefined_repositories: Vec<Repository>,
         progress: Handler<progress::Service>,
         question: Handler<question::Service>,
     ) -> Result<Self, service::Error> {
@@ -95,28 +99,8 @@ impl Model {
             selected_product: None,
             progress,
             question,
+            predefined_repositories,
         })
-    }
-
-    async fn patterns(&self) -> Result<Vec<Pattern>, service::Error> {
-        let Some(product) = &self.selected_product else {
-            return Err(service::Error::MissingProduct);
-        };
-
-        let names = product
-            .software
-            .user_patterns
-            .iter()
-            .map(|user_pattern| match user_pattern {
-                UserPattern::Plain(name) => name.clone(),
-                UserPattern::Preselected(preselected) => preselected.name.clone(),
-            })
-            .collect();
-
-        let (tx, rx) = oneshot::channel();
-        self.zypp_sender
-            .send(SoftwareAction::GetPatternsMetadata(names, tx))?;
-        Ok(rx.await??)
     }
 }
 
@@ -143,11 +127,27 @@ impl ModelAdapter for Model {
 
     /// Returns the software system information.
     async fn system_info(&self) -> Result<SystemInfo, service::Error> {
-        Ok(SystemInfo {
-            patterns: self.patterns().await?,
-            repositories: vec![],
-            addons: vec![],
-        })
+        let Some(product_spec) = self.selected_product.clone() else {
+            return Err(service::Error::MissingProduct);
+        };
+
+        let (tx, rx) = oneshot::channel();
+        self.zypp_sender
+            .send(SoftwareAction::GetSystemInfo(product_spec, tx))?;
+        let mut system_info = rx.await??;
+
+        // Set "predefined" field as this struct holds the information to determine
+        // which repositories are "predefined".
+        let predefined_urls: Vec<_> = self
+            .predefined_repositories
+            .iter()
+            .map(|r| r.url.as_str())
+            .collect();
+        for repo in system_info.repositories.iter_mut() {
+            repo.predefined = predefined_urls.contains(&repo.url.as_str());
+        }
+
+        Ok(system_info)
     }
 
     async fn refresh(&mut self) -> Result<(), service::Error> {
@@ -170,14 +170,14 @@ impl ModelAdapter for Model {
         Ok(rx.await??)
     }
 
-    async fn compute_proposal(&self) -> Result<SoftwareProposal, service::Error> {
+    async fn proposal(&self) -> Result<SoftwareProposal, service::Error> {
         let Some(product_spec) = self.selected_product.clone() else {
             return Err(service::Error::MissingProduct);
         };
 
         let (tx, rx) = oneshot::channel();
         self.zypp_sender
-            .send(SoftwareAction::ComputeProposal(product_spec, tx))?;
+            .send(SoftwareAction::GetProposal(product_spec, tx))?;
         Ok(rx.await??)
     }
 }

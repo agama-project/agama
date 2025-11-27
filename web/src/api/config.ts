@@ -20,15 +20,19 @@
  * find current contact information at www.suse.com.
  */
 
-import * as l10n from "~/api/l10n/config";
-import * as storage from "~/api/storage/config";
-import * as product from "~/api/product/config";
+import type * as network from "~/api/config/network";
+import type * as l10n from "~/api/config/l10n";
+import type * as storage from "~/api/config/storage";
 
 type Config = {
   l10n?: l10n.Config;
+  network?: network.Config;
+  product?: Product;
   storage?: storage.Config;
-  product?: product.Config;
 };
 
-export { l10n, storage };
-export type { Config };
+type Product = {
+  id?: string;
+};
+
+export type { Config, Product, l10n, network, storage };

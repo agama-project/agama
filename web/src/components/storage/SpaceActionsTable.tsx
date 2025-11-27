@@ -37,26 +37,26 @@ import { _ } from "~/i18n";
 import { deviceSize, formattedPath } from "~/components/storage/utils";
 import { DeviceName, DeviceDetails, DeviceSize, toDevice } from "~/components/storage/device-utils";
 import { Icon } from "~/components/layout";
-import { Device, UnusedSlot } from "~/api/storage/proposal";
-import { apiModel } from "~/api/storage";
 import { TreeTableColumn } from "~/components/core/TreeTable";
 import { Table, Td, Th, Tr, Thead, Tbody } from "@patternfly/react-table";
-import { useConfigModel } from "~/queries/storage/config-model";
-import { isPartition, supportShrink } from "~/helpers/storage/device";
+import { useStorageModel } from "~/hooks/api/storage";
+import { supportShrink } from "~/storage/device";
+import type { Device, UnusedSlot } from "~/api/proposal/storage";
+import type { model } from "~/api/storage";
 
 export type SpacePolicyAction = {
   deviceName: string;
   value: "delete" | "resizeIfNeeded";
 };
 
-const isUsedPartition = (partition: apiModel.Partition): boolean => {
+const isUsedPartition = (partition: model.Partition): boolean => {
   return partition.filesystem !== undefined;
 };
 
 // FIXME: there is too much logic here. This is one of those cases that should be considered
 // when restructuring the hooks and queries.
-const useReusedPartition = (name: string): apiModel.Partition | undefined => {
-  const model = useConfigModel();
+const useReusedPartition = (name: string): model.Partition | undefined => {
+  const model = useStorageModel();
 
   if (!model || !name) return;
 
@@ -203,16 +203,7 @@ const DeviceAction = ({
   const device = toDevice(item);
   if (!device) return null;
 
-  if (isPartition(device)) {
-    return <DeviceActionSelector device={device} action={action} onChange={onChange} />;
-  }
-
-  // TODO: check if the device is used by other device (former #component attribute).
-  if (device.filesystem) return _("The content may be deleted");
-
-  if (!device.partitionTable || device.partitions.length === 0) return _("No content found");
-
-  return null;
+  return <DeviceActionSelector device={device} action={action} onChange={onChange} />;
 };
 
 export type SpaceActionsTableProps = {

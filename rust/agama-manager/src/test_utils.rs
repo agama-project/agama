@@ -22,6 +22,7 @@
 
 use agama_l10n::test_utils::start_service as start_l10n_service;
 use agama_network::test_utils::start_service as start_network_service;
+use agama_software::test_utils::start_service as start_software_service;
 use agama_storage::test_utils::start_service as start_storage_service;
 use agama_utils::{actor::Handler, api::event, issue, progress, question};
 
@@ -33,9 +34,12 @@ pub async fn start_service(events: event::Sender, dbus: zbus::Connection) -> Han
     let questions = question::start(events.clone()).await.unwrap();
     let progress = progress::Service::starter(events.clone()).start();
 
-    Service::starter(questions, events.clone(), dbus.clone())
+    Service::starter(questions.clone(), events.clone(), dbus.clone())
         .with_l10n(start_l10n_service(events.clone(), issues.clone()).await)
-        .with_storage(start_storage_service(events, issues, progress, dbus).await)
+        .with_storage(
+            start_storage_service(events.clone(), issues.clone(), progress.clone(), dbus).await,
+        )
+        .with_software(start_software_service(events, issues, progress, questions).await)
         .with_network(start_network_service().await)
         .start()
         .await

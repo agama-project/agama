@@ -2,6 +2,7 @@
 members = [
     "agama-autoinstall",
     "agama-cli",
+    "agama-files",
     "agama-l10n",
     "agama-lib",
     "agama-locale-data",
@@ -10,6 +11,7 @@ members = [
     "agama-server",
     "agama-software",
     "agama-storage",
+    "agama-transfer",
     "agama-utils",
     "suseconnect-agama",
     "suseconnect-agama/suseconnect-agama-sys",

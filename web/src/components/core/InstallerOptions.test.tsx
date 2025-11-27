@@ -23,22 +23,25 @@
 import React from "react";
 import { screen, within } from "@testing-library/react";
 import { installerRender, mockRoutes } from "~/test-utils";
-import { useSelectedProduct, useStatus, useSystem } from "~/hooks/api";
+import { useSystem } from "~/hooks/api/system";
+import { useProduct } from "~/hooks/api/config";
 import { Product } from "~/types/software";
-import { Keymap, Locale } from "~/api/l10n/system";
+import { Keymap, Locale } from "~/api/system/l10n";
 import { Progress, State } from "~/api/status";
+import { System } from "~/api/system/network";
 import * as utils from "~/utils";
 import { PRODUCT, ROOT } from "~/routes/paths";
 import InstallerOptions, { InstallerOptionsProps } from "./InstallerOptions";
+import { useStatus } from "~/hooks/api/status";
 
 const locales: Locale[] = [
-  { id: "en_US.UTF-8", name: "English", territory: "United States" },
-  { id: "es_ES.UTF-8", name: "Spanish", territory: "Spain" },
+  { id: "en_US.UTF-8", language: "English", territory: "United States" },
+  { id: "es_ES.UTF-8", language: "Spanish", territory: "Spain" },
 ];
 
 const keymaps: Keymap[] = [
-  { id: "us", name: "English (US)" },
-  { id: "gb", name: "English (UK)" },
+  { id: "us", description: "English (US)" },
+  { id: "gb", description: "English (UK)" },
 ];
 
 const tumbleweed: Product = {
@@ -47,6 +50,18 @@ const tumbleweed: Product = {
   icon: "tumbleweed.svg",
   description: "Tumbleweed description...",
   registration: false,
+};
+
+const network: System = {
+  connections: [],
+  devices: [],
+  state: {
+    connectivity: true,
+    copyNetwork: true,
+    networkingEnabled: true,
+    wirelessEnabled: true,
+  },
+  accessPoints: [],
 };
 
 const mockChangeUIKeymap = jest.fn();
@@ -67,12 +82,13 @@ jest.mock("~/hooks/api", () => ({
   ...jest.requireActual("~/hooks/api"),
   useSystem: (): ReturnType<typeof useSystem> => ({
     l10n: { locales, keymaps, locale: "us_US.UTF-8", keymap: "us" },
+    network,
   }),
   useStatus: (): ReturnType<typeof useStatus> => ({
     state: mockStateFn(),
     progresses: mockProgressesFn(),
   }),
-  useSelectedProduct: (): ReturnType<typeof useSelectedProduct> => mockSelectedProductFn(),
+  useProduct: (): ReturnType<typeof useProduct> => mockSelectedProductFn(),
 }));
 
 jest.mock("~/context/installerL10n", () => ({

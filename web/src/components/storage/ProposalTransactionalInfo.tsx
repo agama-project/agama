@@ -24,8 +24,8 @@ import React from "react";
 import { Alert } from "@patternfly/react-core";
 import { _ } from "~/i18n";
 import { sprintf } from "sprintf-js";
-import { useProduct } from "~/queries/software";
-import { useVolumeTemplates } from "~/hooks/storage/system";
+import { useProduct } from "~/hooks/api/config";
+import { useVolumeTemplates } from "~/hooks/api/system/storage";
 import { isTransactionalSystem } from "~/components/storage/utils";
 
 /**
@@ -35,7 +35,7 @@ import { isTransactionalSystem } from "~/components/storage/utils";
  * @param props
  */
 export default function ProposalTransactionalInfo() {
-  const { selectedProduct } = useProduct({ suspense: true });
+  const selectedProduct = useProduct();
   const volumes = useVolumeTemplates();
 
   if (!isTransactionalSystem(volumes)) return;

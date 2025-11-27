@@ -19,7 +19,7 @@
 // find current contact information at www.suse.com.
 
 use crate::api::{
-    l10n, network, question,
+    files, l10n, network, question,
     software::{self, ProductConfig},
     storage,
 };
@@ -40,6 +40,8 @@ pub struct Config {
     #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(flatten)]
     pub storage: Option<storage::Config>,
+    #[serde(flatten, skip_serializing_if = "Option::is_none")]
+    pub files: Option<files::Config>,
 }
 
 impl Config {

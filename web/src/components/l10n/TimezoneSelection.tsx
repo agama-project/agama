@@ -24,12 +24,13 @@ import React, { useState } from "react";
 import { Content, Flex, Form, FormGroup, Radio } from "@patternfly/react-core";
 import { useNavigate } from "react-router";
 import { ListSearch, Page } from "~/components/core";
-import { Timezone } from "~/api/l10n/system";
 import { patchConfig } from "~/api";
-import { useSystem, useProposal } from "~/hooks/api";
+import { useProposal } from "~/hooks/api/proposal/l10n";
+import { useSystem } from "~/hooks/api/system/l10n";
 import { timezoneTime } from "~/utils";
 import spacingStyles from "@patternfly/react-styles/css/utilities/Spacing/spacing";
 import { _ } from "~/i18n";
+import type { Timezone } from "~/api/system/l10n";
 
 type TimezoneWithDetails = Timezone & { details: string };
 
@@ -67,13 +68,8 @@ const sortedTimezones = (timezones: Timezone[]) => {
 export default function TimezoneSelection() {
   date = new Date();
   const navigate = useNavigate();
-  const {
-    l10n: { timezones },
-  } = useSystem({ suspense: true });
-  const {
-    l10n: { timezone: currentTimezone },
-  } = useProposal({ suspense: true });
-
+  const timezones = useSystem()?.timezones;
+  const currentTimezone = useProposal()?.timezone;
   const displayTimezones = timezones.map(timezoneWithDetails);
   const [selected, setSelected] = useState(currentTimezone);
   const [filteredTimezones, setFilteredTimezones] = useState(sortedTimezones(displayTimezones));

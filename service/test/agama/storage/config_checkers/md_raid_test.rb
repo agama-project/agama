@@ -76,7 +76,7 @@ describe Agama::Storage::ConfigCheckers::MdRaid do
         it "includes the expected issue" do
           issues = subject.issues
           expect(issues).to include an_object_having_attributes(
-            kind:        :md_raid,
+            kind:        Agama::Storage::IssueClasses::Config::MD_RAID,
             description: /MD RAID without level/
           )
         end
@@ -92,7 +92,9 @@ describe Agama::Storage::ConfigCheckers::MdRaid do
 
         it "does not include the issue" do
           issues = subject.issues
-          expect(issues).to_not include an_object_having_attributes(kind: :md_raid)
+          expect(issues).to_not include an_object_having_attributes(
+            kind: Agama::Storage::IssueClasses::Config::MD_RAID
+          )
         end
       end
     end
@@ -106,7 +108,7 @@ describe Agama::Storage::ConfigCheckers::MdRaid do
       it "includes the expected issue" do
         issues = subject.issues
         expect(issues).to include an_object_having_attributes(
-          kind:        :md_raid,
+          kind:        Agama::Storage::IssueClasses::Config::MD_RAID,
           description: "At least 2 devices are required for raid0"
         )
       end
@@ -118,7 +120,7 @@ describe Agama::Storage::ConfigCheckers::MdRaid do
       it "includes the expected issue" do
         issues = subject.issues
         expect(issues).to include an_object_having_attributes(
-          kind:        :no_such_alias,
+          kind:        Agama::Storage::IssueClasses::Config::ALIAS,
           description: /no MD RAID member device with alias 'disk2'/
         )
       end
@@ -151,7 +153,7 @@ describe Agama::Storage::ConfigCheckers::MdRaid do
           it "includes the expected issue" do
             issues = subject.issues
             expect(issues).to include an_object_having_attributes(
-              kind:        :reused_md_member,
+              kind:        Agama::Storage::IssueClasses::Config::OVERUSED_MD_MEMBER,
               description: /.*vda.*cannot be formatted.*part of.*md0/
             )
           end
@@ -169,7 +171,7 @@ describe Agama::Storage::ConfigCheckers::MdRaid do
           it "includes the expected issue" do
             issues = subject.issues
             expect(issues).to include an_object_having_attributes(
-              kind:        :reused_md_member,
+              kind:        Agama::Storage::IssueClasses::Config::OVERUSED_MD_MEMBER,
               description: /.*vda.*cannot be partitioned.*part of.*md0/
             )
           end
@@ -187,7 +189,7 @@ describe Agama::Storage::ConfigCheckers::MdRaid do
           it "includes the expected issue" do
             issues = subject.issues
             expect(issues).to include an_object_having_attributes(
-              kind:        :reused_md_member,
+              kind:        Agama::Storage::IssueClasses::Config::OVERUSED_MD_MEMBER,
               description: /.*vda.*cannot be used.*part of.*md0/
             )
           end
@@ -213,7 +215,7 @@ describe Agama::Storage::ConfigCheckers::MdRaid do
           it "includes the expected issue" do
             issues = subject.issues
             expect(issues).to include an_object_having_attributes(
-              kind:        :reused_md_member,
+              kind:        Agama::Storage::IssueClasses::Config::OVERUSED_MD_MEMBER,
               description: /.*vda1.*cannot be deleted.*part of.*md0/
             )
           end
@@ -239,7 +241,7 @@ describe Agama::Storage::ConfigCheckers::MdRaid do
           it "includes the expected issue" do
             issues = subject.issues
             expect(issues).to include an_object_having_attributes(
-              kind:        :reused_md_member,
+              kind:        Agama::Storage::IssueClasses::Config::OVERUSED_MD_MEMBER,
               description: /.*vda1.*cannot be resized.*part of.*md0/
             )
           end
@@ -261,7 +263,7 @@ describe Agama::Storage::ConfigCheckers::MdRaid do
         it "includes the expected issue" do
           issues = subject.issues
           expect(issues).to include an_object_having_attributes(
-            kind:        :reused_md_member,
+            kind:        Agama::Storage::IssueClasses::Config::OVERUSED_MD_MEMBER,
             description: /.*vda.*cannot be formatted.*part of.*md0/
           )
         end

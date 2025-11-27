@@ -21,7 +21,7 @@
  */
 
 import { _, n_, formatList } from "~/i18n";
-import { model } from "~/types/storage";
+import { model } from "~/storage";
 import { formattedPath } from "~/components/storage/utils";
 import { sprintf } from "sprintf-js";
 

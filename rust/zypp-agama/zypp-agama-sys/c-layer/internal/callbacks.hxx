@@ -25,4 +25,8 @@ void unset_zypp_resolvable_download_callbacks();
 void set_zypp_security_callbacks(struct SecurityCallbacks *callbacks);
 void unset_zypp_security_callbacks();
 
+// pair of set/unset callbacks used for installation reports.
+void set_zypp_install_callbacks(struct InstallCallbacks *callbacks);
+void unset_zypp_install_callbacks();
+
 #endif

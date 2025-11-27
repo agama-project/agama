@@ -196,9 +196,9 @@ pub const GPGKeyTrust_GPGKT_REJECT: GPGKeyTrust = 0;
 pub const GPGKeyTrust_GPGKT_TEMPORARY: GPGKeyTrust = 1;
 #[doc = " Import key and trust it."]
 pub const GPGKeyTrust_GPGKT_IMPORT: GPGKeyTrust = 2;
-#[doc = " @brief What to do with an unknown GPG key.\n @see zypp::KeyRingReport::KeyTrust in https://github.com/openSUSE/libzypp/blob/master/zypp-logic/zypp/KeyRing.h"]
+#[doc = " @brief What to do with an unknown GPG key.\n @see zypp::KeyRingReport::KeyTrust in\n https://github.com/openSUSE/libzypp/blob/master/zypp-logic/zypp/KeyRing.h"]
 pub type GPGKeyTrust = ::std::os::raw::c_uint;
-#[doc = " @brief Callback to decide whether to accept an unknown GPG key.\n @param key_id The ID of the GPG key.\n @param key_name The name of the GPG key.\n @param key_fingerprint The fingerprint of the GPG key.\n @param repository_alias The alias of the repository providing the key. Can be\n an empty string if not available.\n @param user_data User-defined data.\n @return A GPGKeyTrust value indicating the action to take.\n  @see zypp::KeyRingReport::askUserToAcceptKey in https://github.com/openSUSE/libzypp/blob/master/zypp-logic/zypp/KeyRing.h"]
+#[doc = " @brief Callback to decide whether to accept an unknown GPG key.\n @param key_id The ID of the GPG key.\n @param key_name The name of the GPG key.\n @param key_fingerprint The fingerprint of the GPG key.\n @param repository_alias The alias of the repository providing the key. Can be\n an empty string if not available.\n @param user_data User-defined data.\n @return A GPGKeyTrust value indicating the action to take.\n  @see zypp::KeyRingReport::askUserToAcceptKey in\n https://github.com/openSUSE/libzypp/blob/master/zypp-logic/zypp/KeyRing.h"]
 pub type GPGAcceptKeyCallback = ::std::option::Option<
     unsafe extern "C" fn(
         key_id: *const ::std::os::raw::c_char,
@@ -236,7 +236,8 @@ pub type GPGVerificationFailed = ::std::option::Option<
         user_data: *mut ::std::os::raw::c_void,
     ) -> bool,
 >;
-#[doc = " @see zypp::DigestReport in https://github.com/openSUSE/libzypp/blob/master/zypp-logic/zypp/Digest.h"]
+
+#[doc = " @see zypp::DigestReport in\n https://github.com/openSUSE/libzypp/blob/master/zypp-logic/zypp/Digest.h"]
 pub type ChecksumMissing = ::std::option::Option<
     unsafe extern "C" fn(
         file: *const ::std::os::raw::c_char,
@@ -323,6 +324,80 @@ const _: () = {
         [::std::mem::offset_of!(SecurityCallbacks, checksum_unknown) - 96usize];
     ["Offset of field: SecurityCallbacks::checksum_unknown_data"]
         [::std::mem::offset_of!(SecurityCallbacks, checksum_unknown_data) - 104usize];
+};
+#[doc = " @brief No error occurred."]
+pub const ZyppInstallPackageError_PI_NO_ERROR: ZyppInstallPackageError = 0;
+#[doc = " @brief The requested URL was not found."]
+pub const ZyppInstallPackageError_PI_NOT_FOUND: ZyppInstallPackageError = 1;
+#[doc = " @brief An I/O error occurred."]
+pub const ZyppInstallPackageError_PI_IO: ZyppInstallPackageError = 2;
+#[doc = " @brief The resolvable is invalid."]
+pub const ZyppInstallPackageError_PI_INVALID: ZyppInstallPackageError = 3;
+#[doc = " @brief Errors that can occur during package installation.\n @see zypp::target::rpm::InstallResolvableReport::Error in libzypp."]
+pub type ZyppInstallPackageError = ::std::os::raw::c_uint;
+#[doc = " @brief Callback invoked when the installation of a package starts.\n @param package_name The name of the package being installed.\n @param user_data User-defined data."]
+pub type ZyppInstallPackageStartCallback = ::std::option::Option<
+    unsafe extern "C" fn(
+        package_name: *const ::std::os::raw::c_char,
+        user_data: *mut ::std::os::raw::c_void,
+    ),
+>;
+#[doc = " @brief Callback for handling problems during package installation.\n @param package_name The name of the package that has a problem.\n @param error The type of error that occurred.\n @param description A description of the problem.\n @param user_data User-defined data.\n @return A PROBLEM_RESPONSE value indicating how to proceed."]
+pub type ZyppInstallPackageProblemCallback = ::std::option::Option<
+    unsafe extern "C" fn(
+        package_name: *const ::std::os::raw::c_char,
+        error: ZyppInstallPackageError,
+        description: *const ::std::os::raw::c_char,
+        user_data: *mut ::std::os::raw::c_void,
+    ) -> PROBLEM_RESPONSE,
+>;
+#[doc = " @brief Callback invoked when the installation of a package finishes.\n @note We could add a finish message after package install, but YaST does not.\n Should we do it with Agama?\n @param user_data User-defined data."]
+pub type ZyppInstallPackageFinishCallback = ::std::option::Option<
+    unsafe extern "C" fn(
+        package_name: *const ::std::os::raw::c_char,
+        user_data: *mut ::std::os::raw::c_void,
+    ),
+>;
+#[doc = " @brief Callback for handling problems in package installation scripts (e.g.,\n post-install).\n @param description A description of the script problem.\n @param user_data User-defined data.\n @return A PROBLEM_RESPONSE value indicating how to proceed."]
+pub type ZyppInstallScriptProblemCallback = ::std::option::Option<
+    unsafe extern "C" fn(
+        description: *const ::std::os::raw::c_char,
+        user_data: *mut ::std::os::raw::c_void,
+    ) -> PROBLEM_RESPONSE,
+>;
+#[doc = " @brief Callbacks for monitoring the progress of package installation."]
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct InstallCallbacks {
+    pub package_start: ZyppInstallPackageStartCallback,
+    pub package_start_data: *mut ::std::os::raw::c_void,
+    pub package_problem: ZyppInstallPackageProblemCallback,
+    pub package_problem_data: *mut ::std::os::raw::c_void,
+    pub script_problem: ZyppInstallScriptProblemCallback,
+    pub script_problem_data: *mut ::std::os::raw::c_void,
+    pub package_finish: ZyppInstallPackageFinishCallback,
+    pub package_finish_data: *mut ::std::os::raw::c_void,
+}
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of InstallCallbacks"][::std::mem::size_of::<InstallCallbacks>() - 64usize];
+    ["Alignment of InstallCallbacks"][::std::mem::align_of::<InstallCallbacks>() - 8usize];
+    ["Offset of field: InstallCallbacks::package_start"]
+        [::std::mem::offset_of!(InstallCallbacks, package_start) - 0usize];
+    ["Offset of field: InstallCallbacks::package_start_data"]
+        [::std::mem::offset_of!(InstallCallbacks, package_start_data) - 8usize];
+    ["Offset of field: InstallCallbacks::package_problem"]
+        [::std::mem::offset_of!(InstallCallbacks, package_problem) - 16usize];
+    ["Offset of field: InstallCallbacks::package_problem_data"]
+        [::std::mem::offset_of!(InstallCallbacks, package_problem_data) - 24usize];
+    ["Offset of field: InstallCallbacks::script_problem"]
+        [::std::mem::offset_of!(InstallCallbacks, script_problem) - 32usize];
+    ["Offset of field: InstallCallbacks::script_problem_data"]
+        [::std::mem::offset_of!(InstallCallbacks, script_problem_data) - 40usize];
+    ["Offset of field: InstallCallbacks::package_finish"]
+        [::std::mem::offset_of!(InstallCallbacks, package_finish) - 48usize];
+    ["Offset of field: InstallCallbacks::package_finish_data"]
+        [::std::mem::offset_of!(InstallCallbacks, package_finish_data) - 56usize];
 };
 #[doc = " status struct to pass and obtain from calls that can fail.\n After usage free with \\ref free_status function.\n\n Most functions act as *constructors* for this, taking a pointer\n to it as an output parameter, disregarding the struct current contents\n and filling it in. Thus, if you reuse a `Status` without \\ref free_status\n in between, `error` will leak."]
 #[repr(C)]
@@ -519,6 +594,7 @@ unsafe extern "C" {
         status: *mut Status,
         download_callbacks: *mut DownloadResolvableCallbacks,
         security_callbacks: *mut SecurityCallbacks,
+        install_callbacks: *mut InstallCallbacks,
     ) -> bool;
     #[doc = " Calculates the space usage for a given list of mount points.\n This function populates the `used_size` field for each element in the\n provided `mount_points` array.\n\n @param zypp The Zypp context.\n @param[out] status Output status object.\n @param[in,out] mount_points An array of mount points to be evaluated.\n @param mount_points_size The number of elements in the `mount_points` array."]
     pub fn get_space_usage(

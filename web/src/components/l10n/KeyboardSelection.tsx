@@ -25,19 +25,16 @@ import { Content, Flex, Form, FormGroup, Radio } from "@patternfly/react-core";
 import { useNavigate } from "react-router";
 import { ListSearch, Page } from "~/components/core";
 import { patchConfig } from "~/api";
-import { useSystem, useProposal } from "~/hooks/api";
+import { useProposal } from "~/hooks/api/proposal/l10n";
+import { useSystem } from "~/hooks/api/system/l10n";
 import { _ } from "~/i18n";
 
 // TODO: Add documentation
 // TODO: Evaluate if worth it extracting the selector
 export default function KeyboardSelection() {
   const navigate = useNavigate();
-  const {
-    l10n: { keymaps },
-  } = useSystem({ suspense: true });
-  const {
-    l10n: { keymap: currentKeymap },
-  } = useProposal({ suspense: true });
+  const keymaps = useSystem()?.keymaps;
+  const currentKeymap = useProposal()?.keymap;
 
   // FIXME: get current keymap from either, proposal or config
   const [selected, setSelected] = useState(currentKeymap);

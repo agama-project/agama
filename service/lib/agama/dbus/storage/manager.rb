@@ -206,10 +206,6 @@ module Agama
           next_progress_step(CONFIGURING_STEP)
           config_json = JSON.parse(serialized_config, symbolize_names: true)
 
-          # If config_json is nil, calculate_proposal re-calculates the proposal with the current
-          # config. We could skip that re-calculation if system_changed is false, but that's a
-          # pretty theoretical case (the method was called with an unchanged product configuration
-          # and with no storage configuration).
           calculate_proposal(config_json)
 
           finish_progress

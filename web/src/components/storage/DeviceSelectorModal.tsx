@@ -27,7 +27,6 @@ import SelectableDataTable, {
   SortedBy,
   SelectableDataTableProps,
 } from "~/components/core/SelectableDataTable";
-import { storage } from "~/api/system";
 import {
   typeDescription,
   contentDescription,
@@ -36,7 +35,8 @@ import {
 import { deviceSize } from "~/components/storage/utils";
 import { sortCollection } from "~/utils";
 import { _ } from "~/i18n";
-import { deviceSystems } from "~/helpers/storage/device";
+import { deviceSystems } from "~/storage/device";
+import type { storage } from "~/api/system";
 
 type DeviceSelectorProps = {
   devices: storage.Device[];

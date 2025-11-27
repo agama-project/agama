@@ -21,34 +21,31 @@
  */
 
 import { useCallback } from "react";
-import { useSuspenseQuery, useQuery } from "@tanstack/react-query";
-import { storageModelQuery } from "~/hooks/api";
-import { useSystem } from "~/hooks/storage/system";
-import { apiModel } from "~/api/storage";
-import { buildModel } from "~/helpers/storage/model";
-import { QueryHookOptions } from "~/types/queries";
-import { model } from "~/types/storage";
+import { useSuspenseQuery } from "@tanstack/react-query";
+import { storageModelQuery } from "~/hooks/api/storage";
+import { useSystem } from "~/hooks/api/system/storage";
+import { buildModel } from "~/storage/model";
+import type { model as apiModel } from "~/api/storage";
+import type { model } from "~/storage";
 
-const modelFromData = (data: apiModel.Config | null): model.Model | null =>
+const build = (data: apiModel.Config | null): model.Model | null =>
   data ? buildModel(data) : null;
 
-function useModel(options?: QueryHookOptions): model.Model | null {
-  const func = options?.suspense ? useSuspenseQuery : useQuery;
-  const { data } = func({
-    ...storageModelQuery(),
-    select: modelFromData,
+function useModel(): model.Model | null {
+  const { data } = useSuspenseQuery({
+    ...storageModelQuery,
+    select: build,
   });
   return data;
 }
 
-function useMissingMountPaths(options?: QueryHookOptions): string[] {
+function useMissingMountPaths(): string[] {
   const productMountPoints = useSystem()?.productMountPoints;
-  const func = options?.suspense ? useSuspenseQuery : useQuery;
-  const { data } = func({
-    ...storageModelQuery(),
+  const { data } = useSuspenseQuery({
+    ...storageModelQuery,
     select: useCallback(
       (data: apiModel.Config | null): string[] => {
-        const model = modelFromData(data);
+        const model = build(data);
         const currentMountPaths = model?.getMountPaths() || [];
         return (productMountPoints || []).filter((p) => !currentMountPaths.includes(p));
       },

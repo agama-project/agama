@@ -26,7 +26,7 @@ import Icon from "~/components/layout/Icon";
 import { generatePath, useNavigate } from "react-router";
 import MenuButton, { CustomToggleProps } from "~/components/core/MenuButton";
 import { STORAGE as PATHS } from "~/routes/paths";
-import { model } from "~/types/storage";
+import { model } from "~/storage";
 import { filesystemType, formattedPath } from "~/components/storage/utils";
 import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
