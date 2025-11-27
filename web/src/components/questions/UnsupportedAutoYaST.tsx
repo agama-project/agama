@@ -102,6 +102,7 @@ export default function UnsupportedAutoYaST({
         <Content component="small">
           {/* gettext v0.26 does not handle correctly escaped single quote inside */}
           {/* a single quote string ('foo\'s') so split it into several parts */}
+          {/* eslint-disable agama-i18n/string-literals */}
           {_(
             'If you want to disable this check, please specify "inst.ay_check=0" at kernel' +
               "'s command-line",
