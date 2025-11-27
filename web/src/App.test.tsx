@@ -33,12 +33,23 @@ import { PRODUCT } from "~/routes/paths";
 import type { Config } from "~/api";
 import type { Progress, State } from "~/api/status";
 import App from "./App";
+import { System } from "~/api/system/network";
 
 jest.mock("~/client");
 
 const tumbleweed: Product = { id: "openSUSE", name: "openSUSE Tumbleweed", registration: false };
 const microos: Product = { id: "Leap Micro", name: "openSUSE Micro", registration: false };
-
+const network: System = {
+  connections: [],
+  devices: [],
+  state: {
+    connectivity: true,
+    copyNetwork: true,
+    networkingEnabled: true,
+    wirelessEnabled: true,
+  },
+  accessPoints: [],
+};
 const mockProgresses: jest.Mock<Progress[]> = jest.fn();
 const mockState: jest.Mock<State> = jest.fn();
 const mockSelectedProduct: jest.Mock<Config["product"]> = jest.fn();
@@ -47,6 +58,7 @@ jest.mock("~/hooks/api", () => ({
   ...jest.requireActual("~/hooks/api"),
   useSystem: (): ReturnType<typeof useSystem> => ({
     products: [tumbleweed, microos],
+    network,
   }),
 
   useStatus: (): ReturnType<typeof useStatus> => ({

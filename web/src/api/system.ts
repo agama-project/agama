@@ -21,14 +21,16 @@
  */
 
 import type * as l10n from "~/api/system/l10n";
-import type * as storage from "~/api/system/storage";
+import type * as network from "~/api/system/network";
 import type * as software from "~/api/system/software";
+import type * as storage from "~/api/system/storage";
 
 type System = {
-  products?: Product[];
   l10n?: l10n.System;
-  storage?: storage.System;
+  network: network.System;
+  products?: Product[];
   software?: software.System;
+  storage?: storage.System;
 };
 
 type Product = {
@@ -46,4 +48,4 @@ type Product = {
   license?: string;
 };
 
-export type { System, Product, l10n, storage, software };
+export type { System, Product, l10n, network, software, storage };

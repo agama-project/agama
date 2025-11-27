@@ -60,6 +60,7 @@ const mockNetwork = {
   hwAddress: "??",
   security: [SecurityProtocols.RSN],
   device: wlan0,
+  deviceName: "wlan0",
   settings: new Connection("Network 1", {
     iface: "wlan0",
     addresses: [{ address: "192.168.69.201", prefix: 24 }],

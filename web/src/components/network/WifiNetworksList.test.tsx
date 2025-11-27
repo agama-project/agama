@@ -49,20 +49,17 @@ const wlan0: Device = {
   macAddress: "AA:11:22:33:44::FF",
 };
 
-const mockConnectionRemoval = jest.fn();
-const mockAddConnection = jest.fn();
 let mockWifiNetworks: WifiNetwork[];
 let mockWifiConnections: Connection[];
 
-jest.mock("~/queries/network", () => ({
-  ...jest.requireActual("~/queries/network"),
+jest.mock("~/hooks/api/proposal/network", () => ({
+  ...jest.requireActual("~/hooks/api/proposal/network"),
+  useConnections: () => mockWifiConnections,
+}));
+
+jest.mock("~/hooks/api/system/network", () => ({
+  ...jest.requireActual("~/hooks/api/system/network"),
   useNetworkChanges: jest.fn(),
-  useRemoveConnectionMutation: () => ({
-    mutate: mockConnectionRemoval,
-  }),
-  useAddConnectionMutation: () => ({
-    mutate: mockAddConnection,
-  }),
   useWifiNetworks: () => mockWifiNetworks,
   useConnections: () => mockWifiConnections,
 }));
@@ -89,6 +86,7 @@ describe("WifiNetworksList", () => {
           strength: 25,
           hwAddress: "??",
           security: [SecurityProtocols.RSN],
+          deviceName: "wlan0",
           device: wlan0,
           settings: new Connection("Network 1", {
             iface: "wlan0",
@@ -97,6 +95,7 @@ describe("WifiNetworksList", () => {
           status: WifiNetworkStatus.CONNECTED,
         },
         {
+          deviceName: "wlan1",
           ssid: "Network 2",
           strength: 88,
           hwAddress: "??",
@@ -108,6 +107,7 @@ describe("WifiNetworksList", () => {
           status: WifiNetworkStatus.CONFIGURED,
         },
         {
+          deviceName: "wlan0",
           ssid: "Network 3",
           strength: 66,
           hwAddress: "??",
@@ -160,6 +160,7 @@ describe("WifiNetworksList", () => {
 
         mockWifiNetworks = [
           {
+            deviceName: "wlan1",
             ssid: "Network 2",
             strength: 88,
             hwAddress: "??",
@@ -198,6 +199,7 @@ describe("WifiNetworksList", () => {
 
         mockWifiNetworks = [
           {
+            deviceName: "wlan1",
             ssid: "Network 2",
             strength: 88,
             hwAddress: "??",

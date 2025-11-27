@@ -23,9 +23,10 @@
 import React from "react";
 import { screen, within } from "@testing-library/react";
 import { plainRender, installerRender } from "~/test-utils";
-import { useSystem } from "~/hooks/api";
 import { Product } from "~/types/software";
+import { System } from "~/api/system/network";
 import Header from "./Header";
+import { useSystem } from "~/hooks/api/system";
 
 const tumbleweed: Product = {
   id: "Tumbleweed",
@@ -41,13 +42,29 @@ const microos: Product = {
   registration: false,
 };
 
+const network: System = {
+  connections: [],
+  devices: [],
+  state: {
+    connectivity: true,
+    copyNetwork: true,
+    networkingEnabled: true,
+    wirelessEnabled: true,
+  },
+  accessPoints: [],
+};
+
 jest.mock("~/components/core/InstallerOptions", () => () => <div>Installer Options Mock</div>);
 jest.mock("~/components/core/InstallButton", () => () => <div>Install Button Mock</div>);
 
-jest.mock("~/hooks/api", () => ({
-  ...jest.requireActual("~/hooks/api"),
-  useSystem: (): ReturnType<typeof useSystem> => ({ products: [tumbleweed, microos] }),
-  useSelectedProduct: (): Product => tumbleweed,
+jest.mock("~/hooks/api/system", () => ({
+  ...jest.requireActual("~/hooks/api/system"),
+  useSystem: (): ReturnType<typeof useSystem> => ({ products: [tumbleweed, microos], network }),
+}));
+
+jest.mock("~/hooks/api/config", () => ({
+  ...jest.requireActual("~/hooks/api/config"),
+  useProduct: (): Product => tumbleweed,
 }));
 
 describe("Header", () => {

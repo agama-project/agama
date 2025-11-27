@@ -25,10 +25,35 @@ import { screen, within } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import L10nPage from "~/components/l10n/L10nPage";
 import { Keymap, Locale, Timezone } from "~/api/system/l10n";
-import { useProposal, useSystem } from "~/hooks/api";
+import { useSystem } from "~/hooks/api/system";
+import { useProposal } from "~/hooks/api/proposal";
+import { System } from "~/api/system/network";
+import { Proposal } from "~/api/proposal/network";
 
 let mockSystemData: ReturnType<typeof useSystem>;
 let mockProposedData: ReturnType<typeof useProposal>;
+
+const networkProposal: Proposal = {
+  connections: [],
+  state: {
+    connectivity: true,
+    copyNetwork: true,
+    networkingEnabled: true,
+    wirelessEnabled: true,
+  },
+};
+
+const network: System = {
+  connections: [],
+  devices: [],
+  state: {
+    connectivity: true,
+    copyNetwork: true,
+    networkingEnabled: true,
+    wirelessEnabled: true,
+  },
+  accessPoints: [],
+};
 
 const locales: Locale[] = [
   { id: "en_US.UTF-8", language: "English", territory: "United States" },
@@ -63,6 +88,7 @@ beforeEach(() => {
       keymaps,
       timezones,
     },
+    network,
   };
 
   mockProposedData = {
@@ -71,6 +97,7 @@ beforeEach(() => {
       keymap: "us",
       timezone: "Europe/Berlin",
     },
+    network: networkProposal,
   };
 });
 

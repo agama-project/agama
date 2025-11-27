@@ -27,14 +27,18 @@ import { useSystem } from "~/hooks/api/system";
 import type { system } from "~/api";
 import type { Config } from "~/api/config";
 
-const extendedConfigQuery = {
-  queryKey: ["extendedConfig"],
-  queryFn: getExtendedConfig,
-};
-
 const configQuery = {
   queryKey: ["config"],
   queryFn: getConfig,
+};
+
+function useConfig(): Config | null {
+  return useSuspenseQuery(configQuery)?.data;
+}
+
+const extendedConfigQuery = {
+  queryKey: ["extendedConfig"],
+  queryFn: getExtendedConfig,
 };
 
 function useExtendedConfig(): Config | null {
@@ -57,5 +61,5 @@ function useProduct(): system.Product | null {
   return data;
 }
 
-export { configQuery, extendedConfigQuery, useExtendedConfig, useProduct };
+export { configQuery, extendedConfigQuery, useConfig, useExtendedConfig, useProduct };
 export * as storage from "~/hooks/api/config/storage";

@@ -23,11 +23,14 @@
 import React from "react";
 import { screen } from "@testing-library/react";
 import { installerRender, mockRoutes } from "~/test-utils";
-import { useScopeIssues, useSelectedProduct, useSystem } from "~/hooks/api";
-import { Issue, IssueSeverity, IssueSource } from "~/api/issue";
+import { useSystem } from "~/hooks/api/system";
+import { useProduct } from "~/hooks/api/config";
+import { useIssues } from "~/hooks/api/issue";
+import { Issue } from "~/api/issue";
 import { PRODUCT, REGISTRATION, ROOT } from "~/routes/paths";
 import { Product } from "~/types/software";
 import ProductRegistrationAlert from "./ProductRegistrationAlert";
+import { System } from "~/api/system/network";
 
 const tw: Product = {
   id: "Tumbleweed",
@@ -41,6 +44,18 @@ const sle: Product = {
   registration: true,
 };
 
+const network: System = {
+  connections: [],
+  devices: [],
+  state: {
+    connectivity: true,
+    copyNetwork: true,
+    networkingEnabled: true,
+    wirelessEnabled: true,
+  },
+  accessPoints: [],
+};
+
 const mockSelectedProduct: jest.Mock<Product> = jest.fn();
 const mockIssues: jest.Mock<Issue[]> = jest.fn();
 
@@ -48,17 +63,16 @@ jest.mock("~/hooks/api", () => ({
   ...jest.requireActual("~/hooks/api"),
   useSystem: (): ReturnType<typeof useSystem> => ({
     products: [tw, sle],
+    network,
   }),
-  useSelectedProduct: (): ReturnType<typeof useSelectedProduct> => mockSelectedProduct(),
-  useScopeIssues: (): ReturnType<typeof useScopeIssues> => mockIssues(),
+  useProduct: (): ReturnType<typeof useProduct> => mockSelectedProduct(),
+  useIssues: (): ReturnType<typeof useIssues> => mockIssues(),
 }));
 
 const registrationIssue: Issue = {
   description: "Product must be registered",
   details: "",
-  kind: "missing_registration",
-  source: IssueSource.Unknown,
-  severity: IssueSeverity.Warn,
+  class: "missing_registration",
   scope: "storage",
 };
 

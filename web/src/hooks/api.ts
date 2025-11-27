@@ -20,10 +20,10 @@
  * find current contact information at www.suse.com.
  */
 
-export * as status from "~/hooks/api/status";
-export * as system from "~/hooks/api/system";
 export * as config from "~/hooks/api/config";
-export * as proposal from "~/hooks/api/proposal";
 export * as issue from "~/hooks/api/issue";
+export * as proposal from "~/hooks/api/proposal";
 export * as question from "~/hooks/api/question";
+export * as status from "~/hooks/api/status";
 export * as storage from "~/hooks/api/storage";
+export * as system from "~/hooks/api/system";

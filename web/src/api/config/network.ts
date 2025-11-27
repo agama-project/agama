@@ -20,16 +20,17 @@
  * find current contact information at www.suse.com.
  */
 
-import type * as l10n from "~/api/proposal/l10n";
-import type * as network from "~/api/proposal/network";
-import type * as software from "~/api/proposal/software";
-import type * as storage from "~/api/proposal/storage";
+import { APIConnection } from "~/types/network";
 
-type Proposal = {
-  l10n?: l10n.Proposal;
-  network: network.Proposal;
-  software?: software.Proposal;
-  storage?: storage.Proposal;
+type GeneralState = {
+  wirelessEnabled?: boolean;
+  networkingEnabled?: boolean;
+  copyNetwork?: boolean;
 };
 
-export type { Proposal, l10n, network, storage, software };
+type Config = {
+  connections?: APIConnection[];
+  state?: GeneralState;
+};
+
+export type { Config, GeneralState };

@@ -32,11 +32,12 @@ import {
   Spinner,
 } from "@patternfly/react-core";
 import { Page, PasswordInput } from "~/components/core";
-import { useAddConnectionMutation, useConnectionMutation, useConnections } from "~/queries/network";
 import { Connection, ConnectionState, WifiNetwork, Wireless } from "~/types/network";
 import { isEmpty } from "radashi";
 import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
+import { useConnections } from "~/hooks/api/system/network";
+import { useConnectionMutation } from "~/hooks/api/config/network";
 
 const securityOptions = [
   // TRANSLATORS: WiFi authentication mode
@@ -103,7 +104,6 @@ export default function WifiConnectionForm({ network }: { network: WifiNetwork }
   const [isConnecting, setIsConnecting] = useState<boolean>(
     connection?.state === ConnectionState.activating,
   );
-  const { mutateAsync: addConnection } = useAddConnectionMutation();
   const { mutateAsync: updateConnection } = useConnectionMutation();
 
   useEffect(() => {
@@ -132,8 +132,7 @@ export default function WifiConnectionForm({ network }: { network: WifiNetwork }
       password,
       hidden: false,
     });
-    const action = network.settings ? updateConnection : addConnection;
-    action(nextConnection).catch(() => setError(true));
+    updateConnection(nextConnection).catch(() => setError(true));
     setError(false);
     setIsConnecting(true);
   };

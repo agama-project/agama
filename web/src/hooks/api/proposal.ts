@@ -55,5 +55,6 @@ function useProposalChanges() {
 
 export { proposalQuery, useProposal, useProposalChanges };
 export * as l10n from "~/hooks/api/proposal/l10n";
+export * as network from "~/hooks/api/proposal/network";
 export * as storage from "~/hooks/api/proposal/storage";
 export * as software from "~/hooks/api/proposal/software";

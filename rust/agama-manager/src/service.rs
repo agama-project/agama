@@ -337,6 +337,7 @@ impl Service {
 
         if let Some(network) = &config.network {
             self.network.update_config(network.clone()).await?;
+            self.network.apply().await?;
         }
 
         self.config = config;
