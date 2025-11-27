@@ -11,6 +11,8 @@ members = [
     "agama-software",
     "agama-storage",
     "agama-utils",
+    "suseconnect-agama",
+    "suseconnect-agama/suseconnect-agama-sys",
     "xtask",
     "zypp-agama",
     "zypp-agama/zypp-agama-sys",
