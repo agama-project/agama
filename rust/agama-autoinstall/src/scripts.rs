@@ -62,8 +62,7 @@ impl ScriptsRunner {
     /// It downloads the script from the given URL to the runner directory.
     /// It saves the stdout, stderr and exit code to separate files.
     ///
-    /// If the script cannot be execute due to the error "Text file busy (os error 26)",
-    /// wait for 50 milliseconds and try again (up to 5 times).
+    /// It will retry if it cannot run the script.
     ///
     /// * url: script URL, supporting agama-specific schemes.
     pub async fn run(&mut self, url: &str) -> anyhow::Result<()> {
@@ -101,7 +100,7 @@ impl ScriptsRunner {
     }
 
     async fn save_script(&self, url: &str, path: &PathBuf) -> anyhow::Result<()> {
-        let mut file = Self::create_file(&path, 0o755)?;
+        let mut file = Self::create_file(&path, 0o700)?;
         while let Err(error) = Transfer::get(url, &mut file, self.insecure) {
             eprintln!("Could not load the script from {url}: {error}");
             if !self.should_retry(&url, &error.to_string()).await? {
