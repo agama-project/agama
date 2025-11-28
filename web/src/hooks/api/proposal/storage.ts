@@ -22,7 +22,7 @@
 
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { proposalQuery } from "~/hooks/api/proposal";
-import { flatDevices } from "~/storage/proposal";
+import { flatDevices } from "~/model/proposal/storage";
 import type { Proposal, storage } from "~/model/proposal";
 
 const selectProposal = (data: Proposal | null): storage.Proposal | null => data?.storage;

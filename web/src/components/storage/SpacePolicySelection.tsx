@@ -33,7 +33,7 @@ import { useSetSpacePolicy } from "~/hooks/storage/space-policy";
 import { toDevice } from "./device-utils";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import { sprintf } from "sprintf-js";
-import type { UnusedSlot, Device } from "~/model/proposal/storage";
+import type { storage as proposal } from "~/model/proposal";
 import type { model } from "~/model/storage";
 
 const partitionAction = (partition: model.Partition) => {
@@ -60,7 +60,7 @@ export default function SpacePolicySelection() {
   const setSpacePolicy = useSetSpacePolicy();
   const { collection, index } = useParams();
 
-  const partitionDeviceAction = (device: Device) => {
+  const partitionDeviceAction = (device: proposal.Device) => {
     const partition = deviceModel.partitions?.find((p) => p.name === device.name);
 
     return partition ? partitionAction(partition) : undefined;
@@ -70,7 +70,7 @@ export default function SpacePolicySelection() {
     children
       .filter((d) => toDevice(d) && partitionDeviceAction(toDevice(d)))
       .map(
-        (d: Device): SpacePolicyAction => ({
+        (d: proposal.Device): SpacePolicyAction => ({
           deviceName: toDevice(d).name,
           value: partitionDeviceAction(toDevice(d)),
         }),
@@ -79,7 +79,7 @@ export default function SpacePolicySelection() {
 
   const navigate = useNavigate();
 
-  const deviceAction = (device: Device | UnusedSlot) => {
+  const deviceAction = (device: proposal.Device | proposal.UnusedSlot) => {
     if (toDevice(device) === undefined) return "keep";
 
     return actions.find((a) => a.deviceName === toDevice(device).name)?.value || "keep";
