@@ -22,6 +22,7 @@
 
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { proposalQuery } from "~/hooks/api/proposal";
+import { flatDevices } from "~/storage/proposal";
 import type { Proposal, storage } from "~/api/proposal";
 
 const selectProposal = (data: Proposal | null): storage.Proposal | null => data?.storage;
@@ -44,6 +45,17 @@ function useDevices(): storage.Device[] {
   return data;
 }
 
+const selectFlattenDevices = (data: Proposal | null): storage.Device[] =>
+  data?.storage ? flatDevices(data.storage) : [];
+
+function useFlattenDevices(): storage.Device[] {
+  const { data } = useSuspenseQuery({
+    ...proposalQuery,
+    select: selectFlattenDevices,
+  });
+  return data;
+}
+
 const selectActions = (data: Proposal | null): storage.Action[] => data?.storage?.actions || [];
 
 function useActions(): storage.Action[] {
@@ -54,4 +66,4 @@ function useActions(): storage.Action[] {
   return data;
 }
 
-export { useProposal, useDevices, useActions };
+export { useProposal, useDevices, useFlattenDevices, useActions };

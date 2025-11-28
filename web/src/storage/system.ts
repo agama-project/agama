@@ -23,8 +23,14 @@
 import { sift } from "radashi";
 import type { System, Device } from "~/api/system/storage";
 
+function flatDevices(system: System): Device[] {
+  const partitions = system.devices?.flatMap((d) => d.partitions);
+  const logicalVolumes = system.devices?.flatMap((d) => d.logicalVolumes);
+  return sift([system.devices, partitions, logicalVolumes].flat());
+}
+
 function findDevice(system: System, sid: number): Device | undefined {
-  const device = system.devices.find((d) => d.sid === sid);
+  const device = flatDevices(system).find((d) => d.sid === sid);
   if (device === undefined) console.warn("Device not found:", sid);
 
   return device;
@@ -34,14 +40,8 @@ function findDevices(system: System, sids: number[]): Device[] {
   return sids.map((sid) => findDevice(system, sid)).filter((d) => d);
 }
 
-function allDevices(system: System): Device[] {
-  const partitions = system.devices?.map((d) => d.partitions).flat();
-  const logicalVolumes = system.devices?.map((d) => d.logicalVolumes).flat();
-  return sift([system.devices, partitions, logicalVolumes].flat());
-}
-
 function findDeviceByName(system: System, name: string): Device | null {
-  return allDevices(system).find((d) => d.name === name) || null;
+  return flatDevices(system).find((d) => d.name === name) || null;
 }
 
-export { findDevice, findDevices, findDeviceByName };
+export { flatDevices, findDevice, findDevices, findDeviceByName };
