@@ -25,21 +25,27 @@ import { Alert, List, ListItem } from "@patternfly/react-core";
 import { n_ } from "~/i18n";
 import type { Issue } from "~/model/issue";
 
-const Description = ({ errors }: Issue[]) => {
+type DescriptionProps = FixableConfigInfoProps;
+
+const Description = ({ issues }: DescriptionProps) => {
   return (
     <List isPlain>
-      {errors.map((e, i) => (
+      {issues.map((e, i) => (
         <ListItem key={i}>{e.description}</ListItem>
       ))}
     </List>
   );
 };
 
+type FixableConfigInfoProps = {
+  issues: Issue[];
+};
+
 /**
  * Information about a wrong but fixable storage configuration
  *
  */
-export default function FixableConfigInfo({ issues }: Issue[]) {
+export default function FixableConfigInfo({ issues }: FixableConfigInfoProps) {
   const title = n_(
     "The configuration must be adapted to address the following issue:",
     "The configuration must be adapted to address the following issues:",
@@ -48,7 +54,7 @@ export default function FixableConfigInfo({ issues }: Issue[]) {
 
   return (
     <Alert variant="warning" title={title}>
-      <Description errors={issues} />
+      <Description issues={issues} />
     </Alert>
   );
 }
