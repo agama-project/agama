@@ -26,8 +26,8 @@ import { deviceLabel } from "~/components/storage/utils";
 import { useAvailableDevices, useDevices, useIssues } from "~/hooks/api/system/storage";
 import { useStorageModel } from "~/hooks/api/storage";
 import { _ } from "~/i18n";
-import type { storage } from "~/api/system";
-import type { model } from "~/api/storage";
+import type { storage } from "~/model/system";
+import type { model } from "~/model/storage";
 
 const findDriveDevice = (drive: model.Drive, devices: storage.Device[]) =>
   devices.find((d) => d.name === drive.name);

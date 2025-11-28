@@ -24,7 +24,7 @@ import React from "react";
 import { useSuspenseQuery, useQueryClient } from "@tanstack/react-query";
 import { getSystem } from "~/api";
 import { useInstallerClient } from "~/context/installer";
-import type { System } from "~/api/system";
+import type { System } from "~/model/system";
 
 const systemQuery = {
   queryKey: ["system"],

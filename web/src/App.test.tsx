@@ -31,9 +31,9 @@ import { Product } from "~/types/software";
 import { PATHS } from "~/router";
 import { PRODUCT } from "~/routes/paths";
 import type { Config } from "~/api";
-import type { Progress, State } from "~/api/status";
+import type { Progress, State } from "~/model/status";
 import App from "./App";
-import { System } from "~/api/system/network";
+import { System } from "~/model/system/network";
 
 jest.mock("~/client");
 

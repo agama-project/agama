@@ -24,11 +24,11 @@ import React from "react";
 import { screen, within } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import L10nPage from "~/components/l10n/L10nPage";
-import { Keymap, Locale, Timezone } from "~/api/system/l10n";
+import { Keymap, Locale, Timezone } from "~/model/system/l10n";
 import { useSystem } from "~/hooks/api/system";
 import { useProposal } from "~/hooks/api/proposal";
-import { System } from "~/api/system/network";
-import { Proposal } from "~/api/proposal/network";
+import { System } from "~/model/system/network";
+import { Proposal } from "~/model/proposal/network";
 
 let mockSystemData: ReturnType<typeof useSystem>;
 let mockProposedData: ReturnType<typeof useProposal>;

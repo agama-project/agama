@@ -21,7 +21,7 @@
  */
 
 import { sift } from "radashi";
-import type { Proposal, Device } from "~/api/proposal/storage";
+import type { Proposal, Device } from "~/model/proposal/storage";
 
 function flatDevices(proposal: Proposal): Device[] {
   const partitions = proposal.devices?.flatMap((d) => d.partitions);

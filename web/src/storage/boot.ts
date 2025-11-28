@@ -22,7 +22,7 @@
 
 import { copyApiModel } from "~/storage/api-model";
 import type { model } from "~/storage";
-import type { model as apiModel } from "~/api/storage";
+import type { model as apiModel } from "~/model/storage";
 
 function isUsed(device: model.Drive | model.MdRaid): boolean {
   return device.isTargetDevice || device.getMountPaths().length > 0;

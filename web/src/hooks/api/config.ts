@@ -25,7 +25,7 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import { getConfig, getExtendedConfig } from "~/api";
 import { useSystem } from "~/hooks/api/system";
 import type { system } from "~/api";
-import type { Config } from "~/api/config";
+import type { Config } from "~/model/config";
 
 const configQuery = {
   queryKey: ["config"],

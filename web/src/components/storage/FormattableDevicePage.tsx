@@ -63,8 +63,8 @@ import { sprintf } from "sprintf-js";
 import { STORAGE as PATHS } from "~/routes/paths";
 import { unique } from "radashi";
 import { compact } from "~/utils";
-import type { model as apiModel } from "~/api/storage";
-import type { storage as system } from "~/api/system";
+import type { model as apiModel } from "~/model/storage";
+import type { storage as system } from "~/model/system";
 
 const NO_VALUE = "";
 const BTRFS_SNAPSHOTS = "btrfsSnapshots";

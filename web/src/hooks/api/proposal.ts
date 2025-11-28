@@ -24,7 +24,7 @@ import React from "react";
 import { useSuspenseQuery, useQueryClient } from "@tanstack/react-query";
 import { getProposal } from "~/api";
 import { useInstallerClient } from "~/context/installer";
-import type { Proposal } from "~/api/proposal";
+import type { Proposal } from "~/model/proposal";
 
 const proposalQuery = {
   queryKey: ["proposal"],

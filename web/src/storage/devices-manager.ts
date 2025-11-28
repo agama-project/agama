@@ -23,9 +23,9 @@
 import { unique } from "radashi";
 import { compact } from "~/utils";
 import { deviceSystems, isDrive, isMd, isVolumeGroup } from "~/storage/device";
-import type { Action } from "~/api/proposal/storage";
-import type { storage as system } from "~/api/system";
-import type { storage as proposal } from "~/api/proposal";
+import type { Action } from "~/model/proposal/storage";
+import type { storage as system } from "~/model/system";
+import type { storage as proposal } from "~/model/proposal";
 
 /**
  * Class for managing storage devices.

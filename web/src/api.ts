@@ -21,14 +21,14 @@
  */
 
 import { get, patch, post, put } from "~/http";
-import type { model } from "~/api/storage";
-import type { Config } from "~/api/config";
-import type { Issue } from "~/api/issue";
-import type { Proposal } from "~/api/proposal";
-import type { Question } from "~/api/question";
-import type { Status } from "~/api/status";
-import type { System } from "~/api/system";
-import type { Action, L10nSystemConfig } from "~/api/action";
+import type { model } from "~/model/storage";
+import type { Config } from "~/model/config";
+import type { Issue } from "~/model/issue";
+import type { Proposal } from "~/model/proposal";
+import type { Question } from "~/model/question";
+import type { Status } from "~/model/status";
+import type { System } from "~/model/system";
+import type { Action, L10nSystemConfig } from "~/model/action";
 import type { AxiosResponse } from "axios";
 import type { Job } from "~/types/job";
 
@@ -103,7 +103,7 @@ export {
 };
 
 export type { Response, System, Config, Proposal };
-export type * as system from "~/api/system";
-export type * as config from "~/api/config";
-export type * as proposal from "~/api/proposal";
-export type * as issue from "~/api/issue";
+export type * as system from "~/model/system";
+export type * as config from "~/model/config";
+export type * as proposal from "~/model/proposal";
+export type * as issue from "~/model/issue";

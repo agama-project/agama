@@ -23,7 +23,7 @@
 import React from "react";
 import { Alert, List, ListItem } from "@patternfly/react-core";
 import { n_ } from "~/i18n";
-import type { Issue } from "~/api/issue";
+import type { Issue } from "~/model/issue";
 
 const Description = ({ errors }: Issue[]) => {
   return (

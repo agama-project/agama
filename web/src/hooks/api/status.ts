@@ -25,7 +25,7 @@ import { useSuspenseQuery, useQueryClient } from "@tanstack/react-query";
 import { useInstallerClient } from "~/context/installer";
 import { getStatus } from "~/api";
 import { isEqual, remove, replaceOrAppend } from "radashi";
-import type { Status, Progress } from "~/api/status";
+import type { Status, Progress } from "~/model/status";
 
 const statusQuery = {
   queryKey: ["status"],

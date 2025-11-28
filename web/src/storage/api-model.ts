@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import type { model } from "~/api/storage";
+import type { model } from "~/model/storage";
 import type { data } from "~/storage";
 
 function copyApiModel(apiModel: model.Config): model.Config {

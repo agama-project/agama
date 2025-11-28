@@ -31,9 +31,9 @@ import xbytes from "xbytes";
 import { _, N_ } from "~/i18n";
 import { sprintf } from "sprintf-js";
 import type { model } from "~/storage";
-import type { model as apiModel } from "~/api/storage";
-import type { storage as system } from "~/api/system";
-import type { storage as proposal } from "~/api/proposal";
+import type { model as apiModel } from "~/model/storage";
+import type { storage as system } from "~/model/system";
+import type { storage as proposal } from "~/model/proposal";
 
 /**
  * @note undefined for either property means unknown

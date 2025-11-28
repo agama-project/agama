@@ -21,7 +21,7 @@
  */
 
 import { useMutation, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
-import { fetchHostname, updateHostname } from "~/api/hostname";
+import { fetchHostname, updateHostname } from "~/model/hostname";
 
 /**
  * Returns a query for retrieving the hostname configuration

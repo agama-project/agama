@@ -49,7 +49,7 @@ import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
 import { deviceSystems, isDrive } from "~/storage/device";
 import type { model, data } from "~/storage";
-import type { storage } from "~/api/system";
+import type { storage } from "~/model/system";
 
 /**
  * Hook that returns the devices that can be selected as target to automatically create LVM PVs.

@@ -37,7 +37,7 @@ import {
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
-import type { storage } from "~/api/system";
+import type { storage } from "~/model/system";
 import type { Model } from "~/storage/model";
 
 const filteredCandidates = (candidates: storage.Device[], model: Model): storage.Device[] => {

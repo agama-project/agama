@@ -23,7 +23,7 @@
 import { _, n_, formatList } from "~/i18n";
 import { SpacePolicy, SPACE_POLICIES, baseName, formattedPath } from "~/components/storage/utils";
 import { sprintf } from "sprintf-js";
-import type { model } from "~/api/storage";
+import type { model } from "~/model/storage";
 import type { Drive } from "~/storage/model";
 
 /**

@@ -31,7 +31,7 @@ import { STORAGE } from "~/routes/paths";
 import { deviceLabel, formattedPath } from "~/components/storage/utils";
 import { _ } from "~/i18n";
 import { sprintf } from "sprintf-js";
-import type { storage } from "~/api/system";
+import type { storage } from "~/model/system";
 
 function defaultBootLabel(device?: storage.Device) {
   if (!device) {

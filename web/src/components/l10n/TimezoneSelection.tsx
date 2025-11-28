@@ -30,7 +30,7 @@ import { useSystem } from "~/hooks/api/system/l10n";
 import { timezoneTime } from "~/utils";
 import spacingStyles from "@patternfly/react-styles/css/utilities/Spacing/spacing";
 import { _ } from "~/i18n";
-import type { Timezone } from "~/api/system/l10n";
+import type { Timezone } from "~/model/system/l10n";
 
 type TimezoneWithDetails = Timezone & { details: string };
 

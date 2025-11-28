@@ -29,7 +29,7 @@ import { useEncryptionMethods } from "~/hooks/api/system/storage";
 import { useEncryption } from "~/queries/storage/config-model";
 import { isEmpty } from "radashi";
 import { _ } from "~/i18n";
-import type { model } from "~/api/storage";
+import type { model } from "~/model/storage";
 
 /**
  * Renders a form that allows the user change encryption settings

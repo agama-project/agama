@@ -30,8 +30,8 @@ import RegistrationCertificateQuestion from "~/components/questions/Registration
 import LoadConfigRetryQuestion from "~/components/questions/LoadConfigRetryQuestion";
 import { useQuestions, useQuestionsChanges } from "~/hooks/api/question";
 import { patchQuestion } from "~/api";
-import { FieldType } from "~/api/question";
-import type { AnswerCallback } from "~/api/question";
+import { FieldType } from "~/model/question";
+import type { AnswerCallback } from "~/model/question";
 
 export default function Questions(): React.ReactNode {
   useQuestionsChanges();

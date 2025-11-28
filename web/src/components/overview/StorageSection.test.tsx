@@ -24,7 +24,7 @@ import React from "react";
 import { screen } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
 import { StorageSection } from "~/components/overview";
-import { IssueSeverity, IssueSource } from "~/api/issue";
+import { IssueSeverity, IssueSource } from "~/model/issue";
 
 let mockModel = {
   drives: [],

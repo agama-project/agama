@@ -24,7 +24,7 @@ import React, { useCallback } from "react";
 import { useSuspenseQuery, useQueryClient } from "@tanstack/react-query";
 import { getIssues } from "~/api";
 import { useInstallerClient } from "~/context/installer";
-import type { Issue, Scope } from "~/api/issue";
+import type { Issue, Scope } from "~/model/issue";
 
 const issuesQuery = {
   queryKey: ["issues"],

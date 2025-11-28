@@ -72,8 +72,8 @@ import { sprintf } from "sprintf-js";
 import { STORAGE as PATHS, STORAGE } from "~/routes/paths";
 import { isUndefined, unique } from "radashi";
 import { compact } from "~/utils";
-import type { model } from "~/api/storage";
-import type { storage as system } from "~/api/system";
+import type { model } from "~/model/storage";
+import type { storage as system } from "~/model/system";
 
 const NO_VALUE = "";
 const NEW_PARTITION = "new";

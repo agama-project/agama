@@ -64,7 +64,7 @@ import { compact } from "~/utils";
 import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
 import SizeModeSelect, { SizeMode, SizeRange } from "~/components/storage/SizeModeSelect";
-import type { model } from "~/api/storage";
+import type { model } from "~/model/storage";
 import type { data } from "~/storage";
 
 const NO_VALUE = "";

@@ -33,7 +33,7 @@ import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import { useMdRaid } from "~/hooks/storage/model";
 import { useDevice } from "~/hooks/api/system/storage";
 import type { model } from "~/storage";
-import type { storage } from "~/api/system";
+import type { storage } from "~/model/system";
 
 type MdRaidDeviceMenuProps = {
   raid: model.MdRaid;

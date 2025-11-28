@@ -30,8 +30,8 @@ import {
   FilesystemLabel,
   toDevice,
 } from "~/components/storage/device-utils";
-import { UnusedSlot } from "~/api/system/storage";
-import type { storage } from "~/api/system";
+import { UnusedSlot } from "~/model/system/storage";
+import type { storage } from "~/model/system";
 
 const vda: storage.Device = {
   sid: 59,

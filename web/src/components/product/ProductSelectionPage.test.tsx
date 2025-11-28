@@ -27,7 +27,7 @@ import { useSystem } from "~/hooks/api/system";
 import { useProduct } from "~/hooks/api/config";
 import { Product } from "~/types/software";
 import ProductSelectionPage from "./ProductSelectionPage";
-import { System } from "~/api/system/network";
+import { System } from "~/model/system/network";
 
 jest.mock("~/components/product/ProductRegistrationAlert", () => () => (
   <div>ProductRegistrationAlert Mock</div>

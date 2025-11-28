@@ -33,8 +33,8 @@ import { useSetSpacePolicy } from "~/hooks/storage/space-policy";
 import { toDevice } from "./device-utils";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import { sprintf } from "sprintf-js";
-import type { UnusedSlot, Device } from "~/api/proposal/storage";
-import type { model } from "~/api/storage";
+import type { UnusedSlot, Device } from "~/model/proposal/storage";
+import type { model } from "~/model/storage";
 
 const partitionAction = (partition: model.Partition) => {
   if (partition.delete) return "delete";

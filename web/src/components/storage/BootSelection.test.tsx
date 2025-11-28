@@ -24,8 +24,8 @@ import React from "react";
 import { screen, waitFor, within } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import BootSelection from "./BootSelection";
-import { System } from "~/api/system";
-import { Config } from "~/api/storage/model";
+import { System } from "~/model/system";
+import { Config } from "~/model/storage/model";
 import { putStorageModel } from "~/api";
 
 // FIXME: drop this mock once a better solution for dealing with

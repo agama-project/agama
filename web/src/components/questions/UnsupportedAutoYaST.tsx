@@ -34,7 +34,7 @@ import { Page, Popup } from "~/components/core";
 import QuestionActions from "~/components/questions/QuestionActions";
 import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
-import type { AnswerCallback, Question } from "~/api/question";
+import type { AnswerCallback, Question } from "~/model/question";
 
 const UnsupportedElements = ({
   elements,

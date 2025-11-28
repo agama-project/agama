@@ -26,11 +26,11 @@ import { installerRender, mockRoutes } from "~/test-utils";
 import { useSystem } from "~/hooks/api/system";
 import { useProduct } from "~/hooks/api/config";
 import { useIssues } from "~/hooks/api/issue";
-import { Issue } from "~/api/issue";
+import { Issue } from "~/model/issue";
 import { PRODUCT, REGISTRATION, ROOT } from "~/routes/paths";
 import { Product } from "~/types/software";
 import ProductRegistrationAlert from "./ProductRegistrationAlert";
-import { System } from "~/api/system/network";
+import { System } from "~/model/system/network";
 
 const tw: Product = {
   id: "Tumbleweed",

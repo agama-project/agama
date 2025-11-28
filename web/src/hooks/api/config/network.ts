@@ -22,9 +22,9 @@
 
 import { useSuspenseQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Connection, NetworkConfig } from "~/types/network";
-import { network, Proposal } from "~/api/proposal";
-import { Config } from "~/api/config";
-import { Config as APIConfig } from "~/api/config/network";
+import { network, Proposal } from "~/model/proposal";
+import { Config } from "~/model/config";
+import { Config as APIConfig } from "~/model/config/network";
 import { patchConfig } from "~/api";
 import { configQuery } from "../config";
 import { proposalQuery } from "../proposal";

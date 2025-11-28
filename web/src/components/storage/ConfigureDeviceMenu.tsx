@@ -34,7 +34,7 @@ import { _, n_ } from "~/i18n";
 import DeviceSelectorModal from "./DeviceSelectorModal";
 import { isDrive } from "~/storage/device";
 import { Icon } from "../layout";
-import type { storage } from "~/api/system";
+import type { storage } from "~/model/system";
 
 type AddDeviceMenuItemProps = {
   /** Whether some of the available devices is an MD RAID */

@@ -27,7 +27,7 @@
  * typically used by forms and mutation hooks.
  */
 
-import type { model } from "~/api/storage";
+import type { model } from "~/model/storage";
 
 interface Partition extends Partial<Omit<model.Partition, "filesystem" | "size">> {
   filesystem?: Filesystem;

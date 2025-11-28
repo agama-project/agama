@@ -35,7 +35,7 @@ import { MenuItemProps } from "@patternfly/react-core";
 import { isDrive } from "~/storage/device";
 import type { model } from "~/storage";
 import type { Model } from "~/storage/model";
-import type { storage } from "~/api/system";
+import type { storage } from "~/model/system";
 
 const baseName = (device: storage.Device): string => deviceBaseName(device, true);
 

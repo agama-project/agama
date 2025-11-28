@@ -21,7 +21,7 @@
  */
 
 import { copyApiModel } from "~/storage/api-model";
-import type { model } from "~/api/storage";
+import type { model } from "~/model/storage";
 import type { data } from "~/storage";
 
 function findDevice(

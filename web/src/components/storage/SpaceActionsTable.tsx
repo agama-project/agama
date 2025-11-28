@@ -41,8 +41,8 @@ import { TreeTableColumn } from "~/components/core/TreeTable";
 import { Table, Td, Th, Tr, Thead, Tbody } from "@patternfly/react-table";
 import { useStorageModel } from "~/hooks/api/storage";
 import { supportShrink } from "~/storage/device";
-import type { Device, UnusedSlot } from "~/api/proposal/storage";
-import type { model } from "~/api/storage";
+import type { Device, UnusedSlot } from "~/model/proposal/storage";
+import type { model } from "~/model/storage";
 
 export type SpacePolicyAction = {
   deviceName: string;

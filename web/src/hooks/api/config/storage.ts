@@ -23,7 +23,7 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { configQuery } from "~/hooks/api/config";
 import { putConfig, Response } from "~/api";
-import type { Config } from "~/api/config";
+import type { Config } from "~/model/config";
 
 const removeStorageConfig = (data: Config | null): Config =>
   data ? { ...data, storage: undefined } : {};

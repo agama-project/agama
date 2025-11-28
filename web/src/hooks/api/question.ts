@@ -24,7 +24,7 @@ import { useEffect } from "react";
 import { useSuspenseQuery, useQueryClient } from "@tanstack/react-query";
 import { useInstallerClient } from "~/context/installer";
 import { getQuestions } from "~/api";
-import type { Question } from "~/api/question";
+import type { Question } from "~/model/question";
 
 const questionsQuery = {
   queryKey: ["questions"],

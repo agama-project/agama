@@ -31,7 +31,7 @@ import {
   contentDescription,
   filesystemLabels,
 } from "~/components/storage/utils/device";
-import type { storage } from "~/api/system";
+import type { storage } from "~/model/system";
 
 type DeviceSelectorProps = {
   devices: storage.Device[];
