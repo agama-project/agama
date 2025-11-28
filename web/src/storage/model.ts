@@ -41,14 +41,7 @@ interface Boot extends Omit<apiModel.Boot, "device"> {
   getDevice: () => Drive | MdRaid | null;
 }
 
-/**
- * @fixme Remove list and listIndex from types once the components are adapted to receive a list
- * and an index instead of a device object. See ConfigEditor component.
- */
-
 interface Drive extends Omit<apiModel.Drive, "partitions"> {
-  list: string;
-  listIndex: number;
   isExplicitBoot: boolean;
   isUsed: boolean;
   isAddingPartitions: boolean;
@@ -63,8 +56,6 @@ interface Drive extends Omit<apiModel.Drive, "partitions"> {
 }
 
 interface MdRaid extends Omit<apiModel.MdRaid, "partitions"> {
-  list: string;
-  listIndex: number;
   isExplicitBoot: boolean;
   isUsed: boolean;
   isAddingPartitions: boolean;
@@ -86,8 +77,6 @@ interface Partition extends apiModel.Partition {
 }
 
 interface VolumeGroup extends Omit<apiModel.VolumeGroup, "targetDevices" | "logicalVolumes"> {
-  list: string;
-  listIndex: number;
   logicalVolumes: LogicalVolume[];
   getTargetDevices: () => Drive[];
   getMountPaths: () => string[];
@@ -213,34 +202,16 @@ function partitionableProperties(
   };
 }
 
-function buildDrive(
-  apiDrive: apiModel.Drive,
-  listIndex: number,
-  apiModel: apiModel.Config,
-  model: Model,
-): Drive {
-  const list = "drives";
-
+function buildDrive(apiDrive: apiModel.Drive, apiModel: apiModel.Config, model: Model): Drive {
   return {
     ...apiDrive,
-    list,
-    listIndex,
     ...partitionableProperties(apiDrive, apiModel, model),
   };
 }
 
-function buildMdRaid(
-  apiMdRaid: apiModel.MdRaid,
-  listIndex: number,
-  apiModel: apiModel.Config,
-  model: Model,
-): MdRaid {
-  const list = "mdRaids";
-
+function buildMdRaid(apiMdRaid: apiModel.MdRaid, apiModel: apiModel.Config, model: Model): MdRaid {
   return {
     ...apiMdRaid,
-    list,
-    listIndex,
     ...partitionableProperties(apiMdRaid, apiModel, model),
   };
 }
@@ -249,13 +220,7 @@ function buildLogicalVolume(logicalVolumeData: apiModel.LogicalVolume): LogicalV
   return { ...logicalVolumeData };
 }
 
-function buildVolumeGroup(
-  apiVolumeGroup: apiModel.VolumeGroup,
-  listIndex: number,
-  model: Model,
-): VolumeGroup {
-  const list = "volumeGroups";
-
+function buildVolumeGroup(apiVolumeGroup: apiModel.VolumeGroup, model: Model): VolumeGroup {
   const getMountPaths = (): string[] => {
     return (apiVolumeGroup.logicalVolumes || []).map((l) => l.mountPath).filter((p) => p);
   };
@@ -271,8 +236,6 @@ function buildVolumeGroup(
   return {
     ...apiVolumeGroup,
     logicalVolumes: buildLogicalVolumes(),
-    list,
-    listIndex,
     getMountPaths,
     getTargetDevices,
   };
@@ -294,15 +257,15 @@ function buildModel(apiModel: apiModel.Config): Model {
   };
 
   const buildDrives = (): Drive[] => {
-    return (apiModel.drives || []).map((d, i) => buildDrive(d, i, apiModel, model));
+    return (apiModel.drives || []).map((d) => buildDrive(d, apiModel, model));
   };
 
   const buildMdRaids = (): MdRaid[] => {
-    return (apiModel.mdRaids || []).map((r, i) => buildMdRaid(r, i, apiModel, model));
+    return (apiModel.mdRaids || []).map((r) => buildMdRaid(r, apiModel, model));
   };
 
   const buildVolumeGroups = (): VolumeGroup[] => {
-    return (apiModel.volumeGroups || []).map((v, i) => buildVolumeGroup(v, i, model));
+    return (apiModel.volumeGroups || []).map((v) => buildVolumeGroup(v, model));
   };
 
   const withMountPaths = (): (Drive | MdRaid | VolumeGroup)[] => {

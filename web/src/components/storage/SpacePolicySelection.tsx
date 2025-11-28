@@ -28,7 +28,7 @@ import SpaceActionsTable, { SpacePolicyAction } from "~/components/storage/Space
 import { deviceChildren } from "~/components/storage/utils";
 import { _ } from "~/i18n";
 import { useDevices } from "~/hooks/api/system/storage";
-import { useModel } from "~/hooks/storage/model";
+import { useDrive as useDriveModel, useMdRaid as useMdRaidModel } from "~/hooks/storage/model";
 import { useSetSpacePolicy } from "~/hooks/storage/space-policy";
 import { toDevice } from "./device-utils";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
@@ -43,17 +43,22 @@ const partitionAction = (partition: model.Partition) => {
   return undefined;
 };
 
+function useDeviceModelFromParams(): model.Drive | model.MdRaid | null {
+  const { collection, index } = useParams();
+  const deviceModel = collection === "drives" ? useDriveModel : useMdRaidModel;
+  return deviceModel(Number(index));
+}
+
 /**
  * Renders a page that allows the user to select the space policy and actions.
  */
 export default function SpacePolicySelection() {
-  const { list, listIndex } = useParams();
-  const model = useModel();
-  const deviceModel = model[list][listIndex];
+  const deviceModel = useDeviceModelFromParams();
   const devices = useDevices();
   const device = devices.find((d) => d.name === deviceModel.name);
   const children = deviceChildren(device);
   const setSpacePolicy = useSetSpacePolicy();
+  const { collection, index } = useParams();
 
   const partitionDeviceAction = (device: Device) => {
     const partition = deviceModel.partitions?.find((p) => p.name === device.name);
@@ -89,7 +94,7 @@ export default function SpacePolicySelection() {
 
   const onSubmit = (e) => {
     e.preventDefault();
-    setSpacePolicy(list, listIndex, { type: "custom", actions });
+    setSpacePolicy(collection, index, { type: "custom", actions });
     navigate("..");
   };
 

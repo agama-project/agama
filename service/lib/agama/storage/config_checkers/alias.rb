@@ -88,7 +88,7 @@ module Agama
           target_users = storage_config.target_users(config.alias)
           any_user = (users + target_users).any?
 
-          return unless users.any? || target_users.any?
+          return unless any_user
 
           error(
             format(

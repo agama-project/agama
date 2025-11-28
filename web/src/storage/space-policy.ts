@@ -57,20 +57,20 @@ function setActions(device: model.Drive, actions: data.SpacePolicyAction[]) {
 }
 
 function setSpacePolicy(
-  apiModel: model.Config,
-  list: string,
-  listIndex: number | string,
+  model: model.Config,
+  collection: string,
+  index: number | string,
   data: data.SpacePolicy,
 ): model.Config {
-  apiModel = copyApiModel(apiModel);
-  const apiDevice = findDevice(apiModel, list, listIndex);
+  model = copyApiModel(model);
+  const apiDevice = findDevice(model, collection, index);
 
-  if (apiDevice === undefined) return apiModel;
+  if (apiDevice === undefined) return model;
 
   apiDevice.spacePolicy = data.type;
   if (data.type === "custom") setActions(apiDevice, data.actions || []);
 
-  return apiModel;
+  return model;
 }
 
 export { setSpacePolicy };

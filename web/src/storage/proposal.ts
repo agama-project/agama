@@ -20,22 +20,13 @@
  * find current contact information at www.suse.com.
  */
 
-import { useStorageModel } from "~/hooks/api/storage";
-import { putStorageModel } from "~/api";
-import { data } from "~/storage";
-import { setSpacePolicy } from "~/storage/space-policy";
+import { sift } from "radashi";
+import type { Proposal, Device } from "~/api/proposal/storage";
 
-type setSpacePolicyFn = (
-  collection: string,
-  index: number | string,
-  data: data.SpacePolicy,
-) => void;
-
-function useSetSpacePolicy(): setSpacePolicyFn {
-  const model = useStorageModel();
-  return (collection: string, index: number | string, data: data.SpacePolicy) => {
-    putStorageModel(setSpacePolicy(model, collection, index, data));
-  };
+function flatDevices(proposal: Proposal): Device[] {
+  const partitions = proposal.devices?.flatMap((d) => d.partitions);
+  const logicalVolumes = proposal.devices?.flatMap((d) => d.logicalVolumes);
+  return sift([proposal.devices, partitions, logicalVolumes].flat());
 }
 
-export { useSetSpacePolicy };
+export { flatDevices };

@@ -30,17 +30,14 @@ import { CustomToggleProps } from "~/components/core/MenuButton";
 import { useDeleteDrive } from "~/hooks/storage/drive";
 import { Button, Flex, FlexItem } from "@patternfly/react-core";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
+import { useDrive } from "~/hooks/storage/model";
+import { useDevice } from "~/hooks/api/system/storage";
 import type { model } from "~/storage";
-import type { storage } from "~/api/system";
-
-type DriveDeviceMenuProps = {
-  drive: model.Drive;
-  selected: storage.Device;
-};
+import type { storage as system } from "~/api/system";
 
 type DriveDeviceMenuToggleProps = CustomToggleProps & {
   drive: model.Drive | model.MdRaid;
-  device: storage.Device;
+  device: system.Device;
 };
 
 const DriveDeviceMenuToggle = forwardRef(
@@ -71,6 +68,11 @@ const DriveDeviceMenuToggle = forwardRef(
   },
 );
 
+type DriveDeviceMenuProps = {
+  drive: model.Drive;
+  selected: system.Device;
+};
+
 /**
  * Internal component that renders generic actions available for a Drive device.
  */
@@ -88,16 +90,25 @@ const DriveDeviceMenu = ({ drive, selected }: DriveDeviceMenuProps) => {
   );
 };
 
-export type DriveEditorProps = { drive: model.Drive; driveDevice: storage.Device };
+export type DriveEditorProps = { index: number };
 
 /**
  * Component responsible for displaying detailed information and available actions
  * related to a specific Drive device within the storage ConfigEditor.
  */
-export default function DriveEditor({ drive, driveDevice }: DriveEditorProps) {
+export default function DriveEditor({ index }: DriveEditorProps) {
+  const driveModel = useDrive(index);
+  const drive = useDevice(driveModel.name);
+
+  /**
+   * @fixme Make DriveEditor to work when the device is not found (e.g., after disabling
+   * a iSCSI device).
+   */
+  if (drive === undefined) return null;
+
   return (
-    <ConfigEditorItem header={<DriveDeviceMenu drive={drive} selected={driveDevice} />}>
-      <DeviceEditorContent deviceModel={drive} device={driveDevice} />
+    <ConfigEditorItem header={<DriveDeviceMenu drive={driveModel} selected={drive} />}>
+      <DeviceEditorContent collection="drives" index={index} />
     </ConfigEditorItem>
   );
 }

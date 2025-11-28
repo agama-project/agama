@@ -28,12 +28,11 @@ import MenuButton, { CustomToggleProps } from "~/components/core/MenuButton";
 import { STORAGE as PATHS } from "~/routes/paths";
 import { model } from "~/storage";
 import { filesystemType, formattedPath } from "~/components/storage/utils";
+import { useDevice } from "~/hooks/storage/model";
 import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
 
-type FilesystemMenuProps = { deviceModel: model.Drive | model.MdRaid };
-
-function deviceDescription(deviceModel: FilesystemMenuProps["deviceModel"]): string {
+function deviceDescription(deviceModel: model.Drive | model.MdRaid): string {
   const fs = filesystemType(deviceModel.filesystem);
   const mountPath = deviceModel.mountPath;
   const reuse = deviceModel.filesystem.reuse;
@@ -82,10 +81,18 @@ const FilesystemMenuToggle = forwardRef(
   },
 );
 
-export default function FilesystemMenu({ deviceModel }: FilesystemMenuProps): React.ReactNode {
+type FilesystemMenuProps = {
+  collection: "drives" | "mdRaids";
+  index: number;
+};
+
+export default function FilesystemMenu({
+  collection,
+  index,
+}: FilesystemMenuProps): React.ReactNode {
   const navigate = useNavigate();
-  const { list, listIndex } = deviceModel;
-  const editFilesystemPath = generatePath(PATHS.formatDevice, { list, listIndex });
+  const deviceModel = useDevice(collection, index);
+  const editFilesystemPath = generatePath(PATHS.formatDevice, { collection, index });
 
   return (
     <MenuButton

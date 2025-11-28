@@ -30,6 +30,8 @@ import { CustomToggleProps } from "~/components/core/MenuButton";
 import { useDeleteMdRaid } from "~/hooks/storage/md-raid";
 import { Button, Flex, FlexItem } from "@patternfly/react-core";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
+import { useMdRaid } from "~/hooks/storage/model";
+import { useDevice } from "~/hooks/api/system/storage";
 import type { model } from "~/storage";
 import type { storage } from "~/api/system";
 
@@ -88,16 +90,18 @@ const MdRaidDeviceMenu = ({ raid, selected }: MdRaidDeviceMenuProps): React.Reac
   );
 };
 
-type MdRaidEditorProps = { raid: model.MdRaid; raidDevice: storage.Device };
+type MdRaidEditorProps = { index: number };
 
 /**
  * Component responsible for displaying detailed information and available
  * actions related to a specific MdRaid device within the storage ConfigEditor.
  */
-export default function MdRaidEditor({ raid, raidDevice }: MdRaidEditorProps) {
+export default function MdRaidEditor({ index }: MdRaidEditorProps) {
+  const raidModel = useMdRaid(index);
+  const raid = useDevice(raidModel.name);
   return (
-    <ConfigEditorItem header={<MdRaidDeviceMenu raid={raid} selected={raidDevice} />}>
-      <DeviceEditorContent deviceModel={raid} device={raidDevice} />
+    <ConfigEditorItem header={<MdRaidDeviceMenu raid={raidModel} selected={raid} />}>
+      <DeviceEditorContent collection="mdRaids" index={index} />
     </ConfigEditorItem>
   );
 }

@@ -26,11 +26,8 @@ import Icon from "~/components/layout/Icon";
 import { useNavigate } from "react-router";
 import MenuButton, { CustomToggleProps } from "~/components/core/MenuButton";
 import { STORAGE as PATHS } from "~/routes/paths";
-import { model } from "~/storage";
 import { generateEncodedPath } from "~/utils";
 import { _ } from "~/i18n";
-
-type UnusedMenuProps = { deviceModel: model.Drive | model.MdRaid };
 
 const UnusedMenuToggle = forwardRef(({ ...props }: CustomToggleProps, ref) => {
   const description = _("Not configured yet");
@@ -52,13 +49,19 @@ const UnusedMenuToggle = forwardRef(({ ...props }: CustomToggleProps, ref) => {
   );
 });
 
-export default function UnusedMenu({ deviceModel }: UnusedMenuProps): React.ReactNode {
+type UnusedMenuProps = {
+  collection: "drives" | "mdRaids";
+  index: number;
+};
+
+export default function UnusedMenu({ collection, index }: UnusedMenuProps): React.ReactNode {
   const navigate = useNavigate();
-  const { list, listIndex } = deviceModel;
-  const newPartitionPath = generateEncodedPath(PATHS.addPartition, { list, listIndex });
-  const formatDevicePath = generateEncodedPath(PATHS.formatDevice, { list, listIndex });
+  const newPartitionPath = generateEncodedPath(PATHS.addPartition, { collection, index });
+  const formatDevicePath = generateEncodedPath(PATHS.formatDevice, { collection, index });
   const filesystemLabel =
-    list === "drives" ? _("Use the disk without partitions") : _("Use the RAID without partitions");
+    collection === "drives"
+      ? _("Use the disk without partitions")
+      : _("Use the RAID without partitions");
 
   return (
     <MenuButton
