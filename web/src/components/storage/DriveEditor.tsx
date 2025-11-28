@@ -99,6 +99,13 @@ export type DriveEditorProps = { index: number };
 export default function DriveEditor({ index }: DriveEditorProps) {
   const driveModel = useDrive(index);
   const drive = useDevice(driveModel.name);
+
+  /**
+   * @fixme Make DriveEditor to work when the device is not found (e.g., after disabling
+   * a iSCSI device).
+   */
+  if (drive === undefined) return null;
+
   return (
     <ConfigEditorItem header={<DriveDeviceMenu drive={driveModel} selected={drive} />}>
       <DeviceEditorContent collection="drives" index={index} />
