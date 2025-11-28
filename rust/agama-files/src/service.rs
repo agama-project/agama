@@ -125,9 +125,10 @@ impl Service {
         Starter::new(progress, questions, software)
     }
 
-    pub async fn clear_scripts(&mut self) {
+    pub async fn clear_scripts(&mut self) -> Result<(), Error> {
         let mut repo = self.scripts.lock().await;
-        repo.clear();
+        repo.clear()?;
+        Ok(())
     }
 
     pub async fn add_scripts(&mut self, config: ScriptsConfig) -> Result<(), Error> {
@@ -177,7 +178,7 @@ impl MessageHandler<message::SetConfig> for Service {
     async fn handle(&mut self, message: message::SetConfig) -> Result<(), Error> {
         let config = message.config.unwrap_or_default();
 
-        self.clear_scripts().await;
+        self.clear_scripts().await?;
         if let Some(scripts) = config.scripts {
             self.add_scripts(scripts.clone()).await?;
         }
