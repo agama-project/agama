@@ -194,7 +194,7 @@ mod tests {
         api::{
             event,
             files::{BaseScript, FileSource, PostScript},
-            question::{Answer, Question},
+            question::Answer,
             Event,
         },
         question::test_utils::wait_for_question,

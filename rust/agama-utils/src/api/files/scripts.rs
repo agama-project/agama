@@ -19,24 +19,14 @@
 // find current contact information at www.suse.com.
 
 use std::{
-    fs, io,
+    io,
     path::{Path, PathBuf},
 };
 
-use crate::{
-    actor::Handler,
-    api::{
-        files::{FileSource, FileSourceError, WithFileSource},
-        question::{Question, QuestionSpec},
-        Scope,
-    },
-    command::run_with_retry,
-    progress, question,
-};
+use crate::api::files::{FileSource, FileSourceError, WithFileSource};
 use agama_transfer::Error as TransferError;
 use serde::{Deserialize, Serialize};
 use strum::{EnumIter, IntoEnumIterator};
-use tokio::process;
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
@@ -160,39 +150,6 @@ impl Script {
             _ => false,
         }
     }
-
-    /// Runs the script in the given work directory.
-    ///
-    /// It saves the logs and the exit status of the execution.
-    ///
-    /// * `workdir`: where to run the script.
-    pub async fn run<P: AsRef<Path>>(&self, workdir: P) -> Result<(), Error> {
-        let path = workdir
-            .as_ref()
-            .join(self.group().to_string())
-            .join(self.name());
-        let runner = match self {
-            Script::Pre(inner) => &inner.runner(),
-            Script::PostPartitioning(inner) => &inner.runner(),
-            Script::Post(inner) => &inner.runner(),
-            Script::Init(inner) => &inner.runner(),
-        };
-
-        let Some(runner) = runner else {
-            tracing::info!("No runner defined for script {:?}", &self);
-            return Ok(());
-        };
-
-        runner.run(&path).await
-    }
-}
-
-/// Trait to allow getting the runner for a script.
-trait WithRunner {
-    /// Returns the runner for the script if any.
-    fn runner(&self) -> Option<ScriptRunner> {
-        Some(ScriptRunner::default())
-    }
 }
 
 /// Represents a script that runs before the installation starts.
@@ -219,8 +176,6 @@ impl TryFrom<Script> for PreScript {
     }
 }
 
-impl WithRunner for PreScript {}
-
 impl_with_file_source!(PreScript);
 
 /// Represents a script that runs after partitioning.
@@ -246,8 +201,6 @@ impl TryFrom<Script> for PostPartitioningScript {
         }
     }
 }
-
-impl WithRunner for PostPartitioningScript {}
 
 impl_with_file_source!(PostPartitioningScript);
 
@@ -278,12 +231,6 @@ impl TryFrom<Script> for PostScript {
     }
 }
 
-impl WithRunner for PostScript {
-    fn runner(&self) -> Option<ScriptRunner> {
-        Some(ScriptRunner::new().with_chroot(self.chroot.unwrap_or(true)))
-    }
-}
-
 impl_with_file_source!(PostScript);
 
 /// Represents a script that runs during the first boot of the target system,
@@ -308,13 +255,6 @@ impl TryFrom<Script> for InitScript {
             Script::Init(inner) => Ok(inner),
             _ => Err(Error::WrongScriptType),
         }
-    }
-}
-
-impl WithRunner for InitScript {
-    /// Returns the runner for the script if any.
-    fn runner(&self) -> Option<ScriptRunner> {
-        None
     }
 }
 
@@ -360,23 +300,9 @@ impl ScriptsRepository {
         Ok(())
     }
 
-    /// Runs the scripts in the given group.
+    /// Returns the scripts of the given group.
     ///
-    /// They run in the order they were added to the repository. If does not return an error
-    /// if running a script fails, although it logs the problem.
-    pub async fn run(&self, group: ScriptsGroup) {
-        let scripts: Vec<_> = self.scripts.iter().filter(|s| s.group() == group).collect();
-        for script in scripts {
-            if let Err(error) = script.run(&self.workdir).await {
-                tracing::error!(
-                    "Failed to run user-defined script '{}': {:?}",
-                    &script.name(), // TODO: implement
-                    error
-                );
-            }
-        }
-    }
-
+    /// - `group`: scripts group.
     pub fn by_group(&self, group: ScriptsGroup) -> Vec<&Script> {
         self.scripts.iter().filter(|s| s.group() == group).collect()
     }
@@ -391,47 +317,6 @@ impl Default for ScriptsRepository {
     }
 }
 
-/// Implements the logic to run a command.
-///
-/// At this point, it only supports running a command in a chroot environment. In the future, it
-/// might implement support for other features, like progress reporting (like AutoYaST does).
-#[derive(Default)]
-struct ScriptRunner {
-    chroot: bool,
-}
-
-impl ScriptRunner {
-    fn new() -> Self {
-        Default::default()
-    }
-
-    fn with_chroot(mut self, chroot: bool) -> Self {
-        self.chroot = chroot;
-        self
-    }
-
-    async fn run<P: AsRef<Path>>(&self, path: P) -> Result<(), Error> {
-        let path = path.as_ref();
-        let command = if self.chroot {
-            let mut command = process::Command::new("chroot");
-            command.args(["/mnt", &path.to_string_lossy()]);
-            command
-        } else {
-            process::Command::new(path)
-        };
-
-        let output = run_with_retry(command)
-            .await
-            .inspect_err(|e| tracing::error!("Error executing the script: {e}"))?;
-
-        fs::write(path.with_extension("log"), output.stdout)?;
-        fs::write(path.with_extension("err"), output.stderr)?;
-        fs::write(path.with_extension("out"), output.status.to_string())?;
-
-        Ok(())
-    }
-}
-
 #[cfg(test)]
 mod test {
     use tempfile::TempDir;
@@ -439,7 +324,7 @@ mod test {
 
     use crate::api::files::{BaseScript, FileSource, PreScript, Script};
 
-    use super::{ScriptsGroup, ScriptsRepository};
+    use super::ScriptsRepository;
 
     #[test]
     async fn test_add_script() {
@@ -460,33 +345,6 @@ mod test {
 
         let script_path = tmp_dir.path().join("pre").join("test");
         assert!(script_path.exists());
-    }
-
-    #[test]
-    async fn test_run_scripts() {
-        let tmp_dir = TempDir::with_prefix("scripts-").expect("a temporary directory");
-        let mut repo = ScriptsRepository::new(&tmp_dir);
-        let content = "#!/bin/bash\necho hello\necho error >&2".to_string();
-
-        let base = BaseScript {
-            name: "test".to_string(),
-            source: FileSource::Text { content },
-        };
-        let script = Script::Pre(PreScript { base });
-        repo.add(script).unwrap();
-        repo.run(ScriptsGroup::Pre).await;
-
-        repo.scripts.first().unwrap();
-
-        let path = &tmp_dir.path().join("pre").join("test.log");
-        let body: Vec<u8> = std::fs::read(path).unwrap();
-        let body = String::from_utf8(body).unwrap();
-        assert_eq!("hello\n", body);
-
-        let path = &tmp_dir.path().join("pre").join("test.err");
-        let body: Vec<u8> = std::fs::read(path).unwrap();
-        let body = String::from_utf8(body).unwrap();
-        assert_eq!("error\n", body);
     }
 
     #[test]
