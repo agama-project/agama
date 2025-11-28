@@ -23,9 +23,9 @@
 import React from "react";
 import { Alert, List, ListItem } from "@patternfly/react-core";
 import { n_ } from "~/i18n";
-import { useConfigIssues } from "~/hooks/storage/issue";
+import type { Issue } from "~/api/issue";
 
-const Description = ({ errors }) => {
+const Description = ({ errors }: Issue[]) => {
   return (
     <List isPlain>
       {errors.map((e, i) => (
@@ -39,20 +39,16 @@ const Description = ({ errors }) => {
  * Information about a wrong but fixable storage configuration
  *
  */
-export default function FixableConfigInfo() {
-  const configErrors = useConfigIssues();
-
-  if (!configErrors.length) return;
-
+export default function FixableConfigInfo({ issues }: Issue[]) {
   const title = n_(
     "The configuration must be adapted to address the following issue:",
     "The configuration must be adapted to address the following issues:",
-    configErrors.length,
+    issues.length,
   );
 
   return (
     <Alert variant="warning" title={title}>
-      <Description errors={configErrors} />
+      <Description errors={issues} />
     </Alert>
   );
 }
