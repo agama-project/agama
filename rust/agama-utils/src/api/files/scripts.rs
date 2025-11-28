@@ -156,7 +156,7 @@ impl Script {
 
     pub fn chroot(&self) -> bool {
         match self {
-            Script::Post(script) => script.chroot.unwrap_or_default(),
+            Script::Post(script) => script.chroot.unwrap_or(true),
             _ => false,
         }
     }

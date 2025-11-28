@@ -58,6 +58,8 @@ pub use service::Service;
 
 pub mod message;
 
+pub mod test_utils;
+
 pub mod start;
 pub use start::start;
 use tokio::time::sleep;

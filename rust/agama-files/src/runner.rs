@@ -127,9 +127,17 @@ impl ScriptsRunner {
         if let Error::Script(output) = error {
             let stdout = String::from_utf8_lossy(&output.stdout);
             let stderr = String::from_utf8_lossy(&output.stderr);
-            let code = output.status.to_string();
-            question =
-                question.with_data(&[("stdout", &stdout), ("stderr", &stderr), ("code", &code)]);
+            let exit_status = output
+                .status
+                .code()
+                .map(|c| c.to_string())
+                .unwrap_or("unknown".to_string());
+            question = question.with_data(&[
+                ("name", script.name()),
+                ("stdout", &stdout),
+                ("stderr", &stderr),
+                ("exit_status", &exit_status),
+            ]);
         }
 
         let answer = ask_question(&self.questions, question).await.unwrap();
@@ -153,11 +161,13 @@ impl ScriptsRunner {
 
         let output = run_with_retry(command)
             .await
-            .inspect_err(|e| tracing::error!("Error executing the script: {e}"))?;
+            .inspect_err(|e| println!("Error executing the script: {e}"))?;
 
         fs::write(path.with_extension("log"), output.stdout.clone())?;
         fs::write(path.with_extension("err"), output.stderr.clone())?;
-        fs::write(path.with_extension("out"), output.status.to_string())?;
+        if let Some(code) = output.status.code() {
+            fs::write(path.with_extension("out"), code.to_string())?;
+        }
 
         if !output.status.success() {
             return Err(Error::Script(output));
@@ -175,5 +185,181 @@ impl ScriptsRunner {
         let steps: Vec<_> = messages.iter().map(|s| s.as_ref()).collect();
         let progress_action = progress::message::StartWithSteps::new(Scope::Files, &steps);
         _ = self.progress.cast(progress_action);
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use agama_utils::{
+        api::{
+            event,
+            files::{BaseScript, FileSource, PostScript},
+            question::{Answer, Question},
+            Event,
+        },
+        question::test_utils::wait_for_question,
+    };
+    use tempfile::TempDir;
+    use test_context::{test_context, AsyncTestContext};
+    use tokio::sync::broadcast;
+
+    use super::*;
+
+    struct Context {
+        // runner: ScriptsRunner,
+        install_dir: PathBuf,
+        workdir: PathBuf,
+        progress: Handler<progress::Service>,
+        questions: Handler<question::Service>,
+        events_rx: event::Receiver,
+        tmp_dir: TempDir,
+    }
+
+    impl AsyncTestContext for Context {
+        async fn setup() -> Context {
+            let tmp_dir = TempDir::with_prefix("scripts-").expect("a temporary directory");
+
+            let (events_tx, events_rx) = broadcast::channel::<Event>(16);
+            let install_dir = tmp_dir.path().join("mnt");
+            let workdir = tmp_dir.path().join("scripts");
+            let questions = question::start(events_tx.clone()).await.unwrap();
+            let progress = progress::Service::starter(events_tx.clone()).start();
+
+            Context {
+                events_rx,
+                install_dir,
+                workdir,
+                progress,
+                questions,
+                // runner,
+                tmp_dir,
+            }
+        }
+    }
+
+    impl Context {
+        pub fn runner(&self) -> ScriptsRunner {
+            ScriptsRunner::new(
+                self.install_dir.clone(),
+                self.workdir.clone(),
+                self.progress.clone(),
+                self.questions.clone(),
+            )
+        }
+        pub fn setup_script(&self, content: &str, chroot: bool) -> Script {
+            let base = BaseScript {
+                name: "test.sh".to_string(),
+                source: FileSource::Text {
+                    content: content.to_string(),
+                },
+            };
+            let script = Script::Post(PostScript {
+                base,
+                chroot: Some(chroot),
+            });
+            script
+                .write(&self.workdir)
+                .expect("Could not write the script");
+            script
+        }
+    }
+
+    #[test_context(Context)]
+    #[tokio::test]
+    async fn test_run_scripts_success(ctx: &mut Context) -> Result<(), Error> {
+        let file = ctx.tmp_dir.path().join("file-1.txt");
+        let content = format!(
+            "#!/usr/bin/bash\necho hello\necho error >&2\ntouch {}",
+            file.display()
+        );
+        let script = ctx.setup_script(&content, false);
+        let scripts = vec![&script];
+
+        let runner = ctx.runner();
+        runner.run(&scripts).await.unwrap();
+
+        let path = &ctx.workdir.join("post").join("test.log");
+        let body: Vec<u8> = std::fs::read(path).unwrap();
+        let body = String::from_utf8(body).unwrap();
+        assert_eq!("hello\n", body);
+
+        let path = &ctx.workdir.join("post").join("test.err");
+        let body: Vec<u8> = std::fs::read(path).unwrap();
+        let body = String::from_utf8(body).unwrap();
+        assert_eq!("error\n", body);
+
+        let path = &ctx.workdir.join("post").join("test.out");
+        let body: Vec<u8> = std::fs::read(path).unwrap();
+        let body = String::from_utf8(body).unwrap();
+        assert_eq!("0", body);
+
+        assert!(std::fs::exists(file).unwrap());
+        Ok(())
+    }
+
+    #[test_context(Context)]
+    #[tokio::test]
+    async fn test_run_scripts_retry(ctx: &mut Context) -> Result<(), Error> {
+        let file = ctx.tmp_dir.path().join("file-1.txt");
+        let content = format!(
+            "#!/usr/bin/bash\necho \"hello\"\necho \"line\" >>{}\nagama-unknown\n",
+            file.display()
+        );
+        let script = ctx.setup_script(&content, false);
+
+        let runner = ctx.runner();
+        tokio::task::spawn(async move {
+            let scripts = vec![&script];
+            _ = runner.run(&scripts).await;
+        });
+
+        // Retry
+        let id = wait_for_question(&mut ctx.events_rx)
+            .await
+            .expect("Did not receive a question");
+        _ = ctx.questions.cast(question::message::Answer {
+            id,
+            answer: Answer::new("Yes"),
+        });
+
+        // Check the question content
+        let questions = ctx
+            .questions
+            .call(question::message::Get)
+            .await
+            .expect("Could not get the questions");
+        let question = questions.first().unwrap();
+        assert_eq!(question.spec.data.get("name"), Some(&"test.sh".to_string()));
+        assert_eq!(
+            question.spec.data.get("stdout"),
+            Some(&"hello\n".to_string())
+        );
+        assert_eq!(
+            question.spec.data.get("exit_status"),
+            Some(&"127".to_string())
+        );
+        let stderr = question.spec.data.get("stderr").unwrap();
+        assert!(stderr.contains("agama-unknown"));
+
+        // Do not retry
+        let id = wait_for_question(&mut ctx.events_rx)
+            .await
+            .expect("Did not receive a question");
+        _ = ctx.questions.cast(question::message::Answer {
+            id,
+            answer: Answer::new("No"),
+        });
+
+        // Check the generated files
+        let path = &ctx.workdir.join("post").join("test.err");
+        let body: Vec<u8> = std::fs::read(path).unwrap();
+        let body = String::from_utf8(body).unwrap();
+        assert!(body.contains("agama-unknown"));
+
+        let body: Vec<u8> = std::fs::read(&file).unwrap();
+        let body = String::from_utf8(body).unwrap();
+        assert_eq!("line\nline\n", body);
+
+        Ok(())
     }
 }

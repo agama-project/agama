@@ -344,6 +344,22 @@ pub struct Answer {
     pub value: Option<String>,
 }
 
+impl Answer {
+    /// Creates a new answer.
+    pub fn new(action: &str) -> Self {
+        Self {
+            action: action.to_string(),
+            value: None,
+        }
+    }
+
+    /// Adds a value to an answer.
+    pub fn with_value(mut self, value: &str) -> Self {
+        self.value = Some(value.to_string());
+        self
+    }
+}
+
 /// Represents an update operation over the list of questions.
 ///
 /// It is used by the HTTP layer only.
