@@ -23,7 +23,7 @@
 import type * as l10n from "~/api/system/l10n";
 import type * as network from "~/api/system/network";
 import type * as software from "~/api/system/software";
-import type * as storage from "~/api/system/storage";
+import type { storage } from "~/api/system/storage";
 
 type System = {
   l10n?: l10n.System;

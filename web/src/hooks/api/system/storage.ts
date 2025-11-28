@@ -23,9 +23,8 @@
 import { useCallback } from "react";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { systemQuery } from "~/hooks/api/system";
-import { flatDevices, findDevices, findDeviceByName } from "~/storage/system";
+import { flatDevices, findDevices, findDeviceByName } from "~/api/system/storage";
 import type { System, storage } from "~/api/system";
-import type { EncryptionMethod } from "~/api/system/storage";
 
 const selectSystem = (data: System | null): storage.System => data?.storage;
 
@@ -37,10 +36,10 @@ function useSystem(): storage.System | null {
   return data;
 }
 
-const selectEncryptionMethods = (data: System | null): EncryptionMethod[] =>
+const selectEncryptionMethods = (data: System | null): storage.EncryptionMethod[] =>
   data?.storage?.encryptionMethods || [];
 
-function useEncryptionMethods(): EncryptionMethod[] {
+function useEncryptionMethods(): storage.EncryptionMethod[] {
   const { data } = useSuspenseQuery({
     ...systemQuery,
     select: selectEncryptionMethods,
