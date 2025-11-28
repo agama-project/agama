@@ -25,7 +25,6 @@ import {
   Button,
   Content,
   Grid,
-  GridItem,
   Split,
   SplitItem,
   Stack,
@@ -53,7 +52,7 @@ import ProposalResultSection from "./ProposalResultSection";
 import ProposalTransactionalInfo from "./ProposalTransactionalInfo";
 import UnsupportedModelInfo from "./UnsupportedModelInfo";
 import { useAvailableDevices } from "~/hooks/api/system/storage";
-import { useConfigIssues } from "~/hooks/storage/issue";
+import { useIssues } from "~/hooks/api/issue";
 import { useReset } from "~/hooks/api/config/storage";
 import { useProposal } from "~/hooks/api/proposal/storage";
 import { useStorageModel } from "~/hooks/api/storage";
@@ -67,8 +66,7 @@ import { useStorageUiState } from "~/context/storage-ui-state";
 import MenuButton from "../core/MenuButton";
 import spacingStyles from "@patternfly/react-styles/css/utilities/Spacing/spacing";
 
-function InvalidConfigEmptyState(): React.ReactNode {
-  const errors = useConfigIssues();
+function InvalidConfigEmptyState({ issues }: Issue[]): React.ReactNode {
   const reset = useReset();
 
   return (
@@ -82,11 +80,11 @@ function InvalidConfigEmptyState(): React.ReactNode {
           {n_(
             "The current storage configuration has the following issue:",
             "The current storage configuration has the following issues:",
-            errors.length,
+            issues.length,
           )}
         </Content>
         <List isPlain>
-          {errors.map((e, i) => (
+          {issues.map((e, i) => (
             <ListItem key={i}>{e.description}</ListItem>
           ))}
         </List>
@@ -105,7 +103,7 @@ function InvalidConfigEmptyState(): React.ReactNode {
   );
 }
 
-function UnknowConfigEmptyState(): React.ReactNode {
+function UnknownConfigEmptyState(): React.ReactNode {
   const reset = useReset();
 
   return (
@@ -175,19 +173,8 @@ function UnavailableDevicesEmptyState(): React.ReactNode {
   );
 }
 
-function ProposalEmptyState(): React.ReactNode {
-  const model = useStorageModel();
-  const availableDevices = useAvailableDevices();
-
-  if (!availableDevices.length) return <UnavailableDevicesEmptyState />;
-
-  return model ? <InvalidConfigEmptyState /> : <UnknowConfigEmptyState />;
-}
-
-function ProposalSections(): React.ReactNode {
+function ModelSection(): React.ReactNode {
   const { uiState, setUiState } = useStorageUiState();
-  const model = useStorageModel();
-  const proposal = useProposal();
   const reset = useReset();
   const handleTabClick = (
     event: React.MouseEvent | React.KeyboardEvent | MouseEvent,
@@ -209,87 +196,100 @@ function ProposalSections(): React.ReactNode {
   };
 
   return (
+    <Page.Section
+      title={_("Settings")}
+      titleActions={
+        <Flex>
+          <FlexItem grow={{ default: "grow" }} />
+          <MenuButton
+            menuProps={{
+              popperProps: {
+                position: "end",
+              },
+            }}
+            toggleProps={{
+              variant: "plain",
+              className: spacingStyles.p_0,
+            }}
+            items={[
+              <MenuButton.Item
+                key="reset-link"
+                onClick={onReset}
+                description={_("Start from scratch with the default configuration")}
+              >
+                {_("Reset to defaults")}
+              </MenuButton.Item>,
+            ]}
+          >
+            <Icon name="more_horiz" className="agm-three-dots-icon" />
+          </MenuButton>
+        </Flex>
+      }
+      description={_(
+        "Changes in these settings will immediately update the 'Result' section below.",
+      )}
+    >
+      <Tabs activeKey={uiState.get("st") || "0"} onSelect={handleTabClick} role="region">
+        <Tab
+          key="devices"
+          eventKey={"0"}
+          title={<TabTitleText>{_("Installation devices")}</TabTitleText>}
+        >
+          <NestedContent margin="mtSm">
+            <Stack hasGutter>
+              <div className={textStyles.textColorPlaceholder}>
+                {_(
+                  "Structure of the new system, including disks to use and additional devices like LVM volume groups.",
+                )}
+              </div>
+              <ConfigEditor />
+            </Stack>
+          </NestedContent>
+        </Tab>
+        <Tab key="encryption" eventKey={"1"} title={<TabTitleText>{_("Encryption")}</TabTitleText>}>
+          <NestedContent margin="mtSm">
+            <EncryptionSection />
+          </NestedContent>
+        </Tab>
+        <Tab key="system" eventKey={"2"} title={<TabTitleText>{_("Boot options")}</TabTitleText>}>
+          <NestedContent margin="mtSm">
+            <BootSection />
+          </NestedContent>
+        </Tab>
+      </Tabs>
+    </Page.Section>
+  );
+}
+
+function ProposalPageContent(): React.ReactNode {
+  const model = useStorageModel();
+  const availableDevices = useAvailableDevices();
+  const proposal = useProposal();
+  const issues = useIssues("storage");
+
+  const fixable = [
+    "configNoRoot",
+    "configRequiredPaths",
+    "configOverusedPvTarget",
+    "configOverusedMdMember",
+    "proposal",
+  ];
+  const configIssues = issues.filter((i) => i.class !== "proposal");
+  const unfixableIssues = issues.filter((i) => !fixable.includes(i.class));
+  const isModelEditable = model && !unfixableIssues.length;
+
+  if (!availableDevices.length) return <UnavailableDevicesEmptyState />;
+  if (configIssues.length && !isModelEditable)
+    return <InvalidConfigEmptyState issues={configIssues} />;
+  if (!configIssues.length && !model && !proposal) return <UnknownConfigEmptyState />;
+
+  return (
     <Grid hasGutter>
       <ProposalTransactionalInfo />
-      <ProposalFailedInfo />
-      <FixableConfigInfo />
-      <UnsupportedModelInfo />
-      {model && (
-        <>
-          <GridItem>
-            <Page.Section
-              title={_("Settings")}
-              titleActions={
-                <Flex>
-                  <FlexItem grow={{ default: "grow" }} />
-                  <MenuButton
-                    menuProps={{
-                      popperProps: {
-                        position: "end",
-                      },
-                    }}
-                    toggleProps={{
-                      variant: "plain",
-                      className: spacingStyles.p_0,
-                    }}
-                    items={[
-                      <MenuButton.Item
-                        key="reset-link"
-                        onClick={onReset}
-                        description={_("Start from scratch with the default configuration")}
-                      >
-                        {_("Reset to defaults")}
-                      </MenuButton.Item>,
-                    ]}
-                  >
-                    <Icon name="more_horiz" className="agm-three-dots-icon" />
-                  </MenuButton>
-                </Flex>
-              }
-              description={_(
-                "Changes in these settings will immediately update the 'Result' section below.",
-              )}
-            >
-              <Tabs activeKey={uiState.get("st") || "0"} onSelect={handleTabClick} role="region">
-                <Tab
-                  key="devices"
-                  eventKey={"0"}
-                  title={<TabTitleText>{_("Installation devices")}</TabTitleText>}
-                >
-                  <NestedContent margin="mtSm">
-                    <Stack hasGutter>
-                      <div className={textStyles.textColorPlaceholder}>
-                        {_(
-                          "Structure of the new system, including disks to use and additional devices like LVM volume groups.",
-                        )}
-                      </div>
-                      <ConfigEditor />
-                    </Stack>
-                  </NestedContent>
-                </Tab>
-                <Tab
-                  key="encryption"
-                  eventKey={"1"}
-                  title={<TabTitleText>{_("Encryption")}</TabTitleText>}
-                >
-                  <NestedContent margin="mtSm">
-                    <EncryptionSection />
-                  </NestedContent>
-                </Tab>
-                <Tab
-                  key="system"
-                  eventKey={"2"}
-                  title={<TabTitleText>{_("Boot options")}</TabTitleText>}
-                >
-                  <NestedContent margin="mtSm">
-                    <BootSection />
-                  </NestedContent>
-                </Tab>
-              </Tabs>
-            </Page.Section>
-          </GridItem>
-        </>
-      )}
+      {!configIssues.length && !proposal && <ProposalFailedInfo />}
+      {!!configIssues.length && <FixableConfigInfo issues={configIssues} />}
+      {!model && <UnsupportedModelInfo />}
+      {model && <ModelSection />}
       {proposal && <ProposalResultSection />}
     </Grid>
   );
@@ -300,10 +300,6 @@ function ProposalSections(): React.ReactNode {
  *  and test them individually. The proposal page should simply mount all those components.
  */
 export default function ProposalPage(): React.ReactNode {
-  const model = useStorageModel();
-  const availableDevices = useAvailableDevices();
-  const proposal = useProposal();
-  const configIssues = useConfigIssues();
   const progress = useProgress("storage");
   const navigate = useNavigate();
   const location = useLocation();
@@ -324,18 +320,6 @@ export default function ProposalPage(): React.ReactNode {
     }
   }, [resetNeeded, setUiState]);
 
-  const fixable = [
-    "configNoRoot",
-    "configRequiredPaths",
-    "configOverusedPvTarget",
-    "configOverusedMdMember",
-  ];
-  const unfixableIssues = configIssues.filter((e) => !fixable.includes(e.class));
-  const isModelEditable = model && !unfixableIssues.length;
-  const hasDevices = !!availableDevices.length;
-  const hasResult = !!proposal;
-  const showSections = hasDevices && (isModelEditable || hasResult);
-
   if (resetNeeded) return;
 
   return (
@@ -352,8 +336,7 @@ export default function ProposalPage(): React.ReactNode {
         </Flex>
       </Page.Header>
       <Page.Content>
-        {!showSections && <ProposalEmptyState />}
-        {showSections && <ProposalSections />}
+        <ProposalPageContent />
       </Page.Content>
     </Page>
   );
