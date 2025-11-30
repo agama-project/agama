@@ -7,10 +7,10 @@ export default {
     " · Selección de zona horaria"
   ],
   "\"%s\"": [
-    ""
+    "\"%s\""
   ],
   "\"%s\" does not exist or is no longer available.": [
-    ""
+    "\"%s\" no existe o ya no está disponible."
   ],
   "%1$s (%2$s)": [
     "%1$s (%2$s)"
@@ -354,11 +354,23 @@ export default {
   "Change selection": [
     "Cambiar selección"
   ],
+  "Change the disk to configure": [
+    "Cambiar el disco a configurar"
+  ],
+  "Change the disk to create %s": [
+    "Cambiar el disco para crear %s"
+  ],
+  "Change the disk to format as %s": [
+    "Cambie el disco para formatear como %s"
+  ],
+  "Change the disk to install the system": [
+    "Cambiar el disco para instalar el sistema"
+  ],
   "Change the file system or mount point": [
     "Cambiar el sistema de archivos o el punto de montaje"
   ],
   "Changes in these settings will immediately update the 'Result' section below.": [
-    ""
+    "Los cambios en esta configuración actualizarán inmediatamente la siguiente sección \"Resultado\"."
   ],
   "Channel ID": [
     "ID de canal"
@@ -785,6 +797,9 @@ export default {
   "Final layout": [
     "Diseño final"
   ],
+  "Final structure of the system after installation.": [
+    "Estructura final del sistema después de la instalación."
+  ],
   "Find space in %s": [
     "Encontrar espacio en %s"
   ],
@@ -910,7 +925,7 @@ export default {
     "Si continúa, las particiones del disco duro se modificarán de acuerdo con la configuración de instalación proporcionada."
   ],
   "If you want to disable this check, please specify \"inst.ay_check=0\" at kernel's command-line": [
-    ""
+    "Si desea desactivar esta comprobación, especifique \"inst.ay_check=0\" en la línea de comandos del kernel"
   ],
   "In progress": [
     "En curso"
@@ -971,6 +986,9 @@ export default {
   ],
   "Install using several devices without modifying existing partitions.": [
     "Instalar utilizando varios dispositivos sin modificar las particiones existentes."
+  ],
+  "Installation devices": [
+    "Dispositivos de instalación"
   ],
   "Installation will take %s.": [
     "La instalación utilizará %s."
@@ -1149,6 +1167,9 @@ export default {
   "More languages might be available for the selected product at [Localization] page": [
     "Es posible que haya más idiomas disponibles para el producto seleccionado en la página de [Ubicación]"
   ],
+  "More storage options": [
+    "Más opciones de almacenamiento"
+  ],
   "Moreover, the following partition will be created.": [
     "Además, se creará la partición siguiente.",
     "Además, se crearán las particiones siguientes."
@@ -1262,6 +1283,9 @@ export default {
   "No logical volumes are defined yet": [
     "Aún no se han definido volúmenes lógicos"
   ],
+  "No partitions will be automatically configured for booting.": [
+    "No se configurarán automáticamente particiones para el arranque."
+  ],
   "No partitions will be automatically configured for booting. Use with caution.": [
     "No se configurarán automáticamente particiones para el arranque. Úselo con precaución."
   ],
@@ -1334,6 +1358,9 @@ export default {
   "Only reused partitions will be used.": [
     "Solo se usarán las particiones reutilizadas."
   ],
+  "Options for partition %s": [
+    "Opciones para la partición %s"
+  ],
   "Options toggle": [
     "Conmutador de opciones"
   ],
@@ -1342,6 +1369,9 @@ export default {
   ],
   "Package installation failed": [
     "Error en la instalación del paquete"
+  ],
+  "Partition %s": [
+    "Particiones %s"
   ],
   "Partition Info": [
     "Información de la partición"
@@ -1364,11 +1394,26 @@ export default {
   "Partitions that are not reused would be resized if needed.": [
     "Las particiones que no se reutilizan se redimensionarían si fuese necesario."
   ],
+  "Partitions to boot will be set up if needed at %s.": [
+    "Las particiones para arrancar se configurarán si es necesario en %s."
+  ],
+  "Partitions to boot will be set up if needed at the following device.": [
+    "Las particiones para arrancar se configurarán si es necesario en el siguiente dispositivo."
+  ],
+  "Partitions to boot will be set up if needed at the installation disk,           based on the location of the %s file system.": [
+    "Las particiones para arrancar se configurarán si es necesario en el disco de instalación, según la ubicación del sistema de archivos %s."
+  ],
+  "Partitions to boot will be set up if needed at the installation disk,         based on the location of the %s file system.": [
+    "Las particiones para arrancar se configurarán si es necesario en el disco de instalación, según la ubicación del sistema de archivos %s."
+  ],
   "Partitions to boot will be set up if needed at the installation disk.         Currently %1$s, based on the location of the %2$s file system.": [
-    ""
+    "Las particiones para arrancar se configurarán si es necesario en el disco de instalación. Actualmente %1$s, según la ubicación del sistema de archivos %2$s."
   ],
   "Partitions to boot will be set up if needed at the installation disk.       Currently %1$s, based on the location of the %2$s file system.": [
-    ""
+    "Las particiones para arrancar se configurarán si es necesario en el disco de instalación. Actualmente %1$s, según la ubicación del sistema de archivos %2$s."
+  ],
+  "Partitions to host \"system\" will be created if needed.": [
+    "Si es necesario, se crearán particiones para alojar el \"sistema\"."
   ],
   "Partitions will be used and created for %s": [
     "Las particiones se utilizarán y crearán para %s"
@@ -1432,6 +1477,9 @@ export default {
   ],
   "Product is already registered": [
     "El producto ya está registrado"
+  ],
+  "Protection for the information stored at           the new file systems, including data, programs, and system files.": [
+    "Protección de la información almacenada en los nuevos sistemas de archivos, incluidos datos, programas y archivos del sistema."
   ],
   "Provide email address": [
     "Proporcione una dirección de correo electrónico"
@@ -1521,7 +1569,7 @@ export default {
     "Resultado"
   ],
   "Result of applying the configuration described at the 'Settings' section above.": [
-    ""
+    "Resultado de aplicar la configuración descrita en la sección 'Configuración' anterior."
   ],
   "Reused partitions will not be shrunk": [
     "Las particiones reutilizadas no se reducirán"
@@ -1850,6 +1898,9 @@ export default {
   "The final step to configure the Trusted Platform Module (TPM) to automatically open encrypted devices will take place during the first boot of the new system. For that to work, the machine needs to boot directly to the new boot loader.": [
     "El último paso para configurar Trusted Platform Module (TPM) para abrir automáticamente dispositivos cifrados se llevará a cabo durante el primer inicio del nuevo sistema. Para que eso funcione, la máquina necesita iniciarse directamente con el nuevo cargador de arranque."
   ],
+  "The following actions will be performed in the system during installation.": [
+    "Las siguientes acciones se realizarán en el sistema durante la instalación."
+  ],
   "The following logical volume will be created": [
     "Se creará el volumen lógico siguiente",
     "Se crearán los volúmenes lógicos siguientes"
@@ -1918,7 +1969,7 @@ export default {
     "La contraseña no será necesaria para arrancar y acceder a los datos si TPM puede verificar la integridad del sistema. El sellado TPM requiere que el nuevo sistema se arranque directamente en su primera ejecución."
   ],
   "The product will be registered with \"%s\" hostname": [
-    ""
+    "El producto se registrará con el nombre de host \"%s\""
   ],
   "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of a separate file system for %2$s.": [
     "El tamaño para %1$s se ajustará dinámicamente según el total de RAM del sistema y la presencia de un sistema de archivos independiente para %2$s."
@@ -2047,6 +2098,9 @@ export default {
   ],
   "Tmpfs": [
     "Tmpfs"
+  ],
+  "To ensure the new system is able to boot, the installer may need to create or configure some           partitions in the appropriate disk.": [
+    "Para garantizar que el nuevo sistema pueda iniciarse, es posible que el instalador deba crear o configurar algunas particiones en el disco apropiado."
   ],
   "To ensure the new system is able to boot, the installer may need to create or configure some partitions in the appropriate disk.": [
     "Para garantizar que el nuevo sistema pueda arrancar, es posible que el instalador tenga que crear o configurar algunas particiones en el disco correspondiente."
@@ -2236,6 +2290,9 @@ export default {
   ],
   "Using transient hostname: %s": [
     "Se está utilizando un nombre temporal de equipo: %s"
+  ],
+  "Volume group %s": [
+    "Grupo de volumen %s"
   ],
   "Volume group '%s' already exists. Enter a different name.": [
     "Ya existe el grupo '%s' de volúmenes. Introduzca un nombre diferente."

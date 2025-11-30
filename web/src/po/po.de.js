@@ -7,10 +7,10 @@ export default {
     " Zeitzonenauswahl"
   ],
   "\"%s\"": [
-    ""
+    "„%s“"
   ],
   "\"%s\" does not exist or is no longer available.": [
-    ""
+    "„%s“ existiert nicht oder ist nicht mehr verfügbar."
   ],
   "%1$s (%2$s)": [
     "%1$s (%2$s)"
@@ -354,11 +354,17 @@ export default {
   "Change selection": [
     "Auswahl ändern"
   ],
+  "Change the disk to configure": [
+    "Festplatte ändern, um zu konfigurieren"
+  ],
+  "Change the disk to format as %s": [
+    "Festplatte ändern, um als %s zu formatieren"
+  ],
   "Change the file system or mount point": [
     "Dateisystem oder Einhängepunkt ändern"
   ],
   "Changes in these settings will immediately update the 'Result' section below.": [
-    ""
+    "Änderungen an diesen Einstellungen werden sofort im Abschnitt ‚Ergebnis‘ unten aktualisiert."
   ],
   "Channel ID": [
     "Kanalkennung"
@@ -785,6 +791,9 @@ export default {
   "Final layout": [
     "Endgültige Anordnung"
   ],
+  "Final structure of the system after installation.": [
+    "Endgültige Struktur des Systems nach der Installation."
+  ],
   "Find space in %s": [
     "Speicherplatz in %s finden"
   ],
@@ -910,7 +919,7 @@ export default {
     "Wenn Sie fortfahren, werden die Partitionen auf Ihrer Festplatte entsprechend den vorgegebenen Installationseinstellungen geändert."
   ],
   "If you want to disable this check, please specify \"inst.ay_check=0\" at kernel's command-line": [
-    ""
+    "Wenn Sie diese Überprüfung deaktivieren möchten, geben Sie bitte „inst.ay_check=0” in der Befehlszeile des Kernels an"
   ],
   "In progress": [
     "In Bearbeitung"
@@ -971,6 +980,9 @@ export default {
   ],
   "Install using several devices without modifying existing partitions.": [
     "Installieren unter Verwendung mehrerer Geräte ohne Änderung der vorhandenen Partitionen."
+  ],
+  "Installation devices": [
+    "Installationsgeräte"
   ],
   "Installation will take %s.": [
     "Installation wird %s in Anspruch nehmen."
@@ -1149,6 +1161,9 @@ export default {
   "More languages might be available for the selected product at [Localization] page": [
     "Weitere Sprachen für das ausgewählte Produkt sind unter Umständen auf der Seite [Localization] verfügbar"
   ],
+  "More storage options": [
+    "Weitere Speicherungsoptionen"
+  ],
   "Moreover, the following partition will be created.": [
     "Zudem wird die folgende Partition erstellt.",
     "Zudem werden die folgenden Partitionen erstellt."
@@ -1262,6 +1277,9 @@ export default {
   "No logical volumes are defined yet": [
     "Es sind noch keine logischen Volumes definiert"
   ],
+  "No partitions will be automatically configured for booting.": [
+    "Es werden keine Partitionen automatisch für das Booten konfiguriert."
+  ],
   "No partitions will be automatically configured for booting. Use with caution.": [
     "Es werden keine Partitionen automatisch für das Booten konfiguriert. Seien Sie vorsichtig."
   ],
@@ -1334,6 +1352,9 @@ export default {
   "Only reused partitions will be used.": [
     "Es werden nur wiederverwendete Partitionen verwendet."
   ],
+  "Options for partition %s": [
+    "Optionen für Partition %s"
+  ],
   "Options toggle": [
     "Optionen umschalten"
   ],
@@ -1342,6 +1363,9 @@ export default {
   ],
   "Package installation failed": [
     "Paketinstallation fehlgeschlagen"
+  ],
+  "Partition %s": [
+    "Partition %s"
   ],
   "Partition Info": [
     "Partitionierungsinformationen"
@@ -1364,11 +1388,20 @@ export default {
   "Partitions that are not reused would be resized if needed.": [
     "Die Größe von Partitionen, die nicht wiederverwendet werden, wird bei Bedarf angepasst."
   ],
+  "Partitions to boot will be set up if needed at %s.": [
+    "Partitionen zum Booten werden bei Bedarf unter %s eingerichtet."
+  ],
+  "Partitions to boot will be set up if needed at the following device.": [
+    "Partitionen zum Booten werden bei Bedarf auf dem folgenden Gerät eingerichtet."
+  ],
   "Partitions to boot will be set up if needed at the installation disk.         Currently %1$s, based on the location of the %2$s file system.": [
     ""
   ],
   "Partitions to boot will be set up if needed at the installation disk.       Currently %1$s, based on the location of the %2$s file system.": [
     ""
+  ],
+  "Partitions to host \"system\" will be created if needed.": [
+    "Partitionen für den Host „system“ werden bei Bedarf erstellt."
   ],
   "Partitions will be used and created for %s": [
     "Partitionen werden für %s verwendet und erstellt"
@@ -1521,7 +1554,7 @@ export default {
     "Ergebnis"
   ],
   "Result of applying the configuration described at the 'Settings' section above.": [
-    ""
+    "Ergebnis der Anwendung der im Abschnitt ‚Einstellungen‘ oben beschriebenen Konfiguration."
   ],
   "Reused partitions will not be shrunk": [
     "Wiederverwendete Partitionen werden nicht verkleinert"
@@ -1850,6 +1883,9 @@ export default {
   "The final step to configure the Trusted Platform Module (TPM) to automatically open encrypted devices will take place during the first boot of the new system. For that to work, the machine needs to boot directly to the new boot loader.": [
     "Der letzte Schritt zur Konfiguration des Trusted Platform Module (TPM) zum automatischen Öffnen verschlüsselter Geräte erfolgt beim ersten Booten des neuen Systems. Damit dies funktioniert, muss der Rechner direkt mit dem neuen Bootloader booten."
   ],
+  "The following actions will be performed in the system during installation.": [
+    "Die folgenden Aktionen werden während der Installation im System durchgeführt."
+  ],
   "The following logical volume will be created": [
     "Das folgende logische Volume wird erstellt",
     "Die folgenden logischen Volumes werden erstellt"
@@ -1918,7 +1954,7 @@ export default {
     "Das Passwort wird nicht benötigt, um zu booten und auf die Daten zuzugreifen, wenn das TPM die Integrität des Systems verifizieren kann. Die TPM-Versiegelung erfordert, dass das neue System bei seinem ersten Start direkt gebootet wird."
   ],
   "The product will be registered with \"%s\" hostname": [
-    ""
+    "Das Produkt wird unter dem Hostnamen „%s“ registriert"
   ],
   "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of a separate file system for %2$s.": [
     "Die Größe für %1$s wird dynamisch angepasst, basierend auf der Menge an RAM im System und dem Vorhandensein eines separaten Dateisystems für %2$s."
