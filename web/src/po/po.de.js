@@ -7,10 +7,10 @@ export default {
     " Zeitzonenauswahl"
   ],
   "\"%s\"": [
-    ""
+    "„%s“"
   ],
   "\"%s\" does not exist or is no longer available.": [
-    "\"%s\" existiert nicht oder ist zurzeit nicht verfügbar."
+    "„%s“ existiert nicht oder ist nicht mehr verfügbar."
   ],
   "%1$s (%2$s)": [
     "%1$s (%2$s)"
@@ -925,7 +925,7 @@ export default {
     "Wenn Sie fortfahren, werden die Partitionen auf Ihrer Festplatte entsprechend den vorgegebenen Installationseinstellungen geändert."
   ],
   "If you want to disable this check, please specify \"inst.ay_check=0\" at kernel's command-line": [
-    ""
+    "Wenn Sie diese Überprüfung deaktivieren möchten, geben Sie bitte „inst.ay_check=0” in der Befehlszeile des Kernels an"
   ],
   "In progress": [
     "In Bearbeitung"
@@ -1393,6 +1393,9 @@ export default {
   ],
   "Partitions to boot will be allocated at the installation disk.": [
     "Die zu bootenden Partitionen werden auf der Installationsfestplatte zugewiesen."
+  ],
+  "Partitions to host \"system\" will be created if needed.": [
+    "Partitionen für den Host „system“ werden bei Bedarf erstellt."
   ],
   "Partitions will be used and created for %s": [
     "Partitionen werden für %s verwendet und erstellt"
@@ -1957,7 +1960,7 @@ export default {
     "Das Passwort wird nicht benötigt, um zu booten und auf die Daten zuzugreifen, wenn das TPM die Integrität des Systems verifizieren kann. Die TPM-Versiegelung erfordert, dass das neue System bei seinem ersten Start direkt gebootet wird."
   ],
   "The product will be registered with \"%s\" hostname": [
-    "Das Produkt wird mit dem Hostnamen \"%s\" registriert"
+    "Das Produkt wird unter dem Hostnamen „%s“ registriert"
   ],
   "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of a separate file system for %2$s.": [
     "Die Größe für %1$s wird dynamisch angepasst, basierend auf der Menge an RAM im System und dem Vorhandensein eines separaten Dateisystems für %2$s."
