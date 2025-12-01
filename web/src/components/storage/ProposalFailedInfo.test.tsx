@@ -24,195 +24,146 @@ import React from "react";
 import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import ProposalFailedInfo from "./ProposalFailedInfo";
-import { LogicalVolume } from "~/storage/data";
-import { Issue, IssueSeverity, IssueSource } from "~/api/issue";
-import { apiModel } from "~/api/storage/types";
 
-const mockUseConfigErrorsFn = jest.fn();
-let mockUseIssues = [];
-
-const configError: Issue = {
-  description: "Config error",
-  kind: "storage",
-  details: "",
-  source: IssueSource.Config,
-  severity: IssueSeverity.Error,
-  scope: "storage",
-};
-
-const storageIssue: Issue = {
-  description: "Fake Storage Issue",
-  details: "",
-  kind: "storage_issue",
-  source: IssueSource.Unknown,
-  severity: IssueSeverity.Error,
-  scope: "storage",
-};
-
-const mockApiModel: apiModel.Config = {
+const mockStorageModel = {
   boot: {
     configure: true,
-    device: {
-      default: true,
-      name: "/dev/vdb",
-    },
+    device: "/dev/vdb",
   },
   drives: [
     {
       name: "/dev/vdb",
-      spacePolicy: "delete",
       partitions: [
         {
           name: "/dev/vdb1",
-          size: {
-            default: true,
-            min: 6430916608,
-            max: 6430916608,
-          },
-          delete: true,
-          deleteIfNeeded: false,
-          resize: false,
-          resizeIfNeeded: false,
+          size: { min: 6430916608, max: 6430916608 },
         },
         {
           name: "/dev/vdb2",
-          size: {
-            default: true,
-            min: 4305436160,
-            max: 4305436160,
-          },
-          delete: true,
-          deleteIfNeeded: false,
-          resize: false,
-          resizeIfNeeded: false,
+          size: { min: 4305436160, max: 4305436160 },
         },
       ],
     },
     {
       name: "/dev/vdc",
-      spacePolicy: "delete",
       partitions: [
         {
+          // Partition without name (new partition)
           mountPath: "/documents",
-          filesystem: {
-            reuse: false,
-            default: false,
-            type: "xfs",
-            label: "",
-          },
-          size: {
-            default: false,
-            min: 136365211648,
-          },
-          delete: false,
-          deleteIfNeeded: false,
-          resize: false,
-          resizeIfNeeded: false,
+          filesystem: { type: "xfs" },
+          size: { min: 136365211648 },
         },
       ],
     },
   ],
   volumeGroups: [
     {
-      vgName: "system",
-      targetDevices: ["/dev/vdb"],
+      name: "system",
       logicalVolumes: [
         {
-          lvName: "root",
+          name: "root",
           mountPath: "/",
-          filesystem: {
-            reuse: false,
-            default: true,
-            type: "btrfs",
-            snapshots: true,
-          },
-          size: {
-            default: true,
-            min: 13421772800,
-          },
+          filesystem: { type: "btrfs" },
+          size: { min: 13421772800 },
         },
         {
-          lvName: "swap",
+          name: "swap",
           mountPath: "swap",
-          filesystem: {
-            reuse: false,
-            default: true,
-            type: "swap",
-          },
-          size: {
-            default: true,
-            min: 1073741824,
-            max: 2147483648,
-          },
+          filesystem: { type: "swap" },
+          size: { min: 1073741824, max: 2147483648 },
         },
       ],
     },
   ],
 };
 
-jest.mock("~/hooks/storage/api-model", () => ({
-  ...jest.requireActual("~/hooks/storage/api-model"),
-  useApiModel: () => mockApiModel,
-}));
+let mockUseStorageModel = jest.fn();
 
-jest.mock("~/queries/issues", () => ({
-  ...jest.requireActual("~/queries/issues"),
-  useConfigErrors: () => mockUseConfigErrorsFn(),
-  useIssues: () => mockUseIssues,
+jest.mock("~/hooks/api/storage", () => ({
+  useStorageModel: () => mockUseStorageModel(),
 }));
-
-// eslint-disable-next-line
-const fakeLogicalVolume: LogicalVolume = {
-  // @ts-expect-error: The #name property is used to distinguish new "devices"
-  // in the API model, but it is not yet exposed for logical volumes since they
-  // are currently not reusable. This directive exists to ensure developers
-  // don't overlook updating the ProposalFailedInfo component in the future,
-  // when logical volumes become reusable and the #name property is exposed. See
-  // the FIXME in the ProposalFailedInfo component for more context.
-  name: "Reusable LV",
-  lvName: "helpful",
-};
 
 describe("ProposalFailedInfo", () => {
   beforeEach(() => {
-    mockUseIssues = [];
-    mockUseConfigErrorsFn.mockReturnValue([]);
+    mockUseStorageModel = jest.fn(() => mockStorageModel);
   });
 
-  describe("when proposal can't be created due to configuration errors", () => {
+  describe("when there are no new partitions or logical volumes", () => {
     beforeEach(() => {
-      mockUseConfigErrorsFn.mockReturnValue([configError]);
+      mockUseStorageModel = jest.fn(() => ({
+        boot: { configure: false },
+        drives: [
+          {
+            name: "/dev/vdb",
+            partitions: [
+              {
+                name: "/dev/vdb1", // Has name, so it's not new
+                size: { min: 6430916608 },
+              },
+            ],
+          },
+        ],
+        volumeGroups: [],
+      }));
     });
 
-    it("renders nothing", () => {
-      const { container } = installerRender(<ProposalFailedInfo />);
-      expect(container).toBeEmptyDOMElement();
+    it("renders a generic warning message", () => {
+      installerRender(<ProposalFailedInfo />);
+      screen.getByText("Warning alert:");
+      screen.getByText("Failed to calculate a storage layout");
+      screen.getByText(
+        /It is not possible to install the system with the current configuration/,
+      );
     });
   });
 
-  describe("when proposal is valid", () => {
-    describe("and has no errors", () => {
+  describe("when there are new partitions or logical volumes", () => {
+    describe("and boot is configured", () => {
       beforeEach(() => {
-        mockUseIssues = [];
+        mockUseStorageModel = jest.fn(() => ({
+          ...mockStorageModel,
+          boot: { configure: true },
+        }));
       });
 
-      it("renders nothing", () => {
-        const { container } = installerRender(<ProposalFailedInfo />);
-        expect(container).toBeEmptyDOMElement();
+      it("renders a warning mentioning boot partition", () => {
+        installerRender(<ProposalFailedInfo />);
+        screen.getByText("Warning alert:");
+        screen.getByText("Failed to calculate a storage layout");
+        screen.getByText(/It is not possible to allocate space for the boot partition and for/);
+      });
+
+      it("displays the mount paths with sizes", () => {
+        installerRender(<ProposalFailedInfo />);
+        // Should show mount paths for new partitions and logical volumes
+        expect(screen.getByText(/\/documents/)).toBeInTheDocument();
+        expect(screen.getByText(/\//)).toBeInTheDocument();
+        expect(screen.getByText(/swap/)).toBeInTheDocument();
       });
     });
 
-    describe("but has errors", () => {
+    describe("and boot is not configured", () => {
       beforeEach(() => {
-        mockUseIssues = [storageIssue];
+        mockUseStorageModel = jest.fn(() => ({
+          ...mockStorageModel,
+          boot: { configure: false },
+        }));
       });
 
-      it("renders a warning alert with hints about the failure", () => {
+      it("renders a warning without mentioning boot partition", () => {
         installerRender(<ProposalFailedInfo />);
         screen.getByText("Warning alert:");
         screen.getByText("Failed to calculate a storage layout");
         screen.getByText(/It is not possible to allocate space for/);
+        expect(screen.queryByText(/boot partition/)).not.toBeInTheDocument();
       });
+    });
+  });
+
+  describe("helper text", () => {
+    it("always shows adjustment guidance", () => {
+      installerRender(<ProposalFailedInfo />);
+      screen.getByText(/Adjust the settings below/);
     });
   });
 });

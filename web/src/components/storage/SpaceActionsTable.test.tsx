@@ -24,87 +24,63 @@
 
 import React from "react";
 import { screen, within } from "@testing-library/react";
-import { deviceChildren, gib } from "~/components/storage/utils";
 import { plainRender } from "~/test-utils";
 import SpaceActionsTable, { SpaceActionsTableProps } from "~/components/storage/SpaceActionsTable";
-import { StorageDevice } from "~/storage";
-import { apiModel } from "~/api/storage/types";
+import type { Device, UnusedSlot } from "~/api/proposal/storage";
 
-const sda: StorageDevice = {
-  sid: 59,
-  isDrive: true,
-  type: "disk",
-  description: "",
-  vendor: "Micron",
-  model: "Micron 1100 SATA",
-  driver: ["ahci", "mmcblk"],
-  bus: "IDE",
-  busId: "",
-  transport: "usb",
-  dellBOSS: false,
-  sdCard: true,
-  active: true,
-  name: "/dev/sda",
-  size: gib(10),
-  shrinking: { unsupported: ["Resizing is not supported"] },
-  systems: [],
-  udevIds: ["ata-Micron_1100_SATA_512GB_12563", "scsi-0ATA_Micron_1100_SATA_512GB"],
-  udevPaths: ["pci-0000:00-12", "pci-0000:00-12-ata"],
-};
+const gib = (n: number) => n * 1024 * 1024 * 1024;
 
-const sda1: StorageDevice = {
-  sid: 69,
+const sda1: Device = {
   name: "/dev/sda1",
   description: "Swap partition",
-  isDrive: false,
-  type: "partition",
-  size: gib(2),
-  shrinking: { unsupported: ["Resizing is not supported"] },
-  start: 1,
+  block: {
+    size: gib(2),
+    shrinking: {
+      reasons: ["Resizing is not supported"],
+    },
+  },
 };
 
-const sda2: StorageDevice = {
-  sid: 79,
+const sda2: Device = {
   name: "/dev/sda2",
   description: "EXT4 partition",
-  isDrive: false,
-  type: "partition",
-  size: gib(6),
-  shrinking: { supported: gib(3) },
-  start: 2,
+  block: {
+    size: gib(6),
+    shrinking: {
+      minSize: gib(3),
+    },
+  },
 };
 
-sda.partitionTable = {
-  type: "gpt",
-  partitions: [sda1, sda2],
-  unpartitionedSize: 0,
-  unusedSlots: [{ start: 3, size: gib(2) }],
+const unusedSlot: UnusedSlot = {
+  size: gib(2),
 };
 
-const mockDrive: apiModel.Drive = {
-  name: "/dev/sda",
-  partitions: [
+const devices: (Device | UnusedSlot)[] = [sda1, sda2, unusedSlot];
+
+const mockStorageModel = {
+  drives: [
     {
-      name: "/dev/sda2",
-      mountPath: "swap",
-      filesystem: { reuse: false, default: true },
+      name: "/dev/sda",
+      partitions: [],
     },
   ],
+  volumeGroups: [],
 };
 
-const mockUseConfigModelFn = jest.fn();
-jest.mock("~/queries/storage/config-model", () => ({
-  useConfigModel: () => mockUseConfigModelFn(),
+const mockUseStorageModelFn = jest.fn();
+jest.mock("~/hooks/api/storage", () => ({
+  useStorageModel: () => mockUseStorageModelFn(),
 }));
 
 /**
  * Function to ask for the action of a device.
  *
- * @param {StorageDevice} device
+ * @param {Device | UnusedSlot} device
  * @returns {string}
  */
-const deviceAction = (device) => {
-  if (device === sda1) return "keep";
+const deviceAction = (device: Device | UnusedSlot) => {
+  if ("name" in device && device.name === "/dev/sda1") return "keep";
 
   return "delete";
 };
@@ -114,12 +90,12 @@ let props: SpaceActionsTableProps;
 describe("SpaceActionsTable", () => {
   beforeEach(() => {
     props = {
-      devices: deviceChildren(sda),
+      devices,
       deviceAction,
       onActionChange: jest.fn(),
     };
 
-    mockUseConfigModelFn.mockReturnValue({ drives: [] });
+    mockUseStorageModelFn.mockReturnValue(mockStorageModel);
   });
 
   it("shows the devices to configure the space actions", () => {
@@ -162,7 +138,21 @@ describe("SpaceActionsTable", () => {
 
   describe("if a partition is going to be used", () => {
     beforeEach(() => {
-      mockUseConfigModelFn.mockReturnValue({ drives: [mockDrive] });
+      mockUseStorageModelFn.mockReturnValue({
+        drives: [
+          {
+            name: "/dev/sda",
+            partitions: [
+              {
+                name: "/dev/sda2",
+                mountPath: "swap",
+                filesystem: { type: "swap" },
+              },
+            ],
+          },
+        ],
+        volumeGroups: [],
+      });
     });
 
     it("disables shrink and delete actions for the partition", () => {
