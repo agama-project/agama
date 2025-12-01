@@ -12,6 +12,7 @@ members = [
     "agama-software",
     "agama-storage",
     "agama-transfer",
+    "agama-tui",
     "agama-utils",
     "xtask",
     "zypp-agama",
