@@ -101,11 +101,16 @@ impl TryFrom<Value> for Credentials {
 pub fn announce_system(params: ConnectParams, target_distro: &str) -> Result<Credentials, Error> {
     let result_s = unsafe {
         let param_json = json!(params).to_string();
-        let params_c = CString::new(param_json).unwrap();
-        let distroc_ = CString::new(target_distro).unwrap();
-        let result =
-            suseconnect_agama_sys::announce_system(params_c.into_raw(), distroc_.into_raw());
-        string_from_ptr(result)
+        let params_c_ptr = CString::new(param_json).unwrap().into_raw();
+        let distro_c_ptr = CString::new(target_distro).unwrap().into_raw();
+
+        let result_ptr = suseconnect_agama_sys::announce_system(params_c_ptr, distro_c_ptr);
+
+        // Retake ownership to free memory
+        let _ = CString::from_raw(params_c_ptr);
+        let _ = CString::from_raw(distro_c_ptr);
+
+        string_from_ptr(result_ptr)
     };
 
     let response: Value = serde_json::from_str(&result_s)?;
