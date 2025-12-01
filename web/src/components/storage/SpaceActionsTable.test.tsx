@@ -31,22 +31,26 @@ import type { Device, UnusedSlot } from "~/api/proposal/storage";
 const gib = (n: number) => n * 1024 * 1024 * 1024;
 
 const sda1: Device = {
+  sid: 42,
   name: "/dev/sda1",
   description: "Swap partition",
   block: {
     size: gib(2),
     shrinking: {
+      supported: false,
       reasons: ["Resizing is not supported"],
     },
   },
 };
 
 const sda2: Device = {
+  sid: 43,
   name: "/dev/sda2",
   description: "EXT4 partition",
   block: {
     size: gib(6),
     shrinking: {
+      supported: true,
       minSize: gib(3),
     },
   },
@@ -102,10 +106,10 @@ describe("SpaceActionsTable", () => {
     plainRender(<SpaceActionsTable {...props} />);
 
     screen.getByRole("row", {
-      name: "sda1 Swap partition 2 GiB Do not modify Allow shrink Delete",
+      name: "/dev/sda1 Swap partition 2 GiB Do not modify Allow shrink Delete",
     });
     screen.getByRole("row", {
-      name: "sda2 EXT4 partition 6 GiB Do not modify Allow shrink Delete",
+      name: "/dev/sda2 EXT4 partition 6 GiB Do not modify Allow shrink Delete",
     });
     screen.getByRole("row", { name: "Unused space 2 GiB" });
   });
