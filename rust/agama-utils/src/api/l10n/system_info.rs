@@ -20,13 +20,13 @@
 
 use agama_locale_data::{KeymapId, LocaleId, TimezoneId};
 use gettextrs::*;
-use serde::ser::SerializeStruct;
 use serde::Serialize;
+use serde::{ser::SerializeStruct, Deserialize};
 use serde_with::{serde_as, DisplayFromStr};
 
 /// Localization-related information of the system where the installer is running.
 #[serde_as]
-#[derive(Clone, Default, Debug, Serialize, utoipa::ToSchema)]
+#[derive(Clone, Default, Debug, Deserialize, Serialize, utoipa::ToSchema)]
 pub struct SystemInfo {
     /// List of know locales.
     pub locales: Vec<LocaleEntry>,
@@ -47,7 +47,7 @@ pub struct SystemInfo {
 
 /// Represents a locale, including the localized language and territory.
 #[serde_as]
-#[derive(Debug, Serialize, Clone, utoipa::ToSchema)]
+#[derive(Debug, Deserialize, Serialize, Clone, utoipa::ToSchema)]
 pub struct LocaleEntry {
     /// The locale code (e.g., "es_ES.UTF-8").
     #[serde_as(as = "DisplayFromStr")]
@@ -61,7 +61,7 @@ pub struct LocaleEntry {
 }
 
 /// Represents a timezone, including each part as localized.
-#[derive(Clone, Debug, Serialize, utoipa::ToSchema)]
+#[derive(Clone, Debug, Deserialize, Serialize, utoipa::ToSchema)]
 pub struct TimezoneEntry {
     /// Timezone identifier (e.g. "Atlantic/Canary").
     pub id: TimezoneId,
@@ -72,9 +72,11 @@ pub struct TimezoneEntry {
 }
 
 // Minimal representation of a keymap
-#[derive(Clone, Debug, utoipa::ToSchema)]
+#[derive(Clone, Deserialize, Debug, utoipa::ToSchema)]
 pub struct Keymap {
     /// Keymap identifier (e.g., "us")
+    // FIXME: implement deserialization
+    #[serde(skip_deserializing)]
     pub id: KeymapId,
     /// Keymap description
     description: String,

@@ -19,10 +19,10 @@
 // find current contact information at www.suse.com.
 
 use crate::api::manager::License;
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 
 /// Global information of the system where the installer is running.
-#[derive(Clone, Debug, Default, Serialize, utoipa::ToSchema)]
+#[derive(Clone, Debug, Default, Deserialize, Serialize, utoipa::ToSchema)]
 pub struct SystemInfo {
     /// List of known products.
     pub products: Vec<Product>,
@@ -31,7 +31,7 @@ pub struct SystemInfo {
 }
 
 /// Represents a software product
-#[derive(Clone, Default, Debug, Serialize, utoipa::ToSchema)]
+#[derive(Clone, Default, Debug, Deserialize, Serialize, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct Product {
     /// Product ID (eg., "ALP", "Tumbleweed", etc.)

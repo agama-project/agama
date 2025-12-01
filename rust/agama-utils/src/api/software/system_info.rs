@@ -18,11 +18,11 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 
 /// Localization-related information of the system where the installer
 /// is running.
-#[derive(Clone, Debug, Default, Serialize, utoipa::ToSchema)]
+#[derive(Clone, Debug, Default, Deserialize, Serialize, utoipa::ToSchema)]
 pub struct SystemInfo {
     /// List of known patterns.
     pub patterns: Vec<Pattern>,
@@ -33,7 +33,7 @@ pub struct SystemInfo {
 }
 
 /// Repository specification.
-#[derive(Clone, Debug, Serialize, utoipa::ToSchema)]
+#[derive(Clone, Debug, Deserialize, Serialize, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct Repository {
     /// Repository alias. It has to be unique.
@@ -48,7 +48,7 @@ pub struct Repository {
     pub predefined: bool,
 }
 
-#[derive(Clone, Debug, Serialize, utoipa::ToSchema)]
+#[derive(Clone, Debug, Deserialize, Serialize, utoipa::ToSchema)]
 pub struct Pattern {
     /// Pattern name (eg., "aaa_base", "gnome")
     pub name: String,
@@ -65,7 +65,7 @@ pub struct Pattern {
 }
 
 /// Addon registration
-#[derive(Clone, Debug, Serialize, utoipa::ToSchema)]
+#[derive(Clone, Debug, Deserialize, Serialize, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct AddonProperties {
     /// Addon identifier

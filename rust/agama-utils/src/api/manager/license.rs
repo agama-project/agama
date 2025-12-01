@@ -20,10 +20,10 @@
 
 //! Implements support for reading software licenses.
 
-use std::fmt::Display;
+use std::{fmt::Display, str::FromStr};
 
 use regex::Regex;
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use serde_with::{serde_as, DisplayFromStr};
 use thiserror::Error;
 
@@ -31,7 +31,7 @@ use thiserror::Error;
 ///
 /// It contains the license ID and the list of languages that with a translation.
 #[serde_as]
-#[derive(Clone, Debug, Serialize, utoipa::ToSchema)]
+#[derive(Clone, Debug, Deserialize, Serialize, utoipa::ToSchema)]
 pub struct License {
     /// License ID.
     pub id: String,
@@ -84,6 +84,16 @@ impl Display for LanguageTag {
         } else {
             write!(f, "{}", &self.language)
         }
+    }
+}
+
+// Required by serde_as. Perhaps we should replace the implementation of try_from
+// with this one.
+impl FromStr for LanguageTag {
+    type Err = InvalidLanguageCode;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        LanguageTag::try_from(s)
     }
 }
 
