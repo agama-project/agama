@@ -23,7 +23,7 @@ use agama_lib::http::WebSocketClient;
 /// Main entry point called from Agama CLI main loop
 pub async fn run(mut ws_client: WebSocketClient, pretty: bool) -> anyhow::Result<()> {
     loop {
-        let event = ws_client.receive().await?;
+        let event = ws_client.receive_old_events().await?;
         let conversion = if pretty {
             serde_json::to_string_pretty(&event)
         } else {

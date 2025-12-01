@@ -102,7 +102,7 @@ impl WebSocketClient {
     /// Receive an event from the websocket.
     ///
     /// It returns the message as an event.
-    pub async fn receive(&mut self) -> Result<OldEvent, WebSocketError> {
+    pub async fn receive_old_events(&mut self) -> Result<OldEvent, WebSocketError> {
         let msg = self.socket.next().await.ok_or(WebSocketError::Closed)?;
         let content = msg?.to_string();
         let event: OldEvent = serde_json::from_str(&content)?;

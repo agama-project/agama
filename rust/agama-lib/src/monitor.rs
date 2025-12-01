@@ -201,7 +201,7 @@ impl Monitor {
                 Some(cmd) = self.commands.recv() => {
                     self.handle_command(cmd);
                 }
-                Ok(event) = self.ws_client.receive() => {
+                Ok(event) = self.ws_client.receive_old_events() => {
                     self.handle_event(event);
                 }
             }
