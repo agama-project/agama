@@ -5,3 +5,13 @@ rust-version.workspace = true
 edition.workspace = true
 
 [dependencies]
+agama-lib  = { path = "../agama-lib" }
+agama-cli  = { path = "../agama-cli" }
+agama-utils = { path = "../agama-utils" }
+anyhow = "1.0.100"
+clap = { version = "4.5.53", features = ["derive"] }
+ratatui = "0.29.0"
+thiserror = "2.0.17"
+tokio = { version = "1.48.0", features = ["macros", "rt-multi-thread", "sync", "time"] }
+url = "2.5.7"
+async-trait = "0.1.89"
