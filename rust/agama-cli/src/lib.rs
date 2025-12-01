@@ -24,7 +24,7 @@ use agama_lib::manager::{FinishMethod, ManagerHTTPClient};
 use agama_lib::monitor::{Monitor, MonitorClient};
 use agama_transfer::Transfer;
 use anyhow::Context;
-use auth_tokens_file::AuthTokensFile;
+pub use auth_tokens_file::AuthTokensFile;
 use clap::{Args, Parser};
 use fluent_uri::UriRef;
 
