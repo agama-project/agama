@@ -21,6 +21,7 @@
 //! This module implements a WSClient to connect to Agama's WebSocket and
 //! listen for events.
 
+use agama_utils::api::Event;
 use tokio::{net::TcpStream, sync::broadcast};
 use tokio_native_tls::native_tls;
 use tokio_stream::StreamExt;
@@ -106,6 +107,16 @@ impl WebSocketClient {
         let msg = self.socket.next().await.ok_or(WebSocketError::Closed)?;
         let content = msg?.to_string();
         let event: OldEvent = serde_json::from_str(&content)?;
+        Ok(event)
+    }
+
+    /// Receive an event from the websocket.
+    ///
+    /// It returns the message as an event.
+    pub async fn receive(&mut self) -> Result<Event, WebSocketError> {
+        let msg = self.socket.next().await.ok_or(WebSocketError::Closed)?;
+        let content = msg?.to_string();
+        let event: Event = serde_json::from_str(&content)?;
         Ok(event)
     }
 }
