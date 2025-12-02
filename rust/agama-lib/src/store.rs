@@ -26,7 +26,7 @@ use crate::{
     hostname::store::{HostnameStore, HostnameStoreError},
     http::BaseHTTPClient,
     install_settings::InstallSettings,
-    manager::{http_client::ManagerHTTPClientError, InstallationPhase, ManagerHTTPClient},
+    manager::{http_client::ManagerHTTPClientError, ManagerHTTPClient},
     network::{NetworkStore, NetworkStoreError},
     security::store::{SecurityStore, SecurityStoreError},
     storage::{
