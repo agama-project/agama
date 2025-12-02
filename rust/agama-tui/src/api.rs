@@ -46,6 +46,12 @@ impl ApiState {
         })
     }
 
+    pub async fn select_product(&mut self, id: String) -> anyhow::Result<()> {
+        let config = Config::with_product(id);
+        self.http.put_void("v2/config", &config).await?;
+        Ok(())
+    }
+
     pub async fn update_system_info(&mut self) -> anyhow::Result<()> {
         self.system_info = self.http.get("v2/system").await?;
         Ok(())

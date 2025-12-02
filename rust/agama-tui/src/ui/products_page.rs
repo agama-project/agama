@@ -28,6 +28,8 @@ use ratatui::{
     widgets::{Block, List, ListState, Paragraph, StatefulWidget, Widget, Wrap},
 };
 
+use crate::{action::Action, ui::Page};
+
 pub struct ProductPage {
     state: ListState,
     products: Vec<Product>,
@@ -40,13 +42,24 @@ impl ProductPage {
             state: ListState::default().with_selected(Some(0)),
         }
     }
+
+    pub fn selected_product(&self) -> Option<&Product> {
+        if let Some(selected) = self.state.selected() {
+            return self.products.get(selected);
+        }
+        None
+    }
 }
 
-impl ProductPage {
-    pub fn handle_key_event(&mut self, event: KeyEvent) {
+impl Page for ProductPage {
+    fn handle_key_event(&mut self, event: KeyEvent) -> Option<Action> {
         if event.kind == KeyEventKind::Press {
             match event.code {
-                KeyCode::Enter => {}
+                KeyCode::Enter => {
+                    if let Some(product) = self.selected_product() {
+                        return Some(Action::SelectProduct(product.id.to_string()));
+                    }
+                }
                 KeyCode::Down | KeyCode::Char('j') => {
                     self.state.select_next();
                 }
@@ -56,6 +69,7 @@ impl ProductPage {
                 _ => {}
             }
         }
+        None
     }
 }
 

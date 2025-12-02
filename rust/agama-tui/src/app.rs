@@ -27,7 +27,12 @@ use ratatui::{
 };
 use tokio::sync::mpsc;
 
-use crate::{api::ApiState, event::AppEvent, ui::products_page::ProductPage};
+use crate::{
+    action::Action,
+    api::ApiState,
+    event::AppEvent,
+    ui::{products_page::ProductPage, Page},
+};
 
 /// Base Ratatui application.
 ///
@@ -62,7 +67,7 @@ impl App {
 
             if let Some(event) = self.events_rx.recv().await {
                 match event {
-                    AppEvent::Key(key) => self.handle_key_event(key),
+                    AppEvent::Key(key) => self.handle_key_event(key).await?,
                     AppEvent::Api(event) => {
                         self.handle_api_event(event).await?;
                     }
@@ -77,8 +82,10 @@ impl App {
         frame.render_widget(self, frame.area());
     }
 
-    fn handle_key_event(&mut self, event: KeyEvent) {
-        self.product.handle_key_event(event);
+    async fn handle_key_event(&mut self, event: KeyEvent) -> anyhow::Result<()> {
+        if let Some(action) = self.product.handle_key_event(event) {
+            self.handle_action(action).await?;
+        }
 
         if event.kind == KeyEventKind::Press {
             match event.code {
@@ -88,6 +95,7 @@ impl App {
                 _ => {}
             }
         }
+        Ok(())
     }
 
     async fn handle_api_event(&mut self, event: Event) -> anyhow::Result<()> {
@@ -95,6 +103,13 @@ impl App {
             Event::SystemChanged { scope: _ } => self.api.update_system_info().await?,
             Event::ConfigChanged { scope: _ } => self.api.update_config().await?,
             _ => {}
+        }
+        Ok(())
+    }
+
+    async fn handle_action(&mut self, action: Action) -> anyhow::Result<()> {
+        match action {
+            Action::SelectProduct(id) => self.api.select_product(id).await?,
         }
         Ok(())
     }

@@ -18,18 +18,6 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use ratatui::crossterm::event::KeyEvent;
-
-use crate::action::Action;
-
-pub(crate) mod products_page;
-
-/// Any component that acts as a page should implement this
-/// trait.
-pub trait Page {
-    /// Handle the key event.
-    ///
-    /// Optionally, it returns an application action to be performed
-    /// by the App struct.
-    fn handle_key_event(&mut self, event: KeyEvent) -> Option<Action>;
+pub enum Action {
+    SelectProduct(String),
 }
