@@ -21,6 +21,7 @@
 mod api;
 mod app;
 mod event;
+mod ui;
 mod utils;
 
 use agama_cli::api_url;

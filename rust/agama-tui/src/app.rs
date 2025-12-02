@@ -18,19 +18,16 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use agama_lib::http::BaseHTTPClient;
 use agama_utils::api::Event;
 use ratatui::{
     crossterm::event::{KeyCode, KeyEvent, KeyEventKind},
-    layout::Layout,
     prelude::{Buffer, Rect},
-    text::{Line, Text},
-    widgets::{Block, Paragraph, Widget},
+    widgets::Widget,
     DefaultTerminal, Frame,
 };
 use tokio::sync::mpsc;
 
-use crate::{api::ApiState, event::AppEvent};
+use crate::{api::ApiState, event::AppEvent, ui::products_page::ProductPage};
 
 /// Base Ratatui application.
 ///
@@ -39,16 +36,22 @@ pub struct App {
     exit: bool,
     events_rx: mpsc::Receiver<AppEvent>,
     pub api: ApiState,
+    product: ProductPage,
 }
 
 impl App {
     /// * `api`: handler of the API service.
     /// * `events_rx`: application events, either from the API or the user.
     pub fn new(api: ApiState, events_rx: mpsc::Receiver<AppEvent>) -> Self {
+        // TODO: pass a reference.
+        let products = api.system_info.manager.products.clone();
+
+        let product = ProductPage::new(products);
         Self {
             events_rx,
             api,
             exit: false,
+            product,
         }
     }
 
@@ -70,11 +73,13 @@ impl App {
         Ok(())
     }
 
-    fn draw(&self, frame: &mut Frame) {
+    fn draw(&mut self, frame: &mut Frame) {
         frame.render_widget(self, frame.area());
     }
 
     fn handle_key_event(&mut self, event: KeyEvent) {
+        self.product.handle_key_event(event);
+
         if event.kind == KeyEventKind::Press {
             match event.code {
                 KeyCode::Char('q') => {
@@ -95,54 +100,8 @@ impl App {
     }
 }
 
-impl Widget for &App {
-    /// NOTE: the current implementation is just a PoC. It should be rewritten with the actual UI.
+impl Widget for &mut App {
     fn render(self, area: Rect, buf: &mut Buffer) {
-        // let Some(api) = &self.api else {
-        //     Line::from("System information not loaded yet").render(area, buf);
-        //     return;
-        // };
-
-        let layout = Layout::vertical([10, 5]);
-        let [products_area, selected_area] = layout.areas(area);
-
-        let text = Text::from_iter(
-            self.api
-                .system_info
-                .manager
-                .products
-                .iter()
-                .map(|p| Line::from(p.name.as_str())),
-        );
-
-        Paragraph::new(text)
-            .block(
-                Block::bordered()
-                    .title("Available products")
-                    .title_bottom("Press 'q' to exit"),
-            )
-            .render(products_area, buf);
-
-        let software_config = &self.api.config.software;
-
-        if let Some(config) = software_config {
-            if let Some(product_id) = &config.product.clone().map(|p| p.id).flatten() {
-                let product = self
-                    .api
-                    .system_info
-                    .manager
-                    .products
-                    .iter()
-                    .find(|p| p.id == *product_id);
-
-                let text = if let Some(product) = product {
-                    format!("Selected product: {}", product.name)
-                } else {
-                    "No selected product".to_string()
-                };
-
-                Line::from(text).render(selected_area, buf);
-            }
-        }
+        self.product.render(area, buf);
     }
 }
