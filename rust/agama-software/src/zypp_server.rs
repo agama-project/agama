@@ -28,7 +28,11 @@ use agama_utils::{
     products::ProductSpec,
     progress, question,
 };
-use std::{collections::HashMap, path::Path};
+use std::{
+    collections::HashMap,
+    path::{Path, PathBuf},
+};
+
 use tokio::sync::{
     mpsc::{self, UnboundedSender},
     oneshot,
@@ -40,7 +44,6 @@ use crate::{
     model::state::{self, SoftwareState},
 };
 
-const TARGET_DIR: &str = "/run/agama/software_ng_zypp";
 const GPG_KEYS: &str = "/usr/lib/rpm/gnupg/keys/gpg-*";
 
 #[derive(thiserror::Error, Debug)]
@@ -100,16 +103,20 @@ pub enum SoftwareAction {
 /// Software service server.
 pub struct ZyppServer {
     receiver: mpsc::UnboundedReceiver<SoftwareAction>,
+    root_dir: PathBuf,
 }
 
 impl ZyppServer {
     /// Starts the software service loop and returns a client.
     ///
     /// The service runs on a separate thread and gets the client requests using a channel.
-    pub fn start() -> ZyppServerResult<UnboundedSender<SoftwareAction>> {
+    pub fn start<P: AsRef<Path>>(root_dir: P) -> ZyppServerResult<UnboundedSender<SoftwareAction>> {
         let (sender, receiver) = mpsc::unbounded_channel();
 
-        let server = Self { receiver };
+        let server = Self {
+            receiver,
+            root_dir: root_dir.as_ref().to_path_buf(),
+        };
 
         // see https://docs.rs/tokio/latest/tokio/task/struct.LocalSet.html#use-inside-tokiospawn for explain how to ensure that zypp
         // runs locally on single thread
@@ -506,14 +513,14 @@ impl ZyppServer {
     }
 
     fn initialize_target_dir(&self) -> Result<zypp_agama::Zypp, ZyppDispatchError> {
-        let target_dir = Path::new(TARGET_DIR);
+        let target_dir = self.root_dir.as_path();
         if target_dir.exists() {
             _ = std::fs::remove_dir_all(target_dir);
         }
 
         std::fs::create_dir_all(target_dir).map_err(ZyppDispatchError::TargetCreationFailed)?;
 
-        let zypp = zypp_agama::Zypp::init_target(TARGET_DIR, |text, step, total| {
+        let zypp = zypp_agama::Zypp::init_target(target_dir.to_str().unwrap(), |text, step, total| {
             tracing::info!("Initializing target: {} ({}/{})", text, step, total);
         })?;
 

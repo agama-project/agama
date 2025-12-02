@@ -40,6 +40,8 @@ use std::{path::PathBuf, process::Command, sync::Arc};
 use tokio::sync::{broadcast, Mutex, MutexGuard, RwLock};
 use url::Url;
 
+const TARGET_DIR: &str = "/run/agama/software_ng_zypp";
+
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
     #[error("software service could not send the event")]
@@ -105,7 +107,7 @@ impl Starter {
         let model = match self.model {
             Some(model) => model,
             None => {
-                let zypp_sender = ZyppServer::start()?;
+                let zypp_sender = ZyppServer::start(TARGET_DIR)?;
                 Arc::new(Mutex::new(Model::new(
                     zypp_sender,
                     find_mandatory_repositories("/"),

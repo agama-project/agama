@@ -43,6 +43,6 @@ pub use model::{Model, ModelAdapter, Resolvable, ResolvableType};
 
 mod callbacks;
 pub mod message;
-mod zypp_server;
+pub mod zypp_server;
 
 pub mod test_utils;
