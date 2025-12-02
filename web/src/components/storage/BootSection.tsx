@@ -38,8 +38,8 @@ function defaultBootLabel(device?: StorageDevice) {
     return sprintf(
       // TRANSLATORS: %s is replaced by the formatted path of the root file system (eg. "/")
       _(
-        "Partitions to boot will be set up if needed at the installation disk, \
-        based on the location of the %s file system.",
+        "Partitions to boot will be set up if needed at the installation disk, " +
+          "based on the location of the %s file system.",
       ),
       formattedPath("/"),
     );
@@ -49,8 +49,8 @@ function defaultBootLabel(device?: StorageDevice) {
     // TRANSLATORS: %1$s is replaced by a device name and size (e.g., sda (500GiB)), %2$s is
     // replaced by the formatted path of the root file system (eg. "/")
     _(
-      "Partitions to boot will be set up if needed at the installation disk. \
-      Currently %1$s, based on the location of the %2$s file system.",
+      "Partitions to boot will be set up if needed at the installation disk. " +
+        "Currently %1$s, based on the location of the %2$s file system.",
     ),
     deviceLabel(device),
     formattedPath("/"),
@@ -81,8 +81,8 @@ export default function BootSection() {
     <Stack hasGutter>
       <div className={textStyles.textColorPlaceholder}>
         {_(
-          "To ensure the new system is able to boot, the installer may need to create or configure some \
-          partitions in the appropriate disk.",
+          "To ensure the new system is able to boot, the installer may need to create or configure some " +
+            "partitions in the appropriate disk.",
         )}
       </div>
       <Content component="p" isEditorial>
