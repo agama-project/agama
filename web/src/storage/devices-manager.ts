@@ -64,14 +64,14 @@ export default class DevicesManager {
    * Whether the given device exists in system.
    */
   existInSystem(device: system.Device): boolean {
-    return this.system.find((d) => d.sid === device.sid) !== undefined;
+    return this.systemDevice(device.sid) !== undefined;
   }
 
   /**
    * Whether the given device exists in staging.
    */
   existInStaging(device: proposal.Device): boolean {
-    return this.staging.find((d) => d.sid === device.sid) !== undefined;
+    return this.stagingDevice(device.sid) !== undefined;
   }
 
   /**

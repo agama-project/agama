@@ -26,7 +26,6 @@ import Text from "~/components/core/Text";
 import DriveEditor from "~/components/storage/DriveEditor";
 import VolumeGroupEditor from "~/components/storage/VolumeGroupEditor";
 import MdRaidEditor from "~/components/storage/MdRaidEditor";
-import { useDevices } from "~/hooks/api/system/storage";
 import { useReset } from "~/hooks/api/config/storage";
 import ConfigureDeviceMenu from "./ConfigureDeviceMenu";
 import { useModel } from "~/hooks/storage/model";
@@ -57,24 +56,8 @@ const NoDevicesConfiguredAlert = () => {
   );
 };
 
-/**
- * @fixme Adapt components (DriveEditor, MdRaidEditor, etc) to receive a list name and an index
- * instead of a device object. Each component will retrieve the device from the model if needed.
- *
- * That will allow to:
- * * Simplify the model types (list and listIndex properties are not needed).
- * * All the components (DriveEditor, PartitionPage, etc) work in a similar way. They receive a
- *   list and an index and each component retrieves the device from the model if needed.
- * * The components always have all the needed info for generating an url.
- * * The partitions and logical volumes can also be referenced by an index, so it opens the door
- *   to have partitions and lvs without a mount path.
- *
- * These changes will be done once creating partitions without a mount path is needed (e.g., for
- * manually creating physical volumes).
- */
 export default function ConfigEditor() {
   const model = useModel();
-  const devices = useDevices();
   const drives = model.drives;
   const mdRaids = model.mdRaids;
   const volumeGroups = model.volumeGroups;
@@ -89,22 +72,12 @@ export default function ConfigEditor() {
         {volumeGroups.map((vg, i) => {
           return <VolumeGroupEditor key={`vg-${i}`} vg={vg} />;
         })}
-        {mdRaids.map((raid, i) => {
-          const device = devices.find((d) => d.name === raid.name);
-
-          return <MdRaidEditor key={`md-${i}`} raid={raid} raidDevice={device} />;
-        })}
-        {drives.map((drive, i) => {
-          const device = devices.find((d) => d.name === drive.name);
-
-          /**
-           * @fixme Make DriveEditor to work when the device is not found (e.g., after disabling
-           * a iSCSI device).
-           */
-          if (device === undefined) return null;
-
-          return <DriveEditor key={`drive-${i}`} drive={drive} driveDevice={device} />;
-        })}
+        {mdRaids.map((_, i) => (
+          <MdRaidEditor key={`md-${i}`} index={i} />
+        ))}
+        {drives.map((_, i) => (
+          <DriveEditor key={`drive-${i}`} index={i} />
+        ))}
       </DataList>
       <Flex>
         <ConfigureDeviceMenu />

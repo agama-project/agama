@@ -20,10 +20,17 @@
  * find current contact information at www.suse.com.
  */
 
+import { sift } from "radashi";
 import type { System, Device } from "~/api/system/storage";
 
+function flatDevices(system: System): Device[] {
+  const partitions = system.devices?.flatMap((d) => d.partitions);
+  const logicalVolumes = system.devices?.flatMap((d) => d.logicalVolumes);
+  return sift([system.devices, partitions, logicalVolumes].flat());
+}
+
 function findDevice(system: System, sid: number): Device | undefined {
-  const device = system.devices.find((d) => d.sid === sid);
+  const device = flatDevices(system).find((d) => d.sid === sid);
   if (device === undefined) console.warn("Device not found:", sid);
 
   return device;
@@ -33,4 +40,8 @@ function findDevices(system: System, sids: number[]): Device[] {
   return sids.map((sid) => findDevice(system, sid)).filter((d) => d);
 }
 
-export { findDevice, findDevices };
+function findDeviceByName(system: System, name: string): Device | null {
+  return flatDevices(system).find((d) => d.name === name) || null;
+}
+
+export { flatDevices, findDevice, findDevices, findDeviceByName };

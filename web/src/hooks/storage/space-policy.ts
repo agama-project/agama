@@ -25,12 +25,16 @@ import { putStorageModel } from "~/api";
 import { data } from "~/storage";
 import { setSpacePolicy } from "~/storage/space-policy";
 
-type setSpacePolicyFn = (list: string, listIndex: number | string, data: data.SpacePolicy) => void;
+type setSpacePolicyFn = (
+  collection: string,
+  index: number | string,
+  data: data.SpacePolicy,
+) => void;
 
 function useSetSpacePolicy(): setSpacePolicyFn {
-  const apiModel = useStorageModel();
-  return (list: string, listIndex: number | string, data: data.SpacePolicy) => {
-    putStorageModel(setSpacePolicy(apiModel, list, listIndex, data));
+  const model = useStorageModel();
+  return (collection: string, index: number | string, data: data.SpacePolicy) => {
+    putStorageModel(setSpacePolicy(model, collection, index, data));
   };
 }
 

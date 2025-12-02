@@ -32,7 +32,8 @@ import { STORAGE as PATHS } from "~/routes/paths";
 import * as driveUtils from "~/components/storage/utils/drive";
 import { generateEncodedPath } from "~/utils";
 import { isEmpty } from "radashi";
-import type { storage as system } from "~/api/system";
+import { useDevice as useDeviceModel } from "~/hooks/storage/model";
+import { useDevice } from "~/hooks/api/system/storage";
 import type { model as apiModel } from "~/api/storage";
 import type { model } from "~/storage";
 
@@ -72,27 +73,28 @@ const SpacePolicyMenuToggle = forwardRef(({ drive, ...props }: SpacePolicyMenuTo
 });
 
 type SpacePolicyMenuProps = {
-  modelDevice: model.Drive | model.MdRaid;
-  device: system.Device;
+  collection: "drives" | "mdRaids";
+  index: number;
 };
 
-export default function SpacePolicyMenu({ modelDevice, device }: SpacePolicyMenuProps) {
+export default function SpacePolicyMenu({ collection, index }: SpacePolicyMenuProps) {
   const navigate = useNavigate();
   const setSpacePolicy = useSetSpacePolicy();
-  const { list, listIndex } = modelDevice;
+  const deviceModel = useDeviceModel(collection, index);
+  const device = useDevice(deviceModel.name);
   const existingPartitions = device.partitions?.length;
 
   if (isEmpty(existingPartitions)) return;
 
   const onSpacePolicyChange = (spacePolicy: apiModel.SpacePolicy) => {
     if (spacePolicy === "custom") {
-      return navigate(generateEncodedPath(PATHS.editSpacePolicy, { list, listIndex }));
+      return navigate(generateEncodedPath(PATHS.editSpacePolicy, { collection, index }));
     } else {
-      setSpacePolicy(list, listIndex, { type: spacePolicy });
+      setSpacePolicy(collection, index, { type: spacePolicy });
     }
   };
 
-  const currentPolicy = driveUtils.spacePolicyEntry(modelDevice);
+  const currentPolicy = driveUtils.spacePolicyEntry(deviceModel);
 
   return (
     <MenuButton
@@ -103,12 +105,12 @@ export default function SpacePolicyMenu({ modelDevice, device }: SpacePolicyMenu
         <PolicyItem
           key={policy.id}
           policy={policy}
-          modelDevice={modelDevice}
+          modelDevice={deviceModel}
           isSelected={policy.id === currentPolicy.id}
           onClick={onSpacePolicyChange}
         />
       ))}
-      customToggle={<SpacePolicyMenuToggle drive={modelDevice} />}
+      customToggle={<SpacePolicyMenuToggle drive={deviceModel} />}
     />
   );
 }

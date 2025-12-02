@@ -40,6 +40,7 @@ import MenuButton from "~/components/core/MenuButton";
 import MountPathMenuItem from "~/components/storage/MountPathMenuItem";
 import { STORAGE as PATHS } from "~/routes/paths";
 import { useDeletePartition } from "~/hooks/storage/partition";
+import { useDevice } from "~/hooks/storage/model";
 import * as driveUtils from "~/components/storage/utils/drive";
 import { generateEncodedPath } from "~/utils";
 import * as partitionUtils from "~/components/storage/utils/partition";
@@ -52,12 +53,18 @@ import spacingStyles from "@patternfly/react-styles/css/utilities/Spacing/spacin
 import { toggle } from "radashi";
 import type { model } from "~/storage";
 
-const PartitionMenuItem = ({ device, mountPath }) => {
+type PartitionMenuItemProps = {
+  device: model.Drive | model.MdRaid;
+  mountPath: string;
+  collection: "drives" | "mdRaids";
+  index: number;
+};
+
+const PartitionMenuItem = ({ device, mountPath, collection, index }: PartitionMenuItemProps) => {
   const partition = device.getPartition(mountPath);
-  const { list, listIndex } = device;
   const editPath = generateEncodedPath(PATHS.editPartition, {
-    list,
-    listIndex,
+    collection,
+    index,
     partitionId: mountPath,
   });
   const deletePartition = useDeletePartition();
@@ -66,7 +73,7 @@ const PartitionMenuItem = ({ device, mountPath }) => {
     <MountPathMenuItem
       device={partition}
       editPath={editPath}
-      deleteFn={() => deletePartition(list, listIndex, mountPath)}
+      deleteFn={() => deletePartition(collection, index, mountPath)}
     />
   );
 };
@@ -120,12 +127,16 @@ const optionalPartitionsTexts = (device) => {
   return texts;
 };
 
-const PartitionRow = ({ partition, device }) => {
-  // const partition = device.getPartition(mountPath);
-  const { list, listIndex } = device;
+type PartitionRowProps = {
+  partition: model.Partition;
+  collection: "drives" | "mdRaids";
+  index: number;
+};
+
+const PartitionRow = ({ partition, collection, index }: PartitionRowProps) => {
   const editPath = generateEncodedPath(PATHS.editPartition, {
-    list,
-    listIndex,
+    collection,
+    index,
     partitionId: partition.mountPath,
   });
   const deletePartition = useDeletePartition();
@@ -174,7 +185,7 @@ const PartitionRow = ({ partition, device }) => {
               <MenuButton.Item
                 key={`delete-${partition.mountPath}`}
                 aria-label={`Delete ${partition.mountPath}`}
-                onClick={() => deletePartition(list, listIndex, partition.mountPath)}
+                onClick={() => deletePartition(collection, index, partition.mountPath)}
                 isDanger
               >
                 <Icon name="delete" /> {_("Delete")}
@@ -202,23 +213,24 @@ const PartitionsSectionHeader = ({ device }) => {
 };
 
 type PartitionsSectionProps = {
-  device: model.Drive | model.MdRaid;
+  collection: "drives" | "mdRaids";
+  index: number;
 };
 
-export default function PartitionsSection({ device }: PartitionsSectionProps) {
+export default function PartitionsSection({ collection, index }: PartitionsSectionProps) {
   const { uiState, setUiState } = useStorageUiState();
   const toggleId = useId();
   const contentId = useId();
-  const { list, listIndex } = device;
-  const index = `${list[0]}${listIndex}`;
+  const device = useDevice(collection, index);
+  const uiIndex = `${collection[0]}${index}`;
   const expanded = uiState.get("expanded")?.split(",");
-  const isExpanded = expanded?.includes(index);
-  const newPartitionPath = generateEncodedPath(PATHS.addPartition, { list, listIndex });
+  const isExpanded = expanded?.includes(uiIndex);
+  const newPartitionPath = generateEncodedPath(PATHS.addPartition, { collection, index });
   const hasPartitions = device.partitions.some((p: model.Partition) => p.mountPath);
 
   const onToggle = () => {
     setUiState((state) => {
-      const nextExpanded = toggle(expanded, index);
+      const nextExpanded = toggle(expanded, uiIndex);
       state.set("expanded", nextExpanded.join(","));
       return state;
     });
@@ -241,7 +253,15 @@ export default function PartitionsSection({ device }: PartitionsSectionProps) {
       device.partitions
         .filter((p: model.Partition) => p.mountPath)
         .map((p: model.Partition) => {
-          return <PartitionMenuItem key={p.mountPath} device={device} mountPath={p.mountPath} />;
+          return (
+            <PartitionMenuItem
+              key={p.mountPath}
+              device={device}
+              mountPath={p.mountPath}
+              collection={collection}
+              index={index}
+            />
+          );
         }),
     );
   }
@@ -271,7 +291,14 @@ export default function PartitionsSection({ device }: PartitionsSectionProps) {
               {device.partitions
                 .filter((p: model.Partition) => p.mountPath)
                 .map((p: model.Partition) => {
-                  return <PartitionRow key={p.mountPath} partition={p} device={device} />;
+                  return (
+                    <PartitionRow
+                      key={p.mountPath}
+                      partition={p}
+                      collection={collection}
+                      index={index}
+                    />
+                  );
                 })}
             </DataList>
             <Content component="p" style={{ marginBlockStart: "1rem" }}>

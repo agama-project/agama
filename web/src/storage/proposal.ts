@@ -20,20 +20,13 @@
  * find current contact information at www.suse.com.
  */
 
-import { useSuspenseQuery } from "@tanstack/react-query";
-import { issuesQuery } from "~/hooks/api/issue";
-import type { Issue } from "~/api/issue";
+import { sift } from "radashi";
+import type { Proposal, Device } from "~/api/proposal/storage";
 
-function selectIssues(issues: Issue[]) {
-  return issues.filter((i: Issue) => i.scope === "storage" && i.class !== "proposal");
+function flatDevices(proposal: Proposal): Device[] {
+  const partitions = proposal.devices?.flatMap((d) => d.partitions);
+  const logicalVolumes = proposal.devices?.flatMap((d) => d.logicalVolumes);
+  return sift([proposal.devices, partitions, logicalVolumes].flat());
 }
 
-function useConfigIssues(): Issue[] {
-  const { data } = useSuspenseQuery({
-    ...issuesQuery,
-    select: selectIssues,
-  });
-  return data;
-}
-
-export { useConfigIssues };
+export { flatDevices };
