@@ -20,9 +20,6 @@
 
 //! This module implements a service that retrieves and keeps the information
 //! from an Agama's server.
-//!
-//! It follows an actor-based approach, like other modules from our `api-v2`
-//! branch.
 
 use agama_lib::http::BaseHTTPClient;
 use agama_utils::api::{Config, SystemInfo};
