@@ -306,6 +306,8 @@ impl MessageHandler<message::SetConfig<Config>> for Service {
     }
 }
 
+// FIXME: function is never called
+#[allow(dead_code)]
 async fn compute_proposal(
     model: Arc<Mutex<dyn ModelAdapter + Send + 'static>>,
     product_spec: ProductSpec,

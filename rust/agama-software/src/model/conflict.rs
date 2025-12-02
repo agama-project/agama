@@ -39,6 +39,8 @@ impl From<ConflictSolve> for (u32, u32) {
 /// Information about possible solution for conflict
 #[derive(Clone, Debug, Serialize, Deserialize, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
+// FIXME: struct is never constructed
+#[allow(dead_code)]
 pub struct Solution {
     /// conflict id
     pub id: u32,
@@ -51,6 +53,8 @@ pub struct Solution {
 /// Information about conflict when resolving software
 #[derive(Clone, Debug, Serialize, Deserialize, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
+// FIXME: struct is never constructed
+#[allow(dead_code)]
 pub struct Conflict {
     /// conflict id
     pub id: u32,

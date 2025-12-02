@@ -22,6 +22,8 @@ use serde::{Deserialize, Serialize};
 
 /// Software service configuration (product, patterns, etc.).
 #[derive(Clone, Serialize, Deserialize, utoipa::ToSchema)]
+// FIXME: struct is never constructed
+#[allow(dead_code)]
 pub struct RegistrationParams {
     /// Registration key.
     pub key: String,
@@ -32,6 +34,8 @@ pub struct RegistrationParams {
 /// Addon registration
 #[derive(Clone, Serialize, Deserialize, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
+// FIXME: struct is never constructed
+#[allow(dead_code)]
 pub struct AddonParams {
     // Addon identifier
     pub id: String,
@@ -44,6 +48,8 @@ pub struct AddonParams {
 /// Information about registration configuration (product, patterns, etc.).
 #[derive(Clone, Serialize, Deserialize, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
+// FIXME: struct is never constructed
+#[allow(dead_code)]
 pub struct RegistrationInfo {
     /// Registration status. True if base system is already registered.
     pub registered: bool,
@@ -56,6 +62,8 @@ pub struct RegistrationInfo {
 }
 
 #[derive(Clone, Serialize, Deserialize, utoipa::ToSchema)]
+// FIXME: struct is never constructed
+#[allow(dead_code)]
 pub struct RegistrationError {
     /// ID of error. See dbus API for possible values
     pub id: u32,
