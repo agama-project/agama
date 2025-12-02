@@ -514,10 +514,6 @@ impl ZyppServer {
 
     fn initialize_target_dir(&self) -> Result<zypp_agama::Zypp, ZyppDispatchError> {
         let target_dir = self.root_dir.as_path();
-        if target_dir.exists() {
-            _ = std::fs::remove_dir_all(target_dir);
-        }
-
         std::fs::create_dir_all(target_dir).map_err(ZyppDispatchError::TargetCreationFailed)?;
 
         let zypp = zypp_agama::Zypp::init_target(target_dir.to_str().unwrap(), |text, step, total| {
