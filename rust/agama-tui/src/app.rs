@@ -19,9 +19,16 @@
 // find current contact information at www.suse.com.
 
 use agama_utils::api::Event;
+use itertools::Itertools;
 use ratatui::{
     crossterm::event::{KeyCode, KeyEvent, KeyEventKind},
+    layout::{Alignment, Constraint, Layout},
     prelude::{Buffer, Rect},
+    style::{
+        palette::{material::WHITE, tailwind::BLACK},
+        Modifier, Style,
+    },
+    text::{Line, Span},
     widgets::Widget,
     DefaultTerminal, Frame,
 };
@@ -31,7 +38,7 @@ use crate::{
     action::Action,
     api::ApiState,
     event::AppEvent,
-    ui::{products_page::ProductPage, Page},
+    ui::{products_page::ProductPage, Command, Page},
 };
 
 /// Base Ratatui application.
@@ -117,6 +124,25 @@ impl App {
 
 impl Widget for &mut App {
     fn render(self, area: Rect, buf: &mut Buffer) {
-        self.product.render(area, buf);
+        let layout = Layout::vertical([Constraint::Percentage(100), Constraint::Length(1)]);
+        let [main, footer] = layout.areas(area);
+        self.product.render(main, buf);
+
+        let mut commands = self.product.commands();
+        commands.push(Command::new("Quit", "q"));
+
+        let items: Vec<_> = commands.iter().map(|c| style_command(&c)).collect();
+        let items: Vec<_> = itertools::intersperse(items.into_iter(), Span::raw(" ")).collect();
+
+        Line::from(items)
+            .alignment(Alignment::Right)
+            .render(footer, buf);
     }
+}
+
+const COMMAND_STYLE: Style = Style::new().bg(WHITE).fg(BLACK);
+
+fn style_command<'a>(command: &'a Command) -> Span<'a> {
+    let text = format!(" {} [{}] ", command.title, command.key);
+    Span::from(text).style(COMMAND_STYLE)
 }

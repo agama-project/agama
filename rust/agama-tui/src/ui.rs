@@ -24,6 +24,20 @@ use crate::action::Action;
 
 pub(crate) mod products_page;
 
+pub struct Command {
+    pub title: String,
+    pub key: String,
+}
+
+impl Command {
+    pub fn new(title: &str, key: &str) -> Self {
+        Self {
+            title: title.to_string(),
+            key: key.to_string(),
+        }
+    }
+}
+
 /// Any component that acts as a page should implement this
 /// trait.
 pub trait Page {
@@ -32,4 +46,8 @@ pub trait Page {
     /// Optionally, it returns an application action to be performed
     /// by the App struct.
     fn handle_key_event(&mut self, event: KeyEvent) -> Option<Action>;
+
+    fn commands(&mut self) -> Vec<Command> {
+        vec![]
+    }
 }

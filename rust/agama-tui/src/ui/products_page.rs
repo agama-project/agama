@@ -28,7 +28,10 @@ use ratatui::{
     widgets::{Block, List, ListState, Paragraph, StatefulWidget, Widget, Wrap},
 };
 
-use crate::{action::Action, ui::Page};
+use crate::{
+    action::Action,
+    ui::{Command, Page},
+};
 
 pub struct ProductPage {
     state: ListState,
@@ -70,6 +73,14 @@ impl Page for ProductPage {
             }
         }
         None
+    }
+
+    fn commands(&mut self) -> Vec<super::Command> {
+        vec![
+            Command::new("Previous", "Up/k"),
+            Command::new("Next", "Down/j"),
+            Command::new("Select", "ENTER"),
+        ]
     }
 }
 
