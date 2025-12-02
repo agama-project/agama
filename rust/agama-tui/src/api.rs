@@ -24,7 +24,38 @@
 //! It follows an actor-based approach, like other modules from our `api-v2`
 //! branch.
 
-mod service;
-pub use service::Service;
+use agama_lib::http::BaseHTTPClient;
+use agama_utils::api::{Config, SystemInfo};
 
-pub mod message;
+/// Interface to the Agama API.
+///
+/// In the future, it might listen for changes and update its status automatically.
+/// At this point, the App struct is responsible for that when it receives an event.
+pub struct ApiState {
+    pub system_info: SystemInfo,
+    pub config: Config,
+    http: BaseHTTPClient,
+}
+
+impl ApiState {
+    pub async fn from_api(http: &BaseHTTPClient) -> anyhow::Result<Self> {
+        let system_info = http.get::<SystemInfo>("v2/system").await?;
+        let config = http.get::<Config>("v2/config").await?;
+
+        Ok(Self {
+            system_info,
+            config,
+            http: http.clone(),
+        })
+    }
+
+    pub async fn update_system_info(&mut self) -> anyhow::Result<()> {
+        self.system_info = self.http.get("v2/system").await?;
+        Ok(())
+    }
+
+    pub async fn update_config(&mut self) -> anyhow::Result<()> {
+        self.config = self.http.get("v2/config").await?;
+        Ok(())
+    }
+}

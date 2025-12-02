@@ -18,10 +18,8 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use agama_utils::{
-    actor::Handler,
-    api::{Config, SystemInfo},
-};
+use agama_lib::http::BaseHTTPClient;
+use agama_utils::api::Event;
 use ratatui::{
     crossterm::event::{KeyCode, KeyEvent, KeyEventKind},
     layout::Layout,
@@ -32,42 +30,38 @@ use ratatui::{
 };
 use tokio::sync::mpsc;
 
-use crate::{api, event::AppEvent};
+use crate::{api::ApiState, event::AppEvent};
 
 /// Base Ratatui application.
 ///
 /// This struct represents the Ratatui application and implements the user interface.
 pub struct App {
     exit: bool,
-    api: Handler<api::Service>,
     events_rx: mpsc::Receiver<AppEvent>,
-    state: AppState,
+    pub api: ApiState,
 }
 
 impl App {
     /// * `api`: handler of the API service.
     /// * `events_rx`: application events, either from the API or the user.
-    pub fn new(api: Handler<api::Service>, events_rx: mpsc::Receiver<AppEvent>) -> Self {
+    pub fn new(api: ApiState, events_rx: mpsc::Receiver<AppEvent>) -> Self {
         Self {
-            exit: false,
-            api,
             events_rx,
-            state: AppState::default(),
+            api,
+            exit: false,
         }
     }
 
     /// Runs the application dispatching the application events.
     pub async fn run(&mut self, terminal: &mut DefaultTerminal) -> anyhow::Result<()> {
-        _ = self.update_from_api().await;
-
         while !self.exit {
             terminal.draw(|frame| self.draw(frame))?;
 
             if let Some(event) = self.events_rx.recv().await {
                 match event {
                     AppEvent::Key(key) => self.handle_key_event(key),
-                    AppEvent::Api(_) => {
-                        _ = self.update_from_api().await;
+                    AppEvent::Api(event) => {
+                        self.handle_api_event(event).await?;
                     }
                 }
             }
@@ -91,44 +85,30 @@ impl App {
         }
     }
 
-    /// Updates the data from the API.
-    async fn update_from_api(&mut self) -> anyhow::Result<()> {
-        let message: api::message::Get<SystemInfo> = api::message::Get::new();
-        self.state.system_info = self
-            .api
-            .call(message)
-            .await
-            .expect("Could not get the system state");
-
-        let message: api::message::Get<Config> = api::message::Get::new();
-        self.state.config = self
-            .api
-            .call(message)
-            .await
-            .expect("Could not get the configuration");
+    async fn handle_api_event(&mut self, event: Event) -> anyhow::Result<()> {
+        match event {
+            Event::SystemChanged { scope: _ } => self.api.update_system_info().await?,
+            Event::ConfigChanged { scope: _ } => self.api.update_config().await?,
+            _ => {}
+        }
         Ok(())
     }
-}
-
-#[derive(Default)]
-struct AppState {
-    system_info: Option<SystemInfo>,
-    config: Option<Config>,
 }
 
 impl Widget for &App {
     /// NOTE: the current implementation is just a PoC. It should be rewritten with the actual UI.
     fn render(self, area: Rect, buf: &mut Buffer) {
-        let Some(system_info) = &self.state.system_info else {
-            Line::from("System information not loaded yet").render(area, buf);
-            return;
-        };
+        // let Some(api) = &self.api else {
+        //     Line::from("System information not loaded yet").render(area, buf);
+        //     return;
+        // };
 
         let layout = Layout::vertical([10, 5]);
         let [products_area, selected_area] = layout.areas(area);
 
         let text = Text::from_iter(
-            system_info
+            self.api
+                .system_info
                 .manager
                 .products
                 .iter()
@@ -143,16 +123,13 @@ impl Widget for &App {
             )
             .render(products_area, buf);
 
-        let software_config = &self
-            .state
-            .config
-            .as_ref()
-            .map(|c| c.software.as_ref())
-            .flatten();
+        let software_config = &self.api.config.software;
 
         if let Some(config) = software_config {
             if let Some(product_id) = &config.product.clone().map(|p| p.id).flatten() {
-                let product = system_info
+                let product = self
+                    .api
+                    .system_info
                     .manager
                     .products
                     .iter()
