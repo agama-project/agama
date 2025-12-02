@@ -40,6 +40,7 @@ export default [
   },
   {
     rules: {
+      "agama-i18n/multiple-space": "error",
       "agama-i18n/string-literals": "error",
       "agama-i18n/top-level-translation": "error",
       "i18next/no-literal-string": "error",
