@@ -42,3 +42,29 @@ product, a storage device and a user password). Then it should report the instal
       implemented yet. But it is enough for our purposes, as the configuration is saved (although it
       won't be applied).
 - [ ] Display the progress status from the server (endpoint `/api/v2/manager`).
+
+## Testing
+
+The code is based on the [api-v2](https://github.com/agama-project/agama/tree/api-v2) of the Agama
+project. You can run that code using the
+[testing_using_container.sh script](https://github.com/agama-project/agama/blob/api-v2/testing_using_container.sh).
+
+> [!NOTE] When running the container, you need to manually start the storage service.
+>
+> ```
+> podman exec --tty --interactive agama agamactl storage
+> ```
+
+Alternatively, you can use the
+[api-v2 ISO](https://download.opensuse.org/repositories/systemsmanagement:/Agama:/branches:/api-v2/images/iso/).
+Beware that the web UI is not working in this case.
+
+Once you start Agama, you can connect using the TUI (although you need to authenticate first):
+
+```
+cargo run --bin agama -- --host https://localhost:10443/ --insecure auth login
+cargo run --bin agama-tui -- --host https://localhost:10443/ --insecure
+```
+
+If you are not using a container, replace the `https://localhost:10443/` with the URL of your Agama
+instance.
