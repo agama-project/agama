@@ -25,14 +25,19 @@ mod event;
 mod ui;
 mod utils;
 
+use std::sync::Arc;
+
 use agama_cli::api_url;
 use agama_lib::http::WebSocketClient;
 use clap::Parser;
 use ratatui::{self, crossterm};
-use tokio::sync::mpsc::{self, Sender};
+use tokio::sync::{
+    mpsc::{self, Sender},
+    Mutex,
+};
 
 use crate::{
-    api::ApiState,
+    api::{Api, ApiState},
     app::App,
     event::AppEvent,
     utils::{build_http_client, build_ws_client},
@@ -59,17 +64,6 @@ async fn handle_input_event(events_tx: Sender<AppEvent>) {
     }
 }
 
-async fn handle_api_event(mut ws: WebSocketClient, events_tx: Sender<AppEvent>) {
-    loop {
-        if let Ok(event) = ws.receive().await {
-            events_tx
-                .send(AppEvent::Api(event.clone()))
-                .await
-                .expect("Could not send the message, channel closed (?)");
-        }
-    }
-}
-
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
     let cli = Cli::parse();
@@ -80,20 +74,20 @@ async fn main() -> anyhow::Result<()> {
 
     let url = api_url(cli.host)?;
     let http = build_http_client(url.clone(), cli.insecure, true).await?;
+    let ws = build_ws_client(url, cli.insecure).await?;
 
     let tx_clone = tx.clone();
     tokio::task::spawn(async move {
         handle_input_event(tx_clone).await;
     });
 
-    let ws = build_ws_client(url, cli.insecure).await?;
-    let tx_clone = tx.clone();
-    tokio::task::spawn(async move {
-        handle_api_event(ws, tx_clone).await;
-    });
+    let state = ApiState::from_client(&http).await?;
 
-    let api = ApiState::from_api(&http).await?;
-    let mut app = App::new(api, rx);
+    // TODO: move the state to the client, so it can be accessed through
+    // ApiClient::state().
+    let state = Arc::new(Mutex::new(state));
+    let api = Api::start(state.clone(), http.clone(), ws, tx);
+    let mut app = App::new(state, api, rx);
 
     let mut terminal = ratatui::init();
     let result = app.run(&mut terminal).await;

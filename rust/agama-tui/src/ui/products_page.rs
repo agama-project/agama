@@ -97,11 +97,9 @@ impl Widget for &mut ProductPage {
             .map(|p| Line::from(p.name.as_str()))
             .collect();
 
-        let list = List::new(names).highlight_style(SELECTED_STYLE).block(
-            Block::bordered()
-                .title("Product to install")
-                .title_bottom("Press Up/Down or j/k move and Enter to select the product"),
-        );
+        let list = List::new(names)
+            .highlight_style(SELECTED_STYLE)
+            .block(Block::bordered().title("Product to install"));
 
         StatefulWidget::render(list, products_area, buf, &mut self.state);
 
