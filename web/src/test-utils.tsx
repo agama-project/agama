@@ -150,14 +150,23 @@ const Providers = ({ children, withL10n }) => {
  * @see #plainRender for rendering without installer providers
  */
 const installerRender = (ui: React.ReactNode, options: { withL10n?: boolean } = {}) => {
-  const queryClient = new QueryClient({});
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: {
+        // ✅ turns retries off
+        retry: false,
+        // ✅ make sure that data is not retrieved again when not needed
+        staleTime: Infinity
+      },
+    },
+  });
 
   const Wrapper = ({ children }) => (
-    <Providers withL10n={options.withL10n}>
-      <MemoryRouter initialEntries={initialRoutes()}>
-        <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
-      </MemoryRouter>
-    </Providers>
+    <QueryClientProvider client={queryClient}>
+      <Providers withL10n={options.withL10n}>
+        <MemoryRouter initialEntries={initialRoutes()}>{children}</MemoryRouter>
+      </Providers>
+    </QueryClientProvider>
   );
 
   return {
