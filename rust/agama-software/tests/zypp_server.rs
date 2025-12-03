@@ -99,11 +99,4 @@ async fn test_start_zypp_server() {
     );
     let question = &questions[0];
     assert_eq!(question.spec.class, "software.verification_failed");
-
-    // Send quit action to the server
-    let (quit_tx, quit_rx) = oneshot::channel();
-    client
-        .send(SoftwareAction::Quit(quit_tx))
-        .expect("Failed to send Quit action");
-    quit_rx.await.expect("Failed to receive quit response");
 }
