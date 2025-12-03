@@ -273,7 +273,7 @@ impl ZyppServer {
             .filter(|r| !old_aliases.contains(&r.alias))
             .collect();
 
-        let to_remove: Vec<_> = state
+        let to_remove: Vec<_> = old_state
             .repositories
             .iter()
             .filter(|r| !aliases.contains(&r.alias))
