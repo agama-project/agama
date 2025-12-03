@@ -56,12 +56,16 @@ pub struct App {
 impl App {
     /// * `api`: handler of the API service.
     /// * `events_rx`: application events, either from the API or the user.
-    pub fn new(
+    pub async fn build(
         state: Arc<Mutex<ApiState>>,
         api: ApiClient,
         events_rx: mpsc::Receiver<AppEvent>,
     ) -> Self {
-        let product = ProductPage::new(vec![]);
+        let products = {
+            let state = state.lock().await;
+            state.system_info.manager.products.clone()
+        };
+        let product = ProductPage::new(products);
         Self {
             events_rx,
             api_state: state,
@@ -74,12 +78,6 @@ impl App {
 
     /// Runs the application dispatching the application events.
     pub async fn run(&mut self, terminal: &mut DefaultTerminal) -> anyhow::Result<()> {
-        let products = {
-            let state = self.api_state.lock().await;
-            state.system_info.manager.products.clone()
-        };
-        self.product = ProductPage::new(products);
-
         while !self.exit {
             terminal.draw(|frame| self.draw(frame))?;
 

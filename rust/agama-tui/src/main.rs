@@ -87,7 +87,7 @@ async fn main() -> anyhow::Result<()> {
     // ApiClient::state().
     let state = Arc::new(Mutex::new(state));
     let api = Api::start(state.clone(), http.clone(), ws, tx);
-    let mut app = App::new(state, api, rx);
+    let mut app = App::build(state, api, rx).await;
 
     let mut terminal = ratatui::init();
     let result = app.run(&mut terminal).await;
