@@ -51,7 +51,7 @@ describe Agama::Storage::ConfigCheckers::Boot do
     it "includes the expected issue" do
       issues = subject.issues
       expect(issues).to include an_object_having_attributes(
-        kind:        Agama::Storage::IssueClasses::Config::ALIAS,
+        kind:        Agama::Storage::IssueClasses::Config::NO_SUCH_ALIAS,
         description: /There is no boot device with alias '.*'/
       )
     end

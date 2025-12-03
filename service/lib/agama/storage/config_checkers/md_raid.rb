@@ -96,7 +96,7 @@ module Agama
           error(
             # TRANSLATORS: %s is the replaced by a device alias (e.g., "md1").
             format(_("There is no MD RAID member device with alias '%s'"), device_alias),
-            kind: IssueClasses::Config::ALIAS
+            kind: IssueClasses::Config::NO_SUCH_ALIAS
           )
         end
 
@@ -107,7 +107,10 @@ module Agama
           return if config.level
           return unless config.create?
 
-          error(format(_("There is a MD RAID without level")), kind: IssueClasses::Config::MD_RAID)
+          error(
+            format(_("There is a MD RAID without level")),
+            kind: IssueClasses::Config::NO_RAID_LEVEL
+          )
         end
 
         # Issue if the MD RAID does not contain enough member devices.
@@ -119,7 +122,7 @@ module Agama
 
           error(
             format(_("At least %s devices are required for %s"), config.min_devices, config.level),
-            kind: IssueClasses::Config::MD_RAID
+            kind: IssueClasses::Config::WRONG_RAID_MEMBERS
           )
         end
 
@@ -174,7 +177,7 @@ module Agama
               member:  member_config.found_device.name,
               md_raid: config.found_device.name
             ),
-            kind: IssueClasses::Config::OVERUSED_MD_MEMBER
+            kind: IssueClasses::Config::MISUSED_MD_MEMBER
           )
         end
 
@@ -197,7 +200,7 @@ module Agama
               member:  member_config.found_device.name,
               md_raid: config.found_device.name
             ),
-            kind: IssueClasses::Config::OVERUSED_MD_MEMBER
+            kind: IssueClasses::Config::MISUSED_MD_MEMBER
           )
         end
 
@@ -220,7 +223,7 @@ module Agama
               member:  member_config.found_device.name,
               md_raid: config.found_device.name
             ),
-            kind: IssueClasses::Config::OVERUSED_MD_MEMBER
+            kind: IssueClasses::Config::MISUSED_MD_MEMBER
           )
         end
 
@@ -243,7 +246,7 @@ module Agama
               member:  member_config.found_device.name,
               md_raid: config.found_device.name
             ),
-            kind: IssueClasses::Config::OVERUSED_MD_MEMBER
+            kind: IssueClasses::Config::MISUSED_MD_MEMBER
           )
         end
 
@@ -265,7 +268,7 @@ module Agama
               member:  member_config.found_device.name,
               md_raid: config.found_device.name
             ),
-            kind: IssueClasses::Config::OVERUSED_MD_MEMBER
+            kind: IssueClasses::Config::MISUSED_MD_MEMBER
           )
         end
 
@@ -290,7 +293,7 @@ module Agama
               device:  parent_config.found_device.name,
               md_raid: config.found_device.name
             ),
-            kind: IssueClasses::Config::OVERUSED_MD_MEMBER
+            kind: IssueClasses::Config::MISUSED_MD_MEMBER
           )
         end
 
