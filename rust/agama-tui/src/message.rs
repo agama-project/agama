@@ -20,10 +20,15 @@
 
 use ratatui::crossterm::event::KeyEvent;
 
-pub enum AppEvent {
+use crate::ui::main_page::SelectedTab;
+
+// Split in smaller enums per scope.
+pub enum Message {
     Key(KeyEvent),
-    ApiStateChanged,
+    GoToTab(SelectedTab),
+    SelectProduct(String),
+    ProductSelected,
     RequestStarted,
     RequestFinished,
-    ProductSelected,
+    ApiStateChanged,
 }

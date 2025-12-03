@@ -20,22 +20,23 @@
 
 use ratatui::{
     buffer::Buffer,
-    crossterm::event::{KeyCode, KeyEvent, KeyEventKind},
+    crossterm::event::{KeyCode, KeyEventKind},
     layout::{Constraint, Layout, Rect},
     style::{palette::tailwind, Color},
     text::Line,
-    widgets::{Tabs, Widget},
+    widgets::{StatefulWidget, Tabs, Widget},
 };
 use strum::{Display, EnumIter, FromRepr, IntoEnumIterator};
+use tokio::sync::mpsc;
 
 use crate::{
-    action::Action,
-    ui::{overview_page::OverviewPage, Page},
+    message::Message,
+    ui::{overview_page::OverviewPage, Command},
 };
 
 /// Borrowed from https://ratatui.rs/examples/widgets/tabs/
 #[derive(Clone, Copy, Default, Display, FromRepr, EnumIter)]
-enum SelectedTab {
+pub enum SelectedTab {
     #[default]
     #[strum(to_string = "Overview [o]")]
     Overview,
@@ -44,63 +45,57 @@ enum SelectedTab {
 }
 
 impl SelectedTab {
-    /// Get the previous tab, if there is no previous tab return the current tab.
-    fn previous(self) -> Self {
-        let current_index: usize = self as usize;
-        let previous_index = current_index.saturating_sub(1);
-        Self::from_repr(previous_index).unwrap_or(self)
-    }
-
-    /// Get the next tab, if there is no next tab return the current tab.
-    fn next(self) -> Self {
-        let current_index = self as usize;
-        let next_index = current_index.saturating_add(1);
-        Self::from_repr(next_index).unwrap_or(self)
-    }
-
     fn title(self) -> Line<'static> {
         format!(" {self} ").into()
     }
 }
 
-pub struct MainPage {
+pub struct MainPageState {
     selected_tab: SelectedTab,
-    overview: OverviewPage,
 }
 
-impl MainPage {
-    pub fn new() -> Self {
+impl Default for MainPageState {
+    fn default() -> Self {
         Self {
             selected_tab: SelectedTab::Overview,
-            overview: OverviewPage,
-        }
-    }
-}
-impl Page for MainPage {
-    fn handle_key_event(&mut self, event: KeyEvent) -> Option<Action> {
-        if event.kind == KeyEventKind::Press {
-            match event.code {
-                KeyCode::Char('o') => self.selected_tab = SelectedTab::Overview,
-                KeyCode::Char('n') => self.selected_tab = SelectedTab::Network,
-                _ => {}
-            }
-        }
-
-        match self.selected_tab {
-            SelectedTab::Overview => self.overview.handle_key_event(event),
-            _ => None,
         }
     }
 }
 
-impl Widget for &mut MainPage {
-    fn render(self, area: Rect, buf: &mut Buffer) {
+impl MainPageState {
+    pub async fn update(&mut self, message: Message, _messages_tx: mpsc::Sender<Message>) {
+        let Message::Key(event) = message else {
+            return;
+        };
+
+        if event.kind != KeyEventKind::Press {
+            return;
+        }
+
+        match event.code {
+            KeyCode::Char('o') => self.selected_tab = SelectedTab::Overview,
+            KeyCode::Char('n') => self.selected_tab = SelectedTab::Network,
+            _ => {}
+        }
+    }
+
+    pub fn commands(&self) -> Vec<Command> {
+        vec![]
+    }
+}
+
+pub struct MainPage;
+
+impl StatefulWidget for MainPage {
+    type State = MainPageState;
+
+    fn render(self, area: Rect, buf: &mut Buffer, state: &mut Self::State) {
         let layout = Layout::vertical([Constraint::Length(1), Constraint::Min(0)]);
         let [tab_area, main_area] = layout.areas(area);
 
         let titles = SelectedTab::iter().map(SelectedTab::title);
         let highlight_style = (Color::default(), tailwind::EMERALD.c700);
-        let selected_tab_index = self.selected_tab as usize;
+        let selected_tab_index = state.selected_tab as usize;
         Tabs::new(titles)
             .highlight_style(highlight_style)
             .select(selected_tab_index)
@@ -108,10 +103,8 @@ impl Widget for &mut MainPage {
             .divider(" ")
             .render(tab_area, buf);
 
-        match self.selected_tab {
-            SelectedTab::Overview => {
-                self.overview.render(main_area, buf);
-            }
+        match state.selected_tab {
+            SelectedTab::Overview => Widget::render(&OverviewPage, main_area, buf),
             SelectedTab::Network => {}
         }
     }

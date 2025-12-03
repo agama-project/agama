@@ -19,24 +19,15 @@
 // find current contact information at www.suse.com.
 
 use ratatui::{
-    crossterm::event::KeyEvent,
     prelude::{Buffer, Rect},
     text::Line,
     widgets::Widget,
 };
 
-use crate::{action::Action, ui::Page};
-
 pub struct OverviewPage;
 
-impl Widget for &mut OverviewPage {
+impl Widget for &OverviewPage {
     fn render(self, area: Rect, buf: &mut Buffer) {
         Line::from("The proposal goes here.").render(area, buf);
-    }
-}
-
-impl Page for OverviewPage {
-    fn handle_key_event(&mut self, _event: KeyEvent) -> Option<Action> {
-        None
     }
 }

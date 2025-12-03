@@ -27,7 +27,7 @@ use agama_lib::http::{BaseHTTPClient, WebSocketClient};
 use agama_utils::api::{Config, SystemInfo};
 use tokio::sync::{mpsc, Mutex};
 
-use crate::event::AppEvent;
+use crate::message::Message;
 
 pub struct ApiState {
     pub system_info: SystemInfo,
@@ -53,13 +53,14 @@ enum ApiAction {
 /// Client to interact with the Agama API.
 ///
 /// NOTE: it could implement the ::start method to make [Api] private.
+#[derive(Clone)]
 pub struct ApiClient {
     actions_tx: mpsc::Sender<ApiAction>,
 }
 
 impl ApiClient {
     /// Selects a product.
-    pub async fn select_product(&mut self, id: String) -> anyhow::Result<()> {
+    pub async fn select_product(&self, id: &str) -> anyhow::Result<()> {
         self.actions_tx
             .send(ApiAction::SelectProduct(id.to_string()))
             .await?;
@@ -71,7 +72,7 @@ impl ApiClient {
 pub struct Api {
     actions_rx: mpsc::Receiver<ApiAction>,
     http: BaseHTTPClient,
-    events: mpsc::Sender<AppEvent>,
+    messages: mpsc::Sender<Message>,
 }
 
 impl Api {
@@ -80,16 +81,16 @@ impl Api {
         state: Arc<Mutex<ApiState>>,
         http: BaseHTTPClient,
         ws: WebSocketClient,
-        events: mpsc::Sender<AppEvent>,
+        messages: mpsc::Sender<Message>,
     ) -> ApiClient {
         let (actions_tx, actions_rx) = mpsc::channel(16);
 
-        let monitor = ApiMonitor::new(state, ws, events.clone());
+        let monitor = ApiMonitor::new(state, ws, messages.clone());
         tokio::task::spawn(async move {
             monitor.run().await;
         });
 
-        let api = Api::new(http, actions_rx, events);
+        let api = Api::new(http, actions_rx, messages);
         tokio::spawn(async move {
             api.run().await;
         });
@@ -100,12 +101,12 @@ impl Api {
     fn new(
         http: BaseHTTPClient,
         actions_rx: mpsc::Receiver<ApiAction>,
-        events: mpsc::Sender<AppEvent>,
+        messages: mpsc::Sender<Message>,
     ) -> Self {
         Self {
             http,
             actions_rx,
-            events,
+            messages,
         }
     }
 
@@ -123,12 +124,12 @@ impl Api {
         }
     }
 
-    async fn select_product(&mut self, id: String) -> anyhow::Result<()> {
-        self.events.send(AppEvent::RequestStarted).await?;
-        let config = Config::with_product(id);
+    pub async fn select_product(&self, id: String) -> anyhow::Result<()> {
+        self.messages.send(Message::RequestStarted).await?;
+        let config = Config::with_product(id.to_string());
         self.http.put_void("v2/config", &config).await?;
-        self.events.send(AppEvent::RequestFinished).await?;
-        self.events.send(AppEvent::ProductSelected).await?;
+        self.messages.send(Message::RequestFinished).await?;
+        self.messages.send(Message::ProductSelected).await?;
         Ok(())
     }
 }
@@ -137,24 +138,28 @@ impl Api {
 struct ApiMonitor {
     _state: Arc<Mutex<ApiState>>,
     ws: WebSocketClient,
-    events: mpsc::Sender<AppEvent>,
+    messages: mpsc::Sender<Message>,
 }
 
 impl ApiMonitor {
     pub fn new(
         _state: Arc<Mutex<ApiState>>,
         ws: WebSocketClient,
-        events: mpsc::Sender<AppEvent>,
+        messages: mpsc::Sender<Message>,
     ) -> Self {
-        Self { _state, ws, events }
+        Self {
+            _state,
+            ws,
+            messages,
+        }
     }
 
     async fn run(mut self) {
         loop {
             if let Ok(_) = self.ws.receive().await {
                 // TODO: update the state accordingly to the event.
-                self.events
-                    .send(AppEvent::ApiStateChanged)
+                self.messages
+                    .send(Message::ApiStateChanged)
                     .await
                     .expect("Could not send the message, channel closed (?)");
             }

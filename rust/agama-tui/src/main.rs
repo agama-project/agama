@@ -18,17 +18,15 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-mod action;
 mod api;
 mod app;
-mod event;
+mod message;
 mod ui;
 mod utils;
 
 use std::sync::Arc;
 
 use agama_cli::api_url;
-use agama_lib::http::WebSocketClient;
 use clap::Parser;
 use ratatui::{self, crossterm};
 use tokio::sync::{
@@ -39,7 +37,7 @@ use tokio::sync::{
 use crate::{
     api::{Api, ApiState},
     app::App,
-    event::AppEvent,
+    message::Message,
     utils::{build_http_client, build_ws_client},
 };
 
@@ -52,11 +50,11 @@ struct Cli {
     pub insecure: bool,
 }
 
-async fn handle_input_event(events_tx: Sender<AppEvent>) {
+async fn handle_input_event(events_tx: Sender<Message>) {
     while let Ok(event) = crossterm::event::read() {
         if let crossterm::event::Event::Key(key) = event {
             let exit = key.code == crossterm::event::KeyCode::Char('q');
-            events_tx.send(AppEvent::Key(key)).await.unwrap();
+            events_tx.send(Message::Key(key)).await.unwrap();
             if exit {
                 return;
             }
@@ -86,8 +84,8 @@ async fn main() -> anyhow::Result<()> {
     // TODO: move the state to the client, so it can be accessed through
     // ApiClient::state().
     let state = Arc::new(Mutex::new(state));
-    let api = Api::start(state.clone(), http.clone(), ws, tx);
-    let mut app = App::build(state, api, rx).await;
+    let api = Api::start(state.clone(), http.clone(), ws, tx.clone());
+    let mut app = App::build(state, api, tx, rx).await;
 
     let mut terminal = ratatui::init();
     let result = app.run(&mut terminal).await;

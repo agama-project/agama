@@ -25,27 +25,31 @@ use ratatui::{
     layout::{Alignment, Constraint, Flex, Layout},
     prelude::{Buffer, Rect},
     style::{
-        palette::{material::WHITE, tailwind::BLACK},
+        palette::{
+            material::WHITE,
+            tailwind::{self, BLACK},
+        },
         Style,
     },
     text::{Line, Span},
-    widgets::{Block, Clear, Paragraph, Widget},
+    widgets::{Block, Clear, Paragraph, StatefulWidget, Widget},
     DefaultTerminal, Frame,
 };
 use tokio::sync::{mpsc, Mutex};
 
 use crate::{
-    action::Action,
     api::{ApiClient, ApiState},
-    event::AppEvent,
-    ui::{main_page::MainPage, products_page::ProductPage, Command, Page},
+    message::Message,
+    ui::{
+        main_page::{MainPage, MainPageState},
+        products_page::{ProductPage, ProductPageState},
+        Command,
+    },
 };
 
-#[derive(Default)]
-pub enum AppPage {
-    #[default]
-    Product,
-    Main,
+pub enum Page {
+    Product(ProductPageState),
+    Main(MainPageState),
 }
 
 /// Base Ratatui application.
@@ -54,37 +58,35 @@ pub enum AppPage {
 pub struct App {
     exit: bool,
     busy: bool,
-    events_rx: mpsc::Receiver<AppEvent>,
+    messages_tx: mpsc::Sender<Message>,
+    messages_rx: mpsc::Receiver<Message>,
     api_state: Arc<Mutex<ApiState>>,
     api: ApiClient,
-    product: ProductPage,
-    main: MainPage,
-    current_page: AppPage,
+    current_page: Page,
 }
 
 impl App {
     /// * `api`: handler of the API service.
-    /// * `events_rx`: application events, either from the API or the user.
+    /// * `messages_rx`: application messages, either from the API or the user.
     pub async fn build(
         state: Arc<Mutex<ApiState>>,
         api: ApiClient,
-        events_rx: mpsc::Receiver<AppEvent>,
+        messages_tx: mpsc::Sender<Message>,
+        messages_rx: mpsc::Receiver<Message>,
     ) -> Self {
         let products = {
             let state = state.lock().await;
             state.system_info.manager.products.clone()
         };
-        let product = ProductPage::new(products);
-        let main = MainPage::new();
+        let product = ProductPageState::new(products);
         Self {
-            events_rx,
+            messages_tx,
+            messages_rx,
             api_state: state,
             api,
             exit: false,
             busy: false,
-            product,
-            main,
-            current_page: AppPage::default(),
+            current_page: Page::Product(product),
         }
     }
 
@@ -93,65 +95,60 @@ impl App {
         while !self.exit {
             terminal.draw(|frame| self.draw(frame))?;
 
-            if let Some(event) = self.events_rx.recv().await {
-                match event {
-                    AppEvent::Key(key) => self.handle_key_event(key).await?,
-                    AppEvent::ApiStateChanged => {}
-                    // TODO: add a message.
-                    AppEvent::RequestStarted => {
-                        self.busy = true;
-                    }
-                    AppEvent::RequestFinished => {
-                        self.busy = false;
-                    }
-                    AppEvent::ProductSelected => self.current_page = AppPage::Main,
-                }
+            if let Some(message) = self.messages_rx.recv().await {
+                let messages_tx = self.messages_tx.clone();
+                self.update(message, messages_tx).await;
             }
         }
 
         Ok(())
+    }
+
+    async fn update(&mut self, message: Message, messages_tx: mpsc::Sender<Message>) {
+        if let Message::Key(event) = message {
+            self.handle_key_event(event).await;
+        }
+
+        match message {
+            Message::RequestStarted => {
+                self.busy = true;
+            }
+            Message::RequestFinished => {
+                self.busy = false;
+            }
+            Message::SelectProduct(id) => {
+                _ = self.api.select_product(&id).await;
+            }
+            Message::ProductSelected => {
+                self.current_page = Page::Main(MainPageState::default());
+            }
+            _ => match &mut self.current_page {
+                Page::Product(model) => model.update(message, messages_tx).await,
+                Page::Main(model) => model.update(message, messages_tx).await,
+            },
+        }
     }
 
     fn draw(&mut self, frame: &mut Frame) {
         frame.render_widget(self, frame.area());
     }
 
-    async fn handle_key_event(&mut self, event: KeyEvent) -> anyhow::Result<()> {
+    // Whether to stop handling the event.
+    async fn handle_key_event(&mut self, event: KeyEvent) -> bool {
         if event.kind == KeyEventKind::Press {
             match event.code {
                 KeyCode::Char('q') => {
                     self.exit = true;
+                    return true;
                 }
-                _ => {}
-            }
-        }
-
-        if self.busy {
-            return Ok(());
-        }
-
-        match self.current_page {
-            AppPage::Product => {
-                if let Some(action) = self.product.handle_key_event(event) {
-                    self.handle_action(action).await?;
-                }
-            }
-
-            AppPage::Main => {
-                if let Some(action) = self.main.handle_key_event(event) {
-                    self.handle_action(action).await?;
+                _ => {
+                    if self.busy {
+                        return true;
+                    }
                 }
             }
         }
-
-        Ok(())
-    }
-
-    async fn handle_action(&mut self, action: Action) -> anyhow::Result<()> {
-        match action {
-            Action::SelectProduct(id) => self.api.select_product(id).await?,
-        }
-        Ok(())
+        false
     }
 }
 
@@ -161,14 +158,14 @@ impl Widget for &mut App {
         let [main, footer] = layout.areas(area);
 
         // TODO: refactor to avoid repetition.
-        let mut commands = match self.current_page {
-            AppPage::Product => {
-                self.product.render(main, buf);
-                self.product.commands()
+        let mut commands = match &mut self.current_page {
+            Page::Product(state) => {
+                StatefulWidget::render(ProductPage, main, buf, state);
+                state.commands()
             }
-            AppPage::Main => {
-                self.main.render(main, buf);
-                self.main.commands()
+            Page::Main(state) => {
+                StatefulWidget::render(MainPage, main, buf, state);
+                state.commands()
             }
         };
 
@@ -192,7 +189,7 @@ impl Widget for &mut App {
     }
 }
 
-const COMMAND_STYLE: Style = Style::new().bg(WHITE).fg(BLACK);
+const COMMAND_STYLE: Style = Style::new().bg(tailwind::EMERALD.c700).fg(WHITE);
 
 fn style_command<'a>(command: &'a Command) -> Span<'a> {
     let text = format!(" {} [{}] ", command.title, command.key);

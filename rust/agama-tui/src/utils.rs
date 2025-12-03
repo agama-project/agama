@@ -26,7 +26,7 @@ use agama_lib::{
     auth::AuthToken,
     http::{BaseHTTPClient, WebSocketClient},
 };
-use anyhow::{anyhow, Context};
+use anyhow::anyhow;
 use url::Url;
 
 /// * `api_url`: API URL.
@@ -79,23 +79,6 @@ pub async fn build_ws_client(api_url: Url, insecure: bool) -> anyhow::Result<Web
     // Setting the scheme to a known value ("ws" or "wss" should not fail).
     url.set_scheme(scheme).unwrap();
     Ok(WebSocketClient::connect(&url, &token, insecure).await?)
-}
-
-/// Build the API url from the host.
-///
-/// * `host`: ip or host name. The protocol is optional, using https if omitted (e.g, "myserver",
-/// "http://myserver", "192.168.100.101").
-pub fn api_url(host: String) -> anyhow::Result<Url> {
-    let sanitized_host = host.trim_end_matches('/').to_string();
-
-    let url_str = if sanitized_host.starts_with("http://") || sanitized_host.starts_with("https://")
-    {
-        format!("{}/api/", sanitized_host)
-    } else {
-        format!("https://{}/api/", sanitized_host)
-    };
-
-    Url::parse(&url_str).context("The given URL is not valid.")
 }
 
 fn find_client_token(api_url: &Url) -> Option<AuthToken> {

@@ -21,77 +21,84 @@
 use agama_utils::api::manager::Product;
 use ratatui::{
     buffer::Buffer,
-    crossterm::event::{KeyCode, KeyEvent, KeyEventKind},
+    crossterm::event::{KeyCode, KeyEventKind},
     layout::{Constraint, Layout, Rect},
     style::{Modifier, Style},
     text::Line,
     widgets::{Block, List, ListState, Paragraph, StatefulWidget, Widget, Wrap},
 };
+use tokio::sync::mpsc;
 
-use crate::{
-    action::Action,
-    ui::{Command, Page},
-};
+use crate::{message::Message, ui::Command};
 
-pub struct ProductPage {
-    state: ListState,
+pub struct ProductPageState {
     products: Vec<Product>,
+    list: ListState,
 }
 
-impl ProductPage {
+impl ProductPageState {
     pub fn new(products: Vec<Product>) -> Self {
         Self {
             products,
-            state: ListState::default().with_selected(Some(0)),
+            list: ListState::default().with_selected(Some(0)),
         }
     }
 
-    pub fn selected_product(&self) -> Option<&Product> {
-        if let Some(selected) = self.state.selected() {
-            return self.products.get(selected);
-        }
-        None
-    }
-}
+    pub async fn update(&mut self, message: Message, messages_tx: mpsc::Sender<Message>) {
+        let Message::Key(event) = message else {
+            return;
+        };
 
-impl Page for ProductPage {
-    fn handle_key_event(&mut self, event: KeyEvent) -> Option<Action> {
-        if event.kind == KeyEventKind::Press {
-            match event.code {
-                KeyCode::Enter => {
-                    if let Some(product) = self.selected_product() {
-                        return Some(Action::SelectProduct(product.id.to_string()));
-                    }
+        if event.kind != KeyEventKind::Press {
+            return;
+        }
+
+        match event.code {
+            KeyCode::Enter => {
+                if let Some(selected) = self.selected_product() {
+                    _ = messages_tx
+                        .send(Message::SelectProduct(selected.id.to_string()))
+                        .await;
                 }
-                KeyCode::Down | KeyCode::Char('j') => {
-                    self.state.select_next();
-                }
-                KeyCode::Up | KeyCode::Char('k') => {
-                    self.state.select_previous();
-                }
-                _ => {}
             }
+            KeyCode::Down | KeyCode::Char('j') => {
+                self.list.select_next();
+            }
+            KeyCode::Up | KeyCode::Char('k') => {
+                self.list.select_previous();
+            }
+            _ => {}
         }
-        None
     }
 
-    fn commands(&mut self) -> Vec<super::Command> {
+    pub fn commands(&self) -> Vec<super::Command> {
         vec![
             Command::new("Previous", "Up/k"),
             Command::new("Next", "Down/j"),
             Command::new("Select", "ENTER"),
         ]
     }
+
+    fn selected_product(&self) -> Option<&Product> {
+        if let Some(selected) = self.list.selected() {
+            return self.products.get(selected);
+        }
+        None
+    }
 }
+
+pub struct ProductPage;
 
 const SELECTED_STYLE: Style = Style::new().add_modifier(Modifier::BOLD);
 
-impl Widget for &mut ProductPage {
-    fn render(self, area: Rect, buf: &mut Buffer) {
+impl StatefulWidget for ProductPage {
+    type State = ProductPageState;
+
+    fn render(self, area: Rect, buf: &mut Buffer, state: &mut Self::State) {
         let layout = Layout::vertical([Constraint::Percentage(30), Constraint::Percentage(70)]);
         let [products_area, selected_area] = layout.areas(area);
 
-        let names: Vec<_> = self
+        let names: Vec<_> = state
             .products
             .iter()
             .map(|p| Line::from(p.name.as_str()))
@@ -101,10 +108,10 @@ impl Widget for &mut ProductPage {
             .highlight_style(SELECTED_STYLE)
             .block(Block::bordered().title("Product to install"));
 
-        StatefulWidget::render(list, products_area, buf, &mut self.state);
+        StatefulWidget::render(list, products_area, buf, &mut state.list);
 
-        if let Some(selected) = self.state.selected() {
-            if let Some(product) = self.products.get(selected) {
+        if let Some(selected) = state.list.selected() {
+            if let Some(product) = state.products.get(selected) {
                 Paragraph::new(product.description.as_str())
                     .wrap(Wrap::default())
                     .block(Block::bordered())
