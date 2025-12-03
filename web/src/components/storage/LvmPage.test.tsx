@@ -23,11 +23,12 @@
 import React from "react";
 import { screen, within } from "@testing-library/react";
 import { installerRender, mockParams } from "~/test-utils";
-import { model, StorageDevice } from "~/storage";
+import { model } from "~/storage";
 import { gib } from "./utils";
 import LvmPage from "./LvmPage";
+import type { storage } from "~/api/system";
 
-const sda1: StorageDevice = {
+const sda1: storage.Device = {
   sid: 69,
   name: "/dev/sda1",
   description: "Swap partition",
@@ -38,7 +39,7 @@ const sda1: StorageDevice = {
   start: 1,
 };
 
-const sda: StorageDevice = {
+const sda: storage.Device = {
   sid: 59,
   isDrive: true,
   type: "disk",
@@ -66,7 +67,7 @@ const sda: StorageDevice = {
   description: "",
 };
 
-const sdb: StorageDevice = {
+const sdb: storage.Device = {
   sid: 60,
   isDrive: true,
   type: "disk",
@@ -137,16 +138,16 @@ const mockHomeVolumeGroup: model.VolumeGroup = {
   getMountPaths: () => [],
 };
 
-const mockAddVolumeGroup = jest.fn();
-const mockEditVolumeGroup = jest.fn();
-
 let mockUseModel = {
   drives: [mockSdaDrive],
   mdRaids: [],
   volumeGroups: [],
 };
 
-const mockUseAllDevices = [sda, sdb];
+let mockUseAvailableDevices = [sda, sdb];
+const mockAddVolumeGroup = jest.fn();
+const mockEditVolumeGroup = jest.fn();
+const mockUseVolumeGroup = jest.fn();
 
 jest.mock("~/queries/issues", () => ({
   ...jest.requireActual("~/queries/issues"),
@@ -154,28 +155,32 @@ jest.mock("~/queries/issues", () => ({
   useIssues: () => [],
 }));
 
-jest.mock("~/queries/storage", () => ({
-  ...jest.requireActual("~/queries/storage"),
-  useDevices: () => mockUseAllDevices,
-}));
-
-jest.mock("~/hooks/storage/system", () => ({
-  ...jest.requireActual("~/hooks/storage/system"),
-  useAvailableDevices: () => mockUseAllDevices,
+jest.mock("~/hooks/api/system/storage", () => ({
+  useAvailableDevices: jest.fn(() => mockUseAvailableDevices),
 }));
 
 jest.mock("~/hooks/storage/model", () => ({
-  ...jest.requireActual("~/hooks/storage/model"),
-  __esModule: true,
-  useModel: () => mockUseModel,
+  useModel: jest.fn(() => mockUseModel),
 }));
 
 jest.mock("~/hooks/storage/volume-group", () => ({
-  ...jest.requireActual("~/hooks/storage/volume-group"),
-  __esModule: true,
-  useAddVolumeGroup: () => mockAddVolumeGroup,
-  useEditVolumeGroup: () => mockEditVolumeGroup,
+  useVolumeGroup: jest.fn((id) => mockUseVolumeGroup(id)),
+  useAddVolumeGroup: jest.fn(() => mockAddVolumeGroup),
+  useEditVolumeGroup: jest.fn(() => mockEditVolumeGroup),
 }));
+
+beforeEach(() => {
+  mockAddVolumeGroup.mockClear();
+  mockEditVolumeGroup.mockClear();
+  mockUseVolumeGroup.mockClear();
+  mockUseVolumeGroup.mockReturnValue(undefined); // Default value for creating new VG
+  mockUseModel = {
+    drives: [mockSdaDrive],
+    mdRaids: [],
+    volumeGroups: [],
+  };
+  mockUseAvailableDevices = [sda, sdb];
+});
 
 describe("LvmPage", () => {
   describe("when creating a new volume group", () => {
@@ -296,6 +301,7 @@ describe("LvmPage", () => {
   describe("when editing", () => {
     beforeEach(() => {
       mockParams({ id: "fakeRootVg" });
+      mockUseVolumeGroup.mockReturnValue(mockRootVolumeGroup);
       mockUseModel = {
         drives: [mockSdaDrive],
         mdRaids: [],
