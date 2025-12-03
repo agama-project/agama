@@ -18,12 +18,25 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use ratatui::crossterm::event::KeyEvent;
+use ratatui::{
+    crossterm::event::KeyEvent,
+    prelude::{Buffer, Rect},
+    text::Line,
+    widgets::Widget,
+};
 
-pub enum AppEvent {
-    Key(KeyEvent),
-    ApiStateChanged,
-    RequestStarted,
-    RequestFinished,
-    ProductSelected,
+use crate::{action::Action, ui::Page};
+
+pub struct OverviewPage;
+
+impl Widget for &mut OverviewPage {
+    fn render(self, area: Rect, buf: &mut Buffer) {
+        Line::from("The proposal goes here.").render(area, buf);
+    }
+}
+
+impl Page for OverviewPage {
+    fn handle_key_event(&mut self, _event: KeyEvent) -> Option<Action> {
+        None
+    }
 }

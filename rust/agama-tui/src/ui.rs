@@ -22,6 +22,8 @@ use ratatui::crossterm::event::KeyEvent;
 
 use crate::action::Action;
 
+pub(crate) mod main_page;
+pub(crate) mod overview_page;
 pub(crate) mod products_page;
 
 pub struct Command {

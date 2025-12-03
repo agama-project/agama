@@ -38,8 +38,15 @@ use crate::{
     action::Action,
     api::{ApiClient, ApiState},
     event::AppEvent,
-    ui::{products_page::ProductPage, Command, Page},
+    ui::{main_page::MainPage, products_page::ProductPage, Command, Page},
 };
+
+#[derive(Default)]
+pub enum AppPage {
+    #[default]
+    Product,
+    Main,
+}
 
 /// Base Ratatui application.
 ///
@@ -51,6 +58,8 @@ pub struct App {
     api_state: Arc<Mutex<ApiState>>,
     api: ApiClient,
     product: ProductPage,
+    main: MainPage,
+    current_page: AppPage,
 }
 
 impl App {
@@ -66,6 +75,7 @@ impl App {
             state.system_info.manager.products.clone()
         };
         let product = ProductPage::new(products);
+        let main = MainPage::new();
         Self {
             events_rx,
             api_state: state,
@@ -73,6 +83,8 @@ impl App {
             exit: false,
             busy: false,
             product,
+            main,
+            current_page: AppPage::default(),
         }
     }
 
@@ -92,6 +104,7 @@ impl App {
                     AppEvent::RequestFinished => {
                         self.busy = false;
                     }
+                    AppEvent::ProductSelected => self.current_page = AppPage::Main,
                 }
             }
         }
@@ -117,8 +130,18 @@ impl App {
             return Ok(());
         }
 
-        if let Some(action) = self.product.handle_key_event(event) {
-            self.handle_action(action).await?;
+        match self.current_page {
+            AppPage::Product => {
+                if let Some(action) = self.product.handle_key_event(event) {
+                    self.handle_action(action).await?;
+                }
+            }
+
+            AppPage::Main => {
+                if let Some(action) = self.main.handle_key_event(event) {
+                    self.handle_action(action).await?;
+                }
+            }
         }
 
         Ok(())
@@ -136,11 +159,20 @@ impl Widget for &mut App {
     fn render(self, area: Rect, buf: &mut Buffer) {
         let layout = Layout::vertical([Constraint::Percentage(100), Constraint::Length(1)]);
         let [main, footer] = layout.areas(area);
-        self.product.render(main, buf);
 
-        let mut commands = self.product.commands();
+        // TODO: refactor to avoid repetition.
+        let mut commands = match self.current_page {
+            AppPage::Product => {
+                self.product.render(main, buf);
+                self.product.commands()
+            }
+            AppPage::Main => {
+                self.main.render(main, buf);
+                self.main.commands()
+            }
+        };
+
         commands.push(Command::new("Quit", "q"));
-
         let items: Vec<_> = commands.iter().map(|c| style_command(&c)).collect();
         let items: Vec<_> = itertools::intersperse(items.into_iter(), Span::raw(" ")).collect();
 

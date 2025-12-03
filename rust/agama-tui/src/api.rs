@@ -128,6 +128,7 @@ impl Api {
         let config = Config::with_product(id);
         self.http.put_void("v2/config", &config).await?;
         self.events.send(AppEvent::RequestFinished).await?;
+        self.events.send(AppEvent::ProductSelected).await?;
         Ok(())
     }
 }
