@@ -21,7 +21,7 @@
  */
 
 import React from "react";
-import { screen, fireEvent, act, waitFor } from "@testing-library/react";
+import { screen, waitFor } from "@testing-library/react";
 import { installerRender, mockNavigateFn } from "~/test-utils";
 import SpacePolicyMenu from "./SpacePolicyMenu";
 import * as driveUtils from "~/components/storage/utils/drive";
@@ -63,12 +63,6 @@ jest.mock("~/utils", () => ({
   generateEncodedPath: jest.fn(),
 }));
 
-// Mock radashi's isEmpty
-jest.mock("radashi", () => ({
-  ...jest.requireActual("radashi"),
-  isEmpty: jest.fn(),
-}));
-
 jest.mock("~/components/storage/utils", () => ({
   SPACE_POLICIES: [
     { id: "do_not_format", label: "Delete current content" },
@@ -105,12 +99,6 @@ describe("SpacePolicyMenu", () => {
       label: "Do not format",
     });
     (generateEncodedPath as jest.Mock).mockReturnValue("/path/to/edit");
-    // By default, assume partitions exist so the menu renders
-    jest.mocked(require("radashi").isEmpty).mockReturnValue(false);
-  });
-
-  afterEach(() => {
-    jest.useRealTimers();
   });
 
   it("should render the SpacePolicyMenu with correct initial state", async () => {
@@ -120,10 +108,7 @@ describe("SpacePolicyMenu", () => {
     expect(toggleButton).toBeInTheDocument();
     expect(toggleButton).toHaveAttribute("aria-expanded", "false"); // Initially closed
 
-    await act(async () => {
-      user.click(toggleButton); // Click the toggle button
-      jest.runAllTimers(); // Advance timers
-    });
+    await user.click(toggleButton); // Click the toggle button
 
     // Now, wait for the menu to expand. The "Do not format" item should be visible inside the expanded menu.
     await waitFor(() => {
@@ -133,7 +118,7 @@ describe("SpacePolicyMenu", () => {
   });
 
   it("should not render the SpacePolicyMenu if existingPartitions is empty", () => {
-    jest.mocked(require("radashi").isEmpty).mockReturnValue(true);
+    mockUseDevice.mockReturnValue({ ...mockDevice, partitions: [] });
     const { container } = installerRender(<SpacePolicyMenu collection="drives" index={0} />);
     expect(container).toBeEmptyDOMElement();
   });
@@ -151,7 +136,7 @@ describe("SpacePolicyMenu", () => {
       expect(toggleButton).toHaveAttribute("aria-expanded", "true"); // Wait for menu to be expanded
     });
 
-    const keepPolicyItem = screen.getByRole("menuitem", { name: "Keep existing data" });
+    const keepPolicyItem = screen.getByRole("menuitem", { name: /Keep existing data/ });
     await user.click(keepPolicyItem);
 
     expect(setSpacePolicyMock).toHaveBeenCalledWith("drives", 0, { type: "keep_data" });
@@ -172,7 +157,7 @@ describe("SpacePolicyMenu", () => {
       expect(toggleButton).toHaveAttribute("aria-expanded", "true"); // Check if expanded
     });
 
-    const customPolicyItem = screen.getByRole("menuitem", { name: "Custom" });
+    const customPolicyItem = screen.getByRole("menuitem", { name: /Custom/ });
     await user.click(customPolicyItem);
 
     expect(mockNavigateFn).toHaveBeenCalledWith("/path/to/edit");
@@ -185,10 +170,7 @@ describe("SpacePolicyMenu", () => {
     const { user } = installerRender(<SpacePolicyMenu collection="drives" index={0} />);
 
     const toggleButton = screen.getByRole("button", { name: "Summary text" });
-    await act(async () => {
-      user.click(toggleButton); // Open the menu
-      jest.runAllTimers(); // Advance timers
-    });
+    await user.click(toggleButton); // Open the menu
 
     await waitFor(() => {
       expect(toggleButton).toHaveAttribute("aria-expanded", "true"); // Wait for menu to be expanded
