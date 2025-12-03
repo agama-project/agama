@@ -23,12 +23,12 @@
 import React from "react";
 import { screen, within } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
-import { useStatus } from "~/hooks/api";
+import { useStatus } from "~/hooks/api/status";
 import ProgressStatusMonitor from "./ProgressStatusMonitor";
 
 let mockProgress: jest.Mock<ReturnType<typeof useStatus>["progresses"]> = jest.fn();
 
-jest.mock("~/hooks/api", () => ({
+jest.mock("~/hooks/api/status", () => ({
   useStatus: () => ({ progresses: mockProgress() }),
 }));
 

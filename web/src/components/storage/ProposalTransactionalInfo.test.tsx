@@ -24,35 +24,34 @@ import React from "react";
 import { screen } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
 import { ProposalTransactionalInfo } from "~/components/storage";
-import { Volume } from "~/api/storage/types";
+import type { storage } from "~/api/system";
 
-let mockVolumes: Volume[] = [];
-jest.mock("~/queries/software", () => ({
-  ...jest.requireActual("~/queries/software"),
+let mockVolumes: storage.Volume[] = [];
+jest.mock("~/hooks/api/system/software", () => ({
+  ...jest.requireActual("~/hooks/api/system/software"),
   useProduct: () => ({
     selectedProduct: { name: "Test" },
   }),
   useProductChanges: () => jest.fn(),
 }));
 
-jest.mock("~/queries/storage", () => ({
-  ...jest.requireActual("~/queries/storage"),
+jest.mock("~/hooks/api/system/storage", () => ({
+  ...jest.requireActual("~/hooks/api/system/storage"),
   useVolumes: () => mockVolumes,
 }));
 
-const rootVolume: Volume = {
+const rootVolume: storage.Volume = {
   mountPath: "/",
   mountOptions: [],
-  target: "default",
-  fsType: "Btrfs",
+  autoSize: false,
   minSize: 1024,
   maxSize: 2048,
-  autoSize: false,
+  fsType: "btrfs",
   snapshots: false,
   transactional: false,
   outline: {
     required: true,
-    fsTypes: ["Btrfs", "Ext4"],
+    fsTypes: ["btrfs", "ext4"],
     supportAutoSize: true,
     snapshotsConfigurable: true,
     snapshotsAffectSizes: true,

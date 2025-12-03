@@ -25,27 +25,23 @@ import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import ProposalFailedInfo from "./ProposalFailedInfo";
 import { LogicalVolume } from "~/storage/data";
-import { Issue, IssueSeverity, IssueSource } from "~/api/issue";
-import { apiModel } from "~/api/storage/types";
+import { Issue } from "~/api/issue";
+import { model as apiModel } from "~/api/storage";
 
 const mockUseConfigErrorsFn = jest.fn();
-let mockUseIssues = [];
+let mockUseIssues: Issue[] = [];
 
 const configError: Issue = {
   description: "Config error",
-  kind: "storage",
-  details: "",
-  source: IssueSource.Config,
-  severity: IssueSeverity.Error,
+  class: "storage",
   scope: "storage",
+  details: "",
 };
 
 const storageIssue: Issue = {
   description: "Fake Storage Issue",
   details: "",
-  kind: "storage_issue",
-  source: IssueSource.Unknown,
-  severity: IssueSeverity.Error,
+  class: "storage_issue",
   scope: "storage",
 };
 
@@ -150,15 +146,19 @@ const mockApiModel: apiModel.Config = {
   ],
 };
 
-jest.mock("~/hooks/storage/api-model", () => ({
-  ...jest.requireActual("~/hooks/storage/api-model"),
-  useApiModel: () => mockApiModel,
+jest.mock("~/hooks/api/storage", () => ({
+  ...jest.requireActual("~/hooks/api/storage"),
+  useStorageModel: () => mockApiModel,
 }));
 
-jest.mock("~/queries/issues", () => ({
-  ...jest.requireActual("~/queries/issues"),
-  useConfigErrors: () => mockUseConfigErrorsFn(),
-  useIssues: () => mockUseIssues,
+jest.mock("~/hooks/api/issue", () => ({
+  ...jest.requireActual("~/hooks/api/issue"),
+  useIssues: (scope: string) => {
+    if (scope === "config") {
+      return mockUseConfigErrorsFn();
+    }
+    return mockUseIssues;
+  },
 }));
 
 // eslint-disable-next-line

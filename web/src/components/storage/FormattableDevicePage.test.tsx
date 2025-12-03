@@ -24,16 +24,22 @@ import React from "react";
 import { screen, within } from "@testing-library/react";
 import { installerRender, mockParams } from "~/test-utils";
 import FormattableDevicePage from "~/components/storage/FormattableDevicePage";
-import { StorageDevice, model } from "~/storage";
-import { Volume } from "~/api/storage/types";
+import { model } from "~/storage";
+import type { storage } from "~/api/system";
 import { gib } from "./utils";
 
-const sda: StorageDevice = {
+const sda: storage.Device = {
   sid: 59,
-  isDrive: true,
-  type: "disk",
+  class: "drive",
+  drive: {
+    type: "disk",
+  },
   name: "/dev/sda",
-  size: gib(10),
+  block: {
+    size: gib(10),
+    start: 0,
+    shrinking: { supported: false },
+  },
   description: "",
 };
 
@@ -41,8 +47,6 @@ const sdaModel: model.Drive = {
   name: "/dev/sda",
   spacePolicy: "keep",
   partitions: [],
-  list: "drives",
-  listIndex: 0,
   isExplicitBoot: false,
   isUsed: true,
   isAddingPartitions: true,
@@ -55,22 +59,21 @@ const sdaModel: model.Drive = {
   getConfiguredExistingPartitions: jest.fn(),
 };
 
-const homeVolume: Volume = {
+const mockHomeVolume: storage.Volume = {
   mountPath: "/home",
   mountOptions: [],
-  target: "default",
   fsType: "btrfs",
-  minSize: gib(1),
-  maxSize: gib(5),
+  minSize: 1024,
+  maxSize: 2048,
   autoSize: false,
   snapshots: false,
   transactional: false,
   outline: {
-    required: false,
-    fsTypes: ["btrfs", "xfs"],
-    supportAutoSize: false,
-    snapshotsConfigurable: false,
-    snapshotsAffectSizes: false,
+    required: true,
+    fsTypes: ["btrfs", "ext4"],
+    supportAutoSize: true,
+    snapshotsConfigurable: true,
+    snapshotsAffectSizes: true,
     sizeRelevantVolumes: [],
     adjustByRam: false,
   },
@@ -81,9 +84,10 @@ jest.mock("~/queries/issues", () => ({
   useIssues: () => [],
 }));
 
-jest.mock("~/queries/storage", () => ({
-  ...jest.requireActual("~/queries/storage"),
+jest.mock("~/hooks/api/system/storage", () => ({
+  ...jest.requireActual("~/hooks/api/system/storage"),
   useDevices: () => [sda],
+  useVolumeTemplate: () => mockHomeVolume,
 }));
 
 const mockModel = jest.fn();
@@ -95,7 +99,7 @@ jest.mock("~/hooks/storage/model", () => ({
 jest.mock("~/hooks/storage/product", () => ({
   ...jest.requireActual("~/hooks/storage/product"),
   useMissingMountPaths: () => ["/home", "swap"],
-  useVolume: () => homeVolume,
+  useVolume: () => mockHomeVolume,
 }));
 
 const mockAddFilesystem = jest.fn();

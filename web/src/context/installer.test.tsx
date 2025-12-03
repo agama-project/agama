@@ -27,7 +27,10 @@ import { plainRender } from "~/test-utils";
 import { InstallerClientProvider } from "./installer";
 import { DummyWSClient } from "~/client/ws";
 
-jest.mock("~/components/layout/Loading", () => () => <div>Loading Mock</div>);
+jest.mock("~/components/layout/Loading", () => {
+  const React = require("react");
+  return () => React.createElement("div", null, "Loading Mock");
+});
 
 // Helper component to check the client status.
 const Content = () => {

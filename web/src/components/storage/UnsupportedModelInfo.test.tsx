@@ -26,15 +26,11 @@ import { plainRender } from "~/test-utils";
 import UnsupportedModelInfo from "./UnsupportedModelInfo";
 
 const mockUseResetConfigMutation = jest.fn();
-jest.mock("~/queries/storage", () => ({
-  ...jest.requireActual("~/queries/storage"),
-  useResetConfigMutation: () => mockUseResetConfigMutation(),
-}));
-
 const mockUseConfigModel = jest.fn();
-jest.mock("~/queries/storage/config-model", () => ({
-  ...jest.requireActual("~/queries/storage/config-model"),
-  useConfigModel: () => mockUseConfigModel(),
+jest.mock("~/hooks/api/storage", () => ({
+  ...jest.requireActual("~/hooks/api/storage"),
+  useResetConfigMutation: () => mockUseResetConfigMutation(),
+  useStorageModel: () => mockUseConfigModel(),
 }));
 
 beforeEach(() => {

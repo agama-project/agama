@@ -24,7 +24,8 @@ import React from "react";
 import { screen } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
 import { StorageSection } from "~/components/overview";
-import { IssueSeverity, IssueSource } from "~/api/issue";
+import type { storage } from "~/api/system";
+
 
 let mockModel = {
   drives: [],
@@ -62,30 +63,18 @@ const sdb = {
   udevPaths: [],
 };
 
-jest.mock("~/queries/storage/config-model", () => ({
-  ...jest.requireActual("~/queries/storage/config-model"),
-  useConfigModel: () => mockModel,
+jest.mock("~/hooks/api/storage", () => ({
+  useStorageModel: () => mockModel,
 }));
 
 const mockDevices = [sda, sdb];
-
-jest.mock("~/queries/storage", () => ({
-  ...jest.requireActual("~/queries/storage"),
-  useDevices: () => mockDevices,
-}));
-
 let mockAvailableDevices = [sda, sdb];
+let mockSystemErrors: storage.Issue[] = [];
 
-jest.mock("~/hooks/storage/system", () => ({
-  ...jest.requireActual("~/hooks/storage/system"),
+jest.mock("~/hooks/api/system/storage", () => ({
+  useDevices: () => mockDevices,
   useAvailableDevices: () => mockAvailableDevices,
-}));
-
-let mockSystemErrors = [];
-
-jest.mock("~/queries/issues", () => ({
-  ...jest.requireActual("~/queries/issues"),
-  useSystemErrors: () => mockSystemErrors,
+  useIssues: () => mockSystemErrors,
 }));
 
 beforeEach(() => {
@@ -247,11 +236,8 @@ describe("when there is no configuration model (unsupported features)", () => {
       mockSystemErrors = [
         {
           description: "System error",
-          kind: "storage",
+          class: "storage",
           details: "",
-          source: IssueSource.System,
-          severity: IssueSeverity.Error,
-          scope: "storage",
         },
       ];
     });

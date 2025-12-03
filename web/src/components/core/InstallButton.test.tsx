@@ -25,7 +25,7 @@ import { screen, waitFor, within } from "@testing-library/react";
 import { installerRender, mockRoutes } from "~/test-utils";
 import { InstallButton } from "~/components/core";
 import { PRODUCT, ROOT } from "~/routes/paths";
-import { Issue, IssueSeverity, IssueSource } from "~/api/issue";
+import { Issue } from "~/api/issue";
 
 const mockStartInstallationFn = jest.fn();
 let mockIssuesList: Issue[];
@@ -55,9 +55,7 @@ describe("InstallButton", () => {
       mockIssuesList = [
         {
           description: "Fake Issue",
-          kind: "generic",
-          source: IssueSource.Unknown,
-          severity: IssueSeverity.Error,
+          class: "error",
           details: "Fake Issue details",
           scope: "product",
         },
@@ -133,9 +131,7 @@ describe("InstallButton", () => {
       mockIssuesList = [
         {
           description: "Fake warning",
-          kind: "generic",
-          source: IssueSource.Unknown,
-          severity: IssueSeverity.Warn,
+          class: "warn",
           details: "Fake Issue details",
           scope: "product",
         },

@@ -24,12 +24,12 @@ import React from "react";
 import { screen, within } from "@testing-library/react";
 import { installerRender, mockParams } from "~/test-utils";
 import PartitionPage from "./PartitionPage";
-import { StorageDevice, model } from "~/storage";
-import { apiModel, Volume } from "~/api/storage/types";
+import { model } from "~/storage";
+import type { storage } from "~/api/system";
+import { model as apiModel } from "~/api/storage";
 import { gib } from "./utils";
 
-jest.mock("~/queries/issues", () => ({
-  ...jest.requireActual("~/queries/issues"),
+jest.mock("~/hooks/api/issue", () => ({
   useIssuesChanges: jest.fn(),
   useIssues: () => [],
 }));
@@ -39,42 +39,49 @@ jest.mock("./ProposalTransactionalInfo", () => () => <div>transactional info</di
 
 const mockGetPartition = jest.fn();
 
-const sda1: StorageDevice = {
+const sda1: storage.Device = {
   sid: 69,
   name: "/dev/sda1",
   description: "Swap partition",
-  isDrive: false,
-  type: "partition",
-  size: gib(2),
-  shrinking: { unsupported: ["Resizing is not supported"] },
-  start: 1,
+  class: "partition",
+  block: {
+    size: gib(2),
+    start: 1,
+    shrinking: { supported: false, reasons: ["Resizing is not supported"] },
+  },
 };
 
-const sda: StorageDevice = {
+const sda: storage.Device = {
   sid: 59,
-  isDrive: true,
-  type: "disk",
-  vendor: "Micron",
-  model: "Micron 1100 SATA",
-  driver: ["ahci", "mmcblk"],
-  bus: "IDE",
-  busId: "",
-  transport: "usb",
-  dellBOSS: false,
-  sdCard: true,
-  active: true,
+  class: "drive",
+  drive: {
+    type: "disk",
+    vendor: "Micron",
+    model: "Micron 1100 SATA",
+    driver: ["ahci", "mmcblk"],
+    bus: "IDE",
+    busId: "",
+    transport: "usb",
+    info: {
+      dellBoss: false,
+      sdCard: true,
+    },
+  },
   name: "/dev/sda",
-  size: 1024,
-  shrinking: { unsupported: ["Resizing is not supported"] },
-  systems: [],
+  block: {
+    size: 1024,
+    start: 0,
+    active: true,
+    shrinking: { supported: false, reasons: ["Resizing is not supported"] },
+    systems: [],
+    udevIds: ["ata-Micron_1100_SATA_512GB_12563", "scsi-0ATA_Micron_1100_SATA_512GB"],
+    udevPaths: ["pci-0000:00-12", "pci-0000:00-12-ata"],
+  },
   partitionTable: {
     type: "gpt",
-    partitions: [sda1],
-    unpartitionedSize: 0,
     unusedSlots: [{ start: 3, size: gib(2) }],
   },
-  udevIds: ["ata-Micron_1100_SATA_512GB_12563", "scsi-0ATA_Micron_1100_SATA_512GB"],
-  udevPaths: ["pci-0000:00-12", "pci-0000:00-12-ata"],
+  partitions: [sda1],
   description: "",
 };
 
@@ -114,8 +121,6 @@ const mockDrive: model.Drive = {
       isUsedBySpacePolicy: false,
     },
   ],
-  list: "drives",
-  listIndex: 1,
   isExplicitBoot: false,
   isUsed: true,
   isAddingPartitions: true,
@@ -132,10 +137,9 @@ const mockSolvedConfigModel: apiModel.Config = {
   drives: [mockDrive],
 };
 
-const mockHomeVolume: Volume = {
+const mockHomeVolume: storage.Volume = {
   mountPath: "/home",
   mountOptions: [],
-  target: "default",
   fsType: "btrfs",
   minSize: 1024,
   maxSize: 1024,
@@ -153,10 +157,9 @@ const mockHomeVolume: Volume = {
   },
 };
 
-jest.mock("~/queries/storage", () => ({
-  ...jest.requireActual("~/queries/storage"),
+jest.mock("~/hooks/api/system/storage", () => ({
   useDevices: () => [sda],
-  useVolume: () => mockHomeVolume,
+  useVolumeTemplate: () => mockHomeVolume,
 }));
 
 jest.mock("~/hooks/storage/model", () => ({
@@ -172,10 +175,9 @@ jest.mock("~/hooks/storage/product", () => ({
   useMissingMountPaths: () => ["/home", "swap"],
 }));
 
-jest.mock("~/queries/storage/config-model", () => ({
-  ...jest.requireActual("~/queries/storage/config-model"),
-  useConfigModel: () => ({ drives: [mockDrive] }),
-  useSolvedConfigModel: () => mockSolvedConfigModel,
+jest.mock("~/hooks/api/storage", () => ({
+  useStorageModel: () => ({ drives: [mockDrive] }),
+  useSolvedStorageModel: () => mockSolvedConfigModel,
 }));
 
 beforeEach(() => {

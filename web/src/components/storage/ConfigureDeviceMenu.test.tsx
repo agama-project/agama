@@ -24,35 +24,51 @@ import React from "react";
 import { screen, within } from "@testing-library/react";
 import { mockNavigateFn, installerRender } from "~/test-utils";
 import ConfigureDeviceMenu from "./ConfigureDeviceMenu";
-import { StorageDevice } from "~/storage";
-import { apiModel } from "~/api/storage/types";
+import type { storage } from "~/api/system";
+import { model as apiModel } from "~/api/storage";
 
-const vda: StorageDevice = {
+const vda: storage.Device = {
   sid: 59,
-  type: "disk",
-  isDrive: true,
-  description: "",
-  vendor: "Micron",
-  model: "Micron 1100 SATA",
-  driver: ["ahci", "mmcblk"],
-  bus: "IDE",
   name: "/dev/vda",
-  size: 1e12,
-  systems: ["Windows 11", "openSUSE Leap 15.2"],
+  description: "",
+  class: "drive",
+  drive: {
+    type: "disk",
+    vendor: "Micron",
+    model: "Micron 1100 SATA",
+    driver: ["ahci", "mmcblk"],
+    bus: "IDE",
+  },
+  block: {
+    size: 1e12,
+    start: 0,
+    systems: ["Windows 11", "openSUSE Leap 15.2"],
+    shrinking: { supported: false },
+    active: true,
+    encrypted: false,
+  },
 };
 
-const vdb: StorageDevice = {
+const vdb: storage.Device = {
   sid: 60,
-  type: "disk",
-  isDrive: true,
-  description: "",
-  vendor: "Seagate",
-  model: "Unknown",
-  driver: ["ahci", "mmcblk"],
-  bus: "IDE",
   name: "/dev/vdb",
-  size: 1e6,
-  systems: [],
+  description: "",
+  class: "drive",
+  drive: {
+    type: "disk",
+    vendor: "Seagate",
+    model: "Unknown",
+    driver: ["ahci", "mmcblk"],
+    bus: "IDE",
+  },
+  block: {
+    size: 1e6,
+    start: 0,
+    systems: [],
+    shrinking: { supported: false },
+    active: true,
+    encrypted: false,
+  },
 };
 
 const vdaDrive: apiModel.Drive = {
@@ -70,8 +86,8 @@ const vdbDrive: apiModel.Drive = {
 const mockAddDrive = jest.fn();
 const mockUseModel = jest.fn();
 
-jest.mock("~/hooks/storage/system", () => ({
-  ...jest.requireActual("~/hooks/storage/system"),
+jest.mock("~/hooks/api/system/storage", () => ({
+  ...jest.requireActual("~/hooks/api/system/storage"),
   useAvailableDevices: () => [vda, vdb],
 }));
 

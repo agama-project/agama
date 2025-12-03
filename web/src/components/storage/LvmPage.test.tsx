@@ -23,56 +23,67 @@
 import React from "react";
 import { screen, within } from "@testing-library/react";
 import { installerRender, mockParams } from "~/test-utils";
-import { model, StorageDevice } from "~/storage";
+import { model } from "~/storage";
+import type { storage } from "~/api/system";
 import { gib } from "./utils";
 import LvmPage from "./LvmPage";
 
-const sda1: StorageDevice = {
+const sda1: storage.Device = {
   sid: 69,
   name: "/dev/sda1",
   description: "Swap partition",
-  isDrive: false,
-  type: "partition",
-  size: gib(2),
-  shrinking: { unsupported: ["Resizing is not supported"] },
-  start: 1,
+  class: "partition",
+  block: {
+    size: gib(2),
+    start: 1,
+    shrinking: { supported: false, reasons: ["Resizing is not supported"] },
+  },
 };
 
-const sda: StorageDevice = {
+const sda: storage.Device = {
   sid: 59,
-  isDrive: true,
-  type: "disk",
-  vendor: "Micron",
-  model: "Micron 1100 SATA",
-  driver: ["ahci", "mmcblk"],
-  bus: "IDE",
-  busId: "",
-  transport: "usb",
-  dellBOSS: false,
-  sdCard: true,
-  active: true,
+  class: "drive",
+  drive: {
+    type: "disk",
+    vendor: "Micron",
+    model: "Micron 1100 SATA",
+    driver: ["ahci", "mmcblk"],
+    bus: "IDE",
+    busId: "",
+    transport: "usb",
+    info: {
+      dellBoss: false,
+      sdCard: true,
+    },
+  },
   name: "/dev/sda",
-  size: 1024,
-  shrinking: { unsupported: ["Resizing is not supported"] },
-  systems: [],
+  block: {
+    size: 1024,
+    start: 0,
+    active: true,
+    shrinking: { supported: false, reasons: ["Resizing is not supported"] },
+    systems: [],
+    udevIds: ["ata-Micron_1100_SATA_512GB_12563", "scsi-0ATA_Micron_1100_SATA_512GB"],
+    udevPaths: ["pci-0000:00-12", "pci-0000:00-12-ata"],
+  },
   partitionTable: {
     type: "gpt",
-    partitions: [sda1],
-    unpartitionedSize: 0,
     unusedSlots: [{ start: 3, size: gib(2) }],
   },
-  udevIds: ["ata-Micron_1100_SATA_512GB_12563", "scsi-0ATA_Micron_1100_SATA_512GB"],
-  udevPaths: ["pci-0000:00-12", "pci-0000:00-12-ata"],
+  partitions: [sda1],
   description: "",
 };
 
-const sdb: StorageDevice = {
+const sdb: storage.Device = {
   sid: 60,
-  isDrive: true,
-  type: "disk",
+  class: "drive",
   name: "/dev/sdb",
-  size: 1024,
-  systems: [],
+  block: {
+    size: 1024,
+    start: 0,
+    shrinking: { supported: false },
+    systems: [],
+  },
   description: "",
 };
 
@@ -105,8 +116,6 @@ const mockSdaDrive: model.Drive = {
       isUsedBySpacePolicy: false,
     },
   ],
-  list: "drives",
-  listIndex: 1,
   isExplicitBoot: false,
   isUsed: true,
   isAddingPartitions: true,
@@ -121,8 +130,6 @@ const mockSdaDrive: model.Drive = {
 
 const mockRootVolumeGroup: model.VolumeGroup = {
   vgName: "fakeRootVg",
-  list: "volumeGroups",
-  listIndex: 1,
   logicalVolumes: [],
   getTargetDevices: () => [mockSdaDrive],
   getMountPaths: () => [],
@@ -130,8 +137,6 @@ const mockRootVolumeGroup: model.VolumeGroup = {
 
 const mockHomeVolumeGroup: model.VolumeGroup = {
   vgName: "fakeHomeVg",
-  list: "volumeGroups",
-  listIndex: 2,
   logicalVolumes: [],
   getTargetDevices: () => [mockSdaDrive],
   getMountPaths: () => [],
@@ -148,19 +153,13 @@ let mockUseModel = {
 
 const mockUseAllDevices = [sda, sdb];
 
-jest.mock("~/queries/issues", () => ({
-  ...jest.requireActual("~/queries/issues"),
+jest.mock("~/hooks/api/issue", () => ({
   useIssuesChanges: jest.fn(),
   useIssues: () => [],
 }));
 
-jest.mock("~/queries/storage", () => ({
-  ...jest.requireActual("~/queries/storage"),
+jest.mock("~/hooks/api/system/storage", () => ({
   useDevices: () => mockUseAllDevices,
-}));
-
-jest.mock("~/hooks/storage/system", () => ({
-  ...jest.requireActual("~/hooks/storage/system"),
   useAvailableDevices: () => mockUseAllDevices,
 }));
 
