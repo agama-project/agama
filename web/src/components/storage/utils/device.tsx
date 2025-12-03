@@ -36,7 +36,7 @@ const driveTypeDescription = (device: system.Device): string => {
     return sprintf(_("DASD %s"), device.drive.busId);
   }
 
-  if (device.drive.info.sdCard) {
+  if (device.drive.info?.sdCard) {
     return _("SD Card");
   }
 
