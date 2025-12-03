@@ -17,6 +17,11 @@ impl Security {
 
 impl security::Callback for Security {
     fn unsigned_file(&self, file: String, repository_alias: String) -> bool {
+        tracing::info!(
+            "unsigned_file callback triggered for file: {}, repo: {}",
+            file,
+            repository_alias
+        );
         // TODO: support for extra_repositories with allow_unsigned config
         // TODO: localization for text when parameters in gextext will be solved
         let text = if repository_alias.is_empty() {
@@ -49,6 +54,12 @@ impl security::Callback for Security {
         key_fingerprint: String,
         _repository_alias: String,
     ) -> security::GpgKeyTrust {
+        tracing::info!(
+            "accept_key callback triggered for key_id: {}, key_name: {}, key_fingerprint: {}",
+            key_id,
+            key_name,
+            key_fingerprint
+        );
         // TODO: support for extra_repositories with specified gpg key checksum
         // TODO: localization with params
         let text = format!(
@@ -79,6 +90,12 @@ impl security::Callback for Security {
     }
 
     fn unknown_key(&self, file: String, key_id: String, repository_alias: String) -> bool {
+        tracing::info!(
+            "unknown_key callback triggered for file: {}, key_id: {}, repo: {}",
+            file,
+            key_id,
+            repository_alias
+        );
         // TODO: localization for text when parameters in gextext will be solved
         let text = if repository_alias.is_empty() {
             format!(
@@ -111,6 +128,7 @@ impl security::Callback for Security {
         _key_fingerprint: String,
         repository_alias: String,
     ) -> bool {
+        tracing::info!("verification_failed callback triggered for file: {}, key_id: {}, key_name: {}, repo: {}", file, key_id, key_name, repository_alias);
         // TODO: localization for text when parameters in gextext will be solved
         let text = if repository_alias.is_empty() {
             format!(
@@ -139,6 +157,7 @@ impl security::Callback for Security {
     }
 
     fn checksum_missing(&self, file: String) -> bool {
+        tracing::info!("checksum_missing callback triggered for file: {}", file);
         // TODO: localization for text when parameters in gextext will be solved
         let text = format!(
             "No checksum for the file {file} was found in the repository. This means that \
@@ -156,6 +175,11 @@ impl security::Callback for Security {
     }
 
     fn checksum_unknown(&self, file: String, checksum: String) -> bool {
+        tracing::info!(
+            "checksum_unknown callback triggered for file: {}, checksum: {}",
+            file,
+            checksum
+        );
         let text = format!(
             "The checksum of the file {file} is \"{checksum}\" but the expected checksum is \
               unknown. This means that the origin and integrity of the file cannot be verified. \
@@ -173,6 +197,12 @@ impl security::Callback for Security {
     }
 
     fn checksum_wrong(&self, file: String, expected: String, actual: String) -> bool {
+        tracing::info!(
+            "checksum_wrong callback triggered for file: {}, expected: {}, actual: {}",
+            file,
+            expected,
+            actual
+        );
         let text = format!(
             "The expected checksum of file %{file} is \"%{actual}\" but it was expected to be \
               \"%{expected}\". The file has changed by accident or by an attacker since the \

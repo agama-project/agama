@@ -27,9 +27,11 @@ use agama_utils::api::Issue;
 use agama_software::model::state::{SoftwareState, Repository as StateRepository};
 use std::path::Path;
 use tokio::sync::{oneshot, broadcast};
+use tracing_subscriber;
 
 #[tokio::test]
 async fn test_start_zypp_server() {
+    let _ = tracing_subscriber::fmt::try_init();
     let root_dir = Path::new(env!("CARGO_MANIFEST_DIR")).join("../zypp-agama/fixtures/zypp_root");
     let client = ZyppServer::start(&root_dir).expect("starting zypp server failed");
 

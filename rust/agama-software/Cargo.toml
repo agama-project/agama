@@ -25,3 +25,4 @@ zypp-agama = { path = "../zypp-agama" }
 [dev-dependencies]
 serde_yaml = "0.9.34"
 tempfile = "3.23.0"
+tracing-subscriber = "0.3.18"

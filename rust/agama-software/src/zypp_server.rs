@@ -517,9 +517,10 @@ impl ZyppServer {
         std::fs::create_dir_all(target_dir).map_err(ZyppDispatchError::TargetCreationFailed)?;
 
         // FIXME: use camino::Utf8PathBuf or String
-        let zypp = zypp_agama::Zypp::init_target(target_dir.to_str().unwrap(), |text, step, total| {
-            tracing::info!("Initializing target: {} ({}/{})", text, step, total);
-        })?;
+        let zypp =
+            zypp_agama::Zypp::init_target(target_dir.to_str().unwrap(), |text, step, total| {
+                tracing::info!("Initializing target: {} ({}/{})", text, step, total);
+            })?;
 
         self.import_gpg_keys(&zypp);
         Ok(zypp)
