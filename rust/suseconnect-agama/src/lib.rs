@@ -1,10 +1,13 @@
-use std::ffi::CString;
+use std::ffi::{CString, IntoStringError};
 
 use serde_json::{json, Value};
 
 // Safety requirements: inherited from https://doc.rust-lang.org/std/ffi/struct.CStr.html#method.from_ptr
-pub(crate) unsafe fn string_from_ptr(c_ptr: *const i8) -> String {
-    String::from_utf8_lossy(std::ffi::CStr::from_ptr(c_ptr).to_bytes()).into_owned()
+// expects that rust get control of string pointer
+// note: it is different then libzypp bindings where string is still owned by libzypp
+pub(crate) unsafe fn string_from_ptr(c_ptr: *mut i8) -> Result<String, IntoStringError> {
+    let c_str = CString::from_raw(c_ptr);
+    c_str.into_string()
 }
 
 /// parameters for SUSE Connect calls.
@@ -37,6 +40,8 @@ pub enum Error {
     UnexpectedResponse(String),
     #[error(transparent)]
     JsonParseError(#[from] serde_json::Error),
+    #[error(transparent)]
+    UTF8Error(#[from] std::ffi::IntoStringError),
 }
 
 /// checks response from suseconnect for errors
@@ -44,7 +49,10 @@ pub enum Error {
 /// ruby counterpart is at https://github.com/SUSE/connect-ng/blob/main/third_party/yast/lib/suse/toolkit/shim_utils.rb#L32
 fn check_error(response: &Value) -> Result<(), Error> {
     if let Some(error) = response.get("err_type") {
-        match error.as_str().unwrap() {
+        let Some(error_str) = error.as_str() else {
+            return Err(Error::UnexpectedResponse(response.to_string()));
+        };
+        match error_str {
             "APIError" => {
                 let message = response
                     .get("message")
@@ -69,8 +77,8 @@ fn check_error(response: &Value) -> Result<(), Error> {
 /// Data returned from announce call at https://github.com/SUSE/connect-ng/blob/main/third_party/yast/lib/suse/connect/yast.rb#L57
 #[derive(Debug, Clone)]
 pub struct Credentials {
-    login: String,
-    password: String,
+    pub login: String,
+    pub password: String,
 }
 
 impl TryFrom<Value> for Credentials {
@@ -111,10 +119,111 @@ pub fn announce_system(params: ConnectParams, target_distro: &str) -> Result<Cre
         let _ = CString::from_raw(distro_c_ptr);
 
         string_from_ptr(result_ptr)
-    };
+    }?;
 
     let response: Value = serde_json::from_str(&result_s)?;
     check_error(&response)?;
 
     response.try_into()
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use serde_json::json;
+
+    #[test]
+    fn test_check_error_success() {
+        let response = json!({"status": "ok"});
+        assert!(check_error(&response).is_ok());
+    }
+
+    #[test]
+    fn test_check_error_api_error() {
+        let response = json!({
+            "err_type": "APIError",
+            "message": "Invalid token",
+            "code": 401
+        });
+        match check_error(&response) {
+            Err(Error::ApiError { message, code }) => {
+                assert_eq!(message, "Invalid token");
+                assert_eq!(code, 401);
+            }
+            _ => panic!("Expected ApiError"),
+        }
+    }
+
+    #[test]
+    fn test_check_error_api_error_defaults() {
+        let response = json!({
+            "err_type": "APIError"
+        });
+        match check_error(&response) {
+            Err(Error::ApiError { message, code }) => {
+                assert_eq!(message, "No message");
+                assert_eq!(code, 400);
+            }
+            _ => panic!("Expected ApiError"),
+        }
+    }
+
+    #[test]
+    fn test_check_error_unknown_error() {
+        let response = json!({
+            "err_type": "SomeOtherError",
+            "details": "Something went wrong"
+        });
+        match check_error(&response) {
+            Err(Error::UknownError(msg)) => {
+                assert_eq!(msg, response.to_string());
+            }
+            _ => panic!("Expected UknownError"),
+        }
+    }
+
+    #[test]
+    fn test_credentials_try_from_success() {
+        let value = json!({
+            "credentials": ["user", "pass"]
+        });
+        let credentials = Credentials::try_from(value).unwrap();
+        assert_eq!(credentials.login, "user");
+        assert_eq!(credentials.password, "pass");
+    }
+
+    #[test]
+    fn test_credentials_try_from_missing_credentials_key() {
+        let value = json!({});
+        let result = Credentials::try_from(value);
+        assert!(matches!(result, Err(Error::UnexpectedResponse(_))));
+    }
+
+    #[test]
+    fn test_credentials_try_from_credentials_not_array() {
+        let value = json!({"credentials": "not-an-array"});
+        let result = Credentials::try_from(value);
+        assert!(matches!(result, Err(Error::UnexpectedResponse(_))));
+    }
+
+    #[test]
+    fn test_credentials_try_from_missing_login() {
+        let value = json!({"credentials": []});
+        let result = Credentials::try_from(value);
+        assert!(matches!(result, Err(Error::UnexpectedResponse(_))));
+    }
+
+    #[test]
+    fn test_credentials_try_from_missing_password() {
+        let value = json!({"credentials": ["user"]});
+        let result = Credentials::try_from(value);
+        assert!(matches!(result, Err(Error::UnexpectedResponse(_))));
+    }
+
+    #[test]
+    fn test_credentials_try_from_wrong_types() {
+        let value = json!({"credentials": [123, 456]});
+        let result = Credentials::try_from(value);
+        assert!(matches!(result, Err(Error::UnexpectedResponse(_))));
+    }
 }
