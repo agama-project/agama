@@ -143,6 +143,10 @@ jest.mock("~/hooks/storage/volume-group", () => ({
   useEditVolumeGroup: () => mockEditVolumeGroup,
 }));
 
+jest.mock("~/components/product/ProductRegistrationAlert", () => () => (
+  <div>registration alert</div>
+));
+
 describe("LvmPage", () => {
   beforeEach(() => {
     // Reset all mocks
