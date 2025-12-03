@@ -81,6 +81,8 @@ async fn test_start_zypp_server() {
         "SoftwareAction::Write failed: {:?}",
         result.unwrap_err()
     );
+    let issues = result.unwrap();
+    assert_eq!(issues, vec![]);
 
     // Check for the verification failed question
     let questions = question_handler
