@@ -48,23 +48,19 @@ async fn test_start_zypp_server() {
 
     let (tx, rx) = oneshot::channel();
 
-    let repo1 = StateRepository {
+    let repo_s = StateRepository {
         name: "signed_repo".to_string(),
         alias: "signed_repo".to_string(),
-        url: "/usr/share/signed_repo".to_string(),
-        enabled: true,
-    };
-
-    let repo2 = StateRepository {
-        name: "wrongsig_repo".to_string(),
-        alias: "wrongsig_repo".to_string(),
-        url: "/usr/share/wrongsig_repo".to_string(),
+        url: root_dir
+            .join("usr/share/signed_repo")
+            .to_string_lossy()
+            .to_string(),
         enabled: true,
     };
 
     let software_state = SoftwareState {
         product: "test_product".to_string(),
-        repositories: vec![repo1, repo2],
+        repositories: vec![repo_s],
         resolvables: vec![],
         options: Default::default(),
     };
