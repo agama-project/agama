@@ -85,7 +85,11 @@ impl Page for MainPage {
                 _ => {}
             }
         }
-        None
+
+        match self.selected_tab {
+            SelectedTab::Overview => self.overview.handle_key_event(event),
+            _ => None,
+        }
     }
 }
 
