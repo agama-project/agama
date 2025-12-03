@@ -24,43 +24,77 @@ import React from "react";
 import { screen, within } from "@testing-library/react";
 import { installerRender, mockParams } from "~/test-utils";
 import LvmPage from "./LvmPage";
+import type { system } from "~/api";
 
 const gib = (n) => n * 1024 * 1024 * 1024;
 
-// Mock devices from system storage API
-const sda = {
+// Mock devices from system storage API (using correct api-v2 types)
+const sda: system.storage.Device = {
   sid: 59,
   name: "/dev/sda",
   description: "Micron 1100 SATA",
-  isDrive: true,
-  type: "disk",
-  vendor: "Micron",
-  model: "Micron 1100 SATA",
-  size: 1024,
+  class: "drive",
+  block: {
+    start: 0,
+    size: gib(500),
+    active: true,
+    encrypted: false,
+    systems: [],
+    shrinking: { supported: false, reasons: [] },
+  },
+  drive: {
+    type: "disk",
+    vendor: "Micron",
+    model: "Micron 1100 SATA",
+    transport: "sata",
+    bus: "IDE",
+    driver: ["ahci"],
+  },
 };
 
-const sdb = {
+const sdb: system.storage.Device = {
   sid: 60,
   name: "/dev/sdb",
   description: "Generic disk",
-  isDrive: true,
-  type: "disk",
-  size: 2048,
+  class: "drive",
+  block: {
+    start: 0,
+    size: gib(1000),
+    active: true,
+    encrypted: false,
+    systems: [],
+    shrinking: { supported: false, reasons: [] },
+  },
+  drive: {
+    type: "disk",
+    vendor: "Generic",
+    model: "Generic",
+  },
 };
 
-const md0 = {
+const md0: system.storage.Device = {
   sid: 70,
   name: "/dev/md0",
   description: "MD RAID",
-  isDrive: false,
-  type: "md",
-  size: 4096,
+  class: "mdRaid",
+  block: {
+    start: 0,
+    size: gib(2000),
+    active: true,
+    encrypted: false,
+    systems: [],
+    shrinking: { supported: false, reasons: [] },
+  },
+  md: {
+    level: "raid1",
+    devices: [59, 60],
+  },
 };
 
-// Mock model drive
+// Mock model drive (using config model types)
 const mockDrive = {
   name: "/dev/sda",
-  spacePolicy: "delete",
+  spacePolicy: "delete" as const,
   partitions: [],
   isAddingPartitions: true,
   filesystem: undefined,
