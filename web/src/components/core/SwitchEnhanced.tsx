@@ -22,13 +22,14 @@
 
 import React, { useId } from "react";
 import { Content, Flex, FlexItem, Switch, SwitchProps } from "@patternfly/react-core";
+import { TranslatedString } from "~/i18n";
 
 type SwitchEnhancedProps = Omit<
   SwitchProps,
   "ref" | "label" | "aria-labelledby" | "aria-describedby"
 > & {
   /** Must describe the isChecked="true" state. */
-  label: React.ReactNode;
+  label: TranslatedString;
   /** Description or helper text displayed below the label. */
   description: React.ReactNode;
 };

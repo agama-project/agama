@@ -24,17 +24,18 @@ import React from "react";
 import { screen } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
 import Radio from "./RadioEnhanced";
+import { _ } from "~/i18n";
 
 describe("RadioEnhanced", () => {
   it("renders the label using an `lg` size", () => {
-    plainRender(<Radio label="Just a radio" name="radio-test" id="radio-test-1" />);
+    plainRender(<Radio label={_("Just a radio")} name="radio-test" id="radio-test-1" />);
 
     const radio = screen.getByText("Just a radio");
     expect(radio.classList).toContain("pf-v6-u-font-size-lg");
   });
 
   it("renders the label in bold when radio is checked", () => {
-    plainRender(<Radio label="Just a radio" name="radio-test" id="radio-test-1" isChecked />);
+    plainRender(<Radio label={_("Just a radio")} name="radio-test" id="radio-test-1" isChecked />);
 
     const radio = screen.getByText("Just a radio");
     expect(radio.classList).toContain("pf-v6-u-font-weight-bold");

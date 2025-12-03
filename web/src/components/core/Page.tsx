@@ -49,7 +49,7 @@ import flexStyles from "@patternfly/react-styles/css/utilities/Flex/flex";
 import { useLocation, useNavigate } from "react-router-dom";
 import { isEmpty, isObject } from "radashi";
 import { SIDE_PATHS } from "~/routes/paths";
-import { _ } from "~/i18n";
+import { _, TranslatedString } from "~/i18n";
 
 /**
  * Props accepted by Page.Section
@@ -60,7 +60,7 @@ type SectionProps = {
   /** Actions to display next to the title */
   titleActions?: React.ReactNode;
   /** The value used for accessible label */
-  "aria-label"?: string;
+  "aria-label"?: TranslatedString;
   /** Elements to be rendered in the section footer */
   actions?: React.ReactNode;
   /** A React node with a brief description of what the section is for */

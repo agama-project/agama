@@ -23,8 +23,9 @@
 import React from "react";
 import { Flex, Icon } from "@patternfly/react-core";
 import PFWarningIcon from "@patternfly/react-icons/dist/esm/icons/exclamation-triangle-icon";
+import { TranslatedString } from "~/i18n";
 
-export default function SmallWarning({ text }: { text: string }) {
+export default function SmallWarning({ text }: { text: TranslatedString }) {
   return (
     <Flex alignItems={{ default: "alignItemsCenter" }} gap={{ default: "gapXs" }}>
       <Icon status="warning">
