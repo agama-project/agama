@@ -31,11 +31,21 @@ product, a storage device and a user password). Then it should report the instal
 - Implement a basic UI that displays the list of products and the selected one.
 - The UI is updated on server changes (`SystemChanged` and `ConfigChanged` by now).
 
+### Day 2
+
+- Simplify the interaction with the API.
+- Extract product selection logic to a separate widget.
+
+### Day 3
+
+- Make it possible to run API actions in background.
+- Add a pop-up when the API is busy.
+
 ## Pending tasks
 
 - [x] Display and update information from the server.
 - [x] Implement a product selection page.
-- [ ] Add a popup when selecting the product and waiting for the server response.
+- [x] Add a popup when selecting the product and waiting for the server response.
 - [ ] Design the main UI: similar to the one that the web UI offers? Or do we prefer something
       different? Mock-ups are welcome.
 - [ ] Implement support to select the device for installation (storage).
