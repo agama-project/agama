@@ -18,15 +18,15 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
+use agama_software::model::state::{Repository as StateRepository, SoftwareState};
 use agama_software::zypp_server::{SoftwareAction, ZyppServer, ZyppServerResult};
 use agama_utils::actor;
-use agama_utils::progress;
-use agama_utils::question;
 use agama_utils::api::event::Event;
 use agama_utils::api::Issue;
-use agama_software::model::state::{SoftwareState, Repository as StateRepository};
+use agama_utils::progress;
+use agama_utils::question;
 use std::path::Path;
-use tokio::sync::{oneshot, broadcast};
+use tokio::sync::{broadcast, oneshot};
 use tracing_subscriber;
 
 #[tokio::test]
@@ -48,27 +48,62 @@ async fn test_start_zypp_server() {
 
     let (tx, rx) = oneshot::channel();
 
-    let repo = StateRepository {
+    let repo1 = StateRepository {
         name: "signed_repo".to_string(),
         alias: "signed_repo".to_string(),
-        url: "/usr/share/signed_repo".to_string(), // Relative to root_dir
+        url: "/usr/share/signed_repo".to_string(),
+        enabled: true,
+    };
+
+    let repo2 = StateRepository {
+        name: "wrongsig_repo".to_string(),
+        alias: "wrongsig_repo".to_string(),
+        url: "/usr/share/wrongsig_repo".to_string(),
         enabled: true,
     };
 
     let software_state = SoftwareState {
         product: "test_product".to_string(),
-        repositories: vec![repo],
+        repositories: vec![repo1, repo2],
         resolvables: vec![],
         options: Default::default(),
     };
 
-    client.send(SoftwareAction::Write {
-        state: software_state,
-        progress: progress_handler,
-        question: question_handler,
-        tx,
-    }).expect("Failed to send SoftwareAction::Write");
+    client
+        .send(SoftwareAction::Write {
+            state: software_state,
+            progress: progress_handler,
+            question: question_handler.clone(),
+            tx,
+        })
+        .expect("Failed to send SoftwareAction::Write");
 
-    let result: ZyppServerResult<Vec<Issue>> = rx.await.expect("Failed to receive response from server");
-    assert!(result.is_ok(), "SoftwareAction::Write failed: {:?}", result.unwrap_err());
+    let result: ZyppServerResult<Vec<Issue>> =
+        rx.await.expect("Failed to receive response from server");
+    assert!(
+        result.is_ok(),
+        "SoftwareAction::Write failed: {:?}",
+        result.unwrap_err()
+    );
+
+    // Check for the verification failed question
+    let questions = question_handler
+        .call(question::message::Get)
+        .await
+        .expect("Failed to get questions");
+    assert_eq!(
+        questions.len(),
+        1,
+        "Expected one question, but got {}",
+        questions.len()
+    );
+    let question = &questions[0];
+    assert_eq!(question.spec.class, "software.verification_failed");
+
+    // Send quit action to the server
+    let (quit_tx, quit_rx) = oneshot::channel();
+    client
+        .send(SoftwareAction::Quit(quit_tx))
+        .expect("Failed to send Quit action");
+    quit_rx.await.expect("Failed to receive quit response");
 }
