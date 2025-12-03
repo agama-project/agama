@@ -98,7 +98,6 @@ pub enum SoftwareAction {
         question: Handler<question::Service>,
         tx: oneshot::Sender<ZyppServerResult<Vec<Issue>>>,
     },
-    Quit(oneshot::Sender<()>),
 }
 
 /// Software service server.
@@ -152,12 +151,8 @@ impl ZyppServer {
                 break;
             };
 
-            match self.dispatch(action, &zypp).await {
-                Ok(true) => continue,
-                Ok(false) => break,
-                Err(error) => {
-                    tracing::error!("Software dispatch error: {:?}", error);
-                }
+            if let Err(error) = self.dispatch(action, &zypp).await {
+                tracing::error!("Software dispatch error: {:?}", error);
             }
         }
 
@@ -165,13 +160,11 @@ impl ZyppServer {
     }
 
     /// Forwards the action to the appropriate handler.
-    ///
-    /// Returns `true` if the server should continue running, `false` if it should shut down.
     async fn dispatch(
         &mut self,
         action: SoftwareAction,
         zypp: &zypp_agama::Zypp,
-    ) -> Result<bool, ZyppDispatchError> {
+    ) -> Result<(), ZyppDispatchError> {
         match action {
             SoftwareAction::Write {
                 state,
@@ -206,13 +199,8 @@ impl ZyppServer {
             SoftwareAction::GetProposal(product_spec, sender) => {
                 self.proposal(product_spec, sender, zypp).await?
             }
-            SoftwareAction::Quit(tx) => {
-                tx.send(())
-                    .map_err(|_| ZyppDispatchError::ResponseChannelClosed)?;
-                return Ok(false);
-            }
         }
-        Ok(true)
+        Ok(())
     }
 
     // Install rpms
