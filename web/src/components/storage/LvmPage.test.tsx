@@ -58,10 +58,10 @@ const sda: storage.Device = {
   systems: [],
   partitionTable: {
     type: "gpt",
-    partitions: [sda1],
     unpartitionedSize: 0,
     unusedSlots: [{ start: 3, size: gib(2) }],
   },
+  partitions: [sda1],
   udevIds: ["ata-Micron_1100_SATA_512GB_12563", "scsi-0ATA_Micron_1100_SATA_512GB"],
   udevPaths: ["pci-0000:00-12", "pci-0000:00-12-ata"],
   description: "",
@@ -149,12 +149,6 @@ const mockAddVolumeGroup = jest.fn();
 const mockEditVolumeGroup = jest.fn();
 const mockUseVolumeGroup = jest.fn();
 
-jest.mock("~/queries/issues", () => ({
-  ...jest.requireActual("~/queries/issues"),
-  useIssuesChanges: jest.fn(),
-  useIssues: () => [],
-}));
-
 jest.mock("~/hooks/api/system/storage", () => ({
   useAvailableDevices: jest.fn(() => mockUseAvailableDevices),
 }));
@@ -168,6 +162,10 @@ jest.mock("~/hooks/storage/volume-group", () => ({
   useAddVolumeGroup: jest.fn(() => mockAddVolumeGroup),
   useEditVolumeGroup: jest.fn(() => mockEditVolumeGroup),
 }));
+
+jest.mock("~/components/product/ProductRegistrationAlert", () => () => (
+  <div>registration alert</div>
+));
 
 beforeEach(() => {
   mockAddVolumeGroup.mockClear();
@@ -188,8 +186,8 @@ describe("LvmPage", () => {
       const { user } = installerRender(<LvmPage />);
       const name = screen.getByRole("textbox", { name: "Name" });
       const disks = screen.getByRole("group", { name: "Disks" });
-      const sdaCheckbox = within(disks).getByRole("checkbox", { name: "sda (1 KiB)" });
-      const sdbCheckbox = within(disks).getByRole("checkbox", { name: "sdb (1 KiB)" });
+      const sdaCheckbox = within(disks).getByRole("checkbox", { name: "sda" });
+      const sdbCheckbox = within(disks).getByRole("checkbox", { name: "sdb" });
       const moveMountPointsCheckbox = screen.getByRole("checkbox", {
         name: /Move the mount points currently configured at the selected disks to logical volumes/,
       });
@@ -216,7 +214,7 @@ describe("LvmPage", () => {
     it("allows configuring a new LVM volume group (moving mount points)", async () => {
       const { user } = installerRender(<LvmPage />);
       const disks = screen.getByRole("group", { name: "Disks" });
-      const sdbCheckbox = within(disks).getByRole("checkbox", { name: "sdb (1 KiB)" });
+      const sdbCheckbox = within(disks).getByRole("checkbox", { name: "sdb" });
       const moveMountPointsCheckbox = screen.getByRole("checkbox", {
         name: /Move the mount points currently configured at the selected disks to logical volumes/,
       });
@@ -235,7 +233,7 @@ describe("LvmPage", () => {
       const { user } = installerRender(<LvmPage />);
       const name = screen.getByRole("textbox", { name: "Name" });
       const disks = screen.getByRole("group", { name: "Disks" });
-      const sdaCheckbox = within(disks).getByRole("checkbox", { name: "sda (1 KiB)" });
+      const sdaCheckbox = within(disks).getByRole("checkbox", { name: "sda" });
       const acceptButton = screen.getByRole("button", { name: "Accept" });
 
       // Unselect sda
@@ -313,7 +311,7 @@ describe("LvmPage", () => {
       const { user } = installerRender(<LvmPage />);
       const name = screen.getByRole("textbox", { name: "Name" });
       const disks = screen.getByRole("group", { name: "Disks" });
-      const sdaCheckbox = within(disks).getByRole("checkbox", { name: "sda (1 KiB)" });
+      const sdaCheckbox = within(disks).getByRole("checkbox", { name: "sda" });
       const acceptButton = screen.getByRole("button", { name: "Accept" });
 
       // Let's clean the default given name
@@ -335,7 +333,7 @@ describe("LvmPage", () => {
     it("pre-fills form with the current volume group configuration", async () => {
       installerRender(<LvmPage />);
       const name = screen.getByRole("textbox", { name: "Name" });
-      const sdaCheckbox = screen.getByRole("checkbox", { name: "sda (1 KiB)" });
+      const sdaCheckbox = screen.getByRole("checkbox", { name: "sda" });
       expect(name).toHaveValue("fakeRootVg");
       expect(sdaCheckbox).toBeChecked();
     });
