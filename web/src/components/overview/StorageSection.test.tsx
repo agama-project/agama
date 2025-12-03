@@ -26,7 +26,6 @@ import { plainRender } from "~/test-utils";
 import { StorageSection } from "~/components/overview";
 import type { storage } from "~/api/system";
 
-
 let mockModel = {
   drives: [],
 };

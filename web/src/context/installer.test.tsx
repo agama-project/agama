@@ -28,7 +28,6 @@ import { InstallerClientProvider } from "./installer";
 import { DummyWSClient } from "~/client/ws";
 
 jest.mock("~/components/layout/Loading", () => {
-  const React = require("react");
   return () => React.createElement("div", null, "Loading Mock");
 });
 

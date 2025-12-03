@@ -156,7 +156,7 @@ const installerRender = (ui: React.ReactNode, options: { withL10n?: boolean } = 
         // ✅ turns retries off
         retry: false,
         // ✅ make sure that data is not retrieved again when not needed
-        staleTime: Infinity
+        staleTime: Infinity,
       },
     },
   });
