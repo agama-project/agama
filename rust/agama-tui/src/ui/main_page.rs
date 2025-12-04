@@ -18,6 +18,8 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
+use std::sync::{Arc, Mutex};
+
 use ratatui::{
     buffer::Buffer,
     crossterm::event::{KeyCode, KeyEventKind},
@@ -26,43 +28,48 @@ use ratatui::{
     text::Line,
     widgets::{StatefulWidget, Tabs, Widget},
 };
-use strum::{Display, EnumIter, FromRepr, IntoEnumIterator};
+use strum::Display;
 use tokio::sync::mpsc;
 
 use crate::{
+    api::ApiState,
     message::Message,
-    ui::{overview_page::OverviewPage, Command},
+    ui::{
+        overview_page::{OverviewPage, OverviewPageModel},
+        Command,
+    },
 };
 
 /// Borrowed from https://ratatui.rs/examples/widgets/tabs/
-#[derive(Clone, Copy, Default, Display, FromRepr, EnumIter)]
+#[derive(Clone, Display)]
 pub enum SelectedTab {
-    #[default]
-    #[strum(to_string = "Overview [o]")]
-    Overview,
-    #[strum(to_string = "Network [n]")]
+    Overview(OverviewPageModel),
     Network,
 }
 
 impl SelectedTab {
-    fn title(self) -> Line<'static> {
-        format!(" {self} ").into()
+    fn index(&self) -> usize {
+        match self {
+            Self::Overview(_) => 0,
+            Self::Network => 1,
+        }
     }
 }
 
 pub struct MainPageState {
     selected_tab: SelectedTab,
-}
-
-impl Default for MainPageState {
-    fn default() -> Self {
-        Self {
-            selected_tab: SelectedTab::Overview,
-        }
-    }
+    api: Arc<Mutex<ApiState>>,
 }
 
 impl MainPageState {
+    pub fn new(api: Arc<Mutex<ApiState>>) -> Self {
+        let overview = OverviewPageModel::new(api.clone());
+        Self {
+            api,
+            selected_tab: SelectedTab::Overview(overview),
+        }
+    }
+
     pub async fn update(&mut self, message: Message, _messages_tx: mpsc::Sender<Message>) {
         let Message::Key(event) = message else {
             return;
@@ -73,7 +80,10 @@ impl MainPageState {
         }
 
         match event.code {
-            KeyCode::Char('o') => self.selected_tab = SelectedTab::Overview,
+            KeyCode::Char('o') => {
+                let overview = OverviewPageModel::new(self.api.clone());
+                self.selected_tab = SelectedTab::Overview(overview);
+            }
             KeyCode::Char('n') => self.selected_tab = SelectedTab::Network,
             _ => {}
         }
@@ -81,6 +91,10 @@ impl MainPageState {
 
     pub fn commands(&self) -> Vec<Command> {
         vec![]
+    }
+
+    pub fn titles(&self) -> Vec<Line<'static>> {
+        vec![Line::from("Overview [o]"), Line::from("Network [n]")]
     }
 }
 
@@ -93,18 +107,19 @@ impl StatefulWidget for MainPage {
         let layout = Layout::vertical([Constraint::Length(1), Constraint::Min(0)]);
         let [tab_area, main_area] = layout.areas(area);
 
-        let titles = SelectedTab::iter().map(SelectedTab::title);
         let highlight_style = (Color::default(), tailwind::EMERALD.c700);
-        let selected_tab_index = state.selected_tab as usize;
-        Tabs::new(titles)
+        let selected_tab_index = state.selected_tab.index();
+        Tabs::new(state.titles())
             .highlight_style(highlight_style)
             .select(selected_tab_index)
             .padding("", "")
             .divider(" ")
             .render(tab_area, buf);
 
-        match state.selected_tab {
-            SelectedTab::Overview => Widget::render(&OverviewPage, main_area, buf),
+        match &mut state.selected_tab {
+            SelectedTab::Overview(state) => {
+                StatefulWidget::render(&OverviewPage, main_area, buf, state)
+            }
             SelectedTab::Network => {}
         }
     }

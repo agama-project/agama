@@ -18,7 +18,7 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use std::sync::Arc;
+use std::sync::{Arc, Mutex};
 
 use ratatui::{
     crossterm::event::{KeyCode, KeyEvent, KeyEventKind},
@@ -27,7 +27,7 @@ use ratatui::{
     style::{
         palette::{
             material::WHITE,
-            tailwind::{self, BLACK},
+            tailwind::{self},
         },
         Style,
     },
@@ -35,7 +35,7 @@ use ratatui::{
     widgets::{Block, Clear, Paragraph, StatefulWidget, Widget},
     DefaultTerminal, Frame,
 };
-use tokio::sync::{mpsc, Mutex};
+use tokio::sync::mpsc;
 
 use crate::{
     api::{ApiClient, ApiState},
@@ -75,7 +75,7 @@ impl App {
         messages_rx: mpsc::Receiver<Message>,
     ) -> Self {
         let products = {
-            let state = state.lock().await;
+            let state = state.lock().unwrap();
             state.system_info.manager.products.clone()
         };
         let product = ProductPageState::new(products);
@@ -120,7 +120,7 @@ impl App {
                 _ = self.api.select_product(&id).await;
             }
             Message::ProductSelected => {
-                self.current_page = Page::Main(MainPageState::default());
+                self.current_page = Page::Main(MainPageState::new(self.api_state.clone()));
             }
             _ => match &mut self.current_page {
                 Page::Product(model) => model.update(message, messages_tx).await,

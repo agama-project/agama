@@ -24,15 +24,12 @@ mod message;
 mod ui;
 mod utils;
 
-use std::sync::Arc;
+use std::sync::{Arc, Mutex};
 
 use agama_cli::api_url;
 use clap::Parser;
 use ratatui::{self, crossterm};
-use tokio::sync::{
-    mpsc::{self, Sender},
-    Mutex,
-};
+use tokio::sync::mpsc::{self, Sender};
 
 use crate::{
     api::{Api, ApiState},

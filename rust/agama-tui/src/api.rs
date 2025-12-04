@@ -21,26 +21,29 @@
 //! This module implements a service that retrieves and keeps the information
 //! from an Agama's server.
 
-use std::sync::Arc;
+use std::sync::{Arc, Mutex};
 
 use agama_lib::http::{BaseHTTPClient, WebSocketClient};
-use agama_utils::api::{Config, SystemInfo};
-use tokio::sync::{mpsc, Mutex};
+use agama_utils::api::{Config, Proposal, SystemInfo};
+use tokio::sync::mpsc;
 
 use crate::message::Message;
 
 pub struct ApiState {
     pub system_info: SystemInfo,
+    pub proposal: Proposal,
     pub config: Config,
 }
 
 impl ApiState {
     pub async fn from_client(http: &BaseHTTPClient) -> anyhow::Result<Self> {
         let system_info = http.get::<SystemInfo>("v2/system").await?;
+        let proposal = http.get::<Proposal>("v2/proposal").await?;
         let config = http.get::<Config>("v2/config").await?;
 
         Ok(Self {
             system_info,
+            proposal,
             config,
         })
     }
