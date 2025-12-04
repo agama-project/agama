@@ -29,62 +29,78 @@ import React from "react";
 import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import ProposalPage from "~/components/storage/ProposalPage";
-import { StorageDevice } from "~/storage";
-import { Issue, IssueSeverity, IssueSource } from "~/api/issue";
+import { Device } from "~/api/system/storage";
+import type { Issue } from "~/api/issue";
+import { storage as proposalStorage } from "~/api/proposal";
+import { model as storageModel } from "~/api/storage";
 
-const disk: StorageDevice = {
+const disk: Device = {
   sid: 60,
-  type: "disk",
-  isDrive: true,
-  description: "",
-  vendor: "Seagate",
-  model: "Unknown",
-  driver: ["ahci", "mmcblk"],
-  bus: "IDE",
   name: "/dev/vda",
-  size: 1e6,
+  description: "",
+  class: "drive",
+  drive: {
+    type: "disk",
+    vendor: "Seagate",
+    model: "Unknown",
+    driver: ["ahci", "mmcblk"],
+    bus: "IDE",
+  },
+  block: {
+    size: 1e6,
+    start: 0,
+    shrinking: {
+      supported: false,
+    },
+  },
+};
+
+const mockProposal: proposalStorage.Proposal = {
+  devices: [],
+  actions: [],
 };
 
 const systemError: Issue = {
   description: "System error",
-  kind: "storage",
-  details: "",
-  source: IssueSource.System,
-  severity: IssueSeverity.Error,
+  class: "system",
   scope: "storage",
 };
 
 const configError: Issue = {
   description: "Config error",
-  kind: "storage",
-  details: "",
-  source: IssueSource.Config,
-  severity: IssueSeverity.Error,
+  class: "config",
   scope: "storage",
 };
 
 const mockUseAvailableDevices = jest.fn();
-const mockUseResetConfigMutation = jest.fn();
-const mockUseDeprecated = jest.fn();
-const mockUseDeprecatedChanges = jest.fn();
-const mockUseReprobeMutation = jest.fn();
-jest.mock("~/queries/storage", () => ({
-  ...jest.requireActual("~/queries/storage"),
-  useResetConfigMutation: () => mockUseResetConfigMutation(),
-  useDeprecated: () => mockUseDeprecated(),
-  useDeprecatedChanges: () => mockUseDeprecatedChanges(),
-  useReprobeMutation: () => mockUseReprobeMutation(),
-}));
+const mockUseReset = jest.fn();
+const mockUseProposal = jest.fn();
+const mockActivateStorageAction = jest.fn();
 
-jest.mock("~/hooks/storage/system", () => ({
-  ...jest.requireActual("~/hooks/storage/system"),
+jest.mock("~/hooks/api/system/storage", () => ({
+  ...jest.requireActual("~/hooks/api/system/storage"),
   useAvailableDevices: () => mockUseAvailableDevices(),
 }));
 
-const mockUseConfigModel = jest.fn();
-jest.mock("~/queries/storage/config-model", () => ({
-  ...jest.requireActual("~/queries/storage/config-model"),
-  useConfigModel: () => mockUseConfigModel(),
+jest.mock("~/hooks/api/config/storage", () => ({
+  ...jest.requireActual("~/hooks/api/config/storage"),
+  useReset: () => mockUseReset(),
+}));
+
+jest.mock("~/hooks/api/proposal/storage", () => ({
+  ...jest.requireActual("~/hooks/api/proposal/storage"),
+  useProposal: () => mockUseProposal(),
+}));
+
+jest.mock("~/api", () => ({
+  ...jest.requireActual("~/api"),
+  activateStorageAction: () => mockActivateStorageAction(),
+}));
+
+const mockUseStorageModel = jest.fn();
+jest.mock("~/hooks/api/storage", () => ({
+  ...jest.requireActual("~/hooks/api/storage"),
+  useStorageModel: () => mockUseStorageModel(),
 }));
 
 const mockUseZFCPSupported = jest.fn();
@@ -99,12 +115,10 @@ jest.mock("~/queries/storage/dasd", () => ({
   useDASDSupported: () => mockUseDASDSupported(),
 }));
 
-const mockUseSystemErrors = jest.fn();
-const mockUseConfigErrors = jest.fn();
-jest.mock("~/queries/issues", () => ({
-  ...jest.requireActual("~/queries/issues"),
-  useSystemErrors: () => mockUseSystemErrors(),
-  useConfigErrors: () => mockUseConfigErrors(),
+const mockUseIssues = jest.fn();
+jest.mock("~/hooks/api/issue", () => ({
+  ...jest.requireActual("~/hooks/api/issue"),
+  useIssues: () => mockUseIssues(),
 }));
 
 jest.mock("./ProposalTransactionalInfo", () => () => <div>trasactional info</div>);
@@ -119,18 +133,16 @@ jest.mock("~/components/product/ProductRegistrationAlert", () => () => (
 ));
 
 beforeEach(() => {
-  mockUseResetConfigMutation.mockReturnValue({ mutate: jest.fn() });
-  mockUseReprobeMutation.mockReturnValue({ mutateAsync: jest.fn() });
-  mockUseDeprecated.mockReturnValue(false);
-  mockUseSystemErrors.mockReturnValue([]);
-  mockUseConfigErrors.mockReturnValue([]);
+  mockUseReset.mockReturnValue(jest.fn());
+  mockUseIssues.mockReturnValue([]);
+  mockUseProposal.mockReturnValue(null);
+  mockUseStorageModel.mockReturnValue(null);
+  mockUseAvailableDevices.mockReturnValue([]);
+  mockUseZFCPSupported.mockReturnValue(false);
+  mockUseDASDSupported.mockReturnValue(false);
 });
 
 describe("if there are not devices", () => {
-  beforeEach(() => {
-    mockUseAvailableDevices.mockReturnValue([]);
-  });
-
   it("renders an option for activating iSCSI", () => {
     installerRender(<ProposalPage />);
     expect(screen.queryByRole("link", { name: /iSCSI/ })).toBeInTheDocument();
@@ -147,10 +159,6 @@ describe("if there are not devices", () => {
   });
 
   describe("if zFCP is not supported", () => {
-    beforeEach(() => {
-      mockUseZFCPSupported.mockReturnValue(false);
-    });
-
     it("does not render an option for activating zFCP", () => {
       installerRender(<ProposalPage />);
       expect(screen.queryByRole("link", { name: /zFCP/ })).not.toBeInTheDocument();
@@ -158,10 +166,6 @@ describe("if there are not devices", () => {
   });
 
   describe("if DASD is not supported", () => {
-    beforeEach(() => {
-      mockUseDASDSupported.mockReturnValue(false);
-    });
-
     it("does not render an option for activating DASD", () => {
       installerRender(<ProposalPage />);
       expect(screen.queryByRole("link", { name: /DASD/ })).not.toBeInTheDocument();
@@ -194,17 +198,16 @@ describe("if there are not devices", () => {
 describe("if there is not a model", () => {
   beforeEach(() => {
     mockUseAvailableDevices.mockReturnValue([disk]);
-    mockUseConfigModel.mockReturnValue(null);
   });
 
-  describe("and there are system errors", () => {
+  describe("and there are issues", () => {
     beforeEach(() => {
-      mockUseSystemErrors.mockReturnValue([systemError]);
+      mockUseIssues.mockReturnValue([systemError]);
     });
 
     it("renders an option for resetting the config", () => {
       installerRender(<ProposalPage />);
-      expect(screen.queryByRole("button", { name: /Reset/ })).toBeInTheDocument();
+      expect(screen.queryByRole("button", { name: /reset/i })).toBeInTheDocument();
     });
 
     it("does not render the installation devices", () => {
@@ -218,12 +221,9 @@ describe("if there is not a model", () => {
     });
   });
 
-  describe("and there are not system errors", () => {
-    beforeEach(() => {
-      mockUseSystemErrors.mockReturnValue([]);
-    });
-
+  describe("and there are not issues", () => {
     it("renders an unsupported model alert", async () => {
+      mockUseProposal.mockReturnValue(mockProposal);
       installerRender(<ProposalPage />);
       expect(screen.queryByText("unsupported info")).toBeInTheDocument();
     });
@@ -234,6 +234,7 @@ describe("if there is not a model", () => {
     });
 
     it("renders the result", () => {
+      mockUseProposal.mockReturnValue(mockProposal);
       installerRender(<ProposalPage />);
       expect(screen.queryByText("result")).toBeInTheDocument();
     });
@@ -243,13 +244,13 @@ describe("if there is not a model", () => {
 describe("if there is a model", () => {
   beforeEach(() => {
     mockUseAvailableDevices.mockReturnValue([disk]);
-    mockUseConfigModel.mockReturnValue({ drives: [] });
+    const model: storageModel.Config = { drives: [] };
+    mockUseStorageModel.mockReturnValue(model);
   });
 
-  describe("and there are config errors and system errors", () => {
+  describe("and there are issues", () => {
     beforeEach(() => {
-      mockUseConfigErrors.mockReturnValue([configError]);
-      mockUseSystemErrors.mockReturnValue([systemError]);
+      mockUseIssues.mockReturnValue([configError, systemError]);
     });
 
     it("renders the config errors", () => {
@@ -259,7 +260,7 @@ describe("if there is a model", () => {
 
     it("renders an option for resetting the config", () => {
       installerRender(<ProposalPage />);
-      expect(screen.queryByRole("button", { name: /Reset/ })).toBeInTheDocument();
+      expect(screen.queryByRole("button", { name: /reset/i })).toBeInTheDocument();
     });
 
     it("does not render the installation devices", () => {
@@ -273,9 +274,14 @@ describe("if there is a model", () => {
     });
   });
 
-  describe("and there are not config errors but there are system errors", () => {
+  describe("and there are only proposal errors", () => {
     beforeEach(() => {
-      mockUseSystemErrors.mockReturnValue([systemError]);
+      const proposalError: Issue = {
+        description: "Proposal error",
+        class: "proposal",
+        scope: "storage",
+      };
+      mockUseIssues.mockReturnValue([proposalError]);
     });
 
     it("renders a failed proposal failed", () => {
@@ -295,17 +301,13 @@ describe("if there is a model", () => {
   });
 
   describe("and there are neither config errors nor system errors", () => {
-    beforeEach(() => {
-      mockUseSystemErrors.mockReturnValue([]);
-      mockUseConfigErrors.mockReturnValue([]);
-    });
-
     it("renders the installation devices", () => {
       installerRender(<ProposalPage />);
       expect(screen.queryByText("installation devices")).toBeInTheDocument();
     });
 
     it("renders the result", () => {
+      mockUseProposal.mockReturnValue(mockProposal);
       installerRender(<ProposalPage />);
       expect(screen.queryByText("result")).toBeInTheDocument();
     });
