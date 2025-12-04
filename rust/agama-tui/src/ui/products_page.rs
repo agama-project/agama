@@ -29,7 +29,7 @@ use ratatui::{
 };
 use tokio::sync::mpsc;
 
-use crate::{message::Message, ui::Command};
+use crate::{api::ApiState, message::Message, ui::Command};
 
 pub struct ProductPageState {
     products: Vec<Product>,
@@ -37,12 +37,31 @@ pub struct ProductPageState {
 }
 
 impl ProductPageState {
-    pub fn new(products: Vec<Product>) -> Self {
+    pub fn from_api(api_state: &ApiState) -> Self {
+        let products = api_state.system_info.manager.products.clone();
+        let product_id = api_state
+            .config
+            .software
+            .as_ref()
+            .and_then(|s| s.product.as_ref())
+            .and_then(|p| p.id.as_ref());
+
+        let selected = if let Some(id) = product_id {
+            products.iter().position(|p| &p.id == id)
+        } else {
+            None
+        };
+
         Self {
             products,
-            list: ListState::default().with_selected(Some(0)),
+            list: ListState::default().with_selected(selected),
         }
     }
+
+    // This is not expected to happen.
+    // pub fn update_from_api(&mut self, api_state: &ApiState) {
+    //     self.products = api_state.system_info.manager.products.clone();
+    // }
 
     pub async fn update(&mut self, message: Message, messages_tx: mpsc::Sender<Message>) {
         let Message::Key(event) = message else {

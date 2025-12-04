@@ -18,8 +18,7 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use std::sync::{Arc, Mutex};
-
+use agama_utils::api::software::SoftwareProposal;
 use ratatui::{
     prelude::{Buffer, Rect},
     text::Line,
@@ -28,14 +27,36 @@ use ratatui::{
 
 use crate::api::ApiState;
 
-#[derive(Clone)]
+#[derive(Clone, Default)]
 pub struct OverviewPageModel {
-    api: Arc<Mutex<ApiState>>,
+    used_space: Option<i64>,
 }
 
 impl OverviewPageModel {
-    pub fn new(api: Arc<Mutex<ApiState>>) -> Self {
-        Self { api }
+    pub fn from_api(api_state: &ApiState) -> Self {
+        if let Some(proposal) = Self::proposal_from_api(&api_state) {
+            Self {
+                used_space: Some(proposal.used_space),
+            }
+        } else {
+            Self::default()
+        }
+    }
+
+    pub fn update_from_api(&mut self, api_state: &ApiState) {
+        if let Some(proposal) = Self::proposal_from_api(&api_state) {
+            self.used_space = Some(proposal.used_space);
+        } else {
+            self.used_space = None
+        }
+    }
+
+    fn proposal_from_api(api_state: &ApiState) -> Option<&SoftwareProposal> {
+        api_state
+            .proposal
+            .software
+            .as_ref()
+            .and_then(|p| p.software.as_ref())
     }
 }
 
@@ -45,22 +66,15 @@ impl StatefulWidget for &OverviewPage {
     type State = OverviewPageModel;
 
     fn render(self, area: Rect, buf: &mut Buffer, state: &mut Self::State) {
-        let api = state.api.try_lock().unwrap();
-        let Some(proposal) = api
-            .proposal
-            .software
-            .as_ref()
-            .map(|p| p.software.as_ref())
-            .flatten()
-        else {
-            Line::from("There is not software proposal yet.").render(area, buf);
-            return;
+        let line = if let Some(used_space) = state.used_space {
+            Line::from(format!(
+                "The installation will take {}",
+                used_space.to_string()
+            ))
+        } else {
+            Line::from("There is not software proposal yet.")
         };
 
-        Line::from(format!(
-            "The installation will take {}",
-            proposal.used_space.to_string()
-        ))
-        .render(area, buf);
+        line.render(area, buf);
     }
 }

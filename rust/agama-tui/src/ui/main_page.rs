@@ -43,14 +43,14 @@ use crate::{
 /// Borrowed from https://ratatui.rs/examples/widgets/tabs/
 #[derive(Clone, Display)]
 pub enum SelectedTab {
-    Overview(OverviewPageModel),
+    Overview,
     Network,
 }
 
 impl SelectedTab {
     fn index(&self) -> usize {
         match self {
-            Self::Overview(_) => 0,
+            Self::Overview => 0,
             Self::Network => 1,
         }
     }
@@ -59,32 +59,42 @@ impl SelectedTab {
 pub struct MainPageState {
     selected_tab: SelectedTab,
     api: Arc<Mutex<ApiState>>,
+    overview_state: OverviewPageModel,
 }
 
 impl MainPageState {
     pub fn new(api: Arc<Mutex<ApiState>>) -> Self {
-        let overview = OverviewPageModel::new(api.clone());
+        let overview = {
+            let api_state = api.lock().unwrap();
+            OverviewPageModel::from_api(&api_state)
+        };
+
         Self {
             api,
-            selected_tab: SelectedTab::Overview(overview),
+            selected_tab: SelectedTab::Overview,
+            overview_state: overview,
         }
     }
 
     pub async fn update(&mut self, message: Message, _messages_tx: mpsc::Sender<Message>) {
-        let Message::Key(event) = message else {
-            return;
-        };
+        match message {
+            Message::Key(event) => {
+                if event.kind != KeyEventKind::Press {
+                    return;
+                }
 
-        if event.kind != KeyEventKind::Press {
-            return;
-        }
-
-        match event.code {
-            KeyCode::Char('o') => {
-                let overview = OverviewPageModel::new(self.api.clone());
-                self.selected_tab = SelectedTab::Overview(overview);
+                match event.code {
+                    KeyCode::Char('o') => {
+                        self.selected_tab = SelectedTab::Overview;
+                    }
+                    KeyCode::Char('n') => self.selected_tab = SelectedTab::Network,
+                    _ => {} // TODO: delegate events to the selected tab
+                }
             }
-            KeyCode::Char('n') => self.selected_tab = SelectedTab::Network,
+            Message::ApiStateChanged => {
+                let api_state = self.api.lock().unwrap();
+                self.overview_state.update_from_api(&api_state);
+            }
             _ => {}
         }
     }
@@ -117,8 +127,8 @@ impl StatefulWidget for MainPage {
             .render(tab_area, buf);
 
         match &mut state.selected_tab {
-            SelectedTab::Overview(state) => {
-                StatefulWidget::render(&OverviewPage, main_area, buf, state)
+            SelectedTab::Overview => {
+                StatefulWidget::render(&OverviewPage, main_area, buf, &mut state.overview_state)
             }
             SelectedTab::Network => {}
         }

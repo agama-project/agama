@@ -74,11 +74,10 @@ impl App {
         messages_tx: mpsc::Sender<Message>,
         messages_rx: mpsc::Receiver<Message>,
     ) -> Self {
-        let products = {
+        let product = {
             let state = state.lock().unwrap();
-            state.system_info.manager.products.clone()
+            ProductPageState::from_api(&state)
         };
-        let product = ProductPageState::new(products);
         Self {
             messages_tx,
             messages_rx,
@@ -122,10 +121,11 @@ impl App {
             Message::ProductSelected => {
                 self.current_page = Page::Main(MainPageState::new(self.api_state.clone()));
             }
-            _ => match &mut self.current_page {
-                Page::Product(model) => model.update(message, messages_tx).await,
+            Message::ApiStateChanged => match &mut self.current_page {
                 Page::Main(model) => model.update(message, messages_tx).await,
+                _ => {}
             },
+            _ => {}
         }
     }
 
