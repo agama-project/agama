@@ -29,6 +29,8 @@ import type { storage } from "~/api/system";
 import { model as apiModel } from "~/api/storage";
 import { gib } from "./utils";
 
+jest.mock("~/components/product/ProductRegistrationAlert", () => () => null);
+
 jest.mock("~/hooks/api/issue", () => ({
   useIssuesChanges: jest.fn(),
   useIssues: () => [],
@@ -86,10 +88,36 @@ const sda: storage.Device = {
 };
 
 const mockPartition: model.Partition = {
+  mountPath: "/var",
+  size: { min: gib(1), default: false },
+  filesystem: { type: "ext4", default: false },
   isNew: false,
   isUsed: true,
   isReused: false,
   isUsedBySpacePolicy: false,
+};
+
+const mockApiDrive: apiModel.Drive = {
+  name: "/dev/sda",
+  spacePolicy: "delete",
+  partitions: [
+    {
+      mountPath: "swap",
+      size: {
+        min: gib(2),
+        default: false, // false: user provided, true: calculated
+      },
+      filesystem: { default: false, type: "swap" },
+    },
+    {
+      mountPath: "/home",
+      size: {
+        min: gib(16),
+        default: true,
+      },
+      filesystem: { default: false, type: "xfs" },
+    },
+  ],
 };
 
 const mockDrive: model.Drive = {
@@ -134,7 +162,7 @@ const mockDrive: model.Drive = {
 };
 
 const mockSolvedConfigModel: apiModel.Config = {
-  drives: [mockDrive],
+  drives: [mockApiDrive],
 };
 
 const mockHomeVolume: storage.Volume = {
@@ -160,6 +188,7 @@ const mockHomeVolume: storage.Volume = {
 jest.mock("~/hooks/api/system/storage", () => ({
   useDevices: () => [sda],
   useVolumeTemplate: () => mockHomeVolume,
+  useDevice: () => sda,
 }));
 
 jest.mock("~/hooks/storage/model", () => ({
@@ -168,26 +197,31 @@ jest.mock("~/hooks/storage/model", () => ({
     drives: [mockDrive],
     getMountPaths: () => [],
   }),
-}));
-
-jest.mock("~/hooks/storage/product", () => ({
-  ...jest.requireActual("~/hooks/storage/product"),
   useMissingMountPaths: () => ["/home", "swap"],
+  useDrive: () => mockDrive,
 }));
 
 jest.mock("~/hooks/api/storage", () => ({
-  useStorageModel: () => ({ drives: [mockDrive] }),
-  useSolvedStorageModel: () => mockSolvedConfigModel,
+  storageModelQuery: {
+    queryKey: ["storageModel"],
+    queryFn: () => Promise.resolve({ drives: [mockApiDrive] }),
+  },
+  useStorageModel: () => ({ drives: [mockApiDrive] }),
+}));
+
+jest.mock("~/queries/storage/config-model", () => ({
+  ...jest.requireActual("~/queries/storage/config-model"),
+  useSolvedConfigModel: () => mockSolvedConfigModel,
 }));
 
 beforeEach(() => {
-  mockParams({ list: "drives", listIndex: "0" });
+  mockParams({ collection: "drives", index: "0" });
 });
 
 describe("PartitionPage", () => {
   it("renders a form for defining a partition", async () => {
     const { user } = installerRender(<PartitionPage />);
-    screen.getByRole("form", { name: "Configure partition at /dev/sda" });
+    await screen.findByRole("form", { name: "Configure partition at /dev/sda" });
     const mountPoint = screen.getByRole("button", { name: "Mount point toggle" });
     const mountPointMode = screen.getByRole("button", { name: "Mount point mode" });
     const filesystem = screen.getByRole("button", { name: "File system" });
@@ -225,7 +259,7 @@ describe("PartitionPage", () => {
   it("allows reseting the chosen mount point", async () => {
     const { user } = installerRender(<PartitionPage />);
     // Note that the underline PF component gives the role combobox to the input
-    const mountPoint = screen.getByRole("combobox", { name: "Mount point" });
+    const mountPoint = await screen.findByRole("combobox", { name: "Mount point" });
     const filesystem = screen.getByRole("button", { name: "File system" });
     let size = screen.getByRole("button", { name: "Size mode" });
     expect(mountPoint).toHaveValue("");
@@ -256,7 +290,7 @@ describe("PartitionPage", () => {
 
   it("does not allow sending sizes without units", async () => {
     const { user } = installerRender(<PartitionPage />);
-    screen.getByRole("form", { name: "Configure partition at /dev/sda" });
+    await screen.findByRole("form", { name: "Configure partition at /dev/sda" });
     const mountPoint = screen.getByRole("button", { name: "Mount point toggle" });
     const acceptButton = screen.getByRole("button", { name: "Accept" });
 
@@ -283,44 +317,48 @@ describe("PartitionPage", () => {
   });
 
   describe("if editing a partition", () => {
-    beforeEach(() => {
-      mockParams({ list: "drives", listIndex: "0", partitionId: "/home" });
-      mockGetPartition.mockReturnValue({
-        mountPath: "/home",
-        size: {
-          default: false,
-          min: gib(5),
-          max: gib(5),
-        },
-        filesystem: {
-          default: false,
-          type: "xfs",
-          label: "HOME",
-        },
+    describe("with fixed size", () => {
+      beforeEach(() => {
+        mockParams({ collection: "drives", index: "0", partitionId: "/home" });
+        mockGetPartition.mockReturnValue({
+          mountPath: "/home",
+          size: {
+            default: false,
+            min: gib(5),
+            max: gib(5),
+          },
+          filesystem: {
+            default: false,
+            type: "xfs",
+            label: "HOME",
+          },
+        });
       });
-    });
 
-    it("initializes the form with the partition values", async () => {
-      installerRender(<PartitionPage />);
-      const mountPointSelector = screen.getByRole("combobox", { name: "Mount point" });
-      expect(mountPointSelector).toHaveValue("/home");
-      const targetButton = screen.getByRole("button", { name: "Mount point mode" });
-      within(targetButton).getByText(/As a new partition/);
-      const filesystemButton = screen.getByRole("button", { name: "File system" });
-      within(filesystemButton).getByText("XFS");
-      const label = screen.getByRole("textbox", { name: "File system label" });
-      expect(label).toHaveValue("HOME");
-      const sizeModeButton = screen.getByRole("button", { name: "Size mode" });
-      within(sizeModeButton).getByText("Manual");
-      const sizeInput = screen.getByRole("textbox", { name: "Size" });
-      expect(sizeInput).toHaveValue("5 GiB");
-      const growCheck = screen.getByRole("checkbox", { name: "Allow growing" });
-      expect(growCheck).not.toBeChecked();
+      it("initializes the form with the partition values", async () => {
+        installerRender(<PartitionPage />);
+        const mountPointSelector = await screen.findByRole("combobox", {
+          name: "Mount point",
+        });
+        expect(mountPointSelector).toHaveValue("/home");
+        const targetButton = screen.getByRole("button", { name: "Mount point mode" });
+        within(targetButton).getByText(/As a new partition/);
+        const filesystemButton = screen.getByRole("button", { name: "File system" });
+        within(filesystemButton).getByText("XFS");
+        const label = screen.getByRole("textbox", { name: "File system label" });
+        expect(label).toHaveValue("HOME");
+        const sizeModeButton = screen.getByRole("button", { name: "Size mode" });
+        within(sizeModeButton).getByText("Manual");
+        const sizeInput = screen.getByRole("textbox", { name: "Size" });
+        expect(sizeInput).toHaveValue("5 GiB");
+        const growCheck = screen.getByRole("checkbox", { name: "Allow growing" });
+        expect(growCheck).not.toBeChecked();
+      });
     });
 
     describe("if the max size is unlimited", () => {
       beforeEach(() => {
-        mockParams({ list: "drives", listIndex: "0", partitionId: "/home" });
+        mockParams({ collection: "drives", index: "0", partitionId: "/home" });
         mockGetPartition.mockReturnValue({
           mountPath: "/home",
           size: {
@@ -336,14 +374,14 @@ describe("PartitionPage", () => {
 
       it("checks allow growing", async () => {
         installerRender(<PartitionPage />);
-        const growCheck = screen.getByRole("checkbox", { name: "Allow growing" });
+        const growCheck = await screen.findByRole("checkbox", { name: "Allow growing" });
         expect(growCheck).toBeChecked();
       });
     });
 
     describe("if the max size has a value", () => {
       beforeEach(() => {
-        mockParams({ list: "drives", listIndex: "0", partitionId: "/home" });
+        mockParams({ collection: "drives", index: "0", partitionId: "/home" });
         mockGetPartition.mockReturnValue({
           mountPath: "/home",
           size: {
@@ -360,7 +398,9 @@ describe("PartitionPage", () => {
 
       it("allows switching to a fixed size", async () => {
         const { user } = installerRender(<PartitionPage />);
-        const switchButton = screen.getByRole("button", { name: /Discard the maximum/ });
+        const switchButton = await screen.findByRole("button", {
+          name: /Discard the maximum/,
+        });
         await user.click(switchButton);
         const sizeInput = screen.getByRole("textbox", { name: "Size" });
         expect(sizeInput).toHaveValue("5 GiB");
@@ -371,7 +411,7 @@ describe("PartitionPage", () => {
 
     describe("if the default size has a max value", () => {
       beforeEach(() => {
-        mockParams({ list: "drives", listIndex: "0", partitionId: "/home" });
+        mockParams({ collection: "drives", index: "0", partitionId: "/home" });
         mockGetPartition.mockReturnValue({
           mountPath: "/home",
           size: {
@@ -388,7 +428,7 @@ describe("PartitionPage", () => {
 
       it("allows switching to a custom size", async () => {
         const { user } = installerRender(<PartitionPage />);
-        const sizeModeButton = screen.getByRole("button", { name: "Size mode" });
+        const sizeModeButton = await screen.findByRole("button", { name: "Size mode" });
         await user.click(sizeModeButton);
         const sizeModes = screen.getByRole("listbox", { name: "Size modes" });
         const customSize = within(sizeModes).getByRole("option", { name: /Manual/ });
