@@ -19,6 +19,7 @@
 // find current contact information at www.suse.com.
 
 pub(crate) mod main_page;
+pub(crate) mod network_page;
 pub(crate) mod overview_page;
 pub(crate) mod products_page;
 

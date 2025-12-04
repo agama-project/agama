@@ -35,6 +35,7 @@ use crate::{
     api::ApiState,
     message::Message,
     ui::{
+        network_page::{NetworkPage, NetworkPageState},
         overview_page::{OverviewPage, OverviewPageModel},
         Command,
     },
@@ -44,14 +45,14 @@ use crate::{
 #[derive(Clone, Display)]
 pub enum SelectedTab {
     Overview(OverviewPageModel),
-    Network,
+    Network(NetworkPageState),
 }
 
 impl SelectedTab {
     fn index(&self) -> usize {
         match self {
             Self::Overview(_) => 0,
-            Self::Network => 1,
+            Self::Network(_) => 1,
         }
     }
 }
@@ -84,8 +85,14 @@ impl MainPageState {
                 let overview = OverviewPageModel::new(self.api.clone());
                 self.selected_tab = SelectedTab::Overview(overview);
             }
-            KeyCode::Char('n') => self.selected_tab = SelectedTab::Network,
-            _ => {}
+            KeyCode::Char('n') => {
+                let network = NetworkPageState::new(self.api.clone());
+                self.selected_tab = SelectedTab::Network(network)
+            }
+            _ => match &mut self.selected_tab {
+                SelectedTab::Overview(model) => {}
+                SelectedTab::Network(model) => model.update(message, _messages_tx).await,
+            },
         }
     }
 
@@ -120,7 +127,9 @@ impl StatefulWidget for MainPage {
             SelectedTab::Overview(state) => {
                 StatefulWidget::render(&OverviewPage, main_area, buf, state)
             }
-            SelectedTab::Network => {}
+            SelectedTab::Network(state) => {
+                StatefulWidget::render(&NetworkPage, main_area, buf, state)
+            }
         }
     }
 }

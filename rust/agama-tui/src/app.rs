@@ -42,6 +42,7 @@ use crate::{
     message::Message,
     ui::{
         main_page::{MainPage, MainPageState},
+        network_page::{NetworkPage, NetworkPageState},
         products_page::{ProductPage, ProductPageState},
         Command,
     },
@@ -78,6 +79,7 @@ impl App {
             let state = state.lock().unwrap();
             state.system_info.manager.products.clone()
         };
+
         let product = ProductPageState::new(products);
         Self {
             messages_tx,
