@@ -18,11 +18,11 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
 /// Represents the reason why a pattern is selected.
-#[derive(Clone, Copy, Debug, PartialEq, Serialize, utoipa::ToSchema)]
+#[derive(Clone, Copy, Debug, PartialEq, Deserialize, Serialize, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub enum SelectedBy {
     /// The pattern was selected by the user.
@@ -34,7 +34,7 @@ pub enum SelectedBy {
 }
 
 /// Software proposal information.
-#[derive(Clone, Debug, Serialize, utoipa::ToSchema)]
+#[derive(Clone, Debug, Deserialize, Serialize, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct SoftwareProposal {
     /// Space required for installation in KiB.
@@ -45,7 +45,7 @@ pub struct SoftwareProposal {
 }
 
 /// Describes what Agama proposes for the target system.
-#[derive(Clone, Default, Debug, Serialize, utoipa::ToSchema)]
+#[derive(Clone, Default, Debug, Deserialize, Serialize, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct Proposal {
     /// Software specific proposal
