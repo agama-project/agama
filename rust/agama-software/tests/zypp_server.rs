@@ -22,6 +22,7 @@ use agama_software::model::state::{Repository as StateRepository, SoftwareState}
 use agama_software::zypp_server::{SoftwareAction, ZyppServer, ZyppServerResult};
 use agama_utils::actor;
 use agama_utils::api::event::Event;
+use agama_utils::api::question::{Answer, AnswerRule, Config};
 use agama_utils::api::Issue;
 use agama_utils::progress;
 use agama_utils::question;
@@ -40,9 +41,10 @@ fn clean_leftover_repos(root_dir: &Path) {
         .unwrap()
         .filter_map(Result::ok)
     {
-        let _ = fs::remove_file(path);
+        fs::remove_file(path).expect("failed to remove repo file");
     }
 }
+
 #[tokio::test]
 async fn test_start_zypp_server() {
     let _ = tracing_subscriber::fmt::try_init();
@@ -50,6 +52,10 @@ async fn test_start_zypp_server() {
     let root_dir =
         Path::new(env!("CARGO_MANIFEST_DIR")).join("../zypp-agama/fixtures/zypp_repos_root");
     clean_leftover_repos(&root_dir);
+    let rpmdb_dir = root_dir.join("usr/lib/sysimage/rpm/");
+    if fs::exists(&rpmdb_dir).unwrap_or(false) {
+        fs::remove_dir_all(rpmdb_dir).expect("removing RPM data failed");
+    }
 
     let client = ZyppServer::start(&root_dir).expect("starting zypp server failed");
 
@@ -63,6 +69,26 @@ async fn test_start_zypp_server() {
     // Spawn question service
     let question_service = question::service::Service::new(event_tx.clone());
     let question_handler = actor::spawn(question_service);
+
+    // Pre-configure the answer to the GPG key question
+    let answer = Answer {
+        action: "Trust".to_string(),
+        value: None,
+    };
+    let rule = AnswerRule {
+        class: Some("software.import_gpg".to_string()),
+        text: None,
+        data: None,
+        answer,
+    };
+    let config = Config {
+        policy: None,
+        answers: vec![rule],
+    };
+    question_handler
+        .call(question::message::SetConfig::new(Some(config)))
+        .await
+        .unwrap();
 
     let (tx, rx) = oneshot::channel();
 
@@ -94,25 +120,19 @@ async fn test_start_zypp_server() {
 
     let result: ZyppServerResult<Vec<Issue>> =
         rx.await.expect("Failed to receive response from server");
-    assert!(
+    assert_eq!(
         result.is_ok(),
+        true,
         "SoftwareAction::Write failed: {:?}",
         result.unwrap_err()
     );
     let issues = result.unwrap();
-    assert_eq!(issues, vec![]);
+    assert_eq!(issues.len(), 1);
+    assert_eq!(issues[0].class, "software.select_product");
 
-    // Check for the verification failed question
     let questions = question_handler
         .call(question::message::Get)
         .await
         .expect("Failed to get questions");
-    assert_eq!(
-        questions.len(),
-        1,
-        "Expected one question, but got {}",
-        questions.len()
-    );
-    let question = &questions[0];
-    assert_eq!(question.spec.class, "software.verification_failed");
+    assert!(questions.is_empty());
 }
