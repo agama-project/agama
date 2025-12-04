@@ -19,10 +19,10 @@
 // find current contact information at www.suse.com.
 
 use ratatui::{
-    crossterm::event::{KeyCode, KeyEventKind},
+    crossterm::event::{KeyCode, KeyEvent, KeyEventKind},
     layout::{Constraint, Layout},
     prelude::{Buffer, Rect},
-    style::{Modifier, Style},
+    style::{Modifier, Style, Stylize},
     text::Line,
     widgets::{Block, List, ListItem, ListState, StatefulWidget, Widget},
 };
@@ -44,10 +44,19 @@ struct Action {
     delete: bool,
 }
 
+#[derive(Clone, Copy, Default, PartialEq)]
+enum Section {
+    #[default]
+    Devices,
+    Actions,
+}
+
 pub struct StoragePageState {
     candidate_devices: Vec<Device>,
     candidates_list: ListState,
     actions: Vec<Action>,
+    actions_list: ListState,
+    focus: Section,
 }
 
 impl StoragePageState {
@@ -58,6 +67,8 @@ impl StoragePageState {
             candidate_devices,
             candidates_list: ListState::default().with_selected(Some(0)),
             actions,
+            actions_list: ListState::default().with_selected(Some(0)),
+            focus: Section::default(),
         }
     }
 
@@ -75,6 +86,18 @@ impl StoragePageState {
             return;
         }
 
+        match event.code {
+            KeyCode::Tab => {
+                self.change_focus();
+            }
+            _ => match self.focus {
+                Section::Devices => self.handle_devices_key_event(event, messages_tx),
+                Section::Actions => self.handle_actions_key_event(event),
+            },
+        }
+    }
+
+    fn handle_devices_key_event(&mut self, event: KeyEvent, messages_tx: mpsc::Sender<Message>) {
         match event.code {
             KeyCode::Enter => {
                 if let Some(device) = self.selected_device() {
@@ -96,6 +119,26 @@ impl StoragePageState {
             }
             _ => {}
         }
+    }
+
+    fn handle_actions_key_event(&mut self, event: KeyEvent) {
+        match event.code {
+            KeyCode::Down | KeyCode::Char('j') => {
+                self.actions_list.select_next();
+            }
+            KeyCode::Up | KeyCode::Char('k') => {
+                self.actions_list.select_previous();
+            }
+            _ => {}
+        }
+    }
+
+    fn change_focus(&mut self) {
+        self.focus = if self.focus == Section::Devices {
+            Section::Actions
+        } else {
+            Section::Devices
+        };
     }
 
     fn selected_device(&mut self) -> Option<&mut Device> {
@@ -159,6 +202,22 @@ impl StoragePageState {
             delete,
         })
     }
+
+    fn list_style_for(&self, section: Section) -> Style {
+        if self.focus == section {
+            SELECTED_STYLE
+        } else {
+            Style::default()
+        }
+    }
+
+    fn block_style_for(&self, section: Section) -> Style {
+        if self.focus == section {
+            Style::new().green()
+        } else {
+            Style::default()
+        }
+    }
 }
 
 pub struct StoragePage;
@@ -175,17 +234,21 @@ impl StatefulWidget for StoragePage {
         ]);
         let [devices_area, actions_area] = layout.areas(area);
 
-        let block = Block::bordered().title("Candidate devices");
+        let block = Block::bordered()
+            .border_style(state.block_style_for(Section::Devices))
+            .title(" Candidate devices ");
         let list = List::new(&state.candidate_devices)
             .block(block)
-            .highlight_style(SELECTED_STYLE);
+            .highlight_style(state.list_style_for(Section::Devices));
         StatefulWidget::render(list, devices_area, buf, &mut state.candidates_list);
 
-        let block = Block::bordered().title("Actions");
+        let block = Block::bordered()
+            .border_style(state.block_style_for(Section::Actions))
+            .title("Actions");
         let list = List::new(&state.actions)
             .block(block)
-            .highlight_style(SELECTED_STYLE);
-        StatefulWidget::render(list, actions_area, buf, &mut ListState::default())
+            .highlight_style(state.list_style_for(Section::Actions));
+        StatefulWidget::render(list, actions_area, buf, &mut state.actions_list)
     }
 }
 
@@ -204,7 +267,7 @@ impl From<&Device> for ListItem<'_> {
 impl From<&Action> for ListItem<'_> {
     fn from(value: &Action) -> Self {
         let line = if value.delete {
-            Line::styled(value.text.to_string(), SELECTED_STYLE)
+            Line::styled(value.text.to_string(), Style::default().red())
         } else {
             Line::from(value.text.to_string())
         };

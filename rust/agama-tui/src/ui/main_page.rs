@@ -22,9 +22,9 @@ use std::sync::{Arc, Mutex};
 
 use ratatui::{
     buffer::Buffer,
-    crossterm::event::{KeyCode, KeyEvent, KeyEventKind},
+    crossterm::event::{KeyCode, KeyEventKind, KeyModifiers},
     layout::{Constraint, Layout, Rect},
-    style::{palette::tailwind, Color},
+    style::{palette::tailwind, Color, Modifier, Style},
     text::Line,
     widgets::{StatefulWidget, Tabs, Widget},
 };
@@ -41,7 +41,6 @@ use crate::{
     },
 };
 
-/// Borrowed from https://ratatui.rs/examples/widgets/tabs/
 #[derive(Clone, Display)]
 pub enum SelectedTab {
     Overview,
@@ -82,14 +81,17 @@ impl MainPageState {
     }
 
     pub fn commands(&self) -> Vec<Command> {
-        vec![]
+        vec![
+            Command::new("Alt+[1-3]", "Change section"),
+            Command::new("Tab", "Focus"),
+        ]
     }
 
     pub fn titles(&self) -> Vec<Line<'static>> {
         vec![
-            Line::from("Overview [o]"),
-            Line::from("Network [n]"),
-            Line::from("Storage [s]"),
+            Line::from("Overview [1]"),
+            Line::from("Network [2]"),
+            Line::from("Storage [3]"),
         ]
     }
 
@@ -97,11 +99,13 @@ impl MainPageState {
         match message {
             Message::Key(event) => {
                 if event.kind == KeyEventKind::Press {
-                    match event.code {
-                        KeyCode::Char('o') => self.selected_tab = SelectedTab::Overview,
-                        KeyCode::Char('n') => self.selected_tab = SelectedTab::Network,
-                        KeyCode::Char('s') => self.selected_tab = SelectedTab::Storage,
-                        _ => {} // TODO: delegate events to the selected tab
+                    if event.modifiers.contains(KeyModifiers::ALT) {
+                        match event.code {
+                            KeyCode::Char('1') => self.selected_tab = SelectedTab::Overview,
+                            KeyCode::Char('2') => self.selected_tab = SelectedTab::Network,
+                            KeyCode::Char('3') => self.selected_tab = SelectedTab::Storage,
+                            _ => {} // TODO: delegate events to the selected tab
+                        }
                     }
                 }
             }
@@ -135,13 +139,13 @@ impl StatefulWidget for MainPage {
         let layout = Layout::vertical([Constraint::Length(2), Constraint::Min(0)]);
         let [tab_area, main_area] = layout.areas(area);
 
-        let highlight_style = (Color::default(), tailwind::EMERALD.c700);
+        let highlight_style = Style::default().add_modifier(Modifier::UNDERLINED);
         let selected_tab_index = state.selected_tab.index();
         Tabs::new(state.titles())
             .highlight_style(highlight_style)
             .select(selected_tab_index)
-            .padding("", "")
-            .divider(" ")
+            .padding(" ", " ")
+            .divider(" | ")
             .render(tab_area, buf);
 
         match &mut state.selected_tab {
