@@ -25,14 +25,32 @@ use agama_utils::api::event::Event;
 use agama_utils::api::Issue;
 use agama_utils::progress;
 use agama_utils::question;
+use glob::glob;
+use std::fs;
 use std::path::Path;
+use std::result::Result;
 use tokio::sync::{broadcast, oneshot};
 use tracing_subscriber;
 
+fn clean_leftover_repos(root_dir: &Path) {
+    let repo_dir = root_dir.join("etc/zypp/repos.d/");
+
+    for path in glob(&format!("{}/*.repo", repo_dir.display()))
+        // unwrap OK: literal pattern syntax is correct
+        .unwrap()
+        .filter_map(Result::ok)
+    {
+        let _ = fs::remove_file(path);
+    }
+}
 #[tokio::test]
 async fn test_start_zypp_server() {
     let _ = tracing_subscriber::fmt::try_init();
-    let root_dir = Path::new(env!("CARGO_MANIFEST_DIR")).join("../zypp-agama/fixtures/zypp_root");
+
+    let root_dir =
+        Path::new(env!("CARGO_MANIFEST_DIR")).join("../zypp-agama/fixtures/zypp_repos_root");
+    clean_leftover_repos(&root_dir);
+
     let client = ZyppServer::start(&root_dir).expect("starting zypp server failed");
 
     // Setup event broadcast channel
