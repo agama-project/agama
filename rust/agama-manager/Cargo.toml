@@ -13,6 +13,7 @@ agama-network = { path = "../agama-network" }
 agama-software = { path = "../agama-software" }
 agama-storage = { path = "../agama-storage" }
 agama-utils = { path = "../agama-utils" }
+agama-users = { path = "../agama-users" }
 thiserror = "2.0.12"
 tokio = { version = "1.40.0", features = ["macros", "rt-multi-thread", "sync"] }
 async-trait = "0.1.83"
