@@ -40,6 +40,8 @@ product, a storage device and a user password). Then it should report the instal
 
 - Make it possible to run API actions in background.
 - Add a pop-up when the API is busy.
+- Refactor the code to split the state and the widgets, getting inspiration from
+  [The Elm Architecture](https://ratatui.rs/concepts/application-patterns/the-elm-architecture/).
 
 ## Pending tasks
 
