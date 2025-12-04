@@ -18,7 +18,7 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::{files, l10n, message, network, software, storage};
+use crate::{files, l10n, message, network, software, storage, users};
 use agama_utils::{
     actor::{self, Actor, Handler, MessageHandler},
     api::{
@@ -73,6 +73,8 @@ pub enum Error {
     // rest.
     #[error(transparent)]
     NetworkSystem(#[from] network::NetworkSystemError),
+    #[error(transparent)]
+    Users(#[from] users::service::Error),
 }
 
 pub struct Starter {
@@ -86,6 +88,7 @@ pub struct Starter {
     files: Option<Handler<files::Service>>,
     issues: Option<Handler<issue::Service>>,
     progress: Option<Handler<progress::Service>>,
+    users: Option<Handler<users::Service>>,
 }
 
 impl Starter {
@@ -105,6 +108,7 @@ impl Starter {
             files: None,
             issues: None,
             progress: None,
+            users: None,
         }
     }
 
@@ -140,6 +144,11 @@ impl Starter {
 
     pub fn with_progress(mut self, progress: Handler<progress::Service>) -> Self {
         self.progress = Some(progress);
+        self
+    }
+
+    pub fn with_users(mut self, users: Handler<users::Service>) -> Self {
+        self.users = Some(users);
         self
     }
 
@@ -206,6 +215,15 @@ impl Starter {
             None => network::start().await?,
         };
 
+        let users = match self.users {
+            Some(users) => users,
+            None => {
+                users::Service::starter(self.events.clone(), issues.clone())
+                    .start()
+                    .await?
+            }
+        };
+
         let mut service = Service {
             events: self.events,
             questions: self.questions,
@@ -223,6 +241,7 @@ impl Starter {
             config: Config::default(),
             system: manager::SystemInfo::default(),
             product: None,
+            users: users,
         };
 
         service.setup().await?;
@@ -246,6 +265,7 @@ pub struct Service {
     config: Config,
     system: manager::SystemInfo,
     events: event::Sender,
+    users: Handler<users::Service>,
 }
 
 impl Service {
