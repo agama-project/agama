@@ -22,7 +22,7 @@ use std::sync::{Arc, Mutex};
 
 use ratatui::{
     buffer::Buffer,
-    crossterm::event::{KeyCode, KeyEventKind},
+    crossterm::event::{KeyCode, KeyEvent, KeyEventKind},
     layout::{Constraint, Layout, Rect},
     style::{palette::tailwind, Color},
     text::Line,
@@ -36,6 +36,7 @@ use crate::{
     message::Message,
     ui::{
         overview_page::{OverviewPage, OverviewPageState},
+        storage_page::{StoragePage, StoragePageState},
         Command,
     },
 };
@@ -45,6 +46,7 @@ use crate::{
 pub enum SelectedTab {
     Overview,
     Network,
+    Storage,
 }
 
 impl SelectedTab {
@@ -52,6 +54,7 @@ impl SelectedTab {
         match self {
             Self::Overview => 0,
             Self::Network => 1,
+            Self::Storage => 2,
         }
     }
 }
@@ -60,42 +63,21 @@ pub struct MainPageState {
     selected_tab: SelectedTab,
     api: Arc<Mutex<ApiState>>,
     overview_state: OverviewPageState,
+    storage_state: StoragePageState,
 }
 
 impl MainPageState {
     pub fn new(api: Arc<Mutex<ApiState>>) -> Self {
-        let overview = {
-            let api_state = api.lock().unwrap();
-            OverviewPageState::from_api(&api_state)
-        };
+        let api_state = api.lock().unwrap();
+        let overview = OverviewPageState::from_api(&api_state);
+        let storage = StoragePageState::from_api(&api_state);
+        drop(api_state);
 
         Self {
             api,
             selected_tab: SelectedTab::Overview,
             overview_state: overview,
-        }
-    }
-
-    pub async fn update(&mut self, message: Message, _messages_tx: mpsc::Sender<Message>) {
-        match message {
-            Message::Key(event) => {
-                if event.kind != KeyEventKind::Press {
-                    return;
-                }
-
-                match event.code {
-                    KeyCode::Char('o') => {
-                        self.selected_tab = SelectedTab::Overview;
-                    }
-                    KeyCode::Char('n') => self.selected_tab = SelectedTab::Network,
-                    _ => {} // TODO: delegate events to the selected tab
-                }
-            }
-            Message::ApiStateChanged => {
-                let api_state = self.api.lock().unwrap();
-                self.overview_state.update_from_api(&api_state);
-            }
-            _ => {}
+            storage_state: storage,
         }
     }
 
@@ -104,7 +86,43 @@ impl MainPageState {
     }
 
     pub fn titles(&self) -> Vec<Line<'static>> {
-        vec![Line::from("Overview [o]"), Line::from("Network [n]")]
+        vec![
+            Line::from("Overview [o]"),
+            Line::from("Network [n]"),
+            Line::from("Storage [s]"),
+        ]
+    }
+
+    pub async fn update(&mut self, message: Message, messages_tx: mpsc::Sender<Message>) {
+        match message {
+            Message::Key(event) => {
+                if event.kind == KeyEventKind::Press {
+                    match event.code {
+                        KeyCode::Char('o') => self.selected_tab = SelectedTab::Overview,
+                        KeyCode::Char('n') => self.selected_tab = SelectedTab::Network,
+                        KeyCode::Char('s') => self.selected_tab = SelectedTab::Storage,
+                        _ => {} // TODO: delegate events to the selected tab
+                    }
+                }
+            }
+            Message::ApiStateChanged => {
+                let api_state = self.api.lock().unwrap();
+                self.overview_state.update_from_api(&api_state);
+                self.storage_state.update_from_api(&api_state);
+            }
+            _ => {}
+        }
+
+        self.update_selected_tab(message, messages_tx);
+    }
+
+    fn update_selected_tab(&mut self, message: Message, messages_tx: mpsc::Sender<Message>) {
+        match self.selected_tab {
+            SelectedTab::Storage => {
+                self.storage_state.update(message, messages_tx);
+            }
+            _ => {}
+        }
     }
 }
 
@@ -114,7 +132,7 @@ impl StatefulWidget for MainPage {
     type State = MainPageState;
 
     fn render(self, area: Rect, buf: &mut Buffer, state: &mut Self::State) {
-        let layout = Layout::vertical([Constraint::Length(1), Constraint::Min(0)]);
+        let layout = Layout::vertical([Constraint::Length(2), Constraint::Min(0)]);
         let [tab_area, main_area] = layout.areas(area);
 
         let highlight_style = (Color::default(), tailwind::EMERALD.c700);
@@ -128,9 +146,12 @@ impl StatefulWidget for MainPage {
 
         match &mut state.selected_tab {
             SelectedTab::Overview => {
-                StatefulWidget::render(&OverviewPage, main_area, buf, &mut state.overview_state)
+                StatefulWidget::render(OverviewPage, main_area, buf, &mut state.overview_state)
             }
             SelectedTab::Network => {}
+            SelectedTab::Storage => {
+                StatefulWidget::render(StoragePage, main_area, buf, &mut state.storage_state)
+            }
         }
     }
 }

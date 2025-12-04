@@ -62,7 +62,7 @@ impl OverviewPageState {
 
 pub struct OverviewPage;
 
-impl StatefulWidget for &OverviewPage {
+impl StatefulWidget for OverviewPage {
     type State = OverviewPageState;
 
     fn render(self, area: Rect, buf: &mut Buffer, state: &mut Self::State) {

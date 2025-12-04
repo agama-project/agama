@@ -31,4 +31,5 @@ pub enum Message {
     RequestStarted,
     RequestFinished,
     ApiStateChanged,
+    SetStorageDevices(Vec<String>),
 }

@@ -21,6 +21,7 @@
 pub(crate) mod main_page;
 pub(crate) mod overview_page;
 pub(crate) mod products_page;
+pub(crate) mod storage_page;
 
 pub struct Command {
     pub title: String,
