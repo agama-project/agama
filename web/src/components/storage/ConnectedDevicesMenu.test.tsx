@@ -25,28 +25,28 @@ import { screen, within } from "@testing-library/react";
 import { installerRender, mockNavigateFn } from "~/test-utils";
 import ConnectedDevicesMenu from "./ConnectedDevicesMenu";
 import { STORAGE as PATHS } from "~/routes/paths";
+import { activateStorageAction } from "~/api";
+
+jest.mock("~/api");
 
 const mockUseZFCPSupported = jest.fn();
+
 jest.mock("~/queries/storage/zfcp", () => ({
   ...jest.requireActual("~/queries/storage/zfcp"),
   useZFCPSupported: () => mockUseZFCPSupported(),
 }));
 
 const mockUseDASDSupported = jest.fn();
+
 jest.mock("~/queries/storage/dasd", () => ({
   ...jest.requireActual("~/queries/storage/dasd"),
   useDASDSupported: () => mockUseDASDSupported(),
 }));
 
-const mockReactivateSystem = jest.fn();
-jest.mock("~/hooks/storage/system", () => ({
-  ...jest.requireActual("~/hooks/storage/system"),
-  useReactivateSystem: () => mockReactivateSystem(),
-}));
-
 beforeEach(() => {
   mockUseZFCPSupported.mockReturnValue(false);
   mockUseDASDSupported.mockReturnValue(false);
+  (activateStorageAction as jest.Mock).mockClear();
 });
 
 async function openMenu() {
@@ -67,7 +67,7 @@ it("allows users to rescan devices", async () => {
   const { user, menu } = await openMenu();
   const reprobeItem = within(menu).getByRole("menuitem", { name: /Rescan/ });
   await user.click(reprobeItem);
-  expect(mockReactivateSystem).toHaveBeenCalled();
+  expect(activateStorageAction).toHaveBeenCalled();
 });
 
 it("allows users to configure iSCSI", async () => {
