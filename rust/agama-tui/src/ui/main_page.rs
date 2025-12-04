@@ -35,7 +35,7 @@ use crate::{
     api::ApiState,
     message::Message,
     ui::{
-        overview_page::{OverviewPage, OverviewPageModel},
+        overview_page::{OverviewPage, OverviewPageState},
         Command,
     },
 };
@@ -59,14 +59,14 @@ impl SelectedTab {
 pub struct MainPageState {
     selected_tab: SelectedTab,
     api: Arc<Mutex<ApiState>>,
-    overview_state: OverviewPageModel,
+    overview_state: OverviewPageState,
 }
 
 impl MainPageState {
     pub fn new(api: Arc<Mutex<ApiState>>) -> Self {
         let overview = {
             let api_state = api.lock().unwrap();
-            OverviewPageModel::from_api(&api_state)
+            OverviewPageState::from_api(&api_state)
         };
 
         Self {

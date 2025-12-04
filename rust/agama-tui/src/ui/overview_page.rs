@@ -28,11 +28,11 @@ use ratatui::{
 use crate::api::ApiState;
 
 #[derive(Clone, Default)]
-pub struct OverviewPageModel {
+pub struct OverviewPageState {
     used_space: Option<i64>,
 }
 
-impl OverviewPageModel {
+impl OverviewPageState {
     pub fn from_api(api_state: &ApiState) -> Self {
         if let Some(proposal) = Self::proposal_from_api(&api_state) {
             Self {
@@ -63,7 +63,7 @@ impl OverviewPageModel {
 pub struct OverviewPage;
 
 impl StatefulWidget for &OverviewPage {
-    type State = OverviewPageModel;
+    type State = OverviewPageState;
 
     fn render(self, area: Rect, buf: &mut Buffer, state: &mut Self::State) {
         let line = if let Some(used_space) = state.used_space {

@@ -121,9 +121,9 @@ impl App {
             Message::ProductSelected => {
                 self.current_page = Page::Main(MainPageState::new(self.api_state.clone()));
             }
-            Message::ApiStateChanged => match &mut self.current_page {
+            Message::ApiStateChanged | Message::Key(_) => match &mut self.current_page {
+                Page::Product(model) => model.update(message, messages_tx).await,
                 Page::Main(model) => model.update(message, messages_tx).await,
-                _ => {}
             },
             _ => {}
         }
