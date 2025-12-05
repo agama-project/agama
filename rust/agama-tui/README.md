@@ -43,6 +43,14 @@ product, a storage device and a user password). Then it should report the instal
 - Refactor the code to split the state and the widgets, getting inspiration from
   [The Elm Architecture](https://ratatui.rs/concepts/application-patterns/the-elm-architecture/).
 
+### Day 4
+
+- The current design has a problem: the render methods are responsible for extracting
+  the information from the API which is available behind a Mutex in the widget's state.
+- We change the approach and now the widget state is responsible for extracting the
+  information needed by the view. No more locks in the render function.
+- Introduce a new storage page with different sections that you can navigate using Tab.
+
 ## Pending tasks
 
 - [x] Display and update information from the server.
@@ -50,7 +58,7 @@ product, a storage device and a user password). Then it should report the instal
 - [x] Add a popup when selecting the product and waiting for the server response.
 - [ ] Design the main UI: similar to the one that the web UI offers? Or do we prefer something
       different? Mock-ups are welcome.
-- [ ] Implement support to select the device for installation (storage).
+- [x] Implement support to select the device for installation (storage).
 - [ ] Implement support to set the user. This will not work at all, because the user service is not
       implemented yet. But it is enough for our purposes, as the configuration is saved (although it
       won't be applied).

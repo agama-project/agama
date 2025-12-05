@@ -22,11 +22,11 @@ use std::sync::{Arc, Mutex};
 
 use ratatui::{
     buffer::Buffer,
-    crossterm::event::{KeyCode, KeyEventKind},
+    crossterm::event::{KeyCode, KeyEvent, KeyEventKind, KeyModifiers},
     layout::{Constraint, Layout, Rect},
-    style::{palette::tailwind, Color},
+    style::{Modifier, Style},
     text::Line,
-    widgets::{StatefulWidget, Tabs, Widget},
+    widgets::{Clear, StatefulWidget, Tabs, Widget},
 };
 use strum::Display;
 use tokio::sync::mpsc;
@@ -36,23 +36,27 @@ use crate::{
     message::Message,
     ui::{
         network_page::{NetworkPage, NetworkPageState},
-        overview_page::{OverviewPage, OverviewPageModel},
+        overview_page::{OverviewPage, OverviewPageState},
+        products_page::{ProductPage, ProductPageState},
+        storage_page::{StoragePage, StoragePageState},
         Command,
     },
+    utils::popup_area,
 };
 
-/// Borrowed from https://ratatui.rs/examples/widgets/tabs/
 #[derive(Clone, Display)]
 pub enum SelectedTab {
-    Overview(OverviewPageModel),
-    Network(NetworkPageState),
+    Overview,
+    Network,
+    Storage,
 }
 
 impl SelectedTab {
     fn index(&self) -> usize {
         match self {
-            Self::Overview(_) => 0,
-            Self::Network(_) => 1,
+            Self::Overview => 0,
+            Self::Network => 1,
+            Self::Storage => 2,
         }
     }
 }
@@ -60,48 +64,102 @@ impl SelectedTab {
 pub struct MainPageState {
     selected_tab: SelectedTab,
     api: Arc<Mutex<ApiState>>,
+    network_state: NetworkPageState,
+    overview_state: OverviewPageState,
+    storage_state: StoragePageState,
+    product_state: ProductPageState,
+    product_popup: bool,
 }
 
 impl MainPageState {
     pub fn new(api: Arc<Mutex<ApiState>>) -> Self {
-        let overview = OverviewPageModel::new(api.clone());
+        let api_state = api.lock().unwrap();
+        let overview = OverviewPageState::from_api(&api_state);
+        let storage = StoragePageState::from_api(&api_state);
+        let product = ProductPageState::from_api(&api_state);
+        let network = NetworkPageState::from_api(&api_state);
+        let product_popup = api_state.selected_product().is_none();
+        drop(api_state);
+
         Self {
             api,
-            selected_tab: SelectedTab::Overview(overview),
-        }
-    }
-
-    pub async fn update(&mut self, message: Message, _messages_tx: mpsc::Sender<Message>) {
-        let Message::Key(event) = message else {
-            return;
-        };
-
-        if event.kind != KeyEventKind::Press {
-            return;
-        }
-
-        match event.code {
-            KeyCode::Char('o') => {
-                let overview = OverviewPageModel::new(self.api.clone());
-                self.selected_tab = SelectedTab::Overview(overview);
-            }
-            KeyCode::Char('n') => {
-                let network = NetworkPageState::new(self.api.clone());
-                self.selected_tab = SelectedTab::Network(network)
-            }
-            _ => match &mut self.selected_tab {
-                SelectedTab::Overview(model) => {}
-                SelectedTab::Network(model) => model.update(message, _messages_tx).await,
-            },
+            selected_tab: SelectedTab::Overview,
+            network_state: network,
+            overview_state: overview,
+            storage_state: storage,
+            product_state: product,
+            product_popup,
         }
     }
 
     pub fn commands(&self) -> Vec<Command> {
-        vec![]
+        vec![
+            Command::new("Alt+p", "Change product"),
+            Command::new("Alt+[1-3]", "Change section"),
+            Command::new("Tab", "Focus"),
+        ]
     }
 
     pub fn titles(&self) -> Vec<Line<'static>> {
-        vec![Line::from("Overview [o]"), Line::from("Network [n]")]
+        vec![
+            Line::from("Overview [1]"),
+            Line::from("Network [2]"),
+            Line::from("Storage [3]"),
+        ]
+    }
+
+    pub async fn update(&mut self, message: Message, messages_tx: mpsc::Sender<Message>) {
+        match message {
+            Message::Key(event) => {
+                if self.product_popup {
+                    self.product_state
+                        .update(message.clone(), messages_tx.clone())
+                        .await;
+                } else {
+                    self.handle_key_event(event);
+                }
+            }
+            Message::ProductSelected => self.product_popup = false,
+            Message::ApiStateChanged => {
+                let api_state = self.api.lock().unwrap();
+                self.overview_state.update_from_api(&api_state);
+                self.storage_state.update_from_api(&api_state);
+                self.product_state.update_from_api(&api_state);
+                self.network_state.update_from_api(&api_state);
+            }
+            _ => {}
+        }
+
+        self.update_selected_tab(message, messages_tx);
+    }
+
+    fn handle_key_event(&mut self, event: KeyEvent) {
+        if event.kind != KeyEventKind::Press {
+            return;
+        }
+
+        if event.modifiers.contains(KeyModifiers::ALT) {
+            match event.code {
+                KeyCode::Char('1') => self.selected_tab = SelectedTab::Overview,
+                KeyCode::Char('2') => self.selected_tab = SelectedTab::Network,
+                KeyCode::Char('3') => self.selected_tab = SelectedTab::Storage,
+                KeyCode::Char('p') => self.product_popup = true,
+                KeyCode::Esc => self.product_popup = false,
+                _ => {} // TODO: delegate events to the selected tab
+            }
+        }
+    }
+
+    fn update_selected_tab(&mut self, message: Message, messages_tx: mpsc::Sender<Message>) {
+        match self.selected_tab {
+            SelectedTab::Storage => {
+                self.storage_state.update(message, messages_tx);
+            }
+            SelectedTab::Network => {
+                self.network_state.update(message, messages_tx);
+            }
+            _ => {}
+        }
     }
 }
 
@@ -111,25 +169,34 @@ impl StatefulWidget for MainPage {
     type State = MainPageState;
 
     fn render(self, area: Rect, buf: &mut Buffer, state: &mut Self::State) {
-        let layout = Layout::vertical([Constraint::Length(1), Constraint::Min(0)]);
+        let layout = Layout::vertical([Constraint::Length(2), Constraint::Min(0)]);
         let [tab_area, main_area] = layout.areas(area);
 
-        let highlight_style = (Color::default(), tailwind::EMERALD.c700);
+        let highlight_style = Style::default().add_modifier(Modifier::UNDERLINED);
         let selected_tab_index = state.selected_tab.index();
         Tabs::new(state.titles())
             .highlight_style(highlight_style)
             .select(selected_tab_index)
-            .padding("", "")
-            .divider(" ")
+            .padding(" ", " ")
+            .divider(" | ")
             .render(tab_area, buf);
 
         match &mut state.selected_tab {
-            SelectedTab::Overview(state) => {
-                StatefulWidget::render(&OverviewPage, main_area, buf, state)
+            SelectedTab::Overview => {
+                StatefulWidget::render(OverviewPage, main_area, buf, &mut state.overview_state)
             }
-            SelectedTab::Network(state) => {
-                StatefulWidget::render(&NetworkPage, main_area, buf, state)
+            SelectedTab::Network => {
+                StatefulWidget::render(NetworkPage, main_area, buf, &mut state.network_state)
             }
+            SelectedTab::Storage => {
+                StatefulWidget::render(StoragePage, main_area, buf, &mut state.storage_state)
+            }
+        }
+
+        if state.product_popup {
+            let popup_area = popup_area(area, 80, 80);
+            Clear.render(popup_area, buf);
+            StatefulWidget::render(ProductPage, popup_area, buf, &mut state.product_state);
         }
     }
 }

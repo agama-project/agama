@@ -24,7 +24,7 @@
 use std::sync::{Arc, Mutex};
 
 use agama_lib::http::{BaseHTTPClient, WebSocketClient};
-use agama_utils::api::{Config, Proposal, SystemInfo};
+use agama_utils::api::{manager::Product, Config, Proposal, SystemInfo};
 use tokio::sync::mpsc;
 
 use crate::message::Message;
@@ -46,6 +46,20 @@ impl ApiState {
             proposal,
             config,
         })
+    }
+
+    pub fn selected_product(&self) -> Option<&Product> {
+        let product_id = self
+            .config
+            .software
+            .as_ref()
+            .and_then(|c| c.product.as_ref())
+            .and_then(|c| c.id.as_ref())?;
+        self.system_info
+            .manager
+            .products
+            .iter()
+            .find(|p| &p.id == product_id)
     }
 }
 
@@ -88,7 +102,7 @@ impl Api {
     ) -> ApiClient {
         let (actions_tx, actions_rx) = mpsc::channel(16);
 
-        let monitor = ApiMonitor::new(state, ws, messages.clone());
+        let monitor = ApiMonitor::new(state.clone(), http.clone(), ws, messages.clone());
         tokio::task::spawn(async move {
             monitor.run().await;
         });
@@ -139,19 +153,22 @@ impl Api {
 
 /// Monitors the events coming from the API and updates the ApiState.
 struct ApiMonitor {
-    _state: Arc<Mutex<ApiState>>,
+    state: Arc<Mutex<ApiState>>,
+    http: BaseHTTPClient,
     ws: WebSocketClient,
     messages: mpsc::Sender<Message>,
 }
 
 impl ApiMonitor {
     pub fn new(
-        _state: Arc<Mutex<ApiState>>,
+        state: Arc<Mutex<ApiState>>,
+        http: BaseHTTPClient,
         ws: WebSocketClient,
         messages: mpsc::Sender<Message>,
     ) -> Self {
         Self {
-            _state,
+            state,
+            http,
             ws,
             messages,
         }
@@ -160,11 +177,24 @@ impl ApiMonitor {
     async fn run(mut self) {
         loop {
             if let Ok(_) = self.ws.receive().await {
-                // TODO: update the state accordingly to the event.
+                self.update_from_api().await;
                 self.messages
                     .send(Message::ApiStateChanged)
                     .await
                     .expect("Could not send the message, channel closed (?)");
+            }
+        }
+    }
+
+    // NOTE: who should update the state, ApiMonitor or Api?
+    async fn update_from_api(&mut self) {
+        match ApiState::from_client(&self.http).await {
+            Ok(new_state) => {
+                let mut state = self.state.lock().unwrap();
+                *state = new_state;
+            }
+            Err(error) => {
+                eprintln!("Could not update the application state from the API: {error}.")
             }
         }
     }

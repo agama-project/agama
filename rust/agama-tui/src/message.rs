@@ -23,6 +23,7 @@ use ratatui::crossterm::event::KeyEvent;
 use crate::ui::main_page::SelectedTab;
 
 // Split in smaller enums per scope.
+#[derive(Clone)]
 pub enum Message {
     Key(KeyEvent),
     GoToTab(SelectedTab),
@@ -31,4 +32,5 @@ pub enum Message {
     RequestStarted,
     RequestFinished,
     ApiStateChanged,
+    SetStorageDevices(Vec<String>),
 }

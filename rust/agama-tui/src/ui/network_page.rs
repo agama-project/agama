@@ -39,16 +39,17 @@ pub struct NetworkPageState {
 }
 
 impl NetworkPageState {
-    pub fn new(api: Arc<Mutex<ApiState>>) -> Self {
-        let connections = {
-            let state = api.lock().unwrap();
-            state.system_info.network.connections.0.clone()
-        };
+    pub fn from_api(api_state: &ApiState) -> Self {
+        let connections = api_state.system_info.network.connections.0.clone();
 
         Self {
             connections,
             list: ListState::default().with_selected(Some(0)),
         }
+    }
+
+    pub fn update_from_api(&mut self, api_state: &ApiState) {
+        self.connections = api_state.system_info.network.connections.0.clone();
     }
 
     pub fn selected_connection(&self) -> Option<&NetworkConnection> {
@@ -58,7 +59,7 @@ impl NetworkPageState {
         None
     }
 
-    pub async fn update(&mut self, message: Message, messages_tx: mpsc::Sender<Message>) {
+    pub fn update(&mut self, message: Message, _messages_tx: mpsc::Sender<Message>) {
         let Message::Key(event) = message else {
             return;
         };
@@ -172,7 +173,7 @@ fn field(name: String, value: String) -> Line<'static> {
     ])
 }
 
-impl StatefulWidget for &NetworkPage {
+impl StatefulWidget for NetworkPage {
     type State = NetworkPageState;
 
     fn render(self, area: Rect, buf: &mut Buffer, state: &mut Self::State) {

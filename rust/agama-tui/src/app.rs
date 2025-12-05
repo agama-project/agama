@@ -42,14 +42,12 @@ use crate::{
     message::Message,
     ui::{
         main_page::{MainPage, MainPageState},
-        network_page::{NetworkPage, NetworkPageState},
-        products_page::{ProductPage, ProductPageState},
         Command,
     },
+    utils::popup_area,
 };
 
 pub enum Page {
-    Product(ProductPageState),
     Main(MainPageState),
 }
 
@@ -75,12 +73,7 @@ impl App {
         messages_tx: mpsc::Sender<Message>,
         messages_rx: mpsc::Receiver<Message>,
     ) -> Self {
-        let products = {
-            let state = state.lock().unwrap();
-            state.system_info.manager.products.clone()
-        };
-
-        let product = ProductPageState::new(products);
+        let main_page = MainPageState::new(state.clone());
         Self {
             messages_tx,
             messages_rx,
@@ -88,7 +81,7 @@ impl App {
             api,
             exit: false,
             busy: false,
-            current_page: Page::Product(product),
+            current_page: Page::Main(main_page),
         }
     }
 
@@ -121,13 +114,12 @@ impl App {
             Message::SelectProduct(id) => {
                 _ = self.api.select_product(&id).await;
             }
-            Message::ProductSelected => {
-                self.current_page = Page::Main(MainPageState::new(self.api_state.clone()));
+            Message::ApiStateChanged | Message::Key(_) | Message::ProductSelected => {
+                match &mut self.current_page {
+                    Page::Main(model) => model.update(message, messages_tx).await,
+                }
             }
-            _ => match &mut self.current_page {
-                Page::Product(model) => model.update(message, messages_tx).await,
-                Page::Main(model) => model.update(message, messages_tx).await,
-            },
+            _ => {}
         }
     }
 
@@ -161,10 +153,6 @@ impl Widget for &mut App {
 
         // TODO: refactor to avoid repetition.
         let mut commands = match &mut self.current_page {
-            Page::Product(state) => {
-                StatefulWidget::render(ProductPage, main, buf, state);
-                state.commands()
-            }
             Page::Main(state) => {
                 StatefulWidget::render(MainPage, main, buf, state);
                 state.commands()
@@ -196,16 +184,4 @@ const COMMAND_STYLE: Style = Style::new().bg(tailwind::EMERALD.c700).fg(WHITE);
 fn style_command<'a>(command: &'a Command) -> Span<'a> {
     let text = format!(" {} [{}] ", command.title, command.key);
     Span::from(text).style(COMMAND_STYLE)
-}
-
-/// Create a centered rect using up certain percentage of the available rect
-///
-/// Borrowed from Ratatui examples: https://github.com/ratatui/ratatui/blob/main/examples/apps/popup/src/main.rs#L63.
-/// helper function to create a centered rect using up certain percentage of the available rect `r`
-fn popup_area(area: Rect, percent_x: u16, percent_y: u16) -> Rect {
-    let vertical = Layout::vertical([Constraint::Percentage(percent_y)]).flex(Flex::Center);
-    let horizontal = Layout::horizontal([Constraint::Percentage(percent_x)]).flex(Flex::Center);
-    let [area] = vertical.areas(area);
-    let [area] = horizontal.areas(area);
-    area
 }
