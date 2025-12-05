@@ -90,7 +90,7 @@ export type SelectableDataTableColumn = {
    * If defined, marks the column as sortable and specifies the key used for
    * sorting.
    */
-  sortingKey?: string;
+  sortingKey?: string | ((item: object) => string | number);
 
   /**
    * A space-separated string of additional CSS class names to apply to the column's cells.
