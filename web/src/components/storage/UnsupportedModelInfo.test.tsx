@@ -24,22 +24,22 @@ import React from "react";
 import { screen } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
 import UnsupportedModelInfo from "./UnsupportedModelInfo";
+import { useStorageModel } from "~/hooks/api/storage";
+import { useReset } from "~/hooks/api/config/storage";
 
-const mockUseResetConfigMutation = jest.fn();
-const mockUseConfigModel = jest.fn();
-jest.mock("~/hooks/api/storage", () => ({
-  ...jest.requireActual("~/hooks/api/storage"),
-  useResetConfigMutation: () => mockUseResetConfigMutation(),
-  useStorageModel: () => mockUseConfigModel(),
-}));
+jest.mock("~/hooks/api/storage");
+jest.mock("~/hooks/api/config/storage");
+
+const mockedUseStorageModel = useStorageModel as jest.Mock;
+const mockedUseReset = useReset as jest.Mock;
 
 beforeEach(() => {
-  mockUseResetConfigMutation.mockReturnValue({ mutate: jest.fn() });
+  mockedUseReset.mockReturnValue(jest.fn());
 });
 
 describe("if there is not a model", () => {
   beforeEach(() => {
-    mockUseConfigModel.mockReturnValue(null);
+    mockedUseStorageModel.mockReturnValue(null);
   });
 
   it("renders an alert", () => {
@@ -55,7 +55,7 @@ describe("if there is not a model", () => {
 
 describe("if there is a model", () => {
   beforeEach(() => {
-    mockUseConfigModel.mockReturnValue({ drives: [] });
+    mockedUseStorageModel.mockReturnValue({ drives: [] });
   });
 
   it("does not renders an alert", () => {
