@@ -23,22 +23,16 @@
 import React from "react";
 import { screen } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
-import { ProposalTransactionalInfo } from "~/components/storage";
+import ProposalTransactionalInfo from "./ProposalTransactionalInfo";
 import type { storage } from "~/api/system";
+import { useProduct } from "~/hooks/api/config";
+import { useVolumeTemplates } from "~/hooks/api/system/storage";
 
-let mockVolumes: storage.Volume[] = [];
-jest.mock("~/hooks/api/system/software", () => ({
-  ...jest.requireActual("~/hooks/api/system/software"),
-  useProduct: () => ({
-    selectedProduct: { name: "Test" },
-  }),
-  useProductChanges: () => jest.fn(),
-}));
+jest.mock("~/hooks/api/config");
+jest.mock("~/hooks/api/system/storage");
 
-jest.mock("~/hooks/api/system/storage", () => ({
-  ...jest.requireActual("~/hooks/api/system/storage"),
-  useVolumes: () => mockVolumes,
-}));
+const mockedUseProduct = useProduct as jest.Mock;
+const mockedUseVolumeTemplates = useVolumeTemplates as jest.Mock;
 
 const rootVolume: storage.Volume = {
   mountPath: "/",
@@ -62,7 +56,8 @@ const rootVolume: storage.Volume = {
 
 describe("if the system is not transactional", () => {
   beforeEach(() => {
-    mockVolumes = [rootVolume];
+    mockedUseProduct.mockReturnValue({ name: "Test" });
+    mockedUseVolumeTemplates.mockReturnValue([rootVolume]);
   });
 
   it("renders nothing", () => {
@@ -73,7 +68,8 @@ describe("if the system is not transactional", () => {
 
 describe("if the system is transactional", () => {
   beforeEach(() => {
-    mockVolumes = [{ ...rootVolume, transactional: true }];
+    mockedUseProduct.mockReturnValue({ name: "Test" });
+    mockedUseVolumeTemplates.mockReturnValue([{ ...rootVolume, transactional: true }]);
   });
 
   it("renders an explanation about the transactional system", () => {
