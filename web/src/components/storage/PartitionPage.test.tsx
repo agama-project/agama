@@ -29,12 +29,6 @@ import type { model as apiModel } from "~/api/storage";
 import type { storage as system } from "~/api/system";
 import { gib } from "./utils";
 
-jest.mock("~/queries/issues", () => ({
-  ...jest.requireActual("~/queries/issues"),
-  useIssuesChanges: jest.fn(),
-  useIssues: () => [],
-}));
-
 jest.mock("./ProposalResultSection", () => () => <div>result section</div>);
 jest.mock("./ProposalTransactionalInfo", () => () => <div>transactional info</div>);
 
@@ -176,6 +170,10 @@ if (!HTMLFormElement.prototype.requestSubmit) {
     }
   };
 }
+
+jest.mock("~/components/product/ProductRegistrationAlert", () => () => (
+  <div>registration alert</div>
+));
 
 beforeEach(() => {
   mockParams({ collection: "drives", index: "0" });
