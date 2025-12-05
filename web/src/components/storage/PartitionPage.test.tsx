@@ -24,8 +24,9 @@ import React from "react";
 import { screen, within } from "@testing-library/react";
 import { installerRender, mockParams } from "~/test-utils";
 import PartitionPage from "./PartitionPage";
-import { StorageDevice, model } from "~/storage";
-import { apiModel, Volume } from "~/api/storage/types";
+import { model } from "~/storage";
+import type { model as apiModel } from "~/api/storage";
+import type { storage as system } from "~/api/system";
 import { gib } from "./utils";
 
 jest.mock("~/queries/issues", () => ({
@@ -39,43 +40,26 @@ jest.mock("./ProposalTransactionalInfo", () => () => <div>transactional info</di
 
 const mockGetPartition = jest.fn();
 
-const sda1: StorageDevice = {
-  sid: 69,
+const sda1: system.Device = {
   name: "/dev/sda1",
   description: "Swap partition",
-  isDrive: false,
-  type: "partition",
   size: gib(2),
-  shrinking: { unsupported: ["Resizing is not supported"] },
   start: 1,
+  filesystem: null,
+  partitionTable: null,
 };
 
-const sda: StorageDevice = {
-  sid: 59,
-  isDrive: true,
-  type: "disk",
-  vendor: "Micron",
-  model: "Micron 1100 SATA",
-  driver: ["ahci", "mmcblk"],
-  bus: "IDE",
-  busId: "",
-  transport: "usb",
-  dellBOSS: false,
-  sdCard: true,
-  active: true,
+const sda: system.Device = {
   name: "/dev/sda",
+  description: "",
   size: 1024,
-  shrinking: { unsupported: ["Resizing is not supported"] },
-  systems: [],
+  filesystem: null,
   partitionTable: {
     type: "gpt",
     partitions: [sda1],
     unpartitionedSize: 0,
-    unusedSlots: [{ start: 3, size: gib(2) }],
   },
-  udevIds: ["ata-Micron_1100_SATA_512GB_12563", "scsi-0ATA_Micron_1100_SATA_512GB"],
-  udevPaths: ["pci-0000:00-12", "pci-0000:00-12-ata"],
-  description: "",
+  partitions: [sda1],
 };
 
 const mockPartition: model.Partition = {
@@ -93,7 +77,7 @@ const mockDrive: model.Drive = {
       mountPath: "swap",
       size: {
         min: gib(2),
-        default: false, // false: user provided, true: calculated
+        default: false,
       },
       filesystem: { default: false, type: "swap" },
       isNew: true,
@@ -132,16 +116,13 @@ const mockSolvedConfigModel: apiModel.Config = {
   drives: [mockDrive],
 };
 
-const mockHomeVolume: Volume = {
+const mockHomeVolume: apiModel.VolumeTemplate = {
   mountPath: "/home",
-  mountOptions: [],
-  target: "default",
   fsType: "btrfs",
   minSize: 1024,
   maxSize: 1024,
   autoSize: false,
   snapshots: false,
-  transactional: false,
   outline: {
     required: false,
     fsTypes: ["btrfs"],
@@ -153,23 +134,30 @@ const mockHomeVolume: Volume = {
   },
 };
 
-jest.mock("~/queries/storage", () => ({
-  ...jest.requireActual("~/queries/storage"),
-  useDevices: () => [sda],
-  useVolume: () => mockHomeVolume,
+const mockDevice = jest.fn();
+const mockVolumeTemplate = jest.fn();
+jest.mock("~/hooks/api/system/storage", () => ({
+  ...jest.requireActual("~/hooks/api/system/storage"),
+  useDevice: () => mockDevice(),
+  useVolumeTemplate: (mountPath: string) => mockVolumeTemplate(mountPath),
 }));
 
+const mockModel = jest.fn();
+const mockDriveModel = jest.fn();
+const mockMdRaidModel = jest.fn();
+const mockMissingMountPaths = jest.fn();
 jest.mock("~/hooks/storage/model", () => ({
   ...jest.requireActual("~/hooks/storage/model"),
-  useModel: () => ({
-    drives: [mockDrive],
-    getMountPaths: () => [],
-  }),
+  useModel: () => mockModel(),
+  useDrive: (index: number) => mockDriveModel(index),
+  useMdRaid: (index: number) => mockMdRaidModel(index),
+  useMissingMountPaths: () => mockMissingMountPaths(),
 }));
 
-jest.mock("~/hooks/storage/product", () => ({
-  ...jest.requireActual("~/hooks/storage/product"),
-  useMissingMountPaths: () => ["/home", "swap"],
+const mockStorageModel = jest.fn();
+jest.mock("~/hooks/api/storage", () => ({
+  ...jest.requireActual("~/hooks/api/storage"),
+  useStorageModel: () => mockStorageModel(),
 }));
 
 jest.mock("~/queries/storage/config-model", () => ({
@@ -178,8 +166,29 @@ jest.mock("~/queries/storage/config-model", () => ({
   useSolvedConfigModel: () => mockSolvedConfigModel,
 }));
 
+// Polyfill for JSDOM that doesn't implement requestSubmit
+if (!HTMLFormElement.prototype.requestSubmit) {
+  HTMLFormElement.prototype.requestSubmit = function (submitter) {
+    if (submitter) {
+      submitter.click();
+    } else {
+      this.dispatchEvent(new Event("submit", { bubbles: true, cancelable: true }));
+    }
+  };
+}
+
 beforeEach(() => {
-  mockParams({ list: "drives", listIndex: "0" });
+  mockParams({ collection: "drives", index: "0" });
+  mockDevice.mockReturnValue(sda);
+  mockDriveModel.mockReturnValue(mockDrive);
+  mockMdRaidModel.mockReturnValue(null);
+  mockVolumeTemplate.mockReturnValue(mockHomeVolume);
+  mockMissingMountPaths.mockReturnValue(["/home", "swap"]);
+  mockStorageModel.mockReturnValue({ drives: [mockDrive] });
+  mockModel.mockReturnValue({
+    drives: [mockDrive],
+    getMountPaths: () => [],
+  });
 });
 
 describe("PartitionPage", () => {
@@ -282,7 +291,7 @@ describe("PartitionPage", () => {
 
   describe("if editing a partition", () => {
     beforeEach(() => {
-      mockParams({ list: "drives", listIndex: "0", partitionId: "/home" });
+      mockParams({ collection: "drives", index: "0", partitionId: "/home" });
       mockGetPartition.mockReturnValue({
         mountPath: "/home",
         size: {
@@ -318,7 +327,7 @@ describe("PartitionPage", () => {
 
     describe("if the max size is unlimited", () => {
       beforeEach(() => {
-        mockParams({ list: "drives", listIndex: "0", partitionId: "/home" });
+        mockParams({ collection: "drives", index: "0", partitionId: "/home" });
         mockGetPartition.mockReturnValue({
           mountPath: "/home",
           size: {
@@ -341,7 +350,7 @@ describe("PartitionPage", () => {
 
     describe("if the max size has a value", () => {
       beforeEach(() => {
-        mockParams({ list: "drives", listIndex: "0", partitionId: "/home" });
+        mockParams({ collection: "drives", index: "0", partitionId: "/home" });
         mockGetPartition.mockReturnValue({
           mountPath: "/home",
           size: {
@@ -369,7 +378,7 @@ describe("PartitionPage", () => {
 
     describe("if the default size has a max value", () => {
       beforeEach(() => {
-        mockParams({ list: "drives", listIndex: "0", partitionId: "/home" });
+        mockParams({ collection: "drives", index: "0", partitionId: "/home" });
         mockGetPartition.mockReturnValue({
           mountPath: "/home",
           size: {
