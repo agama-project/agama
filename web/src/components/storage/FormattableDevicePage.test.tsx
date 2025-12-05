@@ -79,25 +79,23 @@ jest.mock("~/queries/issues", () => ({
 }));
 
 const mockDevice = jest.fn();
+const mockVolumeTemplate = jest.fn();
 jest.mock("~/hooks/api/system/storage", () => ({
   ...jest.requireActual("~/hooks/api/system/storage"),
   useDevice: () => mockDevice(),
-  useVolumeTemplate: () => homeVolume,
+  useVolumeTemplate: (mountPath: string) => mockVolumeTemplate(mountPath),
 }));
 
 const mockModel = jest.fn();
 const mockDriveModel = jest.fn();
 const mockMdRaidModel = jest.fn();
+const mockMissingMountPaths = jest.fn();
 jest.mock("~/hooks/storage/model", () => ({
   ...jest.requireActual("~/hooks/storage/model"),
   useModel: () => mockModel(),
   useDrive: (index: number) => mockDriveModel(index),
   useMdRaid: (index: number) => mockMdRaidModel(index),
-}));
-
-jest.mock("~/hooks/storage/product", () => ({
-  ...jest.requireActual("~/hooks/storage/product"),
-  useMissingMountPaths: () => ["/home", "swap"],
+  useMissingMountPaths: () => mockMissingMountPaths(),
 }));
 
 const mockAddFilesystem = jest.fn();
@@ -111,6 +109,8 @@ beforeEach(() => {
   mockDevice.mockReturnValue(sda);
   mockDriveModel.mockReturnValue(sdaModel);
   mockMdRaidModel.mockReturnValue(null);
+  mockVolumeTemplate.mockReturnValue(homeVolume);
+  mockMissingMountPaths.mockReturnValue(["/home", "swap"]);
   mockModel.mockReturnValue({
     drives: [sdaModel],
     getMountPaths: () => [],
