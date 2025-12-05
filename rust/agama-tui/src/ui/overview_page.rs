@@ -28,6 +28,7 @@ use ratatui::{
 
 use crate::api::ApiState;
 
+#[derive(Ord, Eq, PartialEq, PartialOrd)]
 struct Pattern {
     name: String,
     description: String,
@@ -70,7 +71,7 @@ impl OverviewPageState {
     }
 
     fn patterns_from_api(proposal: &SoftwareProposal, patterns: &Vec<ApiPattern>) -> Vec<Pattern> {
-        proposal
+        let mut patterns: Vec<_> = proposal
             .patterns
             .iter()
             .flat_map(|(name, selected)| {
@@ -83,7 +84,9 @@ impl OverviewPageState {
                     auto: false,
                 })
             })
-            .collect()
+            .collect();
+        patterns.sort();
+        patterns
     }
 }
 
