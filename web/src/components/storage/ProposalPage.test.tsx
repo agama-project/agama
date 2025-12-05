@@ -29,62 +29,60 @@ import React from "react";
 import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import ProposalPage from "~/components/storage/ProposalPage";
-import { StorageDevice } from "~/storage";
-import { Issue, IssueSeverity, IssueSource } from "~/api/issue";
 
-const disk: StorageDevice = {
-  sid: 60,
-  type: "disk",
-  isDrive: true,
-  description: "",
-  vendor: "Seagate",
-  model: "Unknown",
-  driver: ["ahci", "mmcblk"],
-  bus: "IDE",
+const disk = {
   name: "/dev/vda",
+  description: "Seagate Unknown",
   size: 1e6,
 };
 
-const systemError: Issue = {
-  description: "System error",
-  kind: "storage",
-  details: "",
-  source: IssueSource.System,
-  severity: IssueSeverity.Error,
+const configIssue = {
+  description: "Config error",
+  class: "configNoRoot",
   scope: "storage",
 };
 
-const configError: Issue = {
-  description: "Config error",
-  kind: "storage",
-  details: "",
-  source: IssueSource.Config,
-  severity: IssueSeverity.Error,
+const proposalIssue = {
+  description: "Proposal error",
+  class: "proposal",
+  scope: "storage",
+};
+
+const unfixableIssue = {
+  description: "System error",
+  class: "systemError",
   scope: "storage",
 };
 
 const mockUseAvailableDevices = jest.fn();
-const mockUseResetConfigMutation = jest.fn();
-const mockUseDeprecated = jest.fn();
-const mockUseDeprecatedChanges = jest.fn();
-const mockUseReprobeMutation = jest.fn();
-jest.mock("~/queries/storage", () => ({
-  ...jest.requireActual("~/queries/storage"),
-  useResetConfigMutation: () => mockUseResetConfigMutation(),
-  useDeprecated: () => mockUseDeprecated(),
-  useDeprecatedChanges: () => mockUseDeprecatedChanges(),
-  useReprobeMutation: () => mockUseReprobeMutation(),
-}));
+const mockUseReset = jest.fn();
+const mockUseStorageModel = jest.fn();
+const mockUseProposal = jest.fn();
+const mockUseIssues = jest.fn();
 
-jest.mock("~/hooks/storage/system", () => ({
-  ...jest.requireActual("~/hooks/storage/system"),
+jest.mock("~/hooks/api/system/storage", () => ({
+  ...jest.requireActual("~/hooks/api/system/storage"),
   useAvailableDevices: () => mockUseAvailableDevices(),
 }));
 
-const mockUseConfigModel = jest.fn();
-jest.mock("~/queries/storage/config-model", () => ({
-  ...jest.requireActual("~/queries/storage/config-model"),
-  useConfigModel: () => mockUseConfigModel(),
+jest.mock("~/hooks/api/config/storage", () => ({
+  ...jest.requireActual("~/hooks/api/config/storage"),
+  useReset: () => mockUseReset(),
+}));
+
+jest.mock("~/hooks/api/storage", () => ({
+  ...jest.requireActual("~/hooks/api/storage"),
+  useStorageModel: () => mockUseStorageModel(),
+}));
+
+jest.mock("~/hooks/api/proposal/storage", () => ({
+  ...jest.requireActual("~/hooks/api/proposal/storage"),
+  useProposal: () => mockUseProposal(),
+}));
+
+jest.mock("~/hooks/api/issue", () => ({
+  ...jest.requireActual("~/hooks/api/issue"),
+  useIssues: () => mockUseIssues(),
 }));
 
 const mockUseZFCPSupported = jest.fn();
@@ -99,18 +97,11 @@ jest.mock("~/queries/storage/dasd", () => ({
   useDASDSupported: () => mockUseDASDSupported(),
 }));
 
-const mockUseSystemErrors = jest.fn();
-const mockUseConfigErrors = jest.fn();
-jest.mock("~/queries/issues", () => ({
-  ...jest.requireActual("~/queries/issues"),
-  useSystemErrors: () => mockUseSystemErrors(),
-  useConfigErrors: () => mockUseConfigErrors(),
-}));
-
-jest.mock("./ProposalTransactionalInfo", () => () => <div>trasactional info</div>);
+jest.mock("./ProposalTransactionalInfo", () => () => <div>transactional info</div>);
 jest.mock("./ProposalFailedInfo", () => () => <div>failed info</div>);
 jest.mock("./UnsupportedModelInfo", () => () => <div>unsupported info</div>);
 jest.mock("./ProposalResultSection", () => () => <div>result</div>);
+jest.mock("./FixableConfigInfo", () => () => <div>fixable config info</div>);
 jest.mock("./ConfigEditor", () => () => <div>installation devices</div>);
 jest.mock("./EncryptionSection", () => () => <div>encryption section</div>);
 jest.mock("./BootSection", () => () => <div>boot section</div>);
@@ -119,16 +110,17 @@ jest.mock("~/components/product/ProductRegistrationAlert", () => () => (
 ));
 
 beforeEach(() => {
-  mockUseResetConfigMutation.mockReturnValue({ mutate: jest.fn() });
-  mockUseReprobeMutation.mockReturnValue({ mutateAsync: jest.fn() });
-  mockUseDeprecated.mockReturnValue(false);
-  mockUseSystemErrors.mockReturnValue([]);
-  mockUseConfigErrors.mockReturnValue([]);
+  mockUseReset.mockReturnValue(jest.fn());
+  mockUseIssues.mockReturnValue([]);
+  mockUseProposal.mockReturnValue(null);
+  mockUseZFCPSupported.mockReturnValue(false);
+  mockUseDASDSupported.mockReturnValue(false);
 });
 
 describe("if there are not devices", () => {
   beforeEach(() => {
     mockUseAvailableDevices.mockReturnValue([]);
+    mockUseStorageModel.mockReturnValue({ drives: [] });
   });
 
   it("renders an option for activating iSCSI", () => {
@@ -194,12 +186,12 @@ describe("if there are not devices", () => {
 describe("if there is not a model", () => {
   beforeEach(() => {
     mockUseAvailableDevices.mockReturnValue([disk]);
-    mockUseConfigModel.mockReturnValue(null);
+    mockUseStorageModel.mockReturnValue(null);
   });
 
-  describe("and there are system errors", () => {
+  describe("and there are unfixable issues", () => {
     beforeEach(() => {
-      mockUseSystemErrors.mockReturnValue([systemError]);
+      mockUseIssues.mockReturnValue([unfixableIssue]);
     });
 
     it("renders an option for resetting the config", () => {
@@ -218,9 +210,53 @@ describe("if there is not a model", () => {
     });
   });
 
-  describe("and there are not system errors", () => {
+  describe("and there are config issues but no unfixable issues", () => {
     beforeEach(() => {
-      mockUseSystemErrors.mockReturnValue([]);
+      mockUseIssues.mockReturnValue([configIssue]);
+    });
+
+    it("renders an option for resetting the config", () => {
+      installerRender(<ProposalPage />);
+      expect(screen.queryByRole("button", { name: /Reset/ })).toBeInTheDocument();
+    });
+
+    it("does not render the installation devices", () => {
+      installerRender(<ProposalPage />);
+      expect(screen.queryByText("installation devices")).not.toBeInTheDocument();
+    });
+
+    it("does not render the result", () => {
+      installerRender(<ProposalPage />);
+      expect(screen.queryByText("result")).not.toBeInTheDocument();
+    });
+  });
+
+  describe("and there are no config issues and no proposal", () => {
+    beforeEach(() => {
+      mockUseIssues.mockReturnValue([]);
+      mockUseProposal.mockReturnValue(null);
+    });
+
+    it("renders an option for resetting the config", () => {
+      installerRender(<ProposalPage />);
+      expect(screen.queryByRole("button", { name: /Reset/ })).toBeInTheDocument();
+    });
+
+    it("does not render the installation devices", () => {
+      installerRender(<ProposalPage />);
+      expect(screen.queryByText("installation devices")).not.toBeInTheDocument();
+    });
+
+    it("does not render the result", () => {
+      installerRender(<ProposalPage />);
+      expect(screen.queryByText("result")).not.toBeInTheDocument();
+    });
+  });
+
+  describe("and there are no issues but there is a proposal", () => {
+    beforeEach(() => {
+      mockUseIssues.mockReturnValue([]);
+      mockUseProposal.mockReturnValue({ drives: [] });
     });
 
     it("renders an unsupported model alert", async () => {
@@ -243,13 +279,12 @@ describe("if there is not a model", () => {
 describe("if there is a model", () => {
   beforeEach(() => {
     mockUseAvailableDevices.mockReturnValue([disk]);
-    mockUseConfigModel.mockReturnValue({ drives: [] });
+    mockUseStorageModel.mockReturnValue({ drives: [] });
   });
 
-  describe("and there are config errors and system errors", () => {
+  describe("and there are config issues and unfixable issues", () => {
     beforeEach(() => {
-      mockUseConfigErrors.mockReturnValue([configError]);
-      mockUseSystemErrors.mockReturnValue([systemError]);
+      mockUseIssues.mockReturnValue([configIssue, unfixableIssue]);
     });
 
     it("renders the config errors", () => {
@@ -273,12 +308,13 @@ describe("if there is a model", () => {
     });
   });
 
-  describe("and there are not config errors but there are system errors", () => {
+  describe("and there are no config issues but there are proposal issues", () => {
     beforeEach(() => {
-      mockUseSystemErrors.mockReturnValue([systemError]);
+      mockUseIssues.mockReturnValue([proposalIssue]);
+      mockUseProposal.mockReturnValue(null);
     });
 
-    it("renders a failed proposal failed", () => {
+    it("renders the failed proposal info", () => {
       installerRender(<ProposalPage />);
       expect(screen.queryByText("failed info")).toBeInTheDocument();
     });
@@ -294,10 +330,32 @@ describe("if there is a model", () => {
     });
   });
 
-  describe("and there are neither config errors nor system errors", () => {
+  describe("and there are fixable config issues", () => {
     beforeEach(() => {
-      mockUseSystemErrors.mockReturnValue([]);
-      mockUseConfigErrors.mockReturnValue([]);
+      mockUseIssues.mockReturnValue([configIssue]);
+      mockUseProposal.mockReturnValue(null);
+    });
+
+    it("renders the fixable config info", () => {
+      installerRender(<ProposalPage />);
+      expect(screen.queryByText("fixable config info")).toBeInTheDocument();
+    });
+
+    it("renders the installation devices", () => {
+      installerRender(<ProposalPage />);
+      expect(screen.queryByText("installation devices")).toBeInTheDocument();
+    });
+
+    it("does not render the result", () => {
+      installerRender(<ProposalPage />);
+      expect(screen.queryByText("result")).not.toBeInTheDocument();
+    });
+  });
+
+  describe("and there are no issues and there is a proposal", () => {
+    beforeEach(() => {
+      mockUseIssues.mockReturnValue([]);
+      mockUseProposal.mockReturnValue({ drives: [] });
     });
 
     it("renders the installation devices", () => {

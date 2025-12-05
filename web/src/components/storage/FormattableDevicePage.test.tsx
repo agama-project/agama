@@ -24,17 +24,17 @@ import React from "react";
 import { screen, within } from "@testing-library/react";
 import { installerRender, mockParams } from "~/test-utils";
 import FormattableDevicePage from "~/components/storage/FormattableDevicePage";
-import { StorageDevice, model } from "~/storage";
-import { Volume } from "~/api/storage/types";
+import { model } from "~/storage";
+import type { storage as system } from "~/api/system";
+import type { model as apiModel } from "~/api/storage";
 import { gib } from "./utils";
 
-const sda: StorageDevice = {
-  sid: 59,
-  isDrive: true,
-  type: "disk",
+const sda: system.Device = {
   name: "/dev/sda",
-  size: gib(10),
   description: "",
+  size: gib(10),
+  filesystem: null,
+  partitionTable: null,
 };
 
 const sdaModel: model.Drive = {
@@ -55,16 +55,13 @@ const sdaModel: model.Drive = {
   getConfiguredExistingPartitions: jest.fn(),
 };
 
-const homeVolume: Volume = {
+const homeVolume: apiModel.VolumeTemplate = {
   mountPath: "/home",
-  mountOptions: [],
-  target: "default",
   fsType: "btrfs",
   minSize: gib(1),
   maxSize: gib(5),
   autoSize: false,
   snapshots: false,
-  transactional: false,
   outline: {
     required: false,
     fsTypes: ["btrfs", "xfs"],
@@ -76,26 +73,24 @@ const homeVolume: Volume = {
   },
 };
 
-jest.mock("~/queries/issues", () => ({
-  ...jest.requireActual("~/queries/issues"),
-  useIssues: () => [],
-}));
-
-jest.mock("~/queries/storage", () => ({
-  ...jest.requireActual("~/queries/storage"),
-  useDevices: () => [sda],
+const mockDevice = jest.fn();
+const mockVolumeTemplate = jest.fn();
+jest.mock("~/hooks/api/system/storage", () => ({
+  ...jest.requireActual("~/hooks/api/system/storage"),
+  useDevice: () => mockDevice(),
+  useVolumeTemplate: (mountPath: string) => mockVolumeTemplate(mountPath),
 }));
 
 const mockModel = jest.fn();
+const mockDriveModel = jest.fn();
+const mockMdRaidModel = jest.fn();
+const mockMissingMountPaths = jest.fn();
 jest.mock("~/hooks/storage/model", () => ({
   ...jest.requireActual("~/hooks/storage/model"),
   useModel: () => mockModel(),
-}));
-
-jest.mock("~/hooks/storage/product", () => ({
-  ...jest.requireActual("~/hooks/storage/product"),
-  useMissingMountPaths: () => ["/home", "swap"],
-  useVolume: () => homeVolume,
+  useDrive: (index: number) => mockDriveModel(index),
+  useMdRaid: (index: number) => mockMdRaidModel(index),
+  useMissingMountPaths: () => mockMissingMountPaths(),
 }));
 
 const mockAddFilesystem = jest.fn();
@@ -104,8 +99,29 @@ jest.mock("~/hooks/storage/filesystem", () => ({
   useAddFilesystem: () => mockAddFilesystem,
 }));
 
+jest.mock("~/components/product/ProductRegistrationAlert", () => () => (
+  <div>registration alert</div>
+));
+
+
+// Polyfill for JSDOM that doesn't implement requestSubmit
+if (!HTMLFormElement.prototype.requestSubmit) {
+  HTMLFormElement.prototype.requestSubmit = function (submitter) {
+    if (submitter) {
+      submitter.click();
+    } else {
+      this.dispatchEvent(new Event("submit", { bubbles: true, cancelable: true }));
+    }
+  };
+}
+
 beforeEach(() => {
-  mockParams({ list: "drives", listIndex: "0" });
+  mockParams({ collection: "drives", index: "0" });
+  mockDevice.mockReturnValue(sda);
+  mockDriveModel.mockReturnValue(sdaModel);
+  mockMdRaidModel.mockReturnValue(null);
+  mockVolumeTemplate.mockReturnValue(homeVolume);
+  mockMissingMountPaths.mockReturnValue(["/home", "swap"]);
   mockModel.mockReturnValue({
     drives: [sdaModel],
     getMountPaths: () => [],
@@ -171,7 +187,16 @@ describe("FormattableDevicePage", () => {
       },
     };
 
+    const formattedSda: system.Device = {
+      ...sda,
+      filesystem: {
+        type: "xfs",
+      },
+    };
+
     beforeEach(() => {
+      mockDevice.mockReturnValue(formattedSda);
+      mockDriveModel.mockReturnValue(formattedSdaModel);
       mockModel.mockReturnValue({
         drives: [formattedSdaModel],
         getMountPaths: () => [],
