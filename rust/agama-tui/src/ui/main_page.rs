@@ -38,6 +38,7 @@ use crate::{
         network_page::{NetworkPage, NetworkPageState},
         overview_page::{OverviewPage, OverviewPageState},
         products_page::{ProductPage, ProductPageState},
+        progress::{ProgressState, ProgressWidget},
         storage_page::{StoragePage, StoragePageState},
         Command,
     },
@@ -68,6 +69,7 @@ pub struct MainPageState {
     overview_state: OverviewPageState,
     storage_state: StoragePageState,
     product_state: ProductPageState,
+    progress_state: ProgressState,
     product_popup: bool,
 }
 
@@ -78,6 +80,7 @@ impl MainPageState {
         let storage = StoragePageState::from_api(&api_state);
         let product = ProductPageState::from_api(&api_state);
         let network = NetworkPageState::from_api(&api_state);
+        let progress = ProgressState::from_api(&api_state);
         let product_popup = api_state.selected_product().is_none();
         drop(api_state);
 
@@ -88,6 +91,7 @@ impl MainPageState {
             overview_state: overview,
             storage_state: storage,
             product_state: product,
+            progress_state: progress,
             product_popup,
         }
     }
@@ -126,6 +130,7 @@ impl MainPageState {
                 self.storage_state.update_from_api(&api_state);
                 self.product_state.update_from_api(&api_state);
                 self.network_state.update_from_api(&api_state);
+                self.progress_state.update_from_api(&api_state);
             }
             _ => {}
         }
@@ -169,8 +174,23 @@ impl StatefulWidget for MainPage {
     type State = MainPageState;
 
     fn render(self, area: Rect, buf: &mut Buffer, state: &mut Self::State) {
-        let layout = Layout::vertical([Constraint::Length(2), Constraint::Min(0)]);
-        let [tab_area, main_area] = layout.areas(area);
+        use Constraint::{Length, Min};
+
+        let has_progress = state.progress_state.has_progress();
+        let mut constraints = vec![Length(2), Min(0)];
+
+        let tab_area: Rect;
+        let main_area: Rect;
+        let mut progress_area = Rect::default();
+
+        if has_progress {
+            constraints.push(Length(4));
+            let layout = Layout::vertical(&constraints);
+            [tab_area, main_area, progress_area] = layout.areas(area);
+        } else {
+            let layout = Layout::vertical(&constraints);
+            [tab_area, main_area] = layout.areas(area);
+        }
 
         let highlight_style = Style::default().add_modifier(Modifier::UNDERLINED);
         let selected_tab_index = state.selected_tab.index();
@@ -191,6 +211,15 @@ impl StatefulWidget for MainPage {
             SelectedTab::Storage => {
                 StatefulWidget::render(StoragePage, main_area, buf, &mut state.storage_state)
             }
+        }
+
+        if has_progress {
+            StatefulWidget::render(
+                ProgressWidget,
+                progress_area,
+                buf,
+                &mut state.progress_state,
+            )
         }
 
         if state.product_popup {

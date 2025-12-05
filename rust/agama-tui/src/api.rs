@@ -24,7 +24,7 @@
 use std::sync::{Arc, Mutex};
 
 use agama_lib::http::{BaseHTTPClient, WebSocketClient};
-use agama_utils::api::{manager::Product, Config, Proposal, SystemInfo};
+use agama_utils::api::{manager::Product, Config, Event, Proposal, Status, SystemInfo};
 use tokio::sync::mpsc;
 
 use crate::message::Message;
@@ -33,6 +33,7 @@ pub struct ApiState {
     pub system_info: SystemInfo,
     pub proposal: Proposal,
     pub config: Config,
+    pub status: Status,
 }
 
 impl ApiState {
@@ -40,11 +41,13 @@ impl ApiState {
         let system_info = http.get::<SystemInfo>("v2/system").await?;
         let proposal = http.get::<Proposal>("v2/proposal").await?;
         let config = http.get::<Config>("v2/config").await?;
+        let status = http.get::<Status>("v2/status").await?;
 
         Ok(Self {
             system_info,
             proposal,
             config,
+            status,
         })
     }
 
@@ -176,8 +179,20 @@ impl ApiMonitor {
 
     async fn run(mut self) {
         loop {
-            if let Ok(_) = self.ws.receive().await {
-                self.update_from_api().await;
+            if let Ok(event) = self.ws.receive().await {
+                match event {
+                    Event::ProposalChanged { scope: _ }
+                    | Event::ConfigChanged { scope: _ }
+                    | Event::SystemChanged { scope: _ } => {
+                        self.update_from_api().await;
+                    }
+                    Event::StateChanged
+                    | Event::ProgressChanged { progress: _ }
+                    | Event::ProgressFinished { scope: _ } => {
+                        self.update_progress().await;
+                    }
+                    _ => {}
+                }
                 self.messages
                     .send(Message::ApiStateChanged)
                     .await
@@ -197,5 +212,11 @@ impl ApiMonitor {
                 eprintln!("Could not update the application state from the API: {error}.")
             }
         }
+    }
+
+    async fn update_progress(&mut self) {
+        let status = self.http.get::<Status>("v2/status").await.unwrap();
+        let mut state = self.state.lock().unwrap();
+        state.status = status;
     }
 }

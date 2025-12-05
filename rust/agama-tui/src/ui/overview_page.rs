@@ -96,7 +96,7 @@ impl StatefulWidget for OverviewPage {
     type State = OverviewPageState;
 
     fn render(self, area: Rect, buf: &mut Buffer, state: &mut Self::State) {
-        let layout = Layout::vertical([Constraint::Percentage(50), Constraint::Percentage(50)]);
+        let layout = Layout::vertical([Constraint::Percentage(70), Constraint::Percentage(30)]);
         let [software_area, _other_area] = layout.areas(area);
 
         let software_layout = Layout::vertical([Constraint::Length(2), Constraint::Min(0)]);
