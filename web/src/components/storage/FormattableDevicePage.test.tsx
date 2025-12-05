@@ -70,7 +70,7 @@ const mockHomeVolume: storage.Volume = {
   transactional: false,
   outline: {
     required: true,
-    fsTypes: ["btrfs", "ext4"],
+    fsTypes: ["btrfs", "ext4", "xfs"],
     supportAutoSize: true,
     snapshotsConfigurable: true,
     snapshotsAffectSizes: true,
@@ -79,27 +79,30 @@ const mockHomeVolume: storage.Volume = {
   },
 };
 
-jest.mock("~/queries/issues", () => ({
-  ...jest.requireActual("~/queries/issues"),
+jest.mock("~/hooks/api/config", () => ({
+  useProduct: () => ({
+    name: "Test Product",
+  }),
+}));
+
+jest.mock("~/hooks/api/issue", () => ({
   useIssues: () => [],
 }));
 
 jest.mock("~/hooks/api/system/storage", () => ({
   ...jest.requireActual("~/hooks/api/system/storage"),
   useDevices: () => [sda],
+  useDevice: () => sda,
   useVolumeTemplate: () => mockHomeVolume,
 }));
 
 const mockModel = jest.fn();
 jest.mock("~/hooks/storage/model", () => ({
-  ...jest.requireActual("~/hooks/storage/model"),
+  __esModule: true,
   useModel: () => mockModel(),
-}));
-
-jest.mock("~/hooks/storage/product", () => ({
-  ...jest.requireActual("~/hooks/storage/product"),
   useMissingMountPaths: () => ["/home", "swap"],
-  useVolume: () => mockHomeVolume,
+  useDrive: (index: number) => mockModel().drives?.[index],
+  useMdRaid: (index: number) => mockModel().mdRaids?.[index],
 }));
 
 const mockAddFilesystem = jest.fn();
@@ -109,7 +112,7 @@ jest.mock("~/hooks/storage/filesystem", () => ({
 }));
 
 beforeEach(() => {
-  mockParams({ list: "drives", listIndex: "0" });
+  mockParams({ collection: "drives", index: "0" });
   mockModel.mockReturnValue({
     drives: [sdaModel],
     getMountPaths: () => [],
@@ -119,16 +122,22 @@ beforeEach(() => {
 describe("FormattableDevicePage", () => {
   it("renders a form for formatting the device", async () => {
     const { user } = installerRender(<FormattableDevicePage />);
-    screen.getByRole("form", { name: "Configure device /dev/sda" });
-    const mountPoint = screen.getByRole("button", { name: "Mount point toggle" });
+    await screen.findByRole("form", { name: "Configure device /dev/sda" });
+    const mountPoint = screen.getByRole("button", {
+      name: "Mount point toggle",
+    });
     const filesystem = screen.getByRole("button", { name: "File system" });
     // File system and size fields disabled until valid mount point selected
     expect(filesystem).toBeDisabled();
     expect(screen.queryByRole("textbox", { name: "File system label" })).not.toBeInTheDocument();
 
     await user.click(mountPoint);
-    const mountPointOptions = screen.getByRole("listbox", { name: "Suggested mount points" });
-    const homeMountPoint = within(mountPointOptions).getByRole("option", { name: "/home" });
+    const mountPointOptions = screen.getByRole("listbox", {
+      name: "Suggested mount points",
+    });
+    const homeMountPoint = within(mountPointOptions).getByRole("option", {
+      name: "/home",
+    });
     await user.click(homeMountPoint);
     // Valid mount point selected, enable file system field
     expect(filesystem).toBeEnabled();
@@ -141,15 +150,23 @@ describe("FormattableDevicePage", () => {
   it("allows reseting the chosen mount point", async () => {
     const { user } = installerRender(<FormattableDevicePage />);
     // Note that the underline PF component gives the role combobox to the input
-    const mountPoint = screen.getByRole("combobox", { name: "Mount point" });
+    const mountPoint = await screen.findByRole("combobox", {
+      name: "Mount point",
+    });
     const filesystem = screen.getByRole("button", { name: "File system" });
     expect(mountPoint).toHaveValue("");
     // File system field is disabled until a valid mount point selected
     expect(filesystem).toBeDisabled();
-    const mountPointToggle = screen.getByRole("button", { name: "Mount point toggle" });
+    const mountPointToggle = screen.getByRole("button", {
+      name: "Mount point toggle",
+    });
     await user.click(mountPointToggle);
-    const mountPointOptions = screen.getByRole("listbox", { name: "Suggested mount points" });
-    const homeMountPoint = within(mountPointOptions).getByRole("option", { name: "/home" });
+    const mountPointOptions = screen.getByRole("listbox", {
+      name: "Suggested mount points",
+    });
+    const homeMountPoint = within(mountPointOptions).getByRole("option", {
+      name: "/home",
+    });
     await user.click(homeMountPoint);
     expect(mountPoint).toHaveValue("/home");
     expect(filesystem).toBeEnabled();
@@ -184,9 +201,13 @@ describe("FormattableDevicePage", () => {
 
     it("initializes the form with the current values", async () => {
       installerRender(<FormattableDevicePage />);
-      const mountPointSelector = screen.getByRole("combobox", { name: "Mount point" });
+      const mountPointSelector = await screen.findByRole("combobox", {
+        name: "Mount point",
+      });
       expect(mountPointSelector).toHaveValue("/home");
-      const filesystemButton = screen.getByRole("button", { name: "File system" });
+      const filesystemButton = screen.getByRole("button", {
+        name: "File system",
+      });
       within(filesystemButton).getByText("XFS");
       const label = screen.getByRole("textbox", { name: "File system label" });
       expect(label).toHaveValue("HOME");
@@ -196,17 +217,31 @@ describe("FormattableDevicePage", () => {
   describe("if the form is accepted", () => {
     it("changes the device config", async () => {
       const { user } = installerRender(<FormattableDevicePage />);
-      const mountPointToggle = screen.getByRole("button", { name: "Mount point toggle" });
+      const mountPointToggle = await screen.findByRole("button", {
+        name: "Mount point toggle",
+      });
       await user.click(mountPointToggle);
-      const mountPointOptions = screen.getByRole("listbox", { name: "Suggested mount points" });
-      const homeMountPoint = within(mountPointOptions).getByRole("option", { name: "/home" });
+      const mountPointOptions = screen.getByRole("listbox", {
+        name: "Suggested mount points",
+      });
+      const homeMountPoint = within(mountPointOptions).getByRole("option", {
+        name: "/home",
+      });
       await user.click(homeMountPoint);
-      const filesystemButton = screen.getByRole("button", { name: "File system" });
+      const filesystemButton = screen.getByRole("button", {
+        name: "File system",
+      });
       await user.click(filesystemButton);
-      const filesystemOptions = screen.getByRole("listbox", { name: "Available file systems" });
-      const xfs = within(filesystemOptions).getByRole("option", { name: "XFS" });
+      const filesystemOptions = screen.getByRole("listbox", {
+        name: "Available file systems",
+      });
+      const xfs = within(filesystemOptions).getByRole("option", {
+        name: "XFS",
+      });
       await user.click(xfs);
-      const labelInput = screen.getByRole("textbox", { name: "File system label" });
+      const labelInput = screen.getByRole("textbox", {
+        name: "File system label",
+      });
       await user.type(labelInput, "TEST");
       const acceptButton = screen.getByRole("button", { name: "Accept" });
       await user.click(acceptButton);
