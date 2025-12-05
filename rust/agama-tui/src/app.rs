@@ -42,7 +42,6 @@ use crate::{
     message::Message,
     ui::{
         main_page::{MainPage, MainPageState},
-        products_page::ProductPage,
         Command,
     },
     utils::popup_area,

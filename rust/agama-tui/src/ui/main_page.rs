@@ -35,6 +35,7 @@ use crate::{
     api::ApiState,
     message::Message,
     ui::{
+        network_page::{NetworkPage, NetworkPageState},
         overview_page::{OverviewPage, OverviewPageState},
         products_page::{ProductPage, ProductPageState},
         storage_page::{StoragePage, StoragePageState},
@@ -63,6 +64,7 @@ impl SelectedTab {
 pub struct MainPageState {
     selected_tab: SelectedTab,
     api: Arc<Mutex<ApiState>>,
+    network_state: NetworkPageState,
     overview_state: OverviewPageState,
     storage_state: StoragePageState,
     product_state: ProductPageState,
@@ -75,12 +77,14 @@ impl MainPageState {
         let overview = OverviewPageState::from_api(&api_state);
         let storage = StoragePageState::from_api(&api_state);
         let product = ProductPageState::from_api(&api_state);
+        let network = NetworkPageState::from_api(&api_state);
         let product_popup = api_state.selected_product().is_none();
         drop(api_state);
 
         Self {
             api,
             selected_tab: SelectedTab::Overview,
+            network_state: network,
             overview_state: overview,
             storage_state: storage,
             product_state: product,
@@ -121,6 +125,7 @@ impl MainPageState {
                 self.overview_state.update_from_api(&api_state);
                 self.storage_state.update_from_api(&api_state);
                 self.product_state.update_from_api(&api_state);
+                self.network_state.update_from_api(&api_state);
             }
             _ => {}
         }
@@ -150,6 +155,9 @@ impl MainPageState {
             SelectedTab::Storage => {
                 self.storage_state.update(message, messages_tx);
             }
+            SelectedTab::Network => {
+                self.network_state.update(message, messages_tx);
+            }
             _ => {}
         }
     }
@@ -177,7 +185,9 @@ impl StatefulWidget for MainPage {
             SelectedTab::Overview => {
                 StatefulWidget::render(OverviewPage, main_area, buf, &mut state.overview_state)
             }
-            SelectedTab::Network => {}
+            SelectedTab::Network => {
+                StatefulWidget::render(NetworkPage, main_area, buf, &mut state.network_state)
+            }
             SelectedTab::Storage => {
                 StatefulWidget::render(StoragePage, main_area, buf, &mut state.storage_state)
             }
