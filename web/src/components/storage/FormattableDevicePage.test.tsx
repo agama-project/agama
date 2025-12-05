@@ -73,11 +73,6 @@ const homeVolume: apiModel.VolumeTemplate = {
   },
 };
 
-jest.mock("~/queries/issues", () => ({
-  ...jest.requireActual("~/queries/issues"),
-  useIssues: () => [],
-}));
-
 const mockDevice = jest.fn();
 const mockVolumeTemplate = jest.fn();
 jest.mock("~/hooks/api/system/storage", () => ({
@@ -103,6 +98,11 @@ jest.mock("~/hooks/storage/filesystem", () => ({
   ...jest.requireActual("~/hooks/storage/filesystem"),
   useAddFilesystem: () => mockAddFilesystem,
 }));
+
+jest.mock("~/components/product/ProductRegistrationAlert", () => () => (
+  <div>registration alert</div>
+));
+
 
 // Polyfill for JSDOM that doesn't implement requestSubmit
 if (!HTMLFormElement.prototype.requestSubmit) {
