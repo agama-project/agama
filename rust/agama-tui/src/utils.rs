@@ -27,6 +27,7 @@ use agama_lib::{
     http::{BaseHTTPClient, WebSocketClient},
 };
 use anyhow::anyhow;
+use ratatui::layout::{Constraint, Flex, Layout, Rect};
 use url::Url;
 
 /// * `api_url`: API URL.
@@ -90,4 +91,19 @@ fn find_client_token(api_url: &Url) -> Option<AuthToken> {
     }
 
     AuthToken::master()
+}
+
+/// Create a centered rect using up certain percentage of the available rect
+///
+/// Borrowed from Ratatui examples: https://github.com/ratatui/ratatui/blob/main/examples/apps/popup/src/main.rs#L63.
+/// helper function to create a centered rect using up certain percentage of the available rect `r`
+pub fn popup_area(area: Rect, percent_x: u16, percent_y: u16) -> Rect {
+    use Constraint::Percentage;
+    use Flex::Center;
+
+    let vertical = Layout::vertical([Percentage(percent_y)]).flex(Center);
+    let horizontal = Layout::horizontal([Percentage(percent_x)]).flex(Center);
+    let [area] = vertical.areas(area);
+    let [area] = horizontal.areas(area);
+    area
 }

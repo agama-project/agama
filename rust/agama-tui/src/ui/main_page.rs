@@ -22,11 +22,11 @@ use std::sync::{Arc, Mutex};
 
 use ratatui::{
     buffer::Buffer,
-    crossterm::event::{KeyCode, KeyEventKind, KeyModifiers},
+    crossterm::event::{KeyCode, KeyEvent, KeyEventKind, KeyModifiers},
     layout::{Constraint, Layout, Rect},
-    style::{palette::tailwind, Color, Modifier, Style},
+    style::{Modifier, Style},
     text::Line,
-    widgets::{StatefulWidget, Tabs, Widget},
+    widgets::{Clear, StatefulWidget, Tabs, Widget},
 };
 use strum::Display;
 use tokio::sync::mpsc;
@@ -36,9 +36,11 @@ use crate::{
     message::Message,
     ui::{
         overview_page::{OverviewPage, OverviewPageState},
+        products_page::{ProductPage, ProductPageState},
         storage_page::{StoragePage, StoragePageState},
         Command,
     },
+    utils::popup_area,
 };
 
 #[derive(Clone, Display)]
@@ -63,6 +65,8 @@ pub struct MainPageState {
     api: Arc<Mutex<ApiState>>,
     overview_state: OverviewPageState,
     storage_state: StoragePageState,
+    product_state: ProductPageState,
+    product_popup: bool,
 }
 
 impl MainPageState {
@@ -70,6 +74,8 @@ impl MainPageState {
         let api_state = api.lock().unwrap();
         let overview = OverviewPageState::from_api(&api_state);
         let storage = StoragePageState::from_api(&api_state);
+        let product = ProductPageState::from_api(&api_state);
+        let product_popup = api_state.selected_product().is_none();
         drop(api_state);
 
         Self {
@@ -77,11 +83,14 @@ impl MainPageState {
             selected_tab: SelectedTab::Overview,
             overview_state: overview,
             storage_state: storage,
+            product_state: product,
+            product_popup,
         }
     }
 
     pub fn commands(&self) -> Vec<Command> {
         vec![
+            Command::new("Alt+p", "Change product"),
             Command::new("Alt+[1-3]", "Change section"),
             Command::new("Tab", "Focus"),
         ]
@@ -98,26 +107,42 @@ impl MainPageState {
     pub async fn update(&mut self, message: Message, messages_tx: mpsc::Sender<Message>) {
         match message {
             Message::Key(event) => {
-                if event.kind == KeyEventKind::Press {
-                    if event.modifiers.contains(KeyModifiers::ALT) {
-                        match event.code {
-                            KeyCode::Char('1') => self.selected_tab = SelectedTab::Overview,
-                            KeyCode::Char('2') => self.selected_tab = SelectedTab::Network,
-                            KeyCode::Char('3') => self.selected_tab = SelectedTab::Storage,
-                            _ => {} // TODO: delegate events to the selected tab
-                        }
-                    }
+                if self.product_popup {
+                    self.product_state
+                        .update(message.clone(), messages_tx.clone())
+                        .await;
+                } else {
+                    self.handle_key_event(event);
                 }
             }
+            Message::ProductSelected => self.product_popup = false,
             Message::ApiStateChanged => {
                 let api_state = self.api.lock().unwrap();
                 self.overview_state.update_from_api(&api_state);
                 self.storage_state.update_from_api(&api_state);
+                self.product_state.update_from_api(&api_state);
             }
             _ => {}
         }
 
         self.update_selected_tab(message, messages_tx);
+    }
+
+    fn handle_key_event(&mut self, event: KeyEvent) {
+        if event.kind != KeyEventKind::Press {
+            return;
+        }
+
+        if event.modifiers.contains(KeyModifiers::ALT) {
+            match event.code {
+                KeyCode::Char('1') => self.selected_tab = SelectedTab::Overview,
+                KeyCode::Char('2') => self.selected_tab = SelectedTab::Network,
+                KeyCode::Char('3') => self.selected_tab = SelectedTab::Storage,
+                KeyCode::Char('p') => self.product_popup = true,
+                KeyCode::Esc => self.product_popup = false,
+                _ => {} // TODO: delegate events to the selected tab
+            }
+        }
     }
 
     fn update_selected_tab(&mut self, message: Message, messages_tx: mpsc::Sender<Message>) {
@@ -156,6 +181,12 @@ impl StatefulWidget for MainPage {
             SelectedTab::Storage => {
                 StatefulWidget::render(StoragePage, main_area, buf, &mut state.storage_state)
             }
+        }
+
+        if state.product_popup {
+            let popup_area = popup_area(area, 80, 80);
+            Clear.render(popup_area, buf);
+            StatefulWidget::render(ProductPage, popup_area, buf, &mut state.product_state);
         }
     }
 }

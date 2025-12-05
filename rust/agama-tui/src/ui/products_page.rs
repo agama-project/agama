@@ -18,18 +18,28 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use agama_utils::api::manager::Product;
 use ratatui::{
     buffer::Buffer,
     crossterm::event::{KeyCode, KeyEventKind},
     layout::{Constraint, Layout, Rect},
-    style::{Modifier, Style},
-    text::Line,
-    widgets::{Block, List, ListState, Paragraph, StatefulWidget, Widget, Wrap},
+    style::{Modifier, Style, Stylize},
+    text::{Line, Text},
+    widgets::{Block, List, ListItem, ListState, Paragraph, StatefulWidget, Widget, Wrap},
 };
 use tokio::sync::mpsc;
 
 use crate::{api::ApiState, message::Message, ui::Command};
+
+pub struct Product {
+    /// Product ID (eg., "ALP", "Tumbleweed", etc.)
+    pub id: String,
+    /// Product name (e.g., "openSUSE Tumbleweed")
+    pub name: String,
+    /// Product description
+    pub description: String,
+    /// Whether the product is the selected one.
+    pub selected: bool,
+}
 
 pub struct ProductPageState {
     products: Vec<Product>,
@@ -38,19 +48,8 @@ pub struct ProductPageState {
 
 impl ProductPageState {
     pub fn from_api(api_state: &ApiState) -> Self {
-        let products = api_state.system_info.manager.products.clone();
-        let product_id = api_state
-            .config
-            .software
-            .as_ref()
-            .and_then(|s| s.product.as_ref())
-            .and_then(|p| p.id.as_ref());
-
-        let selected = if let Some(id) = product_id {
-            products.iter().position(|p| &p.id == id)
-        } else {
-            None
-        };
+        let products = Self::products_from_api(api_state);
+        let selected = products.iter().position(|p| p.selected);
 
         Self {
             products,
@@ -59,9 +58,25 @@ impl ProductPageState {
     }
 
     // This is not expected to happen.
-    // pub fn update_from_api(&mut self, api_state: &ApiState) {
-    //     self.products = api_state.system_info.manager.products.clone();
-    // }
+    pub fn update_from_api(&mut self, api_state: &ApiState) {
+        self.products = Self::products_from_api(api_state);
+    }
+
+    fn products_from_api(api_state: &ApiState) -> Vec<Product> {
+        let product_id = api_state.selected_product().map(|p| &p.id);
+        api_state
+            .system_info
+            .manager
+            .products
+            .iter()
+            .map(|p| Product {
+                id: p.id.clone(),
+                name: p.name.clone(),
+                description: p.description.clone(),
+                selected: Some(&p.id) == product_id,
+            })
+            .collect()
+    }
 
     pub async fn update(&mut self, message: Message, messages_tx: mpsc::Sender<Message>) {
         let Message::Key(event) = message else {
@@ -94,6 +109,7 @@ impl ProductPageState {
         vec![
             Command::new("Previous", "Up/k"),
             Command::new("Next", "Down/j"),
+            Command::new("Close", "Esc"),
             Command::new("Select", "ENTER"),
         ]
     }
@@ -117,14 +133,9 @@ impl StatefulWidget for ProductPage {
         let layout = Layout::vertical([Constraint::Percentage(30), Constraint::Percentage(70)]);
         let [products_area, selected_area] = layout.areas(area);
 
-        let names: Vec<_> = state
-            .products
-            .iter()
-            .map(|p| Line::from(p.name.as_str()))
-            .collect();
-
-        let list = List::new(names)
+        let list = List::new(&state.products)
             .highlight_style(SELECTED_STYLE)
+            .highlight_symbol(">> ")
             .block(Block::bordered().title("Product to install"));
 
         StatefulWidget::render(list, products_area, buf, &mut state.list);
@@ -137,5 +148,18 @@ impl StatefulWidget for ProductPage {
                     .render(selected_area, buf);
             }
         }
+    }
+}
+
+impl From<&Product> for ListItem<'_> {
+    fn from(value: &Product) -> Self {
+        let line = if value.selected {
+            Line::styled(value.name.to_string(), Style::default().green())
+        } else {
+            Line::from(value.name.to_string())
+        };
+        // let description = Line::from(value.description.to_string());
+        // ListItem::new(Text::from(vec![line, description]))
+        ListItem::new(line)
     }
 }

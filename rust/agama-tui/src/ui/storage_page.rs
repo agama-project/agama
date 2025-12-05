@@ -239,12 +239,12 @@ impl StatefulWidget for StoragePage {
             .title(" Candidate devices ");
         let list = List::new(&state.candidate_devices)
             .block(block)
-            .highlight_style(state.list_style_for(Section::Devices));
+            .highlight_style(state.list_style_for(Section::Devices).green());
         StatefulWidget::render(list, devices_area, buf, &mut state.candidates_list);
 
         let block = Block::bordered()
             .border_style(state.block_style_for(Section::Actions))
-            .title("Actions");
+            .title(" Actions ");
         let list = List::new(&state.actions)
             .block(block)
             .highlight_style(state.list_style_for(Section::Actions));
