@@ -99,6 +99,16 @@ const mockDrive: apiModel.Drive = {
   ],
 };
 
+const mockDriveNoMountPath: apiModel.Drive = {
+  name: "/dev/sda",
+  partitions: [
+    {
+      name: "/dev/sda2",
+      filesystem: { reuse: false, default: true },
+    },
+  ],
+};
+
 const mockUseConfigModelFn = jest.fn();
 jest.mock("~/hooks/api/storage", () => ({
   useStorageModel: () => mockUseConfigModelFn(),
@@ -141,6 +151,17 @@ describe("SpaceActionsTable", () => {
     screen.getByRole("row", { name: "Unused space 2 GiB" });
   });
 
+  it("shows no actions for unused space", () => {
+    plainRender(<SpaceActionsTable {...props} />);
+
+    const unusedSpaceRow = screen.getByRole("row", { name: /Unused space/ });
+    const cells = within(unusedSpaceRow).getAllByRole("cell");
+    // The "Action" column should be the 4th cell (index 3).
+    // It should not contain any buttons from DeviceActionSelector.
+    const actionCell = cells[3];
+    expect(actionCell).toBeEmptyDOMElement();
+  });
+
   it("selects the action for each device", () => {
     plainRender(<SpaceActionsTable {...props} />);
 
@@ -180,6 +201,36 @@ describe("SpaceActionsTable", () => {
       const sda2DeleteButton = within(sda2Row).getByRole("button", { name: "Delete" });
       expect(sda2ShrinkButton).toBeDisabled();
       expect(sda2DeleteButton).toBeDisabled();
+    });
+
+    it("shows info that the partition will be used", async () => {
+      const { user } = plainRender(<SpaceActionsTable {...props} />);
+
+      const sda2Row = screen.getByRole("row", { name: /sda2/ });
+      const sda2InfoButton = within(sda2Row).getByRole("button", {
+        name: /information about .*sda2/,
+      });
+      await user.click(sda2InfoButton);
+      const sda2Popup = await screen.findByRole("dialog");
+      within(sda2Popup).getByText(/The device will be mounted at/);
+    });
+  });
+
+  describe("if a partition is going to be used without a mount path", () => {
+    beforeEach(() => {
+      mockUseConfigModelFn.mockReturnValue({ drives: [mockDriveNoMountPath] });
+    });
+
+    it("shows info that the partition will be used", async () => {
+      const { user } = plainRender(<SpaceActionsTable {...props} />);
+
+      const sda2Row = screen.getByRole("row", { name: /sda2/ });
+      const sda2InfoButton = within(sda2Row).getByRole("button", {
+        name: /information about .*sda2/,
+      });
+      await user.click(sda2InfoButton);
+      const sda2Popup = await screen.findByRole("dialog");
+      within(sda2Popup).getByText(/The device will be used by the new system/);
     });
   });
 
