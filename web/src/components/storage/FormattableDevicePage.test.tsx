@@ -104,6 +104,17 @@ jest.mock("~/hooks/storage/filesystem", () => ({
   useAddFilesystem: () => mockAddFilesystem,
 }));
 
+// Polyfill for JSDOM that doesn't implement requestSubmit
+if (!HTMLFormElement.prototype.requestSubmit) {
+  HTMLFormElement.prototype.requestSubmit = function (submitter) {
+    if (submitter) {
+      submitter.click();
+    } else {
+      this.dispatchEvent(new Event("submit", { bubbles: true, cancelable: true }));
+    }
+  };
+}
+
 beforeEach(() => {
   mockParams({ collection: "drives", index: "0" });
   mockDevice.mockReturnValue(sda);
