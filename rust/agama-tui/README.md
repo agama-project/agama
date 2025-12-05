@@ -19,7 +19,7 @@ using an editor (vim, by default), but perhaps you might want to have a more use
 
 ## Goals
 
-The main goal of this project is to built a minimal terminal user-interface for Agama. This
+The main goal of this project is to build a minimal terminal user-interface for Agama. This
 interface will allow the user to install the system providing just a few settings (selecting a
 product, a storage device and a user password). Then it should report the installation progress.
 
