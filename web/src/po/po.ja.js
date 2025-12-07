@@ -2071,7 +2071,7 @@ export default {
     "tmpfs"
   ],
   "To ensure the new system is able to boot, the installer may need to create or configure some partitions in the appropriate disk.": [
-    "システムを起動できるようにするため、インストーラはディスク内にいくつかの追加パーティションを作成もしくは設定する必要があるかもしれません。"
+    "システムを起動できるようにするため、インストーラは適切なディスク内にいくつかの追加パーティションを作成もしくは設定する必要があるかもしれません。"
   ],
   "Transactional root file system": [
     "トランザクション型のルートファイルシステム"

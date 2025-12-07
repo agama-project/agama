@@ -1461,7 +1461,7 @@ export default {
     "El producte ja està registrat."
   ],
   "Protection for the information stored at the new file systems, including data, programs, and system files.": [
-    "Protecció de la informació emmagatzemada als sistemes de fitxers nous, incloses dades, programes i fitxers del sistema."
+    "Protecció de la informació desada als sistemes de fitxers nous, incloses dades, programes i fitxers del sistema."
   ],
   "Provide email address": [
     "Proporcioneu una adreça de correu electrònic."
