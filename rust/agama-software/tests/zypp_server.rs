@@ -143,4 +143,11 @@ async fn test_start_zypp_server() {
         .await
         .expect("Failed to get questions");
     assert!(questions.is_empty());
+
+    // Send quit action to the server
+    let (quit_tx, quit_rx) = oneshot::channel();
+    client
+        .send(SoftwareAction::Quit(quit_tx))
+        .expect("Failed to send Quit action");
+    quit_rx.await.expect("Failed to receive quit response");
 }
