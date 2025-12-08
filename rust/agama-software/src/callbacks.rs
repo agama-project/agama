@@ -19,12 +19,13 @@ fn ask_software_question(
     let (tx, rx) = mpsc::channel();
     let question_handler = handler.clone();
     std::thread::spawn(move || {
+        // unwrap OK: fails only when OS resource limits exhausted anyway
         let runtime = Builder::new_current_thread().enable_all().build().unwrap();
         let result =
             runtime.block_on(async move { ask_question(&question_handler, question).await });
-        // unwrap OK: the receiver should not be dropped before the thread finishes
+        // unwrap OK: rx.recv() does happen
         tx.send(result).unwrap();
     });
-    // unwrap OK: the sender should not be dropped before sending a value
+    // unwrap OK: tx.send() does happen
     rx.recv().unwrap()
 }
