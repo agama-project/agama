@@ -54,9 +54,7 @@ impl TryFrom<Value> for Service {
             return Err(Error::UnexpectedResponse("Missing name key".to_string()));
         };
         let Some(url) = value.get("url").and_then(|c| c.as_str()) else {
-            return Err(Error::UnexpectedResponse(
-                "Missing url key".to_string(),
-            ));
+            return Err(Error::UnexpectedResponse("Missing url key".to_string()));
         };
 
         Ok(Self {
@@ -118,12 +116,11 @@ fn check_error(response: &Value) -> Result<(), Error> {
         match error_str {
             "APIError" => {
                 let code = response.get("code").and_then(|i| i.as_u64()).unwrap_or(400);
-                return Err(Error::ApiError {
-                    message,
-                    code,
-                });
+                return Err(Error::ApiError { message, code });
             }
-            "MalformedSccCredentialsFile" => return Err(Error::MalformedSccCredentialsFile(message)),
+            "MalformedSccCredentialsFile" => {
+                return Err(Error::MalformedSccCredentialsFile(message))
+            }
             "MissingCredentialsFile" => return Err(Error::MissingCredentialsFile(message)),
             "JSONError" => return Err(Error::JSONError(message)),
             "NetError" => return Err(Error::NetError(message)),
@@ -235,7 +232,11 @@ pub fn announce_system(params: ConnectParams, target_distro: &str) -> Result<Cre
 /// # Errors
 ///
 /// Returns an `Err` of type [Error] if activation fails.
-pub fn activate_product(product: Product, params: ConnectParams, email: &str) -> Result<Service, Error> {
+pub fn activate_product(
+    product: Product,
+    params: ConnectParams,
+    email: &str,
+) -> Result<Service, Error> {
     let result_s = unsafe {
         let product_json = json!(product).to_string();
         let params_json = json!(params).to_string();
@@ -244,7 +245,8 @@ pub fn activate_product(product: Product, params: ConnectParams, email: &str) ->
         let params_c_ptr = CString::new(params_json).unwrap().into_raw();
         let email_c_ptr = CString::new(email).unwrap().into_raw();
 
-        let result_ptr = suseconnect_agama_sys::activate_product(product_c_ptr, params_c_ptr, email_c_ptr);
+        let result_ptr =
+            suseconnect_agama_sys::activate_product(product_c_ptr, params_c_ptr, email_c_ptr);
 
         // Retake ownership to free memory
         let _ = CString::from_raw(product_c_ptr);
@@ -312,13 +314,44 @@ pub fn reload_certificates() -> Result<(), Error> {
     check_error(&response)
 }
 
+/// scc config path
+///
+/// source: https://github.com/SUSE/connect-ng/blob/main/third_party/yast/lib/suse/connect/config.rb#L9
+pub const DEFAULT_CONFIG_FILE: &str = "/etc/SUSEConnect";
+/// default URL used if not specified otherwise
+pub const DEFAULT_SCC_URL: &str = "https://scc.suse.com";
+///
+/// Writes the config file with the given parameters, overwriting any existing contents.
+///
+/// Attributes not defined in `params` will not be modified.
+///
+/// # Arguments
+///
+/// * `params` - Parameters [ConnectParams] to override the SUSEConnect config.
+///
+/// # Errors
+/// Returns an `Err` of type `Error` if writing the configuration fails.
+pub fn write_config(params: ConnectParams) -> Result<(), Error> {
+    let result_s = unsafe {
+        let param_json = json!(params).to_string();
+        let params_c_ptr = CString::new(param_json).unwrap().into_raw();
+
+        let result_ptr = suseconnect_agama_sys::write_config(params_c_ptr);
+        let _ = CString::from_raw(params_c_ptr);
+
+        string_from_ptr(result_ptr)
+    }?;
+
+    let response: Value = serde_json::from_str(&result_s)?;
+    check_error(&response)
+}
 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use tempfile;
-    use std::fs;
     use serde_json::json;
+    use std::fs;
+    use tempfile;
 
     #[test]
     fn test_check_error_success() {
@@ -473,10 +506,17 @@ mod tests {
 
         create_credentials_file(login, password, path_str);
 
-        let content = fs::read_to_string(temp_file.path()).expect("Failed to read credentials file");
+        let content =
+            fs::read_to_string(temp_file.path()).expect("Failed to read credentials file");
 
-        assert!(content.contains(&format!("username={}", login)), "Missing/Wrong username section in {content}");
-        assert!(content.contains(&format!("password={}", password)), "Missing/Wrong password section in {content}");
+        assert!(
+            content.contains(&format!("username={}", login)),
+            "Missing/Wrong username section in {content}"
+        );
+        assert!(
+            content.contains(&format!("password={}", password)),
+            "Missing/Wrong password section in {content}"
+        );
     }
 
     #[test]
