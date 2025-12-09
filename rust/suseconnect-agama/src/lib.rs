@@ -40,6 +40,23 @@ pub enum Error {
     UnexpectedResponse(String),
     #[error(transparent)]
     JsonParseError(#[from] serde_json::Error),
+    #[error("Malformed SCC credentials file: {0}")]
+    MalformedSccCredentialsFile(String),
+    #[error("Missing SCC credentials file: {0}")]
+    MissingCredentialsFile(String),
+    #[error("JSON error: {0}")]
+    JSONError(String),
+    #[error("Network error: {0}")]
+    NetError(String),
+    #[error("Timeout: {0}")]
+    Timeout(String),
+    // FIXME use enum for code
+    #[error("SSL error: {message} (code: {code})")]
+    SSLError {
+        message: String,
+        code: u64,
+        current_certificate: String,
+    },
     #[error(transparent)]
     UTF8Error(#[from] std::ffi::IntoStringError),
 }
@@ -52,16 +69,36 @@ fn check_error(response: &Value) -> Result<(), Error> {
         let Some(error_str) = error.as_str() else {
             return Err(Error::UnexpectedResponse(response.to_string()));
         };
+        let message = response
+            .get("message")
+            .and_then(|i| i.as_str())
+            .unwrap_or("No message")
+            .to_string();
+
         match error_str {
             "APIError" => {
-                let message = response
-                    .get("message")
-                    .and_then(|i| i.as_str())
-                    .unwrap_or("No message");
                 let code = response.get("code").and_then(|i| i.as_u64()).unwrap_or(400);
                 return Err(Error::ApiError {
-                    message: message.to_string(),
+                    message,
                     code,
+                });
+            }
+            "MalformedSccCredentialsFile" => return Err(Error::MalformedSccCredentialsFile(message)),
+            "MissingCredentialsFile" => return Err(Error::MissingCredentialsFile(message)),
+            "JSONError" => return Err(Error::JSONError(message)),
+            "NetError" => return Err(Error::NetError(message)),
+            "Timeout" => return Err(Error::Timeout(message)),
+            "SSLError" => {
+                let code = response.get("code").and_then(|i| i.as_u64()).unwrap_or(0);
+                let current_certificate = response
+                    .get("data")
+                    .and_then(|i| i.as_str())
+                    .unwrap_or("")
+                    .to_string();
+                return Err(Error::SSLError {
+                    message,
+                    code,
+                    current_certificate,
                 });
             }
             _ => {
@@ -179,6 +216,99 @@ mod tests {
                 assert_eq!(msg, response.to_string());
             }
             _ => panic!("Expected UknownError"),
+        }
+    }
+
+    #[test]
+    fn test_check_error_missing_credentials_file() {
+        let response = json!({
+            "err_type": "MissingCredentialsFile",
+            "message": "File not found"
+        });
+        match check_error(&response) {
+            Err(Error::MissingCredentialsFile(msg)) => {
+                assert_eq!(msg, "File not found");
+            }
+            _ => panic!("Expected MissingCredentialsFile"),
+        }
+    }
+
+    #[test]
+    fn test_check_error_malformed_scc_credentials_file() {
+        let response = json!({
+            "err_type": "MalformedSccCredentialsFile",
+            "message": "File is corrupted"
+        });
+        match check_error(&response) {
+            Err(Error::MalformedSccCredentialsFile(msg)) => {
+                assert_eq!(msg, "File is corrupted");
+            }
+            _ => panic!("Expected MalformedSccCredentialsFile"),
+        }
+    }
+
+    #[test]
+    fn test_check_error_json_error() {
+        let response = json!({
+            "err_type": "JSONError",
+            "message": "Invalid JSON"
+        });
+        match check_error(&response) {
+            Err(Error::JSONError(msg)) => {
+                assert_eq!(msg, "Invalid JSON");
+            }
+            _ => panic!("Expected JSONError"),
+        }
+    }
+
+    #[test]
+    fn test_check_error_net_error() {
+        let response = json!({
+            "err_type": "NetError",
+            "message": "Network is down"
+        });
+        match check_error(&response) {
+            Err(Error::NetError(msg)) => {
+                assert_eq!(msg, "Network is down");
+            }
+            _ => panic!("Expected NetError"),
+        }
+    }
+
+    #[test]
+    fn test_check_error_timeout() {
+        let response = json!({
+            "err_type": "Timeout",
+            "message": "Connection timed out"
+        });
+        match check_error(&response) {
+            Err(Error::Timeout(msg)) => {
+                assert_eq!(msg, "Connection timed out");
+            }
+            _ => panic!("Expected Timeout"),
+        }
+    }
+
+    #[test]
+    fn test_check_error_ssl_error() {
+        let cert = "-----BEGIN CERTIFICATE-----\n...";
+        let response = json!({
+            "err_type": "SSLError",
+            "message": "Certificate expired",
+            "code": 10,
+            "data": cert
+        });
+        match check_error(&response) {
+            Err(Error::SSLError {
+                message,
+                code,
+                current_certificate,
+            }) => {
+                assert_eq!(message, "Certificate validation failed");
+                assert_eq!(code, 5);
+                assert_eq!(current_certificate, cert);
+            }
+            _ => panic!("Expected SSLError"),
         }
     }
 

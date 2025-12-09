@@ -236,7 +236,6 @@ pub type GPGVerificationFailed = ::std::option::Option<
         user_data: *mut ::std::os::raw::c_void,
     ) -> bool,
 >;
-
 #[doc = " @see zypp::DigestReport in\n https://github.com/openSUSE/libzypp/blob/master/zypp-logic/zypp/Digest.h"]
 pub type ChecksumMissing = ::std::option::Option<
     unsafe extern "C" fn(
