@@ -21,4 +21,5 @@ unsafe extern "C" {
         product: *mut ::std::os::raw::c_char,
         client_params: *mut ::std::os::raw::c_char,
     ) -> *mut ::std::os::raw::c_char;
+    pub fn reload_certificates() -> *mut ::std::os::raw::c_char;
 }

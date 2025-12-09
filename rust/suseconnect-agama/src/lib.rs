@@ -143,6 +143,22 @@ impl TryFrom<Value> for Credentials {
     }
 }
 
+/// Announce system to SCC to get registration credentials.
+///
+/// # Arguments
+///
+/// * `params` - Parameters for the connection, like URL or authentication token.
+/// * `target_distro` - The target distribution to announce.
+///
+/// # Returns
+///
+/// On success, returns `Ok(Credentials)` containing the system credentials that can be used
+/// for subsequent [Self::create_credentials_file] call.
+///
+/// # Errors
+///
+/// Returns an `Err` of type [Error] if the announcement fails due to network issues,
+/// API errors, or problems parsing the response.
 pub fn announce_system(params: ConnectParams, target_distro: &str) -> Result<Credentials, Error> {
     let result_s = unsafe {
         let param_json = json!(params).to_string();
@@ -164,8 +180,20 @@ pub fn announce_system(params: ConnectParams, target_distro: &str) -> Result<Cre
     response.try_into()
 }
 
+/// Default path to the global SUSE Customer Center credentials file.
 pub const GLOBAL_CREDENTIALS_FILE: &str = "/etc/zypp/credentials.d/SCCcredentials";
-pub fn create_credetials_file(login: &str, pwd: &str, path: &str) -> () {
+
+/// Creates a credentials file for SUSE Customer Center.
+///
+/// This function writes the provided username and password to a file at the specified path
+/// in the format expected by SUSEConnect.
+///
+/// # Arguments
+///
+/// * `login` - The username for the credentials file.
+/// * `pwd` - The password for the credentials file.
+/// * `path` - The path where the credentials file will be created.
+pub fn create_credentials_file(login: &str, pwd: &str, path: &str) -> () {
     unsafe {
         // unwrap should not happen we do not construct invalid strings
         let login = CString::new(login).unwrap().into_raw();
@@ -182,6 +210,28 @@ pub fn create_credetials_file(login: &str, pwd: &str, path: &str) -> () {
         let _ = CString::from_raw(empty);
     }
 }
+
+/// Reloads SUSE Customer Center certificates.
+///
+/// This triggers a refresh of the SSL certificates stored internally in SUSE connect.
+/// It is useful after importing certificate after SSL failure.
+///
+/// Returns `Ok(())` on success.
+///
+/// # Errors
+///
+/// Returns an `Err` of type [Error] if reloading certificates fails, for example due
+/// to network errors or if the server response indicates a problem.
+pub fn reload_certificates() -> Result<(), Error> {
+    let result_s = unsafe {
+        let result_ptr = suseconnect_agama_sys::reload_certificates();
+        string_from_ptr(result_ptr)
+    }?;
+
+    let response: Value = serde_json::from_str(&result_s)?;
+    check_error(&response)
+}
+
 
 #[cfg(test)]
 mod tests {
@@ -341,7 +391,7 @@ mod tests {
         let login = "test_user";
         let password = "test_password";
 
-        create_credetials_file(login, password, path_str);
+        create_credentials_file(login, password, path_str);
 
         let content = fs::read_to_string(temp_file.path()).expect("Failed to read credentials file");
 
@@ -392,5 +442,15 @@ mod tests {
         let value = json!({"credentials": [123, 456]});
         let result = Credentials::try_from(value);
         assert!(matches!(result, Err(Error::UnexpectedResponse(_))));
+    }
+
+    #[test]
+    fn test_reload_certificates_smoke() {
+        // This is a smoke test to ensure the FFI call can be executed
+        // without panicking. It calls the actual underlying C function.
+        // The expectation is that in a test environment, this call is a no-op
+        // and succeeds without altering system certificates.
+        let result = reload_certificates();
+        assert!(result.is_ok(), "reload_certificates() failed: {:?}", result);
     }
 }
