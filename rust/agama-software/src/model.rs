@@ -24,7 +24,7 @@ use agama_utils::{
         software::{Repository, SoftwareProposal, SystemInfo},
         Issue,
     },
-    products::{ProductSpec, UserPattern},
+    products::ProductSpec,
     progress, question,
 };
 use async_trait::async_trait;

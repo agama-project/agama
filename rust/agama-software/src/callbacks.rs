@@ -9,11 +9,23 @@ mod security;
 pub use security::Security;
 mod install;
 pub use install::Install;
-use tokio::runtime::Handle;
+use std::sync::mpsc;
+use tokio::runtime::Builder;
 
 fn ask_software_question(
     handler: &Handler<question::Service>,
     question: QuestionSpec,
 ) -> Result<Answer, AskError> {
-    Handle::current().block_on(async move { ask_question(handler, question).await })
+    let (tx, rx) = mpsc::channel();
+    let question_handler = handler.clone();
+    std::thread::spawn(move || {
+        // unwrap OK: fails only when OS resource limits exhausted anyway
+        let runtime = Builder::new_current_thread().enable_all().build().unwrap();
+        let result =
+            runtime.block_on(async move { ask_question(&question_handler, question).await });
+        // unwrap OK: rx.recv() does happen
+        tx.send(result).unwrap();
+    });
+    // unwrap OK: tx.send() does happen
+    rx.recv().unwrap()
 }

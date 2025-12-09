@@ -107,7 +107,11 @@ impl Starter {
 }
 
 pub struct Service {
+    // FIXME: field is never read
+    #[allow(dead_code)]
     progress: Handler<progress::Service>,
+    // FIXME: field is never read
+    #[allow(dead_code)]
     events: event::Sender,
     software: Handler<software::Service>,
     scripts: ScriptsRepository,

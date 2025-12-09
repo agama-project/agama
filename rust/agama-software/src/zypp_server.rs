@@ -28,7 +28,9 @@ use agama_utils::{
     products::ProductSpec,
     progress, question,
 };
-use std::{collections::HashMap, path::Path};
+use camino::{Utf8Path, Utf8PathBuf};
+use std::collections::HashMap;
+
 use tokio::sync::{
     mpsc::{self, UnboundedSender},
     oneshot,
@@ -40,7 +42,6 @@ use crate::{
     model::state::{self, SoftwareState},
 };
 
-const TARGET_DIR: &str = "/run/agama/software_ng_zypp";
 const GPG_KEYS: &str = "/usr/lib/rpm/gnupg/keys/gpg-*";
 
 #[derive(thiserror::Error, Debug)]
@@ -95,21 +96,28 @@ pub enum SoftwareAction {
         question: Handler<question::Service>,
         tx: oneshot::Sender<ZyppServerResult<Vec<Issue>>>,
     },
+    Quit(oneshot::Sender<()>),
 }
 
 /// Software service server.
 pub struct ZyppServer {
     receiver: mpsc::UnboundedReceiver<SoftwareAction>,
+    root_dir: Utf8PathBuf,
 }
 
 impl ZyppServer {
     /// Starts the software service loop and returns a client.
     ///
     /// The service runs on a separate thread and gets the client requests using a channel.
-    pub fn start() -> ZyppServerResult<UnboundedSender<SoftwareAction>> {
+    pub fn start<P: AsRef<Utf8Path>>(
+        root_dir: P,
+    ) -> ZyppServerResult<UnboundedSender<SoftwareAction>> {
         let (sender, receiver) = mpsc::unbounded_channel();
 
-        let server = Self { receiver };
+        let server = Self {
+            receiver,
+            root_dir: root_dir.as_ref().to_path_buf(),
+        };
 
         // see https://docs.rs/tokio/latest/tokio/task/struct.LocalSet.html#use-inside-tokiospawn for explain how to ensure that zypp
         // runs locally on single thread
@@ -144,8 +152,12 @@ impl ZyppServer {
                 break;
             };
 
-            if let Err(error) = self.dispatch(action, &zypp).await {
-                tracing::error!("Software dispatch error: {:?}", error);
+            match self.dispatch(action, &zypp).await {
+                Ok(true) => continue,
+                Ok(false) => break,
+                Err(error) => {
+                    tracing::error!("Software dispatch error: {:?}", error);
+                }
             }
         }
 
@@ -153,11 +165,13 @@ impl ZyppServer {
     }
 
     /// Forwards the action to the appropriate handler.
+    ///
+    /// Returns `true` if the server should continue running, `false` if it should shut down.
     async fn dispatch(
         &mut self,
         action: SoftwareAction,
         zypp: &zypp_agama::Zypp,
-    ) -> Result<(), ZyppDispatchError> {
+    ) -> Result<bool, ZyppDispatchError> {
         match action {
             SoftwareAction::Write {
                 state,
@@ -192,8 +206,13 @@ impl ZyppServer {
             SoftwareAction::GetProposal(product_spec, sender) => {
                 self.proposal(product_spec, sender, zypp).await?
             }
+            SoftwareAction::Quit(tx) => {
+                tx.send(())
+                    .map_err(|_| ZyppDispatchError::ResponseChannelClosed)?;
+                return Ok(false);
+            }
         }
-        Ok(())
+        Ok(true)
     }
 
     // Install rpms
@@ -266,7 +285,7 @@ impl ZyppServer {
             .filter(|r| !old_aliases.contains(&r.alias))
             .collect();
 
-        let to_remove: Vec<_> = state
+        let to_remove: Vec<_> = old_state
             .repositories
             .iter()
             .filter(|r| !aliases.contains(&r.alias))
@@ -506,14 +525,10 @@ impl ZyppServer {
     }
 
     fn initialize_target_dir(&self) -> Result<zypp_agama::Zypp, ZyppDispatchError> {
-        let target_dir = Path::new(TARGET_DIR);
-        if target_dir.exists() {
-            _ = std::fs::remove_dir_all(target_dir);
-        }
-
+        let target_dir = self.root_dir.as_path();
         std::fs::create_dir_all(target_dir).map_err(ZyppDispatchError::TargetCreationFailed)?;
 
-        let zypp = zypp_agama::Zypp::init_target(TARGET_DIR, |text, step, total| {
+        let zypp = zypp_agama::Zypp::init_target(target_dir.as_str(), |text, step, total| {
             tracing::info!("Initializing target: {} ({}/{})", text, step, total);
         })?;
 

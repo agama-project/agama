@@ -11,6 +11,8 @@ use crate::callbacks::ask_software_question;
 
 #[derive(Clone)]
 pub struct Install {
+    // FIXME: field is never read
+    #[allow(dead_code)]
     progress: Handler<progress::Service>,
     questions: Handler<question::Service>,
 }

@@ -26,7 +26,7 @@ use crate::{
     hostname::store::{HostnameStore, HostnameStoreError},
     http::BaseHTTPClient,
     install_settings::InstallSettings,
-    manager::{http_client::ManagerHTTPClientError, InstallationPhase, ManagerHTTPClient},
+    manager::{http_client::ManagerHTTPClientError, ManagerHTTPClient},
     network::{NetworkStore, NetworkStoreError},
     security::store::{SecurityStore, SecurityStoreError},
     storage::{
@@ -84,6 +84,8 @@ pub struct Store {
     security: SecurityStore,
     storage: StorageStore,
     iscsi_client: ISCSIHTTPClient,
+    // FIXME: field is never read
+    #[allow(dead_code)]
     manager_client: ManagerHTTPClient,
     http_client: BaseHTTPClient,
     zfcp: ZFCPStore,
