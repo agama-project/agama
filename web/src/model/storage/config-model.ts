@@ -20,4 +20,4 @@
  * find current contact information at www.suse.com.
  */
 
-export type * as model from "~/model/storage/model";
+export type * as configModel from "~/openapi/storage/config-model";

@@ -23,17 +23,17 @@
 import { _, n_, formatList } from "~/i18n";
 import { SpacePolicy, SPACE_POLICIES, baseName, formattedPath } from "~/components/storage/utils";
 import { sprintf } from "sprintf-js";
-import type { model } from "~/model/storage";
+import type { configModel } from "~/model/storage/config-model";
 import type { Drive } from "~/storage/model";
 
 /**
  * String to identify the drive.
  */
-const label = (drive: model.Drive): string => {
+const label = (drive: configModel.Drive): string => {
   return baseName(drive.name);
 };
 
-const spacePolicyEntry = (drive: model.Drive): SpacePolicy => {
+const spacePolicyEntry = (drive: configModel.Drive): SpacePolicy => {
   return SPACE_POLICIES.find((p) => p.id === drive.spacePolicy);
 };
 
@@ -143,7 +143,7 @@ const contentActionsDescription = (drive: Drive, policyId: string | undefined): 
   }
 };
 
-const contentDescription = (drive: model.Drive): string => {
+const contentDescription = (drive: configModel.Drive): string => {
   const newPartitions = drive.partitions.filter((p) => !p.name);
   const reusedPartitions = drive.partitions.filter((p) => p.name && p.mountPath);
 

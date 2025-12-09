@@ -25,7 +25,7 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import { storageModelQuery } from "~/hooks/model/storage";
 import { useSystem } from "~/hooks/model/system/storage";
 import { buildModel } from "~/storage/model";
-import type { model as apiModel } from "~/model/storage";
+import type { configModel as apiModel } from "~/model/storage/config-model";
 import type { model } from "~/storage";
 
 const build = (data: apiModel.Config | null): model.Model | null =>

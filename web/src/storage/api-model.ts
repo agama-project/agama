@@ -20,28 +20,28 @@
  * find current contact information at www.suse.com.
  */
 
-import type { model } from "~/model/storage";
+import type { configModel } from "~/model/storage/config-model";
 import type { data } from "~/storage";
 
-function copyApiModel(apiModel: model.Config): model.Config {
+function copyApiModel(apiModel: configModel.Config): configModel.Config {
   return JSON.parse(JSON.stringify(apiModel));
 }
 
-function findDevice(apiModel: model.Config, list: string, index: number | string) {
+function findDevice(apiModel: configModel.Config, list: string, index: number | string) {
   const collection = apiModel[list] || [];
   return collection.at(index);
 }
 
-function findDeviceIndex(apiModel: model.Config, list: string, name: string) {
+function findDeviceIndex(apiModel: configModel.Config, list: string, name: string) {
   const collection = apiModel[list] || [];
   return collection.findIndex((d) => d.name === name);
 }
 
-function partitionables(apiModel: model.Config): (model.Drive | model.MdRaid)[] {
+function partitionables(apiModel: configModel.Config): (configModel.Drive | configModel.MdRaid)[] {
   return (apiModel.drives || []).concat(apiModel.mdRaids || []);
 }
 
-function buildFilesystem(data?: data.Filesystem): model.Filesystem | undefined {
+function buildFilesystem(data?: data.Filesystem): configModel.Filesystem | undefined {
   if (!data) return;
 
   return {
@@ -50,7 +50,7 @@ function buildFilesystem(data?: data.Filesystem): model.Filesystem | undefined {
   };
 }
 
-function buildSize(data?: data.Size): model.Size | undefined {
+function buildSize(data?: data.Size): configModel.Size | undefined {
   if (!data) return;
 
   return {
@@ -60,12 +60,12 @@ function buildSize(data?: data.Size): model.Size | undefined {
   };
 }
 
-function buildVolumeGroup(data: data.VolumeGroup): model.VolumeGroup {
+function buildVolumeGroup(data: data.VolumeGroup): configModel.VolumeGroup {
   const defaultVolumeGroup = { vgName: "system", targetDevices: [] };
   return { ...defaultVolumeGroup, ...data };
 }
 
-function buildLogicalVolume(data: data.LogicalVolume): model.LogicalVolume {
+function buildLogicalVolume(data: data.LogicalVolume): configModel.LogicalVolume {
   return {
     ...data,
     filesystem: buildFilesystem(data.filesystem),
@@ -73,7 +73,7 @@ function buildLogicalVolume(data: data.LogicalVolume): model.LogicalVolume {
   };
 }
 
-function buildPartition(data: data.Partition): model.Partition {
+function buildPartition(data: data.Partition): configModel.Partition {
   return {
     ...data,
     filesystem: buildFilesystem(data.filesystem),
@@ -90,14 +90,16 @@ function buildLogicalVolumeName(mountPath?: string): string | undefined {
   return mountPath === "/" ? "root" : mountPath.split("/").pop();
 }
 
-function buildLogicalVolumeFromPartition(partition: model.Partition): model.LogicalVolume {
+function buildLogicalVolumeFromPartition(
+  partition: configModel.Partition,
+): configModel.LogicalVolume {
   return {
     ...partition,
     lvName: buildLogicalVolumeName(partition.mountPath),
   };
 }
 
-function buildPartitionFromLogicalVolume(lv: model.LogicalVolume): model.Partition {
+function buildPartitionFromLogicalVolume(lv: configModel.LogicalVolume): configModel.Partition {
   return {
     mountPath: lv.mountPath,
     filesystem: lv.filesystem,

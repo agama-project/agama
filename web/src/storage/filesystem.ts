@@ -21,23 +21,23 @@
  */
 
 import { copyApiModel } from "~/storage/api-model";
-import type { model } from "~/model/storage";
+import type { configModel } from "~/model/storage/config-model";
 import type { data } from "~/storage";
 
 function findDevice(
-  apiModel: model.Config,
+  apiModel: configModel.Config,
   list: string,
   index: number | string,
-): model.Drive | model.MdRaid | null {
+): configModel.Drive | configModel.MdRaid | null {
   return (apiModel[list] || []).at(index) || null;
 }
 
 function configureFilesystem(
-  apiModel: model.Config,
+  apiModel: configModel.Config,
   list: string,
   index: number | string,
   data: data.Formattable,
-): model.Config {
+): configModel.Config {
   apiModel = copyApiModel(apiModel);
 
   const device = findDevice(apiModel, list, index);

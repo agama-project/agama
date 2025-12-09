@@ -21,7 +21,7 @@
  */
 
 import { get, patch, post, put } from "~/http";
-import type { model } from "~/model/storage";
+import type { configModel } from "~/model/storage/config-model";
 import type { Config } from "~/model/config";
 import type { Issue } from "~/model/issue";
 import type { Proposal } from "~/model/proposal";
@@ -48,16 +48,17 @@ const getIssues = (): Promise<Issue[]> => get("/api/v2/issues");
 
 const getQuestions = (): Promise<Question[]> => get("/api/v2/questions");
 
-const getStorageModel = (): Promise<model.Config | null> => get("/api/v2/private/storage_model");
+const getStorageModel = (): Promise<configModel.Config | null> =>
+  get("/api/v2/private/storage_model");
 
-const solveStorageModel = (model: model.Config): Promise<model.Config | null> => {
+const solveStorageModel = (model: configModel.Config): Promise<configModel.Config | null> => {
   const json = encodeURIComponent(JSON.stringify(model));
   return get(`/api/v2/private/solve_storage_model?model=${json}`);
 };
 
 const putConfig = (config: Config): Response => put("/api/v2/config", config);
 
-const putStorageModel = (model: model.Config) => put("/api/v2/private/storage_model", model);
+const putStorageModel = (model: configModel.Config) => put("/api/v2/private/storage_model", model);
 
 const patchConfig = (config: Config) => patch("/api/v2/config", { update: config });
 

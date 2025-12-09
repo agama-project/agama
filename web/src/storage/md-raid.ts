@@ -22,10 +22,10 @@
 
 import { switchSearched } from "~/storage/search";
 import { copyApiModel } from "~/storage/api-model";
-import type { model } from "~/model/storage";
+import type { configModel } from "~/model/storage/config-model";
 import type { data } from "~/storage";
 
-function addReusedMdRaid(apiModel: model.Config, data: data.MdRaid): model.Config {
+function addReusedMdRaid(apiModel: configModel.Config, data: data.MdRaid): configModel.Config {
   apiModel = copyApiModel(apiModel);
   apiModel.mdRaids ||= [];
   apiModel.mdRaids.push(data);
@@ -33,14 +33,18 @@ function addReusedMdRaid(apiModel: model.Config, data: data.MdRaid): model.Confi
   return apiModel;
 }
 
-function deleteMdRaid(apiModel: model.Config, name: string): model.Config {
+function deleteMdRaid(apiModel: configModel.Config, name: string): configModel.Config {
   apiModel = copyApiModel(apiModel);
   apiModel.mdRaids = apiModel.mdRaids.filter((d) => d.name !== name);
 
   return apiModel;
 }
 
-function switchToMdRaid(apiModel: model.Config, oldName: string, raid: data.MdRaid): model.Config {
+function switchToMdRaid(
+  apiModel: configModel.Config,
+  oldName: string,
+  raid: data.MdRaid,
+): configModel.Config {
   return switchSearched(apiModel, oldName, raid.name, "mdRaids");
 }
 

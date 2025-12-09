@@ -22,24 +22,24 @@
 
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { solveStorageModel, getStorageModel } from "~/api";
-import type { model } from "~/model/storage";
+import type { configModel } from "~/model/storage/config-model";
 
 const storageModelQuery = {
   queryKey: ["storageModel"],
   queryFn: getStorageModel,
 };
 
-function useStorageModel(): model.Config | null {
+function useStorageModel(): configModel.Config | null {
   return useSuspenseQuery(storageModelQuery)?.data;
 }
 
-const solvedStorageModelQuery = (apiModel?: model.Config) => ({
+const solvedStorageModelQuery = (apiModel?: configModel.Config) => ({
   queryKey: ["solvedStorageModel", JSON.stringify(apiModel)],
   queryFn: () => (apiModel ? solveStorageModel(apiModel) : Promise.resolve(null)),
   staleTime: Infinity,
 });
 
-function useSolvedStorageModel(model?: model.Config): model.Config | null {
+function useSolvedStorageModel(model?: configModel.Config): configModel.Config | null {
   return useSuspenseQuery(solvedStorageModelQuery(model))?.data;
 }
 

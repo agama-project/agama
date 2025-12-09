@@ -23,7 +23,7 @@
 import { copyApiModel, findDevice, findDeviceIndex } from "~/storage/api-model";
 import { buildModel } from "~/storage/model";
 import { fork } from "radashi";
-import type { model as apiModel } from "~/model/storage";
+import type { configModel as apiModel } from "~/model/storage/config-model";
 import type { model } from "~/storage";
 
 function deviceLocation(apiModel: apiModel.Config, name: string) {
