@@ -186,11 +186,14 @@ impl StatefulWidget for NetworkPage {
             .map(|p| Line::from(p.id.as_str()))
             .collect();
 
-        let list = List::new(names).highlight_style(SELECTED_STYLE).block(
-            Block::bordered()
-                .title("Connection details")
-                .title_bottom("Press Up/Down or j/k move to show the connection details"),
-        );
+        let list = List::new(names)
+            .highlight_style(SELECTED_STYLE)
+            .highlight_symbol(">> ")
+            .block(
+                Block::bordered()
+                    .title("Connection details")
+                    .title_bottom("Press Up/Down or j/k move to show the connection details"),
+            );
 
         StatefulWidget::render(list, connections_area, buf, &mut state.list);
 
