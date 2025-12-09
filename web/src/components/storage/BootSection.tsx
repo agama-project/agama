@@ -26,7 +26,8 @@ import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import Link from "~/components/core/Link";
 import Icon from "~/components/layout/Icon";
 import { useAvailableDrives } from "~/hooks/model/system/storage";
-import { useModel } from "~/hooks/storage/model";
+import { useStorageModel } from "~/hooks/model/storage";
+import { boot } from "~/model/storage/config-model";
 import { STORAGE } from "~/routes/paths";
 import { deviceLabel, formattedPath } from "~/components/storage/utils";
 import { _ } from "~/i18n";
@@ -72,10 +73,12 @@ function bootLabel(isDefault: boolean, device?: storage.Device) {
 }
 
 export default function BootSection() {
-  const model = useModel();
-  const boot = model.boot;
+  const configModel = useStorageModel();
   const devices = useAvailableDrives();
-  const device = devices.find((d) => d.name === boot.getDevice()?.name);
+
+  const isDefaultBoot = boot.isDefaultBoot(configModel);
+  const bootDevice = boot.bootDevice(configModel);
+  const device = devices.find((d) => d.name === bootDevice?.name);
 
   return (
     <Stack hasGutter>
@@ -86,7 +89,7 @@ export default function BootSection() {
         )}
       </div>
       <Content component="p" isEditorial>
-        {bootLabel(boot.isDefault, device)}
+        {bootLabel(isDefaultBoot, device)}
       </Content>
       <Flex>
         <Link to={STORAGE.editBootDevice} keepQuery variant="plain">

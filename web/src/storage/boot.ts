@@ -21,6 +21,7 @@
  */
 
 import { copyApiModel } from "~/storage/api-model";
+import { bootDevice } from "~/model/storage/config-model/boot";
 import type { model } from "~/storage";
 import type { configModel as apiModel } from "~/model/storage/config-model";
 
@@ -38,8 +39,10 @@ function removeDevice(
 }
 
 function setBoot(model: model.Model, apiModel: apiModel.Config, boot: apiModel.Boot) {
-  const bootDevice = model.boot?.getDevice();
-  if (bootDevice && !isUsed(bootDevice)) removeDevice(apiModel, bootDevice);
+  const device = bootDevice(apiModel);
+  // FIXME
+  const modelDevice = model.drives.concat(model.mdRaids).find((d) => d.name === device?.name);
+  if (device && !isUsed(modelDevice)) removeDevice(apiModel, modelDevice);
 
   apiModel.boot = boot;
   return apiModel;

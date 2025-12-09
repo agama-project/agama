@@ -28,6 +28,7 @@ import { Page, SubtleContent } from "~/components/core";
 import { deviceLabel, formattedPath } from "~/components/storage/utils";
 import { useCandidateDevices, useDevices } from "~/hooks/model/system/storage";
 import { useModel } from "~/hooks/storage/model";
+import { useStorageModel } from "~/hooks/model/storage";
 import { isDrive } from "~/storage/device";
 import {
   useSetBootDevice,
@@ -37,6 +38,7 @@ import {
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
+import { boot } from "~/model/storage/config-model";
 import type { storage } from "~/model/system";
 import type { Model } from "~/storage/model";
 
@@ -73,6 +75,7 @@ export default function BootSelection() {
   const navigate = useNavigate();
   const devices = useDevices();
   const model = useModel();
+  const configModel = useStorageModel();
   const allCandidateDevices = useCandidateDevices();
   const setBootDevice = useSetBootDevice();
   const setDefaultBootDevice = useSetDefaultBootDevice();
@@ -83,34 +86,36 @@ export default function BootSelection() {
   useEffect(() => {
     if (state.load || !model) return;
 
-    const boot = model.boot;
+    const bootModel = configModel.boot;
+    const isDefaultBoot = boot.isDefaultBoot(configModel);
+    const bootDevice = boot.bootDevice(configModel);
     let selectedOption: string;
 
-    if (!boot.configure) {
+    if (!bootModel.configure) {
       selectedOption = BOOT_DISABLED_ID;
-    } else if (boot.isDefault) {
+    } else if (isDefaultBoot) {
       selectedOption = BOOT_AUTO_ID;
     } else {
       selectedOption = BOOT_MANUAL_ID;
     }
 
-    const bootDevice = devices.find((d) => d.name === boot.getDevice()?.name);
-    const defaultBootDevice = boot.isDefault ? bootDevice : undefined;
+    const device = devices.find((d) => d.name === bootDevice?.name);
+    const defaultBootDevice = isDefaultBoot ? device : undefined;
     let candidates = [...candidateDevices];
     // Add the current boot device if it does not belong to the candidate devices.
-    if (bootDevice && !candidates.includes(bootDevice)) {
-      candidates = [bootDevice, ...candidates];
+    if (device && !candidates.includes(device)) {
+      candidates = [device, ...candidates];
     }
 
     setState({
       load: true,
-      bootDevice: bootDevice || candidateDevices[0],
-      configureBoot: boot.configure,
+      bootDevice: device || candidateDevices[0],
+      configureBoot: bootModel.configure,
       defaultBootDevice,
       candidateDevices: candidates,
       selectedOption,
     });
-  }, [devices, candidateDevices, model, state.load]);
+  }, [devices, candidateDevices, model, state.load, configModel]);
 
   if (!state.load || !model) return;
 

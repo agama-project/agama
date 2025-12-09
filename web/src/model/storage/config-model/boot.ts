@@ -20,5 +20,15 @@
  * find current contact information at www.suse.com.
  */
 
-export * as boot from "~/model/storage/config-model/boot";
-export type * as configModel from "~/openapi/storage/config-model";
+import type * as configModel from "~/openapi/storage/config-model";
+
+function isDefaultBoot(model: configModel.Config): boolean {
+  return model.boot?.device?.default || false;
+}
+
+function bootDevice(model: configModel.Config): configModel.Drive | configModel.MdRaid | null {
+  const targets = [...model.drives, ...model.mdRaids];
+  return targets.find((d) => d.name && d.name === model.boot?.device?.name) || null;
+}
+
+export { isDefaultBoot, bootDevice };

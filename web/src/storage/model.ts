@@ -29,17 +29,11 @@
 import type { configModel as apiModel } from "~/model/storage/config-model";
 
 type Model = {
-  boot: Boot;
   drives: Drive[];
   mdRaids: MdRaid[];
   volumeGroups: VolumeGroup[];
   getMountPaths: () => string[];
 };
-
-interface Boot extends Omit<apiModel.Boot, "device"> {
-  isDefault: boolean;
-  getDevice: () => Drive | MdRaid | null;
-}
 
 interface Drive extends Omit<apiModel.Drive, "partitions"> {
   isExplicitBoot: boolean;
@@ -85,19 +79,6 @@ interface VolumeGroup extends Omit<apiModel.VolumeGroup, "targetDevices" | "logi
 type LogicalVolume = apiModel.LogicalVolume;
 
 type Formattable = Drive | MdRaid | Partition | LogicalVolume;
-
-function buildBoot(apiModel: apiModel.Config, model: Model) {
-  const getDevice = (): Drive | MdRaid | null => {
-    const targets = [...model.drives, ...model.mdRaids];
-    return targets.find((d) => d.name && d.name === apiModel.boot?.device?.name) || null;
-  };
-
-  return {
-    configure: apiModel?.boot?.configure || false,
-    isDefault: apiModel?.boot?.device?.default || false,
-    getDevice,
-  };
-}
 
 function buildPartition(partitionData: apiModel.Partition): Partition {
   const isNew = (): boolean => {
@@ -242,14 +223,7 @@ function buildVolumeGroup(apiVolumeGroup: apiModel.VolumeGroup, model: Model): V
 }
 
 function buildModel(apiModel: apiModel.Config): Model {
-  const defaultBoot: Boot = {
-    configure: false,
-    isDefault: false,
-    getDevice: () => null,
-  };
-
   const model: Model = {
-    boot: defaultBoot,
     drives: [],
     mdRaids: [],
     volumeGroups: [],
@@ -277,7 +251,6 @@ function buildModel(apiModel: apiModel.Config): Model {
   };
 
   // Important! Modify the model object instead of assigning a new one.
-  model.boot = buildBoot(apiModel, model);
   model.drives = buildDrives();
   model.mdRaids = buildMdRaids();
   model.volumeGroups = buildVolumeGroups();
@@ -285,5 +258,5 @@ function buildModel(apiModel: apiModel.Config): Model {
   return model;
 }
 
-export type { Model, Boot, Drive, MdRaid, Partition, VolumeGroup, LogicalVolume, Formattable };
+export type { Model, Drive, MdRaid, Partition, VolumeGroup, LogicalVolume, Formattable };
 export { buildModel };
