@@ -164,9 +164,30 @@ pub fn announce_system(params: ConnectParams, target_distro: &str) -> Result<Cre
     response.try_into()
 }
 
+pub const GLOBAL_CREDENTIALS_FILE: &str = "/etc/zypp/credentials.d/SCCcredentials";
+pub fn create_credetials_file(login: &str, pwd: &str, path: &str) -> () {
+    unsafe {
+        // unwrap should not happen we do not construct invalid strings
+        let login = CString::new(login).unwrap().into_raw();
+        let pwd = CString::new(pwd).unwrap().into_raw();
+        let path = CString::new(path).unwrap().into_raw();
+        let empty = CString::new("").unwrap().into_raw();
+
+        suseconnect_agama_sys::create_credentials_file(login, pwd, empty, path);
+
+        // Retake ownership to free memory
+        let _ = CString::from_raw(login);
+        let _ = CString::from_raw(pwd);
+        let _ = CString::from_raw(path);
+        let _ = CString::from_raw(empty);
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+    use tempfile;
+    use std::fs;
     use serde_json::json;
 
     #[test]
@@ -304,12 +325,28 @@ mod tests {
                 code,
                 current_certificate,
             }) => {
-                assert_eq!(message, "Certificate validation failed");
-                assert_eq!(code, 5);
+                assert_eq!(message, "Certificate expired");
+                assert_eq!(code, 10);
                 assert_eq!(current_certificate, cert);
             }
             _ => panic!("Expected SSLError"),
         }
+    }
+
+    #[test]
+    fn test_create_credentials_file() {
+        let temp_file = tempfile::NamedTempFile::new().unwrap();
+        let path_str = temp_file.path().to_str().unwrap();
+
+        let login = "test_user";
+        let password = "test_password";
+
+        create_credetials_file(login, password, path_str);
+
+        let content = fs::read_to_string(temp_file.path()).expect("Failed to read credentials file");
+
+        assert!(content.contains(&format!("username={}", login)), "Missing/Wrong username section in {content}");
+        assert!(content.contains(&format!("password={}", password)), "Missing/Wrong password section in {content}");
     }
 
     #[test]
