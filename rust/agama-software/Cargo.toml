@@ -21,6 +21,7 @@ tracing = "0.1.41"
 url = "2.5.7"
 utoipa = { version = "5.2.0", features = ["axum_extras", "uuid"] }
 zypp-agama = { path = "../zypp-agama" }
+camino = "1.2.1"
 
 [dev-dependencies]
 serde_yaml = "0.9.34"

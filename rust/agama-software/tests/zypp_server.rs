@@ -26,6 +26,7 @@ use agama_utils::api::question::{Answer, AnswerRule, Config};
 use agama_utils::api::Issue;
 use agama_utils::progress;
 use agama_utils::question;
+use camino::Utf8Path;
 use glob::glob;
 use std::fs;
 use std::path::Path;
@@ -62,8 +63,8 @@ async fn test_start_zypp_server() {
     let _ = tracing_subscriber::fmt::try_init();
 
     let root_dir =
-        Path::new(env!("CARGO_MANIFEST_DIR")).join("../zypp-agama/fixtures/zypp_repos_root");
-    cleanup_past_leftovers(&root_dir);
+        Utf8Path::new(env!("CARGO_MANIFEST_DIR")).join("../zypp-agama/fixtures/zypp_repos_root");
+    cleanup_past_leftovers(&root_dir.as_std_path());
 
     let client = ZyppServer::start(&root_dir).expect("starting zypp server failed");
 
@@ -103,10 +104,7 @@ async fn test_start_zypp_server() {
     let repo_s = StateRepository {
         name: "signed_repo".to_string(),
         alias: "signed_repo".to_string(),
-        url: root_dir
-            .join("usr/share/signed_repo")
-            .to_string_lossy()
-            .to_string(),
+        url: root_dir.join("usr/share/signed_repo").to_string(),
         enabled: true,
     };
 

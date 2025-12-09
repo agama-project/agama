@@ -28,10 +28,8 @@ use agama_utils::{
     products::ProductSpec,
     progress, question,
 };
-use std::{
-    collections::HashMap,
-    path::{Path, PathBuf},
-};
+use camino::{Utf8Path, Utf8PathBuf};
+use std::collections::HashMap;
 
 use tokio::sync::{
     mpsc::{self, UnboundedSender},
@@ -104,14 +102,16 @@ pub enum SoftwareAction {
 /// Software service server.
 pub struct ZyppServer {
     receiver: mpsc::UnboundedReceiver<SoftwareAction>,
-    root_dir: PathBuf,
+    root_dir: Utf8PathBuf,
 }
 
 impl ZyppServer {
     /// Starts the software service loop and returns a client.
     ///
     /// The service runs on a separate thread and gets the client requests using a channel.
-    pub fn start<P: AsRef<Path>>(root_dir: P) -> ZyppServerResult<UnboundedSender<SoftwareAction>> {
+    pub fn start<P: AsRef<Utf8Path>>(
+        root_dir: P,
+    ) -> ZyppServerResult<UnboundedSender<SoftwareAction>> {
         let (sender, receiver) = mpsc::unbounded_channel();
 
         let server = Self {
@@ -528,11 +528,9 @@ impl ZyppServer {
         let target_dir = self.root_dir.as_path();
         std::fs::create_dir_all(target_dir).map_err(ZyppDispatchError::TargetCreationFailed)?;
 
-        // FIXME: use camino::Utf8PathBuf or String
-        let zypp =
-            zypp_agama::Zypp::init_target(target_dir.to_str().unwrap(), |text, step, total| {
-                tracing::info!("Initializing target: {} ({}/{})", text, step, total);
-            })?;
+        let zypp = zypp_agama::Zypp::init_target(target_dir.as_str(), |text, step, total| {
+            tracing::info!("Initializing target: {} ({}/{})", text, step, total);
+        })?;
 
         self.import_gpg_keys(&zypp);
         Ok(zypp)
