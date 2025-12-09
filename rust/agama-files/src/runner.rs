@@ -39,6 +39,8 @@ pub enum Error {
     Io(#[from] std::io::Error),
     #[error("The script failed")]
     Script(Output),
+    #[error(transparent)]
+    Question(#[from] question::AskError),
 }
 
 /// Implements the logic to run a script.
@@ -87,7 +89,7 @@ impl ScriptsRunner {
             _ = self
                 .progress
                 .cast(progress::message::Next::new(Scope::Files));
-            self.run_script(script).await;
+            self.run_script(script).await?;
         }
 
         _ = self
@@ -99,7 +101,7 @@ impl ScriptsRunner {
     /// Runs the script.
     ///
     /// If the script fails, it asks the user whether it should try again.
-    async fn run_script(&self, script: &Script) {
+    async fn run_script(&self, script: &Script) -> Result<(), Error> {
         loop {
             let path = self
                 .workdir
@@ -107,17 +109,17 @@ impl ScriptsRunner {
                 .join(script.name());
 
             let Err(error) = self.run_command(&path, script.chroot()).await else {
-                return;
+                return Ok(());
             };
 
-            if !self.should_retry(&script, error).await {
-                return;
+            if !self.should_retry(&script, error).await? {
+                return Ok(());
             }
         }
     }
 
     ///  Asks the user whether it should try to run the script again.
-    async fn should_retry(&self, script: &Script, error: Error) -> bool {
+    async fn should_retry(&self, script: &Script, error: Error) -> Result<bool, Error> {
         let text = format!(
             "Running the script '{}' failed. Do you want to try again?",
             script.name()
@@ -140,9 +142,8 @@ impl ScriptsRunner {
             ]);
         }
 
-        let answer = ask_question(&self.questions, question).await.unwrap();
-
-        return answer.action == "Yes";
+        let answer = ask_question(&self.questions, question).await?;
+        return Ok(answer.action == "Yes");
     }
 
     /// Runs the script at the given path.
