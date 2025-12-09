@@ -39,7 +39,7 @@ import { DeviceName, DeviceDetails, DeviceSize, toDevice } from "~/components/st
 import { Icon } from "~/components/layout";
 import { TreeTableColumn } from "~/components/core/TreeTable";
 import { Table, Td, Th, Tr, Thead, Tbody } from "@patternfly/react-table";
-import { useStorageModel } from "~/hooks/api/storage";
+import { useStorageModel } from "~/hooks/model/storage";
 import { supportShrink } from "~/storage/device";
 import type { storage as proposal } from "~/model/proposal";
 import type { model } from "~/model/storage";

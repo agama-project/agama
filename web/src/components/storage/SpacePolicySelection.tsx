@@ -27,7 +27,7 @@ import { Page } from "~/components/core";
 import SpaceActionsTable, { SpacePolicyAction } from "~/components/storage/SpaceActionsTable";
 import { deviceChildren } from "~/components/storage/utils";
 import { _ } from "~/i18n";
-import { useDevices } from "~/hooks/api/system/storage";
+import { useDevices } from "~/hooks/model/system/storage";
 import { useDrive as useDriveModel, useMdRaid as useMdRaidModel } from "~/hooks/storage/model";
 import { useSetSpacePolicy } from "~/hooks/storage/space-policy";
 import { toDevice } from "./device-utils";

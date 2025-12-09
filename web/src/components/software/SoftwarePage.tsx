@@ -36,7 +36,7 @@ import {
 } from "@patternfly/react-core";
 import { Link, Page, IssuesAlert } from "~/components/core";
 import UsedSize from "./UsedSize";
-import { useIssues } from "~/hooks/api/issue";
+import { useIssues } from "~/hooks/model/issue";
 import {
   usePatterns,
   useSoftwareProposal,

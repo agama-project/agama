@@ -21,7 +21,7 @@
  */
 
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { proposalQuery } from "~/hooks/api/proposal";
+import { proposalQuery } from "~/hooks/model/proposal";
 import { flatDevices } from "~/model/proposal/storage";
 import type { Proposal, storage } from "~/model/proposal";
 

@@ -21,17 +21,17 @@
  */
 
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { proposalQuery } from "~/hooks/api/proposal";
-import type { Proposal, software } from "~/model/proposal";
+import { systemQuery } from "~/hooks/model/system";
+import type { System, software } from "~/model/system";
 
-const selectProposal = (data: Proposal | null): software.Proposal | null => data?.software;
+const selectSystem = (data: System | null): software.System => data?.software;
 
-function useProposal(): software.Proposal | null {
+function useSystem(): software.System | null {
   const { data } = useSuspenseQuery({
-    ...proposalQuery,
-    select: selectProposal,
+    ...systemQuery,
+    select: selectSystem,
   });
   return data;
 }
 
-export { useProposal };
+export { useSystem };

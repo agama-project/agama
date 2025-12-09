@@ -33,7 +33,7 @@ import { Link, Page } from "~/components/core";
 import { Icon } from "~/components/layout";
 import WifiConnectionForm from "./WifiConnectionForm";
 import WifiConnectionDetails from "./WifiConnectionDetails";
-import { useNetworkChanges, useWifiNetworks } from "~/hooks/api/system/network";
+import { useNetworkChanges, useWifiNetworks } from "~/hooks/model/system/network";
 import { DeviceState } from "~/types/network";
 import { PATHS } from "~/routes/network";
 import { _ } from "~/i18n";

@@ -23,7 +23,7 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { Connection, NetworkProposal, GeneralState } from "~/types/network";
 import { network, Proposal } from "~/model/proposal";
-import { proposalQuery } from "~/hooks/api/proposal";
+import { proposalQuery } from "~/hooks/model/proposal";
 
 const useState = (): GeneralState => {
   const { data } = useSuspenseQuery({

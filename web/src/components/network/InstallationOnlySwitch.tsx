@@ -24,7 +24,7 @@ import React from "react";
 import { Connection } from "~/types/network";
 import { SwitchEnhanced } from "~/components/core";
 import { _ } from "~/i18n";
-import { useConnectionMutation } from "~/hooks/api/config/network";
+import { useConnectionMutation } from "~/hooks/model/config/network";
 
 type InstallationOnlySwitchProps = {
   /** The connection to configure as installation-only or not */

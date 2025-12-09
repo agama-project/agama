@@ -24,8 +24,8 @@
 
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { putStorageModel, solveStorageModel } from "~/api";
-import { useStorageModel } from "~/hooks/api/storage";
-import { useVolumeTemplates } from "~/hooks/api/system/storage";
+import { useStorageModel } from "~/hooks/model/storage";
+import { useVolumeTemplates } from "~/hooks/model/system/storage";
 import type { model } from "~/model/storage";
 import type { storage } from "~/model/system";
 

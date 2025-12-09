@@ -22,8 +22,8 @@
 
 import { useCallback } from "react";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { storageModelQuery } from "~/hooks/api/storage";
-import { useSystem } from "~/hooks/api/system/storage";
+import { storageModelQuery } from "~/hooks/model/storage";
+import { useSystem } from "~/hooks/model/system/storage";
 import { buildModel } from "~/storage/model";
 import type { model as apiModel } from "~/model/storage";
 import type { model } from "~/storage";

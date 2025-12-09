@@ -33,7 +33,7 @@ import {
 import { Icon } from "~/components/layout";
 import { rootRoutes } from "~/router";
 import { _ } from "~/i18n";
-import { useProduct } from "~/hooks/api/config";
+import { useProduct } from "~/hooks/model/config";
 
 const MainNavigation = (): React.ReactNode => {
   const product = useProduct();

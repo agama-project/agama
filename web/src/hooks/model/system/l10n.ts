@@ -21,22 +21,17 @@
  */
 
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { configQuery } from "~/hooks/api/config";
-import { putConfig, Response } from "~/api";
-import type { Config } from "~/model/config";
+import { systemQuery } from "~/hooks/model/system";
+import type { System, l10n } from "~/model/system";
 
-const removeStorageConfig = (data: Config | null): Config =>
-  data ? { ...data, storage: undefined } : {};
+const selectSystem = (data: System | null): l10n.System => data?.l10n;
 
-type ResetFn = () => Response;
-
-function useReset(): ResetFn {
+function useSystem(): l10n.System | null {
   const { data } = useSuspenseQuery({
-    ...configQuery,
-    select: removeStorageConfig,
+    ...systemQuery,
+    select: selectSystem,
   });
-  return () => putConfig(data);
+  return data;
 }
 
-export { useReset };
-export type { ResetFn };
+export { useSystem };

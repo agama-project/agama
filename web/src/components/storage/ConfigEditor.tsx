@@ -26,7 +26,7 @@ import Text from "~/components/core/Text";
 import DriveEditor from "~/components/storage/DriveEditor";
 import VolumeGroupEditor from "~/components/storage/VolumeGroupEditor";
 import MdRaidEditor from "~/components/storage/MdRaidEditor";
-import { useReset } from "~/hooks/api/config/storage";
+import { useReset } from "~/hooks/model/config/storage";
 import ConfigureDeviceMenu from "./ConfigureDeviceMenu";
 import { useModel } from "~/hooks/storage/model";
 import { _ } from "~/i18n";

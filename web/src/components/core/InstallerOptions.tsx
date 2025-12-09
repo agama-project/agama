@@ -52,9 +52,9 @@ import { localConnection } from "~/utils";
 import { _ } from "~/i18n";
 import supportedLanguages from "~/languages.json";
 import { PRODUCT, ROOT, L10N } from "~/routes/paths";
-import { useProduct } from "~/hooks/api/config";
-import { useSystem } from "~/hooks/api/system";
-import { useStatus } from "~/hooks/api/status";
+import { useProduct } from "~/hooks/model/config";
+import { useSystem } from "~/hooks/model/system";
+import { useStatus } from "~/hooks/model/status";
 import { patchConfig } from "~/api";
 import type { Keymap, Locale } from "~/model/system/l10n";
 

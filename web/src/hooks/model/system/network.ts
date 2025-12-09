@@ -22,7 +22,7 @@
 
 import { useSuspenseQuery, useQueryClient } from "@tanstack/react-query";
 import { System } from "~/model/system";
-import { systemQuery } from "~/hooks/api/system";
+import { systemQuery } from "~/hooks/model/system";
 import {
   AccessPoint,
   Connection,

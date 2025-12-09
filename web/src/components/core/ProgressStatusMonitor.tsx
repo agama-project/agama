@@ -30,7 +30,7 @@ import {
   Progress,
   Stack,
 } from "@patternfly/react-core";
-import { useStatus } from "~/hooks/api/status";
+import { useStatus } from "~/hooks/model/status";
 import { sprintf } from "sprintf-js";
 import { _, N_, n_ } from "~/i18n";
 import displayStyles from "@patternfly/react-styles/css/utilities/Display/display";

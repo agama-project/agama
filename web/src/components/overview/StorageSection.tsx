@@ -23,8 +23,8 @@
 import React from "react";
 import { Content } from "@patternfly/react-core";
 import { deviceLabel } from "~/components/storage/utils";
-import { useAvailableDevices, useDevices, useIssues } from "~/hooks/api/system/storage";
-import { useStorageModel } from "~/hooks/api/storage";
+import { useAvailableDevices, useDevices, useIssues } from "~/hooks/model/system/storage";
+import { useStorageModel } from "~/hooks/model/storage";
 import { _ } from "~/i18n";
 import type { storage } from "~/model/system";
 import type { model } from "~/model/storage";

@@ -24,7 +24,7 @@ import React, { useId, useState } from "react";
 import { Button, ButtonProps, Stack, Tooltip, TooltipProps } from "@patternfly/react-core";
 import { Popup } from "~/components/core";
 import { startInstallation } from "~/model/manager";
-import { useIssues } from "~/hooks/api/issue";
+import { useIssues } from "~/hooks/model/issue";
 import { useLocation } from "react-router";
 import { SIDE_PATHS } from "~/routes/paths";
 import { _ } from "~/i18n";

@@ -33,7 +33,7 @@ import * as driveUtils from "~/components/storage/utils/drive";
 import { generateEncodedPath } from "~/utils";
 import { isEmpty } from "radashi";
 import { useDevice as useDeviceModel } from "~/hooks/storage/model";
-import { useDevice } from "~/hooks/api/system/storage";
+import { useDevice } from "~/hooks/model/system/storage";
 import type { model as apiModel } from "~/model/storage";
 import type { model } from "~/storage";
 

@@ -61,10 +61,10 @@ import {
   addPartition as addPartitionHelper,
   editPartition as editPartitionHelper,
 } from "~/storage/partition";
-import { useVolumeTemplate, useDevice } from "~/hooks/api/system/storage";
+import { useVolumeTemplate, useDevice } from "~/hooks/model/system/storage";
 
 import { useSolvedConfigModel } from "~/queries/storage/config-model";
-import { useStorageModel } from "~/hooks/api/storage";
+import { useStorageModel } from "~/hooks/model/storage";
 import { findDevice } from "~/storage/api-model";
 import { deviceSize, deviceLabel, filesystemLabel, parseToBytes } from "~/components/storage/utils";
 import { _ } from "~/i18n";

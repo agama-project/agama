@@ -51,9 +51,9 @@ import { SelectWrapperProps as SelectProps } from "~/components/core/SelectWrapp
 import SelectTypeaheadCreatable from "~/components/core/SelectTypeaheadCreatable";
 import AutoSizeText from "~/components/storage/AutoSizeText";
 import { deviceSize, filesystemLabel, parseToBytes } from "~/components/storage/utils";
-import { useSolvedStorageModel, useStorageModel } from "~/hooks/api/storage";
+import { useSolvedStorageModel, useStorageModel } from "~/hooks/model/storage";
 import { useModel, useMissingMountPaths } from "~/hooks/storage/model";
-import { useVolumeTemplate } from "~/hooks/api/system/storage";
+import { useVolumeTemplate } from "~/hooks/model/system/storage";
 import { useVolumeGroup } from "~/hooks/storage/volume-group";
 import { useAddLogicalVolume, useEditLogicalVolume } from "~/hooks/storage/logical-volume";
 import { addLogicalVolume, editLogicalVolume } from "~/storage/logical-volume";

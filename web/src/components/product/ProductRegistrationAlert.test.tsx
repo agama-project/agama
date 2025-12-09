@@ -23,9 +23,9 @@
 import React from "react";
 import { screen } from "@testing-library/react";
 import { installerRender, mockRoutes } from "~/test-utils";
-import { useSystem } from "~/hooks/api/system";
-import { useProduct } from "~/hooks/api/config";
-import { useIssues } from "~/hooks/api/issue";
+import { useSystem } from "~/hooks/model/system";
+import { useProduct } from "~/hooks/model/config";
+import { useIssues } from "~/hooks/model/issue";
 import { Issue } from "~/model/issue";
 import { PRODUCT, REGISTRATION, ROOT } from "~/routes/paths";
 import { Product } from "~/types/software";

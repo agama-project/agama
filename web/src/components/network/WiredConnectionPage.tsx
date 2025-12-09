@@ -30,7 +30,7 @@ import {
   EmptyStateFooter,
 } from "@patternfly/react-core";
 import { Link, Page } from "~/components/core";
-import { useConnections } from "~/hooks/api/proposal/network";
+import { useConnections } from "~/hooks/model/proposal/network";
 import { _ } from "~/i18n";
 import { sprintf } from "sprintf-js";
 import WiredConnectionDetails from "./WiredConnectionDetails";

@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import { useStorageModel } from "~/hooks/api/storage";
+import { useStorageModel } from "~/hooks/model/storage";
 import { putStorageModel } from "~/api";
 import { configureFilesystem } from "~/storage/filesystem";
 import type { data } from "~/storage";

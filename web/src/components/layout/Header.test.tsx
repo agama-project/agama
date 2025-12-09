@@ -26,7 +26,7 @@ import { plainRender, installerRender } from "~/test-utils";
 import { Product } from "~/types/software";
 import { System } from "~/model/system/network";
 import Header from "./Header";
-import { useSystem } from "~/hooks/api/system";
+import { useSystem } from "~/hooks/model/system";
 
 const tumbleweed: Product = {
   id: "Tumbleweed",

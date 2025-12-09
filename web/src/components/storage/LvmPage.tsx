@@ -35,7 +35,7 @@ import {
   TextInput,
 } from "@patternfly/react-core";
 import { Page, SubtleContent } from "~/components/core";
-import { useAvailableDevices } from "~/hooks/api/system/storage";
+import { useAvailableDevices } from "~/hooks/model/system/storage";
 import { useModel } from "~/hooks/storage/model";
 import {
   useVolumeGroup,

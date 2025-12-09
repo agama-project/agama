@@ -55,7 +55,7 @@ import {
   useDrive as useDriveModel,
   useMdRaid as useMdRaidModel,
 } from "~/hooks/storage/model";
-import { useDevice, useVolumeTemplate } from "~/hooks/api/system/storage";
+import { useDevice, useVolumeTemplate } from "~/hooks/model/system/storage";
 import { data, model } from "~/storage";
 import { deviceBaseName, filesystemLabel } from "~/components/storage/utils";
 import { _ } from "~/i18n";

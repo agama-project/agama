@@ -22,20 +22,20 @@
 
 import React from "react";
 import { useSuspenseQuery, useQueryClient } from "@tanstack/react-query";
-import { getSystem } from "~/api";
+import { getProposal } from "~/api";
 import { useInstallerClient } from "~/context/installer";
-import type { System } from "~/model/system";
+import type { Proposal } from "~/model/proposal";
 
-const systemQuery = {
-  queryKey: ["system"],
-  queryFn: getSystem,
+const proposalQuery = {
+  queryKey: ["proposal"],
+  queryFn: getProposal,
 };
 
-function useSystem(): System | null {
-  return useSuspenseQuery(systemQuery)?.data;
+function useProposal(): Proposal | null {
+  return useSuspenseQuery(proposalQuery)?.data;
 }
 
-function useSystemChanges() {
+function useProposalChanges() {
   const queryClient = useQueryClient();
   const client = useInstallerClient();
 
@@ -44,16 +44,17 @@ function useSystemChanges() {
 
     // TODO: replace the scope instead of invalidating the query.
     return client.onEvent((event) => {
-      if (event.type === "SystemChanged") {
-        queryClient.invalidateQueries({ queryKey: ["system"] });
-        if (event.scope === "storage")
-          queryClient.invalidateQueries({ queryKey: ["solvedStorageModel"] });
+      if (event.type === "ProposalChanged") {
+        queryClient.invalidateQueries({ queryKey: ["extendedConfig"] });
+        queryClient.invalidateQueries({ queryKey: ["storageModel"] });
+        queryClient.invalidateQueries({ queryKey: ["proposal"] });
       }
     });
   }, [client, queryClient]);
 }
 
-export { systemQuery, useSystem, useSystemChanges };
-export * as l10n from "~/hooks/api/system/l10n";
-export * as storage from "~/hooks/api/system/storage";
-export * as software from "~/hooks/api/system/software";
+export { proposalQuery, useProposal, useProposalChanges };
+export * as l10n from "~/hooks/model/proposal/l10n";
+export * as network from "~/hooks/model/proposal/network";
+export * as storage from "~/hooks/model/proposal/storage";
+export * as software from "~/hooks/model/proposal/software";

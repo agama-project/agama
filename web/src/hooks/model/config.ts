@@ -23,7 +23,7 @@
 import { useCallback } from "react";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { getConfig, getExtendedConfig } from "~/api";
-import { useSystem } from "~/hooks/api/system";
+import { useSystem } from "~/hooks/model/system";
 import type { system } from "~/api";
 import type { Config } from "~/model/config";
 
@@ -62,4 +62,4 @@ function useProduct(): system.Product | null {
 }
 
 export { configQuery, extendedConfigQuery, useConfig, useExtendedConfig, useProduct };
-export * as storage from "~/hooks/api/config/storage";
+export * as storage from "~/hooks/model/config/storage";

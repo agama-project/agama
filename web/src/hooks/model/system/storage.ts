@@ -22,7 +22,7 @@
 
 import { useCallback } from "react";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { systemQuery } from "~/hooks/api/system";
+import { systemQuery } from "~/hooks/model/system";
 import { flatDevices, findDevices, findDeviceByName } from "~/model/system/storage";
 import type { System, storage } from "~/model/system";
 

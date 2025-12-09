@@ -25,8 +25,8 @@ import { screen, within } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import L10nPage from "~/components/l10n/L10nPage";
 import { Keymap, Locale, Timezone } from "~/model/system/l10n";
-import { useSystem } from "~/hooks/api/system";
-import { useProposal } from "~/hooks/api/proposal";
+import { useSystem } from "~/hooks/model/system";
+import { useProposal } from "~/hooks/model/proposal";
 import { System } from "~/model/system/network";
 import { Proposal } from "~/model/proposal/network";
 

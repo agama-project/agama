@@ -36,8 +36,8 @@ import { Connection, ConnectionState, WifiNetwork, Wireless } from "~/types/netw
 import { isEmpty } from "radashi";
 import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
-import { useConnections } from "~/hooks/api/system/network";
-import { useConnectionMutation } from "~/hooks/api/config/network";
+import { useConnections } from "~/hooks/model/system/network";
+import { useConnectionMutation } from "~/hooks/model/config/network";
 
 const securityOptions = [
   // TRANSLATORS: WiFi authentication mode
