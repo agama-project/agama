@@ -22,23 +22,24 @@
 
 import { copyApiModel } from "~/storage/api-model";
 import { bootDevice } from "~/model/storage/config-model/boot";
+import { usedMountPaths } from "~/model/storage/config-model/partitionable";
 import type { model } from "~/storage";
-import type { configModel as apiModel } from "~/model/storage/config-model";
+import type { configModel } from "~/model/storage/config-model";
 
 function isUsed(device: model.Drive | model.MdRaid): boolean {
-  return device.isTargetDevice || device.getMountPaths().length > 0;
+  return device.isTargetDevice || usedMountPaths(device).length > 0;
 }
 
 function removeDevice(
-  apiModel: apiModel.Config,
+  apiModel: configModel.Config,
   device: model.Drive | model.MdRaid,
-): apiModel.Config {
+): configModel.Config {
   apiModel.drives = apiModel.drives.filter((d) => d.name !== device.name);
   apiModel.mdRaids = apiModel.mdRaids.filter((d) => d.name !== device.name);
   return apiModel;
 }
 
-function setBoot(model: model.Model, apiModel: apiModel.Config, boot: apiModel.Boot) {
+function setBoot(model: model.Model, apiModel: configModel.Config, boot: configModel.Boot) {
   const device = bootDevice(apiModel);
   // FIXME
   const modelDevice = model.drives.concat(model.mdRaids).find((d) => d.name === device?.name);
@@ -50,12 +51,12 @@ function setBoot(model: model.Model, apiModel: apiModel.Config, boot: apiModel.B
 
 function setBootDevice(
   model: model.Model,
-  apiModel: apiModel.Config,
+  apiModel: configModel.Config,
   deviceName: string,
-): apiModel.Config {
+): configModel.Config {
   apiModel = copyApiModel(apiModel);
 
-  const boot: apiModel.Boot = {
+  const boot: configModel.Boot = {
     configure: true,
     device: {
       default: false,
@@ -67,10 +68,13 @@ function setBootDevice(
   return apiModel;
 }
 
-function setDefaultBootDevice(model: model.Model, apiModel: apiModel.Config): apiModel.Config {
+function setDefaultBootDevice(
+  model: model.Model,
+  apiModel: configModel.Config,
+): configModel.Config {
   apiModel = copyApiModel(apiModel);
 
-  const boot: apiModel.Boot = {
+  const boot: configModel.Boot = {
     configure: true,
     device: {
       default: true,
@@ -81,9 +85,9 @@ function setDefaultBootDevice(model: model.Model, apiModel: apiModel.Config): ap
   return apiModel;
 }
 
-function disableBootConfig(model: model.Model, apiModel: apiModel.Config): apiModel.Config {
+function disableBootConfig(model: model.Model, apiModel: configModel.Config): configModel.Config {
   apiModel = copyApiModel(apiModel);
-  const boot: apiModel.Boot = { configure: false };
+  const boot: configModel.Boot = { configure: false };
   setBoot(model, apiModel, boot);
   return apiModel;
 }

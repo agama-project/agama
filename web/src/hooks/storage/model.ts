@@ -25,6 +25,7 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import { storageModelQuery } from "~/hooks/model/storage";
 import { useSystem } from "~/hooks/model/system/storage";
 import { buildModel } from "~/storage/model";
+import { usedMountPaths } from "~/model/storage/config-model";
 import type { configModel as apiModel } from "~/model/storage/config-model";
 import type { model } from "~/storage";
 
@@ -45,8 +46,7 @@ function useMissingMountPaths(): string[] {
     ...storageModelQuery,
     select: useCallback(
       (data: apiModel.Config | null): string[] => {
-        const model = build(data);
-        const currentMountPaths = model?.getMountPaths() || [];
+        const currentMountPaths = data ? usedMountPaths(data) : [];
         return (productMountPoints || []).filter((p) => !currentMountPaths.includes(p));
       },
       [productMountPoints],

@@ -20,22 +20,16 @@
  * find current contact information at www.suse.com.
  */
 
-import * as partitionable from "~/model/storage/config-model/partitionable";
-import * as volumeGroup from "~/model/storage/config-model/volume-group";
+import { sift } from "radashi";
 import type * as configModel from "~/openapi/storage/config-model";
+import type * as model from "~/storage/model";
 
-function usedMountPaths(model: configModel.Config): string[] {
-  const drives = model.drives || [];
-  const mdRaids = model.mdRaids || [];
-  const volumeGroups = model.volumeGroups || [];
+// FIXME: remove model types once model is dropped.
+type Partitionable = configModel.Drive | configModel.MdRaid | model.Drive | model.MdRaid;
 
-  return [
-    ...drives.flatMap(partitionable.usedMountPaths),
-    ...mdRaids.flatMap(partitionable.usedMountPaths),
-    ...volumeGroups.flatMap(volumeGroup.usedMountPaths),
-  ];
+function usedMountPaths(drive: Partitionable): string[] {
+  const mountPaths = (drive.partitions || []).map((p) => p.mountPath);
+  return sift([drive.mountPath, ...mountPaths]);
 }
 
-export * as boot from "~/model/storage/config-model/boot";
 export { usedMountPaths };
-export type { configModel };

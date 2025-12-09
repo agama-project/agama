@@ -20,22 +20,12 @@
  * find current contact information at www.suse.com.
  */
 
-import * as partitionable from "~/model/storage/config-model/partitionable";
-import * as volumeGroup from "~/model/storage/config-model/volume-group";
+import { sift } from "radashi";
 import type * as configModel from "~/openapi/storage/config-model";
 
-function usedMountPaths(model: configModel.Config): string[] {
-  const drives = model.drives || [];
-  const mdRaids = model.mdRaids || [];
-  const volumeGroups = model.volumeGroups || [];
-
-  return [
-    ...drives.flatMap(partitionable.usedMountPaths),
-    ...mdRaids.flatMap(partitionable.usedMountPaths),
-    ...volumeGroups.flatMap(volumeGroup.usedMountPaths),
-  ];
+function usedMountPaths(volumeGroup: configModel.VolumeGroup): string[] {
+  const mountPaths = (volumeGroup.logicalVolumes || []).map((l) => l.mountPath);
+  return sift(mountPaths);
 }
 
-export * as boot from "~/model/storage/config-model/boot";
 export { usedMountPaths };
-export type { configModel };

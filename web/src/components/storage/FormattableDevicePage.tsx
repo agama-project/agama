@@ -50,14 +50,15 @@ import { SelectWrapperProps as SelectProps } from "~/components/core/SelectWrapp
 import SelectTypeaheadCreatable from "~/components/core/SelectTypeaheadCreatable";
 import { useAddFilesystem } from "~/hooks/storage/filesystem";
 import {
-  useModel,
   useMissingMountPaths,
   useDrive as useDriveModel,
   useMdRaid as useMdRaidModel,
 } from "~/hooks/storage/model";
+import { useStorageModel } from "~/hooks/model/storage";
 import { useDevice, useVolumeTemplate } from "~/hooks/model/system/storage";
 import { data, model } from "~/storage";
 import { deviceBaseName, filesystemLabel } from "~/components/storage/utils";
+import { usedMountPaths } from "~/model/storage/config-model";
 import { _ } from "~/i18n";
 import { sprintf } from "sprintf-js";
 import { STORAGE as PATHS } from "~/routes/paths";
@@ -206,8 +207,8 @@ function useUsableFilesystems(mountPoint: string): string[] {
 }
 
 function useMountPointError(value: FormValue): Error | undefined {
-  const model = useModel();
-  const mountPoints = model?.getMountPaths() || [];
+  const configModel = useStorageModel();
+  const mountPoints = configModel ? usedMountPaths(configModel) : [];
   const deviceModel = useDeviceModelFromParams();
   const mountPoint = value.mountPoint;
 

@@ -23,6 +23,7 @@
 import React, { useState } from "react";
 import MenuButton, { CustomToggleProps, MenuButtonItem } from "~/components/core/MenuButton";
 import NewVgMenuOption from "./NewVgMenuOption";
+import { usedMountPaths } from "~/model/storage/config-model/partitionable";
 import { useAvailableDevices } from "~/hooks/model/system/storage";
 import { useModel } from "~/hooks/storage/model";
 import { useSwitchToDrive } from "~/hooks/storage/drive";
@@ -43,7 +44,7 @@ const useOnlyOneOption = (device: model.Drive | model.MdRaid): boolean => {
   if (device.filesystem && device.filesystem.reuse) return true;
 
   const { isTargetDevice, isExplicitBoot } = device;
-  if (!device.getMountPaths().length && (isTargetDevice || isExplicitBoot)) return true;
+  if (!usedMountPaths(device).length && (isTargetDevice || isExplicitBoot)) return true;
 
   return device.isReusingPartitions;
 };
@@ -231,7 +232,7 @@ const RemoveEntryOption = ({ device, onClick }: RemoveEntryOptionProps): React.R
 
   // If these cases, the target device cannot be changed and this disabled button would only provide
   // information that is redundant to the one already displayed at the disabled "change device" one.
-  if (!device.getMountPaths().length && (hasPv || isExplicitBoot)) return;
+  if (!usedMountPaths(device).length && (hasPv || isExplicitBoot)) return;
 
   if (isExplicitBoot) {
     if (hasPv) {

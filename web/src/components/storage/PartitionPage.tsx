@@ -50,9 +50,9 @@ import AutoSizeText from "~/components/storage/AutoSizeText";
 import SizeModeSelect, { SizeMode, SizeRange } from "~/components/storage/SizeModeSelect";
 import AlertOutOfSync from "~/components/core/AlertOutOfSync";
 import ResourceNotFound from "~/components/core/ResourceNotFound";
+import { usedMountPaths } from "~/model/storage/config-model";
 import { useAddPartition, useEditPartition } from "~/hooks/storage/partition";
 import {
-  useModel,
   useMissingMountPaths,
   useDrive as useDriveModel,
   useMdRaid as useMdRaidModel,
@@ -294,8 +294,8 @@ function useUsableFilesystems(mountPoint: string): string[] {
 }
 
 function useMountPointError(value: FormValue): Error | undefined {
-  const model = useModel();
-  const mountPoints = model?.getMountPaths() || [];
+  const configModel = useStorageModel();
+  const mountPoints = configModel ? usedMountPaths(configModel) : [];
   const initialPartitionConfig = useInitialPartitionConfig();
   const mountPoint = value.mountPoint;
 
