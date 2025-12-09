@@ -26,6 +26,46 @@ pub struct ConnectParams {
     pub email: Option<String>,
 }
 
+/// Represents a product to be registered.
+#[derive(serde::Serialize, Debug, Clone)]
+pub struct Product {
+    /// The architecture of the product (e.g., "x86_64").
+    pub arch: String,
+    /// The product identifier (e.g., "SLES").
+    pub identifier: String,
+    /// The product version (e.g., "15.4").
+    pub version: String,
+}
+
+/// Represents a service returned from registration to be added to libzypp.
+#[derive(serde::Serialize, Debug, Clone)]
+pub struct Service {
+    /// The name of the service that can be used in libzypp.
+    pub name: String,
+    /// The URL of the service.
+    pub url: String,
+}
+
+impl TryFrom<Value> for Service {
+    type Error = Error;
+
+    fn try_from(value: Value) -> Result<Self, Self::Error> {
+        let Some(name) = value.get("name").and_then(|c| c.as_str()) else {
+            return Err(Error::UnexpectedResponse("Missing name key".to_string()));
+        };
+        let Some(url) = value.get("url").and_then(|c| c.as_str()) else {
+            return Err(Error::UnexpectedResponse(
+                "Missing url key".to_string(),
+            ));
+        };
+
+        Ok(Self {
+            url: url.to_string(),
+            name: name.to_string(),
+        })
+    }
+}
+
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
     #[error("{message}")]
@@ -170,6 +210,46 @@ pub fn announce_system(params: ConnectParams, target_distro: &str) -> Result<Cre
         // Retake ownership to free memory
         let _ = CString::from_raw(params_c_ptr);
         let _ = CString::from_raw(distro_c_ptr);
+
+        string_from_ptr(result_ptr)
+    }?;
+
+    let response: Value = serde_json::from_str(&result_s)?;
+    check_error(&response)?;
+
+    response.try_into()
+}
+
+/// Activates a product with SUSE Customer Center.
+///
+/// # Arguments
+///
+/// * `product` - The [Product] to activate.
+/// * `params` - Parameters [ConnectParams] for the connection.
+/// * `email` - The email address to associate with the activation. Can be empty.
+///
+/// # Returns
+///
+/// On success, returns `Ok(Service)` containing the [Service] details for libzypp.
+///
+/// # Errors
+///
+/// Returns an `Err` of type [Error] if activation fails.
+pub fn activate_product(product: Product, params: ConnectParams, email: &str) -> Result<Service, Error> {
+    let result_s = unsafe {
+        let product_json = json!(product).to_string();
+        let params_json = json!(params).to_string();
+
+        let product_c_ptr = CString::new(product_json).unwrap().into_raw();
+        let params_c_ptr = CString::new(params_json).unwrap().into_raw();
+        let email_c_ptr = CString::new(email).unwrap().into_raw();
+
+        let result_ptr = suseconnect_agama_sys::activate_product(product_c_ptr, params_c_ptr, email_c_ptr);
+
+        // Retake ownership to free memory
+        let _ = CString::from_raw(product_c_ptr);
+        let _ = CString::from_raw(params_c_ptr);
+        let _ = CString::from_raw(email_c_ptr);
 
         string_from_ptr(result_ptr)
     }?;
