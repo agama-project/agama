@@ -21,13 +21,12 @@
 use std::{
     fs,
     path::{Path, PathBuf},
-    process::Output,
+    process::{Output, Stdio},
 };
 
 use agama_utils::{
     actor::Handler,
     api::{files::Script, question::QuestionSpec, Scope},
-    command::run_with_retry,
     progress,
     question::{self, ask_question},
 };
@@ -151,26 +150,81 @@ impl ScriptsRunner {
     /// * `path`: script's path.
     /// * `chroot`: whether to run the script in a chroot.
     async fn run_command<P: AsRef<Path>>(&self, path: P, chroot: bool) -> Result<(), Error> {
+        const OS_ERROR_BUSY: i32 = 26;
+        const RETRY_ATTEMPTS: u8 = 5;
+        const RETRY_INTERVAL: u64 = 50;
+
         let path = path.as_ref();
-        let command = if chroot {
-            let mut command = process::Command::new("chroot");
-            command.args([&self.install_dir, path]);
-            command
-        } else {
-            process::Command::new(path)
+        let log_path = path.with_extension("log");
+        let err_path = path.with_extension("err");
+        let out_path = path.with_extension("out");
+
+        let mut attempt = 0;
+        let (status, stdout, stderr) = loop {
+            let mut command = if chroot {
+                let mut command = process::Command::new("chroot");
+                command.args([&self.install_dir, path]);
+                command
+            } else {
+                process::Command::new(path)
+            };
+
+            command.stdout(Stdio::piped()).stderr(Stdio::piped());
+
+            match command.spawn() {
+                Ok(mut child) => {
+                    let mut stdout_stream = child.stdout.take().expect("stdout to be piped");
+                    let mut stderr_stream = child.stderr.take().expect("stderr to be piped");
+
+                    let mut log_file = tokio::fs::File::create(&log_path).await?;
+                    let mut err_file = tokio::fs::File::create(&err_path).await?;
+
+                    let log_handle = tokio::spawn(async move {
+                        tokio::io::copy(&mut stdout_stream, &mut log_file).await
+                    });
+                    let err_handle = tokio::spawn(async move {
+                        tokio::io::copy(&mut stderr_stream, &mut err_file).await
+                    });
+
+                    let status = child.wait().await?;
+                    let join_to_io_error =
+                        |e: tokio::task::JoinError| std::io::Error::new(std::io::ErrorKind::Other, e);
+
+                    log_handle.await.map_err(join_to_io_error)??;
+                    err_handle.await.map_err(join_to_io_error)??;
+
+                    let stdout = fs::read(&log_path)?;
+                    let stderr = fs::read(&err_path)?;
+
+                    break (status, stdout, stderr);
+                }
+                Err(error) => {
+                    if let Some(code) = error.raw_os_error() {
+                        if code == OS_ERROR_BUSY && attempt < RETRY_ATTEMPTS {
+                            attempt += 1;
+                            println!(
+                                "Command failed with OS error {OS_ERROR_BUSY} (attempt {attempt}). Retrying."
+                            );
+                            tokio::time::sleep(tokio::time::Duration::from_millis(RETRY_INTERVAL))
+                                .await;
+                            continue;
+                        }
+                    }
+                    return Err(error.into());
+                }
+            }
         };
 
-        let output = run_with_retry(command)
-            .await
-            .inspect_err(|e| println!("Error executing the script: {e}"))?;
-
-        fs::write(path.with_extension("log"), output.stdout.clone())?;
-        fs::write(path.with_extension("err"), output.stderr.clone())?;
-        if let Some(code) = output.status.code() {
-            fs::write(path.with_extension("out"), code.to_string())?;
+        if let Some(code) = status.code() {
+            fs::write(out_path, code.to_string())?;
         }
 
-        if !output.status.success() {
+        if !status.success() {
+            let output = Output {
+                status,
+                stdout,
+                stderr,
+            };
             return Err(Error::Script(output));
         }
 
