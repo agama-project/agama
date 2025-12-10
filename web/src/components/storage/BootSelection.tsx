@@ -38,7 +38,7 @@ import {
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
-import { boot } from "~/model/storage/config-model";
+import { configModelMethods } from "~/model/storage";
 import type { storage } from "~/model/system";
 import type { Model } from "~/storage/model";
 
@@ -87,8 +87,8 @@ export default function BootSelection() {
     if (state.load || !model) return;
 
     const bootModel = configModel.boot;
-    const isDefaultBoot = boot.isDefaultBoot(configModel);
-    const bootDevice = boot.bootDevice(configModel);
+    const isDefaultBoot = configModelMethods.hasDefaultBoot(configModel);
+    const bootDevice = configModelMethods.bootDevice(configModel);
     let selectedOption: string;
 
     if (!bootModel.configure) {

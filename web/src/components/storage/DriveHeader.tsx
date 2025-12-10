@@ -22,7 +22,7 @@
 
 import { sprintf } from "sprintf-js";
 import { deviceLabel } from "./utils";
-import { usedMountPaths } from "~/model/storage/config-model/partitionable";
+import { usedMountPaths } from "~/model/storage/partitionable-model";
 import { useConfigModel } from "~/hooks/model/storage";
 import { configModelMethods } from "~/model/storage";
 import { _ } from "~/i18n";

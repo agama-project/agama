@@ -27,7 +27,7 @@ import Link from "~/components/core/Link";
 import Icon from "~/components/layout/Icon";
 import { useAvailableDrives } from "~/hooks/model/system/storage";
 import { useConfigModel } from "~/hooks/model/storage";
-import { boot } from "~/model/storage/config-model";
+import { configModelMethods } from "~/model/storage";
 import { STORAGE } from "~/routes/paths";
 import { deviceLabel, formattedPath } from "~/components/storage/utils";
 import { _ } from "~/i18n";
@@ -76,8 +76,8 @@ export default function BootSection() {
   const configModel = useConfigModel();
   const devices = useAvailableDrives();
 
-  const isDefaultBoot = boot.isDefaultBoot(configModel);
-  const bootDevice = boot.bootDevice(configModel);
+  const isDefaultBoot = configModelMethods.hasDefaultBoot(configModel);
+  const bootDevice = configModelMethods.bootDevice(configModel);
   const device = devices.find((d) => d.name === bootDevice?.name);
 
   return (

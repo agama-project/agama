@@ -23,14 +23,13 @@
 import React, { useState } from "react";
 import MenuButton, { CustomToggleProps, MenuButtonItem } from "~/components/core/MenuButton";
 import NewVgMenuOption from "./NewVgMenuOption";
-import { usedMountPaths } from "~/model/storage/config-model/partitionable";
+import { usedMountPaths } from "~/model/storage/partitionable-model";
 import { useAvailableDevices } from "~/hooks/model/system/storage";
 import { useModel } from "~/hooks/storage/model";
 import { useConfigModel } from "~/hooks/model/storage";
 import { useSwitchToDrive } from "~/hooks/storage/drive";
 import { useSwitchToMdRaid } from "~/hooks/storage/md-raid";
 import { deviceBaseName, formattedPath } from "~/components/storage/utils";
-import { boot } from "~/model/storage/config-model";
 import { configModelMethods } from "~/model/storage";
 import { sprintf } from "sprintf-js";
 import { _, formatList } from "~/i18n";
@@ -54,7 +53,7 @@ const useOnlyOneOption = (
 
   if (
     !usedMountPaths(device).length &&
-    (isTargetDevice || boot.isExplicitBoot(configModel, device.name))
+    (isTargetDevice || configModelMethods.isExplicitBootDevice(configModel, device.name))
   )
     return true;
 
@@ -110,7 +109,7 @@ const ChangeDeviceDescription = ({ modelDevice, device }: ChangeDeviceDescriptio
   const name = baseName(device);
   const volumeGroups = modelDevice.getVolumeGroups() || [];
   const isBoot = modelDevice.isBoot;
-  const isExplicitBoot = boot.isExplicitBoot(configModel, modelDevice.name);
+  const isExplicitBoot = configModelMethods.isExplicitBootDevice(configModel, modelDevice.name);
   const mountPaths = usedMountPaths(modelDevice);
   const hasMountPaths = mountPaths.length > 0;
   const hasPv = volumeGroups.length > 0;
@@ -242,7 +241,9 @@ const RemoveEntryOption = ({ device, onClick }: RemoveEntryOptionProps): React.R
     // If there are only two drives, the following logic avoids the corner case in which first
     // deleting one of them and then changing the boot settings can lead to zero disks. But it is far
     // from being fully reasonable or understandable for the user.
-    const onlyToBoot = entries.find((e) => boot.isExplicitBoot(configModel, e.name) && !e.isUsed);
+    const onlyToBoot = entries.find(
+      (e) => configModelMethods.isExplicitBootDevice(configModel, e.name) && !e.isUsed,
+    );
     return !onlyToBoot;
   };
 
@@ -251,7 +252,7 @@ const RemoveEntryOption = ({ device, onClick }: RemoveEntryOptionProps): React.R
   if (!hasAdditionalDrives(model)) return;
 
   let description;
-  const isExplicitBoot = boot.isExplicitBoot(configModel, device.name);
+  const isExplicitBoot = configModelMethods.isExplicitBootDevice(configModel, device.name);
   const hasPv = configModelMethods.isTargetDevice(configModel, device.name);
   const isDisabled = isExplicitBoot || hasPv;
 

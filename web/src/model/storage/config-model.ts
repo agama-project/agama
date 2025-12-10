@@ -20,20 +20,37 @@
  * find current contact information at www.suse.com.
  */
 
-import * as partitionable from "~/model/storage/config-model/partitionable";
-import * as volumeGroup from "~/model/storage/config-model/volume-group";
+import * as partitionableModelMethods from "~/model/storage/partitionable-model";
+import { volumeGroupModelMethods } from "~/model/storage";
 import type * as configModel from "~/openapi/storage/config-model";
 
-function usedMountPaths(model: configModel.Config): string[] {
-  const drives = model.drives || [];
-  const mdRaids = model.mdRaids || [];
-  const volumeGroups = model.volumeGroups || [];
+function usedMountPaths(configModel: configModel.Config): string[] {
+  const drives = configModel.drives || [];
+  const mdRaids = configModel.mdRaids || [];
+  const volumeGroups = configModel.volumeGroups || [];
 
   return [
-    ...drives.flatMap(partitionable.usedMountPaths),
-    ...mdRaids.flatMap(partitionable.usedMountPaths),
-    ...volumeGroups.flatMap(volumeGroup.usedMountPaths),
+    ...drives.flatMap(partitionableModelMethods.usedMountPaths),
+    ...mdRaids.flatMap(partitionableModelMethods.usedMountPaths),
+    ...volumeGroups.flatMap(volumeGroupModelMethods.usedMountPaths),
   ];
+}
+
+function bootDevice(model: configModel.Config): configModel.Drive | configModel.MdRaid | null {
+  const targets = [...model.drives, ...model.mdRaids];
+  return targets.find((d) => d.name && d.name === model.boot?.device?.name) || null;
+}
+
+function hasDefaultBoot(model: configModel.Config): boolean {
+  return model.boot?.device?.default || false;
+}
+
+function isBootDevice(model: configModel.Config, deviceName: string): boolean {
+  return model.boot?.configure && model.boot.device?.name === deviceName;
+}
+
+function isExplicitBootDevice(model: configModel.Config, deviceName: string): boolean {
+  return isBootDevice(model, deviceName) && !hasDefaultBoot(model);
 }
 
 function isTargetDevice(model: configModel.Config, deviceName: string): boolean {
@@ -41,7 +58,12 @@ function isTargetDevice(model: configModel.Config, deviceName: string): boolean 
   return targetDevices.includes(deviceName);
 }
 
-export * as boot from "~/model/storage/config-model/boot";
-export * as partition from "~/model/storage/config-model/partition";
-export { usedMountPaths, isTargetDevice };
+export {
+  usedMountPaths,
+  bootDevice,
+  hasDefaultBoot,
+  isBootDevice,
+  isExplicitBootDevice,
+  isTargetDevice,
+};
 export type { configModel };

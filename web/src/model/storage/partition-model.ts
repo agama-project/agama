@@ -20,12 +20,22 @@
  * find current contact information at www.suse.com.
  */
 
-import { sift } from "radashi";
-import type * as configModel from "~/openapi/storage/config-model";
+import type { configModel } from "~/model/storage";
 
-function usedMountPaths(volumeGroup: configModel.VolumeGroup): string[] {
-  const mountPaths = (volumeGroup.logicalVolumes || []).map((l) => l.mountPath);
-  return sift(mountPaths);
+function isNew(partition: configModel.Partition): boolean {
+  return !partition.name;
 }
 
-export { usedMountPaths };
+function isUsed(partition: configModel.Partition): boolean {
+  return partition.filesystem !== undefined;
+}
+
+function isReused(partition: configModel.Partition): boolean {
+  return !isNew(partition) && isUsed(partition);
+}
+
+function isUsedBySpacePolicy(partition: configModel.Partition): boolean {
+  return partition.resizeIfNeeded || partition.delete || partition.deleteIfNeeded;
+}
+
+export { isNew, isUsed, isReused, isUsedBySpacePolicy };

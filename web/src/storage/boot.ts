@@ -21,14 +21,15 @@
  */
 
 import { copyApiModel } from "~/storage/api-model";
-import { isTargetDevice } from "~/model/storage/config-model";
-import { bootDevice } from "~/model/storage/config-model/boot";
-import { usedMountPaths } from "~/model/storage/config-model/partitionable";
+import { configModelMethods } from "~/model/storage";
+import { usedMountPaths } from "~/model/storage/partitionable-model";
 import type { model } from "~/storage";
 import type { configModel } from "~/model/storage/config-model";
 
 function isUsed(configModel: configModel.Config, device: model.Drive | model.MdRaid): boolean {
-  return isTargetDevice(configModel, device.name) || usedMountPaths(device).length > 0;
+  return (
+    configModelMethods.isTargetDevice(configModel, device.name) || usedMountPaths(device).length > 0
+  );
 }
 
 function removeDevice(
@@ -41,7 +42,7 @@ function removeDevice(
 }
 
 function setBoot(model: model.Model, apiModel: configModel.Config, boot: configModel.Boot) {
-  const device = bootDevice(apiModel);
+  const device = configModelMethods.bootDevice(apiModel);
   // FIXME
   const modelDevice = model.drives.concat(model.mdRaids).find((d) => d.name === device?.name);
   if (device && !isUsed(apiModel, modelDevice)) removeDevice(apiModel, modelDevice);

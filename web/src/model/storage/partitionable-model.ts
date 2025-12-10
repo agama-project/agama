@@ -21,7 +21,7 @@
  */
 
 import { sift } from "radashi";
-import type * as configModel from "~/openapi/storage/config-model";
+import type { configModel } from "~/model/storage";
 import type * as model from "~/storage/model";
 
 // FIXME: remove model types once model is dropped.

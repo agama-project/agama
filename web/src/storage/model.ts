@@ -26,10 +26,9 @@
  * Types that extend the configModel by adding calculated properties and methods.
  */
 
-import { partition, isTargetDevice } from "~/model/storage/config-model";
-import { usedMountPaths } from "~/model/storage/config-model/partitionable";
-import { isExplicitBoot } from "~/model/storage/config-model/boot";
-import type { configModel } from "~/model/storage/config-model";
+import { usedMountPaths } from "~/model/storage/partitionable-model";
+import { configModelMethods, partitionModelMethods } from "~/model/storage";
+import type { configModel } from "~/model/storage";
 
 type Model = {
   drives: Drive[];
@@ -91,27 +90,29 @@ function partitionableProperties(
 
   const isUsed = (): boolean => {
     return (
-      isExplicitBoot(apiModel, apiDevice.name) ||
-      isTargetDevice(apiModel, apiDevice.name) ||
+      configModelMethods.isExplicitBootDevice(apiModel, apiDevice.name) ||
+      configModelMethods.isTargetDevice(apiModel, apiDevice.name) ||
       usedMountPaths(apiDevice).length > 0
     );
   };
 
   const isAddingPartitions = (): boolean => {
-    return apiDevice.partitions.some((p) => p.mountPath && partition.isNew(p));
+    return apiDevice.partitions.some((p) => p.mountPath && partitionModelMethods.isNew(p));
   };
 
   const isReusingPartitions = (): boolean => {
-    return apiDevice.partitions.some(partition.isReused);
+    return apiDevice.partitions.some(partitionModelMethods.isReused);
   };
 
   const getConfiguredExistingPartitions = (): configModel.Partition[] => {
     if (apiDevice.spacePolicy === "custom")
       return apiDevice.partitions.filter(
-        (p) => !partition.isNew(p) && (partition.isUsed(p) || partition.isUsedBySpacePolicy(p)),
+        (p) =>
+          !partitionModelMethods.isNew(p) &&
+          (partitionModelMethods.isUsed(p) || partitionModelMethods.isUsedBySpacePolicy(p)),
       );
 
-    return apiDevice.partitions.filter(partition.isReused);
+    return apiDevice.partitions.filter(partitionModelMethods.isReused);
   };
 
   return {
