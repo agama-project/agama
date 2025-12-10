@@ -88,6 +88,7 @@ jobs:
         gcc-c++
         git
         libopenssl-3-devel
+        libsuseconnect
         libzypp-devel
         make
         openssl-3
@@ -148,6 +149,7 @@ jobs:
         golang-github-google-jsonnet
         jq
         libopenssl-3-devel
+        libsuseconnect
         libzypp-devel
         make
         openssl-3
@@ -254,6 +256,7 @@ jobs:
         gcc-c++
         git
         libopenssl-3-devel
+        libsuseconnect
         libzypp-devel
         make
         openssl-3
