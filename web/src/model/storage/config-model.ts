@@ -36,26 +36,40 @@ function usedMountPaths(configModel: configModel.Config): string[] {
   ];
 }
 
-function bootDevice(model: configModel.Config): configModel.Drive | configModel.MdRaid | null {
-  const targets = [...model.drives, ...model.mdRaids];
-  return targets.find((d) => d.name && d.name === model.boot?.device?.name) || null;
+function bootDevice(
+  configModel: configModel.Config,
+): configModel.Drive | configModel.MdRaid | null {
+  const targets = [...configModel.drives, ...configModel.mdRaids];
+  return targets.find((d) => d.name && d.name === configModel.boot?.device?.name) || null;
 }
 
-function hasDefaultBoot(model: configModel.Config): boolean {
-  return model.boot?.device?.default || false;
+function hasDefaultBoot(configModel: configModel.Config): boolean {
+  return configModel.boot?.device?.default || false;
 }
 
-function isBootDevice(model: configModel.Config, deviceName: string): boolean {
-  return model.boot?.configure && model.boot.device?.name === deviceName;
+function isBootDevice(configModel: configModel.Config, deviceName: string): boolean {
+  return configModel.boot?.configure && configModel.boot.device?.name === deviceName;
 }
 
-function isExplicitBootDevice(model: configModel.Config, deviceName: string): boolean {
-  return isBootDevice(model, deviceName) && !hasDefaultBoot(model);
+function isExplicitBootDevice(configModel: configModel.Config, deviceName: string): boolean {
+  return isBootDevice(configModel, deviceName) && !hasDefaultBoot(configModel);
 }
 
-function isTargetDevice(model: configModel.Config, deviceName: string): boolean {
-  const targetDevices = (model.volumeGroups || []).flatMap((v) => v.targetDevices || []);
+function isTargetDevice(configModel: configModel.Config, deviceName: string): boolean {
+  const targetDevices = (configModel.volumeGroups || []).flatMap((v) => v.targetDevices || []);
   return targetDevices.includes(deviceName);
+}
+
+function isUsedDevice(configModel: configModel.Config, deviceName: string): boolean {
+  const drives = configModel.drives || [];
+  const mdRaids = configModel.mdRaids || [];
+  const device = drives.concat(mdRaids).find((d) => d.name === deviceName);
+
+  return (
+    isExplicitBootDevice(configModel, deviceName) ||
+    isTargetDevice(configModel, deviceName) ||
+    partitionableModelMethods.usedMountPaths(device).length > 0
+  );
 }
 
 export {
@@ -65,5 +79,6 @@ export {
   isBootDevice,
   isExplicitBootDevice,
   isTargetDevice,
+  isUsedDevice,
 };
 export type { configModel };

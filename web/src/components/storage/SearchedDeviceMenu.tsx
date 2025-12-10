@@ -25,7 +25,6 @@ import MenuButton, { CustomToggleProps, MenuButtonItem } from "~/components/core
 import NewVgMenuOption from "./NewVgMenuOption";
 import { usedMountPaths } from "~/model/storage/partitionable-model";
 import { useAvailableDevices } from "~/hooks/model/system/storage";
-import { useModel } from "~/hooks/storage/model";
 import { useConfigModel } from "~/hooks/model/storage";
 import { useSwitchToDrive } from "~/hooks/storage/drive";
 import { useSwitchToMdRaid } from "~/hooks/storage/md-raid";
@@ -37,9 +36,8 @@ import DeviceSelectorModal from "./DeviceSelectorModal";
 import { MenuItemProps } from "@patternfly/react-core";
 import { isDrive } from "~/storage/device";
 import type { model } from "~/storage";
-import type { Model } from "~/storage/model";
 import type { storage } from "~/model/system";
-import type { configModel } from "~/model/storage/config-model";
+import type { configModel } from "~/model/storage";
 
 const baseName = (device: storage.Device): string => deviceBaseName(device, true);
 
@@ -226,14 +224,13 @@ type RemoveEntryOptionProps = {
 
 const RemoveEntryOption = ({ device, onClick }: RemoveEntryOptionProps): React.ReactNode => {
   const configModel = useConfigModel();
-  const model = useModel();
 
   /*
    * Pretty artificial logic used to decide whether the UI should display buttons to remove
    * some drives.
    */
-  const hasAdditionalDrives = (model: model.Model): boolean => {
-    const entries = model.drives.concat(model.mdRaids);
+  const hasAdditionalDrives = (configModel: configModel.Config): boolean => {
+    const entries = configModel.drives.concat(configModel.mdRaids);
 
     if (entries.length <= 1) return false;
     if (entries.length > 2) return true;
@@ -242,14 +239,16 @@ const RemoveEntryOption = ({ device, onClick }: RemoveEntryOptionProps): React.R
     // deleting one of them and then changing the boot settings can lead to zero disks. But it is far
     // from being fully reasonable or understandable for the user.
     const onlyToBoot = entries.find(
-      (e) => configModelMethods.isExplicitBootDevice(configModel, e.name) && !e.isUsed,
+      (e) =>
+        configModelMethods.isExplicitBootDevice(configModel, e.name) &&
+        !configModelMethods.isUsedDevice(configModel, e.name),
     );
     return !onlyToBoot;
   };
 
   // When no additional drives has been added, the "Do not use" button can be confusing so it is
   // omitted for all drives.
-  if (!hasAdditionalDrives(model)) return;
+  if (!hasAdditionalDrives(configModel)) return;
 
   let description;
   const isExplicitBoot = configModelMethods.isExplicitBootDevice(configModel, device.name);
@@ -289,19 +288,22 @@ const RemoveEntryOption = ({ device, onClick }: RemoveEntryOptionProps): React.R
 
 const targetDevices = (
   modelDevice: model.Drive | model.MdRaid,
-  model: Model,
+  configModel: configModel.Config,
   availableDevices: storage.Device[],
 ): storage.Device[] => {
   return availableDevices.filter((availableDev) => {
     if (modelDevice.name === availableDev.name) return true;
 
-    const collection = isDrive(availableDev) ? model.drives : model.mdRaids;
+    const collection = isDrive(availableDev) ? configModel.drives : configModel.mdRaids;
     const device = collection.find((d) => d.name === availableDev.name);
     if (!device) return true;
 
-    return modelDevice.filesystem ? !device.isUsed : !device.filesystem;
+    return modelDevice.filesystem
+      ? !configModelMethods.isUsedDevice(configModel, device.name)
+      : !device.filesystem;
   });
 };
+
 export type SearchedDeviceMenuProps = {
   selected: storage.Device;
   modelDevice: model.Drive | model.MdRaid;
@@ -327,7 +329,7 @@ export default function SearchedDeviceMenu({
     const hook = isDrive(device) ? switchToDrive : switchToMdRaid;
     hook(modelDevice.name, { name: device.name });
   };
-  const devices = targetDevices(modelDevice, useModel(), useAvailableDevices());
+  const devices = targetDevices(modelDevice, useConfigModel(), useAvailableDevices());
 
   const onDeviceChange = ([drive]: storage.Device[]) => {
     setIsSelectorOpen(false);

@@ -26,8 +26,7 @@
  * Types that extend the configModel by adding calculated properties and methods.
  */
 
-import { usedMountPaths } from "~/model/storage/partitionable-model";
-import { configModelMethods, partitionModelMethods } from "~/model/storage";
+import { partitionModelMethods } from "~/model/storage";
 import type { configModel } from "~/model/storage";
 
 type Model = {
@@ -37,7 +36,6 @@ type Model = {
 };
 
 interface Drive extends configModel.Drive {
-  isUsed: boolean;
   isAddingPartitions: boolean;
   isReusingPartitions: boolean;
   isBoot: boolean;
@@ -47,7 +45,6 @@ interface Drive extends configModel.Drive {
 }
 
 interface MdRaid extends configModel.MdRaid {
-  isUsed: boolean;
   isAddingPartitions: boolean;
   isReusingPartitions: boolean;
   isBoot: boolean;
@@ -88,14 +85,6 @@ function partitionableProperties(
     return apiModel.boot?.configure && apiModel.boot.device?.name === apiDevice.name;
   };
 
-  const isUsed = (): boolean => {
-    return (
-      configModelMethods.isExplicitBootDevice(apiModel, apiDevice.name) ||
-      configModelMethods.isTargetDevice(apiModel, apiDevice.name) ||
-      usedMountPaths(apiDevice).length > 0
-    );
-  };
-
   const isAddingPartitions = (): boolean => {
     return apiDevice.partitions.some((p) => p.mountPath && partitionModelMethods.isNew(p));
   };
@@ -116,7 +105,6 @@ function partitionableProperties(
   };
 
   return {
-    isUsed: isUsed(),
     isAddingPartitions: isAddingPartitions(),
     isReusingPartitions: isReusingPartitions(),
     isBoot: isBoot(),

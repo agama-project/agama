@@ -47,10 +47,10 @@ function buildModelDevice(
 }
 
 function isUsed(apiModel: configModel.Config, list: string, index: number | string): boolean {
-  const device = buildModelDevice(apiModel, list, index);
+  const device = apiModel[list].at(index);
   if (!device) return false;
 
-  return device.isUsed;
+  return configModelMethods.isUsedDevice(apiModel, device.name);
 }
 
 function deleteIfUnused(apiModel: configModel.Config, name: string): configModel.Config {
