@@ -19,7 +19,8 @@
 // find current contact information at www.suse.com.
 
 use std::{
-    io::Write,
+    fs::File,
+    io::{self, BufReader, Read, Seek, SeekFrom, Write},
     path::{Path, PathBuf},
     process::ExitStatus,
 };
@@ -147,6 +148,8 @@ impl ScriptsRunner {
     /// * `path`: script's path.
     /// * `chroot`: whether to run the script in a chroot.
     async fn run_command<P: AsRef<Path>>(&self, path: P, chroot: bool) -> Result<(), Error> {
+        const STDERR_SIZE: u64 = 512;
+
         let path = path.as_ref();
         let stdout_file = path.with_extension("stdout");
         let stderr_file = path.with_extension("stderr");
@@ -173,7 +176,7 @@ impl ScriptsRunner {
         }
 
         if !output.status.success() {
-            let stderr = std::fs::read_to_string(&path.with_extension("stderr"))?;
+            let stderr = Self::read_n_last_bytes(&stderr_file, STDERR_SIZE)?;
             return Err(Error::Script {
                 status: output.status,
                 stderr,
@@ -192,6 +195,19 @@ impl ScriptsRunner {
         let steps: Vec<_> = messages.iter().map(|s| s.as_ref()).collect();
         let progress_action = progress::message::StartWithSteps::new(Scope::Files, &steps);
         _ = self.progress.cast(progress_action);
+    }
+
+    /// Reads the last n bytes of the file and returns them as a string.
+    fn read_n_last_bytes(path: &Path, n_bytes: u64) -> io::Result<String> {
+        let mut file = File::open(path)?;
+        let file_size = file.metadata()?.len();
+        let offset = file_size.saturating_sub(n_bytes);
+        file.seek(SeekFrom::Start(offset))?;
+        let bytes_to_read = (file_size - offset) as usize;
+        let mut buffer = Vec::with_capacity(bytes_to_read);
+        _ = file.read_to_end(&mut buffer)?;
+        let string = String::from_utf8_lossy(&buffer);
+        Ok(string.into_owned())
     }
 }
 
