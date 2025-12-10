@@ -21,7 +21,10 @@
 use agama_utils::api::manager::HardwareInfo;
 use serde::Deserialize;
 use serde_with::{formats::PreferMany, serde_as, OneOrMany};
-use std::process::ExitStatus;
+use std::{
+    path::{Path, PathBuf},
+    process::ExitStatus,
+};
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
@@ -33,12 +36,79 @@ pub enum Error {
     Io(#[from] std::io::Error),
 }
 
+#[derive(Clone)]
+enum Source {
+    System,
+    File(PathBuf),
+}
+
+pub struct Registry {
+    root: Option<HardwareNode>,
+    source: Source,
+}
+
+impl Registry {
+    pub fn new_from_system() -> Self {
+        Self {
+            source: Source::System,
+            root: None,
+        }
+    }
+
+    pub fn new_from_file<P: AsRef<Path>>(path: P) -> Self {
+        Self {
+            source: Source::File(path.as_ref().to_path_buf()),
+            root: None,
+        }
+    }
+
+    pub async fn read(&mut self) -> Result<(), Error> {
+        match &self.source {
+            Source::System => self.read_from_system().await,
+            Source::File(ref path) => self.read_from_file(path.clone()),
+        }
+    }
+
+    async fn read_from_system(&mut self) -> Result<(), Error> {
+        let output = tokio::process::Command::new("lshw")
+            .arg("-json")
+            .output()
+            .await?;
+
+        if !output.status.success() {
+            return Err(Error::Command {
+                status: output.status,
+                stderr: String::from_utf8_lossy(&output.stderr).into_owned(),
+            });
+        }
+
+        self.root = Some(serde_json::from_slice(&output.stdout)?);
+        Ok(())
+    }
+
+    /// Builds a registry using the lshw data from a file.
+    fn read_from_file<P: AsRef<Path>>(&mut self, path: P) -> Result<(), Error> {
+        let json = std::fs::read_to_string(path)?;
+        self.root = Some(serde_json::from_str(&json)?);
+        Ok(())
+    }
+
+    /// Converts the information to a HardwareInfo struct.
+    pub fn to_hardware_info(&self) -> HardwareInfo {
+        let Some(root) = &self.root else {
+            return HardwareInfo::default();
+        };
+
+        HardwareInfo::from(root)
+    }
+}
+
 /// Hardware information from the underlying system.
 ///
 /// It relies on lshw to read the hardware information.
 #[serde_as]
 #[derive(Clone, Debug, Deserialize, PartialEq)]
-pub struct HardwareNode {
+struct HardwareNode {
     pub id: String,
     pub class: String,
     pub claimed: Option<bool>,
@@ -64,23 +134,6 @@ pub struct HardwareNode {
 }
 
 impl HardwareNode {
-    pub async fn from_system() -> Result<HardwareNode, Error> {
-        let output = tokio::process::Command::new("lshw")
-            .arg("-json")
-            .output()
-            .await?;
-
-        if !output.status.success() {
-            return Err(Error::Command {
-                status: output.status,
-                stderr: String::from_utf8_lossy(&output.stderr).into_owned(),
-            });
-        }
-
-        let hwinfo: HardwareNode = serde_json::from_slice(&output.stdout)?;
-        Ok(hwinfo)
-    }
-
     /// Searches hardware information using the id (e.g., "cpu").
     ///
     /// It assumes that the id is unique.
@@ -151,84 +204,85 @@ impl From<&HardwareNode> for HardwareInfo {
 mod tests {
     use std::{error::Error, path::PathBuf};
 
-    use test_context::{test_context, AsyncTestContext};
-
     use super::*;
 
-    struct Context {
-        hardware: HardwareNode,
-    }
-
-    impl AsyncTestContext for Context {
-        async fn setup() -> Context {
-            let old_path = std::env::var("PATH").unwrap();
-            let bin_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../share/bin");
-            std::env::set_var("PATH", format!("{}:{}", &bin_dir.display(), &old_path));
-            let hardware = HardwareNode::from_system()
-                .await
-                .expect("Could not read hardware information");
-            Context { hardware }
-        }
-    }
-
-    #[test_context(Context)]
     #[tokio::test]
-    async fn test_find_by_id(ctx: &mut Context) {
-        let cpu = ctx.hardware.find_by_id("cpu").unwrap();
+    async fn test_read_from_system() {
+        let old_path = std::env::var("PATH").unwrap();
+        let bin_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../share/bin");
+        std::env::set_var("PATH", format!("{}:{}", &bin_dir.display(), &old_path));
+        let mut hardware = Registry::new_from_system();
+        hardware.read().await.unwrap();
+
+        let info = hardware.to_hardware_info();
+        assert!(info.cpu.is_some());
+    }
+
+    #[tokio::test]
+    async fn test_find_by_id() -> Result<(), Box<dyn Error>> {
+        let fixtures = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../test/share");
+        let path = fixtures.join("lshw.json");
+        let json = std::fs::read_to_string(path)?;
+        let node: HardwareNode = serde_json::from_str(&json)?;
+
+        let cpu = node.find_by_id("cpu").unwrap();
         assert_eq!(cpu.class, "processor");
         assert_eq!(
             cpu.product,
             Some("AMD Ryzen 5 PRO 5650U with Radeon Graphics".to_string())
         );
 
-        let unknown = ctx.hardware.find_by_id("unknown");
+        let unknown = node.find_by_id("unknown");
         assert_eq!(unknown, None);
+        Ok(())
     }
 
-    #[test_context(Context)]
     #[tokio::test]
-    async fn test_find_by_class(ctx: &mut Context) {
-        let disks = ctx.hardware.find_by_class("disk");
+    async fn test_find_by_class() -> Result<(), Box<dyn Error>> {
+        let fixtures = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../test/share");
+        let path = fixtures.join("lshw.json");
+        let json = std::fs::read_to_string(path)?;
+        let node: HardwareNode = serde_json::from_str(&json)?;
+
+        let disks = node.find_by_class("disk");
         assert_eq!(disks.len(), 3);
 
         let disk = disks.first().unwrap();
         assert_eq!(disk.description, Some("NVMe disk".to_string()));
         assert_eq!(disk.logicalname, vec!["hwmon1".to_string()]);
 
-        let unknown = ctx.hardware.find_by_class("unknown");
+        let unknown = node.find_by_class("unknown");
         assert!(unknown.is_empty());
-    }
-
-    #[test]
-    fn test_to_hardware_info() -> Result<(), Box<dyn Error>> {
-        let fixtures = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../test/share");
-        let lshw = std::fs::read_to_string(fixtures.join("lshw.json")).unwrap();
-        let node: HardwareNode = serde_json::from_str(&lshw)?;
-        let hardware = HardwareInfo::from(&node);
-        assert_eq!(
-            hardware.cpu,
-            Some("AMD Ryzen 5 PRO 5650U with Radeon Graphics".to_string())
-        );
-        assert_eq!(hardware.memory, Some(17179869184));
-        assert_eq!(
-            hardware.model,
-            Some("LENOVO ThinkPad T14s Gen 2a".to_string())
-        );
         Ok(())
     }
 
-    #[test]
-    fn test_to_hardware_info_qemu() -> Result<(), Box<dyn Error>> {
+    #[tokio::test]
+    async fn test_to_hardware_info() -> Result<(), Box<dyn Error>> {
         let fixtures = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../test/share");
-        let lshw = std::fs::read_to_string(fixtures.join("lshw-qemu.json")).unwrap();
-        let node: HardwareNode = serde_json::from_str(&lshw)?;
-        let hardware = HardwareInfo::from(&node);
+        let mut registry = Registry::new_from_file(&fixtures.join("lshw.json"));
+        registry.read().await?;
+        let node = registry.to_hardware_info();
         assert_eq!(
-            hardware.cpu,
+            node.cpu,
             Some("AMD Ryzen 5 PRO 5650U with Radeon Graphics".to_string())
         );
-        assert_eq!(hardware.memory, Some(4294967296));
-        assert_eq!(hardware.model, Some("QEMU pc-q35-9.2".to_string()));
+        assert_eq!(node.memory, Some(17179869184));
+        assert_eq!(node.model, Some("LENOVO ThinkPad T14s Gen 2a".to_string()));
+        Ok(())
+    }
+
+    #[tokio::test]
+    async fn test_to_hardware_info_qemu() -> Result<(), Box<dyn Error>> {
+        let fixtures = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../test/share");
+        let mut registry = Registry::new_from_file(&fixtures.join("lshw-qemu.json"));
+        registry.read().await?;
+        let node = registry.to_hardware_info();
+        assert_eq!(
+            node.cpu,
+            Some("AMD Ryzen 5 PRO 5650U with Radeon Graphics".to_string())
+        );
+        assert_eq!(node.memory, Some(4294967296));
+        assert_eq!(node.model, Some("QEMU pc-q35-9.2".to_string()));
         Ok(())
     }
 }

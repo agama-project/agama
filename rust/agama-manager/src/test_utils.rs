@@ -20,16 +20,19 @@
 
 //! This module implements a set of utilities for tests.
 
+use std::path::PathBuf;
+
 use agama_l10n::test_utils::start_service as start_l10n_service;
 use agama_network::test_utils::start_service as start_network_service;
 use agama_software::test_utils::start_service as start_software_service;
 use agama_storage::test_utils::start_service as start_storage_service;
 use agama_utils::{actor::Handler, api::event, issue, progress, question};
 
-use crate::Service;
+use crate::{hardware, Service};
 
 /// Starts a testing manager service.
 pub async fn start_service(events: event::Sender, dbus: zbus::Connection) -> Handler<Service> {
+    let fixtures = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../test/share");
     let issues = issue::Service::starter(events.clone()).start();
     let questions = question::start(events.clone()).await.unwrap();
     let progress = progress::Service::starter(events.clone()).start();
@@ -41,6 +44,9 @@ pub async fn start_service(events: event::Sender, dbus: zbus::Connection) -> Han
         )
         .with_software(start_software_service(events, issues, progress, questions).await)
         .with_network(start_network_service().await)
+        .with_hardware(hardware::Registry::new_from_file(
+            fixtures.join("lshw.json"),
+        ))
         .start()
         .await
         .expect("Could not spawn a testing manager service")

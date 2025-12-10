@@ -24,7 +24,7 @@ use agama_utils::{
     api::{
         self, event,
         files::scripts::ScriptsGroup,
-        manager::{self, HardwareInfo, LicenseContent},
+        manager::{self, LicenseContent},
         status::State,
         Action, Config, Event, Issue, IssueMap, Proposal, Scope, Status, SystemInfo,
     },
@@ -88,6 +88,7 @@ pub struct Starter {
     files: Option<Handler<files::Service>>,
     issues: Option<Handler<issue::Service>>,
     progress: Option<Handler<progress::Service>>,
+    hardware: Option<hardware::Registry>,
 }
 
 impl Starter {
@@ -107,6 +108,7 @@ impl Starter {
             files: None,
             issues: None,
             progress: None,
+            hardware: None,
         }
     }
 
@@ -142,6 +144,11 @@ impl Starter {
 
     pub fn with_progress(mut self, progress: Handler<progress::Service>) -> Self {
         self.progress = Some(progress);
+        self
+    }
+
+    pub fn with_hardware(mut self, hardware: hardware::Registry) -> Self {
+        self.hardware = Some(hardware);
         self
     }
 
@@ -208,6 +215,11 @@ impl Starter {
             None => network::start().await?,
         };
 
+        let hardware = match self.hardware {
+            Some(hardware) => hardware,
+            None => hardware::Registry::new_from_system(),
+        };
+
         let mut service = Service {
             events: self.events,
             questions: self.questions,
@@ -220,6 +232,7 @@ impl Starter {
             files,
             products: products::Registry::default(),
             licenses: licenses::Registry::default(),
+            hardware,
             // FIXME: state is already used for service state.
             state: State::Configuring,
             config: Config::default(),
@@ -243,6 +256,7 @@ pub struct Service {
     questions: Handler<question::Service>,
     products: products::Registry,
     licenses: licenses::Registry,
+    hardware: hardware::Registry,
     product: Option<Arc<RwLock<ProductSpec>>>,
     state: State,
     config: Config,
@@ -278,10 +292,11 @@ impl Service {
     async fn read_system_info(&mut self) -> Result<(), Error> {
         self.licenses.read()?;
         self.products.read()?;
+        self.hardware.read().await?;
+
         self.system.licenses = self.licenses.licenses().into_iter().cloned().collect();
         self.system.products = self.products.products();
-        let hardware_info = hardware::HardwareNode::from_system().await?;
-        self.system.hardware = HardwareInfo::from(&hardware_info);
+        self.system.hardware = self.hardware.to_hardware_info();
 
         Ok(())
     }
