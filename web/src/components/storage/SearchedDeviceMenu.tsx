@@ -31,6 +31,7 @@ import { useSwitchToDrive } from "~/hooks/storage/drive";
 import { useSwitchToMdRaid } from "~/hooks/storage/md-raid";
 import { deviceBaseName, formattedPath } from "~/components/storage/utils";
 import { boot } from "~/model/storage/config-model";
+import { configModelMethods } from "~/model/storage";
 import { sprintf } from "sprintf-js";
 import { _, formatList } from "~/i18n";
 import DeviceSelectorModal from "./DeviceSelectorModal";
@@ -49,7 +50,8 @@ const useOnlyOneOption = (
 ): boolean => {
   if (device.filesystem && device.filesystem.reuse) return true;
 
-  const { isTargetDevice } = device;
+  const isTargetDevice = configModelMethods.isTargetDevice(configModel, device.name);
+
   if (
     !usedMountPaths(device).length &&
     (isTargetDevice || boot.isExplicitBoot(configModel, device.name))
@@ -250,7 +252,7 @@ const RemoveEntryOption = ({ device, onClick }: RemoveEntryOptionProps): React.R
 
   let description;
   const isExplicitBoot = boot.isExplicitBoot(configModel, device.name);
-  const hasPv = device.isTargetDevice;
+  const hasPv = configModelMethods.isTargetDevice(configModel, device.name);
   const isDisabled = isExplicitBoot || hasPv;
 
   // If these cases, the target device cannot be changed and this disabled button would only provide

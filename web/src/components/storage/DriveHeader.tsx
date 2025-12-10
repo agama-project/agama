@@ -23,13 +23,17 @@
 import { sprintf } from "sprintf-js";
 import { deviceLabel } from "./utils";
 import { usedMountPaths } from "~/model/storage/config-model/partitionable";
+import { useStorageModel } from "~/hooks/model/storage";
+import { configModelMethods } from "~/model/storage";
 import { _ } from "~/i18n";
 import type { model } from "~/storage";
 import type { storage } from "~/model/system";
 
 export type DriveHeaderProps = { drive: model.Drive; device: storage.Device };
 
-const text = (drive: model.Drive): string => {
+const Text = (drive: model.Drive): string => {
+  const configModel = useStorageModel();
+
   if (drive.filesystem) {
     // TRANSLATORS: %s will be replaced by a disk name and its size - "sda (20 GiB)"
     if (drive.filesystem.reuse) return _("Mount disk %s");
@@ -37,7 +41,8 @@ const text = (drive: model.Drive): string => {
     return _("Format disk %s");
   }
 
-  const { isBoot, isTargetDevice: hasPv } = drive;
+  const { isBoot } = drive;
+  const hasPv = configModelMethods.isTargetDevice(configModel, drive.name);
   const isRoot = !!drive.getPartition("/");
   const hasFs = !!usedMountPaths(drive).length;
 
@@ -95,5 +100,5 @@ const text = (drive: model.Drive): string => {
 };
 
 export default function DriveHeader({ drive, device }: DriveHeaderProps) {
-  return sprintf(text(drive), deviceLabel(device, true));
+  return sprintf(Text(drive), deviceLabel(device, true));
 }

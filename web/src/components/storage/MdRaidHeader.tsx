@@ -23,13 +23,17 @@
 import { sprintf } from "sprintf-js";
 import { deviceLabel } from "./utils";
 import { usedMountPaths } from "~/model/storage/config-model/partitionable";
+import { useStorageModel } from "~/hooks/model/storage";
+import { configModelMethods } from "~/model/storage";
 import { _ } from "~/i18n";
 import type { model } from "~/storage";
 import type { storage } from "~/model/system";
 
 export type MdRaidHeaderProps = { raid: model.MdRaid; device: storage.Device };
 
-const text = (raid: model.MdRaid): string => {
+const Text = (raid: model.MdRaid): string => {
+  const configModel = useStorageModel();
+
   if (raid.filesystem) {
     // TRANSLATORS: %s will be replaced by a RAID name and its size - "md0 (20 GiB)"
     if (raid.filesystem.reuse) return _("Mount RAID %s");
@@ -37,7 +41,8 @@ const text = (raid: model.MdRaid): string => {
     return _("Format RAID %s");
   }
 
-  const { isBoot, isTargetDevice: hasPv } = raid;
+  const { isBoot } = raid;
+  const hasPv = configModelMethods.isTargetDevice(configModel, raid.name);
   const isRoot = !!raid.getPartition("/");
   const hasFs = !!usedMountPaths(raid).length;
 
@@ -95,5 +100,5 @@ const text = (raid: model.MdRaid): string => {
 };
 
 export default function MdRaidHeader({ raid, device }: MdRaidHeaderProps) {
-  return sprintf(text(raid), deviceLabel(device, true));
+  return sprintf(Text(raid), deviceLabel(device, true));
 }

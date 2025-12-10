@@ -36,7 +36,12 @@ function usedMountPaths(model: configModel.Config): string[] {
   ];
 }
 
+function isTargetDevice(model: configModel.Config, deviceName: string): boolean {
+  const targetDevices = (model.volumeGroups || []).flatMap((v) => v.targetDevices || []);
+  return targetDevices.includes(deviceName);
+}
+
 export * as boot from "~/model/storage/config-model/boot";
 export * as partition from "~/model/storage/config-model/partition";
-export { usedMountPaths };
+export { usedMountPaths, isTargetDevice };
 export type { configModel };

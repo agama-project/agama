@@ -26,7 +26,7 @@
  * Types that extend the configModel by adding calculated properties and methods.
  */
 
-import { partition } from "~/model/storage/config-model";
+import { partition, isTargetDevice } from "~/model/storage/config-model";
 import { usedMountPaths } from "~/model/storage/config-model/partitionable";
 import { isExplicitBoot } from "~/model/storage/config-model/boot";
 import type { configModel } from "~/model/storage/config-model";
@@ -41,7 +41,6 @@ interface Drive extends configModel.Drive {
   isUsed: boolean;
   isAddingPartitions: boolean;
   isReusingPartitions: boolean;
-  isTargetDevice: boolean;
   isBoot: boolean;
   getVolumeGroups: () => VolumeGroup[];
   getPartition: (path: string) => configModel.Partition | undefined;
@@ -52,7 +51,6 @@ interface MdRaid extends configModel.MdRaid {
   isUsed: boolean;
   isAddingPartitions: boolean;
   isReusingPartitions: boolean;
-  isTargetDevice: boolean;
   isBoot: boolean;
   getVolumeGroups: () => VolumeGroup[];
   getPartition: (path: string) => configModel.Partition | undefined;
@@ -91,15 +89,10 @@ function partitionableProperties(
     return apiModel.boot?.configure && apiModel.boot.device?.name === apiDevice.name;
   };
 
-  const isTargetDevice = (): boolean => {
-    const targetDevices = (apiModel.volumeGroups || []).flatMap((v) => v.targetDevices || []);
-    return targetDevices.includes(apiDevice.name);
-  };
-
   const isUsed = (): boolean => {
     return (
       isExplicitBoot(apiModel, apiDevice.name) ||
-      isTargetDevice() ||
+      isTargetDevice(apiModel, apiDevice.name) ||
       usedMountPaths(apiDevice).length > 0
     );
   };
@@ -125,7 +118,6 @@ function partitionableProperties(
     isUsed: isUsed(),
     isAddingPartitions: isAddingPartitions(),
     isReusingPartitions: isReusingPartitions(),
-    isTargetDevice: isTargetDevice(),
     isBoot: isBoot(),
     getVolumeGroups,
     getPartition,

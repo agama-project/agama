@@ -22,6 +22,8 @@
 
 import { _, n_, formatList } from "~/i18n";
 import { SpacePolicy, SPACE_POLICIES, baseName, formattedPath } from "~/components/storage/utils";
+import { useStorageModel } from "~/hooks/model/storage";
+import { configModelMethods } from "~/model/storage";
 import { sprintf } from "sprintf-js";
 import type { configModel } from "~/model/storage/config-model";
 import type { Drive } from "~/storage/model";
@@ -63,8 +65,10 @@ const resizeTextFor = (partitions) => {
   return _("Some partitions may be shrunk");
 };
 
-const summaryForSpacePolicy = (drive: Drive): string | undefined => {
-  const { isBoot, isTargetDevice, isAddingPartitions, isReusingPartitions, spacePolicy } = drive;
+const SummaryForSpacePolicy = (drive: Drive): string | undefined => {
+  const configModel = useStorageModel();
+  const isTargetDevice = configModelMethods.isTargetDevice(configModel, drive.name);
+  const { isBoot, isAddingPartitions, isReusingPartitions, spacePolicy } = drive;
 
   switch (spacePolicy) {
     case "delete":
@@ -89,7 +93,7 @@ const summaryForSpacePolicy = (drive: Drive): string | undefined => {
  * sentence was too hard.
  */
 const contentActionsSummary = (drive: Drive): string => {
-  const policyLabel = summaryForSpacePolicy(drive);
+  const policyLabel = SummaryForSpacePolicy(drive);
 
   if (policyLabel) return policyLabel;
 
@@ -113,8 +117,11 @@ const contentActionsSummary = (drive: Drive): string => {
   return _("Current partitions will be kept");
 };
 
-const contentActionsDescription = (drive: Drive, policyId: string | undefined): string => {
-  const { isBoot, isTargetDevice, isAddingPartitions, isReusingPartitions } = drive;
+const ContentActionsDescription = (drive: Drive, policyId: string | undefined): string => {
+  const configModel = useStorageModel();
+  const isTargetDevice = configModelMethods.isTargetDevice(configModel, drive.name);
+  const { isBoot, isAddingPartitions, isReusingPartitions } = drive;
+
   if (!policyId) policyId = drive.spacePolicy;
 
   switch (policyId) {
@@ -198,6 +205,6 @@ export {
   label,
   spacePolicyEntry,
   contentActionsSummary,
-  contentActionsDescription,
+  ContentActionsDescription as contentActionsDescription,
   contentDescription,
 };
