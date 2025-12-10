@@ -20,8 +20,6 @@
  * find current contact information at www.suse.com.
  */
 
-// import type {} from "~/api/openapi/system/storage";
-
 import { sift } from "radashi";
 import type { System, Device } from "~/openapi/system/storage";
 

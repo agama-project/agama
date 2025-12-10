@@ -25,9 +25,7 @@ import { Alert, List, ListItem } from "@patternfly/react-core";
 import { n_ } from "~/i18n";
 import type { Issue } from "~/model/issue";
 
-type DescriptionProps = FixableConfigInfoProps;
-
-const Description = ({ issues }: DescriptionProps) => {
+const Description = ({ issues }: { issues: Issue[] }) => {
   return (
     <List isPlain>
       {issues.map((e, i) => (
