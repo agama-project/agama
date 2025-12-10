@@ -19,15 +19,15 @@
 // find current contact information at www.suse.com.
 
 use std::{
-    fs,
+    io::Write,
     path::{Path, PathBuf},
-    process::Output,
+    process::ExitStatus,
 };
 
 use agama_utils::{
     actor::Handler,
     api::{files::Script, question::QuestionSpec, Scope},
-    command::run_with_retry,
+    command::{create_log_file, run_with_retry},
     progress,
     question::{self, ask_question},
 };
@@ -38,7 +38,7 @@ pub enum Error {
     #[error(transparent)]
     Io(#[from] std::io::Error),
     #[error("The script failed")]
-    Script(Output),
+    Script { status: ExitStatus, stderr: String },
     #[error(transparent)]
     Question(#[from] question::AskError),
 }
@@ -126,17 +126,13 @@ impl ScriptsRunner {
         );
         let mut question = QuestionSpec::new(&text, "scripts.retry").with_yes_no_actions();
 
-        if let Error::Script(output) = error {
-            let stdout = String::from_utf8_lossy(&output.stdout);
-            let stderr = String::from_utf8_lossy(&output.stderr);
-            let exit_status = output
-                .status
+        if let Error::Script { status, stderr } = error {
+            let exit_status = status
                 .code()
                 .map(|c| c.to_string())
                 .unwrap_or("unknown".to_string());
             question = question.with_data(&[
                 ("name", script.name()),
-                ("stdout", &stdout),
                 ("stderr", &stderr),
                 ("exit_status", &exit_status),
             ]);
@@ -152,7 +148,10 @@ impl ScriptsRunner {
     /// * `chroot`: whether to run the script in a chroot.
     async fn run_command<P: AsRef<Path>>(&self, path: P, chroot: bool) -> Result<(), Error> {
         let path = path.as_ref();
-        let command = if chroot {
+        let stdout_file = path.with_extension("log");
+        let stderr_file = path.with_extension("err");
+
+        let mut command = if chroot {
             let mut command = process::Command::new("chroot");
             command.args([&self.install_dir, path]);
             command
@@ -160,18 +159,25 @@ impl ScriptsRunner {
             process::Command::new(path)
         };
 
+        command
+            .stdout(create_log_file(&stdout_file)?)
+            .stderr(create_log_file(&stderr_file)?);
+
         let output = run_with_retry(command)
             .await
             .inspect_err(|e| println!("Error executing the script: {e}"))?;
 
-        fs::write(path.with_extension("log"), output.stdout.clone())?;
-        fs::write(path.with_extension("err"), output.stderr.clone())?;
         if let Some(code) = output.status.code() {
-            fs::write(path.with_extension("out"), code.to_string())?;
+            let mut file = create_log_file(&path.with_extension("out"))?;
+            write!(&mut file, "{}", code)?;
         }
 
         if !output.status.success() {
-            return Err(Error::Script(output));
+            let stderr = std::fs::read_to_string(&path.with_extension("err"))?;
+            return Err(Error::Script {
+                status: output.status,
+                stderr,
+            });
         }
 
         Ok(())
@@ -331,10 +337,6 @@ mod tests {
             .expect("Could not get the questions");
         let question = questions.first().unwrap();
         assert_eq!(question.spec.data.get("name"), Some(&"test.sh".to_string()));
-        assert_eq!(
-            question.spec.data.get("stdout"),
-            Some(&"hello\n".to_string())
-        );
         assert_eq!(
             question.spec.data.get("exit_status"),
             Some(&"127".to_string())
