@@ -20,8 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import * as partitionableModelMethods from "~/model/storage/partitionable-model";
-import { volumeGroupModelMethods } from "~/model/storage";
+import { volumeGroupModelMethods, partitionableModelMethods } from "~/model/storage";
 import type * as configModel from "~/openapi/storage/config-model";
 
 function usedMountPaths(configModel: configModel.Config): string[] {

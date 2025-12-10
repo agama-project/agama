@@ -22,9 +22,8 @@
 
 import { sprintf } from "sprintf-js";
 import { deviceLabel } from "./utils";
-import { usedMountPaths } from "~/model/storage/partitionable-model";
 import { useConfigModel } from "~/hooks/model/storage";
-import { configModelMethods } from "~/model/storage";
+import { configModelMethods, partitionableModelMethods } from "~/model/storage";
 import { _ } from "~/i18n";
 import type { model } from "~/storage";
 import type { storage } from "~/model/system";
@@ -44,7 +43,7 @@ const Text = (drive: model.Drive): string => {
   const isBoot = configModelMethods.isBootDevice(configModel, drive.name);
   const hasPv = configModelMethods.isTargetDevice(configModel, drive.name);
   const isRoot = !!drive.getPartition("/");
-  const hasFs = !!usedMountPaths(drive).length;
+  const hasFs = !!partitionableModelMethods.usedMountPaths(drive).length;
 
   if (isRoot) {
     if (hasPv) {

@@ -21,14 +21,14 @@
  */
 
 import { copyApiModel } from "~/storage/api-model";
-import { configModelMethods } from "~/model/storage";
-import { usedMountPaths } from "~/model/storage/partitionable-model";
+import { configModelMethods, partitionableModelMethods } from "~/model/storage";
 import type { model } from "~/storage";
 import type { configModel } from "~/model/storage/config-model";
 
 function isUsed(configModel: configModel.Config, device: model.Drive | model.MdRaid): boolean {
   return (
-    configModelMethods.isTargetDevice(configModel, device.name) || usedMountPaths(device).length > 0
+    configModelMethods.isTargetDevice(configModel, device.name) ||
+    partitionableModelMethods.usedMountPaths(device).length > 0
   );
 }
 

@@ -22,9 +22,8 @@
 
 import { sprintf } from "sprintf-js";
 import { deviceLabel } from "./utils";
-import { usedMountPaths } from "~/model/storage/partitionable-model";
 import { useConfigModel } from "~/hooks/model/storage";
-import { configModelMethods } from "~/model/storage";
+import { configModelMethods, partitionableModelMethods } from "~/model/storage";
 import { _ } from "~/i18n";
 import type { model } from "~/storage";
 import type { storage } from "~/model/system";
@@ -44,7 +43,7 @@ const Text = (raid: model.MdRaid): string => {
   const isBoot = configModelMethods.isBootDevice(configModel, raid.name);
   const hasPv = configModelMethods.isTargetDevice(configModel, raid.name);
   const isRoot = !!raid.getPartition("/");
-  const hasFs = !!usedMountPaths(raid).length;
+  const hasFs = !!partitionableModelMethods.usedMountPaths(raid).length;
 
   if (isRoot) {
     if (hasPv) {
