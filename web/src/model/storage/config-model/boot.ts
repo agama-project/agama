@@ -22,13 +22,21 @@
 
 import type * as configModel from "~/openapi/storage/config-model";
 
-function isDefaultBoot(model: configModel.Config): boolean {
-  return model.boot?.device?.default || false;
-}
-
 function bootDevice(model: configModel.Config): configModel.Drive | configModel.MdRaid | null {
   const targets = [...model.drives, ...model.mdRaids];
   return targets.find((d) => d.name && d.name === model.boot?.device?.name) || null;
 }
 
-export { isDefaultBoot, bootDevice };
+function isDefaultBoot(model: configModel.Config): boolean {
+  return model.boot?.device?.default || false;
+}
+
+function isBoot(model: configModel.Config, deviceName: string): boolean {
+  return model.boot?.configure && model.boot.device?.name === deviceName;
+}
+
+function isExplicitBoot(model: configModel.Config, deviceName: string): boolean {
+  return isBoot(model, deviceName) && !isDefaultBoot(model);
+}
+
+export { bootDevice, isDefaultBoot, isBoot, isExplicitBoot };

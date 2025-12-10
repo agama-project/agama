@@ -24,6 +24,7 @@ import { copyApiModel, findDevice, findDeviceIndex } from "~/storage/api-model";
 import { buildModel } from "~/storage/model";
 import { fork } from "radashi";
 import { partition } from "~/model/storage/config-model";
+import { isExplicitBoot } from "~/model/storage/config-model/boot";
 import type { configModel } from "~/model/storage/config-model";
 import type { model } from "~/storage";
 
@@ -103,7 +104,7 @@ function switchSearched(
 
   const [newPartitions, existingPartitions] = fork(deviceModel.partitions, partition.isNew);
   const reusedPartitions = existingPartitions.filter(partition.isReused);
-  const keepEntry = deviceModel.isExplicitBoot || reusedPartitions.length;
+  const keepEntry = isExplicitBoot(apiModel, deviceModel.name) || reusedPartitions.length;
 
   if (keepEntry) {
     device.partitions = existingPartitions;

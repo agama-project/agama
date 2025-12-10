@@ -28,6 +28,7 @@
 
 import { partition } from "~/model/storage/config-model";
 import { usedMountPaths } from "~/model/storage/config-model/partitionable";
+import { isExplicitBoot } from "~/model/storage/config-model/boot";
 import type { configModel } from "~/model/storage/config-model";
 
 type Model = {
@@ -37,7 +38,6 @@ type Model = {
 };
 
 interface Drive extends configModel.Drive {
-  isExplicitBoot: boolean;
   isUsed: boolean;
   isAddingPartitions: boolean;
   isReusingPartitions: boolean;
@@ -49,7 +49,6 @@ interface Drive extends configModel.Drive {
 }
 
 interface MdRaid extends configModel.MdRaid {
-  isExplicitBoot: boolean;
   isUsed: boolean;
   isAddingPartitions: boolean;
   isReusingPartitions: boolean;
@@ -92,17 +91,17 @@ function partitionableProperties(
     return apiModel.boot?.configure && apiModel.boot.device?.name === apiDevice.name;
   };
 
-  const isExplicitBoot = (): boolean => {
-    return isBoot() && !apiModel.boot.device?.default;
-  };
-
   const isTargetDevice = (): boolean => {
     const targetDevices = (apiModel.volumeGroups || []).flatMap((v) => v.targetDevices || []);
     return targetDevices.includes(apiDevice.name);
   };
 
   const isUsed = (): boolean => {
-    return isExplicitBoot() || isTargetDevice() || usedMountPaths(apiDevice).length > 0;
+    return (
+      isExplicitBoot(apiModel, apiDevice.name) ||
+      isTargetDevice() ||
+      usedMountPaths(apiDevice).length > 0
+    );
   };
 
   const isAddingPartitions = (): boolean => {
@@ -128,7 +127,6 @@ function partitionableProperties(
     isReusingPartitions: isReusingPartitions(),
     isTargetDevice: isTargetDevice(),
     isBoot: isBoot(),
-    isExplicitBoot: isExplicitBoot(),
     getVolumeGroups,
     getPartition,
     getConfiguredExistingPartitions,
