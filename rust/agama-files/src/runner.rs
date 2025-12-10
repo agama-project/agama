@@ -148,8 +148,8 @@ impl ScriptsRunner {
     /// * `chroot`: whether to run the script in a chroot.
     async fn run_command<P: AsRef<Path>>(&self, path: P, chroot: bool) -> Result<(), Error> {
         let path = path.as_ref();
-        let stdout_file = path.with_extension("log");
-        let stderr_file = path.with_extension("err");
+        let stdout_file = path.with_extension("stdout");
+        let stderr_file = path.with_extension("stderr");
 
         let mut command = if chroot {
             let mut command = process::Command::new("chroot");
@@ -168,12 +168,12 @@ impl ScriptsRunner {
             .inspect_err(|e| println!("Error executing the script: {e}"))?;
 
         if let Some(code) = output.status.code() {
-            let mut file = create_log_file(&path.with_extension("out"))?;
+            let mut file = create_log_file(&path.with_extension("exit"))?;
             write!(&mut file, "{}", code)?;
         }
 
         if !output.status.success() {
-            let stderr = std::fs::read_to_string(&path.with_extension("err"))?;
+            let stderr = std::fs::read_to_string(&path.with_extension("stderr"))?;
             return Err(Error::Script {
                 status: output.status,
                 stderr,
@@ -285,17 +285,17 @@ mod tests {
         let runner = ctx.runner();
         runner.run(&scripts).await.unwrap();
 
-        let path = &ctx.workdir.join("post").join("test.log");
+        let path = &ctx.workdir.join("post").join("test.stdout");
         let body: Vec<u8> = std::fs::read(path).unwrap();
         let body = String::from_utf8(body).unwrap();
         assert_eq!("hello\n", body);
 
-        let path = &ctx.workdir.join("post").join("test.err");
+        let path = &ctx.workdir.join("post").join("test.stderr");
         let body: Vec<u8> = std::fs::read(path).unwrap();
         let body = String::from_utf8(body).unwrap();
         assert_eq!("error\n", body);
 
-        let path = &ctx.workdir.join("post").join("test.out");
+        let path = &ctx.workdir.join("post").join("test.exit");
         let body: Vec<u8> = std::fs::read(path).unwrap();
         let body = String::from_utf8(body).unwrap();
         assert_eq!("0", body);
@@ -354,7 +354,7 @@ mod tests {
         });
 
         // Check the generated files
-        let path = &ctx.workdir.join("post").join("test.err");
+        let path = &ctx.workdir.join("post").join("test.stderr");
         let body: Vec<u8> = std::fs::read(path).unwrap();
         let body = String::from_utf8(body).unwrap();
         assert!(body.contains("agama-unknown"));
