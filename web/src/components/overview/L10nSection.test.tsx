@@ -24,22 +24,22 @@ import React from "react";
 import { screen } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
 import { L10nSection } from "~/components/overview";
-import { Locale } from "~/api/system";
+import type { Locale } from "~/api/system/l10n";
 
 const locales: Locale[] = [
-  { id: "en_US.UTF-8", name: "English", territory: "United States" },
-  { id: "de_DE.UTF-8", name: "German", territory: "Germany" },
+  { id: "en_US.UTF-8", language: "English", territory: "United States" },
+  { id: "de_DE.UTF-8", language: "German", territory: "Germany" },
 ];
 
-jest.mock("~/queries/system", () => ({
-  ...jest.requireActual("~/queries/system"),
+jest.mock("~/hooks/api/system", () => ({
+  ...jest.requireActual("~/hooks/api/system"),
   useSystem: () => ({
     l10n: { locale: "en_US.UTF-8", locales, keymap: "us" },
   }),
 }));
 
-jest.mock("~/queries/proposal", () => ({
-  ...jest.requireActual("~/queries/proposal"),
+jest.mock("~/hooks/api/proposal", () => ({
+  ...jest.requireActual("~/hooks/api/proposal"),
   useProposal: () => ({
     l10n: { locale: "en_US.UTF-8", keymap: "us" },
   }),

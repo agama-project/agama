@@ -185,7 +185,6 @@ const ChangeDeviceMenuItem = ({
 
   return (
     <MenuButtonItem
-      aria-label={_("Change device menu")}
       description={<ChangeDeviceDescription modelDevice={modelDevice} device={device} />}
       isDisabled={onlyOneOption}
       {...props}

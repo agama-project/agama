@@ -25,7 +25,7 @@ import { Alert, List, ListItem } from "@patternfly/react-core";
 import { n_ } from "~/i18n";
 import type { Issue } from "~/api/issue";
 
-const Description = ({ errors }: Issue[]) => {
+const Description = ({ errors }: { errors: Issue[] }) => {
   return (
     <List isPlain>
       {errors.map((e, i) => (
@@ -39,7 +39,7 @@ const Description = ({ errors }: Issue[]) => {
  * Information about a wrong but fixable storage configuration
  *
  */
-export default function FixableConfigInfo({ issues }: Issue[]) {
+export default function FixableConfigInfo({ issues }: { issues: Issue[] }) {
   const title = n_(
     "The configuration must be adapted to address the following issue:",
     "The configuration must be adapted to address the following issues:",

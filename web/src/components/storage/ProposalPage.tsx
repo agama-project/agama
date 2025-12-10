@@ -65,8 +65,9 @@ import { useNavigate, useLocation } from "react-router";
 import { useStorageUiState } from "~/context/storage-ui-state";
 import MenuButton from "../core/MenuButton";
 import spacingStyles from "@patternfly/react-styles/css/utilities/Spacing/spacing";
+import type { Issue } from "~/api/issue";
 
-function InvalidConfigEmptyState({ issues }: Issue[]): React.ReactNode {
+function InvalidConfigEmptyState({ issues }: { issues: Issue[] }): React.ReactNode {
   const reset = useReset();
 
   return (

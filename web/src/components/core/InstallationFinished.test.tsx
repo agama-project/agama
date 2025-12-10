@@ -84,8 +84,8 @@ const mockStorageConfig = (
   }
 };
 
-jest.mock("~/queries/storage", () => ({
-  ...jest.requireActual("~/queries/storage"),
+jest.mock("~/hooks/api/config/storage", () => ({
+  ...jest.requireActual("~/hooks/api/config/storage"),
   useConfig: () => mockStorageConfig(mockType, mockEncryption),
 }));
 

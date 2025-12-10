@@ -23,7 +23,7 @@
 import React from "react";
 import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
-import { useSystem } from "~/hooks/api";
+import { useSystem } from "~/hooks/api/system";
 import { PRODUCT as PATHS } from "~/routes/paths";
 import { Product } from "~/types/software";
 import ChangeProductOption from "./ChangeProductOption";
@@ -59,8 +59,8 @@ const network: System = {
 // let registrationInfoMock: RegistrationInfo;
 const mockSystemProducts: jest.Mock<Product[]> = jest.fn();
 
-jest.mock("~/hooks/api", () => ({
-  ...jest.requireActual("~/hooks/api"),
+jest.mock("~/hooks/api/system", () => ({
+  ...jest.requireActual("~/hooks/api/system"),
   useSystem: (): ReturnType<typeof useSystem> => ({
     products: mockSystemProducts(),
     network,

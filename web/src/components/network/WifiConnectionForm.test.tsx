@@ -28,6 +28,21 @@ import { Connection, SecurityProtocols, WifiNetworkStatus, Wireless } from "~/ty
 
 const mockUpdateConnection = jest.fn();
 
+const mockConnection = new Connection("Visible Network", {
+  wireless: new Wireless({ ssid: "Visible Network" }),
+});
+
+const mockSystem = {
+  connections: [mockConnection],
+  state: {
+    connectivity: true,
+    wiredEnabled: true,
+    wirelessEnabled: false,
+    persistNetwork: true,
+    copyEnabled: false,
+  },
+};
+
 jest.mock("~/hooks/api/config/network", () => ({
   ...jest.requireActual("~/hooks/api/config/network"),
   useConnectionMutation: () => ({
@@ -50,21 +65,6 @@ jest.mock("~/hooks/api/system/network", () => ({
   useSystem: () => mockSystem,
   useConnections: () => mockSystem.connections,
 }));
-
-const mockConnection = new Connection("Visible Network", {
-  wireless: new Wireless({ ssid: "Visible Network" }),
-});
-
-const mockSystem = {
-  connections: [mockConnection],
-  state: {
-    connectivity: true,
-    wiredEnabled: true,
-    wirelessEnabled: false,
-    persistNetwork: true,
-    copyEnabled: false,
-  },
-};
 
 const networkMock = {
   ssid: "Visible Network",

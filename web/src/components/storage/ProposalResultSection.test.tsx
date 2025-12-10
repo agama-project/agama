@@ -29,15 +29,19 @@ import { devices, actions } from "./test-data/full-result-example";
 const mockUseActionsFn = jest.fn();
 const mockConfig = { drives: [] };
 
-jest.mock("~/queries/storage", () => ({
-  ...jest.requireActual("~/queries/storage"),
+jest.mock("~/hooks/api/system/storage", () => ({
+  ...jest.requireActual("~/hooks/api/system/storage"),
   useDevices: () => devices.staging,
+}));
+
+jest.mock("~/hooks/api/proposal/storage", () => ({
+  ...jest.requireActual("~/hooks/api/proposal/storage"),
   useActions: () => mockUseActionsFn(),
 }));
 
-jest.mock("~/queries/storage/config-model", () => ({
-  ...jest.requireActual("~/queries/storage/config-model"),
-  useConfigModel: () => mockConfig,
+jest.mock("~/hooks/api/storage", () => ({
+  ...jest.requireActual("~/hooks/api/storage"),
+  useStorageModel: () => mockConfig,
 }));
 
 describe("ProposalResultSection", () => {

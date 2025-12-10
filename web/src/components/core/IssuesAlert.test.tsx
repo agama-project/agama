@@ -24,16 +24,14 @@ import React from "react";
 import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import { IssuesAlert } from "~/components/core";
-import { Issue, IssueSeverity, IssueSource } from "~/api/issue";
+import { Issue } from "~/api/issue";
 import { SOFTWARE } from "~/routes/paths";
 
 describe("IssueAlert", () => {
   it("renders a list of issues", () => {
     const issue: Issue = {
       description: "A generic issue",
-      source: IssueSource.Config,
-      severity: IssueSeverity.Error,
-      kind: "generic",
+      class: "generic",
       scope: "software",
     };
     installerRender(<IssuesAlert issues={[issue]} />);
@@ -43,9 +41,7 @@ describe("IssueAlert", () => {
   it("renders a link to conflict resolution when there is a 'solver' issue", () => {
     const issue: Issue = {
       description: "Conflicts found",
-      source: IssueSource.Config,
-      severity: IssueSeverity.Error,
-      kind: "solver",
+      class: "solver",
       scope: "software",
     };
     installerRender(<IssuesAlert issues={[issue]} />);

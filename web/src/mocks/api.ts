@@ -24,25 +24,25 @@
  * Mocking HTTP API calls.
  */
 
-import * as apiStorage from "~/api/storage";
-import * as apiIssues from "~/api/issues";
-import { Device } from "~/api/storage/types/openapi";
+import { model as storageModel } from "~/api/storage";
+import { System } from "~/api/system";
+import { Issue } from "~/api/issue";
+import { Config } from "~/api/config";
+import { Proposal } from "~/api/proposal";
+import { Question } from "~/api/question";
+import { Status } from "~/api/status";
 
 export type ApiData = {
-  "/api/storage/devices/available_drives"?: Awaited<
-    ReturnType<typeof apiStorage.fetchAvailableDrives>
-  >;
-  "/api/storage/devices/available_md_raids"?: Awaited<
-    ReturnType<typeof apiStorage.fetchAvailableMdRaids>
-  >;
-  "/api/storage/devices/system"?: Device[];
-  "/api/storage/config_model"?: Awaited<ReturnType<typeof apiStorage.fetchConfigModel>>;
-  "/api/storage/issues"?: Awaited<ReturnType<typeof apiIssues.fetchIssues>>;
+  "/api/v2/status"?: Status | null;
+  "/api/v2/config"?: Config | null;
+  "/api/v2/extended_config"?: Config | null;
+  "/api/v2/system"?: System | null;
+  "/api/v2/proposal"?: Proposal | null;
+  "/api/v2/issues"?: Issue[];
+  "/api/v2/questions"?: Question[];
+  "/api/v2/private/storage_model"?: storageModel.Config | null;
 };
 
-/**
- * Mocked data.
- */
 const mockApiData = jest.fn().mockReturnValue({});
 
 /**
@@ -50,7 +50,7 @@ const mockApiData = jest.fn().mockReturnValue({});
  *
  * @example
  *    mockApi({
- *      "/api/storage/available_devices": [50, 64]
+ *      "/api/v2/system": { l10n: { locales: [] } }
  *    })
  */
 const mockApi = (data: ApiData) => mockApiData.mockReturnValue(data);
@@ -58,11 +58,16 @@ const mockApi = (data: ApiData) => mockApiData.mockReturnValue(data);
 const addMockApi = (data: ApiData) => mockApi({ ...mockApiData(), ...data });
 
 // Mock get calls.
-jest.mock("~/api/http", () => ({
-  ...jest.requireActual("~/api/http"),
+jest.mock("~/http", () => ({
+  ...jest.requireActual("~/http"),
   get: (url: string) => {
     const data = mockApiData()[url];
-    return Promise.resolve(data);
+    if (data !== undefined) {
+      return Promise.resolve(data);
+    }
+    // You can add a fallback to the actual implementation if needed
+    // For example, by calling jest.requireActual("~/http").get(url)
+    return Promise.reject(new Error(`No mock data for GET ${url}`));
   },
 }));
 

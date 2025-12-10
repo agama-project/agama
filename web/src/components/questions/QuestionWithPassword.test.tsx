@@ -27,7 +27,7 @@ import { Question, FieldType } from "~/api/question";
 import { Product } from "~/types/software";
 import { InstallationPhase } from "~/types/status";
 import QuestionWithPassword from "~/components/questions/QuestionWithPassword";
-import { Locale, Keymap } from "~/api/system";
+import type { Locale, Keymap } from "~/api/system/l10n";
 
 const answerFn = jest.fn();
 const question: Question = {
@@ -51,13 +51,13 @@ const tumbleweed: Product = {
 };
 
 const locales: Locale[] = [
-  { id: "en_US.UTF-8", name: "English", territory: "United States" },
-  { id: "es_ES.UTF-8", name: "Spanish", territory: "Spain" },
+  { id: "en_US.UTF-8", language: "English", territory: "United States" },
+  { id: "es_ES.UTF-8", language: "Spanish", territory: "Spain" },
 ];
 
 const keymaps: Keymap[] = [
-  { id: "us", name: "English" },
-  { id: "es", name: "Spanish" },
+  { id: "us", description: "English" },
+  { id: "es", description: "Spanish" },
 ];
 
 jest.mock("~/queries/status", () => ({

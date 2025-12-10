@@ -24,16 +24,16 @@ import React from "react";
 import { screen, within } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import { InstallationPhase } from "~/types/status";
-import { Issue, IssueSeverity, IssueSource } from "~/api/issue";
+import { Issue } from "~/api/issue";
 import IssuesDrawer from "./IssuesDrawer";
 
 let phase = InstallationPhase.Config;
 let mockIssuesList: Issue[];
 const onCloseFn = jest.fn();
 
-jest.mock("~/queries/issues", () => ({
-  ...jest.requireActual("~/queries/issues"),
-  useAllIssues: () => mockIssuesList,
+jest.mock("~/hooks/api/issue", () => ({
+  ...jest.requireActual("~/hooks/api/issue"),
+  useIssues: () => mockIssuesList,
 }));
 
 jest.mock("~/queries/status", () => ({
@@ -62,16 +62,17 @@ describe("IssuesDrawer", () => {
       mockIssuesList = [
         {
           description: "Registration Fake Warning",
-          kind: "generic",
-          source: IssueSource.Unknown,
-          severity: IssueSeverity.Warn,
+          class: "warn",
           details: "Registration Fake Issue details",
           scope: "product",
         },
       ];
     });
 
-    itRendersNothing();
+    it("renders the drawer with a warning", () => {
+      installerRender(<IssuesDrawer onClose={onCloseFn} />);
+      expect(screen.getByText("Registration Fake Warning")).toBeInTheDocument();
+    });
   });
 
   describe("when there are installation issues", () => {
@@ -79,41 +80,31 @@ describe("IssuesDrawer", () => {
       mockIssuesList = [
         {
           description: "Registration Fake Issue",
-          kind: "generic",
-          source: IssueSource.Unknown,
-          severity: IssueSeverity.Error,
+          class: "error",
           details: "Registration Fake Issue details",
           scope: "product",
         },
         {
           description: "Software Fake Issue",
-          kind: "generic",
-          source: IssueSource.Unknown,
-          severity: IssueSeverity.Error,
+          class: "error",
           details: "Software Fake Issue details",
           scope: "software",
         },
         {
           description: "Storage Fake Issue 1",
-          kind: "generic",
-          source: IssueSource.Unknown,
-          severity: IssueSeverity.Error,
+          class: "error",
           details: "Storage Fake Issue 1 details",
           scope: "storage",
         },
         {
           description: "Storage Fake Issue 2",
-          kind: "generic",
-          source: IssueSource.Unknown,
-          severity: IssueSeverity.Error,
+          class: "error",
           details: "Storage Fake Issue 2 details",
           scope: "storage",
         },
         {
           description: "Users Fake Issue",
-          kind: "generic",
-          source: IssueSource.Unknown,
-          severity: IssueSeverity.Error,
+          class: "error",
           details: "Users Fake Issue details",
           scope: "users",
         },

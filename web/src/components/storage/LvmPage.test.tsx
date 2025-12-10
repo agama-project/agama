@@ -23,56 +23,80 @@
 import React from "react";
 import { screen, within } from "@testing-library/react";
 import { installerRender, mockParams } from "~/test-utils";
-import { model, StorageDevice } from "~/storage";
+import { model } from "~/storage";
+import type { storage } from "~/api/system";
 import { gib } from "./utils";
 import LvmPage from "./LvmPage";
 
-const sda1: StorageDevice = {
+const sda1: storage.Device = {
   sid: 69,
   name: "/dev/sda1",
   description: "Swap partition",
-  isDrive: false,
-  type: "partition",
-  size: gib(2),
-  shrinking: { unsupported: ["Resizing is not supported"] },
-  start: 1,
+  class: "partition",
+  block: {
+    size: gib(2),
+    start: 1,
+    shrinking: { supported: false, reasons: ["Resizing is not supported"] },
+  },
 };
 
-const sda: StorageDevice = {
+const sda: storage.Device = {
   sid: 59,
-  isDrive: true,
-  type: "disk",
-  vendor: "Micron",
-  model: "Micron 1100 SATA",
-  driver: ["ahci", "mmcblk"],
-  bus: "IDE",
-  busId: "",
-  transport: "usb",
-  dellBOSS: false,
-  sdCard: true,
-  active: true,
+  class: "drive",
+  drive: {
+    type: "disk",
+    vendor: "Micron",
+    model: "Micron 1100 SATA",
+    driver: ["ahci", "mmcblk"],
+    bus: "IDE",
+    busId: "",
+    transport: "usb",
+    info: {
+      dellBoss: false,
+      sdCard: true,
+    },
+  },
   name: "/dev/sda",
-  size: 1024,
-  shrinking: { unsupported: ["Resizing is not supported"] },
-  systems: [],
+  block: {
+    size: 1024,
+    start: 0,
+    active: true,
+    shrinking: { supported: false, reasons: ["Resizing is not supported"] },
+    systems: [],
+    udevIds: ["ata-Micron_1100_SATA_512GB_12563", "scsi-0ATA_Micron_1100_SATA_512GB"],
+    udevPaths: ["pci-0000:00-12", "pci-0000:00-12-ata"],
+  },
   partitionTable: {
     type: "gpt",
-    partitions: [sda1],
-    unpartitionedSize: 0,
     unusedSlots: [{ start: 3, size: gib(2) }],
   },
-  udevIds: ["ata-Micron_1100_SATA_512GB_12563", "scsi-0ATA_Micron_1100_SATA_512GB"],
-  udevPaths: ["pci-0000:00-12", "pci-0000:00-12-ata"],
+  partitions: [sda1],
   description: "",
 };
 
-const sdb: StorageDevice = {
+const sdb: storage.Device = {
   sid: 60,
-  isDrive: true,
-  type: "disk",
+  class: "drive",
+  drive: {
+    type: "disk",
+    vendor: "",
+    model: "",
+    driver: [],
+    bus: "",
+    busId: "",
+    transport: "",
+    info: {
+      dellBoss: false,
+      sdCard: false,
+    },
+  },
   name: "/dev/sdb",
-  size: 1024,
-  systems: [],
+  block: {
+    size: 1024,
+    start: 0,
+    shrinking: { supported: false },
+    systems: [],
+  },
   description: "",
 };
 
@@ -105,8 +129,6 @@ const mockSdaDrive: model.Drive = {
       isUsedBySpacePolicy: false,
     },
   ],
-  list: "drives",
-  listIndex: 1,
   isExplicitBoot: false,
   isUsed: true,
   isAddingPartitions: true,
@@ -121,8 +143,6 @@ const mockSdaDrive: model.Drive = {
 
 const mockRootVolumeGroup: model.VolumeGroup = {
   vgName: "fakeRootVg",
-  list: "volumeGroups",
-  listIndex: 1,
   logicalVolumes: [],
   getTargetDevices: () => [mockSdaDrive],
   getMountPaths: () => [],
@@ -130,8 +150,6 @@ const mockRootVolumeGroup: model.VolumeGroup = {
 
 const mockHomeVolumeGroup: model.VolumeGroup = {
   vgName: "fakeHomeVg",
-  list: "volumeGroups",
-  listIndex: 2,
   logicalVolumes: [],
   getTargetDevices: () => [mockSdaDrive],
   getMountPaths: () => [],
@@ -148,19 +166,18 @@ let mockUseModel = {
 
 const mockUseAllDevices = [sda, sdb];
 
-jest.mock("~/queries/issues", () => ({
-  ...jest.requireActual("~/queries/issues"),
+jest.mock("~/hooks/api/issue", () => ({
   useIssuesChanges: jest.fn(),
   useIssues: () => [],
 }));
 
-jest.mock("~/queries/storage", () => ({
-  ...jest.requireActual("~/queries/storage"),
-  useDevices: () => mockUseAllDevices,
+jest.mock("~/components/product", () => ({
+  __esModule: true,
+  ProductRegistrationAlert: () => null,
 }));
 
-jest.mock("~/hooks/storage/system", () => ({
-  ...jest.requireActual("~/hooks/storage/system"),
+jest.mock("~/hooks/api/system/storage", () => ({
+  useDevices: () => mockUseAllDevices,
   useAvailableDevices: () => mockUseAllDevices,
 }));
 
@@ -181,14 +198,14 @@ describe("LvmPage", () => {
   describe("when creating a new volume group", () => {
     it("allows configuring a new LVM volume group (without moving mount points)", async () => {
       const { user } = installerRender(<LvmPage />);
-      const name = screen.getByRole("textbox", { name: "Name" });
-      const disks = screen.getByRole("group", { name: "Disks" });
+      const name = await screen.findByRole("textbox", { name: "Name" });
+      const disks = await screen.findByRole("group", { name: "Disks" });
       const sdaCheckbox = within(disks).getByRole("checkbox", { name: "sda (1 KiB)" });
       const sdbCheckbox = within(disks).getByRole("checkbox", { name: "sdb (1 KiB)" });
-      const moveMountPointsCheckbox = screen.getByRole("checkbox", {
+      const moveMountPointsCheckbox = await screen.findByRole("checkbox", {
         name: /Move the mount points currently configured at the selected disks to logical volumes/,
       });
-      const acceptButton = screen.getByRole("button", { name: "Accept" });
+      const acceptButton = await screen.findByRole("button", { name: "Accept" });
 
       // Clear default value for name
       await user.clear(name);
@@ -210,12 +227,12 @@ describe("LvmPage", () => {
 
     it("allows configuring a new LVM volume group (moving mount points)", async () => {
       const { user } = installerRender(<LvmPage />);
-      const disks = screen.getByRole("group", { name: "Disks" });
+      const disks = await screen.findByRole("group", { name: "Disks" });
       const sdbCheckbox = within(disks).getByRole("checkbox", { name: "sdb (1 KiB)" });
-      const moveMountPointsCheckbox = screen.getByRole("checkbox", {
+      const moveMountPointsCheckbox = await screen.findByRole("checkbox", {
         name: /Move the mount points currently configured at the selected disks to logical volumes/,
       });
-      const acceptButton = screen.getByRole("button", { name: "Accept" });
+      const acceptButton = await screen.findByRole("button", { name: "Accept" });
 
       await user.click(sdbCheckbox);
       expect(moveMountPointsCheckbox).toBeChecked();
@@ -228,10 +245,10 @@ describe("LvmPage", () => {
 
     it("performs basic validations", async () => {
       const { user } = installerRender(<LvmPage />);
-      const name = screen.getByRole("textbox", { name: "Name" });
-      const disks = screen.getByRole("group", { name: "Disks" });
+      const name = await screen.findByRole("textbox", { name: "Name" });
+      const disks = await screen.findByRole("group", { name: "Disks" });
       const sdaCheckbox = within(disks).getByRole("checkbox", { name: "sda (1 KiB)" });
-      const acceptButton = screen.getByRole("button", { name: "Accept" });
+      const acceptButton = await screen.findByRole("button", { name: "Accept" });
 
       // Unselect sda
       await user.click(sdaCheckbox);
@@ -239,16 +256,16 @@ describe("LvmPage", () => {
       // Let's clean the default given name
       await user.clear(name);
       await user.click(acceptButton);
-      screen.getByText("Warning alert:");
-      screen.getByText(/Enter a name/);
-      screen.getByText(/Select at least one disk/);
+      await screen.findByText("Warning alert:");
+      await screen.findByText(/Enter a name/);
+      await screen.findByText(/Select at least one disk/);
 
       // Type a name
       await user.type(name, "root-vg");
       await user.click(acceptButton);
-      screen.getByText("Warning alert:");
+      await screen.findByText("Warning alert:");
       expect(screen.queryByText(/Enter a name/)).toBeNull();
-      screen.getByText(/Select at least one disk/);
+      await screen.findByText(/Select at least one disk/);
 
       // Select sda again
       expect(sdaCheckbox).not.toBeChecked();
@@ -269,9 +286,9 @@ describe("LvmPage", () => {
         };
       });
 
-      it("does not pre-fill the name input", () => {
+      it("does not pre-fill the name input", async () => {
         installerRender(<LvmPage />);
-        const name = screen.getByRole("textbox", { name: "Name" });
+        const name = await screen.findByRole("textbox", { name: "Name" });
         expect(name).toHaveValue("");
       });
     });
@@ -285,9 +302,9 @@ describe("LvmPage", () => {
         };
       });
 
-      it("pre-fills the name input with 'system'", () => {
+      it("pre-fills the name input with 'system'", async () => {
         installerRender(<LvmPage />);
-        const name = screen.getByRole("textbox", { name: "Name" });
+        const name = await screen.findByRole("textbox", { name: "Name" });
         expect(name).toHaveValue("system");
       });
     });
@@ -305,10 +322,10 @@ describe("LvmPage", () => {
 
     it("performs basic validations", async () => {
       const { user } = installerRender(<LvmPage />);
-      const name = screen.getByRole("textbox", { name: "Name" });
-      const disks = screen.getByRole("group", { name: "Disks" });
+      const name = await screen.findByRole("textbox", { name: "Name" });
+      const disks = await screen.findByRole("group", { name: "Disks" });
       const sdaCheckbox = within(disks).getByRole("checkbox", { name: "sda (1 KiB)" });
-      const acceptButton = screen.getByRole("button", { name: "Accept" });
+      const acceptButton = await screen.findByRole("button", { name: "Accept" });
 
       // Let's clean the default given name
       await user.clear(name);
@@ -316,26 +333,28 @@ describe("LvmPage", () => {
       expect(name).toHaveValue("");
       expect(sdaCheckbox).not.toBeChecked();
       await user.click(acceptButton);
-      screen.getByText("Warning alert:");
-      screen.getByText(/Enter a name/);
-      screen.getByText(/Select at least one disk/);
+      await screen.findByText("Warning alert:");
+      await screen.findByText(/Enter a name/);
+      await screen.findByText(/Select at least one disk/);
       // Enter a name already in use
       await user.type(name, "fakeHomeVg");
       await user.click(acceptButton);
       expect(screen.queryByText(/Enter a name/)).toBeNull();
-      screen.getByText(/Enter a different name/);
+      await screen.findByText(/Enter a different name/);
     });
 
     it("pre-fills form with the current volume group configuration", async () => {
       installerRender(<LvmPage />);
-      const name = screen.getByRole("textbox", { name: "Name" });
-      const sdaCheckbox = screen.getByRole("checkbox", { name: "sda (1 KiB)" });
+      const name = await screen.findByRole("textbox", { name: "Name" });
+      const sdaCheckbox = await screen.findByRole("checkbox", { name: "sda (1 KiB)" });
       expect(name).toHaveValue("fakeRootVg");
       expect(sdaCheckbox).toBeChecked();
     });
 
-    it("does not offer option for moving mount points", () => {
+    it("does not offer option for moving mount points", async () => {
       installerRender(<LvmPage />);
+      // HACK: wait for the form to be rendered
+      await screen.findByRole("textbox", { name: "Name" });
       expect(
         screen.queryByRole("checkbox", {
           name: /Move the mount points currently configured at the selected disks to logical volumes/,
@@ -345,8 +364,8 @@ describe("LvmPage", () => {
 
     it("triggers the hook for updating the volume group when user accepts changes", async () => {
       const { user } = installerRender(<LvmPage />);
-      const name = screen.getByRole("textbox", { name: "Name" });
-      const acceptButton = screen.getByRole("button", { name: "Accept" });
+      const name = await screen.findByRole("textbox", { name: "Name" });
+      const acceptButton = await screen.findByRole("button", { name: "Accept" });
       await user.clear(name);
       await user.type(name, "updatedRootVg");
       await user.click(acceptButton);

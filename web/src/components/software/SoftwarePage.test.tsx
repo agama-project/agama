@@ -32,7 +32,7 @@ jest.mock("~/components/product/ProductRegistrationAlert", () => () => (
   <div>ProductRegistrationAlert Mock</div>
 ));
 
-jest.mock("~/queries/issues", () => ({
+jest.mock("~/hooks/api/issue", () => ({
   useIssues: () => [],
 }));
 

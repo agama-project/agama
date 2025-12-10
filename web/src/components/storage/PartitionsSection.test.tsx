@@ -24,7 +24,7 @@ import React from "react";
 import { screen } from "@testing-library/react";
 import { installerRender, mockNavigateFn } from "~/test-utils";
 import PartitionsSection from "~/components/storage/PartitionsSection";
-import { apiModel } from "~/api/storage/types";
+import { model as apiModel } from "~/api/storage";
 import { model } from "~/storage";
 
 const partition1: apiModel.Partition = {
@@ -68,8 +68,6 @@ const drive1: model.Drive = {
   name: "/dev/sda",
   spacePolicy: "delete",
   partitions: drive1PartitionsModel,
-  list: "drives",
-  listIndex: 0,
   isExplicitBoot: false,
   isUsed: true,
   isAddingPartitions: true,
@@ -89,8 +87,13 @@ jest.mock("~/hooks/storage/partition", () => ({
   useDeletePartition: () => mockDeletePartition,
 }));
 
-async function openMenu(path) {
-  const { user } = installerRender(<PartitionsSection device={drive1} />);
+jest.mock("~/hooks/storage/model", () => ({
+  ...jest.requireActual("~/hooks/storage/model"),
+  useDevice: () => drive1,
+}));
+
+async function openMenu(path: string) {
+  const { user } = installerRender(<PartitionsSection collection="drives" index={0} />);
 
   const detailsButton = screen.getByRole("button", { name: /New partitions/ });
   await user.click(detailsButton);

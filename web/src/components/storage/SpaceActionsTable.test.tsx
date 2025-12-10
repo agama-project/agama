@@ -27,58 +27,65 @@ import { screen, within } from "@testing-library/react";
 import { deviceChildren, gib } from "~/components/storage/utils";
 import { plainRender } from "~/test-utils";
 import SpaceActionsTable, { SpaceActionsTableProps } from "~/components/storage/SpaceActionsTable";
-import { StorageDevice } from "~/storage";
-import { apiModel } from "~/api/storage/types";
+import type { storage } from "~/api/system";
+import { model as apiModel } from "~/api/storage";
 
-const sda: StorageDevice = {
-  sid: 59,
-  isDrive: true,
-  type: "disk",
-  description: "",
-  vendor: "Micron",
-  model: "Micron 1100 SATA",
-  driver: ["ahci", "mmcblk"],
-  bus: "IDE",
-  busId: "",
-  transport: "usb",
-  dellBOSS: false,
-  sdCard: true,
-  active: true,
-  name: "/dev/sda",
-  size: gib(10),
-  shrinking: { unsupported: ["Resizing is not supported"] },
-  systems: [],
-  udevIds: ["ata-Micron_1100_SATA_512GB_12563", "scsi-0ATA_Micron_1100_SATA_512GB"],
-  udevPaths: ["pci-0000:00-12", "pci-0000:00-12-ata"],
-};
-
-const sda1: StorageDevice = {
+const sda1: storage.Device = {
   sid: 69,
   name: "/dev/sda1",
   description: "Swap partition",
-  isDrive: false,
-  type: "partition",
-  size: gib(2),
-  shrinking: { unsupported: ["Resizing is not supported"] },
-  start: 1,
+  class: "partition",
+  block: {
+    size: gib(2),
+    start: 1,
+    shrinking: { supported: false, reasons: ["Resizing is not supported"] },
+  },
 };
 
-const sda2: StorageDevice = {
+const sda2: storage.Device = {
   sid: 79,
   name: "/dev/sda2",
   description: "EXT4 partition",
-  isDrive: false,
-  type: "partition",
-  size: gib(6),
-  shrinking: { supported: gib(3) },
-  start: 2,
+  class: "partition",
+  block: {
+    size: gib(6),
+    start: 2,
+    shrinking: { supported: true, minSize: gib(3) },
+  },
 };
 
-sda.partitionTable = {
-  type: "gpt",
+const sda: storage.Device = {
+  sid: 59,
+  class: "drive",
+  drive: {
+    type: "disk",
+    vendor: "Micron",
+    model: "Micron 1100 SATA",
+    driver: ["ahci", "mmcblk"],
+    bus: "IDE",
+    busId: "",
+    transport: "usb",
+    info: {
+      dellBoss: false,
+      sdCard: true,
+    },
+  },
+  name: "/dev/sda",
+  block: {
+    size: gib(10),
+    start: 0,
+    active: true,
+    shrinking: { supported: false, reasons: ["Resizing is not supported"] },
+    systems: [],
+    udevIds: ["ata-Micron_1100_SATA_512GB_12563", "scsi-0ATA_Micron_1100_SATA_512GB"],
+    udevPaths: ["pci-0000:00-12", "pci-0000:00-12-ata"],
+  },
+  partitionTable: {
+    type: "gpt",
+    unusedSlots: [{ start: 3, size: gib(2) }],
+  },
   partitions: [sda1, sda2],
-  unpartitionedSize: 0,
-  unusedSlots: [{ start: 3, size: gib(2) }],
+  description: "",
 };
 
 const mockDrive: apiModel.Drive = {
@@ -92,19 +99,29 @@ const mockDrive: apiModel.Drive = {
   ],
 };
 
+const mockDriveNoMountPath: apiModel.Drive = {
+  name: "/dev/sda",
+  partitions: [
+    {
+      name: "/dev/sda2",
+      filesystem: { reuse: false, default: true },
+    },
+  ],
+};
+
 const mockUseConfigModelFn = jest.fn();
-jest.mock("~/queries/storage/config-model", () => ({
-  useConfigModel: () => mockUseConfigModelFn(),
+jest.mock("~/hooks/api/storage", () => ({
+  useStorageModel: () => mockUseConfigModelFn(),
 }));
 
 /**
  * Function to ask for the action of a device.
  *
- * @param {StorageDevice} device
+ * @param {storage.Device} device
  * @returns {string}
  */
 const deviceAction = (device) => {
-  if (device === sda1) return "keep";
+  if (device.name === "/dev/sda1") return "keep";
 
   return "delete";
 };
@@ -132,6 +149,17 @@ describe("SpaceActionsTable", () => {
       name: "sda2 EXT4 partition 6 GiB Do not modify Allow shrink Delete",
     });
     screen.getByRole("row", { name: "Unused space 2 GiB" });
+  });
+
+  it("shows no actions for unused space", () => {
+    plainRender(<SpaceActionsTable {...props} />);
+
+    const unusedSpaceRow = screen.getByRole("row", { name: /Unused space/ });
+    const cells = within(unusedSpaceRow).getAllByRole("cell");
+    // The "Action" column should be the 4th cell (index 3).
+    // It should not contain any buttons from DeviceActionSelector.
+    const actionCell = cells[3];
+    expect(actionCell).toBeEmptyDOMElement();
   });
 
   it("selects the action for each device", () => {
@@ -173,6 +201,36 @@ describe("SpaceActionsTable", () => {
       const sda2DeleteButton = within(sda2Row).getByRole("button", { name: "Delete" });
       expect(sda2ShrinkButton).toBeDisabled();
       expect(sda2DeleteButton).toBeDisabled();
+    });
+
+    it("shows info that the partition will be used", async () => {
+      const { user } = plainRender(<SpaceActionsTable {...props} />);
+
+      const sda2Row = screen.getByRole("row", { name: /sda2/ });
+      const sda2InfoButton = within(sda2Row).getByRole("button", {
+        name: /information about .*sda2/,
+      });
+      await user.click(sda2InfoButton);
+      const sda2Popup = await screen.findByRole("dialog");
+      within(sda2Popup).getByText(/The device will be mounted at/);
+    });
+  });
+
+  describe("if a partition is going to be used without a mount path", () => {
+    beforeEach(() => {
+      mockUseConfigModelFn.mockReturnValue({ drives: [mockDriveNoMountPath] });
+    });
+
+    it("shows info that the partition will be used", async () => {
+      const { user } = plainRender(<SpaceActionsTable {...props} />);
+
+      const sda2Row = screen.getByRole("row", { name: /sda2/ });
+      const sda2InfoButton = within(sda2Row).getByRole("button", {
+        name: /information about .*sda2/,
+      });
+      await user.click(sda2InfoButton);
+      const sda2Popup = await screen.findByRole("dialog");
+      within(sda2Popup).getByText(/The device will be used by the new system/);
     });
   });
 

@@ -23,50 +23,64 @@
 import React from "react";
 import { screen, within } from "@testing-library/react";
 import { getColumnValues, plainRender } from "~/test-utils";
-import { StorageDevice } from "~/storage";
+import type { storage } from "~/api/system";
 import DeviceSelectorModal from "./DeviceSelectorModal";
 
-const sda: StorageDevice = {
+const sda: storage.Device = {
   sid: 59,
-  isDrive: true,
-  type: "disk",
-  vendor: "Micron",
-  model: "Micron 1100 SATA",
-  driver: ["ahci", "mmcblk"],
-  bus: "IDE",
-  busId: "",
-  transport: "usb",
-  dellBOSS: false,
-  sdCard: true,
-  active: true,
+  class: "drive",
+  drive: {
+    type: "disk",
+    vendor: "Micron",
+    model: "Micron 1100 SATA",
+    driver: ["ahci", "mmcblk"],
+    bus: "IDE",
+    busId: "",
+    transport: "usb",
+    info: {
+      sdCard: true,
+      dellBoss: false,
+    },
+  },
   name: "/dev/sda",
-  size: 1024,
-  shrinking: { unsupported: ["Resizing is not supported"] },
-  systems: [],
-  udevIds: ["ata-Micron_1100_SATA_512GB_12563", "scsi-0ATA_Micron_1100_SATA_512GB"],
-  udevPaths: ["pci-0000:00-12", "pci-0000:00-12-ata"],
+  block: {
+    size: 1024,
+    start: 0,
+    shrinking: { supported: false, reasons: ["Resizing is not supported"] },
+    systems: [],
+    udevIds: ["ata-Micron_1100_SATA_512GB_12563", "scsi-0ATA_Micron_1100_SATA_512GB"],
+    udevPaths: ["pci-0000:00-12", "pci-0000:00-12-ata"],
+    active: true,
+  },
   description: "SDA drive",
 };
 
-const sdb: StorageDevice = {
+const sdb: storage.Device = {
   sid: 62,
-  isDrive: true,
-  type: "disk",
-  vendor: "Samsung",
-  model: "Samsung Evo 8 Pro",
-  driver: ["ahci"],
-  bus: "IDE",
-  busId: "",
-  transport: "",
-  dellBOSS: false,
-  sdCard: false,
-  active: true,
+  class: "drive",
+  drive: {
+    type: "disk",
+    vendor: "Samsung",
+    model: "Samsung Evo 8 Pro",
+    driver: ["ahci"],
+    bus: "IDE",
+    busId: "",
+    transport: "",
+    info: {
+      dellBoss: false,
+      sdCard: false,
+    },
+  },
   name: "/dev/sdb",
-  size: 2048,
-  shrinking: { unsupported: ["Resizing is not supported"] },
-  systems: [],
-  udevIds: [],
-  udevPaths: ["pci-0000:00-19"],
+  block: {
+    size: 2048,
+    start: 0,
+    shrinking: { supported: false, reasons: ["Resizing is not supported"] },
+    systems: [],
+    udevIds: [],
+    udevPaths: ["pci-0000:00-19"],
+    active: true,
+  },
   description: "SDB drive",
 };
 

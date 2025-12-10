@@ -24,9 +24,14 @@ import React from "react";
 import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import EncryptionSettingsPage from "./EncryptionSettingsPage";
-import { EncryptionHook } from "~/queries/storage/config-model";
+import { type EncryptionHook, useEncryption } from "~/queries/storage/config-model";
+import { useEncryptionMethods } from "~/hooks/api/system/storage";
+import { useSystem } from "~/hooks/api/system";
 
 jest.mock("~/components/users/PasswordCheck", () => () => <div>PasswordCheck Mock</div>);
+jest.mock("~/hooks/api/system/storage");
+jest.mock("~/queries/storage/config-model");
+jest.mock("~/hooks/api/system");
 
 const mockLuks2Encryption: EncryptionHook = {
   encryption: {
@@ -56,26 +61,19 @@ jest.mock("~/components/product/ProductRegistrationAlert", () => () => (
   <div>registration alert</div>
 ));
 
-const mockUseEncryptionMethods = jest.fn();
-jest.mock("~/queries/storage", () => ({
-  ...jest.requireActual("~/queries/storage"),
-  useEncryptionMethods: () => mockUseEncryptionMethods(),
-}));
-
-const mockUseEncryption = jest.fn();
-jest.mock("~/queries/storage/config-model", () => ({
-  ...jest.requireActual("~/queries/storage/config-model"),
-  useEncryption: () => mockUseEncryption(),
-}));
-
 describe("EncryptionSettingsPage", () => {
+  const mockedUseEncryptionMethods = useEncryptionMethods as jest.Mock;
+  const mockedUseEncryption = useEncryption as jest.Mock;
+  const mockedUseSystem = useSystem as jest.Mock;
+
   beforeEach(() => {
-    mockUseEncryptionMethods.mockReturnValue(["luks2", "tpmFde"]);
+    mockedUseSystem.mockReturnValue({ l10n: { locale: "en-US" } });
+    mockedUseEncryptionMethods.mockReturnValue(["luks2", "tpmFde"]);
   });
 
   describe("when encryption is not enabled", () => {
     beforeEach(() => {
-      mockUseEncryption.mockReturnValue(mockNoEncryption);
+      mockedUseEncryption.mockReturnValue(mockNoEncryption);
     });
 
     it("allows enabling the encryption", async () => {
@@ -95,7 +93,7 @@ describe("EncryptionSettingsPage", () => {
 
   describe("when encryption is enabled", () => {
     beforeEach(() => {
-      mockUseEncryption.mockReturnValue(mockLuks2Encryption);
+      mockedUseEncryption.mockReturnValue(mockLuks2Encryption);
     });
 
     it("allows disabling the encryption", async () => {
@@ -112,7 +110,7 @@ describe("EncryptionSettingsPage", () => {
 
   describe("when using TPM", () => {
     beforeEach(() => {
-      mockUseEncryption.mockReturnValue(mockTpmEncryption);
+      mockedUseEncryption.mockReturnValue(mockTpmEncryption);
     });
 
     it("allows disabling TPM", async () => {
@@ -129,7 +127,7 @@ describe("EncryptionSettingsPage", () => {
 
   describe("when TPM is not available", () => {
     beforeEach(() => {
-      mockUseEncryptionMethods.mockReturnValue(["luks1", "luks2"]);
+      mockedUseEncryptionMethods.mockReturnValue(["luks1", "luks2"]);
     });
 
     it("does not offer TPM", () => {
