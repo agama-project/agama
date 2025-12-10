@@ -25,7 +25,7 @@ import React from "react";
 import { screen } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
 import InstallationFinished from "./InstallationFinished";
-import { Encryption } from "~/api/config/storage";
+import { Encryption } from "~/model/config/storage";
 
 jest.mock("~/queries/status", () => ({
   ...jest.requireActual("~/queries/status"),

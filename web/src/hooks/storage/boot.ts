@@ -21,7 +21,7 @@
  */
 
 import { useModel } from "~/hooks/storage/model";
-import { useStorageModel } from "~/hooks/api/storage";
+import { useStorageModel } from "~/hooks/model/storage";
 import { putStorageModel } from "~/api";
 import { setBootDevice, setDefaultBootDevice, disableBootConfig } from "~/storage/boot";
 

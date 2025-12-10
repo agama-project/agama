@@ -23,11 +23,11 @@
 import React from "react";
 import { screen } from "@testing-library/react";
 import { installerRender, mockNavigateFn } from "~/test-utils";
-import { useSystem } from "~/hooks/api/system";
-import { useProduct } from "~/hooks/api/config";
+import { useSystem } from "~/hooks/model/system";
+import { useProduct } from "~/hooks/model/config";
 import { Product } from "~/types/software";
 import ProductSelectionPage from "./ProductSelectionPage";
-import { System } from "~/api/system/network";
+import { System } from "~/model/system/network";
 
 jest.mock("~/components/product/ProductRegistrationAlert", () => () => (
   <div>ProductRegistrationAlert Mock</div>

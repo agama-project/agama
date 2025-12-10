@@ -25,7 +25,7 @@ import { screen, waitFor } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import LicenseDialog from "./LicenseDialog";
 import { Product } from "~/types/software";
-import * as softwareApi from "~/api/software";
+import * as softwareApi from "~/model/software";
 
 const sle: Product = {
   id: "SLE",

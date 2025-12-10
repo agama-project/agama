@@ -47,8 +47,8 @@ import { isEmpty } from "radashi";
 import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
 import LicenseDialog from "./LicenseDialog";
-import { useProduct } from "~/hooks/api/config";
-import { useSystem } from "~/hooks/api/system";
+import { useProduct } from "~/hooks/model/config";
+import { useSystem } from "~/hooks/model/system";
 import { patchConfig } from "~/api";
 
 const ResponsiveGridItem = ({ children }) => (

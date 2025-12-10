@@ -29,7 +29,7 @@ import {
   fetchDASDDevices,
   formatDASD,
   supportedDASD,
-} from "~/api/storage/dasd";
+} from "~/model/storage/dasd";
 import { useInstallerClient } from "~/context/installer";
 import React from "react";
 import { hex } from "~/utils";

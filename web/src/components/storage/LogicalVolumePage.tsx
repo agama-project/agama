@@ -51,9 +51,9 @@ import { SelectWrapperProps as SelectProps } from "~/components/core/SelectWrapp
 import SelectTypeaheadCreatable from "~/components/core/SelectTypeaheadCreatable";
 import AutoSizeText from "~/components/storage/AutoSizeText";
 import { deviceSize, filesystemLabel, parseToBytes } from "~/components/storage/utils";
-import { useSolvedStorageModel, useStorageModel } from "~/hooks/api/storage";
+import { useSolvedStorageModel, useStorageModel } from "~/hooks/model/storage";
 import { useModel, useMissingMountPaths } from "~/hooks/storage/model";
-import { useVolumeTemplate } from "~/hooks/api/system/storage";
+import { useVolumeTemplate } from "~/hooks/model/system/storage";
 import { useVolumeGroup } from "~/hooks/storage/volume-group";
 import { useAddLogicalVolume, useEditLogicalVolume } from "~/hooks/storage/logical-volume";
 import { addLogicalVolume, editLogicalVolume } from "~/storage/logical-volume";
@@ -64,7 +64,7 @@ import { compact } from "~/utils";
 import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
 import SizeModeSelect, { SizeMode, SizeRange } from "~/components/storage/SizeModeSelect";
-import type { model } from "~/api/storage";
+import type { configModel } from "~/model/storage/config-model";
 import type { data } from "~/storage";
 
 const NO_VALUE = "";
@@ -93,7 +93,7 @@ type ErrorsHandler = {
 };
 
 function toData(value: FormValue): data.LogicalVolume {
-  const filesystemType = (): model.FilesystemType | undefined => {
+  const filesystemType = (): configModel.FilesystemType | undefined => {
     if (value.filesystem === NO_VALUE) return undefined;
     if (value.filesystem === BTRFS_SNAPSHOTS) return "btrfs";
 
@@ -104,7 +104,7 @@ function toData(value: FormValue): data.LogicalVolume {
      *  This will be fixed in the future by directly exporting the volumes as a JSON, similar to the
      *  config model. The schema for the volumes will define the explicit list of filesystem types.
      */
-    return value.filesystem as model.FilesystemType;
+    return value.filesystem as configModel.FilesystemType;
   };
 
   const filesystem = (): data.Filesystem | undefined => {
@@ -118,7 +118,7 @@ function toData(value: FormValue): data.LogicalVolume {
     };
   };
 
-  const size = (): model.Size | undefined => {
+  const size = (): configModel.Size | undefined => {
     if (value.sizeOption === "auto") return undefined;
     if (value.minSize === NO_VALUE) return undefined;
 
@@ -137,7 +137,7 @@ function toData(value: FormValue): data.LogicalVolume {
   };
 }
 
-function toFormValue(logicalVolume: model.LogicalVolume): FormValue {
+function toFormValue(logicalVolume: configModel.LogicalVolume): FormValue {
   const mountPoint = (): string => logicalVolume.mountPath || NO_VALUE;
 
   const filesystem = (): string => {
@@ -176,7 +176,7 @@ function useDefaultFilesystem(mountPoint: string): string {
   return volume.mountPath === "/" && volume.snapshots ? BTRFS_SNAPSHOTS : volume.fsType;
 }
 
-function useInitialLogicalVolume(): model.LogicalVolume | null {
+function useInitialLogicalVolume(): configModel.LogicalVolume | null {
   const { id: vgName, logicalVolumeId: mountPath } = useParams();
   const volumeGroup = useVolumeGroup(vgName);
 
@@ -337,7 +337,7 @@ function useErrors(value: FormValue): ErrorsHandler {
   return { errors, getError, getVisibleError };
 }
 
-function useSolvedModel(value: FormValue): model.Config | null {
+function useSolvedModel(value: FormValue): configModel.Config | null {
   const { id: vgName, logicalVolumeId: mountPath } = useParams();
   const apiModel = useStorageModel();
   const { getError } = useErrors(value);
@@ -348,7 +348,7 @@ function useSolvedModel(value: FormValue): model.Config | null {
   // Avoid recalculating the solved model because changes in name.
   data.lvName = undefined;
 
-  let sparseModel: model.Config | undefined;
+  let sparseModel: configModel.Config | undefined;
 
   if (data.filesystem && !mountPointError) {
     if (mountPath) {
@@ -362,7 +362,7 @@ function useSolvedModel(value: FormValue): model.Config | null {
   return solvedModel;
 }
 
-function useSolvedLogicalVolume(value: FormValue): model.LogicalVolume | undefined {
+function useSolvedLogicalVolume(value: FormValue): configModel.LogicalVolume | undefined {
   const { id: vgName } = useParams();
   const apiModel = useSolvedModel(value);
   const volumeGroup = apiModel?.volumeGroups?.find((v) => v.vgName === vgName);

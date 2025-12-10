@@ -26,7 +26,7 @@ import { Page } from "~/components/core";
 import { NodesPresenter, DiscoverForm } from "~/components/storage/iscsi";
 import { _ } from "~/i18n";
 import { useNodes, useNodesChanges } from "~/queries/storage/iscsi";
-import { discover } from "~/api/storage/iscsi";
+import { discover } from "~/model/storage/iscsi";
 
 export default function TargetsSection() {
   const [isDiscoverFormOpen, setIsDiscoverFormOpen] = useState<boolean>(false);

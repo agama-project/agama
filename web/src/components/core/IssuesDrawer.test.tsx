@@ -24,7 +24,7 @@ import React from "react";
 import { screen, within } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import { InstallationPhase } from "~/types/status";
-import { Issue, IssueSeverity, IssueSource } from "~/api/issue";
+import { Issue, IssueSeverity, IssueSource } from "~/model/issue";
 import IssuesDrawer from "./IssuesDrawer";
 
 let phase = InstallationPhase.Config;

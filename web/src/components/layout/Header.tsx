@@ -46,7 +46,7 @@ import { ChangeProductOption, InstallButton, InstallerOptions, SkipTo } from "~/
 import ProgressStatusMonitor from "../core/ProgressStatusMonitor";
 import { ROOT } from "~/routes/paths";
 import { _ } from "~/i18n";
-import { useProduct } from "~/hooks/api/config";
+import { useProduct } from "~/hooks/model/config";
 
 export type HeaderProps = {
   /** Whether the application sidebar should be mounted or not */

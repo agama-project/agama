@@ -38,9 +38,9 @@ import Radio from "~/components/core/RadioEnhanced";
 import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
 import { connectionBindingMode } from "~/utils/network";
-import { useConnection } from "~/hooks/api/proposal/network";
-import { useConnectionMutation } from "~/hooks/api/config/network";
-import { useDevices } from "~/hooks/api/system/network";
+import { useConnection } from "~/hooks/model/proposal/network";
+import { useConnectionMutation } from "~/hooks/model/config/network";
+import { useDevices } from "~/hooks/model/system/network";
 
 type DevicesSelectProps = Omit<FormSelectProps, "children" | "ref"> & {
   /**

@@ -31,9 +31,9 @@ import { useDeleteDrive } from "~/hooks/storage/drive";
 import { Button, Flex, FlexItem } from "@patternfly/react-core";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import { useDrive } from "~/hooks/storage/model";
-import { useDevice } from "~/hooks/api/system/storage";
+import { useDevice } from "~/hooks/model/system/storage";
 import type { model } from "~/storage";
-import type { storage as system } from "~/api/system";
+import type { storage as system } from "~/model/system";
 
 type DriveDeviceMenuToggleProps = CustomToggleProps & {
   drive: model.Drive | model.MdRaid;

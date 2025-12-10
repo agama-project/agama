@@ -51,11 +51,11 @@ import ProposalFailedInfo from "./ProposalFailedInfo";
 import ProposalResultSection from "./ProposalResultSection";
 import ProposalTransactionalInfo from "./ProposalTransactionalInfo";
 import UnsupportedModelInfo from "./UnsupportedModelInfo";
-import { useAvailableDevices } from "~/hooks/api/system/storage";
-import { useIssues } from "~/hooks/api/issue";
-import { useReset } from "~/hooks/api/config/storage";
-import { useProposal } from "~/hooks/api/proposal/storage";
-import { useStorageModel } from "~/hooks/api/storage";
+import { useAvailableDevices } from "~/hooks/model/system/storage";
+import { useIssues } from "~/hooks/model/issue";
+import { useReset } from "~/hooks/model/config/storage";
+import { useProposal } from "~/hooks/model/proposal/storage";
+import { useStorageModel } from "~/hooks/model/storage";
 import { useZFCPSupported } from "~/queries/storage/zfcp";
 import { useDASDSupported } from "~/queries/storage/dasd";
 import { STORAGE as PATHS } from "~/routes/paths";
@@ -65,8 +65,13 @@ import { useNavigate, useLocation } from "react-router";
 import { useStorageUiState } from "~/context/storage-ui-state";
 import MenuButton from "../core/MenuButton";
 import spacingStyles from "@patternfly/react-styles/css/utilities/Spacing/spacing";
+import type { Issue } from "~/model/issue";
 
-function InvalidConfigEmptyState({ issues }: Issue[]): React.ReactNode {
+type InvalidConfigEmptyStateProps = {
+  issues: Issue[];
+};
+
+function InvalidConfigEmptyState({ issues }: InvalidConfigEmptyStateProps): React.ReactNode {
   const reset = useReset();
 
   return (

@@ -24,7 +24,7 @@ import { sprintf } from "sprintf-js";
 import { deviceLabel } from "./utils";
 import { _ } from "~/i18n";
 import type { model } from "~/storage";
-import type { storage } from "~/api/system";
+import type { storage } from "~/model/system";
 
 export type MdRaidHeaderProps = { raid: model.MdRaid; device: storage.Device };
 

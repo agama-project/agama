@@ -24,7 +24,7 @@ import React from "react";
 import { screen, waitFor, within } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import TargetsSection from "./TargetsSection";
-import { deleteNode, discover, login, logout } from "~/api/storage/iscsi";
+import { deleteNode, discover, login, logout } from "~/model/storage/iscsi";
 
 let mockNodes = [];
 const mockDiscover = jest.fn();

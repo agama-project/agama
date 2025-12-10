@@ -55,7 +55,7 @@ import {
   useDrive as useDriveModel,
   useMdRaid as useMdRaidModel,
 } from "~/hooks/storage/model";
-import { useDevice, useVolumeTemplate } from "~/hooks/api/system/storage";
+import { useDevice, useVolumeTemplate } from "~/hooks/model/system/storage";
 import { data, model } from "~/storage";
 import { deviceBaseName, filesystemLabel } from "~/components/storage/utils";
 import { _ } from "~/i18n";
@@ -63,8 +63,8 @@ import { sprintf } from "sprintf-js";
 import { STORAGE as PATHS } from "~/routes/paths";
 import { unique } from "radashi";
 import { compact } from "~/utils";
-import type { model as apiModel } from "~/api/storage";
-import type { storage as system } from "~/api/system";
+import type { configModel as apiModel } from "~/model/storage/config-model";
+import type { storage as system } from "~/model/system";
 
 const NO_VALUE = "";
 const BTRFS_SNAPSHOTS = "btrfsSnapshots";

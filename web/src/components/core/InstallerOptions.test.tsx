@@ -23,16 +23,16 @@
 import React from "react";
 import { screen, within } from "@testing-library/react";
 import { installerRender, mockRoutes } from "~/test-utils";
-import { useSystem } from "~/hooks/api/system";
-import { useProduct } from "~/hooks/api/config";
+import { useSystem } from "~/hooks/model/system";
+import { useProduct } from "~/hooks/model/config";
 import { Product } from "~/types/software";
-import { Keymap, Locale } from "~/api/system/l10n";
-import { Progress, State } from "~/api/status";
-import { System } from "~/api/system/network";
+import { Keymap, Locale } from "~/model/system/l10n";
+import { Progress, State } from "~/model/status";
+import { System } from "~/model/system/network";
 import * as utils from "~/utils";
 import { PRODUCT, ROOT } from "~/routes/paths";
 import InstallerOptions, { InstallerOptionsProps } from "./InstallerOptions";
-import { useStatus } from "~/hooks/api/status";
+import { useStatus } from "~/hooks/model/status";
 
 const locales: Locale[] = [
   { id: "en_US.UTF-8", language: "English", territory: "United States" },

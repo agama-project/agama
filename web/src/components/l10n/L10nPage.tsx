@@ -25,8 +25,8 @@ import { Button, Content, Grid, GridItem } from "@patternfly/react-core";
 import { InstallerOptions, Link, Page } from "~/components/core";
 import { L10N as PATHS } from "~/routes/paths";
 import { localConnection } from "~/utils";
-import { useProposal } from "~/hooks/api/proposal/l10n";
-import { useSystem } from "~/hooks/api/system/l10n";
+import { useProposal } from "~/hooks/model/proposal/l10n";
+import { useSystem } from "~/hooks/model/system/l10n";
 import { _ } from "~/i18n";
 
 const InstallerL10nSettingsInfo = () => {

@@ -23,18 +23,18 @@
 import React from "react";
 import { Content } from "@patternfly/react-core";
 import { deviceLabel } from "~/components/storage/utils";
-import { useAvailableDevices, useDevices, useIssues } from "~/hooks/api/system/storage";
-import { useStorageModel } from "~/hooks/api/storage";
+import { useAvailableDevices, useDevices, useIssues } from "~/hooks/model/system/storage";
+import { useStorageModel } from "~/hooks/model/storage";
 import { _ } from "~/i18n";
-import type { storage } from "~/api/system";
-import type { model } from "~/api/storage";
+import type { storage } from "~/model/system";
+import type { configModel } from "~/model/storage/config-model";
 
-const findDriveDevice = (drive: model.Drive, devices: storage.Device[]) =>
+const findDriveDevice = (drive: configModel.Drive, devices: storage.Device[]) =>
   devices.find((d) => d.name === drive.name);
 
 const NoDeviceSummary = () => _("No device selected yet");
 
-const SingleDiskSummary = ({ drive }: { drive: model.Drive }) => {
+const SingleDiskSummary = ({ drive }: { drive: configModel.Drive }) => {
   const devices = useDevices();
   const device = findDriveDevice(drive, devices);
   const options = {
@@ -63,7 +63,7 @@ const SingleDiskSummary = ({ drive }: { drive: model.Drive }) => {
   );
 };
 
-const MultipleDisksSummary = ({ drives }: { drives: model.Drive[] }): string => {
+const MultipleDisksSummary = ({ drives }: { drives: configModel.Drive[] }): string => {
   const options = {
     resize: _("Install using several devices shrinking existing partitions as needed."),
     keep: _("Install using several devices without modifying existing partitions."),
@@ -78,7 +78,7 @@ const MultipleDisksSummary = ({ drives }: { drives: model.Drive[] }): string => 
   return options[drives[0].spacePolicy];
 };
 
-const ModelSummary = ({ model }: { model: model.Config }): React.ReactNode => {
+const ModelSummary = ({ model }: { model: configModel.Config }): React.ReactNode => {
   const devices = useDevices();
   const drives = model?.drives || [];
   const existDevice = (name: string) => devices.some((d) => d.name === name);

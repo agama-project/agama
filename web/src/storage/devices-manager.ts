@@ -23,9 +23,8 @@
 import { unique } from "radashi";
 import { compact } from "~/utils";
 import { deviceSystems, isDrive, isMd, isVolumeGroup } from "~/storage/device";
-import type { Action } from "~/api/proposal/storage";
-import type { storage as system } from "~/api/system";
-import type { storage as proposal } from "~/api/proposal";
+import type { storage as system } from "~/model/system";
+import type { storage as proposal } from "~/model/proposal";
 
 /**
  * Class for managing storage devices.
@@ -33,14 +32,14 @@ import type { storage as proposal } from "~/api/proposal";
 export default class DevicesManager {
   system: system.Device[];
   staging: proposal.Device[];
-  actions: Action[];
+  actions: proposal.Action[];
 
   /**
    * @param system - Devices representing the current state of the system.
    * @param staging - Devices representing the target state of the system.
    * @param actions - Actions to perform from system to staging.
    */
-  constructor(system: system.Device[], staging: proposal.Device[], actions: Action[]) {
+  constructor(system: system.Device[], staging: proposal.Device[], actions: proposal.Action[]) {
     this.system = system;
     this.staging = staging;
     this.actions = actions;

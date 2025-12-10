@@ -24,8 +24,8 @@ import React from "react";
 import { Content, List, ListItem } from "@patternfly/react-core";
 import { isEmpty } from "radashi";
 import { _ } from "~/i18n";
-import { useProposal } from "~/hooks/api/proposal/software";
-import { useSystem } from "~/hooks/api/system/software";
+import { useProposal } from "~/hooks/model/proposal/software";
+import { useSystem } from "~/hooks/model/system/software";
 import xbytes from "xbytes";
 
 export default function SoftwareSection(): React.ReactNode {

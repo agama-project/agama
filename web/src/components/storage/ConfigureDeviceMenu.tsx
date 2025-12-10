@@ -24,7 +24,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router";
 import MenuButton, { MenuButtonItem } from "~/components/core/MenuButton";
 import { Divider, Flex, MenuItemProps } from "@patternfly/react-core";
-import { useAvailableDevices } from "~/hooks/api/system/storage";
+import { useAvailableDevices } from "~/hooks/model/system/storage";
 import { useModel } from "~/hooks/storage/model";
 import { useAddDrive } from "~/hooks/storage/drive";
 import { useAddReusedMdRaid } from "~/hooks/storage/md-raid";
@@ -34,7 +34,7 @@ import { _, n_ } from "~/i18n";
 import DeviceSelectorModal from "./DeviceSelectorModal";
 import { isDrive } from "~/storage/device";
 import { Icon } from "../layout";
-import type { storage } from "~/api/system";
+import type { storage } from "~/model/system";
 
 type AddDeviceMenuItemProps = {
   /** Whether some of the available devices is an MD RAID */

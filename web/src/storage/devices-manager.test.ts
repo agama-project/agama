@@ -21,8 +21,8 @@
  */
 
 import DevicesManager from "~/storage/devices-manager";
-import type { storage as system } from "~/api/system";
-import type { storage as proposal } from "~/api/proposal";
+import type { storage as system } from "~/model/system";
+import type { storage as proposal } from "~/model/proposal";
 
 const block = (systems: string[]): system.Block => ({
   size: 1024,

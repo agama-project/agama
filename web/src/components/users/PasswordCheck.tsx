@@ -22,7 +22,7 @@
 
 import React, { useEffect, useState } from "react";
 import SmallWarning from "~/components/core/SmallWarning";
-import { checkPassword } from "~/api/users";
+import { checkPassword } from "~/model/users";
 import { _ } from "~/i18n";
 
 const MINIMAL_SCORE = 50;

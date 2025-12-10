@@ -23,7 +23,7 @@
 import React, { useState } from "react";
 import { Content } from "@patternfly/react-core";
 import { SelectableDataTable, Page } from "~/components/core/";
-import { useAvailableDevices } from "~/hooks/api/system/storage";
+import { useAvailableDevices } from "~/hooks/model/system/storage";
 import { _ } from "~/i18n";
 import { SelectableDataTableProps } from "../core/SelectableDataTable";
 import {
@@ -31,7 +31,7 @@ import {
   contentDescription,
   filesystemLabels,
 } from "~/components/storage/utils/device";
-import type { storage } from "~/api/system";
+import type { storage } from "~/model/system";
 
 type DeviceSelectorProps = {
   devices: storage.Device[];

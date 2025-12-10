@@ -5,7 +5,7 @@ import { _ } from "~/i18n";
 import { useCancellablePromise } from "~/hooks/use-cancellable-promise";
 import { RowActions } from "../../core";
 import { ZFCPController } from "~/types/zfcp";
-import { activateZFCPController } from "~/api/storage/zfcp";
+import { activateZFCPController } from "~/model/storage/zfcp";
 import { useZFCPControllers } from "~/queries/storage/zfcp";
 
 /**

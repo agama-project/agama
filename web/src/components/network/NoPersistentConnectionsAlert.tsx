@@ -22,7 +22,7 @@
 
 import React from "react";
 import { Alert } from "@patternfly/react-core";
-import { useConnections } from "~/hooks/api/proposal/network";
+import { useConnections } from "~/hooks/model/proposal/network";
 import { Connection } from "~/types/network";
 import { _ } from "~/i18n";
 

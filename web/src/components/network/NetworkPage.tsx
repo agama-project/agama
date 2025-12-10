@@ -27,7 +27,7 @@ import WifiNetworksList from "./WifiNetworksList";
 import WiredConnectionsList from "./WiredConnectionsList";
 import NoPersistentConnectionsAlert from "./NoPersistentConnectionsAlert";
 import { _ } from "~/i18n";
-import { useNetworkChanges, useSystem } from "~/hooks/api/system/network";
+import { useNetworkChanges, useSystem } from "~/hooks/model/system/network";
 
 const NoWifiAvailable = () => (
   <Page.Section>
