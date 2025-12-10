@@ -286,7 +286,7 @@ const Submit = ({ children, ...props }: SubmitActionProps) => {
  *
  * @see [Patternfly Page/PageSection](https://www.patternfly.org/components/page#pagesection)
  */
-const Content = ({ children, ...pageSectionProps }: React.PropsWithChildren<PageSectionProps>) => {
+const Content = ({ children, ...pageSectionProps }: PageSectionProps) => {
   const location = useLocation();
   const mountRegistrationAlert = !SIDE_PATHS.includes(location.pathname);
 
@@ -329,10 +329,7 @@ const Content = ({ children, ...pageSectionProps }: React.PropsWithChildren<Page
  *     </Page.Content>
  *   </Page>
  */
-const Page = ({
-  children,
-  ...pageGroupProps
-}: React.PropsWithChildren<PageGroupProps>): React.ReactNode => {
+const Page = ({ children, ...pageGroupProps }: PageGroupProps): React.ReactNode => {
   return (
     <PageGroup {...pageGroupProps} tabIndex={-1} id="main-content">
       {children}
