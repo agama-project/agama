@@ -20,23 +20,22 @@
  * find current contact information at www.suse.com.
  */
 
-import * as partitionable from "~/model/storage/config-model/partitionable";
-import * as volumeGroup from "~/model/storage/config-model/volume-group";
 import type * as configModel from "~/openapi/storage/config-model";
 
-function usedMountPaths(model: configModel.Config): string[] {
-  const drives = model.drives || [];
-  const mdRaids = model.mdRaids || [];
-  const volumeGroups = model.volumeGroups || [];
-
-  return [
-    ...drives.flatMap(partitionable.usedMountPaths),
-    ...mdRaids.flatMap(partitionable.usedMountPaths),
-    ...volumeGroups.flatMap(volumeGroup.usedMountPaths),
-  ];
+function isNew(partition: configModel.Partition): boolean {
+  return !partition.name;
 }
 
-export * as boot from "~/model/storage/config-model/boot";
-export * as partition from "~/model/storage/config-model/partition";
-export { usedMountPaths };
-export type { configModel };
+function isUsed(partition: configModel.Partition): boolean {
+  return partition.filesystem !== undefined;
+}
+
+function isReused(partition: configModel.Partition): boolean {
+  return !isNew(partition) && isUsed(partition);
+}
+
+function isUsedBySpacePolicy(partition: configModel.Partition): boolean {
+  return partition.resizeIfNeeded || partition.delete || partition.deleteIfNeeded;
+}
+
+export { isNew, isUsed, isReused, isUsedBySpacePolicy };

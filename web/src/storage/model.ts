@@ -23,11 +23,12 @@
 /**
  * Model types.
  *
- * Types that extend the apiModel by adding calculated properties and methods.
+ * Types that extend the configModel by adding calculated properties and methods.
  */
 
+import { partition } from "~/model/storage/config-model";
 import { usedMountPaths } from "~/model/storage/config-model/partitionable";
-import type { configModel as apiModel } from "~/model/storage/config-model";
+import type { configModel } from "~/model/storage/config-model";
 
 type Model = {
   drives: Drive[];
@@ -35,97 +36,56 @@ type Model = {
   volumeGroups: VolumeGroup[];
 };
 
-interface Drive extends Omit<apiModel.Drive, "partitions"> {
+interface Drive extends configModel.Drive {
   isExplicitBoot: boolean;
   isUsed: boolean;
   isAddingPartitions: boolean;
   isReusingPartitions: boolean;
   isTargetDevice: boolean;
   isBoot: boolean;
-  partitions: Partition[];
   getVolumeGroups: () => VolumeGroup[];
-  getPartition: (path: string) => Partition | undefined;
-  getConfiguredExistingPartitions: () => Partition[];
+  getPartition: (path: string) => configModel.Partition | undefined;
+  getConfiguredExistingPartitions: () => configModel.Partition[];
 }
 
-interface MdRaid extends Omit<apiModel.MdRaid, "partitions"> {
+interface MdRaid extends configModel.MdRaid {
   isExplicitBoot: boolean;
   isUsed: boolean;
   isAddingPartitions: boolean;
   isReusingPartitions: boolean;
   isTargetDevice: boolean;
   isBoot: boolean;
-  partitions: Partition[];
   getVolumeGroups: () => VolumeGroup[];
-  getPartition: (path: string) => Partition | undefined;
-  getConfiguredExistingPartitions: () => Partition[];
+  getPartition: (path: string) => configModel.Partition | undefined;
+  getConfiguredExistingPartitions: () => configModel.Partition[];
 }
 
-interface Partition extends apiModel.Partition {
-  isNew: boolean;
-  isUsed: boolean;
-  isReused: boolean;
-  isUsedBySpacePolicy: boolean;
-}
-
-interface VolumeGroup extends Omit<apiModel.VolumeGroup, "targetDevices" | "logicalVolumes"> {
+interface VolumeGroup extends Omit<configModel.VolumeGroup, "targetDevices" | "logicalVolumes"> {
   logicalVolumes: LogicalVolume[];
   getTargetDevices: () => Drive[];
 }
 
-type LogicalVolume = apiModel.LogicalVolume;
+type LogicalVolume = configModel.LogicalVolume;
 
-type Formattable = Drive | MdRaid | Partition | LogicalVolume;
-
-function buildPartition(partitionData: apiModel.Partition): Partition {
-  const isNew = (): boolean => {
-    return !partitionData.name;
-  };
-
-  const isUsed = (): boolean => {
-    return partitionData.filesystem !== undefined;
-  };
-
-  const isReused = (): boolean => {
-    return !isNew() && isUsed();
-  };
-
-  const isUsedBySpacePolicy = (): boolean => {
-    return partitionData.resizeIfNeeded || partitionData.delete || partitionData.deleteIfNeeded;
-  };
-
-  return {
-    ...partitionData,
-    isNew: isNew(),
-    isUsed: isUsed(),
-    isReused: isReused(),
-    isUsedBySpacePolicy: isUsedBySpacePolicy(),
-  };
-}
+type Formattable = Drive | MdRaid | configModel.Partition | LogicalVolume;
 
 const findTarget = (model: Model, name: string): Drive | MdRaid | undefined => {
   return model.drives.concat(model.mdRaids).find((d) => d.name === name);
 };
 
 function partitionableProperties(
-  apiDevice: apiModel.Drive,
-  apiModel: apiModel.Config,
+  apiDevice: configModel.Drive,
+  apiModel: configModel.Config,
   model: Model,
 ) {
-  const buildPartitions = (): Partition[] => {
-    return (apiDevice.partitions || []).map(buildPartition);
-  };
-
-  const partitions = buildPartitions();
-
   const getVolumeGroups = (): VolumeGroup[] => {
     return model.volumeGroups.filter((v) =>
       v.getTargetDevices().some((d) => d.name === apiDevice.name),
     );
   };
 
-  const getPartition = (path: string): Partition | undefined => {
-    return partitions.find((p) => p.mountPath === path);
+  const getPartition = (path: string): configModel.Partition | undefined => {
+    return apiDevice.partitions.find((p) => p.mountPath === path);
   };
 
   const isBoot = (): boolean => {
@@ -146,18 +106,20 @@ function partitionableProperties(
   };
 
   const isAddingPartitions = (): boolean => {
-    return partitions.some((p) => p.mountPath && p.isNew);
+    return apiDevice.partitions.some((p) => p.mountPath && partition.isNew(p));
   };
 
   const isReusingPartitions = (): boolean => {
-    return partitions.some((p) => p.isReused);
+    return apiDevice.partitions.some(partition.isReused);
   };
 
-  const getConfiguredExistingPartitions = (): Partition[] => {
+  const getConfiguredExistingPartitions = (): configModel.Partition[] => {
     if (apiDevice.spacePolicy === "custom")
-      return partitions.filter((p) => !p.isNew && (p.isUsed || p.isUsedBySpacePolicy));
+      return apiDevice.partitions.filter(
+        (p) => !partition.isNew(p) && (partition.isUsed(p) || partition.isUsedBySpacePolicy(p)),
+      );
 
-    return partitions.filter((p) => p.isReused);
+    return apiDevice.partitions.filter(partition.isReused);
   };
 
   return {
@@ -167,32 +129,39 @@ function partitionableProperties(
     isTargetDevice: isTargetDevice(),
     isBoot: isBoot(),
     isExplicitBoot: isExplicitBoot(),
-    partitions,
     getVolumeGroups,
     getPartition,
     getConfiguredExistingPartitions,
   };
 }
 
-function buildDrive(apiDrive: apiModel.Drive, apiModel: apiModel.Config, model: Model): Drive {
+function buildDrive(
+  apiDrive: configModel.Drive,
+  apiModel: configModel.Config,
+  model: Model,
+): Drive {
   return {
     ...apiDrive,
     ...partitionableProperties(apiDrive, apiModel, model),
   };
 }
 
-function buildMdRaid(apiMdRaid: apiModel.MdRaid, apiModel: apiModel.Config, model: Model): MdRaid {
+function buildMdRaid(
+  apiMdRaid: configModel.MdRaid,
+  apiModel: configModel.Config,
+  model: Model,
+): MdRaid {
   return {
     ...apiMdRaid,
     ...partitionableProperties(apiMdRaid, apiModel, model),
   };
 }
 
-function buildLogicalVolume(logicalVolumeData: apiModel.LogicalVolume): LogicalVolume {
+function buildLogicalVolume(logicalVolumeData: configModel.LogicalVolume): LogicalVolume {
   return { ...logicalVolumeData };
 }
 
-function buildVolumeGroup(apiVolumeGroup: apiModel.VolumeGroup, model: Model): VolumeGroup {
+function buildVolumeGroup(apiVolumeGroup: configModel.VolumeGroup, model: Model): VolumeGroup {
   const buildLogicalVolumes = (): LogicalVolume[] => {
     return (apiVolumeGroup.logicalVolumes || []).map(buildLogicalVolume);
   };
@@ -208,7 +177,7 @@ function buildVolumeGroup(apiVolumeGroup: apiModel.VolumeGroup, model: Model): V
   };
 }
 
-function buildModel(apiModel: apiModel.Config): Model {
+function buildModel(apiModel: configModel.Config): Model {
   const model: Model = {
     drives: [],
     mdRaids: [],
@@ -234,5 +203,5 @@ function buildModel(apiModel: apiModel.Config): Model {
   return model;
 }
 
-export type { Model, Drive, MdRaid, Partition, VolumeGroup, LogicalVolume, Formattable };
+export type { Model, Drive, MdRaid, VolumeGroup, LogicalVolume, Formattable };
 export { buildModel };

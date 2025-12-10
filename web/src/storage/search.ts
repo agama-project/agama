@@ -23,10 +23,11 @@
 import { copyApiModel, findDevice, findDeviceIndex } from "~/storage/api-model";
 import { buildModel } from "~/storage/model";
 import { fork } from "radashi";
-import type { configModel as apiModel } from "~/model/storage/config-model";
+import { partition } from "~/model/storage/config-model";
+import type { configModel } from "~/model/storage/config-model";
 import type { model } from "~/storage";
 
-function deviceLocation(apiModel: apiModel.Config, name: string) {
+function deviceLocation(apiModel: configModel.Config, name: string) {
   let index;
   for (const list of ["drives", "mdRaids"]) {
     index = findDeviceIndex(apiModel, list, name);
@@ -37,7 +38,7 @@ function deviceLocation(apiModel: apiModel.Config, name: string) {
 }
 
 function buildModelDevice(
-  apiModel: apiModel.Config,
+  apiModel: configModel.Config,
   list: string,
   index: number | string,
 ): model.Drive | model.MdRaid | undefined {
@@ -45,14 +46,14 @@ function buildModelDevice(
   return model[list].at(index);
 }
 
-function isUsed(apiModel: apiModel.Config, list: string, index: number | string): boolean {
+function isUsed(apiModel: configModel.Config, list: string, index: number | string): boolean {
   const device = buildModelDevice(apiModel, list, index);
   if (!device) return false;
 
   return device.isUsed;
 }
 
-function deleteIfUnused(apiModel: apiModel.Config, name: string): apiModel.Config {
+function deleteIfUnused(apiModel: configModel.Config, name: string): configModel.Config {
   apiModel = copyApiModel(apiModel);
 
   const { list, index } = deviceLocation(apiModel, name);
@@ -65,11 +66,11 @@ function deleteIfUnused(apiModel: apiModel.Config, name: string): apiModel.Confi
 }
 
 function switchSearched(
-  apiModel: apiModel.Config,
+  apiModel: configModel.Config,
   oldName: string,
   name: string,
   list: "drives" | "mdRaids",
-): apiModel.Config {
+): configModel.Config {
   if (name === oldName) return apiModel;
 
   apiModel = copyApiModel(apiModel);
@@ -100,8 +101,8 @@ function switchSearched(
     return apiModel;
   }
 
-  const [newPartitions, existingPartitions] = fork(deviceModel.partitions, (p) => p.isNew);
-  const reusedPartitions = existingPartitions.filter((p) => p.isReused);
+  const [newPartitions, existingPartitions] = fork(deviceModel.partitions, partition.isNew);
+  const reusedPartitions = existingPartitions.filter(partition.isReused);
   const keepEntry = deviceModel.isExplicitBoot || reusedPartitions.length;
 
   if (keepEntry) {

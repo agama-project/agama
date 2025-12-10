@@ -52,6 +52,7 @@ import { sprintf } from "sprintf-js";
 import spacingStyles from "@patternfly/react-styles/css/utilities/Spacing/spacing";
 import { toggle } from "radashi";
 import type { model } from "~/storage";
+import type { configModel } from "~/model/storage/config-model";
 
 type PartitionMenuItemProps = {
   device: model.Drive | model.MdRaid;
@@ -80,7 +81,7 @@ const PartitionMenuItem = ({ device, mountPath, collection, index }: PartitionMe
 
 const partitionsLabelText = (device) => {
   const { isBoot, isTargetDevice, isAddingPartitions, isReusingPartitions } = device;
-  const num = device.partitions.filter((p: model.Partition) => p.mountPath).length;
+  const num = device.partitions.filter((p) => p.mountPath).length;
 
   if (isBoot || isTargetDevice) {
     if (isAddingPartitions && isReusingPartitions)
@@ -128,7 +129,7 @@ const optionalPartitionsTexts = (device) => {
 };
 
 type PartitionRowProps = {
-  partition: model.Partition;
+  partition: configModel.Partition;
   collection: "drives" | "mdRaids";
   index: number;
 };
@@ -202,7 +203,7 @@ const PartitionRow = ({ partition, collection, index }: PartitionRowProps) => {
 
 const PartitionsSectionHeader = ({ device }) => {
   const texts = optionalPartitionsTexts(device);
-  const hasPartitions = device.partitions.some((p: model.Partition) => p.mountPath);
+  const hasPartitions = device.partitions.some((p) => p.mountPath);
   if (hasPartitions) {
     texts.push(partitionsLabelText(device));
   }
@@ -226,7 +227,7 @@ export default function PartitionsSection({ collection, index }: PartitionsSecti
   const expanded = uiState.get("expanded")?.split(",");
   const isExpanded = expanded?.includes(uiIndex);
   const newPartitionPath = generateEncodedPath(PATHS.addPartition, { collection, index });
-  const hasPartitions = device.partitions.some((p: model.Partition) => p.mountPath);
+  const hasPartitions = device.partitions.some((p) => p.mountPath);
 
   const onToggle = () => {
     setUiState((state) => {
@@ -251,8 +252,8 @@ export default function PartitionsSection({ collection, index }: PartitionsSecti
   if (hasPartitions) {
     items.push(
       device.partitions
-        .filter((p: model.Partition) => p.mountPath)
-        .map((p: model.Partition) => {
+        .filter((p) => p.mountPath)
+        .map((p) => {
           return (
             <PartitionMenuItem
               key={p.mountPath}
@@ -289,8 +290,8 @@ export default function PartitionsSection({ collection, index }: PartitionsSecti
               style={{ width: "fit-content", minWidth: "40dvw", maxWidth: "60dwh" }}
             >
               {device.partitions
-                .filter((p: model.Partition) => p.mountPath)
-                .map((p: model.Partition) => {
+                .filter((p) => p.mountPath)
+                .map((p) => {
                   return (
                     <PartitionRow
                       key={p.mountPath}
