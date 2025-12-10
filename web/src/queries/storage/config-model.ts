@@ -24,7 +24,7 @@
 
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { putStorageModel, solveStorageModel } from "~/api";
-import { useStorageModel } from "~/hooks/model/storage";
+import { useConfigModel } from "~/hooks/model/storage";
 import { useVolumeTemplates } from "~/hooks/model/system/storage";
 import type { configModel } from "~/model/storage/config-model";
 import type { storage } from "~/model/system";
@@ -128,7 +128,7 @@ export type EncryptionHook = {
 };
 
 export function useEncryption(): EncryptionHook {
-  const model = useStorageModel();
+  const model = useConfigModel();
 
   return {
     encryption: model?.encryption,
@@ -147,7 +147,7 @@ export type DriveHook = {
 };
 
 export function useDrive(name: string): DriveHook | null {
-  const model = useStorageModel();
+  const model = useConfigModel();
   const drive = findDrive(model, name);
 
   if (drive === undefined) return null;
@@ -172,7 +172,7 @@ export type ModelHook = {
  * Hook for operating on the collections of the model.
  */
 export function useModel(): ModelHook {
-  const model = useStorageModel();
+  const model = useConfigModel();
   const volumes = useVolumeTemplates();
 
   return {

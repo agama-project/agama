@@ -22,7 +22,7 @@
 
 import { _, n_, formatList } from "~/i18n";
 import { SpacePolicy, SPACE_POLICIES, baseName, formattedPath } from "~/components/storage/utils";
-import { useStorageModel } from "~/hooks/model/storage";
+import { useConfigModel } from "~/hooks/model/storage";
 import { configModelMethods } from "~/model/storage";
 import { sprintf } from "sprintf-js";
 import type { configModel } from "~/model/storage/config-model";
@@ -66,7 +66,7 @@ const resizeTextFor = (partitions) => {
 };
 
 const SummaryForSpacePolicy = (drive: Drive): string | undefined => {
-  const configModel = useStorageModel();
+  const configModel = useConfigModel();
   const isTargetDevice = configModelMethods.isTargetDevice(configModel, drive.name);
   const { isBoot, isAddingPartitions, isReusingPartitions, spacePolicy } = drive;
 
@@ -118,7 +118,7 @@ const contentActionsSummary = (drive: Drive): string => {
 };
 
 const ContentActionsDescription = (drive: Drive, policyId: string | undefined): string => {
-  const configModel = useStorageModel();
+  const configModel = useConfigModel();
   const isTargetDevice = configModelMethods.isTargetDevice(configModel, drive.name);
   const { isBoot, isAddingPartitions, isReusingPartitions } = drive;
 

@@ -28,7 +28,7 @@ import { Page, SubtleContent } from "~/components/core";
 import { deviceLabel, formattedPath } from "~/components/storage/utils";
 import { useCandidateDevices, useDevices } from "~/hooks/model/system/storage";
 import { useModel } from "~/hooks/storage/model";
-import { useStorageModel } from "~/hooks/model/storage";
+import { useConfigModel } from "~/hooks/model/storage";
 import { isDrive } from "~/storage/device";
 import {
   useSetBootDevice,
@@ -75,7 +75,7 @@ export default function BootSelection() {
   const navigate = useNavigate();
   const devices = useDevices();
   const model = useModel();
-  const configModel = useStorageModel();
+  const configModel = useConfigModel();
   const allCandidateDevices = useCandidateDevices();
   const setBootDevice = useSetBootDevice();
   const setDefaultBootDevice = useSetDefaultBootDevice();

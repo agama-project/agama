@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import { useStorageModel } from "~/hooks/model/storage";
+import { useConfigModel } from "~/hooks/model/storage";
 import { putStorageModel } from "~/api";
 import {
   addVolumeGroup,
@@ -41,7 +41,7 @@ function useVolumeGroup(vgName: string): model.VolumeGroup | null {
 type AddVolumeGroupFn = (data: data.VolumeGroup, moveContent: boolean) => void;
 
 function useAddVolumeGroup(): AddVolumeGroupFn {
-  const apiModel = useStorageModel();
+  const apiModel = useConfigModel();
   return (data: data.VolumeGroup, moveContent: boolean) => {
     putStorageModel(addVolumeGroup(apiModel, data, moveContent));
   };
@@ -50,7 +50,7 @@ function useAddVolumeGroup(): AddVolumeGroupFn {
 type EditVolumeGroupFn = (vgName: string, data: data.VolumeGroup) => void;
 
 function useEditVolumeGroup(): EditVolumeGroupFn {
-  const apiModel = useStorageModel();
+  const apiModel = useConfigModel();
   return (vgName: string, data: data.VolumeGroup) => {
     putStorageModel(editVolumeGroup(apiModel, vgName, data));
   };
@@ -59,7 +59,7 @@ function useEditVolumeGroup(): EditVolumeGroupFn {
 type DeleteVolumeGroupFn = (vgName: string, moveToDrive: boolean) => void;
 
 function useDeleteVolumeGroup(): DeleteVolumeGroupFn {
-  const apiModel = useStorageModel();
+  const apiModel = useConfigModel();
   return (vgName: string, moveToDrive: boolean) => {
     putStorageModel(
       moveToDrive ? volumeGroupToPartitions(apiModel, vgName) : deleteVolumeGroup(apiModel, vgName),
@@ -70,7 +70,7 @@ function useDeleteVolumeGroup(): DeleteVolumeGroupFn {
 type ConvertToVolumeGroupFn = (driveName: string) => void;
 
 function useConvertToVolumeGroup(): ConvertToVolumeGroupFn {
-  const apiModel = useStorageModel();
+  const apiModel = useConfigModel();
   return (driveName: string) => {
     putStorageModel(deviceToVolumeGroup(apiModel, driveName));
   };

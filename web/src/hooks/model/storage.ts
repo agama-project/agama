@@ -24,23 +24,23 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import { solveStorageModel, getStorageModel } from "~/api";
 import type { configModel } from "~/model/storage/config-model";
 
-const storageModelQuery = {
+const configModelQuery = {
   queryKey: ["storageModel"],
   queryFn: getStorageModel,
 };
 
-function useStorageModel(): configModel.Config | null {
-  return useSuspenseQuery(storageModelQuery)?.data;
+function useConfigModel(): configModel.Config | null {
+  return useSuspenseQuery(configModelQuery).data;
 }
 
-const solvedStorageModelQuery = (apiModel?: configModel.Config) => ({
-  queryKey: ["solvedStorageModel", JSON.stringify(apiModel)],
-  queryFn: () => (apiModel ? solveStorageModel(apiModel) : Promise.resolve(null)),
+const solvedConfigModelQuery = (configModel?: configModel.Config) => ({
+  queryKey: ["solvedStorageModel", JSON.stringify(configModel)],
+  queryFn: () => (configModel ? solveStorageModel(configModel) : Promise.resolve(null)),
   staleTime: Infinity,
 });
 
-function useSolvedStorageModel(model?: configModel.Config): configModel.Config | null {
-  return useSuspenseQuery(solvedStorageModelQuery(model))?.data;
+function useSolvedConfigModel(configModel?: configModel.Config): configModel.Config | null {
+  return useSuspenseQuery(solvedConfigModelQuery(configModel)).data;
 }
 
-export { storageModelQuery, useStorageModel, useSolvedStorageModel };
+export { configModelQuery, useConfigModel, useSolvedConfigModel };

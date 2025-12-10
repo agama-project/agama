@@ -21,7 +21,7 @@
  */
 
 import { useModel } from "~/hooks/storage/model";
-import { useStorageModel } from "~/hooks/model/storage";
+import { useConfigModel } from "~/hooks/model/storage";
 import { putStorageModel } from "~/api";
 import { setBootDevice, setDefaultBootDevice, disableBootConfig } from "~/storage/boot";
 
@@ -29,7 +29,7 @@ type SetBootDeviceFn = (deviceName: string) => void;
 
 function useSetBootDevice(): SetBootDeviceFn {
   const model = useModel();
-  const apiModel = useStorageModel();
+  const apiModel = useConfigModel();
   return (deviceName: string) => putStorageModel(setBootDevice(model, apiModel, deviceName));
 }
 
@@ -37,7 +37,7 @@ type SetDefaultBootDeviceFn = () => void;
 
 function useSetDefaultBootDevice(): SetDefaultBootDeviceFn {
   const model = useModel();
-  const apiModel = useStorageModel();
+  const apiModel = useConfigModel();
   return () => putStorageModel(setDefaultBootDevice(model, apiModel));
 }
 
@@ -45,7 +45,7 @@ type DisableBootConfigFn = () => void;
 
 function useDisableBootConfig(): DisableBootConfigFn {
   const model = useModel();
-  const apiModel = useStorageModel();
+  const apiModel = useConfigModel();
   return () => putStorageModel(disableBootConfig(model, apiModel));
 }
 

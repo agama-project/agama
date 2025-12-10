@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import { useStorageModel } from "~/hooks/model/storage";
+import { useConfigModel } from "~/hooks/model/storage";
 import { putStorageModel } from "~/api";
 import { addDrive, deleteDrive, switchToDrive } from "~/storage/drive";
 import { useModel } from "~/hooks/storage/model";
@@ -35,7 +35,7 @@ function useDrive(name: string): model.Drive | null {
 type AddDriveFn = (data: data.Drive) => void;
 
 function useAddDrive(): AddDriveFn {
-  const apiModel = useStorageModel();
+  const apiModel = useConfigModel();
   return (data: data.Drive) => {
     putStorageModel(addDrive(apiModel, data));
   };
@@ -44,7 +44,7 @@ function useAddDrive(): AddDriveFn {
 type DeleteDriveFn = (name: string) => void;
 
 function useDeleteDrive(): DeleteDriveFn {
-  const apiModel = useStorageModel();
+  const apiModel = useConfigModel();
   return (name: string) => {
     putStorageModel(deleteDrive(apiModel, name));
   };
@@ -53,7 +53,7 @@ function useDeleteDrive(): DeleteDriveFn {
 type SwitchToDriveFn = (oldName: string, drive: data.Drive) => void;
 
 function useSwitchToDrive(): SwitchToDriveFn {
-  const apiModel = useStorageModel();
+  const apiModel = useConfigModel();
   return (oldName: string, drive: data.Drive) => {
     putStorageModel(switchToDrive(apiModel, oldName, drive));
   };

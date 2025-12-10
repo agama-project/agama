@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import { useStorageModel } from "~/hooks/model/storage";
+import { useConfigModel } from "~/hooks/model/storage";
 import { putStorageModel } from "~/api";
 import { data } from "~/storage";
 import { addPartition, editPartition, deletePartition } from "~/storage/partition";
@@ -32,7 +32,7 @@ type AddPartitionFn = (
 ) => void;
 
 function useAddPartition(): AddPartitionFn {
-  const apiModel = useStorageModel();
+  const apiModel = useConfigModel();
   return (collection: "drives" | "mdRaids", index: number | string, data: data.Partition) => {
     putStorageModel(addPartition(apiModel, collection, index, data));
   };
@@ -46,7 +46,7 @@ type EditPartitionFn = (
 ) => void;
 
 function useEditPartition(): EditPartitionFn {
-  const apiModel = useStorageModel();
+  const apiModel = useConfigModel();
   return (
     collection: "drives" | "mdRaids",
     index: number | string,
@@ -64,7 +64,7 @@ type DeletePartitionFn = (
 ) => void;
 
 function useDeletePartition(): DeletePartitionFn {
-  const apiModel = useStorageModel();
+  const apiModel = useConfigModel();
   return (collection: "drives" | "mdRaids", index: number | string, mountPath: string) =>
     putStorageModel(deletePartition(apiModel, collection, index, mountPath));
 }

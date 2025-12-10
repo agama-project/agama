@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import { useStorageModel } from "~/hooks/model/storage";
+import { useConfigModel } from "~/hooks/model/storage";
 import { putStorageModel } from "~/api";
 import { addReusedMdRaid, deleteMdRaid, switchToMdRaid } from "~/storage/md-raid";
 import type { data } from "~/storage";
@@ -28,7 +28,7 @@ import type { data } from "~/storage";
 type AddReusedMdRaidFn = (data: data.MdRaid) => void;
 
 function useAddReusedMdRaid(): AddReusedMdRaidFn {
-  const apiModel = useStorageModel();
+  const apiModel = useConfigModel();
   return (data: data.MdRaid) => {
     putStorageModel(addReusedMdRaid(apiModel, data));
   };
@@ -37,7 +37,7 @@ function useAddReusedMdRaid(): AddReusedMdRaidFn {
 type DeleteMdRaidFn = (name: string) => void;
 
 function useDeleteMdRaid(): DeleteMdRaidFn {
-  const apiModel = useStorageModel();
+  const apiModel = useConfigModel();
   return (name: string) => {
     putStorageModel(deleteMdRaid(apiModel, name));
   };
@@ -46,7 +46,7 @@ function useDeleteMdRaid(): DeleteMdRaidFn {
 type SwitchToMdRaidFn = (oldName: string, raid: data.MdRaid) => void;
 
 function useSwitchToMdRaid(): SwitchToMdRaidFn {
-  const apiModel = useStorageModel();
+  const apiModel = useConfigModel();
   return (oldName: string, raid: data.MdRaid) => {
     putStorageModel(switchToMdRaid(apiModel, oldName, raid));
   };

@@ -39,7 +39,7 @@ import { DeviceName, DeviceDetails, DeviceSize, toDevice } from "~/components/st
 import { Icon } from "~/components/layout";
 import { TreeTableColumn } from "~/components/core/TreeTable";
 import { Table, Td, Th, Tr, Thead, Tbody } from "@patternfly/react-table";
-import { useStorageModel } from "~/hooks/model/storage";
+import { useConfigModel } from "~/hooks/model/storage";
 import { supportShrink } from "~/storage/device";
 import type { storage as proposal } from "~/model/proposal";
 import type { configModel } from "~/model/storage/config-model";
@@ -56,7 +56,7 @@ const isUsedPartition = (partition: configModel.Partition): boolean => {
 // FIXME: there is too much logic here. This is one of those cases that should be considered
 // when restructuring the hooks and queries.
 const useReusedPartition = (name: string): configModel.Partition | undefined => {
-  const model = useStorageModel();
+  const model = useConfigModel();
 
   if (!model || !name) return;
 

@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import { useStorageModel } from "~/hooks/model/storage";
+import { useConfigModel } from "~/hooks/model/storage";
 import { putStorageModel } from "~/api";
 import { addLogicalVolume, editLogicalVolume, deleteLogicalVolume } from "~/storage/logical-volume";
 import type { data } from "~/storage";
@@ -28,7 +28,7 @@ import type { data } from "~/storage";
 type AddLogicalVolumeFn = (vgName: string, data: data.LogicalVolume) => void;
 
 function useAddLogicalVolume(): AddLogicalVolumeFn {
-  const apiModel = useStorageModel();
+  const apiModel = useConfigModel();
   return (vgName: string, data: data.LogicalVolume) => {
     putStorageModel(addLogicalVolume(apiModel, vgName, data));
   };
@@ -37,7 +37,7 @@ function useAddLogicalVolume(): AddLogicalVolumeFn {
 type EditLogicalVolumeFn = (vgName: string, mountPath: string, data: data.LogicalVolume) => void;
 
 function useEditLogicalVolume(): EditLogicalVolumeFn {
-  const apiModel = useStorageModel();
+  const apiModel = useConfigModel();
   return (vgName: string, mountPath: string, data: data.LogicalVolume) => {
     putStorageModel(editLogicalVolume(apiModel, vgName, mountPath, data));
   };
@@ -46,7 +46,7 @@ function useEditLogicalVolume(): EditLogicalVolumeFn {
 type DeleteLogicalVolumeFn = (vgName: string, mountPath: string) => void;
 
 function useDeleteLogicalVolume(): DeleteLogicalVolumeFn {
-  const apiModel = useStorageModel();
+  const apiModel = useConfigModel();
   return (vgName: string, mountPath: string) =>
     putStorageModel(deleteLogicalVolume(apiModel, vgName, mountPath));
 }

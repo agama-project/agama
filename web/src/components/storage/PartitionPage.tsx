@@ -64,7 +64,7 @@ import {
 import { useVolumeTemplate, useDevice } from "~/hooks/model/system/storage";
 
 import { useSolvedConfigModel } from "~/queries/storage/config-model";
-import { useStorageModel } from "~/hooks/model/storage";
+import { useConfigModel } from "~/hooks/model/storage";
 import { findDevice } from "~/storage/api-model";
 import { deviceSize, deviceLabel, filesystemLabel, parseToBytes } from "~/components/storage/utils";
 import { _ } from "~/i18n";
@@ -294,7 +294,7 @@ function useUsableFilesystems(mountPoint: string): string[] {
 }
 
 function useMountPointError(value: FormValue): Error | undefined {
-  const configModel = useStorageModel();
+  const configModel = useConfigModel();
   const mountPoints = configModel ? usedMountPaths(configModel) : [];
   const initialPartitionConfig = useInitialPartitionConfig();
   const mountPoint = value.mountPoint;
@@ -394,7 +394,7 @@ function useErrors(value: FormValue): ErrorsHandler {
 function useSolvedModel(value: FormValue): configModel.Config | null {
   const { collection, index } = useParams();
   const device = useDeviceModelFromParams();
-  const model = useStorageModel();
+  const model = useConfigModel();
   const { errors } = useErrors(value);
   const initialPartitionConfig = useInitialPartitionConfig();
   const partitionConfig = toPartitionConfig(value);

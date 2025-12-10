@@ -26,7 +26,7 @@ import NewVgMenuOption from "./NewVgMenuOption";
 import { usedMountPaths } from "~/model/storage/config-model/partitionable";
 import { useAvailableDevices } from "~/hooks/model/system/storage";
 import { useModel } from "~/hooks/storage/model";
-import { useStorageModel } from "~/hooks/model/storage";
+import { useConfigModel } from "~/hooks/model/storage";
 import { useSwitchToDrive } from "~/hooks/storage/drive";
 import { useSwitchToMdRaid } from "~/hooks/storage/md-raid";
 import { deviceBaseName, formattedPath } from "~/components/storage/utils";
@@ -66,7 +66,7 @@ type ChangeDeviceTitleProps = {
 };
 
 const ChangeDeviceTitle = ({ modelDevice }: ChangeDeviceTitleProps) => {
-  const configModel = useStorageModel();
+  const configModel = useConfigModel();
   const onlyOneOption = useOnlyOneOption(configModel, modelDevice);
   if (onlyOneOption) {
     return _("Selected disk cannot be changed");
@@ -106,7 +106,7 @@ type ChangeDeviceDescriptionProps = {
 };
 
 const ChangeDeviceDescription = ({ modelDevice, device }: ChangeDeviceDescriptionProps) => {
-  const configModel = useStorageModel();
+  const configModel = useConfigModel();
   const name = baseName(device);
   const volumeGroups = modelDevice.getVolumeGroups() || [];
   const isBoot = modelDevice.isBoot;
@@ -205,7 +205,7 @@ const ChangeDeviceMenuItem = ({
   device,
   ...props
 }: ChangeDeviceMenuItemProps): React.ReactNode => {
-  const configModel = useStorageModel();
+  const configModel = useConfigModel();
   const onlyOneOption = useOnlyOneOption(configModel, modelDevice);
 
   return (
@@ -226,7 +226,7 @@ type RemoveEntryOptionProps = {
 };
 
 const RemoveEntryOption = ({ device, onClick }: RemoveEntryOptionProps): React.ReactNode => {
-  const configModel = useStorageModel();
+  const configModel = useConfigModel();
   const model = useModel();
 
   /*

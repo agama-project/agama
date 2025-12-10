@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import { useStorageModel } from "~/hooks/model/storage";
+import { useConfigModel } from "~/hooks/model/storage";
 import { putStorageModel } from "~/api";
 import { data } from "~/storage";
 import { setSpacePolicy } from "~/storage/space-policy";
@@ -32,7 +32,7 @@ type setSpacePolicyFn = (
 ) => void;
 
 function useSetSpacePolicy(): setSpacePolicyFn {
-  const model = useStorageModel();
+  const model = useConfigModel();
   return (collection: string, index: number | string, data: data.SpacePolicy) => {
     putStorageModel(setSpacePolicy(model, collection, index, data));
   };

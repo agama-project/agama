@@ -22,7 +22,7 @@
 
 import { useCallback } from "react";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { storageModelQuery } from "~/hooks/model/storage";
+import { configModelQuery } from "~/hooks/model/storage";
 import { useSystem } from "~/hooks/model/system/storage";
 import { buildModel } from "~/storage/model";
 import { usedMountPaths } from "~/model/storage/config-model";
@@ -34,7 +34,7 @@ const build = (data: apiModel.Config | null): model.Model | null =>
 
 function useModel(): model.Model | null {
   const { data } = useSuspenseQuery({
-    ...storageModelQuery,
+    ...configModelQuery,
     select: build,
   });
   return data;
@@ -43,7 +43,7 @@ function useModel(): model.Model | null {
 function useMissingMountPaths(): string[] {
   const productMountPoints = useSystem()?.productMountPoints;
   const { data } = useSuspenseQuery({
-    ...storageModelQuery,
+    ...configModelQuery,
     select: useCallback(
       (data: apiModel.Config | null): string[] => {
         const currentMountPaths = data ? usedMountPaths(data) : [];
@@ -60,7 +60,7 @@ function useDevice(
   index: number,
 ): model.Drive | model.MdRaid | null {
   const { data } = useSuspenseQuery({
-    ...storageModelQuery,
+    ...configModelQuery,
     select: useCallback(
       (data: apiModel.Config): model.Drive | model.MdRaid | null =>
         build(data)?.[collection]?.at(index) || null,
@@ -72,7 +72,7 @@ function useDevice(
 
 function useDrive(index: number): model.Drive | null {
   const { data } = useSuspenseQuery({
-    ...storageModelQuery,
+    ...configModelQuery,
     select: useCallback(
       (data: apiModel.Config): model.Drive | null => build(data)?.drives?.at(index) || null,
       [index],
@@ -83,7 +83,7 @@ function useDrive(index: number): model.Drive | null {
 
 function useMdRaid(index: number): model.MdRaid | null {
   const { data } = useSuspenseQuery({
-    ...storageModelQuery,
+    ...configModelQuery,
     select: useCallback(
       (data: apiModel.Config): model.MdRaid | null => build(data)?.mdRaids?.at(index) || null,
       [index],

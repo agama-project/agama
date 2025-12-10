@@ -24,7 +24,7 @@ import React from "react";
 import { Content } from "@patternfly/react-core";
 import { deviceLabel } from "~/components/storage/utils";
 import { useAvailableDevices, useDevices, useIssues } from "~/hooks/model/system/storage";
-import { useStorageModel } from "~/hooks/model/storage";
+import { useConfigModel } from "~/hooks/model/storage";
 import { _ } from "~/i18n";
 import type { storage } from "~/model/system";
 import type { configModel } from "~/model/storage/config-model";
@@ -103,7 +103,7 @@ const NoModelSummary = (): React.ReactNode => {
  * Text explaining the storage proposal
  */
 export default function StorageSection() {
-  const configModel = useStorageModel();
+  const configModel = useConfigModel();
 
   return (
     <Content>

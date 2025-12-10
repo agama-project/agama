@@ -52,7 +52,7 @@ import SelectTypeaheadCreatable from "~/components/core/SelectTypeaheadCreatable
 import AutoSizeText from "~/components/storage/AutoSizeText";
 import { deviceSize, filesystemLabel, parseToBytes } from "~/components/storage/utils";
 import { usedMountPaths } from "~/model/storage/config-model";
-import { useSolvedStorageModel, useStorageModel } from "~/hooks/model/storage";
+import { useSolvedConfigModel, useConfigModel } from "~/hooks/model/storage";
 import { useMissingMountPaths } from "~/hooks/storage/model";
 import { useVolumeTemplate } from "~/hooks/model/system/storage";
 import { useVolumeGroup } from "~/hooks/storage/volume-group";
@@ -230,7 +230,7 @@ function useUsableFilesystems(mountPoint: string): string[] {
 }
 
 function useMountPointError(value: FormValue): Error | undefined {
-  const configModel = useStorageModel();
+  const configModel = useConfigModel();
   const mountPoints = configModel ? usedMountPaths(configModel) : [];
   const initialLogicalVolume = useInitialLogicalVolume();
   const mountPoint = value.mountPoint;
@@ -340,7 +340,7 @@ function useErrors(value: FormValue): ErrorsHandler {
 
 function useSolvedModel(value: FormValue): configModel.Config | null {
   const { id: vgName, logicalVolumeId: mountPath } = useParams();
-  const apiModel = useStorageModel();
+  const apiModel = useConfigModel();
   const { getError } = useErrors(value);
   const mountPointError = getError("mountPoint");
   const data = toData(value);
@@ -359,7 +359,7 @@ function useSolvedModel(value: FormValue): configModel.Config | null {
     }
   }
 
-  const solvedModel = useSolvedStorageModel(sparseModel);
+  const solvedModel = useSolvedConfigModel(sparseModel);
   return solvedModel;
 }
 

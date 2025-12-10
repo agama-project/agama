@@ -54,7 +54,7 @@ import {
   useDrive as useDriveModel,
   useMdRaid as useMdRaidModel,
 } from "~/hooks/storage/model";
-import { useStorageModel } from "~/hooks/model/storage";
+import { useConfigModel } from "~/hooks/model/storage";
 import { useDevice, useVolumeTemplate } from "~/hooks/model/system/storage";
 import { data, model } from "~/storage";
 import { deviceBaseName, filesystemLabel } from "~/components/storage/utils";
@@ -207,7 +207,7 @@ function useUsableFilesystems(mountPoint: string): string[] {
 }
 
 function useMountPointError(value: FormValue): Error | undefined {
-  const configModel = useStorageModel();
+  const configModel = useConfigModel();
   const mountPoints = configModel ? usedMountPaths(configModel) : [];
   const deviceModel = useDeviceModelFromParams();
   const mountPoint = value.mountPoint;
