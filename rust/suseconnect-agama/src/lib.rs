@@ -1,4 +1,4 @@
-use std::ffi::{CString, IntoStringError};
+use std::{ffi::{CString, IntoStringError}, fmt::Display};
 
 use serde_json::{json, Value};
 
@@ -13,7 +13,7 @@ pub(crate) unsafe fn string_from_ptr(c_ptr: *mut i8) -> Result<String, IntoStrin
 /// parameters for SUSE Connect calls.
 ///
 /// Based on https://github.com/SUSE/connect-ng/blob/main/internal/connect/config.go#L45
-#[derive(serde::Serialize)]
+#[derive(serde::Serialize, Default, Debug, Clone)]
 pub struct ConnectParams {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub language: Option<String>,
@@ -28,7 +28,7 @@ pub struct ConnectParams {
 
 /// Represents a product to be registered.
 #[derive(serde::Serialize, Debug, Clone)]
-pub struct Product {
+pub struct ProductSpecification {
     /// The architecture of the product (e.g., "x86_64").
     pub arch: String,
     /// The product identifier (e.g., "SLES").
@@ -37,8 +37,76 @@ pub struct Product {
     pub version: String,
 }
 
+/// Represents product and also extensions info from SCC.
+/// list of attributes is just selection which agama uses.
+/// 
+#[derive(Debug, Clone)]
+pub struct Product {
+    pub identifier: String,
+    pub version: String,
+    pub friendly_name: String,
+    pub available: bool,
+    pub free: bool,
+    pub recommended: bool,
+    pub description: String,
+    pub release_stage: String,
+    pub extensions: Vec<Product>,
+}
+
+impl TryFrom<Value> for Product {
+    type Error = Error;
+
+    fn try_from(value: Value) -> Result<Self, Self::Error> {
+        let Some(identifier) = value.get("identifier").and_then(|v| v.as_str()) else {
+            return Err(Error::UnexpectedResponse("Missing or invalid 'identifier' in Product".to_string()));
+        };
+        let Some(version) = value.get("version").and_then(|v| v.as_str()) else {
+            return Err(Error::UnexpectedResponse("Missing or invalid 'version' in Product".to_string()));
+        };
+        let Some(friendly_name) = value.get("friendly_name").and_then(|v| v.as_str()) else {
+            return Err(Error::UnexpectedResponse("Missing or invalid 'friendly_name' in Product".to_string()));
+        };
+        let Some(available) = value.get("available").and_then(|v| v.as_bool()) else {
+            return Err(Error::UnexpectedResponse("Missing or invalid 'available' in Product".to_string()));
+        };
+        let Some(free) = value.get("free").and_then(|v| v.as_bool()) else {
+            return Err(Error::UnexpectedResponse("Missing or invalid 'free' in Product".to_string()));
+        };
+        let Some(recommended) = value.get("recommended").and_then(|v| v.as_bool()) else {
+            return Err(Error::UnexpectedResponse("Missing or invalid 'recommended' in Product".to_string()));
+        };
+        let Some(description) = value.get("description").and_then(|v| v.as_str()) else {
+            return Err(Error::UnexpectedResponse("Missing or invalid 'description' in Product".to_string()));
+        };
+        let Some(release_stage) = value.get("release_stage").and_then(|v| v.as_str()) else {
+            return Err(Error::UnexpectedResponse("Missing or invalid 'release_stage' in Product".to_string()));
+        };
+        let empty_extensions = vec![];
+        let extensions_val = value.get("extensions").and_then(|v| v.as_array()).unwrap_or(&empty_extensions);
+
+        let extensions = extensions_val
+            .iter()
+            .map(|v| Product::try_from(v.clone()))
+            .collect::<Result<Vec<Product>, _>>()?;
+
+        Ok(Product {
+            identifier: identifier.to_string(),
+            version: version.to_string(),
+            friendly_name: friendly_name.to_string(),
+            available,
+            free,
+            recommended,
+            description: description.to_string(),
+            release_stage: release_stage.to_string(),
+            extensions,
+        })
+    }
+}
+
+
+
 /// Represents a service returned from registration to be added to libzypp.
-#[derive(serde::Serialize, Debug, Clone)]
+#[derive(Debug, Clone)]
 pub struct Service {
     /// The name of the service that can be used in libzypp.
     pub name: String,
@@ -61,6 +129,50 @@ impl TryFrom<Value> for Service {
             url: url.to_string(),
             name: name.to_string(),
         })
+    }
+}
+
+/// SSL Error codes returned from SUSEConnect.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[repr(u64)]
+pub enum SSLErrorCode {
+    /// Certificate has expired.
+    Expired = 10,
+    /// Self-signed certificate.
+    SelfSignedCert = 18,
+    /// Self-signed certificate in certificate chain.
+    SelfSignedCertInChain = 19,
+    /// Unable to get local issuer certificate.
+    NoLocalIssuerCertificate = 20,
+    /// Other SSL errors
+    Other = 21,
+}
+
+impl Display for SSLErrorCode {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", match self {
+            Self::Expired => "Certificate has expired",
+            Self::SelfSignedCert => "Self signed certificate",
+            Self::SelfSignedCertInChain => "Self signed certificate in certificate chain",
+            Self::NoLocalIssuerCertificate => "Unable to get local issuer certificate",
+            Self::Other => "Other SSL error",
+        })
+    }
+}
+
+impl SSLErrorCode {
+    pub fn from_u64(code: u64) -> Self {
+        match code {
+            10 => Self::Expired,
+            18 => Self::SelfSignedCert,
+            19 => Self::SelfSignedCertInChain,
+            20 => Self::NoLocalIssuerCertificate,
+            _ => Self::Other,
+        }
+    }
+
+    pub fn is_fixable_by_import(&self) -> bool {
+        matches!(self, Self::SelfSignedCert | Self::SelfSignedCertInChain)
     }
 }
 
@@ -88,11 +200,11 @@ pub enum Error {
     NetError(String),
     #[error("Timeout: {0}")]
     Timeout(String),
-    // FIXME use enum for code
+    // TODO: check how it will look like if code display message won't be duplicite to connect message 
     #[error("SSL error: {message} (code: {code})")]
     SSLError {
         message: String,
-        code: u64,
+        code: SSLErrorCode,
         current_certificate: String,
     },
     #[error(transparent)]
@@ -134,7 +246,7 @@ fn check_error(response: &Value) -> Result<(), Error> {
                     .to_string();
                 return Err(Error::SSLError {
                     message,
-                    code,
+                    code: SSLErrorCode::from_u64(code),
                     current_certificate,
                 });
             }
@@ -233,7 +345,7 @@ pub fn announce_system(params: ConnectParams, target_distro: &str) -> Result<Cre
 ///
 /// Returns an `Err` of type [Error] if activation fails.
 pub fn activate_product(
-    product: Product,
+    product: ProductSpecification,
     params: ConnectParams,
     email: &str,
 ) -> Result<Service, Error> {
@@ -344,6 +456,30 @@ pub fn write_config(params: ConnectParams) -> Result<(), Error> {
 
     let response: Value = serde_json::from_str(&result_s)?;
     check_error(&response)
+}
+
+pub fn show_product(product: ProductSpecification, params: ConnectParams) -> Result<Product, Error> {
+    let result_s = unsafe {
+        let params_json = json!(params).to_string();
+        let product_json = json!(product).to_string();
+
+        let params_c_ptr = CString::new(params_json).unwrap().into_raw();
+        let product_c_ptr = CString::new(product_json).unwrap().into_raw();
+
+        let result_ptr = suseconnect_agama_sys::show_product(params_c_ptr, product_c_ptr);
+
+        // Retake ownership to free memory
+        let _ = CString::from_raw(params_c_ptr);
+        let _ = CString::from_raw(product_c_ptr);
+
+        string_from_ptr(result_ptr)
+    }?;
+
+    tracing::info!("show_product result: {result_s}");
+    let response: Value = serde_json::from_str(&result_s)?;
+    check_error(&response)?;
+
+    response.try_into()
 }
 
 #[cfg(test)]
@@ -489,7 +625,7 @@ mod tests {
                 current_certificate,
             }) => {
                 assert_eq!(message, "Certificate expired");
-                assert_eq!(code, 10);
+                assert_eq!(code, SSLErrorCode::Expired);
                 assert_eq!(current_certificate, cert);
             }
             _ => panic!("Expected SSLError"),
@@ -572,5 +708,65 @@ mod tests {
         // and succeeds without altering system certificates.
         let result = reload_certificates();
         assert!(result.is_ok(), "reload_certificates() failed: {:?}", result);
+    }
+
+    #[test]
+    fn test_product_try_from_success() {
+        let value = json!({
+            "identifier": "SLES",
+            "version": "15-SP4",
+            "friendly_name": "SUSE Linux Enterprise Server 15 SP4",
+            "available": true,
+            "free": false,
+            "recommended": true,
+            "description": "SUSE Linux Enterprise Server 15 SP4",
+            "release_stage": "released",
+            "extensions": [
+                {
+                    "identifier": "sle-module-basesystem",
+                    "version": "15-SP4",
+                    "friendly_name": "Basesystem Module",
+                    "available": true,
+                    "free": true,
+                    "recommended": false,
+                    "description": "Basesystem Module",
+                    "release_stage": "beta"
+                }
+            ]
+        });
+        let product = Product::try_from(value).unwrap();
+        assert_eq!(product.identifier, "SLES");
+        assert_eq!(product.version, "15-SP4");
+        assert_eq!(
+            product.friendly_name,
+            "SUSE Linux Enterprise Server 15 SP4"
+        );
+        assert!(product.available);
+        assert!(!product.free);
+        assert!(product.recommended);
+        assert_eq!(
+            product.description,
+            "SUSE Linux Enterprise Server 15 SP4"
+        );
+        assert_eq!(product.release_stage, "released");
+        assert_eq!(product.extensions.len(), 1);
+
+        let extension = &product.extensions[0];
+        assert_eq!(extension.identifier, "sle-module-basesystem");
+        assert_eq!(extension.version, "15-SP4");
+        assert_eq!(extension.friendly_name, "Basesystem Module");
+        assert!(extension.available);
+        assert!(extension.free);
+        assert!(!extension.recommended);
+        assert_eq!(extension.description, "Basesystem Module");
+        assert_eq!(extension.release_stage, "beta");
+        assert!(extension.extensions.is_empty());
+    }
+
+    #[test]
+    fn test_product_try_from_missing_field() {
+        let value = json!({ "version": "15-SP4" });
+        let result = Product::try_from(value);
+        assert!(matches!(result, Err(Error::UnexpectedResponse(_))));
     }
 }
