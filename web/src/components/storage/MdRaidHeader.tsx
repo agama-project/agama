@@ -41,7 +41,7 @@ const Text = (raid: model.MdRaid): string => {
     return _("Format RAID %s");
   }
 
-  const { isBoot } = raid;
+  const isBoot = configModelMethods.isBootDevice(configModel, raid.name);
   const hasPv = configModelMethods.isTargetDevice(configModel, raid.name);
   const isRoot = !!raid.getPartition("/");
   const hasFs = !!usedMountPaths(raid).length;

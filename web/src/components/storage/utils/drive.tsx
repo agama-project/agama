@@ -68,7 +68,8 @@ const resizeTextFor = (partitions) => {
 const SummaryForSpacePolicy = (drive: Drive): string | undefined => {
   const configModel = useConfigModel();
   const isTargetDevice = configModelMethods.isTargetDevice(configModel, drive.name);
-  const { isBoot, isAddingPartitions, isReusingPartitions, spacePolicy } = drive;
+  const isBoot = configModelMethods.isBootDevice(configModel, drive.name);
+  const { isAddingPartitions, isReusingPartitions, spacePolicy } = drive;
 
   switch (spacePolicy) {
     case "delete":
@@ -120,7 +121,8 @@ const contentActionsSummary = (drive: Drive): string => {
 const ContentActionsDescription = (drive: Drive, policyId: string | undefined): string => {
   const configModel = useConfigModel();
   const isTargetDevice = configModelMethods.isTargetDevice(configModel, drive.name);
-  const { isBoot, isAddingPartitions, isReusingPartitions } = drive;
+  const isBoot = configModelMethods.isBootDevice(configModel, drive.name);
+  const { isAddingPartitions, isReusingPartitions } = drive;
 
   if (!policyId) policyId = drive.spacePolicy;
 

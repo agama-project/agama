@@ -38,7 +38,6 @@ type Model = {
 interface Drive extends configModel.Drive {
   isAddingPartitions: boolean;
   isReusingPartitions: boolean;
-  isBoot: boolean;
   getVolumeGroups: () => VolumeGroup[];
   getPartition: (path: string) => configModel.Partition | undefined;
   getConfiguredExistingPartitions: () => configModel.Partition[];
@@ -47,7 +46,6 @@ interface Drive extends configModel.Drive {
 interface MdRaid extends configModel.MdRaid {
   isAddingPartitions: boolean;
   isReusingPartitions: boolean;
-  isBoot: boolean;
   getVolumeGroups: () => VolumeGroup[];
   getPartition: (path: string) => configModel.Partition | undefined;
   getConfiguredExistingPartitions: () => configModel.Partition[];
@@ -66,11 +64,7 @@ const findTarget = (model: Model, name: string): Drive | MdRaid | undefined => {
   return model.drives.concat(model.mdRaids).find((d) => d.name === name);
 };
 
-function partitionableProperties(
-  apiDevice: configModel.Drive,
-  apiModel: configModel.Config,
-  model: Model,
-) {
+function partitionableProperties(apiDevice: configModel.Drive, model: Model) {
   const getVolumeGroups = (): VolumeGroup[] => {
     return model.volumeGroups.filter((v) =>
       v.getTargetDevices().some((d) => d.name === apiDevice.name),
@@ -79,10 +73,6 @@ function partitionableProperties(
 
   const getPartition = (path: string): configModel.Partition | undefined => {
     return apiDevice.partitions.find((p) => p.mountPath === path);
-  };
-
-  const isBoot = (): boolean => {
-    return apiModel.boot?.configure && apiModel.boot.device?.name === apiDevice.name;
   };
 
   const isAddingPartitions = (): boolean => {
@@ -107,32 +97,23 @@ function partitionableProperties(
   return {
     isAddingPartitions: isAddingPartitions(),
     isReusingPartitions: isReusingPartitions(),
-    isBoot: isBoot(),
     getVolumeGroups,
     getPartition,
     getConfiguredExistingPartitions,
   };
 }
 
-function buildDrive(
-  apiDrive: configModel.Drive,
-  apiModel: configModel.Config,
-  model: Model,
-): Drive {
+function buildDrive(apiDrive: configModel.Drive, model: Model): Drive {
   return {
     ...apiDrive,
-    ...partitionableProperties(apiDrive, apiModel, model),
+    ...partitionableProperties(apiDrive, model),
   };
 }
 
-function buildMdRaid(
-  apiMdRaid: configModel.MdRaid,
-  apiModel: configModel.Config,
-  model: Model,
-): MdRaid {
+function buildMdRaid(apiMdRaid: configModel.MdRaid, model: Model): MdRaid {
   return {
     ...apiMdRaid,
-    ...partitionableProperties(apiMdRaid, apiModel, model),
+    ...partitionableProperties(apiMdRaid, model),
   };
 }
 
@@ -164,11 +145,11 @@ function buildModel(apiModel: configModel.Config): Model {
   };
 
   const buildDrives = (): Drive[] => {
-    return (apiModel.drives || []).map((d) => buildDrive(d, apiModel, model));
+    return (apiModel.drives || []).map((d) => buildDrive(d, model));
   };
 
   const buildMdRaids = (): MdRaid[] => {
-    return (apiModel.mdRaids || []).map((r) => buildMdRaid(r, apiModel, model));
+    return (apiModel.mdRaids || []).map((r) => buildMdRaid(r, model));
   };
 
   const buildVolumeGroups = (): VolumeGroup[] => {
