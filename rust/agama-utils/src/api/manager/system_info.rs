@@ -28,6 +28,8 @@ pub struct SystemInfo {
     pub products: Vec<Product>,
     /// List of known licenses
     pub licenses: Vec<License>,
+    /// Hardware information
+    pub hardware: HardwareInfo,
 }
 
 /// Represents a software product
@@ -46,4 +48,15 @@ pub struct Product {
     pub registration: bool,
     /// License ID
     pub license: Option<String>,
+}
+
+/// Represents the hardware information of the underlying system.
+#[derive(Clone, Default, Debug, Serialize, utoipa::ToSchema)]
+pub struct HardwareInfo {
+    /// CPU description.
+    pub cpu: Option<String>,
+    /// Memory size.
+    pub memory: Option<u64>,
+    /// Computer model.
+    pub model: Option<String>,
 }

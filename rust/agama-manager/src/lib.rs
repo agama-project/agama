@@ -23,6 +23,8 @@ pub use service::Service;
 
 pub mod message;
 
+pub(crate) mod hardware;
+
 pub use agama_files as files;
 pub use agama_l10n as l10n;
 pub use agama_network as network;

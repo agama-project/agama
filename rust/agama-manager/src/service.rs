@@ -18,13 +18,13 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::{files, l10n, message, network, software, storage};
+use crate::{files, hardware, l10n, message, network, software, storage};
 use agama_utils::{
     actor::{self, Actor, Handler, MessageHandler},
     api::{
         self, event,
         files::scripts::ScriptsGroup,
-        manager::{self, LicenseContent},
+        manager::{self, HardwareInfo, LicenseContent},
         status::State,
         Action, Config, Event, Issue, IssueMap, Proposal, Scope, Status, SystemInfo,
     },
@@ -73,6 +73,8 @@ pub enum Error {
     // rest.
     #[error(transparent)]
     NetworkSystem(#[from] network::NetworkSystemError),
+    #[error(transparent)]
+    Hardware(#[from] hardware::Error),
 }
 
 pub struct Starter {
@@ -257,11 +259,11 @@ impl Service {
         Starter::new(questions, events, dbus)
     }
 
-    /// Set up the service by reading the registries and determining the default product.
+    /// Set up the service by reading the registries, the hardware info and determining the default product.
     ///
     /// If a default product is set, it asks the other services to initialize their configurations.
     pub async fn setup(&mut self) -> Result<(), Error> {
-        self.read_registries().await?;
+        self.read_system_info().await?;
 
         if let Some(product) = self.products.default_product() {
             let config = Config::with_product(product.id.clone());
@@ -273,11 +275,14 @@ impl Service {
         Ok(())
     }
 
-    async fn read_registries(&mut self) -> Result<(), Error> {
+    async fn read_system_info(&mut self) -> Result<(), Error> {
         self.licenses.read()?;
         self.products.read()?;
         self.system.licenses = self.licenses.licenses().into_iter().cloned().collect();
         self.system.products = self.products.products();
+        let hardware_info = hardware::HardwareNode::from_system().await?;
+        self.system.hardware = HardwareInfo::from(&hardware_info);
+
         Ok(())
     }
 

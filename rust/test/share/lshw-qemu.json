@@ -1,0 +1,1878 @@
+{
+  "id" : "agama",
+  "class" : "system",
+  "claimed" : true,
+  "handle" : "DMI:0100",
+  "description" : "Computer",
+  "product" : "Standard PC (Q35 + ICH9, 2009)",
+  "vendor" : "QEMU",
+  "version" : "pc-q35-9.2",
+  "width" : 64,
+  "configuration" : {
+    "boot" : "normal",
+    "uuid" : "99615fbd-80b0-46e8-916c-4865be946897"
+  },
+  "capabilities" : {
+    "smbios-2.8" : "SMBIOS version 2.8",
+    "dmi-2.8" : "DMI version 2.8",
+    "smp" : "Symmetric Multi-Processing",
+    "vsyscall32" : "32-bit processes"
+  },
+  "children" : [    {
+      "id" : "core",
+      "class" : "bus",
+      "claimed" : true,
+      "description" : "Motherboard",
+      "physid" : "0",
+      "children" : [        {
+          "id" : "firmware",
+          "class" : "memory",
+          "claimed" : true,
+          "description" : "BIOS",
+          "vendor" : "SeaBIOS",
+          "physid" : "0",
+          "version" : "rel-1.16.3-2-gc13ff2cd-prebuilt.qemu.org",
+          "date" : "04/01/2014",
+          "units" : "bytes",
+          "size" : 98304
+        },
+        {
+          "id" : "cpu:0",
+          "class" : "processor",
+          "claimed" : true,
+          "handle" : "DMI:0400",
+          "description" : "CPU",
+          "product" : "AMD Ryzen 5 PRO 5650U with Radeon Graphics",
+          "vendor" : "Advanced Micro Devices [AMD]",
+          "physid" : "400",
+          "businfo" : "cpu@0",
+          "version" : "25.80.0",
+          "slot" : "CPU 0",
+          "units" : "Hz",
+          "size" : 2000000000,
+          "capacity" : 2000000000,
+          "width" : 64,
+          "configuration" : {
+            "cores" : "1",
+            "enabledcores" : "1",
+            "microcode" : "173015058",
+            "threads" : "1"
+          },
+          "capabilities" : {
+            "fpu" : "mathematical co-processor",
+            "fpu_exception" : "FPU exceptions reporting",
+            "wp" : true,
+            "vme" : "virtual mode extensions",
+            "de" : "debugging extensions",
+            "pse" : "page size extensions",
+            "tsc" : "time stamp counter",
+            "msr" : "model-specific registers",
+            "pae" : "4GB+ memory addressing (Physical Address Extension)",
+            "mce" : "machine check exceptions",
+            "cx8" : "compare and exchange 8-byte",
+            "apic" : "on-chip advanced programmable interrupt controller (APIC)",
+            "sep" : "fast system calls",
+            "mtrr" : "memory type range registers",
+            "pge" : "page global enable",
+            "mca" : "machine check architecture",
+            "cmov" : "conditional move instruction",
+            "pat" : "page attribute table",
+            "pse36" : "36-bit page size extensions",
+            "clflush" : true,
+            "mmx" : "multimedia extensions (MMX)",
+            "fxsr" : "fast floating point save/restore",
+            "sse" : "streaming SIMD extensions (SSE)",
+            "sse2" : "streaming SIMD extensions (SSE2)",
+            "syscall" : "fast system calls",
+            "nx" : "no-execute bit (NX)",
+            "mmxext" : "multimedia extensions (MMXExt)",
+            "fxsr_opt" : true,
+            "pdpe1gb" : true,
+            "rdtscp" : true,
+            "x86-64" : "64bits extensions (x86-64)",
+            "rep_good" : true,
+            "nopl" : true,
+            "xtopology" : true,
+            "cpuid" : true,
+            "extd_apicid" : true,
+            "tsc_known_freq" : true,
+            "pni" : true,
+            "pclmulqdq" : true,
+            "ssse3" : true,
+            "fma" : true,
+            "cx16" : true,
+            "sse4_1" : true,
+            "sse4_2" : true,
+            "x2apic" : true,
+            "movbe" : true,
+            "popcnt" : true,
+            "tsc_deadline_timer" : true,
+            "aes" : true,
+            "xsave" : true,
+            "avx" : true,
+            "f16c" : true,
+            "rdrand" : true,
+            "hypervisor" : true,
+            "lahf_lm" : true,
+            "cmp_legacy" : true,
+            "svm" : true,
+            "cr8_legacy" : true,
+            "abm" : true,
+            "sse4a" : true,
+            "misalignsse" : true,
+            "3dnowprefetch" : true,
+            "osvw" : true,
+            "perfctr_core" : true,
+            "ssbd" : true,
+            "ibrs" : true,
+            "ibpb" : true,
+            "stibp" : true,
+            "vmmcall" : true,
+            "fsgsbase" : true,
+            "tsc_adjust" : true,
+            "bmi1" : true,
+            "avx2" : true,
+            "smep" : true,
+            "bmi2" : true,
+            "erms" : true,
+            "invpcid" : true,
+            "rdseed" : true,
+            "adx" : true,
+            "smap" : true,
+            "clflushopt" : true,
+            "clwb" : true,
+            "sha_ni" : true,
+            "xsaveopt" : true,
+            "xsavec" : true,
+            "xgetbv1" : true,
+            "xsaves" : true,
+            "clzero" : true,
+            "xsaveerptr" : true,
+            "wbnoinvd" : true,
+            "arat" : true,
+            "npt" : true,
+            "lbrv" : true,
+            "nrip_save" : true,
+            "tsc_scale" : true,
+            "vmcb_clean" : true,
+            "flushbyasid" : true,
+            "pausefilter" : true,
+            "pfthreshold" : true,
+            "v_vmsave_vmload" : true,
+            "vgif" : true,
+            "umip" : true,
+            "pku" : true,
+            "ospke" : true,
+            "vaes" : true,
+            "vpclmulqdq" : true,
+            "rdpid" : true,
+            "overflow_recov" : true,
+            "succor" : true,
+            "fsrm" : true,
+            "arch_capabilities" : true
+          }
+        },
+        {
+          "id" : "cpu:1",
+          "class" : "processor",
+          "claimed" : true,
+          "handle" : "DMI:0401",
+          "description" : "CPU",
+          "product" : "AMD Ryzen 5 PRO 5650U with Radeon Graphics",
+          "vendor" : "Advanced Micro Devices [AMD]",
+          "physid" : "401",
+          "businfo" : "cpu@1",
+          "version" : "25.80.0",
+          "slot" : "CPU 1",
+          "units" : "Hz",
+          "size" : 2000000000,
+          "capacity" : 2000000000,
+          "width" : 64,
+          "configuration" : {
+            "cores" : "1",
+            "enabledcores" : "1",
+            "microcode" : "173015058",
+            "threads" : "1"
+          },
+          "capabilities" : {
+            "fpu" : "mathematical co-processor",
+            "fpu_exception" : "FPU exceptions reporting",
+            "wp" : true,
+            "vme" : "virtual mode extensions",
+            "de" : "debugging extensions",
+            "pse" : "page size extensions",
+            "tsc" : "time stamp counter",
+            "msr" : "model-specific registers",
+            "pae" : "4GB+ memory addressing (Physical Address Extension)",
+            "mce" : "machine check exceptions",
+            "cx8" : "compare and exchange 8-byte",
+            "apic" : "on-chip advanced programmable interrupt controller (APIC)",
+            "sep" : "fast system calls",
+            "mtrr" : "memory type range registers",
+            "pge" : "page global enable",
+            "mca" : "machine check architecture",
+            "cmov" : "conditional move instruction",
+            "pat" : "page attribute table",
+            "pse36" : "36-bit page size extensions",
+            "clflush" : true,
+            "mmx" : "multimedia extensions (MMX)",
+            "fxsr" : "fast floating point save/restore",
+            "sse" : "streaming SIMD extensions (SSE)",
+            "sse2" : "streaming SIMD extensions (SSE2)",
+            "syscall" : "fast system calls",
+            "nx" : "no-execute bit (NX)",
+            "mmxext" : "multimedia extensions (MMXExt)",
+            "fxsr_opt" : true,
+            "pdpe1gb" : true,
+            "rdtscp" : true,
+            "x86-64" : "64bits extensions (x86-64)",
+            "rep_good" : true,
+            "nopl" : true,
+            "xtopology" : true,
+            "cpuid" : true,
+            "extd_apicid" : true,
+            "tsc_known_freq" : true,
+            "pni" : true,
+            "pclmulqdq" : true,
+            "ssse3" : true,
+            "fma" : true,
+            "cx16" : true,
+            "sse4_1" : true,
+            "sse4_2" : true,
+            "x2apic" : true,
+            "movbe" : true,
+            "popcnt" : true,
+            "tsc_deadline_timer" : true,
+            "aes" : true,
+            "xsave" : true,
+            "avx" : true,
+            "f16c" : true,
+            "rdrand" : true,
+            "hypervisor" : true,
+            "lahf_lm" : true,
+            "cmp_legacy" : true,
+            "svm" : true,
+            "cr8_legacy" : true,
+            "abm" : true,
+            "sse4a" : true,
+            "misalignsse" : true,
+            "3dnowprefetch" : true,
+            "osvw" : true,
+            "perfctr_core" : true,
+            "ssbd" : true,
+            "ibrs" : true,
+            "ibpb" : true,
+            "stibp" : true,
+            "vmmcall" : true,
+            "fsgsbase" : true,
+            "tsc_adjust" : true,
+            "bmi1" : true,
+            "avx2" : true,
+            "smep" : true,
+            "bmi2" : true,
+            "erms" : true,
+            "invpcid" : true,
+            "rdseed" : true,
+            "adx" : true,
+            "smap" : true,
+            "clflushopt" : true,
+            "clwb" : true,
+            "sha_ni" : true,
+            "xsaveopt" : true,
+            "xsavec" : true,
+            "xgetbv1" : true,
+            "xsaves" : true,
+            "clzero" : true,
+            "xsaveerptr" : true,
+            "wbnoinvd" : true,
+            "arat" : true,
+            "npt" : true,
+            "lbrv" : true,
+            "nrip_save" : true,
+            "tsc_scale" : true,
+            "vmcb_clean" : true,
+            "flushbyasid" : true,
+            "pausefilter" : true,
+            "pfthreshold" : true,
+            "v_vmsave_vmload" : true,
+            "vgif" : true,
+            "umip" : true,
+            "pku" : true,
+            "ospke" : true,
+            "vaes" : true,
+            "vpclmulqdq" : true,
+            "rdpid" : true,
+            "overflow_recov" : true,
+            "succor" : true,
+            "fsrm" : true,
+            "arch_capabilities" : true
+          }
+        },
+        {
+          "id" : "cpu:2",
+          "class" : "processor",
+          "claimed" : true,
+          "handle" : "DMI:0402",
+          "description" : "CPU",
+          "product" : "AMD Ryzen 5 PRO 5650U with Radeon Graphics",
+          "vendor" : "Advanced Micro Devices [AMD]",
+          "physid" : "402",
+          "businfo" : "cpu@2",
+          "version" : "25.80.0",
+          "slot" : "CPU 2",
+          "units" : "Hz",
+          "size" : 2000000000,
+          "capacity" : 2000000000,
+          "width" : 64,
+          "configuration" : {
+            "cores" : "1",
+            "enabledcores" : "1",
+            "microcode" : "173015058",
+            "threads" : "1"
+          },
+          "capabilities" : {
+            "fpu" : "mathematical co-processor",
+            "fpu_exception" : "FPU exceptions reporting",
+            "wp" : true,
+            "vme" : "virtual mode extensions",
+            "de" : "debugging extensions",
+            "pse" : "page size extensions",
+            "tsc" : "time stamp counter",
+            "msr" : "model-specific registers",
+            "pae" : "4GB+ memory addressing (Physical Address Extension)",
+            "mce" : "machine check exceptions",
+            "cx8" : "compare and exchange 8-byte",
+            "apic" : "on-chip advanced programmable interrupt controller (APIC)",
+            "sep" : "fast system calls",
+            "mtrr" : "memory type range registers",
+            "pge" : "page global enable",
+            "mca" : "machine check architecture",
+            "cmov" : "conditional move instruction",
+            "pat" : "page attribute table",
+            "pse36" : "36-bit page size extensions",
+            "clflush" : true,
+            "mmx" : "multimedia extensions (MMX)",
+            "fxsr" : "fast floating point save/restore",
+            "sse" : "streaming SIMD extensions (SSE)",
+            "sse2" : "streaming SIMD extensions (SSE2)",
+            "syscall" : "fast system calls",
+            "nx" : "no-execute bit (NX)",
+            "mmxext" : "multimedia extensions (MMXExt)",
+            "fxsr_opt" : true,
+            "pdpe1gb" : true,
+            "rdtscp" : true,
+            "x86-64" : "64bits extensions (x86-64)",
+            "rep_good" : true,
+            "nopl" : true,
+            "xtopology" : true,
+            "cpuid" : true,
+            "extd_apicid" : true,
+            "tsc_known_freq" : true,
+            "pni" : true,
+            "pclmulqdq" : true,
+            "ssse3" : true,
+            "fma" : true,
+            "cx16" : true,
+            "sse4_1" : true,
+            "sse4_2" : true,
+            "x2apic" : true,
+            "movbe" : true,
+            "popcnt" : true,
+            "tsc_deadline_timer" : true,
+            "aes" : true,
+            "xsave" : true,
+            "avx" : true,
+            "f16c" : true,
+            "rdrand" : true,
+            "hypervisor" : true,
+            "lahf_lm" : true,
+            "cmp_legacy" : true,
+            "svm" : true,
+            "cr8_legacy" : true,
+            "abm" : true,
+            "sse4a" : true,
+            "misalignsse" : true,
+            "3dnowprefetch" : true,
+            "osvw" : true,
+            "perfctr_core" : true,
+            "ssbd" : true,
+            "ibrs" : true,
+            "ibpb" : true,
+            "stibp" : true,
+            "vmmcall" : true,
+            "fsgsbase" : true,
+            "tsc_adjust" : true,
+            "bmi1" : true,
+            "avx2" : true,
+            "smep" : true,
+            "bmi2" : true,
+            "erms" : true,
+            "invpcid" : true,
+            "rdseed" : true,
+            "adx" : true,
+            "smap" : true,
+            "clflushopt" : true,
+            "clwb" : true,
+            "sha_ni" : true,
+            "xsaveopt" : true,
+            "xsavec" : true,
+            "xgetbv1" : true,
+            "xsaves" : true,
+            "clzero" : true,
+            "xsaveerptr" : true,
+            "wbnoinvd" : true,
+            "arat" : true,
+            "npt" : true,
+            "lbrv" : true,
+            "nrip_save" : true,
+            "tsc_scale" : true,
+            "vmcb_clean" : true,
+            "flushbyasid" : true,
+            "pausefilter" : true,
+            "pfthreshold" : true,
+            "v_vmsave_vmload" : true,
+            "vgif" : true,
+            "umip" : true,
+            "pku" : true,
+            "ospke" : true,
+            "vaes" : true,
+            "vpclmulqdq" : true,
+            "rdpid" : true,
+            "overflow_recov" : true,
+            "succor" : true,
+            "fsrm" : true,
+            "arch_capabilities" : true
+          }
+        },
+        {
+          "id" : "cpu:3",
+          "class" : "processor",
+          "claimed" : true,
+          "handle" : "DMI:0403",
+          "description" : "CPU",
+          "product" : "AMD Ryzen 5 PRO 5650U with Radeon Graphics",
+          "vendor" : "Advanced Micro Devices [AMD]",
+          "physid" : "403",
+          "businfo" : "cpu@3",
+          "version" : "25.80.0",
+          "slot" : "CPU 3",
+          "units" : "Hz",
+          "size" : 2000000000,
+          "capacity" : 2000000000,
+          "width" : 64,
+          "configuration" : {
+            "cores" : "1",
+            "enabledcores" : "1",
+            "microcode" : "173015058",
+            "threads" : "1"
+          },
+          "capabilities" : {
+            "fpu" : "mathematical co-processor",
+            "fpu_exception" : "FPU exceptions reporting",
+            "wp" : true,
+            "vme" : "virtual mode extensions",
+            "de" : "debugging extensions",
+            "pse" : "page size extensions",
+            "tsc" : "time stamp counter",
+            "msr" : "model-specific registers",
+            "pae" : "4GB+ memory addressing (Physical Address Extension)",
+            "mce" : "machine check exceptions",
+            "cx8" : "compare and exchange 8-byte",
+            "apic" : "on-chip advanced programmable interrupt controller (APIC)",
+            "sep" : "fast system calls",
+            "mtrr" : "memory type range registers",
+            "pge" : "page global enable",
+            "mca" : "machine check architecture",
+            "cmov" : "conditional move instruction",
+            "pat" : "page attribute table",
+            "pse36" : "36-bit page size extensions",
+            "clflush" : true,
+            "mmx" : "multimedia extensions (MMX)",
+            "fxsr" : "fast floating point save/restore",
+            "sse" : "streaming SIMD extensions (SSE)",
+            "sse2" : "streaming SIMD extensions (SSE2)",
+            "syscall" : "fast system calls",
+            "nx" : "no-execute bit (NX)",
+            "mmxext" : "multimedia extensions (MMXExt)",
+            "fxsr_opt" : true,
+            "pdpe1gb" : true,
+            "rdtscp" : true,
+            "x86-64" : "64bits extensions (x86-64)",
+            "rep_good" : true,
+            "nopl" : true,
+            "xtopology" : true,
+            "cpuid" : true,
+            "extd_apicid" : true,
+            "tsc_known_freq" : true,
+            "pni" : true,
+            "pclmulqdq" : true,
+            "ssse3" : true,
+            "fma" : true,
+            "cx16" : true,
+            "sse4_1" : true,
+            "sse4_2" : true,
+            "x2apic" : true,
+            "movbe" : true,
+            "popcnt" : true,
+            "tsc_deadline_timer" : true,
+            "aes" : true,
+            "xsave" : true,
+            "avx" : true,
+            "f16c" : true,
+            "rdrand" : true,
+            "hypervisor" : true,
+            "lahf_lm" : true,
+            "cmp_legacy" : true,
+            "svm" : true,
+            "cr8_legacy" : true,
+            "abm" : true,
+            "sse4a" : true,
+            "misalignsse" : true,
+            "3dnowprefetch" : true,
+            "osvw" : true,
+            "perfctr_core" : true,
+            "ssbd" : true,
+            "ibrs" : true,
+            "ibpb" : true,
+            "stibp" : true,
+            "vmmcall" : true,
+            "fsgsbase" : true,
+            "tsc_adjust" : true,
+            "bmi1" : true,
+            "avx2" : true,
+            "smep" : true,
+            "bmi2" : true,
+            "erms" : true,
+            "invpcid" : true,
+            "rdseed" : true,
+            "adx" : true,
+            "smap" : true,
+            "clflushopt" : true,
+            "clwb" : true,
+            "sha_ni" : true,
+            "xsaveopt" : true,
+            "xsavec" : true,
+            "xgetbv1" : true,
+            "xsaves" : true,
+            "clzero" : true,
+            "xsaveerptr" : true,
+            "wbnoinvd" : true,
+            "arat" : true,
+            "npt" : true,
+            "lbrv" : true,
+            "nrip_save" : true,
+            "tsc_scale" : true,
+            "vmcb_clean" : true,
+            "flushbyasid" : true,
+            "pausefilter" : true,
+            "pfthreshold" : true,
+            "v_vmsave_vmload" : true,
+            "vgif" : true,
+            "umip" : true,
+            "pku" : true,
+            "ospke" : true,
+            "vaes" : true,
+            "vpclmulqdq" : true,
+            "rdpid" : true,
+            "overflow_recov" : true,
+            "succor" : true,
+            "fsrm" : true,
+            "arch_capabilities" : true
+          }
+        },
+        {
+          "id" : "memory",
+          "class" : "memory",
+          "claimed" : true,
+          "handle" : "DMI:1000",
+          "description" : "System Memory",
+          "physid" : "1000",
+          "units" : "bytes",
+          "size" : 4294967296,
+          "configuration" : {
+            "errordetection" : "multi-bit-ecc"
+          },
+          "capabilities" : {
+            "ecc" : "Multi-bit error-correcting code (ECC)"
+          },
+          "children" : [            {
+              "id" : "bank",
+              "class" : "memory",
+              "claimed" : true,
+              "handle" : "DMI:1100",
+              "description" : "DIMM RAM",
+              "vendor" : "QEMU",
+              "physid" : "0",
+              "slot" : "DIMM 0",
+              "units" : "bytes",
+              "size" : 4294967296
+            }]
+        },
+        {
+          "id" : "pci",
+          "class" : "bridge",
+          "claimed" : true,
+          "handle" : "PCIBUS:0000:00",
+          "description" : "Host bridge",
+          "product" : "82G33/G31/P35/P31 Express DRAM Controller",
+          "vendor" : "Intel Corporation",
+          "physid" : "100",
+          "businfo" : "pci@0000:00:00.0",
+          "version" : "00",
+          "width" : 32,
+          "clock" : 33000000,
+          "children" : [            {
+              "id" : "display",
+              "class" : "display",
+              "claimed" : true,
+              "handle" : "PCI:0000:00:01.0",
+              "description" : "VGA compatible controller",
+              "product" : "Virtio 1.0 GPU",
+              "vendor" : "Red Hat, Inc.",
+              "physid" : "1",
+              "businfo" : "pci@0000:00:01.0",
+              "version" : "01",
+              "width" : 64,
+              "clock" : 33000000,
+              "configuration" : {
+                "driver" : "virtio-pci",
+                "latency" : "0"
+              },
+              "capabilities" : {
+                "msix" : "MSI-X",
+                "vga_controller" : true,
+                "bus_master" : "bus mastering",
+                "cap_list" : "PCI capabilities listing",
+                "rom" : "extension ROM"
+              },
+              "children" : [                {
+                  "id" : "virtio0",
+                  "class" : "generic",
+                  "description" : "Virtual I/O device",
+                  "physid" : "0",
+                  "businfo" : "virtio@0",
+                  "configuration" : {
+                    "driver" : "virtio_gpu"
+                  }
+                }]
+            },
+            {
+              "id" : "pci:0",
+              "class" : "bridge",
+              "claimed" : true,
+              "handle" : "PCIBUS:0000:01",
+              "description" : "PCI bridge",
+              "product" : "QEMU PCIe Root port",
+              "vendor" : "Red Hat, Inc.",
+              "physid" : "2",
+              "businfo" : "pci@0000:00:02.0",
+              "version" : "00",
+              "width" : 32,
+              "clock" : 33000000,
+              "configuration" : {
+                "driver" : "pcieport"
+              },
+              "capabilities" : {
+                "pci" : true,
+                "pciexpress" : "PCI Express",
+                "msix" : "MSI-X",
+                "normal_decode" : true,
+                "bus_master" : "bus mastering",
+                "cap_list" : "PCI capabilities listing"
+              },
+              "children" : [                {
+                  "id" : "network",
+                  "class" : "network",
+                  "claimed" : true,
+                  "handle" : "PCI:0000:01:00.0",
+                  "description" : "Ethernet controller",
+                  "product" : "Virtio 1.0 network device",
+                  "vendor" : "Red Hat, Inc.",
+                  "physid" : "0",
+                  "businfo" : "pci@0000:01:00.0",
+                  "version" : "01",
+                  "width" : 64,
+                  "clock" : 33000000,
+                  "configuration" : {
+                    "driver" : "virtio-pci",
+                    "latency" : "0"
+                  },
+                  "capabilities" : {
+                    "msix" : "MSI-X",
+                    "pm" : "Power Management",
+                    "pciexpress" : "PCI Express",
+                    "bus_master" : "bus mastering",
+                    "cap_list" : "PCI capabilities listing",
+                    "rom" : "extension ROM"
+                  },
+                  "children" : [                    {
+                      "id" : "virtio1",
+                      "class" : "network",
+                      "claimed" : true,
+                      "description" : "Ethernet interface",
+                      "physid" : "0",
+                      "businfo" : "virtio@1",
+                      "logicalname" : "enp1s0",
+                      "serial" : "52:54:00:ff:a4:74",
+                      "configuration" : {
+                        "autonegotiation" : "off",
+                        "broadcast" : "yes",
+                        "driver" : "virtio_net",
+                        "driverversion" : "1.0.0",
+                        "ip" : "192.168.122.10",
+                        "link" : "yes",
+                        "multicast" : "yes"
+                      },
+                      "capabilities" : {
+                        "ethernet" : true,
+                        "physical" : "Physical interface"
+                      }
+                    }]
+                }]
+            },
+            {
+              "id" : "pci:1",
+              "class" : "bridge",
+              "claimed" : true,
+              "handle" : "PCIBUS:0000:02",
+              "description" : "PCI bridge",
+              "product" : "QEMU PCIe Root port",
+              "vendor" : "Red Hat, Inc.",
+              "physid" : "2.1",
+              "businfo" : "pci@0000:00:02.1",
+              "version" : "00",
+              "width" : 32,
+              "clock" : 33000000,
+              "configuration" : {
+                "driver" : "pcieport"
+              },
+              "capabilities" : {
+                "pci" : true,
+                "pciexpress" : "PCI Express",
+                "msix" : "MSI-X",
+                "normal_decode" : true,
+                "bus_master" : "bus mastering",
+                "cap_list" : "PCI capabilities listing"
+              },
+              "children" : [                {
+                  "id" : "usb",
+                  "class" : "bus",
+                  "claimed" : true,
+                  "handle" : "PCI:0000:02:00.0",
+                  "description" : "USB controller",
+                  "product" : "QEMU XHCI Host Controller",
+                  "vendor" : "Red Hat, Inc.",
+                  "physid" : "0",
+                  "businfo" : "pci@0000:02:00.0",
+                  "version" : "01",
+                  "width" : 64,
+                  "clock" : 33000000,
+                  "configuration" : {
+                    "driver" : "xhci_hcd",
+                    "latency" : "0"
+                  },
+                  "capabilities" : {
+                    "msix" : "MSI-X",
+                    "pciexpress" : "PCI Express",
+                    "xhci" : true,
+                    "bus_master" : "bus mastering",
+                    "cap_list" : "PCI capabilities listing"
+                  },
+                  "children" : [                    {
+                      "id" : "usbhost:0",
+                      "class" : "bus",
+                      "claimed" : true,
+                      "handle" : "USB:1:1",
+                      "product" : "xHCI Host Controller",
+                      "vendor" : "Linux 6.17.7-1-default xhci-hcd",
+                      "physid" : "0",
+                      "businfo" : "usb@1",
+                      "logicalname" : "usb1",
+                      "version" : "6.17",
+                      "configuration" : {
+                        "driver" : "hub",
+                        "slots" : "15",
+                        "speed" : "480Mbit/s"
+                      },
+                      "capabilities" : {
+                        "usb-2.00" : "USB 2.0"
+                      },
+                      "children" : [                        {
+                          "id" : "usb",
+                          "class" : "input",
+                          "claimed" : true,
+                          "handle" : "USB:1:2",
+                          "description" : "Human interface device",
+                          "product" : "QEMU QEMU USB Tablet",
+                          "vendor" : "QEMU",
+                          "physid" : "1",
+                          "businfo" : "usb@1:1",
+                          "logicalname" : ["input4", "/dev/input/event3", "/dev/input/js0", "/dev/input/mouse2"],
+                          "version" : "0.00",
+                          "serial" : "28754-0000:00:02.1:00.0-1",
+                          "configuration" : {
+                            "driver" : "usbhid",
+                            "maxpower" : "100mA",
+                            "speed" : "480Mbit/s"
+                          },
+                          "capabilities" : {
+                            "usb-2.00" : "USB 2.0",
+                            "usb" : "USB"
+                          }
+                        }]
+                    },
+                    {
+                      "id" : "usbhost:1",
+                      "class" : "bus",
+                      "claimed" : true,
+                      "handle" : "USB:2:1",
+                      "product" : "xHCI Host Controller",
+                      "vendor" : "Linux 6.17.7-1-default xhci-hcd",
+                      "physid" : "1",
+                      "businfo" : "usb@2",
+                      "logicalname" : "usb2",
+                      "version" : "6.17",
+                      "configuration" : {
+                        "driver" : "hub",
+                        "slots" : "15",
+                        "speed" : "5000Mbit/s"
+                      },
+                      "capabilities" : {
+                        "usb-3.00" : true
+                      },
+                      "children" : [                        {
+                          "id" : "usb",
+                          "class" : "storage",
+                          "claimed" : true,
+                          "handle" : "SCSI:07",
+                          "description" : "Mass storage device",
+                          "product" : "QEMU USB HARDDRIVE",
+                          "vendor" : "QEMU",
+                          "physid" : "2",
+                          "businfo" : "usb@2:2",
+                          "logicalname" : "scsi7",
+                          "version" : "0.00",
+                          "serial" : "1-0000:00:02.1:00.0-2",
+                          "configuration" : {
+                            "driver" : "usb-storage",
+                            "speed" : "5000Mbit/s"
+                          },
+                          "capabilities" : {
+                            "usb-3.00" : true,
+                            "scsi" : "SCSI",
+                            "emulated" : "Emulated device",
+                            "scsi-host" : "SCSI host adapter"
+                          },
+                          "children" : [                            {
+                              "id" : "disk",
+                              "class" : "volume",
+                              "claimed" : true,
+                              "handle" : "SCSI:07:00:00:00",
+                              "description" : "EXT4 volume",
+                              "product" : "QEMU HARDDISK",
+                              "vendor" : "Linux",
+                              "physid" : "0.0.0",
+                              "businfo" : "scsi@7:0.0.0",
+                              "logicalname" : "/dev/sda",
+                              "dev" : "8:0",
+                              "version" : "1.0",
+                              "serial" : "eb812b72-8077-4f28-88ee-7769993b260d",
+                              "size" : 1073741824,
+                              "configuration" : {
+                                "ansiversion" : "5",
+                                "created" : "2025-11-05 08:33:21",
+                                "filesystem" : "ext4",
+                                "label" : "UPDATES",
+                                "lastmountpoint" : "/mnt",
+                                "logicalsectorsize" : "512",
+                                "modified" : "2025-11-05 08:34:23",
+                                "mounted" : "2025-11-05 08:34:11",
+                                "sectorsize" : "512",
+                                "state" : "clean"
+                              },
+                              "capabilities" : {
+                                "5400rpm" : "5400 rotations per minute",
+                                "journaled" : true,
+                                "extended_attributes" : "Extended Attributes",
+                                "large_files" : "4GB+ files",
+                                "huge_files" : "16TB+ files",
+                                "dir_nlink" : "directories with 65000+ subdirs",
+                                "64bit" : "64bit filesystem",
+                                "extents" : "extent-based allocation",
+                                "ext4" : true,
+                                "ext2" : "EXT2/EXT3 volume",
+                                "initialized" : "initialized volume"
+                              }
+                            }]
+                        }]
+                    }]
+                }]
+            },
+            {
+              "id" : "pci:2",
+              "class" : "bridge",
+              "claimed" : true,
+              "handle" : "PCIBUS:0000:03",
+              "description" : "PCI bridge",
+              "product" : "QEMU PCIe Root port",
+              "vendor" : "Red Hat, Inc.",
+              "physid" : "2.2",
+              "businfo" : "pci@0000:00:02.2",
+              "version" : "00",
+              "width" : 32,
+              "clock" : 33000000,
+              "configuration" : {
+                "driver" : "pcieport"
+              },
+              "capabilities" : {
+                "pci" : true,
+                "pciexpress" : "PCI Express",
+                "msix" : "MSI-X",
+                "normal_decode" : true,
+                "bus_master" : "bus mastering",
+                "cap_list" : "PCI capabilities listing"
+              },
+              "children" : [                {
+                  "id" : "communication",
+                  "class" : "communication",
+                  "claimed" : true,
+                  "handle" : "PCI:0000:03:00.0",
+                  "description" : "Communication controller",
+                  "product" : "Virtio 1.0 console",
+                  "vendor" : "Red Hat, Inc.",
+                  "physid" : "0",
+                  "businfo" : "pci@0000:03:00.0",
+                  "version" : "01",
+                  "width" : 64,
+                  "clock" : 33000000,
+                  "configuration" : {
+                    "driver" : "virtio-pci",
+                    "latency" : "0"
+                  },
+                  "capabilities" : {
+                    "msix" : "MSI-X",
+                    "pm" : "Power Management",
+                    "pciexpress" : "PCI Express",
+                    "bus_master" : "bus mastering",
+                    "cap_list" : "PCI capabilities listing"
+                  },
+                  "children" : [                    {
+                      "id" : "virtio2",
+                      "class" : "generic",
+                      "description" : "Virtual I/O device",
+                      "physid" : "0",
+                      "businfo" : "virtio@2",
+                      "configuration" : {
+                        "driver" : "virtio_console"
+                      }
+                    }]
+                }]
+            },
+            {
+              "id" : "pci:3",
+              "class" : "bridge",
+              "claimed" : true,
+              "handle" : "PCIBUS:0000:04",
+              "description" : "PCI bridge",
+              "product" : "QEMU PCIe Root port",
+              "vendor" : "Red Hat, Inc.",
+              "physid" : "2.3",
+              "businfo" : "pci@0000:00:02.3",
+              "version" : "00",
+              "width" : 32,
+              "clock" : 33000000,
+              "configuration" : {
+                "driver" : "pcieport"
+              },
+              "capabilities" : {
+                "pci" : true,
+                "pciexpress" : "PCI Express",
+                "msix" : "MSI-X",
+                "normal_decode" : true,
+                "bus_master" : "bus mastering",
+                "cap_list" : "PCI capabilities listing"
+              },
+              "children" : [                {
+                  "id" : "scsi",
+                  "class" : "storage",
+                  "claimed" : true,
+                  "handle" : "PCI:0000:04:00.0",
+                  "description" : "SCSI storage controller",
+                  "product" : "Virtio 1.0 block device",
+                  "vendor" : "Red Hat, Inc.",
+                  "physid" : "0",
+                  "businfo" : "pci@0000:04:00.0",
+                  "version" : "01",
+                  "width" : 64,
+                  "clock" : 33000000,
+                  "configuration" : {
+                    "driver" : "virtio-pci",
+                    "latency" : "0"
+                  },
+                  "capabilities" : {
+                    "scsi" : true,
+                    "msix" : "MSI-X",
+                    "pm" : "Power Management",
+                    "pciexpress" : "PCI Express",
+                    "bus_master" : "bus mastering",
+                    "cap_list" : "PCI capabilities listing"
+                  },
+                  "children" : [                    {
+                      "id" : "virtio3",
+                      "class" : "disk",
+                      "claimed" : true,
+                      "handle" : "GUID:f6b4cb32-981c-42ea-bfdb-0979224395a3",
+                      "description" : "Virtual I/O device",
+                      "physid" : "0",
+                      "businfo" : "virtio@3",
+                      "logicalname" : "/dev/vda",
+                      "units" : "bytes",
+                      "size" : 42949672960,
+                      "configuration" : {
+                        "driver" : "virtio_blk",
+                        "guid" : "f6b4cb32-981c-42ea-bfdb-0979224395a3",
+                        "logicalsectorsize" : "512",
+                        "sectorsize" : "512"
+                      },
+                      "capabilities" : {
+                        "gpt-1.00" : "GUID Partition Table version 1.00",
+                        "partitioned" : "Partitioned disk",
+                        "partitioned:gpt" : "GUID partition table"
+                      },
+                      "children" : [                        {
+                          "id" : "volume:0",
+                          "class" : "volume",
+                          "claimed" : true,
+                          "handle" : "GUID:2f8ced2d-9dae-474d-b8c5-9f714a0595d5",
+                          "description" : "BIOS Boot partition",
+                          "vendor" : "EFI",
+                          "physid" : "1",
+                          "businfo" : "virtio@3,1",
+                          "logicalname" : "/dev/vda1",
+                          "dev" : "253:1",
+                          "serial" : "2f8ced2d-9dae-474d-b8c5-9f714a0595d5",
+                          "capacity" : 8388096,
+                          "capabilities" : {
+                            "nofs" : "No filesystem"
+                          }
+                        },
+                        {
+                          "id" : "volume:1",
+                          "class" : "volume",
+                          "claimed" : true,
+                          "handle" : "GUID:3f2382c8-ebd2-49ee-8684-034af9394386",
+                          "description" : "EFI partition",
+                          "physid" : "2",
+                          "businfo" : "virtio@3,2",
+                          "logicalname" : "/dev/vda2",
+                          "dev" : "253:2",
+                          "serial" : "3f2382c8-ebd2-49ee-8684-034af9394386",
+                          "capacity" : 40791703040
+                        },
+                        {
+                          "id" : "volume:2",
+                          "class" : "volume",
+                          "claimed" : true,
+                          "handle" : "GUID:69d509f1-b840-423b-a946-05f76287a598",
+                          "description" : "Linux swap volume",
+                          "vendor" : "Linux",
+                          "physid" : "3",
+                          "businfo" : "virtio@3,3",
+                          "logicalname" : "/dev/vda3",
+                          "dev" : "253:3",
+                          "version" : "1",
+                          "serial" : "fdac494d-29f0-4f80-babf-504e4f6adcd9",
+                          "size" : 2148511744,
+                          "capacity" : 2148514816,
+                          "configuration" : {
+                            "filesystem" : "swap",
+                            "pagesize" : "4096"
+                          },
+                          "capabilities" : {
+                            "nofs" : "No filesystem",
+                            "swap" : "Linux swap volume",
+                            "initialized" : "initialized volume"
+                          }
+                        }]
+                    }]
+                }]
+            },
+            {
+              "id" : "pci:4",
+              "class" : "bridge",
+              "claimed" : true,
+              "handle" : "PCIBUS:0000:05",
+              "description" : "PCI bridge",
+              "product" : "QEMU PCIe Root port",
+              "vendor" : "Red Hat, Inc.",
+              "physid" : "2.4",
+              "businfo" : "pci@0000:00:02.4",
+              "version" : "00",
+              "width" : 32,
+              "clock" : 33000000,
+              "configuration" : {
+                "driver" : "pcieport"
+              },
+              "capabilities" : {
+                "pci" : true,
+                "pciexpress" : "PCI Express",
+                "msix" : "MSI-X",
+                "normal_decode" : true,
+                "bus_master" : "bus mastering",
+                "cap_list" : "PCI capabilities listing"
+              },
+              "children" : [                {
+                  "id" : "generic",
+                  "class" : "generic",
+                  "claimed" : true,
+                  "handle" : "PCI:0000:05:00.0",
+                  "description" : "Unclassified device",
+                  "product" : "Virtio 1.0 balloon",
+                  "vendor" : "Red Hat, Inc.",
+                  "physid" : "0",
+                  "businfo" : "pci@0000:05:00.0",
+                  "version" : "01",
+                  "width" : 64,
+                  "clock" : 33000000,
+                  "configuration" : {
+                    "driver" : "virtio-pci",
+                    "latency" : "0"
+                  },
+                  "capabilities" : {
+                    "pm" : "Power Management",
+                    "pciexpress" : "PCI Express",
+                    "bus_master" : "bus mastering",
+                    "cap_list" : "PCI capabilities listing"
+                  },
+                  "children" : [                    {
+                      "id" : "virtio4",
+                      "class" : "generic",
+                      "description" : "Virtual I/O device",
+                      "physid" : "0",
+                      "businfo" : "virtio@4",
+                      "configuration" : {
+                        "driver" : "virtio_balloon"
+                      }
+                    }]
+                }]
+            },
+            {
+              "id" : "pci:5",
+              "class" : "bridge",
+              "claimed" : true,
+              "handle" : "PCIBUS:0000:06",
+              "description" : "PCI bridge",
+              "product" : "QEMU PCIe Root port",
+              "vendor" : "Red Hat, Inc.",
+              "physid" : "2.5",
+              "businfo" : "pci@0000:00:02.5",
+              "version" : "00",
+              "width" : 32,
+              "clock" : 33000000,
+              "configuration" : {
+                "driver" : "pcieport"
+              },
+              "capabilities" : {
+                "pci" : true,
+                "pciexpress" : "PCI Express",
+                "msix" : "MSI-X",
+                "normal_decode" : true,
+                "bus_master" : "bus mastering",
+                "cap_list" : "PCI capabilities listing"
+              },
+              "children" : [                {
+                  "id" : "generic",
+                  "class" : "generic",
+                  "claimed" : true,
+                  "handle" : "PCI:0000:06:00.0",
+                  "description" : "Unclassified device",
+                  "product" : "Virtio 1.0 RNG",
+                  "vendor" : "Red Hat, Inc.",
+                  "physid" : "0",
+                  "businfo" : "pci@0000:06:00.0",
+                  "version" : "01",
+                  "width" : 64,
+                  "clock" : 33000000,
+                  "configuration" : {
+                    "driver" : "virtio-pci",
+                    "latency" : "0"
+                  },
+                  "capabilities" : {
+                    "msix" : "MSI-X",
+                    "pm" : "Power Management",
+                    "pciexpress" : "PCI Express",
+                    "bus_master" : "bus mastering",
+                    "cap_list" : "PCI capabilities listing"
+                  },
+                  "children" : [                    {
+                      "id" : "virtio5",
+                      "class" : "generic",
+                      "description" : "Virtual I/O device",
+                      "physid" : "0",
+                      "businfo" : "virtio@5"
+                    }]
+                }]
+            },
+            {
+              "id" : "pci:6",
+              "class" : "bridge",
+              "claimed" : true,
+              "handle" : "PCIBUS:0000:07",
+              "description" : "PCI bridge",
+              "product" : "QEMU PCIe Root port",
+              "vendor" : "Red Hat, Inc.",
+              "physid" : "2.6",
+              "businfo" : "pci@0000:00:02.6",
+              "version" : "00",
+              "width" : 32,
+              "clock" : 33000000,
+              "configuration" : {
+                "driver" : "pcieport"
+              },
+              "capabilities" : {
+                "pci" : true,
+                "pciexpress" : "PCI Express",
+                "msix" : "MSI-X",
+                "normal_decode" : true,
+                "bus_master" : "bus mastering",
+                "cap_list" : "PCI capabilities listing"
+              },
+              "children" : [                {
+                  "id" : "scsi",
+                  "class" : "storage",
+                  "claimed" : true,
+                  "handle" : "PCI:0000:07:00.0",
+                  "description" : "SCSI storage controller",
+                  "product" : "Virtio 1.0 SCSI",
+                  "vendor" : "Red Hat, Inc.",
+                  "physid" : "0",
+                  "businfo" : "pci@0000:07:00.0",
+                  "version" : "01",
+                  "width" : 64,
+                  "clock" : 33000000,
+                  "configuration" : {
+                    "driver" : "virtio-pci",
+                    "latency" : "0"
+                  },
+                  "capabilities" : {
+                    "scsi" : true,
+                    "msix" : "MSI-X",
+                    "pm" : "Power Management",
+                    "pciexpress" : "PCI Express",
+                    "bus_master" : "bus mastering",
+                    "cap_list" : "PCI capabilities listing"
+                  },
+                  "children" : [                    {
+                      "id" : "virtio6",
+                      "class" : "generic",
+                      "description" : "Virtual I/O device",
+                      "physid" : "0",
+                      "businfo" : "virtio@6",
+                      "configuration" : {
+                        "driver" : "virtio_scsi"
+                      }
+                    }]
+                }]
+            },
+            {
+              "id" : "pci:7",
+              "class" : "bridge",
+              "claimed" : true,
+              "handle" : "PCIBUS:0000:08",
+              "description" : "PCI bridge",
+              "product" : "QEMU PCIe Root port",
+              "vendor" : "Red Hat, Inc.",
+              "physid" : "2.7",
+              "businfo" : "pci@0000:00:02.7",
+              "version" : "00",
+              "width" : 32,
+              "clock" : 33000000,
+              "configuration" : {
+                "driver" : "pcieport"
+              },
+              "capabilities" : {
+                "pci" : true,
+                "pciexpress" : "PCI Express",
+                "msix" : "MSI-X",
+                "normal_decode" : true,
+                "bus_master" : "bus mastering",
+                "cap_list" : "PCI capabilities listing"
+              },
+              "children" : [                {
+                  "id" : "network",
+                  "class" : "network",
+                  "claimed" : true,
+                  "handle" : "PCI:0000:08:00.0",
+                  "description" : "Ethernet controller",
+                  "product" : "Virtio 1.0 network device",
+                  "vendor" : "Red Hat, Inc.",
+                  "physid" : "0",
+                  "businfo" : "pci@0000:08:00.0",
+                  "version" : "01",
+                  "width" : 64,
+                  "clock" : 33000000,
+                  "configuration" : {
+                    "driver" : "virtio-pci",
+                    "latency" : "0"
+                  },
+                  "capabilities" : {
+                    "msix" : "MSI-X",
+                    "pm" : "Power Management",
+                    "pciexpress" : "PCI Express",
+                    "bus_master" : "bus mastering",
+                    "cap_list" : "PCI capabilities listing",
+                    "rom" : "extension ROM"
+                  },
+                  "children" : [                    {
+                      "id" : "virtio7",
+                      "class" : "network",
+                      "claimed" : true,
+                      "description" : "Ethernet interface",
+                      "physid" : "0",
+                      "businfo" : "virtio@7",
+                      "logicalname" : "enp8s0",
+                      "serial" : "52:54:00:8f:48:94",
+                      "configuration" : {
+                        "autonegotiation" : "off",
+                        "broadcast" : "yes",
+                        "driver" : "virtio_net",
+                        "driverversion" : "1.0.0",
+                        "ip" : "192.168.122.122",
+                        "link" : "yes",
+                        "multicast" : "yes"
+                      },
+                      "capabilities" : {
+                        "ethernet" : true,
+                        "physical" : "Physical interface"
+                      }
+                    }]
+                }]
+            },
+            {
+              "id" : "pci:8",
+              "class" : "bridge",
+              "claimed" : true,
+              "handle" : "PCIBUS:0000:09",
+              "description" : "PCI bridge",
+              "product" : "QEMU PCIe Root port",
+              "vendor" : "Red Hat, Inc.",
+              "physid" : "3",
+              "businfo" : "pci@0000:00:03.0",
+              "version" : "00",
+              "width" : 32,
+              "clock" : 33000000,
+              "configuration" : {
+                "driver" : "pcieport"
+              },
+              "capabilities" : {
+                "pci" : true,
+                "pciexpress" : "PCI Express",
+                "msix" : "MSI-X",
+                "normal_decode" : true,
+                "bus_master" : "bus mastering",
+                "cap_list" : "PCI capabilities listing"
+              },
+              "children" : [                {
+                  "id" : "scsi",
+                  "class" : "storage",
+                  "claimed" : true,
+                  "handle" : "PCI:0000:09:00.0",
+                  "description" : "SCSI storage controller",
+                  "product" : "Virtio 1.0 block device",
+                  "vendor" : "Red Hat, Inc.",
+                  "physid" : "0",
+                  "businfo" : "pci@0000:09:00.0",
+                  "version" : "01",
+                  "width" : 64,
+                  "clock" : 33000000,
+                  "configuration" : {
+                    "driver" : "virtio-pci",
+                    "latency" : "0"
+                  },
+                  "capabilities" : {
+                    "scsi" : true,
+                    "msix" : "MSI-X",
+                    "pm" : "Power Management",
+                    "pciexpress" : "PCI Express",
+                    "bus_master" : "bus mastering",
+                    "cap_list" : "PCI capabilities listing"
+                  },
+                  "children" : [                    {
+                      "id" : "virtio8",
+                      "class" : "disk",
+                      "claimed" : true,
+                      "handle" : "GUID:3c1728b2-8e50-4eb2-a423-91b7abbf09c1",
+                      "description" : "Virtual I/O device",
+                      "physid" : "0",
+                      "businfo" : "virtio@8",
+                      "logicalname" : "/dev/vdb",
+                      "units" : "bytes",
+                      "size" : 21474836480,
+                      "configuration" : {
+                        "driver" : "virtio_blk",
+                        "guid" : "3c1728b2-8e50-4eb2-a423-91b7abbf09c1",
+                        "logicalsectorsize" : "512",
+                        "sectorsize" : "512"
+                      },
+                      "capabilities" : {
+                        "gpt-1.00" : "GUID Partition Table version 1.00",
+                        "partitioned" : "Partitioned disk",
+                        "partitioned:gpt" : "GUID partition table"
+                      },
+                      "children" : [                        {
+                          "id" : "volume:0",
+                          "class" : "volume",
+                          "claimed" : true,
+                          "handle" : "GUID:f0cdd1ca-60dd-4643-ab97-cf08c3b7f34b",
+                          "description" : "BIOS Boot partition",
+                          "vendor" : "EFI",
+                          "physid" : "1",
+                          "businfo" : "virtio@8,1",
+                          "logicalname" : "/dev/vdb1",
+                          "dev" : "253:17",
+                          "serial" : "f0cdd1ca-60dd-4643-ab97-cf08c3b7f34b",
+                          "capacity" : 8388096,
+                          "capabilities" : {
+                            "nofs" : "No filesystem"
+                          }
+                        },
+                        {
+                          "id" : "volume:1",
+                          "class" : "volume",
+                          "claimed" : true,
+                          "handle" : "GUID:9d9b43f6-17ac-4264-8e65-54c7a8371d9e",
+                          "description" : "EFI partition",
+                          "physid" : "2",
+                          "businfo" : "virtio@8,2",
+                          "logicalname" : "/dev/vdb2",
+                          "dev" : "253:18",
+                          "serial" : "9d9b43f6-17ac-4264-8e65-54c7a8371d9e",
+                          "capacity" : 19316866560
+                        },
+                        {
+                          "id" : "volume:2",
+                          "class" : "volume",
+                          "claimed" : true,
+                          "handle" : "GUID:251af2d3-0460-436c-aeea-067b503a7666",
+                          "description" : "Linux swap volume",
+                          "vendor" : "Linux",
+                          "physid" : "3",
+                          "businfo" : "virtio@8,3",
+                          "logicalname" : "/dev/vdb3",
+                          "dev" : "253:19",
+                          "version" : "1",
+                          "serial" : "5ca83a76-5081-4f51-a396-9ed70ed8538c",
+                          "size" : 2148511744,
+                          "capacity" : 2148514816,
+                          "configuration" : {
+                            "filesystem" : "swap",
+                            "pagesize" : "4096"
+                          },
+                          "capabilities" : {
+                            "nofs" : "No filesystem",
+                            "swap" : "Linux swap volume",
+                            "initialized" : "initialized volume"
+                          }
+                        }]
+                    }]
+                }]
+            },
+            {
+              "id" : "pci:9",
+              "class" : "bridge",
+              "claimed" : true,
+              "handle" : "PCIBUS:0000:0a",
+              "description" : "PCI bridge",
+              "product" : "QEMU PCIe Root port",
+              "vendor" : "Red Hat, Inc.",
+              "physid" : "3.1",
+              "businfo" : "pci@0000:00:03.1",
+              "version" : "00",
+              "width" : 32,
+              "clock" : 33000000,
+              "configuration" : {
+                "driver" : "pcieport"
+              },
+              "capabilities" : {
+                "pci" : true,
+                "pciexpress" : "PCI Express",
+                "msix" : "MSI-X",
+                "normal_decode" : true,
+                "bus_master" : "bus mastering",
+                "cap_list" : "PCI capabilities listing"
+              }
+            },
+            {
+              "id" : "pci:10",
+              "class" : "bridge",
+              "claimed" : true,
+              "handle" : "PCIBUS:0000:0b",
+              "description" : "PCI bridge",
+              "product" : "QEMU PCIe Root port",
+              "vendor" : "Red Hat, Inc.",
+              "physid" : "3.2",
+              "businfo" : "pci@0000:00:03.2",
+              "version" : "00",
+              "width" : 32,
+              "clock" : 33000000,
+              "configuration" : {
+                "driver" : "pcieport"
+              },
+              "capabilities" : {
+                "pci" : true,
+                "pciexpress" : "PCI Express",
+                "msix" : "MSI-X",
+                "normal_decode" : true,
+                "bus_master" : "bus mastering",
+                "cap_list" : "PCI capabilities listing"
+              }
+            },
+            {
+              "id" : "pci:11",
+              "class" : "bridge",
+              "claimed" : true,
+              "handle" : "PCIBUS:0000:0c",
+              "description" : "PCI bridge",
+              "product" : "QEMU PCIe Root port",
+              "vendor" : "Red Hat, Inc.",
+              "physid" : "3.3",
+              "businfo" : "pci@0000:00:03.3",
+              "version" : "00",
+              "width" : 32,
+              "clock" : 33000000,
+              "configuration" : {
+                "driver" : "pcieport"
+              },
+              "capabilities" : {
+                "pci" : true,
+                "pciexpress" : "PCI Express",
+                "msix" : "MSI-X",
+                "normal_decode" : true,
+                "bus_master" : "bus mastering",
+                "cap_list" : "PCI capabilities listing"
+              }
+            },
+            {
+              "id" : "pci:12",
+              "class" : "bridge",
+              "claimed" : true,
+              "handle" : "PCIBUS:0000:0d",
+              "description" : "PCI bridge",
+              "product" : "QEMU PCIe Root port",
+              "vendor" : "Red Hat, Inc.",
+              "physid" : "3.4",
+              "businfo" : "pci@0000:00:03.4",
+              "version" : "00",
+              "width" : 32,
+              "clock" : 33000000,
+              "configuration" : {
+                "driver" : "pcieport"
+              },
+              "capabilities" : {
+                "pci" : true,
+                "pciexpress" : "PCI Express",
+                "msix" : "MSI-X",
+                "normal_decode" : true,
+                "bus_master" : "bus mastering",
+                "cap_list" : "PCI capabilities listing"
+              }
+            },
+            {
+              "id" : "pci:13",
+              "class" : "bridge",
+              "claimed" : true,
+              "handle" : "PCIBUS:0000:0e",
+              "description" : "PCI bridge",
+              "product" : "QEMU PCIe Root port",
+              "vendor" : "Red Hat, Inc.",
+              "physid" : "3.5",
+              "businfo" : "pci@0000:00:03.5",
+              "version" : "00",
+              "width" : 32,
+              "clock" : 33000000,
+              "configuration" : {
+                "driver" : "pcieport"
+              },
+              "capabilities" : {
+                "pci" : true,
+                "pciexpress" : "PCI Express",
+                "msix" : "MSI-X",
+                "normal_decode" : true,
+                "bus_master" : "bus mastering",
+                "cap_list" : "PCI capabilities listing"
+              }
+            },
+            {
+              "id" : "isa",
+              "class" : "bridge",
+              "claimed" : true,
+              "handle" : "PCI:0000:00:1f.0",
+              "description" : "ISA bridge",
+              "product" : "82801IB (ICH9) LPC Interface Controller",
+              "vendor" : "Intel Corporation",
+              "physid" : "1f",
+              "businfo" : "pci@0000:00:1f.0",
+              "version" : "02",
+              "width" : 32,
+              "clock" : 33000000,
+              "configuration" : {
+                "driver" : "lpc_ich",
+                "latency" : "0"
+              },
+              "capabilities" : {
+                "isa" : true
+              },
+              "children" : [                {
+                  "id" : "pnp00:00",
+                  "class" : "communication",
+                  "claimed" : true,
+                  "product" : "PnP device PNP0501",
+                  "physid" : "0",
+                  "configuration" : {
+                    "driver" : "serial"
+                  },
+                  "capabilities" : {
+                    "pnp" : true
+                  }
+                },
+                {
+                  "id" : "pnp00:01",
+                  "class" : "input",
+                  "claimed" : true,
+                  "product" : "PnP device PNP0303",
+                  "physid" : "1",
+                  "configuration" : {
+                    "driver" : "i8042 kbd"
+                  },
+                  "capabilities" : {
+                    "pnp" : true
+                  }
+                },
+                {
+                  "id" : "pnp00:02",
+                  "class" : "input",
+                  "claimed" : true,
+                  "product" : "PnP device PNP0f13",
+                  "physid" : "2",
+                  "configuration" : {
+                    "driver" : "i8042 aux"
+                  },
+                  "capabilities" : {
+                    "pnp" : true
+                  }
+                },
+                {
+                  "id" : "pnp00:03",
+                  "class" : "system",
+                  "claimed" : true,
+                  "product" : "PnP device PNP0b00",
+                  "physid" : "3",
+                  "configuration" : {
+                    "driver" : "rtc_cmos"
+                  },
+                  "capabilities" : {
+                    "pnp" : true
+                  }
+                },
+                {
+                  "id" : "pnp00:04",
+                  "class" : "system",
+                  "claimed" : true,
+                  "product" : "PnP device PNP0c01",
+                  "physid" : "4",
+                  "configuration" : {
+                    "driver" : "system"
+                  },
+                  "capabilities" : {
+                    "pnp" : true
+                  }
+                }]
+            },
+            {
+              "id" : "sata",
+              "class" : "storage",
+              "claimed" : true,
+              "handle" : "PCI:0000:00:1f.2",
+              "description" : "SATA controller",
+              "product" : "82801IR/IO/IH (ICH9R/DO/DH) 6 port SATA Controller [AHCI mode]",
+              "vendor" : "Intel Corporation",
+              "physid" : "1f.2",
+              "businfo" : "pci@0000:00:1f.2",
+              "logicalname" : "scsi1",
+              "version" : "02",
+              "width" : 32,
+              "clock" : 33000000,
+              "configuration" : {
+                "driver" : "ahci",
+                "latency" : "0"
+              },
+              "capabilities" : {
+                "sata" : true,
+                "msi" : "Message Signalled Interrupts",
+                "ahci_1.0" : true,
+                "bus_master" : "bus mastering",
+                "cap_list" : "PCI capabilities listing",
+                "emulated" : "Emulated device"
+              },
+              "children" : [                {
+                  "id" : "cdrom",
+                  "class" : "disk",
+                  "claimed" : true,
+                  "handle" : "SCSI:01:00:00:00",
+                  "description" : "DVD reader",
+                  "product" : "QEMU DVD-ROM",
+                  "vendor" : "QEMU",
+                  "physid" : "0.0.0",
+                  "businfo" : "scsi@1:0.0.0",
+                  "logicalname" : ["/dev/cdrom", "/dev/sr0", "/run/initramfs/live"],
+                  "dev" : "11:0",
+                  "version" : "2.5+",
+                  "configuration" : {
+                    "ansiversion" : "5",
+                    "mount.fstype" : "iso9660",
+                    "mount.options" : "ro,relatime,nojoliet,check=s,map=n,blocksize=2048,iocharset=utf8",
+                    "state" : "mounted",
+                    "status" : "ready"
+                  },
+                  "capabilities" : {
+                    "removable" : "support is removable",
+                    "audio" : "Audio CD playback",
+                    "dvd" : "DVD playback"
+                  },
+                  "children" : [                    {
+                      "id" : "medium",
+                      "class" : "disk",
+                      "claimed" : true,
+                      "handle" : "GUID:35323032-3930-4033-b130-303435343138",
+                      "physid" : "0",
+                      "logicalname" : ["/dev/cdrom", "/run/initramfs/live"],
+                      "dev" : "11:0",
+                      "configuration" : {
+                        "guid" : "35323032-3930-4033-b130-303435343138",
+                        "mount.fstype" : "iso9660",
+                        "mount.options" : "ro,relatime,nojoliet,check=s,map=n,blocksize=2048,iocharset=utf8",
+                        "state" : "mounted"
+                      },
+                      "capabilities" : {
+                        "gpt-1.00" : "GUID Partition Table version 1.00",
+                        "partitioned" : "Partitioned disk",
+                        "partitioned:gpt" : "GUID partition table"
+                      },
+                      "children" : [                        {
+                          "id" : "volume:0",
+                          "class" : "volume",
+                          "handle" : "GUID:35323032-3930-4033-b131-303435343138",
+                          "description" : "data partition",
+                          "vendor" : "Windows",
+                          "physid" : "1",
+                          "serial" : "35323032-3930-4033-b131-303435343138",
+                          "capacity" : 743712256,
+                          "configuration" : {
+                            "name" : "ISO9660"
+                          },
+                          "capabilities" : {
+                            "precious" : "This partition is required for the platform to function",
+                            "readonly" : "Read-only partition"
+                          }
+                        },
+                        {
+                          "id" : "volume:1",
+                          "class" : "volume",
+                          "handle" : "GUID:35323032-3930-4033-b132-303435343138",
+                          "description" : "Windows FAT volume",
+                          "vendor" : "mkfs.fat",
+                          "physid" : "2",
+                          "version" : "FAT16",
+                          "serial" : "18f0-b4f2",
+                          "size" : 18446744073709549568,
+                          "configuration" : {
+                            "FATs" : "2",
+                            "filesystem" : "fat",
+                            "label" : "BOOT",
+                            "name" : "Appended2"
+                          },
+                          "capabilities" : {
+                            "boot" : "Contains boot code",
+                            "fat" : "Windows FAT volume",
+                            "initialized" : "initialized volume"
+                          }
+                        }]
+                    }]
+                }]
+            },
+            {
+              "id" : "serial",
+              "class" : "bus",
+              "claimed" : true,
+              "handle" : "PCI:0000:00:1f.3",
+              "description" : "SMBus",
+              "product" : "82801I (ICH9 Family) SMBus Controller",
+              "vendor" : "Intel Corporation",
+              "physid" : "1f.3",
+              "businfo" : "pci@0000:00:1f.3",
+              "version" : "02",
+              "width" : 32,
+              "clock" : 33000000,
+              "configuration" : {
+                "driver" : "i801_smbus",
+                "latency" : "0"
+              }
+            }]
+        }]
+    },
+    {
+      "id" : "input:0",
+      "class" : "input",
+      "claimed" : true,
+      "product" : "AT Translated Set 2 keyboard",
+      "physid" : "1",
+      "logicalname" : ["input0", "/dev/input/event0", "input0::capslock", "input0::numlock", "input0::scrolllock"],
+      "capabilities" : {
+        "i8042" : "i8042 PC AT keyboard controller"
+      }
+    },
+    {
+      "id" : "input:1",
+      "class" : "input",
+      "claimed" : true,
+      "product" : "VirtualPS/2 VMware VMMouse",
+      "physid" : "2",
+      "logicalname" : ["input2", "/dev/input/event2", "/dev/input/mouse1"],
+      "capabilities" : {
+        "i8042" : "i8042 PC AT keyboard controller"
+      }
+    },
+    {
+      "id" : "input:2",
+      "class" : "input",
+      "claimed" : true,
+      "product" : "VirtualPS/2 VMware VMMouse",
+      "physid" : "3",
+      "logicalname" : ["input3", "/dev/input/event1", "/dev/input/mouse0"],
+      "capabilities" : {
+        "i8042" : "i8042 PC AT keyboard controller"
+      }
+    },
+    {
+      "id" : "input:3",
+      "class" : "input",
+      "claimed" : true,
+      "product" : "PC Speaker",
+      "physid" : "4",
+      "logicalname" : ["input5", "/dev/input/event4"],
+      "capabilities" : {
+        "isa" : "ISA bus"
+      }
+    },
+    {
+      "id" : "input:4",
+      "class" : "input",
+      "claimed" : true,
+      "product" : "Power Button",
+      "physid" : "5",
+      "logicalname" : ["input6", "/dev/input/event5"],
+      "capabilities" : {
+        "platform" : true
+      }
+    }]
+}

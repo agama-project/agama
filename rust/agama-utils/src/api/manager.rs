@@ -22,4 +22,4 @@ mod license;
 pub use license::{InvalidLanguageCode, LanguageTag, License, LicenseContent};
 
 mod system_info;
-pub use system_info::{Product, SystemInfo};
+pub use system_info::{HardwareInfo, Product, SystemInfo};
