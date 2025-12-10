@@ -1,4 +1,7 @@
-use std::{ffi::{CString, IntoStringError}, fmt::Display};
+use std::{
+    ffi::{CString, IntoStringError},
+    fmt::Display,
+};
 
 use serde_json::{json, Value};
 
@@ -39,7 +42,7 @@ pub struct ProductSpecification {
 
 /// Represents product and also extensions info from SCC.
 /// list of attributes is just selection which agama uses.
-/// 
+///
 #[derive(Debug, Clone)]
 pub struct Product {
     pub identifier: String,
@@ -58,31 +61,50 @@ impl TryFrom<Value> for Product {
 
     fn try_from(value: Value) -> Result<Self, Self::Error> {
         let Some(identifier) = value.get("identifier").and_then(|v| v.as_str()) else {
-            return Err(Error::UnexpectedResponse("Missing or invalid 'identifier' in Product".to_string()));
+            return Err(Error::UnexpectedResponse(
+                "Missing or invalid 'identifier' in Product".to_string(),
+            ));
         };
         let Some(version) = value.get("version").and_then(|v| v.as_str()) else {
-            return Err(Error::UnexpectedResponse("Missing or invalid 'version' in Product".to_string()));
+            return Err(Error::UnexpectedResponse(
+                "Missing or invalid 'version' in Product".to_string(),
+            ));
         };
         let Some(friendly_name) = value.get("friendly_name").and_then(|v| v.as_str()) else {
-            return Err(Error::UnexpectedResponse("Missing or invalid 'friendly_name' in Product".to_string()));
+            return Err(Error::UnexpectedResponse(
+                "Missing or invalid 'friendly_name' in Product".to_string(),
+            ));
         };
         let Some(available) = value.get("available").and_then(|v| v.as_bool()) else {
-            return Err(Error::UnexpectedResponse("Missing or invalid 'available' in Product".to_string()));
+            return Err(Error::UnexpectedResponse(
+                "Missing or invalid 'available' in Product".to_string(),
+            ));
         };
         let Some(free) = value.get("free").and_then(|v| v.as_bool()) else {
-            return Err(Error::UnexpectedResponse("Missing or invalid 'free' in Product".to_string()));
+            return Err(Error::UnexpectedResponse(
+                "Missing or invalid 'free' in Product".to_string(),
+            ));
         };
         let Some(recommended) = value.get("recommended").and_then(|v| v.as_bool()) else {
-            return Err(Error::UnexpectedResponse("Missing or invalid 'recommended' in Product".to_string()));
+            return Err(Error::UnexpectedResponse(
+                "Missing or invalid 'recommended' in Product".to_string(),
+            ));
         };
         let Some(description) = value.get("description").and_then(|v| v.as_str()) else {
-            return Err(Error::UnexpectedResponse("Missing or invalid 'description' in Product".to_string()));
+            return Err(Error::UnexpectedResponse(
+                "Missing or invalid 'description' in Product".to_string(),
+            ));
         };
         let Some(release_stage) = value.get("release_stage").and_then(|v| v.as_str()) else {
-            return Err(Error::UnexpectedResponse("Missing or invalid 'release_stage' in Product".to_string()));
+            return Err(Error::UnexpectedResponse(
+                "Missing or invalid 'release_stage' in Product".to_string(),
+            ));
         };
         let empty_extensions = vec![];
-        let extensions_val = value.get("extensions").and_then(|v| v.as_array()).unwrap_or(&empty_extensions);
+        let extensions_val = value
+            .get("extensions")
+            .and_then(|v| v.as_array())
+            .unwrap_or(&empty_extensions);
 
         let extensions = extensions_val
             .iter()
@@ -102,8 +124,6 @@ impl TryFrom<Value> for Product {
         })
     }
 }
-
-
 
 /// Represents a service returned from registration to be added to libzypp.
 #[derive(Debug, Clone)]
@@ -150,13 +170,17 @@ pub enum SSLErrorCode {
 
 impl Display for SSLErrorCode {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}", match self {
-            Self::Expired => "Certificate has expired",
-            Self::SelfSignedCert => "Self signed certificate",
-            Self::SelfSignedCertInChain => "Self signed certificate in certificate chain",
-            Self::NoLocalIssuerCertificate => "Unable to get local issuer certificate",
-            Self::Other => "Other SSL error",
-        })
+        write!(
+            f,
+            "{}",
+            match self {
+                Self::Expired => "Certificate has expired",
+                Self::SelfSignedCert => "Self signed certificate",
+                Self::SelfSignedCertInChain => "Self signed certificate in certificate chain",
+                Self::NoLocalIssuerCertificate => "Unable to get local issuer certificate",
+                Self::Other => "Other SSL error",
+            }
+        )
     }
 }
 
@@ -200,7 +224,7 @@ pub enum Error {
     NetError(String),
     #[error("Timeout: {0}")]
     Timeout(String),
-    // TODO: check how it will look like if code display message won't be duplicite to connect message 
+    // TODO: check how it will look like if code display message won't be duplicite to connect message
     #[error("SSL error: {message} (code: {code})")]
     SSLError {
         message: String,
@@ -458,7 +482,10 @@ pub fn write_config(params: ConnectParams) -> Result<(), Error> {
     check_error(&response)
 }
 
-pub fn show_product(product: ProductSpecification, params: ConnectParams) -> Result<Product, Error> {
+pub fn show_product(
+    product: ProductSpecification,
+    params: ConnectParams,
+) -> Result<Product, Error> {
     let result_s = unsafe {
         let params_json = json!(params).to_string();
         let product_json = json!(product).to_string();
@@ -737,17 +764,11 @@ mod tests {
         let product = Product::try_from(value).unwrap();
         assert_eq!(product.identifier, "SLES");
         assert_eq!(product.version, "15-SP4");
-        assert_eq!(
-            product.friendly_name,
-            "SUSE Linux Enterprise Server 15 SP4"
-        );
+        assert_eq!(product.friendly_name, "SUSE Linux Enterprise Server 15 SP4");
         assert!(product.available);
         assert!(!product.free);
         assert!(product.recommended);
-        assert_eq!(
-            product.description,
-            "SUSE Linux Enterprise Server 15 SP4"
-        );
+        assert_eq!(product.description, "SUSE Linux Enterprise Server 15 SP4");
         assert_eq!(product.release_stage, "released");
         assert_eq!(product.extensions.len(), 1);
 
