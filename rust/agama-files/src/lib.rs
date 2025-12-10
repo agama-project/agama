@@ -24,6 +24,8 @@ pub mod service;
 pub use service::{Service, Starter};
 
 pub mod message;
+mod runner;
+pub use runner::ScriptsRunner;
 
 #[cfg(test)]
 mod tests {
@@ -33,6 +35,7 @@ mod tests {
     use agama_utils::{
         actor::Handler,
         api::{
+            event,
             files::{scripts::ScriptsGroup, Config},
             Event,
         },
@@ -47,6 +50,7 @@ mod tests {
     struct Context {
         handler: Handler<Service>,
         tmp_dir: TempDir,
+        events_rx: event::Receiver,
     }
 
     impl AsyncTestContext for Context {
@@ -62,20 +66,28 @@ mod tests {
             std::fs::copy("/usr/bin/install", tmp_dir.path().join("usr/bin/install")).unwrap();
 
             // Set up the service
-            let (events_tx, _events_rx) = broadcast::channel::<Event>(16);
+            let (events_tx, events_rx) = broadcast::channel::<Event>(16);
             let issues = issue::Service::starter(events_tx.clone()).start();
             let progress = progress::Service::starter(events_tx.clone()).start();
             let questions = question::start(events_tx.clone()).await.unwrap();
-            let software =
-                start_software_service(events_tx.clone(), issues, progress.clone(), questions)
-                    .await;
-            let handler = Service::starter(events_tx.clone(), progress, software)
+            let software = start_software_service(
+                events_tx.clone(),
+                issues,
+                progress.clone(),
+                questions.clone(),
+            )
+            .await;
+            let handler = Service::starter(progress, questions, software)
                 .with_scripts_workdir(tmp_dir.path())
                 .with_install_dir(tmp_dir.path())
                 .start()
                 .await
                 .unwrap();
-            Context { handler, tmp_dir }
+            Context {
+                handler,
+                tmp_dir,
+                events_rx,
+            }
         }
     }
 
@@ -111,6 +123,12 @@ mod tests {
             .await
             .unwrap();
 
+        // Wait until the scripts are executed.
+        while let Ok(event) = ctx.events_rx.recv().await {
+            if matches!(event, Event::ProgressFinished { scope: _ }) {
+                break;
+            }
+        }
         // Check that only the pre-script ran
         assert!(std::fs::exists(&test_file_1).unwrap());
         assert!(!std::fs::exists(&test_file_2).unwrap());

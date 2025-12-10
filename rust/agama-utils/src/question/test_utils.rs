@@ -18,33 +18,19 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-//! This module includes the struct that represent a service progress step.
+use crate::api::{event, Event};
 
-use serde::{Deserialize, Serialize};
-
-/// Scope to distinguish each service.
-#[derive(
-    Copy,
-    Clone,
-    Debug,
-    Eq,
-    Hash,
-    strum::EnumString,
-    strum::Display,
-    Deserialize,
-    Serialize,
-    utoipa::ToSchema,
-    PartialEq,
-)]
-#[strum(serialize_all = "camelCase")]
-#[serde(rename_all = "camelCase")]
-pub enum Scope {
-    Manager,
-    L10n,
-    Product,
-    Software,
-    Storage,
-    Files,
-    Iscsi,
-    Users,
+/// Wait for a new question and return the id.
+pub async fn wait_for_question(
+    events: &mut event::Receiver,
+) -> Result<u32, tokio::sync::broadcast::error::RecvError> {
+    loop {
+        let event = events.recv().await?;
+        match event {
+            Event::QuestionAdded { id } => return Ok(id),
+            _ => {
+                println!("Ignoring {event:?}")
+            }
+        }
+    }
 }

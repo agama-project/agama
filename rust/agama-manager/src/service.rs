@@ -195,7 +195,7 @@ impl Starter {
         let files = match self.files {
             Some(files) => files,
             None => {
-                files::Service::starter(self.events.clone(), progress.clone(), software.clone())
+                files::Service::starter(progress.clone(), self.questions.clone(), software.clone())
                     .start()
                     .await?
             }

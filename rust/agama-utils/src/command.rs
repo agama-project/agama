@@ -18,7 +18,13 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use std::{process::Output, time::Duration};
+use std::{
+    fs::{self, File},
+    os::unix::fs::OpenOptionsExt,
+    path::Path,
+    process::Output,
+    time::Duration,
+};
 
 use tokio::{io, process::Command, time::sleep};
 
@@ -35,10 +41,11 @@ const RETRY_INTERVAL: u64 = 50;
 pub async fn run_with_retry(mut command: Command) -> io::Result<Output> {
     let mut attempt = 0;
     loop {
-        match command.output().await {
-            Ok(output) => {
-                return Ok(output);
-            }
+        // Using the output() function in tokio::process::Command unconditionlly
+        // configures stdout/stderr to be pipes. That's why we use spawn() +
+        // wait_with_output().
+        match command.spawn() {
+            Ok(child) => return child.wait_with_output().await,
             Err(error) => {
                 if let Some(code) = error.raw_os_error() {
                     if code == OS_ERROR_BUSY && attempt < RETRY_ATTEMPTS {
@@ -57,4 +64,16 @@ pub async fn run_with_retry(mut command: Command) -> io::Result<Output> {
             }
         }
     }
+}
+
+/// Convenience function to create a file to be used as to save command artifacts
+/// (stdout, stderr or exit code).
+pub fn create_log_file(path: &Path) -> io::Result<File> {
+    let file = fs::OpenOptions::new()
+        .create(true)
+        .write(true)
+        .truncate(true)
+        .mode(0o600)
+        .open(path)?;
+    Ok(file)
 }
