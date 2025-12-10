@@ -26,7 +26,7 @@ import { installerRender } from "~/test-utils";
 import { useStatus } from "~/hooks/api";
 import ProgressStatusMonitor from "./ProgressStatusMonitor";
 
-let mockProgress: jest.Mock<ReturnType<typeof useStatus>["progresses"]> = jest.fn();
+const mockProgress: jest.Mock<ReturnType<typeof useStatus>["progresses"]> = jest.fn();
 
 jest.mock("~/hooks/api", () => ({
   useStatus: () => ({ progresses: mockProgress() }),

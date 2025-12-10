@@ -25,11 +25,11 @@ import { useLocation, useNavigate } from "react-router";
 import { ActionGroup, Alert, Checkbox, Content, Form } from "@patternfly/react-core";
 import { NestedContent, Page, PasswordAndConfirmationInput } from "~/components/core";
 import PasswordCheck from "~/components/users/PasswordCheck";
-import { useEncryptionMethods } from "~/hooks/api/system/storage";
+import { useEncryptionMethods } from "~/hooks/model/system/storage";
 import { useEncryption } from "~/queries/storage/config-model";
 import { isEmpty } from "radashi";
 import { _ } from "~/i18n";
-import type { model } from "~/api/storage";
+import type { configModel } from "~/model/storage/config-model";
 
 /**
  * Renders a form that allows the user change encryption settings
@@ -43,7 +43,7 @@ export default function EncryptionSettingsPage() {
   const [errors, setErrors] = useState([]);
   const [isEnabled, setIsEnabled] = useState(false);
   const [password, setPassword] = useState("");
-  const [method, setMethod] = useState<model.EncryptionMethod>("luks2");
+  const [method, setMethod] = useState<configModel.EncryptionMethod>("luks2");
 
   const passwordRef = useRef<HTMLInputElement>();
   const formId = "encryptionSettingsForm";

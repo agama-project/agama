@@ -28,7 +28,7 @@ import {
   updateInitiator,
   ISCSIInitiator,
   ISCSINode,
-} from "~/api/storage/iscsi";
+} from "~/model/storage/iscsi";
 import { useInstallerClient } from "~/context/installer";
 
 const initiatorQuery = {

@@ -23,11 +23,11 @@
 import React from "react";
 import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
-import { Question, FieldType } from "~/api/question";
+import { Question, FieldType } from "~/model/question";
 import { Product } from "~/types/software";
 import { InstallationPhase } from "~/types/status";
 import QuestionWithPassword from "~/components/questions/QuestionWithPassword";
-import { Locale, Keymap } from "~/api/system";
+import { Locale, Keymap } from "~/model/system";
 
 const answerFn = jest.fn();
 const question: Question = {

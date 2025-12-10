@@ -28,11 +28,11 @@ import DevicesManager from "~/storage/devices-manager";
 import ProposalResultTable from "~/components/storage/ProposalResultTable";
 import { ProposalActionsDialog } from "~/components/storage";
 import { _, n_, formatList } from "~/i18n";
-import { useFlattenDevices as useSystemFlattenDevices } from "~/hooks/api/system/storage";
+import { useFlattenDevices as useSystemFlattenDevices } from "~/hooks/model/system/storage";
 import {
   useFlattenDevices as useProposalFlattenDevices,
   useActions,
-} from "~/hooks/api/proposal/storage";
+} from "~/hooks/model/proposal/storage";
 import { sprintf } from "sprintf-js";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import { useStorageUiState } from "~/context/storage-ui-state";

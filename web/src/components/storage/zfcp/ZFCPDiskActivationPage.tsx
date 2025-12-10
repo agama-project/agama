@@ -26,7 +26,7 @@ import { Page } from "~/components/core";
 import { _ } from "~/i18n";
 import { useCancellablePromise } from "~/hooks/use-cancellable-promise";
 import { LUNInfo } from "~/types/zfcp";
-import { activateZFCPDisk } from "~/api/storage/zfcp";
+import { activateZFCPDisk } from "~/model/storage/zfcp";
 import { PATHS } from "~/routes/storage";
 import { useNavigate } from "react-router";
 import ZFCPDiskForm from "./ZFCPDiskForm";

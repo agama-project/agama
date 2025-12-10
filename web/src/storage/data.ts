@@ -27,23 +27,23 @@
  * typically used by forms and mutation hooks.
  */
 
-import type { model } from "~/api/storage";
+import type { configModel } from "~/model/storage/config-model";
 
-interface Partition extends Partial<Omit<model.Partition, "filesystem" | "size">> {
+interface Partition extends Partial<Omit<configModel.Partition, "filesystem" | "size">> {
   filesystem?: Filesystem;
   size?: Size;
 }
 
-type VolumeGroup = Partial<Omit<model.VolumeGroup, "logicalVolumes">>;
+type VolumeGroup = Partial<Omit<configModel.VolumeGroup, "logicalVolumes">>;
 
-interface LogicalVolume extends Partial<Omit<model.LogicalVolume, "filesystem" | "size">> {
+interface LogicalVolume extends Partial<Omit<configModel.LogicalVolume, "filesystem" | "size">> {
   filesystem?: Filesystem;
   size?: Size;
 }
 
-type Filesystem = Partial<Omit<model.Filesystem, "default">>;
+type Filesystem = Partial<Omit<configModel.Filesystem, "default">>;
 
-type Size = Partial<Omit<model.Size, "default">>;
+type Size = Partial<Omit<configModel.Size, "default">>;
 
 type SpacePolicyAction = {
   deviceName: string;
@@ -51,7 +51,7 @@ type SpacePolicyAction = {
 };
 
 type SpacePolicy = {
-  type: model.SpacePolicy;
+  type: configModel.SpacePolicy;
   actions?: SpacePolicyAction[];
 };
 
@@ -65,14 +65,14 @@ type Formattable = {
 // type is used for more operations.
 type MdRaid = {
   name: string;
-  spacePolicy?: model.SpacePolicy;
+  spacePolicy?: configModel.SpacePolicy;
 };
 
 // This type is used only for adding a disk device searched by name. See commend on MdRaid about
 // starting simple.
 type Drive = {
   name: string;
-  spacePolicy?: model.SpacePolicy;
+  spacePolicy?: configModel.SpacePolicy;
 };
 
 export type {

@@ -61,9 +61,9 @@ import {
   updateRegistrationUrl,
   solveConflict,
   updateConfig,
-} from "~/api/software";
+} from "~/model/software";
 import { QueryHookOptions } from "~/types/queries";
-import { probe as systemProbe, reprobe as systemReprobe } from "~/api/manager";
+import { probe as systemProbe, reprobe as systemReprobe } from "~/model/manager";
 
 /**
  * Query to retrieve software configuration

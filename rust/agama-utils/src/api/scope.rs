@@ -44,6 +44,7 @@ pub enum Scope {
     Product,
     Software,
     Storage,
+    Files,
     Iscsi,
     Users,
 }

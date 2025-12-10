@@ -24,9 +24,9 @@ import React from "react";
 import { screen, within } from "@testing-library/react";
 import { plainRender, installerRender } from "~/test-utils";
 import { Product } from "~/types/software";
-import { System } from "~/api/system/network";
+import { System } from "~/model/system/network";
 import Header from "./Header";
-import { useSystem } from "~/hooks/api/system";
+import { useSystem } from "~/hooks/model/system";
 
 const tumbleweed: Product = {
   id: "Tumbleweed",

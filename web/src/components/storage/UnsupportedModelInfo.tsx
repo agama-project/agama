@@ -23,8 +23,8 @@
 import React from "react";
 import { Alert, Button, Content, Stack, StackItem } from "@patternfly/react-core";
 import { _ } from "~/i18n";
-import { useStorageModel } from "~/hooks/api/storage";
-import { useReset } from "~/hooks/api/config/storage";
+import { useStorageModel } from "~/hooks/model/storage";
+import { useReset } from "~/hooks/model/config/storage";
 
 /**
  * Info about unsupported model.

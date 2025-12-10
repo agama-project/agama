@@ -19,16 +19,15 @@
 // find current contact information at www.suse.com.
 
 use std::{
-    fs::{self, create_dir_all, File},
+    fs::{self, create_dir_all},
     io::Write,
     os::unix::fs::OpenOptionsExt,
     path::{Path, PathBuf},
-    process::Output,
 };
 
 use agama_lib::http::BaseHTTPClient;
 use agama_transfer::Transfer;
-use agama_utils::command::run_with_retry;
+use agama_utils::command::{create_log_file, run_with_retry};
 use anyhow::anyhow;
 use url::Url;
 
@@ -73,9 +72,18 @@ impl ScriptsRunner {
         let path = self.path.join(&file_name);
         self.save_script(url, &path).await?;
 
-        let command = tokio::process::Command::new(&path);
+        let stdout_file = create_log_file(&path.with_extension("stdout"))?;
+        let stderr_file = create_log_file(&path.with_extension("stderr"))?;
+
+        let mut command = tokio::process::Command::new(&path);
+        command.stdout(stdout_file).stderr(stderr_file);
         let output = run_with_retry(command).await?;
-        self.save_logs(&path, output)?;
+
+        if let Some(code) = output.status.code() {
+            let mut file = create_log_file(&path.with_extension("exit"))?;
+            write!(&mut file, "{}", code)?;
+        }
+
         Ok(())
     }
 
@@ -100,7 +108,13 @@ impl ScriptsRunner {
     }
 
     async fn save_script(&self, url: &str, path: &PathBuf) -> anyhow::Result<()> {
-        let mut file = Self::create_file(&path, 0o700)?;
+        let mut file = fs::OpenOptions::new()
+            .create(true)
+            .write(true)
+            .truncate(true)
+            .mode(0o700)
+            .open(&path)?;
+
         while let Err(error) = Transfer::get(url, &mut file, self.insecure) {
             eprintln!("Could not load the script from {url}: {error}");
             if !self.should_retry(&url, &error.to_string()).await? {
@@ -109,34 +123,6 @@ impl ScriptsRunner {
         }
         file.sync_all()?;
         Ok(())
-    }
-
-    fn save_logs(&self, path: &Path, output: Output) -> anyhow::Result<()> {
-        if !output.stdout.is_empty() {
-            let mut file = Self::create_file(&path.with_extension("stdout"), 0o600)?;
-            file.write_all(&output.stdout)?;
-        }
-
-        if !output.stderr.is_empty() {
-            let mut file = Self::create_file(&path.with_extension("stderr"), 0o600)?;
-            file.write_all(&output.stderr)?;
-        }
-
-        if let Some(code) = output.status.code() {
-            let mut file = Self::create_file(&path.with_extension("exit"), 0o600)?;
-            write!(&mut file, "{}", code)?;
-        }
-
-        Ok(())
-    }
-
-    fn create_file(path: &Path, perms: u32) -> std::io::Result<File> {
-        fs::OpenOptions::new()
-            .create(true)
-            .truncate(true)
-            .write(true)
-            .mode(perms)
-            .open(path)
     }
 
     async fn should_retry(&self, url: &str, error: &str) -> anyhow::Result<bool> {

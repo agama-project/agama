@@ -25,7 +25,7 @@ import KeyboardSelection from "./KeyboardSelection";
 import userEvent from "@testing-library/user-event";
 import { screen } from "@testing-library/react";
 import { mockNavigateFn, installerRender } from "~/test-utils";
-import { Keymap } from "~/api/system/l10n";
+import { Keymap } from "~/model/system/l10n";
 
 const mockPatchConfigFn = jest.fn();
 

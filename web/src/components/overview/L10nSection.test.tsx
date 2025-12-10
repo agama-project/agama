@@ -24,7 +24,7 @@ import React from "react";
 import { screen } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
 import { L10nSection } from "~/components/overview";
-import { Locale } from "~/api/system";
+import { Locale } from "~/model/system";
 
 const locales: Locale[] = [
   { id: "en_US.UTF-8", name: "English", territory: "United States" },

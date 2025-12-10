@@ -25,7 +25,7 @@ import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import ProposalFailedInfo from "./ProposalFailedInfo";
 import { LogicalVolume } from "~/storage/data";
-import { Issue, IssueSeverity, IssueSource } from "~/api/issue";
+import { Issue, IssueSeverity, IssueSource } from "~/model/issue";
 import { apiModel } from "~/api/storage/types";
 
 const mockUseConfigErrorsFn = jest.fn();

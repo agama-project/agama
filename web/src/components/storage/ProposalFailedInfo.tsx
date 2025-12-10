@@ -22,7 +22,7 @@
 
 import React from "react";
 import { Alert, Content } from "@patternfly/react-core";
-import { useStorageModel } from "~/hooks/api/storage";
+import { useStorageModel } from "~/hooks/model/storage";
 import * as partitionUtils from "~/components/storage/utils/partition";
 import { _, formatList } from "~/i18n";
 import { sprintf } from "sprintf-js";

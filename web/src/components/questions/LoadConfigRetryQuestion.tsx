@@ -25,7 +25,7 @@ import { Content, Stack } from "@patternfly/react-core";
 import { NestedContent, Popup } from "~/components/core";
 import QuestionActions from "~/components/questions/QuestionActions";
 import { _ } from "~/i18n";
-import type { AnswerCallback, Question } from "~/api/question";
+import type { AnswerCallback, Question } from "~/model/question";
 
 /**
  * Component for rendering generic questions

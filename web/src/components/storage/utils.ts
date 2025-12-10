@@ -31,10 +31,9 @@ import xbytes from "xbytes";
 import { _, N_ } from "~/i18n";
 import { sprintf } from "sprintf-js";
 import type { model } from "~/storage";
-import type { Volume } from "~/api/system/storage";
-import type { model as apiModel } from "~/api/storage";
-import type { storage as system } from "~/api/system";
-import type { storage as proposal } from "~/api/proposal";
+import type { configModel as apiModel } from "~/model/storage/config-model";
+import type { storage as system } from "~/model/system";
+import type { storage as proposal } from "~/model/proposal";
 
 /**
  * @note undefined for either property means unknown
@@ -270,12 +269,8 @@ const deviceChildren = (device: proposal.Device): PartitionTableContent | propos
 
 /**
  * Checks if volume uses given fs. This method works same as in backend case insensitive.
- *
- * @param {Volume} volume
- * @param {string} fs - Filesystem name to check.
- * @returns {boolean} true when volume uses given fs
  */
-const hasFS = (volume: Volume, fs: string): boolean => {
+const hasFS = (volume: system.Volume, fs: string): boolean => {
   const volFS = volume.fsType;
 
   return volFS.toLowerCase() === fs.toLocaleLowerCase();
@@ -284,28 +279,28 @@ const hasFS = (volume: Volume, fs: string): boolean => {
 /**
  * Checks whether the given volume has snapshots.
  */
-const hasSnapshots = (volume: Volume): boolean => {
+const hasSnapshots = (volume: system.Volume): boolean => {
   return hasFS(volume, "btrfs") && volume.snapshots;
 };
 
 /**
  * Checks whether the given volume defines a transactional root.
  */
-const isTransactionalRoot = (volume: Volume): boolean => {
+const isTransactionalRoot = (volume: system.Volume): boolean => {
   return volume.mountPath === "/" && volume.transactional;
 };
 
 /**
  * Checks whether the given volumes defines a transactional system.
  */
-const isTransactionalSystem = (volumes: Volume[] = []): boolean => {
+const isTransactionalSystem = (volumes: system.Volume[] = []): boolean => {
   return volumes.find((v) => isTransactionalRoot(v)) !== undefined;
 };
 
 /**
  * Generates a label for the given volume.
  */
-const volumeLabel = (volume: Volume): string =>
+const volumeLabel = (volume: system.Volume): string =>
   volume.mountPath === "/" ? "root" : volume.mountPath;
 
 /**

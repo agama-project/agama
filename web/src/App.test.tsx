@@ -24,16 +24,16 @@ import React from "react";
 import { screen } from "@testing-library/react";
 import { installerRender, mockRoutes } from "~/test-utils";
 import { createClient } from "~/client";
-import { useExtendedConfig } from "~/hooks/api/config";
-import { useStatus } from "~/hooks/api/status";
-import { useSystem } from "~/hooks/api/system";
+import { useExtendedConfig } from "~/hooks/model/config";
+import { useStatus } from "~/hooks/model/status";
+import { useSystem } from "~/hooks/model/system";
 import { Product } from "~/types/software";
 import { PATHS } from "~/router";
 import { PRODUCT } from "~/routes/paths";
 import type { Config } from "~/api";
-import type { Progress, State } from "~/api/status";
+import type { Progress, State } from "~/model/status";
 import App from "./App";
-import { System } from "~/api/system/network";
+import { System } from "~/model/system/network";
 
 jest.mock("~/client");
 

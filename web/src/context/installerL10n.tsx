@@ -24,7 +24,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import { locationReload, setLocationSearch } from "~/utils";
 import agama from "~/agama";
 import supportedLanguages from "~/languages.json";
-import { useSystem } from "~/hooks/api/system";
+import { useSystem } from "~/hooks/model/system";
 import { configureL10nAction } from "~/api";
 
 const L10nContext = React.createContext(null);

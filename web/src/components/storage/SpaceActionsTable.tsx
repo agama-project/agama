@@ -39,23 +39,23 @@ import { DeviceName, DeviceDetails, DeviceSize, toDevice } from "~/components/st
 import { Icon } from "~/components/layout";
 import { TreeTableColumn } from "~/components/core/TreeTable";
 import { Table, Td, Th, Tr, Thead, Tbody } from "@patternfly/react-table";
-import { useStorageModel } from "~/hooks/api/storage";
+import { useStorageModel } from "~/hooks/model/storage";
 import { supportShrink } from "~/storage/device";
-import type { Device, UnusedSlot } from "~/api/proposal/storage";
-import type { model } from "~/api/storage";
+import type { storage as proposal } from "~/model/proposal";
+import type { configModel } from "~/model/storage/config-model";
 
 export type SpacePolicyAction = {
   deviceName: string;
   value: "delete" | "resizeIfNeeded";
 };
 
-const isUsedPartition = (partition: model.Partition): boolean => {
+const isUsedPartition = (partition: configModel.Partition): boolean => {
   return partition.filesystem !== undefined;
 };
 
 // FIXME: there is too much logic here. This is one of those cases that should be considered
 // when restructuring the hooks and queries.
-const useReusedPartition = (name: string): model.Partition | undefined => {
+const useReusedPartition = (name: string): configModel.Partition | undefined => {
   const model = useStorageModel();
 
   if (!model || !name) return;
@@ -68,7 +68,7 @@ const useReusedPartition = (name: string): model.Partition | undefined => {
  * Info about the device.
  * @component
  */
-const DeviceInfoContent = ({ device }: { device: Device }) => {
+const DeviceInfoContent = ({ device }: { device: proposal.Device }) => {
   const minSize = device.block?.shrinking?.minSize;
 
   const reused = useReusedPartition(device.name);
@@ -106,9 +106,9 @@ const DeviceInfoContent = ({ device }: { device: Device }) => {
  * @component
  *
  * @param {object} props
- * @param {Device} props.device
+ * @param {proposal.Device} props.device
  */
-const DeviceInfo = ({ device }: { device: Device }) => {
+const DeviceInfo = ({ device }: { device: proposal.Device }) => {
   return (
     <Popover headerContent={device.name} bodyContent={<DeviceInfoContent device={device} />}>
       <Button
@@ -134,7 +134,7 @@ const DeviceActionSelector = ({
   action,
   onChange,
 }: {
-  device: Device;
+  device: proposal.Device;
   action: string;
   onChange?: (action: SpacePolicyAction) => void;
 }) => {
@@ -196,7 +196,7 @@ const DeviceAction = ({
   action,
   onChange,
 }: {
-  item: UnusedSlot | Device;
+  item: proposal.UnusedSlot | proposal.Device;
   action: string;
   onChange?: (action: SpacePolicyAction) => void;
 }) => {
@@ -207,8 +207,8 @@ const DeviceAction = ({
 };
 
 export type SpaceActionsTableProps = {
-  devices: (UnusedSlot | Device)[];
-  deviceAction: (item: UnusedSlot | Device) => string;
+  devices: (proposal.UnusedSlot | proposal.Device)[];
+  deviceAction: (item: proposal.UnusedSlot | proposal.Device) => string;
   onActionChange: (action: SpacePolicyAction) => void;
 };
 
@@ -223,17 +223,20 @@ export default function SpaceActionsTable({
 }: SpaceActionsTableProps) {
   const columns: TreeTableColumn[] = [
     {
-      name: _("Device"),
-      value: (item: UnusedSlot | Device) => <DeviceName item={item} />,
+      name: _("proposal.Device"),
+      value: (item: proposal.UnusedSlot | proposal.Device) => <DeviceName item={item} />,
     },
     {
       name: _("Details"),
-      value: (item: UnusedSlot | Device) => <DeviceDetails item={item} />,
+      value: (item: proposal.UnusedSlot | proposal.Device) => <DeviceDetails item={item} />,
     },
-    { name: _("Size"), value: (item: UnusedSlot | Device) => <DeviceSize item={item} /> },
+    {
+      name: _("Size"),
+      value: (item: proposal.UnusedSlot | proposal.Device) => <DeviceSize item={item} />,
+    },
     {
       name: _("Action"),
-      value: (item: UnusedSlot | Device) => (
+      value: (item: proposal.UnusedSlot | proposal.Device) => (
         <DeviceAction item={item} action={deviceAction(item)} onChange={onActionChange} />
       ),
     },

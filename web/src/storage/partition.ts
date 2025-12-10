@@ -22,10 +22,10 @@
 
 import { copyApiModel, findDevice, buildPartition } from "~/storage/api-model";
 import { isUsed } from "~/storage/search";
-import type { model } from "~/api/storage";
+import type { configModel } from "~/model/storage/config-model";
 import type { data } from "~/storage";
 
-type Partitionable = model.Drive | model.MdRaid;
+type Partitionable = configModel.Drive | configModel.MdRaid;
 
 function indexByName(device: Partitionable, name: string): number {
   return (device.partitions || []).findIndex((p) => p.name && p.name === name);
@@ -42,11 +42,11 @@ function indexByPath(device: Partitionable, path: string): number {
  * the partition is replaced.
  * */
 function addPartition(
-  model: model.Config,
+  model: configModel.Config,
   collection: "drives" | "mdRaids",
   index: number | string,
   data: data.Partition,
-): model.Config {
+): configModel.Config {
   model = copyApiModel(model);
   const device = findDevice(model, collection, index);
 
@@ -65,12 +65,12 @@ function addPartition(
 }
 
 function editPartition(
-  model: model.Config,
+  model: configModel.Config,
   collection: "drives" | "mdRaids",
   index: number | string,
   mountPath: string,
   data: data.Partition,
-): model.Config {
+): configModel.Config {
   model = copyApiModel(model);
   const device = findDevice(model, collection, index);
 
@@ -87,11 +87,11 @@ function editPartition(
 }
 
 function deletePartition(
-  model: model.Config,
+  model: configModel.Config,
   collection: "drives" | "mdRaids",
   index: number | string,
   mountPath: string,
-): model.Config {
+): configModel.Config {
   model = copyApiModel(model);
   const device = findDevice(model, collection, index);
 

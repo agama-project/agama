@@ -23,7 +23,7 @@
 import React, { useState } from "react";
 import MenuButton, { CustomToggleProps, MenuButtonItem } from "~/components/core/MenuButton";
 import NewVgMenuOption from "./NewVgMenuOption";
-import { useAvailableDevices } from "~/hooks/api/system/storage";
+import { useAvailableDevices } from "~/hooks/model/system/storage";
 import { useModel } from "~/hooks/storage/model";
 import { useSwitchToDrive } from "~/hooks/storage/drive";
 import { useSwitchToMdRaid } from "~/hooks/storage/md-raid";
@@ -35,7 +35,7 @@ import { MenuItemProps } from "@patternfly/react-core";
 import { isDrive } from "~/storage/device";
 import type { model } from "~/storage";
 import type { Model } from "~/storage/model";
-import type { storage } from "~/api/system";
+import type { storage } from "~/model/system";
 
 const baseName = (device: storage.Device): string => deviceBaseName(device, true);
 

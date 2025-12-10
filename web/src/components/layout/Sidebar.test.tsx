@@ -23,9 +23,9 @@
 import React from "react";
 import { screen, within } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
-import { useSystem } from "~/hooks/api/system";
+import { useSystem } from "~/hooks/model/system";
 import { Product } from "~/types/software";
-import { System } from "~/api/system/network";
+import { System } from "~/model/system/network";
 import Sidebar from "./Sidebar";
 
 const tw: Product = {

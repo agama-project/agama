@@ -27,7 +27,7 @@ import {
   contentDescription,
   filesystemLabels,
 } from "~/components/storage/utils/device";
-import type { storage } from "~/api/system";
+import type { storage } from "~/model/system";
 
 /**
  * Renders the content to be used at a menu entry describing a device.

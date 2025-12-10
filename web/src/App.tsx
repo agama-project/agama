@@ -22,11 +22,11 @@
 
 import React, { useEffect } from "react";
 import { Navigate, Outlet, useLocation } from "react-router";
-import { useStatusChanges, useStatus } from "~/hooks/api/status";
-import { useSystemChanges } from "~/hooks/api/system";
-import { useProposalChanges } from "~/hooks/api/proposal";
-import { useIssuesChanges } from "~/hooks/api/issue";
-import { useProduct } from "~/hooks/api/config";
+import { useStatusChanges, useStatus } from "~/hooks/model/status";
+import { useSystemChanges } from "~/hooks/model/system";
+import { useProposalChanges } from "~/hooks/model/proposal";
+import { useIssuesChanges } from "~/hooks/model/issue";
+import { useProduct } from "~/hooks/model/config";
 import { ROOT, PRODUCT } from "~/routes/paths";
 import { useQueryClient } from "@tanstack/react-query";
 import AlertOutOfSync from "~/components/core/AlertOutOfSync";

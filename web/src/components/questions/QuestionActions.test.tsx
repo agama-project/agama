@@ -23,7 +23,7 @@
 import React from "react";
 import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
-import { Question, FieldType } from "~/api/question";
+import { Question, FieldType } from "~/model/question";
 import QuestionActions from "~/components/questions/QuestionActions";
 
 let defaultAction = "sure";

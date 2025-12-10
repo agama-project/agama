@@ -27,8 +27,8 @@ import { Link } from "~/components/core";
 import { REGISTRATION, SIDE_PATHS } from "~/routes/paths";
 import { _ } from "~/i18n";
 import { sprintf } from "sprintf-js";
-import { useIssues } from "~/hooks/api/issue";
-import { useProduct } from "~/hooks/api/config";
+import { useIssues } from "~/hooks/model/issue";
+import { useProduct } from "~/hooks/model/config";
 
 const LinkToRegistration = ({ text }: { text: string }) => {
   const location = useLocation();

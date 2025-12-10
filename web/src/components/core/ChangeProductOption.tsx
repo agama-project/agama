@@ -26,7 +26,7 @@ import { useHref, useLocation } from "react-router";
 // import { useRegistration } from "~/queries/software";
 import { PRODUCT as PATHS, SIDE_PATHS } from "~/routes/paths";
 import { _ } from "~/i18n";
-import { useSystem } from "~/hooks/api/system";
+import { useSystem } from "~/hooks/model/system";
 
 /**
  * DropdownItem Option for navigating to the selection product.

@@ -27,23 +27,23 @@ import { Page } from "~/components/core";
 import SpaceActionsTable, { SpacePolicyAction } from "~/components/storage/SpaceActionsTable";
 import { deviceChildren } from "~/components/storage/utils";
 import { _ } from "~/i18n";
-import { useDevices } from "~/hooks/api/system/storage";
+import { useDevices } from "~/hooks/model/system/storage";
 import { useDrive as useDriveModel, useMdRaid as useMdRaidModel } from "~/hooks/storage/model";
 import { useSetSpacePolicy } from "~/hooks/storage/space-policy";
 import { toDevice } from "./device-utils";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import { sprintf } from "sprintf-js";
-import type { UnusedSlot, Device } from "~/api/proposal/storage";
-import type { model } from "~/api/storage";
+import type { storage as proposal } from "~/model/proposal";
+import type { configModel } from "~/model/storage/config-model";
 
-const partitionAction = (partition: model.Partition) => {
+const partitionAction = (partition: configModel.Partition) => {
   if (partition.delete) return "delete";
   if (partition.resizeIfNeeded) return "resizeIfNeeded";
 
   return undefined;
 };
 
-function useDeviceModelFromParams(): model.Drive | model.MdRaid | null {
+function useDeviceModelFromParams(): configModel.Drive | configModel.MdRaid | null {
   const { collection, index } = useParams();
   const deviceModel = collection === "drives" ? useDriveModel : useMdRaidModel;
   return deviceModel(Number(index));
@@ -60,7 +60,7 @@ export default function SpacePolicySelection() {
   const setSpacePolicy = useSetSpacePolicy();
   const { collection, index } = useParams();
 
-  const partitionDeviceAction = (device: Device) => {
+  const partitionDeviceAction = (device: proposal.Device) => {
     const partition = deviceModel.partitions?.find((p) => p.name === device.name);
 
     return partition ? partitionAction(partition) : undefined;
@@ -70,7 +70,7 @@ export default function SpacePolicySelection() {
     children
       .filter((d) => toDevice(d) && partitionDeviceAction(toDevice(d)))
       .map(
-        (d: Device): SpacePolicyAction => ({
+        (d: proposal.Device): SpacePolicyAction => ({
           deviceName: toDevice(d).name,
           value: partitionDeviceAction(toDevice(d)),
         }),
@@ -79,7 +79,7 @@ export default function SpacePolicySelection() {
 
   const navigate = useNavigate();
 
-  const deviceAction = (device: Device | UnusedSlot) => {
+  const deviceAction = (device: proposal.Device | proposal.UnusedSlot) => {
     if (toDevice(device) === undefined) return "keep";
 
     return actions.find((a) => a.deviceName === toDevice(device).name)?.value || "keep";

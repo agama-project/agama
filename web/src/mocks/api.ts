@@ -24,7 +24,7 @@
  * Mocking HTTP API calls.
  */
 
-import * as apiStorage from "~/api/storage";
+import * as apiStorage from "~/model/storage";
 import * as apiIssues from "~/api/issues";
 import { Device } from "~/api/storage/types/openapi";
 

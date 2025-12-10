@@ -25,8 +25,8 @@ import { Content, Flex, Form, FormGroup, Radio } from "@patternfly/react-core";
 import { useNavigate } from "react-router";
 import { ListSearch, Page } from "~/components/core";
 import { patchConfig } from "~/api";
-import { useProposal } from "~/hooks/api/proposal/l10n";
-import { useSystem } from "~/hooks/api/system/l10n";
+import { useProposal } from "~/hooks/model/proposal/l10n";
+import { useSystem } from "~/hooks/model/system/l10n";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import { _ } from "~/i18n";
 

@@ -22,7 +22,7 @@
 
 import React from "react";
 import { screen, within } from "@testing-library/react";
-import { AnswerCallback, Question, FieldType } from "~/api/question";
+import { AnswerCallback, Question, FieldType } from "~/model/question";
 import UnsupportedAutoYaST from "~/components/questions/UnsupportedAutoYaST";
 import { plainRender } from "~/test-utils";
 
