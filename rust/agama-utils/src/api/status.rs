@@ -25,8 +25,8 @@ use serde::Serialize;
 #[derive(Clone, Default, Serialize, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct Status {
-    /// State of the installation
-    pub state: State,
+    /// Stage of the installation
+    pub stage: Stage,
     /// Active progresses
     pub progresses: Vec<Progress>,
 }
@@ -34,7 +34,7 @@ pub struct Status {
 /// Represents the current state of the installation process.
 #[derive(Clone, Copy, Default, Serialize, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
-pub enum State {
+pub enum Stage {
     #[default]
     /// Configuring the installation
     Configuring,

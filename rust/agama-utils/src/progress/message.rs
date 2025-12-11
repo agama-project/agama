@@ -21,7 +21,7 @@
 use crate::actor::Message;
 use crate::api::progress::Progress;
 use crate::api::scope::Scope;
-use crate::api::status::State;
+use crate::api::status::Stage;
 use crate::api::Status;
 
 pub struct GetStatus;
@@ -134,16 +134,16 @@ impl Message for Finish {
     type Reply = ();
 }
 
-pub struct SetState {
-    pub state: State,
+pub struct SetStage {
+    pub stage: Stage,
 }
 
-impl SetState {
-    pub fn new(state: State) -> Self {
-        Self { state }
+impl SetStage {
+    pub fn new(stage: Stage) -> Self {
+        Self { stage }
     }
 }
 
-impl Message for SetState {
+impl Message for SetStage {
     type Reply = ();
 }

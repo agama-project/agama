@@ -127,9 +127,9 @@ impl MessageHandler<message::GetStatus> for Service {
 }
 
 #[async_trait]
-impl MessageHandler<message::SetState> for Service {
-    async fn handle(&mut self, message: message::SetState) -> Result<(), Error> {
-        self.status.state = message.state;
+impl MessageHandler<message::SetStage> for Service {
+    async fn handle(&mut self, message: message::SetStage) -> Result<(), Error> {
+        self.status.stage = message.stage;
         Ok(())
     }
 }

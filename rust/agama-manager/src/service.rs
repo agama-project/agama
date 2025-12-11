@@ -25,7 +25,7 @@ use agama_utils::{
         self, event,
         files::scripts::ScriptsGroup,
         manager::{self, LicenseContent},
-        status::State,
+        status::Stage,
         Action, Config, Event, Issue, IssueMap, Proposal, Scope, Status, SystemInfo,
     },
     issue, licenses,
@@ -686,7 +686,7 @@ impl InstallAction {
     async fn install(&mut self) -> Result<(), Error> {
         // NOTE: consider a NextState message?
         self.progress
-            .call(progress::message::SetState::new(State::Installing))
+            .call(progress::message::SetStage::new(Stage::Installing))
             .await?;
 
         //
@@ -736,7 +736,7 @@ impl InstallAction {
             .await?;
 
         self.progress
-            .call(progress::message::SetState::new(State::Finished))
+            .call(progress::message::SetStage::new(Stage::Finished))
             .await?;
         Ok(())
     }
