@@ -25,7 +25,6 @@ use agama_utils::{
         self, event,
         files::scripts::ScriptsGroup,
         manager::{self, LicenseContent},
-        status::State,
         Action, Config, Event, Issue, IssueMap, Proposal, Scope, Status, SystemInfo,
     },
     issue, licenses,
@@ -480,10 +479,10 @@ impl Actor for Service {
 }
 
 #[async_trait]
-impl MessageHandler<message::GetStatus> for Service {
+impl MessageHandler<progress::message::GetStatus> for Service {
     /// It returns the status of the installation.
-    async fn handle(&mut self, _message: message::GetStatus) -> Result<Status, Error> {
-        let status = self.progress.call(progress::message::GetStatus).await?;
+    async fn handle(&mut self, message: progress::message::GetStatus) -> Result<Status, Error> {
+        let status = self.progress.call(message).await?;
         Ok(status)
     }
 }

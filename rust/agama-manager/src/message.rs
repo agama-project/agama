@@ -27,13 +27,6 @@ use agama_utils::{
 };
 use serde_json::Value;
 
-/// Gets the installation status.
-pub struct GetStatus;
-
-impl Message for GetStatus {
-    type Reply = Status;
-}
-
 /// Gets the information of the underlying system.
 #[derive(Debug)]
 pub struct GetSystem;
