@@ -50,6 +50,7 @@ import { _ } from "~/i18n";
 import { deviceSystems, isDrive } from "~/storage/device";
 import type { model, data } from "~/storage";
 import type { storage } from "~/model/system";
+import { partitionableModelMethods } from "~/model/storage";
 
 /**
  * Hook that returns the devices that can be selected as target to automatically create LVM PVs.
@@ -115,7 +116,9 @@ export default function LvmPage() {
     } else if (model && !model.volumeGroups.length) {
       setName("system");
       const potentialTargets = model.drives.concat(model.mdRaids);
-      const targetNames = potentialTargets.filter((d) => d.isAddingPartitions).map((d) => d.name);
+      const targetNames = potentialTargets
+        .filter(partitionableModelMethods.isAddingPartitions)
+        .map((d) => d.name);
       const targetDevices = allDevices.filter((d) => targetNames.includes(d.name));
       setSelectedDevices(targetDevices);
     }

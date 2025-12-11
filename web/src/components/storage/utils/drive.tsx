@@ -23,7 +23,7 @@
 import { _, n_, formatList } from "~/i18n";
 import { SpacePolicy, SPACE_POLICIES, baseName, formattedPath } from "~/components/storage/utils";
 import { useConfigModel } from "~/hooks/model/storage";
-import { configModelMethods } from "~/model/storage";
+import { configModelMethods, partitionableModelMethods } from "~/model/storage";
 import { sprintf } from "sprintf-js";
 import type { configModel } from "~/model/storage/config-model";
 import type { Drive } from "~/storage/model";
@@ -69,7 +69,8 @@ const SummaryForSpacePolicy = (drive: Drive): string | undefined => {
   const configModel = useConfigModel();
   const isTargetDevice = configModelMethods.isTargetDevice(configModel, drive.name);
   const isBoot = configModelMethods.isBootDevice(configModel, drive.name);
-  const { isAddingPartitions, isReusingPartitions, spacePolicy } = drive;
+  const isAddingPartitions = partitionableModelMethods.isAddingPartitions(drive);
+  const { isReusingPartitions, spacePolicy } = drive;
 
   switch (spacePolicy) {
     case "delete":
@@ -122,7 +123,8 @@ const ContentActionsDescription = (drive: Drive, policyId: string | undefined): 
   const configModel = useConfigModel();
   const isTargetDevice = configModelMethods.isTargetDevice(configModel, drive.name);
   const isBoot = configModelMethods.isBootDevice(configModel, drive.name);
-  const { isAddingPartitions, isReusingPartitions } = drive;
+  const isAddingPartitions = partitionableModelMethods.isAddingPartitions(drive);
+  const { isReusingPartitions } = drive;
 
   if (!policyId) policyId = drive.spacePolicy;
 

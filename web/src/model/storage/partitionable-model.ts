@@ -21,15 +21,20 @@
  */
 
 import { sift } from "radashi";
+import { partitionModelMethods } from "~/model/storage";
 import type { configModel } from "~/model/storage";
 import type * as model from "~/storage/model";
 
 // FIXME: remove model types once model is dropped.
 type Partitionable = configModel.Drive | configModel.MdRaid | model.Drive | model.MdRaid;
 
-function usedMountPaths(drive: Partitionable): string[] {
-  const mountPaths = (drive.partitions || []).map((p) => p.mountPath);
-  return sift([drive.mountPath, ...mountPaths]);
+function usedMountPaths(device: Partitionable): string[] {
+  const mountPaths = (device.partitions || []).map((p) => p.mountPath);
+  return sift([device.mountPath, ...mountPaths]);
 }
 
-export { usedMountPaths };
+function isAddingPartitions(device: Partitionable): boolean {
+  return device.partitions.some((p) => p.mountPath && partitionModelMethods.isNew(p));
+}
+
+export { usedMountPaths, isAddingPartitions };
