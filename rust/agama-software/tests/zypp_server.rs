@@ -18,7 +18,7 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use agama_software::model::state::{Repository as StateRepository, SoftwareState};
+use agama_software::state::{Repository as StateRepository, SoftwareState};
 use agama_software::zypp_server::{SoftwareAction, ZyppServer, ZyppServerResult};
 use agama_utils::actor;
 use agama_utils::api::event::Event;
@@ -65,8 +65,10 @@ async fn test_start_zypp_server() {
     let root_dir =
         Utf8Path::new(env!("CARGO_MANIFEST_DIR")).join("../zypp-agama/fixtures/zypp_repos_root");
     cleanup_past_leftovers(&root_dir.as_std_path());
+    let zypp_root =
+        Utf8Path::new(env!("CARGO_MANIFEST_DIR")).join("../zypp-agama/fixtures/zypp_root_tmp");
 
-    let client = ZyppServer::start(&root_dir).expect("starting zypp server failed");
+    let client = ZyppServer::start(&zypp_root).expect("starting zypp server failed");
 
     // Setup event broadcast channel
     let (event_tx, _event_rx) = broadcast::channel::<Event>(100); // Buffer size 100
@@ -133,7 +135,7 @@ async fn test_start_zypp_server() {
         result.unwrap_err()
     );
     let issues = result.unwrap();
-    assert_eq!(issues.len(), 1);
+    assert_eq!(issues.len(), 1, "There are unexpected issues size {issues:#?}");
     assert_eq!(issues[0].class, "software.select_product");
 
     let questions = question_handler
@@ -141,11 +143,4 @@ async fn test_start_zypp_server() {
         .await
         .expect("Failed to get questions");
     assert!(questions.is_empty());
-
-    // Send quit action to the server
-    let (quit_tx, quit_rx) = oneshot::channel();
-    client
-        .send(SoftwareAction::Quit(quit_tx))
-        .expect("Failed to send Quit action");
-    quit_rx.await.expect("Failed to receive quit response");
 }

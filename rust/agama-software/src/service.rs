@@ -100,12 +100,14 @@ impl Starter {
         self
     }
 
+    const TARGET_DIR: &str = "/run/agama/software_ng_zypp";
+
     /// Starts the service and returns a handler to communicate with it.
     pub async fn start(self) -> Result<Handler<Service>, Error> {
         let model = match self.model {
             Some(model) => model,
             None => {
-                let zypp_sender = ZyppServer::start()?;
+                let zypp_sender = ZyppServer::start(Self::TARGET_DIR)?;
                 Arc::new(Mutex::new(Model::new(
                     zypp_sender,
                     find_mandatory_repositories("/"),
