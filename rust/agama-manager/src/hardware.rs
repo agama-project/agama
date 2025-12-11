@@ -28,10 +28,14 @@ use std::{
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
-    #[error("lshw command failed")]
+    #[error("lshw command failed: {stderr}")]
     Command { status: ExitStatus, stderr: String },
-    #[error("Failed to parse lshw output")]
-    Parse(#[from] serde_json::Error),
+    #[error("Failed to parse lshw output: {source:?}")]
+    Parse {
+        json: String,
+        #[source]
+        source: serde_json::Error,
+    },
     #[error("I/O error: {0}")]
     Io(#[from] std::io::Error),
 }
@@ -82,14 +86,15 @@ impl Registry {
             });
         }
 
-        self.root = Some(serde_json::from_slice(&output.stdout)?);
+        let stdout = String::from_utf8_lossy(&output.stdout);
+        self.root = Some(HardwareNode::from_json(&stdout)?);
         Ok(())
     }
 
     /// Builds a registry using the lshw data from a file.
     fn read_from_file<P: AsRef<Path>>(&mut self, path: P) -> Result<(), Error> {
         let json = std::fs::read_to_string(path)?;
-        self.root = Some(serde_json::from_str(&json)?);
+        self.root = Some(HardwareNode::from_json(&json)?);
         Ok(())
     }
 
@@ -134,6 +139,18 @@ struct HardwareNode {
 }
 
 impl HardwareNode {
+    /// Builds a node (including its children) from a JSON string.
+    ///
+    /// * `json`: JSON string reference.
+    fn from_json(json: &str) -> Result<HardwareNode, Error> {
+        let node = serde_json::from_str(&json).map_err(|error| Error::Parse {
+            json: json.to_string(),
+            source: error,
+        })?;
+
+        Ok(node)
+    }
+
     /// Searches hardware information using the id (e.g., "cpu").
     ///
     /// It assumes that the id is unique.
@@ -178,7 +195,6 @@ impl HardwareNode {
 
 impl From<&HardwareNode> for HardwareInfo {
     fn from(value: &HardwareNode) -> Self {
-        // let system_info = value.find_by_class("system");
         let cpu = value
             .find_by_class("processor")
             .first()
@@ -186,15 +202,22 @@ impl From<&HardwareNode> for HardwareInfo {
 
         let memory = value.find_by_id("memory").and_then(|m| m.size);
 
-        let model = value.find_by_class("system").first().map(|s| {
-            format!(
+        let model = if let Some(system) = value.find_by_class("system").first() {
+            let model_str = format!(
                 "{} {}",
-                s.vendor.clone().unwrap_or_default(),
-                s.version.clone().unwrap_or_default()
+                system.vendor.clone().unwrap_or_default(),
+                system.version.clone().unwrap_or_default()
             )
             .trim()
-            .to_string()
-        });
+            .to_string();
+            if model_str.is_empty() {
+                None
+            } else {
+                Some(model_str)
+            }
+        } else {
+            None
+        };
 
         Self { cpu, memory, model }
     }
@@ -283,6 +306,32 @@ mod tests {
         );
         assert_eq!(node.memory, Some(4294967296));
         assert_eq!(node.model, Some("QEMU pc-q35-9.2".to_string()));
+        Ok(())
+    }
+
+    #[test]
+    fn test_parse_from_json_error() {
+        let invalid_json = "INVALID JSON";
+        let error = HardwareNode::from_json(invalid_json).unwrap_err();
+        println!("{error}");
+        assert!(matches!(
+            error,
+            super::Error::Parse {
+                json: _json,
+                source: _source
+            }
+        ));
+    }
+
+    #[tokio::test]
+    async fn test_to_hardware_incomplete() -> Result<(), Box<dyn Error>> {
+        let fixtures = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../test/share");
+        let mut registry = Registry::new_from_file(&fixtures.join("lshw-incomplete.json"));
+        registry.read().await?;
+        let node = registry.to_hardware_info();
+        assert_eq!(node.cpu, None);
+        assert_eq!(node.memory, None);
+        assert_eq!(node.model, None);
         Ok(())
     }
 }
