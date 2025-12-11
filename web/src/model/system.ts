@@ -49,8 +49,6 @@ type Product = {
   /** Translations */
   translations?: {
     /** The key is the locale (e.g., "en-US", "es-ES") */
-    name: Record<string, string>;
-    /** The key is the locale (e.g., "en-US", "es-ES") */
     description: Record<string, string>;
   };
 };

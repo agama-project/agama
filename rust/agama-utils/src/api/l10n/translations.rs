@@ -25,9 +25,6 @@ use std::collections::HashMap;
 #[derive(Clone, Default, Debug, Deserialize, Serialize, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct Translations {
-    /// Translated names, by locale.
-    #[serde(default)]
-    pub name: HashMap<String, String>,
     /// Translated descriptions, by locale.
     #[serde(default)]
     pub description: HashMap<String, String>,

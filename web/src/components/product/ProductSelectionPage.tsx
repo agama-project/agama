@@ -63,15 +63,14 @@ const Option = ({ product, isChecked, onChange }) => {
   const logoSrc = `assets/logos/${product.icon}`;
   const currentLocale = agama.language;
 
-  const translatedName = product.translations?.name[currentLocale] || product.name;
   const translatedDescription =
     product.translations?.description[currentLocale] || product.description;
 
   // TRANSLATORS: %s will be replaced by a product name. E.g., "openSUSE Tumbleweed"
-  const logoAltText = sprintf(_("%s logo"), translatedName);
+  const logoAltText = sprintf(_("%s logo"), product.name);
 
   return (
-    <ListItem aria-label={translatedName}>
+    <ListItem aria-label={product.name}>
       <Card>
         <CardBody>
           <Split hasGutter>
@@ -90,7 +89,7 @@ const Option = ({ product, isChecked, onChange }) => {
                 htmlFor={product.id}
                 className={`${pfTextStyles.fontSizeLg} ${pfTextStyles.fontWeightBold}`}
               >
-                {translatedName}
+                {product.name}
               </label>
               <p id={detailsId}>{translatedDescription}</p>
             </Stack>
