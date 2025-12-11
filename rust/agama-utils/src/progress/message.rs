@@ -30,23 +30,23 @@ impl Message for GetStatus {
     type Reply = Status;
 }
 
-pub struct Get;
+pub struct GetProgress;
 
-impl Message for Get {
+impl Message for GetProgress {
     type Reply = Vec<Progress>;
 }
 
-pub struct Set {
+pub struct SetProgress {
     pub progress: Progress,
 }
 
-impl Set {
+impl SetProgress {
     pub fn new(progress: Progress) -> Self {
         Self { progress }
     }
 }
 
-impl Message for Set {
+impl Message for SetProgress {
     type Reply = ();
 }
 

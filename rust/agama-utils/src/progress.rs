@@ -68,7 +68,7 @@ mod tests {
         assert_eq!(event_progress.step, "first step");
         assert_eq!(event_progress.index, 1);
 
-        let progresses = handler.call(message::Get).await?;
+        let progresses = handler.call(message::GetProgress).await?;
         assert_eq!(progresses.len(), 1);
 
         let progress = progresses.first().unwrap();
@@ -82,7 +82,7 @@ mod tests {
         let event = receiver.recv().await.unwrap();
         assert!(matches!(event, Event::ProgressChanged { progress: _ }));
 
-        let progresses = handler.call(message::Get).await.unwrap();
+        let progresses = handler.call(message::GetProgress).await.unwrap();
         let progress = progresses.first().unwrap();
         assert_eq!(progress.scope, Scope::L10n);
         assert_eq!(progress.size, 3);
@@ -96,7 +96,7 @@ mod tests {
         let event = receiver.recv().await.unwrap();
         assert!(matches!(event, Event::ProgressChanged { progress: _ }));
 
-        let progresses = handler.call(message::Get).await.unwrap();
+        let progresses = handler.call(message::GetProgress).await.unwrap();
         let progress = progresses.first().unwrap();
         assert_eq!(progress.scope, Scope::L10n);
         assert_eq!(progress.size, 3);
@@ -113,7 +113,7 @@ mod tests {
             Event::ProgressFinished { scope: Scope::L10n }
         ));
 
-        let progresses = handler.call(message::Get).await.unwrap();
+        let progresses = handler.call(message::GetProgress).await.unwrap();
         assert!(progresses.is_empty());
 
         Ok(())
@@ -125,7 +125,7 @@ mod tests {
 
         // Set first progress.
         let progress = Progress::new(Scope::Storage, 3, "first step".to_string());
-        handler.call(message::Set::new(progress)).await?;
+        handler.call(message::SetProgress::new(progress)).await?;
 
         let event = receiver.recv().await.unwrap();
         let Event::ProgressChanged {
@@ -141,7 +141,7 @@ mod tests {
         assert_eq!(event_progress.step, "first step");
         assert_eq!(event_progress.index, 1);
 
-        let progresses = handler.call(message::Get).await?;
+        let progresses = handler.call(message::GetProgress).await?;
         assert_eq!(progresses.len(), 1);
 
         let progress = progresses.first().unwrap();
@@ -149,7 +149,7 @@ mod tests {
 
         // Set second progress
         let progress = Progress::new(Scope::Storage, 3, "second step".to_string());
-        handler.call(message::Set::new(progress)).await?;
+        handler.call(message::SetProgress::new(progress)).await?;
 
         let event = receiver.recv().await.unwrap();
         let Event::ProgressChanged {
@@ -165,7 +165,7 @@ mod tests {
         assert_eq!(event_progress.step, "second step");
         assert_eq!(event_progress.index, 1);
 
-        let progresses = handler.call(message::Get).await?;
+        let progresses = handler.call(message::GetProgress).await?;
         assert_eq!(progresses.len(), 1);
 
         let progress = progresses.first().unwrap();
@@ -186,7 +186,7 @@ mod tests {
             ))
             .await?;
 
-        let progresses = handler.call(message::Get).await?;
+        let progresses = handler.call(message::GetProgress).await?;
         let progress = progresses.first().unwrap();
         assert_eq!(progress.scope, Scope::L10n);
         assert_eq!(progress.size, 3);
@@ -200,7 +200,7 @@ mod tests {
         // Second step
         handler.call(message::Next::new(Scope::L10n)).await?;
 
-        let progresses = handler.call(message::Get).await.unwrap();
+        let progresses = handler.call(message::GetProgress).await.unwrap();
         let progress = progresses.first().unwrap();
         assert_eq!(progress.step, "second step");
         assert_eq!(progress.index, 2);
@@ -208,7 +208,7 @@ mod tests {
         // Third step
         handler.call(message::Next::new(Scope::L10n)).await?;
 
-        let progresses = handler.call(message::Get).await.unwrap();
+        let progresses = handler.call(message::GetProgress).await.unwrap();
         let progress = progresses.first().unwrap();
         assert_eq!(progress.step, "third step");
         assert_eq!(progress.index, 3);
@@ -216,7 +216,7 @@ mod tests {
         // Finish the progress
         handler.call(message::Finish::new(Scope::L10n)).await?;
 
-        let progresses = handler.call(message::Get).await.unwrap();
+        let progresses = handler.call(message::GetProgress).await.unwrap();
         assert!(progresses.is_empty());
 
         Ok(())
@@ -233,7 +233,7 @@ mod tests {
             .call(message::Start::new(Scope::L10n, 2, ""))
             .await?;
 
-        let progresses = handler.call(message::Get).await.unwrap();
+        let progresses = handler.call(message::GetProgress).await.unwrap();
         assert_eq!(progresses.len(), 2);
         assert_eq!(progresses[0].scope, Scope::Manager);
         assert_eq!(progresses[1].scope, Scope::L10n);

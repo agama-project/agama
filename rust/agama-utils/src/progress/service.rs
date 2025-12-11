@@ -136,15 +136,15 @@ impl MessageHandler<message::SetStage> for Service {
 }
 
 #[async_trait]
-impl MessageHandler<message::Get> for Service {
-    async fn handle(&mut self, _message: message::Get) -> Result<Vec<Progress>, Error> {
+impl MessageHandler<message::GetProgress> for Service {
+    async fn handle(&mut self, _message: message::GetProgress) -> Result<Vec<Progress>, Error> {
         Ok(self.get_progresses().clone())
     }
 }
 
 #[async_trait]
-impl MessageHandler<message::Set> for Service {
-    async fn handle(&mut self, message: message::Set) -> Result<(), Error> {
+impl MessageHandler<message::SetProgress> for Service {
+    async fn handle(&mut self, message: message::SetProgress) -> Result<(), Error> {
         let progress = message.progress;
         if let Some(index) = self.get_progress_index(progress.scope) {
             self.update_progress(index, progress.clone());
