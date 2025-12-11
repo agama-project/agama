@@ -24,18 +24,13 @@ import { useCallback } from "react";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { configModelQuery } from "~/hooks/model/storage";
 import { useSystem } from "~/hooks/model/system/storage";
-import { buildModel } from "~/storage/model";
 import { usedMountPaths } from "~/model/storage/config-model";
 import type { configModel as apiModel } from "~/model/storage/config-model";
 import type { model } from "~/storage";
 
-const build = (data: apiModel.Config | null): model.Model | null =>
-  data ? buildModel(data) : null;
-
 function useModel(): model.Model | null {
   const { data } = useSuspenseQuery({
     ...configModelQuery,
-    select: build,
   });
   return data;
 }
@@ -62,8 +57,8 @@ function useDevice(
   const { data } = useSuspenseQuery({
     ...configModelQuery,
     select: useCallback(
-      (data: apiModel.Config): model.Drive | model.MdRaid | null =>
-        build(data)?.[collection]?.at(index) || null,
+      (data: apiModel.Config | null): model.Drive | model.MdRaid | null =>
+        data?.[collection]?.at(index) || null,
       [collection, index],
     ),
   });
@@ -74,7 +69,7 @@ function useDrive(index: number): model.Drive | null {
   const { data } = useSuspenseQuery({
     ...configModelQuery,
     select: useCallback(
-      (data: apiModel.Config): model.Drive | null => build(data)?.drives?.at(index) || null,
+      (data: apiModel.Config | null): model.Drive | null => data?.drives?.at(index) || null,
       [index],
     ),
   });
@@ -85,7 +80,7 @@ function useMdRaid(index: number): model.MdRaid | null {
   const { data } = useSuspenseQuery({
     ...configModelQuery,
     select: useCallback(
-      (data: apiModel.Config): model.MdRaid | null => build(data)?.mdRaids?.at(index) || null,
+      (data: apiModel.Config | null): model.MdRaid | null => data?.mdRaids?.at(index) || null,
       [index],
     ),
   });

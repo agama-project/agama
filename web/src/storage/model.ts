@@ -40,9 +40,4 @@ type LogicalVolume = configModel.LogicalVolume;
 
 type Formattable = Drive | MdRaid | configModel.Partition | LogicalVolume;
 
-function buildModel(configModel: configModel.Config): Model {
-  return { ...configModel };
-}
-
 export type { Model, Drive, MdRaid, VolumeGroup, LogicalVolume, Formattable };
-export { buildModel };
