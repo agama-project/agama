@@ -51,12 +51,11 @@ import { IconProps } from "../layout/Icon";
 import { sprintf } from "sprintf-js";
 import spacingStyles from "@patternfly/react-styles/css/utilities/Spacing/spacing";
 import { toggle } from "radashi";
-import type { model } from "~/storage";
 import type { configModel } from "~/model/storage/config-model";
 import { partitionableModelMethods } from "~/model/storage";
 
 type PartitionMenuItemProps = {
-  device: model.Drive | model.MdRaid;
+  device: configModel.Drive | configModel.MdRaid;
   mountPath: string;
   collection: "drives" | "mdRaids";
   index: number;

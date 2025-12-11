@@ -34,7 +34,6 @@ import { _, formatList } from "~/i18n";
 import DeviceSelectorModal from "./DeviceSelectorModal";
 import { MenuItemProps } from "@patternfly/react-core";
 import { isDrive } from "~/storage/device";
-import type { model } from "~/storage";
 import type { storage } from "~/model/system";
 import type { configModel } from "~/model/storage";
 
@@ -42,7 +41,7 @@ const baseName = (device: storage.Device): string => deviceBaseName(device, true
 
 const useOnlyOneOption = (
   configModel: configModel.Config,
-  device: model.Drive | model.MdRaid,
+  device: configModel.Drive | configModel.MdRaid,
 ): boolean => {
   if (device.filesystem && device.filesystem.reuse) return true;
 
@@ -58,7 +57,7 @@ const useOnlyOneOption = (
 };
 
 type ChangeDeviceTitleProps = {
-  modelDevice: model.Drive | model.MdRaid;
+  modelDevice: configModel.Drive | configModel.MdRaid;
 };
 
 const ChangeDeviceTitle = ({ modelDevice }: ChangeDeviceTitleProps) => {
@@ -97,7 +96,7 @@ const ChangeDeviceTitle = ({ modelDevice }: ChangeDeviceTitleProps) => {
 };
 
 type ChangeDeviceDescriptionProps = {
-  modelDevice: model.Drive | model.MdRaid;
+  modelDevice: configModel.Drive | configModel.MdRaid;
   device: storage.Device;
 };
 
@@ -190,7 +189,7 @@ const ChangeDeviceDescription = ({ modelDevice, device }: ChangeDeviceDescriptio
 };
 
 type ChangeDeviceMenuItemProps = {
-  modelDevice: model.Drive | model.MdRaid;
+  modelDevice: configModel.Drive | configModel.MdRaid;
   device: storage.Device;
 } & MenuItemProps;
 
@@ -218,8 +217,8 @@ const ChangeDeviceMenuItem = ({
 };
 
 type RemoveEntryOptionProps = {
-  device: model.Drive | model.MdRaid;
-  onClick: (device: model.Drive | model.MdRaid) => void;
+  device: configModel.Drive | configModel.MdRaid;
+  onClick: (device: configModel.Drive | configModel.MdRaid) => void;
 };
 
 const RemoveEntryOption = ({ device, onClick }: RemoveEntryOptionProps): React.ReactNode => {
@@ -287,7 +286,7 @@ const RemoveEntryOption = ({ device, onClick }: RemoveEntryOptionProps): React.R
 };
 
 const targetDevices = (
-  modelDevice: model.Drive | model.MdRaid,
+  modelDevice: configModel.Drive | configModel.MdRaid,
   configModel: configModel.Config,
   availableDevices: storage.Device[],
 ): storage.Device[] => {
@@ -306,9 +305,9 @@ const targetDevices = (
 
 export type SearchedDeviceMenuProps = {
   selected: storage.Device;
-  modelDevice: model.Drive | model.MdRaid;
+  modelDevice: configModel.Drive | configModel.MdRaid;
   toggle?: React.ReactElement<CustomToggleProps>;
-  deleteFn: (device: model.Drive | model.MdRaid) => void;
+  deleteFn: (device: configModel.Drive | configModel.MdRaid) => void;
 };
 
 /**

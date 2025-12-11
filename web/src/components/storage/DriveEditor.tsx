@@ -32,11 +32,11 @@ import { Button, Flex, FlexItem } from "@patternfly/react-core";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import { useDrive } from "~/hooks/storage/model";
 import { useDevice } from "~/hooks/model/system/storage";
-import type { model } from "~/storage";
+import type { configModel } from "~/model/storage";
 import type { storage as system } from "~/model/system";
 
 type DriveDeviceMenuToggleProps = CustomToggleProps & {
-  drive: model.Drive | model.MdRaid;
+  drive: configModel.Drive | configModel.MdRaid;
   device: system.Device;
 };
 
@@ -69,7 +69,7 @@ const DriveDeviceMenuToggle = forwardRef(
 );
 
 type DriveDeviceMenuProps = {
-  drive: model.Drive;
+  drive: configModel.Drive;
   selected: system.Device;
 };
 
@@ -78,7 +78,7 @@ type DriveDeviceMenuProps = {
  */
 const DriveDeviceMenu = ({ drive, selected }: DriveDeviceMenuProps) => {
   const deleteDrive = useDeleteDrive();
-  const deleteFn = (device: model.Drive) => deleteDrive(device.name);
+  const deleteFn = (device: configModel.Drive) => deleteDrive(device.name);
 
   return (
     <SearchedDeviceMenu

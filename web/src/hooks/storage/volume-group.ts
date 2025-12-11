@@ -29,10 +29,11 @@ import {
   volumeGroupToPartitions,
   deviceToVolumeGroup,
 } from "~/storage/volume-group";
-import type { model, data } from "~/storage";
 import { useModel } from "~/hooks/storage/model";
+import type { data } from "~/storage";
+import type { configModel } from "~/model/storage";
 
-function useVolumeGroup(vgName: string): model.VolumeGroup | null {
+function useVolumeGroup(vgName: string): configModel.VolumeGroup | null {
   const model = useModel();
   const volumeGroup = model?.volumeGroups?.find((v) => v.vgName === vgName);
   return volumeGroup || null;

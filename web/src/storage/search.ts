@@ -24,7 +24,6 @@ import { copyApiModel, findDevice, findDeviceIndex } from "~/storage/api-model";
 import { fork } from "radashi";
 import { configModelMethods, partitionModelMethods } from "~/model/storage";
 import type { configModel } from "~/model/storage";
-import type { model } from "~/storage";
 
 function deviceLocation(apiModel: configModel.Config, name: string) {
   let index;
@@ -40,7 +39,7 @@ function buildModelDevice(
   configModel: configModel.Config,
   list: string,
   index: number | string,
-): model.Drive | model.MdRaid | undefined {
+): configModel.Drive | configModel.MdRaid | undefined {
   return configModel[list].at(index);
 }
 

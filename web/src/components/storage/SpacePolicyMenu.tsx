@@ -34,8 +34,7 @@ import { generateEncodedPath } from "~/utils";
 import { isEmpty } from "radashi";
 import { useDevice as useDeviceModel } from "~/hooks/storage/model";
 import { useDevice } from "~/hooks/model/system/storage";
-import type { configModel as apiModel } from "~/model/storage/config-model";
-import type { model } from "~/storage";
+import type { configModel } from "~/model/storage/config-model";
 
 const PolicyItem = ({ policy, modelDevice, isSelected, onClick }) => {
   return (
@@ -51,7 +50,7 @@ const PolicyItem = ({ policy, modelDevice, isSelected, onClick }) => {
 };
 
 type SpacePolicyMenuToggleProps = CustomToggleProps & {
-  drive: model.Drive;
+  drive: configModel.Drive;
 };
 
 const SpacePolicyMenuToggle = forwardRef(({ drive, ...props }: SpacePolicyMenuToggleProps, ref) => {
@@ -86,7 +85,7 @@ export default function SpacePolicyMenu({ collection, index }: SpacePolicyMenuPr
 
   if (isEmpty(existingPartitions)) return;
 
-  const onSpacePolicyChange = (spacePolicy: apiModel.SpacePolicy) => {
+  const onSpacePolicyChange = (spacePolicy: configModel.SpacePolicy) => {
     if (spacePolicy === "custom") {
       return navigate(generateEncodedPath(PATHS.editSpacePolicy, { collection, index }));
     } else {

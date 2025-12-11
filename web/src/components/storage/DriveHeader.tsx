@@ -25,12 +25,12 @@ import { deviceLabel } from "./utils";
 import { useConfigModel } from "~/hooks/model/storage";
 import { configModelMethods, partitionableModelMethods } from "~/model/storage";
 import { _ } from "~/i18n";
-import type { model } from "~/storage";
+import type { configModel } from "~/model/storage";
 import type { storage } from "~/model/system";
 
-export type DriveHeaderProps = { drive: model.Drive; device: storage.Device };
+export type DriveHeaderProps = { drive: configModel.Drive; device: storage.Device };
 
-const Text = (drive: model.Drive): string => {
+const Text = (drive: configModel.Drive): string => {
   const configModel = useConfigModel();
 
   if (drive.filesystem) {

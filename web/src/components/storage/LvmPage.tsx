@@ -48,10 +48,11 @@ import { STORAGE as PATHS } from "~/routes/paths";
 import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
 import { deviceSystems, isDrive } from "~/storage/device";
-import type { model, data } from "~/storage";
-import type { storage } from "~/model/system";
 import { partitionableModelMethods, volumeGroupModelMethods } from "~/model/storage";
 import { useConfigModel } from "~/hooks/model/storage";
+import type { data } from "~/storage";
+import type { configModel } from "~/model/storage";
+import type { storage } from "~/model/system";
 
 /**
  * Hook that returns the devices that can be selected as target to automatically create LVM PVs.
@@ -75,12 +76,12 @@ function useLvmTargetDevices(): storage.Device[] {
 
 function vgNameError(
   vgName: string,
-  model: model.Model,
-  volumeGroup?: model.VolumeGroup,
+  configModel: configModel.Config,
+  volumeGroup?: configModel.VolumeGroup,
 ): string | undefined {
   if (!vgName.length) return _("Enter a name for the volume group.");
 
-  const exist = model.volumeGroups.some((v) => v.vgName === vgName);
+  const exist = configModel.volumeGroups.some((v) => v.vgName === vgName);
   if (exist && vgName !== volumeGroup?.vgName)
     return sprintf(_("Volume group '%s' already exists. Enter a different name."), vgName);
 }

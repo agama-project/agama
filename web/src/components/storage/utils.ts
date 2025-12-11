@@ -30,8 +30,7 @@
 import xbytes from "xbytes";
 import { _, N_ } from "~/i18n";
 import { sprintf } from "sprintf-js";
-import type { model } from "~/storage";
-import type { configModel as apiModel } from "~/model/storage/config-model";
+import type { configModel } from "~/model/storage";
 import type { storage as system } from "~/model/system";
 import type { storage as proposal } from "~/model/proposal";
 
@@ -220,7 +219,7 @@ const baseName = (name: string, truncate?: boolean): string => {
   return base.slice(0, limit1) + "…" + base.slice(limit2);
 };
 
-type DeviceWithName = system.Device | model.Drive | model.MdRaid;
+type DeviceWithName = system.Device | configModel.Drive | configModel.MdRaid;
 
 /**
  * Base name of a device.
@@ -321,7 +320,7 @@ const filesystemLabel = (fstype: string): string => {
  *
  * @returns undefined if there is not enough information
  */
-const filesystemType = (filesystem: apiModel.Filesystem): string | undefined => {
+const filesystemType = (filesystem: configModel.Filesystem): string | undefined => {
   if (filesystem.type) {
     if (filesystem.snapshots) return _("Btrfs with snapshots");
 
@@ -349,7 +348,7 @@ const formattedPath = (path: string): string => {
 /**
  * Representation of the given size limits.
  */
-const sizeDescription = (size: apiModel.Size): string => {
+const sizeDescription = (size: configModel.Size): string => {
   const minSize = deviceSize(size.min);
   const maxSize = size.max ? deviceSize(size.max) : undefined;
 

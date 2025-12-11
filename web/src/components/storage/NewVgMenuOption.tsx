@@ -25,13 +25,13 @@ import { Flex } from "@patternfly/react-core";
 import { MenuButtonItem } from "~/components/core/MenuButton";
 import { useConvertToVolumeGroup } from "~/hooks/storage/volume-group";
 import { deviceBaseName, formattedPath } from "~/components/storage/utils";
-import { model } from "~/storage";
 import { sprintf } from "sprintf-js";
 import { _, n_, formatList } from "~/i18n";
 import { useConfigModel } from "~/hooks/model/storage";
 import { partitionableModelMethods } from "~/model/storage";
+import type { configModel } from "~/model/storage";
 
-export type NewVgMenuOptionProps = { device: model.Drive | model.MdRaid };
+export type NewVgMenuOptionProps = { device: configModel.Drive | configModel.MdRaid };
 
 export default function NewVgMenuOption({ device }: NewVgMenuOptionProps): React.ReactNode {
   const configModel = useConfigModel();

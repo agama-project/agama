@@ -45,7 +45,6 @@ import MenuButton, { CustomToggleProps } from "~/components/core/MenuButton";
 import ConfigEditorItem from "~/components/storage/ConfigEditorItem";
 import Icon, { IconProps } from "~/components/layout/Icon";
 import { STORAGE as PATHS } from "~/routes/paths";
-import { model } from "~/storage";
 import { baseName, formattedPath } from "~/components/storage/utils";
 import { contentDescription } from "~/components/storage/utils/volume-group";
 import { useDeleteVolumeGroup } from "~/hooks/storage/volume-group";
@@ -58,8 +57,9 @@ import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import spacingStyles from "@patternfly/react-styles/css/utilities/Spacing/spacing";
 import { useConfigModel } from "~/hooks/model/storage";
 import { volumeGroupModelMethods } from "~/model/storage";
+import type { configModel } from "~/model/storage";
 
-const DeleteVgOption = ({ vg }: { vg: model.VolumeGroup }) => {
+const DeleteVgOption = ({ vg }: { vg: configModel.VolumeGroup }) => {
   const configModel = useConfigModel();
   const deleteVolumeGroup = useDeleteVolumeGroup();
   const lvs = vg.logicalVolumes.map((lv) => formattedPath(lv.mountPath));
@@ -103,7 +103,7 @@ const DeleteVgOption = ({ vg }: { vg: model.VolumeGroup }) => {
   );
 };
 
-const EditVgOption = ({ vg }: { vg: model.VolumeGroup }) => {
+const EditVgOption = ({ vg }: { vg: configModel.VolumeGroup }) => {
   const navigate = useNavigate();
 
   return (
@@ -183,7 +183,7 @@ const LvRow = ({ lv, vg }) => {
   );
 };
 
-const VgHeader = ({ vg }: { vg: model.VolumeGroup }) => {
+const VgHeader = ({ vg }: { vg: configModel.VolumeGroup }) => {
   const title = vg.logicalVolumes.length
     ? _("Create LVM volume group %s")
     : _("Empty LVM volume group %s");
@@ -192,7 +192,7 @@ const VgHeader = ({ vg }: { vg: model.VolumeGroup }) => {
 };
 
 type VgMenuToggleProps = CustomToggleProps & {
-  vg: model.VolumeGroup;
+  vg: configModel.VolumeGroup;
 };
 
 const VgMenuToggle = forwardRef(({ vg, ...props }: VgMenuToggleProps, ref) => {
@@ -221,7 +221,7 @@ const VgMenuToggle = forwardRef(({ vg, ...props }: VgMenuToggleProps, ref) => {
   );
 });
 
-const VgMenu = ({ vg }: { vg: model.VolumeGroup }) => {
+const VgMenu = ({ vg }: { vg: configModel.VolumeGroup }) => {
   return (
     <MenuButton
       menuProps={{
@@ -233,7 +233,7 @@ const VgMenu = ({ vg }: { vg: model.VolumeGroup }) => {
   );
 };
 
-const AddLvButton = ({ vg }: { vg: model.VolumeGroup }) => {
+const AddLvButton = ({ vg }: { vg: configModel.VolumeGroup }) => {
   const navigate = useNavigate();
   const newLvPath = generateEncodedPath(PATHS.volumeGroup.logicalVolume.add, { id: vg.vgName });
 
@@ -247,7 +247,7 @@ const AddLvButton = ({ vg }: { vg: model.VolumeGroup }) => {
   );
 };
 
-const LogicalVolumes = ({ vg }: { vg: model.VolumeGroup }) => {
+const LogicalVolumes = ({ vg }: { vg: configModel.VolumeGroup }) => {
   const toggleId = useId();
   const contentId = useId();
   const [isExpanded, setIsExpanded] = useState(false);
@@ -307,7 +307,7 @@ const LogicalVolumes = ({ vg }: { vg: model.VolumeGroup }) => {
   );
 };
 
-export type VolumeGroupEditorProps = { vg: model.VolumeGroup };
+export type VolumeGroupEditorProps = { vg: configModel.VolumeGroup };
 
 export default function VolumeGroupEditor({ vg }: VolumeGroupEditorProps) {
   return (

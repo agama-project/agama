@@ -26,7 +26,6 @@ import { useConfigModel } from "~/hooks/model/storage";
 import { configModelMethods, partitionableModelMethods } from "~/model/storage";
 import { sprintf } from "sprintf-js";
 import type { configModel } from "~/model/storage/config-model";
-import type { Drive } from "~/storage/model";
 
 /**
  * String to identify the drive.
@@ -65,7 +64,7 @@ const resizeTextFor = (partitions) => {
   return _("Some partitions may be shrunk");
 };
 
-const SummaryForSpacePolicy = (drive: Drive): string | undefined => {
+const SummaryForSpacePolicy = (drive: configModel.Drive): string | undefined => {
   const configModel = useConfigModel();
   const isTargetDevice = configModelMethods.isTargetDevice(configModel, drive.name);
   const isBoot = configModelMethods.isBootDevice(configModel, drive.name);
@@ -95,7 +94,7 @@ const SummaryForSpacePolicy = (drive: Drive): string | undefined => {
  * FIXME: the case with two sentences looks a bit weird. But trying to summarize everything in one
  * sentence was too hard.
  */
-const contentActionsSummary = (drive: Drive): string => {
+const contentActionsSummary = (drive: configModel.Drive): string => {
   const policyLabel = SummaryForSpacePolicy(drive);
 
   if (policyLabel) return policyLabel;
@@ -120,7 +119,10 @@ const contentActionsSummary = (drive: Drive): string => {
   return _("Current partitions will be kept");
 };
 
-const ContentActionsDescription = (drive: Drive, policyId: string | undefined): string => {
+const ContentActionsDescription = (
+  drive: configModel.Drive,
+  policyId: string | undefined,
+): string => {
   const configModel = useConfigModel();
   const isTargetDevice = configModelMethods.isTargetDevice(configModel, drive.name);
   const isBoot = configModelMethods.isBootDevice(configModel, drive.name);

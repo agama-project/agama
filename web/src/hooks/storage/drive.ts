@@ -24,9 +24,10 @@ import { useConfigModel } from "~/hooks/model/storage";
 import { putStorageModel } from "~/api";
 import { addDrive, deleteDrive, switchToDrive } from "~/storage/drive";
 import { useModel } from "~/hooks/storage/model";
-import type { model, data } from "~/storage";
+import type { data } from "~/storage";
+import type { configModel } from "~/model/storage";
 
-function useDrive(name: string): model.Drive | null {
+function useDrive(name: string): configModel.Drive | null {
   const model = useModel();
   const drive = model?.drives?.find((d) => d.name === name);
   return drive || null;

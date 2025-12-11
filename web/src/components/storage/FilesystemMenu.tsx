@@ -26,13 +26,13 @@ import Icon from "~/components/layout/Icon";
 import { generatePath, useNavigate } from "react-router";
 import MenuButton, { CustomToggleProps } from "~/components/core/MenuButton";
 import { STORAGE as PATHS } from "~/routes/paths";
-import { model } from "~/storage";
 import { filesystemType, formattedPath } from "~/components/storage/utils";
 import { useDevice } from "~/hooks/storage/model";
 import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
+import type { configModel } from "~/model/storage";
 
-function deviceDescription(deviceModel: model.Drive | model.MdRaid): string {
+function deviceDescription(deviceModel: configModel.Drive | configModel.MdRaid): string {
   const fs = filesystemType(deviceModel.filesystem);
   const mountPath = deviceModel.mountPath;
   const reuse = deviceModel.filesystem.reuse;
@@ -53,7 +53,7 @@ function deviceDescription(deviceModel: model.Drive | model.MdRaid): string {
 }
 
 type FilesystemMenuToggleProps = CustomToggleProps & {
-  deviceModel: model.Drive | model.MdRaid;
+  deviceModel: configModel.Drive | configModel.MdRaid;
 };
 
 const FilesystemMenuToggle = forwardRef(
