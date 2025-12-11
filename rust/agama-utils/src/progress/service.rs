@@ -130,6 +130,7 @@ impl MessageHandler<message::GetStatus> for Service {
 impl MessageHandler<message::SetStage> for Service {
     async fn handle(&mut self, message: message::SetStage) -> Result<(), Error> {
         self.status.stage = message.stage;
+        self.events.send(Event::StageChanged)?;
         Ok(())
     }
 }
