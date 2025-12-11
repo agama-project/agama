@@ -19,8 +19,11 @@
 // find current contact information at www.suse.com.
 
 use agama_utils::{
-    actor::{self, Actor, Handler },
-    api::{self, event::{self, Event}},
+    actor::{self, Actor, Handler},
+    api::{
+        self,
+        event::{self, Event},
+    },
     issue,
 };
 
@@ -38,10 +41,7 @@ pub struct Starter {
 
 impl Starter {
     pub fn new(events: event::Sender, issues: Handler<issue::Service>) -> Self {
-        Self {
-            events,
-            issues,
-        }
+        Self { events, issues }
     }
 
     /// Starts the service and returns a handler to communicate with it.
