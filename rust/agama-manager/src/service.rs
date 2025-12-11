@@ -18,7 +18,7 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::{files, l10n, message, network, software, storage};
+use crate::{files, hardware, l10n, message, network, software, storage};
 use agama_utils::{
     actor::{self, Actor, Handler, MessageHandler},
     api::{
@@ -73,6 +73,8 @@ pub enum Error {
     // rest.
     #[error(transparent)]
     NetworkSystem(#[from] network::NetworkSystemError),
+    #[error(transparent)]
+    Hardware(#[from] hardware::Error),
 }
 
 pub struct Starter {
@@ -86,6 +88,7 @@ pub struct Starter {
     files: Option<Handler<files::Service>>,
     issues: Option<Handler<issue::Service>>,
     progress: Option<Handler<progress::Service>>,
+    hardware: Option<hardware::Registry>,
 }
 
 impl Starter {
@@ -105,6 +108,7 @@ impl Starter {
             files: None,
             issues: None,
             progress: None,
+            hardware: None,
         }
     }
 
@@ -140,6 +144,11 @@ impl Starter {
 
     pub fn with_progress(mut self, progress: Handler<progress::Service>) -> Self {
         self.progress = Some(progress);
+        self
+    }
+
+    pub fn with_hardware(mut self, hardware: hardware::Registry) -> Self {
+        self.hardware = Some(hardware);
         self
     }
 
@@ -206,6 +215,11 @@ impl Starter {
             None => network::start().await?,
         };
 
+        let hardware = match self.hardware {
+            Some(hardware) => hardware,
+            None => hardware::Registry::new_from_system(),
+        };
+
         let mut service = Service {
             events: self.events,
             questions: self.questions,
@@ -218,6 +232,7 @@ impl Starter {
             files,
             products: products::Registry::default(),
             licenses: licenses::Registry::default(),
+            hardware,
             // FIXME: state is already used for service state.
             state: State::Configuring,
             config: Config::default(),
@@ -241,6 +256,7 @@ pub struct Service {
     questions: Handler<question::Service>,
     products: products::Registry,
     licenses: licenses::Registry,
+    hardware: hardware::Registry,
     product: Option<Arc<RwLock<ProductSpec>>>,
     state: State,
     config: Config,
@@ -257,11 +273,11 @@ impl Service {
         Starter::new(questions, events, dbus)
     }
 
-    /// Set up the service by reading the registries and determining the default product.
+    /// Set up the service by reading the registries, the hardware info and determining the default product.
     ///
     /// If a default product is set, it asks the other services to initialize their configurations.
     pub async fn setup(&mut self) -> Result<(), Error> {
-        self.read_registries().await?;
+        self.read_system_info().await?;
 
         if let Some(product) = self.products.default_product() {
             let config = Config::with_product(product.id.clone());
@@ -273,11 +289,15 @@ impl Service {
         Ok(())
     }
 
-    async fn read_registries(&mut self) -> Result<(), Error> {
+    async fn read_system_info(&mut self) -> Result<(), Error> {
         self.licenses.read()?;
         self.products.read()?;
+        self.hardware.read().await?;
+
         self.system.licenses = self.licenses.licenses().into_iter().cloned().collect();
         self.system.products = self.products.products();
+        self.system.hardware = self.hardware.to_hardware_info();
+
         Ok(())
     }
 

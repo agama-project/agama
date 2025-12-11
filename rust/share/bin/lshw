@@ -1,0 +1,3 @@
+#!/usr/bin/bash
+
+cat `dirname "${BASH_SOURCE[0]}"`/../../test/share/lshw.json
