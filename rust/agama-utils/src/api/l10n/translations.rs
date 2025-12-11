@@ -18,20 +18,17 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-//! This module contains all Agama public types that might be available over
-//! the HTTP and WebSocket API.
+use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
 
-mod config;
-pub use config::Config;
-
-mod system_info;
-pub use system_info::{Keymap, LocaleEntry, SystemInfo, TimezoneEntry};
-
-mod system_config;
-pub use system_config::SystemConfig;
-
-mod proposal;
-pub use proposal::Proposal;
-
-mod translations;
-pub use translations::Translations;
+/// Represents a set of translations for a given entry.
+#[derive(Clone, Default, Debug, Deserialize, Serialize, utoipa::ToSchema)]
+#[serde(rename_all = "camelCase")]
+pub struct Translations {
+    /// Translated names, by locale.
+    #[serde(default)]
+    pub name: HashMap<String, String>,
+    /// Translated descriptions, by locale.
+    #[serde(default)]
+    pub description: HashMap<String, String>,
+}

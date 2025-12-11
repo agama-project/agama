@@ -47,6 +47,13 @@ type Product = {
   registration: boolean;
   /** The product license id, if any */
   license?: string;
+  /** Translations */
+  translations?: {
+    /** The key is the locale (e.g., "en-US", "es-ES") */
+    name: Record<string, string>;
+    /** The key is the locale (e.g., "en-US", "es-ES") */
+    description: Record<string, string>;
+  };
 };
 
 type License = {

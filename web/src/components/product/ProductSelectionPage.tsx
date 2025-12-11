@@ -46,6 +46,7 @@ import { Product } from "~/types/software";
 import { isEmpty } from "radashi";
 import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
+import agama from "~/agama";
 import LicenseDialog from "./LicenseDialog";
 import { useProduct } from "~/hooks/model/config";
 import { useSystem } from "~/hooks/model/system";
@@ -60,11 +61,17 @@ const ResponsiveGridItem = ({ children }) => (
 const Option = ({ product, isChecked, onChange }) => {
   const detailsId = `${product.id}-details`;
   const logoSrc = `assets/logos/${product.icon}`;
+  const currentLocale = agama.language;
+
+  const translatedName = product.translations?.name[currentLocale] || product.name;
+  const translatedDescription =
+    product.translations?.description[currentLocale] || product.description;
+
   // TRANSLATORS: %s will be replaced by a product name. E.g., "openSUSE Tumbleweed"
-  const logoAltText = sprintf(_("%s logo"), product.name);
+  const logoAltText = sprintf(_("%s logo"), translatedName);
 
   return (
-    <ListItem aria-label={product.name}>
+    <ListItem aria-label={translatedName}>
       <Card>
         <CardBody>
           <Split hasGutter>
@@ -83,9 +90,9 @@ const Option = ({ product, isChecked, onChange }) => {
                 htmlFor={product.id}
                 className={`${pfTextStyles.fontSizeLg} ${pfTextStyles.fontWeightBold}`}
               >
-                {product.name}
+                {translatedName}
               </label>
-              <p id={detailsId}>{product.description}</p>
+              <p id={detailsId}>{translatedDescription}</p>
             </Stack>
           </Split>
         </CardBody>

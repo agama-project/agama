@@ -18,7 +18,7 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::api::manager::License;
+use crate::api::{l10n::Translations, manager::License};
 use serde::Serialize;
 
 /// Global information of the system where the installer is running.
@@ -48,6 +48,9 @@ pub struct Product {
     pub registration: bool,
     /// License ID
     pub license: Option<String>,
+    /// Translations
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub translations: Option<Translations>,
 }
 
 /// Represents the hardware information of the underlying system.

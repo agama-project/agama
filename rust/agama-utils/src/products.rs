@@ -24,13 +24,10 @@
 //! It reads the list of products from the `products.d` directory (usually,
 //! `/usr/share/agama/products.d`).
 
-use crate::api::manager::Product;
+use crate::api::{l10n::Translations, manager::Product};
 use serde::{Deserialize, Deserializer, Serialize};
 use serde_with::{formats::CommaSeparator, serde_as, StringWithSeparator};
-use std::{
-    collections::HashMap,
-    path::{Path, PathBuf},
-};
+use std::path::{Path, PathBuf};
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
@@ -112,6 +109,7 @@ impl Registry {
                 icon: p.icon.clone(),
                 registration: p.registration,
                 license: p.license.clone(),
+                translations: Some(p.translations.clone()),
             })
             .collect()
     }
@@ -134,7 +132,7 @@ pub struct ProductSpec {
     pub description: String,
     pub icon: String,
     #[serde(default)]
-    pub translations: TranslationsSpec,
+    pub translations: Translations,
     #[serde(default)]
     pub registration: bool,
     pub version: Option<String>,
@@ -156,11 +154,6 @@ where
     D: Deserializer<'de>,
 {
     Deserialize::deserialize(d).map(|x: Option<_>| x.unwrap_or_default())
-}
-
-#[derive(Clone, Debug, Default, Deserialize, Serialize)]
-pub struct TranslationsSpec {
-    description: HashMap<String, String>,
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
