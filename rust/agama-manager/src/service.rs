@@ -25,6 +25,7 @@ use agama_utils::{
         self, event,
         files::scripts::ScriptsGroup,
         manager::{self, LicenseContent},
+        status::State,
         Action, Config, Event, Issue, IssueMap, Proposal, Scope, Status, SystemInfo,
     },
     issue, licenses,
@@ -420,21 +421,6 @@ impl Service {
         Ok(())
     }
 
-    async fn install(&mut self) -> Result<(), Error> {
-        // TODO: translate progress steps.
-        self.progress
-            .call(progress::message::StartWithSteps::new(
-                Scope::Manager,
-                &["Installing l10n"],
-            ))
-            .await?;
-        self.l10n.call(l10n::message::Install).await?;
-        self.progress
-            .call(progress::message::Finish::new(Scope::Manager))
-            .await?;
-        Ok(())
-    }
-
     fn set_product(&mut self, config: &Config) -> Result<(), Error> {
         self.product = None;
         self.update_product(config)
@@ -623,7 +609,15 @@ impl MessageHandler<message::RunAction> for Service {
                 self.probe_storage().await?;
             }
             Action::Install => {
-                self.install().await?;
+                let action = InstallAction {
+                    l10n: self.l10n.clone(),
+                    network: self.network.clone(),
+                    software: self.software.clone(),
+                    storage: self.storage.clone(),
+                    files: self.files.clone(),
+                    progress: self.progress.clone(),
+                };
+                action.run();
             }
         }
         Ok(())
@@ -669,6 +663,81 @@ impl MessageHandler<software::message::SetResolvables> for Service {
     /// It sets the software resolvables.
     async fn handle(&mut self, message: software::message::SetResolvables) -> Result<(), Error> {
         self.software.call(message).await?;
+        Ok(())
+    }
+}
+
+struct InstallAction {
+    l10n: Handler<l10n::Service>,
+    network: NetworkSystemClient,
+    software: Handler<software::Service>,
+    storage: Handler<storage::Service>,
+    files: Handler<files::Service>,
+    progress: Handler<progress::Service>,
+}
+
+impl InstallAction {
+    pub fn run(mut self) {
+        tokio::spawn(async move {
+            self.install().await.unwrap();
+        });
+    }
+
+    async fn install(&mut self) -> Result<(), Error> {
+        // NOTE: consider a NextState message?
+        self.progress
+            .call(progress::message::SetState::new(State::Installing))
+            .await?;
+
+        //
+        // Preparation
+        //
+        self.progress
+            .call(progress::message::StartWithSteps::new(
+                Scope::Manager,
+                &[
+                    "Prepare the system",
+                    "Install software",
+                    "Configure the system",
+                ],
+            ))
+            .await?;
+
+        self.storage.call(storage::message::Install).await?;
+        self.files
+            .call(files::message::RunScripts::new(
+                ScriptsGroup::PostPartitioning,
+            ))
+            .await?;
+
+        //
+        // Installation
+        //
+        self.progress
+            .call(progress::message::Next::new(Scope::Manager))
+            .await?;
+        self.software.call(software::message::Install).await?;
+
+        //
+        // Configuration
+        //
+        self.progress
+            .call(progress::message::Next::new(Scope::Manager))
+            .await?;
+        self.l10n.call(l10n::message::Install).await?;
+        self.software.call(software::message::Finish).await?;
+        self.storage.call(storage::message::Finish).await?;
+
+        //
+        // Finish progress and changes
+        //
+        self.progress
+            .call(progress::message::Finish::new(Scope::Manager))
+            .await?;
+
+        self.progress
+            .call(progress::message::SetState::new(State::Finished))
+            .await?;
         Ok(())
     }
 }

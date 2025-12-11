@@ -121,8 +121,16 @@ impl Actor for Service {
 
 #[async_trait]
 impl MessageHandler<message::GetStatus> for Service {
-    async fn handle(&mut self, message: message::GetStatus) -> Result<Status, Error> {
+    async fn handle(&mut self, _message: message::GetStatus) -> Result<Status, Error> {
         Ok(self.get_status().clone())
+    }
+}
+
+#[async_trait]
+impl MessageHandler<message::SetState> for Service {
+    async fn handle(&mut self, message: message::SetState) -> Result<(), Error> {
+        self.status.state = message.state;
+        Ok(())
     }
 }
 
