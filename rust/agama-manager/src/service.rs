@@ -223,7 +223,6 @@ impl Starter {
         };
 
         let mut service = Service {
-            events: self.events,
             questions: self.questions,
             progress,
             issues,
@@ -260,7 +259,6 @@ pub struct Service {
     product: Option<Arc<RwLock<ProductSpec>>>,
     config: Config,
     system: manager::SystemInfo,
-    events: event::Sender,
 }
 
 impl Service {
