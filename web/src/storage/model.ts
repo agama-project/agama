@@ -36,12 +36,10 @@ type Model = {
 };
 
 interface Drive extends configModel.Drive {
-  getPartition: (path: string) => configModel.Partition | undefined;
   getConfiguredExistingPartitions: () => configModel.Partition[];
 }
 
 interface MdRaid extends configModel.MdRaid {
-  getPartition: (path: string) => configModel.Partition | undefined;
   getConfiguredExistingPartitions: () => configModel.Partition[];
 }
 
@@ -54,10 +52,6 @@ type LogicalVolume = configModel.LogicalVolume;
 type Formattable = Drive | MdRaid | configModel.Partition | LogicalVolume;
 
 function partitionableProperties(apiDevice: configModel.Drive) {
-  const getPartition = (path: string): configModel.Partition | undefined => {
-    return apiDevice.partitions.find((p) => p.mountPath === path);
-  };
-
   const getConfiguredExistingPartitions = (): configModel.Partition[] => {
     if (apiDevice.spacePolicy === "custom")
       return apiDevice.partitions.filter(
@@ -70,7 +64,6 @@ function partitionableProperties(apiDevice: configModel.Drive) {
   };
 
   return {
-    getPartition,
     getConfiguredExistingPartitions,
   };
 }

@@ -41,6 +41,13 @@ function isReusingPartitions(device: Partitionable): boolean {
   return device.partitions.some(partitionModelMethods.isReused);
 }
 
+function findPartition(
+  device: Partitionable,
+  mountPath: string,
+): configModel.Partition | undefined {
+  return device.partitions.find((p) => p.mountPath === mountPath);
+}
+
 function selectVolumeGroups(
   device: Partitionable,
   configModel: configModel.Config,
@@ -51,4 +58,10 @@ function selectVolumeGroups(
   );
 }
 
-export { usedMountPaths, isAddingPartitions, isReusingPartitions, selectVolumeGroups };
+export {
+  usedMountPaths,
+  isAddingPartitions,
+  isReusingPartitions,
+  findPartition,
+  selectVolumeGroups,
+};

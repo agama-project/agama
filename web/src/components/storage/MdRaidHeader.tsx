@@ -42,7 +42,7 @@ const Text = (raid: model.MdRaid): string => {
 
   const isBoot = configModelMethods.isBootDevice(configModel, raid.name);
   const hasPv = configModelMethods.isTargetDevice(configModel, raid.name);
-  const isRoot = !!raid.getPartition("/");
+  const isRoot = !!partitionableModelMethods.findPartition(raid, "/");
   const hasFs = !!partitionableModelMethods.usedMountPaths(raid).length;
 
   if (isRoot) {

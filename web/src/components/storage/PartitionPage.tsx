@@ -74,6 +74,7 @@ import { isUndefined, unique } from "radashi";
 import { compact } from "~/utils";
 import type { configModel } from "~/model/storage/config-model";
 import type { storage as system } from "~/model/system";
+import { partitionableModelMethods } from "~/model/storage";
 
 const NO_VALUE = "";
 const NEW_PARTITION = "new";
@@ -229,8 +230,7 @@ function useDefaultFilesystem(mountPoint: string): string {
 function useInitialPartitionConfig(): configModel.Partition | null {
   const { partitionId: mountPath } = useParams();
   const device = useDeviceModelFromParams();
-
-  return mountPath && device ? device.getPartition(mountPath) : null;
+  return mountPath && device ? partitionableModelMethods.findPartition(device, mountPath) : null;
 }
 
 function useInitialFormValue(): FormValue | null {

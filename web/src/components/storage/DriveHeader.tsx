@@ -42,7 +42,7 @@ const Text = (drive: model.Drive): string => {
 
   const isBoot = configModelMethods.isBootDevice(configModel, drive.name);
   const hasPv = configModelMethods.isTargetDevice(configModel, drive.name);
-  const isRoot = !!drive.getPartition("/");
+  const isRoot = !!partitionableModelMethods.findPartition(drive, "/");
   const hasFs = !!partitionableModelMethods.usedMountPaths(drive).length;
 
   if (isRoot) {

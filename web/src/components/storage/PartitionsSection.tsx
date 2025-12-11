@@ -53,6 +53,7 @@ import spacingStyles from "@patternfly/react-styles/css/utilities/Spacing/spacin
 import { toggle } from "radashi";
 import type { model } from "~/storage";
 import type { configModel } from "~/model/storage/config-model";
+import { partitionableModelMethods } from "~/model/storage";
 
 type PartitionMenuItemProps = {
   device: model.Drive | model.MdRaid;
@@ -62,7 +63,7 @@ type PartitionMenuItemProps = {
 };
 
 const PartitionMenuItem = ({ device, mountPath, collection, index }: PartitionMenuItemProps) => {
-  const partition = device.getPartition(mountPath);
+  const partition = partitionableModelMethods.findPartition(device, mountPath);
   const editPath = generateEncodedPath(PATHS.editPartition, {
     collection,
     index,
