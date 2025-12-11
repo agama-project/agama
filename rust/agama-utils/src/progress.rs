@@ -31,6 +31,7 @@ mod tests {
             event::{self, Event},
             progress::{self, Progress},
             scope::Scope,
+            status::Stage,
         },
         progress::{
             message,
@@ -297,6 +298,22 @@ mod tests {
             Err(service::Error::DuplicatedProgress(Scope::L10n))
         ));
 
+        Ok(())
+    }
+
+    #[tokio::test]
+    async fn test_set_and_get_stage() -> Result<(), Box<dyn std::error::Error>> {
+        let (_receiver, handler) = start_testing_service();
+
+        let status = handler.call(message::GetStatus).await?;
+        assert_eq!(status.stage, Stage::Configuring);
+
+        handler
+            .call(message::SetStage::new(Stage::Installing))
+            .await?;
+
+        let status = handler.call(message::GetStatus).await?;
+        assert_eq!(status.stage, Stage::Installing);
         Ok(())
     }
 }
