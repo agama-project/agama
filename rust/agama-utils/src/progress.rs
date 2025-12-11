@@ -315,15 +315,15 @@ mod tests {
     #[test_context(Context)]
     #[tokio::test]
     async fn test_set_and_get_stage(ctx: &mut Context) -> Result<(), Box<dyn std::error::Error>> {
-        let status = ctx.handler.call(message::GetStatus).await?;
-        assert_eq!(status.stage, Stage::Configuring);
+        let stage = ctx.handler.call(message::GetStage).await?;
+        assert_eq!(stage, Stage::Configuring);
 
         ctx.handler
             .call(message::SetStage::new(Stage::Installing))
             .await?;
 
-        let status = ctx.handler.call(message::GetStatus).await?;
-        assert_eq!(status.stage, Stage::Installing);
+        let stage = ctx.handler.call(message::GetStage).await?;
+        assert_eq!(stage, Stage::Installing);
         Ok(())
     }
 }

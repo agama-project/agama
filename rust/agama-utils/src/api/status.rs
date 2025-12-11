@@ -32,7 +32,7 @@ pub struct Status {
 }
 
 /// Represents the current state of the installation process.
-#[derive(Clone, Copy, Debug, Default, Serialize, PartialEq, utoipa::ToSchema)]
+#[derive(Clone, Copy, Debug, Default, Serialize, PartialEq, strum::Display, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub enum Stage {
     #[default]

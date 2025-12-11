@@ -19,6 +19,7 @@
 // find current contact information at www.suse.com.
 
 use crate::actor::{self, Actor, Handler, MessageHandler};
+use crate::api::status::Stage;
 use crate::api::Status;
 use crate::{
     api::event::{self, Event},
@@ -80,6 +81,10 @@ impl Service {
         &self.status
     }
 
+    fn get_stage(&self) -> Stage {
+        self.status.stage
+    }
+
     // NOTE: this method might be implemented by Status.
     fn get_progresses(&mut self) -> &Vec<Progress> {
         &self.status.progresses
@@ -123,6 +128,13 @@ impl Actor for Service {
 impl MessageHandler<message::GetStatus> for Service {
     async fn handle(&mut self, _message: message::GetStatus) -> Result<Status, Error> {
         Ok(self.get_status().clone())
+    }
+}
+
+#[async_trait]
+impl MessageHandler<message::GetStage> for Service {
+    async fn handle(&mut self, _message: message::GetStage) -> Result<Stage, Error> {
+        Ok(self.get_stage())
     }
 }
 

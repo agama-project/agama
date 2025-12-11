@@ -147,3 +147,9 @@ impl SetStage {
 impl Message for SetStage {
     type Reply = ();
 }
+
+pub struct GetStage;
+
+impl Message for GetStage {
+    type Reply = Stage;
+}
