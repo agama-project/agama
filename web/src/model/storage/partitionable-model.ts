@@ -23,10 +23,8 @@
 import { sift } from "radashi";
 import { partitionModelMethods, volumeGroupModelMethods } from "~/model/storage";
 import type { configModel } from "~/model/storage";
-import type * as model from "~/storage/model";
 
-// FIXME: remove model types once model is dropped.
-type Partitionable = configModel.Drive | configModel.MdRaid | model.Drive | model.MdRaid;
+type Partitionable = configModel.Drive | configModel.MdRaid;
 
 function usedMountPaths(device: Partitionable): string[] {
   const mountPaths = (device.partitions || []).map((p) => p.mountPath);
@@ -58,10 +56,22 @@ function selectVolumeGroups(
   );
 }
 
+function selectConfiguredExistingPartitions(device: Partitionable): configModel.Partition[] {
+  if (device.spacePolicy === "custom")
+    return device.partitions.filter(
+      (p) =>
+        !partitionModelMethods.isNew(p) &&
+        (partitionModelMethods.isUsed(p) || partitionModelMethods.isUsedBySpacePolicy(p)),
+    );
+
+  return device.partitions.filter(partitionModelMethods.isReused);
+}
+
 export {
   usedMountPaths,
   isAddingPartitions,
   isReusingPartitions,
   findPartition,
   selectVolumeGroups,
+  selectConfiguredExistingPartitions,
 };

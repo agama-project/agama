@@ -26,95 +26,22 @@
  * Types that extend the configModel by adding calculated properties and methods.
  */
 
-import { partitionModelMethods } from "~/model/storage";
 import type { configModel } from "~/model/storage";
 
-type Model = {
-  drives: Drive[];
-  mdRaids: MdRaid[];
-  volumeGroups: VolumeGroup[];
-};
+type Model = configModel.Config;
 
-interface Drive extends configModel.Drive {
-  getConfiguredExistingPartitions: () => configModel.Partition[];
-}
+type Drive = configModel.Drive;
 
-interface MdRaid extends configModel.MdRaid {
-  getConfiguredExistingPartitions: () => configModel.Partition[];
-}
+type MdRaid = configModel.MdRaid;
 
-interface VolumeGroup extends Omit<configModel.VolumeGroup, "targetDevices" | "logicalVolumes"> {
-  logicalVolumes: LogicalVolume[];
-}
+type VolumeGroup = configModel.VolumeGroup;
 
 type LogicalVolume = configModel.LogicalVolume;
 
 type Formattable = Drive | MdRaid | configModel.Partition | LogicalVolume;
 
-function partitionableProperties(apiDevice: configModel.Drive) {
-  const getConfiguredExistingPartitions = (): configModel.Partition[] => {
-    if (apiDevice.spacePolicy === "custom")
-      return apiDevice.partitions.filter(
-        (p) =>
-          !partitionModelMethods.isNew(p) &&
-          (partitionModelMethods.isUsed(p) || partitionModelMethods.isUsedBySpacePolicy(p)),
-      );
-
-    return apiDevice.partitions.filter(partitionModelMethods.isReused);
-  };
-
-  return {
-    getConfiguredExistingPartitions,
-  };
-}
-
-function buildDrive(apiDrive: configModel.Drive): Drive {
-  return {
-    ...apiDrive,
-    ...partitionableProperties(apiDrive),
-  };
-}
-
-function buildMdRaid(apiMdRaid: configModel.MdRaid): MdRaid {
-  return {
-    ...apiMdRaid,
-    ...partitionableProperties(apiMdRaid),
-  };
-}
-
-function buildLogicalVolume(logicalVolumeData: configModel.LogicalVolume): LogicalVolume {
-  return { ...logicalVolumeData };
-}
-
-function buildVolumeGroup(apiVolumeGroup: configModel.VolumeGroup): VolumeGroup {
-  const buildLogicalVolumes = (): LogicalVolume[] => {
-    return (apiVolumeGroup.logicalVolumes || []).map(buildLogicalVolume);
-  };
-
-  return {
-    ...apiVolumeGroup,
-    logicalVolumes: buildLogicalVolumes(),
-  };
-}
-
-function buildModel(apiModel: configModel.Config): Model {
-  const buildDrives = (): Drive[] => {
-    return (apiModel.drives || []).map((d) => buildDrive(d));
-  };
-
-  const buildMdRaids = (): MdRaid[] => {
-    return (apiModel.mdRaids || []).map((r) => buildMdRaid(r));
-  };
-
-  const buildVolumeGroups = (): VolumeGroup[] => {
-    return (apiModel.volumeGroups || []).map((v) => buildVolumeGroup(v));
-  };
-
-  return {
-    drives: buildDrives(),
-    mdRaids: buildMdRaids(),
-    volumeGroups: buildVolumeGroups(),
-  };
+function buildModel(configModel: configModel.Config): Model {
+  return { ...configModel };
 }
 
 export type { Model, Drive, MdRaid, VolumeGroup, LogicalVolume, Formattable };
