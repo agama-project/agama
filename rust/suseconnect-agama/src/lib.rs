@@ -413,14 +413,13 @@ pub const GLOBAL_CREDENTIALS_FILE: &str = "/etc/zypp/credentials.d/SCCcredential
 /// * `pwd` - The password for the credentials file.
 /// * `path` - The path where the credentials file will be created.
 pub fn create_credentials_file(login: &str, pwd: &str, path: &str) -> Result<(), Error> {
-            // unwrap should not happen we do not construct invalid strings
-        let login = CString::new(login)?.into_raw();
-        let pwd = CString::new(pwd)?.into_raw();
-        let path = CString::new(path)?.into_raw();
-        let empty = CString::new("")?.into_raw();
+    // unwrap should not happen we do not construct invalid strings
+    let login = CString::new(login)?.into_raw();
+    let pwd = CString::new(pwd)?.into_raw();
+    let path = CString::new(path)?.into_raw();
+    let empty = CString::new("")?.into_raw();
 
     unsafe {
-
         suseconnect_agama_sys::create_credentials_file(login, pwd, empty, path);
 
         // Retake ownership to free memory
@@ -671,7 +670,7 @@ mod tests {
         let login = "test_user";
         let password = "test_password";
 
-        let _ =create_credentials_file(login, password, path_str);
+        let _ = create_credentials_file(login, password, path_str);
 
         let content =
             fs::read_to_string(temp_file.path()).expect("Failed to read credentials file");
