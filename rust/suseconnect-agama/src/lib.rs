@@ -22,7 +22,7 @@ pub struct ConnectParams {
     pub language: Option<String>,
     // TODO: maybe use url instead of string?
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub url: Option<String>,
+    pub url: Option<url::Url>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub token: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -59,42 +59,42 @@ impl TryFrom<Value> for Product {
     type Error = Error;
 
     fn try_from(value: Value) -> Result<Self, Self::Error> {
-        let Some(identifier) = value.get("identifier").and_then(|v| v.as_str()) else {
+        let Some(identifier) = value.get("identifier").and_then(Value::as_str) else {
             return Err(Error::UnexpectedResponse(
                 "Missing or invalid 'identifier' in Product".to_string(),
             ));
         };
-        let Some(version) = value.get("version").and_then(|v| v.as_str()) else {
+        let Some(version) = value.get("version").and_then(Value::as_str) else {
             return Err(Error::UnexpectedResponse(
                 "Missing or invalid 'version' in Product".to_string(),
             ));
         };
-        let Some(friendly_name) = value.get("friendly_name").and_then(|v| v.as_str()) else {
+        let Some(friendly_name) = value.get("friendly_name").and_then(Value::as_str) else {
             return Err(Error::UnexpectedResponse(
                 "Missing or invalid 'friendly_name' in Product".to_string(),
             ));
         };
-        let Some(available) = value.get("available").and_then(|v| v.as_bool()) else {
+        let Some(available) = value.get("available").and_then(Value::as_bool) else {
             return Err(Error::UnexpectedResponse(
                 "Missing or invalid 'available' in Product".to_string(),
             ));
         };
-        let Some(free) = value.get("free").and_then(|v| v.as_bool()) else {
+        let Some(free) = value.get("free").and_then(Value::as_bool) else {
             return Err(Error::UnexpectedResponse(
                 "Missing or invalid 'free' in Product".to_string(),
             ));
         };
-        let Some(recommended) = value.get("recommended").and_then(|v| v.as_bool()) else {
+        let Some(recommended) = value.get("recommended").and_then(Value::as_bool) else {
             return Err(Error::UnexpectedResponse(
                 "Missing or invalid 'recommended' in Product".to_string(),
             ));
         };
-        let Some(description) = value.get("description").and_then(|v| v.as_str()) else {
+        let Some(description) = value.get("description").and_then(Value::as_str) else {
             return Err(Error::UnexpectedResponse(
                 "Missing or invalid 'description' in Product".to_string(),
             ));
         };
-        let Some(release_stage) = value.get("release_stage").and_then(|v| v.as_str()) else {
+        let Some(release_stage) = value.get("release_stage").and_then(Value::as_str) else {
             return Err(Error::UnexpectedResponse(
                 "Missing or invalid 'release_stage' in Product".to_string(),
             ));
@@ -102,7 +102,7 @@ impl TryFrom<Value> for Product {
         let empty_extensions = vec![];
         let extensions_val = value
             .get("extensions")
-            .and_then(|v| v.as_array())
+            .and_then(Value::as_array)
             .unwrap_or(&empty_extensions);
 
         let extensions = extensions_val
@@ -137,10 +137,10 @@ impl TryFrom<Value> for Service {
     type Error = Error;
 
     fn try_from(value: Value) -> Result<Self, Self::Error> {
-        let Some(name) = value.get("name").and_then(|c| c.as_str()) else {
+        let Some(name) = value.get("name").and_then(Value::as_str) else {
             return Err(Error::UnexpectedResponse("Missing name key".to_string()));
         };
-        let Some(url) = value.get("url").and_then(|c| c.as_str()) else {
+        let Some(url) = value.get("url").and_then(Value::as_str) else {
             return Err(Error::UnexpectedResponse("Missing url key".to_string()));
         };
 
@@ -202,7 +202,7 @@ impl SSLErrorCode {
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
     #[error("{message}")]
-    ApiError {
+    SCCApi {
         message: String,
         // HTTP error code from API
         code: u64,
@@ -212,26 +212,28 @@ pub enum Error {
     #[error("Unexpected response from SUSEConnect: {0}")]
     UnexpectedResponse(String),
     #[error(transparent)]
-    JsonParseError(#[from] serde_json::Error),
+    JSONResponse(#[from] serde_json::Error),
     #[error("Malformed SCC credentials file: {0}")]
     MalformedSccCredentialsFile(String),
     #[error("Missing SCC credentials file: {0}")]
     MissingCredentialsFile(String),
-    #[error("JSON error: {0}")]
-    JSONError(String),
+    #[error("Passed JSON error: {0}")]
+    JSONPassed(String),
     #[error("Network error: {0}")]
-    NetError(String),
+    Network(String),
     #[error("Timeout: {0}")]
     Timeout(String),
     // TODO: check how it will look like if code display message won't be duplicite to connect message
     #[error("SSL error: {message} (code: {code})")]
-    SSLError {
+    SSL {
         message: String,
         code: SSLErrorCode,
         current_certificate: String,
     },
     #[error(transparent)]
-    UTF8Error(#[from] std::ffi::IntoStringError),
+    UTF8(#[from] std::ffi::IntoStringError),
+    #[error("Malformed string with '\\0' passed to C bindings")]
+    MalformedString(#[from] std::ffi::NulError),
 }
 
 /// checks response from SUSEConnect for errors
@@ -244,37 +246,37 @@ fn check_error(response: &Value) -> Result<(), Error> {
         };
         let message = response
             .get("message")
-            .and_then(|i| i.as_str())
+            .and_then(Value::as_str)
             .unwrap_or("No message")
             .to_string();
 
         match error_str {
             "APIError" => {
                 let code = response.get("code").and_then(|i| i.as_u64()).unwrap_or(400);
-                return Err(Error::ApiError { message, code });
+                return Err(Error::SCCApi { message, code });
             }
             "MalformedSccCredentialsFile" => {
                 return Err(Error::MalformedSccCredentialsFile(message))
             }
             "MissingCredentialsFile" => return Err(Error::MissingCredentialsFile(message)),
-            "JSONError" => return Err(Error::JSONError(message)),
-            "NetError" => return Err(Error::NetError(message)),
+            "JSONError" => return Err(Error::JSONPassed(message)),
+            "NetError" => return Err(Error::Network(message)),
             "Timeout" => return Err(Error::Timeout(message)),
             "SSLError" => {
                 let code = response.get("code").and_then(|i| i.as_u64()).unwrap_or(0);
                 let current_certificate = response
                     .get("data")
-                    .and_then(|i| i.as_str())
+                    .and_then(Value::as_str)
                     .unwrap_or("")
                     .to_string();
-                return Err(Error::SSLError {
+                return Err(Error::SSL {
                     message,
                     code: SSLErrorCode::from_u64(code),
                     current_certificate,
                 });
             }
             _ => {
-                return Err(Error::UknownError(response.to_string()));
+                return Err(Error::Unknown(response.to_string()));
             }
         }
     }
@@ -294,15 +296,15 @@ impl TryFrom<Value> for Credentials {
     type Error = Error;
 
     fn try_from(value: Value) -> Result<Self, Self::Error> {
-        let Some(credentials) = value.get("credentials").and_then(|c| c.as_array()) else {
+        let Some(credentials) = value.get("credentials").and_then(Value::as_array) else {
             return Err(Error::UnexpectedResponse(
                 "Missing credentials key".to_string(),
             ));
         };
-        let Some(login) = credentials.get(0).and_then(|c| c.as_str()) else {
+        let Some(login) = credentials.get(0).and_then(Value::as_str) else {
             return Err(Error::UnexpectedResponse("Missing login key".to_string()));
         };
-        let Some(password) = credentials.get(1).and_then(|c| c.as_str()) else {
+        let Some(password) = credentials.get(1).and_then(Value::as_str) else {
             return Err(Error::UnexpectedResponse(
                 "Missing password key".to_string(),
             ));
@@ -334,8 +336,8 @@ impl TryFrom<Value> for Credentials {
 pub fn announce_system(params: ConnectParams, target_distro: &str) -> Result<Credentials, Error> {
     let result_s = unsafe {
         let param_json = json!(params).to_string();
-        let params_c_ptr = CString::new(param_json).unwrap().into_raw();
-        let distro_c_ptr = CString::new(target_distro).unwrap().into_raw();
+        let params_c_ptr = CString::new(param_json)?.into_raw();
+        let distro_c_ptr = CString::new(target_distro)?.into_raw();
 
         let result_ptr = suseconnect_agama_sys::announce_system(params_c_ptr, distro_c_ptr);
 
@@ -376,9 +378,9 @@ pub fn activate_product(
         let product_json = json!(product).to_string();
         let params_json = json!(params).to_string();
 
-        let product_c_ptr = CString::new(product_json).unwrap().into_raw();
-        let params_c_ptr = CString::new(params_json).unwrap().into_raw();
-        let email_c_ptr = CString::new(email).unwrap().into_raw();
+        let product_c_ptr = CString::new(product_json)?.into_raw();
+        let params_c_ptr = CString::new(params_json)?.into_raw();
+        let email_c_ptr = CString::new(email)?.into_raw();
 
         let result_ptr =
             suseconnect_agama_sys::activate_product(product_c_ptr, params_c_ptr, email_c_ptr);
@@ -410,13 +412,14 @@ pub const GLOBAL_CREDENTIALS_FILE: &str = "/etc/zypp/credentials.d/SCCcredential
 /// * `login` - The username for the credentials file.
 /// * `pwd` - The password for the credentials file.
 /// * `path` - The path where the credentials file will be created.
-pub fn create_credentials_file(login: &str, pwd: &str, path: &str) -> () {
+pub fn create_credentials_file(login: &str, pwd: &str, path: &str) -> Result<(), Error> {
+            // unwrap should not happen we do not construct invalid strings
+        let login = CString::new(login)?.into_raw();
+        let pwd = CString::new(pwd)?.into_raw();
+        let path = CString::new(path)?.into_raw();
+        let empty = CString::new("")?.into_raw();
+
     unsafe {
-        // unwrap should not happen we do not construct invalid strings
-        let login = CString::new(login).unwrap().into_raw();
-        let pwd = CString::new(pwd).unwrap().into_raw();
-        let path = CString::new(path).unwrap().into_raw();
-        let empty = CString::new("").unwrap().into_raw();
 
         suseconnect_agama_sys::create_credentials_file(login, pwd, empty, path);
 
@@ -426,6 +429,8 @@ pub fn create_credentials_file(login: &str, pwd: &str, path: &str) -> () {
         let _ = CString::from_raw(path);
         let _ = CString::from_raw(empty);
     }
+
+    Ok(())
 }
 
 /// Reloads SUSE Customer Center certificates.
@@ -469,7 +474,7 @@ pub const DEFAULT_SCC_URL: &str = "https://scc.suse.com";
 pub fn write_config(params: ConnectParams) -> Result<(), Error> {
     let result_s = unsafe {
         let param_json = json!(params).to_string();
-        let params_c_ptr = CString::new(param_json).unwrap().into_raw();
+        let params_c_ptr = CString::new(param_json)?.into_raw();
 
         let result_ptr = suseconnect_agama_sys::write_config(params_c_ptr);
         let _ = CString::from_raw(params_c_ptr);
@@ -489,8 +494,8 @@ pub fn show_product(
         let params_json = json!(params).to_string();
         let product_json = json!(product).to_string();
 
-        let params_c_ptr = CString::new(params_json).unwrap().into_raw();
-        let product_c_ptr = CString::new(product_json).unwrap().into_raw();
+        let params_c_ptr = CString::new(params_json)?.into_raw();
+        let product_c_ptr = CString::new(product_json)?.into_raw();
 
         let result_ptr = suseconnect_agama_sys::show_product(params_c_ptr, product_c_ptr);
 
@@ -529,7 +534,7 @@ mod tests {
             "code": 401
         });
         match check_error(&response) {
-            Err(Error::ApiError { message, code }) => {
+            Err(Error::SCCApi { message, code }) => {
                 assert_eq!(message, "Invalid token");
                 assert_eq!(code, 401);
             }
@@ -543,7 +548,7 @@ mod tests {
             "err_type": "APIError"
         });
         match check_error(&response) {
-            Err(Error::ApiError { message, code }) => {
+            Err(Error::SCCApi { message, code }) => {
                 assert_eq!(message, "No message");
                 assert_eq!(code, 400);
             }
@@ -558,7 +563,7 @@ mod tests {
             "details": "Something went wrong"
         });
         match check_error(&response) {
-            Err(Error::UknownError(msg)) => {
+            Err(Error::Unknown(msg)) => {
                 assert_eq!(msg, response.to_string());
             }
             _ => panic!("Expected UknownError"),
@@ -600,7 +605,7 @@ mod tests {
             "message": "Invalid JSON"
         });
         match check_error(&response) {
-            Err(Error::JSONError(msg)) => {
+            Err(Error::JSONPassed(msg)) => {
                 assert_eq!(msg, "Invalid JSON");
             }
             _ => panic!("Expected JSONError"),
@@ -614,7 +619,7 @@ mod tests {
             "message": "Network is down"
         });
         match check_error(&response) {
-            Err(Error::NetError(msg)) => {
+            Err(Error::Network(msg)) => {
                 assert_eq!(msg, "Network is down");
             }
             _ => panic!("Expected NetError"),
@@ -645,7 +650,7 @@ mod tests {
             "data": cert
         });
         match check_error(&response) {
-            Err(Error::SSLError {
+            Err(Error::SSL {
                 message,
                 code,
                 current_certificate,
@@ -666,7 +671,7 @@ mod tests {
         let login = "test_user";
         let password = "test_password";
 
-        create_credentials_file(login, password, path_str);
+        let _ =create_credentials_file(login, password, path_str);
 
         let content =
             fs::read_to_string(temp_file.path()).expect("Failed to read credentials file");
