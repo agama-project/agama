@@ -274,9 +274,9 @@ function ProposalPageContent(): React.ReactNode {
 
   const fixable = [
     "configNoRoot",
-    "configRequiredPaths",
+    "configMissingPaths",
     "configOverusedPvTarget",
-    "configOverusedMdMember",
+    "configMisusedMdMember",
     "proposal",
   ];
   const configIssues = issues.filter((i) => i.class !== "proposal");

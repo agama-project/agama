@@ -70,7 +70,7 @@ module Agama
               ),
               missing_paths.join(", ")
             ),
-            kind: IssueClasses::Config::REQUIRED_PATHS
+            kind: IssueClasses::Config::MISSING_PATHS
           )
         end
 

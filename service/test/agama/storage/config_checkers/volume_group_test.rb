@@ -64,7 +64,7 @@ describe Agama::Storage::ConfigCheckers::VolumeGroup do
       it "includes the expected issue" do
         issues = subject.issues
         expect(issues).to include an_object_having_attributes(
-          kind:        Agama::Storage::IssueClasses::Config::ALIAS,
+          kind:        Agama::Storage::IssueClasses::Config::NO_SUCH_ALIAS,
           description: /no LVM physical volume with alias 'pv1'/
         )
       end
@@ -84,7 +84,7 @@ describe Agama::Storage::ConfigCheckers::VolumeGroup do
       it "includes the expected issue" do
         issues = subject.issues
         expect(issues).to include an_object_having_attributes(
-          kind:        Agama::Storage::IssueClasses::Config::ALIAS,
+          kind:        Agama::Storage::IssueClasses::Config::NO_SUCH_ALIAS,
           description: /no target device for LVM physical volumes with alias 'second-disk'/
         )
       end
@@ -110,7 +110,7 @@ describe Agama::Storage::ConfigCheckers::VolumeGroup do
         it "includes the expected issue" do
           issues = subject.issues
           expect(issues).to include an_object_having_attributes(
-            kind:        Agama::Storage::IssueClasses::Config::ENCRYPTION,
+            kind:        Agama::Storage::IssueClasses::Config::NO_ENCRYPTION_PASSPHRASE,
             description: /No passphrase/
           )
         end
@@ -134,7 +134,7 @@ describe Agama::Storage::ConfigCheckers::VolumeGroup do
         it "includes the expected issue" do
           issues = subject.issues
           expect(issues).to include an_object_having_attributes(
-            kind:        Agama::Storage::IssueClasses::Config::ENCRYPTION,
+            kind:        Agama::Storage::IssueClasses::Config::WRONG_ENCRYPTION_METHOD,
             description: /'Regular LUKS2' is not available/
           )
         end
@@ -146,7 +146,7 @@ describe Agama::Storage::ConfigCheckers::VolumeGroup do
         it "includes the expected issue" do
           issues = subject.issues
           expect(issues).to include an_object_having_attributes(
-            kind:        Agama::Storage::IssueClasses::Config::ENCRYPTION,
+            kind:        Agama::Storage::IssueClasses::Config::WRONG_ENCRYPTION_METHOD,
             description: /'Encryption with Volatile Random Key' is not a suitable method/
           )
         end
@@ -164,7 +164,10 @@ describe Agama::Storage::ConfigCheckers::VolumeGroup do
         it "does not include an encryption issue" do
           issues = subject.issues
           expect(issues).to_not include an_object_having_attributes(
-            kind: Agama::Storage::IssueClasses::Config::ENCRYPTION
+            kind: Agama::Storage::IssueClasses::Config::NO_ENCRYPTION_PASSPHRASE
+          )
+          expect(issues).to_not include an_object_having_attributes(
+            kind: Agama::Storage::IssueClasses::Config::WRONG_ENCRYPTION_METHOD
           )
         end
       end
@@ -221,7 +224,7 @@ describe Agama::Storage::ConfigCheckers::VolumeGroup do
         it "includes the expected issue" do
           issues = subject.issues
           expect(issues).to include an_object_having_attributes(
-            kind:        Agama::Storage::IssueClasses::Config::LVM,
+            kind:        Agama::Storage::IssueClasses::Config::INCOMPATIBLE_PV_TARGETS,
             description: /'system' is mixing reused devices and new devices/
           )
         end
@@ -233,7 +236,7 @@ describe Agama::Storage::ConfigCheckers::VolumeGroup do
         it "does not include an incompatible targets issue" do
           issues = subject.issues
           expect(issues).to_not include an_object_having_attributes(
-            kind: Agama::Storage::IssueClasses::Config::LVM
+            kind: Agama::Storage::IssueClasses::Config::INCOMPATIBLE_PV_TARGETS
           )
         end
       end
@@ -244,7 +247,7 @@ describe Agama::Storage::ConfigCheckers::VolumeGroup do
         it "does not include an incompatible targets issue" do
           issues = subject.issues
           expect(issues).to_not include an_object_having_attributes(
-            kind: Agama::Storage::IssueClasses::Config::LVM
+            kind: Agama::Storage::IssueClasses::Config::INCOMPATIBLE_PV_TARGETS
           )
         end
       end

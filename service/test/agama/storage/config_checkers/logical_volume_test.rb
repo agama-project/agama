@@ -64,7 +64,7 @@ describe Agama::Storage::ConfigCheckers::LogicalVolume do
       it "includes the expected issue" do
         issues = subject.issues
         expect(issues).to include an_object_having_attributes(
-          kind:        Agama::Storage::IssueClasses::Config::ALIAS,
+          kind:        Agama::Storage::IssueClasses::Config::NO_SUCH_ALIAS,
           description: /no LVM thin pool/
         )
       end
@@ -76,7 +76,7 @@ describe Agama::Storage::ConfigCheckers::LogicalVolume do
       it "does not include an issue" do
         issues = subject.issues
         expect(issues).to_not include an_object_having_attributes(
-          kind:        Agama::Storage::IssueClasses::Config::ALIAS,
+          kind:        Agama::Storage::IssueClasses::Config::NO_SUCH_ALIAS,
           description: /no LVM thin pool/
         )
       end

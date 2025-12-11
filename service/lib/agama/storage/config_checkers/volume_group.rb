@@ -73,7 +73,10 @@ module Agama
         def name_issue
           return if config.name && !config.name.empty?
 
-          error(_("There is a volume group without name"), kind: IssueClasses::Config::LVM)
+          error(
+            _("There is a volume group without name"),
+            kind: IssueClasses::Config::NO_VOLUME_GROUP_NAME
+          )
         end
 
         # Issues from logical volumes.
@@ -104,7 +107,7 @@ module Agama
           error(
             # TRANSLATORS: %s is the replaced by a device alias (e.g., "pv1").
             format(_("There is no LVM physical volume with alias '%s'"), pv_alias),
-            kind: IssueClasses::Config::ALIAS
+            kind: IssueClasses::Config::NO_SUCH_ALIAS
           )
         end
 
@@ -136,7 +139,7 @@ module Agama
               ),
               config.name
             ),
-            kind: IssueClasses::Config::LVM
+            kind: IssueClasses::Config::INCOMPATIBLE_PV_TARGETS
           )
         end
 
@@ -153,7 +156,7 @@ module Agama
               _("There is no target device for LVM physical volumes with alias '%s'"),
               device_alias
             ),
-            kind: IssueClasses::Config::ALIAS
+            kind: IssueClasses::Config::NO_SUCH_ALIAS
           )
         end
 

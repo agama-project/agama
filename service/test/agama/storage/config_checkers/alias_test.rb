@@ -26,7 +26,7 @@ shared_examples "overused alias issue" do
   it "includes the expected issue" do
     issues = subject.issues
     expect(issues).to include an_object_having_attributes(
-      kind:        Agama::Storage::IssueClasses::Config::ALIAS,
+      kind:        Agama::Storage::IssueClasses::Config::OVERUSED_DEVICE,
       description: /alias '#{device_alias}' is used by more than one/
     )
   end
@@ -145,7 +145,7 @@ shared_examples "formatted and used issue" do
   it "includes the expected issue" do
     issues = subject.issues
     expect(issues).to include an_object_having_attributes(
-      kind:        Agama::Storage::IssueClasses::Config::OVERUSED,
+      kind:        Agama::Storage::IssueClasses::Config::OVERUSED_DEVICE,
       description: /alias '#{device_alias}' cannot be formatted because it is used/
     )
   end
@@ -220,7 +220,7 @@ shared_examples "partitioned and used issue" do
   it "includes the expected issue" do
     issues = subject.issues
     expect(issues).to include an_object_having_attributes(
-      kind:        Agama::Storage::IssueClasses::Config::OVERUSED,
+      kind:        Agama::Storage::IssueClasses::Config::OVERUSED_DEVICE,
       description: /alias '#{device_alias}' cannot be partitioned because it is used/
     )
   end
