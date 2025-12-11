@@ -56,11 +56,14 @@ import { sprintf } from "sprintf-js";
 import { _, n_, formatList } from "~/i18n";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import spacingStyles from "@patternfly/react-styles/css/utilities/Spacing/spacing";
+import { useConfigModel } from "~/hooks/model/storage";
+import { volumeGroupModelMethods } from "~/model/storage";
 
 const DeleteVgOption = ({ vg }: { vg: model.VolumeGroup }) => {
+  const configModel = useConfigModel();
   const deleteVolumeGroup = useDeleteVolumeGroup();
   const lvs = vg.logicalVolumes.map((lv) => formattedPath(lv.mountPath));
-  const targetDevices = vg.getTargetDevices();
+  const targetDevices = volumeGroupModelMethods.selectTargetDevices(vg, configModel);
   const convert = targetDevices.length === 1 && !!lvs.length;
   let description;
 

@@ -50,7 +50,8 @@ import { _ } from "~/i18n";
 import { deviceSystems, isDrive } from "~/storage/device";
 import type { model, data } from "~/storage";
 import type { storage } from "~/model/system";
-import { partitionableModelMethods } from "~/model/storage";
+import { partitionableModelMethods, volumeGroupModelMethods } from "~/model/storage";
+import { useConfigModel } from "~/hooks/model/storage";
 
 /**
  * Hook that returns the devices that can be selected as target to automatically create LVM PVs.
@@ -97,6 +98,7 @@ function targetDevicesError(targetDevices: storage.Device[]): string | undefined
 export default function LvmPage() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const configModel = useConfigModel();
   const model = useModel();
   const volumeGroup = useVolumeGroup(id);
   const addVolumeGroup = useAddVolumeGroup();
@@ -110,7 +112,9 @@ export default function LvmPage() {
   useEffect(() => {
     if (volumeGroup) {
       setName(volumeGroup.vgName);
-      const targetNames = volumeGroup.getTargetDevices().map((d) => d.name);
+      const targetNames = volumeGroupModelMethods
+        .selectTargetDevices(volumeGroup, configModel)
+        .map((d) => d.name);
       const targetDevices = allDevices.filter((d) => targetNames.includes(d.name));
       setSelectedDevices(targetDevices);
     } else if (model && !model.volumeGroups.length) {
@@ -122,7 +126,7 @@ export default function LvmPage() {
       const targetDevices = allDevices.filter((d) => targetNames.includes(d.name));
       setSelectedDevices(targetDevices);
     }
-  }, [model, volumeGroup, allDevices]);
+  }, [model, configModel, volumeGroup, allDevices]);
 
   const updateName = (_, value) => setName(value);
 

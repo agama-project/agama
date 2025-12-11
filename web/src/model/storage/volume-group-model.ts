@@ -28,4 +28,21 @@ function usedMountPaths(volumeGroup: configModel.VolumeGroup): string[] {
   return sift(mountPaths);
 }
 
-export { usedMountPaths };
+function candidateTargetDevices(
+  configModel: configModel.Config,
+): (configModel.Drive | configModel.MdRaid)[] {
+  const drives = configModel.drives || [];
+  const mdRaids = configModel.mdRaids || [];
+  return [...drives, ...mdRaids];
+}
+
+function selectTargetDevices(
+  volumeGroup: configModel.VolumeGroup,
+  configModel: configModel.Config,
+): (configModel.Drive | configModel.MdRaid)[] {
+  return candidateTargetDevices(configModel).filter((d) =>
+    volumeGroup.targetDevices.includes(d.name),
+  );
+}
+
+export { usedMountPaths, selectTargetDevices };

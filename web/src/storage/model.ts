@@ -26,7 +26,7 @@
  * Types that extend the configModel by adding calculated properties and methods.
  */
 
-import { partitionModelMethods } from "~/model/storage";
+import { partitionModelMethods, volumeGroupModelMethods } from "~/model/storage";
 import type { configModel } from "~/model/storage";
 
 type Model = {
@@ -36,34 +36,32 @@ type Model = {
 };
 
 interface Drive extends configModel.Drive {
-  getVolumeGroups: () => VolumeGroup[];
+  getVolumeGroups: () => configModel.VolumeGroup[];
   getPartition: (path: string) => configModel.Partition | undefined;
   getConfiguredExistingPartitions: () => configModel.Partition[];
 }
 
 interface MdRaid extends configModel.MdRaid {
-  getVolumeGroups: () => VolumeGroup[];
+  getVolumeGroups: () => configModel.VolumeGroup[];
   getPartition: (path: string) => configModel.Partition | undefined;
   getConfiguredExistingPartitions: () => configModel.Partition[];
 }
 
 interface VolumeGroup extends Omit<configModel.VolumeGroup, "targetDevices" | "logicalVolumes"> {
   logicalVolumes: LogicalVolume[];
-  getTargetDevices: () => Drive[];
 }
 
 type LogicalVolume = configModel.LogicalVolume;
 
 type Formattable = Drive | MdRaid | configModel.Partition | LogicalVolume;
 
-const findTarget = (model: Model, name: string): Drive | MdRaid | undefined => {
-  return model.drives.concat(model.mdRaids).find((d) => d.name === name);
-};
-
-function partitionableProperties(apiDevice: configModel.Drive, model: Model) {
-  const getVolumeGroups = (): VolumeGroup[] => {
-    return model.volumeGroups.filter((v) =>
-      v.getTargetDevices().some((d) => d.name === apiDevice.name),
+function partitionableProperties(apiDevice: configModel.Drive, configModel: configModel.Config) {
+  const getVolumeGroups = (): configModel.VolumeGroup[] => {
+    const volumeGroups = configModel.volumeGroups || [];
+    return volumeGroups.filter((v) =>
+      volumeGroupModelMethods
+        .selectTargetDevices(v, configModel)
+        .some((d) => d.name === apiDevice.name),
     );
   };
 
@@ -89,17 +87,17 @@ function partitionableProperties(apiDevice: configModel.Drive, model: Model) {
   };
 }
 
-function buildDrive(apiDrive: configModel.Drive, model: Model): Drive {
+function buildDrive(apiDrive: configModel.Drive, configModel: configModel.Config): Drive {
   return {
     ...apiDrive,
-    ...partitionableProperties(apiDrive, model),
+    ...partitionableProperties(apiDrive, configModel),
   };
 }
 
-function buildMdRaid(apiMdRaid: configModel.MdRaid, model: Model): MdRaid {
+function buildMdRaid(apiMdRaid: configModel.MdRaid, configModel: configModel.Config): MdRaid {
   return {
     ...apiMdRaid,
-    ...partitionableProperties(apiMdRaid, model),
+    ...partitionableProperties(apiMdRaid, configModel),
   };
 }
 
@@ -107,46 +105,35 @@ function buildLogicalVolume(logicalVolumeData: configModel.LogicalVolume): Logic
   return { ...logicalVolumeData };
 }
 
-function buildVolumeGroup(apiVolumeGroup: configModel.VolumeGroup, model: Model): VolumeGroup {
+function buildVolumeGroup(apiVolumeGroup: configModel.VolumeGroup): VolumeGroup {
   const buildLogicalVolumes = (): LogicalVolume[] => {
     return (apiVolumeGroup.logicalVolumes || []).map(buildLogicalVolume);
-  };
-
-  const getTargetDevices = (): (Drive | MdRaid)[] => {
-    return (apiVolumeGroup.targetDevices || []).map((d) => findTarget(model, d)).filter((d) => d);
   };
 
   return {
     ...apiVolumeGroup,
     logicalVolumes: buildLogicalVolumes(),
-    getTargetDevices,
   };
 }
 
 function buildModel(apiModel: configModel.Config): Model {
-  const model: Model = {
-    drives: [],
-    mdRaids: [],
-    volumeGroups: [],
-  };
-
   const buildDrives = (): Drive[] => {
-    return (apiModel.drives || []).map((d) => buildDrive(d, model));
+    return (apiModel.drives || []).map((d) => buildDrive(d, apiModel));
   };
 
   const buildMdRaids = (): MdRaid[] => {
-    return (apiModel.mdRaids || []).map((r) => buildMdRaid(r, model));
+    return (apiModel.mdRaids || []).map((r) => buildMdRaid(r, apiModel));
   };
 
   const buildVolumeGroups = (): VolumeGroup[] => {
-    return (apiModel.volumeGroups || []).map((v) => buildVolumeGroup(v, model));
+    return (apiModel.volumeGroups || []).map((v) => buildVolumeGroup(v));
   };
 
-  // Important! Modify the model object instead of assigning a new one.
-  model.drives = buildDrives();
-  model.mdRaids = buildMdRaids();
-  model.volumeGroups = buildVolumeGroups();
-  return model;
+  return {
+    drives: buildDrives(),
+    mdRaids: buildMdRaids(),
+    volumeGroups: buildVolumeGroups(),
+  };
 }
 
 export type { Model, Drive, MdRaid, VolumeGroup, LogicalVolume, Formattable };
