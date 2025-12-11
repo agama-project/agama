@@ -19,6 +19,7 @@
 // find current contact information at www.suse.com.
 
 use crate::actor::{self, Actor, Handler, MessageHandler};
+use crate::api::Status;
 use crate::{
     api::event::{self, Event},
     api::progress::{self, Progress},
@@ -57,7 +58,7 @@ impl Starter {
     pub fn start(self) -> Handler<Service> {
         let service = Service {
             events: self.event,
-            progresses: vec![],
+            status: Status::default(),
         };
 
         let handler = actor::spawn(service);
@@ -67,7 +68,7 @@ impl Starter {
 
 pub struct Service {
     events: event::Sender,
-    progresses: Vec<Progress>,
+    status: Status,
 }
 
 impl Service {
@@ -75,16 +76,37 @@ impl Service {
         Starter::new(events)
     }
 
+    fn get_status(&self) -> &Status {
+        &self.status
+    }
+
+    // NOTE: this method might be implemented by Status.
+    fn get_progresses(&mut self) -> &Vec<Progress> {
+        &self.status.progresses
+    }
+
+    fn add_progress(&mut self, progress: Progress) {
+        self.status.progresses.push(progress);
+    }
+
+    fn update_progress(&mut self, index: usize, progress: Progress) {
+        self.status.progresses[index] = progress;
+    }
+
     fn get_progress(&self, scope: Scope) -> Option<&Progress> {
-        self.progresses.iter().find(|p| p.scope == scope)
+        self.status.progresses.iter().find(|p| p.scope == scope)
     }
 
     fn get_mut_progress(&mut self, scope: Scope) -> Option<&mut Progress> {
-        self.progresses.iter_mut().find(|p| p.scope == scope)
+        self.status.progresses.iter_mut().find(|p| p.scope == scope)
     }
 
     fn get_progress_index(&self, scope: Scope) -> Option<usize> {
-        self.progresses.iter().position(|p| p.scope == scope)
+        self.status.progresses.iter().position(|p| p.scope == scope)
+    }
+
+    fn remove_progress(&mut self, index: usize) {
+        self.status.progresses.remove(index);
     }
 
     fn send_progress_changed(&self, progress: Progress) -> Result<(), Error> {
@@ -98,9 +120,16 @@ impl Actor for Service {
 }
 
 #[async_trait]
+impl MessageHandler<message::GetStatus> for Service {
+    async fn handle(&mut self, message: message::GetStatus) -> Result<Status, Error> {
+        Ok(self.get_status().clone())
+    }
+}
+
+#[async_trait]
 impl MessageHandler<message::Get> for Service {
     async fn handle(&mut self, _message: message::Get) -> Result<Vec<Progress>, Error> {
-        Ok(self.progresses.clone())
+        Ok(self.get_progresses().clone())
     }
 }
 
@@ -109,9 +138,9 @@ impl MessageHandler<message::Set> for Service {
     async fn handle(&mut self, message: message::Set) -> Result<(), Error> {
         let progress = message.progress;
         if let Some(index) = self.get_progress_index(progress.scope) {
-            self.progresses[index] = progress.clone();
+            self.update_progress(index, progress.clone());
         } else {
-            self.progresses.push(progress.clone());
+            self.add_progress(progress.clone());
         }
         self.send_progress_changed(progress)?;
         Ok(())
@@ -125,7 +154,7 @@ impl MessageHandler<message::Start> for Service {
             return Err(Error::DuplicatedProgress(message.scope));
         }
         let progress = Progress::new(message.scope, message.size, message.step);
-        self.progresses.push(progress.clone());
+        self.add_progress(progress.clone());
         self.send_progress_changed(progress)?;
         Ok(())
     }
@@ -138,7 +167,7 @@ impl MessageHandler<message::StartWithSteps> for Service {
             return Err(Error::DuplicatedProgress(message.scope));
         }
         let progress = Progress::new_with_steps(message.scope, message.steps);
-        self.progresses.push(progress.clone());
+        self.add_progress(progress.clone());
         self.send_progress_changed(progress)?;
         Ok(())
     }
@@ -176,7 +205,7 @@ impl MessageHandler<message::Finish> for Service {
         let index = self
             .get_progress_index(message.scope)
             .ok_or(Error::MissingProgress(message.scope))?;
-        self.progresses.remove(index);
+        self.remove_progress(index);
         self.events.send(Event::ProgressFinished {
             scope: message.scope,
         })?;

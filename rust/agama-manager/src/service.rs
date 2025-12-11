@@ -233,8 +233,6 @@ impl Starter {
             products: products::Registry::default(),
             licenses: licenses::Registry::default(),
             hardware,
-            // FIXME: state is already used for service state.
-            state: State::Configuring,
             config: Config::default(),
             system: manager::SystemInfo::default(),
             product: None,
@@ -258,7 +256,6 @@ pub struct Service {
     licenses: licenses::Registry,
     hardware: hardware::Registry,
     product: Option<Arc<RwLock<ProductSpec>>>,
-    state: State,
     config: Config,
     system: manager::SystemInfo,
     events: event::Sender,
@@ -425,8 +422,6 @@ impl Service {
     }
 
     async fn install(&mut self) -> Result<(), Error> {
-        self.state = State::Installing;
-        self.events.send(Event::StateChanged)?;
         // TODO: translate progress steps.
         self.progress
             .call(progress::message::StartWithSteps::new(
@@ -438,8 +433,6 @@ impl Service {
         self.progress
             .call(progress::message::Finish::new(Scope::Manager))
             .await?;
-        self.state = State::Finished;
-        self.events.send(Event::StateChanged)?;
         Ok(())
     }
 
@@ -490,11 +483,8 @@ impl Actor for Service {
 impl MessageHandler<message::GetStatus> for Service {
     /// It returns the status of the installation.
     async fn handle(&mut self, _message: message::GetStatus) -> Result<Status, Error> {
-        let progresses = self.progress.call(progress::message::Get).await?;
-        Ok(Status {
-            state: self.state.clone(),
-            progresses,
-        })
+        let status = self.progress.call(progress::message::GetStatus).await?;
+        Ok(status)
     }
 }
 

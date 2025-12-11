@@ -21,6 +21,13 @@
 use crate::actor::Message;
 use crate::api::progress::Progress;
 use crate::api::scope::Scope;
+use crate::api::Status;
+
+pub struct GetStatus;
+
+impl Message for GetStatus {
+    type Reply = Status;
+}
 
 pub struct Get;
 

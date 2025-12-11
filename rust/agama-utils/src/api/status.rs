@@ -22,7 +22,7 @@ use crate::api::progress::Progress;
 use serde::Serialize;
 
 // Information about the status of the installation.
-#[derive(Serialize, utoipa::ToSchema)]
+#[derive(Clone, Default, Serialize, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct Status {
     /// State of the installation
@@ -32,9 +32,10 @@ pub struct Status {
 }
 
 /// Represents the current state of the installation process.
-#[derive(Clone, Serialize, utoipa::ToSchema)]
+#[derive(Clone, Copy, Default, Serialize, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub enum State {
+    #[default]
     /// Configuring the installation
     Configuring,
     /// Installing the system
