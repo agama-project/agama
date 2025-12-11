@@ -26,7 +26,7 @@
  * Types that extend the configModel by adding calculated properties and methods.
  */
 
-import { partitionModelMethods, volumeGroupModelMethods } from "~/model/storage";
+import { partitionModelMethods } from "~/model/storage";
 import type { configModel } from "~/model/storage";
 
 type Model = {
@@ -36,13 +36,11 @@ type Model = {
 };
 
 interface Drive extends configModel.Drive {
-  getVolumeGroups: () => configModel.VolumeGroup[];
   getPartition: (path: string) => configModel.Partition | undefined;
   getConfiguredExistingPartitions: () => configModel.Partition[];
 }
 
 interface MdRaid extends configModel.MdRaid {
-  getVolumeGroups: () => configModel.VolumeGroup[];
   getPartition: (path: string) => configModel.Partition | undefined;
   getConfiguredExistingPartitions: () => configModel.Partition[];
 }
@@ -55,16 +53,7 @@ type LogicalVolume = configModel.LogicalVolume;
 
 type Formattable = Drive | MdRaid | configModel.Partition | LogicalVolume;
 
-function partitionableProperties(apiDevice: configModel.Drive, configModel: configModel.Config) {
-  const getVolumeGroups = (): configModel.VolumeGroup[] => {
-    const volumeGroups = configModel.volumeGroups || [];
-    return volumeGroups.filter((v) =>
-      volumeGroupModelMethods
-        .selectTargetDevices(v, configModel)
-        .some((d) => d.name === apiDevice.name),
-    );
-  };
-
+function partitionableProperties(apiDevice: configModel.Drive) {
   const getPartition = (path: string): configModel.Partition | undefined => {
     return apiDevice.partitions.find((p) => p.mountPath === path);
   };
@@ -81,23 +70,22 @@ function partitionableProperties(apiDevice: configModel.Drive, configModel: conf
   };
 
   return {
-    getVolumeGroups,
     getPartition,
     getConfiguredExistingPartitions,
   };
 }
 
-function buildDrive(apiDrive: configModel.Drive, configModel: configModel.Config): Drive {
+function buildDrive(apiDrive: configModel.Drive): Drive {
   return {
     ...apiDrive,
-    ...partitionableProperties(apiDrive, configModel),
+    ...partitionableProperties(apiDrive),
   };
 }
 
-function buildMdRaid(apiMdRaid: configModel.MdRaid, configModel: configModel.Config): MdRaid {
+function buildMdRaid(apiMdRaid: configModel.MdRaid): MdRaid {
   return {
     ...apiMdRaid,
-    ...partitionableProperties(apiMdRaid, configModel),
+    ...partitionableProperties(apiMdRaid),
   };
 }
 
@@ -118,11 +106,11 @@ function buildVolumeGroup(apiVolumeGroup: configModel.VolumeGroup): VolumeGroup 
 
 function buildModel(apiModel: configModel.Config): Model {
   const buildDrives = (): Drive[] => {
-    return (apiModel.drives || []).map((d) => buildDrive(d, apiModel));
+    return (apiModel.drives || []).map((d) => buildDrive(d));
   };
 
   const buildMdRaids = (): MdRaid[] => {
-    return (apiModel.mdRaids || []).map((r) => buildMdRaid(r, apiModel));
+    return (apiModel.mdRaids || []).map((r) => buildMdRaid(r));
   };
 
   const buildVolumeGroups = (): VolumeGroup[] => {

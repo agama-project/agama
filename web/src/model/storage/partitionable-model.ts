@@ -21,7 +21,7 @@
  */
 
 import { sift } from "radashi";
-import { partitionModelMethods } from "~/model/storage";
+import { partitionModelMethods, volumeGroupModelMethods } from "~/model/storage";
 import type { configModel } from "~/model/storage";
 import type * as model from "~/storage/model";
 
@@ -41,4 +41,14 @@ function isReusingPartitions(device: Partitionable): boolean {
   return device.partitions.some(partitionModelMethods.isReused);
 }
 
-export { usedMountPaths, isAddingPartitions, isReusingPartitions };
+function selectVolumeGroups(
+  device: Partitionable,
+  configModel: configModel.Config,
+): configModel.VolumeGroup[] {
+  const volumeGroups = configModel.volumeGroups || [];
+  return volumeGroups.filter((v) =>
+    volumeGroupModelMethods.selectTargetDevices(v, configModel).some((d) => d.name === device.name),
+  );
+}
+
+export { usedMountPaths, isAddingPartitions, isReusingPartitions, selectVolumeGroups };
