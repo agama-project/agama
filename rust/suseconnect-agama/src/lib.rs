@@ -6,8 +6,8 @@ use std::{
 use serde_json::{json, Value};
 
 // Safety requirements: inherited from https://doc.rust-lang.org/std/ffi/struct.CStr.html#method.from_ptr
-// expects that rust get control of string pointer
-// note: it is different then libzypp bindings where string is still owned by libzypp
+// expects that rust gets control of string pointer
+// note: it is different than libzypp bindings where string is still owned by libzypp
 pub(crate) unsafe fn string_from_ptr(c_ptr: *mut i8) -> Result<String, IntoStringError> {
     let c_str = CString::from_raw(c_ptr);
     c_str.into_string()
@@ -42,7 +42,6 @@ pub struct ProductSpecification {
 
 /// Represents product and also extensions info from SCC.
 /// list of attributes is just selection which agama uses.
-///
 #[derive(Debug, Clone)]
 pub struct Product {
     pub identifier: String,
@@ -208,9 +207,9 @@ pub enum Error {
         // HTTP error code from API
         code: u64,
     },
-    #[error("Unknown error:{0}")]
-    UknownError(String),
-    #[error("Unexpected response from suse connect: {0}")]
+    #[error("Unknown error: {0}")]
+    Unknown(String),
+    #[error("Unexpected response from SUSEConnect: {0}")]
     UnexpectedResponse(String),
     #[error(transparent)]
     JsonParseError(#[from] serde_json::Error),
@@ -235,7 +234,7 @@ pub enum Error {
     UTF8Error(#[from] std::ffi::IntoStringError),
 }
 
-/// checks response from suseconnect for errors
+/// checks response from SUSEConnect for errors
 ///
 /// ruby counterpart is at https://github.com/SUSE/connect-ng/blob/main/third_party/yast/lib/suse/toolkit/shim_utils.rb#L32
 fn check_error(response: &Value) -> Result<(), Error> {
