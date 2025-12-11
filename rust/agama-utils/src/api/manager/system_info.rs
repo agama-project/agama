@@ -55,7 +55,7 @@ pub struct Product {
 pub struct HardwareInfo {
     /// CPU description.
     pub cpu: Option<String>,
-    /// Memory size.
+    /// Memory size (in bytes).
     pub memory: Option<u64>,
     /// Computer model.
     pub model: Option<String>,
