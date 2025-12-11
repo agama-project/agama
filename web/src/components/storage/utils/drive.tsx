@@ -70,7 +70,8 @@ const SummaryForSpacePolicy = (drive: Drive): string | undefined => {
   const isTargetDevice = configModelMethods.isTargetDevice(configModel, drive.name);
   const isBoot = configModelMethods.isBootDevice(configModel, drive.name);
   const isAddingPartitions = partitionableModelMethods.isAddingPartitions(drive);
-  const { isReusingPartitions, spacePolicy } = drive;
+  const isReusingPartitions = partitionableModelMethods.isReusingPartitions(drive);
+  const { spacePolicy } = drive;
 
   switch (spacePolicy) {
     case "delete":
@@ -124,7 +125,7 @@ const ContentActionsDescription = (drive: Drive, policyId: string | undefined): 
   const isTargetDevice = configModelMethods.isTargetDevice(configModel, drive.name);
   const isBoot = configModelMethods.isBootDevice(configModel, drive.name);
   const isAddingPartitions = partitionableModelMethods.isAddingPartitions(drive);
-  const { isReusingPartitions } = drive;
+  const isReusingPartitions = partitionableModelMethods.isReusingPartitions(drive);
 
   if (!policyId) policyId = drive.spacePolicy;
 

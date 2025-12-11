@@ -37,4 +37,8 @@ function isAddingPartitions(device: Partitionable): boolean {
   return device.partitions.some((p) => p.mountPath && partitionModelMethods.isNew(p));
 }
 
-export { usedMountPaths, isAddingPartitions };
+function isReusingPartitions(device: Partitionable): boolean {
+  return device.partitions.some(partitionModelMethods.isReused);
+}
+
+export { usedMountPaths, isAddingPartitions, isReusingPartitions };

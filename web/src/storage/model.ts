@@ -36,14 +36,12 @@ type Model = {
 };
 
 interface Drive extends configModel.Drive {
-  isReusingPartitions: boolean;
   getVolumeGroups: () => VolumeGroup[];
   getPartition: (path: string) => configModel.Partition | undefined;
   getConfiguredExistingPartitions: () => configModel.Partition[];
 }
 
 interface MdRaid extends configModel.MdRaid {
-  isReusingPartitions: boolean;
   getVolumeGroups: () => VolumeGroup[];
   getPartition: (path: string) => configModel.Partition | undefined;
   getConfiguredExistingPartitions: () => configModel.Partition[];
@@ -73,10 +71,6 @@ function partitionableProperties(apiDevice: configModel.Drive, model: Model) {
     return apiDevice.partitions.find((p) => p.mountPath === path);
   };
 
-  const isReusingPartitions = (): boolean => {
-    return apiDevice.partitions.some(partitionModelMethods.isReused);
-  };
-
   const getConfiguredExistingPartitions = (): configModel.Partition[] => {
     if (apiDevice.spacePolicy === "custom")
       return apiDevice.partitions.filter(
@@ -89,7 +83,6 @@ function partitionableProperties(apiDevice: configModel.Drive, model: Model) {
   };
 
   return {
-    isReusingPartitions: isReusingPartitions(),
     getVolumeGroups,
     getPartition,
     getConfiguredExistingPartitions,

@@ -54,7 +54,7 @@ const useOnlyOneOption = (
   )
     return true;
 
-  return device.isReusingPartitions;
+  return partitionableModelMethods.isReusingPartitions(device);
 };
 
 type ChangeDeviceTitleProps = {
@@ -108,6 +108,7 @@ const ChangeDeviceDescription = ({ modelDevice, device }: ChangeDeviceDescriptio
   const isExplicitBoot = configModelMethods.isExplicitBootDevice(configModel, modelDevice.name);
   const isBoot = configModelMethods.isBootDevice(configModel, modelDevice.name);
   const mountPaths = partitionableModelMethods.usedMountPaths(modelDevice);
+  const isReusingPartitions = partitionableModelMethods.isReusingPartitions(modelDevice);
   const hasMountPaths = mountPaths.length > 0;
   const hasPv = volumeGroups.length > 0;
   const vgName = volumeGroups[0]?.vgName;
@@ -115,7 +116,7 @@ const ChangeDeviceDescription = ({ modelDevice, device }: ChangeDeviceDescriptio
   if (modelDevice.filesystem && modelDevice.filesystem.reuse)
     return _("This uses the existing file system at the disk");
 
-  if (modelDevice.isReusingPartitions) {
+  if (isReusingPartitions) {
     // The current device will be the only option to choose from
     return _("This uses existing partitions at the disk");
   }
