@@ -49,7 +49,7 @@ type Product = {
   license?: string;
   /** Translations */
   translations?: {
-    /** The key is the locale (e.g., "en-US", "es-ES") */
+    /** The key is the locale (e.g., "en", "pt_BR") */
     description: Record<string, string>;
   };
 };

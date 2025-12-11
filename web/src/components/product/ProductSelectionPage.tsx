@@ -61,7 +61,7 @@ const ResponsiveGridItem = ({ children }) => (
 const Option = ({ product, isChecked, onChange }) => {
   const detailsId = `${product.id}-details`;
   const logoSrc = `assets/logos/${product.icon}`;
-  const currentLocale = agama.language;
+  const currentLocale = agama.language.replace("-", "_");
 
   const translatedDescription =
     product.translations?.description[currentLocale] || product.description;
