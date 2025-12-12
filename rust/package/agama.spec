@@ -67,6 +67,7 @@ BuildRequires:  python-langtable-data
 Requires:       python-langtable-data
 # dependency on the YaST part of Agama
 Requires:       agama-yast
+Requires:       agama-common
 
 %description
 Agama is a service-based Linux installer. It is composed of an HTTP-based API,
@@ -103,6 +104,7 @@ Release:        0
 Summary:        Agama command-line interface
 License:        GPL-2.0-only
 Url:            https://github.com/agama-project/agama
+Requires:       agama-common
 
 %description -n agama-cli
 Command line program to interact with the Agama installer.
