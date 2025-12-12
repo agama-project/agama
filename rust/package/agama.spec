@@ -224,6 +224,13 @@ echo $PATH
 %{_pam_vendordir}/agama
 %{_unitdir}/agama-web-server.service
 %dir %{_datadir}/agama/eula
+%dir %{_datadir}/agama/jsonnet
+%{_datadir}/agama/jsonnet/agama.libsonnet
+%dir %{_datadir}/agama/schema
+%{_datadir}/agama/schema/iscsi.schema.json
+%{_datadir}/agama/schema/profile.schema.json
+%{_datadir}/agama/schema/storage.schema.json
+%{_datadir}/agama/schema/storage.model.schema.json
 
 %files -n agama-autoinstall
 %{_bindir}/agama-autoinstall
@@ -231,12 +238,6 @@ echo $PATH
 
 %files -n agama-cli
 %{_bindir}/agama
-%dir %{_datadir}/agama-cli
-%{_datadir}/agama-cli/agama.libsonnet
-%{_datadir}/agama-cli/iscsi.schema.json
-%{_datadir}/agama-cli/profile.schema.json
-%{_datadir}/agama-cli/storage.schema.json
-%{_datadir}/agama-cli/storage.model.schema.json
 %{_mandir}/man1/agama*1%{?ext_man}
 
 %files -n agama-cli-bash-completion
