@@ -24,7 +24,7 @@ import { useConfigModel } from "~/hooks/model/storage";
 import { putStorageModel } from "~/api";
 import { addDrive, deleteDrive, switchToDrive } from "~/storage/drive";
 import { useModel } from "~/hooks/storage/model";
-import type { data } from "~/storage";
+import type { Data } from "~/storage";
 import type { ConfigModel } from "~/model/storage";
 
 function useDrive(name: string): ConfigModel.Drive | null {
@@ -33,11 +33,11 @@ function useDrive(name: string): ConfigModel.Drive | null {
   return drive || null;
 }
 
-type AddDriveFn = (data: data.Drive) => void;
+type AddDriveFn = (data: Data.Drive) => void;
 
 function useAddDrive(): AddDriveFn {
   const apiModel = useConfigModel();
-  return (data: data.Drive) => {
+  return (data: Data.Drive) => {
     putStorageModel(addDrive(apiModel, data));
   };
 }
@@ -51,11 +51,11 @@ function useDeleteDrive(): DeleteDriveFn {
   };
 }
 
-type SwitchToDriveFn = (oldName: string, drive: data.Drive) => void;
+type SwitchToDriveFn = (oldName: string, drive: Data.Drive) => void;
 
 function useSwitchToDrive(): SwitchToDriveFn {
   const apiModel = useConfigModel();
-  return (oldName: string, drive: data.Drive) => {
+  return (oldName: string, drive: Data.Drive) => {
     putStorageModel(switchToDrive(apiModel, oldName, drive));
   };
 }

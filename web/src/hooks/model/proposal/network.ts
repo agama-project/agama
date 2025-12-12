@@ -22,7 +22,7 @@
 
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { Connection, NetworkProposal, GeneralState } from "~/types/network";
-import { network, Proposal } from "~/model/proposal";
+import { Network, Proposal } from "~/model/proposal";
 import { proposalQuery } from "~/hooks/model/proposal";
 
 const useState = (): GeneralState => {
@@ -36,7 +36,7 @@ const useState = (): GeneralState => {
   return data;
 };
 
-const selectConnections = (data: network.Proposal): Connection[] =>
+const selectConnections = (data: Network.Proposal): Connection[] =>
   data.connections.map((c) => Connection.fromApi(c));
 
 const useProposal = (): NetworkProposal => {

@@ -25,11 +25,11 @@ import { List, ListItem, ExpandableSection } from "@patternfly/react-core";
 import { n_ } from "~/i18n";
 import { sprintf } from "sprintf-js";
 import { fork } from "radashi";
-import type { storage as proposal } from "~/model/proposal";
+import type { Storage as Proposal } from "~/model/proposal";
 
-const ActionsList = ({ actions }: { actions: proposal.Action[] }) => {
+const ActionsList = ({ actions }: { actions: Proposal.Action[] }) => {
   // Some actions (e.g., deleting a LV) are reported as several actions joined by a line break
-  const actionItems = (action: proposal.Action, id: number) => {
+  const actionItems = (action: Proposal.Action, id: number) => {
     return action.text.split("\n").map((text, index) => {
       const Wrapper = action.delete ? "strong" : "span";
 
@@ -58,7 +58,7 @@ const ActionsList = ({ actions }: { actions: proposal.Action[] }) => {
 export default function ProposalActionsDialog({
   actions = [],
 }: {
-  actions?: proposal.Action[];
+  actions?: Proposal.Action[];
   isOpen?: boolean;
   onClose?: () => void;
 }) {
@@ -66,7 +66,7 @@ export default function ProposalActionsDialog({
 
   if (actions.length === 0) return null;
 
-  const [generalActions, subvolActions] = fork(actions, (a: proposal.Action) => !a.subvol);
+  const [generalActions, subvolActions] = fork(actions, (a: Proposal.Action) => !a.subvol);
   const toggleText = isExpanded
     ? // TRANSLATORS: show/hide toggle action, this is a clickable link
       sprintf(

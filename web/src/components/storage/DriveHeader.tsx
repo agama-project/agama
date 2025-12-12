@@ -26,9 +26,9 @@ import { useConfigModel } from "~/hooks/model/storage";
 import { configModelMethods, partitionableModelMethods } from "~/model/storage";
 import { _ } from "~/i18n";
 import type { ConfigModel } from "~/model/storage";
-import type { storage } from "~/model/system";
+import type { Storage } from "~/model/system";
 
-export type DriveHeaderProps = { drive: ConfigModel.Drive; device: storage.Device };
+export type DriveHeaderProps = { drive: ConfigModel.Drive; device: Storage.Device };
 
 const Text = (drive: ConfigModel.Drive): string => {
   const configModel = useConfigModel();

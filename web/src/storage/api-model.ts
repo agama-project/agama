@@ -21,7 +21,7 @@
  */
 
 import type { ConfigModel } from "~/model/storage";
-import type { data } from "~/storage";
+import type { Data } from "~/storage";
 
 function copyApiModel(apiModel: ConfigModel.Config): ConfigModel.Config {
   return JSON.parse(JSON.stringify(apiModel));
@@ -41,7 +41,7 @@ function partitionables(apiModel: ConfigModel.Config): (ConfigModel.Drive | Conf
   return (apiModel.drives || []).concat(apiModel.mdRaids || []);
 }
 
-function buildFilesystem(data?: data.Filesystem): ConfigModel.Filesystem | undefined {
+function buildFilesystem(data?: Data.Filesystem): ConfigModel.Filesystem | undefined {
   if (!data) return;
 
   return {
@@ -50,7 +50,7 @@ function buildFilesystem(data?: data.Filesystem): ConfigModel.Filesystem | undef
   };
 }
 
-function buildSize(data?: data.Size): ConfigModel.Size | undefined {
+function buildSize(data?: Data.Size): ConfigModel.Size | undefined {
   if (!data) return;
 
   return {
@@ -60,12 +60,12 @@ function buildSize(data?: data.Size): ConfigModel.Size | undefined {
   };
 }
 
-function buildVolumeGroup(data: data.VolumeGroup): ConfigModel.VolumeGroup {
+function buildVolumeGroup(data: Data.VolumeGroup): ConfigModel.VolumeGroup {
   const defaultVolumeGroup = { vgName: "system", targetDevices: [] };
   return { ...defaultVolumeGroup, ...data };
 }
 
-function buildLogicalVolume(data: data.LogicalVolume): ConfigModel.LogicalVolume {
+function buildLogicalVolume(data: Data.LogicalVolume): ConfigModel.LogicalVolume {
   return {
     ...data,
     filesystem: buildFilesystem(data.filesystem),
@@ -73,7 +73,7 @@ function buildLogicalVolume(data: data.LogicalVolume): ConfigModel.LogicalVolume
   };
 }
 
-function buildPartition(data: data.Partition): ConfigModel.Partition {
+function buildPartition(data: Data.Partition): ConfigModel.Partition {
   return {
     ...data,
     filesystem: buildFilesystem(data.filesystem),

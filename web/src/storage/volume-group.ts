@@ -30,7 +30,7 @@ import {
   buildPartitionFromLogicalVolume,
 } from "~/storage/api-model";
 import type { ConfigModel } from "~/model/storage";
-import type { data } from "~/storage";
+import type { Data } from "~/storage";
 
 function movePartitions(
   device: ConfigModel.Drive | ConfigModel.MdRaid,
@@ -66,7 +66,7 @@ function adjustSpacePolicies(apiModel: ConfigModel.Config, targets: string[]) {
 
 function addVolumeGroup(
   apiModel: ConfigModel.Config,
-  data: data.VolumeGroup,
+  data: Data.VolumeGroup,
   moveContent: boolean,
 ): ConfigModel.Config {
   apiModel = copyApiModel(apiModel);
@@ -112,7 +112,7 @@ function deviceToVolumeGroup(apiModel: ConfigModel.Config, devName: string): Con
 function editVolumeGroup(
   apiModel: ConfigModel.Config,
   vgName: string,
-  data: data.VolumeGroup,
+  data: Data.VolumeGroup,
 ): ConfigModel.Config {
   apiModel = copyApiModel(apiModel);
 

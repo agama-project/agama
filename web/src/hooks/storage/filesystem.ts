@@ -23,13 +23,13 @@
 import { useConfigModel } from "~/hooks/model/storage";
 import { putStorageModel } from "~/api";
 import { configureFilesystem } from "~/storage/filesystem";
-import type { data } from "~/storage";
+import type { Data } from "~/storage";
 
-type AddFilesystemFn = (list: string, index: number, data: data.Formattable) => void;
+type AddFilesystemFn = (list: string, index: number, data: Data.Formattable) => void;
 
 function useAddFilesystem(): AddFilesystemFn {
   const apiModel = useConfigModel();
-  return (list: string, index: number, data: data.Formattable) => {
+  return (list: string, index: number, data: Data.Formattable) => {
     putStorageModel(configureFilesystem(apiModel, list, index, data));
   };
 }

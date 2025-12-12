@@ -31,9 +31,9 @@ import {
   toDevice,
 } from "~/components/storage/device-utils";
 import { UnusedSlot } from "~/model/system/storage";
-import type { storage } from "~/model/system";
+import type { Storage } from "~/model/system";
 
-const vda: storage.Device = {
+const vda: Storage.Device = {
   sid: 59,
   class: "drive",
   name: "/dev/vda",
@@ -80,7 +80,7 @@ const vda: storage.Device = {
   ],
 };
 
-const lv: storage.Device = {
+const lv: Storage.Device = {
   sid: 73,
   class: "logicalVolume",
   name: "/dev/vg0/lv1",
@@ -121,7 +121,7 @@ describe("DeviceName", () => {
 });
 
 describe("DeviceDetails", () => {
-  let item: UnusedSlot | storage.Device;
+  let item: UnusedSlot | Storage.Device;
 
   describe("if the item is a partition slot", () => {
     beforeEach(() => {

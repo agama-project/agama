@@ -23,9 +23,9 @@
 import { switchSearched } from "~/storage/search";
 import { copyApiModel } from "~/storage/api-model";
 import type { ConfigModel } from "~/model/storage";
-import type { data } from "~/storage";
+import type { Data } from "~/storage";
 
-function addDrive(apiModel: ConfigModel.Config, data: data.Drive): ConfigModel.Config {
+function addDrive(apiModel: ConfigModel.Config, data: Data.Drive): ConfigModel.Config {
   apiModel = copyApiModel(apiModel);
   apiModel.drives ||= [];
   apiModel.drives.push(data);
@@ -43,7 +43,7 @@ function deleteDrive(apiModel: ConfigModel.Config, name: string): ConfigModel.Co
 function switchToDrive(
   apiModel: ConfigModel.Config,
   oldName: string,
-  drive: data.Drive,
+  drive: Data.Drive,
 ): ConfigModel.Config {
   return switchSearched(apiModel, oldName, drive.name, "drives");
 }

@@ -73,7 +73,7 @@ import { STORAGE as PATHS, STORAGE } from "~/routes/paths";
 import { isUndefined, unique } from "radashi";
 import { compact } from "~/utils";
 import type { ConfigModel } from "~/model/storage";
-import type { storage as system } from "~/model/system";
+import type { Storage as System } from "~/model/system";
 import { partitionableModelMethods } from "~/model/storage";
 
 const NO_VALUE = "";
@@ -202,18 +202,18 @@ function useDeviceModelFromParams() {
   return deviceModel(Number(index));
 }
 
-function useDeviceFromParams(): system.Device {
+function useDeviceFromParams(): System.Device {
   const deviceModel = useDeviceModelFromParams();
   return useDevice(deviceModel.name);
 }
 
-function usePartition(target: string): system.Device | null {
+function usePartition(target: string): System.Device | null {
   const device = useDeviceFromParams();
 
   if (target === NEW_PARTITION) return null;
 
   const partitions = device.partitions || [];
-  return partitions.find((p: system.Device) => p.name === target);
+  return partitions.find((p: System.Device) => p.name === target);
 }
 
 function usePartitionFilesystem(target: string): string | null {
@@ -252,7 +252,7 @@ function useUnusedMountPoints(): string[] {
 }
 
 /** Unused partitions. Includes the currently used partition when editing (if any). */
-function useUnusedPartitions(): system.Device[] {
+function useUnusedPartitions(): System.Device[] {
   const device = useDeviceFromParams();
   const allPartitions = device.partitions || [];
   const initialPartitionConfig = useInitialPartitionConfig();
@@ -511,7 +511,7 @@ function TargetOptionLabel({ value }: TargetOptionLabelProps): React.ReactNode {
 }
 
 type PartitionDescriptionProps = {
-  partition: system.Device;
+  partition: System.Device;
 };
 
 function PartitionDescription({ partition }: PartitionDescriptionProps): React.ReactNode {

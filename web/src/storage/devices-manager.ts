@@ -23,23 +23,23 @@
 import { unique } from "radashi";
 import { compact } from "~/utils";
 import { deviceSystems, isDrive, isMd, isVolumeGroup } from "~/storage/device";
-import type { storage as system } from "~/model/system";
-import type { storage as proposal } from "~/model/proposal";
+import type { Storage as System } from "~/model/system";
+import type { Storage as Proposal } from "~/model/proposal";
 
 /**
  * Class for managing storage devices.
  */
 export default class DevicesManager {
-  system: system.Device[];
-  staging: proposal.Device[];
-  actions: proposal.Action[];
+  system: System.Device[];
+  staging: Proposal.Device[];
+  actions: Proposal.Action[];
 
   /**
    * @param system - Devices representing the current state of the system.
    * @param staging - Devices representing the target state of the system.
    * @param actions - Actions to perform from system to staging.
    */
-  constructor(system: system.Device[], staging: proposal.Device[], actions: proposal.Action[]) {
+  constructor(system: System.Device[], staging: Proposal.Device[], actions: Proposal.Action[]) {
     this.system = system;
     this.staging = staging;
     this.actions = actions;
@@ -48,35 +48,35 @@ export default class DevicesManager {
   /**
    * System device with the given SID.
    */
-  systemDevice(sid: number): system.Device | undefined {
+  systemDevice(sid: number): System.Device | undefined {
     return this.system.find((d) => d.sid === sid);
   }
 
   /**
    * Staging device with the given SID.
    */
-  stagingDevice(sid: number): proposal.Device {
+  stagingDevice(sid: number): Proposal.Device {
     return this.staging.find((d) => d.sid === sid);
   }
 
   /**
    * Whether the given device exists in system.
    */
-  existInSystem(device: system.Device): boolean {
+  existInSystem(device: System.Device): boolean {
     return this.systemDevice(device.sid) !== undefined;
   }
 
   /**
    * Whether the given device exists in staging.
    */
-  existInStaging(device: proposal.Device): boolean {
+  existInStaging(device: Proposal.Device): boolean {
     return this.stagingDevice(device.sid) !== undefined;
   }
 
   /**
    * Whether the given device is going to be formatted.
    */
-  hasNewFilesystem(device: proposal.Device): boolean {
+  hasNewFilesystem(device: Proposal.Device): boolean {
     if (!device.filesystem) return false;
 
     const systemDevice = this.systemDevice(device.sid);
@@ -88,14 +88,14 @@ export default class DevicesManager {
   /**
    * Whether the given device is going to be shrunk.
    */
-  isShrunk(device: proposal.Device): boolean {
+  isShrunk(device: Proposal.Device): boolean {
     return this.shrinkSize(device) > 0;
   }
 
   /**
    * Amount of bytes the given device is going to be shrunk.
    */
-  shrinkSize(device: proposal.Device): number {
+  shrinkSize(device: Proposal.Device): number {
     const systemDevice = this.systemDevice(device.sid);
     const stagingDevice = this.stagingDevice(device.sid);
 
@@ -115,8 +115,8 @@ export default class DevicesManager {
    * @param knownNames - names of devices already known to be used, even if there are no actions on
    * them.
    */
-  usedDevices(knownNames: string[] = []): proposal.Device[] {
-    const isTarget = (device: system.Device | proposal.Device): boolean =>
+  usedDevices(knownNames: string[] = []): Proposal.Device[] {
+    const isTarget = (device: System.Device | Proposal.Device): boolean =>
       isDrive(device) || isMd(device) || isVolumeGroup(device);
 
     // Check in system devices to detect removals.
@@ -136,7 +136,7 @@ export default class DevicesManager {
    *
    * @note The devices are extracted from the actions.
    */
-  deletedDevices(): system.Device[] {
+  deletedDevices(): System.Device[] {
     return this.#deleteActionsDevice().filter((d) => !isDrive(d));
   }
 
@@ -145,7 +145,7 @@ export default class DevicesManager {
    *
    * @note The devices are extracted from the actions.
    */
-  resizedDevices(): system.Device[] {
+  resizedDevices(): System.Device[] {
     return this.#resizeActionsDevice().filter((d) => !isDrive(d));
   }
 
@@ -171,7 +171,7 @@ export default class DevicesManager {
     return compact(systems);
   }
 
-  #isUsed(device: system.Device | proposal.Device): boolean {
+  #isUsed(device: System.Device | Proposal.Device): boolean {
     const sids = unique(compact(this.actions.map((a) => a.device)));
 
     const partitions = device.partitions || [];
@@ -184,13 +184,13 @@ export default class DevicesManager {
     );
   }
 
-  #deleteActionsDevice(): system.Device[] {
+  #deleteActionsDevice(): System.Device[] {
     const sids = this.actions.filter((a) => a.delete).map((a) => a.device);
     const devices = sids.map((sid) => this.systemDevice(sid));
     return compact(devices);
   }
 
-  #resizeActionsDevice(): system.Device[] {
+  #resizeActionsDevice(): System.Device[] {
     const sids = this.actions.filter((a) => a.resize).map((a) => a.device);
     const devices = sids.map((sid) => this.systemDevice(sid));
     return compact(devices);

@@ -63,9 +63,9 @@ import { sprintf } from "sprintf-js";
 import { STORAGE as PATHS } from "~/routes/paths";
 import { unique } from "radashi";
 import { compact } from "~/utils";
-import type { data } from "~/storage";
+import type { Data } from "~/storage";
 import type { ConfigModel } from "~/model/storage";
-import type { storage as system } from "~/model/system";
+import type { Storage as System } from "~/model/system";
 
 const NO_VALUE = "";
 const BTRFS_SNAPSHOTS = "btrfsSnapshots";
@@ -88,7 +88,7 @@ type ErrorsHandler = {
   getVisibleError: (id: string) => Error | undefined;
 };
 
-function toData(value: FormValue): data.Formattable {
+function toData(value: FormValue): Data.Formattable {
   const filesystemType = (): ConfigModel.FilesystemType | undefined => {
     if (value.filesystem === NO_VALUE) return undefined;
     if (value.filesystem === BTRFS_SNAPSHOTS) return "btrfs";
@@ -103,7 +103,7 @@ function toData(value: FormValue): data.Formattable {
     return value.filesystem as ConfigModel.FilesystemType;
   };
 
-  const filesystem = (): data.Filesystem | undefined => {
+  const filesystem = (): Data.Filesystem | undefined => {
     if (value.filesystem === REUSE_FILESYSTEM) return { reuse: true };
 
     const type = filesystemType();
@@ -150,7 +150,7 @@ function useDeviceModelFromParams(): ConfigModel.Drive | ConfigModel.MdRaid | nu
   return deviceModel(Number(index));
 }
 
-function useDeviceFromParams(): system.Device {
+function useDeviceFromParams(): System.Device {
   const deviceModel = useDeviceModelFromParams();
   return useDevice(deviceModel.name);
 }

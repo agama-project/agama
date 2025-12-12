@@ -23,7 +23,7 @@
 import { copyApiModel, findDevice, buildPartition } from "~/storage/api-model";
 import { isUsed } from "~/storage/search";
 import type { ConfigModel } from "~/model/storage";
-import type { data } from "~/storage";
+import type { Data } from "~/storage";
 
 type Partitionable = ConfigModel.Drive | ConfigModel.MdRaid;
 
@@ -45,7 +45,7 @@ function addPartition(
   model: ConfigModel.Config,
   collection: "drives" | "mdRaids",
   index: number | string,
-  data: data.Partition,
+  data: Data.Partition,
 ): ConfigModel.Config {
   model = copyApiModel(model);
   const device = findDevice(model, collection, index);
@@ -69,7 +69,7 @@ function editPartition(
   collection: "drives" | "mdRaids",
   index: number | string,
   mountPath: string,
-  data: data.Partition,
+  data: Data.Partition,
 ): ConfigModel.Config {
   model = copyApiModel(model);
   const device = findDevice(model, collection, index);

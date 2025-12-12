@@ -33,11 +33,11 @@ import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import { useDrive } from "~/hooks/storage/model";
 import { useDevice } from "~/hooks/model/system/storage";
 import type { ConfigModel } from "~/model/storage";
-import type { storage as system } from "~/model/system";
+import type { Storage as System } from "~/model/system";
 
 type DriveDeviceMenuToggleProps = CustomToggleProps & {
   drive: ConfigModel.Drive | ConfigModel.MdRaid;
-  device: system.Device;
+  device: System.Device;
 };
 
 const DriveDeviceMenuToggle = forwardRef(
@@ -70,7 +70,7 @@ const DriveDeviceMenuToggle = forwardRef(
 
 type DriveDeviceMenuProps = {
   drive: ConfigModel.Drive;
-  selected: system.Device;
+  selected: System.Device;
 };
 
 /**

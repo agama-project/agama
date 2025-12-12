@@ -30,7 +30,7 @@ import {
   deviceToVolumeGroup,
 } from "~/storage/volume-group";
 import { useModel } from "~/hooks/storage/model";
-import type { data } from "~/storage";
+import type { Data } from "~/storage";
 import type { ConfigModel } from "~/model/storage";
 
 function useVolumeGroup(vgName: string): ConfigModel.VolumeGroup | null {
@@ -39,20 +39,20 @@ function useVolumeGroup(vgName: string): ConfigModel.VolumeGroup | null {
   return volumeGroup || null;
 }
 
-type AddVolumeGroupFn = (data: data.VolumeGroup, moveContent: boolean) => void;
+type AddVolumeGroupFn = (data: Data.VolumeGroup, moveContent: boolean) => void;
 
 function useAddVolumeGroup(): AddVolumeGroupFn {
   const apiModel = useConfigModel();
-  return (data: data.VolumeGroup, moveContent: boolean) => {
+  return (data: Data.VolumeGroup, moveContent: boolean) => {
     putStorageModel(addVolumeGroup(apiModel, data, moveContent));
   };
 }
 
-type EditVolumeGroupFn = (vgName: string, data: data.VolumeGroup) => void;
+type EditVolumeGroupFn = (vgName: string, data: Data.VolumeGroup) => void;
 
 function useEditVolumeGroup(): EditVolumeGroupFn {
   const apiModel = useConfigModel();
-  return (vgName: string, data: data.VolumeGroup) => {
+  return (vgName: string, data: Data.VolumeGroup) => {
     putStorageModel(editVolumeGroup(apiModel, vgName, data));
   };
 }

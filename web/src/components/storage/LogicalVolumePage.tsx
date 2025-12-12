@@ -66,7 +66,7 @@ import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
 import SizeModeSelect, { SizeMode, SizeRange } from "~/components/storage/SizeModeSelect";
 import type { ConfigModel } from "~/model/storage";
-import type { data } from "~/storage";
+import type { Data } from "~/storage";
 
 const NO_VALUE = "";
 const BTRFS_SNAPSHOTS = "btrfsSnapshots";
@@ -93,7 +93,7 @@ type ErrorsHandler = {
   getVisibleError: (id: string) => Error | undefined;
 };
 
-function toData(value: FormValue): data.LogicalVolume {
+function toData(value: FormValue): Data.LogicalVolume {
   const filesystemType = (): ConfigModel.FilesystemType | undefined => {
     if (value.filesystem === NO_VALUE) return undefined;
     if (value.filesystem === BTRFS_SNAPSHOTS) return "btrfs";
@@ -108,7 +108,7 @@ function toData(value: FormValue): data.LogicalVolume {
     return value.filesystem as ConfigModel.FilesystemType;
   };
 
-  const filesystem = (): data.Filesystem | undefined => {
+  const filesystem = (): Data.Filesystem | undefined => {
     const type = filesystemType();
     if (type === undefined) return undefined;
 

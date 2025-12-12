@@ -21,19 +21,19 @@
  */
 
 import DevicesManager from "~/storage/devices-manager";
-import type { storage as system } from "~/model/system";
-import type { storage as proposal } from "~/model/proposal";
+import type { Storage as System } from "~/model/system";
+import type { Storage as Proposal } from "~/model/proposal";
 
-const block = (systems: string[]): system.Block => ({
+const block = (systems: string[]): System.Block => ({
   size: 1024,
   start: 0,
   shrinking: { supported: false },
   systems,
 });
 
-let system_devices: system.Device[];
-let proposal_devices: proposal.Device[];
-let actions: proposal.Action[];
+let system_devices: System.Device[];
+let proposal_devices: Proposal.Device[];
+let actions: Proposal.Action[];
 
 beforeEach(() => {
   system_devices = [];

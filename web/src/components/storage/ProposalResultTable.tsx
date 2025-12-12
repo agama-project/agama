@@ -36,9 +36,9 @@ import { sprintf } from "sprintf-js";
 import { deviceChildren, deviceSize } from "~/components/storage/utils";
 import { TreeTableColumn } from "~/components/core/TreeTable";
 import { useConfigModel } from "~/hooks/model/storage";
-import type { storage as proposal } from "~/model/proposal";
+import type { Storage as Proposal } from "~/model/proposal";
 
-type TableItem = proposal.Device | proposal.UnusedSlot;
+type TableItem = Proposal.Device | Proposal.UnusedSlot;
 
 /**
  * @component

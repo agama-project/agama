@@ -26,9 +26,9 @@ import { useConfigModel } from "~/hooks/model/storage";
 import { configModelMethods, partitionableModelMethods } from "~/model/storage";
 import { _ } from "~/i18n";
 import type { ConfigModel } from "~/model/storage";
-import type { storage } from "~/model/system";
+import type { Storage } from "~/model/system";
 
-export type MdRaidHeaderProps = { raid: ConfigModel.MdRaid; device: storage.Device };
+export type MdRaidHeaderProps = { raid: ConfigModel.MdRaid; device: Storage.Device };
 
 const Text = (raid: ConfigModel.MdRaid): string => {
   const configModel = useConfigModel();

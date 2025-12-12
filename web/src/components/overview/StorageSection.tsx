@@ -26,10 +26,10 @@ import { deviceLabel } from "~/components/storage/utils";
 import { useAvailableDevices, useDevices, useIssues } from "~/hooks/model/system/storage";
 import { useConfigModel } from "~/hooks/model/storage";
 import { _ } from "~/i18n";
-import type { storage } from "~/model/system";
+import type { Storage } from "~/model/system";
 import type { ConfigModel } from "~/model/storage";
 
-const findDriveDevice = (drive: ConfigModel.Drive, devices: storage.Device[]) =>
+const findDriveDevice = (drive: ConfigModel.Drive, devices: Storage.Device[]) =>
   devices.find((d) => d.name === drive.name);
 
 const NoDeviceSummary = () => _("No device selected yet");

@@ -50,16 +50,16 @@ import { _ } from "~/i18n";
 import { deviceSystems, isDrive } from "~/storage/device";
 import { partitionableModelMethods, volumeGroupModelMethods } from "~/model/storage";
 import { useConfigModel } from "~/hooks/model/storage";
-import type { data } from "~/storage";
+import type { Data } from "~/storage";
 import type { ConfigModel } from "~/model/storage";
-import type { storage } from "~/model/system";
+import type { Storage } from "~/model/system";
 
 /**
  * Hook that returns the devices that can be selected as target to automatically create LVM PVs.
  *
  * Filters out devices that are going to be directly formatted.
  */
-function useLvmTargetDevices(): storage.Device[] {
+function useLvmTargetDevices(): Storage.Device[] {
   const availableDevices = useAvailableDevices();
   const model = useModel();
 
@@ -86,7 +86,7 @@ function vgNameError(
     return sprintf(_("Volume group '%s' already exists. Enter a different name."), vgName);
 }
 
-function targetDevicesError(targetDevices: storage.Device[]): string | undefined {
+function targetDevicesError(targetDevices: Storage.Device[]): string | undefined {
   if (!targetDevices.length) return _("Select at least one disk.");
 }
 
@@ -106,7 +106,7 @@ export default function LvmPage() {
   const editVolumeGroup = useEditVolumeGroup();
   const allDevices = useLvmTargetDevices();
   const [name, setName] = useState("");
-  const [selectedDevices, setSelectedDevices] = useState<storage.Device[]>([]);
+  const [selectedDevices, setSelectedDevices] = useState<Storage.Device[]>([]);
   const [moveMountPoints, setMoveMountPoints] = useState(true);
   const [errors, setErrors] = useState<string[]>([]);
 
@@ -153,7 +153,7 @@ export default function LvmPage() {
 
     if (errors.length) return;
 
-    const data: data.VolumeGroup = {
+    const data: Data.VolumeGroup = {
       vgName: name,
       targetDevices: selectedDevices.map((d) => d.name),
     };

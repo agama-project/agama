@@ -22,7 +22,7 @@
 
 import { copyApiModel } from "~/storage/api-model";
 import type { ConfigModel } from "~/model/storage";
-import type { data } from "~/storage";
+import type { Data } from "~/storage";
 
 function findDevice(
   apiModel: ConfigModel.Config,
@@ -36,7 +36,7 @@ function configureFilesystem(
   apiModel: ConfigModel.Config,
   list: string,
   index: number | string,
-  data: data.Formattable,
+  data: Data.Formattable,
 ): ConfigModel.Config {
   apiModel = copyApiModel(apiModel);
 

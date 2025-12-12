@@ -23,9 +23,9 @@
 import { switchSearched } from "~/storage/search";
 import { copyApiModel } from "~/storage/api-model";
 import type { ConfigModel } from "~/model/storage";
-import type { data } from "~/storage";
+import type { Data } from "~/storage";
 
-function addReusedMdRaid(apiModel: ConfigModel.Config, data: data.MdRaid): ConfigModel.Config {
+function addReusedMdRaid(apiModel: ConfigModel.Config, data: Data.MdRaid): ConfigModel.Config {
   apiModel = copyApiModel(apiModel);
   apiModel.mdRaids ||= [];
   apiModel.mdRaids.push(data);
@@ -43,7 +43,7 @@ function deleteMdRaid(apiModel: ConfigModel.Config, name: string): ConfigModel.C
 function switchToMdRaid(
   apiModel: ConfigModel.Config,
   oldName: string,
-  raid: data.MdRaid,
+  raid: Data.MdRaid,
 ): ConfigModel.Config {
   return switchSearched(apiModel, oldName, raid.name, "mdRaids");
 }

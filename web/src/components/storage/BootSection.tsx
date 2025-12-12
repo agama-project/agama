@@ -32,9 +32,9 @@ import { STORAGE } from "~/routes/paths";
 import { deviceLabel, formattedPath } from "~/components/storage/utils";
 import { _ } from "~/i18n";
 import { sprintf } from "sprintf-js";
-import type { storage } from "~/model/system";
+import type { Storage } from "~/model/system";
 
-function defaultBootLabel(device?: storage.Device) {
+function defaultBootLabel(device?: Storage.Device) {
   if (!device) {
     return sprintf(
       // TRANSLATORS: %s is replaced by the formatted path of the root file system (eg. "/")
@@ -58,7 +58,7 @@ function defaultBootLabel(device?: storage.Device) {
   );
 }
 
-function bootLabel(isDefault: boolean, device?: storage.Device) {
+function bootLabel(isDefault: boolean, device?: Storage.Device) {
   if (isDefault) {
     return defaultBootLabel(device);
   }

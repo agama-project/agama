@@ -40,12 +40,12 @@ import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
 import { configModelMethods } from "~/model/storage";
 import type { ConfigModel } from "~/model/storage";
-import type { storage } from "~/model/system";
+import type { Storage } from "~/model/system";
 
 const filteredCandidates = (
-  candidates: storage.Device[],
+  candidates: Storage.Device[],
   configModel: ConfigModel.Config,
-): storage.Device[] => {
+): Storage.Device[] => {
   return candidates.filter((candidate) => {
     const collection = isDrive(candidate) ? configModel.drives : configModel.mdRaids;
     const device = collection.find((d) => d.name === candidate.name);
@@ -64,9 +64,9 @@ type BootSelectionState = {
   load: boolean;
   selectedOption?: string;
   configureBoot?: boolean;
-  bootDevice?: storage.Device;
-  defaultBootDevice?: storage.Device;
-  candidateDevices?: storage.Device[];
+  bootDevice?: Storage.Device;
+  defaultBootDevice?: Storage.Device;
+  candidateDevices?: Storage.Device[];
 };
 
 /**

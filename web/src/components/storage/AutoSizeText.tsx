@@ -27,7 +27,7 @@ import { deviceSize } from "~/components/storage/utils";
 import { _, formatList } from "~/i18n";
 import { sprintf } from "sprintf-js";
 import type { ConfigModel } from "~/model/storage";
-import type { storage } from "~/model/system";
+import type { Storage } from "~/model/system";
 
 type DeviceType = "partition" | "logicalVolume";
 
@@ -145,7 +145,7 @@ function AutoSizeTextRam({ path, size, deviceType }: AutoSizeTextRamProps): Reac
 }
 
 type AutoSizeTextDynamicProps = {
-  volume: storage.Volume;
+  volume: Storage.Volume;
   size: ConfigModel.Size;
   deviceType: DeviceType;
 };
@@ -309,7 +309,7 @@ function AutoSizeTextDynamic({
 }
 
 export type AutoSizeTextProps = {
-  volume: storage.Volume;
+  volume: Storage.Volume;
   size: ConfigModel.Size;
   deviceType: DeviceType;
 };

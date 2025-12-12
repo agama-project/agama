@@ -23,13 +23,13 @@
 import { useConfigModel } from "~/hooks/model/storage";
 import { putStorageModel } from "~/api";
 import { addReusedMdRaid, deleteMdRaid, switchToMdRaid } from "~/storage/md-raid";
-import type { data } from "~/storage";
+import type { Data } from "~/storage";
 
-type AddReusedMdRaidFn = (data: data.MdRaid) => void;
+type AddReusedMdRaidFn = (data: Data.MdRaid) => void;
 
 function useAddReusedMdRaid(): AddReusedMdRaidFn {
   const apiModel = useConfigModel();
-  return (data: data.MdRaid) => {
+  return (data: Data.MdRaid) => {
     putStorageModel(addReusedMdRaid(apiModel, data));
   };
 }
@@ -43,11 +43,11 @@ function useDeleteMdRaid(): DeleteMdRaidFn {
   };
 }
 
-type SwitchToMdRaidFn = (oldName: string, raid: data.MdRaid) => void;
+type SwitchToMdRaidFn = (oldName: string, raid: Data.MdRaid) => void;
 
 function useSwitchToMdRaid(): SwitchToMdRaidFn {
   const apiModel = useConfigModel();
-  return (oldName: string, raid: data.MdRaid) => {
+  return (oldName: string, raid: Data.MdRaid) => {
     putStorageModel(switchToMdRaid(apiModel, oldName, raid));
   };
 }

@@ -22,18 +22,18 @@
 
 import { useConfigModel } from "~/hooks/model/storage";
 import { putStorageModel } from "~/api";
-import { data } from "~/storage";
+import { Data } from "~/storage";
 import { addPartition, editPartition, deletePartition } from "~/storage/partition";
 
 type AddPartitionFn = (
   collection: "drives" | "mdRaids",
   index: number | string,
-  data: data.Partition,
+  data: Data.Partition,
 ) => void;
 
 function useAddPartition(): AddPartitionFn {
   const apiModel = useConfigModel();
-  return (collection: "drives" | "mdRaids", index: number | string, data: data.Partition) => {
+  return (collection: "drives" | "mdRaids", index: number | string, data: Data.Partition) => {
     putStorageModel(addPartition(apiModel, collection, index, data));
   };
 }
@@ -42,7 +42,7 @@ type EditPartitionFn = (
   collection: "drives" | "mdRaids",
   index: number | string,
   mountPath: string,
-  data: data.Partition,
+  data: Data.Partition,
 ) => void;
 
 function useEditPartition(): EditPartitionFn {
@@ -51,7 +51,7 @@ function useEditPartition(): EditPartitionFn {
     collection: "drives" | "mdRaids",
     index: number | string,
     mountPath: string,
-    data: data.Partition,
+    data: Data.Partition,
   ) => {
     putStorageModel(editPartition(apiModel, collection, index, mountPath, data));
   };

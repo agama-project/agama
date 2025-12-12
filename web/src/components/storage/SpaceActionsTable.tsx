@@ -41,7 +41,7 @@ import { TreeTableColumn } from "~/components/core/TreeTable";
 import { Table, Td, Th, Tr, Thead, Tbody } from "@patternfly/react-table";
 import { useConfigModel } from "~/hooks/model/storage";
 import { supportShrink } from "~/storage/device";
-import type { storage as proposal } from "~/model/proposal";
+import type { Storage as Proposal } from "~/model/proposal";
 import type { ConfigModel } from "~/model/storage";
 
 export type SpacePolicyAction = {
@@ -68,7 +68,7 @@ const useReusedPartition = (name: string): ConfigModel.Partition | undefined => 
  * Info about the device.
  * @component
  */
-const DeviceInfoContent = ({ device }: { device: proposal.Device }) => {
+const DeviceInfoContent = ({ device }: { device: Proposal.Device }) => {
   const minSize = device.block?.shrinking?.minSize;
 
   const reused = useReusedPartition(device.name);
@@ -106,9 +106,9 @@ const DeviceInfoContent = ({ device }: { device: proposal.Device }) => {
  * @component
  *
  * @param {object} props
- * @param {proposal.Device} props.device
+ * @param {Proposal.Device} props.device
  */
-const DeviceInfo = ({ device }: { device: proposal.Device }) => {
+const DeviceInfo = ({ device }: { device: Proposal.Device }) => {
   return (
     <Popover headerContent={device.name} bodyContent={<DeviceInfoContent device={device} />}>
       <Button
@@ -134,7 +134,7 @@ const DeviceActionSelector = ({
   action,
   onChange,
 }: {
-  device: proposal.Device;
+  device: Proposal.Device;
   action: string;
   onChange?: (action: SpacePolicyAction) => void;
 }) => {
@@ -196,7 +196,7 @@ const DeviceAction = ({
   action,
   onChange,
 }: {
-  item: proposal.UnusedSlot | proposal.Device;
+  item: Proposal.UnusedSlot | Proposal.Device;
   action: string;
   onChange?: (action: SpacePolicyAction) => void;
 }) => {
@@ -207,8 +207,8 @@ const DeviceAction = ({
 };
 
 export type SpaceActionsTableProps = {
-  devices: (proposal.UnusedSlot | proposal.Device)[];
-  deviceAction: (item: proposal.UnusedSlot | proposal.Device) => string;
+  devices: (Proposal.UnusedSlot | Proposal.Device)[];
+  deviceAction: (item: Proposal.UnusedSlot | Proposal.Device) => string;
   onActionChange: (action: SpacePolicyAction) => void;
 };
 
@@ -224,19 +224,19 @@ export default function SpaceActionsTable({
   const columns: TreeTableColumn[] = [
     {
       name: _("proposal.Device"),
-      value: (item: proposal.UnusedSlot | proposal.Device) => <DeviceName item={item} />,
+      value: (item: Proposal.UnusedSlot | Proposal.Device) => <DeviceName item={item} />,
     },
     {
       name: _("Details"),
-      value: (item: proposal.UnusedSlot | proposal.Device) => <DeviceDetails item={item} />,
+      value: (item: Proposal.UnusedSlot | Proposal.Device) => <DeviceDetails item={item} />,
     },
     {
       name: _("Size"),
-      value: (item: proposal.UnusedSlot | proposal.Device) => <DeviceSize item={item} />,
+      value: (item: Proposal.UnusedSlot | Proposal.Device) => <DeviceSize item={item} />,
     },
     {
       name: _("Action"),
-      value: (item: proposal.UnusedSlot | proposal.Device) => (
+      value: (item: Proposal.UnusedSlot | Proposal.Device) => (
         <DeviceAction item={item} action={deviceAction(item)} onChange={onActionChange} />
       ),
     },

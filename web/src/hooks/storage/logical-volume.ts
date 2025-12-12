@@ -23,22 +23,22 @@
 import { useConfigModel } from "~/hooks/model/storage";
 import { putStorageModel } from "~/api";
 import { addLogicalVolume, editLogicalVolume, deleteLogicalVolume } from "~/storage/logical-volume";
-import type { data } from "~/storage";
+import type { Data } from "~/storage";
 
-type AddLogicalVolumeFn = (vgName: string, data: data.LogicalVolume) => void;
+type AddLogicalVolumeFn = (vgName: string, data: Data.LogicalVolume) => void;
 
 function useAddLogicalVolume(): AddLogicalVolumeFn {
   const apiModel = useConfigModel();
-  return (vgName: string, data: data.LogicalVolume) => {
+  return (vgName: string, data: Data.LogicalVolume) => {
     putStorageModel(addLogicalVolume(apiModel, vgName, data));
   };
 }
 
-type EditLogicalVolumeFn = (vgName: string, mountPath: string, data: data.LogicalVolume) => void;
+type EditLogicalVolumeFn = (vgName: string, mountPath: string, data: Data.LogicalVolume) => void;
 
 function useEditLogicalVolume(): EditLogicalVolumeFn {
   const apiModel = useConfigModel();
-  return (vgName: string, mountPath: string, data: data.LogicalVolume) => {
+  return (vgName: string, mountPath: string, data: Data.LogicalVolume) => {
     putStorageModel(editLogicalVolume(apiModel, vgName, mountPath, data));
   };
 }

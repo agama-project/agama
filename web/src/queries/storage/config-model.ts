@@ -27,7 +27,7 @@ import { putStorageModel, solveStorageModel } from "~/api";
 import { useConfigModel } from "~/hooks/model/storage";
 import { useVolumeTemplates } from "~/hooks/model/system/storage";
 import type { ConfigModel } from "~/model/storage";
-import type { storage } from "~/model/system";
+import type { Storage } from "~/model/system";
 
 function copyModel(model: ConfigModel.Config): ConfigModel.Config {
   return JSON.parse(JSON.stringify(model));
@@ -104,7 +104,7 @@ function usedMountPaths(model: ConfigModel.Config): string[] {
 }
 
 /** @depreacted Use useMissingMountPaths from ~/hooks/storage/product. */
-function unusedMountPaths(model: ConfigModel.Config, volumes: storage.Volume[]): string[] {
+function unusedMountPaths(model: ConfigModel.Config, volumes: Storage.Volume[]): string[] {
   const volPaths = volumes.filter((v) => v.mountPath.length).map((v) => v.mountPath);
   const assigned = usedMountPaths(model);
   return volPaths.filter((p) => !assigned.includes(p));
