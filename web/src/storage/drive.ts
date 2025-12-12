@@ -25,27 +25,27 @@ import { copyApiModel } from "~/storage/api-model";
 import type { ConfigModel } from "~/model/storage";
 import type { Data } from "~/storage";
 
-function addDrive(apiModel: ConfigModel.Config, data: Data.Drive): ConfigModel.Config {
-  apiModel = copyApiModel(apiModel);
-  apiModel.drives ||= [];
-  apiModel.drives.push(data);
+function addDrive(config: ConfigModel.Config, data: Data.Drive): ConfigModel.Config {
+  config = copyApiModel(config);
+  config.drives ||= [];
+  config.drives.push(data);
 
-  return apiModel;
+  return config;
 }
 
-function deleteDrive(apiModel: ConfigModel.Config, name: string): ConfigModel.Config {
-  apiModel = copyApiModel(apiModel);
-  apiModel.drives = apiModel.drives.filter((d) => d.name !== name);
+function deleteDrive(config: ConfigModel.Config, name: string): ConfigModel.Config {
+  config = copyApiModel(config);
+  config.drives = config.drives.filter((d) => d.name !== name);
 
-  return apiModel;
+  return config;
 }
 
 function switchToDrive(
-  apiModel: ConfigModel.Config,
+  config: ConfigModel.Config,
   oldName: string,
   drive: Data.Drive,
 ): ConfigModel.Config {
-  return switchSearched(apiModel, oldName, drive.name, "drives");
+  return switchSearched(config, oldName, drive.name, "drives");
 }
 
 export { addDrive, deleteDrive, switchToDrive };

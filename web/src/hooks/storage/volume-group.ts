@@ -42,28 +42,28 @@ function useVolumeGroup(vgName: string): ConfigModel.VolumeGroup | null {
 type AddVolumeGroupFn = (data: Data.VolumeGroup, moveContent: boolean) => void;
 
 function useAddVolumeGroup(): AddVolumeGroupFn {
-  const apiModel = useConfigModel();
+  const config = useConfigModel();
   return (data: Data.VolumeGroup, moveContent: boolean) => {
-    putStorageModel(addVolumeGroup(apiModel, data, moveContent));
+    putStorageModel(addVolumeGroup(config, data, moveContent));
   };
 }
 
 type EditVolumeGroupFn = (vgName: string, data: Data.VolumeGroup) => void;
 
 function useEditVolumeGroup(): EditVolumeGroupFn {
-  const apiModel = useConfigModel();
+  const config = useConfigModel();
   return (vgName: string, data: Data.VolumeGroup) => {
-    putStorageModel(editVolumeGroup(apiModel, vgName, data));
+    putStorageModel(editVolumeGroup(config, vgName, data));
   };
 }
 
 type DeleteVolumeGroupFn = (vgName: string, moveToDrive: boolean) => void;
 
 function useDeleteVolumeGroup(): DeleteVolumeGroupFn {
-  const apiModel = useConfigModel();
+  const config = useConfigModel();
   return (vgName: string, moveToDrive: boolean) => {
     putStorageModel(
-      moveToDrive ? volumeGroupToPartitions(apiModel, vgName) : deleteVolumeGroup(apiModel, vgName),
+      moveToDrive ? volumeGroupToPartitions(config, vgName) : deleteVolumeGroup(config, vgName),
     );
   };
 }
@@ -71,9 +71,9 @@ function useDeleteVolumeGroup(): DeleteVolumeGroupFn {
 type ConvertToVolumeGroupFn = (driveName: string) => void;
 
 function useConvertToVolumeGroup(): ConvertToVolumeGroupFn {
-  const apiModel = useConfigModel();
+  const config = useConfigModel();
   return (driveName: string) => {
-    putStorageModel(deviceToVolumeGroup(apiModel, driveName));
+    putStorageModel(deviceToVolumeGroup(config, driveName));
   };
 }
 

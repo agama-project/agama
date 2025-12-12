@@ -230,8 +230,8 @@ function useUsableFilesystems(mountPoint: string): string[] {
 }
 
 function useMountPointError(value: FormValue): Error | undefined {
-  const configModel = useConfigModel();
-  const mountPoints = configModel ? usedMountPaths(configModel) : [];
+  const config = useConfigModel();
+  const mountPoints = config ? usedMountPaths(config) : [];
   const initialLogicalVolume = useInitialLogicalVolume();
   const mountPoint = value.mountPoint;
 
@@ -340,7 +340,7 @@ function useErrors(value: FormValue): ErrorsHandler {
 
 function useSolvedModel(value: FormValue): ConfigModel.Config | null {
   const { id: vgName, logicalVolumeId: mountPath } = useParams();
-  const apiModel = useConfigModel();
+  const config = useConfigModel();
   const { getError } = useErrors(value);
   const mountPointError = getError("mountPoint");
   const data = toData(value);
@@ -353,9 +353,9 @@ function useSolvedModel(value: FormValue): ConfigModel.Config | null {
 
   if (data.filesystem && !mountPointError) {
     if (mountPath) {
-      sparseModel = editLogicalVolume(apiModel, vgName, mountPath, data);
+      sparseModel = editLogicalVolume(config, vgName, mountPath, data);
     } else {
-      sparseModel = addLogicalVolume(apiModel, vgName, data);
+      sparseModel = addLogicalVolume(config, vgName, data);
     }
   }
 
@@ -365,8 +365,8 @@ function useSolvedModel(value: FormValue): ConfigModel.Config | null {
 
 function useSolvedLogicalVolume(value: FormValue): ConfigModel.LogicalVolume | undefined {
   const { id: vgName } = useParams();
-  const apiModel = useSolvedModel(value);
-  const volumeGroup = apiModel?.volumeGroups?.find((v) => v.vgName === vgName);
+  const config = useSolvedModel(value);
+  const volumeGroup = config?.volumeGroups?.find((v) => v.vgName === vgName);
   return volumeGroup?.logicalVolumes?.find((l) => l.mountPath === value.mountPoint);
 }
 

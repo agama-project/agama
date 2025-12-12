@@ -28,27 +28,27 @@ import type { Data } from "~/storage";
 type AddReusedMdRaidFn = (data: Data.MdRaid) => void;
 
 function useAddReusedMdRaid(): AddReusedMdRaidFn {
-  const apiModel = useConfigModel();
+  const config = useConfigModel();
   return (data: Data.MdRaid) => {
-    putStorageModel(addReusedMdRaid(apiModel, data));
+    putStorageModel(addReusedMdRaid(config, data));
   };
 }
 
 type DeleteMdRaidFn = (name: string) => void;
 
 function useDeleteMdRaid(): DeleteMdRaidFn {
-  const apiModel = useConfigModel();
+  const config = useConfigModel();
   return (name: string) => {
-    putStorageModel(deleteMdRaid(apiModel, name));
+    putStorageModel(deleteMdRaid(config, name));
   };
 }
 
 type SwitchToMdRaidFn = (oldName: string, raid: Data.MdRaid) => void;
 
 function useSwitchToMdRaid(): SwitchToMdRaidFn {
-  const apiModel = useConfigModel();
+  const config = useConfigModel();
   return (oldName: string, raid: Data.MdRaid) => {
-    putStorageModel(switchToMdRaid(apiModel, oldName, raid));
+    putStorageModel(switchToMdRaid(config, oldName, raid));
   };
 }
 

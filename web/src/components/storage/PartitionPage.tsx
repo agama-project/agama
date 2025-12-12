@@ -74,7 +74,7 @@ import { isUndefined, unique } from "radashi";
 import { compact } from "~/utils";
 import type { ConfigModel } from "~/model/storage";
 import type { Storage as System } from "~/model/system";
-import { partitionableModelMethods } from "~/model/storage";
+import { partitionableModel } from "~/model/storage";
 
 const NO_VALUE = "";
 const NEW_PARTITION = "new";
@@ -230,7 +230,7 @@ function useDefaultFilesystem(mountPoint: string): string {
 function useInitialPartitionConfig(): ConfigModel.Partition | null {
   const { partitionId: mountPath } = useParams();
   const device = useDeviceModelFromParams();
-  return mountPath && device ? partitionableModelMethods.findPartition(device, mountPath) : null;
+  return mountPath && device ? partitionableModel.findPartition(device, mountPath) : null;
 }
 
 function useInitialFormValue(): FormValue | null {
@@ -257,7 +257,7 @@ function useUnusedPartitions(): System.Device[] {
   const allPartitions = device.partitions || [];
   const initialPartitionConfig = useInitialPartitionConfig();
   const deviceModel = useDeviceModelFromParams();
-  const configuredPartitionConfigs = partitionableModelMethods
+  const configuredPartitionConfigs = partitionableModel
     .selectConfiguredExistingPartitions(deviceModel)
     .filter((p) => p.name !== initialPartitionConfig?.name)
     .map((p) => p.name);
@@ -295,8 +295,8 @@ function useUsableFilesystems(mountPoint: string): string[] {
 }
 
 function useMountPointError(value: FormValue): Error | undefined {
-  const configModel = useConfigModel();
-  const mountPoints = configModel ? usedMountPaths(configModel) : [];
+  const config = useConfigModel();
+  const mountPoints = config ? usedMountPaths(config) : [];
   const initialPartitionConfig = useInitialPartitionConfig();
   const mountPoint = value.mountPoint;
 

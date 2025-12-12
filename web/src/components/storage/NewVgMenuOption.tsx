@@ -28,18 +28,18 @@ import { deviceBaseName, formattedPath } from "~/components/storage/utils";
 import { sprintf } from "sprintf-js";
 import { _, n_, formatList } from "~/i18n";
 import { useConfigModel } from "~/hooks/model/storage";
-import { partitionableModelMethods } from "~/model/storage";
+import { partitionableModel } from "~/model/storage";
 import type { ConfigModel } from "~/model/storage";
 
 export type NewVgMenuOptionProps = { device: ConfigModel.Drive | ConfigModel.MdRaid };
 
 export default function NewVgMenuOption({ device }: NewVgMenuOptionProps): React.ReactNode {
-  const configModel = useConfigModel();
+  const config = useConfigModel();
   const convertToVg = useConvertToVolumeGroup();
 
   if (device.filesystem) return;
 
-  const vgs = partitionableModelMethods.selectVolumeGroups(device, configModel);
+  const vgs = partitionableModel.selectVolumeGroups(device, config);
   const paths = device.partitions.filter((p) => !p.name).map((p) => formattedPath(p.mountPath));
   const displayName = deviceBaseName(device, true);
 

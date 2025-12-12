@@ -20,54 +20,52 @@
  * find current contact information at www.suse.com.
  */
 
-import { volumeGroupModelMethods, partitionableModelMethods } from "~/model/storage";
+import { volumeGroupModel, partitionableModel } from "~/model/storage";
 import type * as ConfigModel from "~/openapi/storage/config-model";
 
-function usedMountPaths(configModel: ConfigModel.Config): string[] {
-  const drives = configModel.drives || [];
-  const mdRaids = configModel.mdRaids || [];
-  const volumeGroups = configModel.volumeGroups || [];
+function usedMountPaths(config: ConfigModel.Config): string[] {
+  const drives = config.drives || [];
+  const mdRaids = config.mdRaids || [];
+  const volumeGroups = config.volumeGroups || [];
 
   return [
-    ...drives.flatMap(partitionableModelMethods.usedMountPaths),
-    ...mdRaids.flatMap(partitionableModelMethods.usedMountPaths),
-    ...volumeGroups.flatMap(volumeGroupModelMethods.usedMountPaths),
+    ...drives.flatMap(partitionableModel.usedMountPaths),
+    ...mdRaids.flatMap(partitionableModel.usedMountPaths),
+    ...volumeGroups.flatMap(volumeGroupModel.usedMountPaths),
   ];
 }
 
-function bootDevice(
-  configModel: ConfigModel.Config,
-): ConfigModel.Drive | ConfigModel.MdRaid | null {
-  const targets = [...configModel.drives, ...configModel.mdRaids];
-  return targets.find((d) => d.name && d.name === configModel.boot?.device?.name) || null;
+function bootDevice(config: ConfigModel.Config): ConfigModel.Drive | ConfigModel.MdRaid | null {
+  const targets = [...config.drives, ...config.mdRaids];
+  return targets.find((d) => d.name && d.name === config.boot?.device?.name) || null;
 }
 
-function hasDefaultBoot(configModel: ConfigModel.Config): boolean {
-  return configModel.boot?.device?.default || false;
+function hasDefaultBoot(config: ConfigModel.Config): boolean {
+  return config.boot?.device?.default || false;
 }
 
-function isBootDevice(configModel: ConfigModel.Config, deviceName: string): boolean {
-  return configModel.boot?.configure && configModel.boot.device?.name === deviceName;
+function isBootDevice(config: ConfigModel.Config, deviceName: string): boolean {
+  return config.boot?.configure && config.boot.device?.name === deviceName;
 }
 
-function isExplicitBootDevice(configModel: ConfigModel.Config, deviceName: string): boolean {
-  return isBootDevice(configModel, deviceName) && !hasDefaultBoot(configModel);
+function isExplicitBootDevice(config: ConfigModel.Config, deviceName: string): boolean {
+  return isBootDevice(config, deviceName) && !hasDefaultBoot(config);
 }
 
-function isTargetDevice(configModel: ConfigModel.Config, deviceName: string): boolean {
-  const targetDevices = (configModel.volumeGroups || []).flatMap((v) => v.targetDevices || []);
+function isTargetDevice(config: ConfigModel.Config, deviceName: string): boolean {
+  const targetDevices = (config.volumeGroups || []).flatMap((v) => v.targetDevices || []);
   return targetDevices.includes(deviceName);
 }
 
-function isUsedDevice(configModel: ConfigModel.Config, deviceName: string): boolean {
-  const drives = configModel.drives || [];
-  const mdRaids = configModel.mdRaids || [];
+function isUsedDevice(config: ConfigModel.Config, deviceName: string): boolean {
+  const drives = config.drives || [];
+  const mdRaids = config.mdRaids || [];
   const device = drives.concat(mdRaids).find((d) => d.name === deviceName);
 
   return (
-    isExplicitBootDevice(configModel, deviceName) ||
-    isTargetDevice(configModel, deviceName) ||
-    partitionableModelMethods.usedMountPaths(device).length > 0
+    isExplicitBootDevice(config, deviceName) ||
+    isTargetDevice(config, deviceName) ||
+    partitionableModel.usedMountPaths(device).length > 0
   );
 }
 

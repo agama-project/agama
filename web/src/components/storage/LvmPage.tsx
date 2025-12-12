@@ -48,7 +48,7 @@ import { STORAGE as PATHS } from "~/routes/paths";
 import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
 import { deviceSystems, isDrive } from "~/storage/device";
-import { partitionableModelMethods, volumeGroupModelMethods } from "~/model/storage";
+import { partitionableModel, volumeGroupModel } from "~/model/storage";
 import { useConfigModel } from "~/hooks/model/storage";
 import type { Data } from "~/storage";
 import type { ConfigModel } from "~/model/storage";
@@ -76,12 +76,12 @@ function useLvmTargetDevices(): Storage.Device[] {
 
 function vgNameError(
   vgName: string,
-  configModel: ConfigModel.Config,
+  config: ConfigModel.Config,
   volumeGroup?: ConfigModel.VolumeGroup,
 ): string | undefined {
   if (!vgName.length) return _("Enter a name for the volume group.");
 
-  const exist = configModel.volumeGroups.some((v) => v.vgName === vgName);
+  const exist = config.volumeGroups.some((v) => v.vgName === vgName);
   if (exist && vgName !== volumeGroup?.vgName)
     return sprintf(_("Volume group '%s' already exists. Enter a different name."), vgName);
 }
@@ -99,7 +99,7 @@ function targetDevicesError(targetDevices: Storage.Device[]): string | undefined
 export default function LvmPage() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const configModel = useConfigModel();
+  const config = useConfigModel();
   const model = useModel();
   const volumeGroup = useVolumeGroup(id);
   const addVolumeGroup = useAddVolumeGroup();
@@ -113,8 +113,8 @@ export default function LvmPage() {
   useEffect(() => {
     if (volumeGroup) {
       setName(volumeGroup.vgName);
-      const targetNames = volumeGroupModelMethods
-        .selectTargetDevices(volumeGroup, configModel)
+      const targetNames = volumeGroupModel
+        .selectTargetDevices(volumeGroup, config)
         .map((d) => d.name);
       const targetDevices = allDevices.filter((d) => targetNames.includes(d.name));
       setSelectedDevices(targetDevices);
@@ -122,12 +122,12 @@ export default function LvmPage() {
       setName("system");
       const potentialTargets = model.drives.concat(model.mdRaids);
       const targetNames = potentialTargets
-        .filter(partitionableModelMethods.isAddingPartitions)
+        .filter(partitionableModel.isAddingPartitions)
         .map((d) => d.name);
       const targetDevices = allDevices.filter((d) => targetNames.includes(d.name));
       setSelectedDevices(targetDevices);
     }
-  }, [model, configModel, volumeGroup, allDevices]);
+  }, [model, config, volumeGroup, allDevices]);
 
   const updateName = (_, value) => setName(value);
 

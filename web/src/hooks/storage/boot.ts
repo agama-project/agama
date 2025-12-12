@@ -27,22 +27,22 @@ import { setBootDevice, setDefaultBootDevice, disableBootConfig } from "~/storag
 type SetBootDeviceFn = (deviceName: string) => void;
 
 function useSetBootDevice(): SetBootDeviceFn {
-  const configModel = useConfigModel();
-  return (deviceName: string) => putStorageModel(setBootDevice(configModel, deviceName));
+  const config = useConfigModel();
+  return (deviceName: string) => putStorageModel(setBootDevice(config, deviceName));
 }
 
 type SetDefaultBootDeviceFn = () => void;
 
 function useSetDefaultBootDevice(): SetDefaultBootDeviceFn {
-  const configModel = useConfigModel();
-  return () => putStorageModel(setDefaultBootDevice(configModel));
+  const config = useConfigModel();
+  return () => putStorageModel(setDefaultBootDevice(config));
 }
 
 type DisableBootConfigFn = () => void;
 
 function useDisableBootConfig(): DisableBootConfigFn {
-  const configModel = useConfigModel();
-  return () => putStorageModel(disableBootConfig(configModel));
+  const config = useConfigModel();
+  return () => putStorageModel(disableBootConfig(config));
 }
 
 export { useSetBootDevice, useSetDefaultBootDevice, useDisableBootConfig };

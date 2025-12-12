@@ -26,7 +26,7 @@ import FilesystemMenu from "~/components/storage/FilesystemMenu";
 import PartitionsSection from "~/components/storage/PartitionsSection";
 import SpacePolicyMenu from "~/components/storage/SpacePolicyMenu";
 import { useConfigModel } from "~/hooks/model/storage";
-import { configModelMethods } from "~/model/storage";
+import { configModel } from "~/model/storage";
 
 type DeviceEditorContentProps = {
   collection: "drives" | "mdRaids";
@@ -37,9 +37,9 @@ export default function DeviceEditorContent({
   collection,
   index,
 }: DeviceEditorContentProps): React.ReactNode {
-  const configModel = useConfigModel();
-  const device = configModel[collection][index];
-  const isUsed = configModelMethods.isUsedDevice(configModel, device.name);
+  const config = useConfigModel();
+  const device = config[collection][index];
+  const isUsed = configModel.isUsedDevice(config, device.name);
 
   if (!isUsed) return <UnusedMenu collection={collection} index={index} />;
 

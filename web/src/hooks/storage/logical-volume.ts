@@ -28,27 +28,27 @@ import type { Data } from "~/storage";
 type AddLogicalVolumeFn = (vgName: string, data: Data.LogicalVolume) => void;
 
 function useAddLogicalVolume(): AddLogicalVolumeFn {
-  const apiModel = useConfigModel();
+  const config = useConfigModel();
   return (vgName: string, data: Data.LogicalVolume) => {
-    putStorageModel(addLogicalVolume(apiModel, vgName, data));
+    putStorageModel(addLogicalVolume(config, vgName, data));
   };
 }
 
 type EditLogicalVolumeFn = (vgName: string, mountPath: string, data: Data.LogicalVolume) => void;
 
 function useEditLogicalVolume(): EditLogicalVolumeFn {
-  const apiModel = useConfigModel();
+  const config = useConfigModel();
   return (vgName: string, mountPath: string, data: Data.LogicalVolume) => {
-    putStorageModel(editLogicalVolume(apiModel, vgName, mountPath, data));
+    putStorageModel(editLogicalVolume(config, vgName, mountPath, data));
   };
 }
 
 type DeleteLogicalVolumeFn = (vgName: string, mountPath: string) => void;
 
 function useDeleteLogicalVolume(): DeleteLogicalVolumeFn {
-  const apiModel = useConfigModel();
+  const config = useConfigModel();
   return (vgName: string, mountPath: string) =>
-    putStorageModel(deleteLogicalVolume(apiModel, vgName, mountPath));
+    putStorageModel(deleteLogicalVolume(config, vgName, mountPath));
 }
 
 export { useAddLogicalVolume, useEditLogicalVolume, useDeleteLogicalVolume };

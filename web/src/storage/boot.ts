@@ -21,38 +21,38 @@
  */
 
 import { copyApiModel } from "~/storage/api-model";
-import { configModelMethods, partitionableModelMethods } from "~/model/storage";
+import { configModel, partitionableModel } from "~/model/storage";
 import type { ConfigModel } from "~/model/storage";
 
 function isUsed(
-  configModel: ConfigModel.Config,
+  config: ConfigModel.Config,
   device: ConfigModel.Drive | ConfigModel.MdRaid,
 ): boolean {
   return (
-    configModelMethods.isTargetDevice(configModel, device.name) ||
-    partitionableModelMethods.usedMountPaths(device).length > 0
+    configModel.isTargetDevice(config, device.name) ||
+    partitionableModel.usedMountPaths(device).length > 0
   );
 }
 
 function removeDevice(
-  configModel: ConfigModel.Config,
+  config: ConfigModel.Config,
   device: ConfigModel.Drive | ConfigModel.MdRaid,
 ): ConfigModel.Config {
-  configModel.drives = configModel.drives.filter((d) => d.name !== device.name);
-  configModel.mdRaids = configModel.mdRaids.filter((d) => d.name !== device.name);
-  return configModel;
+  config.drives = config.drives.filter((d) => d.name !== device.name);
+  config.mdRaids = config.mdRaids.filter((d) => d.name !== device.name);
+  return config;
 }
 
-function setBoot(configModel: ConfigModel.Config, boot: ConfigModel.Boot) {
-  const device = configModelMethods.bootDevice(configModel);
-  if (device && !isUsed(configModel, device)) removeDevice(configModel, device);
+function setBoot(config: ConfigModel.Config, boot: ConfigModel.Boot) {
+  const device = configModel.bootDevice(config);
+  if (device && !isUsed(config, device)) removeDevice(config, device);
 
-  configModel.boot = boot;
-  return configModel;
+  config.boot = boot;
+  return config;
 }
 
-function setBootDevice(configModel: ConfigModel.Config, deviceName: string): ConfigModel.Config {
-  configModel = copyApiModel(configModel);
+function setBootDevice(config: ConfigModel.Config, deviceName: string): ConfigModel.Config {
+  config = copyApiModel(config);
 
   const boot = {
     configure: true,
@@ -62,12 +62,12 @@ function setBootDevice(configModel: ConfigModel.Config, deviceName: string): Con
     },
   };
 
-  setBoot(configModel, boot);
-  return configModel;
+  setBoot(config, boot);
+  return config;
 }
 
-function setDefaultBootDevice(configModel: ConfigModel.Config): ConfigModel.Config {
-  configModel = copyApiModel(configModel);
+function setDefaultBootDevice(config: ConfigModel.Config): ConfigModel.Config {
+  config = copyApiModel(config);
 
   const boot = {
     configure: true,
@@ -76,15 +76,15 @@ function setDefaultBootDevice(configModel: ConfigModel.Config): ConfigModel.Conf
     },
   };
 
-  setBoot(configModel, boot);
-  return configModel;
+  setBoot(config, boot);
+  return config;
 }
 
-function disableBootConfig(configModel: ConfigModel.Config): ConfigModel.Config {
-  configModel = copyApiModel(configModel);
+function disableBootConfig(config: ConfigModel.Config): ConfigModel.Config {
+  config = copyApiModel(config);
   const boot = { configure: false };
-  setBoot(configModel, boot);
-  return configModel;
+  setBoot(config, boot);
+  return config;
 }
 
 export { setBootDevice, setDefaultBootDevice, disableBootConfig };

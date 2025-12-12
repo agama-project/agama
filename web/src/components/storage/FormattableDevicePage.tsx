@@ -207,8 +207,8 @@ function useUsableFilesystems(mountPoint: string): string[] {
 }
 
 function useMountPointError(value: FormValue): Error | undefined {
-  const configModel = useConfigModel();
-  const mountPoints = configModel ? usedMountPaths(configModel) : [];
+  const config = useConfigModel();
+  const mountPoints = config ? usedMountPaths(config) : [];
   const deviceModel = useDeviceModelFromParams();
   const mountPoint = value.mountPoint;
 

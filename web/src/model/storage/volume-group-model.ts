@@ -29,20 +29,18 @@ function usedMountPaths(volumeGroup: ConfigModel.VolumeGroup): string[] {
 }
 
 function candidateTargetDevices(
-  configModel: ConfigModel.Config,
+  config: ConfigModel.Config,
 ): (ConfigModel.Drive | ConfigModel.MdRaid)[] {
-  const drives = configModel.drives || [];
-  const mdRaids = configModel.mdRaids || [];
+  const drives = config.drives || [];
+  const mdRaids = config.mdRaids || [];
   return [...drives, ...mdRaids];
 }
 
 function selectTargetDevices(
   volumeGroup: ConfigModel.VolumeGroup,
-  configModel: ConfigModel.Config,
+  config: ConfigModel.Config,
 ): (ConfigModel.Drive | ConfigModel.MdRaid)[] {
-  return candidateTargetDevices(configModel).filter((d) =>
-    volumeGroup.targetDevices.includes(d.name),
-  );
+  return candidateTargetDevices(config).filter((d) => volumeGroup.targetDevices.includes(d.name));
 }
 
 export { usedMountPaths, selectTargetDevices };

@@ -27,7 +27,7 @@ import Link from "~/components/core/Link";
 import Icon from "~/components/layout/Icon";
 import { useAvailableDrives } from "~/hooks/model/system/storage";
 import { useConfigModel } from "~/hooks/model/storage";
-import { configModelMethods } from "~/model/storage";
+import { configModel } from "~/model/storage";
 import { STORAGE } from "~/routes/paths";
 import { deviceLabel, formattedPath } from "~/components/storage/utils";
 import { _ } from "~/i18n";
@@ -73,11 +73,11 @@ function bootLabel(isDefault: boolean, device?: Storage.Device) {
 }
 
 export default function BootSection() {
-  const configModel = useConfigModel();
+  const config = useConfigModel();
   const devices = useAvailableDrives();
 
-  const isDefaultBoot = configModelMethods.hasDefaultBoot(configModel);
-  const bootDevice = configModelMethods.bootDevice(configModel);
+  const isDefaultBoot = configModel.hasDefaultBoot(config);
+  const bootDevice = configModel.bootDevice(config);
   const device = devices.find((d) => d.name === bootDevice?.name);
 
   return (

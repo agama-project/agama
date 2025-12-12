@@ -23,7 +23,7 @@
 import { _, n_, formatList } from "~/i18n";
 import { SpacePolicy, SPACE_POLICIES, baseName, formattedPath } from "~/components/storage/utils";
 import { useConfigModel } from "~/hooks/model/storage";
-import { configModelMethods, partitionableModelMethods } from "~/model/storage";
+import { configModel, partitionableModel } from "~/model/storage";
 import { sprintf } from "sprintf-js";
 import type { ConfigModel } from "~/model/storage";
 
@@ -65,11 +65,11 @@ const resizeTextFor = (partitions) => {
 };
 
 const SummaryForSpacePolicy = (drive: ConfigModel.Drive): string | undefined => {
-  const configModel = useConfigModel();
-  const isTargetDevice = configModelMethods.isTargetDevice(configModel, drive.name);
-  const isBoot = configModelMethods.isBootDevice(configModel, drive.name);
-  const isAddingPartitions = partitionableModelMethods.isAddingPartitions(drive);
-  const isReusingPartitions = partitionableModelMethods.isReusingPartitions(drive);
+  const config = useConfigModel();
+  const isTargetDevice = configModel.isTargetDevice(config, drive.name);
+  const isBoot = configModel.isBootDevice(config, drive.name);
+  const isAddingPartitions = partitionableModel.isAddingPartitions(drive);
+  const isReusingPartitions = partitionableModel.isReusingPartitions(drive);
   const { spacePolicy } = drive;
 
   switch (spacePolicy) {
@@ -123,11 +123,11 @@ const ContentActionsDescription = (
   drive: ConfigModel.Drive,
   policyId: string | undefined,
 ): string => {
-  const configModel = useConfigModel();
-  const isTargetDevice = configModelMethods.isTargetDevice(configModel, drive.name);
-  const isBoot = configModelMethods.isBootDevice(configModel, drive.name);
-  const isAddingPartitions = partitionableModelMethods.isAddingPartitions(drive);
-  const isReusingPartitions = partitionableModelMethods.isReusingPartitions(drive);
+  const config = useConfigModel();
+  const isTargetDevice = configModel.isTargetDevice(config, drive.name);
+  const isBoot = configModel.isBootDevice(config, drive.name);
+  const isAddingPartitions = partitionableModel.isAddingPartitions(drive);
+  const isReusingPartitions = partitionableModel.isReusingPartitions(drive);
 
   if (!policyId) policyId = drive.spacePolicy;
 

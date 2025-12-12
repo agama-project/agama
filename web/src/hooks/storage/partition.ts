@@ -32,9 +32,9 @@ type AddPartitionFn = (
 ) => void;
 
 function useAddPartition(): AddPartitionFn {
-  const apiModel = useConfigModel();
+  const config = useConfigModel();
   return (collection: "drives" | "mdRaids", index: number | string, data: Data.Partition) => {
-    putStorageModel(addPartition(apiModel, collection, index, data));
+    putStorageModel(addPartition(config, collection, index, data));
   };
 }
 
@@ -46,14 +46,14 @@ type EditPartitionFn = (
 ) => void;
 
 function useEditPartition(): EditPartitionFn {
-  const apiModel = useConfigModel();
+  const config = useConfigModel();
   return (
     collection: "drives" | "mdRaids",
     index: number | string,
     mountPath: string,
     data: Data.Partition,
   ) => {
-    putStorageModel(editPartition(apiModel, collection, index, mountPath, data));
+    putStorageModel(editPartition(config, collection, index, mountPath, data));
   };
 }
 
@@ -64,9 +64,9 @@ type DeletePartitionFn = (
 ) => void;
 
 function useDeletePartition(): DeletePartitionFn {
-  const apiModel = useConfigModel();
+  const config = useConfigModel();
   return (collection: "drives" | "mdRaids", index: number | string, mountPath: string) =>
-    putStorageModel(deletePartition(apiModel, collection, index, mountPath));
+    putStorageModel(deletePartition(config, collection, index, mountPath));
 }
 
 export { useAddPartition, useEditPartition, useDeletePartition };

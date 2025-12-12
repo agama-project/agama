@@ -21,7 +21,7 @@
  */
 
 import { sift } from "radashi";
-import { partitionModelMethods, volumeGroupModelMethods } from "~/model/storage";
+import { partitionModel, volumeGroupModel } from "~/model/storage";
 import type { ConfigModel } from "~/model/storage";
 
 type Partitionable = ConfigModel.Drive | ConfigModel.MdRaid;
@@ -32,11 +32,11 @@ function usedMountPaths(device: Partitionable): string[] {
 }
 
 function isAddingPartitions(device: Partitionable): boolean {
-  return device.partitions.some((p) => p.mountPath && partitionModelMethods.isNew(p));
+  return device.partitions.some((p) => p.mountPath && partitionModel.isNew(p));
 }
 
 function isReusingPartitions(device: Partitionable): boolean {
-  return device.partitions.some(partitionModelMethods.isReused);
+  return device.partitions.some(partitionModel.isReused);
 }
 
 function findPartition(
@@ -48,11 +48,11 @@ function findPartition(
 
 function selectVolumeGroups(
   device: Partitionable,
-  configModel: ConfigModel.Config,
+  config: ConfigModel.Config,
 ): ConfigModel.VolumeGroup[] {
-  const volumeGroups = configModel.volumeGroups || [];
+  const volumeGroups = config.volumeGroups || [];
   return volumeGroups.filter((v) =>
-    volumeGroupModelMethods.selectTargetDevices(v, configModel).some((d) => d.name === device.name),
+    volumeGroupModel.selectTargetDevices(v, config).some((d) => d.name === device.name),
   );
 }
 
@@ -60,11 +60,11 @@ function selectConfiguredExistingPartitions(device: Partitionable): ConfigModel.
   if (device.spacePolicy === "custom")
     return device.partitions.filter(
       (p) =>
-        !partitionModelMethods.isNew(p) &&
-        (partitionModelMethods.isUsed(p) || partitionModelMethods.isUsedBySpacePolicy(p)),
+        !partitionModel.isNew(p) &&
+        (partitionModel.isUsed(p) || partitionModel.isUsedBySpacePolicy(p)),
     );
 
-  return device.partitions.filter(partitionModelMethods.isReused);
+  return device.partitions.filter(partitionModel.isReused);
 }
 
 export {

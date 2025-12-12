@@ -23,22 +23,22 @@
 import type { ConfigModel } from "~/model/storage";
 import type { Data } from "~/storage";
 
-function copyApiModel(apiModel: ConfigModel.Config): ConfigModel.Config {
-  return JSON.parse(JSON.stringify(apiModel));
+function copyApiModel(config: ConfigModel.Config): ConfigModel.Config {
+  return JSON.parse(JSON.stringify(config));
 }
 
-function findDevice(apiModel: ConfigModel.Config, list: string, index: number | string) {
-  const collection = apiModel[list] || [];
+function findDevice(config: ConfigModel.Config, list: string, index: number | string) {
+  const collection = config[list] || [];
   return collection.at(index);
 }
 
-function findDeviceIndex(apiModel: ConfigModel.Config, list: string, name: string) {
-  const collection = apiModel[list] || [];
+function findDeviceIndex(config: ConfigModel.Config, list: string, name: string) {
+  const collection = config[list] || [];
   return collection.findIndex((d) => d.name === name);
 }
 
-function partitionables(apiModel: ConfigModel.Config): (ConfigModel.Drive | ConfigModel.MdRaid)[] {
-  return (apiModel.drives || []).concat(apiModel.mdRaids || []);
+function partitionables(config: ConfigModel.Config): (ConfigModel.Drive | ConfigModel.MdRaid)[] {
+  return (config.drives || []).concat(config.mdRaids || []);
 }
 
 function buildFilesystem(data?: Data.Filesystem): ConfigModel.Filesystem | undefined {

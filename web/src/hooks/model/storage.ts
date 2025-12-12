@@ -33,14 +33,14 @@ function useConfigModel(): ConfigModel.Config | null {
   return useSuspenseQuery(configModelQuery).data;
 }
 
-const solvedConfigModelQuery = (configModel?: ConfigModel.Config) => ({
-  queryKey: ["solvedStorageModel", JSON.stringify(configModel)],
-  queryFn: () => (configModel ? solveStorageModel(configModel) : Promise.resolve(null)),
+const solvedConfigModelQuery = (config?: ConfigModel.Config) => ({
+  queryKey: ["solvedStorageModel", JSON.stringify(config)],
+  queryFn: () => (config ? solveStorageModel(config) : Promise.resolve(null)),
   staleTime: Infinity,
 });
 
-function useSolvedConfigModel(configModel?: ConfigModel.Config): ConfigModel.Config | null {
-  return useSuspenseQuery(solvedConfigModelQuery(configModel)).data;
+function useSolvedConfigModel(config?: ConfigModel.Config): ConfigModel.Config | null {
+  return useSuspenseQuery(solvedConfigModelQuery(config)).data;
 }
 
 export { configModelQuery, useConfigModel, useSolvedConfigModel };

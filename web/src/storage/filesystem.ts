@@ -25,23 +25,23 @@ import type { ConfigModel } from "~/model/storage";
 import type { Data } from "~/storage";
 
 function findDevice(
-  apiModel: ConfigModel.Config,
+  config: ConfigModel.Config,
   list: string,
   index: number | string,
 ): ConfigModel.Drive | ConfigModel.MdRaid | null {
-  return (apiModel[list] || []).at(index) || null;
+  return (config[list] || []).at(index) || null;
 }
 
 function configureFilesystem(
-  apiModel: ConfigModel.Config,
+  config: ConfigModel.Config,
   list: string,
   index: number | string,
   data: Data.Formattable,
 ): ConfigModel.Config {
-  apiModel = copyApiModel(apiModel);
+  config = copyApiModel(config);
 
-  const device = findDevice(apiModel, list, index);
-  if (!device) return apiModel;
+  const device = findDevice(config, list, index);
+  if (!device) return config;
 
   device.mountPath = data.mountPath;
 
@@ -54,7 +54,7 @@ function configureFilesystem(
     device.filesystem = undefined;
   }
 
-  return apiModel;
+  return config;
 }
 
 export { configureFilesystem };

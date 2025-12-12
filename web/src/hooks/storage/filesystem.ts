@@ -28,18 +28,18 @@ import type { Data } from "~/storage";
 type AddFilesystemFn = (list: string, index: number, data: Data.Formattable) => void;
 
 function useAddFilesystem(): AddFilesystemFn {
-  const apiModel = useConfigModel();
+  const config = useConfigModel();
   return (list: string, index: number, data: Data.Formattable) => {
-    putStorageModel(configureFilesystem(apiModel, list, index, data));
+    putStorageModel(configureFilesystem(config, list, index, data));
   };
 }
 
 type DeleteFilesystemFn = (list: string, index: number) => void;
 
 function useDeleteFilesystem(): DeleteFilesystemFn {
-  const apiModel = useConfigModel();
+  const config = useConfigModel();
   return (list: string, index: number) => {
-    putStorageModel(configureFilesystem(apiModel, list, index, {}));
+    putStorageModel(configureFilesystem(config, list, index, {}));
   };
 }
 

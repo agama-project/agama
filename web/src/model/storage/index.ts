@@ -20,8 +20,8 @@
  * find current contact information at www.suse.com.
  */
 
-export * as configModelMethods from "~/model/storage/config-model";
-export * as partitionableModelMethods from "~/model/storage/partitionable-model";
-export * as partitionModelMethods from "~/model/storage/partition-model";
-export * as volumeGroupModelMethods from "~/model/storage/volume-group-model";
+export * as configModel from "~/model/storage/config-model";
+export * as partitionableModel from "~/model/storage/partitionable-model";
+export * as partitionModel from "~/model/storage/partition-model";
+export * as volumeGroupModel from "~/model/storage/volume-group-model";
 export type { ConfigModel } from "~/model/storage/config-model";

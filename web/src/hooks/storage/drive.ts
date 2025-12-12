@@ -36,27 +36,27 @@ function useDrive(name: string): ConfigModel.Drive | null {
 type AddDriveFn = (data: Data.Drive) => void;
 
 function useAddDrive(): AddDriveFn {
-  const apiModel = useConfigModel();
+  const config = useConfigModel();
   return (data: Data.Drive) => {
-    putStorageModel(addDrive(apiModel, data));
+    putStorageModel(addDrive(config, data));
   };
 }
 
 type DeleteDriveFn = (name: string) => void;
 
 function useDeleteDrive(): DeleteDriveFn {
-  const apiModel = useConfigModel();
+  const config = useConfigModel();
   return (name: string) => {
-    putStorageModel(deleteDrive(apiModel, name));
+    putStorageModel(deleteDrive(config, name));
   };
 }
 
 type SwitchToDriveFn = (oldName: string, drive: Data.Drive) => void;
 
 function useSwitchToDrive(): SwitchToDriveFn {
-  const apiModel = useConfigModel();
+  const config = useConfigModel();
   return (oldName: string, drive: Data.Drive) => {
-    putStorageModel(switchToDrive(apiModel, oldName, drive));
+    putStorageModel(switchToDrive(config, oldName, drive));
   };
 }
 

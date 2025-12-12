@@ -38,16 +38,16 @@ import {
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
-import { configModelMethods } from "~/model/storage";
+import { configModel } from "~/model/storage";
 import type { ConfigModel } from "~/model/storage";
 import type { Storage } from "~/model/system";
 
 const filteredCandidates = (
   candidates: Storage.Device[],
-  configModel: ConfigModel.Config,
+  config: ConfigModel.Config,
 ): Storage.Device[] => {
   return candidates.filter((candidate) => {
-    const collection = isDrive(candidate) ? configModel.drives : configModel.mdRaids;
+    const collection = isDrive(candidate) ? config.drives : config.mdRaids;
     const device = collection.find((d) => d.name === candidate.name);
     return !device || !device.filesystem;
   });
@@ -78,7 +78,7 @@ export default function BootSelection() {
   const navigate = useNavigate();
   const devices = useDevices();
   const model = useModel();
-  const configModel = useConfigModel();
+  const config = useConfigModel();
   const allCandidateDevices = useCandidateDevices();
   const setBootDevice = useSetBootDevice();
   const setDefaultBootDevice = useSetDefaultBootDevice();
@@ -89,9 +89,9 @@ export default function BootSelection() {
   useEffect(() => {
     if (state.load || !model) return;
 
-    const bootModel = configModel.boot;
-    const isDefaultBoot = configModelMethods.hasDefaultBoot(configModel);
-    const bootDevice = configModelMethods.bootDevice(configModel);
+    const bootModel = config.boot;
+    const isDefaultBoot = configModel.hasDefaultBoot(config);
+    const bootDevice = configModel.bootDevice(config);
     let selectedOption: string;
 
     if (!bootModel.configure) {
@@ -118,7 +118,7 @@ export default function BootSelection() {
       candidateDevices: candidates,
       selectedOption,
     });
-  }, [devices, candidateDevices, model, state.load, configModel]);
+  }, [devices, candidateDevices, model, state.load, config]);
 
   if (!state.load || !model) return;
 

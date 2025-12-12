@@ -103,14 +103,14 @@ const NoModelSummary = (): React.ReactNode => {
  * Text explaining the storage proposal
  */
 export default function StorageSection() {
-  const configModel = useConfigModel();
+  const config = useConfigModel();
 
   return (
     <Content>
       <Content component="h3">{_("Storage")}</Content>
       <Content>
-        {configModel && <ModelSummary model={configModel} />}
-        {!configModel && <NoModelSummary />}
+        {config && <ModelSummary model={config} />}
+        {!config && <NoModelSummary />}
       </Content>
     </Content>
   );
