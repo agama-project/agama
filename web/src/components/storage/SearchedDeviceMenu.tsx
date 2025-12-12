@@ -297,9 +297,9 @@ const targetDevices = (
     const device = collection.find((d) => d.name === availableDev.name);
     if (!device) return true;
 
-    return modelDevice.filesystem
-      ? !configModel.isUsedDevice(config, device.name)
-      : !device.filesystem;
+    if (modelDevice.filesystem) return !configModel.isUsedDevice(config, device.name);
+
+    return !device.filesystem;
   });
 };
 
