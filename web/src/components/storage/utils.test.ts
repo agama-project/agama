@@ -32,7 +32,7 @@ import {
   isTransactionalRoot,
   isTransactionalSystem,
 } from "./utils";
-import type { storage } from "~/model/system";
+import type { Storage } from "~/model/system";
 import type { Volume } from "~/model/system/storage";
 
 /**
@@ -82,16 +82,16 @@ describe("deviceSize", () => {
 
 describe("deviceBaseName", () => {
   it("returns the base name of the given device", () => {
-    const disk: storage.Device = { sid: 1, name: "/dev/sda" };
+    const disk: Storage.Device = { sid: 1, name: "/dev/sda" };
     expect(deviceBaseName(disk)).toEqual("sda");
 
-    const raid: storage.Device = { sid: 1, name: "/dev/mapper/dm332" };
+    const raid: Storage.Device = { sid: 1, name: "/dev/mapper/dm332" };
     expect(deviceBaseName(raid)).toEqual("dm332");
   });
 });
 
 describe("deviceLabel", () => {
-  const deviceWithSize = (size: number): storage.Device => {
+  const deviceWithSize = (size: number): Storage.Device => {
     return {
       sid: 1,
       name: "/dev/sda",
@@ -111,7 +111,7 @@ describe("deviceLabel", () => {
 });
 
 describe("deviceChildren", () => {
-  let device: storage.Device;
+  let device: Storage.Device;
 
   describe("if the device has partition table", () => {
     beforeEach(() => {

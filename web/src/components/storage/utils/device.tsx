@@ -23,9 +23,9 @@
 import { _ } from "~/i18n";
 import { sprintf } from "sprintf-js";
 import { compact } from "~/utils";
-import type { storage as system } from "~/model/system";
+import type { Storage as System } from "~/model/system";
 
-const driveTypeDescription = (device: system.Device): string => {
+const driveTypeDescription = (device: System.Device): string => {
   if (device.drive.type === "multipath") {
     // TRANSLATORS: multipath device type
     return _("Multipath");
@@ -50,7 +50,7 @@ const driveTypeDescription = (device: system.Device): string => {
 /*
  * Description of the device type.
  */
-const typeDescription = (device: system.Device): string | undefined => {
+const typeDescription = (device: System.Device): string | undefined => {
   let type: string;
 
   switch (device.class) {
@@ -73,7 +73,7 @@ const typeDescription = (device: system.Device): string | undefined => {
  * TODO: there is a lot of room for improvement here, but first we would need
  * device.description (comes from YaST) to be way more granular
  */
-const contentDescription = (device: system.Device): string => {
+const contentDescription = (device: System.Device): string => {
   if (device.partitionTable) {
     const type = device.partitionTable.type.toUpperCase();
     const numPartitions = device.partitions.length;
@@ -98,7 +98,7 @@ const contentDescription = (device: system.Device): string => {
 /*
  * Labels of the filesystems included at the device
  */
-const filesystemLabels = (device: system.Device): string[] => {
+const filesystemLabels = (device: System.Device): string[] => {
   if (device.partitionTable) {
     return compact(device.partitions.map((p) => p.filesystem?.label));
   }

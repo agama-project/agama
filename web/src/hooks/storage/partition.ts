@@ -20,21 +20,21 @@
  * find current contact information at www.suse.com.
  */
 
-import { useStorageModel } from "~/hooks/model/storage";
+import { useConfigModel } from "~/hooks/model/storage";
 import { putStorageModel } from "~/api";
-import { data } from "~/storage";
+import { Data } from "~/storage";
 import { addPartition, editPartition, deletePartition } from "~/storage/partition";
 
 type AddPartitionFn = (
   collection: "drives" | "mdRaids",
   index: number | string,
-  data: data.Partition,
+  data: Data.Partition,
 ) => void;
 
 function useAddPartition(): AddPartitionFn {
-  const apiModel = useStorageModel();
-  return (collection: "drives" | "mdRaids", index: number | string, data: data.Partition) => {
-    putStorageModel(addPartition(apiModel, collection, index, data));
+  const config = useConfigModel();
+  return (collection: "drives" | "mdRaids", index: number | string, data: Data.Partition) => {
+    putStorageModel(addPartition(config, collection, index, data));
   };
 }
 
@@ -42,18 +42,18 @@ type EditPartitionFn = (
   collection: "drives" | "mdRaids",
   index: number | string,
   mountPath: string,
-  data: data.Partition,
+  data: Data.Partition,
 ) => void;
 
 function useEditPartition(): EditPartitionFn {
-  const apiModel = useStorageModel();
+  const config = useConfigModel();
   return (
     collection: "drives" | "mdRaids",
     index: number | string,
     mountPath: string,
-    data: data.Partition,
+    data: Data.Partition,
   ) => {
-    putStorageModel(editPartition(apiModel, collection, index, mountPath, data));
+    putStorageModel(editPartition(config, collection, index, mountPath, data));
   };
 }
 
@@ -64,9 +64,9 @@ type DeletePartitionFn = (
 ) => void;
 
 function useDeletePartition(): DeletePartitionFn {
-  const apiModel = useStorageModel();
+  const config = useConfigModel();
   return (collection: "drives" | "mdRaids", index: number | string, mountPath: string) =>
-    putStorageModel(deletePartition(apiModel, collection, index, mountPath));
+    putStorageModel(deletePartition(config, collection, index, mountPath));
 }
 
 export { useAddPartition, useEditPartition, useDeletePartition };

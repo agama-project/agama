@@ -20,16 +20,16 @@
  * find current contact information at www.suse.com.
  */
 
-import type * as l10n from "~/model/proposal/l10n";
-import type * as network from "~/model/proposal/network";
-import type * as software from "~/model/proposal/software";
-import type { storage } from "~/model/proposal/storage";
+import type * as L10n from "~/model/proposal/l10n";
+import type * as Network from "~/model/proposal/network";
+import type * as Software from "~/model/proposal/software";
+import type * as Storage from "~/model/proposal/storage";
 
 type Proposal = {
-  l10n?: l10n.Proposal;
-  network: network.Proposal;
-  software?: software.Proposal;
-  storage?: storage.Proposal;
+  l10n?: L10n.Proposal;
+  network: Network.Proposal;
+  software?: Software.Proposal;
+  storage?: Storage.Proposal;
 };
 
-export type { Proposal, l10n, network, storage, software };
+export type { Proposal, L10n, Network, Software, Storage };

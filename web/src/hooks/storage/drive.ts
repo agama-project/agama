@@ -20,42 +20,43 @@
  * find current contact information at www.suse.com.
  */
 
-import { useStorageModel } from "~/hooks/model/storage";
+import { useConfigModel } from "~/hooks/model/storage";
 import { putStorageModel } from "~/api";
 import { addDrive, deleteDrive, switchToDrive } from "~/storage/drive";
 import { useModel } from "~/hooks/storage/model";
-import type { model, data } from "~/storage";
+import type { Data } from "~/storage";
+import type { ConfigModel } from "~/model/storage/config-model";
 
-function useDrive(name: string): model.Drive | null {
+function useDrive(name: string): ConfigModel.Drive | null {
   const model = useModel();
   const drive = model?.drives?.find((d) => d.name === name);
   return drive || null;
 }
 
-type AddDriveFn = (data: data.Drive) => void;
+type AddDriveFn = (data: Data.Drive) => void;
 
 function useAddDrive(): AddDriveFn {
-  const apiModel = useStorageModel();
-  return (data: data.Drive) => {
-    putStorageModel(addDrive(apiModel, data));
+  const config = useConfigModel();
+  return (data: Data.Drive) => {
+    putStorageModel(addDrive(config, data));
   };
 }
 
 type DeleteDriveFn = (name: string) => void;
 
 function useDeleteDrive(): DeleteDriveFn {
-  const apiModel = useStorageModel();
+  const config = useConfigModel();
   return (name: string) => {
-    putStorageModel(deleteDrive(apiModel, name));
+    putStorageModel(deleteDrive(config, name));
   };
 }
 
-type SwitchToDriveFn = (oldName: string, drive: data.Drive) => void;
+type SwitchToDriveFn = (oldName: string, drive: Data.Drive) => void;
 
 function useSwitchToDrive(): SwitchToDriveFn {
-  const apiModel = useStorageModel();
-  return (oldName: string, drive: data.Drive) => {
-    putStorageModel(switchToDrive(apiModel, oldName, drive));
+  const config = useConfigModel();
+  return (oldName: string, drive: Data.Drive) => {
+    putStorageModel(switchToDrive(config, oldName, drive));
   };
 }
 

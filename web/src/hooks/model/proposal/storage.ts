@@ -23,11 +23,11 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { proposalQuery } from "~/hooks/model/proposal";
 import { flatDevices } from "~/model/proposal/storage";
-import type { Proposal, storage } from "~/model/proposal";
+import type { Proposal, Storage } from "~/model/proposal";
 
-const selectProposal = (data: Proposal | null): storage.Proposal | null => data?.storage;
+const selectProposal = (data: Proposal | null): Storage.Proposal | null => data?.storage;
 
-function useProposal(): storage.Proposal | null {
+function useProposal(): Storage.Proposal | null {
   const { data } = useSuspenseQuery({
     ...proposalQuery,
     select: selectProposal,
@@ -35,9 +35,9 @@ function useProposal(): storage.Proposal | null {
   return data;
 }
 
-const selectDevices = (data: Proposal | null): storage.Device[] => data?.storage?.devices || [];
+const selectDevices = (data: Proposal | null): Storage.Device[] => data?.storage?.devices || [];
 
-function useDevices(): storage.Device[] {
+function useDevices(): Storage.Device[] {
   const { data } = useSuspenseQuery({
     ...proposalQuery,
     select: selectDevices,
@@ -45,10 +45,10 @@ function useDevices(): storage.Device[] {
   return data;
 }
 
-const selectFlattenDevices = (data: Proposal | null): storage.Device[] =>
+const selectFlattenDevices = (data: Proposal | null): Storage.Device[] =>
   data?.storage ? flatDevices(data.storage) : [];
 
-function useFlattenDevices(): storage.Device[] {
+function useFlattenDevices(): Storage.Device[] {
   const { data } = useSuspenseQuery({
     ...proposalQuery,
     select: selectFlattenDevices,
@@ -56,9 +56,9 @@ function useFlattenDevices(): storage.Device[] {
   return data;
 }
 
-const selectActions = (data: Proposal | null): storage.Action[] => data?.storage?.actions || [];
+const selectActions = (data: Proposal | null): Storage.Action[] => data?.storage?.actions || [];
 
-function useActions(): storage.Action[] {
+function useActions(): Storage.Action[] {
   const { data } = useSuspenseQuery({
     ...proposalQuery,
     select: selectActions,

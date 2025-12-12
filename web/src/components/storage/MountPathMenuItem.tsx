@@ -25,10 +25,10 @@ import { useNavigate } from "react-router";
 import * as partitionUtils from "~/components/storage/utils/partition";
 import { Icon } from "~/components/layout";
 import { MenuItem, MenuItemAction } from "@patternfly/react-core";
-import type { configModel } from "~/model/storage/config-model";
+import type { ConfigModel } from "~/model/storage/config-model";
 
 export type MountPathMenuItemProps = {
-  device: configModel.Partition | configModel.LogicalVolume;
+  device: ConfigModel.Partition | ConfigModel.LogicalVolume;
   editPath?: string;
   deleteFn?: () => void;
 };

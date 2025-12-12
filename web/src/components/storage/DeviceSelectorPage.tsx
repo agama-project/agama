@@ -31,11 +31,11 @@ import {
   contentDescription,
   filesystemLabels,
 } from "~/components/storage/utils/device";
-import type { storage } from "~/model/system";
+import type { Storage } from "~/model/system";
 
 type DeviceSelectorProps = {
-  devices: storage.Device[];
-  selectedDevices?: storage.Device[];
+  devices: Storage.Device[];
+  selectedDevices?: Storage.Device[];
   onSelectionChange: SelectableDataTableProps["onSelectionChange"];
   selectionMode?: SelectableDataTableProps["selectionMode"];
 };
@@ -51,7 +51,7 @@ const DeviceSelector = ({
       <SelectableDataTable
         columns={[
           { name: _("Type"), value: typeDescription, pfThProps: { width: 10 } },
-          { name: _("Name"), value: (device: storage.Device) => device.name },
+          { name: _("Name"), value: (device: Storage.Device) => device.name },
           { name: _("Content"), value: contentDescription },
           { name: _("Filesystems"), value: filesystemLabels },
         ]}

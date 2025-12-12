@@ -20,17 +20,17 @@
  * find current contact information at www.suse.com.
  */
 
-import type * as l10n from "~/model/system/l10n";
-import type * as network from "~/model/system/network";
-import type * as software from "~/model/system/software";
-import type { storage } from "~/model/system/storage";
+import type * as L10n from "~/model/system/l10n";
+import type * as Network from "~/model/system/network";
+import type * as Software from "~/model/system/software";
+import type * as Storage from "~/model/system/storage";
 
 type System = {
-  l10n?: l10n.System;
-  network: network.System;
+  l10n?: L10n.System;
+  network: Network.System;
   products?: Product[];
-  software?: software.System;
-  storage?: storage.System;
+  software?: Software.System;
+  storage?: Storage.System;
 };
 
 type Product = {
@@ -53,4 +53,4 @@ type Product = {
   };
 };
 
-export type { System, Product, l10n, network, software, storage };
+export type { System, Product, L10n, Network, Software, Storage };

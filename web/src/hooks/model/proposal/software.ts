@@ -22,11 +22,11 @@
 
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { proposalQuery } from "~/hooks/model/proposal";
-import type { Proposal, software } from "~/model/proposal";
+import type { Proposal, Software } from "~/model/proposal";
 
-const selectProposal = (data: Proposal | null): software.Proposal | null => data?.software;
+const selectProposal = (data: Proposal | null): Software.Proposal | null => data?.software;
 
-function useProposal(): software.Proposal | null {
+function useProposal(): Software.Proposal | null {
   const { data } = useSuspenseQuery({
     ...proposalQuery,
     select: selectProposal,

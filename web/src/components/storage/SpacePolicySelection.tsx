@@ -33,17 +33,17 @@ import { useSetSpacePolicy } from "~/hooks/storage/space-policy";
 import { toDevice } from "./device-utils";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import { sprintf } from "sprintf-js";
-import type { storage as proposal } from "~/model/proposal";
-import type { configModel } from "~/model/storage/config-model";
+import type { Storage as Proposal } from "~/model/proposal";
+import type { ConfigModel } from "~/model/storage/config-model";
 
-const partitionAction = (partition: configModel.Partition) => {
+const partitionAction = (partition: ConfigModel.Partition) => {
   if (partition.delete) return "delete";
   if (partition.resizeIfNeeded) return "resizeIfNeeded";
 
   return undefined;
 };
 
-function useDeviceModelFromParams(): configModel.Drive | configModel.MdRaid | null {
+function useDeviceModelFromParams(): ConfigModel.Drive | ConfigModel.MdRaid | null {
   const { collection, index } = useParams();
   const deviceModel = collection === "drives" ? useDriveModel : useMdRaidModel;
   return deviceModel(Number(index));
@@ -60,7 +60,7 @@ export default function SpacePolicySelection() {
   const setSpacePolicy = useSetSpacePolicy();
   const { collection, index } = useParams();
 
-  const partitionDeviceAction = (device: proposal.Device) => {
+  const partitionDeviceAction = (device: Proposal.Device) => {
     const partition = deviceModel.partitions?.find((p) => p.name === device.name);
 
     return partition ? partitionAction(partition) : undefined;
@@ -70,7 +70,7 @@ export default function SpacePolicySelection() {
     children
       .filter((d) => toDevice(d) && partitionDeviceAction(toDevice(d)))
       .map(
-        (d: proposal.Device): SpacePolicyAction => ({
+        (d: Proposal.Device): SpacePolicyAction => ({
           deviceName: toDevice(d).name,
           value: partitionDeviceAction(toDevice(d)),
         }),
@@ -79,7 +79,7 @@ export default function SpacePolicySelection() {
 
   const navigate = useNavigate();
 
-  const deviceAction = (device: proposal.Device | proposal.UnusedSlot) => {
+  const deviceAction = (device: Proposal.Device | Proposal.UnusedSlot) => {
     if (toDevice(device) === undefined) return "keep";
 
     return actions.find((a) => a.deviceName === toDevice(device).name)?.value || "keep";

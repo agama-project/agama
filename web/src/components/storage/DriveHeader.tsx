@@ -22,13 +22,18 @@
 
 import { sprintf } from "sprintf-js";
 import { deviceLabel } from "./utils";
+import { useConfigModel } from "~/hooks/model/storage";
+import configModel from "~/model/storage/config-model";
+import partitionableModel from "~/model/storage/partitionable-model";
 import { _ } from "~/i18n";
-import type { model } from "~/storage";
-import type { storage } from "~/model/system";
+import type { ConfigModel } from "~/model/storage/config-model";
+import type { Storage } from "~/model/system";
 
-export type DriveHeaderProps = { drive: model.Drive; device: storage.Device };
+export type DriveHeaderProps = { drive: ConfigModel.Drive; device: Storage.Device };
 
-const text = (drive: model.Drive): string => {
+const Text = (drive: ConfigModel.Drive): string => {
+  const config = useConfigModel();
+
   if (drive.filesystem) {
     // TRANSLATORS: %s will be replaced by a disk name and its size - "sda (20 GiB)"
     if (drive.filesystem.reuse) return _("Mount disk %s");
@@ -36,9 +41,10 @@ const text = (drive: model.Drive): string => {
     return _("Format disk %s");
   }
 
-  const { isBoot, isTargetDevice: hasPv } = drive;
-  const isRoot = !!drive.getPartition("/");
-  const hasFs = !!drive.getMountPaths().length;
+  const isBoot = configModel.isBootDevice(config, drive.name);
+  const hasPv = configModel.isTargetDevice(config, drive.name);
+  const isRoot = !!partitionableModel.findPartition(drive, "/");
+  const hasFs = !!partitionableModel.usedMountPaths(drive).length;
 
   if (isRoot) {
     if (hasPv) {
@@ -94,5 +100,5 @@ const text = (drive: model.Drive): string => {
 };
 
 export default function DriveHeader({ drive, device }: DriveHeaderProps) {
-  return sprintf(text(drive), deviceLabel(device, true));
+  return sprintf(Text(drive), deviceLabel(device, true));
 }

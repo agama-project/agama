@@ -22,11 +22,11 @@
 
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { systemQuery } from "~/hooks/model/system";
-import type { System, software } from "~/model/system";
+import type { System, Software } from "~/model/system";
 
-const selectSystem = (data: System | null): software.System => data?.software;
+const selectSystem = (data: System | null): Software.System => data?.software;
 
-function useSystem(): software.System | null {
+function useSystem(): Software.System | null {
   const { data } = useSuspenseQuery({
     ...systemQuery,
     select: selectSystem,

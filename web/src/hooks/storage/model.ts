@@ -22,19 +22,14 @@
 
 import { useCallback } from "react";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { storageModelQuery } from "~/hooks/model/storage";
+import { configModelQuery } from "~/hooks/model/storage";
 import { useSystem } from "~/hooks/model/system/storage";
-import { buildModel } from "~/storage/model";
-import type { configModel as apiModel } from "~/model/storage/config-model";
-import type { model } from "~/storage";
+import configModel from "~/model/storage/config-model";
+import type { ConfigModel } from "~/model/storage/config-model";
 
-const build = (data: apiModel.Config | null): model.Model | null =>
-  data ? buildModel(data) : null;
-
-function useModel(): model.Model | null {
+function useModel(): ConfigModel.Config | null {
   const { data } = useSuspenseQuery({
-    ...storageModelQuery,
-    select: build,
+    ...configModelQuery,
   });
   return data;
 }
@@ -42,11 +37,10 @@ function useModel(): model.Model | null {
 function useMissingMountPaths(): string[] {
   const productMountPoints = useSystem()?.productMountPoints;
   const { data } = useSuspenseQuery({
-    ...storageModelQuery,
+    ...configModelQuery,
     select: useCallback(
-      (data: apiModel.Config | null): string[] => {
-        const model = build(data);
-        const currentMountPaths = model?.getMountPaths() || [];
+      (data: ConfigModel.Config | null): string[] => {
+        const currentMountPaths = data ? configModel.usedMountPaths(data) : [];
         return (productMountPoints || []).filter((p) => !currentMountPaths.includes(p));
       },
       [productMountPoints],
@@ -58,34 +52,36 @@ function useMissingMountPaths(): string[] {
 function useDevice(
   collection: "drives" | "mdRaids",
   index: number,
-): model.Drive | model.MdRaid | null {
+): ConfigModel.Drive | ConfigModel.MdRaid | null {
   const { data } = useSuspenseQuery({
-    ...storageModelQuery,
+    ...configModelQuery,
     select: useCallback(
-      (data: apiModel.Config): model.Drive | model.MdRaid | null =>
-        build(data)?.[collection]?.at(index) || null,
+      (data: ConfigModel.Config | null): ConfigModel.Drive | ConfigModel.MdRaid | null =>
+        data?.[collection]?.at(index) || null,
       [collection, index],
     ),
   });
   return data;
 }
 
-function useDrive(index: number): model.Drive | null {
+function useDrive(index: number): ConfigModel.Drive | null {
   const { data } = useSuspenseQuery({
-    ...storageModelQuery,
+    ...configModelQuery,
     select: useCallback(
-      (data: apiModel.Config): model.Drive | null => build(data)?.drives?.at(index) || null,
+      (data: ConfigModel.Config | null): ConfigModel.Drive | null =>
+        data?.drives?.at(index) || null,
       [index],
     ),
   });
   return data;
 }
 
-function useMdRaid(index: number): model.MdRaid | null {
+function useMdRaid(index: number): ConfigModel.MdRaid | null {
   const { data } = useSuspenseQuery({
-    ...storageModelQuery,
+    ...configModelQuery,
     select: useCallback(
-      (data: apiModel.Config): model.MdRaid | null => build(data)?.mdRaids?.at(index) || null,
+      (data: ConfigModel.Config | null): ConfigModel.MdRaid | null =>
+        data?.mdRaids?.at(index) || null,
       [index],
     ),
   });
