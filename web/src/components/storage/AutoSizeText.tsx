@@ -26,8 +26,8 @@ import { SubtleContent } from "~/components/core/";
 import { deviceSize } from "~/components/storage/utils";
 import { _, formatList } from "~/i18n";
 import { sprintf } from "sprintf-js";
-import type { configModel } from "~/model/storage/config-model";
-import type { storage } from "~/model/system";
+import type { ConfigModel } from "~/model/storage/config-model";
+import type { Storage } from "~/model/system";
 
 type DeviceType = "partition" | "logicalVolume";
 
@@ -36,7 +36,7 @@ function deviceTypeLabel(deviceType: DeviceType): string {
 }
 
 type AutoSizeTextFallbackProps = {
-  size: configModel.Size;
+  size: ConfigModel.Size;
   deviceType: DeviceType;
 };
 
@@ -70,7 +70,7 @@ function AutoSizeTextFallback({ size, deviceType }: AutoSizeTextFallbackProps): 
 
 type AutoSizeTextFixedProps = {
   path: string;
-  size: configModel.Size;
+  size: ConfigModel.Size;
   deviceType: DeviceType;
 };
 
@@ -107,7 +107,7 @@ function AutoSizeTextFixed({ path, size, deviceType }: AutoSizeTextFixedProps): 
 
 type AutoSizeTextRamProps = {
   path: string;
-  size: configModel.Size;
+  size: ConfigModel.Size;
   deviceType: DeviceType;
 };
 
@@ -145,8 +145,8 @@ function AutoSizeTextRam({ path, size, deviceType }: AutoSizeTextRamProps): Reac
 }
 
 type AutoSizeTextDynamicProps = {
-  volume: storage.Volume;
-  size: configModel.Size;
+  volume: Storage.Volume;
+  size: ConfigModel.Size;
   deviceType: DeviceType;
 };
 
@@ -309,8 +309,8 @@ function AutoSizeTextDynamic({
 }
 
 export type AutoSizeTextProps = {
-  volume: storage.Volume;
-  size: configModel.Size;
+  volume: Storage.Volume;
+  size: ConfigModel.Size;
   deviceType: DeviceType;
 };
 

@@ -20,22 +20,27 @@
  * find current contact information at www.suse.com.
  */
 
-import { useConfigModel } from "~/hooks/model/storage";
-import { putStorageModel } from "~/api";
-import { Data } from "~/storage";
-import { setSpacePolicy } from "~/storage/space-policy";
+import { sift } from "radashi";
+import type { ConfigModel } from "~/model/storage/config-model";
 
-type setSpacePolicyFn = (
-  collection: string,
-  index: number | string,
-  data: Data.SpacePolicy,
-) => void;
-
-function useSetSpacePolicy(): setSpacePolicyFn {
-  const model = useConfigModel();
-  return (collection: string, index: number | string, data: Data.SpacePolicy) => {
-    putStorageModel(setSpacePolicy(model, collection, index, data));
-  };
+function usedMountPaths(volumeGroup: ConfigModel.VolumeGroup): string[] {
+  const mountPaths = (volumeGroup.logicalVolumes || []).map((l) => l.mountPath);
+  return sift(mountPaths);
 }
 
-export { useSetSpacePolicy };
+function candidateTargetDevices(
+  config: ConfigModel.Config,
+): (ConfigModel.Drive | ConfigModel.MdRaid)[] {
+  const drives = config.drives || [];
+  const mdRaids = config.mdRaids || [];
+  return [...drives, ...mdRaids];
+}
+
+function filterTargetDevices(
+  volumeGroup: ConfigModel.VolumeGroup,
+  config: ConfigModel.Config,
+): (ConfigModel.Drive | ConfigModel.MdRaid)[] {
+  return candidateTargetDevices(config).filter((d) => volumeGroup.targetDevices.includes(d.name));
+}
+
+export default { usedMountPaths, filterTargetDevices };

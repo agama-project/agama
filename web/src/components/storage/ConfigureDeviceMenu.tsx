@@ -34,13 +34,13 @@ import { _, n_ } from "~/i18n";
 import DeviceSelectorModal from "./DeviceSelectorModal";
 import { isDrive } from "~/storage/device";
 import { Icon } from "../layout";
-import type { storage } from "~/model/system";
+import type { Storage } from "~/model/system";
 
 type AddDeviceMenuItemProps = {
   /** Whether some of the available devices is an MD RAID */
   withRaids: boolean;
   /** Available devices to be chosen */
-  devices: storage.Device[];
+  devices: Storage.Device[];
   /** The total amount of drives and RAIDs already configured */
   usedCount: number;
 } & MenuItemProps;
@@ -136,7 +136,7 @@ export default function ConfigureDeviceMenu(): React.ReactNode {
   const devices = allDevices.filter((d) => !usedDevicesNames.includes(d.name));
   const withRaids = !!allDevices.filter((d) => !isDrive(d)).length;
 
-  const addDevice = (device: storage.Device) => {
+  const addDevice = (device: Storage.Device) => {
     const hook = isDrive(device) ? addDrive : addReusedMdRaid;
     hook({ name: device.name, spacePolicy: "keep" });
   };

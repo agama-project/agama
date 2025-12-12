@@ -204,7 +204,7 @@ impl Registry {
 
 impl Default for Registry {
     fn default() -> Self {
-        let relative_path = PathBuf::from("share/eula");
+        let relative_path = PathBuf::from("test/share/eula");
         let path = if relative_path.exists() {
             relative_path
         } else {
@@ -222,7 +222,7 @@ mod test {
     use std::path::Path;
 
     fn build_registry() -> Registry {
-        let mut repo = Registry::new(Path::new("../share/eula"));
+        let mut repo = Registry::new(Path::new("../test/share/eula"));
         repo.read().unwrap();
         repo
     }

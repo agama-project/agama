@@ -29,9 +29,9 @@ import { useEncryption } from "~/queries/storage/config-model";
 import { STORAGE } from "~/routes/paths";
 import { _ } from "~/i18n";
 import PasswordCheck from "~/components/users/PasswordCheck";
-import type { configModel } from "~/model/storage/config-model";
+import type { ConfigModel } from "~/model/storage/config-model";
 
-function encryptionLabel(method?: configModel.EncryptionMethod) {
+function encryptionLabel(method?: ConfigModel.EncryptionMethod) {
   if (!method) return _("Encryption is disabled");
   if (method === "tpmFde") return _("Encryption is enabled using TPM unlocking");
 

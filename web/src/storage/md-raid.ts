@@ -22,30 +22,30 @@
 
 import { switchSearched } from "~/storage/search";
 import { copyApiModel } from "~/storage/api-model";
-import type { configModel } from "~/model/storage/config-model";
-import type { data } from "~/storage";
+import type { ConfigModel } from "~/model/storage/config-model";
+import type { Data } from "~/storage";
 
-function addReusedMdRaid(apiModel: configModel.Config, data: data.MdRaid): configModel.Config {
-  apiModel = copyApiModel(apiModel);
-  apiModel.mdRaids ||= [];
-  apiModel.mdRaids.push(data);
+function addReusedMdRaid(config: ConfigModel.Config, data: Data.MdRaid): ConfigModel.Config {
+  config = copyApiModel(config);
+  config.mdRaids ||= [];
+  config.mdRaids.push(data);
 
-  return apiModel;
+  return config;
 }
 
-function deleteMdRaid(apiModel: configModel.Config, name: string): configModel.Config {
-  apiModel = copyApiModel(apiModel);
-  apiModel.mdRaids = apiModel.mdRaids.filter((d) => d.name !== name);
+function deleteMdRaid(config: ConfigModel.Config, name: string): ConfigModel.Config {
+  config = copyApiModel(config);
+  config.mdRaids = config.mdRaids.filter((d) => d.name !== name);
 
-  return apiModel;
+  return config;
 }
 
 function switchToMdRaid(
-  apiModel: configModel.Config,
+  config: ConfigModel.Config,
   oldName: string,
-  raid: data.MdRaid,
-): configModel.Config {
-  return switchSearched(apiModel, oldName, raid.name, "mdRaids");
+  raid: Data.MdRaid,
+): ConfigModel.Config {
+  return switchSearched(config, oldName, raid.name, "mdRaids");
 }
 
 export { addReusedMdRaid, deleteMdRaid, switchToMdRaid };

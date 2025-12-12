@@ -21,78 +21,78 @@
  */
 
 import { copyApiModel, buildLogicalVolume } from "~/storage/api-model";
-import type { configModel } from "~/model/storage/config-model";
-import type { data } from "~/storage";
+import type { ConfigModel } from "~/model/storage/config-model";
+import type { Data } from "~/storage";
 
-function findVolumeGroupIndex(apiModel: configModel.Config, vgName: string): number {
-  return (apiModel.volumeGroups || []).findIndex((v) => v.vgName === vgName);
+function findVolumeGroupIndex(config: ConfigModel.Config, vgName: string): number {
+  return (config.volumeGroups || []).findIndex((v) => v.vgName === vgName);
 }
 
-function findLogicalVolumeIndex(volumeGroup: configModel.VolumeGroup, mountPath: string): number {
+function findLogicalVolumeIndex(volumeGroup: ConfigModel.VolumeGroup, mountPath: string): number {
   return (volumeGroup.logicalVolumes || []).findIndex((l) => l.mountPath === mountPath);
 }
 
 function addLogicalVolume(
-  apiModel: configModel.Config,
+  config: ConfigModel.Config,
   vgName: string,
-  data: data.LogicalVolume,
-): configModel.Config {
-  apiModel = copyApiModel(apiModel);
+  data: Data.LogicalVolume,
+): ConfigModel.Config {
+  config = copyApiModel(config);
 
-  const vgIndex = findVolumeGroupIndex(apiModel, vgName);
-  if (vgIndex === -1) return apiModel;
+  const vgIndex = findVolumeGroupIndex(config, vgName);
+  if (vgIndex === -1) return config;
 
-  const volumeGroup = apiModel.volumeGroups[vgIndex];
+  const volumeGroup = config.volumeGroups[vgIndex];
   const logicalVolume = buildLogicalVolume(data);
 
   volumeGroup.logicalVolumes ||= [];
   volumeGroup.logicalVolumes.push(logicalVolume);
 
-  return apiModel;
+  return config;
 }
 
 function editLogicalVolume(
-  apiModel: configModel.Config,
+  config: ConfigModel.Config,
   vgName: string,
   mountPath: string,
-  data: data.LogicalVolume,
-): configModel.Config {
-  apiModel = copyApiModel(apiModel);
+  data: Data.LogicalVolume,
+): ConfigModel.Config {
+  config = copyApiModel(config);
 
-  const vgIndex = findVolumeGroupIndex(apiModel, vgName);
-  if (vgIndex === -1) return apiModel;
+  const vgIndex = findVolumeGroupIndex(config, vgName);
+  if (vgIndex === -1) return config;
 
-  const volumeGroup = apiModel.volumeGroups[vgIndex];
+  const volumeGroup = config.volumeGroups[vgIndex];
 
   const lvIndex = findLogicalVolumeIndex(volumeGroup, mountPath);
-  if (lvIndex === -1) return apiModel;
+  if (lvIndex === -1) return config;
 
   const oldLogicalVolume = volumeGroup.logicalVolumes[lvIndex];
   const newLogicalVolume = { ...oldLogicalVolume, ...buildLogicalVolume(data) };
 
   volumeGroup.logicalVolumes.splice(lvIndex, 1, newLogicalVolume);
 
-  return apiModel;
+  return config;
 }
 
 function deleteLogicalVolume(
-  apiModel: configModel.Config,
+  config: ConfigModel.Config,
   vgName: string,
   mountPath: string,
-): configModel.Config {
-  apiModel = copyApiModel(apiModel);
+): ConfigModel.Config {
+  config = copyApiModel(config);
 
-  const vgIndex = findVolumeGroupIndex(apiModel, vgName);
-  if (vgIndex === -1) return apiModel;
+  const vgIndex = findVolumeGroupIndex(config, vgName);
+  if (vgIndex === -1) return config;
 
-  const volumeGroup = apiModel.volumeGroups[vgIndex];
+  const volumeGroup = config.volumeGroups[vgIndex];
 
   const lvIndex = findLogicalVolumeIndex(volumeGroup, mountPath);
-  if (lvIndex === -1) return apiModel;
+  if (lvIndex === -1) return config;
 
   volumeGroup.logicalVolumes.splice(lvIndex, 1);
 
-  return apiModel;
+  return config;
 }
 
 export { addLogicalVolume, editLogicalVolume, deleteLogicalVolume };

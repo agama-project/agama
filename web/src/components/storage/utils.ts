@@ -30,10 +30,9 @@
 import xbytes from "xbytes";
 import { _, N_ } from "~/i18n";
 import { sprintf } from "sprintf-js";
-import type { model } from "~/storage";
-import type { configModel as apiModel } from "~/model/storage/config-model";
-import type { storage as system } from "~/model/system";
-import type { storage as proposal } from "~/model/proposal";
+import type { ConfigModel } from "~/model/storage/config-model";
+import type { Storage as System } from "~/model/system";
+import type { Storage as Proposal } from "~/model/proposal";
 
 /**
  * @note undefined for either property means unknown
@@ -220,7 +219,7 @@ const baseName = (name: string, truncate?: boolean): string => {
   return base.slice(0, limit1) + "…" + base.slice(limit2);
 };
 
-type DeviceWithName = system.Device | model.Drive | model.MdRaid;
+type DeviceWithName = System.Device | ConfigModel.Drive | ConfigModel.MdRaid;
 
 /**
  * Base name of a device.
@@ -236,32 +235,32 @@ const deviceBaseName = (device: DeviceWithName, truncate?: boolean): string => {
  *
  * FIXME: See note at baseName about the usage of truncate.
  */
-const deviceLabel = (device: system.Device, truncate?: boolean): string => {
+const deviceLabel = (device: System.Device, truncate?: boolean): string => {
   const name = deviceBaseName(device, truncate);
   const size = device.block?.size;
 
   return size ? `${name} (${deviceSize(size)})` : name;
 };
 
-type PartitionTableContent = (proposal.Device | proposal.UnusedSlot)[];
+type PartitionTableContent = (Proposal.Device | Proposal.UnusedSlot)[];
 
-function partitionTableContent(device: proposal.Device): PartitionTableContent {
-  const partitions: [number, proposal.Device][] =
+function partitionTableContent(device: Proposal.Device): PartitionTableContent {
+  const partitions: [number, Proposal.Device][] =
     device.partitions?.map((p) => [p.block.start, p]) || [];
-  const unusedSlots: [number, proposal.UnusedSlot][] = device.partitionTable?.unusedSlots?.map(
+  const unusedSlots: [number, Proposal.UnusedSlot][] = device.partitionTable?.unusedSlots?.map(
     (s) => [s.start, s],
   );
   return [...partitions, ...unusedSlots].sort((a, b) => (a[0] < b[0] ? -1 : 1)).map((i) => i[1]);
 }
 
-function volumeGroupContent(device: proposal.Device): proposal.Device[] {
+function volumeGroupContent(device: Proposal.Device): Proposal.Device[] {
   return device?.logicalVolumes.sort((a, b) => (a.name < b.name ? -1 : 1)) || [];
 }
 
 /**
  * Sorted list of children devices (i.e., partitions and unused slots or logical volumes).
  */
-const deviceChildren = (device: proposal.Device): PartitionTableContent | proposal.Device[] => {
+const deviceChildren = (device: Proposal.Device): PartitionTableContent | Proposal.Device[] => {
   if (device.partitionTable) return partitionTableContent(device);
   if (device.logicalVolumes) return volumeGroupContent(device);
   return [];
@@ -270,7 +269,7 @@ const deviceChildren = (device: proposal.Device): PartitionTableContent | propos
 /**
  * Checks if volume uses given fs. This method works same as in backend case insensitive.
  */
-const hasFS = (volume: system.Volume, fs: string): boolean => {
+const hasFS = (volume: System.Volume, fs: string): boolean => {
   const volFS = volume.fsType;
 
   return volFS.toLowerCase() === fs.toLocaleLowerCase();
@@ -279,28 +278,28 @@ const hasFS = (volume: system.Volume, fs: string): boolean => {
 /**
  * Checks whether the given volume has snapshots.
  */
-const hasSnapshots = (volume: system.Volume): boolean => {
+const hasSnapshots = (volume: System.Volume): boolean => {
   return hasFS(volume, "btrfs") && volume.snapshots;
 };
 
 /**
  * Checks whether the given volume defines a transactional root.
  */
-const isTransactionalRoot = (volume: system.Volume): boolean => {
+const isTransactionalRoot = (volume: System.Volume): boolean => {
   return volume.mountPath === "/" && volume.transactional;
 };
 
 /**
  * Checks whether the given volumes defines a transactional system.
  */
-const isTransactionalSystem = (volumes: system.Volume[] = []): boolean => {
+const isTransactionalSystem = (volumes: System.Volume[] = []): boolean => {
   return volumes.find((v) => isTransactionalRoot(v)) !== undefined;
 };
 
 /**
  * Generates a label for the given volume.
  */
-const volumeLabel = (volume: system.Volume): string =>
+const volumeLabel = (volume: System.Volume): string =>
   volume.mountPath === "/" ? "root" : volume.mountPath;
 
 /**
@@ -321,7 +320,7 @@ const filesystemLabel = (fstype: string): string => {
  *
  * @returns undefined if there is not enough information
  */
-const filesystemType = (filesystem: apiModel.Filesystem): string | undefined => {
+const filesystemType = (filesystem: ConfigModel.Filesystem): string | undefined => {
   if (filesystem.type) {
     if (filesystem.snapshots) return _("Btrfs with snapshots");
 
@@ -349,7 +348,7 @@ const formattedPath = (path: string): string => {
 /**
  * Representation of the given size limits.
  */
-const sizeDescription = (size: apiModel.Size): string => {
+const sizeDescription = (size: ConfigModel.Size): string => {
   const minSize = deviceSize(size.min);
   const maxSize = size.max ? deviceSize(size.max) : undefined;
 

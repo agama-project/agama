@@ -1,4 +1,4 @@
-// Copyright (c) [2024] SUSE LLC
+// Copyright (c) [2025] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -18,30 +18,14 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::api::progress::Progress;
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
 
-// Information about the status of the installation.
-#[derive(Clone, Default, Serialize, utoipa::ToSchema)]
+/// Represents a set of translations for a given entry.
+#[derive(Clone, Default, Debug, Deserialize, Serialize, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
-pub struct Status {
-    /// Stage of the installation
-    pub stage: Stage,
-    /// Active progresses
-    pub progresses: Vec<Progress>,
-}
-
-/// Represents the current state of the installation process.
-#[derive(Clone, Copy, Debug, Default, Serialize, PartialEq, strum::Display, utoipa::ToSchema)]
-#[serde(rename_all = "camelCase")]
-pub enum Stage {
-    #[default]
-    /// Configuring the installation
-    Configuring,
-    /// Installing the system
-    Installing,
-    /// Installation finished
-    Finished,
-    /// Installation failed
-    Failed,
+pub struct Translations {
+    /// Translated descriptions, by locale.
+    #[serde(default)]
+    pub description: HashMap<String, String>,
 }

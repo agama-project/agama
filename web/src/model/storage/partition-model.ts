@@ -20,22 +20,22 @@
  * find current contact information at www.suse.com.
  */
 
-import { useConfigModel } from "~/hooks/model/storage";
-import { putStorageModel } from "~/api";
-import { Data } from "~/storage";
-import { setSpacePolicy } from "~/storage/space-policy";
+import type { ConfigModel } from "~/model/storage/config-model";
 
-type setSpacePolicyFn = (
-  collection: string,
-  index: number | string,
-  data: Data.SpacePolicy,
-) => void;
-
-function useSetSpacePolicy(): setSpacePolicyFn {
-  const model = useConfigModel();
-  return (collection: string, index: number | string, data: Data.SpacePolicy) => {
-    putStorageModel(setSpacePolicy(model, collection, index, data));
-  };
+function isNew(partition: ConfigModel.Partition): boolean {
+  return !partition.name;
 }
 
-export { useSetSpacePolicy };
+function isUsed(partition: ConfigModel.Partition): boolean {
+  return partition.filesystem !== undefined;
+}
+
+function isReused(partition: ConfigModel.Partition): boolean {
+  return !isNew(partition) && isUsed(partition);
+}
+
+function isUsedBySpacePolicy(partition: ConfigModel.Partition): boolean {
+  return partition.resizeIfNeeded || partition.delete || partition.deleteIfNeeded;
+}
+
+export default { isNew, isUsed, isReused, isUsedBySpacePolicy };

@@ -22,7 +22,7 @@
 
 import { useSuspenseQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Connection, NetworkConfig } from "~/types/network";
-import { network, Proposal } from "~/model/proposal";
+import { Network, Proposal } from "~/model/proposal";
 import { Config } from "~/model/config";
 import { Config as APIConfig } from "~/model/config/network";
 import { patchConfig } from "~/api";
@@ -66,7 +66,7 @@ const useConfigMutation = () => {
   return useMutation(query);
 };
 
-const selectConnections = (data: network.Proposal): Connection[] =>
+const selectConnections = (data: Network.Proposal): Connection[] =>
   data.connections.map((c) => Connection.fromApi(c));
 
 const useConfig = (): NetworkConfig => {

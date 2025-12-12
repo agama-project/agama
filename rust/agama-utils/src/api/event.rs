@@ -26,8 +26,8 @@ use tokio::sync::broadcast;
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(tag = "type")]
 pub enum Event {
-    // The state of the installation changed.
-    StateChanged,
+    // The stage of the installation changed.
+    StageChanged,
     /// Progress changed.
     ProgressChanged {
         progress: Progress,

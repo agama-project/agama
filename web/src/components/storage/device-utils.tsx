@@ -28,11 +28,11 @@ import { _ } from "~/i18n";
 import { sprintf } from "sprintf-js";
 import { deviceBaseName, deviceSize } from "~/components/storage/utils";
 import { deviceSystems, isLogicalVolume, isMd, isPartition } from "~/storage/device";
-import type { storage as system } from "~/model/system";
-import type { storage as proposal } from "~/model/proposal";
+import type { Storage as System } from "~/model/system";
+import type { Storage as Proposal } from "~/model/proposal";
 
-type Device = system.Device | proposal.Device;
-type UnusedSlot = system.UnusedSlot | proposal.UnusedSlot;
+type Device = System.Device | Proposal.Device;
+type UnusedSlot = System.UnusedSlot | Proposal.UnusedSlot;
 
 /**
  * Ensures the given item is a Device.

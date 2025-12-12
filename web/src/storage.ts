@@ -20,5 +20,4 @@
  * find current contact information at www.suse.com.
  */
 
-export * as model from "~/storage/model";
-export * as data from "~/storage/data";
+export * as Data from "~/storage/data";

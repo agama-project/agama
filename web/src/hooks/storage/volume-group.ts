@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import { useStorageModel } from "~/hooks/model/storage";
+import { useConfigModel } from "~/hooks/model/storage";
 import { putStorageModel } from "~/api";
 import {
   addVolumeGroup,
@@ -29,40 +29,41 @@ import {
   volumeGroupToPartitions,
   deviceToVolumeGroup,
 } from "~/storage/volume-group";
-import type { model, data } from "~/storage";
 import { useModel } from "~/hooks/storage/model";
+import type { Data } from "~/storage";
+import type { ConfigModel } from "~/model/storage/config-model";
 
-function useVolumeGroup(vgName: string): model.VolumeGroup | null {
+function useVolumeGroup(vgName: string): ConfigModel.VolumeGroup | null {
   const model = useModel();
   const volumeGroup = model?.volumeGroups?.find((v) => v.vgName === vgName);
   return volumeGroup || null;
 }
 
-type AddVolumeGroupFn = (data: data.VolumeGroup, moveContent: boolean) => void;
+type AddVolumeGroupFn = (data: Data.VolumeGroup, moveContent: boolean) => void;
 
 function useAddVolumeGroup(): AddVolumeGroupFn {
-  const apiModel = useStorageModel();
-  return (data: data.VolumeGroup, moveContent: boolean) => {
-    putStorageModel(addVolumeGroup(apiModel, data, moveContent));
+  const config = useConfigModel();
+  return (data: Data.VolumeGroup, moveContent: boolean) => {
+    putStorageModel(addVolumeGroup(config, data, moveContent));
   };
 }
 
-type EditVolumeGroupFn = (vgName: string, data: data.VolumeGroup) => void;
+type EditVolumeGroupFn = (vgName: string, data: Data.VolumeGroup) => void;
 
 function useEditVolumeGroup(): EditVolumeGroupFn {
-  const apiModel = useStorageModel();
-  return (vgName: string, data: data.VolumeGroup) => {
-    putStorageModel(editVolumeGroup(apiModel, vgName, data));
+  const config = useConfigModel();
+  return (vgName: string, data: Data.VolumeGroup) => {
+    putStorageModel(editVolumeGroup(config, vgName, data));
   };
 }
 
 type DeleteVolumeGroupFn = (vgName: string, moveToDrive: boolean) => void;
 
 function useDeleteVolumeGroup(): DeleteVolumeGroupFn {
-  const apiModel = useStorageModel();
+  const config = useConfigModel();
   return (vgName: string, moveToDrive: boolean) => {
     putStorageModel(
-      moveToDrive ? volumeGroupToPartitions(apiModel, vgName) : deleteVolumeGroup(apiModel, vgName),
+      moveToDrive ? volumeGroupToPartitions(config, vgName) : deleteVolumeGroup(config, vgName),
     );
   };
 }
@@ -70,9 +71,9 @@ function useDeleteVolumeGroup(): DeleteVolumeGroupFn {
 type ConvertToVolumeGroupFn = (driveName: string) => void;
 
 function useConvertToVolumeGroup(): ConvertToVolumeGroupFn {
-  const apiModel = useStorageModel();
+  const config = useConfigModel();
   return (driveName: string) => {
-    putStorageModel(deviceToVolumeGroup(apiModel, driveName));
+    putStorageModel(deviceToVolumeGroup(config, driveName));
   };
 }
 
