@@ -42,4 +42,6 @@ pub enum Stage {
     Installing,
     /// Installation finished
     Finished,
+    /// Installation failed
+    Failed,
 }

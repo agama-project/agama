@@ -698,7 +698,19 @@ impl InstallAction {
     /// Runs the installation process on a separate Tokio task.
     pub fn run(mut self) {
         tokio::spawn(async move {
-            self.install().await.unwrap();
+            if let Err(error) = self.install().await {
+                tracing::error!("Installation failed: {error}");
+                if let Err(error) = self
+                    .progress
+                    .call(progress::message::SetStage::new(Stage::Failed))
+                    .await
+                {
+                    tracing::error!(
+                        "It was not possible to set the stage to {}: {error}",
+                        Stage::Failed
+                    );
+                }
+            }
         });
     }
 
