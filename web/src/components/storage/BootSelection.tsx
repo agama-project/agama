@@ -91,7 +91,7 @@ export default function BootSelection() {
 
     const bootModel = config.boot;
     const isDefaultBoot = configModel.hasDefaultBoot(config);
-    const bootDevice = configModel.bootDevice(config);
+    const bootDevice = configModel.findBootDevice(config);
     let selectedOption: string;
 
     if (!bootModel.configure) {

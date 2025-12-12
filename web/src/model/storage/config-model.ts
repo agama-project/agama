@@ -23,6 +23,11 @@
 import partitionableModel from "~/model/storage/partitionable-model";
 import volumeGroupModel from "~/model/storage/volume-group-model";
 import type * as ConfigModel from "~/openapi/storage/config-model";
+import type * as Data from "~/model/storage/data";
+
+function clone(config: ConfigModel.Config): ConfigModel.Config {
+  return JSON.parse(JSON.stringify(config));
+}
 
 function usedMountPaths(config: ConfigModel.Config): string[] {
   const drives = config.drives || [];
@@ -36,9 +41,20 @@ function usedMountPaths(config: ConfigModel.Config): string[] {
   ];
 }
 
-function bootDevice(config: ConfigModel.Config): ConfigModel.Drive | ConfigModel.MdRaid | null {
-  const targets = [...config.drives, ...config.mdRaids];
-  return targets.find((d) => d.name && d.name === config.boot?.device?.name) || null;
+function filterPartitionableDevices(
+  config: ConfigModel.Config,
+): (ConfigModel.Drive | ConfigModel.MdRaid)[] {
+  const drives = config.drives || [];
+  const mdRaids = config.mdRaids || [];
+  return [...drives, ...mdRaids];
+}
+
+function findBootDevice(config: ConfigModel.Config): ConfigModel.Drive | ConfigModel.MdRaid | null {
+  return (
+    filterPartitionableDevices(config).find(
+      (d) => d.name && d.name === config.boot?.device?.name,
+    ) || null
+  );
 }
 
 function hasDefaultBoot(config: ConfigModel.Config): boolean {
@@ -59,9 +75,7 @@ function isTargetDevice(config: ConfigModel.Config, deviceName: string): boolean
 }
 
 function isUsedDevice(config: ConfigModel.Config, deviceName: string): boolean {
-  const drives = config.drives || [];
-  const mdRaids = config.mdRaids || [];
-  const device = drives.concat(mdRaids).find((d) => d.name === deviceName);
+  const device = filterPartitionableDevices(config).find((d) => d.name === deviceName);
 
   return (
     isExplicitBootDevice(config, deviceName) ||
@@ -71,12 +85,14 @@ function isUsedDevice(config: ConfigModel.Config, deviceName: string): boolean {
 }
 
 export default {
+  clone,
   usedMountPaths,
-  bootDevice,
+  filterPartitionableDevices,
+  findBootDevice,
   hasDefaultBoot,
   isBootDevice,
   isExplicitBootDevice,
   isTargetDevice,
   isUsedDevice,
 };
-export type { ConfigModel };
+export type { ConfigModel, Data };

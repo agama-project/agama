@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import { copyApiModel, findDevice, findDeviceIndex } from "~/storage/api-model";
+import { findDevice, findDeviceIndex } from "~/storage/api-model";
 import { fork } from "radashi";
 import configModel from "~/model/storage/config-model";
 import partitionModel from "~/model/storage/partition-model";
@@ -52,7 +52,7 @@ function isUsed(config: ConfigModel.Config, list: string, index: number | string
 }
 
 function deleteIfUnused(config: ConfigModel.Config, name: string): ConfigModel.Config {
-  config = copyApiModel(config);
+  config = configModel.clone(config);
 
   const { list, index } = deviceLocation(config, name);
   if (!list) return config;
@@ -71,7 +71,7 @@ function switchSearched(
 ): ConfigModel.Config {
   if (name === oldName) return config;
 
-  config = copyApiModel(config);
+  config = configModel.clone(config);
 
   const { list: oldList, index } = deviceLocation(config, oldName);
   if (!oldList) return config;

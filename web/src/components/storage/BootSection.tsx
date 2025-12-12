@@ -77,7 +77,7 @@ export default function BootSection() {
   const devices = useAvailableDrives();
 
   const isDefaultBoot = configModel.hasDefaultBoot(config);
-  const bootDevice = configModel.bootDevice(config);
+  const bootDevice = configModel.findBootDevice(config);
   const device = devices.find((d) => d.name === bootDevice?.name);
 
   return (

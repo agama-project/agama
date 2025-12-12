@@ -191,7 +191,7 @@ function useVolumeTemplates(): Storage.Volume[] {
 
 const selectVolumeTemplate = (data: System | null, mountPath: string): Storage.Volume | null => {
   const volumes = data?.storage?.volumeTemplates || [];
-  return volumes.find((v) => v.mountPath === mountPath);
+  return volumes.find((v) => v.mountPath === mountPath) || volumes.find((v) => v.mountPath === "");
 };
 
 function useVolumeTemplate(mountPath: string): Storage.Volume | null {

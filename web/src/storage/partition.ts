@@ -20,10 +20,11 @@
  * find current contact information at www.suse.com.
  */
 
-import { copyApiModel, findDevice, buildPartition } from "~/storage/api-model";
+import { findDevice } from "~/storage/api-model";
 import { isUsed } from "~/storage/search";
-import type { ConfigModel } from "~/model/storage/config-model";
-import type { Data } from "~/storage";
+import configModel from "~/model/storage/config-model";
+import partitionModel from "~/model/storage/partition-model";
+import type { ConfigModel, Data } from "~/model/storage/config-model";
 
 type Partitionable = ConfigModel.Drive | ConfigModel.MdRaid;
 
@@ -42,70 +43,71 @@ function indexByPath(device: Partitionable, path: string): number {
  * the partition is replaced.
  * */
 function addPartition(
-  model: ConfigModel.Config,
+  config: ConfigModel.Config,
   collection: "drives" | "mdRaids",
   index: number | string,
   data: Data.Partition,
 ): ConfigModel.Config {
-  model = copyApiModel(model);
-  const device = findDevice(model, collection, index);
+  config = configModel.clone(config);
+  const device = findDevice(config, collection, index);
 
-  if (device === undefined) return model;
+  if (device === undefined) return config;
 
   // Reset the spacePolicy to the default value if the device goes from unused to used
-  if (!isUsed(model, collection, index) && device.spacePolicy === "keep") device.spacePolicy = null;
+  if (!isUsed(config, collection, index) && device.spacePolicy === "keep")
+    device.spacePolicy = null;
 
-  const partition = buildPartition(data);
+  const partition = partitionModel.create(data);
   const partitionIndex = indexByName(device, partition.name);
 
   if (partitionIndex === -1) device.partitions.push(partition);
   else device.partitions[partitionIndex] = partition;
 
-  return model;
+  return config;
 }
 
 function editPartition(
-  model: ConfigModel.Config,
+  config: ConfigModel.Config,
   collection: "drives" | "mdRaids",
   index: number | string,
   mountPath: string,
   data: Data.Partition,
 ): ConfigModel.Config {
-  model = copyApiModel(model);
-  const device = findDevice(model, collection, index);
+  config = configModel.clone(config);
+  const device = findDevice(config, collection, index);
 
-  if (device === undefined) return model;
+  if (device === undefined) return config;
 
   const partitionIndex = indexByPath(device, mountPath);
-  if (partitionIndex === -1) return model;
+  if (partitionIndex === -1) return config;
 
   const oldPartition = device.partitions[partitionIndex];
-  const newPartition = { ...oldPartition, ...buildPartition(data) };
+  const newPartition = { ...oldPartition, ...partitionModel.create(data) };
   device.partitions.splice(partitionIndex, 1, newPartition);
 
-  return model;
+  return config;
 }
 
 function deletePartition(
-  model: ConfigModel.Config,
+  config: ConfigModel.Config,
   collection: "drives" | "mdRaids",
   index: number | string,
   mountPath: string,
 ): ConfigModel.Config {
-  model = copyApiModel(model);
-  const device = findDevice(model, collection, index);
+  config = configModel.clone(config);
+  const device = findDevice(config, collection, index);
 
-  if (device === undefined) return model;
+  if (device === undefined) return config;
 
   const partitionIndex = indexByPath(device, mountPath);
   device.partitions.splice(partitionIndex, 1);
 
   // Do not delete anything if the device is not really used
-  if (!isUsed(model, collection, index)) {
+  if (!isUsed(config, collection, index)) {
     device.spacePolicy = "keep";
   }
 
-  return model;
+  return config;
 }
 
 export { addPartition, editPartition, deletePartition };

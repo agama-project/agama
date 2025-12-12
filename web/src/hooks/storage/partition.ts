@@ -22,8 +22,8 @@
 
 import { useConfigModel } from "~/hooks/model/storage";
 import { putStorageModel } from "~/api";
-import { Data } from "~/storage";
 import { addPartition, editPartition, deletePartition } from "~/storage/partition";
+import type { Data } from "~/model/storage/config-model";
 
 type AddPartitionFn = (
   collection: "drives" | "mdRaids",

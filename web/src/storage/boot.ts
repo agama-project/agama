@@ -20,7 +20,6 @@
  * find current contact information at www.suse.com.
  */
 
-import { copyApiModel } from "~/storage/api-model";
 import configModel from "~/model/storage/config-model";
 import partitionableModel from "~/model/storage/partitionable-model";
 import type { ConfigModel } from "~/model/storage/config-model";
@@ -45,7 +44,7 @@ function removeDevice(
 }
 
 function setBoot(config: ConfigModel.Config, boot: ConfigModel.Boot) {
-  const device = configModel.bootDevice(config);
+  const device = configModel.findBootDevice(config);
   if (device && !isUsed(config, device)) removeDevice(config, device);
 
   config.boot = boot;
@@ -53,7 +52,7 @@ function setBoot(config: ConfigModel.Config, boot: ConfigModel.Boot) {
 }
 
 function setBootDevice(config: ConfigModel.Config, deviceName: string): ConfigModel.Config {
-  config = copyApiModel(config);
+  config = configModel.clone(config);
 
   const boot = {
     configure: true,
@@ -68,7 +67,7 @@ function setBootDevice(config: ConfigModel.Config, deviceName: string): ConfigMo
 }
 
 function setDefaultBootDevice(config: ConfigModel.Config): ConfigModel.Config {
-  config = copyApiModel(config);
+  config = configModel.clone(config);
 
   const boot = {
     configure: true,
@@ -82,7 +81,7 @@ function setDefaultBootDevice(config: ConfigModel.Config): ConfigModel.Config {
 }
 
 function disableBootConfig(config: ConfigModel.Config): ConfigModel.Config {
-  config = copyApiModel(config);
+  config = configModel.clone(config);
   const boot = { configure: false };
   setBoot(config, boot);
   return config;

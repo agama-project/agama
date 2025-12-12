@@ -23,8 +23,7 @@
 /**
  * Data types.
  *
- * Types that represent the data used for managing (add, edit) config devices. These types are
- * typically used by forms and mutation hooks.
+ * Types that represent the data used for managing (add, edit) config model devices.
  */
 
 import type { ConfigModel } from "~/model/storage/config-model";

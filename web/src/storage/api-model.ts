@@ -21,11 +21,6 @@
  */
 
 import type { ConfigModel } from "~/model/storage/config-model";
-import type { Data } from "~/storage";
-
-function copyApiModel(config: ConfigModel.Config): ConfigModel.Config {
-  return JSON.parse(JSON.stringify(config));
-}
 
 function findDevice(config: ConfigModel.Config, list: string, index: number | string) {
   const collection = config[list] || [];
@@ -37,85 +32,4 @@ function findDeviceIndex(config: ConfigModel.Config, list: string, name: string)
   return collection.findIndex((d) => d.name === name);
 }
 
-function partitionables(config: ConfigModel.Config): (ConfigModel.Drive | ConfigModel.MdRaid)[] {
-  return (config.drives || []).concat(config.mdRaids || []);
-}
-
-function buildFilesystem(data?: Data.Filesystem): ConfigModel.Filesystem | undefined {
-  if (!data) return;
-
-  return {
-    ...data,
-    default: false,
-  };
-}
-
-function buildSize(data?: Data.Size): ConfigModel.Size | undefined {
-  if (!data) return;
-
-  return {
-    ...data,
-    default: false,
-    min: data.min || 0,
-  };
-}
-
-function buildVolumeGroup(data: Data.VolumeGroup): ConfigModel.VolumeGroup {
-  const defaultVolumeGroup = { vgName: "system", targetDevices: [] };
-  return { ...defaultVolumeGroup, ...data };
-}
-
-function buildLogicalVolume(data: Data.LogicalVolume): ConfigModel.LogicalVolume {
-  return {
-    ...data,
-    filesystem: buildFilesystem(data.filesystem),
-    size: buildSize(data.size),
-  };
-}
-
-function buildPartition(data: Data.Partition): ConfigModel.Partition {
-  return {
-    ...data,
-    filesystem: buildFilesystem(data.filesystem),
-    size: buildSize(data.size),
-    // Using the ESP partition id for /boot/efi may not be strictly required, but it is
-    // a good practice. Let's force it here since it cannot be selected in the UI.
-    id: data.mountPath === "/boot/efi" ? "esp" : undefined,
-  };
-}
-
-function buildLogicalVolumeName(mountPath?: string): string | undefined {
-  if (!mountPath) return;
-
-  return mountPath === "/" ? "root" : mountPath.split("/").pop();
-}
-
-function buildLogicalVolumeFromPartition(
-  partition: ConfigModel.Partition,
-): ConfigModel.LogicalVolume {
-  return {
-    ...partition,
-    lvName: buildLogicalVolumeName(partition.mountPath),
-  };
-}
-
-function buildPartitionFromLogicalVolume(lv: ConfigModel.LogicalVolume): ConfigModel.Partition {
-  return {
-    mountPath: lv.mountPath,
-    filesystem: lv.filesystem,
-    size: lv.size,
-  };
-}
-
-export {
-  copyApiModel,
-  findDevice,
-  findDeviceIndex,
-  partitionables,
-  buildPartition,
-  buildVolumeGroup,
-  buildLogicalVolume,
-  buildLogicalVolumeName,
-  buildLogicalVolumeFromPartition,
-  buildPartitionFromLogicalVolume,
-};
+export { findDevice, findDeviceIndex };

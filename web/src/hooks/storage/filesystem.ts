@@ -23,7 +23,7 @@
 import { useConfigModel } from "~/hooks/model/storage";
 import { putStorageModel } from "~/api";
 import { configureFilesystem } from "~/storage/filesystem";
-import type { Data } from "~/storage";
+import type { Data } from "~/model/storage/config-model";
 
 type AddFilesystemFn = (list: string, index: number, data: Data.Formattable) => void;
 
