@@ -76,11 +76,8 @@ pub struct StartWithSteps {
 }
 
 impl StartWithSteps {
-    pub fn new(scope: Scope, steps: &[&str]) -> Self {
-        Self {
-            scope,
-            steps: steps.into_iter().map(ToString::to_string).collect(),
-        }
+    pub fn new(scope: Scope, steps: Vec<String>) -> Self {
+        Self { scope, steps }
     }
 }
 

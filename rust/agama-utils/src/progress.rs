@@ -192,7 +192,11 @@ mod tests {
         ctx.handler
             .call(message::StartWithSteps::new(
                 Scope::L10n,
-                &["first step", "second step", "third step"],
+                vec![
+                    "first step".to_string(),
+                    "second step".to_string(),
+                    "third step".to_string(),
+                ],
             ))
             .await?;
 
@@ -302,7 +306,10 @@ mod tests {
 
         let error = ctx
             .handler
-            .call(message::StartWithSteps::new(Scope::L10n, &["step"]))
+            .call(message::StartWithSteps::new(
+                Scope::L10n,
+                vec!["step".to_string()],
+            ))
             .await;
         assert!(matches!(
             error,

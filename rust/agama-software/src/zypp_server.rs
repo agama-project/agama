@@ -28,6 +28,7 @@ use agama_utils::{
     products::ProductSpec,
     progress, question,
 };
+use gettextrs::gettext;
 use std::{collections::HashMap, path::Path};
 use tokio::sync::{
     mpsc::{self, UnboundedSender},
@@ -246,10 +247,10 @@ impl ZyppServer {
 
         _ = progress.cast(progress::message::StartWithSteps::new(
             Scope::Software,
-            &[
-                "Updating the list of repositories",
-                "Refreshing metadata from the repositories",
-                "Calculating the software proposal",
+            vec![
+                gettext("Updating the list of repositories"),
+                gettext("Refreshing metadata from the repositories"),
+                gettext("Calculating the software proposal"),
             ],
         ));
         let old_state = self.read(zypp)?;

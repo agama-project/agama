@@ -33,6 +33,7 @@ use agama_utils::{
     progress, question,
 };
 use async_trait::async_trait;
+use gettextrs::gettext;
 use merge_struct::merge;
 use network::NetworkSystemClient;
 use serde_json::Value;
@@ -726,10 +727,10 @@ impl InstallAction {
         self.progress
             .call(progress::message::StartWithSteps::new(
                 Scope::Manager,
-                &[
-                    "Prepare the system",
-                    "Install software",
-                    "Configure the system",
+                vec![
+                    gettext("Prepare the system"),
+                    gettext("Install software"),
+                    gettext("Configure the system"),
                 ],
             ))
             .await?;
