@@ -35,13 +35,13 @@ import DeviceSelectorModal from "./DeviceSelectorModal";
 import { MenuItemProps } from "@patternfly/react-core";
 import { isDrive } from "~/storage/device";
 import type { storage } from "~/model/system";
-import type { configModel } from "~/model/storage";
+import type { ConfigModel } from "~/model/storage";
 
 const baseName = (device: storage.Device): string => deviceBaseName(device, true);
 
 const useOnlyOneOption = (
-  configModel: configModel.Config,
-  device: configModel.Drive | configModel.MdRaid,
+  configModel: ConfigModel.Config,
+  device: ConfigModel.Drive | ConfigModel.MdRaid,
 ): boolean => {
   if (device.filesystem && device.filesystem.reuse) return true;
 
@@ -57,7 +57,7 @@ const useOnlyOneOption = (
 };
 
 type ChangeDeviceTitleProps = {
-  modelDevice: configModel.Drive | configModel.MdRaid;
+  modelDevice: ConfigModel.Drive | ConfigModel.MdRaid;
 };
 
 const ChangeDeviceTitle = ({ modelDevice }: ChangeDeviceTitleProps) => {
@@ -96,7 +96,7 @@ const ChangeDeviceTitle = ({ modelDevice }: ChangeDeviceTitleProps) => {
 };
 
 type ChangeDeviceDescriptionProps = {
-  modelDevice: configModel.Drive | configModel.MdRaid;
+  modelDevice: ConfigModel.Drive | ConfigModel.MdRaid;
   device: storage.Device;
 };
 
@@ -189,7 +189,7 @@ const ChangeDeviceDescription = ({ modelDevice, device }: ChangeDeviceDescriptio
 };
 
 type ChangeDeviceMenuItemProps = {
-  modelDevice: configModel.Drive | configModel.MdRaid;
+  modelDevice: ConfigModel.Drive | ConfigModel.MdRaid;
   device: storage.Device;
 } & MenuItemProps;
 
@@ -217,8 +217,8 @@ const ChangeDeviceMenuItem = ({
 };
 
 type RemoveEntryOptionProps = {
-  device: configModel.Drive | configModel.MdRaid;
-  onClick: (device: configModel.Drive | configModel.MdRaid) => void;
+  device: ConfigModel.Drive | ConfigModel.MdRaid;
+  onClick: (device: ConfigModel.Drive | ConfigModel.MdRaid) => void;
 };
 
 const RemoveEntryOption = ({ device, onClick }: RemoveEntryOptionProps): React.ReactNode => {
@@ -228,7 +228,7 @@ const RemoveEntryOption = ({ device, onClick }: RemoveEntryOptionProps): React.R
    * Pretty artificial logic used to decide whether the UI should display buttons to remove
    * some drives.
    */
-  const hasAdditionalDrives = (configModel: configModel.Config): boolean => {
+  const hasAdditionalDrives = (configModel: ConfigModel.Config): boolean => {
     const entries = configModel.drives.concat(configModel.mdRaids);
 
     if (entries.length <= 1) return false;
@@ -286,8 +286,8 @@ const RemoveEntryOption = ({ device, onClick }: RemoveEntryOptionProps): React.R
 };
 
 const targetDevices = (
-  modelDevice: configModel.Drive | configModel.MdRaid,
-  configModel: configModel.Config,
+  modelDevice: ConfigModel.Drive | ConfigModel.MdRaid,
+  configModel: ConfigModel.Config,
   availableDevices: storage.Device[],
 ): storage.Device[] => {
   return availableDevices.filter((availableDev) => {
@@ -305,9 +305,9 @@ const targetDevices = (
 
 export type SearchedDeviceMenuProps = {
   selected: storage.Device;
-  modelDevice: configModel.Drive | configModel.MdRaid;
+  modelDevice: ConfigModel.Drive | ConfigModel.MdRaid;
   toggle?: React.ReactElement<CustomToggleProps>;
-  deleteFn: (device: configModel.Drive | configModel.MdRaid) => void;
+  deleteFn: (device: ConfigModel.Drive | ConfigModel.MdRaid) => void;
 };
 
 /**

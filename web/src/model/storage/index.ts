@@ -24,4 +24,4 @@ export * as configModelMethods from "~/model/storage/config-model";
 export * as partitionableModelMethods from "~/model/storage/partitionable-model";
 export * as partitionModelMethods from "~/model/storage/partition-model";
 export * as volumeGroupModelMethods from "~/model/storage/volume-group-model";
-export type { configModel } from "~/model/storage/config-model";
+export type { ConfigModel } from "~/model/storage/config-model";

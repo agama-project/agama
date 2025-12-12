@@ -20,21 +20,21 @@
  * find current contact information at www.suse.com.
  */
 
-import type { configModel } from "~/model/storage";
+import type { ConfigModel } from "~/model/storage";
 
-function isNew(partition: configModel.Partition): boolean {
+function isNew(partition: ConfigModel.Partition): boolean {
   return !partition.name;
 }
 
-function isUsed(partition: configModel.Partition): boolean {
+function isUsed(partition: ConfigModel.Partition): boolean {
   return partition.filesystem !== undefined;
 }
 
-function isReused(partition: configModel.Partition): boolean {
+function isReused(partition: ConfigModel.Partition): boolean {
   return !isNew(partition) && isUsed(partition);
 }
 
-function isUsedBySpacePolicy(partition: configModel.Partition): boolean {
+function isUsedBySpacePolicy(partition: ConfigModel.Partition): boolean {
   return partition.resizeIfNeeded || partition.delete || partition.deleteIfNeeded;
 }
 

@@ -39,12 +39,12 @@ import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
 import { configModelMethods } from "~/model/storage";
-import type { configModel } from "~/model/storage";
+import type { ConfigModel } from "~/model/storage";
 import type { storage } from "~/model/system";
 
 const filteredCandidates = (
   candidates: storage.Device[],
-  configModel: configModel.Config,
+  configModel: ConfigModel.Config,
 ): storage.Device[] => {
   return candidates.filter((candidate) => {
     const collection = isDrive(candidate) ? configModel.drives : configModel.mdRaids;

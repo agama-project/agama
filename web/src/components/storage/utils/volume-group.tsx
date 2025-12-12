@@ -23,9 +23,9 @@
 import { _, n_, formatList } from "~/i18n";
 import { formattedPath } from "~/components/storage/utils";
 import { sprintf } from "sprintf-js";
-import type { configModel } from "~/model/storage";
+import type { ConfigModel } from "~/model/storage";
 
-const contentDescription = (vg: configModel.VolumeGroup): string => {
+const contentDescription = (vg: ConfigModel.VolumeGroup): string => {
   if (vg.logicalVolumes.length === 0) return _("No logical volumes are defined yet");
 
   const mountPaths = vg.logicalVolumes.map((v) => formattedPath(v.mountPath));

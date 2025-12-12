@@ -21,25 +21,25 @@
  */
 
 import { sift } from "radashi";
-import type { configModel } from "~/model/storage";
+import type { ConfigModel } from "~/model/storage";
 
-function usedMountPaths(volumeGroup: configModel.VolumeGroup): string[] {
+function usedMountPaths(volumeGroup: ConfigModel.VolumeGroup): string[] {
   const mountPaths = (volumeGroup.logicalVolumes || []).map((l) => l.mountPath);
   return sift(mountPaths);
 }
 
 function candidateTargetDevices(
-  configModel: configModel.Config,
-): (configModel.Drive | configModel.MdRaid)[] {
+  configModel: ConfigModel.Config,
+): (ConfigModel.Drive | ConfigModel.MdRaid)[] {
   const drives = configModel.drives || [];
   const mdRaids = configModel.mdRaids || [];
   return [...drives, ...mdRaids];
 }
 
 function selectTargetDevices(
-  volumeGroup: configModel.VolumeGroup,
-  configModel: configModel.Config,
-): (configModel.Drive | configModel.MdRaid)[] {
+  volumeGroup: ConfigModel.VolumeGroup,
+  configModel: ConfigModel.Config,
+): (ConfigModel.Drive | ConfigModel.MdRaid)[] {
   return candidateTargetDevices(configModel).filter((d) =>
     volumeGroup.targetDevices.includes(d.name),
   );

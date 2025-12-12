@@ -21,10 +21,10 @@
  */
 
 import { copyApiModel, findDevice } from "~/storage/api-model";
-import type { configModel } from "~/model/storage/config-model";
+import type { ConfigModel } from "~/model/storage";
 import type { data } from "~/storage";
 
-function setActions(device: configModel.Drive, actions: data.SpacePolicyAction[]) {
+function setActions(device: ConfigModel.Drive, actions: data.SpacePolicyAction[]) {
   device.partitions ||= [];
 
   // Reset resize/delete actions of all current partition configs.
@@ -57,11 +57,11 @@ function setActions(device: configModel.Drive, actions: data.SpacePolicyAction[]
 }
 
 function setSpacePolicy(
-  model: configModel.Config,
+  model: ConfigModel.Config,
   collection: string,
   index: number | string,
   data: data.SpacePolicy,
-): configModel.Config {
+): ConfigModel.Config {
   model = copyApiModel(model);
   const apiDevice = findDevice(model, collection, index);
 

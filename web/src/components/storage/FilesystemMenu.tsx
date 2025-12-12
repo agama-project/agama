@@ -30,9 +30,9 @@ import { filesystemType, formattedPath } from "~/components/storage/utils";
 import { useDevice } from "~/hooks/storage/model";
 import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
-import type { configModel } from "~/model/storage";
+import type { ConfigModel } from "~/model/storage";
 
-function deviceDescription(deviceModel: configModel.Drive | configModel.MdRaid): string {
+function deviceDescription(deviceModel: ConfigModel.Drive | ConfigModel.MdRaid): string {
   const fs = filesystemType(deviceModel.filesystem);
   const mountPath = deviceModel.mountPath;
   const reuse = deviceModel.filesystem.reuse;
@@ -53,7 +53,7 @@ function deviceDescription(deviceModel: configModel.Drive | configModel.MdRaid):
 }
 
 type FilesystemMenuToggleProps = CustomToggleProps & {
-  deviceModel: configModel.Drive | configModel.MdRaid;
+  deviceModel: ConfigModel.Drive | ConfigModel.MdRaid;
 };
 
 const FilesystemMenuToggle = forwardRef(

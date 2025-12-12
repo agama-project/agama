@@ -32,16 +32,16 @@ import { Button, Flex, FlexItem } from "@patternfly/react-core";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import { useMdRaid } from "~/hooks/storage/model";
 import { useDevice } from "~/hooks/model/system/storage";
-import type { configModel } from "~/model/storage";
+import type { ConfigModel } from "~/model/storage";
 import type { storage } from "~/model/system";
 
 type MdRaidDeviceMenuProps = {
-  raid: configModel.MdRaid;
+  raid: ConfigModel.MdRaid;
   selected: storage.Device;
 };
 
 type MdRaidDeviceMenuToggleProps = CustomToggleProps & {
-  raid: configModel.MdRaid;
+  raid: ConfigModel.MdRaid;
   device: storage.Device;
 };
 
@@ -78,7 +78,7 @@ const MdRaidDeviceMenuToggle = forwardRef(
  */
 const MdRaidDeviceMenu = ({ raid, selected }: MdRaidDeviceMenuProps): React.ReactNode => {
   const deleteMdRaid = useDeleteMdRaid();
-  const deleteFn = (device: configModel.MdRaid) => deleteMdRaid(device.name);
+  const deleteFn = (device: ConfigModel.MdRaid) => deleteMdRaid(device.name);
 
   return (
     <SearchedDeviceMenu

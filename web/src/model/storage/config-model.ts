@@ -21,9 +21,9 @@
  */
 
 import { volumeGroupModelMethods, partitionableModelMethods } from "~/model/storage";
-import type * as configModel from "~/openapi/storage/config-model";
+import type * as ConfigModel from "~/openapi/storage/config-model";
 
-function usedMountPaths(configModel: configModel.Config): string[] {
+function usedMountPaths(configModel: ConfigModel.Config): string[] {
   const drives = configModel.drives || [];
   const mdRaids = configModel.mdRaids || [];
   const volumeGroups = configModel.volumeGroups || [];
@@ -36,30 +36,30 @@ function usedMountPaths(configModel: configModel.Config): string[] {
 }
 
 function bootDevice(
-  configModel: configModel.Config,
-): configModel.Drive | configModel.MdRaid | null {
+  configModel: ConfigModel.Config,
+): ConfigModel.Drive | ConfigModel.MdRaid | null {
   const targets = [...configModel.drives, ...configModel.mdRaids];
   return targets.find((d) => d.name && d.name === configModel.boot?.device?.name) || null;
 }
 
-function hasDefaultBoot(configModel: configModel.Config): boolean {
+function hasDefaultBoot(configModel: ConfigModel.Config): boolean {
   return configModel.boot?.device?.default || false;
 }
 
-function isBootDevice(configModel: configModel.Config, deviceName: string): boolean {
+function isBootDevice(configModel: ConfigModel.Config, deviceName: string): boolean {
   return configModel.boot?.configure && configModel.boot.device?.name === deviceName;
 }
 
-function isExplicitBootDevice(configModel: configModel.Config, deviceName: string): boolean {
+function isExplicitBootDevice(configModel: ConfigModel.Config, deviceName: string): boolean {
   return isBootDevice(configModel, deviceName) && !hasDefaultBoot(configModel);
 }
 
-function isTargetDevice(configModel: configModel.Config, deviceName: string): boolean {
+function isTargetDevice(configModel: ConfigModel.Config, deviceName: string): boolean {
   const targetDevices = (configModel.volumeGroups || []).flatMap((v) => v.targetDevices || []);
   return targetDevices.includes(deviceName);
 }
 
-function isUsedDevice(configModel: configModel.Config, deviceName: string): boolean {
+function isUsedDevice(configModel: ConfigModel.Config, deviceName: string): boolean {
   const drives = configModel.drives || [];
   const mdRaids = configModel.mdRaids || [];
   const device = drives.concat(mdRaids).find((d) => d.name === deviceName);
@@ -80,4 +80,4 @@ export {
   isTargetDevice,
   isUsedDevice,
 };
-export type { configModel };
+export type { ConfigModel };

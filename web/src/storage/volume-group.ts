@@ -29,12 +29,12 @@ import {
   buildLogicalVolumeFromPartition,
   buildPartitionFromLogicalVolume,
 } from "~/storage/api-model";
-import type { configModel } from "~/model/storage/config-model";
+import type { ConfigModel } from "~/model/storage";
 import type { data } from "~/storage";
 
 function movePartitions(
-  device: configModel.Drive | configModel.MdRaid,
-  volumeGroup: configModel.VolumeGroup,
+  device: ConfigModel.Drive | ConfigModel.MdRaid,
+  volumeGroup: ConfigModel.VolumeGroup,
 ) {
   if (!device.partitions) return;
 
@@ -48,7 +48,7 @@ function movePartitions(
   ];
 }
 
-function adjustSpacePolicy(apiModel: configModel.Config, list: string, index: number) {
+function adjustSpacePolicy(apiModel: ConfigModel.Config, list: string, index: number) {
   const device = findDevice(apiModel, list, index);
   if (device.spacePolicy !== "keep") return;
   if (isUsed(apiModel, list, index)) return;
@@ -56,7 +56,7 @@ function adjustSpacePolicy(apiModel: configModel.Config, list: string, index: nu
   device.spacePolicy = null;
 }
 
-function adjustSpacePolicies(apiModel: configModel.Config, targets: string[]) {
+function adjustSpacePolicies(apiModel: ConfigModel.Config, targets: string[]) {
   ["drives", "mdRaids"].forEach((list) => {
     apiModel[list].forEach((dev, idx) => {
       if (targets.includes(dev.name)) adjustSpacePolicy(apiModel, list, idx);
@@ -65,10 +65,10 @@ function adjustSpacePolicies(apiModel: configModel.Config, targets: string[]) {
 }
 
 function addVolumeGroup(
-  apiModel: configModel.Config,
+  apiModel: ConfigModel.Config,
   data: data.VolumeGroup,
   moveContent: boolean,
-): configModel.Config {
+): ConfigModel.Config {
   apiModel = copyApiModel(apiModel);
   adjustSpacePolicies(apiModel, data.targetDevices);
 
@@ -86,7 +86,7 @@ function addVolumeGroup(
   return apiModel;
 }
 
-function newVgName(apiModel: configModel.Config): string {
+function newVgName(apiModel: ConfigModel.Config): string {
   const vgs = (apiModel.volumeGroups || []).filter((vg) => vg.vgName.match(/^system\d*$/));
 
   if (!vgs.length) return "system";
@@ -95,7 +95,7 @@ function newVgName(apiModel: configModel.Config): string {
   return `system${Math.max(...numbers) + 1}`;
 }
 
-function deviceToVolumeGroup(apiModel: configModel.Config, devName: string): configModel.Config {
+function deviceToVolumeGroup(apiModel: ConfigModel.Config, devName: string): ConfigModel.Config {
   apiModel = copyApiModel(apiModel);
 
   const device = partitionables(apiModel).find((d) => d.name === devName);
@@ -110,10 +110,10 @@ function deviceToVolumeGroup(apiModel: configModel.Config, devName: string): con
 }
 
 function editVolumeGroup(
-  apiModel: configModel.Config,
+  apiModel: ConfigModel.Config,
   vgName: string,
   data: data.VolumeGroup,
-): configModel.Config {
+): ConfigModel.Config {
   apiModel = copyApiModel(apiModel);
 
   const index = (apiModel.volumeGroups || []).findIndex((v) => v.vgName === vgName);
@@ -132,7 +132,7 @@ function editVolumeGroup(
   return apiModel;
 }
 
-function volumeGroupToPartitions(apiModel: configModel.Config, vgName: string): configModel.Config {
+function volumeGroupToPartitions(apiModel: ConfigModel.Config, vgName: string): ConfigModel.Config {
   apiModel = copyApiModel(apiModel);
 
   const index = (apiModel.volumeGroups || []).findIndex((v) => v.vgName === vgName);
@@ -152,7 +152,7 @@ function volumeGroupToPartitions(apiModel: configModel.Config, vgName: string): 
   return apiModel;
 }
 
-function deleteVolumeGroup(apiModel: configModel.Config, vgName: string): configModel.Config {
+function deleteVolumeGroup(apiModel: ConfigModel.Config, vgName: string): ConfigModel.Config {
   apiModel = copyApiModel(apiModel);
 
   const index = (apiModel.volumeGroups || []).findIndex((v) => v.vgName === vgName);

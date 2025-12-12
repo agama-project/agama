@@ -31,9 +31,9 @@ import {
 } from "~/storage/volume-group";
 import { useModel } from "~/hooks/storage/model";
 import type { data } from "~/storage";
-import type { configModel } from "~/model/storage";
+import type { ConfigModel } from "~/model/storage";
 
-function useVolumeGroup(vgName: string): configModel.VolumeGroup | null {
+function useVolumeGroup(vgName: string): ConfigModel.VolumeGroup | null {
   const model = useModel();
   const volumeGroup = model?.volumeGroups?.find((v) => v.vgName === vgName);
   return volumeGroup || null;

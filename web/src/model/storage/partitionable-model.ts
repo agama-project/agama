@@ -22,9 +22,9 @@
 
 import { sift } from "radashi";
 import { partitionModelMethods, volumeGroupModelMethods } from "~/model/storage";
-import type { configModel } from "~/model/storage";
+import type { ConfigModel } from "~/model/storage";
 
-type Partitionable = configModel.Drive | configModel.MdRaid;
+type Partitionable = ConfigModel.Drive | ConfigModel.MdRaid;
 
 function usedMountPaths(device: Partitionable): string[] {
   const mountPaths = (device.partitions || []).map((p) => p.mountPath);
@@ -42,21 +42,21 @@ function isReusingPartitions(device: Partitionable): boolean {
 function findPartition(
   device: Partitionable,
   mountPath: string,
-): configModel.Partition | undefined {
+): ConfigModel.Partition | undefined {
   return device.partitions.find((p) => p.mountPath === mountPath);
 }
 
 function selectVolumeGroups(
   device: Partitionable,
-  configModel: configModel.Config,
-): configModel.VolumeGroup[] {
+  configModel: ConfigModel.Config,
+): ConfigModel.VolumeGroup[] {
   const volumeGroups = configModel.volumeGroups || [];
   return volumeGroups.filter((v) =>
     volumeGroupModelMethods.selectTargetDevices(v, configModel).some((d) => d.name === device.name),
   );
 }
 
-function selectConfiguredExistingPartitions(device: Partitionable): configModel.Partition[] {
+function selectConfiguredExistingPartitions(device: Partitionable): ConfigModel.Partition[] {
   if (device.spacePolicy === "custom")
     return device.partitions.filter(
       (p) =>

@@ -23,9 +23,9 @@
 import { copyApiModel, findDevice, findDeviceIndex } from "~/storage/api-model";
 import { fork } from "radashi";
 import { configModelMethods, partitionModelMethods } from "~/model/storage";
-import type { configModel } from "~/model/storage";
+import type { ConfigModel } from "~/model/storage";
 
-function deviceLocation(apiModel: configModel.Config, name: string) {
+function deviceLocation(apiModel: ConfigModel.Config, name: string) {
   let index;
   for (const list of ["drives", "mdRaids"]) {
     index = findDeviceIndex(apiModel, list, name);
@@ -36,21 +36,21 @@ function deviceLocation(apiModel: configModel.Config, name: string) {
 }
 
 function buildModelDevice(
-  configModel: configModel.Config,
+  configModel: ConfigModel.Config,
   list: string,
   index: number | string,
-): configModel.Drive | configModel.MdRaid | undefined {
+): ConfigModel.Drive | ConfigModel.MdRaid | undefined {
   return configModel[list].at(index);
 }
 
-function isUsed(apiModel: configModel.Config, list: string, index: number | string): boolean {
+function isUsed(apiModel: ConfigModel.Config, list: string, index: number | string): boolean {
   const device = apiModel[list].at(index);
   if (!device) return false;
 
   return configModelMethods.isUsedDevice(apiModel, device.name);
 }
 
-function deleteIfUnused(apiModel: configModel.Config, name: string): configModel.Config {
+function deleteIfUnused(apiModel: ConfigModel.Config, name: string): ConfigModel.Config {
   apiModel = copyApiModel(apiModel);
 
   const { list, index } = deviceLocation(apiModel, name);
@@ -63,11 +63,11 @@ function deleteIfUnused(apiModel: configModel.Config, name: string): configModel
 }
 
 function switchSearched(
-  apiModel: configModel.Config,
+  apiModel: ConfigModel.Config,
   oldName: string,
   name: string,
   list: "drives" | "mdRaids",
-): configModel.Config {
+): ConfigModel.Config {
   if (name === oldName) return apiModel;
 
   apiModel = copyApiModel(apiModel);

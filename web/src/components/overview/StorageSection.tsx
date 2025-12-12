@@ -27,14 +27,14 @@ import { useAvailableDevices, useDevices, useIssues } from "~/hooks/model/system
 import { useConfigModel } from "~/hooks/model/storage";
 import { _ } from "~/i18n";
 import type { storage } from "~/model/system";
-import type { configModel } from "~/model/storage/config-model";
+import type { ConfigModel } from "~/model/storage";
 
-const findDriveDevice = (drive: configModel.Drive, devices: storage.Device[]) =>
+const findDriveDevice = (drive: ConfigModel.Drive, devices: storage.Device[]) =>
   devices.find((d) => d.name === drive.name);
 
 const NoDeviceSummary = () => _("No device selected yet");
 
-const SingleDiskSummary = ({ drive }: { drive: configModel.Drive }) => {
+const SingleDiskSummary = ({ drive }: { drive: ConfigModel.Drive }) => {
   const devices = useDevices();
   const device = findDriveDevice(drive, devices);
   const options = {
@@ -63,7 +63,7 @@ const SingleDiskSummary = ({ drive }: { drive: configModel.Drive }) => {
   );
 };
 
-const MultipleDisksSummary = ({ drives }: { drives: configModel.Drive[] }): string => {
+const MultipleDisksSummary = ({ drives }: { drives: ConfigModel.Drive[] }): string => {
   const options = {
     resize: _("Install using several devices shrinking existing partitions as needed."),
     keep: _("Install using several devices without modifying existing partitions."),
@@ -78,7 +78,7 @@ const MultipleDisksSummary = ({ drives }: { drives: configModel.Drive[] }): stri
   return options[drives[0].spacePolicy];
 };
 
-const ModelSummary = ({ model }: { model: configModel.Config }): React.ReactNode => {
+const ModelSummary = ({ model }: { model: ConfigModel.Config }): React.ReactNode => {
   const devices = useDevices();
   const drives = model?.drives || [];
   const existDevice = (name: string) => devices.some((d) => d.name === name);

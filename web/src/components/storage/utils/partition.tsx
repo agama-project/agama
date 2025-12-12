@@ -29,12 +29,12 @@
 import { _ } from "~/i18n";
 import { sprintf } from "sprintf-js";
 import { filesystemType, formattedPath, sizeDescription } from "~/components/storage/utils";
-import type { configModel } from "~/model/storage/config-model";
+import type { ConfigModel } from "~/model/storage";
 
 /**
  * String to identify the partition.
  */
-const pathWithSize = (partition: configModel.Partition): string => {
+const pathWithSize = (partition: ConfigModel.Partition): string => {
   return sprintf(
     // TRANSLATORS: %1$s is an already formatted mount path (eg. "/"),
     // %2$s is a size description (eg. at least 10 GiB)
@@ -49,15 +49,15 @@ const pathWithSize = (partition: configModel.Partition): string => {
  *  a logical volume has not the property 'name' yet, see {@link typeDescription}.
  */
 function isPartition(
-  device: configModel.Partition | configModel.LogicalVolume,
-): device is configModel.Partition {
+  device: ConfigModel.Partition | ConfigModel.LogicalVolume,
+): device is ConfigModel.Partition {
   return Object.hasOwn(device, "name");
 }
 
 /**
  * String to identify the type of device to be created (or used).
  */
-const typeDescription = (partition: configModel.Partition | configModel.LogicalVolume): string => {
+const typeDescription = (partition: ConfigModel.Partition | ConfigModel.LogicalVolume): string => {
   const fs = filesystemType(partition.filesystem);
 
   if (isPartition(partition) && partition.name) {
@@ -78,7 +78,7 @@ const typeDescription = (partition: configModel.Partition | configModel.LogicalV
 /**
  * Combination of {@link typeDescription} and the size of the target partition.
  */
-const typeWithSize = (partition: configModel.Partition | configModel.LogicalVolume): string => {
+const typeWithSize = (partition: ConfigModel.Partition | ConfigModel.LogicalVolume): string => {
   return sprintf(
     // TRANSLATORS: %1$s is a filesystem type description (eg. "Btrfs with snapshots"),
     // %2$s is a description of the size or the size limits (eg. "at least 10 GiB")

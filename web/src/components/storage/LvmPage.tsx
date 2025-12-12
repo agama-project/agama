@@ -51,7 +51,7 @@ import { deviceSystems, isDrive } from "~/storage/device";
 import { partitionableModelMethods, volumeGroupModelMethods } from "~/model/storage";
 import { useConfigModel } from "~/hooks/model/storage";
 import type { data } from "~/storage";
-import type { configModel } from "~/model/storage";
+import type { ConfigModel } from "~/model/storage";
 import type { storage } from "~/model/system";
 
 /**
@@ -76,8 +76,8 @@ function useLvmTargetDevices(): storage.Device[] {
 
 function vgNameError(
   vgName: string,
-  configModel: configModel.Config,
-  volumeGroup?: configModel.VolumeGroup,
+  configModel: ConfigModel.Config,
+  volumeGroup?: ConfigModel.VolumeGroup,
 ): string | undefined {
   if (!vgName.length) return _("Enter a name for the volume group.");
 

@@ -34,16 +34,16 @@ import { toDevice } from "./device-utils";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import { sprintf } from "sprintf-js";
 import type { storage as proposal } from "~/model/proposal";
-import type { configModel } from "~/model/storage/config-model";
+import type { ConfigModel } from "~/model/storage";
 
-const partitionAction = (partition: configModel.Partition) => {
+const partitionAction = (partition: ConfigModel.Partition) => {
   if (partition.delete) return "delete";
   if (partition.resizeIfNeeded) return "resizeIfNeeded";
 
   return undefined;
 };
 
-function useDeviceModelFromParams(): configModel.Drive | configModel.MdRaid | null {
+function useDeviceModelFromParams(): ConfigModel.Drive | ConfigModel.MdRaid | null {
   const { collection, index } = useParams();
   const deviceModel = collection === "drives" ? useDriveModel : useMdRaidModel;
   return deviceModel(Number(index));

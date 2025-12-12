@@ -25,12 +25,12 @@ import { deviceLabel } from "./utils";
 import { useConfigModel } from "~/hooks/model/storage";
 import { configModelMethods, partitionableModelMethods } from "~/model/storage";
 import { _ } from "~/i18n";
-import type { configModel } from "~/model/storage";
+import type { ConfigModel } from "~/model/storage";
 import type { storage } from "~/model/system";
 
-export type MdRaidHeaderProps = { raid: configModel.MdRaid; device: storage.Device };
+export type MdRaidHeaderProps = { raid: ConfigModel.MdRaid; device: storage.Device };
 
-const Text = (raid: configModel.MdRaid): string => {
+const Text = (raid: ConfigModel.MdRaid): string => {
   const configModel = useConfigModel();
 
   if (raid.filesystem) {

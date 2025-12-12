@@ -29,9 +29,9 @@ import { sprintf } from "sprintf-js";
 import { _, n_, formatList } from "~/i18n";
 import { useConfigModel } from "~/hooks/model/storage";
 import { partitionableModelMethods } from "~/model/storage";
-import type { configModel } from "~/model/storage";
+import type { ConfigModel } from "~/model/storage";
 
-export type NewVgMenuOptionProps = { device: configModel.Drive | configModel.MdRaid };
+export type NewVgMenuOptionProps = { device: ConfigModel.Drive | ConfigModel.MdRaid };
 
 export default function NewVgMenuOption({ device }: NewVgMenuOptionProps): React.ReactNode {
   const configModel = useConfigModel();

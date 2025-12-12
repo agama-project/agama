@@ -22,10 +22,10 @@
 
 import { switchSearched } from "~/storage/search";
 import { copyApiModel } from "~/storage/api-model";
-import type { configModel } from "~/model/storage/config-model";
+import type { ConfigModel } from "~/model/storage";
 import type { data } from "~/storage";
 
-function addDrive(apiModel: configModel.Config, data: data.Drive): configModel.Config {
+function addDrive(apiModel: ConfigModel.Config, data: data.Drive): ConfigModel.Config {
   apiModel = copyApiModel(apiModel);
   apiModel.drives ||= [];
   apiModel.drives.push(data);
@@ -33,7 +33,7 @@ function addDrive(apiModel: configModel.Config, data: data.Drive): configModel.C
   return apiModel;
 }
 
-function deleteDrive(apiModel: configModel.Config, name: string): configModel.Config {
+function deleteDrive(apiModel: ConfigModel.Config, name: string): ConfigModel.Config {
   apiModel = copyApiModel(apiModel);
   apiModel.drives = apiModel.drives.filter((d) => d.name !== name);
 
@@ -41,10 +41,10 @@ function deleteDrive(apiModel: configModel.Config, name: string): configModel.Co
 }
 
 function switchToDrive(
-  apiModel: configModel.Config,
+  apiModel: ConfigModel.Config,
   oldName: string,
   drive: data.Drive,
-): configModel.Config {
+): ConfigModel.Config {
   return switchSearched(apiModel, oldName, drive.name, "drives");
 }
 

@@ -25,16 +25,16 @@ import { SpacePolicy, SPACE_POLICIES, baseName, formattedPath } from "~/componen
 import { useConfigModel } from "~/hooks/model/storage";
 import { configModelMethods, partitionableModelMethods } from "~/model/storage";
 import { sprintf } from "sprintf-js";
-import type { configModel } from "~/model/storage/config-model";
+import type { ConfigModel } from "~/model/storage";
 
 /**
  * String to identify the drive.
  */
-const label = (drive: configModel.Drive): string => {
+const label = (drive: ConfigModel.Drive): string => {
   return baseName(drive.name);
 };
 
-const spacePolicyEntry = (drive: configModel.Drive): SpacePolicy => {
+const spacePolicyEntry = (drive: ConfigModel.Drive): SpacePolicy => {
   return SPACE_POLICIES.find((p) => p.id === drive.spacePolicy);
 };
 
@@ -64,7 +64,7 @@ const resizeTextFor = (partitions) => {
   return _("Some partitions may be shrunk");
 };
 
-const SummaryForSpacePolicy = (drive: configModel.Drive): string | undefined => {
+const SummaryForSpacePolicy = (drive: ConfigModel.Drive): string | undefined => {
   const configModel = useConfigModel();
   const isTargetDevice = configModelMethods.isTargetDevice(configModel, drive.name);
   const isBoot = configModelMethods.isBootDevice(configModel, drive.name);
@@ -94,7 +94,7 @@ const SummaryForSpacePolicy = (drive: configModel.Drive): string | undefined => 
  * FIXME: the case with two sentences looks a bit weird. But trying to summarize everything in one
  * sentence was too hard.
  */
-const contentActionsSummary = (drive: configModel.Drive): string => {
+const contentActionsSummary = (drive: ConfigModel.Drive): string => {
   const policyLabel = SummaryForSpacePolicy(drive);
 
   if (policyLabel) return policyLabel;
@@ -120,7 +120,7 @@ const contentActionsSummary = (drive: configModel.Drive): string => {
 };
 
 const ContentActionsDescription = (
-  drive: configModel.Drive,
+  drive: ConfigModel.Drive,
   policyId: string | undefined,
 ): string => {
   const configModel = useConfigModel();
@@ -157,7 +157,7 @@ const ContentActionsDescription = (
   }
 };
 
-const contentDescription = (drive: configModel.Drive): string => {
+const contentDescription = (drive: ConfigModel.Drive): string => {
   const newPartitions = drive.partitions.filter((p) => !p.name);
   const reusedPartitions = drive.partitions.filter((p) => p.name && p.mountPath);
 

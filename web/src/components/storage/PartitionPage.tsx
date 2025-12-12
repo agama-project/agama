@@ -72,7 +72,7 @@ import { sprintf } from "sprintf-js";
 import { STORAGE as PATHS, STORAGE } from "~/routes/paths";
 import { isUndefined, unique } from "radashi";
 import { compact } from "~/utils";
-import type { configModel } from "~/model/storage/config-model";
+import type { ConfigModel } from "~/model/storage";
 import type { storage as system } from "~/model/system";
 import { partitionableModelMethods } from "~/model/storage";
 
@@ -103,14 +103,14 @@ type ErrorsHandler = {
   getVisibleError: (id: string) => Error | undefined;
 };
 
-function toPartitionConfig(value: FormValue): configModel.Partition {
+function toPartitionConfig(value: FormValue): ConfigModel.Partition {
   const name = (): string | undefined => {
     if (value.target === NO_VALUE || value.target === NEW_PARTITION) return undefined;
 
     return value.target;
   };
 
-  const filesystemType = (): configModel.FilesystemType | undefined => {
+  const filesystemType = (): ConfigModel.FilesystemType | undefined => {
     if (value.filesystem === NO_VALUE) return undefined;
     if (value.filesystem === BTRFS_SNAPSHOTS) return "btrfs";
 
@@ -121,10 +121,10 @@ function toPartitionConfig(value: FormValue): configModel.Partition {
      *  This will be fixed in the future by directly exporting the volumes as a JSON, similar to the
      *  config model. The schema for the volumes will define the explicit list of filesystem types.
      */
-    return value.filesystem as configModel.FilesystemType;
+    return value.filesystem as ConfigModel.FilesystemType;
   };
 
-  const filesystem = (): configModel.Filesystem | undefined => {
+  const filesystem = (): ConfigModel.Filesystem | undefined => {
     if (value.filesystem === REUSE_FILESYSTEM) return { reuse: true, default: true };
 
     const type = filesystemType();
@@ -138,7 +138,7 @@ function toPartitionConfig(value: FormValue): configModel.Partition {
     };
   };
 
-  const size = (): configModel.Size | undefined => {
+  const size = (): ConfigModel.Size | undefined => {
     if (value.sizeOption === "auto") return undefined;
     if (value.minSize === NO_VALUE) return undefined;
 
@@ -157,7 +157,7 @@ function toPartitionConfig(value: FormValue): configModel.Partition {
   };
 }
 
-function toFormValue(partitionConfig: configModel.Partition): FormValue {
+function toFormValue(partitionConfig: ConfigModel.Partition): FormValue {
   const mountPoint = (): string => partitionConfig.mountPath || NO_VALUE;
 
   const target = (): string => partitionConfig.name || NEW_PARTITION;
@@ -227,7 +227,7 @@ function useDefaultFilesystem(mountPoint: string): string {
   return volume.mountPath === "/" && volume.snapshots ? BTRFS_SNAPSHOTS : volume.fsType;
 }
 
-function useInitialPartitionConfig(): configModel.Partition | null {
+function useInitialPartitionConfig(): ConfigModel.Partition | null {
   const { partitionId: mountPath } = useParams();
   const device = useDeviceModelFromParams();
   return mountPath && device ? partitionableModelMethods.findPartition(device, mountPath) : null;
@@ -392,7 +392,7 @@ function useErrors(value: FormValue): ErrorsHandler {
   return { errors, getError, getVisibleError };
 }
 
-function useSolvedModel(value: FormValue): configModel.Config | null {
+function useSolvedModel(value: FormValue): ConfigModel.Config | null {
   const { collection, index } = useParams();
   const device = useDeviceModelFromParams();
   const model = useConfigModel();
@@ -404,7 +404,7 @@ function useSolvedModel(value: FormValue): configModel.Config | null {
 
   const modelCollection = collection === "drives" ? "drives" : "mdRaids";
 
-  let sparseModel: configModel.Config | undefined;
+  let sparseModel: ConfigModel.Config | undefined;
 
   if (device && !errors.length && value.target === NEW_PARTITION && value.filesystem !== NO_VALUE) {
     if (initialPartitionConfig) {
@@ -424,7 +424,7 @@ function useSolvedModel(value: FormValue): configModel.Config | null {
   return solvedModel;
 }
 
-function useSolvedPartitionConfig(value: FormValue): configModel.Partition | undefined {
+function useSolvedPartitionConfig(value: FormValue): ConfigModel.Partition | undefined {
   const model = useSolvedModel(value);
   const { collection, index } = useParams();
   if (!model) return;
