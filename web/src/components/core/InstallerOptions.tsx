@@ -555,7 +555,7 @@ export default function InstallerOptions({
     l10n: { locales },
   } = useSystem();
   const { language, keymap, changeLanguage, changeKeymap } = useInstallerL10n();
-  const { state } = useStatus();
+  const { stage } = useStatus();
   const selectedProduct = useProduct();
   const initialFormState = {
     language,
@@ -572,7 +572,7 @@ export default function InstallerOptions({
   // Skip rendering if any of the following conditions are met
   const skip =
     (variant === "keyboard" && !localConnection()) ||
-    state === "installing" ||
+    stage === "installing" ||
     // FIXME: below condition could be a problem for a question appearing while
     // product progress
     [ROOT.login, ROOT.installationProgress, ROOT.installationFinished, PRODUCT.progress].includes(
