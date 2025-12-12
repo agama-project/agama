@@ -84,7 +84,7 @@ module Agama
           # TRANSLATORS: %s is replaced by a device alias (e.g., "boot").
           error(
             format(_("There is no boot device with alias '%s'"), device_alias),
-            kind: IssueClasses::Config::ALIAS
+            kind: IssueClasses::Config::NO_SUCH_ALIAS
           )
         end
 

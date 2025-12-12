@@ -60,7 +60,8 @@ module Agama
               #   (e.g., 'luks1').
               _("'%{method}' is not a suitable method to encrypt the physical volumes."),
               method: method.to_human_string
-            )
+            ),
+            kind: IssueClasses::Config::WRONG_ENCRYPTION_METHOD
           )
         end
 
