@@ -67,6 +67,7 @@ BuildRequires:  python-langtable-data
 Requires:       python-langtable-data
 # dependency on the YaST part of Agama
 Requires:       agama-yast
+Requires:       agama-common
 
 %description
 Agama is a service-based Linux installer. It is composed of an HTTP-based API,
@@ -84,6 +85,18 @@ Url:            https://github.com/agama-project/agama
 Agama is a service-based Linux installer. This package contains the
 auto-installation service.
 
+%package -n agama-common
+#               This will be set by osc services, that will run after this.
+Version:        0
+Release:        0
+Summary:        Common files for Agama server and CLI.
+License:        GPL-2.0-only
+Url:            https://github.com/agama-project/agama
+
+%description -n agama-common
+Files that are needed by the Agama server and the command-line interface, like
+the JSON schemas or the Jsonnet libraries.
+
 %package -n agama-cli
 #               This will be set by osc services, that will run after this.
 Version:        0
@@ -91,6 +104,7 @@ Release:        0
 Summary:        Agama command-line interface
 License:        GPL-2.0-only
 Url:            https://github.com/agama-project/agama
+Requires:       agama-common
 
 %description -n agama-cli
 Command line program to interact with the Agama installer.
@@ -223,6 +237,16 @@ echo $PATH
 %{_bindir}/agama-web-server
 %{_pam_vendordir}/agama
 %{_unitdir}/agama-web-server.service
+%dir %{_datadir}/agama/eula
+
+%files -n agama-common
+%dir %{_datadir}/agama/jsonnet
+%{_datadir}/agama/jsonnet/agama.libsonnet
+%dir %{_datadir}/agama/schema
+%{_datadir}/agama/schema/iscsi.schema.json
+%{_datadir}/agama/schema/profile.schema.json
+%{_datadir}/agama/schema/storage.schema.json
+%{_datadir}/agama/schema/storage.model.schema.json
 
 %files -n agama-autoinstall
 %{_bindir}/agama-autoinstall
@@ -230,12 +254,6 @@ echo $PATH
 
 %files -n agama-cli
 %{_bindir}/agama
-%dir %{_datadir}/agama-cli
-%{_datadir}/agama-cli/agama.libsonnet
-%{_datadir}/agama-cli/iscsi.schema.json
-%{_datadir}/agama-cli/profile.schema.json
-%{_datadir}/agama-cli/storage.schema.json
-%{_datadir}/agama-cli/storage.model.schema.json
 %{_mandir}/man1/agama*1%{?ext_man}
 
 %files -n agama-cli-bash-completion
