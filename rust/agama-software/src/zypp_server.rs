@@ -112,42 +112,42 @@ impl ZyppServer {
     ) -> ZyppServerResult<UnboundedSender<SoftwareAction>> {
         let (sender, receiver) = mpsc::unbounded_channel();
 
-        let server = Self { receiver, root_dir: root_dir.as_ref().to_path_buf()};
+        let server = Self {
+            receiver,
+            root_dir: root_dir.as_ref().to_path_buf(),
+        };
 
         // see https://docs.rs/tokio/latest/tokio/task/struct.LocalSet.html#use-inside-tokiospawn for explain how to ensure that zypp
         // runs locally on single thread
 
-        let rt = tokio::runtime::Builder::new_current_thread()
-            .enable_all()
-            .build()
-            .unwrap();
-
         // drop the returned JoinHandle: the thread will be detached
         // but that's OK for it to run until the process dies
-        std::thread::spawn(move || {
-            let local = tokio::task::LocalSet::new();
-
-            local.spawn_local(server.run());
-
-            // This will return once all senders are dropped and all
-            // spawned tasks have returned.
-            rt.block_on(local);
-        });
+        std::thread::spawn(move || server.run());
         Ok(sender)
     }
 
     /// Runs the server dispatching the actions received through the input channel.
-    async fn run(mut self) -> Result<(), ZyppDispatchError> {
+    fn run(mut self) -> Result<(), ZyppDispatchError> {
         let zypp = self.initialize_target_dir()?;
 
         loop {
-            let action = self.receiver.recv().await;
+            // well, the code here can look a bit tricky, but what happens in reality here is that we need synchronized code
+            // and only for small async interface run it in blocking way. Receiver handling is done to explicit passing
+            // of ownership as receiver do not implement Copy.
+            let rt = tokio::runtime::Builder::new_current_thread()
+                .enable_all()
+                .build()
+                .unwrap();
+            let res = rt.spawn(async move { (self.receiver.recv().await, self.receiver) });
+            let (action, receiver) = rt.block_on(res).unwrap();
+            self.receiver = receiver;
+
             let Some(action) = action else {
-                tracing::error!("Software action channel closed");
+                tracing::warn!("Software action channel closed");
                 break;
             };
 
-            if let Err(error) = self.dispatch(action, &zypp).await {
+            if let Err(error) = self.dispatch(action, &zypp) {
                 tracing::error!("Software dispatch error: {:?}", error);
             }
         }
@@ -156,7 +156,7 @@ impl ZyppServer {
     }
 
     /// Forwards the action to the appropriate handler.
-    async fn dispatch(
+    fn dispatch(
         &mut self,
         action: SoftwareAction,
         zypp: &zypp_agama::Zypp,
@@ -169,11 +169,10 @@ impl ZyppServer {
                 tx,
             } => {
                 let mut security_callback = callbacks::Security::new(question);
-                self.write(state, progress, &mut security_callback, tx, zypp)
-                    .await?;
+                self.write(state, progress, &mut security_callback, tx, zypp)?;
             }
             SoftwareAction::GetSystemInfo(product_spec, tx) => {
-                self.system_info(product_spec, tx, zypp).await?;
+                self.system_info(product_spec, tx, zypp)?;
             }
             SoftwareAction::Install(tx, progress, question) => {
                 let mut download_callback =
@@ -190,10 +189,10 @@ impl ZyppServer {
                 .map_err(|_| ZyppDispatchError::ResponseChannelClosed)?;
             }
             SoftwareAction::Finish(tx) => {
-                self.finish(zypp, tx).await?;
+                self.finish(zypp, tx)?;
             }
             SoftwareAction::GetProposal(product_spec, sender) => {
-                self.proposal(product_spec, sender, zypp).await?
+                self.proposal(product_spec, sender, zypp)?
             }
         }
         Ok(())
@@ -237,7 +236,7 @@ impl ZyppServer {
         Ok(state)
     }
 
-    async fn write(
+    fn write(
         &self,
         state: SoftwareState,
         progress: Handler<progress::Service>,
@@ -371,7 +370,7 @@ impl ZyppServer {
         Ok(())
     }
 
-    async fn finish(
+    fn finish(
         &mut self,
         zypp: &zypp_agama::Zypp,
         tx: oneshot::Sender<ZyppServerResult<()>>,
@@ -439,14 +438,14 @@ impl ZyppServer {
         Ok(())
     }
 
-    async fn system_info(
+    fn system_info(
         &self,
         product: ProductSpec,
         tx: oneshot::Sender<ZyppServerResult<SystemInfo>>,
         zypp: &zypp_agama::Zypp,
     ) -> Result<(), ZyppDispatchError> {
-        let patterns = self.patterns(&product, zypp).await?;
-        let repositories = self.repositories(zypp).await?;
+        let patterns = self.patterns(&product, zypp)?;
+        let repositories = self.repositories(zypp)?;
 
         let system_info = SystemInfo {
             patterns,
@@ -459,11 +458,7 @@ impl ZyppServer {
         Ok(())
     }
 
-    async fn patterns(
-        &self,
-        product: &ProductSpec,
-        zypp: &zypp_agama::Zypp,
-    ) -> ZyppResult<Vec<Pattern>> {
+    fn patterns(&self, product: &ProductSpec, zypp: &zypp_agama::Zypp) -> ZyppResult<Vec<Pattern>> {
         let pattern_names: Vec<_> = product
             .software
             .user_patterns
@@ -487,10 +482,7 @@ impl ZyppServer {
         Ok(patterns)
     }
 
-    async fn repositories(
-        &self,
-        zypp: &zypp_agama::Zypp,
-    ) -> ZyppResult<Vec<api::software::Repository>> {
+    fn repositories(&self, zypp: &zypp_agama::Zypp) -> ZyppResult<Vec<api::software::Repository>> {
         let result = zypp
             .list_repositories()?
             .into_iter()
@@ -514,13 +506,15 @@ impl ZyppServer {
             _ = std::fs::remove_dir_all(target_dir);
         }
 
-        std::fs::create_dir_all(target_dir.as_str()).map_err(ZyppDispatchError::TargetCreationFailed)?;
+        std::fs::create_dir_all(target_dir.as_str())
+            .map_err(ZyppDispatchError::TargetCreationFailed)?;
 
         let zypp = zypp_agama::Zypp::init_target(target_dir.as_str(), |text, step, total| {
             tracing::info!("Initializing target: {} ({}/{})", text, step, total);
         })?;
 
         self.import_gpg_keys(&zypp);
+        tracing::info!("zypp initialized");
         Ok(zypp)
     }
 
@@ -539,15 +533,15 @@ impl ZyppServer {
         }
     }
 
-    async fn proposal(
+    fn proposal(
         &self,
         product: ProductSpec,
         tx: oneshot::Sender<ZyppServerResult<SoftwareProposal>>,
         zypp: &zypp_agama::Zypp,
     ) -> Result<(), ZyppDispatchError> {
         let proposal = SoftwareProposal {
-            used_space: self.used_space(&zypp).await?,
-            patterns: self.patterns_selection(&product, &zypp).await?,
+            used_space: self.used_space(&zypp)?,
+            patterns: self.patterns_selection(&product, &zypp)?,
         };
 
         tx.send(Ok(proposal))
@@ -555,7 +549,7 @@ impl ZyppServer {
         Ok(())
     }
 
-    async fn used_space(&self, zypp: &zypp_agama::Zypp) -> Result<i64, ZyppServerError> {
+    fn used_space(&self, zypp: &zypp_agama::Zypp) -> Result<i64, ZyppServerError> {
         // TODO: for now it just compute total size, but it can get info about partitions from storage and pass it to libzypp
         let mount_points = vec![zypp_agama::MountPoint {
             directory: "/".to_string(),
@@ -570,7 +564,7 @@ impl ZyppServer {
             .ok_or(ZyppServerError::MissingMountPoint)
     }
 
-    async fn patterns_selection(
+    fn patterns_selection(
         &self,
         product: &ProductSpec,
         zypp: &zypp_agama::Zypp,

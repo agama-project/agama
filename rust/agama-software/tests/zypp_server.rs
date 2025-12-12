@@ -135,7 +135,11 @@ async fn test_start_zypp_server() {
         result.unwrap_err()
     );
     let issues = result.unwrap();
-    assert_eq!(issues.len(), 1, "There are unexpected issues size {issues:#?}");
+    assert_eq!(
+        issues.len(),
+        1,
+        "There are unexpected issues size {issues:#?}"
+    );
     assert_eq!(issues[0].class, "software.select_product");
 
     let questions = question_handler
@@ -143,4 +147,6 @@ async fn test_start_zypp_server() {
         .await
         .expect("Failed to get questions");
     assert!(questions.is_empty());
+
+    // NOTE: here we drop sender channel, which result in exit of zypp thread due to closed channel
 }
