@@ -27,6 +27,9 @@
  */
 
 import agama from "~/agama";
+import type { Tagged } from "type-fest";
+
+export type TranslatedString = Tagged<string, "Translated">;
 
 /**
  * Tests whether a special testing language is used.
@@ -71,7 +74,8 @@ const xTranslate = (str: string): string => {
  * @param str the input string to translate
  * @return translated or original text
  */
-const _ = (str: string): string => (isTestingLanguage() ? xTranslate(str) : agama.gettext(str));
+const _ = (str: string): TranslatedString =>
+  (isTestingLanguage() ? xTranslate(str) : agama.gettext(str)) as TranslatedString;
 
 /**
  * Similar to the _() function. This variant returns singular or plural form
@@ -84,8 +88,10 @@ const _ = (str: string): string => (isTestingLanguage() ? xTranslate(str) : agam
  *   singular or plural form
  * @return translated or original text
  */
-const n_ = (str1: string, strN: string, n: number): string => {
-  return isTestingLanguage() ? xTranslate(n === 1 ? str1 : strN) : agama.ngettext(str1, strN, n);
+const n_ = (str1: string, strN: string, n: number): TranslatedString => {
+  return (
+    isTestingLanguage() ? xTranslate(n === 1 ? str1 : strN) : agama.ngettext(str1, strN, n)
+  ) as TranslatedString;
 };
 
 /**

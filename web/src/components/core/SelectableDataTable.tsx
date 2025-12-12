@@ -39,7 +39,7 @@ import {
 } from "@patternfly/react-table";
 import { isEmpty, isFunction } from "radashi";
 import Icon from "~/components/layout/Icon";
-import { _ } from "~/i18n";
+import { _, TranslatedString } from "~/i18n";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -70,7 +70,7 @@ export type SelectableDataTableColumn = {
    *
    * @example "Name", "Status", "Created At"
    */
-  name: string;
+  name: TranslatedString;
 
   /**
    * A function that takes a data item and returns the content to display in the

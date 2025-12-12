@@ -22,6 +22,7 @@
 
 import React from "react";
 import { Select, MenuToggle, MenuToggleElement, SelectProps } from "@patternfly/react-core";
+import { TranslatedString } from "~/i18n";
 
 export type SelectWrapperProps = {
   id?: string;
@@ -30,7 +31,7 @@ export type SelectWrapperProps = {
   onChange?: (value: number | string) => void;
   isDisabled?: boolean;
   // Accessible name for the toggle
-  toggleName?: string;
+  toggleName?: TranslatedString;
 } & Omit<SelectProps, "toggle" | "onChange">;
 
 /**

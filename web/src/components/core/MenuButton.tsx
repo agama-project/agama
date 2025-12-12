@@ -34,7 +34,7 @@ import {
   MenuItemProps,
   MenuToggleProps,
 } from "@patternfly/react-core";
-import { _ } from "~/i18n";
+import { _, TranslatedString } from "~/i18n";
 import { useLocation, useNavigate } from "react-router-dom";
 
 /**
@@ -53,7 +53,7 @@ function useMenuId() {
 interface MenuButtonItemProps extends Omit<MenuItemProps, "direction" | "drilldownMenu"> {
   items?: React.ReactNode[];
   keepQuery?: boolean;
-  upProps?: { label?: string };
+  upProps?: { label?: TranslatedString };
 }
 
 export type CustomToggleProps = {
@@ -64,7 +64,7 @@ export type CustomToggleProps = {
 export type MenuButtonProps = {
   items?: React.ReactNode[];
   menuProps?: {
-    ["aria-label"]?: string;
+    ["aria-label"]?: TranslatedString;
     ["aria-labelledby"]?: string;
     closeOnClick?: boolean;
     popperProps?: MenuPopperProps;

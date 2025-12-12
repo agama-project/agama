@@ -27,7 +27,7 @@ import { Page, NestedContent } from "~/components/core";
 import DevicesManager from "~/components/storage/DevicesManager";
 import ProposalResultTable from "~/components/storage/ProposalResultTable";
 import { ProposalActionsDialog } from "~/components/storage";
-import { _, n_, formatList } from "~/i18n";
+import { _, n_, formatList, TranslatedString } from "~/i18n";
 import { useActions, useDevices } from "~/queries/storage";
 import { sprintf } from "sprintf-js";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
@@ -51,7 +51,7 @@ const ResultSkeleton = () => (
  * Renders information about delete actions
  */
 const DeletionsInfo = ({ manager }: { manager: DevicesManager }) => {
-  let label;
+  let label: TranslatedString;
   const systems = manager.deletedSystems();
   const deleteActions = manager.actions.filter((a) => a.delete && !a.subvol).length;
   const hasDeleteActions = deleteActions !== 0;

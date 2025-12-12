@@ -188,7 +188,7 @@ describe("Page", () => {
     });
 
     it("renders a section node", () => {
-      plainRender(<Page.Section aria-label="A Page Section">The Content</Page.Section>);
+      plainRender(<Page.Section aria-label={_("A Page Section")}>The Content</Page.Section>);
       const section = screen.getByRole("region");
       within(section).getByText("The Content");
     });
@@ -202,7 +202,7 @@ describe("Page", () => {
 
       // aria-label is given through Page.Section props
       rerender(
-        <Page.Section title="A Page Section" aria-label="An aria label">
+        <Page.Section title="A Page Section" aria-label={_("An aria label")}>
           The Content
         </Page.Section>,
       );
