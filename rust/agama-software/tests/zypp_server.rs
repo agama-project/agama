@@ -20,12 +20,15 @@
 
 use agama_software::state::{Repository as StateRepository, SoftwareState};
 use agama_software::zypp_server::{SoftwareAction, ZyppServer, ZyppServerResult};
-use agama_utils::actor;
-use agama_utils::api::event::Event;
-use agama_utils::api::question::{Answer, AnswerRule, Config};
-use agama_utils::api::Issue;
-use agama_utils::progress;
-use agama_utils::question;
+use agama_utils::{
+    actor,
+    api::{
+        event::Event,
+        question::{Answer, AnswerRule, Config},
+        Issue,
+    },
+    progress, question,
+};
 use camino::Utf8Path;
 use glob::glob;
 use std::fs;

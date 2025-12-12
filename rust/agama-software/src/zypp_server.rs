@@ -117,9 +117,6 @@ impl ZyppServer {
             root_dir: root_dir.as_ref().to_path_buf(),
         };
 
-        // see https://docs.rs/tokio/latest/tokio/task/struct.LocalSet.html#use-inside-tokiospawn for explain how to ensure that zypp
-        // runs locally on single thread
-
         // drop the returned JoinHandle: the thread will be detached
         // but that's OK for it to run until the process dies
         std::thread::spawn(move || server.run());
@@ -131,19 +128,23 @@ impl ZyppServer {
         let zypp = self.initialize_target_dir()?;
 
         loop {
-            // well, the code here can look a bit tricky, but what happens in reality here is that we need synchronized code
+            // what happens here is that we need synchronized code
             // and only for small async interface run it in blocking way. Receiver handling is done to explicit passing
             // of ownership as receiver do not implement Copy.
+            // It creates own runtime here as we are on dedicated zypp thread and there is no tokio runtime yet. So we
+            // create a new one with single thread to run tasks in its own dedicated thread.
+            // unwrap OK: unwrap is fine as if we eat all IO resources, we are doomed, so failing is good solution
             let rt = tokio::runtime::Builder::new_current_thread()
                 .enable_all()
                 .build()
                 .unwrap();
             let res = rt.spawn(async move { (self.receiver.recv().await, self.receiver) });
+            // unwrap OK: receiver hopefuly should not panic when just receiving message
             let (action, receiver) = rt.block_on(res).unwrap();
             self.receiver = receiver;
 
             let Some(action) = action else {
-                tracing::warn!("Software action channel closed");
+                tracing::info!("Software action channel closed. So time for rest in peace.");
                 break;
             };
 
@@ -366,7 +367,10 @@ impl ZyppServer {
             Err(error) => println!("Solver failed: {error}"),
         };
 
-        tx.send(Ok(issues)).unwrap();
+        if let Err(e) = tx.send(Ok(issues)) {
+            tracing::error!("failed to send list of issues after write: {:?}", e);
+            // It is OK to return ok, when tx is closed, we have no other way to indicate issue.
+        }
         Ok(())
     }
 
@@ -519,6 +523,7 @@ impl ZyppServer {
     }
 
     fn import_gpg_keys(&self, zypp: &zypp_agama::Zypp) {
+        // unwrap OK: glob pattern is created by us
         for file in glob::glob(GPG_KEYS).unwrap() {
             match file {
                 Ok(file) => {
