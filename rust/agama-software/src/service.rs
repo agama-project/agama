@@ -28,7 +28,7 @@ use agama_utils::{
     actor::{self, Actor, Handler, MessageHandler},
     api::{
         event::{self, Event},
-        software::{Config, Proposal, Repository, SoftwareProposal, SystemInfo},
+        software::{Config, Proposal, Repository, SystemInfo},
         Issue, Scope,
     },
     issue,
@@ -304,20 +304,6 @@ impl MessageHandler<message::SetConfig<Config>> for Service {
 
         Ok(())
     }
-}
-
-async fn compute_proposal(
-    model: Arc<Mutex<dyn ModelAdapter + Send + 'static>>,
-    product_spec: ProductSpec,
-    wanted: SoftwareState,
-    progress: Handler<progress::Service>,
-) -> Result<(SoftwareProposal, SystemInfo, Vec<Issue>), Error> {
-    let mut my_model = model.lock().await;
-    my_model.set_product(product_spec);
-    let issues = my_model.write(wanted, progress).await?;
-    let proposal = my_model.proposal().await?;
-    let system = my_model.system_info().await?;
-    Ok((proposal, system, issues))
 }
 
 #[async_trait]

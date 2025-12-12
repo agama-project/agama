@@ -20,7 +20,7 @@
 
 use std::{
     fs::File,
-    io::{self, BufReader, Read, Seek, SeekFrom, Write},
+    io::{self, Read, Seek, SeekFrom, Write},
     path::{Path, PathBuf},
     process::ExitStatus,
 };
