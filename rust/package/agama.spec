@@ -223,6 +223,7 @@ echo $PATH
 %{_bindir}/agama-web-server
 %{_pam_vendordir}/agama
 %{_unitdir}/agama-web-server.service
+%dir %{_datadir}/agama/eula
 
 %files -n agama-autoinstall
 %{_bindir}/agama-autoinstall
