@@ -51,8 +51,7 @@ import { deviceSystems, isDrive } from "~/storage/device";
 import partitionableModel from "~/model/storage/partitionable-model";
 import volumeGroupModel from "~/model/storage/volume-group-model";
 import { useConfigModel } from "~/hooks/model/storage";
-import type { Data } from "~/storage";
-import type { ConfigModel } from "~/model/storage/config-model";
+import type { ConfigModel, Data } from "~/model/storage/config-model";
 import type { Storage } from "~/model/system";
 
 /**

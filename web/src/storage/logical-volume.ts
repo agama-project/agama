@@ -20,9 +20,9 @@
  * find current contact information at www.suse.com.
  */
 
-import { copyApiModel, buildLogicalVolume } from "~/storage/api-model";
-import type { ConfigModel } from "~/model/storage/config-model";
-import type { Data } from "~/storage";
+import configModel from "~/model/storage/config-model";
+import logicalVolumeModel from "~/model/storage/logical-volume-model";
+import type { ConfigModel, Data } from "~/model/storage/config-model";
 
 function findVolumeGroupIndex(config: ConfigModel.Config, vgName: string): number {
   return (config.volumeGroups || []).findIndex((v) => v.vgName === vgName);
@@ -37,13 +37,13 @@ function addLogicalVolume(
   vgName: string,
   data: Data.LogicalVolume,
 ): ConfigModel.Config {
-  config = copyApiModel(config);
+  config = configModel.clone(config);
 
   const vgIndex = findVolumeGroupIndex(config, vgName);
   if (vgIndex === -1) return config;
 
   const volumeGroup = config.volumeGroups[vgIndex];
-  const logicalVolume = buildLogicalVolume(data);
+  const logicalVolume = logicalVolumeModel.create(data);
 
   volumeGroup.logicalVolumes ||= [];
   volumeGroup.logicalVolumes.push(logicalVolume);
@@ -57,7 +57,7 @@ function editLogicalVolume(
   mountPath: string,
   data: Data.LogicalVolume,
 ): ConfigModel.Config {
-  config = copyApiModel(config);
+  config = configModel.clone(config);
 
   const vgIndex = findVolumeGroupIndex(config, vgName);
   if (vgIndex === -1) return config;
@@ -68,7 +68,7 @@ function editLogicalVolume(
   if (lvIndex === -1) return config;
 
   const oldLogicalVolume = volumeGroup.logicalVolumes[lvIndex];
-  const newLogicalVolume = { ...oldLogicalVolume, ...buildLogicalVolume(data) };
+  const newLogicalVolume = { ...oldLogicalVolume, ...logicalVolumeModel.create(data) };
 
   volumeGroup.logicalVolumes.splice(lvIndex, 1, newLogicalVolume);
 
@@ -80,7 +80,7 @@ function deleteLogicalVolume(
   vgName: string,
   mountPath: string,
 ): ConfigModel.Config {
-  config = copyApiModel(config);
+  config = configModel.clone(config);
 
   const vgIndex = findVolumeGroupIndex(config, vgName);
   if (vgIndex === -1) return config;

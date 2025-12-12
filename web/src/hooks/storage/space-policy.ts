@@ -22,8 +22,8 @@
 
 import { useConfigModel } from "~/hooks/model/storage";
 import { putStorageModel } from "~/api";
-import { Data } from "~/storage";
 import { setSpacePolicy } from "~/storage/space-policy";
+import type { Data } from "~/model/storage/config-model";
 
 type setSpacePolicyFn = (
   collection: string,

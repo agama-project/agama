@@ -58,15 +58,14 @@ import { useVolumeTemplate } from "~/hooks/model/system/storage";
 import { useVolumeGroup } from "~/hooks/storage/volume-group";
 import { useAddLogicalVolume, useEditLogicalVolume } from "~/hooks/storage/logical-volume";
 import { addLogicalVolume, editLogicalVolume } from "~/storage/logical-volume";
-import { buildLogicalVolumeName } from "~/storage/api-model";
+import logicalVolumeModel from "~/model/storage/logical-volume-model";
 import { STORAGE as PATHS } from "~/routes/paths";
 import { unique } from "radashi";
 import { compact } from "~/utils";
 import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
 import SizeModeSelect, { SizeMode, SizeRange } from "~/components/storage/SizeModeSelect";
-import type { ConfigModel } from "~/model/storage/config-model";
-import type { Data } from "~/storage";
+import type { ConfigModel, Data } from "~/model/storage/config-model";
 
 const NO_VALUE = "";
 const BTRFS_SNAPSHOTS = "btrfsSnapshots";
@@ -644,7 +643,7 @@ export default function LogicalVolumePage() {
       setAutoRefreshFilesystem(true);
       setAutoRefreshSize(true);
       setMountPoint(value);
-      setName(buildLogicalVolumeName(value));
+      setName(logicalVolumeModel.generateName(value));
     }
   };
 

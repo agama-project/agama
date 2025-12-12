@@ -21,7 +21,12 @@
  */
 
 import { sift } from "radashi";
-import type { ConfigModel } from "~/model/storage/config-model";
+import type { ConfigModel, Data } from "~/model/storage/config-model";
+
+function create(data: Data.VolumeGroup): ConfigModel.VolumeGroup {
+  const defaultVolumeGroup = { vgName: "system", targetDevices: [] };
+  return { ...defaultVolumeGroup, ...data };
+}
 
 function usedMountPaths(volumeGroup: ConfigModel.VolumeGroup): string[] {
   const mountPaths = (volumeGroup.logicalVolumes || []).map((l) => l.mountPath);
@@ -43,4 +48,4 @@ function filterTargetDevices(
   return candidateTargetDevices(config).filter((d) => volumeGroup.targetDevices.includes(d.name));
 }
 
-export default { usedMountPaths, filterTargetDevices };
+export default { create, usedMountPaths, filterTargetDevices };

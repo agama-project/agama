@@ -21,16 +21,12 @@
  */
 
 import { isUsed, deleteIfUnused } from "~/storage/search";
-import {
-  copyApiModel,
-  partitionables,
-  findDevice,
-  buildVolumeGroup,
-  buildLogicalVolumeFromPartition,
-  buildPartitionFromLogicalVolume,
-} from "~/storage/api-model";
-import type { ConfigModel } from "~/model/storage/config-model";
-import type { Data } from "~/storage";
+import { findDevice } from "~/storage/api-model";
+import configModel from "~/model/storage/config-model";
+import partitionModel from "~/model/storage/partition-model";
+import logicalVolumeModel from "~/model/storage/logical-volume-model";
+import volumeGroupModel from "~/model/storage/volume-group-model";
+import type { ConfigModel, Data } from "~/model/storage/config-model";
 
 function movePartitions(
   device: ConfigModel.Drive | ConfigModel.MdRaid,
@@ -44,7 +40,7 @@ function movePartitions(
   const logicalVolumes = volumeGroup.logicalVolumes || [];
   volumeGroup.logicalVolumes = [
     ...logicalVolumes,
-    ...newPartitions.map(buildLogicalVolumeFromPartition),
+    ...newPartitions.map(logicalVolumeModel.createFromPartition),
   ];
 }
 
@@ -69,13 +65,14 @@ function addVolumeGroup(
   data: Data.VolumeGroup,
   moveContent: boolean,
 ): ConfigModel.Config {
-  config = copyApiModel(config);
+  config = configModel.clone(config);
   adjustSpacePolicies(config, data.targetDevices);
 
-  const volumeGroup = buildVolumeGroup(data);
+  const volumeGroup = volumeGroupModel.create(data);
 
   if (moveContent) {
-    partitionables(config)
+    configModel
+      .filterPartitionableDevices(config)
       .filter((d) => data.targetDevices.includes(d.name))
       .forEach((d) => movePartitions(d, volumeGroup));
   }
@@ -96,12 +93,15 @@ function newVgName(config: ConfigModel.Config): string {
 }
 
 function deviceToVolumeGroup(config: ConfigModel.Config, devName: string): ConfigModel.Config {
-  config = copyApiModel(config);
+  config = configModel.clone(config);
 
-  const device = partitionables(config).find((d) => d.name === devName);
+  const device = configModel.filterPartitionableDevices(config).find((d) => d.name === devName);
   if (!device) return config;
 
-  const volumeGroup = buildVolumeGroup({ vgName: newVgName(config), targetDevices: [devName] });
+  const volumeGroup = volumeGroupModel.create({
+    vgName: newVgName(config),
+    targetDevices: [devName],
+  });
   movePartitions(device, volumeGroup);
   config.volumeGroups ||= [];
   config.volumeGroups.push(volumeGroup);
@@ -114,13 +114,13 @@ function editVolumeGroup(
   vgName: string,
   data: Data.VolumeGroup,
 ): ConfigModel.Config {
-  config = copyApiModel(config);
+  config = configModel.clone(config);
 
   const index = (config.volumeGroups || []).findIndex((v) => v.vgName === vgName);
   if (index === -1) return config;
 
   const oldVolumeGroup = config.volumeGroups[index];
-  const newVolumeGroup = { ...oldVolumeGroup, ...buildVolumeGroup(data) };
+  const newVolumeGroup = { ...oldVolumeGroup, ...volumeGroupModel.create(data) };
 
   adjustSpacePolicies(config, newVolumeGroup.targetDevices);
 
@@ -133,7 +133,7 @@ function editVolumeGroup(
 }
 
 function volumeGroupToPartitions(config: ConfigModel.Config, vgName: string): ConfigModel.Config {
-  config = copyApiModel(config);
+  config = configModel.clone(config);
 
   const index = (config.volumeGroups || []).findIndex((v) => v.vgName === vgName);
   if (index === -1) return config;
@@ -141,19 +141,24 @@ function volumeGroupToPartitions(config: ConfigModel.Config, vgName: string): Co
   const targetDevice = config.volumeGroups[index].targetDevices[0];
   if (!targetDevice) return config;
 
-  const device = partitionables(config).find((d) => d.name === targetDevice);
+  const device = configModel
+    .filterPartitionableDevices(config)
+    .find((d) => d.name === targetDevice);
   if (!device) return config;
 
   const logicalVolumes = config.volumeGroups[index].logicalVolumes || [];
   config.volumeGroups.splice(index, 1);
   const partitions = device.partitions || [];
-  device.partitions = [...partitions, ...logicalVolumes.map(buildPartitionFromLogicalVolume)];
+  device.partitions = [
+    ...partitions,
+    ...logicalVolumes.map(partitionModel.createFromLogicalVolume),
+  ];
 
   return config;
 }
 
 function deleteVolumeGroup(config: ConfigModel.Config, vgName: string): ConfigModel.Config {
-  config = copyApiModel(config);
+  config = configModel.clone(config);
 
   const index = (config.volumeGroups || []).findIndex((v) => v.vgName === vgName);
   if (index === -1) return config;
@@ -163,13 +168,13 @@ function deleteVolumeGroup(config: ConfigModel.Config, vgName: string): ConfigMo
   config.volumeGroups.splice(index, 1);
   if (!targetDevices.length) return config;
 
-  let deletedApiModel = copyApiModel(config);
+  let deletedConfig = configModel.clone(config);
   targetDevices.forEach((d) => {
-    deletedApiModel = deleteIfUnused(deletedApiModel, d);
+    deletedConfig = deleteIfUnused(deletedConfig, d);
   });
 
   // Do not delete the underlying drives if that results in an empty configuration
-  return partitionables(deletedApiModel).length ? deletedApiModel : config;
+  return configModel.filterPartitionableDevices(deletedConfig).length ? deletedConfig : config;
 }
 
 export {

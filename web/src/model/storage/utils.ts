@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024-2025] SUSE LLC
+ * Copyright (c) [2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -20,4 +20,21 @@
  * find current contact information at www.suse.com.
  */
 
-export * as Data from "~/storage/data";
+import type { ConfigModel, Data } from "~/model/storage/config-model";
+
+function createFilesystem(data: Data.Filesystem): ConfigModel.Filesystem {
+  return {
+    ...data,
+    default: false,
+  };
+}
+
+function createSize(data?: Data.Size): ConfigModel.Size {
+  return {
+    ...data,
+    default: false,
+    min: data.min || 0,
+  };
+}
+
+export { createFilesystem, createSize };

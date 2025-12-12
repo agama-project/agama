@@ -20,7 +20,27 @@
  * find current contact information at www.suse.com.
  */
 
-import type { ConfigModel } from "~/model/storage/config-model";
+import { createFilesystem, createSize } from "~/model/storage/utils";
+import type { ConfigModel, Data } from "~/model/storage/config-model";
+
+function create(data: Data.Partition): ConfigModel.Partition {
+  return {
+    ...data,
+    filesystem: data.filesystem ? createFilesystem(data.filesystem) : undefined,
+    size: data.size ? createSize(data.size) : undefined,
+    // Using the ESP partition id for /boot/efi may not be strictly required, but it is
+    // a good practice. Let's force it here since it cannot be selected in the UI.
+    id: data.mountPath === "/boot/efi" ? "esp" : undefined,
+  };
+}
+
+function createFromLogicalVolume(lv: ConfigModel.LogicalVolume): ConfigModel.Partition {
+  return {
+    mountPath: lv.mountPath,
+    filesystem: lv.filesystem,
+    size: lv.size,
+  };
+}
 
 function isNew(partition: ConfigModel.Partition): boolean {
   return !partition.name;
@@ -38,4 +58,4 @@ function isUsedBySpacePolicy(partition: ConfigModel.Partition): boolean {
   return partition.resizeIfNeeded || partition.delete || partition.deleteIfNeeded;
 }
 
-export default { isNew, isUsed, isReused, isUsedBySpacePolicy };
+export default { create, createFromLogicalVolume, isNew, isUsed, isReused, isUsedBySpacePolicy };

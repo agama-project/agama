@@ -30,8 +30,7 @@ import {
   deviceToVolumeGroup,
 } from "~/storage/volume-group";
 import { useModel } from "~/hooks/storage/model";
-import type { Data } from "~/storage";
-import type { ConfigModel } from "~/model/storage/config-model";
+import type { ConfigModel, Data } from "~/model/storage/config-model";
 
 function useVolumeGroup(vgName: string): ConfigModel.VolumeGroup | null {
   const model = useModel();

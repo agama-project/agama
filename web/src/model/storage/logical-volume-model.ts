@@ -19,40 +19,27 @@
  * To contact SUSE LLC about this file by physical or electronic mail, you may
  * find current contact information at www.suse.com.
  */
-import configModel from "~/model/storage/config-model";
+
+import { createFilesystem, createSize } from "~/model/storage/utils";
 import type { ConfigModel, Data } from "~/model/storage/config-model";
 
-function findDevice(
-  config: ConfigModel.Config,
-  list: string,
-  index: number | string,
-): ConfigModel.Drive | ConfigModel.MdRaid | null {
-  return (config[list] || []).at(index) || null;
+function create(data: Data.LogicalVolume): ConfigModel.LogicalVolume {
+  return {
+    ...data,
+    filesystem: data.filesystem ? createFilesystem(data.filesystem) : undefined,
+    size: data.size ? createSize(data.size) : undefined,
+  };
 }
 
-function configureFilesystem(
-  config: ConfigModel.Config,
-  list: string,
-  index: number | string,
-  data: Data.Formattable,
-): ConfigModel.Config {
-  config = configModel.clone(config);
-
-  const device = findDevice(config, list, index);
-  if (!device) return config;
-
-  device.mountPath = data.mountPath;
-
-  if (data.filesystem) {
-    device.filesystem = {
-      default: false,
-      ...data.filesystem,
-    };
-  } else {
-    device.filesystem = undefined;
-  }
-
-  return config;
+function generateName(mountPath: string): string {
+  return mountPath === "/" ? "root" : mountPath.split("/").pop();
 }
 
-export { configureFilesystem };
+function createFromPartition(partition: ConfigModel.Partition): ConfigModel.LogicalVolume {
+  return {
+    ...partition,
+    lvName: partition.mountPath ? generateName(partition.mountPath) : undefined,
+  };
+}
+
+export default { create, generateName, createFromPartition };

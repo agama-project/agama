@@ -63,8 +63,7 @@ import { sprintf } from "sprintf-js";
 import { STORAGE as PATHS } from "~/routes/paths";
 import { unique } from "radashi";
 import { compact } from "~/utils";
-import type { Data } from "~/storage";
-import type { ConfigModel } from "~/model/storage/config-model";
+import type { ConfigModel, Data } from "~/model/storage/config-model";
 import type { Storage as System } from "~/model/system";
 
 const NO_VALUE = "";
