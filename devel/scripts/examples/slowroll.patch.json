@@ -1,0 +1,13 @@
+{
+  "update": {
+    "product": {
+      "id": "Slowroll"
+    },
+    "software": {
+      "patterns": [
+        "gnome",
+        "kde"
+      ]
+    }
+  }
+}
