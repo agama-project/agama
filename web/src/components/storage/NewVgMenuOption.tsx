@@ -39,7 +39,7 @@ export default function NewVgMenuOption({ device }: NewVgMenuOptionProps): React
 
   if (device.filesystem) return;
 
-  const vgs = partitionableModel.selectVolumeGroups(device, config);
+  const vgs = partitionableModel.filterVolumeGroups(device, config);
   const paths = device.partitions.filter((p) => !p.name).map((p) => formattedPath(p.mountPath));
   const displayName = deviceBaseName(device, true);
 

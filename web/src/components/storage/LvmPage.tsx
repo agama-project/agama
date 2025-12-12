@@ -114,7 +114,7 @@ export default function LvmPage() {
     if (volumeGroup) {
       setName(volumeGroup.vgName);
       const targetNames = volumeGroupModel
-        .selectTargetDevices(volumeGroup, config)
+        .filterTargetDevices(volumeGroup, config)
         .map((d) => d.name);
       const targetDevices = allDevices.filter((d) => targetNames.includes(d.name));
       setSelectedDevices(targetDevices);

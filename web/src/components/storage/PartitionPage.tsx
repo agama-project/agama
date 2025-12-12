@@ -258,7 +258,7 @@ function useUnusedPartitions(): System.Device[] {
   const initialPartitionConfig = useInitialPartitionConfig();
   const deviceModel = useDeviceModelFromParams();
   const configuredPartitionConfigs = partitionableModel
-    .selectConfiguredExistingPartitions(deviceModel)
+    .filterConfiguredExistingPartitions(deviceModel)
     .filter((p) => p.name !== initialPartitionConfig?.name)
     .map((p) => p.name);
 

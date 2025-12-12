@@ -46,17 +46,17 @@ function findPartition(
   return device.partitions.find((p) => p.mountPath === mountPath);
 }
 
-function selectVolumeGroups(
+function filterVolumeGroups(
   device: Partitionable,
   config: ConfigModel.Config,
 ): ConfigModel.VolumeGroup[] {
   const volumeGroups = config.volumeGroups || [];
   return volumeGroups.filter((v) =>
-    volumeGroupModel.selectTargetDevices(v, config).some((d) => d.name === device.name),
+    volumeGroupModel.filterTargetDevices(v, config).some((d) => d.name === device.name),
   );
 }
 
-function selectConfiguredExistingPartitions(device: Partitionable): ConfigModel.Partition[] {
+function filterConfiguredExistingPartitions(device: Partitionable): ConfigModel.Partition[] {
   if (device.spacePolicy === "custom")
     return device.partitions.filter(
       (p) =>
@@ -72,6 +72,6 @@ export {
   isAddingPartitions,
   isReusingPartitions,
   findPartition,
-  selectVolumeGroups,
-  selectConfiguredExistingPartitions,
+  filterVolumeGroups,
+  filterConfiguredExistingPartitions,
 };

@@ -103,7 +103,7 @@ type ChangeDeviceDescriptionProps = {
 const ChangeDeviceDescription = ({ modelDevice, device }: ChangeDeviceDescriptionProps) => {
   const config = useConfigModel();
   const name = baseName(device);
-  const volumeGroups = partitionableModel.selectVolumeGroups(modelDevice, config);
+  const volumeGroups = partitionableModel.filterVolumeGroups(modelDevice, config);
   const isExplicitBoot = configModel.isExplicitBootDevice(config, modelDevice.name);
   const isBoot = configModel.isBootDevice(config, modelDevice.name);
   const mountPaths = partitionableModel.usedMountPaths(modelDevice);

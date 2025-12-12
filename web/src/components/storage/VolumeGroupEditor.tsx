@@ -63,7 +63,7 @@ const DeleteVgOption = ({ vg }: { vg: ConfigModel.VolumeGroup }) => {
   const config = useConfigModel();
   const deleteVolumeGroup = useDeleteVolumeGroup();
   const lvs = vg.logicalVolumes.map((lv) => formattedPath(lv.mountPath));
-  const targetDevices = volumeGroupModel.selectTargetDevices(vg, config);
+  const targetDevices = volumeGroupModel.filterTargetDevices(vg, config);
   const convert = targetDevices.length === 1 && !!lvs.length;
   let description;
 

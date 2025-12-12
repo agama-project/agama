@@ -36,11 +36,11 @@ function candidateTargetDevices(
   return [...drives, ...mdRaids];
 }
 
-function selectTargetDevices(
+function filterTargetDevices(
   volumeGroup: ConfigModel.VolumeGroup,
   config: ConfigModel.Config,
 ): (ConfigModel.Drive | ConfigModel.MdRaid)[] {
   return candidateTargetDevices(config).filter((d) => volumeGroup.targetDevices.includes(d.name));
 }
 
-export { usedMountPaths, selectTargetDevices };
+export { usedMountPaths, filterTargetDevices };
