@@ -459,7 +459,7 @@ impl Service {
         Ok(())
     }
 
-    async fn ensure_stage(&self, expected: Stage) -> Result<(), Error> {
+    async fn check_stage(&self, expected: Stage) -> Result<(), Error> {
         let current = self.progress.call(progress::message::GetStage).await?;
         if current != expected {
             return Err(Error::UnexpectedStage { expected, current });
@@ -537,7 +537,7 @@ impl MessageHandler<message::GetConfig> for Service {
 impl MessageHandler<message::SetConfig> for Service {
     /// Sets the user configuration with the given values.
     async fn handle(&mut self, message: message::SetConfig) -> Result<(), Error> {
-        self.ensure_stage(Stage::Configuring).await?;
+        self.check_stage(Stage::Configuring).await?;
         self.set_config(message.config).await
     }
 }
@@ -561,7 +561,7 @@ impl MessageHandler<message::UpdateConfig> for Service {
     /// It merges the current config with the given one. If some scope is missing in the given
     /// config, then it keeps the values from the current config.
     async fn handle(&mut self, message: message::UpdateConfig) -> Result<(), Error> {
-        self.ensure_stage(Stage::Configuring).await?;
+        self.check_stage(Stage::Configuring).await?;
         let config = merge(&self.config, &message.config).map_err(|_| Error::MergeConfig)?;
         let config = merge_network(config, message.config);
         self.update_config(config).await
@@ -608,7 +608,7 @@ impl MessageHandler<message::GetLicense> for Service {
 impl MessageHandler<message::RunAction> for Service {
     /// It runs the given action.
     async fn handle(&mut self, message: message::RunAction) -> Result<(), Error> {
-        self.ensure_stage(Stage::Configuring).await?;
+        self.check_stage(Stage::Configuring).await?;
 
         match message.action {
             Action::ConfigureL10n(config) => {
@@ -648,7 +648,7 @@ impl MessageHandler<message::GetStorageModel> for Service {
 impl MessageHandler<message::SetStorageModel> for Service {
     /// It sets the storage model.
     async fn handle(&mut self, message: message::SetStorageModel) -> Result<(), Error> {
-        self.ensure_stage(Stage::Configuring).await?;
+        self.check_stage(Stage::Configuring).await?;
         Ok(self
             .storage
             .call(storage::message::SetConfigModel::new(message.model))
@@ -663,7 +663,7 @@ impl MessageHandler<message::SolveStorageModel> for Service {
         &mut self,
         message: message::SolveStorageModel,
     ) -> Result<Option<Value>, Error> {
-        self.ensure_stage(Stage::Configuring).await?;
+        self.check_stage(Stage::Configuring).await?;
         Ok(self
             .storage
             .call(storage::message::SolveConfigModel::new(message.model))
@@ -676,7 +676,7 @@ impl MessageHandler<message::SolveStorageModel> for Service {
 impl MessageHandler<software::message::SetResolvables> for Service {
     /// It sets the software resolvables.
     async fn handle(&mut self, message: software::message::SetResolvables) -> Result<(), Error> {
-        self.ensure_stage(Stage::Configuring).await?;
+        self.check_stage(Stage::Configuring).await?;
         self.software.call(message).await?;
         Ok(())
     }
