@@ -1,9 +1,26 @@
 -------------------------------------------------------------------
-Thu Nov  6 22:26:46 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+Fri Dec 12 06:21:47 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Fix systemd target import from AutoYaST profiles
   (gh#agama-project/agama#2826).
   
+-------------------------------------------------------------------
+Thu Nov 13 13:30:58 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Do not build on 32bit arches (like i586) and PPC64-BE,
+  the dependant libsuseconnect does not support these (bsc#1251846)
+
+-------------------------------------------------------------------
+Wed Nov 12 15:42:26 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 18
+
+-------------------------------------------------------------------
+Fri Nov  7 15:14:51 UTC 2025 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Fixed an error in the calculation of partitions when several
+  MD RAIDs are created (bsc#1253145).
+
 -------------------------------------------------------------------
 Fri Oct 31 13:48:46 UTC 2025 - Ancor Gonzalez Sosa <ancor@suse.com>
 

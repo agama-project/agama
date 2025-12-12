@@ -12,6 +12,7 @@ const StylelintPlugin = require("stylelint-webpack-plugin");
 const TsconfigPathsPlugin = require("tsconfig-paths-webpack-plugin");
 const ReactRefreshWebpackPlugin = require("@pmmmwh/react-refresh-webpack-plugin");
 const ReactRefreshTypeScript = require("react-refresh-typescript");
+const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
 const webpack = require("webpack");
 
 /* A standard nodejs and webpack pattern */
@@ -54,6 +55,9 @@ const plugins = [
     // themselves and do not provide any value because there are basically just arrays of texts
     exclude: /po-.*\.js$/,
   }),
+  // run the TypeScript type checks in a parallel process (report the problems to the dev server in
+  // the development mode)
+  new ForkTsCheckerWebpackPlugin({ devServer: development }),
 ].filter(Boolean);
 
 if (eslint) {
@@ -165,7 +169,10 @@ module.exports = {
               getCustomTransformers: () => ({
                 before: [development && ReactRefreshTypeScript.default()].filter(Boolean),
               }),
-              transpileOnly: development,
+              // skip the TypeScript type checks in the TS loader, the types are checked by the
+              // "fork-ts-checker-webpack-plugin" which runs the checks in parallel in a separate
+              // process to not block the main webpack build process
+              transpileOnly: true,
             },
           },
         ],

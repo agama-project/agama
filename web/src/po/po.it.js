@@ -6,6 +6,12 @@ export default {
   " Timezone selection": [
     " Selezione fuso orario"
   ],
+  "\"%s\"": [
+    ""
+  ],
+  "\"%s\" does not exist or is no longer available.": [
+    ""
+  ],
   "%1$s (%2$s)": [
     "%1$s (%2$s)"
   ],
@@ -905,6 +911,9 @@ export default {
   ],
   "If you continue, partitions on your hard disk will be modified according to the provided installation settings.": [
     "Se continui, le partizioni del disco rigido saranno modificate in base alle impostazioni di installazione fornite."
+  ],
+  "If you want to disable this check, please specify \"inst.ay_check=0\" at kernel's command-line": [
+    ""
   ],
   "In progress": [
     "In corso"
@@ -1910,6 +1919,9 @@ export default {
   ],
   "The password will not be needed to boot and access the data if the TPM can verify the integrity of the system. TPM sealing requires the new system to be booted directly on its first run.": [
     "Non sarà necessaria la password per avviare e accedere ai dati se TPM è in grado di verificare l'integrità del sistema. La sigillatura del TPM richiede che il nuovo sistema venga avviato direttamente alla sua prima esecuzione."
+  ],
+  "The product will be registered with \"%s\" hostname": [
+    ""
   ],
   "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of a separate file system for %2$s.": [
     "La dimensione di %1$s verrà regolata dinamicamente in base alla quantità di RAM nel sistema e alla presenza di un file system separato per %2$s."

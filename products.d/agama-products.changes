@@ -1,4 +1,26 @@
 -------------------------------------------------------------------
+Tue Dec  2 12:40:33 UTC 2025 - Dominique Leuenberger <dimstar@opensuse.org>
+
+- Do not list yast2 patterns and do not pre-install yast
+  (boo#1254414).
+
+-------------------------------------------------------------------
+Thu Nov 13 13:30:58 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Do not build on 32bit arches (like i586) and PPC64-BE,
+  the dependant libsuseconnect is 64bit only (bsc#1251846)
+
+-------------------------------------------------------------------
+Thu Nov 13 09:39:58 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
+
+- Fix removal of kalpa to work also in SLE
+
+-------------------------------------------------------------------
+Wed Nov 12 15:42:28 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 18
+
+-------------------------------------------------------------------
 Fri Oct 17 19:50:58 UTC 2025 - Shawn Dunn <sfalken@opensuse.org>
 
 - Remove Kalpa from multi-distribution installation image.
