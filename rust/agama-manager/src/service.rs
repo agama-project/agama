@@ -741,6 +741,7 @@ impl InstallAction {
             .await?;
         self.l10n.call(l10n::message::Install).await?;
         self.software.call(software::message::Finish).await?;
+        self.files.call(files::message::WriteFiles).await?;
         self.storage.call(storage::message::Finish).await?;
 
         //
