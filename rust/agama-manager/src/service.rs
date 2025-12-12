@@ -682,6 +682,9 @@ impl MessageHandler<software::message::SetResolvables> for Service {
     }
 }
 
+/// Implements the installation process.
+///
+/// This action runs on a separate Tokio task to prevent the manager from blocking.
 struct InstallAction {
     l10n: Handler<l10n::Service>,
     network: NetworkSystemClient,
@@ -692,6 +695,7 @@ struct InstallAction {
 }
 
 impl InstallAction {
+    /// Runs the installation process on a separate Tokio task.
     pub fn run(mut self) {
         tokio::spawn(async move {
             self.install().await.unwrap();
