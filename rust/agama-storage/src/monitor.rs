@@ -183,7 +183,7 @@ impl Monitor {
             return Err(Error::ProgressChangedData);
         };
         self.progress
-            .cast(progress::message::Set::new(progress_data.into()))?;
+            .cast(progress::message::SetProgress::new(progress_data.into()))?;
 
         Ok(())
     }

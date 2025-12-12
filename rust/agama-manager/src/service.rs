@@ -25,7 +25,7 @@ use agama_utils::{
         self, event,
         files::scripts::ScriptsGroup,
         manager::{self, LicenseContent},
-        status::State,
+        status::Stage,
         Action, Config, Event, Issue, IssueMap, Proposal, Scope, Status, SystemInfo,
     },
     issue, licenses,
@@ -33,6 +33,7 @@ use agama_utils::{
     progress, question,
 };
 use async_trait::async_trait;
+use gettextrs::gettext;
 use merge_struct::merge;
 use network::NetworkSystemClient;
 use serde_json::Value;
@@ -75,6 +76,8 @@ pub enum Error {
     NetworkSystem(#[from] network::NetworkSystemError),
     #[error(transparent)]
     Hardware(#[from] hardware::Error),
+    #[error("Cannot dispatch this action in {current} stage (expected {expected}).")]
+    UnexpectedStage { current: Stage, expected: Stage },
 }
 
 pub struct Starter {
@@ -221,7 +224,6 @@ impl Starter {
         };
 
         let mut service = Service {
-            events: self.events,
             questions: self.questions,
             progress,
             issues,
@@ -233,8 +235,6 @@ impl Starter {
             products: products::Registry::default(),
             licenses: licenses::Registry::default(),
             hardware,
-            // FIXME: state is already used for service state.
-            state: State::Configuring,
             config: Config::default(),
             system: manager::SystemInfo::default(),
             product: None,
@@ -258,10 +258,8 @@ pub struct Service {
     licenses: licenses::Registry,
     hardware: hardware::Registry,
     product: Option<Arc<RwLock<ProductSpec>>>,
-    state: State,
     config: Config,
     system: manager::SystemInfo,
-    events: event::Sender,
 }
 
 impl Service {
@@ -424,25 +422,6 @@ impl Service {
         Ok(())
     }
 
-    async fn install(&mut self) -> Result<(), Error> {
-        self.state = State::Installing;
-        self.events.send(Event::StateChanged)?;
-        // TODO: translate progress steps.
-        self.progress
-            .call(progress::message::StartWithSteps::new(
-                Scope::Manager,
-                &["Installing l10n"],
-            ))
-            .await?;
-        self.l10n.call(l10n::message::Install).await?;
-        self.progress
-            .call(progress::message::Finish::new(Scope::Manager))
-            .await?;
-        self.state = State::Finished;
-        self.events.send(Event::StateChanged)?;
-        Ok(())
-    }
-
     fn set_product(&mut self, config: &Config) -> Result<(), Error> {
         self.product = None;
         self.update_product(config)
@@ -480,6 +459,14 @@ impl Service {
         }
         Ok(())
     }
+
+    async fn check_stage(&self, expected: Stage) -> Result<(), Error> {
+        let current = self.progress.call(progress::message::GetStage).await?;
+        if current != expected {
+            return Err(Error::UnexpectedStage { expected, current });
+        }
+        Ok(())
+    }
 }
 
 impl Actor for Service {
@@ -487,14 +474,11 @@ impl Actor for Service {
 }
 
 #[async_trait]
-impl MessageHandler<message::GetStatus> for Service {
+impl MessageHandler<progress::message::GetStatus> for Service {
     /// It returns the status of the installation.
-    async fn handle(&mut self, _message: message::GetStatus) -> Result<Status, Error> {
-        let progresses = self.progress.call(progress::message::Get).await?;
-        Ok(Status {
-            state: self.state.clone(),
-            progresses,
-        })
+    async fn handle(&mut self, message: progress::message::GetStatus) -> Result<Status, Error> {
+        let status = self.progress.call(message).await?;
+        Ok(status)
     }
 }
 
@@ -554,6 +538,7 @@ impl MessageHandler<message::GetConfig> for Service {
 impl MessageHandler<message::SetConfig> for Service {
     /// Sets the user configuration with the given values.
     async fn handle(&mut self, message: message::SetConfig) -> Result<(), Error> {
+        self.check_stage(Stage::Configuring).await?;
         self.set_config(message.config).await
     }
 }
@@ -577,6 +562,7 @@ impl MessageHandler<message::UpdateConfig> for Service {
     /// It merges the current config with the given one. If some scope is missing in the given
     /// config, then it keeps the values from the current config.
     async fn handle(&mut self, message: message::UpdateConfig) -> Result<(), Error> {
+        self.check_stage(Stage::Configuring).await?;
         let config = merge(&self.config, &message.config).map_err(|_| Error::MergeConfig)?;
         let config = merge_network(config, message.config);
         self.update_config(config).await
@@ -623,6 +609,8 @@ impl MessageHandler<message::GetLicense> for Service {
 impl MessageHandler<message::RunAction> for Service {
     /// It runs the given action.
     async fn handle(&mut self, message: message::RunAction) -> Result<(), Error> {
+        self.check_stage(Stage::Configuring).await?;
+
         match message.action {
             Action::ConfigureL10n(config) => {
                 self.configure_l10n(config).await?;
@@ -634,7 +622,15 @@ impl MessageHandler<message::RunAction> for Service {
                 self.probe_storage().await?;
             }
             Action::Install => {
-                self.install().await?;
+                let action = InstallAction {
+                    l10n: self.l10n.clone(),
+                    network: self.network.clone(),
+                    software: self.software.clone(),
+                    storage: self.storage.clone(),
+                    files: self.files.clone(),
+                    progress: self.progress.clone(),
+                };
+                action.run();
             }
         }
         Ok(())
@@ -653,6 +649,7 @@ impl MessageHandler<message::GetStorageModel> for Service {
 impl MessageHandler<message::SetStorageModel> for Service {
     /// It sets the storage model.
     async fn handle(&mut self, message: message::SetStorageModel) -> Result<(), Error> {
+        self.check_stage(Stage::Configuring).await?;
         Ok(self
             .storage
             .call(storage::message::SetConfigModel::new(message.model))
@@ -667,6 +664,7 @@ impl MessageHandler<message::SolveStorageModel> for Service {
         &mut self,
         message: message::SolveStorageModel,
     ) -> Result<Option<Value>, Error> {
+        self.check_stage(Stage::Configuring).await?;
         Ok(self
             .storage
             .call(storage::message::SolveConfigModel::new(message.model))
@@ -679,7 +677,100 @@ impl MessageHandler<message::SolveStorageModel> for Service {
 impl MessageHandler<software::message::SetResolvables> for Service {
     /// It sets the software resolvables.
     async fn handle(&mut self, message: software::message::SetResolvables) -> Result<(), Error> {
+        self.check_stage(Stage::Configuring).await?;
         self.software.call(message).await?;
+        Ok(())
+    }
+}
+
+/// Implements the installation process.
+///
+/// This action runs on a separate Tokio task to prevent the manager from blocking.
+struct InstallAction {
+    l10n: Handler<l10n::Service>,
+    network: NetworkSystemClient,
+    software: Handler<software::Service>,
+    storage: Handler<storage::Service>,
+    files: Handler<files::Service>,
+    progress: Handler<progress::Service>,
+}
+
+impl InstallAction {
+    /// Runs the installation process on a separate Tokio task.
+    pub fn run(mut self) {
+        tokio::spawn(async move {
+            if let Err(error) = self.install().await {
+                tracing::error!("Installation failed: {error}");
+                if let Err(error) = self
+                    .progress
+                    .call(progress::message::SetStage::new(Stage::Failed))
+                    .await
+                {
+                    tracing::error!(
+                        "It was not possible to set the stage to {}: {error}",
+                        Stage::Failed
+                    );
+                }
+            }
+        });
+    }
+
+    async fn install(&mut self) -> Result<(), Error> {
+        // NOTE: consider a NextState message?
+        self.progress
+            .call(progress::message::SetStage::new(Stage::Installing))
+            .await?;
+
+        //
+        // Preparation
+        //
+        self.progress
+            .call(progress::message::StartWithSteps::new(
+                Scope::Manager,
+                vec![
+                    gettext("Prepare the system"),
+                    gettext("Install software"),
+                    gettext("Configure the system"),
+                ],
+            ))
+            .await?;
+
+        self.storage.call(storage::message::Install).await?;
+        self.files
+            .call(files::message::RunScripts::new(
+                ScriptsGroup::PostPartitioning,
+            ))
+            .await?;
+
+        //
+        // Installation
+        //
+        self.progress
+            .call(progress::message::Next::new(Scope::Manager))
+            .await?;
+        self.software.call(software::message::Install).await?;
+
+        //
+        // Configuration
+        //
+        self.progress
+            .call(progress::message::Next::new(Scope::Manager))
+            .await?;
+        self.l10n.call(l10n::message::Install).await?;
+        self.software.call(software::message::Finish).await?;
+        self.files.call(files::message::WriteFiles).await?;
+        self.storage.call(storage::message::Finish).await?;
+
+        //
+        // Finish progress and changes
+        //
+        self.progress
+            .call(progress::message::Finish::new(Scope::Manager))
+            .await?;
+
+        self.progress
+            .call(progress::message::SetStage::new(Stage::Finished))
+            .await?;
         Ok(())
     }
 }

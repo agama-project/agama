@@ -20,6 +20,7 @@ serde_json = "1.0.140"
 tracing = "0.1.41"
 serde = { version = "1.0.228", features = ["derive"] }
 serde_with = "3.16.1"
+gettext-rs = { version = "0.7.7", features = ["gettext-system"] }
 
 [dev-dependencies]
 test-context = "0.4.1"
