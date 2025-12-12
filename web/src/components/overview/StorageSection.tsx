@@ -27,7 +27,7 @@ import { useAvailableDevices, useDevices, useIssues } from "~/hooks/model/system
 import { useConfigModel } from "~/hooks/model/storage";
 import { _ } from "~/i18n";
 import type { Storage } from "~/model/system";
-import type { ConfigModel } from "~/model/storage";
+import type { ConfigModel } from "~/model/storage/config-model";
 
 const findDriveDevice = (drive: ConfigModel.Drive, devices: Storage.Device[]) =>
   devices.find((d) => d.name === drive.name);

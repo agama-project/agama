@@ -27,7 +27,7 @@
  * typically used by forms and mutation hooks.
  */
 
-import type { ConfigModel } from "~/model/storage";
+import type { ConfigModel } from "~/model/storage/config-model";
 
 interface Partition extends Partial<Omit<ConfigModel.Partition, "filesystem" | "size">> {
   filesystem?: Filesystem;

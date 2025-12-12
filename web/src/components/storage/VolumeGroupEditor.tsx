@@ -56,8 +56,8 @@ import { _, n_, formatList } from "~/i18n";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import spacingStyles from "@patternfly/react-styles/css/utilities/Spacing/spacing";
 import { useConfigModel } from "~/hooks/model/storage";
-import { volumeGroupModel } from "~/model/storage";
-import type { ConfigModel } from "~/model/storage";
+import volumeGroupModel from "~/model/storage/volume-group-model";
+import type { ConfigModel } from "~/model/storage/config-model";
 
 const DeleteVgOption = ({ vg }: { vg: ConfigModel.VolumeGroup }) => {
   const config = useConfigModel();

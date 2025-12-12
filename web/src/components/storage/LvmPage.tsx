@@ -48,10 +48,11 @@ import { STORAGE as PATHS } from "~/routes/paths";
 import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
 import { deviceSystems, isDrive } from "~/storage/device";
-import { partitionableModel, volumeGroupModel } from "~/model/storage";
+import partitionableModel from "~/model/storage/partitionable-model";
+import volumeGroupModel from "~/model/storage/volume-group-model";
 import { useConfigModel } from "~/hooks/model/storage";
 import type { Data } from "~/storage";
-import type { ConfigModel } from "~/model/storage";
+import type { ConfigModel } from "~/model/storage/config-model";
 import type { Storage } from "~/model/system";
 
 /**

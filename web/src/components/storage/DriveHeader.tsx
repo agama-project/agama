@@ -23,9 +23,10 @@
 import { sprintf } from "sprintf-js";
 import { deviceLabel } from "./utils";
 import { useConfigModel } from "~/hooks/model/storage";
-import { configModel, partitionableModel } from "~/model/storage";
+import configModel from "~/model/storage/config-model";
+import partitionableModel from "~/model/storage/partitionable-model";
 import { _ } from "~/i18n";
-import type { ConfigModel } from "~/model/storage";
+import type { ConfigModel } from "~/model/storage/config-model";
 import type { Storage } from "~/model/system";
 
 export type DriveHeaderProps = { drive: ConfigModel.Drive; device: Storage.Device };

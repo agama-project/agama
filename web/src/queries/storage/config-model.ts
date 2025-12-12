@@ -26,7 +26,7 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import { putStorageModel, solveStorageModel } from "~/api";
 import { useConfigModel } from "~/hooks/model/storage";
 import { useVolumeTemplates } from "~/hooks/model/system/storage";
-import type { ConfigModel } from "~/model/storage";
+import type { ConfigModel } from "~/model/storage/config-model";
 import type { Storage } from "~/model/system";
 
 function copyModel(model: ConfigModel.Config): ConfigModel.Config {

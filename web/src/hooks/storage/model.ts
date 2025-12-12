@@ -24,8 +24,8 @@ import { useCallback } from "react";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { configModelQuery } from "~/hooks/model/storage";
 import { useSystem } from "~/hooks/model/system/storage";
-import { usedMountPaths } from "~/model/storage/config-model";
-import type { ConfigModel } from "~/model/storage";
+import configModel from "~/model/storage/config-model";
+import type { ConfigModel } from "~/model/storage/config-model";
 
 function useModel(): ConfigModel.Config | null {
   const { data } = useSuspenseQuery({
@@ -40,7 +40,7 @@ function useMissingMountPaths(): string[] {
     ...configModelQuery,
     select: useCallback(
       (data: ConfigModel.Config | null): string[] => {
-        const currentMountPaths = data ? usedMountPaths(data) : [];
+        const currentMountPaths = data ? configModel.usedMountPaths(data) : [];
         return (productMountPoints || []).filter((p) => !currentMountPaths.includes(p));
       },
       [productMountPoints],

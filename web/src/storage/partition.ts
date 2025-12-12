@@ -22,7 +22,7 @@
 
 import { copyApiModel, findDevice, buildPartition } from "~/storage/api-model";
 import { isUsed } from "~/storage/search";
-import type { ConfigModel } from "~/model/storage";
+import type { ConfigModel } from "~/model/storage/config-model";
 import type { Data } from "~/storage";
 
 type Partitionable = ConfigModel.Drive | ConfigModel.MdRaid;

@@ -21,8 +21,9 @@
  */
 
 import { copyApiModel } from "~/storage/api-model";
-import { configModel, partitionableModel } from "~/model/storage";
-import type { ConfigModel } from "~/model/storage";
+import configModel from "~/model/storage/config-model";
+import partitionableModel from "~/model/storage/partitionable-model";
+import type { ConfigModel } from "~/model/storage/config-model";
 
 function isUsed(
   config: ConfigModel.Config,

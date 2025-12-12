@@ -30,7 +30,7 @@
 import xbytes from "xbytes";
 import { _, N_ } from "~/i18n";
 import { sprintf } from "sprintf-js";
-import type { ConfigModel } from "~/model/storage";
+import type { ConfigModel } from "~/model/storage/config-model";
 import type { Storage as System } from "~/model/system";
 import type { Storage as Proposal } from "~/model/proposal";
 

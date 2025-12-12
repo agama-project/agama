@@ -32,7 +32,7 @@ import { Button, Flex, FlexItem } from "@patternfly/react-core";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import { useMdRaid } from "~/hooks/storage/model";
 import { useDevice } from "~/hooks/model/system/storage";
-import type { ConfigModel } from "~/model/storage";
+import type { ConfigModel } from "~/model/storage/config-model";
 import type { Storage } from "~/model/system";
 
 type MdRaidDeviceMenuProps = {

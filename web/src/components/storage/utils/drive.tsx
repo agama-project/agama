@@ -23,9 +23,10 @@
 import { _, n_, formatList } from "~/i18n";
 import { SpacePolicy, SPACE_POLICIES, baseName, formattedPath } from "~/components/storage/utils";
 import { useConfigModel } from "~/hooks/model/storage";
-import { configModel, partitionableModel } from "~/model/storage";
+import configModel from "~/model/storage/config-model";
+import partitionableModel from "~/model/storage/partitionable-model";
 import { sprintf } from "sprintf-js";
-import type { ConfigModel } from "~/model/storage";
+import type { ConfigModel } from "~/model/storage/config-model";
 
 /**
  * String to identify the drive.

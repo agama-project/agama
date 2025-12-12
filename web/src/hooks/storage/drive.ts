@@ -25,7 +25,7 @@ import { putStorageModel } from "~/api";
 import { addDrive, deleteDrive, switchToDrive } from "~/storage/drive";
 import { useModel } from "~/hooks/storage/model";
 import type { Data } from "~/storage";
-import type { ConfigModel } from "~/model/storage";
+import type { ConfigModel } from "~/model/storage/config-model";
 
 function useDrive(name: string): ConfigModel.Drive | null {
   const model = useModel();

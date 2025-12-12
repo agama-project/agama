@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import type { ConfigModel } from "~/model/storage";
+import type { ConfigModel } from "~/model/storage/config-model";
 
 function isNew(partition: ConfigModel.Partition): boolean {
   return !partition.name;
@@ -38,4 +38,4 @@ function isUsedBySpacePolicy(partition: ConfigModel.Partition): boolean {
   return partition.resizeIfNeeded || partition.delete || partition.deleteIfNeeded;
 }
 
-export { isNew, isUsed, isReused, isUsedBySpacePolicy };
+export default { isNew, isUsed, isReused, isUsedBySpacePolicy };

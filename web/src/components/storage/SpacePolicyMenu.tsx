@@ -34,7 +34,7 @@ import { generateEncodedPath } from "~/utils";
 import { isEmpty } from "radashi";
 import { useDevice as useDeviceModel } from "~/hooks/storage/model";
 import { useDevice } from "~/hooks/model/system/storage";
-import type { ConfigModel } from "~/model/storage";
+import type { ConfigModel } from "~/model/storage/config-model";
 
 const PolicyItem = ({ policy, modelDevice, isSelected, onClick }) => {
   return (

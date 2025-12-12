@@ -29,7 +29,7 @@ import { useEncryption } from "~/queries/storage/config-model";
 import { STORAGE } from "~/routes/paths";
 import { _ } from "~/i18n";
 import PasswordCheck from "~/components/users/PasswordCheck";
-import type { ConfigModel } from "~/model/storage";
+import type { ConfigModel } from "~/model/storage/config-model";
 
 function encryptionLabel(method?: ConfigModel.EncryptionMethod) {
   if (!method) return _("Encryption is disabled");

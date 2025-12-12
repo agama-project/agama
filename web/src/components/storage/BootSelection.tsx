@@ -38,8 +38,8 @@ import {
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
-import { configModel } from "~/model/storage";
-import type { ConfigModel } from "~/model/storage";
+import configModel from "~/model/storage/config-model";
+import type { ConfigModel } from "~/model/storage/config-model";
 import type { Storage } from "~/model/system";
 
 const filteredCandidates = (

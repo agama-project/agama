@@ -20,7 +20,8 @@
  * find current contact information at www.suse.com.
  */
 
-import { volumeGroupModel, partitionableModel } from "~/model/storage";
+import partitionableModel from "~/model/storage/partitionable-model";
+import volumeGroupModel from "~/model/storage/volume-group-model";
 import type * as ConfigModel from "~/openapi/storage/config-model";
 
 function usedMountPaths(config: ConfigModel.Config): string[] {
@@ -69,7 +70,7 @@ function isUsedDevice(config: ConfigModel.Config, deviceName: string): boolean {
   );
 }
 
-export {
+export default {
   usedMountPaths,
   bootDevice,
   hasDefaultBoot,

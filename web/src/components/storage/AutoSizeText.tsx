@@ -26,7 +26,7 @@ import { SubtleContent } from "~/components/core/";
 import { deviceSize } from "~/components/storage/utils";
 import { _, formatList } from "~/i18n";
 import { sprintf } from "sprintf-js";
-import type { ConfigModel } from "~/model/storage";
+import type { ConfigModel } from "~/model/storage/config-model";
 import type { Storage } from "~/model/system";
 
 type DeviceType = "partition" | "logicalVolume";

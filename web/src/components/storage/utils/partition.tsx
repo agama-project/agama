@@ -29,7 +29,7 @@
 import { _ } from "~/i18n";
 import { sprintf } from "sprintf-js";
 import { filesystemType, formattedPath, sizeDescription } from "~/components/storage/utils";
-import type { ConfigModel } from "~/model/storage";
+import type { ConfigModel } from "~/model/storage/config-model";
 
 /**
  * String to identify the partition.

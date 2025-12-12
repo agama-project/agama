@@ -50,7 +50,7 @@ import AutoSizeText from "~/components/storage/AutoSizeText";
 import SizeModeSelect, { SizeMode, SizeRange } from "~/components/storage/SizeModeSelect";
 import AlertOutOfSync from "~/components/core/AlertOutOfSync";
 import ResourceNotFound from "~/components/core/ResourceNotFound";
-import { usedMountPaths } from "~/model/storage/config-model";
+import configModel from "~/model/storage/config-model";
 import { useAddPartition, useEditPartition } from "~/hooks/storage/partition";
 import {
   useMissingMountPaths,
@@ -72,9 +72,9 @@ import { sprintf } from "sprintf-js";
 import { STORAGE as PATHS, STORAGE } from "~/routes/paths";
 import { isUndefined, unique } from "radashi";
 import { compact } from "~/utils";
-import type { ConfigModel } from "~/model/storage";
+import partitionableModel from "~/model/storage/partitionable-model";
+import type { ConfigModel } from "~/model/storage/config-model";
 import type { Storage as System } from "~/model/system";
-import { partitionableModel } from "~/model/storage";
 
 const NO_VALUE = "";
 const NEW_PARTITION = "new";
@@ -296,7 +296,7 @@ function useUsableFilesystems(mountPoint: string): string[] {
 
 function useMountPointError(value: FormValue): Error | undefined {
   const config = useConfigModel();
-  const mountPoints = config ? usedMountPaths(config) : [];
+  const mountPoints = config ? configModel.usedMountPaths(config) : [];
   const initialPartitionConfig = useInitialPartitionConfig();
   const mountPoint = value.mountPoint;
 

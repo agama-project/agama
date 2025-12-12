@@ -34,7 +34,7 @@ import { toDevice } from "./device-utils";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import { sprintf } from "sprintf-js";
 import type { Storage as Proposal } from "~/model/proposal";
-import type { ConfigModel } from "~/model/storage";
+import type { ConfigModel } from "~/model/storage/config-model";
 
 const partitionAction = (partition: ConfigModel.Partition) => {
   if (partition.delete) return "delete";

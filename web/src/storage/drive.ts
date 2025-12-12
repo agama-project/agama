@@ -22,7 +22,7 @@
 
 import { switchSearched } from "~/storage/search";
 import { copyApiModel } from "~/storage/api-model";
-import type { ConfigModel } from "~/model/storage";
+import type { ConfigModel } from "~/model/storage/config-model";
 import type { Data } from "~/storage";
 
 function addDrive(config: ConfigModel.Config, data: Data.Drive): ConfigModel.Config {

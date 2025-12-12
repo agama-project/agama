@@ -21,7 +21,7 @@
  */
 
 import { sift } from "radashi";
-import type { ConfigModel } from "~/model/storage";
+import type { ConfigModel } from "~/model/storage/config-model";
 
 function usedMountPaths(volumeGroup: ConfigModel.VolumeGroup): string[] {
   const mountPaths = (volumeGroup.logicalVolumes || []).map((l) => l.mountPath);
@@ -43,4 +43,4 @@ function filterTargetDevices(
   return candidateTargetDevices(config).filter((d) => volumeGroup.targetDevices.includes(d.name));
 }
 
-export { usedMountPaths, filterTargetDevices };
+export default { usedMountPaths, filterTargetDevices };

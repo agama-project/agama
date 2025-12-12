@@ -51,8 +51,8 @@ import { IconProps } from "../layout/Icon";
 import { sprintf } from "sprintf-js";
 import spacingStyles from "@patternfly/react-styles/css/utilities/Spacing/spacing";
 import { toggle } from "radashi";
-import { partitionableModel } from "~/model/storage";
-import type { ConfigModel } from "~/model/storage";
+import partitionableModel from "~/model/storage/partitionable-model";
+import type { ConfigModel } from "~/model/storage/config-model";
 
 type PartitionMenuItemProps = {
   device: ConfigModel.Drive | ConfigModel.MdRaid;

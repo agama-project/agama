@@ -22,7 +22,7 @@
 
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { solveStorageModel, getStorageModel } from "~/api";
-import type { ConfigModel } from "~/model/storage";
+import type { ConfigModel } from "~/model/storage/config-model";
 
 const configModelQuery = {
   queryKey: ["storageModel"],

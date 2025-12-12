@@ -21,8 +21,9 @@
  */
 
 import { sift } from "radashi";
-import { partitionModel, volumeGroupModel } from "~/model/storage";
-import type { ConfigModel } from "~/model/storage";
+import partitionModel from "~/model/storage/partition-model";
+import volumeGroupModel from "~/model/storage/volume-group-model";
+import type { ConfigModel } from "~/model/storage/config-model";
 
 type Partitionable = ConfigModel.Drive | ConfigModel.MdRaid;
 
@@ -67,7 +68,7 @@ function filterConfiguredExistingPartitions(device: Partitionable): ConfigModel.
   return device.partitions.filter(partitionModel.isReused);
 }
 
-export {
+export default {
   usedMountPaths,
   isAddingPartitions,
   isReusingPartitions,

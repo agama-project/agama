@@ -26,7 +26,7 @@ import FilesystemMenu from "~/components/storage/FilesystemMenu";
 import PartitionsSection from "~/components/storage/PartitionsSection";
 import SpacePolicyMenu from "~/components/storage/SpacePolicyMenu";
 import { useConfigModel } from "~/hooks/model/storage";
-import { configModel } from "~/model/storage";
+import configModel from "~/model/storage/config-model";
 
 type DeviceEditorContentProps = {
   collection: "drives" | "mdRaids";

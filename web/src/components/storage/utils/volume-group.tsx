@@ -23,7 +23,7 @@
 import { _, n_, formatList } from "~/i18n";
 import { formattedPath } from "~/components/storage/utils";
 import { sprintf } from "sprintf-js";
-import type { ConfigModel } from "~/model/storage";
+import type { ConfigModel } from "~/model/storage/config-model";
 
 const contentDescription = (vg: ConfigModel.VolumeGroup): string => {
   if (vg.logicalVolumes.length === 0) return _("No logical volumes are defined yet");

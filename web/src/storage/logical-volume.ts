@@ -21,7 +21,7 @@
  */
 
 import { copyApiModel, buildLogicalVolume } from "~/storage/api-model";
-import type { ConfigModel } from "~/model/storage";
+import type { ConfigModel } from "~/model/storage/config-model";
 import type { Data } from "~/storage";
 
 function findVolumeGroupIndex(config: ConfigModel.Config, vgName: string): number {

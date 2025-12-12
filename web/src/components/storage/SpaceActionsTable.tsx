@@ -42,7 +42,7 @@ import { Table, Td, Th, Tr, Thead, Tbody } from "@patternfly/react-table";
 import { useConfigModel } from "~/hooks/model/storage";
 import { supportShrink } from "~/storage/device";
 import type { Storage as Proposal } from "~/model/proposal";
-import type { ConfigModel } from "~/model/storage";
+import type { ConfigModel } from "~/model/storage/config-model";
 
 export type SpacePolicyAction = {
   deviceName: string;

@@ -30,7 +30,7 @@ import { filesystemType, formattedPath } from "~/components/storage/utils";
 import { useDevice } from "~/hooks/storage/model";
 import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
-import type { ConfigModel } from "~/model/storage";
+import type { ConfigModel } from "~/model/storage/config-model";
 
 function deviceDescription(deviceModel: ConfigModel.Drive | ConfigModel.MdRaid): string {
   const fs = filesystemType(deviceModel.filesystem);
