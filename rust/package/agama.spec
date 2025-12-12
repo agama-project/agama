@@ -84,6 +84,18 @@ Url:            https://github.com/agama-project/agama
 Agama is a service-based Linux installer. This package contains the
 auto-installation service.
 
+%package -n agama-common
+#               This will be set by osc services, that will run after this.
+Version:        0
+Release:        0
+Summary:        Common files for Agama server and CLI.
+License:        GPL-2.0-only
+Url:            https://github.com/agama-project/agama
+
+%description -n agama-common
+Files that are needed by the Agama server and the command-line interface, like
+the JSON schemas or the Jsonnet libraries.
+
 %package -n agama-cli
 #               This will be set by osc services, that will run after this.
 Version:        0
@@ -224,6 +236,8 @@ echo $PATH
 %{_pam_vendordir}/agama
 %{_unitdir}/agama-web-server.service
 %dir %{_datadir}/agama/eula
+
+%files -n agama-common
 %dir %{_datadir}/agama/jsonnet
 %{_datadir}/agama/jsonnet/agama.libsonnet
 %dir %{_datadir}/agama/schema
