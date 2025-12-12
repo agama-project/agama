@@ -46,6 +46,11 @@ type Product = {
   registration: boolean;
   /** The product license id, if any */
   license?: string;
+  /** Translations */
+  translations?: {
+    /** The key is the locale (e.g., "en", "pt_BR") */
+    description: Record<string, string>;
+  };
 };
 
 export type { System, Product, l10n, network, software, storage };
