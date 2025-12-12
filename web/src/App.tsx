@@ -41,22 +41,22 @@ import { isEmpty } from "radashi";
 const Content = () => {
   const location = useLocation();
   const product = useProduct();
-  const { progresses, state } = useStatus();
+  const { progresses, stage } = useStatus();
   const isBusy = !isEmpty(progresses);
 
   console.log("App Content component", {
     progresses,
-    state,
+    stage,
     product,
     location: location.pathname,
   });
 
-  if (state === "installing") {
+  if (stage === "installing") {
     console.log("Navigating to the installation progress page");
     return <Navigate to={ROOT.installationProgress} />;
   }
 
-  if (state === "finished") {
+  if (stage === "finished") {
     console.log("Navigating to the finished page");
     return <Navigate to={ROOT.installationFinished} />;
   }

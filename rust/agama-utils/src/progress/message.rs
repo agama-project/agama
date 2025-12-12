@@ -21,24 +21,32 @@
 use crate::actor::Message;
 use crate::api::progress::Progress;
 use crate::api::scope::Scope;
+use crate::api::status::Stage;
+use crate::api::Status;
 
-pub struct Get;
+pub struct GetStatus;
 
-impl Message for Get {
+impl Message for GetStatus {
+    type Reply = Status;
+}
+
+pub struct GetProgress;
+
+impl Message for GetProgress {
     type Reply = Vec<Progress>;
 }
 
-pub struct Set {
+pub struct SetProgress {
     pub progress: Progress,
 }
 
-impl Set {
+impl SetProgress {
     pub fn new(progress: Progress) -> Self {
         Self { progress }
     }
 }
 
-impl Message for Set {
+impl Message for SetProgress {
     type Reply = ();
 }
 
@@ -68,11 +76,8 @@ pub struct StartWithSteps {
 }
 
 impl StartWithSteps {
-    pub fn new(scope: Scope, steps: &[&str]) -> Self {
-        Self {
-            scope,
-            steps: steps.into_iter().map(ToString::to_string).collect(),
-        }
+    pub fn new(scope: Scope, steps: Vec<String>) -> Self {
+        Self { scope, steps }
     }
 }
 
@@ -124,4 +129,24 @@ impl Finish {
 
 impl Message for Finish {
     type Reply = ();
+}
+
+pub struct SetStage {
+    pub stage: Stage,
+}
+
+impl SetStage {
+    pub fn new(stage: Stage) -> Self {
+        Self { stage }
+    }
+}
+
+impl Message for SetStage {
+    type Reply = ();
+}
+
+pub struct GetStage;
+
+impl Message for GetStage {
+    type Reply = Stage;
 }

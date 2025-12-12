@@ -30,4 +30,4 @@ function flatDevices(proposal: Proposal): Device[] {
 }
 
 export { flatDevices };
-export type * as storage from "~/openapi/proposal/storage";
+export type * from "~/openapi/proposal/storage";

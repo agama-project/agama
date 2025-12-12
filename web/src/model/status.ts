@@ -36,7 +36,7 @@ const fetchInstallerStatus = async (): Promise<InstallerStatus> => {
 // TODO: remove
 export { fetchInstallerStatus };
 
-type State = "installing" | "configuring" | "finished";
+type Stage = "installing" | "configuring" | "finished";
 type Scope = "manager" | "l10n" | "product" | "software" | "storage" | "iscsci" | "users";
 type Progress = {
   index: number;
@@ -47,8 +47,8 @@ type Progress = {
 };
 
 type Status = {
-  state: State;
+  stage: Stage;
   progresses: Progress[];
 };
 
-export type { Status, State, Scope, Progress };
+export type { Status, Stage, Scope, Progress };

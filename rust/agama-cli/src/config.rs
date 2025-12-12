@@ -60,7 +60,7 @@ pub enum ConfigCommands {
 
     /// Validate a profile using JSON Schema
     ///
-    /// Schema is available at /usr/share/agama-cli/profile.schema.json
+    /// Schema is available at /usr/share/agama/schema/profile.schema.json
     /// Note: validation is always done as part of all other "agama config" commands.
     Validate {
         /// JSON file, URL or path or `-` for standard input

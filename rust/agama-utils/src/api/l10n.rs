@@ -32,3 +32,6 @@ pub use system_config::SystemConfig;
 
 mod proposal;
 pub use proposal::Proposal;
+
+mod translations;
+pub use translations::Translations;

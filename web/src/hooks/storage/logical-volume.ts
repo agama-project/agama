@@ -20,35 +20,35 @@
  * find current contact information at www.suse.com.
  */
 
-import { useStorageModel } from "~/hooks/model/storage";
+import { useConfigModel } from "~/hooks/model/storage";
 import { putStorageModel } from "~/api";
 import { addLogicalVolume, editLogicalVolume, deleteLogicalVolume } from "~/storage/logical-volume";
-import type { data } from "~/storage";
+import type { Data } from "~/storage";
 
-type AddLogicalVolumeFn = (vgName: string, data: data.LogicalVolume) => void;
+type AddLogicalVolumeFn = (vgName: string, data: Data.LogicalVolume) => void;
 
 function useAddLogicalVolume(): AddLogicalVolumeFn {
-  const apiModel = useStorageModel();
-  return (vgName: string, data: data.LogicalVolume) => {
-    putStorageModel(addLogicalVolume(apiModel, vgName, data));
+  const config = useConfigModel();
+  return (vgName: string, data: Data.LogicalVolume) => {
+    putStorageModel(addLogicalVolume(config, vgName, data));
   };
 }
 
-type EditLogicalVolumeFn = (vgName: string, mountPath: string, data: data.LogicalVolume) => void;
+type EditLogicalVolumeFn = (vgName: string, mountPath: string, data: Data.LogicalVolume) => void;
 
 function useEditLogicalVolume(): EditLogicalVolumeFn {
-  const apiModel = useStorageModel();
-  return (vgName: string, mountPath: string, data: data.LogicalVolume) => {
-    putStorageModel(editLogicalVolume(apiModel, vgName, mountPath, data));
+  const config = useConfigModel();
+  return (vgName: string, mountPath: string, data: Data.LogicalVolume) => {
+    putStorageModel(editLogicalVolume(config, vgName, mountPath, data));
   };
 }
 
 type DeleteLogicalVolumeFn = (vgName: string, mountPath: string) => void;
 
 function useDeleteLogicalVolume(): DeleteLogicalVolumeFn {
-  const apiModel = useStorageModel();
+  const config = useConfigModel();
   return (vgName: string, mountPath: string) =>
-    putStorageModel(deleteLogicalVolume(apiModel, vgName, mountPath));
+    putStorageModel(deleteLogicalVolume(config, vgName, mountPath));
 }
 
 export { useAddLogicalVolume, useEditLogicalVolume, useDeleteLogicalVolume };

@@ -80,7 +80,7 @@ module Agama
           error(
             # TRANSLATORS: %s is the replaced by a device alias (e.g., "pv1").
             format(_("There is no LVM thin pool volume with alias '%s'"), config.used_pool),
-            kind: IssueClasses::Config::ALIAS
+            kind: IssueClasses::Config::NO_SUCH_ALIAS
           )
         end
       end

@@ -54,7 +54,7 @@ describe Agama::Storage::ConfigCheckers::Encryption do
       it "includes the expected issue" do
         issues = subject.issues
         expect(issues).to include an_object_having_attributes(
-          kind:        Agama::Storage::IssueClasses::Config::ENCRYPTION,
+          kind:        Agama::Storage::IssueClasses::Config::NO_ENCRYPTION_PASSPHRASE,
           description: /No passphrase/
         )
       end
@@ -78,7 +78,7 @@ describe Agama::Storage::ConfigCheckers::Encryption do
       it "includes the expected issue" do
         issues = subject.issues
         expect(issues).to include an_object_having_attributes(
-          kind:        Agama::Storage::IssueClasses::Config::ENCRYPTION,
+          kind:        Agama::Storage::IssueClasses::Config::WRONG_ENCRYPTION_METHOD,
           description: /'Pervasive Volume Encryption' is not available/
         )
       end
@@ -102,7 +102,7 @@ describe Agama::Storage::ConfigCheckers::Encryption do
       it "includes the expected issue" do
         issues = subject.issues
         expect(issues).to include an_object_having_attributes(
-          kind:        Agama::Storage::IssueClasses::Config::ENCRYPTION,
+          kind:        Agama::Storage::IssueClasses::Config::WRONG_ENCRYPTION_METHOD,
           description: /'TPM-Based Full Disk Encrytion' is not available/
         )
       end
@@ -121,7 +121,7 @@ describe Agama::Storage::ConfigCheckers::Encryption do
       it "includes the expected issue" do
         issues = subject.issues
         expect(issues).to include an_object_having_attributes(
-          kind:        Agama::Storage::IssueClasses::Config::ENCRYPTION,
+          kind:        Agama::Storage::IssueClasses::Config::WRONG_ENCRYPTION_METHOD,
           description: /'Encryption with Volatile Protected Key' is not a suitable/
         )
       end

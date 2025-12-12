@@ -18,7 +18,7 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::api::manager::License;
+use crate::api::{l10n::Translations, manager::License};
 use serde::Serialize;
 
 /// Global information of the system where the installer is running.
@@ -28,6 +28,8 @@ pub struct SystemInfo {
     pub products: Vec<Product>,
     /// List of known licenses
     pub licenses: Vec<License>,
+    /// Hardware information
+    pub hardware: HardwareInfo,
 }
 
 /// Represents a software product
@@ -46,4 +48,18 @@ pub struct Product {
     pub registration: bool,
     /// License ID
     pub license: Option<String>,
+    /// Translations
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub translations: Option<Translations>,
+}
+
+/// Represents the hardware information of the underlying system.
+#[derive(Clone, Default, Debug, Serialize, utoipa::ToSchema)]
+pub struct HardwareInfo {
+    /// CPU description.
+    pub cpu: Option<String>,
+    /// Memory size (in bytes).
+    pub memory: Option<u64>,
+    /// Computer model.
+    pub model: Option<String>,
 }

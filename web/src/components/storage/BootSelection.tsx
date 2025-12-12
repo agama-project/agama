@@ -28,6 +28,7 @@ import { Page, SubtleContent } from "~/components/core";
 import { deviceLabel, formattedPath } from "~/components/storage/utils";
 import { useCandidateDevices, useDevices } from "~/hooks/model/system/storage";
 import { useModel } from "~/hooks/storage/model";
+import { useConfigModel } from "~/hooks/model/storage";
 import { isDrive } from "~/storage/device";
 import {
   useSetBootDevice,
@@ -37,12 +38,16 @@ import {
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
-import type { storage } from "~/model/system";
-import type { Model } from "~/storage/model";
+import configModel from "~/model/storage/config-model";
+import type { ConfigModel } from "~/model/storage/config-model";
+import type { Storage } from "~/model/system";
 
-const filteredCandidates = (candidates: storage.Device[], model: Model): storage.Device[] => {
+const filteredCandidates = (
+  candidates: Storage.Device[],
+  config: ConfigModel.Config,
+): Storage.Device[] => {
   return candidates.filter((candidate) => {
-    const collection = isDrive(candidate) ? model.drives : model.mdRaids;
+    const collection = isDrive(candidate) ? config.drives : config.mdRaids;
     const device = collection.find((d) => d.name === candidate.name);
     return !device || !device.filesystem;
   });
@@ -59,9 +64,9 @@ type BootSelectionState = {
   load: boolean;
   selectedOption?: string;
   configureBoot?: boolean;
-  bootDevice?: storage.Device;
-  defaultBootDevice?: storage.Device;
-  candidateDevices?: storage.Device[];
+  bootDevice?: Storage.Device;
+  defaultBootDevice?: Storage.Device;
+  candidateDevices?: Storage.Device[];
 };
 
 /**
@@ -73,6 +78,7 @@ export default function BootSelection() {
   const navigate = useNavigate();
   const devices = useDevices();
   const model = useModel();
+  const config = useConfigModel();
   const allCandidateDevices = useCandidateDevices();
   const setBootDevice = useSetBootDevice();
   const setDefaultBootDevice = useSetDefaultBootDevice();
@@ -83,34 +89,36 @@ export default function BootSelection() {
   useEffect(() => {
     if (state.load || !model) return;
 
-    const boot = model.boot;
+    const bootModel = config.boot;
+    const isDefaultBoot = configModel.hasDefaultBoot(config);
+    const bootDevice = configModel.bootDevice(config);
     let selectedOption: string;
 
-    if (!boot.configure) {
+    if (!bootModel.configure) {
       selectedOption = BOOT_DISABLED_ID;
-    } else if (boot.isDefault) {
+    } else if (isDefaultBoot) {
       selectedOption = BOOT_AUTO_ID;
     } else {
       selectedOption = BOOT_MANUAL_ID;
     }
 
-    const bootDevice = devices.find((d) => d.name === boot.getDevice()?.name);
-    const defaultBootDevice = boot.isDefault ? bootDevice : undefined;
+    const device = devices.find((d) => d.name === bootDevice?.name);
+    const defaultBootDevice = isDefaultBoot ? device : undefined;
     let candidates = [...candidateDevices];
     // Add the current boot device if it does not belong to the candidate devices.
-    if (bootDevice && !candidates.includes(bootDevice)) {
-      candidates = [bootDevice, ...candidates];
+    if (device && !candidates.includes(device)) {
+      candidates = [device, ...candidates];
     }
 
     setState({
       load: true,
-      bootDevice: bootDevice || candidateDevices[0],
-      configureBoot: boot.configure,
+      bootDevice: device || candidateDevices[0],
+      configureBoot: bootModel.configure,
       defaultBootDevice,
       candidateDevices: candidates,
       selectedOption,
     });
-  }, [devices, candidateDevices, model, state.load]);
+  }, [devices, candidateDevices, model, state.load, config]);
 
   if (!state.load || !model) return;
 

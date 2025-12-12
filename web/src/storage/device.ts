@@ -20,10 +20,10 @@
  * find current contact information at www.suse.com.
  */
 
-import type { storage as system } from "~/model/system";
-import type { storage as proposal } from "~/model/proposal";
+import type { Storage as System } from "~/model/system";
+import type { Storage as Proposal } from "~/model/proposal";
 
-type Device = system.Device | proposal.Device;
+type Device = System.Device | Proposal.Device;
 
 function isDrive(device: Device): boolean {
   return device.class === "drive";

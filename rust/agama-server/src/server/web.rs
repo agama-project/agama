@@ -33,7 +33,7 @@ use agama_utils::{
         question::{Question, QuestionSpec, UpdateQuestion},
         Action, Config, IssueWithScope, Patch, Status, SystemInfo,
     },
-    question,
+    progress, question,
 };
 use axum::{
     extract::{Path, Query, State},
@@ -136,7 +136,7 @@ pub fn server_with_state(state: ServerState) -> Result<Router, ServiceError> {
     )
 )]
 async fn get_status(State(state): State<ServerState>) -> ServerResult<Json<Status>> {
-    let status = state.manager.call(message::GetStatus).await?;
+    let status = state.manager.call(progress::message::GetStatus).await?;
     Ok(Json(status))
 }
 

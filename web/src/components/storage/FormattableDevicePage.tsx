@@ -50,27 +50,28 @@ import { SelectWrapperProps as SelectProps } from "~/components/core/SelectWrapp
 import SelectTypeaheadCreatable from "~/components/core/SelectTypeaheadCreatable";
 import { useAddFilesystem } from "~/hooks/storage/filesystem";
 import {
-  useModel,
   useMissingMountPaths,
   useDrive as useDriveModel,
   useMdRaid as useMdRaidModel,
 } from "~/hooks/storage/model";
+import { useConfigModel } from "~/hooks/model/storage";
 import { useDevice, useVolumeTemplate } from "~/hooks/model/system/storage";
-import { data, model } from "~/storage";
 import { deviceBaseName, filesystemLabel } from "~/components/storage/utils";
+import configModel from "~/model/storage/config-model";
 import { _ } from "~/i18n";
 import { sprintf } from "sprintf-js";
 import { STORAGE as PATHS } from "~/routes/paths";
 import { unique } from "radashi";
 import { compact } from "~/utils";
-import type { configModel as apiModel } from "~/model/storage/config-model";
-import type { storage as system } from "~/model/system";
+import type { Data } from "~/storage";
+import type { ConfigModel } from "~/model/storage/config-model";
+import type { Storage as System } from "~/model/system";
 
 const NO_VALUE = "";
 const BTRFS_SNAPSHOTS = "btrfsSnapshots";
 const REUSE_FILESYSTEM = "reuse";
 
-type DeviceModel = model.Drive | model.MdRaid;
+type DeviceModel = ConfigModel.Drive | ConfigModel.MdRaid;
 type FormValue = {
   mountPoint: string;
   filesystem: string;
@@ -87,8 +88,8 @@ type ErrorsHandler = {
   getVisibleError: (id: string) => Error | undefined;
 };
 
-function toData(value: FormValue): data.Formattable {
-  const filesystemType = (): apiModel.FilesystemType | undefined => {
+function toData(value: FormValue): Data.Formattable {
+  const filesystemType = (): ConfigModel.FilesystemType | undefined => {
     if (value.filesystem === NO_VALUE) return undefined;
     if (value.filesystem === BTRFS_SNAPSHOTS) return "btrfs";
 
@@ -99,10 +100,10 @@ function toData(value: FormValue): data.Formattable {
      *  This will be fixed in the future by directly exporting the volumes as a JSON, similar to the
      *  config model. The schema for the volumes will define the explicit list of filesystem types.
      */
-    return value.filesystem as apiModel.FilesystemType;
+    return value.filesystem as ConfigModel.FilesystemType;
   };
 
-  const filesystem = (): data.Filesystem | undefined => {
+  const filesystem = (): Data.Filesystem | undefined => {
     if (value.filesystem === REUSE_FILESYSTEM) return { reuse: true };
 
     const type = filesystemType();
@@ -143,13 +144,13 @@ function toFormValue(deviceModel: DeviceModel): FormValue {
   };
 }
 
-function useDeviceModelFromParams(): model.Drive | model.MdRaid | null {
+function useDeviceModelFromParams(): ConfigModel.Drive | ConfigModel.MdRaid | null {
   const { collection, index } = useParams();
   const deviceModel = collection === "drives" ? useDriveModel : useMdRaidModel;
   return deviceModel(Number(index));
 }
 
-function useDeviceFromParams(): system.Device {
+function useDeviceFromParams(): System.Device {
   const deviceModel = useDeviceModelFromParams();
   return useDevice(deviceModel.name);
 }
@@ -206,8 +207,8 @@ function useUsableFilesystems(mountPoint: string): string[] {
 }
 
 function useMountPointError(value: FormValue): Error | undefined {
-  const model = useModel();
-  const mountPoints = model?.getMountPaths() || [];
+  const config = useConfigModel();
+  const mountPoints = config ? configModel.usedMountPaths(config) : [];
   const deviceModel = useDeviceModelFromParams();
   const mountPoint = value.mountPoint;
 

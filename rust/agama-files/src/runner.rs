@@ -20,7 +20,7 @@
 
 use std::{
     fs::File,
-    io::{self, BufReader, Read, Seek, SeekFrom, Write},
+    io::{self, Read, Seek, SeekFrom, Write},
     path::{Path, PathBuf},
     process::ExitStatus,
 };
@@ -188,12 +188,11 @@ impl ScriptsRunner {
 
     /// Ancillary function to start the progress.
     fn start_progress(&self, scripts: &[&Script]) {
-        let messages: Vec<_> = scripts
+        let steps: Vec<_> = scripts
             .iter()
             .map(|s| format!("Running user script '{}'", s.name()))
             .collect();
-        let steps: Vec<_> = messages.iter().map(|s| s.as_ref()).collect();
-        let progress_action = progress::message::StartWithSteps::new(Scope::Files, &steps);
+        let progress_action = progress::message::StartWithSteps::new(Scope::Files, steps);
         _ = self.progress.cast(progress_action);
     }
 

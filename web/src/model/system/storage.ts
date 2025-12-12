@@ -45,4 +45,4 @@ function findDeviceByName(system: System, name: string): Device | null {
 }
 
 export { flatDevices, findDevice, findDevices, findDeviceByName };
-export type * as storage from "~/openapi/system/storage";
+export type * from "~/openapi/system/storage";

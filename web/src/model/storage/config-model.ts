@@ -20,4 +20,63 @@
  * find current contact information at www.suse.com.
  */
 
-export type * as configModel from "~/openapi/storage/config-model";
+import partitionableModel from "~/model/storage/partitionable-model";
+import volumeGroupModel from "~/model/storage/volume-group-model";
+import type * as ConfigModel from "~/openapi/storage/config-model";
+
+function usedMountPaths(config: ConfigModel.Config): string[] {
+  const drives = config.drives || [];
+  const mdRaids = config.mdRaids || [];
+  const volumeGroups = config.volumeGroups || [];
+
+  return [
+    ...drives.flatMap(partitionableModel.usedMountPaths),
+    ...mdRaids.flatMap(partitionableModel.usedMountPaths),
+    ...volumeGroups.flatMap(volumeGroupModel.usedMountPaths),
+  ];
+}
+
+function bootDevice(config: ConfigModel.Config): ConfigModel.Drive | ConfigModel.MdRaid | null {
+  const targets = [...config.drives, ...config.mdRaids];
+  return targets.find((d) => d.name && d.name === config.boot?.device?.name) || null;
+}
+
+function hasDefaultBoot(config: ConfigModel.Config): boolean {
+  return config.boot?.device?.default || false;
+}
+
+function isBootDevice(config: ConfigModel.Config, deviceName: string): boolean {
+  return config.boot?.configure && config.boot.device?.name === deviceName;
+}
+
+function isExplicitBootDevice(config: ConfigModel.Config, deviceName: string): boolean {
+  return isBootDevice(config, deviceName) && !hasDefaultBoot(config);
+}
+
+function isTargetDevice(config: ConfigModel.Config, deviceName: string): boolean {
+  const targetDevices = (config.volumeGroups || []).flatMap((v) => v.targetDevices || []);
+  return targetDevices.includes(deviceName);
+}
+
+function isUsedDevice(config: ConfigModel.Config, deviceName: string): boolean {
+  const drives = config.drives || [];
+  const mdRaids = config.mdRaids || [];
+  const device = drives.concat(mdRaids).find((d) => d.name === deviceName);
+
+  return (
+    isExplicitBootDevice(config, deviceName) ||
+    isTargetDevice(config, deviceName) ||
+    partitionableModel.usedMountPaths(device).length > 0
+  );
+}
+
+export default {
+  usedMountPaths,
+  bootDevice,
+  hasDefaultBoot,
+  isBootDevice,
+  isExplicitBootDevice,
+  isTargetDevice,
+  isUsedDevice,
+};
+export type { ConfigModel };

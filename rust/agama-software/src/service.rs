@@ -28,7 +28,7 @@ use agama_utils::{
     actor::{self, Actor, Handler, MessageHandler},
     api::{
         event::{self, Event},
-        software::{Config, Proposal, Repository, SoftwareProposal, SystemInfo},
+        software::{Config, Proposal, Repository, SystemInfo},
         Issue, Scope,
     },
     issue,
@@ -100,12 +100,14 @@ impl Starter {
         self
     }
 
+    const TARGET_DIR: &str = "/run/agama/software_ng_zypp";
+
     /// Starts the service and returns a handler to communicate with it.
     pub async fn start(self) -> Result<Handler<Service>, Error> {
         let model = match self.model {
             Some(model) => model,
             None => {
-                let zypp_sender = ZyppServer::start()?;
+                let zypp_sender = ZyppServer::start(Self::TARGET_DIR)?;
                 Arc::new(Mutex::new(Model::new(
                     zypp_sender,
                     find_mandatory_repositories("/"),
@@ -302,20 +304,6 @@ impl MessageHandler<message::SetConfig<Config>> for Service {
 
         Ok(())
     }
-}
-
-async fn compute_proposal(
-    model: Arc<Mutex<dyn ModelAdapter + Send + 'static>>,
-    product_spec: ProductSpec,
-    wanted: SoftwareState,
-    progress: Handler<progress::Service>,
-) -> Result<(SoftwareProposal, SystemInfo, Vec<Issue>), Error> {
-    let mut my_model = model.lock().await;
-    my_model.set_product(product_spec);
-    let issues = my_model.write(wanted, progress).await?;
-    let proposal = my_model.proposal().await?;
-    let system = my_model.system_info().await?;
-    Ok((proposal, system, issues))
 }
 
 #[async_trait]

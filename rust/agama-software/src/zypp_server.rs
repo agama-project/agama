@@ -28,7 +28,9 @@ use agama_utils::{
     products::ProductSpec,
     progress, question,
 };
-use std::{collections::HashMap, path::Path};
+use camino::{Utf8Path, Utf8PathBuf};
+use gettextrs::gettext;
+use std::collections::HashMap;
 use tokio::sync::{
     mpsc::{self, UnboundedSender},
     oneshot,
@@ -40,7 +42,6 @@ use crate::{
     model::state::{self, SoftwareState},
 };
 
-const TARGET_DIR: &str = "/run/agama/software_ng_zypp";
 const GPG_KEYS: &str = "/usr/lib/rpm/gnupg/keys/gpg-*";
 
 #[derive(thiserror::Error, Debug)]
@@ -100,51 +101,55 @@ pub enum SoftwareAction {
 /// Software service server.
 pub struct ZyppServer {
     receiver: mpsc::UnboundedReceiver<SoftwareAction>,
+    root_dir: Utf8PathBuf,
 }
 
 impl ZyppServer {
     /// Starts the software service loop and returns a client.
     ///
     /// The service runs on a separate thread and gets the client requests using a channel.
-    pub fn start() -> ZyppServerResult<UnboundedSender<SoftwareAction>> {
+    pub fn start<P: AsRef<Utf8Path>>(
+        root_dir: P,
+    ) -> ZyppServerResult<UnboundedSender<SoftwareAction>> {
         let (sender, receiver) = mpsc::unbounded_channel();
 
-        let server = Self { receiver };
-
-        // see https://docs.rs/tokio/latest/tokio/task/struct.LocalSet.html#use-inside-tokiospawn for explain how to ensure that zypp
-        // runs locally on single thread
-
-        let rt = tokio::runtime::Builder::new_current_thread()
-            .enable_all()
-            .build()
-            .unwrap();
+        let server = Self {
+            receiver,
+            root_dir: root_dir.as_ref().to_path_buf(),
+        };
 
         // drop the returned JoinHandle: the thread will be detached
         // but that's OK for it to run until the process dies
-        std::thread::spawn(move || {
-            let local = tokio::task::LocalSet::new();
-
-            local.spawn_local(server.run());
-
-            // This will return once all senders are dropped and all
-            // spawned tasks have returned.
-            rt.block_on(local);
-        });
+        std::thread::spawn(move || server.run());
         Ok(sender)
     }
 
     /// Runs the server dispatching the actions received through the input channel.
-    async fn run(mut self) -> Result<(), ZyppDispatchError> {
+    fn run(mut self) -> Result<(), ZyppDispatchError> {
         let zypp = self.initialize_target_dir()?;
 
         loop {
-            let action = self.receiver.recv().await;
+            // what happens here is that we need synchronized code
+            // and only for small async interface run it in blocking way. Receiver handling is done to explicit passing
+            // of ownership as receiver do not implement Copy.
+            // It creates own runtime here as we are on dedicated zypp thread and there is no tokio runtime yet. So we
+            // create a new one with single thread to run tasks in its own dedicated thread.
+            // unwrap OK: unwrap is fine as if we eat all IO resources, we are doomed, so failing is good solution
+            let rt = tokio::runtime::Builder::new_current_thread()
+                .enable_all()
+                .build()
+                .unwrap();
+            let res = rt.spawn(async move { (self.receiver.recv().await, self.receiver) });
+            // unwrap OK: receiver hopefuly should not panic when just receiving message
+            let (action, receiver) = rt.block_on(res).unwrap();
+            self.receiver = receiver;
+
             let Some(action) = action else {
-                tracing::error!("Software action channel closed");
+                tracing::info!("Software action channel closed. So time for rest in peace.");
                 break;
             };
 
-            if let Err(error) = self.dispatch(action, &zypp).await {
+            if let Err(error) = self.dispatch(action, &zypp) {
                 tracing::error!("Software dispatch error: {:?}", error);
             }
         }
@@ -153,7 +158,7 @@ impl ZyppServer {
     }
 
     /// Forwards the action to the appropriate handler.
-    async fn dispatch(
+    fn dispatch(
         &mut self,
         action: SoftwareAction,
         zypp: &zypp_agama::Zypp,
@@ -166,11 +171,10 @@ impl ZyppServer {
                 tx,
             } => {
                 let mut security_callback = callbacks::Security::new(question);
-                self.write(state, progress, &mut security_callback, tx, zypp)
-                    .await?;
+                self.write(state, progress, &mut security_callback, tx, zypp)?;
             }
             SoftwareAction::GetSystemInfo(product_spec, tx) => {
-                self.system_info(product_spec, tx, zypp).await?;
+                self.system_info(product_spec, tx, zypp)?;
             }
             SoftwareAction::Install(tx, progress, question) => {
                 let mut download_callback =
@@ -187,10 +191,10 @@ impl ZyppServer {
                 .map_err(|_| ZyppDispatchError::ResponseChannelClosed)?;
             }
             SoftwareAction::Finish(tx) => {
-                self.finish(zypp, tx).await?;
+                self.finish(zypp, tx)?;
             }
             SoftwareAction::GetProposal(product_spec, sender) => {
-                self.proposal(product_spec, sender, zypp).await?
+                self.proposal(product_spec, sender, zypp)?
             }
         }
         Ok(())
@@ -234,7 +238,7 @@ impl ZyppServer {
         Ok(state)
     }
 
-    async fn write(
+    fn write(
         &self,
         state: SoftwareState,
         progress: Handler<progress::Service>,
@@ -246,10 +250,10 @@ impl ZyppServer {
 
         _ = progress.cast(progress::message::StartWithSteps::new(
             Scope::Software,
-            &[
-                "Updating the list of repositories",
-                "Refreshing metadata from the repositories",
-                "Calculating the software proposal",
+            vec![
+                gettext("Updating the list of repositories"),
+                gettext("Refreshing metadata from the repositories"),
+                gettext("Calculating the software proposal"),
             ],
         ));
         let old_state = self.read(zypp)?;
@@ -266,7 +270,7 @@ impl ZyppServer {
             .filter(|r| !old_aliases.contains(&r.alias))
             .collect();
 
-        let to_remove: Vec<_> = state
+        let to_remove: Vec<_> = old_state
             .repositories
             .iter()
             .filter(|r| !aliases.contains(&r.alias))
@@ -364,11 +368,14 @@ impl ZyppServer {
             Err(error) => println!("Solver failed: {error}"),
         };
 
-        tx.send(Ok(issues)).unwrap();
+        if let Err(e) = tx.send(Ok(issues)) {
+            tracing::error!("failed to send list of issues after write: {:?}", e);
+            // It is OK to return ok, when tx is closed, we have no other way to indicate issue.
+        }
         Ok(())
     }
 
-    async fn finish(
+    fn finish(
         &mut self,
         zypp: &zypp_agama::Zypp,
         tx: oneshot::Sender<ZyppServerResult<()>>,
@@ -436,14 +443,14 @@ impl ZyppServer {
         Ok(())
     }
 
-    async fn system_info(
+    fn system_info(
         &self,
         product: ProductSpec,
         tx: oneshot::Sender<ZyppServerResult<SystemInfo>>,
         zypp: &zypp_agama::Zypp,
     ) -> Result<(), ZyppDispatchError> {
-        let patterns = self.patterns(&product, zypp).await?;
-        let repositories = self.repositories(zypp).await?;
+        let patterns = self.patterns(&product, zypp)?;
+        let repositories = self.repositories(zypp)?;
 
         let system_info = SystemInfo {
             patterns,
@@ -456,11 +463,7 @@ impl ZyppServer {
         Ok(())
     }
 
-    async fn patterns(
-        &self,
-        product: &ProductSpec,
-        zypp: &zypp_agama::Zypp,
-    ) -> ZyppResult<Vec<Pattern>> {
+    fn patterns(&self, product: &ProductSpec, zypp: &zypp_agama::Zypp) -> ZyppResult<Vec<Pattern>> {
         let pattern_names: Vec<_> = product
             .software
             .user_patterns
@@ -484,10 +487,7 @@ impl ZyppServer {
         Ok(patterns)
     }
 
-    async fn repositories(
-        &self,
-        zypp: &zypp_agama::Zypp,
-    ) -> ZyppResult<Vec<api::software::Repository>> {
+    fn repositories(&self, zypp: &zypp_agama::Zypp) -> ZyppResult<Vec<api::software::Repository>> {
         let result = zypp
             .list_repositories()?
             .into_iter()
@@ -506,22 +506,25 @@ impl ZyppServer {
     }
 
     fn initialize_target_dir(&self) -> Result<zypp_agama::Zypp, ZyppDispatchError> {
-        let target_dir = Path::new(TARGET_DIR);
+        let target_dir = self.root_dir.as_path();
         if target_dir.exists() {
             _ = std::fs::remove_dir_all(target_dir);
         }
 
-        std::fs::create_dir_all(target_dir).map_err(ZyppDispatchError::TargetCreationFailed)?;
+        std::fs::create_dir_all(target_dir.as_str())
+            .map_err(ZyppDispatchError::TargetCreationFailed)?;
 
-        let zypp = zypp_agama::Zypp::init_target(TARGET_DIR, |text, step, total| {
+        let zypp = zypp_agama::Zypp::init_target(target_dir.as_str(), |text, step, total| {
             tracing::info!("Initializing target: {} ({}/{})", text, step, total);
         })?;
 
         self.import_gpg_keys(&zypp);
+        tracing::info!("zypp initialized");
         Ok(zypp)
     }
 
     fn import_gpg_keys(&self, zypp: &zypp_agama::Zypp) {
+        // unwrap OK: glob pattern is created by us
         for file in glob::glob(GPG_KEYS).unwrap() {
             match file {
                 Ok(file) => {
@@ -536,15 +539,15 @@ impl ZyppServer {
         }
     }
 
-    async fn proposal(
+    fn proposal(
         &self,
         product: ProductSpec,
         tx: oneshot::Sender<ZyppServerResult<SoftwareProposal>>,
         zypp: &zypp_agama::Zypp,
     ) -> Result<(), ZyppDispatchError> {
         let proposal = SoftwareProposal {
-            used_space: self.used_space(&zypp).await?,
-            patterns: self.patterns_selection(&product, &zypp).await?,
+            used_space: self.used_space(&zypp)?,
+            patterns: self.patterns_selection(&product, &zypp)?,
         };
 
         tx.send(Ok(proposal))
@@ -552,7 +555,7 @@ impl ZyppServer {
         Ok(())
     }
 
-    async fn used_space(&self, zypp: &zypp_agama::Zypp) -> Result<i64, ZyppServerError> {
+    fn used_space(&self, zypp: &zypp_agama::Zypp) -> Result<i64, ZyppServerError> {
         // TODO: for now it just compute total size, but it can get info about partitions from storage and pass it to libzypp
         let mount_points = vec![zypp_agama::MountPoint {
             directory: "/".to_string(),
@@ -567,7 +570,7 @@ impl ZyppServer {
             .ok_or(ZyppServerError::MissingMountPoint)
     }
 
-    async fn patterns_selection(
+    fn patterns_selection(
         &self,
         product: &ProductSpec,
         zypp: &zypp_agama::Zypp,

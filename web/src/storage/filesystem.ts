@@ -21,27 +21,27 @@
  */
 
 import { copyApiModel } from "~/storage/api-model";
-import type { configModel } from "~/model/storage/config-model";
-import type { data } from "~/storage";
+import type { ConfigModel } from "~/model/storage/config-model";
+import type { Data } from "~/storage";
 
 function findDevice(
-  apiModel: configModel.Config,
+  config: ConfigModel.Config,
   list: string,
   index: number | string,
-): configModel.Drive | configModel.MdRaid | null {
-  return (apiModel[list] || []).at(index) || null;
+): ConfigModel.Drive | ConfigModel.MdRaid | null {
+  return (config[list] || []).at(index) || null;
 }
 
 function configureFilesystem(
-  apiModel: configModel.Config,
+  config: ConfigModel.Config,
   list: string,
   index: number | string,
-  data: data.Formattable,
-): configModel.Config {
-  apiModel = copyApiModel(apiModel);
+  data: Data.Formattable,
+): ConfigModel.Config {
+  config = copyApiModel(config);
 
-  const device = findDevice(apiModel, list, index);
-  if (!device) return apiModel;
+  const device = findDevice(config, list, index);
+  if (!device) return config;
 
   device.mountPath = data.mountPath;
 
@@ -54,7 +54,7 @@ function configureFilesystem(
     device.filesystem = undefined;
   }
 
-  return apiModel;
+  return config;
 }
 
 export { configureFilesystem };

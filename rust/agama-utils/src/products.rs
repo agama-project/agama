@@ -24,7 +24,7 @@
 //! It reads the list of products from the `products.d` directory (usually,
 //! `/usr/share/agama/products.d`).
 
-use crate::api::manager::Product;
+use crate::api::{l10n::Translations, manager::Product};
 use serde::{Deserialize, Deserializer, Serialize};
 use serde_with::{formats::CommaSeparator, serde_as, StringWithSeparator};
 use std::path::{Path, PathBuf};
@@ -109,6 +109,7 @@ impl Registry {
                 icon: p.icon.clone(),
                 registration: p.registration,
                 license: p.license.clone(),
+                translations: Some(p.translations.clone()),
             })
             .collect()
     }
@@ -130,6 +131,8 @@ pub struct ProductSpec {
     pub name: String,
     pub description: String,
     pub icon: String,
+    #[serde(default)]
+    pub translations: Translations,
     #[serde(default)]
     pub registration: bool,
     pub version: Option<String>,
@@ -336,6 +339,11 @@ mod test {
         assert_eq!(tw.icon, "Tumbleweed.svg");
         assert_eq!(tw.registration, false);
         assert_eq!(tw.version, None);
+
+        let translations = &tw.translations;
+        let description = &translations.description;
+        assert!(description["cs"].contains("verze"));
+
         let software = &tw.software;
         assert_eq!(software.installation_repositories.len(), 12);
         assert_eq!(software.installation_labels.len(), 4);

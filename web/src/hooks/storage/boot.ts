@@ -20,33 +20,29 @@
  * find current contact information at www.suse.com.
  */
 
-import { useModel } from "~/hooks/storage/model";
-import { useStorageModel } from "~/hooks/model/storage";
+import { useConfigModel } from "~/hooks/model/storage";
 import { putStorageModel } from "~/api";
 import { setBootDevice, setDefaultBootDevice, disableBootConfig } from "~/storage/boot";
 
 type SetBootDeviceFn = (deviceName: string) => void;
 
 function useSetBootDevice(): SetBootDeviceFn {
-  const model = useModel();
-  const apiModel = useStorageModel();
-  return (deviceName: string) => putStorageModel(setBootDevice(model, apiModel, deviceName));
+  const config = useConfigModel();
+  return (deviceName: string) => putStorageModel(setBootDevice(config, deviceName));
 }
 
 type SetDefaultBootDeviceFn = () => void;
 
 function useSetDefaultBootDevice(): SetDefaultBootDeviceFn {
-  const model = useModel();
-  const apiModel = useStorageModel();
-  return () => putStorageModel(setDefaultBootDevice(model, apiModel));
+  const config = useConfigModel();
+  return () => putStorageModel(setDefaultBootDevice(config));
 }
 
 type DisableBootConfigFn = () => void;
 
 function useDisableBootConfig(): DisableBootConfigFn {
-  const model = useModel();
-  const apiModel = useStorageModel();
-  return () => putStorageModel(disableBootConfig(model, apiModel));
+  const config = useConfigModel();
+  return () => putStorageModel(disableBootConfig(config));
 }
 
 export { useSetBootDevice, useSetDefaultBootDevice, useDisableBootConfig };

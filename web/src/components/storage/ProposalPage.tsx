@@ -55,7 +55,7 @@ import { useAvailableDevices } from "~/hooks/model/system/storage";
 import { useIssues } from "~/hooks/model/issue";
 import { useReset } from "~/hooks/model/config/storage";
 import { useProposal } from "~/hooks/model/proposal/storage";
-import { useStorageModel } from "~/hooks/model/storage";
+import { useConfigModel } from "~/hooks/model/storage";
 import { useZFCPSupported } from "~/queries/storage/zfcp";
 import { useDASDSupported } from "~/queries/storage/dasd";
 import { STORAGE as PATHS } from "~/routes/paths";
@@ -267,16 +267,16 @@ function ModelSection(): React.ReactNode {
 }
 
 function ProposalPageContent(): React.ReactNode {
-  const model = useStorageModel();
+  const model = useConfigModel();
   const availableDevices = useAvailableDevices();
   const proposal = useProposal();
   const issues = useIssues("storage");
 
   const fixable = [
     "configNoRoot",
-    "configRequiredPaths",
+    "configMissingPaths",
     "configOverusedPvTarget",
-    "configOverusedMdMember",
+    "configMisusedMdMember",
     "proposal",
   ];
   const configIssues = issues.filter((i) => i.class !== "proposal");
