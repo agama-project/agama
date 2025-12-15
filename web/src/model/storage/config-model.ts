@@ -22,18 +22,10 @@
 
 import partitionableModel from "~/model/storage/partitionable-model";
 import volumeGroupModel from "~/model/storage/volume-group-model";
+import partitionable from "~/model/storage/config-model/partitionable";
 import type * as ConfigModel from "~/openapi/storage/config-model";
 import type * as Data from "~/model/storage/data";
-
-type Partitionable = ConfigModel.Drive | ConfigModel.MdRaid;
-
-type PartitionableCollection = "drives" | "mdRaids";
-
-type PartitionableLocation = { collection: PartitionableCollection; index: number };
-
-function isPartitionableCollection(collection: string): collection is PartitionableCollection {
-  return collection === "drives" || collection === "mdRaids";
-}
+import type * as Partitionable from "~/model/storage/config-model/partitionable";
 
 function clone(config: ConfigModel.Config): ConfigModel.Config {
   return JSON.parse(JSON.stringify(config));
@@ -51,53 +43,9 @@ function usedMountPaths(config: ConfigModel.Config): string[] {
   ];
 }
 
-function findPartitionableDevice(
-  config: ConfigModel.Config,
-  collection: PartitionableCollection,
-  index: number,
-): Partitionable | null {
-  const devices = collection === "drives" ? config.drives : config.mdRaids;
-  if (!devices) return null;
-
-  return devices.at(index);
-}
-
-function filterPartitionableDevices(config: ConfigModel.Config): Partitionable[] {
-  const drives = config.drives || [];
-  const mdRaids = config.mdRaids || [];
-  return [...drives, ...mdRaids];
-}
-
-function findPartitionableIndex(
-  config: ConfigModel.Config,
-  collection: PartitionableCollection,
-  name: string,
-): number {
-  const devices = config[collection] || [];
-  return devices.findIndex((d) => d.name === name);
-}
-
-function findPartitionableLocation(
-  config: ConfigModel.Config,
-  name: string,
-): PartitionableLocation | null {
-  const collections: PartitionableCollection[] = ["drives", "mdRaids"];
-
-  for (const collection of collections) {
-    const index = findPartitionableIndex(config, collection, name);
-    if (index !== -1) {
-      return { collection, index };
-    }
-  }
-
-  return null;
-}
-
-function findBootDevice(config: ConfigModel.Config): Partitionable | null {
+function findBootDevice(config: ConfigModel.Config): Partitionable.Device | null {
   return (
-    filterPartitionableDevices(config).find(
-      (d) => d.name && d.name === config.boot?.device?.name,
-    ) || null
+    partitionable.all(config).find((d) => d.name && d.name === config.boot?.device?.name) || null
   );
 }
 
@@ -118,34 +66,14 @@ function isTargetDevice(config: ConfigModel.Config, deviceName: string): boolean
   return targetDevices.includes(deviceName);
 }
 
-function isUsedDevice(config: ConfigModel.Config, deviceName: string): boolean {
-  const device = filterPartitionableDevices(config).find((d) => d.name === deviceName);
-
-  return (
-    isExplicitBootDevice(config, deviceName) ||
-    isTargetDevice(config, deviceName) ||
-    partitionableModel.usedMountPaths(device).length > 0
-  );
-}
-
-function removePartitionableDevice(
-  config: ConfigModel.Config,
-  collection: PartitionableCollection,
-  index: number,
-): ConfigModel.Config {
-  config = clone(config);
-  config[collection]?.splice(index, 1);
-  return config;
-}
-
 function setBoot(config: ConfigModel.Config, boot: ConfigModel.Boot): ConfigModel.Config {
   config = clone(config);
   const device = findBootDevice(config);
   config.boot = null;
 
-  if (device && !isUsedDevice(config, device.name)) {
-    const location = findPartitionableLocation(config, device.name);
-    if (location) config = removePartitionableDevice(config, location.collection, location.index);
+  if (device && !partitionable.isUsed(config, device.name)) {
+    const location = partitionable.findLocation(config, device.name);
+    if (location) config = partitionable.remove(config, location.collection, location.index);
   }
 
   config.boot = boot;
@@ -180,21 +108,16 @@ function disableBoot(config: ConfigModel.Config): ConfigModel.Config {
 }
 
 export default {
-  isPartitionableCollection,
   clone,
   usedMountPaths,
-  findPartitionableDevice,
-  filterPartitionableDevices,
-  findPartitionableIndex,
-  findPartitionableLocation,
   findBootDevice,
   hasDefaultBoot,
   isBootDevice,
   isExplicitBootDevice,
   isTargetDevice,
-  isUsedDevice,
   setBootDevice,
   setDefaultBootDevice,
   disableBoot,
+  partitionable,
 };
-export type { ConfigModel, Data, Partitionable, PartitionableCollection, PartitionableLocation };
+export type { ConfigModel, Data, Partitionable };

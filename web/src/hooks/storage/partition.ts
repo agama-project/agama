@@ -23,23 +23,23 @@
 import { useConfigModel } from "~/hooks/model/storage";
 import { putStorageModel } from "~/api";
 import { addPartition, editPartition, deletePartition } from "~/storage/partition";
-import type { Data, PartitionableCollection } from "~/model/storage/config-model";
+import type { Data, Partitionable } from "~/model/storage/config-model";
 
 type AddPartitionFn = (
-  collection: PartitionableCollection,
+  collection: Partitionable.CollectionName,
   index: number,
   data: Data.Partition,
 ) => void;
 
 function useAddPartition(): AddPartitionFn {
   const config = useConfigModel();
-  return (collection: PartitionableCollection, index: number, data: Data.Partition) => {
+  return (collection: Partitionable.CollectionName, index: number, data: Data.Partition) => {
     putStorageModel(addPartition(config, collection, index, data));
   };
 }
 
 type EditPartitionFn = (
-  collection: PartitionableCollection,
+  collection: Partitionable.CollectionName,
   index: number,
   mountPath: string,
   data: Data.Partition,
@@ -48,7 +48,7 @@ type EditPartitionFn = (
 function useEditPartition(): EditPartitionFn {
   const config = useConfigModel();
   return (
-    collection: PartitionableCollection,
+    collection: Partitionable.CollectionName,
     index: number,
     mountPath: string,
     data: Data.Partition,
@@ -58,14 +58,14 @@ function useEditPartition(): EditPartitionFn {
 }
 
 type DeletePartitionFn = (
-  collection: PartitionableCollection,
+  collection: Partitionable.CollectionName,
   index: number,
   mountPath: string,
 ) => void;
 
 function useDeletePartition(): DeletePartitionFn {
   const config = useConfigModel();
-  return (collection: PartitionableCollection, index: number, mountPath: string) =>
+  return (collection: Partitionable.CollectionName, index: number, mountPath: string) =>
     putStorageModel(deletePartition(config, collection, index, mountPath));
 }
 

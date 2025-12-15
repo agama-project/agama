@@ -23,18 +23,18 @@
 import { fork } from "radashi";
 import configModel from "~/model/storage/config-model";
 import partitionModel from "~/model/storage/partition-model";
-import type { ConfigModel, PartitionableCollection } from "~/model/storage/config-model";
+import type { ConfigModel, Partitionable } from "~/model/storage/config-model";
 
 function deleteIfUnused(config: ConfigModel.Config, name: string): ConfigModel.Config {
   config = configModel.clone(config);
 
-  const location = configModel.findPartitionableLocation(config, name);
+  const location = configModel.partitionable.findLocation(config, name);
   if (!location) return config;
 
   const { collection, index } = location;
-  const device = configModel.findPartitionableDevice(config, collection, index);
+  const device = configModel.partitionable.find(config, collection, index);
   if (!device) return config;
-  if (configModel.isUsedDevice(config, device.name)) return config;
+  if (configModel.partitionable.isUsed(config, device.name)) return config;
 
   config[collection].splice(index, 1);
   return config;
@@ -44,21 +44,19 @@ function switchSearched(
   config: ConfigModel.Config,
   oldName: string,
   name: string,
-  collection: PartitionableCollection,
+  collection: Partitionable.CollectionName,
 ): ConfigModel.Config {
   if (name === oldName) return config;
 
   config = configModel.clone(config);
 
-  const location = configModel.findPartitionableLocation(config, oldName);
+  const location = configModel.partitionable.findLocation(config, oldName);
   if (!location) return config;
 
-  const device = configModel.findPartitionableDevice(config, location.collection, location.index);
-  const targetIndex = configModel.findPartitionableIndex(config, collection, name);
+  const device = configModel.partitionable.find(config, location.collection, location.index);
+  const targetIndex = configModel.partitionable.findIndex(config, collection, name);
   const target =
-    targetIndex === -1
-      ? null
-      : configModel.findPartitionableDevice(config, collection, targetIndex);
+    targetIndex === -1 ? null : configModel.partitionable.find(config, collection, targetIndex);
 
   if (device.filesystem) {
     if (target) {

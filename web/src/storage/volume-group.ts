@@ -44,11 +44,11 @@ function movePartitions(
 }
 
 function adjustSpacePolicies(config: ConfigModel.Config, targets: string[]) {
-  const devices = configModel.filterPartitionableDevices(config);
+  const devices = configModel.partitionable.all(config);
   devices
     .filter((d) => targets.includes(d.name))
     .filter((d) => d.spacePolicy === "keep")
-    .filter((d) => !configModel.isUsedDevice(config, d.name))
+    .filter((d) => !configModel.partitionable.isUsed(config, d.name))
     .forEach((d) => (d.spacePolicy = null));
 }
 
@@ -63,8 +63,8 @@ function addVolumeGroup(
   const volumeGroup = volumeGroupModel.create(data);
 
   if (moveContent) {
-    configModel
-      .filterPartitionableDevices(config)
+    configModel.partitionable
+      .all(config)
       .filter((d) => data.targetDevices.includes(d.name))
       .forEach((d) => movePartitions(d, volumeGroup));
   }
@@ -87,7 +87,7 @@ function newVgName(config: ConfigModel.Config): string {
 function deviceToVolumeGroup(config: ConfigModel.Config, devName: string): ConfigModel.Config {
   config = configModel.clone(config);
 
-  const device = configModel.filterPartitionableDevices(config).find((d) => d.name === devName);
+  const device = configModel.partitionable.all(config).find((d) => d.name === devName);
   if (!device) return config;
 
   const volumeGroup = volumeGroupModel.create({
@@ -133,9 +133,7 @@ function volumeGroupToPartitions(config: ConfigModel.Config, vgName: string): Co
   const targetDevice = config.volumeGroups[index].targetDevices[0];
   if (!targetDevice) return config;
 
-  const device = configModel
-    .filterPartitionableDevices(config)
-    .find((d) => d.name === targetDevice);
+  const device = configModel.partitionable.all(config).find((d) => d.name === targetDevice);
   if (!device) return config;
 
   const logicalVolumes = config.volumeGroups[index].logicalVolumes || [];
@@ -166,7 +164,7 @@ function deleteVolumeGroup(config: ConfigModel.Config, vgName: string): ConfigMo
   });
 
   // Do not delete the underlying drives if that results in an empty configuration
-  return configModel.filterPartitionableDevices(deletedConfig).length ? deletedConfig : config;
+  return configModel.partitionable.all(deletedConfig).length ? deletedConfig : config;
 }
 
 export {

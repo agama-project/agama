@@ -39,7 +39,7 @@ export default function DeviceEditorContent({
 }: DeviceEditorContentProps): React.ReactNode {
   const config = useConfigModel();
   const device = config[collection][index];
-  const isUsed = configModel.isUsedDevice(config, device.name);
+  const isUsed = configModel.partitionable.isUsed(config, device.name);
 
   if (!isUsed) return <UnusedMenu collection={collection} index={index} />;
 

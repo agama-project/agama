@@ -241,7 +241,7 @@ const RemoveEntryOption = ({ device, onClick }: RemoveEntryOptionProps): React.R
     const onlyToBoot = entries.find(
       (e) =>
         configModel.isExplicitBootDevice(config, e.name) &&
-        !configModel.isUsedDevice(config, e.name),
+        !configModel.partitionable.isUsed(config, e.name),
     );
     return !onlyToBoot;
   };
@@ -298,7 +298,7 @@ const targetDevices = (
     const device = collection.find((d) => d.name === availableDev.name);
     if (!device) return true;
 
-    if (modelDevice.filesystem) return !configModel.isUsedDevice(config, device.name);
+    if (modelDevice.filesystem) return !configModel.partitionable.isUsed(config, device.name);
 
     return !device.filesystem;
   });

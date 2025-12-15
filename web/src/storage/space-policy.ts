@@ -21,7 +21,7 @@
  */
 
 import configModel from "~/model/storage/config-model";
-import type { ConfigModel, Data, PartitionableCollection } from "~/model/storage/config-model";
+import type { ConfigModel, Data, Partitionable } from "~/model/storage/config-model";
 
 function setActions(device: ConfigModel.Drive, actions: Data.SpacePolicyAction[]) {
   device.partitions ||= [];
@@ -57,12 +57,12 @@ function setActions(device: ConfigModel.Drive, actions: Data.SpacePolicyAction[]
 
 function setSpacePolicy(
   config: ConfigModel.Config,
-  collection: PartitionableCollection,
+  collection: Partitionable.CollectionName,
   index: number,
   data: Data.SpacePolicy,
 ): ConfigModel.Config {
   config = configModel.clone(config);
-  const device = configModel.findPartitionableDevice(config, collection, index);
+  const device = configModel.partitionable.find(config, collection, index);
 
   if (device === undefined) return config;
 

@@ -95,6 +95,7 @@ export default function SpacePolicySelection() {
   const onSubmit = (e) => {
     e.preventDefault();
     const location = createPartitionableLocation(collection, index);
+    console.log("Location: ", location);
     if (!location) {
       console.log("Invalid location: ", collection, index);
       return;
