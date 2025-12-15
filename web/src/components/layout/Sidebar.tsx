@@ -39,6 +39,10 @@ const MainNavigation = (): React.ReactNode => {
   const product = useProduct();
   const location = useLocation();
 
+  if (!product) {
+    return null;
+  }
+
   const links = rootRoutes().map((route) => {
     const { path, handle: data } = route;
     if (!data) return null;

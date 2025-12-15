@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Bullseye,
   Button,
@@ -41,8 +41,6 @@ import { useNavigate } from "react-router";
 import { Page } from "~/components/core";
 import pfTextStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import pfRadioStyles from "@patternfly/react-styles/css/components/Radio/radio";
-// import { PATHS } from "~/router";
-import { Product } from "~/types/software";
 import { isEmpty } from "radashi";
 import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
@@ -51,6 +49,8 @@ import LicenseDialog from "./LicenseDialog";
 import { useProduct } from "~/hooks/model/config";
 import { useSystem } from "~/hooks/model/system";
 import { patchConfig } from "~/api";
+import { ROOT } from "~/routes/paths";
+import { Product } from "~/model/system";
 
 const ResponsiveGridItem = ({ children }) => (
   <GridItem sm={10} smOffset={1} lg={8} lgOffset={2} xl={6} xlOffset={3}>
@@ -110,7 +110,7 @@ const BackLink = () => {
 };
 
 function ProductSelectionPage() {
-  // const registration = useRegistration();
+  const navigate = useNavigate();
   const { products } = useSystem();
   const selectedProduct = useProduct();
   const [nextProduct, setNextProduct] = useState(selectedProduct);
@@ -118,16 +118,24 @@ function ProductSelectionPage() {
   // because it's a singleProduct iso.
   const [licenseAccepted, setLicenseAccepted] = useState(!!selectedProduct);
   const [showLicense, setShowLicense] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isWaiting, setIsWaiting] = useState(false);
 
   // if (registration?.registered && selectedProduct) return <Navigate to={PATHS.root} />;
+
+  useEffect(() => {
+    if (!isWaiting) return;
+
+    if (selectedProduct?.id === nextProduct?.id) {
+      navigate(ROOT.root);
+    }
+  }, [isWaiting, navigate, nextProduct, selectedProduct]);
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (nextProduct) {
       patchConfig({ product: { id: nextProduct.id } });
-      setIsLoading(true);
+      setIsWaiting(true);
     }
   };
 
@@ -204,14 +212,10 @@ function ProductSelectionPage() {
               </StackItem>
               <StackItem>
                 <Split hasGutter>
-                  <Page.Submit
-                    form="productSelectionForm"
-                    isDisabled={isSelectionDisabled}
-                    isLoading={isLoading}
-                  >
+                  <Page.Submit form="productSelectionForm" isDisabled={isSelectionDisabled}>
                     {_("Select")}
                   </Page.Submit>
-                  {selectedProduct && !isLoading && <BackLink />}
+                  {selectedProduct && <BackLink />}
                 </Split>
               </StackItem>
             </Stack>

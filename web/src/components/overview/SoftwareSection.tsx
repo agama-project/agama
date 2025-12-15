@@ -31,6 +31,11 @@ import xbytes from "xbytes";
 export default function SoftwareSection(): React.ReactNode {
   const system = useSystem();
   const proposal = useProposal();
+
+  if (!proposal) {
+    return null;
+  }
+
   const usedSpace = xbytes(proposal.usedSpace * 1024);
 
   if (isEmpty(proposal.patterns)) return;
