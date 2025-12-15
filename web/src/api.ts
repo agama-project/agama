@@ -21,7 +21,7 @@
  */
 
 import { get, patch, post, put } from "~/http";
-import type { ConfigModel } from "~/model/storage";
+import type { ConfigModel } from "~/model/storage/config-model";
 import type { Config } from "~/model/config";
 import type { Issue } from "~/model/issue";
 import type { Proposal } from "~/model/proposal";
