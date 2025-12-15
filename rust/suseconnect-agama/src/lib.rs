@@ -15,12 +15,11 @@ pub(crate) unsafe fn string_from_ptr(c_ptr: *mut i8) -> Result<String, IntoStrin
 
 /// parameters for SUSE Connect calls.
 ///
-/// Based on https://github.com/SUSE/connect-ng/blob/main/internal/connect/config.go#L45
+/// Based on https://github.com/SUSE/connect-ng/blob/e5ca95a10faa118f04aa5d3292632592d9f02cdc/internal/connect/config.go#L45
 #[derive(serde::Serialize, Default, Debug, Clone)]
 pub struct ConnectParams {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub language: Option<String>,
-    // TODO: maybe use url instead of string?
     #[serde(skip_serializing_if = "Option::is_none")]
     pub url: Option<url::Url>,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -127,7 +126,7 @@ impl TryFrom<Value> for Product {
 /// Represents a service returned from registration to be added to libzypp.
 #[derive(Debug, Clone)]
 pub struct Service {
-    /// The name of the service that can be used in libzypp.
+    /// The name of the service that can be used in libzypp. It can be used as alias in libzypp.
     pub name: String,
     /// The URL of the service.
     pub url: String,
@@ -152,6 +151,7 @@ impl TryFrom<Value> for Service {
 }
 
 /// SSL Error codes returned from SUSEConnect.
+/// Based on https://github.com/SUSE/connect-ng/blob/5a200487c50d9c955708b34d0d35ebef47dc5a3e/third_party/libsuseconnect/libsuseconnect.go#L292
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[repr(u64)]
 pub enum SSLErrorCode {
@@ -204,8 +204,8 @@ pub enum Error {
     #[error("{message}")]
     SCCApi {
         message: String,
-        // HTTP error code from API
-        code: u64,
+        // HTTP error code from API - It is full integer size, same as in suseconnect
+        code: i64,
     },
     #[error("Unknown error: {0}")]
     Unknown(String),
@@ -252,7 +252,7 @@ fn check_error(response: &Value) -> Result<(), Error> {
 
         match error_str {
             "APIError" => {
-                let code = response.get("code").and_then(|i| i.as_u64()).unwrap_or(400);
+                let code = response.get("code").and_then(|i| i.as_i64()).unwrap_or(400);
                 return Err(Error::SCCApi { message, code });
             }
             "MalformedSccCredentialsFile" => {
@@ -417,6 +417,7 @@ pub fn create_credentials_file(login: &str, pwd: &str, path: &str) -> Result<(),
     let login = CString::new(login)?.into_raw();
     let pwd = CString::new(pwd)?.into_raw();
     let path = CString::new(path)?.into_raw();
+    // pass empty string same as connect do it  https://github.com/SUSE/connect-ng/blob/main/third_party/yast/lib/suse/connect/yast.rb#L169
     let empty = CString::new("")?.into_raw();
 
     unsafe {
