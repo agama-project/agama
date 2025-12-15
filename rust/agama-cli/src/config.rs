@@ -33,7 +33,8 @@ use fluent_uri::Uri;
 use tempfile::Builder;
 
 use crate::{
-    api_url, build_clients, cli_input::CliInput, cli_output::CliOutput, show_progress, GlobalOpts,
+    api_url, build_clients, build_http_client, cli_input::CliInput, cli_output::CliOutput,
+    show_progress, GlobalOpts,
 };
 
 const DEFAULT_EDITOR: &str = "/usr/bin/vi";
@@ -108,10 +109,9 @@ pub async fn run(subcommand: ConfigCommands, opts: GlobalOpts) -> anyhow::Result
 
     match subcommand {
         ConfigCommands::Show { output } => {
-            let (http_client, _monitor) = build_clients(api_url, opts.insecure).await?;
-            let store = SettingsStore::new(http_client.clone()).await?;
-            let model = store.load().await?;
-            let json = serde_json::to_string_pretty(&model)?;
+            let http_client = build_http_client(api_url, opts.insecure, true).await?;
+            let response = http_client.get_raw("/v2/config").await?;
+            let json = response.text().await?;
 
             let destination = output.unwrap_or(CliOutput::Stdout);
             destination.write(&json)?;
