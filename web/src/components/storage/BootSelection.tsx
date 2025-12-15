@@ -30,11 +30,7 @@ import { useCandidateDevices, useDevices } from "~/hooks/model/system/storage";
 import { useModel } from "~/hooks/storage/model";
 import { useConfigModel } from "~/hooks/model/storage";
 import { isDrive } from "~/storage/device";
-import {
-  useSetBootDevice,
-  useSetDefaultBootDevice,
-  useDisableBootConfig,
-} from "~/hooks/storage/boot";
+import { useSetBootDevice, useSetDefaultBootDevice, useDisableBoot } from "~/hooks/storage/boot";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
@@ -82,7 +78,7 @@ export default function BootSelection() {
   const allCandidateDevices = useCandidateDevices();
   const setBootDevice = useSetBootDevice();
   const setDefaultBootDevice = useSetDefaultBootDevice();
-  const disableBootConfig = useDisableBootConfig();
+  const disableBootConfig = useDisableBoot();
 
   const candidateDevices = filteredCandidates(allCandidateDevices, model);
 

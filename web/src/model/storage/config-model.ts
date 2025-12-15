@@ -128,6 +128,57 @@ function isUsedDevice(config: ConfigModel.Config, deviceName: string): boolean {
   );
 }
 
+function removePartitionableDevice(
+  config: ConfigModel.Config,
+  collection: PartitionableCollection,
+  index: number,
+): ConfigModel.Config {
+  config = clone(config);
+  config[collection]?.splice(index, 1);
+  return config;
+}
+
+function setBoot(config: ConfigModel.Config, boot: ConfigModel.Boot): ConfigModel.Config {
+  config = clone(config);
+  const device = findBootDevice(config);
+  config.boot = null;
+
+  if (device && !isUsedDevice(config, device.name)) {
+    const location = findPartitionableLocation(config, device.name);
+    if (location) config = removePartitionableDevice(config, location.collection, location.index);
+  }
+
+  config.boot = boot;
+  return config;
+}
+
+function setBootDevice(config: ConfigModel.Config, deviceName: string): ConfigModel.Config {
+  const boot = {
+    configure: true,
+    device: {
+      default: false,
+      name: deviceName,
+    },
+  };
+
+  return setBoot(config, boot);
+}
+
+function setDefaultBootDevice(config: ConfigModel.Config): ConfigModel.Config {
+  const boot = {
+    configure: true,
+    device: {
+      default: true,
+    },
+  };
+
+  return setBoot(config, boot);
+}
+
+function disableBoot(config: ConfigModel.Config): ConfigModel.Config {
+  return setBoot(config, { configure: false });
+}
+
 export default {
   isPartitionableCollection,
   clone,
@@ -142,5 +193,8 @@ export default {
   isExplicitBootDevice,
   isTargetDevice,
   isUsedDevice,
+  setBootDevice,
+  setDefaultBootDevice,
+  disableBoot,
 };
 export type { ConfigModel, Data, Partitionable, PartitionableCollection, PartitionableLocation };

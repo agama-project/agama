@@ -22,27 +22,27 @@
 
 import { useConfigModel } from "~/hooks/model/storage";
 import { putStorageModel } from "~/api";
-import { setBootDevice, setDefaultBootDevice, disableBootConfig } from "~/storage/boot";
+import configModel from "~/model/storage/config-model";
 
 type SetBootDeviceFn = (deviceName: string) => void;
 
 function useSetBootDevice(): SetBootDeviceFn {
   const config = useConfigModel();
-  return (deviceName: string) => putStorageModel(setBootDevice(config, deviceName));
+  return (deviceName: string) => putStorageModel(configModel.setBootDevice(config, deviceName));
 }
 
 type SetDefaultBootDeviceFn = () => void;
 
 function useSetDefaultBootDevice(): SetDefaultBootDeviceFn {
   const config = useConfigModel();
-  return () => putStorageModel(setDefaultBootDevice(config));
+  return () => putStorageModel(configModel.setDefaultBootDevice(config));
 }
 
 type DisableBootConfigFn = () => void;
 
-function useDisableBootConfig(): DisableBootConfigFn {
+function useDisableBoot(): DisableBootConfigFn {
   const config = useConfigModel();
-  return () => putStorageModel(disableBootConfig(config));
+  return () => putStorageModel(configModel.disableBoot(config));
 }
 
-export { useSetBootDevice, useSetDefaultBootDevice, useDisableBootConfig };
+export { useSetBootDevice, useSetDefaultBootDevice, useDisableBoot };
