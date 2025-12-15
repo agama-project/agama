@@ -20,8 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import { isUsed, deleteIfUnused } from "~/storage/search";
-import { findDevice } from "~/storage/api-model";
+import { deleteIfUnused } from "~/storage/search";
 import configModel from "~/model/storage/config-model";
 import partitionModel from "~/model/storage/partition-model";
 import logicalVolumeModel from "~/model/storage/logical-volume-model";
@@ -44,20 +43,13 @@ function movePartitions(
   ];
 }
 
-function adjustSpacePolicy(config: ConfigModel.Config, list: string, index: number) {
-  const device = findDevice(config, list, index);
-  if (device.spacePolicy !== "keep") return;
-  if (isUsed(config, list, index)) return;
-
-  device.spacePolicy = null;
-}
-
 function adjustSpacePolicies(config: ConfigModel.Config, targets: string[]) {
-  ["drives", "mdRaids"].forEach((list) => {
-    config[list].forEach((dev, idx) => {
-      if (targets.includes(dev.name)) adjustSpacePolicy(config, list, idx);
-    });
-  });
+  const devices = configModel.filterPartitionableDevices(config);
+  devices
+    .filter((d) => targets.includes(d.name))
+    .filter((d) => d.spacePolicy === "keep")
+    .filter((d) => !configModel.isUsedDevice(config, d.name))
+    .forEach((d) => (d.spacePolicy = null));
 }
 
 function addVolumeGroup(

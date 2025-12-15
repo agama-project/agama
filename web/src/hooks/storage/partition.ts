@@ -23,24 +23,24 @@
 import { useConfigModel } from "~/hooks/model/storage";
 import { putStorageModel } from "~/api";
 import { addPartition, editPartition, deletePartition } from "~/storage/partition";
-import type { Data } from "~/model/storage/config-model";
+import type { Data, PartitionableCollection } from "~/model/storage/config-model";
 
 type AddPartitionFn = (
-  collection: "drives" | "mdRaids",
-  index: number | string,
+  collection: PartitionableCollection,
+  index: number,
   data: Data.Partition,
 ) => void;
 
 function useAddPartition(): AddPartitionFn {
   const config = useConfigModel();
-  return (collection: "drives" | "mdRaids", index: number | string, data: Data.Partition) => {
+  return (collection: PartitionableCollection, index: number, data: Data.Partition) => {
     putStorageModel(addPartition(config, collection, index, data));
   };
 }
 
 type EditPartitionFn = (
-  collection: "drives" | "mdRaids",
-  index: number | string,
+  collection: PartitionableCollection,
+  index: number,
   mountPath: string,
   data: Data.Partition,
 ) => void;
@@ -48,8 +48,8 @@ type EditPartitionFn = (
 function useEditPartition(): EditPartitionFn {
   const config = useConfigModel();
   return (
-    collection: "drives" | "mdRaids",
-    index: number | string,
+    collection: PartitionableCollection,
+    index: number,
     mountPath: string,
     data: Data.Partition,
   ) => {
@@ -58,14 +58,14 @@ function useEditPartition(): EditPartitionFn {
 }
 
 type DeletePartitionFn = (
-  collection: "drives" | "mdRaids",
-  index: number | string,
+  collection: PartitionableCollection,
+  index: number,
   mountPath: string,
 ) => void;
 
 function useDeletePartition(): DeletePartitionFn {
   const config = useConfigModel();
-  return (collection: "drives" | "mdRaids", index: number | string, mountPath: string) =>
+  return (collection: PartitionableCollection, index: number, mountPath: string) =>
     putStorageModel(deletePartition(config, collection, index, mountPath));
 }
 

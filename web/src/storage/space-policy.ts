@@ -20,9 +20,8 @@
  * find current contact information at www.suse.com.
  */
 
-import { findDevice } from "~/storage/api-model";
 import configModel from "~/model/storage/config-model";
-import type { ConfigModel, Data } from "~/model/storage/config-model";
+import type { ConfigModel, Data, PartitionableCollection } from "~/model/storage/config-model";
 
 function setActions(device: ConfigModel.Drive, actions: Data.SpacePolicyAction[]) {
   device.partitions ||= [];
@@ -58,12 +57,12 @@ function setActions(device: ConfigModel.Drive, actions: Data.SpacePolicyAction[]
 
 function setSpacePolicy(
   config: ConfigModel.Config,
-  collection: string,
-  index: number | string,
+  collection: PartitionableCollection,
+  index: number,
   data: Data.SpacePolicy,
 ): ConfigModel.Config {
   config = configModel.clone(config);
-  const device = findDevice(config, collection, index);
+  const device = configModel.findPartitionableDevice(config, collection, index);
 
   if (device === undefined) return config;
 

@@ -65,8 +65,14 @@ import { useVolumeTemplate, useDevice } from "~/hooks/model/system/storage";
 
 import { useSolvedConfigModel } from "~/queries/storage/config-model";
 import { useConfigModel } from "~/hooks/model/storage";
-import { findDevice } from "~/storage/api-model";
-import { deviceSize, deviceLabel, filesystemLabel, parseToBytes } from "~/components/storage/utils";
+import {
+  deviceSize,
+  deviceLabel,
+  filesystemLabel,
+  parseToBytes,
+  findPartitionableDevice,
+  createPartitionableLocation,
+} from "~/components/storage/utils";
 import { _ } from "~/i18n";
 import { sprintf } from "sprintf-js";
 import { STORAGE as PATHS, STORAGE } from "~/routes/paths";
@@ -411,12 +417,12 @@ function useSolvedModel(value: FormValue): ConfigModel.Config | null {
       sparseModel = editPartitionHelper(
         model,
         modelCollection,
-        index,
+        Number(index),
         initialPartitionConfig.mountPath,
         partitionConfig,
       );
     } else {
-      sparseModel = addPartitionHelper(model, modelCollection, index, partitionConfig);
+      sparseModel = addPartitionHelper(model, modelCollection, Number(index), partitionConfig);
     }
   }
 
@@ -425,12 +431,12 @@ function useSolvedModel(value: FormValue): ConfigModel.Config | null {
 }
 
 function useSolvedPartitionConfig(value: FormValue): ConfigModel.Partition | undefined {
-  const model = useSolvedModel(value);
   const { collection, index } = useParams();
+  const model = useSolvedModel(value);
   if (!model) return;
 
-  const container = findDevice(model, collection, index);
-  return container?.partitions?.find((p) => p.mountPath === value.mountPoint);
+  const device = findPartitionableDevice(model, collection, index);
+  return device?.partitions?.find((p) => p.mountPath === value.mountPoint);
 }
 
 function useSolvedSizes(value: FormValue): SizeRange {
@@ -802,11 +808,21 @@ const PartitionPageForm = () => {
 
   const onSubmit = () => {
     const partitionConfig = toPartitionConfig(value);
-    const modelCollection = collection === "drives" ? "drives" : "mdRaids";
+    const partitionableLocation = createPartitionableLocation(collection, index);
+    if (!partitionableLocation) {
+      console.log("Invalid location: ", collection, index);
+      return;
+    }
 
     if (initialValue)
-      editPartition(modelCollection, index, initialValue.mountPoint, partitionConfig);
-    else addPartition(modelCollection, index, partitionConfig);
+      editPartition(
+        partitionableLocation.collection,
+        partitionableLocation.index,
+        initialValue.mountPoint,
+        partitionConfig,
+      );
+    else
+      addPartition(partitionableLocation.collection, partitionableLocation.index, partitionConfig);
 
     navigate({ pathname: PATHS.root, search: location.search });
   };

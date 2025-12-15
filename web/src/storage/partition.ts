@@ -20,11 +20,9 @@
  * find current contact information at www.suse.com.
  */
 
-import { findDevice } from "~/storage/api-model";
-import { isUsed } from "~/storage/search";
 import configModel from "~/model/storage/config-model";
 import partitionModel from "~/model/storage/partition-model";
-import type { ConfigModel, Data } from "~/model/storage/config-model";
+import type { ConfigModel, Data, PartitionableCollection } from "~/model/storage/config-model";
 
 type Partitionable = ConfigModel.Drive | ConfigModel.MdRaid;
 
@@ -44,17 +42,17 @@ function indexByPath(device: Partitionable, path: string): number {
  * */
 function addPartition(
   config: ConfigModel.Config,
-  collection: "drives" | "mdRaids",
-  index: number | string,
+  collection: PartitionableCollection,
+  index: number,
   data: Data.Partition,
 ): ConfigModel.Config {
   config = configModel.clone(config);
-  const device = findDevice(config, collection, index);
+  const device = configModel.findPartitionableDevice(config, collection, index);
 
   if (device === undefined) return config;
 
   // Reset the spacePolicy to the default value if the device goes from unused to used
-  if (!isUsed(config, collection, index) && device.spacePolicy === "keep")
+  if (!configModel.isUsedDevice(config, device.name) && device.spacePolicy === "keep")
     device.spacePolicy = null;
 
   const partition = partitionModel.create(data);
@@ -68,13 +66,13 @@ function addPartition(
 
 function editPartition(
   config: ConfigModel.Config,
-  collection: "drives" | "mdRaids",
-  index: number | string,
+  collection: PartitionableCollection,
+  index: number,
   mountPath: string,
   data: Data.Partition,
 ): ConfigModel.Config {
   config = configModel.clone(config);
-  const device = findDevice(config, collection, index);
+  const device = configModel.findPartitionableDevice(config, collection, index);
 
   if (device === undefined) return config;
 
@@ -90,12 +88,12 @@ function editPartition(
 
 function deletePartition(
   config: ConfigModel.Config,
-  collection: "drives" | "mdRaids",
-  index: number | string,
+  collection: PartitionableCollection,
+  index: number,
   mountPath: string,
 ): ConfigModel.Config {
   config = configModel.clone(config);
-  const device = findDevice(config, collection, index);
+  const device = configModel.findPartitionableDevice(config, collection, index);
 
   if (device === undefined) return config;
 
@@ -103,7 +101,7 @@ function deletePartition(
   device.partitions.splice(partitionIndex, 1);
 
   // Do not delete anything if the device is not really used
-  if (!isUsed(config, collection, index)) {
+  if (!configModel.isUsedDevice(config, device.name)) {
     device.spacePolicy = "keep";
   }
 

@@ -20,46 +20,23 @@
  * find current contact information at www.suse.com.
  */
 
-import { findDevice, findDeviceIndex } from "~/storage/api-model";
 import { fork } from "radashi";
 import configModel from "~/model/storage/config-model";
 import partitionModel from "~/model/storage/partition-model";
-import type { ConfigModel } from "~/model/storage/config-model";
-
-function deviceLocation(config: ConfigModel.Config, name: string) {
-  let index;
-  for (const list of ["drives", "mdRaids"]) {
-    index = findDeviceIndex(config, list, name);
-    if (index !== -1) return { list, index };
-  }
-
-  return { list: undefined, index: -1 };
-}
-
-function buildModelDevice(
-  config: ConfigModel.Config,
-  list: string,
-  index: number | string,
-): ConfigModel.Drive | ConfigModel.MdRaid | undefined {
-  return config[list].at(index);
-}
-
-function isUsed(config: ConfigModel.Config, list: string, index: number | string): boolean {
-  const device = config[list].at(index);
-  if (!device) return false;
-
-  return configModel.isUsedDevice(config, device.name);
-}
+import type { ConfigModel, PartitionableCollection } from "~/model/storage/config-model";
 
 function deleteIfUnused(config: ConfigModel.Config, name: string): ConfigModel.Config {
   config = configModel.clone(config);
 
-  const { list, index } = deviceLocation(config, name);
-  if (!list) return config;
+  const location = configModel.findPartitionableLocation(config, name);
+  if (!location) return config;
 
-  if (isUsed(config, list, index)) return config;
+  const { collection, index } = location;
+  const device = configModel.findPartitionableDevice(config, collection, index);
+  if (!device) return config;
+  if (configModel.isUsedDevice(config, device.name)) return config;
 
-  config[list].splice(index, 1);
+  config[collection].splice(index, 1);
   return config;
 }
 
@@ -67,27 +44,29 @@ function switchSearched(
   config: ConfigModel.Config,
   oldName: string,
   name: string,
-  list: "drives" | "mdRaids",
+  collection: PartitionableCollection,
 ): ConfigModel.Config {
   if (name === oldName) return config;
 
   config = configModel.clone(config);
 
-  const { list: oldList, index } = deviceLocation(config, oldName);
-  if (!oldList) return config;
+  const location = configModel.findPartitionableLocation(config, oldName);
+  if (!location) return config;
 
-  const device = findDevice(config, oldList, index);
-  const deviceModel = buildModelDevice(config, oldList, index);
-  const targetIndex = findDeviceIndex(config, list, name);
-  const target = targetIndex === -1 ? null : findDevice(config, list, targetIndex);
+  const device = configModel.findPartitionableDevice(config, location.collection, location.index);
+  const targetIndex = configModel.findPartitionableIndex(config, collection, name);
+  const target =
+    targetIndex === -1
+      ? null
+      : configModel.findPartitionableDevice(config, collection, targetIndex);
 
-  if (deviceModel.filesystem) {
+  if (device.filesystem) {
     if (target) {
       target.mountPath = device.mountPath;
       target.filesystem = device.filesystem;
       target.spacePolicy = "keep";
     } else {
-      config[list].push({
+      config[collection].push({
         name,
         mountPath: device.mountPath,
         filesystem: device.filesystem,
@@ -95,26 +74,26 @@ function switchSearched(
       });
     }
 
-    config[oldList].splice(index, 1);
+    config[location.collection].splice(location.index, 1);
     return config;
   }
 
-  const [newPartitions, existingPartitions] = fork(deviceModel.partitions, partitionModel.isNew);
+  const [newPartitions, existingPartitions] = fork(device.partitions, partitionModel.isNew);
   const reusedPartitions = existingPartitions.filter(partitionModel.isReused);
   const keepEntry =
-    configModel.isExplicitBootDevice(config, deviceModel.name) || reusedPartitions.length;
+    configModel.isExplicitBootDevice(config, device.name) || reusedPartitions.length;
 
   if (keepEntry) {
     device.partitions = existingPartitions;
   } else {
-    config[oldList].splice(index, 1);
+    config[location.collection].splice(location.index, 1);
   }
 
   if (target) {
     target.partitions ||= [];
     target.partitions = [...target.partitions, ...newPartitions];
   } else {
-    config[list].push({
+    config[collection].push({
       name,
       partitions: newPartitions,
       spacePolicy: device.spacePolicy === "custom" ? undefined : device.spacePolicy,
@@ -124,4 +103,4 @@ function switchSearched(
   return config;
 }
 
-export { deleteIfUnused, isUsed, switchSearched };
+export { deleteIfUnused, switchSearched };

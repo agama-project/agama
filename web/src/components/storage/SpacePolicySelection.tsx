@@ -25,7 +25,7 @@ import { ActionGroup, Content, Form } from "@patternfly/react-core";
 import { useNavigate, useParams } from "react-router";
 import { Page } from "~/components/core";
 import SpaceActionsTable, { SpacePolicyAction } from "~/components/storage/SpaceActionsTable";
-import { deviceChildren } from "~/components/storage/utils";
+import { createPartitionableLocation, deviceChildren } from "~/components/storage/utils";
 import { _ } from "~/i18n";
 import { useDevices } from "~/hooks/model/system/storage";
 import { useDrive as useDriveModel, useMdRaid as useMdRaidModel } from "~/hooks/storage/model";
@@ -94,7 +94,13 @@ export default function SpacePolicySelection() {
 
   const onSubmit = (e) => {
     e.preventDefault();
-    setSpacePolicy(collection, index, { type: "custom", actions });
+    const location = createPartitionableLocation(collection, index);
+    if (!location) {
+      console.log("Invalid location: ", collection, index);
+      return;
+    }
+
+    setSpacePolicy(location.collection, location.index, { type: "custom", actions });
     navigate("..");
   };
 

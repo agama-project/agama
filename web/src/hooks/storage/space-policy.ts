@@ -23,17 +23,17 @@
 import { useConfigModel } from "~/hooks/model/storage";
 import { putStorageModel } from "~/api";
 import { setSpacePolicy } from "~/storage/space-policy";
-import type { Data } from "~/model/storage/config-model";
+import type { Data, PartitionableCollection } from "~/model/storage/config-model";
 
 type setSpacePolicyFn = (
-  collection: string,
-  index: number | string,
+  collection: PartitionableCollection,
+  index: number,
   data: Data.SpacePolicy,
 ) => void;
 
 function useSetSpacePolicy(): setSpacePolicyFn {
   const model = useConfigModel();
-  return (collection: string, index: number | string, data: Data.SpacePolicy) => {
+  return (collection: PartitionableCollection, index: number, data: Data.SpacePolicy) => {
     putStorageModel(setSpacePolicy(model, collection, index, data));
   };
 }

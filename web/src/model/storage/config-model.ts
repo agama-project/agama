@@ -25,6 +25,16 @@ import volumeGroupModel from "~/model/storage/volume-group-model";
 import type * as ConfigModel from "~/openapi/storage/config-model";
 import type * as Data from "~/model/storage/data";
 
+type Partitionable = ConfigModel.Drive | ConfigModel.MdRaid;
+
+type PartitionableCollection = "drives" | "mdRaids";
+
+type PartitionableLocation = { collection: PartitionableCollection; index: number };
+
+function isPartitionableCollection(collection: string): collection is PartitionableCollection {
+  return collection === "drives" || collection === "mdRaids";
+}
+
 function clone(config: ConfigModel.Config): ConfigModel.Config {
   return JSON.parse(JSON.stringify(config));
 }
@@ -41,15 +51,49 @@ function usedMountPaths(config: ConfigModel.Config): string[] {
   ];
 }
 
-function filterPartitionableDevices(
+function findPartitionableDevice(
   config: ConfigModel.Config,
-): (ConfigModel.Drive | ConfigModel.MdRaid)[] {
+  collection: PartitionableCollection,
+  index: number,
+): Partitionable | null {
+  const devices = collection === "drives" ? config.drives : config.mdRaids;
+  if (!devices) return null;
+
+  return devices.at(index);
+}
+
+function filterPartitionableDevices(config: ConfigModel.Config): Partitionable[] {
   const drives = config.drives || [];
   const mdRaids = config.mdRaids || [];
   return [...drives, ...mdRaids];
 }
 
-function findBootDevice(config: ConfigModel.Config): ConfigModel.Drive | ConfigModel.MdRaid | null {
+function findPartitionableIndex(
+  config: ConfigModel.Config,
+  collection: PartitionableCollection,
+  name: string,
+): number {
+  const devices = config[collection] || [];
+  return devices.findIndex((d) => d.name === name);
+}
+
+function findPartitionableLocation(
+  config: ConfigModel.Config,
+  name: string,
+): PartitionableLocation | null {
+  const collections: PartitionableCollection[] = ["drives", "mdRaids"];
+
+  for (const collection of collections) {
+    const index = findPartitionableIndex(config, collection, name);
+    if (index !== -1) {
+      return { collection, index };
+    }
+  }
+
+  return null;
+}
+
+function findBootDevice(config: ConfigModel.Config): Partitionable | null {
   return (
     filterPartitionableDevices(config).find(
       (d) => d.name && d.name === config.boot?.device?.name,
@@ -85,9 +129,13 @@ function isUsedDevice(config: ConfigModel.Config, deviceName: string): boolean {
 }
 
 export default {
+  isPartitionableCollection,
   clone,
   usedMountPaths,
+  findPartitionableDevice,
   filterPartitionableDevices,
+  findPartitionableIndex,
+  findPartitionableLocation,
   findBootDevice,
   hasDefaultBoot,
   isBootDevice,
@@ -95,4 +143,4 @@ export default {
   isTargetDevice,
   isUsedDevice,
 };
-export type { ConfigModel, Data };
+export type { ConfigModel, Data, Partitionable, PartitionableCollection, PartitionableLocation };
