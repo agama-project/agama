@@ -23,10 +23,12 @@ use crate::api::{
     software::{self, ProductConfig},
     storage,
 };
+use merge::Merge;
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Debug, Default, Deserialize, Serialize, utoipa::ToSchema)]
+#[derive(Clone, Debug, Default, Deserialize, Serialize, Merge, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
+#[merge(strategy = merge::option::recurse)]
 pub struct Config {
     #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(alias = "localization")]
