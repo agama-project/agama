@@ -39,8 +39,6 @@ type Pattern = {
   order: number;
   /** Icon name (not path or file name!) */
   icon: string;
-  /** Whether the pattern if selected and by whom */
-  selectedBy?: SelectedBy;
 };
 
 type Repository = {
@@ -65,31 +63,4 @@ type AddonInfo = {
   release: string;
 };
 
-/**
- * Enum for the reasons to select a pattern
- */
-enum SelectedBy {
-  /** Selected by the user */
-  USER = 0,
-  /** Automatically selected as a dependency of another package */
-  AUTO = 1,
-  /** No selected */
-  NONE = 2,
-}
-
-type Product = {
-  /** Product ID (e.g., "Leap") */
-  id: string;
-  /** Product name (e.g., "openSUSE Leap 15.4") */
-  name: string;
-  /** Product description */
-  description?: string;
-  /** Product icon (e.g., "default.svg") */
-  icon?: string;
-  /** If product is registrable or not */
-  registration: boolean;
-  /** The product license id, if any */
-  license?: string;
-};
-
-export type { System, Pattern, Repository, SelectedBy, Product };
+export type { System, Pattern, Repository };
