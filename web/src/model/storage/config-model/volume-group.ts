@@ -21,7 +21,6 @@
  */
 
 import { sift } from "radashi";
-import { deleteIfUnused } from "~/storage/search";
 import configModel from "~/model/storage/config-model";
 import type { ConfigModel, Data } from "~/model/storage/config-model";
 
@@ -119,7 +118,7 @@ function edit(
 
   config.volumeGroups.splice(index, 1, newVolumeGroup);
   (oldVolumeGroup.targetDevices || []).forEach((d) => {
-    config = deleteIfUnused(config, d);
+    config = configModel.partitionable.removeIfUnused(config, d);
   });
 
   return config;
@@ -138,7 +137,7 @@ function remove(config: ConfigModel.Config, vgName: string): ConfigModel.Config 
 
   let deletedConfig = configModel.clone(config);
   targetDevices.forEach((d) => {
-    deletedConfig = deleteIfUnused(deletedConfig, d);
+    deletedConfig = configModel.partitionable.removeIfUnused(deletedConfig, d);
   });
 
   // Do not delete the underlying drives if that results in an empty configuration

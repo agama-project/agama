@@ -121,6 +121,15 @@ function remove(
   return config;
 }
 
+function removeIfUnused(config: ConfigModel.Config, name: string): ConfigModel.Config {
+  if (isUsed(config, name)) return config;
+
+  const location = findLocation(config, name);
+  if (!location) return config;
+
+  return remove(config, location.collection, location.index);
+}
+
 function convert(
   config: ConfigModel.Config,
   oldName: string,
@@ -196,6 +205,7 @@ export default {
   isAddingPartitions,
   isReusingPartitions,
   remove,
+  removeIfUnused,
   convert,
 };
 export type { Device, CollectionName, Location };

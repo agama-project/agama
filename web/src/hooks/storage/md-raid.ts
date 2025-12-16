@@ -43,9 +43,9 @@ function useDeleteMdRaid(): DeleteMdRaidFn {
   };
 }
 
-type SwitchToMdRaidFn = (oldName: string, raid: Data.MdRaid) => void;
+type AddFromDriveFn = (oldName: string, raid: Data.MdRaid) => void;
 
-function useAddFromDrive(): SwitchToMdRaidFn {
+function useAddFromDrive(): AddFromDriveFn {
   const config = useConfigModel();
   return (oldName: string, raid: Data.MdRaid) => {
     putStorageModel(configModel.mdRaid.addFromDrive(config, oldName, raid));
@@ -53,4 +53,4 @@ function useAddFromDrive(): SwitchToMdRaidFn {
 }
 
 export { useAddMdRaid, useDeleteMdRaid, useAddFromDrive };
-export type { AddReusedMdRaidFn, DeleteMdRaidFn, SwitchToMdRaidFn };
+export type { AddReusedMdRaidFn, DeleteMdRaidFn, AddFromDriveFn };
