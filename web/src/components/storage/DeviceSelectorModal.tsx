@@ -88,7 +88,7 @@ const DeviceSelector = ({
     {
       name: _("Size"),
       value: size,
-      sortingKey: "size",
+      sortingKey: (d) => d.block.size,
       pfTdProps: { style: { width: "10ch" } },
     },
     { name: _("Description"), value: description },
