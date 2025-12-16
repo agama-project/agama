@@ -39,9 +39,9 @@ jest.mock("~/queries/storage/dasd", () => ({
 }));
 
 const mockReactivateSystem = jest.fn();
-jest.mock("~/hooks/storage/system", () => ({
-  ...jest.requireActual("~/hooks/storage/system"),
-  useReactivateSystem: () => mockReactivateSystem(),
+jest.mock("~/api", () => ({
+  ...jest.requireActual("~/api"),
+  activateStorageAction: () => mockReactivateSystem(),
 }));
 
 beforeEach(() => {
