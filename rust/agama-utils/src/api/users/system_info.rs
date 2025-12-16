@@ -18,12 +18,12 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
+use crate::api::users::UserInfo;
 use gettextrs::*;
 use serde::ser::SerializeStruct;
-use serde::Serialize;
 use serde::Deserialize;
+use serde::Serialize;
 use serde_with::{serde_as, DisplayFromStr};
-use crate::api::users::UserInfo;
 
 #[serde_as]
 #[derive(Clone, Default, Debug, Serialize, utoipa::ToSchema)]

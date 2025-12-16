@@ -20,10 +20,7 @@
 
 use agama_utils::{
     actor::Message,
-    api::{
-        self,
-        users::SystemInfo,
-    },
+    api::{self, users::SystemInfo},
 };
 
 #[derive(Clone)]

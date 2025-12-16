@@ -20,8 +20,8 @@
 
 use gettextrs::*;
 use serde::ser::SerializeStruct;
-use serde::Serialize;
 use serde::Deserialize;
+use serde::Serialize;
 use serde_with::{serde_as, DisplayFromStr};
 
 #[serde_as]
