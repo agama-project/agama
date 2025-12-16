@@ -26,6 +26,7 @@ use agama_lib::{
     profile::ProfileValidator, profile::ValidationOutcome, utils::FileFormat,
     Store as SettingsStore,
 };
+use agama_utils::api;
 use anyhow::{anyhow, Context};
 use clap::Subcommand;
 use console::style;
@@ -110,8 +111,8 @@ pub async fn run(subcommand: ConfigCommands, opts: GlobalOpts) -> anyhow::Result
     match subcommand {
         ConfigCommands::Show { output } => {
             let http_client = build_http_client(api_url, opts.insecure, true).await?;
-            let response = http_client.get_raw("/v2/config").await?;
-            let json = response.text().await?;
+            let response: api::Config = http_client.get("/v2/config").await?;
+            let json = serde_json::to_string_pretty(&response)?;
 
             let destination = output.unwrap_or(CliOutput::Stdout);
             destination.write(&json)?;
