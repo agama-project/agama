@@ -142,6 +142,10 @@ function SoftwarePage(): React.ReactNode {
   const issues = useIssues("software");
   const [loading, setLoading] = useState(false);
 
+  if (!proposal) {
+    return null;
+  }
+
   // FIXME: temporarily disabled, the API end point is not implemented yet
   const repos = []; // useRepositories();
   const usedSpace = proposal.usedSpace
