@@ -22,21 +22,18 @@ use std::{io::Write, path::PathBuf, process::Command};
 
 use agama_lib::profile::ProfileHTTPClient;
 use agama_lib::{
-    context::InstallationContext, http::BaseHTTPClient, install_settings::InstallSettings,
-    profile::ProfileValidator, profile::ValidationOutcome, utils::FileFormat,
-    Store as SettingsStore,
+    context::InstallationContext, http::BaseHTTPClient, profile::ProfileValidator,
+    profile::ValidationOutcome, utils::FileFormat,
 };
 use agama_utils::api;
 use anyhow::{anyhow, Context};
 use clap::Subcommand;
 use console::style;
 use fluent_uri::Uri;
+use serde_json::json;
 use tempfile::Builder;
 
-use crate::{
-    api_url, build_clients, build_http_client, cli_input::CliInput, cli_output::CliOutput,
-    show_progress, GlobalOpts,
-};
+use crate::{api_url, build_http_client, cli_input::CliInput, cli_output::CliOutput, GlobalOpts};
 
 const DEFAULT_EDITOR: &str = "/usr/bin/vi";
 
@@ -119,57 +116,58 @@ pub async fn run(subcommand: ConfigCommands, opts: GlobalOpts) -> anyhow::Result
 
             eprintln!();
             validate(&http_client, CliInput::Full(json.clone()), false).await?;
-            Ok(())
         }
         ConfigCommands::Load { url_or_path } => {
-            let (http_client, monitor) = build_clients(api_url, opts.insecure).await?;
-            let store = SettingsStore::new(http_client.clone()).await?;
+            let http_client = build_http_client(api_url, opts.insecure, true).await?;
             let url_or_path = url_or_path.unwrap_or(CliInput::Stdin);
             let contents = url_or_path.read_to_string(opts.insecure)?;
             let valid = validate(&http_client, CliInput::Full(contents.clone()), false).await?;
 
-            if matches!(valid, ValidationOutcome::Valid) {
-                let result =
-                    InstallSettings::from_json(&contents, &InstallationContext::from_env()?)?;
-                tokio::spawn(async move {
-                    show_progress(monitor, true).await;
-                });
-                store.store(&result).await?;
+            if !matches!(valid, ValidationOutcome::Valid) {
+                return Ok(());
             }
 
-            Ok(())
+            let model: api::Config = serde_json::from_str(&contents)?;
+            patch_config(&http_client, &model).await?;
         }
         ConfigCommands::Validate { url_or_path, local } => {
             let _ = if !local {
-                let (http_client, _monitor) = build_clients(api_url, opts.insecure).await?;
+                let http_client = build_http_client(api_url, opts.insecure, true).await?;
                 validate(&http_client, url_or_path, false).await
             } else {
                 validate_local(url_or_path, opts.insecure)
             };
-
-            Ok(())
         }
         ConfigCommands::Generate { url_or_path } => {
-            let (http_client, _monitor) = build_clients(api_url, opts.insecure).await?;
+            let http_client = build_http_client(api_url, opts.insecure, true).await?;
             let url_or_path = url_or_path.unwrap_or(CliInput::Stdin);
 
-            generate(&http_client, url_or_path, opts.insecure).await
+            generate(&http_client, url_or_path, opts.insecure).await?;
         }
         ConfigCommands::Edit { editor } => {
-            let (http_client, monitor) = build_clients(api_url, opts.insecure).await?;
-            let store = SettingsStore::new(http_client.clone()).await?;
-            let model = store.load().await?;
+            let http_client = build_http_client(api_url, opts.insecure, true).await?;
+            let response: api::Config = http_client.get("/v2/config").await?;
             let editor = editor
                 .or_else(|| std::env::var("EDITOR").ok())
                 .unwrap_or(DEFAULT_EDITOR.to_string());
-            let result = edit(&http_client, &model, &editor).await?;
-            tokio::spawn(async move {
-                show_progress(monitor, true).await;
-            });
-            store.store(&result).await?;
-            Ok(())
+            let result = edit(&http_client, &response, &editor).await?;
+            patch_config(&http_client, &result).await?;
         }
     }
+
+    Ok(())
+}
+
+async fn patch_config(
+    http_client: &BaseHTTPClient,
+    model: &api::Config,
+) -> Result<(), anyhow::Error> {
+    let model_json = json!(model);
+    let patch = api::Patch {
+        update: Some(model_json),
+    };
+    http_client.patch_void("/v2/config", &patch).await?;
+    Ok(())
 }
 
 /// Validates a JSON profile with locally available tools only
@@ -245,7 +243,7 @@ async fn generate(
     url_or_path: CliInput,
     insecure: bool,
 ) -> anyhow::Result<()> {
-    let context = match &url_or_path {
+    let _context = match &url_or_path {
         CliInput::Stdin | CliInput::Full(_) => InstallationContext::from_env()?,
         CliInput::Url(url_str) => InstallationContext::from_url_str(url_str)?,
         CliInput::Path(pathbuf) => InstallationContext::from_file(pathbuf.as_path())?,
@@ -289,8 +287,8 @@ async fn generate(
         return Ok(());
     }
 
-    // resolves relative URL references
-    let model = InstallSettings::from_json(&profile_json, &context)?;
+    // TODO: resolves relative URL references
+    let model: api::Config = serde_json::from_str(&profile_json)?;
     let config_json = serde_json::to_string_pretty(&model)?;
 
     println!("{}", &config_json);
@@ -345,9 +343,9 @@ async fn from_json_or_jsonnet(
 /// * `editor`: editor command.
 async fn edit(
     http_client: &BaseHTTPClient,
-    model: &InstallSettings,
+    model: &api::Config,
     editor: &str,
-) -> anyhow::Result<InstallSettings> {
+) -> anyhow::Result<api::Config> {
     let content = serde_json::to_string_pretty(model)?;
     let mut file = Builder::new().suffix(".json").tempfile()?;
     let path = PathBuf::from(file.path());
@@ -362,10 +360,7 @@ async fn edit(
         let contents =
             std::fs::read_to_string(&path).context(format!("Reading from file {:?}", path))?;
         validate(&http_client, CliInput::Full(contents), false).await?;
-        return Ok(InstallSettings::from_file(
-            path,
-            &InstallationContext::from_env()?,
-        )?);
+        return Ok(serde_json::from_str(&content)?);
     }
 
     Err(anyhow!(
