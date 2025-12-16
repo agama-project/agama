@@ -23,67 +23,52 @@
 import React from "react";
 import { screen, within } from "@testing-library/react";
 import { mockNavigateFn, installerRender } from "~/test-utils";
+import type { Storage } from "~/model/proposal";
+import type { ConfigModel } from "~/model/storage/config-model";
 import ConfigureDeviceMenu from "./ConfigureDeviceMenu";
-import { StorageDevice } from "~/storage";
-import { apiModel } from "~/api/storage/types";
 
-const vda: StorageDevice = {
+const vda: Storage.Device = {
   sid: 59,
-  type: "disk",
-  isDrive: true,
-  description: "",
-  vendor: "Micron",
-  model: "Micron 1100 SATA",
-  driver: ["ahci", "mmcblk"],
-  bus: "IDE",
+  class: "drive",
   name: "/dev/vda",
-  size: 1e12,
-  systems: ["Windows 11", "openSUSE Leap 15.2"],
+  drive: { type: "disk", info: { sdCard: false, dellBoss: false } },
+  block: { start: 1, size: 1e12, systems: ["Windows 11", "openSUSE Leap 15.2"] },
 };
 
-const vdb: StorageDevice = {
+const vdb: Storage.Device = {
   sid: 60,
-  type: "disk",
-  isDrive: true,
-  description: "",
-  vendor: "Seagate",
-  model: "Unknown",
-  driver: ["ahci", "mmcblk"],
-  bus: "IDE",
+  class: "drive",
   name: "/dev/vdb",
-  size: 1e6,
-  systems: [],
+  drive: { type: "disk", info: { sdCard: false, dellBoss: false } },
+  block: { start: 1, size: 1e6, systems: [] },
 };
 
-const vdaDrive: apiModel.Drive = {
+const vdaDrive: ConfigModel.Drive = {
   name: "/dev/vda",
   spacePolicy: "delete",
   partitions: [],
 };
 
-const vdbDrive: apiModel.Drive = {
+const vdbDrive: ConfigModel.Drive = {
   name: "/dev/vdb",
   spacePolicy: "delete",
   partitions: [],
 };
 
 const mockAddDrive = jest.fn();
+const mockAddReusedMdRaid = jest.fn();
 const mockUseModel = jest.fn();
 
-jest.mock("~/hooks/storage/system", () => ({
-  ...jest.requireActual("~/hooks/storage/system"),
+jest.mock("~/hooks/model/system/storage", () => ({
+  ...jest.requireActual("~/hooks/model/system/storage"),
   useAvailableDevices: () => [vda, vdb],
 }));
 
-jest.mock("~/hooks/storage/model", () => ({
-  ...jest.requireActual("~/hooks/storage/model"),
-  useModel: () => mockUseModel(),
-}));
-
-jest.mock("~/hooks/storage/drive", () => ({
-  ...jest.requireActual("~/hooks/storage/drive"),
-  __esModule: true,
+jest.mock("~/hooks/model/storage/config-model", () => ({
+  ...jest.requireActual("~/hooks/model/storage/config-model"),
+  useConfigModel: () => mockUseModel(),
   useAddDrive: () => mockAddDrive,
+  useAddMdRaid: () => mockAddReusedMdRaid,
 }));
 
 describe("ConfigureDeviceMenu", () => {
