@@ -57,8 +57,6 @@ import { useMissingMountPaths } from "~/hooks/storage/model";
 import { useVolumeTemplate } from "~/hooks/model/system/storage";
 import { useVolumeGroup } from "~/hooks/storage/volume-group";
 import { useAddLogicalVolume, useEditLogicalVolume } from "~/hooks/storage/logical-volume";
-import { addLogicalVolume, editLogicalVolume } from "~/storage/logical-volume";
-import logicalVolumeModel from "~/model/storage/logical-volume-model";
 import { STORAGE as PATHS } from "~/routes/paths";
 import { unique } from "radashi";
 import { compact } from "~/utils";
@@ -352,9 +350,9 @@ function useSolvedModel(value: FormValue): ConfigModel.Config | null {
 
   if (data.filesystem && !mountPointError) {
     if (mountPath) {
-      sparseModel = editLogicalVolume(config, vgName, mountPath, data);
+      sparseModel = configModel.logicalVolume.edit(config, vgName, mountPath, data);
     } else {
-      sparseModel = addLogicalVolume(config, vgName, data);
+      sparseModel = configModel.logicalVolume.add(config, vgName, data);
     }
   }
 
@@ -643,7 +641,7 @@ export default function LogicalVolumePage() {
       setAutoRefreshFilesystem(true);
       setAutoRefreshSize(true);
       setMountPoint(value);
-      setName(logicalVolumeModel.generateName(value));
+      setName(configModel.logicalVolume.generateName(value));
     }
   };
 

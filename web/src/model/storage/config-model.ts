@@ -24,6 +24,7 @@ import boot from "~/model/storage/config-model/boot";
 import partitionable from "~/model/storage/config-model/partitionable";
 import partition from "~/model/storage/config-model/partition";
 import volumeGroup from "~/model/storage/config-model/volume-group";
+import logicalVolume from "~/model/storage/config-model/logical-volume";
 import type * as ConfigModel from "~/openapi/storage/config-model";
 import type * as Partitionable from "~/model/storage/config-model/partitionable";
 import type * as Data from "~/model/storage/data";
@@ -57,5 +58,6 @@ export default {
   partitionable,
   partition,
   volumeGroup,
+  logicalVolume,
 };
 export type { ConfigModel, Data, Partitionable };

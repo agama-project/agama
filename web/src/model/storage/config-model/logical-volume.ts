@@ -21,29 +21,44 @@
  */
 
 import configModel from "~/model/storage/config-model";
-import logicalVolumeModel from "~/model/storage/logical-volume-model";
+import { createFilesystem, createSize } from "~/model/storage/utils";
 import type { ConfigModel, Data } from "~/model/storage/config-model";
 
-function findVolumeGroupIndex(config: ConfigModel.Config, vgName: string): number {
-  return (config.volumeGroups || []).findIndex((v) => v.vgName === vgName);
-}
-
-function findLogicalVolumeIndex(volumeGroup: ConfigModel.VolumeGroup, mountPath: string): number {
+function findIndex(volumeGroup: ConfigModel.VolumeGroup, mountPath: string): number {
   return (volumeGroup.logicalVolumes || []).findIndex((l) => l.mountPath === mountPath);
 }
 
-function addLogicalVolume(
+function generateName(mountPath: string): string {
+  return mountPath === "/" ? "root" : mountPath.split("/").pop();
+}
+
+function create(data: Data.LogicalVolume): ConfigModel.LogicalVolume {
+  return {
+    ...data,
+    filesystem: data.filesystem ? createFilesystem(data.filesystem) : undefined,
+    size: data.size ? createSize(data.size) : undefined,
+  };
+}
+
+function createFromPartition(partition: ConfigModel.Partition): ConfigModel.LogicalVolume {
+  return {
+    ...partition,
+    lvName: partition.mountPath ? generateName(partition.mountPath) : undefined,
+  };
+}
+
+function add(
   config: ConfigModel.Config,
   vgName: string,
   data: Data.LogicalVolume,
 ): ConfigModel.Config {
   config = configModel.clone(config);
 
-  const vgIndex = findVolumeGroupIndex(config, vgName);
+  const vgIndex = configModel.volumeGroup.findIndex(config, vgName);
   if (vgIndex === -1) return config;
 
   const volumeGroup = config.volumeGroups[vgIndex];
-  const logicalVolume = logicalVolumeModel.create(data);
+  const logicalVolume = create(data);
 
   volumeGroup.logicalVolumes ||= [];
   volumeGroup.logicalVolumes.push(logicalVolume);
@@ -51,7 +66,7 @@ function addLogicalVolume(
   return config;
 }
 
-function editLogicalVolume(
+function edit(
   config: ConfigModel.Config,
   vgName: string,
   mountPath: string,
@@ -59,35 +74,31 @@ function editLogicalVolume(
 ): ConfigModel.Config {
   config = configModel.clone(config);
 
-  const vgIndex = findVolumeGroupIndex(config, vgName);
+  const vgIndex = configModel.volumeGroup.findIndex(config, vgName);
   if (vgIndex === -1) return config;
 
   const volumeGroup = config.volumeGroups[vgIndex];
 
-  const lvIndex = findLogicalVolumeIndex(volumeGroup, mountPath);
+  const lvIndex = findIndex(volumeGroup, mountPath);
   if (lvIndex === -1) return config;
 
   const oldLogicalVolume = volumeGroup.logicalVolumes[lvIndex];
-  const newLogicalVolume = { ...oldLogicalVolume, ...logicalVolumeModel.create(data) };
+  const newLogicalVolume = { ...oldLogicalVolume, ...create(data) };
 
   volumeGroup.logicalVolumes.splice(lvIndex, 1, newLogicalVolume);
 
   return config;
 }
 
-function deleteLogicalVolume(
-  config: ConfigModel.Config,
-  vgName: string,
-  mountPath: string,
-): ConfigModel.Config {
+function remove(config: ConfigModel.Config, vgName: string, mountPath: string): ConfigModel.Config {
   config = configModel.clone(config);
 
-  const vgIndex = findVolumeGroupIndex(config, vgName);
+  const vgIndex = configModel.volumeGroup.findIndex(config, vgName);
   if (vgIndex === -1) return config;
 
   const volumeGroup = config.volumeGroups[vgIndex];
 
-  const lvIndex = findLogicalVolumeIndex(volumeGroup, mountPath);
+  const lvIndex = findIndex(volumeGroup, mountPath);
   if (lvIndex === -1) return config;
 
   volumeGroup.logicalVolumes.splice(lvIndex, 1);
@@ -95,4 +106,4 @@ function deleteLogicalVolume(
   return config;
 }
 
-export { addLogicalVolume, editLogicalVolume, deleteLogicalVolume };
+export default { generateName, create, createFromPartition, add, edit, remove };

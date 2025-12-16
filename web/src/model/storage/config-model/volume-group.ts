@@ -23,7 +23,6 @@
 import { sift } from "radashi";
 import { deleteIfUnused } from "~/storage/search";
 import configModel from "~/model/storage/config-model";
-import logicalVolumeModel from "~/model/storage/logical-volume-model";
 import type { ConfigModel, Data } from "~/model/storage/config-model";
 
 function movePartitions(
@@ -38,7 +37,7 @@ function movePartitions(
   const logicalVolumes = volumeGroup.logicalVolumes || [];
   volumeGroup.logicalVolumes = [
     ...logicalVolumes,
-    ...newPartitions.map(logicalVolumeModel.createFromPartition),
+    ...newPartitions.map(configModel.logicalVolume.createFromPartition),
   ];
 }
 
@@ -59,6 +58,10 @@ function create(data: Data.VolumeGroup): ConfigModel.VolumeGroup {
 function usedMountPaths(volumeGroup: ConfigModel.VolumeGroup): string[] {
   const mountPaths = (volumeGroup.logicalVolumes || []).map((l) => l.mountPath);
   return sift(mountPaths);
+}
+
+function findIndex(config: ConfigModel.Config, vgName: string): number {
+  return (config.volumeGroups || []).findIndex((v) => v.vgName === vgName);
 }
 
 function candidateTargetDevices(
@@ -194,6 +197,7 @@ function convertToPartitionable(config: ConfigModel.Config, vgName: string): Con
 export default {
   create,
   usedMountPaths,
+  findIndex,
   filterTargetDevices,
   add,
   edit,

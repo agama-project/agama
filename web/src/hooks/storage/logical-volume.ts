@@ -22,7 +22,7 @@
 
 import { useConfigModel } from "~/hooks/model/storage";
 import { putStorageModel } from "~/api";
-import { addLogicalVolume, editLogicalVolume, deleteLogicalVolume } from "~/storage/logical-volume";
+import configModel from "~/model/storage/config-model";
 import type { Data } from "~/model/storage/config-model";
 
 type AddLogicalVolumeFn = (vgName: string, data: Data.LogicalVolume) => void;
@@ -30,7 +30,7 @@ type AddLogicalVolumeFn = (vgName: string, data: Data.LogicalVolume) => void;
 function useAddLogicalVolume(): AddLogicalVolumeFn {
   const config = useConfigModel();
   return (vgName: string, data: Data.LogicalVolume) => {
-    putStorageModel(addLogicalVolume(config, vgName, data));
+    putStorageModel(configModel.logicalVolume.add(config, vgName, data));
   };
 }
 
@@ -39,7 +39,7 @@ type EditLogicalVolumeFn = (vgName: string, mountPath: string, data: Data.Logica
 function useEditLogicalVolume(): EditLogicalVolumeFn {
   const config = useConfigModel();
   return (vgName: string, mountPath: string, data: Data.LogicalVolume) => {
-    putStorageModel(editLogicalVolume(config, vgName, mountPath, data));
+    putStorageModel(configModel.logicalVolume.edit(config, vgName, mountPath, data));
   };
 }
 
@@ -48,7 +48,7 @@ type DeleteLogicalVolumeFn = (vgName: string, mountPath: string) => void;
 function useDeleteLogicalVolume(): DeleteLogicalVolumeFn {
   const config = useConfigModel();
   return (vgName: string, mountPath: string) =>
-    putStorageModel(deleteLogicalVolume(config, vgName, mountPath));
+    putStorageModel(configModel.logicalVolume.remove(config, vgName, mountPath));
 }
 
 export { useAddLogicalVolume, useEditLogicalVolume, useDeleteLogicalVolume };
