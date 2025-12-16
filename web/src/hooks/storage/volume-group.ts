@@ -22,14 +22,8 @@
 
 import { useConfigModel } from "~/hooks/model/storage";
 import { putStorageModel } from "~/api";
-import {
-  addVolumeGroup,
-  editVolumeGroup,
-  deleteVolumeGroup,
-  volumeGroupToPartitions,
-  deviceToVolumeGroup,
-} from "~/storage/volume-group";
 import { useModel } from "~/hooks/storage/model";
+import configModel from "~/model/storage/config-model";
 import type { ConfigModel, Data } from "~/model/storage/config-model";
 
 function useVolumeGroup(vgName: string): ConfigModel.VolumeGroup | null {
@@ -43,7 +37,7 @@ type AddVolumeGroupFn = (data: Data.VolumeGroup, moveContent: boolean) => void;
 function useAddVolumeGroup(): AddVolumeGroupFn {
   const config = useConfigModel();
   return (data: Data.VolumeGroup, moveContent: boolean) => {
-    putStorageModel(addVolumeGroup(config, data, moveContent));
+    putStorageModel(configModel.volumeGroup.add(config, data, moveContent));
   };
 }
 
@@ -52,7 +46,7 @@ type EditVolumeGroupFn = (vgName: string, data: Data.VolumeGroup) => void;
 function useEditVolumeGroup(): EditVolumeGroupFn {
   const config = useConfigModel();
   return (vgName: string, data: Data.VolumeGroup) => {
-    putStorageModel(editVolumeGroup(config, vgName, data));
+    putStorageModel(configModel.volumeGroup.edit(config, vgName, data));
   };
 }
 
@@ -62,7 +56,9 @@ function useDeleteVolumeGroup(): DeleteVolumeGroupFn {
   const config = useConfigModel();
   return (vgName: string, moveToDrive: boolean) => {
     putStorageModel(
-      moveToDrive ? volumeGroupToPartitions(config, vgName) : deleteVolumeGroup(config, vgName),
+      moveToDrive
+        ? configModel.volumeGroup.convertToPartitionable(config, vgName)
+        : configModel.volumeGroup.remove(config, vgName),
     );
   };
 }
@@ -72,7 +68,7 @@ type ConvertToVolumeGroupFn = (driveName: string) => void;
 function useConvertToVolumeGroup(): ConvertToVolumeGroupFn {
   const config = useConfigModel();
   return (driveName: string) => {
-    putStorageModel(deviceToVolumeGroup(config, driveName));
+    putStorageModel(configModel.volumeGroup.addFromPartitionable(config, driveName));
   };
 }
 

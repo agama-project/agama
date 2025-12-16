@@ -20,10 +20,10 @@
  * find current contact information at www.suse.com.
  */
 
+import { sift } from "radashi";
 import { deleteIfUnused } from "~/storage/search";
 import configModel from "~/model/storage/config-model";
 import logicalVolumeModel from "~/model/storage/logical-volume-model";
-import volumeGroupModel from "~/model/storage/volume-group-model";
 import type { ConfigModel, Data } from "~/model/storage/config-model";
 
 function movePartitions(
@@ -51,7 +51,32 @@ function adjustSpacePolicies(config: ConfigModel.Config, targets: string[]) {
     .forEach((d) => (d.spacePolicy = null));
 }
 
-function addVolumeGroup(
+function create(data: Data.VolumeGroup): ConfigModel.VolumeGroup {
+  const defaultVolumeGroup = { vgName: "system", targetDevices: [] };
+  return { ...defaultVolumeGroup, ...data };
+}
+
+function usedMountPaths(volumeGroup: ConfigModel.VolumeGroup): string[] {
+  const mountPaths = (volumeGroup.logicalVolumes || []).map((l) => l.mountPath);
+  return sift(mountPaths);
+}
+
+function candidateTargetDevices(
+  config: ConfigModel.Config,
+): (ConfigModel.Drive | ConfigModel.MdRaid)[] {
+  const drives = config.drives || [];
+  const mdRaids = config.mdRaids || [];
+  return [...drives, ...mdRaids];
+}
+
+function filterTargetDevices(
+  config: ConfigModel.Config,
+  volumeGroup: ConfigModel.VolumeGroup,
+): (ConfigModel.Drive | ConfigModel.MdRaid)[] {
+  return candidateTargetDevices(config).filter((d) => volumeGroup.targetDevices.includes(d.name));
+}
+
+function add(
   config: ConfigModel.Config,
   data: Data.VolumeGroup,
   moveContent: boolean,
@@ -59,7 +84,7 @@ function addVolumeGroup(
   config = configModel.clone(config);
   adjustSpacePolicies(config, data.targetDevices);
 
-  const volumeGroup = volumeGroupModel.create(data);
+  const volumeGroup = create(data);
 
   if (moveContent) {
     configModel.partitionable
@@ -74,33 +99,7 @@ function addVolumeGroup(
   return config;
 }
 
-function newVgName(config: ConfigModel.Config): string {
-  const vgs = (config.volumeGroups || []).filter((vg) => vg.vgName.match(/^system\d*$/));
-
-  if (!vgs.length) return "system";
-
-  const numbers = vgs.map((vg) => parseInt(vg.vgName.substring(6)) || 0);
-  return `system${Math.max(...numbers) + 1}`;
-}
-
-function deviceToVolumeGroup(config: ConfigModel.Config, devName: string): ConfigModel.Config {
-  config = configModel.clone(config);
-
-  const device = configModel.partitionable.all(config).find((d) => d.name === devName);
-  if (!device) return config;
-
-  const volumeGroup = volumeGroupModel.create({
-    vgName: newVgName(config),
-    targetDevices: [devName],
-  });
-  movePartitions(device, volumeGroup);
-  config.volumeGroups ||= [];
-  config.volumeGroups.push(volumeGroup);
-
-  return config;
-}
-
-function editVolumeGroup(
+function edit(
   config: ConfigModel.Config,
   vgName: string,
   data: Data.VolumeGroup,
@@ -111,7 +110,7 @@ function editVolumeGroup(
   if (index === -1) return config;
 
   const oldVolumeGroup = config.volumeGroups[index];
-  const newVolumeGroup = { ...oldVolumeGroup, ...volumeGroupModel.create(data) };
+  const newVolumeGroup = { ...oldVolumeGroup, ...create(data) };
 
   adjustSpacePolicies(config, newVolumeGroup.targetDevices);
 
@@ -123,7 +122,53 @@ function editVolumeGroup(
   return config;
 }
 
-function volumeGroupToPartitions(config: ConfigModel.Config, vgName: string): ConfigModel.Config {
+function remove(config: ConfigModel.Config, vgName: string): ConfigModel.Config {
+  config = configModel.clone(config);
+
+  const index = (config.volumeGroups || []).findIndex((v) => v.vgName === vgName);
+  if (index === -1) return config;
+
+  const targetDevices = config.volumeGroups[index].targetDevices || [];
+
+  config.volumeGroups.splice(index, 1);
+  if (!targetDevices.length) return config;
+
+  let deletedConfig = configModel.clone(config);
+  targetDevices.forEach((d) => {
+    deletedConfig = deleteIfUnused(deletedConfig, d);
+  });
+
+  // Do not delete the underlying drives if that results in an empty configuration
+  return configModel.partitionable.all(deletedConfig).length ? deletedConfig : config;
+}
+
+function generateName(config: ConfigModel.Config): string {
+  const vgs = (config.volumeGroups || []).filter((vg) => vg.vgName.match(/^system\d*$/));
+
+  if (!vgs.length) return "system";
+
+  const numbers = vgs.map((vg) => parseInt(vg.vgName.substring(6)) || 0);
+  return `system${Math.max(...numbers) + 1}`;
+}
+
+function addFromPartitionable(config: ConfigModel.Config, devName: string): ConfigModel.Config {
+  config = configModel.clone(config);
+
+  const device = configModel.partitionable.all(config).find((d) => d.name === devName);
+  if (!device) return config;
+
+  const volumeGroup = create({
+    vgName: generateName(config),
+    targetDevices: [devName],
+  });
+  movePartitions(device, volumeGroup);
+  config.volumeGroups ||= [];
+  config.volumeGroups.push(volumeGroup);
+
+  return config;
+}
+
+function convertToPartitionable(config: ConfigModel.Config, vgName: string): ConfigModel.Config {
   config = configModel.clone(config);
 
   const index = (config.volumeGroups || []).findIndex((v) => v.vgName === vgName);
@@ -146,30 +191,13 @@ function volumeGroupToPartitions(config: ConfigModel.Config, vgName: string): Co
   return config;
 }
 
-function deleteVolumeGroup(config: ConfigModel.Config, vgName: string): ConfigModel.Config {
-  config = configModel.clone(config);
-
-  const index = (config.volumeGroups || []).findIndex((v) => v.vgName === vgName);
-  if (index === -1) return config;
-
-  const targetDevices = config.volumeGroups[index].targetDevices || [];
-
-  config.volumeGroups.splice(index, 1);
-  if (!targetDevices.length) return config;
-
-  let deletedConfig = configModel.clone(config);
-  targetDevices.forEach((d) => {
-    deletedConfig = deleteIfUnused(deletedConfig, d);
-  });
-
-  // Do not delete the underlying drives if that results in an empty configuration
-  return configModel.partitionable.all(deletedConfig).length ? deletedConfig : config;
-}
-
-export {
-  addVolumeGroup,
-  editVolumeGroup,
-  deleteVolumeGroup,
-  volumeGroupToPartitions,
-  deviceToVolumeGroup,
+export default {
+  create,
+  usedMountPaths,
+  filterTargetDevices,
+  add,
+  edit,
+  remove,
+  addFromPartitionable,
+  convertToPartitionable,
 };

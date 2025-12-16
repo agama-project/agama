@@ -20,10 +20,10 @@
  * find current contact information at www.suse.com.
  */
 
-import volumeGroupModel from "~/model/storage/volume-group-model";
 import boot from "~/model/storage/config-model/boot";
 import partitionable from "~/model/storage/config-model/partitionable";
 import partition from "~/model/storage/config-model/partition";
+import volumeGroup from "~/model/storage/config-model/volume-group";
 import type * as ConfigModel from "~/openapi/storage/config-model";
 import type * as Partitionable from "~/model/storage/config-model/partitionable";
 import type * as Data from "~/model/storage/data";
@@ -40,7 +40,7 @@ function usedMountPaths(config: ConfigModel.Config): string[] {
   return [
     ...drives.flatMap(partitionable.usedMountPaths),
     ...mdRaids.flatMap(partitionable.usedMountPaths),
-    ...volumeGroups.flatMap(volumeGroupModel.usedMountPaths),
+    ...volumeGroups.flatMap(volumeGroup.usedMountPaths),
   ];
 }
 
@@ -56,5 +56,6 @@ export default {
   boot,
   partitionable,
   partition,
+  volumeGroup,
 };
 export type { ConfigModel, Data, Partitionable };

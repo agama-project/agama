@@ -49,7 +49,6 @@ import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
 import { deviceSystems, isDrive } from "~/storage/device";
 import configModel from "~/model/storage/config-model";
-import volumeGroupModel from "~/model/storage/volume-group-model";
 import { useConfigModel } from "~/hooks/model/storage";
 import type { ConfigModel, Data } from "~/model/storage/config-model";
 import type { Storage } from "~/model/system";
@@ -113,8 +112,8 @@ export default function LvmPage() {
   useEffect(() => {
     if (volumeGroup) {
       setName(volumeGroup.vgName);
-      const targetNames = volumeGroupModel
-        .filterTargetDevices(volumeGroup, config)
+      const targetNames = configModel.volumeGroup
+        .filterTargetDevices(config, volumeGroup)
         .map((d) => d.name);
       const targetDevices = allDevices.filter((d) => targetNames.includes(d.name));
       setSelectedDevices(targetDevices);

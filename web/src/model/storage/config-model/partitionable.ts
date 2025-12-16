@@ -22,7 +22,6 @@
 
 import { sift } from "radashi";
 import configModel from "~/model/storage/config-model";
-import volumeGroupModel from "~/model/storage/volume-group-model";
 import type { ConfigModel } from "~/model/storage/config-model";
 
 type Device = ConfigModel.Drive | ConfigModel.MdRaid;
@@ -74,7 +73,7 @@ function findPartition(device: Device, mountPath: string): ConfigModel.Partition
 function filterVolumeGroups(config: ConfigModel.Config, device: Device): ConfigModel.VolumeGroup[] {
   const volumeGroups = config.volumeGroups || [];
   return volumeGroups.filter((v) =>
-    volumeGroupModel.filterTargetDevices(v, config).some((d) => d.name === device.name),
+    configModel.volumeGroup.filterTargetDevices(config, v).some((d) => d.name === device.name),
   );
 }
 
