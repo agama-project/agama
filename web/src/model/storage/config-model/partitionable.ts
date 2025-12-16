@@ -21,6 +21,7 @@
  */
 
 import { fork, sift } from "radashi";
+import { createFilesystem } from "~/model/storage/config-model/utils";
 import configModel from "~/model/storage/config-model";
 import type { ConfigModel, Data } from "~/model/storage/config-model";
 
@@ -240,6 +241,22 @@ function setSpacePolicy(
   return config;
 }
 
+function setFilesystem(
+  config: ConfigModel.Config,
+  collection: CollectionName,
+  index: number,
+  data: Data.Formattable,
+): ConfigModel.Config {
+  config = configModel.clone(config);
+
+  const device = find(config, collection, index);
+  if (!device) return config;
+
+  device.mountPath = data.mountPath;
+  device.filesystem = data.filesystem ? createFilesystem(data.filesystem) : undefined;
+  return config;
+}
+
 export default {
   isCollectionName,
   all,
@@ -257,5 +274,6 @@ export default {
   removeIfUnused,
   convert,
   setSpacePolicy,
+  setFilesystem,
 };
 export type { Device, CollectionName, Location };

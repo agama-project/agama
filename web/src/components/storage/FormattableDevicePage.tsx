@@ -56,7 +56,11 @@ import {
 } from "~/hooks/storage/model";
 import { useConfigModel } from "~/hooks/model/storage";
 import { useDevice, useVolumeTemplate } from "~/hooks/model/system/storage";
-import { deviceBaseName, filesystemLabel } from "~/components/storage/utils";
+import {
+  createPartitionableLocation,
+  deviceBaseName,
+  filesystemLabel,
+} from "~/components/storage/utils";
 import configModel from "~/model/storage/config-model";
 import { _ } from "~/i18n";
 import { sprintf } from "sprintf-js";
@@ -441,7 +445,10 @@ export default function FormattableDevicePage() {
 
   const onSubmit = () => {
     const data = toData(value);
-    addFilesystem(collection, Number(index), data);
+    const location = createPartitionableLocation(collection, index);
+    if (!location) return;
+
+    addFilesystem(location.collection, location.index, data);
     navigate(PATHS.root);
   };
 

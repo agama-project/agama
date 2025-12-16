@@ -22,24 +22,28 @@
 
 import { useConfigModel } from "~/hooks/model/storage";
 import { putStorageModel } from "~/api";
-import { configureFilesystem } from "~/storage/filesystem";
-import type { Data } from "~/model/storage/config-model";
+import configModel from "~/model/storage/config-model";
+import type { Partitionable, Data } from "~/model/storage/config-model";
 
-type AddFilesystemFn = (list: string, index: number, data: Data.Formattable) => void;
+type AddFilesystemFn = (
+  collection: Partitionable.CollectionName,
+  index: number,
+  data: Data.Formattable,
+) => void;
 
 function useAddFilesystem(): AddFilesystemFn {
   const config = useConfigModel();
-  return (list: string, index: number, data: Data.Formattable) => {
-    putStorageModel(configureFilesystem(config, list, index, data));
+  return (collection: Partitionable.CollectionName, index: number, data: Data.Formattable) => {
+    putStorageModel(configModel.partitionable.setFilesystem(config, collection, index, data));
   };
 }
 
-type DeleteFilesystemFn = (list: string, index: number) => void;
+type DeleteFilesystemFn = (collection: Partitionable.CollectionName, index: number) => void;
 
 function useDeleteFilesystem(): DeleteFilesystemFn {
   const config = useConfigModel();
-  return (list: string, index: number) => {
-    putStorageModel(configureFilesystem(config, list, index, {}));
+  return (list: Partitionable.CollectionName, index: number) => {
+    putStorageModel(configModel.partitionable.setFilesystem(config, list, index, {}));
   };
 }
 

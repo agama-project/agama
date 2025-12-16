@@ -365,8 +365,11 @@ function createPartitionableLocation(
   collection: string,
   index: number | string,
 ): Partitionable.Location | null {
-  if (!configModel.partitionable.isCollectionName(collection)) return null;
-  if (isNaN(Number(index))) return null;
+  if (!configModel.partitionable.isCollectionName(collection) || isNaN(Number(index))) {
+    console.log("Invalid location: ", collection, index);
+
+    return null;
+  }
 
   return { collection, index: Number(index) };
 }

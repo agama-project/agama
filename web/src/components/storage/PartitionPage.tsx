@@ -809,10 +809,7 @@ const PartitionPageForm = () => {
   const onSubmit = () => {
     const partitionConfig = toPartitionConfig(value);
     const partitionableLocation = createPartitionableLocation(collection, index);
-    if (!partitionableLocation) {
-      console.log("Invalid location: ", collection, index);
-      return;
-    }
+    if (!partitionableLocation) return;
 
     if (initialValue)
       editPartition(
