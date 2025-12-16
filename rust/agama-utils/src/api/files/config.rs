@@ -38,7 +38,7 @@ pub struct Config {
     pub scripts: Option<ScriptsConfig>,
 }
 
-#[derive(Clone, Debug, Default, Serialize, Deserialize, Merge, utoipa::ToSchema)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize, Merge, utoipa::ToSchema, PartialEq)]
 #[serde(rename_all = "camelCase")]
 #[merge(strategy = merge::option::overwrite_none)]
 pub struct ScriptsConfig {
@@ -143,5 +143,44 @@ mod tests {
         assert_eq!(pre_scripts.len(), 1);
         let script = pre_scripts.get(0).unwrap();
         assert_eq!(&script.base.name, "updated");
+    }
+
+    #[test]
+    fn test_merge_files_config() {
+        let mut updated = Config {
+            files: Some(vec![UserFile {
+                destination: "/foo".to_string(),
+                ..Default::default()
+            }]),
+            scripts: Some(ScriptsConfig {
+                pre: Some(vec![build_pre_script("updated_pre")]),
+                ..Default::default()
+            }),
+        };
+
+        let original = Config {
+            files: Some(vec![UserFile {
+                destination: "/bar".to_string(),
+                ..Default::default()
+            }]),
+            scripts: Some(ScriptsConfig {
+                pre: Some(vec![build_pre_script("original_pre")]),
+                post: Some(vec![]),
+                ..Default::default()
+            }),
+        };
+
+        let updated_clone = updated.clone();
+        updated.merge(original);
+
+        // Assert for files (overwrite_none)
+        // `updated.files` is Some, so it is not overwritten.
+        assert_eq!(updated.files, updated_clone.files);
+
+        // Assert for scripts (overwrite_none on Option<ScriptsConfig>)
+        // `updated.scripts` is Some, so it is not overwritten.
+        assert_eq!(updated.scripts, updated_clone.scripts);
+        // The inner fields of `updated.scripts` should not have changed.
+        assert!(updated.scripts.as_ref().unwrap().post.is_none());
     }
 }

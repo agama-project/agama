@@ -33,7 +33,7 @@ pub enum FileSourceError {
     IO(#[from] std::io::Error),
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize, utoipa::ToSchema)]
+#[derive(Clone, Debug, Serialize, Deserialize, utoipa::ToSchema, PartialEq)]
 #[serde(untagged)]
 /// Text or URL Reference of a config file or a script
 pub enum FileSource {
