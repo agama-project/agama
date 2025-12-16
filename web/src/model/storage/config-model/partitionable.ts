@@ -70,7 +70,7 @@ function isUsed(config: ConfigModel.Config, deviceName: string): boolean {
   const device = all(config).find((d) => d.name === deviceName);
 
   return (
-    configModel.isExplicitBootDevice(config, deviceName) ||
+    configModel.boot.hasExplicitDevice(config, deviceName) ||
     configModel.isTargetDevice(config, deviceName) ||
     partitionableModel.usedMountPaths(device).length > 0
   );

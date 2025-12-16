@@ -79,7 +79,7 @@ function switchSearched(
   const [newPartitions, existingPartitions] = fork(device.partitions, partitionModel.isNew);
   const reusedPartitions = existingPartitions.filter(partitionModel.isReused);
   const keepEntry =
-    configModel.isExplicitBootDevice(config, device.name) || reusedPartitions.length;
+    configModel.boot.hasExplicitDevice(config, device.name) || reusedPartitions.length;
 
   if (keepEntry) {
     device.partitions = existingPartitions;

@@ -68,7 +68,7 @@ const resizeTextFor = (partitions) => {
 const SummaryForSpacePolicy = (drive: ConfigModel.Drive): string | undefined => {
   const config = useConfigModel();
   const isTargetDevice = configModel.isTargetDevice(config, drive.name);
-  const isBoot = configModel.isBootDevice(config, drive.name);
+  const isBoot = configModel.boot.hasDevice(config, drive.name);
   const isAddingPartitions = partitionableModel.isAddingPartitions(drive);
   const isReusingPartitions = partitionableModel.isReusingPartitions(drive);
   const { spacePolicy } = drive;
@@ -126,7 +126,7 @@ const ContentActionsDescription = (
 ): string => {
   const config = useConfigModel();
   const isTargetDevice = configModel.isTargetDevice(config, drive.name);
-  const isBoot = configModel.isBootDevice(config, drive.name);
+  const isBoot = configModel.boot.hasDevice(config, drive.name);
   const isAddingPartitions = partitionableModel.isAddingPartitions(drive);
   const isReusingPartitions = partitionableModel.isReusingPartitions(drive);
 

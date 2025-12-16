@@ -50,7 +50,7 @@ const useOnlyOneOption = (
 
   if (
     !partitionableModel.usedMountPaths(device).length &&
-    (isTargetDevice || configModel.isExplicitBootDevice(config, device.name))
+    (isTargetDevice || configModel.boot.hasExplicitDevice(config, device.name))
   )
     return true;
 
@@ -105,8 +105,8 @@ const ChangeDeviceDescription = ({ modelDevice, device }: ChangeDeviceDescriptio
   const config = useConfigModel();
   const name = baseName(device);
   const volumeGroups = partitionableModel.filterVolumeGroups(modelDevice, config);
-  const isExplicitBoot = configModel.isExplicitBootDevice(config, modelDevice.name);
-  const isBoot = configModel.isBootDevice(config, modelDevice.name);
+  const isExplicitBoot = configModel.boot.hasExplicitDevice(config, modelDevice.name);
+  const isBoot = configModel.boot.hasDevice(config, modelDevice.name);
   const mountPaths = partitionableModel.usedMountPaths(modelDevice);
   const isReusingPartitions = partitionableModel.isReusingPartitions(modelDevice);
   const hasMountPaths = mountPaths.length > 0;
@@ -240,7 +240,7 @@ const RemoveEntryOption = ({ device, onClick }: RemoveEntryOptionProps): React.R
     // from being fully reasonable or understandable for the user.
     const onlyToBoot = entries.find(
       (e) =>
-        configModel.isExplicitBootDevice(config, e.name) &&
+        configModel.boot.hasExplicitDevice(config, e.name) &&
         !configModel.partitionable.isUsed(config, e.name),
     );
     return !onlyToBoot;
@@ -251,7 +251,7 @@ const RemoveEntryOption = ({ device, onClick }: RemoveEntryOptionProps): React.R
   if (!hasAdditionalDrives(config)) return;
 
   let description;
-  const isExplicitBoot = configModel.isExplicitBootDevice(config, device.name);
+  const isExplicitBoot = configModel.boot.hasExplicitDevice(config, device.name);
   const hasPv = configModel.isTargetDevice(config, device.name);
   const isDisabled = isExplicitBoot || hasPv;
 

@@ -41,7 +41,7 @@ const Text = (drive: ConfigModel.Drive): string => {
     return _("Format disk %s");
   }
 
-  const isBoot = configModel.isBootDevice(config, drive.name);
+  const isBoot = configModel.boot.hasDevice(config, drive.name);
   const hasPv = configModel.isTargetDevice(config, drive.name);
   const isRoot = !!partitionableModel.findPartition(drive, "/");
   const hasFs = !!partitionableModel.usedMountPaths(drive).length;

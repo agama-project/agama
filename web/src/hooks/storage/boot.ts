@@ -28,21 +28,21 @@ type SetBootDeviceFn = (deviceName: string) => void;
 
 function useSetBootDevice(): SetBootDeviceFn {
   const config = useConfigModel();
-  return (deviceName: string) => putStorageModel(configModel.setBootDevice(config, deviceName));
+  return (deviceName: string) => putStorageModel(configModel.boot.setDevice(config, deviceName));
 }
 
 type SetDefaultBootDeviceFn = () => void;
 
 function useSetDefaultBootDevice(): SetDefaultBootDeviceFn {
   const config = useConfigModel();
-  return () => putStorageModel(configModel.setDefaultBootDevice(config));
+  return () => putStorageModel(configModel.boot.setDefault(config));
 }
 
 type DisableBootConfigFn = () => void;
 
 function useDisableBoot(): DisableBootConfigFn {
   const config = useConfigModel();
-  return () => putStorageModel(configModel.disableBoot(config));
+  return () => putStorageModel(configModel.boot.disable(config));
 }
 
 export { useSetBootDevice, useSetDefaultBootDevice, useDisableBoot };
