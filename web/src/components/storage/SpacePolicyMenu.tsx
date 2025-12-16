@@ -32,7 +32,7 @@ import { STORAGE as PATHS } from "~/routes/paths";
 import * as driveUtils from "~/components/storage/utils/drive";
 import { generateEncodedPath } from "~/utils";
 import { isEmpty } from "radashi";
-import { useDevice as useDeviceModel } from "~/hooks/storage/model";
+import { usePartitionable } from "~/hooks/model/storage/config-model";
 import { useDevice } from "~/hooks/model/system/storage";
 import type { ConfigModel } from "~/model/storage/config-model";
 
@@ -79,7 +79,7 @@ type SpacePolicyMenuProps = {
 export default function SpacePolicyMenu({ collection, index }: SpacePolicyMenuProps) {
   const navigate = useNavigate();
   const setSpacePolicy = useSetSpacePolicy();
-  const deviceModel = useDeviceModel(collection, index);
+  const deviceModel = usePartitionable(collection, index);
   const device = useDevice(deviceModel.name);
   const existingPartitions = device.partitions?.length;
 

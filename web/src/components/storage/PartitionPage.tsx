@@ -52,15 +52,14 @@ import AlertOutOfSync from "~/components/core/AlertOutOfSync";
 import ResourceNotFound from "~/components/core/ResourceNotFound";
 import configModel from "~/model/storage/config-model";
 import { useAddPartition, useEditPartition } from "~/hooks/storage/partition";
-import {
-  useMissingMountPaths,
-  useDrive as useDriveModel,
-  useMdRaid as useMdRaidModel,
-} from "~/hooks/storage/model";
 import { useVolumeTemplate, useDevice } from "~/hooks/model/system/storage";
 
 import { useSolvedConfigModel } from "~/queries/storage/config-model";
-import { useConfigModel } from "~/hooks/model/storage/config-model";
+import {
+  useConfigModel,
+  useMissingMountPaths,
+  usePartitionable,
+} from "~/hooks/model/storage/config-model";
 import {
   deviceSize,
   deviceLabel,
@@ -74,7 +73,7 @@ import { sprintf } from "sprintf-js";
 import { STORAGE as PATHS, STORAGE } from "~/routes/paths";
 import { isUndefined, unique } from "radashi";
 import { compact } from "~/utils";
-import type { ConfigModel } from "~/model/storage/config-model";
+import type { ConfigModel, Partitionable } from "~/model/storage/config-model";
 import type { Storage as System } from "~/model/system";
 
 const NO_VALUE = "";
@@ -197,10 +196,12 @@ function toFormValue(partitionConfig: ConfigModel.Partition): FormValue {
   };
 }
 
-function useDeviceModelFromParams() {
+function useDeviceModelFromParams(): Partitionable.Device | null {
   const { collection, index } = useParams();
-  const deviceModel = collection === "drives" ? useDriveModel : useMdRaidModel;
-  return deviceModel(Number(index));
+  const location = createPartitionableLocation(collection, index);
+  const deviceModel = usePartitionable(location.collection, location.index);
+
+  return deviceModel;
 }
 
 function useDeviceFromParams(): System.Device {

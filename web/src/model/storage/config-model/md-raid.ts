@@ -23,6 +23,10 @@
 import configModel from "~/model/storage/config-model";
 import type { ConfigModel, Data } from "~/model/storage/config-model";
 
+function find(config: ConfigModel.Config, index: number): ConfigModel.MdRaid | null {
+  return config.mdRaids?.[index] ?? null;
+}
+
 function add(config: ConfigModel.Config, data: Data.MdRaid): ConfigModel.Config {
   config = configModel.clone(config);
   config.mdRaids ||= [];
@@ -43,4 +47,4 @@ function remove(config: ConfigModel.Config, index: number): ConfigModel.Config {
   return configModel.partitionable.remove(config, "mdRaids", index);
 }
 
-export default { add, addFromDrive, remove };
+export default { find, add, addFromDrive, remove };

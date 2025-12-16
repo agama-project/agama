@@ -52,8 +52,11 @@ import SelectTypeaheadCreatable from "~/components/core/SelectTypeaheadCreatable
 import AutoSizeText from "~/components/storage/AutoSizeText";
 import { deviceSize, filesystemLabel, parseToBytes } from "~/components/storage/utils";
 import configModel from "~/model/storage/config-model";
-import { useSolvedConfigModel, useConfigModel } from "~/hooks/model/storage/config-model";
-import { useMissingMountPaths } from "~/hooks/storage/model";
+import {
+  useSolvedConfigModel,
+  useConfigModel,
+  useMissingMountPaths,
+} from "~/hooks/model/storage/config-model";
 import { useVolumeTemplate } from "~/hooks/model/system/storage";
 import { useVolumeGroup } from "~/hooks/storage/volume-group";
 import { useAddLogicalVolume, useEditLogicalVolume } from "~/hooks/storage/logical-volume";

@@ -20,9 +20,12 @@
  * find current contact information at www.suse.com.
  */
 
+import { useCallback } from "react";
 import { useSuspenseQuery } from "@tanstack/react-query";
+import { useSystem } from "~/hooks/model/system/storage";
 import { solveStorageModel, getStorageModel } from "~/api";
-import type { ConfigModel } from "~/model/storage/config-model";
+import configModel from "~/model/storage/config-model";
+import type { ConfigModel, Partitionable } from "~/model/storage/config-model";
 
 const configModelQuery = {
   queryKey: ["storageModel"],
@@ -43,4 +46,66 @@ function useSolvedConfigModel(config?: ConfigModel.Config): ConfigModel.Config |
   return useSuspenseQuery(solvedConfigModelQuery(config)).data;
 }
 
-export { configModelQuery, useConfigModel, useSolvedConfigModel };
+function useMissingMountPaths(): string[] {
+  const productMountPoints = useSystem()?.productMountPoints;
+  const { data } = useSuspenseQuery({
+    ...configModelQuery,
+    select: useCallback(
+      (data: ConfigModel.Config | null): string[] => {
+        const currentMountPaths = data ? configModel.usedMountPaths(data) : [];
+        return (productMountPoints || []).filter((p) => !currentMountPaths.includes(p));
+      },
+      [productMountPoints],
+    ),
+  });
+  return data;
+}
+
+function usePartitionable(
+  collection: Partitionable.CollectionName,
+  index: number,
+): Partitionable.Device | null {
+  const { data } = useSuspenseQuery({
+    ...configModelQuery,
+    select: useCallback(
+      (data: ConfigModel.Config | null): Partitionable.Device | null =>
+        data ? configModel.partitionable.find(data, collection, index) : null,
+      [collection, index],
+    ),
+  });
+  return data;
+}
+
+function useDrive(index: number): ConfigModel.Drive | null {
+  const { data } = useSuspenseQuery({
+    ...configModelQuery,
+    select: useCallback(
+      (data: ConfigModel.Config | null): ConfigModel.Drive | null =>
+        data ? configModel.drive.find(data, index) : null,
+      [index],
+    ),
+  });
+  return data;
+}
+
+function useMdRaid(index: number): ConfigModel.MdRaid | null {
+  const { data } = useSuspenseQuery({
+    ...configModelQuery,
+    select: useCallback(
+      (data: ConfigModel.Config | null): ConfigModel.MdRaid | null =>
+        data ? configModel.mdRaid.find(data, index) : null,
+      [index],
+    ),
+  });
+  return data;
+}
+
+export {
+  configModelQuery,
+  useConfigModel,
+  useSolvedConfigModel,
+  useMissingMountPaths,
+  usePartitionable,
+  useDrive,
+  useMdRaid,
+};

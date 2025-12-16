@@ -40,7 +40,7 @@ import MenuButton from "~/components/core/MenuButton";
 import MountPathMenuItem from "~/components/storage/MountPathMenuItem";
 import { STORAGE as PATHS } from "~/routes/paths";
 import { useDeletePartition } from "~/hooks/storage/partition";
-import { useDevice } from "~/hooks/storage/model";
+import { usePartitionable } from "~/hooks/model/storage/config-model";
 import * as driveUtils from "~/components/storage/utils/drive";
 import { generateEncodedPath } from "~/utils";
 import * as partitionUtils from "~/components/storage/utils/partition";
@@ -222,7 +222,7 @@ export default function PartitionsSection({ collection, index }: PartitionsSecti
   const { uiState, setUiState } = useStorageUiState();
   const toggleId = useId();
   const contentId = useId();
-  const device = useDevice(collection, index);
+  const device = usePartitionable(collection, index);
   const uiIndex = `${collection[0]}${index}`;
   const expanded = uiState.get("expanded")?.split(",");
   const isExpanded = expanded?.includes(uiIndex);
