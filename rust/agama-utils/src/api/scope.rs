@@ -40,6 +40,7 @@ use serde::{Deserialize, Serialize};
 #[serde(rename_all = "camelCase")]
 pub enum Scope {
     Manager,
+    Hostname,
     L10n,
     Product,
     Software,

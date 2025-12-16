@@ -2,7 +2,7 @@
 members = [
     "agama-autoinstall",
     "agama-cli",
-    "agama-files",
+    "agama-files", "agama-hostname",
     "agama-l10n",
     "agama-lib",
     "agama-locale-data",

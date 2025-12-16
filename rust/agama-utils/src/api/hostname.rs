@@ -18,26 +18,14 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use utoipa::openapi::{Components, ComponentsBuilder, Paths, PathsBuilder};
+//! This module contains all Agama public types that might be available over
+//! the HTTP and WebSocket API.
 
-use super::ApiDocBuilder;
-pub struct HostnameApiDocBuilder;
+mod config;
+pub use config::Config;
 
-impl ApiDocBuilder for HostnameApiDocBuilder {
-    fn title(&self) -> String {
-        "Hostname HTTP API".to_string()
-    }
+mod system_info;
+pub use system_info::SystemInfo;
 
-    fn paths(&self) -> Paths {
-        PathsBuilder::new()
-            .path_from::<crate::hostname::web::__path_get_config>()
-            .path_from::<crate::hostname::web::__path_set_config>()
-            .build()
-    }
-
-    fn components(&self) -> Components {
-        ComponentsBuilder::new()
-            .schema_from::<agama_lib::hostname::model::HostnameSettings>()
-            .build()
-    }
-}
+mod proposal;
+pub use proposal::Proposal;

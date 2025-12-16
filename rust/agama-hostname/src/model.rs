@@ -1,0 +1,104 @@
+// Copyright (c) [2024] SUSE LLC
+//
+// All Rights Reserved.
+//
+// This program is free software; you can redistribute it and/or modify it
+// under the terms of the GNU General Public License as published by the Free
+// Software Foundation; either version 2 of the License, or (at your option)
+// any later version.
+//
+// This program is distributed in the hope that it will be useful, but WITHOUT
+// ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+// FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+// more details.
+//
+// You should have received a copy of the GNU General Public License along
+// with this program; if not, contact SUSE LLC.
+//
+// To contact SUSE LLC about this file by physical or electronic mail, you may
+// find current contact information at www.suse.com.
+
+use crate::service;
+use agama_utils::api::hostname::SystemInfo;
+use std::{fs, path::PathBuf, process::Command};
+
+/// Abstract the hostname-related configuration from the underlying system.
+///
+/// It offers an API to query and set the transient or static hostname of a
+/// system. This trait can be implemented to replace the real system during
+/// tests.
+pub trait ModelAdapter: Send + 'static {
+    /// Reads the system info.
+    fn read_system_info(&self) -> SystemInfo {
+        SystemInfo {
+            r#static: self.static_hostname().unwrap_or_default(),
+            hostname: self.hostname().unwrap_or_default(),
+        }
+    }
+
+    /// Current system hostname.
+    fn hostname(&self) -> Result<String, service::Error>;
+
+    /// Current system static hostname.
+    fn static_hostname(&self) -> Result<String, service::Error>;
+
+    /// Change the system static hostname.
+    fn set_static(&mut self, name: String) -> Result<(), service::Error>;
+
+    /// Change the system hostname
+    fn set_hostname(&mut self, name: String) -> Result<(), service::Error>;
+
+    /// Apply the changes to target system. It is expected to be called almost
+    /// at the end of the installation.
+    fn install(&self) -> Result<(), service::Error>;
+}
+
+/// [ModelAdapter] implementation for systemd-based systems.
+pub struct Model;
+
+impl ModelAdapter for Model {
+    fn static_hostname(&self) -> Result<String, service::Error> {
+        let output = Command::new("hostnamectl")
+            .args(["hostname", "--static"])
+            .output()?;
+        let output = String::from_utf8_lossy(&output.stdout).trim().parse();
+
+        Ok(output.unwrap_or_default())
+    }
+
+    fn hostname(&self) -> Result<String, service::Error> {
+        let output = Command::new("hostnamectl")
+            .args(["hostname", "--transient"])
+            .output()?;
+        let output = String::from_utf8_lossy(&output.stdout).trim().parse();
+
+        Ok(output.unwrap_or_default())
+    }
+
+    fn set_static(&mut self, name: String) -> Result<(), service::Error> {
+        Command::new("hostnamectl")
+            .args(["set-hostname", "--static", name.as_str()])
+            .output()?;
+
+        Ok(())
+    }
+
+    fn set_hostname(&mut self, name: String) -> Result<(), service::Error> {
+        Command::new("hostnamectl")
+            .args(["set-hostname", "--transient", name.as_str()])
+            .output()?;
+        Ok(())
+    }
+
+    // Copy the static hostname to the target system
+    fn install(&self) -> Result<(), service::Error> {
+        const ROOT: &str = "/mnt";
+        const HOSTNAME_PATH: &str = "/etc/hostname";
+        let from = PathBuf::from(HOSTNAME_PATH);
+        if fs::exists(from.clone())? {
+            let to = PathBuf::from(ROOT).join(HOSTNAME_PATH);
+            fs::copy(from, to)?;
+        }
+        Ok(())
+    }
+}
