@@ -29,7 +29,7 @@ import {
   toDevice,
   toPartitionSlot,
 } from "~/components/storage/device-utils";
-import DevicesManager from "~/storage/devices-manager";
+import DevicesManager from "~/model/storage/devices-manager";
 import { TreeTable } from "~/components/core";
 import { _ } from "~/i18n";
 import { sprintf } from "sprintf-js";
