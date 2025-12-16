@@ -54,7 +54,7 @@ import {
   useDrive as useDriveModel,
   useMdRaid as useMdRaidModel,
 } from "~/hooks/storage/model";
-import { useConfigModel } from "~/hooks/model/storage";
+import { useConfigModel } from "~/hooks/model/storage/config-model";
 import { useDevice, useVolumeTemplate } from "~/hooks/model/system/storage";
 import {
   createPartitionableLocation,

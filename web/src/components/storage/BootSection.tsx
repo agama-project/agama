@@ -26,7 +26,7 @@ import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import Link from "~/components/core/Link";
 import Icon from "~/components/layout/Icon";
 import { useAvailableDrives } from "~/hooks/model/system/storage";
-import { useConfigModel } from "~/hooks/model/storage";
+import { useConfigModel } from "~/hooks/model/storage/config-model";
 import configModel from "~/model/storage/config-model";
 import { STORAGE } from "~/routes/paths";
 import { deviceLabel, formattedPath } from "~/components/storage/utils";

@@ -22,7 +22,7 @@
 
 import { useCallback } from "react";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { configModelQuery } from "~/hooks/model/storage";
+import { configModelQuery } from "~/hooks/model/storage/config-model";
 import { useSystem } from "~/hooks/model/system/storage";
 import configModel from "~/model/storage/config-model";
 import type { ConfigModel } from "~/model/storage/config-model";

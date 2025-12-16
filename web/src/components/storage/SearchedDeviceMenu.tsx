@@ -24,7 +24,7 @@ import React, { useState } from "react";
 import MenuButton, { CustomToggleProps, MenuButtonItem } from "~/components/core/MenuButton";
 import NewVgMenuOption from "./NewVgMenuOption";
 import { useAvailableDevices } from "~/hooks/model/system/storage";
-import { useConfigModel } from "~/hooks/model/storage";
+import { useConfigModel } from "~/hooks/model/storage/config-model";
 import { useAddFromMdRaid } from "~/hooks/storage/drive";
 import { useAddFromDrive } from "~/hooks/storage/md-raid";
 import { deviceBaseName, formattedPath } from "~/components/storage/utils";

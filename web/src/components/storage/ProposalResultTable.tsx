@@ -35,7 +35,7 @@ import { _ } from "~/i18n";
 import { sprintf } from "sprintf-js";
 import { deviceChildren, deviceSize } from "~/components/storage/utils";
 import { TreeTableColumn } from "~/components/core/TreeTable";
-import { useConfigModel } from "~/hooks/model/storage";
+import { useConfigModel } from "~/hooks/model/storage/config-model";
 import type { Storage as Proposal } from "~/model/proposal";
 
 type TableItem = Proposal.Device | Proposal.UnusedSlot;

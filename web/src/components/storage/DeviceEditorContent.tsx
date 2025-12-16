@@ -25,7 +25,7 @@ import UnusedMenu from "~/components/storage/UnusedMenu";
 import FilesystemMenu from "~/components/storage/FilesystemMenu";
 import PartitionsSection from "~/components/storage/PartitionsSection";
 import SpacePolicyMenu from "~/components/storage/SpacePolicyMenu";
-import { useConfigModel } from "~/hooks/model/storage";
+import { useConfigModel } from "~/hooks/model/storage/config-model";
 import configModel from "~/model/storage/config-model";
 
 type DeviceEditorContentProps = {

@@ -60,7 +60,7 @@ import {
 import { useVolumeTemplate, useDevice } from "~/hooks/model/system/storage";
 
 import { useSolvedConfigModel } from "~/queries/storage/config-model";
-import { useConfigModel } from "~/hooks/model/storage";
+import { useConfigModel } from "~/hooks/model/storage/config-model";
 import {
   deviceSize,
   deviceLabel,

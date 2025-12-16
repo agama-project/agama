@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import { useConfigModel } from "~/hooks/model/storage";
+import { useConfigModel } from "~/hooks/model/storage/config-model";
 import { putStorageModel } from "~/api";
 import configModel from "~/model/storage/config-model";
 import type { Data } from "~/model/storage/config-model";

@@ -27,7 +27,7 @@ import { useConvertToVolumeGroup } from "~/hooks/storage/volume-group";
 import { deviceBaseName, formattedPath } from "~/components/storage/utils";
 import { sprintf } from "sprintf-js";
 import { _, n_, formatList } from "~/i18n";
-import { useConfigModel } from "~/hooks/model/storage";
+import { useConfigModel } from "~/hooks/model/storage/config-model";
 import configModel from "~/model/storage/config-model";
 import type { ConfigModel } from "~/model/storage/config-model";
 

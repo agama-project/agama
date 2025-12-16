@@ -22,7 +22,7 @@
 
 import { sprintf } from "sprintf-js";
 import { deviceLabel } from "./utils";
-import { useConfigModel } from "~/hooks/model/storage";
+import { useConfigModel } from "~/hooks/model/storage/config-model";
 import configModel from "~/model/storage/config-model";
 import { _ } from "~/i18n";
 import type { ConfigModel } from "~/model/storage/config-model";

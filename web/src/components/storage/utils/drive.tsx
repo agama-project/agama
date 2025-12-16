@@ -22,7 +22,7 @@
 
 import { _, n_, formatList } from "~/i18n";
 import { SpacePolicy, SPACE_POLICIES, baseName, formattedPath } from "~/components/storage/utils";
-import { useConfigModel } from "~/hooks/model/storage";
+import { useConfigModel } from "~/hooks/model/storage/config-model";
 import configModel from "~/model/storage/config-model";
 import { sprintf } from "sprintf-js";
 import type { ConfigModel } from "~/model/storage/config-model";
