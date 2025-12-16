@@ -57,10 +57,6 @@ import {
   useDrive as useDriveModel,
   useMdRaid as useMdRaidModel,
 } from "~/hooks/storage/model";
-import {
-  addPartition as addPartitionHelper,
-  editPartition as editPartitionHelper,
-} from "~/storage/partition";
 import { useVolumeTemplate, useDevice } from "~/hooks/model/system/storage";
 
 import { useSolvedConfigModel } from "~/queries/storage/config-model";
@@ -413,7 +409,7 @@ function useSolvedModel(value: FormValue): ConfigModel.Config | null {
 
   if (device && !errors.length && value.target === NEW_PARTITION && value.filesystem !== NO_VALUE) {
     if (initialPartitionConfig) {
-      sparseModel = editPartitionHelper(
+      sparseModel = configModel.partition.edit(
         model,
         modelCollection,
         Number(index),
@@ -421,7 +417,12 @@ function useSolvedModel(value: FormValue): ConfigModel.Config | null {
         partitionConfig,
       );
     } else {
-      sparseModel = addPartitionHelper(model, modelCollection, Number(index), partitionConfig);
+      sparseModel = configModel.partition.add(
+        model,
+        modelCollection,
+        Number(index),
+        partitionConfig,
+      );
     }
   }
 

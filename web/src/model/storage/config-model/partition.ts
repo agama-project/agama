@@ -24,13 +24,11 @@ import configModel from "~/model/storage/config-model";
 import partitionModel from "~/model/storage/partition-model";
 import type { ConfigModel, Data, Partitionable } from "~/model/storage/config-model";
 
-type Partitionable = ConfigModel.Drive | ConfigModel.MdRaid;
-
-function indexByName(device: Partitionable, name: string): number {
+function indexByName(device: Partitionable.Device, name: string): number {
   return (device.partitions || []).findIndex((p) => p.name && p.name === name);
 }
 
-function indexByPath(device: Partitionable, path: string): number {
+function indexByPath(device: Partitionable.Device, path: string): number {
   return (device.partitions || []).findIndex((p) => p.mountPath === path);
 }
 
@@ -40,7 +38,7 @@ function indexByPath(device: Partitionable, path: string): number {
  * If a partition already exists in the model (e.g., as effect of using the custom policy), then
  * the partition is replaced.
  * */
-function addPartition(
+function add(
   config: ConfigModel.Config,
   collection: Partitionable.CollectionName,
   index: number,
@@ -64,7 +62,7 @@ function addPartition(
   return config;
 }
 
-function editPartition(
+function edit(
   config: ConfigModel.Config,
   collection: Partitionable.CollectionName,
   index: number,
@@ -86,7 +84,7 @@ function editPartition(
   return config;
 }
 
-function deletePartition(
+function remove(
   config: ConfigModel.Config,
   collection: Partitionable.CollectionName,
   index: number,
@@ -108,4 +106,4 @@ function deletePartition(
   return config;
 }
 
-export { addPartition, editPartition, deletePartition };
+export default { add, edit, remove };

@@ -22,7 +22,7 @@
 
 import { useConfigModel } from "~/hooks/model/storage";
 import { putStorageModel } from "~/api";
-import { addPartition, editPartition, deletePartition } from "~/storage/partition";
+import configModel from "~/model/storage/config-model";
 import type { Data, Partitionable } from "~/model/storage/config-model";
 
 type AddPartitionFn = (
@@ -34,7 +34,7 @@ type AddPartitionFn = (
 function useAddPartition(): AddPartitionFn {
   const config = useConfigModel();
   return (collection: Partitionable.CollectionName, index: number, data: Data.Partition) => {
-    putStorageModel(addPartition(config, collection, index, data));
+    putStorageModel(configModel.partition.add(config, collection, index, data));
   };
 }
 
@@ -53,7 +53,7 @@ function useEditPartition(): EditPartitionFn {
     mountPath: string,
     data: Data.Partition,
   ) => {
-    putStorageModel(editPartition(config, collection, index, mountPath, data));
+    putStorageModel(configModel.partition.edit(config, collection, index, mountPath, data));
   };
 }
 
@@ -66,7 +66,7 @@ type DeletePartitionFn = (
 function useDeletePartition(): DeletePartitionFn {
   const config = useConfigModel();
   return (collection: Partitionable.CollectionName, index: number, mountPath: string) =>
-    putStorageModel(deletePartition(config, collection, index, mountPath));
+    putStorageModel(configModel.partition.remove(config, collection, index, mountPath));
 }
 
 export { useAddPartition, useEditPartition, useDeletePartition };
