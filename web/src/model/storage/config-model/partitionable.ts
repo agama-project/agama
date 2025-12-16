@@ -22,7 +22,6 @@
 
 import { sift } from "radashi";
 import configModel from "~/model/storage/config-model";
-import partitionModel from "~/model/storage/partition-model";
 import volumeGroupModel from "~/model/storage/volume-group-model";
 import type { ConfigModel } from "~/model/storage/config-model";
 
@@ -83,11 +82,11 @@ function filterConfiguredExistingPartitions(device: Device): ConfigModel.Partiti
   if (device.spacePolicy === "custom")
     return device.partitions.filter(
       (p) =>
-        !partitionModel.isNew(p) &&
-        (partitionModel.isUsed(p) || partitionModel.isUsedBySpacePolicy(p)),
+        !configModel.partition.isNew(p) &&
+        (configModel.partition.isUsed(p) || configModel.partition.isUsedBySpacePolicy(p)),
     );
 
-  return device.partitions.filter(partitionModel.isReused);
+  return device.partitions.filter(configModel.partition.isReused);
 }
 
 function usedMountPaths(device: Device): string[] {
@@ -106,11 +105,11 @@ function isUsed(config: ConfigModel.Config, deviceName: string): boolean {
 }
 
 function isAddingPartitions(device: Device): boolean {
-  return device.partitions.some((p) => p.mountPath && partitionModel.isNew(p));
+  return device.partitions.some((p) => p.mountPath && configModel.partition.isNew(p));
 }
 
 function isReusingPartitions(device: Device): boolean {
-  return device.partitions.some(partitionModel.isReused);
+  return device.partitions.some(configModel.partition.isReused);
 }
 
 function remove(

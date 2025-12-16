@@ -22,7 +22,6 @@
 
 import { fork } from "radashi";
 import configModel from "~/model/storage/config-model";
-import partitionModel from "~/model/storage/partition-model";
 import type { ConfigModel, Partitionable } from "~/model/storage/config-model";
 
 function deleteIfUnused(config: ConfigModel.Config, name: string): ConfigModel.Config {
@@ -76,8 +75,8 @@ function switchSearched(
     return config;
   }
 
-  const [newPartitions, existingPartitions] = fork(device.partitions, partitionModel.isNew);
-  const reusedPartitions = existingPartitions.filter(partitionModel.isReused);
+  const [newPartitions, existingPartitions] = fork(device.partitions, configModel.partition.isNew);
+  const reusedPartitions = existingPartitions.filter(configModel.partition.isReused);
   const keepEntry =
     configModel.boot.hasExplicitDevice(config, device.name) || reusedPartitions.length;
 

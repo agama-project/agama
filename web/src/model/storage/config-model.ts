@@ -25,8 +25,8 @@ import boot from "~/model/storage/config-model/boot";
 import partitionable from "~/model/storage/config-model/partitionable";
 import partition from "~/model/storage/config-model/partition";
 import type * as ConfigModel from "~/openapi/storage/config-model";
-import type * as Data from "~/model/storage/data";
 import type * as Partitionable from "~/model/storage/config-model/partitionable";
+import type * as Data from "~/model/storage/data";
 
 function clone(config: ConfigModel.Config): ConfigModel.Config {
   return JSON.parse(JSON.stringify(config));

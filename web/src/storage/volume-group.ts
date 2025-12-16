@@ -22,7 +22,6 @@
 
 import { deleteIfUnused } from "~/storage/search";
 import configModel from "~/model/storage/config-model";
-import partitionModel from "~/model/storage/partition-model";
 import logicalVolumeModel from "~/model/storage/logical-volume-model";
 import volumeGroupModel from "~/model/storage/volume-group-model";
 import type { ConfigModel, Data } from "~/model/storage/config-model";
@@ -141,7 +140,7 @@ function volumeGroupToPartitions(config: ConfigModel.Config, vgName: string): Co
   const partitions = device.partitions || [];
   device.partitions = [
     ...partitions,
-    ...logicalVolumes.map(partitionModel.createFromLogicalVolume),
+    ...logicalVolumes.map(configModel.partition.createFromLogicalVolume),
   ];
 
   return config;

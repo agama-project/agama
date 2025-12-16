@@ -19,9 +19,8 @@
  * To contact SUSE LLC about this file by physical or electronic mail, you may
  * find current contact information at www.suse.com.
  */
-
+import { createFilesystem, createSize } from "~/model/storage/utils";
 import configModel from "~/model/storage/config-model";
-import partitionModel from "~/model/storage/partition-model";
 import type { ConfigModel, Data, Partitionable } from "~/model/storage/config-model";
 
 function indexByName(device: Partitionable.Device, name: string): number {
@@ -30,6 +29,25 @@ function indexByName(device: Partitionable.Device, name: string): number {
 
 function indexByPath(device: Partitionable.Device, path: string): number {
   return (device.partitions || []).findIndex((p) => p.mountPath === path);
+}
+
+function create(data: Data.Partition): ConfigModel.Partition {
+  return {
+    ...data,
+    filesystem: data.filesystem ? createFilesystem(data.filesystem) : undefined,
+    size: data.size ? createSize(data.size) : undefined,
+    // Using the ESP partition id for /boot/efi may not be strictly required, but it is
+    // a good practice. Let's force it here since it cannot be selected in the UI.
+    id: data.mountPath === "/boot/efi" ? "esp" : undefined,
+  };
+}
+
+function createFromLogicalVolume(lv: ConfigModel.LogicalVolume): ConfigModel.Partition {
+  return {
+    mountPath: lv.mountPath,
+    filesystem: lv.filesystem,
+    size: lv.size,
+  };
 }
 
 /**
@@ -53,7 +71,7 @@ function add(
   if (!configModel.partitionable.isUsed(config, device.name) && device.spacePolicy === "keep")
     device.spacePolicy = null;
 
-  const partition = partitionModel.create(data);
+  const partition = create(data);
   const partitionIndex = indexByName(device, partition.name);
 
   if (partitionIndex === -1) device.partitions.push(partition);
@@ -78,7 +96,7 @@ function edit(
   if (partitionIndex === -1) return config;
 
   const oldPartition = device.partitions[partitionIndex];
-  const newPartition = { ...oldPartition, ...partitionModel.create(data) };
+  const newPartition = { ...oldPartition, ...create(data) };
   device.partitions.splice(partitionIndex, 1, newPartition);
 
   return config;
@@ -106,4 +124,30 @@ function remove(
   return config;
 }
 
-export default { add, edit, remove };
+function isNew(partition: ConfigModel.Partition): boolean {
+  return !partition.name;
+}
+
+function isUsed(partition: ConfigModel.Partition): boolean {
+  return partition.filesystem !== undefined;
+}
+
+function isReused(partition: ConfigModel.Partition): boolean {
+  return !isNew(partition) && isUsed(partition);
+}
+
+function isUsedBySpacePolicy(partition: ConfigModel.Partition): boolean {
+  return partition.resizeIfNeeded || partition.delete || partition.deleteIfNeeded;
+}
+
+export default {
+  create,
+  createFromLogicalVolume,
+  add,
+  edit,
+  remove,
+  isNew,
+  isUsed,
+  isReused,
+  isUsedBySpacePolicy,
+};
