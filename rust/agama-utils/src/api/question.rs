@@ -517,8 +517,10 @@ mod tests {
             updated.answers.as_ref().unwrap()[0].class,
             Some("foo".to_string())
         );
-        assert_eq!(updated.answers.as_ref().unwrap()[0].answer.action, "yes".to_string());
-
+        assert_eq!(
+            updated.answers.as_ref().unwrap()[0].answer.action,
+            "yes".to_string()
+        );
 
         // Test with None for updated.answers to check overwrite
         let mut updated1 = Config {
@@ -527,14 +529,12 @@ mod tests {
         };
         let original1 = Config {
             policy: Some(Policy::User),
-            answers: Some(vec![
-                AnswerRule {
-                    class: Some("qux".to_string()),
-                    text: None,
-                    data: None,
-                    answer: Answer::new("go"),
-                },
-            ]),
+            answers: Some(vec![AnswerRule {
+                class: Some("qux".to_string()),
+                text: None,
+                data: None,
+                answer: Answer::new("go"),
+            }]),
         };
         updated1.merge(original1.clone());
         // updated1.answers was None, so it should be overwritten by original1.answers.
@@ -543,7 +543,10 @@ mod tests {
             updated1.answers.as_ref().unwrap()[0].class,
             Some("qux".to_string())
         );
-        assert_eq!(updated1.answers.as_ref().unwrap()[0].answer.action, "go".to_string());
+        assert_eq!(
+            updated1.answers.as_ref().unwrap()[0].answer.action,
+            "go".to_string()
+        );
         // updated1.policy was None, so it should be overwritten.
         assert_eq!(updated1.policy, Some(Policy::User));
     }
@@ -562,7 +565,6 @@ mod tests {
         updated.merge(original.clone());
         assert_eq!(updated.policy, Some(Policy::Auto));
         assert_eq!(updated.answers, None); // updated.answers was None, original.answers was None, so it remains None.
-
 
         // Case 2: updated.policy is Some, original.policy is None
         let mut updated1 = Config {
@@ -597,7 +599,10 @@ mod tests {
             updated2.answers.as_ref().unwrap()[0].class,
             Some("foo".to_string())
         );
-        assert_eq!(updated2.answers.as_ref().unwrap()[0].answer.action, "yes".to_string());
+        assert_eq!(
+            updated2.answers.as_ref().unwrap()[0].answer.action,
+            "yes".to_string()
+        );
 
         // Case 4: updated.answers is Some non-empty, original.answers is None
         let mut updated3 = Config {
@@ -619,6 +624,9 @@ mod tests {
             updated3.answers.as_ref().unwrap()[0].class,
             Some("bar".to_string())
         );
-        assert_eq!(updated3.answers.as_ref().unwrap()[0].answer.action, "no".to_string());
+        assert_eq!(
+            updated3.answers.as_ref().unwrap()[0].answer.action,
+            "no".to_string()
+        );
     }
 }
