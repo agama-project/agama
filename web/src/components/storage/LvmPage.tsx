@@ -36,7 +36,6 @@ import {
 } from "@patternfly/react-core";
 import { Page, SubtleContent } from "~/components/core";
 import { useAvailableDevices } from "~/hooks/model/system/storage";
-import { useModel } from "~/hooks/storage/model";
 import {
   useVolumeGroup,
   useAddVolumeGroup,
@@ -60,15 +59,15 @@ import type { Storage } from "~/model/system";
  */
 function useLvmTargetDevices(): Storage.Device[] {
   const availableDevices = useAvailableDevices();
-  const model = useModel();
+  const config = useConfigModel();
 
   const targetDevices = useMemo(() => {
     return availableDevices.filter((candidate) => {
-      const collection = isDrive(candidate) ? model.drives : model.mdRaids;
+      const collection = isDrive(candidate) ? config.drives : config.mdRaids;
       const device = collection.find((d) => d.name === candidate.name);
       return !device || !device.filesystem;
     });
-  }, [availableDevices, model]);
+  }, [availableDevices, config]);
 
   return targetDevices;
 }
@@ -99,7 +98,6 @@ export default function LvmPage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const config = useConfigModel();
-  const model = useModel();
   const volumeGroup = useVolumeGroup(id);
   const addVolumeGroup = useAddVolumeGroup();
   const editVolumeGroup = useEditVolumeGroup();
@@ -117,16 +115,16 @@ export default function LvmPage() {
         .map((d) => d.name);
       const targetDevices = allDevices.filter((d) => targetNames.includes(d.name));
       setSelectedDevices(targetDevices);
-    } else if (model && !model.volumeGroups.length) {
+    } else if (config && !config.volumeGroups.length) {
       setName("system");
-      const potentialTargets = model.drives.concat(model.mdRaids);
+      const potentialTargets = config.drives.concat(config.mdRaids);
       const targetNames = potentialTargets
         .filter(configModel.partitionable.isAddingPartitions)
         .map((d) => d.name);
       const targetDevices = allDevices.filter((d) => targetNames.includes(d.name));
       setSelectedDevices(targetDevices);
     }
-  }, [model, config, volumeGroup, allDevices]);
+  }, [config, volumeGroup, allDevices]);
 
   const updateName = (_, value) => setName(value);
 
@@ -139,7 +137,7 @@ export default function LvmPage() {
   };
 
   const checkErrors = (): string[] => {
-    return [vgNameError(name, model, volumeGroup), targetDevicesError(selectedDevices)].filter(
+    return [vgNameError(name, config, volumeGroup), targetDevicesError(selectedDevices)].filter(
       (e) => e,
     );
   };

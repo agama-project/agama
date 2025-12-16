@@ -28,7 +28,7 @@ import VolumeGroupEditor from "~/components/storage/VolumeGroupEditor";
 import MdRaidEditor from "~/components/storage/MdRaidEditor";
 import { useReset } from "~/hooks/model/config/storage";
 import ConfigureDeviceMenu from "./ConfigureDeviceMenu";
-import { useModel } from "~/hooks/storage/model";
+import { useConfigModel } from "~/hooks/model/storage/config-model";
 import { _ } from "~/i18n";
 
 const NoDevicesConfiguredAlert = () => {
@@ -57,10 +57,10 @@ const NoDevicesConfiguredAlert = () => {
 };
 
 export default function ConfigEditor() {
-  const model = useModel();
-  const drives = model.drives;
-  const mdRaids = model.mdRaids;
-  const volumeGroups = model.volumeGroups;
+  const config = useConfigModel();
+  const drives = config.drives;
+  const mdRaids = config.mdRaids;
+  const volumeGroups = config.volumeGroups;
 
   if (!drives.length && !mdRaids.length && !volumeGroups.length) {
     return <NoDevicesConfiguredAlert />;

@@ -22,13 +22,12 @@
 
 import { useConfigModel } from "~/hooks/model/storage/config-model";
 import { putStorageModel } from "~/api";
-import { useModel } from "~/hooks/storage/model";
 import configModel from "~/model/storage/config-model";
 import type { ConfigModel, Data } from "~/model/storage/config-model";
 
 function useVolumeGroup(vgName: string): ConfigModel.VolumeGroup | null {
-  const model = useModel();
-  const volumeGroup = model?.volumeGroups?.find((v) => v.vgName === vgName);
+  const config = useConfigModel();
+  const volumeGroup = config?.volumeGroups?.find((v) => v.vgName === vgName);
   return volumeGroup || null;
 }
 

@@ -22,13 +22,12 @@
 
 import { useConfigModel } from "~/hooks/model/storage/config-model";
 import { putStorageModel } from "~/api";
-import { useModel } from "~/hooks/storage/model";
 import configModel from "~/model/storage/config-model";
 import type { ConfigModel, Data } from "~/model/storage/config-model";
 
 function useDrive(name: string): ConfigModel.Drive | null {
-  const model = useModel();
-  const drive = model?.drives?.find((d) => d.name === name);
+  const config = useConfigModel();
+  const drive = config?.drives?.find((d) => d.name === name);
   return drive || null;
 }
 

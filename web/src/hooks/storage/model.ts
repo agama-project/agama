@@ -27,13 +27,6 @@ import { useSystem } from "~/hooks/model/system/storage";
 import configModel from "~/model/storage/config-model";
 import type { ConfigModel } from "~/model/storage/config-model";
 
-function useModel(): ConfigModel.Config | null {
-  const { data } = useSuspenseQuery({
-    ...configModelQuery,
-  });
-  return data;
-}
-
 function useMissingMountPaths(): string[] {
   const productMountPoints = useSystem()?.productMountPoints;
   const { data } = useSuspenseQuery({
@@ -88,4 +81,4 @@ function useMdRaid(index: number): ConfigModel.MdRaid | null {
   return data;
 }
 
-export { useModel, useMissingMountPaths, useDevice, useDrive, useMdRaid };
+export { useMissingMountPaths, useDevice, useDrive, useMdRaid };
