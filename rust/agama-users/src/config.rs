@@ -18,21 +18,30 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::api::{hostname, l10n, manager, network, software, users};
-use serde::Serialize;
-use serde_json::Value;
+use crate::service;
+use agama_utils::api::{self, users::SystemInfo, users::user_info::UserInfo};
+use itertools::Itertools;
 
-#[derive(Clone, Debug, Serialize, utoipa::ToSchema)]
-#[serde(rename_all = "camelCase")]
-pub struct SystemInfo {
-    #[serde(flatten)]
-    pub manager: manager::SystemInfo,
-    pub hostname: hostname::SystemInfo,
-    pub l10n: l10n::SystemInfo,
-    pub software: software::SystemInfo,
-    #[serde(default)]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub storage: Option<Value>,
-    pub network: network::SystemInfo,
-    pub users: users::SystemInfo,
+#[derive(Clone, PartialEq)]
+pub struct Config {
+    pub users: Vec<UserInfo>,
+}
+
+impl Config {
+    pub fn new_from(system: &SystemInfo) -> Self {
+        Self {
+            users: system.users.clone(),
+        }
+    }
+
+    pub fn merge(&self, config: &api::users::Config) -> Result<Self, service::Error> {
+        let mut merged = self.clone();
+
+        // there is always at least one user defined in the system
+        let users = [merged.users, config.users.clone()].concat();
+        // deduplicate, we don't need e.g. two root users
+        merged.users = users.into_iter().unique().collect();
+
+        Ok(merged)
+    }
 }

@@ -18,21 +18,12 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::api::{hostname, l10n, manager, network, software, users};
-use serde::Serialize;
-use serde_json::Value;
+use serde::{Deserialize, Serialize};
+use crate::api::users::user_info::UserInfo;
 
-#[derive(Clone, Debug, Serialize, utoipa::ToSchema)]
+/// Localization config.
+#[derive(Clone, Debug, Default, Serialize, Deserialize, PartialEq, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
-pub struct SystemInfo {
-    #[serde(flatten)]
-    pub manager: manager::SystemInfo,
-    pub hostname: hostname::SystemInfo,
-    pub l10n: l10n::SystemInfo,
-    pub software: software::SystemInfo,
-    #[serde(default)]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub storage: Option<Value>,
-    pub network: network::SystemInfo,
-    pub users: users::SystemInfo,
+pub struct Config {
+    pub users: Vec<UserInfo>,
 }

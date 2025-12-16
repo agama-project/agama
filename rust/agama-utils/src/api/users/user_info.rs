@@ -18,21 +18,15 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::api::{hostname, l10n, manager, network, software, users};
+use gettextrs::*;
+use serde::ser::SerializeStruct;
 use serde::Serialize;
-use serde_json::Value;
+use serde::Deserialize;
+use serde_with::{serde_as, DisplayFromStr};
 
-#[derive(Clone, Debug, Serialize, utoipa::ToSchema)]
-#[serde(rename_all = "camelCase")]
-pub struct SystemInfo {
-    #[serde(flatten)]
-    pub manager: manager::SystemInfo,
-    pub hostname: hostname::SystemInfo,
-    pub l10n: l10n::SystemInfo,
-    pub software: software::SystemInfo,
-    #[serde(default)]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub storage: Option<Value>,
-    pub network: network::SystemInfo,
-    pub users: users::SystemInfo,
+#[serde_as]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq, Eq, Hash, utoipa::ToSchema)]
+pub struct UserInfo {
+    #[serde_as(as = "DisplayFromStr")]
+    pub name: String,
 }
