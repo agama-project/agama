@@ -112,7 +112,7 @@ impl HTTPClient {
         answers: Vec<AnswerRule>,
     ) -> Result<(), QuestionsHTTPClientError> {
         let questions = QuestionsConfig {
-            answers,
+            answers: Some(answers),
             ..Default::default()
         };
         let config = Config {
