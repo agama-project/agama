@@ -97,7 +97,7 @@ async fn test_start_zypp_server() {
     };
     let config = Config {
         policy: None,
-        answers: vec![rule],
+        answers: Some(vec![rule]),
     };
     question_handler
         .call(question::message::SetConfig::new(Some(config)))
