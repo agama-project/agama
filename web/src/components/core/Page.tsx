@@ -20,8 +20,10 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useId } from "react";
+import React, { useEffect, useId, useLayoutEffect, useState } from "react";
 import {
+  Alert,
+  Backdrop,
   Button,
   ButtonProps,
   Card,
@@ -41,6 +43,9 @@ import {
   Split,
   Title,
   TitleProps,
+  ProgressStepper,
+  ProgressStep,
+  Spinner,
 } from "@patternfly/react-core";
 import { ProductRegistrationAlert } from "~/components/product";
 import Link, { LinkProps } from "~/components/core/Link";
@@ -50,6 +55,52 @@ import { useLocation, useNavigate } from "react-router";
 import { isEmpty, isObject } from "radashi";
 import { SIDE_PATHS } from "~/routes/paths";
 import { _ } from "~/i18n";
+import { sprintf } from "sprintf-js";
+import { onProposalUpdated } from "~/hooks/model/proposal";
+import { useStatus } from "~/hooks/model/status";
+import type { Scope } from "~/model/status";
+
+const LoadingAlert = ({ progress, isStepper }) => {
+  return (
+    <Alert
+      isPlain
+      customIcon={<Spinner size="sm" />}
+      title={
+        progress ? (
+          <>
+            {progress.step}{" "}
+            <small>{sprintf(_("(step %s of %s)"), progress.index, progress.size)}</small>
+          </>
+        ) : (
+          <>{_("Refreshing data...")}</>
+        )
+      }
+    >
+      <Flex gap={{ default: "gapLg" }}>
+        <FlexItem grow={{ default: "grow" }}>
+          {isStepper && (
+            <ProgressStepper isVertical>
+              {progress.steps.map((s, index) => {
+                const current = progress.index - 1 === index;
+                const variant = progress.index > index ? "success" : "pending";
+
+                return (
+                  <ProgressStep
+                    key={index}
+                    isCurrent={current}
+                    variant={current ? "info" : variant}
+                  >
+                    {s}
+                  </ProgressStep>
+                );
+              })}
+            </ProgressStepper>
+          )}
+        </FlexItem>
+      </Flex>
+    </Alert>
+  );
+};
 
 /**
  * Props accepted by Page.Section
@@ -329,10 +380,59 @@ const Content = ({ children, ...pageSectionProps }: PageSectionProps) => {
  *     </Page.Content>
  *   </Page>
  */
-const Page = ({ children, ...pageGroupProps }: PageGroupProps): React.ReactNode => {
+const Page = ({
+  children,
+  progressScope,
+  ...pageGroupProps
+}: PageGroupProps & { progressScope?: Scope }): React.ReactNode => {
+  const { progresses: tasks } = useStatus();
+  const [isBlocked, setIsBlocked] = useState(false);
+  const [progressFinishedAt, setProgressFinishedAt] = useState<number | null>(null);
+
+  const progress = !isEmpty(progressScope) && tasks.find((t) => t.scope === progressScope);
+
+  useEffect(() => {
+    return onProposalUpdated((detail) => {
+      detail.completedAt > progressFinishedAt && setIsBlocked(false);
+    });
+  }, [progressFinishedAt]);
+
+  useEffect(() => {
+    if (progress) {
+      setIsBlocked(true);
+      setProgressFinishedAt(null);
+    } else {
+      setProgressFinishedAt(Date.now());
+    }
+  }, [progress]);
+
+  const scrollX = window.scrollX;
+  const scrollY = window.scrollY;
+
+  useLayoutEffect(() => {
+    window.scrollTo(scrollX, scrollY);
+  });
+
   return (
     <PageGroup {...pageGroupProps} tabIndex={-1} id="main-content">
-      {children}
+      <div style={isBlocked ? { filter: "blur(2px)", opacity: "55%", overflow: "hidden" } : {}}>
+        {children}
+      </div>
+      {isBlocked && (
+        <Backdrop
+          style={{
+            zIndex: 1000,
+            margin: "0",
+            padding: "0",
+            paddingBlockStart: "2.2rem",
+            position: "absolute",
+            // backgroundColor: "rgba(247, 247, 247, 0.500)",
+            // backgroundColor: "rgba(12, 50, 44, 0.200)",
+          }}
+        >
+          <LoadingAlert progress={progress} isStepper={false} />
+        </Backdrop>
+      )}
     </PageGroup>
   );
 };
