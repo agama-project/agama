@@ -24,7 +24,7 @@ import React from "react";
 import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import ProposalFailedInfo from "./ProposalFailedInfo";
-import { LogicalVolume } from "~/model/storage/data";
+import { LogicalVolume } from "~/model/storage/config-model/data";
 import { Issue, IssueSeverity, IssueSource } from "~/model/issue";
 import { apiModel } from "~/api/storage/types";
 

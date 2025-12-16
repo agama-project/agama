@@ -21,7 +21,7 @@
  */
 
 import configModel from "~/model/storage/config-model";
-import { createFilesystem, createSize } from "~/model/storage/utils";
+import { createFilesystem, createSize } from "~/model/storage/config-model/utils";
 import type { ConfigModel, Data } from "~/model/storage/config-model";
 
 function findIndex(volumeGroup: ConfigModel.VolumeGroup, mountPath: string): number {

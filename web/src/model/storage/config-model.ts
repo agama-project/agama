@@ -27,7 +27,7 @@ import volumeGroup from "~/model/storage/config-model/volume-group";
 import logicalVolume from "~/model/storage/config-model/logical-volume";
 import type * as ConfigModel from "~/openapi/storage/config-model";
 import type * as Partitionable from "~/model/storage/config-model/partitionable";
-import type * as Data from "~/model/storage/data";
+import type * as Data from "~/model/storage/config-model/data";
 
 function clone(config: ConfigModel.Config): ConfigModel.Config {
   return JSON.parse(JSON.stringify(config));

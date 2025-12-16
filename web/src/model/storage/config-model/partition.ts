@@ -19,7 +19,7 @@
  * To contact SUSE LLC about this file by physical or electronic mail, you may
  * find current contact information at www.suse.com.
  */
-import { createFilesystem, createSize } from "~/model/storage/utils";
+import { createFilesystem, createSize } from "~/model/storage/config-model/utils";
 import configModel from "~/model/storage/config-model";
 import type { ConfigModel, Data, Partitionable } from "~/model/storage/config-model";
 
