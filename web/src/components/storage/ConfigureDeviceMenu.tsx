@@ -27,7 +27,7 @@ import { Divider, Flex, MenuItemProps } from "@patternfly/react-core";
 import { useAvailableDevices } from "~/hooks/model/system/storage";
 import { useModel } from "~/hooks/storage/model";
 import { useAddDrive } from "~/hooks/storage/drive";
-import { useAddReusedMdRaid } from "~/hooks/storage/md-raid";
+import { useAddMdRaid } from "~/hooks/storage/md-raid";
 import { STORAGE as PATHS } from "~/routes/paths";
 import { sprintf } from "sprintf-js";
 import { _, n_ } from "~/i18n";
@@ -128,7 +128,7 @@ export default function ConfigureDeviceMenu(): React.ReactNode {
 
   const model = useModel();
   const addDrive = useAddDrive();
-  const addReusedMdRaid = useAddReusedMdRaid();
+  const addReusedMdRaid = useAddMdRaid();
   const allDevices = useAvailableDevices();
 
   const usedDevicesNames = model.drives.concat(model.mdRaids).map((d) => d.name);

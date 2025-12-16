@@ -35,11 +35,6 @@ import { useDevice } from "~/hooks/model/system/storage";
 import type { ConfigModel } from "~/model/storage/config-model";
 import type { Storage } from "~/model/system";
 
-type MdRaidDeviceMenuProps = {
-  raid: ConfigModel.MdRaid;
-  selected: Storage.Device;
-};
-
 type MdRaidDeviceMenuToggleProps = CustomToggleProps & {
   raid: ConfigModel.MdRaid;
   device: Storage.Device;
@@ -73,19 +68,23 @@ const MdRaidDeviceMenuToggle = forwardRef(
   },
 );
 
+type MdRaidDeviceMenuProps = { index: number };
+
 /**
  * Internal component that renders generic actions available for an MdRaid device.
  */
-const MdRaidDeviceMenu = ({ raid, selected }: MdRaidDeviceMenuProps): React.ReactNode => {
+const MdRaidDeviceMenu = ({ index }: MdRaidDeviceMenuProps): React.ReactNode => {
+  const raidModel = useMdRaid(index);
+  const raid = useDevice(raidModel.name);
   const deleteMdRaid = useDeleteMdRaid();
-  const deleteFn = (device: ConfigModel.MdRaid) => deleteMdRaid(device.name);
+  const deleteFn = () => deleteMdRaid(index);
 
   return (
     <SearchedDeviceMenu
-      modelDevice={raid}
-      selected={selected}
+      modelDevice={raidModel}
+      selected={raid}
       deleteFn={deleteFn}
-      toggle={<MdRaidDeviceMenuToggle raid={raid} device={selected} />}
+      toggle={<MdRaidDeviceMenuToggle raid={raidModel} device={raid} />}
     />
   );
 };
@@ -97,10 +96,8 @@ type MdRaidEditorProps = { index: number };
  * actions related to a specific MdRaid device within the storage ConfigEditor.
  */
 export default function MdRaidEditor({ index }: MdRaidEditorProps) {
-  const raidModel = useMdRaid(index);
-  const raid = useDevice(raidModel.name);
   return (
-    <ConfigEditorItem header={<MdRaidDeviceMenu raid={raidModel} selected={raid} />}>
+    <ConfigEditorItem header={<MdRaidDeviceMenu index={index} />}>
       <DeviceEditorContent collection="mdRaids" index={index} />
     </ConfigEditorItem>
   );

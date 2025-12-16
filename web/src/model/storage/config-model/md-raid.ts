@@ -23,7 +23,7 @@
 import configModel from "~/model/storage/config-model";
 import type { ConfigModel, Data } from "~/model/storage/config-model";
 
-function addReusedMdRaid(config: ConfigModel.Config, data: Data.MdRaid): ConfigModel.Config {
+function add(config: ConfigModel.Config, data: Data.MdRaid): ConfigModel.Config {
   config = configModel.clone(config);
   config.mdRaids ||= [];
   config.mdRaids.push(data);
@@ -31,14 +31,7 @@ function addReusedMdRaid(config: ConfigModel.Config, data: Data.MdRaid): ConfigM
   return config;
 }
 
-function deleteMdRaid(config: ConfigModel.Config, name: string): ConfigModel.Config {
-  config = configModel.clone(config);
-  config.mdRaids = config.mdRaids.filter((d) => d.name !== name);
-
-  return config;
-}
-
-function switchToMdRaid(
+function addFromDrive(
   config: ConfigModel.Config,
   oldName: string,
   raid: Data.MdRaid,
@@ -46,4 +39,8 @@ function switchToMdRaid(
   return configModel.partitionable.convert(config, oldName, raid.name, "mdRaids");
 }
 
-export { addReusedMdRaid, deleteMdRaid, switchToMdRaid };
+function remove(config: ConfigModel.Config, index: number): ConfigModel.Config {
+  return configModel.partitionable.remove(config, "mdRaids", index);
+}
+
+export default { add, addFromDrive, remove };

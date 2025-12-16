@@ -26,7 +26,7 @@ import NewVgMenuOption from "./NewVgMenuOption";
 import { useAvailableDevices } from "~/hooks/model/system/storage";
 import { useConfigModel } from "~/hooks/model/storage";
 import { useAddFromMdRaid } from "~/hooks/storage/drive";
-import { useSwitchToMdRaid } from "~/hooks/storage/md-raid";
+import { useAddFromDrive } from "~/hooks/storage/md-raid";
 import { deviceBaseName, formattedPath } from "~/components/storage/utils";
 import configModel from "~/model/storage/config-model";
 import { sprintf } from "sprintf-js";
@@ -323,7 +323,7 @@ export default function SearchedDeviceMenu({
 }: SearchedDeviceMenuProps): React.ReactNode {
   const [isSelectorOpen, setIsSelectorOpen] = useState(false);
   const switchToDrive = useAddFromMdRaid();
-  const switchToMdRaid = useSwitchToMdRaid();
+  const switchToMdRaid = useAddFromDrive();
   const changeTargetFn = (device: Storage.Device) => {
     const hook = isDrive(device) ? switchToDrive : switchToMdRaid;
     hook(modelDevice.name, { name: device.name });

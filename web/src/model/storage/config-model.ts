@@ -23,6 +23,7 @@
 import boot from "~/model/storage/config-model/boot";
 import partitionable from "~/model/storage/config-model/partitionable";
 import drive from "~/model/storage/config-model/drive";
+import mdRaid from "~/model/storage/config-model/md-raid";
 import partition from "~/model/storage/config-model/partition";
 import volumeGroup from "~/model/storage/config-model/volume-group";
 import logicalVolume from "~/model/storage/config-model/logical-volume";
@@ -58,6 +59,7 @@ export default {
   boot,
   partitionable,
   drive,
+  mdRaid,
   partition,
   volumeGroup,
   logicalVolume,

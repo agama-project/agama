@@ -22,35 +22,35 @@
 
 import { useConfigModel } from "~/hooks/model/storage";
 import { putStorageModel } from "~/api";
-import { addReusedMdRaid, deleteMdRaid, switchToMdRaid } from "~/storage/md-raid";
+import configModel from "~/model/storage/config-model";
 import type { Data } from "~/model/storage/config-model";
 
 type AddReusedMdRaidFn = (data: Data.MdRaid) => void;
 
-function useAddReusedMdRaid(): AddReusedMdRaidFn {
+function useAddMdRaid(): AddReusedMdRaidFn {
   const config = useConfigModel();
   return (data: Data.MdRaid) => {
-    putStorageModel(addReusedMdRaid(config, data));
+    putStorageModel(configModel.mdRaid.add(config, data));
   };
 }
 
-type DeleteMdRaidFn = (name: string) => void;
+type DeleteMdRaidFn = (index: number) => void;
 
 function useDeleteMdRaid(): DeleteMdRaidFn {
   const config = useConfigModel();
-  return (name: string) => {
-    putStorageModel(deleteMdRaid(config, name));
+  return (index: number) => {
+    putStorageModel(configModel.mdRaid.remove(config, index));
   };
 }
 
 type SwitchToMdRaidFn = (oldName: string, raid: Data.MdRaid) => void;
 
-function useSwitchToMdRaid(): SwitchToMdRaidFn {
+function useAddFromDrive(): SwitchToMdRaidFn {
   const config = useConfigModel();
   return (oldName: string, raid: Data.MdRaid) => {
-    putStorageModel(switchToMdRaid(config, oldName, raid));
+    putStorageModel(configModel.mdRaid.addFromDrive(config, oldName, raid));
   };
 }
 
-export { useAddReusedMdRaid, useDeleteMdRaid, useSwitchToMdRaid };
+export { useAddMdRaid, useDeleteMdRaid, useAddFromDrive };
 export type { AddReusedMdRaidFn, DeleteMdRaidFn, SwitchToMdRaidFn };
