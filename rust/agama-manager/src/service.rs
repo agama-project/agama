@@ -83,6 +83,7 @@ pub enum Error {
     Hardware(#[from] hardware::Error),
     #[error("Cannot dispatch this action in {current} stage (expected {expected}).")]
     UnexpectedStage { current: Stage, expected: Stage },
+    #[error(transparent)]
     Users(#[from] users::service::Error),
 }
 
@@ -172,6 +173,7 @@ impl Starter {
 
     pub fn with_hardware(mut self, hardware: hardware::Registry) -> Self {
         self.hardware = Some(hardware);
+        self
     }
 
     pub fn with_users(mut self, users: Handler<users::Service>) -> Self {
@@ -314,7 +316,6 @@ pub struct Service {
     product: Option<Arc<RwLock<ProductSpec>>>,
     config: Config,
     system: manager::SystemInfo,
-    events: event::Sender,
     users: Handler<users::Service>,
 }
 
