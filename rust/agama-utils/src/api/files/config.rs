@@ -30,9 +30,9 @@ use crate::api::files::{
 
 #[derive(Clone, Debug, Default, Serialize, Deserialize, Merge, utoipa::ToSchema)]
 pub struct Config {
-    #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    #[merge(strategy = merge::vec::overwrite_empty)]
-    pub files: Vec<UserFile>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[merge(strategy = merge::option::overwrite_none)]
+    pub files: Option<Vec<UserFile>>,
     #[serde(skip_serializing_if = "Option::is_none")]
     #[merge(strategy = merge::option::overwrite_none)]
     pub scripts: Option<ScriptsConfig>,

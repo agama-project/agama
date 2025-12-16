@@ -28,10 +28,8 @@ use serde::{Deserialize, Serialize};
 use std::default::Default;
 use std::net::IpAddr;
 
-#[derive(Clone, Debug, Default, Serialize, Deserialize, Merge, utoipa::ToSchema, PartialEq)]
-pub struct NetworkConnectionsCollection(
-    #[merge(strategy = merge::vec::overwrite_empty)] pub Vec<NetworkConnection>,
-);
+#[derive(Clone, Debug, Default, Serialize, Deserialize, utoipa::ToSchema, PartialEq)]
+pub struct NetworkConnectionsCollection(pub Vec<NetworkConnection>);
 
 /// Network settings for installation
 #[derive(Clone, Debug, Default, Serialize, Deserialize, utoipa::ToSchema)]

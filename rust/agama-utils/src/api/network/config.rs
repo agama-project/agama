@@ -28,11 +28,12 @@ use std::default::Default;
 /// Network config settings for installation
 #[derive(Clone, Debug, Default, Serialize, Deserialize, Merge, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
-#[merge(strategy = merge::option::recurse)]
 pub struct Config {
     /// Connections to use in the installation
+    #[merge(strategy = merge::option::overwrite_none)]
     pub connections: Option<NetworkConnectionsCollection>,
     /// Network general settings
+    #[merge(strategy = merge::option::recurse)]
     pub state: Option<StateSettings>,
 }
 
@@ -110,31 +111,36 @@ mod tests {
         assert_eq!(merged_state.networking_enabled, Some(true)); // from updated, not overwritten by original.Some(false)
         assert_eq!(merged_state.copy_network, Some(true)); // from original, overwritten updated.None
 
-        // Test with empty Vec for overwrite_empty strategy
+        // Test with a list of connections
         let mut updated1 = Config {
             connections: Some(NetworkConnectionsCollection(vec![NetworkConnection {
-                id: "test_empty".to_string(),
+                id: "eth1".to_string(),
                 ..Default::default()
             }])),
             state: None,
         };
         let original1 = Config {
-            connections: Some(NetworkConnectionsCollection(vec![])), // empty vec
+            connections: Some(NetworkConnectionsCollection(vec![NetworkConnection {
+                id: "eth0".to_string(),
+                ..Default::default()
+            }])), // empty vec
             state: None,
         };
-        updated1.merge(original1);
-        assert_eq!(updated1.connections.as_ref().unwrap().0.len(), 1); // should not be overwritten by empty vec
+        let original2 = original1.clone();
 
+        updated1.merge(original1);
+        assert_eq!(updated1.connections.as_ref().unwrap().0.len(), 1); // use the updated1 list
+        let connections = updated1.connections.unwrap();
+        let connection = connections.0.get(0).unwrap();
+        assert_eq!(&connection.id, "eth1");
+
+        // Test without a list of connections
         let mut updated2 = Config {
             connections: None,
             state: None,
         };
-        let original2 = Config {
-            connections: Some(NetworkConnectionsCollection(vec![])), // empty vec
-            state: None,
-        };
         updated2.merge(original2);
-        assert!(updated2.connections.unwrap().0.is_empty()); // should be empty, as updated was None
+        assert_eq!(updated2.connections.unwrap().0.len(), 1); // should be empty, as updated was None
     }
 
     #[test]
