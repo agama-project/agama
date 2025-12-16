@@ -9,7 +9,7 @@
     "x86_64_v3": "auto",
     "gnome_office": "auto",
     "x11_yast": "auto",
-    "gnome": "auto",
+    "gnome": "user",
     "base": "auto",
     "sw_management": "auto",
     "x11": "auto",

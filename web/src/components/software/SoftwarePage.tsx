@@ -49,7 +49,13 @@ import { isEmpty } from "radashi";
 /**
  * List of selected patterns.
  */
-const SelectedPatternsList = ({ patterns, selection }: { patterns: Pattern[], selection: PatternsSelection }): React.ReactNode => {
+const SelectedPatternsList = ({
+  patterns,
+  selection,
+}: {
+  patterns: Pattern[];
+  selection: PatternsSelection;
+}): React.ReactNode => {
   const selected = patterns.filter((p) => selection[p.name] !== SelectedBy.NONE);
 
   if (selected.length === 0) {
@@ -138,7 +144,9 @@ function SoftwarePage(): React.ReactNode {
 
   // FIXME: temporarily disabled, the API end point is not implemented yet
   const repos = []; // useRepositories();
-  const usedSpace = (proposal.usedSpace) ? xbytes(proposal.usedSpace * 1024, { iec: true }) : undefined;
+  const usedSpace = proposal.usedSpace
+    ? xbytes(proposal.usedSpace * 1024, { iec: true })
+    : undefined;
 
   // Selected patterns section should fill the full width in big screen too when
   // there is no information for rendering the Proposal Size section.
@@ -166,7 +174,11 @@ function SoftwarePage(): React.ReactNode {
             </GridItem>
           )}
           <GridItem sm={12} xl={selectedPatternsXlSize}>
-            {isEmpty(proposal.patterns) ? <NoPatterns /> : <SelectedPatterns patterns={patterns} selection={proposal.patterns} />}
+            {isEmpty(proposal.patterns) ? (
+              <NoPatterns />
+            ) : (
+              <SelectedPatterns patterns={patterns} selection={proposal.patterns} />
+            )}
           </GridItem>
           {usedSpace && (
             <GridItem sm={12} xl={6}>
