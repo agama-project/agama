@@ -31,11 +31,13 @@ type PatternsSelection = { [key: string]: SelectedBy };
 
 enum SelectedBy {
   /** Selected by the user */
-  USER = 0,
+  USER = "user",
   /** Automatically selected as a dependency of another package */
-  AUTO = 1,
+  AUTO = "auto",
   /** No selected */
-  NONE = 2,
+  NONE = "none",
 }
 
-export type { Proposal, PatternsSelection, SelectedBy };
+export type { Proposal, PatternsSelection };
+
+export { SelectedBy };
