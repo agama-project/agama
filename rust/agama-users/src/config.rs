@@ -19,7 +19,7 @@
 // find current contact information at www.suse.com.
 
 use crate::service;
-use agama_utils::api::{self, users::SystemInfo, users::user_info::UserInfo};
+use agama_utils::api::{self, users::user_info::UserInfo, users::SystemInfo};
 use itertools::Itertools;
 
 #[derive(Clone, PartialEq)]

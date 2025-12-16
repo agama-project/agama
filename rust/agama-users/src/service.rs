@@ -25,7 +25,7 @@ use agama_utils::{
     api::{
         self,
         event::{self, Event},
-        users::{SystemInfo, user_info::UserInfo},
+        users::{user_info::UserInfo, SystemInfo},
     },
     issue,
 };
@@ -53,7 +53,10 @@ impl Starter {
         let service = Service {
             // just mockup of non-existent system model
             system: SystemInfo {
-                users: [UserInfo { name: String::from("root") }].to_vec()
+                users: [UserInfo {
+                    name: String::from("root"),
+                }]
+                .to_vec(),
             },
             issues: self.issues,
             events: self.events,
