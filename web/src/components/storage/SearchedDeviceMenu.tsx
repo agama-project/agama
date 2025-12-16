@@ -29,7 +29,6 @@ import { useSwitchToDrive } from "~/hooks/storage/drive";
 import { useSwitchToMdRaid } from "~/hooks/storage/md-raid";
 import { deviceBaseName, formattedPath } from "~/components/storage/utils";
 import configModel from "~/model/storage/config-model";
-import partitionableModel from "~/model/storage/partitionable-model";
 import { sprintf } from "sprintf-js";
 import { _, formatList } from "~/i18n";
 import DeviceSelectorModal from "./DeviceSelectorModal";
@@ -49,12 +48,12 @@ const useOnlyOneOption = (
   const isTargetDevice = configModel.isTargetDevice(config, device.name);
 
   if (
-    !partitionableModel.usedMountPaths(device).length &&
+    !configModel.partitionable.usedMountPaths(device).length &&
     (isTargetDevice || configModel.boot.hasExplicitDevice(config, device.name))
   )
     return true;
 
-  return partitionableModel.isReusingPartitions(device);
+  return configModel.partitionable.isReusingPartitions(device);
 };
 
 type ChangeDeviceTitleProps = {
@@ -73,7 +72,7 @@ const ChangeDeviceTitle = ({ modelDevice }: ChangeDeviceTitleProps) => {
     return sprintf(_("Change the disk to format as %s"), formattedPath(modelDevice.mountPath));
   }
 
-  const mountPaths = partitionableModel.usedMountPaths(modelDevice);
+  const mountPaths = configModel.partitionable.usedMountPaths(modelDevice);
   const hasMountPaths = mountPaths.length > 0;
 
   if (!hasMountPaths) {
@@ -104,11 +103,11 @@ type ChangeDeviceDescriptionProps = {
 const ChangeDeviceDescription = ({ modelDevice, device }: ChangeDeviceDescriptionProps) => {
   const config = useConfigModel();
   const name = baseName(device);
-  const volumeGroups = partitionableModel.filterVolumeGroups(modelDevice, config);
+  const volumeGroups = configModel.partitionable.filterVolumeGroups(config, modelDevice);
   const isExplicitBoot = configModel.boot.hasExplicitDevice(config, modelDevice.name);
   const isBoot = configModel.boot.hasDevice(config, modelDevice.name);
-  const mountPaths = partitionableModel.usedMountPaths(modelDevice);
-  const isReusingPartitions = partitionableModel.isReusingPartitions(modelDevice);
+  const mountPaths = configModel.partitionable.usedMountPaths(modelDevice);
+  const isReusingPartitions = configModel.partitionable.isReusingPartitions(modelDevice);
   const hasMountPaths = mountPaths.length > 0;
   const hasPv = volumeGroups.length > 0;
   const vgName = volumeGroups[0]?.vgName;
@@ -257,7 +256,7 @@ const RemoveEntryOption = ({ device, onClick }: RemoveEntryOptionProps): React.R
 
   // If these cases, the target device cannot be changed and this disabled button would only provide
   // information that is redundant to the one already displayed at the disabled "change device" one.
-  if (!partitionableModel.usedMountPaths(device).length && (hasPv || isExplicitBoot)) return;
+  if (!configModel.partitionable.usedMountPaths(device).length && (hasPv || isExplicitBoot)) return;
 
   if (isExplicitBoot) {
     if (hasPv) {

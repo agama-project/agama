@@ -51,7 +51,7 @@ import { IconProps } from "../layout/Icon";
 import { sprintf } from "sprintf-js";
 import spacingStyles from "@patternfly/react-styles/css/utilities/Spacing/spacing";
 import { toggle } from "radashi";
-import partitionableModel from "~/model/storage/partitionable-model";
+import configModel from "~/model/storage/config-model";
 import type { ConfigModel } from "~/model/storage/config-model";
 
 type PartitionMenuItemProps = {
@@ -62,7 +62,7 @@ type PartitionMenuItemProps = {
 };
 
 const PartitionMenuItem = ({ device, mountPath, collection, index }: PartitionMenuItemProps) => {
-  const partition = partitionableModel.findPartition(device, mountPath);
+  const partition = configModel.partitionable.findPartition(device, mountPath);
   const editPath = generateEncodedPath(PATHS.editPartition, {
     collection,
     index,

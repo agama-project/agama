@@ -48,7 +48,7 @@ import { STORAGE as PATHS } from "~/routes/paths";
 import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
 import { deviceSystems, isDrive } from "~/storage/device";
-import partitionableModel from "~/model/storage/partitionable-model";
+import configModel from "~/model/storage/config-model";
 import volumeGroupModel from "~/model/storage/volume-group-model";
 import { useConfigModel } from "~/hooks/model/storage";
 import type { ConfigModel, Data } from "~/model/storage/config-model";
@@ -122,7 +122,7 @@ export default function LvmPage() {
       setName("system");
       const potentialTargets = model.drives.concat(model.mdRaids);
       const targetNames = potentialTargets
-        .filter(partitionableModel.isAddingPartitions)
+        .filter(configModel.partitionable.isAddingPartitions)
         .map((d) => d.name);
       const targetDevices = allDevices.filter((d) => targetNames.includes(d.name));
       setSelectedDevices(targetDevices);

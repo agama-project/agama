@@ -28,7 +28,7 @@ import { deviceBaseName, formattedPath } from "~/components/storage/utils";
 import { sprintf } from "sprintf-js";
 import { _, n_, formatList } from "~/i18n";
 import { useConfigModel } from "~/hooks/model/storage";
-import partitionableModel from "~/model/storage/partitionable-model";
+import configModel from "~/model/storage/config-model";
 import type { ConfigModel } from "~/model/storage/config-model";
 
 export type NewVgMenuOptionProps = { device: ConfigModel.Drive | ConfigModel.MdRaid };
@@ -39,7 +39,7 @@ export default function NewVgMenuOption({ device }: NewVgMenuOptionProps): React
 
   if (device.filesystem) return;
 
-  const vgs = partitionableModel.filterVolumeGroups(device, config);
+  const vgs = configModel.partitionable.filterVolumeGroups(config, device);
   const paths = device.partitions.filter((p) => !p.name).map((p) => formattedPath(p.mountPath));
   const displayName = deviceBaseName(device, true);
 

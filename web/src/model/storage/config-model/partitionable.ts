@@ -20,8 +20,10 @@
  * find current contact information at www.suse.com.
  */
 
+import { sift } from "radashi";
 import configModel from "~/model/storage/config-model";
-import partitionableModel from "~/model/storage/partitionable-model";
+import partitionModel from "~/model/storage/partition-model";
+import volumeGroupModel from "~/model/storage/volume-group-model";
 import type { ConfigModel } from "~/model/storage/config-model";
 
 type Device = ConfigModel.Drive | ConfigModel.MdRaid;
@@ -66,14 +68,49 @@ function findLocation(config: ConfigModel.Config, name: string): Location | null
   return null;
 }
 
+function findPartition(device: Device, mountPath: string): ConfigModel.Partition | undefined {
+  return device.partitions.find((p) => p.mountPath === mountPath);
+}
+
+function filterVolumeGroups(config: ConfigModel.Config, device: Device): ConfigModel.VolumeGroup[] {
+  const volumeGroups = config.volumeGroups || [];
+  return volumeGroups.filter((v) =>
+    volumeGroupModel.filterTargetDevices(v, config).some((d) => d.name === device.name),
+  );
+}
+
+function filterConfiguredExistingPartitions(device: Device): ConfigModel.Partition[] {
+  if (device.spacePolicy === "custom")
+    return device.partitions.filter(
+      (p) =>
+        !partitionModel.isNew(p) &&
+        (partitionModel.isUsed(p) || partitionModel.isUsedBySpacePolicy(p)),
+    );
+
+  return device.partitions.filter(partitionModel.isReused);
+}
+
+function usedMountPaths(device: Device): string[] {
+  const mountPaths = (device.partitions || []).map((p) => p.mountPath);
+  return sift([device.mountPath, ...mountPaths]);
+}
+
 function isUsed(config: ConfigModel.Config, deviceName: string): boolean {
   const device = all(config).find((d) => d.name === deviceName);
 
   return (
     configModel.boot.hasExplicitDevice(config, deviceName) ||
     configModel.isTargetDevice(config, deviceName) ||
-    partitionableModel.usedMountPaths(device).length > 0
+    usedMountPaths(device).length > 0
   );
+}
+
+function isAddingPartitions(device: Device): boolean {
+  return device.partitions.some((p) => p.mountPath && partitionModel.isNew(p));
+}
+
+function isReusingPartitions(device: Device): boolean {
+  return device.partitions.some(partitionModel.isReused);
 }
 
 function remove(
@@ -92,7 +129,13 @@ export default {
   find,
   findIndex,
   findLocation,
+  findPartition,
+  filterVolumeGroups,
+  filterConfiguredExistingPartitions,
+  usedMountPaths,
   isUsed,
+  isAddingPartitions,
+  isReusingPartitions,
   remove,
 };
 export type { Device, CollectionName, Location };

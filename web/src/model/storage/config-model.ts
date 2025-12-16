@@ -20,7 +20,6 @@
  * find current contact information at www.suse.com.
  */
 
-import partitionableModel from "~/model/storage/partitionable-model";
 import volumeGroupModel from "~/model/storage/volume-group-model";
 import boot from "~/model/storage/config-model/boot";
 import partitionable from "~/model/storage/config-model/partitionable";
@@ -38,8 +37,8 @@ function usedMountPaths(config: ConfigModel.Config): string[] {
   const volumeGroups = config.volumeGroups || [];
 
   return [
-    ...drives.flatMap(partitionableModel.usedMountPaths),
-    ...mdRaids.flatMap(partitionableModel.usedMountPaths),
+    ...drives.flatMap(partitionable.usedMountPaths),
+    ...mdRaids.flatMap(partitionable.usedMountPaths),
     ...volumeGroups.flatMap(volumeGroupModel.usedMountPaths),
   ];
 }

@@ -78,7 +78,6 @@ import { sprintf } from "sprintf-js";
 import { STORAGE as PATHS, STORAGE } from "~/routes/paths";
 import { isUndefined, unique } from "radashi";
 import { compact } from "~/utils";
-import partitionableModel from "~/model/storage/partitionable-model";
 import type { ConfigModel } from "~/model/storage/config-model";
 import type { Storage as System } from "~/model/system";
 
@@ -236,7 +235,7 @@ function useDefaultFilesystem(mountPoint: string): string {
 function useInitialPartitionConfig(): ConfigModel.Partition | null {
   const { partitionId: mountPath } = useParams();
   const device = useDeviceModelFromParams();
-  return mountPath && device ? partitionableModel.findPartition(device, mountPath) : null;
+  return mountPath && device ? configModel.partitionable.findPartition(device, mountPath) : null;
 }
 
 function useInitialFormValue(): FormValue | null {
@@ -263,7 +262,7 @@ function useUnusedPartitions(): System.Device[] {
   const allPartitions = device.partitions || [];
   const initialPartitionConfig = useInitialPartitionConfig();
   const deviceModel = useDeviceModelFromParams();
-  const configuredPartitionConfigs = partitionableModel
+  const configuredPartitionConfigs = configModel.partitionable
     .filterConfiguredExistingPartitions(deviceModel)
     .filter((p) => p.name !== initialPartitionConfig?.name)
     .map((p) => p.name);
