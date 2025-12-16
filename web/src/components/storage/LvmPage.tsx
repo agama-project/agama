@@ -47,7 +47,7 @@ import { contentDescription, filesystemLabels, typeDescription } from "./utils/d
 import { STORAGE as PATHS } from "~/routes/paths";
 import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
-import { deviceSystems, isDrive } from "~/storage/device";
+import { deviceSystems, isDrive } from "~/model/storage/device";
 import configModel from "~/model/storage/config-model";
 import { useConfigModel } from "~/hooks/model/storage";
 import type { ConfigModel, Data } from "~/model/storage/config-model";

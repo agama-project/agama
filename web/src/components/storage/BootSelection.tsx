@@ -29,7 +29,7 @@ import { deviceLabel, formattedPath } from "~/components/storage/utils";
 import { useCandidateDevices, useDevices } from "~/hooks/model/system/storage";
 import { useModel } from "~/hooks/storage/model";
 import { useConfigModel } from "~/hooks/model/storage";
-import { isDrive } from "~/storage/device";
+import { isDrive } from "~/model/storage/device";
 import { useSetBootDevice, useSetDefaultBootDevice, useDisableBoot } from "~/hooks/storage/boot";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import { sprintf } from "sprintf-js";

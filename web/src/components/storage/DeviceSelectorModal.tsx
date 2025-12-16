@@ -35,7 +35,7 @@ import {
 import { deviceSize } from "~/components/storage/utils";
 import { sortCollection } from "~/utils";
 import { _ } from "~/i18n";
-import { deviceSystems } from "~/storage/device";
+import { deviceSystems } from "~/model/storage/device";
 import type { Storage } from "~/model/system";
 
 type DeviceSelectorProps = {

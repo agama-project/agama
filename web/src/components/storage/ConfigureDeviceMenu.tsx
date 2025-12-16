@@ -32,7 +32,7 @@ import { STORAGE as PATHS } from "~/routes/paths";
 import { sprintf } from "sprintf-js";
 import { _, n_ } from "~/i18n";
 import DeviceSelectorModal from "./DeviceSelectorModal";
-import { isDrive } from "~/storage/device";
+import { isDrive } from "~/model/storage/device";
 import { Icon } from "../layout";
 import type { Storage } from "~/model/system";
 

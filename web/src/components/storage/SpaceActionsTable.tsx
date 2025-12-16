@@ -40,7 +40,7 @@ import { Icon } from "~/components/layout";
 import { TreeTableColumn } from "~/components/core/TreeTable";
 import { Table, Td, Th, Tr, Thead, Tbody } from "@patternfly/react-table";
 import { useConfigModel } from "~/hooks/model/storage";
-import { supportShrink } from "~/storage/device";
+import { supportShrink } from "~/model/storage/device";
 import type { Storage as Proposal } from "~/model/proposal";
 import type { ConfigModel } from "~/model/storage/config-model";
 
