@@ -69,23 +69,24 @@ const DriveDeviceMenuToggle = forwardRef(
 );
 
 type DriveDeviceMenuProps = {
-  drive: ConfigModel.Drive;
-  selected: System.Device;
+  index: number;
 };
 
 /**
  * Internal component that renders generic actions available for a Drive device.
  */
-const DriveDeviceMenu = ({ drive, selected }: DriveDeviceMenuProps) => {
+const DriveDeviceMenu = ({ index }: DriveDeviceMenuProps) => {
+  const driveModel = useDrive(index);
+  const drive = useDevice(driveModel.name);
   const deleteDrive = useDeleteDrive();
-  const deleteFn = (device: ConfigModel.Drive) => deleteDrive(device.name);
+  const deleteFn = () => deleteDrive(index);
 
   return (
     <SearchedDeviceMenu
-      modelDevice={drive}
-      selected={selected}
+      modelDevice={driveModel}
+      selected={drive}
       deleteFn={deleteFn}
-      toggle={<DriveDeviceMenuToggle drive={drive} device={selected} />}
+      toggle={<DriveDeviceMenuToggle drive={driveModel} device={drive} />}
     />
   );
 };
@@ -107,7 +108,7 @@ export default function DriveEditor({ index }: DriveEditorProps) {
   if (drive === undefined) return null;
 
   return (
-    <ConfigEditorItem header={<DriveDeviceMenu drive={driveModel} selected={drive} />}>
+    <ConfigEditorItem header={<DriveDeviceMenu index={index} />}>
       <DeviceEditorContent collection="drives" index={index} />
     </ConfigEditorItem>
   );

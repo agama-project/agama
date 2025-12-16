@@ -20,7 +20,6 @@
  * find current contact information at www.suse.com.
  */
 
-import { switchSearched } from "~/storage/search";
 import configModel from "~/model/storage/config-model";
 import type { ConfigModel, Data } from "~/model/storage/config-model";
 
@@ -44,7 +43,7 @@ function switchToMdRaid(
   oldName: string,
   raid: Data.MdRaid,
 ): ConfigModel.Config {
-  return switchSearched(config, oldName, raid.name, "mdRaids");
+  return configModel.partitionable.convert(config, oldName, raid.name, "mdRaids");
 }
 
 export { addReusedMdRaid, deleteMdRaid, switchToMdRaid };

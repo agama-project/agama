@@ -22,8 +22,8 @@
 
 import { useConfigModel } from "~/hooks/model/storage";
 import { putStorageModel } from "~/api";
-import { addDrive, deleteDrive, switchToDrive } from "~/storage/drive";
 import { useModel } from "~/hooks/storage/model";
+import configModel from "~/model/storage/config-model";
 import type { ConfigModel, Data } from "~/model/storage/config-model";
 
 function useDrive(name: string): ConfigModel.Drive | null {
@@ -37,27 +37,27 @@ type AddDriveFn = (data: Data.Drive) => void;
 function useAddDrive(): AddDriveFn {
   const config = useConfigModel();
   return (data: Data.Drive) => {
-    putStorageModel(addDrive(config, data));
+    putStorageModel(configModel.drive.add(config, data));
   };
 }
 
-type DeleteDriveFn = (name: string) => void;
+type DeleteDriveFn = (inex: number) => void;
 
 function useDeleteDrive(): DeleteDriveFn {
   const config = useConfigModel();
-  return (name: string) => {
-    putStorageModel(deleteDrive(config, name));
+  return (index: number) => {
+    putStorageModel(configModel.drive.remove(config, index));
   };
 }
 
 type SwitchToDriveFn = (oldName: string, drive: Data.Drive) => void;
 
-function useSwitchToDrive(): SwitchToDriveFn {
+function useAddFromMdRaid(): SwitchToDriveFn {
   const config = useConfigModel();
   return (oldName: string, drive: Data.Drive) => {
-    putStorageModel(switchToDrive(config, oldName, drive));
+    putStorageModel(configModel.drive.addFromMdRaid(config, oldName, drive));
   };
 }
 
-export { useDrive, useAddDrive, useDeleteDrive, useSwitchToDrive };
+export { useDrive, useAddDrive, useDeleteDrive, useAddFromMdRaid };
 export type { AddDriveFn, DeleteDriveFn, SwitchToDriveFn };

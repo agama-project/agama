@@ -20,11 +20,10 @@
  * find current contact information at www.suse.com.
  */
 
-import { switchSearched } from "~/storage/search";
 import configModel from "~/model/storage/config-model";
 import type { ConfigModel, Data } from "~/model/storage/config-model";
 
-function addDrive(config: ConfigModel.Config, data: Data.Drive): ConfigModel.Config {
+function add(config: ConfigModel.Config, data: Data.Drive): ConfigModel.Config {
   config = configModel.clone(config);
   config.drives ||= [];
   config.drives.push(data);
@@ -32,19 +31,16 @@ function addDrive(config: ConfigModel.Config, data: Data.Drive): ConfigModel.Con
   return config;
 }
 
-function deleteDrive(config: ConfigModel.Config, name: string): ConfigModel.Config {
-  config = configModel.clone(config);
-  config.drives = config.drives.filter((d) => d.name !== name);
-
-  return config;
-}
-
-function switchToDrive(
+function addFromMdRaid(
   config: ConfigModel.Config,
   oldName: string,
   drive: Data.Drive,
 ): ConfigModel.Config {
-  return switchSearched(config, oldName, drive.name, "drives");
+  return configModel.partitionable.convert(config, oldName, drive.name, "drives");
 }
 
-export { addDrive, deleteDrive, switchToDrive };
+function remove(config: ConfigModel.Config, index: number): ConfigModel.Config {
+  return configModel.partitionable.remove(config, "drives", index);
+}
+
+export default { add, remove, addFromMdRaid };
