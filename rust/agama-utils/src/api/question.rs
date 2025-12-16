@@ -36,9 +36,9 @@ pub struct Config {
     #[serde(skip_serializing_if = "Option::is_none")]
     #[merge(strategy = merge::option::overwrite_none)]
     pub policy: Option<Policy>,
-    #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    #[merge(strategy = merge::vec::overwrite_empty)]
-    pub answers: Vec<AnswerRule>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[merge(strategy = merge::option::overwrite_none)]
+    pub answers: Option<Vec<AnswerRule>>,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, utoipa::ToSchema)]
@@ -475,18 +475,18 @@ mod tests {
         // updated config
         let mut updated = Config {
             policy: Some(Policy::Auto),
-            answers: vec![AnswerRule {
+            answers: Some(vec![AnswerRule {
                 class: Some("foo".to_string()),
                 text: None,
                 data: None,
                 answer: Answer::new("yes"),
-            }],
+            }]),
         };
 
         // original config to merge from
         let original = Config {
             policy: Some(Policy::User),
-            answers: vec![
+            answers: Some(vec![
                 AnswerRule {
                     class: Some("bar".to_string()),
                     text: None,
@@ -499,7 +499,7 @@ mod tests {
                     data: None,
                     answer: Answer::new("maybe"),
                 },
-            ],
+            ]),
         };
 
         updated.merge(original.clone());
@@ -509,32 +509,41 @@ mod tests {
         // Since updated.policy was Some, it should NOT be overwritten.
         assert_eq!(updated.policy, Some(Policy::Auto));
 
-        // Assertions for answers (overwrite_empty strategy)
-        // updated.answers was not empty, original.answers is not empty.
-        // Since updated.answers was not empty, it should NOT be overwritten.
-        assert_eq!(updated.answers.len(), 1);
-        assert_eq!(updated.answers[0].class, Some("foo".to_string()));
-        assert_eq!(updated.answers[0].answer.action, "yes".to_string());
+        // Assertions for answers (overwrite_none strategy)
+        // updated.answers was Some, original.answers is Some.
+        // Since updated.answers was Some, it should NOT be overwritten.
+        assert_eq!(updated.answers.as_ref().unwrap().len(), 1);
+        assert_eq!(
+            updated.answers.as_ref().unwrap()[0].class,
+            Some("foo".to_string())
+        );
+        assert_eq!(updated.answers.as_ref().unwrap()[0].answer.action, "yes".to_string());
 
-        // Test with empty updated.answers to check overwrite
+
+        // Test with None for updated.answers to check overwrite
         let mut updated1 = Config {
             policy: None,
-            answers: vec![], // Empty
+            answers: None, // None
         };
         let original1 = Config {
             policy: Some(Policy::User),
-            answers: vec![AnswerRule {
-                class: Some("qux".to_string()),
-                text: None,
-                data: None,
-                answer: Answer::new("go"),
-            }],
+            answers: Some(vec![
+                AnswerRule {
+                    class: Some("qux".to_string()),
+                    text: None,
+                    data: None,
+                    answer: Answer::new("go"),
+                },
+            ]),
         };
         updated1.merge(original1.clone());
-        // updated1.answers was empty, so it should be overwritten by original1.answers.
-        assert_eq!(updated1.answers.len(), 1);
-        assert_eq!(updated1.answers[0].class, Some("qux".to_string()));
-        assert_eq!(updated1.answers[0].answer.action, "go".to_string());
+        // updated1.answers was None, so it should be overwritten by original1.answers.
+        assert_eq!(updated1.answers.as_ref().unwrap().len(), 1);
+        assert_eq!(
+            updated1.answers.as_ref().unwrap()[0].class,
+            Some("qux".to_string())
+        );
+        assert_eq!(updated1.answers.as_ref().unwrap()[0].answer.action, "go".to_string());
         // updated1.policy was None, so it should be overwritten.
         assert_eq!(updated1.policy, Some(Policy::User));
     }
@@ -544,65 +553,72 @@ mod tests {
         // Case 1: updated.policy is None, original.policy is Some
         let mut updated = Config {
             policy: None,
-            answers: vec![],
+            answers: None, // Now is None
         };
         let original = Config {
             policy: Some(Policy::Auto),
-            answers: vec![],
+            answers: None, // Now is None
         };
         updated.merge(original.clone());
         assert_eq!(updated.policy, Some(Policy::Auto));
-        assert_eq!(updated.answers.len(), 0); // updated.answers was empty, original.answers was empty, so it remains empty.
+        assert_eq!(updated.answers, None); // updated.answers was None, original.answers was None, so it remains None.
+
 
         // Case 2: updated.policy is Some, original.policy is None
         let mut updated1 = Config {
             policy: Some(Policy::User),
-            answers: vec![],
+            answers: None, // Now is None
         };
         let original1 = Config {
             policy: None,
-            answers: vec![],
+            answers: None, // Now is None
         };
         updated1.merge(original1);
         assert_eq!(updated1.policy, Some(Policy::User)); // updated1.policy was Some, so it's not overwritten.
-        assert_eq!(updated1.answers.len(), 0);
+        assert_eq!(updated1.answers, None); // updated1.answers was None, original1.answers was None, so it remains None.
 
-        // Case 3: updated.answers is empty, original.answers is non-empty
+        // Case 3: updated.answers is None, original.answers is Some non-empty
         let mut updated2 = Config {
             policy: None,
-            answers: vec![],
+            answers: None, // Now is None
         };
         let original2 = Config {
             policy: None,
-            answers: vec![AnswerRule {
+            answers: Some(vec![AnswerRule {
                 class: Some("foo".to_string()),
                 text: None,
                 data: None,
                 answer: Answer::new("yes"),
-            }],
+            }]),
         };
         updated2.merge(original2.clone());
-        assert_eq!(updated2.answers.len(), 1);
-        assert_eq!(updated2.answers[0].class, Some("foo".to_string()));
-        assert_eq!(updated2.answers[0].answer.action, "yes".to_string());
+        assert_eq!(updated2.answers.as_ref().unwrap().len(), 1);
+        assert_eq!(
+            updated2.answers.as_ref().unwrap()[0].class,
+            Some("foo".to_string())
+        );
+        assert_eq!(updated2.answers.as_ref().unwrap()[0].answer.action, "yes".to_string());
 
-        // Case 4: updated.answers is non-empty, original.answers is empty
+        // Case 4: updated.answers is Some non-empty, original.answers is None
         let mut updated3 = Config {
             policy: None,
-            answers: vec![AnswerRule {
+            answers: Some(vec![AnswerRule {
                 class: Some("bar".to_string()),
                 text: None,
                 data: None,
                 answer: Answer::new("no"),
-            }],
+            }]),
         };
         let original3 = Config {
             policy: None,
-            answers: vec![], // Empty
+            answers: None, // Now is None
         };
         updated3.merge(original3);
-        assert_eq!(updated3.answers.len(), 1); // updated.answers was non-empty, so it's not overwritten.
-        assert_eq!(updated3.answers[0].class, Some("bar".to_string()));
-        assert_eq!(updated3.answers[0].answer.action, "no".to_string());
+        assert_eq!(updated3.answers.as_ref().unwrap().len(), 1); // updated.answers was Some, so it's not overwritten.
+        assert_eq!(
+            updated3.answers.as_ref().unwrap()[0].class,
+            Some("bar".to_string())
+        );
+        assert_eq!(updated3.answers.as_ref().unwrap()[0].answer.action, "no".to_string());
     }
 }
