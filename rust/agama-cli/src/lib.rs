@@ -18,17 +18,35 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use agama_lib::auth::AuthToken;
-use agama_lib::context::InstallationContext;
-use agama_lib::manager::{FinishMethod, ManagerHTTPClient};
-use agama_lib::monitor::{Monitor, MonitorClient};
+use std::{
+    fs,
+    os::unix::fs::OpenOptionsExt,
+    path::PathBuf,
+    process::{ExitCode, Termination},
+    time::Duration,
+};
+
+use agama_lib::{
+    auth::AuthToken,
+    context::InstallationContext,
+    error::ServiceError,
+    http::{BaseHTTPClient, WebSocketClient},
+    manager::{FinishMethod, ManagerHTTPClient},
+    monitor::{Monitor, MonitorClient},
+};
 use agama_transfer::Transfer;
-use agama_utils::api::status::Stage;
-use agama_utils::api::{self, IssueWithScope};
+use agama_utils::api::{self, status::Stage, IssueWithScope};
 use anyhow::Context;
-use auth_tokens_file::AuthTokensFile;
 use clap::{Args, Parser};
 use fluent_uri::UriRef;
+use tokio::time::sleep;
+use url::Url;
+
+use crate::{
+    auth::run as run_auth_cmd, auth_tokens_file::AuthTokensFile, commands::Commands,
+    config::run as run_config_cmd, error::CliError, events::run as run_events_cmd,
+    logs::run as run_logs_cmd, progress::ProgressMonitor, questions::run as run_questions_cmd,
+};
 
 mod auth;
 mod auth_tokens_file;
@@ -41,26 +59,6 @@ mod events;
 mod logs;
 mod progress;
 mod questions;
-
-use crate::error::CliError;
-use agama_lib::error::ServiceError;
-use agama_lib::http::{BaseHTTPClient, WebSocketClient};
-use auth::run as run_auth_cmd;
-use commands::Commands;
-use config::run as run_config_cmd;
-use events::run as run_events_cmd;
-use logs::run as run_logs_cmd;
-use progress::ProgressMonitor;
-use questions::run as run_questions_cmd;
-use std::fs;
-use std::os::unix::fs::OpenOptionsExt;
-use std::path::PathBuf;
-use std::{
-    process::{ExitCode, Termination},
-    thread::sleep,
-    time::Duration,
-};
-use url::Url;
 
 /// Agama's CLI global options
 #[derive(Args, Clone)]
@@ -127,7 +125,7 @@ async fn install(http_client: BaseHTTPClient, monitor: MonitorClient) -> anyhow:
     http_client.post_void("/v2/action", &action).await?;
 
     // wait a bit before start monitoring
-    sleep(Duration::from_secs(1));
+    sleep(Duration::from_secs(1)).await;
     let progress = tokio::spawn(async {
         show_progress(monitor, true).await;
     });
