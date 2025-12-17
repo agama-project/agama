@@ -57,9 +57,10 @@ import {
   useConfigModel,
   useMissingMountPaths,
   useVolumeGroup,
+  useAddLogicalVolume,
+  useEditLogicalVolume,
 } from "~/hooks/model/storage/config-model";
 import { useVolumeTemplate } from "~/hooks/model/system/storage";
-import { useAddLogicalVolume, useEditLogicalVolume } from "~/hooks/storage/logical-volume";
 import { STORAGE as PATHS } from "~/routes/paths";
 import { unique } from "radashi";
 import { compact } from "~/utils";

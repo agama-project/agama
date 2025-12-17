@@ -47,14 +47,17 @@ import Icon, { IconProps } from "~/components/layout/Icon";
 import { STORAGE as PATHS } from "~/routes/paths";
 import { baseName, formattedPath } from "~/components/storage/utils";
 import { contentDescription } from "~/components/storage/utils/volume-group";
-import { useDeleteLogicalVolume } from "~/hooks/storage/logical-volume";
 import { generateEncodedPath } from "~/utils";
 import { isEmpty } from "radashi";
 import { sprintf } from "sprintf-js";
 import { _, n_, formatList } from "~/i18n";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import spacingStyles from "@patternfly/react-styles/css/utilities/Spacing/spacing";
-import { useConfigModel, useDeleteVolumeGroup } from "~/hooks/model/storage/config-model";
+import {
+  useConfigModel,
+  useDeleteVolumeGroup,
+  useDeleteLogicalVolume,
+} from "~/hooks/model/storage/config-model";
 import configModel from "~/model/storage/config-model";
 import type { ConfigModel } from "~/model/storage/config-model";
 

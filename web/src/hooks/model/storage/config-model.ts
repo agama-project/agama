@@ -221,6 +221,32 @@ function useAddVolumeGroupFromPartitionable(): AddVolumeGroupFromPartitionableFn
   };
 }
 
+type AddLogicalVolumeFn = (vgName: string, data: Data.LogicalVolume) => void;
+
+function useAddLogicalVolume(): AddLogicalVolumeFn {
+  const config = useConfigModel();
+  return (vgName: string, data: Data.LogicalVolume) => {
+    putStorageModel(configModel.logicalVolume.add(config, vgName, data));
+  };
+}
+
+type EditLogicalVolumeFn = (vgName: string, mountPath: string, data: Data.LogicalVolume) => void;
+
+function useEditLogicalVolume(): EditLogicalVolumeFn {
+  const config = useConfigModel();
+  return (vgName: string, mountPath: string, data: Data.LogicalVolume) => {
+    putStorageModel(configModel.logicalVolume.edit(config, vgName, mountPath, data));
+  };
+}
+
+type DeleteLogicalVolumeFn = (vgName: string, mountPath: string) => void;
+
+function useDeleteLogicalVolume(): DeleteLogicalVolumeFn {
+  const config = useConfigModel();
+  return (vgName: string, mountPath: string) =>
+    putStorageModel(configModel.logicalVolume.remove(config, vgName, mountPath));
+}
+
 export {
   configModelQuery,
   useConfigModel,
@@ -243,4 +269,7 @@ export {
   useEditVolumeGroup,
   useDeleteVolumeGroup,
   useAddVolumeGroupFromPartitionable,
+  useAddLogicalVolume,
+  useEditLogicalVolume,
+  useDeleteLogicalVolume,
 };
