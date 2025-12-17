@@ -22,7 +22,7 @@
 //! configuration and a mechanism to build it starting from the product
 //! definition, the user configuration, etc.
 
-use std::collections::{HashMap, HashSet};
+use std::collections::HashMap;
 
 use agama_utils::{
     api::software::{Config, PatternsConfig, RepositoryConfig, SystemInfo},
@@ -368,11 +368,14 @@ impl ResolvablesState {
     /// Turns the list of resolvables into a vector.
     ///
     /// FIXME: return an interator instead.
-    pub fn to_hash_set(&self) -> HashSet<(String, ResolvableType, ResolvableSelection)> {
-        self.0
+    pub fn to_vec(&self) -> Vec<(String, ResolvableType, ResolvableSelection)> {
+        let mut vector: Vec<_> = self
+            .0
             .iter()
             .map(|(key, selection)| (key.0.to_string(), key.1, *selection))
-            .collect()
+            .collect();
+        vector.sort_by(|a, b| a.0.cmp(&b.0));
+        vector
     }
 }
 
@@ -419,7 +422,7 @@ pub struct SoftwareOptions {
 
 #[cfg(test)]
 mod tests {
-    use std::{collections::HashSet, path::PathBuf};
+    use std::path::PathBuf;
 
     use agama_utils::{
         api::software::{
@@ -485,8 +488,8 @@ mod tests {
         assert_eq!(state.product, "openSUSE".to_string());
 
         assert_eq!(
-            state.resolvables.to_hash_set(),
-            HashSet::from([
+            state.resolvables.to_vec(),
+            vec![
                 (
                     "enhanced_base".to_string(),
                     ResolvableType::Pattern,
@@ -497,7 +500,7 @@ mod tests {
                     ResolvableType::Pattern,
                     ResolvableSelection::AutoSelected { optional: true }
                 ),
-            ])
+            ]
         );
     }
 
@@ -533,24 +536,24 @@ mod tests {
             .with_config(&config)
             .build();
         assert_eq!(
-            state.resolvables.to_hash_set(),
-            HashSet::from([
+            state.resolvables.to_vec(),
+            vec![
                 (
                     "enhanced_base".to_string(),
                     ResolvableType::Pattern,
                     ResolvableSelection::AutoSelected { optional: false }
                 ),
                 (
+                    "gnome".to_string(),
+                    ResolvableType::Pattern,
+                    ResolvableSelection::Selected
+                ),
+                (
                     "selinux".to_string(),
                     ResolvableType::Pattern,
                     ResolvableSelection::AutoSelected { optional: true }
                 ),
-                (
-                    "gnome".to_string(),
-                    ResolvableType::Pattern,
-                    ResolvableSelection::Selected
-                )
-            ])
+            ]
         );
     }
 
@@ -567,8 +570,8 @@ mod tests {
             .with_config(&config)
             .build();
         assert_eq!(
-            state.resolvables.to_hash_set(),
-            HashSet::from([
+            state.resolvables.to_vec(),
+            vec![
                 (
                     "enhanced_base".to_string(),
                     ResolvableType::Pattern,
@@ -579,7 +582,7 @@ mod tests {
                     ResolvableType::Pattern,
                     ResolvableSelection::Removed
                 )
-            ])
+            ]
         );
     }
 
@@ -596,8 +599,8 @@ mod tests {
             .with_config(&config)
             .build();
         assert_eq!(
-            state.resolvables.to_hash_set(),
-            HashSet::from([
+            state.resolvables.to_vec(),
+            vec![
                 (
                     "enhanced_base".to_string(),
                     ResolvableType::Pattern,
@@ -608,7 +611,7 @@ mod tests {
                     ResolvableType::Pattern,
                     ResolvableSelection::AutoSelected { optional: true }
                 )
-            ])
+            ]
         );
     }
 
@@ -622,8 +625,8 @@ mod tests {
             .with_config(&config)
             .build();
         assert_eq!(
-            state.resolvables.to_hash_set(),
-            HashSet::from([
+            state.resolvables.to_vec(),
+            vec![
                 (
                     "enhanced_base".to_string(),
                     ResolvableType::Pattern,
@@ -634,7 +637,7 @@ mod tests {
                     ResolvableType::Pattern,
                     ResolvableSelection::Selected,
                 )
-            ])
+            ]
         );
     }
 

@@ -336,7 +336,7 @@ impl ZyppServer {
                 Issue::new("software.select_product", &message).with_details(&error.to_string()),
             );
         }
-        for (name, r#type, selection) in &state.resolvables.to_hash_set() {
+        for (name, r#type, selection) in &state.resolvables.to_vec() {
             match selection {
                 ResolvableSelection::AutoSelected { optional } => {
                     issues.append(&mut self.select_resolvable(
