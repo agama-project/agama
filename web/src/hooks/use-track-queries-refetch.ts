@@ -21,7 +21,7 @@
  */
 
 import { useCallback, useEffect, useMemo, useRef } from "react";
-import { QueryObserver, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 
 /**
  * Custom hook that monitors multiple TanStack Query keys and triggers a
@@ -74,8 +74,8 @@ function useTrackQueriesRefetch(
 ) {
   const queryClient = useQueryClient();
 
-  // Remove duplicates from queryKeys array.
-  const uniqueQueryKeys = useMemo(() => Array.from(new Set(queryKeys)), [queryKeys]);
+  // Remove duplicates and create Set for faster lookups when matching query keys
+  const queryKeysSet = useMemo(() => new Set(queryKeys), [queryKeys]);
 
   // Tracks when the current tracking cycle started
   const startedAtRef = useRef<number | null>(null);
@@ -83,19 +83,21 @@ function useTrackQueriesRefetch(
   // Helps to prevent duplicate onSuccess calls for the same tracking cycle
   const completedRef = useRef(false);
 
-  // Stores which queries have successfully refetched in the current cycle
+  // Stores which queries have been considered refetched in the current cycle
   const refetchedKeysRef = useRef<Set<string>>(new Set());
 
-  // Stores unsubscribe functions for all active QueryObservers
-  const subscriptionsRef = useRef<Array<() => void>>([]);
+  // Stores the single unsubscribe function for queryCache subscription
+  const unsubscribeRef = useRef<(() => void) | null>(null);
 
   /**
    * Cleans up all active subscriptions and resets tracking state.
    * Called when starting a new tracking cycle or on component unmount.
    */
   const cleanup = useCallback(() => {
-    subscriptionsRef.current.forEach((unsubscribe) => unsubscribe());
-    subscriptionsRef.current = [];
+    if (unsubscribeRef.current) {
+      unsubscribeRef.current();
+      unsubscribeRef.current = null;
+    }
     refetchedKeysRef.current.clear();
     startedAtRef.current = null;
     completedRef.current = false;
@@ -104,7 +106,6 @@ function useTrackQueriesRefetch(
   /**
    * Completes the tracking cycle and invokes the success callback.
    */
-
   const finishTracking = useCallback(() => {
     if (completedRef.current || startedAtRef.current === null) return;
 
@@ -129,42 +130,45 @@ function useTrackQueriesRefetch(
     const startedAt = Date.now();
     startedAtRef.current = startedAt;
 
-    // Handle edge case: no queries to track
-    if (uniqueQueryKeys.length === 0) {
+    // No queries to track, exit immediately
+    if (queryKeysSet.size === 0) {
       finishTracking();
       return;
     }
 
     const refetchedKeys = refetchedKeysRef.current;
 
-    uniqueQueryKeys.forEach((queryKey) => {
-      // Create an observer for each query
-      const observer = new QueryObserver(queryClient, { queryKey: [queryKey] });
+    // Subscribe to the query cache once for all queries
+    const unsubscribe = queryClient.getQueryCache().subscribe((event) => {
+      // Ignore events from stale tracking cycles (prevents race conditions)
+      if (startedAtRef.current !== startedAt) return;
 
-      const unsubscribe = observer.subscribe((result) => {
-        // Ignore events from stale tracking cycles (prevents race conditions)
-        if (startedAtRef.current !== startedAt) return;
+      // Only process 'updated' events
+      if (event.type !== "updated") return;
 
-        // Check if this query can be considered as successfully refetched with fresh data
-        if (
-          result.status === "success" &&
-          result.dataUpdatedAt > startedAt &&
-          !refetchedKeys.has(queryKey)
-        ) {
-          refetchedKeys.add(queryKey);
+      const query = event.query;
+      const queryKey = query.queryKey[0] as string;
 
-          // Time to check if all queries have completed refetching
-          const allRefetched = uniqueQueryKeys.every((k) => refetchedKeys.has(k));
+      // Check if this query is one we're tracking
+      if (!queryKeysSet.has(queryKey)) return;
 
-          if (allRefetched) {
-            finishTracking();
-          }
+      // Check if this query can be considered as successfully refetched with fresh data
+      if (
+        query.state.status === "success" &&
+        query.state.dataUpdatedAt > startedAt &&
+        !refetchedKeys.has(queryKey)
+      ) {
+        refetchedKeys.add(queryKey);
+
+        // Finish if all queries have completed refetching
+        if (refetchedKeys.size === queryKeysSet.size) {
+          finishTracking();
         }
-      });
-
-      subscriptionsRef.current.push(unsubscribe);
+      }
     });
-  }, [uniqueQueryKeys, queryClient, finishTracking, cleanup]);
+
+    unsubscribeRef.current = unsubscribe;
+  }, [queryClient, queryKeysSet, finishTracking, cleanup]);
 
   // Cleanup subscriptions on unmount
   useEffect(() => cleanup, [cleanup]);
