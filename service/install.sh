@@ -14,6 +14,10 @@ if [ "${1-}" = --system ]; then
     DESTDIR=""
     datadir=/usr/share
     unitdir=/usr/lib/systemd/system
+
+    # FIXME: a hack to install the translations during prototyping
+    mkdir -p  "${DESTDIR}${datadir}/locale/cs/LC_MESSAGES"
+    msgfmt -o "${DESTDIR}${datadir}/locale/cs/LC_MESSAGES/agama.mo" "${SRCDIR}/po/cs.po"
 fi
 
 # install regular file, with mode 644 (not an executable with mode 755)
