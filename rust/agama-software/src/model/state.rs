@@ -319,6 +319,9 @@ pub struct ResolvablesState(HashMap<(String, ResolvableType), ResolvableSelectio
 impl ResolvablesState {
     /// Add or replace the state for the resolvable with the given name and type.
     ///
+    /// If the resolvable is auto selected and mandatory, it does not update the
+    /// state.
+    ///
     /// * `name`: resolvable name.
     /// * `r#type`: resolvable type.
     /// * `selection`: selection state.
@@ -328,9 +331,7 @@ impl ResolvablesState {
         r#type: ResolvableType,
         selection: ResolvableSelection,
     ) {
-        println!("Adding {}", name);
         if let Some(entry) = self.0.get(&(name.to_string(), r#type)) {
-            println!("entry {:?}", &entry);
             if let ResolvableSelection::AutoSelected { optional: false } = entry {
                 tracing::debug!("Could not modify the {name} state because it is mandatory.");
                 return;
@@ -340,6 +341,9 @@ impl ResolvablesState {
     }
 
     /// Add or replace the state for the given resolvable.
+    ///
+    /// If the resolvable is auto selected and mandatory, it does not update the
+    /// state.
     ///
     /// * `resolvable`: resolvable.
     /// * `selection`: selection state.
