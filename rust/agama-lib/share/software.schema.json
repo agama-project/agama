@@ -72,6 +72,7 @@
     },
     "repository": {
       "description": "Packages repository",
+      "type": "object",
       "additionalProperties": false,
       "properties": {
         "alias": {
