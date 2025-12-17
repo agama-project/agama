@@ -175,6 +175,52 @@ function useAddMdRaidFromDrive(): AddMdRaidFromDriveFn {
   };
 }
 
+function useVolumeGroup(vgName: string): ConfigModel.VolumeGroup | null {
+  const config = useConfigModel();
+  const volumeGroup = config?.volumeGroups?.find((v) => v.vgName === vgName);
+  return volumeGroup || null;
+}
+
+type AddVolumeGroupFn = (data: Data.VolumeGroup, moveContent: boolean) => void;
+
+function useAddVolumeGroup(): AddVolumeGroupFn {
+  const config = useConfigModel();
+  return (data: Data.VolumeGroup, moveContent: boolean) => {
+    putStorageModel(configModel.volumeGroup.add(config, data, moveContent));
+  };
+}
+
+type EditVolumeGroupFn = (vgName: string, data: Data.VolumeGroup) => void;
+
+function useEditVolumeGroup(): EditVolumeGroupFn {
+  const config = useConfigModel();
+  return (vgName: string, data: Data.VolumeGroup) => {
+    putStorageModel(configModel.volumeGroup.edit(config, vgName, data));
+  };
+}
+
+type DeleteVolumeGroupFn = (vgName: string, moveToDrive: boolean) => void;
+
+function useDeleteVolumeGroup(): DeleteVolumeGroupFn {
+  const config = useConfigModel();
+  return (vgName: string, moveToDrive: boolean) => {
+    putStorageModel(
+      moveToDrive
+        ? configModel.volumeGroup.convertToPartitionable(config, vgName)
+        : configModel.volumeGroup.remove(config, vgName),
+    );
+  };
+}
+
+type AddVolumeGroupFromPartitionableFn = (driveName: string) => void;
+
+function useAddVolumeGroupFromPartitionable(): AddVolumeGroupFromPartitionableFn {
+  const config = useConfigModel();
+  return (driveName: string) => {
+    putStorageModel(configModel.volumeGroup.addFromPartitionable(config, driveName));
+  };
+}
+
 export {
   configModelQuery,
   useConfigModel,
@@ -192,4 +238,9 @@ export {
   useAddMdRaid,
   useDeleteMdRaid,
   useAddMdRaidFromDrive,
+  useVolumeGroup,
+  useAddVolumeGroup,
+  useEditVolumeGroup,
+  useDeleteVolumeGroup,
+  useAddVolumeGroupFromPartitionable,
 };

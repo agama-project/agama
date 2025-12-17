@@ -23,11 +23,13 @@
 import React from "react";
 import { Flex } from "@patternfly/react-core";
 import { MenuButtonItem } from "~/components/core/MenuButton";
-import { useConvertToVolumeGroup } from "~/hooks/storage/volume-group";
 import { deviceBaseName, formattedPath } from "~/components/storage/utils";
 import { sprintf } from "sprintf-js";
 import { _, n_, formatList } from "~/i18n";
-import { useConfigModel } from "~/hooks/model/storage/config-model";
+import {
+  useConfigModel,
+  useAddVolumeGroupFromPartitionable,
+} from "~/hooks/model/storage/config-model";
 import configModel from "~/model/storage/config-model";
 import type { ConfigModel } from "~/model/storage/config-model";
 
@@ -35,7 +37,7 @@ export type NewVgMenuOptionProps = { device: ConfigModel.Drive | ConfigModel.MdR
 
 export default function NewVgMenuOption({ device }: NewVgMenuOptionProps): React.ReactNode {
   const config = useConfigModel();
-  const convertToVg = useConvertToVolumeGroup();
+  const convertToVg = useAddVolumeGroupFromPartitionable();
 
   if (device.filesystem) return;
 

@@ -36,11 +36,6 @@ import {
 } from "@patternfly/react-core";
 import { Page, SubtleContent } from "~/components/core";
 import { useAvailableDevices } from "~/hooks/model/system/storage";
-import {
-  useVolumeGroup,
-  useAddVolumeGroup,
-  useEditVolumeGroup,
-} from "~/hooks/storage/volume-group";
 import { deviceLabel } from "./utils";
 import { contentDescription, filesystemLabels, typeDescription } from "./utils/device";
 import { STORAGE as PATHS } from "~/routes/paths";
@@ -48,7 +43,12 @@ import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
 import { deviceSystems, isDrive } from "~/model/storage/device";
 import configModel from "~/model/storage/config-model";
-import { useConfigModel } from "~/hooks/model/storage/config-model";
+import {
+  useConfigModel,
+  useVolumeGroup,
+  useAddVolumeGroup,
+  useEditVolumeGroup,
+} from "~/hooks/model/storage/config-model";
 import type { ConfigModel, Data } from "~/model/storage/config-model";
 import type { Storage } from "~/model/system";
 
