@@ -22,7 +22,7 @@ use agama_utils::{
     actor::Message,
     api::{
         manager::{LanguageTag, LicenseContent},
-        Action, Config, IssueMap, Proposal, Status, SystemInfo,
+        Action, Config, IssueMap, Proposal, SystemInfo,
     },
 };
 use serde_json::Value;

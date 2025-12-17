@@ -118,6 +118,7 @@ dependencies = [
  "tokio-native-tls",
  "tokio-stream",
  "tokio-tungstenite 0.26.2",
+ "tracing",
  "url",
  "utoipa",
  "uuid",
