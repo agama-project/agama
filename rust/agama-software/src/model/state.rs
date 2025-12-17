@@ -249,7 +249,7 @@ impl<'a> SoftwareStateBuilder<'a> {
                     resolvables.add_or_replace(
                         &user_pattern.name,
                         ResolvableType::Pattern,
-                        ResolvableSelection::AutoSelected { optional: true },
+                        ResolvableSelection::Selected,
                     )
                 }
             }
@@ -332,7 +332,7 @@ impl ResolvablesState {
         selection: ResolvableSelection,
     ) {
         if let Some(entry) = self.0.get(&(name.to_string(), r#type)) {
-            if let ResolvableSelection::AutoSelected { optional: false } = entry {
+            if let ResolvableSelection::AutoSelected { optional: _ } = entry {
                 tracing::debug!("Could not modify the {name} state because it is mandatory.");
                 return;
             }
