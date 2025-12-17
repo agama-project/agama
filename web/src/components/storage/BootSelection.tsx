@@ -27,14 +27,13 @@ import { DevicesFormSelect } from "~/components/storage";
 import { Page, SubtleContent } from "~/components/core";
 import { deviceLabel, formattedPath } from "~/components/storage/utils";
 import { useCandidateDevices, useDevices } from "~/hooks/model/system/storage";
-import { useModel } from "~/hooks/storage/model";
-import { useConfigModel } from "~/hooks/model/storage";
-import { isDrive } from "~/storage/device";
 import {
+  useConfigModel,
   useSetBootDevice,
   useSetDefaultBootDevice,
-  useDisableBootConfig,
-} from "~/hooks/storage/boot";
+  useDisableBoot,
+} from "~/hooks/model/storage/config-model";
+import { isDrive } from "~/model/storage/device";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
@@ -77,21 +76,20 @@ export default function BootSelection() {
   const [state, setState] = useState<BootSelectionState>({ load: false });
   const navigate = useNavigate();
   const devices = useDevices();
-  const model = useModel();
   const config = useConfigModel();
   const allCandidateDevices = useCandidateDevices();
   const setBootDevice = useSetBootDevice();
   const setDefaultBootDevice = useSetDefaultBootDevice();
-  const disableBootConfig = useDisableBootConfig();
+  const disableBootConfig = useDisableBoot();
 
-  const candidateDevices = filteredCandidates(allCandidateDevices, model);
+  const candidateDevices = filteredCandidates(allCandidateDevices, config);
 
   useEffect(() => {
-    if (state.load || !model) return;
+    if (state.load || !config) return;
 
     const bootModel = config.boot;
-    const isDefaultBoot = configModel.hasDefaultBoot(config);
-    const bootDevice = configModel.bootDevice(config);
+    const isDefaultBoot = configModel.boot.isDefault(config);
+    const bootDevice = configModel.boot.findDevice(config);
     let selectedOption: string;
 
     if (!bootModel.configure) {
@@ -118,9 +116,9 @@ export default function BootSelection() {
       candidateDevices: candidates,
       selectedOption,
     });
-  }, [devices, candidateDevices, model, state.load, config]);
+  }, [devices, candidateDevices, config, state.load]);
 
-  if (!state.load || !model) return;
+  if (!state.load || !config) return;
 
   const onSubmit = async (e) => {
     e.preventDefault();

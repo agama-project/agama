@@ -23,7 +23,7 @@
 import React from "react";
 import { Alert, Button, Content, Stack, StackItem } from "@patternfly/react-core";
 import { _ } from "~/i18n";
-import { useConfigModel } from "~/hooks/model/storage";
+import { useConfigModel } from "~/hooks/model/storage/config-model";
 import { useReset } from "~/hooks/model/config/storage";
 
 /**

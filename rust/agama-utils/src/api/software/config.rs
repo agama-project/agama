@@ -21,14 +21,16 @@
 
 use std::collections::HashMap;
 
+use merge::Merge;
 use serde::{Deserialize, Serialize};
 
 /// User configuration for the localization of the target system.
 ///
 /// This configuration is provided by the user, so all the values are optional.
-#[derive(Clone, Debug, Default, Serialize, Deserialize, PartialEq, utoipa::ToSchema)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize, PartialEq, Merge, utoipa::ToSchema)]
 #[schema(as = software::UserConfig)]
 #[serde(rename_all = "camelCase")]
+#[merge(strategy = merge::option::recurse)]
 pub struct Config {
     /// Product related configuration
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -53,8 +55,9 @@ pub struct AddonSettings {
 }
 
 /// Software settings for installation
-#[derive(Clone, Debug, Default, Serialize, Deserialize, PartialEq, utoipa::ToSchema)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize, PartialEq, Merge, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
+#[merge(strategy = merge::option::overwrite_none)]
 pub struct ProductConfig {
     /// ID of the product to install (e.g., "ALP", "Tumbleweed", etc.)
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -80,8 +83,9 @@ impl ProductConfig {
 }
 
 /// Software settings for installation
-#[derive(Clone, Debug, Default, Serialize, Deserialize, PartialEq, utoipa::ToSchema)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize, PartialEq, Merge, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
+#[merge(strategy = merge::option::overwrite_none)]
 pub struct SoftwareConfig {
     /// List of user selected patterns to install.
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -182,7 +186,160 @@ pub struct RepositoryConfig {
     /// Whenever repository can be unsigned. Default is false
     #[serde(skip_serializing_if = "Option::is_none")]
     pub allow_unsigned: Option<bool>,
-    /// List of fingerprints for GPG keys used for repository signing. By default empty
+    /// List of fingerprints for GPG keys used for repository signing. If specified,
+    /// the new list of fingerprints overrides the existing ones instead of merging
+    /// with them. By default empty.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub gpg_fingerprints: Option<Vec<String>>,
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_merge_config() {
+        // The `updated` config that will be merged into
+        let mut updated = Config {
+            product: Some(ProductConfig {
+                id: Some("product1".to_string()),
+                registration_code: Some("reg1".to_string()),
+                registration_email: None,
+                registration_url: None,
+                addons: Some(vec![AddonSettings {
+                    id: "addon1".to_string(),
+                    version: Some("1.0".to_string()),
+                    registration_code: Some("addon_reg1".to_string()),
+                }]),
+            }),
+            software: Some(SoftwareConfig {
+                patterns: Some(PatternsConfig::PatternsList(vec!["pattern1".to_string()])),
+                packages: Some(vec!["package1".to_string()]),
+                extra_repositories: Some(vec![RepositoryConfig {
+                    alias: "repo1".to_string(),
+                    name: Some("Repo 1".to_string()),
+                    url: "http://repo1.com".to_string(),
+                    product_dir: None,
+                    enabled: Some(true),
+                    priority: Some(100),
+                    allow_unsigned: None,
+                    gpg_fingerprints: Some(vec!["fp1".to_string()]),
+                }]),
+                only_required: Some(false),
+            }),
+        };
+
+        // The `original` config to merge from
+        let original = Config {
+            product: Some(ProductConfig {
+                id: Some("product2".to_string()),
+                registration_code: None,
+                registration_email: Some("email2@a.com".to_string()),
+                registration_url: None,
+                addons: Some(vec![AddonSettings {
+                    id: "addon2".to_string(),
+                    version: None,
+                    registration_code: None,
+                }]),
+            }),
+            software: Some(SoftwareConfig {
+                patterns: Some(PatternsConfig::PatternsList(vec!["pattern2".to_string()])),
+                packages: None,
+                extra_repositories: Some(vec![RepositoryConfig {
+                    alias: "repo2".to_string(),
+                    name: None,
+                    url: "http://repo2.com".to_string(),
+                    product_dir: None,
+                    enabled: None,
+                    priority: None,
+                    allow_unsigned: Some(true),
+                    gpg_fingerprints: Some(vec!["fp2".to_string(), "fp3".to_string()]),
+                }]),
+                only_required: Some(true),
+            }),
+        };
+
+        // Perform the merge
+        updated.merge(original);
+
+        let expected_product = ProductConfig {
+            id: Some("product1".to_string()),
+            registration_code: Some("reg1".to_string()),
+            registration_email: Some("email2@a.com".to_string()),
+            registration_url: None,
+            addons: Some(vec![AddonSettings {
+                id: "addon1".to_string(),
+                version: Some("1.0".to_string()),
+                registration_code: Some("addon_reg1".to_string()),
+            }]),
+        };
+
+        let expected_software = SoftwareConfig {
+            patterns: Some(PatternsConfig::PatternsList(vec!["pattern1".to_string()])),
+            packages: Some(vec!["package1".to_string()]),
+            extra_repositories: Some(vec![RepositoryConfig {
+                alias: "repo1".to_string(),
+                name: Some("Repo 1".to_string()),
+                url: "http://repo1.com".to_string(),
+                product_dir: None,
+                enabled: Some(true),
+                priority: Some(100),
+                allow_unsigned: None,
+                gpg_fingerprints: Some(vec!["fp1".to_string()]),
+            }]),
+            only_required: Some(false),
+        };
+
+        assert_eq!(updated.product, Some(expected_product));
+        assert_eq!(updated.software, Some(expected_software));
+    }
+
+    #[test]
+    fn test_merge_config_with_nones() {
+        // Case 1: `updated` has Some, `original` has None
+        let mut updated = Config {
+            product: Some(ProductConfig {
+                id: Some("p1".to_string()),
+                ..Default::default()
+            }),
+            software: None,
+        };
+        let original = Config {
+            product: None,
+            software: Some(SoftwareConfig {
+                packages: Some(vec!["pkg1".to_string()]),
+                ..Default::default()
+            }),
+        };
+
+        let updated_clone = updated.clone();
+        let original_clone = original.clone();
+        updated.merge(original);
+
+        assert_eq!(updated.product, updated_clone.product);
+        assert_eq!(updated.software, original_clone.software);
+
+        // Case 2: `updated` has None, `original` has Some
+        let mut updated = Config {
+            product: None,
+            software: Some(SoftwareConfig {
+                packages: Some(vec!["pkg1".to_string()]),
+                ..Default::default()
+            }),
+        };
+        let original = Config {
+            product: Some(ProductConfig {
+                id: Some("p1".to_string()),
+                ..Default::default()
+            }),
+            software: None,
+        };
+
+        let updated_clone = updated.clone();
+        let original_clone = original.clone();
+        updated.merge(original);
+
+        assert_eq!(updated.product, original_clone.product);
+        assert_eq!(updated.software, updated_clone.software);
+    }
 }

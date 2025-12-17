@@ -52,21 +52,22 @@ import SelectTypeaheadCreatable from "~/components/core/SelectTypeaheadCreatable
 import AutoSizeText from "~/components/storage/AutoSizeText";
 import { deviceSize, filesystemLabel, parseToBytes } from "~/components/storage/utils";
 import configModel from "~/model/storage/config-model";
-import { useSolvedConfigModel, useConfigModel } from "~/hooks/model/storage";
-import { useMissingMountPaths } from "~/hooks/storage/model";
+import {
+  useSolvedConfigModel,
+  useConfigModel,
+  useMissingMountPaths,
+  useVolumeGroup,
+  useAddLogicalVolume,
+  useEditLogicalVolume,
+} from "~/hooks/model/storage/config-model";
 import { useVolumeTemplate } from "~/hooks/model/system/storage";
-import { useVolumeGroup } from "~/hooks/storage/volume-group";
-import { useAddLogicalVolume, useEditLogicalVolume } from "~/hooks/storage/logical-volume";
-import { addLogicalVolume, editLogicalVolume } from "~/storage/logical-volume";
-import { buildLogicalVolumeName } from "~/storage/api-model";
 import { STORAGE as PATHS } from "~/routes/paths";
 import { unique } from "radashi";
 import { compact } from "~/utils";
 import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
 import SizeModeSelect, { SizeMode, SizeRange } from "~/components/storage/SizeModeSelect";
-import type { ConfigModel } from "~/model/storage/config-model";
-import type { Data } from "~/storage";
+import type { ConfigModel, Data } from "~/model/storage/config-model";
 
 const NO_VALUE = "";
 const BTRFS_SNAPSHOTS = "btrfsSnapshots";
@@ -353,9 +354,9 @@ function useSolvedModel(value: FormValue): ConfigModel.Config | null {
 
   if (data.filesystem && !mountPointError) {
     if (mountPath) {
-      sparseModel = editLogicalVolume(config, vgName, mountPath, data);
+      sparseModel = configModel.logicalVolume.edit(config, vgName, mountPath, data);
     } else {
-      sparseModel = addLogicalVolume(config, vgName, data);
+      sparseModel = configModel.logicalVolume.add(config, vgName, data);
     }
   }
 
@@ -644,7 +645,7 @@ export default function LogicalVolumePage() {
       setAutoRefreshFilesystem(true);
       setAutoRefreshSize(true);
       setMountPoint(value);
-      setName(buildLogicalVolumeName(value));
+      setName(configModel.logicalVolume.generateName(value));
     }
   };
 

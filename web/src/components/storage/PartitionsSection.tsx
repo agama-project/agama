@@ -39,8 +39,7 @@ import Text from "~/components/core/Text";
 import MenuButton from "~/components/core/MenuButton";
 import MountPathMenuItem from "~/components/storage/MountPathMenuItem";
 import { STORAGE as PATHS } from "~/routes/paths";
-import { useDeletePartition } from "~/hooks/storage/partition";
-import { useDevice } from "~/hooks/storage/model";
+import { usePartitionable, useDeletePartition } from "~/hooks/model/storage/config-model";
 import * as driveUtils from "~/components/storage/utils/drive";
 import { generateEncodedPath } from "~/utils";
 import * as partitionUtils from "~/components/storage/utils/partition";
@@ -51,7 +50,7 @@ import { IconProps } from "../layout/Icon";
 import { sprintf } from "sprintf-js";
 import spacingStyles from "@patternfly/react-styles/css/utilities/Spacing/spacing";
 import { toggle } from "radashi";
-import partitionableModel from "~/model/storage/partitionable-model";
+import configModel from "~/model/storage/config-model";
 import type { ConfigModel } from "~/model/storage/config-model";
 
 type PartitionMenuItemProps = {
@@ -62,7 +61,7 @@ type PartitionMenuItemProps = {
 };
 
 const PartitionMenuItem = ({ device, mountPath, collection, index }: PartitionMenuItemProps) => {
-  const partition = partitionableModel.findPartition(device, mountPath);
+  const partition = configModel.partitionable.findPartition(device, mountPath);
   const editPath = generateEncodedPath(PATHS.editPartition, {
     collection,
     index,
@@ -222,7 +221,7 @@ export default function PartitionsSection({ collection, index }: PartitionsSecti
   const { uiState, setUiState } = useStorageUiState();
   const toggleId = useId();
   const contentId = useId();
-  const device = useDevice(collection, index);
+  const device = usePartitionable(collection, index);
   const uiIndex = `${collection[0]}${index}`;
   const expanded = uiState.get("expanded")?.split(",");
   const isExpanded = expanded?.includes(uiIndex);

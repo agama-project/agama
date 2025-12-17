@@ -25,16 +25,15 @@ import { ActionGroup, Content, Form } from "@patternfly/react-core";
 import { useNavigate, useParams } from "react-router";
 import { Page } from "~/components/core";
 import SpaceActionsTable, { SpacePolicyAction } from "~/components/storage/SpaceActionsTable";
-import { deviceChildren } from "~/components/storage/utils";
+import { createPartitionableLocation, deviceChildren } from "~/components/storage/utils";
 import { _ } from "~/i18n";
 import { useDevices } from "~/hooks/model/system/storage";
-import { useDrive as useDriveModel, useMdRaid as useMdRaidModel } from "~/hooks/storage/model";
-import { useSetSpacePolicy } from "~/hooks/storage/space-policy";
+import { usePartitionable, useSetSpacePolicy } from "~/hooks/model/storage/config-model";
 import { toDevice } from "./device-utils";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import { sprintf } from "sprintf-js";
 import type { Storage as Proposal } from "~/model/proposal";
-import type { ConfigModel } from "~/model/storage/config-model";
+import type { ConfigModel, Partitionable } from "~/model/storage/config-model";
 
 const partitionAction = (partition: ConfigModel.Partition) => {
   if (partition.delete) return "delete";
@@ -43,10 +42,12 @@ const partitionAction = (partition: ConfigModel.Partition) => {
   return undefined;
 };
 
-function useDeviceModelFromParams(): ConfigModel.Drive | ConfigModel.MdRaid | null {
+function useDeviceModelFromParams(): Partitionable.Device | null {
   const { collection, index } = useParams();
-  const deviceModel = collection === "drives" ? useDriveModel : useMdRaidModel;
-  return deviceModel(Number(index));
+  const location = createPartitionableLocation(collection, index);
+  const deviceModel = usePartitionable(location.collection, location.index);
+
+  return deviceModel;
 }
 
 /**
@@ -94,7 +95,10 @@ export default function SpacePolicySelection() {
 
   const onSubmit = (e) => {
     e.preventDefault();
-    setSpacePolicy(collection, index, { type: "custom", actions });
+    const location = createPartitionableLocation(collection, index);
+    if (!location) return;
+
+    setSpacePolicy(location.collection, location.index, { type: "custom", actions });
     navigate("..");
   };
 

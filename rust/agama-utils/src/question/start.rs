@@ -132,7 +132,7 @@ mod tests {
         // Set the configuration
         let config = Config {
             policy: Some(Policy::User),
-            answers: vec![rule_by_class],
+            answers: Some(vec![rule_by_class]),
         };
         questions.call(message::SetConfig::with(config)).await?;
 
