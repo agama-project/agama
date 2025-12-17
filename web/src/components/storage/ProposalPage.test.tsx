@@ -38,7 +38,7 @@ const disk: Storage.Device = {
   name: "/dev/vda",
   description: "Seagate disk",
   drive: { driver: ["ahci", "mmcblk"], bus: "IDE" },
-  block: { start: 1, size: 1e6 },
+  block: { start: 1, size: 1e6, shrinking: { supported: false } },
 };
 
 const proposalIssue: Issue = {

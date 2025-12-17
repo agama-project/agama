@@ -24,6 +24,7 @@ import React from "react";
 import { screen } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
 import ConfigEditor from "~/components/storage/ConfigEditor";
+import type { ConfigModel } from "~/model/storage/config-model";
 
 const mockUseModel = jest.fn();
 const mockUseReset = jest.fn();
@@ -43,25 +44,25 @@ jest.mock("./MdRaidEditor", () => () => <div>raid editor</div>);
 jest.mock("./VolumeGroupEditor", () => () => <div>volume group editor</div>);
 jest.mock("./ConfigureDeviceMenu", () => () => <div>add device</div>);
 
-const hasDrives: apiModel.Config = {
+const hasDrives: ConfigModel.Config = {
   drives: [{ name: "/dev/vda" }],
   mdRaids: [],
   volumeGroups: [],
 };
 
-const hasVolumeGroups: apiModel.Config = {
+const hasVolumeGroups: ConfigModel.Config = {
   drives: [],
   mdRaids: [],
   volumeGroups: [{ vgName: "/dev/system" }],
 };
 
-const hasBoth: apiModel.Config = {
+const hasBoth: ConfigModel.Config = {
   drives: [{ name: "/dev/vda" }],
   mdRaids: [],
   volumeGroups: [{ vgName: "/dev/system" }],
 };
 
-const hasNothing: apiModel.Config = {
+const hasNothing: ConfigModel.Config = {
   drives: [],
   mdRaids: [],
   volumeGroups: [],

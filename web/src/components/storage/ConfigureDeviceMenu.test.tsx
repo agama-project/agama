@@ -32,7 +32,12 @@ const vda: Storage.Device = {
   class: "drive",
   name: "/dev/vda",
   drive: { type: "disk", info: { sdCard: false, dellBoss: false } },
-  block: { start: 1, size: 1e12, systems: ["Windows 11", "openSUSE Leap 15.2"] },
+  block: {
+    start: 1,
+    size: 1e12,
+    systems: ["Windows 11", "openSUSE Leap 15.2"],
+    shrinking: { supported: false },
+  },
 };
 
 const vdb: Storage.Device = {
@@ -40,7 +45,12 @@ const vdb: Storage.Device = {
   class: "drive",
   name: "/dev/vdb",
   drive: { type: "disk", info: { sdCard: false, dellBoss: false } },
-  block: { start: 1, size: 1e6, systems: [] },
+  block: {
+    start: 1,
+    size: 1e6,
+    systems: [],
+    shrinking: { supported: false },
+  },
 };
 
 const vdaDrive: ConfigModel.Drive = {

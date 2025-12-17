@@ -39,7 +39,7 @@ const sda: Storage.Device = {
     transport: "usb",
     driver: ["ahci", "mmcblk"],
     info: {
-      dellBOSS: false,
+      dellBoss: false,
       sdCard: true,
     },
   },
@@ -48,8 +48,8 @@ const sda: Storage.Device = {
     size: 1024,
     active: true,
     encrypted: false,
-    recoverableSize: 0,
     systems: [],
+    shrinking: { supported: false },
   },
 };
 
@@ -64,6 +64,7 @@ const sdb: Storage.Device = {
     active: true,
     encrypted: false,
     systems: [],
+    shrinking: { supported: false },
   },
   drive: {
     model: "Samsung Evo 8 Pro",
@@ -72,7 +73,7 @@ const sdb: Storage.Device = {
     busId: "",
     transport: "",
     info: {
-      dellBOSS: false,
+      dellBoss: false,
       sdCard: false,
     },
   },
