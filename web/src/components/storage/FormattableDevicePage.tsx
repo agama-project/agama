@@ -48,11 +48,11 @@ import {
 import { Page, SelectWrapper as Select } from "~/components/core/";
 import { SelectWrapperProps as SelectProps } from "~/components/core/SelectWrapper";
 import SelectTypeaheadCreatable from "~/components/core/SelectTypeaheadCreatable";
-import { useAddFilesystem } from "~/hooks/storage/filesystem";
 import {
   useConfigModel,
   useMissingMountPaths,
   usePartitionable,
+  useSetFilesystem,
 } from "~/hooks/model/storage/config-model";
 import { useDevice, useVolumeTemplate } from "~/hooks/model/system/storage";
 import {
@@ -414,7 +414,7 @@ export default function FormattableDevicePage() {
   const { collection, index } = useParams();
   const device = useDeviceModelFromParams();
   const unusedMountPoints = useUnusedMountPoints();
-  const addFilesystem = useAddFilesystem();
+  const addFilesystem = useSetFilesystem();
 
   // Initializes the form values.
   React.useEffect(() => {

@@ -291,6 +291,19 @@ function useDeletePartition(): DeletePartitionFn {
     putStorageModel(configModel.partition.remove(config, collection, index, mountPath));
 }
 
+type SetFilesystemFn = (
+  collection: Partitionable.CollectionName,
+  index: number,
+  data: Data.Formattable,
+) => void;
+
+function useSetFilesystem(): SetFilesystemFn {
+  const config = useConfigModel();
+  return (collection: Partitionable.CollectionName, index: number, data: Data.Formattable) => {
+    putStorageModel(configModel.partitionable.setFilesystem(config, collection, index, data));
+  };
+}
+
 export {
   configModelQuery,
   useConfigModel,
@@ -319,4 +332,5 @@ export {
   useAddPartition,
   useEditPartition,
   useDeletePartition,
+  useSetFilesystem,
 };
