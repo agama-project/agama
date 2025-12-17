@@ -148,6 +148,33 @@ function useMdRaid(index: number): ConfigModel.MdRaid | null {
   return data;
 }
 
+type AddReusedMdRaidFn = (data: Data.MdRaid) => void;
+
+function useAddMdRaid(): AddReusedMdRaidFn {
+  const config = useConfigModel();
+  return (data: Data.MdRaid) => {
+    putStorageModel(configModel.mdRaid.add(config, data));
+  };
+}
+
+type DeleteMdRaidFn = (index: number) => void;
+
+function useDeleteMdRaid(): DeleteMdRaidFn {
+  const config = useConfigModel();
+  return (index: number) => {
+    putStorageModel(configModel.mdRaid.remove(config, index));
+  };
+}
+
+type AddMdRaidFromDriveFn = (oldName: string, raid: Data.MdRaid) => void;
+
+function useAddMdRaidFromDrive(): AddMdRaidFromDriveFn {
+  const config = useConfigModel();
+  return (oldName: string, raid: Data.MdRaid) => {
+    putStorageModel(configModel.mdRaid.addFromDrive(config, oldName, raid));
+  };
+}
+
 export {
   configModelQuery,
   useConfigModel,
@@ -162,4 +189,7 @@ export {
   useDeleteDrive,
   useAddDriveFromMdRaid,
   useMdRaid,
+  useAddMdRaid,
+  useDeleteMdRaid,
+  useAddMdRaidFromDrive,
 };
