@@ -28,6 +28,7 @@ macaddr = { version = "1.0.1", features = ["serde_std"] }
 fs-err = "3.2.0"
 fluent-uri = { version = "0.4.1", features = ["serde"] }
 tempfile = "3.23.0"
+merge = "0.2.0"
 
 [dev-dependencies]
 test-context = "0.4.1"

@@ -34,7 +34,7 @@ use agama_utils::{
 };
 use async_trait::async_trait;
 use gettextrs::gettext;
-use merge_struct::merge;
+use merge::Merge;
 use network::NetworkSystemClient;
 use serde_json::Value;
 use std::sync::Arc;
@@ -44,8 +44,6 @@ use tokio::sync::{broadcast, RwLock};
 pub enum Error {
     #[error("Missing product")]
     MissingProduct,
-    #[error("Cannot merge the configuration")]
-    MergeConfig,
     #[error(transparent)]
     Event(#[from] broadcast::error::SendError<Event>),
     #[error(transparent)]
@@ -543,18 +541,6 @@ impl MessageHandler<message::SetConfig> for Service {
     }
 }
 
-fn merge_network(mut config: Config, update_config: Config) -> Config {
-    if let Some(network) = &update_config.network {
-        if let Some(connections) = &network.connections {
-            if let Some(ref mut config_network) = config.network {
-                config_network.connections = Some(connections.clone());
-            }
-        }
-    }
-
-    config
-}
-
 #[async_trait]
 impl MessageHandler<message::UpdateConfig> for Service {
     /// Patches the config.
@@ -563,9 +549,9 @@ impl MessageHandler<message::UpdateConfig> for Service {
     /// config, then it keeps the values from the current config.
     async fn handle(&mut self, message: message::UpdateConfig) -> Result<(), Error> {
         self.check_stage(Stage::Configuring).await?;
-        let config = merge(&self.config, &message.config).map_err(|_| Error::MergeConfig)?;
-        let config = merge_network(config, message.config);
-        self.update_config(config).await
+        let mut new_config = message.config;
+        new_config.merge(self.config.clone());
+        self.update_config(new_config).await
     }
 }
 

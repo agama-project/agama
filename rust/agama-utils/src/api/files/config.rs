@@ -19,6 +19,7 @@
 // find current contact information at www.suse.com.
 
 use fluent_uri::Uri;
+use merge::Merge;
 use serde::{Deserialize, Serialize};
 
 use crate::api::files::{
@@ -27,16 +28,19 @@ use crate::api::files::{
     FileSourceError, WithFileSource,
 };
 
-#[derive(Clone, Debug, Default, Serialize, Deserialize, utoipa::ToSchema)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize, Merge, utoipa::ToSchema)]
 pub struct Config {
-    #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub files: Vec<UserFile>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[merge(strategy = merge::option::overwrite_none)]
+    pub files: Option<Vec<UserFile>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[merge(strategy = merge::option::overwrite_none)]
     pub scripts: Option<ScriptsConfig>,
 }
 
-#[derive(Clone, Debug, Default, Serialize, Deserialize, utoipa::ToSchema)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize, Merge, utoipa::ToSchema, PartialEq)]
 #[serde(rename_all = "camelCase")]
+#[merge(strategy = merge::option::overwrite_none)]
 pub struct ScriptsConfig {
     /// User-defined pre-installation scripts
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -86,5 +90,97 @@ impl ScriptsConfig {
             }
         }
         Ok(())
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::api::files::{BaseScript, FileSource};
+
+    use super::*;
+
+    fn base_script(name: &str) -> BaseScript {
+        BaseScript {
+            name: name.to_string(),
+            source: FileSource::Text {
+                content: "".to_string(),
+            },
+        }
+    }
+
+    fn build_pre_script(name: &str) -> PreScript {
+        PreScript {
+            base: base_script(name),
+        }
+    }
+
+    #[test]
+    fn test_merge_with_default_scripts() {
+        let mut new_config = ScriptsConfig {
+            pre: Some(vec![build_pre_script("test")]),
+            ..Default::default()
+        };
+        new_config.merge(Default::default());
+
+        let pre_scripts = new_config.pre.unwrap();
+        assert_eq!(pre_scripts.len(), 1);
+    }
+
+    #[test]
+    fn test_merge_scripts() {
+        let original = ScriptsConfig {
+            pre: Some(vec![build_pre_script("test")]),
+            ..Default::default()
+        };
+
+        let mut updated = ScriptsConfig {
+            pre: Some(vec![build_pre_script("updated")]),
+            ..Default::default()
+        };
+
+        updated.merge(original);
+        let pre_scripts = updated.pre.unwrap();
+        assert_eq!(pre_scripts.len(), 1);
+        let script = pre_scripts.get(0).unwrap();
+        assert_eq!(&script.base.name, "updated");
+    }
+
+    #[test]
+    fn test_merge_files_config() {
+        let mut updated = Config {
+            files: Some(vec![UserFile {
+                destination: "/foo".to_string(),
+                ..Default::default()
+            }]),
+            scripts: Some(ScriptsConfig {
+                pre: Some(vec![build_pre_script("updated_pre")]),
+                ..Default::default()
+            }),
+        };
+
+        let original = Config {
+            files: Some(vec![UserFile {
+                destination: "/bar".to_string(),
+                ..Default::default()
+            }]),
+            scripts: Some(ScriptsConfig {
+                pre: Some(vec![build_pre_script("original_pre")]),
+                post: Some(vec![]),
+                ..Default::default()
+            }),
+        };
+
+        let updated_clone = updated.clone();
+        updated.merge(original);
+
+        // Assert for files (overwrite_none)
+        // `updated.files` is Some, so it is not overwritten.
+        assert_eq!(updated.files, updated_clone.files);
+
+        // Assert for scripts (overwrite_none on Option<ScriptsConfig>)
+        // `updated.scripts` is Some, so it is not overwritten.
+        assert_eq!(updated.scripts, updated_clone.scripts);
+        // The inner fields of `updated.scripts` should not have changed.
+        assert!(updated.scripts.as_ref().unwrap().post.is_none());
     }
 }

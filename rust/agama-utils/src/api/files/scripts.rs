@@ -78,7 +78,7 @@ pub enum ScriptsGroup {
     Init,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize, utoipa::ToSchema)]
+#[derive(Clone, Debug, Serialize, Deserialize, utoipa::ToSchema, PartialEq)]
 pub struct BaseScript {
     pub name: String,
     #[serde(flatten)]
@@ -153,7 +153,7 @@ impl Script {
 }
 
 /// Represents a script that runs before the installation starts.
-#[derive(Clone, Debug, Serialize, Deserialize, utoipa::ToSchema)]
+#[derive(Clone, Debug, Serialize, Deserialize, utoipa::ToSchema, PartialEq)]
 pub struct PreScript {
     #[serde(flatten)]
     pub base: BaseScript,
@@ -179,7 +179,7 @@ impl TryFrom<Script> for PreScript {
 impl_with_file_source!(PreScript);
 
 /// Represents a script that runs after partitioning.
-#[derive(Clone, Debug, Serialize, Deserialize, utoipa::ToSchema)]
+#[derive(Clone, Debug, Serialize, Deserialize, utoipa::ToSchema, PartialEq)]
 pub struct PostPartitioningScript {
     #[serde(flatten)]
     pub base: BaseScript,
@@ -205,7 +205,7 @@ impl TryFrom<Script> for PostPartitioningScript {
 impl_with_file_source!(PostPartitioningScript);
 
 /// Represents a script that runs after the installation finishes.
-#[derive(Clone, Debug, Serialize, Deserialize, utoipa::ToSchema)]
+#[derive(Clone, Debug, Serialize, Deserialize, utoipa::ToSchema, PartialEq)]
 pub struct PostScript {
     #[serde(flatten)]
     pub base: BaseScript,
@@ -235,7 +235,7 @@ impl_with_file_source!(PostScript);
 
 /// Represents a script that runs during the first boot of the target system,
 /// once the installation is finished.
-#[derive(Clone, Debug, Serialize, Deserialize, utoipa::ToSchema)]
+#[derive(Clone, Debug, Serialize, Deserialize, utoipa::ToSchema, PartialEq)]
 pub struct InitScript {
     #[serde(flatten)]
     pub base: BaseScript,

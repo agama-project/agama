@@ -183,7 +183,11 @@ impl MessageHandler<message::SetConfig> for Service {
             self.add_scripts(scripts.clone()).await?;
         }
 
-        self.files = config.files;
+        if let Some(files) = config.files {
+            self.files = files;
+        } else {
+            self.files.clear();
+        }
 
         Ok(())
     }
