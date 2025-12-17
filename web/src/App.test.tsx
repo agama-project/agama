@@ -31,7 +31,7 @@ import { Product } from "~/types/software";
 import { PATHS } from "~/router";
 import { PRODUCT } from "~/routes/paths";
 import type { Config } from "~/api";
-import type { Progress, State } from "~/model/status";
+import type { Progress, Stage } from "~/model/status";
 import App from "./App";
 import { System } from "~/model/system/network";
 
@@ -51,7 +51,7 @@ const network: System = {
   accessPoints: [],
 };
 const mockProgresses: jest.Mock<Progress[]> = jest.fn();
-const mockState: jest.Mock<State> = jest.fn();
+const mockState: jest.Mock<Stage> = jest.fn();
 const mockSelectedProduct: jest.Mock<Config["product"]> = jest.fn();
 
 jest.mock("~/hooks/api", () => ({
@@ -62,7 +62,7 @@ jest.mock("~/hooks/api", () => ({
   }),
 
   useStatus: (): ReturnType<typeof useStatus> => ({
-    state: mockState(),
+    stage: mockState(),
     progresses: mockProgresses(),
   }),
 

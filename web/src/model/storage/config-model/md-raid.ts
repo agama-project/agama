@@ -20,32 +20,31 @@
  * find current contact information at www.suse.com.
  */
 
-import { switchSearched } from "~/storage/search";
-import { copyApiModel } from "~/storage/api-model";
-import type { ConfigModel } from "~/model/storage/config-model";
-import type { Data } from "~/storage";
+import configModel from "~/model/storage/config-model";
+import type { ConfigModel, Data } from "~/model/storage/config-model";
 
-function addDrive(config: ConfigModel.Config, data: Data.Drive): ConfigModel.Config {
-  config = copyApiModel(config);
-  config.drives ||= [];
-  config.drives.push(data);
+function find(config: ConfigModel.Config, index: number): ConfigModel.MdRaid | null {
+  return config.mdRaids?.[index] ?? null;
+}
+
+function add(config: ConfigModel.Config, data: Data.MdRaid): ConfigModel.Config {
+  config = configModel.clone(config);
+  config.mdRaids ||= [];
+  config.mdRaids.push(data);
 
   return config;
 }
 
-function deleteDrive(config: ConfigModel.Config, name: string): ConfigModel.Config {
-  config = copyApiModel(config);
-  config.drives = config.drives.filter((d) => d.name !== name);
-
-  return config;
-}
-
-function switchToDrive(
+function addFromDrive(
   config: ConfigModel.Config,
   oldName: string,
-  drive: Data.Drive,
+  raid: Data.MdRaid,
 ): ConfigModel.Config {
-  return switchSearched(config, oldName, drive.name, "drives");
+  return configModel.partitionable.convert(config, oldName, raid.name, "mdRaids");
 }
 
-export { addDrive, deleteDrive, switchToDrive };
+function remove(config: ConfigModel.Config, index: number): ConfigModel.Config {
+  return configModel.partitionable.remove(config, "mdRaids", index);
+}
+
+export default { find, add, addFromDrive, remove };

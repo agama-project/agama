@@ -47,23 +47,25 @@ import Icon, { IconProps } from "~/components/layout/Icon";
 import { STORAGE as PATHS } from "~/routes/paths";
 import { baseName, formattedPath } from "~/components/storage/utils";
 import { contentDescription } from "~/components/storage/utils/volume-group";
-import { useDeleteVolumeGroup } from "~/hooks/storage/volume-group";
-import { useDeleteLogicalVolume } from "~/hooks/storage/logical-volume";
 import { generateEncodedPath } from "~/utils";
 import { isEmpty } from "radashi";
 import { sprintf } from "sprintf-js";
 import { _, n_, formatList } from "~/i18n";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import spacingStyles from "@patternfly/react-styles/css/utilities/Spacing/spacing";
-import { useConfigModel } from "~/hooks/model/storage";
-import volumeGroupModel from "~/model/storage/volume-group-model";
+import {
+  useConfigModel,
+  useDeleteVolumeGroup,
+  useDeleteLogicalVolume,
+} from "~/hooks/model/storage/config-model";
+import configModel from "~/model/storage/config-model";
 import type { ConfigModel } from "~/model/storage/config-model";
 
 const DeleteVgOption = ({ vg }: { vg: ConfigModel.VolumeGroup }) => {
   const config = useConfigModel();
   const deleteVolumeGroup = useDeleteVolumeGroup();
   const lvs = vg.logicalVolumes.map((lv) => formattedPath(lv.mountPath));
-  const targetDevices = volumeGroupModel.filterTargetDevices(vg, config);
+  const targetDevices = configModel.volumeGroup.filterTargetDevices(config, vg);
   const convert = targetDevices.length === 1 && !!lvs.length;
   let description;
 

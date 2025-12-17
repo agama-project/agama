@@ -24,7 +24,7 @@ import React from "react";
 import { Content } from "@patternfly/react-core";
 import { deviceLabel } from "~/components/storage/utils";
 import { useAvailableDevices, useDevices, useIssues } from "~/hooks/model/system/storage";
-import { useConfigModel } from "~/hooks/model/storage";
+import { useConfigModel } from "~/hooks/model/storage/config-model";
 import { _ } from "~/i18n";
 import type { Storage } from "~/model/system";
 import type { ConfigModel } from "~/model/storage/config-model";

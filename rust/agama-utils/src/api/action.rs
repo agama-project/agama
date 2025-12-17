@@ -19,9 +19,9 @@
 // find current contact information at www.suse.com.
 
 use crate::api::l10n;
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Deserialize, utoipa::ToSchema)]
+#[derive(Debug, Serialize, Deserialize, utoipa::ToSchema)]
 pub enum Action {
     #[serde(rename = "activateStorage")]
     ActivateStorage,

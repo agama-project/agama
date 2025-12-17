@@ -51,29 +51,30 @@ import SizeModeSelect, { SizeMode, SizeRange } from "~/components/storage/SizeMo
 import AlertOutOfSync from "~/components/core/AlertOutOfSync";
 import ResourceNotFound from "~/components/core/ResourceNotFound";
 import configModel from "~/model/storage/config-model";
-import { useAddPartition, useEditPartition } from "~/hooks/storage/partition";
-import {
-  useMissingMountPaths,
-  useDrive as useDriveModel,
-  useMdRaid as useMdRaidModel,
-} from "~/hooks/storage/model";
-import {
-  addPartition as addPartitionHelper,
-  editPartition as editPartitionHelper,
-} from "~/storage/partition";
 import { useVolumeTemplate, useDevice } from "~/hooks/model/system/storage";
 
-import { useSolvedConfigModel } from "~/queries/storage/config-model";
-import { useConfigModel } from "~/hooks/model/storage";
-import { findDevice } from "~/storage/api-model";
-import { deviceSize, deviceLabel, filesystemLabel, parseToBytes } from "~/components/storage/utils";
+import {
+  useConfigModel,
+  useSolvedConfigModel,
+  useMissingMountPaths,
+  usePartitionable,
+  useAddPartition,
+  useEditPartition,
+} from "~/hooks/model/storage/config-model";
+import {
+  deviceSize,
+  deviceLabel,
+  filesystemLabel,
+  parseToBytes,
+  findPartitionableDevice,
+  createPartitionableLocation,
+} from "~/components/storage/utils";
 import { _ } from "~/i18n";
 import { sprintf } from "sprintf-js";
 import { STORAGE as PATHS, STORAGE } from "~/routes/paths";
 import { isUndefined, unique } from "radashi";
 import { compact } from "~/utils";
-import partitionableModel from "~/model/storage/partitionable-model";
-import type { ConfigModel } from "~/model/storage/config-model";
+import type { ConfigModel, Partitionable } from "~/model/storage/config-model";
 import type { Storage as System } from "~/model/system";
 
 const NO_VALUE = "";
@@ -196,10 +197,12 @@ function toFormValue(partitionConfig: ConfigModel.Partition): FormValue {
   };
 }
 
-function useDeviceModelFromParams() {
+function useDeviceModelFromParams(): Partitionable.Device | null {
   const { collection, index } = useParams();
-  const deviceModel = collection === "drives" ? useDriveModel : useMdRaidModel;
-  return deviceModel(Number(index));
+  const location = createPartitionableLocation(collection, index);
+  const deviceModel = usePartitionable(location.collection, location.index);
+
+  return deviceModel;
 }
 
 function useDeviceFromParams(): System.Device {
@@ -230,7 +233,7 @@ function useDefaultFilesystem(mountPoint: string): string {
 function useInitialPartitionConfig(): ConfigModel.Partition | null {
   const { partitionId: mountPath } = useParams();
   const device = useDeviceModelFromParams();
-  return mountPath && device ? partitionableModel.findPartition(device, mountPath) : null;
+  return mountPath && device ? configModel.partitionable.findPartition(device, mountPath) : null;
 }
 
 function useInitialFormValue(): FormValue | null {
@@ -257,7 +260,7 @@ function useUnusedPartitions(): System.Device[] {
   const allPartitions = device.partitions || [];
   const initialPartitionConfig = useInitialPartitionConfig();
   const deviceModel = useDeviceModelFromParams();
-  const configuredPartitionConfigs = partitionableModel
+  const configuredPartitionConfigs = configModel.partitionable
     .filterConfiguredExistingPartitions(deviceModel)
     .filter((p) => p.name !== initialPartitionConfig?.name)
     .map((p) => p.name);
@@ -408,15 +411,20 @@ function useSolvedModel(value: FormValue): ConfigModel.Config | null {
 
   if (device && !errors.length && value.target === NEW_PARTITION && value.filesystem !== NO_VALUE) {
     if (initialPartitionConfig) {
-      sparseModel = editPartitionHelper(
+      sparseModel = configModel.partition.edit(
         model,
         modelCollection,
-        index,
+        Number(index),
         initialPartitionConfig.mountPath,
         partitionConfig,
       );
     } else {
-      sparseModel = addPartitionHelper(model, modelCollection, index, partitionConfig);
+      sparseModel = configModel.partition.add(
+        model,
+        modelCollection,
+        Number(index),
+        partitionConfig,
+      );
     }
   }
 
@@ -425,12 +433,12 @@ function useSolvedModel(value: FormValue): ConfigModel.Config | null {
 }
 
 function useSolvedPartitionConfig(value: FormValue): ConfigModel.Partition | undefined {
-  const model = useSolvedModel(value);
   const { collection, index } = useParams();
+  const model = useSolvedModel(value);
   if (!model) return;
 
-  const container = findDevice(model, collection, index);
-  return container?.partitions?.find((p) => p.mountPath === value.mountPoint);
+  const device = findPartitionableDevice(model, collection, index);
+  return device?.partitions?.find((p) => p.mountPath === value.mountPoint);
 }
 
 function useSolvedSizes(value: FormValue): SizeRange {
@@ -802,11 +810,18 @@ const PartitionPageForm = () => {
 
   const onSubmit = () => {
     const partitionConfig = toPartitionConfig(value);
-    const modelCollection = collection === "drives" ? "drives" : "mdRaids";
+    const partitionableLocation = createPartitionableLocation(collection, index);
+    if (!partitionableLocation) return;
 
     if (initialValue)
-      editPartition(modelCollection, index, initialValue.mountPoint, partitionConfig);
-    else addPartition(modelCollection, index, partitionConfig);
+      editPartition(
+        partitionableLocation.collection,
+        partitionableLocation.index,
+        initialValue.mountPoint,
+        partitionConfig,
+      );
+    else
+      addPartition(partitionableLocation.collection, partitionableLocation.index, partitionConfig);
 
     navigate({ pathname: PATHS.root, search: location.search });
   };

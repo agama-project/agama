@@ -20,8 +20,10 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useId } from "react";
+import React, { useEffect, useId, useState } from "react";
 import {
+  Alert,
+  Backdrop,
   Button,
   ButtonProps,
   Card,
@@ -31,6 +33,7 @@ import {
   CardHeader,
   CardHeaderProps,
   CardProps,
+  Content as PFContent,
   Divider,
   Flex,
   FlexItem,
@@ -41,6 +44,7 @@ import {
   Split,
   Title,
   TitleProps,
+  Spinner,
 } from "@patternfly/react-core";
 import { ProductRegistrationAlert } from "~/components/product";
 import Link, { LinkProps } from "~/components/core/Link";
@@ -50,6 +54,10 @@ import { useLocation, useNavigate } from "react-router";
 import { isEmpty, isObject } from "radashi";
 import { SIDE_PATHS } from "~/routes/paths";
 import { _ } from "~/i18n";
+import { sprintf } from "sprintf-js";
+import { onProposalUpdated } from "~/hooks/model/proposal";
+import { useStatus } from "~/hooks/model/status";
+import type { Scope } from "~/model/status";
 
 /**
  * Props accepted by Page.Section
@@ -286,56 +294,145 @@ const Submit = ({ children, ...props }: SubmitActionProps) => {
  *
  * @see [Patternfly Page/PageSection](https://www.patternfly.org/components/page#pagesection)
  */
-const Content = ({ children, ...pageSectionProps }: React.PropsWithChildren<PageSectionProps>) => {
+const Content = ({ children, ...pageSectionProps }: PageSectionProps) => {
   const location = useLocation();
   const mountRegistrationAlert = !SIDE_PATHS.includes(location.pathname);
 
   return (
-    <>
-      <PageSection hasBodyWrapper={false} isFilled component="div" {...pageSectionProps}>
-        {mountRegistrationAlert && <ProductRegistrationAlert />}
-        {children}
-      </PageSection>
-    </>
+    <PageSection hasBodyWrapper={false} isFilled component="div" {...pageSectionProps}>
+      {mountRegistrationAlert && <ProductRegistrationAlert />}
+      {children}
+    </PageSection>
   );
 };
 
 /**
- * Component for structuring an Agama page, built on top of PF/Page/PageGroup.
+ * Props for the ProgressBackdrop component.
+ */
+type ProgressBackdropProps = {
+  /**
+   * Optional scope identifier to filter which progresses trigger the backgrop
+   * overlay. If undefined or no matching tasks exist, the backdrop won't be
+   * displayed.
+   */
+  progressScope?: Scope;
+};
+
+/**
+ * Internal component that blocks user by displaying a blurred overlay with a
+ * progress information when progresses matching the specified scope are active.
  *
- * @see [Patternfly Page/PageGroup](https://www.patternfly.org/components/page#pagegroup)
+ * @remarks
+ * The component uses two mechanisms to manage its visibility:
+ *   - Monitors active tasks from useStatus() that match the progressScope
+ *   - Listens to proposal update events to automatically unblock when
+ *     operations complete
+ *
+ * The backdrop remains visible until a proposal update event with a timestamp
+ * newer than when the progress finished arrives, ensuring the UI doesn't
+ * unblock prematurely.
+ */
+const ProgressBackdrop = ({ progressScope }: ProgressBackdropProps): React.ReactNode => {
+  const { progresses: tasks } = useStatus();
+  const [isBlocked, setIsBlocked] = useState(false);
+  const [progressFinishedAt, setProgressFinishedAt] = useState<number | null>(null);
+  const progress = !isEmpty(progressScope) && tasks.find((t) => t.scope === progressScope);
+
+  useEffect(() => {
+    if (!progress && isBlocked && !progressFinishedAt) {
+      setProgressFinishedAt(Date.now());
+    }
+  }, [progress, isBlocked, progressFinishedAt]);
+
+  useEffect(() => {
+    return onProposalUpdated((detail) => {
+      if (detail.completedAt > progressFinishedAt) {
+        setIsBlocked(false);
+        setProgressFinishedAt(null);
+      }
+    });
+  }, [progressFinishedAt]);
+
+  if (progress && !isBlocked) {
+    setIsBlocked(true);
+    setProgressFinishedAt(null);
+  }
+
+  if (!isBlocked) return null;
+
+  return (
+    <Backdrop className="agm-main-content-overlay" role="alert" aria-labelledby="progressStatus">
+      <Alert
+        isPlain
+        customIcon={<Spinner size="sm" aria-hidden />}
+        title={
+          <PFContent id="progressStatus">
+            {progress ? (
+              <>
+                {progress.step}{" "}
+                <small>{sprintf(_("(step %s of %s)"), progress.index, progress.size)}</small>
+              </>
+            ) : (
+              <>{_("Refreshing data...")}</>
+            )}
+          </PFContent>
+        }
+      />
+    </Backdrop>
+  );
+};
+
+/**
+ * A component for creating an Agama page, built on top of PF/Page/PageGroup.
+ *
+ * It serves as the root container for all Agama pages and supports optional
+ * progress tracking.
+ *
+ * @see {@link https://www.patternfly.org/components/page#pagegroup | Patternfly Page/PageGroup}
  *
  * @example
- *   <Page>
- *     <Page.Header>
- *       <h2>{_("Software")}</h2>
- *     </Page.Header>
+ * Basic page without progress tracking
+ * ```tsx
+ * <Page>
+ *   <Page.Header>
+ *     <h2>{_("Software")}</h2>
+ *   </Page.Header>
+ *   <Page.Content>
+ *     <p>Page content here</p>
+ *   </Page.Content>
+ * </Page>
+ * ```
  *
- *     <Page.Content>
- *       <Stack hasGutter>
- *         <IssuesHint issues={issues} />
- *
- *         <Page.Section title="Selected patterns" >
- *           {patterns.length === 0 ? <NoPatterns /> : <SelectedPatterns patterns={patterns} />}
- *         </Page.Section>
- *
- *         <Page.Section aria-label="Used size">
- *           <UsedSize size={proposal.size} />
- *         </Page.Section>
- *       </Stack>
- *       <Page.Actions>
- *         <Page.Back />
- *       </Page.Actions>
- *     </Page.Content>
- *   </Page>
+ * @example
+ * Page with progress tracking for software operations
+ * ```tsx
+ * <Page progressScope="software">
+ *   <Page.Header>
+ *     <h2>{_("Software")}</h2>
+ *   </Page.Header>
+ *   <Page.Content>
+ *     <Stack hasGutter>
+ *       <IssuesHint issues={issues} />
+ *       <Page.Section title="Selected patterns">
+ *         {patterns.length === 0 ? <NoPatterns /> : <SelectedPatterns patterns={patterns} />}
+ *       </Page.Section>
+ *       <Page.Section aria-label="Used size">
+ *         <UsedSize size={proposal.size} />
+ *       </Page.Section>
+ *     </Stack>
+ *   </Page.Content>
+ * </Page>
+ * ```
  */
 const Page = ({
   children,
+  progressScope,
   ...pageGroupProps
-}: React.PropsWithChildren<PageGroupProps>): React.ReactNode => {
+}: PageGroupProps & ProgressBackdropProps): React.ReactNode => {
   return (
     <PageGroup {...pageGroupProps} tabIndex={-1} id="main-content">
       {children}
+      <ProgressBackdrop progressScope={progressScope} />
     </PageGroup>
   );
 };

@@ -26,7 +26,7 @@ import { ActionGroup, Alert, Checkbox, Content, Form } from "@patternfly/react-c
 import { NestedContent, Page, PasswordAndConfirmationInput } from "~/components/core";
 import PasswordCheck from "~/components/users/PasswordCheck";
 import { useEncryptionMethods } from "~/hooks/model/system/storage";
-import { useEncryption } from "~/queries/storage/config-model";
+import { useConfigModel, useSetEncryption } from "~/hooks/model/storage/config-model";
 import { isEmpty } from "radashi";
 import { _ } from "~/i18n";
 import type { ConfigModel } from "~/model/storage/config-model";
@@ -37,8 +37,9 @@ import type { ConfigModel } from "~/model/storage/config-model";
 export default function EncryptionSettingsPage() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { encryption: encryptionConfig, enable, disable } = useEncryption();
   const methods = useEncryptionMethods();
+  const configModel = useConfigModel();
+  const setEncryption = useSetEncryption();
 
   const [errors, setErrors] = useState([]);
   const [isEnabled, setIsEnabled] = useState(false);
@@ -49,12 +50,12 @@ export default function EncryptionSettingsPage() {
   const formId = "encryptionSettingsForm";
 
   useEffect(() => {
-    if (encryptionConfig) {
+    if (configModel?.encryption) {
       setIsEnabled(true);
-      setMethod(encryptionConfig.method);
-      setPassword(encryptionConfig.password || "");
+      setMethod(configModel.encryption.method);
+      setPassword(configModel.encryption.password || "");
     }
-  }, [encryptionConfig]);
+  }, [configModel]);
 
   const changePassword = (_, v: string) => setPassword(v);
 
@@ -81,7 +82,7 @@ export default function EncryptionSettingsPage() {
       return;
     }
 
-    const commit = () => (isEnabled ? enable(method, password) : disable());
+    const commit = () => (isEnabled ? setEncryption({ method, password }) : setEncryption(null));
 
     commit();
     navigate({ pathname: "..", search: location.search });
@@ -128,7 +129,7 @@ at the new file systems, including data, programs, and system files.",
             <NestedContent margin="mxLg">
               <PasswordAndConfirmationInput
                 inputRef={passwordRef}
-                initialValue={encryptionConfig?.password}
+                initialValue={configModel?.encryption?.password}
                 value={password}
                 onChange={changePassword}
                 isDisabled={!isEnabled}

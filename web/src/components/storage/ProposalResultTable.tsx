@@ -29,13 +29,13 @@ import {
   toDevice,
   toPartitionSlot,
 } from "~/components/storage/device-utils";
-import DevicesManager from "~/storage/devices-manager";
+import DevicesManager from "~/model/storage/devices-manager";
 import { TreeTable } from "~/components/core";
 import { _ } from "~/i18n";
 import { sprintf } from "sprintf-js";
 import { deviceChildren, deviceSize } from "~/components/storage/utils";
 import { TreeTableColumn } from "~/components/core/TreeTable";
-import { useConfigModel } from "~/hooks/model/storage";
+import { useConfigModel } from "~/hooks/model/storage/config-model";
 import type { Storage as Proposal } from "~/model/proposal";
 
 type TableItem = Proposal.Device | Proposal.UnusedSlot;

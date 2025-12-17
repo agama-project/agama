@@ -20,30 +20,45 @@
  * find current contact information at www.suse.com.
  */
 
-import { copyApiModel, buildLogicalVolume } from "~/storage/api-model";
-import type { ConfigModel } from "~/model/storage/config-model";
-import type { Data } from "~/storage";
+import configModel from "~/model/storage/config-model";
+import { createFilesystem, createSize } from "~/model/storage/config-model/utils";
+import type { ConfigModel, Data } from "~/model/storage/config-model";
 
-function findVolumeGroupIndex(config: ConfigModel.Config, vgName: string): number {
-  return (config.volumeGroups || []).findIndex((v) => v.vgName === vgName);
-}
-
-function findLogicalVolumeIndex(volumeGroup: ConfigModel.VolumeGroup, mountPath: string): number {
+function findIndex(volumeGroup: ConfigModel.VolumeGroup, mountPath: string): number {
   return (volumeGroup.logicalVolumes || []).findIndex((l) => l.mountPath === mountPath);
 }
 
-function addLogicalVolume(
+function generateName(mountPath: string): string {
+  return mountPath === "/" ? "root" : mountPath.split("/").pop();
+}
+
+function create(data: Data.LogicalVolume): ConfigModel.LogicalVolume {
+  return {
+    ...data,
+    filesystem: data.filesystem ? createFilesystem(data.filesystem) : undefined,
+    size: data.size ? createSize(data.size) : undefined,
+  };
+}
+
+function createFromPartition(partition: ConfigModel.Partition): ConfigModel.LogicalVolume {
+  return {
+    ...partition,
+    lvName: partition.mountPath ? generateName(partition.mountPath) : undefined,
+  };
+}
+
+function add(
   config: ConfigModel.Config,
   vgName: string,
   data: Data.LogicalVolume,
 ): ConfigModel.Config {
-  config = copyApiModel(config);
+  config = configModel.clone(config);
 
-  const vgIndex = findVolumeGroupIndex(config, vgName);
+  const vgIndex = configModel.volumeGroup.findIndex(config, vgName);
   if (vgIndex === -1) return config;
 
   const volumeGroup = config.volumeGroups[vgIndex];
-  const logicalVolume = buildLogicalVolume(data);
+  const logicalVolume = create(data);
 
   volumeGroup.logicalVolumes ||= [];
   volumeGroup.logicalVolumes.push(logicalVolume);
@@ -51,43 +66,39 @@ function addLogicalVolume(
   return config;
 }
 
-function editLogicalVolume(
+function edit(
   config: ConfigModel.Config,
   vgName: string,
   mountPath: string,
   data: Data.LogicalVolume,
 ): ConfigModel.Config {
-  config = copyApiModel(config);
+  config = configModel.clone(config);
 
-  const vgIndex = findVolumeGroupIndex(config, vgName);
+  const vgIndex = configModel.volumeGroup.findIndex(config, vgName);
   if (vgIndex === -1) return config;
 
   const volumeGroup = config.volumeGroups[vgIndex];
 
-  const lvIndex = findLogicalVolumeIndex(volumeGroup, mountPath);
+  const lvIndex = findIndex(volumeGroup, mountPath);
   if (lvIndex === -1) return config;
 
   const oldLogicalVolume = volumeGroup.logicalVolumes[lvIndex];
-  const newLogicalVolume = { ...oldLogicalVolume, ...buildLogicalVolume(data) };
+  const newLogicalVolume = { ...oldLogicalVolume, ...create(data) };
 
   volumeGroup.logicalVolumes.splice(lvIndex, 1, newLogicalVolume);
 
   return config;
 }
 
-function deleteLogicalVolume(
-  config: ConfigModel.Config,
-  vgName: string,
-  mountPath: string,
-): ConfigModel.Config {
-  config = copyApiModel(config);
+function remove(config: ConfigModel.Config, vgName: string, mountPath: string): ConfigModel.Config {
+  config = configModel.clone(config);
 
-  const vgIndex = findVolumeGroupIndex(config, vgName);
+  const vgIndex = configModel.volumeGroup.findIndex(config, vgName);
   if (vgIndex === -1) return config;
 
   const volumeGroup = config.volumeGroups[vgIndex];
 
-  const lvIndex = findLogicalVolumeIndex(volumeGroup, mountPath);
+  const lvIndex = findIndex(volumeGroup, mountPath);
   if (lvIndex === -1) return config;
 
   volumeGroup.logicalVolumes.splice(lvIndex, 1);
@@ -95,4 +106,4 @@ function deleteLogicalVolume(
   return config;
 }
 
-export { addLogicalVolume, editLogicalVolume, deleteLogicalVolume };
+export default { generateName, create, createFromPartition, add, edit, remove };

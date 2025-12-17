@@ -22,16 +22,26 @@
 
 import React from "react";
 import { screen, within } from "@testing-library/react";
-import { mockNavigateFn, mockRoutes, plainRender, installerRender } from "~/test-utils";
-import { Page } from "~/components/core";
-import { _ } from "~/i18n";
+import { installerRender, mockNavigateFn, mockRoutes, plainRender } from "~/test-utils";
 import { PRODUCT, ROOT } from "~/routes/paths";
+import { _ } from "~/i18n";
+import Page from "./Page";
 
 let consoleErrorSpy: jest.SpyInstance;
 
 jest.mock("~/components/product/ProductRegistrationAlert", () => () => (
   <div>ProductRegistrationAlertMock</div>
 ));
+
+const mockUseStatus = jest.fn();
+jest.mock("~/hooks/model/status", () => ({
+  useStatus: () => mockUseStatus(),
+}));
+
+const mockOnProposalUpdated = jest.fn();
+jest.mock("~/hooks/model/proposal", () => ({
+  onProposalUpdated: (callback: (detail: any) => void) => mockOnProposalUpdated(callback),
+}));
 
 describe("Page", () => {
   beforeAll(() => {
@@ -41,6 +51,20 @@ describe("Page", () => {
 
   afterAll(() => {
     consoleErrorSpy.mockRestore();
+  });
+
+  beforeEach(() => {
+    mockUseStatus.mockReturnValue({
+      progresses: [],
+    });
+    
+    mockOnProposalUpdated.mockReturnValue(() => {});
+    
+    mockNavigateFn.mockClear();
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
   });
 
   it("renders given children", () => {
@@ -54,7 +78,7 @@ describe("Page", () => {
 
   describe("Page.Actions", () => {
     it("renders a footer sticky to bottom", () => {
-      plainRender(
+      installerRender(
         <Page.Actions>
           <Page.Action>Save</Page.Action>
           <Page.Action>Discard</Page.Action>
@@ -67,26 +91,19 @@ describe("Page", () => {
   });
 
   describe("Page.Action", () => {
-    it("renders a button with given content", () => {
-      plainRender(<Page.Action>Save</Page.Action>);
-      screen.getByRole("button", { name: "Save" });
+    it("triggers given onClick handler when user clicks on it, if valid", async () => {
+      const onClick = jest.fn();
+      const { user } = installerRender(<Page.Action onClick={onClick}>Cancel</Page.Action>);
+      const button = screen.getByRole("button", { name: "Cancel" });
+      await user.click(button);
+      expect(onClick).toHaveBeenCalled();
     });
 
-    describe("when user clicks on it", () => {
-      it("triggers given onClick handler, if valid", async () => {
-        const onClick = jest.fn();
-        const { user } = plainRender(<Page.Action onClick={onClick}>Cancel</Page.Action>);
-        const button = screen.getByRole("button", { name: "Cancel" });
-        await user.click(button);
-        expect(onClick).toHaveBeenCalled();
-      });
-
-      it("navigates to the path given through 'navigateTo' prop", async () => {
-        const { user } = plainRender(<Page.Action navigateTo="/somewhere">Cancel</Page.Action>);
-        const button = screen.getByRole("button", { name: "Cancel" });
-        await user.click(button);
-        expect(mockNavigateFn).toHaveBeenCalledWith("/somewhere");
-      });
+    it("navigates to the path given through 'navigateTo' prop when user clicks on it", async () => {
+      const { user } = installerRender(<Page.Action navigateTo="/somewhere">Cancel</Page.Action>);
+      const button = screen.getByRole("button", { name: "Cancel" });
+      await user.click(button);
+      expect(mockNavigateFn).toHaveBeenCalledWith("/somewhere");
     });
   });
 
@@ -138,14 +155,14 @@ describe("Page", () => {
 
   describe("Page.Back", () => {
     it("renders a button for navigating back when user clicks on it", async () => {
-      const { user } = plainRender(<Page.Back />);
+      const { user } = installerRender(<Page.Back />);
       const button = screen.getByRole("button", { name: "Back" });
       await user.click(button);
       expect(mockNavigateFn).toHaveBeenCalledWith(-1);
     });
 
     it("uses `link` variant by default", () => {
-      plainRender(<Page.Back />);
+      installerRender(<Page.Back />);
       const button = screen.getByRole("button", { name: "Back" });
       expect(button.classList.contains("pf-m-link")).toBe(true);
     });
@@ -160,7 +177,7 @@ describe("Page", () => {
         e.preventDefault();
       });
 
-      const { user } = plainRender(
+      const { user } = installerRender(
         <>
           <form onSubmit={onSubmit} id="fake-form" />
           <Page.Submit form="fake-form" onClick={onClick}>
@@ -222,7 +239,7 @@ describe("Page", () => {
     });
 
     it("renders given content props (title, description, actions, and children (content)", () => {
-      plainRender(
+      installerRender(
         <Page.Section
           title="A section"
           description="Testing section with title, description, content, and actions"
@@ -236,6 +253,107 @@ describe("Page", () => {
       within(section).getByText("Testing section with title, description, content, and actions");
       within(section).getByText("The Content");
       within(section).getByRole("button", { name: "Disable" });
+    });
+  });
+
+  describe("ProgressBackdrop", () => {
+    describe("when no progress scope is provided", () => {
+      it("does not render the backdrop", () => {
+        installerRender(<Page>Content</Page>);
+        expect(screen.queryByRole("alert")).toBeNull();
+      });
+    });
+
+    describe("when progress scope is provided but no matching progress exists", () => {
+      it("does not render the backdrop", () => {
+        mockUseStatus.mockReturnValue({
+          progresses: [],
+        });
+
+        installerRender(<Page progressScope="software">Content</Page>);
+        expect(screen.queryByRole("alert")).toBeNull();
+      });
+    });
+
+    describe("when progress scope matches an active progress", () => {
+      it("renders the backdrop with progress information", () => {
+        mockUseStatus.mockReturnValue({
+          progresses: [
+            {
+              scope: "software",
+              step: "Installing packages",
+              index: 2,
+              size: 5,
+            },
+          ],
+        });
+
+        installerRender(<Page progressScope="software">Content</Page>);
+
+        const backdrop = screen.getByRole("alert", { name: /Installing packages/ });
+        expect(backdrop.classList).toContain("agm-main-content-overlay");
+        within(backdrop).getByText(/step 2 of 5/);
+      });
+    });
+
+    describe("when progress finishes", () => {
+      it.todo("shows 'Refreshing data...' message temporarily");
+      it.todo("hides backdrop after proposal update event");
+    });
+
+    describe("when progress scope does not match", () => {
+      it("does not show backdrop for different scope", () => {
+        mockUseStatus.mockReturnValue({
+          progresses: [
+            {
+              scope: "software",
+              step: "Installing packages",
+              index: 2,
+              size: 5,
+            },
+          ],
+        });
+
+        installerRender(<Page progressScope="storage">Content</Page>);
+
+        expect(screen.queryByRole("alert", { name: /Installing pckages/ })).toBeNull();
+      });
+    });
+
+    describe("multiple progress updates", () => {
+      it("updates the backdrop message when progress changes", () => {
+        mockUseStatus.mockReturnValue({
+          progresses: [
+            {
+              scope: "software",
+              step: "Downloading packages",
+              index: 1,
+              size: 5,
+            },
+          ],
+        });
+
+        const { rerender } = installerRender(<Page progressScope="software">Content</Page>);
+
+        expect(screen.getByText(/Downloading packages/)).toBeInTheDocument();
+        expect(screen.getByText(/step 1 of 5/)).toBeInTheDocument();
+
+        mockUseStatus.mockReturnValue({
+          progresses: [
+            {
+              scope: "software",
+              step: "Installing packages",
+              index: 3,
+              size: 5,
+            },
+          ],
+        });
+
+        rerender(<Page progressScope="software">Content</Page>);
+
+        expect(screen.getByText(/Installing packages/)).toBeInTheDocument();
+        expect(screen.getByText(/step 3 of 5/)).toBeInTheDocument();
+      });
     });
   });
 });

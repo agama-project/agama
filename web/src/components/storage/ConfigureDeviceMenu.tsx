@@ -25,14 +25,12 @@ import { useNavigate } from "react-router";
 import MenuButton, { MenuButtonItem } from "~/components/core/MenuButton";
 import { Divider, Flex, MenuItemProps } from "@patternfly/react-core";
 import { useAvailableDevices } from "~/hooks/model/system/storage";
-import { useModel } from "~/hooks/storage/model";
-import { useAddDrive } from "~/hooks/storage/drive";
-import { useAddReusedMdRaid } from "~/hooks/storage/md-raid";
+import { useConfigModel, useAddDrive, useAddMdRaid } from "~/hooks/model/storage/config-model";
 import { STORAGE as PATHS } from "~/routes/paths";
 import { sprintf } from "sprintf-js";
 import { _, n_ } from "~/i18n";
 import DeviceSelectorModal from "./DeviceSelectorModal";
-import { isDrive } from "~/storage/device";
+import { isDrive } from "~/model/storage/device";
 import { Icon } from "../layout";
 import type { Storage } from "~/model/system";
 
@@ -126,12 +124,12 @@ export default function ConfigureDeviceMenu(): React.ReactNode {
 
   const navigate = useNavigate();
 
-  const model = useModel();
+  const config = useConfigModel();
   const addDrive = useAddDrive();
-  const addReusedMdRaid = useAddReusedMdRaid();
+  const addReusedMdRaid = useAddMdRaid();
   const allDevices = useAvailableDevices();
 
-  const usedDevicesNames = model.drives.concat(model.mdRaids).map((d) => d.name);
+  const usedDevicesNames = config.drives.concat(config.mdRaids).map((d) => d.name);
   const usedDevicesCount = usedDevicesNames.length;
   const devices = allDevices.filter((d) => !usedDevicesNames.includes(d.name));
   const withRaids = !!allDevices.filter((d) => !isDrive(d)).length;
