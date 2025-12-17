@@ -54,12 +54,12 @@ describe("Page", () => {
   });
 
   beforeEach(() => {
-    // Configuración por defecto: sin progresses activos
     mockUseStatus.mockReturnValue({
       progresses: [],
     });
-    mockOnProposalUpdated.mockReturnValue(() => {}); // función de cleanup
-    // Limpiar el mock de navigate
+    
+    mockOnProposalUpdated.mockReturnValue(() => {});
+    
     mockNavigateFn.mockClear();
   });
 
