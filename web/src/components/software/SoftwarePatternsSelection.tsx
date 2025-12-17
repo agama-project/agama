@@ -109,28 +109,21 @@ function SoftwarePatternsSelection(): React.ReactNode {
   const { patterns: selection } = useProposal();
   const [searchValue, setSearchValue] = useState("");
 
-  const onToggle = (name: string) => {
-    const remove = [];
-    const add = patterns.filter((p) => selection[p.name] === SelectedBy.USER).map((p) => p.name);
+  const onToggle = (name: string, selected: boolean) => {
+    const add = patterns
+      .filter((p) => selection[p.name] === SelectedBy.USER && p.name !== name)
+      .map((p) => p.name);
+    const remove = patterns
+      .filter((p) => selection[p.name] === SelectedBy.NONE && p.name !== name)
+      .map((p) => p.name);
 
-    // Previously selected by.
-    const selectedBy = selection[name];
-
-    const index = add.indexOf(name);
-    if (index > -1) {
-      // Already selected.
-      add.splice(index, 1);
-      if (selectedBy === SelectedBy.AUTO) {
-        // If it was auto, you need to add it to the list of patterns to remove.
-        // FIXME: expose whether a pattern is auto selected by the product.
-        remove.push(name);
-      }
-    } else {
+    if (selected) {
       add.push(name);
+    } else {
+      remove.push(name);
     }
 
-    const config = { software: { patterns: { add, remove } } };
-    patchConfig(config);
+    patchConfig({ software: { patterns: { add, remove } } });
   };
 
   // FIXME: use loading indicator when busy, we cannot know if it will be
@@ -164,7 +157,7 @@ function SoftwarePatternsSelection(): React.ReactNode {
               <DataListItem key={option.name}>
                 <DataListItemRow>
                   <DataListCheck
-                    onChange={() => onToggle(option.name)}
+                    onChange={(_, value) => onToggle(option.name, value)}
                     aria-labelledby={[nextActionId, titleId].join(" ")}
                     isChecked={selected}
                   />
