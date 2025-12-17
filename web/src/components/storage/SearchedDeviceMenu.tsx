@@ -24,8 +24,7 @@ import React, { useState } from "react";
 import MenuButton, { CustomToggleProps, MenuButtonItem } from "~/components/core/MenuButton";
 import NewVgMenuOption from "./NewVgMenuOption";
 import { useAvailableDevices } from "~/hooks/model/system/storage";
-import { useConfigModel } from "~/hooks/model/storage/config-model";
-import { useAddFromMdRaid } from "~/hooks/storage/drive";
+import { useConfigModel, useAddDriveFromMdRaid } from "~/hooks/model/storage/config-model";
 import { useAddFromDrive } from "~/hooks/storage/md-raid";
 import { deviceBaseName, formattedPath } from "~/components/storage/utils";
 import configModel from "~/model/storage/config-model";
@@ -322,7 +321,7 @@ export default function SearchedDeviceMenu({
   deleteFn,
 }: SearchedDeviceMenuProps): React.ReactNode {
   const [isSelectorOpen, setIsSelectorOpen] = useState(false);
-  const switchToDrive = useAddFromMdRaid();
+  const switchToDrive = useAddDriveFromMdRaid();
   const switchToMdRaid = useAddFromDrive();
   const changeTargetFn = (device: Storage.Device) => {
     const hook = isDrive(device) ? switchToDrive : switchToMdRaid;

@@ -25,7 +25,7 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import { useSystem } from "~/hooks/model/system/storage";
 import { solveStorageModel, getStorageModel, putStorageModel } from "~/api";
 import configModel from "~/model/storage/config-model";
-import type { ConfigModel, Partitionable } from "~/model/storage/config-model";
+import type { ConfigModel, Data, Partitionable } from "~/model/storage/config-model";
 
 const configModelQuery = {
   queryKey: ["storageModel"],
@@ -109,6 +109,33 @@ function useDrive(index: number): ConfigModel.Drive | null {
   return data;
 }
 
+type AddDriveFn = (data: Data.Drive) => void;
+
+function useAddDrive(): AddDriveFn {
+  const config = useConfigModel();
+  return (data: Data.Drive) => {
+    putStorageModel(configModel.drive.add(config, data));
+  };
+}
+
+type DeleteDriveFn = (inex: number) => void;
+
+function useDeleteDrive(): DeleteDriveFn {
+  const config = useConfigModel();
+  return (index: number) => {
+    putStorageModel(configModel.drive.remove(config, index));
+  };
+}
+
+type AddDriveFromMdRaidFn = (oldName: string, drive: Data.Drive) => void;
+
+function useAddDriveFromMdRaid(): AddDriveFromMdRaidFn {
+  const config = useConfigModel();
+  return (oldName: string, drive: Data.Drive) => {
+    putStorageModel(configModel.drive.addFromMdRaid(config, oldName, drive));
+  };
+}
+
 function useMdRaid(index: number): ConfigModel.MdRaid | null {
   const { data } = useSuspenseQuery({
     ...configModelQuery,
@@ -131,5 +158,8 @@ export {
   useDisableBoot,
   usePartitionable,
   useDrive,
+  useAddDrive,
+  useDeleteDrive,
+  useAddDriveFromMdRaid,
   useMdRaid,
 };
