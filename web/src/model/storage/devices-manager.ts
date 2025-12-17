@@ -22,7 +22,7 @@
 
 import { unique } from "radashi";
 import { compact } from "~/utils";
-import { deviceSystems, isDrive, isMd, isVolumeGroup } from "~/storage/device";
+import { deviceSystems, isDrive, isMd, isVolumeGroup } from "~/model/storage/device";
 import type { Storage as System } from "~/model/system";
 import type { Storage as Proposal } from "~/model/proposal";
 

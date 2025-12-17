@@ -20,41 +20,31 @@
  * find current contact information at www.suse.com.
  */
 
-import { copyApiModel } from "~/storage/api-model";
-import type { ConfigModel } from "~/model/storage/config-model";
-import type { Data } from "~/storage";
+import configModel from "~/model/storage/config-model";
+import type { ConfigModel, Data } from "~/model/storage/config-model";
 
-function findDevice(
-  config: ConfigModel.Config,
-  list: string,
-  index: number | string,
-): ConfigModel.Drive | ConfigModel.MdRaid | null {
-  return (config[list] || []).at(index) || null;
+function find(config: ConfigModel.Config, index: number): ConfigModel.Drive | null {
+  return config.drives?.[index] ?? null;
 }
 
-function configureFilesystem(
-  config: ConfigModel.Config,
-  list: string,
-  index: number | string,
-  data: Data.Formattable,
-): ConfigModel.Config {
-  config = copyApiModel(config);
-
-  const device = findDevice(config, list, index);
-  if (!device) return config;
-
-  device.mountPath = data.mountPath;
-
-  if (data.filesystem) {
-    device.filesystem = {
-      default: false,
-      ...data.filesystem,
-    };
-  } else {
-    device.filesystem = undefined;
-  }
+function add(config: ConfigModel.Config, data: Data.Drive): ConfigModel.Config {
+  config = configModel.clone(config);
+  config.drives ||= [];
+  config.drives.push(data);
 
   return config;
 }
 
-export { configureFilesystem };
+function addFromMdRaid(
+  config: ConfigModel.Config,
+  oldName: string,
+  drive: Data.Drive,
+): ConfigModel.Config {
+  return configModel.partitionable.convert(config, oldName, drive.name, "drives");
+}
+
+function remove(config: ConfigModel.Config, index: number): ConfigModel.Config {
+  return configModel.partitionable.remove(config, "drives", index);
+}
+
+export default { find, add, remove, addFromMdRaid };

@@ -22,9 +22,8 @@
 
 import { _, n_, formatList } from "~/i18n";
 import { SpacePolicy, SPACE_POLICIES, baseName, formattedPath } from "~/components/storage/utils";
-import { useConfigModel } from "~/hooks/model/storage";
+import { useConfigModel } from "~/hooks/model/storage/config-model";
 import configModel from "~/model/storage/config-model";
-import partitionableModel from "~/model/storage/partitionable-model";
 import { sprintf } from "sprintf-js";
 import type { ConfigModel } from "~/model/storage/config-model";
 
@@ -68,9 +67,9 @@ const resizeTextFor = (partitions) => {
 const SummaryForSpacePolicy = (drive: ConfigModel.Drive): string | undefined => {
   const config = useConfigModel();
   const isTargetDevice = configModel.isTargetDevice(config, drive.name);
-  const isBoot = configModel.isBootDevice(config, drive.name);
-  const isAddingPartitions = partitionableModel.isAddingPartitions(drive);
-  const isReusingPartitions = partitionableModel.isReusingPartitions(drive);
+  const isBoot = configModel.boot.hasDevice(config, drive.name);
+  const isAddingPartitions = configModel.partitionable.isAddingPartitions(drive);
+  const isReusingPartitions = configModel.partitionable.isReusingPartitions(drive);
   const { spacePolicy } = drive;
 
   switch (spacePolicy) {
@@ -126,9 +125,9 @@ const ContentActionsDescription = (
 ): string => {
   const config = useConfigModel();
   const isTargetDevice = configModel.isTargetDevice(config, drive.name);
-  const isBoot = configModel.isBootDevice(config, drive.name);
-  const isAddingPartitions = partitionableModel.isAddingPartitions(drive);
-  const isReusingPartitions = partitionableModel.isReusingPartitions(drive);
+  const isBoot = configModel.boot.hasDevice(config, drive.name);
+  const isAddingPartitions = configModel.partitionable.isAddingPartitions(drive);
+  const isReusingPartitions = configModel.partitionable.isReusingPartitions(drive);
 
   if (!policyId) policyId = drive.spacePolicy;
 

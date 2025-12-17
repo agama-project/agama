@@ -30,7 +30,8 @@
 import xbytes from "xbytes";
 import { _, N_ } from "~/i18n";
 import { sprintf } from "sprintf-js";
-import type { ConfigModel } from "~/model/storage/config-model";
+import configModel from "~/model/storage/config-model";
+import type { ConfigModel, Partitionable } from "~/model/storage/config-model";
 import type { Storage as System } from "~/model/system";
 import type { Storage as Proposal } from "~/model/proposal";
 
@@ -360,6 +361,29 @@ const sizeDescription = (size: ConfigModel.Size): string => {
   return `${minSize}`;
 };
 
+function createPartitionableLocation(
+  collection: string,
+  index: number | string,
+): Partitionable.Location | null {
+  if (!configModel.partitionable.isCollectionName(collection) || isNaN(Number(index))) {
+    console.log("Invalid location: ", collection, index);
+    return null;
+  }
+
+  return { collection, index: Number(index) };
+}
+
+function findPartitionableDevice(
+  config: ConfigModel.Config,
+  collection: string,
+  index: number | string,
+): Partitionable.Device | null {
+  if (!configModel.partitionable.isCollectionName(collection)) return null;
+  if (isNaN(Number(index))) return null;
+
+  return configModel.partitionable.find(config, collection, Number(index));
+}
+
 export {
   DEFAULT_SIZE_UNIT,
   SIZE_METHODS,
@@ -382,4 +406,6 @@ export {
   isTransactionalRoot,
   isTransactionalSystem,
   volumeLabel,
+  createPartitionableLocation,
+  findPartitionableDevice,
 };

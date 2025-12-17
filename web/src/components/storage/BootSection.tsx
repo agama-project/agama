@@ -26,7 +26,7 @@ import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import Link from "~/components/core/Link";
 import Icon from "~/components/layout/Icon";
 import { useAvailableDrives } from "~/hooks/model/system/storage";
-import { useConfigModel } from "~/hooks/model/storage";
+import { useConfigModel } from "~/hooks/model/storage/config-model";
 import configModel from "~/model/storage/config-model";
 import { STORAGE } from "~/routes/paths";
 import { deviceLabel, formattedPath } from "~/components/storage/utils";
@@ -76,8 +76,8 @@ export default function BootSection() {
   const config = useConfigModel();
   const devices = useAvailableDrives();
 
-  const isDefaultBoot = configModel.hasDefaultBoot(config);
-  const bootDevice = configModel.bootDevice(config);
+  const isDefaultBoot = configModel.boot.isDefault(config);
+  const bootDevice = configModel.boot.findDevice(config);
   const device = devices.find((d) => d.name === bootDevice?.name);
 
   return (

@@ -27,7 +27,7 @@ import { generatePath, useNavigate } from "react-router";
 import MenuButton, { CustomToggleProps } from "~/components/core/MenuButton";
 import { STORAGE as PATHS } from "~/routes/paths";
 import { filesystemType, formattedPath } from "~/components/storage/utils";
-import { useDevice } from "~/hooks/storage/model";
+import { usePartitionable } from "~/hooks/model/storage/config-model";
 import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
 import type { ConfigModel } from "~/model/storage/config-model";
@@ -91,7 +91,7 @@ export default function FilesystemMenu({
   index,
 }: FilesystemMenuProps): React.ReactNode {
   const navigate = useNavigate();
-  const deviceModel = useDevice(collection, index);
+  const deviceModel = usePartitionable(collection, index);
   const editFilesystemPath = generatePath(PATHS.formatDevice, { collection, index });
 
   return (

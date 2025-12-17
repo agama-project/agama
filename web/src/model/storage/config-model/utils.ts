@@ -20,22 +20,21 @@
  * find current contact information at www.suse.com.
  */
 
-import { useConfigModel } from "~/hooks/model/storage";
-import { putStorageModel } from "~/api";
-import { Data } from "~/storage";
-import { setSpacePolicy } from "~/storage/space-policy";
+import type { ConfigModel, Data } from "~/model/storage/config-model";
 
-type setSpacePolicyFn = (
-  collection: string,
-  index: number | string,
-  data: Data.SpacePolicy,
-) => void;
-
-function useSetSpacePolicy(): setSpacePolicyFn {
-  const model = useConfigModel();
-  return (collection: string, index: number | string, data: Data.SpacePolicy) => {
-    putStorageModel(setSpacePolicy(model, collection, index, data));
+function createFilesystem(data: Data.Filesystem): ConfigModel.Filesystem {
+  return {
+    ...data,
+    default: false,
   };
 }
 
-export { useSetSpacePolicy };
+function createSize(data?: Data.Size): ConfigModel.Size {
+  return {
+    ...data,
+    default: false,
+    min: data.min || 0,
+  };
+}
+
+export { createFilesystem, createSize };

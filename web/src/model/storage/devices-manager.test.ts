@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import DevicesManager from "~/storage/devices-manager";
+import DevicesManager from "~/model/storage/devices-manager";
 import type { Storage as System } from "~/model/system";
 import type { Storage as Proposal } from "~/model/proposal";
 

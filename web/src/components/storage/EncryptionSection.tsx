@@ -25,7 +25,7 @@ import { Content, Flex, Split, Stack } from "@patternfly/react-core";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import { Link } from "~/components/core";
 import Icon from "~/components/layout/Icon";
-import { useEncryption } from "~/queries/storage/config-model";
+import { useConfigModel } from "~/hooks/model/storage/config-model";
 import { STORAGE } from "~/routes/paths";
 import { _ } from "~/i18n";
 import PasswordCheck from "~/components/users/PasswordCheck";
@@ -39,7 +39,8 @@ function encryptionLabel(method?: ConfigModel.EncryptionMethod) {
 }
 
 export default function EncryptionSection() {
-  const { encryption } = useEncryption();
+  const configModel = useConfigModel();
+  const encryption = configModel?.encryption;
   const method = encryption?.method;
   const password = encryption?.password;
 

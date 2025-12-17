@@ -48,23 +48,25 @@ import {
 import { Page, SelectWrapper as Select } from "~/components/core/";
 import { SelectWrapperProps as SelectProps } from "~/components/core/SelectWrapper";
 import SelectTypeaheadCreatable from "~/components/core/SelectTypeaheadCreatable";
-import { useAddFilesystem } from "~/hooks/storage/filesystem";
 import {
+  useConfigModel,
   useMissingMountPaths,
-  useDrive as useDriveModel,
-  useMdRaid as useMdRaidModel,
-} from "~/hooks/storage/model";
-import { useConfigModel } from "~/hooks/model/storage";
+  usePartitionable,
+  useSetFilesystem,
+} from "~/hooks/model/storage/config-model";
 import { useDevice, useVolumeTemplate } from "~/hooks/model/system/storage";
-import { deviceBaseName, filesystemLabel } from "~/components/storage/utils";
+import {
+  createPartitionableLocation,
+  deviceBaseName,
+  filesystemLabel,
+} from "~/components/storage/utils";
 import configModel from "~/model/storage/config-model";
 import { _ } from "~/i18n";
 import { sprintf } from "sprintf-js";
 import { STORAGE as PATHS } from "~/routes/paths";
 import { unique } from "radashi";
 import { compact } from "~/utils";
-import type { Data } from "~/storage";
-import type { ConfigModel } from "~/model/storage/config-model";
+import type { ConfigModel, Data, Partitionable } from "~/model/storage/config-model";
 import type { Storage as System } from "~/model/system";
 
 const NO_VALUE = "";
@@ -144,10 +146,12 @@ function toFormValue(deviceModel: DeviceModel): FormValue {
   };
 }
 
-function useDeviceModelFromParams(): ConfigModel.Drive | ConfigModel.MdRaid | null {
+function useDeviceModelFromParams(): Partitionable.Device | null {
   const { collection, index } = useParams();
-  const deviceModel = collection === "drives" ? useDriveModel : useMdRaidModel;
-  return deviceModel(Number(index));
+  const location = createPartitionableLocation(collection, index);
+  const deviceModel = usePartitionable(location.collection, location.index);
+
+  return deviceModel;
 }
 
 function useDeviceFromParams(): System.Device {
@@ -410,7 +414,7 @@ export default function FormattableDevicePage() {
   const { collection, index } = useParams();
   const device = useDeviceModelFromParams();
   const unusedMountPoints = useUnusedMountPoints();
-  const addFilesystem = useAddFilesystem();
+  const addFilesystem = useSetFilesystem();
 
   // Initializes the form values.
   React.useEffect(() => {
@@ -442,7 +446,10 @@ export default function FormattableDevicePage() {
 
   const onSubmit = () => {
     const data = toData(value);
-    addFilesystem(collection, Number(index), data);
+    const location = createPartitionableLocation(collection, index);
+    if (!location) return;
+
+    addFilesystem(location.collection, location.index, data);
     navigate(PATHS.root);
   };
 

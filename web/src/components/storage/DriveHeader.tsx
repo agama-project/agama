@@ -22,9 +22,8 @@
 
 import { sprintf } from "sprintf-js";
 import { deviceLabel } from "./utils";
-import { useConfigModel } from "~/hooks/model/storage";
+import { useConfigModel } from "~/hooks/model/storage/config-model";
 import configModel from "~/model/storage/config-model";
-import partitionableModel from "~/model/storage/partitionable-model";
 import { _ } from "~/i18n";
 import type { ConfigModel } from "~/model/storage/config-model";
 import type { Storage } from "~/model/system";
@@ -41,10 +40,10 @@ const Text = (drive: ConfigModel.Drive): string => {
     return _("Format disk %s");
   }
 
-  const isBoot = configModel.isBootDevice(config, drive.name);
+  const isBoot = configModel.boot.hasDevice(config, drive.name);
   const hasPv = configModel.isTargetDevice(config, drive.name);
-  const isRoot = !!partitionableModel.findPartition(drive, "/");
-  const hasFs = !!partitionableModel.usedMountPaths(drive).length;
+  const isRoot = !!configModel.partitionable.findPartition(drive, "/");
+  const hasFs = !!configModel.partitionable.usedMountPaths(drive).length;
 
   if (isRoot) {
     if (hasPv) {

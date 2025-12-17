@@ -24,17 +24,18 @@ import React, { useState } from "react";
 import MenuButton, { CustomToggleProps, MenuButtonItem } from "~/components/core/MenuButton";
 import NewVgMenuOption from "./NewVgMenuOption";
 import { useAvailableDevices } from "~/hooks/model/system/storage";
-import { useConfigModel } from "~/hooks/model/storage";
-import { useSwitchToDrive } from "~/hooks/storage/drive";
-import { useSwitchToMdRaid } from "~/hooks/storage/md-raid";
+import {
+  useConfigModel,
+  useAddDriveFromMdRaid,
+  useAddMdRaidFromDrive,
+} from "~/hooks/model/storage/config-model";
 import { deviceBaseName, formattedPath } from "~/components/storage/utils";
 import configModel from "~/model/storage/config-model";
-import partitionableModel from "~/model/storage/partitionable-model";
 import { sprintf } from "sprintf-js";
 import { _, formatList } from "~/i18n";
 import DeviceSelectorModal from "./DeviceSelectorModal";
 import { MenuItemProps } from "@patternfly/react-core";
-import { isDrive } from "~/storage/device";
+import { isDrive } from "~/model/storage/device";
 import type { Storage } from "~/model/system";
 import type { ConfigModel } from "~/model/storage/config-model";
 
@@ -49,12 +50,12 @@ const useOnlyOneOption = (
   const isTargetDevice = configModel.isTargetDevice(config, device.name);
 
   if (
-    !partitionableModel.usedMountPaths(device).length &&
-    (isTargetDevice || configModel.isExplicitBootDevice(config, device.name))
+    !configModel.partitionable.usedMountPaths(device).length &&
+    (isTargetDevice || configModel.boot.hasExplicitDevice(config, device.name))
   )
     return true;
 
-  return partitionableModel.isReusingPartitions(device);
+  return configModel.partitionable.isReusingPartitions(device);
 };
 
 type ChangeDeviceTitleProps = {
@@ -73,7 +74,7 @@ const ChangeDeviceTitle = ({ modelDevice }: ChangeDeviceTitleProps) => {
     return sprintf(_("Change the disk to format as %s"), formattedPath(modelDevice.mountPath));
   }
 
-  const mountPaths = partitionableModel.usedMountPaths(modelDevice);
+  const mountPaths = configModel.partitionable.usedMountPaths(modelDevice);
   const hasMountPaths = mountPaths.length > 0;
 
   if (!hasMountPaths) {
@@ -104,11 +105,11 @@ type ChangeDeviceDescriptionProps = {
 const ChangeDeviceDescription = ({ modelDevice, device }: ChangeDeviceDescriptionProps) => {
   const config = useConfigModel();
   const name = baseName(device);
-  const volumeGroups = partitionableModel.filterVolumeGroups(modelDevice, config);
-  const isExplicitBoot = configModel.isExplicitBootDevice(config, modelDevice.name);
-  const isBoot = configModel.isBootDevice(config, modelDevice.name);
-  const mountPaths = partitionableModel.usedMountPaths(modelDevice);
-  const isReusingPartitions = partitionableModel.isReusingPartitions(modelDevice);
+  const volumeGroups = configModel.partitionable.filterVolumeGroups(config, modelDevice);
+  const isExplicitBoot = configModel.boot.hasExplicitDevice(config, modelDevice.name);
+  const isBoot = configModel.boot.hasDevice(config, modelDevice.name);
+  const mountPaths = configModel.partitionable.usedMountPaths(modelDevice);
+  const isReusingPartitions = configModel.partitionable.isReusingPartitions(modelDevice);
   const hasMountPaths = mountPaths.length > 0;
   const hasPv = volumeGroups.length > 0;
   const vgName = volumeGroups[0]?.vgName;
@@ -240,8 +241,8 @@ const RemoveEntryOption = ({ device, onClick }: RemoveEntryOptionProps): React.R
     // from being fully reasonable or understandable for the user.
     const onlyToBoot = entries.find(
       (e) =>
-        configModel.isExplicitBootDevice(config, e.name) &&
-        !configModel.isUsedDevice(config, e.name),
+        configModel.boot.hasExplicitDevice(config, e.name) &&
+        !configModel.partitionable.isUsed(config, e.name),
     );
     return !onlyToBoot;
   };
@@ -251,13 +252,13 @@ const RemoveEntryOption = ({ device, onClick }: RemoveEntryOptionProps): React.R
   if (!hasAdditionalDrives(config)) return;
 
   let description;
-  const isExplicitBoot = configModel.isExplicitBootDevice(config, device.name);
+  const isExplicitBoot = configModel.boot.hasExplicitDevice(config, device.name);
   const hasPv = configModel.isTargetDevice(config, device.name);
   const isDisabled = isExplicitBoot || hasPv;
 
   // If these cases, the target device cannot be changed and this disabled button would only provide
   // information that is redundant to the one already displayed at the disabled "change device" one.
-  if (!partitionableModel.usedMountPaths(device).length && (hasPv || isExplicitBoot)) return;
+  if (!configModel.partitionable.usedMountPaths(device).length && (hasPv || isExplicitBoot)) return;
 
   if (isExplicitBoot) {
     if (hasPv) {
@@ -298,7 +299,7 @@ const targetDevices = (
     const device = collection.find((d) => d.name === availableDev.name);
     if (!device) return true;
 
-    if (modelDevice.filesystem) return !configModel.isUsedDevice(config, device.name);
+    if (modelDevice.filesystem) return !configModel.partitionable.isUsed(config, device.name);
 
     return !device.filesystem;
   });
@@ -323,8 +324,8 @@ export default function SearchedDeviceMenu({
   deleteFn,
 }: SearchedDeviceMenuProps): React.ReactNode {
   const [isSelectorOpen, setIsSelectorOpen] = useState(false);
-  const switchToDrive = useSwitchToDrive();
-  const switchToMdRaid = useSwitchToMdRaid();
+  const switchToDrive = useAddDriveFromMdRaid();
+  const switchToMdRaid = useAddMdRaidFromDrive();
   const changeTargetFn = (device: Storage.Device) => {
     const hook = isDrive(device) ? switchToDrive : switchToMdRaid;
     hook(modelDevice.name, { name: device.name });
