@@ -20,16 +20,18 @@
  * find current contact information at www.suse.com.
  */
 
+import type * as Hostname from "~/model/proposal/hostname";
 import type * as L10n from "~/model/proposal/l10n";
 import type * as Network from "~/model/proposal/network";
 import type * as Software from "~/model/proposal/software";
 import type * as Storage from "~/model/proposal/storage";
 
 type Proposal = {
+  hostname?: Hostname.Proposal;
   l10n?: L10n.Proposal;
   network: Network.Proposal;
   software?: Software.Proposal;
   storage?: Storage.Proposal;
 };
 
-export type { Proposal, L10n, Network, Software, Storage };
+export type { Hostname, Proposal, L10n, Network, Software, Storage };
