@@ -247,6 +247,50 @@ function useDeleteLogicalVolume(): DeleteLogicalVolumeFn {
     putStorageModel(configModel.logicalVolume.remove(config, vgName, mountPath));
 }
 
+type AddPartitionFn = (
+  collection: Partitionable.CollectionName,
+  index: number,
+  data: Data.Partition,
+) => void;
+
+function useAddPartition(): AddPartitionFn {
+  const config = useConfigModel();
+  return (collection: Partitionable.CollectionName, index: number, data: Data.Partition) => {
+    putStorageModel(configModel.partition.add(config, collection, index, data));
+  };
+}
+
+type EditPartitionFn = (
+  collection: Partitionable.CollectionName,
+  index: number,
+  mountPath: string,
+  data: Data.Partition,
+) => void;
+
+function useEditPartition(): EditPartitionFn {
+  const config = useConfigModel();
+  return (
+    collection: Partitionable.CollectionName,
+    index: number,
+    mountPath: string,
+    data: Data.Partition,
+  ) => {
+    putStorageModel(configModel.partition.edit(config, collection, index, mountPath, data));
+  };
+}
+
+type DeletePartitionFn = (
+  collection: Partitionable.CollectionName,
+  index: number,
+  mountPath: string,
+) => void;
+
+function useDeletePartition(): DeletePartitionFn {
+  const config = useConfigModel();
+  return (collection: Partitionable.CollectionName, index: number, mountPath: string) =>
+    putStorageModel(configModel.partition.remove(config, collection, index, mountPath));
+}
+
 export {
   configModelQuery,
   useConfigModel,
@@ -272,4 +316,7 @@ export {
   useAddLogicalVolume,
   useEditLogicalVolume,
   useDeleteLogicalVolume,
+  useAddPartition,
+  useEditPartition,
+  useDeletePartition,
 };

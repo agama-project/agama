@@ -51,7 +51,6 @@ import SizeModeSelect, { SizeMode, SizeRange } from "~/components/storage/SizeMo
 import AlertOutOfSync from "~/components/core/AlertOutOfSync";
 import ResourceNotFound from "~/components/core/ResourceNotFound";
 import configModel from "~/model/storage/config-model";
-import { useAddPartition, useEditPartition } from "~/hooks/storage/partition";
 import { useVolumeTemplate, useDevice } from "~/hooks/model/system/storage";
 
 import { useSolvedConfigModel } from "~/queries/storage/config-model";
@@ -59,6 +58,8 @@ import {
   useConfigModel,
   useMissingMountPaths,
   usePartitionable,
+  useAddPartition,
+  useEditPartition,
 } from "~/hooks/model/storage/config-model";
 import {
   deviceSize,
