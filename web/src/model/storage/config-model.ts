@@ -52,10 +52,20 @@ function isTargetDevice(config: ConfigModel.Config, deviceName: string): boolean
   return targetDevices.includes(deviceName);
 }
 
+function setEncryption(
+  config: ConfigModel.Config,
+  encryption?: ConfigModel.Encryption,
+): ConfigModel.Config {
+  config = clone(config);
+  config.encryption = encryption;
+  return config;
+}
+
 export default {
   clone,
   usedMountPaths,
   isTargetDevice,
+  setEncryption,
   boot,
   partitionable,
   drive,

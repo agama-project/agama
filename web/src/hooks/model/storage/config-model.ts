@@ -297,6 +297,14 @@ type SetFilesystemFn = (
   data: Data.Formattable,
 ) => void;
 
+type SetEncryptionFn = (encryption?: ConfigModel.Encryption) => void;
+
+function useSetEncryption(): SetEncryptionFn {
+  const config = useConfigModel();
+  return (encryption?: ConfigModel.Encryption) =>
+    putStorageModel(configModel.setEncryption(config, encryption));
+}
+
 function useSetFilesystem(): SetFilesystemFn {
   const config = useConfigModel();
   return (collection: Partitionable.CollectionName, index: number, data: Data.Formattable) => {
@@ -344,6 +352,7 @@ export {
   useAddPartition,
   useEditPartition,
   useDeletePartition,
+  useSetEncryption,
   useSetFilesystem,
   useSetSpacePolicy,
 };

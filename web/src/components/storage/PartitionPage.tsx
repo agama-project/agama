@@ -53,9 +53,9 @@ import ResourceNotFound from "~/components/core/ResourceNotFound";
 import configModel from "~/model/storage/config-model";
 import { useVolumeTemplate, useDevice } from "~/hooks/model/system/storage";
 
-import { useSolvedConfigModel } from "~/queries/storage/config-model";
 import {
   useConfigModel,
+  useSolvedConfigModel,
   useMissingMountPaths,
   usePartitionable,
   useAddPartition,
