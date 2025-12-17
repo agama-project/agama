@@ -471,17 +471,29 @@ impl ZyppServer {
             .map(|p| p.name())
             .collect();
 
+        let preselected_patterns: Vec<_> = product
+            .software
+            .user_patterns
+            .iter()
+            .filter(|p| p.preselected())
+            .map(|p| p.name())
+            .collect();
+
         let patterns = zypp.patterns_info(pattern_names)?;
 
         let patterns = patterns
             .into_iter()
-            .map(|p| Pattern {
-                name: p.name,
-                category: p.category,
-                description: p.description,
-                icon: p.icon,
-                summary: p.summary,
-                order: p.order,
+            .map(|p| {
+                let preselected = preselected_patterns.contains(&p.name.as_str());
+                Pattern {
+                    name: p.name,
+                    category: p.category,
+                    description: p.description,
+                    icon: p.icon,
+                    summary: p.summary,
+                    order: p.order,
+                    preselected,
+                }
             })
             .collect();
         Ok(patterns)
