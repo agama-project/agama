@@ -18,15 +18,14 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use std::thread::sleep;
-use std::time::Duration;
-use std::{io::Write, path::PathBuf, process::Command};
+use std::{io::Write, path::PathBuf, process::Command, time::Duration};
 
-use agama_lib::monitor::MonitorClient;
-use agama_lib::profile::ProfileHTTPClient;
 use agama_lib::{
-    context::InstallationContext, http::BaseHTTPClient, profile::ProfileValidator,
-    profile::ValidationOutcome, utils::FileFormat,
+    context::InstallationContext,
+    http::BaseHTTPClient,
+    monitor::MonitorClient,
+    profile::{ProfileHTTPClient, ProfileValidator, ValidationOutcome},
+    utils::FileFormat,
 };
 use agama_utils::api;
 use anyhow::{anyhow, Context};
@@ -35,9 +34,12 @@ use console::style;
 use fluent_uri::Uri;
 use serde_json::json;
 use tempfile::Builder;
+use tokio::time::sleep;
 
-use crate::{api_url, build_http_client, cli_input::CliInput, cli_output::CliOutput, GlobalOpts};
-use crate::{build_clients, show_progress};
+use crate::{
+    api_url, build_clients, build_http_client, cli_input::CliInput, cli_output::CliOutput,
+    show_progress, GlobalOpts,
+};
 
 const DEFAULT_EDITOR: &str = "/usr/bin/vi";
 
@@ -392,7 +394,7 @@ fn editor_command(command: &str) -> Command {
 
 async fn monitor_progress(monitor: MonitorClient) -> anyhow::Result<()> {
     // wait a bit to settle it down and avoid quick actions blinking
-    sleep(Duration::from_secs(1));
+    sleep(Duration::from_secs(1)).await;
 
     let task = tokio::spawn(async move {
         show_progress(monitor, true).await;
