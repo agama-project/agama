@@ -19,6 +19,10 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
 "X-Generator: Weblate 5.12.2\n"
 
+# FIXME: use xgettext or xtr. Manually added for now.
+msgid "Pattern summary"
+msgstr "Shrnutí vzoru"
+
 #. Reports the problems and decide whether to continue or not.
 #.
 #. @param elements [Array<Element>] List of unsupported elements.
