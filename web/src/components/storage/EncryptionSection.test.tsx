@@ -28,7 +28,6 @@ import { STORAGE } from "~/routes/paths";
 
 const mockUseConfigModel = jest.fn();
 jest.mock("~/hooks/model/storage/config-model", () => ({
-  ...jest.requireActual("~/hooks/model/storage/config-model"),
   useConfigModel: () => mockUseConfigModel(),
 }));
 
