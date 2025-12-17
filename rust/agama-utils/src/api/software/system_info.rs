@@ -62,6 +62,8 @@ pub struct Pattern {
     pub summary: String,
     /// Pattern order
     pub order: String,
+    /// Whether the pattern is selected by default
+    pub preselected: bool,
 }
 
 /// Addon registration

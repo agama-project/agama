@@ -27,10 +27,9 @@ import { useSystemChanges } from "~/hooks/model/system";
 import { useProposalChanges } from "~/hooks/model/proposal";
 import { useIssuesChanges } from "~/hooks/model/issue";
 import { useProduct } from "~/hooks/model/config";
-import { ROOT, PRODUCT } from "~/routes/paths";
+import { ROOT } from "~/routes/paths";
 import { useQueryClient } from "@tanstack/react-query";
 import AlertOutOfSync from "~/components/core/AlertOutOfSync";
-import { isEmpty } from "radashi";
 
 /**
  * Content guard and flow control component.
@@ -42,7 +41,6 @@ const Content = () => {
   const location = useLocation();
   const product = useProduct();
   const { progresses, stage } = useStatus();
-  const isBusy = !isEmpty(progresses);
 
   console.log("App Content component", {
     progresses,
@@ -59,11 +57,6 @@ const Content = () => {
   if (stage === "finished") {
     console.log("Navigating to the finished page");
     return <Navigate to={ROOT.installationFinished} />;
-  }
-
-  if (product?.id === undefined && !isBusy && location.pathname !== PRODUCT.root) {
-    console.log("Navigating to the product selection page");
-    return <Navigate to={PRODUCT.root} />;
   }
 
   return (

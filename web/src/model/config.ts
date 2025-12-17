@@ -22,6 +22,7 @@
 
 import type * as L10n from "~/model/config/l10n";
 import type * as Network from "~/model/config/network";
+import type * as Software from "~/model/config/software";
 import type * as Storage from "~/model/config/storage";
 
 type Config = {
@@ -29,6 +30,7 @@ type Config = {
   network?: Network.Config;
   product?: Product;
   storage?: Storage.Config;
+  software?: Software.Config
 };
 
 type Product = {

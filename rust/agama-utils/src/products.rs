@@ -193,10 +193,19 @@ pub enum UserPattern {
 }
 
 impl UserPattern {
+    /// Pattern name.
     pub fn name(&self) -> &str {
         match self {
             UserPattern::Plain(name) => name,
             UserPattern::Preselected(pattern) => &pattern.name,
+        }
+    }
+
+    /// Whether the pattern is preselected.
+    pub fn preselected(&self) -> bool {
+        match self {
+            UserPattern::Plain(_) => false,
+            UserPattern::Preselected(pattern) => pattern.selected,
         }
     }
 }

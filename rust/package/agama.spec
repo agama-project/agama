@@ -245,6 +245,7 @@ echo $PATH
 %dir %{_datadir}/agama/schema
 %{_datadir}/agama/schema/iscsi.schema.json
 %{_datadir}/agama/schema/profile.schema.json
+%{_datadir}/agama/schema/software.schema.json
 %{_datadir}/agama/schema/storage.schema.json
 %{_datadir}/agama/schema/storage.model.schema.json
 
