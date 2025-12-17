@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useEffect, useId, useLayoutEffect, useState } from "react";
+import React, { useEffect, useId, useState } from "react";
 import {
   Alert,
   Backdrop,
@@ -43,8 +43,6 @@ import {
   Split,
   Title,
   TitleProps,
-  ProgressStepper,
-  ProgressStep,
   Spinner,
 } from "@patternfly/react-core";
 import { ProductRegistrationAlert } from "~/components/product";
@@ -59,48 +57,6 @@ import { sprintf } from "sprintf-js";
 import { onProposalUpdated } from "~/hooks/model/proposal";
 import { useStatus } from "~/hooks/model/status";
 import type { Scope } from "~/model/status";
-
-const LoadingAlert = ({ progress, isStepper }) => {
-  return (
-    <Alert
-      isPlain
-      customIcon={<Spinner size="sm" />}
-      title={
-        progress ? (
-          <>
-            {progress.step}{" "}
-            <small>{sprintf(_("(step %s of %s)"), progress.index, progress.size)}</small>
-          </>
-        ) : (
-          <>{_("Refreshing data...")}</>
-        )
-      }
-    >
-      <Flex gap={{ default: "gapLg" }}>
-        <FlexItem grow={{ default: "grow" }}>
-          {isStepper && (
-            <ProgressStepper isVertical>
-              {progress.steps.map((s, index) => {
-                const current = progress.index - 1 === index;
-                const variant = progress.index > index ? "success" : "pending";
-
-                return (
-                  <ProgressStep
-                    key={index}
-                    isCurrent={current}
-                    variant={current ? "info" : variant}
-                  >
-                    {s}
-                  </ProgressStep>
-                );
-              })}
-            </ProgressStepper>
-          )}
-        </FlexItem>
-      </Flex>
-    </Alert>
-  );
-};
 
 /**
  * Props accepted by Page.Section
@@ -352,43 +308,35 @@ const Content = ({ children, ...pageSectionProps }: PageSectionProps) => {
 };
 
 /**
- * Component for structuring an Agama page, built on top of PF/Page/PageGroup.
- *
- * @see [Patternfly Page/PageGroup](https://www.patternfly.org/components/page#pagegroup)
- *
- * @example
- *   <Page>
- *     <Page.Header>
- *       <h2>{_("Software")}</h2>
- *     </Page.Header>
- *
- *     <Page.Content>
- *       <Stack hasGutter>
- *         <IssuesHint issues={issues} />
- *
- *         <Page.Section title="Selected patterns" >
- *           {patterns.length === 0 ? <NoPatterns /> : <SelectedPatterns patterns={patterns} />}
- *         </Page.Section>
- *
- *         <Page.Section aria-label="Used size">
- *           <UsedSize size={proposal.size} />
- *         </Page.Section>
- *       </Stack>
- *       <Page.Actions>
- *         <Page.Back />
- *       </Page.Actions>
- *     </Page.Content>
- *   </Page>
+ * Props for the ProgressBackdrop component.
  */
-const Page = ({
-  children,
-  progressScope,
-  ...pageGroupProps
-}: PageGroupProps & { progressScope?: Scope }): React.ReactNode => {
+type ProgressBackdropProps = {
+  /**
+   * Optional scope identifier to filter which progresses trigger the backgrop
+   * overlay. If undefined or no matching tasks exist, the backdrop won't be
+   * displayed.
+   */
+  progressScope?: Scope;
+};
+
+/**
+ * Internal component that blocks user by displaying a blurred overlay with a
+ * progress information when progresses matching the specified scope are active.
+ *
+ * @remarks
+ * The component uses two mechanisms to manage its visibility:
+ *   - Monitors active tasks from useStatus() that match the progressScope
+ *   - Listens to proposal update events to automatically unblock when
+ *     operations complete
+ *
+ * The backdrop remains visible until a proposal update event with a timestamp
+ * newer than when the progress finished arrives, ensuring the UI doesn't
+ * unblock prematurely.
+ */
+const ProgressBackdrop = ({ progressScope }: ProgressBackdropProps): React.ReactNode => {
   const { progresses: tasks } = useStatus();
   const [isBlocked, setIsBlocked] = useState(false);
   const [progressFinishedAt, setProgressFinishedAt] = useState<number | null>(null);
-
   const progress = !isEmpty(progressScope) && tasks.find((t) => t.scope === progressScope);
 
   useEffect(() => {
@@ -406,33 +354,79 @@ const Page = ({
     }
   }, [progress]);
 
-  const scrollX = window.scrollX;
-  const scrollY = window.scrollY;
-
-  useLayoutEffect(() => {
-    window.scrollTo(scrollX, scrollY);
-  });
+  if (!isBlocked) return null;
 
   return (
+    <Backdrop className="agm-main-content-overlay">
+      <Alert
+        isPlain
+        customIcon={<Spinner size="sm" />}
+        title={
+          progress ? (
+            <>
+              {progress.step}{" "}
+              <small>{sprintf(_("(step %s of %s)"), progress.index, progress.size)}</small>
+            </>
+          ) : (
+            <>{_("Refreshing data...")}</>
+          )
+        }
+      />
+    </Backdrop>
+  );
+};
+
+/**
+ * A component for creating an Agama page, built on top of PF/Page/PageGroup.
+ *
+ * It serves as the root container for all Agama pages and supports optional
+ * progress tracking.
+ *
+ * @see {@link https://www.patternfly.org/components/page#pagegroup | Patternfly Page/PageGroup}
+ *
+ * @example
+ * Basic page without progress tracking
+ * ```tsx
+ * <Page>
+ *   <Page.Header>
+ *     <h2>{_("Software")}</h2>
+ *   </Page.Header>
+ *   <Page.Content>
+ *     <p>Page content here</p>
+ *   </Page.Content>
+ * </Page>
+ * ```
+ *
+ * @example
+ * Page with progress tracking for software operations
+ * ```tsx
+ * <Page progressScope="software">
+ *   <Page.Header>
+ *     <h2>{_("Software")}</h2>
+ *   </Page.Header>
+ *   <Page.Content>
+ *     <Stack hasGutter>
+ *       <IssuesHint issues={issues} />
+ *       <Page.Section title="Selected patterns">
+ *         {patterns.length === 0 ? <NoPatterns /> : <SelectedPatterns patterns={patterns} />}
+ *       </Page.Section>
+ *       <Page.Section aria-label="Used size">
+ *         <UsedSize size={proposal.size} />
+ *       </Page.Section>
+ *     </Stack>
+ *   </Page.Content>
+ * </Page>
+ * ```
+ */
+const Page = ({
+  children,
+  progressScope,
+  ...pageGroupProps
+}: PageGroupProps & ProgressBackdropProps): React.ReactNode => {
+  return (
     <PageGroup {...pageGroupProps} tabIndex={-1} id="main-content">
-      <div style={isBlocked ? { filter: "blur(2px)", opacity: "55%", overflow: "hidden" } : {}}>
-        {children}
-      </div>
-      {isBlocked && (
-        <Backdrop
-          style={{
-            zIndex: 1000,
-            margin: "0",
-            padding: "0",
-            paddingBlockStart: "2.2rem",
-            position: "absolute",
-            // backgroundColor: "rgba(247, 247, 247, 0.500)",
-            // backgroundColor: "rgba(12, 50, 44, 0.200)",
-          }}
-        >
-          <LoadingAlert progress={progress} isStepper={false} />
-        </Backdrop>
-      )}
+      {children}
+      <ProgressBackdrop progressScope={progressScope} />
     </PageGroup>
   );
 };
