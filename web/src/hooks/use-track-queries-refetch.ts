@@ -29,7 +29,7 @@ import { useQueryClient } from "@tanstack/react-query";
  *
  * This hook subscribes to the specified queries and waits until each one
  * reports a `dataUpdatedAt` timestamp newer than when `startTracking()` was
- * called. Once all queries ara consideredupdated, the `onSuccess` callback is
+ * called. Once all queries are updated, the `onSuccess` callback is
  * triggered and subscriptions are automatically cleaned up.
  *
  * @param queryKeys - Array of query key strings to track for refetches
@@ -58,7 +58,7 @@ import { useQueryClient } from "@tanstack/react-query";
  * @remarks
  * - The hook automatically cleans up subscriptions on unmount
  * - Calling `startTracking` multiple times will cancel previous tracking cycles
- * - Only queries updated AFTER `startTracking` is called are considered
+ * - Only queries updated AFTER `startTracking()` is called are considered
  *   refetched
  * - If `queryKeys` is empty, `onSuccess` is called immediately
  * - Race conditions are prevented by tracking the start timestamp
