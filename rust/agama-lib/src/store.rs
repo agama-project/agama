@@ -26,7 +26,6 @@ use crate::{
     hostname::store::{HostnameStore, HostnameStoreError},
     http::BaseHTTPClient,
     install_settings::InstallSettings,
-    manager::{http_client::ManagerHTTPClientError, InstallationPhase, ManagerHTTPClient},
     network::{NetworkStore, NetworkStoreError},
     security::store::{SecurityStore, SecurityStoreError},
     storage::{
@@ -62,8 +61,6 @@ pub enum StoreError {
     #[error(transparent)]
     ISCSI(#[from] ISCSIHTTPClientError),
     #[error(transparent)]
-    Manager(#[from] ManagerHTTPClientError),
-    #[error(transparent)]
     ZFCP(#[from] ZFCPStoreError),
     #[error("Could not calculate the context")]
     InvalidStoreContext,
@@ -84,7 +81,6 @@ pub struct Store {
     security: SecurityStore,
     storage: StorageStore,
     iscsi_client: ISCSIHTTPClient,
-    manager_client: ManagerHTTPClient,
     http_client: BaseHTTPClient,
     zfcp: ZFCPStore,
 }
@@ -99,7 +95,6 @@ impl Store {
             network: NetworkStore::new(http_client.clone()),
             security: SecurityStore::new(http_client.clone()),
             storage: StorageStore::new(http_client.clone()),
-            manager_client: ManagerHTTPClient::new(http_client.clone()),
             iscsi_client: ISCSIHTTPClient::new(http_client.clone()),
             zfcp: ZFCPStore::new(http_client.clone()),
             http_client,

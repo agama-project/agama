@@ -18,15 +18,35 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use agama_lib::auth::AuthToken;
-use agama_lib::context::InstallationContext;
-use agama_lib::manager::{FinishMethod, ManagerHTTPClient};
-use agama_lib::monitor::{Monitor, MonitorClient};
+use std::{
+    fs,
+    os::unix::fs::OpenOptionsExt,
+    path::PathBuf,
+    process::{ExitCode, Termination},
+    time::Duration,
+};
+
+use agama_lib::{
+    auth::AuthToken,
+    context::InstallationContext,
+    error::ServiceError,
+    http::{BaseHTTPClient, WebSocketClient},
+    manager::{FinishMethod, ManagerHTTPClient},
+    monitor::{Monitor, MonitorClient},
+};
 use agama_transfer::Transfer;
+use agama_utils::api::{self, status::Stage, IssueWithScope};
 use anyhow::Context;
-use auth_tokens_file::AuthTokensFile;
 use clap::{Args, Parser};
 use fluent_uri::UriRef;
+use tokio::time::sleep;
+use url::Url;
+
+use crate::{
+    auth::run as run_auth_cmd, auth_tokens_file::AuthTokensFile, commands::Commands,
+    config::run as run_config_cmd, error::CliError, events::run as run_events_cmd,
+    logs::run as run_logs_cmd, progress::ProgressMonitor, questions::run as run_questions_cmd,
+};
 
 mod auth;
 mod auth_tokens_file;
@@ -39,26 +59,6 @@ mod events;
 mod logs;
 mod progress;
 mod questions;
-
-use crate::error::CliError;
-use agama_lib::error::ServiceError;
-use agama_lib::http::{BaseHTTPClient, WebSocketClient};
-use auth::run as run_auth_cmd;
-use commands::Commands;
-use config::run as run_config_cmd;
-use events::run as run_events_cmd;
-use logs::run as run_logs_cmd;
-use progress::ProgressMonitor;
-use questions::run as run_questions_cmd;
-use std::fs;
-use std::os::unix::fs::OpenOptionsExt;
-use std::path::PathBuf;
-use std::{
-    process::{ExitCode, Termination},
-    thread::sleep,
-    time::Duration,
-};
-use url::Url;
 
 /// Agama's CLI global options
 #[derive(Args, Clone)]
@@ -108,40 +108,27 @@ async fn probe(manager: ManagerHTTPClient, monitor: MonitorClient) -> anyhow::Re
 /// Before starting, it makes sure that the manager is idle.
 ///
 /// * `manager`: the manager client.
-async fn install(
-    manager: ManagerHTTPClient,
-    monitor: MonitorClient,
-    max_attempts: usize,
-) -> anyhow::Result<()> {
+async fn install(http_client: BaseHTTPClient, monitor: MonitorClient) -> anyhow::Result<()> {
     wait_until_idle(monitor.clone()).await?;
 
-    let status = manager.status().await?;
-    if !status.can_install {
+    let status = monitor.get_status().await?;
+    // TODO: own client for issues?
+    let issues: Vec<IssueWithScope> = http_client.get("/v2/issues").await?;
+    if status.stage != Stage::Configuring {
+        return Err(CliError::Installation)?;
+    }
+    if !issues.is_empty() {
         return Err(CliError::Validation)?;
     }
 
+    let action = api::Action::Install;
+    http_client.post_void("/v2/action", &action).await?;
+
+    // wait a bit before start monitoring
+    sleep(Duration::from_secs(1)).await;
     let progress = tokio::spawn(async {
         show_progress(monitor, true).await;
     });
-    // Try to start the installation up to max_attempts times.
-    let mut attempts = 1;
-    loop {
-        match manager.install().await {
-            Ok(()) => break,
-            Err(e) => {
-                eprintln!(
-                    "Could not start the installation process: {e}. Attempt {}/{}.",
-                    attempts, max_attempts
-                );
-            }
-        }
-        if attempts == max_attempts {
-            eprintln!("Giving up.");
-            return Err(CliError::Installation)?;
-        }
-        attempts += 1;
-        sleep(Duration::from_secs(1));
-    }
     let _ = progress.await;
     Ok(())
 }
@@ -168,7 +155,7 @@ async fn finish(
 async fn wait_until_idle(monitor: MonitorClient) -> anyhow::Result<()> {
     // FIXME: implement something like "wait_until_idle" in the monitor?
     let status = monitor.get_status().await?;
-    if status.installer_status.is_busy {
+    if !status.progresses.is_empty() {
         eprintln!("The Agama service is busy. Waiting for it to be available...");
         show_progress(monitor.clone(), true).await;
     }
@@ -306,9 +293,8 @@ pub async fn run_command(cli: Cli) -> anyhow::Result<()> {
         }
         Commands::Install => {
             let (client, monitor) = build_clients(api_url, cli.opts.insecure).await?;
-            let manager = ManagerHTTPClient::new(client.clone());
             let _ = wait_until_idle(monitor.clone()).await;
-            install(manager, monitor, 3).await?
+            install(client, monitor).await?
         }
         Commands::Finish { method } => {
             let (client, monitor) = build_clients(api_url, cli.opts.insecure).await?;
