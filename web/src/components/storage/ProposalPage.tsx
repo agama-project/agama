@@ -328,7 +328,7 @@ export default function ProposalPage(): React.ReactNode {
   if (resetNeeded) return;
 
   return (
-    <Page>
+    <Page progressScope="storage">
       <Page.Header>
         <Flex>
           <FlexItem>

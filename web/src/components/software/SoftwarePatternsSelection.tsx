@@ -183,7 +183,7 @@ function SoftwarePatternsSelection(): React.ReactNode {
   });
 
   return (
-    <Page>
+    <Page progressScope="software">
       <Page.Header>
         <Content component="h2">{_("Software selection")}</Content>
         <SearchInput
