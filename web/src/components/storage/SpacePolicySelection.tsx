@@ -28,8 +28,7 @@ import SpaceActionsTable, { SpacePolicyAction } from "~/components/storage/Space
 import { createPartitionableLocation, deviceChildren } from "~/components/storage/utils";
 import { _ } from "~/i18n";
 import { useDevices } from "~/hooks/model/system/storage";
-import { usePartitionable } from "~/hooks/model/storage/config-model";
-import { useSetSpacePolicy } from "~/hooks/storage/space-policy";
+import { usePartitionable, useSetSpacePolicy } from "~/hooks/model/storage/config-model";
 import { toDevice } from "./device-utils";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import { sprintf } from "sprintf-js";

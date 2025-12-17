@@ -304,8 +304,20 @@ function useSetFilesystem(): SetFilesystemFn {
   };
 }
 
+type setSpacePolicyFn = (
+  collection: Partitionable.CollectionName,
+  index: number,
+  data: Data.SpacePolicy,
+) => void;
+
+function useSetSpacePolicy(): setSpacePolicyFn {
+  const model = useConfigModel();
+  return (collection: Partitionable.CollectionName, index: number, data: Data.SpacePolicy) => {
+    putStorageModel(configModel.partitionable.setSpacePolicy(model, collection, index, data));
+  };
+}
+
 export {
-  configModelQuery,
   useConfigModel,
   useSolvedConfigModel,
   useMissingMountPaths,
@@ -333,4 +345,5 @@ export {
   useEditPartition,
   useDeletePartition,
   useSetFilesystem,
+  useSetSpacePolicy,
 };
