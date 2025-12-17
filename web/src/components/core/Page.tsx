@@ -33,6 +33,7 @@ import {
   CardHeader,
   CardHeaderProps,
   CardProps,
+  Content as PFContent,
   Divider,
   Flex,
   FlexItem,
@@ -338,36 +339,43 @@ const ProgressBackdrop = ({ progressScope }: ProgressBackdropProps): React.React
   const progress = !isEmpty(progressScope) && tasks.find((t) => t.scope === progressScope);
 
   useEffect(() => {
+    if (!progress && isBlocked && !progressFinishedAt) {
+      setProgressFinishedAt(Date.now());
+    }
+  }, [progress, isBlocked, progressFinishedAt]);
+
+  useEffect(() => {
     return onProposalUpdated((detail) => {
-      detail.completedAt > progressFinishedAt && setIsBlocked(false);
+      if (detail.completedAt > progressFinishedAt) {
+        setIsBlocked(false);
+        setProgressFinishedAt(null);
+      }
     });
   }, [progressFinishedAt]);
 
-  useEffect(() => {
-    if (progress) {
-      setIsBlocked(true);
-      setProgressFinishedAt(null);
-    } else {
-      setProgressFinishedAt(Date.now());
-    }
-  }, [progress]);
+  if (progress && !isBlocked) {
+    setIsBlocked(true);
+    setProgressFinishedAt(null);
+  }
 
   if (!isBlocked) return null;
 
   return (
-    <Backdrop className="agm-main-content-overlay">
+    <Backdrop className="agm-main-content-overlay" role="alert" aria-labelledby="progressStatus">
       <Alert
         isPlain
-        customIcon={<Spinner size="sm" />}
+        customIcon={<Spinner size="sm" aria-hidden />}
         title={
-          progress ? (
-            <>
-              {progress.step}{" "}
-              <small>{sprintf(_("(step %s of %s)"), progress.index, progress.size)}</small>
-            </>
-          ) : (
-            <>{_("Refreshing data...")}</>
-          )
+          <PFContent id="progressStatus">
+            {progress ? (
+              <>
+                {progress.step}{" "}
+                <small>{sprintf(_("(step %s of %s)"), progress.index, progress.size)}</small>
+              </>
+            ) : (
+              <>{_("Refreshing data...")}</>
+            )}
+          </PFContent>
         }
       />
     </Backdrop>
