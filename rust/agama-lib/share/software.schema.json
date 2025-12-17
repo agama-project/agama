@@ -17,7 +17,7 @@
       ]
     },
     "packages": {
-      "title": "List of packages to install",
+      "description": "List of packages to install",
       "type": "array",
       "items": {
         "type": "string",
@@ -27,11 +27,11 @@
       }
     },
     "onlyRequired": {
-      "title": "Flag if only minimal hard dependencies should be used in solver",
+      "description": "Flag if only minimal hard dependencies should be used in solver",
       "type": "boolean"
     },
     "extraRepositories": {
-      "title": "List of user specified repositories that will be used on top of default ones",
+      "description": "List of user specified repositories that will be used on top of default ones",
       "type": "array",
       "items": {
         "$ref": "#/$defs/repository"
@@ -40,7 +40,7 @@
   },
   "$defs": {
     "patternsArray": {
-      "title": "List of user-selected patterns to install",
+      "description": "List of user-selected patterns to install",
       "type": "array",
       "items": {
         "type": "string",
@@ -50,19 +50,19 @@
       }
     },
     "patternsObject": {
-      "title": "Modifications for the list of user-selected patterns to install",
+      "description": "Modifications for the list of user-selected patterns to install",
       "type": "object",
       "additionalProperties": false,
       "properties": {
         "add": {
-          "title": "List of user-selected patterns to add to the list",
+          "description": "List of user-selected patterns to add to the list",
           "type": "array",
           "items": {
             "type": "string"
           }
         },
         "remove": {
-          "title": "List of user-selected patterns to remove from the list",
+          "description": "List of user-selected patterns to remove from the list",
           "type": "array",
           "items": {
             "type": "string"
@@ -71,39 +71,39 @@
       }
     },
     "repository": {
-      "title": "Packages repository.",
+      "description": "Packages repository",
       "additionalProperties": false,
       "properties": {
         "alias": {
-          "title": "alias used for repository. Acting as identifier",
+          "description": "alias used for repository. Acting as identifier",
           "type": "string"
         },
         "url": {
-          "title": "URL pointing to repository",
+          "description": "URL pointing to repository",
           "type": "string"
         },
         "priority": {
-          "title": "Repository priority",
+          "description": "Repository priority",
           "type": "integer"
         },
         "name": {
-          "title": "User visible name. Defaults to alias",
+          "description": "User visible name. Defaults to alias",
           "type": "string"
         },
         "productDir": {
-          "title": "product directory on multi repo DVD. Usually not needed",
+          "description": "product directory on multi repo DVD. Usually not needed",
           "type": "string"
         },
         "enabled": {
-          "title": "If repository should be enabled. Defaults to true. Useful when adding additional repo that should not be immediately use.",
+          "description": "If repository should be enabled. Defaults to true. Useful when adding additional repo that should not be immediately use.",
           "type": "boolean"
         },
         "allowUnsigned": {
-          "title": "If unsigned repositories are allowed. Mainly useful for repositories that is hand crafted without GPG signature.",
+          "description": "If unsigned repositories are allowed. Mainly useful for repositories that is hand crafted without GPG signature.",
           "type": "boolean"
         },
         "gpgFingerprints": {
-          "title": "List of GPG fingerprints that is accepted for this repository. Useful for own repositories with proper GPG signature.",
+          "description": "List of GPG fingerprints that is accepted for this repository. Useful for own repositories with proper GPG signature.",
           "type": "array",
           "items": {
             "type": "string",

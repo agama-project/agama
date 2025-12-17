@@ -5,44 +5,77 @@
  * and run json-schema-to-typescript to regenerate this file.
  */
 
-export type ListOfUserSelectedPatternsToInstall = string[];
-export type ListOfUserSelectedPatternsToAddToTheList = string[];
-export type ListOfUserSelectedPatternsToRemoveFromTheList = string[];
-export type ListOfPackagesToInstall = string[];
-export type FlagIfOnlyMinimalHardDependenciesShouldBeUsedInSolver = boolean;
-export type AliasUsedForRepositoryActingAsIdentifier = string;
-export type URLPointingToRepository = string;
-export type RepositoryPriority = number;
-export type UserVisibleNameDefaultsToAlias = string;
-export type ProductDirectoryOnMultiRepoDVDUsuallyNotNeeded = string;
-export type IfRepositoryShouldBeEnabledDefaultsToTrueUsefulWhenAddingAdditionalRepoThatShouldNotBeImmediatelyUse =
-  boolean;
-export type IfUnsignedRepositoriesAreAllowedMainlyUsefulForRepositoriesThatIsHandCraftedWithoutGPGSignature = boolean;
-export type ListOfGPGFingerprintsThatIsAcceptedForThisRepositoryUsefulForOwnRepositoriesWithProperGPGSignature =
-  string[];
-export type ListOfUserSpecifiedRepositoriesThatWillBeUsedOnTopOfDefaultOnes = PackagesRepository[];
+/**
+ * List of user-selected patterns to install
+ */
+export type PatternsArray = string[];
 
 /**
  * Software configuration.
  */
 export interface Config {
-  patterns?: ListOfUserSelectedPatternsToInstall | ModificationsForTheListOfUserSelectedPatternsToInstall;
-  packages?: ListOfPackagesToInstall;
-  onlyRequired?: FlagIfOnlyMinimalHardDependenciesShouldBeUsedInSolver;
-  extraRepositories?: ListOfUserSpecifiedRepositoriesThatWillBeUsedOnTopOfDefaultOnes;
+  patterns?: PatternsArray | PatternsObject;
+  /**
+   * List of packages to install
+   */
+  packages?: string[];
+  /**
+   * Flag if only minimal hard dependencies should be used in solver
+   */
+  onlyRequired?: boolean;
+  /**
+   * List of user specified repositories that will be used on top of default ones
+   */
+  extraRepositories?: Repository[];
   [k: string]: unknown;
 }
-export interface ModificationsForTheListOfUserSelectedPatternsToInstall {
-  add?: ListOfUserSelectedPatternsToAddToTheList;
-  remove?: ListOfUserSelectedPatternsToRemoveFromTheList;
+/**
+ * Modifications for the list of user-selected patterns to install
+ */
+export interface PatternsObject {
+  /**
+   * List of user-selected patterns to add to the list
+   */
+  add?: string[];
+  /**
+   * List of user-selected patterns to remove from the list
+   */
+  remove?: string[];
 }
-export interface PackagesRepository {
-  alias?: AliasUsedForRepositoryActingAsIdentifier;
-  url?: URLPointingToRepository;
-  priority?: RepositoryPriority;
-  name?: UserVisibleNameDefaultsToAlias;
-  productDir?: ProductDirectoryOnMultiRepoDVDUsuallyNotNeeded;
-  enabled?: IfRepositoryShouldBeEnabledDefaultsToTrueUsefulWhenAddingAdditionalRepoThatShouldNotBeImmediatelyUse;
-  allowUnsigned?: IfUnsignedRepositoriesAreAllowedMainlyUsefulForRepositoriesThatIsHandCraftedWithoutGPGSignature;
-  gpgFingerprints?: ListOfGPGFingerprintsThatIsAcceptedForThisRepositoryUsefulForOwnRepositoriesWithProperGPGSignature;
+/**
+ * Packages repository
+ */
+export interface Repository {
+  /**
+   * alias used for repository. Acting as identifier
+   */
+  alias?: string;
+  /**
+   * URL pointing to repository
+   */
+  url?: string;
+  /**
+   * Repository priority
+   */
+  priority?: number;
+  /**
+   * User visible name. Defaults to alias
+   */
+  name?: string;
+  /**
+   * product directory on multi repo DVD. Usually not needed
+   */
+  productDir?: string;
+  /**
+   * If repository should be enabled. Defaults to true. Useful when adding additional repo that should not be immediately use.
+   */
+  enabled?: boolean;
+  /**
+   * If unsigned repositories are allowed. Mainly useful for repositories that is hand crafted without GPG signature.
+   */
+  allowUnsigned?: boolean;
+  /**
+   * List of GPG fingerprints that is accepted for this repository. Useful for own repositories with proper GPG signature.
+   */
+  gpgFingerprints?: string[];
 }
