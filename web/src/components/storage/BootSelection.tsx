@@ -27,9 +27,13 @@ import { DevicesFormSelect } from "~/components/storage";
 import { Page, SubtleContent } from "~/components/core";
 import { deviceLabel, formattedPath } from "~/components/storage/utils";
 import { useCandidateDevices, useDevices } from "~/hooks/model/system/storage";
-import { useConfigModel } from "~/hooks/model/storage/config-model";
+import {
+  useConfigModel,
+  useSetBootDevice,
+  useSetDefaultBootDevice,
+  useDisableBoot,
+} from "~/hooks/model/storage/config-model";
 import { isDrive } from "~/model/storage/device";
-import { useSetBootDevice, useSetDefaultBootDevice, useDisableBoot } from "~/hooks/storage/boot";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";

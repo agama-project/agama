@@ -23,7 +23,7 @@
 import { useCallback } from "react";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { useSystem } from "~/hooks/model/system/storage";
-import { solveStorageModel, getStorageModel } from "~/api";
+import { solveStorageModel, getStorageModel, putStorageModel } from "~/api";
 import configModel from "~/model/storage/config-model";
 import type { ConfigModel, Partitionable } from "~/model/storage/config-model";
 
@@ -59,6 +59,27 @@ function useMissingMountPaths(): string[] {
     ),
   });
   return data;
+}
+
+type SetBootDeviceFn = (deviceName: string) => void;
+
+function useSetBootDevice(): SetBootDeviceFn {
+  const config = useConfigModel();
+  return (deviceName: string) => putStorageModel(configModel.boot.setDevice(config, deviceName));
+}
+
+type SetDefaultBootDeviceFn = () => void;
+
+function useSetDefaultBootDevice(): SetDefaultBootDeviceFn {
+  const config = useConfigModel();
+  return () => putStorageModel(configModel.boot.setDefault(config));
+}
+
+type DisableBootConfigFn = () => void;
+
+function useDisableBoot(): DisableBootConfigFn {
+  const config = useConfigModel();
+  return () => putStorageModel(configModel.boot.disable(config));
 }
 
 function usePartitionable(
@@ -105,6 +126,9 @@ export {
   useConfigModel,
   useSolvedConfigModel,
   useMissingMountPaths,
+  useSetBootDevice,
+  useSetDefaultBootDevice,
+  useDisableBoot,
   usePartitionable,
   useDrive,
   useMdRaid,
