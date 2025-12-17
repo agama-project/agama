@@ -51,12 +51,7 @@
 use agama_utils::api::{self, Event};
 use tokio::sync::{broadcast, mpsc, oneshot};
 
-use crate::{
-    http::{
-        BaseHTTPClient, BaseHTTPClientError, WebSocketClient,
-        WebSocketError,
-    },
-};
+use crate::http::{BaseHTTPClient, BaseHTTPClientError, WebSocketClient, WebSocketError};
 
 #[derive(thiserror::Error, Debug)]
 pub enum MonitorError {
@@ -181,10 +176,12 @@ impl Monitor {
     async fn handle_event(&mut self, event: Event) {
         match event {
             // status related events is used here.
-            Event::ProgressFinished { scope: _ } => {},
-            Event::StageChanged => {},
+            Event::ProgressFinished { scope: _ } => {}
+            Event::StageChanged => {}
             Event::ProgressChanged { progress: _ } => {}
-            _ => { return; }
+            _ => {
+                return;
+            }
         }
         self.reread_status().await;
         let _ = self.updates.send(self.status.clone());
@@ -193,13 +190,12 @@ impl Monitor {
     async fn reread_status(&mut self) {
         let status_result = self.status_reader.read().await;
 
-                let Ok(new_status) = status_result else {
-                    tracing::warn!("Failed to read status {:?}", status_result);
-                    return;
-                };
-                self.status = new_status;
+        let Ok(new_status) = status_result else {
+            tracing::warn!("Failed to read status {:?}", status_result);
+            return;
+        };
+        self.status = new_status;
     }
-
 }
 
 /// Ancillary struct to read the status from the API.

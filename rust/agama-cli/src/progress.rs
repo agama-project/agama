@@ -82,7 +82,6 @@ impl ProgressMonitor {
             }
         }
 
-        
         // TODO: adapt to multi progresses
 
         true

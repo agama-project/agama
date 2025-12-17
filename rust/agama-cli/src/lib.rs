@@ -23,8 +23,8 @@ use agama_lib::context::InstallationContext;
 use agama_lib::manager::{FinishMethod, ManagerHTTPClient};
 use agama_lib::monitor::{Monitor, MonitorClient};
 use agama_transfer::Transfer;
-use agama_utils::api::{self, IssueWithScope};
 use agama_utils::api::status::Stage;
+use agama_utils::api::{self, IssueWithScope};
 use anyhow::Context;
 use auth_tokens_file::AuthTokensFile;
 use clap::{Args, Parser};
@@ -110,10 +110,7 @@ async fn probe(manager: ManagerHTTPClient, monitor: MonitorClient) -> anyhow::Re
 /// Before starting, it makes sure that the manager is idle.
 ///
 /// * `manager`: the manager client.
-async fn install(
-    http_client: BaseHTTPClient,
-    monitor: MonitorClient,
-) -> anyhow::Result<()> {
+async fn install(http_client: BaseHTTPClient, monitor: MonitorClient) -> anyhow::Result<()> {
     wait_until_idle(monitor.clone()).await?;
 
     let status = monitor.get_status().await?;
@@ -122,7 +119,7 @@ async fn install(
     if status.stage != Stage::Configuring {
         return Err(CliError::Installation)?;
     }
-    if !issues.is_empty(){
+    if !issues.is_empty() {
         return Err(CliError::Validation)?;
     }
 

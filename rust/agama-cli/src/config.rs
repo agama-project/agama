@@ -18,8 +18,11 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
+use std::thread::sleep;
+use std::time::Duration;
 use std::{io::Write, path::PathBuf, process::Command};
 
+use agama_lib::monitor::MonitorClient;
 use agama_lib::profile::ProfileHTTPClient;
 use agama_lib::{
     context::InstallationContext, http::BaseHTTPClient, profile::ProfileValidator,
@@ -34,6 +37,7 @@ use serde_json::json;
 use tempfile::Builder;
 
 use crate::{api_url, build_http_client, cli_input::CliInput, cli_output::CliOutput, GlobalOpts};
+use crate::{build_clients, show_progress};
 
 const DEFAULT_EDITOR: &str = "/usr/bin/vi";
 
@@ -118,7 +122,7 @@ pub async fn run(subcommand: ConfigCommands, opts: GlobalOpts) -> anyhow::Result
             validate(&http_client, CliInput::Full(json.clone()), false).await?;
         }
         ConfigCommands::Load { url_or_path } => {
-            let http_client = build_http_client(api_url, opts.insecure, true).await?;
+            let (http_client, monitor) = build_clients(api_url, opts.insecure).await?;
             let url_or_path = url_or_path.unwrap_or(CliInput::Stdin);
             let contents = url_or_path.read_to_string(opts.insecure)?;
             let valid = validate(&http_client, CliInput::Full(contents.clone()), false).await?;
@@ -129,6 +133,8 @@ pub async fn run(subcommand: ConfigCommands, opts: GlobalOpts) -> anyhow::Result
 
             let model: api::Config = serde_json::from_str(&contents)?;
             patch_config(&http_client, &model).await?;
+
+            monitor_progress(monitor).await?;
         }
         ConfigCommands::Validate { url_or_path, local } => {
             let _ = if !local {
@@ -145,13 +151,15 @@ pub async fn run(subcommand: ConfigCommands, opts: GlobalOpts) -> anyhow::Result
             generate(&http_client, url_or_path, opts.insecure).await?;
         }
         ConfigCommands::Edit { editor } => {
-            let http_client = build_http_client(api_url, opts.insecure, true).await?;
+            let (http_client, monitor) = build_clients(api_url, opts.insecure).await?;
             let response: api::Config = http_client.get("/v2/config").await?;
             let editor = editor
                 .or_else(|| std::env::var("EDITOR").ok())
                 .unwrap_or(DEFAULT_EDITOR.to_string());
             let result = edit(&http_client, &response, &editor).await?;
             patch_config(&http_client, &result).await?;
+
+            monitor_progress(monitor).await?;
         }
     }
 
@@ -380,4 +388,16 @@ fn editor_command(command: &str) -> Command {
     let mut command = Command::new(program);
     command.args(parts.collect::<Vec<&str>>());
     command
+}
+
+async fn monitor_progress(monitor: MonitorClient) -> anyhow::Result<()> {
+    // wait a bit to settle it down and avoid quick actions blinking
+    sleep(Duration::from_secs(1));
+
+    let task = tokio::spawn(async move {
+        show_progress(monitor, true).await;
+    });
+    let _ = task.await?;
+
+    Ok(())
 }
