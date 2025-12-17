@@ -22,6 +22,8 @@
 //! configuration and a mechanism to build it starting from the product
 //! definition, the user configuration, etc.
 
+use std::collections::{HashMap, HashSet};
+
 use agama_utils::{
     api::software::{Config, PatternsConfig, RepositoryConfig, SystemInfo},
     products::{ProductSpec, UserPattern},
@@ -40,8 +42,20 @@ use crate::{model::software_selection::SoftwareSelection, Resolvable, Resolvable
 pub struct SoftwareState {
     pub product: String,
     pub repositories: Vec<Repository>,
-    pub resolvables: Vec<SelectedResolvable>,
+    pub resolvables: ResolvablesState,
     pub options: SoftwareOptions,
+}
+
+impl SoftwareState {
+    /// Builds an empty software state for the given product.
+    pub fn new(product: &str) -> Self {
+        SoftwareState {
+            product: product.to_string(),
+            repositories: Default::default(),
+            resolvables: Default::default(),
+            options: Default::default(),
+        }
+    }
 }
 
 /// Builder to create a [SoftwareState] struct from different sources.
@@ -144,30 +158,37 @@ impl<'a> SoftwareStateBuilder<'a> {
         if let Some(patterns) = &software.patterns {
             match patterns {
                 PatternsConfig::PatternsList(list) => {
-                    // Replaces the list, keeping only the non-optional elements.
-                    state.resolvables.retain(|p| !p.reason.is_optional());
-                    state.resolvables.extend(list.iter().map(|n| {
-                        SelectedResolvable::new(n, ResolvableType::Pattern, SelectedReason::User)
-                    }));
+                    state.resolvables.reset();
+                    for name in list.iter() {
+                        state.resolvables.add_or_replace(
+                            name,
+                            ResolvableType::Pattern,
+                            ResolvableSelection::Selected,
+                        )
+                    }
                 }
                 PatternsConfig::PatternsMap(map) => {
-                    // Adds or removes elements to the list
+                    let mut list: Vec<(&str, ResolvableSelection)> = vec![];
+
                     if let Some(add) = &map.add {
-                        state.resolvables.extend(add.iter().map(|n| {
-                            SelectedResolvable::new(
-                                n,
-                                ResolvableType::Pattern,
-                                SelectedReason::User,
-                            )
-                        }));
+                        list.extend(
+                            add.iter()
+                                .map(|n| (n.as_str(), ResolvableSelection::Selected)),
+                        );
                     }
 
                     if let Some(remove) = &map.remove {
-                        // NOTE: should we notify when a user wants to remove a
-                        // pattern which is not optional?
-                        state.resolvables.retain(|p| {
-                            !(p.reason.is_optional() && remove.contains(&p.resolvable.name))
-                        });
+                        list.extend(
+                            remove
+                                .iter()
+                                .map(|n| (n.as_str(), ResolvableSelection::Removed)),
+                        );
+                    }
+
+                    for (name, selection) in list.into_iter() {
+                        state
+                            .resolvables
+                            .add_or_replace(name, ResolvableType::Pattern, selection);
                     }
                 }
             }
@@ -180,13 +201,12 @@ impl<'a> SoftwareStateBuilder<'a> {
 
     /// It adds the software selection from Agama modules.
     fn add_selection(&self, state: &mut SoftwareState, selection: &SoftwareSelection) {
-        let resolvables = selection.resolvables().map(|r| {
-            SelectedResolvable::new_with_resolvable(
-                &r,
-                SelectedReason::Installer { optional: false },
-            )
-        });
-        state.resolvables.extend(resolvables)
+        for resolvable in selection.resolvables() {
+            state.resolvables.add_or_replace_resolvable(
+                &resolvable,
+                ResolvableSelection::AutoSelected { optional: false },
+            );
+        }
     }
 
     fn from_product_spec(&self) -> SoftwareState {
@@ -206,40 +226,34 @@ impl<'a> SoftwareStateBuilder<'a> {
             })
             .collect();
 
-        let mut resolvables: Vec<SelectedResolvable> = software
-            .mandatory_patterns
-            .iter()
-            .map(|p| {
-                SelectedResolvable::new(
-                    p,
-                    ResolvableType::Pattern,
-                    SelectedReason::Installer { optional: false },
-                )
-            })
-            .collect();
-
-        resolvables.extend(software.optional_patterns.iter().map(|p| {
-            SelectedResolvable::new(
-                p,
+        let mut resolvables = ResolvablesState::default();
+        for pattern in &software.mandatory_patterns {
+            resolvables.add_or_replace(
+                pattern,
                 ResolvableType::Pattern,
-                SelectedReason::Installer { optional: true },
-            )
-        }));
+                ResolvableSelection::AutoSelected { optional: false },
+            );
+        }
 
-        resolvables.extend(software.user_patterns.iter().filter_map(|p| match p {
-            UserPattern::Plain(_) => None,
-            UserPattern::Preselected(pattern) => {
-                if pattern.selected {
-                    Some(SelectedResolvable::new(
-                        &pattern.name,
+        for pattern in &software.optional_patterns {
+            resolvables.add_or_replace(
+                pattern,
+                ResolvableType::Pattern,
+                ResolvableSelection::AutoSelected { optional: true },
+            );
+        }
+
+        for pattern in &software.user_patterns {
+            if let UserPattern::Preselected(user_pattern) = pattern {
+                if user_pattern.selected {
+                    resolvables.add_or_replace(
+                        &user_pattern.name,
                         ResolvableType::Pattern,
-                        SelectedReason::Installer { optional: true },
-                    ))
-                } else {
-                    None
+                        ResolvableSelection::AutoSelected { optional: true },
+                    )
                 }
             }
-        }));
+        }
 
         SoftwareState {
             product: software.base_product.clone(),
@@ -296,40 +310,83 @@ impl From<&agama_utils::api::software::Repository> for Repository {
     }
 }
 
-/// Defines a resolvable to be selected.
-#[derive(Debug, PartialEq)]
-pub struct SelectedResolvable {
-    /// Resolvable name.
-    pub resolvable: Resolvable,
-    /// The reason to select the resolvable.
-    pub reason: SelectedReason,
-}
+/// Holds states for resolvables.
+///
+/// Check the [ResolvableSelection] enum for possible states.
+#[derive(Debug, Default)]
+pub struct ResolvablesState(HashMap<(String, ResolvableType), ResolvableSelection>);
 
-impl SelectedResolvable {
-    pub fn new(name: &str, r#type: ResolvableType, reason: SelectedReason) -> Self {
-        Self::new_with_resolvable(&Resolvable::new(name, r#type), reason)
-    }
-
-    pub fn new_with_resolvable(resolvable: &Resolvable, reason: SelectedReason) -> Self {
-        Self {
-            resolvable: resolvable.clone(),
-            reason,
+impl ResolvablesState {
+    /// Add or replace the state for the resolvable with the given name and type.
+    ///
+    /// * `name`: resolvable name.
+    /// * `r#type`: resolvable type.
+    /// * `selection`: selection state.
+    pub fn add_or_replace(
+        &mut self,
+        name: &str,
+        r#type: ResolvableType,
+        selection: ResolvableSelection,
+    ) {
+        println!("Adding {}", name);
+        if let Some(entry) = self.0.get(&(name.to_string(), r#type)) {
+            println!("entry {:?}", &entry);
+            if let ResolvableSelection::AutoSelected { optional: false } = entry {
+                tracing::debug!("Could not modify the {name} state because it is mandatory.");
+                return;
+            }
         }
+        self.0.insert((name.to_string(), r#type), selection);
+    }
+
+    /// Add or replace the state for the given resolvable.
+    ///
+    /// * `resolvable`: resolvable.
+    /// * `selection`: selection state.
+    pub fn add_or_replace_resolvable(
+        &mut self,
+        resolvable: &Resolvable,
+        selection: ResolvableSelection,
+    ) {
+        self.add_or_replace(&resolvable.name, resolvable.r#type, selection);
+    }
+
+    /// Reset the list of resolvables.
+    ///
+    /// The mandatory resolvables are preserved.
+    pub fn reset(&mut self) {
+        self.0.retain(|_, selection| match selection {
+            ResolvableSelection::AutoSelected { optional: false } => true,
+            _ => false,
+        });
+    }
+
+    /// Turns the list of resolvables into a vector.
+    ///
+    /// FIXME: return an interator instead.
+    pub fn to_hash_set(&self) -> HashSet<(String, ResolvableType, ResolvableSelection)> {
+        self.0
+            .iter()
+            .map(|(key, selection)| (key.0.to_string(), key.1, *selection))
+            .collect()
     }
 }
 
-/// Defines the reason to select a resolvable.
-#[derive(Clone, Copy, Debug, PartialEq)]
-pub enum SelectedReason {
+/// Define the wanted resolvable selection state.
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
+pub enum ResolvableSelection {
     /// Selected by the user.
-    User,
+    Selected,
     /// Selected by the installer itself and whether it is optional or not.
-    Installer { optional: bool },
+    AutoSelected { optional: bool },
+    /// Removed by the user. It allows to remove resolvables that might be auto-selected
+    /// by the solver (e.g., recommended patterns).
+    Removed,
 }
 
-impl SelectedReason {
+impl ResolvableSelection {
     pub fn is_optional(&self) -> bool {
-        if let SelectedReason::Installer { optional } = self {
+        if let ResolvableSelection::AutoSelected { optional } = self {
             return *optional;
         }
 
@@ -337,13 +394,14 @@ impl SelectedReason {
     }
 }
 
-impl From<SelectedReason> for zypp_agama::ResolvableSelected {
-    fn from(value: SelectedReason) -> Self {
+impl From<ResolvableSelection> for zypp_agama::ResolvableSelected {
+    fn from(value: ResolvableSelection) -> Self {
         match value {
-            SelectedReason::User => zypp_agama::ResolvableSelected::User,
-            SelectedReason::Installer { optional: _ } => {
+            ResolvableSelection::Selected => zypp_agama::ResolvableSelected::User,
+            ResolvableSelection::AutoSelected { optional: _ } => {
                 zypp_agama::ResolvableSelected::Installation
             }
+            ResolvableSelection::Removed => zypp_agama::ResolvableSelected::Not,
         }
     }
 }
@@ -357,7 +415,7 @@ pub struct SoftwareOptions {
 
 #[cfg(test)]
 mod tests {
-    use std::path::PathBuf;
+    use std::{collections::HashSet, path::PathBuf};
 
     use agama_utils::{
         api::software::{
@@ -369,7 +427,7 @@ mod tests {
 
     use crate::model::{
         packages::ResolvableType,
-        state::{SelectedReason, SelectedResolvable, SoftwareStateBuilder},
+        state::{ResolvableSelection, SoftwareStateBuilder},
     };
 
     fn build_user_config(patterns: Option<PatternsConfig>) -> Config {
@@ -423,19 +481,19 @@ mod tests {
         assert_eq!(state.product, "openSUSE".to_string());
 
         assert_eq!(
-            state.resolvables,
-            vec![
-                SelectedResolvable::new(
-                    "enhanced_base",
+            state.resolvables.to_hash_set(),
+            HashSet::from([
+                (
+                    "enhanced_base".to_string(),
                     ResolvableType::Pattern,
-                    SelectedReason::Installer { optional: false }
+                    ResolvableSelection::AutoSelected { optional: false }
                 ),
-                SelectedResolvable::new(
-                    "selinux",
+                (
+                    "selinux".to_string(),
                     ResolvableType::Pattern,
-                    SelectedReason::Installer { optional: true }
+                    ResolvableSelection::AutoSelected { optional: true }
                 ),
-            ]
+            ])
         );
     }
 
@@ -471,20 +529,24 @@ mod tests {
             .with_config(&config)
             .build();
         assert_eq!(
-            state.resolvables,
-            vec![
-                SelectedResolvable::new(
-                    "enhanced_base",
+            state.resolvables.to_hash_set(),
+            HashSet::from([
+                (
+                    "enhanced_base".to_string(),
                     ResolvableType::Pattern,
-                    SelectedReason::Installer { optional: false }
+                    ResolvableSelection::AutoSelected { optional: false }
                 ),
-                SelectedResolvable::new(
-                    "selinux",
+                (
+                    "selinux".to_string(),
                     ResolvableType::Pattern,
-                    SelectedReason::Installer { optional: true }
+                    ResolvableSelection::AutoSelected { optional: true }
                 ),
-                SelectedResolvable::new("gnome", ResolvableType::Pattern, SelectedReason::User)
-            ]
+                (
+                    "gnome".to_string(),
+                    ResolvableType::Pattern,
+                    ResolvableSelection::Selected
+                )
+            ])
         );
     }
 
@@ -501,12 +563,19 @@ mod tests {
             .with_config(&config)
             .build();
         assert_eq!(
-            state.resolvables,
-            vec![SelectedResolvable::new(
-                "enhanced_base",
-                ResolvableType::Pattern,
-                SelectedReason::Installer { optional: false }
-            ),]
+            state.resolvables.to_hash_set(),
+            HashSet::from([
+                (
+                    "enhanced_base".to_string(),
+                    ResolvableType::Pattern,
+                    ResolvableSelection::AutoSelected { optional: false }
+                ),
+                (
+                    "selinux".to_string(),
+                    ResolvableType::Pattern,
+                    ResolvableSelection::Removed
+                )
+            ])
         );
     }
 
@@ -523,19 +592,19 @@ mod tests {
             .with_config(&config)
             .build();
         assert_eq!(
-            state.resolvables,
-            vec![
-                SelectedResolvable::new(
-                    "enhanced_base",
+            state.resolvables.to_hash_set(),
+            HashSet::from([
+                (
+                    "enhanced_base".to_string(),
                     ResolvableType::Pattern,
-                    SelectedReason::Installer { optional: false }
+                    ResolvableSelection::AutoSelected { optional: false }
                 ),
-                SelectedResolvable::new(
-                    "selinux",
+                (
+                    "selinux".to_string(),
                     ResolvableType::Pattern,
-                    SelectedReason::Installer { optional: true }
+                    ResolvableSelection::AutoSelected { optional: true }
                 )
-            ]
+            ])
         );
     }
 
@@ -549,15 +618,19 @@ mod tests {
             .with_config(&config)
             .build();
         assert_eq!(
-            state.resolvables,
-            vec![
-                SelectedResolvable::new(
-                    "enhanced_base",
+            state.resolvables.to_hash_set(),
+            HashSet::from([
+                (
+                    "enhanced_base".to_string(),
                     ResolvableType::Pattern,
-                    SelectedReason::Installer { optional: false }
+                    ResolvableSelection::AutoSelected { optional: false }
                 ),
-                SelectedResolvable::new("gnome", ResolvableType::Pattern, SelectedReason::User,)
-            ]
+                (
+                    "gnome".to_string(),
+                    ResolvableType::Pattern,
+                    ResolvableSelection::Selected,
+                )
+            ])
         );
     }
 

@@ -40,6 +40,8 @@ use zypp_agama::{errors::ZyppResult, ZyppError};
 use crate::{
     callbacks,
     model::state::{self, SoftwareState},
+    state::ResolvableSelection,
+    Resolvable, ResolvableType,
 };
 
 const GPG_KEYS: &str = "/usr/lib/rpm/gnupg/keys/gpg-*";
@@ -227,14 +229,10 @@ impl ZyppServer {
             })
             .collect();
 
-        let state = SoftwareState {
-            // FIXME: read the real product. It is not a problem because it is replaced
-            // later.
-            product: "SLES".to_string(),
-            repositories,
-            resolvables: vec![],
-            options: Default::default(),
-        };
+        // FIXME: read the real product. It is not a problem because it is replaced
+        // later.
+        let mut state = SoftwareState::new("SLES");
+        state.repositories = repositories;
         Ok(state)
     }
 
@@ -338,28 +336,28 @@ impl ZyppServer {
                 Issue::new("software.select_product", &message).with_details(&error.to_string()),
             );
         }
-        for resolvable_state in &state.resolvables {
-            let resolvable = &resolvable_state.resolvable;
-            let result = zypp.select_resolvable(
-                &resolvable.name,
-                resolvable.r#type.into(),
-                resolvable_state.reason.into(),
-            );
-
-            if let Err(error) = result {
-                if resolvable_state.reason.is_optional() {
-                    tracing::info!(
-                        "Could not select '{}' but it is optional.",
-                        &resolvable.name
-                    );
-                } else {
-                    let message = format!("Could not select '{}'", &resolvable.name);
-                    issues.push(
-                        Issue::new("software.select_resolvable", &message)
-                            .with_details(&error.to_string()),
-                    );
+        for (name, r#type, selection) in &state.resolvables.to_hash_set() {
+            match selection {
+                ResolvableSelection::AutoSelected { optional } => {
+                    issues.append(&mut self.select_resolvable(
+                        &zypp,
+                        name,
+                        *r#type,
+                        zypp_agama::ResolvableSelected::Installation,
+                        *optional,
+                    ));
                 }
-            }
+                ResolvableSelection::Selected => {
+                    issues.append(&mut self.select_resolvable(
+                        &zypp,
+                        name,
+                        *r#type,
+                        zypp_agama::ResolvableSelected::User,
+                        false,
+                    ));
+                }
+                ResolvableSelection::Removed => self.unselect_resolvable(&zypp, name, *r#type),
+            };
         }
 
         _ = progress.cast(progress::message::Finish::new(Scope::Software));
@@ -373,6 +371,39 @@ impl ZyppServer {
             // It is OK to return ok, when tx is closed, we have no other way to indicate issue.
         }
         Ok(())
+    }
+
+    fn select_resolvable(
+        &self,
+        zypp: &zypp_agama::Zypp,
+        name: &str,
+        r#type: ResolvableType,
+        reason: zypp_agama::ResolvableSelected,
+        optional: bool,
+    ) -> Vec<Issue> {
+        let mut issues = vec![];
+        let result = zypp.select_resolvable(name, r#type.into(), reason);
+
+        if let Err(error) = result {
+            if optional {
+                tracing::info!("Could not select '{}' but it is optional.", name);
+            } else {
+                let message = format!("Could not select '{}'", name);
+                issues.push(
+                    Issue::new("software.select_resolvable", &message)
+                        .with_details(&error.to_string()),
+                );
+            }
+        }
+        issues
+    }
+
+    fn unselect_resolvable(&self, zypp: &zypp_agama::Zypp, name: &str, r#type: ResolvableType) {
+        if let Err(error) =
+            zypp.unselect_resolvable(name, r#type.into(), zypp_agama::ResolvableSelected::User)
+        {
+            tracing::info!("Could not unselect '{name}': {error}");
+        }
     }
 
     fn finish(

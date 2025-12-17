@@ -39,7 +39,16 @@ impl Resolvable {
 
 /// Software resolvable type (package or pattern).
 #[derive(
-    Clone, Copy, Debug, Deserialize, Serialize, strum::Display, utoipa::ToSchema, PartialEq,
+    Clone,
+    Copy,
+    Debug,
+    Deserialize,
+    Serialize,
+    strum::Display,
+    utoipa::ToSchema,
+    PartialEq,
+    Eq,
+    Hash,
 )]
 #[strum(serialize_all = "camelCase")]
 #[serde(rename_all = "camelCase")]
