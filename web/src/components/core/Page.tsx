@@ -298,12 +298,10 @@ const Content = ({ children, ...pageSectionProps }: PageSectionProps) => {
   const mountRegistrationAlert = !SIDE_PATHS.includes(location.pathname);
 
   return (
-    <>
-      <PageSection hasBodyWrapper={false} isFilled component="div" {...pageSectionProps}>
-        {mountRegistrationAlert && <ProductRegistrationAlert />}
-        {children}
-      </PageSection>
-    </>
+    <PageSection hasBodyWrapper={false} isFilled component="div" {...pageSectionProps}>
+      {mountRegistrationAlert && <ProductRegistrationAlert />}
+      {children}
+    </PageSection>
   );
 };
 
