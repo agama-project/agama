@@ -158,7 +158,7 @@ function SoftwarePage(): React.ReactNode {
 
   const startProbing = () => {
     setLoading(true);
-    // probe();
+    // TODO: probe();
   };
 
   const showReposAlert = repos.some((r) => !r.loaded);
