@@ -18,15 +18,18 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
+use merge::Merge;
 use serde::{Deserialize, Serialize};
 
 /// Hostname config.
-#[derive(Clone, Debug, Default, Serialize, Deserialize, PartialEq, utoipa::ToSchema)]
+#[derive(Clone, Debug, Default, Merge, Serialize, Deserialize, PartialEq, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct Config {
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[merge(strategy = merge::option::overwrite_none)]
     pub r#static: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(alias = "transient")]
+    #[merge(strategy = merge::option::overwrite_none)]
     pub hostname: Option<String>,
 }
