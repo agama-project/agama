@@ -498,7 +498,7 @@ mod tests {
                 (
                     "selinux".to_string(),
                     ResolvableType::Pattern,
-                    ResolvableSelection::AutoSelected { optional: true }
+                    ResolvableSelection::Selected,
                 ),
             ]
         );
@@ -551,7 +551,7 @@ mod tests {
                 (
                     "selinux".to_string(),
                     ResolvableType::Pattern,
-                    ResolvableSelection::AutoSelected { optional: true }
+                    ResolvableSelection::Selected
                 ),
             ]
         );
@@ -609,7 +609,7 @@ mod tests {
                 (
                     "selinux".to_string(),
                     ResolvableType::Pattern,
-                    ResolvableSelection::AutoSelected { optional: true }
+                    ResolvableSelection::Selected
                 )
             ]
         );
