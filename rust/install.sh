@@ -42,6 +42,7 @@ install6 -D -p "${SRCDIR}"/share/agama.pam "${DESTDIR}${pamvendordir}"/agama
 
 install6 -D -t "${DESTDIR}${datadir}"/agama/schema "${SRCDIR}"/agama-lib/share/iscsi.schema.json
 install6 -D -t "${DESTDIR}${datadir}"/agama/schema "${SRCDIR}"/agama-lib/share/profile.schema.json
+install6 -D -t "${DESTDIR}${datadir}"/agama/schema "${SRCDIR}"/agama-lib/share/software.schema.json
 install6 -D -t "${DESTDIR}${datadir}"/agama/schema "${SRCDIR}"/agama-lib/share/storage.schema.json
 install6 -D -t "${DESTDIR}${datadir}"/agama/schema "${SRCDIR}"/agama-lib/share/storage.model.schema.json
 install6 -D -t "${DESTDIR}${datadir}"/agama/jsonnet "${SRCDIR}"/share/agama.libsonnet
