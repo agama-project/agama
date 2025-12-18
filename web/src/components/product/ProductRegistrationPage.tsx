@@ -54,11 +54,11 @@ import RegistrationCodeInput from "./RegistrationCodeInput";
 import { RegistrationParams } from "~/types/software";
 import { HOSTNAME } from "~/routes/paths";
 import { useProduct, useRegistration, useRegisterMutation, useAddons } from "~/queries/software";
-import { useHostname } from "~/queries/hostname";
 import { isEmpty } from "radashi";
 import { mask } from "~/utils";
 import { sprintf } from "sprintf-js";
 import { _, N_ } from "~/i18n";
+import { useProposal } from "~/hooks/model/proposal";
 
 const FORM_ID = "productRegistration";
 const SERVER_LABEL = N_("Registration server");
@@ -388,7 +388,8 @@ const RegistrationFormSection = () => {
 };
 
 const HostnameAlert = () => {
-  const { transient: transientHostname, static: staticHostname } = useHostname();
+  const { hostname: hostnameProposal } = useProposal();
+  const { hostname: transientHostname, static: staticHostname } = hostnameProposal;
   const hostname = isEmpty(staticHostname) ? transientHostname : staticHostname;
 
   // TRANSLATORS: %s will be replaced with the hostname value
