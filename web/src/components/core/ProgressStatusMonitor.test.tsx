@@ -22,22 +22,11 @@
 
 import React from "react";
 import { screen, within } from "@testing-library/react";
-import { installerRender } from "~/test-utils";
-import { useStatus } from "~/hooks/api";
+import { installerRender, mockProgresses } from "~/test-utils";
 import ProgressStatusMonitor from "./ProgressStatusMonitor";
-
-const mockProgress: jest.Mock<ReturnType<typeof useStatus>["progresses"]> = jest.fn();
-
-jest.mock("~/hooks/api", () => ({
-  useStatus: () => ({ progresses: mockProgress() }),
-}));
 
 describe("ProgressStatusMonitor", () => {
   describe("when there are no tasks in background", () => {
-    beforeEach(() => {
-      mockProgress.mockReturnValue([]);
-    });
-
     it("renders a disabled button with no content", () => {
       installerRender(<ProgressStatusMonitor />);
       const button = screen.getByRole("button");
@@ -55,7 +44,7 @@ describe("ProgressStatusMonitor", () => {
 
   describe("when there are running tasks", () => {
     beforeEach(() => {
-      mockProgress.mockReturnValue([
+      mockProgresses([
         {
           scope: "software",
           size: 3,
@@ -70,12 +59,11 @@ describe("ProgressStatusMonitor", () => {
       ]);
     });
 
-    it("renders an enabled button with loading state", () => {
+    it("renders an enabled button with PatternFly 'in-progress' modifier", () => {
       installerRender(<ProgressStatusMonitor />);
       const button = screen.getByRole("button");
       expect(button).toBeEnabled();
-      expect(button).not.toBeEmptyDOMElement();
-      within(button).getByRole("progressbar");
+      expect(button.classList).toContain("pf-m-in-progress");
     });
 
     it("renders a popover with tasks details when the button is clicked", async () => {
@@ -83,7 +71,7 @@ describe("ProgressStatusMonitor", () => {
       const button = screen.getByRole("button");
       await user.click(button);
       const popover = screen.getByRole("dialog", { name: "1 task active" });
-      within(popover).getByRole("progressbar", { name: "Software" });
+      within(popover).getByText("Software");
     });
   });
 });
