@@ -22,12 +22,18 @@
 
 import React from "react";
 import { screen, waitFor, within } from "@testing-library/react";
-import { installerRender, mockNavigateFn, mockRoutes, plainRender } from "~/test-utils";
+import {
+  installerRender,
+  mockNavigateFn,
+  mockProgresses,
+  mockRoutes,
+  plainRender,
+} from "~/test-utils";
+import useTrackQueriesRefetch from "~/hooks/use-track-queries-refetch";
+import { COMMON_PROPOSAL_KEYS } from "~/hooks/model/proposal";
 import { PRODUCT, ROOT } from "~/routes/paths";
 import { _ } from "~/i18n";
 import Page from "./Page";
-import useTrackQueriesRefetch from "~/hooks/use-track-queries-refetch";
-import { COMMON_PROPOSAL_KEYS } from "~/hooks/model/proposal";
 
 let consoleErrorSpy: jest.SpyInstance;
 let mockStartTracking: jest.Mock = jest.fn();
@@ -43,11 +49,6 @@ jest.mock("~/components/product/ProductRegistrationAlert", () => () => (
 
 const mockUseTrackQueriesRefetch = jest.mocked(useTrackQueriesRefetch);
 
-const mockUseStatus = jest.fn();
-jest.mock("~/hooks/model/status", () => ({
-  useStatus: () => mockUseStatus(),
-}));
-
 describe("Page", () => {
   beforeAll(() => {
     consoleErrorSpy = jest.spyOn(console, "error");
@@ -59,10 +60,6 @@ describe("Page", () => {
   });
 
   beforeEach(() => {
-    mockUseStatus.mockReturnValue({
-      progresses: [],
-    });
-
     // Set up default mock for useTrackQueriesRefetch
     mockUseTrackQueriesRefetch.mockReturnValue({
       startTracking: mockStartTracking,
@@ -275,9 +272,6 @@ describe("Page", () => {
 
     describe("when progress scope is provided but no matching progress exists", () => {
       it("does not render the backdrop", () => {
-        mockUseStatus.mockReturnValue({
-          progresses: [],
-        });
         installerRender(<Page progressScope="software">Content</Page>);
         expect(screen.queryByRole("alert")).toBeNull();
       });
@@ -285,16 +279,15 @@ describe("Page", () => {
 
     describe("when progress scope matches an active progress", () => {
       it("renders the backdrop with progress information", () => {
-        mockUseStatus.mockReturnValue({
-          progresses: [
-            {
-              scope: "software",
-              step: "Installing packages",
-              index: 2,
-              size: 5,
-            },
-          ],
-        });
+        mockProgresses([
+          {
+            scope: "software",
+            step: "Installing packages",
+            steps: [],
+            index: 2,
+            size: 5,
+          },
+        ]);
         installerRender(<Page progressScope="software">Content</Page>);
         const backdrop = screen.getByRole("alert", { name: /Installing packages/ });
         expect(backdrop.classList).toContain("agm-main-content-overlay");
@@ -318,25 +311,22 @@ describe("Page", () => {
       // caused by how InstallerProvider manages context.
       it.skip("shows 'Refreshing data...' message temporarily", async () => {
         // Start with active progress
-        mockUseStatus.mockReturnValue({
-          progresses: [
-            {
-              scope: "storage",
-              step: "Calculating proposal",
-              index: 1,
-              size: 1,
-            },
-          ],
-        });
+        mockProgresses([
+          {
+            scope: "storage",
+            step: "Calculating proposal",
+            steps: ["Calculating proposal"],
+            index: 1,
+            size: 1,
+          },
+        ]);
 
         const { rerender } = installerRender(<Page progressScope="storage">Content</Page>);
 
         const backdrop = screen.getByRole("alert", { name: /Calculating proposal/ });
 
         // Progress finishes
-        mockUseStatus.mockReturnValue({
-          progresses: [],
-        });
+        mockProgresses([]);
 
         rerender(<Page progressScope="storage">Content</Page>);
 
@@ -353,23 +343,20 @@ describe("Page", () => {
       // caused by how InstallerProvider manages context.
       it.skip("hides backdrop after queries are refetched", async () => {
         // Start with active progress
-        mockUseStatus.mockReturnValue({
-          progresses: [
-            {
-              scope: "storage",
-              step: "Calculating proposal",
-              index: 1,
-              size: 1,
-            },
-          ],
-        });
+        mockProgresses([
+          {
+            scope: "storage",
+            step: "Calculating proposal",
+            steps: ["Calculating proposal"],
+            index: 1,
+            size: 1,
+          },
+        ]);
 
         const { rerender } = installerRender(<Page progressScope="storage">Content</Page>);
 
         // Progress finishes
-        mockUseStatus.mockReturnValue({
-          progresses: [],
-        });
+        mockProgresses([]);
 
         const backdrop = screen.getByRole("alert", { name: /Calculating proposal/ });
 
@@ -393,16 +380,15 @@ describe("Page", () => {
 
     describe("when progress scope does not match", () => {
       it("does not show backdrop for different scope", () => {
-        mockUseStatus.mockReturnValue({
-          progresses: [
-            {
-              scope: "software",
-              step: "Installing packages",
-              index: 2,
-              size: 5,
-            },
-          ],
-        });
+        mockProgresses([
+          {
+            scope: "software",
+            step: "Installing packages",
+            steps: [],
+            index: 2,
+            size: 5,
+          },
+        ]);
         installerRender(<Page progressScope="storage">Content</Page>);
         expect(screen.queryByRole("alert", { name: /Installing packages/ })).toBeNull();
       });
@@ -410,30 +396,28 @@ describe("Page", () => {
 
     describe("multiple progress updates", () => {
       it("updates the backdrop message when progress changes", () => {
-        mockUseStatus.mockReturnValue({
-          progresses: [
-            {
-              scope: "software",
-              step: "Downloading packages",
-              index: 1,
-              size: 5,
-            },
-          ],
-        });
+        mockProgresses([
+          {
+            scope: "software",
+            step: "Downloading packages",
+            steps: [],
+            index: 1,
+            size: 5,
+          },
+        ]);
         const { rerender } = installerRender(<Page progressScope="software">Content</Page>);
         const backdrop = screen.getByRole("alert", { name: /Downloading packages/ });
         within(backdrop).getByText(/step 1 of 5/);
 
-        mockUseStatus.mockReturnValue({
-          progresses: [
-            {
-              scope: "software",
-              step: "Installing packages",
-              index: 3,
-              size: 5,
-            },
-          ],
-        });
+        mockProgresses([
+          {
+            scope: "software",
+            step: "Installing packages",
+            steps: [],
+            index: 3,
+            size: 5,
+          },
+        ]);
         rerender(<Page progressScope="software">Content</Page>);
         within(backdrop).getByText(/Installing packages/);
         within(backdrop).getByText(/step 3 of 5/);
@@ -442,16 +426,15 @@ describe("Page", () => {
 
     describe("additionalProgressKeys prop", () => {
       it("tracks common proposal keys by default", () => {
-        mockUseStatus.mockReturnValue({
-          progresses: [
-            {
-              scope: "software",
-              step: "Installing packages",
-              index: 1,
-              size: 3,
-            },
-          ],
-        });
+        mockProgresses([
+          {
+            scope: "software",
+            step: "Installing packages",
+            steps: [],
+            index: 1,
+            size: 3,
+          },
+        ]);
 
         installerRender(<Page progressScope="software">Content</Page>);
 
@@ -463,16 +446,15 @@ describe("Page", () => {
       });
 
       it("tracks additional query key along with common ones", () => {
-        mockUseStatus.mockReturnValue({
-          progresses: [
-            {
-              scope: "storage",
-              step: "Calculating proposal",
-              index: 1,
-              size: 1,
-            },
-          ],
-        });
+        mockProgresses([
+          {
+            scope: "storage",
+            step: "Calculating proposal",
+            steps: [],
+            index: 1,
+            size: 1,
+          },
+        ]);
 
         installerRender(
           <Page progressScope="storage" additionalProgressKeys="storageModel">
@@ -488,16 +470,15 @@ describe("Page", () => {
       });
 
       it("tracks multiple additional query keys along with common ones", () => {
-        mockUseStatus.mockReturnValue({
-          progresses: [
-            {
-              scope: "network",
-              step: "Configuring network",
-              index: 1,
-              size: 2,
-            },
-          ],
-        });
+        mockProgresses([
+          {
+            scope: "network",
+            step: "Configuring network",
+            steps: [],
+            index: 1,
+            size: 2,
+          },
+        ]);
 
         installerRender(
           <Page progressScope="network" additionalProgressKeys={["networkConfig", "connections"]}>
@@ -516,16 +497,15 @@ describe("Page", () => {
       // caused by how InstallerProvider manages context.
       it.skip("starts tracking when progress finishes", async () => {
         // Start with active progress
-        mockUseStatus.mockReturnValue({
-          progresses: [
-            {
-              scope: "storage",
-              step: "Calculating proposal",
-              index: 1,
-              size: 1,
-            },
-          ],
-        });
+        mockProgresses([
+          {
+            scope: "storage",
+            step: "Calculating proposal",
+            steps: ["Calculating proposal"],
+            index: 1,
+            size: 1,
+          },
+        ]);
 
         const { rerender } = installerRender(
           <Page progressScope="storage" additionalProgressKeys="storageModel">
@@ -534,9 +514,7 @@ describe("Page", () => {
         );
 
         // Progress finishes
-        mockUseStatus.mockReturnValue({
-          progresses: [],
-        });
+        mockProgresses([]);
 
         rerender(
           <Page progressScope="storage" additionalProgressKeys="storageModel">
