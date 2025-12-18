@@ -36,7 +36,6 @@ const sda1: Storage.Device = {
   block: {
     start: 1,
     size: gib(2),
-    shrinking: { unsupported: ["Resizing is not supported"] },
   }
 };
 
