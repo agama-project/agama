@@ -345,6 +345,13 @@ mod tests {
 
             Ok(())
         }
+
+        // Return the content of a script result file.
+        pub fn result_content(&self, script_type: &str, name: &str) -> String {
+            let path = &self.workdir.join(script_type).join(name);
+            let body: Vec<u8> = std::fs::read(path).unwrap();
+            String::from_utf8(body).unwrap()
+        }
     }
 
     #[test_context(Context)]
@@ -361,20 +368,9 @@ mod tests {
         let runner = ctx.runner();
         runner.run(&scripts).await.unwrap();
 
-        let path = &ctx.workdir.join("post").join("test.stdout");
-        let body: Vec<u8> = std::fs::read(path).unwrap();
-        let body = String::from_utf8(body).unwrap();
-        assert_eq!("hello\n", body);
-
-        let path = &ctx.workdir.join("post").join("test.stderr");
-        let body: Vec<u8> = std::fs::read(path).unwrap();
-        let body = String::from_utf8(body).unwrap();
-        assert_eq!("error\n", body);
-
-        let path = &ctx.workdir.join("post").join("test.exit");
-        let body: Vec<u8> = std::fs::read(path).unwrap();
-        let body = String::from_utf8(body).unwrap();
-        assert_eq!("0", body);
+        assert_eq!(ctx.result_content("post", "test.stdout"), "hello\n");
+        assert_eq!(ctx.result_content("post", "test.stderr"), "error\n");
+        assert_eq!(ctx.result_content("post", "test.exit"), "0");
 
         assert!(std::fs::exists(file).unwrap());
         Ok(())
@@ -397,10 +393,7 @@ mod tests {
         runner.run(&scripts).await.unwrap();
 
         // It runs successfully because the resolv.conf link exists.
-        let path = &ctx.workdir.join("post").join("test.stdout");
-        let body: Vec<u8> = std::fs::read(path).unwrap();
-        let body = String::from_utf8(body).unwrap();
-        assert_eq!("exists\n", body);
+        assert_eq!(ctx.result_content("post", "test.stdout"), "exists\n");
 
         Ok(())
     }
