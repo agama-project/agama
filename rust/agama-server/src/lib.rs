@@ -24,7 +24,6 @@ pub mod dbus;
 pub mod error;
 pub mod hostname;
 pub mod logs;
-pub mod manager;
 pub mod profile;
 pub mod security;
 pub mod storage;

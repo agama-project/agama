@@ -30,8 +30,6 @@ mod bootloader;
 pub use bootloader::BootloaderApiDocBuilder;
 mod profile;
 pub use profile::ProfileApiDocBuilder;
-mod manager;
-pub use manager::ManagerApiDocBuilder;
 mod users;
 pub use users::UsersApiDocBuilder;
 mod misc;

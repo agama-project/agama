@@ -28,7 +28,6 @@ use crate::{
     bootloader::web::bootloader_service,
     error::Error,
     hostname::web::hostname_service,
-    manager::web::{manager_service, manager_stream},
     profile::web::profile_service,
     security::security_service,
     server::server_service,
@@ -76,10 +75,6 @@ where
     let progress = ProgressService::start(dbus.clone(), old_events.clone()).await;
 
     let router = MainServiceBuilder::new(events.clone(), old_events.clone(), web_ui_dir)
-        .add_service(
-            "/manager",
-            manager_service(dbus.clone(), progress.clone()).await?,
-        )
         .add_service("/v2", server_service(events, dbus.clone()).await?)
         .add_service("/security", security_service(dbus.clone()).await?)
         .add_service("/storage", storage_service(dbus.clone(), progress).await?)
@@ -112,16 +107,6 @@ pub async fn run_monitor(events: OldSender) -> Result<(), ServiceError> {
 async fn run_events_monitor(dbus: zbus::Connection, events: OldSender) -> Result<(), Error> {
     let mut stream = StreamMap::new();
 
-    stream.insert("manager", manager_stream(dbus.clone()).await?);
-    stream.insert(
-        "manager-status",
-        service_status_stream(
-            dbus.clone(),
-            "org.opensuse.Agama.Manager1",
-            "/org/opensuse/Agama/Manager1",
-        )
-        .await?,
-    );
     for (id, user_stream) in users_streams(dbus.clone()).await? {
         stream.insert(id, user_stream);
     }
