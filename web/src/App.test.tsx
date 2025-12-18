@@ -54,8 +54,8 @@ const mockProgresses: jest.Mock<Progress[]> = jest.fn();
 const mockState: jest.Mock<Stage> = jest.fn();
 const mockSelectedProduct: jest.Mock<Config["product"]> = jest.fn();
 
-jest.mock("~/hooks/api", () => ({
-  ...jest.requireActual("~/hooks/api"),
+jest.mock("~/hooks/model/system", () => ({
+  ...jest.requireActual("~/hooks/model/system"),
   useSystem: (): ReturnType<typeof useSystem> => ({
     products: [tumbleweed, microos],
     network,

@@ -43,7 +43,7 @@ export default function HostnamePage() {
   const product = useProduct();
   const { hostname: proposal } = useProposal();
   // FIXME: It should be fixed once the registration is adapted to API v2
-  const registration = { registered: true };
+  const registration = { registered: product.registration };
   const { hostname: transientHostname, static: staticHostname } = proposal;
   const hasTransientHostname = isEmpty(staticHostname);
   const [success, setSuccess] = useState<string | null>(null);

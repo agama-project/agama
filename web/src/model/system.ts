@@ -27,9 +27,9 @@ import type * as Software from "~/model/system/software";
 import type * as Storage from "~/model/system/storage";
 
 type System = {
-  hostname: Hostname.System;
+  hostname?: Hostname.System;
   l10n?: L10n.System;
-  network: Network.System;
+  network?: Network.System;
   products?: Product[];
   software?: Software.System;
   storage?: Storage.System;

@@ -21,8 +21,8 @@
  */
 
 type Config = {
-  static?: String;
-  hostname?: String;
+  static?: string;
+  hostname?: string;
 };
 
 export type { Config };

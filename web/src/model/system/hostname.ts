@@ -21,8 +21,8 @@
  */
 
 type System = {
-  static: String;
-  hostname: String;
+  static: string;
+  hostname: string;
 };
 
 export type { System };

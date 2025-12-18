@@ -28,8 +28,8 @@ import { Connection, SecurityProtocols, WifiNetworkStatus, Wireless } from "~/ty
 
 const mockUpdateConnection = jest.fn();
 
-jest.mock("~/hooks/api/config/network", () => ({
-  ...jest.requireActual("~/hooks/api/config/network"),
+jest.mock("~/hooks/model/config/network", () => ({
+  ...jest.requireActual("~/hooks/model/config/network"),
   useConnectionMutation: () => ({
     mutateAsync: mockUpdateConnection,
   }),
@@ -40,9 +40,15 @@ jest.mock("~/api", () => ({
   configureL10nAction: () => jest.fn(),
 }));
 
-jest.mock("~/hooks/api/system", () => ({
-  ...jest.requireActual("~/hooks/api/system"),
+jest.mock("~/hooks/model/system", () => ({
+  ...jest.requireActual("~/hooks/model/system"),
   useSystem: () => jest.fn(),
+}));
+
+jest.mock("~/hooks/model/system/network", () => ({
+  ...jest.requireActual("~/hooks/model/system/network"),
+  useSystem: () => mockSystem,
+  useConnections: () => mockSystem.connections,
 }));
 
 const mockConnection = new Connection("Visible Network", {
@@ -59,12 +65,6 @@ const mockSystem = {
     copyEnabled: false,
   },
 };
-
-jest.mock("~/hooks/api/system/network", () => ({
-  ...jest.requireActual("~/hooks/api/system/network"),
-  useSystem: () => mockSystem,
-  useConnections: () => mockSystem.connections,
-}));
 
 const networkMock = {
   ssid: "Visible Network",

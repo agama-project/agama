@@ -52,13 +52,13 @@ const wlan0: Device = {
 let mockWifiNetworks: WifiNetwork[];
 let mockWifiConnections: Connection[];
 
-jest.mock("~/hooks/api/proposal/network", () => ({
-  ...jest.requireActual("~/hooks/api/proposal/network"),
+jest.mock("~/hooks/model/proposal/network", () => ({
+  ...jest.requireActual("~/hooks/model/proposal/network"),
   useConnections: () => mockWifiConnections,
 }));
 
-jest.mock("~/hooks/api/system/network", () => ({
-  ...jest.requireActual("~/hooks/api/system/network"),
+jest.mock("~/hooks/model/system/network", () => ({
+  ...jest.requireActual("~/hooks/model/system/network"),
   useNetworkChanges: jest.fn(),
   useWifiNetworks: () => mockWifiNetworks,
   useConnections: () => mockWifiConnections,
