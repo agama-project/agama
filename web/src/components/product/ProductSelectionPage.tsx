@@ -146,7 +146,8 @@ function ProductSelectionPage() {
 
   const selectionHasChanged = nextProduct && nextProduct !== selectedProduct;
   const mountLicenseCheckbox = !isEmpty(nextProduct?.license);
-  const isSelectionDisabled = !selectionHasChanged || (mountLicenseCheckbox && !licenseAccepted);
+  const isSelectionDisabled =
+    isWaiting || !selectionHasChanged || (mountLicenseCheckbox && !licenseAccepted);
 
   const [eulaTextStart, eulaTextLink, eulaTextEnd] = sprintf(
     // TRANSLATORS: Text used for the license acceptance checkbox. %s will be
@@ -212,7 +213,12 @@ function ProductSelectionPage() {
               </StackItem>
               <StackItem>
                 <Split hasGutter>
-                  <Page.Submit form="productSelectionForm" isDisabled={isSelectionDisabled}>
+                  <Page.Submit
+                    form="productSelectionForm"
+                    isDisabled={isSelectionDisabled}
+                    isLoading={isWaiting}
+                    variant={isWaiting ? "secondary" : "primary"}
+                  >
                     {_("Select")}
                   </Page.Submit>
                   {selectedProduct && <BackLink />}
