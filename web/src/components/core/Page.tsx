@@ -33,7 +33,6 @@ import {
   CardHeader,
   CardHeaderProps,
   CardProps,
-  Content as PFContent,
   Divider,
   Flex,
   FlexItem,
@@ -394,7 +393,7 @@ const ProgressBackdrop = ({
         isPlain
         customIcon={<Spinner size="sm" aria-hidden />}
         title={
-          <PFContent id="progressStatus">
+          <div id="progressStatus">
             {progress ? (
               <>
                 {progress.step}{" "}
@@ -403,7 +402,7 @@ const ProgressBackdrop = ({
             ) : (
               <>{_("Refreshing data...")}</>
             )}
-          </PFContent>
+          </div>
         }
       />
     </Backdrop>
