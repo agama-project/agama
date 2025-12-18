@@ -1,4 +1,4 @@
-// Copyright (c) [2024] SUSE LLC
+// Copyright (c) [2025] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -29,7 +29,7 @@ use std::{fs, path::PathBuf, process::Command};
 /// tests.
 pub trait ModelAdapter: Send + 'static {
     /// Reads the system info.
-    fn read_system_info(&self) -> SystemInfo {
+    fn system_info(&self) -> SystemInfo {
         SystemInfo {
             r#static: self.static_hostname().unwrap_or_default(),
             hostname: self.hostname().unwrap_or_default(),
@@ -43,7 +43,7 @@ pub trait ModelAdapter: Send + 'static {
     fn static_hostname(&self) -> Result<String, service::Error>;
 
     /// Change the system static hostname.
-    fn set_static(&mut self, name: String) -> Result<(), service::Error>;
+    fn set_static_hostname(&mut self, name: String) -> Result<(), service::Error>;
 
     /// Change the system hostname
     fn set_hostname(&mut self, name: String) -> Result<(), service::Error>;
@@ -51,6 +51,9 @@ pub trait ModelAdapter: Send + 'static {
     /// Apply the changes to target system. It is expected to be called almost
     /// at the end of the installation.
     fn install(&self) -> Result<(), service::Error>;
+
+    // Target directory to copy the static hostname at the end of the installation
+    fn static_target_dir(&self) -> &str;
 }
 
 /// [ModelAdapter] implementation for systemd-based systems.
@@ -75,7 +78,7 @@ impl ModelAdapter for Model {
         Ok(output.unwrap_or_default())
     }
 
-    fn set_static(&mut self, name: String) -> Result<(), service::Error> {
+    fn set_static_hostname(&mut self, name: String) -> Result<(), service::Error> {
         Command::new("hostnamectl")
             .args(["set-hostname", "--static", name.as_str()])
             .output()?;
@@ -90,13 +93,16 @@ impl ModelAdapter for Model {
         Ok(())
     }
 
-    // Copy the static hostname to the target system
+    fn static_target_dir(&self) -> &str {
+        "/mnt"
+    }
+
+    /// Copy the static hostname to the target system
     fn install(&self) -> Result<(), service::Error> {
-        const ROOT: &str = "/mnt";
         const HOSTNAME_PATH: &str = "/etc/hostname";
         let from = PathBuf::from(HOSTNAME_PATH);
         if fs::exists(from.clone())? {
-            let to = PathBuf::from(ROOT).join(HOSTNAME_PATH);
+            let to = PathBuf::from(self.static_target_dir()).join(HOSTNAME_PATH);
             fs::copy(from, to)?;
         }
         Ok(())

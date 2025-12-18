@@ -103,7 +103,7 @@ impl Starter {
             None => Box::new(Model),
         };
 
-        let config = model.read_system_info();
+        let config = model.system_info();
 
         let service = Service {
             config,
@@ -204,7 +204,7 @@ impl MessageHandler<message::SetConfig<api::hostname::Config>> for Service {
             if let Some(name) = &config.r#static {
                 self.config.r#static = name.clone();
                 self.config.hostname = name.clone();
-                self.model.set_static(name.clone())?
+                self.model.set_static_hostname(name.clone())?
             }
 
             if let Some(name) = &config.hostname {
