@@ -24,38 +24,28 @@ import React from "react";
 import { screen, within } from "@testing-library/react";
 import { installerRender, mockParams } from "~/test-utils";
 import FormattableDevicePage from "~/components/storage/FormattableDevicePage";
-import { StorageDevice, model } from "~/storage";
-import { Volume } from "~/api/storage/types";
+import type { Storage } from "~/model/system";
+import type { ConfigModel } from "~/model/storage/config-model";
 import { gib } from "./utils";
 
-const sda: StorageDevice = {
+const sda: Storage.Device = {
   sid: 59,
-  isDrive: true,
-  type: "disk",
+  class: "drive",
   name: "/dev/sda",
-  size: gib(10),
   description: "",
+  block: {
+    start: 1,
+    size: gib(10),
+  },
 };
 
-const sdaModel: model.Drive = {
+const sdaModel: ConfigModel.Drive = {
   name: "/dev/sda",
   spacePolicy: "keep",
   partitions: [],
-  list: "drives",
-  listIndex: 0,
-  isExplicitBoot: false,
-  isUsed: true,
-  isAddingPartitions: true,
-  isReusingPartitions: true,
-  isTargetDevice: false,
-  isBoot: true,
-  getMountPaths: jest.fn(),
-  getVolumeGroups: jest.fn(),
-  getPartition: jest.fn(),
-  getConfiguredExistingPartitions: jest.fn(),
 };
 
-const homeVolume: Volume = {
+const homeVolume: Storage.VolumeTemplate = {
   mountPath: "/home",
   mountOptions: [],
   target: "default",
@@ -76,40 +66,38 @@ const homeVolume: Volume = {
   },
 };
 
-jest.mock("~/queries/issues", () => ({
-  ...jest.requireActual("~/queries/issues"),
-  useIssues: () => [],
+const mockUseDevice = jest.fn();
+const mockUsePartitionable = jest.fn();
+const mockUseConfigModel = jest.fn();
+const mockUseMissingMountPaths = jest.fn();
+const mockUseVolumeTemplate = jest.fn();
+const mockSetFilesystem = jest.fn();
+
+jest.mock("~/hooks/model/system/storage", () => ({
+  ...jest.requireActual("~/hooks/model/system/storage"),
+  useDevice: (name: string) => mockUseDevice(name),
+  useVolumeTemplate: (mountPath: string) => mockUseVolumeTemplate(mountPath),
 }));
 
-jest.mock("~/queries/storage", () => ({
-  ...jest.requireActual("~/queries/storage"),
-  useDevices: () => [sda],
+jest.mock("~/hooks/model/storage/config-model", () => ({
+  ...jest.requireActual("~/hooks/model/storage/config-model"),
+  usePartitionable: (collection: string, index: number) => mockUsePartitionable(collection, index),
+  useConfigModel: () => mockUseConfigModel(),
+  useMissingMountPaths: () => mockUseMissingMountPaths(),
+  useSetFilesystem: () => mockSetFilesystem,
 }));
 
-const mockModel = jest.fn();
-jest.mock("~/hooks/storage/model", () => ({
-  ...jest.requireActual("~/hooks/storage/model"),
-  useModel: () => mockModel(),
-}));
-
-jest.mock("~/hooks/storage/product", () => ({
-  ...jest.requireActual("~/hooks/storage/product"),
-  useMissingMountPaths: () => ["/home", "swap"],
-  useVolume: () => homeVolume,
-}));
-
-const mockAddFilesystem = jest.fn();
-jest.mock("~/hooks/storage/filesystem", () => ({
-  ...jest.requireActual("~/hooks/storage/filesystem"),
-  useAddFilesystem: () => mockAddFilesystem,
-}));
+jest.mock("~/components/product/ProductRegistrationAlert", () => () => (
+  <div>registration alert</div>
+));
 
 beforeEach(() => {
-  mockParams({ list: "drives", listIndex: "0" });
-  mockModel.mockReturnValue({
-    drives: [sdaModel],
-    getMountPaths: () => [],
-  });
+  mockParams({ collection: "drives", index: "0" });
+  mockUsePartitionable.mockReturnValue(sdaModel);
+  mockUseDevice.mockReturnValue(sda);
+  mockUseConfigModel.mockReturnValue({ drives: [sdaModel] });
+  mockUseMissingMountPaths.mockReturnValue(["/home", "swap"]);
+  mockUseVolumeTemplate.mockReturnValue(homeVolume);
 });
 
 describe("FormattableDevicePage", () => {
@@ -171,11 +159,15 @@ describe("FormattableDevicePage", () => {
       },
     };
 
+    const formattedSda: storage.Device = {
+      ...sda,
+      filesystem: { type: "xfs" },
+    };
+
     beforeEach(() => {
-      mockModel.mockReturnValue({
-        drives: [formattedSdaModel],
-        getMountPaths: () => [],
-      });
+      mockUsePartitionable.mockReturnValue(formattedSdaModel);
+      mockUseDevice.mockReturnValue(formattedSda);
+      mockUseConfigModel.mockReturnValue({drives: [formattedSdaModel]});
     });
 
     it("initializes the form with the current values", async () => {
@@ -206,7 +198,7 @@ describe("FormattableDevicePage", () => {
       await user.type(labelInput, "TEST");
       const acceptButton = screen.getByRole("button", { name: "Accept" });
       await user.click(acceptButton);
-      expect(mockAddFilesystem).toHaveBeenCalledWith("drives", 0, {
+      expect(mockSetFilesystem).toHaveBeenCalledWith("drives", 0, {
         mountPath: "/home",
         filesystem: {
           type: "xfs",
