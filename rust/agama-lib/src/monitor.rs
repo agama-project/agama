@@ -68,7 +68,7 @@ pub enum MonitorError {
 /// It allows connecting to the Agama monitor to get the status or listen for changes.
 ///
 /// It can be cloned and moved between threads.
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct MonitorClient {
     commands: mpsc::Sender<MonitorCommand>,
     pub updates: broadcast::Sender<api::Status>,
