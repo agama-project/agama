@@ -32,6 +32,7 @@ BuildRequires: gcc
 BuildRequires: gcc-c++
 BuildRequires: make
 BuildRequires: libzypp-devel
+BuildRequires: libsuseconnect
 # defines the "limit_build" macro used in the "build" section below
 BuildRequires:  memory-constraints
 BuildRequires:  cargo-packaging
