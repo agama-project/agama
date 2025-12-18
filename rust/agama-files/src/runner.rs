@@ -389,12 +389,19 @@ mod tests {
         // However, it does not run on a real chroot (see share/bin/chroot),
         // so it needs the whole path.
         let file = ctx.install_dir.join("etc/resolv.conf");
-        let content = format!("#!/usr/bin/bash\ntest -h {}", file.display());
+        let content = format!("#!/usr/bin/bash\ntest -h {} && echo exists", file.display());
         let script = ctx.setup_script(&content, true);
 
         let runner = ctx.runner();
         let scripts = vec![&script];
         runner.run(&scripts).await.unwrap();
+
+        // It runs successfully because the resolv.conf link exists.
+        let path = &ctx.workdir.join("post").join("test.stdout");
+        let body: Vec<u8> = std::fs::read(path).unwrap();
+        let body = String::from_utf8(body).unwrap();
+        assert_eq!("exists\n", body);
+
         Ok(())
     }
 
