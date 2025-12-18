@@ -20,10 +20,8 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useEffect, useId, useState } from "react";
+import React, { useId } from "react";
 import {
-  Alert,
-  Backdrop,
   Button,
   ButtonProps,
   Card,
@@ -43,21 +41,17 @@ import {
   Split,
   Title,
   TitleProps,
-  Spinner,
 } from "@patternfly/react-core";
 import { ProductRegistrationAlert } from "~/components/product";
 import Link, { LinkProps } from "~/components/core/Link";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import flexStyles from "@patternfly/react-styles/css/utilities/Flex/flex";
 import { useLocation, useNavigate } from "react-router";
-import { concat, isEmpty, isObject } from "radashi";
+import { isEmpty, isObject } from "radashi";
 import { SIDE_PATHS } from "~/routes/paths";
 import { _ } from "~/i18n";
-import { sprintf } from "sprintf-js";
-import { COMMON_PROPOSAL_KEYS } from "~/hooks/model/proposal";
-import { useStatus } from "~/hooks/model/status";
-import type { Scope } from "~/model/status";
-import useTrackQueriesRefetch from "~/hooks/use-track-queries-refetch";
+import type { ProgressBackdropProps } from "~/components/core/ProgressBackdrop";
+import ProgressBackdrop from "~/components/core/ProgressBackdrop";
 
 /**
  * Props accepted by Page.Section
@@ -303,109 +297,6 @@ const Content = ({ children, ...pageSectionProps }: PageSectionProps) => {
       {mountRegistrationAlert && <ProductRegistrationAlert />}
       {children}
     </PageSection>
-  );
-};
-
-/**
- * Props for the ProgressBackdrop component.
- */
-type ProgressBackdropProps = {
-  /**
-   * Optional scope identifier to filter which progresses trigger the backgrop
-   * overlay. If undefined or no matching tasks exist, the backdrop won't be
-   * displayed.
-   */
-  progressScope?: Scope;
-  /**
-   * Additional query keys to track during progress operations.
-   *
-   * The progress backdrop automatically tracks common proposal-related queries.
-   * Use this prop to specify additional query keys that must complete
-   * refetching before the backdrop unblocks the UI.
-   *
-   * This is useful when a page needs to wait for additional queries beyond the
-   * common proposal-related ones, either because the page depends on them or
-   * because operations on the page invalidate them.
-   *
-   * @example
-   * // Track storage model updates in addition to common proposal queries
-   * <Page progressScope="storage" additionalProgressKeys={STORAGE_MODEL_KEY}>
-   *
-   * @example
-   * // Track multiple additional queries
-   * <Page
-   *   progressScope="network"
-   *   additionalProgressKeys={[NETWORK_CONFIG_KEY, CONNECTIONS_KEY]}
-   * >
-   */
-  additionalProgressKeys?: string | string[];
-};
-
-/**
- * Internal component that blocks user by displaying a blurred overlay with a
- * progress information when progresses matching the specified scope are active.
- *
- * @remarks
- * The component uses two mechanisms to manage its visibility:
- *   - Monitors active tasks from useStatus() that match the progressScope
- *   - Listens to proposal update events to automatically unblock when
- *     operations complete
- *
- * The backdrop remains visible until a proposal update event with a timestamp
- * newer than when the progress finished arrives, ensuring the UI doesn't
- * unblock prematurely.
- */
-const ProgressBackdrop = ({
-  progressScope,
-  additionalProgressKeys,
-}: ProgressBackdropProps): React.ReactNode => {
-  const { progresses: tasks } = useStatus();
-  const [isBlocked, setIsBlocked] = useState(false);
-  const [progressFinishedAt, setProgressFinishedAt] = useState<number | null>(null);
-  const progress = !isEmpty(progressScope) && tasks.find((t) => t.scope === progressScope);
-  const { startTracking } = useTrackQueriesRefetch(
-    concat(COMMON_PROPOSAL_KEYS, additionalProgressKeys),
-    (_, completedAt) => {
-      if (completedAt > progressFinishedAt) {
-        setIsBlocked(false);
-        setProgressFinishedAt(null);
-      }
-    },
-  );
-
-  useEffect(() => {
-    if (!progress && isBlocked && !progressFinishedAt) {
-      setProgressFinishedAt(Date.now());
-      startTracking();
-    }
-  }, [progress, isBlocked, progressFinishedAt, startTracking]);
-
-  if (progress && !isBlocked) {
-    setIsBlocked(true);
-    setProgressFinishedAt(null);
-  }
-
-  if (!isBlocked) return null;
-
-  return (
-    <Backdrop className="agm-main-content-overlay" role="alert" aria-labelledby="progressStatus">
-      <Alert
-        isPlain
-        customIcon={<Spinner size="sm" aria-hidden />}
-        title={
-          <div id="progressStatus">
-            {progress ? (
-              <>
-                {progress.step}{" "}
-                <small>{sprintf(_("(step %s of %s)"), progress.index, progress.size)}</small>
-              </>
-            ) : (
-              <>{_("Refreshing data...")}</>
-            )}
-          </div>
-        }
-      />
-    </Backdrop>
   );
 };
 
