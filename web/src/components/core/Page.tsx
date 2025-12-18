@@ -51,13 +51,14 @@ import Link, { LinkProps } from "~/components/core/Link";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import flexStyles from "@patternfly/react-styles/css/utilities/Flex/flex";
 import { useLocation, useNavigate } from "react-router";
-import { isEmpty, isObject } from "radashi";
+import { concat, isEmpty, isObject } from "radashi";
 import { SIDE_PATHS } from "~/routes/paths";
 import { _ } from "~/i18n";
 import { sprintf } from "sprintf-js";
-import { onProposalUpdated } from "~/hooks/model/proposal";
+import { COMMON_PROPOSAL_KEYS } from "~/hooks/model/proposal";
 import { useStatus } from "~/hooks/model/status";
 import type { Scope } from "~/model/status";
+import useTrackQueriesRefetch from "~/hooks/use-track-queries-refetch";
 
 /**
  * Props accepted by Page.Section
@@ -316,6 +317,29 @@ type ProgressBackdropProps = {
    * displayed.
    */
   progressScope?: Scope;
+  /**
+   * Additional query keys to track during progress operations.
+   *
+   * The progress backdrop automatically tracks common proposal-related queries.
+   * Use this prop to specify additional query keys that must complete
+   * refetching before the backdrop unblocks the UI.
+   *
+   * This is useful when a page needs to wait for additional queries beyond the
+   * common proposal-related ones, either because the page depends on them or
+   * because operations on the page invalidate them.
+   *
+   * @example
+   * // Track storage model updates in addition to common proposal queries
+   * <Page progressScope="storage" additionalProgressKeys={STORAGE_MODEL_KEY}>
+   *
+   * @example
+   * // Track multiple additional queries
+   * <Page
+   *   progressScope="network"
+   *   additionalProgressKeys={[NETWORK_CONFIG_KEY, CONNECTIONS_KEY]}
+   * >
+   */
+  additionalProgressKeys?: string | string[];
 };
 
 /**
@@ -332,26 +356,30 @@ type ProgressBackdropProps = {
  * newer than when the progress finished arrives, ensuring the UI doesn't
  * unblock prematurely.
  */
-const ProgressBackdrop = ({ progressScope }: ProgressBackdropProps): React.ReactNode => {
+const ProgressBackdrop = ({
+  progressScope,
+  additionalProgressKeys,
+}: ProgressBackdropProps): React.ReactNode => {
   const { progresses: tasks } = useStatus();
   const [isBlocked, setIsBlocked] = useState(false);
   const [progressFinishedAt, setProgressFinishedAt] = useState<number | null>(null);
   const progress = !isEmpty(progressScope) && tasks.find((t) => t.scope === progressScope);
+  const { startTracking } = useTrackQueriesRefetch(
+    concat(COMMON_PROPOSAL_KEYS, additionalProgressKeys),
+    (_, completedAt) => {
+      if (completedAt > progressFinishedAt) {
+        setIsBlocked(false);
+        setProgressFinishedAt(null);
+      }
+    },
+  );
 
   useEffect(() => {
     if (!progress && isBlocked && !progressFinishedAt) {
       setProgressFinishedAt(Date.now());
+      startTracking();
     }
-  }, [progress, isBlocked, progressFinishedAt]);
-
-  useEffect(() => {
-    return onProposalUpdated((detail) => {
-      if (detail.completedAt > progressFinishedAt) {
-        setIsBlocked(false);
-        setProgressFinishedAt(null);
-      }
-    });
-  }, [progressFinishedAt]);
+  }, [progress, isBlocked, progressFinishedAt, startTracking]);
 
   if (progress && !isBlocked) {
     setIsBlocked(true);
@@ -427,12 +455,16 @@ const ProgressBackdrop = ({ progressScope }: ProgressBackdropProps): React.React
 const Page = ({
   children,
   progressScope,
+  additionalProgressKeys,
   ...pageGroupProps
 }: PageGroupProps & ProgressBackdropProps): React.ReactNode => {
   return (
     <PageGroup {...pageGroupProps} tabIndex={-1} id="main-content">
       {children}
-      <ProgressBackdrop progressScope={progressScope} />
+      <ProgressBackdrop
+        progressScope={progressScope}
+        additionalProgressKeys={additionalProgressKeys}
+      />
     </PageGroup>
   );
 };

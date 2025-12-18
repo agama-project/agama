@@ -136,11 +136,7 @@ const Providers = ({ children, withL10n }) => {
     );
   }
 
-  return (
-    <InstallerClientProvider client={client}>
-      <StorageUiStateProvider>{children}</StorageUiStateProvider>
-    </InstallerClientProvider>
-  );
+  return <StorageUiStateProvider>{children}</StorageUiStateProvider>;
 };
 
 /**
