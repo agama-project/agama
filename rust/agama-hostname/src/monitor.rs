@@ -37,6 +37,10 @@ pub struct Monitor {
     stream: PropertiesChangedStream,
 }
 
+// Monitors the DBUS hostname service notifying the static or transient system hostname change
+// when them occurs
+//
+/// * `handler`: service handler to be monitorized.
 impl Monitor {
     pub async fn new(handler: Handler<Service>) -> Result<Self, Error> {
         let dbus = zbus::Connection::system().await?;
