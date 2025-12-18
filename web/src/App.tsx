@@ -63,7 +63,7 @@ const Content = () => {
     <>
       {/* So far, only the storage backend is able to detect external changes.*/}
       <AlertOutOfSync scope={"Storage"} />
-      <Outlet />;
+      <Outlet />
     </>
   );
 };
