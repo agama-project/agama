@@ -24,162 +24,139 @@ import React from "react";
 import { screen, within } from "@testing-library/react";
 import { installerRender, mockParams } from "~/test-utils";
 import PartitionPage from "./PartitionPage";
-import { StorageDevice, model } from "~/storage";
-import { apiModel, Volume } from "~/api/storage/types";
+import type { ConfigModel } from "~/model/storage/config-model";
+import type { Storage } from "~/model/system";
 import { gib } from "./utils";
-
-jest.mock("~/queries/issues", () => ({
-  ...jest.requireActual("~/queries/issues"),
-  useIssuesChanges: jest.fn(),
-  useIssues: () => [],
-}));
 
 jest.mock("./ProposalResultSection", () => () => <div>result section</div>);
 jest.mock("./ProposalTransactionalInfo", () => () => <div>transactional info</div>);
+jest.mock("~/components/product/ProductRegistrationAlert", () => () => (
+  <div>registration alert</div>
+));
 
-const mockGetPartition = jest.fn();
-
-const sda1: StorageDevice = {
+const sda1: Storage.Device = {
   sid: 69,
+  class: "partition",
   name: "/dev/sda1",
   description: "Swap partition",
-  isDrive: false,
-  type: "partition",
-  size: gib(2),
-  shrinking: { unsupported: ["Resizing is not supported"] },
-  start: 1,
+  block: {
+    start: 1,
+    size: gib(2),
+  }
 };
 
-const sda: StorageDevice = {
+const sda: Storage.Device = {
   sid: 59,
-  isDrive: true,
-  type: "disk",
-  vendor: "Micron",
-  model: "Micron 1100 SATA",
-  driver: ["ahci", "mmcblk"],
-  bus: "IDE",
-  busId: "",
-  transport: "usb",
-  dellBOSS: false,
-  sdCard: true,
-  active: true,
+  class: "drive",
   name: "/dev/sda",
-  size: 1024,
-  shrinking: { unsupported: ["Resizing is not supported"] },
-  systems: [],
-  partitionTable: {
-    type: "gpt",
-    partitions: [sda1],
-    unpartitionedSize: 0,
-    unusedSlots: [{ start: 3, size: gib(2) }],
+  description: "SDA drive",
+  drive: {
+    type: "disk",
+    model: "Micron 1100 SATA",
+    vendor: "Micron",
+    bus: "IDE",
+    busId: "",
+    transport: "usb",
+    driver: ["ahci", "mmcblk"],
+    info: {
+      dellBoss: false,
+      sdCard: true,
+    },
   },
-  udevIds: ["ata-Micron_1100_SATA_512GB_12563", "scsi-0ATA_Micron_1100_SATA_512GB"],
-  udevPaths: ["pci-0000:00-12", "pci-0000:00-12-ata"],
-  description: "",
+  block: {
+    start: 1,
+    size: gib(20),
+    active: true,
+    encrypted: false,
+    systems: [],
+    shrinking: { supported: false },
+  },
+  partitions: [sda1],
 };
 
-const mockPartition: model.Partition = {
-  isNew: false,
-  isUsed: true,
-  isReused: false,
-  isUsedBySpacePolicy: false,
+const swap: ConfigModel.Partition = {
+  mountPath: "swap",
+  size: {
+    min: gib(2),
+    default: false,
+  },
+  filesystem: { type: "swap" },
 };
 
-const mockDrive: model.Drive = {
+const home: ConfigModel.Partition = {
+  mountPath: "/home",
+  size: {
+    default: false,
+    min: gib(5),
+    max: gib(5),
+  },
+  filesystem: {
+    type: "xfs",
+    label: "HOME",
+  },
+};
+
+const drive: ConfigModel.Drive = {
   name: "/dev/sda",
   spacePolicy: "delete",
-  partitions: [
-    {
-      mountPath: "swap",
-      size: {
-        min: gib(2),
-        default: false, // false: user provided, true: calculated
-      },
-      filesystem: { default: false, type: "swap" },
-      isNew: true,
-      isUsed: false,
-      isReused: false,
-      isUsedBySpacePolicy: false,
-    },
-    {
-      mountPath: "/home",
-      size: {
-        min: gib(16),
-        default: true,
-      },
-      filesystem: { default: false, type: "xfs" },
-      isNew: true,
-      isUsed: false,
-      isReused: false,
-      isUsedBySpacePolicy: false,
-    },
-  ],
-  list: "drives",
-  listIndex: 1,
-  isExplicitBoot: false,
-  isUsed: true,
-  isAddingPartitions: true,
-  isReusingPartitions: true,
-  isTargetDevice: false,
-  isBoot: true,
-  getMountPaths: jest.fn(),
-  getVolumeGroups: jest.fn(),
-  getPartition: mockGetPartition,
-  getConfiguredExistingPartitions: () => [mockPartition],
+  partitions: [swap],
 };
 
-const mockSolvedConfigModel: apiModel.Config = {
-  drives: [mockDrive],
+const driveWithHome: ConfigModel.Drive = {
+  name: "/dev/sda",
+  spacePolicy: "delete",
+  partitions: [swap, home],
 };
 
-const mockHomeVolume: Volume = {
+const homeVolume: Storage.VolumeTemplate = {
   mountPath: "/home",
-  mountOptions: [],
-  target: "default",
   fsType: "btrfs",
   minSize: 1024,
   maxSize: 1024,
-  autoSize: false,
   snapshots: false,
-  transactional: false,
   outline: {
     required: false,
     fsTypes: ["btrfs"],
-    supportAutoSize: false,
     snapshotsConfigurable: false,
     snapshotsAffectSizes: false,
-    sizeRelevantVolumes: [],
-    adjustByRam: false,
+    sizeRelevantVolumes: []
   },
 };
 
-jest.mock("~/queries/storage", () => ({
-  ...jest.requireActual("~/queries/storage"),
-  useDevices: () => [sda],
-  useVolume: () => mockHomeVolume,
+const mockUseDevice = jest.fn();
+const mockUsePartitionable = jest.fn();
+const mockUseConfigModel = jest.fn();
+const mockUseSolvedConfigModel = jest.fn();
+const mockUseMissingMountPaths = jest.fn();
+const mockUseVolumeTemplate = jest.fn();
+const mockAddPartition = jest.fn();
+const mockEditPartition = jest.fn();
+
+jest.mock("~/hooks/model/system/storage", () => ({
+  ...jest.requireActual("~/hooks/model/system/storage"),
+  useDevice: (name: string) => mockUseDevice(name),
+  useVolumeTemplate: (mountPath: string) => mockUseVolumeTemplate(mountPath),
 }));
 
-jest.mock("~/hooks/storage/model", () => ({
-  ...jest.requireActual("~/hooks/storage/model"),
-  useModel: () => ({
-    drives: [mockDrive],
-    getMountPaths: () => [],
-  }),
-}));
-
-jest.mock("~/hooks/storage/product", () => ({
-  ...jest.requireActual("~/hooks/storage/product"),
-  useMissingMountPaths: () => ["/home", "swap"],
-}));
-
-jest.mock("~/queries/storage/config-model", () => ({
-  ...jest.requireActual("~/queries/storage/config-model"),
-  useConfigModel: () => ({ drives: [mockDrive] }),
-  useSolvedConfigModel: () => mockSolvedConfigModel,
+jest.mock("~/hooks/model/storage/config-model", () => ({
+  ...jest.requireActual("~/hooks/model/storage/config-model"),
+  usePartitionable: (collection: string, index: number) => mockUsePartitionable(collection, index),
+  useConfigModel: () => mockUseConfigModel(),
+  useSolvedConfigModel: (model?: ConfigModel.Config) => mockUseSolvedConfigModel(model),
+  useMissingMountPaths: () => mockUseMissingMountPaths(),
+  useAddPartition: () => mockAddPartition,
+  useEditPartition: () => mockEditPartition,
 }));
 
 beforeEach(() => {
-  mockParams({ list: "drives", listIndex: "0" });
+  jest.clearAllMocks();
+  mockParams({ collection: "drives", index: "0" });
+  mockUsePartitionable.mockReturnValue(drive);
+  mockUseDevice.mockReturnValue(sda);
+  mockUseConfigModel.mockReturnValue({ drives: [drive] });
+  mockUseSolvedConfigModel.mockReturnValue({ drives: [driveWithHome] });
+  mockUseMissingMountPaths.mockReturnValue(["/home", "swap"]);
+  mockUseVolumeTemplate.mockReturnValue(homeVolume);
 });
 
 describe("PartitionPage", () => {
@@ -282,20 +259,9 @@ describe("PartitionPage", () => {
 
   describe("if editing a partition", () => {
     beforeEach(() => {
-      mockParams({ list: "drives", listIndex: "0", partitionId: "/home" });
-      mockGetPartition.mockReturnValue({
-        mountPath: "/home",
-        size: {
-          default: false,
-          min: gib(5),
-          max: gib(5),
-        },
-        filesystem: {
-          default: false,
-          type: "xfs",
-          label: "HOME",
-        },
-      });
+      mockParams({ collection: "drives", index: "0", partitionId: "/home" });
+      mockUsePartitionable.mockReturnValue(driveWithHome);
+      mockUseConfigModel.mockReturnValue({ drives: [driveWithHome] });
     });
 
     it("initializes the form with the partition values", async () => {
@@ -318,18 +284,16 @@ describe("PartitionPage", () => {
 
     describe("if the max size is unlimited", () => {
       beforeEach(() => {
-        mockParams({ list: "drives", listIndex: "0", partitionId: "/home" });
-        mockGetPartition.mockReturnValue({
-          mountPath: "/home",
-          size: {
-            default: false,
-            min: gib(5),
-          },
-          filesystem: {
-            default: false,
-            type: "xfs",
-          },
-        });
+        const unlimitedHome = {
+          ...home,
+          size: { default: false, min: gib(5) },
+        };
+        const driveWithUnlimited = {
+          ...driveWithHome,
+          partitions: [swap, unlimitedHome],
+        };
+        mockUsePartitionable.mockReturnValue(driveWithUnlimited);
+        mockUseConfigModel.mockReturnValue({ drives: [driveWithUnlimited] });
       });
 
       it("checks allow growing", async () => {
@@ -341,19 +305,16 @@ describe("PartitionPage", () => {
 
     describe("if the max size has a value", () => {
       beforeEach(() => {
-        mockParams({ list: "drives", listIndex: "0", partitionId: "/home" });
-        mockGetPartition.mockReturnValue({
-          mountPath: "/home",
-          size: {
-            default: false,
-            min: gib(5),
-            max: gib(10),
-          },
-          filesystem: {
-            default: false,
-            type: "xfs",
-          },
-        });
+        const rangedHome = {
+          ...home,
+          size: { default: false, min: gib(5), max: gib(10) },
+        };
+        const driveWithRange = {
+          ...driveWithHome,
+          partitions: [swap, rangedHome],
+        };
+        mockUsePartitionable.mockReturnValue(driveWithRange);
+        mockUseConfigModel.mockReturnValue({ drives: [driveWithRange] });
       });
 
       it("allows switching to a fixed size", async () => {
@@ -369,19 +330,16 @@ describe("PartitionPage", () => {
 
     describe("if the default size has a max value", () => {
       beforeEach(() => {
-        mockParams({ list: "drives", listIndex: "0", partitionId: "/home" });
-        mockGetPartition.mockReturnValue({
-          mountPath: "/home",
-          size: {
-            default: true,
-            min: gib(5),
-            max: gib(10),
-          },
-          filesystem: {
-            default: false,
-            type: "xfs",
-          },
-        });
+        const rangedDefaultHome = {
+          ...home,
+          size: { default: true, min: gib(5), max: gib(10) },
+        };
+        const driveWithDefaultRange = {
+          ...driveWithHome,
+          partitions: [swap, rangedDefaultHome],
+        };
+        mockUsePartitionable.mockReturnValue(driveWithDefaultRange);
+        mockUseConfigModel.mockReturnValue({ drives: [driveWithDefaultRange] });
       });
 
       it("allows switching to a custom size", async () => {
