@@ -19,8 +19,9 @@
 // find current contact information at www.suse.com.
 
 use std::{
-    fs::File,
+    fs::{self, File},
     io::{self, Read, Seek, SeekFrom, Write},
+    os::unix::fs::symlink,
     path::{Path, PathBuf},
     process::ExitStatus,
 };
@@ -43,6 +44,11 @@ pub enum Error {
     #[error(transparent)]
     Question(#[from] question::AskError),
 }
+
+// Relative path to the resolv.conf file.
+const RESOLV_CONF_PATH: &str = "etc/resolv.conf";
+// Relative path to the NetworkManager resolv.conf file.
+const NM_RESOLV_CONF_PATH: &str = "run/NetworkManager/resolv.conf";
 
 /// Implements the logic to run a script.
 ///
@@ -86,11 +92,20 @@ impl ScriptsRunner {
     pub async fn run(&self, scripts: &[&Script]) -> Result<(), Error> {
         self.start_progress(scripts);
 
+        let mut resolv_linked = false;
+        if scripts.iter().any(|s| s.chroot()) {
+            resolv_linked = self.link_resolv()?;
+        }
+
         for script in scripts {
             _ = self
                 .progress
                 .cast(progress::message::Next::new(Scope::Files));
             self.run_script(script).await?;
+        }
+
+        if resolv_linked {
+            self.unlink_resolv();
         }
 
         _ = self
@@ -208,6 +223,34 @@ impl ScriptsRunner {
         let string = String::from_utf8_lossy(&buffer);
         Ok(string.into_owned())
     }
+
+    /// Make sures that the resolv.conf is linked and returns true if any action was needed.
+    ///
+    /// It returns false if the resolv.conf was already linked and no action was required.
+    fn link_resolv(&self) -> Result<bool, std::io::Error> {
+        let original = self.install_dir.join(NM_RESOLV_CONF_PATH);
+        let link = self.resolv_link_path();
+
+        if fs::exists(&link)? || !fs::exists(&original)? {
+            return Ok(false);
+        }
+
+        // It assumes that the directory of the resolv.conf (/etc) exists.
+        symlink(original.as_path(), link.as_path())?;
+        Ok(true)
+    }
+
+    /// Removes the resolv.conf file from the chroot.
+    fn unlink_resolv(&self) {
+        let link = self.resolv_link_path();
+        if let Err(error) = fs::remove_file(link) {
+            tracing::warn!("Could not remove the resolv.conf link: {error}");
+        }
+    }
+
+    fn resolv_link_path(&self) -> PathBuf {
+        self.install_dir.join(RESOLV_CONF_PATH)
+    }
 }
 
 #[cfg(test)]
@@ -239,6 +282,11 @@ mod tests {
 
     impl AsyncTestContext for Context {
         async fn setup() -> Context {
+            // Set the PATH
+            let old_path = std::env::var("PATH").unwrap();
+            let bin_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../share/bin");
+            std::env::set_var("PATH", format!("{}:{}", &bin_dir.display(), &old_path));
+
             let tmp_dir = TempDir::with_prefix("scripts-").expect("a temporary directory");
 
             let (events_tx, events_rx) = broadcast::channel::<Event>(16);
@@ -268,6 +316,7 @@ mod tests {
                 self.questions.clone(),
             )
         }
+
         pub fn setup_script(&self, content: &str, chroot: bool) -> Script {
             let base = BaseScript {
                 name: "test.sh".to_string(),
@@ -283,6 +332,25 @@ mod tests {
                 .write(&self.workdir)
                 .expect("Could not write the script");
             script
+        }
+
+        // Set up a fake chroot.
+        pub fn setup_chroot(&self) -> std::io::Result<()> {
+            let nm_dir = self.install_dir.join("run/NetworkManager");
+            fs::create_dir_all(&nm_dir)?;
+            fs::create_dir_all(self.install_dir.join("etc"))?;
+
+            let mut file = File::create(nm_dir.join("resolv.conf"))?;
+            file.write_all(b"nameserver 127.0.0.1\n")?;
+
+            Ok(())
+        }
+
+        // Return the content of a script result file.
+        pub fn result_content(&self, script_type: &str, name: &str) -> String {
+            let path = &self.workdir.join(script_type).join(name);
+            let body: Vec<u8> = std::fs::read(path).unwrap();
+            String::from_utf8(body).unwrap()
         }
     }
 
@@ -300,22 +368,33 @@ mod tests {
         let runner = ctx.runner();
         runner.run(&scripts).await.unwrap();
 
-        let path = &ctx.workdir.join("post").join("test.stdout");
-        let body: Vec<u8> = std::fs::read(path).unwrap();
-        let body = String::from_utf8(body).unwrap();
-        assert_eq!("hello\n", body);
-
-        let path = &ctx.workdir.join("post").join("test.stderr");
-        let body: Vec<u8> = std::fs::read(path).unwrap();
-        let body = String::from_utf8(body).unwrap();
-        assert_eq!("error\n", body);
-
-        let path = &ctx.workdir.join("post").join("test.exit");
-        let body: Vec<u8> = std::fs::read(path).unwrap();
-        let body = String::from_utf8(body).unwrap();
-        assert_eq!("0", body);
+        assert_eq!(ctx.result_content("post", "test.stdout"), "hello\n");
+        assert_eq!(ctx.result_content("post", "test.stderr"), "error\n");
+        assert_eq!(ctx.result_content("post", "test.exit"), "0");
 
         assert!(std::fs::exists(file).unwrap());
+        Ok(())
+    }
+
+    #[test_context(Context)]
+    #[tokio::test]
+    async fn test_chrooted_script(ctx: &mut Context) -> Result<(), Error> {
+        ctx.setup_chroot()?;
+
+        // Ideally, the script should check the existence of /etc/resolv.conf.
+        // However, it does not run on a real chroot (see share/bin/chroot),
+        // so it needs the whole path.
+        let file = ctx.install_dir.join("etc/resolv.conf");
+        let content = format!("#!/usr/bin/bash\ntest -h {} && echo exists", file.display());
+        let script = ctx.setup_script(&content, true);
+
+        let runner = ctx.runner();
+        let scripts = vec![&script];
+        runner.run(&scripts).await.unwrap();
+
+        // It runs successfully because the resolv.conf link exists.
+        assert_eq!(ctx.result_content("post", "test.stdout"), "exists\n");
+
         Ok(())
     }
 

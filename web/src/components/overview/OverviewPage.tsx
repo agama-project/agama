@@ -27,8 +27,17 @@ import L10nSection from "./L10nSection";
 import StorageSection from "./StorageSection";
 import SoftwareSection from "./SoftwareSection";
 import { _ } from "~/i18n";
+import { PRODUCT } from "~/routes/paths";
+import { useProduct } from "~/hooks/model/config";
+import { Navigate } from "react-router";
 
 export default function OverviewPage() {
+  const product = useProduct();
+
+  if (!product) {
+    return <Navigate to={PRODUCT.root} />;
+  }
+
   return (
     <Page>
       <Page.Header>

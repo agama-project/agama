@@ -183,6 +183,16 @@ strong {
   font-weight: var(--pf-t--global--font--weight--400);
 }
 
+#main-content {
+  position: relative;
+
+  .agm-main-content-overlay {
+    position: absolute;
+    padding-block-start: 2.2rem;
+    backdrop-filter: blur(2px);
+  }
+}
+
 // Temporary CSS rules written during migration to PFv6
 
 // Reserve the sidebar space also for "lg" breakpoint

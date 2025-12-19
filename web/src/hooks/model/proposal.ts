@@ -25,9 +25,14 @@ import { useSuspenseQuery, useQueryClient } from "@tanstack/react-query";
 import { getProposal } from "~/api";
 import { useInstallerClient } from "~/context/installer";
 import type { Proposal } from "~/model/proposal";
+import { EXTENDED_CONFIG_KEY } from "~/hooks/model/config";
+import { STORAGE_MODEL_KEY } from "~/hooks/model/storage/config-model";
+
+const PROPOSAL_KEY = "proposal" as const;
+const COMMON_PROPOSAL_KEYS = [PROPOSAL_KEY, EXTENDED_CONFIG_KEY] as const;
 
 const proposalQuery = {
-  queryKey: ["proposal"],
+  queryKey: [PROPOSAL_KEY],
   queryFn: getProposal,
 };
 
@@ -45,15 +50,15 @@ function useProposalChanges() {
     // TODO: replace the scope instead of invalidating the query.
     return client.onEvent((event) => {
       if (event.type === "ProposalChanged") {
-        queryClient.invalidateQueries({ queryKey: ["extendedConfig"] });
-        queryClient.invalidateQueries({ queryKey: ["storageModel"] });
-        queryClient.invalidateQueries({ queryKey: ["proposal"] });
+        [...COMMON_PROPOSAL_KEYS, STORAGE_MODEL_KEY].forEach((queryKey) => {
+          queryClient.invalidateQueries({ queryKey: [queryKey] });
+        });
       }
     });
   }, [client, queryClient]);
 }
 
-export { proposalQuery, useProposal, useProposalChanges };
+export { COMMON_PROPOSAL_KEYS, proposalQuery, useProposal, useProposalChanges };
 export * as l10n from "~/hooks/model/proposal/l10n";
 export * as network from "~/hooks/model/proposal/network";
 export * as storage from "~/hooks/model/proposal/storage";

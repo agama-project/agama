@@ -70,16 +70,16 @@ jest.mock("~/api", () => ({
   patchConfig: (payload) => mockPatchConfigFn(payload),
 }));
 
-jest.mock("~/hooks/api/system", () => ({
-  ...jest.requireActual("~/hooks/api/system"),
+jest.mock("~/hooks/model/system", () => ({
+  ...jest.requireActual("~/hooks/model/system"),
   useSystem: (): ReturnType<typeof useSystem> => ({
     products: [tumbleweed, microOs],
     network,
   }),
 }));
 
-jest.mock("~/hooks/api/config", () => ({
-  ...jest.requireActual("~/hooks/api/config"),
+jest.mock("~/hooks/model/config", () => ({
+  ...jest.requireActual("~/hooks/model/config"),
   useProduct: (): ReturnType<typeof useProduct> => mockSelectedProduct(),
 }));
 

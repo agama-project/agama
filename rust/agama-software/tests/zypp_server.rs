@@ -113,12 +113,8 @@ async fn test_start_zypp_server() {
         enabled: true,
     };
 
-    let software_state = SoftwareState {
-        product: "test_product".to_string(),
-        repositories: vec![repo_s],
-        resolvables: vec![],
-        options: Default::default(),
-    };
+    let mut software_state = SoftwareState::new("test_product");
+    software_state.repositories = vec![repo_s];
 
     client
         .send(SoftwareAction::Write {

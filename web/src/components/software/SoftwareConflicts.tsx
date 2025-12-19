@@ -281,7 +281,7 @@ function SoftwareConflicts(): React.ReactNode {
   const conflicts = useConflicts();
 
   return (
-    <Page>
+    <Page progressScope="software">
       <Page.Header>
         <Content component="h2">{_("Software conflicts resolution")}</Content>
       </Page.Header>

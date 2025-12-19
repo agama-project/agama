@@ -22,16 +22,25 @@
 
 import React from "react";
 import { screen, within } from "@testing-library/react";
-import { mockNavigateFn, mockRoutes, plainRender, installerRender } from "~/test-utils";
-import { Page } from "~/components/core";
-import { _ } from "~/i18n";
+import { installerRender, mockNavigateFn, mockRoutes, plainRender } from "~/test-utils";
+import useTrackQueriesRefetch from "~/hooks/use-track-queries-refetch";
 import { PRODUCT, ROOT } from "~/routes/paths";
+import { _ } from "~/i18n";
+import Page from "./Page";
 
 let consoleErrorSpy: jest.SpyInstance;
+let mockStartTracking: jest.Mock = jest.fn();
+
+jest.mock("~/hooks/use-track-queries-refetch", () => ({
+  __esModule: true,
+  default: jest.fn(),
+}));
 
 jest.mock("~/components/product/ProductRegistrationAlert", () => () => (
   <div>ProductRegistrationAlertMock</div>
 ));
+
+const mockUseTrackQueriesRefetch = jest.mocked(useTrackQueriesRefetch);
 
 describe("Page", () => {
   beforeAll(() => {
@@ -41,6 +50,19 @@ describe("Page", () => {
 
   afterAll(() => {
     consoleErrorSpy.mockRestore();
+  });
+
+  beforeEach(() => {
+    // Set up default mock for useTrackQueriesRefetch
+    mockUseTrackQueriesRefetch.mockReturnValue({
+      startTracking: mockStartTracking,
+    });
+
+    mockNavigateFn.mockClear();
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
   });
 
   it("renders given children", () => {
@@ -54,7 +76,7 @@ describe("Page", () => {
 
   describe("Page.Actions", () => {
     it("renders a footer sticky to bottom", () => {
-      plainRender(
+      installerRender(
         <Page.Actions>
           <Page.Action>Save</Page.Action>
           <Page.Action>Discard</Page.Action>
@@ -67,26 +89,19 @@ describe("Page", () => {
   });
 
   describe("Page.Action", () => {
-    it("renders a button with given content", () => {
-      plainRender(<Page.Action>Save</Page.Action>);
-      screen.getByRole("button", { name: "Save" });
+    it("triggers given onClick handler when user clicks on it, if valid", async () => {
+      const onClick = jest.fn();
+      const { user } = installerRender(<Page.Action onClick={onClick}>Cancel</Page.Action>);
+      const button = screen.getByRole("button", { name: "Cancel" });
+      await user.click(button);
+      expect(onClick).toHaveBeenCalled();
     });
 
-    describe("when user clicks on it", () => {
-      it("triggers given onClick handler, if valid", async () => {
-        const onClick = jest.fn();
-        const { user } = plainRender(<Page.Action onClick={onClick}>Cancel</Page.Action>);
-        const button = screen.getByRole("button", { name: "Cancel" });
-        await user.click(button);
-        expect(onClick).toHaveBeenCalled();
-      });
-
-      it("navigates to the path given through 'navigateTo' prop", async () => {
-        const { user } = plainRender(<Page.Action navigateTo="/somewhere">Cancel</Page.Action>);
-        const button = screen.getByRole("button", { name: "Cancel" });
-        await user.click(button);
-        expect(mockNavigateFn).toHaveBeenCalledWith("/somewhere");
-      });
+    it("navigates to the path given through 'navigateTo' prop when user clicks on it", async () => {
+      const { user } = installerRender(<Page.Action navigateTo="/somewhere">Cancel</Page.Action>);
+      const button = screen.getByRole("button", { name: "Cancel" });
+      await user.click(button);
+      expect(mockNavigateFn).toHaveBeenCalledWith("/somewhere");
     });
   });
 
@@ -138,14 +153,14 @@ describe("Page", () => {
 
   describe("Page.Back", () => {
     it("renders a button for navigating back when user clicks on it", async () => {
-      const { user } = plainRender(<Page.Back />);
+      const { user } = installerRender(<Page.Back />);
       const button = screen.getByRole("button", { name: "Back" });
       await user.click(button);
       expect(mockNavigateFn).toHaveBeenCalledWith(-1);
     });
 
     it("uses `link` variant by default", () => {
-      plainRender(<Page.Back />);
+      installerRender(<Page.Back />);
       const button = screen.getByRole("button", { name: "Back" });
       expect(button.classList.contains("pf-m-link")).toBe(true);
     });
@@ -160,7 +175,7 @@ describe("Page", () => {
         e.preventDefault();
       });
 
-      const { user } = plainRender(
+      const { user } = installerRender(
         <>
           <form onSubmit={onSubmit} id="fake-form" />
           <Page.Submit form="fake-form" onClick={onClick}>
@@ -174,6 +189,7 @@ describe("Page", () => {
       expect(onClick).toHaveBeenCalled();
     });
   });
+
   describe("Page.Header", () => {
     it("renders a node that sticks to top", () => {
       const { container } = plainRender(<Page.Header>The Header</Page.Header>);
@@ -222,7 +238,7 @@ describe("Page", () => {
     });
 
     it("renders given content props (title, description, actions, and children (content)", () => {
-      plainRender(
+      installerRender(
         <Page.Section
           title="A section"
           description="Testing section with title, description, content, and actions"
