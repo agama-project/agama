@@ -22,6 +22,11 @@ use crate::service;
 use agama_utils::api::{self, users::user_info::UserInfo, users::SystemInfo};
 use itertools::Itertools;
 
+// For now it is just a copy of what is in agama_utils::users::Config
+// Two reasons for separation:
+// - impl part bellow which need not to be shared across rest of the Agama
+// - one day it might be useful to separate implementation e.g. by changing to
+// property: Option<holding a Type> in agama_utils vs property: Type here
 #[derive(Clone, PartialEq)]
 pub struct Config {
     pub users: Vec<UserInfo>,
@@ -32,6 +37,16 @@ impl Config {
         Self {
             users: system.users.clone(),
         }
+    }
+
+    pub fn to_api(&self) -> Option<api::users::Config> {
+        if self.users.is_empty() {
+            return None;
+        }
+
+        Some(api::users::Config {
+            users: self.users.clone(),
+        })
     }
 
     pub fn merge(&self, config: &api::users::Config) -> Result<Self, service::Error> {

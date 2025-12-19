@@ -29,3 +29,38 @@ pub struct GetSystem;
 impl Message for GetSystem {
     type Reply = SystemInfo;
 }
+
+#[derive(Clone)]
+pub struct SetSystem<T> {
+    pub system: Option<T>,
+}
+
+impl<T: Send + 'static> Message for SetSystem<T> {
+    type Reply = ();
+}
+
+pub struct GetConfig;
+
+impl Message for GetConfig {
+    type Reply = api::users::Config;
+}
+
+pub struct SetConfig<T> {
+    pub config: Option<T>,
+}
+
+impl<T> SetConfig<T> {
+    pub fn new(config: Option<T>) -> Self {
+        Self { config }
+    }
+}
+
+impl<T: Send + 'static> Message for SetConfig<T> {
+    type Reply = ();
+}
+
+pub struct GetProposal;
+
+impl Message for GetProposal {
+    type Reply = Option<api::users::Config>;
+}

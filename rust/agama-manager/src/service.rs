@@ -354,6 +354,10 @@ impl Service {
             ))
             .await?;
 
+        self.users
+            .call(users::message::SetConfig::new(config.users.clone()))
+            .await?;
+
         if let Some(network) = config.network.clone() {
             self.network.update_config(network).await?;
             self.network.apply().await?;
@@ -477,6 +481,7 @@ impl MessageHandler<message::GetExtendedConfig> for Service {
         let questions = self.questions.call(question::message::GetConfig).await?;
         let network = self.network.get_config().await?;
         let storage = self.storage.call(storage::message::GetConfig).await?;
+        let users = self.users.call(users::message::GetConfig).await?;
 
         Ok(Config {
             l10n: Some(l10n),
@@ -485,6 +490,7 @@ impl MessageHandler<message::GetExtendedConfig> for Service {
             software: Some(software),
             storage,
             files: None,
+            users: Some(users),
         })
     }
 }
@@ -530,12 +536,14 @@ impl MessageHandler<message::GetProposal> for Service {
         let software = self.software.call(software::message::GetProposal).await?;
         let storage = self.storage.call(storage::message::GetProposal).await?;
         let network = self.network.get_proposal().await?;
+        let users = self.users.call(users::message::GetProposal).await?;
 
         Ok(Some(Proposal {
             l10n,
             network,
             software,
             storage,
+            users,
         }))
     }
 }
