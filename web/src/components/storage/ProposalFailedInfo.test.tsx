@@ -135,7 +135,7 @@ const mockCreateNothingConfigModel: ConfigModel.Config = {
       partitions: [
         {
           name: "/dev/vdb1", // Has name, so it's not new
-          size: { min: 6430916608 },
+          size: { default: false, min: 6430916608 },
         },
       ],
     },

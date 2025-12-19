@@ -36,6 +36,7 @@ const sda1: Storage.Device = {
   block: {
     start: 1,
     size: gib(2),
+    shrinking: { supported: false },
   }
 };
 
@@ -75,6 +76,7 @@ const sdb: Storage.Device = {
   block: {
     start: 1,
     size: gib(10),
+    shrinking: { supported: false },
     systems: [],
   },
   drive: {
@@ -96,7 +98,7 @@ const mockSdaDrive: ConfigModel.Drive = {
         min: gib(2),
         default: false,
       },
-      filesystem: { type: "swap" },
+      filesystem: { default: true, type: "swap" },
     },
     {
       mountPath: "/home",
@@ -104,7 +106,7 @@ const mockSdaDrive: ConfigModel.Drive = {
         min: gib(16),
         default: true,
       },
-      filesystem: { type: "xfs" },
+      filesystem: { default: true, type: "xfs" },
     },
   ],
 };

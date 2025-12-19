@@ -42,6 +42,7 @@ const sda1: Storage.Device = {
   block: {
     start: 1,
     size: gib(2),
+    shrinking: { supported: false },
   }
 };
 
@@ -80,7 +81,7 @@ const swap: ConfigModel.Partition = {
     min: gib(2),
     default: false,
   },
-  filesystem: { type: "swap" },
+  filesystem: { default: false, type: "swap" },
 };
 
 const home: ConfigModel.Partition = {
@@ -91,6 +92,7 @@ const home: ConfigModel.Partition = {
     max: gib(5),
   },
   filesystem: {
+    default: false,
     type: "xfs",
     label: "HOME",
   },
@@ -108,17 +110,19 @@ const driveWithHome: ConfigModel.Drive = {
   partitions: [swap, home],
 };
 
-const homeVolume: Storage.VolumeTemplate = {
+const homeVolume: Storage.Volume = {
   mountPath: "/home",
   fsType: "btrfs",
   minSize: 1024,
   maxSize: 1024,
   snapshots: false,
+  autoSize: false,
   outline: {
     required: false,
     fsTypes: ["btrfs"],
     snapshotsConfigurable: false,
     snapshotsAffectSizes: false,
+    supportAutoSize: false,
     sizeRelevantVolumes: []
   },
 };

@@ -36,6 +36,7 @@ const sda: Storage.Device = {
   block: {
     start: 1,
     size: gib(10),
+    shrinking: { supported: false },
   },
 };
 
@@ -45,10 +46,9 @@ const sdaModel: ConfigModel.Drive = {
   partitions: [],
 };
 
-const homeVolume: Storage.VolumeTemplate = {
+const homeVolume: Storage.Volume = {
   mountPath: "/home",
   mountOptions: [],
-  target: "default",
   fsType: "btrfs",
   minSize: gib(1),
   maxSize: gib(5),
@@ -149,7 +149,7 @@ describe("FormattableDevicePage", () => {
   });
 
   describe("if the device has already a filesystem config", () => {
-    const formattedSdaModel: model.Drive = {
+    const formattedSdaModel: ConfigModel.Drive = {
       ...sdaModel,
       mountPath: "/home",
       filesystem: {
@@ -159,9 +159,9 @@ describe("FormattableDevicePage", () => {
       },
     };
 
-    const formattedSda: storage.Device = {
+    const formattedSda: Storage.Device = {
       ...sda,
-      filesystem: { type: "xfs" },
+      filesystem: { sid: 100, type: "xfs" },
     };
 
     beforeEach(() => {
