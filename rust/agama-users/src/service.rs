@@ -26,6 +26,7 @@ use agama_utils::{
         self,
         event::{self, Event},
         users::{user_info::UserInfo, SystemInfo},
+        Issue,
     },
     issue,
 };
@@ -50,14 +51,16 @@ impl Starter {
 
     /// Starts the service and returns a handler to communicate with it.
     pub async fn start(self) -> Result<Handler<Service>, Error> {
+        let system = SystemInfo {
+            users: [UserInfo {
+                name: String::from("root"),
+            }]
+            .to_vec(),
+        };
         let service = Service {
             // just mockup of non-existent system model
-            system: SystemInfo {
-                users: [UserInfo {
-                    name: String::from("root"),
-                }]
-                .to_vec(),
-            },
+            system: system.clone(),
+            full_config: Config::new_from(&system),
             issues: self.issues,
             events: self.events,
         };
@@ -69,8 +72,10 @@ impl Starter {
 
 /// Users service.
 pub struct Service {
-    // users service "caches"
+    // holds system state
     system: SystemInfo,
+    // complete users config
+    full_config: Config,
     // infrastructure stuff
     issues: Handler<issue::Service>,
     events: event::Sender,
@@ -79,6 +84,25 @@ pub struct Service {
 impl Service {
     pub fn starter(events: event::Sender, issues: Handler<issue::Service>) -> Starter {
         Starter::new(events, issues)
+    }
+
+    fn get_proposal(&self) -> Option<api::users::Config> {
+        if self.find_issues().is_empty() {
+            return self.full_config.to_api();
+        }
+
+        None
+    }
+
+    fn find_issues(&self) -> Vec<Issue> {
+        let mut issues = vec![];
+
+        // TODO
+        // Well one of possible issues is missing root
+        // In fact user's config should never be empty
+        // because of the root user
+
+        issues
     }
 }
 
@@ -90,5 +114,40 @@ impl Actor for Service {
 impl MessageHandler<message::GetSystem> for Service {
     async fn handle(&mut self, _message: message::GetSystem) -> Result<SystemInfo, Error> {
         Ok(self.system.clone())
+    }
+}
+
+// Small confusion here:
+// Even thought it reacts on GetConfig
+// - returns full users config. Called from managers service GetExendedConfig
+// - could have been implemented as GetExtendedConfig message handler. GetConfig
+// used for consistency with other services.
+#[async_trait]
+impl MessageHandler<message::GetConfig> for Service {
+    async fn handle(&mut self, _message: message::GetConfig) -> Result<api::users::Config, Error> {
+        Ok(api::users::Config {
+            users: self.full_config.users.clone(),
+        })
+    }
+}
+
+// TODO:
+#[async_trait]
+impl MessageHandler<message::SetConfig<api::users::Config>> for Service {
+    async fn handle(
+        &mut self,
+        message: message::SetConfig<api::users::Config>,
+    ) -> Result<(), Error> {
+        Ok(())
+    }
+}
+
+#[async_trait]
+impl MessageHandler<message::GetProposal> for Service {
+    async fn handle(
+        &mut self,
+        _message: message::GetProposal,
+    ) -> Result<Option<api::users::Config>, Error> {
+        Ok(self.get_proposal())
     }
 }
