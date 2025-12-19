@@ -21,7 +21,7 @@
  */
 
 import React, { useEffect, useState } from "react";
-import { Alert, Backdrop, Spinner } from "@patternfly/react-core";
+import { Alert, Backdrop, Flex, FlexItem, Spinner } from "@patternfly/react-core";
 import { concat, isEmpty } from "radashi";
 import { sprintf } from "sprintf-js";
 import { COMMON_PROPOSAL_KEYS } from "~/hooks/model/proposal";
@@ -29,6 +29,7 @@ import { useStatus } from "~/hooks/model/status";
 import useTrackQueriesRefetch from "~/hooks/use-track-queries-refetch";
 import type { Scope } from "~/model/status";
 import { _ } from "~/i18n";
+import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 /**
  * Props for the ProgressBackdrop component.
  */
@@ -115,18 +116,26 @@ export default function ProgressBackdrop({
     <Backdrop className="agm-main-content-overlay" role="alert" aria-labelledby="progressStatus">
       <Alert
         isPlain
-        customIcon={<Spinner size="sm" aria-hidden />}
+        customIcon={<></>}
         title={
-          <div id="progressStatus">
-            {progress ? (
-              <>
-                {progress.step}{" "}
-                <small>{sprintf(_("(step %s of %s)"), progress.index, progress.size)}</small>
-              </>
-            ) : (
-              <>{_("Refreshing data...")}</>
-            )}
-          </div>
+          <Flex
+            id="progressStatus"
+            gap={{ default: "gapMd" }}
+            alignItems={{ default: "alignItemsCenter" }}
+            className={textStyles.fontSizeXl}
+          >
+            <Spinner size="lg" aria-hidden />
+            <FlexItem>
+              {progress ? (
+                <>
+                  {progress.step}{" "}
+                  <small>{sprintf(_("(step %s of %s)"), progress.index, progress.size)}</small>
+                </>
+              ) : (
+                <>{_("Refreshing data...")}</>
+              )}
+            </FlexItem>
+          </Flex>
         }
       />
     </Backdrop>
