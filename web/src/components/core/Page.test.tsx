@@ -29,7 +29,7 @@ import { _ } from "~/i18n";
 import Page from "./Page";
 
 let consoleErrorSpy: jest.SpyInstance;
-let mockStartTracking: jest.Mock = jest.fn();
+const mockStartTracking: jest.Mock = jest.fn();
 
 jest.mock("~/hooks/use-track-queries-refetch", () => ({
   __esModule: true,

@@ -30,7 +30,7 @@ type Config = {
   network?: Network.Config;
   product?: Product;
   storage?: Storage.Config;
-  software?: Software.Config
+  software?: Software.Config;
 };
 
 type Product = {

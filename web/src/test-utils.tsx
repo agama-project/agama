@@ -108,12 +108,12 @@ jest.mock("react-router", () => ({
 /**
  * Internal mock for manipulating progresses
  */
-let progressesMock = jest.fn().mockReturnValue([]);
+const progressesMock = jest.fn().mockReturnValue([]);
 
 /**
  * Internal mock for manipulating stage
  */
-let stageMock = jest.fn().mockReturnValue("configuring");
+const stageMock = jest.fn().mockReturnValue("configuring");
 
 /**
  * Allows mocking useStatus#progresses for testing purpose
