@@ -25,10 +25,9 @@ import { screen, waitFor, within } from "@testing-library/react";
 import { installerRender, mockProgresses } from "~/test-utils";
 import useTrackQueriesRefetch from "~/hooks/use-track-queries-refetch";
 import { COMMON_PROPOSAL_KEYS } from "~/hooks/model/proposal";
-import { _ } from "~/i18n";
 import ProgressBackdrop from "./ProgressBackdrop";
 
-let mockStartTracking: jest.Mock = jest.fn();
+const mockStartTracking: jest.Mock = jest.fn();
 
 jest.mock("~/hooks/use-track-queries-refetch", () => ({
   __esModule: true,
@@ -146,7 +145,7 @@ describe("ProgressBackdrop", () => {
 
       const backdrop = screen.getByRole("alert", { name: /Calculating proposal/ });
 
-      rerender(<ProgressBackdrop progressScope="storage">Content</ProgressBackdrop>);
+      rerender(<ProgressBackdrop progressScope="storage" />);
 
       // Should show refreshing message
       await waitFor(() => {

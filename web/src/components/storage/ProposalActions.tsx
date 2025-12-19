@@ -46,22 +46,15 @@ const ActionsList = ({ actions }: { actions: Proposal.Action[] }) => {
   return <List>{items}</List>;
 };
 
+type ProposalActionsProps = {
+  actions: Proposal.Action[];
+};
+
 /**
- * Renders a dialog with the given list of actions
+ * Renders the list of actions to perform in the system.
  * @component
- *
- * @param props
- * @param [props.actions=[]] - The actions to perform in the system.
- * @param [props.isOpen=false] - Whether the dialog is visible or not.
- * @param [props.onClose] - Whether the dialog is visible or not.
  */
-export default function ProposalActionsDialog({
-  actions = [],
-}: {
-  actions?: Proposal.Action[];
-  isOpen?: boolean;
-  onClose?: () => void;
-}) {
+export default function ProposalActions({ actions }: ProposalActionsProps): React.ReactNode {
   const [isExpanded, setIsExpanded] = useState(false);
 
   if (actions.length === 0) return null;

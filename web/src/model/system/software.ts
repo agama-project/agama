@@ -40,7 +40,7 @@ type Pattern = {
   /** Icon name (not path or file name!) */
   icon: string;
   /** Whether the pattern is selected by default */
-  preselected: boolean
+  preselected: boolean;
 };
 
 type Repository = {

@@ -24,11 +24,11 @@ import React from "react";
 import { screen } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
 import { L10nSection } from "~/components/overview";
-import { Locale } from "~/model/system";
+import { L10n } from "~/model/system";
 
-const locales: Locale[] = [
-  { id: "en_US.UTF-8", name: "English", territory: "United States" },
-  { id: "de_DE.UTF-8", name: "German", territory: "Germany" },
+const locales: L10n.Locale[] = [
+  { id: "en_US.UTF-8", language: "English", territory: "United States" },
+  { id: "de_DE.UTF-8", language: "German", territory: "Germany" },
 ];
 
 jest.mock("~/queries/system", () => ({

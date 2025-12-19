@@ -27,7 +27,7 @@ import { useSystem } from "~/hooks/model/system";
 import { useProduct } from "~/hooks/model/config";
 import { Product } from "~/types/software";
 import { Keymap, Locale } from "~/model/system/l10n";
-import { Progress, State } from "~/model/status";
+import { Progress, Stage } from "~/model/status";
 import { System } from "~/model/system/network";
 import * as utils from "~/utils";
 import { PRODUCT, ROOT } from "~/routes/paths";
@@ -68,7 +68,7 @@ const mockChangeUIKeymap = jest.fn();
 const mockChangeUILanguage = jest.fn();
 const mockPatchConfigFn = jest.fn();
 const mockConfigureL10nActionFn = jest.fn();
-const mockStateFn: jest.Mock<State> = jest.fn();
+const mockStateFn: jest.Mock<Stage> = jest.fn();
 const mockProgressesFn: jest.Mock<Progress[]> = jest.fn();
 const mockSelectedProductFn: jest.Mock<Product> = jest.fn();
 
@@ -85,7 +85,7 @@ jest.mock("~/hooks/api", () => ({
     network,
   }),
   useStatus: (): ReturnType<typeof useStatus> => ({
-    state: mockStateFn(),
+    stage: mockStateFn(),
     progresses: mockProgressesFn(),
   }),
   useProduct: (): ReturnType<typeof useProduct> => mockSelectedProductFn(),

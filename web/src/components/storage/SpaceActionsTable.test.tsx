@@ -24,77 +24,58 @@
 
 import React from "react";
 import { screen, within } from "@testing-library/react";
-import { deviceChildren, gib } from "~/components/storage/utils";
+import { gib } from "~/components/storage/utils";
 import { plainRender } from "~/test-utils";
+import type { Storage } from "~/model/system";
+import type { ConfigModel } from "~/model/storage/config-model";
 import SpaceActionsTable, { SpaceActionsTableProps } from "~/components/storage/SpaceActionsTable";
-import { StorageDevice } from "~/storage";
-import { apiModel } from "~/api/storage/types";
 
-const sda: StorageDevice = {
-  sid: 59,
-  isDrive: true,
-  type: "disk",
-  description: "",
-  vendor: "Micron",
-  model: "Micron 1100 SATA",
-  driver: ["ahci", "mmcblk"],
-  bus: "IDE",
-  busId: "",
-  transport: "usb",
-  dellBOSS: false,
-  sdCard: true,
-  active: true,
-  name: "/dev/sda",
-  size: gib(10),
-  shrinking: { unsupported: ["Resizing is not supported"] },
-  systems: [],
-  udevIds: ["ata-Micron_1100_SATA_512GB_12563", "scsi-0ATA_Micron_1100_SATA_512GB"],
-  udevPaths: ["pci-0000:00-12", "pci-0000:00-12-ata"],
-};
-
-const sda1: StorageDevice = {
+const sda1: Storage.Device = {
   sid: 69,
+  class: "partition",
   name: "/dev/sda1",
   description: "Swap partition",
-  isDrive: false,
-  type: "partition",
-  size: gib(2),
-  shrinking: { unsupported: ["Resizing is not supported"] },
-  start: 1,
+  block: {
+    start: 1,
+    size: gib(2),
+    shrinking: { supported: false, reasons: ["Resizing is not supported"] },
+  },
 };
 
-const sda2: StorageDevice = {
+const sda2: Storage.Device = {
   sid: 79,
   name: "/dev/sda2",
+  class: "partition",
   description: "EXT4 partition",
-  isDrive: false,
-  type: "partition",
-  size: gib(6),
-  shrinking: { supported: gib(3) },
-  start: 2,
+  block: {
+    start: gib(2),
+    size: gib(6),
+    shrinking: { supported: true, minSize: gib(3) },
+  },
 };
 
-sda.partitionTable = {
-  type: "gpt",
-  partitions: [sda1, sda2],
-  unpartitionedSize: 0,
-  unusedSlots: [{ start: 3, size: gib(2) }],
+const slot: Storage.UnusedSlot = {
+  start: gib(8),
+  size: gib(2),
 };
 
-const mockDrive: apiModel.Drive = {
+const devices: (Storage.Device | Storage.UnusedSlot)[] = [sda1, sda2, slot];
+
+const driveWithReused: ConfigModel.Drive = {
   name: "/dev/sda",
   partitions: [
     {
       name: "/dev/sda2",
       mountPath: "swap",
-      filesystem: { reuse: false, default: true },
+      filesystem: { default: true },
     },
   ],
 };
 
-const mockUseConfigModelFn = jest.fn();
-jest.mock("~/queries/storage/config-model", () => ({
-  useConfigModel: () => mockUseConfigModelFn(),
+const mockUseConfigModel = jest.fn();
+jest.mock("~/hooks/model/storage/config-model", () => ({
+  ...jest.requireActual("~/hooks/model/storage/config-model"),
+  useConfigModel: () => mockUseConfigModel(),
 }));
 
 /**
@@ -114,12 +95,12 @@ let props: SpaceActionsTableProps;
 describe("SpaceActionsTable", () => {
   beforeEach(() => {
     props = {
-      devices: deviceChildren(sda),
+      devices,
       deviceAction,
       onActionChange: jest.fn(),
     };
 
-    mockUseConfigModelFn.mockReturnValue({ drives: [] });
+    mockUseConfigModel.mockReturnValue({ drives: [] });
   });
 
   it("shows the devices to configure the space actions", () => {
@@ -162,7 +143,7 @@ describe("SpaceActionsTable", () => {
 
   describe("if a partition is going to be used", () => {
     beforeEach(() => {
-      mockUseConfigModelFn.mockReturnValue({ drives: [mockDrive] });
+      mockUseConfigModel.mockReturnValue({ drives: [driveWithReused] });
     });
 
     it("disables shrink and delete actions for the partition", () => {
