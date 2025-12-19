@@ -43,7 +43,7 @@ const sda1: Storage.Device = {
     start: 1,
     size: gib(2),
     shrinking: { supported: false },
-  }
+  },
 };
 
 const sda: Storage.Device = {
@@ -123,7 +123,7 @@ const homeVolume: Storage.Volume = {
     snapshotsConfigurable: false,
     snapshotsAffectSizes: false,
     supportAutoSize: false,
-    sizeRelevantVolumes: []
+    sizeRelevantVolumes: [],
   },
 };
 

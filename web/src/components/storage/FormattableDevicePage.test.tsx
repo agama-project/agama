@@ -167,7 +167,7 @@ describe("FormattableDevicePage", () => {
     beforeEach(() => {
       mockUsePartitionable.mockReturnValue(formattedSdaModel);
       mockUseDevice.mockReturnValue(formattedSda);
-      mockUseConfigModel.mockReturnValue({drives: [formattedSdaModel]});
+      mockUseConfigModel.mockReturnValue({ drives: [formattedSdaModel] });
     });
 
     it("initializes the form with the current values", async () => {

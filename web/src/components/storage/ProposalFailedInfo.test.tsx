@@ -164,9 +164,7 @@ describe("ProposalFailedInfo", () => {
       installerRender(<ProposalFailedInfo />);
       screen.getByText("Warning alert:");
       screen.getByText("Failed to calculate a storage layout");
-      screen.getByText(
-        /It is not possible to install the system with the current configuration/,
-      );
+      screen.getByText(/It is not possible to install the system with the current configuration/);
     });
   });
 

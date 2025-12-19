@@ -39,7 +39,7 @@ const sda1: Storage.Device = {
     start: 1,
     size: gib(2),
     shrinking: { supported: false, reasons: ["Resizing is not supported"] },
-  }
+  },
 };
 
 const sda2: Storage.Device = {
@@ -51,7 +51,7 @@ const sda2: Storage.Device = {
     start: gib(2),
     size: gib(6),
     shrinking: { supported: true, minSize: gib(3) },
-  }
+  },
 };
 
 const slot: Storage.UnusedSlot = {

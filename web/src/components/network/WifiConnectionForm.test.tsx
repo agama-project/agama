@@ -45,12 +45,6 @@ jest.mock("~/hooks/api/system", () => ({
   useSystem: () => jest.fn(),
 }));
 
-jest.mock("~/hooks/api/system/network", () => ({
-  ...jest.requireActual("~/hooks/api/system/network"),
-  useSystem: () => mockSystem,
-  useConnections: () => mockSystem.connections,
-}));
-
 const mockConnection = new Connection("Visible Network", {
   wireless: new Wireless({ ssid: "Visible Network" }),
 });
@@ -65,6 +59,12 @@ const mockSystem = {
     copyEnabled: false,
   },
 };
+
+jest.mock("~/hooks/api/system/network", () => ({
+  ...jest.requireActual("~/hooks/api/system/network"),
+  useSystem: () => mockSystem,
+  useConnections: () => mockSystem.connections,
+}));
 
 const networkMock = {
   ssid: "Visible Network",
