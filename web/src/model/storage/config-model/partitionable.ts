@@ -68,7 +68,7 @@ function findLocation(config: ConfigModel.Config, name: string): Location | null
 }
 
 function findPartition(device: Device, mountPath: string): ConfigModel.Partition | undefined {
-  return device.partitions.find((p) => p.mountPath === mountPath);
+  return device.partitions?.find((p) => p.mountPath === mountPath);
 }
 
 function filterVolumeGroups(config: ConfigModel.Config, device: Device): ConfigModel.VolumeGroup[] {
@@ -105,11 +105,11 @@ function isUsed(config: ConfigModel.Config, deviceName: string): boolean {
 }
 
 function isAddingPartitions(device: Device): boolean {
-  return device.partitions.some((p) => p.mountPath && configModel.partition.isNew(p));
+  return device.partitions?.some((p) => p.mountPath && configModel.partition.isNew(p)) || false;
 }
 
 function isReusingPartitions(device: Device): boolean {
-  return device.partitions.some(configModel.partition.isReused);
+  return device.partitions?.some(configModel.partition.isReused) || false;
 }
 
 function remove(

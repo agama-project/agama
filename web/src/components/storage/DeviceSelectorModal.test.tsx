@@ -23,51 +23,60 @@
 import React from "react";
 import { screen, within } from "@testing-library/react";
 import { getColumnValues, plainRender } from "~/test-utils";
-import { StorageDevice } from "~/storage";
+import type { Storage } from "~/model/system";
 import DeviceSelectorModal from "./DeviceSelectorModal";
 
-const sda: StorageDevice = {
+const sda: Storage.Device = {
   sid: 59,
-  isDrive: true,
-  type: "disk",
-  vendor: "Micron",
-  model: "Micron 1100 SATA",
-  driver: ["ahci", "mmcblk"],
-  bus: "IDE",
-  busId: "",
-  transport: "usb",
-  dellBOSS: false,
-  sdCard: true,
-  active: true,
+  class: "drive",
   name: "/dev/sda",
-  size: 1024,
-  shrinking: { unsupported: ["Resizing is not supported"] },
-  systems: [],
-  udevIds: ["ata-Micron_1100_SATA_512GB_12563", "scsi-0ATA_Micron_1100_SATA_512GB"],
-  udevPaths: ["pci-0000:00-12", "pci-0000:00-12-ata"],
   description: "SDA drive",
+  drive: {
+    model: "Micron 1100 SATA",
+    vendor: "Micron",
+    bus: "IDE",
+    busId: "",
+    transport: "usb",
+    driver: ["ahci", "mmcblk"],
+    info: {
+      dellBoss: false,
+      sdCard: true,
+    },
+  },
+  block: {
+    start: 1,
+    size: 1024,
+    active: true,
+    encrypted: false,
+    systems: [],
+    shrinking: { supported: false },
+  },
 };
 
-const sdb: StorageDevice = {
+const sdb: Storage.Device = {
   sid: 62,
-  isDrive: true,
-  type: "disk",
-  vendor: "Samsung",
-  model: "Samsung Evo 8 Pro",
-  driver: ["ahci"],
-  bus: "IDE",
-  busId: "",
-  transport: "",
-  dellBOSS: false,
-  sdCard: false,
-  active: true,
+  class: "drive",
   name: "/dev/sdb",
-  size: 2048,
-  shrinking: { unsupported: ["Resizing is not supported"] },
-  systems: [],
-  udevIds: [],
-  udevPaths: ["pci-0000:00-19"],
   description: "SDB drive",
+  block: {
+    start: 1,
+    size: 2048,
+    active: true,
+    encrypted: false,
+    systems: [],
+    shrinking: { supported: false },
+  },
+  drive: {
+    model: "Samsung Evo 8 Pro",
+    vendor: "Samsung",
+    bus: "IDE",
+    busId: "",
+    transport: "",
+    info: {
+      dellBoss: false,
+      sdCard: false,
+    },
+  },
 };
 
 const onCancelMock = jest.fn();

@@ -26,7 +26,7 @@ import SmallWarning from "~/components/core/SmallWarning";
 import { Page, NestedContent } from "~/components/core";
 import DevicesManager from "~/model/storage/devices-manager";
 import ProposalResultTable from "~/components/storage/ProposalResultTable";
-import { ProposalActionsDialog } from "~/components/storage";
+import ProposalActions from "~/components/storage/ProposalActions";
 import { _, n_, formatList } from "~/i18n";
 import { useFlattenDevices as useSystemFlattenDevices } from "~/hooks/model/system/storage";
 import {
@@ -100,7 +100,7 @@ function ActionsList({ manager }: ActionsListProps) {
   return (
     <Stack hasGutter>
       <DeletionsInfo manager={manager} />
-      <ProposalActionsDialog actions={actions} />
+      <ProposalActions actions={actions} />
     </Stack>
   );
 }

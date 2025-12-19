@@ -148,7 +148,7 @@ type ProposalResultTableProps = {
  */
 export default function ProposalResultTable({ devicesManager }: ProposalResultTableProps) {
   const model = useConfigModel();
-  const devices = devicesManager.usedDevices(model?.drives.map((d) => d.name) || []);
+  const devices = devicesManager.usedDevices(model?.drives?.map((d) => d.name) || []);
 
   return (
     <TreeTable

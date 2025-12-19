@@ -37,7 +37,15 @@ const fetchInstallerStatus = async (): Promise<InstallerStatus> => {
 export { fetchInstallerStatus };
 
 type Stage = "installing" | "configuring" | "finished";
-type Scope = "manager" | "l10n" | "product" | "software" | "storage" | "iscsci" | "users";
+type Scope =
+  | "manager"
+  | "l10n"
+  | "product"
+  | "software"
+  | "storage"
+  | "network"
+  | "iscsci"
+  | "users";
 type Progress = {
   index: number;
   scope: Scope;
