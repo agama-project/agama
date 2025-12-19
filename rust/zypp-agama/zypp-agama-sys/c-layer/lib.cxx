@@ -165,6 +165,8 @@ bool commit(struct Zypp *zypp, struct Status *status,
     set_zypp_security_callbacks(security_callbacks);
     set_zypp_install_callbacks(install_callbacks);
     zypp::ZYppCommitPolicy policy;
+    // enable preload of rpms to speed up installation
+    policy.downloadMode(zypp::DownloadInAdvance);
     zypp::ZYppCommitResult result = zypp->zypp_pointer->commit(policy);
     STATUS_OK(status);
     unset_zypp_resolvable_download_callbacks();
