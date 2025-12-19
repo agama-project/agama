@@ -27,7 +27,7 @@ import { AnswerCallback, Question, FieldType } from "~/model/question";
 import { InstallationPhase } from "~/types/status";
 import { Product } from "~/types/software";
 import LuksActivationQuestion from "~/components/questions/LuksActivationQuestion";
-import { Locale, Keymap } from "~/model/system";
+import type { Locale, Keymap } from "~/model/system/l10n";
 
 let question: Question;
 const questionMock: Question = {
@@ -51,12 +51,12 @@ const tumbleweed: Product = {
 };
 
 const locales: Locale[] = [
-  { id: "en_US.UTF-8", name: "English", territory: "United States" },
-  { id: "es_ES.UTF-8", name: "Spanish", territory: "Spain" },
+  { id: "en_US.UTF-8", language: "English", territory: "United States" },
+  { id: "es_ES.UTF-8", language: "Spanish", territory: "Spain" },
 ];
 const keymaps: Keymap[] = [
-  { id: "us", name: "English" },
-  { id: "es", name: "Spanish" },
+  { id: "us", description: "English" },
+  { id: "es", description: "Spanish" },
 ];
 
 jest.mock("~/queries/system", () => ({
