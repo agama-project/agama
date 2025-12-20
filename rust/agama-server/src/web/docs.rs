@@ -32,7 +32,6 @@ mod users;
 pub use users::UsersApiDocBuilder;
 mod misc;
 pub use misc::MiscApiDocBuilder;
-pub mod common;
 
 pub trait ApiDocBuilder {
     fn title(&self) -> String {
