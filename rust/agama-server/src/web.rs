@@ -31,7 +31,6 @@ use crate::{
     profile::web::profile_service,
     security::security_service,
     server::server_service,
-    storage::web::{iscsi::iscsi_service, storage_service, storage_streams},
     users::web::{users_service, users_streams},
     web::common::{jobs_stream, service_status_stream},
 };
@@ -72,13 +71,9 @@ pub async fn service<P>(
 where
     P: AsRef<Path>,
 {
-    let progress = ProgressService::start(dbus.clone(), old_events.clone()).await;
-
     let router = MainServiceBuilder::new(events.clone(), old_events.clone(), web_ui_dir)
         .add_service("/v2", server_service(events, dbus.clone()).await?)
         .add_service("/security", security_service(dbus.clone()).await?)
-        .add_service("/storage", storage_service(dbus.clone(), progress).await?)
-        .add_service("/iscsi", iscsi_service(dbus.clone()).await?)
         .add_service("/bootloader", bootloader_service(dbus.clone()).await?)
         .add_service("/users", users_service(dbus.clone()).await?)
         .add_service("/hostname", hostname_service().await?)
@@ -110,28 +105,6 @@ async fn run_events_monitor(dbus: zbus::Connection, events: OldSender) -> Result
     for (id, user_stream) in users_streams(dbus.clone()).await? {
         stream.insert(id, user_stream);
     }
-    for (id, storage_stream) in storage_streams(dbus.clone()).await? {
-        stream.insert(id, storage_stream);
-    }
-    stream.insert(
-        "storage-status",
-        service_status_stream(
-            dbus.clone(),
-            "org.opensuse.Agama.Storage1",
-            "/org/opensuse/Agama/Storage1",
-        )
-        .await?,
-    );
-    stream.insert(
-        "storage-jobs",
-        jobs_stream(
-            dbus.clone(),
-            "org.opensuse.Agama.Storage1",
-            "/org/opensuse/Agama/Storage1",
-            "/org/opensuse/Agama/Storage1/jobs",
-        )
-        .await?,
-    );
 
     tokio::pin!(stream);
     let e = events.clone();

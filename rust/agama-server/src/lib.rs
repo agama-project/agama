@@ -26,7 +26,6 @@ pub mod hostname;
 pub mod logs;
 pub mod profile;
 pub mod security;
-pub mod storage;
 pub mod users;
 pub mod web;
 pub use web::service;

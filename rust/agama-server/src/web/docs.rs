@@ -24,8 +24,6 @@ mod config;
 pub use config::ConfigApiDocBuilder;
 mod hostname;
 pub use hostname::HostnameApiDocBuilder;
-mod storage;
-pub use storage::StorageApiDocBuilder;
 mod bootloader;
 pub use bootloader::BootloaderApiDocBuilder;
 mod profile;
