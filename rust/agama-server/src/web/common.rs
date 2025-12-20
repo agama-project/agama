@@ -29,9 +29,6 @@ use tokio_stream::{Stream, StreamExt};
 
 use crate::error::Error;
 
-mod jobs;
-pub use jobs::{jobs_service, jobs_stream};
-
 use super::OldEvent;
 
 pub type EventStreams = Vec<(&'static str, Pin<Box<dyn Stream<Item = OldEvent> + Send>>)>;
