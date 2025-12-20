@@ -25,20 +25,14 @@
 //! * Serve the code for the web user interface (not implemented yet).
 
 use crate::{
-    bootloader::web::bootloader_service,
-    error::Error,
-    hostname::web::hostname_service,
-    profile::web::profile_service,
-    security::security_service,
-    server::server_service,
+    bootloader::web::bootloader_service, error::Error, hostname::web::hostname_service,
+    profile::web::profile_service, security::security_service, server::server_service,
     users::web::users_service,
-    web::common::{jobs_stream, service_status_stream},
 };
 use agama_utils::api::event;
 use axum::Router;
 
 mod auth;
-pub mod common;
 mod config;
 pub mod docs;
 mod http;
