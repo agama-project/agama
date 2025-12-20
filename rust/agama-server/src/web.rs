@@ -31,7 +31,7 @@ use crate::{
     profile::web::profile_service,
     security::security_service,
     server::server_service,
-    users::web::{users_service, users_streams},
+    users::web::users_service,
     web::common::{jobs_stream, service_status_stream},
 };
 use agama_utils::api::event;
@@ -89,27 +89,5 @@ where
 ///
 /// * `events`: channel to send the events to.
 pub async fn run_monitor(events: OldSender) -> Result<(), ServiceError> {
-    let connection = connection().await?;
-    tokio::spawn(run_events_monitor(connection, events.clone()));
-
-    Ok(())
-}
-
-/// Emits the events from the system streams through the events channel.
-///
-/// * `connection`: D-Bus connection.
-/// * `events`: channel to send the events to.
-async fn run_events_monitor(dbus: zbus::Connection, events: OldSender) -> Result<(), Error> {
-    let mut stream = StreamMap::new();
-
-    for (id, user_stream) in users_streams(dbus.clone()).await? {
-        stream.insert(id, user_stream);
-    }
-
-    tokio::pin!(stream);
-    let e = events.clone();
-    while let Some((_, event)) = stream.next().await {
-        _ = e.send(event);
-    }
     Ok(())
 }
