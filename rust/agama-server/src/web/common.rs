@@ -31,8 +31,6 @@ use crate::error::Error;
 
 mod jobs;
 pub use jobs::{jobs_service, jobs_stream};
-mod progress;
-pub use progress::{ProgressClient, ProgressRouterBuilder, ProgressService, ProgressServiceError};
 
 use super::OldEvent;
 

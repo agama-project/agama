@@ -49,7 +49,6 @@ mod ws;
 use agama_lib::connection;
 use agama_lib::error::ServiceError;
 use agama_lib::http::event::{OldEvent, OldSender};
-use common::ProgressService;
 pub use config::ServiceConfig;
 pub use service::MainServiceBuilder;
 use std::path::Path;
