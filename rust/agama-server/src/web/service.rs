@@ -57,7 +57,6 @@ use tracing::Span;
 pub struct MainServiceBuilder {
     config: ServiceConfig,
     events: event::Sender,
-    old_events: http::event::OldSender,
     api_router: Router<ServiceState>,
     public_dir: PathBuf,
 }
@@ -67,7 +66,7 @@ impl MainServiceBuilder {
     ///
     /// * `events`: channel to send events through the WebSocket.
     /// * `public_dir`: path to the public directory.
-    pub fn new<P>(events: event::Sender, old_events: http::event::OldSender, public_dir: P) -> Self
+    pub fn new<P>(events: event::Sender, public_dir: P) -> Self
     where
         P: AsRef<Path>,
     {
@@ -76,7 +75,6 @@ impl MainServiceBuilder {
 
         Self {
             events,
-            old_events,
             api_router,
             config,
             public_dir: PathBuf::from(public_dir.as_ref()),
@@ -107,7 +105,6 @@ impl MainServiceBuilder {
         let state = ServiceState {
             config: self.config,
             events: self.events,
-            old_events: self.old_events,
             public_dir: self.public_dir.clone(),
         };
 

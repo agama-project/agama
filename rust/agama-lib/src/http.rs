@@ -21,8 +21,5 @@
 mod base_http_client;
 pub use base_http_client::{BaseHTTPClient, BaseHTTPClientError};
 
-pub mod event;
-pub use event::{EventPayload, OldEvent};
-
 mod websocket;
 pub use websocket::{WebSocketClient, WebSocketError};

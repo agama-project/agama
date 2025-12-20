@@ -27,7 +27,6 @@
 use crate::{error::Error, users::password::PasswordChecker};
 use agama_lib::{
     error::ServiceError,
-    event,
     users::{model::RootPatchSettings, proxies::Users1Proxy, FirstUser, RootUser, UsersClient},
 };
 use axum::{

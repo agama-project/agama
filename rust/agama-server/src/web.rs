@@ -42,7 +42,6 @@ mod ws;
 
 use agama_lib::connection;
 use agama_lib::error::ServiceError;
-use agama_lib::http::event::{OldEvent, OldSender};
 pub use config::ServiceConfig;
 pub use service::MainServiceBuilder;
 use std::path::Path;
@@ -57,14 +56,13 @@ use tokio_stream::{StreamExt, StreamMap};
 pub async fn service<P>(
     config: ServiceConfig,
     events: event::Sender,
-    old_events: OldSender,
     dbus: zbus::Connection,
     web_ui_dir: P,
 ) -> Result<Router, ServiceError>
 where
     P: AsRef<Path>,
 {
-    let router = MainServiceBuilder::new(events.clone(), old_events.clone(), web_ui_dir)
+    let router = MainServiceBuilder::new(events.clone(), web_ui_dir)
         .add_service("/v2", server_service(events, dbus.clone()).await?)
         .add_service("/security", security_service(dbus.clone()).await?)
         .add_service("/bootloader", bootloader_service(dbus.clone()).await?)
@@ -74,13 +72,4 @@ where
         .with_config(config)
         .build();
     Ok(router)
-}
-
-/// Starts monitoring the D-Bus service progress.
-///
-/// The events are sent to the `events` channel.
-///
-/// * `events`: channel to send the events to.
-pub async fn run_monitor(events: OldSender) -> Result<(), ServiceError> {
-    Ok(())
 }
