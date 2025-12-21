@@ -97,10 +97,15 @@ impl Service {
     fn find_issues(&self) -> Vec<Issue> {
         let mut issues = vec![];
 
-        // TODO
-        // Well one of possible issues is missing root
-        // In fact user's config should never be empty
-        // because of the root user
+        // At least one user is mandatory
+        // - typicaly root or
+        // - first user which will operate throught sudo
+        if self.full_config.users.is_empty() {
+            issues.push(Issue::new(
+                "No user defined",
+                "At least one user has to be defined"
+            ));
+        }
 
         issues
     }
