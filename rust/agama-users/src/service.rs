@@ -103,7 +103,7 @@ impl Service {
         if self.full_config.users.is_empty() {
             issues.push(Issue::new(
                 "No user defined",
-                "At least one user has to be defined"
+                "At least one user has to be defined",
             ));
         }
 
@@ -122,11 +122,13 @@ impl MessageHandler<message::GetSystem> for Service {
     }
 }
 
-// Small confusion here:
-// Even thought it reacts on GetConfig
-// - returns full users config. Called from managers service GetExendedConfig
-// - could have been implemented as GetExtendedConfig message handler. GetConfig
-// used for consistency with other services.
+// Small inconsistency here:
+// - in top level manager service is Config used just for what was
+//   entered by user, manager service is responsible for caching those
+// - in all "sub" services like l10n, or this users, Config is full
+//   service configuration. So GetConfig in those sub services does
+//   what GetExtendedConfig in manager
+// - GetExtendedConfig doesn't make sense for sub services thought
 #[async_trait]
 impl MessageHandler<message::GetConfig> for Service {
     async fn handle(&mut self, _message: message::GetConfig) -> Result<api::users::Config, Error> {
@@ -147,6 +149,8 @@ impl MessageHandler<message::SetConfig<api::users::Config>> for Service {
     }
 }
 
+// Basically same thing as GetConfig (in case of this service).
+// Only difference is that GetProposal checks for an issues.
 #[async_trait]
 impl MessageHandler<message::GetProposal> for Service {
     async fn handle(
