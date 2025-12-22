@@ -22,6 +22,7 @@
 
 use std::path::PathBuf;
 
+use agama_hostname::test_utils::start_service as start_hostname_service;
 use agama_l10n::test_utils::start_service as start_l10n_service;
 use agama_network::test_utils::start_service as start_network_service;
 use agama_software::test_utils::start_service as start_software_service;
@@ -38,6 +39,7 @@ pub async fn start_service(events: event::Sender, dbus: zbus::Connection) -> Han
     let progress = progress::Service::starter(events.clone()).start();
 
     Service::starter(questions.clone(), events.clone(), dbus.clone())
+        .with_hostname(start_hostname_service(events.clone(), issues.clone()).await)
         .with_l10n(start_l10n_service(events.clone(), issues.clone()).await)
         .with_storage(
             start_storage_service(events.clone(), issues.clone(), progress.clone(), dbus).await,

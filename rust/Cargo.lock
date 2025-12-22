@@ -70,9 +70,12 @@ dependencies = [
  "agama-utils",
  "anyhow",
  "async-trait",
+ "tempfile",
+ "test-context",
  "thiserror 2.0.17",
  "tokio",
  "tokio-stream",
+ "tokio-test",
  "tracing",
  "zbus",
 ]

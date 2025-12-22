@@ -18,6 +18,7 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
+//! In this file, we implement a new test case for the `install` method.
 use crate::service;
 use agama_utils::api::hostname::SystemInfo;
 use std::{fs, path::PathBuf, process::Command};
@@ -103,8 +104,77 @@ impl ModelAdapter for Model {
         let from = PathBuf::from(HOSTNAME_PATH);
         if fs::exists(from.clone())? {
             let to = PathBuf::from(self.static_target_dir()).join(HOSTNAME_PATH);
+            fs::create_dir_all(to.parent().unwrap())?;
             fs::copy(from, to)?;
         }
+        Ok(())
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use tempfile::tempdir;
+
+    struct TestModel {
+        source_dir: PathBuf,
+        target_dir: PathBuf,
+    }
+
+    impl ModelAdapter for TestModel {
+        fn hostname(&self) -> Result<String, service::Error> {
+            Ok("test-hostname".to_string())
+        }
+
+        fn static_hostname(&self) -> Result<String, service::Error> {
+            let path = self.source_dir.join("etc/hostname");
+            fs::read_to_string(path).map_err(service::Error::from)
+        }
+
+        fn set_static_hostname(&mut self, name: String) -> Result<(), service::Error> {
+            let path = self.source_dir.join("etc/hostname");
+            fs::write(path, name).map_err(service::Error::from)
+        }
+
+        fn set_hostname(&mut self, _name: String) -> Result<(), service::Error> {
+            Ok(())
+        }
+
+        fn install(&self) -> Result<(), service::Error> {
+            let from = self.source_dir.join("etc/hostname");
+            if fs::exists(&from)? {
+                let to = self.target_dir.join("etc/hostname");
+                fs::create_dir_all(to.parent().unwrap())?;
+                fs::copy(from, to)?;
+            }
+            Ok(())
+        }
+
+        fn static_target_dir(&self) -> &str {
+            self.target_dir.to_str().unwrap()
+        }
+    }
+
+    #[test]
+    fn test_install() -> Result<(), service::Error> {
+        let temp_source = tempdir()?;
+        let temp_target = tempdir()?;
+        let hostname_path = temp_source.path().join("etc");
+        fs::create_dir_all(&hostname_path)?;
+        fs::write(hostname_path.join("hostname"), "test-hostname")?;
+
+        let model = TestModel {
+            source_dir: temp_source.path().to_path_buf(),
+            target_dir: temp_target.path().to_path_buf(),
+        };
+
+        model.install()?;
+
+        let installed_hostname_path = temp_target.path().join("etc/hostname");
+        assert!(fs::exists(&installed_hostname_path)?);
+        let content = fs::read_to_string(installed_hostname_path)?;
+        assert_eq!(content, "test-hostname");
+
         Ok(())
     }
 }

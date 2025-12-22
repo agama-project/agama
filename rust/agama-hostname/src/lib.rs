@@ -43,3 +43,47 @@ pub mod message;
 mod model;
 pub use model::{Model, ModelAdapter};
 mod monitor;
+pub mod test_utils;
+
+#[cfg(test)]
+mod tests {
+    use crate::{
+        message,
+        service::Service,
+        test_utils::{start_service, TestModel},
+    };
+
+    use agama_utils::{actor::Handler, api::event::Event, issue};
+    use test_context::{test_context, AsyncTestContext};
+    use tokio::sync::broadcast;
+
+    struct Context {
+        events_rx: broadcast::Receiver<Event>,
+        handler: Handler<Service>,
+        issues: Handler<issue::Service>,
+    }
+
+    impl AsyncTestContext for Context {
+        async fn setup() -> Context {
+            let (events_tx, events_rx) = broadcast::channel::<Event>(16);
+            let issues = issue::Service::starter(events_tx.clone()).start();
+
+            let handler = start_service(events_tx, issues.clone()).await;
+
+            Self {
+                events_rx,
+                handler,
+                issues,
+            }
+        }
+    }
+
+    #[test_context(Context)]
+    #[tokio::test]
+    async fn test_get_and_set_config(ctx: &mut Context) -> Result<(), Box<dyn std::error::Error>> {
+        let config = ctx.handler.call(message::GetConfig).await.unwrap();
+        assert_eq!(config.r#static, Some("test-hostname".to_string()));
+
+        Ok(())
+    }
+}
