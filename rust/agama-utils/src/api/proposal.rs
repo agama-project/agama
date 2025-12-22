@@ -18,7 +18,7 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::api::{l10n, network, software};
+use crate::api::{l10n, network, software, users};
 use serde::Serialize;
 use serde_json::Value;
 
@@ -32,4 +32,6 @@ pub struct Proposal {
     pub software: Option<software::Proposal>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub storage: Option<Value>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub users: Option<users::Config>,
 }

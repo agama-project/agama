@@ -18,7 +18,7 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::{files, hardware, l10n, message, network, software, storage};
+use crate::{files, hardware, l10n, message, network, software, storage, users};
 use agama_utils::{
     actor::{self, Actor, Handler, MessageHandler},
     api::{
@@ -76,6 +76,8 @@ pub enum Error {
     Hardware(#[from] hardware::Error),
     #[error("Cannot dispatch this action in {current} stage (expected {expected}).")]
     UnexpectedStage { current: Stage, expected: Stage },
+    #[error(transparent)]
+    Users(#[from] users::service::Error),
 }
 
 pub struct Starter {
@@ -90,6 +92,7 @@ pub struct Starter {
     issues: Option<Handler<issue::Service>>,
     progress: Option<Handler<progress::Service>>,
     hardware: Option<hardware::Registry>,
+    users: Option<Handler<users::Service>>,
 }
 
 impl Starter {
@@ -110,6 +113,7 @@ impl Starter {
             issues: None,
             progress: None,
             hardware: None,
+            users: None,
         }
     }
 
@@ -150,6 +154,11 @@ impl Starter {
 
     pub fn with_hardware(mut self, hardware: hardware::Registry) -> Self {
         self.hardware = Some(hardware);
+        self
+    }
+
+    pub fn with_users(mut self, users: Handler<users::Service>) -> Self {
+        self.users = Some(users);
         self
     }
 
@@ -221,6 +230,15 @@ impl Starter {
             None => hardware::Registry::new_from_system(),
         };
 
+        let users = match self.users {
+            Some(users) => users,
+            None => {
+                users::Service::starter(self.events.clone(), issues.clone())
+                    .start()
+                    .await?
+            }
+        };
+
         let mut service = Service {
             questions: self.questions,
             progress,
@@ -236,6 +254,7 @@ impl Starter {
             config: Config::default(),
             system: manager::SystemInfo::default(),
             product: None,
+            users: users,
         };
 
         service.setup().await?;
@@ -258,6 +277,7 @@ pub struct Service {
     product: Option<Arc<RwLock<ProductSpec>>>,
     config: Config,
     system: manager::SystemInfo,
+    users: Handler<users::Service>,
 }
 
 impl Service {
@@ -332,6 +352,10 @@ impl Service {
                 Arc::clone(product),
                 config.storage.clone(),
             ))
+            .await?;
+
+        self.users
+            .call(users::message::SetConfig::new(config.users.clone()))
             .await?;
 
         if let Some(network) = config.network.clone() {
@@ -433,12 +457,15 @@ impl MessageHandler<message::GetSystem> for Service {
         let storage = self.storage.call(storage::message::GetSystem).await?;
         let network = self.network.get_system().await?;
         let software = self.software.call(software::message::GetSystem).await?;
+        let users = self.users.call(users::message::GetSystem).await?;
+
         Ok(SystemInfo {
             l10n,
             manager,
             network,
             storage,
             software,
+            users,
         })
     }
 }
@@ -454,6 +481,7 @@ impl MessageHandler<message::GetExtendedConfig> for Service {
         let questions = self.questions.call(question::message::GetConfig).await?;
         let network = self.network.get_config().await?;
         let storage = self.storage.call(storage::message::GetConfig).await?;
+        let users = self.users.call(users::message::GetConfig).await?;
 
         Ok(Config {
             l10n: Some(l10n),
@@ -462,6 +490,7 @@ impl MessageHandler<message::GetExtendedConfig> for Service {
             software: Some(software),
             storage,
             files: None,
+            users: Some(users),
         })
     }
 }
@@ -507,12 +536,14 @@ impl MessageHandler<message::GetProposal> for Service {
         let software = self.software.call(software::message::GetProposal).await?;
         let storage = self.storage.call(storage::message::GetProposal).await?;
         let network = self.network.get_proposal().await?;
+        let users = self.users.call(users::message::GetProposal).await?;
 
         Ok(Some(Proposal {
             l10n,
             network,
             software,
             storage,
+            users,
         }))
     }
 }
