@@ -45,7 +45,9 @@ impl ModelAdapter for TestModel {
     }
 
     fn set_static_hostname(&mut self, name: String) -> Result<(), service::Error> {
-        let path = self.source_dir.join("etc/hostname");
+        let dir = self.source_dir.join("etc");
+        let path = dir.join("hostname");
+        fs::create_dir_all(&dir).map_err(service::Error::from)?;
         fs::write(path, name).map_err(service::Error::from)
     }
 

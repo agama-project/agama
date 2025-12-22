@@ -53,7 +53,11 @@ mod tests {
         test_utils::{start_service, TestModel},
     };
 
-    use agama_utils::{actor::Handler, api::event::Event, issue};
+    use agama_utils::{
+        actor::Handler,
+        api::{self, event::Event},
+        issue,
+    };
     use test_context::{test_context, AsyncTestContext};
     use tokio::sync::broadcast;
 
@@ -81,8 +85,24 @@ mod tests {
     #[test_context(Context)]
     #[tokio::test]
     async fn test_get_and_set_config(ctx: &mut Context) -> Result<(), Box<dyn std::error::Error>> {
-        let config = ctx.handler.call(message::GetConfig).await.unwrap();
+        let mut config = ctx.handler.call(message::GetConfig).await.unwrap();
         assert_eq!(config.r#static, Some("test-hostname".to_string()));
+        config.r#static = Some("".to_string());
+        config.hostname = Some("test".to_string());
+
+        ctx.handler
+            .call(message::SetConfig::with(config.clone()))
+            .await?;
+        dbg!(" Updated hostname ");
+
+        let updated = ctx.handler.call(message::GetConfig).await?;
+        assert_eq!(
+            &updated,
+            &api::hostname::Config {
+                r#static: Some("".to_string()),
+                hostname: Some("test".to_string())
+            }
+        );
 
         Ok(())
     }
