@@ -1,6 +1,8 @@
+use std::{ffi::OsStr, path::Path};
+
 use agama_utils::{
     actor::Handler,
-    api::question::QuestionSpec,
+    api::{question::QuestionSpec, Scope},
     progress,
     question::{self},
 };
@@ -29,7 +31,6 @@ impl CommitDownload {
 
 impl Callback for CommitDownload {
     fn start_preload(&self) {
-        // TODO: report progress that we start preloading packages
         tracing::info!("Start preload");
     }
 
@@ -96,5 +97,38 @@ impl Callback for CommitDownload {
         // }
 
         None
+    }
+
+    fn finish_preload(
+        &self,
+        _url: String,
+        local_path: String,
+        error: zypp_agama::callbacks::pkg_download::PreloadError,
+        error_details: String,
+    ) {
+        let file = Path::new(&local_path);
+        let file_str = file
+            .file_name()
+            .and_then(OsStr::to_str)
+            .unwrap_or("package");
+
+        if error == zypp_agama::callbacks::pkg_download::PreloadError::NoError {
+            let msg = format!("Finished downloading {}", file_str);
+            // just ignore issues with reporting progress
+            let _ = self.progress
+                .cast(progress::message::NextWithStep::new(Scope::Software, &msg));
+        } else {
+            let labels = [gettext("Ok")];
+            let actions = [("Ok", labels[0].as_str())];
+            let question =
+                QuestionSpec::new(&error_details, "software.package_error.preload_error")
+                    .with_actions(&actions)
+                    .with_data(&[
+                        ("package", file_str),
+                        ("error_code", error.to_string().as_str()),
+                    ]);
+            // answer can be only OK so ignore it
+            let _ = ask_software_question(&self.questions, question);
+        }
     }
 }
