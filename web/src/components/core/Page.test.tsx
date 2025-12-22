@@ -23,25 +23,24 @@
 import React from "react";
 import { screen, within } from "@testing-library/react";
 import { installerRender, mockNavigateFn, mockRoutes, plainRender } from "~/test-utils";
+import useTrackQueriesRefetch from "~/hooks/use-track-queries-refetch";
 import { PRODUCT, ROOT } from "~/routes/paths";
 import { _ } from "~/i18n";
 import Page from "./Page";
 
 let consoleErrorSpy: jest.SpyInstance;
+const mockStartTracking: jest.Mock = jest.fn();
+
+jest.mock("~/hooks/use-track-queries-refetch", () => ({
+  __esModule: true,
+  default: jest.fn(),
+}));
 
 jest.mock("~/components/product/ProductRegistrationAlert", () => () => (
   <div>ProductRegistrationAlertMock</div>
 ));
 
-const mockUseStatus = jest.fn();
-jest.mock("~/hooks/model/status", () => ({
-  useStatus: () => mockUseStatus(),
-}));
-
-const mockOnProposalUpdated = jest.fn();
-jest.mock("~/hooks/model/proposal", () => ({
-  onProposalUpdated: (callback: (detail: any) => void) => mockOnProposalUpdated(callback),
-}));
+const mockUseTrackQueriesRefetch = jest.mocked(useTrackQueriesRefetch);
 
 describe("Page", () => {
   beforeAll(() => {
@@ -54,12 +53,11 @@ describe("Page", () => {
   });
 
   beforeEach(() => {
-    mockUseStatus.mockReturnValue({
-      progresses: [],
+    // Set up default mock for useTrackQueriesRefetch
+    mockUseTrackQueriesRefetch.mockReturnValue({
+      startTracking: mockStartTracking,
     });
-    
-    mockOnProposalUpdated.mockReturnValue(() => {});
-    
+
     mockNavigateFn.mockClear();
   });
 
@@ -191,6 +189,7 @@ describe("Page", () => {
       expect(onClick).toHaveBeenCalled();
     });
   });
+
   describe("Page.Header", () => {
     it("renders a node that sticks to top", () => {
       const { container } = plainRender(<Page.Header>The Header</Page.Header>);
@@ -253,107 +252,6 @@ describe("Page", () => {
       within(section).getByText("Testing section with title, description, content, and actions");
       within(section).getByText("The Content");
       within(section).getByRole("button", { name: "Disable" });
-    });
-  });
-
-  describe("ProgressBackdrop", () => {
-    describe("when no progress scope is provided", () => {
-      it("does not render the backdrop", () => {
-        installerRender(<Page>Content</Page>);
-        expect(screen.queryByRole("alert")).toBeNull();
-      });
-    });
-
-    describe("when progress scope is provided but no matching progress exists", () => {
-      it("does not render the backdrop", () => {
-        mockUseStatus.mockReturnValue({
-          progresses: [],
-        });
-
-        installerRender(<Page progressScope="software">Content</Page>);
-        expect(screen.queryByRole("alert")).toBeNull();
-      });
-    });
-
-    describe("when progress scope matches an active progress", () => {
-      it("renders the backdrop with progress information", () => {
-        mockUseStatus.mockReturnValue({
-          progresses: [
-            {
-              scope: "software",
-              step: "Installing packages",
-              index: 2,
-              size: 5,
-            },
-          ],
-        });
-
-        installerRender(<Page progressScope="software">Content</Page>);
-
-        const backdrop = screen.getByRole("alert", { name: /Installing packages/ });
-        expect(backdrop.classList).toContain("agm-main-content-overlay");
-        within(backdrop).getByText(/step 2 of 5/);
-      });
-    });
-
-    describe("when progress finishes", () => {
-      it.todo("shows 'Refreshing data...' message temporarily");
-      it.todo("hides backdrop after proposal update event");
-    });
-
-    describe("when progress scope does not match", () => {
-      it("does not show backdrop for different scope", () => {
-        mockUseStatus.mockReturnValue({
-          progresses: [
-            {
-              scope: "software",
-              step: "Installing packages",
-              index: 2,
-              size: 5,
-            },
-          ],
-        });
-
-        installerRender(<Page progressScope="storage">Content</Page>);
-
-        expect(screen.queryByRole("alert", { name: /Installing pckages/ })).toBeNull();
-      });
-    });
-
-    describe("multiple progress updates", () => {
-      it("updates the backdrop message when progress changes", () => {
-        mockUseStatus.mockReturnValue({
-          progresses: [
-            {
-              scope: "software",
-              step: "Downloading packages",
-              index: 1,
-              size: 5,
-            },
-          ],
-        });
-
-        const { rerender } = installerRender(<Page progressScope="software">Content</Page>);
-
-        expect(screen.getByText(/Downloading packages/)).toBeInTheDocument();
-        expect(screen.getByText(/step 1 of 5/)).toBeInTheDocument();
-
-        mockUseStatus.mockReturnValue({
-          progresses: [
-            {
-              scope: "software",
-              step: "Installing packages",
-              index: 3,
-              size: 5,
-            },
-          ],
-        });
-
-        rerender(<Page progressScope="software">Content</Page>);
-
-        expect(screen.getByText(/Installing packages/)).toBeInTheDocument();
-        expect(screen.getByText(/step 3 of 5/)).toBeInTheDocument();
-      });
     });
   });
 });

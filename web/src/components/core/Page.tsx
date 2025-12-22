@@ -20,10 +20,8 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useEffect, useId, useState } from "react";
+import React, { useId } from "react";
 import {
-  Alert,
-  Backdrop,
   Button,
   ButtonProps,
   Card,
@@ -33,7 +31,6 @@ import {
   CardHeader,
   CardHeaderProps,
   CardProps,
-  Content as PFContent,
   Divider,
   Flex,
   FlexItem,
@@ -44,7 +41,6 @@ import {
   Split,
   Title,
   TitleProps,
-  Spinner,
 } from "@patternfly/react-core";
 import { ProductRegistrationAlert } from "~/components/product";
 import Link, { LinkProps } from "~/components/core/Link";
@@ -54,10 +50,8 @@ import { useLocation, useNavigate } from "react-router";
 import { isEmpty, isObject } from "radashi";
 import { SIDE_PATHS } from "~/routes/paths";
 import { _ } from "~/i18n";
-import { sprintf } from "sprintf-js";
-import { onProposalUpdated } from "~/hooks/model/proposal";
-import { useStatus } from "~/hooks/model/status";
-import type { Scope } from "~/model/status";
+import type { ProgressBackdropProps } from "~/components/core/ProgressBackdrop";
+import ProgressBackdrop from "~/components/core/ProgressBackdrop";
 
 /**
  * Props accepted by Page.Section
@@ -307,82 +301,6 @@ const Content = ({ children, ...pageSectionProps }: PageSectionProps) => {
 };
 
 /**
- * Props for the ProgressBackdrop component.
- */
-type ProgressBackdropProps = {
-  /**
-   * Optional scope identifier to filter which progresses trigger the backgrop
-   * overlay. If undefined or no matching tasks exist, the backdrop won't be
-   * displayed.
-   */
-  progressScope?: Scope;
-};
-
-/**
- * Internal component that blocks user by displaying a blurred overlay with a
- * progress information when progresses matching the specified scope are active.
- *
- * @remarks
- * The component uses two mechanisms to manage its visibility:
- *   - Monitors active tasks from useStatus() that match the progressScope
- *   - Listens to proposal update events to automatically unblock when
- *     operations complete
- *
- * The backdrop remains visible until a proposal update event with a timestamp
- * newer than when the progress finished arrives, ensuring the UI doesn't
- * unblock prematurely.
- */
-const ProgressBackdrop = ({ progressScope }: ProgressBackdropProps): React.ReactNode => {
-  const { progresses: tasks } = useStatus();
-  const [isBlocked, setIsBlocked] = useState(false);
-  const [progressFinishedAt, setProgressFinishedAt] = useState<number | null>(null);
-  const progress = !isEmpty(progressScope) && tasks.find((t) => t.scope === progressScope);
-
-  useEffect(() => {
-    if (!progress && isBlocked && !progressFinishedAt) {
-      setProgressFinishedAt(Date.now());
-    }
-  }, [progress, isBlocked, progressFinishedAt]);
-
-  useEffect(() => {
-    return onProposalUpdated((detail) => {
-      if (detail.completedAt > progressFinishedAt) {
-        setIsBlocked(false);
-        setProgressFinishedAt(null);
-      }
-    });
-  }, [progressFinishedAt]);
-
-  if (progress && !isBlocked) {
-    setIsBlocked(true);
-    setProgressFinishedAt(null);
-  }
-
-  if (!isBlocked) return null;
-
-  return (
-    <Backdrop className="agm-main-content-overlay" role="alert" aria-labelledby="progressStatus">
-      <Alert
-        isPlain
-        customIcon={<Spinner size="sm" aria-hidden />}
-        title={
-          <PFContent id="progressStatus">
-            {progress ? (
-              <>
-                {progress.step}{" "}
-                <small>{sprintf(_("(step %s of %s)"), progress.index, progress.size)}</small>
-              </>
-            ) : (
-              <>{_("Refreshing data...")}</>
-            )}
-          </PFContent>
-        }
-      />
-    </Backdrop>
-  );
-};
-
-/**
  * A component for creating an Agama page, built on top of PF/Page/PageGroup.
  *
  * It serves as the root container for all Agama pages and supports optional
@@ -406,7 +324,7 @@ const ProgressBackdrop = ({ progressScope }: ProgressBackdropProps): React.React
  * @example
  * Page with progress tracking for software operations
  * ```tsx
- * <Page progressScope="software">
+ * <Page progress={{ scope: "software" }}>
  *   <Page.Header>
  *     <h2>{_("Software")}</h2>
  *   </Page.Header>
@@ -425,14 +343,14 @@ const ProgressBackdrop = ({ progressScope }: ProgressBackdropProps): React.React
  * ```
  */
 const Page = ({
+  progress,
   children,
-  progressScope,
   ...pageGroupProps
-}: PageGroupProps & ProgressBackdropProps): React.ReactNode => {
+}: PageGroupProps & { progress?: ProgressBackdropProps }): React.ReactNode => {
   return (
     <PageGroup {...pageGroupProps} tabIndex={-1} id="main-content">
       {children}
-      <ProgressBackdrop progressScope={progressScope} />
+      <ProgressBackdrop {...progress} />
     </PageGroup>
   );
 };

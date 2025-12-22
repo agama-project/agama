@@ -30,10 +30,10 @@ import { useReset } from "~/hooks/model/config/storage";
  * Info about unsupported model.
  */
 export default function UnsupportedModelInfo(): React.ReactNode {
-  const model = useConfigModel();
+  const config = useConfigModel();
   const reset = useReset();
 
-  if (model) return null;
+  if (config) return null;
 
   return (
     <Alert variant="info" title={_("Unable to modify the settings")}>

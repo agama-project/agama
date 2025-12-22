@@ -5,8 +5,8 @@ mod tasks {
 
     use agama_cli::Cli;
     use agama_server::web::docs::{
-        ApiDocBuilder, ConfigApiDocBuilder, HostnameApiDocBuilder, ManagerApiDocBuilder,
-        MiscApiDocBuilder, ProfileApiDocBuilder, StorageApiDocBuilder, UsersApiDocBuilder,
+        ApiDocBuilder, ConfigApiDocBuilder, HostnameApiDocBuilder, MiscApiDocBuilder,
+        ProfileApiDocBuilder, UsersApiDocBuilder,
     };
     use clap::CommandFactory;
     use clap_complete::aot;
@@ -65,10 +65,8 @@ mod tasks {
 
         write_openapi(ConfigApiDocBuilder {}, out_dir.join("config.json"))?;
         write_openapi(HostnameApiDocBuilder {}, out_dir.join("hostname.json"))?;
-        write_openapi(ManagerApiDocBuilder {}, out_dir.join("manager.json"))?;
         write_openapi(MiscApiDocBuilder {}, out_dir.join("misc.json"))?;
         write_openapi(ProfileApiDocBuilder {}, out_dir.join("profile.json"))?;
-        write_openapi(StorageApiDocBuilder {}, out_dir.join("storage.json"))?;
         write_openapi(UsersApiDocBuilder {}, out_dir.join("users.json"))?;
         println!(
             "Generate the OpenAPI specification at {}.",

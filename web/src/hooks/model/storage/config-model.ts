@@ -27,8 +27,10 @@ import { solveStorageModel, getStorageModel, putStorageModel } from "~/api";
 import configModel from "~/model/storage/config-model";
 import type { ConfigModel, Data, Partitionable } from "~/model/storage/config-model";
 
+const STORAGE_MODEL_KEY = "storageModel" as const;
+
 const configModelQuery = {
-  queryKey: ["storageModel"],
+  queryKey: [STORAGE_MODEL_KEY],
   queryFn: getStorageModel,
 };
 
@@ -326,6 +328,7 @@ function useSetSpacePolicy(): setSpacePolicyFn {
 }
 
 export {
+  STORAGE_MODEL_KEY,
   useConfigModel,
   useSolvedConfigModel,
   useMissingMountPaths,

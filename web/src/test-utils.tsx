@@ -39,6 +39,7 @@ import { InstallerL10nProvider } from "~/context/installerL10n";
 import { StorageUiStateProvider } from "~/context/storage-ui-state";
 import { isObject, noop } from "radashi";
 import { DummyWSClient } from "./client/ws";
+import { Status } from "./model/status";
 
 /**
  * Internal mock for manipulating routes, using ["/"] by default
@@ -104,6 +105,54 @@ jest.mock("react-router", () => ({
     },
 }));
 
+/**
+ * Internal mock for manipulating progresses
+ */
+const progressesMock = jest.fn().mockReturnValue([]);
+
+/**
+ * Internal mock for manipulating stage
+ */
+const stageMock = jest.fn().mockReturnValue("configuring");
+
+/**
+ * Allows mocking useStatus#progresses for testing purpose
+ *
+ * @example
+ *   mockProgresses(
+ *     [
+ *       {
+ *         "scope": "software",
+ *         "size": 3,
+ *         "steps": [
+ *             "Updating the list of repositories",
+ *             "Refreshing metadata from the repositories",
+ *             "Calculating the software proposal"
+ *         ],
+ *         "step": "Refreshing metadata from the repositories",
+ *         "index": 2
+ *       }
+ *     ]
+ *  )
+ */
+const mockProgresses = (progresses: Status["progresses"]) =>
+  progressesMock.mockReturnValue(progresses);
+
+/**
+ * Allows mocking useStatus#stage for testing purpose
+ *
+ * @example
+ *   mockStage("configuring");
+ */
+const mockStage = (stage: Status["stage"]) => stageMock.mockReturnValue(stage);
+
+jest.mock("~/hooks/model/status", () => ({
+  useStatus: () => ({
+    progresses: progressesMock(),
+    stage: stageMock(),
+  }),
+}));
+
 const Providers = ({ children, withL10n }) => {
   const ws = new DummyWSClient();
   const client = createClient(new URL("https://localhost"), ws);
@@ -136,11 +185,7 @@ const Providers = ({ children, withL10n }) => {
     );
   }
 
-  return (
-    <InstallerClientProvider client={client}>
-      <StorageUiStateProvider>{children}</StorageUiStateProvider>
-    </InstallerClientProvider>
-  );
+  return <StorageUiStateProvider>{children}</StorageUiStateProvider>;
 };
 
 /**
@@ -259,4 +304,6 @@ export {
   mockUseRevalidator,
   resetLocalStorage,
   getColumnValues,
+  mockProgresses,
+  mockStage,
 };

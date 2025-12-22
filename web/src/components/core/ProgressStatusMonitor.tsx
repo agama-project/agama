@@ -21,20 +21,13 @@
  */
 
 import React from "react";
-import {
-  Button,
-  Divider,
-  HelperText,
-  HelperTextItem,
-  Popover,
-  Progress,
-  Stack,
-} from "@patternfly/react-core";
+import { Button, Divider, Flex, Popover, Stack } from "@patternfly/react-core";
+import Text from "~/components/core/Text";
+import type { Progress as StatusProgress } from "~/model/status";
 import { useStatus } from "~/hooks/model/status";
+import displayStyles from "@patternfly/react-styles/css/utilities/Display/display";
 import { sprintf } from "sprintf-js";
 import { _, N_, n_ } from "~/i18n";
-import displayStyles from "@patternfly/react-styles/css/utilities/Display/display";
-import type { Progress as StatusProgress } from "~/model/status";
 
 type DetailProps = {
   tasks: StatusProgress[];
@@ -64,20 +57,22 @@ const DetailsHeader = ({ tasks }: DetailProps) => {
  */
 const DetailsBody = ({ tasks }: DetailProps) => {
   return tasks.map((task, index) => {
-    const value = (task.index / task.size) * 100;
     return (
       <React.Fragment key={task.scope}>
-        <Progress
-          /* eslint-disable agama-i18n/string-literals -- SCOPE_NAMES are already marked for translation with N_ */
-          title={_(SCOPE_NAMES[task.scope])}
-          value={value}
-          size="sm"
-          helperText={
-            <HelperText>
-              <HelperTextItem>{task.step}</HelperTextItem>
-            </HelperText>
-          }
-        />
+        <Flex direction={{ default: "column" }} gap={{ default: "gapSm" }}>
+          <div>
+            <Text isBold>
+              {
+                /* eslint-disable agama-i18n/string-literals -- SCOPE_NAMES are already marked for translation with N_ */
+                _(SCOPE_NAMES[task.scope])
+              }
+            </Text>
+          </div>
+
+          <div>
+            {task.step} <small>{sprintf(_("(step %s of %s)"), task.index, task.size)}</small>
+          </div>
+        </Flex>
         {index < tasks.length - 1 && <Divider />}
       </React.Fragment>
     );

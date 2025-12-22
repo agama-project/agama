@@ -25,22 +25,14 @@
 //! * Serve the code for the web user interface (not implemented yet).
 
 use crate::{
-    bootloader::web::bootloader_service,
-    error::Error,
-    hostname::web::hostname_service,
-    manager::web::{manager_service, manager_stream},
-    profile::web::profile_service,
-    security::security_service,
-    server::server_service,
-    storage::web::{iscsi::iscsi_service, storage_service, storage_streams},
-    users::web::{users_service, users_streams},
-    web::common::{jobs_stream, service_status_stream},
+    bootloader::web::bootloader_service, error::Error, hostname::web::hostname_service,
+    profile::web::profile_service, security::security_service, server::server_service,
+    users::web::users_service,
 };
 use agama_utils::api::event;
 use axum::Router;
 
 mod auth;
-pub mod common;
 mod config;
 pub mod docs;
 mod http;
@@ -50,8 +42,6 @@ mod ws;
 
 use agama_lib::connection;
 use agama_lib::error::ServiceError;
-use agama_lib::http::event::{OldEvent, OldSender};
-use common::ProgressService;
 pub use config::ServiceConfig;
 pub use service::MainServiceBuilder;
 use std::path::Path;
@@ -66,24 +56,15 @@ use tokio_stream::{StreamExt, StreamMap};
 pub async fn service<P>(
     config: ServiceConfig,
     events: event::Sender,
-    old_events: OldSender,
     dbus: zbus::Connection,
     web_ui_dir: P,
 ) -> Result<Router, ServiceError>
 where
     P: AsRef<Path>,
 {
-    let progress = ProgressService::start(dbus.clone(), old_events.clone()).await;
-
-    let router = MainServiceBuilder::new(events.clone(), old_events.clone(), web_ui_dir)
-        .add_service(
-            "/manager",
-            manager_service(dbus.clone(), progress.clone()).await?,
-        )
+    let router = MainServiceBuilder::new(events.clone(), web_ui_dir)
         .add_service("/v2", server_service(events, dbus.clone()).await?)
         .add_service("/security", security_service(dbus.clone()).await?)
-        .add_service("/storage", storage_service(dbus.clone(), progress).await?)
-        .add_service("/iscsi", iscsi_service(dbus.clone()).await?)
         .add_service("/bootloader", bootloader_service(dbus.clone()).await?)
         .add_service("/users", users_service(dbus.clone()).await?)
         .add_service("/hostname", hostname_service().await?)
@@ -91,67 +72,4 @@ where
         .with_config(config)
         .build();
     Ok(router)
-}
-
-/// Starts monitoring the D-Bus service progress.
-///
-/// The events are sent to the `events` channel.
-///
-/// * `events`: channel to send the events to.
-pub async fn run_monitor(events: OldSender) -> Result<(), ServiceError> {
-    let connection = connection().await?;
-    tokio::spawn(run_events_monitor(connection, events.clone()));
-
-    Ok(())
-}
-
-/// Emits the events from the system streams through the events channel.
-///
-/// * `connection`: D-Bus connection.
-/// * `events`: channel to send the events to.
-async fn run_events_monitor(dbus: zbus::Connection, events: OldSender) -> Result<(), Error> {
-    let mut stream = StreamMap::new();
-
-    stream.insert("manager", manager_stream(dbus.clone()).await?);
-    stream.insert(
-        "manager-status",
-        service_status_stream(
-            dbus.clone(),
-            "org.opensuse.Agama.Manager1",
-            "/org/opensuse/Agama/Manager1",
-        )
-        .await?,
-    );
-    for (id, user_stream) in users_streams(dbus.clone()).await? {
-        stream.insert(id, user_stream);
-    }
-    for (id, storage_stream) in storage_streams(dbus.clone()).await? {
-        stream.insert(id, storage_stream);
-    }
-    stream.insert(
-        "storage-status",
-        service_status_stream(
-            dbus.clone(),
-            "org.opensuse.Agama.Storage1",
-            "/org/opensuse/Agama/Storage1",
-        )
-        .await?,
-    );
-    stream.insert(
-        "storage-jobs",
-        jobs_stream(
-            dbus.clone(),
-            "org.opensuse.Agama.Storage1",
-            "/org/opensuse/Agama/Storage1",
-            "/org/opensuse/Agama/Storage1/jobs",
-        )
-        .await?,
-    );
-
-    tokio::pin!(stream);
-    let e = events.clone();
-    while let Some((_, event)) = stream.next().await {
-        _ = e.send(event);
-    }
-    Ok(())
 }

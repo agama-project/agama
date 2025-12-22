@@ -55,7 +55,7 @@ import { useAvailableDevices } from "~/hooks/model/system/storage";
 import { useIssues } from "~/hooks/model/issue";
 import { useReset } from "~/hooks/model/config/storage";
 import { useProposal } from "~/hooks/model/proposal/storage";
-import { useConfigModel } from "~/hooks/model/storage/config-model";
+import { STORAGE_MODEL_KEY, useConfigModel } from "~/hooks/model/storage/config-model";
 import { useZFCPSupported } from "~/queries/storage/zfcp";
 import { useDASDSupported } from "~/queries/storage/dasd";
 import { STORAGE as PATHS } from "~/routes/paths";
@@ -328,7 +328,7 @@ export default function ProposalPage(): React.ReactNode {
   if (resetNeeded) return;
 
   return (
-    <Page progressScope="storage">
+    <Page progress={{ scope: "storage", ensureRefetched: STORAGE_MODEL_KEY }}>
       <Page.Header>
         <Flex>
           <FlexItem>

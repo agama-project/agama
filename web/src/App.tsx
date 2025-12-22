@@ -29,7 +29,6 @@ import { useIssuesChanges } from "~/hooks/model/issue";
 import { useProduct } from "~/hooks/model/config";
 import { ROOT } from "~/routes/paths";
 import { useQueryClient } from "@tanstack/react-query";
-import AlertOutOfSync from "~/components/core/AlertOutOfSync";
 
 /**
  * Content guard and flow control component.
@@ -59,13 +58,7 @@ const Content = () => {
     return <Navigate to={ROOT.installationFinished} />;
   }
 
-  return (
-    <>
-      {/* So far, only the storage backend is able to detect external changes.*/}
-      <AlertOutOfSync scope={"Storage"} />
-      <Outlet />;
-    </>
-  );
+  return <Outlet />;
 };
 
 /**

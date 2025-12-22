@@ -25,19 +25,20 @@ import { screen, waitFor, within } from "@testing-library/react";
 import { installerRender, mockRoutes } from "~/test-utils";
 import { InstallButton } from "~/components/core";
 import { PRODUCT, ROOT } from "~/routes/paths";
-import { Issue, IssueSeverity, IssueSource } from "~/model/issue";
+import type { Issue } from "~/model/issue";
 
 const mockStartInstallationFn = jest.fn();
-let mockIssuesList: Issue[];
 
-jest.mock("~/api/manager", () => ({
-  ...jest.requireActual("~/api/manager"),
+jest.mock("~/model/manager", () => ({
+  ...jest.requireActual("~/model/manager"),
   startInstallation: () => mockStartInstallationFn(),
 }));
 
-jest.mock("~/queries/issues", () => ({
-  ...jest.requireActual("~/queries/issues"),
-  useAllIssues: () => mockIssuesList,
+const mockIssues = jest.fn();
+
+jest.mock("~/hooks/model/issue", () => ({
+  ...jest.requireActual("~/hooks/model/issue"),
+  useIssues: () => mockIssues(),
 }));
 
 const clickInstallButton = async () => {
@@ -52,16 +53,14 @@ const clickInstallButton = async () => {
 describe("InstallButton", () => {
   describe("when there are installation issues", () => {
     beforeEach(() => {
-      mockIssuesList = [
+      mockIssues.mockReturnValue([
         {
           description: "Fake Issue",
-          kind: "generic",
-          source: IssueSource.Unknown,
-          severity: IssueSeverity.Error,
+          class: "generic",
           details: "Fake Issue details",
           scope: "product",
         },
-      ];
+      ] as Issue[]);
     });
 
     it("renders additional information to warn users about found problems", async () => {
@@ -86,7 +85,7 @@ describe("InstallButton", () => {
 
   describe("when there are not installation issues", () => {
     beforeEach(() => {
-      mockIssuesList = [];
+      mockIssues.mockReturnValue([]);
     });
 
     it("renders the button without any additional information", async () => {
@@ -130,16 +129,14 @@ describe("InstallButton", () => {
 
   describe("when there are only non-critical issues", () => {
     beforeEach(() => {
-      mockIssuesList = [
+      mockIssues.mockReturnValue([
         {
           description: "Fake warning",
-          kind: "generic",
-          source: IssueSource.Unknown,
-          severity: IssueSeverity.Warn,
+          class: "generic",
           details: "Fake Issue details",
           scope: "product",
         },
-      ];
+      ] as Issue[]);
     });
 
     it("renders the button without any additional information", async () => {

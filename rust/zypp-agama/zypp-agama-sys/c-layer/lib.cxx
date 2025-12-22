@@ -148,6 +148,22 @@ void switch_target(struct Zypp *zypp, const char *root,
   try {
     zypp->zypp_pointer->initializeTarget(root_str,
                                          false /* rebuild rpmdb: no */);
+
+    // switch cache for repositories, otherwise we run out of space in tmpfs
+    // see https://github.com/yast/yast-pkg-bindings/blob/853496f527543e6d51730fd7e3126ad94b13c303/src/PkgFunctions.cc#L496
+    zypp::RepoManagerOptions repo_options(root);
+    zypp::Pathname packages_prefix = repo_options.repoPackagesCachePath;
+
+    zypp::ResPool pool = zypp->zypp_pointer->pool();
+    for_(it, pool.knownRepositoriesBegin(), pool.knownRepositoriesEnd()) {
+      zypp::RepoInfo repo = it->info();
+      repo.setPackagesPath(packages_prefix / repo.escaped_alias());
+
+      MIL << "Setting package cache for repository " << repo.alias().c_str()
+          << ": " << repo.packagesPath().asString().c_str() << std::endl;
+
+      it->setInfo(repo);
+    }
   } catch (zypp::Exception &excpt) {
     STATUS_EXCEPT(status, excpt);
     return;
@@ -165,6 +181,8 @@ bool commit(struct Zypp *zypp, struct Status *status,
     set_zypp_security_callbacks(security_callbacks);
     set_zypp_install_callbacks(install_callbacks);
     zypp::ZYppCommitPolicy policy;
+    // enable preload of rpms to speed up installation
+    policy.downloadMode(zypp::DownloadInAdvance);
     zypp::ZYppCommitResult result = zypp->zypp_pointer->commit(policy);
     STATUS_OK(status);
     unset_zypp_resolvable_download_callbacks();

@@ -23,36 +23,33 @@
 import React from "react";
 import { screen } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
-import { ProposalTransactionalInfo } from "~/components/storage";
-import { Volume } from "~/api/storage/types";
+import ProposalTransactionalInfo from "./ProposalTransactionalInfo";
+import type { Storage as System } from "~/model/system";
 
-let mockVolumes: Volume[] = [];
-jest.mock("~/queries/software", () => ({
-  ...jest.requireActual("~/queries/software"),
-  useProduct: () => ({
-    selectedProduct: { name: "Test" },
-  }),
-  useProductChanges: () => jest.fn(),
+jest.mock("~/hooks/model/config", () => ({
+  ...jest.requireActual("~/hooks/model/config"),
+  useProduct: () => ({ name: "Test" }),
 }));
 
-jest.mock("~/queries/storage", () => ({
-  ...jest.requireActual("~/queries/storage"),
-  useVolumes: () => mockVolumes,
+const mockVolumeTemplates = jest.fn();
+
+jest.mock("~/hooks/model/system/storage", () => ({
+  ...jest.requireActual("~/hooks/model/system/storage"),
+  useVolumeTemplates: () => mockVolumeTemplates(),
 }));
 
-const rootVolume: Volume = {
+const rootVolume: System.Volume = {
   mountPath: "/",
   mountOptions: [],
-  target: "default",
-  fsType: "Btrfs",
+  autoSize: false,
   minSize: 1024,
   maxSize: 2048,
-  autoSize: false,
+  fsType: "btrfs",
   snapshots: false,
   transactional: false,
   outline: {
     required: true,
-    fsTypes: ["Btrfs", "Ext4"],
+    fsTypes: ["btrfs", "ext4"],
     supportAutoSize: true,
     snapshotsConfigurable: true,
     snapshotsAffectSizes: true,
@@ -63,7 +60,7 @@ const rootVolume: Volume = {
 
 describe("if the system is not transactional", () => {
   beforeEach(() => {
-    mockVolumes = [rootVolume];
+    mockVolumeTemplates.mockReturnValue([rootVolume]);
   });
 
   it("renders nothing", () => {
@@ -74,7 +71,7 @@ describe("if the system is not transactional", () => {
 
 describe("if the system is transactional", () => {
   beforeEach(() => {
-    mockVolumes = [{ ...rootVolume, transactional: true }];
+    mockVolumeTemplates.mockReturnValue([{ ...rootVolume, transactional: true }]);
   });
 
   it("renders an explanation about the transactional system", () => {

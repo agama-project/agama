@@ -27,8 +27,11 @@ import { useSystem } from "~/hooks/model/system";
 import type { system } from "~/api";
 import type { Config } from "~/model/config";
 
+const CONFIG_KEY = "config";
+const EXTENDED_CONFIG_KEY = "extendedConfig";
+
 const configQuery = {
-  queryKey: ["config"],
+  queryKey: [CONFIG_KEY],
   queryFn: getConfig,
 };
 
@@ -37,7 +40,7 @@ function useConfig(): Config | null {
 }
 
 const extendedConfigQuery = {
-  queryKey: ["extendedConfig"],
+  queryKey: [EXTENDED_CONFIG_KEY],
   queryFn: getExtendedConfig,
 };
 
@@ -61,5 +64,13 @@ function useProduct(): system.Product | null {
   return data;
 }
 
-export { configQuery, extendedConfigQuery, useConfig, useExtendedConfig, useProduct };
+export {
+  CONFIG_KEY,
+  EXTENDED_CONFIG_KEY,
+  configQuery,
+  extendedConfigQuery,
+  useConfig,
+  useExtendedConfig,
+  useProduct,
+};
 export * as storage from "~/hooks/model/config/storage";
