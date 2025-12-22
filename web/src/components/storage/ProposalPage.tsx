@@ -328,7 +328,7 @@ export default function ProposalPage(): React.ReactNode {
   if (resetNeeded) return;
 
   return (
-    <Page progressScope="storage" additionalProgressKeys={STORAGE_MODEL_KEY}>
+    <Page progress={{ scope: "storage", ensureRefetched: STORAGE_MODEL_KEY }}>
       <Page.Header>
         <Flex>
           <FlexItem>

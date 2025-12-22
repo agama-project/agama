@@ -324,7 +324,7 @@ const Content = ({ children, ...pageSectionProps }: PageSectionProps) => {
  * @example
  * Page with progress tracking for software operations
  * ```tsx
- * <Page progressScope="software">
+ * <Page progress={{ scope: "software" }}>
  *   <Page.Header>
  *     <h2>{_("Software")}</h2>
  *   </Page.Header>
@@ -343,18 +343,14 @@ const Content = ({ children, ...pageSectionProps }: PageSectionProps) => {
  * ```
  */
 const Page = ({
+  progress,
   children,
-  progressScope,
-  additionalProgressKeys,
   ...pageGroupProps
-}: PageGroupProps & ProgressBackdropProps): React.ReactNode => {
+}: PageGroupProps & { progress?: ProgressBackdropProps }): React.ReactNode => {
   return (
     <PageGroup {...pageGroupProps} tabIndex={-1} id="main-content">
       {children}
-      <ProgressBackdrop
-        progressScope={progressScope}
-        additionalProgressKeys={additionalProgressKeys}
-      />
+      <ProgressBackdrop {...progress} />
     </PageGroup>
   );
 };

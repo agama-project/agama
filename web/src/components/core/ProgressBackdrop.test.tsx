@@ -57,7 +57,7 @@ describe("ProgressBackdrop", () => {
 
   describe("when progress scope is provided but no matching progress exists", () => {
     it("does not render the backdrop", () => {
-      installerRender(<ProgressBackdrop progressScope="software" />);
+      installerRender(<ProgressBackdrop scope="software" />);
       expect(screen.queryByRole("alert")).toBeNull();
     });
   });
@@ -73,7 +73,7 @@ describe("ProgressBackdrop", () => {
           size: 5,
         },
       ]);
-      installerRender(<ProgressBackdrop progressScope="software" />);
+      installerRender(<ProgressBackdrop scope="software" />);
       const backdrop = screen.getByRole("alert", { name: /Installing packages/ });
       expect(backdrop.classList).toContain("agm-main-content-overlay");
       within(backdrop).getByText(/step 2 of 5/);
@@ -106,14 +106,14 @@ describe("ProgressBackdrop", () => {
         },
       ]);
 
-      const { rerender } = installerRender(<ProgressBackdrop progressScope="storage" />);
+      const { rerender } = installerRender(<ProgressBackdrop scope="storage" />);
 
       const backdrop = screen.getByRole("alert", { name: /Calculating proposal/ });
 
       // Progress finishes
       mockProgresses([]);
 
-      rerender(<ProgressBackdrop progressScope="storage" />);
+      rerender(<ProgressBackdrop scope="storage" />);
 
       // Should show "Refreshing data..." message
       await waitFor(() => {
@@ -138,14 +138,14 @@ describe("ProgressBackdrop", () => {
         },
       ]);
 
-      const { rerender } = installerRender(<ProgressBackdrop progressScope="storage" />);
+      const { rerender } = installerRender(<ProgressBackdrop scope="storage" />);
 
       // Progress finishes
       mockProgresses([]);
 
       const backdrop = screen.getByRole("alert", { name: /Calculating proposal/ });
 
-      rerender(<ProgressBackdrop progressScope="storage" />);
+      rerender(<ProgressBackdrop scope="storage" />);
 
       // Should show refreshing message
       await waitFor(() => {
@@ -174,7 +174,7 @@ describe("ProgressBackdrop", () => {
           size: 5,
         },
       ]);
-      installerRender(<ProgressBackdrop progressScope="storage" />);
+      installerRender(<ProgressBackdrop scope="storage" />);
       expect(screen.queryByRole("alert", { name: /Installing packages/ })).toBeNull();
     });
   });
@@ -190,7 +190,7 @@ describe("ProgressBackdrop", () => {
           size: 5,
         },
       ]);
-      const { rerender } = installerRender(<ProgressBackdrop progressScope="software" />);
+      const { rerender } = installerRender(<ProgressBackdrop scope="software" />);
       const backdrop = screen.getByRole("alert", { name: /Downloading packages/ });
       within(backdrop).getByText(/step 1 of 5/);
 
@@ -203,13 +203,13 @@ describe("ProgressBackdrop", () => {
           size: 5,
         },
       ]);
-      rerender(<ProgressBackdrop progressScope="software" />);
+      rerender(<ProgressBackdrop scope="software" />);
       within(backdrop).getByText(/Installing packages/);
       within(backdrop).getByText(/step 3 of 5/);
     });
   });
 
-  describe("additionalProgressKeys prop", () => {
+  describe("query keys refetch tracking", () => {
     it("tracks common proposal keys by default", () => {
       mockProgresses([
         {
@@ -221,7 +221,7 @@ describe("ProgressBackdrop", () => {
         },
       ]);
 
-      installerRender(<ProgressBackdrop progressScope="software" />);
+      installerRender(<ProgressBackdrop scope="software" />);
 
       // Should be called with COMMON_PROPOSAL_KEYS and undefined additionalKeys
       expect(mockUseTrackQueriesRefetch).toHaveBeenCalledWith(
@@ -241,9 +241,7 @@ describe("ProgressBackdrop", () => {
         },
       ]);
 
-      installerRender(
-        <ProgressBackdrop progressScope="storage" additionalProgressKeys="storageModel" />,
-      );
+      installerRender(<ProgressBackdrop scope="storage" ensureRefetched="storageModel" />);
 
       // Should be called with COMMON_PROPOSAL_KEYS + storageModel
       expect(mockUseTrackQueriesRefetch).toHaveBeenCalledWith(
@@ -264,10 +262,7 @@ describe("ProgressBackdrop", () => {
       ]);
 
       installerRender(
-        <ProgressBackdrop
-          progressScope="network"
-          additionalProgressKeys={["networkConfig", "connections"]}
-        />,
+        <ProgressBackdrop scope="network" ensureRefetched={["networkConfig", "connections"]} />,
       );
 
       // Should be called with COMMON_PROPOSAL_KEYS + networkConfig + connections
@@ -292,14 +287,14 @@ describe("ProgressBackdrop", () => {
       ]);
 
       const { rerender } = installerRender(
-        <ProgressBackdrop progressScope="storage" additionalProgressKeys="storageModel" />,
+        <ProgressBackdrop scope="storage" ensureRefetched="storageModel" />,
       );
 
       // Progress finishes
       mockProgresses([]);
 
-      rerender(<ProgressBackdrop progressScope="storage" additionalProgressKeys="storageModel" />);
-      rerender(<ProgressBackdrop progressScope="storage" additionalProgressKeys="storageModel" />);
+      rerender(<ProgressBackdrop scope="storage" ensureRefetched="storageModel" />);
+      rerender(<ProgressBackdrop scope="storage" ensureRefetched="storageModel" />);
 
       // Should have called startTracking
       await waitFor(() => {
