@@ -115,7 +115,8 @@ impl Callback for CommitDownload {
         if error == zypp_agama::callbacks::pkg_download::PreloadError::NoError {
             let msg = format!("Finished downloading {}", file_str);
             // just ignore issues with reporting progress
-            let _ = self.progress
+            let _ = self
+                .progress
                 .cast(progress::message::NextWithStep::new(Scope::Software, &msg));
         } else {
             let labels = [gettext("Ok")];

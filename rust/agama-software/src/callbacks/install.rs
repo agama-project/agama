@@ -1,6 +1,6 @@
 use agama_utils::{
     actor::Handler,
-    api::{Scope, question::QuestionSpec},
+    api::{question::QuestionSpec, Scope},
     progress,
     question::{self},
 };
@@ -32,11 +32,9 @@ impl install::Callback for Install {
         tracing::info!("Installing package {}", package_name);
         let msg = format!("Installing {}", package_name);
         // just ignore issues with reporting progress
-        let _ = self.progress.cast(
-            progress::message::NextWithStep::new(
-                Scope::Software,
-                 &msg)
-        );
+        let _ = self
+            .progress
+            .cast(progress::message::NextWithStep::new(Scope::Software, &msg));
     }
 
     fn package_problem(

@@ -207,11 +207,19 @@ impl ZyppServer {
         let packages_count = zypp.packages_count();
         // use packages count *2 as we need to download package and also install it
         let steps = (packages_count * 2) as usize;
-        let _ = progress.cast(progress::message::Start::new(Scope::Software, steps, "Starting packages installation"));
+        let _ = progress.cast(progress::message::Start::new(
+            Scope::Software,
+            steps,
+            "Starting packages installation",
+        ));
 
         let target = "/mnt";
         zypp.switch_target(target)?;
-        let result = zypp.commit(&mut download_callback, &mut install_callback, &mut security_callback)?;
+        let result = zypp.commit(
+            &mut download_callback,
+            &mut install_callback,
+            &mut security_callback,
+        )?;
         tracing::info!("libzypp commit ends with {}", result);
         let _ = progress.cast(progress::message::Finish::new(Scope::Software));
         Ok(result)
