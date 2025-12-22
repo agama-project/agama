@@ -150,7 +150,8 @@ void switch_target(struct Zypp *zypp, const char *root,
                                          false /* rebuild rpmdb: no */);
 
     // switch cache for repositories, otherwise we run out of space in tmpfs
-    // see https://github.com/yast/yast-pkg-bindings/blob/853496f527543e6d51730fd7e3126ad94b13c303/src/PkgFunctions.cc#L496
+    // see
+    // https://github.com/yast/yast-pkg-bindings/blob/853496f527543e6d51730fd7e3126ad94b13c303/src/PkgFunctions.cc#L496
     zypp::RepoManagerOptions repo_options(root);
     zypp::Pathname packages_prefix = repo_options.repoPackagesCachePath;
 
@@ -465,6 +466,12 @@ bool is_local_url(const char *url, struct Status *status) noexcept {
     STATUS_EXCEPT(status, excpt);
     return false;
   }
+}
+
+unsigned packages_to_install(struct Zypp *zypp) noexcept {
+  return zypp::ResPool::instance()
+      .byStatus(&zypp::ResStatus::isToBeInstalled)
+      .size();
 }
 
 static bool package_check(Zypp *zypp, const char *tag, bool selected,

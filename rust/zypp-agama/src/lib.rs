@@ -226,6 +226,10 @@ impl Zypp {
         }
     }
 
+    pub fn packages_count(&self) -> u32 {
+        unsafe { zypp_agama_sys::packages_to_install(self.ptr) }
+    }
+
     pub fn list_repositories(&self) -> ZyppResult<Vec<Repository>> {
         let mut repos_v = vec![];
 
