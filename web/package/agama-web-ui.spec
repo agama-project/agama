@@ -42,7 +42,6 @@ rm -f package-lock.json
 local-npm-registry %{_sourcedir} install --with=dev --legacy-peer-deps || ( find ~/.npm/_logs -name '*-debug.log' -print0 | xargs -0 cat; false)
 # temporary remove tests as its types are broken now
 find src -name *.test.tsx -delete
-rm src/mocks/api.ts
 
 %build
 NODE_ENV="production" npm run build
