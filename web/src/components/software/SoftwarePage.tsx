@@ -164,7 +164,7 @@ function SoftwarePage(): React.ReactNode {
   const showReposAlert = repos.some((r) => !r.loaded);
 
   return (
-    <Page progressScope="software">
+    <Page progress={{ scope: "software" }}>
       <Page.Header>
         <Content component="h2">{_("Software")}</Content>
       </Page.Header>
