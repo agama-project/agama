@@ -18,9 +18,9 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use utoipa::openapi::{ComponentsBuilder, OpenApi, Paths, PathsBuilder};
+use utoipa::openapi::{ComponentsBuilder, Paths, PathsBuilder};
 
-use super::{common::ServiceStatusApiDocBuilder, ApiDocBuilder};
+use super::ApiDocBuilder;
 
 pub struct UsersApiDocBuilder;
 
@@ -54,10 +54,5 @@ impl ApiDocBuilder for UsersApiDocBuilder {
                     .build(),
             )
             .build()
-    }
-
-    fn nested(&self) -> Option<OpenApi> {
-        let status = ServiceStatusApiDocBuilder::new("/api/storage/status").build();
-        Some(status)
     }
 }
