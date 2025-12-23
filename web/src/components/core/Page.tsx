@@ -350,7 +350,7 @@ const Page = ({
   return (
     <PageGroup {...pageGroupProps} tabIndex={-1} id="main-content">
       {children}
-      <ProgressBackdrop {...progress} />
+      {progress && <ProgressBackdrop {...progress} />}
     </PageGroup>
   );
 };

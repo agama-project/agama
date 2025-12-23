@@ -40,6 +40,8 @@ jest.mock("~/components/product/ProductRegistrationAlert", () => () => (
   <div>ProductRegistrationAlertMock</div>
 ));
 
+jest.mock("~/components/core/ProgressBackdrop", () => () => <div>ProgressBackdropMock</div>);
+
 const mockUseTrackQueriesRefetch = jest.mocked(useTrackQueriesRefetch);
 
 describe("Page", () => {
@@ -72,6 +74,20 @@ describe("Page", () => {
       </Page>,
     );
     screen.getByRole("heading", { name: "The Page Component" });
+  });
+
+  describe("when no progress prop is provided", () => {
+    it("does not mount ProgressBackdrop", () => {
+      installerRender(<Page />);
+      expect(screen.queryByText("ProgressBackdropMock")).toBeNull();
+    });
+  });
+
+  describe("when progress prop is provided", () => {
+    it("mounts ProgressBackdrop", () => {
+      installerRender(<Page progress={{ scope: "software" }} />);
+      screen.getByText("ProgressBackdropMock");
+    });
   });
 
   describe("Page.Actions", () => {
