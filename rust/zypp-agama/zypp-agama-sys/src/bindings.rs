@@ -683,6 +683,13 @@ unsafe extern "C" {
         callback: ZyppProgressCallback,
         user_data: *mut ::std::os::raw::c_void,
     );
+    #[doc = " Adds service to repo manager\n @param zypp see \\ref init_target\n @param alias have to be unique\n @param url\n @param[out] status (will overwrite existing contents)"]
+    pub fn add_service(
+        zypp: *mut Zypp,
+        alias: *const ::std::os::raw::c_char,
+        url: *const ::std::os::raw::c_char,
+        status: *mut Status,
+    );
     #[doc = "\n @param zypp see \\ref init_target\n @param alias alias of repository to refresh\n @param[out] status (will overwrite existing contents)\n @param progress pointer to struct with callbacks or NULL if no progress is\n needed\n @param security pointer to struct with security callbacks"]
     pub fn refresh_repository(
         zypp: *mut Zypp,
@@ -690,6 +697,12 @@ unsafe extern "C" {
         status: *mut Status,
         progress: *mut DownloadProgressCallbacks,
         security: *mut SecurityCallbacks,
+    );
+    #[doc = "\n @param zypp see \\ref init_target\n @param alias alias of service to refresh\n @param[out] status (will overwrite existing contents)"]
+    pub fn refresh_service(
+        zypp: *mut Zypp,
+        alias: *const ::std::os::raw::c_char,
+        status: *mut Status,
     );
     pub fn build_repository_cache(
         zypp: *mut Zypp,

@@ -65,6 +65,14 @@ void remove_repository(struct Zypp *zypp, const char *alias,
                        struct Status *status, ZyppProgressCallback callback,
                        void *user_data) noexcept;
 
+/// Adds service to repo manager
+/// @param zypp see \ref init_target
+/// @param alias have to be unique
+/// @param url
+/// @param[out] status (will overwrite existing contents)
+void add_service(struct Zypp *zypp, const char *alias, const char *url,
+                 struct Status *status) noexcept;
+
 ///
 /// @param zypp see \ref init_target
 /// @param alias alias of repository to refresh
@@ -76,6 +84,13 @@ void refresh_repository(struct Zypp *zypp, const char *alias,
                         struct Status *status,
                         struct DownloadProgressCallbacks *progress,
                         struct SecurityCallbacks *security) noexcept;
+
+///
+/// @param zypp see \ref init_target
+/// @param alias alias of service to refresh
+/// @param[out] status (will overwrite existing contents)
+void refresh_service(struct Zypp *zypp, const char *alias,
+                     struct Status *status) noexcept;
 
 void build_repository_cache(struct Zypp *zypp, const char *alias,
                             struct Status *status,
