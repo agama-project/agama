@@ -18,7 +18,6 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-//! In this file, we implement a new test case for the `install` method.
 use crate::service;
 use agama_utils::api::hostname::SystemInfo;
 use std::{fs, path::PathBuf, process::Command};
@@ -102,7 +101,7 @@ impl ModelAdapter for Model {
     fn install(&self) -> Result<(), service::Error> {
         const HOSTNAME_PATH: &str = "/etc/hostname";
         let from = PathBuf::from(HOSTNAME_PATH);
-        if fs::exists(from.clone())? {
+        if from.exists() {
             let to = PathBuf::from(self.static_target_dir()).join(HOSTNAME_PATH);
             fs::create_dir_all(to.parent().unwrap())?;
             fs::copy(from, to)?;
@@ -110,15 +109,15 @@ impl ModelAdapter for Model {
         Ok(())
     }
 }
-
 #[cfg(test)]
-mod tests {
+pub mod tests {
     use super::*;
-    use tempfile::tempdir;
+    use tempfile::{tempdir, TempDir};
 
-    struct TestModel {
-        source_dir: PathBuf,
-        target_dir: PathBuf,
+    #[derive(Clone)]
+    pub struct TestModel {
+        pub source_dir: PathBuf,
+        pub target_dir: PathBuf,
     }
 
     impl ModelAdapter for TestModel {
@@ -142,7 +141,7 @@ mod tests {
 
         fn install(&self) -> Result<(), service::Error> {
             let from = self.source_dir.join("etc/hostname");
-            if fs::exists(&from)? {
+            if from.exists() {
                 let to = self.target_dir.join("etc/hostname");
                 fs::create_dir_all(to.parent().unwrap())?;
                 fs::copy(from, to)?;

@@ -260,6 +260,6 @@ impl MessageHandler<message::UpdateStaticHostname> for Service {
 #[async_trait]
 impl MessageHandler<message::Install> for Service {
     async fn handle(&mut self, _message: message::Install) -> Result<(), Error> {
-        Ok(())
+        self.model.install()
     }
 }

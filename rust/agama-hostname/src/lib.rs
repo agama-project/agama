@@ -47,11 +47,7 @@ pub mod test_utils;
 
 #[cfg(test)]
 mod tests {
-    use crate::{
-        message,
-        service::Service,
-        test_utils::{start_service, TestModel},
-    };
+    use crate::{message, service::Service, test_utils::start_service};
 
     use agama_utils::{
         actor::Handler,
@@ -93,7 +89,6 @@ mod tests {
         ctx.handler
             .call(message::SetConfig::with(config.clone()))
             .await?;
-        dbg!(" Updated hostname ");
 
         let updated = ctx.handler.call(message::GetConfig).await?;
         assert_eq!(
