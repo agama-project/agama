@@ -145,6 +145,11 @@ void resolvable_unselect(struct Zypp *zypp, const char *name,
 /// Note: this also resets the user locks ("taboo" or "keep installed")
 void resolvable_reset_all(struct Zypp *_zypp) noexcept;
 
+/// @brief Amount of packages selected for installation
+/// @param _zypp see \ref init_target
+/// @return count of packages
+unsigned packages_to_install(struct Zypp *_zypp) noexcept;
+
 struct PatternNames {
   /// names of patterns
   const char *const *const names;

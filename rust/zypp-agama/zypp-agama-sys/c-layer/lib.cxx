@@ -150,7 +150,8 @@ void switch_target(struct Zypp *zypp, const char *root,
                                          false /* rebuild rpmdb: no */);
 
     // switch cache for repositories, otherwise we run out of space in tmpfs
-    // see https://github.com/yast/yast-pkg-bindings/blob/853496f527543e6d51730fd7e3126ad94b13c303/src/PkgFunctions.cc#L496
+    // see
+    // https://github.com/yast/yast-pkg-bindings/blob/853496f527543e6d51730fd7e3126ad94b13c303/src/PkgFunctions.cc#L496
     zypp::RepoManagerOptions repo_options(root);
     zypp::Pathname packages_prefix = repo_options.repoPackagesCachePath;
 
@@ -424,6 +425,44 @@ bool run_solver(struct Zypp *zypp, struct Status *status) noexcept {
   }
 }
 
+void add_service(struct Zypp *zypp, const char *alias, const char *url,
+                 struct Status *status) noexcept {
+  if (zypp->repo_manager == NULL) {
+    STATUS_ERROR(status, "Internal Error: Repo manager is not initialized.");
+    return;
+  }
+  try {
+    zypp::ServiceInfo zypp_service = zypp::ServiceInfo(alias);
+    zypp_service.setUrl(zypp::Url(url));
+
+    zypp->repo_manager->addService(zypp_service);
+    STATUS_OK(status);
+  } catch (zypp::Exception &excpt) {
+    STATUS_EXCEPT(status, excpt);
+  }
+}
+
+void refresh_service(struct Zypp *zypp, const char *alias,
+                     struct Status *status) noexcept {
+  if (zypp->repo_manager == NULL) {
+    STATUS_ERROR(status, "Internal Error: Repo manager is not initialized.");
+    return;
+  }
+  try {
+    zypp::ServiceInfo service = zypp->repo_manager->getService(alias);
+    if (service == zypp::ServiceInfo::noService) {
+      STATUS_ERROR(status,
+                   "Cannot refresh service with alias %s. Service not found.",
+                   alias);
+      return;
+    }
+    zypp->repo_manager->refreshService(service);
+    STATUS_OK(status);
+  } catch (zypp::Exception &excpt) {
+    STATUS_EXCEPT(status, excpt);
+  }
+}
+
 void refresh_repository(struct Zypp *zypp, const char *alias,
                         struct Status *status,
                         struct DownloadProgressCallbacks *callbacks,
@@ -465,6 +504,12 @@ bool is_local_url(const char *url, struct Status *status) noexcept {
     STATUS_EXCEPT(status, excpt);
     return false;
   }
+}
+
+unsigned packages_to_install(struct Zypp *zypp) noexcept {
+  return zypp::ResPool::instance()
+      .byStatus(&zypp::ResStatus::isToBeInstalled)
+      .size();
 }
 
 static bool package_check(Zypp *zypp, const char *tag, bool selected,

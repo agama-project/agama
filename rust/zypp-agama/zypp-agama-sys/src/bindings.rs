@@ -620,6 +620,8 @@ unsafe extern "C" {
     );
     #[doc = " Reset status of all resolvables, unselects selected packages, patterns...\n Note: this also resets the user locks (\"taboo\" or \"keep installed\")"]
     pub fn resolvable_reset_all(_zypp: *mut Zypp);
+    #[doc = " @brief Amount of packages selected for installation\n @param _zypp see \\ref init_target\n @return count of packages"]
+    pub fn packages_to_install(_zypp: *mut Zypp) -> ::std::os::raw::c_uint;
     #[doc = " Get Pattern details.\n Unknown patterns are simply omitted from the result. Match by\n PatternInfo.name, not by index."]
     pub fn get_patterns_info(
         _zypp: *mut Zypp,
@@ -683,6 +685,13 @@ unsafe extern "C" {
         callback: ZyppProgressCallback,
         user_data: *mut ::std::os::raw::c_void,
     );
+    #[doc = " Adds service to repo manager\n @param zypp see \\ref init_target\n @param alias have to be unique\n @param url\n @param[out] status (will overwrite existing contents)"]
+    pub fn add_service(
+        zypp: *mut Zypp,
+        alias: *const ::std::os::raw::c_char,
+        url: *const ::std::os::raw::c_char,
+        status: *mut Status,
+    );
     #[doc = "\n @param zypp see \\ref init_target\n @param alias alias of repository to refresh\n @param[out] status (will overwrite existing contents)\n @param progress pointer to struct with callbacks or NULL if no progress is\n needed\n @param security pointer to struct with security callbacks"]
     pub fn refresh_repository(
         zypp: *mut Zypp,
@@ -690,6 +699,12 @@ unsafe extern "C" {
         status: *mut Status,
         progress: *mut DownloadProgressCallbacks,
         security: *mut SecurityCallbacks,
+    );
+    #[doc = "\n @param zypp see \\ref init_target\n @param alias alias of service to refresh\n @param[out] status (will overwrite existing contents)"]
+    pub fn refresh_service(
+        zypp: *mut Zypp,
+        alias: *const ::std::os::raw::c_char,
+        status: *mut Status,
     );
     pub fn build_repository_cache(
         zypp: *mut Zypp,
