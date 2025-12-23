@@ -19,10 +19,10 @@
 // find current contact information at www.suse.com.
 
 use crate::api::{l10n, network, software};
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use serde_json::Value;
 
-#[derive(Clone, Debug, Serialize, utoipa::ToSchema)]
+#[derive(Clone, Debug, Deserialize, Serialize, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct Proposal {
     #[serde(skip_serializing_if = "Option::is_none")]
