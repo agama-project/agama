@@ -34,14 +34,11 @@ fn copy_dir_all(src: impl AsRef<Path>, dst: impl AsRef<Path>) -> io::Result<()> 
     Ok(())
 }
 
-
 #[test]
 fn test_services() {
-    let root_dir =
-        env!("CARGO_MANIFEST_DIR").to_string() + "/fixtures/zypp_services_root";
-    
-    let zypp_root =
-        env!("CARGO_MANIFEST_DIR").to_string() + "/fixtures/zypp_root_tmp";
+    let root_dir = env!("CARGO_MANIFEST_DIR").to_string() + "/fixtures/zypp_services_root";
+
+    let zypp_root = env!("CARGO_MANIFEST_DIR").to_string() + "/fixtures/zypp_root_tmp";
     if fs::exists(&zypp_root).unwrap() {
         fs::remove_dir_all(&zypp_root).unwrap();
     }
@@ -49,14 +46,18 @@ fn test_services() {
 
     copy_dir_all(Path::new(&root_dir), Path::new(&zypp_root)).unwrap();
 
-    let zypp = zypp_agama::Zypp::init_target(&zypp_root, |_,_,_| {}).unwrap();
+    let zypp = zypp_agama::Zypp::init_target(&zypp_root, |_, _, _| {}).unwrap();
 
     let service_url = "file:///service";
     println!("{}", service_url);
-    
+
     zypp.add_service("test", service_url).unwrap();
     zypp.refresh_service("test").unwrap();
 
     let repos = zypp.list_repositories().unwrap();
-    assert!(repos.len() == 2, "Unexpected repos count. Repos: {:#?}", repos);
+    assert!(
+        repos.len() == 2,
+        "Unexpected repos count. Repos: {:#?}",
+        repos
+    );
 }
