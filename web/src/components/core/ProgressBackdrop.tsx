@@ -21,7 +21,7 @@
  */
 
 import React, { useEffect, useState } from "react";
-import { Alert, Backdrop, Spinner } from "@patternfly/react-core";
+import { Alert, Backdrop, Flex, FlexItem, Spinner } from "@patternfly/react-core";
 import { concat, isEmpty } from "radashi";
 import { sprintf } from "sprintf-js";
 import { COMMON_PROPOSAL_KEYS } from "~/hooks/model/proposal";
@@ -29,16 +29,19 @@ import { useStatus } from "~/hooks/model/status";
 import useTrackQueriesRefetch from "~/hooks/use-track-queries-refetch";
 import type { Scope } from "~/model/status";
 import { _ } from "~/i18n";
+import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
+
 /**
  * Props for the ProgressBackdrop component.
  */
 export type ProgressBackdropProps = {
   /**
-   * Optional scope identifier to filter which progresses trigger the backgrop
+   * Scope identifier to filter which progresses trigger the backgrop
    * overlay. If undefined or no matching tasks exist, the backdrop won't be
    * displayed.
    */
-  progressScope?: Scope;
+  scope: Scope;
+
   /**
    * Additional query keys to track during progress operations.
    *
@@ -52,43 +55,43 @@ export type ProgressBackdropProps = {
    *
    * @example
    * // Track storage model updates in addition to common proposal queries
-   * <Page progressScope="storage" additionalProgressKeys={STORAGE_MODEL_KEY}>
+   * <ProgressBackdrop track={{ scope: "storage", ensureRefecthed={STORAGE_MODEL_KEY}} />
    *
    * @example
    * // Track multiple additional queries
-   * <Page
-   *   progressScope="network"
-   *   additionalProgressKeys={[NETWORK_CONFIG_KEY, CONNECTIONS_KEY]}
+   * <ProgressBackdrop
+   *   track="network"
+   *   ensureRefecthed={[NETWORK_CONFIG_KEY, CONNECTIONS_KEY]}
    * >
    */
-  additionalProgressKeys?: string | string[];
+  ensureRefetched?: string | string[];
 };
 
 /**
- * Helper component for blocking user interaction by displaying a blurred
- * overlay with a progress information when progresses matching the specified
- * scope are active.
+ * Helper component that blocks user interaction by displaying a blurred overlay
+ * with progress information while operations matching the specified scope are
+ * active.
  *
  * @remarks
- * The component uses two mechanisms to manage its visibility:
- *   - Monitors active tasks from useStatus() that match the progressScope
- *   - Listens to proposal update events to automatically unblock when
- *     operations complete
+ * Visibility is controlled through two mechanisms:
+ * - Monitors active tasks from `useStatus()` that match the provided scope.
+ * - Tracks refetches for common proposal queries as well as any queries
+ *   specified via `ensureRefetched`.
  *
- * The backdrop remains visible until a proposal update event with a timestamp
- * newer than when the progress finished arrives, ensuring the UI doesn't
+ * Once shown, the backdrop remains visible until all involved queries have been
+ * refetched after the tracked progress has finished, ensuring the UI does not
  * unblock prematurely.
  */
 export default function ProgressBackdrop({
-  progressScope,
-  additionalProgressKeys,
+  scope,
+  ensureRefetched,
 }: ProgressBackdropProps): React.ReactNode {
   const { progresses: tasks } = useStatus();
   const [isBlocked, setIsBlocked] = useState(false);
   const [progressFinishedAt, setProgressFinishedAt] = useState<number | null>(null);
-  const progress = !isEmpty(progressScope) && tasks.find((t) => t.scope === progressScope);
+  const progress = !isEmpty(scope) && tasks.find((t) => t.scope === scope);
   const { startTracking } = useTrackQueriesRefetch(
-    concat(COMMON_PROPOSAL_KEYS, additionalProgressKeys),
+    concat(COMMON_PROPOSAL_KEYS, ensureRefetched),
     (_, completedAt) => {
       if (completedAt > progressFinishedAt) {
         setIsBlocked(false);
@@ -115,18 +118,26 @@ export default function ProgressBackdrop({
     <Backdrop className="agm-main-content-overlay" role="alert" aria-labelledby="progressStatus">
       <Alert
         isPlain
-        customIcon={<Spinner size="sm" aria-hidden />}
+        customIcon={<></>}
         title={
-          <div id="progressStatus">
-            {progress ? (
-              <>
-                {progress.step}{" "}
-                <small>{sprintf(_("(step %s of %s)"), progress.index, progress.size)}</small>
-              </>
-            ) : (
-              <>{_("Refreshing data...")}</>
-            )}
-          </div>
+          <Flex
+            id="progressStatus"
+            gap={{ default: "gapMd" }}
+            alignItems={{ default: "alignItemsCenter" }}
+            className={textStyles.fontSizeXl}
+          >
+            <Spinner size="lg" aria-hidden />
+            <FlexItem>
+              {progress ? (
+                <>
+                  {progress.step}{" "}
+                  <small>{sprintf(_("(step %s of %s)"), progress.index, progress.size)}</small>
+                </>
+              ) : (
+                <>{_("Refreshing data...")}</>
+              )}
+            </FlexItem>
+          </Flex>
         }
       />
     </Backdrop>

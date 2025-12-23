@@ -29,7 +29,7 @@ use agama_lib::{auth::AuthToken, connection_to};
 use agama_server::{
     cert::Certificate,
     logs::init_logging,
-    web::{self, run_monitor},
+    web::{self},
 };
 use agama_utils::api::event::Receiver;
 use anyhow::Context;
@@ -320,9 +320,6 @@ async fn serve_command(args: ServeArgs) -> anyhow::Result<()> {
     _ = l10n_helpers::init_locale();
     init_logging().context("Could not initialize the logger")?;
 
-    let (tx, _) = channel(16);
-    run_monitor(tx.clone()).await?;
-
     let (events_tx, events_rx) = channel(16);
     monitor_events_channel(events_rx);
 
@@ -335,7 +332,7 @@ async fn serve_command(args: ServeArgs) -> anyhow::Result<()> {
         .web_ui_dir
         .clone()
         .unwrap_or_else(|| PathBuf::from(DEFAULT_WEB_UI_DIR));
-    let service = web::service(config, events_tx, tx, dbus, web_ui_dir).await?;
+    let service = web::service(config, events_tx, dbus, web_ui_dir).await?;
     // TODO: Move elsewhere? Use a singleton? (It would be nice to use the same
     // generated self-signed certificate on both ports.)
     let ssl_acceptor = if let Ok(ssl_acceptor) = ssl_acceptor(&args.to_certificate()?) {

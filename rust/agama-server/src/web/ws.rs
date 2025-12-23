@@ -55,13 +55,6 @@ pub async fn ws_handler(
 async fn handle_socket(mut socket: WebSocket, events: event::Sender, client_id: Arc<ClientId>) {
     let mut events_rx = events.subscribe();
 
-    let conn_event = agama_lib::event!(ClientConnected, client_id.as_ref());
-    if let Ok(json) = serde_json::to_string(&conn_event) {
-        if socket.send(Message::Text(json)).await.is_err() {
-            return;
-        }
-    }
-
     loop {
         tokio::select! {
             // Handle messages from the client

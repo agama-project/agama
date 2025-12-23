@@ -343,62 +343,6 @@ impl Service {
         Ok(())
     }
 
-    async fn update_config(&mut self, config: Config) -> Result<(), Error> {
-        self.set_product(&config)?;
-
-        let Some(product) = &self.product else {
-            return Err(Error::MissingProduct);
-        };
-
-        if let Some(files) = &config.files {
-            self.files
-                .call(files::message::SetConfig::with(files.clone()))
-                .await?;
-
-            self.files
-                .call(files::message::RunScripts::new(ScriptsGroup::Pre))
-                .await?;
-        }
-
-        if let Some(l10n) = &config.l10n {
-            self.l10n
-                .call(l10n::message::SetConfig::with(l10n.clone()))
-                .await?;
-        }
-
-        if let Some(questions) = &config.questions {
-            self.questions
-                .call(question::message::SetConfig::with(questions.clone()))
-                .await?;
-        }
-
-        if let Some(storage) = &config.storage {
-            self.storage
-                .call(storage::message::SetConfig::with(
-                    Arc::clone(product),
-                    storage.clone(),
-                ))
-                .await?;
-        }
-
-        if let Some(software) = &config.software {
-            self.software
-                .call(software::message::SetConfig::with(
-                    Arc::clone(product),
-                    software.clone(),
-                ))
-                .await?;
-        }
-
-        if let Some(network) = &config.network {
-            self.network.update_config(network.clone()).await?;
-            self.network.apply().await?;
-        }
-
-        self.config = config;
-        Ok(())
-    }
-
     async fn configure_l10n(&self, config: api::l10n::SystemConfig) -> Result<(), Error> {
         self.l10n
             .call(l10n::message::SetSystem::new(config.clone()))
@@ -551,7 +495,7 @@ impl MessageHandler<message::UpdateConfig> for Service {
         self.check_stage(Stage::Configuring).await?;
         let mut new_config = message.config;
         new_config.merge(self.config.clone());
-        self.update_config(new_config).await
+        self.set_config(new_config).await
     }
 }
 

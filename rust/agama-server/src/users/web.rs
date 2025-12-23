@@ -24,15 +24,9 @@
 //! * `users_service` which returns the Axum service.
 //! * `users_stream` which offers an stream that emits the users events coming from D-Bus.
 
-use crate::{
-    error::Error,
-    users::password::PasswordChecker,
-    web::common::{service_status_router, EventStreams},
-};
+use crate::{error::Error, users::password::PasswordChecker};
 use agama_lib::{
     error::ServiceError,
-    event,
-    http::OldEvent,
     users::{model::RootPatchSettings, proxies::Users1Proxy, FirstUser, RootUser, UsersClient},
 };
 use axum::{
@@ -52,70 +46,6 @@ struct UsersState<'a> {
     users: UsersClient<'a>,
 }
 
-/// Returns streams that emits users related events coming from D-Bus.
-///
-/// It emits the RootPasswordChange, RootSSHKeyChanged and FirstUserChanged events.
-///
-/// * `connection`: D-Bus connection to listen for events.
-pub async fn users_streams(dbus: zbus::Connection) -> Result<EventStreams, Error> {
-    const FIRST_USER_ID: &str = "first_user";
-    const ROOT_USER_ID: &str = "root_user";
-    let result: EventStreams = vec![
-        (
-            FIRST_USER_ID,
-            Box::pin(first_user_changed_stream(dbus.clone()).await?),
-        ),
-        (
-            ROOT_USER_ID,
-            Box::pin(root_user_changed_stream(dbus.clone()).await?),
-        ),
-    ];
-
-    Ok(result)
-}
-
-async fn first_user_changed_stream(
-    dbus: zbus::Connection,
-) -> Result<impl Stream<Item = OldEvent> + Send, Error> {
-    let proxy = Users1Proxy::new(&dbus).await?;
-    let stream = proxy
-        .receive_first_user_changed()
-        .await
-        .then(|change| async move {
-            if let Ok(user) = change.get().await {
-                let user_struct = FirstUser {
-                    full_name: user.0,
-                    user_name: user.1,
-                    password: user.2,
-                    hashed_password: user.3,
-                };
-                return Some(event!(FirstUserChanged(user_struct)));
-            }
-            None
-        })
-        .filter_map(|e| e);
-    Ok(stream)
-}
-
-async fn root_user_changed_stream(
-    dbus: zbus::Connection,
-) -> Result<impl Stream<Item = OldEvent> + Send, Error> {
-    let proxy = Users1Proxy::new(&dbus).await?;
-    let stream = proxy
-        .receive_root_user_changed()
-        .await
-        .then(|change| async move {
-            if let Ok(user) = change.get().await {
-                if let Ok(root) = RootUser::from_dbus(user) {
-                    return Some(event!(RootUserChanged(root)));
-                }
-            }
-            None
-        })
-        .filter_map(|e| e);
-    Ok(stream)
-}
-
 /// Sets up and returns the axum service for the users module.
 pub async fn users_service(dbus: zbus::Connection) -> Result<Router, ServiceError> {
     const DBUS_SERVICE: &str = "org.opensuse.Agama.Manager1";
@@ -125,7 +55,6 @@ pub async fn users_service(dbus: zbus::Connection) -> Result<Router, ServiceErro
     let state = UsersState { users };
     // FIXME: use anyhow temporarily until we adapt all these methods to return
     // the crate::error::Error instead of ServiceError.
-    let status_router = service_status_router(&dbus, DBUS_SERVICE, DBUS_PATH).await?;
     let router = Router::new()
         .route(
             "/first",
@@ -135,7 +64,6 @@ pub async fn users_service(dbus: zbus::Connection) -> Result<Router, ServiceErro
         )
         .route("/root", get(get_root_config).patch(patch_root))
         .route("/password_check", post(check_password))
-        .merge(status_router)
         .with_state(state);
     Ok(router)
 }
