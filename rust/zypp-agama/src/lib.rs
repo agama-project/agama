@@ -474,6 +474,29 @@ impl Zypp {
         }
     }
 
+    pub fn add_service(&self, alias: &str, url: &str) -> ZyppResult<()> {
+        unsafe {
+            let mut status: Status = Status::default();
+            let status_ptr = &mut status as *mut _;
+            let c_alias = CString::new(alias).unwrap();
+            let c_url = CString::new(url).unwrap();
+            zypp_agama_sys::add_service(self.ptr, c_alias.as_ptr(), c_url.as_ptr(), status_ptr);
+
+            helpers::status_to_result_void(status)
+        }
+    }
+
+    pub fn refresh_service(&self, alias: &str) -> ZyppResult<()> {
+        unsafe {
+            let mut status: Status = Status::default();
+            let status_ptr = &mut status as *mut _;
+            let c_alias = CString::new(alias).unwrap();
+            zypp_agama_sys::refresh_service(self.ptr, c_alias.as_ptr(), status_ptr);
+
+            helpers::status_to_result_void(status)
+        }
+    }
+
     pub fn create_repo_cache<F>(&self, alias: &str, progress: F) -> ZyppResult<()>
     where
         F: FnMut(i64, String) -> bool,
