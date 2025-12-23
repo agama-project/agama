@@ -40,8 +40,8 @@ use zypp_agama::{errors::ZyppResult, ZyppError};
 use crate::{
     callbacks,
     model::state::{self, SoftwareState},
-    state::ResolvableSelection,
-    ResolvableType,
+    state::{RegistrationState, ResolvableSelection},
+    Registration, ResolvableType,
 };
 
 const GPG_KEYS: &str = "/usr/lib/rpm/gnupg/keys/gpg-*";
@@ -103,6 +103,7 @@ pub enum SoftwareAction {
 /// Software service server.
 pub struct ZyppServer {
     receiver: mpsc::UnboundedReceiver<SoftwareAction>,
+    registration: Option<Registration>,
     root_dir: Utf8PathBuf,
 }
 
@@ -118,6 +119,7 @@ impl ZyppServer {
         let server = Self {
             receiver,
             root_dir: root_dir.as_ref().to_path_buf(),
+            registration: None,
         };
 
         // drop the returned JoinHandle: the thread will be detached
@@ -246,7 +248,7 @@ impl ZyppServer {
     }
 
     fn write(
-        &self,
+        &mut self,
         state: SoftwareState,
         progress: Handler<progress::Service>,
         security: &mut callbacks::Security,
@@ -254,16 +256,29 @@ impl ZyppServer {
         zypp: &zypp_agama::Zypp,
     ) -> Result<(), ZyppDispatchError> {
         let mut issues: Vec<Issue> = vec![];
+        let mut steps = vec![
+            gettext("Updating the list of repositories"),
+            gettext("Refreshing metadata from the repositories"),
+            gettext("Calculating the software proposal"),
+        ];
+        if state.registration.is_some() {
+            steps.insert(0, gettext("Registering the system"));
+        }
 
         _ = progress.cast(progress::message::StartWithSteps::new(
             Scope::Software,
-            vec![
-                gettext("Updating the list of repositories"),
-                gettext("Refreshing metadata from the repositories"),
-                gettext("Calculating the software proposal"),
-            ],
+            steps,
         ));
+
+        // TODO: add information about the current registration state
         let old_state = self.read(zypp)?;
+
+        // how to check whether the system is registered
+        if let Some(registration) = &state.registration {
+            self.register_system(registration, &zypp, &mut issues);
+        }
+
+        progress.cast(progress::message::Next::new(Scope::Software))?;
         let old_aliases: Vec<_> = old_state
             .repositories
             .iter()
@@ -655,5 +670,30 @@ impl ZyppServer {
                     .collect()
             })
             .map_err(|e| e.into())
+    }
+
+    fn register_system(
+        &mut self,
+        state: &RegistrationState,
+        zypp: &zypp_agama::Zypp,
+        issues: &mut Vec<Issue>,
+    ) {
+        let mut registration =
+            Registration::builder(self.root_dir.clone(), &state.product, &state.version)
+                .with_code(&state.code);
+        registration = registration.with_code(&state.code);
+        if let Some(email) = &state.email {
+            registration = registration.with_email(email);
+        }
+
+        match registration.build(&zypp) {
+            Ok(registration) => self.registration = Some(registration),
+            Err(error) => {
+                issues.push(
+                    Issue::new("software.register_system", "Failed to register the system")
+                        .with_details(&error.to_string()),
+                );
+            }
+        }
     }
 }

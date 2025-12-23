@@ -280,6 +280,7 @@ dependencies = [
  "serde_with",
  "serde_yaml",
  "strum",
+ "suseconnect-agama",
  "tempfile",
  "thiserror 2.0.17",
  "tokio",

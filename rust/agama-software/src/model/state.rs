@@ -165,7 +165,12 @@ impl<'a> SoftwareStateBuilder<'a> {
             return;
         };
 
+        let product = self.product.id.clone();
+        let version = self.product.version.clone().unwrap_or("1".to_string());
+
         state.registration = Some(RegistrationState {
+            product,
+            version,
             code: code.to_string(),
             email: config.registration_email.clone(),
             url: config.registration_url.clone(),
@@ -447,6 +452,9 @@ pub struct SoftwareOptions {
 
 #[derive(Clone, Debug)]
 pub struct RegistrationState {
+    pub product: String,
+    pub version: String,
+    // FIXME: the code should be optional.
     pub code: String,
     pub email: Option<String>,
     pub url: Option<String>,
