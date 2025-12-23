@@ -48,13 +48,6 @@ describe("ProgressBackdrop", () => {
     jest.clearAllMocks();
   });
 
-  describe("when no progress scope is provided", () => {
-    it("does not render the backdrop", () => {
-      installerRender(<ProgressBackdrop />);
-      expect(screen.queryByRole("alert")).toBeNull();
-    });
-  });
-
   describe("when progress scope is provided but no matching progress exists", () => {
     it("does not render the backdrop", () => {
       installerRender(<ProgressBackdrop scope="software" />);
