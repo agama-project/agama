@@ -19,6 +19,135 @@
 // find current contact information at www.suse.com.
 
 use serde::{Deserialize, Serialize};
+use suseconnect_agama::{self, ConnectParams, Credentials};
+use url::Url;
+
+pub struct RegistrationBuilder {
+    product: String,
+    version: String,
+    code: Option<String>,
+    email: Option<String>,
+}
+
+impl RegistrationBuilder {
+    pub fn new(product: &str, version: &str) -> Self {
+        RegistrationBuilder {
+            product: product.to_string(),
+            version: version.to_string(),
+            code: None,
+            email: None,
+        }
+    }
+
+    pub fn with_code(mut self, code: &str) -> Self {
+        self.code = Some(code.to_string());
+        self
+    }
+
+    pub fn with_email(mut self, email: &str) -> Self {
+        self.email = Some(email.to_string());
+        self
+    }
+
+    pub fn build(self, zypp: &zypp_agama::Zypp) -> Registration {
+        let params = suseconnect_agama::ConnectParams {
+            token: self.code.clone(),
+            ..Default::default()
+        };
+        // https://github.com/agama-project/agama/blob/master/service/lib/agama/registration.rb#L294
+        // FIXME: use the correct arquitecture
+        let version = self.version.split(".").next().unwrap_or("1");
+        let target_distro = format!("{}-{}-x86_64", &self.product, version);
+        let creds = suseconnect_agama::announce_system(params, &target_distro).unwrap();
+        tracing::debug!("Announced the system and got credentials {creds:?}");
+        suseconnect_agama::create_credentials_file(
+            &creds.login,
+            &creds.password,
+            suseconnect_agama::GLOBAL_CREDENTIALS_FILE,
+        )
+        .unwrap();
+
+        let mut registration = Registration {
+            creds,
+            email: self.email,
+            services: vec![],
+        };
+
+        registration.activate_product(zypp, &self.product, &self.version, None);
+        registration
+    }
+}
+
+const TARGET_DIR: &str = "/run/agama/zypp";
+
+#[derive(Debug)]
+pub struct Registration {
+    creds: Credentials,
+    email: Option<String>,
+    services: Vec<suseconnect_agama::Service>,
+}
+
+impl Registration {
+    pub fn builder(product: &str, version: &str) -> RegistrationBuilder {
+        RegistrationBuilder::new(product, version)
+    }
+
+    // This activate_product should receive the code
+    pub fn activate_product(
+        &mut self,
+        zypp: &zypp_agama::Zypp,
+        name: &str,
+        version: &str,
+        code: Option<&str>,
+    ) {
+        let product = self.product_specification(name, version);
+        let params = suseconnect_agama::ConnectParams {
+            token: code.map(ToString::to_string),
+            ..Default::default()
+        };
+        tracing::debug!("Registering product {product:?} with params {params:?}");
+        let service = suseconnect_agama::activate_product(
+            product,
+            params,
+            self.email.as_ref().map(|e| e.as_str()).unwrap_or(""),
+        )
+        .unwrap();
+
+        if let Some(file) = Self::credentials_from_url(&service.url) {
+            let path = format!("{}/{}", TARGET_DIR, file);
+            tracing::debug!("Credentials file {} for {:?}", &path, &service);
+            suseconnect_agama::create_credentials_file(
+                &self.creds.login,
+                &self.creds.password,
+                path.as_str(),
+            )
+            .unwrap();
+        }
+
+        // add service
+        zypp.add_service(&service.name, &service.url).unwrap();
+        self.services.push(service);
+    }
+
+    fn product_specification(
+        &self,
+        id: &str,
+        version: &str,
+    ) -> suseconnect_agama::ProductSpecification {
+        suseconnect_agama::ProductSpecification {
+            identifier: id.to_string(),
+            arch: "x86_64".to_string(),
+            version: version.to_string(),
+        }
+    }
+
+    fn credentials_from_url(url: &str) -> Option<String> {
+        let url = Url::parse(url).unwrap();
+        url.query_pairs()
+            .find(|(k, _v)| k == "credentials")
+            .map(|(_k, v)| v.to_string())
+    }
+}
 
 /// Software service configuration (product, patterns, etc.).
 #[derive(Clone, Serialize, Deserialize, utoipa::ToSchema)]

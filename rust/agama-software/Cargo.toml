@@ -21,6 +21,7 @@ tokio-stream = "0.1.16"
 tracing = "0.1.41"
 url = "2.5.7"
 utoipa = { version = "5.2.0", features = ["axum_extras", "uuid"] }
+suseconnect-agama = { path = "../suseconnect-agama" }
 zypp-agama = { path = "../zypp-agama" }
 
 [dev-dependencies]

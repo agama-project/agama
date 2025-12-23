@@ -40,8 +40,8 @@ use zypp_agama::{errors::ZyppResult, ZyppError};
 use crate::{
     callbacks,
     model::state::{self, SoftwareState},
-    state::ResolvableSelection,
-    ResolvableType,
+    state::{RegistrationState, ResolvableSelection},
+    Registration, ResolvableType,
 };
 
 const GPG_KEYS: &str = "/usr/lib/rpm/gnupg/keys/gpg-*";
@@ -103,6 +103,7 @@ pub enum SoftwareAction {
 /// Software service server.
 pub struct ZyppServer {
     receiver: mpsc::UnboundedReceiver<SoftwareAction>,
+    registration: Option<Registration>,
     root_dir: Utf8PathBuf,
 }
 
@@ -118,6 +119,7 @@ impl ZyppServer {
         let server = Self {
             receiver,
             root_dir: root_dir.as_ref().to_path_buf(),
+            registration: None,
         };
 
         // drop the returned JoinHandle: the thread will be detached
@@ -244,8 +246,18 @@ impl ZyppServer {
         Ok(state)
     }
 
+    fn register_system(&mut self, state: &RegistrationState, zypp: &zypp_agama::Zypp) {
+        let mut registration =
+            Registration::builder(&state.product, &state.version).with_code(&state.code);
+        if let Some(email) = &state.email {
+            registration = registration.with_email(email);
+        }
+        let registration = registration.build(&zypp);
+        self.registration = Some(registration);
+    }
+
     fn write(
-        &self,
+        &mut self,
         state: SoftwareState,
         progress: Handler<progress::Service>,
         security: &mut callbacks::Security,
@@ -262,7 +274,15 @@ impl ZyppServer {
                 gettext("Calculating the software proposal"),
             ],
         ));
+
+        // TODO: add information about the current registration state
         let old_state = self.read(zypp)?;
+
+        // how to check whether the system is registered
+        if let Some(registration) = &state.registration {
+            self.register_system(registration, &zypp);
+        }
+
         let old_aliases: Vec<_> = old_state
             .repositories
             .iter()
