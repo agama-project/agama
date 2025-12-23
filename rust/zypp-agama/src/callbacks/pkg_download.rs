@@ -71,6 +71,7 @@ impl From<zypp_agama_sys::GPGCheckPackageResult> for GPGCheckResult {
     }
 }
 
+#[derive(Debug, PartialEq, Eq)]
 pub enum PreloadError {
     NoError,
     NotFound,     // the requested Url was not found
@@ -94,6 +95,19 @@ impl From<zypp_agama_sys::DownloadResolvableFileError> for PreloadError {
                 PreloadError::Error
             }
         }
+    }
+}
+
+impl Display for PreloadError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let str = match self {
+            PreloadError::NoError => "NoError",
+            PreloadError::NotFound => "NotFound",
+            PreloadError::IO => "IO",
+            PreloadError::AccessDenied => "AccessDenied",
+            PreloadError::Error => "Error",
+        };
+        write!(f, "{}", str)
     }
 }
 

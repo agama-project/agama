@@ -41,7 +41,7 @@ use crate::{
     callbacks,
     model::state::{self, SoftwareState},
     state::ResolvableSelection,
-    Resolvable, ResolvableType,
+    ResolvableType,
 };
 
 const GPG_KEYS: &str = "/usr/lib/rpm/gnupg/keys/gpg-*";
@@ -179,18 +179,8 @@ impl ZyppServer {
                 self.system_info(product_spec, tx, zypp)?;
             }
             SoftwareAction::Install(tx, progress, question) => {
-                let mut download_callback =
-                    callbacks::CommitDownload::new(progress.clone(), question.clone());
-                let mut install_callback =
-                    callbacks::Install::new(progress.clone(), question.clone());
-                let mut security_callback = callbacks::Security::new(question);
-                tx.send(self.install(
-                    zypp,
-                    &mut download_callback,
-                    &mut install_callback,
-                    &mut security_callback,
-                ))
-                .map_err(|_| ZyppDispatchError::ResponseChannelClosed)?;
+                tx.send(self.install(zypp, progress, question))
+                    .map_err(|_| ZyppDispatchError::ResponseChannelClosed)?;
             }
             SoftwareAction::Finish(tx) => {
                 self.finish(zypp, tx)?;
@@ -206,14 +196,32 @@ impl ZyppServer {
     fn install(
         &self,
         zypp: &zypp_agama::Zypp,
-        download_callback: &mut callbacks::CommitDownload,
-        install_callback: &mut callbacks::Install,
-        security_callback: &mut callbacks::Security,
+        progress: Handler<progress::Service>,
+        question: Handler<question::Service>,
     ) -> ZyppServerResult<bool> {
+        let mut download_callback =
+            callbacks::CommitDownload::new(progress.clone(), question.clone());
+        let mut install_callback = callbacks::Install::new(progress.clone(), question.clone());
+        let mut security_callback = callbacks::Security::new(question);
+
+        let packages_count = zypp.packages_count();
+        // use packages count *2 as we need to download package and also install it
+        let steps = (packages_count * 2) as usize;
+        let _ = progress.cast(progress::message::Start::new(
+            Scope::Software,
+            steps,
+            "Starting packages installation",
+        ));
+
         let target = "/mnt";
         zypp.switch_target(target)?;
-        let result = zypp.commit(download_callback, install_callback, security_callback)?;
+        let result = zypp.commit(
+            &mut download_callback,
+            &mut install_callback,
+            &mut security_callback,
+        )?;
         tracing::info!("libzypp commit ends with {}", result);
+        let _ = progress.cast(progress::message::Finish::new(Scope::Software));
         Ok(result)
     }
 

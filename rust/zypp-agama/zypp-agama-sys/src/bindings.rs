@@ -620,6 +620,8 @@ unsafe extern "C" {
     );
     #[doc = " Reset status of all resolvables, unselects selected packages, patterns...\n Note: this also resets the user locks (\"taboo\" or \"keep installed\")"]
     pub fn resolvable_reset_all(_zypp: *mut Zypp);
+    #[doc = " @brief Amount of packages selected for installation\n @param _zypp see \\ref init_target\n @return count of packages"]
+    pub fn packages_to_install(_zypp: *mut Zypp) -> ::std::os::raw::c_uint;
     #[doc = " Get Pattern details.\n Unknown patterns are simply omitted from the result. Match by\n PatternInfo.name, not by index."]
     pub fn get_patterns_info(
         _zypp: *mut Zypp,

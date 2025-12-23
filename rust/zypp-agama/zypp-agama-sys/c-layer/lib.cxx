@@ -506,6 +506,12 @@ bool is_local_url(const char *url, struct Status *status) noexcept {
   }
 }
 
+unsigned packages_to_install(struct Zypp *zypp) noexcept {
+  return zypp::ResPool::instance()
+      .byStatus(&zypp::ResStatus::isToBeInstalled)
+      .size();
+}
+
 static bool package_check(Zypp *zypp, const char *tag, bool selected,
                           Status *status) noexcept {
   try {
