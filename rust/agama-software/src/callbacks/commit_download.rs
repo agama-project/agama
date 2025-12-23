@@ -119,17 +119,10 @@ impl Callback for CommitDownload {
                 .progress
                 .cast(progress::message::NextWithStep::new(Scope::Software, &msg));
         } else {
-            let labels = [gettext("Ok")];
-            let actions = [("Ok", labels[0].as_str())];
-            let question =
-                QuestionSpec::new(&error_details, "software.package_error.preload_error")
-                    .with_actions(&actions)
-                    .with_data(&[
-                        ("package", file_str),
-                        ("error_code", error.to_string().as_str()),
-                    ]);
-            // answer can be only OK so ignore it
-            let _ = ask_software_question(&self.questions, question);
+            // just log that download failed as libzypp will automatically use next mirror
+            // so we should not bother user. But also do not update progress otherwise it will
+            // mess us steps.
+            tracing::info!("preload failed with {:?}", error_details);
         }
     }
 }
