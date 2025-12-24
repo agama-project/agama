@@ -23,13 +23,11 @@
 import React from "react";
 import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
-import { Product, RegistrationInfo } from "~/types/software";
+import { Product } from "~/types/software";
 import HostnamePage from "./HostnamePage";
-import { patchConfig } from "~/api";
 
 let mockStaticHostname: string;
-let registrationInfoMock: RegistrationInfo;
-let mockPatchConfig = jest.fn();
+const mockPatchConfig = jest.fn();
 
 const tw: Product = {
   id: "Tumbleweed",
@@ -197,7 +195,6 @@ describe("HostnamePage", () => {
   describe("when the selected product is registrable and registration code is not set", () => {
     beforeEach(() => {
       selectedProduct = sle;
-      registrationInfoMock = { registered: false, key: "", email: "", url: "" };
     });
 
     xit("does not render an alert about registration", () => {
@@ -210,12 +207,6 @@ describe("HostnamePage", () => {
   describe("when the selected product is registrable and registration code is set", () => {
     beforeEach(() => {
       selectedProduct = sle;
-      registrationInfoMock = {
-        registered: true,
-        key: "INTERNAL-USE-ONLY-1234-5678",
-        email: "example@company.test",
-        url: "",
-      };
     });
 
     it("renders an alert to let user know that changes will not have effect in the registration", () => {
