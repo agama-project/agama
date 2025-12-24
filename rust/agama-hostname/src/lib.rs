@@ -82,9 +82,7 @@ mod tests {
         config.r#static = Some("".to_string());
         config.hostname = Some("test".to_string());
 
-        ctx.handler
-            .call(message::SetConfig::with(config.clone()))
-            .await?;
+        ctx.handler.call(message::SetConfig::with(config)).await?;
 
         let updated = ctx.handler.call(message::GetConfig).await?;
         assert_eq!(
