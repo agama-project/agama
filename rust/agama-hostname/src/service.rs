@@ -103,7 +103,7 @@ impl Starter {
             None => Box::new(Model),
         };
 
-        let config = model.system_info();
+        let config = model.system_info()?;
 
         let service = Service {
             config,
@@ -186,7 +186,7 @@ impl MessageHandler<message::GetConfig> for Service {
         _message: message::GetConfig,
     ) -> Result<api::hostname::Config, Error> {
         Ok(api::hostname::Config {
-            r#static: Some(self.config.r#static.clone()),
+            r#static: self.config.r#static.clone(),
             hostname: Some(self.config.hostname.clone()),
         })
     }
@@ -201,15 +201,16 @@ impl MessageHandler<message::SetConfig<api::hostname::Config>> for Service {
         let current = self.config.clone();
 
         if let Some(config) = &message.config {
+            self.config.r#static = config.r#static.clone();
+            self.model
+                .set_static_hostname(config.r#static.clone().unwrap_or_default())?;
             if let Some(name) = &config.r#static {
-                self.config.r#static = name.clone();
                 self.config.hostname = name.clone();
-                self.model.set_static_hostname(name.clone())?
             }
 
             if let Some(name) = &config.hostname {
                 // If static hostname is set the transient is basically the same
-                if self.config.r#static.is_empty() {
+                if self.config.r#static.clone().unwrap_or_default().is_empty() {
                     self.config.hostname = name.clone();
                     self.model.set_hostname(name.clone())?
                 }
@@ -242,7 +243,13 @@ impl MessageHandler<message::GetProposal> for Service {
 #[async_trait]
 impl MessageHandler<message::UpdateHostname> for Service {
     async fn handle(&mut self, message: message::UpdateHostname) -> Result<(), Error> {
-        self.config.hostname = message.name;
+        let current_name = self.config.hostname.clone();
+        self.config.hostname = message.name.clone();
+        if current_name != message.name {
+            self.events.send(Event::ProposalChanged {
+                scope: Scope::Hostname,
+            })?;
+        }
         Ok(())
     }
 }
@@ -251,8 +258,12 @@ impl MessageHandler<message::UpdateHostname> for Service {
 impl MessageHandler<message::UpdateStaticHostname> for Service {
     async fn handle(&mut self, message: message::UpdateStaticHostname) -> Result<(), Error> {
         // If static hostname is set the transient is basically the same
-        self.config.r#static = message.name.clone();
-        self.config.hostname = message.name;
+        if !message.name.is_empty() {
+            self.config.r#static = Some(message.name.clone());
+            self.config.hostname = message.name;
+        } else {
+            self.config.r#static = None;
+        }
         Ok(())
     }
 }

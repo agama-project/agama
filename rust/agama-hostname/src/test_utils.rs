@@ -20,7 +20,7 @@
 
 use agama_utils::{actor::Handler, api::event, issue};
 use async_trait::async_trait;
-use std::{fs, path::PathBuf, process::Command};
+use std::{fs, path::PathBuf};
 use tempfile::tempdir;
 
 use crate::{

@@ -23,6 +23,6 @@ use serde::{Deserialize, Serialize};
 /// Describes the current system hostname information
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize, utoipa::ToSchema)]
 pub struct SystemInfo {
-    pub r#static: String,
+    pub r#static: Option<String>,
     pub hostname: String,
 }

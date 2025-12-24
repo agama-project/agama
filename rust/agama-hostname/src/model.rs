@@ -29,11 +29,13 @@ use std::{fs, path::PathBuf, process::Command};
 /// tests.
 pub trait ModelAdapter: Send + 'static {
     /// Reads the system info.
-    fn system_info(&self) -> SystemInfo {
-        SystemInfo {
-            r#static: self.static_hostname().unwrap_or_default(),
-            hostname: self.hostname().unwrap_or_default(),
-        }
+    fn system_info(&self) -> Result<SystemInfo, service::Error> {
+        let name = self.static_hostname()?;
+
+        Ok(SystemInfo {
+            r#static: (!name.is_empty()).then(|| name),
+            hostname: self.hostname()?,
+        })
     }
 
     /// Current system hostname.
@@ -61,21 +63,24 @@ pub struct Model;
 
 impl ModelAdapter for Model {
     fn static_hostname(&self) -> Result<String, service::Error> {
-        let output = Command::new("hostnamectl")
-            .args(["hostname", "--static"])
-            .output()?;
-        let output = String::from_utf8_lossy(&output.stdout).trim().parse();
+        let mut cmd = Command::new("hostnamectl");
+        cmd.args(["hostname", "--static"]);
+        tracing::info!("{:?}", &cmd);
+        let output = cmd.output()?;
+        tracing::info!("{:?}", &output);
 
-        Ok(output.unwrap_or_default())
+        let output = String::from_utf8_lossy(&output.stdout).trim().to_string();
+
+        Ok(output)
     }
 
     fn hostname(&self) -> Result<String, service::Error> {
         let output = Command::new("hostnamectl")
             .args(["hostname", "--transient"])
             .output()?;
-        let output = String::from_utf8_lossy(&output.stdout).trim().parse();
+        let output = String::from_utf8_lossy(&output.stdout).trim().to_string();
 
-        Ok(output.unwrap_or_default())
+        Ok(output)
     }
 
     fn set_static_hostname(&mut self, name: String) -> Result<(), service::Error> {
@@ -112,7 +117,7 @@ impl ModelAdapter for Model {
 #[cfg(test)]
 pub mod tests {
     use super::*;
-    use tempfile::{tempdir, TempDir};
+    use tempfile::tempdir;
 
     #[derive(Clone)]
     pub struct TestModel {

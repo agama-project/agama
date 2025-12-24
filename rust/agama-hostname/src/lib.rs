@@ -51,7 +51,7 @@ mod tests {
 
     use agama_utils::{
         actor::Handler,
-        api::{self, event::Event},
+        api::{self, event::Event, scope::Scope},
         issue,
     };
     use test_context::{test_context, AsyncTestContext};
@@ -98,6 +98,22 @@ mod tests {
                 hostname: Some("test".to_string())
             }
         );
+
+        let proposal = ctx.handler.call(message::GetProposal).await?;
+        assert!(proposal.is_some());
+
+        let event = ctx
+            .events_rx
+            .recv()
+            .await
+            .expect("Did not receive the event");
+
+        assert!(matches!(
+            event,
+            Event::ProposalChanged {
+                scope: Scope::Hostname
+            }
+        ));
 
         Ok(())
     }

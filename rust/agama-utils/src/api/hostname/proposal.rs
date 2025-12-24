@@ -23,6 +23,6 @@ use serde::{Deserialize, Serialize};
 /// Describes what Agama proposes for the target system.
 #[derive(Clone, Debug, Deserialize, Serialize, utoipa::ToSchema)]
 pub struct Proposal {
-    pub r#static: String,
+    pub r#static: Option<String>,
     pub hostname: String,
 }
