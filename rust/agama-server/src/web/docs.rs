@@ -22,8 +22,6 @@ use utoipa::openapi::{Components, Info, InfoBuilder, OpenApi, OpenApiBuilder, Pa
 
 mod config;
 pub use config::ConfigApiDocBuilder;
-mod hostname;
-pub use hostname::HostnameApiDocBuilder;
 mod bootloader;
 pub use bootloader::BootloaderApiDocBuilder;
 mod profile;

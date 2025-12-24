@@ -6,6 +6,7 @@ edition.workspace = true
 
 [dependencies]
 agama-files = { path = "../agama-files" }
+agama-hostname = { path = "../agama-hostname" }
 agama-l10n = { path = "../agama-l10n" }
 agama-network = { path = "../agama-network" }
 agama-software = { path = "../agama-software" }

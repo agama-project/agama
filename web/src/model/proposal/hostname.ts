@@ -20,23 +20,9 @@
  * find current contact information at www.suse.com.
  */
 
-import type * as Hostname from "~/model/config/hostname";
-import type * as L10n from "~/model/config/l10n";
-import type * as Network from "~/model/config/network";
-import type * as Software from "~/model/config/software";
-import type * as Storage from "~/model/config/storage";
-
-type Config = {
-  hostname?: Hostname.Config;
-  l10n?: L10n.Config;
-  network?: Network.Config;
-  product?: Product;
-  storage?: Storage.Config;
-  software?: Software.Config;
+type Proposal = {
+  static: string;
+  hostname: string;
 };
 
-type Product = {
-  id?: string;
-};
-
-export type { Config, Hostname, Product, L10n, Network, Storage };
+export type { Proposal };

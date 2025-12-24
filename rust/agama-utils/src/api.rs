@@ -52,6 +52,7 @@ mod action;
 pub use action::Action;
 
 pub mod files;
+pub mod hostname;
 pub mod l10n;
 pub mod manager;
 pub mod network;

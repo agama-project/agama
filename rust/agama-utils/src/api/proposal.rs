@@ -18,13 +18,15 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::api::{l10n, network, software};
+use crate::api::{hostname, l10n, network, software};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 
 #[derive(Clone, Debug, Deserialize, Serialize, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct Proposal {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub hostname: Option<hostname::Proposal>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub l10n: Option<l10n::Proposal>,
     pub network: network::Proposal,

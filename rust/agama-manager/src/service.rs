@@ -18,7 +18,7 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::{files, hardware, l10n, message, network, software, storage};
+use crate::{files, hardware, hostname, l10n, message, network, software, storage};
 use agama_utils::{
     actor::{self, Actor, Handler, MessageHandler},
     api::{
@@ -48,6 +48,8 @@ pub enum Error {
     Event(#[from] broadcast::error::SendError<Event>),
     #[error(transparent)]
     Actor(#[from] actor::Error),
+    #[error(transparent)]
+    Hostname(#[from] hostname::service::Error),
     #[error(transparent)]
     L10n(#[from] l10n::service::Error),
     #[error(transparent)]
@@ -82,6 +84,7 @@ pub struct Starter {
     questions: Handler<question::Service>,
     events: event::Sender,
     dbus: zbus::Connection,
+    hostname: Option<Handler<hostname::Service>>,
     l10n: Option<Handler<l10n::Service>>,
     network: Option<NetworkSystemClient>,
     software: Option<Handler<software::Service>>,
@@ -102,6 +105,7 @@ impl Starter {
             events,
             dbus,
             questions,
+            hostname: None,
             l10n: None,
             network: None,
             software: None,
@@ -113,6 +117,10 @@ impl Starter {
         }
     }
 
+    pub fn with_hostname(mut self, hostname: Handler<hostname::Service>) -> Self {
+        self.hostname = Some(hostname);
+        self
+    }
     pub fn with_network(mut self, network: NetworkSystemClient) -> Self {
         self.network = Some(network);
         self
@@ -165,6 +173,14 @@ impl Starter {
             None => progress::Service::starter(self.events.clone()).start(),
         };
 
+        let hostname = match self.hostname {
+            Some(hostname) => hostname,
+            None => {
+                hostname::Service::starter(self.events.clone(), issues.clone())
+                    .start()
+                    .await?
+            }
+        };
         let l10n = match self.l10n {
             Some(l10n) => l10n,
             None => {
@@ -225,6 +241,7 @@ impl Starter {
             questions: self.questions,
             progress,
             issues,
+            hostname,
             l10n,
             network,
             software,
@@ -244,6 +261,7 @@ impl Starter {
 }
 
 pub struct Service {
+    hostname: Handler<hostname::Service>,
     l10n: Handler<l10n::Service>,
     software: Handler<software::Service>,
     network: NetworkSystemClient,
@@ -303,6 +321,10 @@ impl Service {
         let Some(product) = &self.product else {
             return Err(Error::MissingProduct);
         };
+
+        self.hostname
+            .call(hostname::message::SetConfig::new(config.hostname.clone()))
+            .await?;
 
         self.files
             .call(files::message::SetConfig::new(config.files.clone()))
@@ -428,12 +450,14 @@ impl MessageHandler<progress::message::GetStatus> for Service {
 impl MessageHandler<message::GetSystem> for Service {
     /// It returns the information of the underlying system.
     async fn handle(&mut self, _message: message::GetSystem) -> Result<SystemInfo, Error> {
+        let hostname = self.hostname.call(hostname::message::GetSystem).await?;
         let l10n = self.l10n.call(l10n::message::GetSystem).await?;
         let manager = self.system.clone();
         let storage = self.storage.call(storage::message::GetSystem).await?;
         let network = self.network.get_system().await?;
         let software = self.software.call(software::message::GetSystem).await?;
         Ok(SystemInfo {
+            hostname,
             l10n,
             manager,
             network,
@@ -449,6 +473,7 @@ impl MessageHandler<message::GetExtendedConfig> for Service {
     ///
     /// It includes user and default values.
     async fn handle(&mut self, _message: message::GetExtendedConfig) -> Result<Config, Error> {
+        let hostname = self.hostname.call(hostname::message::GetConfig).await?;
         let l10n = self.l10n.call(l10n::message::GetConfig).await?;
         let software = self.software.call(software::message::GetConfig).await?;
         let questions = self.questions.call(question::message::GetConfig).await?;
@@ -456,8 +481,9 @@ impl MessageHandler<message::GetExtendedConfig> for Service {
         let storage = self.storage.call(storage::message::GetConfig).await?;
 
         Ok(Config {
+            hostname: Some(hostname),
             l10n: Some(l10n),
-            questions: questions,
+            questions,
             network: Some(network),
             software: Some(software),
             storage,
@@ -503,12 +529,14 @@ impl MessageHandler<message::UpdateConfig> for Service {
 impl MessageHandler<message::GetProposal> for Service {
     /// It returns the current proposal, if any.
     async fn handle(&mut self, _message: message::GetProposal) -> Result<Option<Proposal>, Error> {
+        let hostname = self.hostname.call(hostname::message::GetProposal).await?;
         let l10n = self.l10n.call(l10n::message::GetProposal).await?;
         let software = self.software.call(software::message::GetProposal).await?;
         let storage = self.storage.call(storage::message::GetProposal).await?;
         let network = self.network.get_proposal().await?;
 
         Ok(Some(Proposal {
+            hostname,
             l10n,
             network,
             software,

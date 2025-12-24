@@ -25,9 +25,8 @@
 //! * Serve the code for the web user interface (not implemented yet).
 
 use crate::{
-    bootloader::web::bootloader_service, error::Error, hostname::web::hostname_service,
-    profile::web::profile_service, security::security_service, server::server_service,
-    users::web::users_service,
+    bootloader::web::bootloader_service, profile::web::profile_service, security::security_service,
+    server::server_service, users::web::users_service,
 };
 use agama_utils::api::event;
 use axum::Router;
@@ -40,12 +39,10 @@ mod service;
 mod state;
 mod ws;
 
-use agama_lib::connection;
 use agama_lib::error::ServiceError;
 pub use config::ServiceConfig;
 pub use service::MainServiceBuilder;
 use std::path::Path;
-use tokio_stream::{StreamExt, StreamMap};
 
 /// Returns a service that implements the web-based Agama API.
 ///
@@ -67,7 +64,6 @@ where
         .add_service("/security", security_service(dbus.clone()).await?)
         .add_service("/bootloader", bootloader_service(dbus.clone()).await?)
         .add_service("/users", users_service(dbus.clone()).await?)
-        .add_service("/hostname", hostname_service().await?)
         .add_service("/profile", profile_service().await?)
         .with_config(config)
         .build();

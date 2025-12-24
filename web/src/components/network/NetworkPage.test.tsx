@@ -44,14 +44,13 @@ const mockSystem = {
   connections: [],
   state: {
     connectivity: true,
-    wiredEnabled: true,
+    copyNetwork: true,
+    networkingEnabled: true,
     wirelessEnabled: false,
-    persistNetwork: true,
-    copyEnabled: false,
   },
 };
 
-jest.mock("~/hooks/api/system/network", () => ({
+jest.mock("~/hooks/model/system/network", () => ({
   useNetworkChanges: jest.fn(),
   useSystem: () => mockSystem,
 }));

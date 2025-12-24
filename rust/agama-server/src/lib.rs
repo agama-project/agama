@@ -22,7 +22,6 @@ pub mod bootloader;
 pub mod cert;
 pub mod dbus;
 pub mod error;
-pub mod hostname;
 pub mod logs;
 pub mod profile;
 pub mod security;

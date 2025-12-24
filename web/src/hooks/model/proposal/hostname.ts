@@ -20,23 +20,18 @@
  * find current contact information at www.suse.com.
  */
 
-import type * as Hostname from "~/model/config/hostname";
-import type * as L10n from "~/model/config/l10n";
-import type * as Network from "~/model/config/network";
-import type * as Software from "~/model/config/software";
-import type * as Storage from "~/model/config/storage";
+import { useSuspenseQuery } from "@tanstack/react-query";
+import { proposalQuery } from "~/hooks/model/proposal";
+import type { Proposal, Hostname } from "~/model/proposal";
 
-type Config = {
-  hostname?: Hostname.Config;
-  l10n?: L10n.Config;
-  network?: Network.Config;
-  product?: Product;
-  storage?: Storage.Config;
-  software?: Software.Config;
-};
+const selectProposal = (data: Proposal | null): Hostname.Proposal | null => data?.hostname;
 
-type Product = {
-  id?: string;
-};
+function useProposal(): Hostname.Proposal | null {
+  const { data } = useSuspenseQuery({
+    ...proposalQuery,
+    select: selectProposal,
+  });
+  return data;
+}
 
-export type { Config, Hostname, Product, L10n, Network, Storage };
+export { useProposal };

@@ -18,26 +18,13 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use utoipa::openapi::{Components, ComponentsBuilder, Paths, PathsBuilder};
+use serde::{Deserialize, Serialize};
 
-use super::ApiDocBuilder;
-pub struct HostnameApiDocBuilder;
-
-impl ApiDocBuilder for HostnameApiDocBuilder {
-    fn title(&self) -> String {
-        "Hostname HTTP API".to_string()
-    }
-
-    fn paths(&self) -> Paths {
-        PathsBuilder::new()
-            .path_from::<crate::hostname::web::__path_get_config>()
-            .path_from::<crate::hostname::web::__path_set_config>()
-            .build()
-    }
-
-    fn components(&self) -> Components {
-        ComponentsBuilder::new()
-            .schema_from::<agama_lib::hostname::model::HostnameSettings>()
-            .build()
-    }
+/// Describes what Agama proposes for the target system.
+#[derive(Clone, Debug, Deserialize, Serialize, utoipa::ToSchema)]
+pub struct Proposal {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub r#static: Option<String>,
+    #[serde(alias = "transient")]
+    pub hostname: String,
 }

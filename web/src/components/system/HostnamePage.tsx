@@ -32,17 +32,19 @@ import {
   TextInput,
 } from "@patternfly/react-core";
 import { NestedContent, Page } from "~/components/core";
-import { useProduct, useRegistration } from "~/queries/software";
-import { useHostname, useHostnameMutation } from "~/queries/hostname";
 import { isEmpty } from "radashi";
 import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
+import { useProposal } from "~/hooks/model/proposal";
+import { useProduct } from "~/hooks/model/config";
+import { patchConfig } from "~/api";
 
 export default function HostnamePage() {
-  const registration = useRegistration();
-  const { selectedProduct: product } = useProduct();
-  const { transient: transientHostname, static: staticHostname } = useHostname();
-  const { mutateAsync: updateHostname } = useHostnameMutation();
+  const product = useProduct();
+  const { hostname: proposal } = useProposal();
+  // FIXME: It should be fixed once the registration is adapted to API v2
+  const registration = { registered: product.registration };
+  const { hostname: transientHostname, static: staticHostname } = proposal;
   const hasTransientHostname = isEmpty(staticHostname);
   const [success, setSuccess] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -64,7 +66,7 @@ export default function HostnamePage() {
       return;
     }
 
-    updateHostname({ static: settingHostname ? hostname : "" })
+    patchConfig({ hostname: { static: settingHostname ? hostname : "" } })
       .then(() => setSuccess(_("Hostname successfully updated")))
       .catch(() => setRequestError(_("Hostname could not be updated")));
   };
@@ -88,7 +90,6 @@ export default function HostnamePage() {
             )}
           </Alert>
         )}
-
         {hasTransientHostname && (
           <Alert variant="custom" title={transientHostnameAlertTitle}>
             {_(
@@ -96,7 +97,6 @@ export default function HostnamePage() {
             )}
           </Alert>
         )}
-
         <Form id="hostnameForm" onSubmit={submit}>
           {success && <Alert variant="success" isInline title={success} />}
           {requestError && <Alert variant="warning" isInline title={requestError} />}

@@ -18,20 +18,14 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::api::{hostname, l10n, manager, network, software};
-use serde::Serialize;
-use serde_json::Value;
+//! This module contains all Agama public types that might be available over
+//! the HTTP and WebSocket API.
 
-#[derive(Clone, Debug, Serialize, utoipa::ToSchema)]
-#[serde(rename_all = "camelCase")]
-pub struct SystemInfo {
-    #[serde(flatten)]
-    pub manager: manager::SystemInfo,
-    pub hostname: hostname::SystemInfo,
-    pub l10n: l10n::SystemInfo,
-    pub software: software::SystemInfo,
-    #[serde(default)]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub storage: Option<Value>,
-    pub network: network::SystemInfo,
-}
+mod config;
+pub use config::Config;
+
+mod system_info;
+pub use system_info::SystemInfo;
+
+mod proposal;
+pub use proposal::Proposal;
