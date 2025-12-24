@@ -72,7 +72,7 @@ pub struct Starter {
 impl Starter {
     /// Creates a new starter.
     ///
-    /// * `events`: channel to emit the [localization-specific events](crate::Event).
+    /// * `events`: channel to emit the [hostname-specific events](crate::Event).
     /// * `issues`: handler to the issues service.
     pub fn new(events: event::Sender, issues: Handler<issue::Service>) -> Self {
         Self {

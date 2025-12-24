@@ -18,19 +18,15 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-//! This crate implements the support for localization handling in Agama.
-//! It takes care of setting the locale, keymap and timezone for Agama itself
-//! and the target system.
+//! This crate implements the support for hostname handling in Agama.
+//! It takes care of setting the hostname for Agama itself and copying it
+//! to the target system in case of an static one.
 //!
-//! From a technical point of view, it includes:
-//!
-//! * The [UserConfig] struct that defines the settings the user can
-//!   alter for the target system.
 //! * The [Proposal] struct that describes how the system will look like after
 //!   the installation.
 //! * The [SystemInfo] which includes information about the system
 //!   where Agama is running.
-//! * An [specific event type](Event) for localization-related events.
+//! * An [specific event type](Event) for hostname-related events.
 //!
 //! The service can be started by calling the [start_service] function, which
 //! returns a [agama_utils::actors::ActorHandler] to interact with the system.
