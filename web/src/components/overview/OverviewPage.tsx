@@ -22,11 +22,13 @@
 
 import React from "react";
 import { Navigate } from "react-router";
-import { Content } from "@patternfly/react-core";
+import { Content, Grid, GridItem } from "@patternfly/react-core";
 import { Page } from "~/components/core";
 import { useProduct } from "~/hooks/model/config";
 import { PRODUCT } from "~/routes/paths";
 import { _ } from "~/i18n";
+import SystemInformationSection from "./SystemInformationSection";
+import InstallationSummarySection from "./InstallationSummarySection";
 
 export default function OverviewPage() {
   const product = useProduct();
@@ -41,7 +43,16 @@ export default function OverviewPage() {
         <Content component="h2">{_("Overview")}</Content>
       </Page.Header>
 
-      <Page.Content />
+      <Page.Content>
+        <Grid hasGutter>
+          <GridItem sm={6}>
+            <SystemInformationSection />
+          </GridItem>
+          <GridItem sm={6}>
+            <InstallationSummarySection />
+          </GridItem>
+        </Grid>
+      </Page.Content>
     </Page>
   );
 }
