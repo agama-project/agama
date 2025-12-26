@@ -32,7 +32,7 @@ import {
   LoginPage,
 } from "~/components/core";
 import StorageProgress from "~/components/storage/Progress";
-import { OverviewPage } from "~/components/overview";
+import OverviewPage from "~/components/overview/OverviewPage";
 import l10nRoutes from "~/routes/l10n";
 import networkRoutes from "~/routes/network";
 import productsRoutes from "~/routes/products";
