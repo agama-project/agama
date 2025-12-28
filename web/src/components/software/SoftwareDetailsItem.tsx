@@ -20,29 +20,19 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useEffect, useState } from "react";
+import React from "react";
 import xbytes from "xbytes";
 import { shake } from "radashi";
 import { Flex, Skeleton } from "@patternfly/react-core";
 import Details from "~/components/core/Details";
 import Link from "~/components/core/Link";
-import { useStatus } from "~/hooks/model/status";
 import { useSystem } from "~/hooks/model/system/software";
 import { useProposal } from "~/hooks/model/proposal/software";
 import { SelectedBy } from "~/model/proposal/software";
 import { SOFTWARE } from "~/routes/paths";
 import { sprintf } from "sprintf-js";
 import { _, n_ } from "~/i18n";
-import { COMMON_PROPOSAL_KEYS } from "~/hooks/model/proposal";
-import useTrackQueriesRefetch from "~/hooks/use-track-queries-refetch";
-
-// FIXME: copied from StorageDetailsItem,
-// FIXME: evaluate to extract this hook and use it instead of repeating such a
-// #find in multiple places
-const useProgress = (scope) => {
-  const { progresses } = useStatus();
-  return progresses.find((p) => p.scope === scope);
-};
+import { useProgressTracking } from "~/hooks/use-progress-tracking";
 
 // TODO: put in a more generic, reusable place
 const useSelectedPatterns = () => {
@@ -85,27 +75,7 @@ const Description = () => {
 };
 
 export default function SoftwareDetailsItem() {
-  const progress = useProgress("software");
-  const [loading, setLoading] = useState(false);
-  const [progressFinishedAt, setProgressFinishedAt] = useState(null);
-  const { startTracking } = useTrackQueriesRefetch(COMMON_PROPOSAL_KEYS, (_, completedAt) => {
-    if (completedAt > progressFinishedAt) {
-      setLoading(false);
-      setProgressFinishedAt(null);
-    }
-  });
-
-  useEffect(() => {
-    if (!progress && loading && !progressFinishedAt) {
-      setProgressFinishedAt(Date.now());
-      startTracking();
-    }
-  }, [progress, startTracking, loading, progressFinishedAt]);
-
-  if (progress && !loading) {
-    setLoading(true);
-    setProgressFinishedAt(null);
-  }
+  const { loading } = useProgressTracking("software");
 
   return (
     <Details.Item label={_("Software")}>

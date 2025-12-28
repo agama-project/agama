@@ -69,7 +69,7 @@ import { useQueryClient } from "@tanstack/react-query";
  * @see {@link https://tanstack.com/query/latest/docs/react/reference/QueryObserver}
  */
 function useTrackQueriesRefetch(
-  queryKeys: string[],
+  queryKeys: readonly string[],
   onSuccess: (startedAt: number, completedAt: number) => void,
 ) {
   const queryClient = useQueryClient();
