@@ -29,6 +29,7 @@ import L10nDetailsItem from "~/components/l10n/L10nDetailsItem";
 import { _ } from "~/i18n";
 import StorageDetailsItem from "../storage/StorageDetailsItem";
 import NetworkDetailsItem from "../network/NetworkDetailsItem";
+import SoftwareDetailsItem from "../software/SoftwareDetailsItem";
 
 export default function InstallationSummarySection() {
   return (
@@ -39,6 +40,7 @@ export default function InstallationSummarySection() {
           <L10nDetailsItem />
           <StorageDetailsItem />
           <NetworkDetailsItem />
+          <SoftwareDetailsItem />
         </Details>
       </NestedContent>
     </Page.Section>
