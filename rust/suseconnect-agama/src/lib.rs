@@ -383,7 +383,7 @@ pub fn activate_product(
         let email_c_ptr = CString::new(email)?.into_raw();
 
         let result_ptr =
-            suseconnect_agama_sys::activate_product(product_c_ptr, params_c_ptr, email_c_ptr);
+            suseconnect_agama_sys::activate_product(params_c_ptr, product_c_ptr, email_c_ptr);
 
         // Retake ownership to free memory
         let _ = CString::from_raw(product_c_ptr);
