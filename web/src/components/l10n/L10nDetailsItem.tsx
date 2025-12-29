@@ -44,10 +44,20 @@ export default function L10nDetailsItem() {
     <Details.Item label={_("Language and region")}>
       <Flex direction={{ default: "column" }} gap={{ default: "gapSm" }}>
         <Link to={L10N.root} variant="link" isInline>
-          {locale.language} - {locale.territory}
+          {
+            // TRANSLATORS: Summary of the selected language and territory.
+            // %1$s is the language name (e.g. "Spanish").
+            // %2$s is the territory/region name (e.g. "Spain").
+            sprintf(_("%1$s (%2$s)"), locale.language, locale.territory)
+          }
         </Link>
         <small>
-          {sprintf(_("Using %s keyboard and %s timezone"), keymap.description, timezone.id)}
+          {
+            // TRANSLATORS: Additional details shown under the language selection.
+            // %1$s is the keyboard layout name (e.g. "Spanish").
+            // %2$s is the time zone identifier (e.g. "Atlantic/Canary").
+            sprintf(_("%1$s keyboard - %2$s timezone"), keymap.description, timezone.id)
+          }
         </small>
       </Flex>
     </Details.Item>
