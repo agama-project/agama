@@ -12,8 +12,8 @@ unsafe extern "C" {
         credentials_file: *mut ::std::os::raw::c_char,
     ) -> *mut ::std::os::raw::c_char;
     pub fn activate_product(
-        product: *mut ::std::os::raw::c_char,
         client_params: *mut ::std::os::raw::c_char,
+        product: *mut ::std::os::raw::c_char,
         email: *mut ::std::os::raw::c_char,
     ) -> *mut ::std::os::raw::c_char;
     pub fn write_config(client_params: *mut ::std::os::raw::c_char) -> *mut ::std::os::raw::c_char;
