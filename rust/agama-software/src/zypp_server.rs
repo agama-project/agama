@@ -222,7 +222,7 @@ impl ZyppServer {
         )?;
         tracing::info!("libzypp commit ends with {}", result);
         let res = progress.cast(progress::message::Finish::new(Scope::Software));
-        tracing::info!("Software install finishes. Progress result {:#?}", res);
+        tracing::info!("Software install finished. Progress result {:#?}", res);
         Ok(result)
     }
 
@@ -421,13 +421,13 @@ impl ZyppServer {
         tx: oneshot::Sender<ZyppServerResult<()>>,
     ) -> Result<(), ZyppDispatchError> {
         if let Err(error) = self.remove_dud_repo(zypp) {
-            tracing::warn!("removing dud repo failed: {error}");
+            tracing::warn!("Failed to remove the DUD repository: {error}");
             tx.send(Err(error.into()))
                 .map_err(|_| ZyppDispatchError::ResponseChannelClosed)?;
             return Ok(());
         }
         if let Err(error) = self.disable_local_repos(zypp) {
-            tracing::warn!("disabling local repos failed: {error}");
+            tracing::warn!("Failed to disable local repositories: {error}");
             tx.send(Err(error.into()))
                 .map_err(|_| ZyppDispatchError::ResponseChannelClosed)?;
             return Ok(());
@@ -436,7 +436,7 @@ impl ZyppServer {
         let _ = self.modify_zypp_conf(); // TODO: move it outside of zypp server as it do not need zypp lock
 
         if let Err(error) = self.modify_full_repo(zypp) {
-            tracing::warn!("modifying full repo failed: {error}");
+            tracing::warn!("Failed to modify the full repository: {error}");
             tx.send(Err(error.into()))
                 .map_err(|_| ZyppDispatchError::ResponseChannelClosed)?;
             return Ok(());
