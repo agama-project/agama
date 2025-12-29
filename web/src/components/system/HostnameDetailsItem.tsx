@@ -21,12 +21,38 @@
  */
 
 import React from "react";
+import { Flex } from "@patternfly/react-core";
 import Details from "~/components/core/Details";
-import { useProposal } from "~/hooks/model/proposal";
+import Link from "~/components/core/Link";
+import { useProposal } from "~/hooks/model/proposal/hostname";
+import { HOSTNAME } from "~/routes/paths";
 import { _ } from "~/i18n";
 
-export default function HostnameDetailsItem() {
-  const { hostname } = useProposal();
+const Static = ({ hostname }) => {
+  return (
+    <Link to={HOSTNAME.root} variant="link" isInline>
+      {hostname}
+    </Link>
+  );
+};
 
-  return <Details.Item label={_("Hostname")}>{hostname.hostname}</Details.Item>;
+const Transient = ({ hostname }) => {
+  return (
+    <Flex direction={{ default: "column" }} gap={{ default: "gapSm" }}>
+      <Link to={HOSTNAME.root} variant="link" isInline>
+        {hostname}
+      </Link>
+      <small>{_("Automatically assigned, may change after reboot or network updates")}</small>
+    </Flex>
+  );
+};
+
+export default function HostnameDetailsItem() {
+  const { hostname: transient, static: staticHostname } = useProposal();
+
+  return (
+    <Details.Item label={_("Hostname")}>
+      {staticHostname ? <Static hostname={staticHostname} /> : <Transient hostname={transient} />}
+    </Details.Item>
+  );
 }
