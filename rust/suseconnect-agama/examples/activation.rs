@@ -1,6 +1,9 @@
 use std::{env, process::exit};
 
-use suseconnect_agama::{ConnectParams, DEFAULT_CONFIG_FILE, ProductSpecification, activate_product, announce_system, create_credentials_file};
+use suseconnect_agama::{
+    activate_product, announce_system, create_credentials_file, ConnectParams,
+    ProductSpecification, DEFAULT_CONFIG_FILE,
+};
 
 pub fn main() {
     tracing_subscriber::fmt::init();
@@ -22,7 +25,11 @@ pub fn main() {
     let Ok(credentials) = result else {
         exit(1);
     };
-    let result = create_credentials_file(&credentials.login, &credentials.password, DEFAULT_CONFIG_FILE);
+    let result = create_credentials_file(
+        &credentials.login,
+        &credentials.password,
+        DEFAULT_CONFIG_FILE,
+    );
     println!("{:?}", result);
     if result.is_err() {
         exit(1);
