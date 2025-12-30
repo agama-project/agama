@@ -390,7 +390,7 @@ async fn get_license(
 
 #[utoipa::path(
     post,
-    path = "/actions",
+    path = "/action",
     context_path = "/api/v2",
     responses(
         (status = 200, description = "Action successfully run."),
