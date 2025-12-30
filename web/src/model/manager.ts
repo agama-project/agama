@@ -39,12 +39,15 @@ const probe = () => post("/api/manager/probe_sync");
  */
 const reprobe = () => post("/api/manager/reprobe_sync");
 
+// we need wrapper here to pass it as plain string json
+/* eslint-disable no-new-wrappers */
+const install_action: object = new String("install");
 /**
  * Starts the installation process.
  *
  * The progress of the installation process can be tracked through installer signals.
  */
-const startInstallation = () => post("/api/manager/install");
+const startInstallation = () => post("/api/v2/action", install_action);
 
 /**
  * Clean-up when installation is done.
