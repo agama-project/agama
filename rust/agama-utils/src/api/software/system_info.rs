@@ -74,14 +74,14 @@ pub struct RegistrationInfo {
     pub email: Option<String>,
     /// URL of the registration server.
     pub url: Option<url::Url>,
-    /// Registered add-ons.
-    pub addons: Vec<AddonProperties>,
+    /// Available add-ons.
+    pub addons: Vec<AddonInfo>,
 }
 
 /// Addon registration
 #[derive(Clone, Debug, Serialize, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
-pub struct AddonProperties {
+pub struct AddonInfo {
     /// Addon identifier
     pub id: String,
     /// Version of the addon

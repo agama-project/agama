@@ -24,7 +24,7 @@
 //! the system and its add-ons and with libzypp (through [zypp_agama]) to add the
 //! corresponding services to `libzypp`.
 
-use agama_utils::api::software::{AddonProperties, RegistrationInfo};
+use agama_utils::api::software::{AddonInfo, RegistrationInfo};
 use camino::Utf8PathBuf;
 use suseconnect_agama::{self, ConnectParams, Credentials};
 use url::Url;
@@ -111,13 +111,13 @@ impl Registration {
     /// It includes not only the basic data (like the registration code or the e-mail),
     /// but the list of extensions.
     pub fn to_registration_info(&self) -> RegistrationInfo {
-        let addons: Vec<AddonProperties> = match self.base_product() {
+        let addons: Vec<AddonInfo> = match self.base_product() {
             Ok(product) => {
                 product
                     .extensions
                     .into_iter()
                     .map(|e| {
-                        AddonProperties {
+                        AddonInfo {
                             id: e.identifier,
                             version: e.version,
                             label: e.friendly_name,
