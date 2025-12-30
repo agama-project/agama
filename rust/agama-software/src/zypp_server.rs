@@ -511,11 +511,12 @@ impl ZyppServer {
     ) -> Result<(), ZyppDispatchError> {
         let patterns = self.patterns(&product, zypp)?;
         let repositories = self.repositories(zypp)?;
+        let registration = self.registration.as_ref().map(|r| r.to_registration_info());
 
         let system_info = SystemInfo {
             patterns,
             repositories,
-            addons: vec![],
+            registration,
         };
 
         tx.send(Ok(system_info))

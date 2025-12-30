@@ -48,6 +48,8 @@ pub struct Registration {
     root_dir: Utf8PathBuf,
     product: String,
     version: String,
+    // The connection parameters are kept because they are needed by the
+    // `to_registration_info` function.
     connect_params: ConnectParams,
     creds: Credentials,
     services: Vec<suseconnect_agama::Service>,
@@ -102,6 +104,54 @@ impl Registration {
             .map_err(|e| RegistrationError::AddService(service.name.clone(), e))?;
         self.services.push(service);
         Ok(())
+    }
+
+    /// Returns the registration information.
+    ///
+    /// It includes not only the basic data (like the registration code or the e-mail),
+    /// but the list of extensions.
+    pub fn to_registration_info(&self) -> RegistrationInfo {
+        let addons: Vec<AddonProperties> = match self.base_product() {
+            Ok(product) => {
+                product
+                    .extensions
+                    .into_iter()
+                    .map(|e| {
+                        AddonProperties {
+                            id: e.identifier,
+                            version: e.version,
+                            label: e.friendly_name,
+                            available: e.available,
+                            free: e.free,
+                            recommended: e.recommended,
+                            description: e.description,
+                            release: e.release_stage,
+                            // FIXME: missing from suseconnect_agama
+                            r#type: "extension".to_string(),
+                        }
+                    })
+                    .collect()
+            }
+            Err(error) => {
+                tracing::error!("Failed to get the product from the registration server: {error}");
+                vec![]
+            }
+        };
+
+        RegistrationInfo {
+            code: self.connect_params.token.clone(),
+            email: self.connect_params.email.clone(),
+            url: self.connect_params.url.clone(),
+            addons,
+        }
+    }
+
+    fn base_product(&self) -> RegistrationResult<suseconnect_agama::Product> {
+        let product = suseconnect_agama::show_product(
+            self.base_product_specification(),
+            self.connect_params.clone(),
+        )?;
+        Ok(product)
     }
 
     fn base_product_specification(&self) -> suseconnect_agama::ProductSpecification {
@@ -183,6 +233,7 @@ impl RegistrationBuilder {
             token: self.code.clone(),
             email: self.email.clone(),
             language: "en-us".to_string().into(),
+            // unwrap: it is guaranteed to be a correct URL.
             url: Some(Url::parse(suseconnect_agama::DEFAULT_SCC_URL).unwrap()),
             ..Default::default()
         };

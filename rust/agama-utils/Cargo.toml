@@ -29,6 +29,7 @@ fs-err = "3.2.0"
 fluent-uri = { version = "0.4.1", features = ["serde"] }
 tempfile = "3.23.0"
 merge = "0.2.0"
+url = { version = "2.5.7", features = ["serde"] }
 
 [dev-dependencies]
 test-context = "0.4.1"

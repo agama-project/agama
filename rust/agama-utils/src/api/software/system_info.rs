@@ -20,7 +20,7 @@
 
 use serde::Serialize;
 
-/// Localization-related information of the system where the installer
+/// Software-related information of the system where the installer
 /// is running.
 #[derive(Clone, Debug, Default, Serialize, utoipa::ToSchema)]
 pub struct SystemInfo {
@@ -28,8 +28,8 @@ pub struct SystemInfo {
     pub patterns: Vec<Pattern>,
     /// List of known repositories.
     pub repositories: Vec<Repository>,
-    /// List of available addons to register
-    pub addons: Vec<AddonProperties>,
+    /// Registration information
+    pub registration: Option<RegistrationInfo>,
 }
 
 /// Repository specification.
@@ -64,6 +64,18 @@ pub struct Pattern {
     pub order: String,
     /// Whether the pattern is selected by default
     pub preselected: bool,
+}
+
+#[derive(Clone, Default, Debug, Serialize, utoipa::ToSchema)]
+pub struct RegistrationInfo {
+    /// Registration code.
+    pub code: Option<String>,
+    /// Registration e-mail.
+    pub email: Option<String>,
+    /// URL of the registration server.
+    pub url: Option<url::Url>,
+    /// Registered add-ons.
+    pub addons: Vec<AddonProperties>,
 }
 
 /// Addon registration
