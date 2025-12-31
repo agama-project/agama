@@ -682,12 +682,11 @@ impl ZyppServer {
         let mut registration =
             Registration::builder(self.root_dir.clone(), &state.product, &state.version)
                 .with_code(&state.code);
-        registration = registration.with_code(&state.code);
         if let Some(email) = &state.email {
             registration = registration.with_email(email);
         }
 
-        match registration.build(&zypp) {
+        match registration.register(&zypp) {
             Ok(registration) => self.registration = Some(registration),
             Err(error) => {
                 issues.push(

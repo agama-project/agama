@@ -24,7 +24,6 @@
 //! the system and its add-ons and with libzypp (through [zypp_agama]) to add the
 //! corresponding services to `libzypp`.
 
-use agama_utils::api::software::{AddonInfo, RegistrationInfo};
 use agama_utils::{
     api::software::{AddonInfo, RegistrationInfo},
     arch::Arch,
@@ -116,26 +115,20 @@ impl Registration {
     /// but the list of extensions.
     pub fn to_registration_info(&self) -> RegistrationInfo {
         let addons: Vec<AddonInfo> = match self.base_product() {
-            Ok(product) => {
-                product
-                    .extensions
-                    .into_iter()
-                    .map(|e| {
-                        AddonInfo {
-                            id: e.identifier,
-                            version: e.version,
-                            label: e.friendly_name,
-                            available: e.available,
-                            free: e.free,
-                            recommended: e.recommended,
-                            description: e.description,
-                            release: e.release_stage,
-                            // FIXME: missing from suseconnect_agama
-                            r#type: "extension".to_string(),
-                        }
-                    })
-                    .collect()
-            }
+            Ok(product) => product
+                .extensions
+                .into_iter()
+                .map(|e| AddonInfo {
+                    id: e.identifier,
+                    version: e.version,
+                    label: e.friendly_name,
+                    available: e.available,
+                    free: e.free,
+                    recommended: e.recommended,
+                    description: e.description,
+                    release: e.release_stage,
+                })
+                .collect(),
             Err(error) => {
                 tracing::error!("Failed to get the product from the registration server: {error}");
                 vec![]
@@ -234,7 +227,7 @@ impl RegistrationBuilder {
     /// It announces the system, gets the credentials and registers the base product.
     ///
     /// * `zypp`: zypp instance.
-    pub fn build(self, zypp: &zypp_agama::Zypp) -> RegistrationResult<Registration> {
+    pub fn register(self, zypp: &zypp_agama::Zypp) -> RegistrationResult<Registration> {
         let params = suseconnect_agama::ConnectParams {
             token: self.code.clone(),
             email: self.email.clone(),

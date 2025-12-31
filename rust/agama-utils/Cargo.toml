@@ -15,7 +15,7 @@ strum = { version = "0.27.2", features = ["derive"] }
 thiserror = "2.0.16"
 tokio = { version = "1.47.1", features = ["macros", "rt-multi-thread", "process", "sync"] }
 tokio-stream = "0.1.17"
-utoipa = "5.3.1"
+utoipa = { version = "5.3.1", features = ["url"] }
 zbus = "5.7.1"
 zvariant = "5.5.2"
 gettext-rs = { version = "0.7.2", features = ["gettext-system"] }

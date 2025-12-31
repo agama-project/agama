@@ -96,8 +96,6 @@ pub struct AddonInfo {
     pub recommended: bool,
     /// Short description of the addon (translated)
     pub description: String,
-    /// Type of the addon, like "extension" or "module"
-    pub r#type: String,
     /// Release status of the addon, e.g. "beta"
     pub release: String,
 }
