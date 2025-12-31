@@ -26,10 +26,10 @@ import NestedContent from "~/components/core/NestedContent";
 import Details from "~/components/core/Details";
 import HostnameDetailsItem from "~/components/system/HostnameDetailsItem";
 import L10nDetailsItem from "~/components/l10n/L10nDetailsItem";
-import { _ } from "~/i18n";
 import StorageDetailsItem from "../storage/StorageDetailsItem";
 import NetworkDetailsItem from "../network/NetworkDetailsItem";
 import SoftwareDetailsItem from "../software/SoftwareDetailsItem";
+import { _ } from "~/i18n";
 
 export default function InstallationSummarySection() {
   return (
@@ -38,8 +38,8 @@ export default function InstallationSummarySection() {
         <Details isHorizontal isCompact>
           <HostnameDetailsItem />
           <L10nDetailsItem />
-          <StorageDetailsItem />
           <NetworkDetailsItem />
+          <StorageDetailsItem />
           <SoftwareDetailsItem />
         </Details>
       </NestedContent>
