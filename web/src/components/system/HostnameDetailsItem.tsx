@@ -22,37 +22,42 @@
 
 import React from "react";
 import { Flex } from "@patternfly/react-core";
+import { isEmpty } from "radashi";
+import { sprintf } from "sprintf-js";
 import Details from "~/components/core/Details";
 import Link from "~/components/core/Link";
 import { useProposal } from "~/hooks/model/proposal/hostname";
 import { HOSTNAME } from "~/routes/paths";
 import { _ } from "~/i18n";
 
-const Static = ({ hostname }) => {
-  return (
-    <Link to={HOSTNAME.root} variant="link" isInline>
-      {hostname}
-    </Link>
-  );
+const Summary = ({ value, isStatic, includeValue }) => {
+  if (includeValue) {
+    return isStatic ? sprintf(_("Static (%s)"), value) : sprintf(_("Transient (%s)"), value);
+  }
+
+  return isStatic ? _("Static") : _("Transient");
 };
 
-const Transient = ({ hostname }) => {
-  return (
-    <Flex direction={{ default: "column" }} gap={{ default: "gapSm" }}>
-      <Link to={HOSTNAME.root} variant="link" isInline>
-        {hostname}
-      </Link>
-      <small>{_("Automatically assigned, may change after reboot or network updates")}</small>
-    </Flex>
-  );
-};
-
-export default function HostnameDetailsItem() {
-  const { hostname: transient, static: staticHostname } = useProposal();
+export default function HostnameDetailsItem({ includeValue = false }) {
+  const { hostname: transientHostname, static: staticHostname } = useProposal();
+  const isStatic = !isEmpty(staticHostname);
 
   return (
     <Details.Item label={_("Hostname")}>
-      {staticHostname ? <Static hostname={staticHostname} /> : <Transient hostname={transient} />}
+      <Flex direction={{ default: "column" }} gap={{ default: "gapSm" }}>
+        <Link to={HOSTNAME.root} variant="link" isInline>
+          <Summary
+            value={isStatic ? staticHostname : transientHostname}
+            isStatic={isStatic}
+            includeValue={includeValue}
+          />
+        </Link>
+        <small>
+          {isStatic
+            ? _("Persistent name that stays the same after reboots or network changes")
+            : _("Temporary name that may change after reboot or network changes")}
+        </small>
+      </Flex>
     </Details.Item>
   );
 }
