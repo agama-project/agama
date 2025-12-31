@@ -23,40 +23,36 @@
 import React from "react";
 import { Flex } from "@patternfly/react-core";
 import { isEmpty } from "radashi";
-import { sprintf } from "sprintf-js";
 import Details from "~/components/core/Details";
 import Link from "~/components/core/Link";
 import { useProposal } from "~/hooks/model/proposal/hostname";
 import { HOSTNAME } from "~/routes/paths";
 import { _ } from "~/i18n";
 
-const Summary = ({ value, isStatic, includeValue }) => {
-  if (includeValue) {
-    return isStatic ? sprintf(_("Static (%s)"), value) : sprintf(_("Transient (%s)"), value);
-  }
-
-  return isStatic ? _("Static") : _("Transient");
-};
-
-export default function HostnameDetailsItem({ includeValue = false }) {
+/**
+ * Hostname settings summary
+ *
+ * If a transient hostname is in use, it shows a brief explanation to inform
+ * users that the hostname may change after reboot or network changes.
+ */
+export default function HostnameDetailsItem() {
   const { hostname: transientHostname, static: staticHostname } = useProposal();
-  const isStatic = !isEmpty(staticHostname);
 
   return (
     <Details.Item label={_("Hostname")}>
       <Flex direction={{ default: "column" }} gap={{ default: "gapSm" }}>
         <Link to={HOSTNAME.root} variant="link" isInline>
-          <Summary
-            value={isStatic ? staticHostname : transientHostname}
-            isStatic={isStatic}
-            includeValue={includeValue}
-          />
+          {staticHostname || transientHostname}
         </Link>
-        <small>
-          {isStatic
-            ? _("Persistent name that stays the same after reboots or network changes")
-            : _("Temporary name that may change after reboot or network changes")}
-        </small>
+        {isEmpty(staticHostname) && (
+          <small>
+            {
+              // TRANSLATORS: a note to briefly explain the possible side-effects
+              // of using a transient hostname
+              _("Temporary name that may change after reboot or network changes")
+            }
+          </small>
+        )}
       </Flex>
     </Details.Item>
   );
