@@ -1,6 +1,6 @@
 use std::{
     ffi::{CString, IntoStringError},
-    fmt::Display,
+    fmt::Display, os::raw::c_char,
 };
 
 use serde_json::{json, Value};
@@ -8,7 +8,7 @@ use serde_json::{json, Value};
 // Safety requirements: inherited from https://doc.rust-lang.org/std/ffi/struct.CStr.html#method.from_ptr
 // expects that rust gets control of string pointer
 // note: it is different than libzypp bindings where string is still owned by libzypp
-pub(crate) unsafe fn string_from_ptr(c_ptr: *mut i8) -> Result<String, IntoStringError> {
+pub(crate) unsafe fn string_from_ptr(c_ptr: *mut c_char) -> Result<String, IntoStringError> {
     let c_str = CString::from_raw(c_ptr);
     c_str.into_string()
 }
