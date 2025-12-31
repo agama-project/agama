@@ -265,7 +265,7 @@ impl Zypp {
                 .iter()
                 .map(|s| CString::new(*s).expect("CString must not contain internal NUL"))
                 .collect();
-            let c_ptr_names: Vec<*const i8> =
+            let c_ptr_names: Vec<*const c_char> =
                 c_names.iter().map(|c| c.as_c_str().as_ptr()).collect();
             let pattern_names = PatternNames {
                 size: names.len() as u32,
