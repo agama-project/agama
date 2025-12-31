@@ -168,12 +168,22 @@ impl<'a> SoftwareStateBuilder<'a> {
         let product = self.product.id.clone();
         let version = self.product.version.clone().unwrap_or("1".to_string());
 
+        let addons: Vec<_> = if let Some(addons_config) = &config.addons {
+            addons_config
+                .iter()
+                .map(|c| Addon::new(&c.id, c.version.clone(), c.registration_code.clone()))
+                .collect()
+        } else {
+            vec![]
+        };
+
         state.registration = Some(RegistrationState {
             product,
             version,
             code: code.to_string(),
             email: config.registration_email.clone(),
             url: config.registration_url.clone(),
+            addons,
         });
     }
 
@@ -458,6 +468,24 @@ pub struct RegistrationState {
     pub code: String,
     pub email: Option<String>,
     pub url: Option<String>,
+    pub addons: Vec<Addon>,
+}
+
+#[derive(Clone, Debug)]
+pub struct Addon {
+    pub id: String,
+    pub version: Option<String>,
+    pub code: Option<String>,
+}
+
+impl Addon {
+    pub fn new(id: &str, version: Option<String>, code: Option<String>) -> Self {
+        Addon {
+            id: id.to_string(),
+            version: version,
+            code: code,
+        }
+    }
 }
 
 #[cfg(test)]
@@ -466,8 +494,8 @@ mod tests {
 
     use agama_utils::{
         api::software::{
-            Config, PatternsConfig, PatternsMap, ProductConfig, Repository, RepositoryConfig,
-            SoftwareConfig, SystemInfo,
+            AddonConfig, Config, PatternsConfig, PatternsMap, ProductConfig, Repository,
+            RepositoryConfig, SoftwareConfig, SystemInfo,
         },
         products::ProductSpec,
     };
@@ -606,7 +634,11 @@ mod tests {
             registration_code: Some("123456".to_string()),
             registration_url: Some("https://scc.suse.com".to_string()),
             registration_email: Some("jane.doe@example.net".to_string()),
-            addons: None,
+            addons: Some(vec![AddonConfig {
+                id: "sle-ha".to_string(),
+                version: Some("16.1".to_string()),
+                registration_code: Some("ABCDEF".to_string()),
+            }]),
         }
         .into();
         let state = SoftwareStateBuilder::for_product(&product)
@@ -617,6 +649,11 @@ mod tests {
         assert_eq!(registration.code, "123456".to_string());
         assert_eq!(registration.url, Some("https://scc.suse.com".to_string()));
         assert_eq!(registration.email, Some("jane.doe@example.net".to_string()));
+
+        let addon = registration.addons.first().unwrap();
+        assert_eq!(&addon.id, "sle-ha");
+        assert_eq!(addon.version, Some("16.1".to_string()));
+        assert_eq!(addon.code, Some("ABCDEF".to_string()));
     }
 
     #[test]
