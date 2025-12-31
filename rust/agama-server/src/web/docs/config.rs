@@ -93,7 +93,7 @@ impl ApiDocBuilder for ConfigApiDocBuilder {
             .schema_from::<agama_lib::network::types::SSID>()
             .schema_from::<agama_lib::network::types::Status>()
             .schema_from::<agama_lib::network::types::LinkLocal>()
-            .schema_from::<agama_utils::api::software::AddonSettings>()
+            .schema_from::<agama_utils::api::software::AddonConfig>()
             .schema_from::<agama_utils::api::software::ProductConfig>()
             .schema_from::<agama_utils::api::files::BaseScript>()
             .schema_from::<agama_utils::api::files::InitScript>()
