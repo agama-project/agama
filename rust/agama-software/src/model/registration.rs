@@ -25,6 +25,10 @@
 //! corresponding services to `libzypp`.
 
 use agama_utils::api::software::{AddonInfo, RegistrationInfo};
+use agama_utils::{
+    api::software::{AddonInfo, RegistrationInfo},
+    arch::Arch,
+};
 use camino::Utf8PathBuf;
 use suseconnect_agama::{self, ConnectParams, Credentials};
 use url::Url;
@@ -159,9 +163,11 @@ impl Registration {
     }
 
     fn product_specification(id: &str, version: &str) -> suseconnect_agama::ProductSpecification {
+        // We do not expect this to happen.
+        let arch = Arch::current().expect("Failed to determine the architecture");
         suseconnect_agama::ProductSpecification {
             identifier: id.to_string(),
-            arch: std::env::consts::ARCH.to_string(),
+            arch: arch.to_string(),
             version: version.to_string(),
         }
     }
