@@ -1,6 +1,7 @@
 use std::{
     ffi::{CString, IntoStringError},
-    fmt::Display, os::raw::c_char,
+    fmt::Display,
+    os::raw::c_char,
 };
 
 use serde_json::{json, Value};
