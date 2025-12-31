@@ -24,6 +24,7 @@ type System = {
   addons: AddonInfo[];
   patterns: Pattern[];
   repositories: Repository[];
+  registration?: RegistrationInfo;
 };
 
 type Pattern = {
@@ -53,16 +54,24 @@ type Repository = {
   loaded: boolean;
 };
 
+type RegistrationInfo = {
+  code?: string;
+  email?: string;
+  // FIXME: it should be mandatory.
+  url?: string;
+  addons: AddonInfo[];
+};
+
 type AddonInfo = {
   id: string;
+  status: any;
   version: string;
   label: string;
   available: boolean;
   free: boolean;
   recommended: boolean;
   description: string;
-  type: string;
   release: string;
 };
 
-export type { System, Pattern, Repository };
+export type { System, Pattern, RegistrationInfo, Repository };

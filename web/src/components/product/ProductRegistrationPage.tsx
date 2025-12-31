@@ -53,12 +53,14 @@ import RegistrationExtension from "./RegistrationExtension";
 import RegistrationCodeInput from "./RegistrationCodeInput";
 import { RegistrationParams } from "~/types/software";
 import { HOSTNAME } from "~/routes/paths";
-import { useProduct, useRegistration, useRegisterMutation, useAddons } from "~/queries/software";
+import { useRegisterMutation } from "~/queries/software";
 import { isEmpty } from "radashi";
 import { mask } from "~/utils";
 import { sprintf } from "sprintf-js";
 import { _, N_ } from "~/i18n";
 import { useProposal } from "~/hooks/model/proposal";
+import { useSystem } from "~/hooks/model/system/software";
+import { useProduct } from "~/hooks/model/config";
 
 const FORM_ID = "productRegistration";
 const SERVER_LABEL = N_("Registration server");
@@ -68,8 +70,8 @@ const CUSTOM_SERVER_LABEL = N_("Custom");
 const EXAMPLE_URL = "https://example.com";
 
 const RegisteredProductSection = () => {
-  const { selectedProduct: product } = useProduct();
-  const registration = useRegistration();
+  const product = useProduct();
+  const { registration } = useSystem();
   const [showCode, setShowCode] = useState(false);
   const toggleCodeVisibility = () => setShowCode(!showCode);
 
@@ -87,12 +89,12 @@ const RegisteredProductSection = () => {
               <DescriptionListDescription>{registration.url}</DescriptionListDescription>
             </>
           )}
-          {!isEmpty(registration.key) && (
+          {!isEmpty(registration.code) && (
             <>
               <DescriptionListTerm>{_("Registration code")}</DescriptionListTerm>
               <DescriptionListDescription>
                 <Flex gap={{ default: "gapSm" }}>
-                  {showCode ? registration.key : mask(registration.key)}
+                  {showCode ? registration.code : mask(registration.code)}
                   <Button variant="link" isInline onClick={toggleCodeVisibility}>
                     {showCode ? _("Hide") : _("Show")}
                   </Button>
@@ -281,7 +283,7 @@ const RegistrationFormSection = () => {
   const [requestError, setRequestError] = useState<string | null>(null);
   const [errors, setErrors] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
-  const registration = useRegistration();
+  const { registration } = useSystem();
 
   useEffect(() => {
     if (registration) {
@@ -414,8 +416,9 @@ const HostnameAlert = () => {
 };
 
 const Extensions = () => {
-  const extensions = useAddons();
-  if (extensions.length === 0) return null;
+  const { registration } = useSystem();
+  const extensions = registration?.addons;
+  if (!extensions || extensions.length === 0) return null;
 
   const extensionComponents = extensions.map((ext) => (
     <RegistrationExtension
@@ -439,11 +442,11 @@ const Extensions = () => {
 };
 
 export default function ProductRegistrationPage() {
-  const { selectedProduct: product } = useProduct();
-  const { registered } = useRegistration();
+  const product = useProduct();
+  const { registration } = useSystem();
 
   // TODO: render something meaningful instead? "Product not registrable"?
-  if (!product.registration) return;
+  if (!product || !product.registration) return;
 
   return (
     <Page>
@@ -452,9 +455,9 @@ export default function ProductRegistrationPage() {
       </Page.Header>
 
       <Page.Content>
-        {!registered && <HostnameAlert />}
-        {!registered ? <RegistrationFormSection /> : <RegisteredProductSection />}
-        {registered && <Extensions />}
+        {!registration && <HostnameAlert />}
+        {!registration ? <RegistrationFormSection /> : <RegisteredProductSection />}
+        {registration && <Extensions />}
       </Page.Content>
     </Page>
   );
