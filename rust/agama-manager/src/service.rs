@@ -18,7 +18,7 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::{files, hardware, hostname, l10n, message, network, software, storage};
+use crate::{bootloader, files, hardware, hostname, l10n, message, network, software, storage};
 use agama_utils::{
     actor::{self, Actor, Handler, MessageHandler},
     api::{
@@ -38,7 +38,7 @@ use merge::Merge;
 use network::NetworkSystemClient;
 use serde_json::Value;
 use std::sync::Arc;
-use tokio::sync::{broadcast, RwLock};
+use tokio::{runtime::Handle, sync::{RwLock, broadcast}};
 
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
@@ -48,6 +48,8 @@ pub enum Error {
     Event(#[from] broadcast::error::SendError<Event>),
     #[error(transparent)]
     Actor(#[from] actor::Error),
+    #[error(transparent)]
+    Bootloader(#[from] bootloader::service::Error),
     #[error(transparent)]
     Hostname(#[from] hostname::service::Error),
     #[error(transparent)]
@@ -84,6 +86,7 @@ pub struct Starter {
     questions: Handler<question::Service>,
     events: event::Sender,
     dbus: zbus::Connection,
+    bootloader: Option<Handler<bootloader::Service>>,
     hostname: Option<Handler<hostname::Service>>,
     l10n: Option<Handler<l10n::Service>>,
     network: Option<NetworkSystemClient>,
@@ -105,6 +108,7 @@ impl Starter {
             events,
             dbus,
             questions,
+            bootloader: None,
             hostname: None,
             l10n: None,
             network: None,
@@ -117,6 +121,10 @@ impl Starter {
         }
     }
 
+    pub fn with_bootloader(mut self, bootloader: Handler<bootloader::Service>) -> Self {
+        self.bootloader = Some(bootloader);
+        self
+    }
     pub fn with_hostname(mut self, hostname: Handler<hostname::Service>) -> Self {
         self.hostname = Some(hostname);
         self
@@ -173,6 +181,14 @@ impl Starter {
             None => progress::Service::starter(self.events.clone()).start(),
         };
 
+        let bootloader = match self.bootloader {
+            Some(bootloader) => bootloader,
+            None => {
+                bootloader::Service::starter(self.dbus.clone(), issues.clone())
+                    .start()
+                    .await?
+            }
+        };
         let hostname = match self.hostname {
             Some(hostname) => hostname,
             None => {
@@ -241,6 +257,7 @@ impl Starter {
             questions: self.questions,
             progress,
             issues,
+            bootloader,
             hostname,
             l10n,
             network,
@@ -261,6 +278,7 @@ impl Starter {
 }
 
 pub struct Service {
+    bootloader: Handler<bootloader::Service>,
     hostname: Handler<hostname::Service>,
     l10n: Handler<l10n::Service>,
     software: Handler<software::Service>,
@@ -473,6 +491,7 @@ impl MessageHandler<message::GetExtendedConfig> for Service {
     ///
     /// It includes user and default values.
     async fn handle(&mut self, _message: message::GetExtendedConfig) -> Result<Config, Error> {
+        let bootloader = self.bootloader.call(bootloader::message::GetConfig).await?.to_option();
         let hostname = self.hostname.call(hostname::message::GetConfig).await?;
         let l10n = self.l10n.call(l10n::message::GetConfig).await?;
         let software = self.software.call(software::message::GetConfig).await?;
@@ -481,6 +500,7 @@ impl MessageHandler<message::GetExtendedConfig> for Service {
         let storage = self.storage.call(storage::message::GetConfig).await?;
 
         Ok(Config {
+            bootloader,
             hostname: Some(hostname),
             l10n: Some(l10n),
             questions,

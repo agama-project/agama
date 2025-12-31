@@ -31,6 +31,7 @@ pub use agama_l10n as l10n;
 pub use agama_network as network;
 pub use agama_software as software;
 pub use agama_storage as storage;
+pub use agama_bootloader as bootloader;
 
 pub mod test_utils;
 
