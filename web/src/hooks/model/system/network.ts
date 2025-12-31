@@ -33,9 +33,11 @@ import {
   DeviceState,
   WifiNetwork,
   ConnectionState,
+  IPAddress,
 } from "~/types/network";
 import { useInstallerClient } from "~/context/installer";
 import React, { useCallback } from "react";
+import { formatIp } from "~/utils/network";
 
 const selectSystem = (data: System | null): NetworkSystem =>
   data ? NetworkSystem.fromApi(data.network) : null;
@@ -116,6 +118,41 @@ const useWifiNetworks = () => {
 };
 
 /**
+ * Options to influence returned value by useIpAddresses
+ */
+type UseIpAddressesOptions = {
+  /**
+   * Whether format IPs as string or not. When true, returns IP addresses as
+   * formatted strings without prefix. If false or omitted, returns raw
+   * IPAddress objects.
+   */
+  formatted?: boolean;
+};
+
+/**
+ * Retrieves all IP addresses from devices associated with active connections.
+ *
+ * It filters devices to only include those linked to existing connections, then
+ * extracts and flattens all IP addresses from those devices.
+ */
+function useIpAddresses(options: { formatted: true }): string[];
+function useIpAddresses(options?: { formatted?: false }): IPAddress[];
+function useIpAddresses(options: UseIpAddressesOptions = {}): string[] | IPAddress[] {
+  const devices = useDevices();
+  const connections = useConnections();
+  const connectionsIds = connections.map((c) => c.id);
+  const filteredDevices = devices.filter((d) => connectionsIds.includes(d.connection));
+
+  if (options.formatted) {
+    return filteredDevices.flatMap((d) =>
+      d.addresses.map((a) => formatIp(a, { removePrefix: true })),
+    );
+  }
+
+  return filteredDevices.flatMap((d) => d.addresses);
+}
+
+/**
  * FIXME: ADAPT to the new config HTTP API
  * Hook that returns a useEffect to listen for NetworkChanged events
  *
@@ -192,4 +229,12 @@ const useNetworkChanges = () => {
   }, [client, queryClient, updateDevices, updateConnectionState]);
 };
 
-export { useConnections, useDevices, useNetworkChanges, useSystem, useWifiNetworks, useState };
+export {
+  useConnections,
+  useDevices,
+  useNetworkChanges,
+  useSystem,
+  useIpAddresses,
+  useWifiNetworks,
+  useState,
+};
