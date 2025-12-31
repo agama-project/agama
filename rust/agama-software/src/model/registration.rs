@@ -40,6 +40,8 @@ pub enum RegistrationError {
     Registration(#[from] suseconnect_agama::Error),
     #[error("Failed to add the service {0}: {1}")]
     AddService(String, #[source] zypp_agama::ZyppError),
+    #[error("Failed to refresh the service {0}: {1}")]
+    RefreshService(String, #[source] zypp_agama::ZyppError),
 }
 
 type RegistrationResult<T> = Result<T, RegistrationError>;
@@ -136,6 +138,8 @@ impl Registration {
         // Add the libzypp service
         zypp.add_service(&service.name, &service.url)
             .map_err(|e| RegistrationError::AddService(service.name.clone(), e))?;
+        zypp.refresh_service(&service.name)
+            .map_err(|e| RegistrationError::RefreshService(service.name.clone(), e))?;
         self.services.push(service);
         Ok(())
     }
