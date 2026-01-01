@@ -20,12 +20,6 @@
  * find current contact information at www.suse.com.
  */
 
-/**
- * @fixme This code was done in a hurry for including LVM managent in SLE16 beta3. It must be
- * completely refactored. There are a lot of duplications with PartitionPage. Both PartitionPage
- * and LogicalVolumePage should be adapted to share as much functionality as possible.
- */
-
 import React, { useCallback, useEffect, useId, useMemo, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
@@ -38,22 +32,17 @@ import {
   FormHelperText,
   HelperText,
   HelperTextItem,
-  SelectGroup,
-  SelectList,
-  SelectOption,
-  SelectOptionProps,
   Stack,
   StackItem,
   TextInput,
 } from "@patternfly/react-core";
 import { Page, SelectWrapper as Select, SubtleContent } from "~/components/core/";
-import { SelectWrapperProps as SelectProps } from "~/components/core/SelectWrapper";
 import SelectTypeaheadCreatable from "~/components/core/SelectTypeaheadCreatable";
 import AutoSizeText from "~/components/storage/AutoSizeText";
-import { deviceSize, filesystemLabel, parseToBytes } from "~/components/storage/utils";
+import SizeModeSelect, { SizeMode, SizeRange } from "~/components/storage/SizeModeSelect";
+import { deviceSize, parseToBytes } from "~/components/storage/utils";
 import { useApiModel, useSolvedApiModel } from "~/hooks/storage/api-model";
-import { useModel } from "~/hooks/storage/model";
-import { useMissingMountPaths, useVolume } from "~/hooks/storage/product";
+import { useVolume } from "~/hooks/storage/product";
 import { useVolumeGroup } from "~/hooks/storage/volume-group";
 import { useAddLogicalVolume, useEditLogicalVolume } from "~/hooks/storage/logical-volume";
 import { addLogicalVolume, editLogicalVolume } from "~/helpers/storage/logical-volume";
@@ -61,14 +50,25 @@ import { buildLogicalVolumeName } from "~/helpers/storage/api-model";
 import { apiModel } from "~/api/storage/types";
 import { data } from "~/types/storage";
 import { STORAGE as PATHS } from "~/routes/paths";
-import { unique } from "radashi";
 import { compact } from "~/utils";
 import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
-import SizeModeSelect, { SizeMode, SizeRange } from "~/components/storage/SizeModeSelect";
-
-const NO_VALUE = "";
-const BTRFS_SNAPSHOTS = "btrfsSnapshots";
+import {
+  NO_VALUE,
+  useMountPointError,
+  useUnusedMountPoints,
+  useErrorsHandler,
+  buildFilesystemConfig,
+  extractFilesystemValue,
+  mountPointSelectOptions,
+  useAutoRefreshFilesystem,
+  validateSize,
+} from "~/components/storage/shared/device-config-logic";
+import {
+  FilesystemLabel,
+  FilesystemSelect,
+  MountPointField,
+} from "~/components/storage/shared/device-config-components";
 
 type SizeOptionValue = "" | SizeMode;
 type FormValue = {
@@ -80,43 +80,9 @@ type FormValue = {
   minSize: string;
   maxSize: string;
 };
-type Error = {
-  id: string;
-  message?: string;
-  isVisible: boolean;
-};
-
-type ErrorsHandler = {
-  errors: Error[];
-  getError: (id: string) => Error | undefined;
-  getVisibleError: (id: string) => Error | undefined;
-};
 
 function toData(value: FormValue): data.LogicalVolume {
-  const filesystemType = (): apiModel.FilesystemType | undefined => {
-    if (value.filesystem === NO_VALUE) return undefined;
-    if (value.filesystem === BTRFS_SNAPSHOTS) return "btrfs";
-
-    /**
-     * @note This type cast is needed because the list of filesystems coming from a volume is not
-     *  enumerated (the volume simply contains a list of strings). This implies we have to rely on
-     *  whatever value coming from such a list as a filesystem type accepted by the config model.
-     *  This will be fixed in the future by directly exporting the volumes as a JSON, similar to the
-     *  config model. The schema for the volumes will define the explicit list of filesystem types.
-     */
-    return value.filesystem as apiModel.FilesystemType;
-  };
-
-  const filesystem = (): data.Filesystem | undefined => {
-    const type = filesystemType();
-    if (type === undefined) return undefined;
-
-    return {
-      type,
-      snapshots: value.filesystem === BTRFS_SNAPSHOTS,
-      label: value.filesystemLabel,
-    };
-  };
+  const filesystem = buildFilesystemConfig(value.filesystem, value.filesystemLabel);
 
   const size = (): apiModel.Size | undefined => {
     if (value.sizeOption === "auto") return undefined;
@@ -132,28 +98,19 @@ function toData(value: FormValue): data.LogicalVolume {
   return {
     mountPath: value.mountPoint,
     lvName: value.name,
-    filesystem: filesystem(),
+    filesystem: filesystem,
     size: size(),
   };
 }
 
 function toFormValue(logicalVolume: apiModel.LogicalVolume): FormValue {
-  const mountPoint = (): string => logicalVolume.mountPath || NO_VALUE;
-
-  const filesystem = (): string => {
-    const fs = logicalVolume.filesystem;
-    if (!fs.type) return NO_VALUE;
-    if (fs.type === "btrfs" && fs.snapshots) return BTRFS_SNAPSHOTS;
-
-    return fs.type;
-  };
-
-  const filesystemLabel = (): string => logicalVolume.filesystem?.label || NO_VALUE;
+  const mountPoint = logicalVolume.mountPath || NO_VALUE;
+  const filesystem = extractFilesystemValue(logicalVolume.filesystem);
+  const filesystemLabel = logicalVolume.filesystem?.label || NO_VALUE;
 
   const sizeOption = (): SizeOptionValue => {
     const size = logicalVolume.size;
     if (!size || size.default) return "auto";
-
     return "custom";
   };
 
@@ -161,19 +118,14 @@ function toFormValue(logicalVolume: apiModel.LogicalVolume): FormValue {
     value ? deviceSize(value, { exact: true }) : NO_VALUE;
 
   return {
-    mountPoint: mountPoint(),
+    mountPoint,
     name: logicalVolume.lvName,
-    filesystem: filesystem(),
-    filesystemLabel: filesystemLabel(),
+    filesystem,
+    filesystemLabel,
     sizeOption: sizeOption(),
     minSize: size(logicalVolume.size?.min),
     maxSize: size(logicalVolume.size?.max),
   };
-}
-
-function useDefaultFilesystem(mountPoint: string): string {
-  const volume = useVolume(mountPoint, { suspense: true });
-  return volume.mountPath === "/" && volume.snapshots ? BTRFS_SNAPSHOTS : volume.fsType;
 }
 
 function useInitialLogicalVolume(): apiModel.LogicalVolume | null {
@@ -188,81 +140,11 @@ function useInitialLogicalVolume(): apiModel.LogicalVolume | null {
 
 function useInitialFormValue(): FormValue | null {
   const logicalVolume = useInitialLogicalVolume();
-  const value = useMemo(() => (logicalVolume ? toFormValue(logicalVolume) : null), [logicalVolume]);
-  return value;
+  return useMemo(() => (logicalVolume ? toFormValue(logicalVolume) : null), [logicalVolume]);
 }
 
-/** Unused predefined mount points. Includes the currently used mount point when editing. */
-function useUnusedMountPoints(): string[] {
-  const missingMountPaths = useMissingMountPaths();
-  const initialLogicalVolume = useInitialLogicalVolume();
-  return compact([initialLogicalVolume?.mountPath, ...missingMountPaths]);
-}
-
-function useUsableFilesystems(mountPoint: string): string[] {
-  const volume = useVolume(mountPoint);
-  const defaultFilesystem = useDefaultFilesystem(mountPoint);
-
-  const usableFilesystems = useMemo(() => {
-    const volumeFilesystems = (): string[] => {
-      const allValues = volume.outline.fsTypes;
-
-      if (volume.mountPath !== "/") return allValues;
-
-      // Btrfs without snapshots is not an option.
-      if (!volume.outline.snapshotsConfigurable && volume.snapshots) {
-        return [BTRFS_SNAPSHOTS, ...allValues].filter((v) => v !== "btrfs");
-      }
-
-      // Btrfs with snapshots is not an option
-      if (!volume.outline.snapshotsConfigurable && !volume.snapshots) {
-        return allValues;
-      }
-
-      return [BTRFS_SNAPSHOTS, ...allValues];
-    };
-
-    return unique([defaultFilesystem, ...volumeFilesystems()]);
-  }, [volume, defaultFilesystem]);
-
-  return usableFilesystems;
-}
-
-function useMountPointError(value: FormValue): Error | undefined {
-  const model = useModel();
-  const mountPoints = model?.getMountPaths() || [];
-  const initialLogicalVolume = useInitialLogicalVolume();
-  const mountPoint = value.mountPoint;
-
-  if (mountPoint === NO_VALUE) {
-    return {
-      id: "mountPoint",
-      isVisible: false,
-    };
-  }
-
-  const regex = /^swap$|^\/$|^(\/[^/\s]+)+$/;
-  if (!regex.test(mountPoint)) {
-    return {
-      id: "mountPoint",
-      message: _("Select or enter a valid mount point"),
-      isVisible: true,
-    };
-  }
-
-  // Exclude itself when editing
-  const initialMountPoint = initialLogicalVolume?.mountPath;
-  if (mountPoint !== initialMountPoint && mountPoints.includes(mountPoint)) {
-    return {
-      id: "mountPoint",
-      message: _("Select or enter a mount point that is not already assigned to another device"),
-      isVisible: true,
-    };
-  }
-}
-
-function checkLogicalVolumeName(value: FormValue): Error | undefined {
-  if (value.name?.length) return;
+function checkLogicalVolumeName(name: string) {
+  if (name?.length) return;
 
   return {
     id: "logicalVolumeName",
@@ -271,70 +153,13 @@ function checkLogicalVolumeName(value: FormValue): Error | undefined {
   };
 }
 
-function checkSize(value: FormValue): Error | undefined {
-  if (value.sizeOption !== "custom") return;
-
-  const min = value.minSize;
-  const max = value.maxSize;
-
-  if (!min) {
-    return {
-      id: "customSize",
-      isVisible: false,
-    };
-  }
-
-  const regexp = /^[0-9]+(\.[0-9]+)?(\s*([KkMmGgTtPpEeZzYy][iI]?)?[Bb])?$/;
-  const validMin = regexp.test(min);
-  const validMax = max ? regexp.test(max) : true;
-
-  if (validMin && validMax) {
-    if (!max || parseToBytes(min) <= parseToBytes(max)) return;
-
-    return {
-      id: "customSize",
-      message: _("The minimum cannot be greater than the maximum"),
-      isVisible: true,
-    };
-  }
-
-  if (validMin) {
-    return {
-      id: "customSize",
-      message: _("The maximum must be a number optionally followed by a unit like GiB or GB"),
-      isVisible: true,
-    };
-  }
-
-  if (validMax) {
-    return {
-      id: "customSize",
-      message: _("The minimum must be a number optionally followed by a unit like GiB or GB"),
-      isVisible: true,
-    };
-  }
-
-  return {
-    id: "customSize",
-    message: _("Size limits must be numbers optionally followed by a unit like GiB or GB"),
-    isVisible: true,
-  };
-}
-
-function useErrors(value: FormValue): ErrorsHandler {
-  const mountPointError = useMountPointError(value);
-  const nameError = checkLogicalVolumeName(value);
-  const sizeError = checkSize(value);
+function useErrors(value: FormValue) {
+  const initialLogicalVolume = useInitialLogicalVolume();
+  const mountPointError = useMountPointError(value.mountPoint, initialLogicalVolume?.mountPath);
+  const nameError = checkLogicalVolumeName(value.name);
+  const sizeError = validateSize(value.sizeOption, value.minSize, value.maxSize);
   const errors = compact([mountPointError, nameError, sizeError]);
-
-  const getError = (id: string): Error | undefined => errors.find((e) => e.id === id);
-
-  const getVisibleError = (id: string): Error | undefined => {
-    const error = getError(id);
-    return error?.isVisible ? error : undefined;
-  };
-
-  return { errors, getError, getVisibleError };
+  return useErrorsHandler(errors);
 }
 
 function useSolvedModel(value: FormValue): apiModel.Config | null {
@@ -343,6 +168,7 @@ function useSolvedModel(value: FormValue): apiModel.Config | null {
   const { getError } = useErrors(value);
   const mountPointError = getError("mountPoint");
   const data = toData(value);
+  
   // Avoid recalculating the solved model because changes in label.
   if (data.filesystem) data.filesystem.label = undefined;
   // Avoid recalculating the solved model because changes in name.
@@ -358,8 +184,7 @@ function useSolvedModel(value: FormValue): apiModel.Config | null {
     }
   }
 
-  const solvedModel = useSolvedApiModel(sparseModel);
-  return solvedModel;
+  return useSolvedApiModel(sparseModel);
 }
 
 function useSolvedLogicalVolume(value: FormValue): apiModel.LogicalVolume | undefined {
@@ -370,7 +195,6 @@ function useSolvedLogicalVolume(value: FormValue): apiModel.LogicalVolume | unde
 }
 
 function useSolvedSizes(value: FormValue): SizeRange {
-  // Remove size values in order to get a solved size.
   const valueWithoutSizes: FormValue = {
     ...value,
     sizeOption: NO_VALUE,
@@ -380,7 +204,7 @@ function useSolvedSizes(value: FormValue): SizeRange {
 
   const logicalVolume = useSolvedLogicalVolume(valueWithoutSizes);
 
-  const solvedSizes = useMemo(() => {
+  return useMemo(() => {
     const min = logicalVolume?.size?.min;
     const max = logicalVolume?.size?.max;
 
@@ -389,20 +213,6 @@ function useSolvedSizes(value: FormValue): SizeRange {
       max: max ? deviceSize(max) : NO_VALUE,
     };
   }, [logicalVolume]);
-
-  return solvedSizes;
-}
-
-function useAutoRefreshFilesystem(handler, value: FormValue) {
-  const { mountPoint } = value;
-  const defaultFilesystem = useDefaultFilesystem(mountPoint);
-
-  useEffect(() => {
-    // Reset filesystem if there is no mount point yet.
-    if (mountPoint === NO_VALUE) handler(NO_VALUE);
-    // Select default filesystem for the mount point.
-    if (mountPoint !== NO_VALUE) handler(defaultFilesystem);
-  }, [handler, mountPoint, defaultFilesystem]);
 }
 
 function useAutoRefreshSize(handler, value: FormValue) {
@@ -411,10 +221,6 @@ function useAutoRefreshSize(handler, value: FormValue) {
   useEffect(() => {
     handler("auto", solvedSizes.min, solvedSizes.max);
   }, [handler, solvedSizes]);
-}
-
-function mountPointSelectOptions(mountPoints: string[]): SelectOptionProps[] {
-  return mountPoints.map((p) => ({ value: p, children: p }));
 }
 
 type LogicalVolumeNameProps = {
@@ -446,113 +252,13 @@ function LogicalVolumeName({
       {error && !isDisabled && (
         <FormHelperText>
           <HelperText>
-            {error && (
-              <HelperTextItem variant="error" screenReaderText="">
-                {error.message}
-              </HelperTextItem>
-            )}
+            <HelperTextItem variant="error" screenReaderText="">
+              {error.message}
+            </HelperTextItem>
           </HelperText>
         </FormHelperText>
       )}
     </FormGroup>
-  );
-}
-
-type FilesystemOptionLabelProps = {
-  value: string;
-};
-
-function FilesystemOptionLabel({ value }: FilesystemOptionLabelProps): React.ReactNode {
-  if (value === NO_VALUE) return _("Waiting for a mount point");
-  if (value === BTRFS_SNAPSHOTS) return _("Btrfs with snapshots");
-
-  return filesystemLabel(value);
-}
-
-type FilesystemOptionsProps = {
-  mountPoint: string;
-};
-
-function FilesystemOptions({ mountPoint }: FilesystemOptionsProps): React.ReactNode {
-  const defaultFilesystem = useDefaultFilesystem(mountPoint);
-  const usableFilesystems = useUsableFilesystems(mountPoint);
-  const volume = useVolume(mountPoint);
-
-  const defaultOptText =
-    mountPoint !== NO_VALUE && volume.mountPath
-      ? sprintf(_("Default file system for %s"), mountPoint)
-      : _("Default file system for generic logical volumes");
-
-  const formatText = _("Format logical volume as");
-
-  return (
-    <SelectList aria-label="Available file systems">
-      {mountPoint === NO_VALUE && (
-        <SelectOption value={NO_VALUE}>
-          <FilesystemOptionLabel value={NO_VALUE} />
-        </SelectOption>
-      )}
-      {mountPoint !== NO_VALUE && (
-        <SelectGroup label={formatText}>
-          {usableFilesystems.map((fsType, index) => (
-            <SelectOption
-              key={index}
-              value={fsType}
-              description={fsType === defaultFilesystem && defaultOptText}
-            >
-              <FilesystemOptionLabel value={fsType} />
-            </SelectOption>
-          ))}
-        </SelectGroup>
-      )}
-    </SelectList>
-  );
-}
-
-type FilesystemSelectProps = {
-  id?: string;
-  value: string;
-  mountPoint: string;
-  onChange: SelectProps["onChange"];
-};
-
-function FilesystemSelect({
-  id,
-  value,
-  mountPoint,
-  onChange,
-}: FilesystemSelectProps): React.ReactNode {
-  const usedValue = mountPoint === NO_VALUE ? NO_VALUE : value;
-
-  return (
-    <Select
-      id={id}
-      value={usedValue}
-      label={<FilesystemOptionLabel value={usedValue} />}
-      onChange={onChange}
-      isDisabled={mountPoint === NO_VALUE}
-    >
-      <FilesystemOptions mountPoint={mountPoint} />
-    </Select>
-  );
-}
-
-type FilesystemLabelProps = {
-  id?: string;
-  value: string;
-  onChange: (v: string) => void;
-};
-
-function FilesystemLabel({ id, value, onChange }: FilesystemLabelProps): React.ReactNode {
-  const isValid = (v: string) => /^[\w-_.]*$/.test(v);
-
-  return (
-    <TextInput
-      id={id}
-      aria-label={_("File system label")}
-      value={value}
-      onChange={(_, v) => isValid(v) && onChange(v)}
-    />
   );
 }
 
@@ -578,8 +284,9 @@ export default function LogicalVolumePage() {
   const navigate = useNavigate();
   const headingId = useId();
   const { id: vgName } = useParams();
-  const addLogicalVolume = useAddLogicalVolume();
-  const editLogicalVolume = useEditLogicalVolume();
+  const addLogicalVolumeAction = useAddLogicalVolume();
+  const editLogicalVolumeAction = useEditLogicalVolume();
+  
   const [mountPoint, setMountPoint] = useState(NO_VALUE);
   const [name, setName] = useState(NO_VALUE);
   const [filesystem, setFilesystem] = useState(NO_VALUE);
@@ -587,18 +294,17 @@ export default function LogicalVolumePage() {
   const [sizeOption, setSizeOption] = useState<SizeOptionValue>(NO_VALUE);
   const [minSize, setMinSize] = useState(NO_VALUE);
   const [maxSize, setMaxSize] = useState(NO_VALUE);
-  // Filesystem and size selectors should not be auto refreshed before the user interacts with the
-  // mount point selector.
   const [autoRefreshFilesystem, setAutoRefreshFilesystem] = useState(false);
   const [autoRefreshSize, setAutoRefreshSize] = useState(false);
 
   const initialValue = useInitialFormValue();
+  const initialLogicalVolume = useInitialLogicalVolume();
   const value = { mountPoint, name, filesystem, filesystemLabel, sizeOption, minSize, maxSize };
   const { errors, getVisibleError } = useErrors(value);
-  const unusedMountPoints = useUnusedMountPoints();
+  const unusedMountPoints = useUnusedMountPoints(initialLogicalVolume?.mountPath);
 
-  // Initializes the form values if there is an initial value (i.e., when editing a logical volume).
-  React.useEffect(() => {
+  // Initialize form values
+  useEffect(() => {
     if (initialValue) {
       setMountPoint(initialValue.mountPoint);
       setName(initialValue.name);
@@ -608,22 +314,14 @@ export default function LogicalVolumePage() {
       setMinSize(initialValue.minSize);
       setMaxSize(initialValue.maxSize);
     }
-  }, [
-    initialValue,
-    setMountPoint,
-    setFilesystem,
-    setFilesystemLabel,
-    setSizeOption,
-    setMinSize,
-    setMaxSize,
-  ]);
+  }, [initialValue]);
 
   const refreshFilesystemHandler = useCallback(
     (filesystem: string) => autoRefreshFilesystem && setFilesystem(filesystem),
-    [autoRefreshFilesystem, setFilesystem],
+    [autoRefreshFilesystem],
   );
 
-  useAutoRefreshFilesystem(refreshFilesystemHandler, value);
+  useAutoRefreshFilesystem(refreshFilesystemHandler, mountPoint, autoRefreshFilesystem);
 
   const refreshSizeHandler = useCallback(
     (sizeOption: SizeOptionValue, minSize: string, maxSize: string) => {
@@ -633,7 +331,7 @@ export default function LogicalVolumePage() {
         setMaxSize(maxSize);
       }
     },
-    [autoRefreshSize, setSizeOption, setMinSize, setMaxSize],
+    [autoRefreshSize],
   );
 
   useAutoRefreshSize(refreshSizeHandler, value);
@@ -656,8 +354,7 @@ export default function LogicalVolumePage() {
   const changeSizeMode = (mode: SizeMode, size: SizeRange) => {
     setSizeOption(mode);
     setMinSize(size.min);
-    if (mode === "custom" && initialValue.sizeOption === "auto" && size.min !== size.max) {
-      // Automatically stop using a range of sizes when a range is used by default.
+    if (mode === "custom" && initialValue?.sizeOption === "auto" && size.min !== size.max) {
       setMaxSize("");
     } else {
       setMaxSize(size.max);
@@ -667,8 +364,11 @@ export default function LogicalVolumePage() {
   const onSubmit = () => {
     const data = toData(value);
 
-    if (initialValue) editLogicalVolume(vgName, initialValue.mountPoint, data);
-    else addLogicalVolume(vgName, data);
+    if (initialValue) {
+      editLogicalVolumeAction(vgName, initialValue.mountPoint, data);
+    } else {
+      addLogicalVolumeAction(vgName, data);
+    }
 
     navigate(PATHS.root);
   };
@@ -694,38 +394,22 @@ export default function LogicalVolumePage() {
             <StackItem>
               <Flex>
                 <FlexItem>
-                  <FormGroup fieldId="mountPoint" label={_("Mount point")}>
-                    <SelectTypeaheadCreatable
-                      id="mountPoint"
-                      toggleName={_("Mount point toggle")}
-                      listName={_("Suggested mount points")}
-                      inputName={_("Mount point")}
-                      clearButtonName={_("Clear selected mount point")}
-                      value={mountPoint}
-                      options={mountPointSelectOptions(unusedMountPoints)}
-                      createText={_("Use")}
-                      onChange={changeMountPoint}
-                    />
-                    <FormHelperText>
-                      <HelperText>
-                        <HelperTextItem
-                          variant={mountPointError ? "error" : "default"}
-                          screenReaderText=""
-                        >
-                          {!mountPointError && _("Select or enter a mount point")}
-                          {mountPointError?.message}
-                        </HelperTextItem>
-                      </HelperText>
-                    </FormHelperText>
-                  </FormGroup>
+                  <MountPointField
+                    value={mountPoint}
+                    options={mountPointSelectOptions(unusedMountPoints)}
+                    error={mountPointError}
+                    onChange={changeMountPoint}
+                    SelectComponent={SelectTypeaheadCreatable}
+                  />
                 </FlexItem>
               </Flex>
             </StackItem>
+
             <StackItem>
               <Flex>
                 <FlexItem>
                   <LogicalVolumeName
-                    id={"name"}
+                    id="name"
                     value={value}
                     mountPoint={usedMountPt}
                     onChange={setName}
@@ -733,6 +417,7 @@ export default function LogicalVolumePage() {
                 </FlexItem>
               </Flex>
             </StackItem>
+
             <StackItem>
               <FormGroup>
                 <Flex>
@@ -742,6 +427,7 @@ export default function LogicalVolumePage() {
                         id="fileSystem"
                         value={filesystem}
                         mountPoint={usedMountPt}
+                        formatText={_("Format logical volume as")}
                         onChange={changeFilesystem}
                       />
                     </FormGroup>
@@ -760,6 +446,7 @@ export default function LogicalVolumePage() {
                 </Flex>
               </FormGroup>
             </StackItem>
+
             <StackItem>
               <FormGroup fieldId="sizeMode" label={_("Size mode")}>
                 {usedMountPt === NO_VALUE && (
@@ -781,6 +468,7 @@ export default function LogicalVolumePage() {
                 )}
               </FormGroup>
             </StackItem>
+
             <ActionGroup>
               <Page.Submit isDisabled={!isFormValid} form="logicalVolumeForm" />
               <Page.Cancel />
