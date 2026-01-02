@@ -11,7 +11,7 @@ After=network.target
 # and before the self-update
 Before=dracut-pre-pivot.service live-self-update.service
 
-ConditionKernelCommandLine=live.net_config=1
+ConditionKernelCommandLine=live.net_config_tui=1
 
 [Service]
 Type=oneshot
