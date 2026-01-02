@@ -84,6 +84,13 @@ describe("formatIp", () => {
     expect(formatIp({ address: "1.2.3.4", prefix: 24 })).toEqual("1.2.3.4/24");
     expect(formatIp({ address: "1.2.3.4", prefix: "255.255.255.0" })).toEqual("1.2.3.4/24");
   });
+
+  it("returns the given IPv4 address in the X.X.X.X format when removePrefix option is true", () => {
+    expect(formatIp({ address: "1.2.3.4", prefix: 24 }, { removePrefix: true })).toEqual("1.2.3.4");
+    expect(
+      formatIp({ address: "1.2.3.4", prefix: "255.255.255.0" }, { removePrefix: true }),
+    ).toEqual("1.2.3.4");
+  });
 });
 
 describe("securityFromFlags", () => {

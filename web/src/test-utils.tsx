@@ -32,7 +32,7 @@ import React from "react";
 import { MemoryRouter, useParams } from "react-router";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import userEvent from "@testing-library/user-event";
-import { render, within } from "@testing-library/react";
+import { render, renderHook, within } from "@testing-library/react";
 import { createClient } from "~/client/index";
 import { InstallerClientProvider } from "~/context/installer";
 import { InstallerL10nProvider } from "~/context/installerL10n";
@@ -212,6 +212,20 @@ const installerRender = (ui: React.ReactNode, options: { withL10n?: boolean } = 
 };
 
 /**
+ * Wrapper around react-testing-library#renderHook for testing custom Tanstack Query based hooks
+ */
+const installerRenderHook: typeof renderHook = (hook, options) => {
+  const queryClient = new QueryClient({});
+
+  return renderHook(hook, {
+    ...options,
+    wrapper: ({ children }) => (
+      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    ),
+  });
+};
+
+/**
  * Wrapper around react-testing-library#render for rendering components without
  * installer providers.
  *
@@ -297,6 +311,7 @@ const getColumnValues = (table: HTMLElement | HTMLTableElement, columnName: stri
 export {
   plainRender,
   installerRender,
+  installerRenderHook,
   createCallbackMock,
   mockNavigateFn,
   mockParams,
