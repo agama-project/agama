@@ -18,8 +18,9 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::config::Config;
 use crate::message;
+use crate::model::ModelAdapter;
+use crate::{config::Config, Model};
 use agama_utils::{
     actor::{self, Actor, Handler, MessageHandler},
     api::{
@@ -40,27 +41,40 @@ pub enum Error {
 
 /// Builds and spawns the users service.
 pub struct Starter {
+    model: Option<Box<dyn ModelAdapter + Send + 'static>>,
     issues: Handler<issue::Service>,
     events: event::Sender,
 }
 
 impl Starter {
     pub fn new(events: event::Sender, issues: Handler<issue::Service>) -> Self {
-        Self { events, issues }
+        Self {
+            model: None,
+            events,
+            issues,
+        }
+    }
+
+    /// Uses the given model.
+    ///
+    /// * `model`: model to use. It must implement the [ModelAdapter] trait.
+    pub fn with_model<T: ModelAdapter + Send + 'static>(mut self, model: T) -> Self {
+        self.model = Some(Box::new(model));
+        self
     }
 
     /// Starts the service and returns a handler to communicate with it.
     pub async fn start(self) -> Result<Handler<Service>, Error> {
-        let system = SystemInfo {
-            users: [UserInfo {
-                name: String::from("root"),
-            }]
-            .to_vec(),
+        let model = match self.model {
+            Some(model) => model,
+            None => Box::new(Model::from_system()?),
         };
+        let system = model.read_system_info();
         let service = Service {
             // just mockup of non-existent system model
             system: system.clone(),
             full_config: Config::new_from(&system),
+            model: model,
             issues: self.issues,
             events: self.events,
         };
@@ -76,6 +90,8 @@ pub struct Service {
     system: SystemInfo,
     // complete users config
     full_config: Config,
+    // service's backend which gets data from real world
+    model: Box<dyn ModelAdapter + Send + 'static>,
     // infrastructure stuff
     issues: Handler<issue::Service>,
     events: event::Sender,

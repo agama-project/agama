@@ -19,11 +19,22 @@
 // find current contact information at www.suse.com.
 
 use crate::api::users::user_info::UserInfo;
+use itertools::Itertools;
+use merge::Merge;
 use serde::{Deserialize, Serialize};
 
-/// Localization config.
-#[derive(Clone, Debug, Default, Serialize, Deserialize, PartialEq, utoipa::ToSchema)]
+/// Users config.
+#[derive(Clone, Debug, Default, Serialize, Deserialize, PartialEq, Merge, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct Config {
+    #[merge(strategy = merge_vec)]
     pub users: Vec<UserInfo>,
+}
+
+pub fn merge_vec(left: &mut Vec<UserInfo>, right: Vec<UserInfo>) {
+    // there is always at least one user defined in the system
+    let merged = [left.clone(), right].concat();
+
+    // deduplicate, we don't need e.g. two root users
+    *left = merged.into_iter().unique().collect();
 }
