@@ -41,3 +41,4 @@ pub use service::{Service, Starter};
 mod dbus;
 pub mod message;
 pub mod client;
+pub mod test_utils;
