@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2025] SUSE LLC
+ * Copyright (c) [2025-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -80,7 +80,7 @@ export default function FormattedIPsList() {
       // wrapped in square brackets [] is displayed as a link. Keep the brackets
       // to ensure the link works correctly.
       text = _("%1$s and [%2$d more]");
-      params = [firstIPv4 || firstIPv6!, rest.length];
+      params = [firstIPv4 || firstIPv6, rest.length];
     }
 
     const [textStart, link, textEnd] = sprintf(text, ...params).split(/[[\]]/);
