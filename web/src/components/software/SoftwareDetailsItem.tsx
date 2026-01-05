@@ -22,45 +22,38 @@
 
 import React from "react";
 import xbytes from "xbytes";
-import { shake } from "radashi";
+import { sprintf } from "sprintf-js";
 import { Flex, Skeleton } from "@patternfly/react-core";
+
+import { useProposal } from "~/hooks/model/proposal/software";
+import { useProgressTracking } from "~/hooks/use-progress-tracking";
+import { useSelectedPatterns } from "~/hooks/model/system/software";
+import { SOFTWARE } from "~/routes/paths";
+import { _, n_ } from "~/i18n";
 import Details from "~/components/core/Details";
 import Link from "~/components/core/Link";
-import { useSystem } from "~/hooks/model/system/software";
-import { useProposal } from "~/hooks/model/proposal/software";
-import { SelectedBy } from "~/model/proposal/software";
-import { SOFTWARE } from "~/routes/paths";
-import { sprintf } from "sprintf-js";
-import { _, n_ } from "~/i18n";
-import { useProgressTracking } from "~/hooks/use-progress-tracking";
 
-// TODO: put in a more generic, reusable place
-const useSelectedPatterns = () => {
-  const proposal = useProposal();
-  const { patterns } = useSystem();
-
-  const selectedPatternsKeys = Object.keys(
-    shake(proposal.patterns, (value) => value === SelectedBy.NONE),
-  );
-
-  return patterns.filter((p) => selectedPatternsKeys.includes(p.name));
-};
-
+/**
+ * Renders a summary text describing the software selection.
+ */
 const Summary = () => {
   const patterns = useSelectedPatterns();
   const patternsQty = patterns.length;
 
   if (patternsQty === 0) {
-    return _("Base system");
+    return _("Required packages");
   }
 
   return sprintf(
     // TRANSLATORS: %s will be replaced with amount of selected patterns.
-    n_("Base system and %s pattern", "Base system and %s patterns", patternsQty),
+    n_("Required packages and %s pattern", "Required packages and %s patterns", patternsQty),
     patternsQty,
   );
 };
 
+/**
+ * Renders the estimated disk space required for the installation.
+ */
 const Description = () => {
   const proposal = useProposal();
 
@@ -69,19 +62,21 @@ const Description = () => {
   return sprintf(
     // TRANSLATORS: %s will be replaced with a human-readable installation size
     // (e.g. 5.95 GiB).
-    _("Estimated installation size: %s"),
+    _("Needs about %s"),
     xbytes(proposal.usedSpace * 1024, { iec: true }),
   );
 };
 
+/**
+ * A software installation summary.
+ */
 export default function SoftwareDetailsItem() {
   const { loading } = useProgressTracking("software");
-
   return (
     <Details.Item label={_("Software")}>
       <Flex direction={{ default: "column" }} gap={{ default: "gapSm" }}>
         {loading ? (
-          <Skeleton width="50%" />
+          <Skeleton aria-label={_("Waiting for proposal")} width="50%" />
         ) : (
           <Link to={SOFTWARE.root} variant="link" isInline>
             <Summary />
