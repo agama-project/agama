@@ -23,10 +23,10 @@ import React from "react";
 import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import { useSelectedPatterns } from "~/hooks/model/system/software";
-import SoftwareDetailsItem from "./SoftwareDetailsItem";
 import { useProgressTracking } from "~/hooks/use-progress-tracking";
 import { useProposal } from "~/hooks/model/proposal/software";
 import { SelectedBy } from "~/model/proposal/software";
+import SoftwareDetailsItem from "./SoftwareDetailsItem";
 
 let mockUseProgressTrackingFn: jest.Mock<ReturnType<typeof useProgressTracking>> = jest.fn();
 let mockUseProposalFn: jest.Mock<ReturnType<typeof useProposal>> = jest.fn();
@@ -129,8 +129,8 @@ describe("SoftwareDetailsItem", () => {
       const { rerender } = installerRender(<SoftwareDetailsItem />);
 
       // Singular
-      expect(screen.getByText("Required packages and 1 pattern")).toBeInTheDocument();
-      expect(screen.getByText(/Needs about 5\.95 GiB/i)).toBeInTheDocument();
+      screen.getByText("Required packages and 1 pattern");
+      screen.getByText(/Needs about 5\.95 GiB/);
 
       mockUseSelectedPatternsFn.mockReturnValue([
         {
@@ -155,8 +155,8 @@ describe("SoftwareDetailsItem", () => {
       rerender(<SoftwareDetailsItem />);
 
       // Plural
-      expect(screen.getByText("Required packages and 2 patterns")).toBeInTheDocument();
-      expect(screen.getByText(/Needs about 5\.95 GiB/i)).toBeInTheDocument();
+      screen.getByText("Required packages and 2 patterns");
+      screen.getByText(/Needs about 5\.95 GiB/);
     });
   });
 });
