@@ -34,7 +34,7 @@ pub enum Error {
 /// Builds and spawns the bootloader service.
 ///
 /// This struct allows to build a bootloader service. It allows replacing
-/// the "model" for a custom one.
+/// the client for a custom one.
 pub struct Starter {
     connection: zbus::Connection,
     client: Option<Box<dyn client::BootloaderClient + Send + 'static>>,
@@ -44,6 +44,7 @@ pub struct Starter {
 impl Starter {
     /// Creates a new starter.
     ///
+    /// * `connection`: connection to the D-Bus.
     /// * `issues`: handler to the issues service.
     pub fn new(connection: zbus::Connection, issues: Handler<issue::Service>) -> Self {
         Self {
@@ -53,17 +54,19 @@ impl Starter {
         }
     }
 
+    /// Sets a custom client.
+    pub fn with_client(mut self, client: impl client::BootloaderClient + Send + 'static) -> Self {
+        self.client = Some(Box::new(client));
+        self
+    }
+
     /// Starts the service and returns a handler to communicate with it.
-    ///
-    /// The service uses a separate monitor to listen to system configuration
-    /// changes.
     pub async fn start(self) -> Result<Handler<Service>, Error> {
         let client = match self.client {
             Some(client) => client,
             None => Box::new(Client::new(self.connection.clone()).await?),
         };
         let service = Service {
-            config: Config::default(),
             client: client,
             issues: self.issues,
         };
@@ -72,16 +75,10 @@ impl Starter {
     }
 }
 
-/// Localization service.
+/// Bootloader service.
 ///
-/// It is responsible for handling the localization part of the installation:
-///
-/// * Reads the list of known locales, keymaps and timezones.
-/// * Keeps track of the localization settings of the underlying system (the installer).
-/// * Holds the user configuration.
-/// * Applies the user configuration at the end of the installation.
+/// It is responsible for handling the bootloader configuration.
 pub struct Service {
-    config: Config,
     client: Box<dyn client::BootloaderClient + Send + 'static>,
     issues: Handler<issue::Service>,
 }
@@ -92,8 +89,6 @@ impl Service {
     }
 
     /// Returns configuration issues.
-    ///
-    /// It returns an issue for each unknown element (locale, keymap and timezone).
     fn find_issues(&self) -> Vec<Issue> {
         // TODO: get issues from bootloader proposal
         vec![]

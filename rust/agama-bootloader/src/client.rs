@@ -26,17 +26,26 @@ use zbus::Connection;
 
 use crate::dbus::BootloaderProxy;
 
+/// Errors that can occur when using the Bootloader client.
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
+    /// Error originating from the D-Bus communication.
     #[error("D-Bus service error: {0}")]
     DBus(#[from] zbus::Error),
+    /// Error parsing or generating JSON data.
     #[error("Passed json data is not correct: {0}")]
     InvalidJson(#[from] serde_json::Error),
 }
 
+/// Trait defining the interface for the Bootloader client.
+///
+/// This trait abstracts the operations available for managing the bootloader configuration
+/// via the Agama D-Bus API. For testing purpose it can be replaced by mock object.
 #[async_trait]
 pub trait BootloaderClient {
+    /// Retrieves the current bootloader configuration.
     async fn get_config(&self) -> ClientResult<Config>;
+    /// Sets the bootloader configuration.
     async fn set_config(&self, config: &Config) -> ClientResult<()>;    
 }
 
@@ -66,7 +75,7 @@ impl<'a> BootloaderClient for Client<'a> {
 
     async fn set_config(&self, config: &Config) -> ClientResult<()> {
         // ignore return value as currently it does not fail and who knows what future brings
-        // but it should not be part of result and instead transformed to ServiceError
+        // but it should not be part of result and instead transformed to Issue
         self.bootloader_proxy
             .set_config(serde_json::to_string(config)?.as_str())
             .await?;
