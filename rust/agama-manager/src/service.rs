@@ -38,7 +38,10 @@ use merge::Merge;
 use network::NetworkSystemClient;
 use serde_json::Value;
 use std::sync::Arc;
-use tokio::{runtime::Handle, sync::{RwLock, broadcast}};
+use tokio::{
+    runtime::Handle,
+    sync::{broadcast, RwLock},
+};
 
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
@@ -374,6 +377,13 @@ impl Service {
             ))
             .await?;
 
+        // call bootloader always after storage to ensure that bootloader reflect new storage settings
+        self.bootloader
+            .call(bootloader::message::SetConfig::new(
+                config.bootloader.clone(),
+            ))
+            .await?;
+
         if let Some(network) = config.network.clone() {
             self.network.update_config(network).await?;
             self.network.apply().await?;
@@ -491,7 +501,11 @@ impl MessageHandler<message::GetExtendedConfig> for Service {
     ///
     /// It includes user and default values.
     async fn handle(&mut self, _message: message::GetExtendedConfig) -> Result<Config, Error> {
-        let bootloader = self.bootloader.call(bootloader::message::GetConfig).await?.to_option();
+        let bootloader = self
+            .bootloader
+            .call(bootloader::message::GetConfig)
+            .await?
+            .to_option();
         let hostname = self.hostname.call(hostname::message::GetConfig).await?;
         let l10n = self.l10n.call(l10n::message::GetConfig).await?;
         let software = self.software.call(software::message::GetConfig).await?;

@@ -18,10 +18,17 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use agama_utils::{actor::{self, Actor, Handler, MessageHandler}, api::{Issue, bootloader::Config}, issue};
+use agama_utils::{
+    actor::{self, Actor, Handler, MessageHandler},
+    api::{bootloader::Config, Issue},
+    issue,
+};
 use async_trait::async_trait;
 
-use crate::{client::{self, Client}, message};
+use crate::{
+    client::{self, Client},
+    message,
+};
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
@@ -108,11 +115,10 @@ impl MessageHandler<message::GetConfig> for Service {
 
 #[async_trait]
 impl MessageHandler<message::SetConfig<Config>> for Service {
-    async fn handle(
-        &mut self,
-        message: message::SetConfig<Config>,
-    ) -> Result<(), Error> {
-        self.client.set_config(&message.config.unwrap_or_default()).await?;
+    async fn handle(&mut self, message: message::SetConfig<Config>) -> Result<(), Error> {
+        self.client
+            .set_config(&message.config.unwrap_or_default())
+            .await?;
         Ok(())
     }
 }

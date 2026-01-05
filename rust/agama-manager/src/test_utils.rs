@@ -22,12 +22,12 @@
 
 use std::path::PathBuf;
 
+use agama_bootloader::test_utils::start_service as start_bootloader_service;
 use agama_hostname::test_utils::start_service as start_hostname_service;
 use agama_l10n::test_utils::start_service as start_l10n_service;
 use agama_network::test_utils::start_service as start_network_service;
 use agama_software::test_utils::start_service as start_software_service;
 use agama_storage::test_utils::start_service as start_storage_service;
-use agama_bootloader::test_utils::start_service as start_bootloader_service;
 use agama_utils::{actor::Handler, api::event, issue, progress, question};
 
 use crate::{hardware, Service};
@@ -43,7 +43,13 @@ pub async fn start_service(events: event::Sender, dbus: zbus::Connection) -> Han
         .with_hostname(start_hostname_service(events.clone(), issues.clone()).await)
         .with_l10n(start_l10n_service(events.clone(), issues.clone()).await)
         .with_storage(
-            start_storage_service(events.clone(), issues.clone(), progress.clone(), dbus.clone()).await,
+            start_storage_service(
+                events.clone(),
+                issues.clone(),
+                progress.clone(),
+                dbus.clone(),
+            )
+            .await,
         )
         .with_bootloader(start_bootloader_service(issues.clone(), dbus.clone()).await)
         .with_software(start_software_service(events, issues, progress, questions).await)

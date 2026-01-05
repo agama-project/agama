@@ -22,16 +22,12 @@
 
 use std::sync::Arc;
 
-use agama_utils::{
-    actor::Handler,
-    api::bootloader::Config,
-    issue,
-};
+use agama_utils::{actor::Handler, api::bootloader::Config, issue};
 use async_trait::async_trait;
 use tokio::sync::Mutex;
 
 use crate::{
-    client::{Error, BootloaderClient},
+    client::{BootloaderClient, Error},
     service::Starter,
     Service,
 };
@@ -81,11 +77,7 @@ impl BootloaderClient for TestClient {
         Ok(state.config.clone())
     }
 
-
-    async fn set_config(
-        &self,
-        config: &Config,
-    ) -> Result<(), Error> {
+    async fn set_config(&self, config: &Config) -> Result<(), Error> {
         let mut state = self.state.lock().await;
         state.config = config.clone();
         Ok(())

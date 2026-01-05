@@ -46,7 +46,7 @@ pub trait BootloaderClient {
     /// Retrieves the current bootloader configuration.
     async fn get_config(&self) -> ClientResult<Config>;
     /// Sets the bootloader configuration.
-    async fn set_config(&self, config: &Config) -> ClientResult<()>;    
+    async fn set_config(&self, config: &Config) -> ClientResult<()>;
 }
 
 pub type ClientResult<T> = Result<T, Error>;
