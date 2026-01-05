@@ -26,10 +26,20 @@ import Details from "~/components/core/Details";
 import Link from "~/components/core/Link";
 import { useStatus } from "~/hooks/model/status";
 import { useConfigModel } from "~/hooks/model/storage/config-model";
-import { useAvailableDevices, useDevices, useIssues } from "~/hooks/model/system/storage";
+import {
+  useFlattenDevices as useSystemFlattenDevices,
+  useAvailableDevices,
+  useDevices,
+} from "~/hooks/model/system/storage";
+import {
+  useFlattenDevices as useProposalFlattenDevices,
+  useActions,
+} from "~/hooks/model/proposal/storage";
+import DevicesManager from "~/model/storage/devices-manager";
+import { useIssues } from "~/hooks/model/issue";
 import { deviceLabel } from "~/components/storage/utils";
 import { STORAGE } from "~/routes/paths";
-import { _ } from "~/i18n";
+import { _, formatList } from "~/i18n";
 
 import type { Scope } from "~/model/status";
 import type { Storage } from "~/model/system";
@@ -47,90 +57,80 @@ const findDriveDevice = (drive: ConfigModel.Drive, devices: Storage.Device[]) =>
 
 const NoDeviceSummary = () => _("No device selected yet");
 
-const SingleDiskSummary = ({ drive }: { drive: ConfigModel.Drive }) => {
+const SingleDeviceSummary = ({ target }: { target: ConfigModel.Drive | ConfigModel.MdRaid }) => {
   const devices = useDevices();
-  const device = findDriveDevice(drive, devices);
-  const options = {
-    // TRANSLATORS: %s will be replaced by the device name and its size,
-    // example: "/dev/sda, 20 GiB"
-    resize: _("Install using device %s shrinking existing partitions as needed."),
-    // TRANSLATORS: %s will be replaced by the device name and its size,
-    // example: "/dev/sda, 20 GiB"
-    keep: _("Install using device %s without modifying existing partitions."),
-    // TRANSLATORS: %s will be replaced by the device name and its size,
-    // example: "/dev/sda, 20 GiB"
-    delete: _("Install using device %s and deleting all its content."),
-    // TRANSLATORS: %s will be replaced by the device name and its size,
-    // example: "/dev/sda, 20 GiB"
-    custom: _("Install using device %s with a custom strategy to find the needed space."),
-  };
-
-  const [textStart, textEnd] = options[drive.spacePolicy].split("%s");
+  const device = findDriveDevice(target, devices);
+  // TRANSLATORS: %s will be replaced by the device name and its size,
+  // example: "/dev/sda, 20 GiB"
+  const text = _("Use device %s");
+  const [textStart, textEnd] = text.split("%s");
 
   return (
     <>
       <span>{textStart}</span>
-      <b>{device ? deviceLabel(device) : drive.name}</b>
+      <b>{device ? deviceLabel(device) : target.name}</b>
       <span>{textEnd}</span>
     </>
   );
 };
 
-const MultipleDisksSummary = ({ drives }: { drives: ConfigModel.Drive[] }): string => {
-  const options = {
-    resize: _("Install using several devices shrinking existing partitions as needed."),
-    keep: _("Install using several devices without modifying existing partitions."),
-    delete: _("Install using several devices and deleting all its content."),
-    custom: _("Install using several devices with a custom strategy to find the needed space."),
-  };
-
-  if (drives.find((d) => d.spacePolicy !== drives[0].spacePolicy)) {
-    return options.custom;
-  }
-
-  return options[drives[0].spacePolicy];
-};
-
 const ModelSummary = ({ model }: { model: ConfigModel.Config }): React.ReactNode => {
   const devices = useDevices();
   const drives = model?.drives || [];
+  // We are only interested in RAIDs and VGs that are being reused. With the current model,
+  // that means all RAIDs and no VGs. Revisit when (a) the model allows to create new RAIDs or
+  // (b) the model allows to reuse existing VGs.
+  const raids = model?.mdRaids || [];
+  const targets = drives.concat(raids);
   const existDevice = (name: string) => devices.some((d) => d.name === name);
-  const noDrive = drives.length === 0 || drives.some((d) => !existDevice(d.name));
+  const noTarget = targets.length === 0 || targets.some((d) => !existDevice(d.name));
 
-  if (noDrive) return <NoDeviceSummary />;
-  if (drives.length > 1) return <MultipleDisksSummary drives={drives} />;
-  return <SingleDiskSummary drive={drives[0]} />;
-};
-
-const NoModelSummary = (): React.ReactNode => {
-  const availableDevices = useAvailableDevices();
-  const systemErrors = useIssues();
-  const hasDisks = !!availableDevices.length;
-  const hasResult = !systemErrors.length;
-
-  if (!hasResult && !hasDisks) return _("There are no disks available for the installation.");
-  return _("Install using an advanced configuration.");
+  if (noTarget) return <NoDeviceSummary />;
+  if (targets.length > 1) return _("Use several devices");
+  return <SingleDeviceSummary target={targets[0]} />;
 };
 
 const LinkContent = () => {
-  const config = useConfigModel();
+  const availableDevices = useAvailableDevices();
+  const model = useConfigModel();
+  const issues = useIssues("storage");
+  const configIssues = issues.filter((i) => i.class !== "proposal");
 
-  return config ? <ModelSummary model={config} /> : <NoModelSummary />;
+  if (!availableDevices.length) return _("There are no disks available for the installation");
+  if (configIssues.length) return _("Invalid settings");
+  if (!model) return _("Using an advanced storage configuration");
+
+  return <ModelSummary model={model} />;
 };
 
 const DescriptionContent = () => {
-  return _("More details as a brief description");
+  const system = useSystemFlattenDevices();
+  const staging = useProposalFlattenDevices();
+  const actions = useActions();
+  const issues = useIssues("storage");
+  const configIssues = issues.filter((i) => i.class !== "proposal");
+  const manager = new DevicesManager(system, staging, actions);
+
+  if (configIssues.length) return;
+  if (!actions.length) return _("Failed to calculate a storage layout");
+
+  const deleteActions = manager.actions.filter((a) => a.delete && !a.subvol).length;
+  if (!deleteActions) return _("No data loss is expected");
+
+  const systems = manager.deletedSystems();
+  if (systems.length) {
+    return sprintf(
+      // TRANSLATORS: %s will be replaced by a formatted list of affected systems
+      // like "Windows and openSUSE Tumbleweed".
+      _("Potential data loss affecting at least %s"),
+      formatList(systems),
+    );
+  }
+
+  return _("Potential data loss");
 };
 
 /**
- * TODO: Refactor this component to align with the latest vision of what an
- * overview item should render.
- *
- * Currently, it wraps all content from the previous Overview version into a
- * link to the section content and uses a placeholder description. Before
- * releasing, the link content must be shortened and a proper description
- * implemented.
- *
  * In the near future, this component may receive one or more props (to be
  * defined) to display additional or alternative information. This will be
  * especially useful for reusing the component in the interface where users are
