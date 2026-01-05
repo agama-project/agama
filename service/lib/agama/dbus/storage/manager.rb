@@ -279,6 +279,9 @@ module Agama
           logger.info("Setting bootloader config from D-Bus: #{serialized_config}")
 
           backend.bootloader.config.load_json(serialized_config)
+          # after loading config try to apply it, so proper packages can be requested
+          # TODO: generate also new issue from configuration
+          backend.bootloader.configure
 
           0
         end
