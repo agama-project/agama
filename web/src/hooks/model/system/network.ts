@@ -132,16 +132,26 @@ type UseIpAddressesOptions = {
 };
 
 /**
+ * @internal
+ *
  * Retrieves all IP addresses from devices associated with active connections.
  *
  * It filters devices to only include those linked to existing connections, then
  * extracts and flattens all IP addresses from those devices.
+ *
+ * @note
+ *
+ * This is actually the implementation of {@link useIpAddresses}
+ *
+ * Extracted and exported for testing purposes only. See reasoning at note in
+ * {@link useNetworkStatus}
+ *
  */
-function useIpAddresses(options: { formatted: true }): string[];
-function useIpAddresses(options?: { formatted?: false }): IPAddress[];
-function useIpAddresses(options: UseIpAddressesOptions = {}): string[] | IPAddress[] {
-  const devices = useDevices();
-  const connections = useConnections();
+function getIpAddresses(
+  devices: Device[] = [],
+  connections: Connection[] = [],
+  options: UseIpAddressesOptions = {},
+) {
   const connectionsIds = connections.map((c) => c.id);
   const filteredDevices = devices.filter((d) => connectionsIds.includes(d.connection));
 
@@ -152,6 +162,20 @@ function useIpAddresses(options: UseIpAddressesOptions = {}): string[] | IPAddre
   }
 
   return filteredDevices.flatMap((d) => d.addresses);
+}
+
+/**
+ * Retrieves all IP addresses from devices associated with active connections.
+ *
+ * @see {@link getIpAddresses} for implementation details
+ */
+function useIpAddresses(options: { formatted: true }): string[];
+function useIpAddresses(options?: { formatted?: false }): IPAddress[];
+function useIpAddresses(options: UseIpAddressesOptions = {}): string[] | IPAddress[] {
+  const devices = useDevices();
+  const connections = useConnections();
+
+  return getIpAddresses(devices, connections, options);
 }
 
 /**
@@ -199,10 +223,10 @@ export type NetworkStatusOptions = {
  * If a better approach is found, this can be moved back into
  * the hook.
  */
-const getNetworkStatus = (
+function getNetworkStatus(
   connections: Connection[],
   { includeNonPersistent = false }: NetworkStatusOptions = {},
-) => {
+) {
   const persistentConnections = connections.filter((c) => c.persistent);
 
   // Filter connections based on includeNonPersistent option
@@ -240,7 +264,7 @@ const getNetworkStatus = (
     connections,
     persistentConnections,
   };
-};
+}
 
 /**
  * Determines the global network configuration status.
@@ -357,4 +381,5 @@ export {
   useWifiNetworks,
   useState,
   getNetworkStatus,
+  getIpAddresses,
 };
