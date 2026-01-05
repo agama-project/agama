@@ -20,6 +20,8 @@
 
 use crate::service;
 use agama_utils::api::users::{SystemInfo, UserInfo};
+use std::time::Duration;
+use user_lookup::sync_reader::PasswdReader;
 
 /// Abstract the users-related configuration from the underlying system.
 pub trait ModelAdapter: Send + 'static {
@@ -60,11 +62,24 @@ impl Model {
     }
 
     fn read(&mut self) -> Result<(), service::Error> {
-        // FIXME: just a mock up
-        self.users = [UserInfo {
-            name: String::from("root"),
-        }]
-        .to_vec();
+        tracing::debug!("Reading users list from the system.");
+
+        let mut reader = PasswdReader::new(Duration::new(0, 0));
+
+        // read users and convert it into internal structure
+        // - users with nologin shell are filtered out
+        // FIXME:
+        // - might be better to use regexp on
+        //   e.shell != "/usr/sbin/nologin"
+        self.users = reader
+            .try_iter()?
+            .filter(|e| e.shell != "/usr/sbin/nologin")
+            .map(|u| UserInfo {
+                name: u.username.clone(),
+            })
+            .collect();
+
+        tracing::debug!("List of users read: {:0?}", self.users);
 
         Ok(())
     }

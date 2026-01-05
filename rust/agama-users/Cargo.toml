@@ -17,6 +17,7 @@ tokio-stream = "0.1.17"
 zbus = "5.11.0"
 async-trait = "0.1.89"
 itertools = "0.10"
+user_lookup = "0.3.0"
 
 [dev-dependencies]
 test-context = "0.4.1"

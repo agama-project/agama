@@ -357,6 +357,7 @@ dependencies = [
  "tokio-stream",
  "tokio-test",
  "tracing",
+ "user_lookup",
  "zbus",
 ]
 
@@ -5041,6 +5042,15 @@ dependencies = [
  "idna",
  "percent-encoding",
  "serde",
+]
+
+[[package]]
+name = "user_lookup"
+version = "0.3.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ce218b4b10d1acf525e5798d1014bc9922f0d11c0267ddc4be4c14775124e209"
+dependencies = [
+ "tokio",
 ]
 
 [[package]]
