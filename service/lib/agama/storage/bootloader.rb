@@ -103,15 +103,18 @@ module Agama
       def configure
         # reset disk to always read the recent storage configuration
         ::Yast::BootStorage.reset_disks
-        # propose values first
-        bootloader = ::Bootloader::BootloaderFactory.current
+        # propose values first. Propose bootloader from factory and do not use
+        # current as agama has /etc/sysconfig/bootloader with efi, so it
+        # will lead to wrong one.
+        bootloader = ::Bootloader::BootloaderFactory.proposed
+        ::Bootloader::BootloaderFactory.current = bootloader
         bootloader.propose
         # then also apply changes to that proposal
         write_config
         # and set packages needed for given config
         install_packages
         # TODO: error handling (including catching exceptions like Bootloader::NoRoot) and filling issues
-        @logger.debug "Bootloader config #{bootloader.inspect}"
+        @logger.info "Bootloader config #{bootloader.inspect}"
       end
 
       # Installs bootloader.
