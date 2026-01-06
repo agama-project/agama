@@ -24,6 +24,10 @@ require "json"
 require "bootloader/bootloader_factory"
 require "bootloader/proposal_client"
 
+require "agama/http/clients"
+
+Yast.import "BootStorage"
+
 module Agama
   module Storage
     # Represents bootloader specific functionality
@@ -97,11 +101,17 @@ module Agama
 
       # Calculates proposal.
       def configure
-        # first make bootloader proposal to be sure that required packages are installed
-        proposal = ::Bootloader::ProposalClient.new.make_proposal({})
+        # reset disk to always read the recent storage configuration
+        ::Yast::BootStorage.reset_disks
+        # propose values first
+        bootloader = ::Bootloader::BootloaderFactory.current
+        bootloader.propose
         # then also apply changes to that proposal
         write_config
-        @logger.debug "Bootloader proposal #{proposal.inspect}"
+        # and set packages needed for given config
+        install_packages
+        # TODO: error handling (including catching exceptions like Bootloader::NoRoot) and filling issues
+        @logger.debug "Bootloader config #{bootloader.inspect}"
       end
 
       # Installs bootloader.
@@ -110,6 +120,15 @@ module Agama
       end
 
     private
+
+      def install_packages
+        bootloader = ::Bootloader::BootloaderFactory.current
+        http_client = Agama::HTTP::Clients::Main.new(::Logger.new($stdout))
+        packages = bootloader.packages
+        @logger.info "Installing bootloader packages: #{packages}"
+
+        http_client.set_resolvables("agama-bootloader", :package, packages)
+      end
 
       def write_config
         bootloader = ::Bootloader::BootloaderFactory.current
