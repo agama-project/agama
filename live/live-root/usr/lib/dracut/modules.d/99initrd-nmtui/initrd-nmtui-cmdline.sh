@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# automatically configure network and start NetworkManager when live.net_config=1
+# automatically configure network and start NetworkManager when live.net_config_tui=1
 
 . /lib/dracut-lib.sh
 
@@ -8,7 +8,7 @@
 FILE="/etc/cmdline.d/initrd-nmtui.conf"
 
 # only if interactive network config requested
-if getargbool 0 live.net_config; then
+if getargbool 0 live.net_config_tui; then
   # and network not disabled
   if getargbool 1 rd.neednet; then
     echo "rd.neednet=1" >"$FILE"
