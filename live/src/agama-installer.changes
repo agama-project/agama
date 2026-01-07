@@ -2,6 +2,7 @@
 Tue Jan  6 16:21:35 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
 
 - Hide the data sharing notification in the Firefox browser
+  (bsc#1252961)
 
 -------------------------------------------------------------------
 Wed Nov 12 15:42:29 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
