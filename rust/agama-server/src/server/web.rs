@@ -21,7 +21,7 @@
 //! This module implements Agama's HTTP API.
 
 use crate::server::config_schema;
-use agama_lib::error::ServiceError;
+use agama_lib::{error::ServiceError, logs};
 use agama_manager::{self as manager, message};
 use agama_software::Resolvable;
 use agama_utils::{
@@ -36,14 +36,17 @@ use agama_utils::{
     progress, question,
 };
 use axum::{
+    body::Body,
     extract::{Path, Query, State},
+    http::HeaderValue,
     response::{IntoResponse, Response},
     routing::{get, post, put},
     Json, Router,
 };
-use hyper::StatusCode;
+use hyper::{header, HeaderMap, StatusCode};
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
+use tokio_util::io::ReaderStream;
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
@@ -123,6 +126,7 @@ pub fn server_with_state(state: ServerState) -> Result<Router, ServiceError> {
         )
         .route("/private/solve_storage_model", get(solve_storage_model))
         .route("/private/resolvables/:id", put(set_resolvables))
+        .route("/private/download_logs", get(download_logs))
         .with_state(state))
 }
 
@@ -493,5 +497,58 @@ fn to_option_response<T: Serialize>(value: Option<T>) -> Response {
     match value {
         Some(inner) => Json(inner).into_response(),
         None => StatusCode::NOT_FOUND.into_response(),
+    }
+}
+
+/// Solves a storage config model.
+#[utoipa::path(
+    get,
+    path = "/private/download_logs",
+    context_path = "/api/v2",
+    params(query::SolveStorageModel),
+    responses(
+        (status = 200, description = "Compressed Agama logs", content_type="application/octet-stream", body = String),
+        (status = 500, description = "Cannot collect the logs"),
+        (status = 507, description = "Server is probably out of space"),
+    )
+)]
+async fn download_logs() -> impl IntoResponse {
+    let mut headers = HeaderMap::new();
+    let err_response = (headers.clone(), Body::empty());
+
+    match logs::store() {
+        Ok(path) => {
+            if let Ok(file) = tokio::fs::File::open(path.clone()).await {
+                let stream = ReaderStream::new(file);
+                let body = Body::from_stream(stream);
+                let _ = std::fs::remove_file(path.clone());
+
+                // See RFC2046, RFC2616 and
+                // https://www.iana.org/assignments/media-types/media-types.xhtml
+                // or /etc/mime.types
+                headers.insert(
+                    header::CONTENT_TYPE,
+                    HeaderValue::from_static("application/x-compressed-tar"),
+                );
+                if let Some(file_name) = path.file_name() {
+                    let disposition =
+                        format!("attachment; filename=\"{}\"", &file_name.to_string_lossy());
+                    headers.insert(
+                        header::CONTENT_DISPOSITION,
+                        HeaderValue::from_str(&disposition)
+                            .unwrap_or_else(|_| HeaderValue::from_static("attachment")),
+                    );
+                }
+                headers.insert(
+                    header::CONTENT_ENCODING,
+                    HeaderValue::from_static(logs::DEFAULT_COMPRESSION.1),
+                );
+
+                (StatusCode::OK, (headers, body))
+            } else {
+                (StatusCode::INSUFFICIENT_STORAGE, err_response)
+            }
+        }
+        Err(_) => (StatusCode::INTERNAL_SERVER_ERROR, err_response),
     }
 }

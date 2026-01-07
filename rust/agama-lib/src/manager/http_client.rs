@@ -80,7 +80,7 @@ impl ManagerHTTPClient {
     /// Returns path to logs
     pub async fn store(&self, path: &Path) -> Result<PathBuf, ManagerHTTPClientError> {
         // 1) response with logs
-        let response = self.client.get_raw("/manager/logs/store").await?;
+        let response = self.client.get_raw("/v2/private/download_logs").await?;
 
         // 2) find out the destination file name
         let ext = &response.headers().get(CONTENT_ENCODING).ok_or(
