@@ -76,47 +76,90 @@ describe("Details", () => {
       screen.getByText("CPU");
       screen.getByText("AMD Ryzen 7");
     });
-  });
 
-  describe("PatternFly props passthrough", () => {
-    it("passes props to DescriptionList", () => {
-      const { container } = plainRender(
-        <Details isHorizontal isCompact>
-          <Details.Item label="Name">John</Details.Item>
-        </Details>,
-      );
+    describe("PatternFly props passthrough", () => {
+      it("passes props to DescriptionList", () => {
+        const { container } = plainRender(
+          <Details isHorizontal isCompact>
+            <Details.Item label="Name">John</Details.Item>
+          </Details>,
+        );
 
-      const descriptionList = container.querySelector("dl");
-      expect(descriptionList).toHaveClass("pf-m-horizontal");
-      expect(descriptionList).toHaveClass("pf-m-compact");
+        const descriptionList = container.querySelector("dl");
+        expect(descriptionList).toHaveClass("pf-m-horizontal");
+        expect(descriptionList).toHaveClass("pf-m-compact");
+      });
+    });
+
+    describe("termProps and descriptionProps", () => {
+      it("passes termProps to DescriptionListTerm", () => {
+        const { container } = plainRender(
+          <Details>
+            <Details.Item label="Name" termProps={{ className: "custom-term-class" }}>
+              John
+            </Details.Item>
+          </Details>,
+        );
+
+        const term = container.querySelector("dt");
+        expect(term).toHaveClass("custom-term-class");
+      });
+
+      it("passes descriptionProps to DescriptionListDescription", () => {
+        const { container } = plainRender(
+          <Details>
+            <Details.Item label="Name" descriptionProps={{ className: "custom-desc-class" }}>
+              John
+            </Details.Item>
+          </Details>,
+        );
+
+        const description = container.querySelector("dd");
+        expect(description).toHaveClass("custom-desc-class");
+      });
     });
   });
 
-  describe("termProps and descriptionProps", () => {
-    it("passes termProps to DescriptionListTerm", () => {
+  describe("Details.StackItem", () => {
+    it("renders given data within an opinionated flex layout", () => {
       const { container } = plainRender(
         <Details>
-          <Details.Item label="Name" termProps={{ className: "custom-term-class" }}>
-            John
-          </Details.Item>
+          <Details.StackItem
+            label="Storage"
+            content={<a href="#/storage">Use device vdd (20 GiB)</a>}
+            description="Potential data loss"
+          />
         </Details>,
       );
 
-      const term = container.querySelector("dt");
-      expect(term).toHaveClass("custom-term-class");
+      const flexContainer = container.querySelector(
+        '[class*="pf-v"][class*="-l-flex"][class*=pf-m-column]',
+      );
+
+      screen.getByText("Storage");
+      screen.getByRole("link", { name: /Use device vdd/i });
+      const small = container.querySelector("small");
+      expect(small).toHaveTextContent("Potential data loss");
+      expect(small).toHaveClass(/pf-v.-u-text-color-subtle/);
     });
 
-    it("passes descriptionProps to DescriptionListDescription", () => {
+    it("renders skeleton placeholders instead of content when isLoading is true", () => {
       const { container } = plainRender(
         <Details>
-          <Details.Item label="Name" descriptionProps={{ className: "custom-desc-class" }}>
-            John
-          </Details.Item>
+          <Details.StackItem
+            label="Storage"
+            content={<a href="#/storage">Use device vdd (20 GiB)</a>}
+            description="Potential data loss"
+            isLoading
+          />
         </Details>,
       );
 
-      const description = container.querySelector("dd");
-      expect(description).toHaveClass("custom-desc-class");
+      expect(screen.queryByRole("link")).not.toBeInTheDocument();
+      expect(screen.queryByText("Use device vdd (20 GiB)")).not.toBeInTheDocument();
+      expect(screen.queryByText("Potential data loss")).not.toBeInTheDocument();
+      const skeletons = container.querySelectorAll('[class*="pf-v"][class*="-c-skeleton"]');
+      expect(skeletons.length).toBe(2);
     });
   });
 });
