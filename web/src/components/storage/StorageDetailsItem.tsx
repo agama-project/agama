@@ -21,10 +21,12 @@
  */
 
 import React from "react";
+import { sprintf } from "sprintf-js";
+
 import { Flex, Skeleton } from "@patternfly/react-core";
 import Details from "~/components/core/Details";
 import Link from "~/components/core/Link";
-import { useStatus } from "~/hooks/model/status";
+
 import { useConfigModel } from "~/hooks/model/storage/config-model";
 import {
   useFlattenDevices as useSystemFlattenDevices,
@@ -41,16 +43,9 @@ import { deviceLabel } from "~/components/storage/utils";
 import { STORAGE } from "~/routes/paths";
 import { _, formatList } from "~/i18n";
 
-import type { Scope } from "~/model/status";
 import type { Storage } from "~/model/system";
 import type { ConfigModel } from "~/model/storage/config-model";
-
-// FIXME: evaluate to extract this hook and use it instead of repeating such a
-// #find in multiple places
-const useProgress = (scope: Scope) => {
-  const { progresses } = useStatus();
-  return progresses.find((p) => p.scope === scope);
-};
+import { useProgressTracking } from "~/hooks/use-progress-tracking";
 
 const findDriveDevice = (drive: ConfigModel.Drive, devices: Storage.Device[]) =>
   devices.find((d) => d.name === drive.name);
@@ -141,19 +136,19 @@ const DescriptionContent = () => {
  * once all "overview/confirmation" items are clearly defined.
  */
 export default function StorageDetailsItem() {
-  const progress = useProgress("storage");
+  const { loading } = useProgressTracking("storage");
 
   return (
     <Details.Item label={_("Storage")}>
       <Flex direction={{ default: "column" }} gap={{ default: "gapSm" }}>
-        {progress ? (
-          <Skeleton fontSize="sm" width="50%" />
+        {loading ? (
+          <Skeleton width="50%" aria-label={_("Waiting for storage proposal")} />
         ) : (
           <Link to={STORAGE.root} variant="link" isInline>
             <LinkContent />
           </Link>
         )}
-        <small>{progress ? <Skeleton fontSize="sm" /> : <DescriptionContent />}</small>
+        <small>{loading ? <Skeleton /> : <DescriptionContent />}</small>
       </Flex>
     </Details.Item>
   );
