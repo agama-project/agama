@@ -25,7 +25,9 @@
 use std::collections::HashMap;
 
 use agama_utils::{
-    api::software::{Config, PatternsConfig, RepositoryConfig, SystemInfo},
+    api::software::{
+        Config, PatternsConfig, ProductConfig, RepositoryConfig, SoftwareConfig, SystemInfo,
+    },
     products::{ProductSpec, UserPattern},
 };
 
@@ -44,6 +46,7 @@ pub struct SoftwareState {
     pub repositories: Vec<Repository>,
     pub resolvables: ResolvablesState,
     pub options: SoftwareOptions,
+    pub registration: Option<RegistrationState>,
 }
 
 impl SoftwareState {
@@ -54,6 +57,7 @@ impl SoftwareState {
             repositories: Default::default(),
             resolvables: Default::default(),
             options: Default::default(),
+            registration: None,
         }
     }
 }
@@ -146,16 +150,41 @@ impl<'a> SoftwareStateBuilder<'a> {
 
     /// Adds the elements from the user configuration.
     fn add_user_config(&self, state: &mut SoftwareState, config: &Config) {
-        let Some(software) = &config.software else {
+        if let Some(product) = &config.product {
+            self.add_user_product_config(state, product);
+        }
+
+        if let Some(software) = &config.software {
+            self.add_user_software_config(state, software);
+        }
+    }
+
+    /// Adds the elements from the user product configuration.
+    fn add_user_product_config(&self, state: &mut SoftwareState, config: &ProductConfig) {
+        let Some(code) = &config.registration_code else {
             return;
         };
 
-        if let Some(repositories) = &software.extra_repositories {
+        let product = self.product.id.clone();
+        let version = self.product.version.clone().unwrap_or("1".to_string());
+
+        state.registration = Some(RegistrationState {
+            product,
+            version,
+            code: code.to_string(),
+            email: config.registration_email.clone(),
+            url: config.registration_url.clone(),
+        });
+    }
+
+    /// Adds the elements from the user software configuration.
+    fn add_user_software_config(&self, state: &mut SoftwareState, config: &SoftwareConfig) {
+        if let Some(repositories) = &config.extra_repositories {
             let extra = repositories.iter().map(Repository::from);
             state.repositories.extend(extra);
         }
 
-        if let Some(patterns) = &software.patterns {
+        if let Some(patterns) = &config.patterns {
             match patterns {
                 PatternsConfig::PatternsList(list) => {
                     state.resolvables.reset();
@@ -194,7 +223,7 @@ impl<'a> SoftwareStateBuilder<'a> {
             }
         }
 
-        if let Some(only_required) = software.only_required {
+        if let Some(only_required) = config.only_required {
             state.options.only_required = only_required;
         }
     }
@@ -259,6 +288,7 @@ impl<'a> SoftwareStateBuilder<'a> {
             product: software.base_product.clone(),
             repositories,
             resolvables,
+            registration: None,
             options: Default::default(),
         }
     }
@@ -420,14 +450,24 @@ pub struct SoftwareOptions {
     only_required: bool,
 }
 
+#[derive(Clone, Debug)]
+pub struct RegistrationState {
+    pub product: String,
+    pub version: String,
+    // FIXME: the code should be optional.
+    pub code: String,
+    pub email: Option<String>,
+    pub url: Option<String>,
+}
+
 #[cfg(test)]
 mod tests {
     use std::path::PathBuf;
 
     use agama_utils::{
         api::software::{
-            Config, PatternsConfig, PatternsMap, Repository, RepositoryConfig, SoftwareConfig,
-            SystemInfo,
+            Config, PatternsConfig, PatternsMap, ProductConfig, Repository, RepositoryConfig,
+            SoftwareConfig, SystemInfo,
         },
         products::ProductSpec,
     };
@@ -555,6 +595,28 @@ mod tests {
                 ),
             ]
         );
+    }
+
+    #[test]
+    fn test_add_registration() {
+        let product = build_product_spec();
+        let mut config = build_user_config(None);
+        config.product = ProductConfig {
+            id: Some("SLES".to_string()),
+            registration_code: Some("123456".to_string()),
+            registration_url: Some("https://scc.suse.com".to_string()),
+            registration_email: Some("jane.doe@example.net".to_string()),
+            addons: None,
+        }
+        .into();
+        let state = SoftwareStateBuilder::for_product(&product)
+            .with_config(&config)
+            .build();
+
+        let registration = state.registration.unwrap();
+        assert_eq!(registration.code, "123456".to_string());
+        assert_eq!(registration.url, Some("https://scc.suse.com".to_string()));
+        assert_eq!(registration.email, Some("jane.doe@example.net".to_string()));
     }
 
     #[test]
