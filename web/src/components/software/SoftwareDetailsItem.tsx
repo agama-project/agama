@@ -23,7 +23,6 @@
 import React from "react";
 import xbytes from "xbytes";
 import { sprintf } from "sprintf-js";
-import { Flex, Skeleton } from "@patternfly/react-core";
 
 import { useProposal } from "~/hooks/model/proposal/software";
 import { useProgressTracking } from "~/hooks/use-progress-tracking";
@@ -73,17 +72,17 @@ const Description = () => {
 export default function SoftwareDetailsItem() {
   const { loading } = useProgressTracking("software");
   return (
-    <Details.Item label={_("Software")}>
-      <Flex direction={{ default: "column" }} gap={{ default: "gapSm" }}>
-        {loading ? (
-          <Skeleton aria-label={_("Waiting for proposal")} width="50%" />
-        ) : (
+    <Details.StackItem
+      label={_("Software")}
+      content={
+        <>
           <Link to={SOFTWARE.root} variant="link" isInline>
             <Summary />
           </Link>
-        )}
-        <small>{loading ? <Skeleton /> : <Description />}</small>
-      </Flex>
-    </Details.Item>
+        </>
+      }
+      description={<Description />}
+      isLoading={loading}
+    />
   );
 }
