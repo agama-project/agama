@@ -139,7 +139,8 @@ module Agama
         write_config
         # and set packages needed for given config
         install_packages
-        # TODO: error handling (including catching exceptions like Bootloader::NoRoot) and filling issues
+        # TODO: error handling (including catching exceptions like Bootloader::NoRoot)
+        # and filling issues
         @logger.info "Bootloader config #{bootloader.inspect}"
       end
 
