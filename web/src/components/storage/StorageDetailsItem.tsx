@@ -23,7 +23,6 @@
 import React from "react";
 import { sprintf } from "sprintf-js";
 
-import { Flex, Skeleton } from "@patternfly/react-core";
 import Details from "~/components/core/Details";
 import Link from "~/components/core/Link";
 
@@ -139,17 +138,15 @@ export default function StorageDetailsItem() {
   const { loading } = useProgressTracking("storage");
 
   return (
-    <Details.Item label={_("Storage")}>
-      <Flex direction={{ default: "column" }} gap={{ default: "gapSm" }}>
-        {loading ? (
-          <Skeleton width="50%" aria-label={_("Waiting for storage proposal")} />
-        ) : (
-          <Link to={STORAGE.root} variant="link" isInline>
-            <LinkContent />
-          </Link>
-        )}
-        <small>{loading ? <Skeleton /> : <DescriptionContent />}</small>
-      </Flex>
-    </Details.Item>
+    <Details.StackItem
+      label={_("Storage")}
+      content={
+        <Link to={STORAGE.root} variant="link" isInline>
+          <LinkContent />
+        </Link>
+      }
+      description={<DescriptionContent />}
+      isLoading={loading}
+    />
   );
 }

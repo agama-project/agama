@@ -22,7 +22,6 @@
 
 import React from "react";
 import { sprintf } from "sprintf-js";
-import { Flex } from "@patternfly/react-core";
 import Details from "~/components/core/Details";
 import Link from "~/components/core/Link";
 import { NETWORK } from "~/routes/paths";
@@ -143,15 +142,14 @@ export default function NetworkDetailsItem() {
   const { status, persistentConnections } = useNetworkStatus();
 
   return (
-    <Details.Item label={_("Network")}>
-      <Flex direction={{ default: "column" }} gap={{ default: "gapSm" }}>
+    <Details.StackItem
+      label={_("Network")}
+      content={
         <Link to={NETWORK.root} variant="link" isInline>
           <Title status={status} />
         </Link>
-        <small>
-          <Description status={status} connections={persistentConnections} />
-        </small>
-      </Flex>
-    </Details.Item>
+      }
+      description={<Description status={status} connections={persistentConnections} />}
+    />
   );
 }

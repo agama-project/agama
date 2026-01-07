@@ -21,7 +21,6 @@
  */
 
 import React from "react";
-import { Flex } from "@patternfly/react-core";
 import { isEmpty } from "radashi";
 import Details from "~/components/core/Details";
 import Link from "~/components/core/Link";
@@ -39,21 +38,19 @@ export default function HostnameDetailsItem() {
   const { hostname: transientHostname, static: staticHostname } = useProposal();
 
   return (
-    <Details.Item label={_("Hostname")}>
-      <Flex direction={{ default: "column" }} gap={{ default: "gapSm" }}>
+    <Details.StackItem
+      label={_("Hostname")}
+      content={
         <Link to={HOSTNAME.root} variant="link" isInline>
           {staticHostname || transientHostname}
         </Link>
-        {isEmpty(staticHostname) && (
-          <small>
-            {
-              // TRANSLATORS: a note to briefly explain the possible side-effects
-              // of using a transient hostname
-              _("Temporary name that may change after reboot or network changes")
-            }
-          </small>
-        )}
-      </Flex>
-    </Details.Item>
+      }
+      description={
+        // TRANSLATORS: a note to briefly explain the possible side-effects
+        // of using a transient hostname
+        isEmpty(staticHostname) &&
+        _("Temporary name that may change after reboot or network changes")
+      }
+    />
   );
 }

@@ -21,7 +21,6 @@
  */
 
 import React from "react";
-import { Flex } from "@patternfly/react-core";
 import Details from "~/components/core/Details";
 import Link from "~/components/core/Link";
 import { useProposal } from "~/hooks/model/proposal/l10n";
@@ -41,8 +40,9 @@ export default function L10nDetailsItem() {
     l10nProposal.timezone && l10nSystem.timezones.find((t) => t.id === l10nProposal.timezone);
 
   return (
-    <Details.Item label={_("Language and region")}>
-      <Flex direction={{ default: "column" }} gap={{ default: "gapSm" }}>
+    <Details.StackItem
+      label={_("Language and region")}
+      content={
         <Link to={L10N.root} variant="link" isInline>
           {
             // TRANSLATORS: Summary of the selected language and territory.
@@ -51,15 +51,13 @@ export default function L10nDetailsItem() {
             sprintf(_("%1$s (%2$s)"), locale.language, locale.territory)
           }
         </Link>
-        <small>
-          {
-            // TRANSLATORS: Additional details shown under the language selection.
-            // %1$s is the keyboard layout name (e.g. "Spanish").
-            // %2$s is the time zone identifier (e.g. "Atlantic/Canary").
-            sprintf(_("%1$s keyboard - %2$s timezone"), keymap.description, timezone.id)
-          }
-        </small>
-      </Flex>
-    </Details.Item>
+      }
+      description={
+        // TRANSLATORS: Additional details shown under the language selection.
+        // %1$s is the keyboard layout name (e.g. "Spanish").
+        // %2$s is the time zone identifier (e.g. "Atlantic/Canary").
+        sprintf(_("%1$s keyboard - %2$s timezone"), keymap.description, timezone.id)
+      }
+    />
   );
 }

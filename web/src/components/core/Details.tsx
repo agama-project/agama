@@ -26,12 +26,15 @@ import {
   DescriptionListGroup,
   DescriptionListTerm,
   DescriptionListDescription,
+  Flex,
+  Skeleton,
 } from "@patternfly/react-core";
 import type {
   DescriptionListTermProps,
   DescriptionListDescriptionProps,
   DescriptionListProps,
 } from "@patternfly/react-core";
+import { _ } from "~/i18n";
 
 type ItemProps = {
   /** The label/term for this field */
@@ -59,6 +62,45 @@ const Item = ({ label, children, termProps = {}, descriptionProps = {} }: ItemPr
   );
 };
 
+type SummaryItemProps = {
+  /** The label for the DescriptionListTerm */
+  label: React.ReactNode;
+  /** The primary value of the item */
+  content: React.ReactNode;
+  /** Secondary information displayed below the content */
+  description?: React.ReactNode;
+  /** Whether to display the skeleton loading state */
+  isLoading?: boolean;
+};
+
+/**
+ * A layout-opinionated item for `Details`.
+ *
+ * Used for rendering items in the Agama overview and confirmation pages, where
+ * a single term has to be rendered with a primary value and an optional
+ * description as well as a consistent "loading skeleton states" when isLoading
+ * is true.
+ */
+const StackItem = ({ label, content, description, isLoading }: SummaryItemProps) => {
+  return (
+    <Item label={label}>
+      <Flex direction={{ default: "column" }} gap={{ default: "gapSm" }}>
+        {isLoading ? (
+          <>
+            <Skeleton aria-label={_("Waiting for proposal")} width="50%" />
+            <Skeleton />
+          </>
+        ) : (
+          <>
+            {content}
+            {description && <small className="pf-v6-u-text-color-subtle">{description}</small>}
+          </>
+        )}
+      </Flex>
+    </Item>
+  );
+};
+
 /**
  * An abstraction over PatternFly's `DescriptionList`.
  *
@@ -81,6 +123,7 @@ const Details = ({ children, ...props }: DescriptionListProps) => {
 };
 
 Details.Item = Item;
+Details.StackItem = StackItem;
 
 export default Details;
 export type { ItemProps as DetailsItemProps };
