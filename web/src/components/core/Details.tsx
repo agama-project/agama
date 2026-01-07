@@ -36,6 +36,8 @@ import type {
 } from "@patternfly/react-core";
 import { _ } from "~/i18n";
 
+import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
+
 type ItemProps = {
   /** The label/term for this field */
   label: DescriptionListTermProps["children"];
@@ -93,7 +95,7 @@ const StackItem = ({ label, content, description, isLoading }: SummaryItemProps)
         ) : (
           <>
             {content}
-            {description && <small className="pf-v6-u-text-color-subtle">{description}</small>}
+            {description && <small className={textStyles.textColorSubtle}>{description}</small>}
           </>
         )}
       </Flex>
