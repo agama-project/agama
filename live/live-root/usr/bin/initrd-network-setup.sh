@@ -31,6 +31,19 @@ while :; do
     fi
   done
 
+  # list all devices
+  summary=$(
+    cat <<EOF
+Network Devices
+---------------
+$(nmcli d)
+
+Details
+-------
+$summary
+EOF
+  )
+
   if [ -n "$http_proxy" ]; then
     # hide the password in the proxy URL
     proxy_label=$(echo "$http_proxy" | sed 's|://.*@|://*******@|')
@@ -82,8 +95,8 @@ while :; do
     nmtui
 
     proxy_address=$(dialog --clear --no-cancel --backtitle "$BACK_TITLE" --title "HTTP proxy address" \
-		  --stdout --inputbox "Enter the HTTP proxy URL (e.g. http://proxy.example.com:3128)\nor leave empty to not use any proxy." \
-			10 70 "$http_proxy")
+      --stdout --inputbox "Enter the HTTP proxy URL (e.g. http://proxy.example.com:3128)\nor leave empty to not use any proxy." \
+      10 70 "$http_proxy")
 
     exit_status=$?
     if [ $exit_status -eq 0 ]; then
