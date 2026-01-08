@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024-2025] SUSE LLC
+ * Copyright (c) [2024-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -80,59 +80,61 @@ user privileges.",
   ).split(/[[\]]/);
 
   return (
-    <Page.Content>
-      <Bullseye>
-        <Page.Section
-          hasHeaderDivider
-          headingLevel="h1"
-          title={
-            <Flex
-              alignItems={{ default: "alignItemsCenter" }}
-              direction={{ default: "column" }}
-              gap={{ default: "gapSm" }}
-            >
-              <Icon name="lock" width="3rem" height="3rem" />
-              {sectionTitle}
-            </Flex>
-          }
-          pfCardProps={{
-            isCompact: false,
-            isFullHeight: false,
-            className: shadowUtils.boxShadowMd,
-          }}
-        >
-          <Form id="login" onSubmit={login} aria-label={_("Login form")}>
-            {error && <Alert variant="danger" title={errorMessage(loginError)} />}
+    <Page emptyHeader>
+      <Page.Content>
+        <Bullseye>
+          <Page.Section
+            hasHeaderDivider
+            headingLevel="h1"
+            title={
+              <Flex
+                alignItems={{ default: "alignItemsCenter" }}
+                direction={{ default: "column" }}
+                gap={{ default: "gapSm" }}
+              >
+                <Icon name="lock" width="3rem" height="3rem" />
+                {sectionTitle}
+              </Flex>
+            }
+            pfCardProps={{
+              isCompact: false,
+              isFullHeight: false,
+              className: shadowUtils.boxShadowMd,
+            }}
+          >
+            <Form id="login" onSubmit={login} aria-label={_("Login form")}>
+              {error && <Alert variant="danger" title={errorMessage(loginError)} />}
 
-            <FormGroup fieldId="password" label={_("Password")}>
-              <PasswordInput
-                id="password"
-                name="password"
-                value={password}
-                aria-label={_("Password input")}
-                onChange={(_, v) => setPassword(v)}
-                reminders={["capslock"]}
-              />
-              <FormHelperText>
-                <HelperText>
-                  <HelperTextItem>
-                    {rootExplanationStart} <b>{rootUser}</b> {rootExplanationEnd}
-                  </HelperTextItem>
-                  <HelperTextItem>
-                    {_("Please, provide its password to log in to the system.")}
-                  </HelperTextItem>
-                </HelperText>
-              </FormHelperText>
-            </FormGroup>
+              <FormGroup fieldId="password" label={_("Password")}>
+                <PasswordInput
+                  id="password"
+                  name="password"
+                  value={password}
+                  aria-label={_("Password input")}
+                  onChange={(_, v) => setPassword(v)}
+                  reminders={["capslock"]}
+                />
+                <FormHelperText>
+                  <HelperText>
+                    <HelperTextItem>
+                      {rootExplanationStart} <b>{rootUser}</b> {rootExplanationEnd}
+                    </HelperTextItem>
+                    <HelperTextItem>
+                      {_("Please, provide its password to log in to the system.")}
+                    </HelperTextItem>
+                  </HelperText>
+                </FormHelperText>
+              </FormGroup>
 
-            <ActionGroup>
-              <Button type="submit" variant="primary">
-                {_("Log in")}
-              </Button>
-            </ActionGroup>
-          </Form>
-        </Page.Section>
-      </Bullseye>
-    </Page.Content>
+              <ActionGroup>
+                <Button type="submit" variant="primary">
+                  {_("Log in")}
+                </Button>
+              </ActionGroup>
+            </Form>
+          </Page.Section>
+        </Bullseye>
+      </Page.Content>
+    </Page>
   );
 }

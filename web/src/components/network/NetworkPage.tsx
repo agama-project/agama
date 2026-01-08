@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2023-2025] SUSE LLC
+ * Copyright (c) [2023-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -21,7 +21,7 @@
  */
 
 import React from "react";
-import { Content, Grid, GridItem } from "@patternfly/react-core";
+import { Grid, GridItem } from "@patternfly/react-core";
 import { EmptyState, Page } from "~/components/core";
 import WifiNetworksList from "./WifiNetworksList";
 import WiredConnectionsList from "./WiredConnectionsList";
@@ -47,11 +47,7 @@ export default function NetworkPage() {
   const { state: networkState } = useSystem();
 
   return (
-    <Page>
-      <Page.Header>
-        <Content component="h2">{_("Network")}</Content>
-      </Page.Header>
-
+    <Page breadcrumbs={[{ label: _("Network") }]}>
       <Page.Content>
         <NoPersistentConnectionsAlert />
 

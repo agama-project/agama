@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2025] SUSE LLC
+ * Copyright (c) [2022-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -78,11 +78,7 @@ export default function L10nPage() {
     l10nProposal.timezone && l10nSystem.timezones.find((t) => t.id === l10nProposal.timezone);
 
   return (
-    <Page>
-      <Page.Header>
-        <Content component="h2">{_("Localization")}</Content>
-      </Page.Header>
-
+    <Page breadcrumbs={[{ label: "Language and region" }]}>
       <Page.Content>
         <Grid hasGutter>
           <GridItem md={4}>

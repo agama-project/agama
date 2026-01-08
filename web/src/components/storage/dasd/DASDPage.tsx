@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2023-2025] SUSE LLC
+ * Copyright (c) [2023-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -21,12 +21,11 @@
  */
 
 import React from "react";
-import { Content } from "@patternfly/react-core";
 import { Page } from "~/components/core";
 import DASDTable from "./DASDTable";
 import DASDFormatProgress from "./DASDFormatProgress";
 import { useDASDDevicesChanges, useDASDFormatJobChanges } from "~/queries/storage/dasd";
-import { STORAGE as PATHS } from "~/routes/paths";
+import { STORAGE as PATHS, STORAGE } from "~/routes/paths";
 import { _ } from "~/i18n";
 
 export default function DASDPage() {
@@ -34,11 +33,7 @@ export default function DASDPage() {
   useDASDFormatJobChanges();
 
   return (
-    <Page>
-      <Page.Header>
-        <Content component="h2">{_("DASD")}</Content>
-      </Page.Header>
-
+    <Page breadcrumbs={[{ label: _("Storage"), path: STORAGE.root }, { label: _("DASD") }]}>
       <Page.Content>
         <DASDTable />
         <DASDFormatProgress />

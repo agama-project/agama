@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2023-2025] SUSE LLC
+ * Copyright (c) [2023-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -24,7 +24,6 @@ import React, { useState } from "react";
 import {
   Alert,
   Button,
-  Content,
   DescriptionList,
   DescriptionListDescription,
   DescriptionListGroup,
@@ -164,11 +163,7 @@ function SoftwarePage(): React.ReactNode {
   const showReposAlert = repos.some((r) => !r.loaded);
 
   return (
-    <Page progress={{ scope: "software" }}>
-      <Page.Header>
-        <Content component="h2">{_("Software")}</Content>
-      </Page.Header>
-
+    <Page breadcrumbs={[{ label: _("Software") }]} progress={{ scope: "software" }}>
       <Page.Content>
         <IssuesAlert issues={issues} />
         <Grid hasGutter>

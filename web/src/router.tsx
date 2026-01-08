@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024] SUSE LLC
+ * Copyright (c) [2024-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -24,7 +24,6 @@ import React from "react";
 import { createHashRouter, Outlet } from "react-router";
 import App from "~/App";
 import Protected from "~/Protected";
-import { FullLayout, PlainLayout } from "~/components/layout";
 import {
   InstallationExit,
   InstallationFinished,
@@ -70,7 +69,6 @@ const protectedRoutes = () => [
     element: <App />,
     children: [
       {
-        element: <FullLayout />,
         children: [
           {
             index: true,
@@ -80,25 +78,16 @@ const protectedRoutes = () => [
         ],
       },
       {
-        element: <PlainLayout />,
         children: [productsRoutes()],
       },
       {
         path: PATHS.confirm,
-        element: (
-          <PlainLayout headerOptions={{ showProductName: false, showInstallerOptions: false }}>
-            <ConfirmPage />
-          </PlainLayout>
-        ),
+        element: <ConfirmPage />,
       },
     ],
   },
   {
-    element: (
-      <PlainLayout>
-        <Outlet />
-      </PlainLayout>
-    ),
+    element: <Outlet />,
     children: [
       {
         path: PATHS.installationProgress,
@@ -120,18 +109,10 @@ const router = () =>
   createHashRouter([
     {
       path: PATHS.login,
-      element: (
-        <PlainLayout mountHeader={false} mountSkipToContent={false}>
-          <LoginPage />
-        </PlainLayout>
-      ),
+      element: <LoginPage />,
     },
     {
-      element: (
-        <PlainLayout mountHeader={false} mountSkipToContent={false}>
-          <Outlet />
-        </PlainLayout>
-      ),
+      element: <Outlet />,
       children: [
         {
           path: PATHS.installationExit,

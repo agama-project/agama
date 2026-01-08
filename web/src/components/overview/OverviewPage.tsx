@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2025] SUSE LLC
+ * Copyright (c) [2022-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -22,7 +22,7 @@
 
 import React from "react";
 import { Navigate } from "react-router";
-import { Content, Grid, GridItem } from "@patternfly/react-core";
+import { Grid, GridItem } from "@patternfly/react-core";
 import { Page } from "~/components/core";
 import { useProductInfo } from "~/hooks/model/config/product";
 import { PRODUCT } from "~/routes/paths";
@@ -38,11 +38,7 @@ export default function OverviewPage() {
   }
 
   return (
-    <Page>
-      <Page.Header>
-        <Content component="h2">{_("Overview")}</Content>
-      </Page.Header>
-
+    <Page breadcrumbs={[{ label: _("Overview") }]}>
       <Page.Content>
         <Grid hasGutter>
           <GridItem sm={6}>

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2025] SUSE LLC
+ * Copyright (c) [2025-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -38,6 +38,7 @@ import { RootUser } from "~/types/users";
 import { isEmpty } from "radashi";
 import { _ } from "~/i18n";
 import PasswordCheck from "~/components/users/PasswordCheck";
+import { USER } from "~/routes/paths";
 
 const AVAILABLE_METHODS = ["password", "sshPublicKey"] as const;
 type ActiveMethods = { [key in (typeof AVAILABLE_METHODS)[number]]?: boolean };
@@ -133,11 +134,7 @@ const RootUserForm = () => {
       .catch((e) => setErrors([e.response.data]));
   };
   return (
-    <Page>
-      <Page.Header>
-        <Content component="h2">{_("Root authentication methods")}</Content>
-      </Page.Header>
-
+    <Page breadcrumbs={[{ label: _("Authentication"), path: USER.root }, { label: _("root") }]}>
       <Page.Content>
         <Form id="rootAuthMethods" onSubmit={onSubmit} isWidthLimited maxWidth="fit-content">
           {errors.length > 0 && (

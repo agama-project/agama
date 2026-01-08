@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024] SUSE LLC
+ * Copyright (c) [2024-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -23,6 +23,7 @@
 import React from "react";
 import { Button, ButtonProps } from "@patternfly/react-core";
 import { To, useHref, useLinkClickHandler, useLocation } from "react-router";
+import { isUndefined } from "radashi";
 
 export type LinkProps = Omit<ButtonProps, "component"> & {
   /** The target route */
@@ -58,6 +59,10 @@ export default function Link({
   const destination = keepQuery ? ({ pathname: to, search: location.search } as To) : to;
   const options = { replace };
   const handleClick = useLinkClickHandler(destination, options);
+
+  if (isUndefined(to)) {
+    return children;
+  }
 
   return (
     <Button

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2023-2025] SUSE LLC
+ * Copyright (c) [2023-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -41,6 +41,7 @@ import { Pattern } from "~/model/system/software";
 import { SelectedBy } from "~/model/proposal/software";
 import { useProposal } from "~/hooks/model/proposal/software";
 import { patchConfig } from "~/api";
+import { SOFTWARE } from "~/routes/paths";
 
 /**
  * PatternGroups mapping "group name" => list of patterns
@@ -191,9 +192,11 @@ function SoftwarePatternsSelection(): React.ReactNode {
   });
 
   return (
-    <Page progress={{ scope: "software" }}>
-      <Page.Header>
-        <Content component="h2">{_("Software selection")}</Content>
+    <Page
+      breadcrumbs={[{ label: _("Software"), path: SOFTWARE.root }, { label: "Patterns selection" }]}
+      progress={{ scope: "software" }}
+    >
+      <Page.Content>
         <SearchInput
           // TRANSLATORS: search field placeholder text
           placeholder={_("Filter by pattern title or description")}
@@ -203,9 +206,6 @@ function SoftwarePatternsSelection(): React.ReactNode {
           onClear={() => setSearchValue("")}
           resultsCount={visiblePatterns.length}
         />
-      </Page.Header>
-
-      <Page.Content>
         <Page.Section title="Patterns">
           {selector.length > 0 ? <Stack hasGutter>{selector}</Stack> : <NoMatches />}
         </Page.Section>

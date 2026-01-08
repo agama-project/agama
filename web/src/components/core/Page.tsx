@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2023-2025] SUSE LLC
+ * Copyright (c) [2023-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useId } from "react";
+import React, { useId, Suspense } from "react";
 import {
   Button,
   ButtonProps,
@@ -34,6 +34,8 @@ import {
   Divider,
   Flex,
   FlexItem,
+  Masthead,
+  Page,
   PageGroup,
   PageGroupProps,
   PageSection,
@@ -44,14 +46,16 @@ import {
 } from "@patternfly/react-core";
 import { ProductRegistrationAlert } from "~/components/product";
 import Link, { LinkProps } from "~/components/core/Link";
+import Loading from "~/components/layout/Loading";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import flexStyles from "@patternfly/react-styles/css/utilities/Flex/flex";
-import { useLocation, useNavigate } from "react-router";
+import { Outlet, useLocation, useNavigate } from "react-router";
 import { isEmpty, isObject } from "radashi";
 import { SIDE_PATHS } from "~/routes/paths";
 import { _, TranslatedString } from "~/i18n";
 import type { ProgressBackdropProps } from "~/components/core/ProgressBackdrop";
 import ProgressBackdrop from "~/components/core/ProgressBackdrop";
+import Header from "~/components/layout/Header";
 
 /**
  * Props accepted by Page.Section
@@ -99,7 +103,7 @@ const STICK_TO_TOP = Object.freeze({ default: "top" });
 const STICK_TO_BOTTOM = Object.freeze({ default: "bottom" });
 
 // TODO: check if it should have the banner role
-const Header = ({ children, ...props }) => {
+const StickyHeaderContent = ({ children, ...props }) => {
   return (
     <PageSection component="div" stickyOnBreakpoint={STICK_TO_TOP} {...props}>
       {children}
@@ -342,27 +346,47 @@ const Content = ({ children, ...pageSectionProps }: PageSectionProps) => {
  * </Page>
  * ```
  */
-const Page = ({
+const PageNext = ({
+  emptyHeader,
+  breadcrumbs,
   progress,
   children,
   ...pageGroupProps
 }: PageGroupProps & { progress?: ProgressBackdropProps }): React.ReactNode => {
+  const pageProps = { isContentFilled: true };
+
+  if (emptyHeader) {
+    return (
+      <Page masthead={<Masthead />} isContentFilled>
+        <PageGroup {...pageGroupProps} tabIndex={-1} id="main-content">
+          {children}
+        </PageGroup>
+      </Page>
+    );
+  }
+
+  pageProps.masthead = <Header breadcrumb={breadcrumbs} />;
+
   return (
-    <PageGroup {...pageGroupProps} tabIndex={-1} id="main-content">
-      {children}
-      {progress && <ProgressBackdrop {...progress} />}
-    </PageGroup>
+    <Page {...pageProps}>
+      <Suspense fallback={<Loading />}>
+        <PageGroup {...pageGroupProps} tabIndex={-1} id="main-content">
+          {children || <Outlet />}
+          {progress && <ProgressBackdrop {...progress} />}
+        </PageGroup>
+      </Suspense>
+    </Page>
   );
 };
 
-Page.displayName = "agama/core/Page";
-Page.Header = Header;
-Page.Content = Content;
-Page.Actions = Actions;
-Page.Back = Back;
-Page.Cancel = Cancel;
-Page.Submit = Submit;
-Page.Action = Action;
-Page.Section = Section;
+PageNext.displayName = "agama/core/PageNext";
+PageNext.StickOnTop = StickyHeaderContent;
+PageNext.Content = Content;
+PageNext.Actions = Actions;
+PageNext.Back = Back;
+PageNext.Cancel = Cancel;
+PageNext.Submit = Submit;
+PageNext.Action = Action;
+PageNext.Section = Section;
 
-export default Page;
+export default PageNext;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2025] SUSE LLC
+ * Copyright (c) [2025-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -26,7 +26,6 @@ import {
   Alert,
   Button,
   Checkbox,
-  Content,
   Form,
   FormGroup,
   TextInput,
@@ -75,11 +74,7 @@ export default function HostnamePage() {
   const transientHostnameAlertTitle = sprintf(_("Using transient hostname: %s"), transientHostname);
 
   return (
-    <Page>
-      <Page.Header>
-        <Content component="h2">{_("Hostname")}</Content>
-      </Page.Header>
-
+    <Page breadcrumbs={[{ label: _("Hostname") }]}>
       <Page.Content>
         {software?.registration && (
           <Alert title={_("Product is already registered")} variant="info">

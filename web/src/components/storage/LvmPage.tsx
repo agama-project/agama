@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2025] SUSE LLC
+ * Copyright (c) [2025-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -51,6 +51,7 @@ import {
 } from "~/hooks/model/storage/config-model";
 import type { ConfigModel, Data } from "~/model/storage/config-model";
 import type { Storage } from "~/model/system";
+import { STORAGE } from "~/routes/paths.next";
 
 /**
  * Hook that returns the devices that can be selected as target to automatically create LVM PVs.
@@ -165,11 +166,13 @@ export default function LvmPage() {
   };
 
   return (
-    <Page>
-      <Page.Header>
-        <Content component="h2">{_("Configure LVM Volume Group")}</Content>
-      </Page.Header>
-
+    <Page
+      breadcrumbs={[
+        { label: _("Storage"), path: STORAGE.root },
+        { label: _("LVM") },
+        { label: _("Configure Volume Group") },
+      ]}
+    >
       <Page.Content>
         <Form id="lvmForm" onSubmit={onSubmit}>
           {errors.length > 0 && (

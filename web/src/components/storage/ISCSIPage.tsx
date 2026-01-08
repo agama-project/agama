@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2023-2025] SUSE LLC
+ * Copyright (c) [2023-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -20,8 +20,8 @@
  * find current contact information at www.suse.com.
  */
 
-import { Content, Grid, GridItem } from "@patternfly/react-core";
 import React from "react";
+import { Grid, GridItem } from "@patternfly/react-core";
 import { Page } from "~/components/core";
 import { InitiatorSection, TargetsSection } from "~/components/storage/iscsi";
 import { STORAGE as PATHS } from "~/routes/paths";
@@ -29,10 +29,7 @@ import { _ } from "~/i18n";
 
 export default function ISCSIPage() {
   return (
-    <Page>
-      <Page.Header>
-        <Content component="h2">{_("iSCSI")}</Content>
-      </Page.Header>
+    <Page breadcrumbs={[{ label: _("Storage"), path: STORAGE.root }, { label: _("iSCSI") }]}>
       <Page.Content>
         <Grid hasGutter>
           <GridItem sm={12}>

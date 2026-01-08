@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2023-2025] SUSE LLC
+ * Copyright (c) [2023-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -435,11 +435,7 @@ export default function ProductRegistrationPage() {
   if (!product || !product.registration) return;
 
   return (
-    <Page progress={{ scope: "software" }}>
-      <Page.Header>
-        <Content component="h2">{_("Registration")}</Content>
-      </Page.Header>
-
+    <Page breadcrumbs={[{ label: _("Registration") }]} progress={{ scope: "software" }}>
       <Page.Content>
         {showIssues && <IssuesAlert issues={issues} />}
         {!registration && <HostnameAlert />}
