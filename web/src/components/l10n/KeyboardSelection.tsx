@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2023-2025] SUSE LLC
+ * Copyright (c) [2023-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -28,6 +28,7 @@ import { patchConfig } from "~/api";
 import { useProposal } from "~/hooks/model/proposal/l10n";
 import { useSystem } from "~/hooks/model/system/l10n";
 import { _ } from "~/i18n";
+import { L10N } from "~/routes/paths";
 
 // TODO: Add documentation
 // TODO: Evaluate if worth it extracting the selector
@@ -75,11 +76,15 @@ export default function KeyboardSelection() {
   }
 
   return (
-    <Page>
-      <Page.Header>
-        <Content component="h2">{_("Keyboard selection")}</Content>
+    <Page
+      breadcrumbs={[
+        { label: "Language and region", path: L10N.root },
+        { label: "Change keyboard" },
+      ]}
+    >
+      <Page.StickOnTop>
         <ListSearch placeholder={searchHelp} elements={keymaps} onChange={setFilteredKeymaps} />
-      </Page.Header>
+      </Page.StickOnTop>
 
       <Page.Content>
         <Form id="keymapSelection" onSubmit={onSubmit}>

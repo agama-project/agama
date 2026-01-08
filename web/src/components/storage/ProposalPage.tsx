@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2025] SUSE LLC
+ * Copyright (c) [2022-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -43,7 +43,7 @@ import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import { Page, Link, NestedContent } from "~/components/core/";
 import { Icon } from "~/components/layout";
 import ConfigEditor from "./ConfigEditor";
-import ConnectedDevicesMenu from "./ConnectedDevicesMenu";
+// import ConnectedDevicesMenu from "./ConnectedDevicesMenu";
 import EncryptionSection from "./EncryptionSection";
 import BootSection from "./BootSection";
 import FixableConfigInfo from "./FixableConfigInfo";
@@ -327,19 +327,13 @@ export default function ProposalPage(): React.ReactNode {
 
   if (resetNeeded) return;
 
+  // FIXME: relocate devices menu
+  //   <ConnectedDevicesMenu /> */
   return (
-    <Page progress={{ scope: "storage", ensureRefetched: STORAGE_MODEL_KEY }}>
-      <Page.Header>
-        <Flex>
-          <FlexItem>
-            <Content component="h2">{_("Storage")}</Content>
-          </FlexItem>
-          <FlexItem grow={{ default: "grow" }} />
-          <FlexItem>
-            <ConnectedDevicesMenu />
-          </FlexItem>
-        </Flex>
-      </Page.Header>
+    <Page
+      breadcrumbs={[{ label: _("Storage") }]}
+      progress={{ scope: "storage", ensureRefetched: STORAGE_MODEL_KEY }}
+    >
       <Page.Content>
         <ProposalPageContent />
       </Page.Content>

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024-2025] SUSE LLC
+ * Copyright (c) [2024-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -22,7 +22,7 @@
 
 import React, { useEffect, useState, useRef } from "react";
 import { useLocation, useNavigate } from "react-router";
-import { ActionGroup, Alert, Checkbox, Content, Form } from "@patternfly/react-core";
+import { ActionGroup, Alert, Checkbox, Form } from "@patternfly/react-core";
 import { NestedContent, Page, PasswordAndConfirmationInput } from "~/components/core";
 import PasswordCheck from "~/components/users/PasswordCheck";
 import { useEncryptionMethods } from "~/hooks/model/system/storage";
@@ -30,6 +30,7 @@ import { useConfigModel, useSetEncryption } from "~/hooks/model/storage/config-m
 import { isEmpty } from "radashi";
 import { _ } from "~/i18n";
 import type { ConfigModel } from "~/model/storage/config-model";
+import { STORAGE } from "~/routes/paths";
 
 /**
  * Renders a form that allows the user change encryption settings
@@ -101,11 +102,12 @@ directly on its first run.",
   const isTpmAvailable = methods.includes("tpmFde");
 
   return (
-    <Page>
-      <Page.Header>
-        <Content component="h2">{_("Encryption settings")}</Content>
-      </Page.Header>
-
+    <Page
+      breadcrumbs={[
+        { label: _("Storage"), path: STORAGE.root },
+        { label: _("Encryption settings") },
+      ]}
+    >
       <Page.Content>
         <Form id={formId} onSubmit={onSubmit}>
           {errors.length > 0 && (

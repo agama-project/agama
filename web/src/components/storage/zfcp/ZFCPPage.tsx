@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2023-2025] SUSE LLC
+ * Copyright (c) [2023-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -23,7 +23,6 @@
 import React from "react";
 import {
   Button,
-  Content,
   Grid,
   GridItem,
   Toolbar,
@@ -42,7 +41,7 @@ import {
 import ZFCPDisksTable from "./ZFCPDisksTable";
 import ZFCPControllersTable from "./ZFCPControllersTable";
 import { probeZFCP } from "~/model/storage/zfcp";
-import { STORAGE as PATHS } from "~/routes/paths";
+import { STORAGE as PATHS, STORAGE } from "~/routes/paths";
 import { useNavigate } from "react-router";
 import { inactiveLuns } from "~/utils/zfcp";
 
@@ -184,11 +183,7 @@ export default function ZFCPPage() {
   useZFCPDisksChanges();
 
   return (
-    <Page>
-      <Page.Header>
-        <Content component="h2">{_("zFCP")}</Content>
-      </Page.Header>
-
+    <Page breadcrumbs={[{ label: _("Storage"), path: STORAGE.root }, { label: _("zFCP") }]}>
       <Page.Content>
         <PageContent />
       </Page.Content>

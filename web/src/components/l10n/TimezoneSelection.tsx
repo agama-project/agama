@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2023-2025] SUSE LLC
+ * Copyright (c) [2023-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -31,6 +31,7 @@ import { timezoneTime } from "~/utils";
 import spacingStyles from "@patternfly/react-styles/css/utilities/Spacing/spacing";
 import { _ } from "~/i18n";
 import type { Timezone } from "~/model/system/l10n";
+import { L10N } from "~/routes/paths";
 
 type TimezoneWithDetails = Timezone & { details: string };
 
@@ -116,16 +117,19 @@ export default function TimezoneSelection() {
   }
 
   return (
-    <Page>
-      <Page.Header>
-        <Content component="h2">{_(" Timezone selection")}</Content>
+    <Page
+      breadcrumbs={[
+        { label: "Language and region", path: L10N.root },
+        { label: "Change timezone" },
+      ]}
+    >
+      <Page.StickOnTop>
         <ListSearch
           placeholder={searchHelp}
           elements={displayTimezones}
           onChange={setFilteredTimezones}
         />
-      </Page.Header>
-
+      </Page.StickOnTop>
       <Page.Content>
         <Form id="timezoneSelection" onSubmit={onSubmit}>
           <FormGroup isStack>{timezonesList}</FormGroup>

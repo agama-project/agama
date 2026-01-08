@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2023-2025] SUSE LLC
+ * Copyright (c) [2023-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -446,11 +446,7 @@ export default function ProductRegistrationPage() {
   if (!product.registration) return;
 
   return (
-    <Page>
-      <Page.Header>
-        <Content component="h2">{_("Registration")}</Content>
-      </Page.Header>
-
+    <Page breadcrumbs={[{ label: _("Registration") }]}>
       <Page.Content>
         {!registered && <HostnameAlert />}
         {!registered ? <RegistrationFormSection /> : <RegisteredProductSection />}

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2025] SUSE LLC
+ * Copyright (c) [2025-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -30,7 +30,6 @@ import React, { useCallback, useEffect, useId, useMemo, useState } from "react";
 import { useParams, useNavigate } from "react-router";
 import {
   ActionGroup,
-  Content,
   Flex,
   FlexItem,
   Form,
@@ -61,7 +60,7 @@ import {
   useEditLogicalVolume,
 } from "~/hooks/model/storage/config-model";
 import { useVolumeTemplate } from "~/hooks/model/system/storage";
-import { STORAGE as PATHS } from "~/routes/paths";
+import { STORAGE as PATHS, STORAGE } from "~/routes/paths";
 import { unique } from "radashi";
 import { compact } from "~/utils";
 import { sprintf } from "sprintf-js";
@@ -683,13 +682,14 @@ export default function LogicalVolumePage() {
   const sizeRange: SizeRange = { min: minSize, max: maxSize };
 
   return (
-    <Page id="logicalVolumePage">
-      <Page.Header>
-        <Content component="h2" id={headingId}>
-          {sprintf(_("Configure LVM logical volume at %s volume group"), vgName)}
-        </Content>
-      </Page.Header>
-
+    <Page
+      breadcrumbs={[
+        { label: _("Storage"), path: STORAGE.root },
+        { label: _("LVM") },
+        { label: vgName },
+        { label: _("Configure logical volume") },
+      ]}
+    >
       <Page.Content>
         <Form id="logicalVolumeForm" aria-labelledby={headingId} onSubmit={onSubmit}>
           <Stack hasGutter>

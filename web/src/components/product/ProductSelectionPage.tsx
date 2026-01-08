@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2025] SUSE LLC
+ * Copyright (c) [2022-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -158,7 +158,11 @@ function ProductSelectionPage() {
   ).split(/[[\]]/);
 
   return (
-    <Page>
+    <Page
+      breadcrumbs={[
+        { label: selectedProduct ? _("Change seleted product") : _("Select a product") },
+      ]}
+    >
       <Page.Content>
         <Bullseye>
           <Form id="productSelectionForm" onSubmit={onSubmit}>
@@ -186,8 +190,6 @@ function ProductSelectionPage() {
             product={nextProduct || selectedProduct}
           />
         )}
-      </Page.Content>
-      <Page.Actions noDefaultWrapper>
         <Grid>
           <ResponsiveGridItem>
             <Stack hasGutter>
@@ -227,7 +229,7 @@ function ProductSelectionPage() {
             </Stack>
           </ResponsiveGridItem>
         </Grid>
-      </Page.Actions>
+      </Page.Content>
     </Page>
   );
 }

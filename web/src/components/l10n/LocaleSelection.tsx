@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2023-2025] SUSE LLC
+ * Copyright (c) [2023-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -29,6 +29,7 @@ import { useProposal } from "~/hooks/model/proposal/l10n";
 import { useSystem } from "~/hooks/model/system/l10n";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import { _ } from "~/i18n";
+import { L10N } from "~/routes/paths";
 
 // TODO: Add documentation
 // TODO: Evaluate if worth it extracting the selector
@@ -72,12 +73,15 @@ export default function LocaleSelection() {
   }
 
   return (
-    <Page>
-      <Page.Header>
-        <Content component="h2">{_("Locale selection")}</Content>
+    <Page
+      breadcrumbs={[
+        { label: "Language and region", path: L10N.root },
+        { label: "Change language" },
+      ]}
+    >
+      <Page.StickOnTop>
         <ListSearch placeholder={searchHelp} elements={locales} onChange={setFilteredLocales} />
-      </Page.Header>
-
+      </Page.StickOnTop>
       <Page.Content>
         <Form id="localeSelection" onSubmit={onSubmit}>
           <FormGroup isStack>{localesList}</FormGroup>

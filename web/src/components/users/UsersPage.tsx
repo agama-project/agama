@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2023-2025] SUSE LLC
+ * Copyright (c) [2023-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -21,7 +21,7 @@
  */
 
 import React from "react";
-import { Content, Grid, GridItem } from "@patternfly/react-core";
+import { Grid, GridItem } from "@patternfly/react-core";
 import { IssuesAlert, Page } from "~/components/core";
 import { FirstUser, RootUser } from "~/components/users";
 import { useIssues } from "~/hooks/model/issue";
@@ -31,11 +31,7 @@ export default function UsersPage() {
   const issues = useIssues("users");
 
   return (
-    <Page>
-      <Page.Header>
-        <Content component="h2">{_("Authentication")}</Content>
-      </Page.Header>
-
+    <Page breadcrumbs={[{ label: _("Authentication") }]}>
       <Page.Content>
         <IssuesAlert issues={issues} />
         <Grid hasGutter>

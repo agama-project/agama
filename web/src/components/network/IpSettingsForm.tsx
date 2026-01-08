@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2025] SUSE LLC
+ * Copyright (c) [2022-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -21,7 +21,7 @@
  */
 
 import React, { useState } from "react";
-import { useNavigate, useParams } from "react-router";
+import { generatePath, useNavigate, useParams } from "react-router";
 import {
   ActionGroup,
   Alert,
@@ -40,10 +40,10 @@ import { Page } from "~/components/core";
 import AddressesDataList from "~/components/network/AddressesDataList";
 import DnsDataList from "~/components/network/DnsDataList";
 import { _ } from "~/i18n";
-import { sprintf } from "sprintf-js";
 import { IPAddress, Connection, ConnectionMethod } from "~/types/network";
 import { useConnectionMutation } from "~/hooks/model/config/network";
 import { useConnection } from "~/hooks/model/proposal/network";
+import { NETWORK } from "~/routes/paths";
 
 const usingDHCP = (method: ConnectionMethod) => method === ConnectionMethod.AUTO;
 
@@ -146,14 +146,16 @@ export default function IpSettingsForm() {
     );
   };
 
+  const breadcrumbs = [
+    { label: _("Network"), path: NETWORK.root },
+    { label: connection.id, path: generatePath(NETWORK.wiredConnection, { id: connection.id }) },
+    { label: _("Edit") },
+  ];
+
   // TRANSLATORS: manual network configuration mode with a static IP address
   // %s is replaced by the connection name
   return (
-    <Page>
-      <Page.Header>
-        <Content component="h2">{sprintf(_("Edit connection %s"), connection.id)}</Content>
-      </Page.Header>
-
+    <Page breadcrumbs={breadcrumbs}>
       <Page.Content>
         {requestError && (
           <Alert variant="warning" isInline title={_("Something went wrong")}>
