@@ -29,7 +29,7 @@ import { L10N } from "~/routes/paths";
 import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
 
-export default function L10nDetailsItem() {
+export default function L10nDetailsItem({ withoutLink = false }: { withoutLink?: boolean }) {
   const l10nProposal = useProposal();
   const l10nSystem = useSystem();
   const locale =
@@ -39,18 +39,22 @@ export default function L10nDetailsItem() {
   const timezone =
     l10nProposal.timezone && l10nSystem.timezones.find((t) => t.id === l10nProposal.timezone);
 
+  // TRANSLATORS: Summary of the selected language and territory.
+  // %1$s is the language name (e.g. "Spanish").
+  // %2$s is the territory/region name (e.g. "Spain").
+  const title = sprintf(_("%1$s (%2$s)"), locale.language, locale.territory);
+
   return (
     <Details.StackItem
       label={_("Language and region")}
       content={
-        <Link to={L10N.root} variant="link" isInline>
-          {
-            // TRANSLATORS: Summary of the selected language and territory.
-            // %1$s is the language name (e.g. "Spanish").
-            // %2$s is the territory/region name (e.g. "Spain").
-            sprintf(_("%1$s (%2$s)"), locale.language, locale.territory)
-          }
-        </Link>
+        withoutLink ? (
+          title
+        ) : (
+          <Link to={L10N.root} variant="link" isInline>
+            {title}
+          </Link>
+        )
       }
       description={
         // TRANSLATORS: Additional details shown under the language selection.

@@ -60,11 +60,11 @@ const SingleDeviceSummary = ({ target }: { target: ConfigModel.Drive | ConfigMod
   const [textStart, textEnd] = text.split("%s");
 
   return (
-    <>
+    <div>
       <span>{textStart}</span>
       <b>{device ? deviceLabel(device) : target.name}</b>
       <span>{textEnd}</span>
-    </>
+    </div>
   );
 };
 
@@ -134,16 +134,20 @@ const DescriptionContent = () => {
  * the component name itself. These changes should be addressed in a final step,
  * once all "overview/confirmation" items are clearly defined.
  */
-export default function StorageDetailsItem() {
+export default function StorageDetailsItem({ withoutLink = false }: { withoutLink?: boolean }) {
   const { loading } = useProgressTracking("storage");
 
   return (
     <Details.StackItem
       label={_("Storage")}
       content={
-        <Link to={STORAGE.root} variant="link" isInline>
+        withoutLink ? (
           <LinkContent />
-        </Link>
+        ) : (
+          <Link to={STORAGE.root} variant="link" isInline>
+            <LinkContent />
+          </Link>
+        )
       }
       description={<DescriptionContent />}
       isLoading={loading}

@@ -580,6 +580,16 @@ button:focus-visible {
   }
 }
 
+span.in-quotes {
+  &::before {
+    content: open-quote;
+  }
+
+  &::after {
+    content: close-quote;
+  }
+}
+
 // FIXME: make ir more generic, if possible, or even without CSS but not
 // rendering such a label if "storage instructions" are more than one
 .storage-structure:has(> li:nth-child(2)) span.action-text {

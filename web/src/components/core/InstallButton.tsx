@@ -20,51 +20,14 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useId, useState } from "react";
-import { Button, ButtonProps, Stack, Tooltip, TooltipProps } from "@patternfly/react-core";
-import { Popup } from "~/components/core";
-import { startInstallation } from "~/model/manager";
+import React, { useId } from "react";
+import { Button, ButtonProps, Tooltip, TooltipProps } from "@patternfly/react-core";
 import { useIssues } from "~/hooks/model/issue";
-import { useLocation } from "react-router";
-import { SIDE_PATHS } from "~/routes/paths";
+import { useLocation, useNavigate } from "react-router";
+import { ROOT, SIDE_PATHS } from "~/routes/paths";
 import { _ } from "~/i18n";
 import { Icon } from "../layout";
 import { isEmpty } from "radashi";
-
-/**
- * List of paths where the InstallButton must not be shown.
- *
- * Apart from obvious login and installation paths, it does not make sense to
- * show the button neither, when the user is about to change the product,
- * defining the root authentication for the first time, nor when the installer
- * is setting the chosen product.
- * */
-
-const InstallConfirmationPopup = ({ onAccept, onClose }) => {
-  return (
-    <Popup title={_("Confirm Installation")} isOpen variant="medium">
-      <Stack hasGutter>
-        <p>
-          {_(
-            "If you continue, partitions on your hard disk will be modified \
-according to the provided installation settings.",
-          )}
-        </p>
-        <p>{_("Please, cancel and check the settings if you are unsure.")}</p>
-      </Stack>
-      <Popup.Actions>
-        <Popup.Confirm onClick={onAccept}>
-          {/* TRANSLATORS: button label */}
-          {_("Continue")}
-        </Popup.Confirm>
-        <Popup.Cancel autoFocus onClick={onClose}>
-          {/* TRANSLATORS: button label */}
-          {_("Cancel")}
-        </Popup.Cancel>
-      </Popup.Actions>
-    </Popup>
-  );
-};
 
 /**
  * Installation button
@@ -79,19 +42,15 @@ const InstallButton = (
   const labelId = useId();
   const tooltipId = useId();
   const issues = useIssues();
-  const [isOpen, setIsOpen] = useState(false);
+  const navigate = useNavigate();
   const location = useLocation();
   const hasIssues = !isEmpty(issues);
 
   if (SIDE_PATHS.includes(location.pathname)) return;
 
+  const navigateToConfirmation = () => navigate(ROOT.confirm);
+
   const { onClickWithIssues, ...buttonProps } = props;
-  const open = async () => setIsOpen(true);
-  const close = () => setIsOpen(false);
-  const onAccept = () => {
-    close();
-    startInstallation();
-  };
 
   // TRANSLATORS: The install button label
   const buttonText = _("Install");
@@ -113,14 +72,13 @@ const InstallButton = (
           variant="control"
           className="agm-install-button"
           {...buttonProps}
-          onClick={hasIssues ? onClickWithIssues : open}
+          onClick={hasIssues ? onClickWithIssues : navigateToConfirmation}
           icon={hasIssues && <Icon name="error_fill" />}
           iconPosition="end"
         >
           <span id={labelId}>{buttonText}</span>
         </Button>
       </Wrapper>
-      {isOpen && <InstallConfirmationPopup onAccept={onAccept} onClose={close} />}
     </>
   );
 };

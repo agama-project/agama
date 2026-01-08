@@ -148,17 +148,17 @@ export default function Header({
               <ToolbarItem>
                 <ProgressStatusMonitor />
               </ToolbarItem>
-              <ToolbarItem>
-                <InstallerOptions />
-              </ToolbarItem>
+              {showInstallerOptions && (
+                <ToolbarItem>
+                  <InstallerOptions />
+                </ToolbarItem>
+              )}
               <ToolbarItem>
                 <InstallButton onClickWithIssues={toggleIssuesDrawer} />
               </ToolbarItem>
-              {showInstallerOptions && (
-                <ToolbarItem>
-                  <OptionsDropdown />
-                </ToolbarItem>
-              )}
+              <ToolbarItem>
+                <OptionsDropdown />
+              </ToolbarItem>
             </ToolbarGroup>
           </ToolbarContent>
         </Toolbar>
