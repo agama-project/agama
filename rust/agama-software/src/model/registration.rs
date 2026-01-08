@@ -138,9 +138,10 @@ impl Registration {
         // Add the libzypp service
         zypp.add_service(&service.name, &service.url)
             .map_err(|e| RegistrationError::AddService(service.name.clone(), e))?;
+        let name = service.name.clone();
         self.services.push(service);
-        zypp.refresh_service(&service.name)
-            .map_err(|e| RegistrationError::RefreshService(service.name.clone(), e))?;
+        zypp.refresh_service(&name)
+            .map_err(|e| RegistrationError::RefreshService(name, e))?;
         Ok(())
     }
 
