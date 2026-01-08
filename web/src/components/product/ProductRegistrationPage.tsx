@@ -36,11 +36,11 @@ import {
   FormGroup,
   SelectList,
   SelectOption,
-  Title,
+  // Title,
   TextInput,
   List,
   ListItem,
-  Divider,
+  // Divider,
 } from "@patternfly/react-core";
 import {
   Link,
@@ -48,19 +48,20 @@ import {
   Page,
   SelectWrapper as Select,
   SubtleContent,
+  IssuesAlert,
 } from "~/components/core";
-import RegistrationExtension from "./RegistrationExtension";
+// import RegistrationExtension from "./RegistrationExtension";
 import RegistrationCodeInput from "./RegistrationCodeInput";
-import { RegistrationParams } from "~/types/software";
 import { HOSTNAME } from "~/routes/paths";
-import { useRegisterMutation } from "~/queries/software";
 import { isEmpty } from "radashi";
 import { mask } from "~/utils";
 import { sprintf } from "sprintf-js";
 import { _, N_ } from "~/i18n";
 import { useProposal } from "~/hooks/model/proposal";
 import { useSystem } from "~/hooks/model/system/software";
-import { useProductInfo } from "~/hooks/model/config/product";
+import { useProduct, useProductInfo } from "~/hooks/model/config/product";
+import { useIssues } from "~/hooks/model/issue";
+import { patchConfig } from "~/api";
 
 const FORM_ID = "productRegistration";
 const SERVER_LABEL = N_("Registration server");
@@ -273,7 +274,6 @@ function RegistrationEmail({
 }
 
 const RegistrationFormSection = () => {
-  const { mutate: register } = useRegisterMutation();
   const [server, setServer] = useState<ServerOption>("default");
   const [url, setUrl] = useState("");
   const [key, setKey] = useState("");
@@ -282,12 +282,12 @@ const RegistrationFormSection = () => {
   const [provideEmail, setProvideEmail] = useState(false);
   const [requestError, setRequestError] = useState<string | null>(null);
   const [errors, setErrors] = useState<string[]>([]);
-  const [loading, setLoading] = useState(false);
-  const { registration } = useSystem();
+  const [loading] = useState(false);
+  const product = useProduct();
 
   useEffect(() => {
-    if (registration) {
-      const { key, email, url } = registration;
+    if (product) {
+      const { registrationCode: key, registrationEmail: email, registrationUrl: url } = product;
       const server = isEmpty(url) ? "default" : "custom";
       setServer(server);
       setKey(key);
@@ -296,7 +296,7 @@ const RegistrationFormSection = () => {
       setProvideKey(!isEmpty(key));
       setProvideEmail(!isEmpty(email));
     }
-  }, [registration]);
+  }, [product]);
 
   const changeServer = (value: ServerOption) => {
     if (value !== "default") setProvideKey(!isEmpty(key));
@@ -311,11 +311,6 @@ const RegistrationFormSection = () => {
   const changeProvideEmail = (value: boolean) => {
     if (!value) setEmail("");
     setProvideEmail(value);
-  };
-
-  // FIXME: use the right type for AxiosResponse
-  const onRegisterError = ({ response }) => {
-    setRequestError(response.data.message);
   };
 
   const submit = async (e: React.SyntheticEvent) => {
@@ -333,16 +328,14 @@ const RegistrationFormSection = () => {
 
     if (!isEmpty(errors)) return;
 
-    const data: RegistrationParams = {
-      url: isUrlRequired ? url : "",
-      key: isKeyRequired ? key : "",
-      email: provideEmail ? email : "",
-    };
-
-    setLoading(true);
-
-    // @ts-expect-error
-    register(data, { onError: onRegisterError, onSettled: () => setLoading(false) });
+    patchConfig({
+      product: {
+        id: product.id,
+        registrationCode: isKeyRequired ? key : undefined,
+        registrationEmail: provideEmail ? email : undefined,
+        registrationUrl: isUrlRequired ? url : undefined,
+      },
+    });
   };
 
   // TODO: adjust texts based of registration "type", mandatory or optional
@@ -415,49 +408,52 @@ const HostnameAlert = () => {
   );
 };
 
-const Extensions = () => {
-  const { registration } = useSystem();
-  const extensions = registration?.addons;
-  if (!extensions || extensions.length === 0) return null;
+// const Extensions = () => {
+//   const { registration } = useSystem();
+//   const extensions = registration?.addons;
+//   if (!extensions || extensions.length === 0) return null;
 
-  const extensionComponents = extensions.map((ext) => (
-    <RegistrationExtension
-      key={`extension-${ext.id}-${ext.version}`}
-      extension={ext}
-      isUnique={extensions.filter((e) => e.id === ext.id).length === 1}
-    />
-  ));
+//   const extensionComponents = extensions.map((ext) => (
+//     <RegistrationExtension
+//       key={`extension-${ext.id}-${ext.version}`}
+//       extension={ext}
+//       isUnique={extensions.filter((e) => e.id === ext.id).length === 1}
+//     />
+//   ));
 
-  return (
-    <>
-      <Divider />
-      <Title headingLevel="h3">{_("Extensions")}</Title>
-      <NestedContent>
-        <Flex gap={{ default: "gap2xl" }} direction={{ default: "column" }}>
-          {extensionComponents}
-        </Flex>
-      </NestedContent>
-    </>
-  );
-};
+//   return (
+//     <>
+//       <Divider />
+//       <Title headingLevel="h3">{_("Extensions")}</Title>
+//       <NestedContent>
+//         <Flex gap={{ default: "gap2xl" }} direction={{ default: "column" }}>
+//           {extensionComponents}
+//         </Flex>
+//       </NestedContent>
+//     </>
+//   );
+// };
 
 export default function ProductRegistrationPage() {
   const product = useProductInfo();
   const { registration } = useSystem();
+  const issues = useIssues("software");
+  const showIssues = issues.find((i) => i.class === "software.register_system") !== undefined;
 
   // TODO: render something meaningful instead? "Product not registrable"?
   if (!product || !product.registration) return;
 
   return (
-    <Page>
+    <Page progress={{ scope: "software" }}>
       <Page.Header>
         <Content component="h2">{_("Registration")}</Content>
       </Page.Header>
 
       <Page.Content>
+        {showIssues && <IssuesAlert issues={issues} />}
         {!registration && <HostnameAlert />}
         {!registration ? <RegistrationFormSection /> : <RegisteredProductSection />}
-        {registration && <Extensions />}
+        {/* {registration && <Extensions />} */}
       </Page.Content>
     </Page>
   );
