@@ -25,12 +25,14 @@
 //! corresponding services to `libzypp`.
 
 use agama_utils::{
-    api::software::{AddonInfo, RegistrationInfo},
+    api::software::{AddonInfo, AddonStatus, RegistrationInfo},
     arch::Arch,
 };
 use camino::Utf8PathBuf;
 use suseconnect_agama::{self, ConnectParams, Credentials};
 use url::Url;
+
+use crate::state::Addon;
 
 #[derive(thiserror::Error, Debug)]
 pub enum RegistrationError {
@@ -38,6 +40,8 @@ pub enum RegistrationError {
     Registration(#[from] suseconnect_agama::Error),
     #[error("Failed to add the service {0}: {1}")]
     AddService(String, #[source] zypp_agama::ZyppError),
+    #[error("Failed to refresh the service {0}: {1}")]
+    RefreshService(String, #[source] zypp_agama::ZyppError),
 }
 
 type RegistrationResult<T> = Result<T, RegistrationError>;
@@ -56,6 +60,9 @@ pub struct Registration {
     connect_params: ConnectParams,
     creds: Credentials,
     services: Vec<suseconnect_agama::Service>,
+    // Holds the addons information because the status cannot be obtained from SCC yet
+    // (e.g., whether and add-on is register or its registration code).
+    addons: Vec<Addon>,
 }
 
 impl Registration {
@@ -63,8 +70,34 @@ impl Registration {
         RegistrationBuilder::new(root_dir, product, version)
     }
 
-    // This activate_product should receive the code
-    pub fn activate_product(
+    /// Registers the given add-on.
+    ///
+    /// * `zypp`: zypp instance.
+    /// * `addon`: add-on to register.
+    pub fn register_addon(
+        &mut self,
+        zypp: &zypp_agama::Zypp,
+        addon: &Addon,
+    ) -> RegistrationResult<()> {
+        // Use the product's version as default.
+        let version = addon.version.clone().unwrap_or(self.version.clone());
+        let code = addon.code.as_ref().map(|c| c.as_str());
+        self.activate_product(&zypp, &addon.id, &version, code)?;
+        self.addons.push(addon.clone());
+        Ok(())
+    }
+
+    /// Determines whether an add-on is registered.
+    ///
+    /// It searches for a registered add-on with the same id.
+    ///
+    /// * `addon`: add-on to check.
+    pub fn is_addon_registered(&self, addon: &Addon) -> bool {
+        self.find_registered_addon(&addon.id).is_some()
+    }
+
+    // Activates the product with the given code.
+    fn activate_product(
         &mut self,
         zypp: &zypp_agama::Zypp,
         name: &str,
@@ -105,7 +138,10 @@ impl Registration {
         // Add the libzypp service
         zypp.add_service(&service.name, &service.url)
             .map_err(|e| RegistrationError::AddService(service.name.clone(), e))?;
+        let name = service.name.clone();
         self.services.push(service);
+        zypp.refresh_service(&name)
+            .map_err(|e| RegistrationError::RefreshService(name, e))?;
         Ok(())
     }
 
@@ -118,15 +154,25 @@ impl Registration {
             Ok(product) => product
                 .extensions
                 .into_iter()
-                .map(|e| AddonInfo {
-                    id: e.identifier,
-                    version: e.version,
-                    label: e.friendly_name,
-                    available: e.available,
-                    free: e.free,
-                    recommended: e.recommended,
-                    description: e.description,
-                    release: e.release_stage,
+                .map(|e| {
+                    let status = match self.find_registered_addon(&e.identifier) {
+                        Some(addon) => AddonStatus::Registered {
+                            code: addon.code.clone(),
+                        },
+                        None => AddonStatus::NotRegistered,
+                    };
+
+                    AddonInfo {
+                        id: e.identifier,
+                        version: e.version,
+                        label: e.friendly_name,
+                        available: e.available,
+                        free: e.free,
+                        recommended: e.recommended,
+                        description: e.description,
+                        release: e.release_stage,
+                        status,
+                    }
                 })
                 .collect(),
             Err(error) => {
@@ -172,6 +218,10 @@ impl Registration {
         url.query_pairs()
             .find(|(k, _v)| k == "credentials")
             .map(|(_k, v)| v.to_string())
+    }
+
+    fn find_registered_addon(&self, id: &str) -> Option<&Addon> {
+        self.addons.iter().find(|a| a.id == id)
     }
 }
 
@@ -259,6 +309,7 @@ impl RegistrationBuilder {
             version: self.version.clone(),
             creds,
             services: vec![],
+            addons: vec![],
         };
 
         registration.activate_product(zypp, &self.product, &self.version, None)?;

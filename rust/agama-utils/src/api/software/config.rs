@@ -43,7 +43,7 @@ pub struct Config {
 /// Addon settings for registration
 #[derive(Clone, Debug, Default, Serialize, Deserialize, PartialEq, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
-pub struct AddonSettings {
+pub struct AddonConfig {
     pub id: String,
     /// Optional version of the addon, if not specified the version is found
     /// from the available addons
@@ -69,7 +69,7 @@ pub struct ProductConfig {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub registration_url: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub addons: Option<Vec<AddonSettings>>,
+    pub addons: Option<Vec<AddonConfig>>,
 }
 
 impl ProductConfig {
@@ -206,7 +206,7 @@ mod tests {
                 registration_code: Some("reg1".to_string()),
                 registration_email: None,
                 registration_url: None,
-                addons: Some(vec![AddonSettings {
+                addons: Some(vec![AddonConfig {
                     id: "addon1".to_string(),
                     version: Some("1.0".to_string()),
                     registration_code: Some("addon_reg1".to_string()),
@@ -236,7 +236,7 @@ mod tests {
                 registration_code: None,
                 registration_email: Some("email2@a.com".to_string()),
                 registration_url: None,
-                addons: Some(vec![AddonSettings {
+                addons: Some(vec![AddonConfig {
                     id: "addon2".to_string(),
                     version: None,
                     registration_code: None,
@@ -267,7 +267,7 @@ mod tests {
             registration_code: Some("reg1".to_string()),
             registration_email: Some("email2@a.com".to_string()),
             registration_url: None,
-            addons: Some(vec![AddonSettings {
+            addons: Some(vec![AddonConfig {
                 id: "addon1".to_string(),
                 version: Some("1.0".to_string()),
                 registration_code: Some("addon_reg1".to_string()),
