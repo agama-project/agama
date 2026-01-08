@@ -50,7 +50,7 @@ import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import flexStyles from "@patternfly/react-styles/css/utilities/Flex/flex";
 import { Outlet, useLocation, useNavigate } from "react-router";
 import { isEmpty, isObject } from "radashi";
-import { ROOT, SIDE_PATHS } from "~/routes/paths";
+import { PRODUCT, ROOT, SIDE_PATHS } from "~/routes/paths";
 import { _, TranslatedString } from "~/i18n";
 import type { ProgressBackdropProps } from "~/components/core/ProgressBackdrop";
 import ProgressBackdrop from "~/components/core/ProgressBackdrop";
@@ -318,7 +318,17 @@ const Full = ({ progress, children, breadcrumbs }) => {
   const location = useLocation();
 
   return (
-    <PFPage isContentFilled masthead={<Header breadcrumb={breadcrumbs} />}>
+    <PFPage
+      isContentFilled
+      masthead={
+        <Header
+          breadcrumb={breadcrumbs}
+          showInstallerOptions={[ROOT.root, ROOT.overview, PRODUCT.changeProduct].includes(
+            location.pathname,
+          )}
+        />
+      }
+    >
       <Suspense fallback={<Loading />}>
         <PageGroup tabIndex={-1} id="main-content">
           {children || <Outlet />}

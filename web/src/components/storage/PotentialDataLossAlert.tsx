@@ -21,7 +21,7 @@
  */
 
 import React from "react";
-import { Alert, ExpandableSection, List, ListItem } from "@patternfly/react-core";
+import { Alert, Content, ExpandableSection, List, ListItem } from "@patternfly/react-core";
 import { _, formatList } from "~/i18n";
 import { sprintf } from "sprintf-js";
 import { useDestructiveActions } from "~/hooks/use-destructive-actions";
@@ -38,7 +38,7 @@ export default function PotentialDataLossAlert() {
     title = sprintf(
       // TRANSLATORS: %s will be replaced by a formatted list of affected
       // systems like "Windows and openSUSE Tumbleweed".
-      _("Proceeding may result in data loss affecting at least %s"),
+      _("Proceeding will erase existing data, including %s"),
       formatList(affectedSystems),
     );
   } else {
@@ -47,6 +47,9 @@ export default function PotentialDataLossAlert() {
 
   return (
     <Alert title={title} variant="danger">
+      <Content component="p">
+        {_("If you are unsure, check the storage section to adjust the settings.")}
+      </Content>
       <ExpandableSection
         toggleTextCollapsed={_("View details")}
         toggleTextExpanded={_("Hide details")}
