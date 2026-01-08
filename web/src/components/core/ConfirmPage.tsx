@@ -31,14 +31,18 @@ import InstallationSummarySection from "~/components/overview/InstallationSummar
 import SystemInformationSection from "~/components/overview/SystemInformationSection";
 import { startInstallation } from "~/model/manager";
 import { useProductInfo } from "~/hooks/model/config/product";
+import { useIssues } from "~/hooks/model/issue";
 import { PRODUCT } from "~/routes/paths";
 import { useDestructiveActions } from "~/hooks/use-destructive-actions";
 import { _ } from "~/i18n";
+import { isEmpty } from "radashi";
 
 export default function ConfirmPage() {
   const product = useProductInfo();
+  const issues = useIssues();
   const { actions } = useDestructiveActions();
   const [showConfirmation, setShowConfirmation] = useState(false);
+  const hasIssues = !isEmpty(issues);
   const hasDestructiveActions = actions.length > 0;
 
   if (!product) {
@@ -92,11 +96,14 @@ export default function ConfirmPage() {
               size="lg"
               variant={hasDestructiveActions ? "danger" : "primary"}
               onClick={onInstallClick}
+              isDisabled={hasIssues}
             >
               <Text isBold>
-                {hasDestructiveActions
-                  ? _("Install now with potential data loss")
-                  : _("Install now")}
+                {hasIssues
+                  ? _("Installation not possible with current setup")
+                  : hasDestructiveActions
+                    ? _("Install now with potential data loss")
+                    : _("Install now")}
               </Text>
             </Button>
           </Flex>

@@ -226,22 +226,6 @@ strong {
   max-inline-size: 100px;
 }
 
-.agm-install-button {
-  background: var(--agm-t--install--button--background);
-  color: var(--agm-t--install--button--color);
-  font-weight: 600;
-  font-size: var(--pf-t--global--font--size--md);
-  align-items: center;
-
-  svg {
-    fill: var(--agm-t--install--button--color);
-  }
-
-  &:hover {
-    background: var(--agm-t--install--button--background--hover);
-  }
-}
-
 .agm-inline-toggle {
   border-radius: 0;
   inline-size: fit-content;
