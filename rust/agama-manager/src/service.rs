@@ -581,6 +581,7 @@ impl MessageHandler<message::RunAction> for Service {
             }
             Action::Install => {
                 let action = InstallAction {
+                    hostname: self.hostname.clone(),
                     l10n: self.l10n.clone(),
                     network: self.network.clone(),
                     software: self.software.clone(),
@@ -645,6 +646,7 @@ impl MessageHandler<software::message::SetResolvables> for Service {
 ///
 /// This action runs on a separate Tokio task to prevent the manager from blocking.
 struct InstallAction {
+    hostname: Handler<hostname::Service>,
     l10n: Handler<l10n::Service>,
     network: NetworkSystemClient,
     software: Handler<software::Service>,
@@ -717,6 +719,7 @@ impl InstallAction {
         self.l10n.call(l10n::message::Install).await?;
         self.software.call(software::message::Finish).await?;
         self.files.call(files::message::WriteFiles).await?;
+        self.hostname.call(hostname::message::Install).await?;
         self.storage.call(storage::message::Finish).await?;
 
         //

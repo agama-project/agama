@@ -23,6 +23,7 @@ use merge::Merge;
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 use std::collections::HashMap;
+use url::Url;
 
 /// User configuration for the localization of the target system.
 ///
@@ -64,7 +65,7 @@ pub struct ProductConfig {
     pub id: Option<String>,
     pub registration_code: Option<String>,
     pub registration_email: Option<String>,
-    pub registration_url: Option<String>,
+    pub registration_url: Option<Url>,
     pub addons: Option<Vec<AddonConfig>>,
 }
 

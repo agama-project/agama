@@ -238,6 +238,7 @@ pub struct RegistrationBuilder {
     version: String,
     code: Option<String>,
     email: Option<String>,
+    url: Option<Url>,
 }
 
 impl RegistrationBuilder {
@@ -255,6 +256,7 @@ impl RegistrationBuilder {
             version: version.to_string(),
             code: None,
             email: None,
+            url: None,
         }
     }
 
@@ -267,8 +269,18 @@ impl RegistrationBuilder {
     }
 
     /// Sets the e-mail associated to the registration.
+    ///
+    /// * `email`: registration e-mail.
     pub fn with_email(mut self, email: &str) -> Self {
         self.email = Some(email.to_string());
+        self
+    }
+
+    /// Sets the URL of the registration server.
+    ///
+    /// * `url`: server URL.
+    pub fn with_url(mut self, url: &Url) -> Self {
+        self.url = Some(url.clone());
         self
     }
 
@@ -282,8 +294,7 @@ impl RegistrationBuilder {
             token: self.code.clone(),
             email: self.email.clone(),
             language: "en-us".to_string().into(),
-            // unwrap: it is guaranteed to be a correct URL.
-            url: Some(Url::parse(suseconnect_agama::DEFAULT_SCC_URL).unwrap()),
+            url: self.url.clone(),
             ..Default::default()
         };
         // https://github.com/agama-project/agama/blob/master/service/lib/agama/registration.rb#L294
