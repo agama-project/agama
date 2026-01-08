@@ -34,16 +34,20 @@ import { _ } from "~/i18n";
  * If a transient hostname is in use, it shows a brief explanation to inform
  * users that the hostname may change after reboot or network changes.
  */
-export default function HostnameDetailsItem() {
+export default function HostnameDetailsItem({ withoutLink = false }: { withoutLink?: boolean }) {
   const { hostname: transientHostname, static: staticHostname } = useProposal();
 
   return (
     <Details.StackItem
       label={_("Hostname")}
       content={
-        <Link to={HOSTNAME.root} variant="link" isInline>
-          {staticHostname || transientHostname}
-        </Link>
+        withoutLink ? (
+          staticHostname || transientHostname
+        ) : (
+          <Link to={HOSTNAME.root} variant="link" isInline>
+            {staticHostname || transientHostname}
+          </Link>
+        )
       }
       description={
         // TRANSLATORS: a note to briefly explain the possible side-effects

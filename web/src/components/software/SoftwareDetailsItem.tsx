@@ -69,17 +69,19 @@ const Description = () => {
 /**
  * A software installation summary.
  */
-export default function SoftwareDetailsItem() {
+export default function SoftwareDetailsItem({ withoutLink = false }: { withoutLink?: boolean }) {
   const { loading } = useProgressTracking("software");
   return (
     <Details.StackItem
       label={_("Software")}
       content={
-        <>
+        withoutLink ? (
+          <Summary />
+        ) : (
           <Link to={SOFTWARE.root} variant="link" isInline>
             <Summary />
           </Link>
-        </>
+        )
       }
       description={<Description />}
       isLoading={loading}
