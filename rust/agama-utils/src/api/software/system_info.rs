@@ -19,10 +19,12 @@
 // find current contact information at www.suse.com.
 
 use serde::Serialize;
+use serde_with::skip_serializing_none;
 
 /// Software-related information of the system where the installer
 /// is running.
 #[derive(Clone, Debug, Default, Serialize, utoipa::ToSchema)]
+#[skip_serializing_none]
 pub struct SystemInfo {
     /// List of known patterns.
     pub patterns: Vec<Pattern>,
@@ -67,6 +69,7 @@ pub struct Pattern {
 }
 
 #[derive(Clone, Default, Debug, Serialize, utoipa::ToSchema)]
+#[skip_serializing_none]
 pub struct RegistrationInfo {
     /// Registration code.
     pub code: Option<String>,

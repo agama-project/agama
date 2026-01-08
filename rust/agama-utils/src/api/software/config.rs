@@ -19,10 +19,10 @@
 // find current contact information at www.suse.com.
 //! Representation of the software settings
 
-use std::collections::HashMap;
-
 use merge::Merge;
 use serde::{Deserialize, Serialize};
+use serde_with::skip_serializing_none;
+use std::collections::HashMap;
 
 /// User configuration for the localization of the target system.
 ///
@@ -30,6 +30,7 @@ use serde::{Deserialize, Serialize};
 #[derive(Clone, Debug, Default, Serialize, Deserialize, PartialEq, Merge, utoipa::ToSchema)]
 #[schema(as = software::UserConfig)]
 #[serde(rename_all = "camelCase")]
+#[skip_serializing_none]
 #[merge(strategy = merge::option::recurse)]
 pub struct Config {
     /// Product related configuration
@@ -42,33 +43,28 @@ pub struct Config {
 
 /// Addon settings for registration
 #[derive(Clone, Debug, Default, Serialize, Deserialize, PartialEq, utoipa::ToSchema)]
+#[skip_serializing_none]
 #[serde(rename_all = "camelCase")]
 pub struct AddonConfig {
     pub id: String,
     /// Optional version of the addon, if not specified the version is found
     /// from the available addons
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub version: Option<String>,
     /// Free extensions do not require a registration code
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub registration_code: Option<String>,
 }
 
 /// Software settings for installation
 #[derive(Clone, Debug, Default, Serialize, Deserialize, PartialEq, Merge, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
+#[skip_serializing_none]
 #[merge(strategy = merge::option::overwrite_none)]
 pub struct ProductConfig {
     /// ID of the product to install (e.g., "ALP", "Tumbleweed", etc.)
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub id: Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub registration_code: Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub registration_email: Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub registration_url: Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub addons: Option<Vec<AddonConfig>>,
 }
 
@@ -84,20 +80,17 @@ impl ProductConfig {
 
 /// Software settings for installation
 #[derive(Clone, Debug, Default, Serialize, Deserialize, PartialEq, Merge, utoipa::ToSchema)]
+#[skip_serializing_none]
 #[serde(rename_all = "camelCase")]
 #[merge(strategy = merge::option::overwrite_none)]
 pub struct SoftwareConfig {
     /// List of user selected patterns to install.
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub patterns: Option<PatternsConfig>,
     /// List of user selected packages to install.
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub packages: Option<Vec<String>>,
     /// List of user specified repositories to use on top of default ones.
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub extra_repositories: Option<Vec<RepositoryConfig>>,
     /// Flag indicating if only hard requirements should be used by solver.
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub only_required: Option<bool>,
 }
 
@@ -118,10 +111,9 @@ impl Default for PatternsConfig {
 }
 
 #[derive(Clone, Debug, Default, Serialize, Deserialize, PartialEq, utoipa::ToSchema)]
+#[skip_serializing_none]
 pub struct PatternsMap {
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub add: Option<Vec<String>>,
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub remove: Option<Vec<String>>,
 }
 
@@ -166,30 +158,25 @@ impl SoftwareConfig {
 /// Parameters for creating new a repository
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
+#[skip_serializing_none]
 pub struct RepositoryConfig {
     /// repository alias. Has to be unique
     pub alias: String,
     /// repository name, if not specified the alias is used
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub name: Option<String>,
     /// Repository url (raw format without expanded variables)
     pub url: String,
     /// product directory (currently not used, valid only for multiproduct DVDs)
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub product_dir: Option<String>,
     /// Whether the repository is enabled, if missing the repository is enabled
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub enabled: Option<bool>,
     /// Repository priority, lower number means higher priority, the default priority is 99
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub priority: Option<i32>,
     /// Whenever repository can be unsigned. Default is false
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub allow_unsigned: Option<bool>,
     /// List of fingerprints for GPG keys used for repository signing. If specified,
     /// the new list of fingerprints overrides the existing ones instead of merging
     /// with them. By default empty.
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub gpg_fingerprints: Option<Vec<String>>,
 }
 
