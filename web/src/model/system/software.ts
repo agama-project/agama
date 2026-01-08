@@ -64,7 +64,7 @@ type RegistrationInfo = {
 
 type AddonInfo = {
   id: string;
-  status: any;
+  status: string;
   version: string;
   label: string;
   available: boolean;

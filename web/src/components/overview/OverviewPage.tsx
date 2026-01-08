@@ -28,11 +28,11 @@ import StorageSection from "./StorageSection";
 import SoftwareSection from "./SoftwareSection";
 import { _ } from "~/i18n";
 import { PRODUCT } from "~/routes/paths";
-import { useProduct } from "~/hooks/model/config";
+import { useProductInfo } from "~/hooks/model/config/product";
 import { Navigate } from "react-router";
 
 export default function OverviewPage() {
-  const product = useProduct();
+  const product = useProductInfo();
 
   if (!product) {
     return <Navigate to={PRODUCT.root} />;

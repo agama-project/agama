@@ -60,7 +60,7 @@ import { sprintf } from "sprintf-js";
 import { _, N_ } from "~/i18n";
 import { useProposal } from "~/hooks/model/proposal";
 import { useSystem } from "~/hooks/model/system/software";
-import { useProduct } from "~/hooks/model/config";
+import { useProductInfo } from "~/hooks/model/config/product";
 
 const FORM_ID = "productRegistration";
 const SERVER_LABEL = N_("Registration server");
@@ -70,7 +70,7 @@ const CUSTOM_SERVER_LABEL = N_("Custom");
 const EXAMPLE_URL = "https://example.com";
 
 const RegisteredProductSection = () => {
-  const product = useProduct();
+  const product = useProductInfo();
   const { registration } = useSystem();
   const [showCode, setShowCode] = useState(false);
   const toggleCodeVisibility = () => setShowCode(!showCode);
@@ -442,7 +442,7 @@ const Extensions = () => {
 };
 
 export default function ProductRegistrationPage() {
-  const product = useProduct();
+  const product = useProductInfo();
   const { registration } = useSystem();
 
   // TODO: render something meaningful instead? "Product not registrable"?

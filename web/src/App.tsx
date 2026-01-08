@@ -26,7 +26,7 @@ import { useStatusChanges, useStatus } from "~/hooks/model/status";
 import { useSystemChanges } from "~/hooks/model/system";
 import { useProposalChanges } from "~/hooks/model/proposal";
 import { useIssuesChanges } from "~/hooks/model/issue";
-import { useProduct } from "~/hooks/model/config";
+import { useProductInfo } from "~/hooks/model/config/product";
 import { ROOT } from "~/routes/paths";
 import { useQueryClient } from "@tanstack/react-query";
 
@@ -38,7 +38,7 @@ import { useQueryClient } from "@tanstack/react-query";
  */
 const Content = () => {
   const location = useLocation();
-  const product = useProduct();
+  const product = useProductInfo();
   const { progresses, stage } = useStatus();
 
   console.log("App Content component", {

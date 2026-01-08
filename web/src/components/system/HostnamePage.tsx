@@ -36,11 +36,11 @@ import { isEmpty } from "radashi";
 import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
 import { useProposal } from "~/hooks/model/proposal";
-import { useProduct } from "~/hooks/model/config";
+import { useProductInfo } from "~/hooks/model/config/product";
 import { patchConfig } from "~/api";
 
 export default function HostnamePage() {
-  const product = useProduct();
+  const product = useProductInfo();
   const { hostname: proposal } = useProposal();
   // FIXME: It should be fixed once the registration is adapted to API v2
   const registration = { registered: product.registration };

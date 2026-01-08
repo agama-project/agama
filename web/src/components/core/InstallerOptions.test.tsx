@@ -24,7 +24,7 @@ import React from "react";
 import { screen, within } from "@testing-library/react";
 import { installerRender, mockRoutes } from "~/test-utils";
 import { useSystem } from "~/hooks/model/system";
-import { useProduct } from "~/hooks/model/config";
+import { useProductInfo } from "~/hooks/model/config/product";
 import { Product } from "~/types/software";
 import { Keymap, Locale } from "~/model/system/l10n";
 import { Progress, Stage } from "~/model/status";
@@ -88,7 +88,7 @@ jest.mock("~/hooks/api", () => ({
     stage: mockStateFn(),
     progresses: mockProgressesFn(),
   }),
-  useProduct: (): ReturnType<typeof useProduct> => mockSelectedProductFn(),
+  useProductInfo: (): ReturnType<typeof useProductInfo> => mockSelectedProductFn(),
 }));
 
 jest.mock("~/context/installerL10n", () => ({

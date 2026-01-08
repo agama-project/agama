@@ -103,8 +103,4 @@ export {
   getStorageJobs,
 };
 
-export type { Response, System, Config, Proposal };
-export type * as system from "~/model/system";
-export type * as config from "~/model/config";
-export type * as proposal from "~/model/proposal";
-export type * as issue from "~/model/issue";
+export type { Response };

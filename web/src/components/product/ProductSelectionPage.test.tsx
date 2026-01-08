@@ -24,7 +24,7 @@ import React from "react";
 import { screen } from "@testing-library/react";
 import { installerRender, mockNavigateFn } from "~/test-utils";
 import { useSystem } from "~/hooks/model/system";
-import { useProduct } from "~/hooks/model/config";
+import { useProductInfo } from "~/hooks/model/config/product";
 import { Product } from "~/types/software";
 import ProductSelectionPage from "./ProductSelectionPage";
 import { System } from "~/model/system/network";
@@ -80,7 +80,7 @@ jest.mock("~/hooks/model/system", () => ({
 
 jest.mock("~/hooks/model/config", () => ({
   ...jest.requireActual("~/hooks/model/config"),
-  useProduct: (): ReturnType<typeof useProduct> => mockSelectedProduct(),
+  useProductInfo: (): ReturnType<typeof useProductInfo> => mockSelectedProduct(),
 }));
 
 describe("ProductSelectionPage", () => {

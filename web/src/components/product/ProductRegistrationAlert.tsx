@@ -28,7 +28,7 @@ import { REGISTRATION, SIDE_PATHS } from "~/routes/paths";
 import { _ } from "~/i18n";
 import { sprintf } from "sprintf-js";
 import { useIssues } from "~/hooks/model/issue";
-import { useProduct } from "~/hooks/model/config";
+import { useProductInfo } from "~/hooks/model/config/product";
 
 const LinkToRegistration = ({ text }: { text: string }) => {
   const location = useLocation();
@@ -44,7 +44,7 @@ const LinkToRegistration = ({ text }: { text: string }) => {
 
 export default function ProductRegistrationAlert() {
   const location = useLocation();
-  const product = useProduct();
+  const product = useProductInfo();
   // FIXME: what scope reports these issues with the new API?
   const issues = useIssues("product");
   const registrationRequired = issues?.find((i) => i.class === "missing_registration");
