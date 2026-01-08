@@ -20,28 +20,41 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
+import React, { useState } from "react";
 import { Navigate } from "react-router";
-import { Button, Content, Divider, Flex, Grid, GridItem } from "@patternfly/react-core";
+import { Button, Content, Divider, Flex, Grid, GridItem, Stack } from "@patternfly/react-core";
 import Page from "~/components/core/Page";
 import Text from "~/components/core/Text";
+import Popup from "~/components/core/Popup";
 import PotentialDataLossAlert from "~/components/storage/PotentialDataLossAlert";
+import InstallationSummarySection from "~/components/overview/InstallationSummarySection";
+import SystemInformationSection from "~/components/overview/SystemInformationSection";
 import { startInstallation } from "~/model/manager";
 import { useProductInfo } from "~/hooks/model/config/product";
 import { PRODUCT } from "~/routes/paths";
 import { useDestructiveActions } from "~/hooks/use-destructive-actions";
 import { _ } from "~/i18n";
-import InstallationSummarySection from "../overview/InstallationSummarySection";
-import SystemInformationSection from "../overview/SystemInformationSection";
 
 export default function ConfirmPage() {
   const product = useProductInfo();
   const { actions } = useDestructiveActions();
+  const [showConfirmation, setShowConfirmation] = useState(false);
   const hasDestructiveActions = actions.length > 0;
 
   if (!product) {
     return <Navigate to={PRODUCT.root} />;
   }
+
+  const onInstallClick = () => {
+    hasDestructiveActions ? setShowConfirmation(true) : startInstallation();
+  };
+
+  const onConfirm = () => {
+    startInstallation();
+    setShowConfirmation(false);
+  };
+
+  const onCancel = () => setShowConfirmation(false);
 
   const [buttonLocationStart, buttonLocationEnd] = _(
     "When ready, click on the %s button at te end of the page.",
@@ -78,7 +91,7 @@ export default function ConfirmPage() {
             <Button
               size="lg"
               variant={hasDestructiveActions ? "danger" : "primary"}
-              onClick={startInstallation}
+              onClick={onInstallClick}
             >
               <Text isBold>
                 {hasDestructiveActions
@@ -89,6 +102,22 @@ export default function ConfirmPage() {
           </Flex>
         </Flex>
       </Page.Content>
+      {showConfirmation && (
+        <Popup isOpen title={_("Delete existing data and install?")}>
+          <Stack hasGutter>
+            <PotentialDataLossAlert
+              isCompact
+              hint={_("If unsure, cancel and review storage settings.")}
+            />
+          </Stack>
+          <Popup.Actions>
+            <Popup.DangerousAction onClick={onConfirm}>
+              {_("Confirm and install")}
+            </Popup.DangerousAction>
+            <Popup.Cancel onClick={onCancel} />
+          </Popup.Actions>
+        </Popup>
+      )}
     </Page>
   );
 }
