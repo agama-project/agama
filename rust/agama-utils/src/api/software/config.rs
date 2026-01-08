@@ -28,23 +28,21 @@ use url::Url;
 /// User configuration for the localization of the target system.
 ///
 /// This configuration is provided by the user, so all the values are optional.
+#[skip_serializing_none]
 #[derive(Clone, Debug, Default, Serialize, Deserialize, PartialEq, Merge, utoipa::ToSchema)]
 #[schema(as = software::UserConfig)]
 #[serde(rename_all = "camelCase")]
-#[skip_serializing_none]
 #[merge(strategy = merge::option::recurse)]
 pub struct Config {
     /// Product related configuration
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub product: Option<ProductConfig>,
     /// Software related configuration
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub software: Option<SoftwareConfig>,
 }
 
 /// Addon settings for registration
-#[derive(Clone, Debug, Default, Serialize, Deserialize, PartialEq, utoipa::ToSchema)]
 #[skip_serializing_none]
+#[derive(Clone, Debug, Default, Serialize, Deserialize, PartialEq, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct AddonConfig {
     pub id: String,
@@ -56,9 +54,9 @@ pub struct AddonConfig {
 }
 
 /// Software settings for installation
+#[skip_serializing_none]
 #[derive(Clone, Debug, Default, Serialize, Deserialize, PartialEq, Merge, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
-#[skip_serializing_none]
 #[merge(strategy = merge::option::overwrite_none)]
 pub struct ProductConfig {
     /// ID of the product to install (e.g., "ALP", "Tumbleweed", etc.)
@@ -80,8 +78,8 @@ impl ProductConfig {
 }
 
 /// Software settings for installation
-#[derive(Clone, Debug, Default, Serialize, Deserialize, PartialEq, Merge, utoipa::ToSchema)]
 #[skip_serializing_none]
+#[derive(Clone, Debug, Default, Serialize, Deserialize, PartialEq, Merge, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
 #[merge(strategy = merge::option::overwrite_none)]
 pub struct SoftwareConfig {
@@ -111,8 +109,8 @@ impl Default for PatternsConfig {
     }
 }
 
-#[derive(Clone, Debug, Default, Serialize, Deserialize, PartialEq, utoipa::ToSchema)]
 #[skip_serializing_none]
+#[derive(Clone, Debug, Default, Serialize, Deserialize, PartialEq, utoipa::ToSchema)]
 pub struct PatternsMap {
     pub add: Option<Vec<String>>,
     pub remove: Option<Vec<String>>,
@@ -157,9 +155,9 @@ impl SoftwareConfig {
 }
 
 /// Parameters for creating new a repository
+#[skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
-#[skip_serializing_none]
 pub struct RepositoryConfig {
     /// repository alias. Has to be unique
     pub alias: String,

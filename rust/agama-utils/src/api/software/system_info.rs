@@ -23,8 +23,8 @@ use serde_with::skip_serializing_none;
 
 /// Software-related information of the system where the installer
 /// is running.
-#[derive(Clone, Debug, Default, Serialize, utoipa::ToSchema)]
 #[skip_serializing_none]
+#[derive(Clone, Debug, Default, Serialize, utoipa::ToSchema)]
 pub struct SystemInfo {
     /// List of known patterns.
     pub patterns: Vec<Pattern>,
@@ -68,8 +68,8 @@ pub struct Pattern {
     pub preselected: bool,
 }
 
-#[derive(Clone, Default, Debug, Serialize, utoipa::ToSchema)]
 #[skip_serializing_none]
+#[derive(Clone, Default, Debug, Serialize, utoipa::ToSchema)]
 pub struct RegistrationInfo {
     /// Registration code.
     pub code: Option<String>,
