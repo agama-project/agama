@@ -35,9 +35,8 @@ import {
   Flex,
   FlexItem,
   Masthead,
-  Page,
+  Page as PFPage,
   PageGroup,
-  PageGroupProps,
   PageSection,
   PageSectionProps,
   Split,
@@ -51,11 +50,12 @@ import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import flexStyles from "@patternfly/react-styles/css/utilities/Flex/flex";
 import { Outlet, useLocation, useNavigate } from "react-router";
 import { isEmpty, isObject } from "radashi";
-import { SIDE_PATHS } from "~/routes/paths";
+import { ROOT, SIDE_PATHS } from "~/routes/paths";
 import { _, TranslatedString } from "~/i18n";
 import type { ProgressBackdropProps } from "~/components/core/ProgressBackdrop";
 import ProgressBackdrop from "~/components/core/ProgressBackdrop";
 import Header from "~/components/layout/Header";
+import { Questions } from "../questions";
 
 /**
  * Props accepted by Page.Section
@@ -304,6 +304,34 @@ const Content = ({ children, ...pageSectionProps }: PageSectionProps) => {
   );
 };
 
+const Limited = ({ children }) => {
+  return (
+    <PFPage isContentFilled masthead={<Masthead />}>
+      <PageGroup tabIndex={-1} id="main-content">
+        {children}
+      </PageGroup>
+    </PFPage>
+  );
+};
+
+const Full = ({ progress, children, breadcrumbs }) => {
+  const location = useLocation();
+
+  return (
+    <PFPage isContentFilled masthead={<Header breadcrumb={breadcrumbs} />}>
+      <Suspense fallback={<Loading />}>
+        <PageGroup tabIndex={-1} id="main-content">
+          {children || <Outlet />}
+          {progress && <ProgressBackdrop {...progress} />}
+        </PageGroup>
+      </Suspense>
+      {location.pathname !== ROOT.login && location.pathname !== ROOT.installationExit && (
+        <Questions />
+      )}
+    </PFPage>
+  );
+};
+
 /**
  * A component for creating an Agama page, built on top of PF/Page/PageGroup.
  *
@@ -346,47 +374,31 @@ const Content = ({ children, ...pageSectionProps }: PageSectionProps) => {
  * </Page>
  * ```
  */
-const PageNext = ({
+const Page = ({
   emptyHeader,
   breadcrumbs,
   progress,
   children,
-  ...pageGroupProps
-}: PageGroupProps & { progress?: ProgressBackdropProps }): React.ReactNode => {
-  const pageProps = { isContentFilled: true };
-
-  if (emptyHeader) {
-    return (
-      <Page masthead={<Masthead />} isContentFilled>
-        <PageGroup {...pageGroupProps} tabIndex={-1} id="main-content">
-          {children}
-        </PageGroup>
-      </Page>
-    );
-  }
-
-  pageProps.masthead = <Header breadcrumb={breadcrumbs} />;
-
-  return (
-    <Page {...pageProps}>
-      <Suspense fallback={<Loading />}>
-        <PageGroup {...pageGroupProps} tabIndex={-1} id="main-content">
-          {children || <Outlet />}
-          {progress && <ProgressBackdrop {...progress} />}
-        </PageGroup>
-      </Suspense>
-    </Page>
+}: {
+  progress?: ProgressBackdropProps;
+}): React.ReactNode => {
+  return emptyHeader ? (
+    <Limited>{children}</Limited>
+  ) : (
+    <Full progress={progress} breadcrumbs={breadcrumbs}>
+      {children}
+    </Full>
   );
 };
 
-PageNext.displayName = "agama/core/PageNext";
-PageNext.StickOnTop = StickyHeaderContent;
-PageNext.Content = Content;
-PageNext.Actions = Actions;
-PageNext.Back = Back;
-PageNext.Cancel = Cancel;
-PageNext.Submit = Submit;
-PageNext.Action = Action;
-PageNext.Section = Section;
+Page.displayName = "agama/core/PageNext";
+Page.StickOnTop = StickyHeaderContent;
+Page.Content = Content;
+Page.Actions = Actions;
+Page.Back = Back;
+Page.Cancel = Cancel;
+Page.Submit = Submit;
+Page.Action = Action;
+Page.Section = Section;
 
-export default PageNext;
+export default Page;
