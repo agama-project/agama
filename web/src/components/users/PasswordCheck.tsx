@@ -23,12 +23,12 @@
 import React, { useEffect, useState } from "react";
 import SmallWarning from "~/components/core/SmallWarning";
 import { checkPassword } from "~/api/users";
-import { _ } from "~/i18n";
+import { _, TranslatedString } from "~/i18n";
 
 const MINIMAL_SCORE = 50;
 
 const PasswordCheck = ({ password }: { password: string }) => {
-  const [error, setError] = useState("");
+  const [error, setError] = useState<TranslatedString | undefined>();
 
   useEffect(() => {
     if (!password) return;
@@ -39,7 +39,7 @@ const PasswordCheck = ({ password }: { password: string }) => {
       } else if (result.success && result.success < MINIMAL_SCORE) {
         setError(_("The password is weak"));
       } else {
-        setError("");
+        setError(undefined);
       }
     });
   }, [password]);

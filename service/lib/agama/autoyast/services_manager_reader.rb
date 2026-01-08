@@ -50,8 +50,7 @@ module Agama
 
       attr_reader :profile
 
-      SYSTEMD_MULTIUSER_TARGET = "systemctl set-default multi-user.target"
-      SYSTEMD_GRAPHICAL_TARGET = "systemctl set-default graphical.target"
+      SYSTEMD_VALID_TARGETS = ["graphical", "multi-user"].freeze
 
       def services_manager_section
         @services_manager_section ||= profile.fetch("services-manager", {})
@@ -84,13 +83,10 @@ module Agama
       end
 
       def target_to_cmd
-        # May we raise an exception if nothing matches?
-        case services_manager_section["default_target"]
-        when "muti_user"
-          SYSTEMD_MULTIUSER_TARGET
-        when "graphical"
-          SYSTEMD_GRAPHICAL_TARGET
-        end
+        target = services_manager_section["default_target"].to_s
+        return unless SYSTEMD_VALID_TARGETS.include?(target)
+
+        "systemctl set-default #{target}.target"
       end
 
       def disabled_to_cmd

@@ -31,7 +31,7 @@ import {
   MenuToggleProps,
 } from "@patternfly/react-core";
 import { Link } from "~/components/core";
-import { _ } from "~/i18n";
+import { _, TranslatedString } from "~/i18n";
 
 /**
  * Type for props accepted by SplitButton
@@ -47,7 +47,7 @@ type SplitButtonBaseProps = React.PropsWithChildren<{
   /** Label for the link or button acting as a main action */
   label: React.ReactNode;
   /** Accessible label for the toggle button */
-  toggleAriaLabel?: MenuToggleProps["aria-label"];
+  toggleAriaLabel?: TranslatedString;
   /** Variant styles of the menu toggle */
   variant?: MenuToggleProps["variant"];
   /** The URL or path for the main action when it should be a link */

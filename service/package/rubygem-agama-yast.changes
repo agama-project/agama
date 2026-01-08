@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Dec 12 06:21:47 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Fix systemd target import from AutoYaST profiles
+  (gh#agama-project/agama#2826).
+  
+-------------------------------------------------------------------
 Thu Nov 13 13:30:58 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
 
 - Do not build on 32bit arches (like i586) and PPC64-BE,

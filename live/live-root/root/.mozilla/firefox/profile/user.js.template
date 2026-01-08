@@ -20,6 +20,8 @@ user_pref("browser.startup.homepage_override.mstone", "ignore");
 user_pref("datareporting.healthreport.uploadEnabled", false);
 user_pref("datareporting.usage.uploadEnabled", false);
 user_pref("toolkit.telemetry.reportingpolicy.firstRun", false);
+// hide the "Firefox automatically sends some data to Mozilla..." info bar at the top
+user_pref("datareporting.policy.dataSubmissionPolicyBypassNotification", true);
 
 // disable downloading the binary H.264 codec from ciscobinary.openh264.org
 user_pref("media.gmp-gmpopenh264.enabled", false);

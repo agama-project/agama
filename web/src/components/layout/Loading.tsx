@@ -27,7 +27,7 @@ import { LayoutProps } from "~/components/layout/Layout";
 import sizingStyles from "@patternfly/react-styles/css/utilities/Sizing/sizing";
 import spacingStyles from "@patternfly/react-styles/css/utilities/Spacing/spacing";
 import { isEmpty } from "radashi";
-import { _ } from "~/i18n";
+import { _, TranslatedString } from "~/i18n";
 
 /**
  * Renders a plain layout without either, header nor mountSidebar
@@ -38,7 +38,7 @@ const Layout = (props: LayoutProps) => (
 
 type LoadingProps = {
   /** Text to be rendered alongside the spinner */
-  text?: string;
+  text?: TranslatedString;
   /** Accessible text, required when rendering only the spinner */
   "aria-label"?: string;
   /**
