@@ -28,7 +28,10 @@ import { useDestructiveActions } from "~/hooks/use-destructive-actions";
 
 // FIXME: this component has a bunch of logic/calls copied from
 // storage/ProposalResultSection that should be moved to a reusable hook.
-export default function PotentialDataLossAlert() {
+export default function PotentialDataLossAlert({
+  isCompact = false,
+  hint = _("If you are unsure, check and adjust the storage settings."),
+}) {
   let title: string;
   const { actions, affectedSystems } = useDestructiveActions();
 
@@ -38,7 +41,7 @@ export default function PotentialDataLossAlert() {
     title = sprintf(
       // TRANSLATORS: %s will be replaced by a formatted list of affected
       // systems like "Windows and openSUSE Tumbleweed".
-      _("Proceeding will erase existing data, including %s"),
+      _("Proceeding will delete existing data, including %s"),
       formatList(affectedSystems),
     );
   } else {
@@ -47,19 +50,19 @@ export default function PotentialDataLossAlert() {
 
   return (
     <Alert title={title} variant="danger">
-      <Content component="p">
-        {_("If you are unsure, check the storage section to adjust the settings.")}
-      </Content>
-      <ExpandableSection
-        toggleTextCollapsed={_("View details")}
-        toggleTextExpanded={_("Hide details")}
-      >
-        <List>
-          {actions.map((a, i) => (
-            <ListItem key={i}>{a.text}</ListItem>
-          ))}
-        </List>
-      </ExpandableSection>
+      <Content component="p">{hint}</Content>
+      {!isCompact && (
+        <ExpandableSection
+          toggleTextCollapsed={_("View details")}
+          toggleTextExpanded={_("Hide details")}
+        >
+          <List>
+            {actions.map((a, i) => (
+              <ListItem key={i}>{a.text}</ListItem>
+            ))}
+          </List>
+        </ExpandableSection>
+      )}
     </Alert>
   );
 }
