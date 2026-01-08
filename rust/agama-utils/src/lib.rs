@@ -27,6 +27,7 @@ pub mod arch;
 pub mod command;
 pub mod dbus;
 pub mod issue;
+pub mod kernel_cmdline;
 pub mod licenses;
 pub mod openapi;
 pub mod products;

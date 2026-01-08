@@ -20,8 +20,6 @@
 
 use std::{collections::HashMap, path::Path};
 
-use anyhow::Context;
-
 /// Implements a mechanism to read the kernel's command-line arguments.
 ///
 /// It supports multiple values for a single key.
@@ -31,11 +29,9 @@ impl KernelCmdline {
     /// Builds an instance from the given file.
     ///
     /// * `content`: file containing the kernel's cmdline arguments.
-    pub fn parse_file<P: std::fmt::Display + AsRef<Path>>(file: P) -> anyhow::Result<Self> {
-        let content = std::fs::read_to_string(&file).context(format!(
-            "Could not read cmdline args file {}",
-            file.to_string()
-        ))?;
+    pub fn parse_file<P: std::fmt::Display + AsRef<Path>>(file: P) -> std::io::Result<Self> {
+        let content = std::fs::read_to_string(&file)
+            .inspect_err(|e| tracing::warn!("Could not read cmdline args file {e}",))?;
         Ok(Self::parse_str(&content))
     }
 
@@ -73,7 +69,7 @@ impl KernelCmdline {
 
 #[cfg(test)]
 mod tests {
-    use crate::KernelCmdline;
+    use super::KernelCmdline;
 
     #[test]
     fn test_cmdline_args() {
