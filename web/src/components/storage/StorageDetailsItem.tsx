@@ -45,6 +45,7 @@ import { _, formatList } from "~/i18n";
 import type { Storage } from "~/model/system";
 import type { ConfigModel } from "~/model/storage/config-model";
 import { useProgressTracking } from "~/hooks/use-progress-tracking";
+import { HelperText, HelperTextItem } from "@patternfly/react-core";
 
 const findDriveDevice = (drive: ConfigModel.Drive, devices: Storage.Device[]) =>
   devices.find((d) => d.name === drive.name);
@@ -91,7 +92,14 @@ const LinkContent = () => {
   const configIssues = issues.filter((i) => i.class !== "proposal");
 
   if (!availableDevices.length) return _("There are no disks available for the installation");
-  if (configIssues.length) return _("Invalid settings");
+  if (configIssues.length) {
+    return (
+      <HelperText>
+        <HelperTextItem variant="warning">{_("Invalid settings")}</HelperTextItem>
+      </HelperText>
+    );
+  }
+
   if (!model) return _("Using an advanced storage configuration");
 
   return <ModelSummary model={model} />;
