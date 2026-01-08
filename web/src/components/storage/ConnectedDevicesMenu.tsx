@@ -25,16 +25,14 @@ import { useNavigate } from "react-router";
 import { _ } from "~/i18n";
 import { activateStorageAction } from "~/api";
 import { STORAGE as PATHS } from "~/routes/paths";
-import { useZFCPSupported } from "~/queries/storage/zfcp";
-import { useDASDSupported } from "~/queries/storage/dasd";
 import { Icon } from "~/components/layout";
 import MenuButton from "../core/MenuButton";
 import spacingStyles from "@patternfly/react-styles/css/utilities/Spacing/spacing";
 
 export default function ConnectedDevicesMenu() {
   const navigate = useNavigate();
-  const isZFCPSupported = useZFCPSupported();
-  const isDASDSupported = useDASDSupported();
+  const isZFCPSupported = false;
+  const isDASDSupported = false;
 
   return (
     <MenuButton
