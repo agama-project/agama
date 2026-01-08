@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2025] SUSE LLC
+ * Copyright (c) [2025-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -47,10 +47,6 @@ export default function ConfirmPage() {
     return <Navigate to={PRODUCT.root} />;
   }
 
-  // TRANSLATORS: title shown in the confirmation page before
-  // starting the installation. %s will be replaced with the product name.
-  const [titleStart, titleEnd] = _("Start %s installation?").split("%s");
-
   return (
     <Page>
       <Page.Content>
@@ -61,15 +57,14 @@ export default function ConfirmPage() {
           alignItems={{ default: "alignItemsFlexStart" }}
           justifyContent={{ default: "justifyContentCenter" }}
         >
-          <Content component="h1">
-            {titleStart} <span className="in-quotes">{product.name}</span> {titleEnd}
-          </Content>
+          <Content component="h1">{product.name}</Content>
           <Content component="p" isEditorial>
             {
-              // TRANSLATORS: Part of the introductory text shown in the confirmation page before
-              // starting the installation.
+              // TRANSLATORS: Introductory text shown in the overview page
+              // either, after selecting a product or before starting the
+              // installation.
               _(
-                "Review the summary below. If anything seems incorrect or you have doubts, go back and adjust the settings before proceeding.",
+                "Review installation settings below and adjust them as needed before starting the installation process.",
               )
             }
           </Content>
@@ -94,7 +89,6 @@ export default function ConfirmPage() {
                   : _("Install now")}
               </Text>
             </Button>
-            <Page.Back size="lg">{_("Go back")}</Page.Back>
           </Split>
         </Flex>
       </Page.Content>

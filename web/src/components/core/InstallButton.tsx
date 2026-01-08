@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2025] SUSE LLC
+ * Copyright (c) [2022-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -24,7 +24,7 @@ import React, { useId } from "react";
 import { Button, ButtonProps, Tooltip, TooltipProps } from "@patternfly/react-core";
 import { useIssues } from "~/hooks/model/issue";
 import { useLocation, useNavigate } from "react-router";
-import { ROOT, SIDE_PATHS } from "~/routes/paths";
+import { EXTENDED_SIDE_PATHS, ROOT } from "~/routes/paths";
 import { _ } from "~/i18n";
 import { Icon } from "../layout";
 import { isEmpty } from "radashi";
@@ -46,9 +46,9 @@ const InstallButton = (
   const location = useLocation();
   const hasIssues = !isEmpty(issues);
 
-  if (SIDE_PATHS.includes(location.pathname)) return;
+  if (EXTENDED_SIDE_PATHS.includes(location.pathname)) return;
 
-  const navigateToConfirmation = () => navigate(ROOT.confirm);
+  const navigateToConfirmation = () => navigate(ROOT.overview);
 
   const { onClickWithIssues, ...buttonProps } = props;
 

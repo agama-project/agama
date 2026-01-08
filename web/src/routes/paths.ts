@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024] SUSE LLC
+ * Copyright (c) [2024-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -49,7 +49,6 @@ const ROOT = {
   root: "/",
   login: "/login",
   overview: "/overview",
-  confirm: "/confirm",
   installation: "/installation",
   installationProgress: "/installation/progress",
   installationFinished: "/installation/finished",
@@ -116,7 +115,6 @@ const HOSTNAME = {
  */
 const SIDE_PATHS = [
   ROOT.login,
-  ROOT.confirm,
   PRODUCT.changeProduct,
   PRODUCT.progress,
   ROOT.installationProgress,
@@ -124,6 +122,8 @@ const SIDE_PATHS = [
   ROOT.installationExit,
   STORAGE.progress,
 ];
+
+const EXTENDED_SIDE_PATHS = [...SIDE_PATHS, ROOT.root, ROOT.overview];
 
 export {
   HOSTNAME,
@@ -133,6 +133,7 @@ export {
   REGISTRATION,
   ROOT,
   SIDE_PATHS,
+  EXTENDED_SIDE_PATHS,
   SOFTWARE,
   STORAGE,
   USER,
