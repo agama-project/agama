@@ -481,11 +481,10 @@ async fn set_resolvables(
 ) -> ServerResult<()> {
     state
         .manager
-        .call(agama_software::message::SetResolvables::new(
+        .cast(agama_software::message::SetResolvables::new(
             id,
             resolvables,
-        ))
-        .await?;
+        ))?;
     Ok(())
 }
 
