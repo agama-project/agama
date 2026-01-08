@@ -229,7 +229,11 @@ impl Starter {
 
         let network = match self.network {
             Some(network) => network,
-            None => network::start().await?,
+            None => {
+                network::Service::starter(self.events.clone(), issues.clone(), progress.clone())
+                    .start()
+                    .await?
+            }
         };
 
         let hardware = match self.hardware {

@@ -24,6 +24,14 @@ use crate::{
     nm::{NetworkManagerClient, NetworkManagerWatcher},
     Adapter, NetworkAdapterError,
 };
+use agama_utils::{
+    actor::Handler,
+    api::{
+        event::{self, Event},
+        Scope,
+    },
+    issue, progress,
+};
 use anyhow::anyhow;
 use async_trait::async_trait;
 use core::time;
@@ -33,16 +41,30 @@ use super::error::NmError;
 
 /// An adapter for NetworkManager
 pub struct NetworkManagerAdapter<'a> {
+    events: event::Sender,
+    issues: Handler<issue::Service>,
+    progress: Handler<progress::Service>,
     client: NetworkManagerClient<'a>,
     connection: zbus::Connection,
 }
 
 impl<'a> NetworkManagerAdapter<'a> {
     /// Returns the adapter for system's NetworkManager.
-    pub async fn from_system() -> Result<NetworkManagerAdapter<'a>, NmError> {
+    pub async fn from_system(
+        events: event::Sender,
+        issues: Handler<issue::Service>,
+        progress: Handler<progress::Service>,
+    ) -> Result<NetworkManagerAdapter<'a>, NmError> {
         let connection = zbus::Connection::system().await?;
         let client = NetworkManagerClient::new(connection.clone()).await?;
-        Ok(Self { client, connection })
+
+        Ok(Self {
+            events,
+            issues,
+            progress,
+            client,
+            connection,
+        })
     }
 }
 
@@ -179,6 +201,13 @@ impl Adapter for NetworkManagerAdapter<'_> {
             .destroy_checkpoint(&checkpoint.as_ref())
             .await
             .map_err(|e| NetworkAdapterError::Checkpoint(anyhow!(e)))?;
+        self.events.send(event::Event::ProposalChanged {
+            scope: agama_utils::api::Scope::Network,
+        })?;
+        self.events.send(Event::ProposalChanged {
+            scope: Scope::Network,
+        })?;
+
         Ok(())
     }
 

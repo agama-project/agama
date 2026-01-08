@@ -20,11 +20,12 @@
 
 //! This module implements a set of utilities for tests.
 
+use agama_utils::{actor::Handler, api::event, issue, progress};
 use async_trait::async_trait;
 
 use crate::{
     adapter::Watcher, model::StateConfig, Adapter, NetworkAdapterError, NetworkState,
-    NetworkSystem, NetworkSystemClient,
+    NetworkSystemClient, Starter,
 };
 
 /// Network adapter for tests.
@@ -49,10 +50,15 @@ impl Adapter for TestAdapter {
 }
 
 /// Starts a testing network service.
-pub async fn start_service() -> NetworkSystemClient {
+pub async fn start_service(
+    events: event::Sender,
+    issues: Handler<issue::Service>,
+    progress: Handler<progress::Service>,
+) -> NetworkSystemClient {
     let adapter = TestAdapter;
-    let system = NetworkSystem::new(adapter);
-    system
+
+    Starter::new(events, issues, progress)
+        .with_adapter(adapter)
         .start()
         .await
         .expect("Could not spawn a testing network service")

@@ -33,6 +33,7 @@ use std::{
     collections::HashMap,
     default::Default,
     fmt,
+    path::PathBuf,
     str::{self, FromStr},
 };
 use thiserror::Error;
@@ -139,7 +140,7 @@ impl NetworkState {
         self.devices.iter_mut().find(|c| c.name == name)
     }
 
-    /// Returns the controller's connection for the givne connection Uuid.
+    /// Returns the controller's connection for the given connection Uuid.
     pub fn get_controlled_by(&mut self, uuid: Uuid) -> Vec<&Connection> {
         let uuid = Some(uuid);
         self.connections
@@ -156,6 +157,37 @@ impl NetworkState {
             return Err(NetworkStateError::ConnectionExists(conn.id));
         }
         self.connections.push(conn);
+
+        Ok(())
+    }
+
+    // Persist the existing connections if there is no one to be persisted and the copy of the
+    // network is not disabled
+    pub fn propose_default(&mut self) -> Result<(), NetworkStateError> {
+        if !self.general_state.copy_network {
+            return Ok(());
+        }
+        if self.connections.is_empty() {
+            return Ok(());
+        }
+
+        let to_persist: Vec<&Connection> =
+            self.connections.iter().filter(|c| c.persistent).collect();
+        if !to_persist.is_empty() {
+            return Ok(());
+        }
+
+        for conn in self.connections.iter_mut() {
+            conn.persistent = true;
+            conn.keep_status();
+        }
+
+        Ok(())
+    }
+
+    pub fn install(&self) -> Result<(), NetworkStateError> {
+        const CONNECTIONS_PATH: &str = "/etc/NetworkManager/system-connections";
+        let from = PathBuf::from(CONNECTIONS_PATH);
 
         Ok(())
     }

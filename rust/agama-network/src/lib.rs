@@ -27,15 +27,13 @@ pub mod adapter;
 pub mod error;
 pub mod model;
 mod nm;
-pub mod start;
-pub use start::start;
-mod system;
+mod service;
 pub mod types;
 
 pub use action::Action;
 pub use adapter::{Adapter, NetworkAdapterError};
 pub use model::NetworkState;
 pub use nm::NetworkManagerAdapter;
-pub use system::{NetworkSystem, NetworkSystemClient, NetworkSystemError};
+pub use service::{NetworkSystemClient, NetworkSystemError, Service, Starter};
 
 pub mod test_utils;

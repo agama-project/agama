@@ -25,6 +25,7 @@ use crate::{
     types::{AccessPoint, Config, Device, DeviceType, Proposal, SystemInfo},
     Adapter, NetworkAdapterError, NetworkManagerAdapter,
 };
+use agama_utils::{actor::Handler, api::event, issue, progress};
 use std::error::Error;
 use tokio::sync::{
     broadcast::{self, Receiver},
@@ -45,7 +46,7 @@ pub enum NetworkSystemError {
     AdapterError(#[from] NetworkAdapterError),
 }
 
-/// Represents the network configuration service.
+/// Builds and spawns the network configuration service.
 ///
 /// It offers an API to start the service and interact with it by using message
 /// passing like the example below.
@@ -70,40 +71,62 @@ pub enum NetworkSystemError {
 ///     .expect("Could not get the list of devices.");
 /// # });
 /// ```
-pub struct NetworkSystem<T: Adapter + Send> {
-    adapter: T,
+pub struct Starter {
+    adapter: Option<Box<dyn Adapter + Send + 'static>>,
+    events: event::Sender,
+    issues: Handler<issue::Service>,
+    progress: Handler<progress::Service>,
 }
 
-impl<T: Adapter + Send + Sync + 'static> NetworkSystem<T> {
+impl Starter {
     /// Returns a new instance of the network configuration system.
     ///
     /// This function does not start the system. To get it running, you must call
     /// the [start](Self::start) method.
     ///
     /// * `adapter`: networking configuration adapter.
-    pub fn new(adapter: T) -> Self {
-        Self { adapter }
+    pub fn new(
+        events: event::Sender,
+        issues: Handler<issue::Service>,
+        progress: Handler<progress::Service>,
+    ) -> Self {
+        Self {
+            adapter: None,
+            events,
+            issues,
+            progress,
+        }
     }
 
-    /// Returns a new instance of the network configuration system using the [NetworkManagerAdapter] for the system.
-    pub async fn for_network_manager() -> NetworkSystem<NetworkManagerAdapter<'static>> {
-        let adapter = NetworkManagerAdapter::from_system()
-            .await
-            .expect("Could not connect to NetworkManager");
-
-        NetworkSystem::new(adapter)
+    /// Uses the given adapter.
+    ///
+    /// By default, the network service relies on systemd. However, it might be useful
+    /// to replace it in some scenarios (e.g., when testing).
+    ///
+    /// * `adapter`: model to use. It must implement the [ModelAdapter] trait.
+    pub fn with_adapter<T: Adapter + Send + 'static>(mut self, adapter: T) -> Self {
+        self.adapter = Some(Box::new(adapter));
+        self
     }
 
     /// Starts the network configuration service and returns a client for communication purposes.
     ///
-    /// This function starts the server (using [NetworkSystemServer]) on a separate
+    /// This function starts the server (using [Service]) on a separate
     /// task. All the communication is performed through the returned [NetworkSystemClient].
     pub async fn start(self) -> Result<NetworkSystemClient, NetworkSystemError> {
-        let state = self.adapter.read(StateConfig::default()).await?;
+        let adapter = match self.adapter {
+            Some(adapter) => adapter,
+            None => Box::new(
+                NetworkManagerAdapter::from_system(self.events, self.issues, self.progress)
+                    .await
+                    .expect("Could not connect to NetworkManager"),
+            ),
+        };
+
+        let state = adapter.read(StateConfig::default()).await?;
         let (actions_tx, actions_rx) = mpsc::unbounded_channel();
         let (updates_tx, _updates_rx) = broadcast::channel(1024);
-
-        if let Some(watcher) = self.adapter.watcher() {
+        if let Some(watcher) = adapter.watcher() {
             let actions_tx_clone = actions_tx.clone();
             tokio::spawn(async move {
                 watcher.run(actions_tx_clone).await.unwrap();
@@ -112,11 +135,11 @@ impl<T: Adapter + Send + Sync + 'static> NetworkSystem<T> {
 
         let updates_tx_clone = updates_tx.clone();
         tokio::spawn(async move {
-            let mut server = NetworkSystemServer {
+            let mut server = Service {
                 state,
                 input: actions_rx,
                 output: updates_tx_clone,
-                adapter: self.adapter,
+                adapter,
             };
 
             server.listen().await;
@@ -282,14 +305,22 @@ impl NetworkSystemClient {
     }
 }
 
-struct NetworkSystemServer<T: Adapter> {
+pub struct Service {
     state: NetworkState,
     input: UnboundedReceiver<Action>,
     output: broadcast::Sender<NetworkChange>,
-    adapter: T,
+    adapter: Box<dyn Adapter + Send + 'static>,
 }
 
-impl<T: Adapter> NetworkSystemServer<T> {
+impl Service {
+    pub fn starter(
+        events: event::Sender,
+        issues: Handler<issue::Service>,
+        progress: Handler<progress::Service>,
+    ) -> Starter {
+        Starter::new(events, issues, progress)
+    }
+
     /// Process incoming actions.
     ///
     /// This function is expected to be executed on a separate thread.
@@ -313,6 +344,10 @@ impl<T: Adapter> NetworkSystemServer<T> {
         action: Action,
     ) -> Result<Option<NetworkChange>, Box<dyn Error>> {
         match action {
+            Action::ProposeDefault(tx) => {
+                let result = self.state.propose_default();
+                tx.send(result).unwrap();
+            }
             Action::AddConnection(name, ty, tx) => {
                 let result = self.add_connection_action(name, ty).await;
                 tx.send(result).unwrap();

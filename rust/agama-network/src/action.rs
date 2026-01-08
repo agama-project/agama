@@ -81,6 +81,7 @@ pub enum Action {
         Box<Vec<String>>,
         Responder<Result<(), NetworkStateError>>,
     ),
+    ProposeDefault(Responder<Result<(), NetworkStateError>>),
     /// Updates a connection (replacing the old one).
     UpdateConnection(Box<Connection>, Responder<Result<(), NetworkStateError>>),
     /// Updates the general network configuration
