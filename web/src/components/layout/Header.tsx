@@ -30,6 +30,7 @@ import {
   MastheadMain,
   MenuToggle,
   MenuToggleElement,
+  Title,
   Toolbar,
   ToolbarContent,
   ToolbarGroup,
@@ -99,6 +100,7 @@ const OptionsDropdown = () => {
  * Built on top of {@link https://www.patternfly.org/components/masthead | PF/Masthead}
  */
 export default function Header({
+  title,
   breadcrumb,
   showSkipToContent = true,
   showInstallerOptions = true,
@@ -109,27 +111,31 @@ export default function Header({
     <Masthead>
       <MastheadMain className={spacingStyles.pXs}>
         {showSkipToContent && <SkipTo />}
-        <Breadcrumb>
-          {product && breadcrumb && (
-            <Breadcrumb.Item
-              hideDivider
-              isEditorial
-              path={ROOT.overview}
-              label={
-                <Icon
-                  name="list_alt"
-                  width="1.4em"
-                  height="1.4em"
-                  style={{ verticalAlign: "middle" }}
-                />
-              }
-            />
-          )}
-          {breadcrumb &&
-            breadcrumb.map(({ label, path }, i) => (
-              <Breadcrumb.Item isEditorial={i === 0} key={i} label={label} path={path} />
-            ))}
-        </Breadcrumb>
+        {title ? (
+          <Title headingLevel="h1">{title}</Title>
+        ) : (
+          <Breadcrumb>
+            {product && breadcrumb && (
+              <Breadcrumb.Item
+                hideDivider
+                isEditorial
+                path={ROOT.overview}
+                label={
+                  <Icon
+                    name="list_alt"
+                    width="1.4em"
+                    height="1.4em"
+                    style={{ verticalAlign: "middle" }}
+                  />
+                }
+              />
+            )}
+            {breadcrumb &&
+              breadcrumb.map(({ label, path }, i) => (
+                <Breadcrumb.Item isEditorial={i === 0} key={i} label={label} path={path} />
+              ))}
+          </Breadcrumb>
+        )}
       </MastheadMain>
       <MastheadContent>
         <Toolbar isFullHeight>

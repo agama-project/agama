@@ -22,21 +22,17 @@
 
 import React from "react";
 import { Navigate } from "react-router";
-import { Button, Content, Flex, Split } from "@patternfly/react-core";
+import { Button, Content, Divider, Flex, Grid, GridItem } from "@patternfly/react-core";
 import Page from "~/components/core/Page";
 import Text from "~/components/core/Text";
-import Details from "~/components/core/Details";
-import HostnameDetailsItem from "~/components/system/HostnameDetailsItem";
-import L10nDetailsItem from "~/components/l10n/L10nDetailsItem";
-import StorageDetailsItem from "~/components/storage/StorageDetailsItem";
-import NetworkDetailsItem from "~/components/network/NetworkDetailsItem";
-import SoftwareDetailsItem from "~/components/software/SoftwareDetailsItem";
 import PotentialDataLossAlert from "~/components/storage/PotentialDataLossAlert";
 import { startInstallation } from "~/model/manager";
 import { useProductInfo } from "~/hooks/model/config/product";
 import { PRODUCT } from "~/routes/paths";
 import { useDestructiveActions } from "~/hooks/use-destructive-actions";
 import { _ } from "~/i18n";
+import InstallationSummarySection from "../overview/InstallationSummarySection";
+import SystemInformationSection from "../overview/SystemInformationSection";
 
 export default function ConfirmPage() {
   const product = useProductInfo();
@@ -47,37 +43,38 @@ export default function ConfirmPage() {
     return <Navigate to={PRODUCT.root} />;
   }
 
-  return (
-    <Page>
-      <Page.Content>
-        <Flex
-          direction={{ default: "column" }}
-          gap={{ default: "gapMd" }}
-          alignContent={{ default: "alignContentCenter" }}
-          alignItems={{ default: "alignItemsFlexStart" }}
-          justifyContent={{ default: "justifyContentCenter" }}
-        >
-          <Content component="h1">{product.name}</Content>
-          <Content component="p" isEditorial>
-            {
-              // TRANSLATORS: Introductory text shown in the overview page
-              // either, after selecting a product or before starting the
-              // installation.
-              _(
-                "Review installation settings below and adjust them as needed before starting the installation process.",
-              )
-            }
-          </Content>
-          <PotentialDataLossAlert />
-          <Details isHorizontal isCompact>
-            <HostnameDetailsItem withoutLink />
-            <L10nDetailsItem withoutLink />
-            <StorageDetailsItem withoutLink />
-            <NetworkDetailsItem withoutLink />
-            <SoftwareDetailsItem withoutLink />
-          </Details>
+  const [buttonLocationStart, buttonLocationEnd] = _(
+    "When ready, click on the %s button at te end of the page.",
+  ).split("%s");
 
-          <Split hasGutter style={{ marginBlock: "2rem" }}>
+  return (
+    <Page title={product.name}>
+      <Page.Content>
+        <Flex gap={{ default: "gapMd" }} direction={{ default: "column" }}>
+          <div>
+            <Content isEditorial>
+              {
+                // TRANSLATORS: Introductory text shown in the overview page
+                // either, after selecting a product or before starting the
+                // installation.
+                _("Take a moment to review the installation settings and adjust them as needed.")
+              }
+            </Content>
+            <Content>
+              {buttonLocationStart} <strong>{_("install now")}</strong> {buttonLocationEnd}
+            </Content>
+          </div>
+          <Divider />
+          <PotentialDataLossAlert />
+          <Grid hasGutter>
+            <GridItem md={12} lg={6}>
+              <InstallationSummarySection />
+            </GridItem>
+            <GridItem md={12} lg={6}>
+              <SystemInformationSection />
+            </GridItem>
+          </Grid>
+          <Flex>
             <Button
               size="lg"
               variant={hasDestructiveActions ? "danger" : "primary"}
@@ -89,7 +86,7 @@ export default function ConfirmPage() {
                   : _("Install now")}
               </Text>
             </Button>
-          </Split>
+          </Flex>
         </Flex>
       </Page.Content>
     </Page>

@@ -20,7 +20,9 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useId, Suspense } from "react";
+import React, { Suspense, useId } from "react";
+import { Outlet, useLocation, useNavigate } from "react-router";
+import Link, { LinkProps } from "~/components/core/Link";
 import {
   Button,
   ButtonProps,
@@ -43,18 +45,16 @@ import {
   Title,
   TitleProps,
 } from "@patternfly/react-core";
-import { ProductRegistrationAlert } from "~/components/product";
-import Link, { LinkProps } from "~/components/core/Link";
-import Loading from "~/components/layout/Loading";
-import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import flexStyles from "@patternfly/react-styles/css/utilities/Flex/flex";
-import { Outlet, useLocation, useNavigate } from "react-router";
+import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import { isEmpty, isObject } from "radashi";
 import { PRODUCT, ROOT, SIDE_PATHS } from "~/routes/paths";
 import { _, TranslatedString } from "~/i18n";
 import type { ProgressBackdropProps } from "~/components/core/ProgressBackdrop";
 import ProgressBackdrop from "~/components/core/ProgressBackdrop";
 import Header from "~/components/layout/Header";
+import Loading from "~/components/layout/Loading";
+import { ProductRegistrationAlert } from "~/components/product";
 import { Questions } from "../questions";
 
 /**
@@ -314,7 +314,7 @@ const Limited = ({ children }) => {
   );
 };
 
-const Full = ({ progress, children, breadcrumbs }) => {
+const Full = ({ progress, children, breadcrumbs, title }) => {
   const location = useLocation();
 
   return (
@@ -322,6 +322,7 @@ const Full = ({ progress, children, breadcrumbs }) => {
       isContentFilled
       masthead={
         <Header
+          title={title}
           breadcrumb={breadcrumbs}
           showInstallerOptions={[ROOT.root, ROOT.overview, PRODUCT.changeProduct].includes(
             location.pathname,
@@ -385,6 +386,7 @@ const Full = ({ progress, children, breadcrumbs }) => {
  * ```
  */
 const Page = ({
+  title,
   emptyHeader,
   breadcrumbs,
   progress,
@@ -395,7 +397,7 @@ const Page = ({
   return emptyHeader ? (
     <Limited>{children}</Limited>
   ) : (
-    <Full progress={progress} breadcrumbs={breadcrumbs}>
+    <Full progress={progress} breadcrumbs={breadcrumbs} title={title}>
       {children}
     </Full>
   );
