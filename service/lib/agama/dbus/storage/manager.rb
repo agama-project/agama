@@ -115,11 +115,8 @@ module Agama
 
         # Implementation for the API method #Install.
         def install
-          start_progress(4, _("Preparing bootloader proposal"))
+          start_progress(3, _("Preparing bootloader proposal"))
           backend.bootloader.configure
-
-          next_progress_step(_("Adding storage-related packages"))
-          backend.add_packages
 
           next_progress_step(_("Preparing the storage devices"))
           backend.install
@@ -404,6 +401,8 @@ module Agama
         # @param config_json [Hash, nil] see Agama::Storage::Manager#configure
         def calculate_proposal(config_json = nil)
           backend.configure(config_json)
+          backend.add_packages if backend.proposal.success?
+
           self.ProposalChanged(recover_proposal)
         end
 
