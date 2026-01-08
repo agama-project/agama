@@ -23,6 +23,7 @@ use std::collections::HashMap;
 
 use merge::Merge;
 use serde::{Deserialize, Serialize};
+use url::Url;
 
 /// User configuration for the localization of the target system.
 ///
@@ -67,7 +68,7 @@ pub struct ProductConfig {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub registration_email: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub registration_url: Option<String>,
+    pub registration_url: Option<Url>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub addons: Option<Vec<AddonConfig>>,
 }

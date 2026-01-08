@@ -20,15 +20,15 @@
 
 use std::str::FromStr;
 
-use agama_autoinstall::{ConfigAutoLoader, KernelCmdline, ScriptsRunner};
+use agama_autoinstall::{ConfigAutoLoader, ScriptsRunner};
 use agama_lib::{
     auth::AuthToken,
     http::BaseHTTPClient,
     manager::{FinishMethod, ManagerHTTPClient},
 };
+use agama_utils::kernel_cmdline::KernelCmdline;
 use anyhow::anyhow;
 
-const CMDLINE_FILE: &str = "/run/agama/cmdline.d/agama.conf";
 const API_URL: &str = "http://localhost/api";
 
 pub fn build_base_client() -> anyhow::Result<BaseHTTPClient> {
@@ -43,7 +43,7 @@ pub fn insecure_from(cmdline: &KernelCmdline, key: &str) -> bool {
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
-    let args = KernelCmdline::parse_file(CMDLINE_FILE)?;
+    let args = KernelCmdline::parse()?;
     let http = build_base_client()?;
     let manager_client = ManagerHTTPClient::new(http.clone());
 

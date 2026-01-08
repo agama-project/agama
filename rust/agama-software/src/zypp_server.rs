@@ -702,6 +702,10 @@ impl ZyppServer {
             registration = registration.with_email(email);
         }
 
+        if let Some(url) = &state.url {
+            registration = registration.with_url(url);
+        }
+
         match registration.register(&zypp) {
             Ok(registration) => {
                 self.registration = Some(registration);
