@@ -138,21 +138,17 @@ const Title = ({ status }: TitleProps) => {
  * most relevant data (e.g., IP addresses), giving users a quick understanding
  * of the network setup before they dive into the section for more details.
  */
-export default function NetworkDetailsItem({ withoutLink = false }: { withoutLink?: boolean }) {
+export default function NetworkDetailsItem() {
   const { status, persistentConnections } = useNetworkStatus();
 
   return (
     <Details.StackItem
-      label={_("Network")}
-      content={
-        withoutLink ? (
-          <Title status={status} />
-        ) : (
-          <Link to={NETWORK.root} variant="link" isInline>
-            <Title status={status} />
-          </Link>
-        )
+      label={
+        <Link to={NETWORK.root} variant="link" isInline>
+          {_("Network")}
+        </Link>
       }
+      content={<Title status={status} />}
       description={<Description status={status} connections={persistentConnections} />}
     />
   );

@@ -29,7 +29,7 @@ import { L10N } from "~/routes/paths";
 import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
 
-export default function L10nDetailsItem({ withoutLink = false }: { withoutLink?: boolean }) {
+export default function L10nDetailsItem() {
   const l10nProposal = useProposal();
   const l10nSystem = useSystem();
   const locale =
@@ -46,16 +46,12 @@ export default function L10nDetailsItem({ withoutLink = false }: { withoutLink?:
 
   return (
     <Details.StackItem
-      label={_("Language and region")}
-      content={
-        withoutLink ? (
-          title
-        ) : (
-          <Link to={L10N.root} variant="link" isInline>
-            {title}
-          </Link>
-        )
+      label={
+        <Link to={L10N.root} variant="link" isInline>
+          {_("Language and region")}
+        </Link>
       }
+      content={title}
       description={
         // TRANSLATORS: Additional details shown under the language selection.
         // %1$s is the keyboard layout name (e.g. "Spanish").

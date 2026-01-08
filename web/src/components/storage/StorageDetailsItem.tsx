@@ -134,21 +134,17 @@ const DescriptionContent = () => {
  * the component name itself. These changes should be addressed in a final step,
  * once all "overview/confirmation" items are clearly defined.
  */
-export default function StorageDetailsItem({ withoutLink = false }: { withoutLink?: boolean }) {
+export default function StorageDetailsItem() {
   const { loading } = useProgressTracking("storage");
 
   return (
     <Details.StackItem
-      label={_("Storage")}
-      content={
-        withoutLink ? (
-          <LinkContent />
-        ) : (
-          <Link to={STORAGE.root} variant="link" isInline>
-            <LinkContent />
-          </Link>
-        )
+      label={
+        <Link to={STORAGE.root} variant="link" isInline>
+          {_("Storage")}
+        </Link>
       }
+      content={<LinkContent />}
       description={<DescriptionContent />}
       isLoading={loading}
     />

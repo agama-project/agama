@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2025] SUSE LLC
+ * Copyright (c) [2025-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -21,20 +21,25 @@
  */
 
 import React from "react";
-import Page from "~/components/core/Page";
-import NestedContent from "~/components/core/NestedContent";
+import { Flex, Title } from "@patternfly/react-core";
 import Details from "~/components/core/Details";
 import HostnameDetailsItem from "~/components/system/HostnameDetailsItem";
 import L10nDetailsItem from "~/components/l10n/L10nDetailsItem";
-import StorageDetailsItem from "../storage/StorageDetailsItem";
-import NetworkDetailsItem from "../network/NetworkDetailsItem";
-import SoftwareDetailsItem from "../software/SoftwareDetailsItem";
+import StorageDetailsItem from "~/components/storage/StorageDetailsItem";
+import NetworkDetailsItem from "~/components/network/NetworkDetailsItem";
+import SoftwareDetailsItem from "~/components/software/SoftwareDetailsItem";
 import { _ } from "~/i18n";
+
+import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
+import { NestedContent } from "../core";
 
 export default function InstallationSummarySection() {
   return (
-    <Page.Section title={_("Installation summary")}>
-      <NestedContent margin="mMd">
+    <Flex gap={{ default: "gapSm" }} direction={{ default: "column" }}>
+      <Title headingLevel="h2" className={textStyles.fontSizeLg}>
+        {_("Installation settings")}
+      </Title>
+      <NestedContent margin="mxSm">
         <Details isHorizontal isCompact>
           <HostnameDetailsItem />
           <L10nDetailsItem />
@@ -43,6 +48,6 @@ export default function InstallationSummarySection() {
           <SoftwareDetailsItem />
         </Details>
       </NestedContent>
-    </Page.Section>
+    </Flex>
   );
 }
