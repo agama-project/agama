@@ -13,6 +13,23 @@ cd "$(dirname "$0")"
 OUTPUT="${1:-agama.pot}"
 XGETTEXT="${2:-xgettext}"
 
+# In this complex invocation, the order of option is roughly
+# from generic to specific.
+# (putting this to a function enables putting the above comment close to the code,
+# unlike in the pipeline)
+call_xgettext() {
+  $XGETTEXT \
+    --files-from=- \
+    --output="$OUTPUT" \
+    --sort-by-file \
+    --from-code=UTF-8 \
+    --foreign-user --copyright-holder="SuSE Linux Products GmbH, Nuernberg" \
+    --add-comments=TRANSLATORS \
+    --default-domain=agama \
+    --language=tsx \
+    --keyword= --keyword=_:1 --keyword=N_:1 --keyword=n_:1,2 --keyword=Nn_:1,2
+}
+
 # Idea: find files of certain extensions
 # but not those matching certain more specific patterns
 find . \
@@ -29,7 +46,4 @@ find . \
   ! -name '*.test.tsx' \
   -name '*.tsx' |
 grep -vE "node_modules/|dist/|coverage/" | \
-$XGETTEXT --default-domain=agama --output="$OUTPUT" --language=tsx --files-from=- \
-  --keyword= --keyword=_:1 --keyword=N_:1 --keyword=n_:1,2 --keyword=Nn_:1,2 \
-  --foreign-user --copyright-holder="SuSE Linux Products GmbH, Nuernberg" \
-  --from-code=UTF-8 --add-comments=TRANSLATORS --sort-by-file
+call_xgettext
