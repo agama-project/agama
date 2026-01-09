@@ -29,6 +29,7 @@ import Popup from "~/components/core/Popup";
 import PotentialDataLossAlert from "~/components/storage/PotentialDataLossAlert";
 import InstallationSummarySection from "~/components/overview/InstallationSummarySection";
 import SystemInformationSection from "~/components/overview/SystemInformationSection";
+import ProductLogo from "~/components/product/ProductLogo";
 import { startInstallation } from "~/model/manager";
 import { useProductInfo } from "~/hooks/model/config/product";
 import { useIssues } from "~/hooks/model/issue";
@@ -65,7 +66,13 @@ export default function ConfirmPage() {
   ).split("%s");
 
   return (
-    <Page title={product.name}>
+    <Page
+      title={
+        <>
+          <ProductLogo product={product} width="40px" /> {product.name}
+        </>
+      }
+    >
       <Page.Content>
         <Flex gap={{ default: "gapMd" }} direction={{ default: "column" }}>
           <div>
