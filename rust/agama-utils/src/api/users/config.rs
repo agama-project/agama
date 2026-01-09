@@ -26,5 +26,6 @@ use serde::{Deserialize, Serialize};
 #[derive(Clone, Debug, Default, Serialize, Deserialize, PartialEq, Merge, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct Config {
+    #[serde(flatten)]
     pub users: UserSettings,
 }

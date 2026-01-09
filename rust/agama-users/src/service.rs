@@ -115,7 +115,7 @@ impl Service {
         // - typicaly root or
         // - first user which will operate throught sudo
         if self.full_config.settings.root.is_none()
-            || self.full_config.settings.first_user.is_none()
+            && self.full_config.settings.first_user.is_none()
         {
             issues.push(Issue::new(
                 "No user defined",

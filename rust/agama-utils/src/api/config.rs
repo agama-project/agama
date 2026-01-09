@@ -48,7 +48,7 @@ pub struct Config {
     pub storage: Option<storage::Config>,
     #[serde(flatten, skip_serializing_if = "Option::is_none")]
     pub files: Option<files::Config>,
-    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(flatten, skip_serializing_if = "Option::is_none")]
     pub users: Option<users::Config>,
 }
 
