@@ -15,3 +15,5 @@
 /target-coverage/
 cobertura.xml
 tarpaulin_*.json
+
+/agama.pot
