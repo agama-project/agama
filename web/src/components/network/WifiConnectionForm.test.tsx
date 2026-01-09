@@ -26,31 +26,6 @@ import { installerRender } from "~/test-utils";
 import WifiConnectionForm from "./WifiConnectionForm";
 import { Connection, SecurityProtocols, WifiNetworkStatus, Wireless } from "~/types/network";
 
-const mockUpdateConnection = jest.fn();
-
-jest.mock("~/hooks/model/config/network", () => ({
-  ...jest.requireActual("~/hooks/model/config/network"),
-  useConnectionMutation: () => ({
-    mutateAsync: mockUpdateConnection,
-  }),
-}));
-
-jest.mock("~/api", () => ({
-  ...jest.requireActual("~/api"),
-  configureL10nAction: () => jest.fn(),
-}));
-
-jest.mock("~/hooks/model/system", () => ({
-  ...jest.requireActual("~/hooks/model/system"),
-  useSystem: () => jest.fn(),
-}));
-
-jest.mock("~/hooks/model/system/network", () => ({
-  ...jest.requireActual("~/hooks/model/system/network"),
-  useSystem: () => mockSystem,
-  useConnections: () => mockSystem.connections,
-}));
-
 const mockConnection = new Connection("Visible Network", {
   wireless: new Wireless({ ssid: "Visible Network" }),
 });
@@ -78,6 +53,31 @@ const networkMock = {
 };
 
 const publicNetworkMock = { ...networkMock, security: [] };
+
+const mockUpdateConnection = jest.fn();
+
+jest.mock("~/hooks/model/config/network", () => ({
+  ...jest.requireActual("~/hooks/model/config/network"),
+  useConnectionMutation: () => ({
+    mutateAsync: mockUpdateConnection,
+  }),
+}));
+
+jest.mock("~/api", () => ({
+  ...jest.requireActual("~/api"),
+  configureL10nAction: () => jest.fn(),
+}));
+
+jest.mock("~/hooks/model/system", () => ({
+  ...jest.requireActual("~/hooks/model/system"),
+  useSystem: () => jest.fn(),
+}));
+
+jest.mock("~/hooks/model/system/network", () => ({
+  ...jest.requireActual("~/hooks/model/system/network"),
+  useSystem: () => mockSystem,
+  useConnections: () => mockSystem.connections,
+}));
 
 describe("WifiConnectionForm", () => {
   beforeEach(() => {

@@ -132,10 +132,6 @@ describe("Details", () => {
         </Details>,
       );
 
-      const flexContainer = container.querySelector(
-        '[class*="pf-v"][class*="-l-flex"][class*=pf-m-column]',
-      );
-
       screen.getByText("Storage");
       screen.getByRole("link", { name: /Use device vdd/i });
       const small = container.querySelector("small");
