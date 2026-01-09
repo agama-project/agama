@@ -165,6 +165,22 @@ impl MessageHandler<message::SetConfig<api::users::Config>> for Service {
         &mut self,
         message: message::SetConfig<api::users::Config>,
     ) -> Result<(), Error> {
+        tracing::info!("Users service - SetConfig");
+
+        let base_config = Config::new_from(&self.system);
+
+        let config = if let Some(config) = &message.config {
+            base_config.merge(config)?
+        } else {
+            base_config
+        };
+
+        if config == self.full_config {
+            return Ok(());
+        }
+
+        self.full_config = config;
+
         Ok(())
     }
 }

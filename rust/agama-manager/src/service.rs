@@ -357,6 +357,8 @@ impl Service {
     }
 
     async fn set_config(&mut self, config: Config) -> Result<(), Error> {
+        tracing::info!("Manager service - set_config");
+
         self.set_product(&config)?;
 
         let Some(product) = &self.product else {
@@ -390,6 +392,10 @@ impl Service {
             .call(l10n::message::SetConfig::new(config.l10n.clone()))
             .await?;
 
+        self.users
+            .call(users::message::SetConfig::new(config.users.clone()))
+            .await?;
+
         self.storage
             .call(storage::message::SetConfig::new(
                 Arc::clone(product),
@@ -404,14 +410,12 @@ impl Service {
             ))
             .await?;
 
-        self.users
-            .call(users::message::SetConfig::new(config.users.clone()))
-            .await?;
-
         if let Some(network) = config.network.clone() {
             self.network.update_config(network).await?;
             self.network.apply().await?;
         }
+
+        tracing::info!("Manager service - set_config: {:?}", config);
 
         self.config = config;
         Ok(())
@@ -569,6 +573,7 @@ impl MessageHandler<message::GetConfig> for Service {
 impl MessageHandler<message::SetConfig> for Service {
     /// Sets the user configuration with the given values.
     async fn handle(&mut self, message: message::SetConfig) -> Result<(), Error> {
+        tracing::info!("Manager service - SetConfig handler");
         self.check_stage(Stage::Configuring).await?;
         self.set_config(message.config).await
     }
@@ -581,6 +586,7 @@ impl MessageHandler<message::UpdateConfig> for Service {
     /// It merges the current config with the given one. If some scope is missing in the given
     /// config, then it keeps the values from the current config.
     async fn handle(&mut self, message: message::UpdateConfig) -> Result<(), Error> {
+        tracing::info!("Manager service - UpdateConfig handler");
         self.check_stage(Stage::Configuring).await?;
         let mut new_config = message.config;
         new_config.merge(self.config.clone());

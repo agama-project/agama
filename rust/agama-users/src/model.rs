@@ -62,7 +62,7 @@ impl Model {
     }
 
     fn read(&mut self) -> Result<(), service::Error> {
-        tracing::debug!("Reading users list from the system.");
+        tracing::info!("Reading users list from the system.");
 
         let mut reader = PasswdReader::new(Duration::new(0, 0));
 
@@ -79,7 +79,7 @@ impl Model {
             })
             .collect();
 
-        tracing::debug!("List of users read: {:0?}", self.users);
+        tracing::info!("List of users read: {:0?}", self.users);
 
         Ok(())
     }

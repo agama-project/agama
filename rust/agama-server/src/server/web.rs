@@ -226,14 +226,19 @@ async fn patch_config(
     State(state): State<ServerState>,
     Json(patch): Json<Patch>,
 ) -> ServerResult<()> {
+    tracing::info!("Agama server - patch config");
     if let Some(json) = patch.update {
+        tracing::info!("Agama server - patch config - before check: {:?}", json);
         config_schema::check(&json)?;
+        tracing::info!("Agama server - patch config - before UpdateConfig");
         let config = serde_json::from_value(json)?;
+        tracing::info!("Agama server - patch config - config = {:?}", config);
         state
             .manager
             .call(message::UpdateConfig::new(config))
             .await?;
     }
+    tracing::info!("Agama server - patch config - done");
     Ok(())
 }
 
