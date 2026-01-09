@@ -49,6 +49,7 @@ const ROOT = {
   root: "/",
   login: "/login",
   overview: "/overview",
+  confirm: "/confirm",
   installation: "/installation",
   installationProgress: "/installation/progress",
   installationFinished: "/installation/finished",
@@ -115,6 +116,7 @@ const HOSTNAME = {
  */
 const SIDE_PATHS = [
   ROOT.login,
+  ROOT.confirm,
   PRODUCT.changeProduct,
   PRODUCT.progress,
   ROOT.installationProgress,
