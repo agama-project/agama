@@ -98,6 +98,7 @@
         <package name="blog" arch="s390x" />
         <package name="libblogger2" arch="s390x" />
         <package name="NetworkManager"/>
+        <package name="NetworkManager-tui"/>
         <package name="agama"/>
         <package name="agama-yast"/>
         <package name="agama-web-ui"/>
