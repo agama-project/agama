@@ -20,7 +20,6 @@
 
 use crate::service;
 use agama_utils::api::users::UserSettings;
-use std::time::Duration;
 
 /// Abstract the users-related configuration from the underlying system.
 pub trait ModelAdapter: Send + 'static {
@@ -41,7 +40,14 @@ impl Model {
     /// Currently we do not care about default users on live media so
     /// basically does nothing.
     pub fn from_system() -> Result<Self, service::Error> {
-        let model = { Model { users: UserSettings { first_user: None, root: None }}};
+        let model = {
+            Model {
+                users: UserSettings {
+                    first_user: None,
+                    root: None,
+                },
+            }
+        };
 
         Ok(model)
     }

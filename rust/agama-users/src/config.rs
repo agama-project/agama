@@ -18,7 +18,6 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::service;
 use agama_utils::api::{self, users::settings::UserSettings};
 
 // For now it is just a copy of what is in agama_utils::users::Config
@@ -34,19 +33,22 @@ pub struct Config {
 impl Config {
     pub fn new() -> Self {
         Self {
-            settings: { UserSettings { first_user: None, root: None } }
+            settings: {
+                UserSettings {
+                    first_user: None,
+                    root: None,
+                }
+            },
         }
     }
 
     pub fn to_api(&self) -> Option<api::users::Config> {
-        if self.settings.root.is_none() ||
-           self.settings.first_user.is_none() {
+        if self.settings.root.is_none() || self.settings.first_user.is_none() {
             return None;
-         }
+        }
 
         Some(api::users::Config {
             users: self.settings.clone(),
         })
     }
-
 }
