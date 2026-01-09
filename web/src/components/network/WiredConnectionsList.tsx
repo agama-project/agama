@@ -65,7 +65,7 @@ const ConnectionListItem = ({ connection }: ConnectionListItemProps) => {
                 </Content>
                 <Content id={ipId} component="small">
                   <Content className={a11yStyles.screenReader}>{_("IP addresses")}</Content>
-                  {addresses.map(formatIp).join(", ")}
+                  {addresses.map((addr) => formatIp(addr)).join(", ")}
                 </Content>
                 {!connection.persistent && (
                   <Annotation>{_("Configured for installation only")}</Annotation>

@@ -187,7 +187,7 @@ const connectionAddresses = (connection: Connection, devices: Device[]): string 
   );
   const addresses = device ? device.addresses : connection.addresses;
 
-  return addresses?.map(formatIp).join(", ");
+  return addresses?.map((addr) => formatIp(addr)).join(", ");
 };
 
 /**

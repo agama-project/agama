@@ -139,7 +139,7 @@ const NetworkListItem = ({ network, connection, showIp }: NetworkListItemProps) 
                 {showIp && network.device && (
                   <Content id={ipId} component="small">
                     <Content className={a11yStyles.screenReader}>{_("IP addresses")}</Content>
-                    {network.device?.addresses.map(formatIp).join(", ")}
+                    {network.device?.addresses.map((addr) => formatIp(addr)).join(", ")}
                   </Content>
                 )}
 
