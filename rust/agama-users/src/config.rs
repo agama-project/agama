@@ -25,7 +25,7 @@ use agama_utils::api::{self, users::settings::UserSettings};
 // - impl part bellow which need not to be shared across rest of the Agama
 // - one day it might be useful to separate implementation e.g. by changing to
 // property: Option<holding a Type> in agama_utils vs property: Type here
-#[derive(Clone, PartialEq)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct Config {
     pub settings: UserSettings,
 }
@@ -43,7 +43,7 @@ impl Config {
     }
 
     pub fn to_api(&self) -> Option<api::users::Config> {
-        if self.settings.root.is_none() || self.settings.first_user.is_none() {
+        if self.settings.root.is_none() && self.settings.first_user.is_none() {
             return None;
         }
 

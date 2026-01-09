@@ -147,15 +147,12 @@ impl MessageHandler<message::GetConfig> for Service {
     }
 }
 
-// TODO:
 #[async_trait]
 impl MessageHandler<message::SetConfig<api::users::Config>> for Service {
     async fn handle(
         &mut self,
         message: message::SetConfig<api::users::Config>,
     ) -> Result<(), Error> {
-        tracing::info!("Users service - SetConfig");
-
         let mut base_config = Config::new();
 
         let config = if let Some(config) = &message.config {
