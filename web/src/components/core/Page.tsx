@@ -49,7 +49,6 @@ import flexStyles from "@patternfly/react-styles/css/utilities/Flex/flex";
 import { useLocation, useNavigate } from "react-router";
 import { isEmpty, isObject } from "radashi";
 import { SIDE_PATHS } from "~/routes/paths";
-import { _ } from "~/i18n";
 import { _, TranslatedString } from "~/i18n";
 import type { ProgressBackdropProps } from "~/components/core/ProgressBackdrop";
 import ProgressBackdrop from "~/components/core/ProgressBackdrop";
