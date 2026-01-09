@@ -1,4 +1,23 @@
 -------------------------------------------------------------------
+Fri Jan  9 14:43:59 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 19.pre
+- Introduce the version 2 of the HTTP API (gh#agama-project/agama#2997).
+- Add new services, ported from Ruby:
+  - hostname
+  - files
+  - manager
+  - storage
+- Replace the old API with the new one.
+- Adapt most parts of the CLI to the new HTTP API.
+- Missing pieces:
+  - Users and authentication handling.
+  - iSCSI, DASD, zFCP.
+  - Network proxy.
+  - IPMI.
+  - Use self-signed certificates for registration.
+
+-------------------------------------------------------------------
 Wed Nov 19 14:49:59 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
 
 - Do not build on 32bit arches (like i586) and PPC64-BE,
