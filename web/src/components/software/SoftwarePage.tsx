@@ -39,7 +39,7 @@ import UsedSize from "./UsedSize";
 import { useIssues } from "~/hooks/model/issue";
 import { useProposal } from "~/hooks/model/proposal/software";
 import { useSystem } from "~/hooks/model/system/software";
-import { _ } from "~/i18n";
+import { N_, _ } from "~/i18n";
 import { SOFTWARE as PATHS } from "~/routes/paths";
 import xbytes from "xbytes";
 import { PatternsSelection, SelectedBy } from "~/model/proposal/software";
@@ -100,7 +100,7 @@ const NoPatterns = (): React.ReactNode => (
   </Page.Section>
 );
 
-const errorMsg = _(
+const errorMsg = N_(
   /* TRANSLATORS: error details followed by a "Try again" link*/
   "Some installation repositories could not be loaded. \
 The system cannot be installed without them.",
@@ -123,7 +123,7 @@ const ReloadSection = ({
       </>
     ) : (
       <>
-        {errorMsg}{" "}
+        {_(errorMsg)}{" "}
         <Button variant="link" isInline onClick={action}>
           {/* TRANSLATORS: link for retrying failed repository load */}
           {_("Try again")}

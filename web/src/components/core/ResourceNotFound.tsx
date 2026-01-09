@@ -29,12 +29,12 @@ import {
 } from "@patternfly/react-core";
 import Icon from "../layout/Icon";
 import Link from "../core/Link";
-import { _ } from "~/i18n";
+import { _, TranslatedString } from "~/i18n";
 
 type ResourceNotFoundProps = {
-  title?: string;
+  title?: TranslatedString;
   body?: React.ReactNode;
-  linkText: string;
+  linkText: TranslatedString;
   linkPath: string;
 };
 

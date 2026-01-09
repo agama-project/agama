@@ -370,7 +370,7 @@ export default {
     "Vaihda tiedostojärjestelmää tai liitoskohtaa"
   ],
   "Changes in these settings will immediately update the 'Result' section below.": [
-    ""
+    "Muutokset näissä asetuksissa näkyvät välittömästi alla olevassa ”Tulos”-osiossa."
   ],
   "Channel ID": [
     "Kanavatunniste"
@@ -1407,10 +1407,13 @@ export default {
     "Käynnistämiseen tarvittavat osiot otetaan tarvittaessa käyttöön asennuslevyltä,          perustuen %s-tiedostojärjestelmän sijaintiin."
   ],
   "Partitions to boot will be set up if needed at the installation disk.         Currently %1$s, based on the location of the %2$s file system.": [
-    ""
+    "Käynnistämiseen tarvittavat osiot otetaan tarvittaessa käyttöön asennuslevyltä.      Tällä hetkellä kyseessä on %1$s, perustuen%2$s-tiedostojärjestelmän sijaintiin."
   ],
   "Partitions to boot will be set up if needed at the installation disk.       Currently %1$s, based on the location of the %2$s file system.": [
-    "Käynnistämiseen tarvittavat osiot otetaan tarvittaessa käyttöön asennuslevyltä.      Tällä hetkellä kyseessä on %1$s, perustuen%2$s-tiedostojärjestelmän sijaintiin."
+    "Käynnistämiseen tarvittavat osiot otetaan tarvittaessa käyttöön asennuslevyltä.      Tällä hetkellä kyseessä on %1$s, perustuen %2$s-tiedostojärjestelmän sijaintiin."
+  ],
+  "Partitions to host \"system\" will be created if needed.": [
+    "Järjestelmätiedostojen tarvitsemat osiot luodaan tarvittaessa."
   ],
   "Partitions will be used and created for %s": [
     "Osioita tullaan luomaan ja käyttämään liitoskohdalle %s"
@@ -1474,6 +1477,9 @@ export default {
   ],
   "Product is already registered": [
     "Tuote on jo rekisteröity"
+  ],
+  "Protection for the information stored at           the new file systems, including data, programs, and system files.": [
+    "Uusien tiedostojärjestelmien tietojen turvaaminen,           mukaanlukien data, ohjelmistot ja järjestelmätiedostot."
   ],
   "Provide email address": [
     "Kirjoita sähköpostiosoite"
@@ -1563,7 +1569,7 @@ export default {
     "Tulos"
   ],
   "Result of applying the configuration described at the 'Settings' section above.": [
-    ""
+    "Yllä olevassa ”Asetukset”-osiossa määritellyt asetukset johtaisivat tällaiseen tulokseen."
   ],
   "Reused partitions will not be shrunk": [
     "Uudelleenkäytettyjä osioita ei tulla pienentämään"

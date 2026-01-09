@@ -27,7 +27,7 @@ import { Page, NestedContent } from "~/components/core";
 import DevicesManager from "~/model/storage/devices-manager";
 import ProposalResultTable from "~/components/storage/ProposalResultTable";
 import ProposalActions from "~/components/storage/ProposalActions";
-import { _, n_, formatList } from "~/i18n";
+import { _, n_, formatList, TranslatedString } from "~/i18n";
 import { useFlattenDevices as useSystemFlattenDevices } from "~/hooks/model/system/storage";
 import {
   useFlattenDevices as useProposalFlattenDevices,
@@ -55,7 +55,7 @@ const ResultSkeleton = () => (
  * Renders information about delete actions
  */
 const DeletionsInfo = ({ manager }: { manager: DevicesManager }) => {
-  let label: string;
+  let label: TranslatedString;
   const systems = manager.deletedSystems();
   const deleteActions = manager.actions.filter((a) => a.delete && !a.subvol).length;
   const hasDeleteActions = deleteActions !== 0;

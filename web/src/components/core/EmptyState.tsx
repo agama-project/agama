@@ -31,9 +31,10 @@ import {
 } from "@patternfly/react-core";
 import { Icon } from "~/components/layout";
 import { IconProps } from "../layout/Icon";
+import { TranslatedString } from "~/i18n";
 
 type EmptyStateWrapperProps = {
-  title: string;
+  title: TranslatedString;
   icon: IconProps["name"];
   color?: string;
   headingLevel?: EmptyStateProps["headingLevel"];
