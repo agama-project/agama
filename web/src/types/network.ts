@@ -343,7 +343,7 @@ class Connection {
     const result: APIConnection = {
       ...newConnection,
       interface: iface,
-      addresses: addresses?.map((addr) => formatIp(addr)) || [],
+      addresses: addresses?.map(formatIp) || [],
     };
 
     if (result.gateway4 === "") delete result.gateway4;
