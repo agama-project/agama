@@ -50,13 +50,13 @@ const LUNScanInfo = () => {
   const { allowLunScan } = useZFCPConfig();
   // TRANSLATORS: the text in the square brackets [] will be displayed in bold
   const lunScanEnabled = _(
-    "Automatic LUN scan is [enabled]. Activating a controller which is \
-      running in NPIV mode will automatically configures all its LUNs.",
+    "Automatic LUN scan is [enabled]. Activating a controller which is " +
+      "running in NPIV mode will automatically configures all its LUNs.",
   );
   // TRANSLATORS: the text in the square brackets [] will be displayed in bold
   const lunScanDisabled = _(
-    "Automatic LUN scan is [disabled]. LUNs have to be manually \
-      configured after activating a controller.",
+    "Automatic LUN scan is [disabled]. LUNs have to be manually " +
+      "configured after activating a controller.",
   );
 
   const msg = allowLunScan ? lunScanEnabled : lunScanDisabled;

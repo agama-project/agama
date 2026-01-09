@@ -45,7 +45,8 @@ describe Agama::AutoYaST::ServicesManagerReader do
       let(:profile) do
         {
           "services-manager" => {
-            "services" => {
+            "default_target" => "multi-user",
+            "services"       => {
               "enable" => ["service"]
             }
           }
@@ -57,6 +58,7 @@ describe Agama::AutoYaST::ServicesManagerReader do
 
         expect(result).not_to be_empty
         expect(result.first["content"]).to match(/service/)
+        expect(result.first["content"]).to match(/set-default multi-user/)
       end
     end
   end

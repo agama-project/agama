@@ -48,8 +48,8 @@ export default function EncryptionSection() {
     <Stack hasGutter>
       <div className={textStyles.textColorPlaceholder}>
         {_(
-          "Protection for the information stored at \
-          the new file systems, including data, programs, and system files.",
+          "Protection for the information stored at " +
+            "the new file systems, including data, programs, and system files.",
         )}
       </div>
       <Content isEditorial>{encryptionLabel(method)}</Content>

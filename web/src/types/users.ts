@@ -20,6 +20,8 @@
  * find current contact information at www.suse.com.
  */
 
+import { TranslatedString } from "~/i18n";
+
 type FirstUser = {
   fullName: string;
   userName: string;
@@ -35,7 +37,7 @@ type RootUser = {
 
 type PasswordCheckResult = {
   success?: number;
-  failure?: string;
+  failure?: TranslatedString;
 };
 
 export type { FirstUser, RootUser, PasswordCheckResult };

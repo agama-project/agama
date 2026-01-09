@@ -7,10 +7,10 @@ export default {
     " Выбор часового пояса"
   ],
   "\"%s\"": [
-    ""
+    "«%s»"
   ],
   "\"%s\" does not exist or is no longer available.": [
-    ""
+    "«%s» не существует или больше недоступен."
   ],
   "%1$s (%2$s)": [
     "%1$s (%2$s)"
@@ -934,7 +934,7 @@ export default {
     "Если продолжите, разделы на жестком диске будут изменены в соответствии с заданными настройками установки."
   ],
   "If you want to disable this check, please specify \"inst.ay_check=0\" at kernel's command-line": [
-    ""
+    "Если вы хотите отключить эту проверку, укажите «inst.ay_check=0» в командной строке ядра"
   ],
   "In progress": [
     "В процессе"
@@ -1422,6 +1422,9 @@ export default {
   ],
   "Partitions to boot will be set up if needed at the installation disk.       Currently %1$s, based on the location of the %2$s file system.": [
     "Разделы для загрузки будут настроены при необходимости на установочном диске.       В настоящее время %1$s, исходя из расположения файловой системы %2$s."
+  ],
+  "Partitions to host \"system\" will be created if needed.": [
+    "При необходимости будут созданы разделы для размещения «system»."
   ],
   "Partitions will be used and created for %s": [
     "Разделы будут использоваться и создаваться для %s"
@@ -1984,7 +1987,7 @@ export default {
     "Пароль не понадобится для загрузки и доступа к данным, если TPM может проверить целостность системы. Запечатывание TPM требует непосредственной загрузки новой системы при первом запуске."
   ],
   "The product will be registered with \"%s\" hostname": [
-    ""
+    "Продукт будет зарегистрирован с именем узла «%s»."
   ],
   "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of a separate file system for %2$s.": [
     "Размер для %1$s будет динамически корректироваться в зависимости от объема оперативной памяти в системе и наличия отдельной файловой системы для %2$s."

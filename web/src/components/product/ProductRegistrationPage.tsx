@@ -85,7 +85,6 @@ const RegisteredProductSection = () => {
         <DescriptionListGroup>
           {!isEmpty(registration.url) && (
             <>
-              {/* eslint-disable agama-i18n/string-literals */}
               <DescriptionListTerm>{_(SERVER_LABEL)}</DescriptionListTerm>
               <DescriptionListDescription>{registration.url}</DescriptionListDescription>
             </>
@@ -105,7 +104,6 @@ const RegisteredProductSection = () => {
           )}
           {!isEmpty(registration.email) && (
             <>
-              {/* eslint-disable agama-i18n/string-literals */}
               <DescriptionListTerm>{_(EMAIL_LABEL)}</DescriptionListTerm>
               <DescriptionListDescription>{registration.email}</DescriptionListDescription>
             </>
@@ -130,28 +128,21 @@ function RegistrationServer({
   onChange,
 }: RegistrationServerProps): React.ReactNode {
   return (
-    <FormGroup
-      fieldId={id}
-      /* eslint-disable agama-i18n/string-literals */
-      label={_(SERVER_LABEL)}
-    >
+    <FormGroup fieldId={id} label={_(SERVER_LABEL)}>
       <Select
         id={"server"}
         value={value}
-        /* eslint-disable agama-i18n/string-literals */
         label={value === "default" ? _(SCC_SERVER_LABEL) : _(CUSTOM_SERVER_LABEL)}
         onChange={(v: ServerOption) => onChange(v)}
       >
         <SelectList aria-label={_("Server options")}>
           <SelectOption value="default" description={_("Register using SUSE server")}>
-            {/* eslint-disable agama-i18n/string-literals */}
             {_(SCC_SERVER_LABEL)}
           </SelectOption>
           <SelectOption
             value="custom"
             description={_("Register using a custom registration server")}
           >
-            {/* eslint-disable agama-i18n/string-literals */}
             {_(CUSTOM_SERVER_LABEL)}
           </SelectOption>
         </SelectList>

@@ -33,7 +33,7 @@ import {
 } from "@patternfly/react-core";
 import { Loading } from "~/components/layout";
 import { fork } from "radashi";
-import { _ } from "~/i18n";
+import { _, TranslatedString } from "~/i18n";
 
 type ButtonWithoutVariantProps = Omit<ButtonProps, "variant">;
 type PredefinedAction = React.PropsWithChildren<ButtonWithoutVariantProps>;
@@ -45,7 +45,7 @@ export type PopupProps = {
   /** Whether it should display a loading indicator instead of the requested content. */
   isLoading?: boolean;
   /** Text displayed when `isLoading` is set to `true` */
-  loadingText?: string;
+  loadingText?: TranslatedString;
 } & Omit<ModalProps, "title" | "size"> &
   Pick<ModalHeaderProps, "description" | "titleIconVariant">;
 
