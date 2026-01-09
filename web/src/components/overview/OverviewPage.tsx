@@ -21,15 +21,14 @@
  */
 
 import React from "react";
-import { Content, Grid, GridItem, Stack } from "@patternfly/react-core";
-import { Page } from "~/components/core";
-import L10nSection from "./L10nSection";
-import StorageSection from "./StorageSection";
-import SoftwareSection from "./SoftwareSection";
-import { _ } from "~/i18n";
-import { PRODUCT } from "~/routes/paths";
-import { useProductInfo } from "~/hooks/model/config/product";
 import { Navigate } from "react-router";
+import { Content, Grid, GridItem } from "@patternfly/react-core";
+import { Page } from "~/components/core";
+import { useProductInfo } from "~/hooks/model/config/product";
+import { PRODUCT } from "~/routes/paths";
+import { _ } from "~/i18n";
+import SystemInformationSection from "./SystemInformationSection";
+import InstallationSummarySection from "./InstallationSummarySection";
 
 export default function OverviewPage() {
   const product = useProductInfo();
@@ -46,17 +45,11 @@ export default function OverviewPage() {
 
       <Page.Content>
         <Grid hasGutter>
-          <GridItem sm={12}>
-            <Stack hasGutter>
-              <Content>
-                {_(
-                  "These are the most relevant installation settings. Feel free to browse the sections in the menu for further details.",
-                )}
-              </Content>
-              <L10nSection />
-              <StorageSection />
-              <SoftwareSection />
-            </Stack>
+          <GridItem sm={6}>
+            <SystemInformationSection />
+          </GridItem>
+          <GridItem sm={6}>
+            <InstallationSummarySection />
           </GridItem>
         </Grid>
       </Page.Content>

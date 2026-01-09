@@ -20,16 +20,15 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Alert, Backdrop, Flex, FlexItem, Spinner } from "@patternfly/react-core";
-import { concat, isEmpty } from "radashi";
+import { concat } from "radashi";
 import { sprintf } from "sprintf-js";
 import { COMMON_PROPOSAL_KEYS } from "~/hooks/model/proposal";
-import { useStatus } from "~/hooks/model/status";
-import useTrackQueriesRefetch from "~/hooks/use-track-queries-refetch";
 import type { Scope } from "~/model/status";
 import { _ } from "~/i18n";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
+import { useProgressTracking } from "~/hooks/use-progress-tracking";
 
 /**
  * Props for the ProgressBackdrop component.
@@ -86,31 +85,10 @@ export default function ProgressBackdrop({
   scope,
   ensureRefetched,
 }: ProgressBackdropProps): React.ReactNode {
-  const { progresses: tasks } = useStatus();
-  const [isBlocked, setIsBlocked] = useState(false);
-  const [progressFinishedAt, setProgressFinishedAt] = useState<number | null>(null);
-  const progress = !isEmpty(scope) && tasks.find((t) => t.scope === scope);
-  const { startTracking } = useTrackQueriesRefetch(
+  const { loading: isBlocked, progress } = useProgressTracking(
+    scope,
     concat(COMMON_PROPOSAL_KEYS, ensureRefetched),
-    (_, completedAt) => {
-      if (completedAt > progressFinishedAt) {
-        setIsBlocked(false);
-        setProgressFinishedAt(null);
-      }
-    },
   );
-
-  useEffect(() => {
-    if (!progress && isBlocked && !progressFinishedAt) {
-      setProgressFinishedAt(Date.now());
-      startTracking();
-    }
-  }, [progress, isBlocked, progressFinishedAt, startTracking]);
-
-  if (progress && !isBlocked) {
-    setIsBlocked(true);
-    setProgressFinishedAt(null);
-  }
 
   if (!isBlocked) return null;
 
