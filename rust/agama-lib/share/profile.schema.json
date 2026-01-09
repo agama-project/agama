@@ -695,49 +695,51 @@
         }
       }
     },
-    "user": {
-      "title": "First user settings",
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "fullName": {
-          "title": "Full name",
-          "type": "string",
-          "examples": ["Jane Doe"]
+    "users": {
+      "user": {
+        "title": "First user settings",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "fullName": {
+            "title": "Full name",
+            "type": "string",
+            "examples": ["Jane Doe"]
+          },
+          "userName": {
+            "title": "User login name",
+            "type": "string",
+            "examples": ["jane.doe"]
+          },
+          "password": {
+            "title": "User password (plain text or hashed depending on the \"hashedPassword\" field)",
+            "type": "string",
+            "examples": ["nots3cr3t"]
+          },
+          "hashedPassword": {
+            "title": "Flag for hashed password (true) or plain text password (false or not defined)",
+            "type": "boolean"
+          }
         },
-        "userName": {
-          "title": "User login name",
-          "type": "string",
-          "examples": ["jane.doe"]
-        },
-        "password": {
-          "title": "User password (plain text or hashed depending on the \"hashedPassword\" field)",
-          "type": "string",
-          "examples": ["nots3cr3t"]
-        },
-        "hashedPassword": {
-          "title": "Flag for hashed password (true) or plain text password (false or not defined)",
-          "type": "boolean"
-        }
+        "required": ["fullName", "userName", "password"]
       },
-      "required": ["fullName", "userName", "password"]
-    },
-    "root": {
-      "title": "Root authentication settings",
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "password": {
-          "title": "Root password (plain text or hashed depending on the \"hashedPassword\" field)",
-          "type": "string"
-        },
-        "hashedPassword": {
-          "title": "Flag for hashed password (true) or plain text password (false or not defined)",
-          "type": "boolean"
-        },
-        "sshPublicKey": {
-          "title": "SSH public key",
-          "type": "string"
+      "root": {
+        "title": "Root authentication settings",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "password": {
+            "title": "Root password (plain text or hashed depending on the \"hashedPassword\" field)",
+            "type": "string"
+          },
+          "hashedPassword": {
+            "title": "Flag for hashed password (true) or plain text password (false or not defined)",
+            "type": "boolean"
+          },
+          "sshPublicKey": {
+            "title": "SSH public key",
+            "type": "string"
+          }
         }
       }
     },
