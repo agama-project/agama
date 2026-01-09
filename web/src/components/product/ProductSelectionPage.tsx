@@ -46,7 +46,7 @@ import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
 import agama from "~/agama";
 import LicenseDialog from "./LicenseDialog";
-import { useProduct } from "~/hooks/model/config";
+import { useProductInfo } from "~/hooks/model/config/product";
 import { useSystem } from "~/hooks/model/system";
 import { patchConfig } from "~/api";
 import { ROOT } from "~/routes/paths";
@@ -112,7 +112,7 @@ const BackLink = () => {
 function ProductSelectionPage() {
   const navigate = useNavigate();
   const { products } = useSystem();
-  const selectedProduct = useProduct();
+  const selectedProduct = useProductInfo();
   const [nextProduct, setNextProduct] = useState(selectedProduct);
   // FIXME: should not be accepted by default first selectedProduct is accepted
   // because it's a singleProduct iso.

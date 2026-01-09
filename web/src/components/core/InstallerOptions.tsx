@@ -52,7 +52,7 @@ import { localConnection } from "~/utils";
 import { _ } from "~/i18n";
 import supportedLanguages from "~/languages.json";
 import { PRODUCT, ROOT, L10N } from "~/routes/paths";
-import { useProduct } from "~/hooks/model/config";
+import { useProductInfo } from "~/hooks/model/config/product";
 import { useSystem } from "~/hooks/model/system";
 import { useStatus } from "~/hooks/model/status";
 import { patchConfig } from "~/api";
@@ -556,7 +556,7 @@ export default function InstallerOptions({
   } = useSystem();
   const { language, keymap, changeLanguage, changeKeymap } = useInstallerL10n();
   const { stage } = useStatus();
-  const selectedProduct = useProduct();
+  const selectedProduct = useProductInfo();
   const initialFormState = {
     language,
     keymap,

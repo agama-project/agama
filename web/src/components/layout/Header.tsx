@@ -46,7 +46,7 @@ import { ChangeProductOption, InstallButton, InstallerOptions, SkipTo } from "~/
 import ProgressStatusMonitor from "../core/ProgressStatusMonitor";
 import { ROOT } from "~/routes/paths";
 import { _ } from "~/i18n";
-import { useProduct } from "~/hooks/model/config";
+import { useProductInfo } from "~/hooks/model/config/product";
 
 export type HeaderProps = {
   /** Whether the application sidebar should be mounted or not */
@@ -112,7 +112,7 @@ export default function Header({
   isSidebarOpen,
   toggleSidebar,
 }: HeaderProps): React.ReactNode {
-  const product = useProduct();
+  const product = useProductInfo();
   const routeMatches = useMatches() as Route[];
   const currentRoute = routeMatches.at(-1);
   // TODO: translate title
@@ -148,17 +148,17 @@ export default function Header({
               <ToolbarItem>
                 <ProgressStatusMonitor />
               </ToolbarItem>
-              <ToolbarItem>
-                <InstallerOptions />
-              </ToolbarItem>
+              {showInstallerOptions && (
+                <ToolbarItem>
+                  <InstallerOptions />
+                </ToolbarItem>
+              )}
               <ToolbarItem>
                 <InstallButton onClickWithIssues={toggleIssuesDrawer} />
               </ToolbarItem>
-              {showInstallerOptions && (
-                <ToolbarItem>
-                  <OptionsDropdown />
-                </ToolbarItem>
-              )}
+              <ToolbarItem>
+                <OptionsDropdown />
+              </ToolbarItem>
             </ToolbarGroup>
           </ToolbarContent>
         </Toolbar>

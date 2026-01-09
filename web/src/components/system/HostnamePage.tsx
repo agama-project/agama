@@ -36,14 +36,12 @@ import { isEmpty } from "radashi";
 import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
 import { useProposal } from "~/hooks/model/proposal";
-import { useProduct } from "~/hooks/model/config";
+import { useSystem } from "~/hooks/model/system";
 import { patchConfig } from "~/api";
 
 export default function HostnamePage() {
-  const product = useProduct();
+  const { software } = useSystem();
   const { hostname: proposal } = useProposal();
-  // FIXME: It should be fixed once the registration is adapted to API v2
-  const registration = { registered: product.registration };
   const { hostname: transientHostname, static: staticHostname } = proposal;
   const hasTransientHostname = isEmpty(staticHostname);
   const [success, setSuccess] = useState<string | null>(null);
@@ -83,7 +81,7 @@ export default function HostnamePage() {
       </Page.Header>
 
       <Page.Content>
-        {product.registration && registration.registered && (
+        {software?.registration && (
           <Alert title={_("Product is already registered")} variant="info">
             {_(
               "Updating the hostname now or later will not change the currently registered hostname.",

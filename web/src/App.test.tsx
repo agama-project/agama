@@ -30,10 +30,10 @@ import { useSystem } from "~/hooks/model/system";
 import { Product } from "~/types/software";
 import { PATHS } from "~/router";
 import { PRODUCT } from "~/routes/paths";
-import type { Config } from "~/api";
-import type { Progress, Stage } from "~/model/status";
 import App from "./App";
 import { System } from "~/model/system/network";
+import type { Config } from "~/model/config";
+import type { Progress, Stage } from "~/model/status";
 
 jest.mock("~/client");
 

@@ -23,20 +23,17 @@
 import type * as Hostname from "~/model/config/hostname";
 import type * as L10n from "~/model/config/l10n";
 import type * as Network from "~/model/config/network";
+import type * as Product from "~/model/config/product";
 import type * as Software from "~/model/config/software";
-import type * as Storage from "~/model/config/storage";
+import type * as Storage from "~/openapi/config/storage";
 
 type Config = {
   hostname?: Hostname.Config;
   l10n?: L10n.Config;
   network?: Network.Config;
-  product?: Product;
+  product?: Product.Config;
   storage?: Storage.Config;
   software?: Software.Config;
-};
-
-type Product = {
-  id?: string;
 };
 
 export type { Config, Hostname, Product, L10n, Network, Storage };

@@ -28,8 +28,10 @@ use agama_utils::{
     api::software::{
         Config, PatternsConfig, ProductConfig, RepositoryConfig, SoftwareConfig, SystemInfo,
     },
+    kernel_cmdline::KernelCmdline,
     products::{ProductSpec, UserPattern},
 };
+use url::Url;
 
 use crate::{model::software_selection::SoftwareSelection, Resolvable, ResolvableType};
 
@@ -79,6 +81,8 @@ pub struct SoftwareStateBuilder<'a> {
     system: Option<&'a SystemInfo>,
     /// Agama's software selection.
     selection: Option<&'a SoftwareSelection>,
+    /// Kernel command-line options.
+    kernel_cmdline: KernelCmdline,
 }
 
 impl<'a> SoftwareStateBuilder<'a> {
@@ -89,6 +93,7 @@ impl<'a> SoftwareStateBuilder<'a> {
             config: None,
             system: None,
             selection: None,
+            kernel_cmdline: KernelCmdline::default(),
         }
     }
 
@@ -113,6 +118,12 @@ impl<'a> SoftwareStateBuilder<'a> {
     /// Agama might require the installation of patterns and packages.
     pub fn with_selection(mut self, selection: &'a SoftwareSelection) -> Self {
         self.selection = Some(selection);
+        self
+    }
+
+    /// Adds the kernel command-line options.
+    pub fn with_kernel_cmdline(mut self, kernel_cmdline: KernelCmdline) -> Self {
+        self.kernel_cmdline = kernel_cmdline;
         self
     }
 
@@ -168,12 +179,31 @@ impl<'a> SoftwareStateBuilder<'a> {
         let product = self.product.id.clone();
         let version = self.product.version.clone().unwrap_or("1".to_string());
 
+        let addons: Vec<_> = if let Some(addons_config) = &config.addons {
+            addons_config
+                .iter()
+                .map(|c| Addon::new(&c.id, c.version.clone(), c.registration_code.clone()))
+                .collect()
+        } else {
+            vec![]
+        };
+
+        let url = match &config.registration_url {
+            Some(registration_url) => Some(registration_url.clone()),
+            None => self
+                .kernel_cmdline
+                .get_last("inst.register_url")
+                .map(|url| Url::parse(&url).ok())
+                .flatten(),
+        };
+
         state.registration = Some(RegistrationState {
             product,
             version,
             code: code.to_string(),
             email: config.registration_email.clone(),
-            url: config.registration_url.clone(),
+            url,
+            addons,
         });
     }
 
@@ -305,6 +335,7 @@ impl SoftwareState {
             .with_config(config)
             .with_system(system)
             .with_selection(selection)
+            .with_kernel_cmdline(KernelCmdline::parse().unwrap_or_default())
             .build()
     }
 }
@@ -457,7 +488,25 @@ pub struct RegistrationState {
     // FIXME: the code should be optional.
     pub code: String,
     pub email: Option<String>,
-    pub url: Option<String>,
+    pub url: Option<Url>,
+    pub addons: Vec<Addon>,
+}
+
+#[derive(Clone, Debug)]
+pub struct Addon {
+    pub id: String,
+    pub version: Option<String>,
+    pub code: Option<String>,
+}
+
+impl Addon {
+    pub fn new(id: &str, version: Option<String>, code: Option<String>) -> Self {
+        Addon {
+            id: id.to_string(),
+            version: version,
+            code: code,
+        }
+    }
 }
 
 #[cfg(test)]
@@ -466,11 +515,13 @@ mod tests {
 
     use agama_utils::{
         api::software::{
-            Config, PatternsConfig, PatternsMap, ProductConfig, Repository, RepositoryConfig,
-            SoftwareConfig, SystemInfo,
+            AddonConfig, Config, PatternsConfig, PatternsMap, ProductConfig, Repository,
+            RepositoryConfig, SoftwareConfig, SystemInfo,
         },
+        kernel_cmdline::KernelCmdline,
         products::ProductSpec,
     };
+    use url::Url;
 
     use crate::model::{
         packages::ResolvableType,
@@ -604,9 +655,13 @@ mod tests {
         config.product = ProductConfig {
             id: Some("SLES".to_string()),
             registration_code: Some("123456".to_string()),
-            registration_url: Some("https://scc.suse.com".to_string()),
+            registration_url: Some(Url::parse("https://scc.suse.com").unwrap()),
             registration_email: Some("jane.doe@example.net".to_string()),
-            addons: None,
+            addons: Some(vec![AddonConfig {
+                id: "sle-ha".to_string(),
+                version: Some("16.1".to_string()),
+                registration_code: Some("ABCDEF".to_string()),
+            }]),
         }
         .into();
         let state = SoftwareStateBuilder::for_product(&product)
@@ -615,8 +670,40 @@ mod tests {
 
         let registration = state.registration.unwrap();
         assert_eq!(registration.code, "123456".to_string());
-        assert_eq!(registration.url, Some("https://scc.suse.com".to_string()));
+        assert_eq!(
+            registration.url,
+            Some(Url::parse("https://scc.suse.com").unwrap())
+        );
         assert_eq!(registration.email, Some("jane.doe@example.net".to_string()));
+
+        let addon = registration.addons.first().unwrap();
+        assert_eq!(&addon.id, "sle-ha");
+        assert_eq!(addon.version, Some("16.1".to_string()));
+        assert_eq!(addon.code, Some("ABCDEF".to_string()));
+    }
+
+    #[test]
+    fn test_add_register_url() {
+        let product = build_product_spec();
+        let mut config = build_user_config(None);
+        config.product = ProductConfig {
+            id: Some("SLES".to_string()),
+            registration_code: Some("123456".to_string()),
+            ..Default::default()
+        }
+        .into();
+
+        let kernel_cmdline = KernelCmdline::parse_str("inst.register_url=http://example.net");
+        let state = SoftwareStateBuilder::for_product(&product)
+            .with_config(&config)
+            .with_kernel_cmdline(kernel_cmdline)
+            .build();
+
+        let registration = state.registration.unwrap();
+        assert_eq!(
+            registration.url,
+            Some(Url::parse("http://example.net").unwrap())
+        );
     }
 
     #[test]

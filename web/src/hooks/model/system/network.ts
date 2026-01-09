@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2025] SUSE LLC
+ * Copyright (c) [2025-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -33,9 +33,13 @@ import {
   DeviceState,
   WifiNetwork,
   ConnectionState,
+  IPAddress,
+  ConnectionMethod,
 } from "~/types/network";
 import { useInstallerClient } from "~/context/installer";
 import React, { useCallback } from "react";
+import { formatIp } from "~/utils/network";
+import { isEmpty } from "radashi";
 
 const selectSystem = (data: System | null): NetworkSystem =>
   data ? NetworkSystem.fromApi(data.network) : null;
@@ -116,6 +120,181 @@ const useWifiNetworks = () => {
 };
 
 /**
+ * Options to influence returned value by useIpAddresses
+ */
+type UseIpAddressesOptions = {
+  /**
+   * Whether format IPs as string or not. When true, returns IP addresses as
+   * formatted strings without prefix. If false or omitted, returns raw
+   * IPAddress objects.
+   */
+  formatted?: boolean;
+};
+
+/**
+ * @internal
+ *
+ * Retrieves all IP addresses from devices associated with active connections.
+ *
+ * It filters devices to only include those linked to existing connections, then
+ * extracts and flattens all IP addresses from those devices.
+ *
+ * @note
+ *
+ * This is actually the implementation of {@link useIpAddresses}
+ *
+ * Extracted and exported for testing purposes only. See reasoning at note in
+ * {@link useNetworkStatus}
+ *
+ */
+function getIpAddresses(
+  devices: Device[] = [],
+  connections: Connection[] = [],
+  options: UseIpAddressesOptions = {},
+) {
+  const connectionsIds = connections.map((c) => c.id);
+  const filteredDevices = devices.filter((d) => connectionsIds.includes(d.connection));
+
+  if (options.formatted) {
+    return filteredDevices.flatMap((d) =>
+      d.addresses.map((a) => formatIp(a, { removePrefix: true })),
+    );
+  }
+
+  return filteredDevices.flatMap((d) => d.addresses);
+}
+
+/**
+ * Retrieves all IP addresses from devices associated with active connections.
+ *
+ * @see {@link getIpAddresses} for implementation details
+ */
+function useIpAddresses(options: { formatted: true }): string[];
+function useIpAddresses(options?: { formatted?: false }): IPAddress[];
+function useIpAddresses(options: UseIpAddressesOptions = {}): string[] | IPAddress[] {
+  const devices = useDevices();
+  const connections = useConnections();
+
+  return getIpAddresses(devices, connections, options);
+}
+
+/**
+ * Network status constants
+ */
+export const NetworkStatus = {
+  MANUAL: "manual",
+  AUTO: "auto",
+  MIXED: "mixed",
+  NOT_CONFIGURED: "not_configured",
+  NO_PERSISTENT: "no_persistent",
+};
+
+type NetworkStatusType = (typeof NetworkStatus)[keyof typeof NetworkStatus];
+
+/**
+ * Options for useNetworkStatus hook
+ */
+export type NetworkStatusOptions = {
+  /** If true, uses also non-persistent connections to determine the network
+   * configuration status */
+  includeNonPersistent?: boolean;
+};
+
+/**
+ * @internal
+ *
+ * Determines the global network configuration status.
+ *
+ * @note
+ *
+ * This is actually the implementation of {@link useNetworkStatus}
+ *
+ * @note
+ *
+ * Exported for testing purposes only. Since useNetworkStatus and useConnections
+ * live in the same module, mocking useConnections doesn't work because internal
+ * calls within a module bypass mocks.
+ *
+ * Rather than split hooks into multiple files or mock React Query internals
+ * (both worse trade-offs), the main logic was extracted as a pure function for
+ * direct testing. Given the complexity and importance of this network status
+ * logic, leaving it untested was not an acceptable option.
+ *
+ * If a better approach is found, this can be moved back into
+ * the hook.
+ */
+function getNetworkStatus(
+  connections: Connection[],
+  { includeNonPersistent = false }: NetworkStatusOptions = {},
+) {
+  const persistentConnections = connections.filter((c) => c.persistent);
+
+  // Filter connections based on includeNonPersistent option
+  const connectionsToCheck = includeNonPersistent ? connections : persistentConnections;
+
+  let status: NetworkStatusType;
+
+  if (isEmpty(connections)) {
+    status = NetworkStatus.NOT_CONFIGURED;
+  } else if (!includeNonPersistent && isEmpty(connectionsToCheck)) {
+    status = NetworkStatus.NO_PERSISTENT;
+  } else {
+    const someManual = connectionsToCheck.some(
+      (c) =>
+        c.method4 === ConnectionMethod.MANUAL ||
+        c.method6 === ConnectionMethod.MANUAL ||
+        !isEmpty(c.addresses),
+    );
+
+    const someAuto = connectionsToCheck.some(
+      (c) => c.method4 === ConnectionMethod.AUTO || c.method6 === ConnectionMethod.AUTO,
+    );
+
+    if (someManual && someAuto) {
+      status = NetworkStatus.MIXED;
+    } else if (someAuto) {
+      status = NetworkStatus.AUTO;
+    } else {
+      status = NetworkStatus.MANUAL;
+    }
+  }
+
+  return {
+    status,
+    connections,
+    persistentConnections,
+  };
+}
+
+/**
+ * Determines the global network configuration status.
+ *
+ * Returns the network status, the full collection of connections (both
+ * persistent and non-persistent), and a filtered list of only persistent
+ * connections.
+ *
+ * The `status` reflects the network configuration, depending on the state of
+ * connections (whether there are connections, and whether some are persistent)
+ * and the so called network mode (manual, auto, mixed)
+ *   - If there are no connections, the status will be `NetworkStatus.NOT_CONFIGURED`.
+ *   - If there are no persistent connections and `includeNonPersistent` is false
+ *     (the default), the status will be `NetworkStatus.NO_PERSISTENT`.
+ *   - When `includeNonPersistent` is true, non-persistent connections are
+ *     included in the mode calculation, and the **NO_PERSISTENT** status is ignored.
+ *   - When at least one connection has defined at least one static IP, the
+ *     status will be either, manual or mixed depending in the connection.method4
+ *     and connection.method6 value
+ *
+ *
+ * @see {@link getNetworkStatus} for implementation details and why the logic
+ * was extracted.
+ */
+const useNetworkStatus = ({ includeNonPersistent = false }: NetworkStatusOptions = {}) => {
+  const connections = useConnections();
+  return getNetworkStatus(connections, { includeNonPersistent });
+};
+
+/**
  * FIXME: ADAPT to the new config HTTP API
  * Hook that returns a useEffect to listen for NetworkChanged events
  *
@@ -192,4 +371,15 @@ const useNetworkChanges = () => {
   }, [client, queryClient, updateDevices, updateConnectionState]);
 };
 
-export { useConnections, useDevices, useNetworkChanges, useSystem, useWifiNetworks, useState };
+export {
+  useConnections,
+  useDevices,
+  useNetworkChanges,
+  useNetworkStatus,
+  useSystem,
+  useIpAddresses,
+  useWifiNetworks,
+  useState,
+  getNetworkStatus,
+  getIpAddresses,
+};

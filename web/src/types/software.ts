@@ -122,12 +122,6 @@ type RegistrationInfo = {
   url: string;
 };
 
-type RegistrationParams = {
-  key: string;
-  email?: string;
-  url: string;
-};
-
 type AddonInfo = {
   id: string;
   version: string;
@@ -177,7 +171,6 @@ export type {
   Product,
   RegisteredAddonInfo,
   RegistrationInfo,
-  RegistrationParams,
   Repository,
   SoftwareConfig,
   SoftwareProposal,

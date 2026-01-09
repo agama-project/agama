@@ -32,7 +32,7 @@ const systemQuery = {
 };
 
 function useSystem(): System | null {
-  return useSuspenseQuery(systemQuery)?.data;
+  return useSuspenseQuery(systemQuery).data;
 }
 
 function useSystemChanges() {
