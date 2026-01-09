@@ -24,14 +24,14 @@ import React from "react";
 import { Navigate } from "react-router";
 import { Content, Grid, GridItem } from "@patternfly/react-core";
 import { Page } from "~/components/core";
-import { useProduct } from "~/hooks/model/config";
+import { useProductInfo } from "~/hooks/model/config/product";
 import { PRODUCT } from "~/routes/paths";
 import { _ } from "~/i18n";
 import SystemInformationSection from "./SystemInformationSection";
 import InstallationSummarySection from "./InstallationSummarySection";
 
 export default function OverviewPage() {
-  const product = useProduct();
+  const product = useProductInfo();
 
   if (!product) {
     return <Navigate to={PRODUCT.root} />;

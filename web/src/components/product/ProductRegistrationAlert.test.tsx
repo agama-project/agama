@@ -24,7 +24,7 @@ import React from "react";
 import { screen } from "@testing-library/react";
 import { installerRender, mockRoutes } from "~/test-utils";
 import { useSystem } from "~/hooks/model/system";
-import { useProduct } from "~/hooks/model/config";
+import { useProductInfo } from "~/hooks/model/config/product";
 import { useIssues } from "~/hooks/model/issue";
 import { Issue } from "~/model/issue";
 import { PRODUCT, REGISTRATION, ROOT } from "~/routes/paths";
@@ -65,7 +65,7 @@ jest.mock("~/hooks/api", () => ({
     products: [tw, sle],
     network,
   }),
-  useProduct: (): ReturnType<typeof useProduct> => mockSelectedProduct(),
+  useProductInfo: (): ReturnType<typeof useProductInfo> => mockSelectedProduct(),
   useIssues: (): ReturnType<typeof useIssues> => mockIssues(),
 }));
 

@@ -21,11 +21,10 @@
  */
 
 import React from "react";
-
 import { screen } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
 import InstallationFinished from "./InstallationFinished";
-import { Encryption } from "~/model/config/storage";
+import type { Storage } from "~/model/config";
 
 jest.mock("~/queries/status", () => ({
   ...jest.requireActual("~/queries/status"),
@@ -39,12 +38,12 @@ type guidedEncryption = {
   pbkdFunction?: string;
 };
 
-let mockEncryption: undefined | Encryption | guidedEncryption;
+let mockEncryption: undefined | Storage.Encryption | guidedEncryption;
 let mockType: storageConfigType;
 
 const mockStorageConfig = (
   type: storageConfigType,
-  encryption: undefined | Encryption | guidedEncryption,
+  encryption: undefined | Storage.Encryption | guidedEncryption,
 ) => {
   const encryptionHash = {};
   if (encryption !== undefined) encryptionHash["encryption"] = encryption;

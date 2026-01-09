@@ -33,13 +33,13 @@ import NetworkDetailsItem from "~/components/network/NetworkDetailsItem";
 import SoftwareDetailsItem from "~/components/software/SoftwareDetailsItem";
 import PotentialDataLossAlert from "~/components/storage/PotentialDataLossAlert";
 import { startInstallation } from "~/model/manager";
-import { useProduct } from "~/hooks/model/config";
+import { useProductInfo } from "~/hooks/model/config/product";
 import { PRODUCT } from "~/routes/paths";
 import { useDestructiveActions } from "~/hooks/use-destructive-actions";
 import { _ } from "~/i18n";
 
 export default function ConfirmPage() {
-  const product = useProduct();
+  const product = useProductInfo();
   const { actions } = useDestructiveActions();
   const hasDestructiveActions = actions.length > 0;
 
