@@ -270,7 +270,8 @@ strong {
 
 #productSelectionForm {
   input[type="radio"] {
-    align-self: center;
+    vertical-align: middle;
+    margin-inline-end: 1ch;
     flex-shrink: 0;
     inline-size: 20px;
     block-size: 20px;
