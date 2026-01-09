@@ -19,21 +19,11 @@
 // find current contact information at www.suse.com.
 
 use crate::service;
-use agama_utils::api::users::{SystemInfo, UserInfo};
+use agama_utils::api::users::UserSettings;
 use std::time::Duration;
-use user_lookup::sync_reader::PasswdReader;
 
 /// Abstract the users-related configuration from the underlying system.
 pub trait ModelAdapter: Send + 'static {
-    /// Reads the system info.
-    fn read_system_info(&self) -> SystemInfo {
-        SystemInfo {
-            users: self.users_list().to_vec(),
-        }
-    }
-
-    fn users_list(&self) -> &Vec<UserInfo>;
-
     /// Apply the changes to target system. It is expected to be called almost
     /// at the end of the installation.
     fn install(&self) -> Result<(), service::Error> {
@@ -43,53 +33,21 @@ pub trait ModelAdapter: Send + 'static {
 
 /// [ModelAdapter] implementation for systemd-based systems.
 pub struct Model {
-    pub users: Vec<UserInfo>,
-}
-
-impl Default for Model {
-    fn default() -> Self {
-        Self { users: [].to_vec() }
-    }
+    pub users: UserSettings,
 }
 
 impl Model {
     /// Initializes the struct with the information from the underlying system.
+    /// Currently we do not care about default users on live media so
+    /// basically does nothing.
     pub fn from_system() -> Result<Self, service::Error> {
-        let mut model = Self::default();
-        model.read()?;
+        let model = { Model { users: UserSettings { first_user: None, root: None }}};
 
         Ok(model)
-    }
-
-    fn read(&mut self) -> Result<(), service::Error> {
-        tracing::info!("Reading users list from the system.");
-
-        let mut reader = PasswdReader::new(Duration::new(0, 0));
-
-        // read users and convert it into internal structure
-        // - users with nologin shell are filtered out
-        // FIXME:
-        // - might be better to use regexp on
-        //   e.shell != "/usr/sbin/nologin"
-        self.users = reader
-            .try_iter()?
-            .filter(|e| e.shell != "/usr/sbin/nologin")
-            .map(|u| UserInfo {
-                name: u.username.clone(),
-            })
-            .collect();
-
-        tracing::info!("List of users read: {:0?}", self.users);
-
-        Ok(())
     }
 }
 
 impl ModelAdapter for Model {
-    fn users_list(&self) -> &Vec<UserInfo> {
-        &self.users
-    }
-
     fn install(&self) -> Result<(), service::Error> {
         Ok(())
     }

@@ -20,15 +20,8 @@
 
 use agama_utils::{
     actor::Message,
-    api::{self, users::SystemInfo},
+    api::{self},
 };
-
-#[derive(Clone)]
-pub struct GetSystem;
-
-impl Message for GetSystem {
-    type Reply = SystemInfo;
-}
 
 #[derive(Clone)]
 pub struct SetSystem<T> {

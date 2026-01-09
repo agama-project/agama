@@ -24,8 +24,5 @@
 mod config;
 pub use config::Config;
 
-pub mod user_info;
-pub use user_info::UserInfo;
-
-mod system_info;
-pub use system_info::SystemInfo;
+pub mod settings;
+pub use settings::UserSettings;

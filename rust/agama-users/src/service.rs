@@ -26,7 +26,7 @@ use agama_utils::{
     api::{
         self,
         event::{self, Event},
-        users::{user_info::UserInfo, SystemInfo},
+        users::settings::UserSettings,
         Issue,
     },
     issue,
@@ -73,11 +73,8 @@ impl Starter {
             Some(model) => model,
             None => Box::new(Model::from_system()?),
         };
-        let system = model.read_system_info();
         let service = Service {
-            // just mockup of non-existent system model
-            system: system.clone(),
-            full_config: Config::new_from(&system),
+            full_config: Config::new(),
             model: model,
             issues: self.issues,
             events: self.events,
@@ -90,8 +87,6 @@ impl Starter {
 
 /// Users service.
 pub struct Service {
-    // holds system state
-    system: SystemInfo,
     // complete users config
     full_config: Config,
     // service's backend which gets data from real world
@@ -120,7 +115,8 @@ impl Service {
         // At least one user is mandatory
         // - typicaly root or
         // - first user which will operate throught sudo
-        if self.full_config.users.is_empty() {
+        if self.full_config.settings.root.is_none() ||
+           self.full_config.settings.first_user.is_none() {
             issues.push(Issue::new(
                 "No user defined",
                 "At least one user has to be defined",
@@ -135,13 +131,6 @@ impl Actor for Service {
     type Error = Error;
 }
 
-#[async_trait]
-impl MessageHandler<message::GetSystem> for Service {
-    async fn handle(&mut self, _message: message::GetSystem) -> Result<SystemInfo, Error> {
-        Ok(self.system.clone())
-    }
-}
-
 // Small inconsistency here:
 // - in top level manager service is Config used just for what was
 //   entered by user, manager service is responsible for caching those
@@ -153,7 +142,7 @@ impl MessageHandler<message::GetSystem> for Service {
 impl MessageHandler<message::GetConfig> for Service {
     async fn handle(&mut self, _message: message::GetConfig) -> Result<api::users::Config, Error> {
         Ok(api::users::Config {
-            users: self.full_config.users.clone(),
+            users: self.full_config.settings.clone(),
         })
     }
 }
@@ -167,10 +156,11 @@ impl MessageHandler<message::SetConfig<api::users::Config>> for Service {
     ) -> Result<(), Error> {
         tracing::info!("Users service - SetConfig");
 
-        let base_config = Config::new_from(&self.system);
+        let mut base_config = Config::new();
 
         let config = if let Some(config) = &message.config {
-            base_config.merge(config)?
+            base_config.settings = config.users.clone();
+            base_config
         } else {
             base_config
         };

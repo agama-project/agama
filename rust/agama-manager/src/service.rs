@@ -512,7 +512,6 @@ impl MessageHandler<message::GetSystem> for Service {
         let storage = self.storage.call(storage::message::GetSystem).await?;
         let network = self.network.get_system().await?;
         let software = self.software.call(software::message::GetSystem).await?;
-        let users = self.users.call(users::message::GetSystem).await?;
 
         Ok(SystemInfo {
             hostname,
@@ -521,7 +520,6 @@ impl MessageHandler<message::GetSystem> for Service {
             network,
             storage,
             software,
-            users,
         })
     }
 }
