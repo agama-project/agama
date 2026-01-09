@@ -117,7 +117,7 @@ impl Starter {
         let adapter = match self.adapter {
             Some(adapter) => adapter,
             None => Box::new(
-                NetworkManagerAdapter::from_system(self.events, self.issues, self.progress)
+                NetworkManagerAdapter::from_system(self.progress)
                     .await
                     .expect("Could not connect to NetworkManager"),
             ),
@@ -286,6 +286,28 @@ impl NetworkSystemClient {
         let (tx, rx) = oneshot::channel();
         self.actions.send(Action::Apply(tx))?;
         let result = rx.await?;
+        //self.events.send(event::Event::ProposalChanged {
+        //    scope: agama_utils::api::Scope::Network,
+        //})?;
+        //self.events.send(Event::Install {
+        //    scope: Scope::Network,
+        //})?;
+
+        Ok(result?)
+    }
+
+    /// Proposes the default network configuration.
+    pub async fn propose_default(&self) -> Result<(), NetworkSystemError> {
+        let (tx, rx) = oneshot::channel();
+        self.actions.send(Action::ProposeDefault(tx))?;
+        let result = rx.await?;
+        Ok(result?)
+    }
+    /// Copies the persistent network connections to the target system.
+    pub async fn install(&self) -> Result<(), NetworkSystemError> {
+        let (tx, rx) = oneshot::channel();
+        self.actions.send(Action::Install(tx))?;
+        let result = rx.await?;
         Ok(result?)
     }
 
@@ -344,10 +366,6 @@ impl Service {
         action: Action,
     ) -> Result<Option<NetworkChange>, Box<dyn Error>> {
         match action {
-            Action::ProposeDefault(tx) => {
-                let result = self.state.propose_default();
-                tx.send(result).unwrap();
-            }
             Action::AddConnection(name, ty, tx) => {
                 let result = self.add_connection_action(name, ty).await;
                 tx.send(result).unwrap();
@@ -463,6 +481,14 @@ impl Service {
             }
             Action::Apply(tx) => {
                 let result = self.write().await;
+                tx.send(result).unwrap();
+            }
+            Action::ProposeDefault(tx) => {
+                let result = self.state.propose_default();
+                tx.send(result).unwrap();
+            }
+            Action::Install(tx) => {
+                let result = self.state.install();
                 tx.send(result).unwrap();
             }
         }

@@ -24,25 +24,17 @@ use crate::{
     nm::{NetworkManagerClient, NetworkManagerWatcher},
     Adapter, NetworkAdapterError,
 };
-use agama_utils::{
-    actor::Handler,
-    api::{
-        event::{self, Event},
-        Scope,
-    },
-    issue, progress,
-};
+use agama_utils::{actor::Handler, api::Scope, progress};
 use anyhow::anyhow;
 use async_trait::async_trait;
 use core::time;
+use gettextrs::gettext;
 use std::thread;
 
 use super::error::NmError;
 
 /// An adapter for NetworkManager
 pub struct NetworkManagerAdapter<'a> {
-    events: event::Sender,
-    issues: Handler<issue::Service>,
     progress: Handler<progress::Service>,
     client: NetworkManagerClient<'a>,
     connection: zbus::Connection,
@@ -51,16 +43,12 @@ pub struct NetworkManagerAdapter<'a> {
 impl<'a> NetworkManagerAdapter<'a> {
     /// Returns the adapter for system's NetworkManager.
     pub async fn from_system(
-        events: event::Sender,
-        issues: Handler<issue::Service>,
         progress: Handler<progress::Service>,
     ) -> Result<NetworkManagerAdapter<'a>, NmError> {
         let connection = zbus::Connection::system().await?;
         let client = NetworkManagerClient::new(connection.clone()).await?;
 
         Ok(Self {
-            events,
-            issues,
             progress,
             client,
             connection,
@@ -71,6 +59,12 @@ impl<'a> NetworkManagerAdapter<'a> {
 #[async_trait]
 impl Adapter for NetworkManagerAdapter<'_> {
     async fn read(&self, config: StateConfig) -> Result<NetworkState, NetworkAdapterError> {
+        let _ = self.progress.cast(progress::message::Start::new(
+            Scope::Network,
+            1,
+            "Reading network configuration",
+        ));
+
         let general_state = self
             .client
             .general_state()
@@ -114,6 +108,11 @@ impl Adapter for NetworkManagerAdapter<'_> {
                 .map_err(|e| NetworkAdapterError::Read(anyhow!(e)))?;
         }
 
+        let _ = self
+            .progress
+            .call(progress::message::Finish::new(Scope::Network))
+            .await?;
+
         Ok(state)
     }
 
@@ -125,12 +124,32 @@ impl Adapter for NetworkManagerAdapter<'_> {
     ///
     /// * `network`: network model.
     async fn write(&self, network: &NetworkState) -> Result<(), NetworkAdapterError> {
+        let steps = vec![
+            gettext("Creating checkpoint"),
+            gettext("Writing general configuration"),
+            gettext("Writing connections"),
+            gettext("Destroying checkpoint"),
+        ];
+
+        let _ = self.progress.cast(progress::message::StartWithSteps::new(
+            Scope::Network,
+            steps,
+        ));
+
+        let _ = self
+            .progress
+            .cast(progress::message::Next::new(Scope::Network))?;
+
         let old_state = self.read(StateConfig::default()).await?;
         let checkpoint = self
             .client
             .create_checkpoint()
             .await
             .map_err(|e| NetworkAdapterError::Checkpoint(anyhow!(e)))?;
+
+        let _ = self
+            .progress
+            .cast(progress::message::Next::new(Scope::Network))?;
 
         tracing::info!("Updating the general state {:?}", &network.general_state);
         let result = self
@@ -149,8 +168,18 @@ impl Adapter for NetworkManagerAdapter<'_> {
                 &network.general_state,
                 &e
             );
+
+            let _ = self
+                .progress
+                .call(progress::message::Finish::new(Scope::Network))
+                .await?;
+
             return Err(NetworkAdapterError::Write(anyhow!(e)));
         }
+
+        let _ = self
+            .progress
+            .cast(progress::message::Next::new(Scope::Network))?;
 
         for conn in ordered_connections(network) {
             let ctrl = conn
@@ -193,21 +222,27 @@ impl Adapter for NetworkManagerAdapter<'_> {
                     .await
                     .map_err(|e| NetworkAdapterError::Checkpoint(anyhow!(e)))?;
                 tracing::error!("Could not process the connection {}: {}", conn.id, &e);
+
+                self.progress
+                    .call(progress::message::Finish::new(Scope::Network))
+                    .await?;
                 return Err(NetworkAdapterError::Write(anyhow!(e)));
             }
         }
+
+        let _ = self
+            .progress
+            .cast(progress::message::Next::new(Scope::Network))?;
 
         self.client
             .destroy_checkpoint(&checkpoint.as_ref())
             .await
             .map_err(|e| NetworkAdapterError::Checkpoint(anyhow!(e)))?;
-        self.events.send(event::Event::ProposalChanged {
-            scope: agama_utils::api::Scope::Network,
-        })?;
-        self.events.send(Event::ProposalChanged {
-            scope: Scope::Network,
-        })?;
 
+        let _ = self
+            .progress
+            .call(progress::message::Finish::new(Scope::Network))
+            .await?;
         Ok(())
     }
 

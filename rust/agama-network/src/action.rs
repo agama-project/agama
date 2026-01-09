@@ -81,7 +81,11 @@ pub enum Action {
         Box<Vec<String>>,
         Responder<Result<(), NetworkStateError>>,
     ),
+    /// It persit existing connections if there is no one to be persisted and the copy of network
+    /// is not disabled
     ProposeDefault(Responder<Result<(), NetworkStateError>>),
+    // Copies persistent connections to the target system
+    Install(Responder<Result<(), NetworkStateError>>),
     /// Updates a connection (replacing the old one).
     UpdateConnection(Box<Connection>, Responder<Result<(), NetworkStateError>>),
     /// Updates the general network configuration

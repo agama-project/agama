@@ -33,7 +33,7 @@ use std::{
     collections::HashMap,
     default::Default,
     fmt,
-    path::PathBuf,
+    path::{Path, PathBuf},
     str::{self, FromStr},
 };
 use thiserror::Error;
@@ -188,8 +188,36 @@ impl NetworkState {
     pub fn install(&self) -> Result<(), NetworkStateError> {
         const CONNECTIONS_PATH: &str = "/etc/NetworkManager/system-connections";
         let from = PathBuf::from(CONNECTIONS_PATH);
+        let to = PathBuf::from(self.target_dir()).join(CONNECTIONS_PATH.trim_start_matches('/'));
+
+        self.copy_connections(&from, &to)
+    }
+
+    fn copy_connections(&self, from: &Path, to: &Path) -> Result<(), NetworkStateError> {
+        if !to.exists() {
+            std::fs::create_dir_all(to).map_err(|e| NetworkStateError::IoError(e.to_string()))?;
+        }
+
+        for entry in
+            std::fs::read_dir(from).map_err(|e| NetworkStateError::IoError(e.to_string()))?
+        {
+            let entry = entry.map_err(|e| NetworkStateError::IoError(e.to_string()))?;
+            let path = entry.path();
+            if path.is_file() {
+                let file_name = path
+                    .file_name()
+                    .ok_or_else(|| NetworkStateError::IoError("Invalid file name".to_string()))?;
+                let dest = to.join(file_name);
+                std::fs::copy(&path, &dest)
+                    .map_err(|e| NetworkStateError::IoError(e.to_string()))?;
+            }
+        }
 
         Ok(())
+    }
+
+    fn target_dir(&self) -> &str {
+        "/mnt"
     }
 
     /// Updates the current [NetworkState] with the configuration provided.
@@ -484,6 +512,37 @@ mod tests {
             error,
             NetworkStateError::NotControllerConnection(_),
         ));
+    }
+
+    #[test]
+    fn test_copy_connections() {
+        use std::fs;
+
+        let tmp_dir = std::env::temp_dir().join(format!("test_agama_network_{}", Uuid::new_v4()));
+        let source = tmp_dir.join("source");
+        let dest = tmp_dir.join("dest");
+
+        fs::create_dir_all(&source).unwrap();
+        fs::write(source.join("conn1.nmconnection"), "content1").unwrap();
+        fs::write(source.join("conn2.nmconnection"), "content2").unwrap();
+        fs::create_dir(source.join("ignored_dir")).unwrap();
+
+        let state = NetworkState::default();
+        state.copy_connections(&source, &dest).unwrap();
+
+        assert!(dest.join("conn1.nmconnection").exists());
+        assert_eq!(
+            fs::read_to_string(dest.join("conn1.nmconnection")).unwrap(),
+            "content1"
+        );
+        assert!(dest.join("conn2.nmconnection").exists());
+        assert_eq!(
+            fs::read_to_string(dest.join("conn2.nmconnection")).unwrap(),
+            "content2"
+        );
+        assert!(!dest.join("ignored_dir").exists());
+
+        fs::remove_dir_all(tmp_dir).unwrap();
     }
 }
 
