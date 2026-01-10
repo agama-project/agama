@@ -40,8 +40,6 @@ type guidedEncryption = {
   pbkdFunction?: string;
 };
 
-let mockEncryption: undefined | Storage.Encryption | guidedEncryption;
-let mockType: storageConfigType;
 const mockUseExtendedConfigFn = jest.fn();
 
 const mockStorageConfig = (
