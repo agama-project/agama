@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024] SUSE LLC
+ * Copyright (c) [2024-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -23,36 +23,21 @@
 import React from "react";
 import { screen, within } from "@testing-library/react";
 import { installerRender, mockRoutes } from "~/test-utils";
-import { LoginPage } from "~/components/core";
 import { AuthErrors } from "~/context/auth";
-import { PlainLayout } from "../layout";
-import { InstallationPhase } from "~/types/status";
+import { Plain as PlainLayout } from "~/components/layout/Layout";
+import LoginPage from "./LoginPage";
 
 let consoleErrorSpy: jest.SpyInstance;
 let mockIsAuthenticated: boolean;
 let mockLoginError;
-const mockLoginFn = jest.fn();
 
-const phase: InstallationPhase = InstallationPhase.Startup;
-const isBusy: boolean = false;
+const mockLoginFn = jest.fn();
 
 jest.mock("~/components/product/ProductRegistrationAlert", () => () => (
   <div>ProductRegistrationAlert Mock</div>
 ));
 
 jest.mock("~/components/layout/Header", () => () => <div>Header Mock</div>);
-
-jest.mock("~/queries/status", () => ({
-  useInstallerStatus: () => ({
-    phase,
-    isBusy,
-  }),
-}));
-
-jest.mock("~/queries/issues", () => ({
-  ...jest.requireActual("~/queries/issues"),
-  useAllIssues: () => [],
-}));
 
 jest.mock("~/context/auth", () => ({
   ...jest.requireActual("~/context/auth"),

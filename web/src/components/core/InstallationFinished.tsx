@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2025] SUSE LLC
+ * Copyright (c) [2022-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -83,6 +83,8 @@ function usingTpm(config): boolean {
     return null;
   }
 
+  if (config.guided) return config.guided.encryption;
+
   const { drives = [], volumeGroups = [] } = config;
 
   const devices = [
@@ -97,7 +99,7 @@ function usingTpm(config): boolean {
 }
 
 function InstallationFinished() {
-  const config = useExtendedConfig();
+  const { storage: storageConfig } = useExtendedConfig();
   const { phase, useIguana } = useInstallerStatus({ suspense: true });
   const navigate = useNavigate();
 
@@ -131,7 +133,7 @@ function InstallationFinished() {
                       ? _("At this point you can power off the machine.")
                       : _("At this point you can reboot the machine to log in to the new system.")}
                   </Content>
-                  {usingTpm(config) && <TpmHint />}
+                  {usingTpm(storageConfig) && <TpmHint />}
                 </EmptyStateBody>
                 <EmptyStateFooter>
                   <EmptyStateActions>
