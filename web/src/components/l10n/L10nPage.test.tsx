@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2025] SUSE LLC
+ * Copyright (c) [2022-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -23,37 +23,13 @@
 import React from "react";
 import { screen, within } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
-import L10nPage from "~/components/l10n/L10nPage";
+import { useSystem } from "~/hooks/model/system/l10n";
+import { useProposal } from "~/hooks/model/proposal/l10n";
 import { Keymap, Locale, Timezone } from "~/model/system/l10n";
-import { useSystem } from "~/hooks/model/system";
-import { useProposal } from "~/hooks/model/proposal";
-import { System } from "~/model/system/network";
-import { Proposal } from "~/model/proposal/network";
+import L10nPage from "./L10nPage";
 
 let mockSystemData: ReturnType<typeof useSystem>;
 let mockProposedData: ReturnType<typeof useProposal>;
-
-const networkProposal: Proposal = {
-  connections: [],
-  state: {
-    connectivity: true,
-    copyNetwork: true,
-    networkingEnabled: true,
-    wirelessEnabled: true,
-  },
-};
-
-const network: System = {
-  connections: [],
-  devices: [],
-  state: {
-    connectivity: true,
-    copyNetwork: true,
-    networkingEnabled: true,
-    wirelessEnabled: true,
-  },
-  accessPoints: [],
-};
 
 const locales: Locale[] = [
   { id: "en_US.UTF-8", language: "English", territory: "United States" },
@@ -76,28 +52,27 @@ jest.mock("~/components/product/ProductRegistrationAlert", () => () => (
 
 jest.mock("~/components/core/InstallerOptions", () => () => <div>InstallerOptions Mock</div>);
 
-jest.mock("~/hooks/api", () => ({
+jest.mock("~/hooks/model/system/l10n", () => ({
+  ...jest.requireActual("~/hooks/model/system/l10n"),
   useSystem: () => mockSystemData,
+}));
+
+jest.mock("~/hooks/model/proposal/l10n", () => ({
+  ...jest.requireActual("~/hooks/model/proposal/l10n"),
   useProposal: () => mockProposedData,
 }));
 
 beforeEach(() => {
   mockSystemData = {
-    l10n: {
-      locales,
-      keymaps,
-      timezones,
-    },
-    network,
+    locales,
+    keymaps,
+    timezones,
   };
 
   mockProposedData = {
-    l10n: {
-      locale: "en_US.UTF-8",
-      keymap: "us",
-      timezone: "Europe/Berlin",
-    },
-    network: networkProposal,
+    locale: "en_US.UTF-8",
+    keymap: "us",
+    timezone: "Europe/Berlin",
   };
 });
 
@@ -117,7 +92,7 @@ it("renders a section for configuring the language", () => {
 
 describe("if the language selected is wrong", () => {
   beforeEach(() => {
-    mockProposedData.l10n.locale = "us_US.UTF-8";
+    mockProposedData.locale = "us_US.UTF-8";
   });
 
   it("renders a button for selecting a language", () => {
@@ -137,7 +112,7 @@ it("renders a section for configuring the keyboard", () => {
 
 describe("if the keyboard selected is wrong", () => {
   beforeEach(() => {
-    mockProposedData.l10n.keymap = "ess";
+    mockProposedData.keymap = "ess";
   });
 
   it("renders a button for selecting a keyboard", () => {
@@ -157,7 +132,7 @@ it("renders a section for configuring the time zone", () => {
 
 describe("if the time zone selected is wrong", () => {
   beforeEach(() => {
-    mockProposedData.l10n.timezone = "Europee/Beeerlin";
+    mockProposedData.timezone = "Europee/Beeerlin";
   });
 
   it("renders a button for selecting a time zone", () => {

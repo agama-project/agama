@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024-2025] SUSE LLC
+ * Copyright (c) [2024-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -24,13 +24,13 @@ import React from "react";
 import { screen } from "@testing-library/react";
 import { installerRender, mockRoutes } from "~/test-utils";
 import { useSystem } from "~/hooks/model/system";
-import { useProductInfo } from "~/hooks/model/config/product";
 import { useIssues } from "~/hooks/model/issue";
+import { useProductInfo } from "~/hooks/model/config/product";
 import { Issue } from "~/model/issue";
-import { PRODUCT, REGISTRATION, ROOT } from "~/routes/paths";
-import { Product } from "~/types/software";
-import ProductRegistrationAlert from "./ProductRegistrationAlert";
 import { System } from "~/model/system/network";
+import { Product } from "~/types/software";
+import { PRODUCT, REGISTRATION, ROOT } from "~/routes/paths";
+import ProductRegistrationAlert from "./ProductRegistrationAlert";
 
 const tw: Product = {
   id: "Tumbleweed",
@@ -59,13 +59,18 @@ const network: System = {
 const mockSelectedProduct: jest.Mock<Product> = jest.fn();
 const mockIssues: jest.Mock<Issue[]> = jest.fn();
 
-jest.mock("~/hooks/api", () => ({
-  ...jest.requireActual("~/hooks/api"),
-  useSystem: (): ReturnType<typeof useSystem> => ({
-    products: [tw, sle],
-    network,
-  }),
+jest.mock("~/hooks/model/system", () => ({
+  ...jest.requireActual("~/hooks/model/system"),
+  useSystem: (): ReturnType<typeof useSystem> => ({ products: [tw, sle], network }),
+}));
+
+jest.mock("~/hooks/model/config/product", () => ({
+  ...jest.requireActual("~/hooks/model/config/product"),
   useProductInfo: (): ReturnType<typeof useProductInfo> => mockSelectedProduct(),
+}));
+
+jest.mock("~/hooks/model/issue", () => ({
+  ...jest.requireActual("~/hooks/model/issue"),
   useIssues: (): ReturnType<typeof useIssues> => mockIssues(),
 }));
 

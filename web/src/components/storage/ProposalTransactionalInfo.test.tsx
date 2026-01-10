@@ -26,9 +26,9 @@ import { plainRender } from "~/test-utils";
 import ProposalTransactionalInfo from "./ProposalTransactionalInfo";
 import type { Storage as System } from "~/model/system";
 
-jest.mock("~/hooks/model/config", () => ({
-  ...jest.requireActual("~/hooks/model/config"),
-  useProduct: () => ({ name: "Test" }),
+jest.mock("~/hooks/model/config/product", () => ({
+  ...jest.requireActual("~/hooks/model/config/product"),
+  useProductInfo: () => ({ name: "Test" }),
 }));
 
 const mockVolumeTemplates = jest.fn();

@@ -22,13 +22,12 @@
 
 import React from "react";
 import { screen } from "@testing-library/react";
-import { installerRender } from "~/test-utils";
+import { installerRender, plainRender } from "~/test-utils";
 import PasswordAndConfirmationInput from "./PasswordAndConfirmationInput";
 
 describe("when the passwords do not match", () => {
   it("displays a warning", async () => {
-    const password = "";
-    const { user } = installerRender(<PasswordAndConfirmationInput value={password} />, {
+    const { user } = plainRender(<PasswordAndConfirmationInput />, {
       withL10n: true,
     });
 
