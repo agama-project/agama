@@ -1,0 +1,30 @@
+[package]
+name = "agama-software"
+version = "0.1.0"
+rust-version.workspace = true
+edition.workspace = true
+
+[dependencies]
+agama-locale-data = { path = "../agama-locale-data" }
+agama-utils = { path = "../agama-utils" }
+async-trait = "0.1.89"
+camino = "1.2.1"
+gettext-rs = { version = "0.7.1", features = ["gettext-system"] }
+glob = "0.3.1"
+regex = "1.11.0"
+serde = { version = "1.0.210", features = ["derive"] }
+serde_with = "3.10.0"
+strum = { version = "0.27.2", features = ["derive"] }
+thiserror = "2.0.12"
+tokio = { version = "1.40.0", features = ["macros", "rt-multi-thread", "sync"] }
+tokio-stream = "0.1.16"
+tracing = "0.1.41"
+url = "2.5.7"
+utoipa = { version = "5.2.0", features = ["axum_extras", "uuid"] }
+suseconnect-agama = { path = "../suseconnect-agama" }
+zypp-agama = { path = "../zypp-agama" }
+
+[dev-dependencies]
+serde_yaml = "0.9.34"
+tempfile = "3.23.0"
+tracing-subscriber = "0.3.18"

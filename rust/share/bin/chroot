@@ -1,0 +1,12 @@
+#!/usr/bin/bash
+
+set -x
+
+case "$2" in
+  "install")
+    mkdir -p "$1/$8"
+  ;;
+  *.sh)
+    . "$2"
+  ;;
+esac

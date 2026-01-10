@@ -19,8 +19,9 @@
 // find current contact information at www.suse.com.
 
 use super::http::{login, login_from_query, logout, session};
-use super::{config::ServiceConfig, state::ServiceState, EventsSender};
-use agama_lib::auth::TokenClaims;
+use super::{config::ServiceConfig, state::ServiceState};
+use agama_lib::{auth::TokenClaims, http};
+use agama_utils::api::event;
 use axum::http::HeaderValue;
 use axum::middleware::Next;
 use axum::{
@@ -55,7 +56,7 @@ use tracing::Span;
 /// * A number of authenticated services that are added using the `add_service` function.
 pub struct MainServiceBuilder {
     config: ServiceConfig,
-    events: EventsSender,
+    events: event::Sender,
     api_router: Router<ServiceState>,
     public_dir: PathBuf,
 }
@@ -65,7 +66,7 @@ impl MainServiceBuilder {
     ///
     /// * `events`: channel to send events through the WebSocket.
     /// * `public_dir`: path to the public directory.
-    pub fn new<P>(events: EventsSender, public_dir: P) -> Self
+    pub fn new<P>(events: event::Sender, public_dir: P) -> Self
     where
         P: AsRef<Path>,
     {

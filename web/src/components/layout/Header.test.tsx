@@ -24,7 +24,9 @@ import React from "react";
 import { screen, within } from "@testing-library/react";
 import { plainRender, installerRender } from "~/test-utils";
 import { Product } from "~/types/software";
+import { System } from "~/model/system/network";
 import Header from "./Header";
+import { useSystem } from "~/hooks/model/system";
 
 const tumbleweed: Product = {
   id: "Tumbleweed",
@@ -40,15 +42,29 @@ const microos: Product = {
   registration: false,
 };
 
+const network: System = {
+  connections: [],
+  devices: [],
+  state: {
+    connectivity: true,
+    copyNetwork: true,
+    networkingEnabled: true,
+    wirelessEnabled: true,
+  },
+  accessPoints: [],
+};
+
 jest.mock("~/components/core/InstallerOptions", () => () => <div>Installer Options Mock</div>);
 jest.mock("~/components/core/InstallButton", () => () => <div>Install Button Mock</div>);
 
-jest.mock("~/queries/software", () => ({
-  useProduct: () => ({
-    products: [tumbleweed, microos],
-    selectedProduct: tumbleweed,
-  }),
-  useRegistration: () => undefined,
+jest.mock("~/hooks/model/system", () => ({
+  ...jest.requireActual("~/hooks/model/system"),
+  useSystem: (): ReturnType<typeof useSystem> => ({ products: [tumbleweed, microos], network }),
+}));
+
+jest.mock("~/hooks/model/config/product", () => ({
+  ...jest.requireActual("~/hooks/model/config/product"),
+  useProductInfo: (): Product => tumbleweed,
 }));
 
 describe("Header", () => {
@@ -86,14 +102,14 @@ describe("Header", () => {
     expect(screen.queryByRole("menu")).toBeNull();
     const toggler = screen.getByRole("button", { name: "Options toggle" });
     await user.click(toggler);
-    const menu = screen.getByRole("menu");
+    const menu = await screen.findByRole("menu");
     within(menu).getByRole("menuitem", { name: "Change product" });
     within(menu).getByRole("menuitem", { name: "Download logs" });
   });
 
   it("does not render an options dropdown when showInstallerOptions is false", async () => {
     installerRender(<Header showInstallerOptions={false} />);
-    expect(screen.queryByRole("button", { name: "Options toggle" })).toBeNull();
+    expect(screen.queryByText("Installer Options Mock")).toBeNull();
   });
 
   it.todo("allows downloading the logs");

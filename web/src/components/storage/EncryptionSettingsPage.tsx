@@ -21,15 +21,15 @@
  */
 
 import React, { useEffect, useState, useRef } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router";
 import { ActionGroup, Alert, Checkbox, Content, Form } from "@patternfly/react-core";
 import { NestedContent, Page, PasswordAndConfirmationInput } from "~/components/core";
 import PasswordCheck from "~/components/users/PasswordCheck";
-import { useEncryptionMethods } from "~/queries/storage";
-import { useEncryption } from "~/queries/storage/config-model";
-import { apiModel } from "~/api/storage/types";
+import { useEncryptionMethods } from "~/hooks/model/system/storage";
+import { useConfigModel, useSetEncryption } from "~/hooks/model/storage/config-model";
 import { isEmpty } from "radashi";
 import { _ } from "~/i18n";
+import type { ConfigModel } from "~/model/storage/config-model";
 
 /**
  * Renders a form that allows the user change encryption settings
@@ -37,28 +37,29 @@ import { _ } from "~/i18n";
 export default function EncryptionSettingsPage() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { encryption: encryptionConfig, enable, disable } = useEncryption();
   const methods = useEncryptionMethods();
+  const configModel = useConfigModel();
+  const setEncryption = useSetEncryption();
 
   const [errors, setErrors] = useState([]);
   const [isEnabled, setIsEnabled] = useState(false);
   const [password, setPassword] = useState("");
-  const [method, setMethod] = useState<apiModel.EncryptionMethod>("luks2");
+  const [method, setMethod] = useState<ConfigModel.EncryptionMethod>("luks2");
 
   const passwordRef = useRef<HTMLInputElement>();
   const formId = "encryptionSettingsForm";
 
   useEffect(() => {
-    if (encryptionConfig) {
+    if (configModel?.encryption) {
       setIsEnabled(true);
-      setMethod(encryptionConfig.method);
-      setPassword(encryptionConfig.password || "");
+      setMethod(configModel.encryption.method);
+      setPassword(configModel.encryption.password || "");
     }
-  }, [encryptionConfig]);
+  }, [configModel]);
 
-  const changePassword = (_, v) => setPassword(v);
+  const changePassword = (_, v: string) => setPassword(v);
 
-  const changeMethod = (_, useTPM) => {
+  const changeMethod = (_, useTPM: boolean) => {
     const method = useTPM ? "tpmFde" : "luks2";
     setMethod(method);
   };
@@ -81,7 +82,7 @@ export default function EncryptionSettingsPage() {
       return;
     }
 
-    const commit = () => (isEnabled ? enable(method, password) : disable());
+    const commit = () => (isEnabled ? setEncryption({ method, password }) : setEncryption(null));
 
     commit();
     navigate({ pathname: "..", search: location.search });
@@ -128,7 +129,7 @@ at the new file systems, including data, programs, and system files.",
             <NestedContent margin="mxLg">
               <PasswordAndConfirmationInput
                 inputRef={passwordRef}
-                initialValue={encryptionConfig?.password}
+                initialValue={configModel?.encryption?.password}
                 value={password}
                 onChange={changePassword}
                 isDisabled={!isEnabled}

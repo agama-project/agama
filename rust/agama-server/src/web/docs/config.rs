@@ -1,0 +1,181 @@
+// Copyright (c) [2025] SUSE LLC
+//
+// All Rights Reserved.
+//
+// This program is free software; you can redistribute it and/or modify it
+// under the terms of the GNU General Public License as published by the Free
+// Software Foundation; either version 2 of the License, or (at your option)
+// any later version.
+//
+// This program is distributed in the hope that it will be useful, but WITHOUT
+// ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+// FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+// more details.
+//
+// You should have received a copy of the GNU General Public License along
+// with this program; if not, contact SUSE LLC.
+//
+// To contact SUSE LLC about this file by physical or electronic mail, you may
+// find current contact information at www.suse.com.
+
+use agama_utils::openapi::schemas;
+use utoipa::openapi::{Components, ComponentsBuilder, Paths, PathsBuilder};
+
+use super::ApiDocBuilder;
+pub struct ConfigApiDocBuilder;
+
+impl ApiDocBuilder for ConfigApiDocBuilder {
+    fn title(&self) -> String {
+        "Config HTTP API".to_string()
+    }
+
+    fn paths(&self) -> Paths {
+        PathsBuilder::new()
+            .path_from::<crate::server::web::__path_get_system>()
+            .path_from::<crate::server::web::__path_get_extended_config>()
+            .path_from::<crate::server::web::__path_get_config>()
+            .path_from::<crate::server::web::__path_put_config>()
+            .path_from::<crate::server::web::__path_patch_config>()
+            .path_from::<crate::server::web::__path_get_proposal>()
+            .path_from::<crate::server::web::__path_get_questions>()
+            .path_from::<crate::server::web::__path_ask_question>()
+            .path_from::<crate::server::web::__path_update_question>()
+            .path_from::<crate::server::web::__path_run_action>()
+            .build()
+    }
+
+    fn components(&self) -> Components {
+        ComponentsBuilder::new()
+            .schema("IpAddr", schemas::ip_addr())
+            .schema("IpInet", schemas::ip_inet())
+            .schema("macaddr.MacAddr6", schemas::mac_addr6())
+            .schema_from::<agama_lib::bootloader::model::BootloaderSettings>()
+            .schema_from::<agama_utils::api::files::FileSource>()
+            .schema_from::<agama_utils::api::files::UserFile>()
+            .schema_from::<agama_lib::hostname::model::HostnameSettings>()
+            .schema_from::<agama_lib::network::NetworkSettings>()
+            .schema_from::<agama_lib::network::model::BondConfig>()
+            .schema_from::<agama_lib::network::model::BondOptions>()
+            .schema_from::<agama_lib::network::model::BridgeConfig>()
+            .schema_from::<agama_lib::network::model::BridgePortConfig>()
+            .schema_from::<agama_lib::network::model::Connection>()
+            .schema_from::<agama_lib::network::model::ConnectionConfig>()
+            .schema_from::<agama_lib::network::model::EAPMethod>()
+            .schema_from::<agama_lib::network::model::GroupAlgorithm>()
+            .schema_from::<agama_lib::network::model::IEEE8021XConfig>()
+            .schema_from::<agama_lib::network::model::InfinibandConfig>()
+            .schema_from::<agama_lib::network::model::InfinibandTransportMode>()
+            .schema_from::<agama_lib::network::model::MatchConfig>()
+            .schema_from::<agama_lib::network::model::OvsBridgeConfig>()
+            .schema_from::<agama_lib::network::model::OvsBridgePortConfig>()
+            .schema_from::<agama_lib::network::model::OvsInterfaceConfig>()
+            .schema_from::<agama_lib::network::model::OvsInterfaceType>()
+            .schema_from::<agama_lib::network::model::OvsPortConfig>()
+            .schema_from::<agama_lib::network::model::PairwiseAlgorithm>()
+            .schema_from::<agama_lib::network::model::Phase2AuthMethod>()
+            .schema_from::<agama_lib::network::model::PortConfig>()
+            .schema_from::<agama_lib::network::model::SecurityProtocol>()
+            .schema_from::<agama_lib::network::model::TunConfig>()
+            .schema_from::<agama_lib::network::model::TunMode>()
+            .schema_from::<agama_lib::network::model::VlanConfig>()
+            .schema_from::<agama_lib::network::model::VlanProtocol>()
+            .schema_from::<agama_lib::network::model::WEPAuthAlg>()
+            .schema_from::<agama_lib::network::model::WEPKeyType>()
+            .schema_from::<agama_lib::network::model::WEPSecurity>()
+            .schema_from::<agama_lib::network::model::WPAProtocolVersion>()
+            .schema_from::<agama_lib::network::model::WirelessBand>()
+            .schema_from::<agama_lib::network::model::WirelessConfig>()
+            .schema_from::<agama_lib::network::model::WirelessMode>()
+            .schema_from::<agama_lib::network::types::BondMode>()
+            .schema_from::<agama_lib::network::types::ConnectionState>()
+            .schema_from::<agama_lib::network::types::DeviceState>()
+            .schema_from::<agama_lib::network::types::DeviceType>()
+            .schema_from::<agama_lib::network::types::SSID>()
+            .schema_from::<agama_lib::network::types::Status>()
+            .schema_from::<agama_lib::network::types::LinkLocal>()
+            .schema_from::<agama_utils::api::software::AddonConfig>()
+            .schema_from::<agama_utils::api::software::ProductConfig>()
+            .schema_from::<agama_utils::api::files::BaseScript>()
+            .schema_from::<agama_utils::api::files::InitScript>()
+            .schema_from::<agama_utils::api::files::PostPartitioningScript>()
+            .schema_from::<agama_utils::api::files::PostScript>()
+            .schema_from::<agama_utils::api::files::PreScript>()
+            .schema_from::<agama_utils::api::files::Script>()
+            .schema_from::<agama_utils::api::files::ScriptsConfig>()
+            .schema_from::<agama_lib::security::SecuritySettings>()
+            .schema_from::<agama_lib::security::model::SSLFingerprint>()
+            .schema_from::<agama_lib::security::model::SSLFingerprintAlgorithm>()
+            .schema_from::<agama_utils::api::software::PatternsMap>()
+            .schema_from::<agama_utils::api::software::PatternsConfig>()
+            .schema_from::<agama_utils::api::software::SoftwareConfig>()
+            .schema_from::<agama_utils::api::manager::LanguageTag>()
+            .schema_from::<agama_utils::api::manager::License>()
+            .schema_from::<agama_utils::api::manager::LicenseContent>()
+            .schema_from::<agama_lib::storage::settings::dasd::DASDConfig>()
+            .schema_from::<agama_lib::storage::settings::dasd::DASDDeviceConfig>()
+            .schema_from::<agama_lib::storage::settings::dasd::DASDDeviceState>()
+            .schema_from::<agama_lib::storage::settings::zfcp::ZFCPConfig>()
+            .schema_from::<agama_lib::storage::settings::zfcp::ZFCPDeviceConfig>()
+            .schema_from::<agama_lib::users::FirstUserSettings>()
+            .schema_from::<agama_lib::users::RootUserSettings>()
+            .schema_from::<agama_lib::users::UserPassword>()
+            .schema_from::<agama_lib::users::UserSettings>()
+            .schema_from::<agama_locale_data::KeymapId>()
+            .schema_from::<agama_locale_data::LocaleId>()
+            .schema_from::<agama_locale_data::TimezoneId>()
+            .schema_from::<agama_utils::api::Action>()
+            .schema_from::<agama_utils::api::Config>()
+            .schema_from::<agama_utils::api::IssueWithScope>()
+            .schema_from::<agama_utils::api::Issue>()
+            .schema_from::<agama_utils::api::Progress>()
+            .schema_from::<agama_utils::api::Proposal>()
+            .schema_from::<agama_utils::api::Scope>()
+            .schema_from::<agama_utils::api::Status>()
+            .schema_from::<agama_utils::api::SystemInfo>()
+            .schema_from::<agama_utils::api::Patch>()
+            .schema_from::<agama_utils::api::l10n::Config>()
+            .schema_from::<agama_utils::api::l10n::Keymap>()
+            .schema_from::<agama_utils::api::l10n::LocaleEntry>()
+            .schema_from::<agama_utils::api::l10n::Proposal>()
+            .schema_from::<agama_utils::api::l10n::SystemConfig>()
+            .schema_from::<agama_utils::api::l10n::SystemInfo>()
+            .schema_from::<agama_utils::api::l10n::TimezoneEntry>()
+            .schema_from::<agama_utils::api::network::AccessPoint>()
+            .schema_from::<agama_utils::api::network::Device>()
+            .schema_from::<agama_utils::api::network::Dhcp4Settings>()
+            .schema_from::<agama_utils::api::network::Dhcp6Settings>()
+            .schema_from::<agama_utils::api::network::DhcpClientId>()
+            .schema_from::<agama_utils::api::network::DhcpDuid>()
+            .schema_from::<agama_utils::api::network::DhcpIaid>()
+            .schema_from::<agama_utils::api::network::IpConfig>()
+            .schema_from::<agama_utils::api::network::IpRoute>()
+            .schema_from::<agama_utils::api::network::Ipv4Method>()
+            .schema_from::<agama_utils::api::network::Ipv6Method>()
+            .schema_from::<agama_utils::api::network::MacAddress>()
+            .schema_from::<agama_utils::api::network::BondSettings>()
+            .schema_from::<agama_utils::api::network::BridgeSettings>()
+            .schema_from::<agama_utils::api::network::IEEE8021XSettings>()
+            .schema_from::<agama_utils::api::network::MatchSettings>()
+            .schema_from::<agama_utils::api::network::NetworkConnection>()
+            .schema_from::<agama_utils::api::network::NetworkConnectionWithState>()
+            .schema_from::<agama_utils::api::network::NetworkConnectionsCollection>()
+            .schema_from::<agama_utils::api::network::NetworkSettings>()
+            .schema_from::<agama_utils::api::network::NetworkSettings>()
+            .schema_from::<agama_utils::api::network::StateSettings>()
+            .schema_from::<agama_utils::api::network::VlanSettings>()
+            .schema_from::<agama_utils::api::network::WirelessSettings>()
+            .schema_from::<agama_utils::api::question::AnswerRule>()
+            .schema_from::<agama_utils::api::question::Answer>()
+            .schema_from::<agama_utils::api::question::Config>()
+            .schema_from::<agama_utils::api::question::Policy>()
+            .schema_from::<agama_utils::api::question::Question>()
+            .schema_from::<agama_utils::api::question::QuestionField>()
+            .schema_from::<agama_utils::api::question::QuestionSpec>()
+            .schema_from::<agama_utils::api::question::SelectionOption>()
+            .schema_from::<agama_utils::api::question::UpdateQuestion>()
+            .schema_from::<agama_utils::api::software::RepositoryConfig>()
+            .schema_from::<agama_utils::api::status::Stage>()
+            .schema_from::<agama_utils::api::query::SolveStorageModel>()
+            .build()
+    }
+}

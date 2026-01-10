@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2023-2024] SUSE LLC
+ * Copyright (c) [2023-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -25,38 +25,48 @@ import LocaleSelection from "./LocaleSelection";
 import userEvent from "@testing-library/user-event";
 import { screen } from "@testing-library/react";
 import { mockNavigateFn, installerRender } from "~/test-utils";
+import { Locale } from "~/model/system/l10n";
 
-const locales = [
-  { id: "en_US.UTF-8", name: "English", territory: "United States" },
-  { id: "es_ES.UTF-8", name: "Spanish", territory: "Spain" },
+const mockPatchConfigFn = jest.fn();
+
+const locales: Locale[] = [
+  { id: "en_US.UTF-8", language: "English", territory: "United States" },
+  { id: "es_ES.UTF-8", language: "Spanish", territory: "Spain" },
 ];
-
-const mockConfigMutation = {
-  mutate: jest.fn(),
-};
 
 jest.mock("~/components/product/ProductRegistrationAlert", () => () => (
   <div>ProductRegistrationAlert Mock</div>
 ));
 
-jest.mock("~/queries/l10n", () => ({
-  ...jest.requireActual("~/queries/l10n"),
-  useL10n: () => ({ locales, selectedLocale: locales[0] }),
-  useConfigMutation: () => mockConfigMutation,
-}));
-
-jest.mock("react-router-dom", () => ({
-  ...jest.requireActual("react-router-dom"),
+jest.mock("react-router", () => ({
+  ...jest.requireActual("react-router"),
   useNavigate: () => mockNavigateFn,
 }));
 
-it("allows changing the keyboard", async () => {
+jest.mock("~/api", () => ({
+  ...jest.requireActual("~/api"),
+  patchConfig: (config) => mockPatchConfigFn(config),
+}));
+
+jest.mock("~/hooks/model/system/l10n", () => ({
+  ...jest.requireActual("~/hooks/model/system/l10n"),
+  useSystem: () => ({ locales }),
+}));
+
+jest.mock("~/hooks/model/proposal/l10n", () => ({
+  ...jest.requireActual("~/hooks/model/proposal/l10n"),
+  useProposal: () => ({ locales, locale: "us_US.UTF-8", keymap: "us" }),
+}));
+
+it("allows changing the language", async () => {
   installerRender(<LocaleSelection />);
 
   const option = await screen.findByText("Spanish");
   await userEvent.click(option);
   const button = await screen.findByRole("button", { name: "Select" });
   await userEvent.click(button);
-  expect(mockConfigMutation.mutate).toHaveBeenCalledWith({ locales: ["es_ES.UTF-8"] });
+  expect(mockPatchConfigFn).toHaveBeenCalledWith({
+    l10n: { locale: "es_ES.UTF-8" },
+  });
   expect(mockNavigateFn).toHaveBeenCalledWith(-1);
 });

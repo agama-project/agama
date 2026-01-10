@@ -26,7 +26,7 @@
  */
 
 import React, { useId } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate } from "react-router";
 import {
   ActionGroup,
   Content,
@@ -48,24 +48,32 @@ import {
 import { Page, SelectWrapper as Select } from "~/components/core/";
 import { SelectWrapperProps as SelectProps } from "~/components/core/SelectWrapper";
 import SelectTypeaheadCreatable from "~/components/core/SelectTypeaheadCreatable";
-import { useMissingMountPaths, useVolume } from "~/hooks/storage/product";
-import { useAddFilesystem } from "~/hooks/storage/filesystem";
-import { useModel } from "~/hooks/storage/model";
-import { useDevices } from "~/queries/storage";
-import { data, model, StorageDevice } from "~/types/storage";
-import { deviceBaseName, filesystemLabel } from "~/components/storage/utils";
+import {
+  useConfigModel,
+  useMissingMountPaths,
+  usePartitionable,
+  useSetFilesystem,
+} from "~/hooks/model/storage/config-model";
+import { useDevice, useVolumeTemplate } from "~/hooks/model/system/storage";
+import {
+  createPartitionableLocation,
+  deviceBaseName,
+  filesystemLabel,
+} from "~/components/storage/utils";
+import configModel from "~/model/storage/config-model";
 import { _ } from "~/i18n";
 import { sprintf } from "sprintf-js";
-import { apiModel } from "~/api/storage/types";
 import { STORAGE as PATHS } from "~/routes/paths";
 import { unique } from "radashi";
 import { compact } from "~/utils";
+import type { ConfigModel, Data, Partitionable } from "~/model/storage/config-model";
+import type { Storage as System } from "~/model/system";
 
 const NO_VALUE = "";
 const BTRFS_SNAPSHOTS = "btrfsSnapshots";
 const REUSE_FILESYSTEM = "reuse";
 
-type DeviceModel = model.Drive | model.MdRaid;
+type DeviceModel = ConfigModel.Drive | ConfigModel.MdRaid;
 type FormValue = {
   mountPoint: string;
   filesystem: string;
@@ -82,8 +90,8 @@ type ErrorsHandler = {
   getVisibleError: (id: string) => Error | undefined;
 };
 
-function toData(value: FormValue): data.Formattable {
-  const filesystemType = (): apiModel.FilesystemType | undefined => {
+function toData(value: FormValue): Data.Formattable {
+  const filesystemType = (): ConfigModel.FilesystemType | undefined => {
     if (value.filesystem === NO_VALUE) return undefined;
     if (value.filesystem === BTRFS_SNAPSHOTS) return "btrfs";
 
@@ -94,10 +102,10 @@ function toData(value: FormValue): data.Formattable {
      *  This will be fixed in the future by directly exporting the volumes as a JSON, similar to the
      *  config model. The schema for the volumes will define the explicit list of filesystem types.
      */
-    return value.filesystem as apiModel.FilesystemType;
+    return value.filesystem as ConfigModel.FilesystemType;
   };
 
-  const filesystem = (): data.Filesystem | undefined => {
+  const filesystem = (): Data.Filesystem | undefined => {
     if (value.filesystem === REUSE_FILESYSTEM) return { reuse: true };
 
     const type = filesystemType();
@@ -138,42 +146,43 @@ function toFormValue(deviceModel: DeviceModel): FormValue {
   };
 }
 
-function useDeviceModel(): DeviceModel {
-  const { list, listIndex } = useParams();
-  const model = useModel({ suspense: true });
-  return model[list].at(listIndex);
+function useDeviceModelFromParams(): Partitionable.Device | null {
+  const { collection, index } = useParams();
+  const location = createPartitionableLocation(collection, index);
+  const deviceModel = usePartitionable(location.collection, location.index);
+
+  return deviceModel;
 }
 
-function useDevice(): StorageDevice {
-  const deviceModel = useDeviceModel();
-  const devices = useDevices("system", { suspense: true });
-  return devices.find((d) => d.name === deviceModel.name);
+function useDeviceFromParams(): System.Device {
+  const deviceModel = useDeviceModelFromParams();
+  return useDevice(deviceModel.name);
 }
 
 function useCurrentFilesystem(): string | null {
-  const device = useDevice();
+  const device = useDeviceFromParams();
   return device?.filesystem?.type || null;
 }
 
 function useDefaultFilesystem(mountPoint: string): string {
-  const volume = useVolume(mountPoint, { suspense: true });
+  const volume = useVolumeTemplate(mountPoint);
   return volume.mountPath === "/" && volume.snapshots ? BTRFS_SNAPSHOTS : volume.fsType;
 }
 
 function useInitialFormValue(): FormValue | null {
-  const deviceModel = useDeviceModel();
+  const deviceModel = useDeviceModelFromParams();
   return React.useMemo(() => (deviceModel ? toFormValue(deviceModel) : null), [deviceModel]);
 }
 
 /** Unused predefined mount points. Includes the currently used mount point when editing. */
 function useUnusedMountPoints(): string[] {
   const unusedMountPaths = useMissingMountPaths();
-  const deviceModel = useDeviceModel();
+  const deviceModel = useDeviceModelFromParams();
   return compact([deviceModel?.mountPath, ...unusedMountPaths]);
 }
 
 function useUsableFilesystems(mountPoint: string): string[] {
-  const volume = useVolume(mountPoint);
+  const volume = useVolumeTemplate(mountPoint);
   const defaultFilesystem = useDefaultFilesystem(mountPoint);
 
   const usableFilesystems = React.useMemo(() => {
@@ -202,9 +211,9 @@ function useUsableFilesystems(mountPoint: string): string[] {
 }
 
 function useMountPointError(value: FormValue): Error | undefined {
-  const model = useModel({ suspense: true });
-  const mountPoints = model?.getMountPaths() || [];
-  const deviceModel = useDeviceModel();
+  const config = useConfigModel();
+  const mountPoints = config ? configModel.usedMountPaths(config) : [];
+  const deviceModel = useDeviceModelFromParams();
   const mountPoint = value.mountPoint;
 
   if (mountPoint === NO_VALUE) {
@@ -291,8 +300,8 @@ type FilesystemOptionsProps = {
 };
 
 function FilesystemOptions({ mountPoint }: FilesystemOptionsProps): React.ReactNode {
-  const device = useDevice();
-  const volume = useVolume(mountPoint);
+  const device = useDeviceFromParams();
+  const volume = useVolumeTemplate(mountPoint);
   const defaultFilesystem = useDefaultFilesystem(mountPoint);
   const usableFilesystems = useUsableFilesystems(mountPoint);
   const currentFilesystem = useCurrentFilesystem();
@@ -402,9 +411,10 @@ export default function FormattableDevicePage() {
   const value = { mountPoint, filesystem, filesystemLabel };
   const { errors, getVisibleError } = useErrors(value);
 
-  const device = useDeviceModel();
+  const { collection, index } = useParams();
+  const device = useDeviceModelFromParams();
   const unusedMountPoints = useUnusedMountPoints();
-  const addFilesystem = useAddFilesystem();
+  const addFilesystem = useSetFilesystem();
 
   // Initializes the form values.
   React.useEffect(() => {
@@ -436,8 +446,10 @@ export default function FormattableDevicePage() {
 
   const onSubmit = () => {
     const data = toData(value);
-    const { list, listIndex } = device;
-    addFilesystem(list, listIndex, data);
+    const location = createPartitionableLocation(collection, index);
+    if (!location) return;
+
+    addFilesystem(location.collection, location.index, data);
     navigate(PATHS.root);
   };
 

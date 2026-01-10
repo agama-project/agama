@@ -46,10 +46,12 @@ import { ProductRegistrationAlert } from "~/components/product";
 import Link, { LinkProps } from "~/components/core/Link";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import flexStyles from "@patternfly/react-styles/css/utilities/Flex/flex";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router";
 import { isEmpty, isObject } from "radashi";
 import { SIDE_PATHS } from "~/routes/paths";
 import { _, TranslatedString } from "~/i18n";
+import type { ProgressBackdropProps } from "~/components/core/ProgressBackdrop";
+import ProgressBackdrop from "~/components/core/ProgressBackdrop";
 
 /**
  * Props accepted by Page.Section
@@ -286,56 +288,69 @@ const Submit = ({ children, ...props }: SubmitActionProps) => {
  *
  * @see [Patternfly Page/PageSection](https://www.patternfly.org/components/page#pagesection)
  */
-const Content = ({ children, ...pageSectionProps }: React.PropsWithChildren<PageSectionProps>) => {
+const Content = ({ children, ...pageSectionProps }: PageSectionProps) => {
   const location = useLocation();
   const mountRegistrationAlert = !SIDE_PATHS.includes(location.pathname);
 
   return (
-    <>
-      <PageSection hasBodyWrapper={false} isFilled component="div" {...pageSectionProps}>
-        {mountRegistrationAlert && <ProductRegistrationAlert />}
-        {children}
-      </PageSection>
-    </>
+    <PageSection hasBodyWrapper={false} isFilled component="div" {...pageSectionProps}>
+      {mountRegistrationAlert && <ProductRegistrationAlert />}
+      {children}
+    </PageSection>
   );
 };
 
 /**
- * Component for structuring an Agama page, built on top of PF/Page/PageGroup.
+ * A component for creating an Agama page, built on top of PF/Page/PageGroup.
  *
- * @see [Patternfly Page/PageGroup](https://www.patternfly.org/components/page#pagegroup)
+ * It serves as the root container for all Agama pages and supports optional
+ * progress tracking.
+ *
+ * @see {@link https://www.patternfly.org/components/page#pagegroup | Patternfly Page/PageGroup}
  *
  * @example
- *   <Page>
- *     <Page.Header>
- *       <h2>{_("Software")}</h2>
- *     </Page.Header>
+ * Basic page without progress tracking
+ * ```tsx
+ * <Page>
+ *   <Page.Header>
+ *     <h2>{_("Software")}</h2>
+ *   </Page.Header>
+ *   <Page.Content>
+ *     <p>Page content here</p>
+ *   </Page.Content>
+ * </Page>
+ * ```
  *
- *     <Page.Content>
- *       <Stack hasGutter>
- *         <IssuesHint issues={issues} />
- *
- *         <Page.Section title="Selected patterns" >
- *           {patterns.length === 0 ? <NoPatterns /> : <SelectedPatterns patterns={patterns} />}
- *         </Page.Section>
- *
- *         <Page.Section aria-label="Used size">
- *           <UsedSize size={proposal.size} />
- *         </Page.Section>
- *       </Stack>
- *       <Page.Actions>
- *         <Page.Back />
- *       </Page.Actions>
- *     </Page.Content>
- *   </Page>
+ * @example
+ * Page with progress tracking for software operations
+ * ```tsx
+ * <Page progress={{ scope: "software" }}>
+ *   <Page.Header>
+ *     <h2>{_("Software")}</h2>
+ *   </Page.Header>
+ *   <Page.Content>
+ *     <Stack hasGutter>
+ *       <IssuesHint issues={issues} />
+ *       <Page.Section title="Selected patterns">
+ *         {patterns.length === 0 ? <NoPatterns /> : <SelectedPatterns patterns={patterns} />}
+ *       </Page.Section>
+ *       <Page.Section aria-label="Used size">
+ *         <UsedSize size={proposal.size} />
+ *       </Page.Section>
+ *     </Stack>
+ *   </Page.Content>
+ * </Page>
+ * ```
  */
 const Page = ({
+  progress,
   children,
   ...pageGroupProps
-}: React.PropsWithChildren<PageGroupProps>): React.ReactNode => {
+}: PageGroupProps & { progress?: ProgressBackdropProps }): React.ReactNode => {
   return (
     <PageGroup {...pageGroupProps} tabIndex={-1} id="main-content">
       {children}
+      {progress && <ProgressBackdrop {...progress} />}
     </PageGroup>
   );
 };

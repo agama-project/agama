@@ -21,10 +21,9 @@
  */
 
 import React from "react";
-import { screen, within } from "@testing-library/react";
-import { installerRender, mockNavigateFn } from "~/test-utils";
+import { screen, waitFor, within } from "@testing-library/react";
+import { installerRender } from "~/test-utils";
 import BootSelection from "./BootSelection";
-import { StorageDevice } from "~/types/storage";
 
 // FIXME: drop this mock once a better solution for dealing with
 // ProductRegistrationAlert, which uses a query with suspense,
@@ -32,259 +31,215 @@ jest.mock("~/components/product/ProductRegistrationAlert", () => () => (
   <div>ProductRegistrationAlert Mock</div>
 ));
 
-const sda: StorageDevice = {
-  sid: 59,
-  isDrive: true,
-  type: "disk",
-  vendor: "Micron",
-  model: "Micron 1100 SATA",
-  driver: ["ahci", "mmcblk"],
-  bus: "IDE",
-  busId: "",
-  transport: "usb",
-  dellBOSS: false,
-  sdCard: true,
-  active: true,
-  name: "/dev/sda",
-  description: "",
-  size: 1024,
-  shrinking: { unsupported: ["Resizing is not supported"] },
-  systems: [],
-  udevIds: ["ata-Micron_1100_SATA_512GB_12563", "scsi-0ATA_Micron_1100_SATA_512GB"],
-  udevPaths: ["pci-0000:00-12", "pci-0000:00-12-ata"],
-};
+const mockDevices = [
+  {
+    sid: 1,
+    class: "drive",
+    name: "/dev/sda",
+  },
+  {
+    sid: 2,
+    class: "drive",
+    name: "/dev/sdb",
+  },
+  {
+    sid: 3,
+    class: "drive",
+    name: "/dev/sdc",
+  },
+];
 
-const sdb: StorageDevice = {
-  sid: 62,
-  isDrive: true,
-  type: "disk",
-  vendor: "Samsung",
-  model: "Samsung Evo 8 Pro",
-  driver: ["ahci"],
-  bus: "IDE",
-  busId: "",
-  transport: "",
-  dellBOSS: false,
-  sdCard: false,
-  active: true,
-  name: "/dev/sdb",
-  description: "",
-  size: 2048,
-  shrinking: { unsupported: ["Resizing is not supported"] },
-  systems: [],
-  udevIds: [],
-  udevPaths: ["pci-0000:00-19"],
-};
+const mockCandidateDevices = [mockDevices[0], mockDevices[1]];
 
-const sdc: StorageDevice = {
-  sid: 63,
-  isDrive: true,
-  type: "disk",
-  vendor: "Samsung",
-  model: "Samsung Evo 8 Pro",
-  driver: ["ahci"],
-  bus: "IDE",
-  busId: "",
-  transport: "",
-  dellBOSS: false,
-  sdCard: false,
-  active: true,
-  name: "/dev/sdc",
-  description: "",
-  size: 2048,
-  shrinking: { unsupported: ["Resizing is not supported"] },
-  systems: [],
-  udevIds: [],
-  udevPaths: ["pci-0000:00-19"],
+const mockConfigModel = {
+  boot: {
+    configure: true,
+    device: {
+      default: true,
+      name: "/dev/sda",
+    },
+  },
+  drives: [],
+  mdRaids: [],
 };
-
-jest.mock("react-router-dom", () => ({
-  ...jest.requireActual("react-router-dom"),
-  useNavigate: () => mockNavigateFn,
-}));
 
 const mockUseDevices = jest.fn();
-jest.mock("~/queries/storage", () => ({
-  ...jest.requireActual("~/queries/storage"),
-  useDevices: () => mockUseDevices(),
-}));
-
 const mockUseCandidateDevices = jest.fn();
-jest.mock("~/hooks/storage/system", () => ({
-  ...jest.requireActual("~/hooks/storage/system"),
+const mockUseConfigModel = jest.fn();
+const mockSetBootDevice = jest.fn();
+const mockSetDefaultBootDevice = jest.fn();
+const mockDisableBootConfig = jest.fn();
+
+jest.mock("~/hooks/model/system/storage", () => ({
+  useDevices: () => mockUseDevices(),
   useCandidateDevices: () => mockUseCandidateDevices(),
 }));
 
-const mockUseModel = jest.fn();
-jest.mock("~/hooks/storage/model", () => ({
-  ...jest.requireActual("~/hooks/storage/model"),
-  useModel: () => mockUseModel(),
+jest.mock("~/hooks/model/storage/config-model", () => ({
+  useConfigModel: () => mockUseConfigModel(),
+  useSetBootDevice: () => mockSetBootDevice,
+  useSetDefaultBootDevice: () => mockSetDefaultBootDevice,
+  useDisableBoot: () => mockDisableBootConfig,
 }));
 
-const mockUseSetBootDevice = jest.fn();
-const mockUseSetDefaultBootDevice = jest.fn();
-const mockUseDisableBootConfig = jest.fn();
-jest.mock("~/hooks/storage/boot", () => ({
-  ...jest.requireActual("~/hooks/storage/boot"),
-  useSetBootDevice: () => mockUseSetBootDevice,
-  useSetDefaultBootDevice: () => mockUseSetDefaultBootDevice,
-  useDisableBootConfig: () => mockUseDisableBootConfig,
-}));
+beforeEach(() => {
+  jest.clearAllMocks();
+  mockUseDevices.mockReturnValue(mockDevices);
+  mockUseCandidateDevices.mockReturnValue(mockCandidateDevices);
+  mockUseConfigModel.mockReturnValue(mockConfigModel);
+});
 
-describe("BootSelection", () => {
-  beforeEach(() => {
-    mockUseDevices.mockReturnValue([sda, sdb, sdc]);
-    mockUseCandidateDevices.mockReturnValue([sda, sdb, sdc]);
-    mockUseModel.mockReturnValue({
-      boot: {
-        configure: true,
-        isDefault: true,
-        getDevice: () => null,
-      },
-      drives: [],
-      mdRaids: [],
-    });
-  });
-
+describe("BootSelectionDialog", () => {
   const automaticOption = () => screen.getByRole("radio", { name: "Automatic" });
   const selectDiskOption = () => screen.getByRole("radio", { name: "Select a disk" });
   const notConfigureOption = () => screen.getByRole("radio", { name: "Do not configure" });
   const diskSelector = () => screen.getByRole("combobox", { name: /choose a disk/i });
 
-  it("offers an option to configure boot in the installation disk", () => {
+  it("offers an option to configure boot in the installation disk", async () => {
     installerRender(<BootSelection />);
-    expect(automaticOption()).toBeInTheDocument();
+    await waitFor(() => {
+      expect(automaticOption()).toBeInTheDocument();
+    });
   });
 
-  it("offers an option to configure boot in a selected disk", () => {
+  it("offers an option to configure boot in a selected disk", async () => {
     installerRender(<BootSelection />);
-    expect(selectDiskOption()).toBeInTheDocument();
-    expect(diskSelector()).toBeInTheDocument();
+    await waitFor(() => {
+      expect(selectDiskOption()).toBeInTheDocument();
+      expect(diskSelector()).toBeInTheDocument();
+    });
   });
 
-  it("offers an option to not configure boot", () => {
+  it("offers an option to not configure boot", async () => {
     installerRender(<BootSelection />);
-    expect(notConfigureOption()).toBeInTheDocument();
+    await waitFor(() => {
+      expect(notConfigureOption()).toBeInTheDocument();
+    });
   });
 
   describe("if the current value is set to boot from the installation disk", () => {
-    it("selects 'Automatic' option by default", () => {
+    it("selects 'Automatic' option by default", async () => {
       installerRender(<BootSelection />);
-      expect(automaticOption()).toBeChecked();
-      expect(selectDiskOption()).not.toBeChecked();
-      expect(diskSelector()).toBeDisabled();
-      expect(notConfigureOption()).not.toBeChecked();
+      await waitFor(() => {
+        expect(automaticOption()).toBeChecked();
+        expect(selectDiskOption()).not.toBeChecked();
+        expect(diskSelector()).toBeDisabled();
+        expect(notConfigureOption()).not.toBeChecked();
+      });
     });
   });
 
   describe("if the current value is set to boot from a selected disk", () => {
     beforeEach(() => {
-      mockUseModel.mockReturnValue({
+      mockUseConfigModel.mockReturnValue({
+        ...mockConfigModel,
         boot: {
           configure: true,
-          isDefault: false,
-          getDevice: () => sda,
+          device: {
+            default: false,
+            name: "/dev/sda",
+          },
         },
-        drives: [],
-        mdRaids: [],
       });
     });
 
-    it("selects 'Select a disk' option by default", () => {
+    it("selects 'Select a disk' option by default", async () => {
       installerRender(<BootSelection />);
-      expect(automaticOption()).not.toBeChecked();
-      expect(selectDiskOption()).toBeChecked();
-      expect(diskSelector()).toBeEnabled();
-      expect(notConfigureOption()).not.toBeChecked();
+      await waitFor(() => {
+        expect(automaticOption()).not.toBeChecked();
+        expect(selectDiskOption()).toBeChecked();
+        expect(diskSelector()).toBeEnabled();
+        expect(notConfigureOption()).not.toBeChecked();
+      });
     });
   });
 
   describe("if the current value is set to not configure boot", () => {
     beforeEach(() => {
-      mockUseModel.mockReturnValue({
-        boot: {
-          configure: false,
-          isDefault: false,
-          getDevice: () => null,
-        },
-        drives: [],
-        mdRaids: [],
+      mockUseConfigModel.mockReturnValue({
+        ...mockConfigModel,
+        boot: { configure: false },
       });
     });
 
-    it("selects 'Do not configure' option by default", () => {
+    it("selects 'Do not configure' option by default", async () => {
       installerRender(<BootSelection />);
-      expect(automaticOption()).not.toBeChecked();
-      expect(selectDiskOption()).not.toBeChecked();
-      expect(diskSelector()).toBeDisabled();
-      expect(notConfigureOption()).toBeChecked();
+      await waitFor(() => {
+        expect(automaticOption()).not.toBeChecked();
+        expect(selectDiskOption()).not.toBeChecked();
+        expect(diskSelector()).toBeDisabled();
+        expect(notConfigureOption()).toBeChecked();
+      });
     });
   });
 
   describe("if the current boot device is not a candidate device", () => {
     beforeEach(() => {
-      mockUseCandidateDevices.mockReturnValue([sdb, sdc]);
-      mockUseModel.mockReturnValue({
+      mockUseConfigModel.mockReturnValue({
+        ...mockConfigModel,
         boot: {
           configure: true,
-          isDefault: false,
-          getDevice: () => sda,
+          device: {
+            default: false,
+            name: "/dev/sdc",
+          },
         },
-        drives: [],
-        mdRaids: [],
+        drives: [{ name: "/dev/sdc" }],
       });
     });
 
     it("offers the current boot device as an option", async () => {
       const { user } = installerRender(<BootSelection />);
+      await waitFor(() => expect(diskSelector()).toBeInTheDocument());
       await user.click(selectDiskOption());
       const selector = diskSelector();
-      within(selector).getByRole("option", { name: /sda/ });
+      within(selector).getByRole("option", { name: /sdc/ });
     });
   });
 
   it("does not change the boot options on cancel", async () => {
     const { user } = installerRender(<BootSelection />);
+    await waitFor(() => expect(diskSelector()).toBeInTheDocument());
     const cancel = screen.getByRole("link", { name: "Cancel" });
-
     await user.click(cancel);
-
-    expect(mockUseSetBootDevice).not.toHaveBeenCalled();
-    expect(mockUseSetDefaultBootDevice).not.toHaveBeenCalled();
-    expect(mockUseDisableBootConfig).not.toHaveBeenCalled();
+    expect(mockSetBootDevice).not.toHaveBeenCalled();
+    expect(mockSetDefaultBootDevice).not.toHaveBeenCalled();
+    expect(mockDisableBootConfig).not.toHaveBeenCalled();
   });
 
   it("applies the expected boot options when 'Automatic' is selected", async () => {
     const { user } = installerRender(<BootSelection />);
+    await waitFor(() => expect(diskSelector()).toBeInTheDocument());
     await user.click(automaticOption());
-
     const accept = screen.getByRole("button", { name: "Accept" });
     await user.click(accept);
-
-    expect(mockUseSetDefaultBootDevice).toHaveBeenCalled();
+    expect(mockSetDefaultBootDevice).toHaveBeenCalled();
+    expect(mockSetBootDevice).not.toHaveBeenCalled();
+    expect(mockDisableBootConfig).not.toHaveBeenCalled();
   });
 
   it("applies the expected boot options when a disk is selected", async () => {
     const { user } = installerRender(<BootSelection />);
-
+    await waitFor(() => expect(diskSelector()).toBeInTheDocument());
     await user.click(selectDiskOption());
     const selector = diskSelector();
     const sdbOption = within(selector).getByRole("option", { name: /sdb/ });
     await user.selectOptions(selector, sdbOption);
-
     const accept = screen.getByRole("button", { name: "Accept" });
     await user.click(accept);
-
-    expect(mockUseSetBootDevice).toHaveBeenCalledWith(sdb.name);
+    expect(mockSetBootDevice).toHaveBeenCalledWith("/dev/sdb");
+    expect(mockSetDefaultBootDevice).not.toHaveBeenCalled();
+    expect(mockDisableBootConfig).not.toHaveBeenCalled();
   });
 
   it("applies the expected boot options when 'No configure' is selected", async () => {
     const { user } = installerRender(<BootSelection />);
+    await waitFor(() => expect(diskSelector()).toBeInTheDocument());
     await user.click(notConfigureOption());
-
     const accept = screen.getByRole("button", { name: "Accept" });
     await user.click(accept);
-
-    expect(mockUseDisableBootConfig).toHaveBeenCalled();
+    expect(mockDisableBootConfig).toHaveBeenCalled();
+    expect(mockSetBootDevice).not.toHaveBeenCalled();
+    expect(mockSetDefaultBootDevice).not.toHaveBeenCalled();
   });
 });

@@ -25,15 +25,15 @@ import { Button, Flex, FlexItem } from "@patternfly/react-core";
 import MenuButton, { CustomToggleProps } from "~/components/core/MenuButton";
 import Text from "~/components/core/Text";
 import Icon from "~/components/layout/Icon";
-import { useNavigate } from "react-router-dom";
-import { useSetSpacePolicy } from "~/hooks/storage/space-policy";
+import { useNavigate } from "react-router";
 import { SPACE_POLICIES } from "~/components/storage/utils";
-import { apiModel } from "~/api/storage/types";
 import { STORAGE as PATHS } from "~/routes/paths";
 import * as driveUtils from "~/components/storage/utils/drive";
 import { generateEncodedPath } from "~/utils";
-import { model } from "~/types/storage";
 import { isEmpty } from "radashi";
+import { usePartitionable, useSetSpacePolicy } from "~/hooks/model/storage/config-model";
+import { useDevice } from "~/hooks/model/system/storage";
+import type { ConfigModel } from "~/model/storage/config-model";
 
 const PolicyItem = ({ policy, modelDevice, isSelected, onClick }) => {
   return (
@@ -49,7 +49,7 @@ const PolicyItem = ({ policy, modelDevice, isSelected, onClick }) => {
 };
 
 type SpacePolicyMenuToggleProps = CustomToggleProps & {
-  drive: model.Drive;
+  drive: ConfigModel.Drive;
 };
 
 const SpacePolicyMenuToggle = forwardRef(({ drive, ...props }: SpacePolicyMenuToggleProps, ref) => {
@@ -70,23 +70,29 @@ const SpacePolicyMenuToggle = forwardRef(({ drive, ...props }: SpacePolicyMenuTo
   );
 });
 
-export default function SpacePolicyMenu({ modelDevice, device }) {
+type SpacePolicyMenuProps = {
+  collection: "drives" | "mdRaids";
+  index: number;
+};
+
+export default function SpacePolicyMenu({ collection, index }: SpacePolicyMenuProps) {
   const navigate = useNavigate();
   const setSpacePolicy = useSetSpacePolicy();
-  const { list, listIndex } = modelDevice;
-  const existingPartitions = device.partitionTable?.partitions.length;
+  const deviceModel = usePartitionable(collection, index);
+  const device = useDevice(deviceModel.name);
+  const existingPartitions = device.partitions?.length;
 
   if (isEmpty(existingPartitions)) return;
 
-  const onSpacePolicyChange = (spacePolicy: apiModel.SpacePolicy) => {
+  const onSpacePolicyChange = (spacePolicy: ConfigModel.SpacePolicy) => {
     if (spacePolicy === "custom") {
-      return navigate(generateEncodedPath(PATHS.editSpacePolicy, { list, listIndex }));
+      return navigate(generateEncodedPath(PATHS.editSpacePolicy, { collection, index }));
     } else {
-      setSpacePolicy(list, listIndex, { type: spacePolicy });
+      setSpacePolicy(collection, index, { type: spacePolicy });
     }
   };
 
-  const currentPolicy = driveUtils.spacePolicyEntry(modelDevice);
+  const currentPolicy = driveUtils.spacePolicyEntry(deviceModel);
 
   return (
     <MenuButton
@@ -97,12 +103,12 @@ export default function SpacePolicyMenu({ modelDevice, device }) {
         <PolicyItem
           key={policy.id}
           policy={policy}
-          modelDevice={modelDevice}
+          modelDevice={deviceModel}
           isSelected={policy.id === currentPolicy.id}
           onClick={onSpacePolicyChange}
         />
       ))}
-      customToggle={<SpacePolicyMenuToggle drive={modelDevice} />}
+      customToggle={<SpacePolicyMenuToggle drive={deviceModel} />}
     />
   );
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024] SUSE LLC
+ * Copyright (c) [2024-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -23,9 +23,12 @@
 import React from "react";
 import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
-import { Question } from "~/types/questions";
+import { Question, FieldType } from "~/model/question";
 import { Product } from "~/types/software";
-import { InstallationPhase } from "~/types/status";
+import { useSystem } from "~/hooks/model/system";
+import { useProductInfo } from "~/hooks/model/config/product";
+import { useStatus } from "~/hooks/model/status";
+import { Locale, Keymap } from "~/model/system/l10n";
 import QuestionWithPassword from "~/components/questions/QuestionWithPassword";
 
 const answerFn = jest.fn();
@@ -33,8 +36,12 @@ const question: Question = {
   id: 1,
   class: "question.password",
   text: "Random question. Will you provide random password?",
-  options: ["ok", "cancel"],
-  defaultOption: "cancel",
+  field: { type: FieldType.None },
+  actions: [
+    { id: "ok", label: "OK" },
+    { id: "cancel", label: "Cancel" },
+  ],
+  defaultAction: "cancel",
 };
 
 const tumbleweed: Product = {
@@ -45,31 +52,36 @@ const tumbleweed: Product = {
   registration: false,
 };
 
-const locales = [
-  { id: "en_US.UTF-8", name: "English", territory: "United States" },
-  { id: "es_ES.UTF-8", name: "Spanish", territory: "Spain" },
+const locales: Locale[] = [
+  { id: "en_US.UTF-8", language: "English", territory: "United States" },
+  { id: "es_ES.UTF-8", language: "Spanish", territory: "Spain" },
 ];
 
-jest.mock("~/queries/status", () => ({
-  useInstallerStatus: () => ({
-    phase: InstallationPhase.Config,
-    isBusy: false,
+const keymaps: Keymap[] = [
+  { id: "us", description: "English" },
+  { id: "es", description: "Spanish" },
+];
+
+jest.mock("~/hooks/model/system", () => ({
+  ...jest.requireActual("~/hooks/model/system"),
+  useSystem: (): ReturnType<typeof useSystem> => ({
+    l10n: {
+      locale: "de-DE",
+      locales,
+      keymaps,
+      keymap: "us",
+    },
   }),
 }));
 
-jest.mock("~/queries/l10n", () => ({
-  ...jest.requireActual("~/queries/l10n"),
-  useL10n: () => ({ locales, selectedLocale: locales[0] }),
+jest.mock("~/hooks/model/status", () => ({
+  ...jest.requireActual("~/hooks/model/status"),
+  useStatus: (): ReturnType<typeof useStatus> => ({ stage: "configuring", progresses: [] }),
 }));
 
-jest.mock("~/queries/software", () => ({
-  ...jest.requireActual("~/queries/software"),
-  useProduct: () => {
-    return {
-      products: [tumbleweed],
-      selectedProduct: tumbleweed,
-    };
-  },
+jest.mock("~/hooks/model/config/product", () => ({
+  ...jest.requireActual("~/hooks/model/config/product"),
+  useProductInfo: (): ReturnType<typeof useProductInfo> => tumbleweed,
 }));
 
 jest.mock("~/context/installerL10n", () => ({
@@ -78,26 +90,23 @@ jest.mock("~/context/installerL10n", () => ({
     keymap: "us",
     language: "de-DE",
   }),
-  useL10n: jest.fn(),
 }));
 
 const renderQuestion = () =>
-  installerRender(<QuestionWithPassword question={question} answerCallback={answerFn} />, {
-    withL10n: true,
-  });
+  installerRender(<QuestionWithPassword question={question} answerCallback={answerFn} />);
 
 describe("QuestionWithPassword", () => {
+  it("renders the question text", () => {
+    renderQuestion();
+
+    screen.getByText(question.text);
+  });
+
   it("allows opening the installer keymap settings", async () => {
     const { user } = renderQuestion();
     const changeKeymapButton = screen.getByRole("button", { name: "Change keyboard layout" });
     await user.click(changeKeymapButton);
     screen.getByRole("dialog", { name: "Change keyboard" });
-  });
-
-  it("renders the question text", () => {
-    renderQuestion();
-
-    screen.queryByText(question.text);
   });
 
   describe("when the user enters the password", () => {
@@ -106,10 +115,12 @@ describe("QuestionWithPassword", () => {
 
       const passwordInput = await screen.findByLabelText("Password");
       await user.type(passwordInput, "notSecret");
-      const skipButton = await screen.findByRole("button", { name: "Ok" });
+      const skipButton = await screen.findByRole("button", { name: "OK" });
       await user.click(skipButton);
 
-      expect(question).toEqual(expect.objectContaining({ password: "notSecret", answer: "ok" }));
+      expect(question.answer).toEqual(
+        expect.objectContaining({ value: "notSecret", action: "ok" }),
+      );
       expect(answerFn).toHaveBeenCalledWith(question);
     });
   });

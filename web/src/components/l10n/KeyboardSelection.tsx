@@ -22,31 +22,36 @@
 
 import React, { useState } from "react";
 import { Content, Flex, Form, FormGroup, Radio } from "@patternfly/react-core";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { ListSearch, Page } from "~/components/core";
+import { patchConfig } from "~/api";
+import { useProposal } from "~/hooks/model/proposal/l10n";
+import { useSystem } from "~/hooks/model/system/l10n";
 import { _ } from "~/i18n";
-import { useConfigMutation, useL10n } from "~/queries/l10n";
 
 // TODO: Add documentation
 // TODO: Evaluate if worth it extracting the selector
 export default function KeyboardSelection() {
   const navigate = useNavigate();
-  const setConfig = useConfigMutation();
-  const { keymaps, selectedKeymap: currentKeymap } = useL10n();
-  const [selected, setSelected] = useState(currentKeymap.id);
+  const keymaps = useSystem()?.keymaps;
+  const currentKeymap = useProposal()?.keymap;
+
+  // FIXME: get current keymap from either, proposal or config
+  const [selected, setSelected] = useState(currentKeymap);
   const [filteredKeymaps, setFilteredKeymaps] = useState(
-    keymaps.sort((k1, k2) => (k1.name > k2.name ? 1 : -1)),
+    keymaps.sort((k1, k2) => (k1.description > k2.description ? 1 : -1)),
   );
 
   const searchHelp = _("Filter by description or keymap code");
 
   const onSubmit = async (e: React.SyntheticEvent) => {
     e.preventDefault();
-    setConfig.mutate({ keymap: selected });
+    // FIXME: udpate when new API is ready
+    patchConfig({ l10n: { keymap: selected } });
     navigate(-1);
   };
 
-  let keymapsList = filteredKeymaps.map(({ id, name }) => {
+  let keymapsList = filteredKeymaps.map(({ id, description }) => {
     return (
       <Radio
         id={id}
@@ -55,7 +60,7 @@ export default function KeyboardSelection() {
         onChange={() => setSelected(id)}
         label={
           <Flex columnGap={{ default: "columnGapSm" }}>
-            <Content isEditorial>{name}</Content>
+            <Content isEditorial>{description}</Content>
             <Content component="small">{id}</Content>
           </Flex>
         }

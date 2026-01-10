@@ -20,7 +20,8 @@
 
 //! Implements the web service state.
 
-use super::{config::ServiceConfig, EventsSender};
+use super::config::ServiceConfig;
+use agama_utils::api::event;
 use std::path::PathBuf;
 
 /// Web service state.
@@ -29,6 +30,6 @@ use std::path::PathBuf;
 #[derive(Clone)]
 pub struct ServiceState {
     pub config: ServiceConfig,
-    pub events: EventsSender,
+    pub events: event::Sender,
     pub public_dir: PathBuf,
 }

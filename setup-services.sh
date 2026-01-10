@@ -139,6 +139,7 @@ $SUDO $ZYPPER install \
   clang-devel \
   gzip \
   jsonnet \
+  libzypp-devel \
   lshw \
   NetworkManager \
   pam-devel \
@@ -208,12 +209,6 @@ EOS
 )
 (
   cd $MYDIR/rust/share
-  DBUSDIR=/usr/share/dbus-1/agama-services
-  for SVC in org.opensuse.Agama*.service; do
-    # it is intention to use debug here to get more useful debugging output
-    sudosed "s@\(Exec\)=/usr/bin/@\1=$MYDIR/rust/target/debug/@" $SVC $DBUSDIR/$SVC
-  done
-
   for SVC in agama*.service; do
     sudosed "s@\(ExecStart\)=/usr/bin/@\1=$MYDIR/rust/target/debug/@" \
       $SVC /usr/lib/systemd/system/$SVC

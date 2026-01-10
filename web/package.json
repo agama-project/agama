@@ -91,7 +91,6 @@
     "webpack-dev-server": "^5.2.2"
   },
   "dependencies": {
-    "@date-fns/tz": "^1.4.1",
     "@material-symbols/svg-400": "^0.34.1",
     "@material-symbols/svg-700": "^0.34.1",
     "@patternfly/patternfly": "^6.3.1",
@@ -104,7 +103,7 @@
     "radashi": "^12.6.2",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "react-router-dom": "^6.30.1",
+    "react-router": "^7.9.5",
     "sprintf-js": "^1.1.3",
     "xbytes": "^1.9.1"
   },

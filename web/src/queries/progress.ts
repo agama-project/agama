@@ -25,7 +25,7 @@ import { useQuery, useQueryClient, useSuspenseQuery } from "@tanstack/react-quer
 import { useInstallerClient } from "~/context/installer";
 import { Progress } from "~/types/progress";
 import { QueryHookOptions } from "~/types/queries";
-import { fetchProgress } from "~/api/progress";
+import { fetchProgress } from "~/model/progress";
 
 const servicesMap = {
   "/org/opensuse/Agama/Manager1": "manager",

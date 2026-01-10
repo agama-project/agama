@@ -22,7 +22,7 @@
 
 import React from "react";
 import { Button, ButtonProps } from "@patternfly/react-core";
-import { To, useHref, useLinkClickHandler, useLocation } from "react-router-dom";
+import { To, useHref, useLinkClickHandler, useLocation } from "react-router";
 
 export type LinkProps = Omit<ButtonProps, "component"> & {
   /** The target route */

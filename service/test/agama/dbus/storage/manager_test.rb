@@ -22,7 +22,6 @@
 require_relative "../../../test_helper"
 require_relative "../../storage/storage_helpers"
 require "agama/dbus/storage/manager"
-require "agama/dbus/storage/proposal"
 require "agama/storage/config"
 require "agama/storage/device_settings"
 require "agama/storage/manager"
@@ -32,12 +31,15 @@ require "agama/storage/volume"
 require "agama/storage/iscsi/manager"
 require "agama/storage/dasd/manager"
 require "agama/dbus/storage/dasds_tree"
-require "agama/dbus/clients/software"
 require "y2storage"
 require "dbus"
 
 def serialize(value)
   JSON.pretty_generate(value)
+end
+
+def parse(string)
+  JSON.parse(string, symbolize_names: true)
 end
 
 describe Agama::DBus::Storage::Manager do
@@ -59,542 +61,583 @@ describe Agama::DBus::Storage::Manager do
     instance_double(Agama::Storage::ISCSI::Manager,
       on_activate:        nil,
       on_probe:           nil,
-      on_sessions_change: nil)
-  end
-
-  let(:software) do
-    instance_double(Agama::DBus::Clients::Software, on_probe_finished: nil)
+      on_sessions_change: nil,
+      configured?:        true)
   end
 
   before do
-    # Speed up tests by avoding real check of TPM presence.
+    # Speed up tests by avoiding real check of TPM presence.
     allow(Y2Storage::EncryptionMethod::TPM_FDE).to receive(:possible?).and_return(true)
+    # Speed up tests by avoiding looking up by name in the system
+    allow(Y2Storage::BlkDevice).to receive(:find_by_any_name)
+    allow(Y2Storage::BootRequirementsStrategies::Analyzer)
+      .to receive(:bls_bootloader_proposed?).and_return(false)
+
     allow(Yast::Arch).to receive(:s390).and_return false
     allow(backend).to receive(:on_configure)
     allow(backend).to receive(:on_issues_change)
     allow(backend).to receive(:actions).and_return([])
     allow(backend).to receive(:iscsi).and_return(iscsi)
-    allow(backend).to receive(:software).and_return(software)
     allow(backend).to receive(:proposal).and_return(proposal)
     mock_storage(devicegraph: "empty-hd-50GiB.yaml")
   end
 
-  describe "#deprecated_system" do
-    before do
-      allow(backend).to receive(:deprecated_system?).and_return(deprecated)
-    end
+  describe "#recover_proposal" do
+    context "if no proposal has been successfully calculated" do
+      before do
+        allow(proposal).to receive(:success?).and_return false
+      end
 
-    context "if the system is set as deprecated" do
-      let(:deprecated) { true }
-
-      it "returns true" do
-        expect(subject.deprecated_system).to eq(true)
+      it "returns 'null'" do
+        expect(subject.recover_proposal).to eq("null")
       end
     end
 
-    context "if the system is not set as deprecated" do
-      let(:deprecated) { false }
-
-      it "returns false" do
-        expect(subject.deprecated_system).to eq(false)
-      end
-    end
-  end
-
-  describe "#read_actions" do
-    before do
-      allow(backend).to receive(:actions).and_return(actions)
-    end
-
-    context "if there are no actions" do
-      let(:actions) { [] }
-
-      it "returns an empty list" do
-        expect(subject.actions).to eq([])
-      end
-    end
-
-    context "if there are actions" do
-      let(:actions) { [action1, action2, action3, action4] }
-
-      let(:action1) do
-        instance_double(Agama::Storage::Action,
-          text:                "test1",
-          device_sid:          1,
-          on_btrfs_subvolume?: false,
-          delete?:             false,
-          resize?:             false)
+    context "if a proposal was successfully calculated" do
+      before do
+        allow(proposal).to receive(:success?).and_return true
       end
 
-      let(:action2) do
-        instance_double(Agama::Storage::Action,
-          text:                "test2",
-          device_sid:          2,
-          on_btrfs_subvolume?: false,
-          delete?:             true,
-          resize?:             false)
-      end
-
-      let(:action3) do
-        instance_double(Agama::Storage::Action,
-          text:                "test3",
-          device_sid:          3,
-          on_btrfs_subvolume?: false,
-          delete?:             false,
-          resize?:             true)
-      end
-
-      let(:action4) do
-        instance_double(Agama::Storage::Action,
-          text:                "test4",
-          device_sid:          4,
-          on_btrfs_subvolume?: true,
-          delete?:             false,
-          resize?:             false)
-      end
-
-      it "returns a list with a hash for each action" do
-        expect(subject.actions.size).to eq(4)
-        expect(subject.actions).to all(be_a(Hash))
-
-        action1, action2, action3, action4 = subject.actions
-
-        expect(action1).to eq({
-          "Device" => 1,
-          "Text"   => "test1",
-          "Subvol" => false,
-          "Delete" => false,
-          "Resize" => false
-        })
-
-        expect(action2).to eq({
-          "Device" => 2,
-          "Text"   => "test2",
-          "Subvol" => false,
-          "Delete" => true,
-          "Resize" => false
-        })
-
-        expect(action3).to eq({
-          "Device" => 3,
-          "Text"   => "test3",
-          "Subvol" => false,
-          "Delete" => false,
-          "Resize" => true
-        })
-        expect(action4).to eq({
-          "Device" => 4,
-          "Text"   => "test4",
-          "Subvol" => true,
-          "Delete" => false,
-          "Resize" => false
-        })
-      end
-    end
-  end
-
-  describe "#available_drives" do
-    before do
-      allow(proposal.storage_system).to receive(:available_drives).and_return(drives)
-    end
-
-    context "if there is no available drives" do
-      let(:drives) { [] }
-
-      it "returns an empty list" do
-        expect(subject.available_drives).to eq([])
-      end
-    end
-
-    context "if there are available drives" do
-      let(:drives) { [drive1, drive2, drive3] }
-
-      let(:drive1) { instance_double(Y2Storage::Disk, name: "/dev/vda", sid: 95) }
-      let(:drive2) { instance_double(Y2Storage::Disk, name: "/dev/vdb", sid: 96) }
-      let(:drive3) { instance_double(Y2Storage::Disk, name: "/dev/vdb", sid: 97) }
-
-      it "retuns the path of each drive" do
-        result = subject.available_drives
-
-        expect(result).to contain_exactly(
-          /system\/95/,
-          /system\/96/,
-          /system\/97/
-        )
-      end
-    end
-  end
-
-  describe "#candidate_drives" do
-    before do
-      allow(proposal.storage_system).to receive(:candidate_drives).and_return(drives)
-    end
-
-    context "if there is no candidate drives" do
-      let(:drives) { [] }
-
-      it "returns an empty list" do
-        expect(subject.candidate_drives).to eq([])
-      end
-    end
-
-    context "if there are candidate drives" do
-      let(:drives) { [drive1, drive2] }
-
-      let(:drive1) { instance_double(Y2Storage::Disk, name: "/dev/vda", sid: 95) }
-      let(:drive2) { instance_double(Y2Storage::Disk, name: "/dev/vdb", sid: 96) }
-
-      it "retuns the path of each drive" do
-        result = subject.candidate_drives
-
-        expect(result).to contain_exactly(
-          /system\/95/,
-          /system\/96/
-        )
-      end
-    end
-  end
-
-  describe "#available_md_raids" do
-    before do
-      allow(proposal.storage_system).to receive(:available_md_raids).and_return(md_raids)
-    end
-
-    context "if there is no available MD RAIDs" do
-      let(:md_raids) { [] }
-
-      it "returns an empty list" do
-        expect(subject.available_md_raids).to eq([])
-      end
-    end
-
-    context "if there are available MD RAIDs" do
-      let(:md_raids) { [md_raid1, md_raid2, md_raid3] }
-
-      let(:md_raid1) { instance_double(Y2Storage::Md, name: "/dev/md0", sid: 100) }
-      let(:md_raid2) { instance_double(Y2Storage::Md, name: "/dev/md1", sid: 101) }
-      let(:md_raid3) { instance_double(Y2Storage::Md, name: "/dev/md2", sid: 102) }
-
-      it "retuns the path of each MD RAID" do
-        result = subject.available_md_raids
-
-        expect(result).to contain_exactly(
-          /system\/100/,
-          /system\/101/,
-          /system\/102/
-        )
-      end
-    end
-  end
-
-  describe "#candidate_md_raids" do
-    before do
-      allow(proposal.storage_system).to receive(:candidate_md_raids).and_return(md_raids)
-    end
-
-    context "if there is no candidate MD RAIDs" do
-      let(:md_raids) { [] }
-
-      it "returns an empty list" do
-        expect(subject.candidate_md_raids).to eq([])
-      end
-    end
-
-    context "if there are candidate MD RAIDs" do
-      let(:md_raids) { [md_raid1, md_raid2] }
-
-      let(:md_raid1) { instance_double(Y2Storage::Md, name: "/dev/md0", sid: 100) }
-      let(:md_raid2) { instance_double(Y2Storage::Md, name: "/dev/md1", sid: 101) }
-
-      it "retuns the path of each MD RAID" do
-        result = subject.candidate_md_raids
-
-        expect(result).to contain_exactly(
-          /system\/100/,
-          /system\/101/
-        )
-      end
-    end
-  end
-
-  describe "#product_mount_points" do
-    let(:config_data) do
-      { "storage" => { "volumes" => [], "volume_templates" => cfg_templates } }
-    end
-
-    context "with no storage section in the configuration" do
-      let(:cfg_templates) { [] }
-
-      it "returns an empty list" do
-        expect(subject.product_mount_points).to eq([])
-      end
-    end
-
-    context "with a set of volume templates in the configuration" do
-      let(:cfg_templates) do
-        [
-          { "mount_path" => "/" },
-          { "mount_path" => "swap" },
-          { "mount_path" => "/home" },
-          { "filesystem" => "ext4" }
-        ]
-      end
-
-      it "returns the mount points of each volume template" do
-        expect(subject.product_mount_points).to contain_exactly("/", "swap", "/home")
-      end
-    end
-  end
-
-  describe "#default_volume" do
-    let(:config_data) do
-      { "storage" => { "volumes" => [], "volume_templates" => cfg_templates } }
-    end
-
-    context "with no storage section in the configuration" do
-      let(:cfg_templates) { [] }
-
-      it "returns the same generic default volume for any path" do
-        generic = {
-          "FsType" => "ext4", "MountOptions" => [],
-          "MinSize" => 0, "AutoSize" => false
-        }
-        generic_outline = { "Required" => false, "FsTypes" => [], "SupportAutoSize" => false }
-
-        expect(subject.default_volume("/")).to include(generic)
-        expect(subject.default_volume("/")["Outline"]).to include(generic_outline)
-
-        expect(subject.default_volume("swap")).to include(generic)
-        expect(subject.default_volume("swap")["Outline"]).to include(generic_outline)
-
-        expect(subject.default_volume("/foo")).to include(generic)
-        expect(subject.default_volume("/foo")["Outline"]).to include(generic_outline)
-      end
-    end
-
-    context "with a set of volume templates in the configuration" do
-      let(:cfg_templates) do
-        [
-          {
-            "mount_path" => "/", "filesystem" => "btrfs", "size" => { "auto" => true },
-            "outline" => {
-              "required"    => true,
-              "filesystems" => ["btrfs"],
-              "auto_size"   => {
-                "base_min" => "5 GiB", "base_max" => "20 GiB", "min_fallback_for" => "/home"
-              }
-            }
-          },
-          {
-            "mount_path" => "swap", "filesystem" => "swap",
-            "size" => { "auto" => false, "min" => "1 GiB", "max" => "2 GiB" },
-            "outline" => { "required" => false, "filesystems" => ["swap"] }
-          },
-          {
-            "mount_path" => "/home", "filesystem" => "xfs",
-            "size" => { "auto" => false, "min" => "10 GiB" },
-            "outline" => { "required" => false, "filesystems" => ["xfs", "ext2"] }
-          },
-          {
-            "filesystem" => "ext4", "size" => { "auto" => false, "min" => "10 GiB" },
-            "outline" => { "filesystems" => ["ext3", "ext4", "xfs"] }
-          }
-        ]
-      end
-
-      it "returns the appropriate volume if there is a corresponding template" do
-        expect(subject.default_volume("/")).to include("FsType" => "btrfs", "AutoSize" => true)
-        expect(subject.default_volume("/")["Outline"]).to include(
-          "Required" => true, "FsTypes" => ["btrfs"],
-          "SupportAutoSize" => true, "SizeRelevantVolumes" => ["/home"]
-        )
-
-        expect(subject.default_volume("swap")).to include(
-          "FsType" => "swap", "AutoSize" => false, "MinSize" => 1024**3, "MaxSize" => 2 * (1024**3)
-        )
-        expect(subject.default_volume("swap")["Outline"]).to include(
-          "Required" => false, "FsTypes" => ["swap"], "SupportAutoSize" => false
-        )
-      end
-
-      it "returns the default volume for any path without a template" do
-        default = { "FsType" => "ext4", "AutoSize" => false, "MinSize" => 10 * (1024**3) }
-        default_outline = { "FsTypes" => ["ext3", "ext4", "xfs"], "SupportAutoSize" => false }
-
-        expect(subject.default_volume("/foo")).to include(default)
-        expect(subject.default_volume("/foo")["Outline"]).to include(default_outline)
-      end
-    end
-  end
-
-  describe "#apply_config" do
-    let(:serialized_config) { config_json.to_json }
-
-    context "if the serialized config contains guided proposal settings" do
-      let(:config_json) do
-        {
-          storage: {
-            guided: {
-              target:     {
-                disk: "/dev/vda"
-              },
-              boot:       {
-                device: "/dev/vdb"
-              },
-              encryption: {
-                password: "notsecret"
-              },
-              volumes:    volumes_settings
-            }
-          }
-        }
-      end
-
-      let(:volumes_settings) do
-        [
-          {
-            mount: {
-              path: "/"
-            }
-          },
-          {
-            mount: {
-              path: "swap"
-            }
-          }
-        ]
-      end
-
-      it "calculates a guided proposal with the given settings" do
-        expect(proposal).to receive(:calculate_guided) do |settings|
-          expect(settings).to be_a(Agama::Storage::ProposalSettings)
-          expect(settings.device).to be_a(Agama::Storage::DeviceSettings::Disk)
-          expect(settings.device.name).to eq "/dev/vda"
-          expect(settings.boot.device).to eq "/dev/vdb"
-          expect(settings.encryption).to be_a(Agama::Storage::EncryptionSettings)
-          expect(settings.encryption.password).to eq("notsecret")
-          expect(settings.volumes).to contain_exactly(
-            an_object_having_attributes(mount_path: "/"),
-            an_object_having_attributes(mount_path: "swap")
-          )
+      describe "recover_proposal[:actions]" do
+        before do
+          allow(backend).to receive(:actions).and_return(actions)
         end
 
-        subject.apply_config(serialized_config)
-      end
+        context "if there are no actions" do
+          let(:actions) { [] }
 
-      context "when the serialized config omits some settings" do
-        let(:config_json) do
-          {
-            storage: {
-              guided: {}
-            }
-          }
+          it "returns an empty list" do
+            expect(parse(subject.recover_proposal)[:actions]).to eq([])
+          end
         end
 
-        it "calculates a proposal with default values for the missing settings" do
-          expect(proposal).to receive(:calculate_guided) do |settings|
-            expect(settings).to be_a(Agama::Storage::ProposalSettings)
-            expect(settings.device).to be_a(Agama::Storage::DeviceSettings::Disk)
-            expect(settings.device.name).to be_nil
-            expect(settings.boot.device).to be_nil
-            expect(settings.encryption).to be_a(Agama::Storage::EncryptionSettings)
-            expect(settings.encryption.password).to be_nil
-            expect(settings.volumes).to eq([])
+        context "if there are actions" do
+          let(:actions) { [action1, action2, action3, action4] }
+
+          let(:action1) do
+            instance_double(Agama::Storage::Action,
+              text:                "test1",
+              device_sid:          1,
+              on_btrfs_subvolume?: false,
+              delete?:             false,
+              resize?:             false)
           end
 
-          subject.apply_config(serialized_config)
+          let(:action2) do
+            instance_double(Agama::Storage::Action,
+              text:                "test2",
+              device_sid:          2,
+              on_btrfs_subvolume?: false,
+              delete?:             true,
+              resize?:             false)
+          end
+
+          let(:action3) do
+            instance_double(Agama::Storage::Action,
+              text:                "test3",
+              device_sid:          3,
+              on_btrfs_subvolume?: false,
+              delete?:             false,
+              resize?:             true)
+          end
+
+          let(:action4) do
+            instance_double(Agama::Storage::Action,
+              text:                "test4",
+              device_sid:          4,
+              on_btrfs_subvolume?: true,
+              delete?:             false,
+              resize?:             false)
+          end
+
+          it "returns a list with a hash for each action" do
+            all_actions = parse(subject.recover_proposal)[:actions]
+            expect(all_actions.size).to eq(4)
+            expect(all_actions).to all(be_a(Hash))
+
+            action1, action2, action3, action4 = all_actions
+
+            expect(action1).to eq({
+              device: 1,
+              text:   "test1",
+              subvol: false,
+              delete: false,
+              resize: false
+            })
+
+            expect(action2).to eq({
+              device: 2,
+              text:   "test2",
+              subvol: false,
+              delete: true,
+              resize: false
+            })
+
+            expect(action3).to eq({
+              device: 3,
+              text:   "test3",
+              subvol: false,
+              delete: false,
+              resize: true
+            })
+            expect(action4).to eq({
+              device: 4,
+              text:   "test4",
+              subvol: true,
+              delete: false,
+              resize: false
+            })
+          end
+        end
+      end
+    end
+  end
+
+  describe "#recover_system" do
+    context "if the system has not been probed yet" do
+      before do
+        allow(Y2Storage::StorageManager.instance).to receive(:probed?).and_return(false)
+      end
+
+      it "returns 'null'" do
+        expect(subject.recover_system).to eq("null")
+      end
+    end
+
+    before do
+      allow(Y2Storage::StorageManager.instance).to receive(:probed?).and_return(true)
+      allow(proposal.storage_system).to receive(:available_drives).and_return(available_drives)
+      allow(proposal.storage_system).to receive(:candidate_drives).and_return(candidate_drives)
+      allow(proposal.storage_system).to receive(:available_md_raids).and_return(available_raids)
+      allow(proposal.storage_system).to receive(:candidate_md_raids).and_return(candidate_raids)
+      allow(proposal.storage_system).to receive(:candidate_devices)
+        .and_return(candidate_drives + candidate_raids)
+    end
+
+    let(:available_drives) { [] }
+    let(:candidate_drives) { [] }
+    let(:available_raids) { [] }
+    let(:candidate_raids) { [] }
+
+    describe "recover_system[:availableDrives]" do
+      context "if there is no available drives" do
+        let(:available_drives) { [] }
+
+        it "returns an empty list" do
+          expect(parse(subject.recover_system)[:availableDrives]).to eq([])
         end
       end
 
-      context "when the serialized config includes a volume" do
-        let(:volumes_settings) { [volume1_settings] }
+      context "if there are available drives" do
+        let(:available_drives) { [drive1, drive2, drive3] }
 
-        let(:volume1_settings) do
-          {
-            mount:      {
-              path: "/"
-            },
-            size:       {
-              min: 1024,
-              max: 2048
-            },
-            filesystem: {
-              btrfs: {
-                snapshots: true
-              }
-            }
-          }
+        let(:drive1) { instance_double(Y2Storage::Disk, name: "/dev/vda", sid: 95) }
+        let(:drive2) { instance_double(Y2Storage::Disk, name: "/dev/vdb", sid: 96) }
+        let(:drive3) { instance_double(Y2Storage::Disk, name: "/dev/vdb", sid: 97) }
+
+        it "retuns the id of each drive" do
+          result = parse(subject.recover_system)[:availableDrives]
+          expect(result).to contain_exactly(95, 96, 97)
+        end
+      end
+    end
+
+    describe "recover_system[:candidateDrives]" do
+      context "if there is no candidate drives" do
+        let(:candidate_drives) { [] }
+
+        it "returns an empty list" do
+          expect(parse(subject.recover_system)[:candidateDrives]).to eq([])
+        end
+      end
+
+      context "if there are candidate drives" do
+        let(:candidate_drives) { [drive1, drive2] }
+
+        let(:drive1) { instance_double(Y2Storage::Disk, name: "/dev/vda", sid: 95) }
+        let(:drive2) { instance_double(Y2Storage::Disk, name: "/dev/vdb", sid: 96) }
+
+        it "retuns the id of each drive" do
+          result = parse(subject.recover_system)[:candidateDrives]
+          expect(result).to contain_exactly(95, 96)
+        end
+      end
+    end
+
+    describe "recover_system[:availableMdRaids]" do
+      context "if there is no available MD RAIDs" do
+        let(:available_raids) { [] }
+
+        it "returns an empty list" do
+          expect(parse(subject.recover_system)[:availableMdRaids]).to eq([])
+        end
+      end
+
+      context "if there are available MD RAIDs" do
+        let(:available_raids) { [md_raid1, md_raid2, md_raid3] }
+
+        let(:md_raid1) { instance_double(Y2Storage::Md, name: "/dev/md0", sid: 100) }
+        let(:md_raid2) { instance_double(Y2Storage::Md, name: "/dev/md1", sid: 101) }
+        let(:md_raid3) { instance_double(Y2Storage::Md, name: "/dev/md2", sid: 102) }
+
+        it "returns the id of each MD RAID" do
+          result = parse(subject.recover_system)[:availableMdRaids]
+          expect(result).to contain_exactly(100, 101, 102)
+        end
+      end
+    end
+
+    describe "recover_system[:candidateMdRaids]" do
+      context "if there is no candidate MD RAIDs" do
+        let(:candidate_raids) { [] }
+
+        it "returns an empty list" do
+          expect(parse(subject.recover_system)[:candidateMdRaids]).to eq([])
+        end
+      end
+
+      context "if there are candidate MD RAIDs" do
+        let(:candidate_raids) { [md_raid1, md_raid2] }
+
+        let(:md_raid1) { instance_double(Y2Storage::Md, name: "/dev/md0", sid: 100) }
+        let(:md_raid2) { instance_double(Y2Storage::Md, name: "/dev/md1", sid: 101) }
+
+        it "retuns the path of each MD RAID" do
+          result = parse(subject.recover_system)[:candidateMdRaids]
+          expect(result).to contain_exactly(100, 101)
+        end
+      end
+    end
+
+    describe "recover_system[:issues]" do
+      context "if there is no candidate drives" do
+        let(:candidate_drives) { [] }
+
+        it "contains a issue about the absence of disks" do
+          result = parse(subject.recover_system)[:issues]
+          expect(result).to contain_exactly(
+            a_hash_including(description: /no suitable device for installation/i)
+          )
+        end
+      end
+
+      context "if there are candidate drives" do
+        let(:candidate_drives) { [drive] }
+
+        let(:drive) { instance_double(Y2Storage::Disk, name: "/dev/vda", sid: 95) }
+
+        it "retuns an empty array" do
+          result = parse(subject.recover_system)[:issues]
+          expect(result).to eq []
+        end
+      end
+    end
+
+    describe "recover_system[:productMountPoints]" do
+      let(:config_data) do
+        { "storage" => { "volumes" => [], "volume_templates" => cfg_templates } }
+      end
+
+      context "with no storage section in the configuration" do
+        let(:cfg_templates) { [] }
+
+        it "contains an empty list" do
+          expect(parse(subject.recover_system)[:productMountPoints]).to eq([])
+        end
+      end
+
+      context "with a set of volume templates in the configuration" do
+        let(:cfg_templates) do
+          [
+            { "mount_path" => "/" },
+            { "mount_path" => "swap" },
+            { "mount_path" => "/home" },
+            { "filesystem" => "ext4" }
+          ]
         end
 
-        let(:config_data) do
-          { "storage" => { "volumes" => [], "volume_templates" => cfg_templates } }
+        it "contains the mount points of each volume template" do
+          result = parse(subject.recover_system)
+          expect(result[:productMountPoints]).to contain_exactly("/", "swap", "/home")
         end
+      end
+    end
 
+    describe "recover_system[:volumeTemplates]" do
+      let(:config_data) do
+        { "storage" => { "volumes" => [], "volume_templates" => cfg_templates } }
+      end
+
+      context "with no storage section in the configuration" do
+        let(:cfg_templates) { [] }
+
+        it "contains only a generic default template with empty path" do
+          generic = { fsType: "ext4", mountOptions: [], minSize: 0, autoSize: false }
+          generic_outline = { required: false, fsTypes: [], supportAutoSize: false }
+
+          templates = parse(subject.recover_system)[:volumeTemplates]
+          expect(templates.size).to eq 1
+
+          expect(templates.first).to include(generic)
+          expect(templates.first[:outline]).to include(generic_outline)
+        end
+      end
+
+      context "with a set of volume templates in the configuration" do
         let(:cfg_templates) do
           [
             {
-              "mount_path" => "/",
-              "outline"    => {
-                "snapshots_configurable" => true
+              "mount_path" => "/", "filesystem" => "btrfs", "size" => { "auto" => true },
+              "outline" => {
+                "required"    => true,
+                "filesystems" => ["btrfs"],
+                "auto_size"   => {
+                  "base_min" => "5 GiB", "base_max" => "20 GiB", "min_fallback_for" => "/home"
+                }
               }
+            },
+            {
+              "mount_path" => "swap", "filesystem" => "swap",
+              "size" => { "auto" => false, "min" => "1 GiB", "max" => "2 GiB" },
+              "outline" => { "required" => false, "filesystems" => ["swap"] }
+            },
+            {
+              "mount_path" => "/home", "filesystem" => "xfs",
+              "size" => { "auto" => false, "min" => "10 GiB" },
+              "outline" => { "required" => false, "filesystems" => ["xfs", "ext2"] }
+            },
+            {
+              "filesystem" => "ext4", "size" => { "auto" => false, "min" => "10 GiB" },
+              "outline" => { "filesystems" => ["ext3", "ext4", "xfs"] }
             }
           ]
         end
 
-        it "calculates a proposal with the given volume settings" do
-          expect(proposal).to receive(:calculate_guided) do |settings|
-            volume = settings.volumes.first
+        it "contains a template for every relevant mount path" do
+          templates = parse(subject.recover_system)[:volumeTemplates]
 
-            expect(volume.mount_path).to eq("/")
-            expect(volume.auto_size).to eq(false)
-            expect(volume.min_size.to_i).to eq(1024)
-            expect(volume.max_size.to_i).to eq(2048)
-            expect(volume.btrfs.snapshots).to eq(true)
-          end
+          root = templates.find { |v| v[:mountPath] == "/" }
+          expect(root).to include(fsType: "btrfs", autoSize: true)
+          expect(root[:outline]).to include(
+            required: true, fsTypes: ["btrfs"],
+            supportAutoSize: true, sizeRelevantVolumes: ["/home"]
+          )
 
-          subject.apply_config(serialized_config)
+          swap = templates.find { |v| v[:mountPath] == "swap" }
+          expect(swap).to include(
+            fsType: "swap", autoSize: false, minSize: 1024**3, maxSize: 2 * (1024**3)
+          )
+          expect(swap[:outline]).to include(
+            required: false, fsTypes: ["swap"], supportAutoSize: false
+          )
         end
 
-        context "and the volume settings omits some values" do
-          let(:volume1_settings) do
+        it "constains the expected default template" do
+          default = { fsType: "ext4", autoSize: false, minSize: 10 * (1024**3) }
+          default_outline = { fsTypes: ["ext3", "ext4", "xfs"], supportAutoSize: false }
+
+          templates = parse(subject.recover_system)[:volumeTemplates]
+          template = templates.find { |v| v[:mountPath] == "" }
+          expect(template).to include(default)
+          expect(template[:outline]).to include(default_outline)
+        end
+      end
+    end
+  end
+
+  describe "#configure" do
+    before do
+      allow(subject).to receive(:ProposalChanged)
+      allow(subject).to receive(:SystemChanged)
+      allow(subject).to receive(:ProgressChanged)
+      allow(subject).to receive(:ProgressFinished)
+
+      allow(backend).to receive(:activated?).and_return activated
+      allow(backend).to receive(:probed?).and_return probed
+
+      allow(backend).to receive(:activate)
+      allow(backend).to receive(:probe)
+      allow(backend).to receive(:add_packages)
+
+      allow(proposal).to receive(:success?).and_return true
+    end
+
+    # Set some known initial product configuration for the backend
+    let(:config_data) do
+      { "storage" => { "volumes" => ["/"], "volume_templates" => [{ "mount_path" => "/" }] } }
+    end
+
+    let(:activated) { true }
+    let(:probed) { true }
+
+    let(:serialized_product) { config_data.to_json }
+    let(:serialized_config) { config_json.to_json }
+
+    RSpec.shared_examples "emit SystemChanged" do
+      it "emits the signal SystemChanged" do
+        expect(subject).to receive(:SystemChanged)
+        subject.configure(serialized_product, serialized_config)
+      end
+    end
+
+    RSpec.shared_examples "do not emit SystemChanged" do
+      it "does not emit the signal SystemChanged" do
+        expect(subject).to_not receive(:SystemChanged)
+        subject.configure(serialized_product, serialized_config)
+      end
+    end
+
+    RSpec.shared_examples "update product configuration" do |mount_paths|
+      it "updates the backend product configuration" do
+        expect(backend.product_config.default_paths).to_not contain_exactly(*mount_paths)
+        subject.configure(serialized_product, serialized_config)
+        expect(backend.product_config.default_paths).to contain_exactly(*mount_paths)
+      end
+
+      it "emits signals for SystemChanged, ProgressChanged and ProgressFinished" do
+        expect(subject).to receive(:SystemChanged) do |system_str|
+          system = parse(system_str)
+          expect(system[:productMountPoints]).to contain_exactly(*mount_paths)
+        end
+        expect(subject).to receive(:ProgressChanged).with(/storage configuration/i)
+        expect(subject).to receive(:ProgressFinished)
+
+        subject.configure(serialized_product, serialized_config)
+      end
+    end
+
+    RSpec.shared_examples "do not update product configuration" do
+      it "does not update the backend product configuration" do
+        data = backend.product_config.data.dup
+        subject.configure(serialized_product, serialized_config)
+        expect(backend.product_config.data).to eq data
+      end
+
+      it "emits signals for ProgressChanged and ProgressFinished" do
+        expect(subject).to receive(:ProgressChanged).with(/storage configuration/i)
+        expect(subject).to receive(:ProgressFinished)
+        subject.configure(serialized_product, serialized_config)
+      end
+    end
+
+    RSpec.shared_examples "activate and probe" do
+      it "activates the storage devices" do
+        expect(backend).to receive(:activate)
+        subject.configure(serialized_product, serialized_config)
+      end
+
+      it "runs a storage probbing process" do
+        expect(backend).to receive(:probe)
+        subject.configure(serialized_product, serialized_config)
+      end
+    end
+
+    RSpec.shared_examples "do not activate or probe" do
+      it "does not activate devices" do
+        expect(backend).to_not receive(:activate)
+        subject.configure(serialized_product, serialized_config)
+      end
+
+      it "does not run a probbing process" do
+        expect(backend).to_not receive(:probe)
+        subject.configure(serialized_product, serialized_config)
+      end
+    end
+
+    RSpec.shared_examples "re-calculate proposal" do
+      it "re-calculates the proposal with the previous configuration" do
+        expect(backend).to receive(:configure).with(nil)
+        subject.configure(serialized_product, serialized_config)
+      end
+
+      it "emits the signal ProposalChanged" do
+        expect(subject).to receive(:ProposalChanged)
+        subject.configure(serialized_product, serialized_config)
+      end
+    end
+
+    RSpec.shared_examples "adjust software" do
+      it "adjusts the packages to install in the target system" do
+        expect(backend).to receive(:add_packages)
+        subject.configure(serialized_product, serialized_config)
+      end
+    end
+
+    context "if no storage configuration is given" do
+      let(:serialized_config) { nil.to_json }
+
+      before do
+        allow(backend).to receive(:configure)
+      end
+
+      context "when storage devices are already activated and probed" do
+        before do
+          allow(backend).to receive(:activated?).and_return true
+          allow(backend).to receive(:probed?).and_return true
+        end
+
+        context "if the product configuration has changed" do
+          let(:serialized_product) { new_config_data.to_json }
+          let(:new_config_data) do
             {
-              mount: {
-                path: "/"
+              "storage" => {
+                "volumes"          => ["/", "swap"],
+                "volume_templates" => [{ "mount_path" => "/" }, { "mount_path" => "swap" }]
               }
             }
           end
 
-          let(:cfg_templates) do
-            [
-              {
-                "mount_path" => "/", "filesystem" => "btrfs",
-                "size" => { "auto" => false, "min" => "5 GiB", "max" => "20 GiB" },
-                "outline" => {
-                  "filesystems" => ["btrfs"]
-                }
+          include_examples "do not activate or probe"
+          include_examples "update product configuration", ["/", "swap"]
+          include_examples "re-calculate proposal"
+          include_examples "emit SystemChanged"
+          include_examples "adjust software"
+        end
+
+        context "if the product configuration is equal to the current one" do
+          include_examples "do not activate or probe"
+          include_examples "do not update product configuration"
+          include_examples "do not emit SystemChanged"
+        end
+      end
+
+      context "when storage devices are not activated and probed" do
+        before do
+          allow(backend).to receive(:activated?).and_return(false, true)
+          allow(backend).to receive(:probed?).and_return(false, true)
+        end
+
+        context "if the product configuration has changed" do
+          let(:serialized_product) { new_config_data.to_json }
+          let(:new_config_data) do
+            {
+              "storage" => {
+                "volumes"          => ["/", "swap"],
+                "volume_templates" => [{ "mount_path" => "/" }, { "mount_path" => "swap" }]
               }
-            ]
+            }
           end
 
-          it "calculates a proposal with default settings for the missing volume settings" do
-            expect(proposal).to receive(:calculate_guided) do |settings|
-              volume = settings.volumes.first
+          include_examples "activate and probe"
+          include_examples "update product configuration", ["/", "swap"]
+          include_examples "emit SystemChanged"
+          include_examples "re-calculate proposal"
+          include_examples "adjust software"
+        end
 
-              expect(volume.mount_path).to eq("/")
-              expect(volume.auto_size).to eq(false)
-              expect(volume.min_size.to_i).to eq(5 * (1024**3))
-              expect(volume.max_size.to_i).to eq(20 * (1024**3))
-              expect(volume.btrfs.snapshots).to eq(false)
-            end
-
-            subject.apply_config(serialized_config)
-          end
+        context "if the product configuration is equal to the current one" do
+          include_examples "activate and probe"
+          include_examples "do not update product configuration"
+          include_examples "emit SystemChanged"
+          include_examples "re-calculate proposal"
+          include_examples "adjust software"
         end
       end
     end
 
-    context "if the serialized config contains storage settings" do
-      let(:config_json) do
+    context "if an Agama storage configuration is given" do
+      let(:serialized_config) { config_hash.to_json }
+      let(:config_hash) do
         {
           storage: {
             drives: [
@@ -612,44 +655,130 @@ describe Agama::DBus::Storage::Manager do
         }
       end
 
-      it "calculates an agama proposal with the given config" do
-        expect(proposal).to receive(:calculate_agama) do |config|
-          expect(config).to be_a(Agama::Storage::Config)
-          expect(config.drives.size).to eq(1)
+      RSpec.shared_examples "calculate new proposal" do
+        it "calculates an agama proposal with the given config" do
+          expect(proposal).to receive(:calculate_agama) do |config|
+            expect(config).to be_a(Agama::Storage::Config)
+            expect(config.drives.size).to eq(1)
 
-          drive = config.drives.first
-          expect(drive.ptable_type).to eq(Y2Storage::PartitionTables::Type::GPT)
-          expect(drive.partitions.size).to eq(1)
+            drive = config.drives.first
+            expect(drive.ptable_type).to eq(Y2Storage::PartitionTables::Type::GPT)
+            expect(drive.partitions.size).to eq(1)
 
-          partition = drive.partitions.first
-          expect(partition.filesystem.type.fs_type).to eq(Y2Storage::Filesystems::Type::BTRFS)
-          expect(partition.filesystem.path).to eq("/")
+            partition = drive.partitions.first
+            expect(partition.filesystem.type.fs_type).to eq(Y2Storage::Filesystems::Type::BTRFS)
+            expect(partition.filesystem.path).to eq("/")
+          end
+
+          subject.configure(serialized_product, serialized_config)
         end
 
-        subject.apply_config(serialized_config)
-      end
-    end
-
-    context "if the serialized config contains legacy AutoYaST settings" do
-      let(:config_json) do
-        {
-          legacyAutoyastStorage: [
-            { device: "/dev/vda" }
-          ]
-        }
-      end
-
-      it "calculates an AutoYaST proposal with the given settings" do
-        expect(proposal).to receive(:calculate_autoyast) do |settings|
-          expect(settings).to eq(config_json[:legacyAutoyastStorage])
+        it "emits the signal ProposalChanged" do
+          allow(proposal).to receive(:calculate_agama)
+          expect(subject).to receive(:ProposalChanged)
+          subject.configure(serialized_product, serialized_config)
         end
 
-        subject.apply_config(serialized_config)
+        context "if the serialized config contains legacy AutoYaST settings" do
+          let(:config_hash) do
+            {
+              legacyAutoyastStorage: [
+                { device: "/dev/vda" }
+              ]
+            }
+          end
+
+          it "calculates an AutoYaST proposal with the given settings" do
+            expect(proposal).to receive(:calculate_autoyast) do |settings|
+              expect(settings).to eq(config_hash[:legacyAutoyastStorage])
+            end
+
+            subject.configure(serialized_product, serialized_config)
+          end
+
+          it "emits the signal ProposalChanged" do
+            allow(proposal).to receive(:calculate_agama)
+            expect(subject).to receive(:ProposalChanged)
+            subject.configure(serialized_product, serialized_config)
+          end
+        end
+      end
+
+      context "when storage devices are already activated and probed" do
+        before do
+          allow(backend).to receive(:activated?).and_return true
+          allow(backend).to receive(:probed?).and_return true
+        end
+
+        context "if the product configuration has changed" do
+          let(:serialized_product) { new_config_data.to_json }
+          let(:new_config_data) do
+            {
+              "storage" => {
+                "volumes"          => ["/", "swap"],
+                "volume_templates" => [{ "mount_path" => "/" }, { "mount_path" => "swap" }]
+              }
+            }
+          end
+
+          include_examples "do not activate or probe"
+          include_examples "update product configuration", ["/", "swap"]
+          include_examples "emit SystemChanged"
+          include_examples "calculate new proposal"
+          include_examples "adjust software"
+        end
+
+        context "if the product configuration is equal to the current one" do
+          include_examples "do not activate or probe"
+          include_examples "do not update product configuration"
+          include_examples "do not emit SystemChanged"
+          include_examples "calculate new proposal"
+          include_examples "adjust software"
+        end
+      end
+
+      context "when storage devices are not activated and probed" do
+        before do
+          allow(backend).to receive(:activated?).and_return(false, true)
+          allow(backend).to receive(:probed?).and_return(false, true)
+        end
+
+        context "if the product configuration has changed" do
+          let(:serialized_product) { new_config_data.to_json }
+          let(:new_config_data) do
+            {
+              "storage" => {
+                "volumes"          => ["/", "swap"],
+                "volume_templates" => [{ "mount_path" => "/" }, { "mount_path" => "swap" }]
+              }
+            }
+          end
+
+          include_examples "activate and probe"
+          include_examples "update product configuration", ["/", "swap"]
+          include_examples "emit SystemChanged"
+          include_examples "calculate new proposal"
+          include_examples "adjust software"
+        end
+
+        context "if the product configuration is equal to the current one" do
+          include_examples "activate and probe"
+          include_examples "do not update product configuration"
+          include_examples "emit SystemChanged"
+          include_examples "calculate new proposal"
+          include_examples "adjust software"
+        end
       end
     end
   end
 
-  describe "#apply_config_model" do
+  describe "#configure_with_model" do
+    before do
+      allow(subject).to receive(:ProposalChanged)
+      allow(subject).to receive(:ProgressChanged)
+      allow(subject).to receive(:ProgressFinished)
+    end
+
     let(:serialized_model) { model_json.to_json }
 
     let(:model_json) do
@@ -676,7 +805,17 @@ describe Agama::DBus::Storage::Manager do
         expect(partition.filesystem.path).to eq("/")
       end
 
-      subject.apply_config_model(serialized_model)
+      subject.configure_with_model(serialized_model)
+    end
+
+    it "emits signals for ProposalChanged, ProgressChanged and ProgressFinished" do
+      allow(proposal).to receive(:calculate_agama)
+
+      expect(subject).to receive(:ProposalChanged)
+      expect(subject).to receive(:ProgressChanged).with(/storage configuration/i)
+      expect(subject).to receive(:ProgressFinished)
+
+      subject.configure_with_model(serialized_model)
     end
   end
 
@@ -684,43 +823,6 @@ describe Agama::DBus::Storage::Manager do
     context "if a proposal has not been calculated" do
       it "returns 'null'" do
         expect(subject.recover_config).to eq("null")
-      end
-    end
-
-    context "if a guided proposal has been calculated" do
-      before do
-        proposal.calculate_from_json(settings_json)
-      end
-
-      let(:settings_json) do
-        {
-          storage: {
-            guided: {
-              target: { disk: "/dev/vda" }
-            }
-          }
-        }
-      end
-
-      it "returns serialized solved guided storage config" do
-        expect(subject.recover_config).to eq(
-          serialize({
-            storage: {
-              guided: {
-                target:  {
-                  disk: "/dev/vda"
-                },
-                boot:    {
-                  configure: true
-                },
-                space:   {
-                  policy: "keep"
-                },
-                volumes: []
-              }
-            }
-          })
-        )
       end
     end
 
@@ -769,30 +871,10 @@ describe Agama::DBus::Storage::Manager do
     end
   end
 
-  describe "#recover_model" do
+  describe "#recover_config_model" do
     context "if a proposal has not been calculated" do
       it "returns 'null'" do
-        expect(subject.recover_model).to eq("null")
-      end
-    end
-
-    context "if a guided proposal has been calculated" do
-      before do
-        proposal.calculate_from_json(settings_json)
-      end
-
-      let(:settings_json) do
-        {
-          storage: {
-            guided: {
-              target: { disk: "/dev/vda" }
-            }
-          }
-        }
-      end
-
-      it "returns 'null'" do
-        expect(subject.recover_model).to eq("null")
+        expect(subject.recover_config_model).to eq("null")
       end
     end
 
@@ -819,7 +901,7 @@ describe Agama::DBus::Storage::Manager do
       end
 
       it "returns the serialized config model" do
-        expect(subject.recover_model).to eq(
+        expect(subject.recover_config_model).to eq(
           serialize({
             boot:         {
               configure: true,
@@ -873,12 +955,12 @@ describe Agama::DBus::Storage::Manager do
       end
 
       it "returns 'null'" do
-        expect(subject.recover_model).to eq("null")
+        expect(subject.recover_config_model).to eq("null")
       end
     end
   end
 
-  describe "#solve_model" do
+  describe "#solve_config_model" do
     let(:model) do
       {
         drives: [
@@ -893,7 +975,7 @@ describe Agama::DBus::Storage::Manager do
     end
 
     it "returns the serialized solved model" do
-      result = subject.solve_model(model.to_json)
+      result = subject.solve_config_model(model.to_json)
 
       expect(result).to eq(
         serialize({
@@ -940,8 +1022,183 @@ describe Agama::DBus::Storage::Manager do
       end
 
       it "returns 'null'" do
-        result = subject.solve_model(model.to_json)
+        result = subject.solve_config_model(model.to_json)
         expect(result).to eq("null")
+      end
+    end
+  end
+
+  describe "#probe" do
+    before do
+      allow(subject).to receive(:SystemChanged)
+      allow(subject).to receive(:ProgressChanged)
+      allow(subject).to receive(:ProgressFinished)
+
+      allow(backend).to receive(:activated?).and_return activated
+      allow(backend).to receive(:probe)
+      allow(backend).to receive(:add_packages)
+    end
+
+    let(:activated) { true }
+
+    it "triggers a new probing" do
+      expect(backend).to receive(:probe)
+      subject.probe
+    end
+
+    context "when storage devices are already activated" do
+      it "does not activate devices" do
+        expect(backend).to_not receive(:activate)
+        subject.probe
+      end
+    end
+
+    context "when storage devices are not yet activated" do
+      let(:activated) { false }
+
+      it "activates the devices" do
+        expect(backend).to receive(:activate)
+        subject.probe
+      end
+    end
+
+    context "when no storage configuration has been set" do
+      it "does not calculate a new proposal" do
+        expect(backend).to_not receive(:configure)
+        subject.probe
+      end
+
+      it "does not emit a ProposalChanged signal" do
+        expect(subject).to_not receive(:ProposalChanged)
+        subject.probe
+      end
+
+      it "emits signals for SystemChanged, ProgressChanged and ProgressFinished" do
+        expect(subject).to receive(:SystemChanged) do |system_str|
+          system = parse(system_str)
+          device = system[:devices].first
+          expect(device[:name]).to eq "/dev/sda"
+          expect(system[:availableDrives]).to eq [device[:sid]]
+        end
+        expect(subject).to receive(:ProgressChanged).with(/storage configuration/i)
+        expect(subject).to receive(:ProgressFinished)
+
+        subject.probe
+      end
+    end
+
+    context "when a storage configuration was previously set" do
+      before do
+        allow(proposal).to receive(:storage_json).and_return config_json
+        allow(subject).to receive(:ProposalChanged)
+        allow(proposal).to receive(:success?).and_return true
+      end
+
+      let(:config_json) do
+        {
+          storage: {
+            drives: [
+              {
+                partitions: [
+                  { search: "*", delete: true },
+                  { filesystem: { path: "/" }, size: { min: "5 GiB" } }
+                ]
+              }
+            ]
+          }
+        }
+      end
+
+      it "re-calculates the proposal" do
+        expect(backend).to receive(:configure).with(config_json)
+        subject.probe
+      end
+
+      it "adjusts the packages to install in the target system" do
+        expect(backend).to receive(:add_packages)
+        subject.probe
+      end
+
+      it "emits signals for ProposalChanged, SystemChanged, ProgressChanged and ProgressFinished" do
+        expect(subject).to receive(:SystemChanged) do |system_str|
+          system = parse(system_str)
+          device = system[:devices].first
+          expect(device[:name]).to eq "/dev/sda"
+          expect(system[:availableDrives]).to eq [device[:sid]]
+        end
+        expect(subject).to receive(:ProposalChanged) do |proposal_str|
+          proposal = parse(proposal_str)
+          expect(proposal[:devices]).to be_a Array
+          expect(proposal[:actions]).to be_a Array
+        end
+        expect(subject).to receive(:ProgressChanged).with(/storage configuration/i)
+        expect(subject).to receive(:ProgressFinished)
+
+        subject.probe
+      end
+    end
+  end
+
+  describe "#recover_issues" do
+    context "if no proposal has been calculated" do
+      it "returns an empty array" do
+        expect(subject.recover_issues).to eq "[]"
+      end
+    end
+
+    context "if an agama proposal has been succesfully calculated" do
+      before do
+        backend.configure(config_json)
+      end
+
+      let(:config_json) do
+        {
+          storage: {
+            drives: [
+              {
+                partitions: [
+                  { size: "10 GiB", filesystem: { path: "/" } }
+                ]
+              }
+            ]
+          }
+        }
+      end
+
+      it "returns an empty array" do
+        expect(subject.recover_issues).to eq "[]"
+      end
+    end
+
+    context "if an agama proposal failed to be calculated" do
+      before do
+        backend.configure(config_json)
+      end
+
+      let(:config_json) do
+        {
+          storage: {
+            drives: [
+              {
+                partitions: [
+                  { size: "60 TiB", filesystem: { path: "/home" } }
+                ]
+              }
+            ]
+          }
+        }
+      end
+
+      it "returns the list of proposal issues" do
+        result = parse(subject.recover_issues)
+        expect(result).to include(
+          a_hash_including(
+            description: /cannot calculate a valid storage setup/i
+          ),
+          a_hash_including(
+            description: /boot device cannot be automatically/i
+          )
+        )
       end
     end
   end

@@ -18,10 +18,10 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use agama_lib::{
-    connection, http::BaseHTTPClient, proxies::questions::QuestionsProxy,
-    questions::http_client::HTTPClient,
-};
+use std::{fs::File, io::BufReader};
+
+use agama_lib::{http::BaseHTTPClient, questions::http_client::HTTPClient};
+use agama_utils::api::question::{AnswerRule, Policy, QuestionSpec};
 use anyhow::anyhow;
 use clap::{Args, Subcommand, ValueEnum};
 
@@ -37,7 +37,7 @@ pub enum QuestionsCommands {
     /// mode or change the answer in automatic mode.
     ///
     /// Please check Agama documentation for more details and examples:
-    /// https://github.com/openSUSE/agama/blob/master/doc/questions.md
+    /// https://github.com/openSUSE/agama/blob/master/doc/questions.
     Answers {
         /// Path to a file containing the answers in JSON format.
         path: String,
@@ -62,53 +62,47 @@ pub enum Modes {
     NonInteractive,
 }
 
-async fn set_mode(proxy: QuestionsProxy<'_>, value: Modes) -> anyhow::Result<()> {
-    proxy
-        .set_interactive(value == Modes::Interactive)
-        .await
-        .map_err(|e| e.into())
+async fn set_mode(client: HTTPClient, value: Modes) -> anyhow::Result<()> {
+    let policy = match value {
+        Modes::Interactive => Policy::User,
+        Modes::NonInteractive => Policy::Auto,
+    };
+
+    client.set_mode(policy).await?;
+    Ok(())
 }
 
-async fn set_answers(proxy: QuestionsProxy<'_>, path: String) -> anyhow::Result<()> {
-    proxy
-        .add_answer_file(path.as_str())
-        .await
-        .map_err(|e| e.into())
+async fn set_answers(client: HTTPClient, path: &str) -> anyhow::Result<()> {
+    let file = File::open(&path)?;
+    let reader = BufReader::new(file);
+    let rules: Vec<AnswerRule> = serde_json::from_reader(reader)?;
+    client.set_answers(rules).await?;
+    Ok(())
 }
 
-async fn list_questions(client: BaseHTTPClient) -> anyhow::Result<()> {
-    let client = HTTPClient::new(client);
-    let questions = client.list_questions().await?;
-    // FIXME: if performance is bad, we can skip converting json from http to struct and then
-    // serialize it, but it won't be pretty string
+async fn list_questions(client: HTTPClient) -> anyhow::Result<()> {
+    let questions = client.get_questions().await?;
     let questions_json = serde_json::to_string_pretty(&questions)?;
     println!("{}", questions_json);
     Ok(())
 }
 
-async fn ask_question(client: BaseHTTPClient) -> anyhow::Result<()> {
-    let client = HTTPClient::new(client);
-    let question = serde_json::from_reader(std::io::stdin())?;
-
-    let created_question = client.create_question(&question).await?;
-    let Some(id) = created_question.generic.id else {
-        return Err(anyhow!("The created question does not have an ID"));
-    };
-    let answer = client.get_answer(id).await?;
+async fn ask_question(client: HTTPClient) -> anyhow::Result<()> {
+    let spec: QuestionSpec = serde_json::from_reader(std::io::stdin())?;
+    let question = client.create_question(&spec).await?;
+    let answer = client.get_answer(question.id).await?;
     let answer_json = serde_json::to_string_pretty(&answer).map_err(|e| anyhow!(e.to_string()))?;
     println!("{}", answer_json);
 
-    client.delete_question(id).await?;
+    client.delete_question(question.id).await?;
     Ok(())
 }
 
 pub async fn run(client: BaseHTTPClient, subcommand: QuestionsCommands) -> anyhow::Result<()> {
-    let connection = connection().await?;
-    let proxy = QuestionsProxy::new(&connection).await?;
-
+    let client = HTTPClient::new(client);
     match subcommand {
-        QuestionsCommands::Mode(value) => set_mode(proxy, value.value).await,
-        QuestionsCommands::Answers { path } => set_answers(proxy, path).await,
+        QuestionsCommands::Mode(value) => set_mode(client, value.value).await,
+        QuestionsCommands::Answers { path } => set_answers(client, &path).await,
         QuestionsCommands::List => list_questions(client).await,
         QuestionsCommands::Ask => ask_question(client).await,
     }

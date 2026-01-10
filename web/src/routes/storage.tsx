@@ -21,7 +21,7 @@
  */
 
 import React from "react";
-import { redirect } from "react-router-dom";
+import { redirect } from "react-router";
 import { N_ } from "~/i18n";
 import { Route } from "~/types/routes";
 import BootSelection from "~/components/storage/BootSelection";
@@ -37,8 +37,8 @@ import ZFCPPage from "~/components/storage/zfcp/ZFCPPage";
 import ZFCPDiskActivationPage from "~/components/storage/zfcp/ZFCPDiskActivationPage";
 import DASDPage from "~/components/storage/dasd/DASDPage";
 import DeviceSelectorPage from "~/components/storage/DeviceSelectorPage";
-import { supportedDASD, probeDASD } from "~/api/storage/dasd";
-import { probeZFCP, supportedZFCP } from "~/api/storage/zfcp";
+import { supportedDASD, probeDASD } from "~/model/storage/dasd";
+import { probeZFCP, supportedZFCP } from "~/model/storage/zfcp";
 import { STORAGE as PATHS } from "~/routes/paths";
 
 const routes = (): Route => ({

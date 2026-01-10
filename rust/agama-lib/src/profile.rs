@@ -22,12 +22,20 @@ use crate::error::ProfileError;
 use anyhow::Context;
 use log::info;
 use serde_json;
-use std::{fs, io::Write, path::Path, process::Command};
+use std::{
+    env, fs,
+    io::Write,
+    path::{Path, PathBuf},
+    process::Command,
+};
 use tempfile::{tempdir, TempDir};
 use url::Url;
 
 pub mod http_client;
 pub use http_client::ProfileHTTPClient;
+
+pub const DEFAULT_SCHEMA_DIR: &str = "/usr/share/agama/schema";
+pub const DEFAULT_JSONNET_DIR: &str = "/usr/share/agama/jsonnet";
 
 /// Downloads and converts autoyast profile.
 pub struct AutoyastProfileImporter {
@@ -119,19 +127,22 @@ pub struct ProfileValidator {
 
 impl ProfileValidator {
     pub fn default_schema() -> Result<Self, ProfileError> {
-        let relative_path = Path::new("agama-lib/share/profile.schema.json");
+        let relative_path = PathBuf::from("agama-lib/share/profile.schema.json");
         let path = if relative_path.exists() {
             relative_path
         } else {
-            Path::new("/usr/share/agama-cli/profile.schema.json")
+            let schema_dir = env::var("AGAMA_SCHEMA_DIR").unwrap_or(DEFAULT_SCHEMA_DIR.to_string());
+            PathBuf::from(schema_dir).join("profile.schema.json")
         };
         info!("Validation with path {:?}", path);
         Self::new(path)
     }
 
-    pub fn new(schema_path: &Path) -> Result<Self, ProfileError> {
-        let contents = fs::read_to_string(schema_path)
-            .context(format!("Failed to read schema at {:?}", schema_path))?;
+    pub fn new<P: AsRef<Path>>(schema_path: P) -> Result<Self, ProfileError> {
+        let contents = fs::read_to_string(&schema_path).context(format!(
+            "Failed to read schema at {}",
+            schema_path.as_ref().to_string_lossy()
+        ))?;
         let mut schema: serde_json::Value = serde_json::from_str(&contents)?;
 
         // Set $id of the main schema file to allow retrieving subschema files by using relative
@@ -221,7 +232,9 @@ impl ProfileEvaluator {
             .output()
             .context("Failed to run lshw")?;
         let helpers = fs::read_to_string("share/agama.libsonnet")
-            .or_else(|_| fs::read_to_string("/usr/share/agama-cli/agama.libsonnet"))
+            .or_else(|_| {
+                fs::read_to_string(PathBuf::from(DEFAULT_JSONNET_DIR).join("agama.libsonnet"))
+            })
             .context("Failed to read agama.libsonnet")?;
         let mut file = fs::File::create(path)?;
         file.write_all(b"{\n")?;

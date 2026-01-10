@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2025] SUSE LLC
+ * Copyright (c) [2022-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -37,12 +37,12 @@ import {
   GridItem,
   Stack,
 } from "@patternfly/react-core";
-import { Navigate, useNavigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router";
 import { Icon } from "~/components/layout";
 import alignmentStyles from "@patternfly/react-styles/css/utilities/Alignment/alignment";
 import { useInstallerStatus } from "~/queries/status";
-import { useConfig } from "~/queries/storage";
-import { finishInstallation } from "~/api/manager";
+import { useExtendedConfig } from "~/hooks/model/config";
+import { finishInstallation } from "~/model/manager";
 import { InstallationPhase } from "~/types/status";
 import { ROOT as PATHS } from "~/routes/paths";
 import { _ } from "~/i18n";
@@ -83,11 +83,10 @@ function usingTpm(config): boolean {
     return null;
   }
 
-  const { guided, drives = [], volumeGroups = [] } = config;
+  if (config.guided) return config.guided.encryption;
 
-  if (guided !== undefined) {
-    return guided.encryption?.method === "tpm_fde";
-  }
+  const { drives = [], volumeGroups = [] } = config;
+
   const devices = [
     ...drives,
     ...drives.flatMap((d) => d.partitions || []),
@@ -100,7 +99,7 @@ function usingTpm(config): boolean {
 }
 
 function InstallationFinished() {
-  const config = useConfig();
+  const { storage: storageConfig } = useExtendedConfig();
   const { phase, useIguana } = useInstallerStatus({ suspense: true });
   const navigate = useNavigate();
 
@@ -134,7 +133,7 @@ function InstallationFinished() {
                       ? _("At this point you can power off the machine.")
                       : _("At this point you can reboot the machine to log in to the new system.")}
                   </Content>
-                  {usingTpm(config) && <TpmHint />}
+                  {usingTpm(storageConfig) && <TpmHint />}
                 </EmptyStateBody>
                 <EmptyStateFooter>
                   <EmptyStateActions>

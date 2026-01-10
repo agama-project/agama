@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024] SUSE LLC
+ * Copyright (c) [2024-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -25,29 +25,37 @@ import KeyboardSelection from "./KeyboardSelection";
 import userEvent from "@testing-library/user-event";
 import { screen } from "@testing-library/react";
 import { mockNavigateFn, installerRender } from "~/test-utils";
+import { Keymap } from "~/model/system/l10n";
 
-const keymaps = [
-  { id: "us", name: "English" },
-  { id: "es", name: "Spanish" },
+const mockPatchConfigFn = jest.fn();
+
+const keymaps: Keymap[] = [
+  { id: "us", description: "English" },
+  { id: "es", description: "Spanish" },
 ];
-
-const mockConfigMutation = {
-  mutate: jest.fn(),
-};
 
 jest.mock("~/components/product/ProductRegistrationAlert", () => () => (
   <div>ProductRegistrationAlert Mock</div>
 ));
 
-jest.mock("~/queries/l10n", () => ({
-  ...jest.requireActual("~/queries/l10n"),
-  useConfigMutation: () => mockConfigMutation,
-  useL10n: () => ({ keymaps, selectedKeymap: keymaps[0] }),
+jest.mock("react-router", () => ({
+  ...jest.requireActual("react-router"),
+  useNavigate: () => mockNavigateFn,
 }));
 
-jest.mock("react-router-dom", () => ({
-  ...jest.requireActual("react-router-dom"),
-  useNavigate: () => mockNavigateFn,
+jest.mock("~/api", () => ({
+  ...jest.requireActual("~/api"),
+  patchConfig: (config) => mockPatchConfigFn(config),
+}));
+
+jest.mock("~/hooks/model/system/l10n", () => ({
+  ...jest.requireActual("~/hooks/model/system/l10n"),
+  useSystem: () => ({ keymaps }),
+}));
+
+jest.mock("~/hooks/model/proposal/l10n", () => ({
+  ...jest.requireActual("~/hooks/model/proposal/l10n"),
+  useProposal: () => ({ keymap: "us" }),
 }));
 
 it("allows changing the keyboard", async () => {
@@ -57,6 +65,6 @@ it("allows changing the keyboard", async () => {
   await userEvent.click(option);
   const button = await screen.findByRole("button", { name: "Select" });
   await userEvent.click(button);
-  expect(mockConfigMutation.mutate).toHaveBeenCalledWith({ keymap: "es" });
+  expect(mockPatchConfigFn).toHaveBeenCalledWith({ l10n: { keymap: "es" } });
   expect(mockNavigateFn).toHaveBeenCalledWith(-1);
 });

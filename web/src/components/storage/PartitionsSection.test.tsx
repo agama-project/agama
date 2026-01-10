@@ -24,73 +24,40 @@ import React from "react";
 import { screen } from "@testing-library/react";
 import { installerRender, mockNavigateFn } from "~/test-utils";
 import PartitionsSection from "~/components/storage/PartitionsSection";
-import { apiModel } from "~/api/storage/types";
-import { model } from "~/types/storage";
+import type { ConfigModel } from "~/model/storage/config-model";
 
-const partition1: apiModel.Partition = {
-  mountPath: "/",
-  size: {
-    min: 1_000_000_000,
-    default: true,
-  },
-  filesystem: { default: true, type: "btrfs" },
-};
-
-const partition2: apiModel.Partition = {
-  mountPath: "swap",
-  size: {
-    min: 2_000_000_000,
-    default: false, // false: user provided, true: calculated
-  },
-  filesystem: { default: false, type: "swap" },
-};
-
-const drive1Partitions: apiModel.Partition[] = [partition1, partition2];
-
-const drive1PartitionsModel: model.Partition[] = [
-  {
-    ...partition1,
-    isNew: true,
-    isUsed: false,
-    isReused: false,
-    isUsedBySpacePolicy: false,
-  },
-  {
-    ...partition2,
-    isNew: true,
-    isUsed: false,
-    isReused: false,
-    isUsedBySpacePolicy: false,
-  },
-];
-
-const drive1: model.Drive = {
+const drive: ConfigModel.Drive = {
   name: "/dev/sda",
   spacePolicy: "delete",
-  partitions: drive1PartitionsModel,
-  list: "drives",
-  listIndex: 0,
-  isExplicitBoot: false,
-  isUsed: true,
-  isAddingPartitions: true,
-  isReusingPartitions: true,
-  isTargetDevice: false,
-  isBoot: true,
-  getVolumeGroups: () => [],
-  getPartition: (path) => drive1PartitionsModel.find((p) => p.mountPath === path),
-  getMountPaths: () => drive1Partitions.map((p) => p.mountPath),
-  getConfiguredExistingPartitions: jest.fn(),
+  partitions: [
+    {
+      mountPath: "/",
+      size: {
+        min: 1_000_000_000,
+        default: true,
+      },
+      filesystem: { default: true, type: "btrfs" },
+    },
+    {
+      mountPath: "swap",
+      size: {
+        min: 2_000_000_000,
+        default: false,
+      },
+      filesystem: { default: false, type: "swap" },
+    },
+  ],
 };
 
 const mockDeletePartition = jest.fn();
 
-jest.mock("~/hooks/storage/partition", () => ({
-  ...jest.requireActual("~/hooks/storage/partition"),
+jest.mock("~/hooks/model/storage/config-model", () => ({
+  usePartitionable: () => drive,
   useDeletePartition: () => mockDeletePartition,
 }));
 
-async function openMenu(path) {
-  const { user } = installerRender(<PartitionsSection device={drive1} />);
+async function openMenu(path: string) {
+  const { user } = installerRender(<PartitionsSection collection="drives" index={0} />);
 
   const detailsButton = screen.getByRole("button", { name: /New partitions/ });
   await user.click(detailsButton);
@@ -101,18 +68,11 @@ async function openMenu(path) {
 }
 
 describe("PartitionMenuItem", () => {
-  it("allows users to delete a not required partition", async () => {
+  it("allows users to delete a partition", async () => {
     const { user } = await openMenu("swap");
     const deleteSwapButton = screen.getByRole("menuitem", { name: "Delete swap" });
     await user.click(deleteSwapButton);
-    expect(mockDeletePartition).toHaveBeenCalled();
-  });
-
-  it("allows users to delete a required partition", async () => {
-    const { user } = await openMenu("/");
-    const deleteRootButton = screen.getByRole("menuitem", { name: "Delete /" });
-    await user.click(deleteRootButton);
-    expect(mockDeletePartition).toHaveBeenCalled();
+    expect(mockDeletePartition).toHaveBeenCalledWith("drives", 0, "swap");
   });
 
   it("allows users to edit a partition", async () => {

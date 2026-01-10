@@ -1,4 +1,15 @@
 -------------------------------------------------------------------
+Fri Jan  9 14:43:59 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 19.pre
+- Adapt to the version 2 of the HTTP API (gh#agama-project/agama#2997).
+- Introduce a new overview page.
+- Missing pieces:
+  - Installation progress.
+  - Add-ons registration.
+  - iSCSI, DASD and zFCP support.
+
+-------------------------------------------------------------------
 Tue Dec 16 08:32:09 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
 
 - Added a new TranslatedString type to require a translated string

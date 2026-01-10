@@ -22,40 +22,46 @@
 
 import React, { useState } from "react";
 import { ActionGroup, Content, Form } from "@patternfly/react-core";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router";
 import { Page } from "~/components/core";
-import { SpaceActionsTable } from "~/components/storage";
-import { deviceChildren } from "~/components/storage/utils";
+import SpaceActionsTable, { SpacePolicyAction } from "~/components/storage/SpaceActionsTable";
+import { createPartitionableLocation, deviceChildren } from "~/components/storage/utils";
 import { _ } from "~/i18n";
-import { PartitionSlot, SpacePolicyAction, StorageDevice } from "~/types/storage";
-import { apiModel } from "~/api/storage/types";
-import { useDevices } from "~/queries/storage";
-import { useModel } from "~/hooks/storage/model";
-import { useSetSpacePolicy } from "~/hooks/storage/space-policy";
-import { toStorageDevice } from "./device-utils";
+import { useDevices } from "~/hooks/model/system/storage";
+import { usePartitionable, useSetSpacePolicy } from "~/hooks/model/storage/config-model";
+import { toDevice } from "./device-utils";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import { sprintf } from "sprintf-js";
+import type { Storage as Proposal } from "~/model/proposal";
+import type { ConfigModel, Partitionable } from "~/model/storage/config-model";
 
-const partitionAction = (partition: apiModel.Partition) => {
+const partitionAction = (partition: ConfigModel.Partition) => {
   if (partition.delete) return "delete";
   if (partition.resizeIfNeeded) return "resizeIfNeeded";
 
   return undefined;
 };
 
+function useDeviceModelFromParams(): Partitionable.Device | null {
+  const { collection, index } = useParams();
+  const location = createPartitionableLocation(collection, index);
+  const deviceModel = usePartitionable(location.collection, location.index);
+
+  return deviceModel;
+}
+
 /**
  * Renders a page that allows the user to select the space policy and actions.
  */
 export default function SpacePolicySelection() {
-  const { list, listIndex } = useParams();
-  const model = useModel({ suspense: true });
-  const deviceModel = model[list][listIndex];
-  const devices = useDevices("system", { suspense: true });
+  const deviceModel = useDeviceModelFromParams();
+  const devices = useDevices();
   const device = devices.find((d) => d.name === deviceModel.name);
   const children = deviceChildren(device);
   const setSpacePolicy = useSetSpacePolicy();
+  const { collection, index } = useParams();
 
-  const partitionDeviceAction = (device: StorageDevice) => {
+  const partitionDeviceAction = (device: Proposal.Device) => {
     const partition = deviceModel.partitions?.find((p) => p.name === device.name);
 
     return partition ? partitionAction(partition) : undefined;
@@ -63,21 +69,21 @@ export default function SpacePolicySelection() {
 
   const [actions, setActions] = useState(
     children
-      .filter((d) => toStorageDevice(d) && partitionDeviceAction(toStorageDevice(d)))
+      .filter((d) => toDevice(d) && partitionDeviceAction(toDevice(d)))
       .map(
-        (d: StorageDevice): SpacePolicyAction => ({
-          deviceName: toStorageDevice(d).name,
-          value: partitionDeviceAction(toStorageDevice(d)),
+        (d: Proposal.Device): SpacePolicyAction => ({
+          deviceName: toDevice(d).name,
+          value: partitionDeviceAction(toDevice(d)),
         }),
       ),
   );
 
   const navigate = useNavigate();
 
-  const deviceAction = (device: StorageDevice | PartitionSlot) => {
-    if (toStorageDevice(device) === undefined) return "keep";
+  const deviceAction = (device: Proposal.Device | Proposal.UnusedSlot) => {
+    if (toDevice(device) === undefined) return "keep";
 
-    return actions.find((a) => a.deviceName === toStorageDevice(device).name)?.value || "keep";
+    return actions.find((a) => a.deviceName === toDevice(device).name)?.value || "keep";
   };
 
   const changeActions = (spaceAction: SpacePolicyAction) => {
@@ -89,7 +95,10 @@ export default function SpacePolicySelection() {
 
   const onSubmit = (e) => {
     e.preventDefault();
-    setSpacePolicy(list, listIndex, { type: "custom", actions });
+    const location = createPartitionableLocation(collection, index);
+    if (!location) return;
+
+    setSpacePolicy(location.collection, location.index, { type: "custom", actions });
     navigate("..");
   };
 

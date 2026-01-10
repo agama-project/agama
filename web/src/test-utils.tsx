@@ -29,16 +29,17 @@
  */
 
 import React from "react";
-import { MemoryRouter, useParams } from "react-router-dom";
+import { MemoryRouter, useParams } from "react-router";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import userEvent from "@testing-library/user-event";
-import { render, within } from "@testing-library/react";
+import { render, renderHook, within } from "@testing-library/react";
 import { createClient } from "~/client/index";
 import { InstallerClientProvider } from "~/context/installer";
 import { InstallerL10nProvider } from "~/context/installerL10n";
 import { StorageUiStateProvider } from "~/context/storage-ui-state";
 import { isObject, noop } from "radashi";
 import { DummyWSClient } from "./client/ws";
+import { Status } from "./model/status";
 
 /**
  * Internal mock for manipulating routes, using ["/"] by default
@@ -87,9 +88,9 @@ const mockRoutes = (...routes) => initialRoutes.mockReturnValueOnce(routes);
  */
 const mockParams = (params: ReturnType<typeof useParams>) => (paramsMock = params);
 
-// Centralize the react-router-dom mock here
-jest.mock("react-router-dom", () => ({
-  ...jest.requireActual("react-router-dom"),
+// Centralize the react-router mock here
+jest.mock("react-router", () => ({
+  ...jest.requireActual("react-router"),
   useHref: (to) => to,
   useNavigate: () => mockNavigateFn,
   useMatches: () => [],
@@ -102,6 +103,54 @@ jest.mock("react-router-dom", () => ({
     () => {
       to;
     },
+}));
+
+/**
+ * Internal mock for manipulating progresses
+ */
+const progressesMock = jest.fn().mockReturnValue([]);
+
+/**
+ * Internal mock for manipulating stage
+ */
+const stageMock = jest.fn().mockReturnValue("configuring");
+
+/**
+ * Allows mocking useStatus#progresses for testing purpose
+ *
+ * @example
+ *   mockProgresses(
+ *     [
+ *       {
+ *         "scope": "software",
+ *         "size": 3,
+ *         "steps": [
+ *             "Updating the list of repositories",
+ *             "Refreshing metadata from the repositories",
+ *             "Calculating the software proposal"
+ *         ],
+ *         "step": "Refreshing metadata from the repositories",
+ *         "index": 2
+ *       }
+ *     ]
+ *  )
+ */
+const mockProgresses = (progresses: Status["progresses"]) =>
+  progressesMock.mockReturnValue(progresses);
+
+/**
+ * Allows mocking useStatus#stage for testing purpose
+ *
+ * @example
+ *   mockStage("configuring");
+ */
+const mockStage = (stage: Status["stage"]) => stageMock.mockReturnValue(stage);
+
+jest.mock("~/hooks/model/status", () => ({
+  useStatus: () => ({
+    progresses: progressesMock(),
+    stage: stageMock(),
+  }),
 }));
 
 const Providers = ({ children, withL10n }) => {
@@ -119,26 +168,24 @@ const Providers = ({ children, withL10n }) => {
   }
 
   if (withL10n) {
-    const fetchConfig = async () => ({
-      keymap: "us",
-      timezone: "Europe/Berlin",
-      uiLocale: "en_US",
-      uiKeymap: "us",
-    });
+    // FIXME
+    // const fetchConfig = async (): Promise<System> => ({
+    //   l10n: {
+    //     keymap: "us",
+    //     timezone: "Europe/Berlin",
+    //     locale: "en_US",
+    //   },
+    // });
     return (
       <InstallerClientProvider client={client}>
-        <InstallerL10nProvider initialLanguage="en-US" fetchConfigFn={fetchConfig}>
+        <InstallerL10nProvider initialLanguage="en-US">
           <StorageUiStateProvider>{children}</StorageUiStateProvider>
         </InstallerL10nProvider>
       </InstallerClientProvider>
     );
   }
 
-  return (
-    <InstallerClientProvider client={client}>
-      <StorageUiStateProvider>{children}</StorageUiStateProvider>
-    </InstallerClientProvider>
-  );
+  return <StorageUiStateProvider>{children}</StorageUiStateProvider>;
 };
 
 /**
@@ -151,17 +198,31 @@ const installerRender = (ui: React.ReactNode, options: { withL10n?: boolean } = 
   const queryClient = new QueryClient({});
 
   const Wrapper = ({ children }) => (
-    <Providers withL10n={options.withL10n}>
-      <MemoryRouter initialEntries={initialRoutes()}>
-        <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
-      </MemoryRouter>
-    </Providers>
+    <QueryClientProvider client={queryClient}>
+      <Providers withL10n={options.withL10n}>
+        <MemoryRouter initialEntries={initialRoutes()}>{children}</MemoryRouter>
+      </Providers>
+    </QueryClientProvider>
   );
 
   return {
     user: userEvent.setup(),
     ...render(ui, { wrapper: Wrapper, ...options }),
   };
+};
+
+/**
+ * Wrapper around react-testing-library#renderHook for testing custom Tanstack Query based hooks
+ */
+const installerRenderHook: typeof renderHook = (hook, options) => {
+  const queryClient = new QueryClient({});
+
+  return renderHook(hook, {
+    ...options,
+    wrapper: ({ children }) => (
+      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    ),
+  });
 };
 
 /**
@@ -250,6 +311,7 @@ const getColumnValues = (table: HTMLElement | HTMLTableElement, columnName: stri
 export {
   plainRender,
   installerRender,
+  installerRenderHook,
   createCallbackMock,
   mockNavigateFn,
   mockParams,
@@ -257,4 +319,6 @@ export {
   mockUseRevalidator,
   resetLocalStorage,
   getColumnValues,
+  mockProgresses,
+  mockStage,
 };

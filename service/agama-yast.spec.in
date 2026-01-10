@@ -83,7 +83,6 @@ sh "%{SOURCE2}" "%{SOURCE1}"
 %{_datadir}/dbus-1/agama-services/org.opensuse.Agama*.service
 %{_unitdir}/agama.service
 %{_unitdir}/agama-dbus-monitor.service
-%{_unitdir}/agama-proxy-setup.service
 %dir %{_datadir}/agama
 %dir %{_datadir}/agama/conf.d
 %{_datadir}/agama/conf.d

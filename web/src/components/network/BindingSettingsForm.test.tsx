@@ -59,10 +59,18 @@ jest.mock("~/components/product/ProductRegistrationAlert", () => () => (
   <div>ProductRegistrationAlert Mock</div>
 ));
 
-jest.mock("~/queries/network", () => ({
-  ...jest.requireActual("~/queries/network"),
-  useNetworkDevices: () => [mockDevice],
+jest.mock("~/hooks/model/system/network", () => ({
+  ...jest.requireActual("~/hooks/model/system/network"),
+  useDevices: () => [mockDevice],
+}));
+
+jest.mock("~/hooks/model/proposal/network", () => ({
+  ...jest.requireActual("~/hooks/model/proposal/network"),
   useConnection: () => mockConnection,
+}));
+
+jest.mock("~/hooks/model/config/network", () => ({
+  ...jest.requireActual("~/hooks/model/config/network"),
   useConnectionMutation: () => ({ mutateAsync: mockMutation }),
 }));
 

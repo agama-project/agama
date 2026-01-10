@@ -23,7 +23,7 @@ require_relative "../../test_helper"
 require_relative "../with_progress_examples"
 require_relative "../with_issues_examples"
 require_relative "storage_helpers"
-require "agama/dbus/clients/questions"
+require "agama/http/clients"
 require "agama/config"
 require "agama/http"
 require "agama/issue"
@@ -33,9 +33,11 @@ require "agama/storage/manager"
 require "agama/storage/proposal"
 require "agama/storage/proposal_settings"
 require "agama/storage/volume"
+require "agama/dbus"
 require "y2storage/issue"
 require "y2storage/luks"
 require "yast2/fs_snapshot"
+require "yaml"
 
 Yast.import "Installation"
 
@@ -48,24 +50,18 @@ describe Agama::Storage::Manager do
   let(:config_path) do
     File.join(FIXTURES_PATH, "root_dir", "etc", "agama.yaml")
   end
-  let(:config) { Agama::Config.from_file(config_path) }
-  let(:files_client) { instance_double(Agama::HTTP::Clients::Files, write: nil) }
-  let(:scripts_client) { instance_double(Agama::HTTP::Clients::Scripts, run: nil) }
-  let(:scripts_dir) { File.join(tmp_dir, "run", "agama", "scripts") }
+  let(:config) { Agama::Config.new(YAML.load_file(config_path)) }
   let(:tmp_dir) { Dir.mktmpdir }
+  let(:http_client) { instance_double(Agama::HTTP::Clients::Main) }
 
   before do
     mock_storage(devicegraph: scenario)
     allow(Agama::Storage::Proposal).to receive(:new).and_return(proposal)
-    allow(Agama::DBus::Clients::Questions).to receive(:new).and_return(questions_client)
-    allow(Agama::DBus::Clients::Software).to receive(:instance).and_return(software)
+    allow(Agama::HTTP::Clients::Questions).to receive(:new).and_return(questions_client)
+    allow(Agama::HTTP::Clients::Main).to receive(:new).and_return(http_client)
     allow(Bootloader::FinishClient).to receive(:new).and_return(bootloader_finish)
-    allow(Agama::Security).to receive(:new).and_return(security)
     # mock writting config as proposal call can do storage probing, which fails in CI
     allow_any_instance_of(Agama::Storage::Bootloader).to receive(:write_config)
-    allow(Agama::HTTP::Clients::Files).to receive(:new).and_return(files_client)
-    allow(Agama::HTTP::Clients::Scripts).to receive(:new).and_return(scripts_client)
-    allow(Agama::Network).to receive(:new).and_return(network)
     allow(Yast::Installation).to receive(:destdir).and_return(File.join(tmp_dir, "mnt"))
     stub_const("Agama::Storage::Finisher::CopyLogsStep::SCRIPTS_DIR",
       File.join(tmp_dir, "run", "agama", "scripts"))
@@ -77,127 +73,67 @@ describe Agama::Storage::Manager do
 
   let(:y2storage_manager) { Y2Storage::StorageManager.instance }
   let(:proposal) { Agama::Storage::Proposal.new(config, logger: logger) }
-  let(:questions_client) { instance_double(Agama::DBus::Clients::Questions) }
-  let(:software) do
-    instance_double(Agama::DBus::Clients::Software, selected_product: "ALP")
-  end
-  let(:network) { instance_double(Agama::Network, link_resolv: nil, unlink_resolv: nil) }
+  let(:questions_client) { instance_double(Agama::HTTP::Clients::Questions) }
   let(:bootloader_finish) { instance_double(Bootloader::FinishClient, write: nil) }
-  let(:security) { instance_double(Agama::Security, write: nil) }
-
   let(:scenario) { "empty-hd-50GiB.yaml" }
 
-  describe "#deprecated_system=" do
-    let(:callback) { proc {} }
-
-    context "if the current value is changed" do
-      before do
-        storage.deprecated_system = true
-      end
-
-      it "executes the on_deprecated_system_change callbacks" do
-        storage.on_deprecated_system_change(&callback)
-
-        expect(callback).to receive(:call)
-
-        storage.deprecated_system = false
-      end
+  describe "#activate" do
+    before do
+      allow(Agama::Storage::ISCSI::Manager).to receive(:new).and_return(iscsi)
+      allow(iscsi).to receive(:activate)
+      allow(y2storage_manager).to receive(:activate)
     end
 
-    context "if the current value is not changed" do
-      before do
-        storage.deprecated_system = true
+    let(:iscsi) { Agama::Storage::ISCSI::Manager.new }
+
+    it "activates iSCSI and devices managed by Y2Storage" do
+      expect(iscsi).to receive(:activate)
+      expect(y2storage_manager).to receive(:activate) do |callbacks|
+        expect(callbacks).to be_a(Agama::Storage::Callbacks::Activate)
       end
-
-      it "does not execute the on_deprecated_system_change callbacks" do
-        storage.on_deprecated_system_change(&callback)
-
-        expect(callback).to_not receive(:call)
-
-        storage.deprecated_system = true
-      end
+      storage.activate
     end
 
-    context "when the system is set as deprecated" do
-      it "marks the system as deprecated" do
-        storage.deprecated_system = true
-
-        expect(storage.deprecated_system?).to eq(true)
-      end
-
-      it "adds a deprecated system issue" do
-        expect(storage.issues).to be_empty
-
-        storage.deprecated_system = true
-
-        expect(storage.issues).to include(
-          an_object_having_attributes(description: /system devices have changed/)
-        )
-      end
+    it "does not reset information from previous activation" do
+      expect(Y2Storage::Luks).to_not receive(:reset_activation_infos)
+      storage.activate
     end
+  end
 
-    context "when the system is set as not deprecated" do
-      it "marks the system as not deprecated" do
-        storage.deprecated_system = false
-
-        expect(storage.deprecated_system?).to eq(false)
-      end
-
-      it "does not add a deprecated system issue" do
-        storage.deprecated_system = false
-
-        expect(storage.issues).to_not include(
-          an_object_having_attributes(description: /system devices have changed/)
-        )
-      end
+  describe "#reset_activation" do
+    it "resets information from previous activation" do
+      expect(Y2Storage::Luks).to receive(:reset_activation_infos)
+      storage.reset_activation
     end
   end
 
   describe "#probe" do
     before do
       allow(Agama::Storage::ISCSI::Manager).to receive(:new).and_return(iscsi)
-      allow(y2storage_manager).to receive(:raw_probed).and_return(raw_devicegraph)
-      allow(proposal).to receive(:issues).and_return(proposal_issues)
-      allow(proposal.storage_system).to receive(:candidate_devices).and_return(devices)
       allow(proposal).to receive(:calculate_from_json).and_return(true)
       allow(proposal).to receive(:success?).and_return(true)
-      allow(proposal).to receive(:storage_json).and_return(current_config)
-      allow_any_instance_of(Agama::Storage::Configurator)
-        .to receive(:generate_configs).and_return([default_config])
-      allow(config).to receive(:pick_product)
-      allow(iscsi).to receive(:activate)
-      allow(y2storage_manager).to receive(:activate)
-      allow(iscsi).to receive(:probe)
-      allow(y2storage_manager).to receive(:probe)
+    end
+
+    let(:iscsi) { Agama::Storage::ISCSI::Manager.new }
+
+    it "probes the storage devices" do
+      expect(iscsi).to receive(:probe)
+      expect(y2storage_manager).to receive(:probe) do |callbacks|
+        expect(callbacks).to be_a(Y2Storage::Callbacks::UserProbe)
+      end
+      storage.probe
+    end
+  end
+
+  describe "#system_issues" do
+    before do
+      allow(y2storage_manager).to receive(:raw_probed).and_return(raw_devicegraph)
+      allow(proposal.storage_system).to receive(:candidate_devices).and_return(devices)
     end
 
     let(:raw_devicegraph) do
       instance_double(Y2Storage::Devicegraph, probing_issues: probing_issues)
     end
-
-    let(:proposal) { Agama::Storage::Proposal.new(config, logger: logger) }
-
-    let(:default_config) do
-      {
-        storage: {
-          drives: [
-            search: "/dev/vda1"
-          ]
-        }
-      }
-    end
-
-    let(:current_config) do
-      {
-        storage: {
-          drives: [
-            search: "/dev/vda2"
-          ]
-        }
-      }
-    end
-
-    let(:iscsi) { Agama::Storage::ISCSI::Manager.new }
 
     let(:devices) { [disk1, disk2] }
 
@@ -206,104 +142,17 @@ describe Agama::Storage::Manager do
 
     let(:probing_issues) { [Y2Storage::Issue.new("probing issue")] }
 
-    let(:proposal_issues) { [Agama::Issue.new("proposal issue")] }
-
-    let(:callback) { proc {} }
-
-    it "sets env YAST_NO_BLS_BOOT to yes if product doesn't requires bls boot explicitly" do
-      expect(config).to receive(:pick_product)
-      expect(config).to receive(:boot_strategy).and_return(nil)
-      expect(ENV).to receive(:[]=).with("YAST_NO_BLS_BOOT", "1")
-
-      storage.probe
-    end
-
-    it "probes the storage devices and calculates a proposal" do
-      expect(config).to receive(:pick_product).with("ALP")
-      expect(iscsi).to receive(:activate)
-      expect(y2storage_manager).to receive(:activate) do |callbacks|
-        expect(callbacks).to be_a(Agama::Storage::Callbacks::Activate)
-      end
-      expect(iscsi).to receive(:probe)
-      expect(y2storage_manager).to receive(:probe)
-      expect(proposal).to receive(:calculate_from_json)
-      storage.probe
-    end
-
-    it "sets the system as non deprecated" do
-      storage.deprecated_system = true
-      storage.probe
-
-      expect(storage.deprecated_system?).to eq(false)
-    end
-
-    it "adds the probing issues" do
-      storage.probe
-
-      expect(storage.issues).to include(
+    it "includes the probing issues" do
+      expect(storage.system_issues).to include(
         an_object_having_attributes(description: /probing issue/)
       )
-    end
-
-    it "adds the proposal issues" do
-      storage.probe
-
-      expect(storage.issues).to include(
-        an_object_having_attributes(description: /proposal issue/)
-      )
-    end
-
-    it "executes the on_probe callbacks" do
-      storage.on_probe(&callback)
-
-      expect(callback).to receive(:call)
-
-      storage.probe
-    end
-
-    context "if :keep_config is false" do
-      let(:keep_config) { false }
-
-      it "calculates a proposal using the default product config" do
-        expect(proposal).to receive(:calculate_from_json).with(default_config)
-        storage.probe(keep_config: keep_config)
-      end
-    end
-
-    context "if :keep_config is true" do
-      let(:keep_config) { true }
-
-      it "calculates a proposal using the current config" do
-        expect(proposal).to receive(:calculate_from_json).with(current_config)
-        storage.probe(keep_config: keep_config)
-      end
-    end
-
-    context "if :keep_activation is false" do
-      let(:keep_activation) { false }
-
-      it "resets information from previous activation" do
-        expect(Y2Storage::Luks).to receive(:reset_activation_infos)
-        storage.probe(keep_activation: keep_activation)
-      end
-    end
-
-    context "if :keep_activation is true" do
-      let(:keep_activation) { true }
-
-      it "does not reset information from previous activation" do
-        expect(Y2Storage::Luks).to_not receive(:reset_activation_infos)
-        storage.probe(keep_activation: keep_activation)
-      end
     end
 
     context "if there are available devices" do
       let(:devices) { [disk1] }
 
-      it "does not add an issue for available devices" do
-        storage.probe
-
-        expect(storage.issues).to_not include(
+      it "does not include an issue for available devices" do
+        expect(storage.system_issues).to_not include(
           an_object_having_attributes(description: /no suitable device/)
         )
       end
@@ -312,10 +161,8 @@ describe Agama::Storage::Manager do
     context "if there are not available devices" do
       let(:devices) { [] }
 
-      it "adds an issue for available devices" do
-        storage.probe
-
-        expect(storage.issues).to include(
+      it "includes an issue for available devices" do
+        expect(storage.system_issues).to include(
           an_object_having_attributes(description: /no suitable device/)
         )
       end
@@ -355,8 +202,6 @@ describe Agama::Storage::Manager do
 
     let(:proposal_issues) { [Agama::Issue.new("proposal issue")] }
 
-    let(:callback) { proc {} }
-
     it "calculates a proposal using the default config if no config is given" do
       expect(proposal).to receive(:calculate_from_json).with(default_config)
       storage.configure
@@ -373,12 +218,6 @@ describe Agama::Storage::Manager do
       expect(storage.issues).to include(
         an_object_having_attributes(description: /proposal issue/)
       )
-    end
-
-    it "executes the on_configure callbacks" do
-      storage.on_configure(&callback)
-      expect(callback).to receive(:call)
-      storage.configure
     end
 
     context "if the proposal was correctly calculated" do
@@ -404,14 +243,31 @@ describe Agama::Storage::Manager do
 
   describe "#install" do
     before do
-      allow(y2storage_manager).to receive(:staging).and_return(proposed_devicegraph)
-
       allow(Yast::WFM).to receive(:CallFunction).with("inst_prepdisk", [])
       allow(Yast::WFM).to receive(:CallFunction).with("inst_bootloader", [])
-      allow(Yast::PackagesProposal).to receive(:SetResolvables)
       allow(Bootloader::ProposalClient).to receive(:new)
         .and_return(bootloader_proposal)
       allow(Y2Storage::Clients::InstPrepdisk).to receive(:new).and_return(client)
+    end
+
+    let(:bootloader_proposal) { instance_double(Bootloader::ProposalClient, make_proposal: nil) }
+    let(:client) { instance_double(Y2Storage::Clients::InstPrepdisk, run: nil) }
+
+    it "runs the inst_prepdisk client" do
+      expect(Y2Storage::Clients::InstPrepdisk).to receive(:new) do |params|
+        expect(params[:commit_callbacks]).to be_a(Agama::Storage::Callbacks::Commit)
+      end.and_return(client)
+
+      expect(client).to receive(:run)
+
+      storage.install
+    end
+  end
+
+  describe "#add_packages" do
+    before do
+      allow(y2storage_manager).to receive(:staging).and_return(proposed_devicegraph)
+      allow(Agama::HTTP::Clients::Main).to receive(:new).and_return(http_client)
     end
 
     let(:proposed_devicegraph) do
@@ -426,26 +282,11 @@ describe Agama::Storage::Manager do
       )
     end
 
-    let(:bootloader_proposal) { instance_double(Bootloader::ProposalClient, make_proposal: nil) }
-
-    let(:client) { instance_double(Y2Storage::Clients::InstPrepdisk, run: nil) }
-
     it "adds storage software to install" do
-      expect(Yast::PackagesProposal).to receive(:SetResolvables) do |_, _, packages|
-        expect(packages).to contain_exactly("btrfsprogs", "snapper")
-      end
+      expect(http_client).to receive(:set_resolvables)
+        .with("storage_proposal", :package, match(include("btrfsprogs", "snapper")))
 
-      storage.install
-    end
-
-    it "runs the inst_prepdisk client" do
-      expect(Y2Storage::Clients::InstPrepdisk).to receive(:new) do |params|
-        expect(params[:commit_callbacks]).to be_a(Agama::Storage::Callbacks::Commit)
-      end.and_return(client)
-
-      expect(client).to receive(:run)
-
-      storage.install
+      storage.add_packages
     end
 
     context "if iSCSI was configured" do
@@ -455,11 +296,10 @@ describe Agama::Storage::Manager do
       end
 
       it "adds the iSCSI software to install" do
-        expect(Yast::PackagesProposal).to receive(:SetResolvables) do |_, _, packages|
-          expect(packages).to include("open-iscsi", "iscsiuio")
-        end
+        expect(http_client).to receive(:set_resolvables)
+          .with("storage_proposal", :package, match(include("iscsiuio")))
 
-        storage.install
+        storage.add_packages
       end
     end
 
@@ -474,11 +314,10 @@ describe Agama::Storage::Manager do
       end
 
       it "adds the iSCSI software to install" do
-        expect(Yast::PackagesProposal).to receive(:SetResolvables) do |_, _, packages|
-          expect(packages).to include("open-iscsi", "iscsiuio")
-        end
+        expect(http_client).to receive(:set_resolvables)
+          .with("storage_proposal", :package, match(include("open-iscsi", "iscsiuio")))
 
-        storage.install
+        storage.add_packages
       end
     end
   end
@@ -506,37 +345,16 @@ describe Agama::Storage::Manager do
     it "copy needed files, installs the bootloader, sets up the snapshots, " \
        "copy logs, symlink resolv.conf, runs the post-installation scripts, " \
        "unlink resolv.conf, and umounts the file systems" do
-      expect(security).to receive(:write)
       expect(copy_files).to receive(:run)
       expect(bootloader_finish).to receive(:write)
       expect(Yast::WFM).to receive(:CallFunction).with("storage_finish", ["Write"])
       expect(Yast::WFM).to receive(:CallFunction).with("iscsi-client_finish", ["Write"])
       expect(Yast2::FsSnapshot).to receive(:configure_snapper)
-      expect(network).to receive(:link_resolv)
-      expect(scripts_client).to receive(:run).with("post")
-      expect(files_client).to receive(:write)
-      expect(network).to receive(:unlink_resolv)
-      expect(Yast::Execute).to receive(:on_target!)
-        .with("systemctl", "enable", "agama-scripts", allowed_exitstatus: [0, 1])
       expect(Yast::WFM).to receive(:CallFunction).with("umount_finish", ["Write"])
       expect(Yast::Execute).to receive(:locally).with(
         "agama", "logs", "store", "--destination", /\/var\/log\/agama-installation\/logs/
       )
       storage.finish
-    end
-
-    context "when scripts artifacts exist" do
-      before do
-        FileUtils.mkdir_p(scripts_dir)
-        FileUtils.touch(File.join(scripts_dir, "test.sh"))
-        allow(Yast::Execute).to receive("locally").with("agama", "logs", "store", any_args)
-      end
-
-      it "copies the artifacts to the installed system" do
-        storage.finish
-        expect(File).to exist(File.join(tmp_dir, "mnt", "var", "log", "agama-installation",
-          "scripts"))
-      end
     end
   end
 
@@ -549,14 +367,23 @@ describe Agama::Storage::Manager do
       before do
         mock_storage(devicegraph: "partitioned_md.yml")
 
-        subject.proposal.calculate_guided(settings)
+        subject.proposal.calculate_from_json(config_json)
       end
 
-      let(:settings) do
-        Agama::Storage::ProposalSettings.new.tap do |settings|
-          settings.device.name = "/dev/sdb"
-          settings.volumes = [Agama::Storage::Volume.new("/")]
-        end
+      let(:config_json) do
+        {
+          storage: {
+            drives: [
+              {
+                search:     "/dev/sdb",
+                partitions: [
+                  { search: "*", delete: true },
+                  { filesystem: { path: "/" } }
+                ]
+              }
+            ]
+          }
+        }
       end
 
       it "returns the list of actions" do

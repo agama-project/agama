@@ -41,9 +41,9 @@ import {
 } from "~/queries/storage/zfcp";
 import ZFCPDisksTable from "./ZFCPDisksTable";
 import ZFCPControllersTable from "./ZFCPControllersTable";
-import { probeZFCP } from "~/api/storage/zfcp";
+import { probeZFCP } from "~/model/storage/zfcp";
 import { STORAGE as PATHS } from "~/routes/paths";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { inactiveLuns } from "~/utils/zfcp";
 
 const LUNScanInfo = () => {

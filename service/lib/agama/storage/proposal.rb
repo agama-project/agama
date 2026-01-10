@@ -26,8 +26,8 @@ require "agama/storage/config_conversions"
 require "agama/storage/config_json_generator"
 require "agama/storage/config_solver"
 require "agama/storage/model_support_checker"
-require "agama/storage/proposal_settings"
 require "agama/storage/proposal_strategies"
+require "agama/storage/issue_classes"
 require "agama/storage/system"
 require "json"
 require "yast"
@@ -59,7 +59,7 @@ module Agama
       #
       # @return [Boolean]
       def success?
-        calculated? && !proposal.failed? && issues.none?(&:error?)
+        calculated? && !proposal.failed? && issues.none?
       end
 
       # Default storage config according to the JSON schema.
@@ -79,12 +79,6 @@ module Agama
       # @return [Hash, nil] nil if there is no proposal yet.
       def storage_json
         case strategy
-        when ProposalStrategies::Guided
-          {
-            storage: {
-              guided: strategy.settings.to_json_settings
-            }
-          }
         when ProposalStrategies::Agama
           source_json || { storage: ConfigConversions::ToJSON.new(config).convert }
         when ProposalStrategies::Autoyast
@@ -130,13 +124,10 @@ module Agama
       def calculate_from_json(source_json)
         # @todo Validate source_json with JSON schema.
 
-        guided_json = source_json.dig(:storage, :guided)
         storage_json = source_json[:storage]
         autoyast_json = source_json[:legacyAutoyastStorage]
 
-        if guided_json
-          calculate_guided_from_json(guided_json)
-        elsif storage_json
+        if storage_json
           calculate_agama_from_json(storage_json)
         elsif autoyast_json
           calculate_autoyast(autoyast_json)
@@ -146,17 +137,6 @@ module Agama
 
         @source_json = source_json
         success?
-      end
-
-      # Calculates a new proposal using the guided strategy.
-      #
-      # @param settings [Agama::Storage::ProposalSettings]
-      # @return [Boolean] Whether the proposal successes.
-      def calculate_guided(settings)
-        logger.info("Calculating proposal with guided strategy: #{settings.inspect}")
-        reset
-        @strategy = ProposalStrategies::Guided.new(product_config, storage_system, settings, logger)
-        calculate
       end
 
       # Calculates a new proposal using the agama strategy.
@@ -219,20 +199,9 @@ module Agama
 
       # Whether the guided strategy was used for calculating the current proposal.
       #
-      # @return [Boolean]
+      # @return [Boolean] Always false because the guided strategy does not longer exists
       def guided?
-        return false unless calculated?
-
-        strategy.is_a?(ProposalStrategies::Guided)
-      end
-
-      # Settings used for calculating the guided proposal, if any.
-      #
-      # @return [ProposalSettings, nil]
-      def guided_settings
-        return unless guided?
-
-        strategy.settings
+        false
       end
 
       # @return [Storage::System]
@@ -286,15 +255,6 @@ module Agama
         ModelSupportChecker.new(config).supported?
       end
 
-      # Calculates a proposal from guided JSON settings.
-      #
-      # @param guided_json [Hash] e.g., { "target": { "disk": "/dev/vda" } }.
-      # @return [Boolean] Whether the proposal successes.
-      def calculate_guided_from_json(guided_json)
-        settings = ProposalSettings.new_from_json(guided_json, config: product_config)
-        calculate_guided(settings)
-      end
-
       # Calculates a proposal from storage JSON settings.
       #
       # @param config_json [Hash] e.g., { "drives": [] }.
@@ -343,8 +303,7 @@ module Agama
       def failed_issue
         Issue.new(
           _("Cannot calculate a valid storage setup with the current configuration"),
-          source:   Issue::Source::SYSTEM,
-          severity: Issue::Severity::ERROR
+          kind: IssueClasses::PROPOSAL
         )
       end
 
@@ -354,9 +313,8 @@ module Agama
       def exception_issue(error)
         Issue.new(
           _("A problem ocurred while calculating the storage setup"),
-          details:  error.message,
-          source:   Issue::Source::SYSTEM,
-          severity: Issue::Severity::ERROR
+          kind:    IssueClasses::PROPOSAL,
+          details: error.message
         )
       end
     end

@@ -37,7 +37,7 @@ import {
   FlexItem,
   Title,
 } from "@patternfly/react-core";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import * as partitionUtils from "~/components/storage/utils/partition";
 import { NestedContent } from "../core";
 import Text from "~/components/core/Text";
@@ -45,22 +45,27 @@ import MenuButton, { CustomToggleProps } from "~/components/core/MenuButton";
 import ConfigEditorItem from "~/components/storage/ConfigEditorItem";
 import Icon, { IconProps } from "~/components/layout/Icon";
 import { STORAGE as PATHS } from "~/routes/paths";
-import { model } from "~/types/storage";
 import { baseName, formattedPath } from "~/components/storage/utils";
 import { contentDescription } from "~/components/storage/utils/volume-group";
-import { useDeleteVolumeGroup } from "~/hooks/storage/volume-group";
-import { useDeleteLogicalVolume } from "~/hooks/storage/logical-volume";
 import { generateEncodedPath } from "~/utils";
 import { isEmpty } from "radashi";
 import { sprintf } from "sprintf-js";
 import { _, n_, formatList } from "~/i18n";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import spacingStyles from "@patternfly/react-styles/css/utilities/Spacing/spacing";
+import {
+  useConfigModel,
+  useDeleteVolumeGroup,
+  useDeleteLogicalVolume,
+} from "~/hooks/model/storage/config-model";
+import configModel from "~/model/storage/config-model";
+import type { ConfigModel } from "~/model/storage/config-model";
 
-const DeleteVgOption = ({ vg }: { vg: model.VolumeGroup }) => {
+const DeleteVgOption = ({ vg }: { vg: ConfigModel.VolumeGroup }) => {
+  const config = useConfigModel();
   const deleteVolumeGroup = useDeleteVolumeGroup();
   const lvs = vg.logicalVolumes.map((lv) => formattedPath(lv.mountPath));
-  const targetDevices = vg.getTargetDevices();
+  const targetDevices = configModel.volumeGroup.filterTargetDevices(config, vg);
   const convert = targetDevices.length === 1 && !!lvs.length;
   let description;
 
@@ -100,7 +105,7 @@ const DeleteVgOption = ({ vg }: { vg: model.VolumeGroup }) => {
   );
 };
 
-const EditVgOption = ({ vg }: { vg: model.VolumeGroup }) => {
+const EditVgOption = ({ vg }: { vg: ConfigModel.VolumeGroup }) => {
   const navigate = useNavigate();
 
   return (
@@ -180,7 +185,7 @@ const LvRow = ({ lv, vg }) => {
   );
 };
 
-const VgHeader = ({ vg }: { vg: model.VolumeGroup }) => {
+const VgHeader = ({ vg }: { vg: ConfigModel.VolumeGroup }) => {
   const title = vg.logicalVolumes.length
     ? _("Create LVM volume group %s")
     : _("Empty LVM volume group %s");
@@ -189,7 +194,7 @@ const VgHeader = ({ vg }: { vg: model.VolumeGroup }) => {
 };
 
 type VgMenuToggleProps = CustomToggleProps & {
-  vg: model.VolumeGroup;
+  vg: ConfigModel.VolumeGroup;
 };
 
 const VgMenuToggle = forwardRef(({ vg, ...props }: VgMenuToggleProps, ref) => {
@@ -218,7 +223,7 @@ const VgMenuToggle = forwardRef(({ vg, ...props }: VgMenuToggleProps, ref) => {
   );
 });
 
-const VgMenu = ({ vg }: { vg: model.VolumeGroup }) => {
+const VgMenu = ({ vg }: { vg: ConfigModel.VolumeGroup }) => {
   return (
     <MenuButton
       menuProps={{
@@ -230,7 +235,7 @@ const VgMenu = ({ vg }: { vg: model.VolumeGroup }) => {
   );
 };
 
-const AddLvButton = ({ vg }: { vg: model.VolumeGroup }) => {
+const AddLvButton = ({ vg }: { vg: ConfigModel.VolumeGroup }) => {
   const navigate = useNavigate();
   const newLvPath = generateEncodedPath(PATHS.volumeGroup.logicalVolume.add, { id: vg.vgName });
 
@@ -244,7 +249,7 @@ const AddLvButton = ({ vg }: { vg: model.VolumeGroup }) => {
   );
 };
 
-const LogicalVolumes = ({ vg }: { vg: model.VolumeGroup }) => {
+const LogicalVolumes = ({ vg }: { vg: ConfigModel.VolumeGroup }) => {
   const toggleId = useId();
   const contentId = useId();
   const [isExpanded, setIsExpanded] = useState(false);
@@ -304,7 +309,7 @@ const LogicalVolumes = ({ vg }: { vg: model.VolumeGroup }) => {
   );
 };
 
-export type VolumeGroupEditorProps = { vg: model.VolumeGroup };
+export type VolumeGroupEditorProps = { vg: ConfigModel.VolumeGroup };
 
 export default function VolumeGroupEditor({ vg }: VolumeGroupEditorProps) {
   return (

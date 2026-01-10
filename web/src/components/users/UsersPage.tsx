@@ -24,7 +24,7 @@ import React from "react";
 import { Content, Grid, GridItem } from "@patternfly/react-core";
 import { IssuesAlert, Page } from "~/components/core";
 import { FirstUser, RootUser } from "~/components/users";
-import { useIssues } from "~/queries/issues";
+import { useIssues } from "~/hooks/model/issue";
 import { _ } from "~/i18n";
 
 export default function UsersPage() {

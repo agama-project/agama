@@ -21,27 +21,32 @@
  */
 
 import React, { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router";
 import { ActionGroup, Content, Form, FormGroup, Radio, Stack } from "@patternfly/react-core";
 import { DevicesFormSelect } from "~/components/storage";
 import { Page, SubtleContent } from "~/components/core";
 import { deviceLabel, formattedPath } from "~/components/storage/utils";
-import { StorageDevice } from "~/types/storage";
-import { useCandidateDevices } from "~/hooks/storage/system";
-import { sprintf } from "sprintf-js";
-import { useDevices } from "~/queries/storage";
-import { useModel } from "~/hooks/storage/model";
+import { useCandidateDevices, useDevices } from "~/hooks/model/system/storage";
 import {
+  useConfigModel,
   useSetBootDevice,
   useSetDefaultBootDevice,
-  useDisableBootConfig,
-} from "~/hooks/storage/boot";
+  useDisableBoot,
+} from "~/hooks/model/storage/config-model";
+import { isDrive } from "~/model/storage/device";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
+import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
+import configModel from "~/model/storage/config-model";
+import type { ConfigModel } from "~/model/storage/config-model";
+import type { Storage } from "~/model/system";
 
-const filteredCandidates = (candidates, model): StorageDevice[] => {
+const filteredCandidates = (
+  candidates: Storage.Device[],
+  config: ConfigModel.Config,
+): Storage.Device[] => {
   return candidates.filter((candidate) => {
-    const collection = candidate.isDrive ? model.drives : model.mdRaids;
+    const collection = isDrive(candidate) ? config.drives : config.mdRaids;
     const device = collection.find((d) => d.name === candidate.name);
     return !device || !device.filesystem;
   });
@@ -58,58 +63,62 @@ type BootSelectionState = {
   load: boolean;
   selectedOption?: string;
   configureBoot?: boolean;
-  bootDevice?: StorageDevice;
-  defaultBootDevice?: StorageDevice;
-  candidateDevices?: StorageDevice[];
+  bootDevice?: Storage.Device;
+  defaultBootDevice?: Storage.Device;
+  candidateDevices?: Storage.Device[];
 };
 
 /**
  * Allows the user to select the boot configuration.
  */
-export default function BootSelectionDialog() {
+export default function BootSelection() {
   const location = useLocation();
   const [state, setState] = useState<BootSelectionState>({ load: false });
   const navigate = useNavigate();
-  const devices = useDevices("system");
-  const model = useModel({ suspense: true });
-  const candidateDevices = filteredCandidates(useCandidateDevices(), model);
+  const devices = useDevices();
+  const config = useConfigModel();
+  const allCandidateDevices = useCandidateDevices();
   const setBootDevice = useSetBootDevice();
   const setDefaultBootDevice = useSetDefaultBootDevice();
-  const disableBootConfig = useDisableBootConfig();
+  const disableBootConfig = useDisableBoot();
+
+  const candidateDevices = filteredCandidates(allCandidateDevices, config);
 
   useEffect(() => {
-    if (state.load || !model) return;
+    if (state.load || !config) return;
 
-    const boot = model.boot;
+    const bootModel = config.boot;
+    const isDefaultBoot = configModel.boot.isDefault(config);
+    const bootDevice = configModel.boot.findDevice(config);
     let selectedOption: string;
 
-    if (!boot.configure) {
+    if (!bootModel.configure) {
       selectedOption = BOOT_DISABLED_ID;
-    } else if (boot.isDefault) {
+    } else if (isDefaultBoot) {
       selectedOption = BOOT_AUTO_ID;
     } else {
       selectedOption = BOOT_MANUAL_ID;
     }
 
-    const bootDevice = devices.find((d) => d.name === boot.getDevice()?.name);
-    const defaultBootDevice = boot.isDefault ? bootDevice : undefined;
+    const device = devices.find((d) => d.name === bootDevice?.name);
+    const defaultBootDevice = isDefaultBoot ? device : undefined;
     let candidates = [...candidateDevices];
     // Add the current boot device if it does not belong to the candidate devices.
-    if (bootDevice && !candidates.includes(bootDevice)) {
-      candidates = [bootDevice, ...candidates];
+    if (device && !candidates.includes(device)) {
+      candidates = [device, ...candidates];
     }
 
     setState({
       load: true,
-      bootDevice: bootDevice || candidateDevices[0],
-      configureBoot: boot.configure,
+      bootDevice: device || candidateDevices[0],
+      configureBoot: bootModel.configure,
       defaultBootDevice,
       candidateDevices: candidates,
       selectedOption,
     });
-  }, [devices, candidateDevices, model, state.load]);
+  }, [devices, candidateDevices, config, state.load]);
 
-  if (!state.load || !model) return;
+  if (!state.load || !config) return;
 
   const onSubmit = async (e) => {
     e.preventDefault();

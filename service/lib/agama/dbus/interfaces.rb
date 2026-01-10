@@ -28,6 +28,3 @@ module Agama
 end
 
 require "agama/dbus/interfaces/issues"
-require "agama/dbus/interfaces/progress"
-require "agama/dbus/interfaces/service_status"
-require "agama/dbus/interfaces/validation"

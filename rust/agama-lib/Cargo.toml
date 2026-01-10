@@ -10,6 +10,8 @@ anyhow = "1.0"
 agama-utils = { path = "../agama-utils" }
 agama-network = { path = "../agama-network" }
 agama-locale-data = { path = "../agama-locale-data" }
+agama-l10n = { path = "../agama-l10n" }
+agama-transfer = { path = "../agama-transfer" }
 async-trait = "0.1.83"
 futures-util = "0.3.30"
 jsonschema = { version = "0.30.0", default-features = false, features = [
@@ -24,6 +26,7 @@ tempfile = "3.13.0"
 thiserror = "2.0.12"
 tokio = { version = "1.40.0", features = ["macros", "rt-multi-thread"] }
 tokio-stream = "0.1.16"
+tracing = "0.1.40"
 url = { version = "2.5.2", features = ["serde"] }
 utoipa = { version = "5.2.0", features = ["url"] }
 zbus = { version = "5", default-features = false, features = ["tokio"] }
@@ -46,6 +49,7 @@ tokio-tungstenite = { version = "0.26.2", features = ["native-tls"] }
 tokio-native-tls = "0.3.1"
 percent-encoding = "2.3.1"
 uuid = { version = "1.17.0", features = ["serde", "v4"] }
+zypp-agama = { path = "../zypp-agama" }
 
 [dev-dependencies]
 httpmock = "0.7.0"

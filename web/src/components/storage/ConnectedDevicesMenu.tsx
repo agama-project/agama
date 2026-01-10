@@ -21,21 +21,18 @@
  */
 
 import React from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { _ } from "~/i18n";
-import { useReactivateSystem } from "~/hooks/storage/system";
+import { activateStorageAction } from "~/api";
 import { STORAGE as PATHS } from "~/routes/paths";
-import { useZFCPSupported } from "~/queries/storage/zfcp";
-import { useDASDSupported } from "~/queries/storage/dasd";
 import { Icon } from "~/components/layout";
 import MenuButton from "../core/MenuButton";
 import spacingStyles from "@patternfly/react-styles/css/utilities/Spacing/spacing";
 
 export default function ConnectedDevicesMenu() {
   const navigate = useNavigate();
-  const isZFCPSupported = useZFCPSupported();
-  const isDASDSupported = useDASDSupported();
-  const reactivate = useReactivateSystem();
+  const isZFCPSupported = false;
+  const isDASDSupported = false;
 
   return (
     <MenuButton
@@ -78,7 +75,7 @@ export default function ConnectedDevicesMenu() {
         ),
         <MenuButton.Item
           key="reprobe-link"
-          onClick={reactivate}
+          onClick={activateStorageAction}
           description={_("Update available disks and activate crypt devices")}
         >
           {_("Rescan devices")}

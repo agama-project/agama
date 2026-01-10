@@ -21,19 +21,20 @@
  */
 
 import { _, n_, formatList } from "~/i18n";
-import { apiModel } from "~/api/storage/types";
-import { Drive } from "~/types/storage/model";
 import { SpacePolicy, SPACE_POLICIES, baseName, formattedPath } from "~/components/storage/utils";
+import { useConfigModel } from "~/hooks/model/storage/config-model";
+import configModel from "~/model/storage/config-model";
 import { sprintf } from "sprintf-js";
+import type { ConfigModel } from "~/model/storage/config-model";
 
 /**
  * String to identify the drive.
  */
-const label = (drive: apiModel.Drive): string => {
+const label = (drive: ConfigModel.Drive): string => {
   return baseName(drive.name);
 };
 
-const spacePolicyEntry = (drive: apiModel.Drive): SpacePolicy => {
+const spacePolicyEntry = (drive: ConfigModel.Drive): SpacePolicy => {
   return SPACE_POLICIES.find((p) => p.id === drive.spacePolicy);
 };
 
@@ -63,8 +64,13 @@ const resizeTextFor = (partitions) => {
   return _("Some partitions may be shrunk");
 };
 
-const summaryForSpacePolicy = (drive: Drive): string | undefined => {
-  const { isBoot, isTargetDevice, isAddingPartitions, isReusingPartitions, spacePolicy } = drive;
+const SummaryForSpacePolicy = (drive: ConfigModel.Drive): string | undefined => {
+  const config = useConfigModel();
+  const isTargetDevice = configModel.isTargetDevice(config, drive.name);
+  const isBoot = configModel.boot.hasDevice(config, drive.name);
+  const isAddingPartitions = configModel.partitionable.isAddingPartitions(drive);
+  const isReusingPartitions = configModel.partitionable.isReusingPartitions(drive);
+  const { spacePolicy } = drive;
 
   switch (spacePolicy) {
     case "delete":
@@ -88,8 +94,8 @@ const summaryForSpacePolicy = (drive: Drive): string | undefined => {
  * FIXME: the case with two sentences looks a bit weird. But trying to summarize everything in one
  * sentence was too hard.
  */
-const contentActionsSummary = (drive: Drive): string => {
-  const policyLabel = summaryForSpacePolicy(drive);
+const contentActionsSummary = (drive: ConfigModel.Drive): string => {
+  const policyLabel = SummaryForSpacePolicy(drive);
 
   if (policyLabel) return policyLabel;
 
@@ -113,8 +119,16 @@ const contentActionsSummary = (drive: Drive): string => {
   return _("Current partitions will be kept");
 };
 
-const contentActionsDescription = (drive: Drive, policyId: string | undefined): string => {
-  const { isBoot, isTargetDevice, isAddingPartitions, isReusingPartitions } = drive;
+const ContentActionsDescription = (
+  drive: ConfigModel.Drive,
+  policyId: string | undefined,
+): string => {
+  const config = useConfigModel();
+  const isTargetDevice = configModel.isTargetDevice(config, drive.name);
+  const isBoot = configModel.boot.hasDevice(config, drive.name);
+  const isAddingPartitions = configModel.partitionable.isAddingPartitions(drive);
+  const isReusingPartitions = configModel.partitionable.isReusingPartitions(drive);
+
   if (!policyId) policyId = drive.spacePolicy;
 
   switch (policyId) {
@@ -143,7 +157,7 @@ const contentActionsDescription = (drive: Drive, policyId: string | undefined): 
   }
 };
 
-const contentDescription = (drive: apiModel.Drive): string => {
+const contentDescription = (drive: ConfigModel.Drive): string => {
   const newPartitions = drive.partitions.filter((p) => !p.name);
   const reusedPartitions = drive.partitions.filter((p) => p.name && p.mountPath);
 
@@ -198,6 +212,6 @@ export {
   label,
   spacePolicyEntry,
   contentActionsSummary,
-  contentActionsDescription,
+  ContentActionsDescription as contentActionsDescription,
   contentDescription,
 };

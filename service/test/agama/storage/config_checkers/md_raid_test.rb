@@ -76,8 +76,7 @@ describe Agama::Storage::ConfigCheckers::MdRaid do
         it "includes the expected issue" do
           issues = subject.issues
           expect(issues).to include an_object_having_attributes(
-            error?:      true,
-            kind:        :md_raid,
+            kind:        Agama::Storage::IssueClasses::Config::NO_RAID_LEVEL,
             description: /MD RAID without level/
           )
         end
@@ -93,7 +92,9 @@ describe Agama::Storage::ConfigCheckers::MdRaid do
 
         it "does not include the issue" do
           issues = subject.issues
-          expect(issues).to_not include an_object_having_attributes(kind: :md_raid)
+          expect(issues).to_not include an_object_having_attributes(
+            kind: Agama::Storage::IssueClasses::Config::NO_RAID_LEVEL
+          )
         end
       end
     end
@@ -107,8 +108,7 @@ describe Agama::Storage::ConfigCheckers::MdRaid do
       it "includes the expected issue" do
         issues = subject.issues
         expect(issues).to include an_object_having_attributes(
-          error?:      true,
-          kind:        :md_raid,
+          kind:        Agama::Storage::IssueClasses::Config::WRONG_RAID_MEMBERS,
           description: "At least 2 devices are required for raid0"
         )
       end
@@ -120,8 +120,7 @@ describe Agama::Storage::ConfigCheckers::MdRaid do
       it "includes the expected issue" do
         issues = subject.issues
         expect(issues).to include an_object_having_attributes(
-          error?:      true,
-          kind:        :no_such_alias,
+          kind:        Agama::Storage::IssueClasses::Config::NO_SUCH_ALIAS,
           description: /no MD RAID member device with alias 'disk2'/
         )
       end
@@ -154,8 +153,7 @@ describe Agama::Storage::ConfigCheckers::MdRaid do
           it "includes the expected issue" do
             issues = subject.issues
             expect(issues).to include an_object_having_attributes(
-              error?:      true,
-              kind:        :reused_md_member,
+              kind:        Agama::Storage::IssueClasses::Config::MISUSED_MD_MEMBER,
               description: /.*vda.*cannot be formatted.*part of.*md0/
             )
           end
@@ -173,8 +171,7 @@ describe Agama::Storage::ConfigCheckers::MdRaid do
           it "includes the expected issue" do
             issues = subject.issues
             expect(issues).to include an_object_having_attributes(
-              error?:      true,
-              kind:        :reused_md_member,
+              kind:        Agama::Storage::IssueClasses::Config::MISUSED_MD_MEMBER,
               description: /.*vda.*cannot be partitioned.*part of.*md0/
             )
           end
@@ -192,8 +189,7 @@ describe Agama::Storage::ConfigCheckers::MdRaid do
           it "includes the expected issue" do
             issues = subject.issues
             expect(issues).to include an_object_having_attributes(
-              error?:      true,
-              kind:        :reused_md_member,
+              kind:        Agama::Storage::IssueClasses::Config::MISUSED_MD_MEMBER,
               description: /.*vda.*cannot be used.*part of.*md0/
             )
           end
@@ -219,8 +215,7 @@ describe Agama::Storage::ConfigCheckers::MdRaid do
           it "includes the expected issue" do
             issues = subject.issues
             expect(issues).to include an_object_having_attributes(
-              error?:      true,
-              kind:        :reused_md_member,
+              kind:        Agama::Storage::IssueClasses::Config::MISUSED_MD_MEMBER,
               description: /.*vda1.*cannot be deleted.*part of.*md0/
             )
           end
@@ -246,8 +241,7 @@ describe Agama::Storage::ConfigCheckers::MdRaid do
           it "includes the expected issue" do
             issues = subject.issues
             expect(issues).to include an_object_having_attributes(
-              error?:      true,
-              kind:        :reused_md_member,
+              kind:        Agama::Storage::IssueClasses::Config::MISUSED_MD_MEMBER,
               description: /.*vda1.*cannot be resized.*part of.*md0/
             )
           end
@@ -269,8 +263,7 @@ describe Agama::Storage::ConfigCheckers::MdRaid do
         it "includes the expected issue" do
           issues = subject.issues
           expect(issues).to include an_object_having_attributes(
-            error?:      true,
-            kind:        :reused_md_member,
+            kind:        Agama::Storage::IssueClasses::Config::MISUSED_MD_MEMBER,
             description: /.*vda.*cannot be formatted.*part of.*md0/
           )
         end

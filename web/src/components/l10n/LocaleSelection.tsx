@@ -22,30 +22,32 @@
 
 import React, { useState } from "react";
 import { Content, Flex, Form, FormGroup, Radio } from "@patternfly/react-core";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { ListSearch, Page } from "~/components/core";
-import { _ } from "~/i18n";
-import { useConfigMutation, useL10n } from "~/queries/l10n";
+import { patchConfig } from "~/api";
+import { useProposal } from "~/hooks/model/proposal/l10n";
+import { useSystem } from "~/hooks/model/system/l10n";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
+import { _ } from "~/i18n";
 
 // TODO: Add documentation
 // TODO: Evaluate if worth it extracting the selector
 export default function LocaleSelection() {
   const navigate = useNavigate();
-  const setConfig = useConfigMutation();
-  const { locales, selectedLocale: currentLocale } = useL10n();
-  const [selected, setSelected] = useState(currentLocale.id);
+  const locales = useSystem()?.locales;
+  const currentLocale = useProposal()?.locale;
+  const [selected, setSelected] = useState(currentLocale);
   const [filteredLocales, setFilteredLocales] = useState(locales);
 
   const searchHelp = _("Filter by language, territory or locale code");
 
   const onSubmit = async (e: React.SyntheticEvent) => {
     e.preventDefault();
-    setConfig.mutate({ locales: [selected] });
+    patchConfig({ l10n: { locale: selected } });
     navigate(-1);
   };
 
-  let localesList = filteredLocales.map(({ id, name, territory }) => {
+  let localesList = filteredLocales.map(({ id, language, territory }) => {
     return (
       <Radio
         id={id}
@@ -54,7 +56,7 @@ export default function LocaleSelection() {
         onChange={() => setSelected(id)}
         label={
           <Flex gap={{ default: "gapSm" }}>
-            <Content isEditorial>{name}</Content>
+            <Content isEditorial>{language}</Content>
             <Content className={`${textStyles.textColorPlaceholder}`}>{territory}</Content>
             <Content className={`${textStyles.textColorSubtle}`}>{id}</Content>
           </Flex>

@@ -73,7 +73,7 @@ module Agama
 
           error(
             _("The boot device cannot be automatically selected"),
-            kind: :no_root
+            kind: IssueClasses::Config::NO_ROOT
           )
         end
 
@@ -84,7 +84,7 @@ module Agama
           # TRANSLATORS: %s is replaced by a device alias (e.g., "boot").
           error(
             format(_("There is no boot device with alias '%s'"), device_alias),
-            kind: :no_such_alias
+            kind: IssueClasses::Config::NO_SUCH_ALIAS
           )
         end
 

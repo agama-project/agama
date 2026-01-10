@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2025] SUSE LLC
+ * Copyright (c) [2024-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -21,279 +21,101 @@
  */
 
 import React from "react";
-import { screen, within } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import DriveEditor from "~/components/storage/DriveEditor";
-import { StorageDevice, model } from "~/types/storage";
-import { Volume } from "~/api/storage/types";
+import type { Storage as System } from "~/model/system";
+import type { ConfigModel } from "~/model/storage/config-model";
 
+jest.mock("~/components/storage/DeviceEditorContent", () => () => (
+  <div data-testid="device-editor-content" />
+));
+
+const mockDriveModel = jest.fn();
+const mockConfigModel = jest.fn();
 const mockDeleteDrive = jest.fn();
-const mockSwitchToDrive = jest.fn();
-const mockUseModel = jest.fn();
+const mockAddVolumeGroupFromPartitionable = jest.fn();
 
-const volume1: Volume = {
-  mountPath: "/",
-  mountOptions: [],
-  target: "default",
-  fsType: "Btrfs",
-  minSize: 1024,
-  maxSize: 1024,
-  autoSize: false,
-  snapshots: false,
-  transactional: false,
-  outline: {
-    required: true,
-    fsTypes: ["Btrfs"],
-    supportAutoSize: false,
-    snapshotsConfigurable: false,
-    snapshotsAffectSizes: false,
-    sizeRelevantVolumes: [],
-    adjustByRam: false,
-  },
-};
-
-const volume2: Volume = {
-  mountPath: "swap",
-  mountOptions: [],
-  target: "default",
-  fsType: "Swap",
-  minSize: 1024,
-  maxSize: 1024,
-  autoSize: false,
-  snapshots: false,
-  transactional: false,
-  outline: {
-    required: false,
-    fsTypes: ["Swap"],
-    supportAutoSize: false,
-    snapshotsConfigurable: false,
-    snapshotsAffectSizes: false,
-    sizeRelevantVolumes: [],
-    adjustByRam: false,
-  },
-};
-
-const volume3: Volume = {
-  mountPath: "/home",
-  mountOptions: [],
-  target: "default",
-  fsType: "XFS",
-  minSize: 1024,
-  maxSize: 1024,
-  autoSize: false,
-  snapshots: false,
-  transactional: false,
-  outline: {
-    required: false,
-    fsTypes: ["XFS"],
-    supportAutoSize: false,
-    snapshotsConfigurable: false,
-    snapshotsAffectSizes: false,
-    sizeRelevantVolumes: [],
-    adjustByRam: false,
-  },
-};
-
-const sda: StorageDevice = {
-  sid: 59,
-  isDrive: true,
-  type: "disk",
-  vendor: "Micron",
-  model: "Micron 1100 SATA",
-  driver: ["ahci", "mmcblk"],
-  bus: "IDE",
-  busId: "",
-  transport: "usb",
-  dellBOSS: false,
-  sdCard: true,
-  active: true,
-  name: "/dev/sda",
-  size: 1024,
-  shrinking: { unsupported: ["Resizing is not supported"] },
-  systems: [],
-  udevIds: ["ata-Micron_1100_SATA_512GB_12563", "scsi-0ATA_Micron_1100_SATA_512GB"],
-  udevPaths: ["pci-0000:00-12", "pci-0000:00-12-ata"],
-  description: "",
-};
-
-const sdb: StorageDevice = {
-  sid: 60,
-  isDrive: true,
-  type: "disk",
-  name: "/dev/sdb",
-  size: 1024,
-  description: "",
-};
-
-const drive1Partitions: model.Partition[] = [
-  {
-    mountPath: "/",
-    size: {
-      min: 1_000_000_000,
-      default: true,
-    },
-    filesystem: { default: true, type: "btrfs" },
-    isNew: true,
-    isUsed: false,
-    isReused: false,
-    isUsedBySpacePolicy: false,
-  },
-  {
-    mountPath: "swap",
-    size: {
-      min: 2_000_000_000,
-      default: false, // false: user provided, true: calculated
-    },
-    filesystem: { default: false, type: "swap" },
-    isNew: true,
-    isUsed: false,
-    isReused: false,
-    isUsedBySpacePolicy: false,
-  },
-];
-
-const drive1 = {
-  name: "/dev/sda",
-  spacePolicy: "delete",
-  partitions: drive1Partitions,
-  list: "drives",
-  listIndex: 1,
-  isUsed: true,
-  isAddingPartitions: true,
-  isTargetDevice: false,
-  isBoot: true,
-  isExplicitBoot: true,
-  getVolumeGroups: () => [],
-  getPartition: jest.fn(),
-  getMountPaths: () => drive1Partitions.map((p) => p.mountPath),
-  getConfiguredExistingPartitions: jest.fn(),
-};
-
-const drive2Partitions: model.Partition[] = [
-  {
-    mountPath: "/home",
-    size: {
-      min: 1_000_000_000,
-      default: true,
-    },
-    filesystem: { default: true, type: "xfs" },
-    isNew: true,
-    isUsed: false,
-    isReused: false,
-    isUsedBySpacePolicy: false,
-  },
-];
-
-const drive2 = {
-  name: "/dev/sdb",
-  spacePolicy: "delete",
-  partitions: drive2Partitions,
-  list: "drives",
-  listIndex: 2,
-  isExplicitBoot: false,
-  isUsed: true,
-  isAddingPartitions: true,
-  isTargetDevice: false,
-  isBoot: true,
-  getVolumeGroups: () => [],
-  getPartition: jest.fn(),
-  getMountPaths: () => drive2Partitions.map((p) => p.mountPath),
-  getConfiguredExistingPartitions: jest.fn(),
-};
-
-jest.mock("~/queries/storage", () => ({
-  ...jest.requireActual("~/queries/storage"),
-  useVolume: (mountPath: string): Volume =>
-    [volume1, volume2, volume3].find((v) => v.mountPath === mountPath),
-}));
-
-jest.mock("~/hooks/storage/system", () => ({
-  ...jest.requireActual("~/hooks/storage/system"),
-  useAvailableDevices: () => [sda, sdb],
-  useCandidateDevices: () => [sda],
-}));
-
-jest.mock("~/hooks/storage/drive", () => ({
-  ...jest.requireActual("~/hooks/storage/drive"),
-  __esModule: true,
+jest.mock("~/hooks/model/storage/config-model", () => ({
+  ...jest.requireActual("~/hooks/model/storage/config-model"),
+  useDrive: () => mockDriveModel(),
+  useConfigModel: () => mockConfigModel(),
+  useAddDriveFromMdRaid: jest.fn(),
+  useAddMdRaidFromDrive: jest.fn(),
   useDeleteDrive: () => mockDeleteDrive,
-  useSwitchToDrive: () => mockSwitchToDrive,
+  useAddVolumeGroupFromPartitionable: () => mockAddVolumeGroupFromPartitionable,
 }));
 
-jest.mock("~/hooks/storage/model", () => ({
-  ...jest.requireActual("~/hooks/storage/model"),
-  useModel: () => mockUseModel(),
+const mockSystemDevice = jest.fn();
+const mockAvailableDevices = jest.fn();
+
+jest.mock("~/hooks/model/system/storage", () => ({
+  ...jest.requireActual("~/hooks/model/system/storage"),
+  useDevice: () => mockSystemDevice(),
+  useAvailableDevices: () => mockAvailableDevices(),
 }));
 
-describe("RemoveDriveOption", () => {
-  describe("if there are additional drives", () => {
-    beforeEach(() => {
-      mockUseModel.mockReturnValue({ drives: [drive1, drive2], mdRaids: [] });
-    });
+const drive1Model: ConfigModel.Drive = {
+  name: "sda",
+  spacePolicy: "custom",
+  partitions: [],
+};
 
-    it("allows users to delete regular drives", async () => {
-      // @ts-expect-error: drives are not typed on purpose because
-      // isReusingPartitions should be a calculated data. Mocking needs a lot of
-      // improvements.
-      const { user } = installerRender(<DriveEditor drive={drive2} driveDevice={sdb} />);
+const drive2Model: ConfigModel.Drive = {
+  name: "sdb",
+  spacePolicy: "keep",
+};
 
-      const changeButton = screen.getByRole("button", { name: /Use disk sdb/ });
-      await user.click(changeButton);
-      const drivesMenu = screen.getByRole("menu", { name: "Device /dev/sdb menu" });
-      const deleteDriveButton = within(drivesMenu).getByRole("menuitem", {
-        name: /Do not use/,
-      });
-      await user.click(deleteDriveButton);
-      expect(mockDeleteDrive).toHaveBeenCalled();
-    });
+const sda: System.Device = {
+  sid: 1,
+  name: "sda",
+  class: "drive",
+  drive: {
+    type: "disk",
+  },
+};
 
-    it("does not allow users to delete drives explicitly used to boot", async () => {
-      // @ts-expect-error: drives are not typed on purpose because
-      // isReusingPartitions should be a calculated data. Mocking needs a lot of
-      // improvements.
-      const { user } = installerRender(<DriveEditor drive={drive1} driveDevice={sda} />);
-
-      const changeButton = screen.getByRole("button", { name: /Use disk sda/ });
-      await user.click(changeButton);
-      const drivesMenu = screen.getByRole("menu", { name: "Device /dev/sda menu" });
-      const deleteDriveButton = within(drivesMenu).queryByRole("menuitem", {
-        name: /Do not use/,
-      });
-      expect(deleteDriveButton).toBeDisabled();
+describe("DriveEditor", () => {
+  beforeEach(() => {
+    mockAvailableDevices.mockReturnValue([sda]);
+    mockConfigModel.mockReturnValue({
+      drives: [drive1Model, drive2Model],
+      mdRaids: [],
     });
   });
 
-  describe("if there are no additional drives", () => {
-    it("does not allow users to delete regular drives", async () => {
-      mockUseModel.mockReturnValue({ drives: [drive2], mdRaids: [] });
-      // @ts-expect-error: drives are not typed on purpose because
-      // isReusingPartitions should be a calculated data. Mocking needs a lot of
-      // improvements.
-      const { user } = installerRender(<DriveEditor drive={drive2} driveDevice={sdb} />);
+  it("should render null if device is not found", () => {
+    mockDriveModel.mockReturnValue(drive1Model);
+    mockSystemDevice.mockReturnValue(undefined);
 
-      const changeButton = screen.getByRole("button", { name: /Use disk sdb/ });
-      await user.click(changeButton);
-      const drivesMenu = screen.getByRole("menu", { name: "Device /dev/sdb menu" });
-      const deleteDriveButton = within(drivesMenu).queryByRole("menuitem", {
-        name: /Do not use/,
-      });
-      expect(deleteDriveButton).not.toBeInTheDocument();
-    });
+    const { container } = installerRender(<DriveEditor index={0} />);
+    expect(container).toBeEmptyDOMElement();
+  });
 
-    it("does not allow users to delete drives explicitly used to boot", async () => {
-      mockUseModel.mockReturnValue({ drives: [drive1], mdRaids: [] });
-      // @ts-expect-error: drives are not typed on purpose because
-      // isReusingPartitions should be a calculated data. Mocking needs a lot of
-      // improvements.
-      const { user } = installerRender(<DriveEditor drive={drive1} driveDevice={sda} />);
+  it("should render the editor for the given drive", () => {
+    mockDriveModel.mockReturnValue(drive1Model);
+    mockSystemDevice.mockReturnValue(sda);
 
-      const changeButton = screen.getByRole("button", { name: /Use disk sda/ });
-      await user.click(changeButton);
-      const drivesMenu = screen.getByRole("menu", { name: "Device /dev/sda menu" });
-      const deleteDriveButton = within(drivesMenu).queryByRole("menuitem", {
-        name: /Do not use/,
-      });
-      expect(deleteDriveButton).not.toBeInTheDocument();
-    });
+    installerRender(<DriveEditor index={0} />);
+
+    expect(screen.getByText(/sda/)).toBeInTheDocument();
+    expect(screen.getByTestId("device-editor-content")).toBeInTheDocument();
+  });
+
+  it("should call delete drive when 'Do not use' is clicked", async () => {
+    mockDriveModel.mockReturnValue(drive1Model);
+    mockSystemDevice.mockReturnValue(sda);
+
+    const { user } = installerRender(<DriveEditor index={0} />);
+
+    // The component uses a custom toggle, we need to get the button by its content
+    const toggleButton = screen.getByText(/sda/).closest("button");
+    expect(toggleButton).toBeInTheDocument();
+    await user.click(toggleButton!);
+
+    const deleteButton = screen.getByText("Do not use");
+    await user.click(deleteButton);
+
+    expect(mockDeleteDrive).toHaveBeenCalledWith(0);
   });
 });

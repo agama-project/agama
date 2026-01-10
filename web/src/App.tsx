@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2024] SUSE LLC
+ * Copyright (c) [2022-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -21,35 +21,63 @@
  */
 
 import React, { useEffect } from "react";
-import { Navigate, Outlet, useLocation } from "react-router-dom";
-import { Loading } from "~/components/layout";
-import { useProduct, useProductChanges } from "~/queries/software";
-import { useL10nConfigChanges } from "~/queries/l10n";
-import { useIssuesChanges } from "~/queries/issues";
-import { useInstallerStatus, useInstallerStatusChanges } from "~/queries/status";
-import { useDeprecatedChanges } from "~/queries/storage";
-import { ROOT, PRODUCT } from "~/routes/paths";
-import { InstallationPhase } from "~/types/status";
+import { Navigate, Outlet, useLocation } from "react-router";
+import { useStatusChanges, useStatus } from "~/hooks/model/status";
+import { useSystemChanges } from "~/hooks/model/system";
+import { useProposalChanges } from "~/hooks/model/proposal";
+import { useIssuesChanges } from "~/hooks/model/issue";
+import { useProductInfo } from "~/hooks/model/config/product";
+import { ROOT } from "~/routes/paths";
 import { useQueryClient } from "@tanstack/react-query";
-import AlertOutOfSync from "~/components/core/AlertOutOfSync";
 
 /**
- * Main application component.
+ * Content guard and flow control component.
+ *
+ * It consumes global state and determines if a status-driven redirect is
+ * necessary before rendering the nested route content via the <Outlet />.
+ */
+const Content = () => {
+  const location = useLocation();
+  const product = useProductInfo();
+  const { progresses, stage } = useStatus();
+
+  console.log("App Content component", {
+    progresses,
+    stage,
+    product,
+    location: location.pathname,
+  });
+
+  if (stage === "installing") {
+    console.log("Navigating to the installation progress page");
+    return <Navigate to={ROOT.installationProgress} />;
+  }
+
+  if (stage === "finished") {
+    console.log("Navigating to the finished page");
+    return <Navigate to={ROOT.installationFinished} />;
+  }
+
+  return <Outlet />;
+};
+
+/**
+ * Structural wrapper of all protected routes responsible for initializing
+ * global background listeners (e.g., useXYZChanges hooks).
+ *
+ * @performance This component sits high in the route tree, directly wrapping
+ * the entire application layout. This makes it critical to avoid consuming
+ * application state directly within it to prevent unnecessary cascade layout
+ * re-renders.
  */
 function App() {
-  useL10nConfigChanges();
-  useProductChanges();
+  useProposalChanges();
+  useSystemChanges();
   useIssuesChanges();
-  useInstallerStatusChanges();
-  useDeprecatedChanges();
-
-  const location = useLocation();
-  const { isBusy, phase } = useInstallerStatus({ suspense: true });
-  const { selectedProduct, products } = useProduct({
-    suspense: phase !== InstallationPhase.Install,
-  });
+  useStatusChanges();
   const queryClient = useQueryClient();
 
+  // FIXME: check if still needed
   useEffect(() => {
     // Invalidate the queries when unmounting this component.
     return () => {
@@ -57,54 +85,7 @@ function App() {
     };
   }, [queryClient]);
 
-  console.log("App component", {
-    phase,
-    isBusy,
-    products,
-    selectedProduct,
-    location: location.pathname,
-  });
-
-  const Content = () => {
-    if (phase === InstallationPhase.Install) {
-      console.log("Navigating to the installation progress page");
-      return <Navigate to={ROOT.installationProgress} />;
-    }
-
-    if (phase === InstallationPhase.Finish) {
-      console.log("Navigating to the finished page");
-      return <Navigate to={ROOT.installationFinished} />;
-    }
-
-    if (!products) {
-      return <Loading listenQuestions />;
-    }
-
-    if (phase === InstallationPhase.Startup && isBusy) {
-      console.log("Loading screen: Installer start phase");
-      return <Loading listenQuestions />;
-    }
-
-    if (selectedProduct === undefined && !isBusy && location.pathname !== PRODUCT.root) {
-      console.log("Navigating to the product selection page");
-      return <Navigate to={PRODUCT.root} />;
-    }
-
-    if (phase === InstallationPhase.Config && isBusy && location.pathname !== PRODUCT.progress) {
-      console.log("Navigating to the probing progress page");
-      return <Navigate to={PRODUCT.progress} />;
-    }
-
-    return <Outlet />;
-  };
-
-  return (
-    <>
-      {/* So far, only the storage backend is able to detect external changes.*/}
-      <AlertOutOfSync scope={"Storage"} />
-      <Content />
-    </>
-  );
+  return <Content />;
 }
 
 export default App;

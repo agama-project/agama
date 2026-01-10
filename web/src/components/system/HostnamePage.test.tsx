@@ -23,57 +23,55 @@
 import React from "react";
 import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
-import { useProduct, useRegistration } from "~/queries/software";
-import { Product, RegistrationInfo } from "~/types/software";
 import HostnamePage from "./HostnamePage";
 
-const tw: Product = {
-  id: "Tumbleweed",
-  name: "openSUSE Tumbleweed",
-  registration: false,
-};
-
-const sle: Product = {
-  id: "sle",
-  name: "SLE",
-  registration: true,
-};
-
-let selectedProduct: Product;
-let registrationInfoMock: RegistrationInfo;
 let mockStaticHostname: string;
-
-const mockHostnameMutation = jest.fn().mockResolvedValue(true);
+const mockPatchConfig = jest.fn();
 
 jest.mock("~/components/product/ProductRegistrationAlert", () => () => (
   <div>ProductRegistrationAlert Mock</div>
 ));
 
-jest.mock("~/queries/software", () => ({
-  ...jest.requireActual("~/queries/software"),
-  useRegistration: (): ReturnType<typeof useRegistration> => registrationInfoMock,
-  useProduct: (): ReturnType<typeof useProduct> => {
-    return {
-      products: [tw, sle],
-      selectedProduct,
-    };
-  },
+jest.mock("~/api", () => ({
+  ...jest.requireActual("~/api"),
+  patchConfig: (config) => mockPatchConfig(config),
 }));
 
-jest.mock("~/queries/system", () => ({
-  ...jest.requireActual("~/queries/system"),
-  useHostname: () => ({ transient: "agama-node", static: mockStaticHostname }),
-  useHostnameMutation: () => ({ mutateAsync: mockHostnameMutation }),
+const system = jest.fn();
+
+jest.mock("~/hooks/model/system", () => ({
+  ...jest.requireActual("~/hooks/model/system"),
+  useSystem: () => system(),
+}));
+
+jest.mock("~/hooks/model/proposal", () => ({
+  ...jest.requireActual("~/hooks/model/proposal"),
+  useProposal: () => ({
+    network: {
+      connections: [],
+      state: {
+        connectivity: true,
+        copyNetwork: true,
+        networkingEnabled: false,
+        wirelessEnabled: false,
+      },
+    },
+    hostname: {
+      hostname: "agama-node",
+      static: mockStaticHostname,
+    },
+  }),
 }));
 
 describe("HostnamePage", () => {
   beforeEach(() => {
-    selectedProduct = tw;
+    system.mockReturnValue({});
   });
 
   describe("when static hostname is set", () => {
     beforeEach(() => {
       mockStaticHostname = "agama-server";
+      mockPatchConfig.mockResolvedValue(true);
     });
 
     it("does not render a custom alert with current value and mode", () => {
@@ -84,6 +82,7 @@ describe("HostnamePage", () => {
 
     it("allows unsetting the static hostname", async () => {
       const { user } = installerRender(<HostnamePage />);
+
       const setHostnameCheckbox = screen.getByRole("checkbox", { name: "Use static hostname" });
       const hostnameInput = screen.getByRole("textbox", { name: "Static hostname" });
       const acceptButton = screen.getByRole("button", { name: "Accept" });
@@ -96,8 +95,8 @@ describe("HostnamePage", () => {
 
       await user.click(acceptButton);
 
-      expect(mockHostnameMutation).toHaveBeenCalledWith({
-        static: "",
+      expect(mockPatchConfig).toHaveBeenCalledWith({
+        hostname: { static: "" },
       });
       screen.getByText("Success alert:");
       screen.getByText("Hostname successfully updated");
@@ -107,6 +106,7 @@ describe("HostnamePage", () => {
   describe("when static hostname is not set", () => {
     beforeEach(() => {
       mockStaticHostname = "";
+      mockPatchConfig.mockResolvedValue(true);
     });
 
     it("renders a custom alert with current value and mode", () => {
@@ -131,8 +131,8 @@ describe("HostnamePage", () => {
       await user.type(hostnameInput, "testing-server");
       await user.click(acceptButton);
 
-      expect(mockHostnameMutation).toHaveBeenCalledWith({
-        static: "testing-server",
+      expect(mockPatchConfig).toHaveBeenCalledWith({
+        hostname: { static: "testing-server" },
       });
       screen.getByText("Success alert:");
       screen.getByText("Hostname successfully updated");
@@ -146,20 +146,21 @@ describe("HostnamePage", () => {
       await user.click(setHostnameCheckbox);
       await user.click(acceptButton);
 
-      expect(mockHostnameMutation).not.toHaveBeenCalled();
+      expect(mockPatchConfig).not.toHaveBeenCalled();
       screen.getByText("Warning alert:");
       screen.getByText("Enter a hostname.");
     });
 
     it("renders an error if the update request fails", async () => {
-      mockHostnameMutation.mockRejectedValue("Not valid");
+      mockPatchConfig.mockRejectedValue("Fail");
+
       const { user } = installerRender(<HostnamePage />);
       const acceptButton = screen.getByRole("button", { name: "Accept" });
 
       await user.click(acceptButton);
 
-      expect(mockHostnameMutation).toHaveBeenCalledWith({
-        static: "",
+      expect(mockPatchConfig).toHaveBeenCalledWith({
+        hostname: { static: "" },
       });
 
       screen.getByText("Warning alert:");
@@ -167,7 +168,7 @@ describe("HostnamePage", () => {
     });
   });
 
-  describe("when selected product is not registrable", () => {
+  describe("when selected product is not registered", () => {
     it("does not render an alert about registration", () => {
       installerRender(<HostnamePage />);
       expect(screen.queryByText("Info alert:")).toBeNull();
@@ -175,10 +176,9 @@ describe("HostnamePage", () => {
     });
   });
 
-  describe("when the selected product is registrable and registration code is not set", () => {
+  describe("when the product is not registered", () => {
     beforeEach(() => {
-      selectedProduct = sle;
-      registrationInfoMock = { registered: false, key: "", email: "", url: "" };
+      system.mockReturnValue({ software: {} });
     });
 
     it("does not render an alert about registration", () => {
@@ -188,15 +188,15 @@ describe("HostnamePage", () => {
     });
   });
 
-  describe("when the selected product is registrable and registration code is set", () => {
+  describe("when the selected product is registered", () => {
     beforeEach(() => {
-      selectedProduct = sle;
-      registrationInfoMock = {
-        registered: true,
-        key: "INTERNAL-USE-ONLY-1234-5678",
-        email: "example@company.test",
-        url: "",
-      };
+      system.mockReturnValue({
+        software: {
+          registration: {
+            code: "12345",
+          },
+        },
+      });
     });
 
     it("renders an alert to let user know that changes will not have effect in the registration", () => {

@@ -22,13 +22,15 @@
 
 import React, { useState } from "react";
 import { Content, Flex, Form, FormGroup, Radio } from "@patternfly/react-core";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { ListSearch, Page } from "~/components/core";
+import { patchConfig } from "~/api";
+import { useProposal } from "~/hooks/model/proposal/l10n";
+import { useSystem } from "~/hooks/model/system/l10n";
 import { timezoneTime } from "~/utils";
-import { useConfigMutation, useL10n } from "~/queries/l10n";
-import { Timezone } from "~/types/l10n";
 import spacingStyles from "@patternfly/react-styles/css/utilities/Spacing/spacing";
 import { _ } from "~/i18n";
+import type { Timezone } from "~/model/system/l10n";
 
 type TimezoneWithDetails = Timezone & { details: string };
 
@@ -66,17 +68,17 @@ const sortedTimezones = (timezones: Timezone[]) => {
 export default function TimezoneSelection() {
   date = new Date();
   const navigate = useNavigate();
-  const setConfig = useConfigMutation();
-  const { timezones, selectedTimezone: currentTimezone } = useL10n();
+  const timezones = useSystem()?.timezones;
+  const currentTimezone = useProposal()?.timezone;
   const displayTimezones = timezones.map(timezoneWithDetails);
-  const [selected, setSelected] = useState(currentTimezone.id);
+  const [selected, setSelected] = useState(currentTimezone);
   const [filteredTimezones, setFilteredTimezones] = useState(sortedTimezones(displayTimezones));
 
   const searchHelp = _("Filter by territory, time zone code or UTC offset");
 
   const onSubmit = async (e: React.SyntheticEvent) => {
     e.preventDefault();
-    setConfig.mutate({ timezone: selected });
+    patchConfig({ l10n: { timezone: selected } });
     navigate(-1);
   };
 

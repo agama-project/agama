@@ -38,9 +38,8 @@ import { useStorageUiState } from "~/context/storage-ui-state";
 import Text from "~/components/core/Text";
 import MenuButton from "~/components/core/MenuButton";
 import MountPathMenuItem from "~/components/storage/MountPathMenuItem";
-import { Partition } from "~/api/storage/types/model";
 import { STORAGE as PATHS } from "~/routes/paths";
-import { useDeletePartition } from "~/hooks/storage/partition";
+import { usePartitionable, useDeletePartition } from "~/hooks/model/storage/config-model";
 import * as driveUtils from "~/components/storage/utils/drive";
 import { generateEncodedPath } from "~/utils";
 import * as partitionUtils from "~/components/storage/utils/partition";
@@ -51,13 +50,21 @@ import { IconProps } from "../layout/Icon";
 import { sprintf } from "sprintf-js";
 import spacingStyles from "@patternfly/react-styles/css/utilities/Spacing/spacing";
 import { toggle } from "radashi";
+import configModel from "~/model/storage/config-model";
+import type { ConfigModel } from "~/model/storage/config-model";
 
-const PartitionMenuItem = ({ device, mountPath }) => {
-  const partition = device.getPartition(mountPath);
-  const { list, listIndex } = device;
+type PartitionMenuItemProps = {
+  device: ConfigModel.Drive | ConfigModel.MdRaid;
+  mountPath: string;
+  collection: "drives" | "mdRaids";
+  index: number;
+};
+
+const PartitionMenuItem = ({ device, mountPath, collection, index }: PartitionMenuItemProps) => {
+  const partition = configModel.partitionable.findPartition(device, mountPath);
   const editPath = generateEncodedPath(PATHS.editPartition, {
-    list,
-    listIndex,
+    collection,
+    index,
     partitionId: mountPath,
   });
   const deletePartition = useDeletePartition();
@@ -66,14 +73,14 @@ const PartitionMenuItem = ({ device, mountPath }) => {
     <MountPathMenuItem
       device={partition}
       editPath={editPath}
-      deleteFn={() => deletePartition(list, listIndex, mountPath)}
+      deleteFn={() => deletePartition(collection, index, mountPath)}
     />
   );
 };
 
 const partitionsLabelText = (device) => {
   const { isBoot, isTargetDevice, isAddingPartitions, isReusingPartitions } = device;
-  const num = device.partitions.filter((p: Partition) => p.mountPath).length;
+  const num = device.partitions.filter((p) => p.mountPath).length;
 
   if (isBoot || isTargetDevice) {
     if (isAddingPartitions && isReusingPartitions)
@@ -120,12 +127,16 @@ const optionalPartitionsTexts = (device) => {
   return texts;
 };
 
-const PartitionRow = ({ partition, device }) => {
-  // const partition = device.getPartition(mountPath);
-  const { list, listIndex } = device;
+type PartitionRowProps = {
+  partition: ConfigModel.Partition;
+  collection: "drives" | "mdRaids";
+  index: number;
+};
+
+const PartitionRow = ({ partition, collection, index }: PartitionRowProps) => {
   const editPath = generateEncodedPath(PATHS.editPartition, {
-    list,
-    listIndex,
+    collection,
+    index,
     partitionId: partition.mountPath,
   });
   const deletePartition = useDeletePartition();
@@ -174,7 +185,7 @@ const PartitionRow = ({ partition, device }) => {
               <MenuButton.Item
                 key={`delete-${partition.mountPath}`}
                 aria-label={`Delete ${partition.mountPath}`}
-                onClick={() => deletePartition(list, listIndex, partition.mountPath)}
+                onClick={() => deletePartition(collection, index, partition.mountPath)}
                 isDanger
               >
                 <Icon name="delete" /> {_("Delete")}
@@ -191,7 +202,7 @@ const PartitionRow = ({ partition, device }) => {
 
 const PartitionsSectionHeader = ({ device }) => {
   const texts = optionalPartitionsTexts(device);
-  const hasPartitions = device.partitions.some((p: Partition) => p.mountPath);
+  const hasPartitions = device.partitions.some((p) => p.mountPath);
   if (hasPartitions) {
     texts.push(partitionsLabelText(device));
   }
@@ -201,20 +212,25 @@ const PartitionsSectionHeader = ({ device }) => {
   return <Content component="p">{textsContent}</Content>;
 };
 
-export default function PartitionsSection({ device }) {
+type PartitionsSectionProps = {
+  collection: "drives" | "mdRaids";
+  index: number;
+};
+
+export default function PartitionsSection({ collection, index }: PartitionsSectionProps) {
   const { uiState, setUiState } = useStorageUiState();
   const toggleId = useId();
   const contentId = useId();
-  const { list, listIndex } = device;
-  const index = `${list[0]}${listIndex}`;
+  const device = usePartitionable(collection, index);
+  const uiIndex = `${collection[0]}${index}`;
   const expanded = uiState.get("expanded")?.split(",");
-  const isExpanded = expanded?.includes(index);
-  const newPartitionPath = generateEncodedPath(PATHS.addPartition, { list, listIndex });
-  const hasPartitions = device.partitions.some((p: Partition) => p.mountPath);
+  const isExpanded = expanded?.includes(uiIndex);
+  const newPartitionPath = generateEncodedPath(PATHS.addPartition, { collection, index });
+  const hasPartitions = device.partitions.some((p) => p.mountPath);
 
   const onToggle = () => {
     setUiState((state) => {
-      const nextExpanded = toggle(expanded, index);
+      const nextExpanded = toggle(expanded, uiIndex);
       state.set("expanded", nextExpanded.join(","));
       return state;
     });
@@ -235,9 +251,17 @@ export default function PartitionsSection({ device }) {
   if (hasPartitions) {
     items.push(
       device.partitions
-        .filter((p: Partition) => p.mountPath)
-        .map((p: Partition) => {
-          return <PartitionMenuItem key={p.mountPath} device={device} mountPath={p.mountPath} />;
+        .filter((p) => p.mountPath)
+        .map((p) => {
+          return (
+            <PartitionMenuItem
+              key={p.mountPath}
+              device={device}
+              mountPath={p.mountPath}
+              collection={collection}
+              index={index}
+            />
+          );
         }),
     );
   }
@@ -265,9 +289,16 @@ export default function PartitionsSection({ device }) {
               style={{ width: "fit-content", minWidth: "40dvw", maxWidth: "60dwh" }}
             >
               {device.partitions
-                .filter((p: Partition) => p.mountPath)
-                .map((p: Partition) => {
-                  return <PartitionRow key={p.mountPath} partition={p} device={device} />;
+                .filter((p) => p.mountPath)
+                .map((p) => {
+                  return (
+                    <PartitionRow
+                      key={p.mountPath}
+                      partition={p}
+                      collection={collection}
+                      index={index}
+                    />
+                  );
                 })}
             </DataList>
             <Content component="p" style={{ marginBlockStart: "1rem" }}>

@@ -25,15 +25,16 @@ import { Content, Flex, Stack } from "@patternfly/react-core";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import Link from "~/components/core/Link";
 import Icon from "~/components/layout/Icon";
-import { StorageDevice } from "~/types/storage";
-import { useAvailableDrives } from "~/hooks/storage/system";
-import { useModel } from "~/hooks/storage/model";
+import { useAvailableDrives } from "~/hooks/model/system/storage";
+import { useConfigModel } from "~/hooks/model/storage/config-model";
+import configModel from "~/model/storage/config-model";
 import { STORAGE } from "~/routes/paths";
 import { deviceLabel, formattedPath } from "~/components/storage/utils";
 import { _ } from "~/i18n";
 import { sprintf } from "sprintf-js";
+import type { Storage } from "~/model/system";
 
-function defaultBootLabel(device?: StorageDevice) {
+function defaultBootLabel(device?: Storage.Device) {
   if (!device) {
     return sprintf(
       // TRANSLATORS: %s is replaced by the formatted path of the root file system (eg. "/")
@@ -57,7 +58,7 @@ function defaultBootLabel(device?: StorageDevice) {
   );
 }
 
-function bootLabel(isDefault: boolean, device?: StorageDevice) {
+function bootLabel(isDefault: boolean, device?: Storage.Device) {
   if (isDefault) {
     return defaultBootLabel(device);
   }
@@ -72,10 +73,12 @@ function bootLabel(isDefault: boolean, device?: StorageDevice) {
 }
 
 export default function BootSection() {
-  const model = useModel({ suspense: true });
-  const boot = model.boot;
+  const config = useConfigModel();
   const devices = useAvailableDrives();
-  const device = devices.find((d) => d.name === boot.getDevice()?.name);
+
+  const isDefaultBoot = configModel.boot.isDefault(config);
+  const bootDevice = configModel.boot.findDevice(config);
+  const device = devices.find((d) => d.name === bootDevice?.name);
 
   return (
     <Stack hasGutter>
@@ -86,7 +89,7 @@ export default function BootSection() {
         )}
       </div>
       <Content component="p" isEditorial>
-        {bootLabel(boot.isDefault, device)}
+        {bootLabel(isDefaultBoot, device)}
       </Content>
       <Flex>
         <Link to={STORAGE.editBootDevice} keepQuery variant="plain">

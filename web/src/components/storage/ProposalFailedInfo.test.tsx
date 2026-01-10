@@ -23,31 +23,10 @@
 import React from "react";
 import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
+import type { ConfigModel } from "~/model/storage/config-model";
 import ProposalFailedInfo from "./ProposalFailedInfo";
-import { LogicalVolume } from "~/types/storage/data";
-import { Issue, IssueSeverity, IssueSource } from "~/types/issues";
-import { apiModel } from "~/api/storage/types";
 
-const mockUseConfigErrorsFn = jest.fn();
-let mockUseIssues = [];
-
-const configError: Issue = {
-  description: "Config error",
-  kind: "storage",
-  details: "",
-  source: 2,
-  severity: 1,
-};
-
-const storageIssue: Issue = {
-  description: "Fake Storage Issue",
-  details: "",
-  kind: "storage_issue",
-  source: IssueSource.Unknown,
-  severity: IssueSeverity.Error,
-};
-
-const mockApiModel: apiModel.Config = {
+const mockFullConfigModel: ConfigModel.Config = {
   boot: {
     configure: true,
     device: {
@@ -148,69 +127,87 @@ const mockApiModel: apiModel.Config = {
   ],
 };
 
-jest.mock("~/hooks/storage/api-model", () => ({
-  ...jest.requireActual("~/hooks/storage/api-model"),
-  useApiModel: () => mockApiModel,
-}));
-
-jest.mock("~/queries/issues", () => ({
-  ...jest.requireActual("~/queries/issues"),
-  useConfigErrors: () => mockUseConfigErrorsFn(),
-  useIssues: () => mockUseIssues,
-}));
-
-// eslint-disable-next-line
-const fakeLogicalVolume: LogicalVolume = {
-  // @ts-expect-error: The #name property is used to distinguish new "devices"
-  // in the API model, but it is not yet exposed for logical volumes since they
-  // are currently not reusable. This directive exists to ensure developers
-  // don't overlook updating the ProposalFailedInfo component in the future,
-  // when logical volumes become reusable and the #name property is exposed. See
-  // the FIXME in the ProposalFailedInfo component for more context.
-  name: "Reusable LV",
-  lvName: "helpful",
+const mockCreateNothingConfigModel: ConfigModel.Config = {
+  boot: { configure: false },
+  drives: [
+    {
+      name: "/dev/vdb",
+      partitions: [
+        {
+          name: "/dev/vdb1", // Has name, so it's not new
+          size: { default: false, min: 6430916608 },
+        },
+      ],
+    },
+  ],
+  volumeGroups: [],
 };
+
+const mockUseConfigModel = jest.fn();
+
+jest.mock("~/hooks/model/storage/config-model", () => ({
+  ...jest.requireActual("~/hooks/model/storage/config-model"),
+  useConfigModel: () => mockUseConfigModel(),
+}));
 
 describe("ProposalFailedInfo", () => {
   beforeEach(() => {
-    mockUseIssues = [];
-    mockUseConfigErrorsFn.mockReturnValue([]);
+    mockUseConfigModel.mockReturnValue(mockFullConfigModel);
   });
 
-  describe("when proposal can't be created due to configuration errors", () => {
+  describe("when there are no new partitions or logical volumes", () => {
     beforeEach(() => {
-      mockUseConfigErrorsFn.mockReturnValue([configError]);
+      mockUseConfigModel.mockReturnValue(mockCreateNothingConfigModel);
     });
 
-    it("renders nothing", () => {
-      const { container } = installerRender(<ProposalFailedInfo />);
-      expect(container).toBeEmptyDOMElement();
+    it("renders a generic warning message", () => {
+      installerRender(<ProposalFailedInfo />);
+      screen.getByText("Warning alert:");
+      screen.getByText("Failed to calculate a storage layout");
+      screen.getByText(/It is not possible to install the system with the current configuration/);
     });
   });
 
-  describe("when proposal is valid", () => {
-    describe("and has no errors", () => {
-      beforeEach(() => {
-        mockUseIssues = [];
+  describe("when there are new partitions or logical volumes", () => {
+    describe("and boot is configured", () => {
+      it("renders a warning mentioning boot partition", () => {
+        installerRender(<ProposalFailedInfo />);
+        screen.getByText("Warning alert:");
+        screen.getByText("Failed to calculate a storage layout");
+        screen.getByText(/It is not possible to allocate space for the boot partition and for/);
       });
 
-      it("renders nothing", () => {
-        const { container } = installerRender(<ProposalFailedInfo />);
-        expect(container).toBeEmptyDOMElement();
+      it("displays the mount paths with sizes", () => {
+        installerRender(<ProposalFailedInfo />);
+        // Should show mount paths for new partitions and logical volumes
+        expect(screen.getByText(/\/documents/)).toBeInTheDocument();
+        expect(screen.getByText(/\//)).toBeInTheDocument();
+        expect(screen.getByText(/swap/)).toBeInTheDocument();
       });
     });
 
-    describe("but has errors", () => {
+    describe("and boot is not configured", () => {
       beforeEach(() => {
-        mockUseIssues = [storageIssue];
+        mockUseConfigModel.mockReturnValue({
+          ...mockFullConfigModel,
+          boot: { configure: false },
+        });
       });
 
-      it("renders a warning alert with hints about the failure", () => {
+      it("renders a warning without mentioning boot partition", () => {
         installerRender(<ProposalFailedInfo />);
         screen.getByText("Warning alert:");
         screen.getByText("Failed to calculate a storage layout");
         screen.getByText(/It is not possible to allocate space for/);
+        expect(screen.queryByText(/boot partition/)).not.toBeInTheDocument();
       });
+    });
+  });
+
+  describe("helper text", () => {
+    it("always shows adjustment guidance", () => {
+      installerRender(<ProposalFailedInfo />);
+      screen.getByText(/Adjust the settings below/);
     });
   });
 });

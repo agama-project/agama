@@ -23,12 +23,12 @@
 import React from "react";
 import { screen } from "@testing-library/react";
 import { installerRender, plainRender } from "~/test-utils";
-import { Question, QuestionType } from "~/types/questions";
+import { Question, FieldType } from "~/model/question";
 import Questions from "~/components/questions/Questions";
 import * as GenericQuestionComponent from "~/components/questions/GenericQuestion";
 
 let mockQuestions: Question[];
-const mockMutation = jest.fn();
+const mockPatchQuestionFn = jest.fn();
 
 jest.mock("~/components/questions/LuksActivationQuestion", () => () => (
   <div>A LUKS activation question mock</div>
@@ -42,23 +42,64 @@ jest.mock("~/components/questions/LoadConfigRetryQuestion", () => () => (
   <div>LoadConfigRetryQuestion mock</div>
 ));
 
-jest.mock("~/queries/questions", () => ({
-  ...jest.requireActual("~/queries/software"),
+jest.mock("~/api", () => ({
+  ...jest.requireActual("~/api"),
+  patchQuestion: (...args) => mockPatchQuestionFn(...args),
+}));
+
+jest.mock("~/hooks/model/question", () => ({
+  ...jest.requireActual("~/hooks/model/question"),
   useQuestions: () => mockQuestions,
-  useQuestionsChanges: () => jest.fn(),
-  useQuestionsConfig: () => ({ mutate: mockMutation }),
 }));
 
 const genericQuestion: Question = {
   id: 1,
-  type: QuestionType.generic,
+  class: "generic",
   text: "Do you write unit tests?",
-  options: ["always", "sometimes", "never"],
-  defaultOption: "sometimes",
+  field: { type: FieldType.None },
+  actions: [
+    { id: "always", label: "Always" },
+    { id: "sometimes", label: "Sometimes" },
+    { id: "never", label: "Never" },
+  ],
+  defaultAction: "sometimes",
 };
-const passwordQuestion: Question = { id: 1, type: QuestionType.withPassword };
-const luksActivationQuestion: Question = { id: 2, class: "storage.luks_activation" };
-const loadConfigurationQuestion: Question = { id: 3, class: "load.retry" };
+
+const passwordQuestion: Question = {
+  id: 2,
+  class: "password",
+  text: "Please, introduce the password",
+  field: { type: FieldType.Password },
+  actions: [
+    { id: "confirm", label: "Confirm" },
+    { id: "cancel", label: "Cancel" },
+  ],
+  defaultAction: "confirm",
+};
+
+const luksActivationQuestion: Question = {
+  id: 3,
+  class: "storage.luks_activation",
+  text: "Password to decrypt the device",
+  field: { type: FieldType.Password },
+  actions: [
+    { id: "decrypt", label: "Decrypt" },
+    { id: "skip", label: "Skip" },
+  ],
+  defaultAction: "decrypt",
+};
+
+const loadConfigurationQuestion: Question = {
+  id: 4,
+  class: "load.retry",
+  text: "Do you want to retry loading the configuration?",
+  field: { type: FieldType.None },
+  actions: [
+    { id: "yes", label: "Yes" },
+    { id: "no", label: "No" },
+  ],
+  defaultAction: "no",
+};
 
 describe("Questions", () => {
   afterEach(() => {
@@ -78,14 +119,18 @@ describe("Questions", () => {
 
   describe("when a question is answered", () => {
     beforeEach(() => {
-      mockQuestions = [genericQuestion];
+      // Do not modify the original object.
+      mockQuestions = [{ ...genericQuestion }];
     });
 
     it("triggers the useQuestionMutation", async () => {
       const { user } = plainRender(<Questions />);
       const button = screen.getByRole("button", { name: "Always" });
       await user.click(button);
-      expect(mockMutation).toHaveBeenCalledWith({ ...genericQuestion, answer: "always" });
+      expect(mockPatchQuestionFn).toHaveBeenCalledWith({
+        ...genericQuestion,
+        answer: { action: "always" },
+      });
     });
   });
 

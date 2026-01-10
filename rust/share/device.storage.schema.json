@@ -1,0 +1,214 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "$id": "https://github.com/openSUSE/agama/blob/master/rust/share/device.storage.schema.json",
+  "title": "Device",
+  "description": "Schema to describe a device both in 'system' and 'proposal'.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["sid", "name"],
+  "properties": {
+    "sid": { "type": "integer" },
+    "name": { "type": "string" },
+    "description": { "type": "string" },
+    "class": { "$ref": "#/$defs/deviceClass" },
+    "block": { "$ref": "#/$defs/block" },
+    "drive": { "$ref": "#/$defs/drive" },
+    "filesystem": { "$ref": "#/$defs/filesystem" },
+    "md": { "$ref": "#/$defs/md" },
+    "multipath": { "$ref": "#/$defs/multipath" },
+    "partitionTable": { "$ref": "#/$defs/partitionTable" },
+    "partition": { "$ref": "#/$defs/partition" },
+    "partitions": {
+      "type": "array",
+      "items": { "$ref": "#" }
+    },
+    "volumeGroup": { "$ref": "#/$defs/volumeGroup" },
+    "logicalVolumes": {
+      "type": "array",
+      "items": { "$ref": "#" }
+    }
+  },
+  "$defs": {
+    "deviceClass": {
+      "title": "Device class",
+      "enum": ["drive", "mdRaid", "partition", "volumeGroup", "logicalVolume"]
+    },
+    "block": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["start", "size", "shrinking"],
+      "properties": {
+        "start": { "type": "integer" },
+        "size": { "type": "integer" },
+        "active": { "type": "boolean" },
+        "encrypted": { "type": "boolean" },
+        "udevIds": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "udevPaths": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "systems": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "shrinking": { "$ref": "#/$defs/shrinkInfo" }
+      }
+    },
+    "shrinkInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["supported"],
+      "properties": {
+        "supported": { "type": "boolean" },
+        "minSize": { "type": "integer" },
+        "reasons": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "drive": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "type": { "$ref": "#/$defs/driveType" },
+        "vendor": { "type": "string" },
+        "model": { "type": "string" },
+        "transport": { "type": "string" },
+        "bus": { "type": "string" },
+        "busId": { "type": "string" },
+        "driver": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "info": { "$ref": "#/$defs/driveInfo" }
+      }
+    },
+    "driveType": {
+      "title": "Drive type",
+      "enum": ["disk", "raid", "multipath", "dasd"]
+    },
+    "driveInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "sdCard": { "type": "boolean" },
+        "dellBoss": { "type": "boolean" }
+      }
+    },
+    "filesystem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sid", "type"],
+      "properties": {
+        "sid": { "type": "integer" },
+        "type": { "$ref": "#/$defs/filesystemType" },
+        "mountPath": { "type": "string" },
+        "label": { "type": "string" }
+      }
+    },
+    "filesystemType": {
+      "title": "Filesystem type",
+      "enum": [
+        "bcachefs",
+        "btrfs",
+        "exfat",
+        "ext2",
+        "ext3",
+        "ext4",
+        "f2fs",
+        "jfs",
+        "nfs",
+        "nilfs2",
+        "ntfs",
+        "reiserfs",
+        "swap",
+        "tmpfs",
+        "vfat",
+        "xfs"
+      ]
+    },
+    "md": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["level", "devices"],
+      "properties": {
+        "level": { "$ref": "#/$defs/mdRaidLevel" },
+        "devices": {
+          "type": "array",
+          "items": { "type": "integer" }
+        },
+        "uuid": { "type": "string" }
+      }
+    },
+    "mdRaidLevel": {
+      "title": "MD level",
+      "enum": [
+        "raid0",
+        "raid1",
+        "raid5",
+        "raid6",
+        "raid10"
+      ]
+    },
+    "multipath": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["wireNames"],
+      "properties": {
+        "wireNames": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "partitionTable": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "unusedSlots"],
+      "properties": {
+        "type": { "$ref": "#/$defs/ptableType" },
+        "unusedSlots": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/unusedSlot" }
+        }
+      }
+    },
+    "ptableType": {
+      "title": "Partition table type",
+      "enum": ["gpt", "msdos", "dasd"]
+    },
+    "unusedSlot": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["start", "size"],
+      "properties": {
+        "start": { "type": "integer" },
+        "size": { "type": "integer" }
+      }
+    },
+    "partition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["efi"],
+      "properties": {
+        "efi": { "type": "boolean" }
+      }
+    },
+    "volumeGroup": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["size", "physicalVolumes"],
+      "properties": {
+        "size": { "type": "integer" },
+        "physicalVolumes": {
+          "type": "array",
+          "items": { "type": "integer" }
+        }
+      }
+    }
+  }
+}

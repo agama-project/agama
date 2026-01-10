@@ -29,4 +29,3 @@ end
 
 require "agama/storage/proposal_strategies/agama"
 require "agama/storage/proposal_strategies/autoyast"
-require "agama/storage/proposal_strategies/guided"

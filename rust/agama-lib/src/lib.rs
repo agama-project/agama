@@ -30,7 +30,7 @@
 //!
 //! Let's have a look to the components that are involved when dealing with the installation
 //! settings, as it is the most complex part of the library. The code is organized in a set of
-//! modules, one for each topic, like [network], [software], and so on.
+//! modules, one for each topic.
 //!
 //! Each of those modules contains, at least:
 //!
@@ -47,26 +47,20 @@ pub mod auth;
 pub mod bootloader;
 pub mod context;
 pub mod error;
-pub mod file_source;
-pub mod files;
 pub mod hostname;
 pub mod http;
 pub mod install_settings;
-pub mod issue;
+pub use agama_utils::issue;
 pub mod jobs;
-pub mod localization;
 pub mod logs;
 pub mod manager;
 pub mod monitor;
 pub mod network;
-pub mod product;
 pub mod profile;
 pub mod progress;
 pub mod proxies;
 pub mod questions;
-pub mod scripts;
 pub mod security;
-pub mod software;
 pub mod storage;
 mod store;
 pub mod users;

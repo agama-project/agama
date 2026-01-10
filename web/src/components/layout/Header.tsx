@@ -39,13 +39,14 @@ import {
   ToolbarGroup,
   ToolbarItem,
 } from "@patternfly/react-core";
-import { useMatches } from "react-router-dom";
+import { useMatches } from "react-router";
 import { Icon } from "~/components/layout";
-import { useProduct } from "~/queries/software";
 import { Route } from "~/types/routes";
 import { ChangeProductOption, InstallButton, InstallerOptions, SkipTo } from "~/components/core";
+import ProgressStatusMonitor from "../core/ProgressStatusMonitor";
 import { ROOT } from "~/routes/paths";
 import { _ } from "~/i18n";
+import { useProductInfo } from "~/hooks/model/config/product";
 
 export type HeaderProps = {
   /** Whether the application sidebar should be mounted or not */
@@ -111,11 +112,11 @@ export default function Header({
   isSidebarOpen,
   toggleSidebar,
 }: HeaderProps): React.ReactNode {
-  const { selectedProduct } = useProduct();
+  const product = useProductInfo();
   const routeMatches = useMatches() as Route[];
   const currentRoute = routeMatches.at(-1);
   // TODO: translate title
-  const title = (showProductName && selectedProduct?.name) || currentRoute?.handle?.title;
+  const title = (showProductName && product?.name) || currentRoute?.handle?.title;
 
   return (
     <Masthead>
@@ -145,16 +146,19 @@ export default function Header({
           <ToolbarContent>
             <ToolbarGroup align={{ default: "alignEnd" }} columnGap={{ default: "columnGapXs" }}>
               <ToolbarItem>
-                <InstallerOptions />
-              </ToolbarItem>
-              <ToolbarItem>
-                <InstallButton onClickWithIssues={toggleIssuesDrawer} />
+                <ProgressStatusMonitor />
               </ToolbarItem>
               {showInstallerOptions && (
                 <ToolbarItem>
-                  <OptionsDropdown />
+                  <InstallerOptions />
                 </ToolbarItem>
               )}
+              <ToolbarItem>
+                <InstallButton onClickWithIssues={toggleIssuesDrawer} />
+              </ToolbarItem>
+              <ToolbarItem>
+                <OptionsDropdown />
+              </ToolbarItem>
             </ToolbarGroup>
           </ToolbarContent>
         </Toolbar>

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024-2025] SUSE LLC
+ * Copyright (c) [2024-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -23,12 +23,14 @@
 import React from "react";
 import { screen } from "@testing-library/react";
 import { installerRender, mockRoutes } from "~/test-utils";
-import ProductRegistrationAlert from "./ProductRegistrationAlert";
+import { useSystem } from "~/hooks/model/system";
+import { useIssues } from "~/hooks/model/issue";
+import { useProductInfo } from "~/hooks/model/config/product";
+import { Issue } from "~/model/issue";
+import { System } from "~/model/system/network";
 import { Product } from "~/types/software";
-import { useProduct } from "~/queries/software";
-import { useIssues } from "~/queries/issues";
 import { PRODUCT, REGISTRATION, ROOT } from "~/routes/paths";
-import { Issue } from "~/types/issues";
+import ProductRegistrationAlert from "./ProductRegistrationAlert";
 
 const tw: Product = {
   id: "Tumbleweed",
@@ -42,31 +44,42 @@ const sle: Product = {
   registration: true,
 };
 
-let selectedProduct: Product;
-
-jest.mock("~/queries/software", () => ({
-  ...jest.requireActual("~/queries/software"),
-  useProduct: (): ReturnType<typeof useProduct> => {
-    return {
-      products: [tw, sle],
-      selectedProduct,
-    };
+const network: System = {
+  connections: [],
+  devices: [],
+  state: {
+    connectivity: true,
+    copyNetwork: true,
+    networkingEnabled: true,
+    wirelessEnabled: true,
   },
+  accessPoints: [],
+};
+
+const mockSelectedProduct: jest.Mock<Product> = jest.fn();
+const mockIssues: jest.Mock<Issue[]> = jest.fn();
+
+jest.mock("~/hooks/model/system", () => ({
+  ...jest.requireActual("~/hooks/model/system"),
+  useSystem: (): ReturnType<typeof useSystem> => ({ products: [tw, sle], network }),
 }));
 
-let issues: Issue[] = [];
+jest.mock("~/hooks/model/config/product", () => ({
+  ...jest.requireActual("~/hooks/model/config/product"),
+  useProductInfo: (): ReturnType<typeof useProductInfo> => mockSelectedProduct(),
+}));
+
+jest.mock("~/hooks/model/issue", () => ({
+  ...jest.requireActual("~/hooks/model/issue"),
+  useIssues: (): ReturnType<typeof useIssues> => mockIssues(),
+}));
+
 const registrationIssue: Issue = {
   description: "Product must be registered",
   details: "",
-  kind: "missing_registration",
-  source: 0,
-  severity: 0,
+  class: "missing_registration",
+  scope: "storage",
 };
-
-jest.mock("~/queries/issues", () => ({
-  ...jest.requireActual("~/queries/issues"),
-  useIssues: (): ReturnType<typeof useIssues> => issues,
-}));
 
 const rendersNothingInSomePaths = () => {
   describe.each([
@@ -90,8 +103,8 @@ const rendersNothingInSomePaths = () => {
 describe("ProductRegistrationAlert", () => {
   describe("when the registration is missing", () => {
     beforeEach(() => {
-      issues = [registrationIssue];
-      selectedProduct = sle;
+      mockSelectedProduct.mockReturnValue(sle);
+      mockIssues.mockReturnValue([registrationIssue]);
     });
 
     rendersNothingInSomePaths();
@@ -122,8 +135,8 @@ describe("ProductRegistrationAlert", () => {
 
   describe("when the registration is not needed", () => {
     beforeEach(() => {
-      issues = [];
-      selectedProduct = sle;
+      mockSelectedProduct.mockReturnValue(tw);
+      mockIssues.mockReturnValue([]);
     });
 
     it("renders nothing", () => {

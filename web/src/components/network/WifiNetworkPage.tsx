@@ -21,7 +21,7 @@
  */
 
 import React from "react";
-import { useParams } from "react-router-dom";
+import { useParams } from "react-router";
 import {
   Content,
   EmptyState,
@@ -33,7 +33,7 @@ import { Link, Page } from "~/components/core";
 import { Icon } from "~/components/layout";
 import WifiConnectionForm from "./WifiConnectionForm";
 import WifiConnectionDetails from "./WifiConnectionDetails";
-import { useNetworkChanges, useWifiNetworks } from "~/queries/network";
+import { useNetworkChanges, useWifiNetworks } from "~/hooks/model/system/network";
 import { DeviceState } from "~/types/network";
 import { PATHS } from "~/routes/network";
 import { _ } from "~/i18n";

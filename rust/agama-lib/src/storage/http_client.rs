@@ -19,7 +19,6 @@
 // find current contact information at www.suse.com.
 
 //! Implements a client to access Agama's storage service.
-
 pub mod dasd;
 pub mod iscsi;
 pub mod zfcp;

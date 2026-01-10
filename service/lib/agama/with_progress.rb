@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022-2025] SUSE LLC
+# Copyright (c) [2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -19,52 +19,55 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "agama/progress_manager"
+require "agama/progress"
 
 module Agama
-  # Mixin that allows to start a progress and configure callbacks
+  # Mixin to use Agama::Progress to track the status of an object.
   module WithProgress
-    # @return [ProgressManager]
-    def progress_manager
-      @progress_manager ||= Agama::ProgressManager.new
+    attr_reader :progress
+
+    def start_progress(size, step)
+      @progress = Progress.new(size, step)
+      progress_change
     end
 
-    # @return [Progress, nil]
-    def progress
-      progress_manager.progress
+    def start_progress_with_steps(steps)
+      @progress = Progress.new_with_steps(steps)
+      progress_change
     end
 
-    # Creates a new progress with a given number of steps
-    #
-    # @param size [Integer] Number of steps
-    def start_progress_with_size(size)
-      progress_manager.start_with_size(size)
+    def next_progress_step(step = nil)
+      return unless @progress
+
+      step ? @progress.next_with_step(step) : @progress.step
+      progress_change
     end
 
-    # Creates a new progress with a given set of steps
-    #
-    # @param descriptions [Array<String>] Steps descriptions
-    def start_progress_with_descriptions(*descriptions)
-      progress_manager.start_with_descriptions(*descriptions)
-    end
-
-    # Finishes the current progress
     def finish_progress
-      progress_manager.finish
+      return unless @progress
+
+      @progress = nil
+      progress_finish
     end
 
-    # Registers an on_change callback to be added to the progress
-    #
+    def progress_change
+      @on_progress_change_callbacks.each(&:call)
+    end
+
+    def progress_finish
+      @on_progress_finish_callbacks.each(&:call)
+    end
+
     # @param block [Proc]
     def on_progress_change(&block)
-      progress_manager.on_change(&block)
+      @on_progress_change_callbacks ||= []
+      @on_progress_change_callbacks << block
     end
 
-    # Registers an on_finish callback to be added to the progress
-    #
     # @param block [Proc]
     def on_progress_finish(&block)
-      progress_manager.on_finish(&block)
+      @on_progress_finish_callbacks ||= []
+      @on_progress_finish_callbacks << block
     end
   end
 end

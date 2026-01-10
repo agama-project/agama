@@ -183,6 +183,22 @@ strong {
   font-weight: var(--pf-t--global--font--weight--400);
 }
 
+// Freeze scrolling when Agama overlay is visible
+.pf-v6-c-page__main:has(.agm-main-content-overlay) {
+  overflow: hidden;
+}
+
+.pf-v6-c-page__main-container:has(.agm-main-content-overlay) {
+  position: relative;
+
+  .agm-main-content-overlay {
+    position: absolute;
+    padding-block-start: 2.2rem;
+    backdrop-filter: blur(2px);
+    background-color: color-mix(in srgb, var(--agm-t--color--fog) 50%, transparent);
+  }
+}
+
 // Temporary CSS rules written during migration to PFv6
 
 // Reserve the sidebar space also for "lg" breakpoint
@@ -561,6 +577,16 @@ button:focus-visible {
 .no-default-icon {
   .pf-v6-c-button__icon {
     display: none;
+  }
+}
+
+span.in-quotes {
+  &::before {
+    content: open-quote;
+  }
+
+  &::after {
+    content: close-quote;
   }
 }
 

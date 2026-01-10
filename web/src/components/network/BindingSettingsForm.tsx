@@ -21,7 +21,7 @@
  */
 
 import React, { useReducer } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router";
 import {
   ActionGroup,
   Content,
@@ -33,12 +33,14 @@ import {
   Stack,
 } from "@patternfly/react-core";
 import { Page, SubtleContent } from "~/components/core";
-import { useConnection, useConnectionMutation, useNetworkDevices } from "~/queries/network";
 import { Connection, ConnectionBindingMode, Device } from "~/types/network";
 import Radio from "~/components/core/RadioEnhanced";
 import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
 import { connectionBindingMode } from "~/utils/network";
+import { useConnection } from "~/hooks/model/proposal/network";
+import { useConnectionMutation } from "~/hooks/model/config/network";
+import { useDevices } from "~/hooks/model/system/network";
 
 type DevicesSelectProps = Omit<FormSelectProps, "children" | "ref"> & {
   /**
@@ -60,7 +62,7 @@ function DevicesSelect({
   valueKey,
   ...formSelectProps
 }: DevicesSelectProps): React.ReactNode {
-  const devices = useNetworkDevices();
+  const devices = useDevices();
 
   const labelAttrs = valueKey === "macAddress" ? ["macAddress", "name"] : ["name", "macAddress"];
 
@@ -129,7 +131,7 @@ export default function BindingSettingsForm() {
   const { id } = useParams();
   const { mutateAsync: updateConnection } = useConnectionMutation();
   const connection = useConnection(id);
-  const devices = useNetworkDevices();
+  const devices = useDevices();
   const navigate = useNavigate();
   const [state, dispatch] = useReducer(formReducer, {
     mode: connectionBindingMode(connection),

@@ -23,18 +23,16 @@
 import React, { forwardRef } from "react";
 import { Button, Flex, FlexItem } from "@patternfly/react-core";
 import Icon from "~/components/layout/Icon";
-import { useNavigate } from "react-router-dom";
+import { generatePath, useNavigate } from "react-router";
 import MenuButton, { CustomToggleProps } from "~/components/core/MenuButton";
 import { STORAGE as PATHS } from "~/routes/paths";
-import { model } from "~/types/storage";
 import { filesystemType, formattedPath } from "~/components/storage/utils";
-import { generateEncodedPath } from "~/utils";
+import { usePartitionable } from "~/hooks/model/storage/config-model";
 import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
+import type { ConfigModel } from "~/model/storage/config-model";
 
-type FilesystemMenuProps = { deviceModel: model.Drive | model.MdRaid };
-
-function deviceDescription(deviceModel: FilesystemMenuProps["deviceModel"]): string {
+function deviceDescription(deviceModel: ConfigModel.Drive | ConfigModel.MdRaid): string {
   const fs = filesystemType(deviceModel.filesystem);
   const mountPath = deviceModel.mountPath;
   const reuse = deviceModel.filesystem.reuse;
@@ -55,7 +53,7 @@ function deviceDescription(deviceModel: FilesystemMenuProps["deviceModel"]): str
 }
 
 type FilesystemMenuToggleProps = CustomToggleProps & {
-  deviceModel: model.Drive | model.MdRaid;
+  deviceModel: ConfigModel.Drive | ConfigModel.MdRaid;
 };
 
 const FilesystemMenuToggle = forwardRef(
@@ -83,10 +81,18 @@ const FilesystemMenuToggle = forwardRef(
   },
 );
 
-export default function FilesystemMenu({ deviceModel }: FilesystemMenuProps): React.ReactNode {
+type FilesystemMenuProps = {
+  collection: "drives" | "mdRaids";
+  index: number;
+};
+
+export default function FilesystemMenu({
+  collection,
+  index,
+}: FilesystemMenuProps): React.ReactNode {
   const navigate = useNavigate();
-  const { list, listIndex } = deviceModel;
-  const editFilesystemPath = generateEncodedPath(PATHS.formatDevice, { list, listIndex });
+  const deviceModel = usePartitionable(collection, index);
+  const editFilesystemPath = generatePath(PATHS.formatDevice, { collection, index });
 
   return (
     <MenuButton

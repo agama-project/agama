@@ -49,6 +49,7 @@ const ROOT = {
   root: "/",
   login: "/login",
   overview: "/overview",
+  confirm: "/confirm",
   installation: "/installation",
   installationProgress: "/installation/progress",
   installationFinished: "/installation/finished",
@@ -78,10 +79,10 @@ const STORAGE = {
   progress: "/storage/progress",
   editBootDevice: "/storage/boot-device/edit",
   editEncryption: "/storage/encryption/edit",
-  editSpacePolicy: "/storage/:list/:listIndex/space-policy/edit",
-  formatDevice: "/storage/:list/:listIndex/format",
-  addPartition: "/storage/:list/:listIndex/partitions/add",
-  editPartition: "/storage/:list/:listIndex/partitions/:partitionId/edit",
+  editSpacePolicy: "/storage/:collection/:index/space-policy/edit",
+  formatDevice: "/storage/:collection/:index/format",
+  addPartition: "/storage/:collection/:index/partitions/add",
+  editPartition: "/storage/:collection/:index/partitions/:partitionId/edit",
   selectDevice: "/storage/devices/select",
   volumeGroup: {
     add: "/storage/volume-groups/add",
@@ -115,6 +116,7 @@ const HOSTNAME = {
  */
 const SIDE_PATHS = [
   ROOT.login,
+  ROOT.confirm,
   PRODUCT.changeProduct,
   PRODUCT.progress,
   ROOT.installationProgress,

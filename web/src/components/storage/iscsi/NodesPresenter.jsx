@@ -27,7 +27,7 @@ import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
 import { RowActions } from "~/components/core";
 import { EditNodeForm, LoginForm, NodeStartupOptions } from "~/components/storage/iscsi";
-import { login, logout, setStartup, deleteNode } from "~/api/storage/iscsi";
+import { login, logout, setStartup, deleteNode } from "~/model/storage/iscsi";
 
 export default function NodesPresenter({ nodes }) {
   const [currentNode, setCurrentNode] = useState();

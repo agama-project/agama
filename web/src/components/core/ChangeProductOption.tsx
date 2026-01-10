@@ -22,22 +22,23 @@
 
 import React from "react";
 import { DropdownItem, DropdownItemProps } from "@patternfly/react-core";
-import { useHref, useLocation } from "react-router-dom";
-import { useProduct, useRegistration } from "~/queries/software";
+import { useHref, useLocation } from "react-router";
+// import { useRegistration } from "~/queries/software";
 import { PRODUCT as PATHS, SIDE_PATHS } from "~/routes/paths";
 import { _ } from "~/i18n";
+import { useSystem } from "~/hooks/model/system";
 
 /**
  * DropdownItem Option for navigating to the selection product.
  */
 export default function ChangeProductOption({ children, ...props }: Omit<DropdownItemProps, "to">) {
-  const { products } = useProduct();
-  const registration = useRegistration();
+  const { products } = useSystem();
+  // const registration = useRegistration();
   const currentLocation = useLocation();
   const to = useHref(PATHS.changeProduct);
 
   if (products.length <= 1) return null;
-  if (registration?.registered) return null;
+  // if (registration?.registered) return null;
   if (SIDE_PATHS.includes(currentLocation.pathname)) return null;
 
   return (

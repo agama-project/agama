@@ -27,20 +27,16 @@ import MdRaidHeader from "~/components/storage/MdRaidHeader";
 import DeviceEditorContent from "~/components/storage/DeviceEditorContent";
 import SearchedDeviceMenu from "~/components/storage/SearchedDeviceMenu";
 import { CustomToggleProps } from "~/components/core/MenuButton";
-import { model, StorageDevice } from "~/types/storage";
-import { MdRaid } from "~/types/storage/model";
-import { useDeleteMdRaid } from "~/hooks/storage/md-raid";
 import { Button, Flex, FlexItem } from "@patternfly/react-core";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
-
-type MdRaidDeviceMenuProps = {
-  raid: model.MdRaid;
-  selected: StorageDevice;
-};
+import { useMdRaid, useDeleteMdRaid } from "~/hooks/model/storage/config-model";
+import { useDevice } from "~/hooks/model/system/storage";
+import type { ConfigModel } from "~/model/storage/config-model";
+import type { Storage } from "~/model/system";
 
 type MdRaidDeviceMenuToggleProps = CustomToggleProps & {
-  raid: model.MdRaid;
-  device: StorageDevice;
+  raid: ConfigModel.MdRaid;
+  device: Storage.Device;
 };
 
 const MdRaidDeviceMenuToggle = forwardRef(
@@ -71,33 +67,37 @@ const MdRaidDeviceMenuToggle = forwardRef(
   },
 );
 
+type MdRaidDeviceMenuProps = { index: number };
+
 /**
  * Internal component that renders generic actions available for an MdRaid device.
  */
-const MdRaidDeviceMenu = ({ raid, selected }: MdRaidDeviceMenuProps): React.ReactNode => {
+const MdRaidDeviceMenu = ({ index }: MdRaidDeviceMenuProps): React.ReactNode => {
+  const raidModel = useMdRaid(index);
+  const raid = useDevice(raidModel.name);
   const deleteMdRaid = useDeleteMdRaid();
-  const deleteFn = (device: model.MdRaid) => deleteMdRaid(device.name);
+  const deleteFn = () => deleteMdRaid(index);
 
   return (
     <SearchedDeviceMenu
-      modelDevice={raid}
-      selected={selected}
+      modelDevice={raidModel}
+      selected={raid}
       deleteFn={deleteFn}
-      toggle={<MdRaidDeviceMenuToggle raid={raid} device={selected} />}
+      toggle={<MdRaidDeviceMenuToggle raid={raidModel} device={raid} />}
     />
   );
 };
 
-type MdRaidEditorProps = { raid: MdRaid; raidDevice: StorageDevice };
+type MdRaidEditorProps = { index: number };
 
 /**
  * Component responsible for displaying detailed information and available
  * actions related to a specific MdRaid device within the storage ConfigEditor.
  */
-export default function MdRaidEditor({ raid, raidDevice }: MdRaidEditorProps) {
+export default function MdRaidEditor({ index }: MdRaidEditorProps) {
   return (
-    <ConfigEditorItem header={<MdRaidDeviceMenu raid={raid} selected={raidDevice} />}>
-      <DeviceEditorContent deviceModel={raid} device={raidDevice} />
+    <ConfigEditorItem header={<MdRaidDeviceMenu index={index} />}>
+      <DeviceEditorContent collection="mdRaids" index={index} />
     </ConfigEditorItem>
   );
 }

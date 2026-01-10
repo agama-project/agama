@@ -56,14 +56,12 @@ import {
   fetchRegistration,
   fetchRepositories,
   probe,
-  register,
   registerAddon,
-  updateRegistrationUrl,
   solveConflict,
   updateConfig,
-} from "~/api/software";
+} from "~/model/software";
 import { QueryHookOptions } from "~/types/queries";
-import { probe as systemProbe, reprobe as systemReprobe } from "~/api/manager";
+import { probe as systemProbe } from "~/model/manager";
 
 /**
  * Query to retrieve software configuration
@@ -181,30 +179,6 @@ const useConfigMutation = () => {
 };
 
 /**
- * Hook that builds a mutation for registering a product
- *
- * @note it would trigger a general probing as a side-effect when mutation
- * includes a product.
- */
-const useRegisterMutation = () => {
-  const queryClient = useQueryClient();
-
-  const query = {
-    mutationFn: async ({ url, key, email }: { url: string; key: string; email?: string }) => {
-      await updateRegistrationUrl(url).then(() => register({ key, email }));
-    },
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ["software", "registration"] });
-    },
-    onSuccess: async () => {
-      await systemReprobe();
-      queryClient.invalidateQueries({ queryKey: ["storage"] });
-    },
-  };
-  return useMutation(query);
-};
-
-/**
  * Hook that builds a mutation for registering an addon
  *
  */
@@ -303,7 +277,7 @@ const usePatterns = (): Pattern[] => {
 /**
  * Returns current software proposal
  */
-const useProposal = (): SoftwareProposal => {
+const useSoftwareProposal = (): SoftwareProposal => {
   const { data: proposal } = useSuspenseQuery(proposalQuery());
   return proposal;
 };
@@ -392,7 +366,7 @@ const useProductChanges = () => {
  *
  * When the selected patterns change, it invalidates the proposal query.
  */
-const useProposalChanges = () => {
+const useSoftwareProposalChanges = () => {
   const client = useInstallerClient();
   const queryClient = useQueryClient();
 
@@ -438,10 +412,9 @@ export {
   usePatterns,
   useProduct,
   useProductChanges,
-  useProposal,
-  useProposalChanges,
+  useSoftwareProposal,
+  useSoftwareProposalChanges,
   useRegisterAddonMutation,
-  useRegisterMutation,
   useRegisteredAddons,
   useRegistration,
   useRepositories,

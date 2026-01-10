@@ -21,7 +21,7 @@
  */
 
 import React from "react";
-import { NavLink, useLocation } from "react-router-dom";
+import { NavLink, useLocation } from "react-router";
 import {
   Nav,
   NavItem,
@@ -33,11 +33,15 @@ import {
 import { Icon } from "~/components/layout";
 import { rootRoutes } from "~/router";
 import { _ } from "~/i18n";
-import { useProduct } from "~/queries/software";
+import { useProductInfo } from "~/hooks/model/config/product";
 
 const MainNavigation = (): React.ReactNode => {
-  const { selectedProduct: product } = useProduct();
+  const product = useProductInfo();
   const location = useLocation();
+
+  if (!product) {
+    return null;
+  }
 
   const links = rootRoutes().map((route) => {
     const { path, handle: data } = route;

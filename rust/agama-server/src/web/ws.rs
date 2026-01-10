@@ -20,10 +20,9 @@
 
 //! Implements the websocket handling.
 
-use std::sync::Arc;
-
-use super::{state::ServiceState, EventsSender};
+use super::state::ServiceState;
 use agama_lib::auth::ClientId;
+use agama_utils::api::event;
 use axum::{
     extract::{
         ws::{Message, WebSocket},
@@ -32,6 +31,18 @@ use axum::{
     response::IntoResponse,
     Extension,
 };
+use std::sync::Arc;
+use tokio::sync::broadcast;
+
+#[derive(Debug, thiserror::Error)]
+pub enum Error {
+    #[error("Error serializing WebSocket message")]
+    Serialize(#[from] serde_json::Error),
+    #[error("Could not receive the event")]
+    RecvEvent(#[from] broadcast::error::RecvError),
+    #[error("Websocket closed")]
+    WebSocketClosed(#[from] axum::Error),
+}
 
 pub async fn ws_handler(
     State(state): State<ServiceState>,
@@ -41,24 +52,38 @@ pub async fn ws_handler(
     ws.on_upgrade(move |socket| handle_socket(socket, state.events, client_id))
 }
 
-async fn handle_socket(mut socket: WebSocket, events: EventsSender, client_id: Arc<ClientId>) {
-    let mut rx = events.subscribe();
+async fn handle_socket(mut socket: WebSocket, events: event::Sender, client_id: Arc<ClientId>) {
+    let mut events_rx = events.subscribe();
 
-    let conn_event = agama_lib::event!(ClientConnected, client_id.as_ref());
-    if let Ok(json) = serde_json::to_string(&conn_event) {
-        _ = socket.send(Message::Text(json)).await;
-    }
-
-    while let Ok(msg) = rx.recv().await {
-        match serde_json::to_string(&msg) {
-            Ok(json) => {
-                if let Err(e) = socket.send(Message::Text(json)).await {
-                    tracing::info!("ws: client disconnected: {e}");
-                    return;
+    loop {
+        tokio::select! {
+            // Handle messages from the client
+            msg = socket.recv() => {
+                match msg {
+                    Some(Ok(Message::Close(_))) | Some(Err(_)) | None => break,
+                    Some(Ok(_)) => {}
                 }
             }
-            Err(e) => {
-                tracing::error!("ws: error serializing message: {e}")
+
+            // Emit events from the server
+            msg = events_rx.recv() => {
+                match msg {
+                    Ok(event) => {
+                        let Ok(json) = serde_json::to_string(&event) else {
+                            tracing::warn!("ws: could not serialize event: {event:?}");
+                            continue;
+                        };
+
+                        if socket.send(Message::Text(json)).await.is_err() {
+                            // Failed to send the message, client probably disconnected.
+                            break;
+                        }
+                    }
+                    Err(error) => {
+                        tracing::warn!("ws: could not receive the event: {error}");
+                        break;
+                    }
+                }
             }
         }
     }

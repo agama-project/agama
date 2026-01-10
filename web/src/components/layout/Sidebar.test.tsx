@@ -23,9 +23,10 @@
 import React from "react";
 import { screen, within } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
-import Sidebar from "./Sidebar";
+import { useSystem } from "~/hooks/model/system";
 import { Product } from "~/types/software";
-import { useProduct } from "~/queries/software";
+import { System } from "~/model/system/network";
+import Sidebar from "./Sidebar";
 
 const tw: Product = {
   id: "Tumbleweed",
@@ -39,16 +40,28 @@ const sle: Product = {
   registration: true,
 };
 
-let selectedProduct: Product;
-
-jest.mock("~/queries/software", () => ({
-  ...jest.requireActual("~/queries/software"),
-  useProduct: (): ReturnType<typeof useProduct> => {
-    return {
-      products: [tw, sle],
-      selectedProduct,
-    };
+const network: System = {
+  connections: [],
+  devices: [],
+  state: {
+    connectivity: true,
+    copyNetwork: true,
+    networkingEnabled: true,
+    wirelessEnabled: true,
   },
+  accessPoints: [],
+};
+
+const mockSelectedProduct: jest.Mock<Product> = jest.fn();
+
+jest.mock("~/hooks/model/system", () => ({
+  ...jest.requireActual("~/hooks/model/system"),
+  useSystem: (): ReturnType<typeof useSystem> => ({ products: [tw, sle], network }),
+}));
+
+jest.mock("~/hooks/model/config/product", () => ({
+  ...jest.requireActual("~/hooks/model/config/product"),
+  useProductInfo: (): Product => mockSelectedProduct(),
 }));
 
 jest.mock("~/router", () => ({
@@ -67,7 +80,7 @@ jest.mock("~/router", () => ({
 describe("Sidebar", () => {
   describe("when product is registrable", () => {
     beforeEach(() => {
-      selectedProduct = sle;
+      mockSelectedProduct.mockReturnValue(sle);
     });
 
     it("renders a navigation including all root routes with handle object", () => {
@@ -83,7 +96,7 @@ describe("Sidebar", () => {
 
   describe("when product is not registrable", () => {
     beforeEach(() => {
-      selectedProduct = tw;
+      mockSelectedProduct.mockReturnValue(tw);
     });
 
     it("renders a navigation including all root routes with handle object, except ones set as needsRegistrableProduct", () => {

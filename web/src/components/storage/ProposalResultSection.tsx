@@ -24,11 +24,15 @@ import React from "react";
 import { Skeleton, Stack, Tab, Tabs, TabTitleText } from "@patternfly/react-core";
 import SmallWarning from "~/components/core/SmallWarning";
 import { Page, NestedContent } from "~/components/core";
-import DevicesManager from "~/components/storage/DevicesManager";
+import DevicesManager from "~/model/storage/devices-manager";
 import ProposalResultTable from "~/components/storage/ProposalResultTable";
-import { ProposalActionsDialog } from "~/components/storage";
+import ProposalActions from "~/components/storage/ProposalActions";
 import { _, n_, formatList, TranslatedString } from "~/i18n";
-import { useActions, useDevices } from "~/queries/storage";
+import { useFlattenDevices as useSystemFlattenDevices } from "~/hooks/model/system/storage";
+import {
+  useFlattenDevices as useProposalFlattenDevices,
+  useActions,
+} from "~/hooks/model/proposal/storage";
 import { sprintf } from "sprintf-js";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import { useStorageUiState } from "~/context/storage-ui-state";
@@ -96,7 +100,7 @@ function ActionsList({ manager }: ActionsListProps) {
   return (
     <Stack hasGutter>
       <DeletionsInfo manager={manager} />
-      <ProposalActionsDialog actions={actions} />
+      <ProposalActions actions={actions} />
     </Stack>
   );
 }
@@ -107,8 +111,8 @@ export type ProposalResultSectionProps = {
 
 export default function ProposalResultSection({ isLoading = false }: ProposalResultSectionProps) {
   const { uiState, setUiState } = useStorageUiState();
-  const system = useDevices("system", { suspense: true });
-  const staging = useDevices("result", { suspense: true });
+  const system = useSystemFlattenDevices();
+  const staging = useProposalFlattenDevices();
   const actions = useActions();
   const devicesManager = new DevicesManager(system, staging, actions);
   const handleTabClick = (

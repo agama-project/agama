@@ -21,7 +21,7 @@
  */
 
 import React from "react";
-import { useParams } from "react-router-dom";
+import { useParams } from "react-router";
 import {
   Content,
   EmptyState,
@@ -30,7 +30,7 @@ import {
   EmptyStateFooter,
 } from "@patternfly/react-core";
 import { Link, Page } from "~/components/core";
-import { useConnections, useNetworkChanges } from "~/queries/network";
+import { useConnections } from "~/hooks/model/proposal/network";
 import { _ } from "~/i18n";
 import { sprintf } from "sprintf-js";
 import WiredConnectionDetails from "./WiredConnectionDetails";
@@ -61,7 +61,6 @@ const ConnectionNotFound = ({ id }) => {
 };
 
 export default function WiredConnectionPage() {
-  useNetworkChanges();
   const { id } = useParams();
   const connections = useConnections();
   const connection = connections.find((c) => c.id === id);

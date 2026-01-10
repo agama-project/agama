@@ -58,13 +58,14 @@ module Agama
             issues_list:       ay_issues
           )
           proposal.propose
+          log_warnings
         ensure
           storage_manager.proposal = proposal
         end
 
         # @see Base#issues
         def issues
-          ay_issues.map { |i| agama_issue(i) }
+          ay_errors.map { |i| agama_issue(i) }
         end
 
       private
@@ -81,13 +82,28 @@ module Agama
           agama_default.to_y2storage(config: product_config)
         end
 
+        # Logs AutoYaST warnings
+        def log_warnings
+          ay_warnings.each { |w| logger.warn(w) }
+        end
+
+        # AutoYaST warnings
+        #
+        # @return [Array<::Installation::AutoinstIssues::Issue>
+        def ay_warnings
+          ay_issues.select(&:warn?)
+        end
+
+        # AutoYaST errors
+        #
+        # @return [Array<::Installation::AutoinstIssues::Issue>
+        def ay_errors
+          ay_issues.reject(&:warn?)
+        end
+
         # Agama issue equivalent to the given AutoYaST issue
         def agama_issue(ay_issue)
-          Issue.new(
-            ay_issue.message,
-            source:   Issue::Source::CONFIG,
-            severity: ay_issue.warn? ? Issue::Severity::WARN : Issue::Severity::ERROR
-          )
+          Issue.new(ay_issue.message)
         end
       end
     end

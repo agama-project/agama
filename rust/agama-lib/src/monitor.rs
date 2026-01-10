@@ -22,14 +22,11 @@
 //!
 //! The monitor tracks:
 //!
-//! * Changes in the installer status (see InstallerStatus).
-//! * Progress changes in any service.
+//! * Changes in the installer status (see [api::Status]).
 //!
 //! Each time the installer status changes, it sends the new status using the
-//! MonitorStatus struct.
+//! [api::Status] struct.
 //!
-//! Note: in the future we might send only the changes, but at this point
-//! the monitor sends the full status.
 //!
 //! ```no_run
 //!   # use agama_lib::{monitor::Monitor, auth::AuthToken, http::{BaseHTTPClient, WebSocketClient}};
@@ -44,26 +41,17 @@
 //!
 //!     loop {
 //!       if let Ok(status) = updates.recv().await {
-//!           println!("Status: {:?}", &status.installer_status);
+//!           println!("Status: {:?}", &status.stage);
 //!       }
 //!     }
 //!  }
 //! ```
 //!
 
-use std::collections::HashMap;
+use agama_utils::api::{self, Event};
 use tokio::sync::{broadcast, mpsc, oneshot};
 
-use crate::{
-    http::{
-        BaseHTTPClient, BaseHTTPClientError, Event, EventPayload, WebSocketClient, WebSocketError,
-    },
-    manager::{InstallationPhase, InstallerStatus},
-    progress::Progress,
-};
-
-const MANAGER_PROGRESS_OBJECT_PATH: &str = "/org/opensuse/Agama/Manager1";
-const SOFTWARE_PROGRESS_OBJECT_PATH: &str = "/org/opensuse/Agama/Software1";
+use crate::http::{BaseHTTPClient, BaseHTTPClientError, WebSocketClient, WebSocketError};
 
 #[derive(thiserror::Error, Debug)]
 pub enum MonitorError {
@@ -77,60 +65,18 @@ pub enum MonitorError {
     Recv(#[from] oneshot::error::RecvError),
 }
 
-/// Represents the current status of the installer.
-#[derive(Clone, Debug, Default)]
-pub struct MonitorStatus {
-    /// The general installer status.
-    ///
-    /// FIXME: do not hold the full status (some elements are not updated)
-    pub installer_status: InstallerStatus,
-    /// Progress for each service using the D-Bus object path as the key. If the progress is
-    /// finished, the entry is removed from the map.
-    pub progress: HashMap<String, Progress>,
-}
-
-impl MonitorStatus {
-    /// Updates the progress for the given service.
-    ///
-    /// The entry is removed if the progress is finished.
-    ///
-    /// * `service`: D-Bus object path.
-    /// * `progress`: updated progress.
-    fn update_progress(&mut self, path: String, progress: Progress) {
-        if progress.finished {
-            _ = self.progress.remove_entry(&path);
-        } else {
-            _ = self.progress.insert(path, progress);
-        }
-    }
-
-    /// Sets whether the installer is busy or not.
-    ///
-    /// * `is_busy`: whether the installer is busy.
-    fn set_is_busy(&mut self, is_busy: bool) {
-        self.installer_status.is_busy = is_busy;
-    }
-
-    /// Sets the service phase.
-    ///
-    /// * `phase`: installation phase.
-    fn set_phase(&mut self, phase: InstallationPhase) {
-        self.installer_status.phase = phase;
-    }
-}
-
 /// It allows connecting to the Agama monitor to get the status or listen for changes.
 ///
 /// It can be cloned and moved between threads.
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct MonitorClient {
     commands: mpsc::Sender<MonitorCommand>,
-    pub updates: broadcast::Sender<MonitorStatus>,
+    pub updates: broadcast::Sender<api::Status>,
 }
 
 impl MonitorClient {
     /// Returns the installer status.
-    pub async fn get_status(&self) -> Result<MonitorStatus, MonitorError> {
+    pub async fn get_status(&self) -> Result<api::Status, MonitorError> {
         let (tx, rx) = tokio::sync::oneshot::channel();
         _ = self.commands.send(MonitorCommand::GetStatus(tx)).await;
         Ok(rx.await?)
@@ -139,7 +85,7 @@ impl MonitorClient {
     /// Subscribe to status updates from the monitor.
     ///
     /// It uses a regular broadcast channel from the Tokio library.
-    pub fn subscribe(&self) -> broadcast::Receiver<MonitorStatus> {
+    pub fn subscribe(&self) -> broadcast::Receiver<api::Status> {
         self.updates.subscribe()
     }
 }
@@ -150,14 +96,15 @@ pub struct Monitor {
     // Channel to receive commands.
     commands: mpsc::Receiver<MonitorCommand>,
     // Channel to send updates.
-    updates: broadcast::Sender<MonitorStatus>,
-    status: MonitorStatus,
+    updates: broadcast::Sender<api::Status>,
+    status: api::Status,
     ws_client: WebSocketClient,
+    status_reader: MonitorStatusReader,
 }
 
 #[derive(Debug)]
 enum MonitorCommand {
-    GetStatus(tokio::sync::oneshot::Sender<MonitorStatus>),
+    GetStatus(tokio::sync::oneshot::Sender<api::Status>),
 }
 
 impl Monitor {
@@ -180,13 +127,15 @@ impl Monitor {
             updates: updates.clone(),
         };
 
-        let status = MonitorStatusReader::with_client(http_client).read().await?;
+        let status_reader = MonitorStatusReader::with_client(http_client);
+        let status = status_reader.read().await?;
 
         let mut monitor = Monitor {
             status,
             updates,
             commands: commands_rx,
             ws_client: websocket_client,
+            status_reader,
         };
 
         tokio::spawn(async move { monitor.run().await });
@@ -201,7 +150,7 @@ impl Monitor {
                     self.handle_command(cmd);
                 }
                 Ok(event) = self.ws_client.receive() => {
-                    self.handle_event(event);
+                    self.handle_event(event).await;
                 }
             }
         }
@@ -224,22 +173,28 @@ impl Monitor {
     /// sends the updated state to its subscribers.
     ///
     /// * `event`: Agama event.
-    fn handle_event(&mut self, event: Event) {
-        match event.payload {
-            EventPayload::ProgressChanged { path, progress } => {
-                self.status.update_progress(path, progress);
+    async fn handle_event(&mut self, event: Event) {
+        match event {
+            // status related events is used here.
+            Event::ProgressFinished { scope: _ } => {}
+            Event::StageChanged => {}
+            Event::ProgressChanged { progress: _ } => {}
+            _ => {
+                return;
             }
-            EventPayload::ServiceStatusChanged { service, status } => {
-                if service.as_str() == MANAGER_PROGRESS_OBJECT_PATH {
-                    self.status.set_is_busy(status == 1);
-                }
-            }
-            EventPayload::InstallationPhaseChanged { phase } => {
-                self.status.set_phase(phase);
-            }
-            _ => {}
         }
+        self.reread_status().await;
         let _ = self.updates.send(self.status.clone());
+    }
+
+    async fn reread_status(&mut self) {
+        let status_result = self.status_reader.read().await;
+
+        let Ok(new_status) = status_result else {
+            tracing::warn!("Failed to read status {:?}", status_result);
+            return;
+        };
+        self.status = new_status;
     }
 }
 
@@ -253,39 +208,8 @@ impl MonitorStatusReader {
         Self { http }
     }
 
-    pub async fn read(self) -> Result<MonitorStatus, MonitorError> {
-        let installer_status: InstallerStatus = self.http.get("/manager/installer").await?;
-        let mut status = MonitorStatus {
-            installer_status,
-            ..Default::default()
-        };
-
-        self.add_service_progress(
-            &mut status,
-            MANAGER_PROGRESS_OBJECT_PATH,
-            "/manager/progress",
-        )
-        .await?;
-        self.add_service_progress(
-            &mut status,
-            SOFTWARE_PROGRESS_OBJECT_PATH,
-            "/software/progress",
-        )
-        .await?;
+    pub async fn read(&self) -> Result<api::Status, MonitorError> {
+        let status: api::Status = self.http.get("/v2/status").await?;
         Ok(status)
-    }
-
-    async fn add_service_progress(
-        &self,
-        status: &mut MonitorStatus,
-        dbus_path: &str,
-        path: &str,
-    ) -> Result<(), MonitorError> {
-        let progress: Progress = self.http.get(path).await?;
-        if progress.finished {
-            return Ok(());
-        }
-        status.progress.insert(dbus_path.to_string(), progress);
-        Ok(())
     }
 }

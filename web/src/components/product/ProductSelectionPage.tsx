@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Bullseye,
   Button,
@@ -37,17 +37,20 @@ import {
   Stack,
   StackItem,
 } from "@patternfly/react-core";
-import { Navigate, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { Page } from "~/components/core";
-import { useConfigMutation, useProduct, useRegistration } from "~/queries/software";
 import pfTextStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import pfRadioStyles from "@patternfly/react-styles/css/components/Radio/radio";
-import { PATHS } from "~/router";
-import { Product } from "~/types/software";
 import { isEmpty } from "radashi";
 import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
+import agama from "~/agama";
 import LicenseDialog from "./LicenseDialog";
+import { useProductInfo } from "~/hooks/model/config/product";
+import { useSystem } from "~/hooks/model/system";
+import { patchConfig } from "~/api";
+import { ROOT } from "~/routes/paths";
+import { Product } from "~/model/system";
 
 const ResponsiveGridItem = ({ children }) => (
   <GridItem sm={10} smOffset={1} lg={8} lgOffset={2} xl={6} xlOffset={3}>
@@ -58,6 +61,11 @@ const ResponsiveGridItem = ({ children }) => (
 const Option = ({ product, isChecked, onChange }) => {
   const detailsId = `${product.id}-details`;
   const logoSrc = `assets/logos/${product.icon}`;
+  const currentLocale = agama.language.replace("-", "_");
+
+  const translatedDescription =
+    product.translations?.description[currentLocale] || product.description;
+
   // TRANSLATORS: %s will be replaced by a product name. E.g., "openSUSE Tumbleweed"
   const logoAltText = sprintf(_("%s logo"), product.name);
 
@@ -83,7 +91,7 @@ const Option = ({ product, isChecked, onChange }) => {
               >
                 {product.name}
               </label>
-              <p id={detailsId}>{product.description}</p>
+              <p id={detailsId}>{translatedDescription}</p>
             </Stack>
           </Split>
         </CardBody>
@@ -102,24 +110,32 @@ const BackLink = () => {
 };
 
 function ProductSelectionPage() {
-  const setConfig = useConfigMutation();
-  const registration = useRegistration();
-  const { products, selectedProduct } = useProduct({ suspense: true });
+  const navigate = useNavigate();
+  const { products } = useSystem();
+  const selectedProduct = useProductInfo();
   const [nextProduct, setNextProduct] = useState(selectedProduct);
   // FIXME: should not be accepted by default first selectedProduct is accepted
   // because it's a singleProduct iso.
   const [licenseAccepted, setLicenseAccepted] = useState(!!selectedProduct);
   const [showLicense, setShowLicense] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isWaiting, setIsWaiting] = useState(false);
 
-  if (registration?.registered && selectedProduct) return <Navigate to={PATHS.root} />;
+  // if (registration?.registered && selectedProduct) return <Navigate to={PATHS.root} />;
+
+  useEffect(() => {
+    if (!isWaiting) return;
+
+    if (selectedProduct?.id === nextProduct?.id) {
+      navigate(ROOT.root);
+    }
+  }, [isWaiting, navigate, nextProduct, selectedProduct]);
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (nextProduct) {
-      setConfig.mutate({ product: nextProduct.id });
-      setIsLoading(true);
+      patchConfig({ product: { id: nextProduct.id } });
+      setIsWaiting(true);
     }
   };
 
@@ -130,7 +146,8 @@ function ProductSelectionPage() {
 
   const selectionHasChanged = nextProduct && nextProduct !== selectedProduct;
   const mountLicenseCheckbox = !isEmpty(nextProduct?.license);
-  const isSelectionDisabled = !selectionHasChanged || (mountLicenseCheckbox && !licenseAccepted);
+  const isSelectionDisabled =
+    isWaiting || !selectionHasChanged || (mountLicenseCheckbox && !licenseAccepted);
 
   const [eulaTextStart, eulaTextLink, eulaTextEnd] = sprintf(
     // TRANSLATORS: Text used for the license acceptance checkbox. %s will be
@@ -199,11 +216,12 @@ function ProductSelectionPage() {
                   <Page.Submit
                     form="productSelectionForm"
                     isDisabled={isSelectionDisabled}
-                    isLoading={isLoading}
+                    isLoading={isWaiting}
+                    variant={isWaiting ? "secondary" : "primary"}
                   >
                     {_("Select")}
                   </Page.Submit>
-                  {selectedProduct && !isLoading && <BackLink />}
+                  {selectedProduct && <BackLink />}
                 </Split>
               </StackItem>
             </Stack>
