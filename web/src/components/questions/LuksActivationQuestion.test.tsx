@@ -23,6 +23,7 @@
 import React from "react";
 import { screen } from "@testing-library/react";
 import { useStatus } from "~/hooks/model/status";
+import { useSystem } from "~/hooks/model/system";
 import { useProductInfo } from "~/hooks/model/config/product";
 import { installerRender } from "~/test-utils";
 import { AnswerCallback, Question, FieldType } from "~/model/question";
@@ -60,12 +61,19 @@ const keymaps: Keymap[] = [
   { id: "es", description: "Spanish" },
 ];
 
+const answerFn: AnswerCallback = jest.fn();
+
 jest.mock("~/hooks/model/system", () => ({
   ...jest.requireActual("~/hooks/model/system"),
-  useSystem: () => ({ l10n: { locales, keymaps, keymap: "us", language: "de-DE" } }),
+  useSystem: (): ReturnType<typeof useSystem> => ({
+    l10n: {
+      locale: "en_US.UTF-8",
+      locales,
+      keymaps,
+      keymap: "us",
+    },
+  }),
 }));
-
-const answerFn: AnswerCallback = jest.fn();
 
 jest.mock("~/hooks/model/status", () => ({
   ...jest.requireActual("~/hooks/model/status"),

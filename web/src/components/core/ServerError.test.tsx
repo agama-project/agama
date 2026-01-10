@@ -30,7 +30,7 @@ import ServerError from "./ServerError";
 jest.mock("~/components/product/ProductRegistrationAlert", () => () => (
   <div>ProductRegistrationAlert Mock</div>
 ));
-
+jest.mock("~/components/questions/Questions", () => () => <div>Questions Mock</div>);
 jest.mock("~/components/layout/Header", () => () => <div>Header Mock</div>);
 jest.mock("~/components/layout/Sidebar", () => () => <div>Sidebar Mock</div>);
 jest.mock("~/components/layout/Layout", () => {
