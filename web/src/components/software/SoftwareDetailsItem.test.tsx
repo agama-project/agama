@@ -28,9 +28,9 @@ import { useProposal } from "~/hooks/model/proposal/software";
 import { SelectedBy } from "~/model/proposal/software";
 import SoftwareDetailsItem from "./SoftwareDetailsItem";
 
-let mockUseProgressTrackingFn: jest.Mock<ReturnType<typeof useProgressTracking>> = jest.fn();
-let mockUseProposalFn: jest.Mock<ReturnType<typeof useProposal>> = jest.fn();
-let mockUseSelectedPatternsFn: jest.Mock<ReturnType<typeof useSelectedPatterns>> = jest.fn();
+const mockUseProgressTrackingFn: jest.Mock<ReturnType<typeof useProgressTracking>> = jest.fn();
+const mockUseProposalFn: jest.Mock<ReturnType<typeof useProposal>> = jest.fn();
+const mockUseSelectedPatternsFn: jest.Mock<ReturnType<typeof useSelectedPatterns>> = jest.fn();
 
 jest.mock("~/hooks/model/system/software", () => ({
   ...jest.requireActual("~/hooks/model/system/software"),

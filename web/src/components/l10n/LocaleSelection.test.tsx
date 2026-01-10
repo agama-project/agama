@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2023-2025] SUSE LLC
+ * Copyright (c) [2023-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -38,10 +38,9 @@ jest.mock("~/components/product/ProductRegistrationAlert", () => () => (
   <div>ProductRegistrationAlert Mock</div>
 ));
 
-jest.mock("~/hooks/api", () => ({
-  ...jest.requireActual("~/hooks/api"),
-  useSystem: () => ({ l10n: { locales } }),
-  useProposal: () => ({ l10n: { locales, locale: "us_US.UTF-8", keymap: "us" } }),
+jest.mock("react-router", () => ({
+  ...jest.requireActual("react-router"),
+  useNavigate: () => mockNavigateFn,
 }));
 
 jest.mock("~/api", () => ({
@@ -49,12 +48,17 @@ jest.mock("~/api", () => ({
   patchConfig: (config) => mockPatchConfigFn(config),
 }));
 
-jest.mock("react-router", () => ({
-  ...jest.requireActual("react-router"),
-  useNavigate: () => mockNavigateFn,
+jest.mock("~/hooks/model/system/l10n", () => ({
+  ...jest.requireActual("~/hooks/model/system/l10n"),
+  useSystem: () => ({ locales }),
 }));
 
-it("allows changing the keyboard", async () => {
+jest.mock("~/hooks/model/proposal/l10n", () => ({
+  ...jest.requireActual("~/hooks/model/proposal/l10n"),
+  useProposal: () => ({ locales, locale: "us_US.UTF-8", keymap: "us" }),
+}));
+
+it("allows changing the language", async () => {
   installerRender(<LocaleSelection />);
 
   const option = await screen.findByText("Spanish");

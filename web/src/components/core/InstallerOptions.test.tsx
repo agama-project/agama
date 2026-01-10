@@ -78,17 +78,25 @@ jest.mock("~/api", () => ({
   patchConfig: (payload) => mockPatchConfigFn(payload),
 }));
 
-jest.mock("~/hooks/api", () => ({
-  ...jest.requireActual("~/hooks/api"),
+jest.mock("~/hooks/model/system", () => ({
+  ...jest.requireActual("~/hooks/model/system"),
   useSystem: (): ReturnType<typeof useSystem> => ({
     l10n: { locales, keymaps, locale: "us_US.UTF-8", keymap: "us" },
     network,
   }),
+}));
+
+jest.mock("~/hooks/model/config/product", () => ({
+  ...jest.requireActual("~/hooks/model/config/product"),
+  useProductInfo: (): ReturnType<typeof useProductInfo> => mockSelectedProductFn(),
+}));
+
+jest.mock("~/hooks/model/status", () => ({
+  ...jest.requireActual("~/hooks/model/status"),
   useStatus: (): ReturnType<typeof useStatus> => ({
     stage: mockStateFn(),
     progresses: mockProgressesFn(),
   }),
-  useProductInfo: (): ReturnType<typeof useProductInfo> => mockSelectedProductFn(),
 }));
 
 jest.mock("~/context/installerL10n", () => ({

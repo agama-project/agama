@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2024] SUSE LLC
+ * Copyright (c) [2022-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -23,8 +23,10 @@
 import React from "react";
 import { screen } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
-import InstallationFinished from "./InstallationFinished";
 import type { Storage } from "~/model/config";
+import InstallationFinished from "~/components/core/InstallationFinished";
+
+jest.mock("~/components/core/InstallerOptions", () => () => <div>Installer Options</div>);
 
 jest.mock("~/queries/status", () => ({
   ...jest.requireActual("~/queries/status"),
@@ -38,8 +40,7 @@ type guidedEncryption = {
   pbkdFunction?: string;
 };
 
-let mockEncryption: undefined | Storage.Encryption | guidedEncryption;
-let mockType: storageConfigType;
+const mockUseExtendedConfigFn = jest.fn();
 
 const mockStorageConfig = (
   type: storageConfigType,
@@ -51,56 +52,57 @@ const mockStorageConfig = (
   switch (type) {
     case "guided":
       return {
-        guided: {
-          ...encryptionHash,
+        storage: {
+          guided: {
+            ...encryptionHash,
+          },
         },
       };
     case "raw":
       return {
-        drives: [
-          {
-            partitions: [
-              {
-                filesystem: {
-                  path: "/",
+        storage: {
+          drives: [
+            {
+              partitions: [
+                {
+                  filesystem: {
+                    path: "/",
+                  },
+                  id: "linux",
+                  ...encryptionHash,
                 },
-                id: "linux",
-                ...encryptionHash,
-              },
-              {
-                filesystem: {
-                  mountBy: "uuid",
-                  path: "swap",
-                  type: "swap",
+                {
+                  filesystem: {
+                    mountBy: "uuid",
+                    path: "swap",
+                    type: "swap",
+                  },
+                  id: "swap",
+                  size: "2 GiB",
                 },
-                id: "swap",
-                size: "2 GiB",
-              },
-            ],
-          },
-        ],
+              ],
+            },
+          ],
+        },
       };
   }
 };
 
-jest.mock("~/queries/storage", () => ({
-  ...jest.requireActual("~/queries/storage"),
-  useConfig: () => mockStorageConfig(mockType, mockEncryption),
+jest.mock("~/hooks/model/config", () => ({
+  ...jest.requireActual("~/hooks/model/config"),
+  useExtendedConfig: () => mockUseExtendedConfigFn(),
 }));
 
 const mockFinishInstallation = jest.fn();
 
-jest.mock("~/api/manager", () => ({
-  ...jest.requireActual("~/api/manager"),
+jest.mock("~/model/manager", () => ({
+  ...jest.requireActual("~/model/manager"),
   finishInstallation: () => mockFinishInstallation(),
 }));
 
-jest.mock("~/components/core/InstallerOptions", () => () => <div>Installer Options</div>);
-
 describe("InstallationFinished", () => {
   beforeEach(() => {
-    mockEncryption = null;
-    mockType = "guided";
+    mockUseExtendedConfigFn.mockReturnValue(mockStorageConfig("guided", null));
   });
 
   it("shows the finished installation screen", () => {
@@ -122,16 +124,18 @@ describe("InstallationFinished", () => {
 
   describe("when running storage config in raw mode", () => {
     beforeEach(() => {
-      mockType = "raw";
+      mockUseExtendedConfigFn.mockReturnValue(mockStorageConfig("raw", null));
     });
 
     describe("when TPM is set as encryption method", () => {
       beforeEach(() => {
-        mockEncryption = {
-          tpmFde: {
-            password: "n0tS3cr3t",
-          },
-        };
+        mockUseExtendedConfigFn.mockReturnValue(
+          mockStorageConfig("raw", {
+            tpmFde: {
+              password: "n0tS3cr3t",
+            },
+          }),
+        );
       });
 
       it("shows the TPM reminder", async () => {
@@ -141,6 +145,10 @@ describe("InstallationFinished", () => {
     });
 
     describe("when TPM is not set as encryption method", () => {
+      beforeEach(() => {
+        mockUseExtendedConfigFn.mockReturnValue(mockStorageConfig("raw", null));
+      });
+
       it("does not show the TPM reminder", async () => {
         plainRender(<InstallationFinished />);
         expect(screen.queryAllByText(/TPM/)).toHaveLength(0);
@@ -151,10 +159,12 @@ describe("InstallationFinished", () => {
   describe("when running storage config in guided mode", () => {
     describe("when TPM is set as encryption method", () => {
       beforeEach(() => {
-        mockEncryption = {
-          method: "tpm_fde",
-          password: "n0tS3cr3t",
-        };
+        mockUseExtendedConfigFn.mockReturnValue(
+          mockStorageConfig("guided", {
+            method: "tpm_fde",
+            password: "n0tS3cr3t",
+          }),
+        );
       });
 
       it("shows the TPM reminder", async () => {
@@ -164,6 +174,10 @@ describe("InstallationFinished", () => {
     });
 
     describe("when TPM is not set as encryption method", () => {
+      beforeEach(() => {
+        mockUseExtendedConfigFn.mockReturnValue(mockStorageConfig("guided", null));
+      });
+
       it("does not show the TPM reminder", async () => {
         plainRender(<InstallationFinished />);
         expect(screen.queryAllByText(/TPM/)).toHaveLength(0);

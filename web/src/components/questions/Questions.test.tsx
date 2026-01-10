@@ -28,7 +28,7 @@ import Questions from "~/components/questions/Questions";
 import * as GenericQuestionComponent from "~/components/questions/GenericQuestion";
 
 let mockQuestions: Question[];
-const mockMutation = jest.fn();
+const mockPatchQuestionFn = jest.fn();
 
 jest.mock("~/components/questions/LuksActivationQuestion", () => () => (
   <div>A LUKS activation question mock</div>
@@ -42,11 +42,14 @@ jest.mock("~/components/questions/LoadConfigRetryQuestion", () => () => (
   <div>LoadConfigRetryQuestion mock</div>
 ));
 
-jest.mock("~/queries/questions", () => ({
-  ...jest.requireActual("~/queries/software"),
+jest.mock("~/api", () => ({
+  ...jest.requireActual("~/api"),
+  patchQuestion: (...args) => mockPatchQuestionFn(...args),
+}));
+
+jest.mock("~/hooks/model/question", () => ({
+  ...jest.requireActual("~/hooks/model/question"),
   useQuestions: () => mockQuestions,
-  useQuestionsChanges: () => jest.fn(),
-  useQuestionsConfig: () => ({ mutate: mockMutation }),
 }));
 
 const genericQuestion: Question = {
@@ -124,7 +127,7 @@ describe("Questions", () => {
       const { user } = plainRender(<Questions />);
       const button = screen.getByRole("button", { name: "Always" });
       await user.click(button);
-      expect(mockMutation).toHaveBeenCalledWith({
+      expect(mockPatchQuestionFn).toHaveBeenCalledWith({
         ...genericQuestion,
         answer: { action: "always" },
       });

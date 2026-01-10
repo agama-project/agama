@@ -198,11 +198,11 @@ const installerRender = (ui: React.ReactNode, options: { withL10n?: boolean } = 
   const queryClient = new QueryClient({});
 
   const Wrapper = ({ children }) => (
-    <Providers withL10n={options.withL10n}>
-      <MemoryRouter initialEntries={initialRoutes()}>
-        <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
-      </MemoryRouter>
-    </Providers>
+    <QueryClientProvider client={queryClient}>
+      <Providers withL10n={options.withL10n}>
+        <MemoryRouter initialEntries={initialRoutes()}>{children}</MemoryRouter>
+      </Providers>
+    </QueryClientProvider>
   );
 
   return {

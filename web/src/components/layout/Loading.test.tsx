@@ -21,13 +21,12 @@
  */
 
 import React from "react";
-
 import { screen } from "@testing-library/react";
 import { installerRender, plainRender } from "~/test-utils";
-
-import Loading from "./Loading";
 import { _ } from "~/i18n";
+import Loading from "./Loading";
 
+jest.mock("~/components/questions/Questions", () => () => <div>Questions Mock</div>);
 jest.mock("~/components/layout/Header", () => () => <div>Header Mock</div>);
 jest.mock("~/components/layout/Sidebar", () => () => <div>Sidebar Mock</div>);
 jest.mock("~/components/layout/Layout", () => {
