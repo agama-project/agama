@@ -7,10 +7,10 @@ export default {
     " Seleção de fuso horário"
   ],
   "\"%s\"": [
-    ""
+    "\"%s\""
   ],
   "\"%s\" does not exist or is no longer available.": [
-    ""
+    "\"%s\" não existe ou não está mais disponível."
   ],
   "%1$s (%2$s)": [
     "%1$s (%2$s)"
@@ -739,7 +739,7 @@ export default {
     "ExFAT"
   ],
   "Example: %s": [
-    ""
+    "Exemplo: %s"
   ],
   "Excellent signal": [
     "Sinal excelente"
