@@ -21,6 +21,9 @@ export default {
   "%1$s at %2$s": [
     "%1$s på %2$s"
   ],
+  "%1$s keyboard - %2$s timezone": [
+    ""
+  ],
   "%1$s will be created as a partition at %2$s": [
     "%1$s kommer att skapas som en partition på %2$s",
     "%1$s kommer att skapa partitioner på %2$s"
@@ -36,6 +39,9 @@ export default {
   ],
   "%s [must be registered].": [
     "%s [måste registreras]."
+  ],
+  "%s and %d others": [
+    ""
   ],
   "%s disk": [
     "%s disk"
@@ -237,8 +243,14 @@ export default {
   "Authentication by target": [
     "Autentisering av mål"
   ],
+  "Auto": [
+    "Auto"
+  ],
   "Auto LUNs Scan": [
     "Automatisk LUN-skanning"
+  ],
+  "Auto and manual": [
+    ""
   ],
   "Automatic": [
     "Automatisk"
@@ -246,11 +258,11 @@ export default {
   "Automatic (DHCP)": [
     "Automatisk (DHCP)"
   ],
-  "Automatic LUN scan is [disabled]. LUNs have to be manually       configured after activating a controller.": [
-    "Automatisk LUN-skanning är [avaktiverad]. LUN kommer att behöva vara manuellt       konfigurerat efter aktivering av en styrenhet."
+  "Automatic LUN scan is [disabled]. LUNs have to be manually configured after activating a controller.": [
+    "Automatisk LUN-skanning är [avaktiverad]. LUN kommer att behöva vara manuellt konfigurerat efter aktivering av en styrenhet."
   ],
-  "Automatic LUN scan is [enabled]. Activating a controller which is       running in NPIV mode will automatically configures all its LUNs.": [
-    "Automatisk LUN-skanning är [aktiverad]. Aktiverar en styrenhet som är       körande i NPIV läge kommer att automatiskt konfigurera alla dess LUN."
+  "Automatic LUN scan is [enabled]. Activating a controller which is running in NPIV mode will automatically configures all its LUNs.": [
+    "Automatisk LUN-skanning är [aktiverad]. Aktiverar en styrenhet som är körande i NPIV läge kommer att automatiskt konfigurera alla dess LUN."
   ],
   "Available products": [
     "Tillgängliga produkter"
@@ -308,6 +320,9 @@ export default {
   ],
   "Btrfs with snapshots": [
     "Btrfs med ögonblicksavbilder"
+  ],
+  "CPU": [
+    ""
   ],
   "Cancel": [
     "Avbryt"
@@ -408,9 +423,6 @@ export default {
   "Close": [
     "Stäng"
   ],
-  "Configuration out of sync": [
-    "Konfigurationen är inte synkroniserad"
-  ],
   "Configuration read from the iSCSI Boot Firmware Table (iBFT).": [
     "Konfiguration läst från iSCSI Boot Firmware Table (iBFT)."
   ],
@@ -449,9 +461,6 @@ export default {
   ],
   "Confirm": [
     "Bekräfta"
-  ],
-  "Confirm Installation": [
-    "Bekräfta Installation"
   ],
   "Confirm that you really want to continue.": [
     "Bekräfta att du verkligen vill fortsätta."
@@ -504,9 +513,6 @@ export default {
   "Content": [
     "Innehåll"
   ],
-  "Continue": [
-    "Fortsätt"
-  ],
   "Continuing without installing the package can result in a broken system. In some cases the system might not even boot.": [
     "Att fortsätta utan att installera paketet kan resultera i ett trasigt system. I vissa fall kanske systemet inte ens startar."
   ],
@@ -554,6 +560,9 @@ export default {
   ],
   "DASD %s": [
     "DASD %s"
+  ],
+  "DHCP, %s": [
+    ""
   ],
   "DIAG": [
     "DIAG"
@@ -761,9 +770,6 @@ export default {
     "Utöka installationen bortom den valda disken",
     "Utöka installationen bortom det nuvarande valda %d diskarna"
   ],
-  "Extensions": [
-    "Tillägg"
-  ],
   "F2FS": [
     "F2FS"
   ],
@@ -866,6 +872,9 @@ export default {
   "GiB": [
     "GiB"
   ],
+  "Go back": [
+    ""
+  ],
   "Go to network page": [
     "Gå till nätverkssidan"
   ],
@@ -912,6 +921,9 @@ export default {
   "IP settings": [
     "IP inställningar"
   ],
+  "IPs": [
+    ""
+  ],
   "IPv4": [
     "IPv4"
   ],
@@ -920,12 +932,6 @@ export default {
   ],
   "If a local media was used to run this installer, remove it before the next boot.": [
     "Om ett lokalt media användes för att köra det här installationsprogrammet, ta bort det före nästa uppstart."
-  ],
-  "If you continue, partitions on your hard disk will be modified according to the provided installation settings.": [
-    "Om du fortsätter kommer partitionerna på din hårddisk att modifieras enligt de medföljande installationsinställningarna."
-  ],
-  "If you want to disable this check, please specify \"inst.ay_check=0\" at kernel's command-line": [
-    "Om du vill inaktivera den här kontrollen, ange \"inst.ay_check=0\" för kärnans kommandorad"
   ],
   "In progress": [
     "Pågår"
@@ -960,32 +966,8 @@ export default {
   "Install": [
     "Installera"
   ],
-  "Install using an advanced configuration.": [
-    "Installera med en avancerad konfiguration."
-  ],
-  "Install using device %s and deleting all its content.": [
-    "Installerar på enhet %s och raderar allt innehåll."
-  ],
-  "Install using device %s shrinking existing partitions as needed.": [
-    "Installera på enhet %s som krymper befintliga partitioner efter behov."
-  ],
-  "Install using device %s with a custom strategy to find the needed space.": [
-    "Installera på enhet %s med en anpassad strategi för att hitta det utrymme som behövs."
-  ],
-  "Install using device %s without modifying existing partitions.": [
-    "Installera på enhet %s utan att ändra befintliga partitioner."
-  ],
-  "Install using several devices and deleting all its content.": [
-    "Installera med flera enheter och ta bort allt innehåll."
-  ],
-  "Install using several devices shrinking existing partitions as needed.": [
-    "Installera med flera enheter som krymper befintliga partitioner efter behov."
-  ],
-  "Install using several devices with a custom strategy to find the needed space.": [
-    "Installera med flera enheter med en anpassad strategi för att hitta det utrymme som behövs."
-  ],
-  "Install using several devices without modifying existing partitions.": [
-    "Installera med flera enheter utan att ändra befintliga partitioner."
+  "Install now with potential data loss": [
+    ""
   ],
   "Installation devices": [
     "Installations enheter"
@@ -1140,6 +1122,9 @@ export default {
   "Max channel": [
     "Maximal kanal"
   ],
+  "Memory": [
+    ""
+  ],
   "MiB": [
     "MiB"
   ],
@@ -1205,8 +1190,8 @@ export default {
   "Move mount points": [
     "Flytta monteringspunkter"
   ],
-  "Move the mount points currently configured at the selected disks to logical                   volumes of this volume group.": [
-    "Flytta monteringspunkterna som för närvarande är konfigurerade på de valda diskarna till logiska                   volymer på denna volymgrupp."
+  "Move the mount points currently configured at the selected disks to logical volumes of this volume group.": [
+    "Flytta monteringspunkterna som för närvarande är konfigurerade på de valda diskarna till logiska volymer på denna volymgrupp."
   ],
   "Multipath": [
     "Flervägs"
@@ -1258,6 +1243,9 @@ export default {
   ],
   "No content found": [
     "Inget innehåll hittades"
+  ],
+  "No data loss is expected": [
+    ""
   ],
   "No device is currently using this connection.": [
     "Ingen enhet använder för närvarande den här anslutningen."
@@ -1340,9 +1328,6 @@ export default {
   "Not protected network": [
     "Inte skyddat nätverk"
   ],
-  "Not selected yet": [
-    "Inte valt ännu"
-  ],
   "Not supported (%s)": [
     "Stöds inte (%s)"
   ],
@@ -1400,16 +1385,10 @@ export default {
   "Partitions to boot will be set up if needed at the following device.": [
     "Partitioner att starta från kommer att konfigureras om det behövs på följande enhet."
   ],
-  "Partitions to boot will be set up if needed at the installation disk,           based on the location of the %s file system.": [
+  "Partitions to boot will be set up if needed at the installation disk, based on the location of the %s file system.": [
     "Partitioner att starta från kommer att konfigureras vid behov på installationsdisken, baserat på platsen för filsystemet %s."
   ],
-  "Partitions to boot will be set up if needed at the installation disk,         based on the location of the %s file system.": [
-    "Partitioner att starta från kommer att konfigureras vid behov på installationsdisken, baserat på platsen för filsystemet %s."
-  ],
-  "Partitions to boot will be set up if needed at the installation disk.         Currently %1$s, based on the location of the %2$s file system.": [
-    "Partitioner att starta från kommer att konfigureras vid behov på installationsdisken. För närvarande %1$s, baserat på platsen för filsystemet %2$s."
-  ],
-  "Partitions to boot will be set up if needed at the installation disk.       Currently %1$s, based on the location of the %2$s file system.": [
+  "Partitions to boot will be set up if needed at the installation disk. Currently %1$s, based on the location of the %2$s file system.": [
     "Partitioner att starta från kommer att konfigureras vid behov på installationsdisken. För närvarande %1$s, baserat på platsen för filsystemet %2$s."
   ],
   "Partitions to host \"system\" will be created if needed.": [
@@ -1445,9 +1424,6 @@ export default {
   "PiB": [
     "PiB"
   ],
-  "Please, cancel and check the settings if you are unsure.": [
-    "Vänligen, avbryt och kontrollera inställningarna om du är osäker."
-  ],
   "Please, check whether it is running.": [
     "Vänligen kontrollera om den är igång."
   ],
@@ -1469,16 +1445,28 @@ export default {
   "Portal": [
     "Portal"
   ],
+  "Potential data loss": [
+    ""
+  ],
+  "Potential data loss affecting at least %s": [
+    ""
+  ],
   "Pre-installation checks": [
     "Förinstallationskontroller"
   ],
   "Prefix length or netmask": [
     "Prefix längd eller nätmask"
   ],
+  "Proceeding may result in data loss": [
+    ""
+  ],
+  "Proceeding may result in data loss affecting at least %s": [
+    ""
+  ],
   "Product is already registered": [
     "Produkten är redan registrerad"
   ],
-  "Protection for the information stored at           the new file systems, including data, programs, and system files.": [
+  "Protection for the information stored at the new file systems, including data, programs, and system files.": [
     "Skydd för informationen som lagras i de nya filsystemen, inklusive data, program och systemfiler."
   ],
   "Provide email address": [
@@ -1535,15 +1523,6 @@ export default {
   "Reload": [
     "Ladda om"
   ],
-  "Reload now": [
-    "Ladda om nu"
-  ],
-  "Reloading data, please wait...": [
-    "Laddar om data, vänligen vänta..."
-  ],
-  "Reloading is required to get the latest data and avoid issues or data loss.": [
-    "Omladdning krävs för att få de senaste data och undvika problem eller dataförlust."
-  ],
   "Remove": [
     "Ta bort"
   ],
@@ -1552,6 +1531,13 @@ export default {
   ],
   "Repository load failed": [
     "Det gick inte att ladda förråd"
+  ],
+  "Required packages": [
+    ""
+  ],
+  "Required packages and %s pattern": [
+    "",
+    ""
   ],
   "Rescan devices": [
     "Skanna om enheter"
@@ -1576,6 +1562,9 @@ export default {
   ],
   "Review and fix": [
     "Granska och åtgärda"
+  ],
+  "Review the summary below. If anything seems incorrect or you have doubts, go back and adjust the settings before proceeding.": [
+    ""
   ],
   "Root authentication methods": [
     "Rotautentiseringsmetoder"
@@ -1812,11 +1801,11 @@ export default {
   "Targets": [
     "Mål"
   ],
+  "Temporary name that may change after reboot or network changes": [
+    ""
+  ],
   "The LVM group '%1$s' will remain at %2$s": [
     "LVM-gruppen '%1$s' kommer att vara kvar på %2$s"
-  ],
-  "The configuration has been updated externally.": [
-    "Konfigurationen har uppdaterats externt."
   ],
   "The configuration must be adapted to address the following issue:": [
     "Konfigurationen måste anpassas för att åtgärda följande problem:",
@@ -1830,9 +1819,6 @@ export default {
   ],
   "The connection will be used only during installation and not available in the installed system.": [
     "Anslutningen kommer endast att användas under installationen och är inte tillgänglig i det installerade systemet."
-  ],
-  "The content may be deleted": [
-    "Innehållet kan komma att raderas"
   ],
   "The current configuration will result in an attempt to create a %1$s of %2$s.": [
     "Den nuvarande konfigurationen kommer att resultera i ett försök att skapa en %1$s på %2$s."
@@ -1925,12 +1911,6 @@ export default {
   "The installation on your machine is complete.": [
     "Installationen på din maskin har slutförts."
   ],
-  "The installation will take": [
-    "Installationen kommer att ta"
-  ],
-  "The installation will take %s including:": [
-    "Installationen kommer att ta upp %s inklusive:"
-  ],
   "The installer interface is no longer available, so you can safely close this window.": [
     "Installationsgränssnittet är inte längre tillgängligt, så du kan säkert stänga det här fönstret."
   ],
@@ -1959,8 +1939,8 @@ export default {
   "The modal selector offers a simplified interface designed for quick and straightforward use, without overwhelming the user.": [
     "Modalväljaren erbjuder ett förenklat gränssnitt utformat för snabb och enkel användning, utan att överväldiga användaren."
   ],
-  "The needed LVM physical volumes will be added as partitions on the chosen disks,                 based on the sizes of the logical volumes. If you select more than one disk, the                 physical volumes may be distributed along several disks.": [
-    "De fysiska LVM-volymerna som behövs kommer att läggas till som partitioner på de valda diskarna,                 baserat på storleken på de logiska volymerna. Om du väljer mer än en disk så kan,                 fysiska volymer vara fördelade på flera diskar."
+  "The needed LVM physical volumes will be added as partitions on the chosen disks, based on the sizes of the logical volumes. If you select more than one disk, the physical volumes may be distributed along several disks.": [
+    "De fysiska LVM-volymerna som behövs kommer att läggas till som partitioner på de valda diskarna, baserat på storleken på de logiska volymerna. Om du väljer mer än en disk så kan, fysiska volymer vara fördelade på flera diskar."
   ],
   "The password is weak": [
     "Lösenordet är svagt"
@@ -2016,17 +1996,11 @@ export default {
   "The system does not support Wi-Fi connections, probably because of missing or disabled hardware.": [
     "Systemet stöder inte WiFi-anslutningar, förmodligen på grund av saknad eller inaktiverad hårdvara."
   ],
-  "The system will use %s as its default language.": [
-    "Systemet kommer att använda %s som dess standardspråk."
-  ],
   "The whole device will be used for %s": [
     "Hela enheten kommer att användas för %s"
   ],
   "The zFCP disk was not activated.": [
     "zFCP disken var inte aktiverad."
-  ],
-  "There are no disks available for the installation.": [
-    "Det finns inga tillgängliga diskar för installation."
   ],
   "There are not disks available for the installation. You may need to configure some device.": [
     "Det finns inga diskar tillgängliga för installationen. Du kan behöva konfigurera någon enhet."
@@ -2041,9 +2015,6 @@ export default {
   "There is %d destructive action planned affecting %s": [
     "Det finns %d planerade destruktiva åtgärder som påverkar %s",
     "Det finns flera %d planerade destruktiva åtgärder som påverkar %s"
-  ],
-  "These are the most relevant installation settings. Feel free to browse the sections in the menu for further details.": [
-    "Dessa är de mest relevanta installationsinställningarna. Bläddra gärna igenom avsnitten i menyn för ytterligare detaljer."
   ],
   "These are the settings for the product to install. The installer language and keyboard layout can be adjusted via the [settings panel] accessible from the top bar.": [
     "Det här är inställningarna för produkten som ska installeras. Installationsprogrammets språk och tangentbordslayout kan justeras via [inställningspanelen] som är tillgänglig från det övre fältet."
@@ -2098,9 +2069,6 @@ export default {
   ],
   "Tmpfs": [
     "Tmpfs"
-  ],
-  "To ensure the new system is able to boot, the installer may need to create or configure some           partitions in the appropriate disk.": [
-    "För att säkerställa att det nya systemet kan starta kan installationsprogrammet behöva skapa eller konfigurera några partitioner på lämplig disk."
   ],
   "To ensure the new system is able to boot, the installer may need to create or configure some partitions in the appropriate disk.": [
     "För att säkerställa att det nya systemet kan starta kan installationsprogrammet behöva skapa eller konfigurera vissa partitioner på lämplig disk."

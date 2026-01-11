@@ -21,6 +21,9 @@ export default {
   "%1$s at %2$s": [
     "%2$s にある %1$s"
   ],
+  "%1$s keyboard - %2$s timezone": [
+    ""
+  ],
   "%1$s will be created as a partition at %2$s": [
     "%1$s を %2$s 内のパーティションとして作成します"
   ],
@@ -35,6 +38,9 @@ export default {
   ],
   "%s [must be registered].": [
     "%s [登録しなければなりません] 。"
+  ],
+  "%s and %d others": [
+    ""
   ],
   "%s disk": [
     "%s ディスク"
@@ -231,8 +237,14 @@ export default {
   "Authentication by target": [
     "ターゲットによる認証"
   ],
+  "Auto": [
+    "自動"
+  ],
   "Auto LUNs Scan": [
     "自動 LUN 検出"
+  ],
+  "Auto and manual": [
+    ""
   ],
   "Automatic": [
     "自動"
@@ -240,10 +252,10 @@ export default {
   "Automatic (DHCP)": [
     "自動 (DHCP)"
   ],
-  "Automatic LUN scan is [disabled]. LUNs have to be manually       configured after activating a controller.": [
+  "Automatic LUN scan is [disabled]. LUNs have to be manually configured after activating a controller.": [
     "自動 LUN スキャンが [無効化] されています。 LUN はコントローラの有効化後、手作業で設定しなければなりません。"
   ],
-  "Automatic LUN scan is [enabled]. Activating a controller which is       running in NPIV mode will automatically configures all its LUNs.": [
+  "Automatic LUN scan is [enabled]. Activating a controller which is running in NPIV mode will automatically configures all its LUNs.": [
     "自動 LUN スキャンが [有効化] されています。 NPIV モードで動作しているコントローラを有効化した場合、その LUN は全て自動的に設定されます。"
   ],
   "Available products": [
@@ -302,6 +314,9 @@ export default {
   ],
   "Btrfs with snapshots": [
     "スナップショット有りの btrfs"
+  ],
+  "CPU": [
+    ""
   ],
   "Cancel": [
     "キャンセル"
@@ -402,9 +417,6 @@ export default {
   "Close": [
     "閉じる"
   ],
-  "Configuration out of sync": [
-    "設定が同期できていません"
-  ],
   "Configuration read from the iSCSI Boot Firmware Table (iBFT).": [
     "iSCSI Boot Firmware Table (iBFT) から読み込んだ設定です。"
   ],
@@ -443,9 +455,6 @@ export default {
   ],
   "Confirm": [
     "確認"
-  ],
-  "Confirm Installation": [
-    "インストールの確認"
   ],
   "Confirm that you really want to continue.": [
     "続行して問題がないかどうか、ご確認ください。"
@@ -498,9 +507,6 @@ export default {
   "Content": [
     "内容"
   ],
-  "Continue": [
-    "続行"
-  ],
   "Continuing without installing the package can result in a broken system. In some cases the system might not even boot.": [
     "このパッケージをインストールせずに続行してしまうと、システムは正しく動作しない可能性があるほか、場合によっては全く起動しなくなることもあり得ます。"
   ],
@@ -548,6 +554,9 @@ export default {
   ],
   "DASD %s": [
     "DASD %s"
+  ],
+  "DHCP, %s": [
+    ""
   ],
   "DIAG": [
     "DIAG"
@@ -753,9 +762,6 @@ export default {
   "Extend the installation beyond the currently selected disk": [
     "現在選択されている %d 個のディスクからさらにインストールを拡張する"
   ],
-  "Extensions": [
-    "拡張"
-  ],
   "F2FS": [
     "f2fs"
   ],
@@ -858,6 +864,9 @@ export default {
   "GiB": [
     "GiB"
   ],
+  "Go back": [
+    ""
+  ],
   "Go to network page": [
     "ネットワークページに移動"
   ],
@@ -903,6 +912,9 @@ export default {
   "IP settings": [
     "IP 設定"
   ],
+  "IPs": [
+    ""
+  ],
   "IPv4": [
     "IPv4"
   ],
@@ -911,12 +923,6 @@ export default {
   ],
   "If a local media was used to run this installer, remove it before the next boot.": [
     "このインストーラの起動に際してローカルメディアを使用している場合は、次回の再起動までの間にメディアを取り出しておいてください。"
-  ],
-  "If you continue, partitions on your hard disk will be modified according to the provided installation settings.": [
-    "続行すると、お使いのコンピュータのハードディスクにあるパーティションは、ここまでのダイアログで設定したとおりに変更されます。"
-  ],
-  "If you want to disable this check, please specify \"inst.ay_check=0\" at kernel's command-line": [
-    "このチェックを無効化したい場合は、カーネルのコマンドラインに \"inst.ay_check=0\" を指定してください"
   ],
   "In progress": [
     "処理中"
@@ -951,32 +957,8 @@ export default {
   "Install": [
     "インストール"
   ],
-  "Install using an advanced configuration.": [
-    "高度な設定項目を利用してインストールします。"
-  ],
-  "Install using device %s and deleting all its content.": [
-    "デバイス %s の内容を全て削除してインストールします。"
-  ],
-  "Install using device %s shrinking existing partitions as needed.": [
-    "デバイス %s の既存パーティションを必要に応じて縮小してインストールします。"
-  ],
-  "Install using device %s with a custom strategy to find the needed space.": [
-    "必要な領域検出に際して独自の方式を利用してデバイス %s にインストールします。"
-  ],
-  "Install using device %s without modifying existing partitions.": [
-    "デバイス %s の既存パーティションを変更せずにインストールします。"
-  ],
-  "Install using several devices and deleting all its content.": [
-    "複数のデバイスの内容を全て削除してインストールします。"
-  ],
-  "Install using several devices shrinking existing partitions as needed.": [
-    "複数のデバイスの既存パーティションを必要に応じて縮小してインストールします。"
-  ],
-  "Install using several devices with a custom strategy to find the needed space.": [
-    "必要な領域検出に際して独自の方式を利用して複数のデバイスにインストールします。"
-  ],
-  "Install using several devices without modifying existing partitions.": [
-    "複数のデバイスの既存パーティションを変更せずにインストールします。"
+  "Install now with potential data loss": [
+    ""
   ],
   "Installation devices": [
     "インストール先のデバイス"
@@ -1131,6 +1113,9 @@ export default {
   "Max channel": [
     "最大チャネル"
   ],
+  "Memory": [
+    ""
+  ],
   "MiB": [
     "MiB"
   ],
@@ -1194,7 +1179,7 @@ export default {
   "Move mount points": [
     "マウントポイントの移動"
   ],
-  "Move the mount points currently configured at the selected disks to logical                   volumes of this volume group.": [
+  "Move the mount points currently configured at the selected disks to logical volumes of this volume group.": [
     "選択したディスク内に設定されたマウントポイントを、このボリュームグループの論理ボリュームに移動します。"
   ],
   "Multipath": [
@@ -1247,6 +1232,9 @@ export default {
   ],
   "No content found": [
     "ストレージには何も記録されていないようです"
+  ],
+  "No data loss is expected": [
+    ""
   ],
   "No device is currently using this connection.": [
     "この接続ではデバイスを使用していません。"
@@ -1329,9 +1317,6 @@ export default {
   "Not protected network": [
     "保護されていないネットワーク"
   ],
-  "Not selected yet": [
-    "まだ何も選択していません"
-  ],
   "Not supported (%s)": [
     "サポート対象外です (%s)"
   ],
@@ -1389,17 +1374,11 @@ export default {
   "Partitions to boot will be set up if needed at the following device.": [
     "下記のデバイス内に必要に応じて起動用のパーティションを割り当てます。"
   ],
-  "Partitions to boot will be set up if needed at the installation disk,           based on the location of the %s file system.": [
-    "ファイルシステム %s の配置場所に応じて 、         必要であればインストール先のディスク内に起動用のパーティションを割り当てます。"
+  "Partitions to boot will be set up if needed at the installation disk, based on the location of the %s file system.": [
+    "ファイルシステム %s の配置場所に応じて 、 必要であればインストール先のディスク内に起動用のパーティションを割り当てます。"
   ],
-  "Partitions to boot will be set up if needed at the installation disk,         based on the location of the %s file system.": [
-    "ファイルシステム %s の配置場所に応じて、         必要であればインストール先のディスク内に起動用のパーティションを割り当てます。"
-  ],
-  "Partitions to boot will be set up if needed at the installation disk.         Currently %1$s, based on the location of the %2$s file system.": [
-    "ファイルシステム %2$s の配置場所に応じて (現時点では %1$s) 、         必要であればインストール先のディスク内に起動用のパーティションを割り当てます。"
-  ],
-  "Partitions to boot will be set up if needed at the installation disk.       Currently %1$s, based on the location of the %2$s file system.": [
-    "ファイルシステム %2$s の配置場所に応じて (現時点では %1$s) 、         必要であればインストール先のディスク内に起動用のパーティションを割り当てます。"
+  "Partitions to boot will be set up if needed at the installation disk. Currently %1$s, based on the location of the %2$s file system.": [
+    "ファイルシステム %2$s の配置場所に応じて (現時点では %1$s) 、 必要であればインストール先のディスク内に起動用のパーティションを割り当てます。"
   ],
   "Partitions to host \"system\" will be created if needed.": [
     "必要に応じて、 \"システム\" を保持するためのパーティションを作成します。"
@@ -1434,9 +1413,6 @@ export default {
   "PiB": [
     "PiB"
   ],
-  "Please, cancel and check the settings if you are unsure.": [
-    "何か不安な点があれば、キャンセルして設定を確認しておくことをお勧めします。"
-  ],
   "Please, check whether it is running.": [
     "問題なく動作しているかどうかご確認ください。"
   ],
@@ -1458,17 +1434,29 @@ export default {
   "Portal": [
     "ポータル"
   ],
+  "Potential data loss": [
+    ""
+  ],
+  "Potential data loss affecting at least %s": [
+    ""
+  ],
   "Pre-installation checks": [
     "インストール前チェック"
   ],
   "Prefix length or netmask": [
     "プレフィクス長またはサブネットマスク"
   ],
+  "Proceeding may result in data loss": [
+    ""
+  ],
+  "Proceeding may result in data loss affecting at least %s": [
+    ""
+  ],
   "Product is already registered": [
     "製品は既に登録済みです"
   ],
-  "Protection for the information stored at           the new file systems, including data, programs, and system files.": [
-    "データやプログラム、システムファイルなど、           新しく作成するファイルシステム内に配置される情報への保護を行います。"
+  "Protection for the information stored at the new file systems, including data, programs, and system files.": [
+    "データやプログラム、システムファイルなど、新しく作成するファイルシステム内に配置される情報への保護を行います。"
   ],
   "Provide email address": [
     "電子メールアドレスを入力する"
@@ -1524,15 +1512,6 @@ export default {
   "Reload": [
     "再読み込み"
   ],
-  "Reload now": [
-    "今すぐ読み込み"
-  ],
-  "Reloading data, please wait...": [
-    "データを再読み込みしています。しばらくお待ちください..."
-  ],
-  "Reloading is required to get the latest data and avoid issues or data loss.": [
-    "最新のデータを取得してデータ損失などの問題を回避するには、再読み込みが必要です。"
-  ],
   "Remove": [
     "削除"
   ],
@@ -1541,6 +1520,12 @@ export default {
   ],
   "Repository load failed": [
     "リポジトリ読み込み失敗"
+  ],
+  "Required packages": [
+    ""
+  ],
+  "Required packages and %s pattern": [
+    ""
   ],
   "Rescan devices": [
     "デバイスの再検出"
@@ -1565,6 +1550,9 @@ export default {
   ],
   "Review and fix": [
     "確認と修正"
+  ],
+  "Review the summary below. If anything seems incorrect or you have doubts, go back and adjust the settings before proceeding.": [
+    ""
   ],
   "Root authentication methods": [
     "root の認証方式"
@@ -1800,11 +1788,11 @@ export default {
   "Targets": [
     "ターゲット"
   ],
+  "Temporary name that may change after reboot or network changes": [
+    ""
+  ],
   "The LVM group '%1$s' will remain at %2$s": [
     "LVM グループ '%1$s' が %2$s に残されます"
-  ],
-  "The configuration has been updated externally.": [
-    "設定が外部から書き換えられています。"
   ],
   "The configuration must be adapted to address the following issue:": [
     "下記の問題に対応するため、何らかの設定調整を行わなければなりません:"
@@ -1817,9 +1805,6 @@ export default {
   ],
   "The connection will be used only during installation and not available in the installed system.": [
     "接続をインストール時にのみ使用するものとし、インストール後は削除します。"
-  ],
-  "The content may be deleted": [
-    "内容が削除されるかもしれません"
   ],
   "The current configuration will result in an attempt to create a %1$s of %2$s.": [
     "現在の設定では %2$s の %1$s を作成する予定になります。"
@@ -1908,12 +1893,6 @@ export default {
   "The installation on your machine is complete.": [
     "お使いのマシンへのインストールが完了しました。"
   ],
-  "The installation will take": [
-    "インストールで占有する容量は"
-  ],
-  "The installation will take %s including:": [
-    "下記の構成をインストールするには %s が必要です:"
-  ],
   "The installer interface is no longer available, so you can safely close this window.": [
     "インストーラの処理は完了しています。このウインドウは閉じてかまいません。"
   ],
@@ -1941,7 +1920,7 @@ export default {
   "The modal selector offers a simplified interface designed for quick and straightforward use, without overwhelming the user.": [
     "このモーダル型の選択ページは、迅速で分かりやすく、かつユーザを混乱させることのないシンプルなインターフェイスを提供します。"
   ],
-  "The needed LVM physical volumes will be added as partitions on the chosen disks,                 based on the sizes of the logical volumes. If you select more than one disk, the                 physical volumes may be distributed along several disks.": [
+  "The needed LVM physical volumes will be added as partitions on the chosen disks, based on the sizes of the logical volumes. If you select more than one disk, the physical volumes may be distributed along several disks.": [
     "必要な LVM 物理ボリュームは、論理ボリュームのサイズを元に、選択したディスク内のパーティションとして追加されます。複数のディスクを選択した場合、物理ボリュームはそれらのディスクに分散して配置されます。"
   ],
   "The password is weak": [
@@ -1998,17 +1977,11 @@ export default {
   "The system does not support Wi-Fi connections, probably because of missing or disabled hardware.": [
     "このシステムは WiFi 接続には対応していません。無線ハードウエアが存在していないか、無効化されているものと思われます。"
   ],
-  "The system will use %s as its default language.": [
-    "システムは %s を既定の言語として使用します。"
-  ],
   "The whole device will be used for %s": [
     "デバイス全体を %s 向けに使用する"
   ],
   "The zFCP disk was not activated.": [
     "zFCP ディスクは有効化されませんでした。"
-  ],
-  "There are no disks available for the installation.": [
-    "インストール可能なディスクが見つかりません。"
   ],
   "There are not disks available for the installation. You may need to configure some device.": [
     "インストールに利用できるディスクがありません。デバイスの設定を行う必要があるかもしれません。"
@@ -2021,9 +1994,6 @@ export default {
   ],
   "There is %d destructive action planned affecting %s": [
     "%d 個の破壊的な処理 (%s に影響) が予定されています"
-  ],
-  "These are the most relevant installation settings. Feel free to browse the sections in the menu for further details.": [
-    "インストールにあたっての主要な項目のみを表示しています。さらに詳しい設定を確認したい場合は、それぞれのセクションを開いてください。"
   ],
   "These are the settings for the product to install. The installer language and keyboard layout can be adjusted via the [settings panel] accessible from the top bar.": [
     "こちらはインストールする製品に対する設定です。インストーラの言語やキーボードレイアウトの設定は、上部バーの [設定パネル] から変更できます。"
@@ -2078,9 +2048,6 @@ export default {
   ],
   "Tmpfs": [
     "tmpfs"
-  ],
-  "To ensure the new system is able to boot, the installer may need to create or configure some           partitions in the appropriate disk.": [
-    "システムを起動できるようにするため、インストーラは適切なディスク内にいくつかの追加パーティションを作成もしくは設定する必要があるかもしれません。"
   ],
   "To ensure the new system is able to boot, the installer may need to create or configure some partitions in the appropriate disk.": [
     "システムを起動できるようにするため、インストーラはディスク内にいくつかの追加パーティションを作成もしくは設定する必要があるかもしれません。"
