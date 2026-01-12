@@ -45,7 +45,7 @@ use tokio::sync::{
 use zypp_agama::{errors::ZyppResult, ZyppError};
 
 use crate::{
-    callbacks,
+    callbacks::{self, ask_software_question},
     model::{
         registration::RegistrationError,
         state::{self, SoftwareState},
@@ -687,7 +687,7 @@ impl ZyppServer {
             .map_err(|e| e.into())
     }
 
-    async fn update_registration(
+    fn update_registration(
         &mut self,
         state: &RegistrationState,
         zypp: &zypp_agama::Zypp,
@@ -695,8 +695,7 @@ impl ZyppServer {
         issues: &mut Vec<Issue>,
     ) {
         if self.registration.is_none() {
-            self.register_base_system(state, zypp, questions, issues)
-                .await;
+            self.register_base_system(state, zypp, questions, issues);
         }
 
         if self.registration.is_some() && !state.addons.is_empty() {
@@ -704,7 +703,7 @@ impl ZyppServer {
         }
     }
 
-    async fn register_base_system(
+    fn register_base_system(
         &mut self,
         state: &RegistrationState,
         zypp: &zypp_agama::Zypp,
@@ -723,7 +722,7 @@ impl ZyppServer {
             registration = registration.with_url(url);
         }
 
-        let result = handle_registration_error(|| registration.register(&zypp), &questions).await;
+        let result = handle_registration_error(|| registration.register(&zypp), &questions);
         match result {
             Ok(registration) => {
                 self.registration = Some(registration);
@@ -770,7 +769,7 @@ impl ZyppServer {
 ///
 /// It returns the result if the given function runs successfully or return any
 /// other kind of error.
-async fn handle_registration_error<T, F>(
+fn handle_registration_error<T, F>(
     func: F,
     questions: &Handler<question::Service>,
 ) -> Result<T, RegistrationError>
@@ -789,7 +788,7 @@ where
             {
                 if code.is_fixable_by_import() {
                     let certificate = X509::from_pem(&current_certificate.as_bytes()).unwrap();
-                    if should_trust_certificate(&certificate, questions).await {
+                    if should_trust_certificate(&certificate, questions) {
                         if let Err(error) = certs::import_certificate(&certificate) {
                             tracing::error!("Could not import the certificate: {error}");
                         }
@@ -806,7 +805,7 @@ where
 ///
 /// * `certificate`: certificate to ask for.
 /// * `questions`: handler to ask questions.
-async fn should_trust_certificate(cert: &X509, questions: &Handler<question::Service>) -> bool {
+fn should_trust_certificate(cert: &X509, questions: &Handler<question::Service>) -> bool {
     let labels = [gettext("Trust"), gettext("Reject")];
     let msg = gettext("Trying to import a self-signed certificate. Do you want to trust it and register the product?");
     let mut data = HashMap::from([
@@ -845,7 +844,7 @@ async fn should_trust_certificate(cert: &X509, questions: &Handler<question::Ser
         ])
         .with_default_action("Trust");
 
-    let Ok(answer) = ask_question(questions, question).await else {
+    let Ok(answer) = ask_software_question(questions, question) else {
         return false;
     };
 
