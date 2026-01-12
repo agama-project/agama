@@ -18,46 +18,30 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-//! This module contains all Agama public types that might be available over
-//! the HTTP and WebSocket API.
+use agama_utils::{actor::Message, api::bootloader::Config};
 
-pub mod event;
-pub use event::Event;
+pub struct GetConfig;
 
-pub mod progress;
-pub use progress::Progress;
+impl Message for GetConfig {
+    type Reply = Config;
+}
 
-pub mod scope;
-pub use scope::Scope;
+pub struct SetConfig<T> {
+    pub config: Option<T>,
+}
 
-pub mod status;
-pub use status::Status;
+impl<T: Send + 'static> Message for SetConfig<T> {
+    type Reply = ();
+}
 
-pub mod issue;
-pub use issue::{Issue, IssueMap, IssueWithScope};
+impl<T> SetConfig<T> {
+    pub fn new(config: Option<T>) -> Self {
+        Self { config }
+    }
 
-mod system_info;
-pub use system_info::SystemInfo;
-
-pub mod config;
-pub use config::Config;
-
-pub mod patch;
-pub use patch::Patch;
-
-mod proposal;
-pub use proposal::Proposal;
-
-mod action;
-pub use action::Action;
-
-pub mod bootloader;
-pub mod files;
-pub mod hostname;
-pub mod l10n;
-pub mod manager;
-pub mod network;
-pub mod query;
-pub mod question;
-pub mod software;
-pub mod storage;
+    pub fn with(config: T) -> Self {
+        Self {
+            config: Some(config),
+        }
+    }
+}

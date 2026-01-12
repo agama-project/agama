@@ -19,7 +19,7 @@
 // find current contact information at www.suse.com.
 
 use crate::api::{
-    files, hostname, l10n, network, question,
+    bootloader, files, hostname, l10n, network, question,
     software::{self, ProductConfig},
     storage,
 };
@@ -30,6 +30,8 @@ use serde::{Deserialize, Serialize};
 #[serde(rename_all = "camelCase")]
 #[merge(strategy = merge::option::recurse)]
 pub struct Config {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub bootloader: Option<bootloader::Config>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub hostname: Option<hostname::Config>,
     #[serde(skip_serializing_if = "Option::is_none")]

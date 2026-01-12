@@ -24,21 +24,39 @@ require "json"
 require "bootloader/bootloader_factory"
 require "bootloader/proposal_client"
 
+require "agama/http/clients"
+
+Yast.import "BootStorage"
+
 module Agama
   module Storage
     # Represents bootloader specific functionality
     class Bootloader
       # Represents bootloader settings
       class Config
-        # If bootloader should stop on boot menu
+        # Whether bootloader should stop on boot menu.
+        #
+        # @return [Boolean]
         attr_accessor :stop_on_boot_menu
-        # bootloader timeout. Only positive numbers are supported and stop_on_boot_menu has
-        # precedence
+
+        # Bootloader timeout.
+        #
+        # Only positive numbers are supported and stop_on_boot_menu has precedence.
+        #
+        # @return [Integer]
         attr_accessor :timeout
-        # bootloader extra kernel parameters beside ones that is proposed.
+
+        # Bootloader extra kernel parameters beside ones that is proposed.
+        #
+        # @return [String]
         attr_accessor :extra_kernel_params
-        # as both previous keys are conflicting, remember which one to set or none. It can be empty
-        # and it means export nothing
+
+        # Keys to export to JSON.
+        #
+        # As both previous keys are conflicting, remember which one to set or none. It can be empty
+        # and it means export nothing.
+        #
+        # @return [Array<Symbol>]
         attr_accessor :keys_to_export
 
         def initialize
@@ -48,6 +66,9 @@ module Agama
           @extra_kernel_params = ""
         end
 
+        # Serializes the config to JSON.
+        #
+        # @return [String]
         def to_json(*_args)
           result = {}
 
@@ -62,6 +83,10 @@ module Agama
           result.to_json
         end
 
+        # Loads the config from a JSON string.
+        #
+        # @param serialized_config [String]
+        # @return [Config] self
         def load_json(serialized_config)
           hsh = JSON.parse(serialized_config, symbolize_names: true)
           if hsh.include?(:timeout)
@@ -88,28 +113,54 @@ module Agama
         end
       end
 
+      # @return [Config]
       attr_reader :config
 
+      # @param logger [Logger]
       def initialize(logger)
         @config = Config.new
         @logger = logger
       end
 
       # Calculates proposal.
+      #
+      # It proposes the bootloader configuration based on the current system and storage
+      # configuration. It also applies the user configuration and installs the needed packages.
       def configure
-        # first make bootloader proposal to be sure that required packages are installed
-        proposal = ::Bootloader::ProposalClient.new.make_proposal({})
+        # reset disk to always read the recent storage configuration
+        ::Yast::BootStorage.reset_disks
+        # propose values first. Propose bootloader from factory and do not use
+        # current as agama has /etc/sysconfig/bootloader with efi, so it
+        # will lead to wrong one.
+        bootloader = ::Bootloader::BootloaderFactory.proposed
+        ::Bootloader::BootloaderFactory.current = bootloader
+        bootloader.propose
         # then also apply changes to that proposal
         write_config
-        @logger.debug "Bootloader proposal #{proposal.inspect}"
+        # and set packages needed for given config
+        install_packages
+        # TODO: error handling (including catching exceptions like Bootloader::NoRoot)
+        # and filling issues
+        @logger.info "Bootloader config #{bootloader.inspect}"
       end
 
       # Installs bootloader.
+      #
+      # It writes the bootloader configuration to the system.
       def install
         Yast::WFM.CallFunction("inst_bootloader", [])
       end
 
     private
+
+      def install_packages
+        bootloader = ::Bootloader::BootloaderFactory.current
+        http_client = Agama::HTTP::Clients::Main.new(::Logger.new($stdout))
+        packages = bootloader.packages
+        @logger.info "Installing bootloader packages: #{packages}"
+
+        http_client.set_resolvables("agama-bootloader", :package, packages)
+      end
 
       def write_config
         bootloader = ::Bootloader::BootloaderFactory.current
