@@ -20,6 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
+import type * as Hardware from "~/model/system/hardware";
 import type * as Hostname from "~/model/system/hostname";
 import type * as L10n from "~/model/system/l10n";
 import type * as Network from "~/model/system/network";
@@ -27,6 +28,7 @@ import type * as Software from "~/model/system/software";
 import type * as Storage from "~/model/system/storage";
 
 type System = {
+  hardware?: Hardware.System;
   hostname?: Hostname.System;
   l10n?: L10n.System;
   network?: Network.System;
@@ -55,4 +57,4 @@ type Product = {
   };
 };
 
-export type { System, Product, L10n, Hostname, Network, Software, Storage };
+export type { System, Product, L10n, Hardware, Hostname, Network, Software, Storage };

@@ -22,7 +22,7 @@
 
 import React, { useState } from "react";
 import { screen } from "@testing-library/react";
-import { installerRender } from "~/test-utils";
+import { plainRender } from "~/test-utils";
 import userEvent from "@testing-library/user-event";
 import PasswordInput, { PasswordInputProps } from "./PasswordInput";
 import * as utils from "~/utils";
@@ -37,18 +37,14 @@ jest.mock("~/context/installerL10n", () => ({
 
 describe("PasswordInput", () => {
   it("renders a password input", () => {
-    installerRender(<PasswordInput id="password" name="password" aria-label="User password" />, {
-      withL10n: true,
-    });
+    plainRender(<PasswordInput id="password" name="password" aria-label="User password" />);
 
     const inputField = screen.getByLabelText("User password");
     expect(inputField).toHaveAttribute("type", "password");
   });
 
   it("allows revealing the password", async () => {
-    installerRender(<PasswordInput id="password" name="password" aria-label="User password" />, {
-      withL10n: true,
-    });
+    plainRender(<PasswordInput id="password" name="password" aria-label="User password" />);
 
     const passwordInput = screen.getByLabelText("User password");
     const button = screen.getByRole("button");
@@ -59,9 +55,8 @@ describe("PasswordInput", () => {
   });
 
   it("applies autoFocus behavior correctly", () => {
-    installerRender(
+    plainRender(
       <PasswordInput autoFocus id="password" name="password" aria-label="User password" />,
-      { withL10n: true },
     );
 
     const inputField = screen.getByLabelText("User password");
@@ -83,9 +78,8 @@ describe("PasswordInput", () => {
   };
 
   it("triggers onChange callback", async () => {
-    const { user } = installerRender(
+    const { user } = plainRender(
       <PasswordInputTest id="test-password" aria-label="Test password" />,
-      { withL10n: true },
     );
     const passwordInput = screen.getByLabelText("Test password");
 
@@ -96,11 +90,8 @@ describe("PasswordInput", () => {
   });
 
   it("renders keyboard reminders by default", async () => {
-    const { user } = installerRender(
+    const { user } = plainRender(
       <PasswordInput id="password" name="password" aria-label="User password" />,
-      {
-        withL10n: true,
-      },
     );
 
     screen.getByLabelText("User password");
@@ -115,11 +106,8 @@ describe("PasswordInput", () => {
   });
 
   it("allow disabling reminders via reminders prop", async () => {
-    const { user } = installerRender(
+    const { user } = plainRender(
       <PasswordInput id="password" name="password" aria-label="User password" reminders={[]} />,
-      {
-        withL10n: true,
-      },
     );
 
     expect(screen.queryByText(/^Using/)).toBeNull();
@@ -129,16 +117,13 @@ describe("PasswordInput", () => {
   });
 
   it("allows picking only the keymap reminder", async () => {
-    const { user } = installerRender(
+    const { user } = plainRender(
       <PasswordInput
         id="password"
         name="password"
         aria-label="User password"
         reminders={["keymap"]}
       />,
-      {
-        withL10n: true,
-      },
     );
 
     screen.getByText(/^Using/);
@@ -148,16 +133,13 @@ describe("PasswordInput", () => {
   });
 
   it("allows picking only the caps locsk reminder", async () => {
-    const { user } = installerRender(
+    const { user } = plainRender(
       <PasswordInput
         id="password"
         name="password"
         aria-label="User password"
         reminders={["capslock"]}
       />,
-      {
-        withL10n: true,
-      },
     );
 
     expect(screen.queryByText(/^Using/)).toBeNull();
@@ -171,9 +153,7 @@ describe("PasswordInput", () => {
   it("does not render the keymap reminder in remote connections", () => {
     jest.spyOn(utils, "localConnection").mockReturnValue(false);
 
-    installerRender(<PasswordInput id="password" name="password" aria-label="User password" />, {
-      withL10n: true,
-    });
+    plainRender(<PasswordInput id="password" name="password" aria-label="User password" />);
 
     expect(screen.queryByText(/^Using/)).toBeNull();
   });

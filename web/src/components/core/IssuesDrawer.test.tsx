@@ -31,8 +31,8 @@ let phase = InstallationPhase.Config;
 const mockIssues = jest.fn();
 const onCloseFn = jest.fn();
 
-jest.mock("~/model/issue", () => ({
-  ...jest.requireActual("~/model/issues"),
+jest.mock("~/hooks/model/issue", () => ({
+  ...jest.requireActual("~/hooks/model/issue"),
   useIssues: (): Issue[] => mockIssues(),
 }));
 
@@ -57,22 +57,7 @@ describe("IssuesDrawer", () => {
     itRendersNothing();
   });
 
-  describe("when there are non-critical issues", () => {
-    beforeEach(() => {
-      mockIssues.mockReturnValue([
-        {
-          description: "Registration Fake Warning",
-          class: "generic",
-          details: "Registration Fake Issue details",
-          scope: "product",
-        },
-      ] as Issue[]);
-    });
-
-    itRendersNothing();
-  });
-
-  describe("when there are installation issues", () => {
+  describe("when there are issues", () => {
     beforeEach(() => {
       mockIssues.mockReturnValue([
         {

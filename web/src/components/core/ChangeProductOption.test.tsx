@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024-2025] SUSE LLC
+ * Copyright (c) [2024-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -24,10 +24,9 @@ import React from "react";
 import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import { useSystem } from "~/hooks/model/system";
-import { PRODUCT as PATHS } from "~/routes/paths";
 import { Product } from "~/types/software";
+import { PRODUCT as PATHS } from "~/routes/paths";
 import ChangeProductOption from "./ChangeProductOption";
-import { System } from "~/model/system/network";
 
 const tumbleweed: Product = {
   id: "Tumbleweed",
@@ -36,6 +35,7 @@ const tumbleweed: Product = {
   description: "Tumbleweed description...",
   registration: false,
 };
+
 const microos: Product = {
   id: "MicroOS",
   name: "openSUSE MicroOS",
@@ -44,26 +44,13 @@ const microos: Product = {
   registration: false,
 };
 
-const network: System = {
-  connections: [],
-  devices: [],
-  state: {
-    connectivity: true,
-    copyNetwork: true,
-    networkingEnabled: true,
-    wirelessEnabled: true,
-  },
-  accessPoints: [],
-};
-
 // let registrationInfoMock: RegistrationInfo;
 const mockSystemProducts: jest.Mock<Product[]> = jest.fn();
 
-jest.mock("~/hooks/api", () => ({
-  ...jest.requireActual("~/hooks/api"),
+jest.mock("~/hooks/model/system", () => ({
+  ...jest.requireActual("~/hooks/model/system"),
   useSystem: (): ReturnType<typeof useSystem> => ({
     products: mockSystemProducts(),
-    network,
   }),
 }));
 

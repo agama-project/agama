@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024-2025] SUSE LLC
+ * Copyright (c) [2024-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -38,10 +38,9 @@ jest.mock("~/components/product/ProductRegistrationAlert", () => () => (
   <div>ProductRegistrationAlert Mock</div>
 ));
 
-jest.mock("~/hooks/api", () => ({
-  ...jest.requireActual("~/hooks/api"),
-  useSystem: () => ({ l10n: { keymaps } }),
-  useProposal: () => ({ l10n: { keymap: "us" } }),
+jest.mock("react-router", () => ({
+  ...jest.requireActual("react-router"),
+  useNavigate: () => mockNavigateFn,
 }));
 
 jest.mock("~/api", () => ({
@@ -49,9 +48,14 @@ jest.mock("~/api", () => ({
   patchConfig: (config) => mockPatchConfigFn(config),
 }));
 
-jest.mock("react-router", () => ({
-  ...jest.requireActual("react-router"),
-  useNavigate: () => mockNavigateFn,
+jest.mock("~/hooks/model/system/l10n", () => ({
+  ...jest.requireActual("~/hooks/model/system/l10n"),
+  useSystem: () => ({ keymaps }),
+}));
+
+jest.mock("~/hooks/model/proposal/l10n", () => ({
+  ...jest.requireActual("~/hooks/model/proposal/l10n"),
+  useProposal: () => ({ keymap: "us" }),
 }));
 
 it("allows changing the keyboard", async () => {

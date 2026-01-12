@@ -1,4 +1,21 @@
 -------------------------------------------------------------------
+Fri Jan  9 14:44:01 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 19.pre
+
+-------------------------------------------------------------------
+Tue Jan  6 16:21:35 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+
+- Hide the data sharing notification in the Firefox browser
+  (bsc#1252961)
+
+-------------------------------------------------------------------
+Mon Dec  1 20:49:41 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Added new boot option "live.net_config=1" to interactively
+  configure network settings (gh#agama-project/agama#2923)
+
+-------------------------------------------------------------------
 Wed Nov 12 15:42:29 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Version 18

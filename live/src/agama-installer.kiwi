@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- OBS-ExclusiveArch: aarch64 ppc64le x86_64 s390x -->
 <!-- OBS-Profiles: @BUILD_FLAVOR@ -->
+<!-- OBS-Milestone: %current_milestone -->
 
 <image schemaversion="7.5" name="agama-installer">
     <description type="system">
@@ -97,6 +98,7 @@
         <package name="blog" arch="s390x" />
         <package name="libblogger2" arch="s390x" />
         <package name="NetworkManager"/>
+        <package name="NetworkManager-tui"/>
         <package name="agama"/>
         <package name="agama-yast"/>
         <package name="agama-web-ui"/>

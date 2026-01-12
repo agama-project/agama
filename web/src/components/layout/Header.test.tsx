@@ -57,14 +57,14 @@ const network: System = {
 jest.mock("~/components/core/InstallerOptions", () => () => <div>Installer Options Mock</div>);
 jest.mock("~/components/core/InstallButton", () => () => <div>Install Button Mock</div>);
 
-jest.mock("~/hooks/api/system", () => ({
-  ...jest.requireActual("~/hooks/api/system"),
+jest.mock("~/hooks/model/system", () => ({
+  ...jest.requireActual("~/hooks/model/system"),
   useSystem: (): ReturnType<typeof useSystem> => ({ products: [tumbleweed, microos], network }),
 }));
 
-jest.mock("~/hooks/api/config", () => ({
-  ...jest.requireActual("~/hooks/api/config"),
-  useProduct: (): Product => tumbleweed,
+jest.mock("~/hooks/model/config/product", () => ({
+  ...jest.requireActual("~/hooks/model/config/product"),
+  useProductInfo: (): Product => tumbleweed,
 }));
 
 describe("Header", () => {
@@ -109,7 +109,7 @@ describe("Header", () => {
 
   it("does not render an options dropdown when showInstallerOptions is false", async () => {
     installerRender(<Header showInstallerOptions={false} />);
-    expect(screen.queryByRole("button", { name: "Options toggle" })).toBeNull();
+    expect(screen.queryByText("Installer Options Mock")).toBeNull();
   });
 
   it.todo("allows downloading the logs");

@@ -23,11 +23,11 @@
 import React, { useState } from "react";
 import { SearchInput } from "@patternfly/react-core";
 import { debounce, noop } from "radashi";
-import { _ } from "~/i18n";
+import { _, TranslatedString } from "~/i18n";
 
 type ListSearchProps<T> = {
   /** Text to display as placeholder for the search input. */
-  placeholder?: string;
+  placeholder?: TranslatedString;
   /** List of elements in which to search. */
   elements: T[];
   /** Callback to be called with the filtered list of elements. */

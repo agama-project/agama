@@ -35,15 +35,15 @@ import { Page, PasswordInput } from "~/components/core";
 import { Connection, ConnectionState, WifiNetwork, Wireless } from "~/types/network";
 import { isEmpty } from "radashi";
 import { sprintf } from "sprintf-js";
-import { _ } from "~/i18n";
+import { N_, _ } from "~/i18n";
 import { useConnections } from "~/hooks/model/system/network";
 import { useConnectionMutation } from "~/hooks/model/config/network";
 
 const securityOptions = [
   // TRANSLATORS: WiFi authentication mode
-  { value: "none", label: _("None") },
+  { value: "none", label: N_("None") },
   // TRANSLATORS: WiFi authentication mode
-  { value: "wpa-psk", label: _("WPA & WPA2 Personal") },
+  { value: "wpa-psk", label: N_("WPA & WPA2 Personal") },
 ];
 
 const securityFrom = (supported: string[]) => {
@@ -161,7 +161,8 @@ export default function WifiConnectionForm({ network }: { network: WifiNetwork }
                 <FormSelectOption
                   key={security.value}
                   value={security.value}
-                  label={security.label}
+                  /* eslint-disable agama-i18n/string-literals */
+                  label={_(security.label)}
                 />
               ))}
             </FormSelect>

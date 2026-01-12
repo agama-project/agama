@@ -25,7 +25,7 @@ import { installerRender } from "~/test-utils";
 import FormattedIPsList from "./FormattedIpsList";
 import { NETWORK } from "~/routes/paths";
 
-let mockUseIpAddressesFn: jest.Mock<string[]> = jest.fn();
+const mockUseIpAddressesFn: jest.Mock<string[]> = jest.fn();
 
 jest.mock("~/hooks/model/system/network", () => ({
   ...jest.requireActual("~/hooks/model/system/network"),

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2025] SUSE LLC
+ * Copyright (c) [2022-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -78,8 +78,8 @@ jest.mock("~/hooks/model/system", () => ({
   }),
 }));
 
-jest.mock("~/hooks/model/config", () => ({
-  ...jest.requireActual("~/hooks/model/config"),
+jest.mock("~/hooks/model/config/product", () => ({
+  ...jest.requireActual("~/hooks/model/config/product"),
   useProductInfo: (): ReturnType<typeof useProductInfo> => mockSelectedProduct(),
 }));
 

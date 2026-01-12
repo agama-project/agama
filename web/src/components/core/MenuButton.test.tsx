@@ -24,10 +24,11 @@ import React, { LegacyRef } from "react";
 import { screen, within } from "@testing-library/react";
 import { installerRender, mockNavigateFn } from "~/test-utils";
 import MenuButton, { CustomToggleProps, MenuButtonItem } from "~/components/core/MenuButton";
+import { _ } from "~/i18n";
 
 it("toggles the menu state on click", async () => {
   const { user } = installerRender(
-    <MenuButton menuProps={{ "aria-label": "test menu" }}>{"test"}</MenuButton>,
+    <MenuButton menuProps={{ "aria-label": _("test menu") }}>{"test"}</MenuButton>,
   );
 
   const button = screen.getByRole("button", { name: "test" });
@@ -40,7 +41,7 @@ it("toggles the menu state on click", async () => {
 
 it("toggles the menu state on [Enter]", async () => {
   const { user } = installerRender(
-    <MenuButton menuProps={{ "aria-label": "test menu" }}>{"test"}</MenuButton>,
+    <MenuButton menuProps={{ "aria-label": _("test menu") }}>{"test"}</MenuButton>,
   );
 
   const button = screen.getByRole("button", { name: "test" });
@@ -55,7 +56,7 @@ it("toggles the menu state on [Enter]", async () => {
 
 it("closes menu on [Escape]", async () => {
   const { user } = installerRender(
-    <MenuButton menuProps={{ "aria-label": "test menu" }}>{"test"}</MenuButton>,
+    <MenuButton menuProps={{ "aria-label": _("test menu") }}>{"test"}</MenuButton>,
   );
 
   const button = screen.getByRole("button", { name: "test" });
@@ -75,7 +76,7 @@ it("closes menu on [Escape]", async () => {
 // representing the next `isOpen` state.
 it("does not open the menu on [Tab] when focused", async () => {
   const { user } = installerRender(
-    <MenuButton menuProps={{ "aria-label": "test menu" }}>{"test"}</MenuButton>,
+    <MenuButton menuProps={{ "aria-label": _("test menu") }}>{"test"}</MenuButton>,
   );
 
   const button = screen.getByRole("button", { name: "test" });
@@ -130,7 +131,10 @@ it("allows to set accessible menu name via aria-labelledby", async () => {
     <>
       <span id="menu-label">Accessible menu</span>
       <MenuButton
-        menuProps={{ "aria-label": "test menu", "aria-labelledby": "menu-label" }}
+        menuProps={{
+          "aria-label": _("test menu"),
+          "aria-labelledby": "menu-label",
+        }}
         items={[
           <MenuButtonItem
             key="item1"
@@ -156,7 +160,7 @@ it("allows to set accessible menu name via aria-labelledby", async () => {
 it("allows to drill in", async () => {
   const { user } = installerRender(
     <MenuButton
-      menuProps={{ "aria-label": "test menu" }}
+      menuProps={{ "aria-label": _("test menu") }}
       items={[
         <MenuButtonItem
           key="item1"
@@ -187,7 +191,7 @@ it("allows to drill in", async () => {
 it("allows to drill out", async () => {
   const { user } = installerRender(
     <MenuButton
-      menuProps={{ "aria-label": "test menu" }}
+      menuProps={{ "aria-label": _("test menu") }}
       items={[
         <MenuButtonItem
           key="item1"
@@ -195,7 +199,7 @@ it("allows to drill out", async () => {
             <MenuButtonItem key="item11">{"item 1-1"}</MenuButtonItem>,
             <MenuButtonItem key="item12">{"item 1-2"}</MenuButtonItem>,
           ]}
-          upProps={{ label: "return" }}
+          upProps={{ label: _("return") }}
         >
           item 1
         </MenuButtonItem>,
@@ -271,7 +275,7 @@ it("allows receiving a fully custom toggle", async () => {
 
   const { user } = installerRender(
     <MenuButton
-      menuProps={{ "aria-label": "test menu" }}
+      menuProps={{ "aria-label": _("test menu") }}
       customToggle={<LinkToggle />}
       items={[
         <MenuButtonItem

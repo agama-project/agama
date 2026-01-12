@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2023-2025] SUSE LLC
+ * Copyright (c) [2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -20,27 +20,10 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
-import { Split, Content } from "@patternfly/react-core";
-import { TranslatedString } from "~/i18n";
-
-type ProgressTextProps = {
-  /** Progress message. */
-  message: TranslatedString;
-  /** Current step. */
-  current: number;
-  /** Total steps. */
-  total: number;
+type System = {
+  cpu?: string;
+  memory?: number;
+  model?: string;
 };
 
-/**
- * Progress description
- */
-export default function ProgressText({ message, current, total }: ProgressTextProps) {
-  const text = current === 0 ? message : `${message} (${current}/${total})`;
-  return (
-    <Split hasGutter>
-      <Content>{text}</Content>
-    </Split>
-  );
-}
+export type { System };

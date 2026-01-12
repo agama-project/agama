@@ -1,4 +1,33 @@
 -------------------------------------------------------------------
+Fri Jan  9 14:43:59 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 19.pre
+- Adapt to the version 2 of the HTTP API (gh#agama-project/agama#2997).
+- Introduce a new overview page.
+- Missing pieces:
+  - Installation progress.
+  - Add-ons registration.
+  - iSCSI, DASD and zFCP support.
+
+-------------------------------------------------------------------
+Tue Dec 16 08:32:09 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Added a new TranslatedString type to require a translated string
+  in the code, this should lower the risk of missing translations
+  (gh#agama-project/agama#2928)
+
+-------------------------------------------------------------------
+Fri Nov 21 08:17:06 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Fixed missing translations (error cases for software repos, iSCSI, DASD; bsc#1250059)
+
+-------------------------------------------------------------------
+Thu Nov 13 13:30:58 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Do not build on 32bit arches (like i586) and PPC64-BE,
+  the dependant libsuseconnect does not support these (bsc#1251846)
+
+-------------------------------------------------------------------
 Wed Nov 12 15:42:28 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Version 18
