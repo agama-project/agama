@@ -93,7 +93,7 @@ user privileges.",
   ).split(/[[\]]/);
 
   return (
-    <Page emptyHeader>
+    <Page variant="minimal" showQuestions={false}>
       <Page.Content>
         <Bullseye>
           <Grid hasGutter>

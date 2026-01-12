@@ -86,6 +86,7 @@ export default function ConfirmPage() {
           <ProductLogo product={product} width="40px" /> {product.name}
         </>
       }
+      showInstallerOptions
     >
       <Page.Content>
         {startingInstallation ? (

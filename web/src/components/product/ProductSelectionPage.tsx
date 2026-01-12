@@ -173,7 +173,10 @@ function ProductSelectionPage() {
   const [selectedTitleStart, selectedTitleEnd] = _("Currently selected %s").split("%s");
 
   return (
-    <Page breadcrumbs={[{ label: selectedProduct ? _("Change product") : _("Select a product") }]}>
+    <Page
+      breadcrumbs={[{ label: selectedProduct ? _("Change product") : _("Select a product") }]}
+      showInstallerOptions
+    >
       <Page.Content>
         <Grid hasGutter>
           <GridItem sm={12} xl={8}>
