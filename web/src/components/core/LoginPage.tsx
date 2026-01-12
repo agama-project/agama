@@ -23,49 +23,62 @@
 import React, { useState } from "react";
 import { Navigate } from "react-router";
 import {
-  ActionGroup,
   Alert,
-  Bullseye,
   Button,
+  Divider,
   Flex,
   Form,
   FormGroup,
-  FormHelperText,
+  Grid,
+  GridItem,
   HelperText,
   HelperTextItem,
+  Title,
+  Bullseye,
 } from "@patternfly/react-core";
 import { Page, PasswordInput } from "~/components/core";
 import { AuthErrors, useAuth } from "~/context/auth";
 import { Icon } from "../layout";
-import shadowUtils from "@patternfly/react-styles/css/utilities/BoxShadow/box-shadow";
 import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
+
+const getError = (authError) => {
+  if (!authError) return;
+
+  if (authError === AuthErrors.AUTH) {
+    return {
+      title: _("Could not log in"),
+      description: _("Make suere that passsword is correct and try again."),
+    };
+  }
+
+  return { title: _("Could not authenticate against the server.") };
+};
 
 /**
  * Renders the UI that lets the user log into the system.
  * @component
  */
 export default function LoginPage() {
+  const [loading, setLoading] = useState(false);
   const [password, setPassword] = useState("");
-  const [error, setError] = useState(false);
+  const [authError, setAuthError] = useState(false);
   const { isLoggedIn, login: loginFn, error: loginError } = useAuth();
 
   const login = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
     const result = await loginFn(password);
 
-    setError(result.status !== 200);
+    setLoading(false);
+    setAuthError(result.status !== 200);
   };
 
-  const errorMessage = (authError) => {
-    if (authError === AuthErrors.AUTH)
-      return _("Could not log in. Please, make sure that the password is correct.");
-
-    return _("Could not authenticate against the server, please check it.");
-  };
   if (isLoggedIn) {
     return <Navigate to="/" />;
   }
+
+  const error = getError(loginError);
 
   // TRANSLATORS: Title for a form to provide the password for the root user. %s
   // will be replaced by "root"
@@ -83,56 +96,65 @@ user privileges.",
     <Page emptyHeader>
       <Page.Content>
         <Bullseye>
-          <Page.Section
-            hasHeaderDivider
-            headingLevel="h1"
-            title={
+          <Grid hasGutter>
+            <GridItem sm={12} md={6} style={{ alignSelf: "center" }}>
               <Flex
-                alignItems={{ default: "alignItemsCenter" }}
                 direction={{ default: "column" }}
-                gap={{ default: "gapSm" }}
+                alignItems={{ default: "alignItemsCenter", md: "alignItemsFlexEnd" }}
+                alignContent={{ default: "alignContentCenter", md: "alignContentFlexEnd" }}
+                alignSelf={{ default: "alignSelfCenter" }}
               >
                 <Icon name="lock" width="3rem" height="3rem" />
-                {sectionTitle}
+                <Title headingLevel="h1">{sectionTitle}</Title>
+                <HelperText>
+                  <HelperTextItem>
+                    {rootExplanationStart} <b>{rootUser}</b> {rootExplanationEnd}
+                  </HelperTextItem>
+                </HelperText>
+                <HelperText>
+                  <HelperTextItem>
+                    {_("Provide its password to log in to the system.")}
+                  </HelperTextItem>
+                </HelperText>
               </Flex>
-            }
-            pfCardProps={{
-              isCompact: false,
-              isFullHeight: false,
-              className: shadowUtils.boxShadowMd,
-            }}
-          >
-            <Form id="login" onSubmit={login} aria-label={_("Login form")}>
-              {error && <Alert variant="danger" title={errorMessage(loginError)} />}
-
-              <FormGroup fieldId="password" label={_("Password")}>
-                <PasswordInput
-                  id="password"
-                  name="password"
-                  value={password}
-                  aria-label={_("Password input")}
-                  onChange={(_, v) => setPassword(v)}
-                  reminders={["capslock"]}
-                />
-                <FormHelperText>
-                  <HelperText>
-                    <HelperTextItem>
-                      {rootExplanationStart} <b>{rootUser}</b> {rootExplanationEnd}
-                    </HelperTextItem>
-                    <HelperTextItem>
-                      {_("Please, provide its password to log in to the system.")}
-                    </HelperTextItem>
-                  </HelperText>
-                </FormHelperText>
-              </FormGroup>
-
-              <ActionGroup>
-                <Button type="submit" variant="primary">
-                  {_("Log in")}
-                </Button>
-              </ActionGroup>
-            </Form>
-          </Page.Section>
+            </GridItem>
+            <GridItem sm={12} md={6}>
+              <Flex
+                gap={{ default: "gapMd" }}
+                alignItems={{ default: "alignItemsCenter" }}
+                style={{ minBlockSize: "30dvh" }}
+              >
+                <Divider orientation={{ default: "horizontal", md: "vertical" }} />
+                <Form id="login" onSubmit={login} aria-label={_("Login form")}>
+                  <FormGroup fieldId="password" label={_("Password")}>
+                    <PasswordInput
+                      id="password"
+                      name="password"
+                      value={password}
+                      aria-label={_("Password input")}
+                      onChange={(_, v) => setPassword(v)}
+                      reminders={["capslock"]}
+                    />
+                  </FormGroup>
+                  {authError && (
+                    <Alert component="div" variant="danger" title={error.title}>
+                      {error.description}
+                    </Alert>
+                  )}
+                  <Flex>
+                    <Button
+                      type="submit"
+                      variant={loading ? "secondary" : "primary"}
+                      isLoading={loading}
+                      isDisabled={loading}
+                    >
+                      {_("Log in")}
+                    </Button>
+                  </Flex>
+                </Form>
+              </Flex>
+            </GridItem>
+          </Grid>
         </Bullseye>
       </Page.Content>
     </Page>
