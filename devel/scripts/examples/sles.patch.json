@@ -1,0 +1,12 @@
+{
+  "update": {
+    "product": {
+      "id": "SLES"
+    },
+    "software": {
+      "patterns": [
+        "gnome"
+      ]
+    }
+  }
+}
