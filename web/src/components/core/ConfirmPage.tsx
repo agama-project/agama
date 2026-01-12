@@ -35,10 +35,13 @@ import { useProductInfo } from "~/hooks/model/config/product";
 import { useIssues } from "~/hooks/model/issue";
 import { PRODUCT } from "~/routes/paths";
 import { useDestructiveActions } from "~/hooks/use-destructive-actions";
-import { _ } from "~/i18n";
 import { isEmpty } from "radashi";
+import CancellableAction from "./CancellableAction";
+import { sprintf } from "sprintf-js";
+import { _ } from "~/i18n";
 
 export default function ConfirmPage() {
+  const [startingInstallation, setStartingInstallation] = useState(false);
   const product = useProductInfo();
   const issues = useIssues();
   const { actions } = useDestructiveActions();
@@ -50,8 +53,19 @@ export default function ConfirmPage() {
     return <Navigate to={PRODUCT.root} />;
   }
 
+  const cancelStart = () => {
+    setStartingInstallation(false);
+  };
+
+  const start = () => {
+    setStartingInstallation(true);
+  };
+
+  console.log(start);
+
   const onInstallClick = () => {
-    hasDestructiveActions ? setShowConfirmation(true) : startInstallation();
+    // hasDestructiveActions ? setShowConfirmation(true) : start();
+    setShowConfirmation(true);
   };
 
   const onConfirm = () => {
@@ -74,60 +88,80 @@ export default function ConfirmPage() {
       }
     >
       <Page.Content>
-        <Flex gap={{ default: "gapMd" }} direction={{ default: "column" }}>
-          <div>
-            <Content isEditorial>
-              {
-                // TRANSLATORS: Introductory text shown in the overview page
-                // either, after selecting a product or before starting the
-                // installation.
-                _("Take a moment to review the installation settings and adjust them as needed.")
-              }
-            </Content>
-            <Content>
-              {buttonLocationStart} <strong>{_("install now")}</strong> {buttonLocationEnd}
-            </Content>
-          </div>
-          <Divider />
-          <PotentialDataLossAlert />
-          <Grid hasGutter>
-            <GridItem md={12} lg={6}>
-              <InstallationSummarySection />
-            </GridItem>
-            <GridItem md={12} lg={6}>
-              <SystemInformationSection />
-            </GridItem>
-          </Grid>
-          <Flex>
-            <Button
-              size="lg"
-              variant={hasDestructiveActions ? "danger" : "primary"}
-              onClick={onInstallClick}
-              isDisabled={hasIssues}
-            >
-              <Text isBold>
-                {hasIssues
-                  ? _("Installation not possible with current setup")
-                  : hasDestructiveActions
-                    ? _("Install now with potential data loss")
-                    : _("Install now")}
-              </Text>
-            </Button>
+        {startingInstallation ? (
+          <CancellableAction
+            initialSeconds={9}
+            onComplete={() => console.log("complete", startInstallation)}
+            onCancel={cancelStart}
+          />
+        ) : (
+          <Flex gap={{ default: "gapMd" }} direction={{ default: "column" }}>
+            <div>
+              <Content isEditorial>
+                {
+                  // TRANSLATORS: Introductory text shown in the overview page
+                  // either, after selecting a product or before starting the
+                  // installation.
+                  _("Take a moment to review the installation settings and adjust them as needed.")
+                }
+              </Content>
+              <Content>
+                {buttonLocationStart} <strong>{_("install now")}</strong> {buttonLocationEnd}
+              </Content>
+            </div>
+            <Divider />
+            <PotentialDataLossAlert />
+            <Grid hasGutter>
+              <GridItem md={12} lg={6}>
+                <InstallationSummarySection />
+              </GridItem>
+              <GridItem md={12} lg={6}>
+                <SystemInformationSection />
+              </GridItem>
+            </Grid>
+            <Flex>
+              <Button
+                size="lg"
+                variant={hasDestructiveActions ? "danger" : "primary"}
+                onClick={onInstallClick}
+                isDisabled={hasIssues}
+              >
+                <Text isBold>
+                  {hasIssues
+                    ? _("Installation not possible with current setup")
+                    : hasDestructiveActions
+                      ? _("Install now with potential data loss")
+                      : _("Install now")}
+                </Text>
+              </Button>
+            </Flex>
           </Flex>
-        </Flex>
+        )}
       </Page.Content>
       {showConfirmation && (
-        <Popup isOpen title={_("Delete existing data and install?")}>
-          <Stack hasGutter>
-            <PotentialDataLossAlert
-              isCompact
-              hint={_("If unsure, cancel and review storage settings.")}
-            />
-          </Stack>
+        <Popup
+          isOpen
+          title={sprintf(
+            hasDestructiveActions ? _("Delete existing data and install %s?") : _("Install %s?"),
+            product.name,
+          )}
+        >
+          {hasDestructiveActions && (
+            <Stack hasGutter>
+              <PotentialDataLossAlert
+                isCompact
+                hint={_("If unsure, cancel and review storage settings.")}
+              />
+            </Stack>
+          )}
           <Popup.Actions>
-            <Popup.DangerousAction onClick={onConfirm}>
-              {_("Confirm and install")}
-            </Popup.DangerousAction>
+            {hasDestructiveActions ? (
+              <Popup.DangerousAction onClick={onConfirm}>
+                {_("Confirm and install")}
+              </Popup.DangerousAction>
+            ) : (
+              <Popup.Confirm onClick={onConfirm}>{_("Confirm and install")}</Popup.Confirm>
+            )}
             <Popup.Cancel onClick={onCancel} />
           </Popup.Actions>
         </Popup>

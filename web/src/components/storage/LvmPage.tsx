@@ -51,7 +51,6 @@ import {
 } from "~/hooks/model/storage/config-model";
 import type { ConfigModel, Data } from "~/model/storage/config-model";
 import type { Storage } from "~/model/system";
-import { STORAGE } from "~/routes/paths.next";
 
 /**
  * Hook that returns the devices that can be selected as target to automatically create LVM PVs.
