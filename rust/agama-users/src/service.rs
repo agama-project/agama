@@ -71,8 +71,6 @@ impl Starter {
 
     /// Starts the service and returns a handler to communicate with it.
     pub async fn start(self) -> Result<Handler<Service>, Error> {
-        tracing::info!("Starting users service");
-
         let model = match self.model {
             Some(model) => model,
             None => Box::new(Model::from_system()?),
