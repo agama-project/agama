@@ -25,6 +25,7 @@ pub mod message;
 
 pub mod hardware;
 
+pub use agama_bootloader as bootloader;
 pub use agama_files as files;
 pub use agama_hostname as hostname;
 pub use agama_l10n as l10n;
