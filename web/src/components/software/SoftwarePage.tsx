@@ -132,10 +132,7 @@ const ReloadSection = ({
   </Alert>
 );
 
-/**
- * Software page component
- */
-function SoftwarePage(): React.ReactNode {
+const Content = () => {
   const { patterns } = useSystem();
   const proposal = useProposal();
   const issues = useIssues("software");
@@ -163,30 +160,41 @@ function SoftwarePage(): React.ReactNode {
   const showReposAlert = repos.some((r) => !r.loaded);
 
   return (
+    <>
+      <IssuesAlert issues={issues} />
+      <Grid hasGutter>
+        {showReposAlert && (
+          <GridItem sm={12}>
+            <ReloadSection loading={loading} action={startProbing} />
+          </GridItem>
+        )}
+        <GridItem sm={12} xl={selectedPatternsXlSize}>
+          {isEmpty(proposal.patterns) ? (
+            <NoPatterns />
+          ) : (
+            <SelectedPatterns patterns={patterns} selection={proposal.patterns} />
+          )}
+        </GridItem>
+        {usedSpace && (
+          <GridItem sm={12} xl={6}>
+            <Page.Section aria-label={_("Used space")}>
+              <UsedSize size={usedSpace} />
+            </Page.Section>
+          </GridItem>
+        )}
+      </Grid>
+    </>
+  );
+};
+
+/**
+ * Software page component
+ */
+function SoftwarePage(): React.ReactNode {
+  return (
     <Page breadcrumbs={[{ label: _("Software") }]} progress={{ scope: "software" }}>
       <Page.Content>
-        <IssuesAlert issues={issues} />
-        <Grid hasGutter>
-          {showReposAlert && (
-            <GridItem sm={12}>
-              <ReloadSection loading={loading} action={startProbing} />
-            </GridItem>
-          )}
-          <GridItem sm={12} xl={selectedPatternsXlSize}>
-            {isEmpty(proposal.patterns) ? (
-              <NoPatterns />
-            ) : (
-              <SelectedPatterns patterns={patterns} selection={proposal.patterns} />
-            )}
-          </GridItem>
-          {usedSpace && (
-            <GridItem sm={12} xl={6}>
-              <Page.Section aria-label={_("Used space")}>
-                <UsedSize size={usedSpace} />
-              </Page.Section>
-            </GridItem>
-          )}
-        </Grid>
+        <Content />
       </Page.Content>
     </Page>
   );
