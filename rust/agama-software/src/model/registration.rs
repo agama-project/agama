@@ -289,7 +289,7 @@ impl RegistrationBuilder {
     /// It announces the system, gets the credentials and registers the base product.
     ///
     /// * `zypp`: zypp instance.
-    pub fn register(self, zypp: &zypp_agama::Zypp) -> RegistrationResult<Registration> {
+    pub fn register(&self, zypp: &zypp_agama::Zypp) -> RegistrationResult<Registration> {
         let params = suseconnect_agama::ConnectParams {
             token: self.code.clone(),
             email: self.email.clone(),
@@ -314,7 +314,7 @@ impl RegistrationBuilder {
         )?;
 
         let mut registration = Registration {
-            root_dir: self.root_dir,
+            root_dir: self.root_dir.clone(),
             connect_params: params,
             product: self.product.clone(),
             version: self.version.clone(),
