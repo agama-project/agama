@@ -24,7 +24,7 @@ import React from "react";
 import { screen, within } from "@testing-library/react";
 import { installerRender, mockRoutes } from "~/test-utils";
 import { useSystem } from "~/hooks/model/system";
-import { useProduct } from "~/hooks/model/config";
+import { useProductInfo } from "~/hooks/model/config/product";
 import { Product } from "~/types/software";
 import { Keymap, Locale } from "~/model/system/l10n";
 import { Progress, Stage } from "~/model/status";
@@ -78,17 +78,25 @@ jest.mock("~/api", () => ({
   patchConfig: (payload) => mockPatchConfigFn(payload),
 }));
 
-jest.mock("~/hooks/api", () => ({
-  ...jest.requireActual("~/hooks/api"),
+jest.mock("~/hooks/model/system", () => ({
+  ...jest.requireActual("~/hooks/model/system"),
   useSystem: (): ReturnType<typeof useSystem> => ({
     l10n: { locales, keymaps, locale: "us_US.UTF-8", keymap: "us" },
     network,
   }),
+}));
+
+jest.mock("~/hooks/model/config/product", () => ({
+  ...jest.requireActual("~/hooks/model/config/product"),
+  useProductInfo: (): ReturnType<typeof useProductInfo> => mockSelectedProductFn(),
+}));
+
+jest.mock("~/hooks/model/status", () => ({
+  ...jest.requireActual("~/hooks/model/status"),
   useStatus: (): ReturnType<typeof useStatus> => ({
     stage: mockStateFn(),
     progresses: mockProgressesFn(),
   }),
-  useProduct: (): ReturnType<typeof useProduct> => mockSelectedProductFn(),
 }));
 
 jest.mock("~/context/installerL10n", () => ({

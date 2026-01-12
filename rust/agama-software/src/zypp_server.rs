@@ -40,7 +40,7 @@ use zypp_agama::{errors::ZyppResult, ZyppError};
 use crate::{
     callbacks,
     model::state::{self, SoftwareState},
-    state::{RegistrationState, ResolvableSelection},
+    state::{Addon, RegistrationState, ResolvableSelection},
     Registration, ResolvableType,
 };
 
@@ -274,8 +274,8 @@ impl ZyppServer {
         let old_state = self.read(zypp)?;
 
         // how to check whether the system is registered
-        if let Some(registration) = &state.registration {
-            self.register_system(registration, &zypp, &mut issues);
+        if let Some(registration_config) = &state.registration {
+            self.update_registration(registration_config, &zypp, &mut issues);
         }
 
         progress.cast(progress::message::Next::new(Scope::Software))?;
@@ -673,7 +673,22 @@ impl ZyppServer {
             .map_err(|e| e.into())
     }
 
-    fn register_system(
+    fn update_registration(
+        &mut self,
+        state: &RegistrationState,
+        zypp: &zypp_agama::Zypp,
+        issues: &mut Vec<Issue>,
+    ) {
+        if self.registration.is_none() {
+            self.register_base_system(state, zypp, issues);
+        }
+
+        if !state.addons.is_empty() {
+            self.register_addons(&state.addons, zypp, issues);
+        }
+    }
+
+    fn register_base_system(
         &mut self,
         state: &RegistrationState,
         zypp: &zypp_agama::Zypp,
@@ -682,17 +697,48 @@ impl ZyppServer {
         let mut registration =
             Registration::builder(self.root_dir.clone(), &state.product, &state.version)
                 .with_code(&state.code);
+
         if let Some(email) = &state.email {
             registration = registration.with_email(email);
         }
 
+        if let Some(url) = &state.url {
+            registration = registration.with_url(url);
+        }
+
         match registration.register(&zypp) {
-            Ok(registration) => self.registration = Some(registration),
+            Ok(registration) => {
+                self.registration = Some(registration);
+            }
             Err(error) => {
                 issues.push(
                     Issue::new("software.register_system", "Failed to register the system")
                         .with_details(&error.to_string()),
                 );
+            }
+        }
+    }
+
+    fn register_addons(
+        &mut self,
+        addons: &Vec<Addon>,
+        zypp: &zypp_agama::Zypp,
+        issues: &mut Vec<Issue>,
+    ) {
+        let Some(registration) = &mut self.registration else {
+            tracing::error!("Could not register addons because the base system is not registered");
+            return;
+        };
+
+        for addon in addons {
+            if registration.is_addon_registered(&addon) {
+                tracing::info!("Skipping already registered add-on {}", &addon.id);
+                continue;
+            }
+            if let Err(error) = registration.register_addon(zypp, addon) {
+                let message = format!("Failed to register the add-on {}", addon.id);
+                let issue = Issue::new("software.addon", &message).with_details(&error.to_string());
+                issues.push(issue);
             }
         }
     }

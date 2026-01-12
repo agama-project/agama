@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2023] SUSE LLC
+ * Copyright (c) [2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -20,7 +20,18 @@
  * find current contact information at www.suse.com.
  */
 
-export { default as OverviewPage } from "./OverviewPage";
-export { default as L10nSection } from "./L10nSection";
-export { default as StorageSection } from "./StorageSection";
-export { default as SoftwareSection } from "./SoftwareSection";
+type Config = {
+  id?: string;
+  registrationCode?: string;
+  registrationEmail?: string;
+  registrationUrl?: string;
+  addons?: Addon[];
+};
+
+type Addon = {
+  id: string;
+  version?: string;
+  registrationCode?: string;
+};
+
+export type { Config, Addon };

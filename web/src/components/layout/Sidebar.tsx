@@ -33,10 +33,10 @@ import {
 import { Icon } from "~/components/layout";
 import { rootRoutes } from "~/router";
 import { _ } from "~/i18n";
-import { useProduct } from "~/hooks/model/config";
+import { useProductInfo } from "~/hooks/model/config/product";
 
 const MainNavigation = (): React.ReactNode => {
-  const product = useProduct();
+  const product = useProductInfo();
   const location = useLocation();
 
   if (!product) {

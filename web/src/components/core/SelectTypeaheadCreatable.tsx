@@ -35,25 +35,25 @@ import {
   Button,
 } from "@patternfly/react-core";
 import TimesIcon from "@patternfly/react-icons/dist/esm/icons/times-icon";
-import { _ } from "~/i18n";
+import { _, TranslatedString } from "~/i18n";
 
 export type SelectTypeaheadCreatableProps = {
   id?: string;
   value: string;
   options: SelectOptionProps[];
-  placeholder?: string;
+  placeholder?: TranslatedString;
   // Text to show for creating a new option.
-  createText?: string;
+  createText?: TranslatedString;
   onChange?: (value: string) => void;
   status?: MenuToggleStatus;
   // Accessible name for the toggle
-  toggleName: string;
+  toggleName: TranslatedString;
   // Accessible name for the options list
-  listName: string;
+  listName: TranslatedString;
   // Accessible name for input text
-  inputName: string;
+  inputName: TranslatedString;
   // Accessible name for clear button
-  clearButtonName: string;
+  clearButtonName: TranslatedString;
 };
 
 /**

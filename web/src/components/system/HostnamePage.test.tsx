@@ -23,25 +23,10 @@
 import React from "react";
 import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
-import { Product } from "~/types/software";
 import HostnamePage from "./HostnamePage";
 
 let mockStaticHostname: string;
 const mockPatchConfig = jest.fn();
-
-const tw: Product = {
-  id: "Tumbleweed",
-  name: "openSUSE Tumbleweed",
-  registration: false,
-};
-
-const sle: Product = {
-  id: "sle",
-  name: "SLE",
-  registration: true,
-};
-
-let selectedProduct = tw;
 
 jest.mock("~/components/product/ProductRegistrationAlert", () => () => (
   <div>ProductRegistrationAlert Mock</div>
@@ -52,12 +37,11 @@ jest.mock("~/api", () => ({
   patchConfig: (config) => mockPatchConfig(config),
 }));
 
-jest.mock("~/hooks/model/config", () => ({
-  ...jest.requireActual("~/hooks/model/config"),
-  useProduct: () => selectedProduct,
-  useConfig: () => ({
-    product: selectedProduct.id,
-  }),
+const system = jest.fn();
+
+jest.mock("~/hooks/model/system", () => ({
+  ...jest.requireActual("~/hooks/model/system"),
+  useSystem: () => system(),
 }));
 
 jest.mock("~/hooks/model/proposal", () => ({
@@ -81,7 +65,7 @@ jest.mock("~/hooks/model/proposal", () => ({
 
 describe("HostnamePage", () => {
   beforeEach(() => {
-    selectedProduct = tw;
+    system.mockReturnValue({});
   });
 
   describe("when static hostname is set", () => {
@@ -184,7 +168,7 @@ describe("HostnamePage", () => {
     });
   });
 
-  describe("when selected product is not registrable", () => {
+  describe("when selected product is not registered", () => {
     it("does not render an alert about registration", () => {
       installerRender(<HostnamePage />);
       expect(screen.queryByText("Info alert:")).toBeNull();
@@ -192,21 +176,27 @@ describe("HostnamePage", () => {
     });
   });
 
-  describe("when the selected product is registrable and registration code is not set", () => {
+  describe("when the product is not registered", () => {
     beforeEach(() => {
-      selectedProduct = sle;
+      system.mockReturnValue({ software: {} });
     });
 
-    xit("does not render an alert about registration", () => {
+    it("does not render an alert about registration", () => {
       installerRender(<HostnamePage />);
       expect(screen.queryByText("Info alert:")).toBeNull();
       expect(screen.queryByText("Product is already registered")).toBeNull();
     });
   });
 
-  describe("when the selected product is registrable and registration code is set", () => {
+  describe("when the selected product is registered", () => {
     beforeEach(() => {
-      selectedProduct = sle;
+      system.mockReturnValue({
+        software: {
+          registration: {
+            code: "12345",
+          },
+        },
+      });
     });
 
     it("renders an alert to let user know that changes will not have effect in the registration", () => {

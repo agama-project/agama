@@ -32,7 +32,7 @@ import React from "react";
 import { MemoryRouter, useParams } from "react-router";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import userEvent from "@testing-library/user-event";
-import { render, within } from "@testing-library/react";
+import { render, renderHook, within } from "@testing-library/react";
 import { createClient } from "~/client/index";
 import { InstallerClientProvider } from "~/context/installer";
 import { InstallerL10nProvider } from "~/context/installerL10n";
@@ -198,17 +198,31 @@ const installerRender = (ui: React.ReactNode, options: { withL10n?: boolean } = 
   const queryClient = new QueryClient({});
 
   const Wrapper = ({ children }) => (
-    <Providers withL10n={options.withL10n}>
-      <MemoryRouter initialEntries={initialRoutes()}>
-        <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
-      </MemoryRouter>
-    </Providers>
+    <QueryClientProvider client={queryClient}>
+      <Providers withL10n={options.withL10n}>
+        <MemoryRouter initialEntries={initialRoutes()}>{children}</MemoryRouter>
+      </Providers>
+    </QueryClientProvider>
   );
 
   return {
     user: userEvent.setup(),
     ...render(ui, { wrapper: Wrapper, ...options }),
   };
+};
+
+/**
+ * Wrapper around react-testing-library#renderHook for testing custom Tanstack Query based hooks
+ */
+const installerRenderHook: typeof renderHook = (hook, options) => {
+  const queryClient = new QueryClient({});
+
+  return renderHook(hook, {
+    ...options,
+    wrapper: ({ children }) => (
+      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    ),
+  });
 };
 
 /**
@@ -297,6 +311,7 @@ const getColumnValues = (table: HTMLElement | HTMLTableElement, columnName: stri
 export {
   plainRender,
   installerRender,
+  installerRenderHook,
   createCallbackMock,
   mockNavigateFn,
   mockParams,

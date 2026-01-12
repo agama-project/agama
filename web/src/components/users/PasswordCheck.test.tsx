@@ -27,8 +27,8 @@ import PasswordCheck from "./PasswordCheck";
 
 const mockCheckPasswordFn = jest.fn();
 
-jest.mock("~/api/users", () => ({
-  ...jest.requireActual("~/api/users"),
+jest.mock("~/model/users", () => ({
+  ...jest.requireActual("~/model/users"),
   checkPassword: (password) => mockCheckPasswordFn(password),
 }));
 

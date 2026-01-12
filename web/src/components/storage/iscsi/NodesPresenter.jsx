@@ -65,8 +65,13 @@ export default function NodesPresenter({ nodes }) {
     if (!node.connected) return _("Disconnected");
 
     const startup = Object.values(NodeStartupOptions).find((o) => o.value === node.startup);
-    // TRANSLATORS: iSCSI connection status, %s is replaced by node label
-    return sprintf(_("Connected (%s)"), startup.label);
+    return sprintf(
+      // TRANSLATORS: iSCSI connection status, %s is replaced by translated
+      // start mode ("Manual", "Automatic" or "On boot")
+      _("Connected (%s)"),
+      /* eslint-disable agama-i18n/string-literals */
+      _(startup.label),
+    );
   };
 
   const nodeActions = (node) => {

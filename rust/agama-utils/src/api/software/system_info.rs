@@ -19,9 +19,11 @@
 // find current contact information at www.suse.com.
 
 use serde::Serialize;
+use serde_with::skip_serializing_none;
 
 /// Software-related information of the system where the installer
 /// is running.
+#[skip_serializing_none]
 #[derive(Clone, Debug, Default, Serialize, utoipa::ToSchema)]
 pub struct SystemInfo {
     /// List of known patterns.
@@ -66,6 +68,7 @@ pub struct Pattern {
     pub preselected: bool,
 }
 
+#[skip_serializing_none]
 #[derive(Clone, Default, Debug, Serialize, utoipa::ToSchema)]
 pub struct RegistrationInfo {
     /// Registration code.
@@ -98,4 +101,13 @@ pub struct AddonInfo {
     pub description: String,
     /// Release status of the addon, e.g. "beta"
     pub release: String,
+    /// Whether the addon is registered
+    pub status: AddonStatus,
+}
+
+#[derive(Clone, Debug, Serialize, utoipa::ToSchema)]
+#[serde(rename_all = "camelCase")]
+pub enum AddonStatus {
+    Registered { code: Option<String> },
+    NotRegistered,
 }

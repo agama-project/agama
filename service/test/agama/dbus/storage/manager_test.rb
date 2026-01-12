@@ -61,7 +61,8 @@ describe Agama::DBus::Storage::Manager do
     instance_double(Agama::Storage::ISCSI::Manager,
       on_activate:        nil,
       on_probe:           nil,
-      on_sessions_change: nil)
+      on_sessions_change: nil,
+      configured?:        true)
   end
 
   before do
@@ -456,6 +457,9 @@ describe Agama::DBus::Storage::Manager do
 
       allow(backend).to receive(:activate)
       allow(backend).to receive(:probe)
+      allow(backend).to receive(:add_packages)
+
+      allow(proposal).to receive(:success?).and_return true
     end
 
     # Set some known initial product configuration for the backend
@@ -552,6 +556,13 @@ describe Agama::DBus::Storage::Manager do
       end
     end
 
+    RSpec.shared_examples "adjust software" do
+      it "adjusts the packages to install in the target system" do
+        expect(backend).to receive(:add_packages)
+        subject.configure(serialized_product, serialized_config)
+      end
+    end
+
     context "if no storage configuration is given" do
       let(:serialized_config) { nil.to_json }
 
@@ -580,6 +591,7 @@ describe Agama::DBus::Storage::Manager do
           include_examples "update product configuration", ["/", "swap"]
           include_examples "re-calculate proposal"
           include_examples "emit SystemChanged"
+          include_examples "adjust software"
         end
 
         context "if the product configuration is equal to the current one" do
@@ -610,6 +622,7 @@ describe Agama::DBus::Storage::Manager do
           include_examples "update product configuration", ["/", "swap"]
           include_examples "emit SystemChanged"
           include_examples "re-calculate proposal"
+          include_examples "adjust software"
         end
 
         context "if the product configuration is equal to the current one" do
@@ -617,6 +630,7 @@ describe Agama::DBus::Storage::Manager do
           include_examples "do not update product configuration"
           include_examples "emit SystemChanged"
           include_examples "re-calculate proposal"
+          include_examples "adjust software"
         end
       end
     end
@@ -711,6 +725,7 @@ describe Agama::DBus::Storage::Manager do
           include_examples "update product configuration", ["/", "swap"]
           include_examples "emit SystemChanged"
           include_examples "calculate new proposal"
+          include_examples "adjust software"
         end
 
         context "if the product configuration is equal to the current one" do
@@ -718,6 +733,7 @@ describe Agama::DBus::Storage::Manager do
           include_examples "do not update product configuration"
           include_examples "do not emit SystemChanged"
           include_examples "calculate new proposal"
+          include_examples "adjust software"
         end
       end
 
@@ -742,6 +758,7 @@ describe Agama::DBus::Storage::Manager do
           include_examples "update product configuration", ["/", "swap"]
           include_examples "emit SystemChanged"
           include_examples "calculate new proposal"
+          include_examples "adjust software"
         end
 
         context "if the product configuration is equal to the current one" do
@@ -749,6 +766,7 @@ describe Agama::DBus::Storage::Manager do
           include_examples "do not update product configuration"
           include_examples "emit SystemChanged"
           include_examples "calculate new proposal"
+          include_examples "adjust software"
         end
       end
     end
@@ -1018,6 +1036,7 @@ describe Agama::DBus::Storage::Manager do
 
       allow(backend).to receive(:activated?).and_return activated
       allow(backend).to receive(:probe)
+      allow(backend).to receive(:add_packages)
     end
 
     let(:activated) { true }
@@ -1072,6 +1091,7 @@ describe Agama::DBus::Storage::Manager do
       before do
         allow(proposal).to receive(:storage_json).and_return config_json
         allow(subject).to receive(:ProposalChanged)
+        allow(proposal).to receive(:success?).and_return true
       end
 
       let(:config_json) do
@@ -1091,6 +1111,11 @@ describe Agama::DBus::Storage::Manager do
 
       it "re-calculates the proposal" do
         expect(backend).to receive(:configure).with(config_json)
+        subject.probe
+      end
+
+      it "adjusts the packages to install in the target system" do
+        expect(backend).to receive(:add_packages)
         subject.probe
       end
 

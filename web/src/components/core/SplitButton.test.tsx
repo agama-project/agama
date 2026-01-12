@@ -24,12 +24,13 @@ import React from "react";
 import { screen, waitForElementToBeRemoved, within } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import SplitButton from "./SplitButton";
+import { _ } from "~/i18n";
 
 const mainOnClickFn = jest.fn();
 const secondaryOnClickFn = jest.fn();
 
 const SplitButtonTest = ({ href }: { href?: string }) => (
-  <SplitButton label="Test" toggleAriaLabel="More actions" href={href} onClick={mainOnClickFn}>
+  <SplitButton label="Test" toggleAriaLabel={_("More actions")} href={href} onClick={mainOnClickFn}>
     <SplitButton.Item onClick={secondaryOnClickFn}>Second test</SplitButton.Item>
   </SplitButton>
 );

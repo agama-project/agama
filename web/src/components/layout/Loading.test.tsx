@@ -21,12 +21,12 @@
  */
 
 import React from "react";
-
 import { screen } from "@testing-library/react";
 import { installerRender, plainRender } from "~/test-utils";
-
+import { _ } from "~/i18n";
 import Loading from "./Loading";
 
+jest.mock("~/components/questions/Questions", () => () => <div>Questions Mock</div>);
 jest.mock("~/components/layout/Header", () => () => <div>Header Mock</div>);
 jest.mock("~/components/layout/Sidebar", () => () => <div>Sidebar Mock</div>);
 jest.mock("~/components/layout/Layout", () => {
@@ -46,7 +46,7 @@ jest.mock("~/components/layout/Layout", () => {
 
 describe("Loading", () => {
   it("renders provided text", async () => {
-    plainRender(<Loading text="Loading something" />);
+    plainRender(<Loading text={_("Loading something")} />);
     await screen.findByText("Loading something");
   });
 
@@ -63,13 +63,13 @@ describe("Loading", () => {
   });
 
   it("hides the spinner icon from a11y tree when text is given", () => {
-    const { container } = plainRender(<Loading text="Loading something" />);
+    const { container } = plainRender(<Loading text={_("Loading something")} />);
     const icon = container.querySelector("svg");
     expect(icon).toHaveAttribute("aria-hidden");
   });
 
   it("wraps itself within a PlainLayout without header and sideabar when listenQuestions is enabled", () => {
-    installerRender(<Loading text="Making a test" listenQuestions />);
+    installerRender(<Loading text={_("Making a test")} listenQuestions />);
     expect(screen.queryByText("Header Mock")).toBeNull();
     expect(screen.queryByText("Sidebar Mock")).toBeNull();
     screen.getByText("PlainLayout Mock");
@@ -77,9 +77,9 @@ describe("Loading", () => {
   });
 
   it("does not wrap itself within a PlainLayout when listenQuestions is not used or set to false", () => {
-    const { rerender } = plainRender(<Loading text="Making a test" />);
+    const { rerender } = plainRender(<Loading text={_("Making a test")} />);
     expect(screen.queryByText("PlainLayout Mock")).toBeNull();
-    rerender(<Loading text="Making a test" listenQuestions={false} />);
+    rerender(<Loading text={_("Making a test")} listenQuestions={false} />);
     expect(screen.queryByText("PlainLayout Mock")).toBeNull();
   });
 });

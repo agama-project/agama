@@ -1,4 +1,24 @@
 -------------------------------------------------------------------
+Fri Jan  9 14:43:58 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 19.pre
+- Introduce the version 2 of the HTTP API (gh#agama-project/agama#2997).
+- Drop most of the services because they have been ported to Rust.
+- Adapt the storage D-Bus service API to the new approach.
+
+-------------------------------------------------------------------
+Fri Dec 12 06:21:47 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Fix systemd target import from AutoYaST profiles
+  (gh#agama-project/agama#2826).
+  
+-------------------------------------------------------------------
+Thu Nov 13 13:30:58 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Do not build on 32bit arches (like i586) and PPC64-BE,
+  the dependant libsuseconnect does not support these (bsc#1251846)
+
+-------------------------------------------------------------------
 Wed Nov 12 15:42:26 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Version 18

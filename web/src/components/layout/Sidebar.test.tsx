@@ -54,14 +54,14 @@ const network: System = {
 
 const mockSelectedProduct: jest.Mock<Product> = jest.fn();
 
-jest.mock("~/hooks/api/system", () => ({
-  ...jest.requireActual("~/hooks/api/system"),
+jest.mock("~/hooks/model/system", () => ({
+  ...jest.requireActual("~/hooks/model/system"),
   useSystem: (): ReturnType<typeof useSystem> => ({ products: [tw, sle], network }),
 }));
 
-jest.mock("~/hooks/api/config", () => ({
-  ...jest.requireActual("~/hooks/api/config"),
-  useProduct: (): Product => mockSelectedProduct(),
+jest.mock("~/hooks/model/config/product", () => ({
+  ...jest.requireActual("~/hooks/model/config/product"),
+  useProductInfo: (): Product => mockSelectedProduct(),
 }));
 
 jest.mock("~/router", () => ({

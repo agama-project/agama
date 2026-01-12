@@ -1,4 +1,22 @@
 -------------------------------------------------------------------
+Fri Jan  9 14:44:00 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 19.pre
+- Do not offer or pre-install YaST2.
+
+-------------------------------------------------------------------
+Tue Dec  2 12:40:33 UTC 2025 - Dominique Leuenberger <dimstar@opensuse.org>
+
+- Do not list yast2 patterns and do not pre-install yast
+  (boo#1254414).
+
+-------------------------------------------------------------------
+Thu Nov 13 13:30:58 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Do not build on 32bit arches (like i586) and PPC64-BE,
+  the dependant libsuseconnect is 64bit only (bsc#1251846)
+
+-------------------------------------------------------------------
 Thu Nov 13 09:39:58 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
 
 - Fix removal of kalpa to work also in SLE

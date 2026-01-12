@@ -20,11 +20,8 @@
  * find current contact information at www.suse.com.
  */
 
-import { useCallback } from "react";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { getConfig, getExtendedConfig } from "~/api";
-import { useSystem } from "~/hooks/model/system";
-import type { system } from "~/api";
 import type { Config } from "~/model/config";
 
 const CONFIG_KEY = "config";
@@ -48,22 +45,6 @@ function useExtendedConfig(): Config | null {
   return useSuspenseQuery(extendedConfigQuery)?.data;
 }
 
-// Returns the information of the current selected product from the list of products provided by
-// the system.
-function useProduct(): system.Product | null {
-  const products = useSystem()?.products;
-  const { data } = useSuspenseQuery({
-    ...extendedConfigQuery,
-    select: useCallback(
-      (data: Config | null): system.Product | null => {
-        return products?.find((p) => p.id === data?.product?.id) || null;
-      },
-      [products],
-    ),
-  });
-  return data;
-}
-
 export {
   CONFIG_KEY,
   EXTENDED_CONFIG_KEY,
@@ -71,6 +52,7 @@ export {
   extendedConfigQuery,
   useConfig,
   useExtendedConfig,
-  useProduct,
 };
+export * as network from "~/hooks/model/config/network";
+export * as product from "~/hooks/model/config/product";
 export * as storage from "~/hooks/model/config/storage";
