@@ -22,15 +22,22 @@ use agama_utils::{
     actor::Handler,
     api::{
         self,
+        question::QuestionSpec,
         software::{Pattern, SelectedBy, SoftwareProposal, SystemInfo},
         Issue, Scope,
     },
     products::ProductSpec,
-    progress, question,
+    progress,
+    question::{self, ask_question},
 };
 use camino::{Utf8Path, Utf8PathBuf};
 use gettextrs::gettext;
-use std::collections::HashMap;
+use openssl::{
+    hash::MessageDigest,
+    nid::Nid,
+    x509::{X509NameRef, X509},
+};
+use std::{collections::HashMap, fs::File, io::Write, process::Command};
 use tokio::sync::{
     mpsc::{self, UnboundedSender},
     oneshot,
@@ -79,6 +86,9 @@ pub enum ZyppServerError {
 
     #[error("Could not find a mount point to calculate the used space")]
     MissingMountPoint,
+
+    #[error("SSL error: {0}")]
+    SSL(#[from] openssl::error::ErrorStack),
 }
 
 pub type ZyppServerResult<R> = Result<R, ZyppServerError>;
@@ -186,8 +196,8 @@ impl ZyppServer {
                 question,
                 tx,
             } => {
-                let mut security_callback = callbacks::Security::new(question);
-                self.write(state, progress, &mut security_callback, tx, zypp)?;
+                let mut security_callback = callbacks::Security::new(question.clone());
+                self.write(state, progress, question, &mut security_callback, tx, zypp)?;
             }
             SoftwareAction::GetSystemInfo(product_spec, tx) => {
                 self.system_info(product_spec, tx, zypp)?;
@@ -263,6 +273,7 @@ impl ZyppServer {
         &mut self,
         state: SoftwareState,
         progress: Handler<progress::Service>,
+        questions: Handler<question::Service>,
         security: &mut callbacks::Security,
         tx: oneshot::Sender<ZyppServerResult<Vec<Issue>>>,
         zypp: &zypp_agama::Zypp,
@@ -286,7 +297,7 @@ impl ZyppServer {
         let old_state = self.read(zypp)?;
 
         if let Some(registration_config) = &state.registration {
-            self.update_registration(registration_config, &zypp, &mut issues);
+            self.update_registration(registration_config, &zypp, &questions, &mut issues);
         }
 
         progress.cast(progress::message::Next::new(Scope::Software))?;
@@ -708,6 +719,7 @@ impl ZyppServer {
         &mut self,
         state: &RegistrationState,
         zypp: &zypp_agama::Zypp,
+        questions: &Handler<question::Service>,
         issues: &mut Vec<Issue>,
     ) {
         match &self.registration {
@@ -721,7 +733,7 @@ impl ZyppServer {
                 );
             }
             RegistrationStatus::NotRegistered => {
-                self.register_base_system(state, zypp, issues);
+                self.register_base_system(state, zypp, questions, issues);
             }
             RegistrationStatus::Registered(registration) => {}
         };
@@ -731,10 +743,11 @@ impl ZyppServer {
         }
     }
 
-    fn register_base_system(
+    async fn register_base_system(
         &mut self,
         state: &RegistrationState,
         zypp: &zypp_agama::Zypp,
+        questions: &Handler<question::Service>,
         issues: &mut Vec<Issue>,
     ) {
         let mut registration =
@@ -749,7 +762,8 @@ impl ZyppServer {
             registration = registration.with_url(url);
         }
 
-        match registration.register(&zypp) {
+        let result = handle_registration_error(|| registration.register(&zypp), &questions).await;
+        match result {
             Ok(registration) => {
                 self.registration = RegistrationStatus::Registered(registration);
             }
@@ -785,5 +799,132 @@ impl ZyppServer {
                 issues.push(issue);
             }
         }
+    }
+}
+
+/// Ancillary function to handle registration errors.
+///
+/// Runs the given function and handles potential SSL errors. If there is an SSL
+/// error and it can be solved by importing the certificate, it asks the user and,
+/// if wanted, imports the certificate and runs the function again.
+///
+/// It returns the result if the given function runs successfully or return any
+/// other kind of error.
+async fn handle_registration_error<T, F>(
+    func: F,
+    questions: &Handler<question::Service>,
+) -> Result<T, RegistrationError>
+where
+    F: Fn() -> Result<T, RegistrationError>,
+{
+    loop {
+        let result = func();
+
+        if let Err(RegistrationError::Registration(ref inner)) = result {
+            if let suseconnect_agama::Error::SSL {
+                code,
+                message: _,
+                current_certificate,
+            } = inner
+            {
+                if code.is_fixable_by_import() {
+                    let certificate = X509::from_pem(&current_certificate.as_bytes()).unwrap();
+                    if should_trust_certificate(&certificate, questions).await {
+                        if let Err(error) = certs::import_certificate(&certificate) {
+                            tracing::error!("Could not import the certificate: {error}");
+                        }
+                        continue;
+                    }
+                }
+            }
+        }
+        return result;
+    }
+}
+
+/// Asks the user whether it should trust the certificate.
+///
+/// * `certificate`: certificate to ask for.
+/// * `questions`: handler to ask questions.
+async fn should_trust_certificate(cert: &X509, questions: &Handler<question::Service>) -> bool {
+    let labels = [gettext("Trust"), gettext("Reject")];
+    let msg = gettext("Trying to import a self-signed certificate. Do you want to trust it and register the product?");
+    let mut data = HashMap::from([
+        ("Not before".to_string(), cert.not_before().to_string()),
+        ("Not after".to_string(), cert.not_after().to_string()),
+    ]);
+
+    if let Ok(digest) = cert.digest(MessageDigest::sha1()) {
+        let sha1 = digest
+            .iter()
+            .map(|b| format!("{:02x}", b))
+            .collect::<Vec<String>>()
+            .join("");
+        data.insert("SHA1 fingerprint".to_string(), sha1);
+    }
+
+    if let Ok(digest) = cert.digest(MessageDigest::sha256()) {
+        let sha256 = digest
+            .iter()
+            .map(|b| format!("{:02x}", b))
+            .collect::<Vec<String>>()
+            .join("");
+        data.insert("SHA256 fingerprint".to_string(), sha256);
+    }
+
+    let issuer = cert.issuer_name();
+    if let Some(name) = certs::extract_entry(issuer, Nid::COMMONNAME) {
+        data.insert("Issuer".to_string(), name);
+    }
+
+    let question = QuestionSpec::new(&msg, "registration.certificate")
+        .with_owned_data(data)
+        .with_actions(&[
+            ("Trust", labels[0].as_str()),
+            ("Reject", labels[1].as_str()),
+        ])
+        .with_default_action("Trust");
+
+    let Ok(answer) = ask_question(questions, question).await else {
+        return false;
+    };
+
+    answer.action == "Trust".to_string()
+}
+
+/// Ancillary functions to work with certificates.
+mod certs {
+    use std::{fs::File, io::Write, process::Command};
+
+    use openssl::{
+        nid::Nid,
+        x509::{X509NameRef, X509},
+    };
+
+    const INSTSYS_CERT_FILE: &str = "/etc/pki/trust/anchors/registration_server.pem";
+
+    /// Imports the certificate.
+    ///
+    /// * `certificate`: certificate to import.
+    pub fn import_certificate(certificate: &X509) -> std::io::Result<()> {
+        let mut file = File::create(INSTSYS_CERT_FILE)?;
+        let pem = certificate.to_pem().unwrap();
+        file.write_all(&pem)?;
+        Command::new("update-ca-certificates").output()?;
+        Ok(())
+    }
+
+    /// Extract an entry from the X509 names.
+    ///
+    /// It only extracts the first value.
+    ///
+    /// * `name`: X509 names.
+    /// * `nid`: entry identifier.
+    pub fn extract_entry(name: &X509NameRef, nid: Nid) -> Option<String> {
+        let Some(entry) = name.entries_by_nid(nid).next() else {
+            return None;
+        };
+
+        entry.data().as_utf8().map(|l| l.to_string()).ok()
     }
 }
