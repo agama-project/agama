@@ -26,14 +26,19 @@ use agama_utils::{
     api::{
         self,
         event::{self, Event},
-        Issue,
+        Issue, Scope,
     },
     issue,
 };
 use async_trait::async_trait;
+use tokio::sync::broadcast;
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
+    #[error(transparent)]
+    Event(#[from] broadcast::error::SendError<Event>),
+    #[error(transparent)]
+    IssueService(#[from] issue::service::Error),
     #[error(transparent)]
     IO(#[from] std::io::Error),
     #[error(transparent)]
@@ -167,6 +172,12 @@ impl MessageHandler<message::SetConfig<api::users::Config>> for Service {
         }
 
         self.full_config = config;
+
+        self.issues
+            .cast(issue::message::Set::new(Scope::Users, self.find_issues()))?;
+        self.events.send(Event::ProposalChanged {
+            scope: Scope::Users,
+        })?;
 
         Ok(())
     }
