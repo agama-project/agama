@@ -833,6 +833,9 @@ where
                         if let Err(error) = certs::import_certificate(&certificate) {
                             tracing::error!("Could not import the certificate: {error}");
                         }
+                        if let Err(error) = suseconnect_agama::reload_certificates() {
+                            tracing::error!("Could not reload the certificates: {error}");
+                        }
                         continue;
                     }
                 }
