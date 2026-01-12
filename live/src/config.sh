@@ -133,7 +133,7 @@ mkdir /etc/cmdline.d
 echo "root=live:LABEL=$label" >/etc/cmdline.d/10-liveroot.conf
 echo "root_disk=live:LABEL=$label" >>/etc/cmdline.d/10-liveroot.conf
 echo 'install_items+=" /etc/cmdline.d/10-liveroot.conf "' >/etc/dracut.conf.d/10-liveroot-file.conf
-echo 'add_dracutmodules+=" dracut-menu agama-cmdline agama-dud live-self-update "' >>/etc/dracut.conf.d/10-liveroot-file.conf
+echo 'add_dracutmodules+=" dracut-menu agama-cmdline agama-dud live-self-update initrd-nmtui "' >>/etc/dracut.conf.d/10-liveroot-file.conf
 
 # decrease the kernel logging on the console, use a dracut module to do it early in the boot process
 echo 'add_dracutmodules+=" agama-logging "' > /etc/dracut.conf.d/10-agama-logging.conf
