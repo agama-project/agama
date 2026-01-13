@@ -74,7 +74,7 @@ describe("Breadcrumbs.Item", () => {
   });
 
   it("applies editorial styles when isEditorial is true", () => {
-    installerRender(<Breadcrumbs.Item label="Software" path="/software" isEditorial={true} />);
+    installerRender(<Breadcrumbs.Item label="Software" path="/software" isEditorial />);
 
     const label = screen.getByText("Software");
     expect(label).toHaveClass(textStyles.fontSizeLg);

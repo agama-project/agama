@@ -33,15 +33,16 @@ import { MemoryRouter, useParams } from "react-router";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import userEvent from "@testing-library/user-event";
 import { render, renderHook, within } from "@testing-library/react";
+import { isObject, noop } from "radashi";
 import { createClient } from "~/client/index";
 import { InstallerClientProvider } from "~/context/installer";
 import { InstallerL10nProvider } from "~/context/installerL10n";
 import { StorageUiStateProvider } from "~/context/storage-ui-state";
-import { isObject, noop } from "radashi";
-import { DummyWSClient } from "./client/ws";
-import { Status } from "./model/status";
-import type { Product } from "./types/software";
-import { FieldType, Question } from "./model/question";
+import { DummyWSClient } from "~/client/ws";
+import { Status } from "~/model/status";
+import { Question } from "~/model/question";
+
+import type { Product } from "~/types/software";
 
 /**
  * Internal mock for manipulating routes, using ["/"] by default
