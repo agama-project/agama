@@ -48,10 +48,4 @@ pub fn set_service_locale(locale: &LocaleId) {
     }
 }
 
-/// Does nothing at runtime, marking the text for translation.
-///
-/// This is useful when you need both the untranslated id
-/// and its translated label, for example.
-pub fn gettext_noop(text: &str) -> &str {
-    text
-}
+pub use agama_utils::gettext_noop;

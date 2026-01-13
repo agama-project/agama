@@ -18,8 +18,9 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use merge::Merge;
+use crate::gettext_noop;
 use gettextrs::gettext;
+use merge::Merge;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
@@ -278,10 +279,8 @@ impl QuestionSpec {
     ///   assert_eq!(q.actions[1].label, "No");
     /// ```
     pub fn with_yes_no_actions(self) -> Self {
-        // we have to always call fresh gettext to ensure it is properly localized after change of locale
-        let labels = [gettextrs::gettext("Yes"), gettextrs::gettext("No")];
-        let actions = [("Yes", labels[0].as_str()), ("No", labels[1].as_str())];
-        self.with_actions(&actions).with_default_action("No")
+        self.with_action_ids(&[gettext_noop("Yes"), gettext_noop("No")])
+            .with_default_action("No")
     }
 
     /// Sets the additional data.
