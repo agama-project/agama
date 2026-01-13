@@ -25,7 +25,12 @@ use crate::{
     types::{AccessPoint, Config, Device, DeviceType, Proposal, SystemInfo},
     Adapter, NetworkAdapterError, NetworkManagerAdapter,
 };
-use agama_utils::{actor::Handler, api::event, issue, progress};
+use agama_utils::{
+    actor::Handler,
+    api::{event, Scope},
+    issue, progress,
+};
+use gettextrs::gettext;
 use std::error::Error;
 use tokio::sync::{
     broadcast::{self, Receiver},
@@ -52,14 +57,14 @@ pub enum NetworkSystemError {
 /// passing like the example below.
 ///
 /// ```no_run
-/// # use agama_network::{Action, NetworkManagerAdapter, NetworkSystem};
+/// # use agama_network::{Action, NetworkManagerAdapter};
 /// # use tokio::sync::oneshot;
 ///
 /// # tokio_test::block_on(async {
 /// let adapter = NetworkManagerAdapter::from_system()
 ///     .await
 ///     .expect("Could not connect to NetworkManager.");
-/// let network = NetworkSystem::new(adapter);
+/// let network = Service::new(adapter);
 ///
 /// // Start the networking service and get the client for communication.
 /// let client = network.start()
@@ -74,7 +79,6 @@ pub enum NetworkSystemError {
 pub struct Starter {
     adapter: Option<Box<dyn Adapter + Send + 'static>>,
     events: event::Sender,
-    issues: Handler<issue::Service>,
     progress: Handler<progress::Service>,
 }
 
@@ -85,15 +89,10 @@ impl Starter {
     /// the [start](Self::start) method.
     ///
     /// * `adapter`: networking configuration adapter.
-    pub fn new(
-        events: event::Sender,
-        issues: Handler<issue::Service>,
-        progress: Handler<progress::Service>,
-    ) -> Self {
+    pub fn new(events: event::Sender, progress: Handler<progress::Service>) -> Self {
         Self {
             adapter: None,
             events,
-            issues,
             progress,
         }
     }
@@ -117,7 +116,7 @@ impl Starter {
         let adapter = match self.adapter {
             Some(adapter) => adapter,
             None => Box::new(
-                NetworkManagerAdapter::from_system(self.progress)
+                NetworkManagerAdapter::from_system()
                     .await
                     .expect("Could not connect to NetworkManager"),
             ),
@@ -136,6 +135,7 @@ impl Starter {
         let updates_tx_clone = updates_tx.clone();
         tokio::spawn(async move {
             let mut server = Service {
+                progress: self.progress,
                 state,
                 input: actions_rx,
                 output: updates_tx_clone,
@@ -152,7 +152,7 @@ impl Starter {
     }
 }
 
-/// Client to interact with the NetworkSystem once it is running.
+/// Client to interact with the Service once it is running.
 ///
 /// It hides the details of the message-passing behind a convenient API.
 #[derive(Clone)]
@@ -328,6 +328,7 @@ impl NetworkSystemClient {
 }
 
 pub struct Service {
+    progress: Handler<progress::Service>,
     state: NetworkState,
     input: UnboundedReceiver<Action>,
     output: broadcast::Sender<NetworkChange>,
@@ -335,12 +336,8 @@ pub struct Service {
 }
 
 impl Service {
-    pub fn starter(
-        events: event::Sender,
-        issues: Handler<issue::Service>,
-        progress: Handler<progress::Service>,
-    ) -> Starter {
-        Starter::new(events, issues, progress)
+    pub fn starter(events: event::Sender, progress: Handler<progress::Service>) -> Starter {
+        Starter::new(events, progress)
     }
 
     /// Process incoming actions.
@@ -480,7 +477,7 @@ impl Service {
                 tx.send(result).unwrap();
             }
             Action::Apply(tx) => {
-                let result = self.write().await;
+                let result = self.apply().await;
                 tx.send(result).unwrap();
             }
             Action::ProposeDefault(tx) => {
@@ -544,10 +541,43 @@ impl Service {
         self.adapter.read(StateConfig::default()).await
     }
 
-    /// Writes the network configuration.
-    pub async fn write(&mut self) -> Result<(), NetworkAdapterError> {
-        self.adapter.write(&self.state).await?;
-        self.state = self.adapter.read(StateConfig::default()).await?;
-        Ok(())
+    /// Writes the network configuration based on current state and then replace the state from the
+    /// one read from the system.
+    pub async fn apply(&mut self) -> Result<(), NetworkAdapterError> {
+        let steps = vec![
+            gettext("Writing configuration"),
+            gettext("Reading configuration"),
+        ];
+
+        let _ = self.progress.cast(progress::message::StartWithSteps::new(
+            Scope::Network,
+            steps,
+        ));
+        self.progress
+            .cast(progress::message::Next::new(Scope::Network))?;
+
+        if let Err(e) = self.adapter.write(&self.state).await {
+            self.progress
+                .call(progress::message::Finish::new(Scope::Network))
+                .await?;
+
+            return Err(e);
+        }
+        self.progress
+            .cast(progress::message::Next::new(Scope::Network))?;
+
+        let result = match self.adapter.read(StateConfig::default()).await {
+            Err(e) => Err(e),
+            Ok(state) => {
+                self.state = state;
+                Ok(())
+            }
+        };
+
+        self.progress
+            .call(progress::message::Finish::new(Scope::Network))
+            .await?;
+
+        result
     }
 }

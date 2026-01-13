@@ -44,7 +44,7 @@ pub async fn start_service(events: event::Sender, dbus: zbus::Connection) -> Han
         .with_storage(
             start_storage_service(events.clone(), issues.clone(), progress.clone(), dbus).await,
         )
-        .with_network(start_network_service(events.clone(), issues.clone(), progress.clone()).await)
+        .with_network(start_network_service(events.clone(), progress.clone()).await)
         .with_software(start_software_service(events, issues, progress, questions).await)
         .with_hardware(hardware::Registry::new_from_file(
             fixtures.join("lshw.json"),

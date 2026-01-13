@@ -20,7 +20,7 @@
 
 //! This module implements a set of utilities for tests.
 
-use agama_utils::{actor::Handler, api::event, issue, progress};
+use agama_utils::{actor::Handler, api::event, progress};
 use async_trait::async_trait;
 
 use crate::{
@@ -52,12 +52,11 @@ impl Adapter for TestAdapter {
 /// Starts a testing network service.
 pub async fn start_service(
     events: event::Sender,
-    issues: Handler<issue::Service>,
     progress: Handler<progress::Service>,
 ) -> NetworkSystemClient {
     let adapter = TestAdapter;
 
-    Starter::new(events, issues, progress)
+    Starter::new(events, progress)
         .with_adapter(adapter)
         .start()
         .await

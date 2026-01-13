@@ -230,7 +230,7 @@ impl Starter {
         let network = match self.network {
             Some(network) => network,
             None => {
-                network::Service::starter(self.events.clone(), issues.clone(), progress.clone())
+                network::Service::starter(self.events.clone(), progress.clone())
                     .start()
                     .await?
             }
