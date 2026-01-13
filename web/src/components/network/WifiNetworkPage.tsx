@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2025] SUSE LLC
+ * Copyright (c) [2025-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -23,7 +23,6 @@
 import React from "react";
 import { useParams } from "react-router";
 import {
-  Content,
   EmptyState,
   EmptyStateActions,
   EmptyStateBody,
@@ -38,6 +37,7 @@ import { DeviceState } from "~/types/network";
 import { PATHS } from "~/routes/network";
 import { _ } from "~/i18n";
 import { sprintf } from "sprintf-js";
+import { NETWORK } from "~/routes/paths";
 
 const NetworkNotFound = ({ ssid }) => {
   // TRANSLATORS: %s will be replaced with the network ssid
@@ -65,15 +65,16 @@ export default function WifiNetworkPage() {
   const { ssid } = useParams();
   const networks = useWifiNetworks();
   const network = networks.find((c) => c.ssid === ssid);
-
   const connected = network?.device?.state === DeviceState.CONNECTED;
-  const title = connected ? _("Connection details") : sprintf(_("Connect to %s"), ssid);
 
   return (
-    <Page>
-      <Page.Header>
-        <Content component="h2">{title}</Content>
-      </Page.Header>
+    <Page
+      breadcrumbs={[
+        { label: _("Network"), path: NETWORK.root },
+        { label: _("Wi-Fi") },
+        { label: ssid },
+      ]}
+    >
       <Page.Content>
         {!network && <NetworkNotFound ssid={ssid} />}
         {network && !connected && <WifiConnectionForm network={network} />}

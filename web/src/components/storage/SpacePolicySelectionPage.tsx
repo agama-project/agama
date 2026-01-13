@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024-2025] SUSE LLC
+ * Copyright (c) [2024-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -21,17 +21,18 @@
  */
 
 import React, { useState } from "react";
-import { ActionGroup, Content, Form } from "@patternfly/react-core";
+import { ActionGroup, Divider, Form } from "@patternfly/react-core";
+import { sprintf } from "sprintf-js";
 import { useNavigate, useParams } from "react-router";
-import { Page } from "~/components/core";
+import { Page, SubtleContent } from "~/components/core";
 import SpaceActionsTable, { SpacePolicyAction } from "~/components/storage/SpaceActionsTable";
 import { createPartitionableLocation, deviceChildren } from "~/components/storage/utils";
-import { _ } from "~/i18n";
 import { useDevices } from "~/hooks/model/system/storage";
 import { usePartitionable, useSetSpacePolicy } from "~/hooks/model/storage/config-model";
-import { toDevice } from "./device-utils";
-import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
-import { sprintf } from "sprintf-js";
+import { toDevice } from "~/components/storage/device-utils";
+import { STORAGE } from "~/routes/paths";
+import { _ } from "~/i18n";
+
 import type { Storage as Proposal } from "~/model/proposal";
 import type { ConfigModel, Partitionable } from "~/model/storage/config-model";
 
@@ -53,7 +54,7 @@ function useDeviceModelFromParams(): Partitionable.Device | null {
 /**
  * Renders a page that allows the user to select the space policy and actions.
  */
-export default function SpacePolicySelection() {
+export default function SpacePolicySelectionPage() {
   const deviceModel = useDeviceModelFromParams();
   const devices = useDevices();
   const device = devices.find((d) => d.name === deviceModel.name);
@@ -107,13 +108,15 @@ export default function SpacePolicySelection() {
   );
 
   return (
-    <Page>
-      <Page.Header>
-        <Content component="h2">{sprintf(_("Find space in %s"), device.name)}</Content>
-        <p className={textStyles.textColorSubtle}>{description}</p>
-      </Page.Header>
-
+    <Page
+      breadcrumbs={[
+        { label: _("Storage"), path: STORAGE.root },
+        { label: sprintf(_("Find space in %s"), device.name) },
+      ]}
+    >
       <Page.Content>
+        <SubtleContent>{description}</SubtleContent>
+        <Divider />
         <Form id="space-policy-form" onSubmit={onSubmit}>
           <SpaceActionsTable
             devices={children}

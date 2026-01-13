@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2025] SUSE LLC
+ * Copyright (c) [2025-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -20,11 +20,10 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useId } from "react";
+import React from "react";
 import { useParams, useNavigate, useLocation } from "react-router";
 import {
   ActionGroup,
-  Content,
   Divider,
   Flex,
   FlexItem,
@@ -710,7 +709,6 @@ const PartitionPageForm = () => {
   const { collection, index } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
-  const headingId = useId();
   const [mountPoint, setMountPoint] = React.useState(NO_VALUE);
   const [target, setTarget] = React.useState(NEW_PARTITION);
   const [filesystem, setFilesystem] = React.useState(NO_VALUE);
@@ -833,15 +831,23 @@ const PartitionPageForm = () => {
   const sizeRange: SizeRange = { min: minSize, max: maxSize };
 
   return (
-    <Page id="partitionPage">
-      <Page.Header>
-        <Content component="h2" id={headingId}>
-          {sprintf(_("Configure partition at %s"), device.name)}
-        </Content>
-      </Page.Header>
-
+    <Page
+      breadcrumbs={[
+        { label: _("Storage"), path: STORAGE.root },
+        { label: device.name },
+        // FIXME: evaluate if worth going for Edit/add or keep usign "Configure"
+        // since Agama still doing neither, adding or editing, but defining a
+        // partition
+        // { label: initialValue ? _("Edit partition") : _("Add partition") },
+        { label: _("Configure partition") },
+      ]}
+    >
       <Page.Content>
-        <Form id="partitionForm" aria-labelledby={headingId} onSubmit={onSubmit}>
+        <Form
+          id="partitionForm"
+          aria-label={sprintf(_("Configure partition at %s"), device.name)}
+          onSubmit={onSubmit}
+        >
           <Stack hasGutter>
             <FormGroup fieldId="mountPoint" label={_("Mount point")}>
               <Flex>

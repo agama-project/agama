@@ -21,14 +21,16 @@
  */
 
 import React from "react";
-import { Alert, ExpandableSection, List, ListItem } from "@patternfly/react-core";
+import { Alert, Content, List, ListItem, Stack } from "@patternfly/react-core";
+import Text from "~/components/core/Text";
 import { _, formatList } from "~/i18n";
 import { sprintf } from "sprintf-js";
 import { useDestructiveActions } from "~/hooks/use-destructive-actions";
 
-// FIXME: this component has a bunch of logic/calls copied from
-// storage/ProposalResultSection that should be moved to a reusable hook.
-export default function PotentialDataLossAlert() {
+export default function PotentialDataLossAlert({
+  isCompact = false,
+  hint = _("If you are unsure, check and adjust the storage settings."),
+}) {
   let title: string;
   const { actions, affectedSystems } = useDestructiveActions();
 
@@ -38,7 +40,7 @@ export default function PotentialDataLossAlert() {
     title = sprintf(
       // TRANSLATORS: %s will be replaced by a formatted list of affected
       // systems like "Windows and openSUSE Tumbleweed".
-      _("Proceeding may result in data loss affecting at least %s"),
+      _("Proceeding will delete existing data, including %s"),
       formatList(affectedSystems),
     );
   } else {
@@ -47,16 +49,18 @@ export default function PotentialDataLossAlert() {
 
   return (
     <Alert title={title} variant="danger">
-      <ExpandableSection
-        toggleTextCollapsed={_("View details")}
-        toggleTextExpanded={_("Hide details")}
-      >
-        <List>
-          {actions.map((a, i) => (
-            <ListItem key={i}>{a.text}</ListItem>
-          ))}
-        </List>
-      </ExpandableSection>
+      <Stack hasGutter>
+        {!isCompact && (
+          <List>
+            {actions.map((a, i) => (
+              <ListItem key={i}>{a.text}</ListItem>
+            ))}
+          </List>
+        )}
+        <Content component="p" isEditorial>
+          <Text isBold>{hint}</Text>
+        </Content>
+      </Stack>
     </Alert>
   );
 }

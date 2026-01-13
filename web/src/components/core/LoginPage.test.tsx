@@ -24,7 +24,6 @@ import React from "react";
 import { screen, within } from "@testing-library/react";
 import { installerRender, mockRoutes } from "~/test-utils";
 import { AuthErrors } from "~/context/auth";
-import { Plain as PlainLayout } from "~/components/layout/Layout";
 import LoginPage from "./LoginPage";
 
 let consoleErrorSpy: jest.SpyInstance;
@@ -61,18 +60,6 @@ describe("LoginPage", () => {
 
   afterAll(() => {
     consoleErrorSpy.mockRestore();
-  });
-
-  // Regresion test: when wrapped by Layout, it shouldn't fail with
-  // "No QueryClient set, use QueryClientProvider to set one"
-  // See commit ecc8d0865abbbebc7795e39bd85ec9462010d065
-  it("renders its content even when wrapped by Layout", async () => {
-    installerRender(
-      <PlainLayout>
-        <LoginPage />
-      </PlainLayout>,
-    );
-    await screen.findByRole("form", { name: "Login form" });
   });
 
   describe("when user is not authenticated", () => {

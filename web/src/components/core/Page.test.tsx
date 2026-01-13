@@ -36,6 +36,9 @@ jest.mock("~/hooks/use-track-queries-refetch", () => ({
   default: jest.fn(),
 }));
 
+jest.mock("~/components/questions/Questions", () => () => <div>Questions Mock</div>);
+jest.mock("~/components/layout/Header", () => () => <div>Header Mock</div>);
+
 jest.mock("~/components/product/ProductRegistrationAlert", () => () => (
   <div>ProductRegistrationAlertMock</div>
 ));
@@ -203,13 +206,6 @@ describe("Page", () => {
       await user.click(button);
       expect(onSubmit).toHaveBeenCalled();
       expect(onClick).toHaveBeenCalled();
-    });
-  });
-
-  describe("Page.Header", () => {
-    it("renders a node that sticks to top", () => {
-      const { container } = plainRender(<Page.Header>The Header</Page.Header>);
-      expect(container.children[0].classList.contains("pf-m-sticky-top")).toBe(true);
     });
   });
 

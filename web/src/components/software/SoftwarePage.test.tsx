@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2023] SUSE LLC
+ * Copyright (c) [2023-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -21,12 +21,14 @@
  */
 
 import React from "react";
-
 import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import testingPatterns from "./patterns.test.json";
 import testingProposal from "./proposal.test.json";
 import SoftwarePage from "./SoftwarePage";
+
+jest.mock("~/components/layout/Header", () => () => <div>Header Mock</div>);
+jest.mock("~/components/questions/Questions", () => () => <div>Questions Mock</div>);
 
 jest.mock("~/components/product/ProductRegistrationAlert", () => () => (
   <div>ProductRegistrationAlert Mock</div>

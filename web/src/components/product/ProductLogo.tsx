@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2024] SUSE LLC
+ * Copyright (c) [2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -21,15 +21,21 @@
  */
 
 import React from "react";
-import { screen } from "@testing-library/react";
-import { installerRender } from "~/test-utils";
-import OverviewPage from "~/components/overview/OverviewPage";
+import { sprintf } from "sprintf-js";
+import { _ } from "~/i18n";
 
-describe("when a product is selected", () => {
-  it.skip("renders the overview page content", async () => {
-    installerRender(<OverviewPage />);
-    await screen.findByText("Localization Section");
-    await screen.findByText("Storage Section");
-    await screen.findByText("Software Section");
-  });
-});
+export default function ProductLogo({ product, width = "80px" }) {
+  const logoSrc = `assets/logos/${product.icon}`;
+  // TRANSLATORS: %s will be replaced by a product name. E.g., "openSUSE Tumbleweed"
+  const logoAltText = sprintf(_("%s logo"), product.name);
+
+  return (
+    <img
+      aria-hidden
+      src={logoSrc}
+      alt={logoAltText}
+      width={width}
+      style={{ verticalAlign: "middle", width }}
+    />
+  );
+}

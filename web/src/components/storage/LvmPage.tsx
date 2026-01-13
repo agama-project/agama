@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2025] SUSE LLC
+ * Copyright (c) [2025-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -38,7 +38,7 @@ import { Page, SubtleContent } from "~/components/core";
 import { useAvailableDevices } from "~/hooks/model/system/storage";
 import { deviceLabel } from "./utils";
 import { contentDescription, filesystemLabels, typeDescription } from "./utils/device";
-import { STORAGE as PATHS } from "~/routes/paths";
+import { STORAGE } from "~/routes/paths";
 import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
 import { deviceSystems, isDrive } from "~/model/storage/device";
@@ -161,15 +161,17 @@ export default function LvmPage() {
       editVolumeGroup(volumeGroup.vgName, data);
     }
 
-    navigate(PATHS.root);
+    navigate(STORAGE.root);
   };
 
   return (
-    <Page>
-      <Page.Header>
-        <Content component="h2">{_("Configure LVM Volume Group")}</Content>
-      </Page.Header>
-
+    <Page
+      breadcrumbs={[
+        { label: _("Storage"), path: STORAGE.root },
+        { label: _("LVM") },
+        { label: _("Configure Volume Group") },
+      ]}
+    >
       <Page.Content>
         <Form id="lvmForm" onSubmit={onSubmit}>
           {errors.length > 0 && (

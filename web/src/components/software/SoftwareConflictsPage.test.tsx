@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2025] SUSE LLC
+ * Copyright (c) [2025-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -24,7 +24,7 @@ import React from "react";
 import { screen, within } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import { Conflict } from "~/types/software";
-import SoftwareConflicts from "./SoftwareConflicts";
+import SoftwareConflictsPage from "./SoftwareConflictsPage";
 
 const conflicts = [
   {
@@ -94,6 +94,8 @@ const conflicts = [
 let mockConflicts: Conflict[];
 const mockSolveConflict = jest.fn();
 
+jest.mock("~/components/layout/Header", () => () => <div>Header Mock</div>);
+jest.mock("~/components/questions/Questions", () => () => <div>Questions Mock</div>);
 jest.mock("~/components/product/ProductRegistrationAlert", () => () => (
   <div>ProductRegistrationAlert Mock</div>
 ));
@@ -110,7 +112,7 @@ describe("SofwareConflicts", () => {
   });
 
   it("does not render the conflicts toolbar", () => {
-    installerRender(<SoftwareConflicts />);
+    installerRender(<SoftwareConflictsPage />);
     expect(screen.queryByText(/Multiple conflicts found/)).toBeNull();
     expect(screen.queryByText(/any order/)).toBeNull();
     expect(screen.queryByText(/resolve others/)).toBeNull();
@@ -120,7 +122,7 @@ describe("SofwareConflicts", () => {
   });
 
   it("allows applying the selected solution", async () => {
-    const { user } = installerRender(<SoftwareConflicts />);
+    const { user } = installerRender(<SoftwareConflictsPage />);
     const applyButton = screen.getByRole("button", { name: "Apply selected solution" });
     const secondOption = screen.getByRole("radio", {
       name: conflicts[0].solutions[1].description,
@@ -131,7 +133,7 @@ describe("SofwareConflicts", () => {
   });
 
   it("displays an error if no solution is selected before submission", async () => {
-    const { user } = installerRender(<SoftwareConflicts />);
+    const { user } = installerRender(<SoftwareConflictsPage />);
     const applyButton = screen.getByRole("button", { name: "Apply selected solution" });
     const firstSolution = screen.getAllByRole("radio")[0];
     await user.click(applyButton);
@@ -162,7 +164,7 @@ describe("SofwareConflicts", () => {
     });
 
     it("renders details in a list, splitting by newline", () => {
-      installerRender(<SoftwareConflicts />);
+      installerRender(<SoftwareConflictsPage />);
       const details = screen.getByRole("list");
       within(details).getByText("Action 1");
       within(details).getByText("Action 2");
@@ -170,7 +172,7 @@ describe("SofwareConflicts", () => {
 
     describe("and the number of details is within the visible limit", () => {
       it("does not render a toggle to show/hide more", () => {
-        installerRender(<SoftwareConflicts />);
+        installerRender(<SoftwareConflictsPage />);
         expect(screen.queryByRole("button", { name: /^Show.*actions$"/ })).toBeNull();
       });
     });
@@ -194,7 +196,7 @@ describe("SofwareConflicts", () => {
       });
 
       it("renders a toggle to show/hide all actions", async () => {
-        const { user } = installerRender(<SoftwareConflicts />);
+        const { user } = installerRender(<SoftwareConflictsPage />);
         const actionsToggle = screen.getByRole("button", { name: /^Show.*actions$/ });
         const details = screen.getByRole("list");
         within(details).getByText("Action 1");
@@ -216,7 +218,7 @@ describe("SofwareConflicts", () => {
     });
 
     it("renders the conflicts toolbar with information and links", () => {
-      installerRender(<SoftwareConflicts />);
+      installerRender(<SoftwareConflictsPage />);
       screen.getByText(/Multiple conflicts found/);
       screen.getByText(/any order/);
       screen.getByText(/resolve others/);
@@ -226,7 +228,7 @@ describe("SofwareConflicts", () => {
     });
 
     it("allows navigating between conflicts without exceeding bounds", async () => {
-      const { user } = installerRender(<SoftwareConflicts />);
+      const { user } = installerRender(<SoftwareConflictsPage />);
       screen.getByText("1 of 3");
       const skipToPrevious = screen.getByRole("button", { name: "Skip to previous" });
       const skipToNext = screen.getByRole("button", { name: "Skip to next" });
@@ -254,7 +256,7 @@ describe("SofwareConflicts", () => {
     });
 
     it("does not preserve the selected option after navigating", async () => {
-      const { user } = installerRender(<SoftwareConflicts />);
+      const { user } = installerRender(<SoftwareConflictsPage />);
       screen.getByText("1 of 3");
       const skipToPrevious = screen.getByRole("button", { name: "Skip to previous" });
       const skipToNext = screen.getByRole("button", { name: "Skip to next" });
@@ -284,7 +286,7 @@ describe("SofwareConflicts", () => {
     });
 
     it("allows applying the selected solution for the current conflict", async () => {
-      const { user } = installerRender(<SoftwareConflicts />);
+      const { user } = installerRender(<SoftwareConflictsPage />);
       const skipToNext = screen.getByRole("button", { name: "Skip to next" });
 
       await user.click(skipToNext);
@@ -304,13 +306,13 @@ describe("SofwareConflicts", () => {
     });
 
     it("does not render the solution selection form", () => {
-      installerRender(<SoftwareConflicts />);
+      installerRender(<SoftwareConflictsPage />);
       expect(screen.queryAllByRole("radio").length).toBe(0);
       expect(screen.queryByRole("button", { name: "Apply selected solution" })).toBeNull();
     });
 
     it("renders a message indicating there are no conflicts to address", () => {
-      installerRender(<SoftwareConflicts />);
+      installerRender(<SoftwareConflictsPage />);
       screen.queryByRole("heading", { name: "No conflicts to address" });
       screen.getByText(/All conflicts have been resolved, or none were detected/);
     });

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2025] SUSE LLC
+ * Copyright (c) [2022-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -20,47 +20,18 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { Fragment } from "react";
+import React from "react";
 import { Flex, EmptyState, Spinner, SpinnerProps } from "@patternfly/react-core";
-import { PlainLayout } from "~/components/layout";
-import { LayoutProps } from "~/components/layout/Layout";
 import sizingStyles from "@patternfly/react-styles/css/utilities/Sizing/sizing";
 import spacingStyles from "@patternfly/react-styles/css/utilities/Spacing/spacing";
 import { isEmpty } from "radashi";
 import { _, TranslatedString } from "~/i18n";
-
-/**
- * Renders a plain layout without either, header nor mountSidebar
- */
-const Layout = (props: LayoutProps) => (
-  <PlainLayout mountHeader={false} mountSidebar={false} {...props} />
-);
 
 type LoadingProps = {
   /** Text to be rendered alongside the spinner */
   text?: TranslatedString;
   /** Accessible text, required when rendering only the spinner */
   "aria-label"?: string;
-  /**
-   * Whether the loading screen should listen for and render any questions
-   *
-   * The Questions component is mounted within the application layout
-   * (src/components/Layout.tsx). However, certain branches in src/App.tsx force
-   * to render the Loading component before the layout is mounted.
-   *
-   * This behavior requires a mechanism to enable the loading to listen
-   * for and render backend questions before the frontend has all the
-   * data necessary to fully mount the layout.
-   *
-   * This is why this prop exists. While this could be improved and ideally
-   * the Loading component shouldn’t need to wrap itself with the layout, be
-   * cautious when tempted to remove this behavior without a solid alternative.
-   * Doing so could silently reintroduced the regression fixed in
-   * https://github.com/agama-project/agama/pull/1825
-   *
-   * FIXME: Find and implement a solid alternative
-   */
-  listenQuestions?: boolean;
   /** Loader style, full screen or inline */
   variant?: "full-screen" | "inline";
   /** Size for the spinner icon */
@@ -74,7 +45,7 @@ const FullScreenLoading = ({
   text,
   "aria-label": ariaLabel,
   spinnerSize,
-}: Omit<LoadingProps, "listenQuestions" | "variant">) => {
+}: Omit<LoadingProps, "variant">) => {
   return (
     <Flex
       className={sizingStyles.h_100vh}
@@ -106,7 +77,7 @@ const InlineLoading = ({
   text,
   "aria-label": ariaLabel,
   spinnerSize,
-}: Omit<LoadingProps, "listenQuestions" | "variant">) => {
+}: Omit<LoadingProps, "variant">) => {
   return (
     <Flex gap={{ default: "gapMd" }} className={spacingStyles.pMd}>
       <Spinner
@@ -122,23 +93,19 @@ const InlineLoading = ({
 function Loading({
   text,
   "aria-label": ariaLabel,
-  listenQuestions = false,
   variant = "full-screen",
   spinnerSize,
 }: LoadingProps) {
-  const Wrapper = listenQuestions ? Layout : Fragment;
   const LoadingComponent = variant === "full-screen" ? FullScreenLoading : InlineLoading;
   const defaultSpinnerSize = variant === "full-screen" ? "xl" : "sm";
   const defaultAriaLabel = _("Loading");
 
   return (
-    <Wrapper>
-      <LoadingComponent
-        text={text}
-        aria-label={ariaLabel || (isEmpty(text) ? defaultAriaLabel : undefined)}
-        spinnerSize={spinnerSize || defaultSpinnerSize}
-      />
-    </Wrapper>
+    <LoadingComponent
+      text={text}
+      aria-label={ariaLabel || (isEmpty(text) ? defaultAriaLabel : undefined)}
+      spinnerSize={spinnerSize || defaultSpinnerSize}
+    />
   );
 }
 

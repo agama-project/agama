@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2025] SUSE LLC
+ * Copyright (c) [2025-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -32,6 +32,7 @@ import {
   filesystemLabels,
 } from "~/components/storage/utils/device";
 import type { Storage } from "~/model/system";
+import { STORAGE } from "~/routes/paths";
 
 type DeviceSelectorProps = {
   devices: Storage.Device[];
@@ -70,10 +71,9 @@ export default function DeviceSelectorPage(): React.ReactNode {
   const [selectedDevices, setSelectedDevices] = useState([]);
 
   return (
-    <Page>
-      <Page.Header>
-        <Content component="h2">{_("Device Selection")}</Content>
-      </Page.Header>
+    <Page
+      breadcrumbs={[{ label: _("Storage"), path: STORAGE.root }, { label: _("Select device") }]}
+    >
       <Page.Content>
         <Content>
           {_(

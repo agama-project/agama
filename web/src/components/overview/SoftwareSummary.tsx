@@ -29,13 +29,13 @@ import { useProgressTracking } from "~/hooks/use-progress-tracking";
 import { useSelectedPatterns } from "~/hooks/model/system/software";
 import { SOFTWARE } from "~/routes/paths";
 import { _, n_ } from "~/i18n";
-import Details from "~/components/core/Details";
+import Summary from "~/components/core/Summary";
 import Link from "~/components/core/Link";
 
 /**
  * Renders a summary text describing the software selection.
  */
-const Summary = () => {
+const Value = () => {
   const patterns = useSelectedPatterns();
   const patternsQty = patterns.length;
 
@@ -69,20 +69,17 @@ const Description = () => {
 /**
  * A software installation summary.
  */
-export default function SoftwareDetailsItem({ withoutLink = false }: { withoutLink?: boolean }) {
+export default function SoftwareSummary() {
   const { loading } = useProgressTracking("software");
   return (
-    <Details.StackItem
-      label={_("Software")}
-      content={
-        withoutLink ? (
-          <Summary />
-        ) : (
-          <Link to={SOFTWARE.root} variant="link" isInline>
-            <Summary />
-          </Link>
-        )
+    <Summary
+      icon="apps"
+      title={
+        <Link to={SOFTWARE.root} variant="link" isInline>
+          {_("Software")}
+        </Link>
       }
+      value={<Value />}
       description={<Description />}
       isLoading={loading}
     />

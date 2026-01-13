@@ -21,18 +21,23 @@
  */
 
 import { useEffect, useRef, useState } from "react";
+import { isUndefined } from "radashi";
 import useTrackQueriesRefetch from "~/hooks/use-track-queries-refetch";
 import { useStatus } from "~/hooks/model/status";
-import { COMMON_PROPOSAL_KEYS } from "./model/proposal";
-import type { Scope } from "~/model/status";
+import { COMMON_PROPOSAL_KEYS } from "~/hooks/model/proposal";
+import type { Progress, Scope } from "~/model/status";
 
-// FIXME: copied from StorageDetailsItem,
-// FIXME: evaluate to extract this hook and use it instead of repeating such a
-// #find in multiple places
-const useProgress = (scope: Scope) => {
+export function useProgress(scope?: undefined): Progress[];
+export function useProgress(scope: Scope): Progress | undefined;
+export function useProgress(scope?: Scope): Progress[] | Progress | undefined {
   const { progresses } = useStatus();
+
+  if (isUndefined(scope)) {
+    return progresses;
+  }
+
   return progresses.find((p) => p.scope === scope);
-};
+}
 
 /**
  * Custom hook that manages loading state for operations with progress tracking.
@@ -94,7 +99,7 @@ const useProgress = (scope: Scope) => {
  * @see {@link useTrackQueriesRefetch} - For tracking query refetch completion
  */
 export function useProgressTracking(
-  scope: Scope,
+  scope?: Scope,
   queryKeys: readonly string[] = COMMON_PROPOSAL_KEYS,
 ) {
   const progress = useProgress(scope);

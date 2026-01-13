@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024-2025] SUSE LLC
+ * Copyright (c) [2024-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -22,45 +22,47 @@
 
 import React, { useState } from "react";
 import {
-  Content,
   Dropdown,
   DropdownItem,
   DropdownList,
   Masthead,
   MastheadContent,
-  MastheadLogo,
   MastheadMain,
-  MastheadToggle,
   MenuToggle,
   MenuToggleElement,
-  PageToggleButton,
+  Title,
   Toolbar,
   ToolbarContent,
   ToolbarGroup,
   ToolbarItem,
 } from "@patternfly/react-core";
-import { useMatches } from "react-router";
 import { Icon } from "~/components/layout";
-import { Route } from "~/types/routes";
-import { ChangeProductOption, InstallButton, InstallerOptions, SkipTo } from "~/components/core";
+import { ChangeProductOption, InstallerOptions, InstallButton, SkipTo } from "~/components/core";
 import ProgressStatusMonitor from "../core/ProgressStatusMonitor";
+import Breadcrumbs from "~/components/core/Breadcrumbs";
+import { useProductInfo } from "~/hooks/model/config/product";
 import { ROOT } from "~/routes/paths";
 import { _ } from "~/i18n";
-import { useProductInfo } from "~/hooks/model/config/product";
+
+import type { BreadcrumbProps } from "~/components/core/Breadcrumbs";
+
+import spacingStyles from "@patternfly/react-styles/css/utilities/Spacing/spacing";
 
 export type HeaderProps = {
-  /** Whether the application sidebar should be mounted or not */
-  showSidebarToggle?: boolean;
-  /** Whether the selected product name should be shown */
-  showProductName?: boolean;
+  /**
+   * Page title rendered as the main heading (h1).
+   *
+   * When provided, the title is shown instead of breadcrumb navigation.
+   * When omitted, breadcrumbs are rendered and the last breadcrumb
+   * represents the current page.
+   */
+  title?: React.ReactNode;
   /** Whether the "Skip to content" link should be mounted */
   showSkipToContent?: boolean;
   /** Whether the installer options link should be mounted */
   showInstallerOptions?: boolean;
-  /** Callback to be triggered for toggling the IssuesDrawer visibility */
-  toggleIssuesDrawer?: () => void;
-  isSidebarOpen?: boolean;
-  toggleSidebar?: () => void;
+  /** Breadcrumb navigation items */
+  breadcrumbs?: BreadcrumbProps[];
 };
 
 const OptionsDropdown = () => {
@@ -98,47 +100,52 @@ const OptionsDropdown = () => {
 };
 
 /**
- * Internal component for building the layout header
+ * Internal component for building the page header
  *
- * It's just a wrapper for {@link https://www.patternfly.org/components/masthead | PF/Masthead} and
- * its expected children components.
+ * Built on top of {@link https://www.patternfly.org/components/masthead | PF/Masthead}
  */
 export default function Header({
-  showSidebarToggle = true,
-  showProductName = true,
+  title,
+  breadcrumbs,
   showSkipToContent = true,
   showInstallerOptions = true,
-  toggleIssuesDrawer,
-  isSidebarOpen,
-  toggleSidebar,
 }: HeaderProps): React.ReactNode {
   const product = useProductInfo();
-  const routeMatches = useMatches() as Route[];
-  const currentRoute = routeMatches.at(-1);
-  // TODO: translate title
-  const title = (showProductName && product?.name) || currentRoute?.handle?.title;
 
   return (
     <Masthead>
-      <MastheadMain>
+      <MastheadMain className={spacingStyles.pXs}>
         {showSkipToContent && <SkipTo />}
-        {showSidebarToggle && (
-          <MastheadToggle>
-            <PageToggleButton
-              isSidebarOpen={isSidebarOpen}
-              onSidebarToggle={toggleSidebar}
-              id="uncontrolled-nav-toggle"
-              variant="plain"
-              aria-label={_("Main navigation")}
-            >
-              <Icon name="menu" color="color-light-100" />
-            </PageToggleButton>
-          </MastheadToggle>
-        )}
-        {title && (
-          <MastheadLogo>
-            <Content component="h1">{title}</Content>
-          </MastheadLogo>
+        {title ? (
+          <Title headingLevel="h1">{title}</Title>
+        ) : (
+          <Breadcrumbs>
+            {product && breadcrumbs && (
+              <Breadcrumbs.Item
+                hideDivider
+                isEditorial
+                path={ROOT.overview}
+                label={
+                  <Icon
+                    name="list_alt"
+                    width="1.4em"
+                    height="1.4em"
+                    style={{ verticalAlign: "middle" }}
+                  />
+                }
+              />
+            )}
+            {breadcrumbs &&
+              breadcrumbs.map(({ label, path }, i) => (
+                <Breadcrumbs.Item
+                  isEditorial={i === 0}
+                  key={i}
+                  label={label}
+                  path={path}
+                  isCurrent={i === breadcrumbs.length - 1}
+                />
+              ))}
+          </Breadcrumbs>
         )}
       </MastheadMain>
       <MastheadContent>
@@ -154,7 +161,7 @@ export default function Header({
                 </ToolbarItem>
               )}
               <ToolbarItem>
-                <InstallButton onClickWithIssues={toggleIssuesDrawer} />
+                <InstallButton />
               </ToolbarItem>
               <ToolbarItem>
                 <OptionsDropdown />

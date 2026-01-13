@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2025] SUSE LLC
+ * Copyright (c) [2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -25,11 +25,10 @@
  *  code duplication.
  */
 
-import React, { useId } from "react";
+import React from "react";
 import { useParams, useNavigate } from "react-router";
 import {
   ActionGroup,
-  Content,
   Divider,
   Flex,
   FlexItem,
@@ -63,7 +62,7 @@ import {
 import configModel from "~/model/storage/config-model";
 import { _ } from "~/i18n";
 import { sprintf } from "sprintf-js";
-import { STORAGE as PATHS } from "~/routes/paths";
+import { STORAGE as PATHS, STORAGE } from "~/routes/paths";
 import { unique } from "radashi";
 import { compact } from "~/utils";
 import type { ConfigModel, Data, Partitionable } from "~/model/storage/config-model";
@@ -399,7 +398,6 @@ function FilesystemLabel({ id, value, onChange }: FilesystemLabelProps): React.R
 
 export default function FormattableDevicePage() {
   const navigate = useNavigate();
-  const headingId = useId();
   const [mountPoint, setMountPoint] = React.useState(NO_VALUE);
   const [filesystem, setFilesystem] = React.useState(NO_VALUE);
   const [filesystemLabel, setFilesystemLabel] = React.useState(NO_VALUE);
@@ -459,15 +457,19 @@ export default function FormattableDevicePage() {
   const showLabel = filesystem !== NO_VALUE && filesystem !== REUSE_FILESYSTEM;
 
   return (
-    <Page id="formattablePage">
-      <Page.Header>
-        <Content component="h2" id={headingId}>
-          {sprintf(_("Configure device %s"), device.name)}
-        </Content>
-      </Page.Header>
-
+    <Page
+      breadcrumbs={[
+        { label: _("Storage"), path: STORAGE.root },
+        { label: device.name },
+        { label: _("Configure") },
+      ]}
+    >
       <Page.Content>
-        <Form id="formattableForm" aria-labelledby={headingId} onSubmit={onSubmit}>
+        <Form
+          id="formattableForm"
+          aria-label={sprintf(_("Configure device %s"), device.name)}
+          onSubmit={onSubmit}
+        >
           <Stack hasGutter>
             <FormGroup fieldId="mountPoint" label={_("Mount point")}>
               <Flex>

@@ -22,7 +22,7 @@
 
 import React from "react";
 import { sprintf } from "sprintf-js";
-import Details from "~/components/core/Details";
+import Summary from "~/components/core/Summary";
 import Link from "~/components/core/Link";
 import { NETWORK } from "~/routes/paths";
 import { NetworkStatus, useNetworkStatus } from "~/hooks/model/system/network";
@@ -37,7 +37,7 @@ type DescriptionProps = {
   connections: Connection[];
 };
 
-type TitleProps = {
+type ValueProps = {
   status: NetworkStatusValue;
 };
 
@@ -109,10 +109,10 @@ const Description = ({ status, connections }: DescriptionProps) => {
 };
 
 /**
- * Helper component that renders a title representing the current network
- * configuration based on the provided network status
+ * Helper component that renders the current network configuration based on the
+ * provided network status
  */
-const Title = ({ status }: TitleProps) => {
+const Value = ({ status }: ValueProps) => {
   const result = {
     // TRANSLATORS: Network summary title when no network has been configured
     [NetworkStatus.NOT_CONFIGURED]: _("Not configured"),
@@ -138,21 +138,18 @@ const Title = ({ status }: TitleProps) => {
  * most relevant data (e.g., IP addresses), giving users a quick understanding
  * of the network setup before they dive into the section for more details.
  */
-export default function NetworkDetailsItem({ withoutLink = false }: { withoutLink?: boolean }) {
+export default function NetworkSummary() {
   const { status, persistentConnections } = useNetworkStatus();
 
   return (
-    <Details.StackItem
-      label={_("Network")}
-      content={
-        withoutLink ? (
-          <Title status={status} />
-        ) : (
-          <Link to={NETWORK.root} variant="link" isInline>
-            <Title status={status} />
-          </Link>
-        )
+    <Summary
+      icon="settings_ethernet"
+      title={
+        <Link to={NETWORK.root} variant="link" isInline>
+          {_("Network")}
+        </Link>
       }
+      value={<Value status={status} />}
       description={<Description status={status} connections={persistentConnections} />}
     />
   );

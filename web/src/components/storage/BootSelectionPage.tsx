@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024-2025] SUSE LLC
+ * Copyright (c) [2024-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -22,7 +22,7 @@
 
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router";
-import { ActionGroup, Content, Form, FormGroup, Radio, Stack } from "@patternfly/react-core";
+import { ActionGroup, Divider, Form, FormGroup, Radio, Stack } from "@patternfly/react-core";
 import { DevicesFormSelect } from "~/components/storage";
 import { Page, SubtleContent } from "~/components/core";
 import { deviceLabel, formattedPath } from "~/components/storage/utils";
@@ -40,6 +40,7 @@ import { _ } from "~/i18n";
 import configModel from "~/model/storage/config-model";
 import type { ConfigModel } from "~/model/storage/config-model";
 import type { Storage } from "~/model/system";
+import { STORAGE } from "~/routes/paths";
 
 const filteredCandidates = (
   candidates: Storage.Device[],
@@ -71,7 +72,7 @@ type BootSelectionState = {
 /**
  * Allows the user to select the boot configuration.
  */
-export default function BootSelection() {
+export default function BootSelectionPage() {
   const location = useLocation();
   const [state, setState] = useState<BootSelectionState>({ load: false });
   const navigate = useNavigate();
@@ -179,13 +180,10 @@ partitions in the appropriate disk.",
   };
 
   return (
-    <Page>
-      <Page.Header>
-        <Content component="h2">{_("Boot options")}</Content>
-        <SubtleContent>{description}</SubtleContent>
-      </Page.Header>
-
+    <Page breadcrumbs={[{ label: _("Storage"), path: STORAGE.root }, { label: _("Boot options") }]}>
       <Page.Content>
+        <SubtleContent>{description}</SubtleContent>
+        <Divider />
         <Form id="bootSelectionForm" onSubmit={onSubmit}>
           <FormGroup isStack>
             <Radio

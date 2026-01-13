@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2025] SUSE LLC
+ * Copyright (c) [2025-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -47,6 +47,7 @@ import { ConflictSolutionOption } from "~/types/software";
 import { useConflicts, useConflictsChanges, useConflictsMutation } from "~/queries/software";
 import { isNullish } from "radashi";
 import { sprintf } from "sprintf-js";
+import { SOFTWARE } from "~/routes/paths";
 import { _ } from "~/i18n";
 
 /**
@@ -276,16 +277,18 @@ const ConflictsContent = ({ conflicts }) => {
  *
  * Displays either a resolution form or a message when no conflicts are present.
  */
-function SoftwareConflicts(): React.ReactNode {
+export default function SoftwareConflictsPage() {
   useConflictsChanges();
   const conflicts = useConflicts();
 
   return (
-    <Page progress={{ scope: "software" }}>
-      <Page.Header>
-        <Content component="h2">{_("Software conflicts resolution")}</Content>
-      </Page.Header>
-
+    <Page
+      breadcrumbs={[
+        { label: _("Software"), path: SOFTWARE.root },
+        { label: _("Software conflicts resolution") },
+      ]}
+      progress={{ scope: "software" }}
+    >
       <Page.Content>
         {conflicts.length > 0 ? <ConflictsContent conflicts={conflicts} /> : <NoConflictsContent />}
       </Page.Content>
@@ -296,5 +299,3 @@ function SoftwareConflicts(): React.ReactNode {
     </Page>
   );
 }
-
-export default SoftwareConflicts;

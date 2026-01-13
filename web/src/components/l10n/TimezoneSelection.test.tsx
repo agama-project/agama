@@ -21,11 +21,11 @@
  */
 
 import React from "react";
-import TimezoneSelection from "./TimezoneSelection";
 import userEvent from "@testing-library/user-event";
 import { screen } from "@testing-library/react";
 import { mockNavigateFn, installerRender } from "~/test-utils";
 import { Timezone } from "~/model/system/l10n";
+import TimezoneSelection from "./TimezoneSelection";
 
 const mockPatchConfigFn = jest.fn();
 

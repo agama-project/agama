@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2025] SUSE LLC
+ * Copyright (c) [2022-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -28,7 +28,7 @@ import {
   EmptyStateBody,
   EmptyStateFooter,
 } from "@patternfly/react-core";
-import { Icon, PlainLayout } from "~/components/layout";
+import { Icon } from "~/components/layout";
 import { Page } from "~/components/core";
 import { locationReload } from "~/utils";
 import shadowUtils from "@patternfly/react-styles/css/utilities/BoxShadow/box-shadow";
@@ -38,30 +38,26 @@ const ErrorIcon = () => <Icon name="error" />;
 
 function ServerError() {
   return (
-    <PlainLayout mountHeader={false} mountSidebar={false}>
-      <Page>
-        <Page.Content>
-          <Bullseye>
-            <Page.Section pfCardProps={{ isFullHeight: false, className: shadowUtils.boxShadowMd }}>
-              <EmptyState
-                variant="xl"
-                titleText={_("Cannot connect to Agama server")}
-                headingLevel="h1"
-                icon={ErrorIcon}
-                status="warning"
-              >
-                <EmptyStateBody>{_("Please, check whether it is running.")}</EmptyStateBody>
-                <EmptyStateFooter>
-                  <Button variant="primary" size="lg" onClick={locationReload}>
-                    {_("Reload")}
-                  </Button>
-                </EmptyStateFooter>
-              </EmptyState>
-            </Page.Section>
-          </Bullseye>
-        </Page.Content>
-      </Page>
-    </PlainLayout>
+    <Page variant="minimal">
+      <Bullseye>
+        <Page.Section pfCardProps={{ isFullHeight: false, className: shadowUtils.boxShadowMd }}>
+          <EmptyState
+            variant="xl"
+            titleText={_("Cannot connect to Agama server")}
+            headingLevel="h1"
+            icon={ErrorIcon}
+            status="warning"
+          >
+            <EmptyStateBody>{_("Please, check whether it is running.")}</EmptyStateBody>
+            <EmptyStateFooter>
+              <Button variant="primary" size="lg" onClick={locationReload}>
+                {_("Reload")}
+              </Button>
+            </EmptyStateFooter>
+          </EmptyState>
+        </Page.Section>
+      </Bullseye>
+    </Page>
   );
 }
 

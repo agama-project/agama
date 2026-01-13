@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2025] SUSE LLC
+ * Copyright (c) [2025-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -23,7 +23,6 @@
 import React from "react";
 import { useParams } from "react-router";
 import {
-  Content,
   EmptyState,
   EmptyStateActions,
   EmptyStateBody,
@@ -65,13 +64,8 @@ export default function WiredConnectionPage() {
   const connections = useConnections();
   const connection = connections.find((c) => c.id === id);
 
-  const title = _("Connection details");
-
   return (
-    <Page>
-      <Page.Header>
-        <Content component="h2">{title}</Content>
-      </Page.Header>
+    <Page breadcrumbs={[{ label: _("Network"), path: NETWORK.root }, { label: connection?.id }]}>
       <Page.Content>
         <NoPersistentConnectionsAlert />
         {connection ? (

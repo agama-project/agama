@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2023-2025] SUSE LLC
+ * Copyright (c) [2023-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -20,7 +20,9 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useId } from "react";
+import React, { Suspense, useId } from "react";
+import { Outlet, useLocation, useNavigate } from "react-router";
+import Link, { LinkProps } from "~/components/core/Link";
 import {
   Button,
   ButtonProps,
@@ -34,24 +36,28 @@ import {
   Divider,
   Flex,
   FlexItem,
+  Masthead,
+  Page as PFPage,
   PageGroup,
-  PageGroupProps,
   PageSection,
   PageSectionProps,
   Split,
   Title,
   TitleProps,
 } from "@patternfly/react-core";
-import { ProductRegistrationAlert } from "~/components/product";
-import Link, { LinkProps } from "~/components/core/Link";
-import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import flexStyles from "@patternfly/react-styles/css/utilities/Flex/flex";
-import { useLocation, useNavigate } from "react-router";
+import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import { isEmpty, isObject } from "radashi";
 import { SIDE_PATHS } from "~/routes/paths";
 import { _, TranslatedString } from "~/i18n";
 import type { ProgressBackdropProps } from "~/components/core/ProgressBackdrop";
 import ProgressBackdrop from "~/components/core/ProgressBackdrop";
+import Header from "~/components/layout/Header";
+import Loading from "~/components/layout/Loading";
+import { ProductRegistrationAlert } from "~/components/product";
+import { Questions } from "../questions";
+
+import type { BreadcrumbProps } from "~/components/core/Breadcrumbs";
 
 /**
  * Props accepted by Page.Section
@@ -99,7 +105,7 @@ const STICK_TO_TOP = Object.freeze({ default: "top" });
 const STICK_TO_BOTTOM = Object.freeze({ default: "bottom" });
 
 // TODO: check if it should have the banner role
-const Header = ({ children, ...props }) => {
+const StickyHeaderContent = ({ children, ...props }) => {
   return (
     <PageSection component="div" stickyOnBreakpoint={STICK_TO_TOP} {...props}>
       {children}
@@ -301,62 +307,203 @@ const Content = ({ children, ...pageSectionProps }: PageSectionProps) => {
 };
 
 /**
- * A component for creating an Agama page, built on top of PF/Page/PageGroup.
+ * Props for the minimal page layout.
+ */
+interface MinimalLayoutProps {
+  /** Page content */
+  children: React.ReactNode;
+}
+
+/**
+ * Minimal page layout with empty masthead.
+ */
+const MinimalLayout = ({ children }: MinimalLayoutProps) => {
+  return (
+    <PFPage isContentFilled masthead={<Masthead />}>
+      <PageGroup tabIndex={-1} id="main-content">
+        {children}
+      </PageGroup>
+    </PFPage>
+  );
+};
+
+/**
+ * Props for the standard page layout.
+ */
+interface StandardLayoutProps {
+  /** Page title shown in header */
+  title?: React.ReactNode;
+  /** Breadcrumb navigation items */
+  breadcrumbs?: BreadcrumbProps[];
+  /** Optional progress tracking configuration */
+  progress?: ProgressBackdropProps;
+  /** Whether to show the Questions component */
+  showQuestions?: boolean;
+  /** Whether to show installer options in the header */
+  showInstallerOptions?: boolean;
+  /** Page content */
+  children?: React.ReactNode;
+}
+
+/**
+ * Standard page layout with header, breadcrumbs, and optional progress tracking.
+ */
+const StandardLayout = ({
+  progress,
+  children,
+  breadcrumbs,
+  title,
+  showQuestions = true,
+  showInstallerOptions = false,
+}: StandardLayoutProps) => {
+  return (
+    <PFPage
+      isContentFilled
+      masthead={
+        <Header
+          title={title}
+          breadcrumbs={breadcrumbs}
+          showInstallerOptions={showInstallerOptions}
+        />
+      }
+    >
+      <Suspense fallback={<Loading />}>
+        <PageGroup tabIndex={-1} id="main-content">
+          {children || <Outlet />}
+          {progress && <ProgressBackdrop {...progress} />}
+        </PageGroup>
+      </Suspense>
+      {showQuestions && <Questions />}
+    </PFPage>
+  );
+};
+
+/**
+ * Common props shared by all page variants.
+ */
+interface BasePageProps {
+  /** Optional progress tracking configuration */
+  progress?: ProgressBackdropProps;
+  /** Whether to show the Questions component at the bottom of the page */
+  showQuestions?: boolean;
+  /** Page content */
+  children?: React.ReactNode;
+}
+
+/**
+ * Props for standard page variant.
+ */
+interface StandardPageProps extends BasePageProps {
+  /** Layout variant to use */
+  variant?: "standard";
+  /** Page title shown in header */
+  title?: React.ReactNode;
+  /** Breadcrumb navigation items */
+  breadcrumbs?: BreadcrumbProps[];
+  /** Whether to show installer options in the header */
+  showInstallerOptions?: boolean;
+}
+
+/**
+ * Props for minimal page variant.
+ */
+interface MinimalPageProps extends BasePageProps {
+  /** Layout variant - minimal layout with empty masthead (e.g., for login pages) */
+  variant: "minimal";
+  /** Title not available in minimal variant */
+  title?: never;
+  /** Breadcrumbs not available in minimal variant */
+  breadcrumbs?: never;
+  /** Installer options not available in minimal variant */
+  showInstallerOptions?: never;
+}
+
+/**
+ * All possible Page component props.
+ */
+type PageProps = StandardPageProps | MinimalPageProps;
+
+/**
+ * Root container for Agama pages.
  *
- * It serves as the root container for all Agama pages and supports optional
- * progress tracking.
+ * Built on top of PatternFly's Page/PageGroup components, it provides a
+ * consistent layout structure with optional header, breadcrumbs, and progress
+ * tracking capabilities.
  *
- * @see {@link https://www.patternfly.org/components/page#pagegroup | Patternfly Page/PageGroup}
+ * @see {@link https://www.patternfly.org/components/page | PatternFly Page}
  *
  * @example
- * Basic page without progress tracking
+ * Standard page with header and breadcrumbs
  * ```tsx
- * <Page>
- *   <Page.Header>
- *     <h2>{_("Software")}</h2>
- *   </Page.Header>
- *   <Page.Content>
- *     <p>Page content here</p>
- *   </Page.Content>
+ * <Page title="Software" breadcrumbs={<Breadcrumbs />}>
+ *   <Page.Section>
+ *     <SoftwareContent />
+ *   </Page.Section>
  * </Page>
  * ```
  *
  * @example
- * Page with progress tracking for software operations
+ * Page with progress tracking
  * ```tsx
- * <Page progress={{ scope: "software" }}>
- *   <Page.Header>
- *     <h2>{_("Software")}</h2>
- *   </Page.Header>
- *   <Page.Content>
- *     <Stack hasGutter>
- *       <IssuesHint issues={issues} />
- *       <Page.Section title="Selected patterns">
- *         {patterns.length === 0 ? <NoPatterns /> : <SelectedPatterns patterns={patterns} />}
- *       </Page.Section>
- *       <Page.Section aria-label="Used size">
- *         <UsedSize size={proposal.size} />
- *       </Page.Section>
- *     </Stack>
- *   </Page.Content>
+ * <Page title="Software" progress={{ scope: "software" }}>
+ *   <Page.Section>
+ *     <PatternSelector />
+ *   </Page.Section>
+ * </Page>
+ * ```
+ *
+ * @example
+ * Page with installer options in header
+ * ```tsx
+ * <Page title="Overview" showInstallerOptions>
+ *   <OverviewContent />
+ * </Page>
+ * ```
+ *
+ * @example
+ * Page without Questions component (e.g., login or exit pages)
+ * ```tsx
+ * <Page title="Login" showQuestions={false}>
+ *   <LoginForm />
+ * </Page>
+ * ```
+ *
+ * @example
+ * Minimal layout without header (e.g., for login)
+ * ```tsx
+ * <Page variant="minimal">
+ *   <LoginForm />
  * </Page>
  * ```
  */
 const Page = ({
+  title,
+  breadcrumbs,
   progress,
+  variant = "standard",
+  showQuestions = true,
+  showInstallerOptions = false,
   children,
-  ...pageGroupProps
-}: PageGroupProps & { progress?: ProgressBackdropProps }): React.ReactNode => {
+}: PageProps): React.ReactNode => {
+  if (variant === "minimal") {
+    return <MinimalLayout>{children}</MinimalLayout>;
+  }
+
   return (
-    <PageGroup {...pageGroupProps} tabIndex={-1} id="main-content">
-      {children}
-      {progress && <ProgressBackdrop {...progress} />}
-    </PageGroup>
+    <StandardLayout
+      progress={progress}
+      breadcrumbs={breadcrumbs}
+      title={title}
+      showQuestions={showQuestions}
+      showInstallerOptions={showInstallerOptions}
+    >
+      {children || <Outlet />}
+    </StandardLayout>
   );
 };
 
-Page.displayName = "agama/core/Page";
-Page.Header = Header;
+Page.displayName = "agama/core/PageNext";
+Page.StickOnTop = StickyHeaderContent;
 Page.Content = Content;
 Page.Actions = Actions;
 Page.Back = Back;

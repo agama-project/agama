@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2025] SUSE LLC
+ * Copyright (c) [2022-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -42,6 +42,7 @@ import { suggestUsernames } from "~/components/users/utils";
 import { useFirstUser, useFirstUserMutation } from "~/queries/users";
 import { FirstUser } from "~/types/users";
 import { _ } from "~/i18n";
+import { USER } from "~/routes/paths";
 
 const UsernameSuggestions = ({
   isOpen = false,
@@ -186,11 +187,12 @@ export default function FirstUserForm() {
   };
 
   return (
-    <Page>
-      <Page.Header>
-        <Content component="h2">{isEditing ? _("Edit user") : _("Create user")}</Content>
-      </Page.Header>
-
+    <Page
+      breadcrumbs={[
+        { label: _("Authentication"), path: USER.root },
+        { label: isEditing ? _("Edit user") : _("Create user") },
+      ]}
+    >
       <Page.Content>
         <Form id="firstUserForm" onSubmit={onSubmit} isWidthLimited maxWidth="fit-content">
           {errors.length > 0 && (

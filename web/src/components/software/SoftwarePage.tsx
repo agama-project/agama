@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2023-2025] SUSE LLC
+ * Copyright (c) [2023-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -24,7 +24,6 @@ import React, { useState } from "react";
 import {
   Alert,
   Button,
-  Content,
   DescriptionList,
   DescriptionListDescription,
   DescriptionListGroup,
@@ -133,10 +132,7 @@ const ReloadSection = ({
   </Alert>
 );
 
-/**
- * Software page component
- */
-function SoftwarePage(): React.ReactNode {
+const Content = () => {
   const { patterns } = useSystem();
   const proposal = useProposal();
   const issues = useIssues("software");
@@ -164,34 +160,41 @@ function SoftwarePage(): React.ReactNode {
   const showReposAlert = repos.some((r) => !r.loaded);
 
   return (
-    <Page progress={{ scope: "software" }}>
-      <Page.Header>
-        <Content component="h2">{_("Software")}</Content>
-      </Page.Header>
-
-      <Page.Content>
-        <IssuesAlert issues={issues} />
-        <Grid hasGutter>
-          {showReposAlert && (
-            <GridItem sm={12}>
-              <ReloadSection loading={loading} action={startProbing} />
-            </GridItem>
-          )}
-          <GridItem sm={12} xl={selectedPatternsXlSize}>
-            {isEmpty(proposal.patterns) ? (
-              <NoPatterns />
-            ) : (
-              <SelectedPatterns patterns={patterns} selection={proposal.patterns} />
-            )}
+    <>
+      <IssuesAlert issues={issues} />
+      <Grid hasGutter>
+        {showReposAlert && (
+          <GridItem sm={12}>
+            <ReloadSection loading={loading} action={startProbing} />
           </GridItem>
-          {usedSpace && (
-            <GridItem sm={12} xl={6}>
-              <Page.Section aria-label={_("Used space")}>
-                <UsedSize size={usedSpace} />
-              </Page.Section>
-            </GridItem>
+        )}
+        <GridItem sm={12} xl={selectedPatternsXlSize}>
+          {isEmpty(proposal.patterns) ? (
+            <NoPatterns />
+          ) : (
+            <SelectedPatterns patterns={patterns} selection={proposal.patterns} />
           )}
-        </Grid>
+        </GridItem>
+        {usedSpace && (
+          <GridItem sm={12} xl={6}>
+            <Page.Section aria-label={_("Used space")}>
+              <UsedSize size={usedSpace} />
+            </Page.Section>
+          </GridItem>
+        )}
+      </Grid>
+    </>
+  );
+};
+
+/**
+ * Software page component
+ */
+function SoftwarePage(): React.ReactNode {
+  return (
+    <Page breadcrumbs={[{ label: _("Software") }]} progress={{ scope: "software" }}>
+      <Page.Content>
+        <Content />
       </Page.Content>
     </Page>
   );

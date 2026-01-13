@@ -22,12 +22,10 @@
 
 import React from "react";
 import { screen } from "@testing-library/react";
-import { installerRender, mockNavigateFn } from "~/test-utils";
+import { installerRender, mockNavigateFn, mockProduct } from "~/test-utils";
 import { useSystem } from "~/hooks/model/system";
-import { useProductInfo } from "~/hooks/model/config/product";
 import { Product } from "~/types/software";
 import ProductSelectionPage from "./ProductSelectionPage";
-import { System } from "~/model/system/network";
 
 jest.mock("~/components/product/ProductRegistrationAlert", () => () => (
   <div>ProductRegistrationAlert Mock</div>
@@ -50,20 +48,12 @@ const microOs: Product = {
   license: "fake.license",
 };
 
-const network: System = {
-  connections: [],
-  devices: [],
-  state: {
-    connectivity: true,
-    copyNetwork: true,
-    networkingEnabled: true,
-    wirelessEnabled: true,
-  },
-  accessPoints: [],
-};
-
 const mockPatchConfigFn = jest.fn();
-const mockSelectedProduct: jest.Mock<Product> = jest.fn();
+
+// FIXME: add ad use a mockSystem from test-utils instead
+jest.mock("~/components/core/InstallerOptions", () => () => (
+  <div>ProductRegistrationAlert Mock</div>
+));
 
 jest.mock("~/api", () => ({
   ...jest.requireActual("~/api"),
@@ -74,19 +64,13 @@ jest.mock("~/hooks/model/system", () => ({
   ...jest.requireActual("~/hooks/model/system"),
   useSystem: (): ReturnType<typeof useSystem> => ({
     products: [tumbleweed, microOs],
-    network,
   }),
-}));
-
-jest.mock("~/hooks/model/config/product", () => ({
-  ...jest.requireActual("~/hooks/model/config/product"),
-  useProductInfo: (): ReturnType<typeof useProductInfo> => mockSelectedProduct(),
 }));
 
 describe("ProductSelectionPage", () => {
   describe("when user select a product with license", () => {
     beforeEach(() => {
-      mockSelectedProduct.mockReturnValue(undefined);
+      mockProduct(undefined);
     });
 
     it("force license acceptance for allowing product selection", async () => {
@@ -106,7 +90,7 @@ describe("ProductSelectionPage", () => {
 
   describe("when there is a product with license previouly selected", () => {
     beforeEach(() => {
-      mockSelectedProduct.mockReturnValue(microOs);
+      mockProduct(microOs);
     });
 
     it("does not allow revoking license acceptance", () => {
@@ -136,7 +120,7 @@ describe("ProductSelectionPage", () => {
 
   describe("when there is a product already selected", () => {
     beforeEach(() => {
-      mockSelectedProduct.mockReturnValue(microOs);
+      mockProduct(microOs);
     });
 
     it("renders the Cancel button", () => {
@@ -147,7 +131,7 @@ describe("ProductSelectionPage", () => {
 
   describe("when there is not a product selected yet", () => {
     beforeEach(() => {
-      mockSelectedProduct.mockReturnValue(undefined);
+      mockProduct(undefined);
     });
 
     it("does not render the Cancel button", () => {
@@ -158,7 +142,7 @@ describe("ProductSelectionPage", () => {
 
   describe("when the user chooses a product and hits the confirmation button", () => {
     beforeEach(() => {
-      mockSelectedProduct.mockReturnValue(undefined);
+      mockProduct(undefined);
     });
 
     it("triggers the product selection", async () => {
@@ -173,7 +157,7 @@ describe("ProductSelectionPage", () => {
 
   describe("when the user chooses a product but hits the cancel button", () => {
     beforeEach(() => {
-      mockSelectedProduct.mockReturnValue(microOs);
+      mockProduct(microOs);
     });
 
     it("does not trigger the product selection and goes back", async () => {

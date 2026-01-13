@@ -22,12 +22,11 @@
 
 import React from "react";
 import { screen } from "@testing-library/react";
-import { installerRender, plainRender } from "~/test-utils";
+import { installerRender, mockQuestions, plainRender } from "~/test-utils";
 import { Question, FieldType } from "~/model/question";
 import Questions from "~/components/questions/Questions";
 import * as GenericQuestionComponent from "~/components/questions/GenericQuestion";
 
-let mockQuestions: Question[];
 const mockPatchQuestionFn = jest.fn();
 
 jest.mock("~/components/questions/LuksActivationQuestion", () => () => (
@@ -45,11 +44,6 @@ jest.mock("~/components/questions/LoadConfigRetryQuestion", () => () => (
 jest.mock("~/api", () => ({
   ...jest.requireActual("~/api"),
   patchQuestion: (...args) => mockPatchQuestionFn(...args),
-}));
-
-jest.mock("~/hooks/model/question", () => ({
-  ...jest.requireActual("~/hooks/model/question"),
-  useQuestions: () => mockQuestions,
 }));
 
 const genericQuestion: Question = {
@@ -107,10 +101,6 @@ describe("Questions", () => {
   });
 
   describe("when there are no pending questions", () => {
-    beforeEach(() => {
-      mockQuestions = [];
-    });
-
     it("renders nothing", () => {
       const { container } = plainRender(<Questions />);
       expect(container).toBeEmptyDOMElement();
@@ -120,7 +110,7 @@ describe("Questions", () => {
   describe("when a question is answered", () => {
     beforeEach(() => {
       // Do not modify the original object.
-      mockQuestions = [{ ...genericQuestion }];
+      mockQuestions([{ ...genericQuestion }]);
     });
 
     it("triggers the useQuestionMutation", async () => {
@@ -136,7 +126,7 @@ describe("Questions", () => {
 
   describe("when there is a generic question pending", () => {
     beforeEach(() => {
-      mockQuestions = [genericQuestion];
+      mockQuestions([genericQuestion]);
       // Not using jest.mock at the top like for the other question components
       // because the original implementation was needed for testing that
       // mutation is triggered when proceed.
@@ -153,7 +143,7 @@ describe("Questions", () => {
 
   describe("when there is a generic question pending", () => {
     beforeEach(() => {
-      mockQuestions = [passwordQuestion];
+      mockQuestions([passwordQuestion]);
     });
 
     it("renders a QuestionWithPassword component", () => {
@@ -164,7 +154,7 @@ describe("Questions", () => {
 
   describe("when there is a LUKS activation question pending", () => {
     beforeEach(() => {
-      mockQuestions = [luksActivationQuestion];
+      mockQuestions([luksActivationQuestion]);
     });
 
     it("renders a LuksActivationQuestion component", () => {
@@ -175,7 +165,7 @@ describe("Questions", () => {
 
   describe("when there is a config load question pending", () => {
     beforeEach(() => {
-      mockQuestions = [loadConfigurationQuestion];
+      mockQuestions([loadConfigurationQuestion]);
     });
 
     it("renders a LoadConfigRetryQuestion component", () => {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2025] SUSE LLC
+ * Copyright (c) [2022-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -21,65 +21,45 @@
  */
 
 import React, { useId } from "react";
-import { Button, ButtonProps, Tooltip, TooltipProps } from "@patternfly/react-core";
-import { useIssues } from "~/hooks/model/issue";
+import { Button, ButtonProps } from "@patternfly/react-core";
 import { useLocation, useNavigate } from "react-router";
-import { ROOT, SIDE_PATHS } from "~/routes/paths";
+import { EXTENDED_SIDE_PATHS, ROOT } from "~/routes/paths";
 import { _ } from "~/i18n";
-import { Icon } from "../layout";
-import { isEmpty } from "radashi";
 
 /**
- * Installation button
+ * A call-to-action button that navigates users to the overview page containing
+ * the actual installation button.
  *
- * It will always be displayed unless in a side path. If any issues are
- * detected, a drawer listing them will be shown; otherwise, confirmation will
- * be requested before initiating the installation process.
+ * Despite its name, this component doesn't trigger installation directly.
+ * Instead, it serves as a prominent navigation element to guide users toward
+ * the overview page where the real installation button resides. The "Install"
+ * label is intentionally simple and action-oriented to match user intent.
+ *
+ * @todo Refactor component name and behavior
+ * - Rename to better reflect its navigation purpose
+ * - Replace route-based visibility logic with explicit prop-based control now
+ *   that pages manage their own layouts
  */
 const InstallButton = (
   props: Omit<ButtonProps, "onClick"> & { onClickWithIssues?: () => void },
 ) => {
   const labelId = useId();
-  const tooltipId = useId();
-  const issues = useIssues();
   const navigate = useNavigate();
   const location = useLocation();
-  const hasIssues = !isEmpty(issues);
 
-  if (SIDE_PATHS.includes(location.pathname)) return;
+  if (EXTENDED_SIDE_PATHS.includes(location.pathname)) return;
 
-  const navigateToConfirmation = () => navigate(ROOT.confirm);
+  const navigateToConfirmation = () => navigate(ROOT.overview);
 
   const { onClickWithIssues, ...buttonProps } = props;
 
   // TRANSLATORS: The install button label
   const buttonText = _("Install");
-  // TRANSLATORS: Text included with the install button when there are issues
-  const withIssuesText = _("Not possible with the current setup. Click to know more.");
-
-  const Wrapper = !hasIssues ? React.Fragment : Tooltip;
-  const tooltipProps: TooltipProps = {
-    id: tooltipId,
-    content: withIssuesText,
-    position: "bottom-start",
-    flipBehavior: ["bottom-end"],
-  };
 
   return (
-    <>
-      <Wrapper {...(hasIssues && tooltipProps)}>
-        <Button
-          variant="control"
-          className="agm-install-button"
-          {...buttonProps}
-          onClick={hasIssues ? onClickWithIssues : navigateToConfirmation}
-          icon={hasIssues && <Icon name="error_fill" />}
-          iconPosition="end"
-        >
-          <span id={labelId}>{buttonText}</span>
-        </Button>
-      </Wrapper>
-    </>
+    <Button variant="primary" {...buttonProps} onClick={navigateToConfirmation}>
+      <span id={labelId}>{buttonText}</span>
+    </Button>
   );
 };
 

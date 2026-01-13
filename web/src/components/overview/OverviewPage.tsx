@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2025] SUSE LLC
+ * Copyright (c) [2025-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -20,39 +20,188 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
+import React, { useState } from "react";
 import { Navigate } from "react-router";
-import { Content, Grid, GridItem } from "@patternfly/react-core";
-import { Page } from "~/components/core";
+import {
+  Button,
+  Content,
+  Divider,
+  Flex,
+  Grid,
+  GridItem,
+  HelperText,
+  HelperTextItem,
+} from "@patternfly/react-core";
+import Page from "~/components/core/Page";
+import Text from "~/components/core/Text";
+import Popup from "~/components/core/Popup";
+import PotentialDataLossAlert from "~/components/storage/PotentialDataLossAlert";
+import InstallationSettings from "~/components/overview/InstallationSettings";
+import SystemInformationSection from "~/components/overview/SystemInformationSection";
+import ProductLogo from "~/components/product/ProductLogo";
+import { startInstallation } from "~/model/manager";
 import { useProductInfo } from "~/hooks/model/config/product";
+import { useIssues } from "~/hooks/model/issue";
 import { PRODUCT } from "~/routes/paths";
+import { useDestructiveActions } from "~/hooks/use-destructive-actions";
+import { isEmpty } from "radashi";
+import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
-import SystemInformationSection from "./SystemInformationSection";
-import InstallationSummarySection from "./InstallationSummarySection";
+
+import type { Product } from "~/types/software";
+
+import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
+import { useProgress } from "~/hooks/use-progress-tracking";
+
+type ConfirmationPopupProps = {
+  product: Product;
+  isDangerous: boolean;
+  onCancel: () => void;
+  onConfirm: () => void;
+};
+const ConfirmationPopup = ({
+  product,
+  isDangerous,
+  onCancel,
+  onConfirm,
+}: ConfirmationPopupProps) => {
+  const title = sprintf(
+    // TRANSLATORS: Confirmation dialog title. %s is replaced with the product name (e.g., "openSUSE Leap")
+    isDangerous ? _("Delete existing data and install %s?") : _("Install %s?"),
+    product.name,
+  );
+
+  const ConfirmButton = isDangerous ? Popup.DangerousAction : Popup.Confirm;
+
+  return (
+    <Popup isOpen title={title}>
+      {isDangerous ? (
+        // TRANSLATORS: Warning shown when installation will delete existing data
+        <PotentialDataLossAlert hint={_("If unsure, cancel and review storage settings.")} />
+      ) : (
+        <Content isEditorial>
+          {/* TRANSLATORS: Information message confirming installation will proceed with current settings */}
+          {_("By proceeding, the installation will begin with defined settings.")}
+        </Content>
+      )}
+      <Popup.Actions>
+        {/* TRANSLATORS: Button to confirm and start the installation */}
+        <ConfirmButton onClick={onConfirm}>{_("Confirm and install")}</ConfirmButton>
+        <Popup.Cancel onClick={onCancel} autoFocus />
+      </Popup.Actions>
+    </Popup>
+  );
+};
 
 export default function OverviewPage() {
   const product = useProductInfo();
+  const issues = useIssues();
+  const progresses = useProgress();
+  const { actions } = useDestructiveActions();
+  const [showConfirmation, setShowConfirmation] = useState(false);
+  const hasIssues = !isEmpty(issues);
+  const hasDestructiveActions = actions.length > 0;
 
   if (!product) {
     return <Navigate to={PRODUCT.root} />;
   }
 
-  return (
-    <Page>
-      <Page.Header>
-        <Content component="h2">{_("Overview")}</Content>
-      </Page.Header>
+  const [buttonLocationStart, buttonLocationLabel, buttonLocationEnd] = _(
+    // TRANSLATORS: This hint helps users locate the install button. Text inside
+    // square brackets [] appears in bold. Keep brackets for proper formatting.
+    "When ready, click on the [install] button at the end of the page.",
+  ).split(/[[\]]/);
 
+  const onInstallClick = () => {
+    setShowConfirmation(true);
+  };
+
+  const onConfirm = () => {
+    startInstallation();
+    setShowConfirmation(false);
+  };
+
+  const onCancel = () => setShowConfirmation(false);
+
+  const isProposalReady = isEmpty(progresses);
+
+  const getInstallButtonText = () => {
+    if (hasIssues || !isProposalReady) return _("Install");
+    if (hasDestructiveActions) return _("Install now with potential data loss");
+    return _("Install now");
+  };
+
+  return (
+    <Page
+      title={
+        <>
+          <ProductLogo product={product} width="40px" /> {product.name}
+        </>
+      }
+      showInstallerOptions
+    >
       <Page.Content>
-        <Grid hasGutter>
-          <GridItem sm={6}>
-            <SystemInformationSection />
-          </GridItem>
-          <GridItem sm={6}>
-            <InstallationSummarySection />
-          </GridItem>
-        </Grid>
+        <Flex gap={{ default: "gapMd" }} direction={{ default: "column" }}>
+          <div>
+            <Content isEditorial>
+              {
+                // TRANSLATORS: Introductory text shown on the overview page
+                _(
+                  "Take a moment to review the installation settings below and adjust them as needed.",
+                )
+              }
+            </Content>
+            <Content className={textStyles.textColorSubtle}>
+              {buttonLocationStart} <strong>{buttonLocationLabel}</strong> {buttonLocationEnd}
+            </Content>
+          </div>
+          <Divider />
+          <Grid hasGutter>
+            <GridItem sm={12} md={8}>
+              <InstallationSettings />
+            </GridItem>
+            <GridItem sm={12} md={4}>
+              <SystemInformationSection />
+            </GridItem>
+          </Grid>
+          <Flex direction={{ default: "column" }} alignItems={{ default: "alignItemsFlexStart" }}>
+            <Button
+              size="lg"
+              variant={hasDestructiveActions ? "danger" : "primary"}
+              onClick={onInstallClick}
+              isDisabled={hasIssues || !isProposalReady}
+            >
+              <Text isBold>{getInstallButtonText()}</Text>
+            </Button>
+
+            {!isProposalReady && (
+              <HelperText>
+                <HelperTextItem variant="warning">
+                  {_("Wait until current operations are completed.")}
+                </HelperTextItem>
+              </HelperText>
+            )}
+
+            {hasIssues && isProposalReady && (
+              <HelperText>
+                <HelperTextItem variant="warning">
+                  {_(
+                    "You need to fix any invalid settings before proceeding with the installation.",
+                  )}
+                </HelperTextItem>
+              </HelperText>
+            )}
+          </Flex>
+        </Flex>
       </Page.Content>
+      {showConfirmation && (
+        <ConfirmationPopup
+          product={product}
+          isDangerous={hasDestructiveActions}
+          onConfirm={onConfirm}
+          onCancel={onCancel}
+        />
+      )}
     </Page>
   );
 }

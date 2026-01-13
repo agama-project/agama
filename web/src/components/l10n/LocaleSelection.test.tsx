@@ -21,11 +21,11 @@
  */
 
 import React from "react";
-import LocaleSelection from "./LocaleSelection";
 import userEvent from "@testing-library/user-event";
 import { screen } from "@testing-library/react";
 import { mockNavigateFn, installerRender } from "~/test-utils";
 import { Locale } from "~/model/system/l10n";
+import LocaleSelection from "./LocaleSelection";
 
 const mockPatchConfigFn = jest.fn();
 
