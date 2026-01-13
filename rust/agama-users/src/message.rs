@@ -18,22 +18,42 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::api::{hostname, l10n, network, software, users};
-use serde::{Deserialize, Serialize};
-use serde_json::Value;
+use agama_utils::{
+    actor::Message,
+    api::{self},
+};
 
-#[derive(Clone, Debug, Deserialize, Serialize, utoipa::ToSchema)]
-#[serde(rename_all = "camelCase")]
-pub struct Proposal {
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub hostname: Option<hostname::Proposal>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub l10n: Option<l10n::Proposal>,
-    pub network: network::Proposal,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub software: Option<software::Proposal>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub storage: Option<Value>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub users: Option<users::Config>,
+#[derive(Clone)]
+pub struct SetSystem<T> {
+    pub system: Option<T>,
+}
+
+impl<T: Send + 'static> Message for SetSystem<T> {
+    type Reply = ();
+}
+
+pub struct GetConfig;
+
+impl Message for GetConfig {
+    type Reply = api::users::Config;
+}
+
+pub struct SetConfig<T> {
+    pub config: Option<T>,
+}
+
+impl<T> SetConfig<T> {
+    pub fn new(config: Option<T>) -> Self {
+        Self { config }
+    }
+}
+
+impl<T: Send + 'static> Message for SetConfig<T> {
+    type Reply = ();
+}
+
+pub struct GetProposal;
+
+impl Message for GetProposal {
+    type Reply = Option<api::users::Config>;
 }

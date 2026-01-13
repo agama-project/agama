@@ -187,6 +187,7 @@ dependencies = [
  "agama-network",
  "agama-software",
  "agama-storage",
+ "agama-users",
  "agama-utils",
  "async-trait",
  "gettext-rs",
@@ -337,6 +338,25 @@ dependencies = [
  "regex",
  "thiserror 2.0.17",
  "url",
+]
+
+[[package]]
+name = "agama-users"
+version = "0.1.0"
+dependencies = [
+ "agama-locale-data",
+ "agama-utils",
+ "anyhow",
+ "async-trait",
+ "gettext-rs",
+ "regex",
+ "test-context",
+ "thiserror 2.0.17",
+ "tokio",
+ "tokio-stream",
+ "tokio-test",
+ "tracing",
+ "zbus",
 ]
 
 [[package]]
