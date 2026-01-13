@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2025] SUSE LLC
+ * Copyright (c) [2025-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -22,9 +22,8 @@
 
 import React from "react";
 import { screen, within } from "@testing-library/react";
-import { installerRender, mockRoutes } from "~/test-utils";
+import { installerRender, mockProduct, mockRoutes } from "~/test-utils";
 import { useSystem } from "~/hooks/model/system";
-import { useProductInfo } from "~/hooks/model/config/product";
 import { Product } from "~/types/software";
 import { Keymap, Locale } from "~/model/system/l10n";
 import { Progress, Stage } from "~/model/status";
@@ -70,7 +69,6 @@ const mockPatchConfigFn = jest.fn();
 const mockConfigureL10nActionFn = jest.fn();
 const mockStateFn: jest.Mock<Stage> = jest.fn();
 const mockProgressesFn: jest.Mock<Progress[]> = jest.fn();
-const mockSelectedProductFn: jest.Mock<Product> = jest.fn();
 
 jest.mock("~/api", () => ({
   ...jest.requireActual("~/api"),
@@ -84,11 +82,6 @@ jest.mock("~/hooks/model/system", () => ({
     l10n: { locales, keymaps, locale: "us_US.UTF-8", keymap: "us" },
     network,
   }),
-}));
-
-jest.mock("~/hooks/model/config/product", () => ({
-  ...jest.requireActual("~/hooks/model/config/product"),
-  useProductInfo: (): ReturnType<typeof useProductInfo> => mockSelectedProductFn(),
 }));
 
 jest.mock("~/hooks/model/status", () => ({
@@ -121,7 +114,7 @@ describe("InstallerOptions", () => {
     jest.spyOn(utils, "localConnection").mockReturnValue(true);
     mockProgressesFn.mockReturnValue([]);
     mockStateFn.mockReturnValue("configuring");
-    mockSelectedProductFn.mockReturnValue(tumbleweed);
+    mockProduct(tumbleweed);
   });
 
   it("allows custom toggle", async () => {
@@ -237,7 +230,7 @@ describe("InstallerOptions", () => {
 
     describe("but a product is not selected yet", () => {
       beforeEach(() => {
-        mockSelectedProductFn.mockReturnValue(undefined);
+        mockProduct(undefined);
       });
 
       it("does not allow reusing setting", async () => {
@@ -353,7 +346,7 @@ describe("InstallerOptions", () => {
 
     describe("but a product is not selected yet", () => {
       beforeEach(() => {
-        mockSelectedProductFn.mockReturnValue(undefined);
+        mockProduct(undefined);
       });
 
       it("does not allow reusing setting", async () => {
@@ -459,7 +452,7 @@ describe("InstallerOptions", () => {
 
     describe("but a product is not selected yet", () => {
       beforeEach(() => {
-        mockSelectedProductFn.mockReturnValue(undefined);
+        mockProduct(undefined);
       });
 
       it("does not allow reusing setting", async () => {

@@ -38,27 +38,25 @@ const ErrorIcon = () => <Icon name="error" />;
 
 function ServerError() {
   return (
-    <Page emptyHeader>
-      <Page.Content>
-        <Bullseye>
-          <Page.Section pfCardProps={{ isFullHeight: false, className: shadowUtils.boxShadowMd }}>
-            <EmptyState
-              variant="xl"
-              titleText={_("Cannot connect to Agama server")}
-              headingLevel="h1"
-              icon={ErrorIcon}
-              status="warning"
-            >
-              <EmptyStateBody>{_("Please, check whether it is running.")}</EmptyStateBody>
-              <EmptyStateFooter>
-                <Button variant="primary" size="lg" onClick={locationReload}>
-                  {_("Reload")}
-                </Button>
-              </EmptyStateFooter>
-            </EmptyState>
-          </Page.Section>
-        </Bullseye>
-      </Page.Content>
+    <Page variant="minimal">
+      <Bullseye>
+        <Page.Section pfCardProps={{ isFullHeight: false, className: shadowUtils.boxShadowMd }}>
+          <EmptyState
+            variant="xl"
+            titleText={_("Cannot connect to Agama server")}
+            headingLevel="h1"
+            icon={ErrorIcon}
+            status="warning"
+          >
+            <EmptyStateBody>{_("Please, check whether it is running.")}</EmptyStateBody>
+            <EmptyStateFooter>
+              <Button variant="primary" size="lg" onClick={locationReload}>
+                {_("Reload")}
+              </Button>
+            </EmptyStateFooter>
+          </EmptyState>
+        </Page.Section>
+      </Bullseye>
     </Page>
   );
 }

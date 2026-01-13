@@ -187,13 +187,13 @@ jest.mock("~/hooks/model/config/product", () => ({
 /**
  * Internal mock for manipulating questions
  */
-const mockUseQuestions: jest.Mock<Question> = jest.fn().mockReturnValue([]);
+const mockUseQuestions: jest.Mock<Question[]> = jest.fn().mockReturnValue([]);
 
 /**
  * Allows mocking useQuestions for testing purpose
  *
  * @example
- *   mockProductInfo({
+ *   mockProductInfo([{
  *     id: 1,
  *     class: "generic",
  *     text: "Do you write unit tests?",
@@ -204,9 +204,9 @@ const mockUseQuestions: jest.Mock<Question> = jest.fn().mockReturnValue([]);
  *       { id: "never", label: "Never" },
  *     ],
  *     defaultAction: "sometimes",
- *   })
+ *   }])
  */
-const mockQuestions = (question: Question) => mockUseQuestions.mockReturnValue(question);
+const mockQuestions = (questions: Question[]) => mockUseQuestions.mockReturnValue(questions);
 
 jest.mock("~/hooks/model/question", () => ({
   ...jest.requireActual("~/hooks/model/question"),

@@ -65,7 +65,7 @@ export default function WiredConnectionPage() {
   const connection = connections.find((c) => c.id === id);
 
   return (
-    <Page breadcrumbs={[{ label: _("Network"), path: NETWORK.root }, { label: connection.id }]}>
+    <Page breadcrumbs={[{ label: _("Network"), path: NETWORK.root }, { label: connection?.id }]}>
       <Page.Content>
         <NoPersistentConnectionsAlert />
         {connection ? (

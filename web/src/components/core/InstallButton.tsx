@@ -27,11 +27,18 @@ import { EXTENDED_SIDE_PATHS, ROOT } from "~/routes/paths";
 import { _ } from "~/i18n";
 
 /**
- * Installation button
+ * A call-to-action button that navigates users to the overview page containing
+ * the actual installation button.
  *
- * It will always be displayed unless in a side path. If any issues are
- * detected, a drawer listing them will be shown; otherwise, confirmation will
- * be requested before initiating the installation process.
+ * Despite its name, this component doesn't trigger installation directly.
+ * Instead, it serves as a prominent navigation element to guide users toward
+ * the overview page where the real installation button resides. The "Install"
+ * label is intentionally simple and action-oriented to match user intent.
+ *
+ * @todo Refactor component name and behavior
+ * - Rename to better reflect its navigation purpose
+ * - Replace route-based visibility logic with explicit prop-based control now
+ *   that pages manage their own layouts
  */
 const InstallButton = (
   props: Omit<ButtonProps, "onClick"> & { onClickWithIssues?: () => void },

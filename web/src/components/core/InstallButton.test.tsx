@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2025] SUSE LLC
+ * Copyright (c) [2022-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -24,87 +24,38 @@ import React from "react";
 import { screen } from "@testing-library/react";
 import { installerRender, mockRoutes } from "~/test-utils";
 import { InstallButton } from "~/components/core";
-import { PRODUCT, ROOT } from "~/routes/paths";
-import type { Issue } from "~/model/issue";
-
-const mockStartInstallationFn = jest.fn();
-
-jest.mock("~/model/manager", () => ({
-  ...jest.requireActual("~/model/manager"),
-  startInstallation: () => mockStartInstallationFn(),
-}));
-
-const mockIssues = jest.fn();
-
-jest.mock("~/hooks/model/issue", () => ({
-  ...jest.requireActual("~/hooks/model/issue"),
-  useIssues: () => mockIssues(),
-}));
+import { PRODUCT, ROOT, STORAGE } from "~/routes/paths";
 
 describe("InstallButton", () => {
-  describe("when there are installation issues", () => {
+  describe("when not in an extended side paths", () => {
     beforeEach(() => {
-      mockIssues.mockReturnValue([
-        {
-          description: "Fake Issue",
-          class: "generic",
-          details: "Fake Issue details",
-          scope: "product",
-        },
-      ] as Issue[]);
+      mockRoutes(STORAGE.addPartition);
     });
 
-    it("renders additional information to warn users about found problems", async () => {
-      const { user, container } = installerRender(<InstallButton />);
-      const button = screen.getByRole("button", { name: /Install/ });
-      // An exlamation icon as visual mark
-      const icon = container.querySelector("svg");
-      expect(icon).toHaveAttribute("data-icon-name", "error_fill");
-      await user.hover(button);
-      screen.getByRole("tooltip", { name: /Not possible with the current setup/ });
-    });
-
-    it("triggers the onClickWithIssues callback", async () => {
-      const onClickWithIssuesFn = jest.fn();
-      const { user } = installerRender(<InstallButton onClickWithIssues={onClickWithIssuesFn} />);
-      const button = screen.getByRole("button", { name: /Install/ });
-      await user.click(button);
-      expect(onClickWithIssuesFn).toHaveBeenCalled();
+    it("renders the button with Install label ", () => {
+      installerRender(<InstallButton />);
+      screen.getByRole("button", { name: "Install" });
     });
   });
 
-  describe("when there are not installation issues", () => {
+  describe.each([
+    ["overview", ROOT.root],
+    ["overview (full route)", ROOT.overview],
+    ["login", ROOT.login],
+    ["product selection", PRODUCT.changeProduct],
+    ["product selection progress", PRODUCT.progress],
+    ["installation progress", ROOT.installationProgress],
+    ["installation finished", ROOT.installationFinished],
+    ["installation exit", ROOT.installationExit],
+    ["storage progress", STORAGE.progress],
+  ])(`when rendering %s screen`, (_, path) => {
     beforeEach(() => {
-      mockIssues.mockReturnValue([]);
+      mockRoutes(path);
     });
 
-    it("renders the button without any additional information", async () => {
-      const { user, container } = installerRender(<InstallButton />);
-      const button = screen.getByRole("button", { name: "Install" });
-      // Renders nothing else
-      const icon = container.querySelector("svg");
-      expect(icon).toBeNull();
-      await user.hover(button);
-      expect(
-        screen.queryByRole("tooltip", { name: /Not possible with the current setup/ }),
-      ).toBeNull();
-    });
-
-    describe.each([
-      ["login", ROOT.login],
-      ["product selection", PRODUCT.changeProduct],
-      ["product selection progress", PRODUCT.progress],
-      ["installation progress", ROOT.installationProgress],
-      ["installation finished", ROOT.installationFinished],
-    ])(`but the installer is rendering the %s screen`, (_, path) => {
-      beforeEach(() => {
-        mockRoutes(path);
-      });
-
-      it("renders nothing", () => {
-        const { container } = installerRender(<InstallButton />);
-        expect(container).toBeEmptyDOMElement();
-      });
+    it("renders nothing", () => {
+      const { container } = installerRender(<InstallButton />);
+      expect(container).toBeEmptyDOMElement();
     });
   });
 });
