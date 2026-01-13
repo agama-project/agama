@@ -40,6 +40,8 @@ import { StorageUiStateProvider } from "~/context/storage-ui-state";
 import { isObject, noop } from "radashi";
 import { DummyWSClient } from "./client/ws";
 import { Status } from "./model/status";
+import type { Product } from "./types/software";
+import { FieldType, Question } from "./model/question";
 
 /**
  * Internal mock for manipulating routes, using ["/"] by default
@@ -151,6 +153,64 @@ jest.mock("~/hooks/model/status", () => ({
     progresses: progressesMock(),
     stage: stageMock(),
   }),
+}));
+
+/**
+ * Internal mock for manipulating product info
+ */
+const mockUseProductInfo: jest.Mock<Product> = jest.fn().mockReturnValue({
+  id: "Tumbleweed",
+  name: "openSUSE Tumbleweed",
+  icon: "tumbleweed.svg",
+  description: "Tumbleweed description...",
+  registration: false,
+});
+
+/**
+ * Allows mocking useProductInfo for testing purpose
+ *
+ * @example
+ *   mockProductInfo({
+ *     id: "Tumbleweed",
+ *     name: "openSUSE Tumbleweed",
+ *     icon: "tumbleweed.svg",
+ *     description: "Tumbleweed description...",
+ *     registration: false,
+ *   })
+ */
+const mockProduct = (product: Product) => mockUseProductInfo.mockReturnValue(product);
+
+jest.mock("~/hooks/model/config/product", () => ({
+  useProductInfo: () => mockUseProductInfo(),
+}));
+
+/**
+ * Internal mock for manipulating questions
+ */
+const mockUseQuestions: jest.Mock<Question> = jest.fn().mockReturnValue([]);
+
+/**
+ * Allows mocking useQuestions for testing purpose
+ *
+ * @example
+ *   mockProductInfo({
+ *     id: 1,
+ *     class: "generic",
+ *     text: "Do you write unit tests?",
+ *     field: { type: FieldType.None },
+ *     actions: [
+ *       { id: "always", label: "Always" },
+ *       { id: "sometimes", label: "Sometimes" },
+ *       { id: "never", label: "Never" },
+ *     ],
+ *     defaultAction: "sometimes",
+ *   })
+ */
+const mockQuestions = (question: Question) => mockUseQuestions.mockReturnValue(question);
+
+jest.mock("~/hooks/model/question", () => ({
+  ...jest.requireActual("~/hooks/model/question"),
+  useQuestions: () => mockUseQuestions(),
 }));
 
 const Providers = ({ children, withL10n }) => {
@@ -321,4 +381,6 @@ export {
   getColumnValues,
   mockProgresses,
   mockStage,
+  mockProduct,
+  mockQuestions,
 };
