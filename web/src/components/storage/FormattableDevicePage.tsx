@@ -25,7 +25,7 @@
  *  code duplication.
  */
 
-import React, { useId } from "react";
+import React from "react";
 import { useParams, useNavigate } from "react-router";
 import {
   ActionGroup,
@@ -398,7 +398,6 @@ function FilesystemLabel({ id, value, onChange }: FilesystemLabelProps): React.R
 
 export default function FormattableDevicePage() {
   const navigate = useNavigate();
-  const headingId = useId();
   const [mountPoint, setMountPoint] = React.useState(NO_VALUE);
   const [filesystem, setFilesystem] = React.useState(NO_VALUE);
   const [filesystemLabel, setFilesystemLabel] = React.useState(NO_VALUE);
@@ -461,11 +460,16 @@ export default function FormattableDevicePage() {
     <Page
       breadcrumbs={[
         { label: _("Storage"), path: STORAGE.root },
-        { label: sprintf(_("Configure device %s"), device.name) },
+        { label: device.name },
+        { label: _("Configure") },
       ]}
     >
       <Page.Content>
-        <Form id="formattableForm" aria-labelledby={headingId} onSubmit={onSubmit}>
+        <Form
+          id="formattableForm"
+          aria-label={sprintf(_("Configure device %s"), device.name)}
+          onSubmit={onSubmit}
+        >
           <Stack hasGutter>
             <FormGroup fieldId="mountPoint" label={_("Mount point")}>
               <Flex>

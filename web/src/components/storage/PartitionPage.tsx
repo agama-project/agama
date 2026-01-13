@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useId } from "react";
+import React from "react";
 import { useParams, useNavigate, useLocation } from "react-router";
 import {
   ActionGroup,
@@ -709,7 +709,6 @@ const PartitionPageForm = () => {
   const { collection, index } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
-  const headingId = useId();
   const [mountPoint, setMountPoint] = React.useState(NO_VALUE);
   const [target, setTarget] = React.useState(NEW_PARTITION);
   const [filesystem, setFilesystem] = React.useState(NO_VALUE);
@@ -844,7 +843,11 @@ const PartitionPageForm = () => {
       ]}
     >
       <Page.Content>
-        <Form id="partitionForm" aria-labelledby={headingId} onSubmit={onSubmit}>
+        <Form
+          id="partitionForm"
+          aria-label={sprintf(_("Configure partition at %s"), device.name)}
+          onSubmit={onSubmit}
+        >
           <Stack hasGutter>
             <FormGroup fieldId="mountPoint" label={_("Mount point")}>
               <Flex>
