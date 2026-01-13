@@ -56,7 +56,7 @@ export type HeaderProps = {
    * When omitted, breadcrumbs are rendered and the last breadcrumb
    * represents the current page.
    */
-  title?: string;
+  title?: React.ReactNode;
   /** Whether the "Skip to content" link should be mounted */
   showSkipToContent?: boolean;
   /** Whether the installer options link should be mounted */

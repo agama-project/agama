@@ -397,7 +397,7 @@ interface StandardPageProps extends BasePageProps {
   /** Layout variant to use */
   variant?: "standard";
   /** Page title shown in header */
-  title?: string;
+  title?: React.ReactNode;
   /** Breadcrumb navigation items */
   breadcrumbs?: BreadcrumbProps[];
   /** Whether to show installer options in the header */
