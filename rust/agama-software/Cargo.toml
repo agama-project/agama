@@ -11,6 +11,7 @@ async-trait = "0.1.89"
 camino = "1.2.1"
 gettext-rs = { version = "0.7.1", features = ["gettext-system"] }
 glob = "0.3.1"
+i18n-format = "0.4.0"
 regex = "1.11.0"
 serde = { version = "1.0.210", features = ["derive"] }
 serde_with = "3.10.0"

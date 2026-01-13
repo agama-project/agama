@@ -37,7 +37,9 @@ call_xgettext() {
     --foreign-user --copyright-holder="SuSE Linux Products GmbH, Nuernberg" \
     --add-comments=TRANSLATORS \
     --default-domain=agama \
-    --language=Rust
+    --language=Rust \
+    --keyword=gettext \
+    --keyword=i18n_format!
 }
 
 find . \
