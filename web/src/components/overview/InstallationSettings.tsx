@@ -45,7 +45,7 @@ export default function InstallationSummarySection() {
       <Title headingLevel="h2" className={a11yStyles.screenReader}>
         {_("Installation settings")}
       </Title>
-      <NestedContent margin="mMd">
+      <NestedContent margin="mtSm">
         <div
           style={{
             display: "grid",
