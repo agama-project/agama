@@ -134,8 +134,6 @@ software:
     - apparmor
   mandatory_packages:
     - NetworkManager
-    # TODO: dynamically propose kernel in agama code
-    - kernel-default
     - openSUSE-repos-Tumbleweed
     - sudo-policy-wheel-auth-self # explicit wheel group policy to conform new auth model
   optional_packages: null
