@@ -262,7 +262,7 @@ impl<'a> SoftwareStateBuilder<'a> {
                 }
             }
         }
-        
+
         if let Some(packages) = &config.packages {
             for name in packages.iter() {
                 state.resolvables.add_or_replace(
@@ -622,15 +622,30 @@ mod tests {
             state.resolvables.to_vec(),
             vec![
                 (
+                    "NetworkManager".to_string(),
+                    ResolvableType::Package,
+                    ResolvableSelection::AutoSelected { optional: false }
+                ),
+                (
                     "enhanced_base".to_string(),
                     ResolvableType::Pattern,
                     ResolvableSelection::AutoSelected { optional: false }
                 ),
                 (
+                    "openSUSE-repos-Tumbleweed".to_string(),
+                    ResolvableType::Package,
+                    ResolvableSelection::AutoSelected { optional: false }
+                ),
+                (
                     "selinux".to_string(),
                     ResolvableType::Pattern,
-                    ResolvableSelection::Selected,
+                    ResolvableSelection::Selected
                 ),
+                (
+                    "sudo-policy-wheel-auth-self".to_string(),
+                    ResolvableType::Package,
+                    ResolvableSelection::AutoSelected { optional: false }
+                )
             ]
         );
     }
@@ -666,8 +681,14 @@ mod tests {
         let state = SoftwareStateBuilder::for_product(&product)
             .with_config(&config)
             .build();
+        let patterns: Vec<_> = state
+            .resolvables
+            .to_vec()
+            .into_iter()
+            .filter(|(_, t, _)| *t == ResolvableType::Pattern)
+            .collect();
         assert_eq!(
-            state.resolvables.to_vec(),
+            patterns,
             vec![
                 (
                     "enhanced_base".to_string(),
@@ -758,8 +779,14 @@ mod tests {
         let state = SoftwareStateBuilder::for_product(&product)
             .with_config(&config)
             .build();
+        let patterns: Vec<_> = state
+            .resolvables
+            .to_vec()
+            .into_iter()
+            .filter(|(_, t, _)| *t == ResolvableType::Pattern)
+            .collect();
         assert_eq!(
-            state.resolvables.to_vec(),
+            patterns,
             vec![
                 (
                     "enhanced_base".to_string(),
@@ -787,8 +814,14 @@ mod tests {
         let state = SoftwareStateBuilder::for_product(&product)
             .with_config(&config)
             .build();
+        let patterns: Vec<_> = state
+            .resolvables
+            .to_vec()
+            .into_iter()
+            .filter(|(_, t, _)| *t == ResolvableType::Pattern)
+            .collect();
         assert_eq!(
-            state.resolvables.to_vec(),
+            patterns,
             vec![
                 (
                     "enhanced_base".to_string(),
@@ -813,8 +846,14 @@ mod tests {
         let state = SoftwareStateBuilder::for_product(&product)
             .with_config(&config)
             .build();
+        let patterns: Vec<_> = state
+            .resolvables
+            .to_vec()
+            .into_iter()
+            .filter(|(_, t, _)| *t == ResolvableType::Pattern)
+            .collect();
         assert_eq!(
-            state.resolvables.to_vec(),
+            patterns,
             vec![
                 (
                     "enhanced_base".to_string(),
@@ -871,5 +910,69 @@ mod tests {
             "user-repo-0".to_string(),
         ];
         assert_eq!(expected_aliases, aliases);
+    }
+
+    #[test]
+    fn test_mandatory_packages() {
+        let product = build_product_spec();
+        let config = Config::default();
+        let state = SoftwareStateBuilder::for_product(&product)
+            .with_config(&config)
+            .build();
+
+        let packages: Vec<_> = state
+            .resolvables
+            .to_vec()
+            .into_iter()
+            .filter(|(_, t, _)| *t == ResolvableType::Package)
+            .collect();
+
+        assert_eq!(
+            packages,
+            vec![
+                (
+                    "NetworkManager".to_string(),
+                    ResolvableType::Package,
+                    ResolvableSelection::AutoSelected { optional: false }
+                ),
+                (
+                    "openSUSE-repos-Tumbleweed".to_string(),
+                    ResolvableType::Package,
+                    ResolvableSelection::AutoSelected { optional: false }
+                ),
+                (
+                    "sudo-policy-wheel-auth-self".to_string(),
+                    ResolvableType::Package,
+                    ResolvableSelection::AutoSelected { optional: false }
+                )
+            ]
+        );
+    }
+
+    #[test]
+    fn test_system_adds_kernel() {
+        let product = build_product_spec();
+        let system = SystemInfo::default();
+
+        let state = SoftwareStateBuilder::for_product(&product)
+            .with_system(&system)
+            .build();
+
+        let kernel = state
+            .resolvables
+            .to_vec()
+            .into_iter()
+            .find(|(name, r#type, _)| {
+                name == "kernel-default" && *r#type == ResolvableType::Package
+            });
+
+        assert_eq!(
+            kernel,
+            Some((
+                "kernel-default".to_string(),
+                ResolvableType::Package,
+                ResolvableSelection::AutoSelected { optional: false }
+            ))
+        );
     }
 }
