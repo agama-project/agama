@@ -25,7 +25,6 @@ require "agama/dbus/storage/iscsi"
 require "agama/dbus/storage/manager"
 require "agama/storage"
 require "y2storage/inhibitors"
-require "y2storage/storage_env"
 
 module Agama
   module DBus
@@ -37,10 +36,8 @@ module Agama
       SERVICE_NAME = "org.opensuse.Agama.Storage1"
       private_constant :SERVICE_NAME
 
-      # @param config [Config] Configuration object
       # @param logger [Logger]
-      def initialize(config, logger = nil)
-        @config = config
+      def initialize(logger = nil)
         @logger = logger || Logger.new($stdout)
       end
 
@@ -56,12 +53,6 @@ module Agama
         # Inhibits various storage subsystem (udisk, systemd mounts, raid auto-assembly) that
         # interfere with the operation of yast-storage-ng and libstorage-ng.
         Y2Storage::Inhibitors.new.inhibit
-
-        # Underlying yast-storage-ng has own mechanism for proposing boot strategies.
-        # However, we don't always want to use BLS when it proposes so. Currently
-        # we want to use BLS only for Tumbleweed / Slowroll
-        prohibit_bls_boot if !config.boot_strategy&.casecmp("BLS")
-
         check_multipath
         export
       end
@@ -85,17 +76,8 @@ module Agama
 
     private
 
-      # @return [Config]
-      attr_reader :config
-
       # @return [Logger]
       attr_reader :logger
-
-      def prohibit_bls_boot
-        ENV["YAST_NO_BLS_BOOT"] = "1"
-        # avoiding problems with cached values
-        Y2Storage::StorageEnv.instance.reset_cache
-      end
 
       MULTIPATH_CONFIG = "/etc/multipath.conf"
       private_constant :MULTIPATH_CONFIG
@@ -137,7 +119,7 @@ module Agama
 
       # @return [Agama::Storage::Manager]
       def manager
-        @manager ||= Agama::Storage::Manager.new(config, logger: logger)
+        @manager ||= Agama::Storage::Manager.new(logger: logger)
       end
     end
   end

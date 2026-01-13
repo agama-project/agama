@@ -23,11 +23,10 @@ require_relative "../../test_helper"
 require "agama/dbus/storage_service"
 
 describe Agama::DBus::StorageService do
-  subject(:service) { described_class.new(config, logger) }
+  subject(:service) { described_class.new(logger) }
 
-  let(:config) { Agama::Config.new }
   let(:logger) { Logger.new($stdout, level: :warn) }
-  let(:manager) { Agama::Storage::Manager.new(config, logger: logger) }
+  let(:manager) { Agama::Storage::Manager.new(logger: logger) }
   let(:inhibitors) { instance_double(Y2Storage::Inhibitors, inhibit: nil, uninhibit: nil) }
 
   let(:object_server) { instance_double(DBus::ObjectServer, export: nil) }
@@ -42,25 +41,15 @@ describe Agama::DBus::StorageService do
     allow(bus).to receive(:request_service).with("org.opensuse.Agama.Storage1")
       .and_return(object_server)
     allow(Y2Storage::Inhibitors).to receive(:new).and_return inhibitors
-    allow(Agama::Storage::Manager).to receive(:new).with(config, logger: logger)
+    allow(Agama::Storage::Manager).to receive(:new).with(logger: logger)
       .and_return(manager)
     allow(Agama::DBus::Storage::Manager).to receive(:new).with(manager, logger: logger)
       .and_return(manager_obj)
   end
 
   describe "#start" do
-    before { allow(ENV).to receive(:[]=) }
-
-    it "sets env YAST_NO_BLS_BOOT to yes if product doesn't requires bls boot explicitly" do
-      expect(config).to receive(:boot_strategy).and_return(nil)
-      expect(ENV).to receive(:[]=).with("YAST_NO_BLS_BOOT", "1")
-
-      service.start
-    end
-
     it "activates the Y2Storage inhibitors" do
       expect(inhibitors).to receive(:inhibit)
-
       service.start
     end
   end

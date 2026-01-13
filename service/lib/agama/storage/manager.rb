@@ -19,6 +19,7 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
+require "agama/config"
 require "agama/http/clients"
 require "agama/issue"
 require "agama/storage/actions_generator"
@@ -34,6 +35,7 @@ require "agama/with_progress_manager"
 require "yast"
 require "y2storage/clients/inst_prepdisk"
 require "y2storage/luks"
+require "y2storage/storage_env"
 require "y2storage/storage_manager"
 
 module Agama
@@ -45,17 +47,26 @@ module Agama
       include WithProgressManager
 
       # @return [Agama::Config]
-      attr_accessor :product_config
+      attr_reader :product_config
 
       # @return [Bootloader]
       attr_reader :bootloader
 
-      # @param product_config [Agama::Config]
       # @param logger [Logger, nil]
-      def initialize(product_config, logger: nil)
-        @product_config = product_config
+      def initialize(logger: nil)
         @logger = logger || Logger.new($stdout)
         @bootloader = Bootloader.new(logger)
+        @no_bls_bootloader = Y2Storage::StorageEnv.instance.no_bls_bootloader
+        self.product_config = Agama::Config.new
+      end
+
+      # Assigns a new product config.
+      #
+      # @param product_config [Agama::Config]
+      def product_config=(config)
+        @product_config = config
+        proposal.product_config = config
+        configure_no_bls_bootloader
       end
 
       def activated?
@@ -174,6 +185,17 @@ module Agama
 
       # @return [Logger]
       attr_reader :logger
+
+      # Underlying yast-storage-ng has own mechanism for proposing boot strategies.
+      # However, we don't always want to use BLS when it proposes so. Currently
+      # we want to use BLS only for Tumbleweed / Slowroll
+      def configure_no_bls_bootloader
+        # Keep original value of the env variable or set it if needed.
+        value = product_config.boot_strategy&.casecmp("BLS") ? @no_bls_bootloader : "1"
+        ENV["YAST_NO_BLS_BOOT"] = value
+        # Avoiding problems with cached values
+        Y2Storage::StorageEnv.instance.reset_cache
+      end
 
       # Whether iSCSI is needed in the target system.
       #

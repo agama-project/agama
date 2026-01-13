@@ -47,15 +47,15 @@ describe Agama::DBus::Storage::Manager do
 
   subject(:manager) { described_class.new(backend, logger: logger) }
 
+  let(:backend) { Agama::Storage::Manager.new }
+
   let(:logger) { Logger.new($stdout, level: :warn) }
 
-  let(:backend) { Agama::Storage::Manager.new(product_config) }
+  let(:proposal) { Agama::Storage::Proposal.new(product_config) }
 
   let(:product_config) { Agama::Config.new(config_data) }
 
   let(:config_data) { {} }
-
-  let(:proposal) { Agama::Storage::Proposal.new(product_config) }
 
   let(:iscsi) do
     instance_double(Agama::Storage::ISCSI::Manager,
@@ -334,6 +334,10 @@ describe Agama::DBus::Storage::Manager do
     end
 
     describe "recover_system[:productMountPoints]" do
+      before do
+        backend.product_config = product_config
+      end
+
       let(:config_data) do
         { "storage" => { "volumes" => [], "volume_templates" => cfg_templates } }
       end
@@ -364,6 +368,10 @@ describe Agama::DBus::Storage::Manager do
     end
 
     describe "recover_system[:volumeTemplates]" do
+      before do
+        backend.product_config = product_config
+      end
+
       let(:config_data) do
         { "storage" => { "volumes" => [], "volume_templates" => cfg_templates } }
       end
@@ -460,6 +468,8 @@ describe Agama::DBus::Storage::Manager do
       allow(backend).to receive(:add_packages)
 
       allow(proposal).to receive(:success?).and_return true
+
+      backend.product_config = product_config
     end
 
     # Set some known initial product configuration for the backend

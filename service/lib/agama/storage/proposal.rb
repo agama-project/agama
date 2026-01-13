@@ -39,6 +39,9 @@ module Agama
     class Proposal
       include Yast::I18n
 
+      # @return [Agama::Config]
+      attr_accessor :product_config
+
       # @param product_config [Agama::Config] Agama config
       # @param logger [Logger]
       def initialize(product_config, logger: nil)
@@ -210,9 +213,6 @@ module Agama
       end
 
     private
-
-      # @return [Agama::Config]
-      attr_reader :product_config
 
       # @return [Logger]
       attr_reader :logger
