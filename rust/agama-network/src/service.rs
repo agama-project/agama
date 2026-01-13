@@ -28,7 +28,7 @@ use crate::{
 use agama_utils::{
     actor::Handler,
     api::{event, Scope},
-    issue, progress,
+    progress,
 };
 use gettextrs::gettext;
 use std::error::Error;
@@ -51,31 +51,7 @@ pub enum NetworkSystemError {
     AdapterError(#[from] NetworkAdapterError),
 }
 
-/// Builds and spawns the network configuration service.
-///
-/// It offers an API to start the service and interact with it by using message
-/// passing like the example below.
-///
-/// ```no_run
-/// # use agama_network::{Action, NetworkManagerAdapter};
-/// # use tokio::sync::oneshot;
-///
-/// # tokio_test::block_on(async {
-/// let adapter = NetworkManagerAdapter::from_system()
-///     .await
-///     .expect("Could not connect to NetworkManager.");
-/// let network = Service::new(adapter);
-///
-/// // Start the networking service and get the client for communication.
-/// let client = network.start()
-///     .await
-///     .expect("Could not start the networking configuration system.");
-///
-/// // Perform some action, like getting the list of devices.
-/// let devices = client.get_devices().await
-///     .expect("Could not get the list of devices.");
-/// # });
-/// ```
+/// Starts the network service
 pub struct Starter {
     adapter: Option<Box<dyn Adapter + Send + 'static>>,
     events: event::Sender,
