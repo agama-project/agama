@@ -43,7 +43,17 @@ type StepProps = {
   description?: ProgressStepProps["description"];
 };
 
-const Progress = ({ steps, step, firstStep, detail }) => {
+const Progress = ({
+  steps,
+  step,
+  firstStep,
+  detail,
+}: {
+  steps: string[];
+  step: ProgressType;
+  firstStep: React.ReactNode;
+  detail: ProgressType | undefined;
+}) => {
   const stepProperties = (stepNumber: number): StepProps => {
     const properties: StepProps = {
       isCurrent: stepNumber === step.current,
@@ -101,7 +111,7 @@ const Progress = ({ steps, step, firstStep, detail }) => {
   );
 };
 
-function findDetail(progresses: ProgressType[]) {
+function findDetail(progresses: ProgressType[]): ProgressType | undefined {
   return progresses.find((progress) => {
     return progress?.finished === false;
   });
