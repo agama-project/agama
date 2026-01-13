@@ -1,6 +1,5 @@
 use agama_l10n::helpers::gettext_noop;
 use agama_utils::{actor::Handler, api::question::QuestionSpec, question};
-use gettextrs::gettext;
 use i18n_format::i18n_format;
 use zypp_agama::callbacks::security;
 
@@ -71,15 +70,8 @@ impl security::Callback for Security {
             &key_name,
             &key_fingerprint
         );
-        let ids = [gettext_noop("Trust"), gettext_noop("Skip")];
-        let labels: Vec<String> = ids.iter().map(|&id| gettext(id)).collect();
-        let actions: Vec<(&str, &str)> = ids
-            .iter()
-            .zip(&labels)
-            .map(|(&id, label)| (id, label.as_str()))
-            .collect();
         let question = QuestionSpec::new(&text, "software.import_gpg")
-            .with_actions(&actions)
+            .with_action_ids(&[gettext_noop("Trust"), gettext_noop("Skip")])
             .with_data(&[
                 ("id", key_id.as_str()),
                 ("name", key_name.as_str()),
