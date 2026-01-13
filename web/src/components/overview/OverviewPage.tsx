@@ -146,7 +146,9 @@ export default function OverviewPage() {
             <Content isEditorial>
               {
                 // TRANSLATORS: Introductory text shown on the overview page
-                _("Take a moment to review the installation settings and adjust them as needed.")
+                _(
+                  "Take a moment to review the installation settings below and adjust them as needed.",
+                )
               }
             </Content>
             <Content className={textStyles.textColorSubtle}>
@@ -175,7 +177,7 @@ export default function OverviewPage() {
             {!isProposalReady && (
               <HelperText>
                 <HelperTextItem variant="warning">
-                  {_("Installation will be available when the current operation completes.")}
+                  {_("Wait until current operations are completed.")}
                 </HelperTextItem>
               </HelperText>
             )}
@@ -183,7 +185,9 @@ export default function OverviewPage() {
             {hasIssues && isProposalReady && (
               <HelperText>
                 <HelperTextItem variant="warning">
-                  {_("Fix areas with issues before proceeding with installation.")}
+                  {_(
+                    "You need to fix any invalid settings before proceeding with the installation.",
+                  )}
                 </HelperTextItem>
               </HelperText>
             )}

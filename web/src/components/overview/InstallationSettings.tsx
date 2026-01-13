@@ -30,6 +30,8 @@ import NetworkSummary from "~/components/overview/NetworkSummary";
 import SoftwareSummary from "~/components/overview/SoftwareSummary";
 import { _ } from "~/i18n";
 
+import a11yStyles from "@patternfly/react-styles/css/utilities/Accessibility/accessibility";
+
 /**
  * InstallationSummarySection
  *
@@ -40,7 +42,9 @@ import { _ } from "~/i18n";
 export default function InstallationSummarySection() {
   return (
     <>
-      <Title headingLevel="h2">{_("Installation settings")}</Title>
+      <Title headingLevel="h2" className={a11yStyles.screenReader}>
+        {_("Installation settings")}
+      </Title>
       <NestedContent margin="mMd">
         <div
           style={{
