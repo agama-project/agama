@@ -25,7 +25,6 @@ import { Navigate } from "react-router";
 import {
   Alert,
   Button,
-  Divider,
   Flex,
   Form,
   FormGroup,
@@ -122,9 +121,13 @@ user privileges.",
               <Flex
                 gap={{ default: "gapMd" }}
                 alignItems={{ default: "alignItemsCenter" }}
-                style={{ minBlockSize: "30dvh" }}
+                style={{
+                  minBlockSize: "30dvh",
+                  boxShadow: "-1px 0 0 var(--pf-t--global--border--color--default)",
+                  paddingInlineStart: "var(--pf-t--global--spacer--md)",
+                  marginBlockStart: "var(--pf-t--global--spacer--xl)",
+                }}
               >
-                <Divider orientation={{ default: "horizontal", md: "vertical" }} />
                 <Form id="login" onSubmit={login} aria-label={_("Login form")}>
                   <FormGroup fieldId="password" label={_("Password")}>
                     <PasswordInput
