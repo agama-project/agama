@@ -21,13 +21,12 @@
  */
 
 import React from "react";
-import { Alert, Content, ExpandableSection, List, ListItem } from "@patternfly/react-core";
+import { Alert, Content, List, ListItem, Stack } from "@patternfly/react-core";
+import Text from "~/components/core/Text";
 import { _, formatList } from "~/i18n";
 import { sprintf } from "sprintf-js";
 import { useDestructiveActions } from "~/hooks/use-destructive-actions";
 
-// FIXME: this component has a bunch of logic/calls copied from
-// storage/ProposalResultSection that should be moved to a reusable hook.
 export default function PotentialDataLossAlert({
   isCompact = false,
   hint = _("If you are unsure, check and adjust the storage settings."),
@@ -50,19 +49,18 @@ export default function PotentialDataLossAlert({
 
   return (
     <Alert title={title} variant="danger">
-      <Content component="p">{hint}</Content>
-      {!isCompact && (
-        <ExpandableSection
-          toggleTextCollapsed={_("View details")}
-          toggleTextExpanded={_("Hide details")}
-        >
+      <Stack hasGutter>
+        {!isCompact && (
           <List>
             {actions.map((a, i) => (
               <ListItem key={i}>{a.text}</ListItem>
             ))}
           </List>
-        </ExpandableSection>
-      )}
+        )}
+        <Content component="p" isEditorial>
+          <Text isBold>{hint}</Text>
+        </Content>
+      </Stack>
     </Alert>
   );
 }

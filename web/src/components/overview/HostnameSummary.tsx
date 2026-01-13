@@ -22,8 +22,8 @@
 
 import React from "react";
 import { isEmpty } from "radashi";
-import Details from "~/components/core/Details";
 import Link from "~/components/core/Link";
+import Summary from "~/components/core/Summary";
 import { useProposal } from "~/hooks/model/proposal/hostname";
 import { HOSTNAME } from "~/routes/paths";
 import { _ } from "~/i18n";
@@ -31,20 +31,23 @@ import { _ } from "~/i18n";
 /**
  * Hostname settings summary
  *
+ * Title is a link that navigates to hostname configuration page.
+ *
  * If a transient hostname is in use, it shows a brief explanation to inform
  * users that the hostname may change after reboot or network changes.
  */
-export default function HostnameDetailsItem() {
+export default function HostnameSummary() {
   const { hostname: transientHostname, static: staticHostname } = useProposal();
 
   return (
-    <Details.StackItem
-      label={
+    <Summary
+      icon="fingerprint"
+      title={
         <Link to={HOSTNAME.root} variant="link" isInline>
           {_("Hostname")}
         </Link>
       }
-      content={staticHostname || transientHostname}
+      value={staticHostname || transientHostname}
       description={
         // TRANSLATORS: a note to briefly explain the possible side-effects
         // of using a transient hostname

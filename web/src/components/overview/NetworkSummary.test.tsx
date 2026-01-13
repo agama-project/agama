@@ -24,7 +24,7 @@ import React from "react";
 import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import { NetworkStatus } from "~/hooks/model/system/network";
-import NetworkDetailsItem from "./NetworkDetailsItem";
+import NetworkSummary from "./NetworkSummary";
 
 const mockUseNetworkStatusFn = jest.fn();
 
@@ -40,7 +40,7 @@ describe("NetworkDetailsItem", () => {
         status: NetworkStatus.NOT_CONFIGURED,
         persistentConnections: [],
       });
-      installerRender(<NetworkDetailsItem />);
+      installerRender(<NetworkSummary />);
       screen.getByText("Not configured");
     });
   });
@@ -51,7 +51,7 @@ describe("NetworkDetailsItem", () => {
         status: NetworkStatus.NO_PERSISTENT,
         persistentConnections: [],
       });
-      installerRender(<NetworkDetailsItem />);
+      installerRender(<NetworkSummary />);
       screen.getByText("Installation only");
       screen.getByText("System will have no network connections");
     });
@@ -63,7 +63,7 @@ describe("NetworkDetailsItem", () => {
         status: NetworkStatus.AUTO,
         persistentConnections: [{ addresses: [] }],
       });
-      installerRender(<NetworkDetailsItem />);
+      installerRender(<NetworkSummary />);
       screen.getByText("Auto");
       screen.getByText("Configured with 1 connection");
     });
@@ -73,7 +73,7 @@ describe("NetworkDetailsItem", () => {
         status: NetworkStatus.AUTO,
         persistentConnections: [{ addresses: [] }, { addresses: [] }],
       });
-      installerRender(<NetworkDetailsItem />);
+      installerRender(<NetworkSummary />);
       screen.getByText("Auto");
       screen.getByText("Configured with 2 connections");
     });
@@ -85,7 +85,7 @@ describe("NetworkDetailsItem", () => {
         status: NetworkStatus.MANUAL,
         persistentConnections: [{ addresses: [{ address: "192.168.1.100", prefix: 24 }] }],
       });
-      installerRender(<NetworkDetailsItem />);
+      installerRender(<NetworkSummary />);
       screen.getByText("Manual");
       screen.getByText("192.168.1.100");
     });
@@ -102,7 +102,7 @@ describe("NetworkDetailsItem", () => {
           },
         ],
       });
-      installerRender(<NetworkDetailsItem />);
+      installerRender(<NetworkSummary />);
       screen.getByText("Manual");
       screen.getByText("192.168.1.100 and 192.168.1.101");
     });
@@ -120,7 +120,7 @@ describe("NetworkDetailsItem", () => {
           },
         ],
       });
-      installerRender(<NetworkDetailsItem />);
+      installerRender(<NetworkSummary />);
       screen.getByText("Manual");
       screen.getByText("192.168.1.100 and 2 others");
     });
@@ -133,7 +133,7 @@ describe("NetworkDetailsItem", () => {
           { addresses: [{ address: "10.0.0.5", prefix: 8 }] },
         ],
       });
-      installerRender(<NetworkDetailsItem />);
+      installerRender(<NetworkSummary />);
       screen.getByText("Manual");
       screen.getByText("Using 2 connections with 192.168.1.100 and 10.0.0.5");
     });
@@ -151,7 +151,7 @@ describe("NetworkDetailsItem", () => {
           { addresses: [{ address: "10.0.0.5", prefix: 8 }] },
         ],
       });
-      installerRender(<NetworkDetailsItem />);
+      installerRender(<NetworkSummary />);
       screen.getByText("Manual");
       screen.getByText("Using 2 connections with 192.168.1.100 and 2 others");
     });
@@ -163,7 +163,7 @@ describe("NetworkDetailsItem", () => {
         status: NetworkStatus.MIXED,
         persistentConnections: [{ addresses: [{ address: "192.168.1.100", prefix: 24 }] }],
       });
-      installerRender(<NetworkDetailsItem />);
+      installerRender(<NetworkSummary />);
       screen.getByText("Auto and manual");
       screen.getByText("DHCP and 192.168.1.100");
     });
@@ -180,7 +180,7 @@ describe("NetworkDetailsItem", () => {
           },
         ],
       });
-      installerRender(<NetworkDetailsItem />);
+      installerRender(<NetworkSummary />);
       screen.getByText("Auto and manual");
       screen.getByText("DHCP, 192.168.1.100 and 192.168.1.101");
     });
@@ -198,7 +198,7 @@ describe("NetworkDetailsItem", () => {
           },
         ],
       });
-      installerRender(<NetworkDetailsItem />);
+      installerRender(<NetworkSummary />);
       screen.getByText("Auto and manual");
       screen.getByText("DHCP, 192.168.1.100 and 2 others");
     });
@@ -211,7 +211,7 @@ describe("NetworkDetailsItem", () => {
           { addresses: [] },
         ],
       });
-      installerRender(<NetworkDetailsItem />);
+      installerRender(<NetworkSummary />);
       screen.getByText("Auto and manual");
       screen.getByText("Using 2 connections with DHCP and 192.168.1.100");
     });
@@ -229,7 +229,7 @@ describe("NetworkDetailsItem", () => {
           { addresses: [{ address: "10.0.0.5", prefix: 8 }] },
         ],
       });
-      installerRender(<NetworkDetailsItem />);
+      installerRender(<NetworkSummary />);
       screen.getByText("Auto and manual");
       screen.getByText("Using 2 connections with DHCP, 192.168.1.100 and 2 others");
     });

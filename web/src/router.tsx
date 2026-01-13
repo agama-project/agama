@@ -32,7 +32,7 @@ import {
 } from "~/components/core";
 import StorageProgress from "~/components/storage/Progress";
 import HostnamePage from "~/components/system/HostnamePage";
-import ConfirmPage from "~/components/core/ConfirmPage";
+import OverviewPage from "~/components/overview/OverviewPage";
 import l10nRoutes from "~/routes/l10n";
 import networkRoutes from "~/routes/network";
 import productsRoutes from "~/routes/products";
@@ -46,7 +46,7 @@ import { N_ } from "~/i18n";
 const rootRoutes = () => [
   {
     path: "/overview",
-    element: <ConfirmPage />,
+    element: <OverviewPage />,
   },
   {
     path: HOSTNAME.root,
@@ -70,7 +70,7 @@ const protectedRoutes = () => [
         children: [
           {
             index: true,
-            element: <ConfirmPage />,
+            element: <OverviewPage />,
           },
           ...rootRoutes(),
         ],

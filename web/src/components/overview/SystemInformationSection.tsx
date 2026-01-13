@@ -21,9 +21,19 @@
  */
 
 import React from "react";
-import { Flex, Title } from "@patternfly/react-core";
+import {
+  Card,
+  CardBody,
+  CardTitle,
+  DescriptionList,
+  DescriptionListGroup,
+  DescriptionListTerm,
+  DescriptionListDescription,
+  Flex,
+  DescriptionListTermProps,
+  DescriptionListDescriptionProps,
+} from "@patternfly/react-core";
 import xbytes from "xbytes";
-import Details from "~/components/core/Details";
 import FormattedIPsList from "~/components/network/FormattedIpsList";
 import NestedContent from "~/components/core/NestedContent";
 import { useSystem } from "~/hooks/model/system";
@@ -31,26 +41,56 @@ import { _ } from "~/i18n";
 
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 
+type ItemProps = {
+  /** The label/term for this field */
+  label: DescriptionListDescriptionProps["children"];
+  /** The value/description for this field */
+  children: DescriptionListDescriptionProps["children"];
+  /** Additional props passed to the DescriptionListTerm component */
+  termProps?: Omit<DescriptionListTermProps, "children">;
+  /** Additional props passed to the DescriptionListDescription component */
+  descriptionProps?: Omit<DescriptionListDescriptionProps, "children">;
+};
+
+/**
+ * A single item in a `Details` description list.
+ *
+ * Wraps a PatternFly `DescriptionListGroup` with `DescriptionListTerm` and
+ * `DescriptionListDescription`.
+ */
+const Item = ({ label, children, termProps = {}, descriptionProps = {} }: ItemProps) => {
+  return (
+    <DescriptionListGroup>
+      <DescriptionListTerm {...termProps}>{label}</DescriptionListTerm>
+      <DescriptionListDescription {...descriptionProps}>
+        <small className={textStyles.textColorSubtle}>{children}</small>
+      </DescriptionListDescription>
+    </DescriptionListGroup>
+  );
+};
+
 export default function SystemInformationSection() {
   const { hardware } = useSystem();
 
   return (
-    <Flex gap={{ default: "gapMd" }} direction={{ default: "column" }}>
-      <Title headingLevel="h2" className={textStyles.fontSizeLg}>
-        {_("System Information")}
-      </Title>
-      <NestedContent margin="mxSm">
-        <Details isHorizontal isCompact>
-          <Details.Item label={_("Model")}>{hardware.model}</Details.Item>
-          <Details.Item label={_("CPU")}>{hardware.cpu}</Details.Item>
-          <Details.Item label={_("Memory")}>
-            {hardware.memory ? xbytes(hardware.memory, { iec: true }) : undefined}
-          </Details.Item>
-          <Details.Item label={_("IPs")}>
-            <FormattedIPsList />
-          </Details.Item>
-        </Details>
-      </NestedContent>
-    </Flex>
+    <Card variant="secondary">
+      <CardTitle component="h3">{_("System Information")}</CardTitle>
+      <CardBody>
+        <Flex gap={{ default: "gapMd" }} direction={{ default: "column" }}>
+          <NestedContent margin="mxSm">
+            <DescriptionList isCompact>
+              <Item label={_("Model")}>{hardware.model}</Item>
+              <Item label={_("CPU")}>{hardware.cpu}</Item>
+              <Item label={_("Memory")}>
+                {hardware.memory ? xbytes(hardware.memory, { iec: true }) : undefined}
+              </Item>
+              <Item label={_("IPs")}>
+                <FormattedIPsList />
+              </Item>
+            </DescriptionList>
+          </NestedContent>
+        </Flex>
+      </CardBody>
+    </Card>
   );
 }

@@ -21,7 +21,7 @@
  */
 
 import React from "react";
-import Details from "~/components/core/Details";
+import Summary from "~/components/core/Summary";
 import Link from "~/components/core/Link";
 import { useProposal } from "~/hooks/model/proposal/l10n";
 import { useSystem } from "~/hooks/model/system/l10n";
@@ -29,7 +29,14 @@ import { L10N } from "~/routes/paths";
 import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
 
-export default function L10nDetailsItem() {
+/**
+ * Displays a summary of the selected localization settings.
+ *
+ * Shows the currently configured language, keyboard layout, and timezone in a
+ * consistent summary format. The title is a link that navigates to the
+ * localization configuration page.
+ */
+export default function L10nSummary() {
   const l10nProposal = useProposal();
   const l10nSystem = useSystem();
   const locale =
@@ -45,13 +52,14 @@ export default function L10nDetailsItem() {
   const title = sprintf(_("%1$s (%2$s)"), locale.language, locale.territory);
 
   return (
-    <Details.StackItem
-      label={
+    <Summary
+      icon="translate"
+      title={
         <Link to={L10N.root} variant="link" isInline>
           {_("Language and region")}
         </Link>
       }
-      content={title}
+      value={title}
       description={
         // TRANSLATORS: Additional details shown under the language selection.
         // %1$s is the keyboard layout name (e.g. "Spanish").

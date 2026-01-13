@@ -20,77 +20,74 @@
  */
 
 import React from "react";
-import { screen } from "@testing-library/react";
-import { installerRender } from "~/test-utils";
-import { useSelectedPatterns } from "~/hooks/model/system/software";
-import { useProgressTracking } from "~/hooks/use-progress-tracking";
+import { screen, within } from "@testing-library/react";
+import { installerRender, mockProgresses } from "~/test-utils";
 import { useProposal } from "~/hooks/model/proposal/software";
+import { useSelectedPatterns } from "~/hooks/model/system/software";
+import { SOFTWARE } from "~/routes/paths";
 import { SelectedBy } from "~/model/proposal/software";
-import SoftwareDetailsItem from "./SoftwareDetailsItem";
+import SoftwareSummary from "./SoftwareSummary";
 
-const mockUseProgressTrackingFn: jest.Mock<ReturnType<typeof useProgressTracking>> = jest.fn();
 const mockUseProposalFn: jest.Mock<ReturnType<typeof useProposal>> = jest.fn();
 const mockUseSelectedPatternsFn: jest.Mock<ReturnType<typeof useSelectedPatterns>> = jest.fn();
 
-jest.mock("~/hooks/model/system/software", () => ({
-  ...jest.requireActual("~/hooks/model/system/software"),
-  useSelectedPatterns: () => mockUseSelectedPatternsFn(),
-}));
-
 jest.mock("~/hooks/model/proposal/software", () => ({
-  ...jest.requireActual("~/hooks/model/proposal/software"),
   useProposal: () => mockUseProposalFn(),
 }));
 
-jest.mock("~/hooks/use-progress-tracking", () => ({
-  ...jest.requireActual("~/hooks/use-progress-tracking"),
-  useProgressTracking: () => mockUseProgressTrackingFn(),
+jest.mock("~/hooks/model/system/software", () => ({
+  useSelectedPatterns: () => mockUseSelectedPatternsFn(),
 }));
 
-describe("SoftwareDetailsItem", () => {
+describe("SoftwareSummary", () => {
   beforeEach(() => {
+    mockProgresses([]);
+    mockUseProposalFn.mockReturnValue({ usedSpace: 6291456, patterns: {} }); // 6 GiB
+    mockUseSelectedPatternsFn.mockReturnValue([]);
+  });
+
+  afterEach(() => {
     jest.clearAllMocks();
   });
 
-  describe("when software data is still loading", () => {
+  it("renders the clickable 'Software' header", () => {
+    installerRender(<SoftwareSummary />);
+    const heading = screen.getByRole("heading");
+    const link = within(heading).getByRole("link", { name: "Software" });
+    expect(link).toHaveAttribute("href", expect.stringContaining(SOFTWARE.root));
+  });
+
+  describe("when software data still loading", () => {
     beforeEach(() => {
-      mockUseProgressTrackingFn.mockReturnValue({
-        loading: true,
-        progress: {
-          index: 1,
+      mockProgresses([
+        {
           scope: "software",
           size: 3,
-          steps: ["one", "two", "three"],
-          step: "two",
+          steps: [
+            "Updating the list of repositories",
+            "Refreshing metadata from the repositories",
+            "Calculating the software proposal",
+          ],
+          step: "Refreshing metadata from the repositories",
+          index: 2,
         },
-      });
+      ]);
     });
 
-    it("renders skeletons instead of content", () => {
-      mockUseProposalFn.mockReturnValue({ usedSpace: 0, patterns: {} });
-      mockUseSelectedPatternsFn.mockReturnValue([]);
-
-      installerRender(<SoftwareDetailsItem />);
-
-      screen.queryByText(/Software/);
-      screen.queryByText("Waiting for proposal"); // Skeleton aria-label
+    it("renders skeleton instead of content", () => {
+      installerRender(<SoftwareSummary />);
+      screen.getByLabelText("Waiting for proposal");
+      expect(screen.queryByText(/Required packages/)).not.toBeInTheDocument();
       expect(screen.queryByText(/Needs about/)).not.toBeInTheDocument();
     });
   });
 
   describe("when software data is loaded (no progress active)", () => {
-    beforeEach(() => {
-      mockUseProgressTrackingFn.mockReturnValue({
-        loading: false,
-        progress: undefined,
-      });
-    });
-
     it("renders 'Required packages' without patterns count when no none is selected", () => {
       mockUseProposalFn.mockReturnValue({ usedSpace: 1955420, patterns: {} });
       mockUseSelectedPatternsFn.mockReturnValue([]);
 
-      installerRender(<SoftwareDetailsItem />);
+      installerRender(<SoftwareSummary />);
 
       screen.getByText("Required packages");
       screen.getByText(/Needs about 1\.86 GiB/);
@@ -126,7 +123,7 @@ describe("SoftwareDetailsItem", () => {
         },
       ]);
 
-      const { rerender } = installerRender(<SoftwareDetailsItem />);
+      const { rerender } = installerRender(<SoftwareSummary />);
 
       // Singular
       screen.getByText("Required packages and 1 pattern");
@@ -152,7 +149,7 @@ describe("SoftwareDetailsItem", () => {
           preselected: false,
         },
       ]);
-      rerender(<SoftwareDetailsItem />);
+      rerender(<SoftwareSummary />);
 
       // Plural
       screen.getByText("Required packages and 2 patterns");

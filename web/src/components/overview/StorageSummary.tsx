@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2025] SUSE LLC
+ * Copyright (c) [2025-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -22,10 +22,10 @@
 
 import React from "react";
 import { sprintf } from "sprintf-js";
-
-import Details from "~/components/core/Details";
+import { HelperText, HelperTextItem } from "@patternfly/react-core";
+import Summary from "~/components/core/Summary";
 import Link from "~/components/core/Link";
-
+import { useProgressTracking } from "~/hooks/use-progress-tracking";
 import { useConfigModel } from "~/hooks/model/storage/config-model";
 import {
   useFlattenDevices as useSystemFlattenDevices,
@@ -44,8 +44,6 @@ import { _, formatList } from "~/i18n";
 
 import type { Storage } from "~/model/system";
 import type { ConfigModel } from "~/model/storage/config-model";
-import { useProgressTracking } from "~/hooks/use-progress-tracking";
-import { HelperText, HelperTextItem } from "@patternfly/react-core";
 
 const findDriveDevice = (drive: ConfigModel.Drive, devices: Storage.Device[]) =>
   devices.find((d) => d.name === drive.name);
@@ -85,7 +83,7 @@ const ModelSummary = ({ model }: { model: ConfigModel.Config }): React.ReactNode
   return <SingleDeviceSummary target={targets[0]} />;
 };
 
-const LinkContent = () => {
+const Value = () => {
   const availableDevices = useAvailableDevices();
   const model = useConfigModel();
   const issues = useIssues("storage");
@@ -105,7 +103,7 @@ const LinkContent = () => {
   return <ModelSummary model={model} />;
 };
 
-const DescriptionContent = () => {
+const Description = () => {
   const system = useSystemFlattenDevices();
   const staging = useProposalFlattenDevices();
   const actions = useActions();
@@ -133,27 +131,46 @@ const DescriptionContent = () => {
 };
 
 /**
- * In the near future, this component may receive one or more props (to be
- * defined) to display additional or alternative information. This will be
- * especially useful for reusing the component in the interface where users are
- * asked to confirm that they want to proceed with the installation.
+ * Displays a summary of the current storage configuration and proposed changes.
  *
- * DISCLAIMER: Naming still has significant room for improvement, starting with
- * the component name itself. These changes should be addressed in a final step,
- * once all "overview/confirmation" items are clearly defined.
+ * It provides an overview of the storage setup, including:
+ *   - Selected target devices (drives, RAIDs, volume groups)
+ *   - Validation status of the storage configuration
+ *   - Data loss warnings for affected systems
+ *   - Loading state during storage proposal calculations
+ *
+ * The title is a clickable link that navigates to the storage configuration page.
+ *
+ * Based on the storage settings, it will output
+ *
+ * **Value (main content):**
+ *  - "No device selected yet" when no valid target devices are configured
+ *  - "Use device [name]" for single device configurations
+ *  - "Use several devices" for multi-device configurations
+ *  - "There are no disks available for the installation" when no disks are detected
+ *  - "Invalid settings" warning when configuration issues exist
+ *  - "Using an advanced storage configuration" when model is unavailable
+ *
+ * **Description (secondary content):**
+ *  - "No data loss is expected" when no delete actions are proposed
+ *  - "Potential data loss" when delete actions exist
+ *  - "Potential data loss affecting at least [systems]" when existing systems will be affected
+ *  - "Failed to calculate a storage layout" when no actions are available
+ *  - Hidden when configuration issues exist
  */
-export default function StorageDetailsItem() {
+export default function StorageSummary() {
   const { loading } = useProgressTracking("storage");
 
   return (
-    <Details.StackItem
-      label={
+    <Summary
+      icon="hard_drive"
+      title={
         <Link to={STORAGE.root} variant="link" isInline>
           {_("Storage")}
         </Link>
       }
-      content={<LinkContent />}
-      description={<DescriptionContent />}
+      value={<Value />}
+      description={<Description />}
       isLoading={loading}
     />
   );
