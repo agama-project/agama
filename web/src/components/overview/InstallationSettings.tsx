@@ -46,13 +46,7 @@ export default function InstallationSummarySection() {
         {_("Installation settings")}
       </Title>
       <NestedContent margin="mtSm">
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(2, minmax(250px, 1fr))",
-            gap: "0.5em",
-          }}
-        >
+        <div className="installation-settings-summary">
           <HostnameSummary />
           <L10nSummary />
           <NetworkSummary />
