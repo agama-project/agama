@@ -23,7 +23,7 @@
 //! FIXME: find a better place for the localization function
 
 use agama_locale_data::LocaleId;
-use gettextrs::{bind_textdomain_codeset, bindtextdomain, setlocale, textdomain, LocaleCategory};
+use gettextrs::{bind_textdomain_codeset, setlocale, textdomain, LocaleCategory};
 use std::env;
 
 /// Initializes the service locale.
@@ -35,7 +35,6 @@ pub fn init_locale() -> Result<LocaleId, Box<dyn std::error::Error>> {
 
     set_service_locale(&locale);
     textdomain("agama")?;
-    bindtextdomain("agama", "/usr/share/YaST2/locale")?;
     bind_textdomain_codeset("agama", "UTF-8")?;
     bind_textdomain_codeset("xkeyboard-config", "UTF-8")?;
     Ok(locale)
