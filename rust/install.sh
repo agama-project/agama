@@ -68,5 +68,4 @@ install6 -D -t "${DESTDIR}${datadir}"/fish/vendor_completions.d "${SRCDIR}"/out/
 install6 -D -t "${DESTDIR}${datadir}"/agama/openapi "${SRCDIR}"/out/openapi/*
 
 # install translations
-make -C "${SRCDIR}/po"
 make -C "${SRCDIR}/po" install DESTDIR="${DESTDIR}" datadir="${datadir}"

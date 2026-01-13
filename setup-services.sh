@@ -162,6 +162,7 @@ $SUDO $ZYPPER install \
   gzip -f out/man/*.?
   cargo run --package xtask -- completions
   cargo run --package xtask -- openapi
+  make -C po
 )
 
 (

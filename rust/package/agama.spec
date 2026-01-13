@@ -178,6 +178,7 @@ cargo run --package xtask -- manpages
 gzip out/man/*
 cargo run --package xtask -- completions
 cargo run --package xtask -- openapi
+make -C po
 
 %install
 env \
