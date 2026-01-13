@@ -47,3 +47,11 @@ pub fn set_service_locale(locale: &LocaleId) {
         tracing::warn!("Could not set the locale");
     }
 }
+
+/// Does nothing at runtime, marking the text for translation.
+///
+/// This is useful when you need both the untranslated id
+/// and its translated label, for example.
+pub fn gettext_noop(text: &str) -> &str {
+    text
+}

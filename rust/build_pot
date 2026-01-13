@@ -39,6 +39,7 @@ call_xgettext() {
     --default-domain=agama \
     --language=Rust \
     --keyword=gettext \
+    --keyword=gettext_noop \
     --keyword=i18n_format!
 }
 
