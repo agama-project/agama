@@ -18,7 +18,9 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::{bootloader, files, hardware, hostname, l10n, message, network, software, storage, users};
+use crate::{
+    bootloader, files, hardware, hostname, l10n, message, network, software, storage, users,
+};
 use agama_utils::{
     actor::{self, Actor, Handler, MessageHandler},
     api::{
@@ -357,8 +359,6 @@ impl Service {
     }
 
     async fn set_config(&mut self, config: Config) -> Result<(), Error> {
-        tracing::info!("Manager service - set_config");
-
         self.set_product(&config)?;
 
         let Some(product) = &self.product else {
@@ -414,8 +414,6 @@ impl Service {
             self.network.update_config(network).await?;
             self.network.apply().await?;
         }
-
-        tracing::info!("Manager service - set_config: {:?}", config);
 
         self.config = config;
         Ok(())
@@ -571,7 +569,6 @@ impl MessageHandler<message::GetConfig> for Service {
 impl MessageHandler<message::SetConfig> for Service {
     /// Sets the user configuration with the given values.
     async fn handle(&mut self, message: message::SetConfig) -> Result<(), Error> {
-        tracing::info!("Manager service - SetConfig handler");
         self.check_stage(Stage::Configuring).await?;
         self.set_config(message.config).await
     }
@@ -584,7 +581,6 @@ impl MessageHandler<message::UpdateConfig> for Service {
     /// It merges the current config with the given one. If some scope is missing in the given
     /// config, then it keeps the values from the current config.
     async fn handle(&mut self, message: message::UpdateConfig) -> Result<(), Error> {
-        tracing::info!("Manager service - UpdateConfig handler");
         self.check_stage(Stage::Configuring).await?;
         let mut new_config = message.config;
         new_config.merge(self.config.clone());
@@ -596,8 +592,6 @@ impl MessageHandler<message::UpdateConfig> for Service {
 impl MessageHandler<message::GetProposal> for Service {
     /// It returns the current proposal, if any.
     async fn handle(&mut self, _message: message::GetProposal) -> Result<Option<Proposal>, Error> {
-        tracing::info!("Manager service - GetProposal");
-
         let hostname = self.hostname.call(hostname::message::GetProposal).await?;
         let l10n = self.l10n.call(l10n::message::GetProposal).await?;
         let software = self.software.call(software::message::GetProposal).await?;

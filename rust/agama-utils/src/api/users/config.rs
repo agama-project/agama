@@ -30,10 +30,10 @@ pub struct Config {
     #[merge(strategy = merge::option::overwrite_none)]
     #[serde(rename = "user")]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub first_user: Option<FirstUserSettings>,
+    pub first_user: Option<FirstUserConfig>,
     #[merge(strategy = merge::option::overwrite_none)]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub root: Option<RootUserSettings>,
+    pub root: Option<RootUserConfig>,
 }
 
 impl Config {
@@ -58,7 +58,7 @@ impl Config {
 /// Holds the settings for the first user.
 #[derive(Clone, Debug, Default, Merge, Serialize, Deserialize, PartialEq, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
-pub struct FirstUserSettings {
+pub struct FirstUserConfig {
     /// First user's full name
     #[merge(strategy = merge::option::overwrite_none)]
     pub full_name: Option<String>,
@@ -72,7 +72,7 @@ pub struct FirstUserSettings {
     pub user_name: Option<String>,
 }
 
-impl FirstUserSettings {
+impl FirstUserConfig {
     /// Whether it is a valid user.
     pub fn is_valid(&self) -> bool {
         self.user_name.is_some()
@@ -105,7 +105,7 @@ fn overwrite_if_not_empty(old: &mut String, new: String) {
 /// Holds the settings for the root user.
 #[derive(Clone, Debug, Default, Merge, Serialize, Deserialize, PartialEq, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
-pub struct RootUserSettings {
+pub struct RootUserConfig {
     /// Root user password
     #[merge(strategy = merge::option::overwrite_none)]
     #[serde(flatten)]
@@ -117,7 +117,7 @@ pub struct RootUserSettings {
     pub ssh_public_key: Option<String>,
 }
 
-impl RootUserSettings {
+impl RootUserConfig {
     pub fn is_empty(&self) -> bool {
         self.password.is_none() && self.ssh_public_key.is_none()
     }
@@ -125,7 +125,7 @@ impl RootUserSettings {
 
 #[cfg(test)]
 mod test {
-    use super::{FirstUserSettings, RootUserSettings, UserPassword};
+    use super::{FirstUserConfig, RootUserConfig, UserPassword};
 
     #[test]
     fn test_parse_user_password() {
