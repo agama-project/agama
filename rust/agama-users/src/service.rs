@@ -20,12 +20,13 @@
 
 use crate::message;
 use crate::model::ModelAdapter;
-use crate::{config::Config, Model};
+use crate::Model;
 use agama_utils::{
     actor::{self, Actor, Handler, MessageHandler},
     api::{
         self,
         event::{self, Event},
+        users::Config,
         Issue, Scope,
     },
     issue,
@@ -73,7 +74,7 @@ impl Starter {
     pub async fn start(self) -> Result<Handler<Service>, Error> {
         let model = match self.model {
             Some(model) => model,
-            None => Box::new(Model::from_system()?),
+            None => Box::new(Model {}),
         };
         let service = Service {
             full_config: Config::new(),
@@ -117,9 +118,7 @@ impl Service {
         // At least one user is mandatory
         // - typicaly root or
         // - first user which will operate throught sudo
-        if self.full_config.settings.root.is_none()
-            && self.full_config.settings.first_user.is_none()
-        {
+        if self.full_config.root.is_none() && self.full_config.first_user.is_none() {
             issues.push(Issue::new(
                 "No user defined",
                 "At least one user has to be defined",
@@ -144,9 +143,7 @@ impl Actor for Service {
 #[async_trait]
 impl MessageHandler<message::GetConfig> for Service {
     async fn handle(&mut self, _message: message::GetConfig) -> Result<api::users::Config, Error> {
-        Ok(api::users::Config {
-            users: self.full_config.settings.clone(),
-        })
+        Ok(self.full_config.clone())
     }
 }
 
@@ -159,7 +156,7 @@ impl MessageHandler<message::SetConfig<api::users::Config>> for Service {
         let mut base_config = Config::new();
 
         let config = if let Some(config) = &message.config {
-            base_config.settings = config.users.clone();
+            base_config = config.clone();
             base_config
         } else {
             base_config

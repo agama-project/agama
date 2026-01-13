@@ -23,6 +23,3 @@
 
 mod config;
 pub use config::Config;
-
-pub mod settings;
-pub use settings::UserSettings;

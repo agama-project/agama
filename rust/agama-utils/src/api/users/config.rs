@@ -1,4 +1,4 @@
-// Copyright (c) [2025] SUSE LLC
+// Copyright (c) [2024] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -18,14 +18,125 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::api::users::settings::UserSettings;
 use merge::Merge;
 use serde::{Deserialize, Serialize};
 
-/// Users config.
-#[derive(Clone, Debug, Default, Serialize, Deserialize, PartialEq, Merge, utoipa::ToSchema)]
+/// User settings
+///
+/// Holds the user settings for the installation.
+#[derive(Clone, Debug, Default, Merge, Serialize, Deserialize, PartialEq, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct Config {
+    #[merge(strategy = merge::option::overwrite_none)]
+    #[serde(rename = "user")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub first_user: Option<FirstUserSettings>,
+    #[merge(strategy = merge::option::overwrite_none)]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub root: Option<RootUserSettings>,
+}
+
+impl Config {
+    pub fn new() -> Self {
+        Self {
+            first_user: None,
+            root: None,
+        }
+    }
+
+    pub fn to_api(&self) -> Option<Config> {
+        if self.root.is_none() && self.first_user.is_none() {
+            return None;
+        }
+
+        Some(self.clone())
+    }
+}
+
+/// First user settings
+///
+/// Holds the settings for the first user.
+#[derive(Clone, Debug, Default, Merge, Serialize, Deserialize, PartialEq, utoipa::ToSchema)]
+#[serde(rename_all = "camelCase")]
+pub struct FirstUserSettings {
+    /// First user's full name
+    #[merge(strategy = merge::option::overwrite_none)]
+    pub full_name: Option<String>,
+    /// First user password
     #[serde(flatten)]
-    pub users: UserSettings,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[merge(strategy = merge::option::overwrite_none)]
+    pub password: Option<UserPassword>,
+    /// First user's username
+    #[merge(strategy = merge::option::overwrite_none)]
+    pub user_name: Option<String>,
+}
+
+impl FirstUserSettings {
+    /// Whether it is a valid user.
+    pub fn is_valid(&self) -> bool {
+        self.user_name.is_some()
+    }
+}
+
+/// Represents a user password.
+///
+/// It holds the password and whether it is a hashed or a plain text password.
+#[derive(Clone, Debug, Merge, Serialize, Deserialize, PartialEq, utoipa::ToSchema)]
+#[serde(rename_all = "camelCase")]
+pub struct UserPassword {
+    /// User password
+    #[merge(strategy = overwrite_if_not_empty)]
+    pub password: String,
+    /// Whether the password is hashed or is plain text
+    #[merge(strategy = merge::bool::overwrite_false)]
+    #[serde(default)]
+    pub hashed_password: bool,
+}
+
+fn overwrite_if_not_empty(old: &mut String, new: String) {
+    if !new.is_empty() {
+        *old = new;
+    }
+}
+
+/// Root user settings
+///
+/// Holds the settings for the root user.
+#[derive(Clone, Debug, Default, Merge, Serialize, Deserialize, PartialEq, utoipa::ToSchema)]
+#[serde(rename_all = "camelCase")]
+pub struct RootUserSettings {
+    /// Root user password
+    #[merge(strategy = merge::option::overwrite_none)]
+    #[serde(flatten)]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub password: Option<UserPassword>,
+    /// Root SSH public key
+    #[merge(strategy = merge::option::overwrite_none)]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub ssh_public_key: Option<String>,
+}
+
+impl RootUserSettings {
+    pub fn is_empty(&self) -> bool {
+        self.password.is_none() && self.ssh_public_key.is_none()
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use super::{FirstUserSettings, RootUserSettings, UserPassword};
+
+    #[test]
+    fn test_parse_user_password() {
+        let password_str = r#"{ "password": "$a$b123", "hashedPassword": true }"#;
+        let password: UserPassword = serde_json::from_str(&password_str).unwrap();
+        assert_eq!(&password.password, "$a$b123");
+        assert_eq!(password.hashed_password, true);
+
+        let password_str = r#"{ "password": "$a$b123" }"#;
+        let password: UserPassword = serde_json::from_str(&password_str).unwrap();
+        assert_eq!(&password.password, "$a$b123");
+        assert_eq!(password.hashed_password, false);
+    }
 }

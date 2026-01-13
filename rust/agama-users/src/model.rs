@@ -19,7 +19,6 @@
 // find current contact information at www.suse.com.
 
 use crate::service;
-use agama_utils::api::users::UserSettings;
 
 /// Abstract the users-related configuration from the underlying system.
 pub trait ModelAdapter: Send + 'static {
@@ -31,27 +30,7 @@ pub trait ModelAdapter: Send + 'static {
 }
 
 /// [ModelAdapter] implementation for systemd-based systems.
-pub struct Model {
-    pub users: UserSettings,
-}
-
-impl Model {
-    /// Initializes the struct with the information from the underlying system.
-    /// Currently we do not care about default users on live media so
-    /// basically does nothing.
-    pub fn from_system() -> Result<Self, service::Error> {
-        let model = {
-            Model {
-                users: UserSettings {
-                    first_user: None,
-                    root: None,
-                },
-            }
-        };
-
-        Ok(model)
-    }
-}
+pub struct Model {}
 
 impl ModelAdapter for Model {
     fn install(&self) -> Result<(), service::Error> {
