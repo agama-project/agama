@@ -387,7 +387,7 @@ interface BasePageProps {
   /** Whether to show the Questions component at the bottom of the page */
   showQuestions?: boolean;
   /** Page content */
-  children: React.ReactNode;
+  children?: React.ReactNode;
 }
 
 /**

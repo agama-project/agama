@@ -25,9 +25,11 @@ import { isUndefined } from "radashi";
 import useTrackQueriesRefetch from "~/hooks/use-track-queries-refetch";
 import { useStatus } from "~/hooks/model/status";
 import { COMMON_PROPOSAL_KEYS } from "~/hooks/model/proposal";
-import type { Scope } from "~/model/status";
+import type { Progress, Scope } from "~/model/status";
 
-export function useProgress(scope?: Scope) {
+export function useProgress(scope?: undefined): Progress[];
+export function useProgress(scope: Scope): Progress | undefined;
+export function useProgress(scope?: Scope): Progress[] | Progress | undefined {
   const { progresses } = useStatus();
 
   if (isUndefined(scope)) {
