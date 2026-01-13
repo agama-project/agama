@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024-2025] SUSE LLC
+ * Copyright (c) [2024-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -72,7 +72,7 @@ type BootSelectionState = {
 /**
  * Allows the user to select the boot configuration.
  */
-export default function BootSelection() {
+export default function BootSelectionPage() {
   const location = useLocation();
   const [state, setState] = useState<BootSelectionState>({ load: false });
   const navigate = useNavigate();
