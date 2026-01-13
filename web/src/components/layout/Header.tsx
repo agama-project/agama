@@ -49,18 +49,18 @@ import type { BreadcrumbProps } from "~/components/core/Breadcrumbs";
 import spacingStyles from "@patternfly/react-styles/css/utilities/Spacing/spacing";
 
 export type HeaderProps = {
-  /** Whether the application sidebar should be mounted or not */
-  showSidebarToggle?: boolean;
-  /** Whether the selected product name should be shown */
-  showProductName?: boolean;
+  /**
+   * Page title rendered as the main heading (h1).
+   *
+   * When provided, the title is shown instead of breadcrumb navigation.
+   * When omitted, breadcrumbs are rendered and the last breadcrumb
+   * represents the current page.
+   */
+  title?: string;
   /** Whether the "Skip to content" link should be mounted */
   showSkipToContent?: boolean;
   /** Whether the installer options link should be mounted */
   showInstallerOptions?: boolean;
-  /** Callback to be triggered for toggling the IssuesDrawer visibility */
-  toggleIssuesDrawer?: () => void;
-  isSidebarOpen?: boolean;
-  toggleSidebar?: () => void;
   /** Breadcrumb navigation items */
   breadcrumbs?: BreadcrumbProps[];
 };
