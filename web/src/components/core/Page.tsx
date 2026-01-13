@@ -57,6 +57,8 @@ import Loading from "~/components/layout/Loading";
 import { ProductRegistrationAlert } from "~/components/product";
 import { Questions } from "../questions";
 
+import type { BreadcrumbProps } from "~/components/core/Breadcrumbs";
+
 /**
  * Props accepted by Page.Section
  */
@@ -332,7 +334,7 @@ interface StandardLayoutProps {
   /** Page title shown in header */
   title?: React.ReactNode;
   /** Breadcrumb navigation items */
-  breadcrumbs?: React.ReactNode;
+  breadcrumbs?: BreadcrumbProps[];
   /** Optional progress tracking configuration */
   progress?: ProgressBackdropProps;
   /** Whether to show the Questions component */
@@ -360,7 +362,7 @@ const StandardLayout = ({
       masthead={
         <Header
           title={title}
-          breadcrumb={breadcrumbs}
+          breadcrumbs={breadcrumbs}
           showInstallerOptions={showInstallerOptions}
         />
       }
@@ -397,7 +399,7 @@ interface StandardPageProps extends BasePageProps {
   /** Page title shown in header */
   title?: string;
   /** Breadcrumb navigation items */
-  breadcrumbs?: React.ReactNode;
+  breadcrumbs?: BreadcrumbProps[];
   /** Whether to show installer options in the header */
   showInstallerOptions?: boolean;
 }

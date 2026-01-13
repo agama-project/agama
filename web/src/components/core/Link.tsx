@@ -36,13 +36,7 @@ export type LinkProps = Omit<ButtonProps, "component"> & {
   keepQuery?: boolean;
 };
 
-/**
- * Returns an HTML `<a>` tag built on top of PF/Button and useHref ReactRouter hook
- *
- * @note when isPrimary not given or false and props does not contain a variant prop,
- * it will default to "secondary" variant
- */
-export default function Link({
+function LinkWithHooks({
   to,
   replace = false,
   isPrimary,
@@ -57,12 +51,7 @@ export default function Link({
   const href = useHref(to);
   const linkVariant = isPrimary ? "primary" : variant || "secondary";
   const destination = keepQuery ? ({ pathname: to, search: location.search } as To) : to;
-  const options = { replace };
-  const handleClick = useLinkClickHandler(destination, options);
-
-  if (isUndefined(to)) {
-    return children;
-  }
+  const handleClick = useLinkClickHandler(destination, { replace });
 
   return (
     <Button
@@ -77,5 +66,21 @@ export default function Link({
     >
       {children}
     </Button>
+  );
+}
+
+/**
+ * Returns an HTML `<a>` tag built on top of PF/Button and useHref ReactRouter hook
+ *
+ * @note when isPrimary not given or false and props does not contain a variant prop,
+ * it will default to "secondary" variant
+ */
+export default function Link({ to, children, ...props }: LinkProps) {
+  if (isUndefined(to)) return children;
+
+  return (
+    <LinkWithHooks to={to} {...props}>
+      {children}
+    </LinkWithHooks>
   );
 }

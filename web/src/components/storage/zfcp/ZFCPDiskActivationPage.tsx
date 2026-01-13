@@ -61,7 +61,7 @@ export default function ZFCPDiskActivationPage() {
     <Page
       breadcrumbs={[
         { label: _("Storage"), path: STORAGE.root },
-        { label: _("zFCP"), path: STORAGE.zfcp },
+        { label: _("zFCP"), path: STORAGE.zfcp.root },
         { label: _("Disk Activation") },
       ]}
     >

@@ -39,10 +39,13 @@ import {
 import { Icon } from "~/components/layout";
 import { ChangeProductOption, InstallerOptions, InstallButton, SkipTo } from "~/components/core";
 import ProgressStatusMonitor from "../core/ProgressStatusMonitor";
-import Breadcrumb from "~/components/core/Breadcrumb";
+import Breadcrumbs from "~/components/core/Breadcrumbs";
 import { useProductInfo } from "~/hooks/model/config/product";
 import { ROOT } from "~/routes/paths";
 import { _ } from "~/i18n";
+
+import type { BreadcrumbProps } from "~/components/core/Breadcrumbs";
+
 import spacingStyles from "@patternfly/react-styles/css/utilities/Spacing/spacing";
 
 export type HeaderProps = {
@@ -58,6 +61,8 @@ export type HeaderProps = {
   toggleIssuesDrawer?: () => void;
   isSidebarOpen?: boolean;
   toggleSidebar?: () => void;
+  /** Breadcrumb navigation items */
+  breadcrumbs?: BreadcrumbProps[];
 };
 
 const OptionsDropdown = () => {
@@ -101,7 +106,7 @@ const OptionsDropdown = () => {
  */
 export default function Header({
   title,
-  breadcrumb,
+  breadcrumbs,
   showSkipToContent = true,
   showInstallerOptions = true,
 }: HeaderProps): React.ReactNode {
@@ -114,9 +119,9 @@ export default function Header({
         {title ? (
           <Title headingLevel="h1">{title}</Title>
         ) : (
-          <Breadcrumb>
-            {product && breadcrumb && (
-              <Breadcrumb.Item
+          <Breadcrumbs>
+            {product && breadcrumbs && (
+              <Breadcrumbs.Item
                 hideDivider
                 isEditorial
                 path={ROOT.overview}
@@ -130,11 +135,17 @@ export default function Header({
                 }
               />
             )}
-            {breadcrumb &&
-              breadcrumb.map(({ label, path }, i) => (
-                <Breadcrumb.Item isEditorial={i === 0} key={i} label={label} path={path} />
+            {breadcrumbs &&
+              breadcrumbs.map(({ label, path }, i) => (
+                <Breadcrumbs.Item
+                  isEditorial={i === 0}
+                  key={i}
+                  label={label}
+                  path={path}
+                  isCurrent={i === breadcrumbs.length - 1}
+                />
               ))}
-          </Breadcrumb>
+          </Breadcrumbs>
         )}
       </MastheadMain>
       <MastheadContent>

@@ -38,7 +38,7 @@ import { Page, SubtleContent } from "~/components/core";
 import { useAvailableDevices } from "~/hooks/model/system/storage";
 import { deviceLabel } from "./utils";
 import { contentDescription, filesystemLabels, typeDescription } from "./utils/device";
-import { STORAGE as PATHS } from "~/routes/paths";
+import { STORAGE } from "~/routes/paths";
 import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
 import { deviceSystems, isDrive } from "~/model/storage/device";
@@ -161,7 +161,7 @@ export default function LvmPage() {
       editVolumeGroup(volumeGroup.vgName, data);
     }
 
-    navigate(PATHS.root);
+    navigate(STORAGE.root);
   };
 
   return (

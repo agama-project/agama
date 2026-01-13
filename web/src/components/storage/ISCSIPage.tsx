@@ -24,7 +24,7 @@ import React from "react";
 import { Grid, GridItem } from "@patternfly/react-core";
 import { Page } from "~/components/core";
 import { InitiatorSection, TargetsSection } from "~/components/storage/iscsi";
-import { STORAGE as PATHS } from "~/routes/paths";
+import { STORAGE } from "~/routes/paths";
 import { _ } from "~/i18n";
 
 export default function ISCSIPage() {
@@ -41,7 +41,7 @@ export default function ISCSIPage() {
         </Grid>
       </Page.Content>
       <Page.Actions>
-        <Page.Action variant="secondary" navigateTo={PATHS.root}>
+        <Page.Action variant="secondary" navigateTo={STORAGE.root}>
           {_("Back")}
         </Page.Action>
       </Page.Actions>
