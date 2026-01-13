@@ -157,6 +157,15 @@ impl<'a> SoftwareStateBuilder<'a> {
             .filter(|r| r.predefined)
             .map(Repository::from);
         state.repositories.extend(repositories);
+
+        // hardcode here kernel as it is not in basic dependencies due to
+        // containers, but for agama usage, it does not make sense to skip kernel
+        // If needs arise, we can always add more smarter kernel selection later.
+        state.resolvables.add_or_replace(
+            "kernel-default",
+            ResolvableType::Package,
+            ResolvableSelection::AutoSelected { optional: false },
+        );
     }
 
     /// Adds the elements from the user configuration.
@@ -217,7 +226,8 @@ impl<'a> SoftwareStateBuilder<'a> {
         if let Some(patterns) = &config.patterns {
             match patterns {
                 PatternsConfig::PatternsList(list) => {
-                    state.resolvables.reset();
+                    // reset list of product preselected patterns
+                    state.resolvables.reset_user_patterns();
                     for name in list.iter() {
                         state.resolvables.add_or_replace(
                             name,
@@ -250,6 +260,16 @@ impl<'a> SoftwareStateBuilder<'a> {
                             .add_or_replace(name, ResolvableType::Pattern, selection);
                     }
                 }
+            }
+        }
+
+        if let Some(packages) = &config.packages {
+            for name in packages.iter() {
+                state.resolvables.add_or_replace(
+                    name,
+                    ResolvableType::Package,
+                    ResolvableSelection::Selected,
+                )
             }
         }
 
@@ -312,6 +332,22 @@ impl<'a> SoftwareStateBuilder<'a> {
                     )
                 }
             }
+        }
+
+        for package in &software.mandatory_packages {
+            resolvables.add_or_replace(
+                package,
+                ResolvableType::Package,
+                ResolvableSelection::AutoSelected { optional: false },
+            );
+        }
+
+        for package in &software.optional_packages {
+            resolvables.add_or_replace(
+                package,
+                ResolvableType::Package,
+                ResolvableSelection::AutoSelected { optional: true },
+            );
         }
 
         SoftwareState {
@@ -416,13 +452,17 @@ impl ResolvablesState {
         self.add_or_replace(&resolvable.name, resolvable.r#type, selection);
     }
 
-    /// Reset the list of resolvables.
+    /// Reset the list of user selected patterns. It is useful if product preselects some and
+    /// user then specify exact list of packages he wants.
     ///
-    /// The mandatory resolvables are preserved.
-    pub fn reset(&mut self) {
-        self.0.retain(|_, selection| match selection {
-            ResolvableSelection::AutoSelected { optional: false } => true,
-            _ => false,
+    /// The automatic patterns are preserved.
+    pub fn reset_user_patterns(&mut self) {
+        self.0.retain(|(_name, typ), selection| {
+            if typ != &ResolvableType::Pattern {
+                return true;
+            }
+
+            selection != &ResolvableSelection::Selected
         });
     }
 
@@ -582,15 +622,30 @@ mod tests {
             state.resolvables.to_vec(),
             vec![
                 (
+                    "NetworkManager".to_string(),
+                    ResolvableType::Package,
+                    ResolvableSelection::AutoSelected { optional: false }
+                ),
+                (
                     "enhanced_base".to_string(),
                     ResolvableType::Pattern,
                     ResolvableSelection::AutoSelected { optional: false }
                 ),
                 (
+                    "openSUSE-repos-Tumbleweed".to_string(),
+                    ResolvableType::Package,
+                    ResolvableSelection::AutoSelected { optional: false }
+                ),
+                (
                     "selinux".to_string(),
                     ResolvableType::Pattern,
-                    ResolvableSelection::Selected,
+                    ResolvableSelection::Selected
                 ),
+                (
+                    "sudo-policy-wheel-auth-self".to_string(),
+                    ResolvableType::Package,
+                    ResolvableSelection::AutoSelected { optional: false }
+                )
             ]
         );
     }
@@ -626,8 +681,14 @@ mod tests {
         let state = SoftwareStateBuilder::for_product(&product)
             .with_config(&config)
             .build();
+        let patterns: Vec<_> = state
+            .resolvables
+            .to_vec()
+            .into_iter()
+            .filter(|(_, t, _)| *t == ResolvableType::Pattern)
+            .collect();
         assert_eq!(
-            state.resolvables.to_vec(),
+            patterns,
             vec![
                 (
                     "enhanced_base".to_string(),
@@ -718,8 +779,14 @@ mod tests {
         let state = SoftwareStateBuilder::for_product(&product)
             .with_config(&config)
             .build();
+        let patterns: Vec<_> = state
+            .resolvables
+            .to_vec()
+            .into_iter()
+            .filter(|(_, t, _)| *t == ResolvableType::Pattern)
+            .collect();
         assert_eq!(
-            state.resolvables.to_vec(),
+            patterns,
             vec![
                 (
                     "enhanced_base".to_string(),
@@ -747,8 +814,14 @@ mod tests {
         let state = SoftwareStateBuilder::for_product(&product)
             .with_config(&config)
             .build();
+        let patterns: Vec<_> = state
+            .resolvables
+            .to_vec()
+            .into_iter()
+            .filter(|(_, t, _)| *t == ResolvableType::Pattern)
+            .collect();
         assert_eq!(
-            state.resolvables.to_vec(),
+            patterns,
             vec![
                 (
                     "enhanced_base".to_string(),
@@ -773,8 +846,14 @@ mod tests {
         let state = SoftwareStateBuilder::for_product(&product)
             .with_config(&config)
             .build();
+        let patterns: Vec<_> = state
+            .resolvables
+            .to_vec()
+            .into_iter()
+            .filter(|(_, t, _)| *t == ResolvableType::Pattern)
+            .collect();
         assert_eq!(
-            state.resolvables.to_vec(),
+            patterns,
             vec![
                 (
                     "enhanced_base".to_string(),
@@ -831,5 +910,69 @@ mod tests {
             "user-repo-0".to_string(),
         ];
         assert_eq!(expected_aliases, aliases);
+    }
+
+    #[test]
+    fn test_mandatory_packages() {
+        let product = build_product_spec();
+        let config = Config::default();
+        let state = SoftwareStateBuilder::for_product(&product)
+            .with_config(&config)
+            .build();
+
+        let packages: Vec<_> = state
+            .resolvables
+            .to_vec()
+            .into_iter()
+            .filter(|(_, t, _)| *t == ResolvableType::Package)
+            .collect();
+
+        assert_eq!(
+            packages,
+            vec![
+                (
+                    "NetworkManager".to_string(),
+                    ResolvableType::Package,
+                    ResolvableSelection::AutoSelected { optional: false }
+                ),
+                (
+                    "openSUSE-repos-Tumbleweed".to_string(),
+                    ResolvableType::Package,
+                    ResolvableSelection::AutoSelected { optional: false }
+                ),
+                (
+                    "sudo-policy-wheel-auth-self".to_string(),
+                    ResolvableType::Package,
+                    ResolvableSelection::AutoSelected { optional: false }
+                )
+            ]
+        );
+    }
+
+    #[test]
+    fn test_system_adds_kernel() {
+        let product = build_product_spec();
+        let system = SystemInfo::default();
+
+        let state = SoftwareStateBuilder::for_product(&product)
+            .with_system(&system)
+            .build();
+
+        let kernel = state
+            .resolvables
+            .to_vec()
+            .into_iter()
+            .find(|(name, r#type, _)| {
+                name == "kernel-default" && *r#type == ResolvableType::Package
+            });
+
+        assert_eq!(
+            kernel,
+            Some((
+                "kernel-default".to_string(),
+                ResolvableType::Package,
+                ResolvableSelection::AutoSelected { optional: false }
+            ))
+        );
     }
 }
