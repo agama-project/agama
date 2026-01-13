@@ -21,7 +21,7 @@
 use crate::api::{
     bootloader, files, hostname, l10n, network, question,
     software::{self, ProductConfig},
-    storage,
+    storage, users,
 };
 use merge::Merge;
 use serde::{Deserialize, Serialize};
@@ -48,6 +48,8 @@ pub struct Config {
     pub storage: Option<storage::Config>,
     #[serde(flatten, skip_serializing_if = "Option::is_none")]
     pub files: Option<files::Config>,
+    #[serde(flatten, skip_serializing_if = "Option::is_none")]
+    pub users: Option<users::Config>,
 }
 
 impl Config {

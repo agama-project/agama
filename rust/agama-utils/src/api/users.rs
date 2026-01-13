@@ -18,22 +18,8 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::api::{hostname, l10n, network, software, users};
-use serde::{Deserialize, Serialize};
-use serde_json::Value;
+//! This module contains all Agama public types that might be available over
+//! the HTTP and WebSocket API.
 
-#[derive(Clone, Debug, Deserialize, Serialize, utoipa::ToSchema)]
-#[serde(rename_all = "camelCase")]
-pub struct Proposal {
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub hostname: Option<hostname::Proposal>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub l10n: Option<l10n::Proposal>,
-    pub network: network::Proposal,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub software: Option<software::Proposal>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub storage: Option<Value>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub users: Option<users::Config>,
-}
+mod config;
+pub use config::Config;

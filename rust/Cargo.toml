@@ -14,6 +14,7 @@ members = [
     "agama-storage",
     "agama-transfer",
     "agama-utils",
+    "agama-users",
     "suseconnect-agama",
     "suseconnect-agama/suseconnect-agama-sys",
     "xtask",
