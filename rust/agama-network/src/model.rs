@@ -25,7 +25,7 @@
 use crate::error::NetworkStateError;
 use crate::types::*;
 
-use agama_utils::openapi::schemas;
+use agama_utils::{actor::Error, openapi::schemas};
 use macaddr::MacAddr6;
 use serde::{Deserialize, Serialize};
 use serde_with::{serde_as, skip_serializing_none, DisplayFromStr};
@@ -37,6 +37,7 @@ use std::{
     str::{self, FromStr},
 };
 use thiserror::Error;
+use tokio::process;
 use uuid::Uuid;
 
 #[derive(PartialEq)]
@@ -185,12 +186,27 @@ impl NetworkState {
         Ok(())
     }
 
-    pub fn install(&self) -> Result<(), NetworkStateError> {
+    pub async fn install(&self) -> Result<(), NetworkStateError> {
         const CONNECTIONS_PATH: &str = "/etc/NetworkManager/system-connections";
         let from = PathBuf::from(CONNECTIONS_PATH);
         let to = PathBuf::from(self.target_dir()).join(CONNECTIONS_PATH.trim_start_matches('/'));
 
-        self.copy_connections(&from, &to)
+        self.copy_connections(&from, &to)?;
+        self.enable_service("/").await
+    }
+
+    pub async fn enable_service(&self, path: &str) -> Result<(), NetworkStateError> {
+        let mut command = process::Command::new("chroot");
+        command.args([path, "systemctl", "enable", "NetworkManager.service"]);
+
+        if let Some(output) = command.output().await.ok() {
+            if output.status.success() {
+                return Ok(());
+            }
+        }
+
+        tracing::error!("Error enabling NetworkManager service");
+        Ok(())
     }
 
     fn copy_connections(&self, from: &Path, to: &Path) -> Result<(), NetworkStateError> {

@@ -461,7 +461,7 @@ impl Service {
                 tx.send(result).unwrap();
             }
             Action::Install(tx) => {
-                let result = self.state.install();
+                let result = self.state.install().await;
                 tx.send(result).unwrap();
             }
         }
