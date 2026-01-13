@@ -157,6 +157,15 @@ impl<'a> SoftwareStateBuilder<'a> {
             .filter(|r| r.predefined)
             .map(Repository::from);
         state.repositories.extend(repositories);
+
+        // hardcode here kernel as it is not in basic dependencies due to
+        // containers, but for agama usage, it does not make sense to skip kernel
+        // If needs arise, we can always add more smarter kernel selection later.
+        state.resolvables.add_or_replace(
+            "kernel-default",
+            ResolvableType::Package,
+            ResolvableSelection::AutoSelected { optional: false },
+        );
     }
 
     /// Adds the elements from the user configuration.
@@ -217,7 +226,8 @@ impl<'a> SoftwareStateBuilder<'a> {
         if let Some(patterns) = &config.patterns {
             match patterns {
                 PatternsConfig::PatternsList(list) => {
-                    state.resolvables.reset();
+                    // reset list of product preselected patterns
+                    state.resolvables.reset_user_patterns();
                     for name in list.iter() {
                         state.resolvables.add_or_replace(
                             name,
@@ -250,6 +260,16 @@ impl<'a> SoftwareStateBuilder<'a> {
                             .add_or_replace(name, ResolvableType::Pattern, selection);
                     }
                 }
+            }
+        }
+        
+        if let Some(packages) = &config.packages {
+            for name in packages.iter() {
+                state.resolvables.add_or_replace(
+                    name,
+                    ResolvableType::Package,
+                    ResolvableSelection::Selected,
+                )
             }
         }
 
@@ -312,6 +332,22 @@ impl<'a> SoftwareStateBuilder<'a> {
                     )
                 }
             }
+        }
+
+        for package in &software.mandatory_packages {
+            resolvables.add_or_replace(
+                package,
+                ResolvableType::Package,
+                ResolvableSelection::AutoSelected { optional: false },
+            );
+        }
+
+        for package in &software.optional_packages {
+            resolvables.add_or_replace(
+                package,
+                ResolvableType::Package,
+                ResolvableSelection::AutoSelected { optional: true },
+            );
         }
 
         SoftwareState {
@@ -416,13 +452,17 @@ impl ResolvablesState {
         self.add_or_replace(&resolvable.name, resolvable.r#type, selection);
     }
 
-    /// Reset the list of resolvables.
+    /// Reset the list of user selected patterns. It is useful if product preselects some and
+    /// user then specify exact list of packages he wants.
     ///
-    /// The mandatory resolvables are preserved.
-    pub fn reset(&mut self) {
-        self.0.retain(|_, selection| match selection {
-            ResolvableSelection::AutoSelected { optional: false } => true,
-            _ => false,
+    /// The automatic patterns are preserved.
+    pub fn reset_user_patterns(&mut self) {
+        self.0.retain(|(_name, typ), selection| {
+            if typ != &ResolvableType::Pattern {
+                return true;
+            }
+
+            selection != &ResolvableSelection::Selected
         });
     }
 
