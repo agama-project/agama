@@ -29,7 +29,6 @@ require "agama/storage/configurator"
 require "agama/storage/finisher"
 require "agama/storage/iscsi/manager"
 require "agama/storage/proposal"
-require "agama/with_issues"
 require "agama/with_locale"
 require "agama/with_progress_manager"
 require "yast"
@@ -42,7 +41,6 @@ module Agama
     # Manager to handle storage configuration
     class Manager
       include WithLocale
-      include WithIssues
       include WithProgressManager
 
       # @return [Agama::Config]
@@ -51,10 +49,14 @@ module Agama
       # @return [Bootloader]
       attr_reader :bootloader
 
+      # @return [Array<Issue>]
+      attr_reader :issues
+
       # @param logger [Logger, nil]
       def initialize(logger: nil)
         @logger = logger || Logger.new($stdout)
         @bootloader = Bootloader.new(logger)
+        @issues = []
         @yast_no_bls_boot = ENV["YAST_NO_BLS_BOOT"]
         self.product_config = Agama::Config.new
       end
@@ -210,7 +212,7 @@ module Agama
 
       # Recalculates the list of issues
       def update_issues
-        self.issues = proposal.issues
+        @issues = proposal.issues
       end
 
       # Issues from the probing phase

@@ -46,8 +46,12 @@ module Agama
           dbus_method(:GetSystem, "out system:s") { recover_system }
           dbus_method(:GetConfig, "out config:s") { recover_config }
           dbus_method(:SetConfig, "in serialized_config:s, out result:u") do |serialized_config|
-            busy_while { apply_config(serialized_config) }
+            apply_config(serialized_config)
           end
+          dbus_method(:Discover, "in options:a{sv}, out result:u") do |serialized_options|
+            discover(serialized_options)
+          end
+
           dbus_signal(:SystemChanged, "system:s")
           dbus_signal(:ProgressChanged, "progress:s")
           dbus_signal(:ProgressFinished)
