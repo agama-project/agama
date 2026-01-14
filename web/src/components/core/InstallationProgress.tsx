@@ -36,7 +36,7 @@ export default function InstallationProgress() {
   const product = useProductInfo();
 
   return (
-    <Page showInstallerOptions={false}>
+    <Page showInstallerOptions={false} hideProgressMonitor>
       <Page.Content>
         <Grid hasGutter style={{ height: "100%", placeContent: "center" }}>
           <GridItem sm={12} md={5} style={{ alignSelf: "center" }}>
