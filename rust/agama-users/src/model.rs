@@ -103,19 +103,21 @@ impl ModelAdapter for Model {
         user_name: &String,
         user_password: &UserPassword,
     ) -> Result<(), service::Error> {
-        // Set the password for the newly created user
         let mut passwd_cmd = Command::new("/usr/sbin/chpasswd");
 
         if user_password.hashed_password {
             passwd_cmd.arg("-e");
         }
 
+        // Spawn process for passwd, listens for data from pipe
         let mut passwd_process = passwd_cmd.stdin(Stdio::piped()).spawn()?;
 
+        // push user name and password into the pipe
         if let Some(mut stdin) = passwd_process.stdin.take() {
             writeln!(stdin, "{}:{}", user_name, user_password.password);
         }
 
+        // proceed with the result
         let passwd = passwd_process.wait_with_output()?;
 
         if !passwd.status.success() {
