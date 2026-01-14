@@ -37,6 +37,8 @@ use tokio::sync::broadcast;
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
+    #[error("Missing first user name")]
+    MissingUserData,
     #[error(transparent)]
     Event(#[from] broadcast::error::SendError<Event>),
     #[error(transparent)]
@@ -211,11 +213,12 @@ impl MessageHandler<message::GetProposal> for Service {
 impl MessageHandler<message::Install> for Service {
     async fn handle(&mut self, _message: message::Install) -> Result<(), Error> {
         let Some(proposal) = self.get_proposal() else {
+            tracing::error!("Missing user proposal");
+
             return Err(Error::MissingProposal);
         };
 
-        self.model
-            .install(&proposal)?;
+        self.model.install(&proposal)?;
 
         Ok(())
     }
