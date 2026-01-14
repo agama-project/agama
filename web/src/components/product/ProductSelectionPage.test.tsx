@@ -27,10 +27,6 @@ import { useSystem } from "~/hooks/model/system";
 import { Product } from "~/types/software";
 import ProductSelectionPage from "./ProductSelectionPage";
 
-jest.mock("~/components/product/ProductRegistrationAlert", () => () => (
-  <div>ProductRegistrationAlert Mock</div>
-));
-
 const tumbleweed: Product = {
   id: "Tumbleweed",
   name: "openSUSE Tumbleweed",

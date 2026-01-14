@@ -21,7 +21,7 @@
  */
 
 import React, { Suspense, useId } from "react";
-import { Outlet, useLocation, useNavigate } from "react-router";
+import { Outlet, useNavigate } from "react-router";
 import Link, { LinkProps } from "~/components/core/Link";
 import {
   Button,
@@ -48,13 +48,11 @@ import {
 import flexStyles from "@patternfly/react-styles/css/utilities/Flex/flex";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import { isEmpty, isObject } from "radashi";
-import { SIDE_PATHS } from "~/routes/paths";
 import { _, TranslatedString } from "~/i18n";
 import type { ProgressBackdropProps } from "~/components/core/ProgressBackdrop";
 import ProgressBackdrop from "~/components/core/ProgressBackdrop";
 import Header from "~/components/layout/Header";
 import Loading from "~/components/layout/Loading";
-import { ProductRegistrationAlert } from "~/components/product";
 import { Questions } from "../questions";
 
 import type { BreadcrumbProps } from "~/components/core/Breadcrumbs";
@@ -295,12 +293,8 @@ const Submit = ({ children, ...props }: SubmitActionProps) => {
  * @see [Patternfly Page/PageSection](https://www.patternfly.org/components/page#pagesection)
  */
 const Content = ({ children, ...pageSectionProps }: PageSectionProps) => {
-  const location = useLocation();
-  const mountRegistrationAlert = !SIDE_PATHS.includes(location.pathname);
-
   return (
     <PageSection hasBodyWrapper={false} isFilled component="div" {...pageSectionProps}>
-      {mountRegistrationAlert && <ProductRegistrationAlert />}
       {children}
     </PageSection>
   );

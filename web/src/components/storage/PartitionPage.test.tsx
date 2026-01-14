@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2025] SUSE LLC
+ * Copyright (c) [2025-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -30,9 +30,6 @@ import { gib } from "./utils";
 
 jest.mock("./ProposalResultSection", () => () => <div>result section</div>);
 jest.mock("./ProposalTransactionalInfo", () => () => <div>transactional info</div>);
-jest.mock("~/components/product/ProductRegistrationAlert", () => () => (
-  <div>registration alert</div>
-));
 
 const sda1: Storage.Device = {
   sid: 69,

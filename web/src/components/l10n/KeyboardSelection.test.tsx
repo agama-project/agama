@@ -34,10 +34,6 @@ const keymaps: Keymap[] = [
   { id: "es", description: "Spanish" },
 ];
 
-jest.mock("~/components/product/ProductRegistrationAlert", () => () => (
-  <div>ProductRegistrationAlert Mock</div>
-));
-
 jest.mock("react-router", () => ({
   ...jest.requireActual("react-router"),
   useNavigate: () => mockNavigateFn,

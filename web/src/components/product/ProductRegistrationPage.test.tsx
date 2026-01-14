@@ -46,10 +46,6 @@ let addonInfoMock: AddonInfo[] = [];
 let registeredAddonInfoMock: RegisteredAddonInfo[] = [];
 const registerMutationMock = jest.fn();
 
-jest.mock("~/components/product/ProductRegistrationAlert", () => () => (
-  <div>ProductRegistrationAlert Mock</div>
-));
-
 jest.mock("~/queries/software", () => ({
   ...jest.requireActual("~/queries/software"),
   useRegisterMutation: () => ({ mutate: registerMutationMock }),

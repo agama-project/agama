@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2023-2025] SUSE LLC
+ * Copyright (c) [2023-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -22,9 +22,8 @@
 
 import React from "react";
 import { screen, within } from "@testing-library/react";
-import { installerRender, mockNavigateFn, mockRoutes, plainRender } from "~/test-utils";
+import { installerRender, mockNavigateFn, plainRender } from "~/test-utils";
 import useTrackQueriesRefetch from "~/hooks/use-track-queries-refetch";
-import { PRODUCT, ROOT } from "~/routes/paths";
 import { _ } from "~/i18n";
 import Page from "./Page";
 
@@ -35,13 +34,6 @@ jest.mock("~/hooks/use-track-queries-refetch", () => ({
   __esModule: true,
   default: jest.fn(),
 }));
-
-jest.mock("~/components/questions/Questions", () => () => <div>Questions Mock</div>);
-jest.mock("~/components/layout/Header", () => () => <div>Header Mock</div>);
-
-jest.mock("~/components/product/ProductRegistrationAlert", () => () => (
-  <div>ProductRegistrationAlertMock</div>
-));
 
 jest.mock("~/components/core/ProgressBackdrop", () => () => <div>ProgressBackdropMock</div>);
 
@@ -129,28 +121,6 @@ describe("Page", () => {
       installerRender(<Page.Content>{_("The Content")}</Page.Content>);
       const content = screen.getByText("The Content");
       expect(content.classList.contains("pf-m-fill")).toBe(true);
-    });
-
-    it("mounts a ProductRegistrationAlert", () => {
-      installerRender(<Page.Content />);
-      screen.getByText("ProductRegistrationAlertMock");
-    });
-
-    describe.each([
-      ["login", ROOT.login],
-      ["product selection", PRODUCT.changeProduct],
-      ["product selection progress", PRODUCT.progress],
-      ["installation progress", ROOT.installationProgress],
-      ["installation finished", ROOT.installationFinished],
-    ])(`but at %s path`, (_, path) => {
-      beforeEach(() => {
-        mockRoutes(path);
-      });
-
-      it("does not mount ProductRegistrationAlert", () => {
-        installerRender(<Page.Content />);
-        expect(screen.queryByText("ProductRegistrationAlertMock")).toBeNull();
-      });
     });
   });
 

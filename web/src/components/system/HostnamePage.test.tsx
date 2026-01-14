@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2025] SUSE LLC
+ * Copyright (c) [2025-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -27,10 +27,6 @@ import HostnamePage from "./HostnamePage";
 
 let mockStaticHostname: string;
 const mockPatchConfig = jest.fn();
-
-jest.mock("~/components/product/ProductRegistrationAlert", () => () => (
-  <div>ProductRegistrationAlert Mock</div>
-));
 
 jest.mock("~/api", () => ({
   ...jest.requireActual("~/api"),

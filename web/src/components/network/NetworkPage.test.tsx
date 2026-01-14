@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2023-2024] SUSE LLC
+ * Copyright (c) [2023-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -24,11 +24,6 @@ import React from "react";
 import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import NetworkPage from "~/components/network/NetworkPage";
-
-jest.mock(
-  "~/components/product/ProductRegistrationAlert",
-  () => () => -(<div>ProductRegistrationAlert Mock</div>),
-);
 
 jest.mock("~/components/network/WifiNetworksList", () => () => <div>WifiNetworksList Mock</div>);
 

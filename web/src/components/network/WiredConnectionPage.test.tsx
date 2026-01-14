@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2025] SUSE LLC
+ * Copyright (c) [2025-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -29,11 +29,6 @@ import { Connection, ConnectionState } from "~/types/network";
 const mockConnection: Connection = new Connection("Network 1", {
   state: ConnectionState.activated,
 });
-
-jest.mock(
-  "~/components/product/ProductRegistrationAlert",
-  () => () => -(<div>ProductRegistrationAlert Mock</div>),
-);
 
 jest.mock("~/components/network/WiredConnectionDetails", () => () => (
   <div>WiredConnectionDetails Mock</div>

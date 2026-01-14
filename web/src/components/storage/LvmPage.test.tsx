@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2025] SUSE LLC
+ * Copyright (c) [2025-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -142,10 +142,6 @@ jest.mock("~/hooks/model/storage/config-model", () => ({
   useAddVolumeGroup: () => mockAddVolumeGroup,
   useEditVolumeGroup: () => mockEditVolumeGroup,
 }));
-
-jest.mock("~/components/product/ProductRegistrationAlert", () => () => (
-  <div>registration alert</div>
-));
 
 describe("LvmPage", () => {
   beforeEach(() => {
