@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Wed Jan 14 23:27:16 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Implement support for users and authentication configuration.
+- Initialize and copy the network configuration to the target
+  system.
+- Execute post-installation scripts.
+
+-------------------------------------------------------------------
 Fri Jan  9 14:43:59 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Version 19.pre

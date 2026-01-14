@@ -1,4 +1,16 @@
 -------------------------------------------------------------------
+Wed Jan 14 23:27:16 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Reorganize the user interface:
+  - The new interface is built around the new overview page.
+  - Remove the sidebar and the menu.
+  - Bring back the installation progress page.
+- Adapt to the new API to handle users and authentication
+  configuration.
+- Extend the overview with information about authentication
+  and registration.
+
+-------------------------------------------------------------------
 Fri Jan  9 14:43:59 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Version 19.pre
