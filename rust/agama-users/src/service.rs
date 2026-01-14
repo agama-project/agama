@@ -41,6 +41,8 @@ pub enum Error {
     MissingUserData,
     #[error("Missing required data for root.")]
     MissingRootData,
+    #[error("System command failed: {0}")]
+    CommandFailed(String),
     #[error(transparent)]
     Event(#[from] broadcast::error::SendError<Event>),
     #[error(transparent)]

@@ -84,10 +84,10 @@ impl ModelAdapter for Model {
 
         if !useradd.status.success() {
             tracing::error!("User {} creation failed", user_name);
-            return Err(service::Error::IO(std::io::Error::other(format!(
+            return Err(service::Error::CommandFailed(format!(
                 "User creation failed: {}",
                 useradd.status
-            ))));
+            )));
         }
 
         self.set_user_password(user_name, user_password)
@@ -139,10 +139,10 @@ impl ModelAdapter for Model {
 
         if !passwd.status.success() {
             tracing::error!("Setting password for user {} creation failed", user_name);
-            return Err(service::Error::IO(std::io::Error::other(format!(
+            return Err(service::Error::CommandFailed(format!(
                 "Cannot set password for user {}: {}",
                 user_name, passwd.status
-            ))));
+            )));
         }
 
         Ok(())
