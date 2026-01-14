@@ -35,12 +35,12 @@ import {
   Button,
 } from "@patternfly/react-core";
 import { useNavigate } from "react-router";
-import { Loading } from "~/components/layout";
 import { PasswordAndConfirmationInput, Page } from "~/components/core";
 import PasswordCheck from "~/components/users/PasswordCheck";
 import { suggestUsernames } from "~/components/users/utils";
-import { useFirstUser, useFirstUserMutation } from "~/queries/users";
-import { FirstUser } from "~/types/users";
+import { useConfig } from "~/hooks/model/config";
+import { patchConfig } from "~/api";
+import type { User } from "~/model/config";
 import { _ } from "~/i18n";
 import { USER } from "~/routes/paths";
 
@@ -83,14 +83,13 @@ const UsernameSuggestions = ({
 // close to the related input.
 // TODO: extract the suggestions logic.
 export default function FirstUserForm() {
-  const firstUser = useFirstUser();
-  const setFirstUser = useFirstUserMutation();
+  const { user: firstUser } = useConfig();
   const [usingHashedPassword, setUsingHashedPassword] = useState(
     firstUser ? firstUser.hashedPassword : false,
   );
-  const [fullName, setFullName] = useState(firstUser?.fullName);
-  const [userName, setUserName] = useState(firstUser?.userName);
-  const [password, setPassword] = useState(usingHashedPassword ? "" : firstUser?.password);
+  const [fullName, setFullName] = useState(firstUser?.fullName || "");
+  const [userName, setUserName] = useState(firstUser?.userName || "");
+  const [password, setPassword] = useState(usingHashedPassword ? "" : firstUser?.password || "");
   const [errors, setErrors] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [insideDropDown, setInsideDropDown] = useState(false);
@@ -105,9 +104,7 @@ export default function FirstUserForm() {
     }
   }, [showSuggestions]);
 
-  if (!firstUser) return <Loading />;
-
-  const isEditing = firstUser.userName !== "";
+  const isEditing = firstUser?.userName !== "";
 
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -115,10 +112,10 @@ export default function FirstUserForm() {
     const nextErrors = [];
     const passwordInput = passwordRef.current;
 
-    const data: Partial<FirstUser> = {
+    const data: User.Config = {
       fullName,
       userName,
-      password: usingHashedPassword ? firstUser.password : password,
+      password: usingHashedPassword ? firstUser?.password : password,
       hashedPassword: usingHashedPassword,
     };
 
@@ -138,8 +135,7 @@ export default function FirstUserForm() {
       return;
     }
 
-    setFirstUser
-      .mutateAsync({ ...data })
+    patchConfig({ user: data })
       .then(() => navigate(".."))
       .catch((e) => setErrors([e.response.data]));
   };
