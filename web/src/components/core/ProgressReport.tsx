@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2025] SUSE LLC
+ * Copyright (c) [2022-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -21,8 +21,8 @@
  */
 
 import React from "react";
+import { sprintf } from "sprintf-js";
 import {
-  Content,
   Flex,
   ProgressStep,
   ProgressStepper,
@@ -30,32 +30,22 @@ import {
   Spinner,
   Truncate,
 } from "@patternfly/react-core";
-import sizingStyles from "@patternfly/react-styles/css/utilities/Sizing/sizing";
+import Text from "~/components/core/Text";
 import { _ } from "~/i18n";
 import { useStatus } from "~/hooks/model/status";
 import type { Progress as ProgressType } from "~/model/status";
 
-type StepProps = {
-  id: string;
-  titleId: string;
-  isCurrent: boolean;
-  variant?: ProgressStepProps["variant"];
-  description?: ProgressStepProps["description"];
-};
-
 const Progress = ({
   steps,
   step,
-  firstStep,
   detail,
 }: {
   steps: string[];
   step: ProgressType;
-  firstStep: React.ReactNode;
   detail: ProgressType | undefined;
 }) => {
-  const stepProperties = (stepNumber: number): StepProps => {
-    const properties: StepProps = {
+  const stepProperties = (stepNumber: number) => {
+    const properties: ProgressStepProps = {
       isCurrent: stepNumber === step.index,
       id: `step-${stepNumber}-id`,
       titleId: `step-${stepNumber}-title`,
@@ -63,20 +53,17 @@ const Progress = ({
 
     if (stepNumber > step.index) {
       properties.variant = "pending";
-      properties.description = <div>{_("Pending")}</div>;
     }
 
     if (properties.isCurrent) {
       properties.variant = "info";
+      properties.icon = <Spinner size="sm" />;
       if (detail && detail.step !== "") {
         const { step: message, index, size } = detail;
         properties.description = (
           <Flex direction={{ default: "column" }} rowGap={{ default: "rowGapXs" }}>
-            <div>{_("In progress")}</div>
-            <div>
-              <Truncate content={message} trailingNumChars={12} position="middle" />
-            </div>
-            <div>{`(${index}/${size})`}</div>
+            <Truncate content={message} trailingNumChars={12} position="middle" />
+            <Text component="small">{sprintf(_("Step %1$d of %2$d"), index, size)}</Text>
           </Flex>
         );
       }
@@ -84,23 +71,14 @@ const Progress = ({
 
     if (stepNumber < step.index) {
       properties.variant = "success";
-      properties.description = <div>{_("Finished")}</div>;
     }
 
     return properties;
   };
 
   return (
-    <ProgressStepper
-      isCenterAligned
-      className={[sizingStyles.w_100, sizingStyles.h_33OnMd].join(" ")}
-    >
-      {firstStep && (
-        <ProgressStep key="initial" variant="success">
-          {firstStep}
-        </ProgressStep>
-      )}
-      {steps.map((description: StepProps["description"], idx: number) => {
+    <ProgressStepper isVertical>
+      {steps.map((description, idx: number) => {
         return (
           <ProgressStep key={idx} {...stepProperties(idx + 1)}>
             {description}
@@ -112,9 +90,9 @@ const Progress = ({
 };
 
 /**
- * Shows progress steps when a product is selected.
+ * Renders progress with a PF/ProgresStepper
  */
-function ProgressReport({ title, firstStep }: { title: string; firstStep?: React.ReactNode }) {
+export default function ProgressReport() {
   const { progresses } = useStatus();
 
   const managerProgress = progresses.find((t) => t.scope === "manager");
@@ -125,24 +103,5 @@ function ProgressReport({ title, firstStep }: { title: string; firstStep?: React
 
   const detail = softwareProgress || storageProgress;
 
-  return (
-    <Flex
-      direction={{ default: "column" }}
-      rowGap={{ default: "rowGapMd" }}
-      alignItems={{ default: "alignItemsCenter" }}
-      justifyContent={{ default: "justifyContentCenter" }}
-      className={sizingStyles.h_100OnMd}
-    >
-      <Spinner size="xl" />
-      <Content component="h1">{title}</Content>
-      <Progress
-        steps={managerProgress.steps}
-        step={managerProgress}
-        detail={detail}
-        firstStep={firstStep}
-      />
-    </Flex>
-  );
+  return <Progress steps={managerProgress.steps} step={managerProgress} detail={detail} />;
 }
-
-export default ProgressReport;
