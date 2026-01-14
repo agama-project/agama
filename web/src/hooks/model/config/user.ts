@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2025] SUSE LLC
+ * Copyright (c) [2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -20,20 +20,23 @@
  * find current contact information at www.suse.com.
  */
 
-import type * as Hostname from "~/model/proposal/hostname";
-import type * as L10n from "~/model/proposal/l10n";
-import type * as Network from "~/model/proposal/network";
-import type * as Software from "~/model/proposal/software";
-import type * as Storage from "~/model/proposal/storage";
-import type * as Users from "~/model/proposal/users";
+import { useSuspenseQuery } from "@tanstack/react-query";
+import { configQuery } from "~/hooks/model/config";
+import { putConfig, Response } from "~/api";
+import type { Config } from "~/model/config";
 
-type Proposal = {
-  hostname?: Hostname.Proposal;
-  l10n?: L10n.Proposal;
-  network: Network.Proposal;
-  software?: Software.Proposal;
-  storage?: Storage.Proposal;
-  users?: Users.Proposal;
-};
+const removeUserConfig = (data: Config | null): Config =>
+  data ? { ...data, user: undefined } : {};
 
-export type { Hostname, Proposal, L10n, Network, Software, Storage };
+type RemoveUserFn = () => Response;
+
+function useRemoveUser(): RemoveUserFn {
+  const { data } = useSuspenseQuery({
+    ...configQuery,
+    select: removeUserConfig,
+  });
+  return () => putConfig(data);
+}
+
+export { useRemoveUser };
+export type { RemoveUserFn };

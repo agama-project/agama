@@ -22,7 +22,6 @@
 
 import React from "react";
 import { sprintf } from "sprintf-js";
-import { HelperText, HelperTextItem } from "@patternfly/react-core";
 import Summary from "~/components/core/Summary";
 import Link from "~/components/core/Link";
 import { useProgressTracking } from "~/hooks/use-progress-tracking";
@@ -91,11 +90,7 @@ const Value = () => {
 
   if (!availableDevices.length) return _("There are no disks available for the installation");
   if (configIssues.length) {
-    return (
-      <HelperText>
-        <HelperTextItem variant="warning">{_("Invalid settings")}</HelperTextItem>
-      </HelperText>
-    );
+    return _("Invalid settings");
   }
 
   if (!model) return _("Using an advanced storage configuration");
@@ -160,9 +155,11 @@ const Description = () => {
  */
 export default function StorageSummary() {
   const { loading } = useProgressTracking("storage");
+  const hasIssues = !!useIssues("storage").length;
 
   return (
     <Summary
+      hasIssues={hasIssues}
       icon="hard_drive"
       title={
         <Link to={STORAGE.root} variant="link" isInline>

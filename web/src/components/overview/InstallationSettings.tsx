@@ -28,6 +28,8 @@ import L10nSummary from "~/components/overview/L10nSummary";
 import StorageSummary from "~/components/overview/StorageSummary";
 import NetworkSummary from "~/components/overview/NetworkSummary";
 import SoftwareSummary from "~/components/overview/SoftwareSummary";
+import RegistrationSummary from "~/components/overview/RegistrationSummary";
+import UsersSummary from "~/components/overview/UsersSummary";
 import { _ } from "~/i18n";
 
 import a11yStyles from "@patternfly/react-styles/css/utilities/Accessibility/accessibility";
@@ -49,9 +51,11 @@ export default function InstallationSummarySection() {
         <div className="installation-settings-summary">
           <HostnameSummary />
           <L10nSummary />
+          <RegistrationSummary />
           <NetworkSummary />
-          <StorageSummary />
           <SoftwareSummary />
+          <StorageSummary />
+          <UsersSummary />
         </div>
       </NestedContent>
     </>

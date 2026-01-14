@@ -25,6 +25,8 @@ import type * as L10n from "~/model/config/l10n";
 import type * as Network from "~/model/config/network";
 import type * as Product from "~/model/config/product";
 import type * as Software from "~/model/config/software";
+import type * as User from "~/model/config/user";
+import type * as Root from "~/model/config/root";
 import type * as Storage from "~/openapi/config/storage";
 
 type Config = {
@@ -34,6 +36,8 @@ type Config = {
   product?: Product.Config;
   storage?: Storage.Config;
   software?: Software.Config;
+  user?: User.Config;
+  root?: Root.Config;
 };
 
-export type { Config, Hostname, Product, L10n, Network, Storage };
+export type { Config, Hostname, Product, L10n, Network, Storage, User, Root };
