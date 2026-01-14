@@ -57,3 +57,9 @@ pub struct GetProposal;
 impl Message for GetProposal {
     type Reply = Option<api::users::Config>;
 }
+
+pub struct Install;
+
+impl Message for Install {
+    type Reply = ();
+}

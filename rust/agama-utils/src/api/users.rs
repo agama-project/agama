@@ -21,5 +21,5 @@
 //! This module contains all Agama public types that might be available over
 //! the HTTP and WebSocket API.
 
-mod config;
+pub mod config;
 pub use config::Config;
