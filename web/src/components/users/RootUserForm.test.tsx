@@ -28,24 +28,38 @@ import RootUserForm from "./RootUserForm";
 let mockPassword: string;
 let mockPublicKey: string;
 let mockHashedPassword: boolean;
-const mockRootUserMutation = jest.fn().mockResolvedValue(true);
+const mockPatchConfig = jest.fn().mockResolvedValue(true);
 
 jest.mock("~/components/users/PasswordCheck", () => () => <div>PasswordCheck Mock</div>);
 
-jest.mock("~/queries/users", () => ({
-  ...jest.requireActual("~/queries/users"),
-  useRootUser: () => ({
-    password: mockPassword,
-    sshPublicKey: mockPublicKey,
-    hashedPassword: mockHashedPassword,
-  }),
-  useRootUserMutation: () => ({
-    mutateAsync: mockRootUserMutation,
+jest.mock("~/hooks/model/config", () => ({
+  ...jest.requireActual("~/hooks/model/config"),
+  useConfig: () => ({
+    root: {
+      password: mockPassword,
+      sshPublicKey: mockPublicKey,
+      hashedPassword: mockHashedPassword,
+    }
   }),
 }));
 
-it.todo("Adapt to new api");
-describe.skip("RootUserForm", () => {
+jest.mock("~/api", () => ({
+  ...jest.requireActual("~/api"),
+  patchConfig: (config) => mockPatchConfig(config),
+}));
+
+// Needed by withL10n
+jest.mock("~/hooks/model/system", () => ({
+  useSystem: () => ({
+    l10n: {
+      keymap: "us",
+      timezone: "Europe/Berlin",
+      locale: "en_US",
+    },
+  }),
+}));
+
+describe("RootUserForm", () => {
   beforeEach(() => {
     mockPassword = "n0ts3cr3t";
     mockHashedPassword = false;
@@ -62,8 +76,10 @@ describe.skip("RootUserForm", () => {
     await user.clear(passwordConfirmationInput);
     await user.type(passwordConfirmationInput, "m0r3S3cr3t");
     await user.click(acceptButton);
-    expect(mockRootUserMutation).toHaveBeenCalledWith(
-      expect.objectContaining({ password: "m0r3S3cr3t", hashedPassword: false }),
+    expect(mockPatchConfig).toHaveBeenCalledWith(
+      expect.objectContaining({
+        root: { password: "m0r3S3cr3t", hashedPassword: false, sshPublicKey: "" }
+      }),
     );
   });
 
@@ -79,7 +95,7 @@ describe.skip("RootUserForm", () => {
     await user.click(acceptButton);
     screen.getByText("Warning alert:");
     screen.getByText("Password is empty.");
-    expect(mockRootUserMutation).not.toHaveBeenCalled();
+    expect(mockPatchConfig).not.toHaveBeenCalled();
   });
 
   it("renders password validation errors, if any", async () => {
@@ -92,7 +108,7 @@ describe.skip("RootUserForm", () => {
     await user.click(acceptButton);
     screen.getByText("Warning alert:");
     screen.getByText("Passwords do not match");
-    expect(mockRootUserMutation).not.toHaveBeenCalled();
+    expect(mockPatchConfig).not.toHaveBeenCalled();
   });
 
   it("allows clearing the password", async () => {
@@ -103,8 +119,10 @@ describe.skip("RootUserForm", () => {
     await user.click(passwordToggle);
     expect(passwordToggle).not.toBeChecked();
     await user.click(acceptButton);
-    expect(mockRootUserMutation).toHaveBeenCalledWith(
-      expect.objectContaining({ password: "", hashedPassword: false }),
+    expect(mockPatchConfig).toHaveBeenCalledWith(
+      expect.objectContaining({
+        root: expect.objectContaining({ password: "", hashedPassword: false }),
+      })
     );
   });
 
@@ -116,10 +134,12 @@ describe.skip("RootUserForm", () => {
     const sshPublicKeyInput = screen.getByRole("textbox", { name: "File upload" });
     await user.type(sshPublicKeyInput, "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDM+ test@example");
     await user.click(acceptButton);
-    expect(mockRootUserMutation).toHaveBeenCalledWith(
+    expect(mockPatchConfig).toHaveBeenCalledWith(
       expect.objectContaining({
-        sshPublicKey: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDM+ test@example",
-      }),
+        root: expect.objectContaining({
+          sshPublicKey: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDM+ test@example",
+        })
+      })
     );
   });
 
@@ -132,7 +152,7 @@ describe.skip("RootUserForm", () => {
     await user.click(acceptButton);
     screen.getByText("Warning alert:");
     screen.getByText("Public SSH Key is empty.");
-    expect(mockRootUserMutation).not.toHaveBeenCalled();
+    expect(mockPatchConfig).not.toHaveBeenCalled();
   });
 
   it("allows clearing the public SSH Key", async () => {
@@ -144,8 +164,10 @@ describe.skip("RootUserForm", () => {
     await user.click(sshPublicKeyToggle);
     expect(sshPublicKeyToggle).not.toBeChecked();
     await user.click(acceptButton);
-    expect(mockRootUserMutation).toHaveBeenCalledWith(
-      expect.objectContaining({ sshPublicKey: "" }),
+    expect(mockPatchConfig).toHaveBeenCalledWith(
+      expect.objectContaining({
+        root: expect.objectContaining({ sshPublicKey: "" }),
+      })
     );
   });
 
@@ -162,8 +184,13 @@ describe.skip("RootUserForm", () => {
       expect(passwordToggle).toBeChecked();
       screen.getByText("Using a hashed password.");
       await user.click(acceptButton);
-      expect(mockRootUserMutation).toHaveBeenCalledWith(
+      expect(mockPatchConfig).toHaveBeenCalledWith(
         expect.not.objectContaining({ hashedPassword: false }),
+      );
+      expect(mockPatchConfig).toHaveBeenCalledWith(
+        expect.objectContaining({
+          root: expect.not.objectContaining({ hashedPassword: false }),
+        })
       );
     });
 
@@ -175,8 +202,10 @@ describe.skip("RootUserForm", () => {
       await user.click(passwordToggle);
       expect(passwordToggle).not.toBeChecked();
       await user.click(acceptButton);
-      expect(mockRootUserMutation).toHaveBeenCalledWith(
-        expect.objectContaining({ hashedPassword: false, password: "" }),
+      expect(mockPatchConfig).toHaveBeenCalledWith(
+        expect.objectContaining({
+          root: expect.objectContaining({ hashedPassword: false, password: "" }),
+        })
       );
     });
 
@@ -190,8 +219,10 @@ describe.skip("RootUserForm", () => {
       await user.type(passwordInput, "n0tS3cr3t");
       await user.type(passwordConfirmationInput, "n0tS3cr3t");
       await user.click(acceptButton);
-      expect(mockRootUserMutation).toHaveBeenCalledWith(
-        expect.objectContaining({ hashedPassword: false, password: "n0tS3cr3t" }),
+      expect(mockPatchConfig).toHaveBeenCalledWith(
+        expect.objectContaining({
+          root: expect.objectContaining({ hashedPassword: false, password: "n0tS3cr3t" }),
+        })
       );
     });
   });

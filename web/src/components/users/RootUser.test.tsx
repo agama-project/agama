@@ -29,10 +29,9 @@ import { USER } from "~/routes/paths";
 let mockPassword: string;
 let mockPublicKey: string;
 
-jest.mock("~/queries/users", () => ({
-  ...jest.requireActual("~/queries/users"),
-  useRootUser: () => ({ password: mockPassword, sshPublicKey: mockPublicKey }),
-  useRootUserChanges: () => jest.fn(),
+jest.mock("~/hooks/model/config", () => ({
+  ...jest.requireActual("~/hooks/model/config"),
+  useConfig: () => ({ root: { password: mockPassword, sshPublicKey: mockPublicKey } }),
 }));
 
 const testKey = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDM+ test@example";
