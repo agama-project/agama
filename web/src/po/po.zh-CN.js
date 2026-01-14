@@ -21,6 +21,9 @@ export default {
   "%1$s at %2$s": [
     "%1$s（%2$s 上）"
   ],
+  "%1$s keyboard - %2$s timezone": [
+    ""
+  ],
   "%1$s will be created as a partition at %2$s": [
     "%1$s 将会创建为 %2$s 上的分区"
   ],
@@ -35,6 +38,9 @@ export default {
   ],
   "%s [must be registered].": [
     "[必须注册] %s。"
+  ],
+  "%s and %d others": [
+    ""
   ],
   "%s disk": [
     "%s 磁盘"
@@ -231,8 +237,14 @@ export default {
   "Authentication by target": [
     "目标身份认证"
   ],
+  "Auto": [
+    "自动"
+  ],
   "Auto LUNs Scan": [
     "自动扫描 LUN"
+  ],
+  "Auto and manual": [
+    ""
   ],
   "Automatic": [
     "自动"
@@ -240,11 +252,11 @@ export default {
   "Automatic (DHCP)": [
     "自动（DHCP）"
   ],
-  "Automatic LUN scan is [disabled]. LUNs have to be manually       configured after activating a controller.": [
+  "Automatic LUN scan is [disabled]. LUNs have to be manually configured after activating a controller.": [
     "自动扫描 LUN 功能[已停用]。激活控制器后必须手动配置 LUN。"
   ],
-  "Automatic LUN scan is [enabled]. Activating a controller which is       running in NPIV mode will automatically configures all its LUNs.": [
-    "自动扫描 LUN 功能[已启用]。如果激活在 NPIV 模式下       运行的控制器，将自动配置其所有 LUN。"
+  "Automatic LUN scan is [enabled]. Activating a controller which is running in NPIV mode will automatically configures all its LUNs.": [
+    "自动扫描 LUN 功能[已启用]。如果激活在 NPIV 模式下 运行的控制器，将自动配置其所有 LUN。"
   ],
   "Available products": [
     "可用产品"
@@ -302,6 +314,9 @@ export default {
   ],
   "Btrfs with snapshots": [
     "带快照的 Btrfs"
+  ],
+  "CPU": [
+    ""
   ],
   "Cancel": [
     "取消"
@@ -390,9 +405,6 @@ export default {
   "Close": [
     "关闭"
   ],
-  "Configuration out of sync": [
-    "配置未同步"
-  ],
   "Configuration read from the iSCSI Boot Firmware Table (iBFT).": [
     "已从 iSCSI 引导固件表 (iBFT) 读取配置。"
   ],
@@ -431,9 +443,6 @@ export default {
   ],
   "Confirm": [
     "确认"
-  ],
-  "Confirm Installation": [
-    "确认安装"
   ],
   "Confirm that you really want to continue.": [
     "请确认您确实要继续。"
@@ -486,9 +495,6 @@ export default {
   "Content": [
     "内容"
   ],
-  "Continue": [
-    "继续"
-  ],
   "Continuing without installing the package can result in a broken system. In some cases the system might not even boot.": [
     "如果继续但不安装该软件包，可能会使系统损坏。在某些情况下，系统甚至可能无法引导。"
   ],
@@ -536,6 +542,9 @@ export default {
   ],
   "DASD %s": [
     "DASD %s"
+  ],
+  "DHCP, %s": [
+    ""
   ],
   "DIAG": [
     "DIAG"
@@ -741,9 +750,6 @@ export default {
   "Extend the installation beyond the currently selected disk": [
     "将安装扩展至超过目前 %d 磁盘的容量"
   ],
-  "Extensions": [
-    "扩展"
-  ],
   "F2FS": [
     "F2FS"
   ],
@@ -843,6 +849,9 @@ export default {
   "GiB": [
     "GiB"
   ],
+  "Go back": [
+    ""
+  ],
   "Go to network page": [
     "前往网络页面"
   ],
@@ -888,6 +897,9 @@ export default {
   "IP settings": [
     "IP 设置"
   ],
+  "IPs": [
+    ""
+  ],
   "IPv4": [
     "IPv4"
   ],
@@ -897,10 +909,7 @@ export default {
   "If a local media was used to run this installer, remove it before the next boot.": [
     "如果运行此次安装时使用了本地介质，请在下次启动前移除。"
   ],
-  "If you continue, partitions on your hard disk will be modified according to the provided installation settings.": [
-    "如果继续，硬盘上的分区将会根据已提供的安装设置进行修改。"
-  ],
-  "If you want to disable this check, please specify \"inst.ay_check=0\" at kernel's command-line": [
+  "If you want to disable this check, please specify \"inst.ay_check=0\" at kernels command-line": [
     ""
   ],
   "In progress": [
@@ -936,32 +945,8 @@ export default {
   "Install": [
     "安装"
   ],
-  "Install using an advanced configuration.": [
-    "使用高级配置安装。"
-  ],
-  "Install using device %s and deleting all its content.": [
-    "使用设备 %s 进行安装，并删除其上的所有内容。"
-  ],
-  "Install using device %s shrinking existing partitions as needed.": [
-    "使用设备 %s 进行安装，并在需要时缩小现有分区。"
-  ],
-  "Install using device %s with a custom strategy to find the needed space.": [
-    "使用设备 %s 进行安装，并采用自定义策略查找所需空间。"
-  ],
-  "Install using device %s without modifying existing partitions.": [
-    "使用设备 %s 进行安装，不修改现有分区。"
-  ],
-  "Install using several devices and deleting all its content.": [
-    "使用多个设备进行安装，并删除其上的所有内容。"
-  ],
-  "Install using several devices shrinking existing partitions as needed.": [
-    "使用多个设备进行安装，并在需要时缩小现有分区。"
-  ],
-  "Install using several devices with a custom strategy to find the needed space.": [
-    "使用多个设备进行安装，并采用自定义策略查找所需空间。"
-  ],
-  "Install using several devices without modifying existing partitions.": [
-    "使用多个设备进行安装，不修改现有分区。"
+  "Install now with potential data loss": [
+    ""
   ],
   "Installation will take %s.": [
     "安装将会占用 %s。"
@@ -1113,6 +1098,9 @@ export default {
   "Max channel": [
     "最大通道"
   ],
+  "Memory": [
+    ""
+  ],
   "MiB": [
     "MiB"
   ],
@@ -1173,7 +1161,7 @@ export default {
   "Move mount points": [
     "移动挂载点"
   ],
-  "Move the mount points currently configured at the selected disks to logical                   volumes of this volume group.": [
+  "Move the mount points currently configured at the selected disks to logical volumes of this volume group.": [
     "将所选磁盘上当前配置的挂载点移动到此卷组的逻辑卷。"
   ],
   "Multipath": [
@@ -1193,6 +1181,9 @@ export default {
   ],
   "Name": [
     "名称"
+  ],
+  "Needs about %s": [
+    ""
   ],
   "Network": [
     "网络"
@@ -1226,6 +1217,9 @@ export default {
   ],
   "No content found": [
     "未找到内容"
+  ],
+  "No data loss is expected": [
+    ""
   ],
   "No device is currently using this connection.": [
     "目前没有设备在使用此连接。"
@@ -1305,9 +1299,6 @@ export default {
   "Not protected network": [
     "不受保护的网络"
   ],
-  "Not selected yet": [
-    "尚未选择"
-  ],
   "Not supported (%s)": [
     "不受支持 (%s)"
   ],
@@ -1353,10 +1344,7 @@ export default {
   "Partitions that are not reused would be resized if needed.": [
     "不重复使用的分区将根据需要调整大小。"
   ],
-  "Partitions to boot will be set up if needed at the installation disk.         Currently %1$s, based on the location of the %2$s file system.": [
-    ""
-  ],
-  "Partitions to boot will be set up if needed at the installation disk.       Currently %1$s, based on the location of the %2$s file system.": [
+  "Partitions to boot will be set up if needed at the installation disk. Currently %1$s, based on the location of the %2$s file system.": [
     ""
   ],
   "Partitions will be used and created for %s": [
@@ -1389,9 +1377,6 @@ export default {
   "PiB": [
     "PiB"
   ],
-  "Please, cancel and check the settings if you are unsure.": [
-    "如果不确定任何事项，请务必取消并检查已进行的设置。"
-  ],
   "Please, check whether it is running.": [
     "请检查它是否在运行。"
   ],
@@ -1413,11 +1398,23 @@ export default {
   "Portal": [
     "门户"
   ],
+  "Potential data loss": [
+    ""
+  ],
+  "Potential data loss affecting at least %s": [
+    ""
+  ],
   "Pre-installation checks": [
     "安装前检查"
   ],
   "Prefix length or netmask": [
     "前缀长度或网络掩码"
+  ],
+  "Proceeding may result in data loss": [
+    ""
+  ],
+  "Proceeding may result in data loss affecting at least %s": [
+    ""
   ],
   "Product is already registered": [
     "产品已注册"
@@ -1476,15 +1473,6 @@ export default {
   "Reload": [
     "重载"
   ],
-  "Reload now": [
-    "立即重新加载"
-  ],
-  "Reloading data, please wait...": [
-    "正在重新加载数据，请稍候..."
-  ],
-  "Reloading is required to get the latest data and avoid issues or data loss.": [
-    "为获取最新数据并避免出现问题或数据丢失，需要重新加载。"
-  ],
   "Remove": [
     "移除"
   ],
@@ -1493,6 +1481,12 @@ export default {
   ],
   "Repository load failed": [
     "加载储存库失败"
+  ],
+  "Required packages": [
+    ""
+  ],
+  "Required packages and %s pattern": [
+    ""
   ],
   "Rescan devices": [
     "重新扫描设备"
@@ -1517,6 +1511,9 @@ export default {
   ],
   "Review and fix": [
     "检查并修复"
+  ],
+  "Review the summary below. If anything seems incorrect or you have doubts, go back and adjust the settings before proceeding.": [
+    ""
   ],
   "Root authentication methods": [
     "root 身份验证方法"
@@ -1752,11 +1749,11 @@ export default {
   "Targets": [
     "目标"
   ],
+  "Temporary name that may change after reboot or network changes": [
+    ""
+  ],
   "The LVM group '%1$s' will remain at %2$s": [
     "LVM 组 '%1$s' 将保留在 %2$s 中"
-  ],
-  "The configuration has been updated externally.": [
-    "配置已在外部更新。"
   ],
   "The configuration must be adapted to address the following issue:": [
     "必须调整配置，以解决以下问题："
@@ -1769,9 +1766,6 @@ export default {
   ],
   "The connection will be used only during installation and not available in the installed system.": [
     "此连接仅在安装过程中使用，安装好的系统中不可用。"
-  ],
-  "The content may be deleted": [
-    "内容可能会被删除"
   ],
   "The current configuration will result in an attempt to create a %1$s of %2$s.": [
     "当前配置将会导致尝试创建一个 %1$s (%2$s)。"
@@ -1857,12 +1851,6 @@ export default {
   "The installation on your machine is complete.": [
     "在您机器上的安装过程已完成。"
   ],
-  "The installation will take": [
-    "安装将会占用"
-  ],
-  "The installation will take %s including:": [
-    "安装将会占用 %s，包括："
-  ],
   "The installer interface is no longer available, so you can safely close this window.": [
     "安装程序界面已不再可用，因此您可以安全关闭此窗口。"
   ],
@@ -1890,8 +1878,8 @@ export default {
   "The modal selector offers a simplified interface designed for quick and straightforward use, without overwhelming the user.": [
     "该模态选择器提供精简的界面，使用方便快捷，对用户而言非常友好。"
   ],
-  "The needed LVM physical volumes will be added as partitions on the chosen disks,                 based on the sizes of the logical volumes. If you select more than one disk, the                 physical volumes may be distributed along several disks.": [
-    "所需的 LVM 物理卷将根据逻辑卷的大小，作为分区                 添加到所选磁盘上。如果选择多个磁盘，                 物理卷可能会分布在多个磁盘上。"
+  "The needed LVM physical volumes will be added as partitions on the chosen disks, based on the sizes of the logical volumes. If you select more than one disk, the physical volumes may be distributed along several disks.": [
+    "所需的 LVM 物理卷将根据逻辑卷的大小，作为分区 添加到所选磁盘上。如果选择多个磁盘， 物理卷可能会分布在多个磁盘上。"
   ],
   "The password is weak": [
     "口令强度太弱"
@@ -1947,17 +1935,11 @@ export default {
   "The system does not support Wi-Fi connections, probably because of missing or disabled hardware.": [
     "系统不支持 WiFi 连接，可能由于硬件缺失或已被禁用。"
   ],
-  "The system will use %s as its default language.": [
-    "系统会使用 %s 作为默认语言。"
-  ],
   "The whole device will be used for %s": [
     "整个设备将用于 %s"
   ],
   "The zFCP disk was not activated.": [
     "zFCP 磁盘未激活。"
-  ],
-  "There are no disks available for the installation.": [
-    "没有可用于安装的磁盘。"
   ],
   "There are not disks available for the installation. You may need to configure some device.": [
     "没有可用于安装的磁盘。您可能需要配置某些设备。"
@@ -1970,9 +1952,6 @@ export default {
   ],
   "There is %d destructive action planned affecting %s": [
     "已计划执行 %d 个会影响 %s 的破坏性操作"
-  ],
-  "These are the most relevant installation settings. Feel free to browse the sections in the menu for further details.": [
-    "这些是最主要的安装设置。如需获取更详细的信息，请随意浏览菜单中的各节。"
   ],
   "These are the settings for the product to install. The installer language and keyboard layout can be adjusted via the [settings panel] accessible from the top bar.": [
     "以下是待安装产品的相关设置。安装程序语言和键盘布局可通过顶部栏的[设置面板]进行调整。"

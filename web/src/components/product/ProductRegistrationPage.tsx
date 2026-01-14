@@ -52,7 +52,7 @@ import {
 } from "~/components/core";
 // import RegistrationExtension from "./RegistrationExtension";
 import RegistrationCodeInput from "./RegistrationCodeInput";
-import { HOSTNAME } from "~/routes/paths";
+import { HOSTNAME, ROOT } from "~/routes/paths";
 import { isEmpty } from "radashi";
 import { mask } from "~/utils";
 import { sprintf } from "sprintf-js";
@@ -62,6 +62,7 @@ import { useSystem } from "~/hooks/model/system/software";
 import { useProduct, useProductInfo } from "~/hooks/model/config/product";
 import { useIssues } from "~/hooks/model/issue";
 import { patchConfig } from "~/api";
+import { Navigate } from "react-router";
 
 const FORM_ID = "productRegistration";
 const SERVER_LABEL = N_("Registration server");
@@ -432,7 +433,7 @@ export default function ProductRegistrationPage() {
   const showIssues = issues.find((i) => i.class === "software.register_system") !== undefined;
 
   // TODO: render something meaningful instead? "Product not registrable"?
-  if (!product || !product.registration) return;
+  if (!product || !product.registration) return <Navigate to={ROOT.overview} />;
 
   return (
     <Page breadcrumbs={[{ label: _("Registration") }]} progress={{ scope: "software" }}>

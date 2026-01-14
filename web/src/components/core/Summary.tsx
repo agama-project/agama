@@ -23,20 +23,46 @@
 import React from "react";
 import { Content, Flex, Skeleton, Title } from "@patternfly/react-core";
 import Icon, { IconProps } from "~/components/layout/Icon";
-import NestedContent from "./NestedContent";
+import NestedContent from "~/components/core/NestedContent";
+import Text from "~/components/core/Text";
 import { _ } from "~/i18n";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
+import WarningIcon from "@patternfly/react-icons/dist/esm/icons/exclamation-triangle-icon";
 
 type SummaryProps = {
+  /**
+   * The name of the icon to display next to the title.
+   * Ignored when `hasIssues` is true (warning icon is shown instead).
+   */
   icon: IconProps["name"];
-  /** The label for the DescriptionListTerm */
+  /**
+   * The label/title for the summary item.
+   * Typically rendered as a heading (h3) for semantic structure.
+   */
   title: React.ReactNode;
-  /** The primary value of the item */
+  /**
+   * The primary value or content of the summary item.
+   * Displayed below the title with emphasis when issues are present.
+   */
   value: React.ReactNode;
-  /** Secondary information displayed below the content */
+  /**
+   * Optional secondary information displayed below the primary value.
+   * Rendered in a smaller, subtle text style.
+   */
   description?: React.ReactNode;
-  /** Whether to display the skeleton loading state */
+  /**
+   * Whether to display skeleton loading placeholders instead of actual content.
+   * When true, shows loading states for both value and description.
+   */
   isLoading?: boolean;
+  /**
+   * Whether a summary item has issues that require attention.
+   * When true:
+   *   - Displays a warning icon instead of the regular icon
+   *   - Applies bold styling to value and description
+   *   - Adds warning color styling to the icon
+   */
+  hasIssues?: boolean;
 };
 
 const ValueSkeleton = () => (
@@ -48,7 +74,7 @@ const ValueSkeleton = () => (
   />
 );
 
-const DescritionSkeletons = () => (
+const DescriptionSkeletons = () => (
   <>
     <Skeleton height="var(--pf-t--global--font--size--body--default)" />
     <Skeleton width="70%" height="var(--pf-t--global--font--size--body--default)" />
@@ -74,23 +100,45 @@ const DescritionSkeletons = () => (
  * />
  * ```
  */
-const Summary = ({ title, icon, value, description, isLoading }: SummaryProps) => {
+const Summary = ({
+  title,
+  icon,
+  value,
+  description,
+  isLoading,
+  hasIssues = false,
+}: SummaryProps) => {
   return (
     <div>
       <Flex gap={{ default: "gapXs" }} alignItems={{ default: "alignItemsCenter" }}>
-        <Icon name={icon} />
+        {hasIssues ? (
+          <WarningIcon
+            aria-hidden="true"
+            className={[textStyles.fontSizeMd, textStyles.textColorStatusWarning].join(" ")}
+          />
+        ) : (
+          <Icon name={icon} />
+        )}
         <Title headingLevel="h3">{title}</Title>
       </Flex>
       <NestedContent margin="mxLg">
         <NestedContent margin="myXs">
           <Flex direction={{ default: "column" }} gap={{ default: "gapSm" }}>
-            {isLoading ? <ValueSkeleton /> : <Content isEditorial>{value}</Content>}
             {isLoading ? (
-              <DescritionSkeletons />
+              <ValueSkeleton />
             ) : (
-              <>
-                {description && <small className={textStyles.textColorSubtle}>{description}</small>}
-              </>
+              <Content isEditorial>
+                <Text isBold={hasIssues}>{value}</Text>
+              </Content>
+            )}
+            {isLoading ? (
+              <DescriptionSkeletons />
+            ) : (
+              description && (
+                <Text component="small" isBold={hasIssues} className={textStyles.textColorSubtle}>
+                  {description}
+                </Text>
+              )
             )}
           </Flex>
         </NestedContent>

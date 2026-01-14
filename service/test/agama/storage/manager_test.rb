@@ -36,7 +36,6 @@ require "agama/storage/volume"
 require "agama/dbus"
 require "y2storage/issue"
 require "y2storage/luks"
-require "y2storage/storage_env"
 require "yast2/fs_snapshot"
 require "yaml"
 
@@ -265,7 +264,7 @@ describe Agama::Storage::Manager do
     context "if the product requires bls boot explicitly" do
       before do
         allow(ENV).to receive(:[]=)
-        allow(Y2Storage::StorageEnv.instance).to receive(:no_bls_bootloader).and_return("0")
+        allow(ENV).to receive(:[]).with("YAST_NO_BLS_BOOT").and_return("0")
       end
 
       let(:config) do

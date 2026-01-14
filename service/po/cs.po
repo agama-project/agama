@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-12 02:50+0000\n"
+"POT-Creation-Date: 2026-01-11 03:28+0000\n"
 "PO-Revision-Date: 2025-08-13 08:59+0000\n"
 "Last-Translator: Jan Papež <honyczek@centrum.cz>\n"
 "Language-Team: Czech <https://l10n.opensuse.org/projects/agama/agama-service-"
@@ -27,300 +27,38 @@ msgstr ""
 msgid "Found unsupported elements in the AutoYaST profile: %{keys}."
 msgstr "Nalezen nepodporovaný prvek profilu AutoYaST: %{keys}."
 
-#. Runs the config phase
-#.
-#. @param reprobe [Boolean] Whether a reprobe should be done instead of a probe.
-#. @param data [Hash] Extra data provided to the D-Bus calls.
-#: service/lib/agama/manager.rb:98
-msgid "Analyze disks"
-msgstr "Analyzovat disky"
+#. Implementation for the API method #Install.
+#: service/lib/agama/dbus/storage/manager.rb:118
+msgid "Preparing bootloader proposal"
+msgstr "Připravuji návrh boot zavaděče"
 
-#: service/lib/agama/manager.rb:98
-msgid "Configure software"
-msgstr "Konfigurovat software"
+#: service/lib/agama/dbus/storage/manager.rb:121
+msgid "Preparing the storage devices"
+msgstr "Připravuji úložná zařízení"
 
-#. Runs the install phase
-#. rubocop:disable Metrics/AbcSize, Metrics/MethodLength
-#: service/lib/agama/manager.rb:117
-msgid "Prepare disks"
-msgstr "Připravit disky"
+#: service/lib/agama/dbus/storage/manager.rb:124
+msgid "Writing bootloader sysconfig"
+msgstr "Zapisuji konfiguraci boot zavaděče v sysconfig"
 
-#: service/lib/agama/manager.rb:118
-msgid "Install software"
-msgstr "Instalovat software"
-
-#: service/lib/agama/manager.rb:119
-msgid "Configure the system"
-msgstr "Konfigurovat systém"
-
-#. rubocop:enable Metrics/AbcSize, Metrics/MethodLength
-#: service/lib/agama/manager.rb:160
-msgid "Load software translations"
-msgstr "Načíst překlady softwaru"
-
-#: service/lib/agama/manager.rb:161
-msgid "Load storage translations"
-msgstr "Načíst překlady paměti"
-
-#. @param certificate [Agama::SSL::Certificate]
-#. @return [Agama::Question]
-#: service/lib/agama/registration.rb:424
-msgid ""
-"Trying to import a self signed certificate. Do you want to trust it and "
-"register the product?"
-msgstr ""
-"Pokoušíte se importovat certifikát, který je podepsaný sám sebou. Chcete mu "
-"důvěřovat a zaregistrovat tento produkt?"
-
-#. TRANSLATORS: button label, try downloading the failed package again
-#: service/lib/agama/software/callbacks/base.rb:48
-msgid "Try again"
-msgstr "Zkusit znovu"
-
-#. TRANSLATORS: button label, ignore the failed download, skip package installation
-#: service/lib/agama/software/callbacks/base.rb:54
-msgid "Continue anyway"
-msgstr "Přesto pokračovat"
-
-#. TRANSLATORS: button label, abort the installation completely after an error
-#: service/lib/agama/software/callbacks/base.rb:60
-msgid "Abort installation"
+#. Implementation for the API method #Finish.
+#: service/lib/agama/dbus/storage/manager.rb:132
+#, fuzzy
+msgid "Finishing installation"
 msgstr "Přerušit instalaci"
 
-#. TRANSLATORS: button label, skip the error
-#: service/lib/agama/software/callbacks/base.rb:66
-msgid "Skip"
-msgstr "Přeskočit"
+#. Error code
+#: service/lib/agama/dbus/storage/manager.rb:371
+msgid "Activating storage devices"
+msgstr "Aktivuji úložná zařízení"
 
-#. TRANSLATORS: button label
-#: service/lib/agama/software/callbacks/base.rb:72
-msgid "Yes"
-msgstr "Ano"
+#: service/lib/agama/dbus/storage/manager.rb:374
+msgid "Probing storage devices"
+msgstr "Sonduji úložná zařízení"
 
-#. TRANSLATORS: button label
-#: service/lib/agama/software/callbacks/base.rb:78
-msgid "No"
-msgstr "Ne"
-
-#. Callback to accept a file without a checksum
-#.
-#. @param filename [String] File name
-#. @return [Boolean]
-#: service/lib/agama/software/callbacks/digest.rb:58
-#, perl-brace-format
-msgid ""
-"No checksum for the file %{file} was found in the repository. This means "
-"that although the file is part of the signed repository, the list of "
-"checksums does not mention this file. Use it anyway?"
-msgstr ""
-"Pro soubor %{file} nebyl v repozitáři nalezen kontrolní součet. To znamená, "
-"že ačkoliv je soubor součástí podepsaného repozitáře, seznam kontrolních "
-"součtů tento soubor nezmiňuje. Chcete jej i přesto použít?"
-
-#. Callback to accept an unknown digest
-#.
-#. @param filename [String] File name
-#. @param digest [String] expected checksum
-#. @return [Boolean]
-#: service/lib/agama/software/callbacks/digest.rb:84
-#, perl-brace-format
-msgid ""
-"The checksum of the file %{file} is \"%{digest}\" but the expected checksum "
-"is unknown. This means that the origin and integrity of the file cannot be "
-"verified. Use it anyway?"
-msgstr ""
-"Kontrolní součet souboru %{file} je \"%{digest}”, ale očekávaná hodnota "
-"kontrolního součtu není známa. Původ a integrita souboru nemohou být "
-"ověřeny. Chcete jej přesto použít?"
-
-#. Callback to accept wrong digest
-#.
-#. @param filename [String] File name
-#. @param expected_digest [String] expected checksum
-#. @param found_digest [String] found checksum
-#. @return [Boolean]
-#: service/lib/agama/software/callbacks/digest.rb:111
-#, perl-brace-format
-msgid ""
-"The expected checksum of file %{file} is \"%{found}\" but it was expected to "
-"be \"%{expected}\". The file has changed by accident or by an attacker since "
-"the creater signed it. Use it anyway?"
-msgstr ""
-"Očekávaný kontrolní součet souboru %{file} je \"%{found}”, avšak byl "
-"očekáván \"%{expected}”. Buďto se soubor změnil náhodou nebo to po "
-"publikování tvůrcem balíčku provedl útočník. Chcete jej i přesto použít?"
-
-#. DoneProvide callback
-#.
-#. @param description [String] Problem description
-#. @return [String] "I" for ignore, "R" for retry and "C" for abort (not implemented)
-#. @see https://github.com/yast/yast-yast2/blob/19180445ab935a25edd4ae0243aa7a3bcd09c9de/library/packages/src/modules/PackageCallbacks.rb#L620
-#: service/lib/agama/software/callbacks/script.rb:50
-msgid "There was a problem running a package script."
-msgstr "Objevil se problém se spuštěním balíčkového skriptu."
-
-#. Callback to handle unsigned files
-#.
-#. @param filename [String] File name
-#. @param repo_id [Integer] Repository ID. It might be -1 if there is not an associated repo.
-#: service/lib/agama/software/callbacks/signature.rb:66
-#, perl-brace-format
-msgid ""
-"The file %{filename} from %{repo_url} is not digitally signed. The origin "
-"and integrity of the file cannot be verified. Use it anyway?"
-msgstr ""
-"Soubor %{filename} z adresy %{repo_url} neobsahuje digitální podpis. Původ a "
-"integrita souboru nemůže být ověřena. Chcete jej i přesto použít?"
-
-#: service/lib/agama/software/callbacks/signature.rb:72
-#, perl-brace-format
-msgid ""
-"The file %{filename} is not digitally signed. The origin and integrity of "
-"the file cannot be verified. Use it anyway?"
-msgstr ""
-"Soubor %{filename} není digitálně podepsán. Původ a integrita souboru nemůže "
-"být ověřena. Chcete jej i přesto použít?"
-
-#. Callback to handle signature verification failures
-#.
-#. @param key [Hash] GPG key data (id, name, fingerprint, etc.)
-#. @param repo_id [Integer] Repository ID
-#: service/lib/agama/software/callbacks/signature.rb:100
-#, perl-brace-format
-msgid ""
-"The key %{id} (%{name}) with fingerprint %{fingerprint} is unknown. Do you "
-"want to trust this key?"
-msgstr ""
-"Klíč %{id} (%{name}) s otiskem %{fingerprint} není známý. Chcete tomuto "
-"klíči důvěřovat?"
-
-#. Callback to handle unknown GPG keys
-#.
-#. @param filename [String] Name of the file.
-#. @param key_id [String] Key ID.
-#. @param repo_id [String] Repository ID.
-#: service/lib/agama/software/callbacks/signature.rb:131
-#, perl-brace-format
-msgid ""
-"The file %{filename} from %{repo_url} is digitally signed with the following "
-"unknown GnuPG key: %{key_id}. Use it anyway?"
-msgstr ""
-"Soubor %{filename} z adresy %{repo_url} je digitálně podepsán pomocí "
-"neznámého GnuPG klíče: %{key_id}. Chcete jej i přesto použít?"
-
-#: service/lib/agama/software/callbacks/signature.rb:137
-#, perl-brace-format
-msgid ""
-"The file %{filename} is digitally signed with the following unknown GnuPG "
-"key: %{key_id}. Use it anyway?"
-msgstr ""
-"Soubor %{filename} je digitálně podepsán pomocí neznámého GnuPG klíče: %"
-"{key_id}. Chcete jej i přesto použít?"
-
-#. Callback to handle file verification failures
-#.
-#. @param filename [String] File name
-#. @param key [Hash] GPG key data (id, name, fingerprint, etc.)
-#. @param repo_id [Integer] Repository ID
-#: service/lib/agama/software/callbacks/signature.rb:168
-#, perl-brace-format
-msgid ""
-"The file %{filename} from %{repo_url} is digitally signed with the following "
-"GnuPG key, but the integrity check failed: %{key_id} (%{key_name}). Use it "
-"anyway?"
-msgstr ""
-"Soubor %{filename} z adresy %{repo_url} je digitálně podepsán pomocí GnuPG "
-"klíče, ale kontrola integrity selhala: %{key_id} (%{key_name}). Chcete jej i "
-"přesto použít?"
-
-#: service/lib/agama/software/callbacks/signature.rb:175
-#, perl-brace-format
-msgid ""
-"The file %{filename} is digitally signed with the following GnuPG key, but "
-"the integrity check failed: %{key_id} (%{key_name}). Use it anyway?"
-msgstr ""
-"Soubor %{filename} je digitálně podepsán pomocí GnuPG klíče, ale kontrola "
-"integrity selhala: %{key_id} (%{key_name}). Chcete jej i přesto použít?"
-
-#. TRANSLATORS: button label, trust the GPG key or the signature
-#: service/lib/agama/software/callbacks/signature.rb:199
-msgid "Trust"
-msgstr "Věřit"
-
-#. Should an error be raised?
-#: service/lib/agama/software/manager.rb:178
-msgid "Refreshing repositories metadata"
-msgstr "Obnovování metadat repozitáře"
-
-#: service/lib/agama/software/manager.rb:179
-msgid "Calculating the software proposal"
-msgstr "Vypočítávání návrhu softwaru"
-
-#: service/lib/agama/software/manager.rb:183
-msgid "Initializing sources"
-msgstr "Inicializuji zdroje"
-
-#. error message
-#: service/lib/agama/software/manager.rb:427
-#, c-format
-msgid "Adding service '%s' failed."
-msgstr "Přidání služby ‘%s' se nezdařilo."
-
-#. error message
-#: service/lib/agama/software/manager.rb:432
-#, c-format
-msgid "Updating service '%s' failed."
-msgstr "Aktualizace služby '%s' se nezdařila."
-
-#. error message
-#: service/lib/agama/software/manager.rb:438
-#, c-format
-msgid "Saving service '%s' failed."
-msgstr "Uložení služby '%s' se nezdařilo."
-
-#. error message
-#: service/lib/agama/software/manager.rb:444
-#, c-format
-msgid "Refreshing service '%s' failed."
-msgstr "Selhalo obnovení služby '%s'."
-
-#. rubocop:enable Metrics/AbcSize
-#: service/lib/agama/software/manager.rb:453
-#, c-format
-msgid "Removing service '%s' failed."
-msgstr "Odebrání služby '%s' se nezdařilo."
-
-#. Issues related to the software proposal.
-#.
-#. Repositories that could not be probed are reported as errors.
-#.
-#. @return [Array<Agama::Issue>]
-#: service/lib/agama/software/manager.rb:710
-#, c-format
-msgid "Could not read repository \"%s\""
-msgstr "Nelze načíst repozitář \"%s\""
-
-#. Issue when a product is missing
-#.
-#. @return [Agama::Issue]
-#: service/lib/agama/software/manager.rb:720
-msgid "Product not selected yet"
-msgstr "Není vybrán žádný produkt"
-
-#. Issue when a product requires registration but it is not registered yet.
-#.
-#. @return [Agama::Issue]
-#: service/lib/agama/software/manager.rb:729
-msgid "Product must be registered"
-msgstr "Produkt musí být zaregistrován"
-
-#. Returns solver error messages from the last attempt
-#.
-#. @return [Array<String>] Error messages
-#: service/lib/agama/software/proposal.rb:276
-#, c-format
-msgid "Found %s dependency issues."
-msgstr "Nalezeno %s problémů v závislostech."
+#: service/lib/agama/dbus/storage/manager.rb:377
+#, fuzzy
+msgid "Applying storage configuration"
+msgstr "Nastavování konfigurace úložiště"
 
 #. TRANSLATORS: SSL certificate details
 #: service/lib/agama/ssl/certificate_details.rb:31
@@ -408,7 +146,7 @@ msgstr "Neexistuje žádné zaváděcí zařízení s aliasem '%s'"
 
 #. TRANSLATORS: 'crypt_method' is the identifier of the method to encrypt the device
 #. (e.g., 'luks1', 'random_swap').
-#: service/lib/agama/storage/config_checkers/encryption.rb:78
+#: service/lib/agama/storage/config_checkers/encryption.rb:73
 #, perl-brace-format
 msgid ""
 "No passphrase provided (required for using the method '%{crypt_method}')."
@@ -418,27 +156,27 @@ msgstr ""
 
 #. TRANSLATORS: 'crypt_method' is the identifier of the method to encrypt the device
 #. (e.g., 'luks1', 'random_swap').
-#: service/lib/agama/storage/config_checkers/encryption.rb:93
+#: service/lib/agama/storage/config_checkers/encryption.rb:89
 #, perl-brace-format
 msgid "Encryption method '%{crypt_method}' is not available in this system."
 msgstr "Šifrovací metoda '%{crypt_method}' není v tomto systému k dispozici."
 
 #. TRANSLATORS: 'crypt_method' is the identifier of the method to encrypt the device
 #. (e.g., 'luks1', 'random_swap').
-#: service/lib/agama/storage/config_checkers/encryption.rb:120
+#: service/lib/agama/storage/config_checkers/encryption.rb:117
 #, perl-brace-format
 msgid "'%{crypt_method}' is not a suitable method to encrypt the device."
 msgstr "'%{crypt_method}' není vhodná metoda pro šifrování zařízení."
 
 #. TRANSLATORS: %s is replaced by a mount path (e.g., "/home").
-#: service/lib/agama/storage/config_checkers/filesystem.rb:79
+#: service/lib/agama/storage/config_checkers/filesystem.rb:75
 #, c-format
 msgid "Missing file system type for '%s'"
 msgstr "Pro '%s' není uveden typ souborového systému"
 
 #. TRANSLATORS: %{filesystem} is replaced by a file system type (e.g., "Btrfs") and
 #. %{path} is replaced by a mount path (e.g., "/home").
-#: service/lib/agama/storage/config_checkers/filesystem.rb:100
+#: service/lib/agama/storage/config_checkers/filesystem.rb:98
 #, perl-brace-format
 msgid "The file system type '%{filesystem}' is not suitable for '%{path}'"
 msgstr "Souborový systém '%{filesystem}' není vhodný pro '%{path}'"
@@ -458,14 +196,14 @@ msgstr "Neexistuje žádné členské zařízení v MD RAIDu s aliasem '%s'"
 #. Issue if the MD RAID level is missing and the device is not reused.
 #.
 #. @return [Issue, nil]
-#: service/lib/agama/storage/config_checkers/md_raid.rb:110
+#: service/lib/agama/storage/config_checkers/md_raid.rb:111
 msgid "There is a MD RAID without level"
 msgstr "Zařízení MD RAID bez úrovně"
 
 #. Issue if the MD RAID does not contain enough member devices.
 #.
 #. @return [Issue, nil]
-#: service/lib/agama/storage/config_checkers/md_raid.rb:121
+#: service/lib/agama/storage/config_checkers/md_raid.rb:124
 #, c-format
 msgid "At least %s devices are required for %s"
 msgstr "Nejméně %s zařízení je zapotřebí pro %s"
@@ -474,7 +212,7 @@ msgstr "Nejméně %s zařízení je zapotřebí pro %s"
 #.
 #. @param member_config [#search]
 #. @return [Issue, nil]
-#: service/lib/agama/storage/config_checkers/md_raid.rb:168
+#: service/lib/agama/storage/config_checkers/md_raid.rb:171
 #, perl-brace-format
 msgid ""
 "The device '%{member}' cannot be deleted because it is part of the MD RAID %"
@@ -486,7 +224,7 @@ msgstr ""
 #.
 #. @param member_config [#search]
 #. @return [Issue, nil]
-#: service/lib/agama/storage/config_checkers/md_raid.rb:191
+#: service/lib/agama/storage/config_checkers/md_raid.rb:194
 #, perl-brace-format
 msgid ""
 "The device '%{member}' cannot be resized because it is part of the MD RAID %"
@@ -499,7 +237,7 @@ msgstr ""
 #.
 #. @param member_config [#search]
 #. @return [Issue, nil]
-#: service/lib/agama/storage/config_checkers/md_raid.rb:214
+#: service/lib/agama/storage/config_checkers/md_raid.rb:217
 #, perl-brace-format
 msgid ""
 "The device '%{member}' cannot be formatted because it is part of the MD RAID "
@@ -512,7 +250,7 @@ msgstr ""
 #.
 #. @param member_config [#search]
 #. @return [Issue, nil]
-#: service/lib/agama/storage/config_checkers/md_raid.rb:237
+#: service/lib/agama/storage/config_checkers/md_raid.rb:240
 #, perl-brace-format
 msgid ""
 "The device '%{member}' cannot be partitioned because it is part of the MD "
@@ -525,7 +263,7 @@ msgstr ""
 #.
 #. @param member_config [#search]
 #. @return [Issue, nil]
-#: service/lib/agama/storage/config_checkers/md_raid.rb:259
+#: service/lib/agama/storage/config_checkers/md_raid.rb:262
 #, perl-brace-format
 msgid ""
 "The device '%{member}' cannot be used because it is part of the MD RAID %"
@@ -538,7 +276,7 @@ msgstr ""
 #.
 #. @param device [Y2Storage::BlkDevice]
 #. @return [Issue, nil]
-#: service/lib/agama/storage/config_checkers/md_raid.rb:284
+#: service/lib/agama/storage/config_checkers/md_raid.rb:287
 #, perl-brace-format
 msgid ""
 "The device '%{device}' cannot be formatted because it is part of the MD RAID "
@@ -590,18 +328,18 @@ msgstr "zařízení"
 #. Issue if the volume group name is missing.
 #.
 #. @return [Issue, nil]
-#: service/lib/agama/storage/config_checkers/volume_group.rb:76
+#: service/lib/agama/storage/config_checkers/volume_group.rb:77
 msgid "There is a volume group without name"
 msgstr "Skupina svazků není pojmenovaná"
 
 #. TRANSLATORS: %s is the replaced by a device alias (e.g., "pv1").
-#: service/lib/agama/storage/config_checkers/volume_group.rb:106
+#: service/lib/agama/storage/config_checkers/volume_group.rb:109
 #, c-format
 msgid "There is no LVM physical volume with alias '%s'"
 msgstr "Neexistuje žádný fyzický svazek LVM s aliasem '%s'"
 
 #. TRANSLATORS: %s is the replaced by a device alias (e.g., "pv1").
-#: service/lib/agama/storage/config_checkers/volume_group.rb:133
+#: service/lib/agama/storage/config_checkers/volume_group.rb:136
 #, c-format
 msgid ""
 "The list of target devices for the volume group '%s' is mixing reused "
@@ -611,7 +349,7 @@ msgstr ""
 "zařízení a nová zařízení"
 
 #. TRANSLATORS: %s is the replaced by a device alias (e.g., "disk1").
-#: service/lib/agama/storage/config_checkers/volume_group.rb:153
+#: service/lib/agama/storage/config_checkers/volume_group.rb:156
 #, c-format
 msgid "There is no target device for LVM physical volumes with alias '%s'"
 msgstr "Neexistuje žádné cílové zařízení pro fyzický svazek LVM s aliasem '%s'"
@@ -645,52 +383,37 @@ msgid "Shrinking is not supported by this device"
 msgstr "Toto zařízení nepodporuje zmenšování"
 
 #. Copy /etc/nvme/host* to keep NVMe working after installation, bsc#1238038
-#: service/lib/agama/storage/finisher.rb:145
+#: service/lib/agama/storage/finisher.rb:135
 msgid "Copying important installation files to the target system"
 msgstr "Kopírování důležitých instalačních souborů do cílového systému"
 
-#. Constructor
-#: service/lib/agama/storage/finisher.rb:186
-msgid "Writing Linux Security Modules configuration"
-msgstr "Zapisuji konfiguraci bezpečnostních modulů Linuxu"
-
 #. Step to write the bootloader configuration
-#: service/lib/agama/storage/finisher.rb:197
+#: service/lib/agama/storage/finisher.rb:170
 msgid "Installing bootloader"
 msgstr "Instalace zavaděče"
 
 #. Step to finish the Y2Storage configuration
-#: service/lib/agama/storage/finisher.rb:214
+#: service/lib/agama/storage/finisher.rb:187
 msgid "Adjusting storage configuration"
 msgstr "Nastavování konfigurace úložiště"
 
 #. Step to finish the iSCSI configuration
-#: service/lib/agama/storage/finisher.rb:225
+#: service/lib/agama/storage/finisher.rb:198
 msgid "Adjusting iSCSI configuration"
 msgstr "Nastavování konfigurace iSCSI"
 
 #. Step to configure the file-system snapshots
-#: service/lib/agama/storage/finisher.rb:236
+#: service/lib/agama/storage/finisher.rb:209
 msgid "Configuring file systems snapshots"
 msgstr "Konfigurovování snímků souborového systému"
 
 #. Step to copy the installation logs
-#: service/lib/agama/storage/finisher.rb:254
+#: service/lib/agama/storage/finisher.rb:227
 msgid "Copying logs"
 msgstr "Kopírování protokolů"
 
-#. Executes post-installation scripts
-#: service/lib/agama/storage/finisher.rb:288
-msgid "Running user-defined scripts"
-msgstr "Spouštění uživatelských skriptů"
-
-#. Executes post-installation scripts
-#: service/lib/agama/storage/finisher.rb:327
-msgid "Deploying user-defined files"
-msgstr "Nasazování uživatelsky definovaných souborů"
-
 #. Step to unmount the target file-systems
-#: service/lib/agama/storage/finisher.rb:346
+#: service/lib/agama/storage/finisher.rb:261
 msgid "Unmounting storage devices"
 msgstr "Odpojuji úložná zařízení"
 
@@ -718,46 +441,10 @@ msgstr "Přihlásit iSCSI cíle"
 msgid "Cannot login to iSCSI target %s"
 msgstr "Nepodařílo se přihlášení k iSCSI cíli %s"
 
-#. Probes storage devices and performs an initial proposal
-#.
-#. @param keep_config [Boolean] Whether to use the current storage config for calculating the
-#. proposal.
-#. @param keep_activation [Boolean] Whether to keep the current activation (e.g., provided LUKS
-#. passwords).
-#: service/lib/agama/storage/manager.rb:133
-msgid "Activating storage devices"
-msgstr "Aktivuji úložná zařízení"
-
-#: service/lib/agama/storage/manager.rb:134
-msgid "Probing storage devices"
-msgstr "Sonduji úložná zařízení"
-
-#: service/lib/agama/storage/manager.rb:135
-msgid "Calculating the storage proposal"
-msgstr "Vypočítávání návrhu úložiště"
-
-#. Prepares the partitioning to install the system
-#: service/lib/agama/storage/manager.rb:161
-msgid "Preparing bootloader proposal"
-msgstr "Připravuji návrh boot zavaděče"
-
-#. then also apply changes to that proposal
-#: service/lib/agama/storage/manager.rb:168
-msgid "Adding storage-related packages"
-msgstr "Přidávám balíčky související s úložištěm"
-
-#: service/lib/agama/storage/manager.rb:169
-msgid "Preparing the storage devices"
-msgstr "Připravuji úložná zařízení"
-
-#: service/lib/agama/storage/manager.rb:170
-msgid "Writing bootloader sysconfig"
-msgstr "Zapisuji konfiguraci boot zavaděče v sysconfig"
-
 #. Issue representing the proposal is not valid.
 #.
 #. @return [Issue]
-#: service/lib/agama/storage/proposal.rb:345
+#: service/lib/agama/storage/proposal.rb:305
 msgid "Cannot calculate a valid storage setup with the current configuration"
 msgstr ""
 "Pro současnou konfiguraci není možné vypočítat platné nastavení úložiště"
@@ -765,35 +452,220 @@ msgstr ""
 #. Issue to communicate a generic Y2Storage error.
 #.
 #. @return [Issue]
-#: service/lib/agama/storage/proposal.rb:356
+#: service/lib/agama/storage/proposal.rb:315
 msgid "A problem ocurred while calculating the storage setup"
 msgstr "Nastal problém při výpočtu nastavení úložiště"
 
-#. Returns an issue if there is no target device.
-#.
-#. @return [Issue, nil]
-#: service/lib/agama/storage/proposal_strategies/guided.rb:135
-msgid "No device selected for installation"
-msgstr "Není vybráno zařízení pro instalaci"
+#~ msgid "Analyze disks"
+#~ msgstr "Analyzovat disky"
 
-#. Returns an issue if any of the devices required for the proposal is not found
-#.
-#. @return [Issue, nil]
-#: service/lib/agama/storage/proposal_strategies/guided.rb:151
+#~ msgid "Configure software"
+#~ msgstr "Konfigurovat software"
+
+#~ msgid "Prepare disks"
+#~ msgstr "Připravit disky"
+
+#~ msgid "Install software"
+#~ msgstr "Instalovat software"
+
+#~ msgid "Configure the system"
+#~ msgstr "Konfigurovat systém"
+
+#~ msgid "Load software translations"
+#~ msgstr "Načíst překlady softwaru"
+
+#~ msgid "Load storage translations"
+#~ msgstr "Načíst překlady paměti"
+
+#~ msgid ""
+#~ "Trying to import a self signed certificate. Do you want to trust it and "
+#~ "register the product?"
+#~ msgstr ""
+#~ "Pokoušíte se importovat certifikát, který je podepsaný sám sebou. Chcete "
+#~ "mu důvěřovat a zaregistrovat tento produkt?"
+
+#~ msgid "Try again"
+#~ msgstr "Zkusit znovu"
+
+#~ msgid "Continue anyway"
+#~ msgstr "Přesto pokračovat"
+
+#~ msgid "Skip"
+#~ msgstr "Přeskočit"
+
+#~ msgid "Yes"
+#~ msgstr "Ano"
+
+#~ msgid "No"
+#~ msgstr "Ne"
+
 #, perl-brace-format
-msgid "The following selected device is not found in the system: %{devices}"
-msgid_plural ""
-"The following selected devices are not found in the system: %{devices}"
-msgstr[0] "Toto zvolené zařízení není v systému: %{devices}"
-msgstr[1] "Tato zvolená zařízení nejsou v systému: %{devices}"
-msgstr[2] "Tato zvolená zařízení nejsou v systému: %{devices}"
+#~ msgid ""
+#~ "No checksum for the file %{file} was found in the repository. This means "
+#~ "that although the file is part of the signed repository, the list of "
+#~ "checksums does not mention this file. Use it anyway?"
+#~ msgstr ""
+#~ "Pro soubor %{file} nebyl v repozitáři nalezen kontrolní součet. To "
+#~ "znamená, že ačkoliv je soubor součástí podepsaného repozitáře, seznam "
+#~ "kontrolních součtů tento soubor nezmiňuje. Chcete jej i přesto použít?"
 
-#. Recalculates the list of issues
-#: service/lib/agama/users.rb:154
-msgid ""
-"Defining a user, setting the root password or a SSH public key is required"
-msgstr ""
-"Definuji uživatele, nastavuji heslo roota nebo potřebuji veřejný klíč SSH"
+#, perl-brace-format
+#~ msgid ""
+#~ "The checksum of the file %{file} is \"%{digest}\" but the expected "
+#~ "checksum is unknown. This means that the origin and integrity of the file "
+#~ "cannot be verified. Use it anyway?"
+#~ msgstr ""
+#~ "Kontrolní součet souboru %{file} je \"%{digest}”, ale očekávaná hodnota "
+#~ "kontrolního součtu není známa. Původ a integrita souboru nemohou být "
+#~ "ověřeny. Chcete jej přesto použít?"
+
+#, perl-brace-format
+#~ msgid ""
+#~ "The expected checksum of file %{file} is \"%{found}\" but it was expected "
+#~ "to be \"%{expected}\". The file has changed by accident or by an attacker "
+#~ "since the creater signed it. Use it anyway?"
+#~ msgstr ""
+#~ "Očekávaný kontrolní součet souboru %{file} je \"%{found}”, avšak byl "
+#~ "očekáván \"%{expected}”. Buďto se soubor změnil náhodou nebo to po "
+#~ "publikování tvůrcem balíčku provedl útočník. Chcete jej i přesto použít?"
+
+#~ msgid "There was a problem running a package script."
+#~ msgstr "Objevil se problém se spuštěním balíčkového skriptu."
+
+#, perl-brace-format
+#~ msgid ""
+#~ "The file %{filename} from %{repo_url} is not digitally signed. The origin "
+#~ "and integrity of the file cannot be verified. Use it anyway?"
+#~ msgstr ""
+#~ "Soubor %{filename} z adresy %{repo_url} neobsahuje digitální podpis. "
+#~ "Původ a integrita souboru nemůže být ověřena. Chcete jej i přesto použít?"
+
+#, perl-brace-format
+#~ msgid ""
+#~ "The file %{filename} is not digitally signed. The origin and integrity of "
+#~ "the file cannot be verified. Use it anyway?"
+#~ msgstr ""
+#~ "Soubor %{filename} není digitálně podepsán. Původ a integrita souboru "
+#~ "nemůže být ověřena. Chcete jej i přesto použít?"
+
+#, perl-brace-format
+#~ msgid ""
+#~ "The key %{id} (%{name}) with fingerprint %{fingerprint} is unknown. Do "
+#~ "you want to trust this key?"
+#~ msgstr ""
+#~ "Klíč %{id} (%{name}) s otiskem %{fingerprint} není známý. Chcete tomuto "
+#~ "klíči důvěřovat?"
+
+#, perl-brace-format
+#~ msgid ""
+#~ "The file %{filename} from %{repo_url} is digitally signed with the "
+#~ "following unknown GnuPG key: %{key_id}. Use it anyway?"
+#~ msgstr ""
+#~ "Soubor %{filename} z adresy %{repo_url} je digitálně podepsán pomocí "
+#~ "neznámého GnuPG klíče: %{key_id}. Chcete jej i přesto použít?"
+
+#, perl-brace-format
+#~ msgid ""
+#~ "The file %{filename} is digitally signed with the following unknown GnuPG "
+#~ "key: %{key_id}. Use it anyway?"
+#~ msgstr ""
+#~ "Soubor %{filename} je digitálně podepsán pomocí neznámého GnuPG klíče: %"
+#~ "{key_id}. Chcete jej i přesto použít?"
+
+#, perl-brace-format
+#~ msgid ""
+#~ "The file %{filename} from %{repo_url} is digitally signed with the "
+#~ "following GnuPG key, but the integrity check failed: %{key_id} (%"
+#~ "{key_name}). Use it anyway?"
+#~ msgstr ""
+#~ "Soubor %{filename} z adresy %{repo_url} je digitálně podepsán pomocí "
+#~ "GnuPG klíče, ale kontrola integrity selhala: %{key_id} (%{key_name}). "
+#~ "Chcete jej i přesto použít?"
+
+#, perl-brace-format
+#~ msgid ""
+#~ "The file %{filename} is digitally signed with the following GnuPG key, "
+#~ "but the integrity check failed: %{key_id} (%{key_name}). Use it anyway?"
+#~ msgstr ""
+#~ "Soubor %{filename} je digitálně podepsán pomocí GnuPG klíče, ale kontrola "
+#~ "integrity selhala: %{key_id} (%{key_name}). Chcete jej i přesto použít?"
+
+#~ msgid "Trust"
+#~ msgstr "Věřit"
+
+#~ msgid "Refreshing repositories metadata"
+#~ msgstr "Obnovování metadat repozitáře"
+
+#~ msgid "Calculating the software proposal"
+#~ msgstr "Vypočítávání návrhu softwaru"
+
+#~ msgid "Initializing sources"
+#~ msgstr "Inicializuji zdroje"
+
+#, c-format
+#~ msgid "Adding service '%s' failed."
+#~ msgstr "Přidání služby ‘%s' se nezdařilo."
+
+#, c-format
+#~ msgid "Updating service '%s' failed."
+#~ msgstr "Aktualizace služby '%s' se nezdařila."
+
+#, c-format
+#~ msgid "Saving service '%s' failed."
+#~ msgstr "Uložení služby '%s' se nezdařilo."
+
+#, c-format
+#~ msgid "Refreshing service '%s' failed."
+#~ msgstr "Selhalo obnovení služby '%s'."
+
+#, c-format
+#~ msgid "Removing service '%s' failed."
+#~ msgstr "Odebrání služby '%s' se nezdařilo."
+
+#, c-format
+#~ msgid "Could not read repository \"%s\""
+#~ msgstr "Nelze načíst repozitář \"%s\""
+
+#~ msgid "Product not selected yet"
+#~ msgstr "Není vybrán žádný produkt"
+
+#~ msgid "Product must be registered"
+#~ msgstr "Produkt musí být zaregistrován"
+
+#, c-format
+#~ msgid "Found %s dependency issues."
+#~ msgstr "Nalezeno %s problémů v závislostech."
+
+#~ msgid "Writing Linux Security Modules configuration"
+#~ msgstr "Zapisuji konfiguraci bezpečnostních modulů Linuxu"
+
+#~ msgid "Running user-defined scripts"
+#~ msgstr "Spouštění uživatelských skriptů"
+
+#~ msgid "Deploying user-defined files"
+#~ msgstr "Nasazování uživatelsky definovaných souborů"
+
+#~ msgid "Calculating the storage proposal"
+#~ msgstr "Vypočítávání návrhu úložiště"
+
+#~ msgid "Adding storage-related packages"
+#~ msgstr "Přidávám balíčky související s úložištěm"
+
+#~ msgid "No device selected for installation"
+#~ msgstr "Není vybráno zařízení pro instalaci"
+
+#, perl-brace-format
+#~ msgid "The following selected device is not found in the system: %{devices}"
+#~ msgid_plural ""
+#~ "The following selected devices are not found in the system: %{devices}"
+#~ msgstr[0] "Toto zvolené zařízení není v systému: %{devices}"
+#~ msgstr[1] "Tato zvolená zařízení nejsou v systému: %{devices}"
+#~ msgstr[2] "Tato zvolená zařízení nejsou v systému: %{devices}"
+
+#~ msgid ""
+#~ "Defining a user, setting the root password or a SSH public key is required"
+#~ msgstr ""
+#~ "Definuji uživatele, nastavuji heslo roota nebo potřebuji veřejný klíč SSH"
 
 #~ msgid "Selecting Linux Security Modules"
 #~ msgstr "Vybírám bezpečnostní moduly Linuxu"

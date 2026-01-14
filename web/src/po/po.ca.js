@@ -21,6 +21,9 @@ export default {
   "%1$s at %2$s": [
     "%1$s a %2$s"
   ],
+  "%1$s keyboard - %2$s timezone": [
+    ""
+  ],
   "%1$s will be created as a partition at %2$s": [
     "%1$s es crearà com a partició a %2$s",
     "%1$s es crearan com a particions a %2$s"
@@ -36,6 +39,9 @@ export default {
   ],
   "%s [must be registered].": [
     "%s [ha d'estar registrat]."
+  ],
+  "%s and %d others": [
+    ""
   ],
   "%s disk": [
     "Disc %s"
@@ -237,8 +243,14 @@ export default {
   "Authentication by target": [
     "Autenticació per destinació"
   ],
+  "Auto": [
+    "Automàtica"
+  ],
   "Auto LUNs Scan": [
     "Escaneig automàtic de LUN"
+  ],
+  "Auto and manual": [
+    ""
   ],
   "Automatic": [
     "Automàtica"
@@ -246,11 +258,11 @@ export default {
   "Automatic (DHCP)": [
     "Automàtic (DHCP)"
   ],
-  "Automatic LUN scan is [disabled]. LUNs have to be manually       configured after activating a controller.": [
-    "L'exploració automàtica de LUN està [desactivada]. Els LUN s'han de configurar       manualment després d'activar un controlador."
+  "Automatic LUN scan is [disabled]. LUNs have to be manually configured after activating a controller.": [
+    "L'exploració automàtica de LUN està [desactivada]. Els LUN s'han de configurar manualment després d'activar un controlador."
   ],
-  "Automatic LUN scan is [enabled]. Activating a controller which is       running in NPIV mode will automatically configures all its LUNs.": [
-    "L'exploració automàtica de LUN està [activada]. L'activació d'un controlador       que s'executa en mode NPIV configurarà automàticament tots els seus LUN."
+  "Automatic LUN scan is [enabled]. Activating a controller which is running in NPIV mode will automatically configures all its LUNs.": [
+    "L'exploració automàtica de LUN està [activada]. L'activació d'un controlador que s'executa en mode NPIV configurarà automàticament tots els seus LUN."
   ],
   "Available products": [
     "Productes disponibles"
@@ -308,6 +320,9 @@ export default {
   ],
   "Btrfs with snapshots": [
     "Btrfs amb instantànies"
+  ],
+  "CPU": [
+    ""
   ],
   "Cancel": [
     "Cancel·la"
@@ -408,9 +423,6 @@ export default {
   "Close": [
     "Tanca"
   ],
-  "Configuration out of sync": [
-    "Configuració no sincronitzada"
-  ],
   "Configuration read from the iSCSI Boot Firmware Table (iBFT).": [
     "Configuració llegida a la taula del microprogramari d'arrencada iSCSI (iBFT)."
   ],
@@ -449,9 +461,6 @@ export default {
   ],
   "Confirm": [
     "Confirmeu-ho"
-  ],
-  "Confirm Installation": [
-    "Confirmeu la instal·lació"
   ],
   "Confirm that you really want to continue.": [
     "Confirmeu que realment voleu continuar."
@@ -504,9 +513,6 @@ export default {
   "Content": [
     "Contingut"
   ],
-  "Continue": [
-    "Continua"
-  ],
   "Continuing without installing the package can result in a broken system. In some cases the system might not even boot.": [
     "Continuar sense instal·lar el paquet pot resultar en un sistema trencat. En alguns casos, és possible que el sistema ni tan sols arrenqui."
   ],
@@ -554,6 +560,9 @@ export default {
   ],
   "DASD %s": [
     "DASD %s"
+  ],
+  "DHCP, %s": [
+    ""
   ],
   "DIAG": [
     "DIAG"
@@ -761,9 +770,6 @@ export default {
     "Ampliar la instal·lació més enllà del disc seleccionat actualment",
     "Amplia la instal·lació més enllà dels %d discs actuals"
   ],
-  "Extensions": [
-    "Extensions"
-  ],
   "F2FS": [
     "F2FS"
   ],
@@ -866,6 +872,9 @@ export default {
   "GiB": [
     "GiB"
   ],
+  "Go back": [
+    ""
+  ],
   "Go to network page": [
     "Ves a la pàgina de la xarxa"
   ],
@@ -912,6 +921,9 @@ export default {
   "IP settings": [
     "Paràmetres d'IP"
   ],
+  "IPs": [
+    ""
+  ],
   "IPv4": [
     "IPv4"
   ],
@@ -920,12 +932,6 @@ export default {
   ],
   "If a local media was used to run this installer, remove it before the next boot.": [
     "Si s'ha usat un mitjà local per executar aquest instal·lador, traieu-lo abans de la propera arrencada."
-  ],
-  "If you continue, partitions on your hard disk will be modified according to the provided installation settings.": [
-    "Si continueu, les particions del disc dur es modificaran segons la configuració d'instal·lació proporcionada."
-  ],
-  "If you want to disable this check, please specify \"inst.ay_check=0\" at kernel's command-line": [
-    "Si voleu desactivar aquesta comprovació, especifiqueu \"inst.ay_check=0\" a la línia d'ordres del nucli."
   ],
   "In progress": [
     "En curs"
@@ -960,32 +966,8 @@ export default {
   "Install": [
     "Instal·la"
   ],
-  "Install using an advanced configuration.": [
-    "Instal·la mitjançant una configuració avançada."
-  ],
-  "Install using device %s and deleting all its content.": [
-    "Instal·la al dispositiu %s suprimint-ne tot el contingut."
-  ],
-  "Install using device %s shrinking existing partitions as needed.": [
-    "Instal·la al dispositiu %s encongint-ne les particions existents segons calgui."
-  ],
-  "Install using device %s with a custom strategy to find the needed space.": [
-    "Instal·la al dispositiu %s amb una estratègia personalitzada per trobar l'espai necessari."
-  ],
-  "Install using device %s without modifying existing partitions.": [
-    "Instal·la al dispositiu %s sense modificar-ne les particions existents."
-  ],
-  "Install using several devices and deleting all its content.": [
-    "Instal·la a dispositius diversos suprimint-ne tot el contingut."
-  ],
-  "Install using several devices shrinking existing partitions as needed.": [
-    "Instal·la a dispositius diversos encongint-ne les particions existents segons calgui."
-  ],
-  "Install using several devices with a custom strategy to find the needed space.": [
-    "Instal·la a dispositius diversos amb una estratègia personalitzada per trobar l'espai necessari."
-  ],
-  "Install using several devices without modifying existing partitions.": [
-    "Instal·la a dispositius diversos sense modificar-ne les particions existents."
+  "Install now with potential data loss": [
+    ""
   ],
   "Installation devices": [
     "Dispositius per a la instal·lació"
@@ -1140,6 +1122,9 @@ export default {
   "Max channel": [
     "Canal màxim"
   ],
+  "Memory": [
+    ""
+  ],
   "MiB": [
     "MiB"
   ],
@@ -1205,8 +1190,8 @@ export default {
   "Move mount points": [
     "Mou els punts de muntatge"
   ],
-  "Move the mount points currently configured at the selected disks to logical                   volumes of this volume group.": [
-    "Mou els punts de muntatge configurats actualment als discs seleccionats                    als volums lògics d'aquest grup de volums."
+  "Move the mount points currently configured at the selected disks to logical volumes of this volume group.": [
+    "Mou els punts de muntatge configurats actualment als discs seleccionats als volums lògics d'aquest grup de volums."
   ],
   "Multipath": [
     "Multicamí"
@@ -1225,6 +1210,9 @@ export default {
   ],
   "Name": [
     "Nom"
+  ],
+  "Needs about %s": [
+    ""
   ],
   "Network": [
     "Xarxa"
@@ -1258,6 +1246,9 @@ export default {
   ],
   "No content found": [
     "No s'ha trobat contingut."
+  ],
+  "No data loss is expected": [
+    ""
   ],
   "No device is currently using this connection.": [
     "Cap dispositiu usa actualment aquesta connexió."
@@ -1340,9 +1331,6 @@ export default {
   "Not protected network": [
     "Xarxa no protegida"
   ],
-  "Not selected yet": [
-    "Encara no s'ha seleccionat."
-  ],
   "Not supported (%s)": [
     "No compatible (%s)"
   ],
@@ -1400,17 +1388,11 @@ export default {
   "Partitions to boot will be set up if needed at the following device.": [
     "Les particions per arrencar s'establiran, si cal, al dispositiu següent:"
   ],
-  "Partitions to boot will be set up if needed at the installation disk,           based on the location of the %s file system.": [
-    "Les particions per arrencar s'establiran, si cal, al disc d'instal·lació,            segons la ubicació del sistema de fitxers %s."
+  "Partitions to boot will be set up if needed at the installation disk, based on the location of the %s file system.": [
+    "Les particions per arrencar s'establiran, si cal, al disc d'instal·lació, segons la ubicació del sistema de fitxers %s."
   ],
-  "Partitions to boot will be set up if needed at the installation disk,         based on the location of the %s file system.": [
-    "Les particions per arrencar s'establiran, si cal, al disc d'instal·lació,          segons la ubicació del sistema de fitxers %s."
-  ],
-  "Partitions to boot will be set up if needed at the installation disk.         Currently %1$s, based on the location of the %2$s file system.": [
-    "Les particions per arrencar s'establiran, si cal, al disc d'instal·lació.          Actualment és %1$s, segons la ubicació del sistema de fitxers %2$s."
-  ],
-  "Partitions to boot will be set up if needed at the installation disk.       Currently %1$s, based on the location of the %2$s file system.": [
-    "Les particions per arrencar s'establiran, si cal, al disc d'instal·lació.        Actualment és %1$s, segons la ubicació del sistema de fitxers %2$s."
+  "Partitions to boot will be set up if needed at the installation disk. Currently %1$s, based on the location of the %2$s file system.": [
+    "Les particions per arrencar s'establiran, si cal, al disc d'instal·lació. Actualment és %1$s, segons la ubicació del sistema de fitxers %2$s."
   ],
   "Partitions to host \"system\" will be created if needed.": [
     "Si cal, es crearan particions per allotjar-hi el sistema."
@@ -1445,9 +1427,6 @@ export default {
   "PiB": [
     "PiB"
   ],
-  "Please, cancel and check the settings if you are unsure.": [
-    "Si us plau, cancel·leu i comproveu-ne la configuració si no n'esteu segur."
-  ],
   "Please, check whether it is running.": [
     "Si us plau, comproveu si s'executa."
   ],
@@ -1469,17 +1448,29 @@ export default {
   "Portal": [
     "Portal"
   ],
+  "Potential data loss": [
+    ""
+  ],
+  "Potential data loss affecting at least %s": [
+    ""
+  ],
   "Pre-installation checks": [
     "Comprovacions prèvies a la instal·lació"
   ],
   "Prefix length or netmask": [
     "Longitud del prefix o màscara de xarxa"
   ],
+  "Proceeding may result in data loss": [
+    ""
+  ],
+  "Proceeding may result in data loss affecting at least %s": [
+    ""
+  ],
   "Product is already registered": [
     "El producte ja està registrat."
   ],
-  "Protection for the information stored at           the new file systems, including data, programs, and system files.": [
-    "Protecció de la informació emmagatzemada            als nous sistemes de fitxers, incloses dades, programes i fitxers del sistema."
+  "Protection for the information stored at the new file systems, including data, programs, and system files.": [
+    "Protecció de la informació desada als sistemes de fitxers nous, incloses dades, programes i fitxers del sistema."
   ],
   "Provide email address": [
     "Proporcioneu una adreça de correu electrònic."
@@ -1535,15 +1526,6 @@ export default {
   "Reload": [
     "Torna a carregar"
   ],
-  "Reload now": [
-    "Torna a carregar"
-  ],
-  "Reloading data, please wait...": [
-    "Tornant a carregar les dades; espereu, si us plau..."
-  ],
-  "Reloading is required to get the latest data and avoid issues or data loss.": [
-    "Cal tornar-la a carregar per obtenir les dades més recents i evitar problemes o pèrdua de dades."
-  ],
   "Remove": [
     "Suprimeix"
   ],
@@ -1552,6 +1534,13 @@ export default {
   ],
   "Repository load failed": [
     "Ha fallat carregar el repositori."
+  ],
+  "Required packages": [
+    ""
+  ],
+  "Required packages and %s pattern": [
+    "",
+    ""
   ],
   "Rescan devices": [
     "Torna a escanejar els dispositius"
@@ -1576,6 +1565,9 @@ export default {
   ],
   "Review and fix": [
     "Revisa i corregeix"
+  ],
+  "Review the summary below. If anything seems incorrect or you have doubts, go back and adjust the settings before proceeding.": [
+    ""
   ],
   "Root authentication methods": [
     "Mètodes d'autenticació d'arrel"
@@ -1812,11 +1804,11 @@ export default {
   "Targets": [
     "Destinacions"
   ],
+  "Temporary name that may change after reboot or network changes": [
+    ""
+  ],
   "The LVM group '%1$s' will remain at %2$s": [
     "El grup d'LVM %1$s es mantindrà a %2$s"
-  ],
-  "The configuration has been updated externally.": [
-    "La configuració s'ha actualitzat externament."
   ],
   "The configuration must be adapted to address the following issue:": [
     "La configuració s'ha d'adaptar per solucionar el problema següent:",
@@ -1830,9 +1822,6 @@ export default {
   ],
   "The connection will be used only during installation and not available in the installed system.": [
     "La connexió només s'usarà durant la instal·lació i no estarà disponible al sistema instal·lat."
-  ],
-  "The content may be deleted": [
-    "El contingut pot suprimir-se"
   ],
   "The current configuration will result in an attempt to create a %1$s of %2$s.": [
     "La configuració actual tindrà com a resultat un intent de crear una %1$s de %2$s."
@@ -1925,12 +1914,6 @@ export default {
   "The installation on your machine is complete.": [
     "La instal·lació a la màquina s'ha completat."
   ],
-  "The installation will take": [
-    "La instal·lació necessitarà"
-  ],
-  "The installation will take %s including:": [
-    "La instal·lació necessitarà %s, incloent-hi el següent:"
-  ],
   "The installer interface is no longer available, so you can safely close this window.": [
     "La interfície de l'instal·lador ja no està disponible, així que podeu tancar aquesta finestra de manera segura."
   ],
@@ -1959,8 +1942,8 @@ export default {
   "The modal selector offers a simplified interface designed for quick and straightforward use, without overwhelming the user.": [
     "El selector modal ofereix una interfície simplificada dissenyada per a un ús ràpid i senzill, sense sobrecarregar l'usuari."
   ],
-  "The needed LVM physical volumes will be added as partitions on the chosen disks,                 based on the sizes of the logical volumes. If you select more than one disk, the                 physical volumes may be distributed along several disks.": [
-    "Els volums físics d'LVM necessaris s'afegiran com a particions als discs triats,                  segons les mides dels volums lògics. Si seleccioneu més d'un disc,                  els volums físics poden estar distribuïts en diversos discs."
+  "The needed LVM physical volumes will be added as partitions on the chosen disks, based on the sizes of the logical volumes. If you select more than one disk, the physical volumes may be distributed along several disks.": [
+    "Els volums físics d'LVM necessaris s'afegiran com a particions als discs triats, segons les mides dels volums lògics. Si seleccioneu més d'un disc, els volums físics poden estar distribuïts en diversos discs."
   ],
   "The password is weak": [
     "La contrasenya és feble"
@@ -2016,17 +1999,11 @@ export default {
   "The system does not support Wi-Fi connections, probably because of missing or disabled hardware.": [
     "El sistema no admet connexions de wifi, probablement a causa de maquinari que manca o que està inhabilitat."
   ],
-  "The system will use %s as its default language.": [
-    "El sistema usarà el %s com a llengua per defecte."
-  ],
   "The whole device will be used for %s": [
     "S'usarà el dispositiu sencer per a %s"
   ],
   "The zFCP disk was not activated.": [
     "El disc zFCP no s'ha activat."
-  ],
-  "There are no disks available for the installation.": [
-    "No hi ha discs disponibles per a la instal·lació."
   ],
   "There are not disks available for the installation. You may need to configure some device.": [
     "No hi ha discs disponibles per a la instal·lació. És possible que hàgiu de configurar algun dispositiu."
@@ -2041,9 +2018,6 @@ export default {
   "There is %d destructive action planned affecting %s": [
     "Hi ha %d acció destructiva planificada que afecta %s",
     "Hi ha %d accions destructives planificades que afecten %s"
-  ],
-  "These are the most relevant installation settings. Feel free to browse the sections in the menu for further details.": [
-    "Aquests són els paràmetres d'instal·lació més rellevants. No dubteu a navegar per les seccions del menú per a més detalls."
   ],
   "These are the settings for the product to install. The installer language and keyboard layout can be adjusted via the [settings panel] accessible from the top bar.": [
     "Aquests són els paràmetres per instal·lar el producte. La llengua de l'instal·lador i la disposició del teclat es poden ajustar a [settings panel] accessible des de la barra superior."
@@ -2098,9 +2072,6 @@ export default {
   ],
   "Tmpfs": [
     "Tmpfs"
-  ],
-  "To ensure the new system is able to boot, the installer may need to create or configure some           partitions in the appropriate disk.": [
-    "Per assegurar que el nou sistema pugui arrencar, l'instal·lador potser haurà de crear o configurar algunes            particions al disc apropiat."
   ],
   "To ensure the new system is able to boot, the installer may need to create or configure some partitions in the appropriate disk.": [
     "Per garantir que el sistema nou pugui arrencar, és possible que l'instal·lador hagi de crear o configurar algunes particions al disc adequat."
