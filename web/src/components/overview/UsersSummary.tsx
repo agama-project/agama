@@ -21,14 +21,14 @@
  */
 
 import React from "react";
-import { sprintf } from "sprintf-js";
 import { useProgressTracking } from "~/hooks/use-progress-tracking";
 import { useConfig } from "~/hooks/model/config";
 import { useIssues } from "~/hooks/model/issue";
-import { USER } from "~/routes/paths";
-import { _ } from "~/i18n";
 import Summary from "~/components/core/Summary";
 import Link from "~/components/core/Link";
+import Text from "~/components/core/Text";
+import { USER } from "~/routes/paths";
+import { _ } from "~/i18n";
 
 const rootConfigured = (config) => {
   if (!config.root) return false;
@@ -59,11 +59,18 @@ const Value = () => {
   if (root && !user) return _("Configured for the root user");
 
   const userName = config.user.userName;
-  // TRANSLATORS: %s is a username like 'jdoe'
-  if (root) return sprintf(_("Configured for root and user '%s'"), userName);
+  const text = root
+    ? // TRANSLATORS: %s is a username like 'jdoe'
+      _("Configured for root and user %s")
+    : // TRANSLATORS: %s is a username like 'jdoe'
+      _("Configured for user %s");
+  const [textStart, textEnd] = text.split("%s");
 
-  // TRANSLATORS: %s is a username like 'jdoe'
-  return sprintf(_("Configured for user '%s'"), userName);
+  return (
+    <>
+      {textStart} <Text isBold>{userName}</Text> {textEnd}
+    </>
+  );
 };
 
 /**
