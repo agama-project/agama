@@ -23,20 +23,14 @@
 import React from "react";
 import { _ } from "~/i18n";
 import ProgressReport from "./ProgressReport";
-import { InstallationPhase } from "~/types/status";
-import { ROOT as PATHS } from "~/routes/paths";
-import { Navigate } from "react-router";
-import { useInstallerStatus, useInstallerStatusChanges } from "~/queries/status";
+import Page from "./Page";
 
 function InstallationProgress() {
-  const { phase } = useInstallerStatus({ suspense: true });
-  useInstallerStatusChanges();
-
-  if (phase !== InstallationPhase.Install) {
-    return <Navigate to={PATHS.root} replace />;
-  }
-
-  return <ProgressReport title={_("Installing the system, please wait...")} />;
+  return (
+    <Page showInstallerOptions={false}>
+      <ProgressReport title={_("Installing the system, please wait...")} />;
+    </Page>
+  );
 }
 
 export default InstallationProgress;

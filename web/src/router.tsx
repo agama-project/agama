@@ -106,13 +106,8 @@ const router = () =>
       element: <LoginPage />,
     },
     {
-      element: <Outlet />,
-      children: [
-        {
-          path: PATHS.installationExit,
-          element: <InstallationExit />,
-        },
-      ],
+      path: PATHS.installationExit,
+      element: <InstallationExit />,
     },
     {
       path: PATHS.root,

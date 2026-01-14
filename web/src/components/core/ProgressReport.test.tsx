@@ -23,34 +23,28 @@
 import React from "react";
 
 import { screen } from "@testing-library/react";
-import { plainRender } from "~/test-utils";
-
+import { mockProgresses, plainRender } from "~/test-utils";
 import { ProgressReport } from "~/components/core";
-
-let mockProgress;
-
-jest.mock("~/queries/progress", () => ({
-  ...jest.requireActual("~/queries/progress"),
-  useProgress: (service) => mockProgress[service],
-}));
 
 describe("ProgressReport", () => {
   describe("when there are details of the storage service", () => {
     beforeEach(() => {
-      mockProgress = {
-        manager: {
-          message: "Partition disks",
-          current: 1,
-          total: 3,
+      mockProgresses([
+        {
+          scope: "manager",
+          step: "Partition disks",
+          index: 1,
+          size: 3,
           steps: ["Partition disks", "Install software", "Install bootloader"],
         },
-        storage: {
-          message: "Doing some partitioning",
-          current: 1,
-          total: 1,
-          finished: false,
+        {
+          scope: "storage",
+          step: "Doing some partitioning",
+          index: 1,
+          size: 1,
+          steps: ["Doing some partitioning"],
         },
-      };
+      ]);
     });
 
     it("shows the progress including the details", () => {
@@ -67,20 +61,22 @@ describe("ProgressReport", () => {
 
   describe("when there are details of the software service", () => {
     beforeEach(() => {
-      mockProgress = {
-        manager: {
-          message: "Installing software",
-          current: 2,
-          total: 3,
+      mockProgresses([
+        {
+          scope: "manager",
+          step: "Installing software",
+          index: 2,
+          size: 3,
           steps: ["Partition disks", "Install software", "Install bootloader"],
         },
-        software: {
-          message: "Installing vim",
-          current: 5,
-          total: 200,
-          finished: false,
+        {
+          scope: "software",
+          step: "Installing vim",
+          index: 5,
+          size: 200,
+          steps: ["Installing vim"],
         },
-      };
+      ]);
     });
 
     it("shows the progress including the details", () => {

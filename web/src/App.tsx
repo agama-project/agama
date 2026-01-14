@@ -21,14 +21,14 @@
  */
 
 import React, { useEffect } from "react";
-import { Navigate, Outlet, useLocation } from "react-router";
+import { Outlet, useLocation } from "react-router";
 import { useStatusChanges, useStatus } from "~/hooks/model/status";
 import { useSystemChanges } from "~/hooks/model/system";
 import { useProposalChanges } from "~/hooks/model/proposal";
 import { useIssuesChanges } from "~/hooks/model/issue";
 import { useProductInfo } from "~/hooks/model/config/product";
-import { ROOT } from "~/routes/paths";
 import { useQueryClient } from "@tanstack/react-query";
+import { InstallationFinished, InstallationProgress } from "./components/core";
 
 /**
  * Content guard and flow control component.
@@ -49,13 +49,11 @@ const Content = () => {
   });
 
   if (stage === "installing") {
-    console.log("Navigating to the installation progress page");
-    return <Navigate to={ROOT.installationProgress} />;
+    return <InstallationProgress />;
   }
 
   if (stage === "finished") {
-    console.log("Navigating to the finished page");
-    return <Navigate to={ROOT.installationFinished} />;
+    return <InstallationFinished />;
   }
 
   return <Outlet />;

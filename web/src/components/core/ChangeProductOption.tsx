@@ -27,12 +27,14 @@ import { useHref, useLocation } from "react-router";
 import { PRODUCT as PATHS, SIDE_PATHS } from "~/routes/paths";
 import { _ } from "~/i18n";
 import { useSystem } from "~/hooks/model/system";
+import { useStatus } from "~/hooks/model/status";
 
 /**
  * DropdownItem Option for navigating to the selection product.
  */
 export default function ChangeProductOption({ children, ...props }: Omit<DropdownItemProps, "to">) {
   const { products } = useSystem();
+  const { stage } = useStatus();
   // const registration = useRegistration();
   const currentLocation = useLocation();
   const to = useHref(PATHS.changeProduct);
@@ -40,6 +42,7 @@ export default function ChangeProductOption({ children, ...props }: Omit<Dropdow
   if (products.length <= 1) return null;
   // if (registration?.registered) return null;
   if (SIDE_PATHS.includes(currentLocation.pathname)) return null;
+  if (stage !== "configuring") return null;
 
   return (
     <DropdownItem to={to} {...props}>

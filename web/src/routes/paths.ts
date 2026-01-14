@@ -53,7 +53,7 @@ const ROOT = {
   installationProgress: "/installation/progress",
   installationFinished: "/installation/finished",
   installationExit: "/installation/exit",
-  logs: "/api/manager/logs/store",
+  logs: "/api/v2/private/download_logs",
 };
 
 const USER = {

@@ -22,16 +22,11 @@
 
 import React from "react";
 import { screen } from "@testing-library/react";
-import { plainRender } from "~/test-utils";
+import { installerRender, mockStage } from "~/test-utils";
 import type { Storage } from "~/model/config";
 import InstallationFinished from "~/components/core/InstallationFinished";
 
 jest.mock("~/components/core/InstallerOptions", () => () => <div>Installer Options</div>);
-
-jest.mock("~/queries/status", () => ({
-  ...jest.requireActual("~/queries/status"),
-  useInstallerStatus: () => ({ isBusy: false, useIguana: false, phase: 3, canInstall: false }),
-}));
 
 type storageConfigType = "guided" | "raw";
 type guidedEncryption = {
@@ -95,28 +90,29 @@ jest.mock("~/hooks/model/config", () => ({
 
 const mockFinishInstallation = jest.fn();
 
-jest.mock("~/model/manager", () => ({
-  ...jest.requireActual("~/model/manager"),
+jest.mock("~/api", () => ({
+  ...jest.requireActual("~/api"),
   finishInstallation: () => mockFinishInstallation(),
 }));
 
 describe("InstallationFinished", () => {
   beforeEach(() => {
     mockUseExtendedConfigFn.mockReturnValue(mockStorageConfig("guided", null));
+    mockStage("finished");
   });
 
   it("shows the finished installation screen", () => {
-    plainRender(<InstallationFinished />);
+    installerRender(<InstallationFinished />);
     screen.getByText("Congratulations!");
   });
 
   it("shows a 'Reboot' button", () => {
-    plainRender(<InstallationFinished />);
+    installerRender(<InstallationFinished />);
     screen.getByRole("button", { name: /Reboot/i });
   });
 
   it("reboots the system if the user clicks on 'Reboot' button", async () => {
-    const { user } = plainRender(<InstallationFinished />);
+    const { user } = installerRender(<InstallationFinished />);
     const rebootButton = screen.getByRole("button", { name: "Reboot" });
     await user.click(rebootButton);
     expect(mockFinishInstallation).toHaveBeenCalled();
@@ -139,7 +135,7 @@ describe("InstallationFinished", () => {
       });
 
       it("shows the TPM reminder", async () => {
-        plainRender(<InstallationFinished />);
+        installerRender(<InstallationFinished />);
         await screen.findAllByText(/TPM/);
       });
     });
@@ -150,7 +146,7 @@ describe("InstallationFinished", () => {
       });
 
       it("does not show the TPM reminder", async () => {
-        plainRender(<InstallationFinished />);
+        installerRender(<InstallationFinished />);
         expect(screen.queryAllByText(/TPM/)).toHaveLength(0);
       });
     });
@@ -168,7 +164,7 @@ describe("InstallationFinished", () => {
       });
 
       it("shows the TPM reminder", async () => {
-        plainRender(<InstallationFinished />);
+        installerRender(<InstallationFinished />);
         await screen.findAllByText(/TPM/);
       });
     });
@@ -179,7 +175,7 @@ describe("InstallationFinished", () => {
       });
 
       it("does not show the TPM reminder", async () => {
-        plainRender(<InstallationFinished />);
+        installerRender(<InstallationFinished />);
         expect(screen.queryAllByText(/TPM/)).toHaveLength(0);
       });
     });

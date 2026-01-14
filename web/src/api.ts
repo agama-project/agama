@@ -78,6 +78,8 @@ const activateStorageAction = () => postAction({ activateStorage: null });
 
 const probeStorageAction = () => postAction({ probeStorage: null });
 
+const finishInstallation = () => postAction({ finish: "reboot" });
+
 /**
  * @todo Adapt jobs to the new API.
  */
@@ -100,6 +102,7 @@ export {
   configureL10nAction,
   activateStorageAction,
   probeStorageAction,
+  finishInstallation,
   getStorageJobs,
 };
 

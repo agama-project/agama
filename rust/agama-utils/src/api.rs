@@ -49,7 +49,7 @@ mod proposal;
 pub use proposal::Proposal;
 
 mod action;
-pub use action::Action;
+pub use {action::Action, action::FinishMethod};
 
 pub mod bootloader;
 pub mod files;

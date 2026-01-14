@@ -32,27 +32,34 @@ import {
   GridItem,
 } from "@patternfly/react-core";
 import { _ } from "~/i18n";
+import Page from "./Page";
 
 export default function InstallationExit() {
   return (
-    <Bullseye>
-      <Grid hasGutter>
-        <GridItem sm={8} smOffset={2}>
-          <Card>
-            <CardBody>
-              <EmptyState variant="xl" titleText={_("Your system is rebooting")} headingLevel="h1">
-                <EmptyStateBody>
-                  <Content component="p">
-                    {_(
-                      "The installer interface is no longer available, so you can safely close this window.",
-                    )}
-                  </Content>
-                </EmptyStateBody>
-              </EmptyState>
-            </CardBody>
-          </Card>
-        </GridItem>
-      </Grid>
-    </Bullseye>
+    <Page variant="minimal">
+      <Bullseye>
+        <Grid hasGutter>
+          <GridItem sm={8} smOffset={2}>
+            <Card>
+              <CardBody>
+                <EmptyState
+                  variant="xl"
+                  titleText={_("Your system is rebooting")}
+                  headingLevel="h1"
+                >
+                  <EmptyStateBody>
+                    <Content component="p">
+                      {_(
+                        "The installer interface is no longer available, so you can safely close this window.",
+                      )}
+                    </Content>
+                  </EmptyStateBody>
+                </EmptyState>
+              </CardBody>
+            </Card>
+          </GridItem>
+        </Grid>
+      </Bullseye>
+    </Page>
   );
 }

@@ -55,6 +55,7 @@ function useStatusChanges() {
   const queryClient = useQueryClient();
   const client = useInstallerClient();
 
+  // FIXME: refactor to use a single subscription.
   useEffect(() => {
     if (!client) return;
 
@@ -78,6 +79,19 @@ function useStatusChanges() {
         // Only set query data if progresses have changed
         if (newProgresses && !isArrayEqual(newProgresses, data.progresses)) {
           return { ...data, progresses: newProgresses };
+        }
+      });
+    });
+  }, [client, queryClient]);
+
+  useEffect(() => {
+    if (!client) return;
+
+    return client.onEvent(({ type, stage }) => {
+      if (!type && !stage) return;
+      queryClient.setQueryData(["status"], (data: Status) => {
+        if (type === "StageChanged") {
+          return { ...data, stage };
         }
       });
     });

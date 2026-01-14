@@ -21,12 +21,8 @@
 use std::str::FromStr;
 
 use agama_autoinstall::{ConfigAutoLoader, ScriptsRunner};
-use agama_lib::{
-    auth::AuthToken,
-    http::BaseHTTPClient,
-    manager::{FinishMethod, ManagerHTTPClient},
-};
-use agama_utils::kernel_cmdline::KernelCmdline;
+use agama_lib::{auth::AuthToken, http::BaseHTTPClient, manager::ManagerHTTPClient};
+use agama_utils::{api::FinishMethod, kernel_cmdline::KernelCmdline};
 use anyhow::anyhow;
 
 const API_URL: &str = "http://localhost/api";
