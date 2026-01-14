@@ -21,12 +21,18 @@ export default {
   "%1$s at %2$s": [
     "%1$s laitteella %2$s"
   ],
+  "%1$s keyboard - %2$s timezone": [
+    ""
+  ],
   "%1$s will be created as a partition at %2$s": [
     "%1$s luodaan osiona levylle %2$s",
     "%1$s luodaan osioina levylle %2$s"
   ],
   "%1$s will still contain the LVM group '%2$s' and any partition needed to boot": [
     "%1$s sisältää edelleen LVM-ryhmän ”%2$s” sekä käynnistämiseen tarvittavat osiot"
+  ],
+  "%1$s, %2$s and [%3$d more]": [
+    ""
   ],
   "%d of %d": [
     "%d / %d"
@@ -36,6 +42,12 @@ export default {
   ],
   "%s [must be registered].": [
     "%s [tulee olla rekisteröity]."
+  ],
+  "%s and %d others": [
+    ""
+  ],
+  "%s and %s": [
+    ""
   ],
   "%s disk": [
     "%s-levy"
@@ -58,6 +70,9 @@ export default {
   ],
   "%s with %d partitions": [
     "%s-osiotaulu, %d osiota"
+  ],
+  "(step %s of %s)": [
+    ""
   ],
   "A %1$s of %2$s will be created for %3$s if possible": [
     "%1$s / %2$s tullaan luomaan kohteelle %3$s jos mahdollista"
@@ -240,17 +255,20 @@ export default {
   "Auto LUNs Scan": [
     "Automaattinen LUN-skannaus"
   ],
+  "Auto and manual": [
+    ""
+  ],
   "Automatic": [
     "Automaattinen"
   ],
   "Automatic (DHCP)": [
     "Automaattinen (DHCP)"
   ],
-  "Automatic LUN scan is [disabled]. LUNs have to be manually       configured after activating a controller.": [
-    "Automaattinen LUN-skannaus on [pois käytöstä]. LUNien asetukset tulee määrittää       käsin ohjaimen aktivoinnin jälkeen."
+  "Automatic LUN scan is [disabled]. LUNs have to be manually configured after activating a controller.": [
+    "Automaattinen LUN-skannaus on [pois käytöstä]. LUNien asetukset tulee määrittää käsin ohjaimen aktivoinnin jälkeen."
   ],
-  "Automatic LUN scan is [enabled]. Activating a controller which is       running in NPIV mode will automatically configures all its LUNs.": [
-    "Automaattinen LUN-skannaus on [käytössä]. NPIV-tilassa toimivan ohjaimen       aktivoiminen määrittää automaattisesti kaikkien LUNien asetukset."
+  "Automatic LUN scan is [enabled]. Activating a controller which is running in NPIV mode will automatically configures all its LUNs.": [
+    "Automaattinen LUN-skannaus on [käytössä]. NPIV-tilassa toimivan ohjaimen aktivoiminen määrittää automaattisesti kaikkien LUNien asetukset."
   ],
   "Available products": [
     "Saatavilla olevat tuotteet"
@@ -308,6 +326,9 @@ export default {
   ],
   "Btrfs with snapshots": [
     "Btrfs tilannevedoksilla"
+  ],
+  "CPU": [
+    ""
   ],
   "Cancel": [
     "Peru"
@@ -408,9 +429,6 @@ export default {
   "Close": [
     "Sulje"
   ],
-  "Configuration out of sync": [
-    "Asetukset eivät ajan tasalla"
-  ],
   "Configuration read from the iSCSI Boot Firmware Table (iBFT).": [
     "Asetukset luettu kohteesta iSCSI Boot Firmware Table (iBFT)."
   ],
@@ -449,9 +467,6 @@ export default {
   ],
   "Confirm": [
     "Vahvista"
-  ],
-  "Confirm Installation": [
-    "Vahvista asentaminen"
   ],
   "Confirm that you really want to continue.": [
     "Vahvista että haluat todella jatkaa."
@@ -504,9 +519,6 @@ export default {
   "Content": [
     "Sisältö"
   ],
-  "Continue": [
-    "Jatka"
-  ],
   "Continuing without installing the package can result in a broken system. In some cases the system might not even boot.": [
     "Jatkaminen asentamatta pakettia voi johtaa rikkinäiseen järjestelmään. Joissain tapauksissa järjestelmä ei välttämättä edes käynnisty."
   ],
@@ -554,6 +566,12 @@ export default {
   ],
   "DASD %s": [
     "DASD %s"
+  ],
+  "DHCP and %s": [
+    ""
+  ],
+  "DHCP, %s": [
+    ""
   ],
   "DIAG": [
     "DIAG"
@@ -761,9 +779,6 @@ export default {
     "Laajenna asennusta käyttämään muutakin kuin nykyistä levyä",
     "Laajenna asennusta käyttämään muutakin kuin nykyisiä %d levyjä"
   ],
-  "Extensions": [
-    "Laajennukset"
-  ],
   "F2FS": [
     "F2FS"
   ],
@@ -866,6 +881,9 @@ export default {
   "GiB": [
     "GiB"
   ],
+  "Go back": [
+    ""
+  ],
   "Go to network page": [
     "Mene verkko-sivulle"
   ],
@@ -912,6 +930,9 @@ export default {
   "IP settings": [
     "IP-asetukset"
   ],
+  "IPs": [
+    ""
+  ],
   "IPv4": [
     "IPv4"
   ],
@@ -920,12 +941,6 @@ export default {
   ],
   "If a local media was used to run this installer, remove it before the next boot.": [
     "Jos paikallista mediaa käytettiin tämän asennusohjelman suorittamiseen, irrota media ennen seuraavaa uudelleenkäynnistystä."
-  ],
-  "If you continue, partitions on your hard disk will be modified according to the provided installation settings.": [
-    "Jos jatkat, kiintolevyn osioita muokataan asennusasetusten mukaisesti."
-  ],
-  "If you want to disable this check, please specify \"inst.ay_check=0\" at kernel's command-line": [
-    "Jos haluat poistaa tämän tarkistuksen, määritä \"inst.ay_check=0\" Linux-ytimen komentoriville"
   ],
   "In progress": [
     "Käynnissä"
@@ -960,32 +975,8 @@ export default {
   "Install": [
     "Asenna"
   ],
-  "Install using an advanced configuration.": [
-    "Asenna käyttäen edistyneitä asetuksia."
-  ],
-  "Install using device %s and deleting all its content.": [
-    "Asenna käyttäen laitetta %s, poistaen kaiken sen nykyisen sisällön."
-  ],
-  "Install using device %s shrinking existing partitions as needed.": [
-    "Asenna käyttäen laitetta %s, pienentäen olemassa olevia osioita tarvittaessa."
-  ],
-  "Install using device %s with a custom strategy to find the needed space.": [
-    "Asenna käyttäen laitetta %s, löytäen tarvittavan tilan mukautetulla tavalla."
-  ],
-  "Install using device %s without modifying existing partitions.": [
-    "Asenna käyttäen laitetta %s, muuttamatta olevia osioita."
-  ],
-  "Install using several devices and deleting all its content.": [
-    "Asenna käyttäen useita laitteita, poistaen kaiken nykyisen sisällön."
-  ],
-  "Install using several devices shrinking existing partitions as needed.": [
-    "Asenna käyttäen useita laitteita, pienentäen olemassa olevia osioita tarvittaessa."
-  ],
-  "Install using several devices with a custom strategy to find the needed space.": [
-    "Asenna käyttäen useita laitteita, löytäen tarvittavan tilan mukautetulla tavalla."
-  ],
-  "Install using several devices without modifying existing partitions.": [
-    "Asenna käyttäen useita laitteita, muuttamatta olevia osioita."
+  "Install now with potential data loss": [
+    ""
   ],
   "Installation devices": [
     "Asennuslaitteet"
@@ -1140,6 +1131,9 @@ export default {
   "Max channel": [
     "Maksimikanava"
   ],
+  "Memory": [
+    ""
+  ],
   "MiB": [
     "MiB"
   ],
@@ -1205,8 +1199,8 @@ export default {
   "Move mount points": [
     "Siirrä liitoskohtia"
   ],
-  "Move the mount points currently configured at the selected disks to logical                   volumes of this volume group.": [
-    "Siirrä nykyisten valittujen levyjen asetettuja liitoskohtia tämän                   taltioryhmän loogisille taltioille."
+  "Move the mount points currently configured at the selected disks to logical volumes of this volume group.": [
+    "Siirrä nykyisten valittujen levyjen asetettuja liitoskohtia tämän taltioryhmän loogisille taltioille."
   ],
   "Multipath": [
     "Multipath"
@@ -1225,6 +1219,9 @@ export default {
   ],
   "Name": [
     "Nimi"
+  ],
+  "Needs about %s": [
+    ""
   ],
   "Network": [
     "Verkko"
@@ -1258,6 +1255,9 @@ export default {
   ],
   "No content found": [
     "Sisältöä ei löytynyt"
+  ],
+  "No data loss is expected": [
+    ""
   ],
   "No device is currently using this connection.": [
     "Mikään laite ei käytä tätä yhteyttä."
@@ -1340,9 +1340,6 @@ export default {
   "Not protected network": [
     "Ei suojattu verkko"
   ],
-  "Not selected yet": [
-    "Ei valittu vielä"
-  ],
   "Not supported (%s)": [
     "Ei tuettu (%s)"
   ],
@@ -1400,17 +1397,11 @@ export default {
   "Partitions to boot will be set up if needed at the following device.": [
     "Käynnistämiseen tarvittavat osiot otetaan tarvittaessa käyttöön seuraavalta laitteelta."
   ],
-  "Partitions to boot will be set up if needed at the installation disk,           based on the location of the %s file system.": [
-    "Käynnistämiseen tarvittavat osiot otetaan käyttöön tarvittaessa asennuslevyltä,           perustuen %s-tiedostojärjestelmän sijaintiin."
+  "Partitions to boot will be set up if needed at the installation disk, based on the location of the %s file system.": [
+    "Käynnistämiseen tarvittavat osiot otetaan käyttöön tarvittaessa asennuslevyltä, perustuen %s-tiedostojärjestelmän sijaintiin."
   ],
-  "Partitions to boot will be set up if needed at the installation disk,         based on the location of the %s file system.": [
-    "Käynnistämiseen tarvittavat osiot otetaan tarvittaessa käyttöön asennuslevyltä,          perustuen %s-tiedostojärjestelmän sijaintiin."
-  ],
-  "Partitions to boot will be set up if needed at the installation disk.         Currently %1$s, based on the location of the %2$s file system.": [
-    "Käynnistämiseen tarvittavat osiot otetaan tarvittaessa käyttöön asennuslevyltä.      Tällä hetkellä kyseessä on %1$s, perustuen%2$s-tiedostojärjestelmän sijaintiin."
-  ],
-  "Partitions to boot will be set up if needed at the installation disk.       Currently %1$s, based on the location of the %2$s file system.": [
-    "Käynnistämiseen tarvittavat osiot otetaan tarvittaessa käyttöön asennuslevyltä.      Tällä hetkellä kyseessä on %1$s, perustuen %2$s-tiedostojärjestelmän sijaintiin."
+  "Partitions to boot will be set up if needed at the installation disk. Currently %1$s, based on the location of the %2$s file system.": [
+    "Käynnistämiseen tarvittavat osiot otetaan tarvittaessa käyttöön asennuslevyltä. Tällä hetkellä kyseessä on %1$s, perustuen %2$s-tiedostojärjestelmän sijaintiin."
   ],
   "Partitions to host \"system\" will be created if needed.": [
     "Järjestelmätiedostojen tarvitsemat osiot luodaan tarvittaessa."
@@ -1445,9 +1436,6 @@ export default {
   "PiB": [
     "PiB"
   ],
-  "Please, cancel and check the settings if you are unsure.": [
-    "Jos et ole varma, peru ja tarkista asetukset."
-  ],
   "Please, check whether it is running.": [
     "Tarkista onko se käynnissä."
   ],
@@ -1469,17 +1457,29 @@ export default {
   "Portal": [
     "Portaali"
   ],
+  "Potential data loss": [
+    ""
+  ],
+  "Potential data loss affecting at least %s": [
+    ""
+  ],
   "Pre-installation checks": [
     "Ennen asennusta tehtävät tarkistukset"
   ],
   "Prefix length or netmask": [
     "Etuliitteen pituus tai verkkomaski"
   ],
+  "Proceeding may result in data loss": [
+    ""
+  ],
+  "Proceeding may result in data loss affecting at least %s": [
+    ""
+  ],
   "Product is already registered": [
     "Tuote on jo rekisteröity"
   ],
-  "Protection for the information stored at           the new file systems, including data, programs, and system files.": [
-    "Uusien tiedostojärjestelmien tietojen turvaaminen,           mukaanlukien data, ohjelmistot ja järjestelmätiedostot."
+  "Protection for the information stored at the new file systems, including data, programs, and system files.": [
+    "Uusien tiedostojärjestelmien tietojen turvaaminen, mukaanlukien data, ohjelmistot ja järjestelmätiedostot."
   ],
   "Provide email address": [
     "Kirjoita sähköpostiosoite"
@@ -1535,15 +1535,6 @@ export default {
   "Reload": [
     "Lataa uudelleen"
   ],
-  "Reload now": [
-    "Lataa uudelleen nyt"
-  ],
-  "Reloading data, please wait...": [
-    "Ladataan tietoja uudelleen, odota..."
-  ],
-  "Reloading is required to get the latest data and avoid issues or data loss.": [
-    "Uusimpien tietojen saamiseksi sekä ongelmien tai tietojen menettämisen välttämiseksi tiedot tulee ladata uudelleen."
-  ],
   "Remove": [
     "Poista"
   ],
@@ -1552,6 +1543,13 @@ export default {
   ],
   "Repository load failed": [
     "Asennuslähteen lataaminen epäonnistui"
+  ],
+  "Required packages": [
+    ""
+  ],
+  "Required packages and %s pattern": [
+    "",
+    ""
   ],
   "Rescan devices": [
     "Tutki laitteet uudelleen"
@@ -1576,6 +1574,9 @@ export default {
   ],
   "Review and fix": [
     "Tutki ja korjaa"
+  ],
+  "Review the summary below. If anything seems incorrect or you have doubts, go back and adjust the settings before proceeding.": [
+    ""
   ],
   "Root authentication methods": [
     "Pääkäyttäjän tunnistautumistavat"
@@ -1812,11 +1813,11 @@ export default {
   "Targets": [
     "Kohteet"
   ],
+  "Temporary name that may change after reboot or network changes": [
+    ""
+  ],
   "The LVM group '%1$s' will remain at %2$s": [
     "LVM-ryhmä ”%1$s” säilyy levyllä %2$s"
-  ],
-  "The configuration has been updated externally.": [
-    "Asetuksia on muutettu ulkoisesti."
   ],
   "The configuration must be adapted to address the following issue:": [
     "Asetuksia tulee muuttaa seuraavan ongelman ratkaisemiseksi:",
@@ -1830,9 +1831,6 @@ export default {
   ],
   "The connection will be used only during installation and not available in the installed system.": [
     "Yhteyttä käytetään vain asennuksen aikana, eikä se ole saatavilla asennetussa järjestelmässä."
-  ],
-  "The content may be deleted": [
-    "Sisältöä saatetaan poistaa"
   ],
   "The current configuration will result in an attempt to create a %1$s of %2$s.": [
     "Nykyisillä asetuksilla %1$s / %2$s tullaan yrittämään luoda."
@@ -1925,12 +1923,6 @@ export default {
   "The installation on your machine is complete.": [
     "Asennus laitteelle on valmis."
   ],
-  "The installation will take": [
-    "Asennuksessa tulee kestämään"
-  ],
-  "The installation will take %s including:": [
-    "Asennuksessa tulee kestämään %s, mukaan lukien:"
-  ],
   "The installer interface is no longer available, so you can safely close this window.": [
     "Asennuksen käyttöliittymä ei ole enää käytettävissä, joten tämän ikkunan voi sulkea turvallisesti."
   ],
@@ -1959,8 +1951,8 @@ export default {
   "The modal selector offers a simplified interface designed for quick and straightforward use, without overwhelming the user.": [
     "Valitsin tarjoaa yksinkertaistetun käyttöliittymän nopeaan ja suoraviivaiseen käyttöön kuormittamatta käyttäjää liikaa."
   ],
-  "The needed LVM physical volumes will be added as partitions on the chosen disks,                 based on the sizes of the logical volumes. If you select more than one disk, the                 physical volumes may be distributed along several disks.": [
-    "Vaaditut fyysiset LVM-taltiot lisätään osioina valituille levyille,                 perustuen loogisten taltioiden kokoihin. Jos valitse useamman kuin yhden levyn                 fyysiset taltiot saatetaan jakaa usean levyn välille."
+  "The needed LVM physical volumes will be added as partitions on the chosen disks, based on the sizes of the logical volumes. If you select more than one disk, the physical volumes may be distributed along several disks.": [
+    "Vaaditut fyysiset LVM-taltiot lisätään osioina valituille levyille, perustuen loogisten taltioiden kokoihin. Jos valitse useamman kuin yhden levyn fyysiset taltiot saatetaan jakaa usean levyn välille."
   ],
   "The password is weak": [
     "Salasana on heikko"
@@ -2016,17 +2008,11 @@ export default {
   "The system does not support Wi-Fi connections, probably because of missing or disabled hardware.": [
     "Järjestelmä ei tue Wi-Fi-yhteyksiä, luultavasti puuttuvan tai käytöstä poistetun laitteiston takia."
   ],
-  "The system will use %s as its default language.": [
-    "Järjestelmä käyttää kieltä %s oletuskielenä."
-  ],
   "The whole device will be used for %s": [
     "Koko laitetta tullaan käyttämään kohteelle %s"
   ],
   "The zFCP disk was not activated.": [
     "zFCP-levyä ei aktivoitu."
-  ],
-  "There are no disks available for the installation.": [
-    "Asennusta varten ei ole saatavilla levyjä."
   ],
   "There are not disks available for the installation. You may need to configure some device.": [
     "Asennukseen ei ole käytettävissä levyjä. Jonkin laitteen asetukset tulee tehdä."
@@ -2041,9 +2027,6 @@ export default {
   "There is %d destructive action planned affecting %s": [
     "%d tietoja tuhoava toiminto suunniteltu kohteeseen %s",
     "%d tietoja tuhoavaa toimintoa suunniteltu kohteeseen %s"
-  ],
-  "These are the most relevant installation settings. Feel free to browse the sections in the menu for further details.": [
-    "Nämä ovat oleellisimmat asennuksen asetukset. Tutki valikon muita osioita vapaasti."
   ],
   "These are the settings for the product to install. The installer language and keyboard layout can be adjusted via the [settings panel] accessible from the top bar.": [
     "Nämä ovat asennettavan tuotteen asetukset. Asennusohjelman kieltä ja näppäimistön asettelua voi muuttaa yläpalkin [asetuspaneelista]."
@@ -2098,9 +2081,6 @@ export default {
   ],
   "Tmpfs": [
     "Tmpfs"
-  ],
-  "To ensure the new system is able to boot, the installer may need to create or configure some           partitions in the appropriate disk.": [
-    "Jotta järjestelmä käynnistyisi, asennusohjelman saattaa täytyä luoda tai tehdä           osioiden asetusmuutoksia soveltuvalla levyllä."
   ],
   "To ensure the new system is able to boot, the installer may need to create or configure some partitions in the appropriate disk.": [
     "Jotta järjestelmä käynnistyisi, asennusohjelman saattaa täytyä luoda tai tehdä osioiden asetusmuutoksia soveltuvalla levyllä."
@@ -2398,6 +2378,9 @@ export default {
   ],
   "partition": [
     "osio"
+  ],
+  "proposal.Device": [
+    ""
   ],
   "read_only": [
     "vain_luku"

@@ -21,6 +21,9 @@ export default {
   "%1$s at %2$s": [
     "%1$s на %2$s"
   ],
+  "%1$s keyboard - %2$s timezone": [
+    ""
+  ],
   "%1$s will be created as a partition at %2$s": [
     "%1$s будет создан как раздел на %2$s",
     "%1$s будут созданы как разделы на %2$s",
@@ -37,6 +40,9 @@ export default {
   ],
   "%s [must be registered].": [
     "%s [требуется регистрация]."
+  ],
+  "%s and %d others": [
+    ""
   ],
   "%s disk": [
     "Диск %s"
@@ -243,8 +249,14 @@ export default {
   "Authentication by target": [
     "Аутентификация по цели"
   ],
+  "Auto": [
+    "Автоматически"
+  ],
   "Auto LUNs Scan": [
     "Автоматическое сканирование LUN"
+  ],
+  "Auto and manual": [
+    ""
   ],
   "Automatic": [
     "Автоматически"
@@ -252,10 +264,10 @@ export default {
   "Automatic (DHCP)": [
     "Автоматически (DHCP)"
   ],
-  "Automatic LUN scan is [disabled]. LUNs have to be manually       configured after activating a controller.": [
+  "Automatic LUN scan is [disabled]. LUNs have to be manually configured after activating a controller.": [
     "Автоматическое сканирование LUN [отключено]. LUN должны быть настроены вручную после активации контроллера."
   ],
-  "Automatic LUN scan is [enabled]. Activating a controller which is       running in NPIV mode will automatically configures all its LUNs.": [
+  "Automatic LUN scan is [enabled]. Activating a controller which is running in NPIV mode will automatically configures all its LUNs.": [
     "Автоматическое сканирование LUN [включено]. Активация контроллера, работающего в режиме NPIV, автоматически сконфигурирует все его LUNы."
   ],
   "Available products": [
@@ -314,6 +326,9 @@ export default {
   ],
   "Btrfs with snapshots": [
     "Btrfs с моментальными снимками"
+  ],
+  "CPU": [
+    ""
   ],
   "Cancel": [
     "Отмена"
@@ -414,9 +429,6 @@ export default {
   "Close": [
     "Закрыть"
   ],
-  "Configuration out of sync": [
-    "Конфигурация рассинхронизирована"
-  ],
   "Configuration read from the iSCSI Boot Firmware Table (iBFT).": [
     "Конфигурация, считанная из таблицы iSCSI Boot Firmware Table (iBFT)."
   ],
@@ -455,9 +467,6 @@ export default {
   ],
   "Confirm": [
     "Подтвердить"
-  ],
-  "Confirm Installation": [
-    "Подтвердить установку"
   ],
   "Confirm that you really want to continue.": [
     "Подтвердите, что вы действительно хотите продолжить."
@@ -510,9 +519,6 @@ export default {
   "Content": [
     "Содержимое"
   ],
-  "Continue": [
-    "Продолжить"
-  ],
   "Continuing without installing the package can result in a broken system. In some cases the system might not even boot.": [
     "Продолжение работы без установки пакета может привести к поломке системы. В некоторых случаях система может даже не загрузиться."
   ],
@@ -560,6 +566,9 @@ export default {
   ],
   "DASD %s": [
     "DASD %s"
+  ],
+  "DHCP, %s": [
+    ""
   ],
   "DIAG": [
     "Режим DIAG"
@@ -769,9 +778,6 @@ export default {
     "Расширение установки за пределы текущих %d дисков",
     "Расширение установки за пределы текущих %d дисков"
   ],
-  "Extensions": [
-    "Расширения"
-  ],
   "F2FS": [
     "F2FS"
   ],
@@ -874,6 +880,9 @@ export default {
   "GiB": [
     "ГиБ"
   ],
+  "Go back": [
+    ""
+  ],
   "Go to network page": [
     "Перейти к разделу «Сеть»"
   ],
@@ -921,6 +930,9 @@ export default {
   "IP settings": [
     "Настройки IP"
   ],
+  "IPs": [
+    ""
+  ],
   "IPv4": [
     "IPv4"
   ],
@@ -929,12 +941,6 @@ export default {
   ],
   "If a local media was used to run this installer, remove it before the next boot.": [
     "Если для запуска этой программы установки использовался локальный носитель, извлеките его перед следующей загрузкой."
-  ],
-  "If you continue, partitions on your hard disk will be modified according to the provided installation settings.": [
-    "Если продолжите, разделы на жестком диске будут изменены в соответствии с заданными настройками установки."
-  ],
-  "If you want to disable this check, please specify \"inst.ay_check=0\" at kernel's command-line": [
-    "Если вы хотите отключить эту проверку, укажите «inst.ay_check=0» в командной строке ядра"
   ],
   "In progress": [
     "В процессе"
@@ -969,32 +975,8 @@ export default {
   "Install": [
     "Установить"
   ],
-  "Install using an advanced configuration.": [
-    "Установка с помощью расширенной конфигурации."
-  ],
-  "Install using device %s and deleting all its content.": [
-    "Установить с использованием устройства %s и удалением его содержимого."
-  ],
-  "Install using device %s shrinking existing partitions as needed.": [
-    "Установка с использованием устройства %s с уменьшением существующих разделов по необходимости."
-  ],
-  "Install using device %s with a custom strategy to find the needed space.": [
-    "Установка с использованием устройства %s с пользовательским контролем пространства."
-  ],
-  "Install using device %s without modifying existing partitions.": [
-    "Установка с использованием устройства %s без изменения существующих разделов."
-  ],
-  "Install using several devices and deleting all its content.": [
-    "Установка с использованием нескольких устройств и удалением всего содержимого на этих устройствах."
-  ],
-  "Install using several devices shrinking existing partitions as needed.": [
-    "Установка с использованием нескольких устройств с уменьшением существующих разделов по необходимости."
-  ],
-  "Install using several devices with a custom strategy to find the needed space.": [
-    "Установка с использованием нескольких устройств с пользовательским контролем пространства."
-  ],
-  "Install using several devices without modifying existing partitions.": [
-    "Установка с использованием нескольких устройств без изменения существующих разделов."
+  "Install now with potential data loss": [
+    ""
   ],
   "Installation devices": [
     "Устройства для установки"
@@ -1149,6 +1131,9 @@ export default {
   "Max channel": [
     "Макс. канал"
   ],
+  "Memory": [
+    ""
+  ],
   "MiB": [
     "МиБ"
   ],
@@ -1216,7 +1201,7 @@ export default {
   "Move mount points": [
     "Переместить точки монтирования"
   ],
-  "Move the mount points currently configured at the selected disks to logical                   volumes of this volume group.": [
+  "Move the mount points currently configured at the selected disks to logical volumes of this volume group.": [
     "Переместите точки монтирования, настроенные на выбранных дисках, на логические тома этой группы томов."
   ],
   "Multipath": [
@@ -1269,6 +1254,9 @@ export default {
   ],
   "No content found": [
     "Содержимое не найдено"
+  ],
+  "No data loss is expected": [
+    ""
   ],
   "No device is currently using this connection.": [
     "В настоящее время ни одно устройство не использует это подключение."
@@ -1351,9 +1339,6 @@ export default {
   "Not protected network": [
     "Незащищённая сеть"
   ],
-  "Not selected yet": [
-    "Ещё не выбрано"
-  ],
   "Not supported (%s)": [
     "Не поддерживается (%s)"
   ],
@@ -1411,17 +1396,11 @@ export default {
   "Partitions to boot will be set up if needed at the following device.": [
     "При необходимости разделы для загрузки будут созданы на следующем устройстве."
   ],
-  "Partitions to boot will be set up if needed at the installation disk,           based on the location of the %s file system.": [
+  "Partitions to boot will be set up if needed at the installation disk, based on the location of the %s file system.": [
     "При необходимости на установочном диске будут созданы разделы для загрузки в зависимости от расположения файловой системы %s."
   ],
-  "Partitions to boot will be set up if needed at the installation disk,         based on the location of the %s file system.": [
-    "Разделы для загрузки будут настроены при необходимости на установочном диске,         исходя из расположения файловой системы %s."
-  ],
-  "Partitions to boot will be set up if needed at the installation disk.         Currently %1$s, based on the location of the %2$s file system.": [
-    "При необходимости на установочном диске будут созданы загрузочные разделы. В настоящее время это %1$s, в зависимости от расположения файловой системы %2$s."
-  ],
-  "Partitions to boot will be set up if needed at the installation disk.       Currently %1$s, based on the location of the %2$s file system.": [
-    "Разделы для загрузки будут настроены при необходимости на установочном диске.       В настоящее время %1$s, исходя из расположения файловой системы %2$s."
+  "Partitions to boot will be set up if needed at the installation disk. Currently %1$s, based on the location of the %2$s file system.": [
+    "Разделы для загрузки будут настроены при необходимости на установочном диске. В настоящее время %1$s, исходя из расположения файловой системы %2$s."
   ],
   "Partitions to host \"system\" will be created if needed.": [
     "При необходимости будут созданы разделы для размещения «system»."
@@ -1456,9 +1435,6 @@ export default {
   "PiB": [
     "ПиБ"
   ],
-  "Please, cancel and check the settings if you are unsure.": [
-    "Если вы не уверены, нажмите «Отмена» и перепроверьте настройки."
-  ],
   "Please, check whether it is running.": [
     "Пожалуйста, проверьте, запущен ли он."
   ],
@@ -1480,16 +1456,28 @@ export default {
   "Portal": [
     "Портал"
   ],
+  "Potential data loss": [
+    ""
+  ],
+  "Potential data loss affecting at least %s": [
+    ""
+  ],
   "Pre-installation checks": [
     "Шаги перед установкой"
   ],
   "Prefix length or netmask": [
     "Длина префикса или маска сети"
   ],
+  "Proceeding may result in data loss": [
+    ""
+  ],
+  "Proceeding may result in data loss affecting at least %s": [
+    ""
+  ],
   "Product is already registered": [
     "Продукт уже зарегистрирован"
   ],
-  "Protection for the information stored at           the new file systems, including data, programs, and system files.": [
+  "Protection for the information stored at the new file systems, including data, programs, and system files.": [
     "Защита информации, хранящейся в новых файловых системах, включая данные, программы и системные файлы."
   ],
   "Provide email address": [
@@ -1546,15 +1534,6 @@ export default {
   "Reload": [
     "Обновить"
   ],
-  "Reload now": [
-    "Обновить"
-  ],
-  "Reloading data, please wait...": [
-    "Загрузка данных, подождите..."
-  ],
-  "Reloading is required to get the latest data and avoid issues or data loss.": [
-    "Чтобы получить актуальную информацию и избежать проблем или потери данных, требуется обновить страницу."
-  ],
   "Remove": [
     "Удалить"
   ],
@@ -1563,6 +1542,14 @@ export default {
   ],
   "Repository load failed": [
     "Не удалось загрузить репозиторий"
+  ],
+  "Required packages": [
+    ""
+  ],
+  "Required packages and %s pattern": [
+    "",
+    "",
+    ""
   ],
   "Rescan devices": [
     "Сканировать у-ва повторно"
@@ -1587,6 +1574,9 @@ export default {
   ],
   "Review and fix": [
     "Просмотреть и исправить"
+  ],
+  "Review the summary below. If anything seems incorrect or you have doubts, go back and adjust the settings before proceeding.": [
+    ""
   ],
   "Root authentication methods": [
     "Методы root-аутентификации"
@@ -1824,11 +1814,11 @@ export default {
   "Targets": [
     "Цели"
   ],
+  "Temporary name that may change after reboot or network changes": [
+    ""
+  ],
   "The LVM group '%1$s' will remain at %2$s": [
     "Группа LVM „%1$s“ останется на диске %2$s"
-  ],
-  "The configuration has been updated externally.": [
-    "Конфигурация была изменена извне."
   ],
   "The configuration must be adapted to address the following issue:": [
     "Конфигурация должна быть адаптирована для решения следующей проблемы:",
@@ -1843,9 +1833,6 @@ export default {
   ],
   "The connection will be used only during installation and not available in the installed system.": [
     "Это подключение будет использоваться только во время установки и не будет доступно в установленной системе."
-  ],
-  "The content may be deleted": [
-    "Содержимое может быть удалено"
   ],
   "The current configuration will result in an attempt to create a %1$s of %2$s.": [
     "Текущая конфигурация приведет к попытке создания раздела %1$s размером %2$s."
@@ -1942,12 +1929,6 @@ export default {
   "The installation on your machine is complete.": [
     "Установка на устройство завершена."
   ],
-  "The installation will take": [
-    "Установка займёт"
-  ],
-  "The installation will take %s including:": [
-    "Установка займёт %s, в том числе:"
-  ],
   "The installer interface is no longer available, so you can safely close this window.": [
     "Интерфейс программы установки больше недоступен. Это окно можно закрыть."
   ],
@@ -1977,7 +1958,7 @@ export default {
   "The modal selector offers a simplified interface designed for quick and straightforward use, without overwhelming the user.": [
     "Модальный селектор предлагает упрощенный интерфейс, разработанный для быстрого и прямого использования, не перегружая пользователя."
   ],
-  "The needed LVM physical volumes will be added as partitions on the chosen disks,                 based on the sizes of the logical volumes. If you select more than one disk, the                 physical volumes may be distributed along several disks.": [
+  "The needed LVM physical volumes will be added as partitions on the chosen disks, based on the sizes of the logical volumes. If you select more than one disk, the physical volumes may be distributed along several disks.": [
     "Необходимые физические тома LVM будут добавлены в качестве разделов на выбранных дисках, исходя из размеров логических томов. Если вы выберете несколько дисков, физические тома могут быть распределены по нескольким дискам."
   ],
   "The password is weak": [
@@ -1987,7 +1968,7 @@ export default {
     "Пароль не понадобится для загрузки и доступа к данным, если TPM может проверить целостность системы. Запечатывание TPM требует непосредственной загрузки новой системы при первом запуске."
   ],
   "The product will be registered with \"%s\" hostname": [
-    "Продукт будет зарегистрирован с именем узла «%s»."
+    "Продукт будет зарегистрирован с именем узла «%s»"
   ],
   "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of a separate file system for %2$s.": [
     "Размер для %1$s будет динамически корректироваться в зависимости от объема оперативной памяти в системе и наличия отдельной файловой системы для %2$s."
@@ -2034,17 +2015,11 @@ export default {
   "The system does not support Wi-Fi connections, probably because of missing or disabled hardware.": [
     "Система не поддерживает подключение по WiFi, вероятно, из-за отсутствующего или отключённого оборудования."
   ],
-  "The system will use %s as its default language.": [
-    "Система будет использовать %s в качестве языка по умолчанию."
-  ],
   "The whole device will be used for %s": [
     "Всё устройство будет использовано для %s"
   ],
   "The zFCP disk was not activated.": [
     "Диск zFCP не был активирован."
-  ],
-  "There are no disks available for the installation.": [
-    "Для установки нет подходящих дисков."
   ],
   "There are not disks available for the installation. You may need to configure some device.": [
     "Для установки не хватает дисков. Может потребоваться настройка какого-либо устройства."
@@ -2061,9 +2036,6 @@ export default {
     "Планируется %d разрушительное действие, затрагивающие %s",
     "Планируется %d разрушительных действия, затрагивающих %s",
     "Планируется %d разрушительных действий, затрагивающих %s"
-  ],
-  "These are the most relevant installation settings. Feel free to browse the sections in the menu for further details.": [
-    "Это наиболее актуальные настройки установки. Более подробные сведения приведены в разделах меню."
   ],
   "These are the settings for the product to install. The installer language and keyboard layout can be adjusted via the [settings panel] accessible from the top bar.": [
     "Это настройки для устанавливаемого продукта. Язык программы установки и раскладку клавиатуры можно изменить через [панель настроек], доступную на верхней панели."
@@ -2118,9 +2090,6 @@ export default {
   ],
   "Tmpfs": [
     "Tmpfs"
-  ],
-  "To ensure the new system is able to boot, the installer may need to create or configure some           partitions in the appropriate disk.": [
-    "Чтобы обеспечить загрузку новой системы, программе установки может потребоваться создать или настроить некоторые             разделы на соответствующем диске."
   ],
   "To ensure the new system is able to boot, the installer may need to create or configure some partitions in the appropriate disk.": [
     "Чтобы обеспечить загрузку новой системы, программе установки может потребоваться создать или настроить некоторые разделы на соответствующем диске."
