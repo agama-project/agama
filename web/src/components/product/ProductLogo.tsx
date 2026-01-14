@@ -25,6 +25,8 @@ import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
 
 export default function ProductLogo({ product, width = "80px" }) {
+  if (!product) return;
+
   const logoSrc = `assets/logos/${product.icon}`;
   // TRANSLATORS: %s will be replaced by a product name. E.g., "openSUSE Tumbleweed"
   const logoAltText = sprintf(_("%s logo"), product.name);
