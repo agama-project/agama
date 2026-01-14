@@ -52,7 +52,7 @@ export default function InstallationProgress() {
                 style={{ textWrap: "balance" }}
                 className={[textStyles.fontSize_3xl, alignmentStyles.textAlignEndOnMd].join(" ")}
               >
-                <ProductLogo product={product} width="1.25em" /> {product.name}
+                <ProductLogo product={product} width="1.25em" /> {product?.name}
               </Title>
 
               <HelperText>
