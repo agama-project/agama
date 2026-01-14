@@ -40,7 +40,6 @@ module Agama
         # @param logger [Logger, nil]
         def initialize(manager, logger: nil)
           textdomain "agama"
-
           super(PATH, logger: logger)
           @manager = manager
           register_progress_callbacks
@@ -104,6 +103,7 @@ module Agama
 
           start_progress(1, _("Performing iSCSI discovery"))
           success = manager.discover(host, port, credentials)
+          emit_system_changed
           finish_progress
 
           success ? 0 : 1
@@ -114,10 +114,15 @@ module Agama
         # @return [Agama::Storage::ISCSI::Manager]
         attr_reader :manager
 
+        # Emits the SystemChanged signal
+        def emit_system_changed
+          self.SystemChanged(recover_system)
+        end
+
         def initiator_json
           {
             name: manager.initiator.name,
-            ibtf: manager.initiator.ibtf_name?
+            ibft: manager.initiator.ibft_name?
           }
         end
 

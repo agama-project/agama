@@ -81,7 +81,7 @@ module Agama
         def read_initiator
           Initiator.new.tap do |initiator|
             initiator.name = Yast::IscsiClientLib.initiatorname
-            initiator.ibft_name = !Yast::IscsiClientLib.getiBFT["iface.initiatorname"].to_s.empty?
+            initiator.ibtf_name = !Yast::IscsiClientLib.getiBFT["iface.initiatorname"].to_s.empty?
           end
         end
 

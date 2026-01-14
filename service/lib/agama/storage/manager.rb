@@ -30,7 +30,6 @@ require "agama/storage/finisher"
 require "agama/storage/iscsi/manager"
 require "agama/storage/proposal"
 require "agama/with_locale"
-require "agama/with_progress_manager"
 require "yast"
 require "y2storage/clients/inst_prepdisk"
 require "y2storage/luks"
@@ -41,7 +40,6 @@ module Agama
     # Manager to handle storage configuration
     class Manager
       include WithLocale
-      include WithProgressManager
 
       # @return [Agama::Config]
       attr_reader :product_config
@@ -146,9 +144,7 @@ module Agama
       #
       # @return [Storage::ISCSI::Manager]
       def iscsi
-        # Uses the same progress as manager. Note that the callbacks of the progess are configured
-        # by the D-Bus object in order to properly update the Progress D-Bus interface.
-        @iscsi ||= ISCSI::Manager.new(progress_manager: progress_manager, logger: logger)
+        @iscsi ||= ISCSI::Manager.new(logger: logger)
       end
 
       # Storage actions.

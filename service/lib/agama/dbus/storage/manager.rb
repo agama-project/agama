@@ -51,13 +51,9 @@ module Agama
         # @param logger [Logger, nil]
         def initialize(backend, logger: nil)
           textdomain "agama"
-
           super(PATH, logger: logger)
           @backend = backend
-
           register_progress_callbacks
-          register_iscsi_callbacks
-
           add_s390_interfaces if Yast::Arch.s390
         end
 
@@ -537,23 +533,6 @@ module Agama
         # @return [Agama::Storage::Proposal]
         def proposal
           backend.proposal
-        end
-
-        def register_iscsi_callbacks
-          backend.iscsi.on_probe do
-            iscsi_initiator_properties_changed
-            refresh_iscsi_nodes
-          end
-        end
-
-        def iscsi_initiator_properties_changed
-          properties = interfaces_and_properties[ISCSI_INITIATOR_INTERFACE]
-          dbus_properties_changed(ISCSI_INITIATOR_INTERFACE, properties, [])
-        end
-
-        def refresh_iscsi_nodes
-          nodes = backend.iscsi.nodes
-          iscsi_nodes_tree.update(nodes)
         end
 
         def iscsi_nodes_tree
