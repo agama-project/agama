@@ -335,6 +335,8 @@ interface StandardLayoutProps {
   showQuestions?: boolean;
   /** Whether to show installer options in the header */
   showInstallerOptions?: boolean;
+  /** Whether the progress monitor must not be mounted */
+  hideProgressMonitor?: boolean;
   /** Page content */
   children?: React.ReactNode;
 }
@@ -349,6 +351,7 @@ const StandardLayout = ({
   title,
   showQuestions = true,
   showInstallerOptions = false,
+  hideProgressMonitor = false,
 }: StandardLayoutProps) => {
   return (
     <PFPage
@@ -358,6 +361,7 @@ const StandardLayout = ({
           title={title}
           breadcrumbs={breadcrumbs}
           showInstallerOptions={showInstallerOptions}
+          hideProgressMonitor={hideProgressMonitor}
         />
       }
     >
@@ -380,6 +384,8 @@ interface BasePageProps {
   progress?: ProgressBackdropProps;
   /** Whether to show the Questions component at the bottom of the page */
   showQuestions?: boolean;
+  /** Whether the progress monitor must not be mounted */
+  hideProgressMonitor?: boolean;
   /** Page content */
   children?: React.ReactNode;
 }
@@ -410,6 +416,8 @@ interface MinimalPageProps extends BasePageProps {
   breadcrumbs?: never;
   /** Installer options not available in minimal variant */
   showInstallerOptions?: never;
+  /** Whether the progress monitor must not be mounted */
+  hideProgressMonitor?: never;
 }
 
 /**
@@ -477,6 +485,7 @@ const Page = ({
   variant = "standard",
   showQuestions = true,
   showInstallerOptions = false,
+  hideProgressMonitor = false,
   children,
 }: PageProps): React.ReactNode => {
   if (variant === "minimal") {
@@ -490,6 +499,7 @@ const Page = ({
       title={title}
       showQuestions={showQuestions}
       showInstallerOptions={showInstallerOptions}
+      hideProgressMonitor={hideProgressMonitor}
     >
       {children || <Outlet />}
     </StandardLayout>

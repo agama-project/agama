@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024] SUSE LLC
+ * Copyright (c) [2024-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -21,7 +21,7 @@
  */
 
 import React from "react";
-import { ProductSelectionPage, ProductSelectionProgress } from "~/components/product";
+import { ProductSelectionPage } from "~/components/product";
 import { Route } from "~/types/routes";
 import { PRODUCT as PATHS } from "~/routes/paths";
 
@@ -31,10 +31,6 @@ const routes = (): Route => ({
     {
       index: true,
       element: <ProductSelectionPage />,
-    },
-    {
-      path: PATHS.progress,
-      element: <ProductSelectionProgress />,
     },
   ],
 });

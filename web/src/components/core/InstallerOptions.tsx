@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2025] SUSE LLC
+ * Copyright (c) [2022-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -51,7 +51,7 @@ import { useInstallerL10n } from "~/context/installerL10n";
 import { localConnection } from "~/utils";
 import { _ } from "~/i18n";
 import supportedLanguages from "~/languages.json";
-import { PRODUCT, ROOT, L10N } from "~/routes/paths";
+import { ROOT, L10N } from "~/routes/paths";
 import { useProductInfo } from "~/hooks/model/config/product";
 import { useSystem } from "~/hooks/model/system";
 import { useStatus } from "~/hooks/model/status";
@@ -575,9 +575,7 @@ export default function InstallerOptions({
     stage === "installing" ||
     // FIXME: below condition could be a problem for a question appearing while
     // product progress
-    [ROOT.login, ROOT.installationProgress, ROOT.installationFinished, PRODUCT.progress].includes(
-      location.pathname,
-    );
+    [ROOT.login, ROOT.installationProgress, ROOT.installationFinished].includes(location.pathname);
 
   if (skip) return;
 

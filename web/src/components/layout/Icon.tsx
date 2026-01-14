@@ -35,6 +35,7 @@ import CheckCircle from "@icons/check_circle.svg?component";
 import ChevronLeft from "@icons/chevron_left.svg?component";
 import ChevronRight from "@icons/chevron_right.svg?component";
 import Delete from "@icons/delete.svg?component";
+import DeployedCodeUpdate from "@icons/deployed_code_update.svg?component";
 import EditSquare from "@icons/edit_square.svg?component";
 import Emergency from "@icons/emergency.svg?component";
 import Error from "@icons/error.svg?component";
@@ -78,6 +79,7 @@ const icons = {
   chevron_left: ChevronLeft,
   chevron_right: ChevronRight,
   delete: Delete,
+  deployed_code_update: DeployedCodeUpdate,
   edit_square: EditSquare,
   emergency: Emergency,
   error: Error,

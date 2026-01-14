@@ -38,7 +38,6 @@ const NETWORK = {
 const PRODUCT = {
   root: "/products",
   changeProduct: "/products",
-  progress: "/products/progress",
 };
 
 const REGISTRATION = {
@@ -116,7 +115,6 @@ const HOSTNAME = {
 const SIDE_PATHS = [
   ROOT.login,
   PRODUCT.changeProduct,
-  PRODUCT.progress,
   ROOT.installationProgress,
   ROOT.installationFinished,
   ROOT.installationExit,

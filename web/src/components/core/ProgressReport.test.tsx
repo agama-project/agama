@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2024] SUSE LLC
+ * Copyright (c) [2022-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -48,14 +48,14 @@ describe("ProgressReport", () => {
     });
 
     it("shows the progress including the details", () => {
-      plainRender(<ProgressReport title="Testing progress" />);
+      plainRender(<ProgressReport />);
 
       expect(screen.getByText(/Partition disks/)).toBeInTheDocument();
       expect(screen.getByText(/Install software/)).toBeInTheDocument();
 
       // NOTE: not finding the whole text because it is now split in two <span> because of PF/Truncate
       expect(screen.getByText(/Doing some/)).toBeInTheDocument();
-      expect(screen.getByText(/\(1\/1\)/)).toBeInTheDocument();
+      expect(screen.getByText(/Step 1 of 1/)).toBeInTheDocument();
     });
   });
 
@@ -80,14 +80,14 @@ describe("ProgressReport", () => {
     });
 
     it("shows the progress including the details", () => {
-      plainRender(<ProgressReport title="Testing progress" />);
+      plainRender(<ProgressReport />);
 
       expect(screen.getByText(/Partition disks/)).toBeInTheDocument();
       expect(screen.getByText(/Install software/)).toBeInTheDocument();
 
       // NOTE: not finding the whole text because it is now split in two <span> because of PF/Truncate
       expect(screen.getByText(/Installing vim/)).toBeInTheDocument();
-      expect(screen.getByText(/\(5\/200\)/)).toBeInTheDocument();
+      expect(screen.getByText(/Step 5 of 200/)).toBeInTheDocument();
     });
   });
 });
