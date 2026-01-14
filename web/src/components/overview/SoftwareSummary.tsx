@@ -55,8 +55,7 @@ const Value = () => {
  */
 const Description = () => {
   const proposal = useProposal();
-
-  if (!proposal.usedSpace) return;
+  if (!proposal?.usedSpace) return;
 
   return sprintf(
     // TRANSLATORS: %s will be replaced with a human-readable installation size

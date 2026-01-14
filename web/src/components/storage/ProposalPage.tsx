@@ -56,8 +56,6 @@ import { useIssues } from "~/hooks/model/issue";
 import { useReset } from "~/hooks/model/config/storage";
 import { useProposal } from "~/hooks/model/proposal/storage";
 import { STORAGE_MODEL_KEY, useConfigModel } from "~/hooks/model/storage/config-model";
-import { useZFCPSupported } from "~/queries/storage/zfcp";
-import { useDASDSupported } from "~/queries/storage/dasd";
 import { STORAGE as PATHS } from "~/routes/paths";
 import { _, n_ } from "~/i18n";
 import { useProgress, useProgressChanges } from "~/queries/progress";
@@ -137,8 +135,8 @@ function UnknownConfigEmptyState(): React.ReactNode {
 }
 
 function UnavailableDevicesEmptyState(): React.ReactNode {
-  const isZFCPSupported = useZFCPSupported();
-  const isDASDSupported = useDASDSupported();
+  const isZFCPSupported = false;
+  const isDASDSupported = false;
 
   const description = _(
     "There are not disks available for the installation. You may need to configure some device.",
