@@ -557,10 +557,7 @@ impl ZyppServer {
                     category: p.category,
                     description: p.description,
                     icon: p.icon,
-                    // FIXME: this should be simply summary: p.summary like for the other items
-                    // but we're using it to get a translated text to a place where it is used
-                    // by the web UI (in web/src/components/overview/SoftwareSection.tsx)
-                    summary: format!("{}: {}", gettext("Pattern summary"), p.summary),
+                    summary: p.summary,
                     order: p.order,
                     preselected,
                 }
