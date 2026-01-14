@@ -35,7 +35,6 @@ require "agama/with_progress_manager"
 require "yast"
 require "y2storage/clients/inst_prepdisk"
 require "y2storage/luks"
-require "y2storage/storage_env"
 require "y2storage/storage_manager"
 
 module Agama
@@ -56,7 +55,7 @@ module Agama
       def initialize(logger: nil)
         @logger = logger || Logger.new($stdout)
         @bootloader = Bootloader.new(logger)
-        @no_bls_bootloader = Y2Storage::StorageEnv.instance.no_bls_bootloader
+        @yast_no_bls_boot = ENV["YAST_NO_BLS_BOOT"]
         self.product_config = Agama::Config.new
       end
 
@@ -191,7 +190,7 @@ module Agama
       # we want to use BLS only for Tumbleweed / Slowroll
       def configure_no_bls_bootloader
         # Keep original value of the env variable or set it if needed.
-        value = product_config.boot_strategy&.casecmp("BLS") ? @no_bls_bootloader : "1"
+        value = product_config.boot_strategy&.casecmp("BLS") ? @yast_no_bls_boot : "1"
         ENV["YAST_NO_BLS_BOOT"] = value
         # Avoiding problems with cached values
         Y2Storage::StorageEnv.instance.reset_cache
