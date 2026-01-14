@@ -37,6 +37,12 @@ use tokio::sync::broadcast;
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
+    #[error("Missing required data for first user.")]
+    MissingUserData,
+    #[error("Missing required data for root.")]
+    MissingRootData,
+    #[error("System command failed: {0}")]
+    CommandFailed(String),
     #[error(transparent)]
     Event(#[from] broadcast::error::SendError<Event>),
     #[error(transparent)]
@@ -202,5 +208,18 @@ impl MessageHandler<message::GetProposal> for Service {
         _message: message::GetProposal,
     ) -> Result<Option<api::users::Config>, Error> {
         Ok(self.get_proposal())
+    }
+}
+
+#[async_trait]
+impl MessageHandler<message::Install> for Service {
+    async fn handle(&mut self, _message: message::Install) -> Result<(), Error> {
+        if let Some(proposal) = self.get_proposal() {
+            self.model.install(&proposal)?;
+        } else {
+            tracing::error!("Missing authentication configuration");
+        };
+
+        Ok(())
     }
 }
