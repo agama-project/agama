@@ -23,7 +23,6 @@ require "agama/issue"
 require "agama/storage/iscsi/adapter"
 require "agama/storage/iscsi/config_importer"
 require "agama/storage/iscsi/node"
-require "agama/with_issues"
 require "yast/i18n"
 
 module Agama
@@ -31,7 +30,6 @@ module Agama
     module ISCSI
       # Manager for iSCSI.
       class Manager
-        include WithIssues
         include Yast::I18n
 
         STARTUP_OPTIONS = ["onboot", "manual", "automatic"].freeze
@@ -52,9 +50,13 @@ module Agama
         # @return [Array<Node>]
         attr_reader :nodes
 
+        # @return [Array<Issue>]
+        attr_reader :issues
+
         # @param logger [Logger, nil]
         def initialize(logger: nil)
           @logger = logger || ::Logger.new($stdout)
+          @issues = []
           @nodes = []
         end
 
@@ -205,7 +207,7 @@ module Agama
           probe unless probed?
           apply_initiator_config(config)
           apply_targets_config(config)
-          issues.none?
+          @issues.none?
         end
 
         # Applies the inititator config.
@@ -262,7 +264,7 @@ module Agama
             end
           end
 
-          self.issues = issues
+          @issues = issues
         end
 
         # Applies the given target config.

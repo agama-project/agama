@@ -19,16 +19,18 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "dbus"
-require "json"
 require "agama/dbus/base_object"
 require "agama/with_progress"
+require "dbus"
+require "json"
+require "yast"
 
 module Agama
   module DBus
     module Storage
       # D-Bus object to manage iSCSI.
       class ISCSI < BaseObject
+        include Yast::I18n
         include Agama::WithProgress
 
         PATH = "/org/opensuse/Agama/Storage1/ISCSI"
@@ -37,6 +39,8 @@ module Agama
         # @param manager [Agama::Storage::ISCSI::Manager]
         # @param logger [Logger, nil]
         def initialize(manager, logger: nil)
+          textdomain "agama"
+
           super(PATH, logger: logger)
           @manager = manager
           register_progress_callbacks
@@ -51,7 +55,6 @@ module Agama
           dbus_method(:Discover, "in options:a{sv}, out result:u") do |serialized_options|
             discover(serialized_options)
           end
-
           dbus_signal(:SystemChanged, "system:s")
           dbus_signal(:ProgressChanged, "progress:s")
           dbus_signal(:ProgressFinished)
@@ -88,6 +91,24 @@ module Agama
           success ? 0 : 1
         end
 
+        def discover(serialized_options)
+          options = JSON.parse(serialized_options, symbolize_names: true)
+          host = options[:host]
+          port = options[:port]
+          credentials = {
+            username:           options[:username] || "",
+            password:           options[:password] || "",
+            initiator_username: options[:username] || "",
+            initiator_password: options[:username] || ""
+          }
+
+          start_progress(1, _("Performing iSCSI discovery"))
+          success = manager.discover(host, port, credentials)
+          finish_progress
+
+          success ? 0 : 1
+        end
+
       private
 
         # @return [Agama::Storage::ISCSI::Manager]
@@ -106,12 +127,12 @@ module Agama
 
         def target_json(node)
           {
-            name: node.target,
-            address: node.address,
-            port: node.port,
+            name:      node.target,
+            address:   node.address,
+            port:      node.port,
             interface: node.interface,
-            ibtf: node.ibtf?,
-            startup: node.startup,
+            ibtf:      node.ibtf?,
+            startup:   node.startup,
             connected: node.connected?
           }
         end
