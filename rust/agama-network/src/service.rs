@@ -263,13 +263,6 @@ impl NetworkSystemClient {
         let (tx, rx) = oneshot::channel();
         self.actions.send(Action::Apply(tx))?;
         let result = rx.await?;
-        //self.events.send(event::Event::ProposalChanged {
-        //    scope: agama_utils::api::Scope::Network,
-        //})?;
-        //self.events.send(Event::Install {
-        //    scope: Scope::Network,
-        //})?;
-
         Ok(result?)
     }
 

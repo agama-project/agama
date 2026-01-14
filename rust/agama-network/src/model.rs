@@ -220,12 +220,14 @@ impl NetworkState {
             let entry = entry.map_err(|e| NetworkStateError::IoError(e.to_string()))?;
             let path = entry.path();
             if path.is_file() {
-                let file_name = path
-                    .file_name()
-                    .ok_or_else(|| NetworkStateError::IoError("Invalid file name".to_string()))?;
-                let dest = to.join(file_name);
-                std::fs::copy(&path, &dest)
-                    .map_err(|e| NetworkStateError::IoError(e.to_string()))?;
+                if let Some(file_name) = path.file_name() {
+                    let dest = to.join(file_name);
+                    if let Err(e) = std::fs::copy(&path, &dest) {
+                        tracing::error!("It was not possible to copy {:?}: {:?}", &file_name, e);
+                    }
+                } else {
+                    tracing::error!("The path {:?} looks wrong, skipping it.", &path);
+                }
             }
         }
 
