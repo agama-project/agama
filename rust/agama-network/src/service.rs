@@ -25,6 +25,12 @@ use crate::{
     types::{AccessPoint, Config, Device, DeviceType, Proposal, SystemInfo},
     Adapter, NetworkAdapterError, NetworkManagerAdapter,
 };
+use agama_utils::{
+    actor::Handler,
+    api::{event, Event, Scope},
+    progress,
+};
+use gettextrs::gettext;
 use std::error::Error;
 use tokio::sync::{
     broadcast::{self, Receiver},
@@ -45,65 +51,57 @@ pub enum NetworkSystemError {
     AdapterError(#[from] NetworkAdapterError),
 }
 
-/// Represents the network configuration service.
-///
-/// It offers an API to start the service and interact with it by using message
-/// passing like the example below.
-///
-/// ```no_run
-/// # use agama_network::{Action, NetworkManagerAdapter, NetworkSystem};
-/// # use tokio::sync::oneshot;
-///
-/// # tokio_test::block_on(async {
-/// let adapter = NetworkManagerAdapter::from_system()
-///     .await
-///     .expect("Could not connect to NetworkManager.");
-/// let network = NetworkSystem::new(adapter);
-///
-/// // Start the networking service and get the client for communication.
-/// let client = network.start()
-///     .await
-///     .expect("Could not start the networking configuration system.");
-///
-/// // Perform some action, like getting the list of devices.
-/// let devices = client.get_devices().await
-///     .expect("Could not get the list of devices.");
-/// # });
-/// ```
-pub struct NetworkSystem<T: Adapter + Send> {
-    adapter: T,
+/// Starts the network service
+pub struct Starter {
+    adapter: Option<Box<dyn Adapter + Send + 'static>>,
+    events: event::Sender,
+    progress: Handler<progress::Service>,
 }
 
-impl<T: Adapter + Send + Sync + 'static> NetworkSystem<T> {
+impl Starter {
     /// Returns a new instance of the network configuration system.
     ///
     /// This function does not start the system. To get it running, you must call
     /// the [start](Self::start) method.
     ///
     /// * `adapter`: networking configuration adapter.
-    pub fn new(adapter: T) -> Self {
-        Self { adapter }
+    pub fn new(events: event::Sender, progress: Handler<progress::Service>) -> Self {
+        Self {
+            adapter: None,
+            events,
+            progress,
+        }
     }
 
-    /// Returns a new instance of the network configuration system using the [NetworkManagerAdapter] for the system.
-    pub async fn for_network_manager() -> NetworkSystem<NetworkManagerAdapter<'static>> {
-        let adapter = NetworkManagerAdapter::from_system()
-            .await
-            .expect("Could not connect to NetworkManager");
-
-        NetworkSystem::new(adapter)
+    /// Uses the given adapter.
+    ///
+    /// By default, the network service relies on systemd. However, it might be useful
+    /// to replace it in some scenarios (e.g., when testing).
+    ///
+    /// * `adapter`: model to use. It must implement the [ModelAdapter] trait.
+    pub fn with_adapter<T: Adapter + Send + 'static>(mut self, adapter: T) -> Self {
+        self.adapter = Some(Box::new(adapter));
+        self
     }
 
     /// Starts the network configuration service and returns a client for communication purposes.
     ///
-    /// This function starts the server (using [NetworkSystemServer]) on a separate
+    /// This function starts the server (using [Service]) on a separate
     /// task. All the communication is performed through the returned [NetworkSystemClient].
     pub async fn start(self) -> Result<NetworkSystemClient, NetworkSystemError> {
-        let state = self.adapter.read(StateConfig::default()).await?;
+        let adapter = match self.adapter {
+            Some(adapter) => adapter,
+            None => Box::new(
+                NetworkManagerAdapter::from_system()
+                    .await
+                    .expect("Could not connect to NetworkManager"),
+            ),
+        };
+
+        let state = adapter.read(StateConfig::default()).await?;
         let (actions_tx, actions_rx) = mpsc::unbounded_channel();
         let (updates_tx, _updates_rx) = broadcast::channel(1024);
-
-        if let Some(watcher) = self.adapter.watcher() {
+        if let Some(watcher) = adapter.watcher() {
             let actions_tx_clone = actions_tx.clone();
             tokio::spawn(async move {
                 watcher.run(actions_tx_clone).await.unwrap();
@@ -112,11 +110,13 @@ impl<T: Adapter + Send + Sync + 'static> NetworkSystem<T> {
 
         let updates_tx_clone = updates_tx.clone();
         tokio::spawn(async move {
-            let mut server = NetworkSystemServer {
+            let mut server = Service {
+                events: self.events,
+                progress: self.progress,
                 state,
                 input: actions_rx,
                 output: updates_tx_clone,
-                adapter: self.adapter,
+                adapter,
             };
 
             server.listen().await;
@@ -129,7 +129,7 @@ impl<T: Adapter + Send + Sync + 'static> NetworkSystem<T> {
     }
 }
 
-/// Client to interact with the NetworkSystem once it is running.
+/// Client to interact with the Service once it is running.
 ///
 /// It hides the details of the message-passing behind a convenient API.
 #[derive(Clone)]
@@ -266,6 +266,21 @@ impl NetworkSystemClient {
         Ok(result?)
     }
 
+    /// Proposes the default network configuration.
+    pub async fn propose_default(&self) -> Result<(), NetworkSystemError> {
+        let (tx, rx) = oneshot::channel();
+        self.actions.send(Action::ProposeDefault(tx))?;
+        let result = rx.await?;
+        Ok(result?)
+    }
+    /// Copies the persistent network connections to the target system.
+    pub async fn install(&self) -> Result<(), NetworkSystemError> {
+        let (tx, rx) = oneshot::channel();
+        self.actions.send(Action::Install(tx))?;
+        let result = rx.await?;
+        Ok(result?)
+    }
+
     /// Returns the collection of access points.
     pub async fn get_access_points(&self) -> Result<Vec<AccessPoint>, NetworkSystemError> {
         let (tx, rx) = oneshot::channel();
@@ -282,14 +297,20 @@ impl NetworkSystemClient {
     }
 }
 
-struct NetworkSystemServer<T: Adapter> {
+pub struct Service {
+    events: event::Sender,
+    progress: Handler<progress::Service>,
     state: NetworkState,
     input: UnboundedReceiver<Action>,
     output: broadcast::Sender<NetworkChange>,
-    adapter: T,
+    adapter: Box<dyn Adapter + Send + 'static>,
 }
 
-impl<T: Adapter> NetworkSystemServer<T> {
+impl Service {
+    pub fn starter(events: event::Sender, progress: Handler<progress::Service>) -> Starter {
+        Starter::new(events, progress)
+    }
+
     /// Process incoming actions.
     ///
     /// This function is expected to be executed on a separate thread.
@@ -361,7 +382,6 @@ impl<T: Adapter> NetworkSystemServer<T> {
             }
             Action::UpdateConfig(config, tx) => {
                 let result = self.state.update_state(*config);
-
                 tx.send(result).unwrap();
             }
             Action::GetConnections(tx) => {
@@ -427,7 +447,15 @@ impl<T: Adapter> NetworkSystemServer<T> {
                 tx.send(result).unwrap();
             }
             Action::Apply(tx) => {
-                let result = self.write().await;
+                let result = self.apply().await;
+                tx.send(result).unwrap();
+            }
+            Action::ProposeDefault(tx) => {
+                let result = self.state.propose_default();
+                tx.send(result).unwrap();
+            }
+            Action::Install(tx) => {
+                let result = self.state.install().await;
                 tx.send(result).unwrap();
             }
         }
@@ -483,10 +511,46 @@ impl<T: Adapter> NetworkSystemServer<T> {
         self.adapter.read(StateConfig::default()).await
     }
 
-    /// Writes the network configuration.
-    pub async fn write(&mut self) -> Result<(), NetworkAdapterError> {
-        self.adapter.write(&self.state).await?;
-        self.state = self.adapter.read(StateConfig::default()).await?;
-        Ok(())
+    /// Writes the network configuration based on current state and then replace the state from the
+    /// one read from the system.
+    pub async fn apply(&mut self) -> Result<(), NetworkAdapterError> {
+        let steps = vec![
+            gettext("Writing configuration"),
+            gettext("Reading configuration"),
+        ];
+
+        let _ = self.progress.cast(progress::message::StartWithSteps::new(
+            Scope::Network,
+            steps,
+        ));
+        self.progress
+            .cast(progress::message::Next::new(Scope::Network))?;
+
+        if let Err(e) = self.adapter.write(&self.state).await {
+            self.progress
+                .call(progress::message::Finish::new(Scope::Network))
+                .await?;
+
+            return Err(e);
+        }
+        self.progress
+            .cast(progress::message::Next::new(Scope::Network))?;
+
+        let result = match self.adapter.read(StateConfig::default()).await {
+            Err(e) => Err(e),
+            Ok(state) => {
+                self.state = state;
+                Ok(())
+            }
+        };
+
+        self.progress
+            .call(progress::message::Finish::new(Scope::Network))
+            .await?;
+        self.events.send(Event::ConfigChanged {
+            scope: (Scope::Network),
+        })?;
+
+        result
     }
 }

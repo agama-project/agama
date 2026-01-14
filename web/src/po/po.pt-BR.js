@@ -7,10 +7,10 @@ export default {
     " Seleção de fuso horário"
   ],
   "\"%s\"": [
-    ""
+    "\"%s\""
   ],
   "\"%s\" does not exist or is no longer available.": [
-    ""
+    "\"%s\" não existe ou não está mais disponível."
   ],
   "%1$s (%2$s)": [
     "%1$s (%2$s)"
@@ -20,6 +20,9 @@ export default {
   ],
   "%1$s at %2$s": [
     "%1$s em %2$s"
+  ],
+  "%1$s keyboard - %2$s timezone": [
+    ""
   ],
   "%1$s will be created as a partition at %2$s": [
     "%1$s será criado como uma partição em %2$s",
@@ -36,6 +39,9 @@ export default {
   ],
   "%s [must be registered].": [
     "%s [deve ser registrado]."
+  ],
+  "%s and %d others": [
+    ""
   ],
   "%s disk": [
     "disco %s"
@@ -237,8 +243,14 @@ export default {
   "Authentication by target": [
     "Autenticação pelo alvo"
   ],
+  "Auto": [
+    "Automático"
+  ],
   "Auto LUNs Scan": [
     "Verificação automática de LUNs"
+  ],
+  "Auto and manual": [
+    ""
   ],
   "Automatic": [
     "Automático"
@@ -246,10 +258,10 @@ export default {
   "Automatic (DHCP)": [
     "Automático (DHCP)"
   ],
-  "Automatic LUN scan is [disabled]. LUNs have to be manually       configured after activating a controller.": [
+  "Automatic LUN scan is [disabled]. LUNs have to be manually configured after activating a controller.": [
     "A varredura automática de LUN está [desabilitada]. Os LUNs precisam ser configurados manualmente após a ativação de um controlador."
   ],
-  "Automatic LUN scan is [enabled]. Activating a controller which is       running in NPIV mode will automatically configures all its LUNs.": [
+  "Automatic LUN scan is [enabled]. Activating a controller which is running in NPIV mode will automatically configures all its LUNs.": [
     "A varredura automática de LUN está [habilitada]. A ativação de um controlador que está sendo executado no modo NPIV configurará automaticamente todos os seus LUNs."
   ],
   "Available products": [
@@ -309,6 +321,9 @@ export default {
   "Btrfs with snapshots": [
     "Btrfs com instantâneos"
   ],
+  "CPU": [
+    ""
+  ],
   "Cancel": [
     "Cancelar"
   ],
@@ -354,11 +369,23 @@ export default {
   "Change selection": [
     "Alterar seleção"
   ],
+  "Change the disk to configure": [
+    "Alterar o disco para configurar"
+  ],
+  "Change the disk to create %s": [
+    "Alterar o disco para criar %s"
+  ],
+  "Change the disk to format as %s": [
+    "Alterar o disco para formatar como %s"
+  ],
+  "Change the disk to install the system": [
+    "Alterar o disco para instalar o sistema"
+  ],
   "Change the file system or mount point": [
     "Alterar o sistema de arquivos ou ponto de montagem"
   ],
   "Changes in these settings will immediately update the 'Result' section below.": [
-    ""
+    "Alterações nestas configurações irão atualizar imediatamente a seção 'Resultados' abaixo."
   ],
   "Channel ID": [
     "ID do canal"
@@ -395,9 +422,6 @@ export default {
   ],
   "Close": [
     "Fechar"
-  ],
-  "Configuration out of sync": [
-    "Configuração fora de sincronia"
   ],
   "Configuration read from the iSCSI Boot Firmware Table (iBFT).": [
     "Configuração lida da Tabela de Firmware de Inicialização iSCSI (iBFT)."
@@ -437,9 +461,6 @@ export default {
   ],
   "Confirm": [
     "Confirmar"
-  ],
-  "Confirm Installation": [
-    "Confirmar instalação"
   ],
   "Confirm that you really want to continue.": [
     "Confirme que você realmente deseja continuar."
@@ -492,9 +513,6 @@ export default {
   "Content": [
     "Conteúdo"
   ],
-  "Continue": [
-    "Continuar"
-  ],
   "Continuing without installing the package can result in a broken system. In some cases the system might not even boot.": [
     "Continuar com a instalação do pacote pode causar defeito no sistema. Em alguns casos, o sistema talvez não seja inicializado."
   ],
@@ -542,6 +560,9 @@ export default {
   ],
   "DASD %s": [
     "DASD %s"
+  ],
+  "DHCP, %s": [
+    ""
   ],
   "DIAG": [
     "DIAG"
@@ -749,9 +770,6 @@ export default {
     "Estender a instalação além do disco selecionado",
     "Estender a instalação além dos %d discos atuais"
   ],
-  "Extensions": [
-    "Extensões"
-  ],
   "F2FS": [
     "F2FS"
   ],
@@ -784,6 +802,9 @@ export default {
   ],
   "Final layout": [
     "Layout final"
+  ],
+  "Final structure of the system after installation.": [
+    "Estrutura final do sistema após a instalação."
   ],
   "Find space in %s": [
     "Encontrar espaço em %s"
@@ -851,6 +872,9 @@ export default {
   "GiB": [
     "GiB"
   ],
+  "Go back": [
+    ""
+  ],
   "Go to network page": [
     "Ir para página da rede"
   ],
@@ -897,6 +921,9 @@ export default {
   "IP settings": [
     "Configurações de IP"
   ],
+  "IPs": [
+    ""
+  ],
   "IPv4": [
     "IPv4"
   ],
@@ -906,10 +933,7 @@ export default {
   "If a local media was used to run this installer, remove it before the next boot.": [
     "Se uma mídia local foi usada para executar este instalador, remova-a antes da próxima inicialização."
   ],
-  "If you continue, partitions on your hard disk will be modified according to the provided installation settings.": [
-    "Se você continuar, as partições do seu disco rígido serão modificadas de acordo com as configurações de instalação fornecidas."
-  ],
-  "If you want to disable this check, please specify \"inst.ay_check=0\" at kernel's command-line": [
+  "If you want to disable this check, please specify \"inst.ay_check=0\" at kernels command-line": [
     ""
   ],
   "In progress": [
@@ -945,32 +969,11 @@ export default {
   "Install": [
     "Instalar"
   ],
-  "Install using an advanced configuration.": [
-    "Instale usando uma configuração avançada."
+  "Install now with potential data loss": [
+    ""
   ],
-  "Install using device %s and deleting all its content.": [
-    "Instale usando o dispositivo %s e excluindo todo o conteúdo dele."
-  ],
-  "Install using device %s shrinking existing partitions as needed.": [
-    "Instale usando o dispositivo %s, reduzindo as partições existentes conforme necessário."
-  ],
-  "Install using device %s with a custom strategy to find the needed space.": [
-    "Instale usando o dispositivo %s com uma estratégia personalizada para encontrar o espaço necessário."
-  ],
-  "Install using device %s without modifying existing partitions.": [
-    "Instale usando o dispositivo %s sem modificar as partições existentes."
-  ],
-  "Install using several devices and deleting all its content.": [
-    "Instale usando vários dispositivos e excluindo todo o seu conteúdo."
-  ],
-  "Install using several devices shrinking existing partitions as needed.": [
-    "Instale usando vários dispositivos, reduzindo as partições existentes conforme necessário."
-  ],
-  "Install using several devices with a custom strategy to find the needed space.": [
-    "Instale usando vários dispositivos com uma estratégia personalizada para encontrar o espaço necessário."
-  ],
-  "Install using several devices without modifying existing partitions.": [
-    "Instale usando vários dispositivos sem modificar as partições existentes."
+  "Installation devices": [
+    "Dispositivos de instalação"
   ],
   "Installation will take %s.": [
     "A instalação levará %s."
@@ -1122,6 +1125,9 @@ export default {
   "Max channel": [
     "Canal máximo"
   ],
+  "Memory": [
+    ""
+  ],
   "MiB": [
     "MiB"
   ],
@@ -1148,6 +1154,9 @@ export default {
   ],
   "More languages might be available for the selected product at [Localization] page": [
     "Mais idiomas podem estar disponíveis para o produto selecionado na página [Localização]"
+  ],
+  "More storage options": [
+    "Mais opções de armazenamento"
   ],
   "Moreover, the following partition will be created.": [
     "Além disso, a seguinte partição será criada.",
@@ -1184,8 +1193,8 @@ export default {
   "Move mount points": [
     "Mover pontos de montagem"
   ],
-  "Move the mount points currently configured at the selected disks to logical                   volumes of this volume group.": [
-    "Mova os pontos de montagem que estão configurados nos discos selecionados para os volumes                   lógicos deste grupo de volumes."
+  "Move the mount points currently configured at the selected disks to logical volumes of this volume group.": [
+    "Mova os pontos de montagem que estão configurados nos discos selecionados para os volumes lógicos deste grupo de volumes."
   ],
   "Multipath": [
     "Múltiplo caminho"
@@ -1238,6 +1247,9 @@ export default {
   "No content found": [
     "Nenhum conteúdo encontrado"
   ],
+  "No data loss is expected": [
+    ""
+  ],
   "No device is currently using this connection.": [
     "Nenhum dispositivo está usando esta conexão no momento."
   ],
@@ -1261,6 +1273,9 @@ export default {
   ],
   "No logical volumes are defined yet": [
     "Nenhum volume lógico ainda foi definido"
+  ],
+  "No partitions will be automatically configured for booting.": [
+    "Nenhuma partição será configurada automaticamente para inicialização."
   ],
   "No partitions will be automatically configured for booting. Use with caution.": [
     "Nenhuma partição será configurada automaticamente para inicialização. Use com cautela."
@@ -1316,9 +1331,6 @@ export default {
   "Not protected network": [
     "Rede não protegida"
   ],
-  "Not selected yet": [
-    "Ainda não selecionado"
-  ],
   "Not supported (%s)": [
     "Não há suporte (%s)"
   ],
@@ -1334,6 +1346,9 @@ export default {
   "Only reused partitions will be used.": [
     "Apenas as partições reutilizadas serão usadas."
   ],
+  "Options for partition %s": [
+    "Opções para a partição %s"
+  ],
   "Options toggle": [
     "Alternar opções"
   ],
@@ -1342,6 +1357,9 @@ export default {
   ],
   "Package installation failed": [
     "Falha na instalação do pacote"
+  ],
+  "Partition %s": [
+    "Partição %s"
   ],
   "Partition Info": [
     "Informação da partição"
@@ -1364,10 +1382,13 @@ export default {
   "Partitions that are not reused would be resized if needed.": [
     "As partições não reutilizadas serão redimensionadas se necessário."
   ],
-  "Partitions to boot will be set up if needed at the installation disk.         Currently %1$s, based on the location of the %2$s file system.": [
-    ""
+  "Partitions to boot will be set up if needed at %s.": [
+    "As partições para inicialização serão configuradas se necessário em %s."
   ],
-  "Partitions to boot will be set up if needed at the installation disk.       Currently %1$s, based on the location of the %2$s file system.": [
+  "Partitions to boot will be set up if needed at the following device.": [
+    "As partições para inicialização serão configuradas se necessário no seguinte dispositivo."
+  ],
+  "Partitions to boot will be set up if needed at the installation disk. Currently %1$s, based on the location of the %2$s file system.": [
     ""
   ],
   "Partitions will be used and created for %s": [
@@ -1400,9 +1421,6 @@ export default {
   "PiB": [
     "PiB"
   ],
-  "Please, cancel and check the settings if you are unsure.": [
-    "Cancele e verifique se as configurações se não tiver certeza."
-  ],
   "Please, check whether it is running.": [
     "Verifique se ele está em execução."
   ],
@@ -1424,14 +1442,29 @@ export default {
   "Portal": [
     "Portal"
   ],
+  "Potential data loss": [
+    ""
+  ],
+  "Potential data loss affecting at least %s": [
+    ""
+  ],
   "Pre-installation checks": [
     "Verificações de pré-instalação"
   ],
   "Prefix length or netmask": [
     "Comprimento do prefixo ou máscara de rede"
   ],
+  "Proceeding may result in data loss": [
+    ""
+  ],
+  "Proceeding may result in data loss affecting at least %s": [
+    ""
+  ],
   "Product is already registered": [
     "Produto já registrado"
+  ],
+  "Protection for the information stored at the new file systems, including data, programs, and system files.": [
+    "Proteção para as informações armazenadas nos novos sistemas de arquivos, incluindo dados, programas e arquivos de sistema."
   ],
   "Provide email address": [
     "Inserir endereço de e-mail"
@@ -1487,15 +1520,6 @@ export default {
   "Reload": [
     "Recarregar"
   ],
-  "Reload now": [
-    "Recarregar agora"
-  ],
-  "Reloading data, please wait...": [
-    "Recarregando dados. Aguarde..."
-  ],
-  "Reloading is required to get the latest data and avoid issues or data loss.": [
-    "É necessário recarregar para obter os dados mais recentes e evitar problemas ou perda de dados."
-  ],
   "Remove": [
     "Remover"
   ],
@@ -1504,6 +1528,13 @@ export default {
   ],
   "Repository load failed": [
     "Falha ao carregar repositório"
+  ],
+  "Required packages": [
+    ""
+  ],
+  "Required packages and %s pattern": [
+    "",
+    ""
   ],
   "Rescan devices": [
     "Verificar os dispositivos novamente"
@@ -1521,13 +1552,16 @@ export default {
     "Resultado"
   ],
   "Result of applying the configuration described at the 'Settings' section above.": [
-    ""
+    "Resultado da aplicação das configurações descritas na seção 'Configurações' acima."
   ],
   "Reused partitions will not be shrunk": [
     "As partições reutilizadas serão reduzidas"
   ],
   "Review and fix": [
     "Revisar e corrigir"
+  ],
+  "Review the summary below. If anything seems incorrect or you have doubts, go back and adjust the settings before proceeding.": [
+    ""
   ],
   "Root authentication methods": [
     "Métodos de autenticação de root"
@@ -1764,11 +1798,11 @@ export default {
   "Targets": [
     "Destinos"
   ],
+  "Temporary name that may change after reboot or network changes": [
+    ""
+  ],
   "The LVM group '%1$s' will remain at %2$s": [
     "O grupo de LVM'%1$s' permanecerá em %2$s"
-  ],
-  "The configuration has been updated externally.": [
-    "A configuração foi atualizada externamente."
   ],
   "The configuration must be adapted to address the following issue:": [
     "A configuração deve ser adaptada para resolver o seguinte problema:",
@@ -1782,9 +1816,6 @@ export default {
   ],
   "The connection will be used only during installation and not available in the installed system.": [
     "A conexão será usada apenas durante a instalação e não ficará disponível no sistema instalado."
-  ],
-  "The content may be deleted": [
-    "O conteúdo pode ser excluído"
   ],
   "The current configuration will result in an attempt to create a %1$s of %2$s.": [
     "A configuração atual resultará na tentativa de criar %1$s de %2$s."
@@ -1850,6 +1881,9 @@ export default {
   "The final step to configure the Trusted Platform Module (TPM) to automatically open encrypted devices will take place during the first boot of the new system. For that to work, the machine needs to boot directly to the new boot loader.": [
     "A etapa final para configurar o Trusted Platform Module (TPM) para abrir automaticamente dispositivos criptografados ocorrerá durante a primeira inicialização do novo sistema. Para que isso funcione, a máquina precisa inicializar diretamente no novo gerenciador de boot."
   ],
+  "The following actions will be performed in the system during installation.": [
+    "As seguintes ações serão executadas no sistema durante a instalação."
+  ],
   "The following logical volume will be created": [
     "O seguinte volume lógico será criado",
     "Os seguintes volumes lógicos serão criados"
@@ -1873,12 +1907,6 @@ export default {
   ],
   "The installation on your machine is complete.": [
     "A instalação em sua máquina está concluída."
-  ],
-  "The installation will take": [
-    "A instalação levará"
-  ],
-  "The installation will take %s including:": [
-    "A instalação levará %s incluindo:"
   ],
   "The installer interface is no longer available, so you can safely close this window.": [
     "A interface do instalador não está mais disponível, portanto, você pode fechar esta janela com segurança."
@@ -1908,8 +1936,8 @@ export default {
   "The modal selector offers a simplified interface designed for quick and straightforward use, without overwhelming the user.": [
     "O seletor modal oferece uma interface simplificada projetada para uso rápido e fácil, sem sobrecarregar o usuário."
   ],
-  "The needed LVM physical volumes will be added as partitions on the chosen disks,                 based on the sizes of the logical volumes. If you select more than one disk, the                 physical volumes may be distributed along several disks.": [
-    "Os volumes físicos LVM necessários serão adicionados como partições nos discos escolhidos,                 com base nos tamanhos dos volumes lógicos. Se você selecionar mais de um disco, os                 volumes físicos poderão ser distribuídos por vários discos."
+  "The needed LVM physical volumes will be added as partitions on the chosen disks, based on the sizes of the logical volumes. If you select more than one disk, the physical volumes may be distributed along several disks.": [
+    "Os volumes físicos LVM necessários serão adicionados como partições nos discos escolhidos, com base nos tamanhos dos volumes lógicos. Se você selecionar mais de um disco, os volumes físicos poderão ser distribuídos por vários discos."
   ],
   "The password is weak": [
     "A senha é fraca"
@@ -1965,17 +1993,11 @@ export default {
   "The system does not support Wi-Fi connections, probably because of missing or disabled hardware.": [
     "O sistema não suporta conexões Wi-Fi, provavelmente devido a hardware ausente ou desativado."
   ],
-  "The system will use %s as its default language.": [
-    "O sistema usará %s como idioma padrão."
-  ],
   "The whole device will be used for %s": [
     "O dispositivo inteiro será usado para %s"
   ],
   "The zFCP disk was not activated.": [
     "O disco zFCP não foi ativado."
-  ],
-  "There are no disks available for the installation.": [
-    "Não há discos disponíveis para a instalação."
   ],
   "There are not disks available for the installation. You may need to configure some device.": [
     "Não há discos disponíveis para a instalação. Talvez você tenha que configurar algum dispositivo."
@@ -1990,9 +2012,6 @@ export default {
   "There is %d destructive action planned affecting %s": [
     "Há %d ação destrutiva planejada que afeta %s",
     "Há %d ações destrutivas planejadas que afetam %s"
-  ],
-  "These are the most relevant installation settings. Feel free to browse the sections in the menu for further details.": [
-    "Estas são as configurações de instalação mais relevantes. Sinta-se à vontade para navegar pelas seções do menu para obter mais detalhes."
   ],
   "These are the settings for the product to install. The installer language and keyboard layout can be adjusted via the [settings panel] accessible from the top bar.": [
     "Estas são as configurações do produto que será instalado. É possível ajustar o idioma do instalador e o layout do teclado no [painel de configurações] acessível na barra superior."
@@ -2236,6 +2255,9 @@ export default {
   ],
   "Using transient hostname: %s": [
     "Usando nome de host temporário: %s"
+  ],
+  "Volume group %s": [
+    "Grupo de volume %s"
   ],
   "Volume group '%s' already exists. Enter a different name.": [
     "O grupo de volumes '%s' já existe. Insira outro nome."

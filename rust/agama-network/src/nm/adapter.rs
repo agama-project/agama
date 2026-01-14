@@ -42,6 +42,7 @@ impl<'a> NetworkManagerAdapter<'a> {
     pub async fn from_system() -> Result<NetworkManagerAdapter<'a>, NmError> {
         let connection = zbus::Connection::system().await?;
         let client = NetworkManagerClient::new(connection.clone()).await?;
+
         Ok(Self { client, connection })
     }
 }
@@ -127,6 +128,7 @@ impl Adapter for NetworkManagerAdapter<'_> {
                 &network.general_state,
                 &e
             );
+
             return Err(NetworkAdapterError::Write(anyhow!(e)));
         }
 
@@ -171,6 +173,7 @@ impl Adapter for NetworkManagerAdapter<'_> {
                     .await
                     .map_err(|e| NetworkAdapterError::Checkpoint(anyhow!(e)))?;
                 tracing::error!("Could not process the connection {}: {}", conn.id, &e);
+
                 return Err(NetworkAdapterError::Write(anyhow!(e)));
             }
         }

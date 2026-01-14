@@ -82,6 +82,8 @@ pub enum NetworkStateError {
     InvalidWirelessBand(String),
     #[error("Invalid bssid: '{0}'")]
     InvalidBssid(String),
+    #[error("I/O error: '{0}'")]
+    IoError(String),
 }
 
 impl From<NetworkStateError> for zbus::fdo::Error {

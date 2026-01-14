@@ -21,6 +21,9 @@ export default {
   "%1$s at %2$s": [
     "%1$s %2$s'de"
   ],
+  "%1$s keyboard - %2$s timezone": [
+    ""
+  ],
   "%1$s will be created as a partition at %2$s": [
     "%1$s bölümü (%2$s) olarak oluşturulacak",
     "%1$s bölümleri (%2$s) olarak oluşturulacak"
@@ -36,6 +39,9 @@ export default {
   ],
   "%s [must be registered].": [
     "%s [kayıtlı olmalı]."
+  ],
+  "%s and %d others": [
+    ""
   ],
   "%s disk": [
     "disk %s"
@@ -237,8 +243,14 @@ export default {
   "Authentication by target": [
     "Hedefe göre kimlik doğrulama"
   ],
+  "Auto": [
+    "Otomatik"
+  ],
   "Auto LUNs Scan": [
     "Kendiliğinden LUN Taraması"
+  ],
+  "Auto and manual": [
+    ""
   ],
   "Automatic": [
     "Kendiliğinden"
@@ -246,11 +258,11 @@ export default {
   "Automatic (DHCP)": [
     "Kendiliğinden (DHCP)"
   ],
-  "Automatic LUN scan is [disabled]. LUNs have to be manually       configured after activating a controller.": [
-    "Otomatik LUN taraması [devre dışı]. LUN'ların manuel olarak taranması gerekir       Bir kontrol cihazı etkinleştirildikten sonra yapılandırılır."
+  "Automatic LUN scan is [disabled]. LUNs have to be manually configured after activating a controller.": [
+    "Otomatik LUN taraması [devre dışı]. LUN'ların manuel olarak taranması gerekir Bir kontrol cihazı etkinleştirildikten sonra yapılandırılır."
   ],
-  "Automatic LUN scan is [enabled]. Activating a controller which is       running in NPIV mode will automatically configures all its LUNs.": [
-    "Otomatik LUN taraması [etkin]. Bir denetleyiciyi etkinleştirme       NPIV modunda çalıştırıldığında tüm LUN'lar otomatik olarak yapılandırılır."
+  "Automatic LUN scan is [enabled]. Activating a controller which is running in NPIV mode will automatically configures all its LUNs.": [
+    "Otomatik LUN taraması [etkin]. Bir denetleyiciyi etkinleştirme NPIV modunda çalıştırıldığında tüm LUN'lar otomatik olarak yapılandırılır."
   ],
   "Available products": [
     "Mevcut ürünler"
@@ -308,6 +320,9 @@ export default {
   ],
   "Btrfs with snapshots": [
     "Anlık imajlarla Btrfs"
+  ],
+  "CPU": [
+    ""
   ],
   "Cancel": [
     "İptal"
@@ -396,9 +411,6 @@ export default {
   "Close": [
     "Kapat"
   ],
-  "Configuration out of sync": [
-    "Yapılandırma senkronize değil"
-  ],
   "Configuration read from the iSCSI Boot Firmware Table (iBFT).": [
     "Yapılandırma iSCSI Önyükleme Ürün Yazılımı Tablosu'ndan (iBFT) okundu."
   ],
@@ -437,9 +449,6 @@ export default {
   ],
   "Confirm": [
     "Onayla"
-  ],
-  "Confirm Installation": [
-    "Kurulumu Onayla"
   ],
   "Confirm that you really want to continue.": [
     "Gerçekten devam etmek istediğinizi onaylayın."
@@ -492,9 +501,6 @@ export default {
   "Content": [
     "İçerik"
   ],
-  "Continue": [
-    "Devam et"
-  ],
   "Continuing without installing the package can result in a broken system. In some cases the system might not even boot.": [
     "Paketi yüklemeden devam etmek bozuk bir sisteme neden olabilir. Bazı durumlarda sistem önyükleme bile yapmayabilir."
   ],
@@ -542,6 +548,9 @@ export default {
   ],
   "DASD %s": [
     "DASD %s"
+  ],
+  "DHCP, %s": [
+    ""
   ],
   "DIAG": [
     "DIAG"
@@ -749,9 +758,6 @@ export default {
     "Kurulumu şu anda seçili olan diskin ötesine geçirin",
     "Kurulumu şu anda seçili olan %d disklerin ötesine geçirin"
   ],
-  "Extensions": [
-    "Uzantılar"
-  ],
   "F2FS": [
     "F2FS"
   ],
@@ -851,6 +857,9 @@ export default {
   "GiB": [
     "GB"
   ],
+  "Go back": [
+    ""
+  ],
   "Go to network page": [
     "Ağ sayfasına git"
   ],
@@ -897,6 +906,9 @@ export default {
   "IP settings": [
     "IP ayarları"
   ],
+  "IPs": [
+    ""
+  ],
   "IPv4": [
     "IPv4"
   ],
@@ -906,10 +918,7 @@ export default {
   "If a local media was used to run this installer, remove it before the next boot.": [
     "Bu yükleyiciyi çalıştırmak için yerel medya kullanıldıysa bir sonraki önyüklemeden önce bunu kaldırın."
   ],
-  "If you continue, partitions on your hard disk will be modified according to the provided installation settings.": [
-    "Devam ederseniz sabit diskinizdeki bölümler, sağlanan kurulum ayarlarına göre değiştirilecektir."
-  ],
-  "If you want to disable this check, please specify \"inst.ay_check=0\" at kernel's command-line": [
+  "If you want to disable this check, please specify \"inst.ay_check=0\" at kernels command-line": [
     ""
   ],
   "In progress": [
@@ -945,32 +954,8 @@ export default {
   "Install": [
     "Yükle"
   ],
-  "Install using an advanced configuration.": [
-    "Gelişmiş seçenekler ile kurulum yapın."
-  ],
-  "Install using device %s and deleting all its content.": [
-    "%s aygıtını kullanarak yükleyin ve tüm içeriğini silin."
-  ],
-  "Install using device %s shrinking existing partitions as needed.": [
-    "%s aygıtını kullanarak kurulum yapın ve gerektiğinde mevcut bölümleri küçültün."
-  ],
-  "Install using device %s with a custom strategy to find the needed space.": [
-    "Gerekli alanı bulmak için özel bir stratejiyle %s cihazını kullanarak yükleyin."
-  ],
-  "Install using device %s without modifying existing partitions.": [
-    "Mevcut bölümleri değiştirmeden, %s cihazını kullanarak yükleyin."
-  ],
-  "Install using several devices and deleting all its content.": [
-    "%s aygıtını kullanarak yükleyin ve tüm içeriğini silin."
-  ],
-  "Install using several devices shrinking existing partitions as needed.": [
-    "%s aygıtını kullanarak kurulum yapın ve gerektiğinde mevcut bölümleri küçültün."
-  ],
-  "Install using several devices with a custom strategy to find the needed space.": [
-    "İhtiyaç duyduğunuz alanı bulmak için özel bir stratejiyle birden fazla cihaz kullanarak kurulum yapın."
-  ],
-  "Install using several devices without modifying existing partitions.": [
-    "Mevcut bölümleri değiştirmeden %s aygıtını kullanarak yükleyin."
+  "Install now with potential data loss": [
+    ""
   ],
   "Installation will take %s.": [
     "Kurulum %s kadar olacak."
@@ -1122,6 +1107,9 @@ export default {
   "Max channel": [
     "Maksimum kanal"
   ],
+  "Memory": [
+    ""
+  ],
   "MiB": [
     "MB"
   ],
@@ -1184,8 +1172,8 @@ export default {
   "Move mount points": [
     "Bağlantı noktalarını taşı"
   ],
-  "Move the mount points currently configured at the selected disks to logical                   volumes of this volume group.": [
-    "Seçili disklerde şu anda yapılandırılmış olan bağlama noktalarını bu                    birim grubunun mantıksal birimlerine taşıyın."
+  "Move the mount points currently configured at the selected disks to logical volumes of this volume group.": [
+    "Seçili disklerde şu anda yapılandırılmış olan bağlama noktalarını bu birim grubunun mantıksal birimlerine taşıyın."
   ],
   "Multipath": [
     "Çoklu yol"
@@ -1204,6 +1192,9 @@ export default {
   ],
   "Name": [
     "İsim"
+  ],
+  "Needs about %s": [
+    ""
   ],
   "Network": [
     "Ağ"
@@ -1237,6 +1228,9 @@ export default {
   ],
   "No content found": [
     "İçerik bulunamadı"
+  ],
+  "No data loss is expected": [
+    ""
   ],
   "No device is currently using this connection.": [
     "Şu anda bu bağlantıyı kullanan bir cihaz yok."
@@ -1316,9 +1310,6 @@ export default {
   "Not protected network": [
     "Korunmayan ağ"
   ],
-  "Not selected yet": [
-    "Henüz seçilmedi"
-  ],
   "Not supported (%s)": [
     "Desteklenmiyor (%s)"
   ],
@@ -1364,10 +1355,7 @@ export default {
   "Partitions that are not reused would be resized if needed.": [
     "Tekrar kullanılmayan bölümler gerektiğinde yeniden boyutlandırılacaktır."
   ],
-  "Partitions to boot will be set up if needed at the installation disk.         Currently %1$s, based on the location of the %2$s file system.": [
-    ""
-  ],
-  "Partitions to boot will be set up if needed at the installation disk.       Currently %1$s, based on the location of the %2$s file system.": [
+  "Partitions to boot will be set up if needed at the installation disk. Currently %1$s, based on the location of the %2$s file system.": [
     ""
   ],
   "Partitions will be used and created for %s": [
@@ -1400,9 +1388,6 @@ export default {
   "PiB": [
     "PB"
   ],
-  "Please, cancel and check the settings if you are unsure.": [
-    "Emin değilseniz lütfen iptal edin ve ayarları kontrol edin."
-  ],
   "Please, check whether it is running.": [
     "Çalışıp çalışmadığını kontrol edin lütfen."
   ],
@@ -1424,11 +1409,23 @@ export default {
   "Portal": [
     "Portal"
   ],
+  "Potential data loss": [
+    ""
+  ],
+  "Potential data loss affecting at least %s": [
+    ""
+  ],
   "Pre-installation checks": [
     "Ön kurulum kontrolleri"
   ],
   "Prefix length or netmask": [
     "Önek uzunluğu veya ağ maskesi"
+  ],
+  "Proceeding may result in data loss": [
+    ""
+  ],
+  "Proceeding may result in data loss affecting at least %s": [
+    ""
   ],
   "Product is already registered": [
     "Ürün zaten kayıtlı"
@@ -1487,15 +1484,6 @@ export default {
   "Reload": [
     "Yenile"
   ],
-  "Reload now": [
-    "Şimdi yeniden yükle"
-  ],
-  "Reloading data, please wait...": [
-    "Veriler yeniden yükleniyor, lütfen bekleyin..."
-  ],
-  "Reloading is required to get the latest data and avoid issues or data loss.": [
-    "En güncel verilere ulaşmak ve sorun veya veri kaybını önlemek için yeniden yükleme yapılması gerekir."
-  ],
   "Remove": [
     "Kaldır"
   ],
@@ -1504,6 +1492,13 @@ export default {
   ],
   "Repository load failed": [
     "Depo yüklemesi başarısız oldu"
+  ],
+  "Required packages": [
+    ""
+  ],
+  "Required packages and %s pattern": [
+    "",
+    ""
   ],
   "Rescan devices": [
     "Aygıtları yeniden tara"
@@ -1528,6 +1523,9 @@ export default {
   ],
   "Review and fix": [
     "Gözden geçir ve düzelt"
+  ],
+  "Review the summary below. If anything seems incorrect or you have doubts, go back and adjust the settings before proceeding.": [
+    ""
   ],
   "Root authentication methods": [
     "Root kimlik doğrulama yöntemleri"
@@ -1764,11 +1762,11 @@ export default {
   "Targets": [
     "Hedefler"
   ],
+  "Temporary name that may change after reboot or network changes": [
+    ""
+  ],
   "The LVM group '%1$s' will remain at %2$s": [
     "LVM grubu '%1$s' %2$s konumunda kalacak"
-  ],
-  "The configuration has been updated externally.": [
-    "Yapılandırma dışardan güncellendi."
   ],
   "The configuration must be adapted to address the following issue:": [
     "Kuruluma başlamadan önce aşağıdaki sorunu gidermeniz gerekmektedir:",
@@ -1782,9 +1780,6 @@ export default {
   ],
   "The connection will be used only during installation and not available in the installed system.": [
     "Bağlantı sadece kurulum sırasında kullanılacak olup, kurulu sistemde mevcut olmayacaktır."
-  ],
-  "The content may be deleted": [
-    "İçerik silinmiş olabilir"
   ],
   "The current configuration will result in an attempt to create a %1$s of %2$s.": [
     "Mevcut yapılandırma %2$s'nin %1$s'sini oluşturma girişimiyle sonuçlanacaktır."
@@ -1874,12 +1869,6 @@ export default {
   "The installation on your machine is complete.": [
     "Makinenize kurulum tamamlanmıştır."
   ],
-  "The installation will take": [
-    "Kurulum yapılacak"
-  ],
-  "The installation will take %s including:": [
-    "Kurulum %s kadar olacaktır ve şunları içerecektir:"
-  ],
   "The installer interface is no longer available, so you can safely close this window.": [
     "Kurulum arayüzü artık kullanılamıyor, bu nedenle bu pencereyi güvenle kapatabilirsiniz."
   ],
@@ -1908,8 +1897,8 @@ export default {
   "The modal selector offers a simplified interface designed for quick and straightforward use, without overwhelming the user.": [
     "Modal seçici, kullanıcıyı bunaltmadan, hızlı ve kolay kullanım için tasarlanmış basitleştirilmiş bir arayüz sunar."
   ],
-  "The needed LVM physical volumes will be added as partitions on the chosen disks,                 based on the sizes of the logical volumes. If you select more than one disk, the                 physical volumes may be distributed along several disks.": [
-    "Gerekli LVM fiziksel birimleri, mantıksal birimlerin boyutlarına göre seçilen disklere bölümler                  halinde eklenecektir. Birden fazla disk                  seçerseniz, fiziksel birimler birkaç diske dağıtılabilir."
+  "The needed LVM physical volumes will be added as partitions on the chosen disks, based on the sizes of the logical volumes. If you select more than one disk, the physical volumes may be distributed along several disks.": [
+    "Gerekli LVM fiziksel birimleri, mantıksal birimlerin boyutlarına göre seçilen disklere bölümler halinde eklenecektir. Birden fazla disk seçerseniz, fiziksel birimler birkaç diske dağıtılabilir."
   ],
   "The password is weak": [
     "Şifre zayıf"
@@ -1965,17 +1954,11 @@ export default {
   "The system does not support Wi-Fi connections, probably because of missing or disabled hardware.": [
     "Sistem muhtemelen eksik veya devre dışı donanım nedeniyle Wi-Fi bağlantılarını desteklemiyor."
   ],
-  "The system will use %s as its default language.": [
-    "Sistem öntanımlı olarak %s dilini kullanacaktır."
-  ],
   "The whole device will be used for %s": [
     "Tüm cihaz %s için kullanılacak"
   ],
   "The zFCP disk was not activated.": [
     "zFCP diski etkinleştirilmedi."
-  ],
-  "There are no disks available for the installation.": [
-    "Kurulum için kullanılabilir bir disk yok."
   ],
   "There are not disks available for the installation. You may need to configure some device.": [
     "Kurulum için kullanılabilir disk yok. Bazı aygıtları yapılandırmanız gerekebilir."
@@ -1990,9 +1973,6 @@ export default {
   "There is %d destructive action planned affecting %s": [
     "%d planlanan yıkım askiyonu %s'i etkiliyor",
     "%d planlanan yıkım askiyonları %s'i etkiliyor"
-  ],
-  "These are the most relevant installation settings. Feel free to browse the sections in the menu for further details.": [
-    "Bunlar belirgin kurulum ayarlarıdır. Daha çok ayrıntı için menüdeki bölümlere göz atmaktan çekinmeyin."
   ],
   "These are the settings for the product to install. The installer language and keyboard layout can be adjusted via the [settings panel] accessible from the top bar.": [
     "Bunlar, ürünün kurulacağı ayarlardır. Yükleyici dili ve klavye düzeni, üst çubuktan erişilebilen [ayarlar paneli] aracılığıyla ayarlanabilir."
@@ -2341,6 +2321,9 @@ export default {
   ],
   "partition": [
     "bölüm"
+  ],
+  "proposal.Device": [
+    ""
   ],
   "read_only": [
     "salt_okunur"

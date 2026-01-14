@@ -49,6 +49,7 @@ pub struct SoftwareState {
     pub resolvables: ResolvablesState,
     pub options: SoftwareOptions,
     pub registration: Option<RegistrationState>,
+    pub allow_registration: bool,
 }
 
 impl SoftwareState {
@@ -60,6 +61,7 @@ impl SoftwareState {
             resolvables: Default::default(),
             options: Default::default(),
             registration: None,
+            allow_registration: false,
         }
     }
 }
@@ -181,6 +183,10 @@ impl<'a> SoftwareStateBuilder<'a> {
 
     /// Adds the elements from the user product configuration.
     fn add_user_product_config(&self, state: &mut SoftwareState, config: &ProductConfig) {
+        if !state.allow_registration {
+            return;
+        }
+
         let Some(code) = &config.registration_code else {
             return;
         };
@@ -356,6 +362,7 @@ impl<'a> SoftwareStateBuilder<'a> {
             resolvables,
             registration: None,
             options: Default::default(),
+            allow_registration: self.product.registration,
         }
     }
 }
@@ -592,16 +599,16 @@ mod tests {
         }
     }
 
-    fn build_product_spec() -> ProductSpec {
+    fn build_product_spec(name: &str) -> ProductSpec {
         let path = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
-            .join("../test/share/products.d/tumbleweed.yaml");
+            .join(format!("../test/share/products.d/{}.yaml", name));
         let product = std::fs::read_to_string(&path).unwrap();
         serde_yaml::from_str(&product).unwrap()
     }
 
     #[test]
     fn test_build_state() {
-        let product = build_product_spec();
+        let product = build_product_spec("tumbleweed");
         let config = Config::default();
         let state = SoftwareStateBuilder::for_product(&product)
             .with_config(&config)
@@ -652,7 +659,7 @@ mod tests {
 
     #[test]
     fn test_add_user_repositories() {
-        let product = build_product_spec();
+        let product = build_product_spec("tumbleweed");
         let config = build_user_config(None);
         let state = SoftwareStateBuilder::for_product(&product)
             .with_config(&config)
@@ -671,7 +678,7 @@ mod tests {
 
     #[test]
     fn test_add_patterns() {
-        let product = build_product_spec();
+        let product = build_product_spec("tumbleweed");
         let patterns = PatternsConfig::PatternsMap(PatternsMap {
             add: Some(vec!["gnome".to_string()]),
             remove: None,
@@ -711,7 +718,7 @@ mod tests {
 
     #[test]
     fn test_add_registration() {
-        let product = build_product_spec();
+        let product = build_product_spec("sles_160");
         let mut config = build_user_config(None);
         config.product = ProductConfig {
             id: Some("SLES".to_string()),
@@ -720,7 +727,7 @@ mod tests {
             registration_email: Some("jane.doe@example.net".to_string()),
             addons: Some(vec![AddonConfig {
                 id: "sle-ha".to_string(),
-                version: Some("16.1".to_string()),
+                version: Some("16.0".to_string()),
                 registration_code: Some("ABCDEF".to_string()),
             }]),
         }
@@ -739,13 +746,13 @@ mod tests {
 
         let addon = registration.addons.first().unwrap();
         assert_eq!(&addon.id, "sle-ha");
-        assert_eq!(addon.version, Some("16.1".to_string()));
+        assert_eq!(addon.version, Some("16.0".to_string()));
         assert_eq!(addon.code, Some("ABCDEF".to_string()));
     }
 
     #[test]
     fn test_add_register_url() {
-        let product = build_product_spec();
+        let product = build_product_spec("sles_160");
         let mut config = build_user_config(None);
         config.product = ProductConfig {
             id: Some("SLES".to_string()),
@@ -769,7 +776,7 @@ mod tests {
 
     #[test]
     fn test_remove_patterns() {
-        let product = build_product_spec();
+        let product = build_product_spec("tumbleweed");
         let patterns = PatternsConfig::PatternsMap(PatternsMap {
             add: None,
             remove: Some(vec!["selinux".to_string()]),
@@ -804,7 +811,7 @@ mod tests {
 
     #[test]
     fn test_remove_mandatory_patterns() {
-        let product = build_product_spec();
+        let product = build_product_spec("tumbleweed");
         let patterns = PatternsConfig::PatternsMap(PatternsMap {
             add: None,
             remove: Some(vec!["enhanced_base".to_string()]),
@@ -839,7 +846,7 @@ mod tests {
 
     #[test]
     fn test_replace_patterns_list() {
-        let product = build_product_spec();
+        let product = build_product_spec("tumbleweed");
         let patterns = PatternsConfig::PatternsList(vec!["gnome".to_string()]);
         let config = build_user_config(Some(patterns));
 
@@ -871,7 +878,7 @@ mod tests {
 
     #[test]
     fn test_use_base_repositories() {
-        let product = build_product_spec();
+        let product = build_product_spec("tumbleweed");
         let patterns = PatternsConfig::PatternsList(vec!["gnome".to_string()]);
         let config = build_user_config(Some(patterns));
 
@@ -914,7 +921,7 @@ mod tests {
 
     #[test]
     fn test_mandatory_packages() {
-        let product = build_product_spec();
+        let product = build_product_spec("tumbleweed");
         let config = Config::default();
         let state = SoftwareStateBuilder::for_product(&product)
             .with_config(&config)
@@ -951,7 +958,7 @@ mod tests {
 
     #[test]
     fn test_system_adds_kernel() {
-        let product = build_product_spec();
+        let product = build_product_spec("tumbleweed");
         let system = SystemInfo::default();
 
         let state = SoftwareStateBuilder::for_product(&product)

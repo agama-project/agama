@@ -25,7 +25,7 @@ mod store;
 
 pub use agama_network::{
     error, model, types, Action, Adapter, NetworkAdapterError, NetworkManagerAdapter,
-    NetworkSystem, NetworkSystemClient, NetworkSystemError,
+    NetworkSystemClient, NetworkSystemError, Service,
 };
 pub use agama_utils::api::network::*;
 pub use client::{NetworkClient, NetworkClientError};
