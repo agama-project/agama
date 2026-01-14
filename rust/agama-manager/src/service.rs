@@ -823,6 +823,11 @@ impl InstallAction {
         self.files.call(files::message::WriteFiles).await?;
         self.network.install().await?;
         self.hostname.call(hostname::message::Install).await?;
+
+        // call files before storage finish as it unmount /mnt/run which is important for chrooted scripts
+        self.files
+            .call(files::message::RunScripts::new(ScriptsGroup::Post))
+            .await?;
         self.storage.call(storage::message::Finish).await?;
 
         //
