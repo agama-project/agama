@@ -45,6 +45,8 @@ pub enum Error {
     IO(#[from] std::io::Error),
     #[error(transparent)]
     Actor(#[from] actor::Error),
+    #[error("There is no user proposed")]
+    MissingProposal,
 }
 
 /// Builds and spawns the users service.
@@ -202,5 +204,19 @@ impl MessageHandler<message::GetProposal> for Service {
         _message: message::GetProposal,
     ) -> Result<Option<api::users::Config>, Error> {
         Ok(self.get_proposal())
+    }
+}
+
+#[async_trait]
+impl MessageHandler<message::Install> for Service {
+    async fn handle(&mut self, _message: message::Install) -> Result<(), Error> {
+        let Some(proposal) = self.get_proposal() else {
+            return Err(Error::MissingProposal);
+        };
+
+        self.model
+            .install(&proposal)?;
+
+        Ok(())
     }
 }

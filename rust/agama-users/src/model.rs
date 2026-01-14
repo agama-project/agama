@@ -18,13 +18,14 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
+use agama_utils::api::users::Config;
 use crate::service;
 
 /// Abstract the users-related configuration from the underlying system.
 pub trait ModelAdapter: Send + 'static {
     /// Apply the changes to target system. It is expected to be called almost
     /// at the end of the installation.
-    fn install(&self) -> Result<(), service::Error> {
+    fn install(&self, _config: &Config) -> Result<(), service::Error> {
         Ok(())
     }
 }
@@ -33,7 +34,9 @@ pub trait ModelAdapter: Send + 'static {
 pub struct Model {}
 
 impl ModelAdapter for Model {
-    fn install(&self) -> Result<(), service::Error> {
+    fn install(&self, config: &Config) -> Result<(), service::Error> {
+        tracing::info!("Users service - Model::install");
+
         Ok(())
     }
 }
