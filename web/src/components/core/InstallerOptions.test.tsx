@@ -29,7 +29,7 @@ import { Keymap, Locale } from "~/model/system/l10n";
 import { Progress, Stage } from "~/model/status";
 import { System } from "~/model/system/network";
 import * as utils from "~/utils";
-import { PRODUCT, ROOT } from "~/routes/paths";
+import { ROOT } from "~/routes/paths";
 import InstallerOptions, { InstallerOptionsProps } from "./InstallerOptions";
 import { useStatus } from "~/hooks/model/status";
 
@@ -135,7 +135,6 @@ describe("InstallerOptions", () => {
 
   describe.each([
     ["login", ROOT.login],
-    ["product selection progress", PRODUCT.progress],
     ["installation progress", ROOT.installationProgress],
     ["installation finished", ROOT.installationFinished],
   ])(`when the installer is rendering the %s screen`, (_, path) => {

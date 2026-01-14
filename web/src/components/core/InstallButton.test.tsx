@@ -43,7 +43,6 @@ describe("InstallButton", () => {
     ["overview (full route)", ROOT.overview],
     ["login", ROOT.login],
     ["product selection", PRODUCT.changeProduct],
-    ["product selection progress", PRODUCT.progress],
     ["installation progress", ROOT.installationProgress],
     ["installation finished", ROOT.installationFinished],
     ["installation exit", ROOT.installationExit],
