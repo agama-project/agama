@@ -54,6 +54,10 @@ pub trait ModelAdapter: Send + 'static {
     fn update_authorized_keys(&self, _ssh_key: &String) -> Result<(), service::Error> {
         Ok(())
     }
+
+    fn update_user_fullname(&self, _user: &FirstUserConfig) -> Result<(), service::Error> {
+        Ok(())
+    }
 }
 
 /// [ModelAdapter] implementation for systemd-based systems.
@@ -90,7 +94,9 @@ impl ModelAdapter for Model {
             )));
         }
 
-        self.set_user_password(user_name, user_password)
+        self.set_user_password(user_name, user_password)?;
+
+        self.update_user_fullname(user)
     }
 
     /// Reads root's data from given config and updates root setup accordingly
@@ -159,6 +165,33 @@ impl ModelAdapter for Model {
         fs::set_permissions(&file_name, Permissions::from_mode(0o600))?;
 
         writeln!(authorized_keys_file, "{}", ssh_key.trim())?;
+
+        Ok(())
+    }
+
+    fn update_user_fullname(&self, user: &FirstUserConfig) -> Result<(), service::Error> {
+        let Some(ref user_name) = user.user_name else {
+            return Ok(());
+        };
+        let Some(ref full_name) = user.full_name else {
+            return Ok(());
+        };
+
+        let chfn = Command::new("/usr/bin/chfn")
+            .args(["-f", &full_name, &user_name])
+            .output()?;
+
+        if !chfn.status.success() {
+            tracing::error!(
+                "Setting full name {} for user {} failed",
+                full_name,
+                user_name
+            );
+            return Err(service::Error::CommandFailed(format!(
+                "Cannot set full name {} for user {}: {}",
+                full_name, user_name, chfn.status
+            )));
+        }
 
         Ok(())
     }
