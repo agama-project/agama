@@ -23,8 +23,8 @@ use agama_utils::api::users::config::{FirstUserConfig, RootUserConfig, UserPassw
 use agama_utils::api::users::Config;
 use std::fs;
 use std::fs::{OpenOptions, Permissions};
-use std::os::unix::fs::PermissionsExt;
 use std::io::Write;
+use std::os::unix::fs::PermissionsExt;
 use std::process::{Command, Stdio};
 
 /// Abstract the users-related configuration from the underlying system.
@@ -138,7 +138,7 @@ impl ModelAdapter for Model {
         let passwd = passwd_process.wait_with_output()?;
 
         if !passwd.status.success() {
-            tracing::error!("Setting passeord for user {} creation failed", user_name);
+            tracing::error!("Setting password for user {} creation failed", user_name);
             return Err(service::Error::IO(std::io::Error::other(format!(
                 "Cannot set password for user {}: {}",
                 user_name, passwd.status
