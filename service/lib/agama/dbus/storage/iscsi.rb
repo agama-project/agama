@@ -22,39 +22,54 @@
 require "dbus"
 require "json"
 require "agama/dbus/base_object"
-require "agama/dbus/interfaces/issues"
-require "agama/dbus/with_service_status"
+require "agama/with_progress"
 
 module Agama
   module DBus
     module Storage
       # D-Bus object to manage iSCSI.
       class ISCSI < BaseObject
-        include WithServiceStatus
-        include DBus::Interfaces::Issues
+        include Agama::WithProgress
 
         PATH = "/org/opensuse/Agama/Storage1/ISCSI"
         private_constant :PATH
 
-        # @param backend [Agama::Storage::ISCSI::Manager]
-        # @param service_status [Agama::DBus::ServiceStatus, nil]
+        # @param manager [Agama::Storage::ISCSI::Manager]
         # @param logger [Logger, nil]
-        def initialize(backend, service_status: nil, logger: nil)
+        def initialize(manager, logger: nil)
           super(PATH, logger: logger)
-          @backend = backend
-          @service_status = service_status
-          register_callbacks
+          @manager = manager
+          register_progress_callbacks
         end
 
-        # List of issues, see {DBus::Interfaces::Issues}
+        dbus_interface "org.opensuse.Agama.Storage1.ISCSI" do
+          dbus_method(:GetSystem, "out system:s") { recover_system }
+          dbus_method(:GetConfig, "out config:s") { recover_config }
+          dbus_method(:SetConfig, "in serialized_config:s, out result:u") do |serialized_config|
+            busy_while { apply_config(serialized_config) }
+          end
+          dbus_signal(:SystemChanged, "system:s")
+          dbus_signal(:ProgressChanged, "progress:s")
+          dbus_signal(:ProgressFinished)
+        end
+
+        # @return [String]
+        def recover_system
+          manager.probe unless manager.probed?
+
+          json = {
+            initiator: initiator_json,
+            targets:   targets_json
+          }
+          JSON.pretty_generate(json)
+        end
+
+        # Gets the serialized config.
         #
-        # @return [Array<Agama::Issue>]
-        def issues
-          backend.issues
+        # @return [String]
+        def recover_config
+          JSON.pretty_generate(manager.config_json)
         end
-
-        ISCSI_INTERFACE = "org.opensuse.Agama.Storage1.ISCSI"
-        private_constant :ISCSI_INTERFACE
 
         # Applies the given serialized iSCSI config according to the JSON schema.
         #
@@ -64,25 +79,42 @@ module Agama
         # @return [Integer] 0 success; 1 error
         def apply_config(serialized_config)
           logger.info("Setting iSCSI config from D-Bus: #{serialized_config}")
-
           config_json = JSON.parse(serialized_config, symbolize_names: true)
-          success = backend.apply_config_json(config_json)
+          success = manager.apply_config_json(config_json)
           success ? 0 : 1
-        end
-
-        dbus_interface ISCSI_INTERFACE do
-          dbus_method(:SetConfig, "in serialized_config:s, out result:u") do |serialized_config|
-            busy_while { apply_config(serialized_config) }
-          end
         end
 
       private
 
         # @return [Agama::Storage::ISCSI::Manager]
-        attr_reader :backend
+        attr_reader :manager
 
-        def register_callbacks
-          backend.on_issues_change { issues_properties_changed }
+        def initiator_json
+          {
+            name: manager.initiator.name,
+            ibtf: manager.initiator.ibtf_name?
+          }
+        end
+
+        def targets_json
+          manager.nodes.map { |n| target_json(n) }
+        end
+
+        def target_json(node)
+          {
+            name: node.target,
+            address: node.address,
+            port: node.port,
+            interface: node.interface,
+            ibtf: node.ibtf?,
+            startup: node.startup,
+            connected: node.connected?
+          }
+        end
+
+        def register_progress_callbacks
+          on_progress_change { self.ProgressChanged(progress.to_json) }
+          on_progress_finish { self.ProgressFinished }
         end
       end
     end

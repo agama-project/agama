@@ -137,7 +137,8 @@ module Agama
         # NOTE: memoization of the values?
         # @return [String]
         def recover_system
-          return nil.to_json unless backend.probed?
+          backend.activate unless backend.activated?
+          backend.probe unless backend.probed?
 
           json = {
             devices:            json_devices(:probed),

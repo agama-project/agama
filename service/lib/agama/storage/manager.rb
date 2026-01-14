@@ -81,7 +81,6 @@ module Agama
 
       # Activates the devices.
       def activate
-        iscsi.activate
         callbacks = Callbacks::Activate.new(questions_client, logger)
         Y2Storage::StorageManager.instance.activate(callbacks)
         @activated = true
@@ -93,7 +92,6 @@ module Agama
 
       # Probes the devices.
       def probe
-        iscsi.probe
         callbacks = Y2Storage::Callbacks::UserProbe.new
         Y2Storage::StorageManager.instance.probe(callbacks)
       end

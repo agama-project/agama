@@ -34,12 +34,16 @@ module Agama
       # This class is a wrapper over the YaST code dealing with iSCSI.
       class Adapter
         # Performs actions for activating iSCSI.
-        def activate
+        def self.activate
           Yast::IscsiClientLib.getiBFT
           # Check initiator name, creating one if missing.
           return false unless Yast::IscsiClientLib.checkInitiatorName(silent: true)
 
-          start_services
+          # Restart the services, in case any of them was already runningfor whatever reason.
+          Yast::Service.restart("iscsi")
+          Yast::Service.restart("iscsid")
+          Yast::Service.restart("iscsiuio")
+
           # Why we need to sleep here? This was copied from yast2-iscsi-client.
           sleep(0.5)
           Yast::IscsiClientLib.getConfig
@@ -147,16 +151,6 @@ module Agama
         end
 
       private
-
-        # Starts the iSCSI services.
-        #
-        # To be precise, it actually restarts the services, in case any of them was already running
-        # for whatever reason.
-        def start_services
-          Yast::Service.restart("iscsi")
-          Yast::Service.restart("iscsid")
-          Yast::Service.restart("iscsiuio")
-        end
 
         # Creates an iSCSI authentication object.
         #

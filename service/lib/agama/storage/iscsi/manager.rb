@@ -24,7 +24,6 @@ require "agama/storage/iscsi/adapter"
 require "agama/storage/iscsi/config_importer"
 require "agama/storage/iscsi/node"
 require "agama/with_issues"
-require "agama/with_progress_manager"
 require "yast/i18n"
 
 module Agama
@@ -33,7 +32,6 @@ module Agama
       # Manager for iSCSI.
       class Manager
         include WithIssues
-        include WithProgressManager
         include Yast::I18n
 
         STARTUP_OPTIONS = ["onboot", "manual", "automatic"].freeze
@@ -54,33 +52,24 @@ module Agama
         # @return [Array<Node>]
         attr_reader :nodes
 
-        # @param progress_manager [ProgressManager, nil]
         # @param logger [Logger, nil]
-        def initialize(progress_manager: nil, logger: nil)
-          @progress_manager = progress_manager
+        def initialize(logger: nil)
           @logger = logger || ::Logger.new($stdout)
           @nodes = []
-          @on_activate_callbacks = []
-          @on_probe_callbacks = []
-          # Sets iSCSI as configured after any change on the sessions.
-          @on_sessions_change_callbacks = [proc { @configured = true }]
         end
 
-        # Whether iSCSI was configured.
+        # Whether probing has been already performed.
         #
         # @return [Boolean]
-        def configured?
-          !!@configured
+        def probed?
+          !!@probed
         end
 
-        # Performs actions for activating iSCSI.
-        #
-        # Callbacks are called at the end, see {#on_probe}.
-        def activate
-          logger.info "Activating iSCSI"
-          @activated = true
-          adapter.activate
-          @on_activate_callbacks.each(&:call)
+        # Probes iSCSI.
+        def probe
+          @probed = true
+          probe_initiator
+          probe_nodes
         end
 
         # Performs an iSCSI discovery.
@@ -96,19 +85,7 @@ module Agama
         #
         # @return [Boolean] Whether the action successes
         def discover(host, port, credentials: {})
-          ensure_activated
           probe_after { adapter.discover(host, port, credentials: credentials) }
-        end
-
-        # Probes iSCSI.
-        #
-        # Callbacks are called at the end, see {#on_probe}.
-        def probe
-          logger.info "Probing iSCSI"
-          @probed = true
-          probe_initiator
-          probe_nodes
-          @on_probe_callbacks.each(&:call)
         end
 
         # Applies the given iSCSI config.
@@ -148,7 +125,6 @@ module Agama
         #
         # @return [Boolean] Whether the action successes
         def login(node, credentials: {}, startup: nil)
-          ensure_activated
           result = probe_after { adapter.login(node, credentials: credentials, startup: startup) }
           run_on_sessions_change_callbacks
           result
@@ -160,7 +136,6 @@ module Agama
         # @param node [Node]
         # @return [Boolean] Whether the action successes
         def logout(node)
-          ensure_activated
           result = probe_after { adapter.logout(node) }
           run_on_sessions_change_callbacks
           result
@@ -185,27 +160,6 @@ module Agama
           probe_after { adapter.update_node(node, startup: startup) }
         end
 
-        # Registers a callback to be called after performing iSCSI activation
-        #
-        # @param block [Proc]
-        def on_activate(&block)
-          @on_activate_callbacks << block
-        end
-
-        # Registers a callback to be called when the nodes are probed
-        #
-        # @param block [Proc]
-        def on_probe(&block)
-          @on_probe_callbacks << block
-        end
-
-        # Registers a callback to be called when a session changes
-        #
-        # @param block [Proc]
-        def on_sessions_change(&block)
-          @on_sessions_change_callbacks << block
-        end
-
       private
 
         # @return [Logger]
@@ -214,31 +168,6 @@ module Agama
         # @return [Adapter]
         def adapter
           @adapter ||= Adapter.new
-        end
-
-        # Whether activation has been already performed
-        #
-        # @return [Boolean]
-        def activated?
-          !!@activated
-        end
-
-        # Whether probing has been already performed.
-        #
-        # @return [Boolean]
-        def probed?
-          !!@probed
-        end
-
-        # Calls activation if needed
-        def ensure_activated
-          activate unless activated?
-        end
-
-        # Calls probing (and activation) if needed.
-        def ensure_probed
-          activate unless activated?
-          probe unless probed?
         end
 
         # Probes the initiator.
@@ -273,10 +202,9 @@ module Agama
         # @param config [ISCSI::Config]
         # @return [Boolean] Whether the config was correctly applied.
         def apply_config(config)
-          ensure_probed
+          probe unless probed?
           apply_initiator_config(config)
           apply_targets_config(config)
-
           issues.none?
         end
 
