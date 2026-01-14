@@ -403,7 +403,7 @@ mod tests {
     fn test_string_question() {
         let q = QuestionSpec::new("Please, enter a username", "username")
             .as_string()
-            .with_action_ids(&[gettext_noop("Next"), gettext_noop("Cancel")]);
+            .with_action_ids(&["Next", "Cancel"]);
 
         let q_str = serde_json::to_string_pretty(&q).unwrap();
         println!("{}", &q_str);
@@ -416,7 +416,7 @@ mod tests {
     fn test_password_question() {
         let q = QuestionSpec::new("Decrypt the device", "luks")
             .as_password()
-            .with_action_ids(&[gettext_noop("Decrypt"), gettext_noop("Skip")]);
+            .with_action_ids(&["Decrypt", "Skip"]);
 
         let q_str = serde_json::to_string_pretty(&q).unwrap();
         println!("{}", &q_str);
@@ -429,7 +429,7 @@ mod tests {
     fn test_select_question() {
         let q = QuestionSpec::new("There is a solver conflict...", "conflict")
             .as_select(&[("opt1", "Option 1"), ("opt2", "Option 2")])
-            .with_action_ids(&[gettext_noop("Decrypt"), gettext_noop("Skip")]);
+            .with_action_ids(&["Decrypt", "Skip"]);
 
         let q_str = serde_json::to_string_pretty(&q).unwrap();
         println!("{}", &q_str);
@@ -451,7 +451,7 @@ mod tests {
         let q = QuestionSpec::new("Please, enter a username", "username")
             .as_string()
             .with_data(&[("id", "1")])
-            .with_action_ids(&[gettext_noop("Next"), gettext_noop("Cancel")]);
+            .with_action_ids(&["Next", "Cancel"]);
 
         let rule_by_text = AnswerRule {
             text: Some("Please, enter a username".to_string()),
