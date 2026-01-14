@@ -22,7 +22,6 @@
 
 import React from "react";
 import { sprintf } from "sprintf-js";
-import { isEmpty } from "radashi";
 import Summary from "~/components/core/Summary";
 import Link from "~/components/core/Link";
 import { useProgressTracking } from "~/hooks/use-progress-tracking";
@@ -156,15 +155,11 @@ const Description = () => {
  */
 export default function StorageSummary() {
   const { loading } = useProgressTracking("storage");
-  // FIXME: Refactor for avoid duplicating these checks about issues and actions
-  // TODO: extend tests for covering the hasIssues status
-  const actions = useActions();
-  const issues = useIssues("storage");
-  const configIssues = issues.filter((i) => i.class !== "proposal");
+  const hasIssues = !!useIssues("storage").length;
 
   return (
     <Summary
-      hasIssues={!isEmpty(configIssues) || isEmpty(actions)}
+      hasIssues={hasIssues}
       icon="hard_drive"
       title={
         <Link to={STORAGE.root} variant="link" isInline>
