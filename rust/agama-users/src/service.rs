@@ -216,13 +216,11 @@ impl MessageHandler<message::GetProposal> for Service {
 #[async_trait]
 impl MessageHandler<message::Install> for Service {
     async fn handle(&mut self, _message: message::Install) -> Result<(), Error> {
-        let Some(proposal) = self.get_proposal() else {
+        if let Some(proposal) = self.get_proposal() {
+            self.model.install(&proposal)?;
+        } else {
             tracing::error!("Missing user proposal");
-
-            return Err(Error::MissingProposal);
         };
-
-        self.model.install(&proposal)?;
 
         Ok(())
     }
