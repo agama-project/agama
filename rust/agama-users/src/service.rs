@@ -117,28 +117,21 @@ impl Service {
     }
 
     fn get_proposal(&self) -> Option<api::users::Config> {
-        if self.find_issues().is_empty() {
+        if !self.full_config.is_empty() {
             return self.full_config.to_api();
         }
 
         None
     }
 
+    /// Updates the service issues.
+    ///
+    /// At least one user is mandatory
+    /// - typicaly root or
+    /// - first user which will operate throught sudo
     fn update_issues(&self) -> Result<(), Error> {
-        let issues = self.find_issues();
-        self.issues
-            .cast(issue::message::Set::new(Scope::Users, issues))?;
-        Ok(())
-    }
-
-    fn find_issues(&self) -> Vec<Issue> {
         let mut issues = vec![];
-
-        tracing::debug!("hello: {:?}", &self.full_config);
-        // At least one user is mandatory
-        // - typicaly root or
-        // - first user which will operate throught sudo
-        if self.full_config.root.is_none() && self.full_config.first_user.is_none() {
+        if self.full_config.is_empty() {
             issues.push(Issue::new(
                 "users.no_auth",
                 &gettext(
@@ -147,7 +140,21 @@ impl Service {
             ));
         }
 
-        issues
+        if self
+            .full_config
+            .first_user
+            .as_ref()
+            .is_some_and(|u| !u.is_valid())
+        {
+            issues.push(Issue::new(
+                "users.invalid_user",
+                &gettext("First user information is incomplete"),
+            ));
+        }
+
+        self.issues
+            .cast(issue::message::Set::new(Scope::Users, issues))?;
+        Ok(())
     }
 }
 

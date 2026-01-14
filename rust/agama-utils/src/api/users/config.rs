@@ -51,6 +51,18 @@ impl Config {
 
         Some(self.clone())
     }
+
+    pub fn is_empty(&self) -> bool {
+        if self.root.as_ref().is_some_and(|r| !r.is_empty()) {
+            return false;
+        }
+
+        if self.first_user.as_ref().is_some_and(|u| !u.is_empty()) {
+            return false;
+        }
+
+        true
+    }
 }
 
 /// First user settings
@@ -73,9 +85,15 @@ pub struct FirstUserConfig {
 }
 
 impl FirstUserConfig {
-    /// Whether it is a valid user.
+    /// Whether it is an empty user.
+    pub fn is_empty(&self) -> bool {
+        self.user_name.is_none()
+    }
+
     pub fn is_valid(&self) -> bool {
-        self.user_name.is_some()
+        self.user_name.as_ref().is_some_and(|n| !n.is_empty())
+            && self.full_name.as_ref().is_some_and(|n| !n.is_empty())
+            && self.password.as_ref().is_some_and(|p| !p.is_empty())
     }
 }
 
@@ -92,6 +110,12 @@ pub struct UserPassword {
     #[merge(strategy = merge::bool::overwrite_false)]
     #[serde(default)]
     pub hashed_password: bool,
+}
+
+impl UserPassword {
+    pub fn is_empty(&self) -> bool {
+        self.password.is_empty()
+    }
 }
 
 fn overwrite_if_not_empty(old: &mut String, new: String) {
@@ -119,13 +143,25 @@ pub struct RootUserConfig {
 
 impl RootUserConfig {
     pub fn is_empty(&self) -> bool {
-        self.password.is_none() && self.ssh_public_key.is_none()
+        if self
+            .password
+            .as_ref()
+            .is_some_and(|p| !p.password.is_empty())
+        {
+            return false;
+        }
+
+        if self.ssh_public_key.as_ref().is_some_and(|p| !p.is_empty()) {
+            return false;
+        }
+
+        return true;
     }
 }
 
 #[cfg(test)]
 mod test {
-    use super::{FirstUserConfig, RootUserConfig, UserPassword};
+    use super::{Config, FirstUserConfig, RootUserConfig, UserPassword};
 
     #[test]
     fn test_parse_user_password() {
@@ -138,5 +174,117 @@ mod test {
         let password: UserPassword = serde_json::from_str(&password_str).unwrap();
         assert_eq!(&password.password, "$a$b123");
         assert_eq!(password.hashed_password, false);
+    }
+
+    #[test]
+    fn test_is_empty() {
+        assert_eq!(Config::default().is_empty(), true);
+
+        let empty_user_config = Config {
+            first_user: Some(FirstUserConfig::default()),
+            ..Default::default()
+        };
+        assert_eq!(empty_user_config.is_empty(), true);
+
+        let empty_root_config = Config {
+            root: Some(RootUserConfig::default()),
+            ..Default::default()
+        };
+        assert_eq!(empty_root_config.is_empty(), true);
+
+        let password = UserPassword {
+            password: "secret".to_string(),
+            hashed_password: false,
+        };
+        let empty_password = UserPassword {
+            password: "".to_string(),
+            hashed_password: false,
+        };
+
+        let user_with_password = FirstUserConfig {
+            user_name: Some("jane".to_string()),
+            password: Some(password.clone()),
+            ..Default::default()
+        };
+        let user_with_password_config = Config {
+            first_user: Some(user_with_password),
+            ..Default::default()
+        };
+        assert_eq!(user_with_password_config.is_empty(), false);
+
+        let root_with_password = RootUserConfig {
+            password: Some(password.clone()),
+            ..Default::default()
+        };
+        let root_with_password_config = Config {
+            root: Some(root_with_password),
+            ..Default::default()
+        };
+        assert_eq!(root_with_password_config.is_empty(), false);
+
+        let root_with_empty_password = RootUserConfig {
+            password: Some(empty_password.clone()),
+            ..Default::default()
+        };
+        let root_with_empty_password_config = Config {
+            root: Some(root_with_empty_password),
+            ..Default::default()
+        };
+        assert_eq!(root_with_empty_password_config.is_empty(), true);
+
+        let root_with_ssh_key = RootUserConfig {
+            ssh_public_key: Some("12345678".to_string()),
+            ..Default::default()
+        };
+        let root_with_ssh_key_config = Config {
+            root: Some(root_with_ssh_key),
+            ..Default::default()
+        };
+        assert_eq!(root_with_ssh_key_config.is_empty(), false);
+    }
+
+    #[test]
+    fn test_user_is_valid() {
+        assert_eq!(FirstUserConfig::default().is_valid(), false);
+
+        let valid_user = FirstUserConfig {
+            user_name: Some("firstuser".to_string()),
+            full_name: Some("First User".to_string()),
+            password: Some(UserPassword {
+                password: "12345678".to_string(),
+                hashed_password: false,
+            }),
+        };
+        assert_eq!(valid_user.is_valid(), true);
+
+        let empty_user_name = FirstUserConfig {
+            user_name: Some("".to_string()),
+            full_name: Some("First User".to_string()),
+            password: Some(UserPassword {
+                password: "12345678".to_string(),
+                hashed_password: false,
+            }),
+        };
+        assert_eq!(empty_user_name.is_valid(), false);
+
+        let empty_full_name = FirstUserConfig {
+            user_name: Some("firstuser".to_string()),
+            full_name: Some("".to_string()),
+            password: Some(UserPassword {
+                password: "12345678".to_string(),
+                hashed_password: false,
+            }),
+        };
+        assert_eq!(empty_full_name.is_valid(), false);
+
+        let empty_password = FirstUserConfig {
+            user_name: Some("firstuser".to_string()),
+            full_name: Some("First User".to_string()),
+            password: Some(UserPassword {
+                password: "".to_string(),
+                hashed_password: false,
+            }),
+        };
+        assert_eq!(empty_password.is_valid(), false);
     }
 }
