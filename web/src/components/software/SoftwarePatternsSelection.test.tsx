@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2023-2024] SUSE LLC
+ * Copyright (c) [2023-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -41,10 +41,6 @@ jest.mock("~/hooks/model/proposal/software", () => ({
 jest.mock("~/api", () => ({
   patchConfig: jest.fn(),
 }));
-
-jest.mock("~/components/product/ProductRegistrationAlert", () => () => (
-  <div>ProductRegistrationAlert Mock</div>
-));
 
 jest.mock("~/queries/software", () => ({
   useConfigMutation: () => onConfigMutationMock,

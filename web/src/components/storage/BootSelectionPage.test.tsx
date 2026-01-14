@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024-2025] SUSE LLC
+ * Copyright (c) [2024-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -24,12 +24,6 @@ import React from "react";
 import { screen, waitFor, within } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import BootSelectionPage from "./BootSelectionPage";
-
-// FIXME: drop this mock once a better solution for dealing with
-// ProductRegistrationAlert, which uses a query with suspense,
-jest.mock("~/components/product/ProductRegistrationAlert", () => () => (
-  <div>ProductRegistrationAlert Mock</div>
-));
 
 const mockDevices = [
   {

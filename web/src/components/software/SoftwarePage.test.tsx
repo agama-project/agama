@@ -30,10 +30,6 @@ import SoftwarePage from "./SoftwarePage";
 jest.mock("~/components/layout/Header", () => () => <div>Header Mock</div>);
 jest.mock("~/components/questions/Questions", () => () => <div>Questions Mock</div>);
 
-jest.mock("~/components/product/ProductRegistrationAlert", () => () => (
-  <div>ProductRegistrationAlert Mock</div>
-));
-
 jest.mock("~/hooks/model/issue", () => ({
   useIssues: () => [],
 }));

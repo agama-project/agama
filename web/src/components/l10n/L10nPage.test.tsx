@@ -46,10 +46,6 @@ const timezones: Timezone[] = [
   { id: "Europe/Madrid", parts: ["Europe", "Madrid"], country: "Spain", utcOffset: 120 },
 ];
 
-jest.mock("~/components/product/ProductRegistrationAlert", () => () => (
-  <div>ProductRegistrationAlert Mock</div>
-));
-
 jest.mock("~/components/core/InstallerOptions", () => () => <div>InstallerOptions Mock</div>);
 
 jest.mock("~/hooks/model/system/l10n", () => ({

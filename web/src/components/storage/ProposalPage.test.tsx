@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2025] SUSE LLC
+ * Copyright (c) [2022-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -110,9 +110,6 @@ jest.mock("./ProposalResultSection", () => () => <div>result</div>);
 jest.mock("./ConfigEditor", () => () => <div>installation devices</div>);
 jest.mock("./EncryptionSection", () => () => <div>encryption section</div>);
 jest.mock("./BootSection", () => () => <div>boot section</div>);
-jest.mock("~/components/product/ProductRegistrationAlert", () => () => (
-  <div>registration alert</div>
-));
 
 beforeEach(() => {
   mockUseReset.mockReturnValue(jest.fn());

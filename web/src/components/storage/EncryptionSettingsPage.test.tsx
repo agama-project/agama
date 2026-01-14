@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024-2025] SUSE LLC
+ * Copyright (c) [2024-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -43,10 +43,6 @@ const mockTpmConfig: ConfigModel.Config = {
 };
 
 const mockNoEncryptionConfig: ConfigModel.Config = {};
-
-jest.mock("~/components/product/ProductRegistrationAlert", () => () => (
-  <div>registration alert</div>
-));
 
 jest.mock("~/hooks/model/system", () => ({
   useSystem: () => ({

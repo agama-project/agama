@@ -34,10 +34,6 @@ const locales: Locale[] = [
   { id: "es_ES.UTF-8", language: "Spanish", territory: "Spain" },
 ];
 
-jest.mock("~/components/product/ProductRegistrationAlert", () => () => (
-  <div>ProductRegistrationAlert Mock</div>
-));
-
 jest.mock("react-router", () => ({
   ...jest.requireActual("react-router"),
   useNavigate: () => mockNavigateFn,
