@@ -18,8 +18,8 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::api::progress::Progress;
 use crate::api::scope::Scope;
+use crate::api::{progress::Progress, status::Stage};
 use serde::{Deserialize, Serialize};
 use tokio::sync::broadcast;
 
@@ -27,7 +27,9 @@ use tokio::sync::broadcast;
 #[serde(tag = "type")]
 pub enum Event {
     // The stage of the installation changed.
-    StageChanged,
+    StageChanged {
+        stage: Stage,
+    },
     /// Progress changed.
     ProgressChanged {
         progress: Progress,

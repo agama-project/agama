@@ -28,7 +28,7 @@ use agama_utils::{
         files::scripts::ScriptsGroup,
         manager::{self, LicenseContent},
         status::Stage,
-        Action, Config, Event, Issue, IssueMap, Proposal, Scope, Status, SystemInfo,
+        Action, Config, Event, FinishMethod, Issue, IssueMap, Proposal, Scope, Status, SystemInfo,
     },
     issue, licenses,
     products::{self, ProductSpec},
@@ -39,11 +39,8 @@ use gettextrs::gettext;
 use merge::Merge;
 use network::NetworkSystemClient;
 use serde_json::Value;
-use std::sync::Arc;
-use tokio::{
-    runtime::Handle,
-    sync::{broadcast, RwLock},
-};
+use std::{process::Command, sync::Arc};
+use tokio::sync::{broadcast, RwLock};
 
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
@@ -509,7 +506,14 @@ impl MessageHandler<message::GetSystem> for Service {
         let manager = self.system.clone();
         let storage = self.storage.call(storage::message::GetSystem).await?;
         let network = self.network.get_system().await?;
-        let software = self.software.call(software::message::GetSystem).await?;
+
+        let stage = self.progress.call(progress::message::GetStage).await?;
+        // During installation, the software service will not answer.
+        let software = if stage != Stage::Installing {
+            self.software.call(software::message::GetSystem).await?
+        } else {
+            Default::default()
+        };
 
         Ok(SystemInfo {
             hostname,
@@ -535,11 +539,18 @@ impl MessageHandler<message::GetExtendedConfig> for Service {
             .to_option();
         let hostname = self.hostname.call(hostname::message::GetConfig).await?;
         let l10n = self.l10n.call(l10n::message::GetConfig).await?;
-        let software = self.software.call(software::message::GetConfig).await?;
         let questions = self.questions.call(question::message::GetConfig).await?;
         let network = self.network.get_config().await?;
         let storage = self.storage.call(storage::message::GetConfig).await?;
         let users = self.users.call(users::message::GetConfig).await?;
+
+        let stage = self.progress.call(progress::message::GetStage).await?;
+        // During installation, the software service will not answer.
+        let software = if stage != Stage::Installing {
+            Some(self.software.call(software::message::GetConfig).await?)
+        } else {
+            None
+        };
 
         Ok(Config {
             bootloader,
@@ -547,7 +558,7 @@ impl MessageHandler<message::GetExtendedConfig> for Service {
             l10n: Some(l10n),
             questions,
             network: Some(network),
-            software: Some(software),
+            software,
             storage,
             files: None,
             users: Some(users),
@@ -594,10 +605,17 @@ impl MessageHandler<message::GetProposal> for Service {
     async fn handle(&mut self, _message: message::GetProposal) -> Result<Option<Proposal>, Error> {
         let hostname = self.hostname.call(hostname::message::GetProposal).await?;
         let l10n = self.l10n.call(l10n::message::GetProposal).await?;
-        let software = self.software.call(software::message::GetProposal).await?;
         let storage = self.storage.call(storage::message::GetProposal).await?;
         let network = self.network.get_proposal().await?;
         let users = self.users.call(users::message::GetProposal).await?;
+
+        let stage = self.progress.call(progress::message::GetStage).await?;
+        // During installation, the software service will not answer.
+        let software = if stage != Stage::Installing {
+            self.software.call(software::message::GetProposal).await?
+        } else {
+            None
+        };
 
         Ok(Some(Proposal {
             hostname,
@@ -632,19 +650,21 @@ impl MessageHandler<message::GetLicense> for Service {
 impl MessageHandler<message::RunAction> for Service {
     /// It runs the given action.
     async fn handle(&mut self, message: message::RunAction) -> Result<(), Error> {
-        self.check_stage(Stage::Configuring).await?;
-
         match message.action {
             Action::ConfigureL10n(config) => {
+                self.check_stage(Stage::Configuring).await?;
                 self.configure_l10n(config).await?;
             }
             Action::ActivateStorage => {
+                self.check_stage(Stage::Configuring).await?;
                 self.activate_storage().await?;
             }
             Action::ProbeStorage => {
+                self.check_stage(Stage::Configuring).await?;
                 self.probe_storage().await?;
             }
             Action::Install => {
+                self.check_stage(Stage::Configuring).await?;
                 let action = InstallAction {
                     hostname: self.hostname.clone(),
                     l10n: self.l10n.clone(),
@@ -654,6 +674,11 @@ impl MessageHandler<message::RunAction> for Service {
                     files: self.files.clone(),
                     progress: self.progress.clone(),
                 };
+                action.run();
+            }
+            Action::Finish(method) => {
+                // TODO: check the stage
+                let action = FinishAction::new(method);
                 action.run();
             }
         }
@@ -798,5 +823,42 @@ impl InstallAction {
             .call(progress::message::SetStage::new(Stage::Finished))
             .await?;
         Ok(())
+    }
+}
+
+/// Implements the finish action.
+struct FinishAction {
+    method: FinishMethod,
+}
+
+impl FinishAction {
+    pub fn new(method: FinishMethod) -> Self {
+        Self { method }
+    }
+
+    pub fn run(self) {
+        let option = match self.method {
+            FinishMethod::Halt => Some("-H"),
+            FinishMethod::Reboot => Some("-r"),
+            FinishMethod::Poweroff => Some("-P"),
+            FinishMethod::Stop => None,
+        };
+        let mut command = Command::new("shutdown");
+
+        if let Some(switch) = option {
+            command.arg(switch);
+        }
+
+        command.arg("now");
+        match command.output() {
+            Ok(output) => {
+                if !output.status.success() {
+                    tracing::error!("Failed to shutdown the system: {output:?}")
+                }
+            }
+            Err(error) => {
+                tracing::error!("Failed to run the shutdown command: {error}");
+            }
+        }
     }
 }

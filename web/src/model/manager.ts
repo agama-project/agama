@@ -52,7 +52,7 @@ const startInstallation = () => post("/api/v2/action", install_action);
 /**
  * Clean-up when installation is done.
  */
-const finishInstallation = () => post("/api/manager/finish");
+const finishInstallation = () => post("/api/v2/action");
 
 /**
  * Returns the binary content of the YaST logs file.

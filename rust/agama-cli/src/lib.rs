@@ -31,11 +31,11 @@ use agama_lib::{
     context::InstallationContext,
     error::ServiceError,
     http::{BaseHTTPClient, WebSocketClient},
-    manager::{FinishMethod, ManagerHTTPClient},
+    manager::ManagerHTTPClient,
     monitor::{Monitor, MonitorClient},
 };
 use agama_transfer::Transfer;
-use agama_utils::api::{self, status::Stage, IssueWithScope};
+use agama_utils::api::{self, status::Stage, FinishMethod, IssueWithScope};
 use anyhow::Context;
 use clap::{Args, Parser};
 use fluent_uri::UriRef;

@@ -31,4 +31,34 @@ pub enum Action {
     ConfigureL10n(l10n::SystemConfig),
     #[serde(rename = "install")]
     Install,
+    #[serde(rename = "finish")]
+    Finish(FinishMethod),
+}
+
+/// Finish method
+#[derive(
+    Default,
+    Serialize,
+    Deserialize,
+    Debug,
+    PartialEq,
+    Eq,
+    Clone,
+    Copy,
+    strum::Display,
+    strum::EnumString,
+    utoipa::ToSchema,
+)]
+#[strum(serialize_all = "camelCase")]
+#[serde(rename_all = "camelCase")]
+pub enum FinishMethod {
+    // Halt the system
+    Halt,
+    // Reboots the system
+    #[default]
+    Reboot,
+    // Do nothing at the end of the installation
+    Stop,
+    // Poweroff the system
+    Poweroff,
 }

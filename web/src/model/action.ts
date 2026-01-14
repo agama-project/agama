@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-type Action = ConfigureL10n | ActivateStorage | ProbeStorage;
+type Action = ConfigureL10n | ActivateStorage | ProbeStorage | Finish;
 
 type ConfigureL10n = {
   configureL10n: L10nSystemConfig;
@@ -37,6 +37,10 @@ type ActivateStorage = {
 
 type ProbeStorage = {
   probeStorage: null;
+};
+
+type Finish = {
+  finish: "halt" | "reboot" | "stop" | "poweroff";
 };
 
 export type { Action, L10nSystemConfig };

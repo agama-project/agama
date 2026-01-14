@@ -177,7 +177,7 @@ impl Monitor {
         match event {
             // status related events is used here.
             Event::ProgressFinished { scope: _ } => {}
-            Event::StageChanged => {}
+            Event::StageChanged { stage: _ } => {}
             Event::ProgressChanged { progress: _ } => {}
             _ => {
                 return;

@@ -37,15 +37,14 @@ import {
   GridItem,
   Stack,
 } from "@patternfly/react-core";
-import { Navigate, useNavigate } from "react-router";
+import { useNavigate } from "react-router";
 import { Icon } from "~/components/layout";
 import alignmentStyles from "@patternfly/react-styles/css/utilities/Alignment/alignment";
-import { useInstallerStatus } from "~/queries/status";
 import { useExtendedConfig } from "~/hooks/model/config";
-import { finishInstallation } from "~/model/manager";
-import { InstallationPhase } from "~/types/status";
+import { finishInstallation } from "~/api";
 import { ROOT as PATHS } from "~/routes/paths";
 import { _ } from "~/i18n";
+import Page from "./Page";
 
 const TpmHint = () => {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -100,7 +99,6 @@ function usingTpm(config): boolean {
 
 function InstallationFinished() {
   const { storage: storageConfig } = useExtendedConfig();
-  const { phase, useIguana } = useInstallerStatus({ suspense: true });
   const navigate = useNavigate();
 
   const onReboot = () => {
@@ -108,46 +106,42 @@ function InstallationFinished() {
     navigate(PATHS.installationExit, { replace: true });
   };
 
-  if (phase !== InstallationPhase.Finish) {
-    return <Navigate to={PATHS.root} />;
-  }
-
   return (
-    <Bullseye>
-      <Grid hasGutter>
-        <GridItem sm={8} smOffset={2}>
-          <Card>
-            <CardBody>
-              <EmptyState
-                variant="xl"
-                titleText={_("Congratulations!")}
-                headingLevel="h1"
-                icon={SuccessIcon}
-              >
-                <EmptyStateBody>
-                  <Content component="p">
-                    {_("The installation on your machine is complete.")}
-                  </Content>
-                  <Content component="p">
-                    {useIguana
-                      ? _("At this point you can power off the machine.")
-                      : _("At this point you can reboot the machine to log in to the new system.")}
-                  </Content>
-                  {usingTpm(storageConfig) && <TpmHint />}
-                </EmptyStateBody>
-                <EmptyStateFooter>
-                  <EmptyStateActions>
-                    <Button variant="primary" onClick={onReboot}>
-                      {useIguana ? _("Finish") : _("Reboot")}
-                    </Button>
-                  </EmptyStateActions>
-                </EmptyStateFooter>
-              </EmptyState>
-            </CardBody>
-          </Card>
-        </GridItem>
-      </Grid>
-    </Bullseye>
+    <Page showQuestions={false}>
+      <Bullseye>
+        <Grid hasGutter>
+          <GridItem sm={8} smOffset={2}>
+            <Card>
+              <CardBody>
+                <EmptyState
+                  variant="xl"
+                  titleText={_("Congratulations!")}
+                  headingLevel="h1"
+                  icon={SuccessIcon}
+                >
+                  <EmptyStateBody>
+                    <Content component="p">
+                      {_("The installation on your machine is complete.")}
+                    </Content>
+                    <Content component="p">
+                      {_("At this point you can reboot the machine to log in to the new system.")}
+                    </Content>
+                    {usingTpm(storageConfig) && <TpmHint />}
+                  </EmptyStateBody>
+                  <EmptyStateFooter>
+                    <EmptyStateActions>
+                      <Button variant="primary" onClick={onReboot}>
+                        {_("Reboot")}
+                      </Button>
+                    </EmptyStateActions>
+                  </EmptyStateFooter>
+                </EmptyState>
+              </CardBody>
+            </Card>
+          </GridItem>
+        </Grid>
+      </Bullseye>
+    </Page>
   );
 }
 
