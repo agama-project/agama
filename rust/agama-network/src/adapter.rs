@@ -19,9 +19,10 @@
 // find current contact information at www.suse.com.
 
 use crate::{model::StateConfig, Action, NetworkState};
+use agama_utils::{api::event::Event, issue, progress};
 use async_trait::async_trait;
 use thiserror::Error;
-use tokio::sync::mpsc::UnboundedSender;
+use tokio::sync::{broadcast, mpsc::UnboundedSender};
 
 #[derive(Error, Debug)]
 pub enum NetworkAdapterError {
@@ -33,6 +34,16 @@ pub enum NetworkAdapterError {
     Checkpoint(anyhow::Error), // only relevant for adapters that implement a checkpoint mechanism
     #[error("The network watcher cannot run: {0}")]
     Watcher(anyhow::Error),
+    #[error("Wrong signal arguments")]
+    ProgressChangedArgs,
+    #[error("Wrong signal data")]
+    ProgressChangedData,
+    #[error(transparent)]
+    Issue(#[from] issue::service::Error),
+    #[error(transparent)]
+    Progress(#[from] progress::service::Error),
+    #[error(transparent)]
+    Event(#[from] broadcast::error::SendError<Event>),
 }
 
 /// A trait for the ability to read/write from/to a network service.
