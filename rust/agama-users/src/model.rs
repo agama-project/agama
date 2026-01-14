@@ -45,13 +45,13 @@ pub trait ModelAdapter: Send + 'static {
 
     fn set_user_password(
         &self,
-        _user_name: &String,
+        _user_name: &str,
         _user_password: &UserPassword,
     ) -> Result<(), service::Error> {
         Ok(())
     }
 
-    fn update_authorized_keys(&self, _ssh_key: &String) -> Result<(), service::Error> {
+    fn update_authorized_keys(&self, _ssh_key: &str) -> Result<(), service::Error> {
         Ok(())
     }
 
@@ -101,13 +101,13 @@ impl ModelAdapter for Model {
 
     /// Reads root's data from given config and updates root setup accordingly
     fn add_root_user(&self, root: &RootUserConfig) -> Result<(), service::Error> {
-        if root.password.is_none() || root.ssh_public_key.is_none() {
+        if root.password.is_none() && root.ssh_public_key.is_none() {
             return Err(service::Error::MissingRootData);
         };
 
         // set password for root if any
         if let Some(ref root_password) = root.password {
-            self.set_user_password(&String::from("root"), root_password)?;
+            self.set_user_password("root", root_password)?;
         }
 
         // store ssh key for root if any
@@ -123,7 +123,7 @@ impl ModelAdapter for Model {
     /// echo "<user_name>:<password>" | chpasswd
     fn set_user_password(
         &self,
-        user_name: &String,
+        user_name: &str,
         user_password: &UserPassword,
     ) -> Result<(), service::Error> {
         let mut passwd_cmd = Command::new("/usr/sbin/chpasswd");
@@ -155,7 +155,7 @@ impl ModelAdapter for Model {
     }
 
     /// Updates root's authorized_keys file with SSH key
-    fn update_authorized_keys(&self, ssh_key: &String) -> Result<(), service::Error> {
+    fn update_authorized_keys(&self, ssh_key: &str) -> Result<(), service::Error> {
         let file_name = String::from("/root/.ssh/authorized_keys");
         let mut authorized_keys_file = OpenOptions::new()
             .create(true)
