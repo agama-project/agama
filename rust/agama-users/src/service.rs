@@ -51,8 +51,6 @@ pub enum Error {
     IO(#[from] std::io::Error),
     #[error(transparent)]
     Actor(#[from] actor::Error),
-    #[error("There is no user proposed")]
-    MissingProposal,
 }
 
 /// Builds and spawns the users service.
