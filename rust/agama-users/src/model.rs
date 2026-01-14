@@ -19,10 +19,10 @@
 // find current contact information at www.suse.com.
 
 use crate::service;
-use agama_utils::api::users::config::{FirstUserConfig, RootUserConfig};
+use agama_utils::api::users::config::{FirstUserConfig, RootUserConfig, UserPassword};
 use agama_utils::api::users::Config;
-use std::process::{Command, Stdio};
 use std::io::Write;
+use std::process::{Command, Stdio};
 
 /// Abstract the users-related configuration from the underlying system.
 pub trait ModelAdapter: Send + 'static {
@@ -36,7 +36,15 @@ pub trait ModelAdapter: Send + 'static {
         Ok(())
     }
 
-    fn add_root_user(&self, user: &RootUserConfig) -> Result<(), service::Error> {
+    fn add_root_user(&self, root: &RootUserConfig) -> Result<(), service::Error> {
+        Ok(())
+    }
+
+    fn set_user_password(
+        &self,
+        user_name: &String,
+        user_password: &UserPassword,
+    ) -> Result<(), service::Error> {
         Ok(())
     }
 }
@@ -46,8 +54,6 @@ pub struct Model {}
 
 impl ModelAdapter for Model {
     fn install(&self, config: &Config) -> Result<(), service::Error> {
-        tracing::info!("Users service - Model::install");
-
         if let Some(first_user) = &config.first_user {
             self.add_first_user(&first_user);
         }
@@ -58,6 +64,7 @@ impl ModelAdapter for Model {
         Ok(())
     }
 
+    /// Reads first user's data from given config and updates its setup accordingly
     fn add_first_user(&self, user: &FirstUserConfig) -> Result<(), service::Error> {
         let Some(ref user_name) = user.user_name else {
             return Err(service::Error::MissingUserData);
@@ -76,6 +83,26 @@ impl ModelAdapter for Model {
             ))));
         }
 
+        self.set_user_password(user_name, user_password)
+    }
+
+    /// Reads root's data from given config and updates root setup accordingly
+    fn add_root_user(&self, root: &RootUserConfig) -> Result<(), service::Error> {
+        let Some(ref root_password) = root.password else {
+            return Err(service::Error::MissingRootData);
+        };
+
+        self.set_user_password(&String::from("root"), root_password)
+    }
+
+    /// Sets password for given user name
+    ///
+    /// echo "<user_name>:<password>" | chpasswd
+    fn set_user_password(
+        &self,
+        user_name: &String,
+        user_password: &UserPassword,
+    ) -> Result<(), service::Error> {
         // Set the password for the newly created user
         let mut passwd_cmd = Command::new("/usr/sbin/chpasswd");
 
@@ -83,9 +110,7 @@ impl ModelAdapter for Model {
             passwd_cmd.arg("-e");
         }
 
-        let mut passwd_process = passwd_cmd
-            .stdin(Stdio::piped())
-            .spawn()?;
+        let mut passwd_process = passwd_cmd.stdin(Stdio::piped()).spawn()?;
 
         if let Some(mut stdin) = passwd_process.stdin.take() {
             writeln!(stdin, "{}:{}", user_name, user_password.password);
@@ -97,15 +122,10 @@ impl ModelAdapter for Model {
             tracing::error!("Setting passeord for user {} creation failed", user_name);
             return Err(service::Error::IO(std::io::Error::other(format!(
                 "Cannot set password for user {}: {}",
-                user_name,
-                passwd.status
+                user_name, passwd.status
             ))));
         }
 
-        Ok(())
-    }
-
-    fn add_root_user(&self, user: &RootUserConfig) -> Result<(), service::Error> {
         Ok(())
     }
 }

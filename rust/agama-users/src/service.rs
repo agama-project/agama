@@ -37,8 +37,10 @@ use tokio::sync::broadcast;
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
-    #[error("Missing first user name")]
+    #[error("Missing required data for first user.")]
     MissingUserData,
+    #[error("Missing required data for root.")]
+    MissingRootData,
     #[error(transparent)]
     Event(#[from] broadcast::error::SendError<Event>),
     #[error(transparent)]
