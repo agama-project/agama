@@ -81,7 +81,7 @@ impl Starter {
     pub async fn start(self) -> Result<Handler<Service>, Error> {
         let model = match self.model {
             Some(model) => model,
-            None => Box::new(Model {}),
+            None => Box::new(Model::new("/mnt")),
         };
         let service = Service {
             full_config: Config::new(),
