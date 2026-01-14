@@ -811,6 +811,9 @@ impl InstallAction {
         self.files.call(files::message::WriteFiles).await?;
         self.hostname.call(hostname::message::Install).await?;
         self.storage.call(storage::message::Finish).await?;
+        self.files
+            .call(files::message::RunScripts::new(ScriptsGroup::Post))
+            .await?;
 
         //
         // Finish progress and changes
