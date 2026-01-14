@@ -44,6 +44,8 @@ function useSelectedPatterns() {
   const proposal = useProposal();
   const { patterns } = useSystem();
 
+  if (!proposal) return [];
+
   const selectedPatternsKeys = Object.keys(
     shake(proposal.patterns, (value) => value === SelectedBy.NONE),
   );

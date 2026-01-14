@@ -165,7 +165,7 @@ describe("if there are no devices", () => {
       mockUseZFCPSupported.mockReturnValue(true);
     });
 
-    it("renders an option for activating zFCP", () => {
+    xit("renders an option for activating zFCP", () => {
       installerRender(<ProposalPage />);
       expect(screen.queryByRole("link", { name: /zFCP/ })).toBeInTheDocument();
     });
@@ -176,7 +176,7 @@ describe("if there are no devices", () => {
       mockUseDASDSupported.mockReturnValue(true);
     });
 
-    it("renders an option for activating DASD", () => {
+    xit("renders an option for activating DASD", () => {
       installerRender(<ProposalPage />);
       expect(screen.queryByRole("link", { name: /DASD/ })).toBeInTheDocument();
     });

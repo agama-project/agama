@@ -32,6 +32,7 @@ use agama_utils::{
     issue,
 };
 use async_trait::async_trait;
+use gettextrs::gettext;
 use tokio::sync::broadcast;
 
 #[derive(thiserror::Error, Debug)]
@@ -82,6 +83,7 @@ impl Starter {
             issues: self.issues,
             events: self.events,
         };
+        service.setup()?;
         let handler = actor::spawn(service);
 
         Ok(handler)
@@ -104,6 +106,10 @@ impl Service {
         Starter::new(events, issues)
     }
 
+    pub fn setup(&self) -> Result<(), Error> {
+        self.update_issues()
+    }
+
     fn get_proposal(&self) -> Option<api::users::Config> {
         if self.find_issues().is_empty() {
             return self.full_config.to_api();
@@ -112,16 +118,26 @@ impl Service {
         None
     }
 
+    fn update_issues(&self) -> Result<(), Error> {
+        let issues = self.find_issues();
+        self.issues
+            .cast(issue::message::Set::new(Scope::Users, issues))?;
+        Ok(())
+    }
+
     fn find_issues(&self) -> Vec<Issue> {
         let mut issues = vec![];
 
+        tracing::debug!("hello: {:?}", &self.full_config);
         // At least one user is mandatory
         // - typicaly root or
         // - first user which will operate throught sudo
         if self.full_config.root.is_none() && self.full_config.first_user.is_none() {
             issues.push(Issue::new(
-                "No user defined",
-                "At least one user has to be defined",
+                "users.no_auth",
+                &gettext(
+                    "Defining a user, setting the root password or a SSH public key is required",
+                ),
             ));
         }
 
@@ -168,12 +184,11 @@ impl MessageHandler<message::SetConfig<api::users::Config>> for Service {
 
         self.full_config = config;
 
-        self.issues
-            .cast(issue::message::Set::new(Scope::Users, self.find_issues()))?;
         self.events.send(Event::ProposalChanged {
             scope: Scope::Users,
         })?;
 
+        self.update_issues()?;
         Ok(())
     }
 }
