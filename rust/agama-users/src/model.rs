@@ -25,6 +25,7 @@ use std::fs;
 use std::fs::{OpenOptions, Permissions};
 use std::io::Write;
 use std::os::unix::fs::PermissionsExt;
+use std::path::{Path, PathBuf};
 use std::process::{Command, Stdio};
 
 /// Abstract the users-related configuration from the underlying system.
@@ -61,7 +62,17 @@ pub trait ModelAdapter: Send + 'static {
 }
 
 /// [ModelAdapter] implementation for systemd-based systems.
-pub struct Model {}
+pub struct Model {
+    install_dir: PathBuf,
+}
+
+impl Model {
+    pub fn new<P: AsRef<Path>>(install_dir: P) -> Self {
+        Self {
+            install_dir: PathBuf::from(install_dir.as_ref()),
+        }
+    }
+}
 
 impl ModelAdapter for Model {
     fn install(&self, config: &Config) -> Result<(), service::Error> {
@@ -84,7 +95,10 @@ impl ModelAdapter for Model {
             return Err(service::Error::MissingUserData);
         };
 
-        let useradd = Command::new("/usr/sbin/useradd").arg(user_name).output()?;
+        let useradd = Command::new("chroot")
+            .arg(&self.install_dir)
+            .args(["useradd", &user_name])
+            .output()?;
 
         if !useradd.status.success() {
             tracing::error!("User {} creation failed", user_name);
@@ -126,7 +140,9 @@ impl ModelAdapter for Model {
         user_name: &str,
         user_password: &UserPassword,
     ) -> Result<(), service::Error> {
-        let mut passwd_cmd = Command::new("/usr/sbin/chpasswd");
+        let mut passwd_cmd = Command::new("chroot");
+        passwd_cmd.arg(&self.install_dir);
+        passwd_cmd.arg("chpasswd");
 
         if user_password.hashed_password {
             passwd_cmd.arg("-e");
@@ -156,7 +172,7 @@ impl ModelAdapter for Model {
 
     /// Updates root's authorized_keys file with SSH key
     fn update_authorized_keys(&self, ssh_key: &str) -> Result<(), service::Error> {
-        let file_name = String::from("/root/.ssh/authorized_keys");
+        let file_name = self.install_dir.join("root/.ssh/authorized_keys");
         let mut authorized_keys_file = OpenOptions::new()
             .create(true)
             .append(true)
@@ -177,8 +193,9 @@ impl ModelAdapter for Model {
             return Ok(());
         };
 
-        let chfn = Command::new("/usr/bin/chfn")
-            .args(["-f", &full_name, &user_name])
+        let chfn = Command::new("chroot")
+            .arg(&self.install_dir)
+            .args(["chfn", "-f", &full_name, &user_name])
             .output()?;
 
         if !chfn.status.success() {

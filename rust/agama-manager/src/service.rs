@@ -685,6 +685,7 @@ impl MessageHandler<message::RunAction> for Service {
                     storage: self.storage.clone(),
                     files: self.files.clone(),
                     progress: self.progress.clone(),
+                    users: self.users.clone(),
                 };
                 action.run();
             }
@@ -755,6 +756,7 @@ struct InstallAction {
     storage: Handler<storage::Service>,
     files: Handler<files::Service>,
     progress: Handler<progress::Service>,
+    users: Handler<users::Service>,
 }
 
 impl InstallAction {
@@ -823,6 +825,7 @@ impl InstallAction {
         self.files.call(files::message::WriteFiles).await?;
         self.network.install().await?;
         self.hostname.call(hostname::message::Install).await?;
+        self.users.call(users::message::Install).await?;
 
         // call files before storage finish as it unmount /mnt/run which is important for chrooted scripts
         self.files
