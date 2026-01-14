@@ -47,7 +47,7 @@ const getError = (authError) => {
   if (authError === AuthErrors.AUTH) {
     return {
       title: _("Could not log in"),
-      description: _("Make suere that passsword is correct and try again."),
+      description: _("Make sure that the passsword is correct and try again."),
     };
   }
 
