@@ -21,6 +21,9 @@
 use crate::service;
 use agama_utils::api::users::config::{FirstUserConfig, RootUserConfig, UserPassword};
 use agama_utils::api::users::Config;
+use std::fs;
+use std::fs::{OpenOptions, Permissions};
+use std::os::unix::fs::PermissionsExt;
 use std::io::Write;
 use std::process::{Command, Stdio};
 
@@ -32,19 +35,23 @@ pub trait ModelAdapter: Send + 'static {
         Ok(())
     }
 
-    fn add_first_user(&self, user: &FirstUserConfig) -> Result<(), service::Error> {
+    fn add_first_user(&self, _user: &FirstUserConfig) -> Result<(), service::Error> {
         Ok(())
     }
 
-    fn add_root_user(&self, root: &RootUserConfig) -> Result<(), service::Error> {
+    fn add_root_user(&self, _root: &RootUserConfig) -> Result<(), service::Error> {
         Ok(())
     }
 
     fn set_user_password(
         &self,
-        user_name: &String,
-        user_password: &UserPassword,
+        _user_name: &String,
+        _user_password: &UserPassword,
     ) -> Result<(), service::Error> {
+        Ok(())
+    }
+
+    fn update_authorized_keys(&self, _ssh_key: &String) -> Result<(), service::Error> {
         Ok(())
     }
 }
@@ -55,10 +62,10 @@ pub struct Model {}
 impl ModelAdapter for Model {
     fn install(&self, config: &Config) -> Result<(), service::Error> {
         if let Some(first_user) = &config.first_user {
-            self.add_first_user(&first_user);
+            self.add_first_user(&first_user)?;
         }
         if let Some(root_user) = &config.root {
-            self.add_root_user(&root_user);
+            self.add_root_user(&root_user)?;
         }
 
         Ok(())
@@ -88,11 +95,21 @@ impl ModelAdapter for Model {
 
     /// Reads root's data from given config and updates root setup accordingly
     fn add_root_user(&self, root: &RootUserConfig) -> Result<(), service::Error> {
-        let Some(ref root_password) = root.password else {
+        if root.password.is_none() || root.ssh_public_key.is_none() {
             return Err(service::Error::MissingRootData);
         };
 
-        self.set_user_password(&String::from("root"), root_password)
+        // set password for root if any
+        if let Some(ref root_password) = root.password {
+            self.set_user_password(&String::from("root"), root_password)?;
+        }
+
+        // store ssh key for root if any
+        if let Some(ref root_ssh_key) = root.ssh_public_key {
+            self.update_authorized_keys(root_ssh_key)?;
+        }
+
+        Ok(())
     }
 
     /// Sets password for given user name
@@ -114,7 +131,7 @@ impl ModelAdapter for Model {
 
         // push user name and password into the pipe
         if let Some(mut stdin) = passwd_process.stdin.take() {
-            writeln!(stdin, "{}:{}", user_name, user_password.password);
+            writeln!(stdin, "{}:{}", user_name, user_password.password)?;
         }
 
         // proceed with the result
@@ -127,6 +144,21 @@ impl ModelAdapter for Model {
                 user_name, passwd.status
             ))));
         }
+
+        Ok(())
+    }
+
+    /// Updates root's authorized_keys file with SSH key
+    fn update_authorized_keys(&self, ssh_key: &String) -> Result<(), service::Error> {
+        let file_name = String::from("/root/.ssh/authorized_keys");
+        let mut authorized_keys_file = OpenOptions::new()
+            .create(true)
+            .append(true)
+            .open(&file_name)?;
+
+        fs::set_permissions(&file_name, Permissions::from_mode(0o600))?;
+
+        writeln!(authorized_keys_file, "{}", ssh_key.trim())?;
 
         Ok(())
     }
