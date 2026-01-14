@@ -342,6 +342,7 @@ impl Action {
 /// on the question field.
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, utoipa::ToSchema)]
 pub struct Answer {
+    #[serde(alias = "answer")]
     pub action: String,
     #[serde(alias = "password")]
     pub value: Option<String>,

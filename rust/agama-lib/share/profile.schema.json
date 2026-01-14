@@ -1008,9 +1008,14 @@
           "description": "Action to use for the question.",
           "type": "string"
         },
+        "answer": {
+          "description": "Action to use for the question. Prefer using \"action\" instead.",
+          "type": "string",
+          "deprecated": true
+        },
         "value": {
           "title": "Predefined question value",
-          "description": "Value to use for the question.",
+          "description": "Value to use for the question (depending on the type of the question).",
           "type": "string"
         }
       }
