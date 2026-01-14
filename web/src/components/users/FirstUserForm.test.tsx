@@ -41,7 +41,7 @@ jest.mock("~/hooks/model/config", () => ({
       fullName: mockFullName,
       password: mockPassword,
       hashedPassword: mockHashedPassword,
-    }
+    },
   }),
 }));
 

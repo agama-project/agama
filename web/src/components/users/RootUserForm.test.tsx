@@ -39,7 +39,7 @@ jest.mock("~/hooks/model/config", () => ({
       password: mockPassword,
       sshPublicKey: mockPublicKey,
       hashedPassword: mockHashedPassword,
-    }
+    },
   }),
 }));
 
@@ -78,7 +78,7 @@ describe("RootUserForm", () => {
     await user.click(acceptButton);
     expect(mockPatchConfig).toHaveBeenCalledWith(
       expect.objectContaining({
-        root: { password: "m0r3S3cr3t", hashedPassword: false, sshPublicKey: "" }
+        root: { password: "m0r3S3cr3t", hashedPassword: false, sshPublicKey: "" },
       }),
     );
   });
@@ -122,7 +122,7 @@ describe("RootUserForm", () => {
     expect(mockPatchConfig).toHaveBeenCalledWith(
       expect.objectContaining({
         root: expect.objectContaining({ password: "", hashedPassword: false }),
-      })
+      }),
     );
   });
 
@@ -138,8 +138,8 @@ describe("RootUserForm", () => {
       expect.objectContaining({
         root: expect.objectContaining({
           sshPublicKey: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDM+ test@example",
-        })
-      })
+        }),
+      }),
     );
   });
 
@@ -167,7 +167,7 @@ describe("RootUserForm", () => {
     expect(mockPatchConfig).toHaveBeenCalledWith(
       expect.objectContaining({
         root: expect.objectContaining({ sshPublicKey: "" }),
-      })
+      }),
     );
   });
 
@@ -190,7 +190,7 @@ describe("RootUserForm", () => {
       expect(mockPatchConfig).toHaveBeenCalledWith(
         expect.objectContaining({
           root: expect.not.objectContaining({ hashedPassword: false }),
-        })
+        }),
       );
     });
 
@@ -205,7 +205,7 @@ describe("RootUserForm", () => {
       expect(mockPatchConfig).toHaveBeenCalledWith(
         expect.objectContaining({
           root: expect.objectContaining({ hashedPassword: false, password: "" }),
-        })
+        }),
       );
     });
 
@@ -222,7 +222,7 @@ describe("RootUserForm", () => {
       expect(mockPatchConfig).toHaveBeenCalledWith(
         expect.objectContaining({
           root: expect.objectContaining({ hashedPassword: false, password: "n0tS3cr3t" }),
-        })
+        }),
       );
     });
   });

@@ -54,7 +54,9 @@ describe("FirstUser", () => {
 
   describe("when the user is already defined", () => {
     beforeEach(() => {
-      mockProposal.mockReturnValue({ users: { user: { fullName: "Gecko Migo", userName: "gmigo" } } });
+      mockProposal.mockReturnValue({
+        users: { user: { fullName: "Gecko Migo", userName: "gmigo" } },
+      });
     });
 
     it("renders the fullname and username", () => {
