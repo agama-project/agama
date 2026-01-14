@@ -28,7 +28,7 @@ import Page from "./Page";
 function InstallationProgress() {
   return (
     <Page showInstallerOptions={false}>
-      <ProgressReport title={_("Installing the system, please wait...")} />;
+      <ProgressReport title={_("Installing the system, please wait...")} />
     </Page>
   );
 }
