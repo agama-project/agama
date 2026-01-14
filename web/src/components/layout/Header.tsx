@@ -38,7 +38,7 @@ import {
 } from "@patternfly/react-core";
 import { Icon } from "~/components/layout";
 import { ChangeProductOption, InstallerOptions, InstallButton, SkipTo } from "~/components/core";
-import ProgressStatusMonitor from "../core/ProgressStatusMonitor";
+import ProgressStatusMonitor from "~/components/core/ProgressStatusMonitor";
 import Breadcrumbs from "~/components/core/Breadcrumbs";
 import { useProductInfo } from "~/hooks/model/config/product";
 import { ROOT } from "~/routes/paths";
@@ -63,6 +63,8 @@ export type HeaderProps = {
   showInstallerOptions?: boolean;
   /** Breadcrumb navigation items */
   breadcrumbs?: BreadcrumbProps[];
+  /** Whether the progress monitor must not be mounted */
+  hideProgressMonitor?: boolean;
 };
 
 const OptionsDropdown = () => {
@@ -109,6 +111,7 @@ export default function Header({
   breadcrumbs,
   showSkipToContent = true,
   showInstallerOptions = true,
+  hideProgressMonitor = false,
 }: HeaderProps): React.ReactNode {
   const product = useProductInfo();
 
@@ -152,9 +155,11 @@ export default function Header({
         <Toolbar isFullHeight>
           <ToolbarContent>
             <ToolbarGroup align={{ default: "alignEnd" }} columnGap={{ default: "columnGapXs" }}>
-              <ToolbarItem>
-                <ProgressStatusMonitor />
-              </ToolbarItem>
+              {!hideProgressMonitor && (
+                <ToolbarItem>
+                  <ProgressStatusMonitor />
+                </ToolbarItem>
+              )}
               {showInstallerOptions && (
                 <ToolbarItem>
                   <InstallerOptions />
