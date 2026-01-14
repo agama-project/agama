@@ -217,7 +217,7 @@ impl MessageHandler<message::Install> for Service {
         if let Some(proposal) = self.get_proposal() {
             self.model.install(&proposal)?;
         } else {
-            tracing::error!("Missing authentication confiuration");
+            tracing::error!("Missing authentication configuration");
         };
 
         Ok(())
