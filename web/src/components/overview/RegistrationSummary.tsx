@@ -40,7 +40,7 @@ import { useIssues } from "~/hooks/model/issue";
 const Content = () => {
   const { registration } = useSystem();
   const issues = useIssues("software");
-  const hasIssues = issues.find((i) => i.class === "software.register_system") !== undefined;
+  const hasIssues = issues.find((i) => i.class === "software.missing_registration") !== undefined;
 
   // TRANSLATORS: Brief summary about the product registration.
   // %s will be replaced with the last 4 digits of the registration code.
