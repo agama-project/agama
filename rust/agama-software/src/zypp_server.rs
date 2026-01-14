@@ -355,10 +355,16 @@ impl ZyppServer {
             zypp_agama::ResolvableSelected::Installation,
         );
         if let Err(error) = result {
-            let message = format!("Could not select the product '{}'", &state.product);
-            issues.push(
-                Issue::new("software.select_product", &message).with_details(&error.to_string()),
-            );
+            let issue = if state.allow_registration {
+                Issue::new(
+                    "software.missing_registration",
+                    &gettext("The product must be registered"),
+                )
+            } else {
+                let message = format!("Could not select the product '{}'", &state.product);
+                Issue::new("software.missing_product", &message).with_details(&error.to_string())
+            };
+            issues.push(issue);
         }
         for (name, r#type, selection) in &state.resolvables.to_vec() {
             match selection {

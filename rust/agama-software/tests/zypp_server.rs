@@ -139,7 +139,7 @@ async fn test_start_zypp_server() {
         1,
         "There are unexpected issues size {issues:#?}"
     );
-    assert_eq!(issues[0].class, "software.select_product");
+    assert_eq!(issues[0].class, "software.missing_product");
 
     let questions = question_handler
         .call(question::message::Get)
