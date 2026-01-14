@@ -144,7 +144,7 @@ impl ModelAdapter for Model {
         let passwd = passwd_process.wait_with_output()?;
 
         if !passwd.status.success() {
-            tracing::error!("Setting password for user {} creation failed", user_name);
+            tracing::error!("Failed to set password for user {}", user_name);
             return Err(service::Error::CommandFailed(format!(
                 "Cannot set password for user {}: {}",
                 user_name, passwd.status
