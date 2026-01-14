@@ -36,6 +36,7 @@ require "agama/storage/volume"
 require "agama/dbus"
 require "y2storage/issue"
 require "y2storage/luks"
+require "y2storage/storage_env"
 require "yast2/fs_snapshot"
 require "yaml"
 
@@ -44,7 +45,7 @@ Yast.import "Installation"
 describe Agama::Storage::Manager do
   include Agama::RSpec::StorageHelpers
 
-  subject(:storage) { described_class.new(config, logger: logger) }
+  subject(:storage) { described_class.new(logger: logger) }
 
   let(:logger) { Logger.new($stdout, level: :warn) }
   let(:config_path) do
@@ -237,6 +238,47 @@ describe Agama::Storage::Manager do
 
       it "returns false" do
         expect(storage.configure).to eq(false)
+      end
+    end
+  end
+
+  describe "#product_config=" do
+    it "sets the product config" do
+      storage.product_config = config
+      expect(storage.product_config).to eq(config)
+      expect(storage.proposal.product_config).to eq(config)
+    end
+
+    context "if the product does not require bls boot explicitly" do
+      before do
+        allow(ENV).to receive(:[]=)
+      end
+
+      let(:config) { Agama::Config.new({}) }
+
+      it "sets env YAST_NO_BLS_BOOT to yes " do
+        expect(ENV).to receive(:[]=).with("YAST_NO_BLS_BOOT", "1")
+        storage.product_config = config
+      end
+    end
+
+    context "if the product requires bls boot explicitly" do
+      before do
+        allow(ENV).to receive(:[]=)
+        allow(Y2Storage::StorageEnv.instance).to receive(:no_bls_bootloader).and_return("0")
+      end
+
+      let(:config) do
+        Agama::Config.new({
+          "storage" => {
+            "boot_strategy" => "BLS"
+          }
+        })
+      end
+
+      it "keeps initial env YAST_NO_BLS_BOOT" do
+        expect(ENV).to receive(:[]=).with("YAST_NO_BLS_BOOT", "0")
+        storage.product_config = config
       end
     end
   end

@@ -67,7 +67,6 @@ module Agama
           dbus_method(:Install) { install }
           dbus_method(:Finish) { finish }
           dbus_method(:SetLocale, "in locale:s") { |locale| backend.configure_locale(locale) }
-          # TODO: receive a product_config instead of an id.
           dbus_method(:GetSystem, "out system:s") { recover_system }
           dbus_method(:GetConfig, "out config:s") { recover_config }
           dbus_method(:SetConfig, "in product:s, in config:s") { |p, c| configure(p, c) }
@@ -180,9 +179,13 @@ module Agama
         # @param serialized_product [String] Serialized product config.
         # @param serialized_config [String] Serialized storage config.
         def configure(serialized_product, serialized_config)
-          new_product_data = JSON.parse(serialized_product)
-          # Potential change in system - productMountPoints, encryptionMethods, volumeTemplates
-          system_changed = product_config.update(new_product_data)
+          system_changed = false
+          new_product_config = Agama::Config.new(JSON.parse(serialized_product))
+
+          if product_config != new_product_config
+            system_changed = true
+            backend.product_config = new_product_config
+          end
 
           start_progress(3, ACTIVATING_STEP)
           if !backend.activated?

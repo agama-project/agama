@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Jan 14 08:54:50 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Properly disable BLS according to the selected product
+  (gh#agama-project/agama#3011).
+
+-------------------------------------------------------------------
 Fri Jan  9 14:43:58 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Version 19.pre
