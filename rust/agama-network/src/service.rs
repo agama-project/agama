@@ -27,7 +27,7 @@ use crate::{
 };
 use agama_utils::{
     actor::Handler,
-    api::{event, Scope},
+    api::{event, Event, Scope},
     progress,
 };
 use gettextrs::gettext;
@@ -111,6 +111,7 @@ impl Starter {
         let updates_tx_clone = updates_tx.clone();
         tokio::spawn(async move {
             let mut server = Service {
+                events: self.events,
                 progress: self.progress,
                 state,
                 input: actions_rx,
@@ -304,6 +305,7 @@ impl NetworkSystemClient {
 }
 
 pub struct Service {
+    events: event::Sender,
     progress: Handler<progress::Service>,
     state: NetworkState,
     input: UnboundedReceiver<Action>,
@@ -387,7 +389,6 @@ impl Service {
             }
             Action::UpdateConfig(config, tx) => {
                 let result = self.state.update_state(*config);
-
                 tx.send(result).unwrap();
             }
             Action::GetConnections(tx) => {
@@ -553,6 +554,9 @@ impl Service {
         self.progress
             .call(progress::message::Finish::new(Scope::Network))
             .await?;
+        self.events.send(Event::ConfigChanged {
+            scope: (Scope::Network),
+        })?;
 
         result
     }
