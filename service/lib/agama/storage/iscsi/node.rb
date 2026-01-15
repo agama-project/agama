@@ -48,10 +48,10 @@ module Agama
         # @return [String]
         attr_accessor :interface
 
-        # Whether the node was initiated by iBTF
+        # Whether the node was initiated by iBFT
         #
         # @return [Boolean]
-        attr_accessor :ibtf
+        attr_accessor :ibft
 
         # Whether the node is connected (there is a session)
         #
@@ -64,7 +64,7 @@ module Agama
         attr_accessor :startup
 
         def ibft?
-          !!ibtf
+          !!ibft
         end
 
         def connected?

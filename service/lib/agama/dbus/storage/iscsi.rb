@@ -136,7 +136,7 @@ module Agama
             address:   node.address,
             port:      node.port,
             interface: node.interface,
-            ibtf:      node.ibtf?,
+            ibft:      node.ibft?,
             startup:   node.startup,
             connected: node.connected?
           }

@@ -81,7 +81,7 @@ module Agama
         def read_initiator
           Initiator.new.tap do |initiator|
             initiator.name = Yast::IscsiClientLib.initiatorname
-            initiator.ibtf_name = !Yast::IscsiClientLib.getiBFT["iface.initiatorname"].to_s.empty?
+            initiator.ibft_name = !Yast::IscsiClientLib.getiBFT["iface.initiatorname"].to_s.empty?
           end
         end
 
@@ -182,7 +182,7 @@ module Agama
             node.connected = false
 
             Yast::IscsiClientLib.currentRecord = record
-            node.ibtf = Yast::IscsiClientLib.iBFT?(Yast::IscsiClientLib.getCurrentNodeValues)
+            node.ibft = Yast::IscsiClientLib.iBFT?(Yast::IscsiClientLib.getCurrentNodeValues)
 
             session_record = find_session_for(record)
 

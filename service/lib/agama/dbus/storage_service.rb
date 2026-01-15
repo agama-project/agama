@@ -53,6 +53,7 @@ module Agama
       def start
         # Inhibits various storage subsystem (udisk, systemd mounts, raid auto-assembly) that
         # interfere with the operation of yast-storage-ng and libstorage-ng.
+        require "debug"; binding.break
         Y2Storage::Inhibitors.new.inhibit
         Agama::Storage::ISCSI::Adapter.activate
         check_multipath
