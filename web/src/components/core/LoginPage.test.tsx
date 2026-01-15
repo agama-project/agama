@@ -64,6 +64,13 @@ describe("LoginPage", () => {
       screen.getAllByText(/root/);
     });
 
+    it("focuses the password input", () => {
+      installerRender(<LoginPage />);
+      const form = screen.getByRole("form", { name: "Login form" });
+      const passwordInput = within(form).getByLabelText("Password input");
+      expect(passwordInput).toHaveFocus();
+    });
+
     it("allows entering a password", async () => {
       const { user } = installerRender(<LoginPage />);
       const form = screen.getByRole("form", { name: "Login form" });

@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Navigate } from "react-router";
 import {
   Alert,
@@ -63,6 +63,11 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [authError, setAuthError] = useState(false);
   const { isLoggedIn, login: loginFn, error: loginError } = useAuth();
+  const passwordInput = useRef<HTMLInputElement>();
+
+  useEffect(() => {
+    passwordInput.current?.focus();
+  }, []);
 
   const login = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -137,6 +142,7 @@ user privileges.",
                       aria-label={_("Password input")}
                       onChange={(_, v) => setPassword(v)}
                       reminders={["capslock"]}
+                      inputRef={passwordInput}
                     />
                   </FormGroup>
                   {authError && (
