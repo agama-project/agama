@@ -69,7 +69,11 @@ impl Model {
 
         let useradd = self
             .chroot_command()
-            .args(["useradd", &user_name])
+            .args([
+                "useradd",
+                "-G",
+                "wheel",
+                &user_name])
             .output()?;
 
         if !useradd.status.success() {
@@ -81,7 +85,6 @@ impl Model {
         }
 
         self.set_user_password(user_name, user_password)?;
-        self.update_user_groups(user_name, vec!["wheel"])?;
         self.update_user_fullname(user)
     }
 
@@ -178,28 +181,6 @@ impl Model {
             return Err(service::Error::CommandFailed(format!(
                 "Cannot set full name {} for user {}: {}",
                 full_name, user_name, chfn.status
-            )));
-        }
-
-        Ok(())
-    }
-
-    fn update_user_groups(&self, user_name: &str, groups: Vec<&str>) -> Result<(), service::Error> {
-        let usermod = self
-            .chroot_command()
-            .args(["usermod", "-aG", &groups.join(","), user_name])
-            .output()?;
-
-        if !usermod.status.success() {
-            tracing::error!(
-                "Failed to add user {} into groups {}",
-                user_name,
-                groups.join(",")
-            );
-            return Err(service::Error::CommandFailed(format!(
-                "Failed to add user {} into groups {}",
-                user_name,
-                groups.join(",")
             )));
         }
 
