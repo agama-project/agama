@@ -21,23 +21,11 @@
  */
 
 import { useEffect, useRef, useState } from "react";
-import { isUndefined } from "radashi";
+import { isEmpty } from "radashi";
 import useTrackQueriesRefetch from "~/hooks/use-track-queries-refetch";
-import { useStatus } from "~/hooks/model/status";
+import { useProgress } from "~/hooks/model/progress";
 import { COMMON_PROPOSAL_KEYS } from "~/hooks/model/proposal";
-import type { Progress, Scope } from "~/model/status";
-
-export function useProgress(scope?: undefined): Progress[];
-export function useProgress(scope: Scope): Progress | undefined;
-export function useProgress(scope?: Scope): Progress[] | Progress | undefined {
-  const { progresses } = useStatus();
-
-  if (isUndefined(scope)) {
-    return progresses;
-  }
-
-  return progresses.find((p) => p.scope === scope);
-}
+import type { Scope } from "~/model/status";
 
 /**
  * Custom hook that manages loading state for operations with progress tracking.
@@ -113,14 +101,16 @@ export function useProgressTracking(
     }
   });
 
+  const progressesFinished = scope ? !progress : isEmpty(progress);
+
   useEffect(() => {
-    if (!progress && loading && !progressFinishedAtRef.current) {
+    if (progressesFinished && loading && !progressFinishedAtRef.current) {
       progressFinishedAtRef.current = Date.now();
       startTracking();
     }
-  }, [progress, startTracking, loading, progressFinishedAtRef]);
+  }, [progressesFinished, startTracking, loading, progressFinishedAtRef]);
 
-  if (progress && !loading) {
+  if (!progressesFinished && !loading) {
     setLoading(true);
     progressFinishedAtRef.current = null;
   }
