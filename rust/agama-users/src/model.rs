@@ -69,11 +69,7 @@ impl Model {
 
         let useradd = self
             .chroot_command()
-            .args([
-                "useradd",
-                "-G",
-                "wheel",
-                &user_name])
+            .args(["useradd", "-G", "wheel", &user_name])
             .output()?;
 
         if !useradd.status.success() {
