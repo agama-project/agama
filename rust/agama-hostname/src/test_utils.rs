@@ -65,7 +65,7 @@ impl ModelAdapter for TestModel {
         Ok(())
     }
 
-    fn static_target_dir(&self) -> &str {
+    fn target_dir(&self) -> &str {
         self.target_dir.to_str().unwrap()
     }
 }
