@@ -35,38 +35,6 @@ pub trait ModelAdapter: Send + 'static {
     fn install(&self, _config: &Config) -> Result<(), service::Error> {
         Ok(())
     }
-
-    fn add_first_user(&self, _user: &FirstUserConfig) -> Result<(), service::Error> {
-        Ok(())
-    }
-
-    fn add_root_user(&self, _root: &RootUserConfig) -> Result<(), service::Error> {
-        Ok(())
-    }
-
-    fn set_user_password(
-        &self,
-        _user_name: &str,
-        _user_password: &UserPassword,
-    ) -> Result<(), service::Error> {
-        Ok(())
-    }
-
-    fn update_authorized_keys(&self, _ssh_key: &str) -> Result<(), service::Error> {
-        Ok(())
-    }
-
-    fn update_user_fullname(&self, _user: &FirstUserConfig) -> Result<(), service::Error> {
-        Ok(())
-    }
-
-    fn update_user_groups(
-        &self,
-        _user_name: &str,
-        _groups: Vec<&str>,
-    ) -> Result<(), service::Error> {
-        Ok(())
-    }
 }
 
 /// [ModelAdapter] implementation for systemd-based systems.
@@ -88,19 +56,6 @@ impl Model {
         cmd.arg(&self.install_dir);
 
         cmd
-    }
-}
-
-impl ModelAdapter for Model {
-    fn install(&self, config: &Config) -> Result<(), service::Error> {
-        if let Some(first_user) = &config.first_user {
-            self.add_first_user(&first_user)?;
-        }
-        if let Some(root_user) = &config.root {
-            self.add_root_user(&root_user)?;
-        }
-
-        Ok(())
     }
 
     /// Reads first user's data from given config and updates its setup accordingly
@@ -246,6 +201,19 @@ impl ModelAdapter for Model {
                 user_name,
                 groups.join(",")
             )));
+        }
+
+        Ok(())
+    }
+}
+
+impl ModelAdapter for Model {
+    fn install(&self, config: &Config) -> Result<(), service::Error> {
+        if let Some(first_user) = &config.first_user {
+            self.add_first_user(&first_user)?;
+        }
+        if let Some(root_user) = &config.root {
+            self.add_root_user(&root_user)?;
         }
 
         Ok(())
