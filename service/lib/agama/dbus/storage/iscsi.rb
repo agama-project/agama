@@ -92,17 +92,17 @@ module Agama
 
         def discover(serialized_options)
           options = JSON.parse(serialized_options, symbolize_names: true)
-          host = options[:host]
+          address = options[:address]
           port = options[:port]
           credentials = {
             username:           options[:username] || "",
             password:           options[:password] || "",
-            initiator_username: options[:username] || "",
-            initiator_password: options[:username] || ""
+            initiator_username: options[:initiatorUsername] || "",
+            initiator_password: options[:initiatorPassword] || ""
           }
 
           start_progress(1, _("Performing iSCSI discovery"))
-          success = manager.discover(host, port, credentials)
+          success = manager.discover(address, port, credentials: credentials)
           emit_system_changed
           finish_progress
 
