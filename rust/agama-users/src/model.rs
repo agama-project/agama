@@ -60,7 +60,11 @@ pub trait ModelAdapter: Send + 'static {
         Ok(())
     }
 
-    fn update_user_groups(&self, _user_name: &str, _groups: Vec<&str>) -> Result<(), service::Error> {
+    fn update_user_groups(
+        &self,
+        _user_name: &str,
+        _groups: Vec<&str>,
+    ) -> Result<(), service::Error> {
         Ok(())
     }
 }
@@ -108,7 +112,8 @@ impl ModelAdapter for Model {
             return Err(service::Error::MissingUserData);
         };
 
-        let useradd = self.chroot_command()
+        let useradd = self
+            .chroot_command()
             .args(["useradd", &user_name])
             .output()?;
 
@@ -204,7 +209,8 @@ impl ModelAdapter for Model {
             return Ok(());
         };
 
-        let chfn = self.chroot_command()
+        let chfn = self
+            .chroot_command()
             .args(["chfn", "-f", &full_name, &user_name])
             .output()?;
 
@@ -224,7 +230,8 @@ impl ModelAdapter for Model {
     }
 
     fn update_user_groups(&self, user_name: &str, groups: Vec<&str>) -> Result<(), service::Error> {
-        let usermod = self.chroot_command()
+        let usermod = self
+            .chroot_command()
             .args(["usermod", "-aG", &groups.join(","), user_name])
             .output()?;
 
