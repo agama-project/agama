@@ -27,7 +27,7 @@
 use crate::{error::Error, users::password::PasswordChecker};
 use agama_lib::{
     error::ServiceError,
-    users::{model::RootPatchSettings, proxies::Users1Proxy, FirstUser, RootUser, UsersClient},
+    users::{model::RootPatchSettings, FirstUser, RootUser, UsersClient},
 };
 use axum::{
     extract::State,
@@ -37,7 +37,6 @@ use axum::{
     Json, Router,
 };
 use serde::Deserialize;
-use tokio_stream::{Stream, StreamExt};
 
 use super::password::PasswordCheckResult;
 
@@ -48,9 +47,6 @@ struct UsersState<'a> {
 
 /// Sets up and returns the axum service for the users module.
 pub async fn users_service(dbus: zbus::Connection) -> Result<Router, ServiceError> {
-    const DBUS_SERVICE: &str = "org.opensuse.Agama.Manager1";
-    const DBUS_PATH: &str = "/org/opensuse/Agama/Users1";
-
     let users = UsersClient::new(dbus.clone()).await?;
     let state = UsersState { users };
     // FIXME: use anyhow temporarily until we adapt all these methods to return
