@@ -34,6 +34,14 @@ module Agama
         # @return [Array<Configs::Target>, nil] If nil, then targets are not configured.
         attr_accessor :targets
 
+        # Whether the config includes a target with the given portal.
+        #
+        # @param portal [String]
+        # @return [Boolean]
+        def include_target?(portal)
+          targets.any? { |t| t.portal == portal }
+        end
+
         # All portals.
         #
         # @return [Array<String>]

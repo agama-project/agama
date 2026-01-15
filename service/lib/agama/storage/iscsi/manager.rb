@@ -32,7 +32,6 @@ module Agama
       class Manager
         include Yast::I18n
 
-        STARTUP_OPTIONS = ["onboot", "manual", "automatic"].freeze
         PACKAGES = ["open-iscsi", "iscsiuio"].freeze
 
         # Config according to the JSON schema.
@@ -97,69 +96,7 @@ module Agama
         def apply_config_json(config_json)
           @config_json = config_json
           config = ConfigImporter.new(config_json).import
-
-          success = probe_after { apply_config(config) }
-          run_on_sessions_change_callbacks if config.targets
-
-          success
-        end
-
-        # Updates the initiator info.
-        #
-        # @param name [String, nil]
-        def update_initiator(name: nil)
-          return unless initiator
-
-          adapter.update_initiator(initiator, name: name)
-          probe_initiator
-        end
-
-        # Creates a new iSCSI session.
-        # @note iSCSI nodes are probed again, see {#probe_after}.
-        #
-        # @param node [Node]
-        # @param credentials [Hash<Symbol, String>]
-        #   @option username [String]
-        #   @option password [String]
-        #   @option initiator_username [String]
-        #   @option initiator_password [String]
-        # @param startup [String, nil] Startup status
-        #
-        # @return [Boolean] Whether the action successes
-        def login(node, credentials: {}, startup: nil)
-          result = probe_after { adapter.login(node, credentials: credentials, startup: startup) }
-          run_on_sessions_change_callbacks
-          result
-        end
-
-        # Closes an iSCSI session.
-        # @note iSCSI nodes are probed again, see {#probe_after}.
-        #
-        # @param node [Node]
-        # @return [Boolean] Whether the action successes
-        def logout(node)
-          result = probe_after { adapter.logout(node) }
-          run_on_sessions_change_callbacks
-          result
-        end
-
-        # Deletes an iSCSI node from the database.
-        # @note iSCSI nodes are probed again, see {#probe_after}.
-        #
-        # @param node [Node]
-        # @return [Boolean] Whether the action successes
-        def delete(node)
-          probe_after { adapter.delete_node(node) }
-        end
-
-        # Updates an iSCSI node.
-        #
-        # @param node [Node]
-        # @param startup [String] New startup mode value
-        #
-        # @return [Boolean] Whether the action successes
-        def update(node, startup:)
-          probe_after { adapter.update_node(node, startup: startup) }
+          probe_after { apply_config(config) }
         end
 
       private
@@ -194,11 +131,6 @@ module Agama
           block.call.tap { probe }
         end
 
-        # Runs callbacks when a session changes
-        def run_on_sessions_change_callbacks
-          @on_sessions_change_callbacks.each(&:call)
-        end
-
         # Applies the given iSCSI config.
         #
         # @param config [ISCSI::Config]
@@ -224,17 +156,10 @@ module Agama
         #
         # @param config [ISCSI::Config]
         def apply_targets_config(config)
-          return unless config.targets
-
-          start_progress_with_size(3)
-          progress.step(_("Logout iSCSI targets")) { logout_targets }
-          progress.step(_("Discover iSCSI targets")) { discover_from_portals(config) }
-          progress.step(_("Login iSCSI targets")) { login_targets(config) }
-        end
-
-        # Tries to logout from all targets (nodes).
-        def logout_targets
-          nodes.select(&:connected?).each { |n| adapter.logout(n) }
+          discover_from_portals(config)
+          logout_targets(config)
+          login_targets(config)
+          update_targets(config)
         end
 
         # Discovers iSCSI targets from all the portals.
@@ -247,22 +172,31 @@ module Agama
           end
         end
 
-        # Tries to login to all targets.
+        # Tries to logout the targets that are not configured.
         #
-        # @note If the login of a target fails, then an issue is generated. The process stops on
-        #   the first failing login.
+        # @param config [ISCSI::Config]
+        def logout_targets(config)
+          nodes
+            .select(&:connected?)
+            .reject { |n| config.include_target?(n.portal) }
+            .each { |n| adapter.logout(n) }
+        end
+
+        # Tries to login the configured targets.
+        #
+        # @note The login is skipped if the target is already connected. An issue is generated if
+        # the login of a target fails.
         #
         # @param config [ISCSI::Config]
         def login_targets(config)
           issues = []
 
-          config.targets.each do |target|
-            success = apply_target_config(target)
-            if !success
-              issues << login_issue(target)
-              break
+          config.targets
+            .reject { |t| connected_target?(t.portal) }
+            .each do |target|
+              success = apply_target_config(target)
+              issues << login_issue(target) unless success
             end
-          end
 
           @issues = issues
         end
@@ -286,6 +220,35 @@ module Agama
           }
 
           adapter.login(node, credentials: credentials, startup: target.startup)
+        end
+
+        # Updates the connected targets if needed.
+        #
+        # @param config [ISCSI::Config]
+        def update_targets(config)
+          config.targets
+            .select { |t| connected_target?(t.portal) }
+            .each do |target|
+              node = find_node(target.portal)
+              next if node.startup == target.startup
+              adapter.update_node(node, startup: target.startup)
+            end
+        end
+
+        # Whether the target of the given portal is connected.
+        #
+        # @param portal [String]
+        # @return [Boolean]
+        def connected_target?(portal)
+          find_node(portal)&.connected? || false
+        end
+
+        # Finds a node with the given portal.
+        #
+        # @param portal [String]
+        # @return [Node, nil]
+        def find_node(portal)
+          nodes.find { |n| n.portal == portal }
         end
 
         # Login issue.

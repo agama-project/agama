@@ -130,15 +130,6 @@ module Agama
           Yast::IscsiClientLib.deleteRecord
         end
 
-        # Deletes an iSCSI node from the database.
-        #
-        # @param node [Node]
-        # @return [Boolean] Whether the action successes
-        def delete_node(node)
-          Yast::IscsiClientLib.currentRecord = record_from(node)
-          Yast::IscsiClientLib.removeRecord
-        end
-
         # Updates an iSCSI node.
         #
         # @param node [Node]
