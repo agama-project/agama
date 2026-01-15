@@ -49,6 +49,16 @@ impl Arch {
             .try_into()
             .map_err(|_| Error::Unknown(arch_str))
     }
+
+    /// Returns the identifier used in the products definition.
+    pub fn to_yast_id(&self) -> String {
+        match &self {
+            Arch::AARCH64 => "aarch64".to_string(),
+            Arch::PPC64LE => "ppc".to_string(),
+            Arch::S390X => "s390".to_string(),
+            Arch::X86_64 => "x86_64".to_string(),
+        }
+    }
 }
 
 #[cfg(test)]
@@ -69,6 +79,14 @@ mod tests {
         assert_eq!(Arch::PPC64LE.to_string(), "ppc64le".to_string());
         assert_eq!(Arch::S390X.to_string(), "s390x".to_string());
         assert_eq!(Arch::X86_64.to_string(), "x86_64".to_string());
+    }
+
+    #[test]
+    fn test_to_product_string() {
+        assert_eq!(Arch::AARCH64.to_yast_id(), "aarch64".to_string());
+        assert_eq!(Arch::PPC64LE.to_yast_id(), "ppc".to_string());
+        assert_eq!(Arch::S390X.to_yast_id(), "s390".to_string());
+        assert_eq!(Arch::X86_64.to_yast_id(), "x86_64".to_string());
     }
 
     #[cfg(target_arch = "aarch64")]
