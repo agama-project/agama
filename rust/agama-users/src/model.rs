@@ -35,30 +35,6 @@ pub trait ModelAdapter: Send + 'static {
     fn install(&self, _config: &Config) -> Result<(), service::Error> {
         Ok(())
     }
-
-    fn add_first_user(&self, _user: &FirstUserConfig) -> Result<(), service::Error> {
-        Ok(())
-    }
-
-    fn add_root_user(&self, _root: &RootUserConfig) -> Result<(), service::Error> {
-        Ok(())
-    }
-
-    fn set_user_password(
-        &self,
-        _user_name: &str,
-        _user_password: &UserPassword,
-    ) -> Result<(), service::Error> {
-        Ok(())
-    }
-
-    fn update_authorized_keys(&self, _ssh_key: &str) -> Result<(), service::Error> {
-        Ok(())
-    }
-
-    fn update_user_fullname(&self, _user: &FirstUserConfig) -> Result<(), service::Error> {
-        Ok(())
-    }
 }
 
 /// [ModelAdapter] implementation for systemd-based systems.
@@ -72,18 +48,14 @@ impl Model {
             install_dir: PathBuf::from(install_dir.as_ref()),
         }
     }
-}
 
-impl ModelAdapter for Model {
-    fn install(&self, config: &Config) -> Result<(), service::Error> {
-        if let Some(first_user) = &config.first_user {
-            self.add_first_user(&first_user)?;
-        }
-        if let Some(root_user) = &config.root {
-            self.add_root_user(&root_user)?;
-        }
+    /// Wrapper for creating Command which works in installation chroot
+    fn chroot_command(&self) -> Command {
+        let mut cmd = Command::new("chroot");
 
-        Ok(())
+        cmd.arg(&self.install_dir);
+
+        cmd
     }
 
     /// Reads first user's data from given config and updates its setup accordingly
@@ -95,9 +67,9 @@ impl ModelAdapter for Model {
             return Err(service::Error::MissingUserData);
         };
 
-        let useradd = Command::new("chroot")
-            .arg(&self.install_dir)
-            .args(["useradd", &user_name])
+        let useradd = self
+            .chroot_command()
+            .args(["useradd", "-G", "wheel", &user_name])
             .output()?;
 
         if !useradd.status.success() {
@@ -109,7 +81,6 @@ impl ModelAdapter for Model {
         }
 
         self.set_user_password(user_name, user_password)?;
-
         self.update_user_fullname(user)
     }
 
@@ -140,8 +111,7 @@ impl ModelAdapter for Model {
         user_name: &str,
         user_password: &UserPassword,
     ) -> Result<(), service::Error> {
-        let mut passwd_cmd = Command::new("chroot");
-        passwd_cmd.arg(&self.install_dir);
+        let mut passwd_cmd = self.chroot_command();
         passwd_cmd.arg("chpasswd");
 
         if user_password.hashed_password {
@@ -193,8 +163,8 @@ impl ModelAdapter for Model {
             return Ok(());
         };
 
-        let chfn = Command::new("chroot")
-            .arg(&self.install_dir)
+        let chfn = self
+            .chroot_command()
             .args(["chfn", "-f", &full_name, &user_name])
             .output()?;
 
@@ -208,6 +178,19 @@ impl ModelAdapter for Model {
                 "Cannot set full name {} for user {}: {}",
                 full_name, user_name, chfn.status
             )));
+        }
+
+        Ok(())
+    }
+}
+
+impl ModelAdapter for Model {
+    fn install(&self, config: &Config) -> Result<(), service::Error> {
+        if let Some(first_user) = &config.first_user {
+            self.add_first_user(&first_user)?;
+        }
+        if let Some(root_user) = &config.root {
+            self.add_root_user(&root_user)?;
         }
 
         Ok(())
