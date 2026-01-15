@@ -24,7 +24,10 @@
 //! It reads the list of products from the `products.d` directory (usually,
 //! `/usr/share/agama/products.d`).
 
-use crate::api::{l10n::Translations, manager::Product};
+use crate::{
+    api::{l10n::Translations, manager::Product},
+    arch::Arch,
+};
 use serde::{Deserialize, Deserializer, Serialize};
 use serde_with::{formats::CommaSeparator, serde_as, StringWithSeparator};
 use std::path::{Path, PathBuf};
@@ -177,7 +180,11 @@ pub struct SoftwareSpec {
 impl SoftwareSpec {
     // NOTE: perhaps implementing our own iterator would be more efficient.
     pub fn repositories(&self) -> Vec<&RepositorySpec> {
-        let arch = std::env::consts::ARCH.to_string();
+        let Ok(arch) = Arch::current() else {
+            tracing::error!("Failed to determine the architecture");
+            return vec![];
+        };
+        let arch = arch.to_yast_id();
         self.installation_repositories
             .iter()
             .filter(|r| r.archs.is_empty() || r.archs.contains(&arch))
