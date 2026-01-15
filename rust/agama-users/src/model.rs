@@ -59,6 +59,10 @@ pub trait ModelAdapter: Send + 'static {
     fn update_user_fullname(&self, _user: &FirstUserConfig) -> Result<(), service::Error> {
         Ok(())
     }
+
+    fn update_user_groups(&self, _user_name: &str, _groups: Vec<&str>) -> Result<(), service::Error> {
+        Ok(())
+    }
 }
 
 /// [ModelAdapter] implementation for systemd-based systems.
@@ -71,6 +75,15 @@ impl Model {
         Self {
             install_dir: PathBuf::from(install_dir.as_ref()),
         }
+    }
+
+    /// Wrapper for creating Command which works in installation chroot
+    fn chroot_command(&self) -> Command {
+        let mut cmd = Command::new("chroot");
+
+        cmd.arg(&self.install_dir);
+
+        cmd
     }
 }
 
@@ -95,8 +108,7 @@ impl ModelAdapter for Model {
             return Err(service::Error::MissingUserData);
         };
 
-        let useradd = Command::new("chroot")
-            .arg(&self.install_dir)
+        let useradd = self.chroot_command()
             .args(["useradd", &user_name])
             .output()?;
 
@@ -109,7 +121,7 @@ impl ModelAdapter for Model {
         }
 
         self.set_user_password(user_name, user_password)?;
-
+        self.update_user_groups(user_name, vec!["wheel"])?;
         self.update_user_fullname(user)
     }
 
@@ -140,8 +152,7 @@ impl ModelAdapter for Model {
         user_name: &str,
         user_password: &UserPassword,
     ) -> Result<(), service::Error> {
-        let mut passwd_cmd = Command::new("chroot");
-        passwd_cmd.arg(&self.install_dir);
+        let mut passwd_cmd = self.chroot_command();
         passwd_cmd.arg("chpasswd");
 
         if user_password.hashed_password {
@@ -193,8 +204,7 @@ impl ModelAdapter for Model {
             return Ok(());
         };
 
-        let chfn = Command::new("chroot")
-            .arg(&self.install_dir)
+        let chfn = self.chroot_command()
             .args(["chfn", "-f", &full_name, &user_name])
             .output()?;
 
@@ -207,6 +217,27 @@ impl ModelAdapter for Model {
             return Err(service::Error::CommandFailed(format!(
                 "Cannot set full name {} for user {}: {}",
                 full_name, user_name, chfn.status
+            )));
+        }
+
+        Ok(())
+    }
+
+    fn update_user_groups(&self, user_name: &str, groups: Vec<&str>) -> Result<(), service::Error> {
+        let usermod = self.chroot_command()
+            .args(["usermod", "-aG", &groups.join(","), user_name])
+            .output()?;
+
+        if !usermod.status.success() {
+            tracing::error!(
+                "Failed to add user {} into groups {}",
+                user_name,
+                groups.join(",")
+            );
+            return Err(service::Error::CommandFailed(format!(
+                "Failed to add user {} into groups {}",
+                user_name,
+                groups.join(",")
             )));
         }
 
