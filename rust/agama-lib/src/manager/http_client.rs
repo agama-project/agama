@@ -23,6 +23,7 @@ use crate::{
     logs::LogsLists,
     manager::InstallerStatus,
 };
+use agama_utils::api;
 use reqwest::header::CONTENT_ENCODING;
 use std::path::{Path, PathBuf};
 use std::{fs, io::Cursor, os::unix::fs::OpenOptionsExt};
@@ -61,15 +62,18 @@ impl ManagerHTTPClient {
 
     /// Starts the installation.
     pub async fn install(&self) -> Result<(), ManagerHTTPClientError> {
-        Ok(self.client.post_void("/manager/install", &()).await?)
+        let action = api::Action::Install;
+        self.client.post_void("/v2/action", &action).await?;
+        Ok(())
     }
 
     /// Finishes the installation.
     ///
     /// * `method`: halt, reboot, stop or poweroff the system.
-    pub async fn finish(&self, method: FinishMethod) -> Result<bool, ManagerHTTPClientError> {
-        let method = Some(method);
-        Ok(self.client.post("/manager/finish", &method).await?)
+    pub async fn finish(&self, method: FinishMethod) -> Result<(), ManagerHTTPClientError> {
+        let action = api::Action::Finish(method);
+        self.client.post_void("/v2/action", &action).await?;
+        Ok(())
     }
 
     /// Downloads package of logs from the backend

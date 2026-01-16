@@ -27,8 +27,6 @@ pub enum CliError {
     Validation,
     #[error("Could not start the installation")]
     Installation,
-    #[error("The installation has not finished correctly")]
-    NotFinished,
     #[error("Could not read the password")]
     InteractivePassword(#[source] InquireError),
     #[error("Could not read the password from the standard input")]
