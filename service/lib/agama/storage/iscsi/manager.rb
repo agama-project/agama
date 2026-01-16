@@ -258,7 +258,7 @@ module Agama
         end
 
         def startup_changed?(target_config)
-          previous_startup = previous_config&.find_target(target_config.name)&.credentials
+          previous_startup = previous_config&.find_target(target_config.name)&.startup
           previous_startup != target_config.startup
         end
 

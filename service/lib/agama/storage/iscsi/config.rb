@@ -38,7 +38,7 @@ module Agama
           @targets = []
         end
 
-        # Whether the config includes a target with the given portal.
+        # Whether the config includes a target with the given name.
         #
         # @param name [String]
         # @return [Boolean]

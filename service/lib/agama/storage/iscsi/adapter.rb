@@ -39,7 +39,7 @@ module Agama
           # Check initiator name, creating one if missing.
           return false unless Yast::IscsiClientLib.checkInitiatorName(silent: true)
 
-          # Restart the services, in case any of them was already runningfor whatever reason.
+          # Restart the services, in case any of them was already running for whatever reason.
           Yast::Service.restart("iscsi")
           Yast::Service.restart("iscsid")
           Yast::Service.restart("iscsiuio")
