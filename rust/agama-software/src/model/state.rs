@@ -999,4 +999,48 @@ mod tests {
             ))
         );
     }
+
+    #[test]
+    fn test_repositories_from_kernel_cmdline() {
+        let product = build_product_spec("tumbleweed");
+        let kernel_cmdline = KernelCmdline::parse_str(
+            "inst.install_url=http://example.com/repo1,http://example.com/repo2",
+        );
+
+        let state = SoftwareStateBuilder::for_product(&product)
+            .with_kernel_cmdline(kernel_cmdline)
+            .build();
+
+        assert_eq!(state.repositories.len(), 2);
+        assert_eq!(state.repositories[0].url, "http://example.com/repo1");
+        assert_eq!(state.repositories[0].alias, "agama-0");
+        assert_eq!(state.repositories[1].url, "http://example.com/repo2");
+        assert_eq!(state.repositories[1].alias, "agama-1");
+    }
+
+    #[test]
+    fn test_single_repository_from_kernel_cmdline() {
+        let product = build_product_spec("tumbleweed");
+        let kernel_cmdline = KernelCmdline::parse_str("inst.install_url=http://example.com/repo1");
+
+        let state = SoftwareStateBuilder::for_product(&product)
+            .with_kernel_cmdline(kernel_cmdline)
+            .build();
+
+        assert_eq!(state.repositories.len(), 1);
+        assert_eq!(state.repositories[0].url, "http://example.com/repo1");
+        assert_eq!(state.repositories[0].alias, "agama-0");
+    }
+
+    #[test]
+    fn test_repositories_fallback_to_product() {
+        let product = build_product_spec("tumbleweed");
+        let kernel_cmdline = KernelCmdline::default();
+
+        let state = SoftwareStateBuilder::for_product(&product)
+            .with_kernel_cmdline(kernel_cmdline)
+            .build();
+
+        assert_eq!(state.repositories.len(), 3);
+    }
 }
