@@ -296,20 +296,37 @@ impl<'a> SoftwareStateBuilder<'a> {
 
     fn from_product_spec(&self) -> SoftwareState {
         let software = &self.product.software;
-        let repositories = software
-            .repositories()
-            .into_iter()
-            .enumerate()
-            .map(|(i, r)| {
-                let alias = format!("agama-{}", i);
-                Repository {
-                    name: alias.clone(),
-                    alias,
-                    url: r.url.clone(),
-                    enabled: true,
-                }
-            })
-            .collect();
+        let kernel_repos = self.kernel_cmdline.get_last("inst.install_url");
+        let repositories = if let Some(kernel_repos) = kernel_repos {
+            kernel_repos
+                .split(",")
+                .enumerate()
+                .map(|(i, url)| {
+                    let alias = format!("agama-{}", i);
+                    Repository {
+                        name: alias.clone(),
+                        alias: alias,
+                        url: url.to_string(),
+                        enabled: true,
+                    }
+                })
+                .collect()
+        } else {
+            software
+                .repositories()
+                .into_iter()
+                .enumerate()
+                .map(|(i, r)| {
+                    let alias = format!("agama-{}", i);
+                    Repository {
+                        name: alias.clone(),
+                        alias,
+                        url: r.url.clone(),
+                        enabled: true,
+                    }
+                })
+                .collect()
+        };
 
         let mut resolvables = ResolvablesState::default();
         for pattern in &software.mandatory_patterns {
