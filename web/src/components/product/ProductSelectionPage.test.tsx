@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
+import React, { act } from "react";
 import { screen } from "@testing-library/react";
 import { installerRender, mockNavigateFn, mockProduct } from "~/test-utils";
 import { useSystem } from "~/hooks/model/system";
@@ -45,6 +45,7 @@ const microOs: Product = {
 };
 
 const mockPatchConfigFn = jest.fn();
+const mockUseSystemFn = jest.fn();
 
 // FIXME: add ad use a mockSystem from test-utils instead
 jest.mock("~/components/core/InstallerOptions", () => () => (
@@ -58,12 +59,41 @@ jest.mock("~/api", () => ({
 
 jest.mock("~/hooks/model/system", () => ({
   ...jest.requireActual("~/hooks/model/system"),
-  useSystem: (): ReturnType<typeof useSystem> => ({
-    products: [tumbleweed, microOs],
-  }),
+  useSystem: (): ReturnType<typeof useSystem> => mockUseSystemFn(),
 }));
 
 describe("ProductSelectionPage", () => {
+  beforeEach(() => {
+    mockUseSystemFn.mockReturnValue({
+      products: [tumbleweed, microOs],
+    });
+  });
+
+  // Regression test:
+  // On component re-renders (e.g. after clicking a header option), the selected
+  // product radio became unchecked because selection logic compared object
+  // references instead of stable identifiers. Even though the products had
+  // identical data, new object instances caused the comparison to fail. This
+  // test ensures the selected option remains checked across re-renders with new
+  // object references.
+  it("keeps product selection across re-renders", async () => {
+    const { user, rerender } = installerRender(<ProductSelectionPage />);
+    const microOsOption = screen.getByRole("radio", { name: microOs.name });
+    expect(microOsOption).not.toBeChecked();
+    await user.click(microOsOption);
+    expect(microOsOption).toBeChecked();
+    act(() => {
+      mockUseSystemFn.mockReturnValue({
+        // Same products, new objects
+        products: [{ ...tumbleweed }, { ...microOs }],
+      });
+    });
+    rerender(<ProductSelectionPage />);
+    expect(microOsOption).toBeChecked();
+    // Product must still checked.
+    expect(microOsOption).toBeChecked();
+  });
+
   describe("when user select a product with license", () => {
     beforeEach(() => {
       mockProduct(undefined);
