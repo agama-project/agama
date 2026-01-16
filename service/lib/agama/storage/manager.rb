@@ -196,7 +196,7 @@ module Agama
       #
       # @return [Boolean]
       def need_iscsi?
-        iscsi.configured? || devicegraph.used_features.any? { |f| f.id == :UF_ISCSI }
+        devicegraph.used_features.any? { |f| f.id == :UF_ISCSI }
       end
 
       # Staging devicegraph

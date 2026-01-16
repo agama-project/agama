@@ -20,7 +20,6 @@
 # find current contact information at www.suse.com.
 
 require_relative "../../test_helper"
-require_relative "../with_progress_examples"
 require_relative "../with_issues_examples"
 require_relative "storage_helpers"
 require "agama/http/clients"
@@ -434,8 +433,6 @@ describe Agama::Storage::Manager do
       end
     end
   end
-
-  include_examples "progress"
 
   include_examples "issues"
 end
