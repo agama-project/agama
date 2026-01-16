@@ -41,7 +41,7 @@ import {
   Stack,
   StackItem,
 } from "@patternfly/react-core";
-import { useNavigate } from "react-router";
+import { Navigate, useNavigate } from "react-router";
 import { NestedContent, Page, SubtleContent } from "~/components/core";
 import pfTextStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import pfRadioStyles from "@patternfly/react-styles/css/components/Radio/radio";
@@ -52,6 +52,7 @@ import agama from "~/agama";
 import LicenseDialog from "./LicenseDialog";
 import { useProductInfo } from "~/hooks/model/config/product";
 import { useSystem } from "~/hooks/model/system";
+import { useSystem as useSystemSoftware } from "~/hooks/model/system/software";
 import { patchConfig } from "~/api";
 import { ROOT } from "~/routes/paths";
 import { Product } from "~/model/system";
@@ -125,6 +126,7 @@ const BackLink = () => {
 function ProductSelectionPage() {
   const navigate = useNavigate();
   const { products } = useSystem();
+  const { registration } = useSystemSoftware();
   const selectedProduct = useProductInfo();
   const [nextProduct, setNextProduct] = useState(selectedProduct);
   // FIXME: should not be accepted by default first selectedProduct is accepted
@@ -133,8 +135,6 @@ function ProductSelectionPage() {
   const [showLicense, setShowLicense] = useState(false);
   const [isWaiting, setIsWaiting] = useState(false);
 
-  // if (registration?.registered && selectedProduct) return <Navigate to={PATHS.root} />;
-
   useEffect(() => {
     if (!isWaiting) return;
 
@@ -142,6 +142,8 @@ function ProductSelectionPage() {
       navigate(ROOT.root);
     }
   }, [isWaiting, navigate, nextProduct, selectedProduct]);
+
+  if (registration && selectedProduct) return <Navigate to={ROOT.root} />;
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
