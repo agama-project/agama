@@ -23,11 +23,7 @@
 mod client;
 mod http_client;
 pub mod model;
-pub mod proxies;
 mod settings;
-mod store;
 
-pub use client::{FirstUser, RootUser, UsersClient};
 pub use http_client::UsersHTTPClient;
 pub use settings::{FirstUserSettings, RootUserSettings, UserPassword, UserSettings};
-pub use store::{UsersStore, UsersStoreError};
