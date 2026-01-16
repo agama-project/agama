@@ -18,12 +18,13 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-//! This crate implements the support for handling security settings,
-//! including certificates management.
+use agama_utils::{actor::Handler, question};
 
-pub mod service;
-pub use service::{Service, Starter};
+use crate::{Service, Starter};
 
-pub mod message;
-
-pub mod test_utils;
+/// Starts a testing security service.
+pub async fn start_service(questions: Handler<question::Service>) -> Handler<Service> {
+    Starter::new(questions)
+        .start()
+        .expect("Could not spawn a testing security service")
+}

@@ -18,12 +18,25 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-//! This crate implements the support for handling security settings,
-//! including certificates management.
+use agama_utils::{actor::Message, api::security::Config};
 
-pub mod service;
-pub use service::{Service, Starter};
+#[derive(Clone)]
+pub struct GetConfig;
 
-pub mod message;
+impl Message for GetConfig {
+    type Reply = Config;
+}
 
-pub mod test_utils;
+pub struct SetConfig<T> {
+    pub config: Option<T>,
+}
+
+impl<T: Send + 'static> Message for SetConfig<T> {
+    type Reply = ();
+}
+
+impl<T> SetConfig<T> {
+    pub fn new(config: Option<T>) -> Self {
+        Self { config }
+    }
+}

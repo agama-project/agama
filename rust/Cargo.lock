@@ -186,6 +186,7 @@ dependencies = [
  "agama-hostname",
  "agama-l10n",
  "agama-network",
+ "agama-security",
  "agama-software",
  "agama-storage",
  "agama-users",
@@ -229,6 +230,17 @@ dependencies = [
  "utoipa",
  "uuid",
  "zbus",
+]
+
+[[package]]
+name = "agama-security"
+version = "0.1.0"
+dependencies = [
+ "agama-utils",
+ "async-trait",
+ "gettext-rs",
+ "openssl",
+ "thiserror 2.0.17",
 ]
 
 [[package]]

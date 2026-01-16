@@ -10,6 +10,7 @@ agama-files = { path = "../agama-files" }
 agama-hostname = { path = "../agama-hostname" }
 agama-l10n = { path = "../agama-l10n" }
 agama-network = { path = "../agama-network" }
+agama-security = { path = "../agama-security" }
 agama-software = { path = "../agama-software" }
 agama-storage = { path = "../agama-storage" }
 agama-utils = { path = "../agama-utils" }

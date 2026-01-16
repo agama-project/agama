@@ -5,3 +5,8 @@ rust-version.workspace = true
 edition.workspace = true
 
 [dependencies]
+agama-utils = { path = "../agama-utils" }
+async-trait = "0.1.89"
+gettext-rs = { version = "0.7.1", features = ["gettext-system"] }
+openssl = "0.10.75"
+thiserror = "2.0.17"
