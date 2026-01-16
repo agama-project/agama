@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri Jan 16 15:01:32 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- Fix unattended installation
+- Add first user to wheel group
+- Implement using inst.install_url instead of Product repositories
+
+-------------------------------------------------------------------
 Wed Jan 14 23:27:16 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Implement support for users and authentication configuration.
