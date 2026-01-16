@@ -92,66 +92,7 @@ impl RootUserSettings {
 
 #[cfg(test)]
 mod test {
-    use crate::users::{settings::UserPassword, FirstUser, RootUser};
-
-    use super::{FirstUserSettings, RootUserSettings};
-
-    #[test]
-    fn test_user_settings_from_first_user() {
-        let empty = FirstUser {
-            full_name: "".to_string(),
-            user_name: "".to_string(),
-            password: "".to_string(),
-            hashed_password: false,
-        };
-        let settings: FirstUserSettings = empty.into();
-        assert_eq!(settings.full_name, None);
-        assert_eq!(settings.user_name, None);
-        assert_eq!(settings.password, None);
-
-        let user = FirstUser {
-            full_name: "SUSE".to_string(),
-            user_name: "suse".to_string(),
-            password: "nots3cr3t".to_string(),
-            hashed_password: false,
-        };
-        let settings: FirstUserSettings = user.into();
-        assert_eq!(settings.full_name, Some("SUSE".to_string()));
-        assert_eq!(settings.user_name, Some("suse".to_string()));
-        let password = settings.password.unwrap();
-        assert_eq!(password.password, "nots3cr3t".to_string());
-        assert_eq!(password.hashed_password, false);
-    }
-
-    #[test]
-    fn test_root_settings_from_root_user() {
-        let empty = RootUser {
-            password: None,
-            hashed_password: None,
-            ssh_public_key: None,
-        };
-
-        let settings: RootUserSettings = empty.into();
-        assert_eq!(settings.password, None);
-        assert_eq!(settings.ssh_public_key, None);
-
-        let with_password = RootUser {
-            password: Some("nots3cr3t".to_string()),
-            hashed_password: Some(false),
-            ..Default::default()
-        };
-        let settings: RootUserSettings = with_password.into();
-        let password = settings.password.unwrap();
-        assert_eq!(password.password, "nots3cr3t".to_string());
-        assert_eq!(password.hashed_password, false);
-
-        let with_ssh_public_key = RootUser {
-            ssh_public_key: Some("ssh-rsa ...".to_string()),
-            ..Default::default()
-        };
-        let settings: RootUserSettings = with_ssh_public_key.into();
-        assert_eq!(settings.ssh_public_key, Some("ssh-rsa ...".to_string()));
-    }
+    use super::{FirstUserSettings, RootUserSettings, UserPassword};
 
     #[test]
     fn test_parse_user_password() {
