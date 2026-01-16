@@ -39,7 +39,6 @@ use crate::{
         },
         StorageStore, StorageStoreError,
     },
-    users::{UsersStore, UsersStoreError},
 };
 
 #[derive(Debug, thiserror::Error)]
@@ -50,8 +49,6 @@ pub enum StoreError {
     DASD(#[from] DASDStoreError),
     #[error(transparent)]
     Hostname(#[from] HostnameStoreError),
-    #[error(transparent)]
-    Users(#[from] UsersStoreError),
     #[error(transparent)]
     Network(#[from] NetworkStoreError),
     #[error(transparent)]
@@ -76,7 +73,6 @@ pub struct Store {
     bootloader: BootloaderStore,
     dasd: DASDStore,
     hostname: HostnameStore,
-    users: UsersStore,
     network: NetworkStore,
     security: SecurityStore,
     storage: StorageStore,
@@ -91,7 +87,6 @@ impl Store {
             bootloader: BootloaderStore::new(http_client.clone()),
             dasd: DASDStore::new(http_client.clone()),
             hostname: HostnameStore::new(http_client.clone()),
-            users: UsersStore::new(http_client.clone()),
             network: NetworkStore::new(http_client.clone()),
             security: SecurityStore::new(http_client.clone()),
             storage: StorageStore::new(http_client.clone()),
@@ -109,7 +104,6 @@ impl Store {
             hostname: Some(self.hostname.load().await?),
             network: Some(self.network.load().await?),
             security: self.security.load().await?.to_option(),
-            user: Some(self.users.load().await?),
             zfcp: self.zfcp.load().await?,
             ..Default::default()
         };
@@ -137,9 +131,6 @@ impl Store {
         // self-signed RMT
         if let Some(security) = &settings.security {
             self.security.store(security).await?;
-        }
-        if let Some(user) = &settings.user {
-            self.users.store(user).await?;
         }
         let mut dirty_flag_set = false;
         // iscsi has to be done before storage

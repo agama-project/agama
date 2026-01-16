@@ -20,8 +20,6 @@
 
 use serde::{Deserialize, Serialize};
 
-use super::{FirstUser, RootUser};
-
 /// User settings
 ///
 /// Holds the user settings for the installation.
@@ -58,37 +56,6 @@ impl FirstUserSettings {
     }
 }
 
-impl From<FirstUser> for FirstUserSettings {
-    fn from(value: FirstUser) -> Self {
-        let user_name = if value.user_name.is_empty() {
-            None
-        } else {
-            Some(value.user_name.clone())
-        };
-
-        let password = if value.password.is_empty() {
-            None
-        } else {
-            Some(UserPassword {
-                password: value.password,
-                hashed_password: value.hashed_password,
-            })
-        };
-
-        let full_name = if value.full_name.is_empty() {
-            None
-        } else {
-            Some(value.full_name)
-        };
-
-        Self {
-            user_name,
-            password,
-            full_name,
-        }
-    }
-}
-
 /// Represents a user password.
 ///
 /// It holds the password and whether it is a hashed or a plain text password.
@@ -120,23 +87,6 @@ pub struct RootUserSettings {
 impl RootUserSettings {
     pub fn is_empty(&self) -> bool {
         self.password.is_none() && self.ssh_public_key.is_none()
-    }
-}
-
-impl From<RootUser> for RootUserSettings {
-    fn from(value: RootUser) -> Self {
-        let password = value
-            .password
-            .filter(|password| !password.is_empty())
-            .map(|password| UserPassword {
-                password,
-                hashed_password: value.hashed_password.unwrap_or_default(),
-            });
-        let ssh_public_key = value.ssh_public_key.filter(|key| !key.is_empty());
-        Self {
-            password,
-            ssh_public_key,
-        }
     }
 }
 
