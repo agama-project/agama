@@ -24,6 +24,7 @@ import React, { act } from "react";
 import { screen } from "@testing-library/react";
 import { installerRender, mockNavigateFn, mockProduct } from "~/test-utils";
 import { useSystem } from "~/hooks/model/system";
+import { useSystem as useSystemSoftware } from "~/hooks/model/system/software";
 import { Product } from "~/types/software";
 import ProductSelectionPage from "./ProductSelectionPage";
 
@@ -45,7 +46,8 @@ const microOs: Product = {
 };
 
 const mockPatchConfigFn = jest.fn();
-const mockUseSystemFn = jest.fn();
+const mockUseSystemFn: jest.Mock<ReturnType<typeof useSystem>> = jest.fn();
+const mockUseSystemSoftwareFn: jest.Mock<ReturnType<typeof useSystemSoftware>> = jest.fn();
 
 // FIXME: add ad use a mockSystem from test-utils instead
 jest.mock("~/components/core/InstallerOptions", () => () => (
@@ -59,13 +61,24 @@ jest.mock("~/api", () => ({
 
 jest.mock("~/hooks/model/system", () => ({
   ...jest.requireActual("~/hooks/model/system"),
-  useSystem: (): ReturnType<typeof useSystem> => mockUseSystemFn(),
+  useSystem: () => mockUseSystemFn(),
+}));
+
+jest.mock("~/hooks/model/system/software", () => ({
+  ...jest.requireActual("~/hooks/model/system/software"),
+  useSystem: () => mockUseSystemSoftwareFn(),
 }));
 
 describe("ProductSelectionPage", () => {
   beforeEach(() => {
     mockUseSystemFn.mockReturnValue({
       products: [tumbleweed, microOs],
+    });
+
+    mockUseSystemSoftwareFn.mockReturnValue({
+      addons: [],
+      patterns: [],
+      repositories: [],
     });
   });
 
@@ -127,15 +140,14 @@ describe("ProductSelectionPage", () => {
     });
   });
 
-  // FIXME: re-enable it when registration is ready in v2
-  describe.skip("when product is registered", () => {
+  describe("when product is registered", () => {
     beforeEach(() => {
-      // registrationInfoMock = {
-      //   registered: true,
-      //   key: "INTERNAL-USE-ONLY-1234-5678",
-      //   email: "",
-      //   url: "",
-      // };
+      mockUseSystemSoftwareFn.mockReturnValue({
+        addons: [],
+        patterns: [],
+        repositories: [],
+        registration: { code: "INTERNAL-USE-ONLY-1234-5678", addons: [] },
+      });
     });
 
     it("navigates to root path", async () => {
