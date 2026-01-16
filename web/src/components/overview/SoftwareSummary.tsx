@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2025] SUSE LLC
+ * Copyright (c) [2025-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -21,16 +21,18 @@
  */
 
 import React from "react";
+import { isEmpty } from "radashi";
 import xbytes from "xbytes";
 import { sprintf } from "sprintf-js";
 
+import Summary from "~/components/core/Summary";
+import Link from "~/components/core/Link";
 import { useProposal } from "~/hooks/model/proposal/software";
 import { useProgressTracking } from "~/hooks/use-progress-tracking";
 import { useSelectedPatterns } from "~/hooks/model/system/software";
+import { useIssues } from "~/hooks/model/issue";
 import { SOFTWARE } from "~/routes/paths";
 import { _, n_ } from "~/i18n";
-import Summary from "~/components/core/Summary";
-import Link from "~/components/core/Link";
 
 /**
  * Renders a summary text describing the software selection.
@@ -70,16 +72,20 @@ const Description = () => {
  */
 export default function SoftwareSummary() {
   const { loading } = useProgressTracking("software");
+  const issues = useIssues("software");
+  const hasIssues = !isEmpty(issues);
+
   return (
     <Summary
+      hasIssues={hasIssues}
       icon="apps"
       title={
         <Link to={SOFTWARE.root} variant="link" isInline>
           {_("Software")}
         </Link>
       }
-      value={<Value />}
-      description={<Description />}
+      value={hasIssues ? _("Invalid software selection") : <Value />}
+      description={!hasIssues && <Description />}
       isLoading={loading}
     />
   );
