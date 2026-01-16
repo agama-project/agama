@@ -35,7 +35,7 @@ use agama_lib::{
     monitor::{Monitor, MonitorClient},
 };
 use agama_transfer::Transfer;
-use agama_utils::api::{self, status::Stage, FinishMethod, IssueWithScope};
+use agama_utils::api::{status::Stage, FinishMethod, IssueWithScope};
 use anyhow::Context;
 use clap::{Args, Parser};
 use fluent_uri::UriRef;
@@ -121,8 +121,8 @@ async fn install(http_client: BaseHTTPClient, monitor: MonitorClient) -> anyhow:
         return Err(CliError::Validation)?;
     }
 
-    let action = api::Action::Install;
-    http_client.post_void("/v2/action", &action).await?;
+    let manager = ManagerHTTPClient::new(http_client);
+    manager.install().await?;
 
     // wait a bit before start monitoring
     sleep(Duration::from_secs(1)).await;
@@ -145,10 +145,7 @@ async fn finish(
 ) -> anyhow::Result<()> {
     wait_until_idle(monitor.clone()).await?;
 
-    if !manager.finish(method).await? {
-        eprintln!("Cannot finish the installation ({method})");
-        return Err(CliError::NotFinished)?;
-    }
+    manager.finish(method).await?;
     Ok(())
 }
 
