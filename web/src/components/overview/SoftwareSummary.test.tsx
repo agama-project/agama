@@ -24,12 +24,14 @@ import { screen, within } from "@testing-library/react";
 import { installerRender, mockProgresses } from "~/test-utils";
 import { useProposal } from "~/hooks/model/proposal/software";
 import { useSelectedPatterns } from "~/hooks/model/system/software";
+import { useIssues } from "~/hooks/model/issue";
 import { SOFTWARE } from "~/routes/paths";
 import { SelectedBy } from "~/model/proposal/software";
 import SoftwareSummary from "./SoftwareSummary";
 
 const mockUseProposalFn: jest.Mock<ReturnType<typeof useProposal>> = jest.fn();
 const mockUseSelectedPatternsFn: jest.Mock<ReturnType<typeof useSelectedPatterns>> = jest.fn();
+const mockUseIssuesFn: jest.Mock<ReturnType<typeof useIssues>> = jest.fn();
 
 jest.mock("~/hooks/model/proposal/software", () => ({
   useProposal: () => mockUseProposalFn(),
@@ -39,9 +41,15 @@ jest.mock("~/hooks/model/system/software", () => ({
   useSelectedPatterns: () => mockUseSelectedPatternsFn(),
 }));
 
+jest.mock("~/hooks/model/issue", () => ({
+  ...jest.requireActual("~/hooks/model/issue"),
+  useIssues: () => mockUseIssuesFn(),
+}));
+
 describe("SoftwareSummary", () => {
   beforeEach(() => {
     mockProgresses([]);
+    mockUseIssuesFn.mockReturnValue([]);
     mockUseProposalFn.mockReturnValue({ usedSpace: 6291456, patterns: {} }); // 6 GiB
     mockUseSelectedPatternsFn.mockReturnValue([]);
   });
@@ -83,6 +91,27 @@ describe("SoftwareSummary", () => {
   });
 
   describe("when software data is loaded (no progress active)", () => {
+    describe("but there are issues", () => {
+      beforeEach(() => {
+        mockUseIssuesFn.mockReturnValue([
+          {
+            description: "Fake Issue",
+            class: "generic",
+            details: "Fake Issue details",
+            scope: "software",
+          },
+        ]);
+      });
+
+      it("renders `Invalid software selection` text", () => {
+        installerRender(<SoftwareSummary />);
+
+        screen.getByText("Invalid software selection");
+        expect(screen.queryByText("Required packages")).toBeNull();
+        expect(screen.queryByText(/Needs about/)).toBeNull();
+      });
+    });
+
     it("renders 'Required packages' without patterns count when no none is selected", () => {
       mockUseProposalFn.mockReturnValue({ usedSpace: 1955420, patterns: {} });
       mockUseSelectedPatternsFn.mockReturnValue([]);
