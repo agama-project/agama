@@ -23,7 +23,5 @@
 mod client;
 mod http_client;
 pub mod model;
-mod settings;
 
 pub use http_client::UsersHTTPClient;
-pub use settings::{FirstUserSettings, RootUserSettings, UserPassword, UserSettings};
