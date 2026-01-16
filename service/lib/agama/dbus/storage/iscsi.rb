@@ -84,7 +84,6 @@ module Agama
         # @param serialized_config [String] Serialized iSCSI config.
         # @return [Integer] 0 success; 1 error
         def apply_config(serialized_config)
-          logger.info("Setting iSCSI config from D-Bus: #{serialized_config}")
           config_json = JSON.parse(serialized_config, symbolize_names: true)
           success = manager.apply_config_json(config_json)
           success ? 0 : 1
@@ -138,7 +137,8 @@ module Agama
             interface: node.interface,
             ibft:      node.ibft?,
             startup:   node.startup,
-            connected: node.connected?
+            connected: node.connected?,
+            locked:    node.locked?
           }
         end
 

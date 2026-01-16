@@ -63,6 +63,15 @@ module Agama
         # @return [String]
         attr_accessor :startup
 
+        # Whether the node is locked (cannot be deactivated)
+        #
+        # @return [Boolean]
+        attr_accessor :locked
+
+        def locked?
+          !!locked
+        end
+
         def ibft?
           !!ibft
         end

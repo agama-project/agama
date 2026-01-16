@@ -121,6 +121,10 @@ module Agama
         # @return [Array<ISCSI::Node>]
         def probe_nodes
           @nodes = adapter.read_nodes
+          # Locked portals are read only the first time the nodes are probed.
+          @locked_portals ||= @nodes.select(&:connected).map(&:portal)
+          @locked_portals.each { |p| find_node(p)&.locked = true }
+          @nodes
         end
 
         # Calls the given block and performs iSCSI probing afterwards
