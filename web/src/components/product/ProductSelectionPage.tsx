@@ -225,7 +225,7 @@ function ProductSelectionPage() {
                       <Option
                         key={index}
                         product={product}
-                        isChecked={nextProduct === product}
+                        isChecked={nextProduct?.id === product?.id}
                         onChange={() => selectProduct(product)}
                       />
                     );
