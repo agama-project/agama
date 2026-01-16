@@ -21,9 +21,8 @@
 use crate::{
     http::{BaseHTTPClient, BaseHTTPClientError},
     logs::LogsLists,
-    manager::InstallerStatus,
 };
-use agama_utils::api;
+use agama_utils::api::{self, Status};
 use reqwest::header::CONTENT_ENCODING;
 use std::path::{Path, PathBuf};
 use std::{fs, io::Cursor, os::unix::fs::OpenOptionsExt};
@@ -127,11 +126,8 @@ impl ManagerHTTPClient {
     }
 
     /// Returns the installer status.
-    pub async fn status(&self) -> Result<InstallerStatus, ManagerHTTPClientError> {
-        let status = self
-            .client
-            .get::<InstallerStatus>("/manager/installer")
-            .await?;
+    pub async fn status(&self) -> Result<Status, ManagerHTTPClientError> {
+        let status = self.client.get::<Status>("/v2/status").await?;
         Ok(status)
     }
 }
