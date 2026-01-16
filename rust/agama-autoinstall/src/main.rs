@@ -18,7 +18,7 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use std::{str::FromStr, time::Duration};
+use std::{process::exit, str::FromStr, time::Duration};
 
 use agama_autoinstall::{ConfigAutoLoader, ScriptsRunner};
 use agama_lib::{auth::AuthToken, http::BaseHTTPClient, manager::ManagerHTTPClient};
@@ -87,9 +87,12 @@ async fn main() -> anyhow::Result<()> {
     loop {
         sleep(Duration::from_secs(1)).await;
         let status = manager_client.status().await?;
-        // TODO: what should we do in case of failure? try reboot or stuck in inst env?
-        if status.stage == Stage::Finished || status.stage == Stage::Failed {
+        if status.stage == Stage::Finished {
             break;
+        }
+        if status.stage == Stage::Failed {
+            eprintln!("Installation failed");
+            exit(1);
         }
     }
 
