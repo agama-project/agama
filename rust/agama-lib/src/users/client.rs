@@ -20,7 +20,6 @@
 
 //! Implements a client to access Agama's users service.
 
-use super::FirstUserSettings;
 use crate::error::ServiceError;
 use serde::{Deserialize, Serialize};
 use zbus::Connection;
