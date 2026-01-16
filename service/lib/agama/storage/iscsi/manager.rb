@@ -19,11 +19,9 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "agama/issue"
 require "agama/storage/iscsi/adapter"
 require "agama/storage/iscsi/config_importer"
 require "agama/storage/iscsi/node"
-require "yast/i18n"
 
 module Agama
   module Storage
@@ -49,13 +47,9 @@ module Agama
         # @return [Array<Node>]
         attr_reader :nodes
 
-        # @return [Array<Issue>]
-        attr_reader :issues
-
         # @param logger [Logger, nil]
         def initialize(logger: nil)
           @logger = logger || ::Logger.new($stdout)
-          @issues = []
           @nodes = []
         end
 
@@ -92,11 +86,15 @@ module Agama
         # Applies the given iSCSI config.
         #
         # @param config_json [Hash{Symbol=>Object}] Config according to the JSON schema.
-        # @return [Boolean] Whether the config was correctly applied.
-        def apply_config_json(config_json)
-          @config_json = config_json
-          config = ConfigImporter.new(config_json).import
-          probe_after { apply_config(config) }
+        def configure(config_json)
+          probe unless probed?
+          config = assign_config(config_json)
+          probe_after do
+            configure_initiator(config)
+            discover_from_portals(config)
+            disconnect_missing_targets(config)
+            configure_targets(config)
+          end
         end
 
       private
@@ -104,9 +102,25 @@ module Agama
         # @return [Logger]
         attr_reader :logger
 
+        attr_reader :previous_config
+
         # @return [Adapter]
         def adapter
           @adapter ||= Adapter.new
+        end
+
+        def assign_config(config_json)
+          @previous_config = @config
+          @config_json = config_json
+          @config = ConfigImporter.new(config_json).import
+        end
+
+        # Calls the given block and performs iSCSI probing afterwards
+        #
+        # @note Returns the result of the block.
+        # @param block [Proc]
+        def probe_after(&block)
+          block.call.tap { probe }
         end
 
         # Probes the initiator.
@@ -121,49 +135,22 @@ module Agama
         # @return [Array<ISCSI::Node>]
         def probe_nodes
           @nodes = adapter.read_nodes
-          # Locked portals are read only the first time the nodes are probed.
-          @locked_portals ||= @nodes.select(&:connected).map(&:portal)
-          @locked_portals.each { |p| find_node(p)&.locked = true }
+          # Targets are set as locked if they are already connected at the time of probing for first
+          # time. This usually happens when there is iBFT activation or the targets are manually
+          # connected (e.g., by using a script).
+          @locked_targets ||= @nodes.select(&:connected).map(&:target)
+          @locked_targets.each { |t| find_node(t)&.locked = true }
           @nodes
         end
 
-        # Calls the given block and performs iSCSI probing afterwards
-        #
-        # @note Returns the result of the block.
-        # @param block [Proc]
-        def probe_after(&block)
-          block.call.tap { probe }
-        end
-
-        # Applies the given iSCSI config.
+        # Configures the initiator.
         #
         # @param config [ISCSI::Config]
-        # @return [Boolean] Whether the config was correctly applied.
-        def apply_config(config)
-          probe unless probed?
-          apply_initiator_config(config)
-          apply_targets_config(config)
-          @issues.none?
-        end
-
-        # Applies the inititator config.
-        #
-        # @param config [ISCSI::Config]
-        def apply_initiator_config(config)
+        def configure_initiator(config)
           return unless initiator && config.initiator
           return if initiator.name == config.initiator
 
           adapter.update_initiator(initiator, name: config.initiator)
-        end
-
-        # Applies the target configs.
-        #
-        # @param config [ISCSI::Config]
-        def apply_targets_config(config)
-          discover_from_portals(config)
-          logout_targets(config)
-          login_targets(config)
-          update_targets(config)
         end
 
         # Discovers iSCSI targets from all the portals.
@@ -176,91 +163,111 @@ module Agama
           end
         end
 
-        # Tries to logout the targets that are not configured.
+        # Disconnects the targets that are not configured, preventing to disconnect locked targets.
         #
         # @param config [ISCSI::Config]
-        def logout_targets(config)
+        def disconnect_missing_targets(config)
           nodes
             .select(&:connected?)
-            .reject { |n| config.include_target?(n.portal) }
-            .each { |n| adapter.logout(n) }
+            .reject(&:locked?)
+            .reject { |n| config.include_target?(n.target) }
+            .each { |n| disconnect_node(n) }
         end
 
-        # Tries to login the configured targets.
-        #
-        # @note The login is skipped if the target is already connected. An issue is generated if
-        # the login of a target fails.
+        # Configures the targets.
         #
         # @param config [ISCSI::Config]
-        def login_targets(config)
-          issues = []
-
-          config.targets
-            .reject { |t| connected_target?(t.portal) }
-            .each do |target|
-              success = apply_target_config(target)
-              issues << login_issue(target) unless success
-            end
-
-          @issues = issues
+        def configure_targets(config)
+          config.targets.each { |t| configure_target(t) }
         end
 
-        # Applies the given target config.
+        # Configures a target.
         #
-        # @param target [ISCSI::Configs::Target]
-        # @return [Boolean] Whether the config was correctly applied.
-        def apply_target_config(target)
-          node = ISCSI::Node.new
-          node.address = target.address
-          node.port = target.port
-          node.target = target.name
-          node.interface = target.interface
+        # @param target_config [ISCSI::Configs::Target]
+        def configure_target(target_config)
+          node = find_node(target_config.name)
+          return unless node
 
-          credentials = {
-            username:           target.username,
-            password:           target.password,
-            initiator_username: target.initiator_username,
-            initiator_password: target.initiator_password
-          }
-
-          adapter.login(node, credentials: credentials, startup: target.startup)
+          if node.connected?
+            configure_connected_node(node, target_config)
+          else
+            connect_node(node, target_config)
+          end
         end
 
-        # Updates the connected targets if needed.
+        # Configures a node that is already connected.
         #
-        # @param config [ISCSI::Config]
-        def update_targets(config)
-          config.targets
-            .select { |t| connected_target?(t.portal) }
-            .each do |target|
-              node = find_node(target.portal)
-              next if node.startup == target.startup
-              adapter.update_node(node, startup: target.startup)
-            end
+        # @param node [Node]
+        # @param target_config [ISCSI::Configs::Target]
+        def configure_connected_node(node, target_config)
+          if credentials_changed?(target_config)
+            reconnect_node(node, target_config)
+          elsif startup_changed?(target_config)
+            update_node(node, target_config)
+          end
         end
 
-        # Whether the target of the given portal is connected.
+        # Tries to connect a node.
         #
-        # @param portal [String]
-        # @return [Boolean]
-        def connected_target?(portal)
-          find_node(portal)&.connected? || false
+        # @param node [Node]
+        # @param target_config [ISCSI::Configs::Target]
+        #
+        # @return [Boolean] Whether the node was connected.
+        def connect_node(node, target_config)
+          adapter.login(
+            node,
+            credentials: target_config.credentials || {},
+            startup: target_config.startup
+          )
         end
 
-        # Finds a node with the given portal.
+        # Tries to disconnect a node.
         #
-        # @param portal [String]
+        # @param node [Node]
+        # @return [Boolean] Whether the node was disconnected.
+        def disconnect_node(node)
+          adapter.logout(node).tap do |success|
+            # Unlock the node if it was correctly disconnected.
+            @locked_targets&.delete(node.target) if success
+          end
+        end
+
+        # Tries to reconnect a node.
+        #
+        # @param node [Node]
+        # @param target_config [ISCSI::Configs::Target]
+        #
+        # @return [Boolean] Whether the node was reconnected.
+        def reconnect_node(node, target_config)
+          disconnect_node(node) && connect_node(node, target_config)
+        end
+
+        # Tries to update a node.
+        #
+        # @param node [Node]
+        # @param target_config [ISCSI::Configs::Target]
+        #
+        # @return [Boolean] Whether the node was updated.
+        def update_node(node, target_config)
+          adapter.update_node(node, startup: target_config.startup)
+        end
+
+        def credentials_changed?(target_config)
+          previous_credentials = previous_config&.find_target(target_config.name)&.credentials
+          previous_credentials != target_config.credentials
+        end
+
+        def startup_changed?(target_config)
+          previous_startup = previous_config&.find_target(target_config.name)&.credentials
+          previous_startup != target_config.startup
+        end
+
+        # Finds a node with the given name.
+        #
+        # @param name [String]
         # @return [Node, nil]
-        def find_node(portal)
-          nodes.find { |n| n.portal == portal }
-        end
-
-        # Login issue.
-        #
-        # @param target [ISCSI::Configs::Target]
-        # @return [Issue]
-        def login_issue(target)
-          Issue.new(format(_("Cannot login to iSCSI target %s"), target.name))
+        def find_node(name)
+          nodes.find { |n| n.target == name }
         end
       end
     end

@@ -48,8 +48,8 @@ module Agama
         dbus_interface "org.opensuse.Agama.Storage1.ISCSI" do
           dbus_method(:GetSystem, "out system:s") { recover_system }
           dbus_method(:GetConfig, "out config:s") { recover_config }
-          dbus_method(:SetConfig, "in serialized_config:s, out result:u") do |serialized_config|
-            apply_config(serialized_config)
+          dbus_method(:SetConfig, "in serialized_config:s") do |serialized_config|
+            configure(serialized_config)
           end
           dbus_method(:Discover, "in options:a{sv}, out result:u") do |serialized_options|
             discover(serialized_options)
@@ -82,11 +82,13 @@ module Agama
         # @todo Raise error if the config is not valid.
         #
         # @param serialized_config [String] Serialized iSCSI config.
-        # @return [Integer] 0 success; 1 error
-        def apply_config(serialized_config)
+        def configure(serialized_config)
           config_json = JSON.parse(serialized_config, symbolize_names: true)
-          success = manager.apply_config_json(config_json)
-          success ? 0 : 1
+
+          start_progress(1, _("Configuring iSCSI"))
+          manager.configure(config_json)
+          emit_system_changed
+          finish_progress
         end
 
         def discover(serialized_options)
