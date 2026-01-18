@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-01-11 03:28+0000\n"
-"PO-Revision-Date: 2025-09-02 12:59+0000\n"
+"POT-Creation-Date: 2026-01-18 03:25+0000\n"
+"PO-Revision-Date: 2026-01-12 13:04+0000\n"
 "Last-Translator: David Medina <medipas@gmail.com>\n"
 "Language-Team: Catalan <https://l10n.opensuse.org/projects/agama/agama-"
 "service-master/ca/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.13\n"
+"X-Generator: Weblate 5.15.1\n"
 
 #. Reports the problems and decide whether to continue or not.
 #.
@@ -28,37 +28,35 @@ msgid "Found unsupported elements in the AutoYaST profile: %{keys}."
 msgstr "S'han trobat elements no compatibles al perfil d'AutoYaST: %{keys}."
 
 #. Implementation for the API method #Install.
-#: service/lib/agama/dbus/storage/manager.rb:118
+#: service/lib/agama/dbus/storage/manager.rb:117
 msgid "Preparing bootloader proposal"
 msgstr "Preparant la proposta de carregador d'arrencada"
 
-#: service/lib/agama/dbus/storage/manager.rb:121
+#: service/lib/agama/dbus/storage/manager.rb:120
 msgid "Preparing the storage devices"
 msgstr "Preparant els dispositius d'emmagatzematge"
 
-#: service/lib/agama/dbus/storage/manager.rb:124
+#: service/lib/agama/dbus/storage/manager.rb:123
 msgid "Writing bootloader sysconfig"
 msgstr "Escrivint la configuració de sistema del carregador d'arrencada"
 
 #. Implementation for the API method #Finish.
-#: service/lib/agama/dbus/storage/manager.rb:132
-#, fuzzy
+#: service/lib/agama/dbus/storage/manager.rb:131
 msgid "Finishing installation"
-msgstr "Avorta la instal·lació"
+msgstr "S'acaba la instal·lació"
 
 #. Error code
-#: service/lib/agama/dbus/storage/manager.rb:371
+#: service/lib/agama/dbus/storage/manager.rb:377
 msgid "Activating storage devices"
 msgstr "Activant els dispositius d'emmagatzematge"
 
-#: service/lib/agama/dbus/storage/manager.rb:374
+#: service/lib/agama/dbus/storage/manager.rb:380
 msgid "Probing storage devices"
 msgstr "Sondant els dispositius d'emmagatzematge"
 
-#: service/lib/agama/dbus/storage/manager.rb:377
-#, fuzzy
+#: service/lib/agama/dbus/storage/manager.rb:383
 msgid "Applying storage configuration"
-msgstr "Ajustant la configuració d'emmagatzematge"
+msgstr "Aplicant la configuració d'emmagatzematge"
 
 #. TRANSLATORS: SSL certificate details
 #: service/lib/agama/ssl/certificate_details.rb:31

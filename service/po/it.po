@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-01-11 03:28+0000\n"
+"POT-Creation-Date: 2026-01-18 03:25+0000\n"
 "PO-Revision-Date: 2025-08-01 13:59+0000\n"
 "Last-Translator: Davide Aiello <davide.aiello@novilingulists.com>\n"
 "Language-Team: Italian <https://l10n.opensuse.org/projects/agama/agama-"
@@ -28,34 +28,34 @@ msgid "Found unsupported elements in the AutoYaST profile: %{keys}."
 msgstr "Trovati elementi non supportati nel profilo AutoYaST: %{keys}."
 
 #. Implementation for the API method #Install.
-#: service/lib/agama/dbus/storage/manager.rb:118
+#: service/lib/agama/dbus/storage/manager.rb:117
 msgid "Preparing bootloader proposal"
 msgstr "Preparazione della proposta del boot loader"
 
-#: service/lib/agama/dbus/storage/manager.rb:121
+#: service/lib/agama/dbus/storage/manager.rb:120
 msgid "Preparing the storage devices"
 msgstr "Preparazione dei dispositivi di memorizzazione"
 
-#: service/lib/agama/dbus/storage/manager.rb:124
+#: service/lib/agama/dbus/storage/manager.rb:123
 msgid "Writing bootloader sysconfig"
 msgstr "Scrittura di sysconfig del boot loader"
 
 #. Implementation for the API method #Finish.
-#: service/lib/agama/dbus/storage/manager.rb:132
+#: service/lib/agama/dbus/storage/manager.rb:131
 #, fuzzy
 msgid "Finishing installation"
 msgstr "Interrompi installazione"
 
 #. Error code
-#: service/lib/agama/dbus/storage/manager.rb:371
+#: service/lib/agama/dbus/storage/manager.rb:377
 msgid "Activating storage devices"
 msgstr "Attivazione dei dispositivi di memorizzazione"
 
-#: service/lib/agama/dbus/storage/manager.rb:374
+#: service/lib/agama/dbus/storage/manager.rb:380
 msgid "Probing storage devices"
 msgstr "Rilevamento dei dispositivi di memorizzazione"
 
-#: service/lib/agama/dbus/storage/manager.rb:377
+#: service/lib/agama/dbus/storage/manager.rb:383
 #, fuzzy
 msgid "Applying storage configuration"
 msgstr "Regolazione della configurazione di memorizzazione"

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-01-11 03:28+0000\n"
+"POT-Creation-Date: 2026-01-18 03:25+0000\n"
 "PO-Revision-Date: 2025-07-10 16:59+0000\n"
 "Last-Translator: Eugene Krater <lachend@gmail.com>\n"
 "Language-Team: Ukrainian <https://l10n.opensuse.org/projects/agama/agama-"
@@ -29,34 +29,34 @@ msgid "Found unsupported elements in the AutoYaST profile: %{keys}."
 msgstr "Знайдено непідтримувані елементи у профілі AutoYaST: %{keys}."
 
 #. Implementation for the API method #Install.
-#: service/lib/agama/dbus/storage/manager.rb:118
+#: service/lib/agama/dbus/storage/manager.rb:117
 msgid "Preparing bootloader proposal"
 msgstr "Підготовка пропозиції щодо завантажувача"
 
-#: service/lib/agama/dbus/storage/manager.rb:121
+#: service/lib/agama/dbus/storage/manager.rb:120
 msgid "Preparing the storage devices"
 msgstr "Підготовка пристроїв зберігання"
 
-#: service/lib/agama/dbus/storage/manager.rb:124
+#: service/lib/agama/dbus/storage/manager.rb:123
 msgid "Writing bootloader sysconfig"
 msgstr "Запис системної конфігурації завантажувача"
 
 #. Implementation for the API method #Finish.
-#: service/lib/agama/dbus/storage/manager.rb:132
+#: service/lib/agama/dbus/storage/manager.rb:131
 #, fuzzy
 msgid "Finishing installation"
 msgstr "Перервати встановлення"
 
 #. Error code
-#: service/lib/agama/dbus/storage/manager.rb:371
+#: service/lib/agama/dbus/storage/manager.rb:377
 msgid "Activating storage devices"
 msgstr "Активація пристроїв зберігання"
 
-#: service/lib/agama/dbus/storage/manager.rb:374
+#: service/lib/agama/dbus/storage/manager.rb:380
 msgid "Probing storage devices"
 msgstr "Пошук пристроїв зберігання"
 
-#: service/lib/agama/dbus/storage/manager.rb:377
+#: service/lib/agama/dbus/storage/manager.rb:383
 #, fuzzy
 msgid "Applying storage configuration"
 msgstr "Налаштування конфігурації сховища"
