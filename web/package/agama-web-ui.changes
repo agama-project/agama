@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Jan 16 12:58:15 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Updated the overview software summary to inform users about
+  blocking issues (gh#agama-project/agama#3035).
+
+-------------------------------------------------------------------
 Wed Jan 14 23:27:16 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Reorganize the user interface:

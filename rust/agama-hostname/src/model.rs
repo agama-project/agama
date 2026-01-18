@@ -55,7 +55,7 @@ pub trait ModelAdapter: Send + 'static {
     fn install(&self) -> Result<(), service::Error>;
 
     // Target directory to copy the static hostname at the end of the installation
-    fn static_target_dir(&self) -> &str;
+    fn target_dir(&self) -> &str;
 }
 
 /// [ModelAdapter] implementation for systemd-based systems.
@@ -98,7 +98,7 @@ impl ModelAdapter for Model {
         Ok(())
     }
 
-    fn static_target_dir(&self) -> &str {
+    fn target_dir(&self) -> &str {
         "/mnt"
     }
 
@@ -107,7 +107,7 @@ impl ModelAdapter for Model {
         const HOSTNAME_PATH: &str = "/etc/hostname";
         let from = PathBuf::from(HOSTNAME_PATH);
         if from.exists() {
-            let to = PathBuf::from(self.static_target_dir()).join(HOSTNAME_PATH);
+            let to = PathBuf::from(self.target_dir()).join(HOSTNAME_PATH.trim_start_matches("/"));
             fs::create_dir_all(to.parent().unwrap())?;
             fs::copy(from, to)?;
         }
@@ -154,7 +154,7 @@ pub mod tests {
             Ok(())
         }
 
-        fn static_target_dir(&self) -> &str {
+        fn target_dir(&self) -> &str {
             self.target_dir.to_str().unwrap()
         }
     }
