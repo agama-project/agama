@@ -21,10 +21,14 @@
  */
 
 import React, { useEffect, useState } from "react";
+import { isEmpty } from "radashi";
+import { sprintf } from "sprintf-js";
 import {
   Button,
+  ButtonProps,
   Card,
   CardBody,
+  CardTitle,
   Checkbox,
   Content,
   Divider,
@@ -35,31 +39,53 @@ import {
   FormGroup,
   Grid,
   GridItem,
+  HelperText,
+  HelperTextItem,
+  Label,
   List,
   ListItem,
   Split,
   Stack,
   StackItem,
+  Title,
 } from "@patternfly/react-core";
 import { Navigate, useNavigate } from "react-router";
-import { NestedContent, Page, SubtleContent } from "~/components/core";
-import pfTextStyles from "@patternfly/react-styles/css/utilities/Text/text";
-import pfRadioStyles from "@patternfly/react-styles/css/components/Radio/radio";
-import { isEmpty } from "radashi";
-import { sprintf } from "sprintf-js";
-import { n_, _ } from "~/i18n";
+import { Link, NestedContent, Page, SubtleContent } from "~/components/core";
+import ProductLogo from "~/components/product/ProductLogo";
+import LicenseDialog from "~/components/product/LicenseDialog";
+import Text from "~/components/core/Text";
 import agama from "~/agama";
-import LicenseDialog from "./LicenseDialog";
+import { patchConfig } from "~/api";
 import { useProductInfo } from "~/hooks/model/config/product";
 import { useSystem } from "~/hooks/model/system";
 import { useSystem as useSystemSoftware } from "~/hooks/model/system/software";
-import { patchConfig } from "~/api";
 import { ROOT } from "~/routes/paths";
 import { Product } from "~/model/system";
-import ProductLogo from "~/components/product/ProductLogo";
-import Text from "../core/Text";
+import { n_, _ } from "~/i18n";
 
-const Option = ({ product, isChecked, onChange, isSelectable = true, isTruncating = true }) => {
+import pfTextStyles from "@patternfly/react-styles/css/utilities/Text/text";
+import pfRadioStyles from "@patternfly/react-styles/css/components/Radio/radio";
+
+/**
+ * Props for ProductFormProductOption component
+ */
+type ProductFormProductOptionProps = {
+  /** The product to display as an option */
+  product: Product;
+  /** Whether this product option is currently selected */
+  isChecked: boolean;
+  /** Callback fired when the product is selected */
+  onChange: () => void;
+};
+
+/**
+ * Renders a single product option as a radio button with expandable details.
+ */
+const ProductFormProductOption = ({
+  product,
+  isChecked,
+  onChange,
+}: ProductFormProductOptionProps) => {
   const detailsId = `${product.id}-details`;
   const currentLocale = agama.language.replace("-", "_");
 
@@ -76,36 +102,42 @@ const Option = ({ product, isChecked, onChange, isSelectable = true, isTruncatin
                 htmlFor={product.id}
                 className={`${pfTextStyles.fontSizeLg} ${pfTextStyles.fontWeightBold}`}
               >
-                {isSelectable && (
-                  <input
-                    id={product.id}
-                    type="radio"
-                    name="product"
-                    className={pfRadioStyles.radioInput}
-                    checked={isChecked}
-                    onChange={onChange}
-                    aria-details={detailsId}
-                  />
-                )}
-                <ProductLogo product={product} width="2em" /> {product.name}
+                <input
+                  id={product.id}
+                  type="radio"
+                  name="product"
+                  className={pfRadioStyles.radioInput}
+                  checked={isChecked}
+                  onChange={onChange}
+                  aria-details={detailsId}
+                />
+                <span>
+                  <ProductLogo product={product} width="2em" /> {product.name}
+                </span>
               </label>
 
-              <p id={detailsId}>
-                {isTruncating ? (
-                  <NestedContent margin="mxXl">
-                    <ExpandableSection
-                      variant="truncate"
-                      truncateMaxLines={2}
-                      toggleTextCollapsed={_("Show more")}
-                      toggleTextExpanded={_("Show less")}
-                    >
-                      <SubtleContent>{translatedDescription}</SubtleContent>
-                    </ExpandableSection>
-                  </NestedContent>
-                ) : (
-                  translatedDescription
-                )}
-              </p>
+              <Stack hasGutter id={detailsId}>
+                <NestedContent margin="mxXl">
+                  {product.license && (
+                    <Split hasGutter>
+                      {product.license && (
+                        <Label variant="outline" isCompact>
+                          <Text component="small">{_("License acceptance required")}</Text>
+                        </Label>
+                      )}
+                    </Split>
+                  )}
+
+                  <ExpandableSection
+                    variant="truncate"
+                    truncateMaxLines={2}
+                    toggleTextCollapsed={_("Show more")}
+                    toggleTextExpanded={_("Show less")}
+                  >
+                    <SubtleContent>{translatedDescription}</SubtleContent>
+                  </ExpandableSection>
+                </NestedContent>
+              </Stack>
             </FlexItem>
           </Flex>
         </CardBody>
@@ -114,173 +146,379 @@ const Option = ({ product, isChecked, onChange, isSelectable = true, isTruncatin
   );
 };
 
-const BackLink = () => {
-  const navigate = useNavigate();
+/**
+ * Props for LicenseButton component
+ */
+type LicenseButtonProps = Omit<ButtonProps, "onClick"> & {
+  /** The product whose license will be displayed */
+  product: Product;
+};
+
+/**
+ * Button that opens a license dialog when clicked.
+ */
+const LicenseButton = ({ product, children, ...props }: LicenseButtonProps) => {
+  const [showEula, setShowEula] = useState(false);
+
+  const open = () => setShowEula(true);
+  const close = () => setShowEula(false);
+
   return (
-    <Button variant="link" onClick={() => navigate("/")}>
-      {_("Cancel")}
-    </Button>
+    <>
+      <Button {...props} onClick={open}>
+        {children}
+      </Button>
+      {showEula && <LicenseDialog product={product} onClose={close} />}
+    </>
   );
 };
 
-function ProductSelectionPage() {
-  const navigate = useNavigate();
-  const { products } = useSystem();
-  const { registration } = useSystemSoftware();
-  const selectedProduct = useProductInfo();
-  const [nextProduct, setNextProduct] = useState(selectedProduct);
-  // FIXME: should not be accepted by default first selectedProduct is accepted
-  // because it's a singleProduct iso.
-  const [licenseAccepted, setLicenseAccepted] = useState(!!selectedProduct);
-  const [showLicense, setShowLicense] = useState(false);
-  const [isWaiting, setIsWaiting] = useState(false);
+/**
+ * Props for EulaCheckbox component
+ */
+type EulaCheckboxProps = {
+  /** The product whose license is being accepted */
+  product: Product;
+  /** Callback fired when checkbox state changes */
+  onChange: (accepted: boolean) => void;
+  /** Whether the checkbox is currently checked (i.e., license accepted) */
+  isChecked: boolean;
+};
 
-  useEffect(() => {
-    if (!isWaiting) return;
-
-    if (selectedProduct?.id === nextProduct?.id) {
-      navigate(ROOT.root);
-    }
-  }, [isWaiting, navigate, nextProduct, selectedProduct]);
-
-  if (registration && selectedProduct) return <Navigate to={ROOT.root} />;
-
-  const onSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (nextProduct) {
-      patchConfig({ product: { id: nextProduct.id } });
-      setIsWaiting(true);
-    }
-  };
-
-  const selectProduct = (product: Product) => {
-    setNextProduct(product);
-    setLicenseAccepted(selectedProduct === product);
-  };
-
-  const selectionHasChanged = nextProduct && nextProduct !== selectedProduct;
-  const mountLicenseCheckbox = !isEmpty(nextProduct?.license);
-  const isSelectionDisabled =
-    isWaiting || !selectionHasChanged || (mountLicenseCheckbox && !licenseAccepted);
-
+/**
+ * Checkbox for accepting a product's license agreement.
+ * Includes a link to view the full license text.
+ */
+const EulaCheckbox = ({ product, onChange, isChecked }: EulaCheckboxProps) => {
   const [eulaTextStart, eulaTextLink, eulaTextEnd] = sprintf(
     // TRANSLATORS: Text used for the license acceptance checkbox. %s will be
     // replaced with the product name and the text in the square brackets [] is
     // used for the link to show the license, please keep the brackets.
     _("I have read and accept the [license] for %s"),
-    nextProduct?.name || selectedProduct?.name,
+    product?.name,
   ).split(/[[\]]/);
 
-  const [selectedTitleStart, selectedTitleEnd] = _("Currently selected %s").split("%s");
+  return (
+    <>
+      <Checkbox
+        isChecked={isChecked}
+        onChange={(_, accepted) => onChange(accepted)}
+        id="license-acceptance"
+        label={
+          <>
+            {eulaTextStart}{" "}
+            <LicenseButton product={product} variant="link" isInline>
+              {eulaTextLink}
+            </LicenseButton>{" "}
+            {eulaTextEnd}
+          </>
+        }
+      />
+    </>
+  );
+};
+/**
+ * Props for ProductFormSubmitLabel component
+ */
+type ProductFormSubmitLabelProps = {
+  /** The product currently configured in the system */
+  currentProduct?: Product;
+  /** The product selected by the user in the UI (not yet confirmed) */
+  selectedProduct?: Product;
+};
+
+/**
+ * Renders the submit button label based on context.
+ * Shows "Change to [Product]" or "Select [Product]" depending on whether
+ * user is selecting a product for first time or making a change.
+ */
+const ProductFormSubmitLabel = ({
+  currentProduct,
+  selectedProduct,
+}: ProductFormSubmitLabelProps) => {
+  const action = currentProduct ? _("Change to %s") : _("Select %s");
+  const fallback = currentProduct ? _("Change") : _("Select");
+
+  if (!selectedProduct) {
+    return fallback;
+  }
+
+  const [labelStart, labelEnd] = action.split("%s");
+
+  return (
+    <Text isBold>
+      {labelStart} {selectedProduct.name} {labelEnd}
+    </Text>
+  );
+};
+
+/**
+ * Props for ProductFormSubmitLabelHelp component
+ */
+type ProductFormSubmitLabelHelpProps = {
+  /** The product selected by the user */
+  selectedProduct?: Product;
+  /** Whether the selected product requires license acceptance */
+  hasEula: boolean;
+  /** Whether the user has accepted the license */
+  isEulaAccepted: boolean;
+};
+
+/**
+ * Displays helper text below the submit button explaining why it's disabled.
+ * Shows warnings for missing product selection or not accepted license.
+ */
+const ProductFormSubmitLabelHelp = ({
+  selectedProduct,
+  hasEula,
+  isEulaAccepted,
+}: ProductFormSubmitLabelHelpProps) => {
+  let text: string;
+
+  if (!selectedProduct) {
+    text = _("Select a product to continue.");
+  } else if (hasEula && !isEulaAccepted) {
+    text = _("License acceptance is required to continue.");
+  } else {
+    return;
+  }
+
+  return (
+    <HelperText>
+      <HelperTextItem variant="warning">{text}</HelperTextItem>
+    </HelperText>
+  );
+};
+
+/**
+ * Props for ProductForm component
+ */
+type ProductFormProps = {
+  /** List of all available products */
+  products: Product[];
+  /** The product currently configured in the system */
+  currentProduct?: Product;
+  /** Callback fired when the form is submitted with a selected product */
+  onSubmit: (product: Product) => void;
+  /** Whether the form is in a waiting/submitting state */
+  isWaiting: boolean;
+};
+
+/**
+ * Form for selecting a product.
+ *
+ * Manages product selection state, license acceptance, and form validation.
+ * Excludes the current product from the list of options.
+ */
+const ProductForm = ({ products, currentProduct, onSubmit, isWaiting }: ProductFormProps) => {
+  const [selectedProduct, setSelectedProduct] = useState<Product>();
+  const [eulaAccepted, setEulaAccepted] = useState(false);
+  const mountEulaCheckbox = selectedProduct && !isEmpty(selectedProduct.license);
+  const isSelectionDisabled = !selectedProduct || isWaiting || (mountEulaCheckbox && !eulaAccepted);
+
+  const onProductSelectionChange = (product) => {
+    setEulaAccepted(false);
+    setSelectedProduct(product);
+  };
+
+  const onFormSubmission = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    onSubmit(selectedProduct);
+  };
+
+  return (
+    <Form id="productSelectionForm" onSubmit={onFormSubmission}>
+      <FormGroup
+        role="radiogroup"
+        label={sprintf(
+          n_(
+            "Switch to other available product",
+            "Choose from %d available products",
+            products.length - 1,
+          ),
+          products.length - 1,
+        )}
+      >
+        <List isPlain>
+          {products.map((product, index) => {
+            if (product.id === currentProduct?.id) return undefined;
+
+            return (
+              <ProductFormProductOption
+                key={index}
+                product={product}
+                isChecked={selectedProduct?.id === product?.id}
+                onChange={() => onProductSelectionChange(product)}
+              />
+            );
+          })}
+        </List>
+      </FormGroup>
+      <Stack hasGutter>
+        {mountEulaCheckbox && (
+          <StackItem>
+            <EulaCheckbox
+              product={selectedProduct}
+              isChecked={eulaAccepted}
+              onChange={setEulaAccepted}
+            />
+          </StackItem>
+        )}
+        <StackItem>
+          <Split hasGutter>
+            <Page.Submit
+              size="lg"
+              form="productSelectionForm"
+              isDisabled={isSelectionDisabled}
+              isLoading={isWaiting}
+              variant={isWaiting ? "secondary" : "primary"}
+            >
+              <ProductFormSubmitLabel
+                currentProduct={currentProduct}
+                selectedProduct={selectedProduct}
+              />
+            </Page.Submit>
+            {currentProduct && (
+              <Link to={ROOT.overview} size="lg" variant="link">
+                {_("Cancel")}
+              </Link>
+            )}
+          </Split>
+        </StackItem>
+        <StackItem>
+          <ProductFormSubmitLabelHelp
+            selectedProduct={selectedProduct}
+            hasEula={mountEulaCheckbox}
+            isEulaAccepted={eulaAccepted}
+          />
+        </StackItem>
+      </Stack>
+    </Form>
+  );
+};
+
+/**
+ * Props for CurrentProductInfo component
+ */
+type CurrentProductInfoProps = {
+  /** The currently configured product to display */
+  product?: Product;
+};
+
+/**
+ * Card displaying information about the currently selected product.
+ *
+ * Shows product name, description, and a link to view the license if applicable.
+ */
+const CurrentProductInfo = ({ product }: CurrentProductInfoProps) => {
+  if (!product) return;
+
+  return (
+    <Card variant="secondary" component="section">
+      <CardTitle component="h2">{_("Current selection")}</CardTitle>
+      <CardBody>
+        <Stack hasGutter>
+          <Title headingLevel="h3">
+            <ProductLogo product={product} width="2em" /> {product.name}
+          </Title>
+          <Divider />
+          <SubtleContent>{product.description}</SubtleContent>
+
+          {product.license && (
+            <LicenseButton product={product} variant="secondary" isInline>
+              {_("View license")}
+            </LicenseButton>
+          )}
+        </Stack>
+      </CardBody>
+    </Card>
+  );
+};
+
+/**
+ * Content component for the product selection page.
+ *
+ * Handles the product selection workflow including:
+ *   - Displaying available products.
+ *   - Managing selection and submission state.
+ *   - Navigating after successful product configuration.
+ *   - Showing current product information.
+ */
+const ProductSelectionContent = () => {
+  const navigate = useNavigate();
+  const { products } = useSystem();
+  const [submittedSelection, setSubmmitedSelection] = useState<Product>();
+  const currentProduct = useProductInfo();
+  const [isWaiting, setIsWaiting] = useState(false);
+
+  useEffect(() => {
+    if (!isWaiting) return;
+
+    if (currentProduct?.id === submittedSelection?.id) {
+      navigate(ROOT.root);
+    }
+  }, [isWaiting, navigate, currentProduct, submittedSelection]);
+
+  const onSubmit = async (selectedProduct: Product) => {
+    setIsWaiting(true);
+    setSubmmitedSelection(selectedProduct);
+    patchConfig({ product: { id: selectedProduct.id } });
+  };
+
+  const introText = n_(
+    "Select a product and confirm your choice.",
+    "Select a product and confirm your choice at the end of the list.",
+    products.length - 1,
+  );
 
   return (
     <Page
-      breadcrumbs={[{ label: selectedProduct ? _("Change product") : _("Select a product") }]}
+      breadcrumbs={[{ label: currentProduct ? _("Change product") : _("Select a product") }]}
       showInstallerOptions
     >
       <Page.Content>
+        <Flex gap={{ default: "gapXs" }} direction={{ default: "column" }}>
+          <Content isEditorial>{introText}</Content>
+          {currentProduct && (
+            <SubtleContent>
+              {_(
+                "Installation settings will automatically update to match the new product's defaults.",
+              )}
+            </SubtleContent>
+          )}
+        </Flex>
+        <Divider />
         <Grid hasGutter>
-          <GridItem sm={12} xl={8}>
-            {selectedProduct && (
-              <>
-                <Stack>
-                  <Content isEditorial>
-                    {selectedTitleStart} <Text isBold>{selectedProduct.name}</Text>{" "}
-                    {selectedTitleEnd}
-                  </Content>
-                  <Content component="p">
-                    <ExpandableSection
-                      toggleTextCollapsed={_("Show description")}
-                      toggleTextExpanded={_("Hide description")}
-                    >
-                      <NestedContent>
-                        <SubtleContent>{selectedProduct.description}</SubtleContent>
-                      </NestedContent>
-                    </ExpandableSection>
-                  </Content>
-                </Stack>
-                <Divider />
-              </>
-            )}
+          <GridItem sm={12} md={8} order={{ default: "1", md: "0" }}>
+            <ProductForm
+              products={products}
+              currentProduct={currentProduct}
+              isWaiting={isWaiting}
+              onSubmit={onSubmit}
+            />
           </GridItem>
-          <GridItem sm={12} xl={8}>
-            <Content isEditorial>
-              {selectedProduct
-                ? sprintf(
-                    n_(
-                      "There is other product available. Selecting a different product will automatically adjust some installation settings to match the chosen product's defaults.",
-                      "There are 2 other products available. Selecting a different product will automatically adjust some installation settings to match the chosen product's defaults.",
-                      products.length - 1,
-                    ),
-                    products.length - 1,
-                  )
-                : sprintf(_("There are %d products available"), products.length)}
-            </Content>
-            <Form id="productSelectionForm" onSubmit={onSubmit}>
-              <FormGroup role="radiogroup">
-                <List isPlain>
-                  {products.map((product, index) => {
-                    if (product === selectedProduct) return undefined;
-
-                    return (
-                      <Option
-                        key={index}
-                        product={product}
-                        isChecked={nextProduct?.id === product?.id}
-                        onChange={() => selectProduct(product)}
-                      />
-                    );
-                  })}
-                </List>
-              </FormGroup>
-            </Form>
+          <GridItem sm={12} md={4} order={{ default: "0", md: "1" }}>
+            <CurrentProductInfo product={currentProduct} />
           </GridItem>
         </Grid>
-        {showLicense && (
-          <LicenseDialog
-            onClose={() => setShowLicense(false)}
-            product={nextProduct || selectedProduct}
-          />
-        )}
-        <Stack hasGutter>
-          <StackItem>
-            {mountLicenseCheckbox && (
-              <Checkbox
-                isChecked={licenseAccepted}
-                onChange={(_, accepted) => setLicenseAccepted(accepted)}
-                isDisabled={selectedProduct === nextProduct}
-                id="license-acceptance"
-                form="productSelectionForm"
-                label={
-                  <>
-                    {eulaTextStart}{" "}
-                    <Button variant="link" isInline onClick={() => setShowLicense(true)}>
-                      {eulaTextLink}
-                    </Button>{" "}
-                    {eulaTextEnd}
-                  </>
-                }
-              />
-            )}
-          </StackItem>
-          <StackItem>
-            <Split hasGutter>
-              <Page.Submit
-                form="productSelectionForm"
-                isDisabled={isSelectionDisabled}
-                isLoading={isWaiting}
-                variant={isWaiting ? "secondary" : "primary"}
-              >
-                {selectedProduct ? _("Change") : _("Select")}
-              </Page.Submit>
-              {selectedProduct && <BackLink />}
-            </Split>
-          </StackItem>
-        </Stack>
       </Page.Content>
     </Page>
   );
-}
+};
 
-export default ProductSelectionPage;
+/**
+ * Main page component for product selection.
+ *
+ * Redirects to root if the system is already registered.
+ * Otherwise, renders the product selection interface allowing users to:
+ *   - Choose from available products
+ *   - View current product information (when changing products)
+ */
+export default function ProductSelectionPage() {
+  const { registration } = useSystemSoftware();
+
+  if (registration) return <Navigate to={ROOT.root} />;
+
+  return <ProductSelectionContent />;
+}
