@@ -7,9 +7,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-01-11 03:28+0000\n"
-"PO-Revision-Date: 2025-08-01 13:59+0000\n"
-"Last-Translator: Gemineo <vistatec@gemineo.de>\n"
+"POT-Creation-Date: 2026-01-18 03:25+0000\n"
+"PO-Revision-Date: 2026-01-16 20:04+0000\n"
+"Last-Translator: Ettore Atalan <atalanttore@googlemail.com>\n"
 "Language-Team: German <https://l10n.opensuse.org/projects/agama/agama-"
 "service-master/de/>\n"
 "Language: de\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.12.2\n"
+"X-Generator: Weblate 5.15.2\n"
 
 #. Reports the problems and decide whether to continue or not.
 #.
@@ -28,37 +28,35 @@ msgid "Found unsupported elements in the AutoYaST profile: %{keys}."
 msgstr "Nicht unterstützte Elemente im AutoYaST-Profil gefunden: %{keys}."
 
 #. Implementation for the API method #Install.
-#: service/lib/agama/dbus/storage/manager.rb:118
+#: service/lib/agama/dbus/storage/manager.rb:117
 msgid "Preparing bootloader proposal"
 msgstr "Bootloader-Vorschlag wird vorbereitet"
 
-#: service/lib/agama/dbus/storage/manager.rb:121
+#: service/lib/agama/dbus/storage/manager.rb:120
 msgid "Preparing the storage devices"
 msgstr "Speichergeräte werden vorbereitet"
 
-#: service/lib/agama/dbus/storage/manager.rb:124
+#: service/lib/agama/dbus/storage/manager.rb:123
 msgid "Writing bootloader sysconfig"
 msgstr "Bootloader-Systemkonfiguration wird geschrieben"
 
 #. Implementation for the API method #Finish.
-#: service/lib/agama/dbus/storage/manager.rb:132
-#, fuzzy
+#: service/lib/agama/dbus/storage/manager.rb:131
 msgid "Finishing installation"
-msgstr "Installation abbrechen"
+msgstr "Installation abschließen"
 
 #. Error code
-#: service/lib/agama/dbus/storage/manager.rb:371
+#: service/lib/agama/dbus/storage/manager.rb:377
 msgid "Activating storage devices"
 msgstr "Speichergeräte werden aktiviert"
 
-#: service/lib/agama/dbus/storage/manager.rb:374
+#: service/lib/agama/dbus/storage/manager.rb:380
 msgid "Probing storage devices"
 msgstr "Speichergeräte werden untersucht"
 
-#: service/lib/agama/dbus/storage/manager.rb:377
-#, fuzzy
+#: service/lib/agama/dbus/storage/manager.rb:383
 msgid "Applying storage configuration"
-msgstr "Speicherkonfiguration wird angepasst"
+msgstr "Speicherkonfiguration anwenden"
 
 #. TRANSLATORS: SSL certificate details
 #: service/lib/agama/ssl/certificate_details.rb:31

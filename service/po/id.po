@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-01-11 03:28+0000\n"
+"POT-Creation-Date: 2026-01-18 03:25+0000\n"
 "PO-Revision-Date: 2025-10-05 17:59+0000\n"
 "Last-Translator: \"James \\\"Jim\\\" Ed Randson\" <jimedrand@disroot.org>\n"
 "Language-Team: Indonesian <https://l10n.opensuse.org/projects/agama/agama-"
@@ -28,34 +28,34 @@ msgid "Found unsupported elements in the AutoYaST profile: %{keys}."
 msgstr "Menemukan elemen yang tidak didukung dalam profil AutoYaST: %{keys}."
 
 #. Implementation for the API method #Install.
-#: service/lib/agama/dbus/storage/manager.rb:118
+#: service/lib/agama/dbus/storage/manager.rb:117
 msgid "Preparing bootloader proposal"
 msgstr "Mempersiapkan proposal bootloader"
 
-#: service/lib/agama/dbus/storage/manager.rb:121
+#: service/lib/agama/dbus/storage/manager.rb:120
 msgid "Preparing the storage devices"
 msgstr "Mempersiapkan perangkat penyimpanan"
 
-#: service/lib/agama/dbus/storage/manager.rb:124
+#: service/lib/agama/dbus/storage/manager.rb:123
 msgid "Writing bootloader sysconfig"
 msgstr "Menulis sysconfig bootloader"
 
 #. Implementation for the API method #Finish.
-#: service/lib/agama/dbus/storage/manager.rb:132
+#: service/lib/agama/dbus/storage/manager.rb:131
 #, fuzzy
 msgid "Finishing installation"
 msgstr "Batalkan instalasi"
 
 #. Error code
-#: service/lib/agama/dbus/storage/manager.rb:371
+#: service/lib/agama/dbus/storage/manager.rb:377
 msgid "Activating storage devices"
 msgstr "Mengaktifkan perangkat penyimpanan"
 
-#: service/lib/agama/dbus/storage/manager.rb:374
+#: service/lib/agama/dbus/storage/manager.rb:380
 msgid "Probing storage devices"
 msgstr "Memeriksa perangkat penyimpanan"
 
-#: service/lib/agama/dbus/storage/manager.rb:377
+#: service/lib/agama/dbus/storage/manager.rb:383
 #, fuzzy
 msgid "Applying storage configuration"
 msgstr "Menyesuaikan konfigurasi penyimpanan"
