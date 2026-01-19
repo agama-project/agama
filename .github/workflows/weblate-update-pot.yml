@@ -235,8 +235,8 @@ jobs:
         if: steps.check_rust_changes.outputs.pot_updated == 'true'
         run: |
           cd agama-weblate
-          git add service/agama.pot
-          git commit -m "Update service POT file"$'\n\n'"Agama commit: $GITHUB_SHA"
+          git add rust/agama.pot
+          git commit -m "Update rust POT file"$'\n\n'"Agama commit: $GITHUB_SHA"
           git push
 
       - name: (rust) Merge new POT to PO translations
