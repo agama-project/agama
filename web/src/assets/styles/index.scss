@@ -258,11 +258,9 @@ strong {
 
 #productSelectionForm {
   input[type="radio"] {
-    vertical-align: middle;
-    margin-inline-end: 1ch;
-    flex-shrink: 0;
-    inline-size: 20px;
-    block-size: 20px;
+    align-self: center;
+    inline-size: 1.2em;
+    block-size: 1.2em;
   }
 
   .pf-v6-c-card {

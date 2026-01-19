@@ -44,13 +44,14 @@ import {
   Label,
   List,
   ListItem,
+  Radio,
   Split,
   Stack,
   StackItem,
   Title,
 } from "@patternfly/react-core";
 import { Navigate, useNavigate } from "react-router";
-import { Link, NestedContent, Page, SubtleContent } from "~/components/core";
+import { Link, Page, SubtleContent } from "~/components/core";
 import ProductLogo from "~/components/product/ProductLogo";
 import LicenseDialog from "~/components/product/LicenseDialog";
 import Text from "~/components/core/Text";
@@ -64,7 +65,6 @@ import { Product } from "~/model/system";
 import { n_, _ } from "~/i18n";
 
 import pfTextStyles from "@patternfly/react-styles/css/utilities/Text/text";
-import pfRadioStyles from "@patternfly/react-styles/css/components/Radio/radio";
 
 /**
  * Props for ProductFormProductOption component
@@ -98,46 +98,40 @@ const ProductFormProductOption = ({
         <CardBody>
           <Flex flexWrap={{ default: "nowrap" }} alignItems={{ default: "alignItemsFlexStart" }}>
             <FlexItem>
-              <label
-                htmlFor={product.id}
-                className={`${pfTextStyles.fontSizeLg} ${pfTextStyles.fontWeightBold}`}
-              >
-                <input
-                  id={product.id}
-                  type="radio"
-                  name="product"
-                  className={pfRadioStyles.radioInput}
-                  checked={isChecked}
-                  onChange={onChange}
-                  aria-details={detailsId}
-                />
-                <span>
-                  <ProductLogo product={product} width="2em" /> {product.name}
-                </span>
-              </label>
+              <Radio
+                id={product.id}
+                name="product"
+                checked={isChecked}
+                onChange={onChange}
+                aria-details={detailsId}
+                label={
+                  <Text isBold className={pfTextStyles.fontSizeLg}>
+                    <ProductLogo product={product} width="2em" /> {product.name}
+                  </Text>
+                }
+                body={
+                  <Stack hasGutter id={detailsId}>
+                    {product.license && (
+                      <Split hasGutter>
+                        {product.license && (
+                          <Label variant="outline" isCompact>
+                            <Text component="small">{_("License acceptance required")}</Text>
+                          </Label>
+                        )}
+                      </Split>
+                    )}
 
-              <Stack hasGutter id={detailsId}>
-                <NestedContent margin="mxXl">
-                  {product.license && (
-                    <Split hasGutter>
-                      {product.license && (
-                        <Label variant="outline" isCompact>
-                          <Text component="small">{_("License acceptance required")}</Text>
-                        </Label>
-                      )}
-                    </Split>
-                  )}
-
-                  <ExpandableSection
-                    variant="truncate"
-                    truncateMaxLines={2}
-                    toggleTextCollapsed={_("Show more")}
-                    toggleTextExpanded={_("Show less")}
-                  >
-                    <SubtleContent>{translatedDescription}</SubtleContent>
-                  </ExpandableSection>
-                </NestedContent>
-              </Stack>
+                    <ExpandableSection
+                      variant="truncate"
+                      truncateMaxLines={2}
+                      toggleTextCollapsed={_("Show more")}
+                      toggleTextExpanded={_("Show less")}
+                    >
+                      <SubtleContent>{translatedDescription}</SubtleContent>
+                    </ExpandableSection>
+                  </Stack>
+                }
+              />
             </FlexItem>
           </Flex>
         </CardBody>
