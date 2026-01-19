@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Jan 19 23:48:20 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Internal fix to prevent warnings (not visible for users) in the
+  product selection form (gh#agama-project/agama#3048).
+
+-------------------------------------------------------------------
 Mon Jan 19 13:27:16 UTC 2026 - José Iván López González <jlopez@suse.com>
 
 - Fix query refetch (gh#agama-project/agama#3044).
