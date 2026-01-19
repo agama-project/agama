@@ -71,8 +71,3 @@ msgstr ""
 #: agama-software/src/zypp_server.rs:486
 msgid "Pattern summary"
 msgstr "Shrnutí vzoru"
-
-#: agama-software/src/zypp_server.rs:561
-#, rust-format
-msgid "Pattern summary: {0} {1}"
-msgstr "Shrnutí vzoru {crashme} {0}"
