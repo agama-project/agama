@@ -1,12 +1,12 @@
 use std::{ffi::OsStr, path::Path};
 
+use agama_l10n::helpers::gettext_noop;
 use agama_utils::{
     actor::Handler,
     api::{question::QuestionSpec, Scope},
     progress,
     question::{self},
 };
-use gettextrs::gettext;
 use zypp_agama::callbacks::pkg_download::{Callback, DownloadError};
 
 use crate::callbacks::ask_software_question;
@@ -40,17 +40,12 @@ impl Callback for CommitDownload {
         error: DownloadError,
         description: String,
     ) -> zypp_agama::callbacks::ProblemResponse {
-        // TODO: make it generic for any problemResponse questions
-        // TODO: we need support for abort and make it default action
-        let labels = [gettext("Retry"), gettext("Ignore")];
-        let actions = [
-            ("Retry", labels[0].as_str()),
-            ("Ignore", labels[1].as_str()),
-        ];
         let error_str = error.to_string();
         let question =
             QuestionSpec::new(description.as_str(), "software.package_error.provide_error")
-                .with_actions(&actions)
+                // TODO: make it generic for any problemResponse questions
+                // TODO: we need support for abort and make it default action
+                .with_action_ids(&[gettext_noop("Retry"), gettext_noop("Ignore")])
                 .with_data(&[
                     ("package", name.as_str()),
                     ("error_code", error_str.as_str()),

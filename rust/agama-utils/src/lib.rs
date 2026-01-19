@@ -34,3 +34,11 @@ pub mod products;
 pub mod progress;
 pub mod question;
 pub mod test;
+
+/// Does nothing at runtime, marking the text for translation.
+///
+/// This is useful when you need both the untranslated id
+/// and its translated label, for example.
+pub fn gettext_noop(text: &str) -> &str {
+    text
+}

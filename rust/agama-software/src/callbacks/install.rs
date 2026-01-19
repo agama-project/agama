@@ -8,6 +8,7 @@ use gettextrs::gettext;
 use zypp_agama::callbacks::{install, ProblemResponse};
 
 use crate::callbacks::ask_software_question;
+use agama_l10n::helpers::gettext_noop;
 
 #[derive(Clone)]
 pub struct Install {
@@ -50,14 +51,9 @@ impl install::Callback for Install {
             description
         );
 
-        // TODO: add abort when it is properly handled in UI/backend
-        let labels = [gettext("Retry"), gettext("Ignore")];
-        let actions = [
-            ("Retry", labels[0].as_str()),
-            ("Ignore", labels[1].as_str()),
-        ];
         let question = QuestionSpec::new(&description, "software.package_error.install_error")
-            .with_actions(&actions)
+            // TODO: add abort when it is properly handled in UI/backend
+            .with_action_ids(&[gettext_noop("Retry"), gettext_noop("Ignore")])
             .with_data(&[("package", package_name.as_str())]);
 
         let result = ask_software_question(&self.questions, question);
@@ -79,15 +75,10 @@ impl install::Callback for Install {
     fn script_problem(&self, description: String) -> ProblemResponse {
         tracing::error!("Problem running install script: {}", description);
 
-        let labels = [gettext("Retry"), gettext("Continue")];
-        let actions = [
-            ("Retry", labels[0].as_str()),
-            ("Continue", labels[1].as_str()),
-        ];
         let message = gettext("There was a problem running a package script.");
         let full_message = message + "\n\n" + &description;
         let question = QuestionSpec::new(&full_message, "software.script_problem")
-            .with_actions(&actions)
+            .with_action_ids(&[gettext_noop("Retry"), gettext_noop("Continue")])
             .with_data(&[("details", &description)]);
 
         let result = ask_software_question(&self.questions, question);

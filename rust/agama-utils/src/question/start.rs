@@ -44,14 +44,15 @@ mod tests {
             question::{Answer, AnswerRule, Config, Policy, QuestionSpec},
             Event,
         },
+        gettext_noop,
         question::{self, message},
     };
     use tokio::sync::broadcast;
 
     fn build_question_spec() -> QuestionSpec {
         QuestionSpec::new("Do you want to continue?", "continue")
-            .with_actions(&[("yes", "Yes"), ("no", "No")])
-            .with_default_action("no")
+            .with_action_ids(&[gettext_noop("Yes"), gettext_noop("No")])
+            .with_default_action("No")
     }
 
     #[tokio::test]
@@ -67,7 +68,7 @@ mod tests {
 
         // Answer the question
         let answer = Answer {
-            action: "yes".to_string(),
+            action: "Yes".to_string(),
             value: None,
         };
         questions
@@ -119,7 +120,7 @@ mod tests {
 
         // Define a rule and an answer.
         let answer = Answer {
-            action: "no".to_string(),
+            action: "No".to_string(),
             value: None,
         };
         let rule_by_class = AnswerRule {

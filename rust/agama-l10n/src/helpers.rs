@@ -34,7 +34,8 @@ pub fn init_locale() -> Result<LocaleId, Box<dyn std::error::Error>> {
     let locale = lang.parse().unwrap_or_default();
 
     set_service_locale(&locale);
-    textdomain("xkeyboard-config")?;
+    textdomain("agama")?;
+    bind_textdomain_codeset("agama", "UTF-8")?;
     bind_textdomain_codeset("xkeyboard-config", "UTF-8")?;
     Ok(locale)
 }
@@ -46,3 +47,5 @@ pub fn set_service_locale(locale: &LocaleId) {
         tracing::warn!("Could not set the locale");
     }
 }
+
+pub use agama_utils::gettext_noop;

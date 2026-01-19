@@ -54,6 +54,8 @@ $SUDO $ZYPPER install \
 $SUDO $ZYPPER install \
   dbus-1-common \
   dbus-1-daemon \
+  gettext-runtime \
+  glibc-locale \
   suseconnect-ruby-bindings \
   autoyast2-installation \
   yast2 \
@@ -160,6 +162,7 @@ $SUDO $ZYPPER install \
   gzip -f out/man/*.?
   cargo run --package xtask -- completions
   cargo run --package xtask -- openapi
+  make -C po
 )
 
 (
