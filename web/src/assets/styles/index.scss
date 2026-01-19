@@ -256,6 +256,11 @@ strong {
   }
 }
 
+.sticky-top {
+  position: sticky;
+  top: 1em;
+}
+
 #productSelectionForm {
   input[type="radio"] {
     align-self: center;
@@ -271,6 +276,10 @@ strong {
     label {
       cursor: pointer;
     }
+  }
+
+  .pf-v6-c-radio {
+    row-gap: 0;
   }
 }
 
