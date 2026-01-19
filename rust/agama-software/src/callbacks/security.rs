@@ -64,7 +64,7 @@ impl security::Callback for Security {
         // TODO: support for extra_repositories with specified gpg key checksum
         let text = i18n_format!(
             // TRANSLATORS: substituting: key ID, (key name), fingerprint
-            "The key {} ({}) with fingerprint {} is unknown. \
+            "The key {0} ({1}) with fingerprint {2} is unknown. \
               Do you want to trust this key?",
             &key_id,
             &key_name,
