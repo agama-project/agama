@@ -20,7 +20,8 @@
 //! Implements a data model for Bootloader configuration.
 
 use merge::Merge;
-use serde::{Deserialize, Serialize};
+use serde::{Deserialize, Deserializer, Serialize};
+use serde_with::serde_as;
 
 /// Security settings for installation
 #[derive(Clone, Debug, Default, Serialize, Deserialize, Merge, utoipa::ToSchema)]
@@ -57,10 +58,12 @@ pub enum SSLFingerprintAlgorithm {
     SHA256,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize, utoipa::ToSchema)]
+#[serde_as]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, utoipa::ToSchema)]
 pub struct SSLFingerprint {
     /// The string value for SSL certificate fingerprint.
     /// Example value is "F6:7A:ED:BB:BC:94:CF:55:9D:B3:BA:74:7A:87:05:EF:67:4E:C2:DB"
+    #[serde_with(serialize_fingerprint)]
     pub fingerprint: String,
     /// Algorithm used to compute SSL certificate fingerprint.
     /// Supported options are "SHA1" and "SHA256"
@@ -71,3 +74,41 @@ pub struct SSLFingerprint {
 // fn alg_not_found_err(s: &str) -> ServiceError {
 //     ServiceError::UnsupportedSSLFingerprintAlgorithm(s.to_string())
 // }
+
+impl SSLFingerprint {
+    pub fn sha1(fingerprint: &str) -> Self {
+        Self {
+            fingerprint: normalize_fingerprint(fingerprint),
+            algorithm: SSLFingerprintAlgorithm::SHA1,
+        }
+    }
+
+    pub fn sha256(fingerprint: &str) -> Self {
+        Self {
+            fingerprint: normalize_fingerprint(fingerprint),
+            algorithm: SSLFingerprintAlgorithm::SHA256,
+        }
+    }
+}
+
+impl ToString for SSLFingerprint {
+    fn to_string(&self) -> String {
+        self.fingerprint.clone()
+    }
+}
+
+fn serialize_fingerprint<'de, D>(deserializer: D) -> Result<String, D::Error>
+where
+    D: Deserializer<'de>,
+{
+    // 1. Deserialize the value into a temporary String
+    let s: String = Deserialize::deserialize(deserializer)?;
+
+    // 2. Preprocess: remove spaces and convert to lowercase
+    // We use .replace(" ", "") to remove all spaces, or .trim() for just ends
+    Ok(s.replace(' ', "").to_lowercase())
+}
+
+fn normalize_fingerprint(fingerprint: &str) -> String {
+    fingerprint.replace(' ', "").to_lowercase()
+}

@@ -18,15 +18,14 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use std::{collections::HashMap, fs::File, io::Write, process::Command};
+use std::{collections::HashMap, fs::File, io::Write, path::Path, process::Command};
 
+use agama_utils::api::security::SSLFingerprint;
 use openssl::{
     hash::MessageDigest,
     nid::Nid,
     x509::{X509NameRef, X509},
 };
-
-const INSTSYS_CERT_FILE: &str = "/etc/pki/trust/anchors/registration_server.pem";
 
 /// Wrapper around a X509 certificate.
 ///
@@ -40,10 +39,6 @@ impl Certificate {
         Self { x509 }
     }
 
-    pub fn issuer(&self) -> Option<String> {
-        Self::extract_entry(self.x509.issuer_name(), Nid::COMMONNAME)
-    }
-
     pub fn not_before(&self) -> String {
         self.x509.not_before().to_string()
     }
@@ -52,32 +47,40 @@ impl Certificate {
         self.x509.not_after().to_string()
     }
 
-    pub fn sha1(&self) -> Option<String> {
+    pub fn fingerprint(&self) -> Option<SSLFingerprint> {
+        self.sha256().or_else(|| self.sha1())
+    }
+
+    pub fn sha1(&self) -> Option<SSLFingerprint> {
         match self.x509.digest(MessageDigest::sha1()) {
-            Ok(digest) => digest
-                .iter()
-                .map(|b| format!("{:02x}", b))
-                .collect::<Vec<String>>()
-                .join("")
-                .into(),
+            Ok(digest) => {
+                let fingerprint = digest
+                    .iter()
+                    .map(|b| format!("{:02x}", b))
+                    .collect::<Vec<String>>()
+                    .join(":");
+                SSLFingerprint::sha1(&fingerprint).into()
+            }
             Err(_) => None,
         }
     }
 
-    pub fn sha256(&self) -> Option<String> {
-        match self.x509.digest(MessageDigest::sha1()) {
-            Ok(digest) => digest
-                .iter()
-                .map(|b| format!("{:02x}", b))
-                .collect::<Vec<String>>()
-                .join("")
-                .into(),
+    pub fn sha256(&self) -> Option<SSLFingerprint> {
+        match self.x509.digest(MessageDigest::sha256()) {
+            Ok(digest) => {
+                let fingerprint = digest
+                    .iter()
+                    .map(|b| format!("{:02x}", b))
+                    .collect::<Vec<String>>()
+                    .join(":");
+                SSLFingerprint::sha256(&fingerprint).into()
+            }
             Err(_) => None,
         }
     }
 
-    pub fn import(&self) -> std::io::Result<()> {
-        let mut file = File::create(INSTSYS_CERT_FILE)?;
+    pub fn import<P: AsRef<Path>>(&self, path: P) -> std::io::Result<()> {
+        let mut file = File::create(path)?;
         let pem = self.x509.to_pem().unwrap();
         file.write_all(&pem)?;
         Command::new("update-ca-certificates").output()?;
@@ -85,21 +88,30 @@ impl Certificate {
     }
 
     pub fn to_data(&self) -> HashMap<String, String> {
+        let issuer_name = self.x509.issuer_name();
         let mut data = HashMap::from([
             ("issueDate".to_string(), self.not_before()),
             ("expirationDate".to_string(), self.not_after()),
         ]);
 
+        if let Some(common_name) = Self::extract_entry(issuer_name, Nid::COMMONNAME) {
+            data.insert("issuer".to_string(), common_name);
+        }
+
+        if let Some(ou) = Self::extract_entry(issuer_name, Nid::ORGANIZATIONALUNITNAME) {
+            data.insert("organizationalUnit".to_string(), ou);
+        }
+
+        if let Some(o) = Self::extract_entry(issuer_name, Nid::ORGANIZATIONNAME) {
+            data.insert("organization".to_string(), o);
+        }
+
         if let Some(sha1) = self.sha1() {
-            data.insert("sha1Fingerprint".to_string(), sha1);
+            data.insert("sha1".to_string(), sha1.to_string());
         }
 
         if let Some(sha256) = self.sha256() {
-            data.insert("sha256Fingerprint".to_string(), sha256);
-        }
-
-        if let Some(issuer) = self.issuer() {
-            data.insert("issuer".to_string(), issuer);
+            data.insert("sha256".to_string(), sha256.to_string());
         }
 
         data
@@ -137,7 +149,26 @@ mod tests {
         let x509 = X509::from_pem(content.as_bytes()).unwrap();
         let certificate = Certificate::new(x509);
 
-        let issuer = certificate.issuer().unwrap();
-        dbg!(issuer);
+        let data = certificate.to_data();
+        assert_eq!(
+            data.get("organization").unwrap(),
+            &"Example Company Ltd".to_string()
+        );
+        assert_eq!(
+            data.get("issueDate").unwrap(),
+            &"Jan 19 10:49:57 2026 GMT".to_string()
+        );
+        assert_eq!(
+            data.get("expirationDate").unwrap(),
+            &"Jan 19 10:49:57 2027 GMT".to_string()
+        );
+        assert_eq!(
+            data.get("sha1").unwrap(),
+            &"5d:f7:68:ce:de:96:4c:dc:ea:84:e0:35:09:7a:9d:5f:af:b3:25:f4".to_string()
+        );
+        assert_eq!(
+            data.get("sha256").unwrap(),
+            &"18:c0:d9:dc:9d:a9:93:6b:52:79:39:62:39:49:17:9f:0b:9f:ad:95:83:a5:d6:5b:02:16:62:f4:4b:18:1a:79".to_string()
+        );
     }
 }

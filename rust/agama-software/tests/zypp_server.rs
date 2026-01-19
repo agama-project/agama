@@ -18,6 +18,7 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
+use agama_security as security;
 use agama_software::state::{Repository as StateRepository, SoftwareState};
 use agama_software::zypp_server::{SoftwareAction, ZyppServer, ZyppServerResult};
 use agama_utils::{
@@ -84,6 +85,10 @@ async fn test_start_zypp_server() {
     let question_service = question::service::Service::new(event_tx.clone());
     let question_handler = actor::spawn(question_service);
 
+    // Spawn the security service
+    let security_service_starter = security::service::Starter::new(question_handler.clone());
+    let security_handler = security_service_starter.start().unwrap();
+
     // Pre-configure the answer to the GPG key question
     let answer = Answer {
         action: "Trust".to_string(),
@@ -121,6 +126,7 @@ async fn test_start_zypp_server() {
             state: software_state,
             progress: progress_handler,
             question: question_handler.clone(),
+            security: security_handler,
             tx,
         })
         .expect("Failed to send SoftwareAction::Write");

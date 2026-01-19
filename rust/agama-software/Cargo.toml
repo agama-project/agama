@@ -8,6 +8,7 @@ edition.workspace = true
 agama-l10n = { path = "../agama-l10n" }
 agama-locale-data = { path = "../agama-locale-data" }
 agama-utils = { path = "../agama-utils" }
+agama-security = { path = "../agama-security" }
 async-trait = "0.1.89"
 camino = "1.2.1"
 gettext-rs = { version = "0.7.1", features = ["gettext-system"] }

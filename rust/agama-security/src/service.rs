@@ -18,40 +18,50 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
+use std::path::PathBuf;
+
 use agama_utils::{
     actor::{self, Actor, Handler, MessageHandler},
-    api::{
-        self,
-        question::QuestionSpec,
-        security::{SSLFingerprint, SSLFingerprintAlgorithm},
-    },
+    api::{self, question::QuestionSpec, security::SSLFingerprint},
     question::{self, ask_question},
 };
 use async_trait::async_trait;
 use gettextrs::gettext;
-use openssl::x509;
 
 use crate::{certificate::Certificate, message};
+
+const DEFAULT_WORKDIR: &str = "/etc/pki/trust/anchors";
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
     #[error(transparent)]
     Actor(#[from] actor::Error),
+    #[error("Could not write the certificate: {0}")]
+    CertificateIO(#[source] std::io::Error),
 }
 
 pub struct Starter {
     questions: Handler<question::Service>,
+    workdir: PathBuf,
 }
 
 impl Starter {
     pub fn new(questions: Handler<question::Service>) -> Starter {
-        Self { questions }
+        Self {
+            questions,
+            workdir: PathBuf::from(DEFAULT_WORKDIR),
+        }
+    }
+
+    pub fn with_workdir(mut self, workdir: &PathBuf) -> Self {
+        self.workdir = workdir.clone();
+        self
     }
 
     pub fn start(self) -> Result<Handler<Service>, Error> {
         let service = Service {
             questions: self.questions,
-            state: State::default(),
+            state: State::new(self.workdir),
         };
         let handler = actor::spawn(service);
         Ok(handler)
@@ -60,7 +70,67 @@ impl Starter {
 
 #[derive(Default)]
 struct State {
-    fingerprints: Vec<SSLFingerprint>,
+    trusted: Vec<SSLFingerprint>,
+    rejected: Vec<SSLFingerprint>,
+    imported: Vec<PathBuf>,
+    workdir: PathBuf,
+}
+
+impl State {
+    pub fn new(workdir: PathBuf) -> Self {
+        Self {
+            workdir,
+            ..Default::default()
+        }
+    }
+    pub fn trust(&mut self, certificate: &Certificate) {
+        match certificate.fingerprint() {
+            Some(fingerprint) => self.trusted.push(fingerprint),
+            None => tracing::warn!("Failed to get the certificate fingerprint"),
+        }
+    }
+
+    pub fn reject(&mut self, certificate: &Certificate) {
+        match certificate.fingerprint() {
+            Some(fingerprint) => self.rejected.push(fingerprint),
+            None => tracing::warn!("Failed to get the certificate fingerprint"),
+        }
+    }
+
+    pub fn import(&mut self, certificate: &Certificate) -> Result<(), Error> {
+        let path = self.workdir.join("registration_server.pem");
+        certificate
+            .import(&path)
+            .map_err(|e| Error::CertificateIO(e))?;
+        self.imported.push(path);
+        Ok(())
+    }
+
+    /// Determines whether the certificate is trusted.
+    pub fn is_trusted(&self, certificate: &Certificate) -> bool {
+        Self::contains(&self.trusted, certificate)
+    }
+
+    /// Determines whether the certificate was rejected.
+    pub fn is_rejected(&self, certificate: &Certificate) -> bool {
+        Self::contains(&self.rejected, certificate)
+    }
+
+    fn contains(list: &[SSLFingerprint], certificate: &Certificate) -> bool {
+        if let Some(sha256) = certificate.sha256() {
+            if list.contains(&sha256) {
+                return true;
+            }
+        }
+
+        if let Some(sha1) = certificate.sha1() {
+            if list.contains(&sha1) {
+                return true;
+            }
+        }
+
+        false
+    }
 }
 
 pub struct Service {
@@ -104,7 +174,7 @@ impl MessageHandler<message::SetConfig<api::security::Config>> for Service {
     ) -> Result<(), Error> {
         match message.config {
             Some(config) => {
-                self.state.fingerprints = config.ssl_certificates.unwrap_or_default();
+                self.state.trusted = config.ssl_certificates.unwrap_or_default();
             }
             None => {
                 self.state = State::default();
@@ -121,52 +191,48 @@ impl MessageHandler<message::GetConfig> for Service {
         _message: message::GetConfig,
     ) -> Result<api::security::Config, Error> {
         Ok(api::security::Config {
-            ssl_certificates: Some(self.state.fingerprints.clone()),
+            ssl_certificates: Some(self.state.trusted.clone()),
         })
     }
 }
 
 #[async_trait]
 impl MessageHandler<message::CheckCertificate> for Service {
-    // check whether the certificate is trusted.
-    // if it is not trusted, ask the user
-    // if the user rejects, adds it to a list of not trusted
-    // if the user accepts, adds it to the list of fingerprints
-    // and import the certificate.
     async fn handle(&mut self, message: message::CheckCertificate) -> Result<bool, Error> {
         let certificate = Certificate::new(message.certificate);
+        let fingerprint = certificate
+            .fingerprint()
+            .as_ref()
+            .map(ToString::to_string)
+            .unwrap_or("unknown".to_string());
 
-        if let Some(sha256) = certificate.sha256() {
-            if self
-                .state
-                .fingerprints
-                .iter()
-                .find(|f| f.algorithm == SSLFingerprintAlgorithm::SHA256 && f.fingerprint == sha256)
-                .is_some()
-            {
-                certificate.import().unwrap();
-                return Ok(true);
-            };
+        let trusted = self.state.is_trusted(&certificate);
+        let rejected = self.state.is_rejected(&certificate);
+
+        tracing::info!(
+            "Certificate fingerprint={fingerprint} trusted={trusted} rejected={rejected}"
+        );
+
+        if rejected {
+            return Ok(false);
         }
 
-        if let Some(sha1) = certificate.sha1() {
-            if self
-                .state
-                .fingerprints
-                .iter()
-                .find(|f| f.algorithm == SSLFingerprintAlgorithm::SHA1 && f.fingerprint == sha1)
-                .is_some()
-            {
-                certificate.import().unwrap();
-                return Ok(true);
-            }
+        if trusted {
+            // import in case it was not previously imported
+            tracing::info!("Importing already trusted certificate {fingerprint}");
+            self.state.import(&certificate)?;
+            return Ok(true);
         }
 
         if self.should_trust_certificate(&certificate).await {
-            certificate.import().unwrap();
-            Ok(true)
+            tracing::info!("The user trusts certificate {fingerprint}");
+            self.state.trust(&certificate);
+            self.state.import(&certificate)?;
+            return Ok(true);
         } else {
-            Ok(false)
+            tracing::info!("The user rejects the certificate {fingerprint}");
+            self.state.reject(&certificate);
+            return Ok(false);
         }
     }
 }

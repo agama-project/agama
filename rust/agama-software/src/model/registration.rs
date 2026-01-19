@@ -24,11 +24,14 @@
 //! the system and its add-ons and with libzypp (through [zypp_agama]) to add the
 //! corresponding services to `libzypp`.
 
+use agama_security as security;
 use agama_utils::{
+    actor::Handler,
     api::software::{AddonInfo, AddonStatus, RegistrationInfo},
     arch::Arch,
 };
 use camino::Utf8PathBuf;
+use openssl::x509::X509;
 use suseconnect_agama::{self, ConnectParams, Credentials};
 use url::Url;
 
@@ -42,6 +45,8 @@ pub enum RegistrationError {
     AddService(String, #[source] zypp_agama::ZyppError),
     #[error("Failed to refresh the service {0}: {1}")]
     RefreshService(String, #[source] zypp_agama::ZyppError),
+    #[error(transparent)]
+    Security(#[from] security::service::Error),
 }
 
 type RegistrationResult<T> = Result<T, RegistrationError>;
@@ -289,7 +294,11 @@ impl RegistrationBuilder {
     /// It announces the system, gets the credentials and registers the base product.
     ///
     /// * `zypp`: zypp instance.
-    pub fn register(&self, zypp: &zypp_agama::Zypp) -> RegistrationResult<Registration> {
+    pub fn register(
+        &self,
+        zypp: &zypp_agama::Zypp,
+        security_srv: &Handler<security::Service>,
+    ) -> RegistrationResult<Registration> {
         let params = suseconnect_agama::ConnectParams {
             token: self.code.clone(),
             email: self.email.clone(),
@@ -301,7 +310,12 @@ impl RegistrationBuilder {
         let version = self.version.split(".").next().unwrap_or("1");
         let target_distro = format!("{}-{}-{}", &self.product, version, std::env::consts::ARCH);
         tracing::debug!("Announcing system {target_distro}");
-        let creds = suseconnect_agama::announce_system(params.clone(), &target_distro)?;
+        let creds = handle_registration_error(
+            || suseconnect_agama::announce_system(params.clone(), &target_distro),
+            security_srv,
+        )?;
+
+        // suseconnect_agama::announce_system(params.clone(), &target_distro)?;
 
         tracing::debug!(
             "Creating the base credentials file at {}",
@@ -326,4 +340,67 @@ impl RegistrationBuilder {
         registration.activate_product(zypp, &self.product, &self.version, None)?;
         Ok(registration)
     }
+}
+
+/// Ancillary function to handle registration errors.
+///
+/// Runs the given function and handles potential SSL errors. If there is an SSL
+/// error and it can be solved by importing the certificate, it asks the security
+/// service whether to trust the certificate.
+///
+/// It returns the result if the given function runs successfully or return any
+/// other kind of error.
+fn handle_registration_error<T, F>(
+    func: F,
+    security_srv: &Handler<security::Service>,
+) -> Result<T, RegistrationError>
+where
+    F: Fn() -> Result<T, suseconnect_agama::Error>,
+{
+    loop {
+        let result = func();
+
+        if let Err(suseconnect_agama::Error::SSL {
+            code,
+            message: _,
+            current_certificate,
+        }) = &result
+        {
+            if code.is_fixable_by_import() {
+                let x509 = X509::from_pem(&current_certificate.as_bytes()).unwrap();
+                match should_trust_certificate(&x509, security_srv) {
+                    Ok(true) => {
+                        if let Err(error) = suseconnect_agama::reload_certificates() {
+                            tracing::error!("Could not reload the certificates: {error}");
+                        }
+                        continue;
+                    }
+                    Ok(false) => tracing::warn!("Do not trust the certificate"),
+                    Err(error) => tracing::error!("Error processing the certificate: {error}"),
+                }
+            }
+        }
+
+        return Ok(result?);
+    }
+}
+
+pub fn should_trust_certificate(
+    certificate: &X509,
+    security_srv: &Handler<security::Service>,
+) -> Result<bool, security::service::Error> {
+    // unwrap OK: unwrap is fine because, if we eat all I/O resources, there is not solution
+    let rt = tokio::runtime::Builder::new_current_thread()
+        .enable_all()
+        .build()
+        .unwrap();
+
+    let security_srv = security_srv.clone();
+    let certificate = certificate.clone();
+    let handle = rt.spawn(async move {
+        security_srv
+            .call(security::message::CheckCertificate::new(certificate))
+            .await
+    });
+    rt.block_on(handle).unwrap()
 }

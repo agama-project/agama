@@ -240,6 +240,7 @@ impl Starter {
                     issues.clone(),
                     progress.clone(),
                     self.questions.clone(),
+                    security.clone(),
                 )
                 .start()
                 .await?
