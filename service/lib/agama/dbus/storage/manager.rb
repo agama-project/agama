@@ -37,7 +37,7 @@ module Agama
   module DBus
     module Storage
       # D-Bus object to manage storage installation
-      class Manager < BaseObject # rubocop:disable Metrics/ClassLength
+      class Manager < BaseObject
         extend Yast::I18n
         include Yast::I18n
         include Agama::WithProgress
@@ -124,16 +124,12 @@ module Agama
         def finish
           start_progress(1, _("Finishing installation"))
           backend.finish
-
           finish_progress
         end
 
         # NOTE: memoization of the values?
         # @return [String]
         def recover_system
-          # backend.activate unless backend.activated?
-          # backend.probe unless backend.probed?
-          # FIXME
           return nil.to_json unless backend.probed?
 
           json = {

@@ -217,7 +217,7 @@ module Agama
           adapter.login(
             node,
             credentials: target_config.credentials || {},
-            startup: target_config.startup
+            startup:     target_config.startup
           )
         end
 

@@ -52,7 +52,7 @@ module Agama
         steps = possible_steps.select(&:run?)
 
         on_target do
-          steps.each { |s| s.run }
+          steps.each(&:run)
         end
       end
 
