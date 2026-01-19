@@ -259,7 +259,7 @@ export default {
     "Productes disponibles"
   ],
   "Back": [
-    "Enrere"
+    "Ves enrere"
   ],
   "Based on the amount of RAM in the system, a %1$s of %2$s will be planned for %3$s": [
     "Segons la quantitat de memòria RAM del sistema, es planificarà una %1$s de %2$s per a %3$s"
