@@ -1,0 +1,13 @@
+{
+  "update": {
+    "product": {
+      "id": "Tumbleweed"
+    },
+    "software": {
+      "patterns": [
+        "gnome",
+        "kde"
+      ]
+    }
+  }
+}
