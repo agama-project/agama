@@ -25,11 +25,11 @@ import { useSuspenseQuery, useQueryClient } from "@tanstack/react-query";
 import { getProposal } from "~/api";
 import { useInstallerClient } from "~/context/installer";
 import type { Proposal } from "~/model/proposal";
-import { EXTENDED_CONFIG_KEY } from "~/hooks/model/config";
+import { CONFIG_KEY, EXTENDED_CONFIG_KEY } from "~/hooks/model/config";
 import { STORAGE_MODEL_KEY } from "~/hooks/model/storage/config-model";
 
 const PROPOSAL_KEY = "proposal" as const;
-const COMMON_PROPOSAL_KEYS = [PROPOSAL_KEY, EXTENDED_CONFIG_KEY] as const;
+const COMMON_PROPOSAL_KEYS = [PROPOSAL_KEY, CONFIG_KEY, EXTENDED_CONFIG_KEY] as const;
 
 const proposalQuery = {
   queryKey: [PROPOSAL_KEY],

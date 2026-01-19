@@ -54,6 +54,12 @@ const queryClient = new QueryClient({
     queries: {
       ...sharedOptions,
       /**
+       * Disable refetch data.
+       * @see https://tanstack.com/query/v5/docs/framework/react/guides/important-defaults
+       */
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
+      /**
        * Structural sharing is disabled to ensure QueryCache subscriptions
        * receive 'updated' events even when refetched data is identical to
        * previous data.

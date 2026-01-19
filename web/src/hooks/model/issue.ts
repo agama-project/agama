@@ -29,6 +29,8 @@ import type { Issue, Scope } from "~/model/issue";
 const issuesQuery = {
   queryKey: ["issues"],
   queryFn: getIssues,
+  /* FIXME: disable refetch. */
+  refetchOnMount: true,
 };
 
 function useIssues(scope?: Scope): Issue[] {
