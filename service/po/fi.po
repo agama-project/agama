@@ -7,9 +7,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-01-11 03:28+0000\n"
-"PO-Revision-Date: 2025-09-11 08:59+0000\n"
-"Last-Translator: Timo Jyrinki <tjyrinki@suse.com>\n"
+"POT-Creation-Date: 2026-01-18 03:25+0000\n"
+"PO-Revision-Date: 2026-01-12 16:04+0000\n"
+"Last-Translator: Tommi Nieminen <software@legisign.org>\n"
 "Language-Team: Finnish <https://l10n.opensuse.org/projects/agama/agama-"
 "service-master/fi/>\n"
 "Language: fi\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.13.1\n"
+"X-Generator: Weblate 5.15.1\n"
 
 #. Reports the problems and decide whether to continue or not.
 #.
@@ -28,37 +28,35 @@ msgid "Found unsupported elements in the AutoYaST profile: %{keys}."
 msgstr "AutoYaST-profiilissa löydettiin tukemattomia kohita: %{keys}."
 
 #. Implementation for the API method #Install.
-#: service/lib/agama/dbus/storage/manager.rb:118
+#: service/lib/agama/dbus/storage/manager.rb:117
 msgid "Preparing bootloader proposal"
 msgstr "Valmistellaan alkulatausohjelman ehdotusta"
 
-#: service/lib/agama/dbus/storage/manager.rb:121
+#: service/lib/agama/dbus/storage/manager.rb:120
 msgid "Preparing the storage devices"
 msgstr "Valmistellaan tallennuslaitteita"
 
-#: service/lib/agama/dbus/storage/manager.rb:124
+#: service/lib/agama/dbus/storage/manager.rb:123
 msgid "Writing bootloader sysconfig"
 msgstr "Kirjoitetaan alkulatausohjelman asetuksia"
 
 #. Implementation for the API method #Finish.
-#: service/lib/agama/dbus/storage/manager.rb:132
-#, fuzzy
+#: service/lib/agama/dbus/storage/manager.rb:131
 msgid "Finishing installation"
-msgstr "Keskeytä asennus"
+msgstr "Viimeistellään asennusta"
 
 #. Error code
-#: service/lib/agama/dbus/storage/manager.rb:371
+#: service/lib/agama/dbus/storage/manager.rb:377
 msgid "Activating storage devices"
 msgstr "Otetaan tallennuslaitteita käyttöön"
 
-#: service/lib/agama/dbus/storage/manager.rb:374
+#: service/lib/agama/dbus/storage/manager.rb:380
 msgid "Probing storage devices"
 msgstr "Havaitaan tallennuslaitteita"
 
-#: service/lib/agama/dbus/storage/manager.rb:377
-#, fuzzy
+#: service/lib/agama/dbus/storage/manager.rb:383
 msgid "Applying storage configuration"
-msgstr "Tallennustilan asetusten muuttaminen"
+msgstr "Otetaan talletustilamääritys käyttöön"
 
 #. TRANSLATORS: SSL certificate details
 #: service/lib/agama/ssl/certificate_details.rb:31
