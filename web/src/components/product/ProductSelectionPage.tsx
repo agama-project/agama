@@ -101,7 +101,7 @@ const ProductFormProductOption = ({
               <Radio
                 id={product.id}
                 name="product"
-                checked={isChecked}
+                isChecked={isChecked}
                 onChange={onChange}
                 aria-details={detailsId}
                 label={
