@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2025] SUSE LLC
+ * Copyright (c) [2025-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -85,9 +85,7 @@ describe("ProgressBackdrop", () => {
       });
     });
 
-    // Test skipped because rerender fails when using installerRender,
-    // caused by how InstallerProvider manages context.
-    it.skip("shows 'Refreshing data...' message temporarily", async () => {
+    it("shows 'Refreshing data...' message temporarily", async () => {
       // Start with active progress
       mockProgresses([
         {
@@ -117,9 +115,7 @@ describe("ProgressBackdrop", () => {
       expect(mockStartTracking).toHaveBeenCalled();
     });
 
-    // Test skipped because rerender fails when using installerRender,
-    // caused by how InstallerProvider manages context.
-    it.skip("hides backdrop after queries are refetched", async () => {
+    it("hides backdrop after queries are refetched", async () => {
       // Start with active progress
       mockProgresses([
         {
@@ -265,9 +261,7 @@ describe("ProgressBackdrop", () => {
       );
     });
 
-    // Test skipped because rerender fails when using installerRender,
-    // caused by how InstallerProvider manages context.
-    it.skip("starts tracking when progress finishes", async () => {
+    it("starts tracking when progress finishes", async () => {
       // Start with active progress
       mockProgresses([
         {

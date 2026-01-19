@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useState } from "react";
+import React, { useDeferredValue, useState } from "react";
 import { Navigate } from "react-router";
 import {
   Button,
@@ -51,7 +51,7 @@ import { _ } from "~/i18n";
 import type { Product } from "~/types/software";
 
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
-import { useProgress } from "~/hooks/use-progress-tracking";
+import { useProgressTracking } from "~/hooks/use-progress-tracking";
 
 type ConfirmationPopupProps = {
   product: Product;
@@ -93,18 +93,14 @@ const ConfirmationPopup = ({
   );
 };
 
-export default function OverviewPage() {
-  const product = useProductInfo();
+const OverviewPageContent = ({ product }) => {
   const issues = useIssues();
-  const progresses = useProgress();
+  const { loading } = useProgressTracking();
+  const isReady = useDeferredValue(!loading);
   const { actions } = useDestructiveActions();
   const [showConfirmation, setShowConfirmation] = useState(false);
   const hasIssues = !isEmpty(issues);
   const hasDestructiveActions = actions.length > 0;
-
-  if (!product) {
-    return <Navigate to={PRODUCT.root} />;
-  }
 
   const [buttonLocationStart, buttonLocationLabel, buttonLocationEnd] = _(
     // TRANSLATORS: This hint helps users locate the install button. Text inside
@@ -123,10 +119,8 @@ export default function OverviewPage() {
 
   const onCancel = () => setShowConfirmation(false);
 
-  const isProposalReady = isEmpty(progresses);
-
   const getInstallButtonText = () => {
-    if (hasIssues || !isProposalReady) return _("Install");
+    if (hasIssues || !isReady) return _("Install");
     if (hasDestructiveActions) return _("Install now with potential data loss");
     return _("Install now");
   };
@@ -169,20 +163,20 @@ export default function OverviewPage() {
               size="lg"
               variant={hasDestructiveActions ? "danger" : "primary"}
               onClick={onInstallClick}
-              isDisabled={hasIssues || !isProposalReady}
+              isDisabled={hasIssues || !isReady}
             >
               <Text isBold>{getInstallButtonText()}</Text>
             </Button>
 
-            {!isProposalReady && (
+            {!isReady && (
               <HelperText>
-                <HelperTextItem variant="warning">
+                <HelperTextItem variant="indeterminate">
                   {_("Wait until current operations are completed.")}
                 </HelperTextItem>
               </HelperText>
             )}
 
-            {hasIssues && isProposalReady && (
+            {hasIssues && isReady && (
               <HelperText>
                 <HelperTextItem variant="warning">
                   {_(
@@ -204,4 +198,14 @@ export default function OverviewPage() {
       )}
     </Page>
   );
+};
+
+export default function OverviewPage() {
+  const product = useProductInfo();
+
+  if (!product) {
+    return <Navigate to={PRODUCT.root} />;
+  }
+
+  return <OverviewPageContent product={product} />;
 }

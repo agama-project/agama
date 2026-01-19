@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2025] SUSE LLC
+ * Copyright (c) [2025-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -20,32 +20,34 @@
  * find current contact information at www.suse.com.
  */
 
+import { act } from "react";
 import { renderHook, waitFor } from "@testing-library/react";
-import { useProgressTracking } from "./use-progress-tracking";
-import { useStatus } from "~/hooks/model/status";
+import { mockProgresses } from "~/test-utils";
 import useTrackQueriesRefetch from "~/hooks/use-track-queries-refetch";
 import { COMMON_PROPOSAL_KEYS } from "~/hooks/model/proposal";
 import type { Progress } from "~/model/status";
-import { act } from "react";
-
-const mockProgressesFn: jest.Mock<Progress[]> = jest.fn();
+import { useProgressTracking } from "./use-progress-tracking";
 
 jest.mock("~/hooks/use-track-queries-refetch");
 
-jest.mock("~/hooks/model/status", () => ({
-  ...jest.requireActual("~/hooks/model/status"),
-  useStatus: (): ReturnType<typeof useStatus> => ({
-    stage: "configuring",
-    progresses: mockProgressesFn(),
-  }),
-}));
-
-const fakeProgress: Progress = {
-  index: 1,
+const fakeSoftwareProgress: Progress = {
   scope: "software",
   size: 3,
-  steps: ["one", "two", "three"],
-  step: "two",
+  steps: [
+    "Updating the list of repositories",
+    "Refreshing metadata from the repositories",
+    "Calculating the software proposal",
+  ],
+  step: "Updating the list of repositories",
+  index: 1,
+};
+
+const fakeStorageProgress: Progress = {
+  scope: "storage",
+  size: 3,
+  steps: [],
+  step: "Activating storage devices",
+  index: 1,
 };
 
 describe("useProgressTracking", () => {
@@ -61,8 +63,6 @@ describe("useProgressTracking", () => {
       mockRefetchCallback = callback;
       return { startTracking: mockStartTracking };
     });
-
-    mockProgressesFn.mockReturnValue([]);
   });
 
   afterEach(() => {
@@ -76,70 +76,149 @@ describe("useProgressTracking", () => {
     expect(useTrackQueriesRefetch).toHaveBeenCalledWith(COMMON_PROPOSAL_KEYS, expect.any(Function));
   });
 
-  it("returns loading false when there is no active progress", () => {
-    const { result } = renderHook(() => useProgressTracking("software"));
+  describe("with a specific scope", () => {
+    it("returns loading false when there is no active progress", () => {
+      const { result } = renderHook(() => useProgressTracking("software"));
 
-    expect(result.current.loading).toBe(false);
-    expect(result.current.progress).toBeUndefined();
+      expect(result.current.loading).toBe(false);
+      expect(result.current.progress).toBeUndefined();
+    });
+
+    it("returns loading false when there is active progress of different scope", () => {
+      mockProgresses([fakeStorageProgress]);
+      const { result } = renderHook(() => useProgressTracking("software"));
+
+      expect(result.current.loading).toBe(false);
+      expect(result.current.progress).toBeUndefined();
+    });
+
+    it("returns loading true when there is an active progress of gien scope", () => {
+      mockProgresses([fakeSoftwareProgress]);
+      const { result } = renderHook(() => useProgressTracking("software"));
+
+      expect(result.current.loading).toBe(true);
+      expect(result.current.progress).toBe(fakeSoftwareProgress);
+    });
+
+    it("keeps loading true until all queries refetch after progress completes", async () => {
+      const { result, rerender } = renderHook(() => useProgressTracking("software"));
+
+      // Start progress
+      mockProgresses([fakeSoftwareProgress]);
+      rerender();
+
+      // Complete progress
+      jest.setSystemTime(1000);
+      mockProgresses([]);
+      rerender();
+
+      await waitFor(() => {
+        expect(mockStartTracking).toHaveBeenCalledTimes(1);
+      });
+
+      expect(result.current.loading).toBe(true);
+
+      // Queries refetch after progress finished
+      jest.setSystemTime(2000);
+
+      act(() => {
+        mockRefetchCallback(1000, 2000);
+      });
+
+      expect(result.current.loading).toBe(false);
+    });
+
+    it("ignores query refetches completed before progress finished", async () => {
+      const { result, rerender } = renderHook(() => useProgressTracking("software"));
+
+      // Start progress
+      mockProgresses([fakeSoftwareProgress]);
+      rerender();
+
+      // Complete progress
+      jest.setSystemTime(2000);
+      mockProgresses([]);
+      rerender();
+
+      await waitFor(() => {
+        expect(mockStartTracking).toHaveBeenCalled();
+      });
+
+      // Queries refetched before progress finished, must be ignored
+      act(() => {
+        mockRefetchCallback(500, 1000);
+      });
+
+      expect(result.current.loading).toBe(true);
+    });
   });
+  describe("without scope", () => {
+    it("returns loading false when there are no active progress", () => {
+      mockProgresses([]);
+      const { result } = renderHook(() => useProgressTracking());
 
-  it("returns loading true when progress starts", () => {
-    mockProgressesFn.mockReturnValue([fakeProgress]);
-    const { result } = renderHook(() => useProgressTracking("software"));
-
-    expect(result.current.loading).toBe(true);
-    expect(result.current.progress).toBe(fakeProgress);
-  });
-
-  it("keeps loading true until all queries refetch after progress completes", async () => {
-    const { result, rerender } = renderHook(() => useProgressTracking("software"));
-
-    // Start progress
-    mockProgressesFn.mockReturnValue([fakeProgress]);
-    rerender();
-
-    // Complete progress
-    jest.setSystemTime(1000);
-    mockProgressesFn.mockReturnValue([]);
-    rerender();
-
-    await waitFor(() => {
-      expect(mockStartTracking).toHaveBeenCalledTimes(1);
+      expect(result.current.loading).toBe(false);
+      expect(result.current.progress).toEqual([]);
     });
 
-    expect(result.current.loading).toBe(true);
+    it("returns loading true when there is an active progress", () => {
+      mockProgresses([fakeSoftwareProgress]);
+      const { result } = renderHook(() => useProgressTracking());
 
-    // Queries refetch after progress finished
-    jest.setSystemTime(2000);
-
-    act(() => {
-      mockRefetchCallback(1000, 2000);
+      expect(result.current.loading).toBe(true);
+      expect(result.current.progress).toEqual([fakeSoftwareProgress]);
     });
 
-    expect(result.current.loading).toBe(false);
-  });
+    it("keeps loading true until all queries refetch after progress completes", async () => {
+      const { result, rerender } = renderHook(() => useProgressTracking());
 
-  it("ignores query refetches completed before progress finished", async () => {
-    const { result, rerender } = renderHook(() => useProgressTracking("software"));
+      // Start progress
+      mockProgresses([fakeSoftwareProgress]);
+      rerender();
 
-    // Start progress
-    mockProgressesFn.mockReturnValue([fakeProgress]);
-    rerender();
+      // Complete progress
+      jest.setSystemTime(1000);
+      mockProgresses([]);
+      rerender();
 
-    // Complete progress
-    jest.setSystemTime(2000);
-    mockProgressesFn.mockReturnValue([]);
-    rerender();
+      await waitFor(() => {
+        expect(mockStartTracking).toHaveBeenCalledTimes(1);
+      });
 
-    await waitFor(() => {
-      expect(mockStartTracking).toHaveBeenCalled();
+      expect(result.current.loading).toBe(true);
+
+      // Queries refetch after progress finished
+      jest.setSystemTime(2000);
+
+      act(() => {
+        mockRefetchCallback(1000, 2000);
+      });
+
+      expect(result.current.loading).toBe(false);
     });
 
-    // Queries refetched before progress finished, must be ignored
-    act(() => {
-      mockRefetchCallback(500, 1000);
-    });
+    it("ignores query refetches completed before progress finished", async () => {
+      const { result, rerender } = renderHook(() => useProgressTracking());
 
-    expect(result.current.loading).toBe(true);
+      // Start progress
+      mockProgresses([fakeSoftwareProgress]);
+      rerender();
+
+      // Complete progress
+      jest.setSystemTime(2000);
+      mockProgresses([]);
+      rerender();
+
+      await waitFor(() => {
+        expect(mockStartTracking).toHaveBeenCalled();
+      });
+
+      // Queries refetched before progress finished, must be ignored
+      act(() => {
+        mockRefetchCallback(500, 1000);
+      });
+
+      expect(result.current.loading).toBe(true);
+    });
   });
 });
