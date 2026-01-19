@@ -61,7 +61,7 @@ module Agama
 
       # Assigns a new product config.
       #
-      # @param product_config [Agama::Config]
+      # @param config [Agama::Config]
       def product_config=(config)
         @product_config = config
         proposal.product_config = config

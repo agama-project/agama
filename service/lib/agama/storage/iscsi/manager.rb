@@ -102,6 +102,7 @@ module Agama
         # @return [Logger]
         attr_reader :logger
 
+        # @return [Config, nil]
         attr_reader :previous_config
 
         # @return [Adapter]
@@ -109,6 +110,9 @@ module Agama
           @adapter ||= Adapter.new
         end
 
+        # Sets the new config and keeps the previous one.
+        #
+        # @param config_json [Hash{Symbol=>Object}] Config according to the JSON schema.
         def assign_config(config_json)
           @previous_config = @config
           @config_json = config_json
@@ -252,11 +256,19 @@ module Agama
           adapter.update_node(node, startup: target_config.startup)
         end
 
+        # Whether the credentials has changed.
+        #
+        # @param target_config [ISCSI::Configs::Target]
+        # @return [Boolean]
         def credentials_changed?(target_config)
           previous_credentials = previous_config&.find_target(target_config.name)&.credentials
           previous_credentials != target_config.credentials
         end
 
+        # Whether the startup mode has changed.
+        #
+        # @param target_config [ISCSI::Configs::Target]
+        # @return [Boolean]
         def startup_changed?(target_config)
           previous_startup = previous_config&.find_target(target_config.name)&.startup
           previous_startup != target_config.startup

@@ -59,6 +59,8 @@ module Agama
           dbus_signal(:ProgressFinished)
         end
 
+        # Gets the serialized system information.
+        #
         # @return [String]
         def recover_system
           manager.probe unless manager.probed?
@@ -77,11 +79,11 @@ module Agama
           JSON.pretty_generate(manager.config_json)
         end
 
-        # Applies the given serialized iSCSI config according to the JSON schema.
+        # Applies the given serialized iSCSI config.
         #
         # @todo Raise error if the config is not valid.
         #
-        # @param serialized_config [String] Serialized iSCSI config.
+        # @param serialized_config [String] Serialized iSCSI config according to the JSON schema.
         def configure(serialized_config)
           config_json = JSON.parse(serialized_config, symbolize_names: true)
 
@@ -91,6 +93,10 @@ module Agama
           finish_progress
         end
 
+        # Performs an iSCSI discovery.
+        #
+        # @param serialized_options [String] Serialized dicovery options.
+        # @return [Number] 0 success; 1 failure.
         def discover(serialized_options)
           options = JSON.parse(serialized_options, symbolize_names: true)
           address = options[:address]
@@ -120,6 +126,7 @@ module Agama
           self.SystemChanged(recover_system)
         end
 
+        # @return [Hash]
         def initiator_json
           {
             name: manager.initiator.name,
@@ -127,10 +134,13 @@ module Agama
           }
         end
 
+        # @return [Hash]
         def targets_json
           manager.nodes.map { |n| target_json(n) }
         end
 
+        # @param node [ISCSI::Node]
+        # @return [Hash]
         def target_json(node)
           {
             name:      node.target,

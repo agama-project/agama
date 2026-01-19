@@ -46,6 +46,10 @@ module Agama
           !find_target(name).nil?
         end
 
+        # Searchs for a target with the given name.
+        #
+        # @param name [String]
+        # @return [Configs::Target, nil]
         def find_target(name)
           targets.find { |t| t.name == name }
         end

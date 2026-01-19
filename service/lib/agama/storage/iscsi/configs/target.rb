@@ -87,6 +87,13 @@ module Agama
             self.portal == portal
           end
 
+          # Credentials of the target.
+          #
+          # @return [Hash, nil]
+          #   @option username [String]
+          #   @option password [String]
+          #   @option initiator_username [String, nil]
+          #   @option initiator_password [String, nil]
           def credentials
             return unless username && password
 
