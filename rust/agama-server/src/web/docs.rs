@@ -26,8 +26,6 @@ mod bootloader;
 pub use bootloader::BootloaderApiDocBuilder;
 mod profile;
 pub use profile::ProfileApiDocBuilder;
-mod users;
-pub use users::UsersApiDocBuilder;
 mod misc;
 pub use misc::MiscApiDocBuilder;
 
