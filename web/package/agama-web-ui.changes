@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Jan 19 13:24:41 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Avoid flickering on the overview page by stabilizing progress
+  updates (gh#agama-project/agama#3042).
+
+-------------------------------------------------------------------
 Mon Jan 19 09:00:12 UTC 2026 - David Diaz <dgonzalez@suse.com>
 
 - Enhance product selection page (gh#agama-project/agama#3039):
