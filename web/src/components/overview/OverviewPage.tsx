@@ -170,7 +170,7 @@ const OverviewPageContent = ({ product }) => {
 
             {!isReady && (
               <HelperText>
-                <HelperTextItem variant="warning">
+                <HelperTextItem variant="indeterminate">
                   {_("Wait until current operations are completed.")}
                 </HelperTextItem>
               </HelperText>
