@@ -25,8 +25,3 @@ pub mod message;
 
 mod model;
 pub use model::{Model, ModelAdapter};
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-}

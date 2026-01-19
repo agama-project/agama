@@ -52,7 +52,7 @@ pub async fn ws_handler(
     ws.on_upgrade(move |socket| handle_socket(socket, state.events, client_id))
 }
 
-async fn handle_socket(mut socket: WebSocket, events: event::Sender, client_id: Arc<ClientId>) {
+async fn handle_socket(mut socket: WebSocket, events: event::Sender, _client_id: Arc<ClientId>) {
     let mut events_rx = events.subscribe();
 
     loop {

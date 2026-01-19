@@ -25,7 +25,7 @@
 use crate::error::NetworkStateError;
 use crate::types::*;
 
-use agama_utils::{actor::Error, openapi::schemas};
+use agama_utils::openapi::schemas;
 use macaddr::MacAddr6;
 use serde::{Deserialize, Serialize};
 use serde_with::{serde_as, skip_serializing_none, DisplayFromStr};
