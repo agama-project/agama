@@ -409,7 +409,7 @@ const CurrentProductInfo = ({ product }: CurrentProductInfoProps) => {
   if (!product) return;
 
   return (
-    <Card variant="secondary" component="section">
+    <Card variant="secondary" component="section" className="sticky-top">
       <CardTitle component="h2">{_("Current selection")}</CardTitle>
       <CardBody>
         <Stack hasGutter>
