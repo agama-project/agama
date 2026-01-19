@@ -1,0 +1,73 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR SuSE Linux Products GmbH, Nuernberg
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-01-06 09:22+0000\n"
+"PO-Revision-Date: 2026-01-13 10:00:00+0100\n"
+"Last-Translator: Martin Vidner <mvidner@suse.com>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: cs\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
+
+#: agama-manager/src/service.rs:731
+msgid "Prepare the system"
+msgstr ""
+
+#: agama-manager/src/service.rs:732
+msgid "Install software"
+msgstr ""
+
+#: agama-manager/src/service.rs:733
+msgid "Configure the system"
+msgstr ""
+
+#: agama-software/src/callbacks/commit_download.rs:44
+#: agama-software/src/callbacks/install.rs:50
+msgid "Ignore"
+msgstr ""
+
+#: agama-software/src/callbacks/commit_download.rs:44
+#: agama-software/src/callbacks/install.rs:50
+#: agama-software/src/callbacks/install.rs:78
+msgid "Retry"
+msgstr ""
+
+#: agama-software/src/callbacks/install.rs:78
+msgid "Continue"
+msgstr ""
+
+#: agama-software/src/callbacks/install.rs:83
+msgid "There was a problem running a package script."
+msgstr ""
+
+#: agama-software/src/callbacks/security.rs:69
+msgid "Skip"
+msgstr ""
+
+#: agama-software/src/callbacks/security.rs:69
+msgid "Trust"
+msgstr ""
+
+#: agama-software/src/zypp_server.rs:254
+msgid "Updating the list of repositories"
+msgstr ""
+
+#: agama-software/src/zypp_server.rs:255
+msgid "Refreshing metadata from the repositories"
+msgstr ""
+
+#: agama-software/src/zypp_server.rs:256
+msgid "Calculating the software proposal"
+msgstr ""
+
+#: agama-software/src/zypp_server.rs:486
+msgid "Pattern summary"
+msgstr "Shrnutí vzoru"

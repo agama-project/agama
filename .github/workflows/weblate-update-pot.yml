@@ -40,15 +40,6 @@ jobs:
         with:
           path: agama
 
-      - name: Generate web POT file
-        run: |
-          cd agama/web
-          ./build_pot
-          msgfmt --statistics agama.pot
-
-      - name: Validate the generated web POT file
-        run:  msgfmt --check-format agama/web/agama.pot
-
       - name: Checkout Weblate sources
         uses: actions/checkout@v4
         with:
@@ -56,19 +47,28 @@ jobs:
           repository: ${{ github.repository_owner }}/agama-weblate
           token:  ${{ secrets.GH_TOKEN }}
 
-      - name: Configure Git
+      - name: Configure Git user and email
         run: |
           git config --global user.name "YaST Bot"
           git config --global user.email "yast-devel@opensuse.org"
 
-      - name: Update web POT file
+      - name: (web) Generate POT file
+        run: |
+          cd agama/web
+          ./build_pot
+          msgfmt --statistics agama.pot
+
+      - name: (web) Validate the generated POT file
+        run:  msgfmt --check-format agama/web/agama.pot
+
+      - name: (web) Update POT file
         run: |
           mkdir -p agama-weblate/web
           cp agama/web/agama.pot agama-weblate/web/agama.pot
 
       # any change besides the timestamp in the POT file?
-      - name: Check web POT changes
-        id: check_changes
+      - name: (web) Check POT changes
+        id: check_web_changes
         run: |
           git -C agama-weblate diff --ignore-matching-lines="POT-Creation-Date:" web/agama.pot > pot.diff
 
@@ -82,18 +82,18 @@ jobs:
             git -C agama-weblate reset --hard
           fi
 
-      - name: Push updated web POT file
+      - name: (web) Push updated POT file
         # run only when the POT file has been updated
-        if: steps.check_changes.outputs.pot_updated == 'true'
+        if: steps.check_web_changes.outputs.pot_updated == 'true'
         run: |
           cd agama-weblate
           git add web/agama.pot
           git commit -m "Update web POT file"$'\n\n'"Agama commit: $GITHUB_SHA"
           git push
 
-      - name: Merge new POT to web translations
+      - name: (web) Merge new POT to PO translations
         # run only when the POT file has been updated
-        if: steps.check_changes.outputs.pot_updated == 'true'
+        if: steps.check_web_changes.outputs.pot_updated == 'true'
         run: |
           cd agama-weblate/web
           find . -name "*.po" -exec msgmerge -U "{}" agama.pot \;
@@ -105,23 +105,23 @@ jobs:
           cd agama/.github/workflows/product_translations
           npm ci
 
-      - name: Generate products POT file
+      - name: (products) Generate POT file
         run: |
           cd agama/products.d
           ../.github/workflows/product_translations/products_pot *.yaml > products.pot
           msgfmt --statistics products.pot
 
-      - name: Validate the generated products POT file
+      - name: (products) Validate the generated POT file
         run:  msgfmt --check-format agama/products.d/products.pot
 
-      - name: Update products POT file
+      - name: (products) Update POT file
         run: |
           mkdir -p agama-weblate/products
           cp agama/products.d/products.pot agama-weblate/products/products.pot
 
       # any change besides the timestamp in the POT file?
-      - name: Check products POT changes
-        id: check_changes_products
+      - name: (products) Check POT changes
+        id: check_product_changes
         run: |
           git -C agama-weblate diff --ignore-matching-lines="POT-Creation-Date:" products/products.pot > pot.diff
 
@@ -134,40 +134,40 @@ jobs:
             git -C agama-weblate reset --hard
           fi
 
-      - name: Push updated products POT file
+      - name: (products) Push updated POT file
         # run only when the POT file has been updated
-        if: steps.check_changes_products.outputs.pot_updated == 'true'
+        if: steps.check_product_changes.outputs.pot_updated == 'true'
         run: |
           cd agama-weblate
           git add products/products.pot
           git commit -m "Update products POT file"$'\n\n'"Agama commit: $GITHUB_SHA"
           git push
 
-      - name: Merge new POT to product translations
+      - name: (products) Merge new POT to PO translations
         # run only when the POT file has been updated
-        if: steps.check_changes_products.outputs.pot_updated == 'true'
+        if: steps.check_product_changes.outputs.pot_updated == 'true'
         run: |
           cd agama-weblate/products
           find . -name "*.po" -exec msgmerge -U '{}' products.pot \;
           git commit -a -m "Merge new POT file to product translations"$'\n\n'"Agama commit: $GITHUB_SHA"
           git push
 
-      - name: Generate service POT file
+      - name: (service) Generate POT file
         run: |
           cd agama
           rake pot
           msgfmt --statistics agama.pot
 
-      - name: Validate the generated service POT file
+      - name: (service) Validate the generated service POT file
         run:  msgfmt --check-format agama/agama.pot
 
-      - name: Update service POT file
+      - name: (service) Update POT file
         run: |
           mkdir -p agama-weblate/service
           cp agama/agama.pot agama-weblate/service/agama.pot
 
       # any change besides the timestamp in the POT file?
-      - name: Check service POT changes
+      - name: (service) Check POT changes
         id: check_service_changes
         run: |
           git -C agama-weblate diff --ignore-matching-lines="POT-Creation-Date:" service/agama.pot > pot.diff
@@ -182,7 +182,7 @@ jobs:
             git -C agama-weblate reset --hard
           fi
 
-      - name: Push updated service POT file
+      - name: (service) Push updated POT file
         # run only when the POT file has been updated
         if: steps.check_service_changes.outputs.pot_updated == 'true'
         run: |
@@ -191,11 +191,59 @@ jobs:
           git commit -m "Update service POT file"$'\n\n'"Agama commit: $GITHUB_SHA"
           git push
 
-      - name: Merge service POT to service translations
+      - name: (service) Merge service POT to PO translations
         # run only when the POT file has been updated
         if: steps.check_service_changes.outputs.pot_updated == 'true'
         run: |
           cd agama-weblate/service
           find . -name "*.po" -exec msgmerge -U "{}" agama.pot \;
           git commit -a -m "Merge new POT file to service translations"$'\n\n'"Agama commit: $GITHUB_SHA"
+          git push
+
+      - name: (rust) Generate POT file
+        run: |
+          cd agama/rust
+          ./build_pot
+          msgfmt --statistics agama.pot
+
+      - name: (rust) Validate the generated POT file
+        run:  msgfmt --check-format agama/rust/agama.pot
+
+      - name: (rust) Update POT file
+        run: |
+          mkdir -p agama-weblate/rust
+          cp agama/rust/agama.pot agama-weblate/rust/agama.pot
+
+      # any change besides the timestamp in the POT file?
+      - name: (rust) Check POT changes
+        id: check_rust_changes
+        run: |
+          git -C agama-weblate diff --ignore-matching-lines="POT-Creation-Date:" rust/agama.pot > pot.diff
+
+          if [ -s pot.diff ]; then
+            echo "POT file updated"
+            echo "pot_updated=true" >> $GITHUB_OUTPUT
+          else
+            echo "POT file unchanged"
+            echo "pot_updated=false" >> $GITHUB_OUTPUT
+            # reset any possible changes so they are not accidentally committed later
+            git -C agama-weblate reset --hard
+          fi
+
+      - name: (rust) Push updated POT file
+        # run only when the POT file has been updated
+        if: steps.check_rust_changes.outputs.pot_updated == 'true'
+        run: |
+          cd agama-weblate
+          git add service/agama.pot
+          git commit -m "Update service POT file"$'\n\n'"Agama commit: $GITHUB_SHA"
+          git push
+
+      - name: (rust) Merge new POT to PO translations
+        # run only when the POT file has been updated
+        if: steps.check_rust_changes.outputs.pot_updated == 'true'
+        run: |
+          cd agama-weblate/rust
+          find . -name "*.po" -exec msgmerge -U "{}" agama.pot \;
+          git commit -a -m "Merge new POT file to rust translations"$'\n\n'"Agama commit: $GITHUB_SHA"
           git push

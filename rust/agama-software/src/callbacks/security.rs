@@ -1,5 +1,6 @@
+use agama_l10n::helpers::gettext_noop;
 use agama_utils::{actor::Handler, api::question::QuestionSpec, question};
-use gettextrs::gettext;
+use i18n_format::i18n_format;
 use zypp_agama::callbacks::security;
 
 use crate::callbacks::ask_software_question;
@@ -61,15 +62,16 @@ impl security::Callback for Security {
             key_fingerprint,
         );
         // TODO: support for extra_repositories with specified gpg key checksum
-        // TODO: localization with params
-        let text = format!(
-            "The key {key_id} ({key_name}) with fingerprint {key_fingerprint} is unknown. \
-              Do you want to trust this key?"
+        let text = i18n_format!(
+            // TRANSLATORS: substituting: key ID, (key name), fingerprint
+            "The key {0} ({1}) with fingerprint {2} is unknown. \
+              Do you want to trust this key?",
+            &key_id,
+            &key_name,
+            &key_fingerprint
         );
-        let labels = [gettext("Trust"), gettext("Skip")];
-        let actions = [("Trust", labels[0].as_str()), ("Skip", labels[1].as_str())];
         let question = QuestionSpec::new(&text, "software.import_gpg")
-            .with_actions(&actions)
+            .with_action_ids(&[gettext_noop("Trust"), gettext_noop("Skip")])
             .with_data(&[
                 ("id", key_id.as_str()),
                 ("name", key_name.as_str()),
