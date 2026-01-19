@@ -43,6 +43,7 @@ pub struct Config {
     strum::EnumString,
     Serialize,
     Deserialize,
+    PartialEq,
     utoipa::ToSchema,
 )]
 #[strum(ascii_case_insensitive)]

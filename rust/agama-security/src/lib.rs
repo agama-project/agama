@@ -27,3 +27,5 @@ pub use service::{Service, Starter};
 pub mod message;
 
 pub mod test_utils;
+
+mod certificate;

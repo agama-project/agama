@@ -19,6 +19,7 @@
 // find current contact information at www.suse.com.
 
 use agama_utils::{actor::Message, api::security::Config};
+use openssl::x509::X509;
 
 #[derive(Clone)]
 pub struct GetConfig;
@@ -39,4 +40,18 @@ impl<T> SetConfig<T> {
     pub fn new(config: Option<T>) -> Self {
         Self { config }
     }
+}
+
+pub struct CheckCertificate {
+    pub certificate: X509,
+}
+
+impl CheckCertificate {
+    pub fn new(certificate: X509) -> Self {
+        Self { certificate }
+    }
+}
+
+impl Message for CheckCertificate {
+    type Reply = bool;
 }
