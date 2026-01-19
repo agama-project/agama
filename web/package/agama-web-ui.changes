@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon Jan 19 13:27:16 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Fix query refetch (gh#agama-project/agama#3044).
+
+-------------------------------------------------------------------
 Mon Jan 19 13:24:41 UTC 2026 - David Diaz <dgonzalez@suse.com>
 
 - Avoid flickering on the overview page by stabilizing progress
