@@ -170,7 +170,7 @@ jobs:
       - name: (service) Check POT changes
         id: check_service_changes
         run: |
-          git -C agama-weblate diff --ignore-matching-lines="POT-Creation-Date:" service/agama.pot > pot.diff
+          git -C agama-weblate diff --ignore-matching-lines="POT-Creation-Date:" --ignore-matching-lines="PO-Revision-Date:" service/agama.pot > pot.diff
 
           if [ -s pot.diff ]; then
             echo "POT file updated"
