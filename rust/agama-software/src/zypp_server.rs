@@ -18,6 +18,7 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
+use i18n_format::i18n_format;
 use agama_utils::{
     actor::Handler,
     api::{
@@ -557,7 +558,7 @@ impl ZyppServer {
                     category: p.category,
                     description: p.description,
                     icon: p.icon,
-                    summary: p.summary,
+                    summary: i18n_format!("Pattern summary: {0} {1}", p.summary, ":-)"),
                     order: p.order,
                     preselected,
                 }
