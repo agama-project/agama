@@ -20,12 +20,14 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
-import { screen } from "@testing-library/react";
+import React, { act } from "react";
+import { screen, within } from "@testing-library/react";
 import { installerRender, mockNavigateFn, mockProduct } from "~/test-utils";
 import { useSystem } from "~/hooks/model/system";
+import { useSystem as useSystemSoftware } from "~/hooks/model/system/software";
 import { Product } from "~/types/software";
 import ProductSelectionPage from "./ProductSelectionPage";
+import { ROOT } from "~/routes/paths";
 
 const tumbleweed: Product = {
   id: "Tumbleweed",
@@ -45,11 +47,15 @@ const microOs: Product = {
 };
 
 const mockPatchConfigFn = jest.fn();
+const mockUseSystemFn: jest.Mock<ReturnType<typeof useSystem>> = jest.fn();
+const mockUseSystemSoftwareFn: jest.Mock<ReturnType<typeof useSystemSoftware>> = jest.fn();
 
 // FIXME: add ad use a mockSystem from test-utils instead
 jest.mock("~/components/core/InstallerOptions", () => () => (
   <div>ProductRegistrationAlert Mock</div>
 ));
+
+jest.mock("~/components/product/LicenseDialog", () => () => <div>LicenseDialog Mock</div>);
 
 jest.mock("~/api", () => ({
   ...jest.requireActual("~/api"),
@@ -58,112 +64,270 @@ jest.mock("~/api", () => ({
 
 jest.mock("~/hooks/model/system", () => ({
   ...jest.requireActual("~/hooks/model/system"),
-  useSystem: (): ReturnType<typeof useSystem> => ({
-    products: [tumbleweed, microOs],
-  }),
+  useSystem: () => mockUseSystemFn(),
+}));
+
+jest.mock("~/hooks/model/system/software", () => ({
+  ...jest.requireActual("~/hooks/model/system/software"),
+  useSystem: () => mockUseSystemSoftwareFn(),
 }));
 
 describe("ProductSelectionPage", () => {
-  describe("when user select a product with license", () => {
-    beforeEach(() => {
-      mockProduct(undefined);
+  beforeEach(() => {
+    mockUseSystemFn.mockReturnValue({
+      products: [tumbleweed, microOs],
     });
 
-    it("force license acceptance for allowing product selection", async () => {
+    mockUseSystemSoftwareFn.mockReturnValue({
+      addons: [],
+      patterns: [],
+      repositories: [],
+    });
+  });
+
+  // Regression test:
+  // On component re-renders (e.g. after clicking a header option), the selected
+  // product radio became unchecked because selection logic compared object
+  // references instead of stable identifiers. Even though the products had
+  // identical data, new object instances caused the comparison to fail. This
+  // test ensures the selected option remains checked across re-renders with new
+  // object references.
+  it("keeps product selection across re-renders", async () => {
+    const { user, rerender } = installerRender(<ProductSelectionPage />);
+    const microOsOption = screen.getByRole("radio", { name: microOs.name });
+    expect(microOsOption).not.toBeChecked();
+    await user.click(microOsOption);
+    expect(microOsOption).toBeChecked();
+    act(() => {
+      mockUseSystemFn.mockReturnValue({
+        // Same products, new objects
+        products: [{ ...tumbleweed }, { ...microOs }],
+      });
+    });
+    rerender(<ProductSelectionPage />);
+    expect(microOsOption).toBeChecked();
+    // Product must still checked.
+    expect(microOsOption).toBeChecked();
+  });
+
+  it("force license acceptance for products with license", async () => {
+    mockProduct(undefined);
+    const { user } = installerRender(<ProductSelectionPage />);
+    expect(screen.queryByRole("checkbox", { name: /I have read and accept/ })).toBeNull();
+    const selectButton = screen.getByRole("button", { name: "Select" });
+    const microOsOption = screen.getByRole("radio", { name: microOs.name });
+    await user.click(microOsOption);
+    const licenseCheckbox = screen.getByRole("checkbox", { name: /I have read and accept/ });
+    expect(licenseCheckbox).not.toBeChecked();
+    expect(selectButton).toBeDisabled();
+    await user.click(licenseCheckbox);
+    expect(licenseCheckbox).toBeChecked();
+    expect(selectButton).not.toBeDisabled();
+  });
+
+  it("resets license acceptance when switching between products with licenses", async () => {
+    const productWithLicense1 = { ...microOs, id: "Product1", name: "Product 1" };
+    const productWithLicense2 = { ...microOs, id: "Product2", name: "Product 2" };
+
+    mockProduct(undefined);
+    mockUseSystemFn.mockReturnValue({
+      products: [productWithLicense1, productWithLicense2],
+    });
+
+    const { user } = installerRender(<ProductSelectionPage />);
+
+    // Select first product and accept license
+    const product1Option = screen.getByRole("radio", { name: "Product 1" });
+    await user.click(product1Option);
+    const licenseCheckbox = screen.getByRole("checkbox", { name: /I have read and accept/ });
+    await user.click(licenseCheckbox);
+    expect(licenseCheckbox).toBeChecked();
+
+    // Switch to second product
+    const product2Option = screen.getByRole("radio", { name: "Product 2" });
+    await user.click(product2Option);
+
+    // License checkbox should be unchecked
+    expect(licenseCheckbox).not.toBeChecked();
+  });
+
+  it("navigates to root path when product is registered (registration exists)", async () => {
+    mockUseSystemSoftwareFn.mockReturnValue({
+      addons: [],
+      patterns: [],
+      repositories: [],
+      registration: { code: "INTERNAL-USE-ONLY-1234-5678", addons: [] },
+    });
+    installerRender(<ProductSelectionPage />);
+    await screen.findByText("Navigating to /");
+  });
+
+  it("renders the Cancel button when a product is already seelected ", () => {
+    mockProduct(microOs);
+    installerRender(<ProductSelectionPage />);
+    screen.getByRole("link", { name: "Cancel" });
+  });
+
+  it("does not render the Cancel button if product no selected yet", () => {
+    mockProduct(undefined);
+    installerRender(<ProductSelectionPage />);
+    expect(screen.queryByRole("link", { name: "Cancel" })).toBeNull();
+  });
+
+  it("triggers the product selection when user select a product and click submission button", async () => {
+    mockProduct(undefined);
+    const { user } = installerRender(<ProductSelectionPage />);
+    const productOption = screen.getByRole("radio", { name: tumbleweed.name });
+    const selectButton = screen.getByRole("button", { name: "Select" });
+    await user.click(productOption);
+    await user.click(selectButton);
+    expect(mockPatchConfigFn).toHaveBeenCalledWith({ product: { id: tumbleweed.id } });
+  });
+
+  it("does not trigger the product selection if user selects a product but clicks o cancel button", async () => {
+    mockProduct(microOs);
+    const { user } = installerRender(<ProductSelectionPage />);
+    const productOption = screen.getByRole("radio", { name: tumbleweed.name });
+    const cancel = screen.getByRole("link", { name: "Cancel" });
+    expect(cancel).toHaveAttribute("href", ROOT.overview);
+    await user.click(productOption);
+    await user.click(cancel);
+    expect(mockPatchConfigFn).not.toHaveBeenCalled();
+  });
+
+  it.todo("make navigation test work");
+  it.skip("navigates to root after successful product selection", async () => {
+    mockProduct(undefined);
+    const { user } = installerRender(<ProductSelectionPage />);
+
+    const tumbleweedOption = screen.getByRole("radio", { name: tumbleweed.name });
+    await user.click(tumbleweedOption);
+
+    const selectButton = screen.getByRole("button", { name: /Select/ });
+    await user.click(selectButton);
+
+    // Mock the product as selected
+    act(() => {
+      mockProduct(tumbleweed);
+    });
+
+    expect(mockNavigateFn).toHaveBeenCalledWith(ROOT.root);
+  });
+
+  describe("ProductFormSubmitLabel", () => {
+    it("renders 'Change' or  'Change to %product.name' when changing from one product to another", async () => {
+      mockProduct(microOs);
       const { user } = installerRender(<ProductSelectionPage />);
-      expect(screen.queryByRole("checkbox", { name: /I have read and accept/ })).toBeNull();
-      const selectButton = screen.getByRole("button", { name: "Select" });
+
+      screen.getByRole("button", { name: "Change" });
+      const tumbleweedOption = screen.getByRole("radio", { name: tumbleweed.name });
+      await user.click(tumbleweedOption);
+      screen.getByRole("button", { name: "Change to openSUSE Tumbleweed" });
+    });
+
+    it("renders 'Select' or 'Select %product.name' during initial selection", async () => {
+      mockProduct(undefined);
+      const { user } = installerRender(<ProductSelectionPage />);
+
+      screen.getByRole("button", { name: "Select" });
+      const tumbleweedOption = screen.getByRole("radio", { name: tumbleweed.name });
+      await user.click(tumbleweedOption);
+      screen.getByRole("button", { name: "Select openSUSE Tumbleweed" });
+    });
+  });
+
+  describe("ProductFormSubmitLabelHelp", () => {
+    it("renders warning when no product is selected", () => {
+      mockProduct(undefined);
+      installerRender(<ProductSelectionPage />);
+
+      screen.getByText("Select a product to continue.");
+    });
+
+    it("renders warning when license is not accepted", async () => {
+      mockProduct(undefined);
+      const { user } = installerRender(<ProductSelectionPage />);
+
+      const microOsOption = screen.getByRole("radio", { name: microOs.name });
+      await user.click(microOsOption);
+      screen.getByText("License acceptance is required to continue.");
+    });
+
+    it("hides helper text when product is selected and license is accepted", async () => {
+      mockProduct(undefined);
+      const { user } = installerRender(<ProductSelectionPage />);
+
       const microOsOption = screen.getByRole("radio", { name: microOs.name });
       await user.click(microOsOption);
       const licenseCheckbox = screen.getByRole("checkbox", { name: /I have read and accept/ });
-      expect(licenseCheckbox).not.toBeChecked();
-      expect(selectButton).toBeDisabled();
       await user.click(licenseCheckbox);
-      expect(licenseCheckbox).toBeChecked();
-      expect(selectButton).not.toBeDisabled();
+      expect(
+        screen.queryByText("License acceptance is required to continue."),
+      ).not.toBeInTheDocument();
+      expect(screen.queryByText("Select a product to continue.")).not.toBeInTheDocument();
     });
   });
 
-  describe("when there is a product with license previouly selected", () => {
-    beforeEach(() => {
+  describe("CurrentProductInfo", () => {
+    it("renders current product information when changing products", () => {
       mockProduct(microOs);
-    });
-
-    it("does not allow revoking license acceptance", () => {
       installerRender(<ProductSelectionPage />);
-      const licenseCheckbox = screen.getByRole("checkbox", { name: /I have read and accept/ });
-      expect(licenseCheckbox).toBeChecked();
-      expect(licenseCheckbox).toBeDisabled();
-    });
-  });
 
-  // FIXME: re-enable it when registration is ready in v2
-  describe.skip("when product is registered", () => {
-    beforeEach(() => {
-      // registrationInfoMock = {
-      //   registered: true,
-      //   key: "INTERNAL-USE-ONLY-1234-5678",
-      //   email: "",
-      //   url: "",
-      // };
+      const sectionHeading = screen.getByRole("heading", { level: 2, name: "Current selection" });
+      const section = sectionHeading.closest("section");
+      within(section).getByRole("heading", { level: 3, name: microOs.name });
+      within(section).getByText(microOs.description);
     });
 
-    it("navigates to root path", async () => {
-      installerRender(<ProductSelectionPage />);
-      await screen.findByText("Navigating to /");
-    });
-  });
-
-  describe("when there is a product already selected", () => {
-    beforeEach(() => {
+    it("renders view license button for products with license", () => {
       mockProduct(microOs);
-    });
-
-    it("renders the Cancel button", () => {
       installerRender(<ProductSelectionPage />);
-      screen.getByRole("button", { name: "Cancel" });
-    });
-  });
 
-  describe("when there is not a product selected yet", () => {
-    beforeEach(() => {
+      const sectionHeading = screen.getByRole("heading", { level: 2, name: "Current selection" });
+      const section = sectionHeading.closest("section");
+      within(section).getByRole("button", { name: "View license" });
+    });
+
+    it("does not render view license button for products without license", () => {
+      mockProduct(tumbleweed);
+      installerRender(<ProductSelectionPage />);
+
+      const sectionHeading = screen.getByRole("heading", { level: 2, name: "Current selection" });
+      const section = sectionHeading.closest("section");
+      expect(
+        within(section).queryByRole("button", { name: "View license" }),
+      ).not.toBeInTheDocument();
+    });
+
+    it("does not render when no product is selected", () => {
       mockProduct(undefined);
-    });
-
-    it("does not render the Cancel button", () => {
       installerRender(<ProductSelectionPage />);
-      expect(screen.queryByRole("button", { name: "Cancel" })).toBeNull();
+
+      expect(screen.queryByText("Current selection")).not.toBeInTheDocument();
     });
   });
 
-  describe("when the user chooses a product and hits the confirmation button", () => {
-    beforeEach(() => {
-      mockProduct(undefined);
-    });
-
-    it("triggers the product selection", async () => {
-      const { user } = installerRender(<ProductSelectionPage />);
-      const productOption = screen.getByRole("radio", { name: tumbleweed.name });
-      const selectButton = screen.getByRole("button", { name: "Select" });
-      await user.click(productOption);
-      await user.click(selectButton);
-      expect(mockPatchConfigFn).toHaveBeenCalledWith({ product: { id: tumbleweed.id } });
-    });
-  });
-
-  describe("when the user chooses a product but hits the cancel button", () => {
-    beforeEach(() => {
+  describe("LicenseButton", () => {
+    it("opens license dialog", async () => {
       mockProduct(microOs);
-    });
-
-    it("does not trigger the product selection and goes back", async () => {
       const { user } = installerRender(<ProductSelectionPage />);
-      const productOption = screen.getByRole("radio", { name: tumbleweed.name });
-      const cancelButton = screen.getByRole("button", { name: "Cancel" });
-      await user.click(productOption);
-      await user.click(cancelButton);
-      expect(mockPatchConfigFn).not.toHaveBeenCalled();
-      expect(mockNavigateFn).toHaveBeenCalledWith("/");
+
+      const viewLicenseButton = screen.getByRole("button", { name: "View license" });
+      await user.click(viewLicenseButton);
+      screen.getByText("LicenseDialog Mock");
+    });
+  });
+
+  describe("ProductFormProductOption", () => {
+    it("displays license requirement label for products with licenses", () => {
+      mockProduct(undefined);
+      mockUseSystemFn.mockReturnValue({ products: [microOs] });
+      const { rerender } = installerRender(<ProductSelectionPage />);
+      screen.getByText("License acceptance required");
+
+      mockUseSystemFn.mockReturnValue({ products: [tumbleweed] });
+      rerender(<ProductSelectionPage />);
+      expect(screen.queryByText("License acceptance required")).toBeNull();
     });
   });
 });

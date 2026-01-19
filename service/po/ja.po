@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-01-11 03:28+0000\n"
-"PO-Revision-Date: 2025-07-07 02:59+0000\n"
+"POT-Creation-Date: 2026-01-18 03:25+0000\n"
+"PO-Revision-Date: 2026-01-13 00:04+0000\n"
 "Last-Translator: Yasuhiko Kamata <belphegor@belbel.or.jp>\n"
 "Language-Team: Japanese <https://l10n.opensuse.org/projects/agama/agama-"
 "service-master/ja/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.12.2\n"
+"X-Generator: Weblate 5.15.1\n"
 
 #. Reports the problems and decide whether to continue or not.
 #.
@@ -29,37 +29,35 @@ msgstr ""
 "AutoYaST プロファイル内にサポートされていない要素が見つかりました: %{keys}."
 
 #. Implementation for the API method #Install.
-#: service/lib/agama/dbus/storage/manager.rb:118
+#: service/lib/agama/dbus/storage/manager.rb:117
 msgid "Preparing bootloader proposal"
 msgstr "ブートローダの提案内容を準備しています"
 
-#: service/lib/agama/dbus/storage/manager.rb:121
+#: service/lib/agama/dbus/storage/manager.rb:120
 msgid "Preparing the storage devices"
 msgstr "ストレージデバイスを準備しています"
 
-#: service/lib/agama/dbus/storage/manager.rb:124
+#: service/lib/agama/dbus/storage/manager.rb:123
 msgid "Writing bootloader sysconfig"
 msgstr "ブートローダの sysconfig を書き込んでいます"
 
 #. Implementation for the API method #Finish.
-#: service/lib/agama/dbus/storage/manager.rb:132
-#, fuzzy
+#: service/lib/agama/dbus/storage/manager.rb:131
 msgid "Finishing installation"
-msgstr "インストールの中止"
+msgstr "インストールを完了しています"
 
 #. Error code
-#: service/lib/agama/dbus/storage/manager.rb:371
+#: service/lib/agama/dbus/storage/manager.rb:377
 msgid "Activating storage devices"
 msgstr "ストレージデバイスを有効化しています"
 
-#: service/lib/agama/dbus/storage/manager.rb:374
+#: service/lib/agama/dbus/storage/manager.rb:380
 msgid "Probing storage devices"
 msgstr "ストレージデバイスを検出しています"
 
-#: service/lib/agama/dbus/storage/manager.rb:377
-#, fuzzy
+#: service/lib/agama/dbus/storage/manager.rb:383
 msgid "Applying storage configuration"
-msgstr "ストレージ設定を調整しています"
+msgstr "ストレージ設定を適用しています"
 
 #. TRANSLATORS: SSL certificate details
 #: service/lib/agama/ssl/certificate_details.rb:31

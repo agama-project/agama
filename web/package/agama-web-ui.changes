@@ -1,4 +1,31 @@
 -------------------------------------------------------------------
+Mon Jan 19 13:27:16 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Fix query refetch (gh#agama-project/agama#3044).
+
+-------------------------------------------------------------------
+Mon Jan 19 13:24:41 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Avoid flickering on the overview page by stabilizing progress
+  updates (gh#agama-project/agama#3042).
+
+-------------------------------------------------------------------
+Mon Jan 19 09:00:12 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Enhance product selection page (gh#agama-project/agama#3039):
+  - Keep the selected product’s radio button checked after
+    interacting with other controls.
+  - Improved UX with persistent product details on large screens,
+    clearer submission-disabled messages, and other minor yet
+    useful UI tweaks.
+
+-------------------------------------------------------------------
+Fri Jan 16 12:58:15 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Updated the overview software summary to inform users about
+  blocking issues (gh#agama-project/agama#3035).
+
+-------------------------------------------------------------------
 Wed Jan 14 23:27:16 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Reorganize the user interface:

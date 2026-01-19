@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-01-11 03:28+0000\n"
+"POT-Creation-Date: 2026-01-18 03:25+0000\n"
 "PO-Revision-Date: 2025-08-09 13:59+0000\n"
 "Last-Translator: Javier Llorente <javier@opensuse.org>\n"
 "Language-Team: Spanish <https://l10n.opensuse.org/projects/agama/agama-"
@@ -29,34 +29,34 @@ msgstr ""
 "Se han encontrado elementos no admitidos en el perfil de AutoYaST: %{keys}."
 
 #. Implementation for the API method #Install.
-#: service/lib/agama/dbus/storage/manager.rb:118
+#: service/lib/agama/dbus/storage/manager.rb:117
 msgid "Preparing bootloader proposal"
 msgstr "Preparando la propuesta del gestor de arranque"
 
-#: service/lib/agama/dbus/storage/manager.rb:121
+#: service/lib/agama/dbus/storage/manager.rb:120
 msgid "Preparing the storage devices"
 msgstr "Preparando los dispositivos de almacenamiento"
 
-#: service/lib/agama/dbus/storage/manager.rb:124
+#: service/lib/agama/dbus/storage/manager.rb:123
 msgid "Writing bootloader sysconfig"
 msgstr "Escribiendo el gestor de arranque sysconfig"
 
 #. Implementation for the API method #Finish.
-#: service/lib/agama/dbus/storage/manager.rb:132
+#: service/lib/agama/dbus/storage/manager.rb:131
 #, fuzzy
 msgid "Finishing installation"
 msgstr "Cancelar instalación"
 
 #. Error code
-#: service/lib/agama/dbus/storage/manager.rb:371
+#: service/lib/agama/dbus/storage/manager.rb:377
 msgid "Activating storage devices"
 msgstr "Activar dispositivos de almacenamiento"
 
-#: service/lib/agama/dbus/storage/manager.rb:374
+#: service/lib/agama/dbus/storage/manager.rb:380
 msgid "Probing storage devices"
 msgstr "Probando los dispositivos de almacenamiento"
 
-#: service/lib/agama/dbus/storage/manager.rb:377
+#: service/lib/agama/dbus/storage/manager.rb:383
 #, fuzzy
 msgid "Applying storage configuration"
 msgstr "Ajustando configuración de almacenamiento"

@@ -26,9 +26,11 @@ import { IssuesAlert, Page } from "~/components/core";
 import { FirstUser, RootUser } from "~/components/users";
 import { useIssues } from "~/hooks/model/issue";
 import { _ } from "~/i18n";
+import { useProposalChanges } from "~/hooks/model/proposal";
 
 export default function UsersPage() {
   const issues = useIssues("users");
+  useProposalChanges();
 
   return (
     <Page breadcrumbs={[{ label: _("Authentication") }]}>

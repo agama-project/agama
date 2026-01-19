@@ -19,7 +19,7 @@
 // find current contact information at www.suse.com.
 
 use agama_locale_data::{KeymapId, LocaleId, TimezoneId};
-use gettextrs::*;
+use gettextrs::dgettext;
 use serde::ser::SerializeStruct;
 use serde::Serialize;
 use serde_with::{serde_as, DisplayFromStr};
@@ -89,7 +89,7 @@ impl Keymap {
     }
 
     pub fn localized_description(&self) -> String {
-        gettext(&self.description)
+        dgettext("xkeyboard-config", &self.description)
     }
 }
 

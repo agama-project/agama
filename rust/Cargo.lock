@@ -12,6 +12,7 @@ checksum = "512761e0bb2578dd7380c6baaa0f4ce03e84f95e960231d1dec8bf4d7d6e2627"
 name = "agama-autoinstall"
 version = "0.1.0"
 dependencies = [
+ "agama-l10n",
  "agama-lib",
  "agama-transfer",
  "agama-utils",
@@ -293,12 +294,14 @@ dependencies = [
 name = "agama-software"
 version = "0.1.0"
 dependencies = [
+ "agama-l10n",
  "agama-locale-data",
  "agama-utils",
  "async-trait",
  "camino",
  "gettext-rs",
  "glob",
+ "i18n-format",
  "regex",
  "serde",
  "serde_with",
@@ -1785,6 +1788,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "formatx"
+version = "0.2.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d8866fac38f53fc87fa3ae1b09ddd723e0482f8fa74323518b4c59df2c55a00a"
+
+[[package]]
 name = "fraction"
 version = "0.15.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2309,6 +2318,16 @@ dependencies = [
  "tokio",
  "tower-service",
  "tracing",
+]
+
+[[package]]
+name = "i18n-format"
+version = "0.4.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f24f35ae2e31a52498d50755e28bef173da86913238c1eb0e48e76b724acd2c6"
+dependencies = [
+ "formatx",
+ "gettext-rs",
 ]
 
 [[package]]
