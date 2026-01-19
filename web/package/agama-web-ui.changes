@@ -1,4 +1,14 @@
 -------------------------------------------------------------------
+Mon Jan 19 09:00:12 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Enhance product selection page (gh#agama-project/agama#3039):
+  - Keep the selected product’s radio button checked after
+    interacting with other controls.
+  - Improved UX with persistent product details on large screens,
+    clearer submission-disabled messages, and other minor yet
+    useful UI tweaks.
+
+-------------------------------------------------------------------
 Fri Jan 16 12:58:15 UTC 2026 - David Diaz <dgonzalez@suse.com>
 
 - Updated the overview software summary to inform users about
