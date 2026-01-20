@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Jan 20 12:36:32 UTC 2026 - Martin Vidner <mvidner@suse.com>
+
+- refactor install_translations.sh for readability and testability
+  (part of Rust translations enablement, gh#agama-project/agama#2949).
+
+-------------------------------------------------------------------
 Wed Jan 14 08:54:50 UTC 2026 - José Iván López González <jlopez@suse.com>
 
 - Properly disable BLS according to the selected product
