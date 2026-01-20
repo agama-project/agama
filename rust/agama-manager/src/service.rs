@@ -868,6 +868,9 @@ impl FinishAction {
 
         if let Some(switch) = option {
             command.arg(switch);
+        } else {
+            tracing::info!("Stopped as requested");
+            return;
         }
 
         command.arg("now");
