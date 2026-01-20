@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Jan 20 03:52:59 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Update look&feel of some pages to make them match the new style
+  (gh#agama-project/agama#3050).
+
+-------------------------------------------------------------------
 Mon Jan 19 13:27:16 UTC 2026 - José Iván López González <jlopez@suse.com>
 
 - Fix query refetch (gh#agama-project/agama#3044).
