@@ -11,3 +11,8 @@ gettext-rs = { version = "0.7.1", features = ["gettext-system"] }
 openssl = "0.10.75"
 thiserror = "2.0.17"
 tracing = "0.1.44"
+
+[dev-dependencies]
+test-context = "0.4.1"
+tempfile = "3.10.1"
+tokio = { version = "1.47.1", features = ["macros"] }
