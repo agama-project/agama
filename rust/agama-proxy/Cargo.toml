@@ -1,0 +1,12 @@
+[package]
+name = "agama-proxy"
+version = "0.1.0"
+rust-version.workspace = true
+edition.workspace = true
+
+[dependencies]
+agama-utils = { version = "0.1.0", path = "../agama-utils" }
+strum = "0.27.2"
+thiserror = "2.0.18"
+tracing = "0.1.44"
+url = "2.5.8"
