@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2025] SUSE LLC
+ * Copyright (c) [2022-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -35,6 +35,7 @@ import CheckCircle from "@icons/check_circle.svg?component";
 import ChevronLeft from "@icons/chevron_left.svg?component";
 import ChevronRight from "@icons/chevron_right.svg?component";
 import Delete from "@icons/delete.svg?component";
+import DoneAll from "@icons/done_all.svg?component";
 import DeployedCodeUpdate from "@icons/deployed_code_update.svg?component";
 import EditSquare from "@icons/edit_square.svg?component";
 import Emergency from "@icons/emergency.svg?component";
@@ -57,9 +58,10 @@ import MoreVert from "@bolderIcons/more_vert.svg?component";
 import NetworkWifi from "@icons/network_wifi.svg?component";
 import NetworkWifi1Bar from "@icons/network_wifi_1_bar.svg?component";
 import NetworkWifi3Bar from "@icons/network_wifi_3_bar.svg?component";
-import Translate from "@icons/translate.svg?component";
+import RestartAlt from "@icons/restart_alt.svg?component";
 import SearchOff from "@icons/search_off.svg?component";
 import SettingsEthernet from "@icons/settings_ethernet.svg?component";
+import Translate from "@icons/translate.svg?component";
 import UnfoldLess from "@icons/unfold_less.svg?component";
 import UnfoldMore from "@icons/unfold_more.svg?component";
 import Warning from "@icons/warning.svg?component";
@@ -79,6 +81,7 @@ const icons = {
   chevron_left: ChevronLeft,
   chevron_right: ChevronRight,
   delete: Delete,
+  done_all: DoneAll,
   deployed_code_update: DeployedCodeUpdate,
   edit_square: EditSquare,
   emergency: Emergency,
@@ -101,6 +104,7 @@ const icons = {
   network_wifi: NetworkWifi,
   network_wifi_1_bar: NetworkWifi1Bar,
   network_wifi_3_bar: NetworkWifi3Bar,
+  restart_alt: RestartAlt,
   search_off: SearchOff,
   settings_ethernet: SettingsEthernet,
   translate: Translate,
