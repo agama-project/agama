@@ -45,11 +45,11 @@ import { _ } from "~/i18n";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import alignmentStyles from "@patternfly/react-styles/css/utilities/Alignment/alignment";
 
-const TpmHint = () => {
+const TpmAlert = () => {
   const title = _("TPM sealing requires the new system to be booted directly.");
 
   return (
-    <Alert title={title}>
+    <Alert title={title} variant="danger">
       <Stack hasGutter>
         <Divider />
         <Content isEditorial className={textStyles.fontSizeXl}>
@@ -110,7 +110,7 @@ const RebootButton = () => {
 
 function InstallationFinished() {
   const { storage: storageConfig } = useExtendedConfig();
-  const mountTpmHint = usingTpm(storageConfig);
+  const mountTpmAlert = usingTpm(storageConfig);
 
   return (
     <Page showQuestions={false}>
@@ -141,7 +141,7 @@ function InstallationFinished() {
                   {_("You can reboot the machine to log in to the new system.")}
                 </HelperTextItem>
               </HelperText>
-              {mountTpmHint && <RebootButton />}
+              {mountTpmAlert && <RebootButton />}
             </Flex>
           </GridItem>
           <GridItem sm={12} md={6}>
@@ -156,7 +156,7 @@ function InstallationFinished() {
                 marginBlockStart: "var(--pf-t--global--spacer--xl)",
               }}
             >
-              {mountTpmHint ? <TpmHint /> : <RebootButton />}
+              {mountTpmAlert ? <TpmAlert /> : <RebootButton />}
             </Flex>
           </GridItem>
         </Grid>
