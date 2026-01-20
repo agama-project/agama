@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Jan 20 03:52:59 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Update look&feel of some pages to make them match the new style
+  (gh#agama-project/agama#3050).
+
+-------------------------------------------------------------------
 Tue Jan 20 00:53:06 UTC 2026 - David Diaz <dgonzalez@suse.com>
 
 - Avoid flicker on the product selection page by deferring the

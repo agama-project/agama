@@ -103,7 +103,7 @@ describe("InstallationFinished", () => {
 
   it("shows the finished installation screen", () => {
     installerRender(<InstallationFinished />);
-    screen.getByText("Congratulations!");
+    screen.getByRole("heading", { level: 1, name: "Installation complete" });
   });
 
   it("shows a 'Reboot' button", () => {
