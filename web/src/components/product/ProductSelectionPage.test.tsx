@@ -21,13 +21,13 @@
  */
 
 import React, { act } from "react";
-import { screen, within } from "@testing-library/react";
+import { screen, waitFor, within } from "@testing-library/react";
 import { installerRender, mockNavigateFn, mockProduct } from "~/test-utils";
 import { useSystem } from "~/hooks/model/system";
 import { useSystem as useSystemSoftware } from "~/hooks/model/system/software";
 import { Product } from "~/types/software";
-import ProductSelectionPage from "./ProductSelectionPage";
 import { ROOT } from "~/routes/paths";
+import ProductSelectionPage from "./ProductSelectionPage";
 
 const tumbleweed: Product = {
   id: "Tumbleweed",
@@ -269,6 +269,38 @@ describe("ProductSelectionPage", () => {
   });
 
   describe("CurrentProductInfo", () => {
+    it("renders nothing when no product has been set yet", () => {
+      mockProduct(undefined);
+      installerRender(<ProductSelectionPage />);
+
+      expect(screen.queryByRole("heading", { level: 2, name: "Current selection" })).toBeNull();
+    });
+
+    // Test for ensuring that the section displaying information about the
+    // currently configured product disappears immediately after the user
+    // submits a new product request.
+    //
+    // Rationale:
+    //   - Once a new product is selected, the previously configured product
+    //     should no longer be shown, to provide clear and complete feedback
+    //     that a new selection is in progress.
+    //   - Keeping this section mounted or visible could cause a brief flicker
+    //     during the initial selection, just before the app automatically
+    //     navigates to the overview.
+    it("renders nothing when new product is set (form was submitted)", async () => {
+      mockProduct(microOs);
+      const { user } = installerRender(<ProductSelectionPage />);
+
+      screen.getByRole("heading", { level: 2, name: "Current selection" });
+      const tumbleweedOption = screen.getByRole("radio", { name: tumbleweed.name });
+      const submitButton = screen.getByRole("button", { name: /Change/ });
+      await user.click(tumbleweedOption);
+      await user.click(submitButton);
+      await waitFor(() => {
+        expect(screen.queryByRole("heading", { level: 2, name: "Current selection" })).toBeNull();
+      });
+    });
+
     it("renders current product information when changing products", () => {
       mockProduct(microOs);
       installerRender(<ProductSelectionPage />);
