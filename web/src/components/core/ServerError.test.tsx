@@ -30,7 +30,8 @@ import ServerError from "./ServerError";
 describe("ServerError", () => {
   it("wraps a generic server problem message", () => {
     installerRender(<ServerError />);
-    screen.getByText(/Cannot connect to Agama server/i);
+    screen.getByText("Cannot connect");
+    screen.getByText("Check whether Agama server is running.");
   });
 
   it("calls location.reload when user clicks on 'Reload'", async () => {
