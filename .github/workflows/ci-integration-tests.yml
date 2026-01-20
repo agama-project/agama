@@ -6,7 +6,7 @@ permissions:
 on:
   schedule:
     # at 9:45 UTC every day from Monday to Friday
-    - cron: "45 9 * * 1-5"
+    - cron: "45 9 * * Mon-Fri"
 
   # allow running manually
   workflow_dispatch:
