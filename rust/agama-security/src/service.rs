@@ -116,6 +116,10 @@ impl State {
         Self::contains(&self.rejected, certificate)
     }
 
+    pub fn reset(&mut self) {
+        self.trusted.clear();
+    }
+
     fn contains(list: &[SSLFingerprint], certificate: &Certificate) -> bool {
         if let Some(sha256) = certificate.sha256() {
             if list.contains(&sha256) {
@@ -177,7 +181,7 @@ impl MessageHandler<message::SetConfig<api::security::Config>> for Service {
                 self.state.trusted = config.ssl_certificates.unwrap_or_default();
             }
             None => {
-                self.state = State::default();
+                self.state.reset();
             }
         }
         Ok(())
