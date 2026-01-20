@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useEffect, useState } from "react";
+import React, { useDeferredValue, useEffect, useState } from "react";
 import { isEmpty } from "radashi";
 import { sprintf } from "sprintf-js";
 import {
@@ -101,7 +101,7 @@ const ProductFormProductOption = ({
               <Radio
                 id={product.id}
                 name="product"
-                checked={isChecked}
+                isChecked={isChecked}
                 onChange={onChange}
                 aria-details={detailsId}
                 label={
@@ -294,8 +294,8 @@ type ProductFormProps = {
   currentProduct?: Product;
   /** Callback fired when the form is submitted with a selected product */
   onSubmit: (product: Product) => void;
-  /** Whether the form is in a waiting/submitting state */
-  isWaiting: boolean;
+  /** Whether the form was already submitted */
+  isSubmitted: boolean;
 };
 
 /**
@@ -304,11 +304,12 @@ type ProductFormProps = {
  * Manages product selection state, license acceptance, and form validation.
  * Excludes the current product from the list of options.
  */
-const ProductForm = ({ products, currentProduct, onSubmit, isWaiting }: ProductFormProps) => {
+const ProductForm = ({ products, currentProduct, isSubmitted, onSubmit }: ProductFormProps) => {
   const [selectedProduct, setSelectedProduct] = useState<Product>();
   const [eulaAccepted, setEulaAccepted] = useState(false);
   const mountEulaCheckbox = selectedProduct && !isEmpty(selectedProduct.license);
-  const isSelectionDisabled = !selectedProduct || isWaiting || (mountEulaCheckbox && !eulaAccepted);
+  const isSelectionDisabled =
+    !selectedProduct || isSubmitted || (mountEulaCheckbox && !eulaAccepted);
 
   const onProductSelectionChange = (product) => {
     setEulaAccepted(false);
@@ -365,8 +366,8 @@ const ProductForm = ({ products, currentProduct, onSubmit, isWaiting }: ProductF
               size="lg"
               form="productSelectionForm"
               isDisabled={isSelectionDisabled}
-              isLoading={isWaiting}
-              variant={isWaiting ? "secondary" : "primary"}
+              isLoading={isSubmitted}
+              variant={isSubmitted ? "secondary" : "primary"}
             >
               <ProductFormSubmitLabel
                 currentProduct={currentProduct}
@@ -442,20 +443,21 @@ const CurrentProductInfo = ({ product }: CurrentProductInfoProps) => {
 const ProductSelectionContent = () => {
   const navigate = useNavigate();
   const { products } = useSystem();
-  const [submittedSelection, setSubmmitedSelection] = useState<Product>();
   const currentProduct = useProductInfo();
-  const [isWaiting, setIsWaiting] = useState(false);
+  const [submittedSelection, setSubmmitedSelection] = useState<Product>();
+  const [isSubmitted, setIsSubmmited] = useState(false);
+  const isWaiting = useDeferredValue(isSubmitted);
 
   useEffect(() => {
-    if (!isWaiting) return;
+    if (!isSubmitted) return;
 
     if (currentProduct?.id === submittedSelection?.id) {
       navigate(ROOT.root);
     }
-  }, [isWaiting, navigate, currentProduct, submittedSelection]);
+  }, [navigate, isSubmitted, currentProduct, submittedSelection]);
 
   const onSubmit = async (selectedProduct: Product) => {
-    setIsWaiting(true);
+    setIsSubmmited(true);
     setSubmmitedSelection(selectedProduct);
     patchConfig({ product: { id: selectedProduct.id } });
   };
@@ -488,12 +490,12 @@ const ProductSelectionContent = () => {
             <ProductForm
               products={products}
               currentProduct={currentProduct}
-              isWaiting={isWaiting}
+              isSubmitted={isWaiting}
               onSubmit={onSubmit}
             />
           </GridItem>
           <GridItem sm={12} md={4} order={{ default: "0", md: "1" }}>
-            <CurrentProductInfo product={currentProduct} />
+            {!isWaiting && <CurrentProductInfo product={currentProduct} />}
           </GridItem>
         </Grid>
       </Page.Content>
