@@ -499,8 +499,15 @@ impl ZyppServer {
         Ok(())
     }
 
-    fn registration_finish(&self) -> ZyppServerResult<()> {
-        // TODO: implement when registration is ready
+    fn registration_finish(&mut self) -> ZyppServerResult<()> {
+        let Some(registration) = &mut self.registration else {
+            return Ok(());
+        };
+
+        if let Err(error) = registration.finish() {
+            // just log error and continue as registration config is recoverable
+            tracing::error!("Failed to finish the registration: {error}");
+        };
         Ok(())
     }
 
