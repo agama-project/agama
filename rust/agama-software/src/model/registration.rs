@@ -69,7 +69,6 @@ pub struct Registration {
     config_files: Vec<Utf8PathBuf>,
 }
 
-
 impl Registration {
     pub fn builder(root_dir: Utf8PathBuf, product: &str, version: &str) -> RegistrationBuilder {
         RegistrationBuilder::new(root_dir, product, version)
@@ -198,7 +197,8 @@ impl Registration {
     // Writes to target system all registration configuration that is needed
     pub fn finish(&mut self) -> Result<(), RegistrationError> {
         suseconnect_agama::write_config(self.connect_params.clone())?;
-        self.config_files.push(suseconnect_agama::DEFAULT_CONFIG_FILE.into());
+        self.config_files
+            .push(suseconnect_agama::DEFAULT_CONFIG_FILE.into());
         self.copy_files()?;
         Ok(())
     }
@@ -208,7 +208,8 @@ impl Registration {
             tracing::info!("Copying credentials file {path:?}");
             let target = Utf8PathBuf::from("/mnt");
             let target_path = target.join(path);
-            std::fs::copy(path, target_path).map_err(|e| RegistrationError::IO(path.to_string(), e));
+            std::fs::copy(path, target_path)
+                .map_err(|e| RegistrationError::IO(path.to_string(), e));
         }
 
         Ok(())
