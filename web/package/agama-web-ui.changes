@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Jan 20 00:53:06 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Avoid flicker on the product selection page by deferring the
+  display of current product information
+  (gh#agama-project/agama#3049).
+  
+-------------------------------------------------------------------
 Mon Jan 19 23:48:20 UTC 2026 - David Diaz <dgonzalez@suse.com>
 
 - Internal fix to prevent warnings (not visible for users) in the
