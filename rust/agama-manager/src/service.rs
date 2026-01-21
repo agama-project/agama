@@ -688,6 +688,12 @@ impl MessageHandler<message::GetLicense> for Service {
 impl MessageHandler<message::RunAction> for Service {
     /// It runs the given action.
     async fn handle(&mut self, message: message::RunAction) -> Result<(), Error> {
+        let issues = self.issues.call(issue::message::Get).await?;
+
+        if !issues.is_empty() {
+            return Err(Error::InstallationBlocked);
+        }
+
         match message.action {
             Action::ConfigureL10n(config) => {
                 self.check_stage(Stage::Configuring).await?;
