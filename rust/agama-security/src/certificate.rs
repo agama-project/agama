@@ -164,11 +164,11 @@ mod tests {
         );
         assert_eq!(
             data.get("sha1").unwrap(),
-            &"5d:f7:68:ce:de:96:4c:dc:ea:84:e0:35:09:7a:9d:5f:af:b3:25:f4".to_string()
+            &"5D:F7:68:CE:DE:96:4C:DC:EA:84:E0:35:09:7A:9D:5F:AF:B3:25:F4".to_string()
         );
         assert_eq!(
             data.get("sha256").unwrap(),
-            &"18:c0:d9:dc:9d:a9:93:6b:52:79:39:62:39:49:17:9f:0b:9f:ad:95:83:a5:d6:5b:02:16:62:f4:4b:18:1a:79".to_string()
+            &"18:C0:D9:DC:9D:A9:93:6B:52:79:39:62:39:49:17:9F:0B:9F:AD:95:83:A5:D6:5B:02:16:62:F4:4B:18:1A:79".to_string()
         );
     }
 }

@@ -48,7 +48,7 @@ pub struct SSLFingerprint {
     /// The string value for SSL certificate fingerprint.
     /// Example value is "F6:7A:ED:BB:BC:94:CF:55:9D:B3:BA:74:7A:87:05:EF:67:4E:C2:DB"
     #[serde(deserialize_with = "serialize_fingerprint")]
-    pub fingerprint: String,
+    fingerprint: String,
     /// Algorithm used to compute SSL certificate fingerprint.
     /// Supported options are "SHA1" and "SHA256"
     #[serde(default)]
@@ -56,20 +56,21 @@ pub struct SSLFingerprint {
 }
 
 impl SSLFingerprint {
-    /// Helper function to creaate a SHA1 fingerprint.
-    pub fn sha1(fingerprint: &str) -> Self {
+    pub fn new(fingerprint: &str, algorithm: SSLFingerprintAlgorithm) -> Self {
         Self {
             fingerprint: normalize_fingerprint(fingerprint),
-            algorithm: SSLFingerprintAlgorithm::SHA1,
+            algorithm,
         }
+    }
+
+    /// Helper function to creaate a SHA1 fingerprint.
+    pub fn sha1(fingerprint: &str) -> Self {
+        new(fingerprint, SSLFingerprintAlgorithm::SHA1)
     }
 
     /// Helper function to creaate a SHA256 fingerprint.
     pub fn sha256(fingerprint: &str) -> Self {
-        Self {
-            fingerprint: normalize_fingerprint(fingerprint),
-            algorithm: SSLFingerprintAlgorithm::SHA256,
-        }
+        new(fingerprint, SSLFingerprintAlgorithm::SHA256)
     }
 }
 
