@@ -98,10 +98,6 @@ impl Certificate {
             data.insert("issuer".to_string(), common_name);
         }
 
-        if let Some(ou) = Self::extract_entry(issuer_name, Nid::ORGANIZATIONALUNITNAME) {
-            data.insert("organizationalUnit".to_string(), ou);
-        }
-
         if let Some(o) = Self::extract_entry(issuer_name, Nid::ORGANIZATIONNAME) {
             data.insert("organization".to_string(), o);
         }
