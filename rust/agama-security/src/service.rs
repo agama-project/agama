@@ -18,7 +18,10 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use std::path::{Path, PathBuf};
+use std::{
+    path::{Path, PathBuf},
+    process,
+};
 
 use agama_utils::{
     actor::{self, Actor, Handler, MessageHandler},
@@ -39,6 +42,10 @@ pub enum Error {
     Actor(#[from] actor::Error),
     #[error("Could not write the certificate: {0}")]
     CertificateIO(#[source] std::io::Error),
+    #[error("Could not update the certificates database: {0}")]
+    CaCertificates(String),
+    #[error(transparent)]
+    IO(#[from] std::io::Error),
 }
 
 pub struct Starter {
@@ -156,7 +163,7 @@ impl State {
     /// Copy the certificates to the given directory.
     ///
     /// * `directory`: directory to copy the certificates.
-    pub fn copy_certificates(&self, directory: &Path) {
+    pub fn copy_certificates(&self, directory: &Path) -> Result<(), Error> {
         let workdir = self.workdir.strip_prefix("/").unwrap_or(&self.workdir);
         let target_directory = directory.join(workdir);
         for name in &self.imported {
@@ -164,11 +171,26 @@ impl State {
             let source = self.workdir.join(&filename);
             let destination = target_directory.join(&filename);
 
-            println!("COPYING {} {}", source.display(), destination.display());
             if let Err(error) = std::fs::copy(source, destination) {
                 tracing::warn!("Failed to write the certificate to {filename}: {error}",);
             }
         }
+
+        let output = process::Command::new("update-ca-certificates")
+            .arg("--root")
+            .arg(&directory)
+            .output()?;
+
+        if !output.status.success() {
+            tracing::warn!(
+                "Failed to update the certificates database at {}",
+                &directory.display()
+            );
+            let stderr = String::from_utf8_lossy(&output.stderr);
+            return Err(Error::CaCertificates(stderr.to_string()));
+        }
+
+        Ok(())
     }
 
     fn contains(list: &[SSLFingerprint], certificate: &Certificate) -> bool {
@@ -299,7 +321,9 @@ impl MessageHandler<message::CheckCertificate> for Service {
 #[async_trait]
 impl MessageHandler<message::Finish> for Service {
     async fn handle(&mut self, _message: message::Finish) -> Result<(), Error> {
-        self.state.copy_certificates(&self.install_dir);
+        if let Err(error) = self.state.copy_certificates(&self.install_dir) {
+            tracing::error!("Failed to update the certificates on the target system: {error}");
+        }
         Ok(())
     }
 }
