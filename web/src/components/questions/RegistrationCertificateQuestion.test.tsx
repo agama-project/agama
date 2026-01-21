@@ -37,12 +37,11 @@ const question: Question = {
   ],
   defaultAction: "yes",
   data: {
-    url: "https://test.com",
-    issuer_name: "test",
-    issue_date: "01-01-2025",
-    expiration_date: "01-01-2030",
-    sha1_fingerprint: "AA:BB:CC",
-    sha256_fingerprint: "11:22:33:44:55",
+    organization: "test",
+    issueDate: "01-01-2025",
+    expirationDate: "01-01-2030",
+    sha1: "AA:BB:CC",
+    sha256: "11:22:33:44:55",
   },
 };
 
@@ -61,10 +60,9 @@ it("renders the certificate data", async () => {
   renderQuestion();
 
   const data = question.data;
-  await screen.findByText(data.url);
-  await screen.findByText(data.issuer_name);
-  await screen.findByText(data.issue_date);
-  await screen.findByText(data.expiration_date);
-  await screen.findByText(data.sha1_fingerprint);
-  await screen.findByText(data.sha256_fingerprint);
+  await screen.findByText(data.organization);
+  await screen.findByText(data.issueDate);
+  await screen.findByText(data.expirationDate);
+  await screen.findByText(data.sha1);
+  await screen.findByText(data.sha256);
 });
