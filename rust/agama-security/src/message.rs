@@ -42,16 +42,34 @@ impl<T> SetConfig<T> {
     }
 }
 
+/// Message to check an SSL certificate.
 pub struct CheckCertificate {
     pub certificate: X509,
+    pub name: String,
 }
 
 impl CheckCertificate {
-    pub fn new(certificate: X509) -> Self {
-        Self { certificate }
+    /// Creates the message.
+    ///
+    /// * `certificate`: X509 certificate.
+    /// * `name`: certificate name. It is used as the filename (without the extension) when
+    ///    importing the certificate.
+    pub fn new(certificate: X509, name: &str) -> Self {
+        Self {
+            certificate,
+            name: name.to_string(),
+        }
     }
 }
 
 impl Message for CheckCertificate {
     type Reply = bool;
+}
+
+/// Execute actions at the end of the installation.
+#[derive(Clone)]
+pub struct Finish;
+
+impl Message for Finish {
+    type Reply = ();
 }

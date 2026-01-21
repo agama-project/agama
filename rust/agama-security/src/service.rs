@@ -18,7 +18,7 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 
 use agama_utils::{
     actor::{self, Actor, Handler, MessageHandler},
@@ -31,6 +31,7 @@ use gettextrs::gettext;
 use crate::{certificate::Certificate, message};
 
 const DEFAULT_WORKDIR: &str = "/etc/pki/trust/anchors";
+const DEFAULT_INSTALL_DIR: &str = "/mnt";
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
@@ -43,6 +44,7 @@ pub enum Error {
 pub struct Starter {
     questions: Handler<question::Service>,
     workdir: PathBuf,
+    install_dir: PathBuf,
 }
 
 impl Starter {
@@ -50,7 +52,13 @@ impl Starter {
         Self {
             questions,
             workdir: PathBuf::from(DEFAULT_WORKDIR),
+            install_dir: PathBuf::from(DEFAULT_INSTALL_DIR),
         }
+    }
+
+    pub fn with_install_dir<P: AsRef<Path>>(mut self, install_dir: P) -> Self {
+        self.install_dir = PathBuf::from(install_dir.as_ref());
+        self
     }
 
     pub fn with_workdir(mut self, workdir: &PathBuf) -> Self {
@@ -62,6 +70,7 @@ impl Starter {
         let service = Service {
             questions: self.questions,
             state: State::new(self.workdir),
+            install_dir: self.install_dir.clone(),
         };
         let handler = actor::spawn(service);
         Ok(handler)
@@ -72,7 +81,7 @@ impl Starter {
 struct State {
     trusted: Vec<SSLFingerprint>,
     rejected: Vec<SSLFingerprint>,
-    imported: Vec<PathBuf>,
+    imported: Vec<String>,
     workdir: PathBuf,
 }
 
@@ -97,12 +106,12 @@ impl State {
         }
     }
 
-    pub fn import(&mut self, certificate: &Certificate) -> Result<(), Error> {
-        let path = self.workdir.join("registration_server.pem");
+    pub fn import(&mut self, certificate: &Certificate, name: &str) -> Result<(), Error> {
+        let path = self.workdir.join(format!("{name}.pem"));
         certificate
             .import(&path)
             .map_err(|e| Error::CertificateIO(e))?;
-        self.imported.push(path);
+        self.imported.push(name.to_string());
         Ok(())
     }
 
@@ -118,6 +127,21 @@ impl State {
 
     pub fn reset(&mut self) {
         self.trusted.clear();
+    }
+
+    pub fn copy_certificates(&self, directory: &Path) {
+        let workdir = self.workdir.strip_prefix("/").unwrap_or(&self.workdir);
+        let target_directory = directory.join(workdir);
+        for name in &self.imported {
+            let filename = format!("{name}.pem");
+            let source = self.workdir.join(&filename);
+            let destination = target_directory.join(&filename);
+
+            println!("COPYING {} {}", source.display(), destination.display());
+            if let Err(error) = std::fs::copy(source, destination) {
+                tracing::warn!("Failed to write the certificate to {filename}: {error}",);
+            }
+        }
     }
 
     fn contains(list: &[SSLFingerprint], certificate: &Certificate) -> bool {
@@ -140,6 +164,7 @@ impl State {
 pub struct Service {
     questions: Handler<question::Service>,
     state: State,
+    install_dir: PathBuf,
 }
 
 impl Service {
@@ -224,19 +249,27 @@ impl MessageHandler<message::CheckCertificate> for Service {
         if trusted {
             // import in case it was not previously imported
             tracing::info!("Importing already trusted certificate {fingerprint}");
-            self.state.import(&certificate)?;
+            self.state.import(&certificate, &message.name)?;
             return Ok(true);
         }
 
         if self.should_trust_certificate(&certificate).await {
             tracing::info!("The user trusts certificate {fingerprint}");
             self.state.trust(&certificate);
-            self.state.import(&certificate)?;
+            self.state.import(&certificate, &message.name)?;
             return Ok(true);
         } else {
             tracing::info!("The user rejects the certificate {fingerprint}");
             self.state.reject(&certificate);
             return Ok(false);
         }
+    }
+}
+
+#[async_trait]
+impl MessageHandler<message::Finish> for Service {
+    async fn handle(&mut self, _message: message::Finish) -> Result<(), Error> {
+        self.state.copy_certificates(&self.install_dir);
+        Ok(())
     }
 }

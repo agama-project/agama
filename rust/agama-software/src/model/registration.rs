@@ -399,7 +399,10 @@ pub fn should_trust_certificate(
     let certificate = certificate.clone();
     let handle = rt.spawn(async move {
         security_srv
-            .call(security::message::CheckCertificate::new(certificate))
+            .call(security::message::CheckCertificate::new(
+                certificate,
+                "registration_server",
+            ))
             .await
     });
     rt.block_on(handle).unwrap()

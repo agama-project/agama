@@ -65,12 +65,12 @@ impl SSLFingerprint {
 
     /// Helper function to creaate a SHA1 fingerprint.
     pub fn sha1(fingerprint: &str) -> Self {
-        new(fingerprint, SSLFingerprintAlgorithm::SHA1)
+        Self::new(fingerprint, SSLFingerprintAlgorithm::SHA1)
     }
 
     /// Helper function to creaate a SHA256 fingerprint.
     pub fn sha256(fingerprint: &str) -> Self {
-        new(fingerprint, SSLFingerprintAlgorithm::SHA256)
+        Self::new(fingerprint, SSLFingerprintAlgorithm::SHA256)
     }
 }
 

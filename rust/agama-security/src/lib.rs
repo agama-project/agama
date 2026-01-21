@@ -52,13 +52,18 @@ mod tests {
         handler: Handler<Service>,
         questions: Handler<question::Service>,
         _tmp_dir: TempDir,
+        workdir: PathBuf,
+        install_dir: PathBuf,
         _events_rx: broadcast::Receiver<Event>,
     }
 
     impl AsyncTestContext for Context {
         async fn setup() -> Context {
             let tmp_dir = TempDir::new().expect("Could not create temp dir");
-            let workdir = tmp_dir.path().to_path_buf();
+            let workdir = tmp_dir.path().join("etc/pki/trust/anchors").to_path_buf();
+            std::fs::create_dir_all(&workdir).unwrap();
+            let install_dir = tmp_dir.path().join("mnt").to_path_buf();
+            std::fs::create_dir_all(&install_dir).unwrap();
 
             let bin_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
                 .parent()
@@ -79,6 +84,7 @@ mod tests {
 
             let handler = Service::starter(questions.clone())
                 .with_workdir(&workdir)
+                .with_install_dir(&install_dir)
                 .start()
                 .expect("Could not start the security service");
 
@@ -86,6 +92,8 @@ mod tests {
                 handler,
                 questions,
                 _tmp_dir: tmp_dir,
+                install_dir,
+                workdir,
                 _events_rx: events_rx,
             }
         }
@@ -125,10 +133,16 @@ mod tests {
         // Check the certificate
         let valid = ctx
             .handler
-            .call(message::CheckCertificate::new(cert))
+            .call(message::CheckCertificate::new(cert, "registration"))
             .await?;
 
         assert!(valid);
+
+        // Check that the file is copied at the end of the installation.
+        ctx.handler.call(message::Finish).await?;
+        assert!(
+            std::fs::exists(ctx.install_dir.join(ctx.workdir.join("registration.pem"))).unwrap()
+        );
 
         Ok(())
     }
@@ -171,7 +185,7 @@ mod tests {
         // Check the certificate
         let valid = ctx
             .handler
-            .call(message::CheckCertificate::new(cert))
+            .call(message::CheckCertificate::new(cert, "registration"))
             .await?;
 
         assert!(valid);
@@ -217,7 +231,7 @@ mod tests {
         // Check the certificate
         let valid = ctx
             .handler
-            .call(message::CheckCertificate::new(cert))
+            .call(message::CheckCertificate::new(cert, "registration"))
             .await?;
 
         assert!(!valid);
@@ -263,7 +277,7 @@ mod tests {
         // Check the certificate (first time)
         let valid = ctx
             .handler
-            .call(message::CheckCertificate::new(cert.clone()))
+            .call(message::CheckCertificate::new(cert.clone(), "registration"))
             .await?;
 
         assert!(valid);
@@ -271,7 +285,7 @@ mod tests {
         // Check the certificate again (should be remembered)
         let valid_again = ctx
             .handler
-            .call(message::CheckCertificate::new(cert))
+            .call(message::CheckCertificate::new(cert, "registration"))
             .await?;
 
         assert!(valid_again);
@@ -279,4 +293,3 @@ mod tests {
         Ok(())
     }
 }
-
