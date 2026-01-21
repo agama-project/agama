@@ -689,8 +689,9 @@ impl MessageHandler<message::RunAction> for Service {
     /// It runs the given action.
     async fn handle(&mut self, message: message::RunAction) -> Result<(), Error> {
         let issues = self.issues.call(issue::message::Get).await?;
+        let progress = self.progress.call(progress::message::GetProgress).await?;
 
-        if !issues.is_empty() {
+        if !issues.is_empty() || !progress.is_empty() {
             return Err(Error::InstallationBlocked);
         }
 
