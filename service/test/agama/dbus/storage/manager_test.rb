@@ -28,7 +28,6 @@ require "agama/storage/manager"
 require "agama/storage/proposal"
 require "agama/storage/proposal_settings"
 require "agama/storage/volume"
-require "agama/storage/iscsi/manager"
 require "agama/storage/dasd/manager"
 require "agama/dbus/storage/dasds_tree"
 require "y2storage"
@@ -57,14 +56,6 @@ describe Agama::DBus::Storage::Manager do
 
   let(:config_data) { {} }
 
-  let(:iscsi) do
-    instance_double(Agama::Storage::ISCSI::Manager,
-      on_activate:        nil,
-      on_probe:           nil,
-      on_sessions_change: nil,
-      configured?:        true)
-  end
-
   before do
     # Speed up tests by avoiding real check of TPM presence.
     allow(Y2Storage::EncryptionMethod::TPM_FDE).to receive(:possible?).and_return(true)
@@ -77,7 +68,6 @@ describe Agama::DBus::Storage::Manager do
     allow(backend).to receive(:on_configure)
     allow(backend).to receive(:on_issues_change)
     allow(backend).to receive(:actions).and_return([])
-    allow(backend).to receive(:iscsi).and_return(iscsi)
     allow(backend).to receive(:proposal).and_return(proposal)
     mock_storage(devicegraph: "empty-hd-50GiB.yaml")
   end
@@ -1209,146 +1199,6 @@ describe Agama::DBus::Storage::Manager do
             description: /boot device cannot be automatically/i
           )
         )
-      end
-    end
-  end
-
-  describe "#iscsi_discover" do
-    it "performs an iSCSI discovery" do
-      expect(iscsi).to receive(:discover).with("192.168.100.90", 3260, anything)
-
-      subject.iscsi_discover("192.168.100.90", 3260)
-    end
-
-    context "when no authentication options are given" do
-      it "uses empty credentials" do
-        expect(iscsi).to receive(:discover) do |_, _, discover_options|
-          expect(discover_options[:credentials]).to eq({
-            username:           nil,
-            password:           nil,
-            initiator_username: nil,
-            initiator_password: nil
-          })
-        end
-
-        subject.iscsi_discover("192.168.100.90", 3260)
-      end
-    end
-
-    context "when authentication options are given" do
-      let(:options) do
-        {
-          "Username"        => "target",
-          "Password"        => "12345",
-          "ReverseUsername" => "initiator",
-          "ReversePassword" => "54321"
-        }
-      end
-
-      it "uses the expected crendentials" do
-        expect(iscsi).to receive(:discover) do |_, _, discover_options|
-          expect(discover_options[:credentials]).to eq({
-            username:           "target",
-            password:           "12345",
-            initiator_username: "initiator",
-            initiator_password: "54321"
-          })
-        end
-
-        subject.iscsi_discover("192.168.100.90", 3260, options)
-      end
-    end
-
-    context "when the action successes" do
-      before do
-        allow(iscsi).to receive(:discover).and_return(true)
-      end
-
-      it "returns 0" do
-        result = subject.iscsi_discover("192.168.100.90", 3260)
-
-        expect(result).to eq(0)
-      end
-    end
-
-    context "when the action fails" do
-      before do
-        allow(iscsi).to receive(:discover).and_return(false)
-      end
-
-      it "returns 1" do
-        result = subject.iscsi_discover("192.168.100.90", 3260)
-
-        expect(result).to eq(1)
-      end
-    end
-  end
-
-  describe "#iscsi_delete" do
-    before do
-      allow(Agama::DBus::Storage::ISCSINodesTree)
-        .to receive(:new).and_return(iscsi_nodes_tree)
-    end
-
-    let(:iscsi_nodes_tree) { instance_double(Agama::DBus::Storage::ISCSINodesTree) }
-
-    let(:path) { "/org/opensuse/Agama/Storage1/iscsi_nodes/1" }
-
-    context "when the requested path for deleting is not exported yet" do
-      before do
-        allow(iscsi_nodes_tree).to receive(:find).with(path).and_return(nil)
-      end
-
-      it "does not delete the iSCSI node" do
-        expect(iscsi).to_not receive(:delete)
-
-        subject.iscsi_delete(path)
-      end
-
-      it "returns 1" do
-        result = subject.iscsi_delete(path)
-
-        expect(result).to eq(1)
-      end
-    end
-
-    context "when the requested path for deleting is exported" do
-      before do
-        allow(iscsi_nodes_tree).to receive(:find).with(path).and_return(dbus_node)
-      end
-
-      let(:dbus_node) { Agama::DBus::Storage::ISCSINode.new(iscsi, node, path) }
-
-      let(:node) { Agama::Storage::ISCSI::Node.new }
-
-      it "deletes the iSCSI node" do
-        expect(iscsi).to receive(:delete).with(node)
-
-        subject.iscsi_delete(path)
-      end
-
-      context "and the action successes" do
-        before do
-          allow(iscsi).to receive(:delete).with(node).and_return(true)
-        end
-
-        it "returns 0" do
-          result = subject.iscsi_delete(path)
-
-          expect(result).to eq(0)
-        end
-      end
-
-      context "and the action fails" do
-        before do
-          allow(iscsi).to receive(:delete).with(node).and_return(false)
-        end
-
-        it "returns 2" do
-          result = subject.iscsi_delete(path)
-
-          expect(result).to eq(2)
-        end
       end
     end
   end

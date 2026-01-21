@@ -20,8 +20,6 @@
 # find current contact information at www.suse.com.
 
 require_relative "../../test_helper"
-require_relative "../with_progress_examples"
-require_relative "../with_issues_examples"
 require_relative "storage_helpers"
 require "agama/http/clients"
 require "agama/config"
@@ -79,15 +77,10 @@ describe Agama::Storage::Manager do
 
   describe "#activate" do
     before do
-      allow(Agama::Storage::ISCSI::Manager).to receive(:new).and_return(iscsi)
-      allow(iscsi).to receive(:activate)
       allow(y2storage_manager).to receive(:activate)
     end
 
-    let(:iscsi) { Agama::Storage::ISCSI::Manager.new }
-
-    it "activates iSCSI and devices managed by Y2Storage" do
-      expect(iscsi).to receive(:activate)
+    it "activates devices managed by Y2Storage" do
       expect(y2storage_manager).to receive(:activate) do |callbacks|
         expect(callbacks).to be_a(Agama::Storage::Callbacks::Activate)
       end
@@ -109,7 +102,6 @@ describe Agama::Storage::Manager do
 
   describe "#probe" do
     before do
-      allow(Agama::Storage::ISCSI::Manager).to receive(:new).and_return(iscsi)
       allow(proposal).to receive(:calculate_from_json).and_return(true)
       allow(proposal).to receive(:success?).and_return(true)
     end
@@ -117,7 +109,6 @@ describe Agama::Storage::Manager do
     let(:iscsi) { Agama::Storage::ISCSI::Manager.new }
 
     it "probes the storage devices" do
-      expect(iscsi).to receive(:probe)
       expect(y2storage_manager).to receive(:probe) do |callbacks|
         expect(callbacks).to be_a(Y2Storage::Callbacks::UserProbe)
       end
@@ -327,20 +318,6 @@ describe Agama::Storage::Manager do
       storage.add_packages
     end
 
-    context "if iSCSI was configured" do
-      before do
-        allow_any_instance_of(Agama::Storage::ISCSI::Manager)
-          .to receive(:configured?).and_return(true)
-      end
-
-      it "adds the iSCSI software to install" do
-        expect(http_client).to receive(:set_resolvables)
-          .with("storage_proposal", :package, match(include("iscsiuio")))
-
-        storage.add_packages
-      end
-    end
-
     context "if iSCSI was used" do
       before do
         allow_any_instance_of(Agama::Storage::ISCSI::Manager)
@@ -431,8 +408,4 @@ describe Agama::Storage::Manager do
       end
     end
   end
-
-  include_examples "progress"
-
-  include_examples "issues"
 end
