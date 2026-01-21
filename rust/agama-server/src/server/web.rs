@@ -22,8 +22,8 @@
 
 use crate::server::config_schema;
 use agama_lib::{error::ServiceError, logs};
-use agama_manager::{self as manager, message};
 use agama_manager::service::Error::InstallationBlocked;
+use agama_manager::{self as manager, message};
 use agama_software::Resolvable;
 use agama_utils::{
     actor::Handler,
