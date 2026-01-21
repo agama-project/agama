@@ -48,7 +48,6 @@ import {
   Page,
   SelectWrapper as Select,
   SubtleContent,
-  IssuesAlert,
 } from "~/components/core";
 // import RegistrationExtension from "./RegistrationExtension";
 import RegistrationCodeInput from "./RegistrationCodeInput";
@@ -61,8 +60,10 @@ import { useProposal } from "~/hooks/model/proposal";
 import { useSystem } from "~/hooks/model/system/software";
 import { useProduct, useProductInfo } from "~/hooks/model/config/product";
 import { useIssues } from "~/hooks/model/issue";
-import { patchConfig } from "~/api";
+import { putConfig } from "~/api";
 import { Navigate } from "react-router";
+import { Issue } from "~/model/issue";
+import { useConfig } from "~/hooks/model/config";
 
 const FORM_ID = "productRegistration";
 const SERVER_LABEL = N_("Registration server");
@@ -275,6 +276,7 @@ const RegistrationFormSection = () => {
   const [requestError, setRequestError] = useState<string | null>(null);
   const [errors, setErrors] = useState<string[]>([]);
   const [loading] = useState(false);
+  const config = useConfig();
   const product = useProduct();
 
   useEffect(() => {
@@ -320,7 +322,8 @@ const RegistrationFormSection = () => {
 
     if (!isEmpty(errors)) return;
 
-    patchConfig({
+    putConfig({
+      ...config,
       product: {
         id: product.id,
         registrationCode: isKeyRequired ? key : undefined,
@@ -426,11 +429,18 @@ const HostnameAlert = () => {
 //   );
 // };
 
+const RegistrationIssueAlert = ({ issue }: { issue: Issue }) => {
+  return (
+    <Alert variant="danger" title={issue.description}>
+      {issue.details && <p>{issue.details}</p>}
+    </Alert>
+  );
+};
 export default function ProductRegistrationPage() {
   const product = useProductInfo();
   const { registration } = useSystem();
   const issues = useIssues("software");
-  const showIssues = issues.find((i) => i.class === "software.register_system") !== undefined;
+  const registrationIssue = issues.find((i) => i.class === "software.register_system");
 
   // TODO: render something meaningful instead? "Product not registrable"?
   if (!product || !product.registration) return <Navigate to={ROOT.overview} />;
@@ -438,8 +448,8 @@ export default function ProductRegistrationPage() {
   return (
     <Page breadcrumbs={[{ label: _("Registration") }]} progress={{ scope: "software" }}>
       <Page.Content>
-        {showIssues && <IssuesAlert issues={issues} />}
         {!registration && <HostnameAlert />}
+        {registrationIssue && <RegistrationIssueAlert issue={registrationIssue} />}
         {!registration ? <RegistrationFormSection /> : <RegisteredProductSection />}
         {/* {registration && <Extensions />} */}
       </Page.Content>
