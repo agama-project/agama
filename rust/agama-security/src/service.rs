@@ -92,6 +92,10 @@ impl State {
             ..Default::default()
         }
     }
+
+    /// Trust the given certificate.
+    ///
+    /// * `certificate`: certificate to trust.
     pub fn trust(&mut self, certificate: &Certificate) {
         match certificate.fingerprint() {
             Some(fingerprint) => self.trusted.push(fingerprint),
@@ -99,6 +103,9 @@ impl State {
         }
     }
 
+    /// Reject the given certificate.
+    ///
+    /// * `certificate`: certificate to import.
     pub fn reject(&mut self, certificate: &Certificate) {
         match certificate.fingerprint() {
             Some(fingerprint) => self.rejected.push(fingerprint),
@@ -106,6 +113,12 @@ impl State {
         }
     }
 
+    /// Import the given certificate.
+    ///
+    /// It will be copied to the running system using the given name.
+    ///
+    /// * `certificate`: certificate to import.
+    /// * `name`: certificate name (e.g., "registration_server")
     pub fn import(&mut self, certificate: &Certificate, name: &str) -> Result<(), Error> {
         let path = self.workdir.join(format!("{name}.pem"));
         certificate
@@ -116,19 +129,33 @@ impl State {
     }
 
     /// Determines whether the certificate is trusted.
+    ///
+    /// It checks whether its SHA1 or SHA256 fingerprint are included in the list of trusted
+    /// certificates.
+    ///
+    /// * `certificate`: certificate to check.
     pub fn is_trusted(&self, certificate: &Certificate) -> bool {
         Self::contains(&self.trusted, certificate)
     }
 
     /// Determines whether the certificate was rejected.
+    ///
+    /// It checks whether its SHA1 or SHA256 fingerprint are included in the list of rejected
+    /// certificates.
     pub fn is_rejected(&self, certificate: &Certificate) -> bool {
         Self::contains(&self.rejected, certificate)
     }
 
+    /// Reset the list of trusted certificates.
+    ///
+    /// Beware that it does not remove the already imported certificates.
     pub fn reset(&mut self) {
         self.trusted.clear();
     }
 
+    /// Copy the certificates to the given directory.
+    ///
+    /// * `directory`: directory to copy the certificates.
     pub fn copy_certificates(&self, directory: &Path) {
         let workdir = self.workdir.strip_prefix("/").unwrap_or(&self.workdir);
         let target_directory = directory.join(workdir);
@@ -172,6 +199,9 @@ impl Service {
         Starter::new(questions)
     }
 
+    /// Asks the user whether to trust the certificate.
+    ///
+    /// * `certificate`: certificate to check.
     pub async fn should_trust_certificate(&self, certificate: &Certificate) -> bool {
         let labels = [gettext("Trust"), gettext("Reject")];
         let msg = gettext("Trying to import a self-signed certificate. Do you want to trust it and register the product?");
