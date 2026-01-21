@@ -202,11 +202,11 @@ impl NetworkState {
         match command.output().await {
             Ok(output) => {
                 if !output.status.success() {
-                    tracing::error!("Failed to enable NetworkManager service: {output:?}")
+                    tracing::error!("Failed to enable the NetworkManager service: {output:?}")
                 }
             }
             Err(error) => {
-                tracing::error!("Failed to run the enable NetworkManager service command: {error}");
+                tracing::error!("Failed to run the command to enable the NetworkManager service command: {error}");
             }
         }
 
