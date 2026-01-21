@@ -21,7 +21,6 @@
 
 use merge::Merge;
 use serde::{Deserialize, Deserializer, Serialize};
-use serde_with::serde_as;
 
 /// Security settings for installation
 #[derive(Clone, Debug, Default, Serialize, Deserialize, Merge, utoipa::ToSchema)]
@@ -35,35 +34,20 @@ pub struct Config {
     pub ssl_certificates: Option<Vec<SSLFingerprint>>,
 }
 
-#[derive(
-    Default,
-    Clone,
-    Copy,
-    Debug,
-    strum::IntoStaticStr,
-    strum::EnumString,
-    Serialize,
-    Deserialize,
-    PartialEq,
-    utoipa::ToSchema,
-)]
-#[strum(ascii_case_insensitive)]
-// #[strum(
-//   parse_err_fn = alg_not_found_err,
-//   parse_err_ty = ServiceError,
-// )]
+#[derive(Default, Clone, Copy, Debug, Serialize, Deserialize, PartialEq, utoipa::ToSchema)]
 pub enum SSLFingerprintAlgorithm {
+    #[serde(alias = "sha1", alias = "SHA1")]
     SHA1,
+    #[serde(alias = "sha256", alias = "SHA256")]
     #[default]
     SHA256,
 }
 
-#[serde_as]
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, utoipa::ToSchema)]
 pub struct SSLFingerprint {
     /// The string value for SSL certificate fingerprint.
     /// Example value is "F6:7A:ED:BB:BC:94:CF:55:9D:B3:BA:74:7A:87:05:EF:67:4E:C2:DB"
-    #[serde_with(serialize_fingerprint)]
+    #[serde(deserialize_with = "serialize_fingerprint")]
     pub fingerprint: String,
     /// Algorithm used to compute SSL certificate fingerprint.
     /// Supported options are "SHA1" and "SHA256"
@@ -71,11 +55,8 @@ pub struct SSLFingerprint {
     pub algorithm: SSLFingerprintAlgorithm,
 }
 
-// fn alg_not_found_err(s: &str) -> ServiceError {
-//     ServiceError::UnsupportedSSLFingerprintAlgorithm(s.to_string())
-// }
-
 impl SSLFingerprint {
+    /// Helper function to creaate a SHA1 fingerprint.
     pub fn sha1(fingerprint: &str) -> Self {
         Self {
             fingerprint: normalize_fingerprint(fingerprint),
@@ -83,6 +64,7 @@ impl SSLFingerprint {
         }
     }
 
+    /// Helper function to creaate a SHA256 fingerprint.
     pub fn sha256(fingerprint: &str) -> Self {
         Self {
             fingerprint: normalize_fingerprint(fingerprint),
@@ -101,14 +83,30 @@ fn serialize_fingerprint<'de, D>(deserializer: D) -> Result<String, D::Error>
 where
     D: Deserializer<'de>,
 {
-    // 1. Deserialize the value into a temporary String
     let s: String = Deserialize::deserialize(deserializer)?;
-
-    // 2. Preprocess: remove spaces and convert to lowercase
-    // We use .replace(" ", "") to remove all spaces, or .trim() for just ends
-    Ok(s.replace(' ', "").to_lowercase())
+    Ok(normalize_fingerprint(s.as_str()))
 }
 
+/// Remove spaces and convert to uppercase
 fn normalize_fingerprint(fingerprint: &str) -> String {
-    fingerprint.replace(' ', "").to_lowercase()
+    fingerprint.replace(' ', "").to_uppercase()
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_deserialize_fingerprint() {
+        let json = r#"
+          { "fingerprint": "f6:7a:ED:BB:BC:94:CF:55:9D:B3:BA:74:7A:87:05:EF:67:4E:C2:DB", "algorithm": "sha256" }
+        "#;
+
+        let fingerprint: SSLFingerprint = serde_json::from_str(json).unwrap();
+        assert_eq!(
+            &fingerprint.fingerprint,
+            "F6:7A:ED:BB:BC:94:CF:55:9D:B3:BA:74:7A:87:05:EF:67:4E:C2:DB"
+        );
+        assert_eq!(fingerprint.algorithm, SSLFingerprintAlgorithm::SHA256);
+    }
 }
