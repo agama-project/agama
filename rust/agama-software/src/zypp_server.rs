@@ -18,6 +18,7 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
+use agama_security as security;
 use agama_utils::{
     actor::Handler,
     api::{
@@ -39,7 +40,10 @@ use zypp_agama::{errors::ZyppResult, ZyppError};
 
 use crate::{
     callbacks,
-    model::state::{self, SoftwareState},
+    model::{
+        registration::RegistrationError,
+        state::{self, SoftwareState},
+    },
     state::{Addon, RegistrationState, ResolvableSelection},
     Registration, ResolvableType,
 };
@@ -76,6 +80,9 @@ pub enum ZyppServerError {
 
     #[error("Could not find a mount point to calculate the used space")]
     MissingMountPoint,
+
+    #[error("SSL error: {0}")]
+    SSL(#[from] openssl::error::ErrorStack),
 }
 
 pub type ZyppServerResult<R> = Result<R, ZyppServerError>;
@@ -96,14 +103,24 @@ pub enum SoftwareAction {
         state: SoftwareState,
         progress: Handler<progress::Service>,
         question: Handler<question::Service>,
+        security: Handler<security::Service>,
         tx: oneshot::Sender<ZyppServerResult<Vec<Issue>>>,
     },
+}
+
+/// Registration status.
+#[derive(Default)]
+pub enum RegistrationStatus {
+    #[default]
+    NotRegistered,
+    Registered(Registration),
+    Failed(RegistrationError),
 }
 
 /// Software service server.
 pub struct ZyppServer {
     receiver: mpsc::UnboundedReceiver<SoftwareAction>,
-    registration: Option<Registration>,
+    registration: RegistrationStatus,
     root_dir: Utf8PathBuf,
 }
 
@@ -119,7 +136,7 @@ impl ZyppServer {
         let server = Self {
             receiver,
             root_dir: root_dir.as_ref().to_path_buf(),
-            registration: None,
+            registration: Default::default(),
         };
 
         // drop the returned JoinHandle: the thread will be detached
@@ -172,10 +189,19 @@ impl ZyppServer {
                 state,
                 progress,
                 question,
+                security: security_srv,
                 tx,
             } => {
-                let mut security_callback = callbacks::Security::new(question);
-                self.write(state, progress, &mut security_callback, tx, zypp)?;
+                let mut security_callback = callbacks::Security::new(question.clone());
+                self.write(
+                    state,
+                    progress,
+                    question,
+                    security_srv,
+                    &mut security_callback,
+                    tx,
+                    zypp,
+                )?;
             }
             SoftwareAction::GetSystemInfo(product_spec, tx) => {
                 self.system_info(product_spec, tx, zypp)?;
@@ -251,6 +277,8 @@ impl ZyppServer {
         &mut self,
         state: SoftwareState,
         progress: Handler<progress::Service>,
+        questions: Handler<question::Service>,
+        security_srv: Handler<security::Service>,
         security: &mut callbacks::Security,
         tx: oneshot::Sender<ZyppServerResult<Vec<Issue>>>,
         zypp: &zypp_agama::Zypp,
@@ -273,9 +301,8 @@ impl ZyppServer {
         // TODO: add information about the current registration state
         let old_state = self.read(zypp)?;
 
-        // how to check whether the system is registered
         if let Some(registration_config) = &state.registration {
-            self.update_registration(registration_config, &zypp, &mut issues);
+            self.update_registration(registration_config, &zypp, &security_srv, &mut issues);
         }
 
         progress.cast(progress::message::Next::new(Scope::Software))?;
@@ -517,7 +544,13 @@ impl ZyppServer {
     ) -> Result<(), ZyppDispatchError> {
         let patterns = self.patterns(&product, zypp)?;
         let repositories = self.repositories(zypp)?;
-        let registration = self.registration.as_ref().map(|r| r.to_registration_info());
+        // let registration = self.registration.as_ref().map(|r| r.to_registration_info());
+        let registration = match &self.registration {
+            RegistrationStatus::Registered(registration) => {
+                Some(registration.to_registration_info())
+            }
+            _ => None,
+        };
 
         let system_info = SystemInfo {
             patterns,
@@ -679,15 +712,37 @@ impl ZyppServer {
             .map_err(|e| e.into())
     }
 
+    /// Update the registration status.
+    ///
+    /// Register the system and the add-ons. If it was not possible to register the system
+    /// on a previous call to this function, do not try again. Otherwise, it might fail
+    /// again.
+    ///
+    /// - `state`: wanted registration state.
+    /// - `zypp`: zypp instance.
+    /// - `issues`: list of issues to update.
     fn update_registration(
         &mut self,
         state: &RegistrationState,
         zypp: &zypp_agama::Zypp,
+        security_srv: &Handler<security::Service>,
         issues: &mut Vec<Issue>,
     ) {
-        if self.registration.is_none() {
-            self.register_base_system(state, zypp, issues);
-        }
+        match &self.registration {
+            RegistrationStatus::Failed(error) => {
+                issues.push(
+                    Issue::new(
+                        "software.register_system",
+                        &gettext("Failed to register the system"),
+                    )
+                    .with_details(&error.to_string()),
+                );
+            }
+            RegistrationStatus::NotRegistered => {
+                self.register_base_system(state, zypp, security_srv, issues);
+            }
+            RegistrationStatus::Registered(registration) => {}
+        };
 
         if !state.addons.is_empty() {
             self.register_addons(&state.addons, zypp, issues);
@@ -698,6 +753,7 @@ impl ZyppServer {
         &mut self,
         state: &RegistrationState,
         zypp: &zypp_agama::Zypp,
+        security_srv: &Handler<security::Service>,
         issues: &mut Vec<Issue>,
     ) {
         let mut registration =
@@ -712,15 +768,16 @@ impl ZyppServer {
             registration = registration.with_url(url);
         }
 
-        match registration.register(&zypp) {
+        match registration.register(&zypp, security_srv) {
             Ok(registration) => {
-                self.registration = Some(registration);
+                self.registration = RegistrationStatus::Registered(registration);
             }
             Err(error) => {
                 issues.push(
                     Issue::new("software.register_system", "Failed to register the system")
                         .with_details(&error.to_string()),
                 );
+                self.registration = RegistrationStatus::Failed(error);
             }
         }
     }
@@ -731,7 +788,7 @@ impl ZyppServer {
         zypp: &zypp_agama::Zypp,
         issues: &mut Vec<Issue>,
     ) {
-        let Some(registration) = &mut self.registration else {
+        let RegistrationStatus::Registered(registration) = &mut self.registration else {
             tracing::error!("Could not register addons because the base system is not registered");
             return;
         };

@@ -293,6 +293,11 @@ impl QuestionSpec {
             .collect::<HashMap<String, String>>();
         self
     }
+
+    pub fn with_owned_data(mut self, data: HashMap<String, String>) -> Self {
+        self.data = data;
+        self
+    }
 }
 
 /// Question field.

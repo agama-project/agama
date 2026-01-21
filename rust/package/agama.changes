@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Jan 21 11:07:34 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Allow importing SSL certificates from registration servers
+  (gh#agama-project/agama#3055).
+  
+-------------------------------------------------------------------
 Wed Jan 21 10:59:15 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
 
 - Fix enabling NetworkManager service in the target system

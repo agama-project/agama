@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Jan 21 10:48:33 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Adapt to the changes in the question about trusting
+  certificates from the registration (gh#agama-project/agama#3055).
+
+-------------------------------------------------------------------
 Tue Jan 20 03:52:59 UTC 2026 - David Diaz <dgonzalez@suse.com>
 
 - Update look&feel of some pages to make them match the new style
@@ -10,7 +16,7 @@ Tue Jan 20 00:53:06 UTC 2026 - David Diaz <dgonzalez@suse.com>
 - Avoid flicker on the product selection page by deferring the
   display of current product information
   (gh#agama-project/agama#3049).
-  
+
 -------------------------------------------------------------------
 Mon Jan 19 23:48:20 UTC 2026 - David Diaz <dgonzalez@suse.com>
 

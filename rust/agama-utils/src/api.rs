@@ -59,6 +59,7 @@ pub mod manager;
 pub mod network;
 pub mod query;
 pub mod question;
+pub mod security;
 pub mod software;
 pub mod storage;
 pub mod users;

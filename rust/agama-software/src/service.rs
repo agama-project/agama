@@ -24,6 +24,7 @@ use crate::{
     zypp_server::{self, SoftwareAction, ZyppServer},
     Model,
 };
+use agama_security as security;
 use agama_utils::{
     actor::{self, Actor, Handler, MessageHandler},
     api::{
@@ -71,6 +72,7 @@ pub struct Starter {
     issues: Handler<issue::Service>,
     progress: Handler<progress::Service>,
     questions: Handler<question::Service>,
+    security: Handler<security::Service>,
 }
 
 impl Starter {
@@ -79,6 +81,7 @@ impl Starter {
         issues: Handler<issue::Service>,
         progress: Handler<progress::Service>,
         questions: Handler<question::Service>,
+        security: Handler<security::Service>,
     ) -> Self {
         Self {
             model: None,
@@ -86,6 +89,7 @@ impl Starter {
             issues,
             progress,
             questions,
+            security,
         }
     }
 
@@ -113,6 +117,7 @@ impl Starter {
                     find_mandatory_repositories("/"),
                     self.progress.clone(),
                     self.questions.clone(),
+                    self.security.clone(),
                 )?))
             }
         };
@@ -162,8 +167,9 @@ impl Service {
         issues: Handler<issue::Service>,
         progress: Handler<progress::Service>,
         questions: Handler<question::Service>,
+        security: Handler<security::Service>,
     ) -> Starter {
-        Starter::new(events, issues, progress, questions)
+        Starter::new(events, issues, progress, questions, security)
     }
 
     pub async fn setup(&mut self) -> Result<(), Error> {
