@@ -68,7 +68,7 @@ impl IntoResponse for Error {
             "error": self.to_string()
         });
         let status = if matches!(self, Error::Manager(InstallationBlocked)) {
-            StatusCode::METHOD_NOT_ALLOWED
+            StatusCode::UNPROCESSABLE_ENTITY
         } else {
             StatusCode::BAD_REQUEST
         };
@@ -405,7 +405,7 @@ async fn get_license(
     responses(
         (status = 200, description = "Action successfully run."),
         (status = 400, description = "Not possible to run the action.", body = Object),
-        (status = 405, description = "Action blocked by backend state", body = Object)
+        (status = 422, description = "Action blocked by backend state", body = Object)
     ),
     params(
         ("action" = Action, description = "Description of the action to run."),
