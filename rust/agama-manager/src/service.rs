@@ -85,6 +85,8 @@ pub enum Error {
     Hardware(#[from] hardware::Error),
     #[error("Cannot dispatch this action in {current} stage (expected {expected}).")]
     UnexpectedStage { current: Stage, expected: Stage },
+    #[error("Cannot start the installation. The config contains some issues.")]
+    InstallationBlocked,
     #[error(transparent)]
     Users(#[from] users::service::Error),
 }

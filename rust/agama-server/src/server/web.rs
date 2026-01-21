@@ -23,6 +23,7 @@
 use crate::server::config_schema;
 use agama_lib::{error::ServiceError, logs};
 use agama_manager::{self as manager, message};
+use agama_manager::service::Error::InstallationBlocked;
 use agama_software::Resolvable;
 use agama_utils::{
     actor::Handler,
@@ -66,7 +67,12 @@ impl IntoResponse for Error {
         let body = json!({
             "error": self.to_string()
         });
-        (StatusCode::BAD_REQUEST, Json(body)).into_response()
+        let status = if matches!(self, Error::Manager(InstallationBlocked)) {
+            StatusCode::METHOD_NOT_ALLOWED
+        } else {
+            StatusCode::BAD_REQUEST
+        };
+        (status, Json(body)).into_response()
     }
 }
 
@@ -398,7 +404,8 @@ async fn get_license(
     context_path = "/api/v2",
     responses(
         (status = 200, description = "Action successfully run."),
-        (status = 400, description = "Not possible to run the action.", body = Object)
+        (status = 400, description = "Not possible to run the action.", body = Object),
+        (status = 405, description = "Action blocked by backend state", body = Object)
     ),
     params(
         ("action" = Action, description = "Description of the action to run."),
