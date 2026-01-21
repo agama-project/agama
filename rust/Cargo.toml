@@ -4,10 +4,12 @@ members = [
     "agama-cli",
     "agama-files",
     "agama-hostname",
+    "agama-iscsi",
     "agama-l10n",
     "agama-lib",
     "agama-locale-data",
     "agama-manager",
+    "agama-proxy",
     "agama-network",
     "agama-security",
     "agama-server",
@@ -20,7 +22,8 @@ members = [
     "suseconnect-agama/suseconnect-agama-sys",
     "xtask",
     "zypp-agama",
-    "zypp-agama/zypp-agama-sys", "agama-iscsi",
+    "zypp-agama/zypp-agama-sys", 
+    "zypp-agama/zypp-agama-sys"
 ]
 resolver = "2"
 
