@@ -729,19 +729,10 @@ impl ZyppServer {
         issues: &mut Vec<Issue>,
     ) {
         match &self.registration {
-            RegistrationStatus::Failed(error) => {
-                issues.push(
-                    Issue::new(
-                        "software.register_system",
-                        &gettext("Failed to register the system"),
-                    )
-                    .with_details(&error.to_string()),
-                );
-            }
-            RegistrationStatus::NotRegistered => {
+            RegistrationStatus::Failed(_) | RegistrationStatus::NotRegistered => {
                 self.register_base_system(state, zypp, security_srv, issues);
             }
-            RegistrationStatus::Registered(registration) => {}
+            RegistrationStatus::Registered(_) => {}
         };
 
         if !state.addons.is_empty() {
