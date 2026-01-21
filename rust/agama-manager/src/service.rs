@@ -573,7 +573,10 @@ impl MessageHandler<message::GetExtendedConfig> for Service {
             .to_option();
         let hostname = self.hostname.call(hostname::message::GetConfig).await?;
         let l10n = self.l10n.call(l10n::message::GetConfig).await?;
-        let security = self.security.call(security::message::GetConfig).await?;
+        // FIXME: the security service might be busy asking some question, so it cannot answer.
+        // By now, let's consider that the whole security configuration is set by the user
+        // (ignoring imported certificates by questions).
+        let security = self.config.security.clone();
         let questions = self.questions.call(question::message::GetConfig).await?;
         let network = self.network.get_config().await?;
         let storage = self.storage.call(storage::message::GetConfig).await?;
@@ -593,7 +596,7 @@ impl MessageHandler<message::GetExtendedConfig> for Service {
             l10n: Some(l10n),
             questions,
             network: Some(network),
-            security: Some(security),
+            security,
             software,
             storage,
             files: None,
