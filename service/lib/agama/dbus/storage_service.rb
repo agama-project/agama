@@ -23,7 +23,8 @@ require "dbus"
 require "agama/dbus/bus"
 require "agama/dbus/storage/iscsi"
 require "agama/dbus/storage/manager"
-require "agama/storage"
+require "agama/storage/manager"
+require "agama/storage/iscsi/adapter"
 require "y2storage/inhibitors"
 
 module Agama
@@ -53,6 +54,7 @@ module Agama
         # Inhibits various storage subsystem (udisk, systemd mounts, raid auto-assembly) that
         # interfere with the operation of yast-storage-ng and libstorage-ng.
         Y2Storage::Inhibitors.new.inhibit
+        Agama::Storage::ISCSI::Adapter.activate
         check_multipath
         export
       end
