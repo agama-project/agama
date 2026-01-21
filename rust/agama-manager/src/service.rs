@@ -516,6 +516,17 @@ impl Service {
         }
         Ok(())
     }
+
+    /// Determines whether the software service is available.
+    ///
+    /// Consider the service as available if there is no pending progress.
+    async fn is_software_available(&self) -> Result<bool, Error> {
+        let is_empty = self
+            .progress
+            .call(progress::message::IsEmpty::with_scope(Scope::Software))
+            .await?;
+        Ok(is_empty)
+    }
 }
 
 impl Actor for Service {
@@ -541,9 +552,8 @@ impl MessageHandler<message::GetSystem> for Service {
         let storage = self.storage.call(storage::message::GetSystem).await?;
         let network = self.network.get_system().await?;
 
-        let stage = self.progress.call(progress::message::GetStage).await?;
-        // During installation, the software service will not answer.
-        let software = if stage != Stage::Installing {
+        // If the software service is busy, it will not answer.
+        let software = if self.is_software_available().await? {
             self.software.call(software::message::GetSystem).await?
         } else {
             Default::default()
@@ -582,9 +592,8 @@ impl MessageHandler<message::GetExtendedConfig> for Service {
         let storage = self.storage.call(storage::message::GetConfig).await?;
         let users = self.users.call(users::message::GetConfig).await?;
 
-        let stage = self.progress.call(progress::message::GetStage).await?;
-        // During installation, the software service will not answer.
-        let software = if stage != Stage::Installing {
+        // If the software service is busy, it will not answer.
+        let software = if self.is_software_available().await? {
             Some(self.software.call(software::message::GetConfig).await?)
         } else {
             None
@@ -648,9 +657,8 @@ impl MessageHandler<message::GetProposal> for Service {
         let network = self.network.get_proposal().await?;
         let users = self.users.call(users::message::GetProposal).await?;
 
-        let stage = self.progress.call(progress::message::GetStage).await?;
-        // During installation, the software service will not answer.
-        let software = if stage != Stage::Installing {
+        // If the software service is busy, it will not answer.
+        let software = if self.is_software_available().await? {
             self.software.call(software::message::GetProposal).await?
         } else {
             None
