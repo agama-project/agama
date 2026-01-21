@@ -25,7 +25,7 @@
 use crate::error::NetworkStateError;
 use crate::types::*;
 
-use agama_utils::{actor::Error, openapi::schemas};
+use agama_utils::openapi::schemas;
 use macaddr::MacAddr6;
 use serde::{Deserialize, Serialize};
 use serde_with::{serde_as, skip_serializing_none, DisplayFromStr};
@@ -192,20 +192,24 @@ impl NetworkState {
         let to = PathBuf::from(self.target_dir()).join(CONNECTIONS_PATH.trim_start_matches('/'));
 
         self.copy_connections(&from, &to)?;
-        self.enable_service("/").await
+        self.enable_service(self.target_dir()).await
     }
 
     pub async fn enable_service(&self, path: &str) -> Result<(), NetworkStateError> {
         let mut command = process::Command::new("chroot");
         command.args([path, "systemctl", "enable", "NetworkManager.service"]);
 
-        if let Some(output) = command.output().await.ok() {
-            if output.status.success() {
-                return Ok(());
+        match command.output().await {
+            Ok(output) => {
+                if !output.status.success() {
+                    tracing::error!("Failed to enable NetworkManager service: {output:?}")
+                }
+            }
+            Err(error) => {
+                tracing::error!("Failed to run the enable NetworkManager service command: {error}");
             }
         }
 
-        tracing::error!("Error enabling NetworkManager service");
         Ok(())
     }
 
