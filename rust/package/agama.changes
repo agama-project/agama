@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Jan 21 10:47:24 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Allow importing SSL certificates from registration servers
+  (gh#agama-project/agama#3055).
+
+-------------------------------------------------------------------
 Mon Jan 19 20:31:26 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
 
 - Fix inst.finish=stop option (gh#agama-project/agama#3047)
