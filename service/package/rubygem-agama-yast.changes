@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Jan 22 12:50:32 UTC 2026 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Stop reporting a bootloader error when there is no valid storage
+  proposal (bsc#1257013).
+
+-------------------------------------------------------------------
 Wed Jan 21 10:24:50 UTC 2026 - Ancor Gonzalez Sosa <ancor@suse.com>
 
 - Honor the read_only flag for volumes coming from the product
