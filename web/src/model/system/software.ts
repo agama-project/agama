@@ -75,12 +75,6 @@ type AddonInfo = {
   registration: AddonRegistered | AddonUnregistered;
 };
 
-type AddonConfig = {
-  id: string;
-  version?: string;
-  registrationCode?: string;
-};
-
 type AddonRegistered = {
   status: "registered";
   code?: string;
