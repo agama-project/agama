@@ -21,9 +21,11 @@
  */
 
 import React from "react";
-import { Grid, GridItem } from "@patternfly/react-core";
+import { Divider, Grid, GridItem } from "@patternfly/react-core";
 import { Page } from "~/components/core";
-import { InitiatorSection, TargetsSection } from "~/components/storage/iscsi";
+// import { InitiatorSection, TargetsSection } from "~/components/storage/iscsi";
+import { InitiatorSection } from "~/components/storage/iscsi";
+import TargetsTable from "~/components/storage/iscsi/TargetsTable";
 import { STORAGE } from "~/routes/paths";
 import { _ } from "~/i18n";
 
@@ -36,15 +38,10 @@ export default function ISCSIPage() {
             <InitiatorSection />
           </GridItem>
           <GridItem sm={12}>
-            <TargetsSection />
+            <TargetsTable />
           </GridItem>
         </Grid>
       </Page.Content>
-      <Page.Actions>
-        <Page.Action variant="secondary" navigateTo={STORAGE.root}>
-          {_("Back")}
-        </Page.Action>
-      </Page.Actions>
     </Page>
   );
 }
