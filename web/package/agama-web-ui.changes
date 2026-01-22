@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Jan 22 14:11:19 UTC 2026 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Avoid inconsistent state (collapsed/open) in the lists of
+  partitions (gh#agama-project/agama#3063).
+
+-------------------------------------------------------------------
 Thu Jan 22 03:57:13 UTC 2026 - David Diaz <dgonzalez@suse.com>
 
 - Updated top header install button label to clarify navigation to
