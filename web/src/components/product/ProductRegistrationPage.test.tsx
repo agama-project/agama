@@ -415,9 +415,11 @@ describe.skip("ProductRegistrationPage", () => {
             available: true,
             free: false,
             recommended: false,
-            description: "SUSE Linux High Availability Extension provides ...",
-            type: "extension",
+            description: "SUSE Linux High Availability Extension provides...",
             release: "beta",
+            registration: {
+              status: "notRegistered",
+            },
           },
         ];
       });

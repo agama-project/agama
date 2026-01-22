@@ -130,8 +130,17 @@ type AddonInfo = {
   free: boolean;
   recommended: boolean;
   description: string;
-  type: string;
   release: string;
+  registration: AddonRegistered | AddonUnregistered;
+};
+
+type AddonRegistered = {
+  status: "registered";
+  code?: string;
+};
+
+type AddonUnregistered = {
+  status: "notRegistered";
 };
 
 type RegisteredAddonInfo = {
