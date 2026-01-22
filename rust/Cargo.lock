@@ -102,6 +102,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "agama-iscsi"
+version = "0.1.0"
+dependencies = [
+ "agama-utils",
+ "async-trait",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.17",
+ "tokio",
+ "tokio-stream",
+ "zbus",
+]
+
+[[package]]
 name = "agama-l10n"
 version = "0.1.0"
 dependencies = [
@@ -184,6 +198,7 @@ dependencies = [
  "agama-bootloader",
  "agama-files",
  "agama-hostname",
+ "agama-iscsi",
  "agama-l10n",
  "agama-network",
  "agama-security",

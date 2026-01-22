@@ -19,8 +19,8 @@
 // find current contact information at www.suse.com.
 
 use crate::{
-    bootloader, files, hardware, hostname, l10n, message, network, security, software, storage,
-    users,
+    bootloader, files, hardware, hostname, iscsi, l10n, message, network, security, software,
+    storage, users,
 };
 use agama_utils::{
     actor::{self, Actor, Handler, MessageHandler},
@@ -55,6 +55,8 @@ pub enum Error {
     Bootloader(#[from] bootloader::service::Error),
     #[error(transparent)]
     Hostname(#[from] hostname::service::Error),
+    #[error(transparent)]
+    ISCSI(#[from] iscsi::service::Error),
     #[error(transparent)]
     L10n(#[from] l10n::service::Error),
     #[error(transparent)]
@@ -101,6 +103,7 @@ pub struct Starter {
     dbus: zbus::Connection,
     bootloader: Option<Handler<bootloader::Service>>,
     hostname: Option<Handler<hostname::Service>>,
+    iscsi: Option<Handler<iscsi::Service>>,
     l10n: Option<Handler<l10n::Service>>,
     network: Option<NetworkSystemClient>,
     security: Option<Handler<security::Service>>,
@@ -125,6 +128,7 @@ impl Starter {
             questions,
             bootloader: None,
             hostname: None,
+            iscsi: None,
             l10n: None,
             network: None,
             security: None,
@@ -144,6 +148,10 @@ impl Starter {
     }
     pub fn with_hostname(mut self, hostname: Handler<hostname::Service>) -> Self {
         self.hostname = Some(hostname);
+        self
+    }
+    pub fn with_iscsi(mut self, iscsi: Handler<iscsi::Service>) -> Self {
+        self.iscsi = Some(iscsi);
         self
     }
     pub fn with_network(mut self, network: NetworkSystemClient) -> Self {
@@ -216,6 +224,7 @@ impl Starter {
                     .await?
             }
         };
+
         let hostname = match self.hostname {
             Some(hostname) => hostname,
             None => {
@@ -224,6 +233,12 @@ impl Starter {
                     .await?
             }
         };
+
+        let iscsi = match self.iscsi {
+            Some(iscsi) => iscsi,
+            None => iscsi::Service::starter(self.dbus.clone()).start().await?,
+        };
+
         let l10n = match self.l10n {
             Some(l10n) => l10n,
             None => {
@@ -305,6 +320,7 @@ impl Starter {
             issues,
             bootloader,
             hostname,
+            iscsi,
             l10n,
             network,
             security,
@@ -328,6 +344,7 @@ impl Starter {
 pub struct Service {
     bootloader: Handler<bootloader::Service>,
     hostname: Handler<hostname::Service>,
+    iscsi: Handler<iscsi::Service>,
     l10n: Handler<l10n::Service>,
     security: Handler<security::Service>,
     software: Handler<software::Service>,
@@ -433,6 +450,10 @@ impl Service {
             .call(users::message::SetConfig::new(config.users.clone()))
             .await?;
 
+        self.iscsi
+            .call(iscsi::message::SetConfig::new(config.iscsi.clone()))
+            .await?;
+
         self.storage
             .call(storage::message::SetConfig::new(
                 Arc::clone(product),
@@ -464,6 +485,13 @@ impl Service {
             self.storage
                 .cast(storage::message::SetLocale::new(locale.as_str()))?;
         }
+        Ok(())
+    }
+
+    async fn discover_iscsi(&self, config: api::iscsi::DiscoverConfig) -> Result<(), Error> {
+        self.iscsi
+            .call(iscsi::message::Discover::new(config))
+            .await?;
         Ok(())
     }
 
@@ -572,6 +600,7 @@ impl MessageHandler<message::GetSystem> for Service {
         let l10n = self.l10n.call(l10n::message::GetSystem).await?;
         let manager = self.system.clone();
         let storage = self.storage.call(storage::message::GetSystem).await?;
+        let iscsi = self.iscsi.call(iscsi::message::GetSystem).await?;
         let network = self.network.get_system().await?;
 
         // If the software service is busy, it will not answer.
@@ -587,6 +616,7 @@ impl MessageHandler<message::GetSystem> for Service {
             manager,
             network,
             storage,
+            iscsi,
             software,
         })
     }
@@ -604,6 +634,7 @@ impl MessageHandler<message::GetExtendedConfig> for Service {
             .await?
             .to_option();
         let hostname = self.hostname.call(hostname::message::GetConfig).await?;
+        let iscsi = self.iscsi.call(iscsi::message::GetConfig).await?;
         let l10n = self.l10n.call(l10n::message::GetConfig).await?;
         // FIXME: the security service might be busy asking some question, so it cannot answer.
         // By now, let's consider that the whole security configuration is set by the user
@@ -624,6 +655,7 @@ impl MessageHandler<message::GetExtendedConfig> for Service {
         Ok(Config {
             bootloader,
             hostname: Some(hostname),
+            iscsi,
             l10n: Some(l10n),
             questions,
             network: Some(network),
@@ -723,6 +755,10 @@ impl MessageHandler<message::RunAction> for Service {
             Action::ConfigureL10n(config) => {
                 self.check_stage(Stage::Configuring).await?;
                 self.configure_l10n(config).await?;
+            }
+            Action::DiscoverISCSI(config) => {
+                self.check_stage(Stage::Configuring).await?;
+                self.discover_iscsi(config).await?;
             }
             Action::ActivateStorage => {
                 self.check_stage(Stage::Configuring).await?;
