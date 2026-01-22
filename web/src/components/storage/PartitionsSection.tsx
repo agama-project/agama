@@ -34,7 +34,11 @@ import {
   ExpandableSectionToggle,
   ExpandableSectionProps,
 } from "@patternfly/react-core";
-import { useStorageUiState } from "~/context/storage-ui-state";
+import {
+  useStorageUiState,
+  isExpandedInState,
+  toggleExpandedInState,
+} from "~/context/storage-ui-state";
 import Text from "~/components/core/Text";
 import MenuButton from "~/components/core/MenuButton";
 import MountPathMenuItem from "~/components/storage/MountPathMenuItem";
@@ -49,7 +53,6 @@ import { Icon } from "../layout";
 import { IconProps } from "../layout/Icon";
 import { sprintf } from "sprintf-js";
 import spacingStyles from "@patternfly/react-styles/css/utilities/Spacing/spacing";
-import { toggle } from "radashi";
 import configModel from "~/model/storage/config-model";
 import type { ConfigModel } from "~/model/storage/config-model";
 
@@ -223,17 +226,12 @@ export default function PartitionsSection({ collection, index }: PartitionsSecti
   const contentId = useId();
   const device = usePartitionable(collection, index);
   const uiIndex = `${collection[0]}${index}`;
-  const expanded = uiState.get("expanded")?.split(",");
-  const isExpanded = !!expanded?.includes(uiIndex);
+  const isExpanded = isExpandedInState(uiState, uiIndex);
   const newPartitionPath = generateEncodedPath(PATHS.addPartition, { collection, index });
   const hasPartitions = device.partitions.some((p) => p.mountPath);
 
   const onToggle = () => {
-    setUiState((state) => {
-      const nextExpanded = toggle(expanded, uiIndex);
-      state.set("expanded", nextExpanded.join(","));
-      return state;
-    });
+    setUiState((state) => toggleExpandedInState(state, uiIndex));
   };
   const iconName: IconProps["name"] = isExpanded ? "unfold_less" : "unfold_more";
   const commonProps: Pick<ExpandableSectionProps, "toggleId" | "contentId" | "isExpanded"> = {
