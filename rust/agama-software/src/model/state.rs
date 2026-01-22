@@ -187,9 +187,9 @@ impl<'a> SoftwareStateBuilder<'a> {
             return;
         }
 
-        let Some(code) = &config.registration_code else {
+        if config.registration_code.is_none() && config.registration_url.is_none() {
             return;
-        };
+        }
 
         let product = self.product.id.clone();
         let version = self.product.version.clone().unwrap_or("1".to_string());
@@ -203,21 +203,12 @@ impl<'a> SoftwareStateBuilder<'a> {
             vec![]
         };
 
-        let url = match &config.registration_url {
-            Some(registration_url) => Some(registration_url.clone()),
-            None => self
-                .kernel_cmdline
-                .get_last("inst.register_url")
-                .map(|url| Url::parse(&url).ok())
-                .flatten(),
-        };
-
         state.registration = Some(RegistrationState {
             product,
             version,
-            code: code.to_string(),
+            code: config.registration_code.clone(),
             email: config.registration_email.clone(),
-            url,
+            url: config.registration_url.clone(),
             addons,
         });
     }
@@ -550,7 +541,7 @@ pub struct RegistrationState {
     pub product: String,
     pub version: String,
     // FIXME: the code should be optional.
-    pub code: String,
+    pub code: Option<String>,
     pub email: Option<String>,
     pub url: Option<Url>,
     pub addons: Vec<Addon>,
@@ -754,7 +745,7 @@ mod tests {
             .build();
 
         let registration = state.registration.unwrap();
-        assert_eq!(registration.code, "123456".to_string());
+        assert_eq!(registration.code, Some("123456".to_string()));
         assert_eq!(
             registration.url,
             Some(Url::parse("https://scc.suse.com").unwrap())
@@ -765,30 +756,6 @@ mod tests {
         assert_eq!(&addon.id, "sle-ha");
         assert_eq!(addon.version, Some("16.0".to_string()));
         assert_eq!(addon.code, Some("ABCDEF".to_string()));
-    }
-
-    #[test]
-    fn test_add_register_url() {
-        let product = build_product_spec("sles_160");
-        let mut config = build_user_config(None);
-        config.product = ProductConfig {
-            id: Some("SLES".to_string()),
-            registration_code: Some("123456".to_string()),
-            ..Default::default()
-        }
-        .into();
-
-        let kernel_cmdline = KernelCmdline::parse_str("inst.register_url=http://example.net");
-        let state = SoftwareStateBuilder::for_product(&product)
-            .with_config(&config)
-            .with_kernel_cmdline(kernel_cmdline)
-            .build();
-
-        let registration = state.registration.unwrap();
-        assert_eq!(
-            registration.url,
-            Some(Url::parse("http://example.net").unwrap())
-        );
     }
 
     #[test]

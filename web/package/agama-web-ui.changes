@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Thu Jan 22 16:19:20 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Allow registering add-ons (gh#agama-project/agama#3061).
+- Improve error reporting in the registration page.
+- Do not block the UI when registering the system (bsc#1257105).
+- Do not allow to change the product when it is already registered.
+
+-------------------------------------------------------------------
 Thu Jan 22 15:25:25 UTC 2026 - Ancor Gonzalez Sosa <ancor@suse.com>
 
 - Track state (collapsed/open) of the lists of logical volumes

@@ -33,14 +33,13 @@ import { useStatus } from "~/hooks/model/status";
  * DropdownItem Option for navigating to the selection product.
  */
 export default function ChangeProductOption({ children, ...props }: Omit<DropdownItemProps, "to">) {
-  const { products } = useSystem();
+  const { products, software } = useSystem();
   const { stage } = useStatus();
-  // const registration = useRegistration();
   const currentLocation = useLocation();
   const to = useHref(PATHS.changeProduct);
 
   if (products.length <= 1) return null;
-  // if (registration?.registered) return null;
+  if (software?.registration) return null;
   if (SIDE_PATHS.includes(currentLocation.pathname)) return null;
   if (stage !== "configuring") return null;
 

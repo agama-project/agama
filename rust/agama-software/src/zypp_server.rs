@@ -729,19 +729,10 @@ impl ZyppServer {
         issues: &mut Vec<Issue>,
     ) {
         match &self.registration {
-            RegistrationStatus::Failed(error) => {
-                issues.push(
-                    Issue::new(
-                        "software.register_system",
-                        &gettext("Failed to register the system"),
-                    )
-                    .with_details(&error.to_string()),
-                );
-            }
-            RegistrationStatus::NotRegistered => {
+            RegistrationStatus::Failed(_) | RegistrationStatus::NotRegistered => {
                 self.register_base_system(state, zypp, security_srv, issues);
             }
-            RegistrationStatus::Registered(registration) => {}
+            RegistrationStatus::Registered(_) => {}
         };
 
         if !state.addons.is_empty() {
@@ -757,8 +748,11 @@ impl ZyppServer {
         issues: &mut Vec<Issue>,
     ) {
         let mut registration =
-            Registration::builder(self.root_dir.clone(), &state.product, &state.version)
-                .with_code(&state.code);
+            Registration::builder(self.root_dir.clone(), &state.product, &state.version);
+
+        if let Some(code) = &state.code {
+            registration = registration.with_code(code);
+        }
 
         if let Some(email) = &state.email {
             registration = registration.with_email(email);
@@ -774,8 +768,11 @@ impl ZyppServer {
             }
             Err(error) => {
                 issues.push(
-                    Issue::new("software.register_system", "Failed to register the system")
-                        .with_details(&error.to_string()),
+                    Issue::new(
+                        "system_registration_failed",
+                        "Failed to register the system",
+                    )
+                    .with_details(&error.to_string()),
                 );
                 self.registration = RegistrationStatus::Failed(error);
             }
@@ -800,7 +797,8 @@ impl ZyppServer {
             }
             if let Err(error) = registration.register_addon(zypp, addon) {
                 let message = format!("Failed to register the add-on {}", addon.id);
-                let issue = Issue::new("software.addon", &message).with_details(&error.to_string());
+                let issue_id = format!("addon_registration_failed[{}]", &addon.id);
+                let issue = Issue::new(&issue_id, &message).with_details(&error.to_string());
                 issues.push(issue);
             }
         }
