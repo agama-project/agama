@@ -205,6 +205,7 @@ dependencies = [
  "agama-iscsi",
  "agama-l10n",
  "agama-network",
+ "agama-proxy",
  "agama-security",
  "agama-software",
  "agama-storage",
@@ -256,9 +257,16 @@ name = "agama-proxy"
 version = "0.1.0"
 dependencies = [
  "agama-utils",
+ "anyhow",
+ "async-trait",
+ "env_filter",
+ "gettext-rs",
+ "libsystemd",
  "strum",
  "thiserror 2.0.18",
  "tracing",
+ "tracing-journald",
+ "tracing-subscriber",
  "url",
 ]
 
@@ -1681,9 +1689,9 @@ dependencies = [
 
 [[package]]
 name = "env_filter"
-version = "0.1.3"
+version = "0.1.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "186e05a59d4c50738528153b83b0b0194d3a29507dfec16eccd4b342903397d0"
+checksum = "1bf3c259d255ca70051b30e2e95b5446cdb8949ac4cd22c0d7fd634d89f568e2"
 dependencies = [
  "log",
  "regex",
@@ -4933,9 +4941,9 @@ dependencies = [
 
 [[package]]
 name = "tracing-journald"
-version = "0.3.1"
+version = "0.3.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fc0b4143302cf1022dac868d521e36e8b27691f72c84b3311750d5188ebba657"
+checksum = "2d3a81ed245bfb62592b1e2bc153e77656d94ee6a0497683a65a12ccaf2438d0"
 dependencies = [
  "libc",
  "tracing-core",
@@ -4955,9 +4963,9 @@ dependencies = [
 
 [[package]]
 name = "tracing-subscriber"
-version = "0.3.20"
+version = "0.3.22"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2054a14f5307d601f88daf0553e1cbf472acc4f2c51afab632431cdcd72124d5"
+checksum = "2f30143827ddab0d256fd843b7a66d164e9f271cfa0dde49142c5ca0ca291f1e"
 dependencies = [
  "matchers",
  "nu-ansi-term",

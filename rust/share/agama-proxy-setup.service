@@ -1,0 +1,11 @@
+[Unit]
+Description=Agama Proxy Configuration
+Before=agama.service
+
+[Service]
+ExecStart=/usr/bin/agama-proxy-setup
+Type=oneshot
+User=root
+
+[Install]
+WantedBy=multi-user.target

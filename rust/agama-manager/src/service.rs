@@ -19,8 +19,8 @@
 // find current contact information at www.suse.com.
 
 use crate::{
-    bootloader, files, hardware, hostname, iscsi, l10n, message, network, security, software,
-    storage, users,
+    bootloader, files, hardware, hostname, iscsi, l10n, message, network, proxy, security,
+    software, storage, users,
 };
 use agama_utils::{
     actor::{self, Actor, Handler, MessageHandler},
@@ -84,6 +84,8 @@ pub enum Error {
     #[error(transparent)]
     NetworkSystem(#[from] network::NetworkSystemError),
     #[error(transparent)]
+    Proxy(#[from] proxy::service::Error),
+    #[error(transparent)]
     Hardware(#[from] hardware::Error),
     #[error("Cannot dispatch this action in {current} stage (expected {expected}).")]
     UnexpectedStage { current: Stage, expected: Stage },
@@ -106,6 +108,7 @@ pub struct Starter {
     iscsi: Option<Handler<iscsi::Service>>,
     l10n: Option<Handler<l10n::Service>>,
     network: Option<NetworkSystemClient>,
+    proxy: Option<Handler<proxy::Service>>,
     security: Option<Handler<security::Service>>,
     software: Option<Handler<software::Service>>,
     storage: Option<Handler<storage::Service>>,
@@ -131,6 +134,7 @@ impl Starter {
             iscsi: None,
             l10n: None,
             network: None,
+            proxy: None,
             security: None,
             software: None,
             storage: None,
@@ -189,6 +193,10 @@ impl Starter {
         self
     }
 
+    pub fn with_proxy(mut self, proxy: Handler<proxy::Service>) -> Self {
+        self.proxy = Some(proxy);
+        self
+    }
     pub fn with_progress(mut self, progress: Handler<progress::Service>) -> Self {
         self.progress = Some(progress);
         self
@@ -232,6 +240,11 @@ impl Starter {
                     .start()
                     .await?
             }
+        };
+
+        let proxy = match self.proxy {
+            Some(proxy) => proxy,
+            None => proxy::Service::starter(self.events.clone()).start()?,
         };
 
         let l10n = match self.l10n {
@@ -332,6 +345,7 @@ impl Starter {
             iscsi,
             l10n,
             network,
+            proxy,
             security,
             software,
             storage,
@@ -354,6 +368,7 @@ pub struct Service {
     bootloader: Handler<bootloader::Service>,
     hostname: Handler<hostname::Service>,
     iscsi: Handler<iscsi::Service>,
+    proxy: Handler<proxy::Service>,
     l10n: Handler<l10n::Service>,
     security: Handler<security::Service>,
     software: Handler<software::Service>,
@@ -430,6 +445,10 @@ impl Service {
 
         self.hostname
             .call(hostname::message::SetConfig::new(config.hostname.clone()))
+            .await?;
+
+        self.proxy
+            .call(proxy::message::SetConfig::new(config.proxy.clone()))
             .await?;
 
         self.files
@@ -605,7 +624,10 @@ impl MessageHandler<progress::message::GetStatus> for Service {
 impl MessageHandler<message::GetSystem> for Service {
     /// It returns the information of the underlying system.
     async fn handle(&mut self, _message: message::GetSystem) -> Result<SystemInfo, Error> {
+        tracing::info!("Calling get system");
         let hostname = self.hostname.call(hostname::message::GetSystem).await?;
+        let proxy = self.proxy.call(proxy::message::GetSystem).await?;
+        tracing::info!("The proxy configuration is {:?}", proxy);
         let l10n = self.l10n.call(l10n::message::GetSystem).await?;
         let manager = self.system.clone();
         let storage = self.storage.call(storage::message::GetSystem).await?;
@@ -621,6 +643,7 @@ impl MessageHandler<message::GetSystem> for Service {
 
         Ok(SystemInfo {
             hostname,
+            proxy,
             l10n,
             manager,
             network,
@@ -649,6 +672,7 @@ impl MessageHandler<message::GetExtendedConfig> for Service {
         // By now, let's consider that the whole security configuration is set by the user
         // (ignoring imported certificates by questions).
         let security = self.config.security.clone();
+        let proxy = self.proxy.call(proxy::message::GetConfig).await?;
         let questions = self.questions.call(question::message::GetConfig).await?;
         let network = self.network.get_config().await?;
         let storage = self.storage.call(storage::message::GetConfig).await?;
@@ -666,6 +690,7 @@ impl MessageHandler<message::GetExtendedConfig> for Service {
             hostname: Some(hostname),
             iscsi,
             l10n: Some(l10n),
+            proxy,
             questions,
             network: Some(network),
             security,

@@ -1,3 +1,5 @@
+use std::path::Path;
+
 use agama_utils::kernel_cmdline::KernelCmdline;
 use strum::{Display, EnumIter, EnumString, IntoEnumIterator};
 
@@ -9,7 +11,7 @@ pub enum Error {
     Io(#[from] std::io::Error),
 }
 
-#[derive(Debug, Default, Display, PartialEq, EnumIter, EnumString)]
+#[derive(Clone, Debug, Default, Display, PartialEq, EnumIter, EnumString)]
 #[strum(serialize_all = "camelCase")]
 pub enum Protocol {
     FTP,
@@ -20,12 +22,15 @@ pub enum Protocol {
     SOCKS,
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Clone, Debug, Default, PartialEq)]
 pub struct ProxyConfig {
     pub proxies: Vec<Proxy>,
     pub socks5_server: Option<String>,
-    pub enabled: bool,
+    pub enabled: Option<bool>,
+    pub no_proxy: Option<String>,
 }
+
+const PROXY_PATH: &str = "/etc/sysconfig/proxy";
 
 impl ProxyConfig {
     pub fn from_cmdline() -> Option<Self> {
@@ -33,29 +38,108 @@ impl ProxyConfig {
 
         for path in paths {
             if let Ok(cmdline) = KernelCmdline::parse_file(path) {
-                if let Some(url) = cmdline.get_last("proxy") {
-                    let mut proxies = vec![];
-                    for protocol in Protocol::iter() {
-                        if [Protocol::GOPHER, Protocol::SOCKS].contains(&protocol) {
-                            continue;
-                        }
-                        proxies.push(Proxy::new(url.clone(), protocol));
-                    }
-                    return Some(ProxyConfig {
-                        proxies,
-                        socks5_server: None,
-                        enabled: true,
-                    });
+                if let Some(config) = Self::from_kernel_cmdline(&cmdline) {
+                    return Some(config);
                 }
-            } else {
-                tracing::info!("No proxy is configured, skipping configuration");
             }
+        }
+
+        tracing::info!("No proxy is configured, skipping configuration");
+        None
+    }
+
+    pub fn from_kernel_cmdline(cmdline: &KernelCmdline) -> Option<Self> {
+        if let Some(url) = cmdline.get_last("proxy") {
+            tracing::info!(
+                "The proxy url: '{}' was given, using it for the configuration.",
+                url
+            );
+            let mut proxies = vec![];
+            for protocol in Protocol::iter() {
+                if [Protocol::GOPHER, Protocol::SOCKS].contains(&protocol) {
+                    continue;
+                }
+                proxies.push(Proxy::new(url.clone(), protocol));
+            }
+            return Some(ProxyConfig {
+                proxies,
+                ..Default::default()
+            });
         }
         None
     }
 
+    pub fn config_path(&self) -> &str {
+        PROXY_PATH
+    }
+
+    pub fn read() -> Result<Option<Self>, Error> {
+        let path = Path::new(PROXY_PATH);
+        match Self::read_from(path) {
+            Ok(config) => Ok(Some(config)),
+            Err(Error::Io(e)) if e.kind() == std::io::ErrorKind::NotFound => Ok(None),
+            Err(e) => Err(e),
+        }
+    }
+
+    pub fn read_from<P: AsRef<std::path::Path>>(path: P) -> Result<Self, Error> {
+        use std::io::BufRead;
+
+        let path = path.as_ref();
+        let file = std::fs::File::open(path)?;
+        let reader = std::io::BufReader::new(file);
+
+        let mut proxies = Vec::new();
+        let mut enabled = None;
+        let mut socks5_server = None;
+        let mut no_proxy = None;
+
+        for line in reader.lines() {
+            let line = line?;
+            let line = line.trim();
+            if line.is_empty() || line.starts_with('#') {
+                continue;
+            }
+
+            if let Some((key, value)) = line.split_once('=') {
+                let key = key.trim();
+                let value = value.trim().trim_matches('"');
+
+                match key {
+                    "PROXY_ENABLED" => {
+                        enabled = Some(value == "yes");
+                    }
+                    "SOCKS5_SERVER" => {
+                        if !value.is_empty() {
+                            socks5_server = Some(value.to_string());
+                        }
+                    }
+                    "NO_PROXY" => {
+                        no_proxy = Some(value.to_string());
+                    }
+                    k if k.ends_with("_PROXY") => {
+                        let protocol_str = k.trim_end_matches("_PROXY");
+                        if let Ok(protocol) = protocol_str.to_lowercase().parse::<Protocol>() {
+                            if !value.is_empty() {
+                                proxies.push(Proxy::new(value.to_string(), protocol));
+                            }
+                        }
+                    }
+                    _ => {}
+                }
+            }
+        }
+
+        Ok(ProxyConfig {
+            proxies,
+            enabled,
+            socks5_server,
+            no_proxy,
+        })
+    }
+
     pub fn write(&self) -> Result<(), Error> {
-        self.write_to("/etc/sysconfig/proxy")
+        self.write_to(self.config_path())
     }
 
     pub fn write_to<P: AsRef<std::path::Path>>(&self, path: P) -> Result<(), Error> {
@@ -64,36 +148,36 @@ impl ProxyConfig {
 
         let mut settings = HashMap::new();
 
-        let enabled = if self.enabled { "yes" } else { "no" };
-        settings.insert("PROXY_ENABLED".to_string(), enabled.to_string());
-
-        for protocol in Protocol::iter() {
-            let key = format!("{}_PROXY", protocol.to_string().to_uppercase());
-
-            let url = self
-                .proxies
-                .iter()
-                .find(|p| p.protocol == protocol)
-                .map(|p| p.url.as_str())
-                .unwrap_or("");
-
-            settings.insert(key, url.to_string());
+        if let Some(enabled) = self.enabled {
+            let enabled = if enabled { "yes" } else { "no" };
+            settings.insert("PROXY_ENABLED".to_string(), enabled.to_string());
         }
 
-        let socks5 = self.socks5_server.as_deref().unwrap_or("");
-        settings.insert("SOCKS5_SERVER".to_string(), socks5.to_string());
+        for proxy in &self.proxies {
+            let key = format!("{}_PROXY", proxy.protocol.to_string().to_uppercase());
+            settings.insert(key, proxy.url.to_string());
+        }
 
-        settings.insert("NO_PROXY".to_string(), "".to_string());
+        if let Some(sock5_server) = &self.socks5_server {
+            settings.insert("SOCKS5_SERVER".to_string(), sock5_server.to_string());
+        }
+
+        if let Some(no_proxy) = &self.no_proxy {
+            settings.insert("NO_PROXY".to_string(), no_proxy.to_string());
+        }
 
         let path = path.as_ref();
         let mut lines = Vec::new();
 
-        if path.exists() {
-            let file = std::fs::File::open(path)?;
-            let reader = std::io::BufReader::new(file);
-            for line in reader.lines() {
-                lines.push(line?);
+        match std::fs::File::open(path) {
+            Ok(file) => {
+                let reader = std::io::BufReader::new(file);
+                for line in reader.lines() {
+                    lines.push(line?);
+                }
             }
+            Err(e) if e.kind() == std::io::ErrorKind::NotFound => {}
+            Err(e) => return Err(e.into()),
         }
 
         let mut new_lines = Vec::new();
@@ -115,25 +199,13 @@ impl ProxyConfig {
             }
         }
 
-        let order = [
-            "PROXY_ENABLED",
-            "FTP_PROXY",
-            "HTTP_PROXY",
-            "HTTPS_PROXY",
-            "GOPHER_PROXY",
-            "SOCKS_PROXY",
-            "SOCKS5_SERVER",
-            "NO_PROXY",
-        ];
-
-        for key in order {
+        // All the key settings should be processed but ensure the lines are written in
+        // case them not.
+        for (key, val) in &settings {
             if !processed_keys.contains(key) {
-                if let Some(val) = settings.get(key) {
-                    new_lines.push(format!("{}=\"{}\"", key, val));
-                }
+                new_lines.push(format!("{}=\"{}\"", key, val));
             }
         }
-
         let mut file = std::fs::File::create(path)?;
         for line in new_lines {
             writeln!(file, "{}", line)?;
@@ -143,7 +215,7 @@ impl ProxyConfig {
     }
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct Proxy {
     pub protocol: Protocol,
     pub url: String,
@@ -158,24 +230,33 @@ impl Proxy {
 #[cfg(test)]
 mod tests {
     use super::*;
-    // use agama_utils::kernel_cmdline::KernelCmdline;
+    use agama_utils::kernel_cmdline::KernelCmdline;
 
-    /*
     #[test]
     fn test_from_cmdline() {
         let content =
             "BOOT_IMAGE=/boot/vmlinuz root=/dev/sda1 proxy=http://proxy.example.com:8080 quiet";
         let cmdline = KernelCmdline::parse_str(content);
-        assert_eq!(
-            Proxy::from_cmdline(&cmdline),
-            Some(Proxy::new("http://proxy.example.com:8080".to_string()))
-        );
+        let config = ProxyConfig::from_kernel_cmdline(&cmdline).unwrap();
+
+        assert_eq!(config.proxies.len(), 3);
+        assert!(config.proxies.contains(&Proxy::new(
+            "http://proxy.example.com:8080".to_string(),
+            Protocol::HTTP
+        )));
+        assert!(config.proxies.contains(&Proxy::new(
+            "http://proxy.example.com:8080".to_string(),
+            Protocol::HTTPS
+        )));
+        assert!(config.proxies.contains(&Proxy::new(
+            "http://proxy.example.com:8080".to_string(),
+            Protocol::FTP
+        )));
 
         let content = "no_proxy_here";
         let cmdline = KernelCmdline::parse_str(content);
-        assert_eq!(Proxy::from_cmdline(&cmdline), None);
+        assert_eq!(ProxyConfig::from_kernel_cmdline(&cmdline), None);
     }
-    */
 
     #[test]
     fn test_write() {
@@ -185,7 +266,8 @@ mod tests {
                 Proxy::new("ftp://proxy.example.com".to_string(), Protocol::FTP),
             ],
             socks5_server: Some("socks.example.com".to_string()),
-            enabled: true,
+            enabled: Some(true),
+            no_proxy: Some("".to_string()),
         };
 
         let path = "test_proxy_config";
@@ -220,7 +302,8 @@ mod tests {
                 Protocol::HTTP,
             )],
             socks5_server: None,
-            enabled: true,
+            enabled: Some(true),
+            no_proxy: None,
         };
 
         config.write_to(path).unwrap();
@@ -234,5 +317,35 @@ mod tests {
         assert!(content.contains("# A comment"));
         assert!(content.contains("PROXY_ENABLED=\"yes\""));
     }
-}
 
+    #[test]
+    fn test_read() {
+        let path = "test_proxy_config_read";
+        {
+            use std::io::Write;
+            let mut file = std::fs::File::create(path).unwrap();
+            writeln!(file, "PROXY_ENABLED=\"yes\"").unwrap();
+            writeln!(file, "HTTP_PROXY=\"http://proxy.example.com\"").unwrap();
+            writeln!(file, "FTP_PROXY=\"ftp://proxy.example.com\"").unwrap();
+            writeln!(file, "SOCKS5_SERVER=\"socks.example.com\"").unwrap();
+            writeln!(file, "NO_PROXY=\"localhost,127.0.0.1\"").unwrap();
+            writeln!(file, "# Some comment").unwrap();
+            writeln!(file, "OTHER_VAR=\"ignore\"").unwrap();
+        }
+
+        let config = ProxyConfig::read_from(path).unwrap();
+        std::fs::remove_file(path).unwrap();
+
+        assert_eq!(config.enabled, Some(true));
+        assert!(config.proxies.contains(&Proxy::new(
+            "http://proxy.example.com".to_string(),
+            Protocol::HTTP
+        )));
+        assert!(config.proxies.contains(&Proxy::new(
+            "ftp://proxy.example.com".to_string(),
+            Protocol::FTP
+        )));
+        assert_eq!(config.socks5_server, Some("socks.example.com".to_string()));
+        assert_eq!(config.no_proxy, Some("localhost,127.0.0.1".to_string()));
+    }
+}

@@ -6,7 +6,19 @@ edition.workspace = true
 
 [dependencies]
 agama-utils = { version = "0.1.0", path = "../agama-utils" }
+anyhow = "1.0.100"
+async-trait = "0.1.89"
+env_filter = "0.1.4"
+gettext-rs = "0.7.7"
+libsystemd = "0.7.2"
 strum = "0.27.2"
 thiserror = "2.0.18"
 tracing = "0.1.44"
+tracing-journald = "0.3.2"
+tracing-subscriber = { version = "0.3.22", features = ["env-filter"] }
 url = "2.5.8"
+
+[[bin]]
+name = "agama-proxy-setup"
+path = "src/main.rs"
+
