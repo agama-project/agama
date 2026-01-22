@@ -38,15 +38,22 @@ export default function ChangeProductOption({ children, ...props }: Omit<Dropdow
   // const registration = useRegistration();
   const currentLocation = useLocation();
   const to = useHref(PATHS.changeProduct);
+  const hasModes = products.find((p) => p.modes);
 
-  if (products.length <= 1) return null;
+  if (products.length <= 1 && !hasModes) return null;
   // if (registration?.registered) return null;
   if (SIDE_PATHS.includes(currentLocation.pathname)) return null;
   if (stage !== "configuring") return null;
 
+  const getLabel = () => {
+    if (products.length === 1 && hasModes) return _("Change mode");
+    if (hasModes) return _("Change product or mode");
+    return _("Change product");
+  };
+
   return (
     <DropdownItem to={to} {...props}>
-      {children || _("Change product")}
+      {children || getLabel()}
     </DropdownItem>
   );
 }
