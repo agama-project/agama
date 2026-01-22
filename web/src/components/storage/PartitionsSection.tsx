@@ -224,7 +224,7 @@ export default function PartitionsSection({ collection, index }: PartitionsSecti
   const device = usePartitionable(collection, index);
   const uiIndex = `${collection[0]}${index}`;
   const expanded = uiState.get("expanded")?.split(",");
-  const isExpanded = expanded?.includes(uiIndex);
+  const isExpanded = !!expanded?.includes(uiIndex);
   const newPartitionPath = generateEncodedPath(PATHS.addPartition, { collection, index });
   const hasPartitions = device.partitions.some((p) => p.mountPath);
 
