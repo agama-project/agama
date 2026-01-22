@@ -187,9 +187,9 @@ impl<'a> SoftwareStateBuilder<'a> {
             return;
         }
 
-        let Some(code) = &config.registration_code else {
+        if config.registration_code.is_none() && config.registration_url.is_none() {
             return;
-        };
+        }
 
         let product = self.product.id.clone();
         let version = self.product.version.clone().unwrap_or("1".to_string());
@@ -206,9 +206,9 @@ impl<'a> SoftwareStateBuilder<'a> {
         state.registration = Some(RegistrationState {
             product,
             version,
-            code: code.to_string(),
+            code: config.registration_code.clone(),
             email: config.registration_email.clone(),
-            url,
+            url: config.registration_url.clone(),
             addons,
         });
     }
@@ -541,7 +541,7 @@ pub struct RegistrationState {
     pub product: String,
     pub version: String,
     // FIXME: the code should be optional.
-    pub code: String,
+    pub code: Option<String>,
     pub email: Option<String>,
     pub url: Option<Url>,
     pub addons: Vec<Addon>,
@@ -745,7 +745,7 @@ mod tests {
             .build();
 
         let registration = state.registration.unwrap();
-        assert_eq!(registration.code, "123456".to_string());
+        assert_eq!(registration.code, Some("123456".to_string()));
         assert_eq!(
             registration.url,
             Some(Url::parse("https://scc.suse.com").unwrap())

@@ -748,8 +748,11 @@ impl ZyppServer {
         issues: &mut Vec<Issue>,
     ) {
         let mut registration =
-            Registration::builder(self.root_dir.clone(), &state.product, &state.version)
-                .with_code(&state.code);
+            Registration::builder(self.root_dir.clone(), &state.product, &state.version);
+
+        if let Some(code) = &state.code {
+            registration = registration.with_code(code);
+        }
 
         if let Some(email) = &state.email {
             registration = registration.with_email(email);
