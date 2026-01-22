@@ -29,8 +29,10 @@ pub enum SelectedBy {
     User,
     /// The pattern was selected automatically.
     Auto,
-    /// The pattern has not be selected.
+    /// The pattern has not been selected.
     None,
+    // The pattern has been explicitly removed by user.
+    Removed,
 }
 
 /// Software proposal information.

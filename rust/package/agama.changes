@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Jan 22 17:09:17 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+
+- Fixed removing automatically selected recommended patterns
+
+-------------------------------------------------------------------
 Wed Jan 21 11:07:34 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Allow importing SSL certificates from registration servers
