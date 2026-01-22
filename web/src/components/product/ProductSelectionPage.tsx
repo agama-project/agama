@@ -347,7 +347,12 @@ const ProductForm = ({ products, currentProduct, isSubmitted, onSubmit }: Produc
   };
 
   return (
-    <Form id="productSelectionForm" onSubmit={onFormSubmission}>
+    <Form
+      id="productSelectionForm"
+      onSubmit={onFormSubmission}
+      // @ts-expect-error: https://www.codegenes.net/blog/error-when-using-inert-attribute-with-typescript/
+      inert={isSubmitted ? "" : undefined}
+    >
       <FormGroup
         role="radiogroup"
         label={<ProductFormLabel products={products} currentProduct={currentProduct} />}
@@ -385,13 +390,14 @@ const ProductForm = ({ products, currentProduct, isSubmitted, onSubmit }: Produc
               isDisabled={isSelectionDisabled}
               isLoading={isSubmitted}
               variant={isSubmitted ? "secondary" : "primary"}
+              style={{ maxInlineSize: "30dvw", overflow: "hidden", textWrap: "balance" }}
             >
               <ProductFormSubmitLabel
                 currentProduct={currentProduct}
                 selectedProduct={selectedProduct}
               />
             </Page.Submit>
-            {currentProduct && (
+            {currentProduct && !isSubmitted && (
               <Link to={ROOT.overview} size="lg" variant="link">
                 {_("Cancel")}
               </Link>
