@@ -6,9 +6,11 @@ edition.workspace = true
 
 [dependencies]
 agama-utils = { path = "../agama-utils" }
+agama-storage = { path = "../agama-storage" }
 thiserror = "2.0.16"
 async-trait = "0.1.89"
 zbus = "5.7.1"
+tracing = "0.1.41"
 tokio = { version = "1.47.1", features = ["macros", "rt-multi-thread", "sync"] }
 tokio-stream = "0.1.16"
 serde = { version = "1.0.228" }

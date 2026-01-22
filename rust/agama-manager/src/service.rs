@@ -234,11 +234,6 @@ impl Starter {
             }
         };
 
-        let iscsi = match self.iscsi {
-            Some(iscsi) => iscsi,
-            None => iscsi::Service::starter(self.dbus.clone()).start().await?,
-        };
-
         let l10n = match self.l10n {
             Some(l10n) => l10n,
             None => {
@@ -274,6 +269,20 @@ impl Starter {
                 storage::Service::starter(
                     self.events.clone(),
                     issues.clone(),
+                    progress.clone(),
+                    self.dbus.clone(),
+                )
+                .start()
+                .await?
+            }
+        };
+
+        let iscsi = match self.iscsi {
+            Some(iscsi) => iscsi,
+            None => {
+                iscsi::Service::starter(
+                    storage.clone(),
+                    self.events.clone(),
                     progress.clone(),
                     self.dbus.clone(),
                 )

@@ -21,8 +21,14 @@
 use crate::{
     client::{self, Client},
     message,
+    monitor::{self, Monitor},
+    storage,
 };
-use agama_utils::actor::{self, Actor, Handler, MessageHandler};
+use agama_utils::{
+    actor::{self, Actor, Handler, MessageHandler},
+    api::event,
+    progress,
+};
 use async_trait::async_trait;
 use serde_json::Value;
 
@@ -32,16 +38,29 @@ pub enum Error {
     Actor(#[from] actor::Error),
     #[error(transparent)]
     Client(#[from] client::Error),
+    #[error(transparent)]
+    Monitor(#[from] monitor::Error),
 }
 
 pub struct Starter {
+    storage: Handler<storage::Service>,
+    events: event::Sender,
+    progress: Handler<progress::Service>,
     connection: zbus::Connection,
     client: Option<Box<dyn client::ISCSIClient + Send + 'static>>,
 }
 
 impl Starter {
-    pub fn new(connection: zbus::Connection) -> Self {
+    pub fn new(
+        storage: Handler<storage::Service>,
+        events: event::Sender,
+        progress: Handler<progress::Service>,
+        connection: zbus::Connection,
+    ) -> Self {
         Self {
+            storage,
+            events,
+            progress,
             connection,
             client: None,
         }
@@ -59,6 +78,10 @@ impl Starter {
         };
         let service = Service { client };
         let handler = actor::spawn(service);
+
+        let monitor = Monitor::new(self.storage, self.progress, self.events, self.connection);
+        monitor::spawn(monitor)?;
+
         Ok(handler)
     }
 }
@@ -68,8 +91,13 @@ pub struct Service {
 }
 
 impl Service {
-    pub fn starter(connection: zbus::Connection) -> Starter {
-        Starter::new(connection)
+    pub fn starter(
+        storage: Handler<storage::Service>,
+        events: event::Sender,
+        progress: Handler<progress::Service>,
+        connection: zbus::Connection,
+    ) -> Starter {
+        Starter::new(storage, events, progress, connection)
     }
 }
 

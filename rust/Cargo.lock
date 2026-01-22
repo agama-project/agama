@@ -105,6 +105,7 @@ dependencies = [
 name = "agama-iscsi"
 version = "0.1.0"
 dependencies = [
+ "agama-storage",
  "agama-utils",
  "async-trait",
  "serde",
@@ -112,6 +113,7 @@ dependencies = [
  "thiserror 2.0.17",
  "tokio",
  "tokio-stream",
+ "tracing",
  "zbus",
 ]
 

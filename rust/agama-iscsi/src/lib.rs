@@ -23,5 +23,8 @@ pub use service::{Service, Starter};
 
 pub mod message;
 
+pub use agama_storage as storage;
+
 mod client;
 mod dbus;
+mod monitor;
