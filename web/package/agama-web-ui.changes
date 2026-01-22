@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Thu Jan 22 16:19:20 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Allow registering add-ons (gh#agama-project/agama#3061).
+- Improve error reporting in the registration page.
+- Do not block the UI when registering the system (bsc#1257105).
+- Do not allow to change the product when it is already registered.
+
+-------------------------------------------------------------------
 Thu Jan 22 03:57:13 UTC 2026 - David Diaz <dgonzalez@suse.com>
 
 - Updated top header install button label to clarify navigation to
