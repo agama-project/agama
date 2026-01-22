@@ -90,7 +90,7 @@ type ActionProps = {
 
 type SubmitActionProps = {
   /** The id of a <form> the submit button is associated with */
-  form: string;
+  form?: string;
 } & ButtonProps;
 
 const defaultCardProps: CardProps = {
