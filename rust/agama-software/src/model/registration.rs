@@ -27,7 +27,7 @@
 use agama_security as security;
 use agama_utils::{
     actor::Handler,
-    api::software::{AddonInfo, AddonStatus, RegistrationInfo},
+    api::software::{AddonInfo, AddonRegistration, RegistrationInfo},
     arch::Arch,
 };
 use camino::Utf8PathBuf;
@@ -160,11 +160,11 @@ impl Registration {
                 .extensions
                 .into_iter()
                 .map(|e| {
-                    let status = match self.find_registered_addon(&e.identifier) {
-                        Some(addon) => AddonStatus::Registered {
+                    let registration = match self.find_registered_addon(&e.identifier) {
+                        Some(addon) => AddonRegistration::Registered {
                             code: addon.code.clone(),
                         },
-                        None => AddonStatus::NotRegistered,
+                        None => AddonRegistration::NotRegistered,
                     };
 
                     AddonInfo {
@@ -176,7 +176,7 @@ impl Registration {
                         recommended: e.recommended,
                         description: e.description,
                         release: e.release_stage,
-                        status,
+                        registration,
                     }
                 })
                 .collect(),
