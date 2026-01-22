@@ -61,9 +61,9 @@ import { useSystem } from "~/hooks/model/system/software";
 import { useProduct, useProductInfo } from "~/hooks/model/config/product";
 import { useIssues } from "~/hooks/model/issue";
 import { patchConfig, putConfig } from "~/api";
-import { Issue } from "~/model/issue";
+import type { Issue } from "~/model/issue";
+import type { Addon } from "~/model/config/product";
 import { useConfig } from "~/hooks/model/config";
-import { Addon } from "~/model/config/product";
 
 const FORM_ID = "productRegistration";
 const SERVER_LABEL = N_("Registration server");

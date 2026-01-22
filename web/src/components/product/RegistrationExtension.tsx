@@ -35,8 +35,8 @@ import { AddonInfo } from "~/types/software";
 import { mask } from "~/utils";
 import { _ } from "~/i18n";
 import RegistrationCodeInput from "./RegistrationCodeInput";
-import { Issue } from "~/model/issue";
-import { Addon } from "~/model/config/product";
+import type { Issue } from "~/model/issue";
+import type { Addon } from "~/model/config/product";
 import { isEmpty } from "radashi";
 
 /**
