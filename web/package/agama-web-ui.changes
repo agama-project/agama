@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Jan 22 03:57:13 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Updated top header install button label to clarify navigation to
+  the overview page (gh#agama-project/agama#3060).
+
+-------------------------------------------------------------------
 Wed Jan 21 10:48:33 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Adapt to the changes in the question about trusting

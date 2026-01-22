@@ -20,30 +20,29 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useId } from "react";
+import React from "react";
 import { Button, ButtonProps } from "@patternfly/react-core";
 import { useLocation, useNavigate } from "react-router";
 import { EXTENDED_SIDE_PATHS, ROOT } from "~/routes/paths";
 import { _ } from "~/i18n";
 
 /**
- * A call-to-action button that navigates users to the overview page containing
- * the actual installation button.
+ * A call-to-action button that directs users to the overview page, which
+ * contains the actual installation button.
  *
- * Despite its name, this component doesn't trigger installation directly.
- * Instead, it serves as a prominent navigation element to guide users toward
- * the overview page where the real installation button resides. The "Install"
- * label is intentionally simple and action-oriented to match user intent.
+ * This button does not trigger installation directly. Instead, it serves as a
+ * navigation element that guides users to the overview page where they can
+ * review installation details before proceeding. The label "Review and Install"
+ * is intentional, indicating that users will first be presented with a summary
+ * screen before they can proceed with the installation.
  *
- * @todo Refactor component name and behavior
- * - Rename to better reflect its navigation purpose
+ * @todo Refactor component behavior
  * - Replace route-based visibility logic with explicit prop-based control now
  *   that pages manage their own layouts
  */
-const InstallButton = (
+export default function ReviewAndInstallButton(
   props: Omit<ButtonProps, "onClick"> & { onClickWithIssues?: () => void },
-) => {
-  const labelId = useId();
+) {
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -53,14 +52,12 @@ const InstallButton = (
 
   const { onClickWithIssues, ...buttonProps } = props;
 
-  // TRANSLATORS: The install button label
-  const buttonText = _("Install");
+  // TRANSLATORS: The review and install button label
+  const buttonText = _("Review and install");
 
   return (
-    <Button variant="primary" {...buttonProps} onClick={navigateToConfirmation}>
-      <span id={labelId}>{buttonText}</span>
+    <Button {...buttonProps} onClick={navigateToConfirmation}>
+      {buttonText}
     </Button>
   );
-};
-
-export default InstallButton;
+}

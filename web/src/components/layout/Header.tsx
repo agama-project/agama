@@ -37,7 +37,12 @@ import {
   ToolbarItem,
 } from "@patternfly/react-core";
 import { Icon } from "~/components/layout";
-import { ChangeProductOption, InstallerOptions, InstallButton, SkipTo } from "~/components/core";
+import {
+  ChangeProductOption,
+  InstallerOptions,
+  ReviewAndInstallButton,
+  SkipTo,
+} from "~/components/core";
 import ProgressStatusMonitor from "~/components/core/ProgressStatusMonitor";
 import Breadcrumbs from "~/components/core/Breadcrumbs";
 import { useProductInfo } from "~/hooks/model/config/product";
@@ -166,7 +171,7 @@ export default function Header({
                 </ToolbarItem>
               )}
               <ToolbarItem>
-                <InstallButton />
+                <ReviewAndInstallButton />
               </ToolbarItem>
               <ToolbarItem>
                 <OptionsDropdown />
