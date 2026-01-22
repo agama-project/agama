@@ -54,6 +54,7 @@ pub use {action::Action, action::FinishMethod};
 pub mod bootloader;
 pub mod files;
 pub mod hostname;
+pub mod iscsi;
 pub mod l10n;
 pub mod manager;
 pub mod network;

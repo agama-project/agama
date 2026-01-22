@@ -18,10 +18,5 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-pub mod service;
-pub use service::{Service, Starter};
-
-pub mod message;
-
-mod client;
-mod dbus;
+mod discover_config;
+pub use discover_config::DiscoverConfig;

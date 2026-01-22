@@ -30,8 +30,9 @@ pub struct SystemInfo {
     pub hostname: hostname::SystemInfo,
     pub l10n: l10n::SystemInfo,
     pub software: software::SystemInfo,
-    #[serde(default)]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub storage: Option<Value>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub iscsi: Option<Value>,
     pub network: network::SystemInfo,
 }

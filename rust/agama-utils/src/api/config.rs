@@ -25,6 +25,7 @@ use crate::api::{
 };
 use merge::Merge;
 use serde::{Deserialize, Serialize};
+use serde_json::Value;
 
 #[derive(Clone, Debug, Default, Deserialize, Serialize, Merge, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
@@ -48,6 +49,9 @@ pub struct Config {
     #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(flatten)]
     pub storage: Option<storage::Config>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[merge(strategy = merge::option::overwrite_none)]
+    pub iscsi: Option<Value>,
     #[serde(flatten, skip_serializing_if = "Option::is_none")]
     pub files: Option<files::Config>,
     #[serde(flatten, skip_serializing_if = "Option::is_none")]

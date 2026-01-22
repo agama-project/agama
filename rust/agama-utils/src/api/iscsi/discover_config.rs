@@ -6,7 +6,7 @@
 // under the terms of the GNU General Public License as published by the Free
 // Software Foundation; either version 2 of the License, or (at your option)
 // any later version.
-//
+//f
 // This program is distributed in the hope that it will be useful, but WITHOUT
 // ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
 // FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
@@ -18,10 +18,15 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-pub mod service;
-pub use service::{Service, Starter};
+use serde::{Deserialize, Serialize};
 
-pub mod message;
-
-mod client;
-mod dbus;
+#[derive(Clone, Debug, Serialize, Deserialize, utoipa::ToSchema)]
+#[serde(rename_all = "camelCase")]
+pub struct DiscoverConfig {
+    pub address: String,
+    pub port: u32,
+    pub username: Option<String>,
+    pub password: Option<String>,
+    pub initiator_username: Option<String>,
+    pub initiator_password: Option<String>,
+}

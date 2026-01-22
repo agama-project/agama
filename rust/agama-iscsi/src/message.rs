@@ -18,10 +18,45 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-pub mod service;
-pub use service::{Service, Starter};
+use agama_utils::{actor::Message, api::iscsi::DiscoverConfig};
+use serde_json::Value;
 
-pub mod message;
+pub struct Discover {
+    pub config: DiscoverConfig,
+}
 
-mod client;
-mod dbus;
+impl Discover {
+    pub fn new(config: DiscoverConfig) -> Self {
+        Self { config }
+    }
+}
+
+impl Message for Discover {
+    type Reply = u32;
+}
+
+pub struct GetSystem;
+
+impl Message for GetSystem {
+    type Reply = Option<Value>;
+}
+
+pub struct GetConfig;
+
+impl Message for GetConfig {
+    type Reply = Option<Value>;
+}
+
+pub struct SetConfig {
+    pub config: Option<Value>,
+}
+
+impl SetConfig {
+    pub fn new(config: Option<Value>) -> Self {
+        Self { config }
+    }
+}
+
+impl Message for SetConfig {
+    type Reply = ();
+}
