@@ -298,6 +298,30 @@ type ProductFormProps = {
   isSubmitted: boolean;
 };
 
+const ProductFormLabel = ({ products, currentProduct }) => {
+  // Calculate the number of available products, excluding the current product if selected
+  const availableProductCount = currentProduct ? products.length - 1 : products.length;
+
+  // TODO: Refactor once mode selection is implemented
+  // When mode selection is added, check if there is only one product left,
+  // and if so, handle the display to allow switching between modes for that product.
+  //
+  // if (availableProductCount === 0) {
+  //   return sprintf(_("Switch to one of %d other modes"), products[0].modes.length);
+  // }
+
+  return sprintf(
+    n_(
+      "Switch to another available product",
+      // TODO: One modes is implemented, the label should reflect switching to
+      // available products or their modes
+      "Choose from %d available products",
+      availableProductCount,
+    ),
+    availableProductCount,
+  );
+};
+
 /**
  * Form for selecting a product.
  *
@@ -326,14 +350,7 @@ const ProductForm = ({ products, currentProduct, isSubmitted, onSubmit }: Produc
     <Form id="productSelectionForm" onSubmit={onFormSubmission}>
       <FormGroup
         role="radiogroup"
-        label={sprintf(
-          n_(
-            "Switch to other available product",
-            "Choose from %d available products",
-            products.length - 1,
-          ),
-          products.length - 1,
-        )}
+        label={<ProductFormLabel products={products} currentProduct={currentProduct} />}
       >
         <List isPlain>
           {products.map((product, index) => {
