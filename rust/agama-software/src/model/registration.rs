@@ -29,6 +29,7 @@ use agama_utils::{
     actor::Handler,
     api::software::{AddonInfo, AddonRegistration, RegistrationInfo},
     arch::Arch,
+    helpers::copy_dir_all,
 };
 use camino::Utf8PathBuf;
 use openssl::x509::X509;
@@ -45,6 +46,8 @@ pub enum RegistrationError {
     AddService(String, #[source] zypp_agama::ZyppError),
     #[error("Failed to refresh the service {0}: {1}")]
     RefreshService(String, #[source] zypp_agama::ZyppError),
+    #[error("Failed to copy file {0}: {1}")]
+    IO(String, #[source] std::io::Error),
     #[error(transparent)]
     Security(#[from] security::service::Error),
 }
@@ -69,6 +72,8 @@ pub struct Registration {
     // Holds the addons information because the status cannot be obtained from SCC yet
     // (e.g., whether and add-on is register or its registration code).
     addons: Vec<Addon>,
+    // Holds all config files it created, later it will be copied to target system
+    config_files: Vec<Utf8PathBuf>,
 }
 
 impl Registration {
@@ -139,6 +144,7 @@ impl Registration {
                 &self.creds.password,
                 path.as_str(),
             )?;
+            self.config_files.push(path);
         }
 
         // Add the libzypp service
@@ -193,6 +199,43 @@ impl Registration {
             url: self.connect_params.url.clone(),
             addons,
         }
+    }
+
+    /// Writes to the target system all the registration configuration that is needed
+    ///
+    /// Beware that, if a certificate was imported, it is copied by the agama-security service.
+    pub fn finish(&mut self, install_dir: &Utf8PathBuf) -> Result<(), RegistrationError> {
+        suseconnect_agama::write_config(self.connect_params.clone())?;
+        self.config_files
+            .push(suseconnect_agama::DEFAULT_CONFIG_FILE.into());
+        self.copy_files(install_dir)?;
+
+        // FIXME: Copy services files. Temporarily solution because, most probably,
+        // it should be handled by libzypp itself.
+        if let Err(error) = copy_dir_all(
+            self.root_dir.join("etc/zypp/services.d"),
+            install_dir.join("etc/zypp/services.d"),
+        ) {
+            tracing::error!("Failed to copy the libzypp services files: {error}");
+        };
+        Ok(())
+    }
+
+    fn copy_files(&self, target_dir: &Utf8PathBuf) -> Result<(), RegistrationError> {
+        for path in &self.config_files {
+            let target_path = match path.strip_prefix(&self.root_dir) {
+                Ok(relative_path) => target_dir.join(&relative_path),
+                Err(_) => {
+                    let relative_path = path.strip_prefix("/").unwrap_or(path);
+                    target_dir.join(relative_path)
+                }
+            };
+            tracing::info!("Copying credentials file {path} to {target_path}");
+            std::fs::copy(path, target_path)
+                .map_err(|e| RegistrationError::IO(path.to_string(), e))?;
+        }
+
+        Ok(())
     }
 
     fn base_product(&self) -> RegistrationResult<suseconnect_agama::Product> {
@@ -341,6 +384,7 @@ impl RegistrationBuilder {
             creds,
             services: vec![],
             addons: vec![],
+            config_files: vec![suseconnect_agama::GLOBAL_CREDENTIALS_FILE.into()],
         };
 
         registration.activate_product(zypp, &self.product, &self.version, None)?;
