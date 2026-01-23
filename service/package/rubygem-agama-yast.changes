@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri Jan 23 10:28:20 UTC 2026 - Martin Wilck <mwilck@suse.com>
+
+- Drop dependency on dmraid (jsc#PED-15368)
+
+-------------------------------------------------------------------
 Wed Jan 21 10:24:50 UTC 2026 - Ancor Gonzalez Sosa <ancor@suse.com>
 
 - Honor the read_only flag for volumes coming from the product
