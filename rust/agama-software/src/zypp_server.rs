@@ -529,11 +529,14 @@ impl ZyppServer {
     }
 
     fn registration_finish(&mut self) -> ZyppServerResult<()> {
-        let Some(registration) = &mut self.registration else {
+        let RegistrationStatus::Registered(registration) = &mut self.registration else {
+            tracing::info!(
+                "Skipping the copy of registration files because the system was not registered"
+            );
             return Ok(());
         };
 
-        if let Err(error) = registration.finish() {
+        if let Err(error) = registration.finish(&self.install_dir) {
             // just log error and continue as registration config is recoverable
             tracing::error!("Failed to finish the registration: {error}");
         };

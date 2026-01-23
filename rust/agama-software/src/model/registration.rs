@@ -202,21 +202,26 @@ impl Registration {
     /// Writes to target system all registration configuration that is needed
     ///
     /// Beware that, if a certificate was imported, it is copied by the agama-security service.
-    pub fn finish(&mut self) -> Result<(), RegistrationError> {
+    pub fn finish(&mut self, install_dir: &Utf8PathBuf) -> Result<(), RegistrationError> {
         suseconnect_agama::write_config(self.connect_params.clone())?;
         self.config_files
             .push(suseconnect_agama::DEFAULT_CONFIG_FILE.into());
-        self.copy_files()?;
+        self.copy_files(install_dir)?;
         Ok(())
     }
 
-    fn copy_files(&self) -> Result<(), RegistrationError> {
+    fn copy_files(&self, target_dir: &Utf8PathBuf) -> Result<(), RegistrationError> {
         for path in &self.config_files {
-            tracing::info!("Copying credentials file {path:?}");
-            let target = Utf8PathBuf::from("/mnt");
-            let target_path = target.join(path);
+            let target_path = match path.strip_prefix(&self.root_dir) {
+                Ok(relative_path) => target_dir.join(&relative_path),
+                Err(_) => {
+                    let relative_path = path.strip_prefix("/").unwrap_or(path);
+                    target_dir.join(relative_path)
+                }
+            };
+            tracing::info!("Copying credentials file {path} to {target_path}");
             std::fs::copy(path, target_path)
-                .map_err(|e| RegistrationError::IO(path.to_string(), e));
+                .map_err(|e| RegistrationError::IO(path.to_string(), e))?;
         }
 
         Ok(())
