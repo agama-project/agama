@@ -24,7 +24,7 @@ import React, { useEffect } from "react";
 import { Outlet, useLocation } from "react-router";
 import { useStatusChanges, useStatus } from "~/hooks/model/status";
 import { useSystemChanges } from "~/hooks/model/system";
-import { useProposalChanges } from "~/hooks/model/proposal";
+import { useProposal, useProposalChanges } from "~/hooks/model/proposal";
 import { useIssuesChanges } from "~/hooks/model/issue";
 import { useProductInfo } from "~/hooks/model/config/product";
 import { useQueryClient } from "@tanstack/react-query";
@@ -37,6 +37,13 @@ import { InstallationFinished, InstallationProgress } from "./components/core";
  * necessary before rendering the nested route content via the <Outlet />.
  */
 const Content = () => {
+  // FIXME: we need to force TanStack query to retrieve the proposal to make
+  // sure it is refreshed after being invalidated. Related to useProgressTracking
+  // and useTrackQueriesRefetch.
+  //
+  // https://tanstack.com/query/latest/docs/framework/react/guides/query-invalidation
+  useProposal();
+
   const location = useLocation();
   const product = useProductInfo();
   const { progresses, stage } = useStatus();

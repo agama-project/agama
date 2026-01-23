@@ -43,6 +43,7 @@ import { Status } from "~/model/status";
 import { Question } from "~/model/question";
 
 import type { Product } from "~/types/software";
+import type { Config as ProductConfig } from "~/model/config/product";
 
 /**
  * Internal mock for manipulating routes, using ["/"] by default
@@ -167,6 +168,8 @@ const mockUseProductInfo: jest.Mock<Product> = jest.fn().mockReturnValue({
   registration: false,
 });
 
+const mockUseProduct = jest.fn().mockReturnValue(null);
+
 /**
  * Allows mocking useProductInfo for testing purpose
  *
@@ -181,8 +184,15 @@ const mockUseProductInfo: jest.Mock<Product> = jest.fn().mockReturnValue({
  */
 const mockProduct = (product: Product) => mockUseProductInfo.mockReturnValue(product);
 
+/**
+ * Allows mocking useProduct for testing purpose
+ */
+const mockProductConfig = (product: ProductConfig | null) =>
+  mockUseProduct.mockReturnValue(product);
+
 jest.mock("~/hooks/model/config/product", () => ({
   useProductInfo: () => mockUseProductInfo(),
+  useProduct: () => mockUseProduct(),
 }));
 
 /**
@@ -383,5 +393,6 @@ export {
   mockProgresses,
   mockStage,
   mockProduct,
+  mockProductConfig,
   mockQuestions,
 };

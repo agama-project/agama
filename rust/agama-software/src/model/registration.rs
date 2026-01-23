@@ -27,7 +27,7 @@
 use agama_security as security;
 use agama_utils::{
     actor::Handler,
-    api::software::{AddonInfo, AddonStatus, RegistrationInfo},
+    api::software::{AddonInfo, AddonRegistration, RegistrationInfo},
     arch::Arch,
 };
 use camino::Utf8PathBuf;
@@ -60,6 +60,7 @@ pub struct Registration {
     root_dir: Utf8PathBuf,
     product: String,
     version: String,
+    arch: Arch,
     // The connection parameters are kept because they are needed by the
     // `to_registration_info` function.
     connect_params: ConnectParams,
@@ -109,7 +110,7 @@ impl Registration {
         version: &str,
         code: Option<&str>,
     ) -> RegistrationResult<()> {
-        let product = Self::product_specification(name, version);
+        let product = Self::product_specification(name, version, self.arch);
         let mut params = self.connect_params.clone();
         params.token = code.map(ToString::to_string);
 
@@ -160,11 +161,11 @@ impl Registration {
                 .extensions
                 .into_iter()
                 .map(|e| {
-                    let status = match self.find_registered_addon(&e.identifier) {
-                        Some(addon) => AddonStatus::Registered {
+                    let registration = match self.find_registered_addon(&e.identifier) {
+                        Some(addon) => AddonRegistration::Registered {
                             code: addon.code.clone(),
                         },
-                        None => AddonStatus::NotRegistered,
+                        None => AddonRegistration::NotRegistered,
                     };
 
                     AddonInfo {
@@ -176,7 +177,7 @@ impl Registration {
                         recommended: e.recommended,
                         description: e.description,
                         release: e.release_stage,
-                        status,
+                        registration,
                     }
                 })
                 .collect(),
@@ -203,12 +204,15 @@ impl Registration {
     }
 
     fn base_product_specification(&self) -> suseconnect_agama::ProductSpecification {
-        Self::product_specification(&self.product, &self.version)
+        Self::product_specification(&self.product, &self.version, self.arch)
     }
 
-    fn product_specification(id: &str, version: &str) -> suseconnect_agama::ProductSpecification {
+    fn product_specification(
+        id: &str,
+        version: &str,
+        arch: Arch,
+    ) -> suseconnect_agama::ProductSpecification {
         // We do not expect this to happen.
-        let arch = Arch::current().expect("Failed to determine the architecture");
         suseconnect_agama::ProductSpecification {
             identifier: id.to_string(),
             arch: arch.to_string(),
@@ -308,7 +312,8 @@ impl RegistrationBuilder {
         };
         // https://github.com/agama-project/agama/blob/master/service/lib/agama/registration.rb#L294
         let version = self.version.split(".").next().unwrap_or("1");
-        let target_distro = format!("{}-{}-{}", &self.product, version, std::env::consts::ARCH);
+        let arch = Arch::current().expect("Failed to determine the architecture");
+        let target_distro = format!("{}-{}-{}", &self.product, version, arch.to_string());
         tracing::debug!("Announcing system {target_distro}");
         let creds = handle_registration_error(
             || suseconnect_agama::announce_system(params.clone(), &target_distro),
@@ -332,6 +337,7 @@ impl RegistrationBuilder {
             connect_params: params,
             product: self.product.clone(),
             version: self.version.clone(),
+            arch,
             creds,
             services: vec![],
             addons: vec![],

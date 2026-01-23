@@ -21,6 +21,7 @@
  */
 
 import React, { useCallback, useState } from "react";
+import { toggle } from "radashi";
 
 const StorageUiStateContext = React.createContext(null);
 
@@ -94,4 +95,18 @@ function StorageUiStateProvider({ children }: React.PropsWithChildren) {
   );
 }
 
-export { StorageUiStateProvider, useStorageUiState };
+/* Check whether an element is marked as expanded in the given state */
+function isExpandedInState(uiState, uiIndex) {
+  const expanded = uiState.get("expanded")?.split(",");
+  return !!expanded?.includes(uiIndex);
+}
+
+/* Change the information about an element in the given state */
+function toggleExpandedInState(uiState, uiIndex) {
+  const expanded = uiState.get("expanded")?.split(",");
+  const nextExpanded = toggle(expanded, uiIndex);
+  uiState.set("expanded", nextExpanded.join(","));
+  return uiState;
+}
+
+export { StorageUiStateProvider, useStorageUiState, isExpandedInState, toggleExpandedInState };

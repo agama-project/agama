@@ -29,10 +29,11 @@ use agama_utils::{
     actor::{self, Actor, Handler, MessageHandler},
     api::{
         event::{self, Event},
-        software::{Config, Proposal, Repository, SystemInfo},
+        software::{Config, ProductConfig, Proposal, Repository, SystemInfo},
         Issue, Scope,
     },
     issue,
+    kernel_cmdline::KernelCmdline,
     products::ProductSpec,
     progress, question,
 };
@@ -131,6 +132,7 @@ impl Starter {
             issues: self.issues,
             progress: self.progress,
             product: None,
+            kernel_cmdline: KernelCmdline::parse().unwrap_or_default(),
         };
         service.setup().await?;
         Ok(actor::spawn(service))
@@ -152,6 +154,7 @@ pub struct Service {
     state: Arc<RwLock<ServiceState>>,
     product: Option<Arc<RwLock<ProductSpec>>>,
     selection: SoftwareSelection,
+    kernel_cmdline: KernelCmdline,
 }
 
 #[derive(Default)]
@@ -270,6 +273,25 @@ impl Service {
             }
         }
     }
+
+    /// Completes the configuration with data from the kernel command-line.
+    ///
+    /// - Use `inst.register_url` as default value for `product.registration_url`.
+    fn add_kernel_cmdline_defaults(&mut self, config: &mut Config) {
+        let Some(product) = &mut config.product else {
+            return;
+        };
+
+        if product.registration_url.is_some() {
+            return;
+        }
+
+        product.registration_url = self
+            .kernel_cmdline
+            .get_last("inst.register_url")
+            .map(|url| Url::parse(&url).ok())
+            .flatten();
+    }
 }
 
 impl Actor for Service {
@@ -297,9 +319,12 @@ impl MessageHandler<message::SetConfig<Config>> for Service {
     async fn handle(&mut self, message: message::SetConfig<Config>) -> Result<(), Error> {
         self.product = Some(message.product.clone());
 
+        let mut config = message.config.clone().unwrap_or_default();
+        self.add_kernel_cmdline_defaults(&mut config);
+
         {
             let mut state = self.state.write().await;
-            state.config = message.config.clone().unwrap_or_default();
+            state.config = config;
         }
 
         self.events.send(Event::ConfigChanged {

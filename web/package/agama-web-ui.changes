@@ -1,4 +1,30 @@
 -------------------------------------------------------------------
+Thu Jan 22 16:19:20 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Allow registering add-ons (gh#agama-project/agama#3061).
+- Improve error reporting in the registration page.
+- Do not block the UI when registering the system (bsc#1257105).
+- Do not allow to change the product when it is already registered.
+
+-------------------------------------------------------------------
+Thu Jan 22 15:25:25 UTC 2026 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Track state (collapsed/open) of the lists of logical volumes
+  (gh#agama-project/agama#3066).
+
+-------------------------------------------------------------------
+Thu Jan 22 14:11:19 UTC 2026 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Avoid inconsistent state (collapsed/open) in the lists of
+  partitions (gh#agama-project/agama#3063).
+
+-------------------------------------------------------------------
+Thu Jan 22 03:57:13 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Updated top header install button label to clarify navigation to
+  the overview page (gh#agama-project/agama#3060).
+
+-------------------------------------------------------------------
 Wed Jan 21 10:48:33 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Adapt to the changes in the question about trusting
