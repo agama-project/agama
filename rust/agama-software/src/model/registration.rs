@@ -201,7 +201,7 @@ impl Registration {
         }
     }
 
-    /// Writes to target system all registration configuration that is needed
+    /// Writes to the target system all the registration configuration that is needed
     ///
     /// Beware that, if a certificate was imported, it is copied by the agama-security service.
     pub fn finish(&mut self, install_dir: &Utf8PathBuf) -> Result<(), RegistrationError> {
