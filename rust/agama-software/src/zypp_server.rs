@@ -122,6 +122,7 @@ pub struct ZyppServer {
     receiver: mpsc::UnboundedReceiver<SoftwareAction>,
     registration: RegistrationStatus,
     root_dir: Utf8PathBuf,
+    install_dir: Utf8PathBuf,
 }
 
 impl ZyppServer {
@@ -130,12 +131,14 @@ impl ZyppServer {
     /// The service runs on a separate thread and gets the client requests using a channel.
     pub fn start<P: AsRef<Utf8Path>>(
         root_dir: P,
+        install_dir: P,
     ) -> ZyppServerResult<UnboundedSender<SoftwareAction>> {
         let (sender, receiver) = mpsc::unbounded_channel();
 
         let server = Self {
             receiver,
             root_dir: root_dir.as_ref().to_path_buf(),
+            install_dir: install_dir.as_ref().to_path_buf(),
             registration: Default::default(),
         };
 
@@ -241,8 +244,7 @@ impl ZyppServer {
             "Starting packages installation",
         ));
 
-        let target = "/mnt";
-        zypp.switch_target(target)?;
+        zypp.switch_target(&self.install_dir.to_string())?;
         let result = zypp.commit(
             &mut download_callback,
             &mut install_callback,
