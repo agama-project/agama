@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Jan 28 14:26:37 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- Enable agama-proxy-setup service for configuring the proxy if
+  given through the kernel cmdline (gh#agama-project/agama#3069).
+
+-------------------------------------------------------------------
 Wed Jan 28 13:59:00 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
 
 - Display version "16.1" in the Live ISO boot menu
