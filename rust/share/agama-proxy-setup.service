@@ -1,7 +1,7 @@
 [Unit]
 Description=Agama Proxy Configuration
 Before=agama.service
-After=local-fs.target
+After=agama-cmdline-process.service
 
 [Service]
 ExecStart=/usr/bin/agama-proxy-setup
