@@ -72,7 +72,6 @@ $SUDO $ZYPPER install \
   bcache-tools \
   btrfsprogs \
   cryptsetup \
-  dmraid \
   dosfstools \
   e2fsprogs \
   exfatprogs \
