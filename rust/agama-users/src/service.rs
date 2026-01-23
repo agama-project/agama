@@ -222,7 +222,9 @@ impl MessageHandler<message::GetProposal> for Service {
 impl MessageHandler<message::Install> for Service {
     async fn handle(&mut self, _message: message::Install) -> Result<(), Error> {
         if let Some(proposal) = self.get_proposal() {
-            self.model.install(&proposal)?;
+            if let Err(error) = self.model.install(&proposal) {
+                tracing::error!("Failed to write users configuration: {error}");
+            }
         } else {
             tracing::error!("Missing authentication configuration");
         };
