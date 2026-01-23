@@ -85,6 +85,8 @@ pub enum Error {
     Hardware(#[from] hardware::Error),
     #[error("Cannot dispatch this action in {current} stage (expected {expected}).")]
     UnexpectedStage { current: Stage, expected: Stage },
+    #[error("Cannot start the installation. The config contains some issues.")]
+    InstallationBlocked,
     #[error(transparent)]
     Users(#[from] users::service::Error),
 }
@@ -697,6 +699,13 @@ impl MessageHandler<message::GetLicense> for Service {
 impl MessageHandler<message::RunAction> for Service {
     /// It runs the given action.
     async fn handle(&mut self, message: message::RunAction) -> Result<(), Error> {
+        let issues = self.issues.call(issue::message::Get).await?;
+        let progress = self.progress.call(progress::message::GetProgress).await?;
+
+        if !issues.is_empty() || !progress.is_empty() {
+            return Err(Error::InstallationBlocked);
+        }
+
         match message.action {
             Action::ConfigureL10n(config) => {
                 self.check_stage(Stage::Configuring).await?;
