@@ -1,4 +1,4 @@
-use std::path::Path;
+use std::{fs, path::Path};
 
 use agama_utils::kernel_cmdline::KernelCmdline;
 use strum::{Display, EnumIter, EnumString, IntoEnumIterator};
@@ -37,6 +37,11 @@ impl ProxyConfig {
         let paths = ["/run/agama/cmdline.d/kernel.conf", "/etc/cmdline-menu.conf"];
 
         for path in paths {
+            if !Path::new(path).exists() {
+                tracing::info!("There is no {} file", path);
+                continue;
+            }
+
             if let Ok(cmdline) = KernelCmdline::parse_file(path) {
                 if let Some(config) = Self::from_kernel_cmdline(&cmdline) {
                     return Some(config);
