@@ -397,11 +397,11 @@ struct PatternInfos get_patterns_info(struct Zypp *_zypp,
         break;
       }
     } else {
-        // distinguish between the "not selected" and "explicitly removed by user" states
-        if (status.getTransactByValue() == zypp::ResStatus::TransactByValue::USER)
-          result.infos[i].selected = RESOLVABLE_SELECTED::USER_REMOVED;
-        else
-          result.infos[i].selected = RESOLVABLE_SELECTED::NOT_SELECTED;
+      // distinguish between the "not selected" and "explicitly removed by user" states
+      if (status.getTransactByValue() == zypp::ResStatus::TransactByValue::USER)
+        result.infos[i].selected = RESOLVABLE_SELECTED::USER_REMOVED;
+      else
+        result.infos[i].selected = RESOLVABLE_SELECTED::NOT_SELECTED;
     }
     result.size++;
   };
