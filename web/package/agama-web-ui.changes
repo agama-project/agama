@@ -1,5 +1,5 @@
 -------------------------------------------------------------------
-Fri Jan 23 17:10:53 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+Fri Jan 23 15:34:08 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
 
 - Fixed removing automatically selected recommended patterns
   (gh#agama-project/agama#3072)
