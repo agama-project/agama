@@ -17,6 +17,6 @@ pub fn main() {
         email: None,
     };
 
-    let result = announce_system(params, "sles16");
+    let result = announce_system(params, "SLES-16-x86_64");
     println!("{:?}", result);
 }

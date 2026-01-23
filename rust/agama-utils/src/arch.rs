@@ -20,8 +20,6 @@
 
 //! Implement support for detecting and converting architeture identifiers.
 
-use std::process::Command;
-
 #[derive(Clone, Copy, Debug, PartialEq, strum::Display, strum::EnumString)]
 #[strum(serialize_all = "lowercase")]
 pub enum Arch {
@@ -42,12 +40,13 @@ pub enum Error {
 impl Arch {
     /// Returns the current architecture.
     pub fn current() -> Result<Self, Error> {
-        let output = Command::new("uname").arg("-m").output()?;
-        let arch_str = String::from_utf8_lossy(&output.stdout).trim().to_string();
-        arch_str
-            .as_str()
-            .try_into()
-            .map_err(|_| Error::Unknown(arch_str))
+        match std::env::consts::ARCH {
+            "aarch64" => Ok(Arch::AARCH64),
+            "powerpc64" => Ok(Arch::PPC64LE),
+            "s390x" => Ok(Arch::S390X),
+            "x86_64" => Ok(Arch::X86_64),
+            _ => Err(Error::Unknown(std::env::consts::ARCH.to_string())),
+        }
     }
 
     /// Returns the identifier used in the products definition.

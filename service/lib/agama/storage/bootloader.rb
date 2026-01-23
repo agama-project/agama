@@ -22,7 +22,7 @@
 require "yast"
 require "json"
 require "bootloader/bootloader_factory"
-require "bootloader/proposal_client"
+require "bootloader/os_prober"
 
 require "agama/http/clients"
 
@@ -127,6 +127,8 @@ module Agama
       # It proposes the bootloader configuration based on the current system and storage
       # configuration. It also applies the user configuration and installs the needed packages.
       def configure
+        # TODO: get value from product ( probably for TW and maybe Leap?)
+        ::Bootloader::OsProber.package_available = false
         # reset disk to always read the recent storage configuration
         ::Yast::BootStorage.reset_disks
         # propose values first. Propose bootloader from factory and do not use

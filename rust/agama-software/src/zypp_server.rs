@@ -122,6 +122,7 @@ pub struct ZyppServer {
     receiver: mpsc::UnboundedReceiver<SoftwareAction>,
     registration: RegistrationStatus,
     root_dir: Utf8PathBuf,
+    install_dir: Utf8PathBuf,
 }
 
 impl ZyppServer {
@@ -130,12 +131,14 @@ impl ZyppServer {
     /// The service runs on a separate thread and gets the client requests using a channel.
     pub fn start<P: AsRef<Utf8Path>>(
         root_dir: P,
+        install_dir: P,
     ) -> ZyppServerResult<UnboundedSender<SoftwareAction>> {
         let (sender, receiver) = mpsc::unbounded_channel();
 
         let server = Self {
             receiver,
             root_dir: root_dir.as_ref().to_path_buf(),
+            install_dir: install_dir.as_ref().to_path_buf(),
             registration: Default::default(),
         };
 
@@ -241,8 +244,7 @@ impl ZyppServer {
             "Starting packages installation",
         ));
 
-        let target = "/mnt";
-        zypp.switch_target(target)?;
+        zypp.switch_target(&self.install_dir.to_string())?;
         let result = zypp.commit(
             &mut download_callback,
             &mut install_callback,
@@ -539,8 +541,18 @@ impl ZyppServer {
         Ok(())
     }
 
-    fn registration_finish(&self) -> ZyppServerResult<()> {
-        // TODO: implement when registration is ready
+    fn registration_finish(&mut self) -> ZyppServerResult<()> {
+        let RegistrationStatus::Registered(registration) = &mut self.registration else {
+            tracing::info!(
+                "Skipping the copy of registration files because the system was not registered"
+            );
+            return Ok(());
+        };
+
+        if let Err(error) = registration.finish(&self.install_dir) {
+            // just log error and continue as registration config is recoverable
+            tracing::error!("Failed to finish the registration: {error}");
+        };
         Ok(())
     }
 
@@ -743,19 +755,10 @@ impl ZyppServer {
         issues: &mut Vec<Issue>,
     ) {
         match &self.registration {
-            RegistrationStatus::Failed(error) => {
-                issues.push(
-                    Issue::new(
-                        "software.register_system",
-                        &gettext("Failed to register the system"),
-                    )
-                    .with_details(&error.to_string()),
-                );
-            }
-            RegistrationStatus::NotRegistered => {
+            RegistrationStatus::Failed(_) | RegistrationStatus::NotRegistered => {
                 self.register_base_system(state, zypp, security_srv, issues);
             }
-            RegistrationStatus::Registered(registration) => {}
+            RegistrationStatus::Registered(_) => {}
         };
 
         if !state.addons.is_empty() {
@@ -771,8 +774,11 @@ impl ZyppServer {
         issues: &mut Vec<Issue>,
     ) {
         let mut registration =
-            Registration::builder(self.root_dir.clone(), &state.product, &state.version)
-                .with_code(&state.code);
+            Registration::builder(self.root_dir.clone(), &state.product, &state.version);
+
+        if let Some(code) = &state.code {
+            registration = registration.with_code(code);
+        }
 
         if let Some(email) = &state.email {
             registration = registration.with_email(email);
@@ -788,8 +794,11 @@ impl ZyppServer {
             }
             Err(error) => {
                 issues.push(
-                    Issue::new("software.register_system", "Failed to register the system")
-                        .with_details(&error.to_string()),
+                    Issue::new(
+                        "system_registration_failed",
+                        "Failed to register the system",
+                    )
+                    .with_details(&error.to_string()),
                 );
                 self.registration = RegistrationStatus::Failed(error);
             }
@@ -814,7 +823,8 @@ impl ZyppServer {
             }
             if let Err(error) = registration.register_addon(zypp, addon) {
                 let message = format!("Failed to register the add-on {}", addon.id);
-                let issue = Issue::new("software.addon", &message).with_details(&error.to_string());
+                let issue_id = format!("addon_registration_failed[{}]", &addon.id);
+                let issue = Issue::new(&issue_id, &message).with_details(&error.to_string());
                 issues.push(issue);
             }
         }

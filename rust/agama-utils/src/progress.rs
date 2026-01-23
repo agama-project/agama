@@ -333,4 +333,32 @@ mod tests {
         assert_eq!(stage, Stage::Installing);
         Ok(())
     }
+
+    #[test_context(Context)]
+    #[tokio::test]
+    async fn test_is_empty(ctx: &mut Context) -> Result<(), Box<dyn std::error::Error>> {
+        let is_empty = ctx.handler.call(message::IsEmpty::new()).await?;
+        assert!(is_empty);
+
+        // Start a progress (first step)
+        ctx.handler
+            .call(message::Start::new(Scope::L10n, 3, "first step"))
+            .await?;
+
+        let is_empty = ctx.handler.call(message::IsEmpty::new()).await?;
+        assert!(!is_empty);
+
+        let is_empty = ctx
+            .handler
+            .call(message::IsEmpty::with_scope(Scope::L10n))
+            .await?;
+        assert!(!is_empty);
+
+        let is_empty = ctx
+            .handler
+            .call(message::IsEmpty::with_scope(Scope::Software))
+            .await?;
+        assert!(is_empty);
+        Ok(())
+    }
 }

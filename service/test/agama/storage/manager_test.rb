@@ -286,12 +286,9 @@ describe Agama::Storage::Manager do
     before do
       allow(Yast::WFM).to receive(:CallFunction).with("inst_prepdisk", [])
       allow(Yast::WFM).to receive(:CallFunction).with("inst_bootloader", [])
-      allow(Bootloader::ProposalClient).to receive(:new)
-        .and_return(bootloader_proposal)
       allow(Y2Storage::Clients::InstPrepdisk).to receive(:new).and_return(client)
     end
 
-    let(:bootloader_proposal) { instance_double(Bootloader::ProposalClient, make_proposal: nil) }
     let(:client) { instance_double(Y2Storage::Clients::InstPrepdisk, run: nil) }
 
     it "runs the inst_prepdisk client" do

@@ -30,7 +30,7 @@ use agama_utils::{
     },
     progress, question,
 };
-use camino::Utf8Path;
+use camino::{Utf8Path, Utf8PathBuf};
 use glob::glob;
 use std::fs;
 use std::path::Path;
@@ -72,7 +72,8 @@ async fn test_start_zypp_server() {
     let zypp_root =
         Utf8Path::new(env!("CARGO_MANIFEST_DIR")).join("../zypp-agama/fixtures/zypp_root_tmp");
 
-    let client = ZyppServer::start(&zypp_root).expect("starting zypp server failed");
+    let install_dir = Utf8PathBuf::from("/mnt");
+    let client = ZyppServer::start(&zypp_root, &install_dir).expect("starting zypp server failed");
 
     // Setup event broadcast channel
     let (event_tx, _event_rx) = broadcast::channel::<Event>(100); // Buffer size 100

@@ -1,4 +1,15 @@
 -------------------------------------------------------------------
+Fri Jan 23 13:47:45 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- Temporarily disable the check of os-prober to avoid
+  trying to access libzypp (gh#agama-project/agama#3053).
+  
+-------------------------------------------------------------------
+Fri Jan 23 10:28:20 UTC 2026 - Martin Wilck <mwilck@suse.com>
+
+- Drop dependency on dmraid (jsc#PED-15368)
+
+-------------------------------------------------------------------
 Thu Jan 22 12:50:32 UTC 2026 - Ancor Gonzalez Sosa <ancor@suse.com>
 
 - Stop reporting a bootloader error when there is no valid storage

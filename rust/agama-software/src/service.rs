@@ -29,10 +29,11 @@ use agama_utils::{
     actor::{self, Actor, Handler, MessageHandler},
     api::{
         event::{self, Event},
-        software::{Config, Proposal, Repository, SystemInfo},
+        software::{Config, ProductConfig, Proposal, Repository, SystemInfo},
         Issue, Scope,
     },
     issue,
+    kernel_cmdline::KernelCmdline,
     products::ProductSpec,
     progress, question,
 };
@@ -105,13 +106,15 @@ impl Starter {
     }
 
     const TARGET_DIR: &str = "/run/agama/software_ng_zypp";
+    // FIXME: it should be defined in a single place and injected where needed.
+    const INSTALL_DIR: &str = "/mnt";
 
     /// Starts the service and returns a handler to communicate with it.
     pub async fn start(self) -> Result<Handler<Service>, Error> {
         let model = match self.model {
             Some(model) => model,
             None => {
-                let zypp_sender = ZyppServer::start(Self::TARGET_DIR)?;
+                let zypp_sender = ZyppServer::start(Self::TARGET_DIR, Self::INSTALL_DIR)?;
                 Arc::new(Mutex::new(Model::new(
                     zypp_sender,
                     find_mandatory_repositories("/"),
@@ -131,6 +134,7 @@ impl Starter {
             issues: self.issues,
             progress: self.progress,
             product: None,
+            kernel_cmdline: KernelCmdline::parse().unwrap_or_default(),
         };
         service.setup().await?;
         Ok(actor::spawn(service))
@@ -152,6 +156,7 @@ pub struct Service {
     state: Arc<RwLock<ServiceState>>,
     product: Option<Arc<RwLock<ProductSpec>>>,
     selection: SoftwareSelection,
+    kernel_cmdline: KernelCmdline,
 }
 
 #[derive(Default)]
@@ -270,6 +275,25 @@ impl Service {
             }
         }
     }
+
+    /// Completes the configuration with data from the kernel command-line.
+    ///
+    /// - Use `inst.register_url` as default value for `product.registration_url`.
+    fn add_kernel_cmdline_defaults(&mut self, config: &mut Config) {
+        let Some(product) = &mut config.product else {
+            return;
+        };
+
+        if product.registration_url.is_some() {
+            return;
+        }
+
+        product.registration_url = self
+            .kernel_cmdline
+            .get_last("inst.register_url")
+            .map(|url| Url::parse(&url).ok())
+            .flatten();
+    }
 }
 
 impl Actor for Service {
@@ -297,9 +321,12 @@ impl MessageHandler<message::SetConfig<Config>> for Service {
     async fn handle(&mut self, message: message::SetConfig<Config>) -> Result<(), Error> {
         self.product = Some(message.product.clone());
 
+        let mut config = message.config.clone().unwrap_or_default();
+        self.add_kernel_cmdline_defaults(&mut config);
+
         {
             let mut state = self.state.write().await;
-            state.config = message.config.clone().unwrap_or_default();
+            state.config = config;
         }
 
         self.events.send(Event::ConfigChanged {

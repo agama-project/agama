@@ -85,6 +85,8 @@ pub enum Error {
     Hardware(#[from] hardware::Error),
     #[error("Cannot dispatch this action in {current} stage (expected {expected}).")]
     UnexpectedStage { current: Stage, expected: Stage },
+    #[error("Cannot start the installation. The config contains some issues.")]
+    InstallationBlocked,
     #[error(transparent)]
     Users(#[from] users::service::Error),
 }
@@ -516,6 +518,17 @@ impl Service {
         }
         Ok(())
     }
+
+    /// Determines whether the software service is available.
+    ///
+    /// Consider the service as available if there is no pending progress.
+    async fn is_software_available(&self) -> Result<bool, Error> {
+        let is_empty = self
+            .progress
+            .call(progress::message::IsEmpty::with_scope(Scope::Software))
+            .await?;
+        Ok(is_empty)
+    }
 }
 
 impl Actor for Service {
@@ -541,9 +554,8 @@ impl MessageHandler<message::GetSystem> for Service {
         let storage = self.storage.call(storage::message::GetSystem).await?;
         let network = self.network.get_system().await?;
 
-        let stage = self.progress.call(progress::message::GetStage).await?;
-        // During installation, the software service will not answer.
-        let software = if stage != Stage::Installing {
+        // If the software service is busy, it will not answer.
+        let software = if self.is_software_available().await? {
             self.software.call(software::message::GetSystem).await?
         } else {
             Default::default()
@@ -573,15 +585,17 @@ impl MessageHandler<message::GetExtendedConfig> for Service {
             .to_option();
         let hostname = self.hostname.call(hostname::message::GetConfig).await?;
         let l10n = self.l10n.call(l10n::message::GetConfig).await?;
-        let security = self.security.call(security::message::GetConfig).await?;
+        // FIXME: the security service might be busy asking some question, so it cannot answer.
+        // By now, let's consider that the whole security configuration is set by the user
+        // (ignoring imported certificates by questions).
+        let security = self.config.security.clone();
         let questions = self.questions.call(question::message::GetConfig).await?;
         let network = self.network.get_config().await?;
         let storage = self.storage.call(storage::message::GetConfig).await?;
         let users = self.users.call(users::message::GetConfig).await?;
 
-        let stage = self.progress.call(progress::message::GetStage).await?;
-        // During installation, the software service will not answer.
-        let software = if stage != Stage::Installing {
+        // If the software service is busy, it will not answer.
+        let software = if self.is_software_available().await? {
             Some(self.software.call(software::message::GetConfig).await?)
         } else {
             None
@@ -593,7 +607,7 @@ impl MessageHandler<message::GetExtendedConfig> for Service {
             l10n: Some(l10n),
             questions,
             network: Some(network),
-            security: Some(security),
+            security,
             software,
             storage,
             files: None,
@@ -645,9 +659,8 @@ impl MessageHandler<message::GetProposal> for Service {
         let network = self.network.get_proposal().await?;
         let users = self.users.call(users::message::GetProposal).await?;
 
-        let stage = self.progress.call(progress::message::GetStage).await?;
-        // During installation, the software service will not answer.
-        let software = if stage != Stage::Installing {
+        // If the software service is busy, it will not answer.
+        let software = if self.is_software_available().await? {
             self.software.call(software::message::GetProposal).await?
         } else {
             None
@@ -686,6 +699,13 @@ impl MessageHandler<message::GetLicense> for Service {
 impl MessageHandler<message::RunAction> for Service {
     /// It runs the given action.
     async fn handle(&mut self, message: message::RunAction) -> Result<(), Error> {
+        let issues = self.issues.call(issue::message::Get).await?;
+        let progress = self.progress.call(progress::message::GetProgress).await?;
+
+        if !issues.is_empty() || !progress.is_empty() {
+            return Err(Error::InstallationBlocked);
+        }
+
         match message.action {
             Action::ConfigureL10n(config) => {
                 self.check_stage(Stage::Configuring).await?;

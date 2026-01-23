@@ -42,3 +42,25 @@ pub mod test;
 pub fn gettext_noop(text: &str) -> &str {
     text
 }
+
+pub mod helpers {
+    use std::{fs, io, path::Path};
+
+    /// Copy the files in the `src` directory to `dst`.
+    ///
+    /// It does not perform a recursive copy.
+    pub fn copy_dir_all(src: impl AsRef<Path>, dst: impl AsRef<Path>) -> io::Result<()> {
+        fs::create_dir_all(&dst)?;
+
+        for entry in fs::read_dir(src)? {
+            let entry = entry?;
+            let file_type = entry.file_type()?;
+
+            if file_type.is_file() {
+                std::fs::copy(entry.path(), dst.as_ref().join(entry.file_name()))?;
+            }
+        }
+
+        Ok(())
+    }
+}
