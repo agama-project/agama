@@ -21,6 +21,7 @@
 //! Implements a client to access Agama's D-Bus API related to Bootloader management.
 
 use crate::dbus::ISCSIProxy;
+use agama_utils::api::iscsi::Config;
 use agama_utils::api::iscsi::DiscoverConfig;
 use async_trait::async_trait;
 use serde_json::Value;
@@ -38,8 +39,8 @@ pub enum Error {
 pub trait ISCSIClient {
     async fn discover(&self, config: DiscoverConfig) -> Result<u32, Error>;
     async fn get_system(&self) -> Result<Option<Value>, Error>;
-    async fn get_config(&self) -> Result<Option<Value>, Error>;
-    async fn set_config(&self, config: Option<Value>) -> Result<(), Error>;
+    async fn get_config(&self) -> Result<Option<Config>, Error>;
+    async fn set_config(&self, config: Option<Config>) -> Result<(), Error>;
 }
 
 #[derive(Clone)]
@@ -73,21 +74,19 @@ impl<'a> ISCSIClient for Client<'a> {
         }
     }
 
-    async fn get_config(&self) -> Result<Option<Value>, Error> {
+    async fn get_config(&self) -> Result<Option<Config>, Error> {
         let serialized_config = self.proxy.get_config().await?;
-        let config: Value = serde_json::from_str(serialized_config.as_str())?;
-        match config {
+        let value: Value = serde_json::from_str(serialized_config.as_str())?;
+        match value {
             Value::Null => Ok(None),
-            _ => Ok(Some(config)),
+            _ => Ok(Some(Config(value))),
         }
     }
 
-    async fn set_config(&self, config: Option<Value>) -> Result<(), Error> {
-        if config.is_some() {
-            self.proxy
-                .set_config(serde_json::to_string(&config)?.as_str())
-                .await?;
-        }
+    async fn set_config(&self, config: Option<Config>) -> Result<(), Error> {
+        self.proxy
+            .set_config(serde_json::to_string(&config)?.as_str())
+            .await?;
         Ok(())
     }
 }

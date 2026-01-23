@@ -18,7 +18,10 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use agama_utils::{actor::Message, api::iscsi::DiscoverConfig};
+use agama_utils::{
+    actor::Message,
+    api::iscsi::{Config, DiscoverConfig},
+};
 use serde_json::Value;
 
 pub struct Discover {
@@ -44,15 +47,15 @@ impl Message for GetSystem {
 pub struct GetConfig;
 
 impl Message for GetConfig {
-    type Reply = Option<Value>;
+    type Reply = Option<Config>;
 }
 
 pub struct SetConfig {
-    pub config: Option<Value>,
+    pub config: Option<Config>,
 }
 
 impl SetConfig {
-    pub fn new(config: Option<Value>) -> Self {
+    pub fn new(config: Option<Config>) -> Self {
         Self { config }
     }
 }

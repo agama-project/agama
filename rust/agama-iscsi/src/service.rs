@@ -26,7 +26,7 @@ use crate::{
 };
 use agama_utils::{
     actor::{self, Actor, Handler, MessageHandler},
-    api::event,
+    api::{event, iscsi::Config},
     progress,
 };
 use async_trait::async_trait;
@@ -123,7 +123,7 @@ impl MessageHandler<message::GetSystem> for Service {
 
 #[async_trait]
 impl MessageHandler<message::GetConfig> for Service {
-    async fn handle(&mut self, _message: message::GetConfig) -> Result<Option<Value>, Error> {
+    async fn handle(&mut self, _message: message::GetConfig) -> Result<Option<Config>, Error> {
         let config = self.client.get_config().await?;
         Ok(config)
     }
