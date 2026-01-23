@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri Jan 23 10:28:20 UTC 2026 - Martin Wilck <mwilck@suse.com>
+
+- Drop dependency on dmraid (jsc#PED-15368)
+
+-------------------------------------------------------------------
 Thu Jan 22 12:50:32 UTC 2026 - Ancor Gonzalez Sosa <ancor@suse.com>
 
 - Stop reporting a bootloader error when there is no valid storage
