@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Jan 23 09:53:37 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Use the right architecture when regisrering a system in ppc64le
+  (gh#agama-project/agama#3068).
+
+-------------------------------------------------------------------
 Thu Jan 22 16:16:55 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Consider inst.register_url as part of the "extended configuration"
