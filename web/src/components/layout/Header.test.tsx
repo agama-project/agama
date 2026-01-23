@@ -55,7 +55,9 @@ const network: System = {
 };
 
 jest.mock("~/components/core/InstallerOptions", () => () => <div>Installer Options Mock</div>);
-jest.mock("~/components/core/InstallButton", () => () => <div>Install Button Mock</div>);
+jest.mock("~/components/core/ReviewAndInstallButton", () => () => (
+  <div>ReviewAndInstall Button Mock</div>
+));
 
 jest.mock("~/hooks/model/system", () => ({
   ...jest.requireActual("~/hooks/model/system"),
@@ -85,7 +87,7 @@ describe("Header", () => {
 
   it("mounts the Install button", () => {
     plainRender(<Header />);
-    screen.getByText("Install Button Mock");
+    screen.getByText("ReviewAndInstall Button Mock");
   });
 
   it("mounts installer options by default", () => {

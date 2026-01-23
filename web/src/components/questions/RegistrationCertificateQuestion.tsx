@@ -80,15 +80,14 @@ export default function RegistrationCertificateQuestion({
         </StackItem>
         <StackItem>
           <DescriptionList isHorizontal isCompact className={spacingStyles.mxLg}>
-            <QuestionData label={_("URL")} value={question.data.url} />
-            <QuestionData label={_("Issuer")} value={question.data.issuer_name} />
-            <QuestionData label={_("Issue date")} value={question.data.issue_date} />
-            <QuestionData label={_("Expiration date")} value={question.data.expiration_date} />
-            <QuestionData label={_("SHA1 fingerprint")} value={question.data.sha1_fingerprint} />
-            <QuestionData
-              label={_("SHA256 fingerprint")}
-              value={question.data.sha256_fingerprint}
-            />
+            <QuestionData label={_("Issuer")} value={question.data.issuer} />
+            {question.data.organization && (
+              <QuestionData label={_("Issuer")} value={question.data.organization} />
+            )}
+            <QuestionData label={_("Issue date")} value={question.data.issueDate} />
+            <QuestionData label={_("Expiration date")} value={question.data.expirationDate} />
+            <QuestionData label={_("SHA1 fingerprint")} value={question.data.sha1} />
+            <QuestionData label={_("SHA256 fingerprint")} value={question.data.sha256} />
           </DescriptionList>
         </StackItem>
       </Stack>

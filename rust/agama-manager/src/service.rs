@@ -19,7 +19,8 @@
 // find current contact information at www.suse.com.
 
 use crate::{
-    bootloader, files, hardware, hostname, l10n, message, network, software, storage, users,
+    bootloader, files, hardware, hostname, l10n, message, network, security, software, storage,
+    users,
 };
 use agama_utils::{
     actor::{self, Actor, Handler, MessageHandler},
@@ -56,6 +57,8 @@ pub enum Error {
     Hostname(#[from] hostname::service::Error),
     #[error(transparent)]
     L10n(#[from] l10n::service::Error),
+    #[error(transparent)]
+    Security(#[from] security::service::Error),
     #[error(transparent)]
     Software(#[from] software::service::Error),
     #[error(transparent)]
@@ -94,6 +97,7 @@ pub struct Starter {
     hostname: Option<Handler<hostname::Service>>,
     l10n: Option<Handler<l10n::Service>>,
     network: Option<NetworkSystemClient>,
+    security: Option<Handler<security::Service>>,
     software: Option<Handler<software::Service>>,
     storage: Option<Handler<storage::Service>>,
     files: Option<Handler<files::Service>>,
@@ -117,6 +121,7 @@ impl Starter {
             hostname: None,
             l10n: None,
             network: None,
+            security: None,
             software: None,
             storage: None,
             files: None,
@@ -137,6 +142,11 @@ impl Starter {
     }
     pub fn with_network(mut self, network: NetworkSystemClient) -> Self {
         self.network = Some(network);
+        self
+    }
+
+    pub fn with_security(mut self, security: Handler<security::Service>) -> Self {
+        self.security = Some(security);
         self
     }
 
@@ -217,6 +227,11 @@ impl Starter {
             }
         };
 
+        let security = match self.security {
+            Some(security) => security,
+            None => security::Service::starter(self.questions.clone()).start()?,
+        };
+
         let software = match self.software {
             Some(software) => software,
             None => {
@@ -225,6 +240,7 @@ impl Starter {
                     issues.clone(),
                     progress.clone(),
                     self.questions.clone(),
+                    security.clone(),
                 )
                 .start()
                 .await?
@@ -285,6 +301,7 @@ impl Starter {
             hostname,
             l10n,
             network,
+            security,
             software,
             storage,
             files,
@@ -306,6 +323,7 @@ pub struct Service {
     bootloader: Handler<bootloader::Service>,
     hostname: Handler<hostname::Service>,
     l10n: Handler<l10n::Service>,
+    security: Handler<security::Service>,
     software: Handler<software::Service>,
     network: NetworkSystemClient,
     storage: Handler<storage::Service>,
@@ -373,6 +391,10 @@ impl Service {
         let Some(product) = &self.product else {
             return Err(Error::MissingProduct);
         };
+
+        self.security
+            .call(security::message::SetConfig::new(config.security.clone()))
+            .await?;
 
         self.hostname
             .call(hostname::message::SetConfig::new(config.hostname.clone()))
@@ -494,6 +516,17 @@ impl Service {
         }
         Ok(())
     }
+
+    /// Determines whether the software service is available.
+    ///
+    /// Consider the service as available if there is no pending progress.
+    async fn is_software_available(&self) -> Result<bool, Error> {
+        let is_empty = self
+            .progress
+            .call(progress::message::IsEmpty::with_scope(Scope::Software))
+            .await?;
+        Ok(is_empty)
+    }
 }
 
 impl Actor for Service {
@@ -519,9 +552,8 @@ impl MessageHandler<message::GetSystem> for Service {
         let storage = self.storage.call(storage::message::GetSystem).await?;
         let network = self.network.get_system().await?;
 
-        let stage = self.progress.call(progress::message::GetStage).await?;
-        // During installation, the software service will not answer.
-        let software = if stage != Stage::Installing {
+        // If the software service is busy, it will not answer.
+        let software = if self.is_software_available().await? {
             self.software.call(software::message::GetSystem).await?
         } else {
             Default::default()
@@ -551,14 +583,17 @@ impl MessageHandler<message::GetExtendedConfig> for Service {
             .to_option();
         let hostname = self.hostname.call(hostname::message::GetConfig).await?;
         let l10n = self.l10n.call(l10n::message::GetConfig).await?;
+        // FIXME: the security service might be busy asking some question, so it cannot answer.
+        // By now, let's consider that the whole security configuration is set by the user
+        // (ignoring imported certificates by questions).
+        let security = self.config.security.clone();
         let questions = self.questions.call(question::message::GetConfig).await?;
         let network = self.network.get_config().await?;
         let storage = self.storage.call(storage::message::GetConfig).await?;
         let users = self.users.call(users::message::GetConfig).await?;
 
-        let stage = self.progress.call(progress::message::GetStage).await?;
-        // During installation, the software service will not answer.
-        let software = if stage != Stage::Installing {
+        // If the software service is busy, it will not answer.
+        let software = if self.is_software_available().await? {
             Some(self.software.call(software::message::GetConfig).await?)
         } else {
             None
@@ -570,6 +605,7 @@ impl MessageHandler<message::GetExtendedConfig> for Service {
             l10n: Some(l10n),
             questions,
             network: Some(network),
+            security,
             software,
             storage,
             files: None,
@@ -621,9 +657,8 @@ impl MessageHandler<message::GetProposal> for Service {
         let network = self.network.get_proposal().await?;
         let users = self.users.call(users::message::GetProposal).await?;
 
-        let stage = self.progress.call(progress::message::GetStage).await?;
-        // During installation, the software service will not answer.
-        let software = if stage != Stage::Installing {
+        // If the software service is busy, it will not answer.
+        let software = if self.is_software_available().await? {
             self.software.call(software::message::GetProposal).await?
         } else {
             None

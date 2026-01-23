@@ -18,6 +18,7 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
+use agama_security::test_utils::start_service as start_security_service;
 use agama_utils::{
     actor::Handler,
     api::{
@@ -89,7 +90,8 @@ pub async fn start_service(
     progress: Handler<progress::Service>,
     questions: Handler<question::Service>,
 ) -> Handler<Service> {
-    Service::starter(events, issues, progress, questions)
+    let security = start_security_service(questions.clone()).await;
+    Service::starter(events, issues, progress, questions, security)
         .with_model(TestModel {})
         .start()
         .await

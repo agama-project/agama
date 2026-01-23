@@ -24,14 +24,16 @@ use crate::{
     zypp_server::{self, SoftwareAction, ZyppServer},
     Model,
 };
+use agama_security as security;
 use agama_utils::{
     actor::{self, Actor, Handler, MessageHandler},
     api::{
         event::{self, Event},
-        software::{Config, Proposal, Repository, SystemInfo},
+        software::{Config, ProductConfig, Proposal, Repository, SystemInfo},
         Issue, Scope,
     },
     issue,
+    kernel_cmdline::KernelCmdline,
     products::ProductSpec,
     progress, question,
 };
@@ -71,6 +73,7 @@ pub struct Starter {
     issues: Handler<issue::Service>,
     progress: Handler<progress::Service>,
     questions: Handler<question::Service>,
+    security: Handler<security::Service>,
 }
 
 impl Starter {
@@ -79,6 +82,7 @@ impl Starter {
         issues: Handler<issue::Service>,
         progress: Handler<progress::Service>,
         questions: Handler<question::Service>,
+        security: Handler<security::Service>,
     ) -> Self {
         Self {
             model: None,
@@ -86,6 +90,7 @@ impl Starter {
             issues,
             progress,
             questions,
+            security,
         }
     }
 
@@ -113,6 +118,7 @@ impl Starter {
                     find_mandatory_repositories("/"),
                     self.progress.clone(),
                     self.questions.clone(),
+                    self.security.clone(),
                 )?))
             }
         };
@@ -126,6 +132,7 @@ impl Starter {
             issues: self.issues,
             progress: self.progress,
             product: None,
+            kernel_cmdline: KernelCmdline::parse().unwrap_or_default(),
         };
         service.setup().await?;
         Ok(actor::spawn(service))
@@ -147,6 +154,7 @@ pub struct Service {
     state: Arc<RwLock<ServiceState>>,
     product: Option<Arc<RwLock<ProductSpec>>>,
     selection: SoftwareSelection,
+    kernel_cmdline: KernelCmdline,
 }
 
 #[derive(Default)]
@@ -162,8 +170,9 @@ impl Service {
         issues: Handler<issue::Service>,
         progress: Handler<progress::Service>,
         questions: Handler<question::Service>,
+        security: Handler<security::Service>,
     ) -> Starter {
-        Starter::new(events, issues, progress, questions)
+        Starter::new(events, issues, progress, questions, security)
     }
 
     pub async fn setup(&mut self) -> Result<(), Error> {
@@ -264,6 +273,25 @@ impl Service {
             }
         }
     }
+
+    /// Completes the configuration with data from the kernel command-line.
+    ///
+    /// - Use `inst.register_url` as default value for `product.registration_url`.
+    fn add_kernel_cmdline_defaults(&mut self, config: &mut Config) {
+        let Some(product) = &mut config.product else {
+            return;
+        };
+
+        if product.registration_url.is_some() {
+            return;
+        }
+
+        product.registration_url = self
+            .kernel_cmdline
+            .get_last("inst.register_url")
+            .map(|url| Url::parse(&url).ok())
+            .flatten();
+    }
 }
 
 impl Actor for Service {
@@ -291,9 +319,12 @@ impl MessageHandler<message::SetConfig<Config>> for Service {
     async fn handle(&mut self, message: message::SetConfig<Config>) -> Result<(), Error> {
         self.product = Some(message.product.clone());
 
+        let mut config = message.config.clone().unwrap_or_default();
+        self.add_kernel_cmdline_defaults(&mut config);
+
         {
             let mut state = self.state.write().await;
-            state.config = message.config.clone().unwrap_or_default();
+            state.config = config;
         }
 
         self.events.send(Event::ConfigChanged {

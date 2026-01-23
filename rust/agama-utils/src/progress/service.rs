@@ -171,6 +171,17 @@ impl MessageHandler<message::SetProgress> for Service {
 }
 
 #[async_trait]
+impl MessageHandler<message::IsEmpty> for Service {
+    async fn handle(&mut self, message: message::IsEmpty) -> Result<bool, Error> {
+        let result = match message.scope {
+            Some(scope) => self.get_progress(scope).is_none(),
+            None => self.get_progresses().is_empty(),
+        };
+        Ok(result)
+    }
+}
+
+#[async_trait]
 impl MessageHandler<message::Start> for Service {
     async fn handle(&mut self, message: message::Start) -> Result<(), Error> {
         if self.get_progress(message.scope).is_some() {

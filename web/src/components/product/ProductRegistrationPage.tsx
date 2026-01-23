@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   ActionGroup,
   Alert,
@@ -36,11 +36,11 @@ import {
   FormGroup,
   SelectList,
   SelectOption,
-  // Title,
   TextInput,
   List,
   ListItem,
-  // Divider,
+  Divider,
+  Title,
 } from "@patternfly/react-core";
 import {
   Link,
@@ -48,11 +48,10 @@ import {
   Page,
   SelectWrapper as Select,
   SubtleContent,
-  IssuesAlert,
 } from "~/components/core";
-// import RegistrationExtension from "./RegistrationExtension";
+import RegistrationExtension from "./RegistrationExtension";
 import RegistrationCodeInput from "./RegistrationCodeInput";
-import { HOSTNAME, ROOT } from "~/routes/paths";
+import { HOSTNAME } from "~/routes/paths";
 import { isEmpty } from "radashi";
 import { mask } from "~/utils";
 import { sprintf } from "sprintf-js";
@@ -61,8 +60,10 @@ import { useProposal } from "~/hooks/model/proposal";
 import { useSystem } from "~/hooks/model/system/software";
 import { useProduct, useProductInfo } from "~/hooks/model/config/product";
 import { useIssues } from "~/hooks/model/issue";
-import { patchConfig } from "~/api";
-import { Navigate } from "react-router";
+import { patchConfig, putConfig } from "~/api";
+import type { Issue } from "~/model/issue";
+import type { Addon } from "~/model/config/product";
+import { useConfig } from "~/hooks/model/config";
 
 const FORM_ID = "productRegistration";
 const SERVER_LABEL = N_("Registration server");
@@ -76,6 +77,8 @@ const RegisteredProductSection = () => {
   const { registration } = useSystem();
   const [showCode, setShowCode] = useState(false);
   const toggleCodeVisibility = () => setShowCode(!showCode);
+
+  if (!product) return null;
 
   return (
     <>
@@ -275,6 +278,7 @@ const RegistrationFormSection = () => {
   const [requestError, setRequestError] = useState<string | null>(null);
   const [errors, setErrors] = useState<string[]>([]);
   const [loading] = useState(false);
+  const config = useConfig();
   const product = useProduct();
 
   useEffect(() => {
@@ -320,7 +324,8 @@ const RegistrationFormSection = () => {
 
     if (!isEmpty(errors)) return;
 
-    patchConfig({
+    putConfig({
+      ...config,
       product: {
         id: product.id,
         registrationCode: isKeyRequired ? key : undefined,
@@ -400,48 +405,84 @@ const HostnameAlert = () => {
   );
 };
 
-// const Extensions = () => {
-//   const { registration } = useSystem();
-//   const extensions = registration?.addons;
-//   if (!extensions || extensions.length === 0) return null;
+const Extensions = () => {
+  const { registration } = useSystem();
+  const { product } = useConfig();
+  const extensions = registration?.addons;
+  const issues = useIssues("software");
 
-//   const extensionComponents = extensions.map((ext) => (
-//     <RegistrationExtension
-//       key={`extension-${ext.id}-${ext.version}`}
-//       extension={ext}
-//       isUnique={extensions.filter((e) => e.id === ext.id).length === 1}
-//     />
-//   ));
+  const registrationCallback = useCallback(
+    (addon: Addon) => {
+      const updatedAddons = [addon];
 
-//   return (
-//     <>
-//       <Divider />
-//       <Title headingLevel="h3">{_("Extensions")}</Title>
-//       <NestedContent>
-//         <Flex gap={{ default: "gap2xl" }} direction={{ default: "column" }}>
-//           {extensionComponents}
-//         </Flex>
-//       </NestedContent>
-//     </>
-//   );
-// };
+      const addons: Addon[] = product?.addons || [];
+      for (const a of addons) {
+        if (a.id !== addon.id) {
+          updatedAddons.push(addon);
+        }
+      }
+
+      const updatedProduct = {
+        ...product,
+        addons: updatedAddons,
+      };
+
+      patchConfig({ product: updatedProduct });
+    },
+    [product],
+  );
+
+  if (!extensions || extensions.length === 0) return null;
+
+  const extensionComponents = extensions.map((ext) => {
+    const issue = issues.find((i) => i.class === `addon_registration_failed[${ext.id}]`);
+    const config = (product?.addons || []).find((c) => c.id === ext.id);
+
+    return (
+      <RegistrationExtension
+        key={`extension-${ext.id}-${ext.version}`}
+        extension={ext}
+        config={config}
+        issue={issue}
+        isUnique={extensions.filter((e) => e.id === ext.id).length === 1}
+        registrationCallback={registrationCallback}
+      />
+    );
+  });
+
+  return (
+    <>
+      <Divider />
+      <Title headingLevel="h3">{_("Extensions")}</Title>
+      <NestedContent>
+        <Flex gap={{ default: "gap2xl" }} direction={{ default: "column" }}>
+          {extensionComponents}
+        </Flex>
+      </NestedContent>
+    </>
+  );
+};
+
+const RegistrationIssueAlert = ({ issue }: { issue: Issue }) => {
+  return (
+    <Alert variant="warning" title={issue.description}>
+      {issue.details && <p>{issue.details}</p>}
+    </Alert>
+  );
+};
 
 export default function ProductRegistrationPage() {
-  const product = useProductInfo();
   const { registration } = useSystem();
   const issues = useIssues("software");
-  const showIssues = issues.find((i) => i.class === "software.register_system") !== undefined;
-
-  // TODO: render something meaningful instead? "Product not registrable"?
-  if (!product || !product.registration) return <Navigate to={ROOT.overview} />;
+  const registrationIssue = issues.find((i) => i.class === "system_registration_failed");
 
   return (
     <Page breadcrumbs={[{ label: _("Registration") }]} progress={{ scope: "software" }}>
       <Page.Content>
-        {showIssues && <IssuesAlert issues={issues} />}
         {!registration && <HostnameAlert />}
+        {registrationIssue && <RegistrationIssueAlert issue={registrationIssue} />}
         {!registration ? <RegistrationFormSection /> : <RegisteredProductSection />}
-        {/* {registration && <Extensions />} */}
+        {registration && <Extensions />}
       </Page.Content>
     </Page>
   );

@@ -1,4 +1,25 @@
 -------------------------------------------------------------------
+Thu Jan 22 16:16:55 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Consider inst.register_url as part of the "extended configuration"
+  (bsc#1256907).
+- Try to register the system even if only a registration URL was
+  specified (without a code).
+- When the registration fails, retry it on the next SetConfig call.
+
+-------------------------------------------------------------------
+Wed Jan 21 11:07:34 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Allow importing SSL certificates from registration servers
+  (gh#agama-project/agama#3055).
+  
+-------------------------------------------------------------------
+Wed Jan 21 10:59:15 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- Fix enabling NetworkManager service in the target system
+  (gh#agama-project/agama#3056).
+
+-------------------------------------------------------------------
 Mon Jan 19 20:31:26 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
 
 - Fix inst.finish=stop option (gh#agama-project/agama#3047)

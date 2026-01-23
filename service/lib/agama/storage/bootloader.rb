@@ -141,9 +141,10 @@ module Agama
         write_config
         # and set packages needed for given config
         install_packages
-        # TODO: error handling (including catching exceptions like Bootloader::NoRoot)
-        # and filling issues
+        # TODO: error handling (including catching exceptions and filling issues)
         @logger.info "Bootloader config #{bootloader.inspect}"
+      rescue ::Bootloader::NoRoot
+        @logger.info "Bootloader configure aborted - there is no storage proposal"
       end
 
       # Installs bootloader.

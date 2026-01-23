@@ -23,8 +23,8 @@
 import React from "react";
 import { screen } from "@testing-library/react";
 import { installerRender, mockRoutes } from "~/test-utils";
-import { InstallButton } from "~/components/core";
 import { PRODUCT, ROOT, STORAGE } from "~/routes/paths";
+import ReviewAndInstallButton from "./ReviewAndInstallButton";
 
 describe("InstallButton", () => {
   describe("when not in an extended side paths", () => {
@@ -32,9 +32,9 @@ describe("InstallButton", () => {
       mockRoutes(STORAGE.addPartition);
     });
 
-    it("renders the button with Install label ", () => {
-      installerRender(<InstallButton />);
-      screen.getByRole("button", { name: "Install" });
+    it("renders the button with 'Review and install' label ", () => {
+      installerRender(<ReviewAndInstallButton />);
+      screen.getByRole("button", { name: "Review and install" });
     });
   });
 
@@ -53,7 +53,7 @@ describe("InstallButton", () => {
     });
 
     it("renders nothing", () => {
-      const { container } = installerRender(<InstallButton />);
+      const { container } = installerRender(<ReviewAndInstallButton />);
       expect(container).toBeEmptyDOMElement();
     });
   });

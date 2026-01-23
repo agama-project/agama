@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { forwardRef, useId, useState } from "react";
+import React, { forwardRef, useId } from "react";
 import {
   Button,
   Content,
@@ -38,6 +38,11 @@ import {
   Title,
 } from "@patternfly/react-core";
 import { useNavigate } from "react-router";
+import {
+  useStorageUiState,
+  isExpandedInState,
+  toggleExpandedInState,
+} from "~/context/storage-ui-state";
 import * as partitionUtils from "~/components/storage/utils/partition";
 import { NestedContent } from "../core";
 import Text from "~/components/core/Text";
@@ -252,10 +257,15 @@ const AddLvButton = ({ vg }: { vg: ConfigModel.VolumeGroup }) => {
 const LogicalVolumes = ({ vg }: { vg: ConfigModel.VolumeGroup }) => {
   const toggleId = useId();
   const contentId = useId();
-  const [isExpanded, setIsExpanded] = useState(false);
+  const { uiState, setUiState } = useStorageUiState();
+  const uiIndex = `vg${vg.vgName}`;
+  const isExpanded = isExpandedInState(uiState, uiIndex);
   const menuAriaLabel = sprintf(_("Logical volumes for %s"), vg.vgName);
 
-  const toggle = () => setIsExpanded(!isExpanded);
+  const onToggle = () => {
+    setUiState((state) => toggleExpandedInState(state, uiIndex));
+  };
+
   const iconName: IconProps["name"] = isExpanded ? "unfold_less" : "unfold_more";
   const commonProps: Pick<ExpandableSectionProps, "toggleId" | "contentId" | "isExpanded"> = {
     toggleId,
@@ -277,7 +287,7 @@ const LogicalVolumes = ({ vg }: { vg: ConfigModel.VolumeGroup }) => {
     <Flex direction={{ default: "column" }}>
       <ExpandableSectionToggle
         {...commonProps}
-        onToggle={toggle}
+        onToggle={onToggle}
         className="no-default-icon"
         style={{ marginBlock: 0 }}
       >

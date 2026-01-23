@@ -74,6 +74,8 @@ Requires:       python-langtable-data
 # dependency on the YaST part of Agama
 Requires:       agama-yast
 Requires:       agama-common
+# required for importing SSL certificates
+Requires:       ca-certificates
 
 %description
 Agama is a service-based Linux installer. It is composed of an HTTP-based API,

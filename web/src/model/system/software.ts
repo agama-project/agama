@@ -72,6 +72,16 @@ type AddonInfo = {
   recommended: boolean;
   description: string;
   release: string;
+  registration: AddonRegistered | AddonUnregistered;
+};
+
+type AddonRegistered = {
+  status: "registered";
+  code?: string;
+};
+
+type AddonUnregistered = {
+  status: "notRegistered";
 };
 
 export type { System, Pattern, RegistrationInfo, Repository };

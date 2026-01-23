@@ -26,6 +26,7 @@ use agama_bootloader::test_utils::start_service as start_bootloader_service;
 use agama_hostname::test_utils::start_service as start_hostname_service;
 use agama_l10n::test_utils::start_service as start_l10n_service;
 use agama_network::test_utils::start_service as start_network_service;
+use agama_security::test_utils::start_service as start_security_service;
 use agama_software::test_utils::start_service as start_software_service;
 use agama_storage::test_utils::start_service as start_storage_service;
 use agama_utils::{actor::Handler, api::event, issue, progress, question};
@@ -38,6 +39,7 @@ pub async fn start_service(events: event::Sender, dbus: zbus::Connection) -> Han
     let issues = issue::Service::starter(events.clone()).start();
     let questions = question::start(events.clone()).await.unwrap();
     let progress = progress::Service::starter(events.clone()).start();
+    let security = start_security_service(questions.clone()).await;
 
     Service::starter(questions.clone(), events.clone(), dbus.clone())
         .with_hostname(start_hostname_service(events.clone(), issues.clone()).await)
@@ -53,6 +55,7 @@ pub async fn start_service(events: event::Sender, dbus: zbus::Connection) -> Han
         )
         .with_bootloader(start_bootloader_service(issues.clone(), dbus.clone()).await)
         .with_network(start_network_service(events.clone(), progress.clone()).await)
+        .with_security(security.clone())
         .with_software(start_software_service(events, issues, progress, questions).await)
         .with_hardware(hardware::Registry::new_from_file(
             fixtures.join("lshw.json"),
