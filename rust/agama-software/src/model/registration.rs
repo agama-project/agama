@@ -199,7 +199,9 @@ impl Registration {
         }
     }
 
-    // Writes to target system all registration configuration that is needed
+    /// Writes to target system all registration configuration that is needed
+    ///
+    /// Beware that, if a certificate was imported, it is copied by the agama-security service.
     pub fn finish(&mut self) -> Result<(), RegistrationError> {
         suseconnect_agama::write_config(self.connect_params.clone())?;
         self.config_files
