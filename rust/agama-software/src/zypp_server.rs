@@ -541,15 +541,17 @@ impl ZyppServer {
                 // we need special handling of symlinks as libzypp do
                 // some tricks with danglinks symlinks and we should not
                 // break it
-                let link_dest = entry.path().read_link_utf8().map_err(|e| ZyppServerError::IO(entry.path().to_string(), e))?;
+                let link_dest = entry
+                    .path()
+                    .read_link_utf8()
+                    .map_err(|e| ZyppServerError::IO(entry.path().to_string(), e))?;
                 tracing::info!(
                     "Recreating symlink from {} to {} pointing to {}",
                     entry.path().to_string(),
                     dst.to_string(),
                     link_dest.to_string(),
                 );
-                symlink(link_dest, &dst)
-                    .map_err(|e| ZyppServerError::IO(dst.to_string(), e))?;
+                symlink(link_dest, &dst).map_err(|e| ZyppServerError::IO(dst.to_string(), e))?;
             } else {
                 tracing::info!(
                     "Copying from {} to {}",
