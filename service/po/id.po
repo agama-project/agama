@@ -7,9 +7,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-08 09:26+0000\n"
-"PO-Revision-Date: 2025-10-05 17:59+0000\n"
-"Last-Translator: \"James \\\"Jim\\\" Ed Randson\" <jimedrand@disroot.org>\n"
+"POT-Creation-Date: 2025-11-24 12:57+0000\n"
+"PO-Revision-Date: 2026-01-22 04:04+0000\n"
+"Last-Translator: Arif Budiman <arifpedia@gmail.com>\n"
 "Language-Team: Indonesian <https://l10n.opensuse.org/projects/agama/agama-"
 "service-sle-16/id/>\n"
 "Language: id\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.13.3\n"
+"X-Generator: Weblate 5.15.2\n"
 
 #. Reports the problems and decide whether to continue or not.
 #.
@@ -47,11 +47,11 @@ msgstr "Siapkan disk"
 
 #: service/lib/agama/manager.rb:119
 msgid "Install software"
-msgstr "Menginstal perangkat lunak"
+msgstr "Instal perangkat lunak"
 
 #: service/lib/agama/manager.rb:120
 msgid "Configure the system"
-msgstr "Mengkonfigurasi sistem"
+msgstr "Konfigurasikan sistem"
 
 #. rubocop:enable Metrics/AbcSize, Metrics/MethodLength
 #: service/lib/agama/manager.rb:161
@@ -159,7 +159,7 @@ msgstr ""
 #. @see https://github.com/yast/yast-yast2/blob/19180445ab935a25edd4ae0243aa7a3bcd09c9de/library/packages/src/modules/PackageCallbacks.rb#L620
 #: service/lib/agama/software/callbacks/script.rb:50
 msgid "There was a problem running a package script."
-msgstr "Ada masalah dalam menjalankan skrip paket."
+msgstr "Terjadi masalah saat menjalankan skrip paket."
 
 #. Callback to handle unsigned files
 #.
@@ -261,7 +261,7 @@ msgstr "Menyegarkan metadata repositori"
 
 #: service/lib/agama/software/manager.rb:179
 msgid "Calculating the software proposal"
-msgstr "Menghitung proposal perangkat lunak"
+msgstr "Menghitung usulan perangkat lunak"
 
 #: service/lib/agama/software/manager.rb:183
 msgid "Initializing sources"
@@ -805,7 +805,8 @@ msgstr[0] ""
 msgid ""
 "Defining a user, setting the root password or a SSH public key is required"
 msgstr ""
-"Wajib menentukan pengguna, mengatur kata sandi root atau kunci publik SSH"
+"Diperlukan penetapan pengguna, pengaturan kata sandi root, atau kunci publik "
+"SSH"
 
 #~ msgid "Selecting Linux Security Modules"
 #~ msgstr "Memilih Modul Keamanan Linux"
