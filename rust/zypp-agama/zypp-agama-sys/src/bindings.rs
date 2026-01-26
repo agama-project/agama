@@ -470,6 +470,8 @@ pub const RESOLVABLE_SELECTED_SOLVER_SELECTED: RESOLVABLE_SELECTED = 1;
 pub const RESOLVABLE_SELECTED_APPLICATION_SELECTED: RESOLVABLE_SELECTED = 2;
 #[doc = " user select resolvable for installation\n match TransactByValue::USER"]
 pub const RESOLVABLE_SELECTED_USER_SELECTED: RESOLVABLE_SELECTED = 3;
+#[doc = " explicitly removed by user"]
+pub const RESOLVABLE_SELECTED_USER_REMOVED: RESOLVABLE_SELECTED = 4;
 pub type RESOLVABLE_SELECTED = ::std::os::raw::c_uint;
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]

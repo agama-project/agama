@@ -115,6 +115,8 @@ enum RESOLVABLE_SELECTED {
   /// user select resolvable for installation
   /// match TransactByValue::USER
   USER_SELECTED,
+  /// explicitly removed by user
+  USER_REMOVED
 };
 
 /// Marks resolvable for installation

@@ -115,13 +115,17 @@ function SoftwarePatternsSelection(): React.ReactNode {
       .filter((p) => selection[p.name] === SelectedBy.USER && p.name !== name)
       .map((p) => p.name);
     const remove = patterns
-      .filter((p) => selection[p.name] === SelectedBy.NONE && p.name !== name)
+      .filter((p) => selection[p.name] === SelectedBy.REMOVED && p.name !== name)
       .map((p) => p.name);
 
     if (selected) {
       add.push(name);
     } else {
-      remove.push(name);
+      // add the pattern to the "remove" list only if it was autoselected by dependencies, otherwise
+      // it was selected by user and it is enough to remove it from the "add" list above
+      if (selection[name] === SelectedBy.AUTO) {
+        remove.push(name);
+      }
     }
 
     patchConfig({ software: { patterns: { add, remove } } });
@@ -141,7 +145,7 @@ function SoftwarePatternsSelection(): React.ReactNode {
   // TODO: extract to a DataListSelector component or so.
   const selector = sortGroups(groups).map((groupName) => {
     const selectedIds = groups[groupName]
-      .filter((p) => selection[p.name] !== SelectedBy.NONE)
+      .filter((p) => [SelectedBy.USER, SelectedBy.AUTO].includes(selection[p.name]))
       .map((p) => p.name);
 
     return (

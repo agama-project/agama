@@ -299,6 +299,9 @@ transactby_from(enum RESOLVABLE_SELECTED who) {
   case RESOLVABLE_SELECTED::NOT_SELECTED: {
     PANIC("Unexpected value RESOLVABLE_SELECTED::NOT_SELECTED.");
   }
+  case RESOLVABLE_SELECTED::USER_REMOVED: {
+    PANIC("Unexpected value RESOLVABLE_SELECTED::USER_REMOVED.");
+  }
   }
 
   // should not happen
@@ -394,7 +397,11 @@ struct PatternInfos get_patterns_info(struct Zypp *_zypp,
         break;
       }
     } else {
-      result.infos[i].selected = RESOLVABLE_SELECTED::NOT_SELECTED;
+      // distinguish between the "not selected" and "explicitly removed by user" states
+      if (status.getTransactByValue() == zypp::ResStatus::TransactByValue::USER)
+        result.infos[i].selected = RESOLVABLE_SELECTED::USER_REMOVED;
+      else
+        result.infos[i].selected = RESOLVABLE_SELECTED::NOT_SELECTED;
     }
     result.size++;
   };

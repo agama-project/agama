@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Jan 23 15:36:12 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+
+- Fixed removing automatically selected recommended patterns
+  (gh#agama-project/agama#3072)
+
+-------------------------------------------------------------------
 Fri Jan 23 14:10:16 UTC 2026 - Martin Vidner <mvidner@suse.com>
 
 - Follow suit, do not package /usr/share/locale itself
