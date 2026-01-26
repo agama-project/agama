@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Jan 26 14:03:08 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+
+- Log the data sent to the backend when the request fails
+  (related to bsc#1256069)
+
+-------------------------------------------------------------------
 Fri Jan 23 15:34:08 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
 
 - Fixed removing automatically selected recommended patterns
