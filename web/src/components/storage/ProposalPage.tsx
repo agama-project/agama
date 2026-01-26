@@ -49,7 +49,6 @@ import BootSection from "./BootSection";
 import FixableConfigInfo from "./FixableConfigInfo";
 import ProposalFailedInfo from "./ProposalFailedInfo";
 import ProposalResultSection from "./ProposalResultSection";
-import ProposalTransactionalInfo from "./ProposalTransactionalInfo";
 import UnsupportedModelInfo from "./UnsupportedModelInfo";
 import { useAvailableDevices } from "~/hooks/model/system/storage";
 import { useIssues } from "~/hooks/model/issue";
@@ -288,7 +287,6 @@ function ProposalPageContent(): React.ReactNode {
 
   return (
     <Grid hasGutter>
-      <ProposalTransactionalInfo />
       {!configIssues.length && !proposal && <ProposalFailedInfo />}
       {!!configIssues.length && <FixableConfigInfo issues={configIssues} />}
       {!model && <UnsupportedModelInfo />}
