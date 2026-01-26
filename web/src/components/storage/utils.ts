@@ -68,6 +68,8 @@ const FILESYSTEM_NAMES = Object.freeze({
   bcachefs: N_("Bcachefs"),
   bitlocke: N_("BitLocker"),
   btrfs: N_("Btrfs"),
+  btrfsImmutable: N_("immutable Btrfs"),
+  btrfsSnapshots: N_("Btrfs with snapshots"),
   exfat: N_("ExFAT"),
   ext2: N_("Ext2"),
   ext3: N_("Ext3"),
@@ -280,7 +282,7 @@ const hasFS = (volume: System.Volume, fs: string): boolean => {
  * Checks whether the given volume has snapshots.
  */
 const hasSnapshots = (volume: System.Volume): boolean => {
-  return hasFS(volume, "btrfs") && volume.snapshots;
+  return hasFS(volume, "btrfsSnapshots") || hasFS(volume, "btrfsImmutable");
 };
 
 /**
@@ -309,8 +311,6 @@ const filesystemLabel = (fstype: string): string => {
  */
 const filesystemType = (filesystem: ConfigModel.Filesystem): string | undefined => {
   if (filesystem.type) {
-    if (filesystem.snapshots) return _("Btrfs with snapshots");
-
     return filesystemLabel(filesystem.type);
   }
 

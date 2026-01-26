@@ -44,13 +44,10 @@ const volume = (properties: object = {}): Volume => {
     minSize: 1024,
     maxSize: 2048,
     autoSize: false,
-    snapshots: false,
-    transactional: false,
     outline: {
       required: false,
       fsTypes: ["btrfs", "ext4"],
       supportAutoSize: false,
-      snapshotsConfigurable: false,
       snapshotsAffectSizes: false,
       sizeRelevantVolumes: [],
       adjustByRam: false,
@@ -247,14 +244,14 @@ describe("hasFS", () => {
 
 describe("hasSnapshots", () => {
   it("returns false if the volume has not Btrfs file system", () => {
-    expect(hasSnapshots(volume({ fsType: "EXT4", snapshots: true }))).toBe(false);
+    expect(hasSnapshots(volume({ fsType: "EXT4" }))).toBe(false);
   });
 
   it("returns false if the volume has not snapshots enabled", () => {
-    expect(hasSnapshots(volume({ fsType: "Btrfs", snapshots: false }))).toBe(false);
+    expect(hasSnapshots(volume({ fsType: "Btrfs" }))).toBe(false);
   });
 
   it("returns true if the volume has Btrfs file system and snapshots enabled", () => {
-    expect(hasSnapshots(volume({ fsType: "Btrfs", snapshots: true }))).toBe(true);
+    expect(hasSnapshots(volume({ fsType: "BtrfsSnapshots" }))).toBe(true);
   });
 });

@@ -111,12 +111,10 @@ const homeVolume: Storage.Volume = {
   fsType: "btrfs",
   minSize: 1024,
   maxSize: 1024,
-  snapshots: false,
   autoSize: false,
   outline: {
     required: false,
     fsTypes: ["btrfs"],
-    snapshotsConfigurable: false,
     snapshotsAffectSizes: false,
     supportAutoSize: false,
     sizeRelevantVolumes: [],

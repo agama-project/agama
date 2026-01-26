@@ -69,7 +69,6 @@ import type { ConfigModel, Data, Partitionable } from "~/model/storage/config-mo
 import type { Storage as System } from "~/model/system";
 
 const NO_VALUE = "";
-const BTRFS_SNAPSHOTS = "btrfsSnapshots";
 const REUSE_FILESYSTEM = "reuse";
 
 type DeviceModel = ConfigModel.Drive | ConfigModel.MdRaid;
@@ -92,7 +91,6 @@ type ErrorsHandler = {
 function toData(value: FormValue): Data.Formattable {
   const filesystemType = (): ConfigModel.FilesystemType | undefined => {
     if (value.filesystem === NO_VALUE) return undefined;
-    if (value.filesystem === BTRFS_SNAPSHOTS) return "btrfs";
 
     /**
      * @note This type cast is needed because the list of filesystems coming from a volume is not
@@ -112,7 +110,6 @@ function toData(value: FormValue): Data.Formattable {
 
     return {
       type,
-      snapshots: value.filesystem === BTRFS_SNAPSHOTS,
       label: value.filesystemLabel,
     };
   };
@@ -131,7 +128,6 @@ function toFormValue(deviceModel: DeviceModel): FormValue {
     if (!fsConfig) return NO_VALUE;
     if (fsConfig.reuse) return REUSE_FILESYSTEM;
     if (!fsConfig.type) return NO_VALUE;
-    if (fsConfig.type === "btrfs" && fsConfig.snapshots) return BTRFS_SNAPSHOTS;
 
     return fsConfig.type;
   };
@@ -165,7 +161,7 @@ function useCurrentFilesystem(): string | null {
 
 function useDefaultFilesystem(mountPoint: string): string {
   const volume = useVolumeTemplate(mountPoint);
-  return volume.mountPath === "/" && volume.snapshots ? BTRFS_SNAPSHOTS : volume.fsType;
+  return volume.fsType;
 }
 
 function useInitialFormValue(): FormValue | null {
@@ -186,21 +182,7 @@ function useUsableFilesystems(mountPoint: string): string[] {
 
   const usableFilesystems = React.useMemo(() => {
     const volumeFilesystems = (): string[] => {
-      const allValues = volume.outline.fsTypes;
-
-      if (volume.mountPath !== "/") return allValues;
-
-      // Btrfs without snapshots is not an option.
-      if (!volume.outline.snapshotsConfigurable && volume.snapshots) {
-        return [BTRFS_SNAPSHOTS, ...allValues].filter((v) => v !== "btrfs");
-      }
-
-      // Btrfs with snapshots is not an option
-      if (!volume.outline.snapshotsConfigurable && !volume.snapshots) {
-        return allValues;
-      }
-
-      return [BTRFS_SNAPSHOTS, ...allValues];
+      return volume.outline.fsTypes;
     };
 
     return unique([defaultFilesystem, ...volumeFilesystems()]);
@@ -281,6 +263,7 @@ function mountPointSelectOptions(mountPoints: string[]): SelectOptionProps[] {
 
 type FilesystemOptionLabelProps = {
   value: string;
+  volume: System.Volume;
 };
 
 function FilesystemOptionLabel({ value }: FilesystemOptionLabelProps): React.ReactNode {
@@ -289,7 +272,6 @@ function FilesystemOptionLabel({ value }: FilesystemOptionLabelProps): React.Rea
   // TRANSLATORS: %s is a filesystem type, like Btrfs
   if (value === REUSE_FILESYSTEM && filesystem)
     return sprintf(_("Current %s"), filesystemLabel(filesystem));
-  if (value === BTRFS_SNAPSHOTS) return _("Btrfs with snapshots");
 
   return filesystemLabel(value);
 }
@@ -317,7 +299,7 @@ function FilesystemOptions({ mountPoint }: FilesystemOptionsProps): React.ReactN
     <SelectList aria-label="Available file systems">
       {mountPoint === NO_VALUE && (
         <SelectOption value={NO_VALUE}>
-          <FilesystemOptionLabel value={NO_VALUE} />
+          <FilesystemOptionLabel value={NO_VALUE} volume={volume} />
         </SelectOption>
       )}
       {mountPoint !== NO_VALUE && canReuse && (
@@ -328,7 +310,7 @@ function FilesystemOptions({ mountPoint }: FilesystemOptionsProps): React.ReactN
             sprintf(_("Do not format %s and keep the data"), deviceBaseName(device, true))
           }
         >
-          <FilesystemOptionLabel value={REUSE_FILESYSTEM} />
+          <FilesystemOptionLabel value={REUSE_FILESYSTEM} volume={volume} />
         </SelectOption>
       )}
       {mountPoint !== NO_VALUE && canReuse && usableFilesystems.length && <Divider />}
@@ -340,7 +322,7 @@ function FilesystemOptions({ mountPoint }: FilesystemOptionsProps): React.ReactN
               value={fsType}
               description={fsType === defaultFilesystem && defaultOptText}
             >
-              <FilesystemOptionLabel value={fsType} />
+              <FilesystemOptionLabel value={fsType} volume={volume} />
             </SelectOption>
           ))}
         </SelectGroup>
@@ -362,13 +344,14 @@ function FilesystemSelect({
   mountPoint,
   onChange,
 }: FilesystemSelectProps): React.ReactNode {
+  const volume = useVolumeTemplate(mountPoint);
   const usedValue = mountPoint === NO_VALUE ? NO_VALUE : value;
 
   return (
     <Select
       id={id}
       value={usedValue}
-      label={<FilesystemOptionLabel value={usedValue} />}
+      label={<FilesystemOptionLabel value={usedValue} volume={volume} />}
       onChange={onChange}
       isDisabled={mountPoint === NO_VALUE}
     >
