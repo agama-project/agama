@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Jan 23 15:34:08 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+
+- Fixed removing automatically selected recommended patterns
+  (gh#agama-project/agama#3072)
+
+-------------------------------------------------------------------
 Thu Jan 22 16:19:20 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Allow registering add-ons (gh#agama-project/agama#3061).

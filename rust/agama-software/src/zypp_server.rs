@@ -420,7 +420,20 @@ impl ZyppServer {
                         false,
                     ));
                 }
+                // the removal is handled in a separate iteration to unselect resolvables selected
+                // by dependencies
+                ResolvableSelection::Removed => {}
+            };
+        }
+
+        // run the solver to select the dependencies, ignore the errors, the solver runs again later
+        let _ = zypp.run_solver();
+
+        // unselect packages including the autoselected dependencies
+        for (name, r#type, selection) in &state.resolvables.to_vec() {
+            match selection {
                 ResolvableSelection::Removed => self.unselect_resolvable(&zypp, name, *r#type),
+                _ => {}
             };
         }
 
@@ -785,6 +798,7 @@ impl ZyppServer {
                             zypp_agama::ResolvableSelected::Not => SelectedBy::None,
                             zypp_agama::ResolvableSelected::Solver => SelectedBy::Auto,
                             zypp_agama::ResolvableSelected::User => SelectedBy::User,
+                            zypp_agama::ResolvableSelected::Removed => SelectedBy::Removed,
                         };
                         (pattern.name.clone(), tag)
                     })

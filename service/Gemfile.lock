@@ -10,6 +10,7 @@ PATH
       fast_gettext (~> 2.3.0)
       logger (~> 1.5)
       nokogiri (~> 1.15)
+      ostruct (~> 0.6.1)
       prime (~> 0.1)
       rexml (~> 3.2)
       ruby-dbus (>= 0.23.1, < 1.0)
@@ -20,7 +21,6 @@ GEM
     abstract_method (1.2.1)
     ast (2.4.3)
     base64 (0.2.0)
-    byebug (11.1.3)
     cfa (1.0.2)
       ruby-augeas
     cfa_grub2 (2.0.0)
@@ -28,30 +28,53 @@ GEM
     cheetah (1.0.0)
       abstract_method (~> 1.2)
     csv (3.3.2)
+    date (3.5.1)
+    debug (1.11.1)
+      irb (~> 1.10)
+      reline (>= 0.3.8)
     diff-lcs (1.5.1)
     docile (1.4.1)
+    erb (6.0.1)
     eventmachine (1.2.7)
     fast_gettext (2.3.0)
     forwardable (1.3.3)
+    io-console (0.8.2)
+    irb (1.16.0)
+      pp (>= 0.6.0)
+      rdoc (>= 4.0.0)
+      reline (>= 0.4.2)
     logger (1.6.5)
     mini_portile2 (2.8.8)
     nokogiri (1.16.7)
       mini_portile2 (~> 2.8.2)
       racc (~> 1.4)
+    ostruct (0.6.3)
     packaging_rake_tasks (1.5.4)
       rake
     parallel (1.27.0)
     parser (3.3.8.0)
       ast (~> 2.4.1)
       racc
+    pp (0.6.3)
+      prettyprint
+    prettyprint (0.2.0)
     prime (0.1.3)
       forwardable
       singleton
     prism (1.4.0)
+    psych (5.3.1)
+      date
+      stringio
     racc (1.8.1)
     rainbow (3.1.1)
     rake (13.0.6)
+    rdoc (7.1.0)
+      erb
+      psych (>= 4.0.0)
+      tsort
     regexp_parser (2.10.0)
+    reline (0.6.3)
+      io-console (~> 0.5)
     rexml (3.2.9)
       strscan
     rspec (3.11.0)
@@ -91,7 +114,9 @@ GEM
     simplecov-lcov (0.8.0)
     simplecov_json_formatter (0.1.4)
     singleton (0.3.0)
+    stringio (3.2.0)
     strscan (3.1.0)
+    tsort (0.2.0)
     unicode-display_width (2.6.0)
     webrick (1.9.1)
     yard (0.9.36)
@@ -103,7 +128,7 @@ PLATFORMS
 DEPENDENCIES
   agama-yast!
   base64
-  byebug
+  debug
   packaging_rake_tasks (~> 1.5.1)
   rake (~> 13.0.6)
   rspec (~> 3.11.0)

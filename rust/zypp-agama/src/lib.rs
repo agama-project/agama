@@ -645,6 +645,7 @@ pub enum ResolvableSelected {
     User,
     Installation,
     Solver,
+    Removed,
 }
 
 impl From<zypp_agama_sys::RESOLVABLE_SELECTED> for ResolvableSelected {
@@ -654,6 +655,8 @@ impl From<zypp_agama_sys::RESOLVABLE_SELECTED> for ResolvableSelected {
             zypp_agama_sys::RESOLVABLE_SELECTED_USER_SELECTED => Self::User,
             zypp_agama_sys::RESOLVABLE_SELECTED_APPLICATION_SELECTED => Self::Installation,
             zypp_agama_sys::RESOLVABLE_SELECTED_SOLVER_SELECTED => Self::Solver,
+            zypp_agama_sys::RESOLVABLE_SELECTED_USER_REMOVED => Self::Removed,
+
             _ => panic!("Unknown value for resolvable_selected {}", value),
         }
     }
@@ -664,6 +667,7 @@ impl From<ResolvableSelected> for zypp_agama_sys::RESOLVABLE_SELECTED {
         match val {
             ResolvableSelected::Not => zypp_agama_sys::RESOLVABLE_SELECTED_NOT_SELECTED,
             ResolvableSelected::User => zypp_agama_sys::RESOLVABLE_SELECTED_USER_SELECTED,
+            ResolvableSelected::Removed => zypp_agama_sys::RESOLVABLE_SELECTED_USER_REMOVED,
             ResolvableSelected::Installation => {
                 zypp_agama_sys::RESOLVABLE_SELECTED_APPLICATION_SELECTED
             }
