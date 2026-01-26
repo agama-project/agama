@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-01-18 03:25+0000\n"
-"PO-Revision-Date: 2025-07-10 16:59+0000\n"
+"POT-Creation-Date: 2026-01-19 14:11+0000\n"
+"PO-Revision-Date: 2026-01-19 22:04+0000\n"
 "Last-Translator: Eugene Krater <lachend@gmail.com>\n"
 "Language-Team: Ukrainian <https://l10n.opensuse.org/projects/agama/agama-"
 "service-master/uk/>\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 5.12.2\n"
+"X-Generator: Weblate 5.15.2\n"
 
 #. Reports the problems and decide whether to continue or not.
 #.
@@ -43,9 +43,8 @@ msgstr "Запис системної конфігурації завантаж�
 
 #. Implementation for the API method #Finish.
 #: service/lib/agama/dbus/storage/manager.rb:131
-#, fuzzy
 msgid "Finishing installation"
-msgstr "Перервати встановлення"
+msgstr "Завершення встановлення"
 
 #. Error code
 #: service/lib/agama/dbus/storage/manager.rb:377
@@ -57,9 +56,8 @@ msgid "Probing storage devices"
 msgstr "Пошук пристроїв зберігання"
 
 #: service/lib/agama/dbus/storage/manager.rb:383
-#, fuzzy
 msgid "Applying storage configuration"
-msgstr "Налаштування конфігурації сховища"
+msgstr "Застосування конфігурації сховища"
 
 #. TRANSLATORS: SSL certificate details
 #: service/lib/agama/ssl/certificate_details.rb:31

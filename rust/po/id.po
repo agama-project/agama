@@ -8,46 +8,44 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-01-23 15:24+0000\n"
-"PO-Revision-Date: 2026-01-19 15:36+0000\n"
-"Last-Translator: Ladislav Slezák <lslezak@suse.com>\n"
-"Language-Team: Czech <https://l10n.opensuse.org/projects/agama/agama-rust-"
-"master/cs/>\n"
-"Language: cs\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: none\n"
+"Language: id\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
-"X-Generator: Weblate 5.15.2\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
 
 #: agama-autoinstall/src/questions.rs:41 agama-utils/src/api/question.rs:282
 #: agama-utils/src/question/start.rs:54
 msgid "No"
-msgstr "Ne"
+msgstr ""
 
 #: agama-autoinstall/src/questions.rs:41 agama-utils/src/api/question.rs:282
 #: agama-utils/src/question/start.rs:54
 msgid "Yes"
-msgstr "Ano"
+msgstr ""
 
 #: agama-manager/src/service.rs:839
 msgid "Prepare the system"
-msgstr "Nachystat systém"
+msgstr ""
 
 #: agama-manager/src/service.rs:840
 msgid "Install software"
-msgstr "Instalovat software"
+msgstr ""
 
 #: agama-manager/src/service.rs:841
 msgid "Configure the system"
-msgstr "Nakonfigurovat systém"
+msgstr ""
 
 #: agama-network/src/service.rs:518
 msgid "Writing configuration"
-msgstr "Zapisuji konfiguraci"
+msgstr ""
 
 #: agama-network/src/service.rs:519
 msgid "Reading configuration"
-msgstr "Načítám konfiguraci"
+msgstr ""
 
 #: agama-security/src/service.rs:228
 msgid "Reject"
@@ -56,7 +54,7 @@ msgstr ""
 #: agama-security/src/service.rs:228
 #: agama-software/src/callbacks/security.rs:74
 msgid "Trust"
-msgstr "Důvěřovat"
+msgstr ""
 
 #: agama-security/src/service.rs:229
 msgid ""
@@ -67,21 +65,21 @@ msgstr ""
 #: agama-software/src/callbacks/commit_download.rs:48
 #: agama-software/src/callbacks/install.rs:56
 msgid "Ignore"
-msgstr "Ignorovat"
+msgstr ""
 
 #: agama-software/src/callbacks/commit_download.rs:48
 #: agama-software/src/callbacks/install.rs:56
 #: agama-software/src/callbacks/install.rs:81
 msgid "Retry"
-msgstr "Opakovat"
+msgstr ""
 
 #: agama-software/src/callbacks/install.rs:78
 msgid "There was a problem running a package script."
-msgstr "Vyskytla se chyba při běhu skriptu balíku."
+msgstr ""
 
 #: agama-software/src/callbacks/install.rs:81
 msgid "Continue"
-msgstr "Pokračovat"
+msgstr ""
 
 #. TRANSLATORS: substituting: key ID, (key name), fingerprint
 #: agama-software/src/callbacks/security.rs:67
@@ -90,43 +88,36 @@ msgid ""
 "The key {0} ({1}) with fingerprint {2} is unknown. Do you want to trust this "
 "key?"
 msgstr ""
-"Klíč {0} ({1}) s otiskem {2} není známý. Chcete důvěřovat tomuto klíči?"
 
 #: agama-software/src/callbacks/security.rs:74
 msgid "Skip"
-msgstr "Přeskočit"
+msgstr ""
 
 #: agama-software/src/zypp_server.rs:290
 msgid "Updating the list of repositories"
-msgstr "Aktualizuji seznam repozitářů"
+msgstr ""
 
 #: agama-software/src/zypp_server.rs:291
 msgid "Refreshing metadata from the repositories"
-msgstr "Obnovuji metadata repozitářů"
+msgstr ""
 
 #: agama-software/src/zypp_server.rs:292
 msgid "Calculating the software proposal"
-msgstr "Vyhodnocuje se návrh softwaru"
+msgstr ""
 
 #: agama-software/src/zypp_server.rs:295
 msgid "Registering the system"
-msgstr "Systém se registruje"
+msgstr ""
 
 #: agama-software/src/zypp_server.rs:390
 msgid "The product must be registered"
-msgstr "Produkt musí být zaregistrovaný"
+msgstr ""
 
 #: agama-users/src/service.rs:138
 msgid ""
 "Defining a user, setting the root password or a SSH public key is required"
 msgstr ""
-"Je vyžadováno definování uživatele a nastavení rootovského hesla nebo SSH "
-"klíče"
 
 #: agama-users/src/service.rs:151
 msgid "First user information is incomplete"
-msgstr "Nastavení prvního uživatele není kompletní"
-
-#, fuzzy
-#~ msgid "Failed to register the system"
-#~ msgstr "Systém se registruje"
+msgstr ""
