@@ -7,9 +7,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-01-18 03:25+0000\n"
-"PO-Revision-Date: 2025-10-05 17:59+0000\n"
-"Last-Translator: \"James \\\"Jim\\\" Ed Randson\" <jimedrand@disroot.org>\n"
+"POT-Creation-Date: 2026-01-19 14:11+0000\n"
+"PO-Revision-Date: 2026-01-22 04:04+0000\n"
+"Last-Translator: Arif Budiman <arifpedia@gmail.com>\n"
 "Language-Team: Indonesian <https://l10n.opensuse.org/projects/agama/agama-"
 "service-master/id/>\n"
 "Language: id\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.13.3\n"
+"X-Generator: Weblate 5.15.2\n"
 
 #. Reports the problems and decide whether to continue or not.
 #.
@@ -42,9 +42,8 @@ msgstr "Menulis sysconfig bootloader"
 
 #. Implementation for the API method #Finish.
 #: service/lib/agama/dbus/storage/manager.rb:131
-#, fuzzy
 msgid "Finishing installation"
-msgstr "Batalkan instalasi"
+msgstr "Menyelesaikan instalasi"
 
 #. Error code
 #: service/lib/agama/dbus/storage/manager.rb:377
@@ -56,9 +55,8 @@ msgid "Probing storage devices"
 msgstr "Memeriksa perangkat penyimpanan"
 
 #: service/lib/agama/dbus/storage/manager.rb:383
-#, fuzzy
 msgid "Applying storage configuration"
-msgstr "Menyesuaikan konfigurasi penyimpanan"
+msgstr "Menerapkan konfigurasi penyimpanan"
 
 #. TRANSLATORS: SSL certificate details
 #: service/lib/agama/ssl/certificate_details.rb:31
