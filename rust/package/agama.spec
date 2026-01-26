@@ -194,6 +194,7 @@ env \
   libexecdir=%{_libexecdir} \
   mandir=%{_mandir} \
   %{_builddir}/agama/install.sh
+%find_lang agama
 
 %check
 PATH=$PWD/share/bin:$PATH
@@ -240,15 +241,13 @@ echo $PATH
 %postun -n agama-scripts
 %service_del_postun_with_restart agama-scripts.service
 
-%files
+%files -f agama.lang
 %doc README.md
 %license LICENSE
 %{_bindir}/agama-web-server
 %{_pam_vendordir}/agama
 %{_unitdir}/agama-web-server.service
 %dir %{_datadir}/agama/eula
-%dir %{_datadir}/locale
-%{_datadir}/locale/*/LC_MESSAGES/agama.mo
 
 %files -n agama-common
 %dir %{_datadir}/agama/jsonnet
