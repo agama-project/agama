@@ -36,7 +36,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     if let Some(config) = ProxyConfig::from_cmdline() {
         config.write()?;
     } else {
-        tracing::info!("No proxy was found");
+        tracing::info!("No proxy configuration was found");
     }
     Ok(())
 }

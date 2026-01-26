@@ -206,7 +206,7 @@ impl ProxyConfig {
         }
 
         // All the key settings should be processed but ensure the lines are written in
-        // case them not.
+        // case they are not.
         for (key, val) in &settings {
             if !processed_keys.contains(key) {
                 new_lines.push(format!("{}=\"{}\"", key, val));

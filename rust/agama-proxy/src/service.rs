@@ -53,7 +53,7 @@ pub struct Starter {
 
 impl Starter {
     /// Creates a new starter.
-    /// * `events`: channel to emit the [hostname-specific events](crate::Event).
+    /// * `events`: channel to emit the [proxy-specific events](crate::Event).
     pub fn new(events: event::Sender) -> Starter {
         Self {
             events,

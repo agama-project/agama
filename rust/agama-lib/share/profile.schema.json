@@ -179,27 +179,27 @@
           "type": "boolean"
         },
         "httpProxy": {
-          "title": "Url to be used for the http proxy.",
+          "description": "URL to be used for the HTTP proxy.",
           "type": "string",
           "examples": ["http://proxy.provider.de:3128/"]
         },
         "httpsProxy": {
-          "title": "Url to be used for the https proxy.",
+          "description": "URL to be used for the HTTPS proxy.",
           "type": "string"
         },
         "ftpProxy": {
           "type": "string"
         },
         "gopherProxy": {
-          "title": "Url to be used for the gopher proxy.",
+          "description": "URL to be used for the Gopher proxy.",
           "type": "string"
         },
         "socksProxy": {
-          "title": "Url to be used for the socks proxy.",
+          "description": "URL to be used for the SOCKS proxy.",
           "type": "string"
         },
         "socks5Server": {
-          "title": "Socks5 server address",
+          "description": "SOCKS5 server address",
           "type": "string",
           "examples": ["office-proxy.example.com:8881"]
         },
