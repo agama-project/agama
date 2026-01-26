@@ -26,7 +26,6 @@ require "yast2/systemd/service"
 require "yast2/fs_snapshot"
 require "bootloader/finish_client"
 require "y2storage/storage_manager"
-require "agama/with_progress_manager"
 require "agama/helpers"
 require "abstract_method"
 require "fileutils"
@@ -38,7 +37,6 @@ module Agama
   module Storage
     # Auxiliary class to handle the last storage-related steps of the installation
     class Finisher
-      include WithProgressManager
       include Helpers
 
       # Constructor
@@ -49,17 +47,12 @@ module Agama
         @config = config
       end
 
-      # Execute the final storage actions, reporting the progress
+      # Execute the final storage actions.
       def run
-        # FIXME: This progress is not emitting changes in D-Bus because its callbacks are not
-        #   configured. Is that expected? If so, why a progress?
         steps = possible_steps.select(&:run?)
-        start_progress_with_size(steps.size)
 
         on_target do
-          steps.each do |step|
-            progress.step(step.label) { step.run }
-          end
+          steps.each(&:run)
         end
       end
 

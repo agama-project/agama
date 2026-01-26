@@ -30,164 +30,127 @@ describe Agama::Storage::ISCSI::Manager do
 
   let(:logger) { Logger.new($stdout, level: :warn) }
 
-  # Mocks YaST calls done by the iSCSI adapter, see {Agama::Storage::ISCSI::Adapter}.
-  #
-  # These tests should be agnostic to the adapter. In this case, directly mocking the adapter code
-  # is not that bad because having more iSCSI adapters is not expected at all.
-  #
-  # If any other adapter is added at some point, then these tests have to be refactored and each
-  # adapter should have its own tests.
-  before do
-    allow(Yast::IscsiClientLib).to receive(:initiatorname).and_return(initiator_name)
-    allow(Yast::IscsiClientLib).to receive(:getiBFT).and_return(ibft)
-    allow(Yast::IscsiClientLib).to receive(:checkInitiatorName).and_return true
-    allow(Yast::IscsiClientLib).to receive(:getConfig)
-    allow(Yast::IscsiClientLib).to receive(:autoLogOn)
-    allow(Yast::IscsiClientLib).to receive(:readSessions)
-    allow(Yast::IscsiClientLib).to receive(:getDiscovered).and_return(yast_nodes)
-    allow(Yast::IscsiClientLib).to receive(:currentRecord=)
-    allow(Yast::IscsiClientLib).to receive(:getCurrentNodeValues)
-    allow(Yast::IscsiClientLib).to receive(:iBFT?)
-    allow(Yast::IscsiClientLib).to receive(:find_session)
-    allow(Yast::IscsiClientLib).to receive(:getStartupStatus)
-    allow(Yast::IscsiClientLib).to receive(:discover_from_portal)
-    allow(Yast::Service).to receive(:restart)
-    allow(subject).to receive(:adapter).and_return(adapter)
-    allow(subject).to receive(:sleep)
-  end
-
-  let(:initiator_name) { "iqn.1996-04.de.suse:01:351e6d6249" }
-
-  let(:ibft) { { "iface.initiatorname" => "test-name" } }
-
-  let(:yast_nodes) { [] }
-
   let(:adapter) { Agama::Storage::ISCSI::Adapter.new }
 
-  describe "#activate" do
-    it "activates iSCSI" do
-      expect(adapter).to receive(:activate).and_call_original
-
-      subject.activate
+  let(:initiator) do
+    Agama::Storage::ISCSI::Initiator.new.tap do |initiator|
+      initiator.name = "iqn.1996-04.de.suse:01:351e6d6249"
+      initiator.ibft_name = true
     end
+  end
 
-    it "restarts the iSCSI services" do
-      expect(Yast::Service).to receive(:restart).with("iscsi").ordered
-      expect(Yast::Service).to receive(:restart).with("iscsid").ordered
-      expect(Yast::Service).to receive(:restart).with("iscsiuio").ordered
-
-      subject.activate
+  let(:node1) do
+    Agama::Storage::ISCSI::Node.new.tap do |target|
+      target.target = "iqn.2023-01.com.example:12ac588"
+      target.address = "192.168.100.102"
+      target.port = 3264
+      target.interface = "default"
+      target.ibft = true
+      target.startup = "onboot"
+      target.connected = true
+      target.locked = true
     end
+  end
 
-    it "runs the callbacks" do
-      callback = proc {}
-      subject.on_activate(&callback)
-
-      expect(callback).to receive(:call)
-
-      subject.activate
+  let(:node2) do
+    Agama::Storage::ISCSI::Node.new.tap do |target|
+      target.target = "iqn.2023-01.com.example:12aca"
+      target.address = "192.168.100.110"
+      target.port = 3264
+      target.interface = "default"
+      target.ibft = false
+      target.startup = "manual"
+      target.connected = false
+      target.locked = false
     end
+  end
+
+  let(:node3) do
+    Agama::Storage::ISCSI::Node.new.tap do |target|
+      target.target = "iqn.2023-01.com.example:12123"
+      target.address = "192.168.100.110"
+      target.port = 3264
+      target.interface = "default"
+      target.ibft = false
+      target.startup = "manual"
+      target.connected = true
+      target.locked = false
+    end
+  end
+
+  before do
+    allow(subject).to receive(:adapter).and_return(adapter)
+    allow(subject).to receive(:sleep)
+    allow(adapter).to receive(:read_initiator)
+    allow(adapter).to receive(:read_nodes)
+    allow(adapter).to receive(:update_initiator)
+    allow(adapter).to receive(:discover)
+    allow(adapter).to receive(:discover_from_portals)
+    allow(adapter).to receive(:login).and_return(true)
+    allow(adapter).to receive(:logout).and_return(true)
+    allow(adapter).to receive(:update_node)
   end
 
   describe "#probe" do
-    let(:yast_nodes) do
-      [
-        "192.168.100.101:3264 iqn.2023-01.com.example:12ac588 default",
-        "192.168.100.102:3264 iqn.2023-01.com.example:12ac588"
-      ]
+    before do
+      allow(adapter).to receive(:read_initiator).and_return(initiator)
+      allow(adapter).to receive(:read_nodes).and_return([node1, node2, node3])
     end
 
     it "reads the initiator" do
       subject.probe
-
-      expect(subject.initiator).to be_a(Agama::Storage::ISCSI::Initiator)
-      expect(subject.initiator.name).to eq("iqn.1996-04.de.suse:01:351e6d6249")
-      expect(subject.initiator.ibft_name?).to eq(true)
+      expect(subject.initiator).to eq(initiator)
     end
 
     it "reads the discoverd nodes" do
       subject.probe
-
       nodes = subject.nodes
-      expect(nodes).to all(be_a(Agama::Storage::ISCSI::Node))
-
-      expect(nodes).to include(an_object_having_attributes(
-        address:   "192.168.100.101",
-        port:      3264,
-        target:    "iqn.2023-01.com.example:12ac588",
-        interface: "default"
-      ))
-
-      expect(nodes).to include(an_object_having_attributes(
-        address:   "192.168.100.102",
-        port:      3264,
-        target:    "iqn.2023-01.com.example:12ac588",
-        interface: "default"
-      ))
+      expect(nodes).to contain_exactly(node1, node2, node3)
     end
 
-    it "runs the callbacks" do
-      callback = proc {}
-      subject.on_probe(&callback)
-
-      expect(callback).to receive(:call)
-
+    it "sets the system as probed" do
+      expect(subject.probed?).to eq(false)
       subject.probe
-    end
-  end
-
-  describe "#update_initiator" do
-    context "if iSCSI is not probed yet" do
-      it "does not set the initiator name" do
-        expect(Yast::IscsiClientLib).to_not receive(:writeInitiatorName)
-
-        subject.update_initiator(name: "test-name")
-      end
+      expect(subject.probed?).to eq(true)
     end
 
-    context "if the iSCSI is probed" do
+    context "on first probe" do
       before do
+        [node1, node2, node3].each { |n| n.locked = false }
+      end
+
+      it "locks connected nodes" do
         subject.probe
+        expect(node1.locked?).to eq(true)
+        expect(node2.locked?).to eq(false)
+        expect(node3.locked?).to eq(true)
+      end
+    end
+
+    context "on other probes" do
+      before do
+        allow(adapter).to receive(:read_nodes).and_return([node1, node2], [node1, node2, node3])
+        [node1, node2, node3].each { |n| n.locked = false }
       end
 
-      context "and the given name is the same" do
-        let(:name) { initiator_name }
-
-        it "does not set the initiator name" do
-          expect(Yast::IscsiClientLib).to_not receive(:writeInitiatorName)
-
-          subject.update_initiator(name: name)
-        end
-      end
-
-      context "and the given name is not the same" do
-        let(:name) { "test-name" }
-
-        it "sets the initiator name" do
-          expect(Yast::IscsiClientLib).to receive(:writeInitiatorName).with("test-name")
-
-          subject.update_initiator(name: name)
-        end
+      it "only locks initially connected nodes" do
+        subject.probe
+        subject.probe
+        expect(node1.locked?).to eq(true)
+        expect(node2.locked?).to eq(false)
+        expect(node3.locked?).to eq(false)
       end
     end
   end
 
   describe "#discover" do
-    before do
-      allow(Yast::IscsiClientLib).to receive(:discover)
-    end
-
     it "performs iSCSI discovery without credentials" do
-      expect(Yast::IscsiClientLib).to receive(:discover) do |host, port, auth, _|
+      expect(adapter).to receive(:discover) do |host, port, options|
         expect(host).to eq("192.168.100.101")
         expect(port).to eq(3264)
-        expect(auth).to be_a(Y2IscsiClient::Authentication)
-        expect(auth.username).to be_nil
-        expect(auth.password).to be_nil
-        expect(auth.username_in).to be_nil
-        expect(auth.password_in).to be_nil
+        expect(options).to eq({ credentials: {} })
       end
-
+      expect(subject).to receive(:probe)
       subject.discover("192.168.100.101", 3264)
     end
 
@@ -198,305 +161,47 @@ describe Agama::Storage::ISCSI::Manager do
         initiator_username: "initiator",
         initiator_password: "54321"
       }
-
-      expect(Yast::IscsiClientLib).to receive(:discover) do |host, port, auth, _|
+      expect(adapter).to receive(:discover) do |host, port, options|
         expect(host).to eq("192.168.100.101")
         expect(port).to eq(3264)
-        expect(auth).to be_a(Y2IscsiClient::Authentication)
-        expect(auth.username).to eq("target")
-        expect(auth.password).to eq("12345")
-        expect(auth.username_in).to eq("initiator")
-        expect(auth.password_in).to eq("54321")
+        expect(options).to eq({ credentials: credentials })
       end
-
+      expect(subject).to receive(:probe)
       subject.discover("192.168.100.101", 3264, credentials: credentials)
     end
-
-    it "probes iSCSI" do
-      expect(subject).to receive(:probe)
-
-      subject.discover("192.168.100.101", 3264)
-    end
-
-    context "if iSCSI activation is not performed yet" do
-      it "activates iSCSI" do
-        expect(subject).to receive(:activate)
-
-        subject.discover("192.168.100.101", 3264)
-      end
-    end
-
-    context "if iSCSI activation was already performed" do
-      before do
-        subject.activate
-      end
-
-      it "does not activate iSCSI again" do
-        expect(subject).to_not receive(:activate)
-
-        subject.discover("192.168.100.101", 3264)
-      end
-    end
   end
 
-  describe "#login" do
+  describe "#configure" do
     before do
-      allow(Yast::IscsiClientLib).to receive(:default_startup_status).and_return("onboot")
-      allow(Yast::IscsiClientLib).to receive(:login_into_current).and_return(login_success)
-      allow(Yast::IscsiClientLib).to receive(:setStartupStatus).and_return(startup_success)
-    end
-
-    let(:node) { Agama::Storage::ISCSI::Node.new }
-
-    let(:login_success) { nil }
-
-    let(:startup_success) { nil }
-
-    let(:startup) { "automatic" }
-
-    it "tries to login without credentials" do
-      expect(Yast::IscsiClientLib).to receive(:login_into_current) do |auth, _|
-        expect(auth).to be_a(Y2IscsiClient::Authentication)
-        expect(auth.username).to be_nil
-        expect(auth.password).to be_nil
-        expect(auth.username_in).to be_nil
-        expect(auth.password_in).to be_nil
-      end.and_return(true)
-
-      expect(Yast::IscsiClientLib).to receive(:setStartupStatus).with("automatic")
-
-      subject.login(node, startup: startup)
-    end
-
-    it "tries to login with credentials" do
-      credentials = {
-        username:           "target",
-        password:           "12345",
-        initiator_username: "initiator",
-        initiator_password: "54321"
-      }
-
-      expect(Yast::IscsiClientLib).to receive(:login_into_current) do |auth, _|
-        expect(auth).to be_a(Y2IscsiClient::Authentication)
-        expect(auth.username).to eq("target")
-        expect(auth.password).to eq("12345")
-        expect(auth.username_in).to eq("initiator")
-        expect(auth.password_in).to eq("54321")
-      end.and_return(true)
-
-      expect(Yast::IscsiClientLib).to receive(:setStartupStatus).with("automatic")
-
-      subject.login(node, credentials: credentials, startup: startup)
-    end
-
-    context "if iSCSI activation is not performed yet" do
-      it "activates iSCSI" do
-        expect(subject).to receive(:activate)
-
-        subject.login(node)
-      end
-    end
-
-    context "if iSCSI activation was already performed" do
-      before do
-        subject.activate
-      end
-
-      it "does not activate iSCSI again" do
-        expect(subject).to_not receive(:activate)
-
-        subject.login(node)
-      end
-    end
-
-    context "and the session is created" do
-      let(:login_success) { true }
-
-      context "and the startup status is correctly set" do
-        let(:startup_success) { true }
-
-        it "probes iSCSI" do
-          expect(subject).to receive(:probe)
-
-          subject.login(node)
-        end
-
-        it "returns true" do
-          result = subject.login(node)
-
-          expect(result).to eq(true)
-        end
-      end
-
-      context "and the startup status cannot be set" do
-        let(:startup_success) { false }
-
-        it "probes iSCSI" do
-          expect(subject).to receive(:probe)
-
-          subject.login(node)
-        end
-
-        it "returns false" do
-          result = subject.login(node)
-
-          expect(result).to eq(false)
-        end
-      end
-    end
-  end
-
-  describe "#logout" do
-    before do
-      allow(Yast::IscsiClientLib).to receive(:deleteRecord)
-    end
-
-    let(:node) { Agama::Storage::ISCSI::Node.new }
-
-    it "closes the iSCSI session" do
-      expect(Yast::IscsiClientLib).to receive(:deleteRecord)
-
-      subject.logout(node)
-    end
-
-    it "probes iSCSI" do
-      expect(subject).to receive(:probe)
-
-      subject.logout(node)
-    end
-
-    context "if iSCSI activation is not performed yet" do
-      it "activates iSCSI" do
-        expect(subject).to receive(:activate)
-
-        subject.logout(node)
-      end
-    end
-
-    context "if iSCSI activation was already performed" do
-      before do
-        subject.activate
-      end
-
-      it "does not activate iSCSI again" do
-        expect(subject).to_not receive(:activate)
-
-        subject.logout(node)
-      end
-    end
-  end
-
-  describe "#delete" do
-    before do
-      allow(Yast::IscsiClientLib).to receive(:removeRecord)
-    end
-
-    let(:node) { Agama::Storage::ISCSI::Node.new }
-
-    it "deletes the iSCSI node" do
-      expect(Yast::IscsiClientLib).to receive(:removeRecord)
-
-      subject.delete(node)
-    end
-
-    it "probes iSCSI" do
-      expect(subject).to receive(:probe)
-
-      subject.delete(node)
-    end
-  end
-
-  describe "#update" do
-    before do
-      allow(Yast::IscsiClientLib).to receive(:setStartupStatus)
-    end
-
-    let(:node) { Agama::Storage::ISCSI::Node.new }
-
-    it "updates the iSCSI node" do
-      expect(Yast::IscsiClientLib).to receive(:setStartupStatus).with("manual")
-
-      subject.update(node, startup: "manual")
-    end
-
-    it "probes iSCSI" do
-      expect(subject).to receive(:probe)
-
-      subject.update(node, startup: "manual")
-    end
-  end
-
-  describe "#apply_config_json" do
-    context "if iSCSI activation is not performed yet" do
-      it "activates iSCSI" do
-        expect(subject).to receive(:activate)
-
-        subject.apply_config_json({})
-      end
-    end
-
-    context "if iSCSI activation was already performed" do
-      before do
-        subject.activate
-      end
-
-      it "does not activate iSCSI again" do
-        expect(subject).to_not receive(:activate)
-
-        subject.apply_config_json({})
-      end
+      allow(adapter).to receive(:read_initiator).and_return(initiator)
+      allow(adapter).to receive(:read_nodes).and_return([node1, node2, node3])
     end
 
     context "if the config does not specify the initiator name" do
       it "does not update the initiator" do
         expect(adapter).to_not receive(:update_initiator)
-
-        subject.apply_config_json({})
-      end
-
-      it "returns true" do
-        result = subject.apply_config_json({})
-
-        expect(result).to eq(true)
+        subject.configure({})
       end
     end
 
     context "if the config specifies the initiator name" do
-      let(:config_json) { { initiator: initiator } }
+      let(:config_json) { { initiator: initiator_name } }
 
       context "and the name is equal to the current inititator name" do
         let(:initiator_name) { "iqn.1996-04.de.suse:01:351e6d6249" }
 
-        let(:initiator) { initiator_name }
-
         it "does not update the initiator" do
           expect(adapter).to_not receive(:update_initiator)
-
-          subject.apply_config_json(config_json)
-        end
-
-        it "returns true" do
-          result = subject.apply_config_json(config_json)
-
-          expect(result).to eq(true)
+          subject.configure(config_json)
         end
       end
 
       context "and the name is not equal to the current inititator name" do
-        let(:initiator_name) { "iqn.1996-04.de.suse:01:351e6d6249" }
-
-        let(:initiator) { "iqn.1996-04.de.suse:01:351e6d6250" }
+        let(:initiator_name) { "iqn.1996-04.de.suse:01:351e6d6250" }
 
         it "updates the initiator" do
-          expect(adapter).to receive(:update_initiator).with(anything, name: initiator)
-
-          subject.apply_config_json(config_json)
-        end
-
-        it "returns true" do
-          result = subject.apply_config_json(config_json)
-
-          expect(result).to eq(true)
+          expect(adapter).to receive(:update_initiator).with(initiator, name: initiator_name)
+          subject.configure(config_json)
         end
       end
     end
@@ -504,85 +209,46 @@ describe Agama::Storage::ISCSI::Manager do
     context "if the config does not specify targets" do
       let(:config_json) { {} }
 
-      it "does not modify the sessions" do
-        expect(adapter).to_not receive(:logout)
+      it "does not connect any node" do
         expect(adapter).to_not receive(:login)
-
-        subject.apply_config_json(config_json)
+        subject.configure(config_json)
       end
 
-      it "does not run the callbacks" do
-        callback = proc {}
-        subject.on_sessions_change(&callback)
-
-        expect(callback).to_not receive(:call)
-
-        subject.apply_config_json(config_json)
-      end
-
-      it "returns true" do
-        result = subject.apply_config_json(config_json)
-
-        expect(result).to eq(true)
+      it "does not disconnect any node" do
+        expect(adapter).to_not receive(:logout)
+        subject.configure(config_json)
       end
     end
 
     context "if the config specifies targets" do
       let(:config_json) { { targets: targets } }
 
-      let(:yast_nodes) do
-        [
-          "192.168.100.101:3264 iqn.2023-01.com.example:12ac588 default",
-          "192.168.100.102:3264 iqn.2023-01.com.example:12ac589"
-        ]
-      end
-
-      before do
-        allow(adapter).to receive(:find_session_for).and_call_original
-        # Mock session (connected target).
-        allow(adapter).to receive(:find_session_for).with([
-                                                            "192.168.100.101:3264",
-                                                            "iqn.2023-01.com.example:12ac588",
-                                                            "default"
-                                                          ]).and_return([])
-      end
-
-      shared_examples "callbacks" do
-        it "runs the callbacks" do
-          callback = proc {}
-          subject.on_sessions_change(&callback)
-
-          expect(callback).to receive(:call)
-
-          subject.apply_config_json(config_json)
-        end
-      end
-
       context "and the list is empty" do
         let(:targets) { [] }
 
-        it "performs logout of all connected targets" do
-          expect(adapter).to receive(:logout)
-            .with(an_object_having_attributes(target: "iqn.2023-01.com.example:12ac588"))
+        before do
+          subject.probe
 
-          expect(adapter).to_not receive(:logout)
-            .with(an_object_having_attributes(target: "iqn.2023-01.com.example:12ac589"))
+          node1.locked = true
+          node1.connected = true
 
-          subject.apply_config_json(config_json)
+          node2.locked = false
+          node2.connected = false
+
+          node3.locked = false
+          node3.connected = true
         end
 
-        it "does not login to any target" do
+        it "diconnects the connected nodes if unlocked" do
+          expect(adapter).to_not receive(:logout).with(node1)
+          expect(adapter).to_not receive(:logout).with(node2)
+          expect(adapter).to receive(:logout).with(node3)
+          subject.configure(config_json)
+        end
+
+        it "does not connect any node" do
           expect(adapter).to_not receive(:login)
-
-          subject.apply_config_json(config_json)
-        end
-
-        include_examples "callbacks"
-
-        it "returns true" do
-          result = subject.apply_config_json(config_json)
-
-          expect(result).to eq(true)
+          subject.configure(config_json)
         end
       end
 
@@ -590,19 +256,10 @@ describe Agama::Storage::ISCSI::Manager do
         let(:targets) do
           [
             {
-              address:         "192.168.100.151",
-              port:            3260,
-              name:            "iqn.2025-01.com.example:becda24e8804c6580bd0",
-              interface:       "default",
-              startup:         "onboot",
-              authByTarget:    {
-                username: "test1",
-                password: "12345"
-              },
-              authByInitiator: {
-                username: "test2",
-                password: "54321"
-              }
+              address:   "192.168.100.151",
+              port:      3260,
+              name:      "iqn.2025-01.com.example:becda24e8804c6580bd0",
+              interface: "default"
             },
             {
               address:   "192.168.100.152",
@@ -613,10 +270,6 @@ describe Agama::Storage::ISCSI::Manager do
           ]
         end
 
-        before do
-          allow(adapter).to receive(:login).and_return(true)
-        end
-
         it "performs a discovery for each portal" do
           expect(adapter).to receive(:discover_from_portal)
             .with("192.168.100.151:3260", interfaces: ["default"])
@@ -624,125 +277,81 @@ describe Agama::Storage::ISCSI::Manager do
           expect(adapter).to receive(:discover_from_portal)
             .with("192.168.100.152:3260", interfaces: ["default"])
 
-          subject.apply_config_json(config_json)
+          subject.configure(config_json)
         end
 
-        it "tries to login to each target" do
-          expect(adapter).to receive(:login) do |node, options|
-            expect(node.address).to eq("192.168.100.151")
-            expect(node.port).to eq(3260)
-            expect(node.target).to eq("iqn.2025-01.com.example:becda24e8804c6580bd0")
-            expect(node.interface).to eq("default")
-
-            startup = options[:startup]
-            expect(startup).to eq("onboot")
-
-            credentials = options[:credentials]
-            expect(credentials[:username]).to eq("test1")
-            expect(credentials[:password]).to eq("12345")
-            expect(credentials[:initiator_username]).to eq("test2")
-            expect(credentials[:initiator_password]).to eq("54321")
+        context "if the node is disconnected" do
+          let(:targets) do
+            [
+              {
+                name:      "iqn.2023-01.com.example:12aca",
+                address:   "192.168.100.110",
+                port:      3260,
+                interface: "default"
+              }
+            ]
           end
 
-          expect(adapter).to receive(:login) do |node, options|
-            expect(node.address).to eq("192.168.100.152")
-            expect(node.port).to eq(3260)
-            expect(node.target).to eq("iqn.2025-01.com.example:becda24e8804c6580bd1")
-            expect(node.interface).to eq("default")
-
-            startup = options[:startup]
-            expect(startup).to be_nil
-
-            credentials = options[:credentials]
-            expect(credentials[:username]).to be_nil
-            expect(credentials[:password]).to be_nil
-            expect(credentials[:initiator_username]).to be_nil
-            expect(credentials[:initiator_password]).to be_nil
-          end
-
-          subject.apply_config_json(config_json)
-        end
-
-        include_examples "callbacks"
-
-        it "returns true" do
-          result = subject.apply_config_json(config_json)
-
-          expect(result).to eq(true)
-        end
-
-        context "and fails to login" do
-          before do
-            allow(adapter).to receive(:login).and_return(false)
-          end
-
-          it "does not try to login the rest of targets" do
-            expect(adapter).to receive(:login).once
-
-            subject.apply_config_json(config_json)
-          end
-
-          it "reports an issue" do
-            subject.apply_config_json(config_json)
-
-            expect(subject.issues.size).to eq(1)
-            expect(subject.issues.first.description).to match(/Cannot login .*0bd0/)
-          end
-
-          include_examples "callbacks"
-
-          it "returns false" do
-            result = subject.apply_config_json(config_json)
-
-            expect(result).to eq(false)
+          it "connects the node" do
+            expect(adapter).to receive(:login).with(node2, anything)
+            subject.configure(config_json)
           end
         end
-      end
-    end
-  end
 
-  describe "#configured?" do
-    context "if no session has been configured yet" do
-      it "returns false" do
-        expect(subject.configured?).to eq(false)
-      end
-    end
+        context "if the node is connected" do
+          let(:targets) do
+            [
+              {
+                name:         "iqn.2023-01.com.example:12ac588",
+                address:      "192.168.100.102",
+                port:         3260,
+                interface:    "default",
+                startup:      startup,
+                authByTarget: auth
+              }
+            ]
+          end
 
-    context "if a session was configured by loading a config" do
-      let(:config_json) do
-        {
-          targets: [
-            {
-              address:   "192.168.100.152",
-              port:      3260,
-              name:      "iqn.2025-01.com.example:becda24e8804c6580bd1",
-              interface: "default"
-            }
-          ]
-        }
-      end
+          let(:startup) { nil }
 
-      before do
-        allow(adapter).to receive(:login).and_return(true)
-        subject.apply_config_json(config_json)
-      end
+          context "and its credentials have changed" do
+            let(:auth) do
+              {
+                username: "test",
+                password: "12345"
+              }
+            end
 
-      it "returns true" do
-        expect(subject.configured?).to eq(true)
-      end
-    end
+            it "reconnects the node" do
+              expect(adapter).to receive(:logout).with(node1).ordered
+              expect(adapter).to receive(:login).with(node1, anything).ordered
+              subject.configure(config_json)
+            end
+          end
 
-    context "if a session was manually configured" do
-      before do
-        allow(Yast::IscsiClientLib).to receive(:default_startup_status).and_return("onboot")
-        allow(Yast::IscsiClientLib).to receive(:login_into_current).and_return(true)
-        allow(Yast::IscsiClientLib).to receive(:setStartupStatus).and_return(true)
-        node = Agama::Storage::ISCSI::Node.new
-        subject.login(node)
-      end
+          context "and its credentials have not changed" do
+            let(:auth) { nil }
 
-      it "returns true" do
-        expect(subject.configured?).to eq(true)
+            context "and its startup mode has changed" do
+              let(:startup) { "manual" }
+
+              it "updates the node" do
+                expect(adapter).to receive(:update_node).with(node1, { startup: "manual" })
+                subject.configure(config_json)
+              end
+            end
+
+            context "and its startup mode has not changed" do
+              let(:startup) { "onboot" }
+
+              it "does not change the node" do
+                expect(adapter).to_not receive(:logout).with(node1)
+                expect(adapter).to_not receive(:login).with(node1)
+                expect(adapter).to_not receive(:update_node).with(node1)
+              end
+            end
+          end
+        end
       end
     end
   end

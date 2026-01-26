@@ -1,9 +1,14 @@
 -------------------------------------------------------------------
+Mon Jan 26 06:49:56 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Provide new D-Bus API for iSCSI (gh#agama-project/agama#3008).
+
+-------------------------------------------------------------------
 Fri Jan 23 13:47:45 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
 
 - Temporarily disable the check of os-prober to avoid
   trying to access libzypp (gh#agama-project/agama#3053).
-  
+
 -------------------------------------------------------------------
 Fri Jan 23 10:28:20 UTC 2026 - Martin Wilck <mwilck@suse.com>
 
@@ -46,7 +51,7 @@ Fri Dec 12 06:21:47 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Fix systemd target import from AutoYaST profiles
   (gh#agama-project/agama#2826).
-  
+
 -------------------------------------------------------------------
 Thu Nov 13 13:30:58 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
 

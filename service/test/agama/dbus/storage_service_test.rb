@@ -21,6 +21,7 @@
 
 require_relative "../../test_helper"
 require "agama/dbus/storage_service"
+require "agama/storage/iscsi/adapter"
 
 describe Agama::DBus::StorageService do
   subject(:service) { described_class.new(logger) }
@@ -45,11 +46,17 @@ describe Agama::DBus::StorageService do
       .and_return(manager)
     allow(Agama::DBus::Storage::Manager).to receive(:new).with(manager, logger: logger)
       .and_return(manager_obj)
+    allow_any_instance_of(Agama::Storage::ISCSI::Adapter).to receive(:activate)
   end
 
   describe "#start" do
     it "activates the Y2Storage inhibitors" do
       expect(inhibitors).to receive(:inhibit)
+      service.start
+    end
+
+    it "activates iSCSI" do
+      expect_any_instance_of(Agama::Storage::ISCSI::Adapter).to receive(:activate)
       service.start
     end
   end

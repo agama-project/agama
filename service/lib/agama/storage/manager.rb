@@ -29,9 +29,7 @@ require "agama/storage/configurator"
 require "agama/storage/finisher"
 require "agama/storage/iscsi/manager"
 require "agama/storage/proposal"
-require "agama/with_issues"
 require "agama/with_locale"
-require "agama/with_progress_manager"
 require "yast"
 require "y2storage/clients/inst_prepdisk"
 require "y2storage/luks"
@@ -42,8 +40,6 @@ module Agama
     # Manager to handle storage configuration
     class Manager
       include WithLocale
-      include WithIssues
-      include WithProgressManager
 
       # @return [Agama::Config]
       attr_reader :product_config
@@ -51,17 +47,21 @@ module Agama
       # @return [Bootloader]
       attr_reader :bootloader
 
+      # @return [Array<Issue>]
+      attr_reader :issues
+
       # @param logger [Logger, nil]
       def initialize(logger: nil)
         @logger = logger || Logger.new($stdout)
         @bootloader = Bootloader.new(logger)
+        @issues = []
         @yast_no_bls_boot = ENV["YAST_NO_BLS_BOOT"]
         self.product_config = Agama::Config.new
       end
 
       # Assigns a new product config.
       #
-      # @param product_config [Agama::Config]
+      # @param config [Agama::Config]
       def product_config=(config)
         @product_config = config
         proposal.product_config = config
@@ -81,7 +81,6 @@ module Agama
 
       # Activates the devices.
       def activate
-        iscsi.activate
         callbacks = Callbacks::Activate.new(questions_client, logger)
         Y2Storage::StorageManager.instance.activate(callbacks)
         @activated = true
@@ -93,7 +92,6 @@ module Agama
 
       # Probes the devices.
       def probe
-        iscsi.probe
         callbacks = Y2Storage::Callbacks::UserProbe.new
         Y2Storage::StorageManager.instance.probe(callbacks)
       end
@@ -146,9 +144,7 @@ module Agama
       #
       # @return [Storage::ISCSI::Manager]
       def iscsi
-        # Uses the same progress as manager. Note that the callbacks of the progess are configured
-        # by the D-Bus object in order to properly update the Progress D-Bus interface.
-        @iscsi ||= ISCSI::Manager.new(progress_manager: progress_manager, logger: logger)
+        @iscsi ||= ISCSI::Manager.new(logger: logger)
       end
 
       # Storage actions.
@@ -200,7 +196,7 @@ module Agama
       #
       # @return [Boolean]
       def need_iscsi?
-        iscsi.configured? || devicegraph.used_features.any? { |f| f.id == :UF_ISCSI }
+        devicegraph.used_features.any? { |f| f.id == :UF_ISCSI }
       end
 
       # Staging devicegraph
@@ -212,7 +208,7 @@ module Agama
 
       # Recalculates the list of issues
       def update_issues
-        self.issues = proposal.issues
+        @issues = proposal.issues
       end
 
       # Issues from the probing phase

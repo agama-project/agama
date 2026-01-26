@@ -39,7 +39,11 @@ module Agama
           # Check initiator name, creating one if missing.
           return false unless Yast::IscsiClientLib.checkInitiatorName(silent: true)
 
-          start_services
+          # Restart the services, in case any of them was already running for whatever reason.
+          Yast::Service.restart("iscsi")
+          Yast::Service.restart("iscsid")
+          Yast::Service.restart("iscsiuio")
+
           # Why we need to sleep here? This was copied from yast2-iscsi-client.
           sleep(0.5)
           Yast::IscsiClientLib.getConfig
@@ -126,15 +130,6 @@ module Agama
           Yast::IscsiClientLib.deleteRecord
         end
 
-        # Deletes an iSCSI node from the database.
-        #
-        # @param node [Node]
-        # @return [Boolean] Whether the action successes
-        def delete_node(node)
-          Yast::IscsiClientLib.currentRecord = record_from(node)
-          Yast::IscsiClientLib.removeRecord
-        end
-
         # Updates an iSCSI node.
         #
         # @param node [Node]
@@ -147,16 +142,6 @@ module Agama
         end
 
       private
-
-        # Starts the iSCSI services.
-        #
-        # To be precise, it actually restarts the services, in case any of them was already running
-        # for whatever reason.
-        def start_services
-          Yast::Service.restart("iscsi")
-          Yast::Service.restart("iscsid")
-          Yast::Service.restart("iscsiuio")
-        end
 
         # Creates an iSCSI authentication object.
         #
@@ -188,7 +173,7 @@ module Agama
             node.connected = false
 
             Yast::IscsiClientLib.currentRecord = record
-            node.ibtf = Yast::IscsiClientLib.iBFT?(Yast::IscsiClientLib.getCurrentNodeValues)
+            node.ibft = Yast::IscsiClientLib.iBFT?(Yast::IscsiClientLib.getCurrentNodeValues)
 
             session_record = find_session_for(record)
 
