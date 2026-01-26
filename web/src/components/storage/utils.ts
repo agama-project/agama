@@ -309,6 +309,7 @@ const filesystemLabel = (fstype: string): string => {
  */
 const filesystemType = (filesystem: ConfigModel.Filesystem): string | undefined => {
   if (filesystem.type) {
+    if (filesystem.transactional) return _("immutable Btrfs");
     if (filesystem.snapshots) return _("Btrfs with snapshots");
 
     return filesystemLabel(filesystem.type);
