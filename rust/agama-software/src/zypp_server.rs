@@ -31,7 +31,7 @@ use agama_utils::{
 };
 use camino::{Utf8Path, Utf8PathBuf};
 use gettextrs::gettext;
-use std::collections::HashMap;
+use std::{collections::HashMap, fs};
 use tokio::sync::{
     mpsc::{self, UnboundedSender},
     oneshot,
@@ -83,6 +83,9 @@ pub enum ZyppServerError {
 
     #[error("SSL error: {0}")]
     SSL(#[from] openssl::error::ErrorStack),
+
+    #[error("Failed to copy file {0}: {1}")]
+    IO(String, #[source] std::io::Error),
 }
 
 pub type ZyppServerResult<R> = Result<R, ZyppServerError>;
@@ -260,6 +263,8 @@ impl ZyppServer {
         let repositories = zypp
             .list_repositories()?
             .into_iter()
+            // filter out service managed repositories
+            .filter(|repo| repo.service.is_none())
             .map(|repo| state::Repository {
                 name: repo.user_name,
                 alias: repo.alias,
@@ -491,8 +496,58 @@ impl ZyppServer {
                 .map_err(|_| ZyppDispatchError::ResponseChannelClosed)?;
             return Ok(());
         }
+        if let Err(error) = self.copy_files() {
+            tracing::warn!("Failed to copy zypp files: {error}");
+            tx.send(Err(error.into()))
+                .map_err(|_| ZyppDispatchError::ResponseChannelClosed)?;
+            return Ok(());
+        }
+
         // if we fail to send ok, lets just ignore it
         let _ = tx.send(Ok(()));
+        Ok(())
+    }
+
+    const ZYPP_DIRS: [&str; 4] = [
+        "etc/zypp/services.d",
+        "etc/zypp/repos.d",
+        "etc/zypp/credentials.d",
+        "var/cache/zypp",
+    ];
+    fn copy_files(&self) -> ZyppServerResult<()> {
+        for path in Self::ZYPP_DIRS {
+            let source_path = self.root_dir.join(path);
+            let target_path = self.install_dir.join(path);
+            if source_path.exists() {
+                self.copy_dir_all(&source_path, &target_path)?;
+            }
+        }
+        Ok(())
+    }
+
+    fn copy_dir_all(&self, source: &Utf8Path, target: &Utf8Path) -> ZyppServerResult<()> {
+        fs::create_dir_all(&target).map_err(|e| ZyppServerError::IO(target.to_string(), e))?;
+        for entry in source
+            .read_dir_utf8()
+            .map_err(|e| ZyppServerError::IO(source.to_string(), e))?
+        {
+            let entry = entry.map_err(|e| ZyppServerError::IO(source.to_string(), e))?;
+            let ty = entry
+                .file_type()
+                .map_err(|e| ZyppServerError::IO(entry.path().to_string(), e))?;
+            let dst = target.join(entry.file_name());
+            if ty.is_dir() {
+                self.copy_dir_all(entry.path(), &dst)?;
+            } else {
+                tracing::info!(
+                    "Copying from {} to {}",
+                    entry.path().to_string(),
+                    dst.to_string()
+                );
+                fs::copy(entry.path(), &dst)
+                    .map_err(|e| ZyppServerError::IO(entry.path().to_string(), e))?;
+            }
+        }
         Ok(())
     }
 

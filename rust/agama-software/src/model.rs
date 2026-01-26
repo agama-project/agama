@@ -40,7 +40,7 @@ pub mod software_selection;
 pub mod state;
 
 pub use packages::{Resolvable, ResolvableType};
-pub use registration::{Registration, RegistrationBuilder};
+pub use registration::Registration;
 
 /// Abstract the software-related configuration from the underlying system.
 ///

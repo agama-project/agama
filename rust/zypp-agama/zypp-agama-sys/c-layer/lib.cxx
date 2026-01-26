@@ -255,6 +255,7 @@ void free_repository(struct Repository *repo) {
   free(repo->url);
   free(repo->alias);
   free(repo->userName);
+  free(repo->serviceName);
 }
 
 void free_repository_list(struct RepositoryList *list) noexcept {
@@ -646,6 +647,7 @@ struct RepositoryList list_repositories(struct Zypp *zypp,
     new_repo->url = strdup(iter->url().asString().c_str());
     new_repo->alias = strdup(iter->alias().c_str());
     new_repo->userName = strdup(iter->asUserString().c_str());
+    new_repo->serviceName = strdup(iter->service().c_str());
   }
 
   struct RepositoryList result = {static_cast<unsigned>(size), repos};

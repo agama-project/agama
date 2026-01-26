@@ -14,6 +14,7 @@ struct Repository {
   char *url;      ///< owned
   char *alias;    ///< owned
   char *userName; ///< owned
+  char *serviceName; ///< owned
 };
 
 struct RepositoryList {
