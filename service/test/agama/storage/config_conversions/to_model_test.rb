@@ -101,9 +101,10 @@ describe Agama::Storage::ConfigConversions::ToModel do
             {
               name:        "/dev/md0",
               filesystem:  {
-                reuse:   false,
-                default: true,
-                type:    "ext4"
+                reuse:         false,
+                default:       true,
+                type:          "ext4",
+                transactional: false
               },
               mountPath:   "/data",
               spacePolicy: "keep",
@@ -117,10 +118,11 @@ describe Agama::Storage::ConfigConversions::ToModel do
               logicalVolumes: [
                 {
                   filesystem: {
-                    reuse:     false,
-                    default:   true,
-                    type:      "btrfs",
-                    snapshots: false
+                    reuse:         false,
+                    default:       true,
+                    type:          "btrfs",
+                    snapshots:     false,
+                    transactional: false
                   },
                   mountPath:  "/",
                   size:       {

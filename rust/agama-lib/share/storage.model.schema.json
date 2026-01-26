@@ -136,7 +136,8 @@
         "default": { "type": "boolean" },
         "type": { "$ref": "#/$defs/filesystemType" },
         "snapshots": { "type": "boolean" },
-        "label": { "type": "string" }
+        "label": { "type": "string" },
+        "transactional": { "type": "boolean" }
       }
     },
     "filesystemType": {
