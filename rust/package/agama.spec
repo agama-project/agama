@@ -247,6 +247,7 @@ echo $PATH
 %{_pam_vendordir}/agama
 %{_unitdir}/agama-web-server.service
 %dir %{_datadir}/agama/eula
+%dir %{_datadir}/locale
 %{_datadir}/locale/*/LC_MESSAGES/agama.mo
 
 %files -n agama-common
