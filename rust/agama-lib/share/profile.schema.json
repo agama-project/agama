@@ -178,32 +178,32 @@
           "title": "Whether the proxy is enabled or not.",
           "type": "boolean"
         },
-        "http_proxy": {
+        "httpProxy": {
           "title": "Url to be used for the http proxy.",
           "type": "string",
           "examples": ["http://proxy.provider.de:3128/"]
         },
-        "https_proxy": {
+        "httpsProxy": {
           "title": "Url to be used for the https proxy.",
           "type": "string"
         },
-        "ftp_proxy": {
+        "ftpProxy": {
           "type": "string"
         },
-        "gopher_proxy": {
+        "gopherProxy": {
           "title": "Url to be used for the gopher proxy.",
           "type": "string"
         },
-        "socks_proxy": {
+        "socksProxy": {
           "title": "Url to be used for the socks proxy.",
           "type": "string"
         },
-        "socks5_server": {
+        "socks5Server": {
           "title": "Socks5 server address",
           "type": "string",
           "examples": ["office-proxy.example.com:8881"]
         },
-        "no_proxy": {
+        "noProxy": {
           "title": "Hosts that do not need a proxy for being reach",
           "type": "string"
         }

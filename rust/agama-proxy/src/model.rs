@@ -67,6 +67,7 @@ impl ProxyConfig {
                 proxies.push(Proxy::new(url.clone(), protocol));
             }
             return Some(ProxyConfig {
+                enabled: Some(true),
                 proxies,
                 ..Default::default()
             });
