@@ -46,7 +46,7 @@ describe Agama::DBus::StorageService do
       .and_return(manager)
     allow(Agama::DBus::Storage::Manager).to receive(:new).with(manager, logger: logger)
       .and_return(manager_obj)
-    allow(Agama::Storage::ISCSI::Adapter).to receive(:activate)
+    allow_any_instance_of(Agama::Storage::ISCSI::Adapter).to receive(:activate)
   end
 
   describe "#start" do
@@ -56,7 +56,7 @@ describe Agama::DBus::StorageService do
     end
 
     it "activates iSCSI" do
-      expect(Agama::Storage::ISCSI::Adapter).to receive(:activate)
+      expect_any_instance_of(Agama::Storage::ISCSI::Adapter).to receive(:activate)
       service.start
     end
   end

@@ -34,7 +34,7 @@ module Agama
       # This class is a wrapper over the YaST code dealing with iSCSI.
       class Adapter
         # Performs actions for activating iSCSI.
-        def self.activate
+        def activate
           Yast::IscsiClientLib.getiBFT
           # Check initiator name, creating one if missing.
           return false unless Yast::IscsiClientLib.checkInitiatorName(silent: true)

@@ -54,7 +54,7 @@ module Agama
         # Inhibits various storage subsystem (udisk, systemd mounts, raid auto-assembly) that
         # interfere with the operation of yast-storage-ng and libstorage-ng.
         Y2Storage::Inhibitors.new.inhibit
-        Agama::Storage::ISCSI::Adapter.activate
+        Agama::Storage::ISCSI::Adapter.new.activate
         check_multipath
         export
       end
