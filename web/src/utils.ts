@@ -160,6 +160,59 @@ const mask = (value: string, visible: number = 4, maskChar: string = "*"): strin
   return maskChar.repeat(maskedLength) + visiblePart;
 };
 
+// list of sensitive object properties replaced by the sanitize() function
+const default_sensitive_keys = [
+  // storage
+  "encryptionPassword",
+  // users
+  "password",
+  // registration
+  "registrationCode",
+  // storage (iSCSI setting)
+  "reverse_password",
+];
+
+/**
+ * Recursively filters an object by replacing sensitive values with text
+ * "[FILTERED]". Useful for logging possibly sensitive data.
+ *
+ * It returns a new object, the original input is unchanged.
+ *
+ * @example
+ * ```ts
+ * const data = { user: "John", password: "123" };
+ * // logs { user: "John", password: "[FILTERED]" }
+ * console.log(sanitize(data));
+ * ```
+ *
+ * @param obj - The object or array to sanitize
+ * @param sensitive_keys - Custom keys to replace
+ * @returns Sanitized copy of the input
+ */
+const sanitize = (obj: unknown, sensitive_keys: string[] = default_sensitive_keys): unknown => {
+  if (obj === null || typeof obj !== "object") {
+    return obj;
+  }
+
+  if (Array.isArray(obj)) {
+    return obj.map((item) => sanitize(item, sensitive_keys));
+  }
+
+  const newObj: { [key: string]: unknown } = {};
+
+  for (const key in obj) {
+    if (Object.prototype.hasOwnProperty.call(obj, key)) {
+      if (sensitive_keys.includes(key)) {
+        newObj[key] = "[FILTERED]";
+      } else {
+        newObj[key] = sanitize(obj[key]);
+      }
+    }
+  }
+
+  return newObj;
+};
+
 /**
  * A wrapper around React Router's `generatePath` that ensures all path parameters
  * are URI-encoded using `encodeURIComponent`. This prevents broken URLs caused by
@@ -214,5 +267,6 @@ export {
   timezoneTime,
   mask,
   generateEncodedPath,
+  sanitize,
   sortCollection,
 };

@@ -21,10 +21,25 @@
  */
 
 import axios, { AxiosRequestConfig } from "axios";
+import { sanitize } from "~/utils";
 
 const http = axios.create({
   responseType: "json",
 });
+
+// helper function which logs details of a failed HTTP request
+const log_failure = function (url: string, error: Error, data?: unknown) {
+  if (data) {
+    // log the error: remove the sensitive data and serialize to string to avoid folding large
+    // data structures
+    console.error(`Request ${url} failed, sent data:\n`, JSON.stringify(sanitize(data), null, 2));
+  } else {
+    console.error(`Request ${url} failed`);
+  }
+
+  // rethrow the error again
+  throw error;
+};
 
 /**
  * Retrieves the object from given URL
@@ -32,7 +47,11 @@ const http = axios.create({
  * @param url - HTTP URL
  * @return data from the response body
  */
-const get = (url: string) => http.get(url).then(({ data }) => data);
+const get = (url: string) =>
+  http
+    .get(url)
+    .then(({ data }) => data)
+    .catch((error) => log_failure(url, error));
 
 /**
  * Performs a PATCH request with the given URL and data
@@ -40,7 +59,8 @@ const get = (url: string) => http.get(url).then(({ data }) => data);
  * @param url - endpoint URL
  * @param data - Request payload
  */
-const patch = (url: string, data?: object) => http.patch(url, data);
+const patch = (url: string, data?: object) =>
+  http.patch(url, data).catch((error) => log_failure(url, error, data));
 
 /**
  * Performs a PUT request with the given URL and data
@@ -50,7 +70,7 @@ const patch = (url: string, data?: object) => http.patch(url, data);
  * @param config - request config (optional)
  */
 const put = (url: string, data: object | string, config?: AxiosRequestConfig) =>
-  http.put(url, data, config);
+  http.put(url, data, config).catch((error) => log_failure(url, error, data));
 
 /**
  * Performs a POST request with the given URL and data
@@ -58,7 +78,8 @@ const put = (url: string, data: object | string, config?: AxiosRequestConfig) =>
  * @param url - endpoint URL
  * @param data - request payload
  */
-const post = (url: string, data?: object | boolean) => http.post(url, data);
+const post = (url: string, data?: object | boolean) =>
+  http.post(url, data).catch((error) => log_failure(url, error, data));
 
 /**
  * Performs a DELETE request on the given URL
@@ -66,6 +87,6 @@ const post = (url: string, data?: object | boolean) => http.post(url, data);
  * @param url - endpoint URL
  * @param data - request payload
  */
-const del = (url: string) => http.delete(url);
+const del = (url: string) => http.delete(url).catch((error) => log_failure(url, error));
 
 export { get, patch, post, put, del };
