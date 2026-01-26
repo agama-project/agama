@@ -624,10 +624,8 @@ impl MessageHandler<progress::message::GetStatus> for Service {
 impl MessageHandler<message::GetSystem> for Service {
     /// It returns the information of the underlying system.
     async fn handle(&mut self, _message: message::GetSystem) -> Result<SystemInfo, Error> {
-        tracing::info!("Calling get system");
         let hostname = self.hostname.call(hostname::message::GetSystem).await?;
         let proxy = self.proxy.call(proxy::message::GetSystem).await?;
-        tracing::info!("The proxy configuration is {:?}", proxy);
         let l10n = self.l10n.call(l10n::message::GetSystem).await?;
         let manager = self.system.clone();
         let storage = self.storage.call(storage::message::GetSystem).await?;
@@ -810,6 +808,7 @@ impl MessageHandler<message::RunAction> for Service {
                     hostname: self.hostname.clone(),
                     l10n: self.l10n.clone(),
                     network: self.network.clone(),
+                    proxy: self.proxy.clone(),
                     software: self.software.clone(),
                     storage: self.storage.clone(),
                     files: self.files.clone(),
@@ -881,6 +880,7 @@ struct InstallAction {
     hostname: Handler<hostname::Service>,
     l10n: Handler<l10n::Service>,
     network: NetworkSystemClient,
+    proxy: Handler<proxy::Service>,
     software: Handler<software::Service>,
     storage: Handler<storage::Service>,
     files: Handler<files::Service>,

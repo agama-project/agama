@@ -30,22 +30,22 @@ pub struct Config {
     pub enabled: Option<bool>,
     #[serde(skip_serializing_if = "Option::is_none")]
     #[merge(strategy = merge::option::overwrite_none)]
-    pub http_proxy: Option<String>,
+    pub http: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     #[merge(strategy = merge::option::overwrite_none)]
-    pub https_proxy: Option<String>,
+    pub https: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     #[merge(strategy = merge::option::overwrite_none)]
-    pub ftp_proxy: Option<String>,
+    pub ftp: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     #[merge(strategy = merge::option::overwrite_none)]
-    pub gopher_proxy: Option<String>,
+    pub gopher: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     #[merge(strategy = merge::option::overwrite_none)]
-    pub socks_proxy: Option<String>,
+    pub socks: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     #[merge(strategy = merge::option::overwrite_none)]
-    pub socks5_server: Option<String>,
+    pub socks5: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     #[merge(strategy = merge::option::overwrite_none)]
     pub no_proxy: Option<String>,

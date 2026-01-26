@@ -1,4 +1,24 @@
-use std::{fs, path::Path};
+// Copyright (c) [2026] SUSE LLC
+//
+// All Rights Reserved.
+//
+// This program is free software; you can redistribute it and/or modify it
+// under the terms of the GNU General Public License as published by the Free
+// Software Foundation; either version 2 of the License, or (at your option)
+// any later version.
+//
+// This program is distributed in the hope that it will be useful, but WITHOUT
+// ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+// FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+// more details.
+//
+// You should have received a copy of the GNU General Public License along
+// with this program; if not, contact SUSE LLC.
+//
+// To contact SUSE LLC about this file by physical or electronic mail, you may
+// find current contact information at www.suse.com.
+
+use std::path::Path;
 
 use agama_utils::kernel_cmdline::KernelCmdline;
 use strum::{Display, EnumIter, EnumString, IntoEnumIterator};
@@ -20,12 +40,12 @@ pub enum Protocol {
     HTTPS,
     GOPHER,
     SOCKS,
+    SOCKS5,
 }
 
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ProxyConfig {
     pub proxies: Vec<Proxy>,
-    pub socks5_server: Option<String>,
     pub enabled: Option<bool>,
     pub no_proxy: Option<String>,
 }
@@ -38,7 +58,6 @@ impl ProxyConfig {
 
         for path in paths {
             if !Path::new(path).exists() {
-                tracing::info!("There is no {} file", path);
                 continue;
             }
 
@@ -48,20 +67,14 @@ impl ProxyConfig {
                 }
             }
         }
-
-        tracing::info!("No proxy is configured, skipping configuration");
         None
     }
 
     pub fn from_kernel_cmdline(cmdline: &KernelCmdline) -> Option<Self> {
         if let Some(url) = cmdline.get_last("proxy") {
-            tracing::info!(
-                "The proxy url: '{}' was given, using it for the configuration.",
-                url
-            );
             let mut proxies = vec![];
             for protocol in Protocol::iter() {
-                if [Protocol::GOPHER, Protocol::SOCKS].contains(&protocol) {
+                if [Protocol::GOPHER, Protocol::SOCKS, Protocol::SOCKS5].contains(&protocol) {
                     continue;
                 }
                 proxies.push(Proxy::new(url.clone(), protocol));
@@ -97,7 +110,6 @@ impl ProxyConfig {
 
         let mut proxies = Vec::new();
         let mut enabled = None;
-        let mut socks5_server = None;
         let mut no_proxy = None;
 
         for line in reader.lines() {
@@ -117,7 +129,7 @@ impl ProxyConfig {
                     }
                     "SOCKS5_SERVER" => {
                         if !value.is_empty() {
-                            socks5_server = Some(value.to_string());
+                            proxies.push(Proxy::new(value.to_string(), Protocol::SOCKS5));
                         }
                     }
                     "NO_PROXY" => {
@@ -139,7 +151,6 @@ impl ProxyConfig {
         Ok(ProxyConfig {
             proxies,
             enabled,
-            socks5_server,
             no_proxy,
         })
     }
@@ -160,12 +171,12 @@ impl ProxyConfig {
         }
 
         for proxy in &self.proxies {
-            let key = format!("{}_PROXY", proxy.protocol.to_string().to_uppercase());
+            let key = if proxy.protocol == Protocol::SOCKS5 {
+                "SOCKS5_SERVER".to_string()
+            } else {
+                format!("{}_PROXY", proxy.protocol.to_string().to_uppercase())
+            };
             settings.insert(key, proxy.url.to_string());
-        }
-
-        if let Some(sock5_server) = &self.socks5_server {
-            settings.insert("SOCKS5_SERVER".to_string(), sock5_server.to_string());
         }
 
         if let Some(no_proxy) = &self.no_proxy {
@@ -270,8 +281,8 @@ mod tests {
             proxies: vec![
                 Proxy::new("http://proxy.example.com".to_string(), Protocol::HTTP),
                 Proxy::new("ftp://proxy.example.com".to_string(), Protocol::FTP),
+                Proxy::new("socks.example.com".to_string(), Protocol::SOCKS5),
             ],
-            socks5_server: Some("socks.example.com".to_string()),
             enabled: Some(true),
             no_proxy: Some("".to_string()),
         };
@@ -307,7 +318,6 @@ mod tests {
                 "http://new.proxy.com".to_string(),
                 Protocol::HTTP,
             )],
-            socks5_server: None,
             enabled: Some(true),
             no_proxy: None,
         };
@@ -351,7 +361,10 @@ mod tests {
             "ftp://proxy.example.com".to_string(),
             Protocol::FTP
         )));
-        assert_eq!(config.socks5_server, Some("socks.example.com".to_string()));
+        assert!(config.proxies.contains(&Proxy::new(
+            "socks.example.com".to_string(),
+            Protocol::SOCKS5
+        )));
         assert_eq!(config.no_proxy, Some("localhost,127.0.0.1".to_string()));
     }
 }

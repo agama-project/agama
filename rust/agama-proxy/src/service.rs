@@ -26,6 +26,7 @@ use agama_utils::{
     api::{
         self,
         event::{self},
+        l10n::SystemConfig,
     },
 };
 use async_trait::async_trait;
@@ -93,41 +94,48 @@ struct State {
 
 impl State {
     pub fn new(config_path: PathBuf) -> Self {
+        let mut object = Self {
+            config_path,
+            ..Default::default()
+        };
+        let replace = ProxyConfig::from_cmdline().is_some();
+        object.load(replace);
+        object
+    }
+
+    pub fn load(&mut self, replace_config: bool) {
         let mut config = None;
-        let system = match ProxyConfig::read_from(&config_path) {
+        match ProxyConfig::read_from(&self.config_path) {
             Ok(system) => {
-                config = Some(system.clone());
-                Some(system)
+                if replace_config {
+                    config = Some(system.clone());
+                }
+                self.system = Some(system)
             }
             Err(e) => {
                 tracing::error!("Failed to read proxy configuration: {}", e);
-                None
+                self.system = None
             }
         };
-
-        Self {
-            system,
-            config,
-            config_path,
-        }
+        self.config = config;
     }
 
-    pub fn to_config(&self) -> Option<api::proxy::Config> {
-        if let Some(proxy_config) = &self.config {
+    pub fn to_config(&self, config: Option<ProxyConfig>) -> Option<api::proxy::Config> {
+        if let Some(proxy_config) = config {
             let mut config = api::proxy::Config {
                 enabled: proxy_config.enabled,
                 no_proxy: proxy_config.no_proxy.clone(),
-                socks5_server: proxy_config.socks5_server.clone(),
                 ..Default::default()
             };
 
             for proxy in &proxy_config.proxies {
                 let value = match &proxy.protocol {
-                    model::Protocol::FTP => &mut config.ftp_proxy,
-                    model::Protocol::HTTP => &mut config.http_proxy,
-                    model::Protocol::HTTPS => &mut config.https_proxy,
-                    model::Protocol::GOPHER => &mut config.gopher_proxy,
-                    model::Protocol::SOCKS => &mut config.socks_proxy,
+                    model::Protocol::FTP => &mut config.ftp,
+                    model::Protocol::HTTP => &mut config.http,
+                    model::Protocol::HTTPS => &mut config.https,
+                    model::Protocol::GOPHER => &mut config.gopher,
+                    model::Protocol::SOCKS => &mut config.socks,
+                    model::Protocol::SOCKS5 => &mut config.socks5,
                 };
 
                 *value = Some(proxy.url.clone());
@@ -142,28 +150,33 @@ impl State {
     pub fn update_config(&mut self, config: api::proxy::Config) -> Result<(), model::Error> {
         let mut proxies = Vec::new();
 
-        if let Some(url) = config.ftp_proxy {
+        if let Some(url) = config.ftp {
             proxies.push(model::Proxy::new(url, model::Protocol::FTP));
         }
-        if let Some(url) = config.http_proxy {
+        if let Some(url) = config.http {
             proxies.push(model::Proxy::new(url, model::Protocol::HTTP));
         }
-        if let Some(url) = config.https_proxy {
+        if let Some(url) = config.https {
             proxies.push(model::Proxy::new(url, model::Protocol::HTTPS));
         }
-        if let Some(url) = config.gopher_proxy {
+        if let Some(url) = config.gopher {
             proxies.push(model::Proxy::new(url, model::Protocol::GOPHER));
+        }
+        if let Some(url) = config.socks {
+            proxies.push(model::Proxy::new(url, model::Protocol::SOCKS));
+        }
+        if let Some(url) = config.socks5 {
+            proxies.push(model::Proxy::new(url, model::Protocol::SOCKS5));
         }
 
         let proxy_config = ProxyConfig {
             proxies,
-            socks5_server: config.socks5_server,
             enabled: config.enabled,
             no_proxy: config.no_proxy,
         };
 
         proxy_config.write_to(&self.config_path)?;
-        self.config = Some(proxy_config);
+        self.load(true);
         Ok(())
     }
 }
@@ -203,7 +216,7 @@ impl MessageHandler<message::GetConfig> for Service {
         &mut self,
         _message: message::GetConfig,
     ) -> Result<Option<api::proxy::Config>, Error> {
-        Ok(self.state.to_config())
+        Ok(self.state.to_config(self.state.config.clone()))
     }
 }
 
@@ -213,7 +226,7 @@ impl MessageHandler<message::GetSystem> for Service {
         &mut self,
         _message: message::GetSystem,
     ) -> Result<Option<api::proxy::Config>, Error> {
-        Ok(self.state.to_config())
+        Ok(self.state.to_config(self.state.system.clone()))
     }
 }
 
@@ -248,9 +261,9 @@ mod tests {
         let mut state = State::new(config_path.clone());
         // Test update_config
         let config = api::proxy::Config {
-            http_proxy: Some("http://proxy.example.com".to_string()),
+            http: Some("http://proxy.example.com".to_string()),
             enabled: Some(true),
-            socks5_server: Some("socks.example.com".to_string()),
+            socks5: Some("socks.example.com".to_string()),
             ..Default::default()
         };
 
@@ -263,14 +276,14 @@ mod tests {
         assert!(content.contains("PROXY_ENABLED=\"yes\""));
 
         // Test to_config
-        let retrieved_config = state.to_config().unwrap();
+        let retrieved_config = state.to_config(state.config.clone()).unwrap();
 
         assert_eq!(
-            retrieved_config.http_proxy,
+            retrieved_config.http,
             Some("http://proxy.example.com".to_string())
         );
         assert_eq!(
-            retrieved_config.socks5_server,
+            retrieved_config.socks5,
             Some("socks.example.com".to_string())
         );
         assert_eq!(retrieved_config.enabled, Some(true));
