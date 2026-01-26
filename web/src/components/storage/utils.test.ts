@@ -29,8 +29,6 @@ import {
   splitSize,
   hasFS,
   hasSnapshots,
-  isTransactionalRoot,
-  isTransactionalSystem,
 } from "./utils";
 import type { Storage } from "~/model/system";
 import type { Volume } from "~/model/system/storage";
@@ -258,39 +256,5 @@ describe("hasSnapshots", () => {
 
   it("returns true if the volume has Btrfs file system and snapshots enabled", () => {
     expect(hasSnapshots(volume({ fsType: "Btrfs", snapshots: true }))).toBe(true);
-  });
-});
-
-describe("isTransactionalRoot", () => {
-  it("returns false if the volume is not root", () => {
-    expect(isTransactionalRoot(volume({ mountPath: "/home", transactional: true }))).toBe(false);
-  });
-
-  it("returns false if the volume has not transactional enabled", () => {
-    expect(isTransactionalRoot(volume({ mountPath: "/", transactional: false }))).toBe(false);
-  });
-
-  it("returns true if the volume is root and has transactional enabled", () => {
-    expect(isTransactionalRoot(volume({ mountPath: "/", transactional: true }))).toBe(true);
-  });
-});
-
-describe("isTransactionalSystem", () => {
-  it("returns false if volumes does not include a transactional root", () => {
-    expect(isTransactionalSystem([])).toBe(false);
-
-    const volumes = [
-      volume({ mountPath: "/" }),
-      volume({ mountPath: "/home", transactional: true }),
-    ];
-    expect(isTransactionalSystem(volumes)).toBe(false);
-  });
-
-  it("returns true if volumes includes a transactional root", () => {
-    const volumes = [
-      volume({ mountPath: "EXT4" }),
-      volume({ mountPath: "/", transactional: true }),
-    ];
-    expect(isTransactionalSystem(volumes)).toBe(true);
   });
 });
