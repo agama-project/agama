@@ -31,7 +31,7 @@ use agama_utils::{
 };
 use camino::{Utf8Path, Utf8PathBuf};
 use gettextrs::gettext;
-use std::{collections::HashMap, fs};
+use std::{collections::HashMap, fs, os::unix::fs::symlink};
 use tokio::sync::{
     mpsc::{self, UnboundedSender},
     oneshot,
@@ -532,12 +532,24 @@ impl ZyppServer {
             .map_err(|e| ZyppServerError::IO(source.to_string(), e))?
         {
             let entry = entry.map_err(|e| ZyppServerError::IO(source.to_string(), e))?;
-            let ty = entry
-                .file_type()
+            let ty = fs::symlink_metadata(entry.path())
                 .map_err(|e| ZyppServerError::IO(entry.path().to_string(), e))?;
             let dst = target.join(entry.file_name());
             if ty.is_dir() {
                 self.copy_dir_all(entry.path(), &dst)?;
+            } else if ty.is_symlink() {
+                // we need special handling of symlinks as libzypp do
+                // some tricks with danglinks symlinks and we should not
+                // break it
+                let link_dest = entry.path().read_link_utf8().map_err(|e| ZyppServerError::IO(entry.path().to_string(), e))?;
+                tracing::info!(
+                    "Recreating symlink from {} to {} pointing to {}",
+                    entry.path().to_string(),
+                    dst.to_string(),
+                    link_dest.to_string(),
+                );
+                symlink(link_dest, &dst)
+                    .map_err(|e| ZyppServerError::IO(dst.to_string(), e))?;
             } else {
                 tracing::info!(
                     "Copying from {} to {}",
