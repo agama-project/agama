@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Jan 23 14:10:16 UTC 2026 - Martin Vidner <mvidner@suse.com>
+
+- Follow suit, do not package /usr/share/locale itself
+  (gh#agama-project/agama#3071).
+
+-------------------------------------------------------------------
 Fri Jan 23 13:47:29 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
 
 - Copy the SCC credentials and the libzypp services 
