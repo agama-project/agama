@@ -18,7 +18,7 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use std::path::Path;
+use std::path::{Path, PathBuf};
 
 use agama_utils::kernel_cmdline::KernelCmdline;
 use strum::{Display, EnumIter, EnumString, IntoEnumIterator};
@@ -50,7 +50,8 @@ pub struct ProxyConfig {
     pub no_proxy: Option<String>,
 }
 
-const PROXY_PATH: &str = "/etc/sysconfig/proxy";
+const WORK_DIR: &str = "/";
+const PROXY_PATH: &str = "etc/sysconfig/proxy";
 
 impl ProxyConfig {
     pub fn from_cmdline() -> Option<Self> {
@@ -88,23 +89,22 @@ impl ProxyConfig {
         None
     }
 
-    pub fn config_path(&self) -> &str {
-        PROXY_PATH
+    pub fn config_path() -> PathBuf {
+        PathBuf::from(WORK_DIR).join(PROXY_PATH)
     }
 
     pub fn read() -> Result<Option<Self>, Error> {
-        let path = Path::new(PROXY_PATH);
-        match Self::read_from(path) {
+        let path = Self::config_path();
+        match Self::read_from(&path) {
             Ok(config) => Ok(Some(config)),
             Err(Error::Io(e)) if e.kind() == std::io::ErrorKind::NotFound => Ok(None),
             Err(e) => Err(e),
         }
     }
 
-    pub fn read_from<P: AsRef<std::path::Path>>(path: P) -> Result<Self, Error> {
+    pub fn read_from(path: &PathBuf) -> Result<Self, Error> {
         use std::io::BufRead;
 
-        let path = path.as_ref();
         let file = std::fs::File::open(path)?;
         let reader = std::io::BufReader::new(file);
 
@@ -156,10 +156,10 @@ impl ProxyConfig {
     }
 
     pub fn write(&self) -> Result<(), Error> {
-        self.write_to(self.config_path())
+        self.write_to(&Self::config_path())
     }
 
-    pub fn write_to<P: AsRef<std::path::Path>>(&self, path: P) -> Result<(), Error> {
+    pub fn write_to(&self, path: &PathBuf) -> Result<(), Error> {
         use std::collections::{HashMap, HashSet};
         use std::io::{BufRead, Write};
 
@@ -183,7 +183,6 @@ impl ProxyConfig {
             settings.insert("NO_PROXY".to_string(), no_proxy.to_string());
         }
 
-        let path = path.as_ref();
         let mut lines = Vec::new();
 
         match std::fs::File::open(path) {
@@ -287,11 +286,11 @@ mod tests {
             no_proxy: Some("".to_string()),
         };
 
-        let file = tempfile::NamedTempFile::new().unwrap();
-        let path = file.path();
-        config.write_to(path).unwrap();
+        let tempdir = tempfile::tempdir().unwrap();
+        let path = tempdir.path().join("proxy");
+        config.write_to(&path).unwrap();
 
-        let content = std::fs::read_to_string(path).unwrap();
+        let content = std::fs::read_to_string(&path).unwrap();
 
         assert!(content.contains("PROXY_ENABLED=\"yes\""));
         assert!(content.contains("HTTP_PROXY=\"http://proxy.example.com\""));
@@ -302,11 +301,13 @@ mod tests {
 
     #[test]
     fn test_write_preserve_content() {
-        let mut file = tempfile::NamedTempFile::new().unwrap();
+        let tempdir = tempfile::tempdir().unwrap();
+        let path = tempdir.path().join("proxy");
 
         // Create initial file with some extra content
         {
             use std::io::Write;
+            let mut file = std::fs::File::create(&path).unwrap();
             writeln!(file, "SOME_OTHER_VAR=\"value\"").unwrap();
             writeln!(file, "HTTP_PROXY=\"old_value\"").unwrap();
             writeln!(file, "# A comment").unwrap();
@@ -321,9 +322,9 @@ mod tests {
             no_proxy: None,
         };
 
-        config.write_to(file.path()).unwrap();
+        config.write_to(&path).unwrap();
 
-        let content = std::fs::read_to_string(file.path()).unwrap();
+        let content = std::fs::read_to_string(&path).unwrap();
 
         assert!(content.contains("SOME_OTHER_VAR=\"value\""));
         assert!(content.contains("HTTP_PROXY=\"http://new.proxy.com\""));
@@ -334,9 +335,14 @@ mod tests {
 
     #[test]
     fn test_read() {
-        let mut file = tempfile::NamedTempFile::new().unwrap();
+        let tempdir = tempfile::tempdir().unwrap();
+        let path = tempdir.path().join(PROXY_PATH);
+        if let Some(parent) = path.parent() {
+            std::fs::create_dir_all(parent).unwrap();
+        }
         {
             use std::io::Write;
+            let mut file = std::fs::File::create(&path).unwrap();
             writeln!(file, "PROXY_ENABLED=\"yes\"").unwrap();
             writeln!(file, "HTTP_PROXY=\"http://proxy.example.com\"").unwrap();
             writeln!(file, "FTP_PROXY=\"ftp://proxy.example.com\"").unwrap();
@@ -346,7 +352,7 @@ mod tests {
             writeln!(file, "OTHER_VAR=\"ignore\"").unwrap();
         }
 
-        let config = ProxyConfig::read_from(file.path()).unwrap();
+        let config = ProxyConfig::read_from(&path).unwrap();
 
         assert_eq!(config.enabled, Some(true));
         assert!(config.proxies.contains(&Proxy::new(

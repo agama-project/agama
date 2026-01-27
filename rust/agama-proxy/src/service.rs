@@ -242,7 +242,7 @@ impl MessageHandler<message::Finish> for Service {
             if let Some(parent) = path.parent() {
                 std::fs::create_dir_all(parent)?;
             }
-            config.write_to(path)?;
+            config.write_to(&path)?;
         }
         Ok(())
     }

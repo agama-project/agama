@@ -263,6 +263,7 @@ dependencies = [
  "gettext-rs",
  "libsystemd",
  "strum",
+ "tempfile",
  "thiserror 2.0.18",
  "tracing",
  "tracing-journald",

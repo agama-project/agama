@@ -22,3 +22,6 @@ url = "2.5.8"
 name = "agama-proxy-setup"
 path = "src/main.rs"
 
+
+[dev-dependencies]
+tempfile = "3.13.0"
