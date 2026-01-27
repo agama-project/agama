@@ -26,14 +26,14 @@ use agama_utils::{
     api::{
         self,
         event::{self},
-        l10n::SystemConfig,
     },
 };
 use async_trait::async_trait;
 
 use crate::{message, model::ProxyConfig};
 
-const DEFAULT_WORKDIR: &str = "/etc/sysconfig";
+const PROXY_PATH: &str = "etc/sysconfig/proxy";
+const DEFAULT_WORKDIR: &str = "/";
 const DEFAULT_INSTALL_DIR: &str = "/mnt";
 
 #[derive(thiserror::Error, Debug)]
@@ -76,7 +76,7 @@ impl Starter {
     pub fn start(self) -> Result<Handler<Service>, Error> {
         let service = Service {
             events: self.events,
-            state: State::new(self.workdir.join("proxy")),
+            state: State::new(self.workdir.join(PROXY_PATH)),
             install_dir: self.install_dir,
         };
 
@@ -191,6 +191,10 @@ impl Service {
     pub fn starter(events: event::Sender) -> Starter {
         Starter::new(events)
     }
+
+    pub fn config_path(&self) -> PathBuf {
+        self.install_dir.join(PROXY_PATH)
+    }
 }
 
 impl Actor for Service {
@@ -234,7 +238,7 @@ impl MessageHandler<message::GetSystem> for Service {
 impl MessageHandler<message::Finish> for Service {
     async fn handle(&mut self, _message: message::Finish) -> Result<(), Error> {
         if let Some(config) = &self.state.config {
-            let path = self.install_dir.join("etc/sysconfig/proxy");
+            let path = self.config_path();
             if let Some(parent) = path.parent() {
                 std::fs::create_dir_all(parent)?;
             }

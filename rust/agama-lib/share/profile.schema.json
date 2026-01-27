@@ -171,7 +171,7 @@
       }
     },
     "proxy": {
-      "title": "Proxy configuration",
+      "title": "Proxy settings",
       "type": "object",
       "properties": {
         "enabled": {
