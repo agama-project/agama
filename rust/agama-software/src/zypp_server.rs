@@ -26,12 +26,13 @@ use agama_utils::{
         software::{Pattern, SelectedBy, SoftwareProposal, SystemInfo},
         Issue, Scope,
     },
+    helpers::copy_dir_all,
     products::ProductSpec,
     progress, question,
 };
 use camino::{Utf8Path, Utf8PathBuf};
 use gettextrs::gettext;
-use std::{collections::HashMap, fs, os::unix::fs::symlink};
+use std::collections::HashMap;
 use tokio::sync::{
     mpsc::{self, UnboundedSender},
     oneshot,
@@ -84,8 +85,8 @@ pub enum ZyppServerError {
     #[error("SSL error: {0}")]
     SSL(#[from] openssl::error::ErrorStack),
 
-    #[error("Failed to copy file {0}: {1}")]
-    IO(String, #[source] std::io::Error),
+    #[error("Failed to copy to target system: {0}")]
+    IO(#[from] std::io::Error),
 }
 
 pub type ZyppServerResult<R> = Result<R, ZyppServerError>;
@@ -532,47 +533,7 @@ impl ZyppServer {
             let source_path = self.root_dir.join(path);
             let target_path = self.install_dir.join(path);
             if source_path.exists() {
-                self.copy_dir_all(&source_path, &target_path)?;
-            }
-        }
-        Ok(())
-    }
-
-    fn copy_dir_all(&self, source: &Utf8Path, target: &Utf8Path) -> ZyppServerResult<()> {
-        fs::create_dir_all(&target).map_err(|e| ZyppServerError::IO(target.to_string(), e))?;
-        for entry in source
-            .read_dir_utf8()
-            .map_err(|e| ZyppServerError::IO(source.to_string(), e))?
-        {
-            let entry = entry.map_err(|e| ZyppServerError::IO(source.to_string(), e))?;
-            let ty = fs::symlink_metadata(entry.path())
-                .map_err(|e| ZyppServerError::IO(entry.path().to_string(), e))?;
-            let dst = target.join(entry.file_name());
-            if ty.is_dir() {
-                self.copy_dir_all(entry.path(), &dst)?;
-            } else if ty.is_symlink() {
-                // we need special handling of symlinks as libzypp do
-                // some tricks with danglinks symlinks and we should not
-                // break it
-                let link_dest = entry
-                    .path()
-                    .read_link_utf8()
-                    .map_err(|e| ZyppServerError::IO(entry.path().to_string(), e))?;
-                tracing::info!(
-                    "Recreating symlink from {} to {} pointing to {}",
-                    entry.path().to_string(),
-                    dst.to_string(),
-                    link_dest.to_string(),
-                );
-                symlink(link_dest, &dst).map_err(|e| ZyppServerError::IO(dst.to_string(), e))?;
-            } else {
-                tracing::info!(
-                    "Copying from {} to {}",
-                    entry.path().to_string(),
-                    dst.to_string()
-                );
-                fs::copy(entry.path(), &dst)
-                    .map_err(|e| ZyppServerError::IO(entry.path().to_string(), e))?;
+                copy_dir_all(&source_path, &target_path)?;
             }
         }
         Ok(())
