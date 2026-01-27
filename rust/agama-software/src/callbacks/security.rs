@@ -9,6 +9,7 @@ use crate::{callbacks::ask_software_question, state::RepoKey};
 pub struct Security {
     questions: Handler<question::Service>,
     trusted_gpg_keys: Vec<RepoKey>,
+    unsigned_repos: Vec<String>,
 }
 
 impl Security {
@@ -16,11 +17,16 @@ impl Security {
         Self {
             questions,
             trusted_gpg_keys: vec![],
+            unsigned_repos: vec![],
         }
     }
 
     pub fn set_trusted_gpg_keys(&mut self, trusted_gpg_keys: Vec<RepoKey>) {
         self.trusted_gpg_keys = trusted_gpg_keys;
+    }
+
+    pub fn set_unsigned_repos(&mut self, unsigned_repos: Vec<String>) {
+        self.unsigned_repos = unsigned_repos;
     }
 }
 
@@ -31,7 +37,11 @@ impl security::Callback for Security {
             file,
             repository_alias
         );
-        // TODO: support for extra_repositories with allow_unsigned config
+
+        if self.unsigned_repos.contains(&repository_alias) {
+            return true;
+        }
+
         // TODO: localization for text when parameters in gextext will be solved
         let text = if repository_alias.is_empty() {
             format!(

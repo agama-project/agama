@@ -57,6 +57,7 @@ pub struct SoftwareState {
     pub registration: Option<RegistrationState>,
     pub allow_registration: bool,
     pub trusted_gpg_keys: Vec<RepoKey>,
+    pub unsigned_repos: Vec<String>,
 }
 
 impl SoftwareState {
@@ -70,6 +71,7 @@ impl SoftwareState {
             registration: None,
             allow_registration: false,
             trusted_gpg_keys: vec![],
+            unsigned_repos: vec![],
         }
     }
 }
@@ -237,6 +239,10 @@ impl<'a> SoftwareStateBuilder<'a> {
                         });
                     }
                 }
+
+                if repo.allow_unsigned == Some(true) {
+                    state.unsigned_repos.push(repo.alias.clone());
+                }
             }
         }
 
@@ -392,6 +398,7 @@ impl<'a> SoftwareStateBuilder<'a> {
             options: Default::default(),
             allow_registration: self.product.registration,
             trusted_gpg_keys: vec![],
+            unsigned_repos: vec![],
         }
     }
 }
