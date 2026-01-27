@@ -1,0 +1,309 @@
+id: SLES
+name: SUSE Linux Enterprise Server 16.1
+registration: true
+version: "16.1"
+license: "license.final"
+# ------------------------------------------------------------------------------
+# WARNING: When changing the product description delete the translations located
+# at the at translations/description key below to avoid using obsolete
+# translations!!
+# ------------------------------------------------------------------------------
+description: "An open, reliable, compliant, and future-proof Linux Server choice
+  that ensures the enterprise's business continuity. It is the secure and
+  adaptable OS for long-term supported, innovation-ready infrastructure running
+  business-critical workloads on-premises, in the cloud, and at the edge."
+icon: SUSE.svg
+# Do not manually change any translations! See README.md for more details.
+translations:
+  description:
+    ca: Una opció de servidor de Linux oberta, fiable, compatible i a prova del
+      futur que garanteix la continuïtat del negoci de l'empresa. És el sistema
+      operatiu segur i adaptable per a una infraestructura amb suport a llarg
+      termini i preparada per a la innovació que executa càrregues de treball
+      crítiques per a l'empresa a les instal·lacions, al núvol i a l'última.
+    cs: Otevřená, spolehlivá, kompatibilní a perspektivní volba linuxového serveru,
+      která zajišťuje kontinuitu podnikání podniku. Je to bezpečný a
+      přizpůsobivý operační systém pro dlouhodobě podporovanou infrastrukturu
+      připravenou na inovace, na které běží kritické podnikové úlohy v lokálním
+      prostředí, v cloudu i na okraji sítě.
+    de: Ein offener, zuverlässiger, kompatibler und zukunftssicherer Linux-Server,
+      der die Geschäftskontinuität des Unternehmens gewährleistet. Es ist das
+      sichere und anpassungsfähige Betriebssystem für eine langfristig
+      unterstützte, innovationsbereite Infrastruktur, auf der geschäftskritische
+      Arbeitslasten vor Ort, in der Cloud und am Netzwerkrand ausgeführt werden.
+    es: Una opción de servidor Linux abierta, confiable, compatible y preparada para
+      el futuro que garantiza la continuidad del negocio de la empresa. Es el
+      sistema operativo seguro y adaptable para una infraestructura lista para
+      la innovación y con soporte a largo plazo que ejecuta cargas de trabajo
+      críticas para el negocio en las instalaciones, en la nube y en el borde.
+    fi: Avoin, luotettava, määräysten mukainen ja tulevaisuutta varten valmis
+      Linux-palvelin, joka varmistaa yrityksen liiketoiminnan jatkuvuuden. Se on
+      tietoturvallinen, mukautuva, pitkään tuettu uudistamista tukeva
+      infrastuktuurikäyttöjärjestelmä, jolla voidaan suorittaa
+      liiketoimintakriittisiä työkuormia omissa tiloissa, pilvessä tai verkon
+      reunalaitteissa.
+    fr: Choix de serveur Linux ouvert, fiable, conforme et à l'épreuve du temps qui
+      garantit la continuité des activités de l'entreprise. C'est le système
+      d'exploitation sûr et adaptable pour une infrastructure prise en charge
+      sur le long terme et prête pour l'innovation, qui exécute des charges de
+      travail critiques sur site, dans le cloud et à la périphérie.
+    he: הפצת שרתי לינוקס פתוחה, יציבה, עומדת בתקינה ועמידה לאורך זמן אשר מספקת
+      המשכיות של עסקי התאגיד או המיזם. היא בטוחה וניתנת להתאמה, נכונה לחידושים
+      ומהווה תשתית למשימות עסקיות קריטיות במתחם העבודה, בענן, ובקצוות.
+    id: Pilihan Server Linux yang terbuka, andal, sesuai standar, dan siap
+      menghadapi masa depan, yang memastikan kelangsungan bisnis perusahaan.
+      Sistem operasi ini aman dan fleksibel untuk infrastruktur yang didukung
+      jangka panjang, siap berinovasi, dan dapat menjalankan beban kerja penting
+      bisnis, baik di lokasi (on-premises), cloud, maupun edge.
+    it: Una scelta per server Linux aperta, affidabile, conforme e a prova di futuro
+      che garantisce la continuità aziendale dell'impresa. È il sistema
+      operativo sicuro e adattabile per infrastrutture supportate a lungo
+      termine e pronte per l'innovazione, che eseguono carichi di lavoro critici
+      per il business in locale, nel cloud e a livello di edge.
+    ja: オープンで信頼性が高く、各種の標準にも準拠し、将来性とビジネスの継続性を支援する Linux
+      サーバです。長期のサポートが提供されていることから、安全性と順応性に優れ、オンプレミスからクラウド、エッジ環境に至るまで、様々な場所で重要なビジネス処理をこなすことのできる革新性の高いインフラストラクチャです。
+    nl: Een open, betrouwbare, compliant en toekomstbestendige Linux Server keuze
+      die ervoor zorgt voor continuïteit in de enterprise business. Het is een
+      veilig en aanpasbaar besturingssysteem met langdurige ondersteuning,
+      innovatie-klaar infrastructuur om bedrijfs-kritische werklasten op locatie
+      te draaien, in de cloud en op de edge.
+    pt_BR: Uma escolha de servidor Linux aberta, confiável, compatível e à prova do
+      futuro que garante a continuidade dos negócios da empresa. É o SO seguro e
+      adaptável para infraestrutura com suporte de longo prazo e pronta para
+      inovação, executando cargas de trabalho críticas para os negócios no
+      local, na nuvem e na borda.
+    ru: Открытая, надёжная и перспективная серверная ОС Linux для обеспечения
+      непрерывности бизнеса. Безопасна, гибка и подходит для критически важных
+      нагрузок — на локальных серверах, в облаке и на периферии.
+    sv: Ett öppet, pålitligt, kompatibelt och framtidssäkert Linux-serverval som
+      säkerställer företagets affärskontinuitet. Det är det säkra och
+      anpassningsbara operativsystemet för långsiktigt stödd, innovationsfärdig
+      infrastruktur som kör affärskritiska arbetsbelastningar på plats, i molnet
+      och vid kanten.
+    tr: İşletmenin iş sürekliliğini garanti eden açık, güvenilir, uyumlu ve geleceğe
+      dönük bir Linux Sunucu seçeneği. Uzun vadeli desteklenen, inovasyona hazır
+      altyapı için güvenli ve uyarlanabilir işletim sistemidir. Şirket içinde,
+      bulutta ve uçta iş açısından kritik iş yüklerini çalıştırır.
+    uk: Відкритий, надійний, сумісний і перспективний вибір Linux для сервера, що
+      забезпечує неперервність бізнесу підприємства. Це безпечна й адаптована ОС
+      для довгострокової підтримуваної, готової до інновацій інфраструктури, що
+      виконує критично важливі для бізнесу робочі навантаження в приміщеннях, у
+      хмарі та Edge.
+    zh_CN: 开放、可靠、合规且面向未来的 Linux
+      服务器系统，旨在确保企业业务持续运作。作为安全和可适应的操作系统，它适用于本地、云端或边缘计算平台的关键业务工作负载，运行在需要长期支持、容许创新的基础设施之上。
+    zh_TW: 一個開放、可靠、符合標準且具未來適應性的 Linux
+      伺服器系統，能確保企業業務的持續運作。它是一個安全且具備適應力的作業系統，適用於受到長期支援、具備創新彈性並用於在內部、雲端與邊緣環境中執行關鍵業務工作負載的基礎架構。
+software:
+  installation_repositories: []
+  installation_labels:
+    - label: SLES160-x86_64
+      archs: x86_64
+    - label: SLES160-arch64
+      archs: aarch64
+    - label: SLES160-s390x
+      archs: s390
+    - label: SLES160-ppc64
+      archs: ppc
+
+  mandatory_patterns:
+    - bootloader
+  optional_patterns: [] # no optional pattern shared
+  user_patterns:
+    - cockpit
+    - sles_sap_minimal_sap
+    - fips
+    - name: selinux
+      selected: true
+    - documentation
+    - sw_management
+    - container_runtime_docker
+    - container_runtime_podman
+    - dhcp_dns_server
+    - directory_server
+    - file_server
+    - gateway_server
+    - kvm_server
+    - kvm_tools
+    - lamp_server
+    - mail_server
+    - gnome
+    - gnome_internet
+    - devel_basis
+    - devel_kernel
+    - oracle_server
+    - print_server
+  mandatory_packages:
+    - NetworkManager
+    # bsc#1241224, bsc#1224868 avoid probe DHCP over all ethernet devices and ignore carrier
+    - NetworkManager-config-server
+    - sudo-policy-wheel-auth-self # explicit wheel group policy to conform new auth model
+  optional_packages: []
+  base_product: SLES
+
+security:
+  lsm: selinux
+  available_lsms:
+    selinux:
+      patterns:
+        - selinux
+    none:
+      patterns: null
+
+modes:
+  - id: traditional
+    name: Traditional
+    description: Traditional system
+
+    software:
+      mandatory_patterns:
+        - enhanced_base
+
+    storage:
+      space_policy: delete
+      volumes:
+        - "/"
+        - "swap"
+      volume_templates:
+        - mount_path: "/"
+          filesystem: btrfs
+          btrfs:
+            snapshots: true
+            read_only: false
+            default_subvolume: "@"
+            subvolumes:
+              - path: home
+              - path: opt
+              - path: root
+              - path: srv
+              - path: usr/local
+              # Unified var subvolume - https://lists.opensuse.org/opensuse-packaging/2017-11/msg00017.html
+              - path: var
+                copy_on_write: false
+              # Architecture specific subvolumes
+              - path: boot/grub2/arm64-efi
+                archs: aarch64
+              - path: boot/grub2/arm-efi
+                archs: arm
+              - path: boot/grub2/i386-pc
+                archs: x86_64
+              - path: boot/grub2/powerpc-ieee1275
+                archs: ppc,!board_powernv
+              - path: boot/grub2/s390x-emu
+                archs: s390
+              - path: boot/grub2/x86_64-efi
+                archs: x86_64
+              - path: boot/grub2/riscv64-efi
+                archs: riscv64
+          size:
+            auto: true
+          outline:
+            required: true
+            filesystems:
+              - btrfs
+              - ext2
+              - ext3
+              - ext4
+              - xfs
+            auto_size:
+              base_min: 5 GiB
+              base_max: 15 GiB
+              snapshots_increment: 150%
+              max_fallback_for:
+                - "/home"
+            snapshots_configurable: true
+        - mount_path: "swap"
+          filesystem: swap
+          size:
+            min: 1 GiB
+            max: 2 GiB
+          outline:
+            required: false
+            filesystems:
+              - swap
+        - mount_path: "/home"
+          filesystem: xfs
+          size:
+            auto: false
+            min: 5 GiB
+            max: unlimited
+          outline:
+            required: false
+            filesystems:
+              - btrfs
+              - ext2
+              - ext3
+              - ext4
+              - xfs
+        - filesystem: xfs
+          size:
+            auto: false
+            min: 512 MiB
+          outline:
+            required: false
+            filesystems:
+              - btrfs
+              - ext2
+              - ext3
+              - ext4
+              - xfs
+              - vfat
+
+  - id: immutable
+    name: Immutable
+    description: Immutable system with snapshots
+
+    software:
+      mandatory_patterns:
+        - transactional_base
+
+    storage:
+      space_policy: delete
+      volumes:
+        - "/"
+        - "/var"
+      volume_templates:
+        - mount_path: "/"
+          filesystem: btrfs
+          btrfs:
+            snapshots: true
+            read_only: true
+            default_subvolume: "@"
+            subvolumes:
+              - path: home
+              - path: opt
+              - path: root
+              - path: srv
+              - path: usr/local
+              - path: boot/writable
+              # Unified var subvolume - https://lists.opensuse.org/opensuse-packaging/2017-11/msg00017.html
+              - path: var
+                copy_on_write: false
+              # Architecture specific subvolumes
+              - path: boot/grub2/arm64-efi
+                archs: aarch64
+              - path: boot/grub2/x86_64-efi
+                archs: x86_64
+          size:
+            auto: true
+          outline:
+            required: true
+            snapshots_configurable: false
+            filesystems:
+              - btrfs
+            auto_size:
+              base_min: 5 GiB
+              base_max: 25 GiB
+              max_fallback_for:
+                - "/var"
+        - mount_path: "/var"
+          filesystem: btrfs
+          mount_options:
+            - "x-initrd.mount"
+            - "nodatacow"
+          size:
+            auto: false
+            min: 5 GiB
+          outline:
+            required: false
+            filesystems:
+              - btrfs

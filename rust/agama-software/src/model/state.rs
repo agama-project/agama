@@ -365,7 +365,10 @@ impl<'a> SoftwareStateBuilder<'a> {
         }
 
         SoftwareState {
-            product: software.base_product.clone(),
+            product: software
+                .base_product
+                .clone()
+                .expect("Expected a base product to be defined"),
             repositories,
             resolvables,
             registration: None,
@@ -730,6 +733,7 @@ mod tests {
         let mut config = build_user_config(None);
         config.product = ProductConfig {
             id: Some("SLES".to_string()),
+            mode: None,
             registration_code: Some("123456".to_string()),
             registration_url: Some(Url::parse("https://scc.suse.com").unwrap()),
             registration_email: Some("jane.doe@example.net".to_string()),

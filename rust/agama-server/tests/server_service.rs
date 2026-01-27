@@ -62,7 +62,7 @@ impl AsyncTestContext for Context {
 }
 
 async fn select_product(client: &Client) -> Result<(), Box<dyn Error>> {
-    let json = r#"{"product": {"id": "SLES"}}"#;
+    let json = r#"{"product": {"id": "SLES", "mode": "traditional"}}"#;
     let request = Request::builder()
         .uri("/config")
         .header("Content-Type", "application/json")
@@ -234,7 +234,8 @@ async fn test_patch_config_success(ctx: &mut Context) -> Result<(), Box<dyn Erro
 
     let body = body_to_string(response.into_body()).await;
     assert!(body.contains(r#""l10n":{"keymap":"en"}"#));
-    assert!(body.contains(r#""product":{"id":"SLES"}"#));
+    dbg!(&body);
+    assert!(body.contains(r#""product":{"id":"SLES","mode":"traditional"}"#));
 
     Ok(())
 }

@@ -479,19 +479,15 @@ impl Service {
     }
 
     fn update_product(&mut self, config: &Config) -> Result<(), Error> {
-        let product_id = config
-            .software
-            .as_ref()
-            .and_then(|s| s.product.as_ref())
-            .and_then(|p| p.id.as_ref());
+        let product = config.software.as_ref().and_then(|s| s.product.as_ref());
 
-        if let Some(id) = product_id {
-            if let Some(product_spec) = self.products.find(&id) {
+        if let Some(product) = product {
+            if let Some(id) = &product.id {
+                let mode = product.mode.as_ref().map(|m| m.as_str());
+                tracing::debug!("Setting product and mode to {} and {:?}", id, mode);
+                let product_spec = self.products.find(&id, mode)?;
                 let product = RwLock::new(product_spec.clone());
                 self.product = Some(Arc::new(product));
-            } else {
-                self.product = None;
-                tracing::warn!("Unknown product '{id}'");
             }
         }
 

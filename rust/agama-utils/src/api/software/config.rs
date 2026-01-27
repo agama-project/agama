@@ -61,6 +61,7 @@ pub struct AddonConfig {
 pub struct ProductConfig {
     /// ID of the product to install (e.g., "ALP", "Tumbleweed", etc.)
     pub id: Option<String>,
+    pub mode: Option<String>,
     pub registration_code: Option<String>,
     pub registration_email: Option<String>,
     pub registration_url: Option<Url>,
@@ -189,6 +190,7 @@ mod tests {
         let mut updated = Config {
             product: Some(ProductConfig {
                 id: Some("product1".to_string()),
+                mode: None,
                 registration_code: Some("reg1".to_string()),
                 registration_email: None,
                 registration_url: None,
@@ -219,6 +221,7 @@ mod tests {
         let original = Config {
             product: Some(ProductConfig {
                 id: Some("product2".to_string()),
+                mode: None,
                 registration_code: None,
                 registration_email: Some("email2@a.com".to_string()),
                 registration_url: None,
@@ -250,6 +253,7 @@ mod tests {
 
         let expected_product = ProductConfig {
             id: Some("product1".to_string()),
+            mode: None,
             registration_code: Some("reg1".to_string()),
             registration_email: Some("email2@a.com".to_string()),
             registration_url: None,
