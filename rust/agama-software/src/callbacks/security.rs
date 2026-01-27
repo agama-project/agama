@@ -3,16 +3,24 @@ use agama_utils::{actor::Handler, api::question::QuestionSpec, question};
 use i18n_format::i18n_format;
 use zypp_agama::callbacks::security;
 
-use crate::callbacks::ask_software_question;
+use crate::{callbacks::ask_software_question, state::RepoKey};
 
 #[derive(Clone)]
 pub struct Security {
     questions: Handler<question::Service>,
+    trusted_gpg_keys: Vec<RepoKey>,
 }
 
 impl Security {
     pub fn new(questions: Handler<question::Service>) -> Self {
-        Self { questions }
+        Self {
+            questions,
+            trusted_gpg_keys: vec![],
+        }
+    }
+
+    pub fn set_trusted_gpg_keys(&mut self, trusted_gpg_keys: Vec<RepoKey>) {
+        self.trusted_gpg_keys = trusted_gpg_keys;
     }
 }
 
@@ -53,7 +61,7 @@ impl security::Callback for Security {
         key_id: String,
         key_name: String,
         key_fingerprint: String,
-        _repository_alias: String,
+        repository_alias: String,
     ) -> security::GpgKeyTrust {
         tracing::info!(
             "accept_key callback: key_id='{}', key_name='{}', key_fingerprint='{}'",
@@ -61,7 +69,16 @@ impl security::Callback for Security {
             key_name,
             key_fingerprint,
         );
-        // TODO: support for extra_repositories with specified gpg key checksum
+
+        let predefined = self
+            .trusted_gpg_keys
+            .iter()
+            .any(|key| key.alias == repository_alias && key.fingerprint == key_fingerprint);
+        if predefined {
+            tracing::info!("GPG key trusted as specified in profile");
+            return security::GpgKeyTrust::Import;
+        }
+
         let text = i18n_format!(
             // TRANSLATORS: substituting: key ID, (key name), fingerprint
             "The key {0} ({1}) with fingerprint {2} is unknown. \
