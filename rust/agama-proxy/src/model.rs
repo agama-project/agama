@@ -287,11 +287,11 @@ mod tests {
             no_proxy: Some("".to_string()),
         };
 
-        let path = "test_proxy_config";
+        let file = tempfile::NamedTempFile::new().unwrap();
+        let path = file.path();
         config.write_to(path).unwrap();
 
         let content = std::fs::read_to_string(path).unwrap();
-        std::fs::remove_file(path).unwrap();
 
         assert!(content.contains("PROXY_ENABLED=\"yes\""));
         assert!(content.contains("HTTP_PROXY=\"http://proxy.example.com\""));
@@ -302,12 +302,11 @@ mod tests {
 
     #[test]
     fn test_write_preserve_content() {
-        let path = "test_proxy_config_preserve";
+        let mut file = tempfile::NamedTempFile::new().unwrap();
 
         // Create initial file with some extra content
         {
             use std::io::Write;
-            let mut file = std::fs::File::create(path).unwrap();
             writeln!(file, "SOME_OTHER_VAR=\"value\"").unwrap();
             writeln!(file, "HTTP_PROXY=\"old_value\"").unwrap();
             writeln!(file, "# A comment").unwrap();
@@ -322,10 +321,9 @@ mod tests {
             no_proxy: None,
         };
 
-        config.write_to(path).unwrap();
+        config.write_to(file.path()).unwrap();
 
-        let content = std::fs::read_to_string(path).unwrap();
-        std::fs::remove_file(path).unwrap();
+        let content = std::fs::read_to_string(file.path()).unwrap();
 
         assert!(content.contains("SOME_OTHER_VAR=\"value\""));
         assert!(content.contains("HTTP_PROXY=\"http://new.proxy.com\""));
@@ -336,10 +334,9 @@ mod tests {
 
     #[test]
     fn test_read() {
-        let path = "test_proxy_config_read";
+        let mut file = tempfile::NamedTempFile::new().unwrap();
         {
             use std::io::Write;
-            let mut file = std::fs::File::create(path).unwrap();
             writeln!(file, "PROXY_ENABLED=\"yes\"").unwrap();
             writeln!(file, "HTTP_PROXY=\"http://proxy.example.com\"").unwrap();
             writeln!(file, "FTP_PROXY=\"ftp://proxy.example.com\"").unwrap();
@@ -349,8 +346,7 @@ mod tests {
             writeln!(file, "OTHER_VAR=\"ignore\"").unwrap();
         }
 
-        let config = ProxyConfig::read_from(path).unwrap();
-        std::fs::remove_file(path).unwrap();
+        let config = ProxyConfig::read_from(file.path()).unwrap();
 
         assert_eq!(config.enabled, Some(true));
         assert!(config.proxies.contains(&Proxy::new(
