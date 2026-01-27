@@ -25,9 +25,9 @@ import { screen, waitFor, within } from "@testing-library/react";
 import { installerRender, mockNavigateFn, mockProduct } from "~/test-utils";
 import { useSystem } from "~/hooks/model/system";
 import { useSystem as useSystemSoftware } from "~/hooks/model/system/software";
-import { Product } from "~/types/software";
 import { ROOT } from "~/routes/paths";
 import ProductSelectionPage from "./ProductSelectionPage";
+import { Product } from "~/model/system";
 
 const tumbleweed: Product = {
   id: "Tumbleweed",
@@ -35,6 +35,7 @@ const tumbleweed: Product = {
   icon: "tumbleweed.svg",
   description: "Tumbleweed description...",
   registration: false,
+  modes: [],
 };
 
 const microOs: Product = {
@@ -44,6 +45,7 @@ const microOs: Product = {
   description: "MicroOS description",
   registration: false,
   license: "fake.license",
+  modes: [],
 };
 
 const mockPatchConfigFn = jest.fn();

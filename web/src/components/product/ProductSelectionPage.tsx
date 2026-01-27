@@ -76,6 +76,8 @@ type ProductFormProductOptionProps = {
   isChecked: boolean;
   /** Callback fired when the product is selected */
   onChange: () => void;
+  /** Callback fired when the mode is changed */
+  onModeChange: (mode: string) => void;
 };
 
 /**

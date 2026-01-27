@@ -24,9 +24,9 @@ import React from "react";
 import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import { useSystem } from "~/hooks/model/system";
-import { Product } from "~/types/software";
 import { PRODUCT as PATHS } from "~/routes/paths";
 import ChangeProductOption from "./ChangeProductOption";
+import { Product } from "~/model/system";
 
 const tumbleweed: Product = {
   id: "Tumbleweed",
@@ -34,6 +34,7 @@ const tumbleweed: Product = {
   icon: "tumbleweed.svg",
   description: "Tumbleweed description...",
   registration: false,
+  modes: [],
 };
 
 const microos: Product = {
@@ -42,6 +43,7 @@ const microos: Product = {
   icon: "MicroOS.svg",
   description: "MicroOS description",
   registration: false,
+  modes: [],
 };
 
 // let registrationInfoMock: RegistrationInfo;

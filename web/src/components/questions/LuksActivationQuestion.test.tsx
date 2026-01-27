@@ -27,9 +27,9 @@ import { useSystem } from "~/hooks/model/system";
 import { useProductInfo } from "~/hooks/model/config/product";
 import { installerRender } from "~/test-utils";
 import { AnswerCallback, Question, FieldType } from "~/model/question";
-import { Product } from "~/types/software";
 import type { Locale, Keymap } from "~/model/system/l10n";
 import LuksActivationQuestion from "~/components/questions/LuksActivationQuestion";
+import { Product } from "~/model/system";
 
 let question: Question;
 const questionMock: Question = {
@@ -50,6 +50,7 @@ const tumbleweed: Product = {
   icon: "tumbleweed.svg",
   description: "Tumbleweed description...",
   registration: false,
+  modes: [],
 };
 
 const locales: Locale[] = [
