@@ -61,7 +61,7 @@ import { useProductInfo } from "~/hooks/model/config/product";
 import { useSystem } from "~/hooks/model/system";
 import { useSystem as useSystemSoftware } from "~/hooks/model/system/software";
 import { ROOT } from "~/routes/paths";
-import { Product } from "~/model/system";
+import { Mode, Product } from "~/model/system";
 import { n_, _ } from "~/i18n";
 
 import pfTextStyles from "@patternfly/react-styles/css/utilities/Text/text";
@@ -318,7 +318,7 @@ type ProductFormProps = {
   /** The product currently configured in the system */
   currentProduct?: Product;
   /** Callback fired when the form is submitted with a selected product */
-  onSubmit: (product: Product) => void;
+  onSubmit: (product: Product, mode: Mode) => void;
   /** Whether the form was already submitted */
   isSubmitted: boolean;
 };
@@ -492,24 +492,6 @@ const ProductSelectionContent = () => {
     // FIXME: use Mode as expected
     patchConfig({ product: { id: selectedProduct.id, mode: selectedMode } });
   };
-
-  // FIXME: Example data, remove
-  products[1].modes = [
-    {
-      id: "t",
-      name: _("Traditional"),
-      description: _(
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam ac eros in tortor vulputate sollicitudin. Fusce euismod nisl a nisl vehicula, sit amet tempor turpis ullamcorper. Integer euismod ipsum sed nisi vehicula, sed vehicula purus maximus. Cras hendrerit dui nec ante scelerisque, vel vestibulum erat auctor. Integer non mauris euismod, scelerisque nulla in, dictum libero.",
-      ),
-    },
-    {
-      id: "i",
-      name: _("Inmutable"),
-      description: _(
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam ac eros in tortor vulputate sollicitudin. Fusce euismod nisl a nisl vehicula, sit amet tempor turpis ullamcorper. Integer euismod ipsum sed nisi vehicula, sed vehicula purus maximus. Cras hendrerit dui nec ante scelerisque, vel vestibulum erat auctor. Integer non mauris euismod, scelerisque nulla in, dictum libero.",
-      ),
-    },
-  ];
 
   const introText = n_(
     "Select a product and confirm your choice.",
