@@ -389,6 +389,7 @@ dependencies = [
  "agama-locale-data",
  "agama-transfer",
  "async-trait",
+ "camino",
  "cidr",
  "fluent-uri 0.4.1",
  "fs-err",

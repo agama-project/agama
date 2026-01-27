@@ -44,20 +44,42 @@ pub fn gettext_noop(text: &str) -> &str {
 }
 
 pub mod helpers {
-    use std::{fs, io, path::Path};
+    use camino::Utf8Path;
+    use fs_err as fs;
 
-    /// Copy the files in the `src` directory to `dst`.
+    /// Recursively copies a directory.
     ///
-    /// It does not perform a recursive copy.
-    pub fn copy_dir_all(src: impl AsRef<Path>, dst: impl AsRef<Path>) -> io::Result<()> {
-        fs::create_dir_all(&dst)?;
-
-        for entry in fs::read_dir(src)? {
+    /// It copies the content of the `source` directory to the `target` directory.
+    /// It preserves the directory structure and the files content.
+    ///
+    /// Symlinks are recreated pointing to the same target as the original one.
+    pub fn copy_dir_all(source: &Utf8Path, target: &Utf8Path) -> Result<(), std::io::Error> {
+        fs::create_dir_all(&target)?;
+        for entry in source.read_dir_utf8()? {
             let entry = entry?;
-            let file_type = entry.file_type()?;
-
-            if file_type.is_file() {
-                std::fs::copy(entry.path(), dst.as_ref().join(entry.file_name()))?;
+            let ty = fs::symlink_metadata(entry.path())?;
+            let dst = target.join(entry.file_name());
+            if ty.is_dir() {
+                copy_dir_all(entry.path(), &dst)?;
+            } else if ty.is_symlink() {
+                // we need special handling of symlinks as libzypp do
+                // some tricks with danglinks symlinks and we should not
+                // break it
+                let link_dest = entry.path().read_link_utf8()?;
+                tracing::info!(
+                    "Recreating symlink from {} to {} pointing to {}",
+                    entry.path().to_string(),
+                    dst.to_string(),
+                    link_dest.to_string(),
+                );
+                fs_err::os::unix::fs::symlink(link_dest, &dst)?;
+            } else {
+                tracing::info!(
+                    "Copying from {} to {}",
+                    entry.path().to_string(),
+                    dst.to_string()
+                );
+                fs::copy(entry.path(), &dst)?;
             }
         }
 
