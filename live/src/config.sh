@@ -196,10 +196,10 @@ if [[ "$kiwi_profiles" == *MINI* ]]; then
   rm -rf /usr/lib/modules/*/kernel/net/bluetooth
 fi
 
-# Remove the SUSEConnect CLI tool from the openSUSE images and the mini PXE image,
-# keep it in the SLE images, it might be useful for testing/debugging
-# (Agama uses libsuseconnect.so directly via the Ruby bindings and does not need the CLI,
-# registration in theory would be still possible even in the openSUSE images)
+# Remove the SUSEConnect CLI tool from the openSUSE images and the mini PXE
+# image, keep it in the SLE images, it might be useful for testing/debugging
+# (Agama uses libsuseconnect.so directly and does not need the CLI, registration
+# in theory would be still possible even in the openSUSE images)
 if [[ "$kiwi_profiles" == *MINI* ]] || [[ "$kiwi_profiles" == *Leap* ]] || [[ "$kiwi_profiles" == *openSUSE* ]]; then
   rm -f /usr/bin/suseconnect
 fi
@@ -210,10 +210,10 @@ fi
 # Clean-up logs
 rm /var/log/zypper.log /var/log/zypp/history
 
-# reduce the "vim-data" content, this package is huge (37MB unpacked!), keep only
-# support for JSON (for "agama config edit") and Ruby (fixing/debugging the Ruby
-# service)
-rpm -ql vim-data | grep -v -e '/ruby.vim$' -e '/json.vim$' -e colors | xargs rm 2>/dev/null || true
+# reduce the "vim-data" content, this package is huge (37MB unpacked!), keep
+# only support for JSON (for "agama config edit"), YAML (the product definition
+# files) and Ruby (fixing/debugging the Ruby service)
+rpm -ql vim-data | grep -v -e '/ruby.vim$' -e '/json.vim$' -e '/yaml.vim$' -e '/bash.vim$' -e colors | xargs rm 2>/dev/null || true
 
 du -h -s /usr/{share,lib}/locale/
 
