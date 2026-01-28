@@ -27,6 +27,10 @@ use serde_json::Value;
 pub struct Config(pub Value);
 
 impl Merge for Config {
+    // Merge by using "ignore" strategy, that is, lhs takes precedence over rhs.
+    // Note that the new config is used as lhs, for example: new_config.merge(old_config). This
+    // implies we want to keep the current values of lhs and only the missing values are taken from
+    // rhs.
     fn merge(&mut self, rhs: Self) {
         let lhs_value = &mut self.0;
         let rhs_value = rhs.0;
