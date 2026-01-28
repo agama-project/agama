@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Jan 28 13:59:00 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+
+- Display version "16.1" in the Live ISO boot menu
+  (gh#agama-project/agama#3089)
+
+-------------------------------------------------------------------
 Fri Jan  9 14:44:01 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Version 19.pre
