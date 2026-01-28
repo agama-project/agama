@@ -35,6 +35,12 @@ use url::Url;
 
 use crate::{model::software_selection::SoftwareSelection, Resolvable, ResolvableType};
 
+#[derive(Clone, Debug)]
+pub struct RepoKey {
+    pub alias: String,
+    pub fingerprint: String,
+}
+
 /// Represents the wanted software configuration.
 ///
 /// It includes the list of repositories, selected resolvables, configuration
@@ -50,6 +56,8 @@ pub struct SoftwareState {
     pub options: SoftwareOptions,
     pub registration: Option<RegistrationState>,
     pub allow_registration: bool,
+    pub trusted_gpg_keys: Vec<RepoKey>,
+    pub unsigned_repos: Vec<String>,
 }
 
 impl SoftwareState {
@@ -62,6 +70,8 @@ impl SoftwareState {
             options: Default::default(),
             registration: None,
             allow_registration: false,
+            trusted_gpg_keys: vec![],
+            unsigned_repos: vec![],
         }
     }
 }
@@ -218,6 +228,23 @@ impl<'a> SoftwareStateBuilder<'a> {
         if let Some(repositories) = &config.extra_repositories {
             let extra = repositories.iter().map(Repository::from);
             state.repositories.extend(extra);
+
+            // create map for gpg signatures
+            for repo in repositories {
+                if let Some(gpg_fingerprints) = &repo.gpg_fingerprints {
+                    for fingerprint in gpg_fingerprints {
+                        state.trusted_gpg_keys.push(RepoKey {
+                            alias: repo.alias.clone(),
+                            // remove all whitespaces to sanitize input
+                            fingerprint: fingerprint.replace(" ", ""),
+                        });
+                    }
+                }
+
+                if repo.allow_unsigned == Some(true) {
+                    state.unsigned_repos.push(repo.alias.clone());
+                }
+            }
         }
 
         if let Some(patterns) = &config.patterns {
@@ -374,6 +401,8 @@ impl<'a> SoftwareStateBuilder<'a> {
             registration: None,
             options: Default::default(),
             allow_registration: self.product.registration,
+            trusted_gpg_keys: vec![],
+            unsigned_repos: vec![],
         }
     }
 }

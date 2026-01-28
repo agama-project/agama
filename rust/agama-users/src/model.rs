@@ -24,7 +24,7 @@ use agama_utils::api::users::Config;
 use std::fs;
 use std::fs::{OpenOptions, Permissions};
 use std::io::Write;
-use std::os::unix::fs::PermissionsExt;
+use std::os::unix::fs::{OpenOptionsExt, PermissionsExt};
 use std::path::{Path, PathBuf};
 use std::process::{Command, Stdio};
 
@@ -98,6 +98,8 @@ impl Model {
         // store ssh key for root if any
         if let Some(ref root_ssh_key) = root.ssh_public_key {
             self.update_authorized_keys(root_ssh_key)?;
+            self.enable_sshd_service()?;
+            self.open_ssh_port()?;
         }
 
         Ok(())
@@ -142,15 +144,83 @@ impl Model {
 
     /// Updates root's authorized_keys file with SSH key
     fn update_authorized_keys(&self, ssh_key: &str) -> Result<(), service::Error> {
+        let mode = 0o644;
         let file_name = self.install_dir.join("root/.ssh/authorized_keys");
         let mut authorized_keys_file = OpenOptions::new()
             .create(true)
             .append(true)
+            // sets mode only for a new file
+            .mode(mode)
             .open(&file_name)?;
 
-        fs::set_permissions(&file_name, Permissions::from_mode(0o600))?;
+        // sets mode also for an existing file
+        fs::set_permissions(&file_name, Permissions::from_mode(mode))?;
 
         writeln!(authorized_keys_file, "{}", ssh_key.trim())?;
+
+        Ok(())
+    }
+
+    /// Enables sshd service in the target system
+    fn enable_sshd_service(&self) -> Result<(), service::Error> {
+        let systemctl = self
+            .chroot_command()
+            .args(["systemctl", "enable", "sshd.service"])
+            .output()?;
+
+        if !systemctl.status.success() {
+            tracing::error!("Enabling the sshd service failed");
+            return Err(service::Error::CommandFailed(format!(
+                "Cannot enable the sshd service: {}",
+                systemctl.status
+            )));
+        } else {
+            tracing::info!("The sshd service has been successfully enabled");
+        }
+
+        Ok(())
+    }
+
+    /// Opens the SSH port in firewall in the target system
+    fn open_ssh_port(&self) -> Result<(), service::Error> {
+        let firewall_cmd = self
+            .chroot_command()
+            .args(["firewall-offline-cmd", "--add-service=ssh"])
+            .output();
+
+        match firewall_cmd {
+            Ok(output) => {
+                if !output.status.success() {
+                    tracing::error!(
+                        "Opening SSH port in firewall failed: exit: {}, stderr: {}",
+                        output.status,
+                        String::from_utf8_lossy(&output.stderr)
+                    );
+
+                    return Err(service::Error::CommandFailed(String::from(
+                        "Cannot open SSH port in firewall",
+                    )));
+                } else {
+                    tracing::info!("The SSH port has been successfully opened in the firewall");
+                }
+            }
+
+            Err(e) => {
+                // ignore the error and just log a warning if the firewall is not installed,
+                // in that case we do need to open the port
+                if e.kind() == std::io::ErrorKind::NotFound {
+                    tracing::warn!(
+                        "Command firewall-offline-cmd not found, firewall not installed?"
+                    );
+                } else {
+                    tracing::error!("Running firewall-offline-cmd failed: {}", e);
+
+                    return Err(service::Error::CommandFailed(String::from(
+                        "Cannot open SSH port in the firewall",
+                    )));
+                }
+            }
+        }
 
         Ok(())
     }
