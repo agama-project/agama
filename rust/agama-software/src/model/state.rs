@@ -235,7 +235,8 @@ impl<'a> SoftwareStateBuilder<'a> {
                     for fingerprint in gpg_fingerprints {
                         state.trusted_gpg_keys.push(RepoKey {
                             alias: repo.alias.clone(),
-                            fingerprint: fingerprint.clone(),
+                            // remove all whitespaces to sanitize input
+                            fingerprint: fingerprint.replace(" ", ""),
                         });
                     }
                 }
