@@ -30,3 +30,16 @@ pub struct DiscoverConfig {
     pub initiator_username: Option<String>,
     pub initiator_password: Option<String>,
 }
+
+impl DiscoverConfig {
+    pub fn new(address: &str, port: u32) -> Self {
+        Self {
+            address: String::from(address),
+            port,
+            username: None,
+            password: None,
+            initiator_username: None,
+            initiator_password: None,
+        }
+    }
+}

@@ -21,10 +21,97 @@
 pub mod service;
 pub use service::{Service, Starter};
 
+pub mod client;
 pub mod message;
+pub mod test_utils;
 
-pub use agama_storage as storage;
-
-mod client;
 mod dbus;
 mod monitor;
+
+use agama_storage as storage;
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::test_utils::TestClient;
+    use agama_utils::{
+        actor::Handler,
+        api::{iscsi::Config, iscsi::DiscoverConfig, Event},
+        issue, progress, test,
+    };
+    use test_context::{test_context, AsyncTestContext};
+    use tokio::sync::broadcast;
+
+    struct Context {
+        handler: Handler<Service>,
+        client: TestClient,
+    }
+
+    impl AsyncTestContext for Context {
+        async fn setup() -> Context {
+            let (events, _) = broadcast::channel::<Event>(16);
+            let connection = test::dbus::connection().await.unwrap();
+            let progress = progress::Service::starter(events.clone()).start();
+            let issues = issue::Service::starter(events.clone()).start();
+            let storage = storage::test_utils::start_service(
+                events.clone(),
+                issues.clone(),
+                progress.clone(),
+                connection.clone(),
+            )
+            .await;
+            let client = TestClient::new();
+            let handler = Service::starter(storage, events, progress, connection)
+                .with_client(client.clone())
+                .start()
+                .await
+                .expect("Could not start the iSCSI service");
+
+            Context { handler, client }
+        }
+    }
+
+    #[test_context(Context)]
+    #[tokio::test]
+    async fn test_discover(ctx: &mut Context) -> Result<(), service::Error> {
+        let message = message::Discover::new(DiscoverConfig::new("192.168.100.10", 3260));
+        ctx.handler.call(message).await?;
+
+        let state = ctx.client.state().await;
+        assert!(state.discovered);
+
+        Ok(())
+    }
+
+    #[test_context(Context)]
+    #[tokio::test]
+    async fn test_get_system(ctx: &mut Context) -> Result<(), service::Error> {
+        let system = ctx.handler.call(message::GetSystem).await?;
+        assert!(system.is_some());
+
+        Ok(())
+    }
+
+    #[test_context(Context)]
+    #[tokio::test]
+    async fn test_set_config(ctx: &mut Context) -> Result<(), service::Error> {
+        let config: Config = serde_json::from_str(
+            r#"
+            {
+                "initiator": "ini.test",
+                "targets": [
+                    { "name": "target.test" }
+                 ]
+            }
+            "#,
+        )
+        .unwrap();
+        let message = message::SetConfig::new(Some(config));
+        ctx.handler.call(message).await?;
+
+        let config = ctx.handler.call(message::GetConfig).await?;
+        assert!(config.is_some());
+
+        Ok(())
+    }
+}

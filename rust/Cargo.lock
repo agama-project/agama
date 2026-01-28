@@ -110,9 +110,11 @@ dependencies = [
  "async-trait",
  "serde",
  "serde_json",
+ "test-context",
  "thiserror 2.0.17",
  "tokio",
  "tokio-stream",
+ "tokio-test",
  "tracing",
  "zbus",
 ]
