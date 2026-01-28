@@ -19,5 +19,3 @@
 // find current contact information at www.suse.com.
 
 pub(crate) mod password;
-pub mod web;
-pub use web::users_service;
