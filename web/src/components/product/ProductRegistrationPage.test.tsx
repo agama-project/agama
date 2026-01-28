@@ -35,12 +35,14 @@ const tw: Product = {
   id: "Tumbleweed",
   name: "openSUSE Tumbleweed",
   registration: false,
+  modes: [],
 };
 
 const sle: Product = {
   id: "sle",
   name: "SLE",
   registration: true,
+  modes: [],
 };
 
 let mockSelectedProduct: Product | undefined;

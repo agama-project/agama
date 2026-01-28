@@ -22,6 +22,7 @@
 
 type Config = {
   id?: string;
+  mode?: string;
   registrationCode?: string;
   registrationEmail?: string;
   registrationUrl?: string;

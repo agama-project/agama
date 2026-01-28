@@ -31,13 +31,13 @@ software:
     - microos_hardware
     - microos_kde_desktop
     - microos_selinux
-  optional_patterns: null
+  optional_patterns: []
   user_patterns:
     - container_runtime
   mandatory_packages:
     - NetworkManager
     - openSUSE-repos-MicroOS
-  optional_packages: null
+  optional_packages: []
   base_product: Kalpa
 
 security:

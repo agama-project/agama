@@ -23,16 +23,17 @@
 import React from "react";
 import { screen, within } from "@testing-library/react";
 import { plainRender, installerRender } from "~/test-utils";
-import { Product } from "~/types/software";
 import { System } from "~/model/system/network";
 import Header from "./Header";
 import { useSystem } from "~/hooks/model/system";
+import { Product } from "~/model/system";
 
 const tumbleweed: Product = {
   id: "Tumbleweed",
   name: "openSUSE Tumbleweed",
   description: "Tumbleweed description...",
   registration: false,
+  modes: [],
 };
 
 const microos: Product = {
@@ -40,6 +41,7 @@ const microos: Product = {
   name: "openSUSE MicroOS",
   description: "MicroOS description",
   registration: false,
+  modes: [],
 };
 
 const network: System = {

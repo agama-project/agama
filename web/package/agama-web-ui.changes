@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Wed Jan 28 11:00:28 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Allow selecting the mode in the product selection screen (jsc#PED-14307).
+
+-------------------------------------------------------------------
 Fri Jan 23 15:34:08 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
 
 - Fixed removing automatically selected recommended patterns

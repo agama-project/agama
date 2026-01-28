@@ -115,7 +115,7 @@ software:
     - microos_defaults
     - microos_hardware
     - microos_selinux
-  optional_patterns: null
+  optional_patterns: []
   user_patterns:
     - container_runtime
     - microos_ra_agent
@@ -123,7 +123,7 @@ software:
   mandatory_packages:
     - NetworkManager
     - openSUSE-repos-MicroOS
-  optional_packages: null
+  optional_packages: []
   base_product: MicroOS
 
 security:

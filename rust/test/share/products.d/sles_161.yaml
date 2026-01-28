@@ -151,8 +151,8 @@ security:
 
 modes:
   - id: standard
-    name: Standard
-    description: Standard system
+    name: Traditional
+    description: Traditional system
 
     software:
       mandatory_patterns:
@@ -250,7 +250,7 @@ modes:
 
   - id: immutable
     name: Immutable
-    description: Immutable system with atomic updates
+    description: Immutable system with snapshots
 
     software:
       mandatory_patterns:

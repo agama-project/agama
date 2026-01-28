@@ -244,16 +244,20 @@
             "Tumbleweed"
           ]
         },
+        "mode": {
+          "description": "The mode from the products.d/foo.yaml file",
+          "type": "string"
+        },
         "registrationCode": {
-          "title": "Product registration code",
+          "description": "Product registration code",
           "type": "string"
         },
         "registrationEmail": {
-          "title": "Product registration email",
+          "description": "Product registration email",
           "type": "string"
         },
         "registrationUrl": {
-          "title": "URL of the registration server",
+          "description": "URL of the registration server",
           "type": "string"
         },
         "addons": {
