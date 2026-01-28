@@ -216,7 +216,7 @@ impl Model {
                     tracing::error!("Running firewall-offline-cmd failed: {}", e);
 
                     return Err(service::Error::CommandFailed(String::from(
-                        "Cannot open SSH port in firewall",
+                        "Cannot open SSH port in the firewall",
                     )));
                 }
             }
