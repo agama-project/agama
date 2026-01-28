@@ -232,9 +232,9 @@ describe Agama::Storage::Manager do
     end
   end
 
-  describe "#product_config=" do
+  describe "#update_product_config" do
     it "sets the product config" do
-      storage.product_config = config
+      storage.update_product_config(config)
       expect(storage.product_config).to eq(config)
       expect(storage.proposal.product_config).to eq(config)
     end
@@ -248,7 +248,7 @@ describe Agama::Storage::Manager do
 
       it "sets env YAST_NO_BLS_BOOT to yes " do
         expect(ENV).to receive(:[]=).with("YAST_NO_BLS_BOOT", "1")
-        storage.product_config = config
+        storage.update_product_config(config)
       end
     end
 
@@ -268,7 +268,60 @@ describe Agama::Storage::Manager do
 
       it "keeps initial env YAST_NO_BLS_BOOT" do
         expect(ENV).to receive(:[]=).with("YAST_NO_BLS_BOOT", "0")
-        storage.product_config = config
+        storage.update_product_config(config)
+      end
+    end
+  end
+
+  describe "#configured?" do
+    before do
+      allow(subject).to receive(:product_config).and_return(product_config)
+      allow(subject).to receive(:config_json).and_return(config_json)
+    end
+
+    let(:product_config) { Agama::Config.new(product_config_json) }
+
+    let(:product_config_json) do
+      {
+        id: "SLES"
+      }
+    end
+
+    let(:config_json) do
+      {
+        storage: {
+          drives: []
+        }
+      }
+    end
+
+    context "if the product config and the config have not changed" do
+      let(:new_product_config_json) { product_config_json.dup }
+      let(:new_config_json) { config_json.dup }
+
+      it "returns true" do
+        result = subject.configured?(new_product_config_json, new_config_json)
+        expect(result).to eq(true)
+      end
+    end
+
+    context "if the product config has changed" do
+      let(:new_product_config_json) { {} }
+      let(:new_config_json) { config_json.dup }
+
+      it "returns false" do
+        result = subject.configured?(new_product_config_json, new_config_json)
+        expect(result).to eq(false)
+      end
+    end
+
+    context "if the config has changed" do
+      let(:new_product_config_json) { product_config_json.dup }
+      let(:new_config_json) { {} }
+
+      it "returns false" do
+        result = subject.configured?(new_product_config_json, new_config_json)
+        expect(result).to eq(false)
       end
     end
   end

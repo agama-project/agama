@@ -8,6 +8,7 @@ edition.workspace = true
 agama-bootloader = { path = "../agama-bootloader" }
 agama-files = { path = "../agama-files" }
 agama-hostname = { path = "../agama-hostname" }
+agama-iscsi = { path = "../agama-iscsi" }
 agama-l10n = { path = "../agama-l10n" }
 agama-network = { path = "../agama-network" }
 agama-security = { path = "../agama-security" }

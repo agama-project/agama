@@ -87,9 +87,17 @@ module Agama
         def configure(serialized_config)
           config_json = JSON.parse(serialized_config, symbolize_names: true)
 
+          # Do not configure if there is no config
+          return unless config_json
+
+          # Do not configure if there is nothing to change.
+          return if manager.configured?(config_json)
+
+          logger.info("Configuring iSCSI")
+
           start_progress(1, _("Configuring iSCSI"))
-          manager.configure(config_json)
-          emit_system_changed
+          system_changed = manager.configure(config_json)
+          emit_system_changed if system_changed
           finish_progress
         end
 
@@ -98,7 +106,10 @@ module Agama
         # @param serialized_options [String] Serialized dicovery options.
         # @return [Number] 0 success; 1 failure.
         def discover(serialized_options)
+          logger.info("Discovering iSCSI targets")
+
           options = JSON.parse(serialized_options, symbolize_names: true)
+
           address = options[:address]
           port = options[:port]
           credentials = {
