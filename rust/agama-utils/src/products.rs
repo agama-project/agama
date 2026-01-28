@@ -63,8 +63,6 @@ pub enum Error {
     UnknownProduct(String),
     #[error("Invalid mode '{1}' for product '{0}'")]
     UnknownMode(String, String),
-    #[error("Mode required for product '{0}'")]
-    ModeRequired(String),
 }
 
 /// Products registry.
@@ -139,12 +137,15 @@ impl Registry {
     /// * `id`: product ID.
     /// * `mode`: product mode. Required only if the product has modes.
     pub fn find(&self, id: &str, mode: Option<&str>) -> Result<ProductSpec, Error> {
+        let mut mode = mode.clone();
         let Some(template) = self.products.iter().find(|p| p.id == id) else {
             return Err(Error::UnknownProduct(id.to_string()));
         };
 
-        if template.has_modes() && mode.is_none() {
-            return Err(Error::ModeRequired(id.to_string()));
+        if mode.is_none() {
+            if let Some(default_mode) = template.modes.first() {
+                mode = Some(default_mode.id.as_str());
+            }
         }
 
         template.to_product_spec(mode)
@@ -539,9 +540,10 @@ mod test {
 
     #[test_context(Context)]
     #[test]
-    fn test_find_product_with_required_mode(ctx: &mut Context) {
-        let product = ctx.registry.find("SLES", None).unwrap_err();
-        assert!(matches!(product, Error::ModeRequired(_)));
+    fn test_find_product_without_mode(ctx: &mut Context) {
+        let product = ctx.registry.find("SLES", None).unwrap();
+        assert_eq!(&product.id, "SLES");
+        assert_eq!(&product.mode.unwrap(), "standard");
     }
 
     #[test_context(Context)]

@@ -1,15 +1,25 @@
-
-Wed Jan 28 12:59:50 UTC 2026 - José Iván López González <jlopez@suse.com>
-
-- Add agama-iscsi service and integrate iSCSI into the new HTTP API
-  (gh#agama-project/agama#3064).
-
 -------------------------------------------------------------------
-Wed Jan 28 13:00:08 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+Wed Jan 28 18:00:08 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
 
 - Added proxy service allowing to configure the proxy through the 
   kernel cmdline proxy argument and with HTTP API
   (gh#agama-project/agama#3069).
+
+-------------------------------------------------------------------
+Wed Jan 28 17:07:32 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Import the security settings correctly (bsc#1257290).
+
+-------------------------------------------------------------------
+Wed Jan 28 16:14:52 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Use the first product mode if none is given (related to jsc#PED-14307).
+
+-------------------------------------------------------------------
+Wed Jan 28 12:59:50 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Add agama-iscsi service and integrate iSCSI into the new HTTP API
+  (gh#agama-project/agama#3064).
 
 -------------------------------------------------------------------
 Wed Jan 28 12:43:05 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>

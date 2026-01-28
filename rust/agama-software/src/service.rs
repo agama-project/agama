@@ -294,6 +294,26 @@ impl Service {
             .map(|url| Url::parse(&url).ok())
             .flatten();
     }
+
+    /// Completes the configuration with the product mode if it is missing.
+    ///
+    /// Agama uses the first available mode (if any) in case the user does not set one.
+    async fn add_product_mode(&mut self, config: &mut Config) {
+        let Some(product_config) = &mut config.product else {
+            return;
+        };
+
+        if product_config.mode.is_some() {
+            return;
+        }
+
+        let Some(selected_product) = &self.product else {
+            return;
+        };
+
+        let selected_product = selected_product.read().await;
+        product_config.mode = selected_product.mode.clone();
+    }
 }
 
 impl Actor for Service {
@@ -323,6 +343,7 @@ impl MessageHandler<message::SetConfig<Config>> for Service {
 
         let mut config = message.config.clone().unwrap_or_default();
         self.add_kernel_cmdline_defaults(&mut config);
+        self.add_product_mode(&mut config).await;
 
         {
             let mut state = self.state.write().await;
