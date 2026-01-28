@@ -5,6 +5,13 @@ Wed Jan 28 12:59:50 UTC 2026 - José Iván López González <jlopez@suse.com>
   (gh#agama-project/agama#3064).
 
 -------------------------------------------------------------------
+Wed Jan 28 13:00:08 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- Added proxy service allowing to configure the proxy through the 
+  kernel cmdline proxy argument and with HTTP API
+  (gh#agama-project/agama#3069).
+
+-------------------------------------------------------------------
 Wed Jan 28 12:43:05 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Fix the handling of HTTP actions (gh#agama-project/agama#3088).
