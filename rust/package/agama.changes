@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Jan 27 18:35:59 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+
+- Enable the SSH service and open the SSH port in firewall when
+  an SSH key for the root user is set (bsc#1257212)
+
+-------------------------------------------------------------------
 Fri Jan 23 15:36:12 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
 
 - Fixed removing automatically selected recommended patterns
