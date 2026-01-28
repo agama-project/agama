@@ -57,7 +57,7 @@ import LicenseDialog from "~/components/product/LicenseDialog";
 import Text from "~/components/core/Text";
 import agama from "~/agama";
 import { patchConfig } from "~/api";
-import { useProductInfo } from "~/hooks/model/config/product";
+import { useProduct, useProductInfo } from "~/hooks/model/config/product";
 import { useSystem } from "~/hooks/model/system";
 import { useSystem as useSystemSoftware } from "~/hooks/model/system/software";
 import { ROOT } from "~/routes/paths";
@@ -454,6 +454,8 @@ const ProductForm = ({ products, currentProduct, isSubmitted, onSubmit }: Produc
 type CurrentProductInfoProps = {
   /** The currently configured product to display */
   product?: Product;
+  /** The selected mode */
+  modeId?: string;
 };
 
 /**
@@ -461,8 +463,13 @@ type CurrentProductInfoProps = {
  *
  * Shows product name, description, and a link to view the license if applicable.
  */
-const CurrentProductInfo = ({ product }: CurrentProductInfoProps) => {
+const CurrentProductInfo = ({ product, modeId }: CurrentProductInfoProps) => {
   if (!product) return;
+
+  let mode;
+  if (modeId) {
+    mode = product.modes.find((m) => m.id === modeId);
+  }
 
   return (
     <Card variant="secondary" component="section" className="sticky-top">
@@ -474,6 +481,15 @@ const CurrentProductInfo = ({ product }: CurrentProductInfoProps) => {
           </Title>
           <Divider />
           <SubtleContent>{product.description}</SubtleContent>
+
+          {mode && (
+            <>
+              <Title headingLevel="h3">{mode.name}</Title>
+
+              <Divider />
+              <SubtleContent>{mode.description}</SubtleContent>
+            </>
+          )}
 
           {product.license && (
             <LicenseButton product={product} variant="secondary" isInline>
@@ -497,6 +513,7 @@ const CurrentProductInfo = ({ product }: CurrentProductInfoProps) => {
  */
 const ProductSelectionContent = () => {
   const navigate = useNavigate();
+  const product = useProduct();
   const { products } = useSystem();
   const currentProduct = useProductInfo();
   const [submittedSelection, setSubmmitedSelection] = useState<Product>();
@@ -551,7 +568,7 @@ const ProductSelectionContent = () => {
             />
           </GridItem>
           <GridItem sm={12} md={4} order={{ default: "0", md: "1" }}>
-            {!isWaiting && <CurrentProductInfo product={currentProduct} />}
+            {!isWaiting && <CurrentProductInfo product={currentProduct} modeId={product?.mode} />}
           </GridItem>
         </Grid>
       </Page.Content>
