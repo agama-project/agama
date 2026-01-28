@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Wed Jan 28 10:59:29 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Add support to define product modes (jsc#PED-14307).
+
+-------------------------------------------------------------------
 Wed Jan 28 09:59:43 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
 
 - Support "gpgFingerprints" and "allowUnsigned" keys in
