@@ -1,4 +1,13 @@
 -------------------------------------------------------------------
+Wed Jan 28 12:43:13 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Force the user to select a mode when it is needed (related to
+  jsc#PED-14307).
+- Do not loose the mode when registering a product (related to
+  jsc#PED-14307).
+- Reset the configuration when selecting a new product.
+
+-------------------------------------------------------------------
 Wed Jan 28 11:00:28 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Allow selecting the mode in the product selection screen (jsc#PED-14307).

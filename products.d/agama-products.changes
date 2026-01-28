@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Jan 28 13:01:02 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Fix the optional_patterns attribute in the product definitions
+  (jsc#PED-14307).
+
+-------------------------------------------------------------------
 Wed Jan 28 11:01:02 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Define "standard" and "immutable" modes for SLES (jsc#PED-14307).

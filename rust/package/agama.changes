@@ -1,4 +1,13 @@
 -------------------------------------------------------------------
+Wed Jan 28 12:43:05 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Fix the handling of HTTP actions (gh#agama-project/agama#3088).
+- Add more details when a request fails because there are pending issues
+  or the installer is busy.
+- Include in the logs markers for the start and the end of the
+  installation.
+
+-------------------------------------------------------------------
 Wed Jan 28 10:59:29 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Add support to define product modes (jsc#PED-14307).

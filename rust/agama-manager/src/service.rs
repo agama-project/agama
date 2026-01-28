@@ -40,7 +40,7 @@ use gettextrs::gettext;
 use merge::Merge;
 use network::NetworkSystemClient;
 use serde_json::Value;
-use std::{process::Command, sync::Arc};
+use std::{collections::HashMap, process::Command, sync::Arc};
 use tokio::sync::{broadcast, RwLock};
 
 #[derive(Debug, thiserror::Error)]
@@ -85,8 +85,12 @@ pub enum Error {
     Hardware(#[from] hardware::Error),
     #[error("Cannot dispatch this action in {current} stage (expected {expected}).")]
     UnexpectedStage { current: Stage, expected: Stage },
-    #[error("Cannot start the installation. The config contains some issues.")]
-    InstallationBlocked,
+    #[error("Failed to perform the action because the system is busy: {scopes:?}.")]
+    Busy { scopes: Vec<Scope> },
+    #[error(
+        "It is not possible to install the system because there are some pending issues: {issues:?}."
+    )]
+    PendingIssues { issues: HashMap<Scope, Vec<Issue>> },
     #[error(transparent)]
     Users(#[from] users::service::Error),
 }
@@ -515,6 +519,26 @@ impl Service {
         Ok(())
     }
 
+    async fn check_issues(&self) -> Result<(), Error> {
+        let issues = self.issues.call(issue::message::Get).await?;
+        if !issues.is_empty() {
+            return Err(Error::PendingIssues {
+                issues: issues.clone(),
+            });
+        }
+        Ok(())
+    }
+
+    async fn check_progress(&self) -> Result<(), Error> {
+        let progress = self.progress.call(progress::message::GetProgress).await?;
+        if !progress.is_empty() {
+            return Err(Error::Busy {
+                scopes: progress.iter().map(|p| p.scope).collect(),
+            });
+        }
+        Ok(())
+    }
+
     /// Determines whether the software service is available.
     ///
     /// Consider the service as available if there is no pending progress.
@@ -695,13 +719,6 @@ impl MessageHandler<message::GetLicense> for Service {
 impl MessageHandler<message::RunAction> for Service {
     /// It runs the given action.
     async fn handle(&mut self, message: message::RunAction) -> Result<(), Error> {
-        let issues = self.issues.call(issue::message::Get).await?;
-        let progress = self.progress.call(progress::message::GetProgress).await?;
-
-        if !issues.is_empty() || !progress.is_empty() {
-            return Err(Error::InstallationBlocked);
-        }
-
         match message.action {
             Action::ConfigureL10n(config) => {
                 self.check_stage(Stage::Configuring).await?;
@@ -717,6 +734,8 @@ impl MessageHandler<message::RunAction> for Service {
             }
             Action::Install => {
                 self.check_stage(Stage::Configuring).await?;
+                self.check_issues().await?;
+                self.check_progress().await?;
                 let action = InstallAction {
                     hostname: self.hostname.clone(),
                     l10n: self.l10n.clone(),
@@ -730,7 +749,7 @@ impl MessageHandler<message::RunAction> for Service {
                 action.run();
             }
             Action::Finish(method) => {
-                // TODO: check the stage
+                self.check_stage(Stage::Finished).await?;
                 let action = FinishAction::new(method);
                 action.run();
             }
@@ -803,6 +822,7 @@ impl InstallAction {
     /// Runs the installation process on a separate Tokio task.
     pub fn run(mut self) {
         tokio::spawn(async move {
+            tracing::info!("Installation started");
             if let Err(error) = self.install().await {
                 tracing::error!("Installation failed: {error}");
                 if let Err(error) = self
@@ -815,6 +835,8 @@ impl InstallAction {
                         Stage::Failed
                     );
                 }
+            } else {
+                tracing::info!("Installation finished");
             }
         });
     }

@@ -80,7 +80,7 @@ jest.mock("~/hooks/model/proposal", () => ({
 
 describe("ProductRegistrationPage", () => {
   beforeEach(() => {
-    mockConfig = { product: { id: "sle", registrationCode: "" } };
+    mockConfig = { product: { id: "sle", mode: "standard", registrationCode: "" } };
     mockIssues = [];
     mockProductConfig(mockConfig.product);
     // @ts-ignore
@@ -144,6 +144,7 @@ describe("ProductRegistrationPage", () => {
         ...mockConfig,
         product: {
           id: "sle",
+          mode: "standard",
           registrationCode: "INTERNAL-USE-ONLY-1234-5678",
           registrationEmail: undefined,
           registrationUrl: undefined,
@@ -172,6 +173,7 @@ describe("ProductRegistrationPage", () => {
         ...mockConfig,
         product: {
           id: "sle",
+          mode: "standard",
           registrationCode: "INTERNAL-USE-ONLY-1234-5678",
           registrationEmail: "example@company.test",
           registrationUrl: undefined,
@@ -211,6 +213,7 @@ describe("ProductRegistrationPage", () => {
         ...mockConfig,
         product: {
           id: "sle",
+          mode: "standard",
           registrationUrl: "https://custom-server.test",
           registrationCode: undefined,
           registrationEmail: undefined,
@@ -272,6 +275,7 @@ describe("ProductRegistrationPage", () => {
             ...mockConfig,
             product: {
               id: "sle",
+              mode: "standard",
               registrationUrl: "https://custom-server.test",
               registrationCode: "INTERNAL-USE-ONLY-1234-5678",
               registrationEmail: undefined,
