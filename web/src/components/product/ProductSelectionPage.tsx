@@ -121,7 +121,7 @@ const ProductFormProductOption = ({
                             <Text component="small">{_("License acceptance required")}</Text>
                           </Label>
                         )}
-                        {product.modes && (
+                        {!isEmpty(product.modes) && (
                           <Label variant="outline" isCompact>
                             <Text component="small">
                               {sprintf(_("%d modes available"), product.modes.length)}
