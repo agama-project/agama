@@ -34,7 +34,7 @@
 //!
 //! Additionally, a template can specify a list of product modes. Each mode can overwrite
 //! the default configuration for any of the sections. A typical use case is offering
-//! "traditional" and "immutable" modes.
+//! "standard" and "immutable" modes.
 //!
 //! # Product specifications
 //!
@@ -547,7 +547,7 @@ mod test {
     #[test_context(Context)]
     #[test]
     fn test_find_product_with_mode(ctx: &mut Context) {
-        let sles = ctx.registry.find("SLES", Some("traditional")).unwrap();
+        let sles = ctx.registry.find("SLES", Some("standard")).unwrap();
         assert_eq!(sles.id, "SLES");
         assert_eq!(sles.name, "SUSE Linux Enterprise Server 16.1");
         assert_eq!(sles.registration, true);

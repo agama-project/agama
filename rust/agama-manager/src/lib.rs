@@ -61,7 +61,7 @@ mod test {
         let software = software::Config {
             product: Some(ProductConfig {
                 id: Some("SLES".to_string()),
-                mode: Some("traditional".to_string()),
+                mode: Some("standard".to_string()),
                 ..Default::default()
             }),
             ..Default::default()
@@ -107,7 +107,7 @@ mod test {
         let software = software::Config {
             product: Some(ProductConfig {
                 id: Some("SLES".to_string()),
-                mode: Some("traditional".to_string()),
+                mode: Some("standard".to_string()),
                 ..Default::default()
             }),
             ..Default::default()

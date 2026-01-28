@@ -730,11 +730,11 @@ mod tests {
 
     #[test]
     fn test_add_registration() {
-        let product = build_product_spec("sles_161", Some("traditional"));
+        let product = build_product_spec("sles_161", Some("standard"));
         let mut config = build_user_config(None);
         config.product = ProductConfig {
             id: Some("SLES".to_string()),
-            mode: Some("traditional".to_string()),
+            mode: Some("standard".to_string()),
             registration_code: Some("123456".to_string()),
             registration_url: Some(Url::parse("https://scc.suse.com").unwrap()),
             registration_email: Some("jane.doe@example.net".to_string()),

@@ -26,7 +26,7 @@ software:
     - cockpit
     - base
     - transactional
-    - traditional
+    - standard
     - hardware
     - selinux
 

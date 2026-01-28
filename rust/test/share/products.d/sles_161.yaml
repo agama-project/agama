@@ -150,7 +150,7 @@ security:
       patterns: null
 
 modes:
-  - id: traditional
+  - id: standard
     name: Traditional
     description: Traditional system
 
