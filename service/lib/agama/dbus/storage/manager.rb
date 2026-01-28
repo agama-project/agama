@@ -169,15 +169,22 @@ module Agama
         #
         # @raise If the config is not valid.
         #
-        # @param serialized_product [String] Serialized product config.
+        # @param serialized_product_config [String] Serialized product config.
         # @param serialized_config [String] Serialized storage config.
-        def configure(serialized_product, serialized_config)
-          system_changed = false
-          new_product_config = Agama::Config.new(JSON.parse(serialized_product))
+        def configure(serialized_product_config, serialized_config)
+          product_config_json = JSON.parse(serialized_product_config)
+          config_json = JSON.parse(serialized_config, symbolize_names: true)
+          logger.info("Configuring storage: #{config_json.inspect}")
 
-          if product_config != new_product_config
+          # Do not configure if there is nothing to change.
+          return if backend.configured?(product_config_json, config_json)
+
+          system_changed = false
+          product_config = Agama::Config.new(product_config_json)
+
+          if backend.product_config != product_config
             system_changed = true
-            backend.product_config = new_product_config
+            backend.update_product_config(product_config)
           end
 
           start_progress(3, ACTIVATING_STEP)
@@ -197,8 +204,6 @@ module Agama
           emit_system_changed if system_changed
 
           next_progress_step(CONFIGURING_STEP)
-          config_json = JSON.parse(serialized_config, symbolize_names: true)
-
           calculate_proposal(config_json)
 
           finish_progress
@@ -307,12 +312,11 @@ module Agama
 
         # Configures storage using the current config.
         #
-        # @note The proposal is not calculated if there is not a config yet.
+        # @note Skips if no proposal has been calculated yet.
         def configure_with_current
-          config_json = proposal.storage_json
-          return unless config_json
+          return unless proposal.storage_json
 
-          calculate_proposal(config_json)
+          calculate_proposal(backend.config_json)
         end
 
         # @see #configure
