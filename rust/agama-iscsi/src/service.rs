@@ -19,7 +19,7 @@
 // find current contact information at www.suse.com.
 
 use crate::{
-    client::{self, Client},
+    client::{self, Client, DiscoverResult},
     message,
     monitor::{self, Monitor},
     storage,
@@ -107,7 +107,7 @@ impl Actor for Service {
 
 #[async_trait]
 impl MessageHandler<message::Discover> for Service {
-    async fn handle(&mut self, message: message::Discover) -> Result<u32, Error> {
+    async fn handle(&mut self, message: message::Discover) -> Result<DiscoverResult, Error> {
         let result = self.client.discover(message.config).await?;
         Ok(result)
     }

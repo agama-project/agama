@@ -35,9 +35,14 @@ pub enum Error {
     Json(#[from] serde_json::Error),
 }
 
+pub enum DiscoverResult {
+    Success,
+    Failure,
+}
+
 #[async_trait]
 pub trait ISCSIClient {
-    async fn discover(&self, config: DiscoverConfig) -> Result<u32, Error>;
+    async fn discover(&self, config: DiscoverConfig) -> Result<DiscoverResult, Error>;
     async fn get_system(&self) -> Result<Option<Value>, Error>;
     async fn get_config(&self) -> Result<Option<Config>, Error>;
     async fn set_config(&self, config: Option<Config>) -> Result<(), Error>;
@@ -57,12 +62,15 @@ impl<'a> Client<'a> {
 
 #[async_trait]
 impl<'a> ISCSIClient for Client<'a> {
-    async fn discover(&self, config: DiscoverConfig) -> Result<u32, Error> {
+    async fn discover(&self, config: DiscoverConfig) -> Result<DiscoverResult, Error> {
         let result = self
             .proxy
             .discover(serde_json::to_string(&config)?.as_str())
             .await?;
-        Ok(result)
+        match result {
+            0 => Ok(DiscoverResult::Success),
+            _ => Ok(DiscoverResult::Failure),
+        }
     }
 
     async fn get_system(&self) -> Result<Option<Value>, Error> {

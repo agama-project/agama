@@ -18,6 +18,7 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
+use crate::client::DiscoverResult;
 use agama_utils::{
     actor::Message,
     api::iscsi::{Config, DiscoverConfig},
@@ -35,7 +36,7 @@ impl Discover {
 }
 
 impl Message for Discover {
-    type Reply = u32;
+    type Reply = DiscoverResult;
 }
 
 pub struct GetSystem;

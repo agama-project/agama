@@ -23,6 +23,7 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize, Deserialize, utoipa::ToSchema)]
 pub enum Action {
+    /// Performs an iSCSI discovery, finding nodes from the given portal.
     #[serde(rename = "discoverISCSI")]
     DiscoverISCSI(iscsi::DiscoverConfig),
     #[serde(rename = "activateStorage")]

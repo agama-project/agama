@@ -21,7 +21,7 @@
 //! This module implements a set of utilities for tests.
 
 use crate::{
-    client::{Error, ISCSIClient},
+    client::{DiscoverResult, Error, ISCSIClient},
     service::{Service, Starter},
     storage,
 };
@@ -109,10 +109,10 @@ impl ISCSIClient for TestClient {
         Ok(())
     }
 
-    async fn discover(&self, _config: DiscoverConfig) -> Result<u32, Error> {
+    async fn discover(&self, _config: DiscoverConfig) -> Result<DiscoverResult, Error> {
         let mut state = self.state.lock().await;
         state.discovered = true;
-        Ok(0)
+        Ok(DiscoverResult::Success)
     }
 }
 
