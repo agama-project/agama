@@ -55,7 +55,7 @@ software:
     - wpa_supplicant
     - opensuse-migration-tool
 
-  optional_packages: null
+  optional_packages: []
   base_product: Leap-Micro
 
 security:

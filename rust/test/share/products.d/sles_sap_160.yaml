@@ -30,7 +30,7 @@ software:
     - enhanced_base
     - bootloader
     - sles_sap_base_sap_server
-  optional_patterns: null # no optional pattern shared
+  optional_patterns: [] # no optional pattern shared
   user_patterns:
     # First all patterns from file sles_160.yaml
     - cockpit
@@ -71,7 +71,7 @@ software:
     # bsc#1241224, bsc#1224868 avoid probe DHCP over all ethernet devices and ignore carrier
     - NetworkManager-config-server
     - sudo-policy-wheel-auth-self # explicit wheel group policy to conform new auth model
-  optional_packages: null
+  optional_packages: []
   base_product: SLES_SAP
 
 security:

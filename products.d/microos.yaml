@@ -146,7 +146,7 @@ software:
   mandatory_packages:
     - NetworkManager
     - openSUSE-repos-MicroOS
-  optional_packages: null
+  optional_packages: []
   base_product: MicroOS
 
 security:

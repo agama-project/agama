@@ -30,7 +30,7 @@ software:
     - hardware
     - selinux
 
-  optional_patterns: null
+  optional_patterns: []
 
   user_patterns:
     - cloud
@@ -46,7 +46,7 @@ software:
   mandatory_packages:
     - NetworkManager
     - openSUSE-repos-LeapMicro
-  optional_packages: null
+  optional_packages: []
   base_product: Leap-Micro
 
 security:
