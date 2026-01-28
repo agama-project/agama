@@ -61,7 +61,7 @@ import { useProductInfo } from "~/hooks/model/config/product";
 import { useSystem } from "~/hooks/model/system";
 import { useSystem as useSystemSoftware } from "~/hooks/model/system/software";
 import { ROOT } from "~/routes/paths";
-import { Mode, Product } from "~/model/system";
+import { Product } from "~/model/system";
 import { n_, _ } from "~/i18n";
 
 import pfTextStyles from "@patternfly/react-styles/css/utilities/Text/text";
@@ -320,7 +320,7 @@ type ProductFormProps = {
   /** The product currently configured in the system */
   currentProduct?: Product;
   /** Callback fired when the form is submitted with a selected product */
-  onSubmit: (product: Product, mode: Mode) => void;
+  onSubmit: (product: Product, mode: string) => void;
   /** Whether the form was already submitted */
   isSubmitted: boolean;
 };
@@ -335,7 +335,7 @@ type ProductFormProps = {
  */
 const ProductForm = ({ products, currentProduct, isSubmitted, onSubmit }: ProductFormProps) => {
   const [selectedProduct, setSelectedProduct] = useState<Product>();
-  const [selectedMode, setSelectedMode] = useState();
+  const [selectedMode, setSelectedMode] = useState<string>();
   const [eulaAccepted, setEulaAccepted] = useState(false);
   const mountEulaCheckbox = selectedProduct && !isEmpty(selectedProduct.license);
   const isSelectionDisabled =
@@ -488,7 +488,7 @@ const ProductSelectionContent = () => {
     }
   }, [navigate, isSubmitted, currentProduct, submittedSelection]);
 
-  const onSubmit = async (selectedProduct: Product, selectedMode) => {
+  const onSubmit = async (selectedProduct: Product, selectedMode: string) => {
     setIsSubmmited(true);
     setSubmmitedSelection(selectedProduct);
     // FIXME: use Mode as expected
