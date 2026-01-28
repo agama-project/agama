@@ -86,7 +86,7 @@ software:
     - microos_hardware
     - microos_kde_desktop
     - microos_selinux
-  optional_patterns: null
+  optional_patterns: []
   user_patterns:
     - container_runtime
   mandatory_packages:

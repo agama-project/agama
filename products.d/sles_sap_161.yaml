@@ -88,7 +88,7 @@ software:
     - enhanced_base
     - bootloader
     - sles_sap_base_sap_server
-  optional_patterns: null # no optional pattern shared
+  optional_patterns: [] # no optional pattern shared
   user_patterns:
     # First all patterns from file sles_160.yaml
     - cockpit

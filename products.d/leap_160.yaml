@@ -63,7 +63,7 @@ software:
       archs: ppc
   mandatory_patterns:
     - enhanced_base # only pattern that is shared among all roles on Leap
-  optional_patterns: null # no optional pattern shared
+  optional_patterns: [] # no optional pattern shared
   user_patterns:
     - gnome
     - kde

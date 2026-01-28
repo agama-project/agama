@@ -29,7 +29,7 @@ software:
     - hardware
     - selinux
 
-  optional_patterns: null
+  optional_patterns: []
 
   user_patterns:
     - cloud

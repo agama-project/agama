@@ -138,7 +138,7 @@ software:
     - microos_defaults
     - microos_hardware
     - microos_selinux
-  optional_patterns: null
+  optional_patterns: []
   user_patterns:
     - container_runtime
     - microos_ra_agent
