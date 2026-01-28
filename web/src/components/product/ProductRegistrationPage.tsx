@@ -328,6 +328,7 @@ const RegistrationFormSection = () => {
       ...config,
       product: {
         id: product.id,
+        mode: product.mode,
         registrationCode: isKeyRequired ? key : undefined,
         registrationEmail: provideEmail ? email : undefined,
         registrationUrl: isUrlRequired ? url : undefined,
