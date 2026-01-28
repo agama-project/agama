@@ -76,6 +76,8 @@ type ProductFormProductOptionProps = {
   isChecked: boolean;
   /** Callback fired when the product is selected */
   onChange: () => void;
+  /** Callback fired when the mode is changed */
+  onModeChange: (mode: string) => void;
 };
 
 /**
@@ -85,6 +87,7 @@ const ProductFormProductOption = ({
   product,
   isChecked,
   onChange,
+  onModeChange,
 }: ProductFormProductOptionProps) => {
   const detailsId = `${product.id}-details`;
   const currentLocale = agama.language.replace("-", "_");
@@ -111,11 +114,18 @@ const ProductFormProductOption = ({
                 }
                 body={
                   <Stack hasGutter id={detailsId}>
-                    {product.license && (
+                    {(product.license || product.modes) && (
                       <Split hasGutter>
                         {product.license && (
                           <Label variant="outline" isCompact>
                             <Text component="small">{_("License acceptance required")}</Text>
+                          </Label>
+                        )}
+                        {product.modes && (
+                          <Label variant="outline" isCompact>
+                            <Text component="small">
+                              {sprintf(_("%d modes available"), product.modes.length)}
+                            </Text>
                           </Label>
                         )}
                       </Split>
@@ -129,6 +139,22 @@ const ProductFormProductOption = ({
                     >
                       <SubtleContent>{translatedDescription}</SubtleContent>
                     </ExpandableSection>
+                    {isChecked && product.modes && (
+                      <Split hasGutter>
+                        {product.modes.map((mode) => (
+                          <FlexItem key={mode.id}>
+                            <Radio
+                              key={mode.id}
+                              id={mode.id}
+                              name="mode"
+                              onChange={() => onModeChange(mode.id)}
+                              label={<Text isBold>{mode.name}</Text>}
+                              description={mode.description}
+                            />
+                          </FlexItem>
+                        ))}
+                      </Split>
+                    )}
                   </Stack>
                 }
               />
@@ -230,6 +256,7 @@ const ProductFormSubmitLabel = ({
   currentProduct,
   selectedProduct,
 }: ProductFormSubmitLabelProps) => {
+  // FIXME: add logic to include information about the mode
   const action = currentProduct ? _("Change to %s") : _("Select %s");
   const fallback = currentProduct ? _("Change") : _("Select");
 
@@ -293,7 +320,7 @@ type ProductFormProps = {
   /** The product currently configured in the system */
   currentProduct?: Product;
   /** Callback fired when the form is submitted with a selected product */
-  onSubmit: (product: Product) => void;
+  onSubmit: (product: Product, mode: string) => void;
   /** Whether the form was already submitted */
   isSubmitted: boolean;
 };
@@ -327,9 +354,12 @@ const ProductFormLabel = ({ products, currentProduct }) => {
  *
  * Manages product selection state, license acceptance, and form validation.
  * Excludes the current product from the list of options.
+ *
+ * TODO: use a reducer instead of bunch of isolated state pieces
  */
 const ProductForm = ({ products, currentProduct, isSubmitted, onSubmit }: ProductFormProps) => {
   const [selectedProduct, setSelectedProduct] = useState<Product>();
+  const [selectedMode, setSelectedMode] = useState<string>();
   const [eulaAccepted, setEulaAccepted] = useState(false);
   const mountEulaCheckbox = selectedProduct && !isEmpty(selectedProduct.license);
   const isSelectionDisabled =
@@ -337,13 +367,14 @@ const ProductForm = ({ products, currentProduct, isSubmitted, onSubmit }: Produc
 
   const onProductSelectionChange = (product) => {
     setEulaAccepted(false);
+    setSelectedMode(undefined);
     setSelectedProduct(product);
   };
 
   const onFormSubmission = (e: React.FormEvent) => {
     e.preventDefault();
 
-    onSubmit(selectedProduct);
+    onSubmit(selectedProduct, selectedMode);
   };
 
   return (
@@ -359,7 +390,7 @@ const ProductForm = ({ products, currentProduct, isSubmitted, onSubmit }: Produc
       >
         <List isPlain>
           {products.map((product, index) => {
-            if (product.id === currentProduct?.id) return undefined;
+            if (product.id === currentProduct?.id && !product.modes) return undefined;
 
             return (
               <ProductFormProductOption
@@ -367,6 +398,7 @@ const ProductForm = ({ products, currentProduct, isSubmitted, onSubmit }: Produc
                 product={product}
                 isChecked={selectedProduct?.id === product?.id}
                 onChange={() => onProductSelectionChange(product)}
+                onModeChange={setSelectedMode}
               />
             );
           })}
@@ -479,10 +511,11 @@ const ProductSelectionContent = () => {
     }
   }, [navigate, isSubmitted, currentProduct, submittedSelection]);
 
-  const onSubmit = async (selectedProduct: Product) => {
+  const onSubmit = async (selectedProduct: Product, selectedMode: string) => {
     setIsSubmmited(true);
     setSubmmitedSelection(selectedProduct);
-    patchConfig({ product: { id: selectedProduct.id } });
+    // FIXME: use Mode as expected
+    patchConfig({ product: { id: selectedProduct.id, mode: selectedMode } });
   };
 
   const introText = n_(

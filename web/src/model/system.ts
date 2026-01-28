@@ -55,6 +55,16 @@ type Product = {
     /** The key is the locale (e.g., "en", "pt_BR") */
     description: Record<string, string>;
   };
+  modes: Mode[];
 };
 
-export type { System, Product, L10n, Hardware, Hostname, Network, Software, Storage };
+type Mode = {
+  /** Mode ID (e.g., "traditional") */
+  id: string;
+  /** Mode name (e.g., "Traditional") */
+  name: string;
+  /** Mode description (e.g., "Traditional system") */
+  description: string;
+};
+
+export type { System, Product, L10n, Hardware, Hostname, Mode, Network, Software, Storage };

@@ -28,6 +28,7 @@ import { PRODUCT as PATHS, SIDE_PATHS } from "~/routes/paths";
 import { _ } from "~/i18n";
 import { useSystem } from "~/hooks/model/system";
 import { useStatus } from "~/hooks/model/status";
+import { isEmpty } from "radashi";
 
 /**
  * DropdownItem Option for navigating to the selection product.
@@ -37,15 +38,22 @@ export default function ChangeProductOption({ children, ...props }: Omit<Dropdow
   const { stage } = useStatus();
   const currentLocation = useLocation();
   const to = useHref(PATHS.changeProduct);
+  const hasModes = products.find((p) => !isEmpty(p.modes));
 
-  if (products.length <= 1) return null;
+  if (products.length <= 1 && !hasModes) return null;
   if (software?.registration) return null;
   if (SIDE_PATHS.includes(currentLocation.pathname)) return null;
   if (stage !== "configuring") return null;
 
+  const getLabel = () => {
+    if (products.length === 1 && hasModes) return _("Change mode");
+    if (hasModes) return _("Change product or mode");
+    return _("Change product");
+  };
+
   return (
     <DropdownItem to={to} {...props}>
-      {children || _("Change product")}
+      {children || getLabel()}
     </DropdownItem>
   );
 }
