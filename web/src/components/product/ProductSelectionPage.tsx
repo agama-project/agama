@@ -362,8 +362,12 @@ const ProductForm = ({ products, currentProduct, isSubmitted, onSubmit }: Produc
   const [selectedMode, setSelectedMode] = useState<string>();
   const [eulaAccepted, setEulaAccepted] = useState(false);
   const mountEulaCheckbox = selectedProduct && !isEmpty(selectedProduct.license);
+  console.log(selectedMode);
   const isSelectionDisabled =
-    !selectedProduct || isSubmitted || (mountEulaCheckbox && !eulaAccepted);
+    !selectedProduct ||
+    isSubmitted ||
+    (mountEulaCheckbox && !eulaAccepted) ||
+    (!isEmpty(selectedProduct.modes) && !selectedMode);
 
   const onProductSelectionChange = (product) => {
     setEulaAccepted(false);
