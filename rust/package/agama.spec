@@ -206,7 +206,7 @@ echo $PATH
 %endif
 
 %pre
-%service_add_pre agama-web-server.service
+%service_add_pre agama-web-server.service agama-proxy-setup.service
 
 %pre -n agama-autoinstall
 %service_add_pre agama-autoinstall.service
@@ -215,7 +215,7 @@ echo $PATH
 %service_add_pre agama-scripts.service
 
 %post
-%service_add_post agama-web-server.service
+%service_add_post agama-web-server.service agama-proxy-setup.service
 
 %post -n agama-autoinstall
 %service_add_post agama-autoinstall.service
@@ -224,7 +224,7 @@ echo $PATH
 %service_add_post agama-scripts.service
 
 %preun
-%service_del_preun agama-web-server.service
+%service_del_preun agama-web-server.service agama-proxy-setup.service
 
 %preun -n agama-autoinstall
 %service_del_preun agama-autoinstall.service
@@ -233,7 +233,7 @@ echo $PATH
 %service_del_preun agama-scripts.service
 
 %postun
-%service_del_postun_with_restart agama-web-server.service
+%service_del_postun_with_restart agama-web-server.service agama-proxy-setup.service
 
 %postun -n agama-autoinstall
 %service_del_postun_with_restart agama-autoinstall.service
@@ -245,8 +245,10 @@ echo $PATH
 %doc README.md
 %license LICENSE
 %{_bindir}/agama-web-server
+%{_bindir}/agama-proxy-setup
 %{_pam_vendordir}/agama
 %{_unitdir}/agama-web-server.service
+%{_unitdir}/agama-proxy-setup.service
 %dir %{_datadir}/agama/eula
 
 %files -n agama-common

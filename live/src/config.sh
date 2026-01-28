@@ -61,6 +61,7 @@ systemctl enable agama-web-server.service
 systemctl enable agama-dbus-monitor.service
 systemctl enable agama-autoinstall.service
 systemctl enable agama-hostname.service
+systemctl enable agama-proxy-setup.service
 systemctl enable agama-certificate-issue.path
 systemctl enable agama-certificate-wait.service
 systemctl enable agama-cmdline-process.service

@@ -1,4 +1,4 @@
-// Copyright (c) [2025] SUSE LLC
+// Copyright (c) [2026] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -17,23 +17,6 @@
 //
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
-
-use crate::api::{hostname, l10n, manager, network, proxy, software};
-use serde::Serialize;
-use serde_json::Value;
-
-#[derive(Clone, Debug, Serialize, utoipa::ToSchema)]
-#[serde(rename_all = "camelCase")]
-pub struct SystemInfo {
-    #[serde(flatten)]
-    pub manager: manager::SystemInfo,
-    pub hostname: hostname::SystemInfo,
-    pub proxy: Option<proxy::Config>,
-    pub l10n: l10n::SystemInfo,
-    pub software: software::SystemInfo,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub storage: Option<Value>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub iscsi: Option<Value>,
-    pub network: network::SystemInfo,
-}
+//
+mod config;
+pub use config::*;

@@ -26,6 +26,7 @@ serde = { version = "1.0.228", features = ["derive"] }
 serde_with = "3.16.1"
 gettext-rs = { version = "0.7.7", features = ["gettext-system"] }
 merge = "0.2.0"
+agama-proxy = { version = "0.1.0", path = "../agama-proxy" }
 
 [dev-dependencies]
 test-context = "0.4.1"
