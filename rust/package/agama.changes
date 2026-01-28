@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Wed Jan 28 16:14:52 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Use the first product mode if none is given (related to jsc#PED-14307).
+
+-------------------------------------------------------------------
 Wed Jan 28 12:43:05 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Fix the handling of HTTP actions (gh#agama-project/agama#3088).
