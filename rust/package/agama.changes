@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Wed Jan 28 17:07:32 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Import the security settings correctly (bsc#1257290).
+
+-------------------------------------------------------------------
 Wed Jan 28 16:14:52 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Use the first product mode if none is given (related to jsc#PED-14307).
