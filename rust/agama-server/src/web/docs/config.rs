@@ -177,6 +177,7 @@ impl ApiDocBuilder for ConfigApiDocBuilder {
             .schema_from::<agama_utils::api::software::RepositoryConfig>()
             .schema_from::<agama_utils::api::status::Stage>()
             .schema_from::<agama_utils::api::query::SolveStorageModel>()
+            .schema_from::<agama_utils::api::iscsi::DiscoverConfig>()
             .build()
     }
 }

@@ -47,6 +47,6 @@ pub enum Scope {
     Software,
     Storage,
     Files,
-    Iscsi,
+    ISCSI,
     Users,
 }

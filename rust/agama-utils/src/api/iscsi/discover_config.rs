@@ -1,4 +1,4 @@
-// Copyright (c) [2025] SUSE LLC
+// Copyright (c) [2026] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -6,7 +6,7 @@
 // under the terms of the GNU General Public License as published by the Free
 // Software Foundation; either version 2 of the License, or (at your option)
 // any later version.
-//
+//f
 // This program is distributed in the hope that it will be useful, but WITHOUT
 // ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
 // FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
@@ -18,21 +18,28 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::api::{hostname, l10n, manager, network, software};
-use serde::Serialize;
-use serde_json::Value;
+use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Debug, Serialize, utoipa::ToSchema)]
+#[derive(Clone, Debug, Serialize, Deserialize, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
-pub struct SystemInfo {
-    #[serde(flatten)]
-    pub manager: manager::SystemInfo,
-    pub hostname: hostname::SystemInfo,
-    pub l10n: l10n::SystemInfo,
-    pub software: software::SystemInfo,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub storage: Option<Value>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub iscsi: Option<Value>,
-    pub network: network::SystemInfo,
+pub struct DiscoverConfig {
+    pub address: String,
+    pub port: u32,
+    pub username: Option<String>,
+    pub password: Option<String>,
+    pub initiator_username: Option<String>,
+    pub initiator_password: Option<String>,
+}
+
+impl DiscoverConfig {
+    pub fn new(address: &str, port: u32) -> Self {
+        Self {
+            address: String::from(address),
+            port,
+            username: None,
+            password: None,
+            initiator_username: None,
+            initiator_password: None,
+        }
+    }
 }

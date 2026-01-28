@@ -227,8 +227,6 @@ describe Agama::Storage::ISCSI::Manager do
         let(:targets) { [] }
 
         before do
-          subject.probe
-
           node1.locked = true
           node1.connected = true
 
@@ -237,9 +235,12 @@ describe Agama::Storage::ISCSI::Manager do
 
           node3.locked = false
           node3.connected = true
+
+          allow(subject).to receive(:probe_nodes)
+          allow(subject).to receive(:nodes).and_return([node1, node2, node3])
         end
 
-        it "diconnects the connected nodes if unlocked" do
+        it "disconnects the connected nodes if unlocked" do
           expect(adapter).to_not receive(:logout).with(node1)
           expect(adapter).to_not receive(:logout).with(node2)
           expect(adapter).to receive(:logout).with(node3)
@@ -348,9 +349,201 @@ describe Agama::Storage::ISCSI::Manager do
                 expect(adapter).to_not receive(:logout).with(node1)
                 expect(adapter).to_not receive(:login).with(node1)
                 expect(adapter).to_not receive(:update_node).with(node1)
+                subject.configure(config_json)
               end
             end
           end
+        end
+      end
+    end
+
+    context "if the system has not changed" do
+      before do
+        allow(adapter).to receive(:read_initiator).and_return(initiator, initiator)
+        allow(adapter).to receive(:read_nodes).and_return([node1], [node1])
+      end
+
+      it "returns false" do
+        expect(subject.configure({})).to eq(false)
+      end
+    end
+
+    context "if the initiator has changed" do
+      before do
+        new_initiator = initiator.dup.tap { |i| i.name = "iqn.1996-04.de.suse:01:351e6d62aa" }
+        allow(adapter).to receive(:read_initiator).and_return(initiator, new_initiator)
+        allow(adapter).to receive(:read_nodes).and_return([node1], [node1])
+      end
+
+      it "returns true" do
+        expect(subject.configure({})).to eq(true)
+      end
+    end
+
+    context "if the nodes have changed" do
+      before do
+        allow(adapter).to receive(:read_nodes).and_return([node1], [node1, node2])
+      end
+
+      it "returns true" do
+        expect(subject.configure({})).to eq(true)
+      end
+    end
+  end
+
+  describe "#configured?" do
+    before do
+      allow(subject).to receive(:previous_config).and_return(previous_config)
+      allow(subject).to receive(:initiator).and_return(initiator)
+      allow(subject).to receive(:nodes).and_return(nodes)
+    end
+
+    let(:previous_config) { Agama::Storage::ISCSI::ConfigImporter.new(previous_config_json).import }
+
+    let(:previous_config_json) do
+      {
+        initiator: "iqn.1996-04.de.suse:01:351e6d6249",
+        targets:   [
+          {
+            address:         "192.168.100.110",
+            port:            3260,
+            name:            "iqn.2023-01.com.example:12123",
+            interface:       "default",
+            startup:         "manual",
+            authByTarget:    {
+              username: "target",
+              password: "12345"
+            },
+            authByInitiator: {
+              username: "ini",
+              password: "54321"
+            }
+          }
+        ]
+      }
+    end
+
+    let(:nodes) { [node1, node2, node3] }
+
+    context "if the initiator and the nodes are already configured" do
+      let(:config_json) { previous_config_json.dup }
+
+      it "returns true" do
+        expect(subject.configured?(config_json)).to eq(true)
+      end
+    end
+
+    context "if there is no initiator in the system" do
+      let(:initiator) { nil }
+
+      context "and the given config has no initiator" do
+        let(:config_json) do
+          {
+            targets: previous_config_json[:targets]
+          }
+        end
+
+        it "returns true" do
+          expect(subject.configured?(config_json)).to eq(true)
+        end
+      end
+
+      context "and the given config has initiator" do
+        let(:config_json) { previous_config_json.dup }
+
+        it "returns false" do
+          expect(subject.configured?(config_json)).to eq(false)
+        end
+      end
+    end
+
+    context "if the given config contains a target that is not connected" do
+      let(:config_json) do
+        {
+          initiator: previous_config_json[:initiator],
+          targets:   [
+            {
+              address:   "192.168.100.110",
+              port:      3260,
+              name:      "iqn.2023-01.com.example:12aca",
+              interface: "default",
+              startup:   "manual"
+            }
+          ]
+        }
+      end
+
+      it "returns false" do
+        expect(subject.configured?(config_json)).to eq(false)
+      end
+    end
+
+    context "if the given config is missing a target that is connected" do
+      let(:config_json) do
+        {
+          initiator: previous_config_json[:initiator],
+          targets:   []
+        }
+      end
+
+      it "returns false" do
+        expect(subject.configured?(config_json)).to eq(false)
+      end
+    end
+
+    context "if the given config contains a configured target" do
+      let(:config_json) do
+        {
+          initiator: previous_config_json[:initiator],
+          targets:   [target]
+        }
+      end
+
+      context "and the credentials have changed" do
+        let(:target) do
+          {
+            address:         "192.168.100.110",
+            port:            3260,
+            name:            "iqn.2023-01.com.example:12123",
+            interface:       "default",
+            startup:         "manual",
+            authByTarget:    {
+              username: "target",
+              password: "123456"
+            },
+            authByInitiator: {
+              username: "ini",
+              password: "54321"
+            }
+          }
+        end
+
+        it "returns false" do
+          expect(subject.configured?(config_json)).to eq(false)
+        end
+      end
+
+      context "and the startup have changed" do
+        let(:target) do
+          {
+            address:         "192.168.100.110",
+            port:            3260,
+            name:            "iqn.2023-01.com.example:12123",
+            interface:       "default",
+            startup:         "onboot",
+            authByTarget:    {
+              username: "target",
+              password: "12345"
+            },
+            authByInitiator: {
+              username: "ini",
+              password: "54321"
+            }
+          }
+        end
+
+        it "returns false" do
+          expect(subject.configured?(config_json)).to eq(false)
         end
       end
     end

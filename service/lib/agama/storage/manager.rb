@@ -44,6 +44,9 @@ module Agama
       # @return [Agama::Config]
       attr_reader :product_config
 
+      # @return [Hash, nil]
+      attr_reader :config_json
+
       # @return [Bootloader]
       attr_reader :bootloader
 
@@ -56,15 +59,15 @@ module Agama
         @bootloader = Bootloader.new(logger)
         @issues = []
         @yast_no_bls_boot = ENV["YAST_NO_BLS_BOOT"]
-        self.product_config = Agama::Config.new
+        update_product_config(Agama::Config.new)
       end
 
       # Assigns a new product config.
       #
-      # @param config [Agama::Config]
-      def product_config=(config)
-        @product_config = config
-        proposal.product_config = config
+      # @param product_config [Agama::Config]
+      def update_product_config(product_config)
+        @product_config = product_config
+        proposal.product_config = product_config
         configure_no_bls_bootloader
       end
 
@@ -90,6 +93,16 @@ module Agama
         Y2Storage::StorageManager.instance.probed?
       end
 
+      # Whether the current proposal was already calculated for the given product and config.
+      #
+      # @param product_config_json [Hash]
+      # @param config_json [Hash]
+      #
+      # @return [Boolean]
+      def configured?(product_config_json, config_json)
+        product_config.data == product_config_json && self.config_json == config_json
+      end
+
       # Probes the devices.
       def probe
         callbacks = Y2Storage::Callbacks::UserProbe.new
@@ -102,7 +115,7 @@ module Agama
       #   the default config is applied.
       # @return [Boolean] Whether storage was successfully configured.
       def configure(config_json = nil)
-        logger.info("Configuring storage: #{config_json}")
+        @config_json = config_json
         result = Configurator.new(proposal).configure(config_json)
         update_issues
         result

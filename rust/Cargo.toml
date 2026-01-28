@@ -20,7 +20,7 @@ members = [
     "suseconnect-agama/suseconnect-agama-sys",
     "xtask",
     "zypp-agama",
-    "zypp-agama/zypp-agama-sys",
+    "zypp-agama/zypp-agama-sys", "agama-iscsi",
 ]
 resolver = "2"
 

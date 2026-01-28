@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Jan 28 09:51:16 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Configure storage and iSCSI only if needed
+  (gh#agama-project/agama#3064).
+
+-------------------------------------------------------------------
 Mon Jan 26 06:49:56 UTC 2026 - José Iván López González <jlopez@suse.com>
 
 - Provide new D-Bus API for iSCSI (gh#agama-project/agama#3008).
