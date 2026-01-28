@@ -20,7 +20,15 @@
  * find current contact information at www.suse.com.
  */
 
-import { compact, localConnection, hex, mask, timezoneTime, sortCollection } from "./utils";
+import {
+  compact,
+  localConnection,
+  hex,
+  mask,
+  timezoneTime,
+  sanitize,
+  sortCollection,
+} from "./utils";
 
 describe("compact", () => {
   it("removes null and undefined values", () => {
@@ -259,5 +267,98 @@ describe("simpleFastSort", () => {
     const original = [...fakeDevices];
     sortCollection(fakeDevices, "asc", "size");
     expect(fakeDevices).toEqual(original);
+  });
+});
+
+describe("sanitize", () => {
+  it("should filter sensitive keys from an object", () => {
+    const obj = { user: "test", password: "123" };
+    const sanitized = sanitize(obj);
+    expect(sanitized).toEqual({ user: "test", password: "[FILTERED]" });
+  });
+
+  it("should not modify an object without sensitive keys", () => {
+    const obj = { user: "test", id: 1 };
+    const sanitized = sanitize(obj);
+    expect(sanitized).toEqual({ user: "test", id: 1 });
+  });
+
+  it("should recursively filter sensitive keys in nested objects", () => {
+    const obj = {
+      user: "test",
+      credentials: {
+        password: "123",
+      },
+    };
+    const sanitized = sanitize(obj);
+    expect(sanitized).toEqual({
+      user: "test",
+      credentials: {
+        password: "[FILTERED]",
+      },
+    });
+  });
+
+  it("should handle arrays of objects", () => {
+    const arr = [
+      { user: "one", password: "123" },
+      { user: "two", id: 2 },
+    ];
+    const sanitized = sanitize(arr);
+    expect(sanitized).toEqual([
+      { user: "one", password: "[FILTERED]" },
+      { user: "two", id: 2 },
+    ]);
+  });
+
+  it("should not mutate the original object", () => {
+    const originalObj = { user: "test", password: "123" };
+    const originalObjCopy = JSON.parse(JSON.stringify(originalObj));
+    sanitize(originalObj);
+    expect(originalObj).toEqual(originalObjCopy);
+  });
+
+  it("should handle null and undefined values correctly", () => {
+    const obj = { user: "test", password: "123", data: null, extra: undefined };
+    const sanitized = sanitize(obj);
+    // Note: `undefined` properties are omitted when creating a new object from an existing one.
+    expect(sanitized).toEqual({ user: "test", password: "[FILTERED]", data: null });
+  });
+
+  it("should return primitive values unmodified", () => {
+    expect(sanitize("string")).toBe("string");
+    expect(sanitize(123)).toBe(123);
+    expect(sanitize(true)).toBe(true);
+    expect(sanitize(null)).toBe(null);
+    expect(sanitize(undefined)).toBe(undefined);
+  });
+
+  it("should handle an empty object", () => {
+    expect(sanitize({})).toEqual({});
+  });
+
+  it("should handle an empty array", () => {
+    expect(sanitize([])).toEqual([]);
+  });
+
+  it("should filter all defined sensitive keys", () => {
+    const obj = {
+      user: "test",
+      password: "123",
+      hashedPassword: false,
+      registrationCode: "xyz",
+    };
+    expect(sanitize(obj)).toEqual({
+      user: "test",
+      password: "[FILTERED]",
+      hashedPassword: false,
+      registrationCode: "[FILTERED]",
+    });
+  });
+
+  it("should handle custom sensitive keys", () => {
+    const obj = { user: "test", password: "123", sensitive: "abc" };
+    const sanitized = sanitize(obj, ["sensitive"]);
+    expect(sanitized).toEqual({ user: "test", password: "123", sensitive: "[FILTERED]" });
   });
 });
