@@ -45,7 +45,7 @@ use crate::{
         registration::RegistrationError,
         state::{self, SoftwareState},
     },
-    state::{Addon, RegistrationState, ResolvableSelection},
+    state::{Addon, RegistrationState, RepoKey, ResolvableSelection},
     Registration, ResolvableType,
 };
 
@@ -127,6 +127,8 @@ pub struct ZyppServer {
     registration: RegistrationStatus,
     root_dir: Utf8PathBuf,
     install_dir: Utf8PathBuf,
+    trusted_keys: Vec<RepoKey>,
+    unsigned_repos: Vec<String>,
 }
 
 impl ZyppServer {
@@ -144,6 +146,8 @@ impl ZyppServer {
             root_dir: root_dir.as_ref().to_path_buf(),
             install_dir: install_dir.as_ref().to_path_buf(),
             registration: Default::default(),
+            trusted_keys: vec![],
+            unsigned_repos: vec![],
         };
 
         // drop the returned JoinHandle: the thread will be detached
@@ -238,6 +242,8 @@ impl ZyppServer {
             callbacks::CommitDownload::new(progress.clone(), question.clone());
         let mut install_callback = callbacks::Install::new(progress.clone(), question.clone());
         let mut security_callback = callbacks::Security::new(question);
+        security_callback.set_trusted_gpg_keys(self.trusted_keys.clone());
+        security_callback.set_unsigned_repos(self.unsigned_repos.clone());
 
         let packages_count = zypp.packages_count();
         // use packages count *2 as we need to download package and also install it
@@ -312,6 +318,11 @@ impl ZyppServer {
         if let Some(registration_config) = &state.registration {
             self.update_registration(registration_config, &zypp, &security_srv, &mut issues);
         }
+
+        self.trusted_keys = state.trusted_gpg_keys;
+        security.set_trusted_gpg_keys(self.trusted_keys.clone());
+        self.unsigned_repos = state.unsigned_repos;
+        security.set_unsigned_repos(self.unsigned_repos.clone());
 
         progress.cast(progress::message::Next::new(Scope::Software))?;
         let old_aliases: Vec<_> = old_state
