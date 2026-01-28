@@ -19,7 +19,10 @@
 // find current contact information at www.suse.com.
 
 use crate::model;
-use std::path::{Path, PathBuf};
+use std::{
+    path::{Path, PathBuf},
+    process,
+};
 
 use agama_utils::{
     actor::{self, Actor, Handler, MessageHandler},
@@ -195,6 +198,32 @@ impl Service {
     pub fn config_path(&self) -> PathBuf {
         self.install_dir.join(PROXY_PATH)
     }
+    pub fn enable_services(&self) -> Result<(), Error> {
+        self.enable_service("setup-systemd-proxy-env.service")?;
+        self.enable_service("setup-systemd-proxy-env.path")?;
+        Ok(())
+    }
+
+    pub fn enable_service(&self, name: &str) -> Result<(), Error> {
+        let mut command = process::Command::new("chroot");
+        let path = self.install_dir.to_str().unwrap();
+        command.args([path, "systemctl", "enable", name]);
+
+        match command.output() {
+            Ok(output) => {
+                if !output.status.success() {
+                    tracing::error!("Failed to enable the {name} service: {output:?}")
+                }
+            }
+            Err(error) => {
+                tracing::error!(
+                    "Failed to run the command to enable the {name} service command: {error}"
+                );
+            }
+        }
+
+        Ok(())
+    }
 }
 
 impl Actor for Service {
@@ -243,6 +272,7 @@ impl MessageHandler<message::Finish> for Service {
                 std::fs::create_dir_all(parent)?;
             }
             config.write_to(&path)?;
+            self.enable_services()?;
         }
         Ok(())
     }
