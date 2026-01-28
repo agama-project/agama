@@ -18,7 +18,10 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use std::path::{Path, PathBuf};
+use std::{
+    os::unix::fs::OpenOptionsExt,
+    path::{Path, PathBuf},
+};
 
 use agama_utils::kernel_cmdline::KernelCmdline;
 use strum::{Display, EnumIter, EnumString, IntoEnumIterator};
@@ -105,7 +108,7 @@ impl ProxyConfig {
     pub fn read_from(path: &PathBuf) -> Result<Self, Error> {
         use std::io::BufRead;
 
-        let file = std::fs::File::open(path)?;
+        let file = std::fs::OpenOptions::new().read(true).open(path)?;
         let reader = std::io::BufReader::new(file);
 
         let mut proxies = Vec::new();
@@ -185,7 +188,7 @@ impl ProxyConfig {
 
         let mut lines = Vec::new();
 
-        match std::fs::File::open(path) {
+        match std::fs::OpenOptions::new().read(true).open(path) {
             Ok(file) => {
                 let reader = std::io::BufReader::new(file);
                 for line in reader.lines() {
@@ -222,7 +225,13 @@ impl ProxyConfig {
                 new_lines.push(format!("{}=\"{}\"", key, val));
             }
         }
-        let mut file = std::fs::File::create(path)?;
+        let mut file = std::fs::OpenOptions::new()
+            .read(true)
+            .write(true)
+            .create(true)
+            .truncate(true)
+            .mode(0o644)
+            .open(path)?;
         for line in new_lines {
             writeln!(file, "{}", line)?;
         }
