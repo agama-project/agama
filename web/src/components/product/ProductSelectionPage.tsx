@@ -56,7 +56,7 @@ import ProductLogo from "~/components/product/ProductLogo";
 import LicenseDialog from "~/components/product/LicenseDialog";
 import Text from "~/components/core/Text";
 import agama from "~/agama";
-import { patchConfig } from "~/api";
+import { putConfig } from "~/api";
 import { useProduct, useProductInfo } from "~/hooks/model/config/product";
 import { useSystem } from "~/hooks/model/system";
 import { useSystem as useSystemSoftware } from "~/hooks/model/system/software";
@@ -535,7 +535,7 @@ const ProductSelectionContent = () => {
     setIsSubmmited(true);
     setSubmmitedSelection(selectedProduct);
     // FIXME: use Mode as expected
-    patchConfig({ product: { id: selectedProduct.id, mode: selectedMode } });
+    putConfig({ product: { id: selectedProduct.id, mode: selectedMode } });
   };
 
   const introText = n_(
