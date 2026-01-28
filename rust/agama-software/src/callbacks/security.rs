@@ -89,13 +89,21 @@ impl security::Callback for Security {
             return security::GpgKeyTrust::Import;
         }
 
+        let human_fingerprint = key_fingerprint
+            .chars()
+            .collect::<Vec<char>>()
+            .chunks(4)
+            .map(|chunk| chunk.iter().collect::<String>())
+            .collect::<Vec<String>>()
+            .join(" ");
+
         let text = i18n_format!(
             // TRANSLATORS: substituting: key ID, (key name), fingerprint
             "The key {0} ({1}) with fingerprint {2} is unknown. \
               Do you want to trust this key?",
             &key_id,
             &key_name,
-            &key_fingerprint
+            &human_fingerprint
         );
         let question = QuestionSpec::new(&text, "software.import_gpg")
             .with_action_ids(&[gettext_noop("Trust"), gettext_noop("Skip")])
