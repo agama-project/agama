@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Jan 28 09:59:43 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- Support "gpgFingerprints" and "allowUnsigned" keys in
+  "software/extraRepositories" section of profile
+  (gh#agama-project/agama#3087)
+
+-------------------------------------------------------------------
 Fri Jan 23 15:36:12 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
 
 - Fixed removing automatically selected recommended patterns
