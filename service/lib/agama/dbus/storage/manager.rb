@@ -174,10 +174,11 @@ module Agama
         def configure(serialized_product_config, serialized_config)
           product_config_json = JSON.parse(serialized_product_config)
           config_json = JSON.parse(serialized_config, symbolize_names: true)
-          logger.info("Configuring storage: #{config_json.inspect}")
 
           # Do not configure if there is nothing to change.
           return if backend.configured?(product_config_json, config_json)
+
+          logger.info("Configuring storage")
 
           system_changed = false
           product_config = Agama::Config.new(product_config_json)
