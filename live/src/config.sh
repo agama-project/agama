@@ -213,7 +213,7 @@ rm /var/log/zypper.log /var/log/zypp/history
 # reduce the "vim-data" content, this package is huge (37MB unpacked!), keep
 # only support for JSON (for "agama config edit"), YAML (the product definition
 # files) and Ruby (fixing/debugging the Ruby service)
-rpm -ql vim-data | grep -v -e '/ruby.vim$' -e '/json.vim$' -e '/yaml.vim$' -e colors | xargs rm 2>/dev/null || true
+rpm -ql vim-data | grep -v -e '/ruby.vim$' -e '/json.vim$' -e '/yaml.vim$' -e '/bash.vim$' -e colors | xargs rm 2>/dev/null || true
 
 du -h -s /usr/{share,lib}/locale/
 
