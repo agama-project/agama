@@ -216,12 +216,69 @@ describe Agama::DBus::Storage::ISCSI do
       }
     end
 
-    it "configures iSCSI" do
-      expect(subject).to receive(:SystemChanged)
-      expect(subject).to receive(:ProgressChanged)
-      expect(subject).to receive(:ProgressFinished)
-      expect(manager).to receive(:configure).with(config_json)
-      subject.configure(serialize(config_json))
+    context "if the config is 'null'" do
+      let(:serialized_config) { "null" }
+
+      it "does not configure iSCSI" do
+        expect(manager).to_not receive(:configure)
+        expect(subject).to_not receive(:SystemChanged)
+        expect(subject).to_not receive(:ProgressChanged)
+        expect(subject).to_not receive(:ProgressFinished)
+        subject.configure(serialized_config)
+      end
+    end
+
+    context "if the system is already configured for the given config" do
+      let(:serialized_config) { serialize(config_json) }
+
+      before do
+        allow(manager).to receive(:configured?).with(config_json).and_return(true)
+      end
+
+      it "does not configure iSCSI" do
+        expect(manager).to_not receive(:configure)
+        expect(subject).to_not receive(:SystemChanged)
+        expect(subject).to_not receive(:ProgressChanged)
+        expect(subject).to_not receive(:ProgressFinished)
+        subject.configure(serialized_config)
+      end
+    end
+
+    context "if the system is not configured yet" do
+      let(:serialized_config) { serialize(config_json) }
+
+      before do
+        allow(manager).to receive(:configured?).with(config_json).and_return(false)
+      end
+
+      it "tries to configure iSCSI" do
+        expect(subject).to receive(:ProgressChanged).ordered
+        expect(manager).to receive(:configure).with(config_json).ordered
+        expect(subject).to receive(:ProgressFinished).ordered
+        subject.configure(serialized_config)
+      end
+
+      context "and the system is modified" do
+        before do
+          expect(manager).to receive(:configure).with(config_json).and_return(true)
+        end
+
+        it "emits SystemChanged signal" do
+          expect(subject).to receive(:SystemChanged)
+          subject.configure(serialized_config)
+        end
+      end
+
+      context "and the system is not modified" do
+        before do
+          expect(manager).to receive(:configure).with(config_json).and_return(false)
+        end
+
+        it "does not emit SystemChanged signal" do
+          expect(subject).to_not receive(:SystemChanged)
+          subject.configure(serialized_config)
+        end
+      end
     end
   end
 

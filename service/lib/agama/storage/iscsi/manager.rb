@@ -86,15 +86,31 @@ module Agama
         # Applies the given iSCSI config.
         #
         # @param config_json [Hash{Symbol=>Object}] Config according to the JSON schema.
+        # @return [Boolean] Whether the iSCSI system was changed.
         def configure(config_json)
           probe unless probed?
           config = assign_config(config_json)
+
+          initiator = self.initiator
+          nodes = self.nodes
+
           probe_after do
             configure_initiator(config)
             discover_from_portals(config)
             disconnect_missing_targets(config)
             configure_targets(config)
           end
+
+          system_changed?(initiator, nodes)
+        end
+
+        # Whether the system is already configured for the given config.
+        #
+        # @param config_json [Hash]
+        # @return [Boolean]
+        def configured?(config_json)
+          config = ConfigImporter.new(config_json).import
+          initiator_configured?(config) && nodes_configured?(config)
         end
 
       private
@@ -147,12 +163,55 @@ module Agama
           @nodes
         end
 
+        # Whether the initiator is already configured for the given config.
+        #
+        # @param config [Config]
+        # @return [Boolean]
+        def initiator_configured?(config)
+          return true unless config.initiator
+
+          initiator&.name == config.initiator
+        end
+
+        # Whether all the nodes are already configured for the given config.
+        #
+        # @param config [Config]
+        # @return [Boolean]
+        def nodes_configured?(config)
+          nodes.all? { |n| node_configured?(n, config) }
+        end
+
+        # Whether the node is already configured for the given config.
+        #
+        # @param node [Node]
+        # @param config [Config]
+        #
+        # @return [Boolean]
+        def node_configured?(node, config)
+          target_config = config.find_target(node.target)
+
+          if target_config
+            node.connected? &&
+              !credentials_changed?(target_config) &&
+              !startup_changed?(target_config)
+          else
+            !node.connected || node.locked?
+          end
+        end
+
+        # Whether the system has changed.
+        #
+        # @param initiator [Initiator]
+        # @param nodes [Array<Node>]
+        def system_changed?(initiator, nodes)
+          self.initiator != initiator || self.nodes != nodes
+        end
+
         # Configures the initiator.
         #
         # @param config [ISCSI::Config]
         def configure_initiator(config)
-          return unless initiator && config.initiator
-          return if initiator.name == config.initiator
+          return if initiator_configured?(config)
 
           adapter.update_initiator(initiator, name: config.initiator)
         end
@@ -165,6 +224,7 @@ module Agama
             interfaces = config.interfaces(portal)
             adapter.discover_from_portal(portal, interfaces: interfaces)
           end
+          probe_nodes
         end
 
         # Disconnects the targets that are not configured, preventing to disconnect locked targets.
@@ -218,6 +278,7 @@ module Agama
         #
         # @return [Boolean] Whether the node was connected.
         def connect_node(node, target_config)
+          logger.info("Connecting iSCSI node: #{node.inspect}")
           adapter.login(
             node,
             credentials: target_config.credentials || {},
@@ -230,6 +291,7 @@ module Agama
         # @param node [Node]
         # @return [Boolean] Whether the node was disconnected.
         def disconnect_node(node)
+          logger.info("Disconnecting iSCSI node: #{node.inspect}")
           adapter.logout(node).tap do |success|
             # Unlock the node if it was correctly disconnected.
             @locked_targets&.delete(node.target) if success
@@ -253,6 +315,7 @@ module Agama
         #
         # @return [Boolean] Whether the node was updated.
         def update_node(node, target_config)
+          logger.info("Updating iSCSI node: #{node.inspect}")
           adapter.update_node(node, startup: target_config.startup)
         end
 
