@@ -142,7 +142,7 @@ const ProductFormProductOption = ({
                     {isChecked && product.modes && (
                       <Split hasGutter>
                         {product.modes.map((mode) => (
-                          <FlexItem>
+                          <FlexItem key={mode.id}>
                             <Radio
                               key={mode.id}
                               id={mode.id}
