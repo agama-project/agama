@@ -37,7 +37,7 @@ pub struct Config {
     #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(alias = "localization")]
     pub l10n: Option<l10n::Config>,
-    #[serde(flatten, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub security: Option<security::Config>,
     #[serde(flatten, skip_serializing_if = "Option::is_none")]
     pub software: Option<software::Config>,
