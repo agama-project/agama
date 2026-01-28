@@ -201,7 +201,7 @@ impl Model {
                         "Cannot open SSH port in firewall",
                     )));
                 } else {
-                    tracing::info!("The SSH port has been successfully opened in firewall");
+                    tracing::info!("The SSH port has been successfully opened in the firewall");
                 }
             }
 
