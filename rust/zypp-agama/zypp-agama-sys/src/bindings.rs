@@ -547,16 +547,20 @@ pub struct Repository {
     pub alias: *mut ::std::os::raw::c_char,
     #[doc = "< owned"]
     pub userName: *mut ::std::os::raw::c_char,
+    #[doc = "< owned"]
+    pub serviceName: *mut ::std::os::raw::c_char,
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of Repository"][::std::mem::size_of::<Repository>() - 32usize];
+    ["Size of Repository"][::std::mem::size_of::<Repository>() - 40usize];
     ["Alignment of Repository"][::std::mem::align_of::<Repository>() - 8usize];
     ["Offset of field: Repository::enabled"][::std::mem::offset_of!(Repository, enabled) - 0usize];
     ["Offset of field: Repository::url"][::std::mem::offset_of!(Repository, url) - 8usize];
     ["Offset of field: Repository::alias"][::std::mem::offset_of!(Repository, alias) - 16usize];
     ["Offset of field: Repository::userName"]
         [::std::mem::offset_of!(Repository, userName) - 24usize];
+    ["Offset of field: Repository::serviceName"]
+        [::std::mem::offset_of!(Repository, serviceName) - 32usize];
 };
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]

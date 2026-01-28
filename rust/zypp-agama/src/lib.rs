@@ -23,6 +23,7 @@ pub struct Repository {
     pub url: String,
     pub alias: String,
     pub user_name: String,
+    pub service: Option<String>,
 }
 
 impl Repository {
@@ -242,11 +243,18 @@ impl Zypp {
             let size_usize: usize = repos.size.try_into().unwrap();
             for i in 0..size_usize {
                 let c_repo = *(repos.repos.add(i));
+                let service = string_from_ptr(c_repo.serviceName);
+                let service_opt = if service.is_empty() {
+                    None
+                } else {
+                    Some(service)
+                };
                 let r_repo = Repository {
                     enabled: c_repo.enabled,
                     url: string_from_ptr(c_repo.url),
                     alias: string_from_ptr(c_repo.alias),
                     user_name: string_from_ptr(c_repo.userName),
+                    service: service_opt,
                 };
                 repos_v.push(r_repo);
             }

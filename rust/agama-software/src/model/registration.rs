@@ -29,7 +29,6 @@ use agama_utils::{
     actor::Handler,
     api::software::{AddonInfo, AddonRegistration, RegistrationInfo},
     arch::Arch,
-    helpers::copy_dir_all,
 };
 use camino::Utf8PathBuf;
 use openssl::x509::X509;
@@ -210,14 +209,6 @@ impl Registration {
             .push(suseconnect_agama::DEFAULT_CONFIG_FILE.into());
         self.copy_files(install_dir)?;
 
-        // FIXME: Copy services files. Temporarily solution because, most probably,
-        // it should be handled by libzypp itself.
-        if let Err(error) = copy_dir_all(
-            self.root_dir.join("etc/zypp/services.d"),
-            install_dir.join("etc/zypp/services.d"),
-        ) {
-            tracing::error!("Failed to copy the libzypp services files: {error}");
-        };
         Ok(())
     }
 

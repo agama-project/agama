@@ -29,7 +29,7 @@ use agama_utils::{
     actor::{self, Actor, Handler, MessageHandler},
     api::{
         event::{self, Event},
-        software::{Config, ProductConfig, Proposal, Repository, SystemInfo},
+        software::{Config, Proposal, Repository, SystemInfo},
         Issue, Scope,
     },
     issue,

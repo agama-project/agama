@@ -26,6 +26,7 @@ use agama_utils::{
         software::{Pattern, SelectedBy, SoftwareProposal, SystemInfo},
         Issue, Scope,
     },
+    helpers::copy_dir_all,
     products::ProductSpec,
     progress, question,
 };
@@ -83,6 +84,9 @@ pub enum ZyppServerError {
 
     #[error("SSL error: {0}")]
     SSL(#[from] openssl::error::ErrorStack),
+
+    #[error("Failed to copy to target system: {0}")]
+    IO(#[from] std::io::Error),
 }
 
 pub type ZyppServerResult<R> = Result<R, ZyppServerError>;
@@ -266,6 +270,8 @@ impl ZyppServer {
         let repositories = zypp
             .list_repositories()?
             .into_iter()
+            // filter out service managed repositories
+            .filter(|repo| repo.service.is_none())
             .map(|repo| state::Repository {
                 name: repo.user_name,
                 alias: repo.alias,
@@ -515,8 +521,32 @@ impl ZyppServer {
                 .map_err(|_| ZyppDispatchError::ResponseChannelClosed)?;
             return Ok(());
         }
+        if let Err(error) = self.copy_files() {
+            tracing::warn!("Failed to copy zypp files: {error}");
+            tx.send(Err(error.into()))
+                .map_err(|_| ZyppDispatchError::ResponseChannelClosed)?;
+            return Ok(());
+        }
+
         // if we fail to send ok, lets just ignore it
         let _ = tx.send(Ok(()));
+        Ok(())
+    }
+
+    const ZYPP_DIRS: [&str; 4] = [
+        "etc/zypp/services.d",
+        "etc/zypp/repos.d",
+        "etc/zypp/credentials.d",
+        "var/cache/zypp",
+    ];
+    fn copy_files(&self) -> ZyppServerResult<()> {
+        for path in Self::ZYPP_DIRS {
+            let source_path = self.root_dir.join(path);
+            let target_path = self.install_dir.join(path);
+            if source_path.exists() {
+                copy_dir_all(&source_path, &target_path)?;
+            }
+        }
         Ok(())
     }
 
