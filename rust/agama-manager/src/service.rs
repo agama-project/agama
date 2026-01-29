@@ -463,12 +463,10 @@ impl Service {
             .call(iscsi::message::SetConfig::new(config.iscsi.clone()))
             .await?;
 
-        self.storage
-            .call(storage::message::SetConfig::new(
-                Arc::clone(product),
-                config.storage.clone(),
-            ))
-            .await?;
+        self.storage.cast(storage::message::SetConfig::new(
+            Arc::clone(product),
+            config.storage.clone(),
+        ))?;
 
         // call bootloader always after storage to ensure that bootloader reflect new storage settings
         self.bootloader
