@@ -107,7 +107,8 @@ const NoMatches = (): React.ReactNode => <b>{_("None of the patterns match the f
  */
 function SoftwarePatternsSelection(): React.ReactNode {
   const { patterns } = useSystem();
-  const { patterns: selection } = useProposal();
+  const proposal = useProposal();
+  const selection = proposal?.patterns || [];
   const [searchValue, setSearchValue] = useState("");
 
   const onToggle = (name: string, selected: boolean) => {
