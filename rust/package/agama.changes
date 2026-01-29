@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Jan 29 21:10:18 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- Add support for "onlyRequired" key in "software" section
+  using new libzypp zypp.conf.d directory.
+  (gh#agama-project/agama#3100)
+
+-------------------------------------------------------------------
 Thu Jan 29 14:56:50 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Fix "agama config edit" subcommand to update the configuration
