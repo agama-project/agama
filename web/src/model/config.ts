@@ -24,7 +24,7 @@ import type * as Hostname from "~/model/config/hostname";
 import type * as L10n from "~/model/config/l10n";
 import type * as Network from "~/model/config/network";
 import type * as Product from "~/model/config/product";
-import type * as Software from "~/model/config/software";
+import type * as Software from "~/openapi/config/software";
 import type * as User from "~/model/config/user";
 import type * as Root from "~/model/config/root";
 import type * as Storage from "~/openapi/config/storage";
