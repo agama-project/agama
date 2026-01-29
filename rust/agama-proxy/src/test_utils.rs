@@ -18,8 +18,13 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-pub mod message;
-pub mod model;
-pub mod service;
-pub use service::{Service, Starter};
-pub mod test_utils;
+use agama_utils::{actor::Handler, api::event};
+
+use crate::{Service, Starter};
+
+/// Starts a testing proxy service.
+pub async fn start_service(events: event::Sender) -> Handler<Service> {
+    Starter::new(events)
+        .start()
+        .expect("Could not spawn a testing proxy service")
+}
