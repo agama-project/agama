@@ -606,12 +606,10 @@ impl ZyppServer {
         // write only if different from default
         if self.only_required {
             let contents = "# Use only hard dependencies as configured in installer\nsolver.onlyRequires = true\n";
-            let write_result = std::fs::write(
-                self.install_dir.join("etc/zypp/zypp.conf.d/installer.conf"),
-                contents,
-            );
+            let path = self.install_dir.join("etc/zypp/zypp.conf.d/installer.conf");
+            let write_result = std::fs::write(path.as_path(), contents);
             if write_result.is_err() {
-                tracing::error!("Failed to write zypp.conf.d/installer.conf. {write_result:?}");
+                tracing::error!("Failed to write {path}. {write_result:?}");
             }
         }
     }
