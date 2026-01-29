@@ -78,7 +78,7 @@ impl Starter {
 
     pub fn start(self) -> Result<Handler<Service>, Error> {
         let service = Service {
-            events: self.events,
+            _events: self.events,
             state: State::new(self.workdir.join(PROXY_PATH)),
             install_dir: self.install_dir,
         };
@@ -190,7 +190,7 @@ impl State {
 }
 
 pub struct Service {
-    events: event::Sender,
+    _events: event::Sender,
     state: State,
     install_dir: PathBuf,
 }

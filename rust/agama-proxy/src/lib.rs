@@ -26,10 +26,8 @@ pub mod test_utils;
 
 #[cfg(test)]
 mod tests {
-    use crate::model::ProxyConfig;
-
     use super::*;
-    use agama_utils::api::{self, config};
+    use agama_utils::api;
     use tokio::sync::broadcast;
 
     #[tokio::test]
@@ -43,7 +41,7 @@ mod tests {
         let install_dir = temp_dir.path().join("install");
 
         let service = Starter::new(sender)
-            .with_install_dir(install_dir)
+            .with_install_dir(&install_dir)
             .with_workdir(&config_dir)
             .start()
             .expect("Failed to start service");
@@ -69,5 +67,15 @@ mod tests {
         // Check config is updated
         let config = service.call(message::GetConfig).await.unwrap();
         assert_eq!(config, Some(new_config));
+        // Call Finish
+        service.call(message::Finish).await.unwrap();
+
+        // Check if the config file was written to the install_dir
+        let expected_path = install_dir.join("etc/sysconfig/proxy");
+        assert!(expected_path.exists());
+
+        let content = fs::read_to_string(expected_path).unwrap();
+        assert!(content.contains("HTTP_PROXY=\"http://proxy.example.com\""));
+        assert!(content.contains("PROXY_ENABLED=\"yes\""));
     }
 }
