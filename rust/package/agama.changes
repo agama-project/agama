@@ -1,4 +1,15 @@
 -------------------------------------------------------------------
+Thu Jan 29 07:04:09 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Expose the product configuration even in the software service is busy
+  (bsc#1257443).
+
+-------------------------------------------------------------------
+Thu Jan 29 06:24:00 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Fix answers validation (gh#agama-project/agama#3094).
+
+-------------------------------------------------------------------
 Wed Jan 28 17:07:32 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Import the security settings correctly (bsc#1257290).
