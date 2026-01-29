@@ -428,11 +428,7 @@ bool run_solver(struct Zypp *zypp, bool only_required,
                 struct Status *status) noexcept {
   try {
     STATUS_OK(status);
-    if (only_required) {
-      zypp->zypp_pointer->resolver()->setOnlyRequires(true);
-    } else {
-      zypp->zypp_pointer->resolver()->setOnlyRequires(false);
-    }
+    zypp->zypp_pointer->resolver()->setOnlyRequires(only_required);
     return zypp->zypp_pointer->resolver()->resolvePool();
   } catch (zypp::Exception &excpt) {
     STATUS_EXCEPT(status, excpt);

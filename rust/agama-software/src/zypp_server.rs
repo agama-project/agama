@@ -441,6 +441,7 @@ impl ZyppServer {
         }
 
         self.only_required = state.options.only_required;
+        tracing::info!("only_required: {}", self.only_required);
         // run the solver to select the dependencies, ignore the errors, the solver runs again later
         let _ = zypp.run_solver(self.only_required);
 
