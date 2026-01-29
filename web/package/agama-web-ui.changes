@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Jan 29 10:26:49 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Do not crash when selecting a pattern (gh#agama-project/agama#3097,
+  bsc#1257454).
+
+-------------------------------------------------------------------
 Wed Jan 28 12:43:13 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Force the user to select a mode when it is needed (related to
