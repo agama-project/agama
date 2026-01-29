@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Jan 29 09:56:05 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Do not wait for the storage service when setting the configuration
+  (gh#agama-project/agama#3096, related to bsc#1257067).
+
+-------------------------------------------------------------------
 Thu Jan 29 07:04:09 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Expose the product configuration even in the software service is busy
