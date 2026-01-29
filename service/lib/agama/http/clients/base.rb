@@ -37,7 +37,9 @@ module Agama
         # @param path [String] path relatived to `api`` endpoint.
         # @param data [#to_json] data to send in request
         def post(path, data)
-          response = Net::HTTP.post(uri(path), data.to_json, headers)
+          response = request_with_retry do
+            Net::HTTP.post(uri(path), data.to_json, headers)
+          end
           return response unless response.is_a?(Net::HTTPClientError)
 
           @logger.warn "server returned #{response.code} with body: #{response.body}"
@@ -47,7 +49,9 @@ module Agama
         # @param path [String] path relatived to `api`` endpoint.
         # @return [Net::HTTPResponse, nil] Net::HTTPResponse if it is not an Net::HTTPClientError
         def get(path)
-          response = Net::HTTP.get(uri(path), headers)
+          response = request_with_retry do
+            Net::HTTP.get(uri(path), headers)
+          end
           return response unless response.is_a?(Net::HTTPClientError)
 
           @logger.warn "server returned #{response.code} with body: #{response.body}"
@@ -57,7 +61,9 @@ module Agama
         # @param path [String] path relatived to `api`` endpoint.
         # @param data [#to_json] data to send in request
         def put(path, data)
-          response = Net::HTTP.put(uri(path), data.to_json, headers)
+          response = request_with_retry do
+            Net::HTTP.put(uri(path), data.to_json, headers)
+          end
           return unless response.is_a?(Net::HTTPClientError)
 
           @logger.warn "server returned #{response.code} with body: #{response.body}"
@@ -68,8 +74,10 @@ module Agama
         # @param data [#to_json] data to send in request
         def patch(path, data)
           url = uri(path)
-          http = Net::HTTP.start(url.hostname, url.port, use_ssl: url.scheme == "https")
-          response = http.patch(url, data.to_json, headers)
+          response = request_with_retry do
+            http = Net::HTTP.start(url.hostname, url.port, use_ssl: url.scheme == "https")
+            http.patch(url, data.to_json, headers)
+          end
           return response unless response.is_a?(Net::HTTPClientError)
 
           @logger.warn "server returned #{response.code} with body: #{response.body}"
@@ -90,6 +98,27 @@ module Agama
 
         def auth_token
           File.read("/run/agama/token")
+        end
+
+        CONNECT_ATTEMPTS = 10
+
+        # Performs a request and retries if it fails.
+        #
+        # During initialization, it might happen that Agama's web server is not available.
+        # This method retries the block if the connection is not possible.
+        #
+        # @return [Object] value returned by the block
+        def request_with_retry(&block)
+          attempt = 1
+          begin
+            block.call
+          rescue Errno::ECONNREFUSED => error
+            @logger.warn "Failed to contact Agama's server (attempt #{attempt} of #{CONNECT_ATTEMPTS})."
+            raise if attempt == CONNECT_ATTEMPTS
+            sleep 1
+            attempt += 1
+            retry
+          end
         end
       end
     end
