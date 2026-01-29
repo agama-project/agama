@@ -516,7 +516,8 @@ impl ZyppServer {
             return Ok(());
         }
         let _ = self.registration_finish(); // TODO: move it outside of zypp server as it do not need zypp lock
-        let _ = self.modify_zypp_conf(); // TODO: move it outside of zypp server as it do not need zypp lock
+
+        self.modify_zypp_conf();
 
         if let Err(error) = self.modify_full_repo(zypp) {
             tracing::warn!("Failed to modify the full repository: {error}");
@@ -600,14 +601,18 @@ impl ZyppServer {
         Ok(())
     }
 
-    fn modify_zypp_conf(&self) -> ZyppServerResult<()> {
+    fn modify_zypp_conf(&self) {
         // write only if different from default
         if self.only_required {
             let contents = "# Use only hard dependencies as configured in installer\nsolver.onlyRequires = true\n";
-            std::fs::write(
-                self.install_dir.join("etc/zypp/zypp.conf.d/installer.conf"), contents);
+            let write_result = std::fs::write(
+                self.install_dir.join("etc/zypp/zypp.conf.d/installer.conf"),
+                contents,
+            );
+            if write_result.is_err() {
+                tracing::error!("Failed to write zypp.conf.d/installer.conf. {write_result:?}");
             }
-        Ok(())
+        }
     }
 
     fn system_info(
