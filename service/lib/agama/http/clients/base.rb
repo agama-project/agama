@@ -112,9 +112,11 @@ module Agama
           attempt = 1
           begin
             block.call
-          rescue Errno::ECONNREFUSED => error
-            @logger.warn "Failed to contact Agama's server (attempt #{attempt} of #{CONNECT_ATTEMPTS})."
+          rescue Errno::ECONNREFUSED => e
+            @logger.warn "Failed to contact Agama's server with error #{e} " \
+                         "(attempt #{attempt} of #{CONNECT_ATTEMPTS})."
             raise if attempt == CONNECT_ATTEMPTS
+
             sleep 1
             attempt += 1
             retry
