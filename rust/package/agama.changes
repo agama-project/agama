@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Jan 29 14:56:50 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Fix "agama config edit" subcommand to update the configuration
+  (bsc#1257198).
+
+-------------------------------------------------------------------
 Thu Jan 29 09:56:05 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Do not wait for the storage service when setting the configuration
