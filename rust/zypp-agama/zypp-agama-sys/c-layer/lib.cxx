@@ -398,7 +398,8 @@ struct PatternInfos get_patterns_info(struct Zypp *_zypp,
         break;
       }
     } else {
-      // distinguish between the "not selected" and "explicitly removed by user" states
+      // distinguish between the "not selected" and "explicitly removed by user"
+      // states
       if (status.getTransactByValue() == zypp::ResStatus::TransactByValue::USER)
         result.infos[i].selected = RESOLVABLE_SELECTED::USER_REMOVED;
       else
@@ -423,9 +424,11 @@ void free_pattern_infos(const struct PatternInfos *infos) noexcept {
   free(infos->infos);
 }
 
-bool run_solver(struct Zypp *zypp, struct Status *status) noexcept {
+bool run_solver(struct Zypp *zypp, bool only_required,
+                struct Status *status) noexcept {
   try {
     STATUS_OK(status);
+    zypp->zypp_pointer->resolver()->setOnlyRequires(only_required);
     return zypp->zypp_pointer->resolver()->resolvePool();
   } catch (zypp::Exception &excpt) {
     STATUS_EXCEPT(status, excpt);

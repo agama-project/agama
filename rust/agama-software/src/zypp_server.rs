@@ -129,6 +129,7 @@ pub struct ZyppServer {
     install_dir: Utf8PathBuf,
     trusted_keys: Vec<RepoKey>,
     unsigned_repos: Vec<String>,
+    only_required: bool,
 }
 
 impl ZyppServer {
@@ -148,6 +149,7 @@ impl ZyppServer {
             registration: Default::default(),
             trusted_keys: vec![],
             unsigned_repos: vec![],
+            only_required: false,
         };
 
         // drop the returned JoinHandle: the thread will be detached
@@ -438,8 +440,10 @@ impl ZyppServer {
             };
         }
 
+        self.only_required = state.options.only_required;
+        tracing::info!("Install only required packages: {}", self.only_required);
         // run the solver to select the dependencies, ignore the errors, the solver runs again later
-        let _ = zypp.run_solver();
+        let _ = zypp.run_solver(self.only_required);
 
         // unselect packages including the autoselected dependencies
         for (name, r#type, selection) in &state.resolvables.to_vec() {
@@ -450,7 +454,7 @@ impl ZyppServer {
         }
 
         _ = progress.cast(progress::message::Finish::new(Scope::Software));
-        match zypp.run_solver() {
+        match zypp.run_solver(self.only_required) {
             Ok(result) => println!("Solver result: {result}"),
             Err(error) => println!("Solver failed: {error}"),
         };
@@ -513,7 +517,8 @@ impl ZyppServer {
             return Ok(());
         }
         let _ = self.registration_finish(); // TODO: move it outside of zypp server as it do not need zypp lock
-        let _ = self.modify_zypp_conf(); // TODO: move it outside of zypp server as it do not need zypp lock
+
+        self.modify_zypp_conf();
 
         if let Err(error) = self.modify_full_repo(zypp) {
             tracing::warn!("Failed to modify the full repository: {error}");
@@ -597,9 +602,16 @@ impl ZyppServer {
         Ok(())
     }
 
-    fn modify_zypp_conf(&self) -> ZyppServerResult<()> {
-        // TODO: implement when requireOnly is implemented
-        Ok(())
+    fn modify_zypp_conf(&self) {
+        // write only if different from default
+        if self.only_required {
+            let contents = "# Use only hard dependencies as configured in installer\nsolver.onlyRequires = true\n";
+            let path = self.install_dir.join("etc/zypp/zypp.conf.d/installer.conf");
+            let write_result = std::fs::write(path.as_path(), contents);
+            if write_result.is_err() {
+                tracing::error!("Failed to write {path}: {write_result:?}");
+            }
+        }
     }
 
     fn system_info(
