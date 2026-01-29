@@ -356,10 +356,10 @@ async fn edit(
     model: &api::Config,
     editor: &str,
 ) -> anyhow::Result<api::Config> {
-    let content = serde_json::to_string_pretty(model)?;
+    let original = serde_json::to_string_pretty(model)?;
     let mut file = Builder::new().suffix(".json").tempfile()?;
     let path = PathBuf::from(file.path());
-    write!(file, "{}", content)?;
+    write!(file, "{}", original)?;
 
     let mut base_command = editor_command(editor);
     let command = base_command.arg(path.as_os_str());
@@ -367,10 +367,10 @@ async fn edit(
     // TODO: do nothing if the content of the file is unchanged
     if status.success() {
         // FIXME: invalid profile still gets loaded
-        let contents =
+        let updated =
             std::fs::read_to_string(&path).context(format!("Reading from file {:?}", path))?;
-        validate(&http_client, CliInput::Full(contents), false).await?;
-        return Ok(serde_json::from_str(&content)?);
+        validate(&http_client, CliInput::Full(updated.clone()), false).await?;
+        return Ok(serde_json::from_str(&updated)?);
     }
 
     Err(anyhow!(
