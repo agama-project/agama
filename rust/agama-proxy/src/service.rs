@@ -178,7 +178,12 @@ impl State {
             no_proxy: config.no_proxy,
         };
 
-        proxy_config.write_to(&self.config_path)?;
+        let path = &self.config_path;
+        if let Some(parent) = path.parent() {
+            std::fs::create_dir_all(parent)?;
+        }
+
+        proxy_config.write_to(&path)?;
         self.load(true);
         Ok(())
     }

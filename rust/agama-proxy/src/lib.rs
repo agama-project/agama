@@ -23,3 +23,51 @@ pub mod model;
 pub mod service;
 pub use service::{Service, Starter};
 pub mod test_utils;
+
+#[cfg(test)]
+mod tests {
+    use crate::model::ProxyConfig;
+
+    use super::*;
+    use agama_utils::api::{self, config};
+    use tokio::sync::broadcast;
+
+    #[tokio::test]
+    async fn test_proxy_service() {
+        use std::fs;
+        use tempfile::tempdir;
+
+        let (sender, _receiver) = broadcast::channel(100);
+        let temp_dir = tempdir().unwrap();
+        let config_dir = temp_dir.path().join("config");
+        let install_dir = temp_dir.path().join("install");
+
+        let service = Starter::new(sender)
+            .with_install_dir(install_dir)
+            .with_workdir(&config_dir)
+            .start()
+            .expect("Failed to start service");
+
+        // Would be nice
+        //fs::create_dir_all(&config_dir.join("etc/sysconfig")).unwrap();
+        // Check initial config is empty
+        let config = service.call(message::GetConfig).await.unwrap();
+        assert_eq!(config, None);
+
+        // Update config
+        let new_config = api::proxy::Config {
+            enabled: Some(true),
+            http: Some("http://proxy.example.com".to_string()),
+            ..Default::default()
+        };
+
+        service
+            .call(message::SetConfig::new(Some(new_config.clone())))
+            .await
+            .unwrap();
+
+        // Check config is updated
+        let config = service.call(message::GetConfig).await.unwrap();
+        assert_eq!(config, Some(new_config));
+    }
+}

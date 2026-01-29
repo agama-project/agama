@@ -100,8 +100,16 @@ impl ProxyConfig {
         let path = Self::config_path();
         match Self::read_from(&path) {
             Ok(config) => Ok(Some(config)),
-            Err(Error::Io(e)) if e.kind() == std::io::ErrorKind::NotFound => Ok(None),
-            Err(e) => Err(e),
+            Err(Error::Io(e)) => {
+                if e.kind() == std::io::ErrorKind::NotFound {
+                    tracing::error!("There is no proxy configuration");
+                }
+                Ok(None)
+            }
+            Err(e) => {
+                tracing::error!("There was an error reading the proxy configuration: {e}");
+                Ok(None)
+            }
         }
     }
 
