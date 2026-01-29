@@ -441,7 +441,7 @@ impl ZyppServer {
         }
 
         self.only_required = state.options.only_required;
-        tracing::info!("only_required: {}", self.only_required);
+        tracing::info!("Install only required packages: {}", self.only_required);
         // run the solver to select the dependencies, ignore the errors, the solver runs again later
         let _ = zypp.run_solver(self.only_required);
 
@@ -609,7 +609,7 @@ impl ZyppServer {
             let path = self.install_dir.join("etc/zypp/zypp.conf.d/installer.conf");
             let write_result = std::fs::write(path.as_path(), contents);
             if write_result.is_err() {
-                tracing::error!("Failed to write {path}. {write_result:?}");
+                tracing::error!("Failed to write {path}: {write_result:?}");
             }
         }
     }
