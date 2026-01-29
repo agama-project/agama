@@ -1,4 +1,171 @@
 -------------------------------------------------------------------
+Wed Jan 28 12:43:13 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Force the user to select a mode when it is needed (related to
+  jsc#PED-14307).
+- Do not loose the mode when registering a product (related to
+  jsc#PED-14307).
+- Reset the configuration when selecting a new product.
+
+-------------------------------------------------------------------
+Wed Jan 28 11:00:28 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Allow selecting the mode in the product selection screen (jsc#PED-14307).
+
+-------------------------------------------------------------------
+Fri Jan 23 15:34:08 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+
+- Fixed removing automatically selected recommended patterns
+  (gh#agama-project/agama#3072)
+
+-------------------------------------------------------------------
+Thu Jan 22 16:19:20 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Allow registering add-ons (gh#agama-project/agama#3061).
+- Improve error reporting in the registration page.
+- Do not block the UI when registering the system (bsc#1257105).
+- Do not allow to change the product when it is already registered.
+
+-------------------------------------------------------------------
+Thu Jan 22 15:25:25 UTC 2026 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Track state (collapsed/open) of the lists of logical volumes
+  (gh#agama-project/agama#3066).
+
+-------------------------------------------------------------------
+Thu Jan 22 14:11:19 UTC 2026 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Avoid inconsistent state (collapsed/open) in the lists of
+  partitions (gh#agama-project/agama#3063).
+
+-------------------------------------------------------------------
+Thu Jan 22 03:57:13 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Updated top header install button label to clarify navigation to
+  the overview page (gh#agama-project/agama#3060).
+
+-------------------------------------------------------------------
+Wed Jan 21 10:48:33 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Adapt to the changes in the question about trusting
+  certificates from the registration (gh#agama-project/agama#3055).
+
+-------------------------------------------------------------------
+Tue Jan 20 03:52:59 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Update look&feel of some pages to make them match the new style
+  (gh#agama-project/agama#3050).
+
+-------------------------------------------------------------------
+Tue Jan 20 00:53:06 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Avoid flicker on the product selection page by deferring the
+  display of current product information
+  (gh#agama-project/agama#3049).
+
+-------------------------------------------------------------------
+Mon Jan 19 23:48:20 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Internal fix to prevent warnings (not visible for users) in the
+  product selection form (gh#agama-project/agama#3048).
+
+-------------------------------------------------------------------
+Mon Jan 19 13:27:16 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Fix query refetch (gh#agama-project/agama#3044).
+
+-------------------------------------------------------------------
+Mon Jan 19 13:24:41 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Avoid flickering on the overview page by stabilizing progress
+  updates (gh#agama-project/agama#3042).
+
+-------------------------------------------------------------------
+Mon Jan 19 09:00:12 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Enhance product selection page (gh#agama-project/agama#3039):
+  - Keep the selected product’s radio button checked after
+    interacting with other controls.
+  - Improved UX with persistent product details on large screens,
+    clearer submission-disabled messages, and other minor yet
+    useful UI tweaks.
+
+-------------------------------------------------------------------
+Fri Jan 16 12:58:15 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Updated the overview software summary to inform users about
+  blocking issues (gh#agama-project/agama#3035).
+
+-------------------------------------------------------------------
+Wed Jan 14 23:27:16 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Reorganize the user interface:
+  - The new interface is built around the new overview page.
+  - Remove the sidebar and the menu.
+  - Bring back the installation progress page.
+- Adapt to the new API to handle users and authentication
+  configuration.
+- Extend the overview with information about authentication
+  and registration.
+
+-------------------------------------------------------------------
+Fri Jan  9 14:43:59 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 19.pre
+- Adapt to the version 2 of the HTTP API (gh#agama-project/agama#2997).
+- Introduce a new overview page.
+- Missing pieces:
+  - Installation progress.
+  - Add-ons registration.
+  - iSCSI, DASD and zFCP support.
+
+-------------------------------------------------------------------
+Tue Dec 16 08:32:09 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Added a new TranslatedString type to require a translated string
+  in the code, this should lower the risk of missing translations
+  (gh#agama-project/agama#2928)
+
+-------------------------------------------------------------------
+Fri Nov 21 08:17:06 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Fixed missing translations (error cases for software repos, iSCSI, DASD; bsc#1250059)
+
+-------------------------------------------------------------------
+Thu Nov 13 13:30:58 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Do not build on 32bit arches (like i586) and PPC64-BE,
+  the dependant libsuseconnect does not support these (bsc#1251846)
+
+-------------------------------------------------------------------
+Wed Nov 12 15:42:28 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 18
+
+-------------------------------------------------------------------
+Tue Oct 28 16:34:22 UTC 2025 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Rearrange the information in the storage page
+  (gh#agama-project/agama#2767).
+
+-------------------------------------------------------------------
+Mon Oct 27 15:51:48 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Use the JavaScript/TypeScript parser to extract strings for
+  translation (gh#agama-project/agama#2748).
+
+-------------------------------------------------------------------
+Fri Oct 17 12:30:56 UTC 2025 - David Diaz <dgonzalez@suse.com>
+
+- Preserve installer options values after successful submission
+  (bsc#1249636).
+
+-------------------------------------------------------------------
+Tue Oct 14 14:01:15 UTC 2025 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Fixed the check about which DASDs can be formatted (bsc#1243795).
+
+-------------------------------------------------------------------
 Thu Sep 18 08:57:11 UTC 2025 - David Diaz <dgonzalez@suse.com>
 
 - Preserve installer options values after successful submission

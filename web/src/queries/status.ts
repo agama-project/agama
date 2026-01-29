@@ -22,7 +22,7 @@
 
 import { useQuery, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import React from "react";
-import { fetchInstallerStatus } from "~/api/status";
+import { fetchInstallerStatus } from "~/model/status";
 import { useInstallerClient } from "~/context/installer";
 import { InstallerStatus } from "~/types/status";
 import { QueryHookOptions } from "~/types/queries";
@@ -66,9 +66,6 @@ const useInstallerStatusChanges = () => {
       const data = queryClient.getQueryData(["status"]) as object;
 
       switch (type) {
-        case "IssuesChanged":
-          queryClient.invalidateQueries({ queryKey: ["status"] });
-          break;
         case "InstallationPhaseChanged":
           if (!data) {
             console.warn("Ignoring InstallationPhaseChanged event", event);

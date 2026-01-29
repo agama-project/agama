@@ -1,0 +1,131 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR SuSE Linux Products GmbH, Nuernberg
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-01-23 15:24+0000\n"
+"PO-Revision-Date: 2026-01-20 00:04+0000\n"
+"Last-Translator: Yasuhiko Kamata <belphegor@belbel.or.jp>\n"
+"Language-Team: Japanese <https://l10n.opensuse.org/projects/agama/agama-rust-"
+"master/ja/>\n"
+"Language: ja\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 5.15.2\n"
+
+#: agama-autoinstall/src/questions.rs:41 agama-utils/src/api/question.rs:282
+#: agama-utils/src/question/start.rs:54
+msgid "No"
+msgstr "いいえ"
+
+#: agama-autoinstall/src/questions.rs:41 agama-utils/src/api/question.rs:282
+#: agama-utils/src/question/start.rs:54
+msgid "Yes"
+msgstr "はい"
+
+#: agama-manager/src/service.rs:839
+msgid "Prepare the system"
+msgstr "システムの準備"
+
+#: agama-manager/src/service.rs:840
+msgid "Install software"
+msgstr "ソフトウエアのインストール"
+
+#: agama-manager/src/service.rs:841
+msgid "Configure the system"
+msgstr "システムの設定"
+
+#: agama-network/src/service.rs:518
+msgid "Writing configuration"
+msgstr "設定を書き込んでいます"
+
+#: agama-network/src/service.rs:519
+msgid "Reading configuration"
+msgstr "設定を読み込んでいます"
+
+#: agama-security/src/service.rs:228
+msgid "Reject"
+msgstr ""
+
+#: agama-security/src/service.rs:228
+#: agama-software/src/callbacks/security.rs:74
+msgid "Trust"
+msgstr "信頼する"
+
+#: agama-security/src/service.rs:229
+msgid ""
+"Trying to import a self-signed certificate. Do you want to trust it and "
+"register the product?"
+msgstr ""
+
+#: agama-software/src/callbacks/commit_download.rs:48
+#: agama-software/src/callbacks/install.rs:56
+msgid "Ignore"
+msgstr "無視"
+
+#: agama-software/src/callbacks/commit_download.rs:48
+#: agama-software/src/callbacks/install.rs:56
+#: agama-software/src/callbacks/install.rs:81
+msgid "Retry"
+msgstr "再試行"
+
+#: agama-software/src/callbacks/install.rs:78
+msgid "There was a problem running a package script."
+msgstr "パッケージスクリプトの実行にあたって問題が発生しました。"
+
+#: agama-software/src/callbacks/install.rs:81
+msgid "Continue"
+msgstr "続行"
+
+#. TRANSLATORS: substituting: key ID, (key name), fingerprint
+#: agama-software/src/callbacks/security.rs:67
+#, rust-format
+msgid ""
+"The key {0} ({1}) with fingerprint {2} is unknown. Do you want to trust this "
+"key?"
+msgstr ""
+"指紋 {2} の鍵 {0} ({1}) は未知の鍵です。この鍵を信頼してよろしいですか？"
+
+#: agama-software/src/callbacks/security.rs:74
+msgid "Skip"
+msgstr "飛ばす"
+
+#: agama-software/src/zypp_server.rs:290
+msgid "Updating the list of repositories"
+msgstr "リポジトリの一覧を更新しています"
+
+#: agama-software/src/zypp_server.rs:291
+msgid "Refreshing metadata from the repositories"
+msgstr "リポジトリのメタデータを更新しています"
+
+#: agama-software/src/zypp_server.rs:292
+msgid "Calculating the software proposal"
+msgstr "ソフトウエアの提案内容を作成しています"
+
+#: agama-software/src/zypp_server.rs:295
+msgid "Registering the system"
+msgstr "システムを登録しています"
+
+#: agama-software/src/zypp_server.rs:390
+msgid "The product must be registered"
+msgstr "製品を登録しなければなりません"
+
+#: agama-users/src/service.rs:138
+msgid ""
+"Defining a user, setting the root password or a SSH public key is required"
+msgstr ""
+"ユーザの設定、 root パスワードの設定、 SSH 公開鍵の設定のいずれかが必要です"
+
+#: agama-users/src/service.rs:151
+msgid "First user information is incomplete"
+msgstr "最初のユーザ情報が不十分です"
+
+#, fuzzy
+#~ msgid "Failed to register the system"
+#~ msgstr "システムを登録しています"

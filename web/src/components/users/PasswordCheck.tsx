@@ -20,15 +20,15 @@
  * find current contact information at www.suse.com.
  */
 
-import { Alert } from "@patternfly/react-core";
 import React, { useEffect, useState } from "react";
-import { checkPassword } from "~/api/users";
-import { _ } from "~/i18n";
+import SmallWarning from "~/components/core/SmallWarning";
+import { checkPassword } from "~/model/users";
+import { _, TranslatedString } from "~/i18n";
 
 const MINIMAL_SCORE = 50;
 
 const PasswordCheck = ({ password }: { password: string }) => {
-  const [error, setError] = useState("");
+  const [error, setError] = useState<TranslatedString | undefined>();
 
   useEffect(() => {
     if (!password) return;
@@ -39,7 +39,7 @@ const PasswordCheck = ({ password }: { password: string }) => {
       } else if (result.success && result.success < MINIMAL_SCORE) {
         setError(_("The password is weak"));
       } else {
-        setError("");
+        setError(undefined);
       }
     });
   }, [password]);
@@ -48,7 +48,7 @@ const PasswordCheck = ({ password }: { password: string }) => {
 
   return (
     <div aria-live="polite">
-      <Alert isPlain title={error} variant="warning" />
+      <SmallWarning text={error} />
     </div>
   );
 };

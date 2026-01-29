@@ -20,31 +20,16 @@
 
 use utoipa::openapi::{Components, Info, InfoBuilder, OpenApi, OpenApiBuilder, Paths};
 
-mod hostname;
-pub use hostname::HostnameApiDocBuilder;
-mod network;
-pub use network::NetworkApiDocBuilder;
-mod storage;
-pub use storage::StorageApiDocBuilder;
+mod config;
+pub use config::ConfigApiDocBuilder;
 mod bootloader;
 pub use bootloader::BootloaderApiDocBuilder;
-mod software;
-pub use software::SoftwareApiDocBuilder;
-mod l10n;
-pub use l10n::L10nApiDocBuilder;
-mod questions;
-pub use questions::QuestionsApiDocBuilder;
 mod profile;
 pub use profile::ProfileApiDocBuilder;
-mod manager;
-pub use manager::ManagerApiDocBuilder;
 mod users;
 pub use users::UsersApiDocBuilder;
 mod misc;
 pub use misc::MiscApiDocBuilder;
-mod scripts;
-pub use scripts::ScriptsApiDocBuilder;
-pub mod common;
 
 pub trait ApiDocBuilder {
     fn title(&self) -> String {

@@ -20,6 +20,8 @@
  * find current contact information at www.suse.com.
  */
 
+/** @deprecated */
+
 /**
  * Enum for the reasons to select a pattern
  */
@@ -45,6 +47,11 @@ type Product = {
   registration: boolean;
   /** The product license id, if any */
   license?: string;
+  /** Translations */
+  translations?: {
+    /** The key is the locale (e.g., "en", "pt_BR") */
+    description: Record<string, string>;
+  };
 };
 
 type License = {
@@ -115,12 +122,6 @@ type RegistrationInfo = {
   url: string;
 };
 
-type RegistrationParams = {
-  key: string;
-  email?: string;
-  url: string;
-};
-
 type AddonInfo = {
   id: string;
   version: string;
@@ -129,8 +130,17 @@ type AddonInfo = {
   free: boolean;
   recommended: boolean;
   description: string;
-  type: string;
   release: string;
+  registration: AddonRegistered | AddonUnregistered;
+};
+
+type AddonRegistered = {
+  status: "registered";
+  code?: string;
+};
+
+type AddonUnregistered = {
+  status: "notRegistered";
 };
 
 type RegisteredAddonInfo = {
@@ -170,7 +180,6 @@ export type {
   Product,
   RegisteredAddonInfo,
   RegistrationInfo,
-  RegistrationParams,
   Repository,
   SoftwareConfig,
   SoftwareProposal,

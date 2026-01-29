@@ -108,7 +108,7 @@ make build OBS_PROJECT=home:<USER>:branches:systemsmanagement:Agama:Devel
 To build a SLE image using the internal OBS instance run
 
 ```shell
-make build OBS_API=https://api.suse.de OBS_PROJECT=Devel:YaST:Agama:Head OBS_PACKAGE=agama-installer FLAVOR=SUSE_SLE_16
+make build OBS_API=https://api.suse.de OBS_PROJECT=Devel:YaST:Agama:Head OBS_PACKAGE=agama-installer FLAVOR=SUSE_SLE_16.1
 ```
 
 #### Using locally built RPM packages
@@ -148,8 +148,6 @@ The main Kiwi source files are located in the [src](src) subdirectory:
   resources (enough free disk space).
 - [_multibuild](src/_multibuild) defines the image flavors (KIWI profiles) which are available to
   build
-- [images.sh](src/images.sh) - injects a script which checks whether the machine has enough RAM when
-  booting the Live ISO
 - [fix_bootconfig](src/fix_bootconfig) - a special KIWI hook script which sets the boot
   configuration on S390 and PPC64 architectures.
 

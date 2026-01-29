@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2023-2025] SUSE LLC
+ * Copyright (c) [2023-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -34,10 +34,14 @@ import {
   Content,
 } from "@patternfly/react-core";
 import { Page } from "~/components/core";
-import { useConfigMutation, usePatterns } from "~/queries/software";
-import { Pattern, SelectedBy } from "~/types/software";
 import { _ } from "~/i18n";
 import a11yStyles from "@patternfly/react-styles/css/utilities/Accessibility/accessibility";
+import { useSystem } from "~/hooks/model/system/software";
+import { Pattern } from "~/model/system/software";
+import { SelectedBy } from "~/model/proposal/software";
+import { useProposal } from "~/hooks/model/proposal/software";
+import { patchConfig } from "~/api";
+import { SOFTWARE } from "~/routes/paths";
 
 /**
  * PatternGroups mapping "group name" => list of patterns
@@ -102,21 +106,29 @@ const NoMatches = (): React.ReactNode => <b>{_("None of the patterns match the f
  * Pattern selector component
  */
 function SoftwarePatternsSelection(): React.ReactNode {
-  const patterns = usePatterns();
-  const config = useConfigMutation();
+  const { patterns } = useSystem();
+  const { patterns: selection } = useProposal();
   const [searchValue, setSearchValue] = useState("");
 
-  const onToggle = (name: string) => {
-    const selected = patterns
-      .filter((p) => p.selectedBy === SelectedBy.USER)
-      .reduce((all, p) => {
-        all[p.name] = true;
-        return all;
-      }, {});
-    const pattern = patterns.find((p) => p.name === name);
-    selected[name] = pattern.selectedBy === SelectedBy.NONE;
+  const onToggle = (name: string, selected: boolean) => {
+    const add = patterns
+      .filter((p) => selection[p.name] === SelectedBy.USER && p.name !== name)
+      .map((p) => p.name);
+    const remove = patterns
+      .filter((p) => selection[p.name] === SelectedBy.REMOVED && p.name !== name)
+      .map((p) => p.name);
 
-    config.mutate({ patterns: selected });
+    if (selected) {
+      add.push(name);
+    } else {
+      // add the pattern to the "remove" list only if it was autoselected by dependencies, otherwise
+      // it was selected by user and it is enough to remove it from the "add" list above
+      if (selection[name] === SelectedBy.AUTO) {
+        remove.push(name);
+      }
+    }
+
+    patchConfig({ software: { patterns: { add, remove } } });
   };
 
   // FIXME: use loading indicator when busy, we cannot know if it will be
@@ -133,8 +145,9 @@ function SoftwarePatternsSelection(): React.ReactNode {
   // TODO: extract to a DataListSelector component or so.
   const selector = sortGroups(groups).map((groupName) => {
     const selectedIds = groups[groupName]
-      .filter((p) => p.selectedBy !== SelectedBy.NONE)
+      .filter((p) => [SelectedBy.USER, SelectedBy.AUTO].includes(selection[p.name]))
       .map((p) => p.name);
+
     return (
       <section key={groupName}>
         <Content component="h3">{groupName}</Content>
@@ -149,7 +162,7 @@ function SoftwarePatternsSelection(): React.ReactNode {
               <DataListItem key={option.name}>
                 <DataListItemRow>
                   <DataListCheck
-                    onChange={() => onToggle(option.name)}
+                    onChange={(_, value) => onToggle(option.name, value)}
                     aria-labelledby={[nextActionId, titleId].join(" ")}
                     isChecked={selected}
                   />
@@ -159,7 +172,7 @@ function SoftwarePatternsSelection(): React.ReactNode {
                         <Stack hasGutter>
                           <div>
                             <b id={titleId}>{option.summary}</b>{" "}
-                            {option.selectedBy === SelectedBy.AUTO && (
+                            {selection[option.name] === SelectedBy.AUTO && (
                               <Label color="blue" isCompact>
                                 {_("auto selected")}
                               </Label>
@@ -183,9 +196,11 @@ function SoftwarePatternsSelection(): React.ReactNode {
   });
 
   return (
-    <Page>
-      <Page.Header>
-        <Content component="h2">{_("Software selection")}</Content>
+    <Page
+      breadcrumbs={[{ label: _("Software"), path: SOFTWARE.root }, { label: "Patterns selection" }]}
+      progress={{ scope: "software" }}
+    >
+      <Page.Content>
         <SearchInput
           // TRANSLATORS: search field placeholder text
           placeholder={_("Filter by pattern title or description")}
@@ -195,10 +210,7 @@ function SoftwarePatternsSelection(): React.ReactNode {
           onClear={() => setSearchValue("")}
           resultsCount={visiblePatterns.length}
         />
-      </Page.Header>
-
-      <Page.Content>
-        <Page.Section>
+        <Page.Section title="Patterns">
           {selector.length > 0 ? <Stack hasGutter>{selector}</Stack> : <NoMatches />}
         </Page.Section>
       </Page.Content>

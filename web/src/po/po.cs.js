@@ -6,6 +6,15 @@ export default {
   " Timezone selection": [
     " Výběr časového pásma"
   ],
+  "\"%s\"": [
+    ""
+  ],
+  "\"%s\" does not exist or is no longer available.": [
+    ""
+  ],
+  "%1$s keyboard - %2$s timezone": [
+    ""
+  ],
   "%1$s will still contain the LVM group '%2$s' and any partition needed to boot": [
     "%1$s bude nadále obsahovat LVM skupinu '%2$s’ a nějaký oddíl potřebný pro spuštění systému"
   ],
@@ -17,6 +26,9 @@ export default {
   ],
   "%s [must be registered].": [
     "%s [musí být registrován]."
+  ],
+  "%s and %d others": [
+    ""
   ],
   "%s disk": [
     "%s disk"
@@ -40,6 +52,9 @@ export default {
   ],
   "%s with %d partitions": [
     "%s s %d oddíly"
+  ],
+  "(step %s of %s)": [
+    ""
   ],
   "A %1$s of %2$s will be created for %3$s if possible": [
     "Pokud to je možné, bude vytvořeno %1$s o velikosti %2$s pro %3$s"
@@ -91,9 +106,6 @@ export default {
   ],
   "Add another address": [
     "Přidat další adresu"
-  ],
-  "Add another partition or mount an existing one": [
-    "Přidat další oddíl nebo připojit stávající"
   ],
   "Add device menu": [
     "Nabídka přidat zařízení"
@@ -164,8 +176,14 @@ export default {
   "Authentication by target": [
     "Ověřování cílem"
   ],
+  "Auto": [
+    "Auto"
+  ],
   "Auto LUNs Scan": [
     "Automatické skenování jednotek LUN"
+  ],
+  "Auto and manual": [
+    ""
   ],
   "Automatic": [
     "Automatický"
@@ -173,11 +191,11 @@ export default {
   "Automatic (DHCP)": [
     "Automatická (DHCP)"
   ],
-  "Automatic LUN scan is [disabled]. LUNs have to be manually       configured after activating a controller.": [
-    "Automatické skenování LUN je [zakázáno]. Po aktivaci řadiče        je třeba LUNy konfigurovat ručně."
+  "Automatic LUN scan is [disabled]. LUNs have to be manually configured after activating a controller.": [
+    "Automatické skenování LUN je [zakázáno]. Po aktivaci řadiče je třeba LUNy konfigurovat ručně."
   ],
-  "Automatic LUN scan is [enabled]. Activating a controller which is       running in NPIV mode will automatically configures all its LUNs.": [
-    "Automatické skenování LUN je [povoleno]. Aktivací řadiče,       běžícího v režimu NPIV, se automaticky zkonfigurují všechny jeho LUN."
+  "Automatic LUN scan is [enabled]. Activating a controller which is running in NPIV mode will automatically configures all its LUNs.": [
+    "Automatické skenování LUN je [povoleno]. Aktivací řadiče, běžícího v režimu NPIV, se automaticky zkonfigurují všechny jeho LUN."
   ],
   "Available products": [
     "Dostupné produkty"
@@ -224,6 +242,9 @@ export default {
   "Btrfs with snapshots": [
     "Btrfs se snímky"
   ],
+  "CPU": [
+    ""
+  ],
   "Cancel": [
     "Zrušit"
   ],
@@ -238,9 +259,6 @@ export default {
   ],
   "Change Language": [
     "Změnit jazyk"
-  ],
-  "Change boot options": [
-    "Změnit možnosti zavádění systému"
   ],
   "Change device menu": [
     "Nabídka změny zařízení"
@@ -268,6 +286,9 @@ export default {
   ],
   "Change the file system or mount point": [
     "Změnit systém souborů nebo přípojný bod"
+  ],
+  "Changes in these settings will immediately update the 'Result' section below.": [
+    ""
   ],
   "Channel ID": [
     "ID kanálu"
@@ -299,9 +320,6 @@ export default {
   "Close": [
     "Zavřít"
   ],
-  "Configuration out of sync": [
-    "Konfigurace není synchronizována"
-  ],
   "Configuration read from the iSCSI Boot Firmware Table (iBFT).": [
     "Konfigurace byla načtena z tabulky iSCSI Boot Firmware Table (iBFT)."
   ],
@@ -328,9 +346,6 @@ export default {
   ],
   "Confirm": [
     "Potvrdit"
-  ],
-  "Confirm Installation": [
-    "Potvrdit instalaci"
   ],
   "Confirm that you really want to continue.": [
     "Prosím potvrďte, že opravdu chcete pokračovat."
@@ -380,9 +395,6 @@ export default {
   "Content": [
     "Obsah"
   ],
-  "Continue": [
-    "Pokračovat"
-  ],
   "Continuing without installing the package can result in a broken system. In some cases the system might not even boot.": [
     "Pokračování bez instalace tohoto balíčku může vést k poškození systému. V některých případech systém nebude dokonce ani schopný se spustit."
   ],
@@ -415,6 +427,9 @@ export default {
   ],
   "DASD %s": [
     "DASD %s"
+  ],
+  "DHCP, %s": [
+    ""
   ],
   "DIAG": [
     "DIAG"
@@ -457,9 +472,6 @@ export default {
   ],
   "Details": [
     "Podrobnosti"
-  ],
-  "Details for %s": [
-    "Detaily zařízení %s"
   ],
   "Details will appear after the connection is successfully established.": [
     "Podrobnosti se zobrazí poté, co bude spojení úspěšně sestaveno."
@@ -505,9 +517,6 @@ export default {
   ],
   "Download logs": [
     "Stáhnout protokoly"
-  ],
-  "During installation, several actions will be performed to setup the layout shown at the table below.": [
-    "Během instalace bude provedeno několik akcí, aby bylo dosaženo návrhu uvedeného v tabulce níže."
   ],
   "Edit": [
     "Upravit"
@@ -557,8 +566,8 @@ export default {
   "ExFAT": [
     ""
   ],
-  "Example: https://myserver.com": [
-    "Například: https://mujserver.cz"
+  "Example: %s": [
+    "Například: %s"
   ],
   "Excellent signal": [
     "Výborný signál"
@@ -584,9 +593,6 @@ export default {
     "",
     "",
     ""
-  ],
-  "Extensions": [
-    "Rozšíření"
   ],
   "F2FS": [
     ""
@@ -614,6 +620,9 @@ export default {
   ],
   "Filter by territory, time zone code or UTC offset": [
     "Filtrování podle území, kódu časového pásma nebo posunu od UTC"
+  ],
+  "Final layout": [
+    "Konečné rozvržení"
   ],
   "Find space in %s": [
     "Najít místo na %s"
@@ -672,6 +681,9 @@ export default {
   "GiB": [
     "GiB"
   ],
+  "Go back": [
+    ""
+  ],
   "Go to network page": [
     "Přejít na stránku síť"
   ],
@@ -716,6 +728,9 @@ export default {
   "IP settings": [
     "Nastavení IP adresy"
   ],
+  "IPs": [
+    ""
+  ],
   "IPv4": [
     "IPv4"
   ],
@@ -725,8 +740,8 @@ export default {
   "If a local media was used to run this installer, remove it before the next boot.": [
     "Bylo-li ke spuštění tohoto instalačního programu použito místní médium, před dalším spuštěním ho odstraňte."
   ],
-  "If you continue, partitions on your hard disk will be modified according to the provided installation settings.": [
-    "Budete-li pokračovat, oddíly na pevném disku budou upraveny podle zadaných instalačních nastavení."
+  "If you want to disable this check, please specify \"inst.ay_check=0\" at kernels command-line": [
+    ""
   ],
   "In progress": [
     "Probíhá"
@@ -758,32 +773,8 @@ export default {
   "Install": [
     "Instalovat"
   ],
-  "Install using an advanced configuration.": [
-    "Nainstalovat pomocí pokročilé konfigurace."
-  ],
-  "Install using device %s and deleting all its content.": [
-    "Instalace na zařízení %s a odstranění veškerého jeho obsahu"
-  ],
-  "Install using device %s shrinking existing partitions as needed.": [
-    "Instalace na zařízení %s se zmenšením stávajících oddílů podle potřeby."
-  ],
-  "Install using device %s with a custom strategy to find the needed space.": [
-    "Instalace na zařízení %s s vlastní strategií pro vyhledání potřebného místa"
-  ],
-  "Install using device %s without modifying existing partitions.": [
-    "Instalace na zařízení %s bez úpravy stávajících oddílů"
-  ],
-  "Install using several devices and deleting all its content.": [
-    "Instalace na několik zařízení s odstraněním veškerého obsahu"
-  ],
-  "Install using several devices shrinking existing partitions as needed.": [
-    "Instalace na zařízení %s se zmenšením stávajících oddílů podle potřeby"
-  ],
-  "Install using several devices with a custom strategy to find the needed space.": [
-    "Instalace na několik zařízení s vlastní strategií pro vyhledání potřebného místa"
-  ],
-  "Install using several devices without modifying existing partitions.": [
-    "Instalace na několik zařízení bez úpravy stávajících oddílů."
+  "Install now with potential data loss": [
+    ""
   ],
   "Installation will take %s.": [
     "Instalace bude trvat %s."
@@ -923,6 +914,9 @@ export default {
   "Manual": [
     "Ruční"
   ],
+  "Memory": [
+    ""
+  ],
   "MiB": [
     "MiB"
   ],
@@ -962,8 +956,8 @@ export default {
   "Move mount points": [
     "Přesunout přípojné body"
   ],
-  "Move the mount points currently configured at the selected disks to logical                   volumes of this volume group.": [
-    "Přesun přípojných bodů je v současnosti nastaven na vybrané disky do logických                    svazků této skupiny svazků."
+  "Move the mount points currently configured at the selected disks to logical volumes of this volume group.": [
+    "Přesun přípojných bodů je v současnosti nastaven na vybrané disky do logických svazků této skupiny svazků."
   ],
   "Multipath": [
     "Vícecestný"
@@ -979,6 +973,9 @@ export default {
   ],
   "Name": [
     "Název"
+  ],
+  "Needs about %s": [
+    ""
   ],
   "Network": [
     "Síť"
@@ -1006,6 +1003,9 @@ export default {
   ],
   "No content found": [
     "Nebyl nalezen žádný obsah"
+  ],
+  "No data loss is expected": [
+    ""
   ],
   "No device is currently using this connection.": [
     "V současnosti toto připojení nepoužívá žádné zařízení."
@@ -1067,9 +1067,6 @@ export default {
   "Not protected network": [
     "Nezabezpečená síť"
   ],
-  "Not selected yet": [
-    "Dosud nevybráno"
-  ],
   "Not supported (%s)": [
     "Není podporováno (%s)"
   ],
@@ -1100,11 +1097,8 @@ export default {
   "Partitions that are not reused would be resized if needed.": [
     ""
   ],
-  "Partitions to boot will be allocated at the following device.": [
-    "Oddíly pro zavádění budou přiděleny na tomto zařízení."
-  ],
-  "Partitions to boot will be allocated at the installation disk.": [
-    "Oddíly pro zavádění budou přiděleny na instalačním disku."
+  "Partitions to boot will be set up if needed at the installation disk. Currently %1$s, based on the location of the %2$s file system.": [
+    ""
   ],
   "Partitions will be used and created for %s": [
     ""
@@ -1136,9 +1130,6 @@ export default {
   "PiB": [
     "PiB"
   ],
-  "Please, cancel and check the settings if you are unsure.": [
-    "Nejste-li si jisti, zrušte akci a zkontrolujte nastavení."
-  ],
   "Please, check whether it is running.": [
     "Zkontrolujte, zda je spuštěn."
   ],
@@ -1160,17 +1151,26 @@ export default {
   "Portal": [
     "Portál"
   ],
+  "Potential data loss": [
+    ""
+  ],
+  "Potential data loss affecting at least %s": [
+    ""
+  ],
   "Pre-installation checks": [
     "Kontrola před instalací"
   ],
   "Prefix length or netmask": [
     "Délka předpony nebo maska sítě"
   ],
-  "Product is already registered": [
+  "Proceeding may result in data loss": [
     ""
   ],
-  "Protection for the information stored at the new file systems, including data, programs, and system files.": [
-    "Ochrana informací uložených na nových souborových systémech, včetně dat, programů a systémových souborů."
+  "Proceeding may result in data loss affecting at least %s": [
+    ""
+  ],
+  "Product is already registered": [
+    ""
   ],
   "Provide email address": [
     "Zadejte emailovou adresu"
@@ -1223,17 +1223,19 @@ export default {
   "Reload": [
     "Znovu načíst"
   ],
-  "Reload now": [
-    "Teď znovu načíst"
-  ],
-  "Reloading is required to get the latest data and avoid issues or data loss.": [
-    "Je vyžadováno nové načtení pro získání nejnovějších dat a předejití chybám nebo ztrátě dat."
-  ],
   "Remove": [
     "Odstranit"
   ],
   "Repository load failed": [
     "Selhalo načítání repozitáře"
+  ],
+  "Required packages": [
+    ""
+  ],
+  "Required packages and %s pattern": [
+    "",
+    "",
+    ""
   ],
   "Reset to defaults": [
     "Obnovit výchozí nastavení"
@@ -1244,8 +1246,14 @@ export default {
   "Result": [
     "Výsledek"
   ],
+  "Result of applying the configuration described at the 'Settings' section above.": [
+    ""
+  ],
   "Review and fix": [
     "Zkontrolovat a opravit"
+  ],
+  "Review the summary below. If anything seems incorrect or you have doubts, go back and adjust the settings before proceeding.": [
+    ""
   ],
   "Routes": [
     "Trasy"
@@ -1321,9 +1329,6 @@ export default {
   ],
   "Select or enter a valid mount point": [
     "Vyber nebo zadej platný bod připojení"
-  ],
-  "Select the disk to configure partitions for booting": [
-    "Vyberte disk pro nastavení oddílů pro zavádění systému"
   ],
   "Select what to do with each partition in order to find space for allocating the new system.": [
     "Vybrat pro každý oddíl co dělat, aby se podařilo najít místo pro vyhrazení novému systému."
@@ -1444,11 +1449,11 @@ export default {
   "Targets": [
     "Cíle"
   ],
+  "Temporary name that may change after reboot or network changes": [
+    ""
+  ],
   "The LVM group '%1$s' will remain at %2$s": [
     "LVM skupina '%1$s' zůstane na %2$s"
-  ],
-  "The configuration has been updated externally.": [
-    "Konfigurace byla externě aktualizována."
   ],
   "The configuration must be adapted to address the following issue:": [
     "Před zahájením instalace vyřešte tento problém:",
@@ -1463,9 +1468,6 @@ export default {
   ],
   "The connection will be used only during installation and not available in the installed system.": [
     "Připojení bude použito pouze během instalace a nebude dostupné v nainstalovaném systému."
-  ],
-  "The content may be deleted": [
-    "Obsah může být smazán"
   ],
   "The current configuration will result in an attempt to create a %1$s of %2$s.": [
     "Současná konfigurace povede k pokusu vytvořit %1$s o velikosti %2$s."
@@ -1535,12 +1537,6 @@ export default {
   "The installation on your machine is complete.": [
     "Instalace na váš počítač je dokončena."
   ],
-  "The installation will take": [
-    "Instalace zabere"
-  ],
-  "The installation will take %s including:": [
-    "Instalace bude trvat %s včetně:"
-  ],
   "The installer interface is no longer available, so you can safely close this window.": [
     "Instalátor už není dostupný, můžete bezpečně zavřít toto okno."
   ],
@@ -1565,11 +1561,14 @@ export default {
   "The modal selector offers a simplified interface designed for quick and straightforward use, without overwhelming the user.": [
     "Modální výběr nabízí zjednodušené rozhraní navržené pro rychlé a přímočaré použití, aniž by byl uživatel zahlcen."
   ],
-  "The needed LVM physical volumes will be added as partitions on the chosen disks,                 based on the sizes of the logical volumes. If you select more than one disk, the                 physical volumes may be distributed along several disks.": [
-    "Požadované fyzické LVM svazky budou přidány jako oddíly vybraných disku,                 na základě velikosti logických svazků. Pokud vyberete více než jeden disk,                 fyzické svazky mohou být rozloženy mezi několik disků."
+  "The needed LVM physical volumes will be added as partitions on the chosen disks, based on the sizes of the logical volumes. If you select more than one disk, the physical volumes may be distributed along several disks.": [
+    "Požadované fyzické LVM svazky budou přidány jako oddíly vybraných disku, na základě velikosti logických svazků. Pokud vyberete více než jeden disk, fyzické svazky mohou být rozloženy mezi několik disků."
   ],
   "The password will not be needed to boot and access the data if the TPM can verify the integrity of the system. TPM sealing requires the new system to be booted directly on its first run.": [
     "Dokáže-li čip TPM ověřit integritu systému, nebude heslo pro spuštění systému a přístup k datům potřebné. Zapečetění TPM vyžaduje, aby byl nový systém spuštěn hned při prvním použití."
+  ],
+  "The product will be registered with \"%s\" hostname": [
+    ""
   ],
   "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of a separate file system for %2$s.": [
     "Velikost %1$s bude dynamicky upravena na základě množství paměti RAM v systému a přítomnosti zvláštního souborového systému pro %2$s."
@@ -1616,14 +1615,8 @@ export default {
   "The system does not support Wi-Fi connections, probably because of missing or disabled hardware.": [
     "Systém nepodporuje připojení Wi-Fi, pravděpodobně chybí hardware nebo je zakázán."
   ],
-  "The system will use %s as its default language.": [
-    "Systém použije jako výchozí jazyk %s."
-  ],
   "The zFCP disk was not activated.": [
     "Disk zFCP nebyl aktivován."
-  ],
-  "There are no disks available for the installation.": [
-    "Pro instalaci nejsou k dispozici žádné disky."
   ],
   "There are not disks available for the installation. You may need to configure some device.": [
     "Pro instalaci nesou dostupné žádné disky. Možná bude potřeba nakonfigurovat nějaká zařízení."
@@ -1632,9 +1625,6 @@ export default {
     "",
     "",
     ""
-  ],
-  "These are the most relevant installation settings. Feel free to browse the sections in the menu for further details.": [
-    "Toto je nejdůležitější nastavení instalace. Další podrobnosti najdete v sekcích v nabídce."
   ],
   "These are the settings for the product to install. The installer language and keyboard layout can be adjusted via the [settings panel] accessible from the top bar.": [
     "Toto jsou nastavení pro instalaci produktu. Jazyk instalátoru a rozložení klávesnice můžete upravit v [panelu nastavení] dostupném v horní liště."

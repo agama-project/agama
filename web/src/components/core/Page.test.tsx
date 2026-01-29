@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2023-2025] SUSE LLC
+ * Copyright (c) [2023-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -22,16 +22,22 @@
 
 import React from "react";
 import { screen, within } from "@testing-library/react";
-import { plainRender, mockNavigateFn, mockRoutes, installerRender } from "~/test-utils";
-import { Page } from "~/components/core";
+import { installerRender, mockNavigateFn, plainRender } from "~/test-utils";
+import useTrackQueriesRefetch from "~/hooks/use-track-queries-refetch";
 import { _ } from "~/i18n";
-import { PRODUCT, ROOT } from "~/routes/paths";
+import Page from "./Page";
 
 let consoleErrorSpy: jest.SpyInstance;
+const mockStartTracking: jest.Mock = jest.fn();
 
-jest.mock("~/components/product/ProductRegistrationAlert", () => () => (
-  <div>ProductRegistrationAlertMock</div>
-));
+jest.mock("~/hooks/use-track-queries-refetch", () => ({
+  __esModule: true,
+  default: jest.fn(),
+}));
+
+jest.mock("~/components/core/ProgressBackdrop", () => () => <div>ProgressBackdropMock</div>);
+
+const mockUseTrackQueriesRefetch = jest.mocked(useTrackQueriesRefetch);
 
 describe("Page", () => {
   beforeAll(() => {
@@ -43,8 +49,21 @@ describe("Page", () => {
     consoleErrorSpy.mockRestore();
   });
 
+  beforeEach(() => {
+    // Set up default mock for useTrackQueriesRefetch
+    mockUseTrackQueriesRefetch.mockReturnValue({
+      startTracking: mockStartTracking,
+    });
+
+    mockNavigateFn.mockClear();
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
   it("renders given children", () => {
-    plainRender(
+    installerRender(
       <Page>
         <h1>The Page Component</h1>
       </Page>,
@@ -52,9 +71,23 @@ describe("Page", () => {
     screen.getByRole("heading", { name: "The Page Component" });
   });
 
+  describe("when no progress prop is provided", () => {
+    it("does not mount ProgressBackdrop", () => {
+      installerRender(<Page />);
+      expect(screen.queryByText("ProgressBackdropMock")).toBeNull();
+    });
+  });
+
+  describe("when progress prop is provided", () => {
+    it("mounts ProgressBackdrop", () => {
+      installerRender(<Page progress={{ scope: "software" }} />);
+      screen.getByText("ProgressBackdropMock");
+    });
+  });
+
   describe("Page.Actions", () => {
     it("renders a footer sticky to bottom", () => {
-      plainRender(
+      installerRender(
         <Page.Actions>
           <Page.Action>Save</Page.Action>
           <Page.Action>Discard</Page.Action>
@@ -67,26 +100,19 @@ describe("Page", () => {
   });
 
   describe("Page.Action", () => {
-    it("renders a button with given content", () => {
-      plainRender(<Page.Action>Save</Page.Action>);
-      screen.getByRole("button", { name: "Save" });
+    it("triggers given onClick handler when user clicks on it, if valid", async () => {
+      const onClick = jest.fn();
+      const { user } = installerRender(<Page.Action onClick={onClick}>Cancel</Page.Action>);
+      const button = screen.getByRole("button", { name: "Cancel" });
+      await user.click(button);
+      expect(onClick).toHaveBeenCalled();
     });
 
-    describe("when user clicks on it", () => {
-      it("triggers given onClick handler, if valid", async () => {
-        const onClick = jest.fn();
-        const { user } = plainRender(<Page.Action onClick={onClick}>Cancel</Page.Action>);
-        const button = screen.getByRole("button", { name: "Cancel" });
-        await user.click(button);
-        expect(onClick).toHaveBeenCalled();
-      });
-
-      it("navigates to the path given through 'navigateTo' prop", async () => {
-        const { user } = plainRender(<Page.Action navigateTo="/somewhere">Cancel</Page.Action>);
-        const button = screen.getByRole("button", { name: "Cancel" });
-        await user.click(button);
-        expect(mockNavigateFn).toHaveBeenCalledWith("/somewhere");
-      });
+    it("navigates to the path given through 'navigateTo' prop when user clicks on it", async () => {
+      const { user } = installerRender(<Page.Action navigateTo="/somewhere">Cancel</Page.Action>);
+      const button = screen.getByRole("button", { name: "Cancel" });
+      await user.click(button);
+      expect(mockNavigateFn).toHaveBeenCalledWith("/somewhere");
     });
   });
 
@@ -96,39 +122,19 @@ describe("Page", () => {
       const content = screen.getByText("The Content");
       expect(content.classList.contains("pf-m-fill")).toBe(true);
     });
-
-    it("mounts a ProductRegistrationAlert", () => {
-      installerRender(<Page.Content />);
-      screen.getByText("ProductRegistrationAlertMock");
-    });
-
-    describe.each([
-      ["login", ROOT.login],
-      ["product selection", PRODUCT.changeProduct],
-      ["product selection progress", PRODUCT.progress],
-      ["installation progress", ROOT.installationProgress],
-      ["installation finished", ROOT.installationFinished],
-    ])(`but at %s path`, (_, path) => {
-      beforeEach(() => {
-        mockRoutes(path);
-      });
-
-      it("does not mount ProductRegistrationAlert", () => {
-        installerRender(<Page.Content />);
-        expect(screen.queryByText("ProductRegistrationAlertMock")).toBeNull();
-      });
-    });
   });
 
   describe("Page.Cancel", () => {
+    // Page.Cancel uses core/Link. It needs installerRender because of
+    // useLocation usage
     it("renders a link that navigates to the top level route by default", () => {
-      plainRender(<Page.Cancel />);
+      installerRender(<Page.Cancel />);
       const link = screen.getByRole("link", { name: "Cancel" });
       expect(link).toHaveAttribute("href", "..");
     });
 
     it("renders a link that navigates to the given route", () => {
-      plainRender(<Page.Cancel navigateTo="somewhere" />);
+      installerRender(<Page.Cancel navigateTo="somewhere" />);
       const link = screen.getByRole("link", { name: "Cancel" });
       expect(link).toHaveAttribute("href", "somewhere");
     });
@@ -136,14 +142,14 @@ describe("Page", () => {
 
   describe("Page.Back", () => {
     it("renders a button for navigating back when user clicks on it", async () => {
-      const { user } = plainRender(<Page.Back />);
+      const { user } = installerRender(<Page.Back />);
       const button = screen.getByRole("button", { name: "Back" });
       await user.click(button);
       expect(mockNavigateFn).toHaveBeenCalledWith(-1);
     });
 
     it("uses `link` variant by default", () => {
-      plainRender(<Page.Back />);
+      installerRender(<Page.Back />);
       const button = screen.getByRole("button", { name: "Back" });
       expect(button.classList.contains("pf-m-link")).toBe(true);
     });
@@ -158,7 +164,7 @@ describe("Page", () => {
         e.preventDefault();
       });
 
-      const { user } = plainRender(
+      const { user } = installerRender(
         <>
           <form onSubmit={onSubmit} id="fake-form" />
           <Page.Submit form="fake-form" onClick={onClick}>
@@ -172,12 +178,6 @@ describe("Page", () => {
       expect(onClick).toHaveBeenCalled();
     });
   });
-  describe("Page.Header", () => {
-    it("renders a node that sticks to top", () => {
-      const { container } = plainRender(<Page.Header>The Header</Page.Header>);
-      expect(container.children[0].classList.contains("pf-m-sticky-top")).toBe(true);
-    });
-  });
 
   describe("Page.Section", () => {
     it("outputs to console.error if both are missing, title and aria-label", () => {
@@ -186,7 +186,7 @@ describe("Page", () => {
     });
 
     it("renders a section node", () => {
-      plainRender(<Page.Section aria-label="A Page Section">The Content</Page.Section>);
+      plainRender(<Page.Section aria-label={_("A Page Section")}>The Content</Page.Section>);
       const section = screen.getByRole("region");
       within(section).getByText("The Content");
     });
@@ -200,7 +200,7 @@ describe("Page", () => {
 
       // aria-label is given through Page.Section props
       rerender(
-        <Page.Section title="A Page Section" aria-label="An aria label">
+        <Page.Section title="A Page Section" aria-label={_("An aria label")}>
           The Content
         </Page.Section>,
       );
@@ -220,7 +220,7 @@ describe("Page", () => {
     });
 
     it("renders given content props (title, description, actions, and children (content)", () => {
-      plainRender(
+      installerRender(
         <Page.Section
           title="A section"
           description="Testing section with title, description, content, and actions"

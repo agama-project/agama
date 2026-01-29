@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2025] SUSE LLC
+ * Copyright (c) [2025-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -30,11 +30,6 @@ const mockConnection: Connection = new Connection("Network 1", {
   state: ConnectionState.activated,
 });
 
-jest.mock(
-  "~/components/product/ProductRegistrationAlert",
-  () => () => -(<div>ProductRegistrationAlert Mock</div>),
-);
-
 jest.mock("~/components/network/WiredConnectionDetails", () => () => (
   <div>WiredConnectionDetails Mock</div>
 ));
@@ -43,7 +38,7 @@ jest.mock("~/components/network/NoPersistentConnectionsAlert", () => () => (
   <div>NoPersistentConnectionsAlert Mock</div>
 ));
 
-jest.mock("~/queries/network", () => ({
+jest.mock("~/hooks/model/proposal/network", () => ({
   useNetworkChanges: jest.fn(),
   useConnections: () => [mockConnection],
 }));

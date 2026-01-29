@@ -200,74 +200,7 @@
       }
     },
     "software": {
-      "title": "Software settings",
-      "type": "object",
-      "properties": {
-        "patterns": {
-          "anyOf": [
-            { "$ref": "#/$defs/patternsArray" },
-            { "$ref": "#/$defs/patternsObject" }
-          ]
-        },
-        "packages": {
-          "title": "List of packages to install",
-          "type": "array",
-          "items": {
-            "type": "string",
-            "examples": ["vim"]
-          }
-        },
-        "onlyRequired": {
-          "title": "Flag if only minimal hard dependencies should be used in solver",
-          "type": "boolean"
-        },
-        "extraRepositories": {
-          "title": "List of user specified repositories that will be used on top of default ones",
-          "type": "array",
-          "items": {
-            "type": "object",
-            "required": ["alias", "url"],
-            "properties": {
-              "alias": {
-                "title": "alias used for repository. Acting as identifier",
-                "type": "string"
-              },
-              "url": {
-                "title": "URL pointing to repository",
-                "type": "string"
-              },
-              "priority": {
-                "title": "Repository priority",
-                "type": "integer"
-              },
-              "name": {
-                "title": "User visible name. Defaults to alias",
-                "type": "string"
-              },
-              "productDir": {
-                "title": "product directory on multi repo DVD. Usually not needed",
-                "type": "string"
-              },
-              "enabled": {
-                "title": "If repository should be enabled. Defaults to true. Useful when adding additional repo that should not be immediately use.",
-                "type": "boolean"
-              },
-              "allowUnsigned": {
-                "title": "If unsigned repositories are allowed. Mainly useful for repositories that is hand crafted without GPG signature.",
-                "type": "boolean"
-              },
-              "gpgFingerprints": {
-                "title": "List of GPG fingerprints that is accepted for this repository. Useful for own repositories with proper GPG signature.",
-                "type": "array",
-                "items": {
-                  "type": "string",
-                  "pattern": "^[0-9a-fA-F ]+"
-                }
-              }
-            }
-          }
-        }
-      }
+      "$ref": "software.schema.json"
     },
     "questions": {
       "title": "How to handle Agama questions",
@@ -311,16 +244,20 @@
             "Tumbleweed"
           ]
         },
+        "mode": {
+          "description": "The mode from the products.d/foo.yaml file",
+          "type": "string"
+        },
         "registrationCode": {
-          "title": "Product registration code",
+          "description": "Product registration code",
           "type": "string"
         },
         "registrationEmail": {
-          "title": "Product registration email",
+          "description": "Product registration email",
           "type": "string"
         },
         "registrationUrl": {
-          "title": "URL of the registration server",
+          "description": "URL of the registration server",
           "type": "string"
         },
         "addons": {
@@ -355,6 +292,29 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
+        "state": {
+          "title": "Network general settings",
+          "type": "object",
+          "properties": {
+            "connectivity": {
+              "title": "Whether the user is able to access the Internet",
+              "type": "boolean",
+              "readOnly": true
+            },
+            "copyNetwork": {
+              "title": "Whether the network configuration should be copied to the target system",
+              "type": "boolean"
+            },
+            "networkingEnabled": {
+              "title": "Whether the network should be enabled",
+              "type": "boolean"
+            },
+            "wirelessEnabled": {
+              "title": "Whether the wireless should be enabled",
+              "type": "boolean"
+            }
+          }
+        },
         "connections": {
           "title": "Network connections to be defined",
           "type": "array",
@@ -785,9 +745,33 @@
         }
       }
     },
-    "localization": {
+    "l10n": {
       "title": "Localization settings",
       "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "locale": {
+          "title": "Locale ID",
+          "type": "string",
+          "examples": ["en_US.UTF-8", "en_US"]
+        },
+        "keymap": {
+          "title": "Keymap ID",
+          "type": "string",
+          "examples": ["us", "en", "es"]
+        },
+        "timezone": {
+          "title": "Time zone ID",
+          "type": "string",
+          "examples": ["Europe/Berlin"]
+        }
+      }
+    },
+    "localization": {
+      "deprecated": true,
+      "title": "Localization settings (old schema)",
+      "type": "object",
+      "additionalProperties": false,
       "properties": {
         "language": {
           "title": "System language ID",
@@ -1000,16 +984,13 @@
           "title": "Question class",
           "description": "Each question has a \"class\" which works as an identifier.",
           "type": "string",
-          "examples": ["storage.activate_multipath"]
+          "examples": [
+            "storage.activate_multipath"
+          ]
         },
         "text": {
           "title": "Question text",
           "description": "Question full text",
-          "type": "string"
-        },
-        "answer": {
-          "title": "Question answer",
-          "description": "Answer to use for the question.",
           "type": "string"
         },
         "password": {
@@ -1020,32 +1001,26 @@
           "title": "Additional data for matching questions",
           "description": "Additional data for matching questions and answers",
           "type": "object",
-          "examples": [{ "device": "/dev/sda" }]
-        }
-      }
-    },
-    "patternsArray": {
-      "title": "List of user-selected patterns to install",
-      "type": "array",
-      "items": {
-        "type": "string",
-        "examples": ["minimal_base"]
-      }
-    },
-    "patternsObject": {
-      "title": "Modifications for the list of user-selected patterns to install",
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "add": {
-          "title": "List of user-selected patterns to add to the list",
-          "type": "array",
-          "items": { "type": "string" }
+          "examples": [
+            {
+              "device": "/dev/sda"
+            }
+          ]
         },
-        "remove": {
-          "title": "List of user-selected patterns to remove from the list",
-          "type": "array",
-          "items": { "type": "string" }
+        "action": {
+          "title": "Predefined question action",
+          "description": "Action to use for the question.",
+          "type": "string"
+        },
+        "answer": {
+          "description": "Action to use for the question. Prefer using \"action\" instead.",
+          "type": "string",
+          "deprecated": true
+        },
+        "value": {
+          "title": "Predefined question value",
+          "description": "Value to use for the question (depending on the type of the question).",
+          "type": "string"
         }
       }
     }

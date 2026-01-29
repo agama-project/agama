@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2025] SUSE LLC
+ * Copyright (c) [2022-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -23,44 +23,52 @@
 import React from "react";
 import { screen, within } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
-import L10nPage from "~/components/l10n/L10nPage";
+import { useSystem } from "~/hooks/model/system/l10n";
+import { useProposal } from "~/hooks/model/proposal/l10n";
+import { Keymap, Locale, Timezone } from "~/model/system/l10n";
+import L10nPage from "./L10nPage";
 
-let mockLoadedData;
+let mockSystemData: ReturnType<typeof useSystem>;
+let mockProposedData: ReturnType<typeof useProposal>;
 
-const locales = [
-  { id: "en_US.UTF-8", name: "English", territory: "United States" },
-  { id: "es_ES.UTF-8", name: "Spanish", territory: "Spain" },
+const locales: Locale[] = [
+  { id: "en_US.UTF-8", language: "English", territory: "United States" },
+  { id: "es_ES.UTF-8", language: "Spanish", territory: "Spain" },
 ];
 
-const keymaps = [
-  { id: "us", name: "English" },
-  { id: "es", name: "Spanish" },
+const keymaps: Keymap[] = [
+  { id: "us", description: "English" },
+  { id: "es", description: "Spanish" },
 ];
 
-const timezones = [
-  { id: "Europe/Berlin", parts: ["Europe", "Berlin"] },
-  { id: "Europe/Madrid", parts: ["Europe", "Madrid"] },
+const timezones: Timezone[] = [
+  { id: "Europe/Berlin", parts: ["Europe", "Berlin"], country: "Germany", utcOffset: 120 },
+  { id: "Europe/Madrid", parts: ["Europe", "Madrid"], country: "Spain", utcOffset: 120 },
 ];
-
-jest.mock("~/components/product/ProductRegistrationAlert", () => () => (
-  <div>ProductRegistrationAlert Mock</div>
-));
 
 jest.mock("~/components/core/InstallerOptions", () => () => <div>InstallerOptions Mock</div>);
 
-jest.mock("~/queries/l10n", () => ({
-  ...jest.requireActual("~/queries/l10n"),
-  useL10n: () => mockLoadedData,
+jest.mock("~/hooks/model/system/l10n", () => ({
+  ...jest.requireActual("~/hooks/model/system/l10n"),
+  useSystem: () => mockSystemData,
+}));
+
+jest.mock("~/hooks/model/proposal/l10n", () => ({
+  ...jest.requireActual("~/hooks/model/proposal/l10n"),
+  useProposal: () => mockProposedData,
 }));
 
 beforeEach(() => {
-  mockLoadedData = {
+  mockSystemData = {
     locales,
     keymaps,
     timezones,
-    selectedLocale: locales[0],
-    selectedKeymap: keymaps[0],
-    selectedTimezone: timezones[0],
+  };
+
+  mockProposedData = {
+    locale: "en_US.UTF-8",
+    keymap: "us",
+    timezone: "Europe/Berlin",
   };
 });
 
@@ -78,15 +86,15 @@ it("renders a section for configuring the language", () => {
   within(region).getByText("Change");
 });
 
-describe("if there is no selected language", () => {
+describe("if the language selected is wrong", () => {
   beforeEach(() => {
-    mockLoadedData.selectedLocale = undefined;
+    mockProposedData.locale = "us_US.UTF-8";
   });
 
   it("renders a button for selecting a language", () => {
     installerRender(<L10nPage />);
     const region = screen.getByRole("region", { name: "Language" });
-    within(region).getByText("Not selected yet");
+    within(region).getByText("Wrong selection");
     within(region).getByText("Select");
   });
 });
@@ -98,15 +106,15 @@ it("renders a section for configuring the keyboard", () => {
   within(region).getByText("Change");
 });
 
-describe("if there is no selected keyboard", () => {
+describe("if the keyboard selected is wrong", () => {
   beforeEach(() => {
-    mockLoadedData.selectedKeymap = undefined;
+    mockProposedData.keymap = "ess";
   });
 
   it("renders a button for selecting a keyboard", () => {
     installerRender(<L10nPage />);
     const region = screen.getByRole("region", { name: "Keyboard" });
-    within(region).getByText("Not selected yet");
+    within(region).getByText("Wrong selection");
     within(region).getByText("Select");
   });
 });
@@ -118,15 +126,15 @@ it("renders a section for configuring the time zone", () => {
   within(region).getByText("Change");
 });
 
-describe("if there is no selected time zone", () => {
+describe("if the time zone selected is wrong", () => {
   beforeEach(() => {
-    mockLoadedData.selectedTimezone = undefined;
+    mockProposedData.timezone = "Europee/Beeerlin";
   });
 
   it("renders a button for selecting a time zone", () => {
     installerRender(<L10nPage />);
     const region = screen.getByRole("region", { name: "Time zone" });
-    within(region).getByText("Not selected yet");
+    within(region).getByText("Wrong selection");
     within(region).getByText("Select");
   });
 });

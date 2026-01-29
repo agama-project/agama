@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-09-28 02:56+0000\n"
-"PO-Revision-Date: 2025-07-21 02:59+0000\n"
+"POT-Creation-Date: 2026-01-19 14:11+0000\n"
+"PO-Revision-Date: 2026-01-22 04:04+0000\n"
 "Last-Translator: Arif Budiman <arifpedia@gmail.com>\n"
 "Language-Team: Indonesian <https://l10n.opensuse.org/projects/agama/agama-"
 "service-master/id/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.12.2\n"
+"X-Generator: Weblate 5.15.2\n"
 
 #. Reports the problems and decide whether to continue or not.
 #.
@@ -27,307 +27,36 @@ msgstr ""
 msgid "Found unsupported elements in the AutoYaST profile: %{keys}."
 msgstr "Menemukan elemen yang tidak didukung dalam profil AutoYaST: %{keys}."
 
-#. Runs the config phase
-#.
-#. @param reprobe [Boolean] Whether a reprobe should be done instead of a probe.
-#. @param data [Hash] Extra data provided to the D-Bus calls.
-#: service/lib/agama/manager.rb:98
-msgid "Analyze disks"
-msgstr "Menganalisis disk"
+#. Implementation for the API method #Install.
+#: service/lib/agama/dbus/storage/manager.rb:117
+msgid "Preparing bootloader proposal"
+msgstr "Mempersiapkan proposal bootloader"
 
-#: service/lib/agama/manager.rb:98
-msgid "Configure software"
-msgstr "Mengkonfigurasi perangkat lunak"
+#: service/lib/agama/dbus/storage/manager.rb:120
+msgid "Preparing the storage devices"
+msgstr "Mempersiapkan perangkat penyimpanan"
 
-#. Runs the install phase
-#. rubocop:disable Metrics/AbcSize, Metrics/MethodLength
-#: service/lib/agama/manager.rb:117
-msgid "Prepare disks"
-msgstr "Siapkan disk"
+#: service/lib/agama/dbus/storage/manager.rb:123
+msgid "Writing bootloader sysconfig"
+msgstr "Menulis sysconfig bootloader"
 
-#: service/lib/agama/manager.rb:118
-msgid "Install software"
-msgstr "Menginstal perangkat lunak"
+#. Implementation for the API method #Finish.
+#: service/lib/agama/dbus/storage/manager.rb:131
+msgid "Finishing installation"
+msgstr "Menyelesaikan instalasi"
 
-#: service/lib/agama/manager.rb:119
-msgid "Configure the system"
-msgstr "Mengkonfigurasi sistem"
+#. Error code
+#: service/lib/agama/dbus/storage/manager.rb:377
+msgid "Activating storage devices"
+msgstr "Mengaktifkan perangkat penyimpanan"
 
-#. rubocop:enable Metrics/AbcSize, Metrics/MethodLength
-#: service/lib/agama/manager.rb:160
-msgid "Load software translations"
-msgstr "Memuat terjemahan perangkat lunak"
+#: service/lib/agama/dbus/storage/manager.rb:380
+msgid "Probing storage devices"
+msgstr "Memeriksa perangkat penyimpanan"
 
-#: service/lib/agama/manager.rb:161
-msgid "Load storage translations"
-msgstr "Memuat terjemahan penyimpanan"
-
-#. @param certificate [Agama::SSL::Certificate]
-#. @return [Agama::Question]
-#: service/lib/agama/registration.rb:424
-msgid ""
-"Trying to import a self signed certificate. Do you want to trust it and "
-"register the product?"
-msgstr ""
-"Mencoba mengimpor sertifikat yang ditandatangani sendiri. Apakah Anda ingin "
-"mempercayainya dan mendaftarkan produk?"
-
-#. TRANSLATORS: button label, try downloading the failed package again
-#: service/lib/agama/software/callbacks/base.rb:48
-msgid "Try again"
-msgstr "Coba lagi"
-
-#. TRANSLATORS: button label, ignore the failed download, skip package installation
-#: service/lib/agama/software/callbacks/base.rb:54
-msgid "Continue anyway"
-msgstr "Lanjutkan saja"
-
-#. TRANSLATORS: button label, abort the installation completely after an error
-#: service/lib/agama/software/callbacks/base.rb:60
-msgid "Abort installation"
-msgstr "Batalkan instalasi"
-
-#. TRANSLATORS: button label, skip the error
-#: service/lib/agama/software/callbacks/base.rb:66
-msgid "Skip"
-msgstr "Lewati"
-
-#. TRANSLATORS: button label
-#: service/lib/agama/software/callbacks/base.rb:72
-msgid "Yes"
-msgstr "Ya"
-
-#. TRANSLATORS: button label
-#: service/lib/agama/software/callbacks/base.rb:78
-msgid "No"
-msgstr "Tidak"
-
-#. Callback to accept a file without a checksum
-#.
-#. @param filename [String] File name
-#. @return [Boolean]
-#: service/lib/agama/software/callbacks/digest.rb:58
-#, perl-brace-format
-msgid ""
-"No checksum for the file %{file} was found in the repository. This means "
-"that although the file is part of the signed repository, the list of "
-"checksums does not mention this file. Use it anyway?"
-msgstr ""
-"Tidak ditemukan checksum untuk berkas %{file} di repositori. Hal ini berarti "
-"meskipun berkas tersebut merupakan bagian dari repositori yang "
-"ditandatangani, daftar checksum tidak mencantumkan berkas ini. Apakah tetap "
-"ingin menggunakannya?"
-
-#. Callback to accept an unknown digest
-#.
-#. @param filename [String] File name
-#. @param digest [String] expected checksum
-#. @return [Boolean]
-#: service/lib/agama/software/callbacks/digest.rb:84
-#, perl-brace-format
-msgid ""
-"The checksum of the file %{file} is \"%{digest}\" but the expected checksum "
-"is unknown. This means that the origin and integrity of the file cannot be "
-"verified. Use it anyway?"
-msgstr ""
-"Checksum berkas %{file} adalah “%{digest}”, tetapi checksum yang diharapkan "
-"tidak diketahui. Hal ini berarti asal usul dan integritas berkas tidak dapat "
-"diverifikasi. Apakah tetap ingin menggunakannya?"
-
-#. Callback to accept wrong digest
-#.
-#. @param filename [String] File name
-#. @param expected_digest [String] expected checksum
-#. @param found_digest [String] found checksum
-#. @return [Boolean]
-#: service/lib/agama/software/callbacks/digest.rb:111
-#, perl-brace-format
-msgid ""
-"The expected checksum of file %{file} is \"%{found}\" but it was expected to "
-"be \"%{expected}\". The file has changed by accident or by an attacker since "
-"the creater signed it. Use it anyway?"
-msgstr ""
-"Checksum yang diharapkan untuk berkas %{file} adalah “%{found}”, tetapi "
-"seharusnya “%{expected}”. Berkas ini telah berubah secara tidak sengaja atau "
-"oleh penyerang sejak pembuatnya menandatanganinya. Apakah tetap ingin "
-"menggunakannya?"
-
-#. DoneProvide callback
-#.
-#. @param description [String] Problem description
-#. @return [String] "I" for ignore, "R" for retry and "C" for abort (not implemented)
-#. @see https://github.com/yast/yast-yast2/blob/19180445ab935a25edd4ae0243aa7a3bcd09c9de/library/packages/src/modules/PackageCallbacks.rb#L620
-#: service/lib/agama/software/callbacks/script.rb:50
-msgid "There was a problem running a package script."
-msgstr "Ada masalah dalam menjalankan skrip paket."
-
-#. Callback to handle unsigned files
-#.
-#. @param filename [String] File name
-#. @param repo_id [Integer] Repository ID. It might be -1 if there is not an associated repo.
-#: service/lib/agama/software/callbacks/signature.rb:66
-#, perl-brace-format
-msgid ""
-"The file %{filename} from %{repo_url} is not digitally signed. The origin "
-"and integrity of the file cannot be verified. Use it anyway?"
-msgstr ""
-"Berkas %{filename} dari %{repo_url} tidak ditandatangani secara digital. "
-"Asal usul dan integritas berkas tidak dapat diverifikasi. Apakah tetap ingin "
-"menggunakannya?"
-
-#: service/lib/agama/software/callbacks/signature.rb:72
-#, perl-brace-format
-msgid ""
-"The file %{filename} is not digitally signed. The origin and integrity of "
-"the file cannot be verified. Use it anyway?"
-msgstr ""
-"Berkas %{filename} tidak ditandatangani secara digital. Asal usul dan "
-"integritas berkas tidak dapat diverifikasi. Apakah tetap ingin "
-"menggunakannya?"
-
-#. Callback to handle signature verification failures
-#.
-#. @param key [Hash] GPG key data (id, name, fingerprint, etc.)
-#. @param repo_id [Integer] Repository ID
-#: service/lib/agama/software/callbacks/signature.rb:100
-#, perl-brace-format
-msgid ""
-"The key %{id} (%{name}) with fingerprint %{fingerprint} is unknown. Do you "
-"want to trust this key?"
-msgstr ""
-"Kunci %{id} (%{name}) dengan sidik jari %{fingerprint} tidak diketahui. "
-"Apakah Anda ingin mempercayai kunci ini?"
-
-#. Callback to handle unknown GPG keys
-#.
-#. @param filename [String] Name of the file.
-#. @param key_id [String] Key ID.
-#. @param repo_id [String] Repository ID.
-#: service/lib/agama/software/callbacks/signature.rb:131
-#, perl-brace-format
-msgid ""
-"The file %{filename} from %{repo_url} is digitally signed with the following "
-"unknown GnuPG key: %{key_id}. Use it anyway?"
-msgstr ""
-"Berkas %{filename} dari %{repo_url} ditandatangani secara digital dengan "
-"kunci GnuPG yang tidak dikenal berikut: %{key_id}. Apakah tetap ingin "
-"menggunakannya?"
-
-#: service/lib/agama/software/callbacks/signature.rb:137
-#, perl-brace-format
-msgid ""
-"The file %{filename} is digitally signed with the following unknown GnuPG "
-"key: %{key_id}. Use it anyway?"
-msgstr ""
-"Berkas %{filename} telah ditandatangani secara digital menggunakan kunci "
-"GnuPG yang tidak dikenal berikut: %{key_id}. Apakah tetap ingin "
-"menggunakannya?"
-
-#. Callback to handle file verification failures
-#.
-#. @param filename [String] File name
-#. @param key [Hash] GPG key data (id, name, fingerprint, etc.)
-#. @param repo_id [Integer] Repository ID
-#: service/lib/agama/software/callbacks/signature.rb:168
-#, perl-brace-format
-msgid ""
-"The file %{filename} from %{repo_url} is digitally signed with the following "
-"GnuPG key, but the integrity check failed: %{key_id} (%{key_name}). Use it "
-"anyway?"
-msgstr ""
-"Berkas %{filename} dari %{repo_url} telah ditandatangani secara digital "
-"menggunakan kunci GnuPG berikut, tetapi pemeriksaan integritas gagal: %"
-"{key_id} (%{key_name}). Apakah tetap ingin menggunakannya?"
-
-#: service/lib/agama/software/callbacks/signature.rb:175
-#, perl-brace-format
-msgid ""
-"The file %{filename} is digitally signed with the following GnuPG key, but "
-"the integrity check failed: %{key_id} (%{key_name}). Use it anyway?"
-msgstr ""
-"Berkas %{filename} telah ditandatangani secara digital menggunakan kunci "
-"GnuPG berikut, tetapi pemeriksaan integritas gagal: %{key_id} (%{key_name}). "
-"Apakah tetap ingin menggunakannya?"
-
-#. TRANSLATORS: button label, trust the GPG key or the signature
-#: service/lib/agama/software/callbacks/signature.rb:199
-msgid "Trust"
-msgstr "Percayai"
-
-#. Should an error be raised?
-#: service/lib/agama/software/manager.rb:178
-msgid "Refreshing repositories metadata"
-msgstr "Menyegarkan metadata repositori"
-
-#: service/lib/agama/software/manager.rb:179
-msgid "Calculating the software proposal"
-msgstr "Menghitung proposal perangkat lunak"
-
-#: service/lib/agama/software/manager.rb:183
-msgid "Initializing sources"
-msgstr "Menginisialisasi sumber"
-
-#. error message
-#: service/lib/agama/software/manager.rb:427
-#, c-format
-msgid "Adding service '%s' failed."
-msgstr "Penambahan layanan ‘%s’ gagal."
-
-#. error message
-#: service/lib/agama/software/manager.rb:432
-#, c-format
-msgid "Updating service '%s' failed."
-msgstr "Pembaruan layanan ‘%s’ gagal."
-
-#. error message
-#: service/lib/agama/software/manager.rb:438
-#, c-format
-msgid "Saving service '%s' failed."
-msgstr "Penyimpanan layanan ‘%s’ gagal."
-
-#. error message
-#: service/lib/agama/software/manager.rb:444
-#, c-format
-msgid "Refreshing service '%s' failed."
-msgstr "Penyegaran layanan ‘%s’ gagal."
-
-#. rubocop:enable Metrics/AbcSize
-#: service/lib/agama/software/manager.rb:453
-#, c-format
-msgid "Removing service '%s' failed."
-msgstr "Penghapusan layanan ‘%s’ gagal."
-
-#. Issues related to the software proposal.
-#.
-#. Repositories that could not be probed are reported as errors.
-#.
-#. @return [Array<Agama::Issue>]
-#: service/lib/agama/software/manager.rb:710
-#, c-format
-msgid "Could not read repository \"%s\""
-msgstr "Tidak dapat membaca repositori \"%s\""
-
-#. Issue when a product is missing
-#.
-#. @return [Agama::Issue]
-#: service/lib/agama/software/manager.rb:720
-msgid "Product not selected yet"
-msgstr "Produk belum dipilih"
-
-#. Issue when a product requires registration but it is not registered yet.
-#.
-#. @return [Agama::Issue]
-#: service/lib/agama/software/manager.rb:729
-msgid "Product must be registered"
-msgstr "Produk harus didaftarkan"
-
-#. Returns solver error messages from the last attempt
-#.
-#. @return [Array<String>] Error messages
-#: service/lib/agama/software/proposal.rb:276
-#, c-format
-msgid "Found %s dependency issues."
-msgstr "Ditemukan %s masalah ketergantungan."
+#: service/lib/agama/dbus/storage/manager.rb:383
+msgid "Applying storage configuration"
+msgstr "Menerapkan konfigurasi penyimpanan"
 
 #. TRANSLATORS: SSL certificate details
 #: service/lib/agama/ssl/certificate_details.rb:31
@@ -353,7 +82,7 @@ msgstr "Sidik Jari SHA256: "
 #. label followed by the SSL certificate identification
 #: service/lib/agama/ssl/certificate_details.rb:46
 msgid "Common Name (CN): "
-msgstr "Common Name (CN): "
+msgstr "Nama Umum (CN): "
 
 #. label followed by the SSL certificate identification
 #: service/lib/agama/ssl/certificate_details.rb:48
@@ -415,7 +144,7 @@ msgstr "Tidak ada perangkat boot dengan alias '%s'"
 
 #. TRANSLATORS: 'crypt_method' is the identifier of the method to encrypt the device
 #. (e.g., 'luks1', 'random_swap').
-#: service/lib/agama/storage/config_checkers/encryption.rb:78
+#: service/lib/agama/storage/config_checkers/encryption.rb:73
 #, perl-brace-format
 msgid ""
 "No passphrase provided (required for using the method '%{crypt_method}')."
@@ -425,28 +154,28 @@ msgstr ""
 
 #. TRANSLATORS: 'crypt_method' is the identifier of the method to encrypt the device
 #. (e.g., 'luks1', 'random_swap').
-#: service/lib/agama/storage/config_checkers/encryption.rb:93
+#: service/lib/agama/storage/config_checkers/encryption.rb:89
 #, perl-brace-format
 msgid "Encryption method '%{crypt_method}' is not available in this system."
 msgstr "Metode enkripsi '%{crypt_method}' tidak tersedia di sistem ini."
 
 #. TRANSLATORS: 'crypt_method' is the identifier of the method to encrypt the device
 #. (e.g., 'luks1', 'random_swap').
-#: service/lib/agama/storage/config_checkers/encryption.rb:120
+#: service/lib/agama/storage/config_checkers/encryption.rb:117
 #, perl-brace-format
 msgid "'%{crypt_method}' is not a suitable method to encrypt the device."
 msgstr ""
 "'%{crypt_method}' bukan metode yang cocok untuk mengenkripsi perangkat."
 
 #. TRANSLATORS: %s is replaced by a mount path (e.g., "/home").
-#: service/lib/agama/storage/config_checkers/filesystem.rb:79
+#: service/lib/agama/storage/config_checkers/filesystem.rb:75
 #, c-format
 msgid "Missing file system type for '%s'"
 msgstr "Tidak ada tipe sistem berkas untuk '%s'"
 
 #. TRANSLATORS: %{filesystem} is replaced by a file system type (e.g., "Btrfs") and
 #. %{path} is replaced by a mount path (e.g., "/home").
-#: service/lib/agama/storage/config_checkers/filesystem.rb:100
+#: service/lib/agama/storage/config_checkers/filesystem.rb:98
 #, perl-brace-format
 msgid "The file system type '%{filesystem}' is not suitable for '%{path}'"
 msgstr "Tipe sistem berkas '%{filesystem}' tidak cocok untuk '%{path}'"
@@ -466,14 +195,14 @@ msgstr "Tidak ada perangkat member MD RAID dengan alias '%s'"
 #. Issue if the MD RAID level is missing and the device is not reused.
 #.
 #. @return [Issue, nil]
-#: service/lib/agama/storage/config_checkers/md_raid.rb:110
+#: service/lib/agama/storage/config_checkers/md_raid.rb:111
 msgid "There is a MD RAID without level"
 msgstr "Ada MD RAID tanpa tingkat"
 
 #. Issue if the MD RAID does not contain enough member devices.
 #.
 #. @return [Issue, nil]
-#: service/lib/agama/storage/config_checkers/md_raid.rb:121
+#: service/lib/agama/storage/config_checkers/md_raid.rb:124
 #, c-format
 msgid "At least %s devices are required for %s"
 msgstr "Setidaknya %s perangkat diperlukan untuk %s"
@@ -482,7 +211,7 @@ msgstr "Setidaknya %s perangkat diperlukan untuk %s"
 #.
 #. @param member_config [#search]
 #. @return [Issue, nil]
-#: service/lib/agama/storage/config_checkers/md_raid.rb:168
+#: service/lib/agama/storage/config_checkers/md_raid.rb:171
 #, perl-brace-format
 msgid ""
 "The device '%{member}' cannot be deleted because it is part of the MD RAID %"
@@ -495,7 +224,7 @@ msgstr ""
 #.
 #. @param member_config [#search]
 #. @return [Issue, nil]
-#: service/lib/agama/storage/config_checkers/md_raid.rb:191
+#: service/lib/agama/storage/config_checkers/md_raid.rb:194
 #, perl-brace-format
 msgid ""
 "The device '%{member}' cannot be resized because it is part of the MD RAID %"
@@ -508,7 +237,7 @@ msgstr ""
 #.
 #. @param member_config [#search]
 #. @return [Issue, nil]
-#: service/lib/agama/storage/config_checkers/md_raid.rb:214
+#: service/lib/agama/storage/config_checkers/md_raid.rb:217
 #, perl-brace-format
 msgid ""
 "The device '%{member}' cannot be formatted because it is part of the MD RAID "
@@ -521,7 +250,7 @@ msgstr ""
 #.
 #. @param member_config [#search]
 #. @return [Issue, nil]
-#: service/lib/agama/storage/config_checkers/md_raid.rb:237
+#: service/lib/agama/storage/config_checkers/md_raid.rb:240
 #, perl-brace-format
 msgid ""
 "The device '%{member}' cannot be partitioned because it is part of the MD "
@@ -534,7 +263,7 @@ msgstr ""
 #.
 #. @param member_config [#search]
 #. @return [Issue, nil]
-#: service/lib/agama/storage/config_checkers/md_raid.rb:259
+#: service/lib/agama/storage/config_checkers/md_raid.rb:262
 #, perl-brace-format
 msgid ""
 "The device '%{member}' cannot be used because it is part of the MD RAID %"
@@ -547,7 +276,7 @@ msgstr ""
 #.
 #. @param device [Y2Storage::BlkDevice]
 #. @return [Issue, nil]
-#: service/lib/agama/storage/config_checkers/md_raid.rb:284
+#: service/lib/agama/storage/config_checkers/md_raid.rb:287
 #, perl-brace-format
 msgid ""
 "The device '%{device}' cannot be formatted because it is part of the MD RAID "
@@ -600,18 +329,18 @@ msgstr "perangkat"
 #. Issue if the volume group name is missing.
 #.
 #. @return [Issue, nil]
-#: service/lib/agama/storage/config_checkers/volume_group.rb:76
+#: service/lib/agama/storage/config_checkers/volume_group.rb:77
 msgid "There is a volume group without name"
 msgstr "Ada grup volume tanpa nama"
 
 #. TRANSLATORS: %s is the replaced by a device alias (e.g., "pv1").
-#: service/lib/agama/storage/config_checkers/volume_group.rb:106
+#: service/lib/agama/storage/config_checkers/volume_group.rb:109
 #, c-format
 msgid "There is no LVM physical volume with alias '%s'"
 msgstr "Tidak ada volume fisik LVM dengan alias '%s'"
 
 #. TRANSLATORS: %s is the replaced by a device alias (e.g., "pv1").
-#: service/lib/agama/storage/config_checkers/volume_group.rb:133
+#: service/lib/agama/storage/config_checkers/volume_group.rb:136
 #, c-format
 msgid ""
 "The list of target devices for the volume group '%s' is mixing reused "
@@ -621,7 +350,7 @@ msgstr ""
 "digunakan kembali dan perangkat baru"
 
 #. TRANSLATORS: %s is the replaced by a device alias (e.g., "disk1").
-#: service/lib/agama/storage/config_checkers/volume_group.rb:153
+#: service/lib/agama/storage/config_checkers/volume_group.rb:156
 #, c-format
 msgid "There is no target device for LVM physical volumes with alias '%s'"
 msgstr "Tidak ada perangkat target untuk volume fisik LVM dengan alias '%s'"
@@ -657,52 +386,37 @@ msgid "Shrinking is not supported by this device"
 msgstr "Penyusutan tidak didukung oleh perangkat ini"
 
 #. Copy /etc/nvme/host* to keep NVMe working after installation, bsc#1238038
-#: service/lib/agama/storage/finisher.rb:145
+#: service/lib/agama/storage/finisher.rb:135
 msgid "Copying important installation files to the target system"
 msgstr "Menyalin berkas instalasi penting ke sistem tujuan"
 
-#. Constructor
-#: service/lib/agama/storage/finisher.rb:186
-msgid "Writing Linux Security Modules configuration"
-msgstr "Menulis konfigurasi Modul Keamanan Linux"
-
 #. Step to write the bootloader configuration
-#: service/lib/agama/storage/finisher.rb:197
+#: service/lib/agama/storage/finisher.rb:170
 msgid "Installing bootloader"
 msgstr "Menginstal bootloader"
 
 #. Step to finish the Y2Storage configuration
-#: service/lib/agama/storage/finisher.rb:214
+#: service/lib/agama/storage/finisher.rb:187
 msgid "Adjusting storage configuration"
 msgstr "Menyesuaikan konfigurasi penyimpanan"
 
 #. Step to finish the iSCSI configuration
-#: service/lib/agama/storage/finisher.rb:225
+#: service/lib/agama/storage/finisher.rb:198
 msgid "Adjusting iSCSI configuration"
 msgstr "Menyesuaikan konfigurasi iSCSI"
 
 #. Step to configure the file-system snapshots
-#: service/lib/agama/storage/finisher.rb:236
+#: service/lib/agama/storage/finisher.rb:209
 msgid "Configuring file systems snapshots"
 msgstr "Konfigurasi snapshot sistem berkas"
 
 #. Step to copy the installation logs
-#: service/lib/agama/storage/finisher.rb:254
+#: service/lib/agama/storage/finisher.rb:227
 msgid "Copying logs"
 msgstr "Menyalin log"
 
-#. Executes post-installation scripts
-#: service/lib/agama/storage/finisher.rb:288
-msgid "Running user-defined scripts"
-msgstr "Menjalankan skrip yang didefinisikan pengguna"
-
-#. Executes post-installation scripts
-#: service/lib/agama/storage/finisher.rb:327
-msgid "Deploying user-defined files"
-msgstr "Menerapkan berkas yang didefinisikan pengguna"
-
 #. Step to unmount the target file-systems
-#: service/lib/agama/storage/finisher.rb:346
+#: service/lib/agama/storage/finisher.rb:261
 msgid "Unmounting storage devices"
 msgstr "Melepas perangkat penyimpanan"
 
@@ -730,46 +444,10 @@ msgstr "Masuk ke target iSCSI"
 msgid "Cannot login to iSCSI target %s"
 msgstr "Tidak dapat masuk ke target iSCSI %s"
 
-#. Probes storage devices and performs an initial proposal
-#.
-#. @param keep_config [Boolean] Whether to use the current storage config for calculating the
-#. proposal.
-#. @param keep_activation [Boolean] Whether to keep the current activation (e.g., provided LUKS
-#. passwords).
-#: service/lib/agama/storage/manager.rb:133
-msgid "Activating storage devices"
-msgstr "Mengaktifkan perangkat penyimpanan"
-
-#: service/lib/agama/storage/manager.rb:134
-msgid "Probing storage devices"
-msgstr "Memeriksa perangkat penyimpanan"
-
-#: service/lib/agama/storage/manager.rb:135
-msgid "Calculating the storage proposal"
-msgstr "Menghitung proposal penyimpanan"
-
-#. Prepares the partitioning to install the system
-#: service/lib/agama/storage/manager.rb:161
-msgid "Preparing bootloader proposal"
-msgstr "Mempersiapkan proposal bootloader"
-
-#. then also apply changes to that proposal
-#: service/lib/agama/storage/manager.rb:168
-msgid "Adding storage-related packages"
-msgstr "Menambahkan paket terkait penyimpanan"
-
-#: service/lib/agama/storage/manager.rb:169
-msgid "Preparing the storage devices"
-msgstr "Mempersiapkan perangkat penyimpanan"
-
-#: service/lib/agama/storage/manager.rb:170
-msgid "Writing bootloader sysconfig"
-msgstr "Menulis sysconfig bootloader"
-
 #. Issue representing the proposal is not valid.
 #.
 #. @return [Issue]
-#: service/lib/agama/storage/proposal.rb:345
+#: service/lib/agama/storage/proposal.rb:305
 msgid "Cannot calculate a valid storage setup with the current configuration"
 msgstr ""
 "Tidak dapat menghitung konfigurasi penyimpanan yang valid dengan konfigurasi "
@@ -778,34 +456,227 @@ msgstr ""
 #. Issue to communicate a generic Y2Storage error.
 #.
 #. @return [Issue]
-#: service/lib/agama/storage/proposal.rb:356
+#: service/lib/agama/storage/proposal.rb:315
 msgid "A problem ocurred while calculating the storage setup"
 msgstr "Terjadi masalah saat menghitung pengaturan penyimpanan"
 
-#. Returns an issue if there is no target device.
-#.
-#. @return [Issue, nil]
-#: service/lib/agama/storage/proposal_strategies/guided.rb:135
-msgid "No device selected for installation"
-msgstr "Tidak ada perangkat yang dipilih untuk pemasangan"
+#~ msgid "Analyze disks"
+#~ msgstr "Menganalisis disk"
 
-#. Returns an issue if any of the devices required for the proposal is not found
-#.
-#. @return [Issue, nil]
-#: service/lib/agama/storage/proposal_strategies/guided.rb:151
+#~ msgid "Configure software"
+#~ msgstr "Mengkonfigurasi perangkat lunak"
+
+#~ msgid "Prepare disks"
+#~ msgstr "Siapkan disk"
+
+#~ msgid "Install software"
+#~ msgstr "Menginstal perangkat lunak"
+
+#~ msgid "Configure the system"
+#~ msgstr "Mengkonfigurasi sistem"
+
+#~ msgid "Load software translations"
+#~ msgstr "Memuat terjemahan perangkat lunak"
+
+#~ msgid "Load storage translations"
+#~ msgstr "Memuat terjemahan penyimpanan"
+
+#~ msgid ""
+#~ "Trying to import a self signed certificate. Do you want to trust it and "
+#~ "register the product?"
+#~ msgstr ""
+#~ "Mencoba mengimpor sertifikat yang ditandatangani sendiri. Apakah Anda "
+#~ "ingin mempercayainya dan mendaftarkan produk?"
+
+#~ msgid "Try again"
+#~ msgstr "Coba lagi"
+
+#~ msgid "Continue anyway"
+#~ msgstr "Lanjutkan saja"
+
+#~ msgid "Skip"
+#~ msgstr "Lewati"
+
+#~ msgid "Yes"
+#~ msgstr "Ya"
+
+#~ msgid "No"
+#~ msgstr "Tidak"
+
 #, perl-brace-format
-msgid "The following selected device is not found in the system: %{devices}"
-msgid_plural ""
-"The following selected devices are not found in the system: %{devices}"
-msgstr[0] ""
-"Perangkat yang dipilih berikut ini tidak ditemukan dalam sistem: %{devices}"
+#~ msgid ""
+#~ "No checksum for the file %{file} was found in the repository. This means "
+#~ "that although the file is part of the signed repository, the list of "
+#~ "checksums does not mention this file. Use it anyway?"
+#~ msgstr ""
+#~ "Tidak ditemukan checksum untuk berkas %{file} di repositori. Hal ini "
+#~ "berarti meskipun berkas tersebut merupakan bagian dari repositori yang "
+#~ "ditandatangani, daftar checksum tidak mencantumkan berkas ini. Apakah "
+#~ "tetap ingin menggunakannya?"
 
-#. Recalculates the list of issues
-#: service/lib/agama/users.rb:154
-msgid ""
-"Defining a user, setting the root password or a SSH public key is required"
-msgstr ""
-"Wajib menentukan pengguna, mengatur kata sandi root atau kunci publik SSH"
+#, perl-brace-format
+#~ msgid ""
+#~ "The checksum of the file %{file} is \"%{digest}\" but the expected "
+#~ "checksum is unknown. This means that the origin and integrity of the file "
+#~ "cannot be verified. Use it anyway?"
+#~ msgstr ""
+#~ "Checksum berkas %{file} adalah “%{digest}”, tetapi checksum yang "
+#~ "diharapkan tidak diketahui. Hal ini berarti asal usul dan integritas "
+#~ "berkas tidak dapat diverifikasi. Apakah tetap ingin menggunakannya?"
+
+#, perl-brace-format
+#~ msgid ""
+#~ "The expected checksum of file %{file} is \"%{found}\" but it was expected "
+#~ "to be \"%{expected}\". The file has changed by accident or by an attacker "
+#~ "since the creater signed it. Use it anyway?"
+#~ msgstr ""
+#~ "Checksum yang diharapkan untuk berkas %{file} adalah “%{found}”, tetapi "
+#~ "seharusnya “%{expected}”. Berkas ini telah berubah secara tidak sengaja "
+#~ "atau oleh penyerang sejak pembuatnya menandatanganinya. Apakah tetap "
+#~ "ingin menggunakannya?"
+
+#~ msgid "There was a problem running a package script."
+#~ msgstr "Ada masalah dalam menjalankan skrip paket."
+
+#, perl-brace-format
+#~ msgid ""
+#~ "The file %{filename} from %{repo_url} is not digitally signed. The origin "
+#~ "and integrity of the file cannot be verified. Use it anyway?"
+#~ msgstr ""
+#~ "Berkas %{filename} dari %{repo_url} tidak ditandatangani secara digital. "
+#~ "Asal usul dan integritas berkas tidak dapat diverifikasi. Apakah tetap "
+#~ "ingin menggunakannya?"
+
+#, perl-brace-format
+#~ msgid ""
+#~ "The file %{filename} is not digitally signed. The origin and integrity of "
+#~ "the file cannot be verified. Use it anyway?"
+#~ msgstr ""
+#~ "Berkas %{filename} tidak ditandatangani secara digital. Asal usul dan "
+#~ "integritas berkas tidak dapat diverifikasi. Apakah tetap ingin "
+#~ "menggunakannya?"
+
+#, perl-brace-format
+#~ msgid ""
+#~ "The key %{id} (%{name}) with fingerprint %{fingerprint} is unknown. Do "
+#~ "you want to trust this key?"
+#~ msgstr ""
+#~ "Kunci %{id} (%{name}) dengan sidik jari %{fingerprint} tidak diketahui. "
+#~ "Apakah Anda ingin mempercayai kunci ini?"
+
+#, perl-brace-format
+#~ msgid ""
+#~ "The file %{filename} from %{repo_url} is digitally signed with the "
+#~ "following unknown GnuPG key: %{key_id}. Use it anyway?"
+#~ msgstr ""
+#~ "Berkas %{filename} dari %{repo_url} ditandatangani secara digital dengan "
+#~ "kunci GnuPG yang tidak dikenal berikut: %{key_id}. Apakah tetap ingin "
+#~ "menggunakannya?"
+
+#, perl-brace-format
+#~ msgid ""
+#~ "The file %{filename} is digitally signed with the following unknown GnuPG "
+#~ "key: %{key_id}. Use it anyway?"
+#~ msgstr ""
+#~ "Berkas %{filename} telah ditandatangani secara digital menggunakan kunci "
+#~ "GnuPG yang tidak dikenal berikut: %{key_id}. Apakah tetap ingin "
+#~ "menggunakannya?"
+
+#, perl-brace-format
+#~ msgid ""
+#~ "The file %{filename} from %{repo_url} is digitally signed with the "
+#~ "following GnuPG key, but the integrity check failed: %{key_id} (%"
+#~ "{key_name}). Use it anyway?"
+#~ msgstr ""
+#~ "Berkas %{filename} dari %{repo_url} telah ditandatangani secara digital "
+#~ "menggunakan kunci GnuPG berikut, tetapi pemeriksaan integritas gagal: %"
+#~ "{key_id} (%{key_name}). Apakah tetap ingin menggunakannya?"
+
+#, perl-brace-format
+#~ msgid ""
+#~ "The file %{filename} is digitally signed with the following GnuPG key, "
+#~ "but the integrity check failed: %{key_id} (%{key_name}). Use it anyway?"
+#~ msgstr ""
+#~ "Berkas %{filename} telah ditandatangani secara digital menggunakan kunci "
+#~ "GnuPG berikut, tetapi pemeriksaan integritas gagal: %{key_id} (%"
+#~ "{key_name}). Apakah tetap ingin menggunakannya?"
+
+#~ msgid "Trust"
+#~ msgstr "Percayai"
+
+#~ msgid "Refreshing repositories metadata"
+#~ msgstr "Menyegarkan metadata repositori"
+
+#~ msgid "Calculating the software proposal"
+#~ msgstr "Menghitung proposal perangkat lunak"
+
+#~ msgid "Initializing sources"
+#~ msgstr "Menginisialisasi sumber"
+
+#, c-format
+#~ msgid "Adding service '%s' failed."
+#~ msgstr "Penambahan layanan ‘%s’ gagal."
+
+#, c-format
+#~ msgid "Updating service '%s' failed."
+#~ msgstr "Pembaruan layanan ‘%s’ gagal."
+
+#, c-format
+#~ msgid "Saving service '%s' failed."
+#~ msgstr "Penyimpanan layanan ‘%s’ gagal."
+
+#, c-format
+#~ msgid "Refreshing service '%s' failed."
+#~ msgstr "Penyegaran layanan ‘%s’ gagal."
+
+#, c-format
+#~ msgid "Removing service '%s' failed."
+#~ msgstr "Penghapusan layanan ‘%s’ gagal."
+
+#, c-format
+#~ msgid "Could not read repository \"%s\""
+#~ msgstr "Tidak dapat membaca repositori \"%s\""
+
+#~ msgid "Product not selected yet"
+#~ msgstr "Produk belum dipilih"
+
+#~ msgid "Product must be registered"
+#~ msgstr "Produk harus didaftarkan"
+
+#, c-format
+#~ msgid "Found %s dependency issues."
+#~ msgstr "Ditemukan %s masalah ketergantungan."
+
+#~ msgid "Writing Linux Security Modules configuration"
+#~ msgstr "Menulis konfigurasi Modul Keamanan Linux"
+
+#~ msgid "Running user-defined scripts"
+#~ msgstr "Menjalankan skrip yang didefinisikan pengguna"
+
+#~ msgid "Deploying user-defined files"
+#~ msgstr "Menerapkan berkas yang didefinisikan pengguna"
+
+#~ msgid "Calculating the storage proposal"
+#~ msgstr "Menghitung proposal penyimpanan"
+
+#~ msgid "Adding storage-related packages"
+#~ msgstr "Menambahkan paket terkait penyimpanan"
+
+#~ msgid "No device selected for installation"
+#~ msgstr "Tidak ada perangkat yang dipilih untuk pemasangan"
+
+#, perl-brace-format
+#~ msgid "The following selected device is not found in the system: %{devices}"
+#~ msgid_plural ""
+#~ "The following selected devices are not found in the system: %{devices}"
+#~ msgstr[0] ""
+#~ "Perangkat yang dipilih berikut ini tidak ditemukan dalam sistem: %"
+#~ "{devices}"
+
+#~ msgid ""
+#~ "Defining a user, setting the root password or a SSH public key is required"
+#~ msgstr ""
+#~ "Wajib menentukan pengguna, mengatur kata sandi root atau kunci publik SSH"
 
 #~ msgid "Selecting Linux Security Modules"
 #~ msgstr "Memilih Modul Keamanan Linux"

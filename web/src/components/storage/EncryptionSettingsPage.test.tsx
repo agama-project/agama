@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024-2025] SUSE LLC
+ * Copyright (c) [2024-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -24,58 +24,58 @@ import React from "react";
 import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import EncryptionSettingsPage from "./EncryptionSettingsPage";
-import { EncryptionHook } from "~/queries/storage/config-model";
+import type { ConfigModel } from "~/model/storage/config-model";
 
 jest.mock("~/components/users/PasswordCheck", () => () => <div>PasswordCheck Mock</div>);
 
-const mockLuks2Encryption: EncryptionHook = {
+const mockLuks2Config: ConfigModel.Config = {
   encryption: {
     method: "luks2",
     password: "12345",
   },
-  enable: jest.fn(),
-  disable: jest.fn(),
 };
 
-const mockTpmEncryption: EncryptionHook = {
+const mockTpmConfig: ConfigModel.Config = {
   encryption: {
     method: "tpmFde",
     password: "12345",
   },
-  enable: jest.fn(),
-  disable: jest.fn(),
 };
 
-const mockNoEncryption: EncryptionHook = {
-  encryption: undefined,
-  enable: jest.fn(),
-  disable: jest.fn(),
-};
+const mockNoEncryptionConfig: ConfigModel.Config = {};
 
-jest.mock("~/components/product/ProductRegistrationAlert", () => () => (
-  <div>registration alert</div>
-));
+jest.mock("~/hooks/model/system", () => ({
+  useSystem: () => ({
+    l10n: {
+      keymap: "us",
+      timezone: "Europe/Berlin",
+      locale: "en_US",
+    },
+  }),
+}));
 
 const mockUseEncryptionMethods = jest.fn();
-jest.mock("~/queries/storage", () => ({
-  ...jest.requireActual("~/queries/storage"),
+jest.mock("~/hooks/model/system/storage", () => ({
   useEncryptionMethods: () => mockUseEncryptionMethods(),
 }));
 
-const mockUseEncryption = jest.fn();
-jest.mock("~/queries/storage/config-model", () => ({
-  ...jest.requireActual("~/queries/storage/config-model"),
-  useEncryption: () => mockUseEncryption(),
+const mockUseConfigModel = jest.fn();
+const mockSetEncryption = jest.fn();
+jest.mock("~/hooks/model/storage/config-model", () => ({
+  useConfigModel: () => mockUseConfigModel(),
+  useSetEncryption: () => mockSetEncryption,
 }));
 
 describe("EncryptionSettingsPage", () => {
   beforeEach(() => {
     mockUseEncryptionMethods.mockReturnValue(["luks2", "tpmFde"]);
+    mockSetEncryption.mockClear();
+    mockUseConfigModel.mockClear();
   });
 
   describe("when encryption is not enabled", () => {
     beforeEach(() => {
-      mockUseEncryption.mockReturnValue(mockNoEncryption);
+      mockUseConfigModel.mockReturnValue(mockNoEncryptionConfig);
     });
 
     it("allows enabling the encryption", async () => {
@@ -89,13 +89,13 @@ describe("EncryptionSettingsPage", () => {
       await user.type(passwordConfirmationInput, "12345");
       const acceptButton = screen.getByRole("button", { name: "Accept" });
       await user.click(acceptButton);
-      expect(mockNoEncryption.enable).toHaveBeenCalledWith("luks2", "12345");
+      expect(mockSetEncryption).toHaveBeenCalledWith({ method: "luks2", password: "12345" });
     });
   });
 
   describe("when encryption is enabled", () => {
     beforeEach(() => {
-      mockUseEncryption.mockReturnValue(mockLuks2Encryption);
+      mockUseConfigModel.mockReturnValue(mockLuks2Config);
     });
 
     it("allows disabling the encryption", async () => {
@@ -106,13 +106,13 @@ describe("EncryptionSettingsPage", () => {
       const acceptButton = screen.getByRole("button", { name: "Accept" });
       await user.click(acceptButton);
 
-      expect(mockLuks2Encryption.disable).toHaveBeenCalled();
+      expect(mockSetEncryption).toHaveBeenCalledWith(null);
     });
   });
 
   describe("when using TPM", () => {
     beforeEach(() => {
-      mockUseEncryption.mockReturnValue(mockTpmEncryption);
+      mockUseConfigModel.mockReturnValue(mockTpmConfig);
     });
 
     it("allows disabling TPM", async () => {
@@ -123,7 +123,7 @@ describe("EncryptionSettingsPage", () => {
       await user.click(tpmCheckbox);
       expect(tpmCheckbox).not.toBeChecked();
       await user.click(acceptButton);
-      expect(mockTpmEncryption.enable).toHaveBeenCalledWith("luks2", "12345");
+      expect(mockSetEncryption).toHaveBeenCalledWith({ method: "luks2", password: "12345" });
     });
   });
 

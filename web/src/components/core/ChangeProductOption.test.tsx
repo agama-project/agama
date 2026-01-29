@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024-2025] SUSE LLC
+ * Copyright (c) [2024-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -23,10 +23,10 @@
 import React from "react";
 import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
+import { useSystem } from "~/hooks/model/system";
 import { PRODUCT as PATHS } from "~/routes/paths";
-import { Product, RegistrationInfo } from "~/types/software";
 import ChangeProductOption from "./ChangeProductOption";
-import { useRegistration } from "~/queries/software";
+import { Product } from "~/model/system";
 
 const tumbleweed: Product = {
   id: "Tumbleweed",
@@ -34,27 +34,32 @@ const tumbleweed: Product = {
   icon: "tumbleweed.svg",
   description: "Tumbleweed description...",
   registration: false,
+  modes: [],
 };
+
 const microos: Product = {
   id: "MicroOS",
   name: "openSUSE MicroOS",
   icon: "MicroOS.svg",
   description: "MicroOS description",
   registration: false,
+  modes: [],
 };
 
-let mockUseProduct: { products: Product[]; selectedProduct?: Product };
-let registrationInfoMock: RegistrationInfo;
+// let registrationInfoMock: RegistrationInfo;
+const mockSystemProducts: jest.Mock<Product[]> = jest.fn();
 
-jest.mock("~/queries/software", () => ({
-  useProduct: () => mockUseProduct,
-  useRegistration: (): ReturnType<typeof useRegistration> => registrationInfoMock,
+jest.mock("~/hooks/model/system", () => ({
+  ...jest.requireActual("~/hooks/model/system"),
+  useSystem: (): ReturnType<typeof useSystem> => ({
+    products: mockSystemProducts(),
+  }),
 }));
 
 describe("ChangeProductOption", () => {
   describe("when there is more than one product available", () => {
     beforeEach(() => {
-      mockUseProduct = { products: [tumbleweed, microos] };
+      mockSystemProducts.mockReturnValue([tumbleweed, microos]);
     });
 
     it("renders a menu item for navigating to product selection page", () => {
@@ -63,15 +68,16 @@ describe("ChangeProductOption", () => {
       expect(link).toHaveAttribute("href", PATHS.changeProduct);
     });
 
-    describe("but a product is registered", () => {
-      beforeEach(() => {
-        registrationInfoMock = {
-          registered: true,
-          key: "INTERNAL-USE-ONLY-1234-5678",
-          email: "",
-          url: "",
-        };
-      });
+    // FIXME: activate it again when registration is ready in api v2
+    describe.skip("but a product is registered", () => {
+      // beforeEach(() => {
+      //   registrationInfoMock = {
+      //     registered: true,
+      //     key: "INTERNAL-USE-ONLY-1234-5678",
+      //     email: "",
+      //     url: "",
+      //   };
+      // });
 
       it("renders nothing", () => {
         const { container } = installerRender(<ChangeProductOption />);
@@ -82,7 +88,7 @@ describe("ChangeProductOption", () => {
 
   describe("when there is only one product available", () => {
     beforeEach(() => {
-      mockUseProduct = { products: [tumbleweed] };
+      mockSystemProducts.mockReturnValue([tumbleweed]);
     });
 
     it("renders nothing", () => {

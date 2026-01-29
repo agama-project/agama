@@ -72,7 +72,7 @@ module Agama
 
           error(
             format(_("The device with alias '%s' is used by more than one device"), config.alias),
-            kind: :overused_alias
+            kind: IssueClasses::Config::OVERUSED_DEVICE
           )
         end
 
@@ -88,7 +88,7 @@ module Agama
           target_users = storage_config.target_users(config.alias)
           any_user = (users + target_users).any?
 
-          return unless users.any? || target_users.any?
+          return unless any_user
 
           error(
             format(
@@ -98,7 +98,7 @@ module Agama
               ),
               config.alias
             ),
-            kind: :formatted_with_user
+            kind: IssueClasses::Config::OVERUSED_DEVICE
           )
         end
 
@@ -122,7 +122,7 @@ module Agama
               ),
               config.alias
             ),
-            kind: :partitioned_with_user
+            kind: IssueClasses::Config::OVERUSED_DEVICE
           )
         end
       end

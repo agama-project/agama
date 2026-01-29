@@ -21,57 +21,68 @@
  */
 
 import React, { useState } from "react";
-import MenuButton, { MenuButtonItem } from "~/components/core/MenuButton";
+import MenuButton, { CustomToggleProps, MenuButtonItem } from "~/components/core/MenuButton";
 import NewVgMenuOption from "./NewVgMenuOption";
-import { useAvailableDevices } from "~/hooks/storage/system";
-import { useModel } from "~/hooks/storage/model";
-import { useSwitchToDrive } from "~/hooks/storage/drive";
-import { useSwitchToMdRaid } from "~/hooks/storage/md-raid";
+import { useAvailableDevices } from "~/hooks/model/system/storage";
+import {
+  useConfigModel,
+  useAddDriveFromMdRaid,
+  useAddMdRaidFromDrive,
+} from "~/hooks/model/storage/config-model";
 import { deviceBaseName, formattedPath } from "~/components/storage/utils";
-import * as model from "~/types/storage/model";
-import { StorageDevice } from "~/types/storage";
+import configModel from "~/model/storage/config-model";
 import { sprintf } from "sprintf-js";
 import { _, formatList } from "~/i18n";
 import DeviceSelectorModal from "./DeviceSelectorModal";
 import { MenuItemProps } from "@patternfly/react-core";
-import { Icon } from "../layout";
+import { isDrive } from "~/model/storage/device";
+import type { Storage } from "~/model/system";
+import type { ConfigModel } from "~/model/storage/config-model";
 
-const baseName = (device: StorageDevice): string => deviceBaseName(device, true);
+const baseName = (device: Storage.Device): string => deviceBaseName(device, true);
 
-const useOnlyOneOption = (device: model.Drive | model.MdRaid): boolean => {
+const useOnlyOneOption = (
+  config: ConfigModel.Config,
+  device: ConfigModel.Drive | ConfigModel.MdRaid,
+): boolean => {
   if (device.filesystem && device.filesystem.reuse) return true;
 
-  const { isTargetDevice, isExplicitBoot } = device;
-  if (!device.getMountPaths().length && (isTargetDevice || isExplicitBoot)) return true;
+  const isTargetDevice = configModel.isTargetDevice(config, device.name);
 
-  return device.isReusingPartitions;
+  if (
+    !configModel.partitionable.usedMountPaths(device).length &&
+    (isTargetDevice || configModel.boot.hasExplicitDevice(config, device.name))
+  )
+    return true;
+
+  return configModel.partitionable.isReusingPartitions(device);
 };
 
-type ChangeDeviceMenuItemProps = {
-  modelDevice: model.Drive | model.MdRaid;
-  device: StorageDevice;
-} & MenuItemProps;
+type ChangeDeviceTitleProps = {
+  modelDevice: ConfigModel.Drive | ConfigModel.MdRaid;
+};
 
-const ChangeDeviceTitle = ({ modelDevice }) => {
-  const onlyOneOption = useOnlyOneOption(modelDevice);
+const ChangeDeviceTitle = ({ modelDevice }: ChangeDeviceTitleProps) => {
+  const config = useConfigModel();
+  const onlyOneOption = useOnlyOneOption(config, modelDevice);
   if (onlyOneOption) {
     return _("Selected disk cannot be changed");
   }
 
   if (modelDevice.filesystem) {
     // TRANSLATORS: %s is a formatted mount point like '"/home"'
-    return sprintf(_("Select a disk to format as %s"), formattedPath(modelDevice.mountPath));
+    return sprintf(_("Change the disk to format as %s"), formattedPath(modelDevice.mountPath));
   }
 
-  const mountPaths = modelDevice.getMountPaths();
+  const mountPaths = configModel.partitionable.usedMountPaths(modelDevice);
   const hasMountPaths = mountPaths.length > 0;
 
   if (!hasMountPaths) {
-    return _("Select a disk to configure");
+    return _("Change the disk to configure");
   }
 
   if (mountPaths.includes("/")) {
-    return _("Select a disk to install the system");
+    return _("Change the disk to install the system");
   }
 
   const newMountPaths = modelDevice.partitions
@@ -81,17 +92,24 @@ const ChangeDeviceTitle = ({ modelDevice }) => {
   return sprintf(
     // TRANSLATORS: %s is a list of formatted mount points like '"/", "/var" and "swap"' (or a
     // single mount point in the singular case).
-    _("Select a disk to create %s"),
+    _("Change the disk to create %s"),
     formatList(newMountPaths),
   );
 };
 
-const ChangeDeviceDescription = ({ modelDevice, device }) => {
+type ChangeDeviceDescriptionProps = {
+  modelDevice: ConfigModel.Drive | ConfigModel.MdRaid;
+  device: Storage.Device;
+};
+
+const ChangeDeviceDescription = ({ modelDevice, device }: ChangeDeviceDescriptionProps) => {
+  const config = useConfigModel();
   const name = baseName(device);
-  const volumeGroups = modelDevice.getVolumeGroups() || [];
-  const isBoot = modelDevice.isBoot;
-  const isExplicitBoot = modelDevice.isExplicitBoot;
-  const mountPaths = modelDevice.getMountPaths();
+  const volumeGroups = configModel.partitionable.filterVolumeGroups(config, modelDevice);
+  const isExplicitBoot = configModel.boot.hasExplicitDevice(config, modelDevice.name);
+  const isBoot = configModel.boot.hasDevice(config, modelDevice.name);
+  const mountPaths = configModel.partitionable.usedMountPaths(modelDevice);
+  const isReusingPartitions = configModel.partitionable.isReusingPartitions(modelDevice);
   const hasMountPaths = mountPaths.length > 0;
   const hasPv = volumeGroups.length > 0;
   const vgName = volumeGroups[0]?.vgName;
@@ -99,7 +117,7 @@ const ChangeDeviceDescription = ({ modelDevice, device }) => {
   if (modelDevice.filesystem && modelDevice.filesystem.reuse)
     return _("This uses the existing file system at the disk");
 
-  if (modelDevice.isReusingPartitions) {
+  if (isReusingPartitions) {
     // The current device will be the only option to choose from
     return _("This uses existing partitions at the disk");
   }
@@ -172,6 +190,11 @@ const ChangeDeviceDescription = ({ modelDevice, device }) => {
   }
 };
 
+type ChangeDeviceMenuItemProps = {
+  modelDevice: ConfigModel.Drive | ConfigModel.MdRaid;
+  device: Storage.Device;
+} & MenuItemProps;
+
 /**
  * Internal component holding the presentation of the option to change the device
  */
@@ -180,7 +203,8 @@ const ChangeDeviceMenuItem = ({
   device,
   ...props
 }: ChangeDeviceMenuItemProps): React.ReactNode => {
-  const onlyOneOption = useOnlyOneOption(modelDevice);
+  const config = useConfigModel();
+  const onlyOneOption = useOnlyOneOption(config, modelDevice);
 
   return (
     <MenuButtonItem
@@ -195,19 +219,19 @@ const ChangeDeviceMenuItem = ({
 };
 
 type RemoveEntryOptionProps = {
-  device: model.Drive | model.MdRaid;
-  onClick: (device: model.Drive | model.MdRaid) => void;
+  device: ConfigModel.Drive | ConfigModel.MdRaid;
+  onClick: (device: ConfigModel.Drive | ConfigModel.MdRaid) => void;
 };
 
 const RemoveEntryOption = ({ device, onClick }: RemoveEntryOptionProps): React.ReactNode => {
-  const model = useModel();
+  const config = useConfigModel();
 
   /*
    * Pretty artificial logic used to decide whether the UI should display buttons to remove
    * some drives.
    */
-  const hasAdditionalDrives = (model: model.Model): boolean => {
-    const entries = model.drives.concat(model.mdRaids);
+  const hasAdditionalDrives = (config: ConfigModel.Config): boolean => {
+    const entries = config.drives.concat(config.mdRaids);
 
     if (entries.length <= 1) return false;
     if (entries.length > 2) return true;
@@ -215,22 +239,26 @@ const RemoveEntryOption = ({ device, onClick }: RemoveEntryOptionProps): React.R
     // If there are only two drives, the following logic avoids the corner case in which first
     // deleting one of them and then changing the boot settings can lead to zero disks. But it is far
     // from being fully reasonable or understandable for the user.
-    const onlyToBoot = entries.find((e) => e.isExplicitBoot && !e.isUsed);
+    const onlyToBoot = entries.find(
+      (e) =>
+        configModel.boot.hasExplicitDevice(config, e.name) &&
+        !configModel.partitionable.isUsed(config, e.name),
+    );
     return !onlyToBoot;
   };
 
   // When no additional drives has been added, the "Do not use" button can be confusing so it is
   // omitted for all drives.
-  if (!hasAdditionalDrives(model)) return;
+  if (!hasAdditionalDrives(config)) return;
 
   let description;
-  const isExplicitBoot = device.isExplicitBoot;
-  const hasPv = device.isTargetDevice;
+  const isExplicitBoot = configModel.boot.hasExplicitDevice(config, device.name);
+  const hasPv = configModel.isTargetDevice(config, device.name);
   const isDisabled = isExplicitBoot || hasPv;
 
   // If these cases, the target device cannot be changed and this disabled button would only provide
   // information that is redundant to the one already displayed at the disabled "change device" one.
-  if (!device.getMountPaths().length && (hasPv || isExplicitBoot)) return;
+  if (!configModel.partitionable.usedMountPaths(device).length && (hasPv || isExplicitBoot)) return;
 
   if (isExplicitBoot) {
     if (hasPv) {
@@ -259,22 +287,29 @@ const RemoveEntryOption = ({ device, onClick }: RemoveEntryOptionProps): React.R
   );
 };
 
-const targetDevices = (modelDevice, model, availableDevices): StorageDevice[] => {
+const targetDevices = (
+  modelDevice: ConfigModel.Drive | ConfigModel.MdRaid,
+  config: ConfigModel.Config,
+  availableDevices: Storage.Device[],
+): Storage.Device[] => {
   return availableDevices.filter((availableDev) => {
     if (modelDevice.name === availableDev.name) return true;
 
-    const collection = availableDev.isDrive ? model.drives : model.mdRaids;
+    const collection = isDrive(availableDev) ? config.drives : config.mdRaids;
     const device = collection.find((d) => d.name === availableDev.name);
     if (!device) return true;
 
-    return modelDevice.filesystem ? !device.isUsed : !device.filesystem;
+    if (modelDevice.filesystem) return !configModel.partitionable.isUsed(config, device.name);
+
+    return !device.filesystem;
   });
 };
 
 export type SearchedDeviceMenuProps = {
-  modelDevice: model.Drive | model.MdRaid;
-  selected: StorageDevice;
-  deleteFn: (device: model.Drive | model.MdRaid) => void;
+  selected: Storage.Device;
+  modelDevice: ConfigModel.Drive | ConfigModel.MdRaid;
+  toggle?: React.ReactElement<CustomToggleProps>;
+  deleteFn: (device: ConfigModel.Drive | ConfigModel.MdRaid) => void;
 };
 
 /**
@@ -285,18 +320,19 @@ export type SearchedDeviceMenuProps = {
 export default function SearchedDeviceMenu({
   modelDevice,
   selected,
+  toggle,
   deleteFn,
 }: SearchedDeviceMenuProps): React.ReactNode {
   const [isSelectorOpen, setIsSelectorOpen] = useState(false);
-  const switchToDrive = useSwitchToDrive();
-  const switchToMdRaid = useSwitchToMdRaid();
-  const changeTargetFn = (device: StorageDevice) => {
-    const hook = device.isDrive ? switchToDrive : switchToMdRaid;
+  const switchToDrive = useAddDriveFromMdRaid();
+  const switchToMdRaid = useAddMdRaidFromDrive();
+  const changeTargetFn = (device: Storage.Device) => {
+    const hook = isDrive(device) ? switchToDrive : switchToMdRaid;
     hook(modelDevice.name, { name: device.name });
   };
-  const devices = targetDevices(modelDevice, useModel(), useAvailableDevices());
+  const devices = targetDevices(modelDevice, useConfigModel(), useAvailableDevices());
 
-  const onDeviceChange = ([drive]: StorageDevice[]) => {
+  const onDeviceChange = ([drive]: Storage.Device[]) => {
     setIsSelectorOpen(false);
     changeTargetFn(drive);
   };
@@ -306,11 +342,9 @@ export default function SearchedDeviceMenu({
       <MenuButton
         menuProps={{
           "aria-label": sprintf(_("Device %s menu"), modelDevice.name),
-          popperProps: { position: "end" },
+          popperProps: { position: "end", maxWidth: "fit-content", minWidth: "fit-content" },
         }}
-        toggleProps={{
-          variant: "plain",
-        }}
+        customToggle={toggle}
         items={[
           <ChangeDeviceMenuItem
             key="change"
@@ -321,10 +355,7 @@ export default function SearchedDeviceMenu({
           <NewVgMenuOption key="add-vg-option" device={modelDevice} />,
           <RemoveEntryOption key="delete-disk-option" device={modelDevice} onClick={deleteFn} />,
         ]}
-      >
-        <span className="action-text">{_("Change")}</span>{" "}
-        <Icon name="more_horiz" className="agm-strong-icon" />
-      </MenuButton>
+      />
       {isSelectorOpen && (
         <DeviceSelectorModal
           title={<ChangeDeviceTitle modelDevice={modelDevice} />}

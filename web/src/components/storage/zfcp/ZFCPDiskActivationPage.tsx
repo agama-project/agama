@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024-2025] SUSE LLC
+ * Copyright (c) [2024-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -21,16 +21,17 @@
  */
 
 import React, { useState } from "react";
-import { Content, Grid, GridItem } from "@patternfly/react-core";
+import { Grid, GridItem } from "@patternfly/react-core";
 import { Page } from "~/components/core";
 import { _ } from "~/i18n";
 import { useCancellablePromise } from "~/hooks/use-cancellable-promise";
 import { LUNInfo } from "~/types/zfcp";
-import { activateZFCPDisk } from "~/api/storage/zfcp";
+import { activateZFCPDisk } from "~/model/storage/zfcp";
 import { PATHS } from "~/routes/storage";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import ZFCPDiskForm from "./ZFCPDiskForm";
 import { useZFCPControllersChanges, useZFCPDisksChanges } from "~/queries/storage/zfcp";
+import { STORAGE } from "~/routes/paths";
 
 export default function ZFCPDiskActivationPage() {
   useZFCPControllersChanges();
@@ -57,11 +58,13 @@ export default function ZFCPDiskActivationPage() {
   const formId = "ZFCPDiskForm";
 
   return (
-    <Page>
-      <Page.Header>
-        <Content component="h2">{_("zFCP Disk Activation")}</Content>
-      </Page.Header>
-
+    <Page
+      breadcrumbs={[
+        { label: _("Storage"), path: STORAGE.root },
+        { label: _("zFCP"), path: STORAGE.zfcp.root },
+        { label: _("Disk Activation") },
+      ]}
+    >
       <Page.Content>
         <Grid hasGutter>
           <GridItem sm={12} xl={12}>

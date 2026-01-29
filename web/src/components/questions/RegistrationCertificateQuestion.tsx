@@ -32,9 +32,9 @@ import {
   StackItem,
 } from "@patternfly/react-core";
 import { Popup } from "~/components/core";
-import { AnswerCallback, Question } from "~/types/questions";
 import QuestionActions from "~/components/questions/QuestionActions";
 import { _ } from "~/i18n";
+import type { AnswerCallback, Question } from "~/model/question";
 
 type QuestionDataProps = {
   label: string;
@@ -65,8 +65,8 @@ export default function RegistrationCertificateQuestion({
   question: Question;
   answerCallback: AnswerCallback;
 }): React.ReactNode {
-  const actionCallback = (option: string) => {
-    question.answer = option;
+  const actionCallback = (action: string) => {
+    question.answer = { action };
     answerCallback(question);
   };
 
@@ -80,22 +80,21 @@ export default function RegistrationCertificateQuestion({
         </StackItem>
         <StackItem>
           <DescriptionList isHorizontal isCompact className={spacingStyles.mxLg}>
-            <QuestionData label={_("URL")} value={question.data.url} />
-            <QuestionData label={_("Issuer")} value={question.data.issuer_name} />
-            <QuestionData label={_("Issue date")} value={question.data.issue_date} />
-            <QuestionData label={_("Expiration date")} value={question.data.expiration_date} />
-            <QuestionData label={_("SHA1 fingerprint")} value={question.data.sha1_fingerprint} />
-            <QuestionData
-              label={_("SHA256 fingerprint")}
-              value={question.data.sha256_fingerprint}
-            />
+            <QuestionData label={_("Issuer")} value={question.data.issuer} />
+            {question.data.organization && (
+              <QuestionData label={_("Issuer")} value={question.data.organization} />
+            )}
+            <QuestionData label={_("Issue date")} value={question.data.issueDate} />
+            <QuestionData label={_("Expiration date")} value={question.data.expirationDate} />
+            <QuestionData label={_("SHA1 fingerprint")} value={question.data.sha1} />
+            <QuestionData label={_("SHA256 fingerprint")} value={question.data.sha256} />
           </DescriptionList>
         </StackItem>
       </Stack>
       <Popup.Actions>
         <QuestionActions
-          actions={question.options}
-          defaultAction={question.defaultOption}
+          actions={question.actions}
+          defaultAction={question.defaultAction}
           actionCallback={actionCallback}
         />
       </Popup.Actions>

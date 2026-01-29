@@ -18,22 +18,15 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use agama_lib::{
-    monitor::{MonitorClient, MonitorStatus},
-    progress::Progress,
-};
-use console::style;
+use agama_lib::monitor::MonitorClient;
+use agama_utils::api::{self, Scope};
 use indicatif::{ProgressBar, ProgressStyle};
-use std::time::Duration;
-
-const MANAGER_PROGRESS_OBJECT_PATH: &str = "/org/opensuse/Agama/Manager1";
-const SOFTWARE_PROGRESS_OBJECT_PATH: &str = "/org/opensuse/Agama/Software1";
+use std::{collections::HashMap, time::Duration};
 
 /// Displays the progress on the terminal.
+#[derive(Debug)]
 pub struct ProgressMonitor {
     monitor: MonitorClient,
-    bar: Option<ProgressBar>,
-    current_step: u32,
     running: bool,
     stop_on_idle: bool,
 }
@@ -45,9 +38,7 @@ impl ProgressMonitor {
     pub fn new(monitor: MonitorClient) -> Self {
         Self {
             monitor,
-            bar: None,
-            current_step: 0,
-            running: false,
+            running: true,
             stop_on_idle: true,
         }
     }
@@ -62,12 +53,42 @@ impl ProgressMonitor {
     pub async fn run(&mut self) -> anyhow::Result<()> {
         let mut updates = self.monitor.subscribe();
         let status = self.monitor.get_status().await?;
-        self.update(status).await;
+        self.update(&status).await;
+        if !self.running {
+            return Ok(());
+        }
 
+        let multibar = indicatif::MultiProgress::new();
+        let mut bars: HashMap<Scope, ProgressBar> = HashMap::new();
+        multibar.println("Installaton Tasks:")?;
         loop {
             if let Ok(status) = updates.recv().await {
-                if !self.update(status).await {
+                if !self.update(&status).await {
                     return Ok(());
+                }
+
+                let mut active_scopes = vec![];
+                for progress in status.progresses {
+                    active_scopes.push(progress.scope);
+                    let bar = bars.entry(progress.scope).or_insert_with(|| {
+                        let style = ProgressStyle::with_template("{spinner:.green} {msg}").unwrap();
+                        let new_bar = ProgressBar::new(progress.size as u64).with_style(style);
+                        new_bar.enable_steady_tick(Duration::from_millis(120));
+                        multibar.add(new_bar)
+                    });
+                    bar.set_message(progress.step);
+                    bar.set_position(progress.index as u64);
+                }
+                // and finish all that no longer have progress
+                let mut to_remove = vec![];
+                for (scope, bar) in &bars {
+                    if !active_scopes.contains(&scope) {
+                        bar.finish_with_message("done");
+                        to_remove.push(scope.clone());
+                    }
+                }
+                for scope in to_remove {
+                    bars.remove(&scope);
                 }
             }
         }
@@ -76,63 +97,19 @@ impl ProgressMonitor {
     /// Updates the progress.
     ///
     /// It returns true if the monitor should continue.
-    async fn update(&mut self, status: MonitorStatus) -> bool {
-        if status.progress.get(MANAGER_PROGRESS_OBJECT_PATH).is_none() && self.running {
+    async fn update(&mut self, status: &api::Status) -> bool {
+        if status.progresses.is_empty() && self.running {
             self.finish();
             if self.stop_on_idle {
                 return false;
             }
         }
 
-        if let Some(progress) = status.progress.get(MANAGER_PROGRESS_OBJECT_PATH) {
-            self.running = true;
-            if self.current_step != progress.current_step {
-                self.update_main(&progress).await;
-                self.current_step = progress.current_step;
-            }
-        }
-
-        match status.progress.get(SOFTWARE_PROGRESS_OBJECT_PATH) {
-            Some(progress) => self.update_bar(progress),
-            None => self.remove_bar(),
-        }
-
         true
-    }
-
-    /// Updates the main bar.
-    async fn update_main(&mut self, progress: &Progress) {
-        let counter = format!("[{}/{}]", &progress.current_step, &progress.max_steps);
-
-        println!(
-            "{} {}",
-            style(&counter).bold().green(),
-            &progress.current_title
-        );
-    }
-
-    fn update_bar(&mut self, progress: &Progress) {
-        let bar = self.bar.get_or_insert_with(|| {
-            let style = ProgressStyle::with_template("{spinner:.green} {msg}").unwrap();
-            let bar = ProgressBar::new(0).with_style(style);
-            bar.enable_steady_tick(Duration::from_millis(120));
-            bar
-        });
-
-        bar.set_length(progress.max_steps.into());
-        bar.set_position(progress.current_step.into());
-        bar.set_message(progress.current_title.to_owned());
-    }
-
-    fn remove_bar(&mut self) {
-        _ = self.bar.take()
     }
 
     /// Stops the representation.
     fn finish(&mut self) {
         self.running = false;
-        if let Some(bar) = self.bar.take() {
-            bar.finish_with_message("Done");
-        }
     }
 }

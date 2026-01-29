@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2023] SUSE LLC
+ * Copyright (c) [2023-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -21,27 +21,25 @@
  */
 
 import React from "react";
-
 import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import testingPatterns from "./patterns.test.json";
 import testingProposal from "./proposal.test.json";
 import SoftwarePage from "./SoftwarePage";
 
-jest.mock("~/components/product/ProductRegistrationAlert", () => () => (
-  <div>ProductRegistrationAlert Mock</div>
-));
+jest.mock("~/components/layout/Header", () => () => <div>Header Mock</div>);
+jest.mock("~/components/questions/Questions", () => () => <div>Questions Mock</div>);
 
-jest.mock("~/queries/issues", () => ({
+jest.mock("~/hooks/model/issue", () => ({
   useIssues: () => [],
 }));
 
-jest.mock("~/queries/software", () => ({
-  usePatterns: () => testingPatterns,
+jest.mock("~/hooks/model/proposal/software", () => ({
   useProposal: () => testingProposal,
-  useProposalChanges: jest.fn(),
-  useRepositories: () => [],
-  useRepositoryMutation: () => ({ mutate: jest.fn() }),
+}));
+
+jest.mock("~/hooks/model/system/software", () => ({
+  useSystem: () => ({ patterns: testingPatterns }),
 }));
 
 describe("SoftwarePage", () => {
@@ -52,14 +50,14 @@ describe("SoftwarePage", () => {
     screen.getByText("YaST Desktop Utilities");
     screen.getByText("Multimedia");
     screen.getAllByText(/Office software/);
-    expect(screen.queryByText("KDE")).toBeNull();
-    expect(screen.queryByText("XFCE")).toBeNull();
+    expect(screen.queryByText(/KDE/)).toBeNull();
+    expect(screen.queryByText(/XFCE/)).toBeNull();
     expect(screen.queryByText("YaST Server Utilities")).toBeNull();
   });
 
   it("renders amount of size selected product and patterns will need", () => {
     installerRender(<SoftwarePage />);
-    screen.getByText("Installation will take 4.6 GiB.");
+    screen.getByText("Installation will take 4.60 GiB.");
   });
 
   it("renders a button for navigating to patterns selection", () => {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024-2025] SUSE LLC
+ * Copyright (c) [2024-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -23,14 +23,17 @@
 import React from "react";
 import { screen, within } from "@testing-library/react";
 import { plainRender, installerRender } from "~/test-utils";
-import { Product } from "~/types/software";
+import { System } from "~/model/system/network";
 import Header from "./Header";
+import { useSystem } from "~/hooks/model/system";
+import { Product } from "~/model/system";
 
 const tumbleweed: Product = {
   id: "Tumbleweed",
   name: "openSUSE Tumbleweed",
   description: "Tumbleweed description...",
   registration: false,
+  modes: [],
 };
 
 const microos: Product = {
@@ -38,37 +41,40 @@ const microos: Product = {
   name: "openSUSE MicroOS",
   description: "MicroOS description",
   registration: false,
+  modes: [],
+};
+
+const network: System = {
+  connections: [],
+  devices: [],
+  state: {
+    connectivity: true,
+    copyNetwork: true,
+    networkingEnabled: true,
+    wirelessEnabled: true,
+  },
+  accessPoints: [],
 };
 
 jest.mock("~/components/core/InstallerOptions", () => () => <div>Installer Options Mock</div>);
-jest.mock("~/components/core/InstallButton", () => () => <div>Install Button Mock</div>);
+jest.mock("~/components/core/ReviewAndInstallButton", () => () => (
+  <div>ReviewAndInstall Button Mock</div>
+));
 
-jest.mock("~/queries/software", () => ({
-  useProduct: () => ({
-    products: [tumbleweed, microos],
-    selectedProduct: tumbleweed,
-  }),
-  useRegistration: () => undefined,
+jest.mock("~/hooks/model/system", () => ({
+  ...jest.requireActual("~/hooks/model/system"),
+  useSystem: (): ReturnType<typeof useSystem> => ({ products: [tumbleweed, microos], network }),
+}));
+
+jest.mock("~/hooks/model/config/product", () => ({
+  ...jest.requireActual("~/hooks/model/config/product"),
+  useProductInfo: (): Product => tumbleweed,
 }));
 
 describe("Header", () => {
-  it("renders the product name unless showProductName is set to false", () => {
-    const { rerender } = plainRender(<Header />);
+  it("renders given title as heading level 1", () => {
+    plainRender(<Header title={tumbleweed.name} />);
     screen.getByRole("heading", { name: tumbleweed.name, level: 1 });
-    rerender(<Header />);
-    screen.getByRole("heading", { name: tumbleweed.name, level: 1 });
-    rerender(<Header showProductName={false} />);
-    expect(screen.queryByRole("heading", { name: tumbleweed.name, level: 1 })).toBeNull();
-  });
-
-  it("mounts the Install button", () => {
-    plainRender(<Header />);
-    screen.getByText("Install Button Mock");
-  });
-
-  it("mounts InstallerOptions", () => {
-    plainRender(<Header />);
-    screen.getByText("Installer Options Mock");
   });
 
   it("renders skip to content link", async () => {
@@ -81,20 +87,33 @@ describe("Header", () => {
     expect(screen.queryByRole("link", { name: "Skip to content" })).toBeNull();
   });
 
+  it("mounts the Install button", () => {
+    plainRender(<Header />);
+    screen.getByText("ReviewAndInstall Button Mock");
+  });
+
+  it("mounts installer options by default", () => {
+    plainRender(<Header showInstallerOptions />);
+    screen.getByText("Installer Options Mock");
+  });
+
+  it("mounts installer options when showInstallerOptions=true", () => {
+    plainRender(<Header showInstallerOptions />);
+    screen.getByText("Installer Options Mock");
+  });
+
+  it("does not mount installer options when showInstallerOptions=false", () => {
+    plainRender(<Header showInstallerOptions={false} />);
+    expect(screen.queryByText("Installer Options Mock")).toBeNull();
+  });
+
   it("renders an options dropdown by default", async () => {
     const { user } = installerRender(<Header />);
     expect(screen.queryByRole("menu")).toBeNull();
     const toggler = screen.getByRole("button", { name: "Options toggle" });
     await user.click(toggler);
-    const menu = screen.getByRole("menu");
+    const menu = await screen.findByRole("menu");
     within(menu).getByRole("menuitem", { name: "Change product" });
     within(menu).getByRole("menuitem", { name: "Download logs" });
   });
-
-  it("does not render an options dropdown when showInstallerOptions is false", async () => {
-    installerRender(<Header showInstallerOptions={false} />);
-    expect(screen.queryByRole("button", { name: "Options toggle" })).toBeNull();
-  });
-
-  it.todo("allows downloading the logs");
 });

@@ -6,6 +6,12 @@ export default {
   " Timezone selection": [
     " დროის სარტყლის არჩევანი"
   ],
+  "\"%s\"": [
+    "\"%s\""
+  ],
+  "\"%s\" does not exist or is no longer available.": [
+    "\"%s\" არ არსებობს, ან ხელმისაწვდომი აღარაა."
+  ],
   "%1$s (%2$s)": [
     "%1$s (%2$s)"
   ],
@@ -14,6 +20,9 @@ export default {
   ],
   "%1$s at %2$s": [
     "%1$s %2$s-ზე"
+  ],
+  "%1$s keyboard - %2$s timezone": [
+    ""
   ],
   "%1$s will be created as a partition at %2$s": [
     "%1$s შეიქმნება დანაყოფის სახით %2$s-ზე",
@@ -31,6 +40,9 @@ export default {
   "%s [must be registered].": [
     "%s [დარეგისტრირებული უნდა იყოს]."
   ],
+  "%s and %d others": [
+    ""
+  ],
   "%s disk": [
     "%s დისკი"
   ],
@@ -44,8 +56,8 @@ export default {
     "%s-ის ლოგო"
   ],
   "%s will be created as a logical volume": [
-    "",
-    ""
+    "%s შეიქმნება ლოგიკური ტომის სახით",
+    "%s შეიქმნება ლოგიკური ტომების სახით"
   ],
   "%s will still contain the configured LVM groups and any partition needed to boot": [
     ""
@@ -139,9 +151,6 @@ export default {
   "Add another address": [
     "სხვა მისამართის დამატება"
   ],
-  "Add another partition or mount an existing one": [
-    "დაამატეთ კიდევ ერთი დანაყოფი ან მიამაგრეთ არსებული"
-  ],
   "Add device menu": [
     "მოწყობილობის მენიუს დამატება"
   ],
@@ -234,8 +243,14 @@ export default {
   "Authentication by target": [
     "ავთენტიკაცია სამიზნით"
   ],
+  "Auto": [
+    "ავტო"
+  ],
   "Auto LUNs Scan": [
     "LUN-ების ავტომატური სკანირება"
+  ],
+  "Auto and manual": [
+    ""
   ],
   "Automatic": [
     "ავტომატური"
@@ -243,10 +258,10 @@ export default {
   "Automatic (DHCP)": [
     "ავტომატური (მხოლოდ DHCP)"
   ],
-  "Automatic LUN scan is [disabled]. LUNs have to be manually       configured after activating a controller.": [
+  "Automatic LUN scan is [disabled]. LUNs have to be manually configured after activating a controller.": [
     ""
   ],
-  "Automatic LUN scan is [enabled]. Activating a controller which is       running in NPIV mode will automatically configures all its LUNs.": [
+  "Automatic LUN scan is [enabled]. Activating a controller which is running in NPIV mode will automatically configures all its LUNs.": [
     ""
   ],
   "Available products": [
@@ -306,6 +321,9 @@ export default {
   "Btrfs with snapshots": [
     "Btrfs სწრაფი ასლებით"
   ],
+  "CPU": [
+    ""
+  ],
   "Cancel": [
     "გაუქმება"
   ],
@@ -326,9 +344,6 @@ export default {
   ],
   "Change Language": [
     "ენის შეცვლა"
-  ],
-  "Change boot options": [
-    "ჩატვირთვის პარამეტრების შეცვლა"
   ],
   "Change device menu": [
     "მოწყობილობის მენიუს შეცვლა"
@@ -354,14 +369,26 @@ export default {
   "Change selection": [
     "მონიშნულის შეცვლა"
   ],
+  "Change the disk to configure": [
+    "შეცვალეთ დისკი მოსარგებად"
+  ],
+  "Change the disk to create %s": [
+    "შეცვალეთ დისკი %s-ის შესაქმნელად"
+  ],
+  "Change the disk to format as %s": [
+    "დისკის შეცვლა, რომ დაფორმატდეს, როგორც %s"
+  ],
+  "Change the disk to install the system": [
+    "შეცვალეთ დისკი სისტემის დასაყენებლად"
+  ],
   "Change the file system or mount point": [
     "ფილური სისტემის ან მიმაგრების წერტილის შეცვლა"
   ],
+  "Changes in these settings will immediately update the 'Result' section below.": [
+    "ამ პარამეტრის შეცვლა დაუყოვნებლივ განაახლებს ქვემორე სექციას 'შედეგი'."
+  ],
   "Channel ID": [
     "არხის ID"
-  ],
-  "Check the %d planned actions": [
-    "%d დაგეგმილი ქმედების შემოწმება"
   ],
   "Check the authentication parameters.": [
     "შეამოწმეთ ავთენტიკაციის პარამეტრები."
@@ -395,12 +422,6 @@ export default {
   ],
   "Close": [
     "დახურვა"
-  ],
-  "Collapse the list of planned actions": [
-    "დაგეგმილი ქმედებების ჩამოშლა"
-  ],
-  "Configuration out of sync": [
-    "კონფიგურაციის სინქრონიზაცია დარღვეულია"
   ],
   "Configuration read from the iSCSI Boot Firmware Table (iBFT).": [
     "iSCSI-დან ჩამტვირთავი მიკროკოდიდან (iBFT) წაკითხული კონფიგურაცია."
@@ -440,9 +461,6 @@ export default {
   ],
   "Confirm": [
     "დადასტურება"
-  ],
-  "Confirm Installation": [
-    "დაყენების დადასტურება"
   ],
   "Confirm that you really want to continue.": [
     "დაადასტურეთ, რომ მართლა გნებავთ, გააგრძელოთ."
@@ -495,9 +513,6 @@ export default {
   "Content": [
     "შემცველობა"
   ],
-  "Continue": [
-    "გაგრძელება"
-  ],
   "Continuing without installing the package can result in a broken system. In some cases the system might not even boot.": [
     ""
   ],
@@ -545,6 +560,9 @@ export default {
   ],
   "DASD %s": [
     "DASD %s"
+  ],
+  "DHCP, %s": [
+    ""
   ],
   "DIAG": [
     "დიაგ"
@@ -609,9 +627,6 @@ export default {
   "Details": [
     "დეტალები"
   ],
-  "Details for %s": [
-    "%s-ის დეტალები"
-  ],
   "Details will appear after the connection is successfully established.": [
     "დეტალები გამოჩნდება კავშირის წარმატებულად დამყარების შემდეგ."
   ],
@@ -665,9 +680,6 @@ export default {
   ],
   "Download logs": [
     "ჟურნალის გადმოწერა"
-  ],
-  "During installation, several actions will be performed to setup the layout shown at the table below.": [
-    ""
   ],
   "Edit": [
     "ჩასწორება"
@@ -732,8 +744,8 @@ export default {
   "ExFAT": [
     "ExFAT"
   ],
-  "Example: https://myserver.com": [
-    "მაგ: https://ჩემისერვერი.ცომ"
+  "Example: %s": [
+    "მაგ: %s"
   ],
   "Excellent signal": [
     "ძალიან კარგი სიგნალი"
@@ -751,15 +763,12 @@ export default {
     "Ext4"
   ],
   "Extend the installation beyond the currently selected device": [
-    "",
-    ""
+    "დაყენების გაფართოება ამჟამად არჩეული მოწყობილობის მიღმა",
+    "დაყენების გაფართოება ამჟამად არჩეული %d მოწყობილობის მიღმა"
   ],
   "Extend the installation beyond the currently selected disk": [
-    "",
-    ""
-  ],
-  "Extensions": [
-    "გაფართოებები"
+    "დაყენების გაფართოება ამჟამად არჩეული დისკის მიღმა",
+    "დაყენების გაფართოება ამჟამად არჩეული %d დისკის მიღმა"
   ],
   "F2FS": [
     "F2FS"
@@ -791,8 +800,11 @@ export default {
   "Filter by territory, time zone code or UTC offset": [
     "გაფილტვრა ტერიტორიით, დროის სარტყლით, ან UTC წანაცვლებით"
   ],
-  "Find space": [
-    "ადგილის პოვნა"
+  "Final layout": [
+    "საბოლოო განლაგება"
+  ],
+  "Final structure of the system after installation.": [
+    "სისტემის საბოლოო სტრუქტურა დაყენების შემდეგ."
   ],
   "Find space in %s": [
     "ადგილის პოვნა %s-ში"
@@ -860,6 +872,9 @@ export default {
   "GiB": [
     "გიბ"
   ],
+  "Go back": [
+    ""
+  ],
   "Go to network page": [
     "ქსელის გვერდზე გადასვლა"
   ],
@@ -906,6 +921,9 @@ export default {
   "IP settings": [
     "IP-ის მორგება"
   ],
+  "IPs": [
+    ""
+  ],
   "IPv4": [
     "IPv4"
   ],
@@ -915,7 +933,7 @@ export default {
   "If a local media was used to run this installer, remove it before the next boot.": [
     ""
   ],
-  "If you continue, partitions on your hard disk will be modified according to the provided installation settings.": [
+  "If you want to disable this check, please specify \"inst.ay_check=0\" at kernels command-line": [
     ""
   ],
   "In progress": [
@@ -951,34 +969,10 @@ export default {
   "Install": [
     "დაყენება"
   ],
-  "Install using an advanced configuration.": [
-    "დაყენება დამატებითი მორგებით."
+  "Install now with potential data loss": [
+    ""
   ],
-  "Install using device %s and deleting all its content.": [
-    "დაყენება მოწყობილობაზე %s მისი შემცველობის სრულად წაშლის გზით."
-  ],
-  "Install using device %s shrinking existing partitions as needed.": [
-    "დაყენება მოწყობილობაზე %s არსებული დანაყოფების საჭიროებისამებრ შემცირების გზით."
-  ],
-  "Install using device %s with a custom strategy to find the needed space.": [
-    "დაყენება მოწყობილობაზე %s საჭირო ადგილის საპოვნელად თქვენი სტრატეგიის გამოყენებით."
-  ],
-  "Install using device %s without modifying existing partitions.": [
-    "დაყენება მოწყობილობაზე %s არსებული დანაყოფების შეცვლის გარეშე."
-  ],
-  "Install using several devices and deleting all its content.": [
-    "დაყენება რამდენიმე მოწყობილობაზე მეტი შემცველობის სრულად წაშლის გზით."
-  ],
-  "Install using several devices shrinking existing partitions as needed.": [
-    "დაყენება რამდენიმე მოწყობილობის გამოყენებით არსებული დანაყოფების საჭიროებისამებრ დაპატარავების გზით."
-  ],
-  "Install using several devices with a custom strategy to find the needed space.": [
-    "დაყენება რამდენიმე მოწყობილობაზე საჭირო სივრცის საპოვნელად თქვენს მიერ მითითებული სტრატეგიით."
-  ],
-  "Install using several devices without modifying existing partitions.": [
-    "დაყენება რამდენიმე მოწყობილობის გამოყენებით არსებული დანაყოფების შეცვლის გარეშე."
-  ],
-  "Installation Devices": [
+  "Installation devices": [
     "დაყენების მოწყობილობები"
   ],
   "Installation will take %s.": [
@@ -1131,6 +1125,9 @@ export default {
   "Max channel": [
     "მაქს. არხი"
   ],
+  "Memory": [
+    ""
+  ],
   "MiB": [
     "მიბ"
   ],
@@ -1157,6 +1154,9 @@ export default {
   ],
   "More languages might be available for the selected product at [Localization] page": [
     "მეტი ენა, შეიძლება, [Localization]-ის გვერდზე იყოს ხელმისაწვდომი"
+  ],
+  "More storage options": [
+    "საცავის მეტი პარამეტრი"
   ],
   "Moreover, the following partition will be created.": [
     "კიდევ შეიქმნება შემდეგი დანაყოფი.",
@@ -1193,7 +1193,7 @@ export default {
   "Move mount points": [
     "მიმაგრების წერტილების გადატანა"
   ],
-  "Move the mount points currently configured at the selected disks to logical                   volumes of this volume group.": [
+  "Move the mount points currently configured at the selected disks to logical volumes of this volume group.": [
     ""
   ],
   "Multipath": [
@@ -1213,6 +1213,9 @@ export default {
   ],
   "Name": [
     "სახელი"
+  ],
+  "Needs about %s": [
+    ""
   ],
   "Network": [
     "ქსელი"
@@ -1247,6 +1250,9 @@ export default {
   "No content found": [
     "შემცველობა აღმოჩენილი არაა"
   ],
+  "No data loss is expected": [
+    ""
+  ],
   "No device is currently using this connection.": [
     "ამ კავშირს, ამჟამად, არც ერთი მოწყობილობა იყენებს."
   ],
@@ -1270,6 +1276,9 @@ export default {
   ],
   "No logical volumes are defined yet": [
     "ლოგიკური ტომები ჯერ აღწერილი არაა"
+  ],
+  "No partitions will be automatically configured for booting.": [
+    "ჩასატვირთად დანაყოფების ავტომატური მორგება არ მოხდება."
   ],
   "No partitions will be automatically configured for booting. Use with caution.": [
     "ჩასატვირთად დანაყოფების ავტომატური მორგება არ მოხდება. ფრთხილად გამოიყენეთ."
@@ -1325,9 +1334,6 @@ export default {
   "Not protected network": [
     "ქსელი დაცვის გარეშე"
   ],
-  "Not selected yet": [
-    "ჯერ არჩეული არაა"
-  ],
   "Not supported (%s)": [
     "მხარდაჭერილი არაა (%s)"
   ],
@@ -1343,14 +1349,11 @@ export default {
   "Only reused partitions will be used.": [
     "გამოყენებული იქნება, მხოლოდ, თავიდან გამოყენებული დანაყოფები."
   ],
+  "Options for partition %s": [
+    "პარამეტრები დანაყოფისთვის %s"
+  ],
   "Options toggle": [
     "პარამეტრის გადართვა"
-  ],
-  "Other options": [
-    "სხვა პარამეტრები"
-  ],
-  "Other options toggle": [
-    "სხვა პარამეტრის გადართვა"
   ],
   "Overview": [
     "გადახედვა"
@@ -1358,8 +1361,14 @@ export default {
   "Package installation failed": [
     "პაკეტის დაყენება ჩავარდა"
   ],
+  "Partition %s": [
+    "დანაყოფი %s"
+  ],
   "Partition Info": [
     "დანაყოფის ინფორმაცია"
+  ],
+  "Partitions": [
+    "დანაყოფები"
   ],
   "Partitions needed for booting will also be adapted": [
     "ასევე მოხდება ჩასატვირთად საჭირო დანაყოფების მორგება"
@@ -1376,14 +1385,20 @@ export default {
   "Partitions that are not reused would be resized if needed.": [
     "დანაყოფები, რომლებიც თავიდან არ გამოიყენება, შეიძლება, ზომა საჭიროებისამებრ შეეცვალოს."
   ],
-  "Partitions to boot will be allocated at the following device.": [
-    "ჩატვირთვადი დანაყოფები გამოიყოფა შემდეგი მოწყობილობიდან."
+  "Partitions to boot will be set up if needed at %s.": [
+    "ჩატვირთვადი დანაყოფები დაყენების დისკზე(%s )გამოიყოფა."
   ],
-  "Partitions to boot will be allocated at the installation disk %s.": [
-    "ჩატვირთვადი დანაყოფები გამოიყოფა დაყენების დისკზე %s."
+  "Partitions to boot will be set up if needed at the following device.": [
+    "ჩატვირთვადი დანაყოფები გამოიყოფა საჭიროებისამებრ შემდეგი მოწყობილობიდან."
   ],
-  "Partitions to boot will be allocated at the installation disk.": [
-    "ჩატვირთვადი დანაყოფები დაყენების დისკზე გამოიყოფა."
+  "Partitions to boot will be set up if needed at the installation disk, based on the location of the %s file system.": [
+    "ჩატვირთვადი დანაყოფები გამოიყოფა დაყენების დისკზე იმაზე დამოკიდებულებით, თუ სად იქნება მოთავსებული ფაილური სისტემა %s."
+  ],
+  "Partitions to boot will be set up if needed at the installation disk. Currently %1$s, based on the location of the %2$s file system.": [
+    ""
+  ],
+  "Partitions to host \"system\" will be created if needed.": [
+    "დანაყოფები \"სისტემისთვის\" საჭიროებისამებრ შეიქმნება."
   ],
   "Partitions will be used and created for %s": [
     "დანაყოფები, რომლებიც გამოყენებული და შექმნილი იქნება '%s'-სთვის"
@@ -1415,9 +1430,6 @@ export default {
   "PiB": [
     "პიბ"
   ],
-  "Please, cancel and check the settings if you are unsure.": [
-    "თუ დარწმუნებული არ ბრძანდებით, გააუქმეთ და პარამეტრები გადაამოწმეთ."
-  ],
   "Please, check whether it is running.": [
     "შეამოწმეთ, გაშვებულია თუ არა ის."
   ],
@@ -1439,11 +1451,23 @@ export default {
   "Portal": [
     "პორტალი"
   ],
+  "Potential data loss": [
+    ""
+  ],
+  "Potential data loss affecting at least %s": [
+    ""
+  ],
   "Pre-installation checks": [
     "დაყენებისწინა შემოწმებები"
   ],
   "Prefix length or netmask": [
     "პრეფიქსის სიგრძე ან ნეტმასკა"
+  ],
+  "Proceeding may result in data loss": [
+    ""
+  ],
+  "Proceeding may result in data loss affecting at least %s": [
+    ""
   ],
   "Product is already registered": [
     "პროდუქტი უკვე რეგისტრირებულია"
@@ -1505,15 +1529,6 @@ export default {
   "Reload": [
     "თავიდან ჩატვირთვა"
   ],
-  "Reload now": [
-    "თავიდან ჩატვირთვა ახლავე"
-  ],
-  "Reloading data, please wait...": [
-    "მიმდინარეობს მონაცემების თავიდან ჩატვირთვა. მოითმინეთ..."
-  ],
-  "Reloading is required to get the latest data and avoid issues or data loss.": [
-    ""
-  ],
   "Remove": [
     "წაშლა"
   ],
@@ -1522,6 +1537,13 @@ export default {
   ],
   "Repository load failed": [
     "რეპოზიტორიის ჩატვირთვა ჩავარდა"
+  ],
+  "Required packages": [
+    ""
+  ],
+  "Required packages and %s pattern": [
+    "",
+    ""
   ],
   "Rescan devices": [
     "მოწყობილობების თავიდან სკანირება"
@@ -1538,11 +1560,17 @@ export default {
   "Result": [
     "შედეგი"
   ],
+  "Result of applying the configuration described at the 'Settings' section above.": [
+    "შედეგი იმ პარამეტრების გადატარებისა, რომლებიც აღწერილია ზემორე სექციაში 'მორგება'."
+  ],
   "Reused partitions will not be shrunk": [
     "თავიდან გამოყენებული დანაყოფების დაპატარავება შეუძლებელია"
   ],
   "Review and fix": [
     "გადახედვა და გასწორება"
+  ],
+  "Review the summary below. If anything seems incorrect or you have doubts, go back and adjust the settings before proceeding.": [
+    ""
   ],
   "Root authentication methods": [
     "Root-ით ავთენტიკაციის მეთოდები"
@@ -1598,20 +1626,8 @@ export default {
   "Select a disk": [
     "აირჩიეთ დისკი"
   ],
-  "Select a disk to configure": [
-    "აირჩიეთ დისკი მოსარგებად"
-  ],
-  "Select a disk to create %s": [
-    "აირჩიეთ დისკი %s-ის შესაქმნელად"
-  ],
   "Select a disk to define partitions or to mount": [
     "აირჩიეთ დისკი დანაყოფების აღწერისთვის, ან მიმაგრებისთვის"
-  ],
-  "Select a disk to format as %s": [
-    "აირჩიეთ დისკი, რომელიც დაფორმატდება, როგორც %s"
-  ],
-  "Select a disk to install the system": [
-    "აირჩიეთ დისკი სისტემის დასაყენებლად"
   ],
   "Select a product": [
     "აირჩიეთ პროდუქტი"
@@ -1639,9 +1655,6 @@ export default {
   ],
   "Select or enter a valid mount point": [
     "აირჩიეთ, ან შეიყვანეთ სწორი მიმაგრების წერტილი"
-  ],
-  "Select the disk to configure partitions for booting": [
-    "აირჩიეთ დისკი ჩატვირთვადი დანაყოფების მოსარგებად"
   ],
   "Select what to do with each partition in order to find space for allocating the new system.": [
     ""
@@ -1794,11 +1807,11 @@ export default {
   "Targets": [
     "სამიზნეები"
   ],
+  "Temporary name that may change after reboot or network changes": [
+    ""
+  ],
   "The LVM group '%1$s' will remain at %2$s": [
     "LVM ჯგუფი '%1$s' დარჩება დისკზე '%2$s'"
-  ],
-  "The configuration has been updated externally.": [
-    "კონფიგურაცია გარედან განახლდა."
   ],
   "The configuration must be adapted to address the following issue:": [
     "კონფიგურაცია უნდა შეცვალოთ ისე, რომ გადაწყვიტოთ შემდეგი პრობლემა:",
@@ -1812,9 +1825,6 @@ export default {
   ],
   "The connection will be used only during installation and not available in the installed system.": [
     ""
-  ],
-  "The content may be deleted": [
-    "შეიძლება, შემცველობა წაიშალოს"
   ],
   "The current configuration will result in an attempt to create a %1$s of %2$s.": [
     ""
@@ -1880,6 +1890,9 @@ export default {
   "The final step to configure the Trusted Platform Module (TPM) to automatically open encrypted devices will take place during the first boot of the new system. For that to work, the machine needs to boot directly to the new boot loader.": [
     ""
   ],
+  "The following actions will be performed in the system during installation.": [
+    "დაყენებისას სისტემაში მოხდება შემდეგი ცვლილებები."
+  ],
   "The following logical volume will be created": [
     "შეიქმნება შემდეგი ლოგიკური ტომი",
     "შეიქმნება შემდეგი ლოგიკური ტომები"
@@ -1903,12 +1916,6 @@ export default {
   ],
   "The installation on your machine is complete.": [
     "თქვენს მანქანაზე დაყენება დასრულდა."
-  ],
-  "The installation will take": [
-    "დაყენებას დასჭირდება"
-  ],
-  "The installation will take %s including:": [
-    "დაყენებას დასჭირდება %s ჩათვლით:"
   ],
   "The installer interface is no longer available, so you can safely close this window.": [
     ""
@@ -1938,7 +1945,7 @@ export default {
   "The modal selector offers a simplified interface designed for quick and straightforward use, without overwhelming the user.": [
     ""
   ],
-  "The needed LVM physical volumes will be added as partitions on the chosen disks,                 based on the sizes of the logical volumes. If you select more than one disk, the                 physical volumes may be distributed along several disks.": [
+  "The needed LVM physical volumes will be added as partitions on the chosen disks, based on the sizes of the logical volumes. If you select more than one disk, the physical volumes may be distributed along several disks.": [
     ""
   ],
   "The password is weak": [
@@ -1946,6 +1953,9 @@ export default {
   ],
   "The password will not be needed to boot and access the data if the TPM can verify the integrity of the system. TPM sealing requires the new system to be booted directly on its first run.": [
     ""
+  ],
+  "The product will be registered with \"%s\" hostname": [
+    "პროდუქტი დარეგისტრირდება ჰოსტის სახელით \"%s\""
   ],
   "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of a separate file system for %2$s.": [
     ""
@@ -1992,17 +2002,11 @@ export default {
   "The system does not support Wi-Fi connections, probably because of missing or disabled hardware.": [
     ""
   ],
-  "The system will use %s as its default language.": [
-    "სისტემა ნაგულისხმევ ენად %s-ს გამოიყენებს."
-  ],
   "The whole device will be used for %s": [
     "%s-სთვის გამოყენებული იქნება მთლიანი მოწყობილობა"
   ],
   "The zFCP disk was not activated.": [
     "zFCP დისკის გააქტიურება შეუძლებელია."
-  ],
-  "There are no disks available for the installation.": [
-    "დაყენებისთვის დისკები ხელმისაწვდომი არაა."
   ],
   "There are not disks available for the installation. You may need to configure some device.": [
     ""
@@ -2015,11 +2019,8 @@ export default {
     "დაგეგმილია %d გამანადგურებელი ქმედება"
   ],
   "There is %d destructive action planned affecting %s": [
-    "",
-    ""
-  ],
-  "These are the most relevant installation settings. Feel free to browse the sections in the menu for further details.": [
-    "ეს ყველაზე ხშირად არჩეული დაყენების პარამეტრებია. ნუ შეშინდებით, დაათვალიეროთ მენიუს სექციები დამატებითი დეტალებისთვის."
+    "დაგეგმილია %d დამანგრეველი ქმედება, რომელიც ეხება %s-ს",
+    "დაგეგმილია %d დამანგრეველი ქმედება რომელიც ეხება %s-ს"
   ],
   "These are the settings for the product to install. The installer language and keyboard layout can be adjusted via the [settings panel] accessible from the top bar.": [
     "ეს დასაყენებელი პროდუქტის პარამეტრებია. დაყენების პროგრამის ენა და კლავიატურის განლაგება შეგიძლიათ [მორგების პანელიდან] ზედა პანელიდან."
@@ -2263,6 +2264,9 @@ export default {
   ],
   "Using transient hostname: %s": [
     "გამოიყენება გარდამავლი ჰოსტის სახელი: %s"
+  ],
+  "Volume group %s": [
+    "ტომების ჯგუფი %s"
   ],
   "Volume group '%s' already exists. Enter a different name.": [
     "ტომების ჯგუფი '%s' უკვე არსებობს. შეიყვანეთ განსხვავებული სახელი."

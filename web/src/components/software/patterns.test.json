@@ -5,8 +5,7 @@
     "icon": "./pattern-gnome-wayland",
     "description": "The GNOME desktop environment is an intuitive and attractive desktop for users.\nThis pattern installs components for GNOME to run with Wayland and X11 technologies.",
     "summary": "GNOME Desktop Environment (Wayland)",
-    "order": "1010",
-    "selectedBy": 0
+    "order": "1010"
   },
   {
     "name": "kde",
@@ -14,8 +13,7 @@
     "icon": "./pattern-kde",
     "description": "Packages providing the Plasma desktop environment and applications from KDE.",
     "summary": "KDE Applications and Plasma 5 Desktop",
-    "order": "1110",
-    "selectedBy": 2
+    "order": "1110"
   },
   {
     "name": "yast2_basis",
@@ -23,8 +21,7 @@
     "icon": "./yast",
     "description": "YaST tools for basic system administration.",
     "summary": "YaST Base Utilities",
-    "order": "1220",
-    "selectedBy": 1
+    "order": "1220"
   },
   {
     "name": "yast2_desktop",
@@ -32,8 +29,7 @@
     "icon": "./yast",
     "description": "YaST tools for desktop system administration.",
     "summary": "YaST Desktop Utilities",
-    "order": "1222",
-    "selectedBy": 1
+    "order": "1222"
   },
   {
     "name": "yast2_server",
@@ -41,8 +37,7 @@
     "icon": "./yast",
     "description": "YaST tools for server system administration.",
     "summary": "YaST Server Utilities",
-    "order": "1224",
-    "selectedBy": 2
+    "order": "1224"
   },
   {
     "name": "xfce",
@@ -50,8 +45,7 @@
     "icon": "./pattern-xfce",
     "description": "Xfce is a lightweight desktop environment for various *NIX systems.",
     "summary": "XFCE Desktop Environment",
-    "order": "1310",
-    "selectedBy": 2
+    "order": "1310"
   },
   {
     "name": "multimedia",
@@ -59,8 +53,7 @@
     "icon": "./pattern-multimedia",
     "description": "Multimedia players, sound editing tools, video and image manipulation applications.",
     "summary": "Multimedia",
-    "order": "1580",
-    "selectedBy": 1
+    "order": "1580"
   },
   {
     "name": "office",
@@ -68,8 +61,7 @@
     "icon": "./pattern-office",
     "description": "Office software for your desktop environment including LibreOffice.",
     "summary": "Office Software",
-    "order": "1640",
-    "selectedBy": 1
+    "order": "1640"
   },
   {
     "name": "basic_desktop",
@@ -77,7 +69,6 @@
     "icon": "./pattern-x11",
     "description": "This pattern installs a rather basic desktop (icewm)",
     "summary": "A very basic desktop (previously part of x11 pattern)",
-    "order": "1802",
-    "selectedBy": 2
+    "order": "1802"
   }
 ]

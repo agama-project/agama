@@ -1,0 +1,2 @@
+# the zypp_server test will remove them at its start, via clean_leftover_repos
+*.repo

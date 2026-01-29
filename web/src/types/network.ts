@@ -92,6 +92,7 @@ enum DeviceState {
 enum ConnectionStatus {
   UP = "up",
   DOWN = "down",
+  DELETE = "delete",
 }
 
 // Current state of the connection.
@@ -140,6 +141,7 @@ type Route = {
 };
 
 type APIAccessPoint = {
+  device: string;
   ssid: string;
   strength: number;
   hwAddress: string;
@@ -149,12 +151,20 @@ type APIAccessPoint = {
 };
 
 class AccessPoint {
+  deviceName: string;
   ssid: string;
   strength: number;
   hwAddress: string;
   security: SecurityProtocols[];
 
-  constructor(ssid: string, strength: number, hwAddress: string, security: SecurityProtocols[]) {
+  constructor(
+    device: string,
+    ssid: string,
+    strength: number,
+    hwAddress: string,
+    security: SecurityProtocols[],
+  ) {
+    this.deviceName = device;
     this.ssid = ssid;
     this.strength = strength;
     this.hwAddress = hwAddress;
@@ -162,9 +172,15 @@ class AccessPoint {
   }
 
   static fromApi(options: APIAccessPoint) {
-    const { ssid, strength, hwAddress, flags, wpaFlags, rsnFlags } = options;
+    const { device, ssid, strength, hwAddress, flags, wpaFlags, rsnFlags } = options;
 
-    return new AccessPoint(ssid, strength, hwAddress, securityFromFlags(flags, wpaFlags, rsnFlags));
+    return new AccessPoint(
+      device,
+      ssid,
+      strength,
+      hwAddress,
+      securityFromFlags(flags, wpaFlags, rsnFlags),
+    );
   }
 }
 
@@ -353,11 +369,128 @@ type WifiNetwork = AccessPoint & {
   hidden?: boolean;
 };
 
-type NetworkGeneralState = {
+type GeneralState = {
+  copyNetwork: boolean;
   connectivity: boolean;
-  hostname: string;
   networkingEnabled: boolean;
   wirelessEnabled: boolean;
+};
+
+class NetworkSystem {
+  connections: Connection[];
+  accessPoints: AccessPoint[];
+  devices: Device[];
+  state: GeneralState;
+
+  constructor(
+    connections?: Connection[],
+    accessPoints?: AccessPoint[],
+    devices?: Device[],
+    state?: GeneralState,
+  ) {
+    if (connections !== undefined) this.connections = connections;
+    if (accessPoints !== undefined) this.accessPoints = accessPoints;
+    if (devices !== undefined) this.devices = devices;
+    if (state !== undefined) this.state = state;
+  }
+
+  static fromApi(options: APISystem) {
+    const { connections: conns, accessPoints: aps, devices: devs, state } = options;
+    const connections = conns.map(Connection.fromApi);
+    const accessPoints = aps.map(AccessPoint.fromApi).sort((a, b) => b.strength - a.strength);
+    const devices = devs.map(Device.fromApi);
+
+    return new NetworkSystem(connections, accessPoints, devices, state);
+  }
+}
+
+class NetworkConfig {
+  connections?: Connection[];
+  state?: GeneralStateConfig;
+
+  constructor(
+    connections?: Connection[],
+    //accessPoints?: AccessPoint[],
+    //devices?: Device[],
+    state?: GeneralStateConfig,
+  ) {
+    if (connections !== undefined) this.connections = connections;
+    if (state !== undefined) this.state = state;
+  }
+
+  static fromApi(options: APIConfig) {
+    const { connections, state } = options;
+    const conns = connections.map((c) => Connection.fromApi(c));
+
+    return new NetworkConfig(conns, state);
+  }
+
+  addOrUpdateConnection(connection: Connection) {
+    const connections = this.connections.map((c) => (c.id === connection.id ? connection : c));
+    this.connections = connections;
+  }
+
+  toApi(): APIConfig {
+    const connections = this.connections.map((c) => c.toApi());
+
+    return { connections, state: this.state };
+  }
+}
+
+class NetworkProposal {
+  connections: Connection[];
+  state: GeneralState;
+
+  constructor(
+    connections?: Connection[],
+    //accessPoints?: AccessPoint[],
+    //devices?: Device[],
+    state?: GeneralState,
+  ) {
+    if (connections !== undefined) this.connections = connections;
+    if (state !== undefined) this.state = state;
+  }
+
+  static fromApi(options: APIProposal) {
+    const { connections, state } = options;
+    const conns = connections.map((c) => Connection.fromApi(c));
+
+    return new NetworkProposal(conns, state);
+  }
+
+  addOrUpdateConnection(connection: Connection) {
+    const connections = this.connections.map((c) => (c.id === connection.id ? connection : c));
+    this.connections = connections;
+  }
+
+  toApi(): APIProposal {
+    const connections = this.connections.map((c) => c.toApi());
+
+    return { connections, state: this.state };
+  }
+}
+
+type APISystem = {
+  connections: APIConnection[];
+  accessPoints: APIAccessPoint[];
+  devices: APIDevice[];
+  state: GeneralState;
+};
+
+type APIProposal = {
+  connections: APIConnection[];
+  state: GeneralState;
+};
+
+type GeneralStateConfig = {
+  copyNetwork?: boolean;
+  networkingEnabled?: boolean;
+  wirelessEnabled?: boolean;
+};
+
+type APIConfig = {
+  connections?: APIConnection[];
+  state?: GeneralStateConfig;
 };
 
 export {
@@ -372,7 +505,10 @@ export {
   Device,
   DeviceState,
   DeviceType,
+  NetworkConfig,
+  NetworkProposal,
   NetworkState,
+  NetworkSystem,
   SecurityProtocols,
   WifiNetworkStatus,
   Wireless,
@@ -385,7 +521,10 @@ export type {
   ConnectionOptions,
   APIDevice,
   IPAddress,
-  NetworkGeneralState,
+  APIConfig,
+  APIProposal,
+  APISystem,
+  GeneralState,
   Route,
   APIRoute,
   WifiNetwork,

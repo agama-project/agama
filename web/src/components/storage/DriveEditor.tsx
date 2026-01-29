@@ -20,42 +20,95 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
+import React, { forwardRef } from "react";
+import Icon from "~/components/layout/Icon";
 import ConfigEditorItem from "~/components/storage/ConfigEditorItem";
 import DriveHeader from "~/components/storage/DriveHeader";
 import DeviceEditorContent from "~/components/storage/DeviceEditorContent";
 import SearchedDeviceMenu from "~/components/storage/SearchedDeviceMenu";
-import { Drive } from "~/types/storage/model";
-import { model, StorageDevice } from "~/types/storage";
-import { useDeleteDrive } from "~/hooks/storage/drive";
+import { CustomToggleProps } from "~/components/core/MenuButton";
+import { Button, Flex, FlexItem } from "@patternfly/react-core";
+import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
+import { useDrive, useDeleteDrive } from "~/hooks/model/storage/config-model";
+import { useDevice } from "~/hooks/model/system/storage";
+import type { ConfigModel } from "~/model/storage/config-model";
+import type { Storage as System } from "~/model/system";
+
+type DriveDeviceMenuToggleProps = CustomToggleProps & {
+  drive: ConfigModel.Drive | ConfigModel.MdRaid;
+  device: System.Device;
+};
+
+const DriveDeviceMenuToggle = forwardRef(
+  ({ drive, device, ...props }: DriveDeviceMenuToggleProps, ref) => {
+    return (
+      <Button
+        variant="link"
+        ref={ref}
+        style={{ display: "inline", width: "fit-content" }}
+        className={[textStyles.fontFamilyHeading, textStyles.fontSizeMd].join(" ")}
+        {...props}
+      >
+        <Flex
+          alignItems={{ default: "alignItemsCenter" }}
+          gap={{ default: "gapSm" }}
+          flexWrap={{ default: "nowrap" }}
+          style={{ whiteSpace: "normal", textAlign: "start" }}
+        >
+          <FlexItem>
+            <DriveHeader drive={drive} device={device} {...props} />
+          </FlexItem>
+          <FlexItem>
+            <Icon name="keyboard_arrow_down" style={{ verticalAlign: "middle" }} />
+          </FlexItem>
+        </Flex>
+      </Button>
+    );
+  },
+);
 
 type DriveDeviceMenuProps = {
-  drive: model.Drive;
-  selected: StorageDevice;
+  index: number;
 };
 
 /**
  * Internal component that renders generic actions available for a Drive device.
  */
-const DriveDeviceMenu = ({ drive, selected }: DriveDeviceMenuProps) => {
+const DriveDeviceMenu = ({ index }: DriveDeviceMenuProps) => {
+  const driveModel = useDrive(index);
+  const drive = useDevice(driveModel.name);
   const deleteDrive = useDeleteDrive();
-  const deleteFn = (device: model.Drive) => deleteDrive(device.name);
+  const deleteFn = () => deleteDrive(index);
 
-  return <SearchedDeviceMenu modelDevice={drive} selected={selected} deleteFn={deleteFn} />;
+  return (
+    <SearchedDeviceMenu
+      modelDevice={driveModel}
+      selected={drive}
+      deleteFn={deleteFn}
+      toggle={<DriveDeviceMenuToggle drive={driveModel} device={drive} />}
+    />
+  );
 };
 
-export type DriveEditorProps = { drive: Drive; driveDevice: StorageDevice };
+export type DriveEditorProps = { index: number };
 
 /**
  * Component responsible for displaying detailed information and available actions
  * related to a specific Drive device within the storage ConfigEditor.
  */
-export default function DriveEditor({ drive, driveDevice }: DriveEditorProps) {
+export default function DriveEditor({ index }: DriveEditorProps) {
+  const driveModel = useDrive(index);
+  const drive = useDevice(driveModel.name);
+
+  /**
+   * @fixme Make DriveEditor to work when the device is not found (e.g., after disabling
+   * a iSCSI device).
+   */
+  if (drive === undefined) return null;
+
   return (
-    <ConfigEditorItem
-      header={<DriveHeader drive={drive} device={driveDevice} />}
-      content={<DeviceEditorContent deviceModel={drive} device={driveDevice} />}
-      actions={<DriveDeviceMenu drive={drive} selected={driveDevice} />}
-    />
+    <ConfigEditorItem header={<DriveDeviceMenu index={index} />}>
+      <DeviceEditorContent collection="drives" index={index} />
+    </ConfigEditorItem>
   );
 }

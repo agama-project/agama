@@ -22,15 +22,13 @@
 
 import React from "react";
 import { Alert, Content } from "@patternfly/react-core";
-import { IssueSeverity } from "~/types/issues";
-import { useApiModel } from "~/hooks/storage/api-model";
-import { useIssues, useConfigErrors } from "~/queries/issues";
+import { useConfigModel } from "~/hooks/model/storage/config-model";
 import * as partitionUtils from "~/components/storage/utils/partition";
 import { _, formatList } from "~/i18n";
 import { sprintf } from "sprintf-js";
 
 const Description = () => {
-  const model = useApiModel({ suspense: true });
+  const model = useConfigModel();
   const partitions = model.drives.flatMap((d) => d.partitions || []);
   const logicalVolumes = model.volumeGroups.flatMap((vg) => vg.logicalVolumes || []);
 
@@ -81,19 +79,8 @@ const Description = () => {
 /**
  * Displays information to help users understand why a storage proposal
  * could not be generated with the current configuration.
- *
- * Renders nothing if:
- *   - The proposal could not be generated at all (known by the presence of
- *     configuration errors in the storage scope)
- *   - The generated proposal contains no errors.
  */
 export default function ProposalFailedInfo() {
-  const configErrors = useConfigErrors("storage");
-  const errors = useIssues("storage").filter((s) => s.severity === IssueSeverity.Error);
-
-  if (configErrors.length !== 0) return;
-  if (errors.length === 0) return;
-
   return (
     <Alert variant="warning" title={_("Failed to calculate a storage layout")}>
       <Description />

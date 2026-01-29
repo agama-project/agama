@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2025] SUSE LLC
+ * Copyright (c) [2022-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -25,13 +25,18 @@ import React from "react";
 // NOTE: "@icons" and "@bolderIcons" are aliases to use a shorter path to real
 // @material-symbols icons locations. Check the tsconfig.json file to see its
 // value.
+import Add from "@icons/add.svg?component";
+import AddCircle from "@icons/add_circle.svg?component";
 import Apps from "@icons/apps.svg?component";
 import AppRegistration from "@icons/app_registration.svg?component";
+import ArrowDropDown from "@icons/arrow_drop_down.svg?component";
 import Backspace from "@icons/backspace.svg?component";
 import CheckCircle from "@icons/check_circle.svg?component";
 import ChevronLeft from "@icons/chevron_left.svg?component";
 import ChevronRight from "@icons/chevron_right.svg?component";
 import Delete from "@icons/delete.svg?component";
+import DoneAll from "@icons/done_all.svg?component";
+import DeployedCodeUpdate from "@icons/deployed_code_update.svg?component";
 import EditSquare from "@icons/edit_square.svg?component";
 import Emergency from "@icons/emergency.svg?component";
 import Error from "@icons/error.svg?component";
@@ -53,9 +58,10 @@ import MoreVert from "@bolderIcons/more_vert.svg?component";
 import NetworkWifi from "@icons/network_wifi.svg?component";
 import NetworkWifi1Bar from "@icons/network_wifi_1_bar.svg?component";
 import NetworkWifi3Bar from "@icons/network_wifi_3_bar.svg?component";
-import Translate from "@icons/translate.svg?component";
+import RestartAlt from "@icons/restart_alt.svg?component";
 import SearchOff from "@icons/search_off.svg?component";
 import SettingsEthernet from "@icons/settings_ethernet.svg?component";
+import Translate from "@icons/translate.svg?component";
 import UnfoldLess from "@icons/unfold_less.svg?component";
 import UnfoldMore from "@icons/unfold_more.svg?component";
 import Warning from "@icons/warning.svg?component";
@@ -65,13 +71,18 @@ import Wifi from "@icons/wifi.svg?component";
 import WifiOff from "@icons/wifi_off.svg?component";
 
 const icons = {
+  add: Add,
+  add_circle: AddCircle,
   apps: Apps,
   app_registration: AppRegistration,
+  arrow_drop_down: ArrowDropDown,
   backspace: Backspace,
   check_circle: CheckCircle,
   chevron_left: ChevronLeft,
   chevron_right: ChevronRight,
   delete: Delete,
+  done_all: DoneAll,
+  deployed_code_update: DeployedCodeUpdate,
   edit_square: EditSquare,
   emergency: Emergency,
   error: Error,
@@ -93,6 +104,7 @@ const icons = {
   network_wifi: NetworkWifi,
   network_wifi_1_bar: NetworkWifi1Bar,
   network_wifi_3_bar: NetworkWifi3Bar,
+  restart_alt: RestartAlt,
   search_off: SearchOff,
   settings_ethernet: SettingsEthernet,
   translate: Translate,

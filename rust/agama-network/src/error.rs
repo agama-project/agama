@@ -21,6 +21,16 @@
 //! Error types.
 use thiserror::Error;
 
+use crate::NetworkSystemError;
+
+#[derive(thiserror::Error, Debug)]
+pub enum Error {
+    #[error(transparent)]
+    NetworkStateError(#[from] NetworkStateError),
+    #[error(transparent)]
+    NetworkSystemError(#[from] NetworkSystemError),
+}
+
 /// Errors that are related to the network configuration.
 #[derive(Error, Debug)]
 pub enum NetworkStateError {
@@ -72,6 +82,8 @@ pub enum NetworkStateError {
     InvalidWirelessBand(String),
     #[error("Invalid bssid: '{0}'")]
     InvalidBssid(String),
+    #[error("I/O error: '{0}'")]
+    IoError(String),
 }
 
 impl From<NetworkStateError> for zbus::fdo::Error {

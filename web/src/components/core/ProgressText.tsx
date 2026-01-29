@@ -22,10 +22,11 @@
 
 import React from "react";
 import { Split, Content } from "@patternfly/react-core";
+import { TranslatedString } from "~/i18n";
 
 type ProgressTextProps = {
   /** Progress message. */
-  message: string;
+  message: TranslatedString;
   /** Current step. */
   current: number;
   /** Total steps. */

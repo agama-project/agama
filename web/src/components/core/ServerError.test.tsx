@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2024] SUSE LLC
+ * Copyright (c) [2022-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -27,34 +27,11 @@ import { noop } from "radashi";
 import * as utils from "~/utils";
 import ServerError from "./ServerError";
 
-jest.mock("~/components/product/ProductRegistrationAlert", () => () => (
-  <div>ProductRegistrationAlert Mock</div>
-));
-
-jest.mock("~/components/layout/Header", () => () => <div>Header Mock</div>);
-jest.mock("~/components/layout/Sidebar", () => () => <div>Sidebar Mock</div>);
-jest.mock("~/components/layout/Layout", () => {
-  const layout = jest.requireActual("~/components/layout/Layout");
-  const OriginalPlainLayout = layout.Plain;
-
-  return {
-    ...layout,
-    Plain: ({ ...props }) => (
-      <>
-        <div>PlainLayout Mock</div>
-        <OriginalPlainLayout {...props} />
-      </>
-    ),
-  };
-});
-
 describe("ServerError", () => {
-  it("wraps a generic server problem message into a plain layout with neither, header nor sidebar", () => {
+  it("wraps a generic server problem message", () => {
     installerRender(<ServerError />);
-    expect(screen.queryByText("Header Mock")).toBeNull();
-    expect(screen.queryByText("Sidebar Mock")).toBeNull();
-    screen.getByText("PlainLayout Mock");
-    screen.getByText(/Cannot connect to Agama server/i);
+    screen.getByText("Cannot connect");
+    screen.getByText("Check whether Agama server is running.");
   });
 
   it("calls location.reload when user clicks on 'Reload'", async () => {

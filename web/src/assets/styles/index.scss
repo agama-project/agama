@@ -183,47 +183,35 @@ strong {
   font-weight: var(--pf-t--global--font--weight--400);
 }
 
-// Temporary CSS rules written during migration to PFv6
+// Freeze scrolling when Agama overlay is visible
+.pf-v6-c-page__main:has(.agm-main-content-overlay) {
+  overflow: hidden;
+}
 
-// Reserve the sidebar space also for "lg" breakpoint
+.pf-v6-c-page__main-container:has(.agm-main-content-overlay) {
+  position: relative;
+
+  .agm-main-content-overlay {
+    position: absolute;
+    padding-block-start: 2.2rem;
+    backdrop-filter: blur(2px);
+    background-color: color-mix(in srgb, var(--agm-t--color--fog) 50%, transparent);
+  }
+}
+
+.installation-settings-summary {
+  display: grid;
+  gap: 0.5em;
+}
+
 @media (width >= 64rem) {
-  .pf-v6-c-page__main-container {
-    --pf-v6-c-page__main-container--MarginInlineStart: var(--pf-v6-c-page--inset);
-  }
-
-  .pf-v6-c-page.agm-full-layout {
-    --pf-v6-c-page__sidebar--Width: 12rem; // var(--pf-v6-c-page__sidebar--xl--Width);
-    grid-template-areas:
-      "header  header"
-      "sidebar main  ";
-    grid-template-columns: var(--pf-v6-c-page__sidebar--Width) 1fr;
-  }
-
-  .pf-v6-c-page__sidebar.pf-m-collapsed + .pf-v6-c-page__drawer {
-    --pf-v6-c-page__main-container--GridArea: var(
-      --pf-v6-c-page--masthead--main-container--GridArea
-    );
+  .installation-settings-summary {
+    grid-template-columns: repeat(2, minmax(250px, 1fr));
   }
 }
 
 #productSelectionForm img {
   max-inline-size: 100px;
-}
-
-.agm-install-button {
-  background: var(--agm-t--install--button--background);
-  color: var(--agm-t--install--button--color);
-  font-weight: 600;
-  font-size: var(--pf-t--global--font--size--md);
-  align-items: center;
-
-  svg {
-    fill: var(--agm-t--install--button--color);
-  }
-
-  &:hover {
-    background: var(--agm-t--install--button--background--hover);
-  }
 }
 
 .agm-inline-toggle {
@@ -268,12 +256,16 @@ strong {
   }
 }
 
+.sticky-top {
+  position: sticky;
+  top: 1em;
+}
+
 #productSelectionForm {
   input[type="radio"] {
     align-self: center;
-    flex-shrink: 0;
-    inline-size: 20px;
-    block-size: 20px;
+    inline-size: 1.2em;
+    block-size: 1.2em;
   }
 
   .pf-v6-c-card {
@@ -284,17 +276,10 @@ strong {
     label {
       cursor: pointer;
     }
+  }
 
-    label::after {
-      content: "";
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      top: 0;
-      right: 0;
-      bottom: 0;
-      left: 0;
-    }
+  .pf-v6-c-radio {
+    row-gap: 0;
   }
 }
 
@@ -502,6 +487,27 @@ label.pf-m-disabled + .pf-v6-c-check__description {
   --pf-v6-c-table__sort-indicator--MarginInlineStart: var(--pf-t--global--spacer--xs);
 }
 
+// Temporary workaround for a recently introduced issue in PatternFly's
+// ExpandableSection, where the parent container displays scrollbars when the
+// section is collapsed. This issue has been fixed in PatternFly core on September
+// 23, 2025 (PR #7843): https://github.com/patternfly/patternfly/pull/7843
+//
+// Applying the fix directly didn’t work in our case, as nested expandable
+// sections still take up space when collapsed. As a result, we’ve added an
+// extra `height: 0` rule, specifically targeting the collapsed [hidden]
+// content.
+//
+// This workaround should be removed once the updated PatternFly version
+// includes the upstream fix for this issue.
+//
+// TODO: Re-test and remove this workaround once the next PatternFly release
+// includes the fix.
+.pf-v6-c-expandable-section:where(:not(.pf-m-truncate))
+  .pf-v6-c-expandable-section__content:where([hidden]) {
+  overflow: hidden;
+  height: 0;
+}
+
 // Some utilities not found at PF
 .w-14ch {
   inline-size: 14ch;
@@ -527,9 +533,30 @@ button:focus-visible {
   outline-offset: 3px;
 }
 
+.agm-three-dots-icon {
+  font-size: 1.1rem;
+  vertical-align: text-top;
+}
+
 .agm-strong-icon {
   font-size: 1.6rem;
   vertical-align: middle;
+}
+
+.no-default-icon {
+  .pf-v6-c-button__icon {
+    display: none;
+  }
+}
+
+span.in-quotes {
+  &::before {
+    content: open-quote;
+  }
+
+  &::after {
+    content: close-quote;
+  }
 }
 
 // FIXME: make ir more generic, if possible, or even without CSS but not

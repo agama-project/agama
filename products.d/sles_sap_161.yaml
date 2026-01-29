@@ -1,0 +1,232 @@
+id: SLES_SAP
+name: SUSE Linux Enterprise Server for SAP applications 16.1
+archs: x86_64,ppc
+registration: true
+version: "16.1"
+license: "license.final"
+# ------------------------------------------------------------------------------
+# WARNING: When changing the product description delete the translations located
+# at the at translations/description key below to avoid using obsolete
+# translations!!
+# ------------------------------------------------------------------------------
+description: "The leading OS for a secure and reliable SAP platform. Endorsed
+  for SAP deployments, SUSE Linux Enterprise Server for SAP applications
+  futureproofs the SAP project, offers uninterrupted business, and minimizes
+  operational risks and costs."
+icon: SUSE.svg
+# Do not manually change any translations! See README.md for more details.
+translations:
+  description:
+    ca: El sistema operatiu líder per a una plataforma SAP segura i fiable. Avalat
+      per a implementacions SAP, SUSE Linux Enterprise Server per a aplicacions
+      SAP prepara el projecte SAP per al futur, ofereix negocis sense
+      interrupcions i minimitza els riscos i costos operatius.
+    cs: Přední distribuce pro bezpečnou a spolehlivou platformu SAP. Určený pro
+      nasazení SAP, SUSE Linux Enterprise Server for SAP applications zajišťuje
+      dlouhodobou udržitelnost projektu SAP, nabízí nepřerušený chod podniku a
+      minimalizuje provozní rizika a náklady.
+    de: Das führende Betriebssytem für eine sichere und zuverlässige SAP-Platform.
+      Abgestimmt auf SAP-Bereitstellungen, ist SUSE Linux Enterprise Server for
+      SAP applications zukunftssicher, bietet unterbrechungsfreien
+      Geschäftsbetrieb und minimiert betriebliche Risiken und Kosten.
+    es: El sistema operativo líder para una plataforma SAP segura y fiable. SUSE
+      Linux Enterprise Server for SAP applications está recomendado para
+      implantaciones SAP, ya que prepara el proyecto SAP para el futuro, ofrece
+      un funcionamiento ininterrumpido y minimiza los riesgos y costes
+      operativos.
+    fi: Johtava tietoturvallisen ja luotettavan SAP-alustan käyttöjärjestelmä. SUSE
+      Linux Enterprise Server for SAP applications on hyväksytty
+      SAP-käyttöönottoihin, joka varmistaa SAP-projektin tulevaisuuden tarjoten
+      keskeytymätöntä liiketoimintaa ja minimoi operatiiviset riskit sekä
+      kustannukset.
+    fr: Le système d’exploitation leader pour une plateforme SAP sécurisée et
+      fiable. Approuvé pour les déploiements SAP, SUSE Linux Enterprise Server
+      for SAP assure la pérennité du projet SAP, offre une continuité des
+      activités et réduit les risques opérationnels et les coûts.
+    id: Sistem operasi terdepan untuk platform SAP yang aman dan andal. Didukung
+      secara resmi untuk penerapan SAP, SUSE Linux Enterprise Server for SAP
+      Applications memberikan jaminan masa depan bagi proyek SAP, memastikan
+      kelancaran bisnis tanpa gangguan, serta meminimalkan risiko operasional
+      dan biaya.
+    it: Il sistema operativo leader per una piattaforma SAP sicura e affidabile.
+      Approvato per le implementazioni SAP, SUSE Linux Enterprise Server per
+      applicazioni SAP rende il progetto SAP a prova di futuro, garantisce la
+      continuità operativa e riduce al minimo i rischi e i costi operativi.
+    ja: 安全で信頼性のある SAP プラットフォームを構築するためのリーディング OS です。 SAP 承認も取得済みの SUSE Linux
+      Enterprise Server for SAP applications では、 SAP
+      プロジェクトに将来性をもたらすほか、途切れることのないビジネス環境を提供し、運用で発生しうるリスクやコストを最小限に抑えます。
+    pt_BR: O principal sistema operacional para uma plataforma SAP segura e
+      confiável. Endossado para implantações SAP, o SUSE Linux Enterprise Server
+      for SAP Applications prepara o projeto SAP para o futuro, oferece
+      continuidade nos negócios e minimiza riscos e custos operacionais.
+    ru: "Ведущая ОС для безопасной и надёжной работы SAP: сертифицирована для SAP,
+      обеспечивает стабильность, снижает риски и издержки."
+    sv: Det ledande operativsystemet för en säker och pålitlig SAP-plattform.
+      Godkänd för SAP utrullningar, SUSE Linux Enterprise Server för
+      SAP-applikationer framtidssäkrar SAP-projektet, erbjuder oavbrutna affärer
+      och minimerar operativa risker och kostnader.
+    tr: Güvenli ve sağlam bir SAP platformu için önde gelen işletim sistemi. SAP
+      dağıtımları için onaylanan SUSE Linux Enterprise Server for SAP,
+      uygulamaları SAP projesini geleceğe hazır hale getirir, kesintisiz işleyiş
+      sağlar ve operasyonel riskleri ve maliyetleri en aza indirir.
+    uk: "Провідна ОС для безпечної та надійної роботи SAP: сертифікована для SAP,
+      забезпечує стабільність, знижує ризики та витрати."
+    zh_CN: 作为SAP平台安全可靠的优选操作系统， SUSE Linux Enterprise Server for SAP
+      Applications经SAP部署认可，能够为SAP项目提供未来保障，确保业务持续运行，同时最大限度降低运营风险和成本。
+    zh_TW: 為安全可靠的 SAP 平台所打造的領先作業系統。SUSE Linux Enterprise Server for SAP Applications
+      獲 SAP 推薦部署，能為您的 SAP 專案奠定成功基石，確保業務營運不中斷，並將營運風險與成本降至最低。
+software:
+  installation_repositories: []
+  installation_labels:
+    - label: S4SAP160-x86_64
+      archs: x86_64
+    - label: S4SAP160-ppc64
+      archs: ppc
+
+  mandatory_patterns:
+    - base
+    - enhanced_base
+    - bootloader
+    - sles_sap_base_sap_server
+  optional_patterns: [] # no optional pattern shared
+  user_patterns:
+    # First all patterns from file sles_160.yaml
+    - cockpit
+    - sles_sap_minimal_sap
+    - fips
+    - name: selinux
+      selected: true
+    - documentation
+    - sw_management
+    - container_runtime_docker
+    - container_runtime_podman
+    - dhcp_dns_server
+    - directory_server
+    - file_server
+    - gateway_server
+    - kvm_server
+    - kvm_tools
+    - lamp_server
+    - mail_server
+    - gnome
+    - gnome_internet
+    - devel_basis
+    - devel_kernel
+    - oracle_server
+    - print_server
+    # Second, all patterns for SAP only
+    - sles_sap_DB
+    - sles_sap_HADB
+    - sles_sap_APP
+    - sles_sap_HAAPP
+    - sles_sap_trento_server
+    - sles_sap_trento_agent
+    - sles_sap_automation
+    - sles_sap_monitoring
+    - sles_sap_gui
+  mandatory_packages:
+    - NetworkManager
+    # bsc#1241224, bsc#1224868 avoid probe DHCP over all ethernet devices and ignore carrier
+    - NetworkManager-config-server
+    - sudo-policy-wheel-auth-self # explicit wheel group policy to conform new auth model
+  optional_packages: []
+  base_product: SLES_SAP
+
+security:
+  lsm: selinux
+  available_lsms:
+    selinux:
+      patterns:
+        - selinux
+    none:
+      patterns: null
+
+storage:
+  space_policy: delete
+  volumes:
+    - "/"
+    - "swap"
+  volume_templates:
+    - mount_path: "/"
+      filesystem: btrfs
+      btrfs:
+        snapshots: true
+        read_only: false
+        default_subvolume: "@"
+        subvolumes:
+          - path: home
+          - path: opt
+          - path: root
+          - path: srv
+          - path: usr/local
+          # Unified var subvolume - https://lists.opensuse.org/opensuse-packaging/2017-11/msg00017.html
+          - path: var
+            copy_on_write: false
+          # Architecture specific subvolumes
+          - path: boot/grub2/arm64-efi
+            archs: aarch64
+          - path: boot/grub2/arm-efi
+            archs: arm
+          - path: boot/grub2/i386-pc
+            archs: x86_64
+          - path: boot/grub2/powerpc-ieee1275
+            archs: ppc,!board_powernv
+          - path: boot/grub2/s390x-emu
+            archs: s390
+          - path: boot/grub2/x86_64-efi
+            archs: x86_64
+          - path: boot/grub2/riscv64-efi
+            archs: riscv64
+      size:
+        auto: true
+      outline:
+        required: true
+        filesystems:
+          - btrfs
+          - ext2
+          - ext3
+          - ext4
+          - xfs
+        auto_size:
+          base_min: 5 GiB
+          base_max: 15 GiB
+          snapshots_increment: 150%
+          max_fallback_for:
+            - "/home"
+        snapshots_configurable: true
+    - mount_path: "swap"
+      filesystem: swap
+      size:
+        min: 1 GiB
+        max: 2 GiB
+      outline:
+        required: false
+        filesystems:
+          - swap
+    - mount_path: "/home"
+      filesystem: xfs
+      size:
+        auto: false
+        min: 5 GiB
+        max: unlimited
+      outline:
+        required: false
+        filesystems:
+          - btrfs
+          - ext2
+          - ext3
+          - ext4
+          - xfs
+    - filesystem: xfs
+      size:
+        auto: false
+        min: 512 MiB
+      outline:
+        required: false
+        filesystems:
+          - btrfs
+          - ext2
+          - ext3
+          - ext4
+          - xfs
+          - vfat

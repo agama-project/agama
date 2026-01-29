@@ -38,27 +38,6 @@ module Agama
 
       # @return [Logger]
       attr_reader :logger
-
-      # Extra data provided to the D-Bus call (e.g., the client_id requesting the action).
-      #
-      # @return [Hash]
-      def request_data
-        @request_data ||= {}
-      end
-
-      # Executes a block ensuring the given request data is available during the process.
-      #
-      # Saving the request data is needed in order to have it available while emitting signals as
-      # part of the block execution.
-      #
-      # @param data [Hash] Extra data, see {#request_data}.
-      # @param block [Proc]
-      def request(data = {}, &block)
-        @request_data = data
-        block.call
-      ensure
-        @request_data = {}
-      end
     end
   end
 end

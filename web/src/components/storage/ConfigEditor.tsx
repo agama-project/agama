@@ -21,17 +21,18 @@
  */
 
 import React from "react";
-import { Alert, Button, DataList } from "@patternfly/react-core";
+import { Alert, Button, DataList, Flex } from "@patternfly/react-core";
 import Text from "~/components/core/Text";
 import DriveEditor from "~/components/storage/DriveEditor";
 import VolumeGroupEditor from "~/components/storage/VolumeGroupEditor";
 import MdRaidEditor from "~/components/storage/MdRaidEditor";
-import { useDevices, useResetConfigMutation } from "~/queries/storage";
-import { useModel } from "~/hooks/storage/model";
+import { useReset } from "~/hooks/model/config/storage";
+import ConfigureDeviceMenu from "./ConfigureDeviceMenu";
+import { useConfigModel } from "~/hooks/model/storage/config-model";
 import { _ } from "~/i18n";
 
 const NoDevicesConfiguredAlert = () => {
-  const { mutate: reset } = useResetConfigMutation();
+  const reset = useReset();
   const title = _("No devices configured yet");
   // TRANSLATORS: %s will be replaced by a "reset to default" button
   const body = _(
@@ -55,53 +56,32 @@ const NoDevicesConfiguredAlert = () => {
   );
 };
 
-/**
- * @fixme Adapt components (DriveEditor, MdRaidEditor, etc) to receive a list name and an index
- * instead of a device object. Each component will retrieve the device from the model if needed.
- *
- * That will allow to:
- * * Simplify the model types (list and listIndex properties are not needed).
- * * All the components (DriveEditor, PartitionPage, etc) work in a similar way. They receive a
- *   list and an index and each component retrieves the device from the model if needed.
- * * The components always have all the needed info for generating an url.
- * * The partitions and logical volumes can also be referenced by an index, so it opens the door
- *   to have partitions and lvs without a mount path.
- *
- * These changes will be done once creating partitions without a mount path is needed (e.g., for
- * manually creating physical volumes).
- */
 export default function ConfigEditor() {
-  const model = useModel();
-  const devices = useDevices("system", { suspense: true });
-  const drives = model.drives;
-  const mdRaids = model.mdRaids;
-  const volumeGroups = model.volumeGroups;
+  const config = useConfigModel();
+  const drives = config.drives;
+  const mdRaids = config.mdRaids;
+  const volumeGroups = config.volumeGroups;
 
   if (!drives.length && !mdRaids.length && !volumeGroups.length) {
     return <NoDevicesConfiguredAlert />;
   }
 
   return (
-    <DataList aria-label={_("[FIXME]")} isCompact className="storage-structure">
-      {volumeGroups.map((vg, i) => {
-        return <VolumeGroupEditor key={`vg-${i}`} vg={vg} />;
-      })}
-      {mdRaids.map((raid, i) => {
-        const device = devices.find((d) => d.name === raid.name);
-
-        return <MdRaidEditor key={`md-${i}`} raid={raid} raidDevice={device} />;
-      })}
-      {drives.map((drive, i) => {
-        const device = devices.find((d) => d.name === drive.name);
-
-        /**
-         * @fixme Make DriveEditor to work when the device is not found (e.g., after disabling
-         * a iSCSI device).
-         */
-        if (device === undefined) return null;
-
-        return <DriveEditor key={`drive-${i}`} drive={drive} driveDevice={device} />;
-      })}
-    </DataList>
+    <>
+      <DataList aria-label={_("[FIXME]")} isCompact className="storage-structure">
+        {volumeGroups.map((vg, i) => {
+          return <VolumeGroupEditor key={`vg-${i}`} vg={vg} />;
+        })}
+        {mdRaids.map((_, i) => (
+          <MdRaidEditor key={`md-${i}`} index={i} />
+        ))}
+        {drives.map((_, i) => (
+          <DriveEditor key={`drive-${i}`} index={i} />
+        ))}
+      </DataList>
+      <Flex>
+        <ConfigureDeviceMenu />
+      </Flex>
+    </>
   );
 }

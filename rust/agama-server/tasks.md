@@ -1,0 +1,2 @@
+- [] Move server error to the supervisor.
+- [] Add test to the config merge.

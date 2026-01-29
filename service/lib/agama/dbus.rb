@@ -25,7 +25,4 @@ module Agama
   end
 end
 
-require "agama/dbus/manager"
-require "agama/dbus/software"
 require "agama/dbus/storage"
-require "agama/dbus/users"

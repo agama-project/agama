@@ -6,6 +6,12 @@ export default {
   " Timezone selection": [
     " Pemilihan zona waktu"
   ],
+  "\"%s\"": [
+    "\"%s\""
+  ],
+  "\"%s\" does not exist or is no longer available.": [
+    "\"%s\" tidak ditemukan atau tidak lagi tersedia."
+  ],
   "%1$s (%2$s)": [
     "%1$s (%2$s)"
   ],
@@ -14,6 +20,9 @@ export default {
   ],
   "%1$s at %2$s": [
     "%1$s di %2$s"
+  ],
+  "%1$s keyboard - %2$s timezone": [
+    ""
   ],
   "%1$s will be created as a partition at %2$s": [
     "%1$s akan dibuat sebagai partisi di %2$s"
@@ -29,6 +38,9 @@ export default {
   ],
   "%s [must be registered].": [
     "%s [harus terdaftar]."
+  ],
+  "%s and %d others": [
+    ""
   ],
   "%s disk": [
     "%s diska"
@@ -50,6 +62,9 @@ export default {
   ],
   "%s with %d partitions": [
     "%s dengan partisi %d"
+  ],
+  "(step %s of %s)": [
+    ""
   ],
   "A %1$s of %2$s will be created for %3$s if possible": [
     "%1$s dari %2$s akan dibuat untuk %3$s jika memungkinkan"
@@ -134,9 +149,6 @@ export default {
   ],
   "Add another address": [
     "Tambahkan alamat lain"
-  ],
-  "Add another partition or mount an existing one": [
-    "Tambahkan partisi lain atau pasang partisi yang sudah ada"
   ],
   "Add device menu": [
     "Tambahkan menu perangkat"
@@ -228,8 +240,14 @@ export default {
   "Authentication by target": [
     "Otentikasi berdasarkan target"
   ],
+  "Auto": [
+    "Otomatis"
+  ],
   "Auto LUNs Scan": [
     "Pemindaian LUN Otomatis"
+  ],
+  "Auto and manual": [
+    ""
   ],
   "Automatic": [
     "Otomatis"
@@ -237,10 +255,10 @@ export default {
   "Automatic (DHCP)": [
     "Otomatis (DHCP)"
   ],
-  "Automatic LUN scan is [disabled]. LUNs have to be manually       configured after activating a controller.": [
+  "Automatic LUN scan is [disabled]. LUNs have to be manually configured after activating a controller.": [
     "Pemindaian LUN otomatis [dinonaktifkan]. LUN harus dikonfigurasi secara manual setelah mengaktifkan pengontrol."
   ],
-  "Automatic LUN scan is [enabled]. Activating a controller which is       running in NPIV mode will automatically configures all its LUNs.": [
+  "Automatic LUN scan is [enabled]. Activating a controller which is running in NPIV mode will automatically configures all its LUNs.": [
     "Pemindaian LUN otomatis [diaktifkan]. Mengaktifkan pengontrol yang berjalan dalam mode NPIV akan secara otomatis mengonfigurasi semua LUN."
   ],
   "Available products": [
@@ -300,6 +318,9 @@ export default {
   "Btrfs with snapshots": [
     "Btrfs dengan snapshot"
   ],
+  "CPU": [
+    ""
+  ],
   "Cancel": [
     "Batal"
   ],
@@ -320,9 +341,6 @@ export default {
   ],
   "Change Language": [
     "Ubah Bahasa"
-  ],
-  "Change boot options": [
-    "Mengubah opsi boot"
   ],
   "Change device menu": [
     "Ubah menu perangkat"
@@ -348,14 +366,26 @@ export default {
   "Change selection": [
     "Mengubah pilihan"
   ],
+  "Change the disk to configure": [
+    "Ganti disk untuk konfigurasi"
+  ],
+  "Change the disk to create %s": [
+    "Ganti disk untuk membuat %s"
+  ],
+  "Change the disk to format as %s": [
+    "Ganti disk untuk diformat sebagai %s"
+  ],
+  "Change the disk to install the system": [
+    "Ganti disk untuk menginstal sistem"
+  ],
   "Change the file system or mount point": [
     "Ubah sistem berkas atau titik mount"
   ],
+  "Changes in these settings will immediately update the 'Result' section below.": [
+    "Perubahan pada pengaturan ini akan segera memperbarui bagian 'Hasil' di bawah ini."
+  ],
   "Channel ID": [
     "ID saluran"
-  ],
-  "Check the %d planned actions": [
-    "Periksa %d tindakan yang direncanakan"
   ],
   "Check the authentication parameters.": [
     "Periksa parameter otentikasi."
@@ -389,12 +419,6 @@ export default {
   ],
   "Close": [
     "Tutup"
-  ],
-  "Collapse the list of planned actions": [
-    "Lipat daftar tindakan yang direncanakan"
-  ],
-  "Configuration out of sync": [
-    "Konfigurasi tidak sinkron"
   ],
   "Configuration read from the iSCSI Boot Firmware Table (iBFT).": [
     "Konfigurasi dibaca dari Tabel Firmware Boot iSCSI (iBFT)."
@@ -434,9 +458,6 @@ export default {
   ],
   "Confirm": [
     "Konfirmasi"
-  ],
-  "Confirm Installation": [
-    "Konfirmasi Instalasi"
   ],
   "Confirm that you really want to continue.": [
     "Pastikan Anda benar-benar ingin melanjutkan."
@@ -489,9 +510,6 @@ export default {
   "Content": [
     "Konten"
   ],
-  "Continue": [
-    "Lanjutkan"
-  ],
   "Continuing without installing the package can result in a broken system. In some cases the system might not even boot.": [
     "Melanjutkan tanpa memasang paket dapat mengakibatkan sistem rusak. Dalam beberapa kasus, sistem bahkan mungkin tidak dapat melakukan booting."
   ],
@@ -539,6 +557,9 @@ export default {
   ],
   "DASD %s": [
     "DASD %s"
+  ],
+  "DHCP, %s": [
+    ""
   ],
   "DIAG": [
     "DIAG"
@@ -603,9 +624,6 @@ export default {
   "Details": [
     "Detail"
   ],
-  "Details for %s": [
-    "Rincian untuk %s"
-  ],
   "Details will appear after the connection is successfully established.": [
     "Rincian akan ditampilkan setelah koneksi berhasil terhubung."
   ],
@@ -659,9 +677,6 @@ export default {
   ],
   "Download logs": [
     "Unduh log"
-  ],
-  "During installation, several actions will be performed to setup the layout shown at the table below.": [
-    "Selama pemasangan, beberapa tindakan akan dilakukan untuk mengatur tata letak yang ditunjukkan pada tabel di bawah ini."
   ],
   "Edit": [
     "Edit"
@@ -726,8 +741,8 @@ export default {
   "ExFAT": [
     "ExFAT"
   ],
-  "Example: https://myserver.com": [
-    "Contoh: https://myserver.com"
+  "Example: %s": [
+    "Contoh: %s"
   ],
   "Excellent signal": [
     "Sinyal sangat baik"
@@ -748,10 +763,7 @@ export default {
     "Perluas instalasi melampaui perangkat %d yang saat ini dipilih"
   ],
   "Extend the installation beyond the currently selected disk": [
-    "Perluas instalasi melampaui disk %d yang saat ini dipilih."
-  ],
-  "Extensions": [
-    "Ekstensi"
+    "Perluas instalasi melampaui disk %d yang saat ini dipilih"
   ],
   "F2FS": [
     "F2FS"
@@ -783,8 +795,11 @@ export default {
   "Filter by territory, time zone code or UTC offset": [
     "Memfilter berdasarkan wilayah, kode zona waktu, atau offset UTC"
   ],
-  "Find space": [
-    "Temukan ruang"
+  "Final layout": [
+    "Tata letak akhir"
+  ],
+  "Final structure of the system after installation.": [
+    "Struktur akhir sistem setelah pemasangan."
   ],
   "Find space in %s": [
     "Temukan ruang di %s"
@@ -852,6 +867,9 @@ export default {
   "GiB": [
     "GiB"
   ],
+  "Go back": [
+    ""
+  ],
   "Go to network page": [
     "Buka halaman jaringan"
   ],
@@ -897,6 +915,9 @@ export default {
   "IP settings": [
     "Pengaturan IP"
   ],
+  "IPs": [
+    ""
+  ],
   "IPv4": [
     "IPv4"
   ],
@@ -905,9 +926,6 @@ export default {
   ],
   "If a local media was used to run this installer, remove it before the next boot.": [
     "Jika media lokal digunakan untuk menjalankan penginstalasi ini, hapus media tersebut sebelum boot berikutnya."
-  ],
-  "If you continue, partitions on your hard disk will be modified according to the provided installation settings.": [
-    "Jika Anda melanjutkan, partisi pada hard disk Anda akan dimodifikasi sesuai dengan pengaturan instalasi yang disediakan."
   ],
   "In progress": [
     "Dalam proses"
@@ -942,35 +960,11 @@ export default {
   "Install": [
     "Instal"
   ],
-  "Install using an advanced configuration.": [
-    "Instal menggunakan konfigurasi lanjutan."
+  "Install now with potential data loss": [
+    ""
   ],
-  "Install using device %s and deleting all its content.": [
-    "Menginstal menggunakan perangkat %s dan menghapus semua isinya."
-  ],
-  "Install using device %s shrinking existing partitions as needed.": [
-    "Instal menggunakan perangkat %s mengecilkan partisi yang ada sesuai kebutuhan."
-  ],
-  "Install using device %s with a custom strategy to find the needed space.": [
-    "Pasang menggunakan perangkat %s dengan strategi khusus untuk menemukan ruang yang dibutuhkan."
-  ],
-  "Install using device %s without modifying existing partitions.": [
-    "Menginstal menggunakan perangkat %s tanpa mengubah partisi yang ada."
-  ],
-  "Install using several devices and deleting all its content.": [
-    "Pasang menggunakan beberapa perangkat dan hapus semua kontennya."
-  ],
-  "Install using several devices shrinking existing partitions as needed.": [
-    "Pasang menggunakan beberapa perangkat yang mengecilkan partisi yang ada sesuai kebutuhan."
-  ],
-  "Install using several devices with a custom strategy to find the needed space.": [
-    "Pasang menggunakan beberapa perangkat dengan strategi khusus untuk menemukan ruang yang dibutuhkan."
-  ],
-  "Install using several devices without modifying existing partitions.": [
-    "Pasang menggunakan beberapa perangkat tanpa mengubah partisi yang ada."
-  ],
-  "Installation Devices": [
-    "Perangkat Pemasangan"
+  "Installation devices": [
+    "Perangkat pemasangan"
   ],
   "Installation will take %s.": [
     "Penginstalan akan memakan waktu %s."
@@ -1122,6 +1116,9 @@ export default {
   "Max channel": [
     "Saluran maks"
   ],
+  "Memory": [
+    ""
+  ],
   "MiB": [
     "MiB"
   ],
@@ -1149,6 +1146,9 @@ export default {
   "More languages might be available for the selected product at [Localization] page": [
     "Bahasa lain mungkin tersedia untuk produk yang dipilih di halaman [Localization]"
   ],
+  "More storage options": [
+    "Lebih banyak opsi penyimpanan"
+  ],
   "Moreover, the following partition will be created.": [
     "Selain itu, partisi berikut akan dibuat."
   ],
@@ -1165,7 +1165,7 @@ export default {
     "Mount RAID %s"
   ],
   "Mount disk %s": [
-    "Mount disk %s"
+    "Kait diska %s"
   ],
   "Mount point": [
     "Titik pemasangan"
@@ -1182,7 +1182,7 @@ export default {
   "Move mount points": [
     "Pindahkan titik mount"
   ],
-  "Move the mount points currently configured at the selected disks to logical                   volumes of this volume group.": [
+  "Move the mount points currently configured at the selected disks to logical volumes of this volume group.": [
     "Pindahkan titik mount yang saat ini dikonfigurasi pada disk yang dipilih ke volume logis dari grup volume ini."
   ],
   "Multipath": [
@@ -1202,6 +1202,9 @@ export default {
   ],
   "Name": [
     "Nama"
+  ],
+  "Needs about %s": [
+    ""
   ],
   "Network": [
     "Jaringan"
@@ -1236,6 +1239,9 @@ export default {
   "No content found": [
     "Tidak ada konten yang ditemukan"
   ],
+  "No data loss is expected": [
+    ""
+  ],
   "No device is currently using this connection.": [
     "Tidak ada perangkat yang saat ini menggunakan koneksi ini."
   ],
@@ -1259,6 +1265,9 @@ export default {
   ],
   "No logical volumes are defined yet": [
     "Belum ada volume logis yang didefinisikan"
+  ],
+  "No partitions will be automatically configured for booting.": [
+    "Partisi tidak akan dikonfigurasi secara otomatis untuk booting."
   ],
   "No partitions will be automatically configured for booting. Use with caution.": [
     "Tidak ada partisi yang akan dikonfigurasi secara otomatis untuk booting. Gunakan dengan hati-hati."
@@ -1314,9 +1323,6 @@ export default {
   "Not protected network": [
     "Jaringan tidak dilindungi"
   ],
-  "Not selected yet": [
-    "Belum dipilih"
-  ],
   "Not supported (%s)": [
     "Tidak didukung (%s)"
   ],
@@ -1332,14 +1338,11 @@ export default {
   "Only reused partitions will be used.": [
     "Hanya partisi yang telah digunakan kembali yang akan digunakan."
   ],
+  "Options for partition %s": [
+    "Opsi untuk partisi %s"
+  ],
   "Options toggle": [
     "Sakelar opsi"
-  ],
-  "Other options": [
-    "Opsi lain"
-  ],
-  "Other options toggle": [
-    "Tombol opsi lain"
   ],
   "Overview": [
     "Ikhtisar"
@@ -1347,8 +1350,14 @@ export default {
   "Package installation failed": [
     "Pemasangan paket gagal"
   ],
+  "Partition %s": [
+    "Partisi %s"
+  ],
   "Partition Info": [
     "Info Partisi"
+  ],
+  "Partitions": [
+    "Partisi"
   ],
   "Partitions needed for booting will also be adapted": [
     "Partisi yang diperlukan untuk booting juga akan disesuaikan"
@@ -1365,14 +1374,20 @@ export default {
   "Partitions that are not reused would be resized if needed.": [
     "Partisi yang tidak digunakan ulang akan diubah ukurannya jika diperlukan."
   ],
-  "Partitions to boot will be allocated at the following device.": [
-    "Partisi untuk boot akan dialokasikan pada perangkat berikut."
+  "Partitions to boot will be set up if needed at %s.": [
+    "Partisi untuk booting akan disiapkan jika diperlukan di %s."
   ],
-  "Partitions to boot will be allocated at the installation disk %s.": [
-    "Partisi untuk boot akan dialokasikan pada disk instalasi %s."
+  "Partitions to boot will be set up if needed at the following device.": [
+    "Partisi untuk booting akan disiapkan jika diperlukan pada perangkat berikut."
   ],
-  "Partitions to boot will be allocated at the installation disk.": [
-    "Partisi untuk boot akan dialokasikan pada disk instalasi."
+  "Partitions to boot will be set up if needed at the installation disk, based on the location of the %s file system.": [
+    "Partisi untuk booting akan dibuat jika diperlukan pada disk instalasi, berdasarkan lokasi sistem berkas %s."
+  ],
+  "Partitions to boot will be set up if needed at the installation disk. Currently %1$s, based on the location of the %2$s file system.": [
+    "Partisi untuk booting akan dibuat jika diperlukan pada disk instalasi. Saat ini %1$s, berdasarkan lokasi sistem berkas %2$s."
+  ],
+  "Partitions to host \"system\" will be created if needed.": [
+    "Partisi untuk menampung “sistem” akan dibuat jika diperlukan."
   ],
   "Partitions will be used and created for %s": [
     "Partisi akan digunakan dan dibuat untuk %s"
@@ -1404,9 +1419,6 @@ export default {
   "PiB": [
     "PiB"
   ],
-  "Please, cancel and check the settings if you are unsure.": [
-    "Mohon batalkan dan periksa pengaturan jika Anda tidak yakin."
-  ],
   "Please, check whether it is running.": [
     "Silakan periksa apakah sudah berjalan."
   ],
@@ -1428,17 +1440,29 @@ export default {
   "Portal": [
     "Portal"
   ],
+  "Potential data loss": [
+    ""
+  ],
+  "Potential data loss affecting at least %s": [
+    ""
+  ],
   "Pre-installation checks": [
     "Pemeriksaan pra-instalasi"
   ],
   "Prefix length or netmask": [
     "Panjang awalan atau netmask"
   ],
+  "Proceeding may result in data loss": [
+    ""
+  ],
+  "Proceeding may result in data loss affecting at least %s": [
+    ""
+  ],
   "Product is already registered": [
     "Produk sudah terdaftar"
   ],
   "Protection for the information stored at the new file systems, including data, programs, and system files.": [
-    "Perlindungan untuk informasi yang disimpan di sistem berkas baru, termasuk data, program, dan berkas sistem."
+    "Pemeliharaan keamanan informasi yang disimpan pada sistem berkas baru, termasuk data, program, dan berkas sistem."
   ],
   "Provide email address": [
     "Berikan alamat email"
@@ -1494,15 +1518,6 @@ export default {
   "Reload": [
     "Muat ulang"
   ],
-  "Reload now": [
-    "Muat ulang sekarang"
-  ],
-  "Reloading data, please wait...": [
-    "Muat ulang data, harap tunggu..."
-  ],
-  "Reloading is required to get the latest data and avoid issues or data loss.": [
-    "Pemuatan ulang diperlukan untuk mendapatkan data terbaru dan menghindari masalah atau kehilangan data."
-  ],
   "Remove": [
     "Menghapus"
   ],
@@ -1511,6 +1526,12 @@ export default {
   ],
   "Repository load failed": [
     "Pemuatan repositori gagal"
+  ],
+  "Required packages": [
+    ""
+  ],
+  "Required packages and %s pattern": [
+    ""
   ],
   "Rescan devices": [
     "Pindai ulang perangkat"
@@ -1527,11 +1548,17 @@ export default {
   "Result": [
     "Hasil"
   ],
+  "Result of applying the configuration described at the 'Settings' section above.": [
+    "Hasil penerapan konfigurasi yang dijelaskan pada bagian 'Pengaturan' di atas."
+  ],
   "Reused partitions will not be shrunk": [
     "Partisi yang digunakan kembali tidak akan diperkecil"
   ],
   "Review and fix": [
     "Periksa dan perbaiki"
+  ],
+  "Review the summary below. If anything seems incorrect or you have doubts, go back and adjust the settings before proceeding.": [
+    ""
   ],
   "Root authentication methods": [
     "Metode otentikasi root"
@@ -1587,20 +1614,8 @@ export default {
   "Select a disk": [
     "Pilih disk"
   ],
-  "Select a disk to configure": [
-    "Pilih disk yang akan dikonfigurasi"
-  ],
-  "Select a disk to create %s": [
-    "Pilih disk untuk membuat %s"
-  ],
   "Select a disk to define partitions or to mount": [
     "Pilih perangkat lain untuk mendefinisikan partisi atau untuk mount"
-  ],
-  "Select a disk to format as %s": [
-    "Pilih disk yang akan diformat sebagai %s"
-  ],
-  "Select a disk to install the system": [
-    "Pilih disk untuk memasang sistem"
   ],
   "Select a product": [
     "Pilih produk"
@@ -1628,9 +1643,6 @@ export default {
   ],
   "Select or enter a valid mount point": [
     "Pilih atau masukkan titik mount yang valid"
-  ],
-  "Select the disk to configure partitions for booting": [
-    "Pilih disk yang akan dikonfigurasi partisi untuk booting"
   ],
   "Select what to do with each partition in order to find space for allocating the new system.": [
     "Pilih tindakan yang akan dilakukan pada setiap partisi untuk menemukan ruang yang cukup untuk mengalokasikan sistem baru."
@@ -1782,11 +1794,11 @@ export default {
   "Targets": [
     "Target"
   ],
+  "Temporary name that may change after reboot or network changes": [
+    ""
+  ],
   "The LVM group '%1$s' will remain at %2$s": [
     "Grup LVM ‘%1$s’ akan tetap berada di %2$s"
-  ],
-  "The configuration has been updated externally.": [
-    "Konfigurasi telah diperbarui secara eksternal."
   ],
   "The configuration must be adapted to address the following issue:": [
     "Konfigurasi harus disesuaikan untuk mengatasi masalah berikut:"
@@ -1799,9 +1811,6 @@ export default {
   ],
   "The connection will be used only during installation and not available in the installed system.": [
     "Koneksi hanya akan digunakan selama pemasangan dan tidak tersedia dalam sistem yang telah dipasang."
-  ],
-  "The content may be deleted": [
-    "Konten mungkin akan dihapus"
   ],
   "The current configuration will result in an attempt to create a %1$s of %2$s.": [
     "Konfigurasi saat ini akan mengakibatkan upaya untuk membuat %1$s dari %2$s."
@@ -1866,6 +1875,9 @@ export default {
   "The final step to configure the Trusted Platform Module (TPM) to automatically open encrypted devices will take place during the first boot of the new system. For that to work, the machine needs to boot directly to the new boot loader.": [
     "Langkah terakhir untuk mengonfigurasi Trusted Platform Module (TPM) agar dapat membuka perangkat yang dienkripsi secara otomatis selama booting pertama dari sistem yang baru. Agar dapat berfungsi, mesin harus melakukan booting secara langsung ke boot loader yang baru."
   ],
+  "The following actions will be performed in the system during installation.": [
+    "Tindakan berikut akan dilakukan dalam sistem selama proses instalasi."
+  ],
   "The following logical volume will be created": [
     "Volume logis berikut akan dibuat"
   ],
@@ -1886,12 +1898,6 @@ export default {
   ],
   "The installation on your machine is complete.": [
     "Penginstalan pada mesin Anda sudah selesai."
-  ],
-  "The installation will take": [
-    "Instalasi akan memakan waktu"
-  ],
-  "The installation will take %s including:": [
-    "Instalasi akan memakan waktu %s termasuk:"
   ],
   "The installer interface is no longer available, so you can safely close this window.": [
     "Antarmuka penginstal tidak lagi tersedia, jadi Anda dapat menutup jendela ini dengan aman."
@@ -1920,14 +1926,17 @@ export default {
   "The modal selector offers a simplified interface designed for quick and straightforward use, without overwhelming the user.": [
     "Pemilih mode menawarkan antarmuka yang disederhanakan yang dirancang untuk penggunaan cepat dan mudah, tanpa membingungkan pengguna."
   ],
-  "The needed LVM physical volumes will be added as partitions on the chosen disks,                 based on the sizes of the logical volumes. If you select more than one disk, the                 physical volumes may be distributed along several disks.": [
-    "Volume fisik LVM yang diperlukan akan ditambahkan sebagai partisi pada disk yang dipilih,                 berdasarkan ukuran volume logis. Jika Anda memilih lebih dari satu disk,                 volume fisik mungkin didistribusikan ke beberapa disk."
+  "The needed LVM physical volumes will be added as partitions on the chosen disks, based on the sizes of the logical volumes. If you select more than one disk, the physical volumes may be distributed along several disks.": [
+    "Volume fisik LVM yang diperlukan akan ditambahkan sebagai partisi pada disk yang dipilih, berdasarkan ukuran volume logis. Jika Anda memilih lebih dari satu disk, volume fisik mungkin didistribusikan ke beberapa disk."
   ],
   "The password is weak": [
     "Kata sandi ini lemah"
   ],
   "The password will not be needed to boot and access the data if the TPM can verify the integrity of the system. TPM sealing requires the new system to be booted directly on its first run.": [
     "Kata sandi tidak akan diperlukan untuk mem-boot dan mengakses data jika TPM dapat memverifikasi integritas sistem. Penyegelan TPM mengharuskan sistem baru untuk di-boot secara langsung saat pertama kali dijalankan."
+  ],
+  "The product will be registered with \"%s\" hostname": [
+    "Produk akan di-registrasi dengan hostname \"%s\""
   ],
   "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of a separate file system for %2$s.": [
     "Ukuran untuk %1$s akan disesuaikan secara dinamis berdasarkan jumlah RAM dalam sistem dan keberadaan sistem berkas yang terpisah untuk %2$s."
@@ -1974,17 +1983,11 @@ export default {
   "The system does not support Wi-Fi connections, probably because of missing or disabled hardware.": [
     "Sistem tidak mendukung koneksi Wi-Fi, mungkin karena perangkat keras yang tidak ada atau dinonaktifkan."
   ],
-  "The system will use %s as its default language.": [
-    "Sistem akan menggunakan %s sebagai bahasa default."
-  ],
   "The whole device will be used for %s": [
     "Seluruh perangkat akan digunakan untuk %s"
   ],
   "The zFCP disk was not activated.": [
     "Disk zFCP tidak diaktifkan."
-  ],
-  "There are no disks available for the installation.": [
-    "Tidak ada disk yang tersedia untuk pemasangan."
   ],
   "There are not disks available for the installation. You may need to configure some device.": [
     "Tidak ada disk yang tersedia untuk pemasangan. Anda mungkin perlu mengkonfigurasi beberapa perangkat."
@@ -1997,9 +2000,6 @@ export default {
   ],
   "There is %d destructive action planned affecting %s": [
     "Ada %d tindakan destruktif yang direncanakan yang akan mempengaruhi %s"
-  ],
-  "These are the most relevant installation settings. Feel free to browse the sections in the menu for further details.": [
-    "Berikut ini adalah pengaturan instalasi yang paling relevan. Silakan telusuri bagian dalam menu untuk rincian lebih lanjut."
   ],
   "These are the settings for the product to install. The installer language and keyboard layout can be adjusted via the [settings panel] accessible from the top bar.": [
     "Pengaturan untuk menginstal produk. Bahasa penginstal dan tata letak keyboard dapat disesuaikan melalui [panel pengaturan] yang dapat diakses dari bilah atas."
@@ -2244,6 +2244,9 @@ export default {
   "Using transient hostname: %s": [
     "Menggunakan nama host sementara: %s"
   ],
+  "Volume group %s": [
+    "Grup volume %s"
+  ],
   "Volume group '%s' already exists. Enter a different name.": [
     "Grup volume ‘%s’ sudah ada. Masukkan nama yang berbeda."
   ],
@@ -2348,6 +2351,9 @@ export default {
   ],
   "partition": [
     "partisi"
+  ],
+  "proposal.Device": [
+    ""
   ],
   "read_only": [
     "hanya_baca"

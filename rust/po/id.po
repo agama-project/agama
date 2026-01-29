@@ -1,0 +1,123 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR SuSE Linux Products GmbH, Nuernberg
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-01-23 15:24+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: none\n"
+"Language: id\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#: agama-autoinstall/src/questions.rs:41 agama-utils/src/api/question.rs:282
+#: agama-utils/src/question/start.rs:54
+msgid "No"
+msgstr ""
+
+#: agama-autoinstall/src/questions.rs:41 agama-utils/src/api/question.rs:282
+#: agama-utils/src/question/start.rs:54
+msgid "Yes"
+msgstr ""
+
+#: agama-manager/src/service.rs:839
+msgid "Prepare the system"
+msgstr ""
+
+#: agama-manager/src/service.rs:840
+msgid "Install software"
+msgstr ""
+
+#: agama-manager/src/service.rs:841
+msgid "Configure the system"
+msgstr ""
+
+#: agama-network/src/service.rs:518
+msgid "Writing configuration"
+msgstr ""
+
+#: agama-network/src/service.rs:519
+msgid "Reading configuration"
+msgstr ""
+
+#: agama-security/src/service.rs:228
+msgid "Reject"
+msgstr ""
+
+#: agama-security/src/service.rs:228
+#: agama-software/src/callbacks/security.rs:74
+msgid "Trust"
+msgstr ""
+
+#: agama-security/src/service.rs:229
+msgid ""
+"Trying to import a self-signed certificate. Do you want to trust it and "
+"register the product?"
+msgstr ""
+
+#: agama-software/src/callbacks/commit_download.rs:48
+#: agama-software/src/callbacks/install.rs:56
+msgid "Ignore"
+msgstr ""
+
+#: agama-software/src/callbacks/commit_download.rs:48
+#: agama-software/src/callbacks/install.rs:56
+#: agama-software/src/callbacks/install.rs:81
+msgid "Retry"
+msgstr ""
+
+#: agama-software/src/callbacks/install.rs:78
+msgid "There was a problem running a package script."
+msgstr ""
+
+#: agama-software/src/callbacks/install.rs:81
+msgid "Continue"
+msgstr ""
+
+#. TRANSLATORS: substituting: key ID, (key name), fingerprint
+#: agama-software/src/callbacks/security.rs:67
+#, rust-format
+msgid ""
+"The key {0} ({1}) with fingerprint {2} is unknown. Do you want to trust this "
+"key?"
+msgstr ""
+
+#: agama-software/src/callbacks/security.rs:74
+msgid "Skip"
+msgstr ""
+
+#: agama-software/src/zypp_server.rs:290
+msgid "Updating the list of repositories"
+msgstr ""
+
+#: agama-software/src/zypp_server.rs:291
+msgid "Refreshing metadata from the repositories"
+msgstr ""
+
+#: agama-software/src/zypp_server.rs:292
+msgid "Calculating the software proposal"
+msgstr ""
+
+#: agama-software/src/zypp_server.rs:295
+msgid "Registering the system"
+msgstr ""
+
+#: agama-software/src/zypp_server.rs:390
+msgid "The product must be registered"
+msgstr ""
+
+#: agama-users/src/service.rs:138
+msgid ""
+"Defining a user, setting the root password or a SSH public key is required"
+msgstr ""
+
+#: agama-users/src/service.rs:151
+msgid "First user information is incomplete"
+msgstr ""

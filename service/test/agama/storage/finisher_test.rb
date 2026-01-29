@@ -21,16 +21,15 @@
 
 require_relative "../../test_helper"
 require_relative "storage_helpers"
-require_relative "../with_progress_examples"
 require "agama/helpers"
 require "agama/config"
-require "agama/security"
 require "agama/storage/finisher"
+require "yaml"
 
 describe Agama::Storage::Finisher do
   include Agama::RSpec::StorageHelpers
 
-  subject(:storage) { described_class.new(logger, config, security) }
+  subject(:storage) { described_class.new(logger, config) }
 
   let(:logger) { Logger.new($stdout, level: :warn) }
   let(:config_path) do
@@ -38,10 +37,8 @@ describe Agama::Storage::Finisher do
   end
 
   let(:destdir) { File.join(FIXTURES_PATH, "target_dir") }
-  let(:config) { Agama::Config.from_file(config_path) }
-  let(:security) { instance_double(Agama::Security, write: nil) }
+  let(:config) { Agama::Config.new(YAML.load_file(config_path)) }
   let(:copy_files) { Agama::Storage::Finisher::CopyFilesStep.new(logger) }
-  let(:progress) { instance_double(Agama::Progress, step: nil) }
 
   describe "#run" do
     before do
@@ -49,17 +46,10 @@ describe Agama::Storage::Finisher do
       allow(described_class::Step).to receive(:run?).and_return(false)
       allow(copy_files.class).to receive(:new).and_return(copy_files)
       allow(copy_files).to receive(:run?).and_return(true)
-      allow(subject).to receive(:progress).and_return(progress)
     end
 
     it "runs the possible steps that must be run" do
-      expect(subject).to receive(:start_progress_with_size).with(1)
-      expect(subject.progress).to receive(:step) do |label, &block|
-        expect(label).to eql(copy_files.label)
-        expect(copy_files).to receive(:run)
-        block.call
-      end
-
+      expect(copy_files).to receive(:run)
       subject.run
     end
   end
@@ -150,8 +140,6 @@ describe Agama::Storage::Finisher do
       subject.run
     end
   end
-
-  include_examples "progress"
 end
 
 describe Agama::Storage::Finisher::CopyLogsStep do

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2024] SUSE LLC
+ * Copyright (c) [2022-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -22,19 +22,26 @@
 
 import React from "react";
 import { screen } from "@testing-library/react";
+import { useStatus } from "~/hooks/model/status";
+import { useSystem } from "~/hooks/model/system";
+import { useProductInfo } from "~/hooks/model/config/product";
 import { installerRender } from "~/test-utils";
-import { AnswerCallback, Question } from "~/types/questions";
-import { InstallationPhase } from "~/types/status";
-import { Product } from "~/types/software";
+import { AnswerCallback, Question, FieldType } from "~/model/question";
+import type { Locale, Keymap } from "~/model/system/l10n";
 import LuksActivationQuestion from "~/components/questions/LuksActivationQuestion";
+import { Product } from "~/model/system";
 
 let question: Question;
 const questionMock: Question = {
   id: 1,
   class: "storage.luks_activation",
   text: "A Luks device found. Do you want to open it?",
-  options: ["decrypt", "skip"],
-  defaultOption: "decrypt",
+  field: { type: FieldType.String },
+  actions: [
+    { id: "decrypt", label: "Decrypt" },
+    { id: "skip", label: "Skip" },
+  ],
+  defaultAction: "decrypt",
   data: { attempt: "1" },
 };
 const tumbleweed: Product = {
@@ -43,34 +50,40 @@ const tumbleweed: Product = {
   icon: "tumbleweed.svg",
   description: "Tumbleweed description...",
   registration: false,
+  modes: [],
 };
 
-const answerFn: AnswerCallback = jest.fn();
-const locales = [
-  { id: "en_US.UTF-8", name: "English", territory: "United States" },
-  { id: "es_ES.UTF-8", name: "Spanish", territory: "Spain" },
+const locales: Locale[] = [
+  { id: "en_US.UTF-8", language: "English", territory: "United States" },
+  { id: "es_ES.UTF-8", language: "Spanish", territory: "Spain" },
+];
+const keymaps: Keymap[] = [
+  { id: "us", description: "English" },
+  { id: "es", description: "Spanish" },
 ];
 
-jest.mock("~/queries/status", () => ({
-  useInstallerStatus: () => ({
-    phase: InstallationPhase.Config,
-    isBusy: false,
+const answerFn: AnswerCallback = jest.fn();
+
+jest.mock("~/hooks/model/system", () => ({
+  ...jest.requireActual("~/hooks/model/system"),
+  useSystem: (): ReturnType<typeof useSystem> => ({
+    l10n: {
+      locale: "en_US.UTF-8",
+      locales,
+      keymaps,
+      keymap: "us",
+    },
   }),
 }));
 
-jest.mock("~/queries/l10n", () => ({
-  ...jest.requireActual("~/queries/l10n"),
-  useL10n: () => ({ locales, selectedLocale: locales[0] }),
+jest.mock("~/hooks/model/status", () => ({
+  ...jest.requireActual("~/hooks/model/status"),
+  useStatus: (): ReturnType<typeof useStatus> => ({ stage: "configuring", progresses: [] }),
 }));
 
-jest.mock("~/queries/software", () => ({
-  ...jest.requireActual("~/queries/software"),
-  useProduct: () => {
-    return {
-      products: [tumbleweed],
-      selectedProduct: tumbleweed,
-    };
-  },
+jest.mock("~/hooks/model/config/product", () => ({
+  ...jest.requireActual("~/hooks/model/config/product"),
+  useProductInfo: (): ReturnType<typeof useProductInfo> => tumbleweed,
 }));
 
 jest.mock("~/context/installerL10n", () => ({
@@ -135,8 +148,8 @@ describe("LuksActivationQuestion", () => {
         const skipButton = await screen.findByRole("button", { name: /Skip/ });
         await user.click(skipButton);
 
-        expect(question).toEqual(
-          expect.objectContaining({ password: "notSecret", answer: "skip" }),
+        expect(question.answer).toEqual(
+          expect.objectContaining({ value: "notSecret", action: "skip" }),
         );
         expect(answerFn).toHaveBeenCalledWith(question);
       });
@@ -151,8 +164,8 @@ describe("LuksActivationQuestion", () => {
         const decryptButton = await screen.findByRole("button", { name: /Decrypt/ });
         await user.click(decryptButton);
 
-        expect(question).toEqual(
-          expect.objectContaining({ password: "notSecret", answer: "decrypt" }),
+        expect(question.answer).toEqual(
+          expect.objectContaining({ value: "notSecret", action: "decrypt" }),
         );
         expect(answerFn).toHaveBeenCalledWith(question);
       });
@@ -165,8 +178,8 @@ describe("LuksActivationQuestion", () => {
         const passwordInput = await screen.findByLabelText("Encryption Password");
         await user.type(passwordInput, "notSecret{enter}");
 
-        expect(question).toEqual(
-          expect.objectContaining({ password: "notSecret", answer: "decrypt" }),
+        expect(question.answer).toEqual(
+          expect.objectContaining({ value: "notSecret", action: "decrypt" }),
         );
         expect(answerFn).toHaveBeenCalledWith(question);
       });

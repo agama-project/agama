@@ -20,14 +20,19 @@
  * find current contact information at www.suse.com.
  */
 
-import { model, StorageDevice } from "~/types/storage";
 import { sprintf } from "sprintf-js";
 import { deviceLabel } from "./utils";
+import { useConfigModel } from "~/hooks/model/storage/config-model";
+import configModel from "~/model/storage/config-model";
 import { _ } from "~/i18n";
+import type { ConfigModel } from "~/model/storage/config-model";
+import type { Storage } from "~/model/system";
 
-export type MdRaidHeaderProps = { raid: model.MdRaid; device: StorageDevice };
+export type MdRaidHeaderProps = { raid: ConfigModel.MdRaid; device: Storage.Device };
 
-const text = (raid: model.MdRaid): string => {
+const Text = (raid: ConfigModel.MdRaid): string => {
+  const config = useConfigModel();
+
   if (raid.filesystem) {
     // TRANSLATORS: %s will be replaced by a RAID name and its size - "md0 (20 GiB)"
     if (raid.filesystem.reuse) return _("Mount RAID %s");
@@ -35,9 +40,10 @@ const text = (raid: model.MdRaid): string => {
     return _("Format RAID %s");
   }
 
-  const { isBoot, isTargetDevice: hasPv } = raid;
-  const isRoot = !!raid.getPartition("/");
-  const hasFs = !!raid.getMountPaths().length;
+  const isBoot = configModel.boot.hasDevice(config, raid.name);
+  const hasPv = configModel.isTargetDevice(config, raid.name);
+  const isRoot = !!configModel.partitionable.findPartition(raid, "/");
+  const hasFs = !!configModel.partitionable.usedMountPaths(raid).length;
 
   if (isRoot) {
     if (hasPv) {
@@ -93,5 +99,5 @@ const text = (raid: model.MdRaid): string => {
 };
 
 export default function MdRaidHeader({ raid, device }: MdRaidHeaderProps) {
-  return sprintf(text(raid), deviceLabel(device, true));
+  return sprintf(Text(raid), deviceLabel(device, true));
 }

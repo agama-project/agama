@@ -18,8 +18,8 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use super::{settings::NetworkConnection, types::Device};
 use crate::http::{BaseHTTPClient, BaseHTTPClientError};
+use crate::network::{Device, NetworkConnection};
 use crate::utils::url::encode;
 
 #[derive(Debug, thiserror::Error)]

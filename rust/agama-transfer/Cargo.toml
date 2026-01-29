@@ -1,0 +1,11 @@
+[package]
+name = "agama-transfer"
+version = "0.1.0"
+rust-version.workspace = true
+edition.workspace = true
+
+[dependencies]
+curl = { version = "0.4.49", features = ["protocol-ftp"] }
+regex = "1.12.2"
+thiserror = "2.0.17"
+url = { version = "2.5.7", features = ["serde"] }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2025] SUSE LLC
+ * Copyright (c) [2022-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -32,8 +32,7 @@
  */
 
 import React, { useReducer } from "react";
-import { useHref, useLocation } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
+import { useHref, useLocation } from "react-router";
 import {
   Button,
   ButtonProps,
@@ -48,16 +47,16 @@ import {
 } from "@patternfly/react-core";
 import { Popup } from "~/components/core";
 import { Icon } from "~/components/layout";
-import { LocaleConfig } from "~/types/l10n";
-import { InstallationPhase } from "~/types/status";
 import { useInstallerL10n } from "~/context/installerL10n";
-import { keymapsQuery, useConfigMutation, useL10n } from "~/queries/l10n";
-import { useInstallerStatus } from "~/queries/status";
 import { localConnection } from "~/utils";
 import { _ } from "~/i18n";
 import supportedLanguages from "~/languages.json";
-import { PRODUCT, ROOT, L10N } from "~/routes/paths";
-import { useProduct } from "~/queries/software";
+import { ROOT, L10N } from "~/routes/paths";
+import { useProductInfo } from "~/hooks/model/config/product";
+import { useSystem } from "~/hooks/model/system";
+import { useStatus } from "~/hooks/model/status";
+import { patchConfig } from "~/api";
+import type { Keymap, Locale } from "~/model/system/l10n";
 
 /**
  * Props for select inputs
@@ -88,8 +87,9 @@ const LangaugeFormInput = ({ value, onChange }: SelectProps) => (
  * Not available in remote installations.
  */
 const KeyboardFormInput = ({ value, onChange }: SelectProps) => {
-  const { isPending, data: keymaps } = useQuery(keymapsQuery());
-  if (isPending) return;
+  const {
+    l10n: { keymaps },
+  } = useSystem();
 
   if (!localConnection()) {
     return (
@@ -109,7 +109,7 @@ const KeyboardFormInput = ({ value, onChange }: SelectProps) => {
         onChange={onChange}
       >
         {keymaps.map((keymap, index) => (
-          <FormSelectOption key={index} value={keymap.id} label={keymap.name} />
+          <FormSelectOption key={index} value={keymap.id} label={keymap.description} />
         ))}
       </FormSelect>
     </FormGroup>
@@ -551,11 +551,12 @@ export default function InstallerOptions({
   onClose,
 }: InstallerOptionsProps) {
   const location = useLocation();
-  const { locales } = useL10n();
-  const { mutate: updateSystemL10n } = useConfigMutation();
+  const {
+    l10n: { locales },
+  } = useSystem();
   const { language, keymap, changeLanguage, changeKeymap } = useInstallerL10n();
-  const { phase } = useInstallerStatus({ suspense: true });
-  const { selectedProduct } = useProduct({ suspense: true });
+  const { stage } = useStatus();
+  const selectedProduct = useProductInfo();
   const initialFormState = {
     language,
     keymap,
@@ -571,12 +572,10 @@ export default function InstallerOptions({
   // Skip rendering if any of the following conditions are met
   const skip =
     (variant === "keyboard" && !localConnection()) ||
-    phase === InstallationPhase.Install ||
+    stage === "installing" ||
     // FIXME: below condition could be a problem for a question appearing while
     // product progress
-    [ROOT.login, ROOT.installationProgress, ROOT.installationFinished, PRODUCT.progress].includes(
-      location.pathname,
-    );
+    [ROOT.login, ROOT.installationProgress, ROOT.installationFinished].includes(location.pathname);
 
   if (skip) return;
 
@@ -586,12 +585,12 @@ export default function InstallerOptions({
   const reuseSettings = () => {
     // FIXME: export and use languageToLocale from context/installerL10n
     const systemLocale = locales.find((l) => l.id.startsWith(formState.language.replace("-", "_")));
-    const systemL10n: Partial<LocaleConfig> = {};
+    const systemL10n: { locale?: Locale["id"]; keymap?: Keymap["id"] } = {};
     // FIXME: use a fallback if no system locale was found ?
-    if (variant !== "keyboard") systemL10n.locales = [systemLocale?.id];
+    if (variant !== "keyboard") systemL10n.locale = systemLocale?.id;
     if (variant !== "language" && localConnection()) systemL10n.keymap = formState.keymap;
 
-    updateSystemL10n(systemL10n);
+    patchConfig({ l10n: systemL10n });
   };
 
   const close = () => {
@@ -602,6 +601,13 @@ export default function InstallerOptions({
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     dispatchDialogAction({ type: "SET_BUSY" });
+
+    // TODO: send unique request for all; await no longer works here
+    // keep logical order, reuse first, the trigger second, to avoid the latest
+    // "eating" the first request.
+    // const request = {};
+    // ...
+    // if(something) request.someelse  = whatever
 
     try {
       if (variant !== "language" && localConnection()) {

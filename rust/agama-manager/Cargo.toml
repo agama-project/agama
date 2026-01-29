@@ -1,0 +1,35 @@
+[package]
+name = "agama-manager"
+version = "0.1.0"
+rust-version.workspace = true
+edition.workspace = true
+
+[dependencies]
+agama-bootloader = { path = "../agama-bootloader" }
+agama-files = { path = "../agama-files" }
+agama-hostname = { path = "../agama-hostname" }
+agama-iscsi = { path = "../agama-iscsi" }
+agama-l10n = { path = "../agama-l10n" }
+agama-network = { path = "../agama-network" }
+agama-security = { path = "../agama-security" }
+agama-software = { path = "../agama-software" }
+agama-storage = { path = "../agama-storage" }
+agama-utils = { path = "../agama-utils" }
+agama-users = { path = "../agama-users" }
+thiserror = "2.0.12"
+tokio = { version = "1.40.0", features = ["macros", "rt-multi-thread", "sync"] }
+async-trait = "0.1.83"
+zbus = { version = "5", default-features = false, features = ["tokio"] }
+serde_json = "1.0.140"
+tracing = "0.1.41"
+serde = { version = "1.0.228", features = ["derive"] }
+serde_with = "3.16.1"
+gettext-rs = { version = "0.7.7", features = ["gettext-system"] }
+merge = "0.2.0"
+
+[dev-dependencies]
+test-context = "0.4.1"
+tokio-test = "0.4.4"
+
+[lints.rust]
+unexpected_cfgs = { level = "warn", check-cfg = ['cfg(ci)'] }

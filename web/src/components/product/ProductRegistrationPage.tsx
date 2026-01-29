@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2023-2025] SUSE LLC
+ * Copyright (c) [2023-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   ActionGroup,
   Alert,
@@ -36,11 +36,11 @@ import {
   FormGroup,
   SelectList,
   SelectOption,
-  Title,
   TextInput,
   List,
   ListItem,
   Divider,
+  Title,
 } from "@patternfly/react-core";
 import {
   Link,
@@ -51,26 +51,34 @@ import {
 } from "~/components/core";
 import RegistrationExtension from "./RegistrationExtension";
 import RegistrationCodeInput from "./RegistrationCodeInput";
-import { RegistrationParams } from "~/types/software";
 import { HOSTNAME } from "~/routes/paths";
-import { useProduct, useRegistration, useRegisterMutation, useAddons } from "~/queries/software";
-import { useHostname } from "~/queries/system";
 import { isEmpty } from "radashi";
 import { mask } from "~/utils";
 import { sprintf } from "sprintf-js";
 import { _, N_ } from "~/i18n";
+import { useProposal } from "~/hooks/model/proposal";
+import { useSystem } from "~/hooks/model/system/software";
+import { useProduct, useProductInfo } from "~/hooks/model/config/product";
+import { useIssues } from "~/hooks/model/issue";
+import { patchConfig, putConfig } from "~/api";
+import type { Issue } from "~/model/issue";
+import type { Addon } from "~/model/config/product";
+import { useConfig } from "~/hooks/model/config";
 
 const FORM_ID = "productRegistration";
 const SERVER_LABEL = N_("Registration server");
 const EMAIL_LABEL = N_("Email");
 const SCC_SERVER_LABEL = N_("SUSE Customer Center (SCC)");
 const CUSTOM_SERVER_LABEL = N_("Custom");
+const EXAMPLE_URL = "https://example.com";
 
 const RegisteredProductSection = () => {
-  const { selectedProduct: product } = useProduct();
-  const registration = useRegistration();
+  const product = useProductInfo();
+  const { registration } = useSystem();
   const [showCode, setShowCode] = useState(false);
   const toggleCodeVisibility = () => setShowCode(!showCode);
+
+  if (!product) return null;
 
   return (
     <>
@@ -81,17 +89,16 @@ const RegisteredProductSection = () => {
         <DescriptionListGroup>
           {!isEmpty(registration.url) && (
             <>
-              {/* eslint-disable agama-i18n/string-literals */}
               <DescriptionListTerm>{_(SERVER_LABEL)}</DescriptionListTerm>
               <DescriptionListDescription>{registration.url}</DescriptionListDescription>
             </>
           )}
-          {!isEmpty(registration.key) && (
+          {!isEmpty(registration.code) && (
             <>
               <DescriptionListTerm>{_("Registration code")}</DescriptionListTerm>
               <DescriptionListDescription>
                 <Flex gap={{ default: "gapSm" }}>
-                  {showCode ? registration.key : mask(registration.key)}
+                  {showCode ? registration.code : mask(registration.code)}
                   <Button variant="link" isInline onClick={toggleCodeVisibility}>
                     {showCode ? _("Hide") : _("Show")}
                   </Button>
@@ -101,7 +108,6 @@ const RegisteredProductSection = () => {
           )}
           {!isEmpty(registration.email) && (
             <>
-              {/* eslint-disable agama-i18n/string-literals */}
               <DescriptionListTerm>{_(EMAIL_LABEL)}</DescriptionListTerm>
               <DescriptionListDescription>{registration.email}</DescriptionListDescription>
             </>
@@ -126,28 +132,21 @@ function RegistrationServer({
   onChange,
 }: RegistrationServerProps): React.ReactNode {
   return (
-    <FormGroup
-      fieldId={id}
-      /* eslint-disable agama-i18n/string-literals */
-      label={_(SERVER_LABEL)}
-    >
+    <FormGroup fieldId={id} label={_(SERVER_LABEL)}>
       <Select
         id={"server"}
         value={value}
-        /* eslint-disable agama-i18n/string-literals */
         label={value === "default" ? _(SCC_SERVER_LABEL) : _(CUSTOM_SERVER_LABEL)}
         onChange={(v: ServerOption) => onChange(v)}
       >
         <SelectList aria-label={_("Server options")}>
           <SelectOption value="default" description={_("Register using SUSE server")}>
-            {/* eslint-disable agama-i18n/string-literals */}
             {_(SCC_SERVER_LABEL)}
           </SelectOption>
           <SelectOption
             value="custom"
             description={_("Register using a custom registration server")}
           >
-            {/* eslint-disable agama-i18n/string-literals */}
             {_(CUSTOM_SERVER_LABEL)}
           </SelectOption>
         </SelectList>
@@ -166,7 +165,8 @@ function RegistrationUrl({ id = "url", value, onChange }: RegistrationUrlProps):
   return (
     <FormGroup fieldId={id} label={_("Server URL")}>
       <TextInput id={id} value={value} onChange={(_, v) => onChange(v)} />
-      <SubtleContent>{_("Example: https://myserver.com")}</SubtleContent>
+      {/* TRANSLATORS: %s is replaced by an example URL like https://example.com */}
+      <SubtleContent>{sprintf(_("Example: %s"), EXAMPLE_URL)}</SubtleContent>
     </FormGroup>
   );
 }
@@ -269,7 +269,6 @@ function RegistrationEmail({
 }
 
 const RegistrationFormSection = () => {
-  const { mutate: register } = useRegisterMutation();
   const [server, setServer] = useState<ServerOption>("default");
   const [url, setUrl] = useState("");
   const [key, setKey] = useState("");
@@ -278,12 +277,13 @@ const RegistrationFormSection = () => {
   const [provideEmail, setProvideEmail] = useState(false);
   const [requestError, setRequestError] = useState<string | null>(null);
   const [errors, setErrors] = useState<string[]>([]);
-  const [loading, setLoading] = useState(false);
-  const registration = useRegistration();
+  const [loading] = useState(false);
+  const config = useConfig();
+  const product = useProduct();
 
   useEffect(() => {
-    if (registration) {
-      const { key, email, url } = registration;
+    if (product) {
+      const { registrationCode: key, registrationEmail: email, registrationUrl: url } = product;
       const server = isEmpty(url) ? "default" : "custom";
       setServer(server);
       setKey(key);
@@ -292,7 +292,7 @@ const RegistrationFormSection = () => {
       setProvideKey(!isEmpty(key));
       setProvideEmail(!isEmpty(email));
     }
-  }, [registration]);
+  }, [product]);
 
   const changeServer = (value: ServerOption) => {
     if (value !== "default") setProvideKey(!isEmpty(key));
@@ -307,11 +307,6 @@ const RegistrationFormSection = () => {
   const changeProvideEmail = (value: boolean) => {
     if (!value) setEmail("");
     setProvideEmail(value);
-  };
-
-  // FIXME: use the right type for AxiosResponse
-  const onRegisterError = ({ response }) => {
-    setRequestError(response.data.message);
   };
 
   const submit = async (e: React.SyntheticEvent) => {
@@ -329,16 +324,16 @@ const RegistrationFormSection = () => {
 
     if (!isEmpty(errors)) return;
 
-    const data: RegistrationParams = {
-      url: isUrlRequired ? url : "",
-      key: isKeyRequired ? key : "",
-      email: provideEmail ? email : "",
-    };
-
-    setLoading(true);
-
-    // @ts-expect-error
-    register(data, { onError: onRegisterError, onSettled: () => setLoading(false) });
+    putConfig({
+      ...config,
+      product: {
+        id: product.id,
+        mode: product.mode,
+        registrationCode: isKeyRequired ? key : undefined,
+        registrationEmail: provideEmail ? email : undefined,
+        registrationUrl: isUrlRequired ? url : undefined,
+      },
+    });
   };
 
   // TODO: adjust texts based of registration "type", mandatory or optional
@@ -386,7 +381,8 @@ const RegistrationFormSection = () => {
 };
 
 const HostnameAlert = () => {
-  const { transient: transientHostname, static: staticHostname } = useHostname();
+  const { hostname: hostnameProposal } = useProposal();
+  const { hostname: transientHostname, static: staticHostname } = hostnameProposal;
   const hostname = isEmpty(staticHostname) ? transientHostname : staticHostname;
 
   // TRANSLATORS: %s will be replaced with the hostname value
@@ -404,23 +400,56 @@ const HostnameAlert = () => {
   );
 
   return (
-    <Alert title={title} variant="custom" isPlain>
+    <Alert title={title} variant="custom">
       {descStart} {link} {descEnd}
     </Alert>
   );
 };
 
 const Extensions = () => {
-  const extensions = useAddons();
-  if (extensions.length === 0) return null;
+  const { registration } = useSystem();
+  const { product } = useConfig();
+  const extensions = registration?.addons;
+  const issues = useIssues("software");
 
-  const extensionComponents = extensions.map((ext) => (
-    <RegistrationExtension
-      key={`extension-${ext.id}-${ext.version}`}
-      extension={ext}
-      isUnique={extensions.filter((e) => e.id === ext.id).length === 1}
-    />
-  ));
+  const registrationCallback = useCallback(
+    (addon: Addon) => {
+      const updatedAddons = [addon];
+
+      const addons: Addon[] = product?.addons || [];
+      for (const a of addons) {
+        if (a.id !== addon.id) {
+          updatedAddons.push(addon);
+        }
+      }
+
+      const updatedProduct = {
+        ...product,
+        addons: updatedAddons,
+      };
+
+      patchConfig({ product: updatedProduct });
+    },
+    [product],
+  );
+
+  if (!extensions || extensions.length === 0) return null;
+
+  const extensionComponents = extensions.map((ext) => {
+    const issue = issues.find((i) => i.class === `addon_registration_failed[${ext.id}]`);
+    const config = (product?.addons || []).find((c) => c.id === ext.id);
+
+    return (
+      <RegistrationExtension
+        key={`extension-${ext.id}-${ext.version}`}
+        extension={ext}
+        config={config}
+        issue={issue}
+        isUnique={extensions.filter((e) => e.id === ext.id).length === 1}
+        registrationCallback={registrationCallback}
+      />
+    );
+  });
 
   return (
     <>
@@ -435,23 +464,26 @@ const Extensions = () => {
   );
 };
 
-export default function ProductRegistrationPage() {
-  const { selectedProduct: product } = useProduct();
-  const { registered } = useRegistration();
+const RegistrationIssueAlert = ({ issue }: { issue: Issue }) => {
+  return (
+    <Alert variant="warning" title={issue.description}>
+      {issue.details && <p>{issue.details}</p>}
+    </Alert>
+  );
+};
 
-  // TODO: render something meaningful instead? "Product not registrable"?
-  if (!product.registration) return;
+export default function ProductRegistrationPage() {
+  const { registration } = useSystem();
+  const issues = useIssues("software");
+  const registrationIssue = issues.find((i) => i.class === "system_registration_failed");
 
   return (
-    <Page>
-      <Page.Header>
-        <Content component="h2">{_("Registration")}</Content>
-      </Page.Header>
-
+    <Page breadcrumbs={[{ label: _("Registration") }]} progress={{ scope: "software" }}>
       <Page.Content>
-        {!registered && <HostnameAlert />}
-        {!registered ? <RegistrationFormSection /> : <RegisteredProductSection />}
-        {registered && <Extensions />}
+        {!registration && <HostnameAlert />}
+        {registrationIssue && <RegistrationIssueAlert issue={registrationIssue} />}
+        {!registration ? <RegistrationFormSection /> : <RegisteredProductSection />}
+        {registration && <Extensions />}
       </Page.Content>
     </Page>
   );

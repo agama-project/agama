@@ -1,4 +1,175 @@
 -------------------------------------------------------------------
+Wed Jan 28 17:07:32 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Import the security settings correctly (bsc#1257290).
+
+-------------------------------------------------------------------
+Wed Jan 28 16:14:52 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Use the first product mode if none is given (related to jsc#PED-14307).
+
+-------------------------------------------------------------------
+Wed Jan 28 12:59:50 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Add agama-iscsi service and integrate iSCSI into the new HTTP API
+  (gh#agama-project/agama#3064).
+
+-------------------------------------------------------------------
+Wed Jan 28 12:43:05 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Fix the handling of HTTP actions (gh#agama-project/agama#3088).
+- Add more details when a request fails because there are pending issues
+  or the installer is busy.
+- Include in the logs markers for the start and the end of the
+  installation.
+
+-------------------------------------------------------------------
+Wed Jan 28 10:59:29 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Add support to define product modes (jsc#PED-14307).
+
+-------------------------------------------------------------------
+Wed Jan 28 09:59:43 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- Support "gpgFingerprints" and "allowUnsigned" keys in
+  "software/extraRepositories" section of profile
+  (gh#agama-project/agama#3087)
+
+-------------------------------------------------------------------
+Tue Jan 27 18:35:59 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+
+- Enable the SSH service and open the SSH port in firewall when
+  an SSH key for the root user is set (bsc#1257212)
+
+-------------------------------------------------------------------
+Fri Jan 23 15:36:12 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+
+- Fixed removing automatically selected recommended patterns
+  (gh#agama-project/agama#3072)
+
+-------------------------------------------------------------------
+Fri Jan 23 14:10:16 UTC 2026 - Martin Vidner <mvidner@suse.com>
+
+- Follow suit, do not package /usr/share/locale itself
+  (gh#agama-project/agama#3071).
+
+-------------------------------------------------------------------
+Fri Jan 23 13:47:29 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- Copy the SCC credentials and the libzypp services
+  (gh#agama-project/agama#3053).
+
+-------------------------------------------------------------------
+Fri Jan 23 09:53:37 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Use the right architecture when regisrering a system in ppc64le
+  (gh#agama-project/agama#3068).
+
+-------------------------------------------------------------------
+Thu Jan 22 16:16:55 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Consider inst.register_url as part of the "extended configuration"
+  (bsc#1256907).
+- Try to register the system even if only a registration URL was
+  specified (without a code).
+- When the registration fails, retry it on the next SetConfig call.
+
+-------------------------------------------------------------------
+Wed Jan 21 11:07:34 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Allow importing SSL certificates from registration servers
+  (gh#agama-project/agama#3055).
+
+-------------------------------------------------------------------
+Wed Jan 21 10:59:15 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- Fix enabling NetworkManager service in the target system
+  (gh#agama-project/agama#3056).
+
+-------------------------------------------------------------------
+Mon Jan 19 20:31:26 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- Fix inst.finish=stop option (gh#agama-project/agama#3047)
+
+-------------------------------------------------------------------
+Fri Jan 16 15:01:32 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- Fix unattended installation (bsc#1256898).
+- Add first user to wheel group (gh#agama-project/agama#3030).
+- Implement using inst.install_url instead of Product repositories
+  (gh#agama-project/agama#3030).
+
+-------------------------------------------------------------------
+Wed Jan 14 23:27:16 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Implement support for users and authentication configuration.
+- Initialize and copy the network configuration to the target
+  system.
+- Execute post-installation scripts.
+
+-------------------------------------------------------------------
+Fri Jan  9 14:43:59 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 19.pre
+- Introduce the version 2 of the HTTP API (gh#agama-project/agama#2997).
+- Add new services, ported from Ruby:
+  - hostname
+  - files
+  - manager
+  - storage
+- Replace the old API with the new one.
+- Adapt most parts of the CLI to the new HTTP API.
+- Missing pieces:
+  - Users and authentication handling.
+  - iSCSI, DASD, zFCP.
+  - Network proxy.
+  - IPMI.
+  - Use self-signed certificates for registration.
+
+-------------------------------------------------------------------
+Wed Nov 19 14:49:59 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Do not build on 32bit arches (like i586) and PPC64-BE,
+  the dependant libsuseconnect does not support these (bsc#1251846)
+
+-------------------------------------------------------------------
+Tue Nov 18 08:47:11 UTC 2025 - Michal Filka <mfilka@suse.com>
+
+- Fixed passing arguments when "agama config generate" with an
+  AutoYast profile.
+- Removed unhandled unwrap, reorganized validation result reporting
+  (gh#agama-project/agama#2893).
+
+-------------------------------------------------------------------
+Wed Nov 12 15:42:27 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 18
+
+-------------------------------------------------------------------
+Wed Nov 12 13:14:21 UTC 2025 - Michal Filka <mfilka@suse.com>
+
+- Fixed output of "agama config generate"
+
+-------------------------------------------------------------------
+Mon Nov 10 14:35:25 UTC 2025 - Michal Filka <mfilka@suse.com>
+
+- Created ProfileClient based on HTTP API base client for profile
+  validation requests and refactored / cleaned relevant code
+  (gh#agama-project/agaam#2778).
+
+-------------------------------------------------------------------
+Tue Oct 14 10:36:49 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Do not log errors when retrieving NetworkManager secrets to prevent
+  leaking them (bsc#1251898).
+
+-------------------------------------------------------------------
+Tue Oct  7 09:55:46 UTC 2025 - Clemens Famulla-Conrad <cfamullaconrad@suse.com>
+
+- Add IpConfig.link_local4 to specify ZeroConf/AutoIP behavior.
+  (gh#agama-project/agama#2792).
+
+-------------------------------------------------------------------
 Wed Oct  1 13:45:23 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
 
 - Autoinstallation schema improvements (gh#agama-project/agama#2773):

@@ -27,7 +27,7 @@ import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
 import { RowActions } from "~/components/core";
 import { EditNodeForm, LoginForm, NodeStartupOptions } from "~/components/storage/iscsi";
-import { login, logout, setStartup, deleteNode } from "~/api/storage/iscsi";
+import { login, logout, setStartup, deleteNode } from "~/model/storage/iscsi";
 
 export default function NodesPresenter({ nodes }) {
   const [currentNode, setCurrentNode] = useState();
@@ -65,8 +65,13 @@ export default function NodesPresenter({ nodes }) {
     if (!node.connected) return _("Disconnected");
 
     const startup = Object.values(NodeStartupOptions).find((o) => o.value === node.startup);
-    // TRANSLATORS: iSCSI connection status, %s is replaced by node label
-    return sprintf(_("Connected (%s)"), startup.label);
+    return sprintf(
+      // TRANSLATORS: iSCSI connection status, %s is replaced by translated
+      // start mode ("Manual", "Automatic" or "On boot")
+      _("Connected (%s)"),
+      /* eslint-disable agama-i18n/string-literals */
+      _(startup.label),
+    );
   };
 
   const nodeActions = (node) => {

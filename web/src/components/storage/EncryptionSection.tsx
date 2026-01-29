@@ -21,15 +21,17 @@
  */
 
 import React from "react";
-import { Card, CardBody, Content } from "@patternfly/react-core";
-import { Link, Page } from "~/components/core";
-import { useEncryption } from "~/queries/storage/config-model";
-import { apiModel } from "~/api/storage/types";
+import { Content, Flex, Split, Stack } from "@patternfly/react-core";
+import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
+import { Link } from "~/components/core";
+import Icon from "~/components/layout/Icon";
+import { useConfigModel } from "~/hooks/model/storage/config-model";
 import { STORAGE } from "~/routes/paths";
 import { _ } from "~/i18n";
 import PasswordCheck from "~/components/users/PasswordCheck";
+import type { ConfigModel } from "~/model/storage/config-model";
 
-function encryptionLabel(method?: apiModel.EncryptionMethod) {
+function encryptionLabel(method?: ConfigModel.EncryptionMethod) {
   if (!method) return _("Encryption is disabled");
   if (method === "tpmFde") return _("Encryption is enabled using TPM unlocking");
 
@@ -37,26 +39,28 @@ function encryptionLabel(method?: apiModel.EncryptionMethod) {
 }
 
 export default function EncryptionSection() {
-  const { encryption } = useEncryption();
+  const configModel = useConfigModel();
+  const encryption = configModel?.encryption;
   const method = encryption?.method;
   const password = encryption?.password;
 
   return (
-    <Page.Section
-      title={_("Encryption")}
-      description={_(
-        "Protection for the information stored at \
-the new file systems, including data, programs, and system files.",
-      )}
-      pfCardBodyProps={{ isFilled: true }}
-      actions={<Link to={STORAGE.editEncryption}>{_("Edit")}</Link>}
-    >
-      <Card isCompact isPlain>
-        <CardBody>
-          <Content component="p">{encryptionLabel(method)}</Content>
-          {password && <PasswordCheck password={password} />}
-        </CardBody>
-      </Card>
-    </Page.Section>
+    <Stack hasGutter>
+      <div className={textStyles.textColorPlaceholder}>
+        {_(
+          "Protection for the information stored at " +
+            "the new file systems, including data, programs, and system files.",
+        )}
+      </div>
+      <Content isEditorial>{encryptionLabel(method)}</Content>
+      {password && <PasswordCheck password={password} />}
+      <Split hasGutter>
+        <Link to={STORAGE.editEncryption} keepQuery variant="plain">
+          <Flex alignItems={{ default: "alignItemsCenter" }} gap={{ default: "gapSm" }}>
+            <Icon name="edit_square" /> {_("Change")}
+          </Flex>
+        </Link>
+      </Split>
+    </Stack>
   );
 }

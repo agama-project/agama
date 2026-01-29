@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2025] SUSE LLC
+ * Copyright (c) [2025-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -26,23 +26,22 @@ import {
   Alert,
   Button,
   Checkbox,
-  Content,
   Form,
   FormGroup,
   TextInput,
 } from "@patternfly/react-core";
 import { NestedContent, Page } from "~/components/core";
-import { useProduct, useRegistration } from "~/queries/software";
-import { useHostname, useHostnameMutation } from "~/queries/system";
 import { isEmpty } from "radashi";
 import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
+import { useProposal } from "~/hooks/model/proposal";
+import { useSystem } from "~/hooks/model/system";
+import { patchConfig } from "~/api";
 
 export default function HostnamePage() {
-  const registration = useRegistration();
-  const { selectedProduct: product } = useProduct();
-  const { transient: transientHostname, static: staticHostname } = useHostname();
-  const { mutateAsync: updateHostname } = useHostnameMutation();
+  const { software } = useSystem();
+  const { hostname: proposal } = useProposal();
+  const { hostname: transientHostname, static: staticHostname } = proposal;
   const hasTransientHostname = isEmpty(staticHostname);
   const [success, setSuccess] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -64,7 +63,7 @@ export default function HostnamePage() {
       return;
     }
 
-    updateHostname({ static: settingHostname ? hostname : "" })
+    patchConfig({ hostname: { static: settingHostname ? hostname : "" } })
       .then(() => setSuccess(_("Hostname successfully updated")))
       .catch(() => setRequestError(_("Hostname could not be updated")));
   };
@@ -75,20 +74,15 @@ export default function HostnamePage() {
   const transientHostnameAlertTitle = sprintf(_("Using transient hostname: %s"), transientHostname);
 
   return (
-    <Page>
-      <Page.Header>
-        <Content component="h2">{_("Hostname")}</Content>
-      </Page.Header>
-
+    <Page breadcrumbs={[{ label: _("Hostname") }]}>
       <Page.Content>
-        {product.registration && registration.registered && (
+        {software?.registration && (
           <Alert title={_("Product is already registered")} variant="info">
             {_(
               "Updating the hostname now or later will not change the currently registered hostname.",
             )}
           </Alert>
         )}
-
         {hasTransientHostname && (
           <Alert variant="custom" title={transientHostnameAlertTitle}>
             {_(
@@ -96,7 +90,6 @@ export default function HostnamePage() {
             )}
           </Alert>
         )}
-
         <Form id="hostnameForm" onSubmit={submit}>
           {success && <Alert variant="success" isInline title={success} />}
           {requestError && <Alert variant="warning" isInline title={requestError} />}

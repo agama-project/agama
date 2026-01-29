@@ -23,17 +23,17 @@
 import React from "react";
 import { Alert, Button, Content, Stack, StackItem } from "@patternfly/react-core";
 import { _ } from "~/i18n";
-import { useConfigModel } from "~/queries/storage/config-model";
-import { useResetConfigMutation } from "~/queries/storage";
+import { useConfigModel } from "~/hooks/model/storage/config-model";
+import { useReset } from "~/hooks/model/config/storage";
 
 /**
  * Info about unsupported model.
  */
 export default function UnsupportedModelInfo(): React.ReactNode {
-  const model = useConfigModel({ suspense: true });
-  const { mutate: reset } = useResetConfigMutation();
+  const config = useConfigModel();
+  const reset = useReset();
 
-  if (model) return null;
+  if (config) return null;
 
   return (
     <Alert variant="info" title={_("Unable to modify the settings")}>

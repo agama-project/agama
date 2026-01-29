@@ -1,0 +1,117 @@
+{
+  "$comment": "Software configuration",
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "$id": "https://github.com/agama-project/agama/blob/master/rust/agama-lib/share/software.schema.json",
+  "title": "Config",
+  "description": "Software configuration.",
+  "type": "object",
+  "properties": {
+    "patterns": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/patternsArray"
+        },
+        {
+          "$ref": "#/$defs/patternsObject"
+        }
+      ]
+    },
+    "packages": {
+      "description": "List of packages to install",
+      "type": "array",
+      "items": {
+        "type": "string",
+        "examples": [
+          "vim"
+        ]
+      }
+    },
+    "onlyRequired": {
+      "description": "Flag if only minimal hard dependencies should be used in solver",
+      "type": "boolean"
+    },
+    "extraRepositories": {
+      "description": "List of user specified repositories that will be used on top of default ones",
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/repository"
+      }
+    }
+  },
+  "$defs": {
+    "patternsArray": {
+      "description": "List of user-selected patterns to install",
+      "type": "array",
+      "items": {
+        "type": "string",
+        "examples": [
+          "minimal_base"
+        ]
+      }
+    },
+    "patternsObject": {
+      "description": "Modifications for the list of user-selected patterns to install",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "add": {
+          "description": "List of user-selected patterns to add to the list",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "remove": {
+          "description": "List of user-selected patterns to remove from the list",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "repository": {
+      "description": "Packages repository",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "alias": {
+          "description": "alias used for repository. Acting as identifier",
+          "type": "string"
+        },
+        "url": {
+          "description": "URL pointing to repository",
+          "type": "string"
+        },
+        "priority": {
+          "description": "Repository priority",
+          "type": "integer"
+        },
+        "name": {
+          "description": "User visible name. Defaults to alias",
+          "type": "string"
+        },
+        "productDir": {
+          "description": "product directory on multi repo DVD. Usually not needed",
+          "type": "string"
+        },
+        "enabled": {
+          "description": "If repository should be enabled. Defaults to true. Useful when adding additional repo that should not be immediately use.",
+          "type": "boolean"
+        },
+        "allowUnsigned": {
+          "description": "If unsigned repositories are allowed. Mainly useful for repositories that is hand crafted without GPG signature.",
+          "type": "boolean"
+        },
+        "gpgFingerprints": {
+          "description": "List of GPG fingerprints that is accepted for this repository. Useful for own repositories with proper GPG signature.",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[0-9a-fA-F ]+"
+          }
+        }
+      }
+    }
+  }
+}

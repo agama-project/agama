@@ -30,9 +30,8 @@ import {
   Stack,
 } from "@patternfly/react-core";
 import Link from "~/components/core/Link";
-import { useAllIssues } from "~/queries/issues";
+import { useIssues } from "~/hooks/model/issue";
 import { useInstallerStatus } from "~/queries/status";
-import { IssueSeverity } from "~/types/issues";
 import { InstallationPhase } from "~/types/status";
 import { _ } from "~/i18n";
 
@@ -40,9 +39,8 @@ import { _ } from "~/i18n";
  * Drawer for displaying installation issues
  */
 const IssuesDrawer = forwardRef(({ onClose }: { onClose: () => void }, ref) => {
-  const issues = useAllIssues().filter((i) => i.severity === IssueSeverity.Error);
+  const issues = useIssues();
   const { phase } = useInstallerStatus({ suspense: true });
-  const { issues: issuesByScope } = issues;
 
   // FIXME: share below headers with navigation menu
   const scopeHeaders = {
@@ -50,9 +48,11 @@ const IssuesDrawer = forwardRef(({ onClose }: { onClose: () => void }, ref) => {
     storage: _("Storage"),
     software: _("Software"),
     product: _("Registration"),
+    localization: _("Localization"),
+    iscsi: _("iSCSI"),
   };
 
-  if (issues.isEmpty || phase === InstallationPhase.Install) return;
+  if (issues.length === 0 || phase === InstallationPhase.Install) return;
 
   return (
     <NotificationDrawer ref={ref}>
@@ -64,8 +64,9 @@ const IssuesDrawer = forwardRef(({ onClose }: { onClose: () => void }, ref) => {
               "Before installing, you have to make some decisions. Click on each section to review the settings.",
             )}
           </p>
-          {Object.entries(issuesByScope).map(([scope, issues], idx) => {
-            if (issues.length === 0) return null;
+          {Object.keys(scopeHeaders).map((scope, idx) => {
+            const scopeIssues = issues.filter((i) => i.scope === scope);
+            if (scopeIssues.length === 0) return null;
             // FIXME: address this better or use the /product(s)? namespace instead of
             // /registration.
             const section = scope === "product" ? "registration" : scope;
@@ -80,14 +81,11 @@ const IssuesDrawer = forwardRef(({ onClose }: { onClose: () => void }, ref) => {
                     </Link>
                   </h4>
                   <ul>
-                    {issues.map((issue, subIdx) => {
-                      const variant = issue.severity === IssueSeverity.Error ? "warning" : "info";
-
+                    {scopeIssues.map((issue, subIdx) => {
                       return (
                         <li key={subIdx}>
                           <HelperText>
-                            {/** @ts-expect-error TS complain about variant, let's fix it after PF6 migration */}
-                            <HelperTextItem variant={variant} screenReaderText="">
+                            <HelperTextItem variant={"warning"} screenReaderText="">
                               {issue.description}
                             </HelperTextItem>
                           </HelperText>

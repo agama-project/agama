@@ -20,14 +20,15 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
+import React, { LegacyRef } from "react";
 import { screen, within } from "@testing-library/react";
-import { plainRender } from "~/test-utils";
-import MenuButton, { MenuButtonItem } from "~/components/core/MenuButton";
+import { installerRender, mockNavigateFn } from "~/test-utils";
+import MenuButton, { CustomToggleProps, MenuButtonItem } from "~/components/core/MenuButton";
+import { _ } from "~/i18n";
 
 it("toggles the menu state on click", async () => {
-  const { user } = plainRender(
-    <MenuButton menuProps={{ "aria-label": "test menu" }}>{"test"}</MenuButton>,
+  const { user } = installerRender(
+    <MenuButton menuProps={{ "aria-label": _("test menu") }}>{"test"}</MenuButton>,
   );
 
   const button = screen.getByRole("button", { name: "test" });
@@ -39,8 +40,8 @@ it("toggles the menu state on click", async () => {
 });
 
 it("toggles the menu state on [Enter]", async () => {
-  const { user } = plainRender(
-    <MenuButton menuProps={{ "aria-label": "test menu" }}>{"test"}</MenuButton>,
+  const { user } = installerRender(
+    <MenuButton menuProps={{ "aria-label": _("test menu") }}>{"test"}</MenuButton>,
   );
 
   const button = screen.getByRole("button", { name: "test" });
@@ -54,8 +55,8 @@ it("toggles the menu state on [Enter]", async () => {
 });
 
 it("closes menu on [Escape]", async () => {
-  const { user } = plainRender(
-    <MenuButton menuProps={{ "aria-label": "test menu" }}>{"test"}</MenuButton>,
+  const { user } = installerRender(
+    <MenuButton menuProps={{ "aria-label": _("test menu") }}>{"test"}</MenuButton>,
   );
 
   const button = screen.getByRole("button", { name: "test" });
@@ -74,8 +75,8 @@ it("closes menu on [Escape]", async () => {
 // `toggle` receives a SyntheticEvent, whereas `onOpenChange` expects a boolean
 // representing the next `isOpen` state.
 it("does not open the menu on [Tab] when focused", async () => {
-  const { user } = plainRender(
-    <MenuButton menuProps={{ "aria-label": "test menu" }}>{"test"}</MenuButton>,
+  const { user } = installerRender(
+    <MenuButton menuProps={{ "aria-label": _("test menu") }}>{"test"}</MenuButton>,
   );
 
   const button = screen.getByRole("button", { name: "test" });
@@ -88,7 +89,7 @@ it("does not open the menu on [Tab] when focused", async () => {
 });
 
 it("renders all the given menu items", async () => {
-  const { user } = plainRender(
+  const { user } = installerRender(
     <MenuButton
       items={[
         <MenuButtonItem key="item1">{"item 1"}</MenuButtonItem>,
@@ -109,7 +110,7 @@ it("renders all the given menu items", async () => {
 });
 
 it("allows passing props to the toggle", () => {
-  plainRender(
+  installerRender(
     <MenuButton
       toggleProps={{ className: "inline-toggle" }}
       items={[
@@ -126,11 +127,14 @@ it("allows passing props to the toggle", () => {
 });
 
 it("allows to set accessible menu name via aria-labelledby", async () => {
-  const { user } = plainRender(
+  const { user } = installerRender(
     <>
       <span id="menu-label">Accessible menu</span>
       <MenuButton
-        menuProps={{ "aria-label": "test menu", "aria-labelledby": "menu-label" }}
+        menuProps={{
+          "aria-label": _("test menu"),
+          "aria-labelledby": "menu-label",
+        }}
         items={[
           <MenuButtonItem
             key="item1"
@@ -154,9 +158,9 @@ it("allows to set accessible menu name via aria-labelledby", async () => {
 });
 
 it("allows to drill in", async () => {
-  const { user } = plainRender(
+  const { user } = installerRender(
     <MenuButton
-      menuProps={{ "aria-label": "test menu" }}
+      menuProps={{ "aria-label": _("test menu") }}
       items={[
         <MenuButtonItem
           key="item1"
@@ -185,9 +189,9 @@ it("allows to drill in", async () => {
 });
 
 it("allows to drill out", async () => {
-  const { user } = plainRender(
+  const { user } = installerRender(
     <MenuButton
-      menuProps={{ "aria-label": "test menu" }}
+      menuProps={{ "aria-label": _("test menu") }}
       items={[
         <MenuButtonItem
           key="item1"
@@ -195,7 +199,7 @@ it("allows to drill out", async () => {
             <MenuButtonItem key="item11">{"item 1-1"}</MenuButtonItem>,
             <MenuButtonItem key="item12">{"item 1-2"}</MenuButtonItem>,
           ]}
-          upProps={{ label: "return" }}
+          upProps={{ label: _("return") }}
         >
           item 1
         </MenuButtonItem>,
@@ -217,7 +221,7 @@ it("allows to drill out", async () => {
 
 it("calls the item action on click", async () => {
   const action = jest.fn();
-  const { user } = plainRender(
+  const { user } = installerRender(
     <MenuButton
       items={[
         <MenuButtonItem key="item1">{"item 1"}</MenuButtonItem>,
@@ -236,4 +240,64 @@ it("calls the item action on click", async () => {
   const item2 = within(menu).getByRole("menuitem", { name: "item 2" });
   await user.click(item2);
   expect(action).toHaveBeenCalled();
+});
+
+it("allows defining items as link preserving query string", async () => {
+  const action = jest.fn();
+  const { user } = installerRender(
+    <MenuButton
+      items={[
+        <MenuButtonItem key="item2" to="somewhere" keepQuery onClick={action}>
+          item 2
+        </MenuButtonItem>,
+      ]}
+    >
+      test
+    </MenuButton>,
+  );
+
+  const button = screen.getByRole("button", { name: "test" });
+  await user.click(button);
+  const menu = screen.getByRole("menu");
+  const item2 = within(menu).getByRole("menuitem", { name: "item 2" });
+  await user.click(item2);
+  expect(mockNavigateFn).toHaveBeenCalledWith({ pathname: "somewhere", search: expect.anything() });
+});
+
+it("allows receiving a fully custom toggle", async () => {
+  const LinkToggle = React.forwardRef(
+    (props: CustomToggleProps, ref: LegacyRef<HTMLAnchorElement>) => (
+      <a ref={ref} href="#" onClick={props.onClick}>
+        Link as a custom toggle
+      </a>
+    ),
+  );
+
+  const { user } = installerRender(
+    <MenuButton
+      menuProps={{ "aria-label": _("test menu") }}
+      customToggle={<LinkToggle />}
+      items={[
+        <MenuButtonItem
+          key="item1"
+          items={[
+            <MenuButtonItem key="item11">{"item 1-1"}</MenuButtonItem>,
+            <MenuButtonItem key="item12">{"item 1-2"}</MenuButtonItem>,
+          ]}
+        >
+          item 1
+        </MenuButtonItem>,
+      ]}
+    />,
+  );
+  const toggle = screen.getByRole("link", { name: "Link as a custom toggle" });
+  await user.click(toggle);
+  const menu = screen.getByRole("menu", { name: "test menu" });
+  const item1 = within(menu).getByRole("menuitem", { name: "item 1" });
+  // Jsdom does not report correct styles, see https://github.com/jsdom/jsdom/issues/2986.
+  // const item11 = within(menu).getByRole("menuitem", { name: "item 1-1" });
+  // expect(item11).not.toBeVisible();
+  expect(item1).toHaveAttribute("aria-current", "false");
+  await user.click(item1);
+  expect(item1).toHaveAttribute("aria-current", "true");
 });

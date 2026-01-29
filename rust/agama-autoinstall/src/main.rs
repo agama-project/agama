@@ -18,17 +18,17 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use std::str::FromStr;
+use std::{process::exit, str::FromStr, time::Duration};
 
-use agama_autoinstall::{ConfigAutoLoader, KernelCmdline, ScriptsRunner};
-use agama_lib::{
-    auth::AuthToken,
-    http::BaseHTTPClient,
-    manager::{FinishMethod, ManagerHTTPClient},
+use agama_autoinstall::{ConfigAutoLoader, ScriptsRunner};
+use agama_lib::{auth::AuthToken, http::BaseHTTPClient, manager::ManagerHTTPClient};
+use agama_utils::{
+    api::{status::Stage, FinishMethod},
+    kernel_cmdline::KernelCmdline,
 };
 use anyhow::anyhow;
+use tokio::time::sleep;
 
-const CMDLINE_FILE: &str = "/run/agama/cmdline.d/agama.conf";
 const API_URL: &str = "http://localhost/api";
 
 pub fn build_base_client() -> anyhow::Result<BaseHTTPClient> {
@@ -43,7 +43,7 @@ pub fn insecure_from(cmdline: &KernelCmdline, key: &str) -> bool {
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
-    let args = KernelCmdline::parse_file(CMDLINE_FILE)?;
+    let args = KernelCmdline::parse()?;
     let http = build_base_client()?;
     let manager_client = ManagerHTTPClient::new(http.clone());
 
@@ -72,7 +72,29 @@ async fn main() -> anyhow::Result<()> {
         }
     }
 
+    // wait till config is properly set.
+    loop {
+        sleep(Duration::from_secs(1)).await;
+        let status = manager_client.status().await?;
+        if status.progresses.is_empty() {
+            break;
+        }
+    }
+
     manager_client.install().await?;
+
+    // wait till install is done.
+    loop {
+        sleep(Duration::from_secs(1)).await;
+        let status = manager_client.status().await?;
+        if status.stage == Stage::Finished {
+            break;
+        }
+        if status.stage == Stage::Failed {
+            eprintln!("Installation failed");
+            exit(1);
+        }
+    }
 
     let method = args
         .get("inst.finish")

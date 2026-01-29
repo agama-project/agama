@@ -24,7 +24,7 @@
 //! with nested hash maps (see [NestedHash] and [OwnedNestedHash]).
 use super::{error::NmError, model::*};
 use crate::model::*;
-use crate::types::{BondMode, SSID};
+use crate::types::*;
 use agama_utils::dbus::{
     get_optional_property, get_property, to_owned_hash, NestedHash, OwnedNestedHash,
 };
@@ -434,12 +434,21 @@ fn ip_config_to_ipv4_dbus<'a>(
         .collect::<Vec<_>>()
         .into();
 
+    let link_local = if ip_config.link_local4 == LinkLocal::Fallback
+        && VersionReq::parse("<1.52.0").unwrap().matches(nm_version)
+    {
+        LinkLocal::Enabled
+    } else {
+        ip_config.link_local4
+    };
+
     let mut ipv4_dbus = HashMap::from([
         ("address-data", address_data),
         ("dns-data", dns_data),
         ("dns-search", ip_config.dns_searchlist.clone().into()),
         ("ignore-auto-dns", ip_config.ignore_auto_dns.into()),
         ("method", ip_config.method4.to_string().into()),
+        ("link-local", (link_local as i32).into()),
     ]);
 
     if !ip_config.routes4.is_empty() {
@@ -693,13 +702,13 @@ fn wireless_config_to_dbus(config: &'_ WirelessConfig) -> NestedHash<'_> {
     NestedHash::from([(WIRELESS_KEY, wireless), (WIRELESS_SECURITY_KEY, security)])
 }
 
-fn bond_config_to_dbus(config: &BondConfig) -> HashMap<&str, zvariant::Value> {
+fn bond_config_to_dbus(config: &BondConfig) -> HashMap<&str, zvariant::Value<'_>> {
     let mut options = config.options.0.clone();
     options.insert("mode".to_string(), config.mode.to_string());
     HashMap::from([("options", Value::new(options))])
 }
 
-fn bridge_config_to_dbus(bridge: &BridgeConfig) -> HashMap<&str, zvariant::Value> {
+fn bridge_config_to_dbus(bridge: &BridgeConfig) -> HashMap<&str, zvariant::Value<'_>> {
     let mut hash = HashMap::new();
 
     if let Some(stp) = bridge.stp {
@@ -739,7 +748,9 @@ fn bridge_config_from_dbus(conn: &OwnedNestedHash) -> Result<Option<BridgeConfig
     }))
 }
 
-fn bridge_port_config_to_dbus(bridge_port: &BridgePortConfig) -> HashMap<&str, zvariant::Value> {
+fn bridge_port_config_to_dbus(
+    bridge_port: &BridgePortConfig,
+) -> HashMap<&str, zvariant::Value<'_>> {
     let mut hash = HashMap::new();
 
     if let Some(prio) = bridge_port.priority {
@@ -765,7 +776,7 @@ fn bridge_port_config_from_dbus(
     }))
 }
 
-fn infiniband_config_to_dbus(config: &InfinibandConfig) -> HashMap<&str, zvariant::Value> {
+fn infiniband_config_to_dbus(config: &InfinibandConfig) -> HashMap<&str, zvariant::Value<'_>> {
     let mut infiniband_config: HashMap<&str, zvariant::Value> = HashMap::from([
         (
             "transport-mode",
@@ -801,7 +812,7 @@ fn infiniband_config_from_dbus(
     Ok(Some(config))
 }
 
-fn tun_config_to_dbus(config: &TunConfig) -> HashMap<&str, zvariant::Value> {
+fn tun_config_to_dbus(config: &TunConfig) -> HashMap<&str, zvariant::Value<'_>> {
     let mut tun_config: HashMap<&str, zvariant::Value> =
         HashMap::from([("mode", Value::new(config.mode.clone() as u32))]);
 
@@ -833,7 +844,7 @@ fn tun_config_from_dbus(conn: &OwnedNestedHash) -> Result<Option<TunConfig>, NmE
     }))
 }
 
-fn ovs_bridge_config_to_dbus(br: &OvsBridgeConfig) -> HashMap<&str, zvariant::Value> {
+fn ovs_bridge_config_to_dbus(br: &OvsBridgeConfig) -> HashMap<&str, zvariant::Value<'_>> {
     let mut br_config: HashMap<&str, zvariant::Value> = HashMap::new();
 
     if let Some(mcast_snooping) = br.mcast_snooping_enable {
@@ -863,7 +874,7 @@ fn ovs_bridge_from_dbus(conn: &OwnedNestedHash) -> Result<Option<OvsBridgeConfig
     }))
 }
 
-fn ovs_port_config_to_dbus(config: &OvsPortConfig) -> HashMap<&str, zvariant::Value> {
+fn ovs_port_config_to_dbus(config: &OvsPortConfig) -> HashMap<&str, zvariant::Value<'_>> {
     let mut port_config: HashMap<&str, zvariant::Value> = HashMap::new();
 
     if let Some(tag) = &config.tag {
@@ -883,7 +894,7 @@ fn ovs_port_from_dbus(conn: &OwnedNestedHash) -> Result<Option<OvsPortConfig>, N
     }))
 }
 
-fn ovs_interface_config_to_dbus(config: &OvsInterfaceConfig) -> HashMap<&str, zvariant::Value> {
+fn ovs_interface_config_to_dbus(config: &OvsInterfaceConfig) -> HashMap<&str, zvariant::Value<'_>> {
     let mut ifc_config: HashMap<&str, zvariant::Value> = HashMap::new();
 
     ifc_config.insert("type", config.interface_type.to_string().clone().into());
@@ -905,7 +916,7 @@ fn ovs_interface_from_dbus(conn: &OwnedNestedHash) -> Result<Option<OvsInterface
 /// Converts a MatchConfig struct into a HashMap that can be sent over D-Bus.
 ///
 /// * `match_config`: MatchConfig to convert.
-fn match_config_to_dbus(match_config: &MatchConfig) -> HashMap<&str, zvariant::Value> {
+fn match_config_to_dbus(match_config: &MatchConfig) -> HashMap<&str, zvariant::Value<'_>> {
     let drivers: Value = match_config.driver.to_vec().into();
 
     let kernels: Value = match_config.kernel.to_vec().into();
@@ -1079,6 +1090,10 @@ fn ip_config_from_dbus(conn: &OwnedNestedHash) -> Result<IpConfig, NmError> {
 
         if let Some(dns_priority4) = get_optional_property(ipv4, "dns-priority")? {
             ip_config.dns_priority4 = Some(dns_priority4);
+        }
+
+        if let Some(link_local4) = get_optional_property::<i32>(ipv4, "link-local")? {
+            ip_config.link_local4 = link_local4.try_into().unwrap_or_default();
         }
 
         let mut dhcp4_settings = Dhcp4Settings::default();
@@ -1374,7 +1389,7 @@ fn bond_config_from_dbus(conn: &OwnedNestedHash) -> Result<Option<BondConfig>, N
     Ok(Some(bond))
 }
 
-fn vlan_config_to_dbus(cfg: &VlanConfig) -> NestedHash {
+fn vlan_config_to_dbus(cfg: &VlanConfig) -> NestedHash<'_> {
     let vlan: HashMap<&str, zvariant::Value> = HashMap::from([
         ("id", cfg.id.into()),
         ("parent", cfg.parent.clone().into()),
@@ -1401,7 +1416,7 @@ fn vlan_config_from_dbus(conn: &OwnedNestedHash) -> Result<Option<VlanConfig>, N
     }))
 }
 
-fn ieee_8021x_config_to_dbus(config: &IEEE8021XConfig) -> HashMap<&str, zvariant::Value> {
+fn ieee_8021x_config_to_dbus(config: &IEEE8021XConfig) -> HashMap<&str, zvariant::Value<'_>> {
     let mut ieee_8021x_config: HashMap<&str, zvariant::Value> = HashMap::from([(
         "eap",
         config
@@ -1573,7 +1588,6 @@ mod test {
         connection_from_dbus, connection_to_dbus, merge_dbus_connections, NestedHash,
         OwnedNestedHash,
     };
-    use crate::types::{BondMode, SSID};
     use crate::{
         model::*,
         nm::{
@@ -1583,6 +1597,7 @@ mod test {
             },
             error::NmError,
         },
+        types::*,
     };
     use cidr::IpInet;
     use macaddr::MacAddr6;

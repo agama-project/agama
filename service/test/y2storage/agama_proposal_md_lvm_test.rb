@@ -254,7 +254,7 @@ describe Y2Storage::AgamaProposal do
           an_object_having_attributes(name: "/dev/md0", md_level: Y2Storage::MdLevel::RAID1),
           an_object_having_attributes(name: "/dev/md1", md_level: Y2Storage::MdLevel::RAID0)
         )
-        md0 = devicegraph.find_by_any_name("/dev/md0")
+        md0 = devicegraph.md_raids.find { |r| r.md_level.is?(:raid0) }
         md0_formatted = md0.partitions.select(&:formatted?)
         expect(md0_formatted.map(&:filesystem).map(&:mount_path)).to include "/extra"
 
@@ -268,12 +268,17 @@ describe Y2Storage::AgamaProposal do
           "/dev/system/root", "/dev/system/swap"
         )
         pvs_system = vg_system.lvm_pvs.map(&:blk_device)
-        expect(pvs_system.map(&:name)).to contain_exactly("/dev/md0p2", "/dev/md1p2")
+        expect(pvs_system.map(&:partitionable).map(&:name))
+          .to contain_exactly("/dev/md0", "/dev/md1")
 
         vg1 = devicegraph.find_by_any_name("/dev/vg1")
         expect(vg1.lvm_lvs.map(&:name)).to contain_exactly("/dev/vg1/home")
         pvs_vg1 = vg1.lvm_pvs.map(&:blk_device)
-        expect(pvs_vg1.map(&:name)).to contain_exactly("/dev/mapper/cr_md1p1")
+        expect(pvs_vg1.size).to eq 1
+
+        pv = pvs_vg1.first
+        expect(pv.is?(:encryption)).to eq true
+        expect(pv.blk_device.partitionable).to eq md0
       end
     end
   end

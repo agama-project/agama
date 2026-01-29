@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024] SUSE LLC
+ * Copyright (c) [2024-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -38,7 +38,6 @@ const NETWORK = {
 const PRODUCT = {
   root: "/products",
   changeProduct: "/products",
-  progress: "/products/progress",
 };
 
 const REGISTRATION = {
@@ -53,7 +52,7 @@ const ROOT = {
   installationProgress: "/installation/progress",
   installationFinished: "/installation/finished",
   installationExit: "/installation/exit",
-  logs: "/api/manager/logs/store",
+  logs: "/api/v2/private/download_logs",
 };
 
 const USER = {
@@ -78,10 +77,10 @@ const STORAGE = {
   progress: "/storage/progress",
   editBootDevice: "/storage/boot-device/edit",
   editEncryption: "/storage/encryption/edit",
-  editSpacePolicy: "/storage/:list/:listIndex/space-policy/edit",
-  formatDevice: "/storage/:list/:listIndex/format",
-  addPartition: "/storage/:list/:listIndex/partitions/add",
-  editPartition: "/storage/:list/:listIndex/partitions/:partitionId/edit",
+  editSpacePolicy: "/storage/:collection/:index/space-policy/edit",
+  formatDevice: "/storage/:collection/:index/format",
+  addPartition: "/storage/:collection/:index/partitions/add",
+  editPartition: "/storage/:collection/:index/partitions/:partitionId/edit",
   selectDevice: "/storage/devices/select",
   volumeGroup: {
     add: "/storage/volume-groups/add",
@@ -116,12 +115,13 @@ const HOSTNAME = {
 const SIDE_PATHS = [
   ROOT.login,
   PRODUCT.changeProduct,
-  PRODUCT.progress,
   ROOT.installationProgress,
   ROOT.installationFinished,
   ROOT.installationExit,
   STORAGE.progress,
 ];
+
+const EXTENDED_SIDE_PATHS = [...SIDE_PATHS, ROOT.root, ROOT.overview];
 
 export {
   HOSTNAME,
@@ -131,6 +131,7 @@ export {
   REGISTRATION,
   ROOT,
   SIDE_PATHS,
+  EXTENDED_SIDE_PATHS,
   SOFTWARE,
   STORAGE,
   USER,

@@ -23,9 +23,11 @@
 import React from "react";
 import { screen, waitFor } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
-import LicenseDialog from "./LicenseDialog";
+import { useSystem } from "~/hooks/model/system";
 import { Product } from "~/types/software";
-import * as softwareApi from "~/api/software";
+import * as softwareApi from "~/model/software";
+import { Locale, Keymap } from "~/model/system/l10n";
+import LicenseDialog from "./LicenseDialog";
 
 const sle: Product = {
   id: "SLE",
@@ -42,9 +44,36 @@ const product: Product = sle;
 const onCloseFn = jest.fn();
 let mockFetchLicense: jest.SpyInstance;
 
+const locales: Locale[] = [
+  { id: "en_US.UTF-8", language: "English", territory: "United States" },
+  { id: "es_ES.UTF-8", language: "Spanish", territory: "Spain" },
+];
+
+const keymaps: Keymap[] = [
+  { id: "us", description: "English" },
+  { id: "es", description: "Spanish" },
+];
+
 jest.mock("~/utils", () => ({
   ...jest.requireActual("~/utils"),
   locationReload: jest.fn(),
+}));
+
+jest.mock("~/api", () => ({
+  ...jest.requireActual("~/api"),
+  configureL10nAction: jest.fn(),
+}));
+
+jest.mock("~/hooks/model/system", () => ({
+  ...jest.requireActual("~/hooks/model/system"),
+  useSystem: (): ReturnType<typeof useSystem> => ({
+    l10n: {
+      locale: "de-DE",
+      locales,
+      keymaps,
+      keymap: "us",
+    },
+  }),
 }));
 
 jest.mock("~/context/installerL10n", () => ({

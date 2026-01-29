@@ -1,4 +1,87 @@
 -------------------------------------------------------------------
+Wed Jan 28 09:51:16 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Configure storage and iSCSI only if needed
+  (gh#agama-project/agama#3064).
+
+-------------------------------------------------------------------
+Mon Jan 26 06:49:56 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Provide new D-Bus API for iSCSI (gh#agama-project/agama#3008).
+
+-------------------------------------------------------------------
+Fri Jan 23 13:47:45 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- Temporarily disable the check of os-prober to avoid
+  trying to access libzypp (gh#agama-project/agama#3053).
+
+-------------------------------------------------------------------
+Fri Jan 23 10:28:20 UTC 2026 - Martin Wilck <mwilck@suse.com>
+
+- Drop dependency on dmraid (jsc#PED-15368)
+
+-------------------------------------------------------------------
+Thu Jan 22 12:50:32 UTC 2026 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Stop reporting a bootloader error when there is no valid storage
+  proposal (bsc#1257013).
+
+-------------------------------------------------------------------
+Wed Jan 21 10:24:50 UTC 2026 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Honor the read_only flag for volumes coming from the product
+  configuration (bsc#1253616).
+
+-------------------------------------------------------------------
+Tue Jan 20 12:36:32 UTC 2026 - Martin Vidner <mvidner@suse.com>
+
+- refactor install_translations.sh for readability and testability
+  (part of Rust translations enablement, gh#agama-project/agama#2949).
+
+-------------------------------------------------------------------
+Wed Jan 14 08:54:50 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Properly disable BLS according to the selected product
+  (gh#agama-project/agama#3011).
+
+-------------------------------------------------------------------
+Fri Jan  9 14:43:58 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 19.pre
+- Introduce the version 2 of the HTTP API (gh#agama-project/agama#2997).
+- Drop most of the services because they have been ported to Rust.
+- Adapt the storage D-Bus service API to the new approach.
+
+-------------------------------------------------------------------
+Fri Dec 12 06:21:47 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Fix systemd target import from AutoYaST profiles
+  (gh#agama-project/agama#2826).
+
+-------------------------------------------------------------------
+Thu Nov 13 13:30:58 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Do not build on 32bit arches (like i586) and PPC64-BE,
+  the dependant libsuseconnect does not support these (bsc#1251846)
+
+-------------------------------------------------------------------
+Wed Nov 12 15:42:26 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 18
+
+-------------------------------------------------------------------
+Fri Nov  7 15:14:51 UTC 2025 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Fixed an error in the calculation of partitions when several
+  MD RAIDs are created (bsc#1253145).
+
+-------------------------------------------------------------------
+Fri Oct 31 13:48:46 UTC 2025 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Use a version of yast2-iscsi-client that fixes the errors
+  reported at bsc#1247711.
+
+-------------------------------------------------------------------
 Mon Sep 15 13:50:54 UTC 2025 - José Iván López González <jlopez@suse.com>
 
 - Fix JSON conversion for not configured sizes (bsc#1249591).

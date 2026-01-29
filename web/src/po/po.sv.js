@@ -6,6 +6,12 @@ export default {
   " Timezone selection": [
     " Tidszon val"
   ],
+  "\"%s\"": [
+    "\"%s\""
+  ],
+  "\"%s\" does not exist or is no longer available.": [
+    "\"%s\" existrerar inte eller är inte längre tillgänglig."
+  ],
   "%1$s (%2$s)": [
     "%1$s (%2$s)"
   ],
@@ -14,6 +20,9 @@ export default {
   ],
   "%1$s at %2$s": [
     "%1$s på %2$s"
+  ],
+  "%1$s keyboard - %2$s timezone": [
+    ""
   ],
   "%1$s will be created as a partition at %2$s": [
     "%1$s kommer att skapas som en partition på %2$s",
@@ -30,6 +39,9 @@ export default {
   ],
   "%s [must be registered].": [
     "%s [måste registreras]."
+  ],
+  "%s and %d others": [
+    ""
   ],
   "%s disk": [
     "%s disk"
@@ -139,9 +151,6 @@ export default {
   "Add another address": [
     "Lägg till en annan adress"
   ],
-  "Add another partition or mount an existing one": [
-    "Lägg till ytterligare en partition eller montera en befintlig"
-  ],
   "Add device menu": [
     "Lägg till enhetsmeny"
   ],
@@ -234,8 +243,14 @@ export default {
   "Authentication by target": [
     "Autentisering av mål"
   ],
+  "Auto": [
+    "Auto"
+  ],
   "Auto LUNs Scan": [
     "Automatisk LUN-skanning"
+  ],
+  "Auto and manual": [
+    ""
   ],
   "Automatic": [
     "Automatisk"
@@ -243,11 +258,11 @@ export default {
   "Automatic (DHCP)": [
     "Automatisk (DHCP)"
   ],
-  "Automatic LUN scan is [disabled]. LUNs have to be manually       configured after activating a controller.": [
-    "Automatisk LUN-skanning är [avaktiverad]. LUN kommer att behöva vara manuellt       konfigurerat efter aktivering av en styrenhet."
+  "Automatic LUN scan is [disabled]. LUNs have to be manually configured after activating a controller.": [
+    "Automatisk LUN-skanning är [avaktiverad]. LUN kommer att behöva vara manuellt konfigurerat efter aktivering av en styrenhet."
   ],
-  "Automatic LUN scan is [enabled]. Activating a controller which is       running in NPIV mode will automatically configures all its LUNs.": [
-    "Automatisk LUN-skanning är [aktiverad]. Aktiverar en styrenhet som är       körande i NPIV läge kommer att automatiskt konfigurera alla dess LUN."
+  "Automatic LUN scan is [enabled]. Activating a controller which is running in NPIV mode will automatically configures all its LUNs.": [
+    "Automatisk LUN-skanning är [aktiverad]. Aktiverar en styrenhet som är körande i NPIV läge kommer att automatiskt konfigurera alla dess LUN."
   ],
   "Available products": [
     "Tillgängliga produkter"
@@ -306,6 +321,9 @@ export default {
   "Btrfs with snapshots": [
     "Btrfs med ögonblicksavbilder"
   ],
+  "CPU": [
+    ""
+  ],
   "Cancel": [
     "Avbryt"
   ],
@@ -326,9 +344,6 @@ export default {
   ],
   "Change Language": [
     "Ändra språk"
-  ],
-  "Change boot options": [
-    "Ändra uppstartsalternativ"
   ],
   "Change device menu": [
     "Ändra enhetsmeny"
@@ -354,14 +369,26 @@ export default {
   "Change selection": [
     "Ändra val"
   ],
+  "Change the disk to configure": [
+    "Ändra disken som ska konfigureras"
+  ],
+  "Change the disk to create %s": [
+    "Ändra disk för att skapa %s"
+  ],
+  "Change the disk to format as %s": [
+    "Ändra disken till att formateras som %s"
+  ],
+  "Change the disk to install the system": [
+    "Ändra disk för att installera systemet"
+  ],
   "Change the file system or mount point": [
     "Ändra filsystemet eller monteringspunkten"
   ],
+  "Changes in these settings will immediately update the 'Result' section below.": [
+    "Ändringar i dessa inställningar kommer omedelbart att uppdatera avsnittet \"Resultat\" nedan."
+  ],
   "Channel ID": [
     "Kanal-ID"
-  ],
-  "Check the %d planned actions": [
-    "Kontrollera det %d planerade åtgärderna"
   ],
   "Check the authentication parameters.": [
     "Kontrollera autentiseringsparametrarna."
@@ -395,12 +422,6 @@ export default {
   ],
   "Close": [
     "Stäng"
-  ],
-  "Collapse the list of planned actions": [
-    "Dölj listan över planerade åtgärder"
-  ],
-  "Configuration out of sync": [
-    "Konfigurationen är inte synkroniserad"
   ],
   "Configuration read from the iSCSI Boot Firmware Table (iBFT).": [
     "Konfiguration läst från iSCSI Boot Firmware Table (iBFT)."
@@ -440,9 +461,6 @@ export default {
   ],
   "Confirm": [
     "Bekräfta"
-  ],
-  "Confirm Installation": [
-    "Bekräfta Installation"
   ],
   "Confirm that you really want to continue.": [
     "Bekräfta att du verkligen vill fortsätta."
@@ -495,9 +513,6 @@ export default {
   "Content": [
     "Innehåll"
   ],
-  "Continue": [
-    "Fortsätt"
-  ],
   "Continuing without installing the package can result in a broken system. In some cases the system might not even boot.": [
     "Att fortsätta utan att installera paketet kan resultera i ett trasigt system. I vissa fall kanske systemet inte ens startar."
   ],
@@ -545,6 +560,9 @@ export default {
   ],
   "DASD %s": [
     "DASD %s"
+  ],
+  "DHCP, %s": [
+    ""
   ],
   "DIAG": [
     "DIAG"
@@ -609,9 +627,6 @@ export default {
   "Details": [
     "Detaljer"
   ],
-  "Details for %s": [
-    "Detaljer för %s"
-  ],
   "Details will appear after the connection is successfully established.": [
     "Detaljer kommer att visas efter att anslutningen har upprättats."
   ],
@@ -665,9 +680,6 @@ export default {
   ],
   "Download logs": [
     "Ladda ner loggar"
-  ],
-  "During installation, several actions will be performed to setup the layout shown at the table below.": [
-    "Under installationen kommer flera åtgärder att utföras för att ställa in layouten som visas i tabellen nedan."
   ],
   "Edit": [
     "Redigera"
@@ -732,8 +744,8 @@ export default {
   "ExFAT": [
     "ExFAT"
   ],
-  "Example: https://myserver.com": [
-    "Exempel: https://minserver.com"
+  "Example: %s": [
+    "Exempel: %s"
   ],
   "Excellent signal": [
     "Utmärkt signal"
@@ -757,9 +769,6 @@ export default {
   "Extend the installation beyond the currently selected disk": [
     "Utöka installationen bortom den valda disken",
     "Utöka installationen bortom det nuvarande valda %d diskarna"
-  ],
-  "Extensions": [
-    "Tillägg"
   ],
   "F2FS": [
     "F2FS"
@@ -791,8 +800,11 @@ export default {
   "Filter by territory, time zone code or UTC offset": [
     "Filtrera efter område, tidszonskod eller UTC-förskjutning"
   ],
-  "Find space": [
-    "Hitta utrymme"
+  "Final layout": [
+    "Slutgiltig layout"
+  ],
+  "Final structure of the system after installation.": [
+    "Systemets slutgiltiga struktur efter installation."
   ],
   "Find space in %s": [
     "Hitta utrymme på %s"
@@ -860,6 +872,9 @@ export default {
   "GiB": [
     "GiB"
   ],
+  "Go back": [
+    ""
+  ],
   "Go to network page": [
     "Gå till nätverkssidan"
   ],
@@ -906,6 +921,9 @@ export default {
   "IP settings": [
     "IP inställningar"
   ],
+  "IPs": [
+    ""
+  ],
   "IPv4": [
     "IPv4"
   ],
@@ -914,9 +932,6 @@ export default {
   ],
   "If a local media was used to run this installer, remove it before the next boot.": [
     "Om ett lokalt media användes för att köra det här installationsprogrammet, ta bort det före nästa uppstart."
-  ],
-  "If you continue, partitions on your hard disk will be modified according to the provided installation settings.": [
-    "Om du fortsätter kommer partitionerna på din hårddisk att modifieras enligt de medföljande installationsinställningarna."
   ],
   "In progress": [
     "Pågår"
@@ -951,35 +966,11 @@ export default {
   "Install": [
     "Installera"
   ],
-  "Install using an advanced configuration.": [
-    "Installera med en avancerad konfiguration."
+  "Install now with potential data loss": [
+    ""
   ],
-  "Install using device %s and deleting all its content.": [
-    "Installerar på enhet %s och raderar allt innehåll."
-  ],
-  "Install using device %s shrinking existing partitions as needed.": [
-    "Installera på enhet %s som krymper befintliga partitioner efter behov."
-  ],
-  "Install using device %s with a custom strategy to find the needed space.": [
-    "Installera på enhet %s med en anpassad strategi för att hitta det utrymme som behövs."
-  ],
-  "Install using device %s without modifying existing partitions.": [
-    "Installera på enhet %s utan att ändra befintliga partitioner."
-  ],
-  "Install using several devices and deleting all its content.": [
-    "Installera med flera enheter och ta bort allt innehåll."
-  ],
-  "Install using several devices shrinking existing partitions as needed.": [
-    "Installera med flera enheter som krymper befintliga partitioner efter behov."
-  ],
-  "Install using several devices with a custom strategy to find the needed space.": [
-    "Installera med flera enheter med en anpassad strategi för att hitta det utrymme som behövs."
-  ],
-  "Install using several devices without modifying existing partitions.": [
-    "Installera med flera enheter utan att ändra befintliga partitioner."
-  ],
-  "Installation Devices": [
-    "Installationsenheter"
+  "Installation devices": [
+    "Installations enheter"
   ],
   "Installation will take %s.": [
     "Installationen kommer att ta %s."
@@ -1131,6 +1122,9 @@ export default {
   "Max channel": [
     "Maximal kanal"
   ],
+  "Memory": [
+    ""
+  ],
   "MiB": [
     "MiB"
   ],
@@ -1157,6 +1151,9 @@ export default {
   ],
   "More languages might be available for the selected product at [Localization] page": [
     "Fler språk kan vara tillgängliga för den valda produkten på [Lokalisering] sidan"
+  ],
+  "More storage options": [
+    "Mer lagringsalternativ"
   ],
   "Moreover, the following partition will be created.": [
     "Dessutom kommer följande partition att skapas.",
@@ -1193,8 +1190,8 @@ export default {
   "Move mount points": [
     "Flytta monteringspunkter"
   ],
-  "Move the mount points currently configured at the selected disks to logical                   volumes of this volume group.": [
-    "Flytta monteringspunkterna som för närvarande är konfigurerade på de valda diskarna till logiska                   volymer på denna volymgrupp."
+  "Move the mount points currently configured at the selected disks to logical volumes of this volume group.": [
+    "Flytta monteringspunkterna som för närvarande är konfigurerade på de valda diskarna till logiska volymer på denna volymgrupp."
   ],
   "Multipath": [
     "Flervägs"
@@ -1247,6 +1244,9 @@ export default {
   "No content found": [
     "Inget innehåll hittades"
   ],
+  "No data loss is expected": [
+    ""
+  ],
   "No device is currently using this connection.": [
     "Ingen enhet använder för närvarande den här anslutningen."
   ],
@@ -1270,6 +1270,9 @@ export default {
   ],
   "No logical volumes are defined yet": [
     "Inga logiska volymer är definierade ännu"
+  ],
+  "No partitions will be automatically configured for booting.": [
+    "Inga partitioner kommer att konfigureras automatiskt för uppstart."
   ],
   "No partitions will be automatically configured for booting. Use with caution.": [
     "Inga partitioner kommer att konfigureras automatiskt för uppstart. Använd med försiktighet."
@@ -1325,9 +1328,6 @@ export default {
   "Not protected network": [
     "Inte skyddat nätverk"
   ],
-  "Not selected yet": [
-    "Inte valt ännu"
-  ],
   "Not supported (%s)": [
     "Stöds inte (%s)"
   ],
@@ -1343,14 +1343,11 @@ export default {
   "Only reused partitions will be used.": [
     "Endast återanvända partitioner kommer att användas."
   ],
+  "Options for partition %s": [
+    "Alternativ för partition %s"
+  ],
   "Options toggle": [
     "Växla mellan alternativ"
-  ],
-  "Other options": [
-    "Andra alternativ"
-  ],
-  "Other options toggle": [
-    "Andra alternativ växel"
   ],
   "Overview": [
     "Översikt"
@@ -1358,8 +1355,14 @@ export default {
   "Package installation failed": [
     "Paket installation misslyckades"
   ],
+  "Partition %s": [
+    "Partition %s"
+  ],
   "Partition Info": [
     "Partitionsinformation"
+  ],
+  "Partitions": [
+    "Partitioner"
   ],
   "Partitions needed for booting will also be adapted": [
     "Partitioner som behövs för uppstart kommer också att anpassas"
@@ -1376,14 +1379,20 @@ export default {
   "Partitions that are not reused would be resized if needed.": [
     "Partitioner som inte återanvänds kan ändras i storlek vid behov."
   ],
-  "Partitions to boot will be allocated at the following device.": [
-    "Partitioner för att uppstart kommer att tilldelas på följande enhet."
+  "Partitions to boot will be set up if needed at %s.": [
+    "Partitioner att starta kommer att konfigureras vid behov på %s."
   ],
-  "Partitions to boot will be allocated at the installation disk %s.": [
-    "Partitioner att starta kommer att allokeras på installationsdisken %s."
+  "Partitions to boot will be set up if needed at the following device.": [
+    "Partitioner att starta från kommer att konfigureras om det behövs på följande enhet."
   ],
-  "Partitions to boot will be allocated at the installation disk.": [
-    "Partitioner som ska startas upp kommer att tilldelas på installationsdisken."
+  "Partitions to boot will be set up if needed at the installation disk, based on the location of the %s file system.": [
+    "Partitioner att starta från kommer att konfigureras vid behov på installationsdisken, baserat på platsen för filsystemet %s."
+  ],
+  "Partitions to boot will be set up if needed at the installation disk. Currently %1$s, based on the location of the %2$s file system.": [
+    "Partitioner att starta från kommer att konfigureras vid behov på installationsdisken. För närvarande %1$s, baserat på platsen för filsystemet %2$s."
+  ],
+  "Partitions to host \"system\" will be created if needed.": [
+    "Partitioner för att vara värd för \"systemet\" kommer att skapas vid behov."
   ],
   "Partitions will be used and created for %s": [
     "Partitioner kommer att användas och skapas för %s"
@@ -1415,9 +1424,6 @@ export default {
   "PiB": [
     "PiB"
   ],
-  "Please, cancel and check the settings if you are unsure.": [
-    "Vänligen, avbryt och kontrollera inställningarna om du är osäker."
-  ],
   "Please, check whether it is running.": [
     "Vänligen kontrollera om den är igång."
   ],
@@ -1439,11 +1445,23 @@ export default {
   "Portal": [
     "Portal"
   ],
+  "Potential data loss": [
+    ""
+  ],
+  "Potential data loss affecting at least %s": [
+    ""
+  ],
   "Pre-installation checks": [
     "Förinstallationskontroller"
   ],
   "Prefix length or netmask": [
     "Prefix längd eller nätmask"
+  ],
+  "Proceeding may result in data loss": [
+    ""
+  ],
+  "Proceeding may result in data loss affecting at least %s": [
+    ""
   ],
   "Product is already registered": [
     "Produkten är redan registrerad"
@@ -1505,15 +1523,6 @@ export default {
   "Reload": [
     "Ladda om"
   ],
-  "Reload now": [
-    "Ladda om nu"
-  ],
-  "Reloading data, please wait...": [
-    "Laddar om data, vänligen vänta..."
-  ],
-  "Reloading is required to get the latest data and avoid issues or data loss.": [
-    "Omladdning krävs för att få de senaste data och undvika problem eller dataförlust."
-  ],
   "Remove": [
     "Ta bort"
   ],
@@ -1522,6 +1531,13 @@ export default {
   ],
   "Repository load failed": [
     "Det gick inte att ladda förråd"
+  ],
+  "Required packages": [
+    ""
+  ],
+  "Required packages and %s pattern": [
+    "",
+    ""
   ],
   "Rescan devices": [
     "Skanna om enheter"
@@ -1538,11 +1554,17 @@ export default {
   "Result": [
     "Resultat"
   ],
+  "Result of applying the configuration described at the 'Settings' section above.": [
+    "Resultat av att tillämpa konfigurationen som beskrivs i avsnittet \"Inställningar\" ovan."
+  ],
   "Reused partitions will not be shrunk": [
     "Återanvända partitioner kommer inte att krympas"
   ],
   "Review and fix": [
     "Granska och åtgärda"
+  ],
+  "Review the summary below. If anything seems incorrect or you have doubts, go back and adjust the settings before proceeding.": [
+    ""
   ],
   "Root authentication methods": [
     "Rotautentiseringsmetoder"
@@ -1598,20 +1620,8 @@ export default {
   "Select a disk": [
     "Välj en disk"
   ],
-  "Select a disk to configure": [
-    "Välj en disk att konfigurera"
-  ],
-  "Select a disk to create %s": [
-    "Välj en disk för att skapa %s"
-  ],
   "Select a disk to define partitions or to mount": [
     "Välj en disk för att definiera partitioner eller för att montera"
-  ],
-  "Select a disk to format as %s": [
-    "Välj en disk att formatera som %s"
-  ],
-  "Select a disk to install the system": [
-    "Välj en disk för att installera systemet"
   ],
   "Select a product": [
     "Välj en produkt"
@@ -1639,9 +1649,6 @@ export default {
   ],
   "Select or enter a valid mount point": [
     "Välj eller ange en giltig monteringspunkt"
-  ],
-  "Select the disk to configure partitions for booting": [
-    "Välj disk för att konfigurera partitionerna för uppstart"
   ],
   "Select what to do with each partition in order to find space for allocating the new system.": [
     "Välj vad som ska göras med varje partition för att hitta utrymme för att allokera det nya systemet."
@@ -1794,11 +1801,11 @@ export default {
   "Targets": [
     "Mål"
   ],
+  "Temporary name that may change after reboot or network changes": [
+    ""
+  ],
   "The LVM group '%1$s' will remain at %2$s": [
     "LVM-gruppen '%1$s' kommer att vara kvar på %2$s"
-  ],
-  "The configuration has been updated externally.": [
-    "Konfigurationen har uppdaterats externt."
   ],
   "The configuration must be adapted to address the following issue:": [
     "Konfigurationen måste anpassas för att åtgärda följande problem:",
@@ -1812,9 +1819,6 @@ export default {
   ],
   "The connection will be used only during installation and not available in the installed system.": [
     "Anslutningen kommer endast att användas under installationen och är inte tillgänglig i det installerade systemet."
-  ],
-  "The content may be deleted": [
-    "Innehållet kan komma att raderas"
   ],
   "The current configuration will result in an attempt to create a %1$s of %2$s.": [
     "Den nuvarande konfigurationen kommer att resultera i ett försök att skapa en %1$s på %2$s."
@@ -1880,6 +1884,9 @@ export default {
   "The final step to configure the Trusted Platform Module (TPM) to automatically open encrypted devices will take place during the first boot of the new system. For that to work, the machine needs to boot directly to the new boot loader.": [
     "Det sista steget för att konfigurera Trusted Platform Module (TPM) för att automatiskt öppna krypterade enheter kommer att ske under den första uppstarten av det nya systemet. För att det ska fungera måste maskinen startas direkt till den nya uppstartshanteraren."
   ],
+  "The following actions will be performed in the system during installation.": [
+    "Följande åtgärder kommer att utföras i systemet under installationen."
+  ],
   "The following logical volume will be created": [
     "Följande logiska volym kommer att skapas",
     "Följande logiska volymer kommer också att skapas"
@@ -1903,12 +1910,6 @@ export default {
   ],
   "The installation on your machine is complete.": [
     "Installationen på din maskin har slutförts."
-  ],
-  "The installation will take": [
-    "Installationen kommer att ta"
-  ],
-  "The installation will take %s including:": [
-    "Installationen kommer att ta upp %s inklusive:"
   ],
   "The installer interface is no longer available, so you can safely close this window.": [
     "Installationsgränssnittet är inte längre tillgängligt, så du kan säkert stänga det här fönstret."
@@ -1938,14 +1939,17 @@ export default {
   "The modal selector offers a simplified interface designed for quick and straightforward use, without overwhelming the user.": [
     "Modalväljaren erbjuder ett förenklat gränssnitt utformat för snabb och enkel användning, utan att överväldiga användaren."
   ],
-  "The needed LVM physical volumes will be added as partitions on the chosen disks,                 based on the sizes of the logical volumes. If you select more than one disk, the                 physical volumes may be distributed along several disks.": [
-    "De fysiska LVM-volymerna som behövs kommer att läggas till som partitioner på de valda diskarna,                 baserat på storleken på de logiska volymerna. Om du väljer mer än en disk så kan,                 fysiska volymer vara fördelade på flera diskar."
+  "The needed LVM physical volumes will be added as partitions on the chosen disks, based on the sizes of the logical volumes. If you select more than one disk, the physical volumes may be distributed along several disks.": [
+    "De fysiska LVM-volymerna som behövs kommer att läggas till som partitioner på de valda diskarna, baserat på storleken på de logiska volymerna. Om du väljer mer än en disk så kan, fysiska volymer vara fördelade på flera diskar."
   ],
   "The password is weak": [
     "Lösenordet är svagt"
   ],
   "The password will not be needed to boot and access the data if the TPM can verify the integrity of the system. TPM sealing requires the new system to be booted directly on its first run.": [
     "Lösenordet kommer inte att behövas för att starta och komma åt data om TPM kan verifiera systemets integritet. TPM-försegling kräver att det nya systemet startas upp direkt vid första körningen."
+  ],
+  "The product will be registered with \"%s\" hostname": [
+    "Produkten kommer att registreras med \"%s\" värdnamn"
   ],
   "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of a separate file system for %2$s.": [
     "Storleken för %1$s kommer att justeras dynamiskt baserat på mängden RAM i systemet och förekomsten av ett separat filsystem för %2$s."
@@ -1992,17 +1996,11 @@ export default {
   "The system does not support Wi-Fi connections, probably because of missing or disabled hardware.": [
     "Systemet stöder inte WiFi-anslutningar, förmodligen på grund av saknad eller inaktiverad hårdvara."
   ],
-  "The system will use %s as its default language.": [
-    "Systemet kommer att använda %s som dess standardspråk."
-  ],
   "The whole device will be used for %s": [
     "Hela enheten kommer att användas för %s"
   ],
   "The zFCP disk was not activated.": [
     "zFCP disken var inte aktiverad."
-  ],
-  "There are no disks available for the installation.": [
-    "Det finns inga tillgängliga diskar för installation."
   ],
   "There are not disks available for the installation. You may need to configure some device.": [
     "Det finns inga diskar tillgängliga för installationen. Du kan behöva konfigurera någon enhet."
@@ -2017,9 +2015,6 @@ export default {
   "There is %d destructive action planned affecting %s": [
     "Det finns %d planerade destruktiva åtgärder som påverkar %s",
     "Det finns flera %d planerade destruktiva åtgärder som påverkar %s"
-  ],
-  "These are the most relevant installation settings. Feel free to browse the sections in the menu for further details.": [
-    "Dessa är de mest relevanta installationsinställningarna. Bläddra gärna igenom avsnitten i menyn för ytterligare detaljer."
   ],
   "These are the settings for the product to install. The installer language and keyboard layout can be adjusted via the [settings panel] accessible from the top bar.": [
     "Det här är inställningarna för produkten som ska installeras. Installationsprogrammets språk och tangentbordslayout kan justeras via [inställningspanelen] som är tillgänglig från det övre fältet."
@@ -2263,6 +2258,9 @@ export default {
   ],
   "Using transient hostname: %s": [
     "Använder transient värdnamn: %s"
+  ],
+  "Volume group %s": [
+    "Volymgrupp %s"
   ],
   "Volume group '%s' already exists. Enter a different name.": [
     "Volymgrupp '%s' existerar redan. Ange ett annat namn."

@@ -23,7 +23,13 @@
 import React from "react";
 import { InstallerClientProvider } from "./installer";
 import { InstallerL10nProvider } from "./installerL10n";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { StorageUiStateProvider } from "./storage-ui-state";
+import {
+  DefaultOptions,
+  MutationOptions,
+  QueryClient,
+  QueryClientProvider,
+} from "@tanstack/react-query";
 import { localConnection } from "~/utils";
 
 // Determines which "network mode" should Tanstack Query use
@@ -39,13 +45,62 @@ const networkMode = (): "always" | "online" => {
   return localConnection() ? "always" : "online";
 };
 
-const sharedOptions = {
+const sharedOptions: DefaultOptions & MutationOptions = {
   networkMode: networkMode(),
 };
 
 const queryClient = new QueryClient({
   defaultOptions: {
-    queries: sharedOptions,
+    queries: {
+      ...sharedOptions,
+      /**
+       * Disable refetch data.
+       * @see https://tanstack.com/query/v5/docs/framework/react/guides/important-defaults
+       */
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
+      /**
+       * Structural sharing is disabled to ensure QueryCache subscriptions
+       * receive 'updated' events even when refetched data is identical to
+       * previous data.
+       *
+       * With structural sharing enabled (default), TanStack Query reuses the
+       * previous data reference when new data is deeply equal, preventing the
+       * QueryCache from emitting update events. This makes it impossible to
+       * detect refetches via subscriptions when data hasn't changed.
+       *
+       * The custom useTrackQueriesRefetch hook (used by ProgressBackdrop)
+       * relies on these events to detect when queries have been refetched,
+       * enabling it to unblock the UI at the right moment when a progress has
+       * finished and data for rendering the interface is ready. Without these
+       * events, the UI cannot reliably determine when to unblock.
+       *
+       * The performance impact of disabling this optimization is expected to be
+       * minimal because:
+       *
+       *   * Identical data responses are relatively rare in practice
+       *   * React's reconciliation efficiently skips DOM updates when rendered
+       *     output is identical, even if components re-render. Any heavy
+       *     computations can be memoized to avoid re-execution when data hasn't
+       *     changed
+       *
+       * Several alternatives were evaluated and rejected as unnecessarily complex
+       * for the value provided:
+       *
+       *   * Adding artificial timestamps to JSON responses (which achieves
+       *     nearly the same result as disabling this optimization, but at the
+       *     cost of breaking types and polluting the data model)
+       *   * Reverting useTrackQueriesRefetch to query observer pattern
+       *   * Manually configuring notifyOnChangeProps globally or per-query
+       *   * Implementing separate tracker queries alongside data queries
+       *
+       * This approach simply trades one render optimization for simpler, more
+       * reliable event detection.
+       *
+       * @see https://tanstack.com/query/v5/docs/framework/react/guides/render-optimizations
+       */
+      structuralSharing: false,
+    },
     mutations: sharedOptions,
   },
 });
@@ -57,7 +112,9 @@ function AppProviders({ children }: React.PropsWithChildren) {
   return (
     <InstallerClientProvider>
       <QueryClientProvider client={queryClient}>
-        <InstallerL10nProvider>{children}</InstallerL10nProvider>
+        <InstallerL10nProvider>
+          <StorageUiStateProvider>{children}</StorageUiStateProvider>
+        </InstallerL10nProvider>
       </QueryClientProvider>
     </InstallerClientProvider>
   );

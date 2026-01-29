@@ -1,0 +1,52 @@
+#! /bin/sh
+
+# This script builds the POT file with the translatable texts from the Rust sources
+
+# NOTE: The Rust input file format requires a newer version of the GNU gettext,
+# for running in openSUSE Leap or in SLE use the --container switch
+# which runs a newer gettext in an openSUSE Tumbleweed container.
+
+# path to this script
+DIR="$(dirname "$0")"
+
+if [ "$1" = "--container" ]; then
+  shift
+  OUTPUT="${1:-agama.pot}"
+  # run the container script instead of the standard "xgettext" command
+  XGETTEXT=../devel/xgettext/xgettext.sh
+  exec "$DIR"/../devel/xgettext/run.sh "$0" "$OUTPUT" "$XGETTEXT"
+fi
+
+# always run in the directory of this script to ensure the file paths
+# saved in the POT file are always the same
+cd "$DIR" || exit
+
+OUTPUT="${1:-agama.pot}"
+XGETTEXT="${2:-xgettext}"
+
+# In this complex invocation, the order of option is roughly
+# from generic to specific.
+# (putting this to a function enables putting the above comment close to the code,
+# unlike in the pipeline)
+call_xgettext() {
+  $XGETTEXT \
+    --files-from=- \
+    --output="$OUTPUT" \
+    --sort-by-file \
+    --from-code=UTF-8 \
+    --foreign-user --copyright-holder="SuSE Linux Products GmbH, Nuernberg" \
+    --add-comments=TRANSLATORS \
+    --default-domain=agama \
+    --language=Rust \
+    --keyword=gettext \
+    --keyword=gettext_noop \
+    --keyword=i18n_format!
+}
+
+find . \
+  -path './target*' \
+  -prune \
+  -o \
+  -name '*.rs' \
+  -print |
+call_xgettext

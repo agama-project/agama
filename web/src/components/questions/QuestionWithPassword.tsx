@@ -24,9 +24,9 @@ import React, { useState } from "react";
 import { Content, Form, FormGroup, Stack } from "@patternfly/react-core";
 import { Icon } from "~/components/layout";
 import { InstallerOptions, PasswordInput, Popup } from "~/components/core";
-import { AnswerCallback, Question } from "~/types/questions";
 import QuestionActions from "~/components/questions/QuestionActions";
 import { _ } from "~/i18n";
+import type { AnswerCallback, Question } from "~/model/question";
 
 /**
  * Component for rendering questions asking for password
@@ -41,12 +41,11 @@ export default function QuestionWithPassword({
   question: Question;
   answerCallback: AnswerCallback;
 }): React.ReactNode {
-  const [password, setPassword] = useState(question.password || "");
-  const defaultAction = question.defaultOption;
+  const [password, setPassword] = useState(question.answer?.value || "");
 
-  const actionCallback = (option: string) => {
-    question.password = password;
-    question.answer = option;
+  const actionCallback = (action: string) => {
+    const answer = { action, value: password };
+    question.answer = answer;
     answerCallback(question);
   };
 
@@ -74,8 +73,8 @@ export default function QuestionWithPassword({
 
       <Popup.Actions>
         <QuestionActions
-          actions={question.options}
-          defaultAction={defaultAction}
+          actions={question.actions}
+          defaultAction={question.defaultAction}
           actionCallback={actionCallback}
         />
       </Popup.Actions>

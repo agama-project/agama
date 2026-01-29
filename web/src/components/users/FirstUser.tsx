@@ -33,14 +33,23 @@ import {
 } from "@patternfly/react-core";
 import { Link, Page, SplitButton } from "~/components/core";
 import PasswordCheck from "~/components/users/PasswordCheck";
-import { useFirstUser, useFirstUserChanges, useRemoveFirstUserMutation } from "~/queries/users";
+// This should be based on the config, not on the proposal. As a temporary hack (introduced in a
+// separate commit that should be easy to revert), we are using the proposal because the config
+// does not emit an event on every change.
+import { useProposal } from "~/hooks/model/proposal";
+import { useRemoveUser } from "~/hooks/model/config/user";
 import { PATHS } from "~/routes/users";
 import { isEmpty } from "radashi";
 import { _ } from "~/i18n";
 
+const useUser = () => {
+  const proposal = useProposal().users;
+  return proposal?.user;
+};
+
 const UserActions = () => {
-  const user = useFirstUser();
-  const { mutate: removeUser } = useRemoveFirstUserMutation();
+  const user = useUser();
+  const removeUser = useRemoveUser();
 
   if (isEmpty(user?.userName)) {
     return (
@@ -60,7 +69,7 @@ const UserActions = () => {
 };
 
 const UserData = () => {
-  const user = useFirstUser();
+  const user = useUser();
   const fullnameTermId = useId();
   const usernameTermId = useId();
 
@@ -94,8 +103,6 @@ const UserData = () => {
 };
 
 export default function FirstUser() {
-  useFirstUserChanges();
-
   return (
     <Page.Section
       title={_("First user")}

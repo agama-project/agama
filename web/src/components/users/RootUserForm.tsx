@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2025] SUSE LLC
+ * Copyright (c) [2025-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -31,18 +31,20 @@ import {
   Form,
   FormGroup,
 } from "@patternfly/react-core";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { NestedContent, Page, PasswordAndConfirmationInput } from "~/components/core";
-import { useRootUser, useRootUserMutation } from "~/queries/users";
-import { RootUser } from "~/types/users";
+import { useConfig } from "~/hooks/model/config";
+import { patchConfig } from "~/api";
+import type { Root } from "~/model/config";
 import { isEmpty } from "radashi";
 import { _ } from "~/i18n";
 import PasswordCheck from "~/components/users/PasswordCheck";
+import { USER } from "~/routes/paths";
 
 const AVAILABLE_METHODS = ["password", "sshPublicKey"] as const;
 type ActiveMethods = { [key in (typeof AVAILABLE_METHODS)[number]]?: boolean };
 
-const initialState = (user: RootUser): ActiveMethods =>
+const initialState = (user: Root.Config): ActiveMethods =>
   AVAILABLE_METHODS.reduce((result, key) => {
     return { ...result, [key]: !isEmpty(user[key]) };
   }, {});
@@ -76,14 +78,13 @@ const SSHKeyField = ({ value, onChange }) => {
 
 const RootUserForm = () => {
   const navigate = useNavigate();
-  const rootUser = useRootUser();
-  const { mutateAsync: updateRootUser } = useRootUserMutation();
+  const rootUser = useConfig().root || {};
   const [activeMethods, setActiveMethods] = useState(initialState(rootUser));
   const [errors, setErrors] = useState([]);
   const [usingHashedPassword, setUsingHashedPassword] = useState(
-    rootUser ? rootUser.hashedPassword : false,
+    rootUser ? rootUser?.hashedPassword || false : false,
   );
-  const [password, setPassword] = useState(usingHashedPassword ? "" : rootUser?.password);
+  const [password, setPassword] = useState(usingHashedPassword ? "" : rootUser?.password || "");
   const [sshkey, setSshKey] = useState(rootUser?.sshPublicKey);
   const passwordRef = useRef<HTMLInputElement>();
 
@@ -114,7 +115,7 @@ const RootUserForm = () => {
       return;
     }
 
-    const data: Partial<RootUser> = {
+    const data: Partial<Root.Config> = {
       sshPublicKey: activeMethods.sshPublicKey ? sshkey : "",
     };
 
@@ -124,20 +125,16 @@ const RootUserForm = () => {
     }
 
     if (activeMethods.password) {
-      data.password = usingHashedPassword ? rootUser.password : password;
+      data.password = usingHashedPassword ? rootUser?.password || "" : password;
       data.hashedPassword = usingHashedPassword;
     }
 
-    updateRootUser(data)
+    patchConfig({ root: data })
       .then(() => navigate(".."))
       .catch((e) => setErrors([e.response.data]));
   };
   return (
-    <Page>
-      <Page.Header>
-        <Content component="h2">{_("Root authentication methods")}</Content>
-      </Page.Header>
-
+    <Page breadcrumbs={[{ label: _("Authentication"), path: USER.root }, { label: _("root") }]}>
       <Page.Content>
         <Form id="rootAuthMethods" onSubmit={onSubmit} isWidthLimited maxWidth="fit-content">
           {errors.length > 0 && (

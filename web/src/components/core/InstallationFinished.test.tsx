@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2024] SUSE LLC
+ * Copyright (c) [2022-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -21,16 +21,12 @@
  */
 
 import React from "react";
-
 import { screen } from "@testing-library/react";
-import { plainRender } from "~/test-utils";
-import InstallationFinished from "./InstallationFinished";
-import { Encryption } from "~/api/storage/types/config";
+import { installerRender, mockStage } from "~/test-utils";
+import type { Storage } from "~/model/config";
+import InstallationFinished from "~/components/core/InstallationFinished";
 
-jest.mock("~/queries/status", () => ({
-  ...jest.requireActual("~/queries/status"),
-  useInstallerStatus: () => ({ isBusy: false, useIguana: false, phase: 3, canInstall: false }),
-}));
+jest.mock("~/components/core/InstallerOptions", () => () => <div>Installer Options</div>);
 
 type storageConfigType = "guided" | "raw";
 type guidedEncryption = {
@@ -39,12 +35,11 @@ type guidedEncryption = {
   pbkdFunction?: string;
 };
 
-let mockEncryption: undefined | Encryption | guidedEncryption;
-let mockType: storageConfigType;
+const mockUseExtendedConfigFn = jest.fn();
 
 const mockStorageConfig = (
   type: storageConfigType,
-  encryption: undefined | Encryption | guidedEncryption,
+  encryption: undefined | Storage.Encryption | guidedEncryption,
 ) => {
   const encryptionHash = {};
   if (encryption !== undefined) encryptionHash["encryption"] = encryption;
@@ -52,70 +47,72 @@ const mockStorageConfig = (
   switch (type) {
     case "guided":
       return {
-        guided: {
-          ...encryptionHash,
+        storage: {
+          guided: {
+            ...encryptionHash,
+          },
         },
       };
     case "raw":
       return {
-        drives: [
-          {
-            partitions: [
-              {
-                filesystem: {
-                  path: "/",
+        storage: {
+          drives: [
+            {
+              partitions: [
+                {
+                  filesystem: {
+                    path: "/",
+                  },
+                  id: "linux",
+                  ...encryptionHash,
                 },
-                id: "linux",
-                ...encryptionHash,
-              },
-              {
-                filesystem: {
-                  mountBy: "uuid",
-                  path: "swap",
-                  type: "swap",
+                {
+                  filesystem: {
+                    mountBy: "uuid",
+                    path: "swap",
+                    type: "swap",
+                  },
+                  id: "swap",
+                  size: "2 GiB",
                 },
-                id: "swap",
-                size: "2 GiB",
-              },
-            ],
-          },
-        ],
+              ],
+            },
+          ],
+        },
       };
   }
 };
 
-jest.mock("~/queries/storage", () => ({
-  ...jest.requireActual("~/queries/storage"),
-  useConfig: () => mockStorageConfig(mockType, mockEncryption),
+jest.mock("~/hooks/model/config", () => ({
+  ...jest.requireActual("~/hooks/model/config"),
+  useExtendedConfig: () => mockUseExtendedConfigFn(),
 }));
 
 const mockFinishInstallation = jest.fn();
 
-jest.mock("~/api/manager", () => ({
-  ...jest.requireActual("~/api/manager"),
+jest.mock("~/api", () => ({
+  ...jest.requireActual("~/api"),
   finishInstallation: () => mockFinishInstallation(),
 }));
 
-jest.mock("~/components/core/InstallerOptions", () => () => <div>Installer Options</div>);
-
 describe("InstallationFinished", () => {
   beforeEach(() => {
-    mockEncryption = null;
-    mockType = "guided";
+    mockUseExtendedConfigFn.mockReturnValue(mockStorageConfig("guided", null));
+    mockStage("finished");
   });
 
   it("shows the finished installation screen", () => {
-    plainRender(<InstallationFinished />);
-    screen.getByText("Congratulations!");
+    installerRender(<InstallationFinished />);
+    screen.getByRole("heading", { level: 1, name: "Installation complete" });
   });
 
   it("shows a 'Reboot' button", () => {
-    plainRender(<InstallationFinished />);
+    installerRender(<InstallationFinished />);
     screen.getByRole("button", { name: /Reboot/i });
   });
 
   it("reboots the system if the user clicks on 'Reboot' button", async () => {
-    const { user } = plainRender(<InstallationFinished />);
+    const { user } = installerRender(<InstallationFinished />);
     const rebootButton = screen.getByRole("button", { name: "Reboot" });
     await user.click(rebootButton);
     expect(mockFinishInstallation).toHaveBeenCalled();
@@ -123,27 +120,33 @@ describe("InstallationFinished", () => {
 
   describe("when running storage config in raw mode", () => {
     beforeEach(() => {
-      mockType = "raw";
+      mockUseExtendedConfigFn.mockReturnValue(mockStorageConfig("raw", null));
     });
 
     describe("when TPM is set as encryption method", () => {
       beforeEach(() => {
-        mockEncryption = {
-          tpmFde: {
-            password: "n0tS3cr3t",
-          },
-        };
+        mockUseExtendedConfigFn.mockReturnValue(
+          mockStorageConfig("raw", {
+            tpmFde: {
+              password: "n0tS3cr3t",
+            },
+          }),
+        );
       });
 
       it("shows the TPM reminder", async () => {
-        plainRender(<InstallationFinished />);
+        installerRender(<InstallationFinished />);
         await screen.findAllByText(/TPM/);
       });
     });
 
     describe("when TPM is not set as encryption method", () => {
+      beforeEach(() => {
+        mockUseExtendedConfigFn.mockReturnValue(mockStorageConfig("raw", null));
+      });
+
       it("does not show the TPM reminder", async () => {
-        plainRender(<InstallationFinished />);
+        installerRender(<InstallationFinished />);
         expect(screen.queryAllByText(/TPM/)).toHaveLength(0);
       });
     });
@@ -152,21 +155,27 @@ describe("InstallationFinished", () => {
   describe("when running storage config in guided mode", () => {
     describe("when TPM is set as encryption method", () => {
       beforeEach(() => {
-        mockEncryption = {
-          method: "tpm_fde",
-          password: "n0tS3cr3t",
-        };
+        mockUseExtendedConfigFn.mockReturnValue(
+          mockStorageConfig("guided", {
+            method: "tpm_fde",
+            password: "n0tS3cr3t",
+          }),
+        );
       });
 
       it("shows the TPM reminder", async () => {
-        plainRender(<InstallationFinished />);
+        installerRender(<InstallationFinished />);
         await screen.findAllByText(/TPM/);
       });
     });
 
     describe("when TPM is not set as encryption method", () => {
+      beforeEach(() => {
+        mockUseExtendedConfigFn.mockReturnValue(mockStorageConfig("guided", null));
+      });
+
       it("does not show the TPM reminder", async () => {
-        plainRender(<InstallationFinished />);
+        installerRender(<InstallationFinished />);
         expect(screen.queryAllByText(/TPM/)).toHaveLength(0);
       });
     });

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2025] SUSE LLC
+ * Copyright (c) [2022-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -22,46 +22,74 @@
 
 import React from "react";
 import {
-  Bullseye,
   Button,
-  EmptyState,
-  EmptyStateBody,
-  EmptyStateFooter,
+  Flex,
+  Grid,
+  GridItem,
+  HelperText,
+  HelperTextItem,
+  Title,
 } from "@patternfly/react-core";
-import { Icon, PlainLayout } from "~/components/layout";
-import { Page } from "~/components/core";
+import Icon from "~/components/layout/Icon";
+import Page from "~/components/core/Page";
 import { locationReload } from "~/utils";
-import shadowUtils from "@patternfly/react-styles/css/utilities/BoxShadow/box-shadow";
 import { _ } from "~/i18n";
 
-const ErrorIcon = () => <Icon name="error" />;
+import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
+import alignmentStyles from "@patternfly/react-styles/css/utilities/Alignment/alignment";
 
 function ServerError() {
   return (
-    <PlainLayout mountHeader={false} mountSidebar={false}>
-      <Page>
-        <Page.Content>
-          <Bullseye>
-            <Page.Section pfCardProps={{ isFullHeight: false, className: shadowUtils.boxShadowMd }}>
-              <EmptyState
-                variant="xl"
-                titleText={_("Cannot connect to Agama server")}
+    <Page variant="minimal">
+      <Page.Content>
+        <Grid hasGutter style={{ height: "100%", placeContent: "center" }}>
+          <GridItem sm={12} md={6} style={{ alignSelf: "center" }}>
+            <Flex
+              gap={{ default: "gapMd" }}
+              direction={{ default: "column" }}
+              alignItems={{ default: "alignItemsCenter", md: "alignItemsFlexEnd" }}
+              alignContent={{ default: "alignContentCenter", md: "alignContentFlexEnd" }}
+              alignSelf={{ default: "alignSelfCenter" }}
+            >
+              <Icon name="error" width="3rem" height="3rem" />
+              <Title
                 headingLevel="h1"
-                icon={ErrorIcon}
-                status="warning"
+                style={{ textWrap: "balance" }}
+                className={[textStyles.fontSize_3xl, alignmentStyles.textAlignEndOnMd].join(" ")}
               >
-                <EmptyStateBody>{_("Please, check whether it is running.")}</EmptyStateBody>
-                <EmptyStateFooter>
-                  <Button variant="primary" size="lg" onClick={locationReload}>
-                    {_("Reload")}
-                  </Button>
-                </EmptyStateFooter>
-              </EmptyState>
-            </Page.Section>
-          </Bullseye>
-        </Page.Content>
-      </Page>
-    </PlainLayout>
+                {_("Cannot connect")}
+              </Title>
+
+              <HelperText>
+                <HelperTextItem>{_("Check whether Agama server is running.")}</HelperTextItem>
+              </HelperText>
+            </Flex>
+          </GridItem>
+          <GridItem sm={12} md={6}>
+            <Flex
+              gap={{ default: "gapMd" }}
+              alignItems={{ md: "alignItemsCenter" }}
+              justifyContent={{ default: "justifyContentCenter", md: "justifyContentFlexStart" }}
+              style={{
+                minBlockSize: "30dvh",
+                boxShadow: "-1px 0 0 var(--pf-t--global--border--color--default)",
+                paddingInlineStart: "var(--pf-t--global--spacer--md)",
+                marginBlockStart: "var(--pf-t--global--spacer--xl)",
+              }}
+            >
+              <Button
+                variant="primary"
+                size="lg"
+                style={{ minInlineSize: "25dvw" }}
+                onClick={locationReload}
+              >
+                {_("Reload")}
+              </Button>
+            </Flex>
+          </GridItem>
+        </Grid>
+      </Page.Content>
+    </Page>
   );
 }
 

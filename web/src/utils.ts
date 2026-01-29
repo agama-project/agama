@@ -21,7 +21,7 @@
  */
 
 import { mapEntries } from "radashi";
-import { generatePath } from "react-router-dom";
+import { generatePath } from "react-router";
 import { ISortBy, sort } from "fast-sort";
 
 /**

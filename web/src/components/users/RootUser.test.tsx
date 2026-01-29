@@ -22,17 +22,16 @@
 
 import React from "react";
 import { screen } from "@testing-library/react";
-import { plainRender } from "~/test-utils";
+import { installerRender } from "~/test-utils";
 import { RootUser } from "~/components/users";
 import { USER } from "~/routes/paths";
 
 let mockPassword: string;
 let mockPublicKey: string;
 
-jest.mock("~/queries/users", () => ({
-  ...jest.requireActual("~/queries/users"),
-  useRootUser: () => ({ password: mockPassword, sshPublicKey: mockPublicKey }),
-  useRootUserChanges: () => jest.fn(),
+jest.mock("~/hooks/model/config", () => ({
+  ...jest.requireActual("~/hooks/model/config"),
+  useConfig: () => ({ root: { password: mockPassword, sshPublicKey: mockPublicKey } }),
 }));
 
 const testKey = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDM+ test@example";
@@ -44,7 +43,7 @@ beforeEach(() => {
 
 describe("RootUser", () => {
   it("renders an edit action", () => {
-    plainRender(<RootUser />);
+    installerRender(<RootUser />);
 
     const editLink = screen.getByRole("link", { name: "Edit" });
     expect(editLink).toHaveAttribute("href", USER.rootUser.edit);
@@ -52,7 +51,7 @@ describe("RootUser", () => {
 
   describe("if no method is defined", () => {
     it("renders them as 'Not defined'", () => {
-      plainRender(<RootUser />);
+      installerRender(<RootUser />);
 
       expect(screen.getAllByText("Not defined").length).toEqual(2);
     });
@@ -64,7 +63,7 @@ describe("RootUser", () => {
     });
 
     it("renders the 'Defined (hidden)' text", async () => {
-      plainRender(<RootUser />);
+      installerRender(<RootUser />);
 
       screen.getByText("Defined (hidden)");
     });
@@ -76,7 +75,7 @@ describe("RootUser", () => {
     });
 
     it("renders its truncated content keeping the comment visible when possible", async () => {
-      plainRender(<RootUser />);
+      installerRender(<RootUser />);
 
       screen.getByText("ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDM+");
       screen.getByText("test@example");

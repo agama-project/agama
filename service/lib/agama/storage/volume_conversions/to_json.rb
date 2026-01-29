@@ -27,6 +27,15 @@ module Agama
   module Storage
     module VolumeConversions
       # Volume conversion to JSON hash according to schema.
+      #
+      # This class was in the past meant to convert the 'volumes' section of the ProposalSettings,
+      # when we used to have a Guided strategy. So each conversion represented a volume that was
+      # meant to be part of the proposal (as a new partition, LV, etc.). That Guided strategy does
+      # not exist anymore.
+      #
+      # Now the volumes are only used to describe the templates used by the product to represent
+      # the suggested/acceptable settings for each mount point, since the class Volume is still
+      # (ab)used for that purpose. Thus, this conversion now serves that purpose.
       class ToJSON
         # @param volume [Volume]
         def initialize(volume)
@@ -38,12 +47,17 @@ module Agama
         # @return [Hash]
         def convert
           {
-            mount:  mount_conversion,
-            size:   size_conversion,
-            target: target_conversion
+            mountPath:     volume.mount_path.to_s,
+            mountOptions:  volume.mount_options,
+            fsType:        volume.fs_type&.to_s || "",
+            minSize:       min_size_conversion,
+            autoSize:      volume.auto_size?,
+            snapshots:     volume.btrfs.snapshots?,
+            transactional: volume.btrfs.read_only?,
+            outline:       outline_conversion
           }.tap do |volume_json|
-            filesystem_json = filesystem_conversion
-            volume_json[:filesystem] = filesystem_json if filesystem_json
+            # Some volumes could not have "MaxSize".
+            max_size_conversion(volume_json)
           end
         end
 
@@ -52,47 +66,44 @@ module Agama
         # @return [Volume]
         attr_reader :volume
 
-        def mount_conversion
+        # @return [Integer]
+        def min_size_conversion
+          min_size = volume.min_size
+          min_size = volume.outline.base_min_size if volume.auto_size?
+          min_size.to_i
+        end
+
+        # @param json [Hash]
+        def max_size_conversion(json)
+          max_size = volume.max_size
+          max_size = volume.outline.base_max_size if volume.auto_size?
+          return if max_size.unlimited?
+
+          json[:maxSize] = max_size.to_i
+        end
+
+        # Converts volume outline to D-Bus.
+        #
+        # @return [Hash<Symbol, Object>]
+        #   * required [Boolean]
+        #   * fsTypes [Array<String>]
+        #   * supportAutoSize [Boolean]
+        #   * adjustByRam [Boolean]
+        #   * snapshotsConfigurable [Boolean]
+        #   * snapshotsAffectSizes [Boolean]
+        #   * sizeRelevantVolumes [Array<String>]
+        def outline_conversion
+          outline = volume.outline
+
           {
-            path:    volume.mount_path.to_s,
-            options: volume.mount_options
+            required:              outline.required?,
+            fsTypes:               outline.filesystems.map(&:to_s),
+            supportAutoSize:       outline.adaptive_sizes?,
+            adjustByRam:           outline.adjust_by_ram?,
+            snapshotsConfigurable: outline.snapshots_configurable?,
+            snapshotsAffectSizes:  outline.snapshots_affect_sizes?,
+            sizeRelevantVolumes:   outline.size_relevant_volumes
           }
-        end
-
-        def filesystem_conversion
-          return unless volume.fs_type
-          return volume.fs_type.to_s if volume.fs_type != Y2Storage::Filesystems::Type::BTRFS
-
-          {
-            btrfs: {
-              snapshots: volume.btrfs.snapshots?
-            }
-          }
-        end
-
-        def size_conversion
-          return "auto" if volume.auto_size?
-
-          size = { min: volume.min_size.to_i }
-          size[:max] = volume.max_size.to_i if volume.max_size != Y2Storage::DiskSize.unlimited
-          size
-        end
-
-        def target_conversion
-          location = volume.location
-
-          case location.target
-          when :default
-            "default"
-          when :new_partition
-            { newPartition: location.device }
-          when :new_vg
-            { newVg: location.device }
-          when :device
-            { device: location.device }
-          when :filesystem
-            { filesystem: location.device }
-          end
         end
       end
     end

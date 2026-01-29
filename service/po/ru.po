@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-09-28 02:56+0000\n"
+"POT-Creation-Date: 2026-01-19 14:11+0000\n"
 "PO-Revision-Date: 2025-07-07 12:59+0000\n"
 "Last-Translator: Aleksey Fedorov <Aleksejfedorov963@gmail.com>\n"
 "Language-Team: Russian <https://l10n.opensuse.org/projects/agama/agama-"
@@ -28,300 +28,38 @@ msgstr ""
 msgid "Found unsupported elements in the AutoYaST profile: %{keys}."
 msgstr "Найдены неподдерживаемые элементы в профиле AutoYaST: %{keys}."
 
-#. Runs the config phase
-#.
-#. @param reprobe [Boolean] Whether a reprobe should be done instead of a probe.
-#. @param data [Hash] Extra data provided to the D-Bus calls.
-#: service/lib/agama/manager.rb:98
-msgid "Analyze disks"
-msgstr "Анализ дисков"
+#. Implementation for the API method #Install.
+#: service/lib/agama/dbus/storage/manager.rb:117
+msgid "Preparing bootloader proposal"
+msgstr "Подготовка предложения по загрузчику"
 
-#: service/lib/agama/manager.rb:98
-msgid "Configure software"
-msgstr "Настройка программного обеспечения"
+#: service/lib/agama/dbus/storage/manager.rb:120
+msgid "Preparing the storage devices"
+msgstr "Подготовка устройств хранения"
 
-#. Runs the install phase
-#. rubocop:disable Metrics/AbcSize, Metrics/MethodLength
-#: service/lib/agama/manager.rb:117
-msgid "Prepare disks"
-msgstr "Подготовка дисков"
+#: service/lib/agama/dbus/storage/manager.rb:123
+msgid "Writing bootloader sysconfig"
+msgstr "Запись системной конфигурации загрузчика"
 
-#: service/lib/agama/manager.rb:118
-msgid "Install software"
-msgstr "Установка программного обеспечения"
-
-#: service/lib/agama/manager.rb:119
-msgid "Configure the system"
-msgstr "Настройка системы"
-
-#. rubocop:enable Metrics/AbcSize, Metrics/MethodLength
-#: service/lib/agama/manager.rb:160
-msgid "Load software translations"
-msgstr "Загрузка переводов программ"
-
-#: service/lib/agama/manager.rb:161
-msgid "Load storage translations"
-msgstr "Загрузка переводов хранения"
-
-#. @param certificate [Agama::SSL::Certificate]
-#. @return [Agama::Question]
-#: service/lib/agama/registration.rb:424
-msgid ""
-"Trying to import a self signed certificate. Do you want to trust it and "
-"register the product?"
-msgstr ""
-"Попытка импортировать самоподписанный сертификат. Хотите ли вы доверять ему "
-"и зарегистрировать продукт?"
-
-#. TRANSLATORS: button label, try downloading the failed package again
-#: service/lib/agama/software/callbacks/base.rb:48
-msgid "Try again"
-msgstr "Повторить попытку"
-
-#. TRANSLATORS: button label, ignore the failed download, skip package installation
-#: service/lib/agama/software/callbacks/base.rb:54
-msgid "Continue anyway"
-msgstr "Всё равно продолжить"
-
-#. TRANSLATORS: button label, abort the installation completely after an error
-#: service/lib/agama/software/callbacks/base.rb:60
-msgid "Abort installation"
+#. Implementation for the API method #Finish.
+#: service/lib/agama/dbus/storage/manager.rb:131
+#, fuzzy
+msgid "Finishing installation"
 msgstr "Прервать установку"
 
-#. TRANSLATORS: button label, skip the error
-#: service/lib/agama/software/callbacks/base.rb:66
-msgid "Skip"
-msgstr "Пропустить"
+#. Error code
+#: service/lib/agama/dbus/storage/manager.rb:377
+msgid "Activating storage devices"
+msgstr "Активация устройств хранения"
 
-#. TRANSLATORS: button label
-#: service/lib/agama/software/callbacks/base.rb:72
-msgid "Yes"
-msgstr "Да"
+#: service/lib/agama/dbus/storage/manager.rb:380
+msgid "Probing storage devices"
+msgstr "Поиск устройств хранения"
 
-#. TRANSLATORS: button label
-#: service/lib/agama/software/callbacks/base.rb:78
-msgid "No"
-msgstr "Нет"
-
-#. Callback to accept a file without a checksum
-#.
-#. @param filename [String] File name
-#. @return [Boolean]
-#: service/lib/agama/software/callbacks/digest.rb:58
-#, perl-brace-format
-msgid ""
-"No checksum for the file %{file} was found in the repository. This means "
-"that although the file is part of the signed repository, the list of "
-"checksums does not mention this file. Use it anyway?"
-msgstr ""
-"В репозитории не найдена контрольная сумма для файла %{file}. Это означает, "
-"что хотя файл является частью подписанного репозитория, в списке контрольных "
-"сумм он не упоминается. Использовать его в любом случае?"
-
-#. Callback to accept an unknown digest
-#.
-#. @param filename [String] File name
-#. @param digest [String] expected checksum
-#. @return [Boolean]
-#: service/lib/agama/software/callbacks/digest.rb:84
-#, perl-brace-format
-msgid ""
-"The checksum of the file %{file} is \"%{digest}\" but the expected checksum "
-"is unknown. This means that the origin and integrity of the file cannot be "
-"verified. Use it anyway?"
-msgstr ""
-"Контрольная сумма файла %{file} равна «%{digest}», но ожидаемая контрольная "
-"сумма неизвестна. Это означает, что происхождение и целостность файла не "
-"могут быть проверены. Все равно использовать его?"
-
-#. Callback to accept wrong digest
-#.
-#. @param filename [String] File name
-#. @param expected_digest [String] expected checksum
-#. @param found_digest [String] found checksum
-#. @return [Boolean]
-#: service/lib/agama/software/callbacks/digest.rb:111
-#, perl-brace-format
-msgid ""
-"The expected checksum of file %{file} is \"%{found}\" but it was expected to "
-"be \"%{expected}\". The file has changed by accident or by an attacker since "
-"the creater signed it. Use it anyway?"
-msgstr ""
-"Ожидаемая контрольная сумма файла %{file} равна «%{found}», а должна была "
-"быть «%{expected}». Файл был изменен случайно или злонамеренно с момента "
-"подписания его создателем. Использовать его в любом случае?"
-
-#. DoneProvide callback
-#.
-#. @param description [String] Problem description
-#. @return [String] "I" for ignore, "R" for retry and "C" for abort (not implemented)
-#. @see https://github.com/yast/yast-yast2/blob/19180445ab935a25edd4ae0243aa7a3bcd09c9de/library/packages/src/modules/PackageCallbacks.rb#L620
-#: service/lib/agama/software/callbacks/script.rb:50
-msgid "There was a problem running a package script."
-msgstr "Возникла проблема с запуском скрипта пакета."
-
-#. Callback to handle unsigned files
-#.
-#. @param filename [String] File name
-#. @param repo_id [Integer] Repository ID. It might be -1 if there is not an associated repo.
-#: service/lib/agama/software/callbacks/signature.rb:66
-#, perl-brace-format
-msgid ""
-"The file %{filename} from %{repo_url} is not digitally signed. The origin "
-"and integrity of the file cannot be verified. Use it anyway?"
-msgstr ""
-"Файл %{filename} из %{repo_url} не имеет цифровой подписи. Происхождение и "
-"целостность файла не могут быть проверены. Все равно использовать его?"
-
-#: service/lib/agama/software/callbacks/signature.rb:72
-#, perl-brace-format
-msgid ""
-"The file %{filename} is not digitally signed. The origin and integrity of "
-"the file cannot be verified. Use it anyway?"
-msgstr ""
-"Файл %{filename} не имеет цифровой подписи. Происхождение и целостность "
-"файла не могут быть проверены. Все равно использовать его?"
-
-#. Callback to handle signature verification failures
-#.
-#. @param key [Hash] GPG key data (id, name, fingerprint, etc.)
-#. @param repo_id [Integer] Repository ID
-#: service/lib/agama/software/callbacks/signature.rb:100
-#, perl-brace-format
-msgid ""
-"The key %{id} (%{name}) with fingerprint %{fingerprint} is unknown. Do you "
-"want to trust this key?"
-msgstr ""
-"Ключ %{id} (%{name}) с отпечатком %{fingerprint} неизвестен. Хотите ли вы "
-"доверять этому ключу?"
-
-#. Callback to handle unknown GPG keys
-#.
-#. @param filename [String] Name of the file.
-#. @param key_id [String] Key ID.
-#. @param repo_id [String] Repository ID.
-#: service/lib/agama/software/callbacks/signature.rb:131
-#, perl-brace-format
-msgid ""
-"The file %{filename} from %{repo_url} is digitally signed with the following "
-"unknown GnuPG key: %{key_id}. Use it anyway?"
-msgstr ""
-"Файл %{filename} из %{repo_url} подписан цифровой подписью следующим "
-"неизвестным ключом GnuPG: %{key_id}. Использовать его в любом случае?"
-
-#: service/lib/agama/software/callbacks/signature.rb:137
-#, perl-brace-format
-msgid ""
-"The file %{filename} is digitally signed with the following unknown GnuPG "
-"key: %{key_id}. Use it anyway?"
-msgstr ""
-"Файл %{filename} подписан цифровой подписью следующим неизвестным ключом "
-"GnuPG: %{key_id}. Использовать его в любом случае?"
-
-#. Callback to handle file verification failures
-#.
-#. @param filename [String] File name
-#. @param key [Hash] GPG key data (id, name, fingerprint, etc.)
-#. @param repo_id [Integer] Repository ID
-#: service/lib/agama/software/callbacks/signature.rb:168
-#, perl-brace-format
-msgid ""
-"The file %{filename} from %{repo_url} is digitally signed with the following "
-"GnuPG key, but the integrity check failed: %{key_id} (%{key_name}). Use it "
-"anyway?"
-msgstr ""
-"Файл %{filename} из %{repo_url} подписан следующим ключом GnuPG, но проверка "
-"целостности дала сбой: %{key_id} (%{key_name}). Использовать его в любом "
-"случае?"
-
-#: service/lib/agama/software/callbacks/signature.rb:175
-#, perl-brace-format
-msgid ""
-"The file %{filename} is digitally signed with the following GnuPG key, but "
-"the integrity check failed: %{key_id} (%{key_name}). Use it anyway?"
-msgstr ""
-"Файл %{filename} подписан следующим ключом GnuPG, но проверка целостности "
-"дала сбой: %{key_id} (%{key_name}). Использовать его в любом случае?"
-
-#. TRANSLATORS: button label, trust the GPG key or the signature
-#: service/lib/agama/software/callbacks/signature.rb:199
-msgid "Trust"
-msgstr "Доверять"
-
-#. Should an error be raised?
-#: service/lib/agama/software/manager.rb:178
-msgid "Refreshing repositories metadata"
-msgstr "Обновление метаданных репозиториев"
-
-#: service/lib/agama/software/manager.rb:179
-msgid "Calculating the software proposal"
-msgstr "Расчет предложения по программному обеспечению"
-
-#: service/lib/agama/software/manager.rb:183
-msgid "Initializing sources"
-msgstr "Инициализация источников"
-
-#. error message
-#: service/lib/agama/software/manager.rb:427
-#, c-format
-msgid "Adding service '%s' failed."
-msgstr "Сбой добавления службы „%s“."
-
-#. error message
-#: service/lib/agama/software/manager.rb:432
-#, c-format
-msgid "Updating service '%s' failed."
-msgstr "Сбой обновления службы „%s“."
-
-#. error message
-#: service/lib/agama/software/manager.rb:438
-#, c-format
-msgid "Saving service '%s' failed."
-msgstr "Сбой сохранения службы „%s“."
-
-#. error message
-#: service/lib/agama/software/manager.rb:444
-#, c-format
-msgid "Refreshing service '%s' failed."
-msgstr "Сбой обновления данных службы „%s“."
-
-#. rubocop:enable Metrics/AbcSize
-#: service/lib/agama/software/manager.rb:453
-#, c-format
-msgid "Removing service '%s' failed."
-msgstr "Сбой удаления службы „%s“."
-
-#. Issues related to the software proposal.
-#.
-#. Repositories that could not be probed are reported as errors.
-#.
-#. @return [Array<Agama::Issue>]
-#: service/lib/agama/software/manager.rb:710
-#, c-format
-msgid "Could not read repository \"%s\""
-msgstr "Не удалось прочитать репозиторий \"%s\""
-
-#. Issue when a product is missing
-#.
-#. @return [Agama::Issue]
-#: service/lib/agama/software/manager.rb:720
-msgid "Product not selected yet"
-msgstr "Продукт еще не выбран"
-
-#. Issue when a product requires registration but it is not registered yet.
-#.
-#. @return [Agama::Issue]
-#: service/lib/agama/software/manager.rb:729
-msgid "Product must be registered"
-msgstr "Продукт должен быть зарегистрирован"
-
-#. Returns solver error messages from the last attempt
-#.
-#. @return [Array<String>] Error messages
-#: service/lib/agama/software/proposal.rb:276
-#, c-format
-msgid "Found %s dependency issues."
-msgstr "Найдено %s проблем с зависимостями."
+#: service/lib/agama/dbus/storage/manager.rb:383
+#, fuzzy
+msgid "Applying storage configuration"
+msgstr "Настройка конфигурации хранилища"
 
 #. TRANSLATORS: SSL certificate details
 #: service/lib/agama/ssl/certificate_details.rb:31
@@ -409,7 +147,7 @@ msgstr "Не существует загрузочного устройства 
 
 #. TRANSLATORS: 'crypt_method' is the identifier of the method to encrypt the device
 #. (e.g., 'luks1', 'random_swap').
-#: service/lib/agama/storage/config_checkers/encryption.rb:78
+#: service/lib/agama/storage/config_checkers/encryption.rb:73
 #, perl-brace-format
 msgid ""
 "No passphrase provided (required for using the method '%{crypt_method}')."
@@ -419,28 +157,28 @@ msgstr ""
 
 #. TRANSLATORS: 'crypt_method' is the identifier of the method to encrypt the device
 #. (e.g., 'luks1', 'random_swap').
-#: service/lib/agama/storage/config_checkers/encryption.rb:93
+#: service/lib/agama/storage/config_checkers/encryption.rb:89
 #, perl-brace-format
 msgid "Encryption method '%{crypt_method}' is not available in this system."
 msgstr "Метод шифрования „%{crypt_method}“ недоступен в этой системе."
 
 #. TRANSLATORS: 'crypt_method' is the identifier of the method to encrypt the device
 #. (e.g., 'luks1', 'random_swap').
-#: service/lib/agama/storage/config_checkers/encryption.rb:120
+#: service/lib/agama/storage/config_checkers/encryption.rb:117
 #, perl-brace-format
 msgid "'%{crypt_method}' is not a suitable method to encrypt the device."
 msgstr ""
 "'%{crypt_method}' не является подходящим методом для шифрования устройства."
 
 #. TRANSLATORS: %s is replaced by a mount path (e.g., "/home").
-#: service/lib/agama/storage/config_checkers/filesystem.rb:79
+#: service/lib/agama/storage/config_checkers/filesystem.rb:75
 #, c-format
 msgid "Missing file system type for '%s'"
 msgstr "Отсутствует тип файловой системы для '%s'"
 
 #. TRANSLATORS: %{filesystem} is replaced by a file system type (e.g., "Btrfs") and
 #. %{path} is replaced by a mount path (e.g., "/home").
-#: service/lib/agama/storage/config_checkers/filesystem.rb:100
+#: service/lib/agama/storage/config_checkers/filesystem.rb:98
 #, perl-brace-format
 msgid "The file system type '%{filesystem}' is not suitable for '%{path}'"
 msgstr "Тип файловой системы „%{filesystem}“ не подходит для '%{path}'"
@@ -460,14 +198,14 @@ msgstr "Не существует устройства-члена MD RAID с п�
 #. Issue if the MD RAID level is missing and the device is not reused.
 #.
 #. @return [Issue, nil]
-#: service/lib/agama/storage/config_checkers/md_raid.rb:110
+#: service/lib/agama/storage/config_checkers/md_raid.rb:111
 msgid "There is a MD RAID without level"
 msgstr "Существует RAID-массив MD без уровня"
 
 #. Issue if the MD RAID does not contain enough member devices.
 #.
 #. @return [Issue, nil]
-#: service/lib/agama/storage/config_checkers/md_raid.rb:121
+#: service/lib/agama/storage/config_checkers/md_raid.rb:124
 #, c-format
 msgid "At least %s devices are required for %s"
 msgstr "Требуется не менее %s устр. для %s"
@@ -476,7 +214,7 @@ msgstr "Требуется не менее %s устр. для %s"
 #.
 #. @param member_config [#search]
 #. @return [Issue, nil]
-#: service/lib/agama/storage/config_checkers/md_raid.rb:168
+#: service/lib/agama/storage/config_checkers/md_raid.rb:171
 #, perl-brace-format
 msgid ""
 "The device '%{member}' cannot be deleted because it is part of the MD RAID %"
@@ -489,7 +227,7 @@ msgstr ""
 #.
 #. @param member_config [#search]
 #. @return [Issue, nil]
-#: service/lib/agama/storage/config_checkers/md_raid.rb:191
+#: service/lib/agama/storage/config_checkers/md_raid.rb:194
 #, perl-brace-format
 msgid ""
 "The device '%{member}' cannot be resized because it is part of the MD RAID %"
@@ -502,7 +240,7 @@ msgstr ""
 #.
 #. @param member_config [#search]
 #. @return [Issue, nil]
-#: service/lib/agama/storage/config_checkers/md_raid.rb:214
+#: service/lib/agama/storage/config_checkers/md_raid.rb:217
 #, perl-brace-format
 msgid ""
 "The device '%{member}' cannot be formatted because it is part of the MD RAID "
@@ -515,7 +253,7 @@ msgstr ""
 #.
 #. @param member_config [#search]
 #. @return [Issue, nil]
-#: service/lib/agama/storage/config_checkers/md_raid.rb:237
+#: service/lib/agama/storage/config_checkers/md_raid.rb:240
 #, perl-brace-format
 msgid ""
 "The device '%{member}' cannot be partitioned because it is part of the MD "
@@ -528,7 +266,7 @@ msgstr ""
 #.
 #. @param member_config [#search]
 #. @return [Issue, nil]
-#: service/lib/agama/storage/config_checkers/md_raid.rb:259
+#: service/lib/agama/storage/config_checkers/md_raid.rb:262
 #, perl-brace-format
 msgid ""
 "The device '%{member}' cannot be used because it is part of the MD RAID %"
@@ -541,7 +279,7 @@ msgstr ""
 #.
 #. @param device [Y2Storage::BlkDevice]
 #. @return [Issue, nil]
-#: service/lib/agama/storage/config_checkers/md_raid.rb:284
+#: service/lib/agama/storage/config_checkers/md_raid.rb:287
 #, perl-brace-format
 msgid ""
 "The device '%{device}' cannot be formatted because it is part of the MD RAID "
@@ -594,18 +332,18 @@ msgstr "устройство"
 #. Issue if the volume group name is missing.
 #.
 #. @return [Issue, nil]
-#: service/lib/agama/storage/config_checkers/volume_group.rb:76
+#: service/lib/agama/storage/config_checkers/volume_group.rb:77
 msgid "There is a volume group without name"
 msgstr "Существует группа томов без имени"
 
 #. TRANSLATORS: %s is the replaced by a device alias (e.g., "pv1").
-#: service/lib/agama/storage/config_checkers/volume_group.rb:106
+#: service/lib/agama/storage/config_checkers/volume_group.rb:109
 #, c-format
 msgid "There is no LVM physical volume with alias '%s'"
 msgstr "Не существует физического тома LVM с псевдонимом '%s'"
 
 #. TRANSLATORS: %s is the replaced by a device alias (e.g., "pv1").
-#: service/lib/agama/storage/config_checkers/volume_group.rb:133
+#: service/lib/agama/storage/config_checkers/volume_group.rb:136
 #, c-format
 msgid ""
 "The list of target devices for the volume group '%s' is mixing reused "
@@ -615,7 +353,7 @@ msgstr ""
 "используемые и новые устройства"
 
 #. TRANSLATORS: %s is the replaced by a device alias (e.g., "disk1").
-#: service/lib/agama/storage/config_checkers/volume_group.rb:153
+#: service/lib/agama/storage/config_checkers/volume_group.rb:156
 #, c-format
 msgid "There is no target device for LVM physical volumes with alias '%s'"
 msgstr ""
@@ -652,52 +390,37 @@ msgid "Shrinking is not supported by this device"
 msgstr "Уменьшение размера не поддерживается этим устройством"
 
 #. Copy /etc/nvme/host* to keep NVMe working after installation, bsc#1238038
-#: service/lib/agama/storage/finisher.rb:145
+#: service/lib/agama/storage/finisher.rb:135
 msgid "Copying important installation files to the target system"
 msgstr "Копирование важных установочных файлов в целевую систему"
 
-#. Constructor
-#: service/lib/agama/storage/finisher.rb:186
-msgid "Writing Linux Security Modules configuration"
-msgstr "Запись конфигурации модулей безопасности Linux"
-
 #. Step to write the bootloader configuration
-#: service/lib/agama/storage/finisher.rb:197
+#: service/lib/agama/storage/finisher.rb:170
 msgid "Installing bootloader"
 msgstr "Установка загрузчика"
 
 #. Step to finish the Y2Storage configuration
-#: service/lib/agama/storage/finisher.rb:214
+#: service/lib/agama/storage/finisher.rb:187
 msgid "Adjusting storage configuration"
 msgstr "Настройка конфигурации хранилища"
 
 #. Step to finish the iSCSI configuration
-#: service/lib/agama/storage/finisher.rb:225
+#: service/lib/agama/storage/finisher.rb:198
 msgid "Adjusting iSCSI configuration"
 msgstr "Настройка конфигурации iSCSI"
 
 #. Step to configure the file-system snapshots
-#: service/lib/agama/storage/finisher.rb:236
+#: service/lib/agama/storage/finisher.rb:209
 msgid "Configuring file systems snapshots"
 msgstr "Настройка моментальных снимков файловых систем"
 
 #. Step to copy the installation logs
-#: service/lib/agama/storage/finisher.rb:254
+#: service/lib/agama/storage/finisher.rb:227
 msgid "Copying logs"
 msgstr "Копирование журналов"
 
-#. Executes post-installation scripts
-#: service/lib/agama/storage/finisher.rb:288
-msgid "Running user-defined scripts"
-msgstr "Выполнение пользовательских скриптов"
-
-#. Executes post-installation scripts
-#: service/lib/agama/storage/finisher.rb:327
-msgid "Deploying user-defined files"
-msgstr "Развертывание пользовательских файлов"
-
 #. Step to unmount the target file-systems
-#: service/lib/agama/storage/finisher.rb:346
+#: service/lib/agama/storage/finisher.rb:261
 msgid "Unmounting storage devices"
 msgstr "Размонтирование накопителей"
 
@@ -725,46 +448,10 @@ msgstr "Вход в систему iSCSI-целей"
 msgid "Cannot login to iSCSI target %s"
 msgstr "Невозможно войти в систему iSCSI-цели %s"
 
-#. Probes storage devices and performs an initial proposal
-#.
-#. @param keep_config [Boolean] Whether to use the current storage config for calculating the
-#. proposal.
-#. @param keep_activation [Boolean] Whether to keep the current activation (e.g., provided LUKS
-#. passwords).
-#: service/lib/agama/storage/manager.rb:133
-msgid "Activating storage devices"
-msgstr "Активация устройств хранения"
-
-#: service/lib/agama/storage/manager.rb:134
-msgid "Probing storage devices"
-msgstr "Поиск устройств хранения"
-
-#: service/lib/agama/storage/manager.rb:135
-msgid "Calculating the storage proposal"
-msgstr "Расчет предложения по хранению"
-
-#. Prepares the partitioning to install the system
-#: service/lib/agama/storage/manager.rb:161
-msgid "Preparing bootloader proposal"
-msgstr "Подготовка предложения по загрузчику"
-
-#. then also apply changes to that proposal
-#: service/lib/agama/storage/manager.rb:168
-msgid "Adding storage-related packages"
-msgstr "Добавление пакетов, связанных с хранилищем"
-
-#: service/lib/agama/storage/manager.rb:169
-msgid "Preparing the storage devices"
-msgstr "Подготовка устройств хранения"
-
-#: service/lib/agama/storage/manager.rb:170
-msgid "Writing bootloader sysconfig"
-msgstr "Запись системной конфигурации загрузчика"
-
 #. Issue representing the proposal is not valid.
 #.
 #. @return [Issue]
-#: service/lib/agama/storage/proposal.rb:345
+#: service/lib/agama/storage/proposal.rb:305
 msgid "Cannot calculate a valid storage setup with the current configuration"
 msgstr ""
 "Невозможно рассчитать правильную настройку хранения с текущей конфигурацией"
@@ -772,36 +459,222 @@ msgstr ""
 #. Issue to communicate a generic Y2Storage error.
 #.
 #. @return [Issue]
-#: service/lib/agama/storage/proposal.rb:356
+#: service/lib/agama/storage/proposal.rb:315
 msgid "A problem ocurred while calculating the storage setup"
 msgstr "Возникла проблема при расчёте конфигурации накопителей"
 
-#. Returns an issue if there is no target device.
-#.
-#. @return [Issue, nil]
-#: service/lib/agama/storage/proposal_strategies/guided.rb:135
-msgid "No device selected for installation"
-msgstr "Не выбрано устройство для установки"
+#~ msgid "Analyze disks"
+#~ msgstr "Анализ дисков"
 
-#. Returns an issue if any of the devices required for the proposal is not found
-#.
-#. @return [Issue, nil]
-#: service/lib/agama/storage/proposal_strategies/guided.rb:151
+#~ msgid "Configure software"
+#~ msgstr "Настройка программного обеспечения"
+
+#~ msgid "Prepare disks"
+#~ msgstr "Подготовка дисков"
+
+#~ msgid "Install software"
+#~ msgstr "Установка программного обеспечения"
+
+#~ msgid "Configure the system"
+#~ msgstr "Настройка системы"
+
+#~ msgid "Load software translations"
+#~ msgstr "Загрузка переводов программ"
+
+#~ msgid "Load storage translations"
+#~ msgstr "Загрузка переводов хранения"
+
+#~ msgid ""
+#~ "Trying to import a self signed certificate. Do you want to trust it and "
+#~ "register the product?"
+#~ msgstr ""
+#~ "Попытка импортировать самоподписанный сертификат. Хотите ли вы доверять "
+#~ "ему и зарегистрировать продукт?"
+
+#~ msgid "Try again"
+#~ msgstr "Повторить попытку"
+
+#~ msgid "Continue anyway"
+#~ msgstr "Всё равно продолжить"
+
+#~ msgid "Skip"
+#~ msgstr "Пропустить"
+
+#~ msgid "Yes"
+#~ msgstr "Да"
+
+#~ msgid "No"
+#~ msgstr "Нет"
+
 #, perl-brace-format
-msgid "The following selected device is not found in the system: %{devices}"
-msgid_plural ""
-"The following selected devices are not found in the system: %{devices}"
-msgstr[0] "Следующее выбранное устройство не найдено в системе: %{devices}"
-msgstr[1] "Следующие выбранные устройства не найдены в системе: %{devices}"
-msgstr[2] "Следующие выбранные устройства не найдены в системе: %{devices}"
+#~ msgid ""
+#~ "No checksum for the file %{file} was found in the repository. This means "
+#~ "that although the file is part of the signed repository, the list of "
+#~ "checksums does not mention this file. Use it anyway?"
+#~ msgstr ""
+#~ "В репозитории не найдена контрольная сумма для файла %{file}. Это "
+#~ "означает, что хотя файл является частью подписанного репозитория, в "
+#~ "списке контрольных сумм он не упоминается. Использовать его в любом "
+#~ "случае?"
 
-#. Recalculates the list of issues
-#: service/lib/agama/users.rb:154
-msgid ""
-"Defining a user, setting the root password or a SSH public key is required"
-msgstr ""
-"Необходимо определить пользователя, установить пароль root или открытый ключ "
-"SSH"
+#, perl-brace-format
+#~ msgid ""
+#~ "The checksum of the file %{file} is \"%{digest}\" but the expected "
+#~ "checksum is unknown. This means that the origin and integrity of the file "
+#~ "cannot be verified. Use it anyway?"
+#~ msgstr ""
+#~ "Контрольная сумма файла %{file} равна «%{digest}», но ожидаемая "
+#~ "контрольная сумма неизвестна. Это означает, что происхождение и "
+#~ "целостность файла не могут быть проверены. Все равно использовать его?"
+
+#, perl-brace-format
+#~ msgid ""
+#~ "The expected checksum of file %{file} is \"%{found}\" but it was expected "
+#~ "to be \"%{expected}\". The file has changed by accident or by an attacker "
+#~ "since the creater signed it. Use it anyway?"
+#~ msgstr ""
+#~ "Ожидаемая контрольная сумма файла %{file} равна «%{found}», а должна была "
+#~ "быть «%{expected}». Файл был изменен случайно или злонамеренно с момента "
+#~ "подписания его создателем. Использовать его в любом случае?"
+
+#~ msgid "There was a problem running a package script."
+#~ msgstr "Возникла проблема с запуском скрипта пакета."
+
+#, perl-brace-format
+#~ msgid ""
+#~ "The file %{filename} from %{repo_url} is not digitally signed. The origin "
+#~ "and integrity of the file cannot be verified. Use it anyway?"
+#~ msgstr ""
+#~ "Файл %{filename} из %{repo_url} не имеет цифровой подписи. Происхождение "
+#~ "и целостность файла не могут быть проверены. Все равно использовать его?"
+
+#, perl-brace-format
+#~ msgid ""
+#~ "The file %{filename} is not digitally signed. The origin and integrity of "
+#~ "the file cannot be verified. Use it anyway?"
+#~ msgstr ""
+#~ "Файл %{filename} не имеет цифровой подписи. Происхождение и целостность "
+#~ "файла не могут быть проверены. Все равно использовать его?"
+
+#, perl-brace-format
+#~ msgid ""
+#~ "The key %{id} (%{name}) with fingerprint %{fingerprint} is unknown. Do "
+#~ "you want to trust this key?"
+#~ msgstr ""
+#~ "Ключ %{id} (%{name}) с отпечатком %{fingerprint} неизвестен. Хотите ли вы "
+#~ "доверять этому ключу?"
+
+#, perl-brace-format
+#~ msgid ""
+#~ "The file %{filename} from %{repo_url} is digitally signed with the "
+#~ "following unknown GnuPG key: %{key_id}. Use it anyway?"
+#~ msgstr ""
+#~ "Файл %{filename} из %{repo_url} подписан цифровой подписью следующим "
+#~ "неизвестным ключом GnuPG: %{key_id}. Использовать его в любом случае?"
+
+#, perl-brace-format
+#~ msgid ""
+#~ "The file %{filename} is digitally signed with the following unknown GnuPG "
+#~ "key: %{key_id}. Use it anyway?"
+#~ msgstr ""
+#~ "Файл %{filename} подписан цифровой подписью следующим неизвестным ключом "
+#~ "GnuPG: %{key_id}. Использовать его в любом случае?"
+
+#, perl-brace-format
+#~ msgid ""
+#~ "The file %{filename} from %{repo_url} is digitally signed with the "
+#~ "following GnuPG key, but the integrity check failed: %{key_id} (%"
+#~ "{key_name}). Use it anyway?"
+#~ msgstr ""
+#~ "Файл %{filename} из %{repo_url} подписан следующим ключом GnuPG, но "
+#~ "проверка целостности дала сбой: %{key_id} (%{key_name}). Использовать его "
+#~ "в любом случае?"
+
+#, perl-brace-format
+#~ msgid ""
+#~ "The file %{filename} is digitally signed with the following GnuPG key, "
+#~ "but the integrity check failed: %{key_id} (%{key_name}). Use it anyway?"
+#~ msgstr ""
+#~ "Файл %{filename} подписан следующим ключом GnuPG, но проверка целостности "
+#~ "дала сбой: %{key_id} (%{key_name}). Использовать его в любом случае?"
+
+#~ msgid "Trust"
+#~ msgstr "Доверять"
+
+#~ msgid "Refreshing repositories metadata"
+#~ msgstr "Обновление метаданных репозиториев"
+
+#~ msgid "Calculating the software proposal"
+#~ msgstr "Расчет предложения по программному обеспечению"
+
+#~ msgid "Initializing sources"
+#~ msgstr "Инициализация источников"
+
+#, c-format
+#~ msgid "Adding service '%s' failed."
+#~ msgstr "Сбой добавления службы „%s“."
+
+#, c-format
+#~ msgid "Updating service '%s' failed."
+#~ msgstr "Сбой обновления службы „%s“."
+
+#, c-format
+#~ msgid "Saving service '%s' failed."
+#~ msgstr "Сбой сохранения службы „%s“."
+
+#, c-format
+#~ msgid "Refreshing service '%s' failed."
+#~ msgstr "Сбой обновления данных службы „%s“."
+
+#, c-format
+#~ msgid "Removing service '%s' failed."
+#~ msgstr "Сбой удаления службы „%s“."
+
+#, c-format
+#~ msgid "Could not read repository \"%s\""
+#~ msgstr "Не удалось прочитать репозиторий \"%s\""
+
+#~ msgid "Product not selected yet"
+#~ msgstr "Продукт еще не выбран"
+
+#~ msgid "Product must be registered"
+#~ msgstr "Продукт должен быть зарегистрирован"
+
+#, c-format
+#~ msgid "Found %s dependency issues."
+#~ msgstr "Найдено %s проблем с зависимостями."
+
+#~ msgid "Writing Linux Security Modules configuration"
+#~ msgstr "Запись конфигурации модулей безопасности Linux"
+
+#~ msgid "Running user-defined scripts"
+#~ msgstr "Выполнение пользовательских скриптов"
+
+#~ msgid "Deploying user-defined files"
+#~ msgstr "Развертывание пользовательских файлов"
+
+#~ msgid "Calculating the storage proposal"
+#~ msgstr "Расчет предложения по хранению"
+
+#~ msgid "Adding storage-related packages"
+#~ msgstr "Добавление пакетов, связанных с хранилищем"
+
+#~ msgid "No device selected for installation"
+#~ msgstr "Не выбрано устройство для установки"
+
+#, perl-brace-format
+#~ msgid "The following selected device is not found in the system: %{devices}"
+#~ msgid_plural ""
+#~ "The following selected devices are not found in the system: %{devices}"
+#~ msgstr[0] "Следующее выбранное устройство не найдено в системе: %{devices}"
+#~ msgstr[1] "Следующие выбранные устройства не найдены в системе: %{devices}"
+#~ msgstr[2] "Следующие выбранные устройства не найдены в системе: %{devices}"
+
+#~ msgid ""
+#~ "Defining a user, setting the root password or a SSH public key is required"
+#~ msgstr ""
+#~ "Необходимо определить пользователя, установить пароль root или открытый "
+#~ "ключ SSH"
 
 #~ msgid "Selecting Linux Security Modules"
 #~ msgstr "Выбор модулей безопасности Linux"

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2025] SUSE LLC
+ * Copyright (c) [2022-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -24,9 +24,10 @@ import React from "react";
 import { Button, Content, Grid, GridItem } from "@patternfly/react-core";
 import { InstallerOptions, Link, Page } from "~/components/core";
 import { L10N as PATHS } from "~/routes/paths";
-import { useL10n } from "~/queries/l10n";
-import { _ } from "~/i18n";
 import { localConnection } from "~/utils";
+import { useProposal } from "~/hooks/model/proposal/l10n";
+import { useSystem } from "~/hooks/model/system/l10n";
+import { _ } from "~/i18n";
 
 const InstallerL10nSettingsInfo = () => {
   const info = localConnection()
@@ -66,14 +67,18 @@ const InstallerL10nSettingsInfo = () => {
  * Page for configuring localization.
  */
 export default function L10nPage() {
-  const { selectedLocale: locale, selectedTimezone: timezone, selectedKeymap: keymap } = useL10n();
+  // FIXME: retrieve selection from config when ready
+  const l10nProposal = useProposal();
+  const l10nSystem = useSystem();
+  const locale =
+    l10nProposal.locale && l10nSystem.locales.find((l) => l.id === l10nProposal.locale);
+  const keymap =
+    l10nProposal.keymap && l10nSystem.keymaps.find((k) => k.id === l10nProposal.keymap);
+  const timezone =
+    l10nProposal.timezone && l10nSystem.timezones.find((t) => t.id === l10nProposal.timezone);
 
   return (
-    <Page>
-      <Page.Header>
-        <Content component="h2">{_("Localization")}</Content>
-      </Page.Header>
-
+    <Page breadcrumbs={[{ label: "Language and region" }]}>
       <Page.Content>
         <Grid hasGutter>
           <GridItem md={4}>
@@ -86,7 +91,7 @@ export default function L10nPage() {
               }
             >
               <Content isEditorial>
-                {locale ? `${locale.name} - ${locale.territory}` : _("Not selected yet")}
+                {locale ? `${locale.language} - ${locale.territory}` : _("Wrong selection")}
               </Content>
             </Page.Section>
           </GridItem>
@@ -99,7 +104,7 @@ export default function L10nPage() {
                 </Link>
               }
             >
-              <Content isEditorial>{keymap ? keymap.name : _("Not selected yet")}</Content>
+              <Content isEditorial>{keymap ? keymap.description : _("Wrong selection")}</Content>
             </Page.Section>
           </GridItem>
           <GridItem md={4}>
@@ -112,7 +117,7 @@ export default function L10nPage() {
               }
             >
               <Content isEditorial>
-                {timezone ? (timezone.parts || []).join(" - ") : _("Not selected yet")}
+                {timezone ? (timezone.parts || []).join(" - ") : _("Wrong selection")}
               </Content>
             </Page.Section>
           </GridItem>

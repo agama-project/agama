@@ -22,14 +22,13 @@
 
 import React from "react";
 import { screen } from "@testing-library/react";
-import { plainRender } from "~/test-utils";
+import { installerRender } from "~/test-utils";
 import EncryptionSection from "./EncryptionSection";
 import { STORAGE } from "~/routes/paths";
 
-const mockUseEncryption = jest.fn();
-jest.mock("~/queries/storage/config-model", () => ({
-  ...jest.requireActual("~/queries/storage/config-model"),
-  useEncryption: () => mockUseEncryption(),
+const mockUseConfigModel = jest.fn();
+jest.mock("~/hooks/model/storage/config-model", () => ({
+  useConfigModel: () => mockUseConfigModel(),
 }));
 
 jest.mock("~/components/users/PasswordCheck", () => () => <div>PasswordCheck Mock</div>);
@@ -37,7 +36,7 @@ jest.mock("~/components/users/PasswordCheck", () => () => <div>PasswordCheck Moc
 describe("EncryptionSection", () => {
   describe("if encryption is enabled", () => {
     beforeEach(() => {
-      mockUseEncryption.mockReturnValue({
+      mockUseConfigModel.mockReturnValue({
         encryption: {
           method: "luks2",
           password: "12345",
@@ -46,13 +45,13 @@ describe("EncryptionSection", () => {
     });
 
     it("renders encryption as enabled", () => {
-      plainRender(<EncryptionSection />);
+      installerRender(<EncryptionSection />);
       screen.getByText(/is enabled/);
     });
 
     describe("and uses TPM", () => {
       beforeEach(() => {
-        mockUseEncryption.mockReturnValue({
+        mockUseConfigModel.mockReturnValue({
           encryption: {
             method: "tpmFde",
             password: "12345",
@@ -61,7 +60,7 @@ describe("EncryptionSection", () => {
       });
 
       it("renders encryption as TPM enabled", () => {
-        plainRender(<EncryptionSection />);
+        installerRender(<EncryptionSection />);
         screen.getByText(/using TPM/);
       });
     });
@@ -69,18 +68,18 @@ describe("EncryptionSection", () => {
 
   describe("if encryption is disabled", () => {
     beforeEach(() => {
-      mockUseEncryption.mockReturnValue({});
+      mockUseConfigModel.mockReturnValue({});
     });
 
     it("renders encryption as disabled", () => {
-      plainRender(<EncryptionSection />);
+      installerRender(<EncryptionSection />);
       screen.getByText(/is disabled/);
     });
   });
 
   it("renders a link for navigating to encryption settings", () => {
-    plainRender(<EncryptionSection />);
-    const editLink = screen.getByRole("link", { name: "Edit" });
+    installerRender(<EncryptionSection />);
+    const editLink = screen.getByRole("link", { name: "Change" });
     expect(editLink).toHaveAttribute("href", STORAGE.editEncryption);
   });
 });

@@ -20,21 +20,19 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useId } from "react";
-import { Divider, Flex } from "@patternfly/react-core";
-import { useNavigate } from "react-router-dom";
-import Text from "~/components/core/Text";
-import MenuHeader from "~/components/core/MenuHeader";
-import MenuButton from "~/components/core/MenuButton";
+import React, { forwardRef } from "react";
+import { Button, Flex, FlexItem } from "@patternfly/react-core";
+import Icon from "~/components/layout/Icon";
+import { generatePath, useNavigate } from "react-router";
+import MenuButton, { CustomToggleProps } from "~/components/core/MenuButton";
 import { STORAGE as PATHS } from "~/routes/paths";
-import { model } from "~/types/storage";
-import * as driveUtils from "~/components/storage/utils/drive";
 import { filesystemType, formattedPath } from "~/components/storage/utils";
-import { generateEncodedPath } from "~/utils";
+import { usePartitionable } from "~/hooks/model/storage/config-model";
 import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
+import type { ConfigModel } from "~/model/storage/config-model";
 
-function deviceDescription(deviceModel: FilesystemMenuProps["deviceModel"]): string {
+function deviceDescription(deviceModel: ConfigModel.Drive | ConfigModel.MdRaid): string {
   const fs = filesystemType(deviceModel.filesystem);
   const mountPath = deviceModel.mountPath;
   const reuse = deviceModel.filesystem.reuse;
@@ -54,49 +52,64 @@ function deviceDescription(deviceModel: FilesystemMenuProps["deviceModel"]): str
   return sprintf(_("The device will be formatted as %1$s and mounted at %2$s"), fs, path);
 }
 
-type FilesystemMenuProps = { deviceModel: model.Drive | model.MdRaid };
+type FilesystemMenuToggleProps = CustomToggleProps & {
+  deviceModel: ConfigModel.Drive | ConfigModel.MdRaid;
+};
 
-export default function FilesystemMenu({ deviceModel }: FilesystemMenuProps): React.ReactNode {
+const FilesystemMenuToggle = forwardRef(
+  ({ deviceModel, ...props }: FilesystemMenuToggleProps, ref) => {
+    return (
+      <Button
+        variant="link"
+        ref={ref}
+        style={{ display: "inline", width: "fit-content" }}
+        {...props}
+      >
+        <Flex
+          alignItems={{ default: "alignItemsCenter" }}
+          gap={{ default: "gapSm" }}
+          flexWrap={{ default: "nowrap" }}
+          style={{ whiteSpace: "normal", textAlign: "start" }}
+        >
+          <FlexItem>{deviceDescription(deviceModel)}</FlexItem>
+          <FlexItem>
+            <Icon name="keyboard_arrow_down" style={{ verticalAlign: "middle" }} />
+          </FlexItem>
+        </Flex>
+      </Button>
+    );
+  },
+);
+
+type FilesystemMenuProps = {
+  collection: "drives" | "mdRaids";
+  index: number;
+};
+
+export default function FilesystemMenu({
+  collection,
+  index,
+}: FilesystemMenuProps): React.ReactNode {
   const navigate = useNavigate();
-  const ariaLabelId = useId();
-  const toggleTextId = useId();
-  const { list, listIndex } = deviceModel;
-  const editFilesystemPath = generateEncodedPath(PATHS.formatDevice, { list, listIndex });
-
-  // TRANSLATORS: %s is the name of device, like '/dev/sda'.
-  const detailsAriaLabel = sprintf(_("Details for %s"), deviceModel.name);
+  const deviceModel = usePartitionable(collection, index);
+  const editFilesystemPath = generatePath(PATHS.formatDevice, { collection, index });
 
   return (
-    <Flex gap={{ default: "gapXs" }}>
-      <Text id={ariaLabelId} srOnly>
-        {detailsAriaLabel}
-      </Text>
-      <Text isBold aria-hidden>
-        {_("Details")}
-      </Text>
-      <MenuButton
-        menuProps={{
-          "aria-label": detailsAriaLabel,
-        }}
-        toggleProps={{
-          variant: "plainText",
-          "aria-labelledby": `${ariaLabelId} ${toggleTextId}`,
-        }}
-        items={[
-          <MenuHeader key="header-filesystem" description={deviceDescription(deviceModel)} />,
-          <Divider key="divider-filesystem" component="li" />,
-          <MenuButton.Item
-            key="edit-filesystem"
-            itemId="edit-filesystem"
-            description={_("Change the file system or mount point")}
-            onClick={() => navigate(editFilesystemPath)}
-          >
-            {_("Edit")}
-          </MenuButton.Item>,
-        ]}
-      >
-        <Text id={toggleTextId}>{driveUtils.contentDescription(deviceModel)}</Text>
-      </MenuButton>
-    </Flex>
+    <MenuButton
+      toggleProps={{
+        variant: "plainText",
+      }}
+      items={[
+        <MenuButton.Item
+          key="edit-filesystem"
+          itemId="edit-filesystem"
+          description={_("Change the file system or mount point")}
+          onClick={() => navigate(editFilesystemPath)}
+        >
+          {_("Edit")}
+        </MenuButton.Item>,
+      ]}
+      customToggle={<FilesystemMenuToggle deviceModel={deviceModel} />}
+    />
   );
 }
