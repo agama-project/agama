@@ -205,6 +205,74 @@ const generateEncodedPath = (...args: Parameters<typeof generatePath>) => {
 const sortCollection = <T>(collection: T[], direction: "asc" | "desc", key: string | ISortBy<T>) =>
   sort(collection)[direction](key as ISortBy<T>);
 
+interface MergeSourcesOptions<T, K extends keyof T> {
+  /** Object mapping source names to their arrays */
+  collections: Record<string, T[]>;
+  /** The property name to use as the unique identifier (default: "id") */
+  key?: K;
+}
+
+interface ItemWithSources<T> extends Omit<T, "sources"> {
+  /** Array of source names where this item was found */
+  sources: string[];
+}
+
+/**
+ * Merges multiple collections of objects, tracking which sources each item
+ * appears in.
+ *
+ * When the same item (identified by the specified key) appears in multiple
+ * collections, it will appear only once in the output with a `sources` array
+ * listing all collections where it was found.
+ *
+ * @template T - The type of objects in the collections
+ * @template K - The key type used for identifying unique items
+ *
+ * @param options - Configuration object
+ * @param options.collections - Object mapping source names to arrays of items
+ * @param options.key - Property name to use as unique identifier (default: "id")
+ *
+ * @returns Array of merged items, each with a `sources` property
+ *
+ * @example
+ * ```typescript
+ * const result = mergeSources({
+ *   collections: {
+ *     database: [{ id: 1, name: 'Alice' }, { id: 2, name: 'Bob' }],
+ *     cache: [{ id: 1, name: 'Alice' }, { id: 3, name: 'Charlie' }],
+ *     api: [{ id: 2, name: 'Bob' }]
+ *   },
+ *   key: 'id'
+ * });
+ * // Returns:
+ * // [
+ * //   { id: 1, name: 'Alice', sources: ['database', 'cache'] },
+ * //   { id: 2, name: 'Bob', sources: ['database', 'api'] },
+ * //   { id: 3, name: 'Charlie', sources: ['cache'] }
+ * // ]
+ * ```
+ */
+function mergeSources<T extends Record<string, any>, K extends keyof T = "id">({
+  collections,
+  key = "id" as K,
+}: MergeSourcesOptions<T, K>): ItemWithSources<T>[] {
+  const map = new Map<T[K], ItemWithSources<T>>();
+
+  for (const [name, items] of Object.entries(collections)) {
+    for (const obj of items) {
+      const id = obj[key];
+
+      if (map.has(id)) {
+        map.get(id)!.sources.push(name);
+      } else {
+        map.set(id, { ...obj, sources: [name] });
+      }
+    }
+  }
+
+  return Array.from(map.values());
+}
+
 export {
   compact,
   hex,
@@ -215,4 +283,5 @@ export {
   mask,
   generateEncodedPath,
   sortCollection,
+  mergeSources,
 };

@@ -90,7 +90,12 @@ const STORAGE = {
       edit: "/storage/volume-groups/:id/logical-volumes/:logicalVolumeId/edit",
     },
   },
-  iscsi: "/storage/iscsi",
+  iscsi: {
+    root: "/storage/iscsi",
+    initiator: "/storage/iscsi/initiator",
+    discover: "/storage/iscsi/targets/discover",
+    login: "/storage/iscsi/targets/:id/login",
+  },
   dasd: "/storage/dasd",
   zfcp: {
     root: "/storage/zfcp",

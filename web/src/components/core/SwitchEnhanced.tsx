@@ -56,17 +56,23 @@ type SwitchEnhancedProps = Omit<
  * ```
  */
 export default function SwitchEnhanced({ description, label, ...props }: SwitchEnhancedProps) {
+  const switchId = useId();
   const labelId = useId();
   const descriptionId = useId();
 
   return (
-    <Flex flexWrap={{ default: "nowrap" }}>
+    <Flex flexWrap={{ default: "nowrap" }} alignItems={{ default: "alignItemsFlexStart" }}>
       <FlexItem>
-        <Switch {...props} aria-labelledby={labelId} aria-describedby={descriptionId} />
+        <Switch
+          {...props}
+          id={switchId}
+          aria-labelledby={labelId}
+          aria-describedby={descriptionId}
+        />
       </FlexItem>
       <FlexItem>
         <Content isEditorial id={labelId}>
-          {label}
+          <label htmlFor={switchId}>{label}</label>
         </Content>
         <Content component="small" id={descriptionId}>
           {description}
