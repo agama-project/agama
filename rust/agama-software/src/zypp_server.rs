@@ -129,6 +129,7 @@ pub struct ZyppServer {
     install_dir: Utf8PathBuf,
     trusted_keys: Vec<RepoKey>,
     unsigned_repos: Vec<String>,
+    only_required: bool,
 }
 
 impl ZyppServer {
@@ -148,6 +149,7 @@ impl ZyppServer {
             registration: Default::default(),
             trusted_keys: vec![],
             unsigned_repos: vec![],
+            only_required: false,
         };
 
         // drop the returned JoinHandle: the thread will be detached
@@ -438,8 +440,9 @@ impl ZyppServer {
             };
         }
 
+        self.only_required = state.options.only_required;
         // run the solver to select the dependencies, ignore the errors, the solver runs again later
-        let _ = zypp.run_solver();
+        let _ = zypp.run_solver(self.only_required);
 
         // unselect packages including the autoselected dependencies
         for (name, r#type, selection) in &state.resolvables.to_vec() {
@@ -450,7 +453,7 @@ impl ZyppServer {
         }
 
         _ = progress.cast(progress::message::Finish::new(Scope::Software));
-        match zypp.run_solver() {
+        match zypp.run_solver(self.only_required) {
             Ok(result) => println!("Solver result: {result}"),
             Err(error) => println!("Solver failed: {error}"),
         };
@@ -598,7 +601,12 @@ impl ZyppServer {
     }
 
     fn modify_zypp_conf(&self) -> ZyppServerResult<()> {
-        // TODO: implement when requireOnly is implemented
+        // write only if different from default
+        if self.only_required {
+            let contents = "# Use only hard dependencies as configured in installer\nsolver.onlyRequires = true\n";
+            std::fs::write(
+                self.install_dir.join("etc/zypp/zypp.conf.d/installer.conf"), contents);
+            }
         Ok(())
     }
 

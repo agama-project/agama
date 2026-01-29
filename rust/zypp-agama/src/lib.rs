@@ -542,11 +542,11 @@ impl Zypp {
         }
     }
 
-    pub fn run_solver(&self) -> ZyppResult<bool> {
+    pub fn run_solver(&self, only_required: bool) -> ZyppResult<bool> {
         unsafe {
             let mut status: Status = Status::default();
             let status_ptr = &mut status as *mut _;
-            let r_res = zypp_agama_sys::run_solver(self.ptr, status_ptr);
+            let r_res = zypp_agama_sys::run_solver(self.ptr, only_required, status_ptr);
             helpers::status_to_result(status, r_res)
         }
     }
