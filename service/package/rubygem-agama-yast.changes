@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Jan 29 09:55:38 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Retry requests to the web server if the connection failed
+  (gh#agama-project/agama#3096, related to bsc#1257067).
+
+-------------------------------------------------------------------
 Wed Jan 28 09:51:16 UTC 2026 - José Iván López González <jlopez@suse.com>
 
 - Configure storage and iSCSI only if needed

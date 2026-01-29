@@ -194,7 +194,18 @@ async fn test_put_config_without_mode(ctx: &mut Context) -> Result<(), Box<dyn E
         .unwrap();
 
     let response = ctx.client.send_request(request).await;
-    assert_eq!(response.status(), StatusCode::BAD_REQUEST);
+    assert_eq!(response.status(), StatusCode::OK);
+
+    let request = Request::builder()
+        .uri("/extended_config")
+        .body("".to_string())
+        .unwrap();
+
+    let response = ctx.client.send_request(request).await;
+    assert_eq!(response.status(), StatusCode::OK);
+
+    let body = body_to_string(response.into_body()).await;
+    assert!(body.contains(r#""product":{"id":"SLES","mode":"standard"}"#));
 
     Ok(())
 }
@@ -259,7 +270,6 @@ async fn test_patch_config_success(ctx: &mut Context) -> Result<(), Box<dyn Erro
 
     let body = body_to_string(response.into_body()).await;
     assert!(body.contains(r#""l10n":{"keymap":"en"}"#));
-    dbg!(&body);
     assert!(body.contains(r#""product":{"id":"SLES","mode":"standard"}"#));
 
     Ok(())
