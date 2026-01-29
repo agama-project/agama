@@ -586,6 +586,25 @@ impl Service {
             .await?;
         Ok(is_empty)
     }
+
+    /// Returns the product configuration.
+    ///
+    /// When the software is busy, the configuration will not include the product
+    /// information. However, most of that information is already available in the
+    /// manager service.
+    async fn product_software_config(&self) -> Result<Option<api::software::Config>, Error> {
+        let Some(product) = &self.product else {
+            return Ok(None);
+        };
+
+        let mut software_config = self.config.software.clone().unwrap_or_default();
+        let product_config = software_config.product.get_or_insert_default();
+        let product = product.read().await;
+        product_config.id = Some(product.id.clone());
+        product_config.mode = product.mode.clone();
+
+        Ok(Some(software_config))
+    }
 }
 
 impl Actor for Service {
@@ -658,7 +677,7 @@ impl MessageHandler<message::GetExtendedConfig> for Service {
         let software = if self.is_software_available().await? {
             Some(self.software.call(software::message::GetConfig).await?)
         } else {
-            None
+            self.product_software_config().await?
         };
 
         Ok(Config {
