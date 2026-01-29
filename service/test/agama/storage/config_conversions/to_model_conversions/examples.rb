@@ -94,10 +94,11 @@ shared_examples "with filesystem" do
       expect(model_json[:mountPath]).to eq("/test")
       expect(model_json[:filesystem]).to eq(
         {
-          reuse:   true,
-          default: false,
-          type:    "xfs",
-          label:   "test"
+          reuse:         true,
+          default:       false,
+          type:          "xfs",
+          label:         "test",
+          transactional: false
         }
       )
     end
@@ -161,7 +162,10 @@ shared_examples "with partitions" do
             deleteIfNeeded: false,
             resize:         false,
             resizeIfNeeded: false,
-            filesystem:     { reuse: false },
+            filesystem:     {
+              reuse:         false,
+              transactional: false
+            },
             mountPath:      "/",
             size:           {
               default: true,

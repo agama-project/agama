@@ -22,9 +22,9 @@
 
 /**
  * @fixme This file implements utils for the storage components and it also offers several functions
- * to get information from a Volume (e.g., #hasSnapshots, #isTransactionalRoot, etc). It would be
- * better to use another approach to encapsulate the volume information. For example, by creating
- * a Volume class or by providing a kind of interface for volumes.
+ * to get information from a Volume (e.g., #hasSnapshots, etc). It would be better to use another
+ * approach to encapsulate the volume information. For example, by creating a Volume class or by
+ * providing a kind of interface for volumes.
  */
 
 import xbytes from "xbytes";
@@ -284,20 +284,6 @@ const hasSnapshots = (volume: System.Volume): boolean => {
 };
 
 /**
- * Checks whether the given volume defines a transactional root.
- */
-const isTransactionalRoot = (volume: System.Volume): boolean => {
-  return volume.mountPath === "/" && volume.transactional;
-};
-
-/**
- * Checks whether the given volumes defines a transactional system.
- */
-const isTransactionalSystem = (volumes: System.Volume[] = []): boolean => {
-  return volumes.find((v) => isTransactionalRoot(v)) !== undefined;
-};
-
-/**
  * Generates a label for the given volume.
  */
 const volumeLabel = (volume: System.Volume): string =>
@@ -323,6 +309,7 @@ const filesystemLabel = (fstype: string): string => {
  */
 const filesystemType = (filesystem: ConfigModel.Filesystem): string | undefined => {
   if (filesystem.type) {
+    if (filesystem.transactional) return _("immutable Btrfs");
     if (filesystem.snapshots) return _("Btrfs with snapshots");
 
     return filesystemLabel(filesystem.type);
@@ -403,8 +390,6 @@ export {
   sizeDescription,
   hasFS,
   hasSnapshots,
-  isTransactionalRoot,
-  isTransactionalSystem,
   volumeLabel,
   createPartitionableLocation,
   findPartitionableDevice,

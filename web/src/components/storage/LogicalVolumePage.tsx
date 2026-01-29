@@ -67,6 +67,7 @@ import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
 import SizeModeSelect, { SizeMode, SizeRange } from "~/components/storage/SizeModeSelect";
 import type { ConfigModel, Data } from "~/model/storage/config-model";
+import type { Storage as System } from "~/model/system";
 
 const NO_VALUE = "";
 const BTRFS_SNAPSHOTS = "btrfsSnapshots";
@@ -461,11 +462,15 @@ function LogicalVolumeName({
 
 type FilesystemOptionLabelProps = {
   value: string;
+  volume: System.Volume;
 };
 
-function FilesystemOptionLabel({ value }: FilesystemOptionLabelProps): React.ReactNode {
+function FilesystemOptionLabel({ value, volume }: FilesystemOptionLabelProps): React.ReactNode {
   if (value === NO_VALUE) return _("Waiting for a mount point");
-  if (value === BTRFS_SNAPSHOTS) return _("Btrfs with snapshots");
+  if (value === BTRFS_SNAPSHOTS) {
+    if (volume.transactional) return _("Immutable Btrfs");
+    return _("Btrfs with snapshots");
+  }
 
   return filesystemLabel(value);
 }
@@ -490,7 +495,7 @@ function FilesystemOptions({ mountPoint }: FilesystemOptionsProps): React.ReactN
     <SelectList aria-label="Available file systems">
       {mountPoint === NO_VALUE && (
         <SelectOption value={NO_VALUE}>
-          <FilesystemOptionLabel value={NO_VALUE} />
+          <FilesystemOptionLabel value={NO_VALUE} volume={volume} />
         </SelectOption>
       )}
       {mountPoint !== NO_VALUE && (
@@ -501,7 +506,7 @@ function FilesystemOptions({ mountPoint }: FilesystemOptionsProps): React.ReactN
               value={fsType}
               description={fsType === defaultFilesystem && defaultOptText}
             >
-              <FilesystemOptionLabel value={fsType} />
+              <FilesystemOptionLabel value={fsType} volume={volume} />
             </SelectOption>
           ))}
         </SelectGroup>
@@ -523,13 +528,14 @@ function FilesystemSelect({
   mountPoint,
   onChange,
 }: FilesystemSelectProps): React.ReactNode {
+  const volume = useVolumeTemplate(mountPoint);
   const usedValue = mountPoint === NO_VALUE ? NO_VALUE : value;
 
   return (
     <Select
       id={id}
       value={usedValue}
-      label={<FilesystemOptionLabel value={usedValue} />}
+      label={<FilesystemOptionLabel value={usedValue} volume={volume} />}
       onChange={onChange}
       isDisabled={mountPoint === NO_VALUE}
     >

@@ -1016,9 +1016,10 @@ describe Agama::DBus::Storage::Manager do
                   {
                     mountPath:      "/",
                     filesystem:     {
-                      reuse:   false,
-                      default: true,
-                      type:    "ext4"
+                      reuse:         false,
+                      default:       true,
+                      type:          "ext4",
+                      transactional: false
                     },
                     size:           {
                       default: true,
@@ -1092,9 +1093,10 @@ describe Agama::DBus::Storage::Manager do
                 {
                   mountPath:      "/",
                   filesystem:     {
-                    reuse:   false,
-                    default: true,
-                    type:    "ext4"
+                    reuse:         false,
+                    default:       true,
+                    type:          "ext4",
+                    transactional: false
                   },
                   size:           {
                     default: true,

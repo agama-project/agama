@@ -28,21 +28,27 @@ module Agama
         # Drive conversion to model according to the JSON schema.
         class Filesystem < Base
           # @param config [Configs::Filesystem]
-          def initialize(config)
+          # @param volumes [VolumeTemplatesBuilder]
+          def initialize(config, volumes)
             super()
             @config = config
+            @volumes = volumes
           end
 
         private
 
+          # @return [VolumeTemplatesBuilder]
+          attr_reader :volumes
+
           # @see Base#conversions
           def conversions
             {
-              reuse:     config.reuse?,
-              default:   convert_default,
-              type:      convert_type,
-              snapshots: convert_snapshots,
-              label:     config.label
+              reuse:         config.reuse?,
+              default:       convert_default,
+              type:          convert_type,
+              snapshots:     convert_snapshots,
+              label:         config.label,
+              transactional: convert_transactional
             }
           end
 
@@ -65,6 +71,16 @@ module Agama
             return unless config.type&.fs_type&.is?(:btrfs)
 
             config.type.btrfs&.snapshots?
+          end
+
+          # @return [Boolean, nil]
+          def convert_transactional
+            return false unless config.path
+
+            volume = volumes.for(config.path)
+            return false unless volume
+
+            !!volume.btrfs&.read_only?
           end
         end
       end

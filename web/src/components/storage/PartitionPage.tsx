@@ -567,16 +567,25 @@ function TargetOptions(): React.ReactNode {
 type FilesystemOptionLabelProps = {
   value: string;
   target: string;
+  volume: System.Volume;
 };
 
-function FilesystemOptionLabel({ value, target }: FilesystemOptionLabelProps): React.ReactNode {
+function FilesystemOptionLabel({
+  value,
+  target,
+  volume,
+}: FilesystemOptionLabelProps): React.ReactNode {
   const partition = usePartition(target);
   const filesystem = partition?.filesystem?.type;
+
   if (value === NO_VALUE) return _("Waiting for a mount point");
   // TRANSLATORS: %s is a filesystem type, like Btrfs
   if (value === REUSE_FILESYSTEM && filesystem)
     return sprintf(_("Current %s"), filesystemLabel(filesystem));
-  if (value === BTRFS_SNAPSHOTS) return _("Btrfs with snapshots");
+  if (value === BTRFS_SNAPSHOTS) {
+    if (volume.transactional) return _("Immutable Btrfs");
+    return _("Btrfs with snapshots");
+  }
 
   return filesystemLabel(value);
 }
@@ -604,7 +613,7 @@ function FilesystemOptions({ mountPoint, target }: FilesystemOptionsProps): Reac
     <SelectList aria-label="Available file systems">
       {mountPoint === NO_VALUE && (
         <SelectOption value={NO_VALUE}>
-          <FilesystemOptionLabel value={NO_VALUE} target={target} />
+          <FilesystemOptionLabel value={NO_VALUE} target={target} volume={volume} />
         </SelectOption>
       )}
       {mountPoint !== NO_VALUE && canReuse && (
@@ -613,7 +622,7 @@ function FilesystemOptions({ mountPoint, target }: FilesystemOptionsProps): Reac
           // TRANSLATORS: %s is the name of a partition, like /dev/vda2
           description={sprintf(_("Do not format %s and keep the data"), target)}
         >
-          <FilesystemOptionLabel value={REUSE_FILESYSTEM} target={target} />
+          <FilesystemOptionLabel value={REUSE_FILESYSTEM} target={target} volume={volume} />
         </SelectOption>
       )}
       {mountPoint !== NO_VALUE && canReuse && usableFilesystems.length && <Divider />}
@@ -625,7 +634,7 @@ function FilesystemOptions({ mountPoint, target }: FilesystemOptionsProps): Reac
               value={fsType}
               description={fsType === defaultFilesystem && defaultOptText}
             >
-              <FilesystemOptionLabel value={fsType} target={target} />
+              <FilesystemOptionLabel value={fsType} target={target} volume={volume} />
             </SelectOption>
           ))}
         </SelectGroup>
@@ -649,13 +658,14 @@ function FilesystemSelect({
   target,
   onChange,
 }: FilesystemSelectProps): React.ReactNode {
+  const volume = useVolumeTemplate(mountPoint);
   const usedValue = mountPoint === NO_VALUE ? NO_VALUE : value;
 
   return (
     <Select
       id={id}
       value={usedValue}
-      label={<FilesystemOptionLabel value={usedValue} target={target} />}
+      label={<FilesystemOptionLabel value={usedValue} target={target} volume={volume} />}
       onChange={onChange}
       isDisabled={mountPoint === NO_VALUE}
     >

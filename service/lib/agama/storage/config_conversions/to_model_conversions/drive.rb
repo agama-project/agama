@@ -35,12 +35,17 @@ module Agama
           include WithSpacePolicy
 
           # @param config [Configs::Drive]
-          def initialize(config)
+          # @param volumes [VolumeTemplatesBuilder]
+          def initialize(config, volumes)
             super()
             @config = config
+            @volumes = volumes
           end
 
         private
+
+          # @return [VolumeTemplatesBuilder]
+          attr_reader :volumes
 
           # @see Base#conversions
           def conversions

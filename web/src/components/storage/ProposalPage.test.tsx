@@ -102,7 +102,6 @@ jest.mock("~/queries/storage/dasd", () => ({
   useDASDSupported: () => mockUseDASDSupported(),
 }));
 
-jest.mock("./ProposalTransactionalInfo", () => () => <div>trasactional info</div>);
 jest.mock("./ProposalFailedInfo", () => () => <div>proposal failed info</div>);
 jest.mock("./UnsupportedModelInfo", () => () => <div>unsupported model info</div>);
 jest.mock("./FixableConfigInfo", () => () => <div>fixable config info</div>);

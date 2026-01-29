@@ -62,6 +62,7 @@ export interface Filesystem {
   type?: FilesystemType;
   snapshots?: boolean;
   label?: string;
+  transactional?: boolean;
 }
 export interface Partition {
   name?: string;
