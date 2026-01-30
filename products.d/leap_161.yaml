@@ -1,5 +1,5 @@
 id: openSUSE_Leap
-name: Leap 16.0
+name: Leap 16.1
 # ------------------------------------------------------------------------------
 # WARNING: When changing the product description delete the translations located
 # at the at translations/description key below to avoid using obsolete
@@ -31,7 +31,7 @@ translations:
     ja: 最新のSUSE Linux Enterprise Server をベースにした、コミュニティディストリビューションの最新版です。
     kab: Lqem aneggaru n uzuzer n temɣiwant yebnan ɣef uqeddac aneggaru n SUSE Linux
       Enterprise Server.
-    nb_NO: Leap 16.0 er den nyeste versjonen av den fellesskapte distribusjon basert
+    nb_NO: Den nyeste versjonen av en fellesskapsbasert distribusjon basert
       på den nyeste SUSE Linux Enterprise Server.
     nl: De nieuwste versie van een community distributie gebaseerd op de laatse SUSE
       Linux Enterprise Server.
@@ -51,7 +51,7 @@ translations:
     zh_TW: 根據最新 SUSE Linux Enterprise Server 打造的最新社群版發行版本。
 software:
   installation_repositories:
-    - url: https://download.opensuse.org/distribution/leap/16.0/repo/oss/$basearch
+    - url: https://download.opensuse.org/distribution/leap/16.1/repo/oss/$basearch
   installation_labels:
     - label: Leap-DVD-x86_64
       archs: x86_64

@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Jan 29 11:00:00 UTC 2026 - Lubos Kocman <Lubos.Kocman@suse.com>
+
+- Add Leap 16.1 product definition
+- Drop Leap 16.0 product definition
+-------------------------------------------------------------------
 Wed Jan 28 13:01:02 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Fix the optional_patterns attribute in the product definitions
