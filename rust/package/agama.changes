@@ -1,5 +1,5 @@
 -------------------------------------------------------------------
-Fri Jan 30 15:00:08 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+Fri Jan 30 11:00:08 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
 
 - Added proxy service allowing to configure the proxy through the 
   kernel cmdline proxy argument and with HTTP API
