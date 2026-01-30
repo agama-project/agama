@@ -26,6 +26,7 @@ use agama_hostname::test_utils::start_service as start_hostname_service;
 use agama_iscsi::test_utils::start_service as start_iscsi_service;
 use agama_l10n::test_utils::start_service as start_l10n_service;
 use agama_network::test_utils::start_service as start_network_service;
+use agama_proxy::test_utils::start_service as start_proxy_service;
 use agama_security::test_utils::start_service as start_security_service;
 use agama_software::test_utils::start_service as start_software_service;
 use agama_storage::test_utils::start_service as start_storage_service;
@@ -61,6 +62,7 @@ pub async fn start_service(events: event::Sender, dbus: zbus::Connection) -> Han
         .with_iscsi(iscsi)
         .with_bootloader(start_bootloader_service(issues.clone(), dbus.clone()).await)
         .with_network(start_network_service(events.clone(), progress.clone()).await)
+        .with_proxy(start_proxy_service(events.clone()).await)
         .with_security(security.clone())
         .with_software(start_software_service(events, issues, progress, questions).await)
         .with_hardware(hardware::Registry::new_from_file(
