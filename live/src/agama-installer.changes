@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Jan 30 15:49:09 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+
+- Do display a message if "UEFI Firmware Settings" boot menu entry
+  fails  (gh#agama-project/agama#3109)
+
+-------------------------------------------------------------------
 Wed Jan 28 14:26:37 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
 
 - Enable agama-proxy-setup service for configuring the proxy if
