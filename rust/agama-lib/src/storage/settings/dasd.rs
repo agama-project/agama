@@ -21,6 +21,7 @@
 //! Representation of the DASD settings used in set/get config
 
 use serde::{Deserialize, Serialize};
+use serde_with::skip_serializing_none;
 
 #[derive(Debug, Default, Serialize, Deserialize, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
@@ -38,6 +39,7 @@ pub enum DASDDeviceState {
 
 /// Representation of single DASD device in settings used in set/get config
 #[derive(Clone, Debug, Default, Serialize, Deserialize, utoipa::ToSchema)]
+#[skip_serializing_none]
 #[serde(rename_all = "camelCase")]
 pub struct DASDDeviceConfig {
     /// DASD device Channel. Mandatory part of device config.
