@@ -228,7 +228,7 @@ impl ScriptsRunner {
     ///
     /// It returns false if the resolv.conf was already linked and no action was required.
     fn link_resolv(&self) -> Result<bool, std::io::Error> {
-        let original = self.workdir.join(NM_RESOLV_CONF_PATH);
+        let original = self.root_path().join(NM_RESOLV_CONF_PATH);
         let link = self.resolv_link_path();
 
         if fs::exists(&link)? || !fs::exists(&original)? {
@@ -250,6 +250,10 @@ impl ScriptsRunner {
 
     fn resolv_link_path(&self) -> PathBuf {
         self.install_dir.join(RESOLV_CONF_PATH)
+    }
+
+    fn root_path(&self) -> PathBuf {
+        PathBuf::from("/")
     }
 }
 
@@ -334,9 +338,14 @@ mod tests {
             script
         }
 
+        fn root_path(&self) -> PathBuf {
+            let tmp_dir = TempDir::new().expect("a temporary directory");
+            tmp_dir.path().to_path_buf()
+        }
+
         // Set up a fake chroot.
         pub fn setup_chroot(&self) -> std::io::Result<()> {
-            let nm_dir = self.workdir.join("run/NetworkManager");
+            let nm_dir = self.root_path().join("run/NetworkManager");
             fs::create_dir_all(&nm_dir)?;
             fs::create_dir_all(self.install_dir.join("etc"))?;
 
