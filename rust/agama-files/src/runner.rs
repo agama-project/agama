@@ -228,7 +228,7 @@ impl ScriptsRunner {
     ///
     /// It returns false if the resolv.conf was already linked and no action was required.
     fn link_resolv(&self) -> Result<bool, std::io::Error> {
-        let original = self.install_dir.join(NM_RESOLV_CONF_PATH);
+        let original = self.workdir.join(NM_RESOLV_CONF_PATH);
         let link = self.resolv_link_path();
 
         if fs::exists(&link)? || !fs::exists(&original)? {
