@@ -22,7 +22,7 @@
 
 import React, { act } from "react";
 import { screen, waitFor, within } from "@testing-library/react";
-import { installerRender, mockNavigateFn, mockProduct } from "~/test-utils";
+import { installerRender, mockNavigateFn, mockProduct, mockProductConfig } from "~/test-utils";
 import { useSystem } from "~/hooks/model/system";
 import { useSystem as useSystemSoftware } from "~/hooks/model/system/software";
 import { ROOT } from "~/routes/paths";
@@ -455,6 +455,37 @@ describe("ProductSelectionPage", () => {
       installerRender(<ProductSelectionPage />);
 
       expect(screen.queryByRole("heading", { level: 2, name: "Current selection" })).toBeNull();
+    });
+
+    it("displays mode information when product has a selected mode", () => {
+      mockProductConfig({ id: productWithModes.id, mode: "standard" });
+      mockProduct(productWithModes);
+      installerRender(<ProductSelectionPage />);
+
+      const sectionHeading = screen.getByRole("heading", { level: 2, name: "Current selection" });
+      const section = sectionHeading.closest("section");
+
+      // Product information
+      within(section).getByRole("heading", { level: 3, name: productWithModes.name });
+      within(section).getByText(productWithModes.description);
+
+      // Mode information
+      within(section).getByRole("heading", { level: 3, name: "Standard" });
+      within(section).getByText("Standard system");
+    });
+
+    it("does not display mode information for products without modes", () => {
+      mockProduct(tumbleweed);
+      installerRender(<ProductSelectionPage />);
+
+      const sectionHeading = screen.getByRole("heading", { level: 2, name: "Current selection" });
+      const section = sectionHeading.closest("section");
+
+      within(section).getByRole("heading", { level: 3, name: tumbleweed.name });
+
+      // Should only have one h3 heading (the product name)
+      const h3Headings = within(section).getAllByRole("heading", { level: 3 });
+      expect(h3Headings).toHaveLength(1);
     });
 
     // Test for ensuring that the section displaying information about the
