@@ -77,7 +77,10 @@ impl<'a> Client<'a> {
     pub async fn new(connection: Connection) -> ClientResult<Client<'a>> {
         let bootloader_proxy = BootloaderProxy::new(&connection).await?;
 
-        Ok(Self { bootloader_proxy, kernel_args: HashMap::new()})
+        Ok(Self {
+            bootloader_proxy,
+            kernel_args: HashMap::new(),
+        })
     }
 }
 
