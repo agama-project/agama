@@ -53,13 +53,10 @@ const homeVolume: Storage.Volume = {
   minSize: gib(1),
   maxSize: gib(5),
   autoSize: false,
-  snapshots: false,
-  transactional: false,
   outline: {
     required: false,
     fsTypes: ["btrfs", "xfs"],
     supportAutoSize: false,
-    snapshotsConfigurable: false,
     snapshotsAffectSizes: false,
     sizeRelevantVolumes: [],
     adjustByRam: false,
@@ -198,7 +195,6 @@ describe("FormattableDevicePage", () => {
         mountPath: "/home",
         filesystem: {
           type: "xfs",
-          snapshots: false,
           label: "TEST",
         },
       });

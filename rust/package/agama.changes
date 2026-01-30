@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Jan 30 16:27:35 UTC 2026 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Update schemas for storage model and volume templates (related to
+  jsc#PED-14307).
+
+-------------------------------------------------------------------
 Fri Jan 30 11:00:08 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
 
 - Added proxy service allowing to configure the proxy through the 

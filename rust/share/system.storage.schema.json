@@ -72,8 +72,6 @@
         "autoSize": { "type": "boolean" },
         "minSize": { "type": "integer" },
         "maxSize": { "type": "integer" },
-        "snapshots": { "type": "boolean" },
-        "transactional": { "type": "boolean" },
         "outline": { "$ref": "#/$defs/volumeOutline" }
       }
     },
@@ -89,7 +87,6 @@
           "items": { "$ref": "device.storage.schema.json#/$defs/filesystemType" }
         },
         "adjustByRam": { "type": "boolean" },
-        "snapshotsConfigurable": { "type": "boolean" },
         "snapshotsAffectSizes": { "type": "boolean" },
         "sizeRelevantVolumes": {
           "type": "array",

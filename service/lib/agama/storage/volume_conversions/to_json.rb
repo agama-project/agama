@@ -47,14 +47,12 @@ module Agama
         # @return [Hash]
         def convert
           {
-            mountPath:     volume.mount_path.to_s,
-            mountOptions:  volume.mount_options,
-            fsType:        volume.fs_type&.to_s || "",
-            minSize:       min_size_conversion,
-            autoSize:      volume.auto_size?,
-            snapshots:     volume.btrfs.snapshots?,
-            transactional: volume.btrfs.read_only?,
-            outline:       outline_conversion
+            mountPath:    volume.mount_path.to_s,
+            mountOptions: volume.mount_options,
+            fsType:       fs_type_conversion,
+            minSize:      min_size_conversion,
+            autoSize:     volume.auto_size?,
+            outline:      outline_conversion
           }.tap do |volume_json|
             # Some volumes could not have "MaxSize".
             max_size_conversion(volume_json)
@@ -96,14 +94,41 @@ module Agama
           outline = volume.outline
 
           {
-            required:              outline.required?,
-            fsTypes:               outline.filesystems.map(&:to_s),
-            supportAutoSize:       outline.adaptive_sizes?,
-            adjustByRam:           outline.adjust_by_ram?,
-            snapshotsConfigurable: outline.snapshots_configurable?,
-            snapshotsAffectSizes:  outline.snapshots_affect_sizes?,
-            sizeRelevantVolumes:   outline.size_relevant_volumes
+            required:             outline.required?,
+            fsTypes:              fs_types_conversion(outline),
+            supportAutoSize:      outline.adaptive_sizes?,
+            adjustByRam:          outline.adjust_by_ram?,
+            snapshotsAffectSizes: outline.snapshots_affect_sizes?,
+            sizeRelevantVolumes:  outline.size_relevant_volumes
           }
+        end
+
+        # @see #convert
+        def fs_type_conversion
+          type = volume.fs_type&.to_s || ""
+          if type == "btrfs"
+            return "btrfsImmutable" if volume.btrfs.read_only?
+            return "btrfsSnapshots" if volume.btrfs.snapshots?
+          end
+          type
+        end
+
+        # @see #outline_conversion
+        def fs_types_conversion(outline)
+          types = outline.filesystems.map(&:to_s)
+          if types.include?("btrfs")
+            idx = types.index("btrfs")
+
+            if volume.btrfs.read_only?
+              types[idx] = "btrfsImmutable"
+            elsif outline.snapshots_configurable?
+              types = types[0..idx] + ["btrfsSnapshots"] + types[idx + 1..-1]
+            elsif volume.btrfs.snapshots?
+              types[idx] = "btrfsSnapshots"
+            end
+          end
+
+          types
         end
       end
     end
