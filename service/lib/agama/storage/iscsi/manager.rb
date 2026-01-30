@@ -28,8 +28,6 @@ module Agama
     module ISCSI
       # Manager for iSCSI.
       class Manager
-        include Yast::I18n
-
         PACKAGES = ["open-iscsi", "iscsiuio"].freeze
 
         # Config according to the JSON schema.

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2023] SUSE LLC
+# Copyright (c) [2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -19,151 +19,122 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "dbus"
 require "agama/dbus/base_object"
+require "agama/with_progress"
+require "dbus"
+require "json"
+require "yast"
 
 module Agama
   module DBus
     module Storage
-      # Class representing a DASD in the D-Bus tree
-      class Dasd < BaseObject
-        # YaST representation of the DASD
-        #
-        # @return [Y2S390::Dasd]
-        attr_reader :dasd
+      # D-Bus object to manage DASD.
+      class DASD < BaseObject
+        include Yast::I18n
+        include Agama::WithProgress
 
-        # Constructor
-        #
-        # @param dasd [Y2S390::Dasd] See {#dasd}
-        # @param path [DBus::ObjectPath] Path in which the object is exported
+        PATH = "/org/opensuse/Agama/Storage1/DASD"
+        private_constant :PATH
+
+        # @param manager [Agama::Storage::DASD::Manager]
         # @param logger [Logger, nil]
-        def initialize(dasd, path, logger: nil)
-          super(path, logger: logger)
-          @dasd = dasd
+        def initialize(manager, logger: nil)
+          textdomain "agama"
+          super(PATH, logger: logger)
+          @manager = manager
+          register_progress_callbacks
         end
 
-        # The device channel id
-        #
-        # @return [String]
-        def id
-          dasd.id
-        end
-
-        # Whether the device is enabled
-        #
-        # @return [Boolean]
-        def enabled
-          !dasd.offline?
-        end
-
-        # The associated device name
-        #
-        # @return [String] empty if the device is not enabled
-        def device_name
-          dasd.device_name || ""
-        end
-
-        # Whether the device is formatted
-        #
-        # @return [Boolean]
-        def formatted
-          dasd.formatted?
-        end
-
-        # Whether the DIAG access method is enabled
-        #
-        # YaST traditionally displays #use_diag, which is always false for disabled devices (see
-        # more info about the YaST behavior regarding DIAG at Agama::Storage::DASD::Manager).
-        # But displaying #diag_wanted is surely more useful. For enabled DASDs both values match
-        # and for disabled DASDs #diag_wanted is more informative.
-        #
-        # @return [Boolean]
-        def diag
-          dasd.diag_wanted
-        end
-
-        # The DASD device type concatenating the cutype and devtype (i.e. 3990/E9 3390/0A)
-        #
-        # @return [String] empty if unknown
-        def device_type
-          dasd.device_type || ""
-        end
-
-        ECKD = "ECKD"
-        FBA = "FBA"
-
-        # Return the type from the device type
-        #
-        # @see https://github.com/SUSE/s390-tools/blob/master/dasd_configure#L162
-        #
-        # @return [String]
-        def type_from(device_type)
-          cu_type, dev_type = device_type.split
-          return ECKD if cu_type.to_s.start_with?("3990", "2105", "2107", "1750", "9343")
-          return FBA if cu_type.to_s.start_with?("6310")
-
-          if cu_type.start_with?("3880")
-            return ECKD if dev_type.start_with?("3390")
-            return FBA if dev_type.start_with?("3370")
+        dbus_interface "org.opensuse.Agama.Storage1.DASD" do
+          dbus_method(:GetSystem, "out system:s") { recover_system }
+          dbus_method(:GetConfig, "out config:s") { recover_config }
+          dbus_method(:SetConfig, "in serialized_config:s") do |serialized_config|
+            configure(serialized_config)
           end
-
-          device_type
+          dbus_signal(:SystemChanged, "system:s")
+          dbus_signal(:ProgressChanged, "progress:s")
+          dbus_signal(:ProgressFinished)
+          dbus_signal(:FormatChanged, "summary:s")
         end
 
-        # The DASD type (ECKD, FBA)
+        # Gets the serialized system information.
         #
-        # @return [String] empty if unknown
-        def type
-          dasd.type || type_from(device_type)
+        # @return [String]
+        def recover_system
+          manager.probe unless manager.probed?
+          JSON.pretty_generate(system_json)
         end
 
-        # Access type ('rw', 'ro')
+        # Gets the serialized config.
         #
-        # @return [String] empty if unknown
-        def access_type
-          dasd.access_type || ""
+        # @return [String]
+        def recover_config
+          JSON.pretty_generate(manager.config_json)
         end
 
-        # Device status if known or 'unknown' if not
+        # Applies the given serialized DASD config.
         #
-        # @return [String] 'active', 'read_only', 'offline', 'no_format', or 'unknown'
-        def status
-          dasd.status.to_s
+        # @todo Raise error if the config is not valid.
+        #
+        # @param serialized_config [String] Serialized DASD config according to the JSON schema.
+        def configure(serialized_config)
+          config_json = JSON.parse(serialized_config, symbolize_names: true)
+
+          # Do not configure if there is no config
+          return unless config_json
+
+          # Do not configure if there is nothing to change.
+          return if manager.configured?(config_json)
+
+          # TODO: run everything in a new thread.
+
+          logger.info("Configuring DASD")
+
+          start_progress(1, _("Configuring DASD"))
+          manager.configure(config_json)
+          emit_system_changed
+          finish_progress
         end
 
-        # Description of the partitions
-        #
-        # @return [String] empty if the information is unknown
-        def partition_info
-          dasd.partition_info || ""
+      private
+
+        # @return [Agama::Storage::ISCSI::Manager]
+        attr_reader :manager
+
+        # @return [Hash]
+        def system_json
+          { devices: devices_json }
         end
 
-        # Sets the associated DASD object
-        #
-        # @note A properties changed signal is always emitted.
-        #
-        # @param value [Y2S390::Dasd]
-        def dasd=(value)
-          @dasd = value
-
-          properties = interfaces_and_properties[DASD_DEVICE_INTERFACE]
-          dbus_properties_changed(DASD_DEVICE_INTERFACE, properties, [])
+        # @return [Hash]
+        def devices_json
+          manager.devices.map { |d| device_json(n) }
         end
 
-        # Interface name representing a DASD object
-        DASD_DEVICE_INTERFACE = "org.opensuse.Agama.Storage1.DASD.Device"
-        private_constant :DASD_DEVICE_INTERFACE
+        # @param dasd [Y2S390::Dasd]
+        # @return [Hash]
+        def device_json(dasd)
+          {
+            channel: dasd.id,
+            deviceName: dasd.device_name || "",
+            type: manager.device_type(dasd),
+            diag: dasd.use_diag,
+            accessType: dasd.access_type || "",
+            partitionInfo: dasd.partition_info || "",
+            status: dasd.status.to_s,
+            active: !dasd.offline?,
+            formatted: dasd.formatted?,
+          }
+        end
 
-        dbus_interface DASD_DEVICE_INTERFACE do
-          dbus_reader(:id, "s")
-          dbus_reader(:enabled, "b")
-          dbus_reader(:device_name, "s")
-          dbus_reader(:formatted, "b")
-          dbus_reader(:diag, "b")
-          dbus_reader(:status, "s")
-          dbus_reader(:type, "s")
-          dbus_reader(:access_type, "s")
-          dbus_reader(:partition_info, "s")
+        # Emits the SystemChanged signal
+        def emit_system_changed
+          self.SystemChanged(recover_system)
+        end
+
+        def register_progress_callbacks
+          on_progress_change { self.ProgressChanged(progress.to_json) }
+          on_progress_finish { self.ProgressFinished }
         end
       end
     end
