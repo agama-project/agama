@@ -177,10 +177,12 @@ module Agama
         write_stop_on_boot(bootloader) if @config.keys_to_export.include?(:stop_on_boot_menu)
         write_timeout(bootloader) if @config.keys_to_export.include?(:timeout)
         kernel_params = @config.scoped_kernel_params.values.join(" ")
+        @logger.info "scoped kernel params: #{kernel_params}"
 
         if @config.keys_to_export.include?(:extra_kernel_params)
           kernel_params += " " + @config.extra_kernel_params
         end
+        @logger.info "full kernel params: #{kernel_params}"
         write_extra_kernel_params(bootloader, kernel_params)
 
         bootloader

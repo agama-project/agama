@@ -97,6 +97,7 @@ impl<'a> BootloaderClient for Client<'a> {
             config: config.clone(),
             kernel_args: self.kernel_args.clone(),
         };
+        tracing::info!("sending bootloader config {:?}", full_config);
         // ignore return value as currently it does not fail and who knows what future brings
         // but it should not be part of result and instead transformed to Issue
         self.bootloader_proxy
