@@ -10,10 +10,10 @@ extern "C" {
 #endif
 
 struct Repository {
-  bool enabled;   ///<
-  char *url;      ///< owned
-  char *alias;    ///< owned
-  char *userName; ///< owned
+  bool enabled;      ///<
+  char *url;         ///< owned
+  char *alias;       ///< owned
+  char *userName;    ///< owned
   char *serviceName; ///< owned
 };
 

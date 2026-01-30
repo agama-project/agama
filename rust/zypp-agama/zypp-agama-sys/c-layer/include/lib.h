@@ -213,9 +213,11 @@ bool is_package_selected(struct Zypp *zypp, const char *tag,
 
 /// Runs solver
 /// @param zypp see \ref init_target
+/// @param only_required if true, only required packages are installed (ignoring recommended packages)
 /// @param[out] status (will overwrite existing contents)
 /// @return true if solver pass and false if it found some dependency issues
-bool run_solver(struct Zypp *zypp, struct Status *status) noexcept;
+bool run_solver(struct Zypp *zypp, bool only_required,
+                struct Status *status) noexcept;
 
 /// the last call that will free all pointers to zypp holded by agama
 void free_zypp(struct Zypp *zypp) noexcept;

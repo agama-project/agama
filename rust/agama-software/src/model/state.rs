@@ -565,7 +565,7 @@ impl From<ResolvableSelection> for zypp_agama::ResolvableSelected {
 #[derive(Default, Debug)]
 pub struct SoftwareOptions {
     /// Install only required packages (not recommended ones).
-    only_required: bool,
+    pub only_required: bool,
 }
 
 #[derive(Clone, Debug)]

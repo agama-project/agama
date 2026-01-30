@@ -1,9 +1,22 @@
 -------------------------------------------------------------------
-Thu Jan 29 15:00:08 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+Fri Jan 30 15:00:08 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
 
 - Added proxy service allowing to configure the proxy through the 
   kernel cmdline proxy argument and with HTTP API
   (gh#agama-project/agama#3069).
+
+-------------------------------------------------------------------
+Thu Jan 29 22:30:05 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Do not export neither network/connections nor network/state when
+  they are None (related to bsc#1257400).
+
+-------------------------------------------------------------------
+Thu Jan 29 21:10:18 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- Add support for "onlyRequired" key in "software" section
+  using new libzypp zypp.conf.d directory.
+  (gh#agama-project/agama#3100)
 
 -------------------------------------------------------------------
 Thu Jan 29 14:56:50 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>

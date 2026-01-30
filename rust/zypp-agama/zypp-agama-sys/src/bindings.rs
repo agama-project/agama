@@ -654,8 +654,8 @@ unsafe extern "C" {
         tag: *const ::std::os::raw::c_char,
         status: *mut Status,
     ) -> bool;
-    #[doc = " Runs solver\n @param zypp see \\ref init_target\n @param[out] status (will overwrite existing contents)\n @return true if solver pass and false if it found some dependency issues"]
-    pub fn run_solver(zypp: *mut Zypp, status: *mut Status) -> bool;
+    #[doc = " Runs solver\n @param zypp see \\ref init_target\n @param only_required if true, only required packages are installed (ignoring recommended packages)\n @param[out] status (will overwrite existing contents)\n @return true if solver pass and false if it found some dependency issues"]
+    pub fn run_solver(zypp: *mut Zypp, only_required: bool, status: *mut Status) -> bool;
     #[doc = " the last call that will free all pointers to zypp holded by agama"]
     pub fn free_zypp(zypp: *mut Zypp);
     #[doc = " repository array in list.\n when no longer needed, use \\ref free_repository_list to release memory\n @param zypp see \\ref init_target\n @param[out] status (will overwrite existing contents)"]
