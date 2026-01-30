@@ -51,6 +51,11 @@ module Agama
         # @return [String]
         attr_accessor :extra_kernel_params
 
+        # Bootloader extra kernel parameters needed for other parts of agama
+        #
+        # @return [Hash<String, String>]
+        attr_accessor :scoped_kernel_params
+
         # Keys to export to JSON.
         #
         # As both previous keys are conflicting, remember which one to set or none. It can be empty
@@ -108,6 +113,8 @@ module Agama
               keys_to_export.push(:extra_kernel_params)
             end
           end
+
+          self.scoped_kernel_params = hsh[:kernelArgs]
 
           self
         end
@@ -169,19 +176,24 @@ module Agama
         bootloader = ::Bootloader::BootloaderFactory.current
         write_stop_on_boot(bootloader) if @config.keys_to_export.include?(:stop_on_boot_menu)
         write_timeout(bootloader) if @config.keys_to_export.include?(:timeout)
+        kernel_params = @config.scoped_kernel_params.values.join(" ")
+        @logger.info "scoped kernel params: #{kernel_params}"
+
         if @config.keys_to_export.include?(:extra_kernel_params)
-          write_extra_kernel_params(bootloader)
+          kernel_params += " " + @config.extra_kernel_params
         end
+        @logger.info "full kernel params: #{kernel_params}"
+        write_extra_kernel_params(bootloader, kernel_params)
 
         bootloader
       end
 
-      def write_extra_kernel_params(bootloader)
+      def write_extra_kernel_params(bootloader, kernel_params)
         # no systemd boot support for now
         return unless bootloader.respond_to?(:grub_default)
 
         new_bl = bootloader.class.new
-        new_bl.grub_default.kernel_params.replace(@config.extra_kernel_params)
+        new_bl.grub_default.kernel_params.replace(kernel_params)
         # and now just merge extra kernel params with all merge logic
         bootloader.merge(new_bl)
       end

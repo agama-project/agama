@@ -124,7 +124,10 @@ function SoftwarePatternsSelection(): React.ReactNode {
     } else {
       // add the pattern to the "remove" list only if it was autoselected by dependencies, otherwise
       // it was selected by user and it is enough to remove it from the "add" list above
-      if (selection[name] === SelectedBy.AUTO) {
+      // with exception of product preselected pattern which also needs to be added
+      const preselected = patterns.find((p) => p.name === name && p.preselected);
+
+      if (selection[name] === SelectedBy.AUTO || preselected) {
         remove.push(name);
       }
     }
