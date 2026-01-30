@@ -273,19 +273,29 @@ async fn handle_http_stream(
     }
 }
 
+async fn find_listener(addresses: String) -> Option<tokio::net::TcpListener> {
+    let addresses = addresses.split(',').collect::<Vec<_>>();
+    for addr in addresses {
+        // see https://github.com/tokio-rs/axum/blob/main/examples/low-level-openssl/src/main.rs
+        // how to use axum with openSSL
+        match tokio::net::TcpListener::bind(&addr).await {
+            Ok(listener) => {
+                return Some(listener);
+            }
+            Err(error) => {
+                eprintln!("Error: could not listen on {}: {}", &addr, error);
+            }
+        }
+    }
+    None
+}
+
 /// Starts the web server
 async fn start_server(address: String, service: Router, ssl_acceptor: SslAcceptor) {
     tracing::info!("Starting Agama web server at {}", address);
 
-    // see https://github.com/tokio-rs/axum/blob/main/examples/low-level-openssl/src/main.rs
-    // how to use axum with openSSL
-    let listener = tokio::net::TcpListener::bind(&address)
-        .await
-        .unwrap_or_else(|error| {
-            let msg = format!("Error: could not listen on {}: {}", &address, error);
-            tracing::error!(msg);
-            panic!("{}", msg)
-        });
+    let opt_listener = find_listener(address).await;
+    let listener = opt_listener.expect("None of the alternative addresses worked");
 
     pin_mut!(listener);
 
