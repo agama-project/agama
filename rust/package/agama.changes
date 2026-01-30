@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Jan 29 22:30:05 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Do not export neither network/connections nor network/state when
+  they are None (related to bsc#1257400).
+
+-------------------------------------------------------------------
 Thu Jan 29 21:10:18 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
 
 - Add support for "onlyRequired" key in "software" section

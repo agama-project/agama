@@ -30,9 +30,11 @@ use std::default::Default;
 #[serde(rename_all = "camelCase")]
 pub struct Config {
     /// Connections to use in the installation
+    #[serde(skip_serializing_if = "Option::is_none")]
     #[merge(strategy = merge::option::overwrite_none)]
     pub connections: Option<NetworkConnectionsCollection>,
     /// Network general settings
+    #[serde(skip_serializing_if = "Option::is_none")]
     #[merge(strategy = merge::option::recurse)]
     pub state: Option<StateSettings>,
 }
