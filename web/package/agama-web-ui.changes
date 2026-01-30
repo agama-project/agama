@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri Jan 30 16:28:39 UTC 2026 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Adapt UI to the new representation of Btrfs information
+  (snapshots and immutable) in the storage model and the volume
+  templates (related to jsc#PED-14307).
+
+-------------------------------------------------------------------
 Thu Jan 29 10:26:49 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Do not crash when selecting a pattern (gh#agama-project/agama#3097,

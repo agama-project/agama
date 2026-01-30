@@ -9,6 +9,8 @@ export type DriveType = "disk" | "raid" | "multipath" | "dasd";
 export type FilesystemType =
   | "bcachefs"
   | "btrfs"
+  | "btrfsSnapshots"
+  | "btrfsImmutable"
   | "exfat"
   | "ext2"
   | "ext3"

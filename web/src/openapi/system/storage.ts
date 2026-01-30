@@ -9,6 +9,8 @@ export type DriveType = "disk" | "raid" | "multipath" | "dasd";
 export type FilesystemType =
   | "bcachefs"
   | "btrfs"
+  | "btrfsSnapshots"
+  | "btrfsImmutable"
   | "exfat"
   | "ext2"
   | "ext3"
@@ -156,8 +158,6 @@ export interface Volume {
   autoSize: boolean;
   minSize: number;
   maxSize?: number;
-  snapshots?: boolean;
-  transactional?: boolean;
   outline?: VolumeOutline;
 }
 export interface VolumeOutline {
@@ -165,7 +165,6 @@ export interface VolumeOutline {
   supportAutoSize: boolean;
   fsTypes?: FilesystemType[];
   adjustByRam?: boolean;
-  snapshotsConfigurable?: boolean;
   snapshotsAffectSizes?: boolean;
   sizeRelevantVolumes?: string[];
 }

@@ -22,9 +22,9 @@
 
 /**
  * @fixme This file implements utils for the storage components and it also offers several functions
- * to get information from a Volume (e.g., #hasSnapshots, #isTransactionalRoot, etc). It would be
- * better to use another approach to encapsulate the volume information. For example, by creating
- * a Volume class or by providing a kind of interface for volumes.
+ * to get information from a Volume (e.g., #hasSnapshots, etc). It would be better to use another
+ * approach to encapsulate the volume information. For example, by creating a Volume class or by
+ * providing a kind of interface for volumes.
  */
 
 import xbytes from "xbytes";
@@ -68,6 +68,8 @@ const FILESYSTEM_NAMES = Object.freeze({
   bcachefs: N_("Bcachefs"),
   bitlocke: N_("BitLocker"),
   btrfs: N_("Btrfs"),
+  btrfsImmutable: N_("immutable Btrfs"),
+  btrfsSnapshots: N_("Btrfs with snapshots"),
   exfat: N_("ExFAT"),
   ext2: N_("Ext2"),
   ext3: N_("Ext3"),
@@ -280,21 +282,7 @@ const hasFS = (volume: System.Volume, fs: string): boolean => {
  * Checks whether the given volume has snapshots.
  */
 const hasSnapshots = (volume: System.Volume): boolean => {
-  return hasFS(volume, "btrfs") && volume.snapshots;
-};
-
-/**
- * Checks whether the given volume defines a transactional root.
- */
-const isTransactionalRoot = (volume: System.Volume): boolean => {
-  return volume.mountPath === "/" && volume.transactional;
-};
-
-/**
- * Checks whether the given volumes defines a transactional system.
- */
-const isTransactionalSystem = (volumes: System.Volume[] = []): boolean => {
-  return volumes.find((v) => isTransactionalRoot(v)) !== undefined;
+  return hasFS(volume, "btrfsSnapshots") || hasFS(volume, "btrfsImmutable");
 };
 
 /**
@@ -323,8 +311,6 @@ const filesystemLabel = (fstype: string): string => {
  */
 const filesystemType = (filesystem: ConfigModel.Filesystem): string | undefined => {
   if (filesystem.type) {
-    if (filesystem.snapshots) return _("Btrfs with snapshots");
-
     return filesystemLabel(filesystem.type);
   }
 
@@ -403,8 +389,6 @@ export {
   sizeDescription,
   hasFS,
   hasSnapshots,
-  isTransactionalRoot,
-  isTransactionalSystem,
   volumeLabel,
   createPartitionableLocation,
   findPartitionableDevice,

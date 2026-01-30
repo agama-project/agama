@@ -1,4 +1,17 @@
 -------------------------------------------------------------------
+Fri Jan 30 16:27:35 UTC 2026 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Update schemas for storage model and volume templates (related to
+  jsc#PED-14307).
+
+-------------------------------------------------------------------
+Fri Jan 30 11:00:08 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- Added proxy service allowing to configure the proxy through the 
+  kernel cmdline proxy argument and with HTTP API
+  (gh#agama-project/agama#3069).
+
+-------------------------------------------------------------------
 Thu Jan 29 22:30:05 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Do not export neither network/connections nor network/state when

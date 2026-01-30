@@ -23,9 +23,10 @@ require_relative "../../storage_helpers"
 require_relative "./examples"
 require "agama/storage/config_conversions/from_json_conversions/md_raid"
 require "agama/storage/config_conversions/to_model_conversions/md_raid"
+require "agama/storage/volume_templates_builder"
 
 describe Agama::Storage::ConfigConversions::ToModelConversions::MdRaid do
-  subject { described_class.new(config) }
+  subject { described_class.new(config, volumes) }
 
   let(:config) do
     Agama::Storage::ConfigConversions::FromJSONConversions::MdRaid
@@ -41,6 +42,8 @@ describe Agama::Storage::ConfigConversions::ToModelConversions::MdRaid do
       partitions: partitions
     }
   end
+
+  let(:volumes) { Agama::Storage::VolumeTemplatesBuilder.new([]) }
 
   let(:search) { nil }
   let(:filesystem) { nil }

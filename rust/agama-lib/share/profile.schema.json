@@ -170,6 +170,45 @@
         }
       }
     },
+    "proxy": {
+      "title": "Proxy settings",
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "title": "Whether the proxy is enabled or not.",
+          "type": "boolean"
+        },
+        "httpProxy": {
+          "description": "URL to be used for the HTTP proxy.",
+          "type": "string",
+          "examples": ["http://proxy.provider.de:3128/"]
+        },
+        "httpsProxy": {
+          "description": "URL to be used for the HTTPS proxy.",
+          "type": "string"
+        },
+        "ftpProxy": {
+          "type": "string"
+        },
+        "gopherProxy": {
+          "description": "URL to be used for the Gopher proxy.",
+          "type": "string"
+        },
+        "socksProxy": {
+          "description": "URL to be used for the SOCKS proxy.",
+          "type": "string"
+        },
+        "socks5Server": {
+          "description": "SOCKS5 server address",
+          "type": "string",
+          "examples": ["office-proxy.example.com:8881"]
+        },
+        "noProxy": {
+          "title": "Hosts that do not need a proxy for being reach",
+          "type": "string"
+        }
+      }
+    },
     "security": {
       "title": "Security settings",
       "type": "object",
@@ -984,9 +1023,7 @@
           "title": "Question class",
           "description": "Each question has a \"class\" which works as an identifier.",
           "type": "string",
-          "examples": [
-            "storage.activate_multipath"
-          ]
+          "examples": ["storage.activate_multipath"]
         },
         "text": {
           "title": "Question text",
