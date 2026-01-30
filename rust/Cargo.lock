@@ -329,6 +329,7 @@ dependencies = [
 name = "agama-software"
 version = "0.1.0"
 dependencies = [
+ "agama-bootloader",
  "agama-l10n",
  "agama-locale-data",
  "agama-security",
