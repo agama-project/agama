@@ -49,14 +49,15 @@ pub enum Error {
     Actor(#[from] actor::Error),
 }
 
-const DEFAULT_SCRIPTS_DIR: &str = "/run/agama/scripts";
+const DEFAULT_SCRIPTS_DIR: &str = "run/agama/scripts";
+const DEFAULT_WORK_DIR: &str = "/";
 const DEFAULT_INSTALL_DIR: &str = "/mnt";
 
 /// Builds and spawns the files service.
 ///
 /// This structs allows to build a files service.
 pub struct Starter {
-    scripts_workdir: PathBuf,
+    workdir: PathBuf,
     install_dir: PathBuf,
     software: Handler<software::Service>,
     progress: Handler<progress::Service>,
@@ -76,14 +77,14 @@ impl Starter {
             software,
             progress,
             questions,
-            scripts_workdir: PathBuf::from(DEFAULT_SCRIPTS_DIR),
+            workdir: PathBuf::from(DEFAULT_WORK_DIR),
             install_dir: PathBuf::from(DEFAULT_INSTALL_DIR),
         }
     }
 
     /// Starts the service and returns the handler to communicate with it.
     pub async fn start(self) -> Result<Handler<Service>, Error> {
-        let scripts = ScriptsRepository::new(self.scripts_workdir);
+        let scripts = ScriptsRepository::new(self.workdir.join(DEFAULT_SCRIPTS_DIR));
         let service = Service {
             progress: self.progress,
             questions: self.questions,
@@ -91,13 +92,14 @@ impl Starter {
             scripts: Arc::new(Mutex::new(scripts)),
             files: vec![],
             install_dir: self.install_dir,
+            root_dir: self.workdir,
         };
         let handler = actor::spawn(service);
         Ok(handler)
     }
 
-    pub fn with_scripts_workdir<P: AsRef<Path>>(mut self, workdir: P) -> Self {
-        self.scripts_workdir = PathBuf::from(workdir.as_ref());
+    pub fn with_workdir<P: AsRef<Path>>(mut self, workdir: P) -> Self {
+        self.workdir = PathBuf::from(workdir.as_ref());
         self
     }
 
@@ -114,6 +116,7 @@ pub struct Service {
     scripts: Arc<Mutex<ScriptsRepository>>,
     files: Vec<UserFile>,
     install_dir: PathBuf,
+    root_dir: PathBuf,
 }
 
 impl Service {
@@ -198,6 +201,7 @@ impl MessageHandler<message::RunScripts> for Service {
     async fn handle(&mut self, message: message::RunScripts) -> Result<(), Error> {
         let scripts = self.scripts.clone();
         let install_dir = self.install_dir.clone();
+        let root_dir = self.root_dir.clone();
         let progress = self.progress.clone();
         let questions = self.questions.clone();
 
@@ -205,7 +209,7 @@ impl MessageHandler<message::RunScripts> for Service {
             let scripts = scripts.lock().await;
             let workdir = scripts.workdir.clone();
             let to_run = scripts.by_group(message.group).clone();
-            let runner = ScriptsRunner::new(install_dir, workdir, progress, questions);
+            let runner = ScriptsRunner::new(root_dir, install_dir, workdir, progress, questions);
             runner.run(&to_run).await.unwrap();
         });
         Ok(())
