@@ -48,6 +48,18 @@ const microOs: Product = {
   modes: [],
 };
 
+const productWithModes: Product = {
+  id: "SLES",
+  name: "SUSE Linux Enterprise Server",
+  icon: "sles.svg",
+  description: "Enterprise Linux",
+  registration: false,
+  modes: [
+    { id: "standard", name: "Standard", description: "Standard system" },
+    { id: "immutable", name: "Immutable", description: "Immutable system with atomic updates" },
+  ],
+};
+
 const mockPutConfigFn = jest.fn();
 const mockUseSystemFn: jest.Mock<ReturnType<typeof useSystem>> = jest.fn();
 const mockUseSystemSoftwareFn: jest.Mock<ReturnType<typeof useSystemSoftware>> = jest.fn();
@@ -214,6 +226,173 @@ describe("ProductSelectionPage", () => {
     });
 
     expect(mockNavigateFn).toHaveBeenCalledWith(ROOT.root);
+  });
+
+  describe("when there are products with modes involved", () => {
+    it("renders mode options when product has modes", async () => {
+      mockProduct(undefined);
+      mockUseSystemFn.mockReturnValue({ products: [productWithModes] });
+      const { user } = installerRender(<ProductSelectionPage />);
+
+      const productOption = screen.getByRole("radio", { name: productWithModes.name });
+      await user.click(productOption);
+
+      screen.getByRole("radio", { name: "Standard" });
+      screen.getByRole("radio", { name: "Immutable" });
+    });
+
+    it("allows selecting a mode", async () => {
+      mockProduct(undefined);
+      mockUseSystemFn.mockReturnValue({ products: [productWithModes] });
+      const { user } = installerRender(<ProductSelectionPage />);
+
+      const productOption = screen.getByRole("radio", { name: productWithModes.name });
+      await user.click(productOption);
+
+      const standardMode = screen.getByRole("radio", { name: "Standard" });
+      const immutableMode = screen.getByRole("radio", { name: "Immutable" });
+
+      expect(standardMode).not.toBeChecked();
+      await user.click(standardMode);
+      expect(standardMode).toBeChecked();
+
+      await user.click(immutableMode);
+      expect(immutableMode).toBeChecked();
+      expect(standardMode).not.toBeChecked();
+    });
+
+    it("submits product with selected mode", async () => {
+      mockProduct(undefined);
+      mockUseSystemFn.mockReturnValue({ products: [productWithModes] });
+      const { user } = installerRender(<ProductSelectionPage />);
+
+      const productOption = screen.getByRole("radio", { name: productWithModes.name });
+      await user.click(productOption);
+
+      const standardMode = screen.getByRole("radio", { name: "Standard" });
+      await user.click(standardMode);
+
+      const selectButton = screen.getByRole("button", { name: /Select/ });
+      await user.click(selectButton);
+
+      expect(mockPutConfigFn).toHaveBeenCalledWith({
+        product: { id: productWithModes.id, mode: "standard" },
+      });
+    });
+
+    it("resets mode selection when switching to a product without modes", async () => {
+      mockProduct(undefined);
+      mockUseSystemFn.mockReturnValue({ products: [productWithModes, tumbleweed] });
+      const { user } = installerRender(<ProductSelectionPage />);
+
+      // Select product with modes and choose a mode
+      const slesOption = screen.getByRole("radio", { name: productWithModes.name });
+      await user.click(slesOption);
+      const standardMode = screen.getByRole("radio", { name: "Standard" });
+      await user.click(standardMode);
+
+      // Switch to product without modes
+      const tumbleweedOption = screen.getByRole("radio", { name: tumbleweed.name });
+      await user.click(tumbleweedOption);
+
+      // Mode selection should not affect products without modes
+      const selectButton = screen.getByRole("button", { name: /Select/ });
+      expect(selectButton).not.toBeDisabled();
+    });
+
+    it("disables submit button when product with modes has no mode selected", async () => {
+      mockProduct(undefined);
+      mockUseSystemFn.mockReturnValue({ products: [productWithModes] });
+      const { user } = installerRender(<ProductSelectionPage />);
+
+      const productOption = screen.getByRole("radio", { name: productWithModes.name });
+      await user.click(productOption);
+
+      const selectButton = screen.getByRole("button", { name: /Select/ });
+      expect(selectButton).toBeDisabled();
+    });
+
+    it("enables submit button when mode is selected", async () => {
+      mockProduct(undefined);
+      mockUseSystemFn.mockReturnValue({ products: [productWithModes] });
+      const { user } = installerRender(<ProductSelectionPage />);
+
+      const productOption = screen.getByRole("radio", { name: productWithModes.name });
+      await user.click(productOption);
+
+      const standardMode = screen.getByRole("radio", { name: "Standard" });
+      await user.click(standardMode);
+
+      const selectButton = screen.getByRole("button", { name: /Select/ });
+      expect(selectButton).not.toBeDisabled();
+    });
+
+    describe("ProductFormSubmitLabel", () => {
+      it("includes mode name in submit button label", async () => {
+        mockProduct(undefined);
+        mockUseSystemFn.mockReturnValue({ products: [productWithModes] });
+        const { user } = installerRender(<ProductSelectionPage />);
+
+        const productOption = screen.getByRole("radio", { name: productWithModes.name });
+        await user.click(productOption);
+
+        const standardMode = screen.getByRole("radio", { name: "Standard" });
+        await user.click(standardMode);
+
+        screen.getByRole("button", { name: "Select Standard SUSE Linux Enterprise Server" });
+      });
+
+      it("shows only product name when no mode selected", async () => {
+        mockProduct(undefined);
+        mockUseSystemFn.mockReturnValue({ products: [productWithModes] });
+        const { user } = installerRender(<ProductSelectionPage />);
+
+        const productOption = screen.getByRole("radio", { name: productWithModes.name });
+        await user.click(productOption);
+
+        // Mode not selected yet
+        screen.getByRole("button", { name: "Select SUSE Linux Enterprise Server" });
+      });
+    });
+
+    describe("ProductFormSubmitLabelHelp", () => {
+      it("shows warning when product with modes is selected but no mode chosen", async () => {
+        mockProduct(undefined);
+        mockUseSystemFn.mockReturnValue({ products: [productWithModes] });
+        const { user } = installerRender(<ProductSelectionPage />);
+
+        const productOption = screen.getByRole("radio", { name: productWithModes.name });
+        await user.click(productOption);
+
+        screen.getByText("Select a product mode to continue.");
+      });
+
+      it("hides warning when mode is selected", async () => {
+        mockProduct(undefined);
+        mockUseSystemFn.mockReturnValue({ products: [productWithModes] });
+        const { user } = installerRender(<ProductSelectionPage />);
+
+        const productOption = screen.getByRole("radio", { name: productWithModes.name });
+        await user.click(productOption);
+
+        screen.getByText("Select a product mode to continue.");
+
+        const standardMode = screen.getByRole("radio", { name: "Standard" });
+        await user.click(standardMode);
+
+        expect(screen.queryByText("Select a product mode to continue.")).not.toBeInTheDocument();
+      });
+
+      it("does not show mode warning for products without modes", async () => {
+        mockProduct(undefined);
+        const { user } = installerRender(<ProductSelectionPage />);
+
+        const productOption = screen.getByRole("radio", { name: tumbleweed.name });
+        await user.click(productOption);
+
+        expect(screen.queryByText("Select a product mode to continue.")).not.toBeInTheDocument();
+      });
+    });
   });
 
   describe("ProductFormSubmitLabel", () => {

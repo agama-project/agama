@@ -61,7 +61,7 @@ import { useProduct, useProductInfo } from "~/hooks/model/config/product";
 import { useSystem } from "~/hooks/model/system";
 import { useSystem as useSystemSoftware } from "~/hooks/model/system/software";
 import { ROOT } from "~/routes/paths";
-import { Product } from "~/model/system";
+import { Mode, Product } from "~/model/system";
 import { n_, _ } from "~/i18n";
 
 import pfTextStyles from "@patternfly/react-styles/css/utilities/Text/text";
@@ -74,10 +74,12 @@ type ProductFormProductOptionProps = {
   product: Product;
   /** Whether this product option is currently selected */
   isChecked: boolean;
+  /** The product mode selected, if any */
+  modeId?: Mode["id"];
   /** Callback fired when the product is selected */
   onChange: () => void;
   /** Callback fired when the mode is changed */
-  onModeChange: (mode: string) => void;
+  onModeChange: (mode: Mode) => void;
 };
 
 /**
@@ -85,6 +87,7 @@ type ProductFormProductOptionProps = {
  */
 const ProductFormProductOption = ({
   product,
+  modeId,
   isChecked,
   onChange,
   onModeChange,
@@ -147,7 +150,8 @@ const ProductFormProductOption = ({
                               key={mode.id}
                               id={mode.id}
                               name="mode"
-                              onChange={() => onModeChange(mode.id)}
+                              checked={mode.id === modeId}
+                              onChange={() => onModeChange(mode)}
                               label={<Text isBold>{mode.name}</Text>}
                               description={mode.description}
                             />
@@ -245,6 +249,8 @@ type ProductFormSubmitLabelProps = {
   currentProduct?: Product;
   /** The product selected by the user in the UI (not yet confirmed) */
   selectedProduct?: Product;
+  /** The product mode selected by the user in the UI (not yet confirmed) */
+  selectedMode?: Mode;
 };
 
 /**
@@ -255,8 +261,8 @@ type ProductFormSubmitLabelProps = {
 const ProductFormSubmitLabel = ({
   currentProduct,
   selectedProduct,
+  selectedMode,
 }: ProductFormSubmitLabelProps) => {
-  // FIXME: add logic to include information about the mode
   const action = currentProduct ? _("Change to %s") : _("Select %s");
   const fallback = currentProduct ? _("Change") : _("Select");
 
@@ -265,10 +271,13 @@ const ProductFormSubmitLabel = ({
   }
 
   const [labelStart, labelEnd] = action.split("%s");
+  const productLabel = selectedMode
+    ? `${selectedMode.name} ${selectedProduct.name}`
+    : selectedProduct.name;
 
   return (
     <Text isBold>
-      {labelStart} {selectedProduct.name} {labelEnd}
+      {labelStart} {productLabel} {labelEnd}
     </Text>
   );
 };
@@ -279,6 +288,8 @@ const ProductFormSubmitLabel = ({
 type ProductFormSubmitLabelHelpProps = {
   /** The product selected by the user */
   selectedProduct?: Product;
+  /** The product mode selected by the user */
+  selectedMode?: Mode;
   /** Whether the selected product requires license acceptance */
   hasEula: boolean;
   /** Whether the user has accepted the license */
@@ -291,6 +302,7 @@ type ProductFormSubmitLabelHelpProps = {
  */
 const ProductFormSubmitLabelHelp = ({
   selectedProduct,
+  selectedMode,
   hasEula,
   isEulaAccepted,
 }: ProductFormSubmitLabelHelpProps) => {
@@ -298,6 +310,8 @@ const ProductFormSubmitLabelHelp = ({
 
   if (!selectedProduct) {
     text = _("Select a product to continue.");
+  } else if (!isEmpty(selectedProduct.modes) && isEmpty(selectedMode)) {
+    text = _("Select a product mode to continue.");
   } else if (hasEula && !isEulaAccepted) {
     text = _("License acceptance is required to continue.");
   } else {
@@ -359,7 +373,7 @@ const ProductFormLabel = ({ products, currentProduct }) => {
  */
 const ProductForm = ({ products, currentProduct, isSubmitted, onSubmit }: ProductFormProps) => {
   const [selectedProduct, setSelectedProduct] = useState<Product>();
-  const [selectedMode, setSelectedMode] = useState<string>();
+  const [selectedMode, setSelectedMode] = useState<Mode>();
   const [eulaAccepted, setEulaAccepted] = useState(false);
   const mountEulaCheckbox = selectedProduct && !isEmpty(selectedProduct.license);
   const isSelectionDisabled =
@@ -377,7 +391,7 @@ const ProductForm = ({ products, currentProduct, isSubmitted, onSubmit }: Produc
   const onFormSubmission = (e: React.FormEvent) => {
     e.preventDefault();
 
-    onSubmit(selectedProduct, selectedMode);
+    onSubmit(selectedProduct, selectedMode?.id);
   };
 
   return (
@@ -399,6 +413,7 @@ const ProductForm = ({ products, currentProduct, isSubmitted, onSubmit }: Produc
               <ProductFormProductOption
                 key={index}
                 product={product}
+                modeId={selectedMode?.id}
                 isChecked={selectedProduct?.id === product?.id}
                 onChange={() => onProductSelectionChange(product)}
                 onModeChange={setSelectedMode}
@@ -430,6 +445,7 @@ const ProductForm = ({ products, currentProduct, isSubmitted, onSubmit }: Produc
               <ProductFormSubmitLabel
                 currentProduct={currentProduct}
                 selectedProduct={selectedProduct}
+                selectedMode={selectedMode}
               />
             </Page.Submit>
             {currentProduct && !isSubmitted && (
@@ -442,6 +458,7 @@ const ProductForm = ({ products, currentProduct, isSubmitted, onSubmit }: Produc
         <StackItem>
           <ProductFormSubmitLabelHelp
             selectedProduct={selectedProduct}
+            selectedMode={selectedMode}
             hasEula={mountEulaCheckbox}
             isEulaAccepted={eulaAccepted}
           />
