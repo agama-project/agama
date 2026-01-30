@@ -430,12 +430,15 @@ fn find_mandatory_repositories<P: Into<PathBuf>>(root: P) -> Vec<Repository> {
         repos.push(dud)
     }
 
+    tracing::info!("Using mandatory repositories: {:?}", repos);
+
     repos
 }
 
 /// Returns the repository for the given directory if it exists.
 fn find_repository(dir: &PathBuf, name: &str) -> Option<Repository> {
     if !std::fs::exists(dir).is_ok_and(|e| e) {
+        tracing::info!("No local repository found at {:?}", dir);
         return None;
     }
 
@@ -447,6 +450,8 @@ fn find_repository(dir: &PathBuf, name: &str) -> Option<Repository> {
         );
         return None;
     };
+
+    tracing::info!("Found local repository \"{}\" at {:?}", name, dir);
 
     Some(Repository {
         alias: name.to_string(),
