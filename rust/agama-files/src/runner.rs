@@ -336,7 +336,7 @@ mod tests {
 
         // Set up a fake chroot.
         pub fn setup_chroot(&self) -> std::io::Result<()> {
-            let nm_dir = self.install_dir.join("run/NetworkManager");
+            let nm_dir = self.workdir.join("run/NetworkManager");
             fs::create_dir_all(&nm_dir)?;
             fs::create_dir_all(self.install_dir.join("etc"))?;
 
