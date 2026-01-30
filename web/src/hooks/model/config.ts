@@ -56,3 +56,4 @@ export {
 export * as network from "~/hooks/model/config/network";
 export * as product from "~/hooks/model/config/product";
 export * as storage from "~/hooks/model/config/storage";
+export * as iscsi from "~/hooks/model/config/iscsi";

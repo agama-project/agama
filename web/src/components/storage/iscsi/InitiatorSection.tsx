@@ -21,47 +21,57 @@
  */
 
 import React from "react";
-
+import { Button, Content, Flex, Split } from "@patternfly/react-core";
+import Page from "~/components/core/Page";
+import Text from "~/components/core/Text";
 import { _ } from "~/i18n";
-import { Page } from "~/components/core";
-import {
-  DescriptionList,
-  DescriptionListGroup,
-  DescriptionListTerm,
-  DescriptionListDescription,
-} from "@patternfly/react-core";
-import { InitiatorForm } from "~/components/storage/iscsi";
-import { useInitiator, useInitiatorMutation, useInitiatorChanges } from "~/queries/storage/iscsi";
+import { Link, SubtleContent } from "~/components/core";
+import { STORAGE } from "~/routes/paths";
 
-const InitiatorDescription = ({ initiator }) => {
+const IBFtDesc = () => {
+  return _(
+    "Configuration read from the iSCSI Boot Firmware Table (iBFT). Initiator cannot be changed.",
+  );
+};
+const NoIBFtDesc = () => {
+  const [textStart, linkText, textEnd] = _(
+    "No iSCSI Boot Firmware Table (iBFT) found. The initiator can be [configured manually.]",
+  ).split(/[[\]]/);
+
   return (
-    <DescriptionList aria-label={_("Initiator details")} isHorizontal isFluid>
-      <DescriptionListGroup>
-        <DescriptionListTerm>{_("Name")}</DescriptionListTerm>
-        <DescriptionListDescription>{initiator.name}</DescriptionListDescription>
-      </DescriptionListGroup>
-    </DescriptionList>
+    <>
+      {textStart}{" "}
+      <Link to={STORAGE.iscsi.initiator} variant="link" isInline>
+        {linkText}
+      </Link>{" "}
+      {textEnd}
+    </>
   );
 };
 
 export default function InitiatorSection() {
-  const initiator = useInitiator();
-  const { mutateAsync: updateInitiator } = useInitiatorMutation();
-  useInitiatorChanges();
-
-  const submitForm = async ({ name }) => {
-    await updateInitiator({ name });
-  };
-
-  const desc = initiator.ibft
-    ? _("Configuration read from the iSCSI Boot Firmware Table (iBFT).")
-    : _("No iSCSI Boot Firmware Table (iBFT) found. The initiator can be configured manually.");
+  // FIXME: retrieve initiator infor from appropiate place/hook
+  const initiator = { name: "iqn.1996-04.de.suse:01:351e6d6249", ibft: false };
 
   return (
     // TRANSLATORS: iSCSI initiator section name
-    <Page.Section title={_("Initiator")} description={desc}>
-      {initiator.ibft && <InitiatorDescription initiator={initiator} />}
-      {!initiator.ibft && <InitiatorForm initiator={initiator} onSubmit={submitForm} />}
+    <Page.Section
+      actions={
+        <Split hasGutter>
+          <Link to={STORAGE.iscsi.discover} variant="primary">
+            {_("Discover targets")}
+          </Link>
+        </Split>
+      }
+    >
+      <Flex direction={{ default: "column" }}>
+        <Content isEditorial>
+          <Flex gap={{ default: "gapXs" }}>
+            <Text isBold>{_("Initiator")}</Text> <Text component="small">{initiator.name}</Text>
+          </Flex>
+        </Content>
+        <SubtleContent>{initiator.ibft ? <IBFtDesc /> : <NoIBFtDesc />}</SubtleContent>
+      </Flex>
     </Page.Section>
   );
 }

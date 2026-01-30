@@ -1,0 +1,58 @@
+/*
+ * Copyright (c) [2026] SUSE LLC
+ *
+ * All Rights Reserved.
+ *
+ * This program is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License as published by the Free
+ * Software Foundation; either version 2 of the License, or (at your option)
+ * any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+ * more details.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, contact SUSE LLC.
+ *
+ * To contact SUSE LLC about this file by physical or electronic mail, you may
+ * find current contact information at www.suse.com.
+ */
+
+import { Config, Target } from "~/openapi/config/iscsi";
+
+function clone(config: Config): Config {
+  return JSON.parse(JSON.stringify(config));
+}
+
+function setInitiator(config: Config, name: string): Config {
+  config = clone(config);
+  config.initiator = name;
+  return config;
+}
+
+function findTargetIndex(config: Config, name: string): number | undefined {
+  return config.targets?.findIndex((t) => t.name === name);
+}
+
+function findTarget(config: Config, name: string): Target | undefined {
+  return config.targets?.find((t) => t.name === name);
+}
+
+function addTarget(config: Config, target: Target): Config {
+  config = clone(config);
+  config.targets ||= [];
+  config.targets.push(target);
+  return config;
+}
+
+function removeTarget(config: Config, name: string): Config {
+  config = clone(config);
+  const index = config.targets?.findIndex((t) => t.name === name);
+  if (index) config.targets.splice(index, 1);
+  return config;
+}
+
+export default { setInitiator, findTargetIndex, findTarget, addTarget, removeTarget };
+export type * from "~/openapi/config/iscsi";

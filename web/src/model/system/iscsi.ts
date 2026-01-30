@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2025] SUSE LLC
+ * Copyright (c) [2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -20,40 +20,15 @@
  * find current contact information at www.suse.com.
  */
 
-type Action = ConfigureL10n | ActivateStorage | ProbeStorage | DiscoverISCSI | Finish;
+import { System, Target } from "~/openapi/system/iscsi";
 
-type ConfigureL10n = {
-  configureL10n: L10nSystemConfig;
-};
+function findTargetIndex(system: System, name: string): number | undefined {
+  return system.targets?.findIndex((t) => t.name === name);
+}
 
-type L10nSystemConfig = {
-  locale?: string;
-  keymap?: string;
-};
+function findTarget(system: System, name: string): Target | undefined {
+  return system.targets?.find((t) => t.name === name);
+}
 
-type ActivateStorage = {
-  activateStorage: null;
-};
-
-type ProbeStorage = {
-  probeStorage: null;
-};
-
-type DiscoverISCSI = {
-  discoverISCSI: DiscoverISCSIConfig;
-};
-
-type DiscoverISCSIConfig = {
-  address: string;
-  port: number;
-  username?: string;
-  password?: string;
-  initiatorUsername?: string;
-  initiatorPassword?: string;
-};
-
-type Finish = {
-  finish: "halt" | "reboot" | "stop" | "poweroff";
-};
-
-export type { Action, L10nSystemConfig, DiscoverISCSIConfig };
+export default { findTargetIndex, findTarget };
+export type * from "~/openapi/system/iscsi";

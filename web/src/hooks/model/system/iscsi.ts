@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2025] SUSE LLC
+ * Copyright (c) [2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -20,40 +20,18 @@
  * find current contact information at www.suse.com.
  */
 
-type Action = ConfigureL10n | ActivateStorage | ProbeStorage | DiscoverISCSI | Finish;
+import { useSuspenseQuery } from "@tanstack/react-query";
+import { systemQuery } from "~/hooks/model/system";
+import type { System, ISCSI } from "~/model/system";
 
-type ConfigureL10n = {
-  configureL10n: L10nSystemConfig;
-};
+const selectSystem = (data: System | null): ISCSI.System => data?.iscsi;
 
-type L10nSystemConfig = {
-  locale?: string;
-  keymap?: string;
-};
+function useSystem(): ISCSI.System | null {
+  const { data } = useSuspenseQuery({
+    ...systemQuery,
+    select: selectSystem,
+  });
+  return data;
+}
 
-type ActivateStorage = {
-  activateStorage: null;
-};
-
-type ProbeStorage = {
-  probeStorage: null;
-};
-
-type DiscoverISCSI = {
-  discoverISCSI: DiscoverISCSIConfig;
-};
-
-type DiscoverISCSIConfig = {
-  address: string;
-  port: number;
-  username?: string;
-  password?: string;
-  initiatorUsername?: string;
-  initiatorPassword?: string;
-};
-
-type Finish = {
-  finish: "halt" | "reboot" | "stop" | "poweroff";
-};
-
-export type { Action, L10nSystemConfig, DiscoverISCSIConfig };
+export { useSystem };
