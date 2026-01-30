@@ -22,7 +22,7 @@
 
 use std::sync::Arc;
 
-use agama_utils::{actor::Handler, api::bootloader::Config, issue};
+use agama_utils::{actor::Handler, api::bootloader::{Config, KernelArg}, issue};
 use async_trait::async_trait;
 use tokio::sync::Mutex;
 
@@ -82,6 +82,10 @@ impl BootloaderClient for TestClient {
         state.config = config.clone();
         Ok(())
     }
+
+    async fn set_kernel_arg(&mut self, _arg: KernelArg) {
+    }
+
 }
 
 /// Starts a testing storage service.

@@ -47,3 +47,10 @@ impl Config {
         }
     }
 }
+
+#[derive(Clone, Debug, Serialize, Deserialize, Default)]
+#[serde(rename_all = "camelCase")]
+pub struct KernelArg {
+    pub scope: String,
+    pub value: String,
+}

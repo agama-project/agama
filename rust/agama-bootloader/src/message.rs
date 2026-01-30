@@ -18,7 +18,7 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use agama_utils::{actor::Message, api::bootloader::Config};
+use agama_utils::{actor::Message, api::bootloader::{Config, KernelArg}};
 
 pub struct GetConfig;
 
@@ -43,5 +43,19 @@ impl<T> SetConfig<T> {
         Self {
             config: Some(config),
         }
+    }
+}
+
+pub struct SetKernelArg {
+    pub arg: KernelArg,
+}
+
+impl Message for SetKernelArg {
+    type Reply = ();
+}
+
+impl SetKernelArg {
+    pub fn new(arg: KernelArg) -> Self {
+        Self { arg }
     }
 }
