@@ -395,6 +395,130 @@ describe("ProductSelectionPage", () => {
     });
   });
 
+  describe("ProductSelectionTitle", () => {
+    describe("when single product is available", () => {
+      it("renders 'Select a mode' when product has modes and no product selected", () => {
+        mockProduct(undefined);
+        mockUseSystemFn.mockReturnValue({ products: [productWithModes] });
+        installerRender(<ProductSelectionPage />);
+
+        // FIXME: breadcrumb is not ready for heading yet, but should be
+        // screen.getByRole("heading", { name: "Select a mode" });
+        screen.getByText("Select a mode");
+      });
+
+      it("renders 'Change mode' when product with modes is already selected", () => {
+        mockProduct(productWithModes);
+        mockUseSystemFn.mockReturnValue({ products: [productWithModes] });
+        installerRender(<ProductSelectionPage />);
+
+        // FIXME: breadcrumb is not ready for heading yet, but should be
+        // screen.getByRole("heading", { name: "Change mode" });
+        screen.getByText("Change mode");
+      });
+
+      it("renders 'Select a product' when single product has no modes", () => {
+        mockProduct(undefined);
+        mockUseSystemFn.mockReturnValue({ products: [tumbleweed] });
+        installerRender(<ProductSelectionPage />);
+
+        // FIXME: breadcrumb is not ready for heading yet, but should be
+        // screen.getByRole("heading", { name: "Select a product" });
+        screen.getByText("Select a product");
+      });
+    });
+
+    describe("when multiple products are available", () => {
+      it("renders 'Select a product' when no product selected", () => {
+        mockProduct(undefined);
+        mockUseSystemFn.mockReturnValue({ products: [tumbleweed, microOs] });
+        installerRender(<ProductSelectionPage />);
+
+        // FIXME: breadcrumb is not ready for heading yet, but should be
+        // screen.getByRole("heading", { name: "Select a product" });
+        screen.getByText("Select a product");
+      });
+
+      it("renders 'Change product' when switching from product without modes", () => {
+        mockProduct(tumbleweed);
+        mockUseSystemFn.mockReturnValue({ products: [tumbleweed, microOs] });
+        installerRender(<ProductSelectionPage />);
+
+        // FIXME: breadcrumb is not ready for heading yet, but should be
+        // screen.getByRole("heading", { name: "Change product" });
+        screen.getByText("Change product");
+      });
+
+      it("renders 'Change product or mode' when switching from product with modes", () => {
+        mockProduct(productWithModes);
+        mockUseSystemFn.mockReturnValue({ products: [productWithModes, tumbleweed] });
+        installerRender(<ProductSelectionPage />);
+
+        // FIXME: breadcrumb is not ready for heading yet, but should be
+        // screen.getByRole("heading", { name: "Change product or mode" });
+        screen.getByText("Change product or mode");
+      });
+    });
+  });
+
+  describe("ProductSelectionIntro", () => {
+    describe("when single product is available", () => {
+      it("renders mode selection intro when product has modes", () => {
+        mockProduct(undefined);
+        mockUseSystemFn.mockReturnValue({ products: [productWithModes] });
+        installerRender(<ProductSelectionPage />);
+
+        screen.getByText("Select a mode and confirm your choice.");
+      });
+
+      it("renders confirmation intro when product has no modes", () => {
+        mockProduct(undefined);
+        mockUseSystemFn.mockReturnValue({ products: [tumbleweed] });
+        installerRender(<ProductSelectionPage />);
+
+        screen.getByText("Confirm the product selection.");
+      });
+    });
+
+    describe("when multiple products are available", () => {
+      it("renders singular form with two products available but one already selected", () => {
+        mockProduct(tumbleweed);
+        mockUseSystemFn.mockReturnValue({ products: [tumbleweed, microOs] });
+        installerRender(<ProductSelectionPage />);
+
+        screen.getByText("Select a product and confirm your choice.");
+      });
+
+      it("renders plural form when multiple products available for initial selection", () => {
+        mockProduct(undefined);
+        mockUseSystemFn.mockReturnValue({ products: [tumbleweed, microOs] });
+        installerRender(<ProductSelectionPage />);
+
+        screen.getByText("Select a product and confirm your choice at the end of the list.");
+      });
+
+      it("renders plural form when more than two products available", () => {
+        mockProduct(tumbleweed);
+        mockUseSystemFn.mockReturnValue({
+          products: [tumbleweed, microOs, productWithModes],
+        });
+        installerRender(<ProductSelectionPage />);
+
+        screen.getByText("Select a product and confirm your choice at the end of the list.");
+      });
+
+      it("renders plural form for initial selection with three products", () => {
+        mockProduct(undefined);
+        mockUseSystemFn.mockReturnValue({
+          products: [tumbleweed, microOs, productWithModes],
+        });
+        installerRender(<ProductSelectionPage />);
+
+        screen.getByText("Select a product and confirm your choice at the end of the list.");
+      });
+    });
+  });
+
   describe("ProductFormLabel", () => {
     describe("when single product is available", () => {
       it("renders 'Choose a mode' when product has modes and no product selected", () => {

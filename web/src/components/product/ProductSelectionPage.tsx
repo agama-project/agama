@@ -339,7 +339,25 @@ type ProductFormProps = {
   isSubmitted: boolean;
 };
 
-const ProductFormLabel = ({ products, currentProduct }) => {
+type ProductSelectionContextProps = {
+  /** List of all available products */
+  products: Product[];
+  /** The product currently configured in the system */
+  currentProduct?: Product;
+};
+
+/**
+ * Renders the label for the product selection form.
+ *
+ * Provides clear, actionable labels that reflect what the user needs to do
+ *   - Initial selection: uses "Choose" verb
+ *   - Single product scenarios: focuses on mode selection or switching
+ *   - Product switching: uses "Switch" verb and prioritizes mode switching
+ *     when available
+ *
+ * Handles proper pluralization for multiple products.
+ */
+const ProductFormLabel = ({ products, currentProduct }: ProductSelectionContextProps) => {
   const singleProductSelection = products.length === 1;
   const availableProductCount = currentProduct ? products.length - 1 : products.length;
   const currentHasModes = currentProduct && !isEmpty(currentProduct.modes);
@@ -552,6 +570,63 @@ const CurrentProductInfo = ({ product, modeId }: CurrentProductInfoProps) => {
 };
 
 /**
+ * Renders the page title for the product selection screen.
+ *
+ * Provides context-aware titles based on the selection scenario.
+ */
+const ProductSelectionTitle = ({ products, currentProduct }: ProductSelectionContextProps) => {
+  const singleProductSelection = products.length === 1;
+  const currentHasModes = currentProduct && !isEmpty(currentProduct.modes);
+
+  if (singleProductSelection) {
+    if (currentProduct) {
+      return _("Change mode");
+    }
+    if (!isEmpty(products[0].modes)) {
+      return _("Select a mode");
+    }
+    return _("Select a product");
+  }
+
+  if (!currentProduct) {
+    return _("Select a product");
+  }
+
+  if (currentHasModes) {
+    return _("Change product or mode");
+  }
+
+  return _("Change product");
+};
+
+/**
+ * Renders introductory text guiding the user through the selection process.
+ *
+ * Adapts the message based on amount of products available
+ *   - Single product with modes: prompts to select a mode
+ *   - Single product without modes: prompts to confirm selection
+ *   - Multiple products: guides to select and confirm (with plural handling)
+ */
+const ProductSelectionIntro = ({ products, currentProduct }: ProductSelectionContextProps) => {
+  const singleProductSelection = products.length === 1;
+
+  if (singleProductSelection) {
+    if (!isEmpty(products[0].modes)) {
+      return _("Select a mode and confirm your choice.");
+    }
+    return _("Confirm the product selection.");
+  }
+
+  const availableProductCount = currentProduct ? products.length - 1 : products.length;
+
+  return n_(
+    "Select a product and confirm your choice.",
+    "Select a product and confirm your choice at the end of the list.",
+    availableProductCount,
+  );
+};
+
+/**
  * Content component for the product selection page.
  *
  * Handles the product selection workflow including:
@@ -580,24 +655,21 @@ const ProductSelectionContent = () => {
   const onSubmit = async (selectedProduct: Product, selectedMode: string) => {
     setIsSubmmited(true);
     setSubmmitedSelection(selectedProduct);
-    // FIXME: use Mode as expected
     putConfig({ product: { id: selectedProduct.id, mode: selectedMode } });
   };
 
-  const introText = n_(
-    "Select a product and confirm your choice.",
-    "Select a product and confirm your choice at the end of the list.",
-    products.length - 1,
-  );
-
   return (
     <Page
-      breadcrumbs={[{ label: currentProduct ? _("Change product") : _("Select a product") }]}
+      breadcrumbs={[
+        { label: <ProductSelectionTitle products={products} currentProduct={currentProduct} /> },
+      ]}
       showInstallerOptions
     >
       <Page.Content>
         <Flex gap={{ default: "gapXs" }} direction={{ default: "column" }}>
-          <Content isEditorial>{introText}</Content>
+          <Content isEditorial>
+            <ProductSelectionIntro products={products} currentProduct={currentProduct} />
+          </Content>
           {currentProduct && (
             <SubtleContent>
               {_(
