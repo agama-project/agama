@@ -65,9 +65,7 @@ const mockUseSystemFn: jest.Mock<ReturnType<typeof useSystem>> = jest.fn();
 const mockUseSystemSoftwareFn: jest.Mock<ReturnType<typeof useSystemSoftware>> = jest.fn();
 
 // FIXME: add ad use a mockSystem from test-utils instead
-jest.mock("~/components/core/InstallerOptions", () => () => (
-  <div>ProductRegistrationAlert Mock</div>
-));
+jest.mock("~/components/core/InstallerOptions", () => () => <div>InstallerOptions Mock</div>);
 
 jest.mock("~/components/product/LicenseDialog", () => () => <div>LicenseDialog Mock</div>);
 
@@ -97,6 +95,33 @@ describe("ProductSelectionPage", () => {
       patterns: [],
       repositories: [],
     });
+  });
+
+  it("renders available products excluding the selected one unless it has modes", () => {
+    mockUseSystemFn.mockReturnValue({
+      products: [tumbleweed, microOs, productWithModes],
+    });
+
+    // No product selected yet
+    mockProduct(undefined);
+    const { rerender } = installerRender(<ProductSelectionPage />);
+    screen.getByRole("radio", { name: tumbleweed.name });
+    screen.getByRole("radio", { name: microOs.name });
+    screen.getByRole("radio", { name: productWithModes.name });
+
+    // Selected product without modes, excluded from the list
+    mockProduct(tumbleweed);
+    rerender(<ProductSelectionPage />);
+    expect(screen.queryByRole("radio", { name: tumbleweed.name })).toBeNull();
+    screen.getByRole("radio", { name: microOs.name });
+    screen.getByRole("radio", { name: productWithModes.name });
+
+    // Selected product with modes, included in the list
+    mockProduct(productWithModes);
+    rerender(<ProductSelectionPage />);
+    screen.queryByRole("radio", { name: tumbleweed.name });
+    screen.getByRole("radio", { name: microOs.name });
+    screen.getByRole("radio", { name: productWithModes.name });
   });
 
   // Regression test:
@@ -792,6 +817,26 @@ describe("ProductSelectionPage", () => {
       mockUseSystemFn.mockReturnValue({ products: [tumbleweed] });
       rerender(<ProductSelectionPage />);
       expect(screen.queryByText("License acceptance required")).toBeNull();
+    });
+
+    it("displays modes label for products with modes (none selected yet)", () => {
+      mockProduct(undefined);
+      mockUseSystemFn.mockReturnValue({ products: [productWithModes] });
+      const { rerender } = installerRender(<ProductSelectionPage />);
+      screen.getByText("2 modes available");
+
+      mockUseSystemFn.mockReturnValue({ products: [tumbleweed] });
+      rerender(<ProductSelectionPage />);
+      expect(screen.queryByText("2 modes avaiable")).toBeNull();
+    });
+
+    it("displays modes label for products with modes (one selected)", () => {
+      mockProduct(productWithModes);
+      mockProductConfig({ id: productWithModes.id, mode: "standard" });
+      mockUseSystemFn.mockReturnValue({ products: [productWithModes] });
+      installerRender(<ProductSelectionPage />);
+
+      screen.getByText("1 other mode available");
     });
   });
 });

@@ -477,7 +477,8 @@ const ProductForm = ({
       >
         <List isPlain>
           {products.map((product, index) => {
-            if (product.id === currentProduct?.id && !product.modes) return undefined;
+            // FIXME: check what happens if a product offers only one mode ;/
+            if (product.id === currentProduct?.id && isEmpty(product.modes)) return undefined;
 
             return (
               <ProductFormProductOption
