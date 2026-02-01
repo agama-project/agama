@@ -340,23 +340,52 @@ type ProductFormProps = {
 };
 
 const ProductFormLabel = ({ products, currentProduct }) => {
-  // Calculate the number of available products, excluding the current product if selected
+  const singleProductSelection = products.length === 1;
   const availableProductCount = currentProduct ? products.length - 1 : products.length;
+  const currentHasModes = currentProduct && !isEmpty(currentProduct.modes);
 
-  // TODO: Refactor once mode selection is implemented
-  // When mode selection is added, check if there is only one product left,
-  // and if so, handle the display to allow switching between modes for that product.
-  //
-  // if (availableProductCount === 0) {
-  //   return sprintf(_("Switch to one of %d other modes"), products[0].modes.length);
-  // }
+  // Single product scenarios
+  if (singleProductSelection) {
+    // Can only switch modes (product already selected)
+    if (currentProduct) {
+      return _("Switch to a different mode");
+    }
 
+    // Need to choose a mode (initial selection)
+    if (!isEmpty(products[0].modes)) {
+      return _("Choose a mode");
+    }
+
+    // Single product without modes.
+    // FIXME: shouldn't happen, temporary fallback
+    return _("Choose a product");
+  }
+
+  // No product selected yet (multiple products available)
+  if (!currentProduct) {
+    return sprintf(
+      n_("Choose a product", "Choose from %d available products", availableProductCount),
+      availableProductCount,
+    );
+  }
+
+  // Switching from existing product (without modes)
+  if (!currentHasModes) {
+    return sprintf(
+      n_(
+        "Switch to another product",
+        "Switch to one of %d available products",
+        availableProductCount,
+      ),
+      availableProductCount,
+    );
+  }
+
+  // Switching from existing product (with modes)
   return sprintf(
     n_(
-      "Switch to another available product",
-      // TODO: One modes is implemented, the label should reflect switching to
-      // available products or their modes
-      "Choose from %d available products",
+      "Switch to a different mode or another product",
+      "Switch to a different mode or to one of %d available products",
       availableProductCount,
     ),
     availableProductCount,

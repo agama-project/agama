@@ -395,6 +395,89 @@ describe("ProductSelectionPage", () => {
     });
   });
 
+  describe("ProductFormLabel", () => {
+    describe("when single product is available", () => {
+      it("renders 'Choose a mode' when product has modes and no product selected", () => {
+        mockProduct(undefined);
+        mockUseSystemFn.mockReturnValue({ products: [productWithModes] });
+        installerRender(<ProductSelectionPage />);
+
+        screen.getByText("Choose a mode");
+      });
+
+      it("renders 'Switch to a different mode' when product is already selected", () => {
+        mockProduct(productWithModes);
+        mockUseSystemFn.mockReturnValue({ products: [productWithModes] });
+        installerRender(<ProductSelectionPage />);
+
+        screen.getByText("Switch to a different mode");
+      });
+
+      // FIXME: This scenario shouldn't exist. When there's only one product
+      // without modes, the selection screen should not be shown and the product
+      // should be auto-selected.
+      it("renders 'Choose a product' when single product has no modes", () => {
+        mockProduct(undefined);
+        mockUseSystemFn.mockReturnValue({ products: [tumbleweed] });
+        installerRender(<ProductSelectionPage />);
+
+        screen.getByText("Choose a product");
+      });
+    });
+
+    describe("when no product is selected yet (initial selection)", () => {
+      it("renders plural form when multiple products available", () => {
+        mockProduct(undefined);
+        mockUseSystemFn.mockReturnValue({ products: [tumbleweed, microOs] });
+        installerRender(<ProductSelectionPage />);
+
+        screen.getByText("Choose from 2 available products");
+      });
+    });
+
+    describe("when switching from a product without modes", () => {
+      it("renders singular form when only one other product available", () => {
+        mockProduct(tumbleweed);
+        mockUseSystemFn.mockReturnValue({ products: [tumbleweed, microOs] });
+        installerRender(<ProductSelectionPage />);
+
+        screen.getByText("Switch to another product");
+      });
+
+      it("renders plural form when multiple other products available", () => {
+        mockProduct(tumbleweed);
+        mockUseSystemFn.mockReturnValue({
+          products: [tumbleweed, microOs, productWithModes],
+        });
+        installerRender(<ProductSelectionPage />);
+
+        screen.getByText("Switch to one of 2 available products");
+      });
+    });
+
+    describe("when switching from a product with modes", () => {
+      it("renders singular form when only one other product available", () => {
+        mockProduct(productWithModes);
+        mockUseSystemFn.mockReturnValue({
+          products: [productWithModes, tumbleweed],
+        });
+        installerRender(<ProductSelectionPage />);
+
+        screen.getByText("Switch to a different mode or another product");
+      });
+
+      it("renders plural form when multiple other products available", () => {
+        mockProduct(productWithModes);
+        mockUseSystemFn.mockReturnValue({
+          products: [productWithModes, tumbleweed, microOs],
+        });
+        installerRender(<ProductSelectionPage />);
+
+        screen.getByText("Switch to a different mode or to one of 2 available products");
+      });
+    });
+  });
+
   describe("ProductFormSubmitLabel", () => {
     it("renders 'Change' or  'Change to %product.name' when changing from one product to another", async () => {
       mockProduct(microOs);
