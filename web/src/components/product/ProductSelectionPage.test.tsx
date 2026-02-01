@@ -440,9 +440,7 @@ describe("ProductSelectionPage", () => {
         mockUseSystemFn.mockReturnValue({ products: [productWithModes] });
         installerRender(<ProductSelectionPage />);
 
-        // FIXME: breadcrumb is not ready for heading yet, but should be
-        // screen.getByRole("heading", { name: "Select a mode" });
-        screen.getByText("Select a mode");
+        screen.getByRole("heading", { name: "Select a mode" });
       });
 
       it("renders 'Change mode' when product with modes is already selected", () => {
@@ -450,9 +448,7 @@ describe("ProductSelectionPage", () => {
         mockUseSystemFn.mockReturnValue({ products: [productWithModes] });
         installerRender(<ProductSelectionPage />);
 
-        // FIXME: breadcrumb is not ready for heading yet, but should be
-        // screen.getByRole("heading", { name: "Change mode" });
-        screen.getByText("Change mode");
+        screen.getByRole("heading", { name: "Change mode" });
       });
 
       it("renders 'Select a product' when single product has no modes", () => {
@@ -460,9 +456,7 @@ describe("ProductSelectionPage", () => {
         mockUseSystemFn.mockReturnValue({ products: [tumbleweed] });
         installerRender(<ProductSelectionPage />);
 
-        // FIXME: breadcrumb is not ready for heading yet, but should be
-        // screen.getByRole("heading", { name: "Select a product" });
-        screen.getByText("Select a product");
+        screen.getByRole("heading", { name: "Select a product" });
       });
     });
 
@@ -472,9 +466,7 @@ describe("ProductSelectionPage", () => {
         mockUseSystemFn.mockReturnValue({ products: [tumbleweed, microOs] });
         installerRender(<ProductSelectionPage />);
 
-        // FIXME: breadcrumb is not ready for heading yet, but should be
-        // screen.getByRole("heading", { name: "Select a product" });
-        screen.getByText("Select a product");
+        screen.getByRole("heading", { name: "Select a product" });
       });
 
       it("renders 'Change product' when switching from product without modes", () => {
@@ -482,9 +474,7 @@ describe("ProductSelectionPage", () => {
         mockUseSystemFn.mockReturnValue({ products: [tumbleweed, microOs] });
         installerRender(<ProductSelectionPage />);
 
-        // FIXME: breadcrumb is not ready for heading yet, but should be
-        // screen.getByRole("heading", { name: "Change product" });
-        screen.getByText("Change product");
+        screen.getByRole("heading", { name: "Change product" });
       });
 
       it("renders 'Change product or mode' when switching from product with modes", () => {
@@ -492,9 +482,7 @@ describe("ProductSelectionPage", () => {
         mockUseSystemFn.mockReturnValue({ products: [productWithModes, tumbleweed] });
         installerRender(<ProductSelectionPage />);
 
-        // FIXME: breadcrumb is not ready for heading yet, but should be
-        // screen.getByRole("heading", { name: "Change product or mode" });
-        screen.getByText("Change product or mode");
+        screen.getByRole("heading", { name: "Change product or mode" });
       });
     });
   });
