@@ -61,7 +61,7 @@ import { useProduct, useProductInfo } from "~/hooks/model/config/product";
 import { useSystem } from "~/hooks/model/system";
 import { useSystem as useSystemSoftware } from "~/hooks/model/system/software";
 import { ROOT } from "~/routes/paths";
-import { Product } from "~/model/system";
+import { Mode, Product } from "~/model/system";
 import { n_, _ } from "~/i18n";
 
 import pfTextStyles from "@patternfly/react-styles/css/utilities/Text/text";
@@ -72,12 +72,18 @@ import pfTextStyles from "@patternfly/react-styles/css/utilities/Text/text";
 type ProductFormProductOptionProps = {
   /** The product to display as an option */
   product: Product;
-  /** Whether this product option is currently selected */
+  /** Whether this product is currently configured in the system */
+  isCurrent: boolean;
+  /** Whether this product option is currently selected by the user UI */
   isChecked: boolean;
+  /** The id of the product mode currently selected by the user in the UI */
+  selectedModeId?: Mode["id"];
+  /** The id of the product mode currently configured in the system, if any */
+  currentModeId?: Mode["id"];
   /** Callback fired when the product is selected */
   onChange: () => void;
   /** Callback fired when the mode is changed */
-  onModeChange: (mode: string) => void;
+  onModeChange: (mode: Mode) => void;
 };
 
 /**
@@ -85,6 +91,9 @@ type ProductFormProductOptionProps = {
  */
 const ProductFormProductOption = ({
   product,
+  currentModeId,
+  selectedModeId,
+  isCurrent,
   isChecked,
   onChange,
   onModeChange,
@@ -94,6 +103,17 @@ const ProductFormProductOption = ({
 
   const translatedDescription =
     product.translations?.description[currentLocale] || product.description;
+
+  // Filter out the currently selected mode if this is the current product
+  const availableModes = product.modes?.filter((mode) =>
+    isCurrent ? mode.id !== currentModeId : true,
+  );
+
+  // Count of modes to display in the label
+  const modesCount = availableModes?.length || 0;
+  const modesLabel = isCurrent
+    ? sprintf(n_("%d other mode available", "%d other modes available", modesCount), modesCount)
+    : sprintf(n_("%d mode available", "%d modes available", modesCount), modesCount);
 
   return (
     <ListItem aria-label={product.name}>
@@ -121,11 +141,9 @@ const ProductFormProductOption = ({
                             <Text component="small">{_("License acceptance required")}</Text>
                           </Label>
                         )}
-                        {!isEmpty(product.modes) && (
+                        {!isEmpty(availableModes) && (
                           <Label variant="outline" isCompact>
-                            <Text component="small">
-                              {sprintf(_("%d modes available"), product.modes.length)}
-                            </Text>
+                            <Text component="small">{modesLabel}</Text>
                           </Label>
                         )}
                       </Split>
@@ -139,15 +157,16 @@ const ProductFormProductOption = ({
                     >
                       <SubtleContent>{translatedDescription}</SubtleContent>
                     </ExpandableSection>
-                    {isChecked && product.modes && (
+                    {isChecked && availableModes && (
                       <Split hasGutter>
-                        {product.modes.map((mode) => (
+                        {availableModes.map((mode) => (
                           <FlexItem key={mode.id}>
                             <Radio
                               key={mode.id}
                               id={mode.id}
                               name="mode"
-                              onChange={() => onModeChange(mode.id)}
+                              isChecked={mode.id === selectedModeId}
+                              onChange={() => onModeChange(mode)}
                               label={<Text isBold>{mode.name}</Text>}
                               description={mode.description}
                             />
@@ -245,6 +264,8 @@ type ProductFormSubmitLabelProps = {
   currentProduct?: Product;
   /** The product selected by the user in the UI (not yet confirmed) */
   selectedProduct?: Product;
+  /** The product mode selected by the user in the UI (not yet confirmed) */
+  selectedMode?: Mode;
 };
 
 /**
@@ -255,8 +276,8 @@ type ProductFormSubmitLabelProps = {
 const ProductFormSubmitLabel = ({
   currentProduct,
   selectedProduct,
+  selectedMode,
 }: ProductFormSubmitLabelProps) => {
-  // FIXME: add logic to include information about the mode
   const action = currentProduct ? _("Change to %s") : _("Select %s");
   const fallback = currentProduct ? _("Change") : _("Select");
 
@@ -265,10 +286,13 @@ const ProductFormSubmitLabel = ({
   }
 
   const [labelStart, labelEnd] = action.split("%s");
+  const productLabel = selectedMode
+    ? `${selectedMode.name} ${selectedProduct.name}`
+    : selectedProduct.name;
 
   return (
     <Text isBold>
-      {labelStart} {selectedProduct.name} {labelEnd}
+      {labelStart} {productLabel} {labelEnd}
     </Text>
   );
 };
@@ -279,6 +303,8 @@ const ProductFormSubmitLabel = ({
 type ProductFormSubmitLabelHelpProps = {
   /** The product selected by the user */
   selectedProduct?: Product;
+  /** The product mode selected by the user */
+  selectedMode?: Mode;
   /** Whether the selected product requires license acceptance */
   hasEula: boolean;
   /** Whether the user has accepted the license */
@@ -291,6 +317,7 @@ type ProductFormSubmitLabelHelpProps = {
  */
 const ProductFormSubmitLabelHelp = ({
   selectedProduct,
+  selectedMode,
   hasEula,
   isEulaAccepted,
 }: ProductFormSubmitLabelHelpProps) => {
@@ -298,6 +325,8 @@ const ProductFormSubmitLabelHelp = ({
 
   if (!selectedProduct) {
     text = _("Select a product to continue.");
+  } else if (!isEmpty(selectedProduct.modes) && isEmpty(selectedMode)) {
+    text = _("Select a product mode to continue.");
   } else if (hasEula && !isEulaAccepted) {
     text = _("License acceptance is required to continue.");
   } else {
@@ -319,30 +348,79 @@ type ProductFormProps = {
   products: Product[];
   /** The product currently configured in the system */
   currentProduct?: Product;
+  /** The id of the product mode currently configured in the system */
+  currentModeId?: Mode["id"];
   /** Callback fired when the form is submitted with a selected product */
   onSubmit: (product: Product, mode: string) => void;
   /** Whether the form was already submitted */
   isSubmitted: boolean;
 };
 
-const ProductFormLabel = ({ products, currentProduct }) => {
-  // Calculate the number of available products, excluding the current product if selected
+type ProductSelectionContextProps = {
+  /** List of all available products */
+  products: Product[];
+  /** The product currently configured in the system */
+  currentProduct?: Product;
+};
+
+/**
+ * Renders the label for the product selection form.
+ *
+ * Provides clear, actionable labels that reflect what the user needs to do
+ *   - Initial selection: uses "Choose" verb
+ *   - Single product scenarios: focuses on mode selection or switching
+ *   - Product switching: uses "Switch" verb and prioritizes mode switching
+ *     when available
+ *
+ * Handles proper pluralization for multiple products.
+ */
+const ProductFormLabel = ({ products, currentProduct }: ProductSelectionContextProps) => {
+  const singleProductSelection = products.length === 1;
   const availableProductCount = currentProduct ? products.length - 1 : products.length;
+  const currentHasModes = currentProduct && !isEmpty(currentProduct.modes);
 
-  // TODO: Refactor once mode selection is implemented
-  // When mode selection is added, check if there is only one product left,
-  // and if so, handle the display to allow switching between modes for that product.
-  //
-  // if (availableProductCount === 0) {
-  //   return sprintf(_("Switch to one of %d other modes"), products[0].modes.length);
-  // }
+  // Single product scenarios
+  if (singleProductSelection) {
+    // Can only switch modes (product already selected)
+    if (currentProduct) {
+      return _("Switch to a different mode");
+    }
 
+    // Need to choose a mode (initial selection)
+    if (!isEmpty(products[0].modes)) {
+      return _("Choose a mode");
+    }
+
+    // Single product without modes.
+    // FIXME: shouldn't happen, temporary fallback
+    return _("Choose a product");
+  }
+
+  // No product selected yet (multiple products available)
+  if (!currentProduct) {
+    return sprintf(
+      n_("Choose a product", "Choose from %d available products", availableProductCount),
+      availableProductCount,
+    );
+  }
+
+  // Switching from existing product (without modes)
+  if (!currentHasModes) {
+    return sprintf(
+      n_(
+        "Switch to another product",
+        "Switch to one of %d available products",
+        availableProductCount,
+      ),
+      availableProductCount,
+    );
+  }
+
+  // Switching from existing product (with modes)
   return sprintf(
     n_(
-      "Switch to another available product",
-      // TODO: One modes is implemented, the label should reflect switching to
-      // available products or their modes
-      "Choose from %d available products",
+      "Switch to a different mode or another product",
+      "Switch to a different mode or to one of %d available products",
       availableProductCount,
     ),
     availableProductCount,
@@ -357,9 +435,15 @@ const ProductFormLabel = ({ products, currentProduct }) => {
  *
  * TODO: use a reducer instead of bunch of isolated state pieces
  */
-const ProductForm = ({ products, currentProduct, isSubmitted, onSubmit }: ProductFormProps) => {
+const ProductForm = ({
+  products,
+  currentProduct,
+  currentModeId,
+  isSubmitted,
+  onSubmit,
+}: ProductFormProps) => {
   const [selectedProduct, setSelectedProduct] = useState<Product>();
-  const [selectedMode, setSelectedMode] = useState<string>();
+  const [selectedMode, setSelectedMode] = useState<Mode>();
   const [eulaAccepted, setEulaAccepted] = useState(false);
   const mountEulaCheckbox = selectedProduct && !isEmpty(selectedProduct.license);
   const isSelectionDisabled =
@@ -377,7 +461,7 @@ const ProductForm = ({ products, currentProduct, isSubmitted, onSubmit }: Produc
   const onFormSubmission = (e: React.FormEvent) => {
     e.preventDefault();
 
-    onSubmit(selectedProduct, selectedMode);
+    onSubmit(selectedProduct, selectedMode?.id);
   };
 
   return (
@@ -393,13 +477,17 @@ const ProductForm = ({ products, currentProduct, isSubmitted, onSubmit }: Produc
       >
         <List isPlain>
           {products.map((product, index) => {
-            if (product.id === currentProduct?.id && !product.modes) return undefined;
+            // FIXME: check what happens if a product offers only one mode ;/
+            if (product.id === currentProduct?.id && isEmpty(product.modes)) return undefined;
 
             return (
               <ProductFormProductOption
                 key={index}
                 product={product}
-                isChecked={selectedProduct?.id === product?.id}
+                currentModeId={currentModeId}
+                isCurrent={currentProduct?.id === product.id}
+                isChecked={selectedProduct?.id === product.id}
+                selectedModeId={selectedMode?.id}
                 onChange={() => onProductSelectionChange(product)}
                 onModeChange={setSelectedMode}
               />
@@ -425,11 +513,17 @@ const ProductForm = ({ products, currentProduct, isSubmitted, onSubmit }: Produc
               isDisabled={isSelectionDisabled}
               isLoading={isSubmitted}
               variant={isSubmitted ? "secondary" : "primary"}
-              style={{ maxInlineSize: "30dvw", overflow: "hidden", textWrap: "balance" }}
+              style={{
+                maxInlineSize: "50dvw",
+                overflow: "hidden",
+                textWrap: "balance",
+                textAlign: "start",
+              }}
             >
               <ProductFormSubmitLabel
                 currentProduct={currentProduct}
                 selectedProduct={selectedProduct}
+                selectedMode={selectedMode}
               />
             </Page.Submit>
             {currentProduct && !isSubmitted && (
@@ -442,6 +536,7 @@ const ProductForm = ({ products, currentProduct, isSubmitted, onSubmit }: Produc
         <StackItem>
           <ProductFormSubmitLabelHelp
             selectedProduct={selectedProduct}
+            selectedMode={selectedMode}
             hasEula={mountEulaCheckbox}
             isEulaAccepted={eulaAccepted}
           />
@@ -506,6 +601,63 @@ const CurrentProductInfo = ({ product, modeId }: CurrentProductInfoProps) => {
 };
 
 /**
+ * Renders the page title for the product selection screen.
+ *
+ * Provides context-aware titles based on the selection scenario.
+ */
+const ProductSelectionTitle = ({ products, currentProduct }: ProductSelectionContextProps) => {
+  const singleProductSelection = products.length === 1;
+  const currentHasModes = currentProduct && !isEmpty(currentProduct.modes);
+
+  if (singleProductSelection) {
+    if (currentProduct) {
+      return _("Change mode");
+    }
+    if (!isEmpty(products[0].modes)) {
+      return _("Select a mode");
+    }
+    return _("Select a product");
+  }
+
+  if (!currentProduct) {
+    return _("Select a product");
+  }
+
+  if (currentHasModes) {
+    return _("Change product or mode");
+  }
+
+  return _("Change product");
+};
+
+/**
+ * Renders introductory text guiding the user through the selection process.
+ *
+ * Adapts the message based on amount of products available
+ *   - Single product with modes: prompts to select a mode
+ *   - Single product without modes: prompts to confirm selection
+ *   - Multiple products: guides to select and confirm (with plural handling)
+ */
+const ProductSelectionIntro = ({ products, currentProduct }: ProductSelectionContextProps) => {
+  const singleProductSelection = products.length === 1;
+
+  if (singleProductSelection) {
+    if (!isEmpty(products[0].modes)) {
+      return _("Select a mode and confirm your choice.");
+    }
+    return _("Confirm the product selection.");
+  }
+
+  const availableProductCount = currentProduct ? products.length - 1 : products.length;
+
+  return n_(
+    "Select a product and confirm your choice.",
+    "Select a product and confirm your choice at the end of the list.",
+    availableProductCount,
+  );
+};
+
+/**
  * Content component for the product selection page.
  *
  * Handles the product selection workflow including:
@@ -534,24 +686,21 @@ const ProductSelectionContent = () => {
   const onSubmit = async (selectedProduct: Product, selectedMode: string) => {
     setIsSubmmited(true);
     setSubmmitedSelection(selectedProduct);
-    // FIXME: use Mode as expected
     putConfig({ product: { id: selectedProduct.id, mode: selectedMode } });
   };
 
-  const introText = n_(
-    "Select a product and confirm your choice.",
-    "Select a product and confirm your choice at the end of the list.",
-    products.length - 1,
-  );
-
   return (
     <Page
-      breadcrumbs={[{ label: currentProduct ? _("Change product") : _("Select a product") }]}
+      breadcrumbs={[
+        { label: <ProductSelectionTitle products={products} currentProduct={currentProduct} /> },
+      ]}
       showInstallerOptions
     >
       <Page.Content>
         <Flex gap={{ default: "gapXs" }} direction={{ default: "column" }}>
-          <Content isEditorial>{introText}</Content>
+          <Content isEditorial>
+            <ProductSelectionIntro products={products} currentProduct={currentProduct} />
+          </Content>
           {currentProduct && (
             <SubtleContent>
               {_(
@@ -566,6 +715,7 @@ const ProductSelectionContent = () => {
             <ProductForm
               products={products}
               currentProduct={currentProduct}
+              currentModeId={product?.mode}
               isSubmitted={isWaiting}
               onSubmit={onSubmit}
             />
