@@ -72,10 +72,14 @@ import pfTextStyles from "@patternfly/react-styles/css/utilities/Text/text";
 type ProductFormProductOptionProps = {
   /** The product to display as an option */
   product: Product;
-  /** Whether this product option is currently selected */
+  /** Whether this product is currently configured in the system */
+  isCurrent: boolean;
+  /** Whether this product option is currently selected by the user UI */
   isChecked: boolean;
-  /** The product mode selected, if any */
-  modeId?: Mode["id"];
+  /** The id of the product mode currently selected by the user in the UI */
+  selectedModeId?: Mode["id"];
+  /** The id of the product mode currently configured in the system, if any */
+  currentModeId?: Mode["id"];
   /** Callback fired when the product is selected */
   onChange: () => void;
   /** Callback fired when the mode is changed */
@@ -87,7 +91,9 @@ type ProductFormProductOptionProps = {
  */
 const ProductFormProductOption = ({
   product,
-  modeId,
+  currentModeId,
+  selectedModeId,
+  isCurrent,
   isChecked,
   onChange,
   onModeChange,
@@ -97,6 +103,17 @@ const ProductFormProductOption = ({
 
   const translatedDescription =
     product.translations?.description[currentLocale] || product.description;
+
+  // Filter out the currently selected mode if this is the current product
+  const availableModes = product.modes?.filter((mode) =>
+    isCurrent ? mode.id !== currentModeId : true,
+  );
+
+  // Count of modes to display in the label
+  const modesCount = availableModes?.length || 0;
+  const modesLabel = isCurrent
+    ? sprintf(n_("%d other mode available", "%d other modes available", modesCount), modesCount)
+    : sprintf(n_("%d mode available", "%d modes available", modesCount), modesCount);
 
   return (
     <ListItem aria-label={product.name}>
@@ -124,11 +141,9 @@ const ProductFormProductOption = ({
                             <Text component="small">{_("License acceptance required")}</Text>
                           </Label>
                         )}
-                        {!isEmpty(product.modes) && (
+                        {!isEmpty(availableModes) && (
                           <Label variant="outline" isCompact>
-                            <Text component="small">
-                              {sprintf(_("%d modes available"), product.modes.length)}
-                            </Text>
+                            <Text component="small">{modesLabel}</Text>
                           </Label>
                         )}
                       </Split>
@@ -142,15 +157,15 @@ const ProductFormProductOption = ({
                     >
                       <SubtleContent>{translatedDescription}</SubtleContent>
                     </ExpandableSection>
-                    {isChecked && product.modes && (
+                    {isChecked && availableModes && (
                       <Split hasGutter>
-                        {product.modes.map((mode) => (
+                        {availableModes.map((mode) => (
                           <FlexItem key={mode.id}>
                             <Radio
                               key={mode.id}
                               id={mode.id}
                               name="mode"
-                              checked={mode.id === modeId}
+                              isChecked={mode.id === selectedModeId}
                               onChange={() => onModeChange(mode)}
                               label={<Text isBold>{mode.name}</Text>}
                               description={mode.description}
@@ -333,6 +348,8 @@ type ProductFormProps = {
   products: Product[];
   /** The product currently configured in the system */
   currentProduct?: Product;
+  /** The id of the product mode currently configured in the system */
+  currentModeId?: Mode["id"];
   /** Callback fired when the form is submitted with a selected product */
   onSubmit: (product: Product, mode: string) => void;
   /** Whether the form was already submitted */
@@ -418,7 +435,13 @@ const ProductFormLabel = ({ products, currentProduct }: ProductSelectionContextP
  *
  * TODO: use a reducer instead of bunch of isolated state pieces
  */
-const ProductForm = ({ products, currentProduct, isSubmitted, onSubmit }: ProductFormProps) => {
+const ProductForm = ({
+  products,
+  currentProduct,
+  currentModeId,
+  isSubmitted,
+  onSubmit,
+}: ProductFormProps) => {
   const [selectedProduct, setSelectedProduct] = useState<Product>();
   const [selectedMode, setSelectedMode] = useState<Mode>();
   const [eulaAccepted, setEulaAccepted] = useState(false);
@@ -460,8 +483,10 @@ const ProductForm = ({ products, currentProduct, isSubmitted, onSubmit }: Produc
               <ProductFormProductOption
                 key={index}
                 product={product}
-                modeId={selectedMode?.id}
-                isChecked={selectedProduct?.id === product?.id}
+                currentModeId={currentModeId}
+                isCurrent={currentProduct?.id === product.id}
+                isChecked={selectedProduct?.id === product.id}
+                selectedModeId={selectedMode?.id}
                 onChange={() => onProductSelectionChange(product)}
                 onModeChange={setSelectedMode}
               />
@@ -684,6 +709,7 @@ const ProductSelectionContent = () => {
             <ProductForm
               products={products}
               currentProduct={currentProduct}
+              currentModeId={product?.mode}
               isSubmitted={isWaiting}
               onSubmit={onSubmit}
             />

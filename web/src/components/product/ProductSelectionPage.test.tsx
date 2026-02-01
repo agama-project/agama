@@ -241,6 +241,19 @@ describe("ProductSelectionPage", () => {
       screen.getByRole("radio", { name: "Immutable" });
     });
 
+    it("excludes already selected mode", async () => {
+      mockProduct(productWithModes);
+      mockProductConfig({ id: productWithModes.id, mode: "standard" });
+      mockUseSystemFn.mockReturnValue({ products: [productWithModes] });
+      const { user } = installerRender(<ProductSelectionPage />);
+
+      const productOption = screen.getByRole("radio", { name: productWithModes.name });
+      await user.click(productOption);
+
+      expect(screen.queryByRole("radio", { name: "Standard" })).toBeNull();
+      screen.getByRole("radio", { name: "Immutable" });
+    });
+
     it("allows selecting a mode", async () => {
       mockProduct(undefined);
       mockUseSystemFn.mockReturnValue({ products: [productWithModes] });
