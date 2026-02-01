@@ -513,7 +513,12 @@ const ProductForm = ({
               isDisabled={isSelectionDisabled}
               isLoading={isSubmitted}
               variant={isSubmitted ? "secondary" : "primary"}
-              style={{ maxInlineSize: "30dvw", overflow: "hidden", textWrap: "balance" }}
+              style={{
+                maxInlineSize: "50dvw",
+                overflow: "hidden",
+                textWrap: "balance",
+                textAlign: "start",
+              }}
             >
               <ProductFormSubmitLabel
                 currentProduct={currentProduct}
