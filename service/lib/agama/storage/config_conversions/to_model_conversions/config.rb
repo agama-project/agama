@@ -33,12 +33,17 @@ module Agama
         # Config conversion to model according to the JSON schema.
         class Config < Base
           # @param config [Storage::Config]
-          def initialize(config)
+          # @param product_config [Agama::Config, nil]
+          def initialize(config, product_config)
             super()
             @config = config
+            @product_config = product_config
           end
 
         private
+
+          # @return [Agama::Config, nil]
+          attr_reader :product_config
 
           # @see Base#conversions
           def conversions
@@ -66,17 +71,33 @@ module Agama
 
           # @return [Array<Hash>]
           def convert_drives
-            config.valid_drives.map { |d| ToModelConversions::Drive.new(d).convert }
+            config.valid_drives.map do |drive|
+              ToModelConversions::Drive.new(drive, volumes).convert
+            end
           end
 
           # @return [Array<Hash>]
           def convert_md_raids
-            config.valid_md_raids.map { |r| ToModelConversions::MdRaid.new(r).convert }
+            config.valid_md_raids.map do |raid|
+              ToModelConversions::MdRaid.new(raid, volumes).convert
+            end
           end
 
           # @return [Array<Hash>]
           def convert_volume_groups
-            config.volume_groups.map { |v| ToModelConversions::VolumeGroup.new(v, config).convert }
+            config.volume_groups.map do |vol|
+              ToModelConversions::VolumeGroup.new(vol, config, volumes).convert
+            end
+          end
+
+          # @return [VolumeTemplatesBuilder]
+          def volumes
+            @volumes ||=
+              if product_config
+                VolumeTemplatesBuilder.new_from_config(product_config)
+              else
+                VolumeTemplatesBuilder.new([])
+              end
           end
         end
       end

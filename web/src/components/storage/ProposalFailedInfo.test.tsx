@@ -100,8 +100,7 @@ const mockFullConfigModel: ConfigModel.Config = {
           filesystem: {
             reuse: false,
             default: true,
-            type: "btrfs",
-            snapshots: true,
+            type: "btrfsSnapshots",
           },
           size: {
             default: true,

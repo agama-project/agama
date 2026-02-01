@@ -52,62 +52,157 @@ describe Agama::Storage::VolumeConversions::ToJSON do
       # @todo Check whether the result matches the JSON schema.
 
       expect(described_class.new(default_volume).convert).to eq(
-        mountPath:     "/test",
-        mountOptions:  [],
-        fsType:        "",
-        minSize:       0,
-        autoSize:      false,
-        snapshots:     false,
-        transactional: false,
-        outline:       {
-          required:              false,
-          fsTypes:               [],
-          supportAutoSize:       false,
-          adjustByRam:           false,
-          snapshotsConfigurable: false,
-          snapshotsAffectSizes:  false,
-          sizeRelevantVolumes:   []
+        mountPath:    "/test",
+        mountOptions: [],
+        fsType:       "",
+        minSize:      0,
+        autoSize:     false,
+        outline:      {
+          required:             false,
+          fsTypes:              [],
+          supportAutoSize:      false,
+          adjustByRam:          false,
+          snapshotsAffectSizes: false,
+          sizeRelevantVolumes:  []
         }
       )
 
       expect(described_class.new(custom_volume1).convert).to eq(
-        mountPath:     "/test",
-        mountOptions:  [],
-        fsType:        "xfs",
-        minSize:       0,
-        autoSize:      true,
-        snapshots:     false,
-        transactional: false,
-        outline:       {
-          required:              false,
-          fsTypes:               [],
-          supportAutoSize:       false,
-          adjustByRam:           false,
-          snapshotsConfigurable: false,
-          snapshotsAffectSizes:  false,
-          sizeRelevantVolumes:   []
+        mountPath:    "/test",
+        mountOptions: [],
+        fsType:       "xfs",
+        minSize:      0,
+        autoSize:     true,
+        outline:      {
+          required:             false,
+          fsTypes:              [],
+          supportAutoSize:      false,
+          adjustByRam:          false,
+          snapshotsAffectSizes: false,
+          sizeRelevantVolumes:  []
         }
       )
 
       expect(described_class.new(custom_volume2).convert).to eq(
-        mountPath:     "/test",
-        mountOptions:  ["rw", "default"],
-        fsType:        "btrfs",
-        minSize:       1024,
-        maxSize:       2048,
-        autoSize:      false,
-        snapshots:     true,
-        transactional: false,
-        outline:       {
-          required:              false,
-          fsTypes:               [],
-          supportAutoSize:       false,
-          adjustByRam:           false,
-          snapshotsConfigurable: false,
-          snapshotsAffectSizes:  false,
-          sizeRelevantVolumes:   []
+        mountPath:    "/test",
+        mountOptions: ["rw", "default"],
+        fsType:       "btrfsSnapshots",
+        minSize:      1024,
+        maxSize:      2048,
+        autoSize:     false,
+        outline:      {
+          required:             false,
+          fsTypes:              [],
+          supportAutoSize:      false,
+          adjustByRam:          false,
+          snapshotsAffectSizes: false,
+          sizeRelevantVolumes:  []
         }
       )
+    end
+
+    context "if btrfs snapshots can be configured" do
+      let(:volume) do
+        Agama::Storage::Volume.new("/").tap do |volume|
+          volume.fs_type = Y2Storage::Filesystems::Type::BTRFS
+          volume.auto_size = true
+          volume.btrfs.snapshots = true
+          volume.outline = Agama::Storage::VolumeOutline.new.tap do |outline|
+            outline.filesystems = [
+              Y2Storage::Filesystems::Type::XFS, Y2Storage::Filesystems::Type::BTRFS
+            ]
+            outline.snapshots_configurable = true
+          end
+        end
+      end
+
+      it "includes all the expected filesystem types" do
+        converted = described_class.new(volume).convert
+        expect(converted[:outline][:fsTypes]).to contain_exactly("xfs", "btrfs", "btrfsSnapshots")
+      end
+
+      it "sets the correct default filesystem type" do
+        converted = described_class.new(volume).convert
+        expect(converted[:fsType]).to eq "btrfsSnapshots"
+      end
+    end
+
+    context "if btrfs snapshots are mandatory" do
+      let(:volume) do
+        Agama::Storage::Volume.new("/").tap do |volume|
+          volume.fs_type = Y2Storage::Filesystems::Type::BTRFS
+          volume.auto_size = true
+          volume.btrfs.snapshots = true
+          volume.outline = Agama::Storage::VolumeOutline.new.tap do |outline|
+            outline.filesystems = [
+              Y2Storage::Filesystems::Type::XFS, Y2Storage::Filesystems::Type::BTRFS
+            ]
+            outline.snapshots_configurable = false
+          end
+        end
+      end
+
+      it "includes all the expected filesystem types" do
+        converted = described_class.new(volume).convert
+        expect(converted[:outline][:fsTypes]).to contain_exactly("xfs", "btrfsSnapshots")
+      end
+
+      it "sets the correct default filesystem type" do
+        converted = described_class.new(volume).convert
+        expect(converted[:fsType]).to eq "btrfsSnapshots"
+      end
+    end
+
+    context "if btrfs snapshots cannot be enabled" do
+      let(:volume) do
+        Agama::Storage::Volume.new("/").tap do |volume|
+          volume.fs_type = Y2Storage::Filesystems::Type::BTRFS
+          volume.auto_size = true
+          volume.btrfs.snapshots = false
+          volume.outline = Agama::Storage::VolumeOutline.new.tap do |outline|
+            outline.filesystems = [
+              Y2Storage::Filesystems::Type::XFS, Y2Storage::Filesystems::Type::BTRFS
+            ]
+            outline.snapshots_configurable = false
+          end
+        end
+      end
+
+      it "includes all the expected filesystem types" do
+        converted = described_class.new(volume).convert
+        expect(converted[:outline][:fsTypes]).to contain_exactly("xfs", "btrfs")
+      end
+
+      it "sets the correct default filesystem type" do
+        converted = described_class.new(volume).convert
+        expect(converted[:fsType]).to eq "btrfs"
+      end
+    end
+
+    context "if the system is configured as immutable" do
+      let(:volume) do
+        Agama::Storage::Volume.new("/").tap do |volume|
+          volume.fs_type = Y2Storage::Filesystems::Type::BTRFS
+          volume.auto_size = true
+          volume.btrfs.read_only = true
+          volume.btrfs.snapshots = true
+          volume.outline = Agama::Storage::VolumeOutline.new.tap do |outline|
+            outline.filesystems = [
+              Y2Storage::Filesystems::Type::XFS, Y2Storage::Filesystems::Type::BTRFS
+            ]
+          end
+        end
+      end
+
+      it "includes all the expected filesystem types" do
+        converted = described_class.new(volume).convert
+        expect(converted[:outline][:fsTypes]).to contain_exactly("xfs", "btrfsImmutable")
+      end
+
+      it "sets the correct default filesystem type" do
+        converted = described_class.new(volume).convert
+        expect(converted[:fsType]).to eq "btrfsImmutable"
+      end
     end
   end
 end

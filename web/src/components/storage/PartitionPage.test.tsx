@@ -29,7 +29,6 @@ import type { Storage } from "~/model/system";
 import { gib } from "./utils";
 
 jest.mock("./ProposalResultSection", () => () => <div>result section</div>);
-jest.mock("./ProposalTransactionalInfo", () => () => <div>transactional info</div>);
 
 const sda1: Storage.Device = {
   sid: 69,
@@ -112,12 +111,10 @@ const homeVolume: Storage.Volume = {
   fsType: "btrfs",
   minSize: 1024,
   maxSize: 1024,
-  snapshots: false,
   autoSize: false,
   outline: {
     required: false,
     fsTypes: ["btrfs"],
-    snapshotsConfigurable: false,
     snapshotsAffectSizes: false,
     supportAutoSize: false,
     sizeRelevantVolumes: [],
