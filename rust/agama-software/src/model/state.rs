@@ -547,6 +547,14 @@ impl ResolvableSelection {
 
         false
     }
+
+    pub fn selected(&self) -> bool {
+        match self {
+            ResolvableSelection::Selected => true,
+            ResolvableSelection::AutoSelected { optional: _ } => true,
+            _ => false,
+        }
+    }
 }
 
 impl From<ResolvableSelection> for zypp_agama::ResolvableSelected {

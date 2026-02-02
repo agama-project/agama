@@ -270,6 +270,7 @@ impl Starter {
                     progress.clone(),
                     self.questions.clone(),
                     security.clone(),
+                    bootloader.clone(),
                 )
                 .start()
                 .await?
