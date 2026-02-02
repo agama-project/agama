@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Feb  2 11:56:24 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+
+- Fixed opening the SSH firewall port when the firewall is not
+  installed because of the set "onlyRequires" flag in the software
+  configuration (bsc#1257212)
+
+-------------------------------------------------------------------
 Mon Feb  2 08:13:10 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
 
 - Implement modification of kernel parameters when SELinux pattern
