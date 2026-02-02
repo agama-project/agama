@@ -24,7 +24,7 @@ use std::sync::Arc;
 
 use agama_utils::{
     actor::Handler,
-    api::bootloader::{Config, KernelArg},
+    api::bootloader::Config,
     issue,
 };
 use async_trait::async_trait;
@@ -87,7 +87,7 @@ impl BootloaderClient for TestClient {
         Ok(())
     }
 
-    async fn set_kernel_arg(&mut self, _arg: KernelArg) {}
+    async fn set_kernel_arg(&mut self, _id: String, _value: String) {}
 }
 
 /// Starts a testing storage service.

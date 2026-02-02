@@ -20,7 +20,7 @@
 
 use agama_utils::{
     actor::Message,
-    api::bootloader::{Config, KernelArg},
+    api::bootloader::Config,
 };
 
 pub struct GetConfig;
@@ -50,7 +50,8 @@ impl<T> SetConfig<T> {
 }
 
 pub struct SetKernelArg {
-    pub arg: KernelArg,
+    pub id: String,
+    pub value: String,    
 }
 
 impl Message for SetKernelArg {
@@ -58,7 +59,7 @@ impl Message for SetKernelArg {
 }
 
 impl SetKernelArg {
-    pub fn new(arg: KernelArg) -> Self {
-        Self { arg }
+    pub fn new(id: String, value: String) -> Self {
+        Self { id, value }
     }
 }

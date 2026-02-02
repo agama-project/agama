@@ -29,7 +29,6 @@ use agama_security as security;
 use agama_utils::{
     actor::{self, Actor, Handler, MessageHandler},
     api::{
-        bootloader::KernelArg,
         event::{self, Event},
         software::{Config, Proposal, Repository, SystemInfo},
         Issue, Scope,
@@ -208,13 +207,11 @@ impl Service {
         } else {
             "security="
         };
-        let arg = KernelArg {
-            scope: "selinux".to_string(),
+        let message = agama_bootloader::message::SetKernelArg {
+            id: "selinux".to_string(),
             value: value.to_string(),
         };
-        let res = self
-            .bootloader
-            .cast(agama_bootloader::message::SetKernelArg { arg });
+        let res = self.bootloader.cast(message);
         if res.is_err() {
             tracing::warn!("Failed to send to bootloader new selinux state: {:?}", res);
         }

@@ -22,7 +22,7 @@
 
 use std::collections::HashMap;
 
-use agama_utils::api::bootloader::{Config, KernelArg};
+use agama_utils::api::bootloader::Config;
 use async_trait::async_trait;
 use serde::{Deserialize, Serialize};
 use zbus::Connection;
@@ -51,7 +51,10 @@ pub trait BootloaderClient {
     /// Sets the bootloader configuration.
     async fn set_config(&self, config: &Config) -> ClientResult<()>;
     /// Sets the extra kernel args for given scope.
-    async fn set_kernel_arg(&mut self, arg: KernelArg);
+    ///
+    /// * `id`: identifier of the kernel argument so it can be later changed.
+    /// * `value`: plaintext value that will be appended to kernel commandline.
+    async fn set_kernel_arg(&mut self, id: String, value: String);
 }
 
 // full config used on dbus which beside public config passes
@@ -106,7 +109,7 @@ impl<'a> BootloaderClient for Client<'a> {
         Ok(())
     }
 
-    async fn set_kernel_arg(&mut self, arg: KernelArg) {
-        self.kernel_args.insert(arg.scope, arg.value);
+    async fn set_kernel_arg(&mut self, id: String, value: String) {
+        self.kernel_args.insert(id, value);
     }
 }
