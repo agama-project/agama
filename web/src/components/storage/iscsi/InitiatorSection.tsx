@@ -21,12 +21,13 @@
  */
 
 import React from "react";
-import { Button, Content, Flex, Split } from "@patternfly/react-core";
+import { Content, Flex, Split } from "@patternfly/react-core";
 import Page from "~/components/core/Page";
 import Text from "~/components/core/Text";
 import { _ } from "~/i18n";
 import { Link, SubtleContent } from "~/components/core";
 import { STORAGE } from "~/routes/paths";
+import { useSystem } from "~/hooks/model/system/iscsi";
 
 const IBFtDesc = () => {
   return _(
@@ -50,8 +51,7 @@ const NoIBFtDesc = () => {
 };
 
 export default function InitiatorSection() {
-  // FIXME: retrieve initiator infor from appropiate place/hook
-  const initiator = { name: "iqn.1996-04.de.suse:01:351e6d6249", ibft: false };
+  const initiator = useSystem().initiator;
 
   return (
     // TRANSLATORS: iSCSI initiator section name

@@ -199,8 +199,8 @@ export default function DiscoverForm() {
         <div ref={alertRef}>
           <Alert variant="warning" isInline title={_("Something went wrong")}>
             <List>
-              {errors.map((error) => (
-                <ListItem>{error}</ListItem>
+              {errors.map((error, i) => (
+                <ListItem key={`error_${i}`}>{error}</ListItem>
               ))}
             </List>
           </Alert>

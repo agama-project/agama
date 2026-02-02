@@ -21,7 +21,7 @@
  */
 
 import React from "react";
-import { Divider, Grid, GridItem } from "@patternfly/react-core";
+import { Grid, GridItem } from "@patternfly/react-core";
 import { Page } from "~/components/core";
 // import { InitiatorSection, TargetsSection } from "~/components/storage/iscsi";
 import { InitiatorSection } from "~/components/storage/iscsi";

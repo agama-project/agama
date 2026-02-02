@@ -20,12 +20,10 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useState } from "react";
-import { Button, Toolbar, ToolbarItem, ToolbarContent, Stack } from "@patternfly/react-core";
+import React from "react";
 import { Page } from "~/components/core";
-import { NodesPresenter, DiscoverForm } from "~/components/storage/iscsi";
+import { DiscoverForm } from "~/components/storage/iscsi";
 import { _ } from "~/i18n";
-import { useNodes, useNodesChanges } from "~/queries/storage/iscsi";
 import { discover } from "~/model/storage/iscsi";
 import { STORAGE } from "~/routes/paths";
 
@@ -39,8 +37,8 @@ export default function TargetsPage() {
       reversePassword,
     });
 
-    // FIXME
-    return;
+    // FIXME, success is not to be returned
+    return success;
   };
   return (
     <Page

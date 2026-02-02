@@ -145,6 +145,7 @@ export default function TargetLoginPage() {
   const onChange = handleInputChange(dispatch);
 
   const startupFormOptions = Object.values(NodeStartupOptions).map((option, i) => (
+    /* eslint-disable agama-i18n/string-literals */
     <FormSelectOption key={i} value={option.value} label={_(option.label)} />
   ));
 
@@ -163,8 +164,8 @@ export default function TargetLoginPage() {
             <div ref={alertRef}>
               <Alert variant="warning" isInline title={_("Something went wrong")}>
                 <List>
-                  {errors.map((error) => (
-                    <ListItem>{error}</ListItem>
+                  {errors.map((error, i) => (
+                    <ListItem key={`error_${i}`}>{error}</ListItem>
                   ))}
                 </List>
               </Alert>

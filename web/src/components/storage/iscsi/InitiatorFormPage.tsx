@@ -21,22 +21,27 @@
  */
 
 import React, { useState } from "react";
+import { useNavigate } from "react-router";
 import { Alert, Button, Form, FormGroup, TextInput, ActionGroup } from "@patternfly/react-core";
 import { Page } from "~/components/core";
 import { STORAGE } from "~/routes/paths";
 import { _ } from "~/i18n";
+import { useSystem } from "~/hooks/model/system/iscsi";
+import { useSetInitiator } from "~/hooks/model/config/iscsi";
 
 export default function InitiatorFormPage() {
-  // FIXME: read the initiator from the corresponding hook/query/whatever
-  const initiator = { name: "iqn.1996-04.de.suse:01:351e6d6249", ibft: false };
+  const initiator = useSystem().initiator;
   const [data, setData] = useState({ ...initiator });
   const [error, setError] = useState<string | null>(null);
+  const setInitiator = useSetInitiator();
+  const navigate = useNavigate();
 
   const onNameChange = (_, name) => setData({ ...data, name });
 
   const submit = async () => {
     setError(null);
-    console.log("FIXME: do the submission and navigate if no error");
+    setInitiator(data.name);
+    navigate({ pathname: STORAGE.iscsi.root });
   };
 
   const onSubmit = async (event) => {
