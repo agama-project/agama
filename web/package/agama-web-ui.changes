@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Feb  2 08:03:43 UTC 2026 - David Díaz González <dgonzalez@suse.com>
+
+- Improve product and mode selection UX with clearer messaging, better
+  feedback, and removal of no-op mode switches
+  (gh#agama-project/agama#3112).
+
+-------------------------------------------------------------------
 Fri Jan 30 16:28:39 UTC 2026 - Ancor Gonzalez Sosa <ancor@suse.com>
 
 - Adapt UI to the new representation of Btrfs information
