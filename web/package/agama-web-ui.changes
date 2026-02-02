@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Feb  2 08:08:26 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- Fix unselecting  product preselected patterns
+  (gh#agama-project/agama#3103)
+
+-------------------------------------------------------------------
 Fri Jan 30 16:28:39 UTC 2026 - Ancor Gonzalez Sosa <ancor@suse.com>
 
 - Adapt UI to the new representation of Btrfs information

@@ -22,8 +22,9 @@ use crate::{
     message,
     model::{software_selection::SoftwareSelection, state::SoftwareState, ModelAdapter},
     zypp_server::{self, SoftwareAction, ZyppServer},
-    Model,
+    Model, ResolvableType,
 };
+use agama_bootloader;
 use agama_security as security;
 use agama_utils::{
     actor::{self, Actor, Handler, MessageHandler},
@@ -74,6 +75,7 @@ pub struct Starter {
     progress: Handler<progress::Service>,
     questions: Handler<question::Service>,
     security: Handler<security::Service>,
+    bootloader: Handler<agama_bootloader::Service>,
 }
 
 impl Starter {
@@ -83,6 +85,7 @@ impl Starter {
         progress: Handler<progress::Service>,
         questions: Handler<question::Service>,
         security: Handler<security::Service>,
+        bootloader: Handler<agama_bootloader::Service>,
     ) -> Self {
         Self {
             model: None,
@@ -91,6 +94,7 @@ impl Starter {
             progress,
             questions,
             security,
+            bootloader,
         }
     }
 
@@ -135,6 +139,7 @@ impl Starter {
             progress: self.progress,
             product: None,
             kernel_cmdline: KernelCmdline::parse().unwrap_or_default(),
+            bootloader: self.bootloader,
         };
         service.setup().await?;
         Ok(actor::spawn(service))
@@ -157,6 +162,7 @@ pub struct Service {
     product: Option<Arc<RwLock<ProductSpec>>>,
     selection: SoftwareSelection,
     kernel_cmdline: KernelCmdline,
+    bootloader: Handler<agama_bootloader::Service>,
 }
 
 #[derive(Default)]
@@ -173,8 +179,9 @@ impl Service {
         progress: Handler<progress::Service>,
         questions: Handler<question::Service>,
         security: Handler<security::Service>,
+        bootloader: Handler<agama_bootloader::Service>,
     ) -> Starter {
-        Starter::new(events, issues, progress, questions, security)
+        Starter::new(events, issues, progress, questions, security, bootloader)
     }
 
     pub async fn setup(&mut self) -> Result<(), Error> {
@@ -188,6 +195,26 @@ impl Service {
         })?;
 
         Ok(())
+    }
+
+    fn update_selinux(&self, state: &SoftwareState) {
+        let selinux_selected = state.resolvables.to_vec().iter().any(|(name, typ, state)| {
+            typ == &ResolvableType::Pattern && name == "selinux" && state.selected()
+        });
+
+        let value = if selinux_selected {
+            "security=selinux"
+        } else {
+            "security="
+        };
+        let message = agama_bootloader::message::SetKernelArg {
+            id: "selinux".to_string(),
+            value: value.to_string(),
+        };
+        let res = self.bootloader.cast(message);
+        if res.is_err() {
+            tracing::warn!("Failed to send to bootloader new selinux state: {:?}", res);
+        }
     }
 
     /// Updates the proposal and the service state.
@@ -214,6 +241,8 @@ impl Service {
         };
 
         tracing::info!("Wanted software state: {new_state:?}");
+        self.update_selinux(&new_state);
+
         let model = self.model.clone();
         let progress = self.progress.clone();
         let issues = self.issues.clone();

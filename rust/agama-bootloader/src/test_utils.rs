@@ -82,6 +82,8 @@ impl BootloaderClient for TestClient {
         state.config = config.clone();
         Ok(())
     }
+
+    async fn set_kernel_arg(&mut self, _id: String, _value: String) {}
 }
 
 /// Starts a testing storage service.

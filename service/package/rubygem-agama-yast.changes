@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Feb  2 08:13:48 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- Allow other parts to define in bootloader its proposed kernel
+  parameters (gh#agama-project/agama#3103)
+
+-------------------------------------------------------------------
 Fri Jan 30 16:21:23 UTC 2026 - Ancor Gonzalez Sosa <ancor@suse.com>
 
 - Change how Btrfs information (snapshots and immutable) is
