@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Feb  2 08:13:10 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- Implement modification of kernel parameters when selinux pattern
+  is selected (gh#agama-project/agama#3103)
+
+-------------------------------------------------------------------
 Fri Jan 30 16:27:35 UTC 2026 - Ancor Gonzalez Sosa <ancor@suse.com>
 
 - Update schemas for storage model and volume templates (related to
