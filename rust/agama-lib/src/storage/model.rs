@@ -399,7 +399,6 @@ pub struct VolumeOutline {
     fs_types: Vec<String>,
     support_auto_size: bool,
     adjust_by_ram: bool,
-    snapshots_configurable: bool,
     snapshots_affect_sizes: bool,
     size_relevant_volumes: Vec<String>,
 }
@@ -414,7 +413,6 @@ impl TryFrom<zbus::zvariant::Value<'_>> for VolumeOutline {
             fs_types: get_property(&mvalue, "FsTypes")?,
             support_auto_size: get_property(&mvalue, "SupportAutoSize")?,
             adjust_by_ram: get_property(&mvalue, "AdjustByRam")?,
-            snapshots_configurable: get_property(&mvalue, "SnapshotsConfigurable")?,
             snapshots_affect_sizes: get_property(&mvalue, "SnapshotsAffectSizes")?,
             size_relevant_volumes: get_property(&mvalue, "SizeRelevantVolumes")?,
         };
@@ -435,8 +433,6 @@ pub struct Volume {
     min_size: Option<DeviceSize>,
     max_size: Option<DeviceSize>,
     auto_size: bool,
-    snapshots: bool,
-    transactional: Option<bool>,
     outline: Option<VolumeOutline>,
 }
 
@@ -448,7 +444,6 @@ impl From<Volume> for zbus::zvariant::Value<'_> {
             ("Target", val.target.into()),
             ("FsType", Value::new(val.fs_type)),
             ("AutoSize", Value::new(val.auto_size)),
-            ("Snapshots", Value::new(val.snapshots)),
         ]);
         if let Some(dev) = val.target_device {
             result.insert("TargetDevice", Value::new(dev));
@@ -487,8 +482,6 @@ impl TryFrom<HashMap<String, OwnedValue>> for Volume {
             min_size: get_optional_property(&volume_hash, "MinSize")?,
             max_size: get_optional_property(&volume_hash, "MaxSize")?,
             auto_size: get_property(&volume_hash, "AutoSize")?,
-            snapshots: get_property(&volume_hash, "Snapshots")?,
-            transactional: get_optional_property(&volume_hash, "Transactional")?,
             outline: get_optional_property(&volume_hash, "Outline")?,
         };
 

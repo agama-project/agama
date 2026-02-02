@@ -27,21 +27,26 @@ module Agama
       # Config conversion to model according to the JSON schema.
       class ToModel
         # @param config [Storage::Config]
-        def initialize(config)
+        # @param product_config [Agama::Config, nil] Agama config
+        def initialize(config, product_config = nil)
           @config = config
+          @product_config = product_config
         end
 
         # Performs the conversion to config model according to the JSON schema.
         #
         # @return [Hash]
         def convert
-          ToModelConversions::Config.new(config).convert
+          ToModelConversions::Config.new(config, product_config).convert
         end
 
       private
 
         # @return [Storage::Config]
         attr_reader :config
+
+        # @return [Agama::Config, nil]
+        attr_reader :product_config
       end
     end
   end

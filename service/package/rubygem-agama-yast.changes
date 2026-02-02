@@ -1,4 +1,17 @@
 -------------------------------------------------------------------
+Mon Feb  2 08:13:48 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- Allow other parts to define in bootloader its proposed kernel
+  parameters (gh#agama-project/agama#3103)
+
+-------------------------------------------------------------------
+Fri Jan 30 16:21:23 UTC 2026 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Change how Btrfs information (snapshots and immutable) is
+  represented in the storage model and in the volume templates
+  (related to jsc#PED-14307).
+
+-------------------------------------------------------------------
 Thu Jan 29 09:55:38 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Retry requests to the web server if the connection failed

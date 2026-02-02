@@ -1,4 +1,24 @@
 -------------------------------------------------------------------
+Mon Feb  2 12:50:43 UTC 2026 - David Díaz González <dgonzalez@suse.com>
+
+- Improve product and mode selection UX with clearer messaging, better
+  feedback, and removal of no-op mode switches
+  (gh#agama-project/agama#3112).
+  
+-------------------------------------------------------------------
+Mon Feb  2 08:08:26 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- Fix unselecting  product preselected patterns
+  (gh#agama-project/agama#3103)
+
+-------------------------------------------------------------------
+Fri Jan 30 16:28:39 UTC 2026 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Adapt UI to the new representation of Btrfs information
+  (snapshots and immutable) in the storage model and the volume
+  templates (related to jsc#PED-14307).
+
+-------------------------------------------------------------------
 Thu Jan 29 10:26:49 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Do not crash when selecting a pattern (gh#agama-project/agama#3097,

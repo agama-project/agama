@@ -1,0 +1,130 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR SuSE Linux Products GmbH, Nuernberg
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-01-30 16:41+0000\n"
+"PO-Revision-Date: 2026-01-28 23:04+0000\n"
+"Last-Translator: Ettore Atalan <atalanttore@googlemail.com>\n"
+"Language-Team: German <https://l10n.opensuse.org/projects/agama/agama-rust-"
+"master/de/>\n"
+"Language: de\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 5.15.2\n"
+
+#: agama-autoinstall/src/questions.rs:41 agama-utils/src/api/question.rs:282
+#: agama-utils/src/question/start.rs:54
+msgid "No"
+msgstr "Nein"
+
+#: agama-autoinstall/src/questions.rs:41 agama-utils/src/api/question.rs:282
+#: agama-utils/src/question/start.rs:54
+msgid "Yes"
+msgstr "Ja"
+
+#: agama-manager/src/service.rs:944
+msgid "Prepare the system"
+msgstr ""
+
+#: agama-manager/src/service.rs:945
+msgid "Install software"
+msgstr "Software installieren"
+
+#: agama-manager/src/service.rs:946
+msgid "Configure the system"
+msgstr "System konfigurieren"
+
+#: agama-network/src/service.rs:518
+msgid "Writing configuration"
+msgstr "Konfiguration wird geschrieben"
+
+#: agama-network/src/service.rs:519
+msgid "Reading configuration"
+msgstr "Konfiguration wird gelesen"
+
+#: agama-security/src/service.rs:228
+msgid "Reject"
+msgstr "Ablehnen"
+
+#: agama-security/src/service.rs:228
+#: agama-software/src/callbacks/security.rs:109
+msgid "Trust"
+msgstr "Vertrauen"
+
+#: agama-security/src/service.rs:229
+msgid ""
+"Trying to import a self-signed certificate. Do you want to trust it and "
+"register the product?"
+msgstr ""
+"Es wird versucht, ein selbstsigniertes Zertifikat zu importieren. Möchten "
+"Sie diesem Zertifikat vertrauen und das Produkt registrieren?"
+
+#: agama-software/src/callbacks/commit_download.rs:48
+#: agama-software/src/callbacks/install.rs:56
+msgid "Ignore"
+msgstr "Ignorieren"
+
+#: agama-software/src/callbacks/commit_download.rs:48
+#: agama-software/src/callbacks/install.rs:56
+#: agama-software/src/callbacks/install.rs:81
+msgid "Retry"
+msgstr "Wiederholen"
+
+#: agama-software/src/callbacks/install.rs:78
+msgid "There was a problem running a package script."
+msgstr "Es gab ein Problem bei der Ausführung eines Paketskripts."
+
+#: agama-software/src/callbacks/install.rs:81
+msgid "Continue"
+msgstr "Fortsetzen"
+
+#. TRANSLATORS: substituting: key ID, (key name), fingerprint
+#: agama-software/src/callbacks/security.rs:102
+msgid ""
+"The key {0} ({1}) with fingerprint {2} is unknown. Do you want to trust this "
+"key?"
+msgstr ""
+"Der Schlüssel {0} ({1}) mit dem Fingerabdruck {2} ist unbekannt. Möchten Sie "
+"diesem Schlüssel vertrauen?"
+
+#: agama-software/src/callbacks/security.rs:109
+msgid "Skip"
+msgstr "Überspringen"
+
+#: agama-software/src/zypp_server.rs:304
+msgid "Updating the list of repositories"
+msgstr "Liste der Repositorien wird aktualisiert"
+
+#: agama-software/src/zypp_server.rs:305
+msgid "Refreshing metadata from the repositories"
+msgstr "Metadaten aus den Repositorien wird aktualisiert"
+
+#: agama-software/src/zypp_server.rs:306
+msgid "Calculating the software proposal"
+msgstr "Software-Vorschlag wird berechnet"
+
+#: agama-software/src/zypp_server.rs:309
+msgid "Registering the system"
+msgstr "System wird registriert"
+
+#: agama-software/src/zypp_server.rs:409
+msgid "The product must be registered"
+msgstr "Das Produkt muss registriert werden"
+
+#: agama-users/src/service.rs:138
+msgid ""
+"Defining a user, setting the root password or a SSH public key is required"
+msgstr ""
+"Die Definition eines Benutzers, das Festlegen des Root-Passworts oder eines "
+"öffentlichen SSH-Schlüssels ist erforderlich"
+
+#: agama-users/src/service.rs:151
+msgid "First user information is incomplete"
+msgstr "Die Informationen zum ersten Benutzer sind unvollständig"

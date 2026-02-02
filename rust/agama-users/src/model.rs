@@ -186,40 +186,27 @@ impl Model {
         let firewall_cmd = self
             .chroot_command()
             .args(["firewall-offline-cmd", "--add-service=ssh"])
-            .output();
+            .output()?;
 
-        match firewall_cmd {
-            Ok(output) => {
-                if !output.status.success() {
-                    tracing::error!(
-                        "Opening SSH port in firewall failed: exit: {}, stderr: {}",
-                        output.status,
-                        String::from_utf8_lossy(&output.stderr)
-                    );
+        // ignore error if the firewall is not installed, in that case we do need to open the port,
+        // chroot returns exit status 127 if the command is not found
+        if firewall_cmd.status.code() == Some(127) {
+            tracing::warn!("Command firewall-offline-cmd not found, firewall not installed?");
+            return Ok(());
+        }
 
-                    return Err(service::Error::CommandFailed(String::from(
-                        "Cannot open SSH port in firewall",
-                    )));
-                } else {
-                    tracing::info!("The SSH port has been successfully opened in the firewall");
-                }
-            }
+        if firewall_cmd.status.success() {
+            tracing::info!("The SSH port has been successfully opened in the firewall");
+        } else {
+            tracing::error!(
+                "Opening SSH port in firewall failed: exit: {}, stderr: {}",
+                firewall_cmd.status,
+                String::from_utf8_lossy(&firewall_cmd.stderr)
+            );
 
-            Err(e) => {
-                // ignore the error and just log a warning if the firewall is not installed,
-                // in that case we do need to open the port
-                if e.kind() == std::io::ErrorKind::NotFound {
-                    tracing::warn!(
-                        "Command firewall-offline-cmd not found, firewall not installed?"
-                    );
-                } else {
-                    tracing::error!("Running firewall-offline-cmd failed: {}", e);
-
-                    return Err(service::Error::CommandFailed(String::from(
-                        "Cannot open SSH port in the firewall",
-                    )));
-                }
-            }
+            return Err(service::Error::CommandFailed(String::from(
+                "Cannot open SSH port in firewall",
+            )));
         }
 
         Ok(())

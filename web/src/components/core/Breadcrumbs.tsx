@@ -55,6 +55,12 @@ const Breadcrumb = ({
   hideDivider = false,
   isEditorial = false,
 }: BreadcrumbProps) => {
+  const content = (
+    <Text isBold={isEditorial} className={isEditorial && textStyles.fontSizeLg}>
+      {label}
+    </Text>
+  );
+
   return (
     <Flex
       component="li"
@@ -63,11 +69,13 @@ const Breadcrumb = ({
       aria-current={isCurrent ? "page" : undefined}
     >
       {!hideDivider && <Icon name="chevron_right" aria-hidden />}
-      <Link to={path} variant="link" isInline>
-        <Text isBold={isEditorial} className={isEditorial && textStyles.fontSizeLg}>
-          {label}
-        </Text>
-      </Link>
+      {isCurrent ? (
+        <h1>{content}</h1>
+      ) : (
+        <Link to={path} variant="link" isInline>
+          {content}
+        </Link>
+      )}
     </Flex>
   );
 };

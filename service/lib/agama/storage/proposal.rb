@@ -100,7 +100,7 @@ module Agama
         config = config(solved: true)
         return unless config && model_supported?(config)
 
-        ConfigConversions::ToModel.new(config).convert
+        ConfigConversions::ToModel.new(config, product_config).convert
       end
 
       # Solves a given model.
@@ -115,7 +115,7 @@ module Agama
           .convert
 
         ConfigSolver.new(product_config, storage_system).solve(config)
-        ConfigConversions::ToModel.new(config).convert
+        ConfigConversions::ToModel.new(config, product_config).convert
       end
 
       # Calculates a new proposal using the given JSON.

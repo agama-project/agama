@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-01-23 15:24+0000\n"
-"PO-Revision-Date: 2026-01-20 00:04+0000\n"
+"POT-Creation-Date: 2026-01-30 16:41+0000\n"
+"PO-Revision-Date: 2026-01-26 23:04+0000\n"
 "Last-Translator: Yasuhiko Kamata <belphegor@belbel.or.jp>\n"
 "Language-Team: Japanese <https://l10n.opensuse.org/projects/agama/agama-rust-"
 "master/ja/>\n"
@@ -29,15 +29,15 @@ msgstr "いいえ"
 msgid "Yes"
 msgstr "はい"
 
-#: agama-manager/src/service.rs:839
+#: agama-manager/src/service.rs:944
 msgid "Prepare the system"
 msgstr "システムの準備"
 
-#: agama-manager/src/service.rs:840
+#: agama-manager/src/service.rs:945
 msgid "Install software"
 msgstr "ソフトウエアのインストール"
 
-#: agama-manager/src/service.rs:841
+#: agama-manager/src/service.rs:946
 msgid "Configure the system"
 msgstr "システムの設定"
 
@@ -51,10 +51,10 @@ msgstr "設定を読み込んでいます"
 
 #: agama-security/src/service.rs:228
 msgid "Reject"
-msgstr ""
+msgstr "拒否する"
 
 #: agama-security/src/service.rs:228
-#: agama-software/src/callbacks/security.rs:74
+#: agama-software/src/callbacks/security.rs:109
 msgid "Trust"
 msgstr "信頼する"
 
@@ -63,6 +63,8 @@ msgid ""
 "Trying to import a self-signed certificate. Do you want to trust it and "
 "register the product?"
 msgstr ""
+"自己署名型の証明書を取り込もうとしています。この証明書を信用し、製品を登録し"
+"てよろしいですか？"
 
 #: agama-software/src/callbacks/commit_download.rs:48
 #: agama-software/src/callbacks/install.rs:56
@@ -84,35 +86,34 @@ msgid "Continue"
 msgstr "続行"
 
 #. TRANSLATORS: substituting: key ID, (key name), fingerprint
-#: agama-software/src/callbacks/security.rs:67
-#, rust-format
+#: agama-software/src/callbacks/security.rs:102
 msgid ""
 "The key {0} ({1}) with fingerprint {2} is unknown. Do you want to trust this "
 "key?"
 msgstr ""
 "指紋 {2} の鍵 {0} ({1}) は未知の鍵です。この鍵を信頼してよろしいですか？"
 
-#: agama-software/src/callbacks/security.rs:74
+#: agama-software/src/callbacks/security.rs:109
 msgid "Skip"
 msgstr "飛ばす"
 
-#: agama-software/src/zypp_server.rs:290
+#: agama-software/src/zypp_server.rs:304
 msgid "Updating the list of repositories"
 msgstr "リポジトリの一覧を更新しています"
 
-#: agama-software/src/zypp_server.rs:291
+#: agama-software/src/zypp_server.rs:305
 msgid "Refreshing metadata from the repositories"
 msgstr "リポジトリのメタデータを更新しています"
 
-#: agama-software/src/zypp_server.rs:292
+#: agama-software/src/zypp_server.rs:306
 msgid "Calculating the software proposal"
 msgstr "ソフトウエアの提案内容を作成しています"
 
-#: agama-software/src/zypp_server.rs:295
+#: agama-software/src/zypp_server.rs:309
 msgid "Registering the system"
 msgstr "システムを登録しています"
 
-#: agama-software/src/zypp_server.rs:390
+#: agama-software/src/zypp_server.rs:409
 msgid "The product must be registered"
 msgstr "製品を登録しなければなりません"
 
@@ -126,6 +127,5 @@ msgstr ""
 msgid "First user information is incomplete"
 msgstr "最初のユーザ情報が不十分です"
 
-#, fuzzy
 #~ msgid "Failed to register the system"
-#~ msgstr "システムを登録しています"
+#~ msgstr "システムの登録に失敗しました"

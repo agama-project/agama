@@ -31,6 +31,7 @@ pub use agama_hostname as hostname;
 pub use agama_iscsi as iscsi;
 pub use agama_l10n as l10n;
 pub use agama_network as network;
+pub use agama_proxy as proxy;
 pub use agama_security as security;
 pub use agama_software as software;
 pub use agama_storage as storage;

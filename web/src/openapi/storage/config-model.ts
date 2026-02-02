@@ -8,6 +8,8 @@ export type EncryptionMethod = "luks1" | "luks2" | "tpmFde";
 export type FilesystemType =
   | "bcachefs"
   | "btrfs"
+  | "btrfsImmutable"
+  | "btrfsSnapshots"
   | "exfat"
   | "ext2"
   | "ext3"
@@ -60,7 +62,6 @@ export interface Filesystem {
   reuse?: boolean;
   default: boolean;
   type?: FilesystemType;
-  snapshots?: boolean;
   label?: string;
 }
 export interface Partition {

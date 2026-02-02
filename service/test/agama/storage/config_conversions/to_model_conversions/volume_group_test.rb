@@ -27,7 +27,7 @@ require "y2storage/refinements"
 using Y2Storage::Refinements::SizeCasts
 
 describe Agama::Storage::ConfigConversions::ToModelConversions::VolumeGroup do
-  subject { described_class.new(volume_group_config, config) }
+  subject { described_class.new(volume_group_config, config, volumes) }
 
   let(:config) do
     Agama::Storage::ConfigConversions::FromJSON
@@ -50,6 +50,8 @@ describe Agama::Storage::ConfigConversions::ToModelConversions::VolumeGroup do
       ]
     }
   end
+
+  let(:volumes) { Agama::Storage::VolumeTemplatesBuilder.new([]) }
 
   let(:drives) { nil }
   let(:name) { nil }
@@ -148,7 +150,9 @@ describe Agama::Storage::ConfigConversions::ToModelConversions::VolumeGroup do
               }
             },
             {
-              filesystem: { reuse: false },
+              filesystem: {
+                reuse: false
+              },
               mountPath:  "/",
               size:       {
                 default: true,

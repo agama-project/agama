@@ -254,7 +254,7 @@ modes:
 
     software:
       mandatory_patterns:
-        - transactional_base
+        - immutable_base
 
     storage:
       space_policy: delete

@@ -1,4 +1,15 @@
 -------------------------------------------------------------------
+Fri Jan 30 12:44:21 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Fix packaging after the inclusion of Leap 16.1 specification
+  (gh#agama-project/agama#3098).
+
+-------------------------------------------------------------------
+Fri Jan 30 11:36:18 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Rename "transactional_base" to "immutable_base" (related to jsc#PED-14307).
+
+-------------------------------------------------------------------
 Thu Jan 29 11:00:00 UTC 2026 - Lubos Kocman <Lubos.Kocman@suse.com>
 
 - Add Leap 16.1 product definition
