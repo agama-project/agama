@@ -349,7 +349,7 @@ export default {
     "Ubah tata letak keyboard"
   ],
   "Change product": [
-    "Mengubah produk"
+    "Ubah produk"
   ],
   "Change selection": [
     "Mengubah pilihan"
@@ -1009,7 +1009,7 @@ export default {
     "Penerbit"
   ],
   "It doesn't exist or can't be reached.": [
-    "Tidak ada atau tidak dapat diakses."
+    "Tidak ada atau tidak dapat dijangkau."
   ],
   "It is chosen for booting": [
     "Ini dipilih untuk booting"
@@ -1450,7 +1450,7 @@ export default {
     "Produk sudah terdaftar"
   ],
   "Protection for the information stored at the new file systems, including data, programs, and system files.": [
-    "Perlindungan untuk informasi yang disimpan di sistem berkas baru, termasuk data, program, dan berkas sistem."
+    "Perlindungan untuk informasi yang tersimpan pada sistem berkas baru, termasuk data, program, dan berkas sistem."
   ],
   "Provide email address": [
     "Berikan alamat email"
@@ -1474,7 +1474,7 @@ export default {
     "Baca perangkat zFCP"
   ],
   "Reboot": [
-    "Maut ulang"
+    "Mulai ulang"
   ],
   "Recommended": [
     "Direkomendasikan"
@@ -1555,7 +1555,7 @@ export default {
     "Route"
   ],
   "Row actions": [
-    "Baris tindakan"
+    "Tindakan baris"
   ],
   "Row expansion": [
     "Perluasan baris"
@@ -1909,7 +1909,7 @@ export default {
     "Antarmuka penginstal tidak lagi tersedia, jadi Anda dapat menutup jendela ini dengan aman."
   ],
   "The installer requires [root] user privileges.": [
-    "Penginstal memerlukan hak akses pengguna [root]."
+    "Penginstal memerlukan hak istimewa pengguna [root]."
   ],
   "The logical volume will also be deleted": [
     "Volume logis juga akan dihapus"
