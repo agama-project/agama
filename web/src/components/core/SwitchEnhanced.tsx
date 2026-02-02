@@ -57,6 +57,10 @@ type SwitchEnhancedProps = Omit<
  */
 export default function SwitchEnhanced({ description, label, ...props }: SwitchEnhancedProps) {
   const switchId = useId();
+  // NOTE: `labelId` isn't actually needed because the usage of `label#htmlFor`.
+  // It remains to satisfy PatternFly/Switch component, which requires at least
+  // one of `label`, `aria-labelledby`, or `aria-label` props, None of them
+  // strictly needed with the approach followed here.
   const labelId = useId();
   const descriptionId = useId();
 
@@ -71,8 +75,10 @@ export default function SwitchEnhanced({ description, label, ...props }: SwitchE
         />
       </FlexItem>
       <FlexItem>
-        <Content isEditorial id={labelId}>
-          <label htmlFor={switchId}>{label}</label>
+        <Content isEditorial>
+          <label id={labelId} htmlFor={switchId}>
+            {label}
+          </label>
         </Content>
         <Content component="small" id={descriptionId}>
           {description}
