@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-11-24 12:57+0000\n"
-"PO-Revision-Date: 2025-09-11 08:59+0000\n"
+"PO-Revision-Date: 2026-01-26 20:04+0000\n"
 "Last-Translator: Timo Jyrinki <tjyrinki@suse.com>\n"
 "Language-Team: Finnish <https://l10n.opensuse.org/projects/agama/agama-"
 "service-sle-16/fi/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.13.1\n"
+"X-Generator: Weblate 5.15.2\n"
 
 #. Reports the problems and decide whether to continue or not.
 #.
@@ -47,11 +47,11 @@ msgstr "Levyjen valmistelu"
 
 #: service/lib/agama/manager.rb:119
 msgid "Install software"
-msgstr "Ohjelmistojen asennus"
+msgstr "Asenna ohjelmistoja"
 
 #: service/lib/agama/manager.rb:120
 msgid "Configure the system"
-msgstr "Järjestelmän asetukset"
+msgstr "Tee järjestelmän asetukset"
 
 #. rubocop:enable Metrics/AbcSize, Metrics/MethodLength
 #: service/lib/agama/manager.rb:161
@@ -90,7 +90,7 @@ msgstr "Keskeytä asennus"
 #. TRANSLATORS: button label, skip the error
 #: service/lib/agama/software/callbacks/base.rb:66
 msgid "Skip"
-msgstr "Ohita"
+msgstr "Ohita tämä kohta"
 
 #. TRANSLATORS: button label
 #: service/lib/agama/software/callbacks/base.rb:72
@@ -158,7 +158,7 @@ msgstr ""
 #. @see https://github.com/yast/yast-yast2/blob/19180445ab935a25edd4ae0243aa7a3bcd09c9de/library/packages/src/modules/PackageCallbacks.rb#L620
 #: service/lib/agama/software/callbacks/script.rb:50
 msgid "There was a problem running a package script."
-msgstr "Ongelma suoritettaessa paketin komentojonoa."
+msgstr "Pakettikomentojonoa suoritettaessa oli ongelma."
 
 #. Callback to handle unsigned files
 #.
@@ -791,8 +791,7 @@ msgstr[1] "Seuraavat valitut laitteet eivät löydy järjestelmästä: %{devices
 msgid ""
 "Defining a user, setting the root password or a SSH public key is required"
 msgstr ""
-"Joko käyttäjän, pääkäyttäjän salasanan tai julkisen SSH-avaimen "
-"määrittäminen vaaditaan"
+"Määritetään käyttäjää, pääkäyttäjän salasana tai julkinen SSH-avain vaaditaan"
 
 #~ msgid "Selecting Linux Security Modules"
 #~ msgstr "Valitaan Linuxin tietoturvamoduuleita (LSM)"
