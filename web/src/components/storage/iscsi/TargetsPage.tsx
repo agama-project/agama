@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2023-2025] SUSE LLC
+ * Copyright (c) [2023-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -23,23 +23,10 @@
 import React from "react";
 import { Page } from "~/components/core";
 import { DiscoverForm } from "~/components/storage/iscsi";
-import { _ } from "~/i18n";
-import { discover } from "~/model/storage/iscsi";
 import { STORAGE } from "~/routes/paths";
+import { _ } from "~/i18n";
 
 export default function TargetsPage() {
-  const onSubmit = async (data) => {
-    const { username, password, reverseUsername, reversePassword } = data;
-    const success = await discover(data.address, parseInt(data.port), {
-      username,
-      password,
-      reverseUsername,
-      reversePassword,
-    });
-
-    // FIXME, success is not to be returned
-    return success;
-  };
   return (
     <Page
       breadcrumbs={[
@@ -49,7 +36,7 @@ export default function TargetsPage() {
       ]}
     >
       <Page.Content>
-        <DiscoverForm onSubmit={onSubmit} onCancel={() => {}} />
+        <DiscoverForm />
       </Page.Content>
     </Page>
   );

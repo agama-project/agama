@@ -47,6 +47,11 @@ import { STORAGE } from "~/routes/paths";
 import { _ } from "~/i18n";
 import Text from "~/components/core/Text";
 
+import type { Target as ConfigTarget } from "~/openapi/config/iscsi";
+import type { Target as SystemTarget } from "~/openapi/system/iscsi";
+
+type MixedTargets = ConfigTarget | SystemTarget;
+
 /**
  * Filter options for narrowing down iSCSI targets shown in the table.
  *
@@ -264,7 +269,7 @@ type TargetsTableState = {
   /** Current active filters applied to the device list */
   filters: ISCSITargetsFilters;
   /** Currently selected devices in the UI */
-  selectedDevices: [];
+  selectedDevices: MixedTargets[];
 };
 
 /**
@@ -289,11 +294,7 @@ type TargetsTableAction =
   | { type: "RESET_FILTERS" }
   | { type: "UPDATE_SELECTION"; payload: TargetsTableState["selectedDevices"] }
   | { type: "RESET_SELECTION" }
-  | { type: "REQUEST_FORMAT"; payload: TargetsTableState["devicesToFormat"] }
-  | { type: "CANCEL_FORMAT_REQUEST" }
-  | { type: "START_WAITING"; payload: DASDDevice["id"][] }
-  | { type: "UPDATE_WAITING"; payload: DASDDevice["id"] }
-  | { type: "UPDATE_DEVICE"; payload: DASDDevice };
+  | { type: "CANCEL_FORMAT_REQUEST" };
 
 /**
  * Reducer function that handles all iSCSI targets table state transitions.
@@ -318,13 +319,6 @@ const reducer = (state: TargetsTableState, action: TargetsTableAction): TargetsT
 
     case "RESET_SELECTION": {
       return { ...state, selectedDevices: initialState.selectedDevices };
-    }
-
-    case "UPDATE_DEVICE": {
-      const selectedDevices = state.selectedDevices.map((dev) =>
-        action.payload.id === dev.id ? action.payload : dev,
-      );
-      return { ...state, selectedDevices };
     }
   }
 };
@@ -392,46 +386,38 @@ const createColumns = () => [
 export default function TargetsTable() {
   const navigate = useNavigate();
   // FIXME:use real data
-  const configTargets = [
+  const configTargets: ConfigTarget[] = [
     {
       name: "iqn.2023-01.com.example:12ac588",
       address: "192.168.100.102",
       port: 3262,
       interface: "default",
-      ibft: true,
       startup: "onboot",
-      connected: true,
-      locked: true,
     },
     {
       name: "iqn.2023-01.com.example:12ac788",
       address: "192.168.100.106",
       port: 3264,
       interface: "default",
-      ibft: false,
       startup: "onboot",
-      connected: false,
-      locked: false,
     },
     {
       name: "inConfigBUTNOTinSystem:12ac788",
       address: "192.168.100.10",
       port: 3264,
       interface: "default",
-      ibft: false,
       startup: "onboot",
-      connected: false,
-      locked: false,
     },
   ];
 
-  const systemTargets = [
+  const systemTargets: SystemTarget[] = [
     {
       name: "iqn.2023-01.com.example:12ac588",
       address: "192.168.100.102",
       port: 3264,
       interface: "default",
-      ibft: true,
+      // FIXME: check https://github.com/agama-project/agama/pull/3092/changes#r2755510133
+      ibtf: true,
       startup: "onboot",
       connected: true,
       locked: true,
@@ -441,14 +427,15 @@ export default function TargetsTable() {
       address: "192.168.100.106",
       port: 3264,
       interface: "default",
-      ibft: false,
+      // FIXME: check https://github.com/agama-project/agama/pull/3092/changes#r2755510133
+      ibtf: false,
       startup: "onboot",
       connected: false,
       locked: false,
     },
   ];
 
-  const targets = mergeSources({
+  const targets = mergeSources<MixedTargets, "name">({
     collections: {
       config: configTargets,
       system: systemTargets,
@@ -456,7 +443,7 @@ export default function TargetsTable() {
     key: "name",
   });
 
-  const hasLocked = targets.find((t) => t.locked);
+  const hasLocked = targets.find((t) => "locked" in t && t.locked);
 
   const [state, dispatch] = useReducer(reducer, initialState);
 
@@ -471,7 +458,7 @@ export default function TargetsTable() {
     dispatch({ type: "RESET_SELECTION" });
   };
 
-  const onSelectionChange = (devices: DASDDevice[]) => {
+  const onSelectionChange = (devices: MixedTargets[]) => {
     dispatch({ type: "UPDATE_SELECTION", payload: devices });
   };
 

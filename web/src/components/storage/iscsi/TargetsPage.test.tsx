@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024] SUSE LLC
+ * Copyright (c) [2024-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -23,8 +23,8 @@
 import React from "react";
 import { screen, waitFor, within } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
-import TargetsSection from "./TargetsSection";
 import { deleteNode, discover, login, logout } from "~/model/storage/iscsi";
+import TargetsPage from "./TargetsPage";
 
 let mockNodes = [];
 const mockDiscover = jest.fn();
@@ -64,7 +64,7 @@ jest.mock("~/model/storage/iscsi", () => ({
 }));
 
 it.todo("Adapt to new api");
-describe.skip("TargetsSection", () => {
+describe.skip("TargetsPage", () => {
   beforeEach(() => {
     mockNodes = [];
     mockDiscover.mockResolvedValue(true);
@@ -72,7 +72,7 @@ describe.skip("TargetsSection", () => {
 
   describe("allows discovering the node", () => {
     it("asks for discover info and closes the dialog on success", async () => {
-      const { user } = installerRender(<TargetsSection />, { withL10n: true });
+      const { user } = installerRender(<TargetsPage />, { withL10n: true });
       const button = await screen.findByRole("button", { name: "Discover iSCSI targets" });
       await user.click(button);
 
@@ -113,7 +113,7 @@ describe.skip("TargetsSection", () => {
     });
 
     it("allows logging into disconnected targets", async () => {
-      const { user } = installerRender(<TargetsSection />, { withL10n: true });
+      const { user } = installerRender(<TargetsPage />, { withL10n: true });
 
       const row = await screen.findByRole("row", { name: /Disconnected/ });
       const actionsButton = await within(row).findByRole("button", { name: "Actions" });
@@ -148,7 +148,7 @@ describe.skip("TargetsSection", () => {
     });
 
     it("allows logging out connected targets", async () => {
-      const { user } = installerRender(<TargetsSection />, { withL10n: true });
+      const { user } = installerRender(<TargetsPage />, { withL10n: true });
 
       const row = await screen.findByRole("row", { name: /Connected/ });
       const actionsButton = await within(row).findByRole("button", { name: "Actions" });
@@ -162,7 +162,7 @@ describe.skip("TargetsSection", () => {
     });
 
     it("allows deleting a disconnected target", async () => {
-      const { user } = installerRender(<TargetsSection />, { withL10n: true });
+      const { user } = installerRender(<TargetsPage />, { withL10n: true });
 
       const row = await screen.findByRole("row", { name: /Disconnected/ });
       const actionsButton = await within(row).findByRole("button", { name: "Actions" });

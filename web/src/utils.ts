@@ -205,17 +205,19 @@ const generateEncodedPath = (...args: Parameters<typeof generatePath>) => {
 const sortCollection = <T>(collection: T[], direction: "asc" | "desc", key: string | ISortBy<T>) =>
   sort(collection)[direction](key as ISortBy<T>);
 
-interface MergeSourcesOptions<T, K extends keyof T> {
+/** Options for mergeSources */
+export type MergeSourcesOptions<T, K extends keyof T> = {
   /** Object mapping source names to their arrays */
   collections: Record<string, T[]>;
   /** The property name to use as the unique identifier (default: "id") */
   key?: K;
-}
+};
 
-interface ItemWithSources<T> extends Omit<T, "sources"> {
+/** Item augmented with sources array */
+type ItemWithSources<T> = Omit<T, "sources"> & {
   /** Array of source names where this item was found */
   sources: string[];
-}
+};
 
 /**
  * Merges multiple collections of objects, tracking which sources each item
@@ -252,7 +254,7 @@ interface ItemWithSources<T> extends Omit<T, "sources"> {
  * // ]
  * ```
  */
-function mergeSources<T extends Record<string, any>, K extends keyof T = "id">({
+function mergeSources<T, K extends keyof T>({
   collections,
   key = "id" as K,
 }: MergeSourcesOptions<T, K>): ItemWithSources<T>[] {

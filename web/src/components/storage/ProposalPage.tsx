@@ -151,7 +151,7 @@ function UnavailableDevicesEmptyState(): React.ReactNode {
       <EmptyStateFooter>
         <Split hasGutter>
           <SplitItem>
-            <Link to={PATHS.iscsi} variant="link">
+            <Link to={PATHS.iscsi.root} variant="link">
               {_("Connect to iSCSI targets")}
             </Link>
           </SplitItem>
