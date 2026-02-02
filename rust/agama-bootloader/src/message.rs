@@ -18,10 +18,7 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use agama_utils::{
-    actor::Message,
-    api::bootloader::Config,
-};
+use agama_utils::{actor::Message, api::bootloader::Config};
 
 pub struct GetConfig;
 
@@ -51,7 +48,7 @@ impl<T> SetConfig<T> {
 
 pub struct SetKernelArg {
     pub id: String,
-    pub value: String,    
+    pub value: String,
 }
 
 impl Message for SetKernelArg {

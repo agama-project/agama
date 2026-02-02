@@ -22,11 +22,7 @@
 
 use std::sync::Arc;
 
-use agama_utils::{
-    actor::Handler,
-    api::bootloader::Config,
-    issue,
-};
+use agama_utils::{actor::Handler, api::bootloader::Config, issue};
 use async_trait::async_trait;
 use tokio::sync::Mutex;
 
