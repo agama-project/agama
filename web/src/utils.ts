@@ -209,6 +209,8 @@ const sortCollection = <T>(collection: T[], direction: "asc" | "desc", key: stri
 export type MergeSourcesOptions<T, K extends keyof T> = {
   /** Object mapping source names to their arrays */
   collections: Record<string, T[]>;
+  /** Where to take the object from, if it is in more than one collection */
+  precedence: string[];
   /** The property name to use as the unique identifier (default: "id") */
   key?: K;
 };
@@ -256,11 +258,13 @@ type ItemWithSources<T> = Omit<T, "sources"> & {
  */
 function mergeSources<T, K extends keyof T>({
   collections,
+  precedence,
   key = "id" as K,
 }: MergeSourcesOptions<T, K>): ItemWithSources<T>[] {
   const map = new Map<T[K], ItemWithSources<T>>();
 
-  for (const [name, items] of Object.entries(collections)) {
+  for (const name of precedence) {
+    const items = collections[name];
     for (const obj of items) {
       const id = obj[key];
 

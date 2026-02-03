@@ -46,6 +46,8 @@ import { generatePath, useNavigate } from "react-router";
 import { STORAGE } from "~/routes/paths";
 import { _ } from "~/i18n";
 import Text from "~/components/core/Text";
+import { useSystem } from "~/hooks/model/system/iscsi";
+import { useConfig } from "~/hooks/model/config/iscsi";
 
 import type { Target as ConfigTarget } from "~/openapi/config/iscsi";
 import type { Target as SystemTarget } from "~/openapi/system/iscsi";
@@ -384,68 +386,21 @@ const createColumns = () => [
 ];
 
 export default function TargetsTable() {
+  const [state, dispatch] = useReducer(reducer, initialState);
   const navigate = useNavigate();
-  // FIXME:use real data
-  const configTargets: ConfigTarget[] = [
-    {
-      name: "iqn.2023-01.com.example:12ac588",
-      address: "192.168.100.102",
-      port: 3262,
-      interface: "default",
-      startup: "onboot",
-    },
-    {
-      name: "iqn.2023-01.com.example:12ac788",
-      address: "192.168.100.106",
-      port: 3264,
-      interface: "default",
-      startup: "onboot",
-    },
-    {
-      name: "inConfigBUTNOTinSystem:12ac788",
-      address: "192.168.100.10",
-      port: 3264,
-      interface: "default",
-      startup: "onboot",
-    },
-  ];
-
-  const systemTargets: SystemTarget[] = [
-    {
-      name: "iqn.2023-01.com.example:12ac588",
-      address: "192.168.100.102",
-      port: 3264,
-      interface: "default",
-      // FIXME: check https://github.com/agama-project/agama/pull/3092/changes#r2755510133
-      ibtf: true,
-      startup: "onboot",
-      connected: true,
-      locked: true,
-    },
-    {
-      name: "iqn.2023-01.com.example:12ac788",
-      address: "192.168.100.106",
-      port: 3264,
-      interface: "default",
-      // FIXME: check https://github.com/agama-project/agama/pull/3092/changes#r2755510133
-      ibtf: false,
-      startup: "onboot",
-      connected: false,
-      locked: false,
-    },
-  ];
+  const configTargets = useConfig()?.targets || [];
+  const systemTargets = useSystem()?.targets || [];
 
   const targets = mergeSources<MixedTargets, "name">({
     collections: {
       config: configTargets,
       system: systemTargets,
     },
+    precedence: ["system", "config"],
     key: "name",
   });
 
   const hasLocked = targets.find((t) => "locked" in t && t.locked);
-
-  const [state, dispatch] = useReducer(reducer, initialState);
 
   const columns = createColumns();
 
