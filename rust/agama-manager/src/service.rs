@@ -456,9 +456,7 @@ impl Service {
             .call(files::message::SetConfig::new(config.files.clone()))
             .await?;
 
-        self.files
-            .call(files::message::RunScripts::new(ScriptsGroup::Pre))
-            .await?;
+        self.run_pre_scripts();
 
         self.questions
             .call(question::message::SetConfig::new(config.questions.clone()))
@@ -622,6 +620,23 @@ impl Service {
         product_config.mode = product.mode.clone();
 
         Ok(Some(software_config))
+    }
+
+    /// It runs pre-scripts and asks storage for probing.
+    fn run_pre_scripts(&self) {
+        let files = self.files.clone();
+        let storage = self.storage.clone();
+        tokio::spawn(async move {
+            let pre_scripts_ran = files
+                .call(files::message::RunScripts::new(ScriptsGroup::Pre))
+                .await
+                .unwrap();
+            if pre_scripts_ran {
+                if let Err(error) = storage.cast(storage::message::Probe) {
+                    tracing::error!("Failed to ask for storage probing: {error}");
+                }
+            }
+        });
     }
 }
 

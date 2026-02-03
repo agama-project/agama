@@ -56,7 +56,7 @@ impl RunScripts {
 }
 
 impl Message for RunScripts {
-    type Reply = ();
+    type Reply = bool;
 }
 
 #[derive(Clone)]
