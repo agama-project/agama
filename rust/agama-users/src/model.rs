@@ -189,9 +189,9 @@ impl Model {
 
     /// Enables sshd service in the target system
     fn enable_sshd_service(&self) -> Result<(), service::Error> {
-        let systemctl = self
-            .chroot_command()
-            .args(["systemctl", "enable", "sshd.service"])
+        let systemctl = ChrootCommand::new(self.install_dir.clone())
+            .cmd("systemctl")
+            .args(["enable", "sshd.service"])
             .output()?;
 
         if !systemctl.status.success() {
@@ -209,9 +209,9 @@ impl Model {
 
     /// Opens the SSH port in firewall in the target system
     fn open_ssh_port(&self) -> Result<(), service::Error> {
-        let firewall_cmd = self
-            .chroot_command()
-            .args(["firewall-offline-cmd", "--add-service=ssh"])
+        let firewall_cmd = ChrootCommand::new(self.install_dir.clone())
+            .cmd("firewall-offline-cmd")
+            .args(["-add-service=ssh"])
             .output()?;
 
         // ignore error if the firewall is not installed, in that case we do need to open the port,
