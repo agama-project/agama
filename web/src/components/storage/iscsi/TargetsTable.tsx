@@ -47,10 +47,10 @@ import { STORAGE } from "~/routes/paths";
 import { _ } from "~/i18n";
 import Text from "~/components/core/Text";
 import { useSystem } from "~/hooks/model/system/iscsi";
-import { useConfig } from "~/hooks/model/config/iscsi";
+import { useConfig, useRemoveTarget } from "~/hooks/model/config/iscsi";
 
 import type { Target as ConfigTarget } from "~/openapi/config/iscsi";
-import type { Target as SystemTarget } from "~/openapi/system/iscsi";
+import type { Target as SystemTarget, Target } from "~/openapi/system/iscsi";
 
 type MixedTargets = ConfigTarget | SystemTarget;
 
@@ -58,8 +58,6 @@ type MixedTargets = ConfigTarget | SystemTarget;
  * Filter options for narrowing down iSCSI targets shown in the table.
  *
  * All filters are optional and may be combined.
- *
- * FIXME: Implement it
  */
 export type ISCSITargetsFilters = {
   name?: string;
@@ -78,8 +76,6 @@ type ISCSITargetCondition = (target) => boolean;
 
 /**
  * Filters an array of targets based on given filters.
- *
- * FIXME: Implement it
  */
 const filterTargets = (targets, filters) => {
   const { name, portal, status } = filters;
@@ -114,7 +110,16 @@ const filterTargets = (targets, filters) => {
 
   return targets.filter((t) => conditions.every((conditionFn) => conditionFn(t)));
 };
-//
+
+/**
+ * Checks if given target failed to connect.
+ */
+const failedToConnect = (target: Target & { sources: string[] }): boolean => {
+  return (
+    target.sources.includes("system") && target.sources.includes("config") && !target.connected
+  );
+};
+
 /**
  * Builds the list of available actions for given targets.
  *
@@ -123,12 +128,12 @@ const filterTargets = (targets, filters) => {
  * Returns an array of action objects, each with a label and an `onClick`
  * handler. (...)
  */
-const buildActions = (target, navigateFn) => {
+const buildActions = (target, navigateFn, onDelete) => {
   if (target.locked) return [];
 
   const { connected, sources } = target;
   const inConfig = sources.includes("config");
-  const inSystem = sources.includes("system");
+  const hasConnectionFailures = failedToConnect(target);
 
   return [
     !connected && {
@@ -140,16 +145,11 @@ const buildActions = (target, navigateFn) => {
         title: _("Disconnect"),
         onClick: () => console.log("Disconnect"),
       },
-    inConfig &&
-      !inSystem && {
-        isSeparator: true,
-      },
-    inConfig &&
-      !inSystem && {
-        title: _("Delete"),
-        onClick: () => console.log("Delete"),
-        isDanger: true,
-      },
+    hasConnectionFailures && {
+      title: _("Delete"),
+      onClick: () => onDelete(target.name),
+      isDanger: true,
+    },
   ].filter(Boolean);
 };
 
@@ -390,6 +390,7 @@ export default function TargetsTable() {
   const navigate = useNavigate();
   const configTargets = useConfig()?.targets || [];
   const systemTargets = useSystem()?.targets || [];
+  const removeTarget = useRemoveTarget();
 
   const targets = mergeSources<MixedTargets, "name">({
     collections: {
@@ -446,7 +447,9 @@ export default function TargetsTable() {
         sortedBy={state.sortedBy}
         updateSorting={onSortingChange}
         allowSelectAll
-        itemActions={(target) => buildActions(target, navigate)}
+        itemActions={(target) =>
+          buildActions(target, navigate, (targetName) => removeTarget(targetName))
+        }
         itemActionsLabel={(d) => `Actions for ${d.id}`}
         emptyState={<ISCSITableEmptyState mode={emptyMode} resetFilters={resetFilters} />}
       />
