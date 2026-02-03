@@ -23,7 +23,7 @@ export interface Target {
   /**
    * Whether the target was initiated by iBFT.
    */
-  ibtf: boolean;
+  ibft: boolean;
   startup: "onboot" | "manual" | "automatic";
   /**
    * Whether the node is connected (there is a session).

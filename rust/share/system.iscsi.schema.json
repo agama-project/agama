@@ -32,7 +32,7 @@
         "address": { "type": "string" },
         "port": { "type": "number" },
         "interface": { "type": "string" },
-        "ibtf": {
+        "ibft": {
           "description": "Whether the target was initiated by iBFT.",
           "type": "boolean"
         },
