@@ -63,7 +63,6 @@ pub mod questions;
 pub mod security;
 pub mod storage;
 mod store;
-pub mod users;
 pub use store::Store;
 pub mod utils;
 pub use agama_utils::{dbus, openapi};
