@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2025] SUSE LLC
+ * Copyright (c) [2025-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -77,7 +77,7 @@ it("allows users to configure iSCSI", async () => {
   const { user, menu } = await openMenu();
   const iscsiItem = within(menu).getByRole("menuitem", { name: /Configure iSCSI/ });
   await user.click(iscsiItem);
-  expect(mockNavigateFn).toHaveBeenCalledWith(PATHS.iscsi);
+  expect(mockNavigateFn).toHaveBeenCalledWith(PATHS.iscsi.root);
 });
 
 describe("if zFCP is not supported", () => {

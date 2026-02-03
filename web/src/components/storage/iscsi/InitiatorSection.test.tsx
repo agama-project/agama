@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024-2025] SUSE LLC
+ * Copyright (c) [2024-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -22,57 +22,52 @@
 
 import React from "react";
 import { screen } from "@testing-library/react";
-import { plainRender } from "~/test-utils";
-
+import { installerRender } from "~/test-utils";
+import { STORAGE } from "~/routes/paths";
 import InitiatorSection from "./InitiatorSection";
-import type { ISCSIInitiator } from "~/model/storage/iscsi";
 
-let initiator: ISCSIInitiator;
+const ibftInitiator = { name: "iqn.1996-04.de.suse:01:62b45cf7fc", ibft: true };
+const noIbftInitiator = { name: "iqn.1996-04.de.suse:01:62b45cf7fc", ibft: false };
 
-const mockInitiatorMutation = { mutateAsync: jest.fn() };
+const mockUseSystemFn = jest.fn();
 
-jest.mock("~/queries/storage/iscsi", () => ({
-  ...jest.requireActual("~/queries/storage/iscsi"),
-  useInitiator: () => initiator,
-  useInitiatorMutation: () => mockInitiatorMutation,
+jest.mock("~/hooks/model/system/iscsi", () => ({
+  ...jest.requireActual("~/hooks/model/system/iscsi"),
+  useSystem: () => mockUseSystemFn(),
 }));
 
-describe("InitiatorPresenter", () => {
-  describe("iBFT", () => {
-    beforeEach(() => {
-      initiator = { name: "iqn.1996-04.de.suse:01:62b45cf7fc", ibft: true };
-    });
-
-    it("displays the initiator data", () => {
-      plainRender(<InitiatorSection />);
-      screen.getByText(/read from.*iBFT/);
-      screen.getByText(initiator.name);
+describe("InitiatorSection", () => {
+  beforeEach(() => {
+    mockUseSystemFn.mockReturnValue({
+      initiator: ibftInitiator,
     });
   });
 
-  describe("without iBFT", () => {
+  it("renders the initiator name", () => {
+    installerRender(<InitiatorSection />);
+    screen.getByText(ibftInitiator.name);
+  });
+
+  describe("when read from iBFT", () => {
+    it("does not render a link to configure it when read from iBFT", () => {
+      installerRender(<InitiatorSection />);
+      screen.getByText(/read from.*iBFT/);
+      screen.getByText(/Initiator cannot be changed/);
+      expect(screen.queryByRole("link", { name: /configured manually/ })).toBeNull();
+    });
+  });
+
+  describe("when not read from iBFT", () => {
     beforeEach(() => {
-      initiator = { name: "iqn.1996-04.de.suse:01:62b45cf7fc", ibft: false };
+      mockUseSystemFn.mockReturnValue({
+        initiator: noIbftInitiator,
+      });
     });
 
-    it("displays the initiator form", () => {
-      plainRender(<InitiatorSection />);
-      screen.getByText(/No iSCSI Boot Firmware Table/);
-      const name = screen.getByRole("textbox", { name: "Initiator name" });
-      expect(name).toHaveValue(initiator.name);
-    });
-
-    it("updates the initiator data", async () => {
-      const { user } = plainRender(<InitiatorSection />);
-
-      const nameInput = screen.getByRole("textbox", { name: "Initiator name" });
-      await user.clear(nameInput);
-      await user.type(nameInput, "my-initiator");
-
-      const button = screen.getByRole("button", { name: "Change" });
-      await user.click(button);
-
-      expect(mockInitiatorMutation.mutateAsync).toHaveBeenCalledWith({ name: "my-initiator" });
+    it("renders a link to configure the target", () => {
+      installerRender(<InitiatorSection />);
+      const link = screen.getByRole("link", { name: /configured manually/ });
+      expect(link).toHaveAttribute("href", STORAGE.iscsi.initiator);
     });
   });
 });
