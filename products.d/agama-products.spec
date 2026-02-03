@@ -48,15 +48,15 @@ env \
 # for now remove kalpa from all builds until it is fixed
 rm -f %{buildroot}%{_datadir}/agama/products.d/kalpa.yaml
 
-# Keep only Leap based distros on Leap
-%if 0%{?is_opensuse} && 0%{?suse_version} == 1600
+# Keep only Leap based distros on Leap, Tumbleweed uses version 1699
+%if 0%{?is_opensuse} && 0%{?suse_version} <= 1610
 rm -f %{buildroot}%{_datadir}/agama/products.d/microos.yaml
 rm -f %{buildroot}%{_datadir}/agama/products.d/tumbleweed.yaml
 rm -f %{buildroot}%{_datadir}/agama/products.d/slowroll.yaml
 %endif
 
 # Keep TW-based distros on TW (drop Kalpa + Leap + Leap Micro)
-%if 0%{?is_opensuse} && 0%{?suse_version} > 1600
+%if 0%{?is_opensuse} && 0%{?suse_version} > 1610
 rm -f %{buildroot}%{_datadir}/agama/products.d/leap*.yaml
 %endif
 
@@ -72,12 +72,12 @@ Definition of openSUSE products (Tumbleweed, Leap, MicroOS and Slowroll) for the
 %dir %{_datadir}/agama
 %dir %{_datadir}/agama/products.d
 # if building on SLES add all opensuse products
-%if !0%{?is_opensuse} || 0%{?suse_version} > 1600
+%if !0%{?is_opensuse} || 0%{?suse_version} > 1610
 %{_datadir}/agama/products.d/microos.yaml
 %{_datadir}/agama/products.d/tumbleweed.yaml
 %{_datadir}/agama/products.d/slowroll.yaml
 %endif
-%if !0%{?is_opensuse} || 0%{?suse_version} == 1600
+%if !0%{?is_opensuse} || 0%{?suse_version} <= 1610
 %{_datadir}/agama/products.d/leap_161.yaml
 %{_datadir}/agama/products.d/leap_micro_62.yaml
 %endif
