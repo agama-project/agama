@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2023-2025] SUSE LLC
+# Copyright (c) [2023-2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -28,8 +28,6 @@ require "agama/storage/manager"
 require "agama/storage/proposal"
 require "agama/storage/proposal_settings"
 require "agama/storage/volume"
-require "agama/storage/dasd/manager"
-require "agama/dbus/storage/dasds_tree"
 require "y2storage"
 require "dbus"
 
@@ -1304,173 +1302,10 @@ describe Agama::DBus::Storage::Manager do
   context "in an s390 system" do
     before do
       allow(Yast::Arch).to receive(:s390).and_return true
-      allow(Agama::Storage::DASD::Manager).to receive(:new).and_return(dasd_backend)
-    end
-
-    let(:dasd_backend) do
-      instance_double(Agama::Storage::DASD::Manager,
-        on_probe:   nil,
-        on_refresh: nil)
-    end
-
-    it "includes interface for managing DASD devices" do
-      expect(subject.intfs.keys).to include("org.opensuse.Agama.Storage1.DASD.Manager")
     end
 
     it "includes interface for managing zFCP devices" do
       expect(subject.intfs.keys).to include("org.opensuse.Agama.Storage1.ZFCP.Manager")
-    end
-
-    describe "#dasd_enable" do
-      before do
-        allow(Agama::DBus::Storage::DasdsTree).to receive(:new).and_return(dasds_tree)
-        allow(dasds_tree).to receive(:find_paths).and_return [dbus_dasd1, dbus_dasd2]
-      end
-
-      let(:dasds_tree) { instance_double(Agama::DBus::Storage::DasdsTree) }
-
-      let(:dasd1) { instance_double("Y2S390::Dasd") }
-      let(:path1) { "/org/opensuse/Agama/Storage1/dasds/1" }
-      let(:dbus_dasd1) { Agama::DBus::Storage::Dasd.new(dasd1, path1) }
-
-      let(:dasd2) { instance_double("Y2S390::Dasd") }
-      let(:path2) { "/org/opensuse/Agama/Storage1/dasds/2" }
-      let(:dbus_dasd2) { Agama::DBus::Storage::Dasd.new(dasd2, path2) }
-
-      let(:path3) { "/org/opensuse/Agama/Storage1/dasds/3" }
-
-      context "when some of the paths do not correspond to an exported DASD" do
-        let(:paths) { [path1, path2, path3] }
-
-        it "does not try enable any DASD" do
-          expect(dasd_backend).to_not receive(:enable)
-          subject.dasd_enable(paths)
-        end
-
-        it "returns 1" do
-          result = subject.dasd_enable(paths)
-          expect(result).to eq(1)
-        end
-      end
-
-      context "when all the paths correspond to exported DASDs" do
-        let(:paths) { [path1, path2] }
-
-        it "tries to enable all the DASDs" do
-          expect(dasd_backend).to receive(:enable).with([dasd1, dasd2])
-          subject.dasd_enable(paths)
-        end
-
-        context "and the action successes" do
-          before do
-            allow(dasd_backend).to receive(:enable).with([dasd1, dasd2]).and_return true
-          end
-
-          it "returns 0" do
-            result = subject.dasd_enable(paths)
-            expect(result).to eq 0
-          end
-        end
-
-        context "and the action fails" do
-          before do
-            allow(dasd_backend).to receive(:enable).with([dasd1, dasd2]).and_return false
-          end
-
-          it "returns 2" do
-            result = subject.dasd_enable(paths)
-            expect(result).to eq 2
-          end
-        end
-      end
-    end
-
-    describe "#dasd_format" do
-      before do
-        allow(Agama::DBus::Storage::DasdsTree).to receive(:new).and_return(dasds_tree)
-        allow(dasds_tree).to receive(:find_paths).and_return [dbus_dasd1, dbus_dasd2]
-      end
-
-      let(:dasds_tree) { instance_double(Agama::DBus::Storage::DasdsTree) }
-
-      let(:dasd1) { instance_double("Y2S390::Dasd") }
-      let(:path1) { "/org/opensuse/Agama/Storage1/dasds/1" }
-      let(:dbus_dasd1) { Agama::DBus::Storage::Dasd.new(dasd1, path1) }
-
-      let(:dasd2) { instance_double("Y2S390::Dasd") }
-      let(:path2) { "/org/opensuse/Agama/Storage1/dasds/2" }
-      let(:dbus_dasd2) { Agama::DBus::Storage::Dasd.new(dasd2, path2) }
-
-      let(:path3) { "/org/opensuse/Agama/Storage1/dasds/3" }
-
-      context "when some of the paths do not correspond to an exported DASD" do
-        let(:paths) { [path1, path2, path3] }
-
-        it "does not try to format" do
-          expect(dasd_backend).to_not receive(:format)
-          subject.dasd_format(paths)
-        end
-
-        it "returns 1 as code and '/' as path" do
-          result = subject.dasd_format(paths)
-          expect(result).to eq [1, "/"]
-        end
-      end
-
-      context "when all the paths correspond to exported DASDs" do
-        let(:paths) { [path1, path2] }
-
-        it "tries to format all the DASDs" do
-          expect(dasd_backend).to receive(:format).with([dasd1, dasd2], any_args)
-          subject.dasd_format(paths)
-        end
-
-        context "and the action successes" do
-          before do
-            allow(dasd_backend).to receive(:format).and_return initial_status
-
-            allow(Agama::DBus::Storage::JobsTree).to receive(:new).and_return(jobs_tree)
-            allow(jobs_tree).to receive(:add_dasds_format).and_return format_job
-          end
-
-          let(:initial_status) { [double("FormatStatus"), double("FormatStatus")] }
-          let(:jobs_tree) { instance_double(Agama::DBus::Storage::JobsTree) }
-          let(:format_job) do
-            instance_double(Agama::DBus::Storage::DasdsFormatJob, path: job_path)
-          end
-          let(:job_path) { "/some/path" }
-
-          it "returns 0 and the path to the new Job object" do
-            result = subject.dasd_format(paths)
-            expect(result).to eq [0, job_path]
-          end
-        end
-
-        context "and the action fails" do
-          before do
-            allow(dasd_backend).to receive(:format).and_return nil
-          end
-
-          it "returns 2 as code and '/' as path" do
-            result = subject.dasd_format(paths)
-            expect(result).to eq [2, "/"]
-          end
-        end
-      end
-    end
-  end
-
-  context "in a system that is not s390" do
-    before do
-      allow(Yast::Arch).to receive(:s390).and_return false
-    end
-
-    it "does not respond to #dasd_enable" do
-      expect { subject.dasd_enable }.to raise_error NoMethodError
-    end
-
-    it "does not respond to #dasd_format" do
-      expect { subject.dasd_format }.to raise_error NoMethodError
     end
   end
 end
