@@ -1,7 +1,7 @@
 -------------------------------------------------------------------
 Tue Feb  3 07:23:18 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
 
-- Fixed linking the /etc/resolv.conf file in the chroot to 
+- Correct the /etc/resolv.conf link in the chroot to
   /run/NetworkManager/resolv.conf (bsc#257468).
 
 -------------------------------------------------------------------
