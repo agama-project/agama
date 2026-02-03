@@ -78,7 +78,7 @@ mod tests {
             )
             .await;
             let handler = Service::starter(progress, questions, software)
-                .with_scripts_workdir(tmp_dir.path())
+                .with_workdir(tmp_dir.path())
                 .with_install_dir(tmp_dir.path())
                 .start()
                 .await

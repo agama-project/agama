@@ -57,6 +57,7 @@ const NM_RESOLV_CONF_PATH: &str = "run/NetworkManager/resolv.conf";
 pub struct ScriptsRunner {
     progress: Handler<progress::Service>,
     questions: Handler<question::Service>,
+    root_dir: PathBuf,
     install_dir: PathBuf,
     workdir: PathBuf,
 }
@@ -64,12 +65,14 @@ pub struct ScriptsRunner {
 impl ScriptsRunner {
     /// Creates a new runner.
     ///
+    /// * `root_dir`: root directory of the system.
     /// * `install_dir`: directory where the system is being installed. It is relevant for
     ///   chrooted scripts.
     /// * `workdir`: scripts work directory.
     /// * `progress`: handler to report the progress.
     /// * `questions`: handler to interact with the user.
     pub fn new<P: AsRef<Path>>(
+        root_dir: P,
         install_dir: P,
         workdir: P,
         progress: Handler<progress::Service>,
@@ -78,6 +81,7 @@ impl ScriptsRunner {
         Self {
             progress,
             questions,
+            root_dir: root_dir.as_ref().to_path_buf(),
             install_dir: install_dir.as_ref().to_path_buf(),
             workdir: workdir.as_ref().to_path_buf(),
         }
@@ -228,7 +232,7 @@ impl ScriptsRunner {
     ///
     /// It returns false if the resolv.conf was already linked and no action was required.
     fn link_resolv(&self) -> Result<bool, std::io::Error> {
-        let original = self.install_dir.join(NM_RESOLV_CONF_PATH);
+        let original = self.root_dir.join(NM_RESOLV_CONF_PATH);
         let link = self.resolv_link_path();
 
         if fs::exists(&link)? || !fs::exists(&original)? {
@@ -291,7 +295,7 @@ mod tests {
 
             let (events_tx, events_rx) = broadcast::channel::<Event>(16);
             let install_dir = tmp_dir.path().join("mnt");
-            let workdir = tmp_dir.path().join("scripts");
+            let workdir = tmp_dir.path().to_path_buf();
             let questions = question::start(events_tx.clone()).await.unwrap();
             let progress = progress::Service::starter(events_tx.clone()).start();
 
@@ -310,11 +314,16 @@ mod tests {
     impl Context {
         pub fn runner(&self) -> ScriptsRunner {
             ScriptsRunner::new(
-                self.install_dir.clone(),
                 self.workdir.clone(),
+                self.install_dir.clone(),
+                self.scripts_dir(),
                 self.progress.clone(),
                 self.questions.clone(),
             )
+        }
+
+        pub fn scripts_dir(&self) -> PathBuf {
+            self.workdir.join("run/agama/scripts")
         }
 
         pub fn setup_script(&self, content: &str, chroot: bool) -> Script {
@@ -329,14 +338,14 @@ mod tests {
                 chroot: Some(chroot),
             });
             script
-                .write(&self.workdir)
+                .write(&self.scripts_dir())
                 .expect("Could not write the script");
             script
         }
 
         // Set up a fake chroot.
         pub fn setup_chroot(&self) -> std::io::Result<()> {
-            let nm_dir = self.install_dir.join("run/NetworkManager");
+            let nm_dir = self.workdir.join("run/NetworkManager");
             fs::create_dir_all(&nm_dir)?;
             fs::create_dir_all(self.install_dir.join("etc"))?;
 
@@ -348,7 +357,7 @@ mod tests {
 
         // Return the content of a script result file.
         pub fn result_content(&self, script_type: &str, name: &str) -> String {
-            let path = &self.workdir.join(script_type).join(name);
+            let path = &self.scripts_dir().join(script_type).join(name);
             let body: Vec<u8> = std::fs::read(path).unwrap();
             String::from_utf8(body).unwrap()
         }
@@ -448,7 +457,7 @@ mod tests {
         });
 
         // Check the generated files
-        let path = &ctx.workdir.join("post").join("test.stderr");
+        let path = &ctx.scripts_dir().join("post").join("test.stderr");
         let body: Vec<u8> = std::fs::read(path).unwrap();
         let body = String::from_utf8(body).unwrap();
         assert!(body.contains("agama-unknown"));
