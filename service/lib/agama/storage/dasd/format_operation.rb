@@ -46,19 +46,16 @@ module Agama
         # DasdActions::Activate seems to imply that, but the code at DasdActions::Format contains a
         # comment stating otherwise. Let's do nothing for the time being.
         #
-        # @return [Array<Y2S390::FormatStatus>, nil] Initial status for all DASDs, nil if the format
-        #   process couldn't be started.
+        # @return [Boolean] false if the format process couldn't be started.
         def run
-          return nil unless start?
+          return false unless start?
 
           process.initialize_summary
-          Thread.new do
-            # Just to be absolutely sure, sleep to ensure the #run method returns and its result is
-            # processed by the caller before we start calling callbacks
-            wait
-            monitor_process
-          end
-          process.summary.values
+          # Just to be absolutely sure, sleep to ensure the #run method returns and its result is
+          # processed by the caller before we start calling callbacks
+          wait
+          monitor_process
+          true
         end
 
       private

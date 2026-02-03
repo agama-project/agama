@@ -28,8 +28,6 @@ module Agama
     module ISCSI
       # Manager for iSCSI.
       class Manager
-        include Yast::I18n
-
         PACKAGES = ["open-iscsi", "iscsiuio"].freeze
 
         # Config according to the JSON schema.
@@ -129,6 +127,7 @@ module Agama
         # Sets the new config and keeps the previous one.
         #
         # @param config_json [Hash{Symbol=>Object}] Config according to the JSON schema.
+        # @return [Config]
         def assign_config(config_json)
           @previous_config = @config
           @config_json = config_json
