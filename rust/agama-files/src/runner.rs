@@ -255,10 +255,6 @@ impl ScriptsRunner {
     fn resolv_link_path(&self) -> PathBuf {
         self.install_dir.join(RESOLV_CONF_PATH)
     }
-
-    fn root_path(&self) -> PathBuf {
-        self.root_dir.clone()
-    }
 }
 
 #[cfg(test)]
