@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2023-2024] SUSE LLC
+ * Copyright (c) [2023-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -21,6 +21,7 @@
  */
 
 import React, { useEffect, useReducer, useRef, useState } from "react";
+import { useNavigate } from "react-router";
 import {
   ActionGroup,
   Alert,
@@ -35,34 +36,26 @@ import {
 import { NestedContent, Page, PasswordInput, SwitchEnhanced } from "~/components/core";
 import { isValidIp } from "~/utils/network";
 import { isEmpty, pick } from "radashi";
+import { discoverISCSIAction } from "~/api";
+import { STORAGE } from "~/routes/paths";
 import { _ } from "~/i18n";
 
-/**
- * Represents the form state.
- */
-type FormState = {
-  address: string;
-  port: string;
-  username?: string;
-  password?: string;
-  reverseUsername?: string;
-  reversePassword?: string;
-};
+import type { DiscoverISCSIConfig } from "~/model/action";
 
 /**
  * Generic action to set any field in the form state.
  */
 type SetValueAction = {
-  [K in keyof FormState]: {
+  [K in keyof DiscoverISCSIConfig]: {
     type: "SET_VALUE";
     field: K;
-    payload: FormState[K];
+    payload: DiscoverISCSIConfig[K];
   };
-}[keyof FormState];
+}[keyof DiscoverISCSIConfig];
 
 type FormAction = SetValueAction;
 
-const formReducer = (state: FormState, action: FormAction): FormState => {
+const formReducer = (state: DiscoverISCSIConfig, action: FormAction): DiscoverISCSIConfig => {
   const { type, field, payload } = action;
 
   switch (type) {
@@ -73,57 +66,12 @@ const formReducer = (state: FormState, action: FormAction): FormState => {
   }
 };
 
-// /**
-//  * Supported form actions.
-//  */
-// type FormAction =
-//   | { type: "SET_ADDRESS"; payload: FormState["address"] }
-//   | { type: "SET_PORT"; payload: FormState["port"] }
-//   | { type: "SET_USERNAME"; payload: FormState["username"] }
-//   | { type: "SET_PASSWORD"; payload: FormState["password"] }
-//   | { type: "SET_REVERSE_USERNAME"; payload: FormState["reverseUsername"] }
-//   | { type: "SET_REVERSE_PASSWORD"; payload: FormState["reversePassword"] }
-//
-// /**
-//  * Reducer for form state updates.
-//  */
-// const formReducer = (state: FormState, action: FormAction): FormState => {
-//   const { type, payload} = action;
-//
-//   switch (type) {
-//     case "SET_ADDRESS": {
-//       return { ...state, address: payload };
-//     }
-//
-//     case "SET_PORT": {
-//       return { ...state, port: payload };
-//     }
-//
-//     case "SET_USERNAME": {
-//       return { ...state, username: payload };
-//     }
-//
-//     case "SET_PASSWORD": {
-//       return { ...state, password: payload };
-//     }
-//
-//     case "SET_REVERSE_USERNAME": {
-//       return { ...state, reverseUsername: payload };
-//     }
-//
-//     case "SET_REVERSE_PASSWORD": {
-//       return { ...state, reversePassword: payload };
-//     }
-//   }
-// };
-//
-
 /**
  * Helper to create a change handler that infers the field from the input name.
  */
 const handleInputChange =
   (dispatch: React.Dispatch<FormAction>) => (e: React.ChangeEvent<HTMLInputElement>) => {
-    const field = e.target.name as keyof FormState;
+    const field = e.target.name as keyof DiscoverISCSIConfig;
 
     dispatch({
       type: "SET_VALUE",
@@ -135,17 +83,18 @@ const handleInputChange =
 export default function DiscoverForm() {
   const [state, dispatch] = useReducer(formReducer, {
     address: "",
-    port: "",
+    port: 3260,
     username: "",
     password: "",
-    reverseUsername: "",
-    reversePassword: "",
+    initiatorUsername: "",
+    initiatorPassword: "",
   });
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState([]);
   const [showAuth, setShowAuth] = useState(false);
   const [showMutualAuth, setShowMutualAuth] = useState(false);
   const alertRef = useRef(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     // Scroll the alert into view
@@ -157,22 +106,24 @@ export default function DiscoverForm() {
     }
   }, [errors]);
 
+  const onInputChange = handleInputChange(dispatch);
+
   const onSubmit = async (event) => {
     event.preventDefault();
     setIsLoading(true);
     setErrors([]);
     const nextErrors = [];
 
-    const fieldsToCheck: Array<keyof FormState> = ["address", "port"];
+    const fieldsToCheck: Array<keyof DiscoverISCSIConfig> = ["address", "port"];
 
     showAuth && fieldsToCheck.push("username", "password");
-    showAuth && showMutualAuth && fieldsToCheck.push("reverseUsername", "reversePassword");
+    showAuth && showMutualAuth && fieldsToCheck.push("initiatorUsername", "initiatorPassword");
 
     if (!isValidIp(state.address)) {
       nextErrors.push(_("No valid address."));
     }
 
-    if (!Number.isInteger(parseInt(state.port))) {
+    if (!Number.isInteger(state.port)) {
       nextErrors.push(_("No valid port."));
     }
 
@@ -186,12 +137,10 @@ export default function DiscoverForm() {
       return;
     }
 
-    console.log(
-      "FIXME: sent data and navigate somewhere, maybe back, with useNavigate, navigate('path')",
-    );
+    setIsLoading(true);
+    discoverISCSIAction(pick(state, fieldsToCheck));
+    navigate({ pathname: STORAGE.iscsi.root });
   };
-
-  const onChange = handleInputChange(dispatch);
 
   return (
     <Form onSubmit={onSubmit}>
@@ -207,27 +156,11 @@ export default function DiscoverForm() {
         </div>
       )}
       <Flex>
-        <FormGroup fieldId="address" label={_("IP address")}>
-          <TextInput
-            id="address"
-            name="address"
-            // TRANSLATORS: network address
-            aria-label={_("Address")}
-            value={state.address}
-            label={_("Address")}
-            onChange={onChange}
-          />
+        <FormGroup fieldId="address" label={_("Address")}>
+          <TextInput id="address" name="address" value={state.address} onChange={onInputChange} />
         </FormGroup>
         <FormGroup fieldId="port" label={_("Port")}>
-          <TextInput
-            id="port"
-            name="port"
-            // TRANSLATORS: network port number
-            aria-label={_("Port")}
-            value={state.port}
-            label={_("Port")}
-            onChange={onChange}
-          />
+          <TextInput id="port" name="port" value={state.port} onChange={onInputChange} />
         </FormGroup>
       </Flex>
       <SwitchEnhanced
@@ -244,19 +177,16 @@ export default function DiscoverForm() {
               <TextInput
                 id="username"
                 name="username"
-                aria-label={_("User name")}
                 value={state.username}
-                label={_("User name")}
-                onChange={onChange}
+                onChange={onInputChange}
               />
             </FormGroup>
             <FormGroup fieldId="password" label={_("Password")}>
               <PasswordInput
                 id="password"
                 name="password"
-                aria-label={_("Password")}
                 value={state.password}
-                onChange={onChange}
+                onChange={onInputChange}
               />
             </FormGroup>
           </Split>
@@ -270,23 +200,20 @@ export default function DiscoverForm() {
           />
           {showMutualAuth && (
             <Split hasGutter>
-              <FormGroup fieldId="reverseUsername" label={_("User name")}>
+              <FormGroup fieldId="initiatorUsername" label={_("User name")}>
                 <TextInput
-                  id="reverseUsername"
-                  name="reverseUsername"
-                  aria-label={_("User name")}
-                  value={state.reverseUsername}
-                  label={_("User name")}
-                  onChange={onChange}
+                  id="initiatorUsername"
+                  name="initiatorUsername"
+                  value={state.initiatorUsername}
+                  onChange={onInputChange}
                 />
               </FormGroup>
-              <FormGroup fieldId="reversePassword" label="Password">
+              <FormGroup fieldId="initiatorPassword" label="Password">
                 <PasswordInput
-                  id="reversePassword"
-                  name="reversePassword"
-                  aria-label={_("Target Password")}
-                  value={state.reversePassword}
-                  onChange={onChange}
+                  id="initiatorPassword"
+                  name="initiatorPassword"
+                  value={state.initiatorPassword}
+                  onChange={onInputChange}
                 />
               </FormGroup>
             </Split>
@@ -295,7 +222,7 @@ export default function DiscoverForm() {
       )}
 
       <ActionGroup>
-        <Page.Submit />
+        <Page.Submit isLoading={isLoading} />
         {!isLoading && <Page.Back>{_("Cancel")}</Page.Back>}
       </ActionGroup>
     </Form>
