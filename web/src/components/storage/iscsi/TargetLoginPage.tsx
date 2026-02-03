@@ -21,7 +21,7 @@
  */
 
 import React, { useEffect, useReducer, useState, useRef } from "react";
-import { useParams } from "react-router";
+import { useParams, useNavigate } from "react-router";
 import { isEmpty, pick } from "radashi";
 import {
   ActionGroup,
@@ -38,17 +38,21 @@ import {
 import { NestedContent, Page, PasswordInput, SwitchEnhanced } from "~/components/core";
 import { NodeStartupOptions } from "~/components/storage/iscsi";
 import { STORAGE } from "~/routes/paths";
+import { useSystem } from "~/hooks/model/system/iscsi";
+import { useAddTarget } from "~/hooks/model/config/iscsi";
 import { _ } from "~/i18n";
+
+import type { Target, Authentication } from "~/openapi/config/iscsi";
 
 /**
  * Represents the form state.
  */
 type FormState = {
-  username?: string;
+  username?: Authentication["username"];
   password?: string;
   reverseUsername?: string;
   reversePassword?: string;
-  startup: "onboot" | "manual" | "auto";
+  startup: Target["startup"];
 };
 
 /**
@@ -91,9 +95,10 @@ const handleInputChange =
     } as FormAction);
   };
 
-export default function TargetLoginPage() {
+function TargetLoginPageContent({ target }): React.ReactNode {
   const alertRef = useRef(null);
-  const { id } = useParams();
+  const addTarget = useAddTarget();
+  const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState([]);
   const [showAuth, setShowAuth] = useState(false);
@@ -137,9 +142,25 @@ export default function TargetLoginPage() {
       return;
     }
 
-    console.log(
-      "FIXME: sent data and navigate somewhere, maybe back, with useNavigate, navigate('path')",
-    );
+    const authByTarget = showAuth
+      ? { username: state.username, password: state.password }
+      : undefined;
+    const authByInitiator =
+      showAuth && showMutualAuth
+        ? { username: state.reverseUsername, password: state.reversePassword }
+        : undefined;
+
+    const targetConfig = {
+      address: target.address,
+      port: target.port,
+      name: target.name,
+      interface: target.interface,
+      startup: state.startup,
+      authByTarget,
+      authByInitiator,
+    };
+    addTarget(targetConfig);
+    navigate({ pathname: STORAGE.iscsi.root });
   };
 
   const onChange = handleInputChange(dispatch);
@@ -148,6 +169,110 @@ export default function TargetLoginPage() {
     /* eslint-disable agama-i18n/string-literals */
     <FormSelectOption key={i} value={option.value} label={_(option.label)} />
   ));
+
+  return (
+    <Form onSubmit={onSubmit}>
+      {errors.length > 0 && (
+        <div ref={alertRef}>
+          <Alert variant="warning" isInline title={_("Something went wrong")}>
+            <List>
+              {errors.map((error, i) => (
+                <ListItem key={`error_${i}`}>{error}</ListItem>
+              ))}
+            </List>
+          </Alert>
+        </div>
+      )}
+      {/* TRANSLATORS: iSCSI start up mode (on boot/manual/automatic) */}
+      <FormGroup fieldId="startup" label={_("Startup")}>
+        <FormSelect
+          id="startup"
+          name="startup"
+          aria-label={_("Startup")}
+          value={state.startup}
+          onChange={onChange}
+        >
+          {startupFormOptions}
+        </FormSelect>
+      </FormGroup>
+      <SwitchEnhanced
+        id="useAuth"
+        label={_("Provide authentication")}
+        description={_("Lorem ipsum dolor")}
+        isChecked={showAuth}
+        onChange={() => setShowAuth(!showAuth)}
+      />
+      {showAuth && (
+        <NestedContent>
+          <Split hasGutter>
+            <FormGroup fieldId="username" label={_("User name")}>
+              <TextInput
+                id="username"
+                name="username"
+                aria-label={_("User name")}
+                value={state.username}
+                label={_("User name")}
+                onChange={onChange}
+              />
+            </FormGroup>
+            <FormGroup fieldId="password" label={_("Password")}>
+              <PasswordInput
+                id="password"
+                name="password"
+                aria-label={_("Password")}
+                value={state.password}
+                onChange={onChange}
+              />
+            </FormGroup>
+          </Split>
+
+          <SwitchEnhanced
+            id="useMutualAuth"
+            label={_("Enable mutual verification")}
+            description={_("Allow both sides verify each other's identity")}
+            isChecked={showMutualAuth}
+            onChange={() => setShowMutualAuth(!showMutualAuth)}
+          />
+          {showMutualAuth && (
+            <Split hasGutter>
+              <FormGroup fieldId="reverseUsername" label={_("User name")}>
+                <TextInput
+                  id="reverseUsername"
+                  name="reverseUsername"
+                  aria-label={_("User name")}
+                  value={state.reverseUsername}
+                  label={_("User name")}
+                  onChange={onChange}
+                />
+              </FormGroup>
+              <FormGroup fieldId="reversePassword" label="Password">
+                <PasswordInput
+                  id="reversePassword"
+                  name="reversePassword"
+                  aria-label={_("Target Password")}
+                  value={state.reversePassword}
+                  onChange={onChange}
+                />
+              </FormGroup>
+            </Split>
+          )}
+        </NestedContent>
+      )}
+
+      <ActionGroup>
+        <Page.Submit />
+        {!isLoading && <Page.Back>{_("Cancel")}</Page.Back>}
+      </ActionGroup>
+    </Form>
+  );
+}
+
+export default function TargetLoginPage() {
+  const { id } = useParams();
+  const targets = useSystem()?.targets || [];
+  const target = targets.find((t) => t.name === id);
+
+  if (!target) return null;
 
   return (
     <Page
@@ -159,99 +284,7 @@ export default function TargetLoginPage() {
       ]}
     >
       <Page.Content>
-        <Form onSubmit={onSubmit}>
-          {errors.length > 0 && (
-            <div ref={alertRef}>
-              <Alert variant="warning" isInline title={_("Something went wrong")}>
-                <List>
-                  {errors.map((error, i) => (
-                    <ListItem key={`error_${i}`}>{error}</ListItem>
-                  ))}
-                </List>
-              </Alert>
-            </div>
-          )}
-          {/* TRANSLATORS: iSCSI start up mode (on boot/manual/automatic) */}
-          <FormGroup fieldId="startup" label={_("Startup")}>
-            <FormSelect
-              id="startup"
-              name="startup"
-              aria-label={_("Startup")}
-              value={state.startup}
-              onChange={onChange}
-            >
-              {startupFormOptions}
-            </FormSelect>
-          </FormGroup>
-          <SwitchEnhanced
-            id="useAuth"
-            label={_("Provide authentication")}
-            description={_("Lorem ipsum dolor")}
-            isChecked={showAuth}
-            onChange={() => setShowAuth(!showAuth)}
-          />
-          {showAuth && (
-            <NestedContent>
-              <Split hasGutter>
-                <FormGroup fieldId="username" label={_("User name")}>
-                  <TextInput
-                    id="username"
-                    name="username"
-                    aria-label={_("User name")}
-                    value={state.username}
-                    label={_("User name")}
-                    onChange={onChange}
-                  />
-                </FormGroup>
-                <FormGroup fieldId="password" label={_("Password")}>
-                  <PasswordInput
-                    id="password"
-                    name="password"
-                    aria-label={_("Password")}
-                    value={state.password}
-                    onChange={onChange}
-                  />
-                </FormGroup>
-              </Split>
-
-              <SwitchEnhanced
-                id="useMutualAuth"
-                label={_("Enable mutual verification")}
-                description={_("Allow both sides verify each other's identity")}
-                isChecked={showMutualAuth}
-                onChange={() => setShowMutualAuth(!showMutualAuth)}
-              />
-              {showMutualAuth && (
-                <Split hasGutter>
-                  <FormGroup fieldId="reverseUsername" label={_("User name")}>
-                    <TextInput
-                      id="reverseUsername"
-                      name="reverseUsername"
-                      aria-label={_("User name")}
-                      value={state.reverseUsername}
-                      label={_("User name")}
-                      onChange={onChange}
-                    />
-                  </FormGroup>
-                  <FormGroup fieldId="reversePassword" label="Password">
-                    <PasswordInput
-                      id="reversePassword"
-                      name="reversePassword"
-                      aria-label={_("Target Password")}
-                      value={state.reversePassword}
-                      onChange={onChange}
-                    />
-                  </FormGroup>
-                </Split>
-              )}
-            </NestedContent>
-          )}
-
-          <ActionGroup>
-            <Page.Submit />
-            {!isLoading && <Page.Back>{_("Cancel")}</Page.Back>}
-          </ActionGroup>
-        </Form>
+        <TargetLoginPageContent target={target} />
       </Page.Content>
     </Page>
   );
