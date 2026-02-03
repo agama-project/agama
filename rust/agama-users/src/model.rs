@@ -27,6 +27,7 @@ use std::io::Write;
 use std::os::unix::fs::{OpenOptionsExt, PermissionsExt};
 use std::path::{Path, PathBuf};
 use std::process::{Command, Stdio};
+use std::ops::{Deref, DerefMut};
 
 /// Abstract the users-related configuration from the underlying system.
 pub trait ModelAdapter: Send + 'static {
@@ -34,6 +35,41 @@ pub trait ModelAdapter: Send + 'static {
     /// at the end of the installation.
     fn install(&self, _config: &Config) -> Result<(), service::Error> {
         Ok(())
+    }
+}
+
+struct ChrootCommand {
+    command: Command,
+}
+
+impl ChrootCommand {
+    pub fn new(chroot: PathBuf) -> Self {
+        // TODO: check if the dir exists?
+        let mut cmd = Command::new("chroot");
+
+        cmd.arg(chroot);
+
+        Self { command: cmd }
+    }
+
+    pub fn cmd(mut self, command: &str) -> Self {
+        self.command.arg(command);
+
+        self
+    }
+}
+
+impl Deref for ChrootCommand {
+    type Target = Command;
+
+    fn deref(&self) -> &Self::Target {
+        &self.command
+    }
+}
+
+impl DerefMut for ChrootCommand {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.command
     }
 }
 
@@ -49,15 +85,6 @@ impl Model {
         }
     }
 
-    /// Wrapper for creating Command which works in installation chroot
-    fn chroot_command(&self) -> Command {
-        let mut cmd = Command::new("chroot");
-
-        cmd.arg(&self.install_dir);
-
-        cmd
-    }
-
     /// Reads first user's data from given config and updates its setup accordingly
     fn add_first_user(&self, user: &FirstUserConfig) -> Result<(), service::Error> {
         let Some(ref user_name) = user.user_name else {
@@ -67,10 +94,10 @@ impl Model {
             return Err(service::Error::MissingUserData);
         };
 
-        let useradd = self
-            .chroot_command()
-            .args(["useradd", "-G", "wheel", &user_name])
-            .output()?;
+        let useradd = ChrootCommand::new(self.install_dir.clone())
+                    .cmd("useradd")
+                    .args(["-G", "wheel", &user_name])
+                    .output()?;
 
         if !useradd.status.success() {
             tracing::error!("User {} creation failed", user_name);
@@ -113,8 +140,8 @@ impl Model {
         user_name: &str,
         user_password: &UserPassword,
     ) -> Result<(), service::Error> {
-        let mut passwd_cmd = self.chroot_command();
-        passwd_cmd.arg("chpasswd");
+        let mut passwd_cmd = ChrootCommand::new(self.install_dir.clone())
+                    .cmd("chpasswd");
 
         if user_password.hashed_password {
             passwd_cmd.arg("-e");
@@ -220,10 +247,10 @@ impl Model {
             return Ok(());
         };
 
-        let chfn = self
-            .chroot_command()
-            .args(["chfn", "-f", &full_name, &user_name])
-            .output()?;
+        let chfn = ChrootCommand::new(self.install_dir.clone())
+                    .cmd("chfn")
+                    .args(["-f", &full_name, &user_name])
+                    .output()?;
 
         if !chfn.status.success() {
             tracing::error!(
