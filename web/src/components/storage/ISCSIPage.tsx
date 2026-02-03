@@ -31,7 +31,10 @@ import { _ } from "~/i18n";
 
 export default function ISCSIPage() {
   return (
-    <Page breadcrumbs={[{ label: _("Storage"), path: STORAGE.root }, { label: _("iSCSI") }]}>
+    <Page
+      progress={{ scope: "iSCSI" }}
+      breadcrumbs={[{ label: _("Storage"), path: STORAGE.root }, { label: _("iSCSI") }]}
+    >
       <Page.Content>
         <Grid hasGutter>
           <GridItem sm={12}>
