@@ -24,10 +24,10 @@ use agama_utils::api::users::Config;
 use std::fs;
 use std::fs::{OpenOptions, Permissions};
 use std::io::Write;
+use std::ops::{Deref, DerefMut};
 use std::os::unix::fs::{OpenOptionsExt, PermissionsExt};
 use std::path::{Path, PathBuf};
 use std::process::{Command, Stdio};
-use std::ops::{Deref, DerefMut};
 
 /// Abstract the users-related configuration from the underlying system.
 pub trait ModelAdapter: Send + 'static {
@@ -95,9 +95,9 @@ impl Model {
         };
 
         let useradd = ChrootCommand::new(self.install_dir.clone())
-                    .cmd("useradd")
-                    .args(["-G", "wheel", &user_name])
-                    .output()?;
+            .cmd("useradd")
+            .args(["-G", "wheel", &user_name])
+            .output()?;
 
         if !useradd.status.success() {
             tracing::error!("User {} creation failed", user_name);
@@ -140,8 +140,7 @@ impl Model {
         user_name: &str,
         user_password: &UserPassword,
     ) -> Result<(), service::Error> {
-        let mut passwd_cmd = ChrootCommand::new(self.install_dir.clone())
-                    .cmd("chpasswd");
+        let mut passwd_cmd = ChrootCommand::new(self.install_dir.clone()).cmd("chpasswd");
 
         if user_password.hashed_password {
             passwd_cmd.arg("-e");
@@ -248,9 +247,9 @@ impl Model {
         };
 
         let chfn = ChrootCommand::new(self.install_dir.clone())
-                    .cmd("chfn")
-                    .args(["-f", &full_name, &user_name])
-                    .output()?;
+            .cmd("chfn")
+            .args(["-f", &full_name, &user_name])
+            .output()?;
 
         if !chfn.status.success() {
             tracing::error!(
