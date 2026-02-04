@@ -44,8 +44,9 @@ import type { DiscoverISCSIConfig } from "~/model/action";
 
 /**
  * Generic action to set any field in the form state.
+ * Uses mapped types to ensure type safety across all config fields.
  */
-type SetValueAction = {
+type SetValueFormAction = {
   [K in keyof DiscoverISCSIConfig]: {
     type: "SET_VALUE";
     field: K;
@@ -53,9 +54,47 @@ type SetValueAction = {
   };
 }[keyof DiscoverISCSIConfig];
 
-type FormAction = SetValueAction;
+/** Initial state for the iSCSI discovery form.
+ *
+ * Also serves as a type reference for automatic value conversion in
+ * handleInputChange.
+ */
+const initialState: DiscoverISCSIConfig = {
+  address: "",
+  port: 3260,
+  username: "",
+  password: "",
+  initiatorUsername: "",
+  initiatorPassword: "",
+};
 
-const formReducer = (state: DiscoverISCSIConfig, action: FormAction): DiscoverISCSIConfig => {
+/**
+ * Helper to create a change handler that infers the field from the input name.
+ *
+ * Automatically converts input values to match their expected types by checking
+ * against the initialState. E.g., number fields are converted from strings to
+ * numbers.
+ */
+const handleInputChange =
+  (dispatch: React.Dispatch<SetValueFormAction>) => (e: React.ChangeEvent<HTMLInputElement>) => {
+    const field = e.target.name as keyof DiscoverISCSIConfig;
+    const expectedType = typeof initialState[field];
+    const value = expectedType === "number" ? Number(e.target.value) : e.target.value;
+
+    dispatch({
+      type: "SET_VALUE",
+      field,
+      payload: value,
+    } as SetValueFormAction);
+  };
+
+/**
+ * Reducer function for managing iSCSI discovery form state.
+ */
+const formReducer = (
+  state: DiscoverISCSIConfig,
+  action?: SetValueFormAction,
+): DiscoverISCSIConfig => {
   const { type, field, payload } = action;
 
   switch (type) {
@@ -67,28 +106,13 @@ const formReducer = (state: DiscoverISCSIConfig, action: FormAction): DiscoverIS
 };
 
 /**
- * Helper to create a change handler that infers the field from the input name.
+ * Form component for discovering iSCSI targets.
+ *
+ * Manages a kind of multi-step form where optional authentication fields are
+ * conditionally rendered based on toggle switches upon user decision.
  */
-const handleInputChange =
-  (dispatch: React.Dispatch<FormAction>) => (e: React.ChangeEvent<HTMLInputElement>) => {
-    const field = e.target.name as keyof DiscoverISCSIConfig;
-
-    dispatch({
-      type: "SET_VALUE",
-      field,
-      payload: e.target.value,
-    } as FormAction);
-  };
-
-export default function DiscoverForm() {
-  const [state, dispatch] = useReducer(formReducer, {
-    address: "",
-    port: 3260,
-    username: "",
-    password: "",
-    initiatorUsername: "",
-    initiatorPassword: "",
-  });
+function DiscoverForm() {
+  const [state, dispatch] = useReducer(formReducer, initialState);
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState([]);
   const [showAuth, setShowAuth] = useState(false);
@@ -200,7 +224,7 @@ export default function DiscoverForm() {
           />
           {showMutualAuth && (
             <Split hasGutter>
-              <FormGroup fieldId="initiatorUsername" label={_("User name")}>
+              <FormGroup fieldId="initiatorUsername" label={_("Initiator user name")}>
                 <TextInput
                   id="initiatorUsername"
                   name="initiatorUsername"
@@ -208,7 +232,7 @@ export default function DiscoverForm() {
                   onChange={onInputChange}
                 />
               </FormGroup>
-              <FormGroup fieldId="initiatorPassword" label="Password">
+              <FormGroup fieldId="initiatorPassword" label={_("Initiator password")}>
                 <PasswordInput
                   id="initiatorPassword"
                   name="initiatorPassword"
@@ -226,5 +250,27 @@ export default function DiscoverForm() {
         {!isLoading && <Page.Back>{_("Cancel")}</Page.Back>}
       </ActionGroup>
     </Form>
+  );
+}
+
+/**
+ * Page wrapper for the iSCSI discovery form.
+ *
+ * Provides page layout with breadcrumb navigation for the discover targets
+ * workflow.
+ */
+export default function DiscoverFormPage() {
+  return (
+    <Page
+      breadcrumbs={[
+        { label: _("Storage"), path: STORAGE.root },
+        { label: _("iSCSI"), path: STORAGE.iscsi.root },
+        { label: _("Discover targets") },
+      ]}
+    >
+      <Page.Content>
+        <DiscoverForm />
+      </Page.Content>
+    </Page>
   );
 }

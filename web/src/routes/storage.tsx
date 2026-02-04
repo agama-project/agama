@@ -36,8 +36,8 @@ import LogicalVolumePage from "~/components/storage/LogicalVolumePage";
 import ZFCPPage from "~/components/storage/zfcp/ZFCPPage";
 import ZFCPDiskActivationPage from "~/components/storage/zfcp/ZFCPDiskActivationPage";
 import DASDPage from "~/components/storage/dasd/DASDPage";
-import TargetsPage from "~/components/storage/iscsi/TargetsPage";
 import TargetLoginPage from "~/components/storage/iscsi/TargetLoginPage";
+import DiscoverFormPage from "~/components/storage/iscsi/DiscoverFormPage";
 import DeviceSelectorPage from "~/components/storage/DeviceSelectorPage";
 import { supportedDASD, probeDASD } from "~/model/storage/dasd";
 import { probeZFCP, supportedZFCP } from "~/model/storage/zfcp";
@@ -106,7 +106,7 @@ const routes = (): Route => ({
     },
     {
       path: PATHS.iscsi.discover,
-      element: <TargetsPage />,
+      element: <DiscoverFormPage />,
     },
     {
       path: PATHS.iscsi.login,

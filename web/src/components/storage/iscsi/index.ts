@@ -23,7 +23,6 @@
 export { default as InitiatorSection } from "./InitiatorSection";
 export { default as InitiatorForm } from "./InitiatorForm";
 export { default as NodesPresenter } from "./NodesPresenter";
-export { default as DiscoverForm } from "./DiscoverForm";
 export { default as EditNodeForm } from "./EditNodeForm";
 export { default as LoginForm } from "./LoginForm";
 export { default as AuthFields } from "./AuthFields";
