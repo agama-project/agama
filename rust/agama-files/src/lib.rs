@@ -78,7 +78,7 @@ mod tests {
             )
             .await;
             let handler = Service::starter(progress, questions, software)
-                .with_scripts_workdir(tmp_dir.path())
+                .with_workdir(tmp_dir.path())
                 .with_install_dir(tmp_dir.path())
                 .start()
                 .await
@@ -94,6 +94,13 @@ mod tests {
     #[test_context(Context)]
     #[tokio::test]
     async fn test_add_and_run_scripts(ctx: &mut Context) -> Result<(), Error> {
+        let ran = ctx
+            .handler
+            .call(message::RunScripts::new(ScriptsGroup::Pre))
+            .await
+            .unwrap();
+        assert_eq!(ran, false);
+
         let test_file_1 = ctx.tmp_dir.path().join("file-1.txt");
         let test_file_2 = ctx.tmp_dir.path().join("file-2.txt");
 
@@ -118,10 +125,12 @@ mod tests {
             .await
             .unwrap();
 
-        ctx.handler
+        let ran = ctx
+            .handler
             .call(message::RunScripts::new(ScriptsGroup::Pre))
             .await
             .unwrap();
+        assert_eq!(ran, true);
 
         // Wait until the scripts are executed.
         while let Ok(event) = ctx.events_rx.recv().await {
