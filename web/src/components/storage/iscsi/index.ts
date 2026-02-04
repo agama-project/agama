@@ -20,7 +20,6 @@
  * find current contact information at www.suse.com.
  */
 
-export { default as InitiatorSection } from "./InitiatorSection";
 export { default as InitiatorForm } from "./InitiatorForm";
 export { default as NodesPresenter } from "./NodesPresenter";
 export { default as EditNodeForm } from "./EditNodeForm";

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2023-2025] SUSE LLC
+ * Copyright (c) [2023-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -22,19 +22,21 @@
 
 import React from "react";
 import { Content, Flex, Split } from "@patternfly/react-core";
+import Link from "~/components/core/Link";
 import Page from "~/components/core/Page";
+import SubtleContent from "~/components/core/SubtleContent";
 import Text from "~/components/core/Text";
-import { _ } from "~/i18n";
-import { Link, SubtleContent } from "~/components/core";
-import { STORAGE } from "~/routes/paths";
 import { useSystem } from "~/hooks/model/system/iscsi";
+import { STORAGE } from "~/routes/paths";
+import { _ } from "~/i18n";
 
-const IBFtDesc = () => {
-  return _(
-    "Configuration read from the iSCSI Boot Firmware Table (iBFT). Initiator cannot be changed.",
-  );
-};
-const NoIBFtDesc = () => {
+function Description({ ibft }: { ibft: boolean }) {
+  if (ibft) {
+    return _(
+      "Configuration read from the iSCSI Boot Firmware Table (iBFT). Initiator cannot be changed.",
+    );
+  }
+
   const [textStart, linkText, textEnd] = _(
     "No iSCSI Boot Firmware Table (iBFT) found. The initiator can be [configured manually.]",
   ).split(/[[\]]/);
@@ -48,13 +50,12 @@ const NoIBFtDesc = () => {
       {textEnd}
     </>
   );
-};
+}
 
 export default function InitiatorSection() {
   const initiator = useSystem().initiator;
 
   return (
-    // TRANSLATORS: iSCSI initiator section name
     <Page.Section
       actions={
         <Split hasGutter>
@@ -70,7 +71,9 @@ export default function InitiatorSection() {
             <Text isBold>{_("Initiator")}</Text> <Text component="small">{initiator.name}</Text>
           </Flex>
         </Content>
-        <SubtleContent>{initiator.ibft ? <IBFtDesc /> : <NoIBFtDesc />}</SubtleContent>
+        <SubtleContent>
+          <Description ibft={initiator.ibft} />
+        </SubtleContent>
       </Flex>
     </Page.Section>
   );

@@ -22,9 +22,8 @@
 
 import React from "react";
 import { Grid, GridItem } from "@patternfly/react-core";
-import { Page } from "~/components/core";
-// import { InitiatorSection, TargetsSection } from "~/components/storage/iscsi";
-import { InitiatorSection } from "~/components/storage/iscsi";
+import InitiatorSection from "~/components/storage/iscsi/InitiatorSection";
+import Page from "~/components/core/Page";
 import TargetsTable from "~/components/storage/iscsi/TargetsTable";
 import { STORAGE } from "~/routes/paths";
 import { _ } from "~/i18n";
