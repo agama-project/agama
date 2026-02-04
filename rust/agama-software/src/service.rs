@@ -459,6 +459,8 @@ fn find_mandatory_repositories<P: Into<PathBuf>>(root: P) -> Vec<Repository> {
         repos.push(dud)
     }
 
+    tracing::info!("Using mandatory repositories: {:?}", repos);
+
     repos
 }
 

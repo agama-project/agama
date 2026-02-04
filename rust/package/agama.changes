@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Feb  4 11:37:18 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- Fix usage of local repositories on full medium
+  (bsc#1257475)
+
+-------------------------------------------------------------------
 Tue Feb  3 07:23:18 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
 
 - Correct the /etc/resolv.conf link in the chroot to
