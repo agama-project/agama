@@ -157,6 +157,10 @@ impl ModelAdapter for Model {
                 missing_predefined_repos.retain(|r| r.url != repo.url);
             }
         }
+
+        // Add all predefined repositories that are missing in libzypp.
+        // As a result, they will be added to libzypp when writing the new
+        // software state.
         system_info.repositories.extend(missing_predefined_repos);
         tracing::info!("System info: {:?}", system_info);
 
