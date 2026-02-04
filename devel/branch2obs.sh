@@ -1,20 +1,24 @@
 #! /usr/bin/bash
 
-# This script configures autosubmission from a GitHub branch to an OBS project.
-# Works with the original project and with forks as well.
-
 usage () {
+  echo "This script configures autosubmission from a GitHub branch to an OBS project."
+  echo "Works with the original project and with forks as well."
+  echo
   echo "Usage: $0 [options]"
   echo
   echo "Options:"
   echo "  -a              - keep all original build archs (default: build only x86_64)"
   echo "  -b <branch|tag> - source git branch or tag (default: current git branch)"
-  echo "  -p <project>    - target OBS project (based on the git branch)"
+  echo "  -p <project>    - target OBS project"
+  echo "                    (default: systemsmanagement:Agama:branches:\$BRANCH"
+  echo "                           or systemsmanagement:Agama:Devel  for master)"
   echo "  -t              - keep all original build targets (default: disable Leap 16.0)"
+  echo
   echo "  -c              - cleanup (delete) all obsolete projects, exclusive option,"
   echo "                    all other options are ignored"
   echo "  -o              - print obsolete projects, similar to -c but only print"
   echo "                    the projects instead of deleting them"
+  echo "                    Obsolete are those that don't have a git branch anymore."
   echo "  -h              - print this help"
 }
 
@@ -103,7 +107,7 @@ if [ -n "$CLEANUP" ] || [ -n "$OBSOLETE" ]; then
   for project in "${obs_projects[@]}"; do
     # remove the prefix to get the related Git branch
     branch_name=$(echo -n "$project" | sed -e "s/^$prefix://")
-    if ! git ls-remote --exit-code --heads origin "$branch_name" > /dev/null; then
+    if ! git ls-remote --exit-code --branches origin "$branch_name" > /dev/null; then
       if [ -n "$CLEANUP" ]; then
         echo "Deleting obsolete project $project..."
         # recursive remote delete (allows deleting a non-empty project)
@@ -174,7 +178,14 @@ if osc ls "$PROJECT" > /dev/null 2>&1; then
 else
   echo "Creating project $PROJECT..."
   # packages to branch
-  packages=(agama agama-installer agama-auto agama-products agama-web-ui rubygem-agama-yast)
+  packages=(
+    agama
+    agama-installer
+    agama-auto
+    agama-products
+    agama-web-ui
+    rubygem-agama-yast
+    )
   for pkg in "${packages[@]}"; do
     echo "Branching package $pkg"
     # branch the package
@@ -189,34 +200,38 @@ else
     echo "Disabling build on aarch64, i586, ppc64le and s390x"
     osc meta prj "$PROJECT" | \
       sed "/<arch>aarch64<\/arch>/d;/<arch>i586<\/arch>/d;/<arch>ppc64le<\/arch>/d;/<arch>s390x<\/arch>/d;" | \
-      osc meta prj -F - "$PROJECT"
+      osc meta prj --file - "$PROJECT"
   fi
 
   # disable Leap 16.0 target
   if [ "$ALL_TARGETS" != true ]; then
     echo "Disabling openSUSE Leap 16.0 build target"
+    ADD='<build>  <disable repository="openSUSE_Leap_16.0"/>  <disable repository="images_Leap_16.0"/>  </build>'
     osc meta prj "$PROJECT" | \
-      sed 's#</description>#</description><build><disable repository="openSUSE_Leap_16.0"/><disable repository="images_Leap_16.0"/></build>##' | \
-      osc meta prj -F - "$PROJECT"
+      sed "s#</description>#</description>$ADD#" | \
+      osc meta prj --file - "$PROJECT"
   fi
 
   # disable building the agama-installer-Leap image for Tumbleweed, that does not work
+  echo "Disabling build of agama-installer-Leap for TW"
+  ADD='<build>  <disable repository="images"/>  </build>'
   osc meta pkg "$PROJECT" agama-installer-Leap | \
-    sed 's#</package>#<build><disable repository="images"/></build></package>##' | \
-    osc meta pkg -F - "$PROJECT" agama-installer-Leap
+    sed "s#</package>#$ADD</package>#" | \
+    osc meta pkg --file - "$PROJECT" agama-installer-Leap
 
   # enable publishing of the built packages and images (delete the disabled publish section)
   echo "Enable publishing of the build results"
   osc meta prj "$PROJECT" | sed "/^\s*<publish>\s*$/,/^\s*<\/publish>\s*$/d" | \
-    osc meta prj -F - "$PROJECT"
+    osc meta prj --file - "$PROJECT"
 
   echo "Set project description"
   url=$(gh repo view --json url --jq .url)
+  DESCR="This project contains the latest packages built from repository $repo_slug, branch \"$BRANCH\"."
   osc meta prj "$PROJECT" | 
     sed -e "s#<url>.*</url>#<url>$url/tree/$BRANCH</url>#" \
       -e "s#<title>.*</title>#<title>Agama from Git</title>#" \
-      -e "s#<description>.*</description>#<description>This project contains the latest packages built from repository $repo_slug, branch \"$BRANCH\".</description>#" | \
-    osc meta prj -F - "$PROJECT"
+      -e "s#<description>.*</description>#<description>$DESCR</description>#" | \
+    osc meta prj --file - "$PROJECT"
 fi
 
 # configure OBS_PROJECTS GitHub variable
@@ -232,8 +247,14 @@ echo "$projects" | jq ". += { \"$BRANCH\" : \"$PROJECT\" } " | gh -R "$repo_slug
 
 # to really synchronize the GitHub content with OBS trigger the autosubmission jobs if the remote
 # brach already exists or print the instructions for later
-workflows=(obs-staging-live.yml obs-staging-products.yml obs-staging-rust.yml obs-staging-service.yml obs-staging-web.yml)
-if git ls-remote --exit-code --heads origin "$BRANCH" > /dev/null; then
+workflows=(
+  obs-staging-live.yml
+  obs-staging-products.yml
+  obs-staging-rust.yml
+  obs-staging-service.yml
+  obs-staging-web.yml
+  )
+if git ls-remote --exit-code --branches origin "$BRANCH" > /dev/null; then
   for workflow in "${workflows[@]}"; do
     echo "Starting GitHub Action $workflow..."
     gh workflow run "$workflow" --ref "$BRANCH"
