@@ -168,7 +168,6 @@ impl<'a> SoftwareStateBuilder<'a> {
             .iter()
             .filter(|r| r.predefined)
             .map(Repository::from);
-        tracing::info!("Adding to state system repos: {:?}", repositories);
         state.repositories.extend(repositories);
 
         // hardcode here kernel as it is not in basic dependencies due to

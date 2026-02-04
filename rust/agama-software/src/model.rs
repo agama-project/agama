@@ -98,10 +98,6 @@ impl Model {
         question: Handler<question::Service>,
         security: Handler<security::Service>,
     ) -> Result<Self, service::Error> {
-        tracing::info!(
-            "Creating model with predefined repositories: {:?}",
-            predefined_repositories
-        );
         Ok(Self {
             zypp_sender,
             selected_product: None,

@@ -237,7 +237,6 @@ impl Service {
 
         let new_state = {
             let state = self.state.read().await;
-            tracing::info!("Old system state: {:?}", state.system);
             SoftwareState::build_from(&product, &state.config, &state.system, &self.selection)
         };
 
@@ -295,7 +294,6 @@ impl Service {
 
         match model.system_info().await {
             Ok(system_info) => {
-                tracing::info!("Setting new system info {:?}", system_info);
                 state.system = system_info;
                 _ = events.send(Event::SystemChanged {
                     scope: Scope::Software,
@@ -469,7 +467,6 @@ fn find_mandatory_repositories<P: Into<PathBuf>>(root: P) -> Vec<Repository> {
 /// Returns the repository for the given directory if it exists.
 fn find_repository(dir: &PathBuf, name: &str) -> Option<Repository> {
     if !std::fs::exists(dir).is_ok_and(|e| e) {
-        tracing::info!("No local repository found at {:?}", dir);
         return None;
     }
 
@@ -481,8 +478,6 @@ fn find_repository(dir: &PathBuf, name: &str) -> Option<Repository> {
         );
         return None;
     };
-
-    tracing::info!("Found local repository \"{}\" at {:?}", name, dir);
 
     Some(Repository {
         alias: name.to_string(),
