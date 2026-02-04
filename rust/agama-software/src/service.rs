@@ -237,6 +237,7 @@ impl Service {
 
         let new_state = {
             let state = self.state.read().await;
+            tracing::info!("Old system state: {:?}", state.system);
             SoftwareState::build_from(&product, &state.config, &state.system, &self.selection)
         };
 
