@@ -198,21 +198,26 @@ impl MessageHandler<message::SetConfig> for Service {
 
 #[async_trait]
 impl MessageHandler<message::RunScripts> for Service {
-    async fn handle(&mut self, message: message::RunScripts) -> Result<(), Error> {
-        let scripts = self.scripts.clone();
-        let install_dir = self.install_dir.clone();
-        let root_dir = self.root_dir.clone();
-        let progress = self.progress.clone();
-        let questions = self.questions.clone();
+    async fn handle(&mut self, message: message::RunScripts) -> Result<bool, Error> {
+        let scripts = self.scripts.lock().await;
+        let workdir = scripts.workdir.clone();
+        let to_run = scripts.by_group(message.group).clone();
 
-        tokio::task::spawn(async move {
-            let scripts = scripts.lock().await;
-            let workdir = scripts.workdir.clone();
-            let to_run = scripts.by_group(message.group).clone();
-            let runner = ScriptsRunner::new(root_dir, install_dir, workdir, progress, questions);
-            runner.run(&to_run).await.unwrap();
-        });
-        Ok(())
+        if to_run.is_empty() {
+            return Ok(false);
+        } else {
+            let runner = ScriptsRunner::new(
+                &self.root_dir,
+                &self.install_dir,
+                &workdir,
+                self.progress.clone(),
+                self.questions.clone(),
+            );
+            if let Err(error) = runner.run(&to_run).await {
+                tracing::error!("Error running scripts: {error}");
+            }
+            Ok(true)
+        }
     }
 }
 
