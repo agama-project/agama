@@ -295,6 +295,7 @@ impl Service {
 
         match model.system_info().await {
             Ok(system_info) => {
+                tracing::info!("Setting new system info {:?}", system_info);
                 state.system = system_info;
                 _ = events.send(Event::SystemChanged {
                     scope: Scope::Software,

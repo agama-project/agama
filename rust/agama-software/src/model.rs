@@ -154,6 +154,7 @@ impl ModelAdapter for Model {
             .map(|r| r.url.as_str())
             .collect();
         for repo in system_info.repositories.iter_mut() {
+            tracing::info!("system info repo {:?}", repo);
             repo.predefined = predefined_urls.contains(&repo.url.as_str());
         }
 
