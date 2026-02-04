@@ -94,7 +94,7 @@ const STORAGE = {
     root: "/storage/iscsi",
     initiator: "/storage/iscsi/initiator",
     discover: "/storage/iscsi/targets/discover",
-    login: "/storage/iscsi/targets/:id/login",
+    login: "/storage/iscsi/targets/:name/:address/:port/login",
   },
   dasd: "/storage/dasd",
   zfcp: {

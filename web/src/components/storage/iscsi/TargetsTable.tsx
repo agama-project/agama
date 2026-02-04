@@ -138,7 +138,14 @@ const buildActions = (target, navigateFn, onDelete) => {
   return [
     !connected && {
       title: _("Connect"),
-      onClick: () => navigateFn(generatePath(STORAGE.iscsi.login, { id: target.name })),
+      onClick: () =>
+        navigateFn(
+          generatePath(STORAGE.iscsi.login, {
+            name: target.name,
+            address: target.address,
+            port: target.port,
+          }),
+        ),
     },
     connected &&
       inConfig && {

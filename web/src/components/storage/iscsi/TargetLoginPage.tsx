@@ -23,9 +23,14 @@
 import React, { useEffect, useReducer, useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router";
 import { isEmpty, pick } from "radashi";
+import { sprintf } from "sprintf-js";
 import {
   ActionGroup,
   Alert,
+  DescriptionList,
+  DescriptionListDescription,
+  DescriptionListGroup,
+  DescriptionListTerm,
   Form,
   FormGroup,
   FormSelect,
@@ -35,7 +40,11 @@ import {
   Split,
   TextInput,
 } from "@patternfly/react-core";
-import { NestedContent, Page, PasswordInput, SwitchEnhanced } from "~/components/core";
+import Page from "~/components/core/Page";
+import PasswordInput from "~/components/core/PasswordInput";
+import SwitchEnhanced from "~/components/core/SwitchEnhanced";
+import NestedContent from "~/components/core/NestedContent";
+import ResourceNotFound from "~/components/core/ResourceNotFound";
 import { NodeStartupOptions } from "~/components/storage/iscsi";
 import { STORAGE } from "~/routes/paths";
 import { useSystem } from "~/hooks/model/system/iscsi";
@@ -49,16 +58,16 @@ import type { Target, Authentication } from "~/openapi/config/iscsi";
  */
 type FormState = {
   username?: Authentication["username"];
-  password?: string;
-  reverseUsername?: string;
-  reversePassword?: string;
+  password?: Authentication["password"];
+  reverseUsername?: Authentication["username"];
+  reversePassword?: Authentication["password"];
   startup: Target["startup"];
 };
 
 /**
  * Generic action to set any field in the form state.
  */
-type SetValueAction = {
+type SetValueFormAction = {
   [K in keyof FormState]: {
     type: "SET_VALUE";
     field: K;
@@ -66,9 +75,7 @@ type SetValueAction = {
   };
 }[keyof FormState];
 
-type FormAction = SetValueAction;
-
-const formReducer = (state: FormState, action: FormAction): FormState => {
+const formReducer = (state: FormState, action?: SetValueFormAction): FormState => {
   const { type, field, payload } = action;
 
   switch (type) {
@@ -83,7 +90,7 @@ const formReducer = (state: FormState, action: FormAction): FormState => {
  * Helper to create a change handler that infers the field from the input name.
  */
 const handleInputChange =
-  (dispatch: React.Dispatch<FormAction>) =>
+  (dispatch: React.Dispatch<SetValueFormAction>) =>
   (e: React.FormEvent<HTMLInputElement | HTMLSelectElement>) => {
     const target = e.target as HTMLFormElement;
     const field = target.name as keyof FormState;
@@ -92,10 +99,10 @@ const handleInputChange =
       type: "SET_VALUE",
       field,
       payload: target.value,
-    } as FormAction);
+    });
   };
 
-function TargetLoginPageContent({ target }): React.ReactNode {
+function TargetLoginForm({ target }): React.ReactNode {
   const alertRef = useRef(null);
   const addTarget = useAddTarget();
   const navigate = useNavigate();
@@ -183,6 +190,20 @@ function TargetLoginPageContent({ target }): React.ReactNode {
           </Alert>
         </div>
       )}
+
+      <DescriptionList isCompact>
+        <DescriptionListGroup>
+          <DescriptionListTerm>{_("Target")}</DescriptionListTerm>
+          <DescriptionListDescription>{target.name}</DescriptionListDescription>
+        </DescriptionListGroup>
+        <DescriptionListGroup>
+          <DescriptionListTerm>{_("Portal")}</DescriptionListTerm>
+          <DescriptionListDescription>
+            {`${target.address}:${target.port}`}
+          </DescriptionListDescription>
+        </DescriptionListGroup>
+      </DescriptionList>
+
       {/* TRANSLATORS: iSCSI start up mode (on boot/manual/automatic) */}
       <FormGroup fieldId="startup" label={_("Startup")}>
         <FormSelect
@@ -206,20 +227,12 @@ function TargetLoginPageContent({ target }): React.ReactNode {
         <NestedContent>
           <Split hasGutter>
             <FormGroup fieldId="username" label={_("User name")}>
-              <TextInput
-                id="username"
-                name="username"
-                aria-label={_("User name")}
-                value={state.username}
-                label={_("User name")}
-                onChange={onChange}
-              />
+              <TextInput id="username" name="username" value={state.username} onChange={onChange} />
             </FormGroup>
             <FormGroup fieldId="password" label={_("Password")}>
               <PasswordInput
                 id="password"
                 name="password"
-                aria-label={_("Password")}
                 value={state.password}
                 onChange={onChange}
               />
@@ -235,21 +248,18 @@ function TargetLoginPageContent({ target }): React.ReactNode {
           />
           {showMutualAuth && (
             <Split hasGutter>
-              <FormGroup fieldId="reverseUsername" label={_("User name")}>
+              <FormGroup fieldId="reverseUsername" label={_("Initiator user name")}>
                 <TextInput
                   id="reverseUsername"
                   name="reverseUsername"
-                  aria-label={_("User name")}
                   value={state.reverseUsername}
-                  label={_("User name")}
                   onChange={onChange}
                 />
               </FormGroup>
-              <FormGroup fieldId="reversePassword" label="Password">
+              <FormGroup fieldId="reversePassword" label="Initiator password">
                 <PasswordInput
                   id="reversePassword"
                   name="reversePassword"
-                  aria-label={_("Target Password")}
                   value={state.reversePassword}
                   onChange={onChange}
                 />
@@ -268,23 +278,35 @@ function TargetLoginPageContent({ target }): React.ReactNode {
 }
 
 export default function TargetLoginPage() {
-  const { id } = useParams();
+  const { name, address, port } = useParams();
   const targets = useSystem()?.targets || [];
-  const target = targets.find((t) => t.name === id);
-
-  if (!target) return null;
+  const target = targets.find(
+    (t) => t.name === name && t.address === address && t.port === Number(port),
+  );
 
   return (
     <Page
       breadcrumbs={[
         { label: _("Storage"), path: STORAGE.root },
         { label: _("iSCSI"), path: STORAGE.iscsi.root },
-        { label: id },
         { label: _("Login") },
       ]}
     >
       <Page.Content>
-        <TargetLoginPageContent target={target} />
+        {target ? (
+          <TargetLoginForm target={target} />
+        ) : (
+          <ResourceNotFound
+            title={_("Target not found")}
+            body={sprintf(
+              _("%s at portal %s does not exist or cannot be reached."),
+              name,
+              `${address}:${port}`,
+            )}
+            linkText={_("Go to iSCSI")}
+            linkPath={STORAGE.iscsi.root}
+          />
+        )}
       </Page.Content>
     </Page>
   );
