@@ -41,14 +41,14 @@ import {
   TextInput,
 } from "@patternfly/react-core";
 import Page from "~/components/core/Page";
-import PasswordInput from "~/components/core/PasswordInput";
-import SwitchEnhanced from "~/components/core/SwitchEnhanced";
 import NestedContent from "~/components/core/NestedContent";
+import PasswordInput from "~/components/core/PasswordInput";
 import ResourceNotFound from "~/components/core/ResourceNotFound";
-import { NodeStartupOptions } from "~/components/storage/iscsi";
-import { STORAGE } from "~/routes/paths";
+import SwitchEnhanced from "~/components/core/SwitchEnhanced";
+import NodeStartupOptions from "~/components/storage/iscsi/NodeStartupOptions";
 import { useSystem } from "~/hooks/model/system/iscsi";
 import { useAddTarget } from "~/hooks/model/config/iscsi";
+import { STORAGE } from "~/routes/paths";
 import { _ } from "~/i18n";
 
 import type { Target, Authentication } from "~/openapi/config/iscsi";
