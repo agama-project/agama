@@ -43,7 +43,7 @@ describe Agama::Storage::ISCSI::Manager do
     Agama::Storage::ISCSI::Node.new.tap do |target|
       target.target = "iqn.2023-01.com.example:12ac588"
       target.address = "192.168.100.102"
-      target.port = 3264
+      target.port = 3260
       target.interface = "default"
       target.ibft = true
       target.startup = "onboot"
@@ -56,7 +56,7 @@ describe Agama::Storage::ISCSI::Manager do
     Agama::Storage::ISCSI::Node.new.tap do |target|
       target.target = "iqn.2023-01.com.example:12aca"
       target.address = "192.168.100.110"
-      target.port = 3264
+      target.port = 3260
       target.interface = "default"
       target.ibft = false
       target.startup = "manual"
@@ -69,7 +69,7 @@ describe Agama::Storage::ISCSI::Manager do
     Agama::Storage::ISCSI::Node.new.tap do |target|
       target.target = "iqn.2023-01.com.example:12123"
       target.address = "192.168.100.110"
-      target.port = 3264
+      target.port = 3260
       target.interface = "default"
       target.ibft = false
       target.startup = "manual"
@@ -147,11 +147,11 @@ describe Agama::Storage::ISCSI::Manager do
     it "performs iSCSI discovery without credentials" do
       expect(adapter).to receive(:discover) do |host, port, options|
         expect(host).to eq("192.168.100.101")
-        expect(port).to eq(3264)
+        expect(port).to eq(3260)
         expect(options).to eq({ credentials: {} })
       end
       expect(subject).to receive(:probe)
-      subject.discover("192.168.100.101", 3264)
+      subject.discover("192.168.100.101", 3260)
     end
 
     it "performs iSCSI discovery with credentials" do
@@ -163,11 +163,11 @@ describe Agama::Storage::ISCSI::Manager do
       }
       expect(adapter).to receive(:discover) do |host, port, options|
         expect(host).to eq("192.168.100.101")
-        expect(port).to eq(3264)
+        expect(port).to eq(3260)
         expect(options).to eq({ credentials: credentials })
       end
       expect(subject).to receive(:probe)
-      subject.discover("192.168.100.101", 3264, credentials: credentials)
+      subject.discover("192.168.100.101", 3260, credentials: credentials)
     end
   end
 
@@ -352,6 +352,65 @@ describe Agama::Storage::ISCSI::Manager do
                 subject.configure(config_json)
               end
             end
+          end
+        end
+
+        context "if several targets share the name but in different portals" do
+          before do
+            allow(adapter).to receive(:read_nodes).and_return([node1, node2])
+          end
+
+          let(:node1) do
+            Agama::Storage::ISCSI::Node.new.tap do |target|
+              target.target = "iqn.2023-01.com.example:12ac588"
+              target.address = "192.168.100.102"
+              target.port = 3260
+              target.interface = "default"
+              target.ibft = false
+              target.startup = "onboot"
+              target.connected = true
+              target.locked = true
+            end
+          end
+
+          let(:node2) do
+            Agama::Storage::ISCSI::Node.new.tap do |target|
+              target.target = "iqn.2023-01.com.example:12ac588"
+              target.address = "192.168.100.102"
+              target.port = 3265
+              target.interface = "default"
+              target.ibft = false
+              target.startup = "manual"
+              target.connected = false
+              target.locked = false
+            end
+          end
+
+          let(:targets) do
+            [
+              {
+                name:      "iqn.2023-01.com.example:12ac588",
+                address:   "192.168.100.102",
+                port:      3260,
+                interface: "default",
+                startup:   "onboot"
+              },
+              {
+                name:      "iqn.2023-01.com.example:12ac588",
+                address:   "192.168.100.102",
+                port:      3265,
+                interface: "default",
+                startup:   "onboot"
+              }
+            ]
+          end
+
+          it "performs the correct operation for each node" do
+            expect(adapter).to_not receive(:logout).with(node1)
+            expect(adapter).to_not receive(:login).with(node1)
+            expect(adapter).to_not receive(:logout).with(node2)
+            expect(adapter).to receive(:login).with(node2, anything)
+            subject.configure(config_json)
           end
         end
       end
@@ -545,6 +604,25 @@ describe Agama::Storage::ISCSI::Manager do
         it "returns false" do
           expect(subject.configured?(config_json)).to eq(false)
         end
+      end
+    end
+
+    context "if the given config contains a target with the same name but different portal" do
+      let(:config_json) do
+        {
+          initiator: previous_config_json[:initiator],
+          targets:   [target]
+        }
+      end
+
+      let(:target) do
+        new_target = previous_config_json[:targets].first.clone
+        new_target[:address] = "192.168.100.1"
+        new_target
+      end
+
+      it "returns false" do
+        expect(subject.configured?(config_json)).to eq(false)
       end
     end
   end
