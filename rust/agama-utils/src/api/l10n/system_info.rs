@@ -88,12 +88,26 @@ pub struct TimezoneEntry {
 }
 
 // Minimal representation of a keymap
-#[derive(Clone, Debug, utoipa::ToSchema)]
+#[derive(Clone, Debug, utoipa::ToSchema, PartialEq, Eq)]
 pub struct Keymap {
     /// Keymap identifier (e.g., "us")
     pub id: KeymapId,
     /// Keymap description
     description: String,
+}
+
+impl Ord for Keymap {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        self.localized_description()
+            .cmp(&other.localized_description())
+            .then_with(|| self.id.cmp(&other.id))
+    }
+}
+
+impl PartialOrd for Keymap {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        Some(self.cmp(other))
+    }
 }
 
 impl Keymap {
