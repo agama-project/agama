@@ -627,10 +627,17 @@ impl Service {
         let files = self.files.clone();
         let storage = self.storage.clone();
         tokio::spawn(async move {
-            let pre_scripts_ran = files
+            let pre_scripts_ran = match files
                 .call(files::message::RunScripts::new(ScriptsGroup::Pre))
                 .await
-                .unwrap();
+            {
+                Ok(result) => result,
+                Err(error) => {
+                    tracing::error!("Failed to run pre-scripts: {error}");
+                    return;
+                }
+            };
+
             if pre_scripts_ran {
                 if let Err(error) = storage.cast(storage::message::Probe) {
                     tracing::error!("Failed to ask for storage probing: {error}");
