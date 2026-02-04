@@ -52,7 +52,7 @@ import { useConfig, useRemoveTarget } from "~/hooks/model/config/iscsi";
 import type { Target as ConfigTarget } from "~/openapi/config/iscsi";
 import type { Target as SystemTarget, Target } from "~/openapi/system/iscsi";
 
-type MixedTargets = ConfigTarget | SystemTarget;
+type MergedTarget = Partial<SystemTarget> & Partial<ConfigTarget>;
 
 /**
  * Filter options for narrowing down iSCSI targets shown in the table.
@@ -278,7 +278,7 @@ type TargetsTableState = {
   /** Current active filters applied to the device list */
   filters: ISCSITargetsFilters;
   /** Currently selected devices in the UI */
-  selectedDevices: MixedTargets[];
+  selectedDevices: MergedTarget[];
 };
 
 /**
@@ -399,13 +399,13 @@ export default function TargetsTable() {
   const systemTargets = useSystem()?.targets || [];
   const removeTarget = useRemoveTarget();
 
-  const targets = mergeSources<MixedTargets, "name">({
+  const targets = mergeSources<MergedTarget, keyof MergedTarget>({
     collections: {
       config: configTargets,
       system: systemTargets,
     },
     precedence: ["system", "config"],
-    key: "name",
+    primaryKey: ["name", "address", "port"],
   });
 
   const hasLocked = targets.find((t) => "locked" in t && t.locked);
@@ -421,7 +421,7 @@ export default function TargetsTable() {
     dispatch({ type: "RESET_SELECTION" });
   };
 
-  const onSelectionChange = (devices: MixedTargets[]) => {
+  const onSelectionChange = (devices: MergedTarget[]) => {
     dispatch({ type: "UPDATE_SELECTION", payload: devices });
   };
 
