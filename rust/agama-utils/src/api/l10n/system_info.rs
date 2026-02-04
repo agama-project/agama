@@ -47,7 +47,7 @@ pub struct SystemInfo {
 
 /// Represents a locale, including the localized language and territory.
 #[serde_as]
-#[derive(Debug, Serialize, Clone, utoipa::ToSchema)]
+#[derive(Debug, Serialize, Clone, utoipa::ToSchema, PartialEq, Eq)]
 pub struct LocaleEntry {
     /// The locale code (e.g., "es_ES.UTF-8").
     #[serde_as(as = "DisplayFromStr")]
@@ -58,6 +58,22 @@ pub struct LocaleEntry {
     pub territory: String,
     /// Console font
     pub consolefont: Option<String>,
+}
+
+impl Ord for LocaleEntry {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        self.language
+            .cmp(&other.language)
+            .then_with(|| self.territory.cmp(&other.territory))
+            .then_with(|| self.id.cmp(&other.id))
+            .then_with(|| self.consolefont.cmp(&other.consolefont))
+    }
+}
+
+impl PartialOrd for LocaleEntry {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        Some(self.cmp(other))
+    }
 }
 
 /// Represents a timezone, including each part as localized.
