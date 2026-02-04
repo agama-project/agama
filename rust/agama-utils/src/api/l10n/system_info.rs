@@ -77,7 +77,7 @@ impl PartialOrd for LocaleEntry {
 }
 
 /// Represents a timezone, including each part as localized.
-#[derive(Clone, Debug, Serialize, utoipa::ToSchema)]
+#[derive(Clone, Debug, Serialize, utoipa::ToSchema, PartialEq, Eq)]
 pub struct TimezoneEntry {
     /// Timezone identifier (e.g. "Atlantic/Canary").
     pub id: TimezoneId,
@@ -85,6 +85,21 @@ pub struct TimezoneEntry {
     pub parts: Vec<String>,
     /// Localized name of the territory this timezone is associated to
     pub country: Option<String>,
+}
+
+impl Ord for TimezoneEntry {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        self.parts
+            .cmp(&other.parts)
+            .then_with(|| self.country.cmp(&other.country))
+            .then_with(|| self.id.cmp(&other.id))
+    }
+}
+
+impl PartialOrd for TimezoneEntry {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        Some(self.cmp(other))
+    }
 }
 
 // Minimal representation of a keymap
