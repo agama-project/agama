@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Feb  4 11:37:18 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- Fix usage of local repositories on full medium
+  (bsc#1257475)
+
+-------------------------------------------------------------------
 Mon Feb  2 11:56:24 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
 
 - Fixed opening the SSH firewall port when the firewall is not
