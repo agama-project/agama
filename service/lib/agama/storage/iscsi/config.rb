@@ -38,20 +38,22 @@ module Agama
           @targets = []
         end
 
-        # Whether the config includes a target with the given name.
+        # Whether the config includes a target with the given name and portal.
         #
         # @param name [String]
+        # @param portal [String]
         # @return [Boolean]
-        def include_target?(name)
-          !find_target(name).nil?
+        def include_target?(name, portal)
+          !find_target(name, portal).nil?
         end
 
-        # Searchs for a target with the given name.
+        # Searchs for a target with the given name and portal.
         #
         # @param name [String]
+        # @param portal [String]
         # @return [Configs::Target, nil]
-        def find_target(name)
-          targets.find { |t| t.name == name }
+        def find_target(name, portal)
+          targets.find { |t| t.name == name && t.portal?(portal) }
         end
 
         # All portals.

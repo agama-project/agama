@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Feb  4 14:01:15 UTC 2026 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Identify iSCSI nodes using the combination of name and portal
+  (gh#agama-project/agama#3123).
+
+-------------------------------------------------------------------
 Mon Feb  2 08:13:48 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
 
 - Allow other parts to define in bootloader its proposed kernel

@@ -62,9 +62,9 @@ module Agama
 
         # Probes iSCSI.
         def probe
-          @probed = true
           probe_initiator
           probe_nodes
+          @probed = true
         end
 
         # Performs an iSCSI discovery.
@@ -155,11 +155,11 @@ module Agama
         # @return [Array<ISCSI::Node>]
         def probe_nodes
           @nodes = adapter.read_nodes
-          # Targets are set as locked if they are already connected at the time of probing for first
+          # Nodes are set as locked if they are already connected at the time of probing for first
           # time. This usually happens when there is iBFT activation or the targets are manually
           # connected (e.g., by using a script).
-          @locked_targets ||= @nodes.select(&:connected).map(&:target)
-          @locked_targets.each { |t| find_node(t)&.locked = true }
+          init_locked_nodes(@nodes.select(&:connected)) unless probed?
+          locked_nodes.each { |n| n.locked = true }
           @nodes
         end
 
@@ -188,7 +188,7 @@ module Agama
         #
         # @return [Boolean]
         def node_configured?(node, config)
-          target_config = config.find_target(node.target)
+          target_config = config.find_target(node.target, node.portal)
 
           if target_config
             node.connected? &&
@@ -234,7 +234,7 @@ module Agama
           nodes
             .select(&:connected?)
             .reject(&:locked?)
-            .reject { |n| config.include_target?(n.target) }
+            .reject { |n| config.include_target?(n.target, n.portal) }
             .each { |n| disconnect_node(n) }
         end
 
@@ -249,7 +249,7 @@ module Agama
         #
         # @param target_config [ISCSI::Configs::Target]
         def configure_target(target_config)
-          node = find_node(target_config.name)
+          node = find_node(target_config)
           return unless node
 
           if node.connected?
@@ -294,7 +294,7 @@ module Agama
           logger.info("Disconnecting iSCSI node: #{node.inspect}")
           adapter.logout(node).tap do |success|
             # Unlock the node if it was correctly disconnected.
-            @locked_targets&.delete(node.target) if success
+            unregister_locked_node(node) if success
           end
         end
 
@@ -324,7 +324,7 @@ module Agama
         # @param target_config [ISCSI::Configs::Target]
         # @return [Boolean]
         def credentials_changed?(target_config)
-          previous_credentials = previous_config&.find_target(target_config.name)&.credentials
+          previous_credentials = find_previous_target(target_config)&.credentials
           previous_credentials != target_config.credentials
         end
 
@@ -333,16 +333,60 @@ module Agama
         # @param target_config [ISCSI::Configs::Target]
         # @return [Boolean]
         def startup_changed?(target_config)
-          previous_startup = previous_config&.find_target(target_config.name)&.startup
+          previous_startup = find_previous_target(target_config)&.startup
           previous_startup != target_config.startup
         end
 
-        # Finds a node with the given name.
+        # Finds the equivalent target in the previous configuration, if any.
         #
-        # @param name [String]
+        # @param target_config [ISCSI::Configs::Target]
+        # @return [ISCSI::Configs::Target, nil]
+        def find_previous_target(target_config)
+          previous_config&.find_target(target_config.name, target_config.portal)
+        end
+
+        # Finds the node corresponding to the given target configuration.
+        #
+        # @param target_config [ISCSI::Configs::Target]
         # @return [Node, nil]
-        def find_node(name)
-          nodes.find { |n| n.target == name }
+        def find_node(target_config)
+          nodes.find { |n| n.target == target_config.name && n.portal == target_config.portal }
+        end
+
+        # Nodes that should be marked as locked according to the status of the system in the first
+        # probe, no matter the value of their Node#locked attribute
+        #
+        # @return [Array<Node>]
+        def locked_nodes
+          @locked_node_ids.map do |i|
+            nodes.find { |n| n.target == i[:target] && n.portal == i[:portal] }
+          end.compact
+        end
+
+        # Method to be called during the initial probing in order to identify the nodes that
+        # should be marked as locked.
+        #
+        # @param nodes [Array<Node>]
+        def init_locked_nodes(nodes)
+          @locked_node_ids = []
+          nodes.each { |n| register_locked_node(n) }
+        end
+
+        # @see #locked_nodes
+        #
+        # @param node [Node]
+        def register_locked_node(node)
+          @locked_node_ids ||= []
+          @locked_node_ids << { target: node.target, portal: node.portal }
+        end
+
+        # @see #locked_nodes
+        #
+        # @param node [Node]
+        def unregister_locked_node(node)
+          return unless @locked_node_ids
+
+          @locked_node_ids.delete({ target: node.target, portal: node.portal })
         end
       end
     end
