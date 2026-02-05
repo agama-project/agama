@@ -434,71 +434,27 @@ impl Service {
     }
 
     async fn set_config(&mut self, config: Config) -> Result<(), Error> {
+        tracing::debug!("SetConfig: {config:?}");
         self.set_product(&config)?;
+        self.config = config;
 
-        let Some(product) = &self.product else {
-            return Err(Error::MissingProduct);
+        let action = SetConfigAction {
+            bootloader: self.bootloader.clone(),
+            files: self.files.clone(),
+            hostname: self.hostname.clone(),
+            iscsi: self.iscsi.clone(),
+            l10n: self.l10n.clone(),
+            network: self.network.clone(),
+            proxy: self.proxy.clone(),
+            questions: self.questions.clone(),
+            security: self.security.clone(),
+            software: self.software.clone(),
+            storage: self.storage.clone(),
+            users: self.users.clone(),
         };
 
-        self.security
-            .call(security::message::SetConfig::new(config.security.clone()))
-            .await?;
+        action.run(self.product.clone(), &self.config).await;
 
-        self.hostname
-            .call(hostname::message::SetConfig::new(config.hostname.clone()))
-            .await?;
-
-        self.proxy
-            .call(proxy::message::SetConfig::new(config.proxy.clone()))
-            .await?;
-
-        self.files
-            .call(files::message::SetConfig::new(config.files.clone()))
-            .await?;
-
-        self.run_pre_scripts();
-
-        self.questions
-            .call(question::message::SetConfig::new(config.questions.clone()))
-            .await?;
-
-        self.software
-            .call(software::message::SetConfig::new(
-                Arc::clone(product),
-                config.software.clone(),
-            ))
-            .await?;
-
-        self.l10n
-            .call(l10n::message::SetConfig::new(config.l10n.clone()))
-            .await?;
-
-        self.users
-            .call(users::message::SetConfig::new(config.users.clone()))
-            .await?;
-
-        self.iscsi
-            .call(iscsi::message::SetConfig::new(config.iscsi.clone()))
-            .await?;
-
-        self.storage.cast(storage::message::SetConfig::new(
-            Arc::clone(product),
-            config.storage.clone(),
-        ))?;
-
-        // call bootloader always after storage to ensure that bootloader reflect new storage settings
-        self.bootloader
-            .call(bootloader::message::SetConfig::new(
-                config.bootloader.clone(),
-            ))
-            .await?;
-
-        if let Some(network) = config.network.clone() {
-            self.network.update_config(network).await?;
-            self.network.apply().await?;
-        }
-
-        self.config = config;
         Ok(())
     }
 
@@ -620,30 +576,6 @@ impl Service {
         product_config.mode = product.mode.clone();
 
         Ok(Some(software_config))
-    }
-
-    /// It runs pre-scripts and asks storage for probing.
-    fn run_pre_scripts(&self) {
-        let files = self.files.clone();
-        let storage = self.storage.clone();
-        tokio::spawn(async move {
-            let pre_scripts_ran = match files
-                .call(files::message::RunScripts::new(ScriptsGroup::Pre))
-                .await
-            {
-                Ok(result) => result,
-                Err(error) => {
-                    tracing::error!("Failed to run pre-scripts: {error}");
-                    return;
-                }
-            };
-
-            if pre_scripts_ran {
-                if let Err(error) = storage.cast(storage::message::Probe) {
-                    tracing::error!("Failed to ask for storage probing: {error}");
-                }
-            }
-        });
     }
 }
 
@@ -1057,5 +989,115 @@ impl FinishAction {
                 tracing::error!("Failed to run the shutdown command: {error}");
             }
         }
+    }
+}
+
+/// Implements the set config logic.
+///
+/// This action runs on a separate Tokio task to prevent the manager from blocking.
+struct SetConfigAction {
+    bootloader: Handler<bootloader::Service>,
+    files: Handler<files::Service>,
+    hostname: Handler<hostname::Service>,
+    iscsi: Handler<iscsi::Service>,
+    l10n: Handler<l10n::Service>,
+    network: NetworkSystemClient,
+    proxy: Handler<proxy::Service>,
+    questions: Handler<question::Service>,
+    security: Handler<security::Service>,
+    software: Handler<software::Service>,
+    storage: Handler<storage::Service>,
+    users: Handler<users::Service>,
+}
+
+impl SetConfigAction {
+    pub async fn run(self, product: Option<Arc<RwLock<ProductSpec>>>, config: &Config) {
+        let config = config.clone();
+        tokio::spawn(async move {
+            tracing::info!("Updating the configuration");
+            match self.set_config(product, config).await {
+                Ok(_) => tracing::info!("Configuration updated successfully"),
+                Err(error) => tracing::error!("Failed to update the configuration: {error}"),
+            }
+        });
+    }
+
+    async fn set_config(
+        self,
+        product: Option<Arc<RwLock<ProductSpec>>>,
+        config: Config,
+    ) -> Result<(), Error> {
+        self.security
+            .call(security::message::SetConfig::new(config.security.clone()))
+            .await?;
+
+        self.hostname
+            .call(hostname::message::SetConfig::new(config.hostname.clone()))
+            .await?;
+
+        self.proxy
+            .call(proxy::message::SetConfig::new(config.proxy.clone()))
+            .await?;
+
+        self.files
+            .call(files::message::SetConfig::new(config.files.clone()))
+            .await?;
+
+        self.files
+            .call(files::message::RunScripts::new(ScriptsGroup::Pre))
+            .await?;
+
+        self.questions
+            .call(question::message::SetConfig::new(config.questions.clone()))
+            .await?;
+
+        self.l10n
+            .call(l10n::message::SetConfig::new(config.l10n.clone()))
+            .await?;
+
+        self.users
+            .call(users::message::SetConfig::new(config.users.clone()))
+            .await?;
+
+        self.iscsi
+            .call(iscsi::message::SetConfig::new(config.iscsi.clone()))
+            .await?;
+
+        if let Some(network) = config.network.clone() {
+            self.network.update_config(network).await?;
+            self.network.apply().await?;
+        }
+
+        match &product {
+            Some(product) => {
+                self.software
+                    .call(software::message::SetConfig::new(
+                        Arc::clone(product),
+                        config.software.clone(),
+                    ))
+                    .await?;
+
+                self.storage
+                    .call(storage::message::SetConfig::new(
+                        Arc::clone(product),
+                        config.storage.clone(),
+                    ))
+                    .await?;
+
+                // call bootloader always after storage to ensure that bootloader reflect new storage settings
+                self.bootloader
+                    .call(bootloader::message::SetConfig::new(
+                        config.bootloader.clone(),
+                    ))
+                    .await?;
+            }
+
+            None => {
+                // TODO: reset software and storage proposals.
+                tracing::info!("No product is selected.");
+            }
+        }
+
+        Ok(())
     }
 }
