@@ -123,6 +123,18 @@ const failedToConnect = (target: MergedTarget): boolean => {
 };
 
 /**
+ * Action handlers for target operations.
+ */
+type TargetActionHandlers = {
+  /** Handler to execute when the user clicks the Connect action */
+  onConnect: () => void;
+  /** Handler to execute when the user clicks the Disconnect action */
+  onDisconnect: () => void;
+  /** Handler to execute when the user clicks the Delete action */
+  onDelete: () => void;
+};
+
+/**
  * Builds the list of available actions for a given target.
  *
  * @returns Array of available actions for the target, each with a label and an
@@ -130,8 +142,7 @@ const failedToConnect = (target: MergedTarget): boolean => {
  */
 const buildActions = (
   target: MergedTarget,
-  navigateFn: ReturnType<typeof useNavigate>,
-  onDelete: (targetName: string, targetAddress: string, targetPort: number) => void,
+  { onConnect, onDisconnect, onDelete }: TargetActionHandlers,
 ) => {
   if (target.locked) return [];
 
@@ -142,23 +153,16 @@ const buildActions = (
   return [
     !connected && {
       title: _("Connect"),
-      onClick: () =>
-        navigateFn(
-          generatePath(STORAGE.iscsi.login, {
-            name: target.name,
-            address: target.address,
-            port: target.port,
-          }),
-        ),
+      onClick: onConnect,
     },
     connected &&
       inConfig && {
         title: _("Disconnect"),
-        onClick: () => onDelete(target.name, target.address, target.port),
+        onClick: onDisconnect,
       },
     hasConnectionFailures && {
       title: _("Delete"),
-      onClick: () => onDelete(target.name, target.address, target.port),
+      onClick: onDelete,
       isDanger: true,
     },
   ].filter(Boolean);
@@ -466,7 +470,18 @@ export default function TargetsTable() {
         sortedBy={state.sortedBy}
         updateSorting={onSortingChange}
         itemActions={(target: MergedTarget) =>
-          buildActions(target, navigate, (n, a, p) => removeTarget(n, a, p))
+          buildActions(target, {
+            onConnect: () =>
+              navigate(
+                generatePath(STORAGE.iscsi.login, {
+                  name: target.name,
+                  address: target.address,
+                  port: target.port,
+                }),
+              ),
+            onDisconnect: () => removeTarget(target.name, target.address, target.port),
+            onDelete: () => removeTarget(target.name, target.address, target.port),
+          })
         }
         itemActionsLabel={(t) =>
           sprintf(_("Actions for %s at portal %s"), t.name, `${t.address}:${t.port}`)

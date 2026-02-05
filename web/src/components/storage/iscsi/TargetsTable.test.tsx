@@ -436,8 +436,8 @@ describe("TargetsTable", () => {
       mockUseConfigFn.mockReturnValue({ targets: [testingTargets[0]] });
     });
 
-    it("displays target name and portal in action label", async () => {
-      const { user } = installerRender(<TargetsTable />);
+    it("displays target name and portal in action label", () => {
+      installerRender(<TargetsTable />);
 
       screen.getByRole("button", {
         name: /Actions for iqn\.2023-01\.com\.example:12ac588 at portal 192\.168\.100\.102:3262/i,
