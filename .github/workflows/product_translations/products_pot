@@ -14,7 +14,7 @@ Usage:
 const fs = require("fs");
 const process = require("process");
 
-const { Parser, LineCounter, parseDocument } = require("yaml");
+const { LineCounter, parseDocument } = require("yaml");
 const gettextParser = require("gettext-parser");
 
 /**
@@ -24,20 +24,20 @@ class POEntry {
   text;
   file;
   line;
-  product;
+  translators_comment;
 
   /**
    * Constructor
    * @param {string} text - text of the description
    * @param {string} file - file name
    * @param {number} line - line location
-   * @param {string} product - name of the product
+   * @param {string} translators_comment - translators comment
    */
-  constructor(text, file, line, product) {
+  constructor(text, file, line, translators_comment) {
     this.text = text;
     this.file = file;
     this.line = line;
-    this.product = product;
+    this.translators_comment = translators_comment;
   }
 }
 
@@ -49,11 +49,20 @@ class POFile {
    * generate a time stamp string for the POT file header
    * @returns {string} timestamp
    */
-  timestamp() {
+  #timestamp() {
     const date = new Date();
-    return date.getUTCFullYear() + "-" + (date.getUTCMonth() + 1) + "-" +
-      date.getUTCDate() + " " + date.getUTCHours() + ":" + date.getUTCMinutes() +
-      "+0000";
+    return (
+      date.getUTCFullYear() +
+      "-" +
+      this.#padNumber(date.getUTCMonth() + 1) +
+      "-" +
+      this.#padNumber(date.getUTCDate()) +
+      " " +
+      this.#padNumber(date.getUTCHours()) +
+      ":" +
+      this.#padNumber(date.getUTCMinutes()) +
+      "+0000"
+    );
   }
 
   /**
@@ -65,23 +74,45 @@ class POFile {
 
     // template file with the default POT file header
     const template = require("./template.json");
-    template.headers["POT-Creation-Date"] = this.timestamp();
+    template.headers["POT-Creation-Date"] = this.#timestamp();
 
     const translations = template.translations[""];
 
-    this.entries.forEach(e => {
-      translations[e.text] = {
-        msgid: e.text,
-        comments: {
-          translator: `TRANSLATORS: description of product "${e.product}"`,
-          reference: e.file + ":" + e.line
-        },
-        msgstr: [""]
-      };
+    this.entries.forEach((e) => {
+      const ref = e.file + ":" + e.line;
+      if (translations[e.text]) {
+        // the same text was already found at a different place, just merge the
+        // locations and translators comments if not already there
+        const item = translations[e.text];
+        if (!item.comments.translator.split("\n").includes(e.translators_comment)) {
+          item.comments.translator += "\n" + e.translators_comment;
+        }
+        if (!item.comments.reference.split("\n").includes(ref)) {
+          item.comments.reference += "\n" + ref;
+        }
+      } else {
+        translations[e.text] = {
+          msgid: e.text,
+          comments: {
+            translator: e.translators_comment,
+            reference: ref,
+          },
+          msgstr: [""],
+        };
+      }
     });
 
     // sort the output by the msgid to have consistent results
     return String(gettextParser.po.compile(template, { sort: true }));
+  }
+
+  /**
+   * Formats the number as a string with at least 2 digits, adds leading zero if needed
+   * @param n number
+   * @returns formatted number
+   */
+  #padNumber(n) {
+    return n.toString().padStart(2, "0");
   }
 }
 
@@ -101,43 +132,77 @@ class YamlReader {
 
   /**
    * Read and parse the YAML file
-   * @returns {undefined,POEntry} the found description entry or `undefined` if not found
+   * @returns {POEntry[]} the found translatable entries
    */
-  description() {
+  read() {
     const data = fs.readFileSync(this.file, "utf-8");
-
-    // get the parsed text value
-    const parsed = parseDocument(data);
-    const description = parsed.get("description");
-    if (!description) return;
-
-    const product = parsed.get("name");
+    const entries = [];
 
     const lineCounter = new LineCounter();
-    const tokens = new Parser(lineCounter.addNewLine).parse(data);
+    const parsed = parseDocument(data, { lineCounter });
 
-    for (const token of tokens) {
-      if (token.type === "document") {
-        // get the line position of the value
-        const description_token = token.value.items.find(i => i.key.source === "description");
-        const line = lineCounter.linePos(description_token.value.offset).line;
-        return new POEntry(description, this.file, line, product);
-      }
+    const product = parsed.get("name");
+    const descriptionNode = parsed.get("description", true);
+
+    if (descriptionNode) {
+      const line = lineCounter.linePos(descriptionNode.range[0]).line;
+      entries.push(
+        new POEntry(
+          parsed.get("description"),
+          this.file,
+          line,
+          `TRANSLATORS: description of product "${product}"`
+        )
+      );
     }
+
+    const modes = parsed.get("modes", true);
+    if (modes && modes.items) {
+      modes.items.forEach((mode) => {
+        if (!mode.get) return;
+
+        const modeName = mode.get("name");
+        const nameNode = mode.get("name", true);
+        if (nameNode) {
+          const line = lineCounter.linePos(nameNode.range[0]).line;
+          entries.push(
+            new POEntry(
+              modeName,
+              this.file,
+              line,
+              `TRANSLATORS: name of the installation mode for product "${product}"`
+            )
+          );
+        }
+
+        const descriptionNode = mode.get("description", true);
+        if (descriptionNode) {
+          const line = lineCounter.linePos(descriptionNode.range[0]).line;
+          entries.push(
+            new POEntry(
+              mode.get("description"),
+              this.file,
+              line,
+              `TRANSLATORS: description of installation mode "${modeName}" for product "${product}"`
+            )
+          );
+        }
+      });
+    }
+
+    return entries;
   }
 }
 
 const output = new POFile();
 // script arguments (the first arg is executor path ("/usr/bin/node"),
 // the second is name of this script)
-const [,, ...params] = process.argv;
+const [, , ...params] = process.argv;
 
-params.forEach(f => {
+params.forEach((f) => {
   const reader = new YamlReader(f);
-  const descriptionEntry = reader.description();
-  if (descriptionEntry) {
-    output.entries.push(descriptionEntry);
-  }
+  const entries = reader.read();
+  output.entries.push(...entries);
 });
 
 console.log(output.dump());
