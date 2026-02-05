@@ -108,7 +108,7 @@ pub struct Keymap {
     /// Keymap identifier (e.g., "us")
     pub id: KeymapId,
     /// Keymap description
-    description: String,
+    pub description: String,
 }
 
 impl Ord for Keymap {

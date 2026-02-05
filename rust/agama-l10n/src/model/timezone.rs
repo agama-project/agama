@@ -35,17 +35,16 @@ impl TimezonesDatabase {
     }
 
     pub fn with_entries(data: &[TimezoneEntry]) -> Self {
-        let mut timezones = data.to_vec();
-        timezones.sort();
-        Self { timezones }
+        let mut database = Self::new();
+        database.set_entries(data.to_vec());
+        database
     }
 
     /// Initializes the list of known timezones.
     ///
     /// * `ui_language`: language to translate the descriptions (e.g., "en").
     pub fn read(&mut self, ui_language: &str) -> anyhow::Result<()> {
-        self.timezones = self.get_timezones(ui_language)?;
-        self.timezones.sort();
+        self.set_entries(self.get_timezones(ui_language)?);
         Ok(())
     }
 
@@ -91,6 +90,12 @@ impl TimezonesDatabase {
             .collect();
 
         Ok(ret)
+    }
+
+    // Set the locales entries.
+    fn set_entries(&mut self, timezones: Vec<TimezoneEntry>) {
+        self.timezones = timezones;
+        self.timezones.sort();
     }
 }
 

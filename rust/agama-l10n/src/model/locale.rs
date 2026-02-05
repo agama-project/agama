@@ -41,12 +41,10 @@ impl LocalesDatabase {
     }
 
     pub fn with_entries(data: &[LocaleEntry]) -> Self {
-        let mut locales = data.to_vec();
-        locales.sort();
-        Self {
-            known_locales: locales.iter().map(|l| l.id.clone()).collect(),
-            locales,
-        }
+        let mut database = Self::new();
+        database.set_entries(data.to_vec());
+        database.known_locales = database.locales.iter().map(|l| l.id.clone()).collect();
+        database
     }
 
     /// Loads the list of locales.
@@ -57,9 +55,7 @@ impl LocalesDatabase {
     /// * `ui_language`: language to translate the descriptions (e.g., "en").
     pub fn read(&mut self, ui_language: &str) -> anyhow::Result<()> {
         self.known_locales = Self::get_locales_list()?;
-        self.locales = self.get_locales(ui_language)?;
-        self.locales.sort();
-        self.known_locales = self.locales.iter().map(|l| l.id.clone()).collect();
+        self.set_entries(self.get_locales(ui_language)?);
         Ok(())
     }
 
@@ -127,6 +123,12 @@ impl LocalesDatabase {
 
         tracing::info!("Read {} locales", result.len());
         Ok(result)
+    }
+
+    // Set the locales entries.
+    fn set_entries(&mut self, locales: Vec<LocaleEntry>) {
+        self.locales = locales;
+        self.locales.sort();
     }
 
     fn get_locales_list() -> anyhow::Result<Vec<LocaleId>> {
