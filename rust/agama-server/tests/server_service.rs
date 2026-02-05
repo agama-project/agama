@@ -152,30 +152,6 @@ async fn test_put_config_success(ctx: &mut Context) -> Result<(), Box<dyn Error>
 
 #[test_context(Context)]
 #[test]
-async fn test_put_config_without_product(ctx: &mut Context) -> Result<(), Box<dyn Error>> {
-    let json = r#"
-        {
-          "l10n": {
-            "locale": "es_ES.UTF-8", "keymap": "es", "timezone": "Atlantic/Canary"
-          }
-        }
-    "#;
-
-    let request = Request::builder()
-        .uri("/config")
-        .header("Content-Type", "application/json")
-        .method(Method::PUT)
-        .body(json.to_string())
-        .unwrap();
-
-    let response = ctx.client.send_request(request).await;
-    assert_eq!(response.status(), StatusCode::BAD_REQUEST);
-
-    Ok(())
-}
-
-#[test_context(Context)]
-#[test]
 async fn test_put_config_without_mode(ctx: &mut Context) -> Result<(), Box<dyn Error>> {
     let json = r#"
         {
@@ -271,28 +247,6 @@ async fn test_patch_config_success(ctx: &mut Context) -> Result<(), Box<dyn Erro
     let body = body_to_string(response.into_body()).await;
     assert!(body.contains(r#""l10n":{"keymap":"en"}"#));
     assert!(body.contains(r#""product":{"id":"SLES","mode":"standard"}"#));
-
-    Ok(())
-}
-
-#[test_context(Context)]
-#[test]
-async fn test_patch_config_without_selected_product(
-    ctx: &mut Context,
-) -> Result<(), Box<dyn Error>> {
-    let json = r#"{ "update": { "l10n": { "keymap": "en" } } }"#;
-    let request = Request::builder()
-        .uri("/config")
-        .header("Content-Type", "application/json")
-        .method(Method::PATCH)
-        .body(json.to_string())
-        .unwrap();
-
-    let response = ctx.client.send_request(request).await;
-    assert_eq!(response.status(), StatusCode::BAD_REQUEST);
-
-    let body = body_to_string(response.into_body()).await;
-    assert_eq!(body, r#"{"error":"Missing product"}"#);
 
     Ok(())
 }

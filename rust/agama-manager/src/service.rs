@@ -45,8 +45,6 @@ use tokio::sync::{broadcast, RwLock};
 
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
-    #[error("Missing product")]
-    MissingProduct,
     #[error(transparent)]
     Event(#[from] broadcast::error::SendError<Event>),
     #[error(transparent)]
