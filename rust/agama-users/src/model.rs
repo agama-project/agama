@@ -38,18 +38,32 @@ pub trait ModelAdapter: Send + 'static {
     }
 }
 
+/// A wrapper for common std::process::Command for use in chroot
+///
+/// It basically creates Command for chroot and command to be run
+/// in chrooted environment is passed as an argument.
+///
+/// Example use:
+/// ChrootCommand::new(<chroot directory>)
+///   .cmd(<command to be run in chroot env>)
+///   .args(["the command", "args"]
 struct ChrootCommand {
     command: Command,
 }
 
 impl ChrootCommand {
-    pub fn new(chroot: PathBuf) -> Self {
-        // TODO: check if the dir exists?
+    pub fn new(chroot: PathBuf) -> Result<Self, service::Error> {
+        if !chroot.is_dir() {
+            return Err(service::Error::CommandFailed(String::from(
+                "Failed to chroot",
+            )));
+        }
+
         let mut cmd = Command::new("chroot");
 
         cmd.arg(chroot);
 
-        Self { command: cmd }
+        Ok(Self { command: cmd })
     }
 
     pub fn cmd(mut self, command: &str) -> Self {
@@ -94,7 +108,7 @@ impl Model {
             return Err(service::Error::MissingUserData);
         };
 
-        let useradd = ChrootCommand::new(self.install_dir.clone())
+        let useradd = ChrootCommand::new(self.install_dir.clone())?
             .cmd("useradd")
             .args(["-G", "wheel", &user_name])
             .output()?;
@@ -140,7 +154,7 @@ impl Model {
         user_name: &str,
         user_password: &UserPassword,
     ) -> Result<(), service::Error> {
-        let mut passwd_cmd = ChrootCommand::new(self.install_dir.clone()).cmd("chpasswd");
+        let mut passwd_cmd = ChrootCommand::new(self.install_dir.clone())?.cmd("chpasswd");
 
         if user_password.hashed_password {
             passwd_cmd.arg("-e");
@@ -189,7 +203,7 @@ impl Model {
 
     /// Enables sshd service in the target system
     fn enable_sshd_service(&self) -> Result<(), service::Error> {
-        let systemctl = ChrootCommand::new(self.install_dir.clone())
+        let systemctl = ChrootCommand::new(self.install_dir.clone())?
             .cmd("systemctl")
             .args(["enable", "sshd.service"])
             .output()?;
@@ -209,7 +223,7 @@ impl Model {
 
     /// Opens the SSH port in firewall in the target system
     fn open_ssh_port(&self) -> Result<(), service::Error> {
-        let firewall_cmd = ChrootCommand::new(self.install_dir.clone())
+        let firewall_cmd = ChrootCommand::new(self.install_dir.clone())?
             .cmd("firewall-offline-cmd")
             .args(["-add-service=ssh"])
             .output()?;
@@ -246,7 +260,7 @@ impl Model {
             return Ok(());
         };
 
-        let chfn = ChrootCommand::new(self.install_dir.clone())
+        let chfn = ChrootCommand::new(self.install_dir.clone())?
             .cmd("chfn")
             .args(["-f", &full_name, &user_name])
             .output()?;
