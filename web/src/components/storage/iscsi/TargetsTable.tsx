@@ -150,11 +150,11 @@ const buildActions = (target, navigateFn, onDelete) => {
     connected &&
       inConfig && {
         title: _("Disconnect"),
-        onClick: () => console.log("Disconnect"),
+        onClick: () => onDelete(target.name, target.address, target.port),
       },
     hasConnectionFailures && {
       title: _("Delete"),
-      onClick: () => onDelete(target.name),
+      onClick: () => onDelete(target.name, target.address, target.port),
       isDanger: true,
     },
   ].filter(Boolean);
@@ -454,9 +454,7 @@ export default function TargetsTable() {
         sortedBy={state.sortedBy}
         updateSorting={onSortingChange}
         allowSelectAll
-        itemActions={(target) =>
-          buildActions(target, navigate, (targetName) => removeTarget(targetName))
-        }
+        itemActions={(target) => buildActions(target, navigate, (n, a, p) => removeTarget(n, a, p))}
         itemActionsLabel={(d) => `Actions for ${d.id}`}
         emptyState={<ISCSITableEmptyState mode={emptyMode} resetFilters={resetFilters} />}
       />

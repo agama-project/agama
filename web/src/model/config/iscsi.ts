@@ -32,12 +32,17 @@ function setInitiator(config: Config, name: string): Config {
   return config;
 }
 
-function findTargetIndex(config: Config, name: string): number | undefined {
-  return config.targets?.findIndex((t) => t.name === name);
+function findTargetIndex(
+  config: Config,
+  name: string,
+  addr: string,
+  port: number,
+): number | undefined {
+  return config.targets?.findIndex((t) => t.name === name && t.address === addr && t.port === port);
 }
 
-function findTarget(config: Config, name: string): Target | undefined {
-  return config.targets?.find((t) => t.name === name);
+function findTarget(config: Config, name: string, addr: string, port: number): Target | undefined {
+  return config.targets?.find((t) => t.name === name && t.address === addr && t.port === port);
 }
 
 function addTarget(config: Config, target: Target): Config {
@@ -47,9 +52,9 @@ function addTarget(config: Config, target: Target): Config {
   return config;
 }
 
-function removeTarget(config: Config, name: string): Config {
+function removeTarget(config: Config, name: string, addr: string, port: number): Config {
   config = clone(config);
-  const index = config.targets?.findIndex((t) => t.name === name);
+  const index = findTargetIndex(config, name, addr, port);
   if (index) config.targets.splice(index, 1);
   return config;
 }

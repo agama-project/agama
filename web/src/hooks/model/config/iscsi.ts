@@ -56,15 +56,36 @@ function useAddTarget(): addTargetFn {
   return (target: ISCSI.Target) => patchConfig({ iscsi: addTarget(config, target) });
 }
 
-const removeTarget = (config: ISCSI.Config | null, name: string): ISCSI.Config =>
-  config ? iscsi.removeTarget(config, name) : {};
+const removeTarget = (
+  config: ISCSI.Config | null,
+  name: string,
+  addr: string,
+  port: number,
+): ISCSI.Config => (config ? iscsi.removeTarget(config, name, addr, port) : {});
 
-type removeTargetFn = (name: string) => Response;
+type removeTargetFn = (name: string, addr: string, port: number) => Response;
 
 function useRemoveTarget(): removeTargetFn {
   const config = useConfig();
-  return (name: string) => patchConfig({ iscsi: removeTarget(config, name) });
+  return (name: string, addr: string, port: number) =>
+    patchConfig({ iscsi: removeTarget(config, name, addr, port) });
 }
 
-export { useConfig, useSetInitiator, useAddTarget, useRemoveTarget };
+const addOrEditTarget = (config: ISCSI.Config | null, target: ISCSI.Target): ISCSI.Config => {
+  if (config) {
+    const clean = iscsi.removeTarget(config, target.name, target.address, target.port);
+    return iscsi.addTarget(clean, target);
+  } else {
+    return { targets: [target] };
+  }
+};
+
+type addOrEditTargetFn = (target: ISCSI.Target) => Response;
+
+function useAddOrEditTarget(): addOrEditTargetFn {
+  const config = useConfig();
+  return (target: ISCSI.Target) => patchConfig({ iscsi: addOrEditTarget(config, target) });
+}
+
+export { useConfig, useSetInitiator, useAddTarget, useAddOrEditTarget, useRemoveTarget };
 export type { setInitiatorFn as changeInitiatorFn };

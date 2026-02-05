@@ -46,7 +46,7 @@ import PasswordInput from "~/components/core/PasswordInput";
 import ResourceNotFound from "~/components/core/ResourceNotFound";
 import SwitchEnhanced from "~/components/core/SwitchEnhanced";
 import { useSystem } from "~/hooks/model/system/iscsi";
-import { useAddTarget } from "~/hooks/model/config/iscsi";
+import { useAddOrEditTarget } from "~/hooks/model/config/iscsi";
 import { STORAGE } from "~/routes/paths";
 import { N_, _ } from "~/i18n";
 
@@ -109,7 +109,7 @@ const handleInputChange =
 
 function TargetLoginForm({ target }): React.ReactNode {
   const alertRef = useRef(null);
-  const addTarget = useAddTarget();
+  const addOrEditTarget = useAddOrEditTarget();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState([]);
@@ -171,7 +171,7 @@ function TargetLoginForm({ target }): React.ReactNode {
       authByTarget,
       authByInitiator,
     };
-    addTarget(targetConfig);
+    addOrEditTarget(targetConfig);
     navigate({ pathname: STORAGE.iscsi.root });
   };
 
