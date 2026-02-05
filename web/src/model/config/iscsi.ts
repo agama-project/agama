@@ -55,7 +55,7 @@ function addTarget(config: Config, target: Target): Config {
 function removeTarget(config: Config, name: string, addr: string, port: number): Config {
   config = clone(config);
   const index = findTargetIndex(config, name, addr, port);
-  if (index) config.targets.splice(index, 1);
+  if (index !== undefined) config.targets.splice(index, 1);
   return config;
 }
 
