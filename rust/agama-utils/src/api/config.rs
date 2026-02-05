@@ -1,4 +1,4 @@
-// Copyright (c) [2025] SUSE LLC
+// Copyright (c) [2025-2026] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -25,6 +25,7 @@ use crate::api::{
 };
 use merge::Merge;
 use serde::{Deserialize, Serialize};
+use serde_json::Value;
 
 #[derive(Clone, Debug, Default, Deserialize, Serialize, Merge, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
@@ -70,5 +71,137 @@ impl Config {
             }),
             ..Default::default()
         }
+    }
+}
+
+#[derive(Clone, Debug, Default, Serialize, Deserialize, PartialEq, Eq, utoipa::ToSchema)]
+#[serde(transparent)]
+pub struct RawConfig(pub Value);
+
+impl Merge for RawConfig {
+    // Merge by using "ignore" strategy, that is, lhs takes precedence over rhs.
+    // Note that the new config is used as lhs, for example: new_config.merge(old_config). This
+    // implies we want to keep the current values of lhs and only the missing values are taken from
+    // rhs.
+    fn merge(&mut self, rhs: Self) {
+        let lhs_value = &mut self.0;
+        let rhs_value = rhs.0;
+
+        let Value::Object(lhs_object) = lhs_value else {
+            return;
+        };
+
+        let Value::Object(rhs_object) = rhs_value else {
+            return;
+        };
+
+        for (k, v) in rhs_object {
+            lhs_object.entry(k).or_insert(v);
+        }
+    }
+}
+
+#[cfg(test)]
+mod tests_raw_config {
+    use super::*;
+
+    #[test]
+    fn test_merge_from_empty() {
+        let original: RawConfig = serde_json::from_str(
+            r#"
+            {
+                "field1": "value",
+                "field2": [
+                    { "foo": "bar" }
+                 ]
+            }
+            "#,
+        )
+        .unwrap();
+
+        let mut config: RawConfig = serde_json::from_str(r#"{}"#).unwrap();
+
+        config.merge(original.clone());
+        assert_eq!(config, original);
+    }
+
+    #[test]
+    fn test_merge_value() {
+        let original: RawConfig = serde_json::from_str(
+            r#"
+            {
+                "field1": "value",
+                "field2": [
+                    { "foo1": "bar1" }
+                 ]
+            }
+            "#,
+        )
+        .unwrap();
+
+        let mut config: RawConfig = serde_json::from_str(
+            r#"
+            {
+                "field2": [
+                    { "foo2": "bar2" }
+                 ]
+            }
+            "#,
+        )
+        .unwrap();
+
+        let result: RawConfig = serde_json::from_str(
+            r#"
+            {
+                "field1": "value",
+                "field2": [
+                    { "foo2": "bar2" }
+                 ]
+            }
+            "#,
+        )
+        .unwrap();
+
+        config.merge(original);
+        assert_eq!(config, result);
+    }
+
+    #[test]
+    fn test_merge_list() {
+        let original: RawConfig = serde_json::from_str(
+            r#"
+            {
+                "field1": "value1",
+                "field2": [
+                    { "foo1": "bar1" }
+                 ]
+            }
+            "#,
+        )
+        .unwrap();
+
+        let mut config: RawConfig = serde_json::from_str(
+            r#"
+            {
+                "field1": "value2",
+            }
+            "#,
+        )
+        .unwrap();
+
+        let result: RawConfig = serde_json::from_str(
+            r#"
+            {
+                "field1": "value2",
+                "field2": [
+                    { "foo1": "bar1" }
+                 ]
+            }
+            "#,
+        )
+        .unwrap();
+
+        config.merge(original);
+        assert_eq!(config, result);
     }
 }

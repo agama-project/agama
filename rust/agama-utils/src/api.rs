@@ -40,7 +40,7 @@ mod system_info;
 pub use system_info::SystemInfo;
 
 pub mod config;
-pub use config::Config;
+pub use config::{Config, RawConfig};
 
 pub mod patch;
 pub use patch::Patch;

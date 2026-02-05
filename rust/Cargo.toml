@@ -24,7 +24,7 @@ members = [
     "zypp-agama",
     "zypp-agama/zypp-agama-sys", 
     "zypp-agama/zypp-agama-sys"
-]
+, "agama-s390"]
 resolver = "2"
 
 [workspace.package]
