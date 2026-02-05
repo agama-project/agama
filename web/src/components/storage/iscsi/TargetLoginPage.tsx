@@ -45,13 +45,18 @@ import NestedContent from "~/components/core/NestedContent";
 import PasswordInput from "~/components/core/PasswordInput";
 import ResourceNotFound from "~/components/core/ResourceNotFound";
 import SwitchEnhanced from "~/components/core/SwitchEnhanced";
-import NodeStartupOptions from "~/components/storage/iscsi/NodeStartupOptions";
 import { useSystem } from "~/hooks/model/system/iscsi";
 import { useAddTarget } from "~/hooks/model/config/iscsi";
 import { STORAGE } from "~/routes/paths";
-import { _ } from "~/i18n";
+import { N_, _ } from "~/i18n";
 
 import type { Target, Authentication } from "~/openapi/config/iscsi";
+
+export const StartupOptions = Object.freeze({
+  MANUAL: { label: N_("Manual"), value: "manual" },
+  ONBOOT: { label: N_("On boot"), value: "onboot" },
+  AUTOMATIC: { label: N_("Automatic"), value: "automatic" },
+});
 
 /**
  * Represents the form state.
@@ -172,7 +177,7 @@ function TargetLoginForm({ target }): React.ReactNode {
 
   const onChange = handleInputChange(dispatch);
 
-  const startupFormOptions = Object.values(NodeStartupOptions).map((option, i) => (
+  const startupFormOptions = Object.values(StartupOptions).map((option, i) => (
     /* eslint-disable agama-i18n/string-literals */
     <FormSelectOption key={i} value={option.value} label={_(option.label)} />
   ));
