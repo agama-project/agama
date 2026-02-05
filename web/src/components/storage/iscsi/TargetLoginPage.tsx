@@ -162,7 +162,7 @@ function TargetLoginForm({ target }): React.ReactNode {
         ? { username: state.reverseUsername, password: state.reversePassword }
         : undefined;
 
-    const targetConfig = {
+    const targetConfig: Target = {
       address: target.address,
       port: target.port,
       name: target.name,

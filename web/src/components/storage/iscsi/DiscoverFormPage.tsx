@@ -143,6 +143,8 @@ function DiscoverForm() {
     showAuth && fieldsToCheck.push("username", "password");
     showAuth && showMutualAuth && fieldsToCheck.push("initiatorUsername", "initiatorPassword");
 
+    const config: DiscoverISCSIConfig = pick(state, fieldsToCheck);
+
     if (!isValidIp(state.address)) {
       nextErrors.push(_("No valid address."));
     }
@@ -151,7 +153,7 @@ function DiscoverForm() {
       nextErrors.push(_("No valid port."));
     }
 
-    if (Object.values(pick(state, fieldsToCheck)).some((v) => isEmpty(v))) {
+    if (Object.values(config).some((v) => isEmpty(v))) {
       nextErrors.push(_("All fields are required."));
     }
 
@@ -162,7 +164,7 @@ function DiscoverForm() {
     }
 
     setIsLoading(true);
-    discoverISCSIAction(pick(state, fieldsToCheck));
+    discoverISCSIAction(config);
     navigate({ pathname: STORAGE.iscsi.root });
   };
 
