@@ -131,7 +131,7 @@ const failedToConnect = (target: MergedTarget): boolean => {
 const buildActions = (
   target: MergedTarget,
   navigateFn: ReturnType<typeof useNavigate>,
-  onDelete: (targetName: string) => void,
+  onDelete: (targetName: string, targetAddress: string, targetPort: number) => void,
 ) => {
   if (target.locked) return [];
 
