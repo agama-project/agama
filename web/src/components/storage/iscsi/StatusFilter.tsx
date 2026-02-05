@@ -63,7 +63,13 @@ export default function StatusFilter({ value, onChange }: StatusFilterProps) {
   const onToggle = () => setIsOpen(!isOpen);
 
   const toggle = (toggleRef: React.Ref<MenuToggleElement>) => (
-    <MenuToggle id={ID} ref={toggleRef} onClick={onToggle} isExpanded={isOpen}>
+    <MenuToggle
+      id={ID}
+      ref={toggleRef}
+      onClick={onToggle}
+      isExpanded={isOpen}
+      aria-label={_("Status filter toggle")}
+    >
       {/* eslint-disable agama-i18n/string-literals */}
       {_(options[value])}
     </MenuToggle>

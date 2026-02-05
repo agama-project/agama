@@ -21,6 +21,9 @@
  */
 
 import React, { useReducer } from "react";
+import { generatePath, useNavigate } from "react-router";
+import { isEmpty } from "radashi";
+import { sprintf } from "sprintf-js";
 import {
   Button,
   Content,
@@ -39,20 +42,19 @@ import {
 import Icon from "~/components/layout/Icon";
 import SelectableDataTable, { SortedBy } from "~/components/core/SelectableDataTable";
 import StatusFilter from "~/components/storage/iscsi/StatusFilter";
-import TextinputFilter from "~/components/storage/dasd/TextinputFilter";
-import { isEmpty } from "radashi";
-import { sortCollection, mergeSources } from "~/utils";
-import { generatePath, useNavigate } from "react-router";
-import { STORAGE } from "~/routes/paths";
-import { _ } from "~/i18n";
 import Text from "~/components/core/Text";
+import TextinputFilter from "~/components/storage/dasd/TextinputFilter";
+import { sortCollection, mergeSources } from "~/utils";
+import { STORAGE } from "~/routes/paths";
 import { useSystem } from "~/hooks/model/system/iscsi";
 import { useConfig, useRemoveTarget } from "~/hooks/model/config/iscsi";
+import { _ } from "~/i18n";
 
 import type { Target as ConfigTarget } from "~/openapi/config/iscsi";
-import type { Target as SystemTarget, Target } from "~/openapi/system/iscsi";
+import type { Target as SystemTarget } from "~/openapi/system/iscsi";
 
-type MergedTarget = Partial<SystemTarget> & Partial<ConfigTarget>;
+type MergedTarget = Partial<SystemTarget> & Partial<ConfigTarget> & { sources: string[] };
+type TargetToMerge = SystemTarget | ConfigTarget;
 
 /**
  * Filter options for narrowing down iSCSI targets shown in the table.
@@ -70,14 +72,14 @@ export type ISCSITargetsFilters = {
  * condition.
  *
  * Used internally to compose filter logic when narrowing down the list of
- * devices shown in the table.
+ * targets shown in the table.
  */
 type ISCSITargetCondition = (target) => boolean;
 
 /**
  * Filters an array of targets based on given filters.
  */
-const filterTargets = (targets, filters) => {
+const filterTargets = (targets: MergedTarget[], filters: ISCSITargetsFilters): MergedTarget[] => {
   const { name, portal, status } = filters;
 
   const conditions: ISCSITargetCondition[] = [];
@@ -112,23 +114,25 @@ const filterTargets = (targets, filters) => {
 };
 
 /**
- * Checks if given target failed to connect.
+ * Checks if a given target failed to connect.
  */
-const failedToConnect = (target: Target & { sources: string[] }): boolean => {
+const failedToConnect = (target: MergedTarget): boolean => {
   return (
     target.sources.includes("system") && target.sources.includes("config") && !target.connected
   );
 };
 
 /**
- * Builds the list of available actions for given targets.
+ * Builds the list of available actions for a given target.
  *
- * FIXME: Implement it
- *
- * Returns an array of action objects, each with a label and an `onClick`
- * handler. (...)
+ * @returns Array of available actions for the target, each with a label and an
+ * `onClick` handler
  */
-const buildActions = (target, navigateFn, onDelete) => {
+const buildActions = (
+  target: MergedTarget,
+  navigateFn: ReturnType<typeof useNavigate>,
+  onDelete: (targetName: string) => void,
+) => {
   if (target.locked) return [];
 
   const { connected, sources } = target;
@@ -161,13 +165,13 @@ const buildActions = (target, navigateFn, onDelete) => {
 };
 
 /**
- * Props for the FiltersToolbar component used in the DASD table.
+ * Props for the FiltersToolbar component rendered along with the table.
  */
 type FiltersToolbarProps = {
   /** Current filter state */
   filters: ISCSITargetsFilters;
   /** Callback invoked when a filter value changes. */
-  onFilterChange: (filter: keyof ISCSITargetsFilters, value: string | number) => void;
+  onFilterChange: (filter: keyof ISCSITargetsFilters, value: string) => void;
 };
 
 /**
@@ -202,17 +206,17 @@ const FiltersToolbar = ({ filters, onFilterChange }: FiltersToolbarProps) => (
 );
 
 /**
- * Represents the mode of the empty state shown in the DASD table.
+ * Represents the mode of the empty state shown in the table.
  *
- * - "noDevices": No DASD devices are present on the system.
- * - "noFilterResults": No matching results after appluing filters.
+ * - "noDevices": No iSCSI targets are present on the system.
+ * - "noFilterResults": No matching results after applying filters.
  */
 type TargetsEmptyStateMode = "noDevices" | "noFilterResults";
 
 /**
- * Props for the DASDTableEmptyState component.
+ * Props for the ISCSITableEmptyState component.
  */
-type DASDTableEmptyStateProps = {
+type TargetsEmptyStateProps = {
   /**
    * Determines the type of empty state to display.
    */
@@ -224,10 +228,9 @@ type DASDTableEmptyStateProps = {
 };
 
 /**
- * Displays an appropriate empty state interface for the DASD table,
- * depending on the mode.
+ * Displays an appropriate empty state interface for the table.
  */
-const ISCSITableEmptyState = ({ mode, resetFilters }: DASDTableEmptyStateProps) => {
+const TargetsEmptyState = ({ mode, resetFilters }: TargetsEmptyStateProps) => {
   switch (mode) {
     case "noDevices": {
       return (
@@ -268,21 +271,19 @@ const ISCSITableEmptyState = ({ mode, resetFilters }: DASDTableEmptyStateProps) 
 
 /**
  * Encapsulates all state used by the iSCSI targets table component, including
- * filters, sorting configuration, current selection, and devices to be format.
- *
- * FIXME: finish adaptation
+ * filters, sorting configuration, and current selection.
  */
 type TargetsTableState = {
   /** Current sorting state */
   sortedBy: SortedBy;
-  /** Current active filters applied to the device list */
+  /** Current active filters applied to the target list */
   filters: ISCSITargetsFilters;
-  /** Currently selected devices in the UI */
-  selectedDevices: MergedTarget[];
+  /** Currently selected targets in the UI */
+  selectedTargets: MergedTarget[];
 };
 
 /**
- * Defines the initial state used by the DASD table reducer.
+ * Defines the initial state used by table reducer.
  */
 const initialState: TargetsTableState = {
   sortedBy: { index: 0, direction: "asc" },
@@ -291,7 +292,7 @@ const initialState: TargetsTableState = {
     portal: "",
     status: "all",
   },
-  selectedDevices: [],
+  selectedTargets: [],
 };
 
 /**
@@ -301,7 +302,7 @@ type TargetsTableAction =
   | { type: "UPDATE_SORTING"; payload: TargetsTableState["sortedBy"] }
   | { type: "UPDATE_FILTERS"; payload: TargetsTableState["filters"] }
   | { type: "RESET_FILTERS" }
-  | { type: "UPDATE_SELECTION"; payload: TargetsTableState["selectedDevices"] }
+  | { type: "UPDATE_SELECTION"; payload: TargetsTableState["selectedTargets"] }
   | { type: "RESET_SELECTION" }
   | { type: "CANCEL_FORMAT_REQUEST" };
 
@@ -323,11 +324,11 @@ const reducer = (state: TargetsTableState, action: TargetsTableAction): TargetsT
     }
 
     case "UPDATE_SELECTION": {
-      return { ...state, selectedDevices: action.payload };
+      return { ...state, selectedTargets: action.payload };
     }
 
     case "RESET_SELECTION": {
-      return { ...state, selectedDevices: initialState.selectedDevices };
+      return { ...state, selectedTargets: initialState.selectedTargets };
     }
   }
 };
@@ -342,16 +343,16 @@ const reducer = (state: TargetsTableState, action: TargetsTableAction): TargetsT
  */
 const createColumns = () => [
   {
-    // TRANSLATORS: table header for a iSCSI targets table
+    // TRANSLATORS: table header for an iSCSI targets table
     name: _("Name"),
-    value: (t) => t.name,
+    value: (t: MergedTarget) => t.name,
     sortingKey: "name",
   },
 
   {
-    // TRANSLATORS: table header for a iSCSI targets table
+    // TRANSLATORS: table header for an iSCSI targets table
     name: _("Portal"),
-    value: (t) => (
+    value: (t: MergedTarget) => (
       <Text>
         {t.address}:
         <Text component="small" style={{ display: "inline" }}>
@@ -362,23 +363,23 @@ const createColumns = () => [
     sortingKey: "address",
   },
   {
-    // TRANSLATORS: table header for a iSCSI targets table
+    // TRANSLATORS: table header for an iSCSI targets table
     name: _("Interface"),
-    value: (t) => t.interface,
+    value: (t: MergedTarget) => t.interface,
     sortingKey: "interface",
   },
   {
-    // TRANSLATORS: table header for a iSCSI targets table
+    // TRANSLATORS: table header for an iSCSI targets table
     name: _("Startup"),
-    value: (t) => {
+    value: (t: MergedTarget) => {
       return t.startup;
     },
     sortingKey: "startup",
   },
   {
-    // TRANSLATORS: table header for a iSCSI targets table
+    // TRANSLATORS: table header for an iSCSI targets table
     name: _("Status"),
-    value: (t) => {
+    value: (t: MergedTarget) => {
       // Not connected
       if (!t.connected) return _("Disconnected");
 
@@ -392,6 +393,12 @@ const createColumns = () => [
   },
 ];
 
+/**
+ * Main component for displaying and managing iSCSI targets.
+ *
+ * Provides a filterable, sortable table of iSCSI targets with actions
+ * to perform over them.
+ */
 export default function TargetsTable() {
   const [state, dispatch] = useReducer(reducer, initialState);
   const navigate = useNavigate();
@@ -399,7 +406,7 @@ export default function TargetsTable() {
   const systemTargets = useSystem()?.targets || [];
   const removeTarget = useRemoveTarget();
 
-  const targets = mergeSources<MergedTarget, keyof MergedTarget>({
+  const targets: MergedTarget[] = mergeSources<TargetToMerge, keyof TargetToMerge>({
     collections: {
       config: configTargets,
       system: systemTargets,
@@ -408,7 +415,7 @@ export default function TargetsTable() {
     primaryKey: ["name", "address", "port"],
   });
 
-  const hasLocked = targets.find((t) => "locked" in t && t.locked);
+  const hasLockedTargets = targets.find((t: MergedTarget) => "locked" in t && t.locked);
 
   const columns = createColumns();
 
@@ -416,28 +423,33 @@ export default function TargetsTable() {
     dispatch({ type: "UPDATE_SORTING", payload: sortedBy });
   };
 
-  const onFilterChange = (filter: keyof ISCSITargetsFilters, value) => {
+  const onFilterChange = (filter: keyof ISCSITargetsFilters, value: string) => {
     dispatch({ type: "UPDATE_FILTERS", payload: { [filter]: value } });
     dispatch({ type: "RESET_SELECTION" });
   };
 
-  const onSelectionChange = (devices: MergedTarget[]) => {
-    dispatch({ type: "UPDATE_SELECTION", payload: devices });
+  const onSelectionChange = (targets: MergedTarget[]) => {
+    dispatch({ type: "UPDATE_SELECTION", payload: targets });
   };
 
-  const resetFilters = () => dispatch({ type: "RESET_FILTERS" });
-
   // Filtering
-  const filteredDevices = filterTargets(targets, state.filters);
+  const resetFilters = () => dispatch({ type: "RESET_FILTERS" });
+  const filteredTargets = filterTargets(targets, state.filters);
 
   // Sorting
   const sortingKey = columns[state.sortedBy.index].sortingKey;
-  const sortedDevices = sortCollection(filteredDevices, state.sortedBy.direction, sortingKey);
+  const sortedTargets = sortCollection(filteredTargets, state.sortedBy.direction, sortingKey);
 
   // Determine the appropriate empty state mode, if needed
-  let emptyMode: TargetsEmptyStateMode;
-  if (isEmpty(filteredDevices)) {
-    emptyMode = state.filters === initialState.filters ? "noDevices" : "noFilterResults";
+  let emptyStateMode: TargetsEmptyStateMode | undefined;
+  if (isEmpty(filteredTargets)) {
+    // Check if filters are at their initial values
+    const filtersAreInitial =
+      state.filters.name === initialState.filters.name &&
+      state.filters.portal === initialState.filters.portal &&
+      state.filters.status === initialState.filters.status;
+
+    emptyStateMode = filtersAreInitial ? "noDevices" : "noFilterResults";
   }
 
   return (
@@ -446,19 +458,24 @@ export default function TargetsTable() {
       <Divider />
       <SelectableDataTable
         columns={columns}
-        items={sortedDevices}
+        items={sortedTargets}
         selectionMode="none"
-        itemsSelected={state.selectedDevices}
+        itemsSelected={state.selectedTargets}
         variant="compact"
         onSelectionChange={onSelectionChange}
         sortedBy={state.sortedBy}
         updateSorting={onSortingChange}
-        allowSelectAll
-        itemActions={(target) => buildActions(target, navigate, (n, a, p) => removeTarget(n, a, p))}
-        itemActionsLabel={(d) => `Actions for ${d.id}`}
-        emptyState={<ISCSITableEmptyState mode={emptyMode} resetFilters={resetFilters} />}
+        itemActions={(target: MergedTarget) =>
+          buildActions(target, navigate, (n, a, p) => removeTarget(n, a, p))
+        }
+        itemActionsLabel={(t) =>
+          sprintf(_("Actions for %s at portal %s"), t.name, `${t.address}:${t.port}`)
+        }
+        emptyState={
+          emptyStateMode && <TargetsEmptyState mode={emptyStateMode} resetFilters={resetFilters} />
+        }
       />
-      {hasLocked && (
+      {hasLockedTargets && (
         <HelperText>
           <HelperTextItem variant="indeterminate">
             {_("Locked targets cannot be managed from here and do not offer any actions.")}
