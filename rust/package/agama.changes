@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Feb  5 06:46:46 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Sort the list of languages, keymaps and timezones (bsc#1257497).
+
+-------------------------------------------------------------------
 Wed Feb  4 11:37:18 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
 
 - Fix usage of local repositories on full medium

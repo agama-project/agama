@@ -35,16 +35,16 @@ impl TimezonesDatabase {
     }
 
     pub fn with_entries(data: &[TimezoneEntry]) -> Self {
-        Self {
-            timezones: data.to_vec(),
-        }
+        let mut database = Self::new();
+        database.set_entries(data.to_vec());
+        database
     }
 
     /// Initializes the list of known timezones.
     ///
     /// * `ui_language`: language to translate the descriptions (e.g., "en").
     pub fn read(&mut self, ui_language: &str) -> anyhow::Result<()> {
-        self.timezones = self.get_timezones(ui_language)?;
+        self.set_entries(self.get_timezones(ui_language)?);
         Ok(())
     }
 
@@ -91,6 +91,12 @@ impl TimezonesDatabase {
 
         Ok(ret)
     }
+
+    // Set the locales entries.
+    fn set_entries(&mut self, timezones: Vec<TimezoneEntry>) {
+        self.timezones = timezones;
+        self.timezones.sort();
+    }
 }
 
 fn translate_parts(timezone: &str, ui_language: &str, tz_parts: &TimezoneIdParts) -> Vec<String> {
@@ -124,6 +130,7 @@ fn translate_country(
 #[cfg(test)]
 mod tests {
     use super::TimezonesDatabase;
+    use agama_utils::api::l10n::TimezoneEntry;
 
     #[test]
     fn test_read_timezones() {
@@ -174,5 +181,33 @@ mod tests {
         let unknown = "Unknown/Unknown".parse().unwrap();
         assert!(db.exists(&canary));
         assert!(!db.exists(&unknown));
+    }
+
+    #[test]
+    fn test_sorting_timezones() {
+        let entries = vec![
+            TimezoneEntry {
+                id: "Europe/Madrid".parse().unwrap(),
+                parts: vec!["Europe".to_string(), "Madrid".to_string()],
+                country: Some("Spain".to_string()),
+            },
+            TimezoneEntry {
+                id: "Atlantic/Canary".parse().unwrap(),
+                parts: vec!["Atlantic".to_string(), "Canary".to_string()],
+                country: Some("Spain".to_string()),
+            },
+            TimezoneEntry {
+                id: "Europe/Berlin".parse().unwrap(),
+                parts: vec!["Europe".to_string(), "Berlin".to_string()],
+                country: Some("Germany".to_string()),
+            },
+        ];
+
+        let db = TimezonesDatabase::with_entries(&entries);
+        let timezones = db.entries();
+
+        assert_eq!(timezones[0].id.as_str(), "Atlantic/Canary");
+        assert_eq!(timezones[1].id.as_str(), "Europe/Berlin");
+        assert_eq!(timezones[2].id.as_str(), "Europe/Madrid");
     }
 }
