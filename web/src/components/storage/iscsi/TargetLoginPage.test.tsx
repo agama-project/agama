@@ -26,7 +26,7 @@ import { installerRender, mockParams } from "~/test-utils";
 import TargetLoginPage from "./TargetLoginPage";
 
 const mockUseSystemFn = jest.fn();
-const mockAddTargetFn = jest.fn();
+const mockAddOrEditTargetFnt = jest.fn();
 const testingTargets = [
   {
     name: "iqn.2023-01.com.example:12ac588",
@@ -52,7 +52,7 @@ jest.mock("~/hooks/model/system/iscsi", () => ({
 jest.mock("~/hooks/model/config/iscsi", () => ({
   ...jest.requireActual("~/hooks/model/config/iscsi"),
   useConfig: jest.fn(),
-  useAddTarget: () => mockAddTargetFn,
+  useAddOrEditTarget: () => mockAddOrEditTargetFnt,
 }));
 
 // Needed by withL10n
@@ -107,7 +107,7 @@ describe("TargetLoginPage", () => {
 
     await user.selectOptions(startupOptions, "Manual");
     await user.click(acceptButton);
-    expect(mockAddTargetFn).toHaveBeenCalledWith({ ...target, startup: "manual" });
+    expect(mockAddOrEditTargetFnt).toHaveBeenCalledWith({ ...target, startup: "manual" });
   });
 
   it("allows login with target auth", async () => {
@@ -140,7 +140,7 @@ describe("TargetLoginPage", () => {
     await user.type(username, "john");
     await user.type(password, "secret");
     await user.click(acceptButton);
-    expect(mockAddTargetFn).toHaveBeenCalledWith({
+    expect(mockAddOrEditTargetFnt).toHaveBeenCalledWith({
       ...target,
       startup: "manual",
       authByTarget: { username: "john", password: "secret" },
@@ -182,7 +182,7 @@ describe("TargetLoginPage", () => {
     await user.type(initiatorUsername, "jane");
     await user.type(initiatorPassword, "secret");
     await user.click(acceptButton);
-    expect(mockAddTargetFn).toHaveBeenCalledWith({
+    expect(mockAddOrEditTargetFnt).toHaveBeenCalledWith({
       ...target,
       startup: "manual",
       authByTarget: { username: "john", password: "secret" },
