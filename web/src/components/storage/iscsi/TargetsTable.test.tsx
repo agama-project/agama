@@ -404,7 +404,11 @@ describe("TargetsTable", () => {
         const deleteAction = screen.getByText("Delete");
         await user.click(deleteAction);
 
-        expect(mockRemoveTargetFn).toHaveBeenCalledWith("iqn.2023-01.com.example:12ac788");
+        expect(mockRemoveTargetFn).toHaveBeenCalledWith(
+          "iqn.2023-01.com.example:12ac788",
+          "192.168.100.106",
+          3264,
+        );
       });
     });
 
