@@ -42,6 +42,7 @@ const options = {
   all: N_("all"),
   connected: N_("Connected"),
   connected_and_locked: N_("Connected and locked"),
+  connection_failed: N_("Connection failed"),
   disconnected: N_("Disconnected"),
 };
 

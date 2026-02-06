@@ -103,6 +103,12 @@ const filterTargets = (targets: MergedTarget[], filters: ISCSITargetsFilters): M
           return t.connected === true && t.locked === true;
         }
 
+        case "connection_failed": {
+          return (
+            t.connected === false && t.sources.includes("system") && t.sources.includes("config")
+          );
+        }
+
         case "disconnected": {
           return t.connected !== true;
         }
@@ -384,6 +390,9 @@ const createColumns = () => [
     // TRANSLATORS: table header for an iSCSI targets table
     name: _("Status"),
     value: (t: MergedTarget) => {
+      // Failed to connect
+      if (failedToConnect(t)) return _("Connection failed");
+
       // Not connected
       if (!t.connected) return _("Disconnected");
 

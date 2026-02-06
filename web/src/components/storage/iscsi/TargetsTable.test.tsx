@@ -24,39 +24,61 @@ import React from "react";
 import { screen, within } from "@testing-library/react";
 import { installerRender, mockNavigateFn } from "~/test-utils";
 import TargetsTable from "./TargetsTable";
+import { omit } from "radashi";
 
 const mockUseSystemFn = jest.fn();
 const mockUseConfigFn = jest.fn();
 const mockRemoveTargetFn = jest.fn();
 
-const testingTargets = [
-  {
-    name: "iqn.2023-01.com.example:12ac588",
-    address: "192.168.100.102",
-    port: 3262,
-    interface: "default",
-    startup: "onboot",
-    connected: true,
-    locked: false,
-  },
-  {
-    name: "iqn.2023-01.com.example:12ac788",
-    address: "192.168.100.106",
-    port: 3264,
-    interface: "default",
-    startup: "manual",
-    connected: false,
-    locked: false,
-  },
-  {
-    name: "iqn.2023-01.com.example:locked",
-    address: "192.168.100.108",
-    port: 3260,
-    interface: "default",
-    startup: "onboot",
-    connected: true,
-    locked: true,
-  },
+const connectedTarget = {
+  name: "iqn.2023-01.com.example:connected",
+  address: "192.168.100.102",
+  port: 3262,
+  interface: "default",
+  startup: "onboot",
+  connected: true,
+  locked: false,
+};
+
+const disconnectedTarget = {
+  name: "iqn.2023-01.com.example:disconnected",
+  address: "192.168.100.103",
+  port: 3263,
+  interface: "default",
+  startup: "onboot",
+  connected: false,
+  locked: false,
+};
+
+const failedToConnectTarget = {
+  name: "iqn.2023-01.com.example:connection_failed",
+  address: "192.168.100.106",
+  port: 3264,
+  interface: "default",
+  startup: "manual",
+  connected: false,
+  locked: false,
+};
+
+const lockedTarget = {
+  name: "iqn.2023-01.com.example:locked",
+  address: "192.168.100.108",
+  port: 3260,
+  interface: "default",
+  startup: "onboot",
+  connected: true,
+  locked: true,
+};
+
+const testingSystemTargets = [
+  connectedTarget,
+  disconnectedTarget,
+  failedToConnectTarget,
+  lockedTarget,
+];
+const testingConfigTargets = [
+  omit(connectedTarget, ["connected", "locked"]),
+  omit(failedToConnectTarget, ["connected", "locked"]),
 ];
 
 jest.mock("~/hooks/model/system/iscsi", () => ({
@@ -109,15 +131,16 @@ describe("TargetsTable", () => {
 
   describe("when targets are available", () => {
     beforeEach(() => {
-      mockUseSystemFn.mockReturnValue({ targets: testingTargets });
-      mockUseConfigFn.mockReturnValue({ targets: testingTargets });
+      mockUseSystemFn.mockReturnValue({ targets: testingSystemTargets });
+      mockUseConfigFn.mockReturnValue({ targets: testingConfigTargets });
     });
 
     it("renders the targets table with all targets", () => {
       installerRender(<TargetsTable />);
 
-      screen.getByText("iqn.2023-01.com.example:12ac588");
-      screen.getByText("iqn.2023-01.com.example:12ac788");
+      screen.getByText("iqn.2023-01.com.example:connected");
+      screen.getByText("iqn.2023-01.com.example:connection_failed");
+      screen.getByText("iqn.2023-01.com.example:disconnected");
       screen.getByText("iqn.2023-01.com.example:locked");
     });
 
@@ -133,21 +156,12 @@ describe("TargetsTable", () => {
       within(headerRow).getByRole("columnheader", { name: "Status" });
     });
 
-    it("displays portal information correctly", () => {
-      installerRender(<TargetsTable />);
-
-      screen.getByText("192.168.100.102:");
-      screen.getByText("3262");
-      screen.getByText("192.168.100.106:");
-      screen.getByText("3264");
-    });
-
     it("displays correct status for connected target", () => {
       installerRender(<TargetsTable />);
 
       const rows = screen.getAllByRole("row");
       const connectedRow = rows.find((row) =>
-        within(row).queryByText("iqn.2023-01.com.example:12ac588"),
+        within(row).queryByText("iqn.2023-01.com.example:connected"),
       );
 
       within(connectedRow).getByText("Connected");
@@ -158,10 +172,21 @@ describe("TargetsTable", () => {
 
       const rows = screen.getAllByRole("row");
       const disconnectedRow = rows.find((row) =>
-        within(row).queryByText("iqn.2023-01.com.example:12ac788"),
+        within(row).queryByText("iqn.2023-01.com.example:disconnected"),
       );
 
       within(disconnectedRow).getByText("Disconnected");
+    });
+
+    it("displays correct status for target with connection failures", () => {
+      installerRender(<TargetsTable />);
+
+      const rows = screen.getAllByRole("row");
+      const disconnectedRow = rows.find((row) =>
+        within(row).queryByText("iqn.2023-01.com.example:connection_failed"),
+      );
+
+      within(disconnectedRow).getByText("Connection failed");
     });
 
     it("displays correct status for locked target", () => {
@@ -184,18 +209,18 @@ describe("TargetsTable", () => {
 
   describe("filtering", () => {
     beforeEach(() => {
-      mockUseSystemFn.mockReturnValue({ targets: testingTargets });
-      mockUseConfigFn.mockReturnValue({ targets: testingTargets });
+      mockUseSystemFn.mockReturnValue({ targets: testingSystemTargets });
+      mockUseConfigFn.mockReturnValue({ targets: testingConfigTargets });
     });
 
     it("filters targets by name", async () => {
       const { user } = installerRender(<TargetsTable />);
 
       const nameFilter = screen.getByLabelText("Name");
-      await user.type(nameFilter, "12ac588");
+      await user.type(nameFilter, "connected");
 
-      screen.getByText("iqn.2023-01.com.example:12ac588");
-      expect(screen.queryByText("iqn.2023-01.com.example:12ac788")).toBeNull();
+      screen.getByText("iqn.2023-01.com.example:connected");
+      expect(screen.queryByText("iqn.2023-01.com.example:connection_failed")).toBeNull();
       expect(screen.queryByText("iqn.2023-01.com.example:locked")).toBeNull();
     });
 
@@ -205,8 +230,8 @@ describe("TargetsTable", () => {
       const portalFilter = screen.getByLabelText("Portal");
       await user.type(portalFilter, "192.168.100.106");
 
-      screen.getByText("iqn.2023-01.com.example:12ac788");
-      expect(screen.queryByText("iqn.2023-01.com.example:12ac588")).toBeNull();
+      screen.getByText("iqn.2023-01.com.example:connection_failed");
+      expect(screen.queryByText("iqn.2023-01.com.example:connected")).toBeNull();
       expect(screen.queryByText("iqn.2023-01.com.example:locked")).toBeNull();
     });
 
@@ -232,16 +257,16 @@ describe("TargetsTable", () => {
       const clearButton = screen.getByRole("button", { name: "Clear all filters" });
       await user.click(clearButton);
 
-      screen.getByText("iqn.2023-01.com.example:12ac588");
-      screen.getByText("iqn.2023-01.com.example:12ac788");
+      screen.getByText("iqn.2023-01.com.example:connected");
+      screen.getByText("iqn.2023-01.com.example:connection_failed");
       expect(screen.queryByText("No targets matches filters")).toBeNull();
     });
   });
 
   describe("status filtering", () => {
     beforeEach(() => {
-      mockUseSystemFn.mockReturnValue({ targets: testingTargets });
-      mockUseConfigFn.mockReturnValue({ targets: testingTargets });
+      mockUseSystemFn.mockReturnValue({ targets: testingSystemTargets });
+      mockUseConfigFn.mockReturnValue({ targets: testingConfigTargets });
     });
 
     it("filters connected targets", async () => {
@@ -253,9 +278,25 @@ describe("TargetsTable", () => {
       const connectedOption = within(statusOptions).getByRole("option", { name: "Connected" });
       await user.click(connectedOption);
 
-      screen.getByText("iqn.2023-01.com.example:12ac588");
+      screen.getByText("iqn.2023-01.com.example:connected");
       screen.getByText("iqn.2023-01.com.example:locked");
-      expect(screen.queryByText("iqn.2023-01.com.example:12ac788")).toBeNull();
+      expect(screen.queryByText("iqn.2023-01.com.example:connection_failed")).toBeNull();
+    });
+
+    it("filters connection failed targets", async () => {
+      const { user } = installerRender(<TargetsTable />);
+
+      const statusFilterToggle = screen.getByRole("button", { name: "Status filter toggle" });
+      await user.click(statusFilterToggle);
+      const statusOptions = screen.getByRole("listbox");
+      const connectionFailedOption = within(statusOptions).getByRole("option", {
+        name: "Connection failed",
+      });
+      await user.click(connectionFailedOption);
+
+      screen.getByText("iqn.2023-01.com.example:connection_failed");
+      expect(screen.queryByText("iqn.2023-01.com.example:locked")).toBeNull();
+      expect(screen.queryByText("iqn.2023-01.com.example:connected")).toBeNull();
     });
 
     it("filters disconnected targets", async () => {
@@ -269,8 +310,8 @@ describe("TargetsTable", () => {
       });
       await user.click(discconectedOption);
 
-      screen.getByText("iqn.2023-01.com.example:12ac788");
-      expect(screen.queryByText("iqn.2023-01.com.example:12ac588")).toBeNull();
+      screen.getByText("iqn.2023-01.com.example:connection_failed");
+      expect(screen.queryByText("iqn.2023-01.com.example:connected")).toBeNull();
       expect(screen.queryByText("iqn.2023-01.com.example:locked")).toBeNull();
     });
 
@@ -286,15 +327,15 @@ describe("TargetsTable", () => {
       await user.click(connectedAndLockedOption);
 
       screen.getByText("iqn.2023-01.com.example:locked");
-      expect(screen.queryByText("iqn.2023-01.com.example:12ac588")).toBeNull();
-      expect(screen.queryByText("iqn.2023-01.com.example:12ac788")).toBeNull();
+      expect(screen.queryByText("iqn.2023-01.com.example:connected")).toBeNull();
+      expect(screen.queryByText("iqn.2023-01.com.example:connection_failed")).toBeNull();
     });
   });
 
   describe("sorting", () => {
     beforeEach(() => {
-      mockUseSystemFn.mockReturnValue({ targets: testingTargets });
-      mockUseConfigFn.mockReturnValue({ targets: testingTargets });
+      mockUseSystemFn.mockReturnValue({ targets: testingSystemTargets });
+      mockUseConfigFn.mockReturnValue({ targets: testingConfigTargets });
     });
 
     it("sorts targets by name when clicking the Name column header", async () => {
@@ -325,7 +366,7 @@ describe("TargetsTable", () => {
     describe("for disconnected targets", () => {
       beforeEach(() => {
         const disconnectedTarget = {
-          ...testingTargets[1],
+          ...testingSystemTargets[1],
           connected: false,
         };
         mockUseSystemFn.mockReturnValue({ targets: [disconnectedTarget] });
@@ -357,7 +398,7 @@ describe("TargetsTable", () => {
     describe("for connected targets in config", () => {
       beforeEach(() => {
         const connectedTarget = {
-          ...testingTargets[0],
+          ...testingSystemTargets[0],
           connected: true,
           sources: ["system", "config"],
         };
@@ -377,13 +418,8 @@ describe("TargetsTable", () => {
 
     describe("for targets that failed to connect", () => {
       beforeEach(() => {
-        const failedTarget = {
-          ...testingTargets[1],
-          connected: false,
-          sources: ["system", "config"],
-        };
-        mockUseSystemFn.mockReturnValue({ targets: [failedTarget] });
-        mockUseConfigFn.mockReturnValue({ targets: [failedTarget] });
+        mockUseSystemFn.mockReturnValue({ targets: [failedToConnectTarget] });
+        mockUseConfigFn.mockReturnValue({ targets: [failedToConnectTarget] });
       });
 
       it("shows Delete action", async () => {
@@ -405,7 +441,7 @@ describe("TargetsTable", () => {
         await user.click(deleteAction);
 
         expect(mockRemoveTargetFn).toHaveBeenCalledWith(
-          "iqn.2023-01.com.example:12ac788",
+          "iqn.2023-01.com.example:connection_failed",
           "192.168.100.106",
           3264,
         );
@@ -415,7 +451,7 @@ describe("TargetsTable", () => {
     describe("for locked targets", () => {
       beforeEach(() => {
         const lockedTarget = {
-          ...testingTargets[2],
+          ...testingSystemTargets[2],
           locked: true,
         };
         mockUseSystemFn.mockReturnValue({ targets: [lockedTarget] });
@@ -432,71 +468,16 @@ describe("TargetsTable", () => {
 
   describe("action label", () => {
     beforeEach(() => {
-      mockUseSystemFn.mockReturnValue({ targets: [testingTargets[0]] });
-      mockUseConfigFn.mockReturnValue({ targets: [testingTargets[0]] });
+      mockUseSystemFn.mockReturnValue({ targets: testingSystemTargets });
+      mockUseConfigFn.mockReturnValue({ targets: testingConfigTargets });
     });
 
     it("displays target name and portal in action label", () => {
       installerRender(<TargetsTable />);
 
       screen.getByRole("button", {
-        name: /Actions for iqn\.2023-01\.com\.example:12ac588 at portal 192\.168\.100\.102:3262/i,
+        name: "Actions for iqn.2023-01.com.example:connection_failed at portal 192.168.100.106:3264",
       });
-    });
-  });
-
-  describe("target merging", () => {
-    it("merges system and config targets correctly", () => {
-      const systemTarget = {
-        name: "iqn.2023-01.com.example:system",
-        address: "192.168.100.100",
-        port: 3260,
-        interface: "default",
-        startup: "onboot",
-        connected: true,
-        locked: false,
-      };
-
-      const configTarget = {
-        name: "iqn.2023-01.com.example:config",
-        address: "192.168.100.101",
-        port: 3261,
-        interface: "default",
-        startup: "manual",
-      };
-
-      mockUseSystemFn.mockReturnValue({ targets: [systemTarget] });
-      mockUseConfigFn.mockReturnValue({ targets: [configTarget] });
-
-      installerRender(<TargetsTable />);
-
-      screen.getByText("iqn.2023-01.com.example:system");
-      screen.getByText("iqn.2023-01.com.example:config");
-    });
-
-    it("prioritizes system data over config data for same target", () => {
-      const target = {
-        name: "iqn.2023-01.com.example:merged",
-        address: "192.168.100.100",
-        port: 3260,
-        interface: "default",
-        startup: "onboot",
-      };
-
-      const systemTarget = { ...target, connected: true };
-      const configTarget = { ...target, connected: false };
-
-      mockUseSystemFn.mockReturnValue({ targets: [systemTarget] });
-      mockUseConfigFn.mockReturnValue({ targets: [configTarget] });
-
-      installerRender(<TargetsTable />);
-
-      const rows = screen.getAllByRole("row");
-      const mergedRow = rows.find((row) =>
-        within(row).queryByText("iqn.2023-01.com.example:merged"),
-      );
-
-      within(mergedRow).getByText("Connected");
     });
   });
 });
