@@ -21,43 +21,25 @@
  */
 
 import { Config, Target } from "~/openapi/config/iscsi";
-
-function clone(config: Config): Config {
-  return JSON.parse(JSON.stringify(config));
-}
+import { remove } from "radashi";
 
 function setInitiator(config: Config, name: string): Config {
-  config = clone(config);
-  config.initiator = name;
-  return config;
-}
-
-function findTargetIndex(
-  config: Config,
-  name: string,
-  addr: string,
-  port: number,
-): number | undefined {
-  return config.targets?.findIndex((t) => t.name === name && t.address === addr && t.port === port);
-}
-
-function findTarget(config: Config, name: string, addr: string, port: number): Target | undefined {
-  return config.targets?.find((t) => t.name === name && t.address === addr && t.port === port);
+  return { ...config, initiator: name };
 }
 
 function addTarget(config: Config, target: Target): Config {
-  config = clone(config);
-  config.targets ||= [];
-  config.targets.push(target);
-  return config;
+  return { ...config, targets: [...config.targets, target] };
 }
 
 function removeTarget(config: Config, name: string, addr: string, port: number): Config {
-  config = clone(config);
-  const index = findTargetIndex(config, name, addr, port);
-  if (index !== undefined) config.targets.splice(index, 1);
-  return config;
+  return {
+    ...config,
+    targets: remove(
+      config.targets,
+      (t) => t.name === name && t.address === addr && t.port === port,
+    ),
+  };
 }
 
-export default { setInitiator, findTargetIndex, findTarget, addTarget, removeTarget };
+export default { setInitiator, addTarget, removeTarget };
 export type * from "~/openapi/config/iscsi";
