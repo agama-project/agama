@@ -112,11 +112,23 @@ const filterTargets = (targets: MergedTarget[], filters: ISCSITargetsFilters): M
         case "disconnected": {
           return t.connected !== true;
         }
+
+        case "missing": {
+          return isMissing(t);
+        }
       }
     });
   }
 
   return targets.filter((t) => conditions.every((conditionFn) => conditionFn(t)));
+};
+
+/**
+ * Checks if a given target is considered "missing": appears in config but not
+ * in system.
+ */
+const isMissing = (target: MergedTarget): boolean => {
+  return target.sources.includes("config") && !target.sources.includes("system");
 };
 
 /**
@@ -154,19 +166,21 @@ const buildActions = (
 
   const { connected, sources } = target;
   const inConfig = sources.includes("config");
-  const hasConnectionFailures = failedToConnect(target);
+  const inSystem = sources.includes("system");
 
   return [
-    !connected && {
-      title: _("Connect"),
-      onClick: onConnect,
-    },
+    !connected &&
+      !isMissing(target) && {
+        title: _("Connect"),
+        onClick: onConnect,
+      },
     connected &&
-      inConfig && {
+      inConfig &&
+      inSystem && {
         title: _("Disconnect"),
         onClick: onDisconnect,
       },
-    hasConnectionFailures && {
+    (failedToConnect(target) || isMissing(target)) && {
       title: _("Delete"),
       onClick: onDelete,
       isDanger: true,
@@ -403,6 +417,9 @@ const createColumns = ({ showIbft = false }: CreateColumnsParams) =>
       // TRANSLATORS: table header for an iSCSI targets table
       name: _("Status"),
       value: (t: MergedTarget) => {
+        // Target exists in config but it is not in system
+        if (isMissing(t)) return _("Missing");
+
         // Failed to connect
         if (failedToConnect(t)) return _("Connection failed");
 

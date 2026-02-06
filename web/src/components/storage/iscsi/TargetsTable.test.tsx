@@ -70,6 +70,14 @@ const lockedTarget = {
   locked: true,
 };
 
+const missingTarget = {
+  name: "iqn.2023-01.com.example:missing",
+  address: "192.168.100.118",
+  port: 3260,
+  interface: "default",
+  startup: "onboot",
+};
+
 const testingSystemTargets = [
   connectedTarget,
   disconnectedTarget,
@@ -79,6 +87,7 @@ const testingSystemTargets = [
 const testingConfigTargets = [
   omit(connectedTarget, ["connected", "locked"]),
   omit(failedToConnectTarget, ["connected", "locked"]),
+  missingTarget,
 ];
 
 jest.mock("~/hooks/model/system/iscsi", () => ({
@@ -199,6 +208,16 @@ describe("TargetsTable", () => {
       within(disconnectedRow).getByText("Connection failed");
     });
 
+    it("displays correct status for missing target", () => {
+      installerRender(<TargetsTable />);
+
+      const rows = screen.getAllByRole("row");
+      const missingRow = rows.find((row) =>
+        within(row).queryByText("iqn.2023-01.com.example:missing"),
+      );
+
+      expect(within(missingRow).getByText("Missing")).toBeInTheDocument();
+    });
     it("displays correct status for locked target", () => {
       installerRender(<TargetsTable />);
 
@@ -323,6 +342,24 @@ describe("TargetsTable", () => {
       screen.getByText("iqn.2023-01.com.example:connection_failed");
       expect(screen.queryByText("iqn.2023-01.com.example:connected")).toBeNull();
       expect(screen.queryByText("iqn.2023-01.com.example:locked")).toBeNull();
+    });
+
+    it("filters missing targets", async () => {
+      const { user } = installerRender(<TargetsTable />);
+
+      const statusFilterToggle = screen.getByRole("button", { name: "Status filter toggle" });
+      await user.click(statusFilterToggle);
+      const statusOptions = screen.getByRole("listbox");
+      const missingOption = within(statusOptions).getByRole("option", {
+        name: "Missing",
+      });
+      await user.click(missingOption);
+
+      screen.getByText("iqn.2023-01.com.example:missing");
+      expect(screen.queryByText("iqn.2023-01.com.example:connected")).toBeNull();
+      expect(screen.queryByText("iqn.2023-01.com.example:locked")).toBeNull();
+      expect(screen.queryByText("iqn.2023-01.com.example:disconnected")).toBeNull();
+      expect(screen.queryByText("iqn.2023-01.com.example:connection_failed")).toBeNull();
     });
 
     it("filters connected and locked targets", async () => {
@@ -473,6 +510,29 @@ describe("TargetsTable", () => {
 
         expect(screen.queryByRole("button", { name: /Actions for/i })).toBeNull();
       });
+    });
+  });
+
+  describe("for missing targets", () => {
+    beforeEach(() => {
+      mockUseSystemFn.mockReturnValue({ targets: [] });
+      mockUseConfigFn.mockReturnValue({ targets: [missingTarget] });
+    });
+
+    it("does not show Connect action", async () => {
+      const { user } = installerRender(<TargetsTable />);
+      const actionsButton = screen.getByRole("button", { name: /Actions for/i });
+      await user.click(actionsButton);
+
+      expect(screen.queryByText("Connect")).toBeNull();
+    });
+
+    it("shows Delete action", async () => {
+      const { user } = installerRender(<TargetsTable />);
+      const actionsButton = screen.getByRole("button", { name: /Actions for/i });
+      await user.click(actionsButton);
+
+      screen.getByText("Delete");
     });
   });
 

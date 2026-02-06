@@ -44,6 +44,7 @@ const options = {
   connected_and_locked: N_("Connected and locked"),
   connection_failed: N_("Connection failed"),
   disconnected: N_("Disconnected"),
+  missing: N_("Missing"),
 };
 
 const ID = "iscsi-status-filter";
