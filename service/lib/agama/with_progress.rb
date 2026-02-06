@@ -51,11 +51,11 @@ module Agama
     end
 
     def progress_change
-      @on_progress_change_callbacks.each(&:call)
+      @on_progress_change_callbacks&.each(&:call)
     end
 
     def progress_finish
-      @on_progress_finish_callbacks.each(&:call)
+      @on_progress_finish_callbacks&.each(&:call)
     end
 
     # @param block [Proc]

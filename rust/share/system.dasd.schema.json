@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "$id": "https://github.com/openSUSE/agama/blob/master/rust/share/system.storage.schema.json",
+  "title": "System",
+  "description": "API description of the DASD system",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["devices"],
+  "properties": {
+    "devices": {
+      "description": "DASD devices",
+      "type": "array",
+      "items": { "$ref": "#/$defs/device" }
+    }
+  },
+  "$defs": {
+    "device": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "channel",
+        "deviceName",
+        "type",
+        "diag",
+        "accessType",
+        "partitionInfo",
+        "status",
+        "active",
+        "formatted"
+      ],
+      "properties": {
+        "channel": { "type": "string" },
+        "deviceName": { "type": "string" },
+        "type": { "type": "string" },
+        "diag": { "type": "boolean" },
+        "accessType": { "type": "string" },
+        "partitionInfo": { "type": "string" },
+        "status": { "type": "string" },
+        "active": { "type": "boolean" },
+        "formatted": { "type": "boolean" }
+      }
+    }
+  }
+}

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2023-2024] SUSE LLC
+# Copyright (c) [2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -20,13 +20,35 @@
 # find current contact information at www.suse.com.
 
 module Agama
-  module DBus
-    module Storage
-      # Module for D-Bus interfaces of storage.
-      module Interfaces
+  module Storage
+    module DASD
+      # DASD config.
+      class Config
+        # List of devices.
+        #
+        # @return [Array<Configs::Device>]
+        attr_accessor :devices
+
+        def initialize
+          @devices = []
+        end
+
+        # Whether the config includes a device with the given channel.
+        #
+        # @param channel [String] DASD channel.
+        # @return [Boolean]
+        def include_device?(channel)
+          !find_device(channel).nil?
+        end
+
+        # Searchs for a device with the given channel.
+        #
+        # @param channel [String]
+        # @return [Configs::Device, nil]
+        def find_device(channel)
+          devices.find { |d| d.channel == channel }
+        end
       end
     end
   end
 end
-
-require "agama/dbus/storage/interfaces/zfcp_manager"

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022-2025] SUSE LLC
+# Copyright (c) [2022-2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -442,13 +442,8 @@ module Agama
         end
 
         def add_s390_interfaces
-          require "agama/dbus/storage/interfaces/dasd_manager"
           require "agama/dbus/storage/interfaces/zfcp_manager"
-
-          singleton_class.include Interfaces::DasdManager
           singleton_class.include Interfaces::ZFCPManager
-
-          register_dasd_callbacks
           register_zfcp_callbacks
         end
 
