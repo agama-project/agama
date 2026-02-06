@@ -12,7 +12,7 @@ usage () {
   echo "  -p <project>    - target OBS project"
   echo "                    (default: systemsmanagement:Agama:branches:\$BRANCH"
   echo "                           or systemsmanagement:Agama:Devel  for master)"
-  echo "  -t              - keep all original build targets (default: disable Leap 16.0)"
+  echo "  -t              - keep all original build targets (default: disable Leap 16.x)"
   echo
   echo "  -c              - cleanup (delete) all obsolete projects, exclusive option,"
   echo "                    all other options are ignored"
@@ -203,10 +203,17 @@ else
       osc meta prj --file - "$PROJECT"
   fi
 
-  # disable Leap 16.0 target
+  # disable Leap 16.x targets
   if [ "$ALL_TARGETS" != true ]; then
-    echo "Disabling openSUSE Leap 16.0 build target"
-    ADD='<build>  <disable repository="openSUSE_Leap_16.0"/>  <disable repository="images_Leap_16.0"/>  </build>'
+    echo "Disabling openSUSE Leap 16.x build targets"
+    ADD='<build>
+        <disable repository="openSUSE_Leap_16.1"/>
+        <disable repository="openSUSE_Leap_16.0"/>
+        <disable repository="images_Leap_16.1"/>
+        <disable repository="images_Leap_16.0"/>
+      </build>'
+    # remove newlines to fit into a sed command
+    ADD="$(echo "$ADD" | tr '\n' ' ')"
     osc meta prj "$PROJECT" | \
       sed "s#</description>#</description>$ADD#" | \
       osc meta prj --file - "$PROJECT"
@@ -270,3 +277,4 @@ fi
 
 echo
 echo "Git branch \"$BRANCH\" is now automatically submitted to OBS project \"$PROJECT\""
+echo "  xdg-open https://build.opensuse.org/project/show/$PROJECT"
