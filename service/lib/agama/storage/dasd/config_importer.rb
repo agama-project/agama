@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2023-2024] SUSE LLC
+# Copyright (c) [2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -19,14 +19,34 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
+require "agama/json_importer"
+require "agama/storage/dasd/config"
+require "agama/storage/dasd/config_importers/device"
+
 module Agama
-  module DBus
-    module Storage
-      # Module for D-Bus interfaces of storage.
-      module Interfaces
+  module Storage
+    module DASD
+      # Class for generating a DASD config object from a JSON.
+      class ConfigImporter < JSONImporter
+        # @return [Config]
+        def target
+          Config.new
+        end
+
+        # @see Agama::JSONImporter#imports
+        def imports
+          {
+            devices: import_devices
+          }
+        end
+
+        def import_devices
+          devices_json = json[:devices]
+          return unless devices_json
+
+          devices_json.map { |d| ConfigImporters::Device.new(d).import }
+        end
       end
     end
   end
 end
-
-require "agama/dbus/storage/interfaces/zfcp_manager"
