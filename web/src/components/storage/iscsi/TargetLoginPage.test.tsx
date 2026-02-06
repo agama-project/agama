@@ -26,6 +26,7 @@ import { installerRender, mockParams } from "~/test-utils";
 import TargetLoginPage from "./TargetLoginPage";
 
 const mockUseSystemFn = jest.fn();
+const mockUseConfigFn = jest.fn();
 const mockAddOrEditTargetFnt = jest.fn();
 const testingTargets = [
   {
@@ -51,7 +52,7 @@ jest.mock("~/hooks/model/system/iscsi", () => ({
 
 jest.mock("~/hooks/model/config/iscsi", () => ({
   ...jest.requireActual("~/hooks/model/config/iscsi"),
-  useConfig: jest.fn(),
+  useConfig: () => mockUseConfigFn(),
   useAddOrEditTarget: () => mockAddOrEditTargetFnt,
 }));
 
@@ -83,6 +84,53 @@ describe("TargetLoginPage", () => {
     });
     rerender(<TargetLoginPage />);
     screen.getByRole("heading", { name: "Target not found" });
+  });
+
+  it("does not render resource not found when target exists in system", () => {
+    mockParams({
+      name: testingTargets[0].name,
+      address: testingTargets[0].address,
+      port: String(testingTargets[0].port),
+    });
+    mockUseSystemFn.mockReturnValue({ targets: testingTargets });
+    mockUseConfigFn.mockReturnValue({ targets: [] });
+
+    installerRender(<TargetLoginPage />, { withL10n: true });
+
+    screen.getByText(testingTargets[0].name);
+    expect(screen.queryByRole("heading", { name: "Target not found" })).toBeNull();
+  });
+
+  it("does not render resource not found when target exists in config", () => {
+    mockParams({
+      name: testingTargets[0].name,
+      address: testingTargets[0].address,
+      port: String(testingTargets[0].port),
+    });
+
+    mockUseSystemFn.mockReturnValue({ targets: [] });
+    mockUseConfigFn.mockReturnValue({ targets: testingTargets });
+
+    installerRender(<TargetLoginPage />, { withL10n: true });
+
+    screen.getByText(testingTargets[0].name);
+    expect(screen.queryByRole("heading", { name: "Target not found" })).toBeNull();
+  });
+
+  it("does not render resource not found when target exists in both system and config", () => {
+    mockParams({
+      name: testingTargets[0].name,
+      address: testingTargets[0].address,
+      port: String(testingTargets[0].port),
+    });
+
+    mockUseSystemFn.mockReturnValue({ targets: testingTargets });
+    mockUseConfigFn.mockReturnValue({ targets: testingTargets });
+
+    installerRender(<TargetLoginPage />, { withL10n: true });
+
+    screen.getByText(testingTargets[0].name);
+    expect(screen.queryByRole("heading", { name: "Target not found" })).toBeNull();
   });
 
   it("allows login without auth", async () => {
@@ -188,5 +236,176 @@ describe("TargetLoginPage", () => {
       authByTarget: { username: "john", password: "secret" },
       authByInitiator: { username: "jane", password: "secret" },
     });
+  });
+
+  it("pre-populates form with existing target authentication", async () => {
+    mockParams({
+      name: "iqn.2023-01.com.example:12ac588",
+      address: "192.168.100.102",
+      port: "3262",
+    });
+
+    const configTarget = {
+      name: "iqn.2023-01.com.example:12ac588",
+      address: "192.168.100.102",
+      port: 3262,
+      interface: "default",
+      startup: "onboot",
+      authByTarget: { username: "john", password: "secret123" },
+      authByInitiator: { username: "jane", password: "secret456" },
+    };
+
+    mockUseSystemFn.mockReturnValue({ targets: [] });
+    mockUseConfigFn.mockReturnValue({ targets: [configTarget] });
+
+    installerRender(<TargetLoginPage />, { withL10n: true });
+
+    const provideAuthSwitch = screen.getByRole("switch", { name: "Provide authentication" });
+    expect(provideAuthSwitch).toBeChecked();
+
+    const mutualAuthSwitch = screen.getByRole("switch", { name: "Enable mutual verification" });
+    expect(mutualAuthSwitch).toBeChecked();
+
+    const username = screen.getByRole("textbox", { name: "User name" });
+    expect(username).toHaveValue("john");
+
+    const password = screen.getByLabelText("Password");
+    expect(password).toHaveValue("secret123");
+
+    const initiatorUsername = screen.getByRole("textbox", { name: "Initiator user name" });
+    expect(initiatorUsername).toHaveValue("jane");
+
+    const initiatorPassword = screen.getByLabelText("Initiator password");
+    expect(initiatorPassword).toHaveValue("secret456");
+  });
+
+  it("pre-populates only target auth when initiator auth is not configured", async () => {
+    mockParams({
+      name: "iqn.2023-01.com.example:12ac588",
+      address: "192.168.100.102",
+      port: "3262",
+    });
+
+    const configTarget = {
+      name: "iqn.2023-01.com.example:12ac588",
+      address: "192.168.100.102",
+      port: 3262,
+      interface: "default",
+      startup: "onboot",
+      authByTarget: { username: "john", password: "secret123" },
+    };
+
+    mockUseSystemFn.mockReturnValue({ targets: [] });
+    mockUseConfigFn.mockReturnValue({ targets: [configTarget] });
+
+    installerRender(<TargetLoginPage />, { withL10n: true });
+
+    const provideAuthSwitch = screen.getByRole("switch", { name: "Provide authentication" });
+    expect(provideAuthSwitch).toBeChecked();
+
+    const mutualAuthSwitch = screen.getByRole("switch", { name: "Enable mutual verification" });
+    expect(mutualAuthSwitch).not.toBeChecked();
+
+    const username = screen.getByRole("textbox", { name: "User name" });
+    expect(username).toHaveValue("john");
+
+    const password = screen.getByLabelText("Password");
+    expect(password).toHaveValue("secret123");
+
+    expect(screen.queryByRole("textbox", { name: "Initiator user name" })).not.toBeInTheDocument();
+  });
+
+  it("allows editing pre-populated authentication data", async () => {
+    mockParams({
+      name: "iqn.2023-01.com.example:12ac588",
+      address: "192.168.100.102",
+      port: "3262",
+    });
+
+    const configTarget = {
+      name: "iqn.2023-01.com.example:12ac588",
+      address: "192.168.100.102",
+      port: 3262,
+      interface: "default",
+      startup: "automatic",
+      authByTarget: { username: "john", password: "secret123" },
+    };
+
+    mockUseSystemFn.mockReturnValue({ targets: [] });
+    mockUseConfigFn.mockReturnValue({ targets: [configTarget] });
+
+    const { user } = installerRender(<TargetLoginPage />, { withL10n: true });
+
+    const acceptButton = screen.getByRole("button", { name: "Accept" });
+    const username = screen.getByRole("textbox", { name: "User name" });
+    const password = screen.getByLabelText("Password");
+
+    await user.clear(username);
+    await user.type(username, "new_user");
+
+    await user.clear(password);
+    await user.type(password, "new_pass");
+
+    await user.click(acceptButton);
+
+    expect(mockAddOrEditTargetFnt).toHaveBeenCalledWith({
+      name: configTarget.name,
+      address: configTarget.address,
+      port: configTarget.port,
+      interface: configTarget.interface,
+      startup: "automatic",
+      authByTarget: { username: "new_user", password: "new_pass" },
+    });
+  });
+
+  it("uses system target when config target is not available", async () => {
+    mockParams({
+      name: "iqn.2023-01.com.example:12ac588",
+      address: "192.168.100.102",
+      port: "3262",
+    });
+
+    mockUseSystemFn.mockReturnValue({ targets: testingTargets });
+    mockUseConfigFn.mockReturnValue({ targets: [] });
+
+    installerRender(<TargetLoginPage />, { withL10n: true });
+
+    const target = testingTargets[0];
+    screen.getByText(target.name);
+    screen.getByText(`${target.address}:${target.port}`);
+
+    const startupOptions = screen.getByRole("combobox", { name: "Startup" });
+    expect(startupOptions).toHaveValue("onboot");
+  });
+
+  it("prioritizes config target properties over system target properties", async () => {
+    mockParams({
+      name: "iqn.2023-01.com.example:12ac588",
+      address: "192.168.100.102",
+      port: "3262",
+    });
+
+    const systemTarget = {
+      name: "iqn.2023-01.com.example:12ac588",
+      address: "192.168.100.102",
+      port: 3262,
+      interface: "default",
+      startup: "onboot",
+    };
+
+    const configTarget = {
+      name: "iqn.2023-01.com.example:12ac588",
+      address: "192.168.100.102",
+      port: 3262,
+      startup: "manual",
+    };
+
+    mockUseSystemFn.mockReturnValue({ targets: [systemTarget] });
+    mockUseConfigFn.mockReturnValue({ targets: [configTarget] });
+
+    installerRender(<TargetLoginPage />, { withL10n: true });
+
+    const startupOptions = screen.getByRole("combobox", { name: "Startup" });
+    expect(startupOptions).toHaveValue("manual");
   });
 });

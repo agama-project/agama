@@ -46,11 +46,11 @@ import PasswordInput from "~/components/core/PasswordInput";
 import ResourceNotFound from "~/components/core/ResourceNotFound";
 import SwitchEnhanced from "~/components/core/SwitchEnhanced";
 import { useSystem } from "~/hooks/model/system/iscsi";
-import { useAddOrEditTarget } from "~/hooks/model/config/iscsi";
+import { useAddOrEditTarget, useConfig } from "~/hooks/model/config/iscsi";
 import { STORAGE } from "~/routes/paths";
 import { N_, _ } from "~/i18n";
 
-import type { Target, Authentication } from "~/openapi/config/iscsi";
+import type { Target as ConfigTarget, Authentication } from "~/openapi/config/iscsi";
 
 export const StartupOptions = Object.freeze({
   MANUAL: { label: N_("Manual"), value: "manual" },
@@ -66,7 +66,7 @@ type FormState = {
   password?: Authentication["password"];
   reverseUsername?: Authentication["username"];
   reversePassword?: Authentication["password"];
-  startup: Target["startup"];
+  startup: ConfigTarget["startup"];
 };
 
 /**
@@ -111,17 +111,17 @@ function TargetLoginForm({ target }): React.ReactNode {
   const alertRef = useRef(null);
   const addOrEditTarget = useAddOrEditTarget();
   const navigate = useNavigate();
-  const [isLoading, setIsLoading] = useState(false);
-  const [errors, setErrors] = useState([]);
-  const [showAuth, setShowAuth] = useState(false);
-  const [showMutualAuth, setShowMutualAuth] = useState(false);
   const [state, dispatch] = useReducer(formReducer, {
-    username: "",
-    password: "",
-    reverseUsername: "",
-    reversePassword: "",
-    startup: "onboot",
+    username: target.authByTarget?.username || "",
+    password: target.authByTarget?.password || "",
+    reverseUsername: target.authByInitiator?.username || "",
+    reversePassword: target.authByInitiator?.password || "",
+    startup: target.startup || "onboot",
   });
+  const [showAuth, setShowAuth] = useState(!isEmpty(state.username));
+  const [showMutualAuth, setShowMutualAuth] = useState(!isEmpty(state.reverseUsername));
+  const [errors, setErrors] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     // Scroll the alert into view
@@ -162,10 +162,10 @@ function TargetLoginForm({ target }): React.ReactNode {
         ? { username: state.reverseUsername, password: state.reversePassword }
         : undefined;
 
-    const targetConfig: Target = {
+    const targetConfig: ConfigTarget = {
+      name: target.name,
       address: target.address,
       port: target.port,
-      name: target.name,
       interface: target.interface,
       startup: state.startup,
       authByTarget,
@@ -284,10 +284,18 @@ function TargetLoginForm({ target }): React.ReactNode {
 
 export default function TargetLoginPage() {
   const { name, address, port } = useParams();
-  const targets = useSystem()?.targets || [];
-  const target = targets.find(
+  const config = useConfig();
+  const system = useSystem();
+
+  const systemTarget = system?.targets?.find(
     (t) => t.name === name && t.address === address && t.port === Number(port),
   );
+
+  const configTarget = config?.targets?.find(
+    (t) => t.name === name && t.address === address && t.port === Number(port),
+  );
+
+  const target = { ...systemTarget, ...configTarget };
 
   return (
     <Page
@@ -298,9 +306,7 @@ export default function TargetLoginPage() {
       ]}
     >
       <Page.Content>
-        {target ? (
-          <TargetLoginForm target={target} />
-        ) : (
+        {isEmpty(target) ? (
           <ResourceNotFound
             title={_("Target not found")}
             body={sprintf(
@@ -311,6 +317,8 @@ export default function TargetLoginPage() {
             linkText={_("Go to iSCSI")}
             linkPath={STORAGE.iscsi.root}
           />
+        ) : (
+          <TargetLoginForm target={target} />
         )}
       </Page.Content>
     </Page>
