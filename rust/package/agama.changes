@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri Feb  6 07:38:38 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Allow loading a profile with no product (bsc#1257067 and bsc#1257082).
+- Make the bootloader proposal after the storage one is ready.
+- Run pre-scripts only once to prevent potential infinite loops.
+
+-------------------------------------------------------------------
 Thu Feb  5 06:46:46 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Sort the list of languages, keymaps and timezones (bsc#1257497).
