@@ -107,6 +107,27 @@ describe Agama::Storage::DASD::Manager do
       expect(subject.send(:device_locked?, dasd1)).to be(true)
       expect(subject.send(:device_locked?, dasd2)).to be(false)
     end
+
+    context "when a configuration is already present" do
+      let(:config_json) { { devices: [{ channel: "0.0.0100" }] } }
+
+      before do
+        allow(subject).to receive(:config_json).and_return(config_json)
+      end
+
+      context "if a device is part of the configuration" do
+        before do
+          allow(dasd1).to receive(:offline?).and_return(false)
+          allow(dasd2).to receive(:offline?).and_return(false)
+        end
+
+        it "does not lock active devices that are part of the configuration" do
+          subject.probe
+          expect(subject.send(:device_locked?, dasd1)).to be(false)
+          expect(subject.send(:device_locked?, dasd2)).to be(true)
+        end
+      end
+    end
   end
 
   describe "#configured?" do
@@ -382,6 +403,22 @@ describe Agama::Storage::DASD::Manager do
         end
         subject.configure(config_json)
       end
+
+      context "if the device was already formatted" do
+        before do
+          allow(subject).to receive(:device_formatted?).and_call_original
+          allow(subject).to receive(:device_formatted?).with(dasd1).and_return(true)
+          allow(dasd1).to receive(:formatted?).and_return(true)
+        end
+
+        it "does not format the device again" do
+          expect(Agama::Storage::DASD::FormatOperation).to receive(:new) do |devices, _, _|
+            expect(devices).to contain_exactly(dasd2)
+            format_operation
+          end
+          subject.configure(config_json)
+        end
+      end
     end
 
     context "if the config omits format" do
@@ -552,10 +589,36 @@ describe Agama::Storage::DASD::Manager do
         expect(reader).to_not receive(:update_info).with(dasd4, extended: true)
         subject.configure(config_json)
       end
+    end
 
-      it "unlocks modified devices" do
-        locked_ids = [dasd1.id, dasd2.id, dasd3.id, dasd4.id]
-        subject.instance_variable_set(:@locked_devices, locked_ids)
+    context "if a device is configured" do
+      let(:config_json) do
+        {
+          devices: [
+            {
+              channel: "0.0.0002",
+              state:   "active",
+              format:  false
+            },
+            {
+              channel: "0.0.0003",
+              state:   "active",
+              format:  false
+            }
+          ]
+        }
+      end
+
+      before do
+        allow(dasd1).to receive(:offline?).and_return(true)
+        allow(dasd2).to receive(:offline?).and_return(false)
+        allow(dasd2).to receive(:active?).and_return(true)
+        allow(dasd3).to receive(:offline?).and_return(false)
+        allow(dasd4).to receive(:offline?).and_return(false)
+        allow(subject).to receive(:device_locked?).and_call_original
+      end
+
+      it "removes configured devices from locked devices" do
         subject.configure(config_json)
         expect(subject.send(:device_locked?, dasd1)).to eq(false)
         expect(subject.send(:device_locked?, dasd2)).to eq(false)

@@ -59,6 +59,8 @@ module Agama
           @logger = logger || ::Logger.new($stdout)
           @devices = Y2S390::DasdsCollection.new([])
           @configured = false
+          @locked_devices = []
+          @formatted_devices = []
         end
 
         # Whether probing has been already performed.
@@ -78,9 +80,7 @@ module Agama
           @devices = reader.list(force_probing: true)
           # Initialize the attribute just in case the reader doesn't do it (see bsc#1209162)
           @devices.each { |d| d.diag_wanted = d.use_diag }
-          # Devices are locked if they are already enabled at the time of probing for first time.
-          @locked_devices ||= @devices.reject(&:offline?).map(&:id)
-          true
+          assign_locked_devices(@devices)
         end
 
         # Applies the given DASD config.
@@ -98,6 +98,7 @@ module Agama
           format_devices(config)
           enable_diag(config)
           disable_diag(config)
+          remove_locked_devices(config)
         end
 
         # Whether the system is already configured for the given config.
@@ -152,7 +153,7 @@ module Agama
 
           logger.info("Activating DASDs: #{devices}")
           EnableOperation.new(devices, logger).run
-          update_configured_devices(devices)
+          refresh_devices(devices)
         end
 
         # Deactivates DASDs devices.
@@ -180,7 +181,7 @@ module Agama
 
           logger.info("Deactivating DASDs: #{devices}")
           DisableOperation.new(devices, logger).run
-          update_configured_devices(devices)
+          refresh_devices(devices)
         end
 
         # Formats DASDs devices.
@@ -201,7 +202,8 @@ module Agama
           progress = @on_format_change_callbacks || []
           finish = @on_format_finish_callbacks || []
           FormatOperation.new(devices, progress, finish).run
-          update_configured_devices(devices)
+          add_formatted_devices(devices)
+          refresh_devices(devices)
         end
 
         # Enables DIAG option.
@@ -220,7 +222,7 @@ module Agama
 
           logger.info("Enabling DIAG: #{devices}")
           DiagOperation.new(devices, logger, true).run
-          update_configured_devices(devices)
+          refresh_devices(devices)
         end
 
         # Disables DIAG option.
@@ -239,15 +241,14 @@ module Agama
 
           logger.info("Disabling DASDs: #{devices}")
           DiagOperation.new(devices, logger, false).run
-          update_configured_devices(devices)
+          refresh_devices(devices)
         end
 
-        # Updates the information about the configured devices.
+        # Adds the given devices to the list of already formatted devices.
         #
         # @param devices [Array<Y2S390::Dasd>]
-        def update_configured_devices(devices)
-          refresh_devices(devices)
-          unlock_devices(devices)
+        def add_formatted_devices(devices)
+          @formatted_devices.concat(devices.map(&:id)).uniq!
         end
 
         # Updates the attributes of the given DASDs with the current information read from the
@@ -258,13 +259,24 @@ module Agama
           devices.each { |d| reader.update_info(d, extended: true) }
         end
 
-        # Removes the given devices from the list of locked devices.
+        # Sets the list of locked devices.
+        #
+        # A device is considered as locked if it is active and not configured yet.
         #
         # @param devices [Array<Y2S390::Dasd>]
-        def unlock_devices(devices)
-          return unless @locked_devices
+        def assign_locked_devices(devices)
+          config = ConfigImporter.new(config_json || {}).import
+          @locked_devices = devices
+            .reject(&:offline?)
+            .reject { |d| config.include_device?(d.id) }
+            .map(&:id)
+        end
 
-          devices.each { |d| @locked_devices.delete(d.id) }
+        # Removes the given devices from the list of locked devices.
+        #
+        # @param config [Config]
+        def remove_locked_devices(config)
+          config.devices.each { |d| @locked_devices.delete(d.channel) }
         end
 
         # Whether the given device is locked.
@@ -272,7 +284,15 @@ module Agama
         # @param device [Y2S390::Dasd]
         # @return [Boolean]
         def device_locked?(device)
-          @locked_devices&.include?(device.id) || false
+          @locked_devices.include?(device.id)
+        end
+
+        # Whether the given device was formatted.
+        #
+        # @param device [Y2S390::Dasd]
+        # @return [Boolean]
+        def device_formatted?(device)
+          @formatted_devices.include?(device.id)
         end
 
         # Whether the device has to be formatted.
@@ -285,7 +305,10 @@ module Agama
           device = find_device(device_config.channel)
           return false unless device
 
-          !device.formatted? || device_config.format_action == Configs::Device::FormatAction::FORMAT
+          return true unless device.formatted?
+
+          device_config.format_action == Configs::Device::FormatAction::FORMAT &&
+            !device_formatted?(device)
         end
 
         # Finds a DASD device with the given channel.
