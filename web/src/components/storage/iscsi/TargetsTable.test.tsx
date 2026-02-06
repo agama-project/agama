@@ -131,7 +131,10 @@ describe("TargetsTable", () => {
 
   describe("when targets are available", () => {
     beforeEach(() => {
-      mockUseSystemFn.mockReturnValue({ targets: testingSystemTargets });
+      mockUseSystemFn.mockReturnValue({
+        initiator: { ibft: false },
+        targets: testingSystemTargets,
+      });
       mockUseConfigFn.mockReturnValue({ targets: testingConfigTargets });
     });
 
@@ -145,7 +148,8 @@ describe("TargetsTable", () => {
     });
 
     it("displays all column headers", () => {
-      installerRender(<TargetsTable />);
+      // Without iBFT
+      const { rerender } = installerRender(<TargetsTable />);
 
       const table = screen.getByRole("grid");
       const headerRow = within(table).getAllByRole("row")[0];
@@ -154,6 +158,12 @@ describe("TargetsTable", () => {
       within(headerRow).getByRole("columnheader", { name: "Interface" });
       within(headerRow).getByRole("columnheader", { name: "Startup" });
       within(headerRow).getByRole("columnheader", { name: "Status" });
+      expect(within(headerRow).queryByRole("columnheader", { name: "iBFT" })).toBeNull();
+
+      // With iBFT
+      mockUseSystemFn.mockReturnValue({ initiator: { ibft: true }, targets: testingSystemTargets });
+      rerender(<TargetsTable />);
+      within(headerRow).getByRole("columnheader", { name: "iBFT" });
     });
 
     it("displays correct status for connected target", () => {

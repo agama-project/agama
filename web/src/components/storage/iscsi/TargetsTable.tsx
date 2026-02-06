@@ -342,6 +342,13 @@ const reducer = (state: TargetsTableState, action: TargetsTableAction): TargetsT
     }
   }
 };
+/**
+ * Parameters for creating column definitions.
+ */
+type CreateColumnsParams = {
+  /** Whether to show the iBFT (iSCSI Boot Firmware Table) column */
+  showIbft?: boolean;
+};
 
 /**
  * Column definitions for the iSCSI targets table.
@@ -351,60 +358,66 @@ const reducer = (state: TargetsTableState, action: TargetsTableAction): TargetsT
  *
  * These columns are consumed by the core <SelectableDataTable> component.
  */
-const createColumns = () => [
-  {
-    // TRANSLATORS: table header for an iSCSI targets table
-    name: _("Name"),
-    value: (t: MergedTarget) => t.name,
-    sortingKey: "name",
-  },
+const createColumns = ({ showIbft = false }: CreateColumnsParams) =>
+  [
+    {
+      // TRANSLATORS: table header for an iSCSI targets table
+      name: _("Name"),
+      value: (t: MergedTarget) => t.name,
+      sortingKey: "name",
+    },
 
-  {
-    // TRANSLATORS: table header for an iSCSI targets table
-    name: _("Portal"),
-    value: (t: MergedTarget) => (
-      <Text>
-        {t.address}:
-        <Text component="small" style={{ display: "inline" }}>
-          {t.port}
+    {
+      // TRANSLATORS: table header for an iSCSI targets table
+      name: _("Portal"),
+      value: (t: MergedTarget) => (
+        <Text>
+          {t.address}:
+          <Text component="small" style={{ display: "inline" }}>
+            {t.port}
+          </Text>
         </Text>
-      </Text>
-    ),
-    sortingKey: "address",
-  },
-  {
-    // TRANSLATORS: table header for an iSCSI targets table
-    name: _("Interface"),
-    value: (t: MergedTarget) => t.interface,
-    sortingKey: "interface",
-  },
-  {
-    // TRANSLATORS: table header for an iSCSI targets table
-    name: _("Startup"),
-    value: (t: MergedTarget) => {
-      return t.startup;
+      ),
+      sortingKey: "address",
     },
-    sortingKey: "startup",
-  },
-  {
-    // TRANSLATORS: table header for an iSCSI targets table
-    name: _("Status"),
-    value: (t: MergedTarget) => {
-      // Failed to connect
-      if (failedToConnect(t)) return _("Connection failed");
-
-      // Not connected
-      if (!t.connected) return _("Disconnected");
-
-      // Connected but...
-      if (t.locked) return _("Connected and locked");
-      if (!t.sources.includes("config")) return _("Could not disconnect");
-
-      // Simply connected and not in above situations
-      return _("Connected");
+    {
+      // TRANSLATORS: table header for an iSCSI targets table
+      name: _("Interface"),
+      value: (t: MergedTarget) => t.interface,
+      sortingKey: "interface",
     },
-  },
-];
+    {
+      // TRANSLATORS: table header for an iSCSI targets table
+      name: _("Startup"),
+      value: (t: MergedTarget) => {
+        return t.startup;
+      },
+      sortingKey: "startup",
+    },
+    showIbft && {
+      name: _("iBFT"),
+      value: (t: MergedTarget) => (t.ibft ? _("Yes") : _("No")),
+      sortingKey: "ibft",
+    },
+    {
+      // TRANSLATORS: table header for an iSCSI targets table
+      name: _("Status"),
+      value: (t: MergedTarget) => {
+        // Failed to connect
+        if (failedToConnect(t)) return _("Connection failed");
+
+        // Not connected
+        if (!t.connected) return _("Disconnected");
+
+        // Connected but...
+        if (t.locked) return _("Connected and locked");
+        if (!t.sources.includes("config")) return _("Could not disconnect");
+
+        // Simply connected and not in above situations
+        return _("Connected");
+      },
+    },
+  ].filter(Boolean);
 
 /**
  * Main component for displaying and managing iSCSI targets.
@@ -416,7 +429,8 @@ export default function TargetsTable() {
   const [state, dispatch] = useReducer(reducer, initialState);
   const navigate = useNavigate();
   const configTargets = useConfig()?.targets || [];
-  const systemTargets = useSystem()?.targets || [];
+  // FIXME: stop returning undefined or null from hooks
+  const { initiator, targets: systemTargets = [] } = useSystem() || {};
   const removeTarget = useRemoveTarget();
 
   const targets: MergedTarget[] = mergeSources<TargetToMerge, keyof TargetToMerge>({
@@ -430,7 +444,7 @@ export default function TargetsTable() {
 
   const hasLockedTargets = targets.find((t: MergedTarget) => "locked" in t && t.locked);
 
-  const columns = createColumns();
+  const columns = createColumns({ showIbft: initiator?.ibft });
 
   const onSortingChange = (sortedBy: SortedBy) => {
     dispatch({ type: "UPDATE_SORTING", payload: sortedBy });
