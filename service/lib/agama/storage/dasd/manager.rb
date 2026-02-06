@@ -58,8 +58,16 @@ module Agama
         def initialize(logger: nil)
           @logger = logger || ::Logger.new($stdout)
           @devices = Y2S390::DasdsCollection.new([])
+          # Keeps whether a configuration was already applied. In some cases it is necessary to
+          # consider that the config has not being applied yet, see {#probe}.
           @configured = false
+          # Keeps the list of locked devices. A device is considered as locked if it is active at
+          # the time of probing. Those devices should not be deactivated when applying a config that
+          # does not include such devices.
           @locked_devices = []
+          # Keeps the list of formatted devices. A device is added to the list when it was formatted
+          # as effect of applying a config. Those devices should not be formatted anymore when
+          # applying a new config.
           @formatted_devices = []
         end
 
