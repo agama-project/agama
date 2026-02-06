@@ -77,6 +77,14 @@ export type ISCSITargetsFilters = {
 type ISCSITargetCondition = (target) => boolean;
 
 /**
+ * Checks if a given target is considered "missing": appears in config but not
+ * in system.
+ */
+const isMissing = (target: MergedTarget): boolean => {
+  return target.sources.includes("config") && !target.sources.includes("system");
+};
+
+/**
  * Filters an array of targets based on given filters.
  */
 const filterTargets = (targets: MergedTarget[], filters: ISCSITargetsFilters): MergedTarget[] => {
@@ -121,14 +129,6 @@ const filterTargets = (targets: MergedTarget[], filters: ISCSITargetsFilters): M
   }
 
   return targets.filter((t) => conditions.every((conditionFn) => conditionFn(t)));
-};
-
-/**
- * Checks if a given target is considered "missing": appears in config but not
- * in system.
- */
-const isMissing = (target: MergedTarget): boolean => {
-  return target.sources.includes("config") && !target.sources.includes("system");
 };
 
 /**
