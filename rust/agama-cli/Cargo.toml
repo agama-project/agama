@@ -28,6 +28,7 @@ chrono = "0.4.38"
 regex = "1.11.1"
 home = "0.5.11"
 fluent-uri = "0.3.2"
+serde = { version = "1.0.228", features = ["derive"] }
 
 [[bin]]
 name = "agama"
