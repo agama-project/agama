@@ -152,13 +152,39 @@ void resolvable_reset_all(struct Zypp *_zypp) noexcept;
 /// @return count of packages
 unsigned packages_to_install(struct Zypp *_zypp) noexcept;
 
+/// Representation of zypp::Pattern.
+/// https://doc.opensuse.org/projects/libzypp/HEAD/classzypp_1_1Pattern.html
+// Note: it will soon replace PatternInfo. It co-lives now as internmediate
+// steps for performance reasons elements are NOT owned
+struct Pattern {
+  const char *name;        ///< owned
+  const char *category;    ///< owned
+  const char *icon;        ///< owned
+  const char *description; ///< owned
+  const char *summary;     ///< owned
+  const char *order;       ///< owned
+  const char *repo_alias;  ///< owned
+  enum RESOLVABLE_SELECTED selected;
+};
+
+struct Patterns {
+  struct Pattern *list; ///< owned, *size* items
+  unsigned size;
+};
+
+/// Get Pattern details.
+/// Unknown patterns are simply omitted from the result. Match by
+/// PatternInfo.name, not by index.
+struct Patterns get_patterns(struct Zypp *_zypp,
+                             struct Status *status) noexcept;
+void free_patterns(const struct Patterns *patterns) noexcept;
+
 struct PatternNames {
   /// names of patterns
   const char *const *const names;
   /// size of names array
   unsigned size;
 };
-
 /// Info from zypp::Pattern.
 /// https://doc.opensuse.org/projects/libzypp/HEAD/classzypp_1_1Pattern.html
 struct PatternInfo {
@@ -213,7 +239,8 @@ bool is_package_selected(struct Zypp *zypp, const char *tag,
 
 /// Runs solver
 /// @param zypp see \ref init_target
-/// @param only_required if true, only required packages are installed (ignoring recommended packages)
+/// @param only_required if true, only required packages are installed (ignoring
+/// recommended packages)
 /// @param[out] status (will overwrite existing contents)
 /// @return true if solver pass and false if it found some dependency issues
 bool run_solver(struct Zypp *zypp, bool only_required,

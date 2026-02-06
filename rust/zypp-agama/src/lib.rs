@@ -6,7 +6,7 @@ use std::{
 
 use errors::ZyppResult;
 use zypp_agama_sys::{
-    get_patterns_info, PatternNames, ProgressCallback, ProgressData, Status, ZyppProgressCallback,
+    PatternNames, ProgressCallback, ProgressData, Status, ZyppProgressCallback, get_patterns, get_patterns_info
 };
 
 pub mod errors;
@@ -57,6 +57,19 @@ pub struct PatternInfo {
     pub description: String,
     pub summary: String,
     pub order: String,
+    pub selected: ResolvableSelected,
+}
+
+// TODO: should we add also e.g. serd serializers here?
+#[derive(Debug)]
+pub struct Pattern {
+    pub name: String,
+    pub category: String,
+    pub icon: String,
+    pub description: String,
+    pub summary: String,
+    pub order: String,
+    pub repo_alias: String,
     pub selected: ResolvableSelected,
 }
 
@@ -262,6 +275,34 @@ impl Zypp {
             zypp_agama_sys::free_repository_list(repos_rawp as *mut _);
 
             helpers::status_to_result(status, repos_v)
+        }
+    }
+
+    pub fn list_patterns(&self) -> ZyppResult<Vec<Pattern>> {
+        unsafe {
+            let mut status: Status = Status::default();
+            let status_ptr = &mut status as *mut _;
+
+            let patterns = get_patterns(self.ptr, status_ptr);
+            helpers::status_to_result_void(status)?;
+
+            let mut r_patterns = Vec::with_capacity(patterns.size as usize);
+            for i in 0..patterns.size as usize {
+                let c_pattern = *(patterns.list.add(i));
+                let r_pattern = Pattern {
+                    name: string_from_ptr(c_pattern.name),
+                    category: string_from_ptr(c_pattern.category),
+                    icon: string_from_ptr(c_pattern.icon),
+                    description: string_from_ptr(c_pattern.description),
+                    summary: string_from_ptr(c_pattern.summary),
+                    order: string_from_ptr(c_pattern.order),
+                    repo_alias: string_from_ptr(c_pattern.repo_alias),
+                    selected: c_pattern.selected.into(),
+                };
+                r_patterns.push(r_pattern);
+            }
+            zypp_agama_sys::free_patterns(&patterns);
+            Ok(r_patterns)
         }
     }
 

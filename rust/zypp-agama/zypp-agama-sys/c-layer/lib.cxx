@@ -357,6 +357,73 @@ void resolvable_reset_all(struct Zypp *_zypp) noexcept {
     item.statusReset();
 }
 
+static RESOLVABLE_SELECTED
+convert_selected(zypp::ui::Selectable::constPtr selectable) {
+  auto &status = selectable->theObj().status();
+  if (status.isToBeInstalled()) {
+    switch (status.getTransactByValue()) {
+    case zypp::ResStatus::TransactByValue::USER:
+      return RESOLVABLE_SELECTED::USER_SELECTED;
+    case zypp::ResStatus::TransactByValue::APPL_HIGH:
+    case zypp::ResStatus::TransactByValue::APPL_LOW:
+      return RESOLVABLE_SELECTED::APPLICATION_SELECTED;
+    case zypp::ResStatus::TransactByValue::SOLVER:
+      return RESOLVABLE_SELECTED::SOLVER_SELECTED;
+    }
+  } else {
+    // distinguish between the "not selected" and "explicitly removed by user"
+    // states
+    if (status.getTransactByValue() == zypp::ResStatus::TransactByValue::USER)
+      return RESOLVABLE_SELECTED::USER_REMOVED;
+    else
+      return RESOLVABLE_SELECTED::NOT_SELECTED;
+  }
+
+  return RESOLVABLE_SELECTED::NOT_SELECTED;
+}
+
+struct Patterns get_patterns(struct Zypp *zypp,
+                             struct Status *status) noexcept {
+  auto iterator =
+      zypp->zypp_pointer->poolProxy().byKind(zypp::ResKind::pattern);
+
+  Patterns result = {
+      (struct Pattern *)malloc(iterator.size() * sizeof(Patterns)),
+      0 // initialize with zero and increase after each successful add of
+        // pattern info
+  };
+
+  for (const auto iter : iterator) {
+    Pattern &pattern = result.list[result.size];
+    auto zypp_pattern = iter->candidateAsKind<zypp::Pattern>();
+    pattern.name = strdup(iter->name().c_str());
+    pattern.category = strdup(zypp_pattern->category().c_str());
+    pattern.description = strdup(zypp_pattern->description().c_str());
+    pattern.icon = strdup(zypp_pattern->icon().c_str());
+    pattern.summary = strdup(zypp_pattern->summary().c_str());
+    pattern.order = strdup(zypp_pattern->order().c_str());
+    pattern.repo_alias = strdup(zypp_pattern->repoInfo().alias().c_str());
+    pattern.selected = convert_selected(iter.get());
+    result.size++;
+  }
+
+  STATUS_OK(status);
+  return result;
+}
+
+void free_patterns(const struct Patterns *patterns) noexcept {
+  for (unsigned i = 0; i < patterns->size; ++i) {
+    free((void *)patterns->list[i].name);
+    free((void *)patterns->list[i].category);
+    free((void *)patterns->list[i].description);
+    free((void *)patterns->list[i].icon);
+    free((void *)patterns->list[i].summary);
+    free((void *)patterns->list[i].order);
+    free((void *)patterns->list[i].repo_alias);
+  }
+  free((void *)patterns->list);
+}
+
 struct PatternInfos get_patterns_info(struct Zypp *_zypp,
                                       struct PatternNames names,
                                       struct Status *status) noexcept {
@@ -383,28 +450,7 @@ struct PatternInfos get_patterns_info(struct Zypp *_zypp,
     result.infos[i].icon = strdup(pattern->icon().c_str());
     result.infos[i].summary = strdup(pattern->summary().c_str());
     result.infos[i].order = strdup(pattern->order().c_str());
-    auto &status = selectable->theObj().status();
-    if (status.isToBeInstalled()) {
-      switch (status.getTransactByValue()) {
-      case zypp::ResStatus::TransactByValue::USER:
-        result.infos[i].selected = RESOLVABLE_SELECTED::USER_SELECTED;
-        break;
-      case zypp::ResStatus::TransactByValue::APPL_HIGH:
-      case zypp::ResStatus::TransactByValue::APPL_LOW:
-        result.infos[i].selected = RESOLVABLE_SELECTED::APPLICATION_SELECTED;
-        break;
-      case zypp::ResStatus::TransactByValue::SOLVER:
-        result.infos[i].selected = RESOLVABLE_SELECTED::SOLVER_SELECTED;
-        break;
-      }
-    } else {
-      // distinguish between the "not selected" and "explicitly removed by user"
-      // states
-      if (status.getTransactByValue() == zypp::ResStatus::TransactByValue::USER)
-        result.infos[i].selected = RESOLVABLE_SELECTED::USER_REMOVED;
-      else
-        result.infos[i].selected = RESOLVABLE_SELECTED::NOT_SELECTED;
-    }
+    result.infos[i].selected = convert_selected(selectable);
     result.size++;
   };
 
