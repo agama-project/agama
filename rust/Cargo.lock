@@ -76,6 +76,7 @@ dependencies = [
  "agama-utils",
  "async-trait",
  "serde_json",
+ "strum",
  "tempfile",
  "test-context",
  "thiserror 2.0.18",

@@ -52,7 +52,7 @@ const NM_RESOLV_CONF_PATH: &str = "run/NetworkManager/resolv.conf";
 
 /// Implements the logic to run a script.
 ///
-/// It takes care of running the script, reporting errors (and asking whether to retry) and write
+/// It takes care of running the script, reporting errors (and asking whether to retry) and writing
 /// the logs.
 pub struct ScriptsRunner {
     progress: Handler<progress::Service>,
@@ -94,7 +94,8 @@ impl ScriptsRunner {
     ///
     /// * `scripts`: scripts to run.
     pub async fn run(&self, scripts: &[&Script]) -> Result<(), Error> {
-        self.start_progress(scripts);
+        let scripts: Vec<_> = self.find_scripts_to_run(&scripts);
+        self.start_progress(&scripts);
 
         let mut resolv_linked = false;
         if scripts.iter().any(|s| s.chroot()) {
@@ -122,12 +123,9 @@ impl ScriptsRunner {
     ///
     /// If the script fails, it asks the user whether it should try again.
     async fn run_script(&self, script: &Script) -> Result<(), Error> {
-        loop {
-            let path = self
-                .workdir
-                .join(script.group().to_string())
-                .join(script.name());
+        let path = self.workdir.join(script.relative_script_path());
 
+        loop {
             let Err(error) = self.run_command(&path, script.chroot()).await else {
                 return Ok(());
             };
@@ -213,6 +211,23 @@ impl ScriptsRunner {
             .collect();
         let progress_action = progress::message::StartWithSteps::new(Scope::Files, steps);
         _ = self.progress.cast(progress_action);
+    }
+
+    /// Returns the scripts to run from the given collection
+    ///
+    /// It exclues any script that already ran.
+    fn find_scripts_to_run<'a>(&self, scripts: &[&'a Script]) -> Vec<&'a Script> {
+        scripts
+            .into_iter()
+            .filter(|s| {
+                let stdout_file = self
+                    .workdir
+                    .join(s.relative_script_path())
+                    .with_extension("stdout");
+                !std::fs::exists(stdout_file).unwrap_or(false)
+            })
+            .cloned()
+            .collect()
     }
 
     /// Reads the last n bytes of the file and returns them as a string.
