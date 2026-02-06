@@ -151,6 +151,11 @@ security:
 
 modes:
   - id: standard
+    # ------------------------------------------------------------------------------
+    # WARNING: When changing the mode name or description delete the translations
+    # located at the translations/mode/<id> key above to avoid using obsolete
+    # translations!!
+    # ------------------------------------------------------------------------------
     name: Standard
     description: Standard system
 
@@ -249,6 +254,11 @@ modes:
               - vfat
 
   - id: immutable
+    # ------------------------------------------------------------------------------
+    # WARNING: When changing the mode name or description delete the translations
+    # located at the translations/mode/<id> key above to avoid using obsolete
+    # translations!!
+    # ------------------------------------------------------------------------------
     name: Immutable
     description: Immutable system with atomic updates
 
