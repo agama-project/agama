@@ -44,10 +44,17 @@ pub trait ModelAdapter: Send + 'static {
 /// in chrooted environment is passed as an argument.
 ///
 /// Example use:
-/// ChrootCommand::new(<chroot directory>)
-///   .cmd(<command to be run in chroot env>)
-///   .args(["the command", "args"]
-struct ChrootCommand {
+/// ```
+/// # use agama_users::ChrootCommand;
+/// # use agama_users::service;
+/// # fn main() -> Result<(), service::Error> {
+/// let cmd = ChrootCommand::new("/tmp".into())?
+///   .cmd("echo")
+///   .args(["Hello world!"]);
+/// # Ok(())
+/// # }
+/// ```
+pub struct ChrootCommand {
     command: Command,
 }
 

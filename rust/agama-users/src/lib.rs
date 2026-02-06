@@ -24,7 +24,7 @@ pub use service::{Service, Starter};
 pub mod message;
 
 mod model;
-pub use model::{Model, ModelAdapter};
+pub use model::{ChrootCommand, Model, ModelAdapter};
 
 #[cfg(test)]
 mod tests {
