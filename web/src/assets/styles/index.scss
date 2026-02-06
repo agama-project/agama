@@ -559,6 +559,11 @@ span.in-quotes {
   }
 }
 
+nav.agm-breadcrumb h1 {
+  // Allow heading in breadcrumb use fontSize from its parent
+  font-size: inherit;
+}
+
 // FIXME: make ir more generic, if possible, or even without CSS but not
 // rendering such a label if "storage instructions" are more than one
 .storage-structure:has(> li:nth-child(2)) span.action-text {

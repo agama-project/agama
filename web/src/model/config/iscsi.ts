@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2025] SUSE LLC
+ * Copyright (c) [2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -20,40 +20,26 @@
  * find current contact information at www.suse.com.
  */
 
-type Action = ConfigureL10n | ActivateStorage | ProbeStorage | DiscoverISCSI | Finish;
+import { Config, Target } from "~/openapi/config/iscsi";
+import { remove } from "radashi";
 
-type ConfigureL10n = {
-  configureL10n: L10nSystemConfig;
-};
+function setInitiator(config: Config, name: string): Config {
+  return { ...config, initiator: name };
+}
 
-type L10nSystemConfig = {
-  locale?: string;
-  keymap?: string;
-};
+function addTarget(config: Config, target: Target): Config {
+  return { ...config, targets: [...config.targets, target] };
+}
 
-type ActivateStorage = {
-  activateStorage: null;
-};
+function removeTarget(config: Config, name: string, addr: string, port: number): Config {
+  return {
+    ...config,
+    targets: remove(
+      config.targets,
+      (t) => t.name === name && t.address === addr && t.port === port,
+    ),
+  };
+}
 
-type ProbeStorage = {
-  probeStorage: null;
-};
-
-type DiscoverISCSI = {
-  discoverISCSI: DiscoverISCSIConfig;
-};
-
-type DiscoverISCSIConfig = {
-  address: string;
-  port: number;
-  username?: string;
-  password?: string;
-  initiatorUsername?: string;
-  initiatorPassword?: string;
-};
-
-type Finish = {
-  finish: "halt" | "reboot" | "stop" | "poweroff";
-};
-
-export type { Action, L10nSystemConfig, DiscoverISCSIConfig };
+export default { setInitiator, addTarget, removeTarget };
+export type * from "~/openapi/config/iscsi";

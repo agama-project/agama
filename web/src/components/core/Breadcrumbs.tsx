@@ -92,7 +92,7 @@ const Breadcrumb = ({
  */
 const Breadcrumbs = ({ a11yName = _("Breadcrumbs"), children }) => {
   return (
-    <nav aria-label={a11yName}>
+    <nav aria-label={a11yName} className="agm-breadcrumb">
       <Flex
         component="ol"
         gap={{ default: "gapXs" }}

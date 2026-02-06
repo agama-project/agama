@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2023] SUSE LLC
+ * Copyright (c) [2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -20,12 +20,18 @@
  * find current contact information at www.suse.com.
  */
 
-export { default as InitiatorSection } from "./InitiatorSection";
-export { default as InitiatorForm } from "./InitiatorForm";
-export { default as TargetsSection } from "./TargetsSection";
-export { default as NodesPresenter } from "./NodesPresenter";
-export { default as DiscoverForm } from "./DiscoverForm";
-export { default as EditNodeForm } from "./EditNodeForm";
-export { default as LoginForm } from "./LoginForm";
-export { default as AuthFields } from "./AuthFields";
-export { default as NodeStartupOptions } from "./NodeStartupOptions";
+import { useSuspenseQuery } from "@tanstack/react-query";
+import { systemQuery } from "~/hooks/model/system";
+import type { System, ISCSI } from "~/model/system";
+
+const selectSystem = (data: System | null): ISCSI.System => data?.iscsi;
+
+function useSystem(): ISCSI.System | null {
+  const { data } = useSuspenseQuery({
+    ...systemQuery,
+    select: selectSystem,
+  });
+  return data;
+}
+
+export { useSystem };

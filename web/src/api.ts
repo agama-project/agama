@@ -28,7 +28,7 @@ import type { Proposal } from "~/model/proposal";
 import type { Question } from "~/model/question";
 import type { Status } from "~/model/status";
 import type { System } from "~/model/system";
-import type { Action, L10nSystemConfig } from "~/model/action";
+import type { Action, L10nSystemConfig, DiscoverISCSIConfig } from "~/model/action";
 import type { AxiosResponse } from "axios";
 import type { Job } from "~/types/job";
 
@@ -78,6 +78,8 @@ const activateStorageAction = () => postAction({ activateStorage: null });
 
 const probeStorageAction = () => postAction({ probeStorage: null });
 
+const discoverISCSIAction = (config: DiscoverISCSIConfig) => postAction({ discoverISCSI: config });
+
 const finishInstallation = () => postAction({ finish: "reboot" });
 
 /**
@@ -102,6 +104,7 @@ export {
   configureL10nAction,
   activateStorageAction,
   probeStorageAction,
+  discoverISCSIAction,
   finishInstallation,
   getStorageJobs,
 };

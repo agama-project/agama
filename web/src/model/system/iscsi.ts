@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2023] SUSE LLC
+ * Copyright (c) [2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -20,12 +20,15 @@
  * find current contact information at www.suse.com.
  */
 
-import { N_ } from "~/i18n";
+import { System, Target } from "~/openapi/system/iscsi";
 
-const NodeStartupOptions = Object.freeze({
-  MANUAL: { label: N_("Manual"), value: "manual" },
-  ONBOOT: { label: N_("On boot"), value: "onboot" },
-  AUTOMATIC: { label: N_("Automatic"), value: "automatic" },
-});
+function findTargetIndex(system: System, name: string): number | undefined {
+  return system.targets?.findIndex((t) => t.name === name);
+}
 
-export default NodeStartupOptions;
+function findTarget(system: System, name: string): Target | undefined {
+  return system.targets?.find((t) => t.name === name);
+}
+
+export default { findTargetIndex, findTarget };
+export type * from "~/openapi/system/iscsi";

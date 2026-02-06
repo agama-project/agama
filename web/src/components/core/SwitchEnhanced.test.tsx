@@ -37,9 +37,9 @@ describe("SwitchEnhanced", () => {
       />,
     );
 
-    const switchElement = screen.getByRole("switch");
-    const label = screen.getByText(/Use for installation only/);
-    const description = screen.getByText(/Not persisted to the installed system/);
+    const switchElement = screen.getByRole("switch", { name: "Use for installation only" });
+    const label = screen.getByText("Use for installation only");
+    const description = screen.getByText("Not persisted to the installed system.");
 
     // Ensure aria-labelledby and aria-describedby point to the correct elements
     expect(switchElement).toHaveAttribute("aria-labelledby", label.id);
@@ -62,9 +62,16 @@ describe("SwitchEnhanced", () => {
 
     const { user } = plainRender(<SwitchEnhancedTestWrapper />);
 
-    const switchElement = screen.getByRole("switch");
+    const switchElement = screen.getByRole("switch", { name: "Use for installation only" });
     expect(switchElement).not.toBeChecked();
     await user.click(switchElement);
+    expect(switchElement).toBeChecked();
+
+    // Clicking on label should work too
+    const label = screen.getByText("Use for installation only");
+    await user.click(label);
+    expect(switchElement).not.toBeChecked();
+    await user.click(label);
     expect(switchElement).toBeChecked();
   });
 });

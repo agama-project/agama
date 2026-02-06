@@ -50,7 +50,7 @@ export default function ConnectedDevicesMenu() {
       items={[
         <MenuButton.Item
           key="iscsi-link"
-          onClick={() => navigate(PATHS.iscsi)}
+          onClick={() => navigate(PATHS.iscsi.root)}
           description={_("Discover and connect to iSCSI targets")}
         >
           {_("Configure iSCSI")}
