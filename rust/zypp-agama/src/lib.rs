@@ -6,7 +6,8 @@ use std::{
 
 use errors::ZyppResult;
 use zypp_agama_sys::{
-    PatternNames, ProgressCallback, ProgressData, Status, ZyppProgressCallback, get_patterns, get_patterns_info
+    get_patterns, get_patterns_info, PatternNames, ProgressCallback, ProgressData, Status,
+    ZyppProgressCallback,
 };
 
 pub mod errors;
