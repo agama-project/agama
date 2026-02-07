@@ -26,7 +26,7 @@ use crate::context::InstallationContext;
 use crate::hostname::model::HostnameSettings;
 use crate::security::settings::SecuritySettings;
 use crate::storage::settings::zfcp::ZFCPConfig;
-use crate::{network::NetworkSettings, storage::settings::dasd::DASDConfig, users::UserSettings};
+use crate::{network::NetworkSettings, storage::settings::dasd::DASDConfig};
 use serde::{Deserialize, Serialize};
 use serde_json::value::RawValue;
 use std::default::Default;
@@ -43,7 +43,7 @@ pub enum InstallSettingsError {
 /// Installation settings
 ///
 /// This struct represents installation settings. It serves as an entry point and it is composed of
-/// other structs which hold the settings for each area ("users", "software", etc.).
+/// other structs which hold the settings for each area ("software", etc.).
 #[derive(Clone, Debug, Default, Serialize, Deserialize, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct InstallSettings {
@@ -56,8 +56,6 @@ pub struct InstallSettings {
     #[serde(skip_serializing_if = "Option::is_none")]
     #[schema(value_type = Object)]
     pub iscsi: Option<Box<RawValue>>,
-    #[serde(flatten)]
-    pub user: Option<UserSettings>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub security: Option<SecuritySettings>,
     #[serde(skip_serializing_if = "Option::is_none")]
