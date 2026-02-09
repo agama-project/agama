@@ -21,7 +21,6 @@
 //! Configuration settings handling
 //!
 //! This module implements the mechanisms to load and store the installation settings.
-use crate::bootloader::model::BootloaderSettings;
 use crate::context::InstallationContext;
 use crate::hostname::model::HostnameSettings;
 use crate::storage::settings::zfcp::ZFCPConfig;
@@ -46,8 +45,6 @@ pub enum InstallSettingsError {
 #[derive(Clone, Debug, Default, Serialize, Deserialize, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct InstallSettings {
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub bootloader: Option<BootloaderSettings>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub dasd: Option<DASDConfig>,
     #[serde(skip_serializing_if = "Option::is_none")]

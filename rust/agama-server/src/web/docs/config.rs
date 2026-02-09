@@ -49,7 +49,6 @@ impl ApiDocBuilder for ConfigApiDocBuilder {
             .schema("IpAddr", schemas::ip_addr())
             .schema("IpInet", schemas::ip_inet())
             .schema("macaddr.MacAddr6", schemas::mac_addr6())
-            .schema_from::<agama_lib::bootloader::model::BootloaderSettings>()
             .schema_from::<agama_utils::api::files::FileSource>()
             .schema_from::<agama_utils::api::files::UserFile>()
             .schema_from::<agama_lib::hostname::model::HostnameSettings>()

@@ -22,7 +22,6 @@
 // TODO: quickly explain difference between FooSettings and FooStore, with an example
 
 use crate::{
-    bootloader::store::{BootloaderStore, BootloaderStoreError},
     hostname::store::{HostnameStore, HostnameStoreError},
     http::BaseHTTPClient,
     install_settings::InstallSettings,
@@ -42,8 +41,6 @@ use crate::{
 
 #[derive(Debug, thiserror::Error)]
 pub enum StoreError {
-    #[error(transparent)]
-    Bootloader(#[from] BootloaderStoreError),
     #[error(transparent)]
     DASD(#[from] DASDStoreError),
     #[error(transparent)]
@@ -67,7 +64,6 @@ pub enum StoreError {
 ///
 /// This struct uses the default connection built by [connection function](super::connection).
 pub struct Store {
-    bootloader: BootloaderStore,
     dasd: DASDStore,
     hostname: HostnameStore,
     network: NetworkStore,
@@ -80,7 +76,6 @@ pub struct Store {
 impl Store {
     pub async fn new(http_client: BaseHTTPClient) -> Result<Store, StoreError> {
         Ok(Self {
-            bootloader: BootloaderStore::new(http_client.clone()),
             dasd: DASDStore::new(http_client.clone()),
             hostname: HostnameStore::new(http_client.clone()),
             network: NetworkStore::new(http_client.clone()),
@@ -94,7 +89,6 @@ impl Store {
     /// Loads the installation settings from the HTTP interface.
     pub async fn load(&self) -> Result<InstallSettings, StoreError> {
         let mut settings = InstallSettings {
-            bootloader: self.bootloader.load().await?,
             dasd: self.dasd.load().await?,
             hostname: Some(self.hostname.load().await?),
             network: Some(self.network.load().await?),
@@ -146,9 +140,6 @@ impl Store {
 
         if settings.storage.is_some() || settings.storage_autoyast.is_some() {
             self.storage.store(&settings.into()).await?
-        }
-        if let Some(bootloader) = &settings.bootloader {
-            self.bootloader.store(bootloader).await?;
         }
         if let Some(hostname) = &settings.hostname {
             self.hostname.store(hostname).await?;
