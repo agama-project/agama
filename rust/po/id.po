@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-01-30 16:41+0000\n"
+"POT-Creation-Date: 2026-02-07 18:02+0000\n"
 "PO-Revision-Date: 2026-01-22 03:26+0000\n"
 "Last-Translator: Arif Budiman <arifpedia@gmail.com>\n"
 "Language-Team: Indonesian <https://l10n.opensuse.org/projects/agama/agama-"
@@ -29,15 +29,15 @@ msgstr "Tidak"
 msgid "Yes"
 msgstr "Ya"
 
-#: agama-manager/src/service.rs:944
+#: agama-manager/src/service.rs:897
 msgid "Prepare the system"
 msgstr "Siapkan sistem"
 
-#: agama-manager/src/service.rs:945
+#: agama-manager/src/service.rs:898
 msgid "Install software"
 msgstr "Instal perangkat lunak"
 
-#: agama-manager/src/service.rs:946
+#: agama-manager/src/service.rs:899
 msgid "Configure the system"
 msgstr "Konfigurasikan sistem"
 
@@ -85,6 +85,7 @@ msgstr "Lanjutkan"
 
 #. TRANSLATORS: substituting: key ID, (key name), fingerprint
 #: agama-software/src/callbacks/security.rs:102
+#, rust-format
 msgid ""
 "The key {0} ({1}) with fingerprint {2} is unknown. Do you want to trust this "
 "key?"
