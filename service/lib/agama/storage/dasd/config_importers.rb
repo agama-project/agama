@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2023-2024] SUSE LLC
+# Copyright (c) [2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -20,13 +20,13 @@
 # find current contact information at www.suse.com.
 
 module Agama
-  module DBus
-    module Storage
-      # Module for D-Bus interfaces of storage.
-      module Interfaces
+  module Storage
+    module DASD
+      # Namespace for DASD config importers.
+      module ConfigImporters
       end
     end
   end
 end
 
-require "agama/dbus/storage/interfaces/zfcp_manager"
+require "agama/storage/dasd/config_importers/device"

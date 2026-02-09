@@ -49,8 +49,16 @@ if stat -t /usr/lib/rpm/gnupg/keys/*.asc 2>/dev/null 1>/dev/null; then
   rpm --import /usr/lib/rpm/gnupg/keys/*.asc
 fi
 
+if [ $(rpm -q --provides libzypp | grep -q 'libzypp(econf)'; echo $?) -eq 0 ]; then
+# A new enough version of libzypp is in use which supports UAPI configuration. Configure a drop-in conf
+cat <<EOF > /etc/zypp/zypp.conf.d/90-agama.conf
+[main]
+download.connect_timeout = 20
+EOF
+else
 # decrease the libzypp timeout to 20 seconds (the default is 60 seconds)
 sed -i -e "s/^\s*#\s*download.connect_timeout\s*=\s*.*$/download.connect_timeout = 20/" /etc/zypp/zypp.conf
+fi
 
 # activate services
 systemctl enable sshd.service
