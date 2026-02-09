@@ -22,12 +22,10 @@
 // TODO: quickly explain difference between FooSettings and FooStore, with an example
 
 use crate::{
-    bootloader::store::{BootloaderStore, BootloaderStoreError},
     hostname::store::{HostnameStore, HostnameStoreError},
     http::BaseHTTPClient,
     install_settings::InstallSettings,
     network::{NetworkStore, NetworkStoreError},
-    security::store::{SecurityStore, SecurityStoreError},
     storage::{
         http_client::{
             iscsi::{ISCSIHTTPClient, ISCSIHTTPClientError},
@@ -44,15 +42,11 @@ use crate::{
 #[derive(Debug, thiserror::Error)]
 pub enum StoreError {
     #[error(transparent)]
-    Bootloader(#[from] BootloaderStoreError),
-    #[error(transparent)]
     DASD(#[from] DASDStoreError),
     #[error(transparent)]
     Hostname(#[from] HostnameStoreError),
     #[error(transparent)]
     Network(#[from] NetworkStoreError),
-    #[error(transparent)]
-    Security(#[from] SecurityStoreError),
     #[error(transparent)]
     Storage(#[from] StorageStoreError),
     #[error(transparent)]
@@ -70,11 +64,9 @@ pub enum StoreError {
 ///
 /// This struct uses the default connection built by [connection function](super::connection).
 pub struct Store {
-    bootloader: BootloaderStore,
     dasd: DASDStore,
     hostname: HostnameStore,
     network: NetworkStore,
-    security: SecurityStore,
     storage: StorageStore,
     iscsi_client: ISCSIHTTPClient,
     http_client: BaseHTTPClient,
@@ -84,11 +76,9 @@ pub struct Store {
 impl Store {
     pub async fn new(http_client: BaseHTTPClient) -> Result<Store, StoreError> {
         Ok(Self {
-            bootloader: BootloaderStore::new(http_client.clone()),
             dasd: DASDStore::new(http_client.clone()),
             hostname: HostnameStore::new(http_client.clone()),
             network: NetworkStore::new(http_client.clone()),
-            security: SecurityStore::new(http_client.clone()),
             storage: StorageStore::new(http_client.clone()),
             iscsi_client: ISCSIHTTPClient::new(http_client.clone()),
             zfcp: ZFCPStore::new(http_client.clone()),
@@ -99,11 +89,9 @@ impl Store {
     /// Loads the installation settings from the HTTP interface.
     pub async fn load(&self) -> Result<InstallSettings, StoreError> {
         let mut settings = InstallSettings {
-            bootloader: self.bootloader.load().await?,
             dasd: self.dasd.load().await?,
             hostname: Some(self.hostname.load().await?),
             network: Some(self.network.load().await?),
-            security: self.security.load().await?.to_option(),
             zfcp: self.zfcp.load().await?,
             ..Default::default()
         };
@@ -126,11 +114,6 @@ impl Store {
     pub async fn store(&self, settings: &InstallSettings) -> Result<(), StoreError> {
         if let Some(network) = &settings.network {
             self.network.store(network).await?;
-        }
-        // security has to be done before product to allow registration against
-        // self-signed RMT
-        if let Some(security) = &settings.security {
-            self.security.store(security).await?;
         }
         let mut dirty_flag_set = false;
         // iscsi has to be done before storage
@@ -157,9 +140,6 @@ impl Store {
 
         if settings.storage.is_some() || settings.storage_autoyast.is_some() {
             self.storage.store(&settings.into()).await?
-        }
-        if let Some(bootloader) = &settings.bootloader {
-            self.bootloader.store(bootloader).await?;
         }
         if let Some(hostname) = &settings.hostname {
             self.hostname.store(hostname).await?;
