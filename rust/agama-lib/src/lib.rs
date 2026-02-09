@@ -60,7 +60,6 @@ pub mod profile;
 pub mod progress;
 pub mod proxies;
 pub mod questions;
-pub mod security;
 pub mod storage;
 mod store;
 pub use store::Store;

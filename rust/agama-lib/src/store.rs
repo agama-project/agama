@@ -27,7 +27,6 @@ use crate::{
     http::BaseHTTPClient,
     install_settings::InstallSettings,
     network::{NetworkStore, NetworkStoreError},
-    security::store::{SecurityStore, SecurityStoreError},
     storage::{
         http_client::{
             iscsi::{ISCSIHTTPClient, ISCSIHTTPClientError},
@@ -52,8 +51,6 @@ pub enum StoreError {
     #[error(transparent)]
     Network(#[from] NetworkStoreError),
     #[error(transparent)]
-    Security(#[from] SecurityStoreError),
-    #[error(transparent)]
     Storage(#[from] StorageStoreError),
     #[error(transparent)]
     ISCSI(#[from] ISCSIHTTPClientError),
@@ -74,7 +71,6 @@ pub struct Store {
     dasd: DASDStore,
     hostname: HostnameStore,
     network: NetworkStore,
-    security: SecurityStore,
     storage: StorageStore,
     iscsi_client: ISCSIHTTPClient,
     http_client: BaseHTTPClient,
@@ -88,7 +84,6 @@ impl Store {
             dasd: DASDStore::new(http_client.clone()),
             hostname: HostnameStore::new(http_client.clone()),
             network: NetworkStore::new(http_client.clone()),
-            security: SecurityStore::new(http_client.clone()),
             storage: StorageStore::new(http_client.clone()),
             iscsi_client: ISCSIHTTPClient::new(http_client.clone()),
             zfcp: ZFCPStore::new(http_client.clone()),
@@ -103,7 +98,6 @@ impl Store {
             dasd: self.dasd.load().await?,
             hostname: Some(self.hostname.load().await?),
             network: Some(self.network.load().await?),
-            security: self.security.load().await?.to_option(),
             zfcp: self.zfcp.load().await?,
             ..Default::default()
         };
@@ -126,11 +120,6 @@ impl Store {
     pub async fn store(&self, settings: &InstallSettings) -> Result<(), StoreError> {
         if let Some(network) = &settings.network {
             self.network.store(network).await?;
-        }
-        // security has to be done before product to allow registration against
-        // self-signed RMT
-        if let Some(security) = &settings.security {
-            self.security.store(security).await?;
         }
         let mut dirty_flag_set = false;
         // iscsi has to be done before storage

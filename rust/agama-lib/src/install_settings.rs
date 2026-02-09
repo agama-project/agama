@@ -24,7 +24,6 @@
 use crate::bootloader::model::BootloaderSettings;
 use crate::context::InstallationContext;
 use crate::hostname::model::HostnameSettings;
-use crate::security::settings::SecuritySettings;
 use crate::storage::settings::zfcp::ZFCPConfig;
 use crate::{network::NetworkSettings, storage::settings::dasd::DASDConfig};
 use serde::{Deserialize, Serialize};
@@ -56,8 +55,6 @@ pub struct InstallSettings {
     #[serde(skip_serializing_if = "Option::is_none")]
     #[schema(value_type = Object)]
     pub iscsi: Option<Box<RawValue>>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub security: Option<SecuritySettings>,
     #[serde(skip_serializing_if = "Option::is_none")]
     #[schema(value_type = Object)]
     pub storage: Option<Box<RawValue>>,

@@ -25,8 +25,7 @@
 //! * Serve the code for the web user interface (not implemented yet).
 
 use crate::{
-    bootloader::web::bootloader_service, profile::web::profile_service, security::security_service,
-    server::server_service,
+    bootloader::web::bootloader_service, profile::web::profile_service, server::server_service,
 };
 use agama_utils::api::event;
 use axum::Router;
@@ -61,7 +60,6 @@ where
 {
     let router = MainServiceBuilder::new(events.clone(), web_ui_dir)
         .add_service("/v2", server_service(events, dbus.clone()).await?)
-        .add_service("/security", security_service(dbus.clone()).await?)
         .add_service("/bootloader", bootloader_service(dbus.clone()).await?)
         .add_service("/profile", profile_service().await?)
         .with_config(config)
