@@ -20,9 +20,7 @@
 
 use crate::{
     bootloader, files, hardware, hostname, iscsi, l10n, message, network, proxy, security,
-    software, storage,
-    tasks::{Task, TasksRunner},
-    users,
+    software, storage, tasks, users,
 };
 use agama_utils::{
     actor::{self, Actor, Handler, MessageHandler},
@@ -95,8 +93,6 @@ pub enum Error {
     PendingIssues { issues: HashMap<Scope, Vec<Issue>> },
     #[error(transparent)]
     Users(#[from] users::service::Error),
-    #[error("Failed to start a manager task")]
-    StartTask,
 }
 
 pub struct Starter {
@@ -337,8 +333,7 @@ impl Starter {
             }
         };
 
-        let (sender, receiver) = mpsc::channel(16);
-        let runner = TasksRunner {
+        let runner = tasks::TasksRunner {
             bootloader: bootloader.clone(),
             files: files.clone(),
             hostname: hostname.clone(),
@@ -352,9 +347,8 @@ impl Starter {
             software: software.clone(),
             storage: storage.clone(),
             users: users.clone(),
-            receiver,
         };
-        tokio::spawn(async move { runner.run().await });
+        let tasks = actor::spawn(runner);
 
         let mut service = Service {
             questions: self.questions,
@@ -377,7 +371,7 @@ impl Starter {
             system: manager::SystemInfo::default(),
             product: None,
             users,
-            tasks: sender,
+            tasks,
         };
 
         service.setup().await?;
@@ -406,7 +400,7 @@ pub struct Service {
     config: Config,
     system: manager::SystemInfo,
     users: Handler<users::Service>,
-    tasks: mpsc::Sender<Task>,
+    tasks: Handler<tasks::TasksRunner>,
 }
 
 impl Service {
@@ -459,11 +453,8 @@ impl Service {
         self.set_product(&config)?;
         self.config = config;
 
-        let task = Task::SetConfig {
-            product: self.product.clone(),
-            config: self.config.clone(),
-        };
-        self.tasks.send(task).await.map_err(|_| Error::StartTask)?;
+        let set_config = tasks::message::SetConfig::new(self.product.clone(), self.config.clone());
+        self.tasks.cast(set_config)?;
 
         Ok(())
     }
@@ -786,10 +777,7 @@ impl MessageHandler<message::RunAction> for Service {
                 self.check_stage(Stage::Configuring).await?;
                 self.check_issues().await?;
                 self.check_progress().await?;
-                self.tasks
-                    .send(Task::Install)
-                    .await
-                    .map_err(|_| Error::StartTask)?;
+                self.tasks.cast(tasks::message::Install)?;
             }
             Action::Finish(method) => {
                 self.check_stage(Stage::Finished).await?;

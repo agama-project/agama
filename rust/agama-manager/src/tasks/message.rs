@@ -18,7 +18,28 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-pub mod message;
-mod runner;
+use std::sync::Arc;
 
-pub use runner::TasksRunner;
+use agama_utils::{actor::Message, api::Config, products::ProductSpec};
+use tokio::sync::RwLock;
+
+pub struct Install;
+
+impl Message for Install {
+    type Reply = ();
+}
+
+pub struct SetConfig {
+    pub product: Option<Arc<RwLock<ProductSpec>>>,
+    pub config: Config,
+}
+
+impl SetConfig {
+    pub fn new(product: Option<Arc<RwLock<ProductSpec>>>, config: Config) -> Self {
+        SetConfig { config, product }
+    }
+}
+
+impl Message for SetConfig {
+    type Reply = ();
+}
