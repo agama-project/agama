@@ -37,6 +37,8 @@ pub use agama_software as software;
 pub use agama_storage as storage;
 pub use agama_users as users;
 
+mod tasks;
+
 pub mod test_utils;
 
 #[cfg(test)]
