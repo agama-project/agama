@@ -41,9 +41,10 @@ import {
 } from "@patternfly/react-core";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import { Page, Link, NestedContent } from "~/components/core/";
-import { Icon } from "~/components/layout";
+import Icon from "~/components/layout/Icon";
+import MenuButton from "~/components/core/MenuButton";
 import ConfigEditor from "./ConfigEditor";
-// import ConnectedDevicesMenu from "./ConnectedDevicesMenu";
+import ConnectedDevicesMenu from "./ConnectedDevicesMenu";
 import EncryptionSection from "./EncryptionSection";
 import BootSection from "./BootSection";
 import FixableConfigInfo from "./FixableConfigInfo";
@@ -60,9 +61,10 @@ import { _, n_ } from "~/i18n";
 import { useProgress, useProgressChanges } from "~/queries/progress";
 import { useNavigate, useLocation } from "react-router";
 import { useStorageUiState } from "~/context/storage-ui-state";
-import MenuButton from "../core/MenuButton";
-import spacingStyles from "@patternfly/react-styles/css/utilities/Spacing/spacing";
+
 import type { Issue } from "~/model/issue";
+
+import spacingStyles from "@patternfly/react-styles/css/utilities/Spacing/spacing";
 
 type InvalidConfigEmptyStateProps = {
   issues: Issue[];
@@ -327,7 +329,12 @@ export default function ProposalPage(): React.ReactNode {
   //   <ConnectedDevicesMenu /> */
   return (
     <Page
-      breadcrumbs={[{ label: _("Storage") }]}
+      breadcrumbs={[
+        {
+          label: _("Storage"),
+          menu: <ConnectedDevicesMenu />,
+        },
+      ]}
       progress={{ scope: "storage", ensureRefetched: STORAGE_MODEL_KEY }}
     >
       <Page.Content>

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024-2025] SUSE LLC
+ * Copyright (c) [2024-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -38,11 +38,12 @@ export default function ConnectedDevicesMenu() {
     <MenuButton
       menuProps={{
         popperProps: {
-          position: "end",
+          position: "start",
         },
       }}
       toggleProps={{
         variant: "plain",
+        style: { minWidth: "24px" },
         className: spacingStyles.p_0,
         // TRANSLATORS: this is an ARIA (accesibility) description of an UI element
         "aria-label": _("More storage options"),
