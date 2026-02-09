@@ -250,7 +250,9 @@ if [ -z "$projects" ]; then
 fi
 
 # insert the mapping for the new branch
-echo "$projects" | jq ". += { \"$BRANCH\" : \"$PROJECT\" } " | gh -R "$repo_slug" variable set OBS_PROJECTS
+echo "$projects" |
+  jq --sort-keys ". += { \"$BRANCH\" : \"$PROJECT\" } " |
+  gh -R "$repo_slug" variable set OBS_PROJECTS
 
 # to really synchronize the GitHub content with OBS trigger the autosubmission jobs if the remote
 # brach already exists or print the instructions for later
