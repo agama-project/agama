@@ -357,9 +357,7 @@ void resolvable_reset_all(struct Zypp *_zypp) noexcept {
     item.statusReset();
 }
 
-static RESOLVABLE_SELECTED
-convert_selected(zypp::ui::Selectable::constPtr selectable) {
-  auto &status = selectable->theObj().status();
+static RESOLVABLE_SELECTED convert_selected(zypp::ResStatus status) {
   if (status.isToBeInstalled()) {
     switch (status.getTransactByValue()) {
     case zypp::ResStatus::TransactByValue::USER:
@@ -385,10 +383,10 @@ convert_selected(zypp::ui::Selectable::constPtr selectable) {
 struct Patterns get_patterns(struct Zypp *zypp,
                              struct Status *status) noexcept {
   auto iterator =
-      zypp->zypp_pointer->poolProxy().byKind(zypp::ResKind::pattern);
+      zypp->zypp_pointer->pool().proxy().byKind(zypp::ResKind::pattern);
 
   Patterns result = {
-      (struct Pattern *)malloc(iterator.size() * sizeof(Patterns)),
+      (struct Pattern *)malloc(iterator.size() * sizeof(Pattern)),
       0 // initialize with zero and increase after each successful add of
         // pattern info
   };
@@ -403,7 +401,7 @@ struct Patterns get_patterns(struct Zypp *zypp,
     pattern.summary = strdup(zypp_pattern->summary().c_str());
     pattern.order = strdup(zypp_pattern->order().c_str());
     pattern.repo_alias = strdup(zypp_pattern->repoInfo().alias().c_str());
-    pattern.selected = convert_selected(iter.get());
+    pattern.selected = convert_selected(iter->theObj().status());
     result.size++;
   }
 
@@ -450,7 +448,7 @@ struct PatternInfos get_patterns_info(struct Zypp *_zypp,
     result.infos[i].icon = strdup(pattern->icon().c_str());
     result.infos[i].summary = strdup(pattern->summary().c_str());
     result.infos[i].order = strdup(pattern->order().c_str());
-    result.infos[i].selected = convert_selected(selectable);
+    result.infos[i].selected = convert_selected(selectable->theObj().status());
     result.size++;
   };
 
