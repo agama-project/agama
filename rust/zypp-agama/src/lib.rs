@@ -6,7 +6,7 @@ use std::{
 
 use errors::ZyppResult;
 use zypp_agama_sys::{
-    get_patterns, get_patterns_info, PatternNames, ProgressCallback, ProgressData, Status,
+    get_patterns, ProgressCallback, ProgressData, Status,
     ZyppProgressCallback,
 };
 
@@ -304,42 +304,6 @@ impl Zypp {
             }
             zypp_agama_sys::free_patterns(&patterns);
             Ok(r_patterns)
-        }
-    }
-
-    pub fn patterns_info(&self, names: Vec<&str>) -> ZyppResult<Vec<PatternInfo>> {
-        unsafe {
-            let mut status: Status = Status::default();
-            let status_ptr = &mut status as *mut _;
-            let c_names: Vec<CString> = names
-                .iter()
-                .map(|s| CString::new(*s).expect("CString must not contain internal NUL"))
-                .collect();
-            let c_ptr_names: Vec<*const c_char> =
-                c_names.iter().map(|c| c.as_c_str().as_ptr()).collect();
-            let pattern_names = PatternNames {
-                size: names.len() as u32,
-                names: c_ptr_names.as_ptr(),
-            };
-            let infos = get_patterns_info(self.ptr, pattern_names, status_ptr);
-            helpers::status_to_result_void(status)?;
-
-            let mut r_infos = Vec::with_capacity(infos.size as usize);
-            for i in 0..infos.size as usize {
-                let c_info = *(infos.infos.add(i));
-                let r_info = PatternInfo {
-                    name: string_from_ptr(c_info.name),
-                    category: string_from_ptr(c_info.category),
-                    icon: string_from_ptr(c_info.icon),
-                    description: string_from_ptr(c_info.description),
-                    summary: string_from_ptr(c_info.summary),
-                    order: string_from_ptr(c_info.order),
-                    selected: c_info.selected.into(),
-                };
-                r_infos.push(r_info);
-            }
-            zypp_agama_sys::free_pattern_infos(&infos);
-            Ok(r_infos)
         }
     }
 

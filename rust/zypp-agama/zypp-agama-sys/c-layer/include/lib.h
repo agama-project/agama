@@ -154,8 +154,6 @@ unsigned packages_to_install(struct Zypp *_zypp) noexcept;
 
 /// Representation of zypp::Pattern.
 /// https://doc.opensuse.org/projects/libzypp/HEAD/classzypp_1_1Pattern.html
-// Note: it will soon replace PatternInfo. It co-lives now as internmediate
-// steps for performance reasons elements are NOT owned
 struct Pattern {
   const char *name;        ///< owned
   const char *category;    ///< owned
@@ -178,37 +176,6 @@ struct Patterns {
 struct Patterns get_patterns(struct Zypp *_zypp,
                              struct Status *status) noexcept;
 void free_patterns(const struct Patterns *patterns) noexcept;
-
-struct PatternNames {
-  /// names of patterns
-  const char *const *const names;
-  /// size of names array
-  unsigned size;
-};
-/// Info from zypp::Pattern.
-/// https://doc.opensuse.org/projects/libzypp/HEAD/classzypp_1_1Pattern.html
-struct PatternInfo {
-  char *name;        ///< owned
-  char *category;    ///< owned
-  char *icon;        ///< owned
-  char *description; ///< owned
-  char *summary;     ///< owned
-  char *order;       ///< owned
-  enum RESOLVABLE_SELECTED selected;
-};
-
-struct PatternInfos {
-  struct PatternInfo *infos; ///< owned, *size* items
-  unsigned size;
-};
-
-/// Get Pattern details.
-/// Unknown patterns are simply omitted from the result. Match by
-/// PatternInfo.name, not by index.
-struct PatternInfos get_patterns_info(struct Zypp *_zypp,
-                                      struct PatternNames names,
-                                      struct Status *status) noexcept;
-void free_pattern_infos(const struct PatternInfos *infos) noexcept;
 
 void import_gpg_key(struct Zypp *zypp, const char *const pathname,
                     struct Status *status) noexcept;

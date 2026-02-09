@@ -523,69 +523,6 @@ const _: () = {
 };
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
-pub struct PatternNames {
-    #[doc = " names of patterns"]
-    pub names: *const *const ::std::os::raw::c_char,
-    #[doc = " size of names array"]
-    pub size: ::std::os::raw::c_uint,
-}
-#[allow(clippy::unnecessary_operation, clippy::identity_op)]
-const _: () = {
-    ["Size of PatternNames"][::std::mem::size_of::<PatternNames>() - 16usize];
-    ["Alignment of PatternNames"][::std::mem::align_of::<PatternNames>() - 8usize];
-    ["Offset of field: PatternNames::names"][::std::mem::offset_of!(PatternNames, names) - 0usize];
-    ["Offset of field: PatternNames::size"][::std::mem::offset_of!(PatternNames, size) - 8usize];
-};
-#[doc = " Info from zypp::Pattern.\n https://doc.opensuse.org/projects/libzypp/HEAD/classzypp_1_1Pattern.html"]
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct PatternInfo {
-    #[doc = "< owned"]
-    pub name: *mut ::std::os::raw::c_char,
-    #[doc = "< owned"]
-    pub category: *mut ::std::os::raw::c_char,
-    #[doc = "< owned"]
-    pub icon: *mut ::std::os::raw::c_char,
-    #[doc = "< owned"]
-    pub description: *mut ::std::os::raw::c_char,
-    #[doc = "< owned"]
-    pub summary: *mut ::std::os::raw::c_char,
-    #[doc = "< owned"]
-    pub order: *mut ::std::os::raw::c_char,
-    pub selected: RESOLVABLE_SELECTED,
-}
-#[allow(clippy::unnecessary_operation, clippy::identity_op)]
-const _: () = {
-    ["Size of PatternInfo"][::std::mem::size_of::<PatternInfo>() - 56usize];
-    ["Alignment of PatternInfo"][::std::mem::align_of::<PatternInfo>() - 8usize];
-    ["Offset of field: PatternInfo::name"][::std::mem::offset_of!(PatternInfo, name) - 0usize];
-    ["Offset of field: PatternInfo::category"]
-        [::std::mem::offset_of!(PatternInfo, category) - 8usize];
-    ["Offset of field: PatternInfo::icon"][::std::mem::offset_of!(PatternInfo, icon) - 16usize];
-    ["Offset of field: PatternInfo::description"]
-        [::std::mem::offset_of!(PatternInfo, description) - 24usize];
-    ["Offset of field: PatternInfo::summary"]
-        [::std::mem::offset_of!(PatternInfo, summary) - 32usize];
-    ["Offset of field: PatternInfo::order"][::std::mem::offset_of!(PatternInfo, order) - 40usize];
-    ["Offset of field: PatternInfo::selected"]
-        [::std::mem::offset_of!(PatternInfo, selected) - 48usize];
-};
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct PatternInfos {
-    #[doc = "< owned, *size* items"]
-    pub infos: *mut PatternInfo,
-    pub size: ::std::os::raw::c_uint,
-}
-#[allow(clippy::unnecessary_operation, clippy::identity_op)]
-const _: () = {
-    ["Size of PatternInfos"][::std::mem::size_of::<PatternInfos>() - 16usize];
-    ["Alignment of PatternInfos"][::std::mem::align_of::<PatternInfos>() - 8usize];
-    ["Offset of field: PatternInfos::infos"][::std::mem::offset_of!(PatternInfos, infos) - 0usize];
-    ["Offset of field: PatternInfos::size"][::std::mem::offset_of!(PatternInfos, size) - 8usize];
-};
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
 pub struct Repository {
     #[doc = "<"]
     pub enabled: bool,
@@ -679,13 +616,6 @@ unsafe extern "C" {
     #[doc = " Get Pattern details.\n Unknown patterns are simply omitted from the result. Match by\n PatternInfo.name, not by index."]
     pub fn get_patterns(_zypp: *mut Zypp, status: *mut Status) -> Patterns;
     pub fn free_patterns(patterns: *const Patterns);
-    #[doc = " Get Pattern details.\n Unknown patterns are simply omitted from the result. Match by\n PatternInfo.name, not by index."]
-    pub fn get_patterns_info(
-        _zypp: *mut Zypp,
-        names: PatternNames,
-        status: *mut Status,
-    ) -> PatternInfos;
-    pub fn free_pattern_infos(infos: *const PatternInfos);
     pub fn import_gpg_key(
         zypp: *mut Zypp,
         pathname: *const ::std::os::raw::c_char,

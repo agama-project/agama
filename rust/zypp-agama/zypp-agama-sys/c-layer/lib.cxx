@@ -422,52 +422,6 @@ void free_patterns(const struct Patterns *patterns) noexcept {
   free((void *)patterns->list);
 }
 
-struct PatternInfos get_patterns_info(struct Zypp *_zypp,
-                                      struct PatternNames names,
-                                      struct Status *status) noexcept {
-  PatternInfos result = {
-      (struct PatternInfo *)malloc(names.size * sizeof(PatternInfo)),
-      0 // initialize with zero and increase after each successful add of
-        // pattern info
-  };
-
-  for (unsigned j = 0; j < names.size; ++j) {
-    zypp::ui::Selectable::constPtr selectable =
-        zypp::ui::Selectable::get(zypp::ResKind::pattern, names.names[j]);
-    // we do not find any pattern
-    if (!selectable.get())
-      continue;
-
-    // we know here that we get only patterns
-    zypp::Pattern::constPtr pattern =
-        zypp::asKind<zypp::Pattern>(selectable->theObj().resolvable());
-    unsigned i = result.size;
-    result.infos[i].name = strdup(pattern->name().c_str());
-    result.infos[i].category = strdup(pattern->category().c_str());
-    result.infos[i].description = strdup(pattern->description().c_str());
-    result.infos[i].icon = strdup(pattern->icon().c_str());
-    result.infos[i].summary = strdup(pattern->summary().c_str());
-    result.infos[i].order = strdup(pattern->order().c_str());
-    result.infos[i].selected = convert_selected(selectable->theObj().status());
-    result.size++;
-  };
-
-  STATUS_OK(status);
-  return result;
-}
-
-void free_pattern_infos(const struct PatternInfos *infos) noexcept {
-  for (unsigned i = 0; i < infos->size; ++i) {
-    free(infos->infos[i].name);
-    free(infos->infos[i].category);
-    free(infos->infos[i].icon);
-    free(infos->infos[i].description);
-    free(infos->infos[i].summary);
-    free(infos->infos[i].order);
-  }
-  free(infos->infos);
-}
-
 bool run_solver(struct Zypp *zypp, bool only_required,
                 struct Status *status) noexcept {
   try {
