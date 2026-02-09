@@ -93,6 +93,33 @@ translations:
       服务器系统，旨在确保企业业务持续运作。作为安全和可适应的操作系统，它适用于本地、云端或边缘计算平台的关键业务工作负载，运行在需要长期支持、容许创新的基础设施之上。
     zh_TW: 一個開放、可靠、符合標準且具未來適應性的 Linux
       伺服器系統，能確保企業業務的持續運作。它是一個安全且具備適應力的作業系統，適用於受到長期支援、具備創新彈性並用於在內部、雲端與邊緣環境中執行關鍵業務工作負載的基礎架構。
+  mode:
+    standard:
+      name:
+        ca: Estàndard
+        cs: Standardní
+        de: Standard
+        id: Standar
+        ja: 標準
+      description:
+        ca: Sistema estàndard
+        cs: Standardní systém
+        de: Standardsystem
+        id: Sistem standar
+        ja: 標準システム
+    immutable:
+      name:
+        ca: Immutable
+        cs: Neměnitelný
+        de: Unveränderlich
+        id: Immutable
+        ja: 不変型
+      description:
+        ca: Sistema immutable amb actualitzacions atòmiques
+        cs: Neměnitelný systém s atomickými aktualizacemi
+        de: Unveränderliches System mit atomaren Aktualisierungen
+        id: Sistem immutable dengan pembaruan atomik
+        ja: 不可分な更新機能を持つ不変型システム
 software:
   installation_repositories: []
   installation_labels:
