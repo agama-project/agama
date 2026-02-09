@@ -20,15 +20,4 @@
  * find current contact information at www.suse.com.
  */
 
-import { System, Target } from "~/openapi/system/iscsi";
-
-function findTargetIndex(system: System, name: string): number | undefined {
-  return system.targets?.findIndex((t) => t.name === name);
-}
-
-function findTarget(system: System, name: string): Target | undefined {
-  return system.targets?.find((t) => t.name === name);
-}
-
-export default { findTargetIndex, findTarget };
 export type * from "~/openapi/system/iscsi";
