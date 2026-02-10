@@ -31,20 +31,12 @@ import {
   SelectProps,
 } from "@patternfly/react-core";
 import Text from "~/components/core/Text";
-import { N_, _ } from "~/i18n";
+import { _ } from "~/i18n";
 
 type StatusFilterProps = {
   value: string;
+  options: Record<string, string>;
   onChange: SelectProps["onSelect"];
-};
-
-const options = {
-  all: N_("all"),
-  connected: N_("Connected"),
-  connected_and_locked: N_("Connected and locked"),
-  connection_failed: N_("Connection failed"),
-  disconnected: N_("Disconnected"),
-  missing: N_("Missing"),
 };
 
 const ID = "iscsi-status-filter";
@@ -60,7 +52,7 @@ const ID = "iscsi-status-filter";
  * @privateRemarks There is an issue with a11y label for the PF/MenuToggle,
  * check https://github.com/patternfly/patternfly-react/issues/11805
  */
-export default function StatusFilter({ value, onChange }: StatusFilterProps) {
+export default function StatusFilter({ value, options, onChange }: StatusFilterProps) {
   const [isOpen, setIsOpen] = useState(false);
   const onToggle = () => setIsOpen(!isOpen);
 

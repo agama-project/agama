@@ -50,6 +50,26 @@ const disconnectedTarget = {
   locked: false,
 };
 
+const disconnectedBySystemTarget = {
+  name: "iqn.2023-01.com.example:disconnected_by_system",
+  address: "192.18.10.108",
+  port: 3263,
+  interface: "default",
+  startup: "onboot",
+  connected: false,
+  locked: true,
+};
+
+const disconnectionFailedTarget = {
+  name: "iqn.2023-01.com.example:disconnection_failed",
+  address: "192.16.10.133",
+  port: 3363,
+  interface: "default",
+  startup: "onboot",
+  connected: true,
+  locked: false,
+};
+
 const failedToConnectTarget = {
   name: "iqn.2023-01.com.example:connection_failed",
   address: "192.168.100.106",
@@ -61,7 +81,7 @@ const failedToConnectTarget = {
 };
 
 const lockedTarget = {
-  name: "iqn.2023-01.com.example:locked",
+  name: "iqn.2023-01.com.example:connected_by_system",
   address: "192.168.100.108",
   port: 3260,
   interface: "default",
@@ -81,6 +101,8 @@ const missingTarget = {
 const testingSystemTargets = [
   connectedTarget,
   disconnectedTarget,
+  disconnectionFailedTarget,
+  disconnectedBySystemTarget,
   failedToConnectTarget,
   lockedTarget,
 ];
@@ -152,8 +174,11 @@ describe("TargetsTable", () => {
 
       screen.getByText("iqn.2023-01.com.example:connected");
       screen.getByText("iqn.2023-01.com.example:connection_failed");
+      screen.getByText("iqn.2023-01.com.example:connected_by_system");
       screen.getByText("iqn.2023-01.com.example:disconnected");
-      screen.getByText("iqn.2023-01.com.example:locked");
+      screen.getByText("iqn.2023-01.com.example:disconnected_by_system");
+      screen.getByText("iqn.2023-01.com.example:disconnection_failed");
+      screen.getByText("iqn.2023-01.com.example:missing");
     });
 
     it("displays all column headers", () => {
@@ -223,10 +248,10 @@ describe("TargetsTable", () => {
 
       const rows = screen.getAllByRole("row");
       const lockedRow = rows.find((row) =>
-        within(row).queryByText("iqn.2023-01.com.example:locked"),
+        within(row).queryByText("iqn.2023-01.com.example:connected_by_system"),
       );
 
-      within(lockedRow).getByText("Connected and locked");
+      within(lockedRow).getByText("Connected by the system");
     });
 
     it("displays helper text for locked targets", () => {
@@ -249,6 +274,7 @@ describe("TargetsTable", () => {
       await user.type(nameFilter, "connected");
 
       screen.getByText("iqn.2023-01.com.example:connected");
+      screen.getByText("iqn.2023-01.com.example:connected_by_system");
       expect(screen.queryByText("iqn.2023-01.com.example:connection_failed")).toBeNull();
       expect(screen.queryByText("iqn.2023-01.com.example:locked")).toBeNull();
     });
@@ -261,7 +287,6 @@ describe("TargetsTable", () => {
 
       screen.getByText("iqn.2023-01.com.example:connection_failed");
       expect(screen.queryByText("iqn.2023-01.com.example:connected")).toBeNull();
-      expect(screen.queryByText("iqn.2023-01.com.example:locked")).toBeNull();
     });
 
     it("displays empty state when filters match no results", async () => {
@@ -308,8 +333,12 @@ describe("TargetsTable", () => {
       await user.click(connectedOption);
 
       screen.getByText("iqn.2023-01.com.example:connected");
-      screen.getByText("iqn.2023-01.com.example:locked");
       expect(screen.queryByText("iqn.2023-01.com.example:connection_failed")).toBeNull();
+      expect(screen.queryByText("iqn.2023-01.com.example:connected_by_system")).toBeNull();
+      expect(screen.queryByText("iqn.2023-01.com.example:disconnected")).toBeNull();
+      expect(screen.queryByText("iqn.2023-01.com.example:disconnected_by_system")).toBeNull();
+      expect(screen.queryByText("iqn.2023-01.com.example:disconnection_failed")).toBeNull();
+      expect(screen.queryByText("iqn.2023-01.com.example:missing")).toBeNull();
     });
 
     it("filters connection failed targets", async () => {
@@ -324,8 +353,12 @@ describe("TargetsTable", () => {
       await user.click(connectionFailedOption);
 
       screen.getByText("iqn.2023-01.com.example:connection_failed");
-      expect(screen.queryByText("iqn.2023-01.com.example:locked")).toBeNull();
       expect(screen.queryByText("iqn.2023-01.com.example:connected")).toBeNull();
+      expect(screen.queryByText("iqn.2023-01.com.example:connected_by_system")).toBeNull();
+      expect(screen.queryByText("iqn.2023-01.com.example:disconnected")).toBeNull();
+      expect(screen.queryByText("iqn.2023-01.com.example:disconnected_by_system")).toBeNull();
+      expect(screen.queryByText("iqn.2023-01.com.example:disconnection_failed")).toBeNull();
+      expect(screen.queryByText("iqn.2023-01.com.example:missing")).toBeNull();
     });
 
     it("filters disconnected targets", async () => {
@@ -339,9 +372,13 @@ describe("TargetsTable", () => {
       });
       await user.click(discconectedOption);
 
-      screen.getByText("iqn.2023-01.com.example:connection_failed");
+      screen.getByText("iqn.2023-01.com.example:disconnected");
       expect(screen.queryByText("iqn.2023-01.com.example:connected")).toBeNull();
-      expect(screen.queryByText("iqn.2023-01.com.example:locked")).toBeNull();
+      expect(screen.queryByText("iqn.2023-01.com.example:connection_failed")).toBeNull();
+      expect(screen.queryByText("iqn.2023-01.com.example:connected_by_system")).toBeNull();
+      expect(screen.queryByText("iqn.2023-01.com.example:disconnected_by_system")).toBeNull();
+      expect(screen.queryByText("iqn.2023-01.com.example:disconnection_failed")).toBeNull();
+      expect(screen.queryByText("iqn.2023-01.com.example:missing")).toBeNull();
     });
 
     it("filters missing targets", async () => {
@@ -357,25 +394,31 @@ describe("TargetsTable", () => {
 
       screen.getByText("iqn.2023-01.com.example:missing");
       expect(screen.queryByText("iqn.2023-01.com.example:connected")).toBeNull();
-      expect(screen.queryByText("iqn.2023-01.com.example:locked")).toBeNull();
-      expect(screen.queryByText("iqn.2023-01.com.example:disconnected")).toBeNull();
       expect(screen.queryByText("iqn.2023-01.com.example:connection_failed")).toBeNull();
+      expect(screen.queryByText("iqn.2023-01.com.example:connected_by_system")).toBeNull();
+      expect(screen.queryByText("iqn.2023-01.com.example:disconnected_by_system")).toBeNull();
+      expect(screen.queryByText("iqn.2023-01.com.example:disconnection_failed")).toBeNull();
+      expect(screen.queryByText("iqn.2023-01.com.example:disconnected")).toBeNull();
     });
 
-    it("filters connected and locked targets", async () => {
+    it("filters targets connected by the system", async () => {
       const { user } = installerRender(<TargetsTable />);
 
       const statusFilterToggle = screen.getByRole("button", { name: "Status filter toggle" });
       await user.click(statusFilterToggle);
       const statusOptions = screen.getByRole("listbox");
       const connectedAndLockedOption = within(statusOptions).getByRole("option", {
-        name: "Connected and locked",
+        name: "Connected by the system",
       });
       await user.click(connectedAndLockedOption);
 
-      screen.getByText("iqn.2023-01.com.example:locked");
+      screen.getByText("iqn.2023-01.com.example:connected_by_system");
       expect(screen.queryByText("iqn.2023-01.com.example:connected")).toBeNull();
       expect(screen.queryByText("iqn.2023-01.com.example:connection_failed")).toBeNull();
+      expect(screen.queryByText("iqn.2023-01.com.example:disconnected_by_system")).toBeNull();
+      expect(screen.queryByText("iqn.2023-01.com.example:disconnection_failed")).toBeNull();
+      expect(screen.queryByText("iqn.2023-01.com.example:disconnected")).toBeNull();
+      expect(screen.queryByText("iqn.2023-01.com.example:missing")).toBeNull();
     });
   });
 
@@ -469,23 +512,14 @@ describe("TargetsTable", () => {
         mockUseConfigFn.mockReturnValue({ targets: [failedToConnectTarget] });
       });
 
-      it("shows Delete action", async () => {
+      it("shows Cancel connection action that calls removeTarget when clicked", async () => {
         const { user } = installerRender(<TargetsTable />);
 
         const actionsButton = screen.getByRole("button", { name: /Actions for/i });
         await user.click(actionsButton);
 
-        screen.getByText("Delete");
-      });
-
-      it("calls removeTarget when Delete is clicked", async () => {
-        const { user } = installerRender(<TargetsTable />);
-
-        const actionsButton = screen.getByRole("button", { name: /Actions for/i });
-        await user.click(actionsButton);
-
-        const deleteAction = screen.getByText("Delete");
-        await user.click(deleteAction);
+        const cancelConnectionAction = screen.getByText("Cancel connection");
+        await user.click(cancelConnectionAction);
 
         expect(mockRemoveTargetFn).toHaveBeenCalledWith(
           "iqn.2023-01.com.example:connection_failed",

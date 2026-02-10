@@ -22,7 +22,7 @@
 
 import React, { useReducer } from "react";
 import { generatePath, useNavigate } from "react-router";
-import { isEmpty } from "radashi";
+import { isEmpty, pick } from "radashi";
 import { sprintf } from "sprintf-js";
 import {
   Button,
@@ -48,7 +48,7 @@ import { sortCollection, mergeSources } from "~/utils";
 import { STORAGE } from "~/routes/paths";
 import { useSystem } from "~/hooks/model/system/iscsi";
 import { useConfig, useRemoveTarget } from "~/hooks/model/config/iscsi";
-import { _ } from "~/i18n";
+import { _, N_ } from "~/i18n";
 
 import type { Target as ConfigTarget } from "~/openapi/config/iscsi";
 import type { Target as SystemTarget } from "~/openapi/system/iscsi";
@@ -61,7 +61,7 @@ type TargetToMerge = SystemTarget | ConfigTarget;
  *
  * All filters are optional and may be combined.
  */
-export type ISCSITargetsFilters = {
+type ISCSITargetsFilters = {
   name?: string;
   portal?: string;
   status?: string;
@@ -71,18 +71,104 @@ export type ISCSITargetsFilters = {
  * Predicate function for evaluating whether a iSCSI target meets a given
  * condition.
  *
- * Used internally to compose filter logic when narrowing down the list of
- * targets shown in the table.
+ * Created for reusing the filtering logic where needed, like in filteres for
+ * narrowing down the list of targets, at the time of building targets actions
+ * and so on.
+ *
+ * TODO: Move to a more appropiated place
  */
 type ISCSITargetCondition = (target) => boolean;
 
 /**
- * Checks if a given target is considered "missing": appears in config but not
- * in system.
+ * Predicate functions for determining iSCSI target status.
+ *
+ * Each predicate checks the combination of target sources (config/system),
+ * connection state, and lock status to determine the target's current status.
+ *
+ * TODO: Move to a more appropiated place
  */
-const isMissing = (target: MergedTarget): boolean => {
-  return target.sources.includes("config") && !target.sources.includes("system");
+export const statusMatches = {
+  // In both,  config and System
+  connected: (t: MergedTarget) =>
+    t.sources.includes("config") && t.sources.includes("system") && t.connected,
+
+  connection_failed: (t: MergedTarget) =>
+    t.sources.includes("config") && t.sources.includes("system") && !t.connected,
+
+  // Only in system
+  connected_by_system: (t: MergedTarget) =>
+    t.sources.includes("system") && !t.sources.includes("config") && t.connected && t.locked,
+
+  disconnected_by_system: (t: MergedTarget) =>
+    t.sources.includes("system") && !t.sources.includes("config") && !t.connected && t.locked,
+
+  disconnection_failed: (t: MergedTarget) =>
+    t.sources.includes("system") && !t.sources.includes("config") && t.connected && !t.locked,
+
+  disconnected: (t: MergedTarget) =>
+    t.sources.includes("system") && !t.sources.includes("config") && !t.connected && !t.locked,
+
+  // Only in config
+  missing: (t: MergedTarget) =>
+    t.sources.includes("config") && !t.sources.includes("system") && !t.connected,
+} as const;
+
+/**
+ * Valid status values for iSCSI targets.
+ *
+ * @see statusMatches for the logic determining each status
+ */
+export type TargetStatus = keyof typeof statusMatches;
+
+/**
+ * Returns status for given target
+ *
+ * TODO: Move to a more appropiated place
+ */
+
+/**
+ * Determines the status of an iSCSI target.
+ *
+ * @note
+ * Returns "unknown" if target doesn't match any status predicate.
+ * This should not happen in practice if STATUS_PREDICATES is complete.
+ *
+ * TODO: Move to a more appropiated place
+ */
+export const statusOf = (target: MergedTarget): TargetStatus | "unknown" => {
+  const keys = Object.keys(statusMatches) as TargetStatus[];
+
+  // Returns the first key where the predicate returns true
+  return keys.find((key) => statusMatches[key](target)) ?? "unknown";
 };
+
+/**
+ * Human-readable labels for iSCSI target statuses.
+ *
+ * Values use `N_()` for translation extraction. Translate with `_()` at render time.
+ *
+ * @example
+ * ```ts
+ * const status = getStatus(target);
+ * const label = _(STATUS_LABELS[status]);
+ * ```
+ * TODO: Move to a more appropiated place
+ */
+export const STATUS_LABELS: Record<TargetStatus, string> = {
+  connected: N_("Connected"),
+  connection_failed: N_("Connection failed"),
+  connected_by_system: N_("Connected by the system"),
+  disconnected_by_system: N_("Disconnected by the system"),
+  disconnection_failed: N_("Disconnection failed"),
+  disconnected: N_("Disconnected"),
+  missing: N_("Missing"),
+};
+
+/**
+ * A map of statuses human-readable status labels.
+ * TODO: Move to a more appropiated place
+ */
+type StatusKey = keyof typeof STATUS_LABELS;
 
 /**
  * Filters an array of targets based on given filters.
@@ -101,43 +187,11 @@ const filterTargets = (targets: MergedTarget[], filters: ISCSITargetsFilters): M
   }
 
   if (status && status !== "all") {
-    conditions.push((t) => {
-      switch (status) {
-        case "connected": {
-          return t.connected === true;
-        }
-
-        case "connected_and_locked": {
-          return t.connected === true && t.locked === true;
-        }
-
-        case "connection_failed": {
-          return (
-            t.connected === false && t.sources.includes("system") && t.sources.includes("config")
-          );
-        }
-
-        case "disconnected": {
-          return t.connected !== true;
-        }
-
-        case "missing": {
-          return isMissing(t);
-        }
-      }
-    });
+    const statusFilterFn = statusMatches[status as TargetStatus];
+    if (statusFilterFn) conditions.push(statusFilterFn);
   }
 
   return targets.filter((t) => conditions.every((conditionFn) => conditionFn(t)));
-};
-
-/**
- * Checks if a given target failed to connect.
- */
-const failedToConnect = (target: MergedTarget): boolean => {
-  return (
-    target.sources.includes("system") && target.sources.includes("config") && !target.connected
-  );
 };
 
 /**
@@ -164,28 +218,37 @@ const buildActions = (
 ) => {
   if (target.locked) return [];
 
-  const { connected, sources } = target;
-  const inConfig = sources.includes("config");
-  const inSystem = sources.includes("system");
-
   return [
-    !connected &&
-      !isMissing(target) && {
+    statusMatches.connected(target) && {
+      title: _("Disconnect"),
+      onClick: onDisconnect,
+      isDanger: true,
+    },
+
+    statusMatches.connection_failed(target) && [
+      {
         title: _("Connect"),
         onClick: onConnect,
       },
-    connected &&
-      inConfig &&
-      inSystem && {
-        title: _("Disconnect"),
-        onClick: onDisconnect,
+      {
+        title: _("Cancel connection"),
+        onClick: onDelete,
+        isDanger: true,
       },
-    (failedToConnect(target) || isMissing(target)) && {
+    ],
+
+    statusMatches.disconnected(target) && {
+      title: _("Connect"),
+      onClick: onConnect,
+    },
+
+    statusMatches.missing(target) && {
       title: _("Delete"),
       onClick: onDelete,
-      isDanger: true,
     },
-  ].filter(Boolean);
+  ]
+    .flatMap((i) => i)
+    .filter(Boolean);
 };
 
 /**
@@ -194,6 +257,8 @@ const buildActions = (
 type FiltersToolbarProps = {
   /** Current filter state */
   filters: ISCSITargetsFilters;
+  /** Avaialble status options to build the status filter */
+  statusOptions: Record<StatusKey, string>;
   /** Callback invoked when a filter value changes. */
   onFilterChange: (filter: keyof ISCSITargetsFilters, value: string) => void;
 };
@@ -201,7 +266,7 @@ type FiltersToolbarProps = {
 /**
  * Renders the toolbar used to filter targets.
  */
-const FiltersToolbar = ({ filters, onFilterChange }: FiltersToolbarProps) => (
+const FiltersToolbar = ({ filters, statusOptions, onFilterChange }: FiltersToolbarProps) => (
   <Toolbar>
     <ToolbarContent>
       <ToolbarGroup>
@@ -221,9 +286,15 @@ const FiltersToolbar = ({ filters, onFilterChange }: FiltersToolbarProps) => (
             onChange={(_, v) => onFilterChange("portal", v)}
           />
         </ToolbarItem>
-        <ToolbarItem>
-          <StatusFilter value={filters.status} onChange={(_, v) => onFilterChange("status", v)} />
-        </ToolbarItem>
+        {!isEmpty(statusOptions) && (
+          <ToolbarItem>
+            <StatusFilter
+              value={filters.status}
+              options={statusOptions}
+              onChange={(_, v) => onFilterChange("status", v)}
+            />
+          </ToolbarItem>
+        )}
       </ToolbarGroup>
     </ToolbarContent>
   </Toolbar>
@@ -416,23 +487,8 @@ const createColumns = ({ showIbft = false }: CreateColumnsParams) =>
     {
       // TRANSLATORS: table header for an iSCSI targets table
       name: _("Status"),
-      value: (t: MergedTarget) => {
-        // Target exists in config but it is not in system
-        if (isMissing(t)) return _("Missing");
-
-        // Failed to connect
-        if (failedToConnect(t)) return _("Connection failed");
-
-        // Not connected
-        if (!t.connected) return _("Disconnected");
-
-        // Connected but...
-        if (t.locked) return _("Connected and locked");
-        if (!t.sources.includes("config")) return _("Could not disconnect");
-
-        // Simply connected and not in above situations
-        return _("Connected");
-      },
+      // eslint-disable-next-line agama-i18n/string-literals
+      value: (t: MergedTarget) => _(STATUS_LABELS[statusOf(t)]),
     },
   ].filter(Boolean);
 
@@ -498,7 +554,13 @@ export default function TargetsTable() {
 
   return (
     <Content>
-      <FiltersToolbar filters={state.filters} onFilterChange={onFilterChange} />
+      {!isEmpty(targets) && (
+        <FiltersToolbar
+          filters={state.filters}
+          statusOptions={pick(STATUS_LABELS, targets.map(statusOf) as TargetStatus[])}
+          onFilterChange={onFilterChange}
+        />
+      )}
       <Divider />
       <SelectableDataTable
         columns={columns}
