@@ -86,6 +86,13 @@ impl MessageHandler<message::Install> for TasksRunner {
             .await
             .inspect_err(|e| tracing::error!("Installation failed: {e}"))?;
 
+        //
+        // Make sure to finish the progress
+        //
+        _ = self
+            .progress
+            .call(progress::message::Finish::new(Scope::Manager))
+            .await;
         tracing::info!("Installation finished");
         Ok(())
     }
@@ -114,6 +121,14 @@ impl MessageHandler<message::SetConfig> for TasksRunner {
         if let Err(error) = action.run(message.product, message.config).await {
             tracing::error!("Failed to set the configuration: {error}");
         }
+
+        //
+        // Make sure to finish the progress
+        //
+        _ = self
+            .progress
+            .call(progress::message::Finish::new(Scope::Manager))
+            .await;
         Ok(())
     }
 }
@@ -258,49 +273,119 @@ impl SetConfigAction {
     ) -> Result<(), service::Error> {
         checks::check_stage(&self.progress, Stage::Configuring).await?;
 
+        //
+        // Preparation
+        //
+        let mut steps = vec![
+            gettext("Storing security settings"),
+            gettext("Setting up the hostname"),
+            gettext("Setting up the network proxy"),
+            gettext("Importing user files"),
+            gettext("Running user pre-installation scripts"),
+            gettext("Storing questions settings"),
+            gettext("Storing localization settings"),
+            gettext("Storing users settings"),
+            gettext("Configuring iSCSI devices"),
+        ];
+
+        if config.network.is_some() {
+            steps.push(gettext("Setting up the network"));
+        }
+
+        if product.is_some() {
+            steps.extend_from_slice(&[
+                gettext("Preparing the software proposal"),
+                gettext("Preparing the storage proposal"),
+                gettext("Storing bootloader settings"),
+            ])
+        }
+
+        self.progress
+            .call(progress::message::StartWithSteps::new(
+                Scope::Manager,
+                steps,
+            ))
+            .await?;
+
+        //
+        // Set the configuration for each service
+        //
+        self.progress
+            .call(progress::message::Next::new(Scope::Manager))
+            .await?;
         self.security
             .call(security::message::SetConfig::new(config.security.clone()))
             .await?;
 
+        self.progress
+            .call(progress::message::Next::new(Scope::Manager))
+            .await?;
         self.hostname
             .call(hostname::message::SetConfig::new(config.hostname.clone()))
             .await?;
 
+        self.progress
+            .call(progress::message::Next::new(Scope::Manager))
+            .await?;
         self.proxy
             .call(proxy::message::SetConfig::new(config.proxy.clone()))
             .await?;
 
+        self.progress
+            .call(progress::message::Next::new(Scope::Manager))
+            .await?;
         self.files
             .call(files::message::SetConfig::new(config.files.clone()))
             .await?;
 
+        self.progress
+            .call(progress::message::Next::new(Scope::Manager))
+            .await?;
         self.files
             .call(files::message::RunScripts::new(ScriptsGroup::Pre))
             .await?;
 
+        self.progress
+            .call(progress::message::Next::new(Scope::Manager))
+            .await?;
         self.questions
             .call(question::message::SetConfig::new(config.questions.clone()))
             .await?;
 
+        self.progress
+            .call(progress::message::Next::new(Scope::Manager))
+            .await?;
         self.l10n
             .call(l10n::message::SetConfig::new(config.l10n.clone()))
             .await?;
 
+        self.progress
+            .call(progress::message::Next::new(Scope::Manager))
+            .await?;
         self.users
             .call(users::message::SetConfig::new(config.users.clone()))
             .await?;
 
+        self.progress
+            .call(progress::message::Next::new(Scope::Manager))
+            .await?;
         self.iscsi
             .call(iscsi::message::SetConfig::new(config.iscsi.clone()))
             .await?;
 
         if let Some(network) = config.network.clone() {
+            self.progress
+                .call(progress::message::Next::new(Scope::Manager))
+                .await?;
             self.network.update_config(network).await?;
             self.network.apply().await?;
         }
 
         match &product {
             Some(product) => {
+                self.progress
+                    .call(progress::message::Next::new(Scope::Manager))
+                    .await?;
                 self.software
                     .call(software::message::SetConfig::new(
                         Arc::clone(product),
@@ -308,6 +393,9 @@ impl SetConfigAction {
                     ))
                     .await?;
 
+                self.progress
+                    .call(progress::message::Next::new(Scope::Manager))
+                    .await?;
                 self.storage
                     .call(storage::message::SetConfig::new(
                         Arc::clone(product),
@@ -316,6 +404,9 @@ impl SetConfigAction {
                     .await?;
 
                 // call bootloader always after storage to ensure that bootloader reflect new storage settings
+                self.progress
+                    .call(progress::message::Next::new(Scope::Manager))
+                    .await?;
                 self.bootloader
                     .call(bootloader::message::SetConfig::new(
                         config.bootloader.clone(),
