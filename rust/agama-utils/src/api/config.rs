@@ -50,6 +50,7 @@ pub struct Config {
     pub files: Option<files::Config>,
     #[serde(flatten)]
     pub users: Option<users::Config>,
+    #[serde(flatten)]
     pub s390: Option<s390::Config>,
 }
 
