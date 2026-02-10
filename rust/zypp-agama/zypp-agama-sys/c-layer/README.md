@@ -24,4 +24,5 @@ that allows to call easily libzypp functionality from languages that have issue 
 - if pointer provided by method is non-trivial ( usually struct ), then there have to be API call to free it.
 - if method gets any pointer, it is still owned by caller who is responsible for its deallocation.
 - if callback method receive any pointer, it is owned by library and library will deallocate it after callback finish.
+- if a pointer is owned by the library (and should not be freed by the caller), it must be explicitly documented (e.g. `///< library owned`).
 - ideally C layer should only have runtime dependency on libzypp and libstdc++

@@ -10,6 +10,9 @@ pub fn empty_progress(_value: i64, _text: String) -> bool {
     true
 }
 
+// empty init target callback
+pub fn empty_init_target_progress(_text: String, _stage: u32, _total: u32) {}
+
 pub enum ProblemResponse {
     RETRY,
     ABORT,

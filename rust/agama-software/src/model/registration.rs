@@ -67,6 +67,8 @@ pub struct Registration {
     // `to_registration_info` function.
     connect_params: ConnectParams,
     creds: Credentials,
+    /// list of services for each registered product
+    /// the first service is always the one for base product registration
     services: Vec<suseconnect_agama::Service>,
     // Holds the addons information because the status cannot be obtained from SCC yet
     // (e.g., whether and add-on is register or its registration code).
@@ -265,6 +267,10 @@ impl Registration {
 
     fn find_registered_addon(&self, id: &str) -> Option<&Addon> {
         self.addons.iter().find(|a| a.id == id)
+    }
+
+    pub fn base_product_service_name(&self) -> Option<String> {
+        self.services.first().map(|s| s.name.clone())
     }
 }
 
