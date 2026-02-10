@@ -21,13 +21,14 @@
 use std::sync::Arc;
 
 use crate::{
-    bootloader, files, hostname, iscsi, l10n, proxy, security, service, software, storage,
+    bootloader, checks, files, hostname, iscsi, l10n, proxy, security, service, software, storage,
     tasks::message, users,
 };
 use agama_network::NetworkSystemClient;
 use agama_utils::{
     actor::{Actor, Handler, MessageHandler},
     api::{files::scripts::ScriptsGroup, status::Stage, Config, Scope},
+    issue,
     products::ProductSpec,
     progress, question,
 };
@@ -46,6 +47,7 @@ pub struct TasksRunner {
     pub files: Handler<files::Service>,
     pub hostname: Handler<hostname::Service>,
     pub iscsi: Handler<iscsi::Service>,
+    pub issues: Handler<issue::Service>,
     pub l10n: Handler<l10n::Service>,
     pub network: NetworkSystemClient,
     pub progress: Handler<progress::Service>,
@@ -63,9 +65,10 @@ impl Actor for TasksRunner {
 
 #[async_trait]
 impl MessageHandler<message::Install> for TasksRunner {
-    /// It returns the status of the installation.
+    /// It starts the installation process.
     async fn handle(&mut self, _message: message::Install) -> Result<(), service::Error> {
         let action = InstallAction {
+            issues: self.issues.clone(),
             hostname: self.hostname.clone(),
             l10n: self.l10n.clone(),
             network: self.network.clone(),
@@ -76,14 +79,21 @@ impl MessageHandler<message::Install> for TasksRunner {
             progress: self.progress.clone(),
             users: self.users.clone(),
         };
-        action.run().await;
+
+        tracing::info!("Installation started");
+        action
+            .run()
+            .await
+            .inspect_err(|e| tracing::error!("Installation failed: {e}"))?;
+
+        tracing::info!("Installation finished");
         Ok(())
     }
 }
 
 #[async_trait]
 impl MessageHandler<message::SetConfig> for TasksRunner {
-    /// It returns the status of the installation.
+    /// It sets the configuration.
     async fn handle(&mut self, message: message::SetConfig) -> Result<(), service::Error> {
         let action = SetConfigAction {
             bootloader: self.bootloader.clone(),
@@ -92,6 +102,7 @@ impl MessageHandler<message::SetConfig> for TasksRunner {
             iscsi: self.iscsi.clone(),
             l10n: self.l10n.clone(),
             network: self.network.clone(),
+            progress: self.progress.clone(),
             proxy: self.proxy.clone(),
             questions: self.questions.clone(),
             security: self.security.clone(),
@@ -112,6 +123,7 @@ impl MessageHandler<message::SetConfig> for TasksRunner {
 /// This action runs on a separate Tokio task to prevent the manager from blocking.
 struct InstallAction {
     hostname: Handler<hostname::Service>,
+    issues: Handler<issue::Service>,
     l10n: Handler<l10n::Service>,
     network: NetworkSystemClient,
     proxy: Handler<proxy::Service>,
@@ -124,23 +136,20 @@ struct InstallAction {
 
 impl InstallAction {
     /// Runs the installation process on a separate Tokio task.
-    pub async fn run(mut self) {
+    pub async fn run(mut self) -> Result<(), service::Error> {
+        checks::check_stage(&self.progress, Stage::Configuring).await?;
+        checks::check_issues(&self.issues).await?;
+        checks::check_progress(&self.progress).await?;
+
         tracing::info!("Installation started");
         if let Err(error) = self.install().await {
             tracing::error!("Installation failed: {error}");
-            if let Err(error) = self
-                .progress
-                .call(progress::message::SetStage::new(Stage::Failed))
-                .await
-            {
-                tracing::error!(
-                    "It was not possible to set the stage to {}: {error}",
-                    Stage::Failed
-                );
-            }
-        } else {
-            tracing::info!("Installation finished");
+            self.set_stage(Stage::Failed).await;
+            return Err(error);
         }
+
+        tracing::info!("Installation finished");
+        Ok(())
     }
 
     async fn install(&mut self) -> Result<(), service::Error> {
@@ -210,6 +219,16 @@ impl InstallAction {
             .await?;
         Ok(())
     }
+
+    async fn set_stage(&self, stage: Stage) {
+        if let Err(error) = self
+            .progress
+            .call(progress::message::SetStage::new(stage))
+            .await
+        {
+            tracing::error!("It was not possible to set the stage to {}: {error}", stage);
+        }
+    }
 }
 
 /// Implements the set config logic.
@@ -223,6 +242,7 @@ struct SetConfigAction {
     l10n: Handler<l10n::Service>,
     network: NetworkSystemClient,
     proxy: Handler<proxy::Service>,
+    progress: Handler<progress::Service>,
     questions: Handler<question::Service>,
     security: Handler<security::Service>,
     software: Handler<software::Service>,
@@ -236,6 +256,8 @@ impl SetConfigAction {
         product: Option<Arc<RwLock<ProductSpec>>>,
         config: Config,
     ) -> Result<(), service::Error> {
+        checks::check_stage(&self.progress, Stage::Configuring).await?;
+
         self.security
             .call(security::message::SetConfig::new(config.security.clone()))
             .await?;

@@ -19,7 +19,7 @@
 // find current contact information at www.suse.com.
 
 use crate::{
-    bootloader, files, hardware, hostname, iscsi, l10n, message, network, proxy, security,
+    bootloader, checks, files, hardware, hostname, iscsi, l10n, message, network, proxy, security,
     software, storage, tasks, users,
 };
 use agama_utils::{
@@ -39,7 +39,7 @@ use merge::Merge;
 use network::NetworkSystemClient;
 use serde_json::Value;
 use std::{collections::HashMap, process::Command, sync::Arc};
-use tokio::sync::{broadcast, mpsc, RwLock};
+use tokio::sync::{broadcast, RwLock};
 
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
@@ -338,6 +338,7 @@ impl Starter {
             files: files.clone(),
             hostname: hostname.clone(),
             iscsi: iscsi.clone(),
+            issues: issues.clone(),
             l10n: l10n.clone(),
             network: network.clone(),
             progress: progress.clone(),
@@ -449,7 +450,6 @@ impl Service {
     }
 
     async fn set_config(&mut self, config: Config) -> Result<(), Error> {
-        tracing::debug!("SetConfig: {config:?}");
         self.set_product(&config)?;
         self.config = config;
 
@@ -517,34 +517,6 @@ impl Service {
             let issue = Issue::new("no_product", "No product has been selected.");
             self.issues
                 .cast(issue::message::Set::new(Scope::Manager, vec![issue]))?;
-        }
-        Ok(())
-    }
-
-    async fn check_stage(&self, expected: Stage) -> Result<(), Error> {
-        let current = self.progress.call(progress::message::GetStage).await?;
-        if current != expected {
-            return Err(Error::UnexpectedStage { expected, current });
-        }
-        Ok(())
-    }
-
-    async fn check_issues(&self) -> Result<(), Error> {
-        let issues = self.issues.call(issue::message::Get).await?;
-        if !issues.is_empty() {
-            return Err(Error::PendingIssues {
-                issues: issues.clone(),
-            });
-        }
-        Ok(())
-    }
-
-    async fn check_progress(&self) -> Result<(), Error> {
-        let progress = self.progress.call(progress::message::GetProgress).await?;
-        if !progress.is_empty() {
-            return Err(Error::Busy {
-                scopes: progress.iter().map(|p| p.scope).collect(),
-            });
         }
         Ok(())
     }
@@ -687,7 +659,7 @@ impl MessageHandler<message::GetConfig> for Service {
 impl MessageHandler<message::SetConfig> for Service {
     /// Sets the user configuration with the given values.
     async fn handle(&mut self, message: message::SetConfig) -> Result<(), Error> {
-        self.check_stage(Stage::Configuring).await?;
+        checks::check_stage(&self.progress, Stage::Configuring).await?;
         self.set_config(message.config).await
     }
 }
@@ -699,7 +671,7 @@ impl MessageHandler<message::UpdateConfig> for Service {
     /// It merges the current config with the given one. If some scope is missing in the given
     /// config, then it keeps the values from the current config.
     async fn handle(&mut self, message: message::UpdateConfig) -> Result<(), Error> {
-        self.check_stage(Stage::Configuring).await?;
+        checks::check_stage(&self.progress, Stage::Configuring).await?;
         let mut new_config = message.config;
         new_config.merge(self.config.clone());
         self.set_config(new_config).await
@@ -758,29 +730,26 @@ impl MessageHandler<message::RunAction> for Service {
     async fn handle(&mut self, message: message::RunAction) -> Result<(), Error> {
         match message.action {
             Action::ConfigureL10n(config) => {
-                self.check_stage(Stage::Configuring).await?;
+                checks::check_stage(&self.progress, Stage::Configuring).await?;
                 self.configure_l10n(config).await?;
             }
             Action::DiscoverISCSI(config) => {
-                self.check_stage(Stage::Configuring).await?;
+                checks::check_stage(&self.progress, Stage::Configuring).await?;
                 self.discover_iscsi(config).await?;
             }
             Action::ActivateStorage => {
-                self.check_stage(Stage::Configuring).await?;
+                checks::check_stage(&self.progress, Stage::Configuring).await?;
                 self.activate_storage().await?;
             }
             Action::ProbeStorage => {
-                self.check_stage(Stage::Configuring).await?;
+                checks::check_stage(&self.progress, Stage::Configuring).await?;
                 self.probe_storage().await?;
             }
             Action::Install => {
-                self.check_stage(Stage::Configuring).await?;
-                self.check_issues().await?;
-                self.check_progress().await?;
                 self.tasks.cast(tasks::message::Install)?;
             }
             Action::Finish(method) => {
-                self.check_stage(Stage::Finished).await?;
+                checks::check_stage(&self.progress, Stage::Finished).await?;
                 let action = FinishAction::new(method);
                 action.run();
             }
@@ -801,7 +770,7 @@ impl MessageHandler<message::GetStorageModel> for Service {
 impl MessageHandler<message::SetStorageModel> for Service {
     /// It sets the storage model.
     async fn handle(&mut self, message: message::SetStorageModel) -> Result<(), Error> {
-        self.check_stage(Stage::Configuring).await?;
+        checks::check_stage(&self.progress, Stage::Configuring).await?;
         Ok(self
             .storage
             .call(storage::message::SetConfigModel::new(message.model))
@@ -816,7 +785,7 @@ impl MessageHandler<message::SolveStorageModel> for Service {
         &mut self,
         message: message::SolveStorageModel,
     ) -> Result<Option<Value>, Error> {
-        self.check_stage(Stage::Configuring).await?;
+        checks::check_stage(&self.progress, Stage::Configuring).await?;
         Ok(self
             .storage
             .call(storage::message::SolveConfigModel::new(message.model))
@@ -829,7 +798,7 @@ impl MessageHandler<message::SolveStorageModel> for Service {
 impl MessageHandler<software::message::SetResolvables> for Service {
     /// It sets the software resolvables.
     async fn handle(&mut self, message: software::message::SetResolvables) -> Result<(), Error> {
-        self.check_stage(Stage::Configuring).await?;
+        checks::check_stage(&self.progress, Stage::Configuring).await?;
         self.software.call(message).await?;
         Ok(())
     }

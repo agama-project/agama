@@ -37,7 +37,8 @@ pub use agama_software as software;
 pub use agama_storage as storage;
 pub use agama_users as users;
 
-mod tasks;
+pub(crate) mod checks;
+pub(crate) mod tasks;
 
 pub mod test_utils;
 
