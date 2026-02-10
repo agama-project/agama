@@ -325,16 +325,10 @@ export default function ProposalPage(): React.ReactNode {
 
   if (resetNeeded) return;
 
-  // FIXME: relocate devices menu
-  //   <ConnectedDevicesMenu /> */
   return (
     <Page
-      breadcrumbs={[
-        {
-          label: _("Storage"),
-          menu: <ConnectedDevicesMenu />,
-        },
-      ]}
+      breadcrumbs={[{ label: _("Storage") }]}
+      centerSlot={<ConnectedDevicesMenu />}
       progress={{ scope: "storage", ensureRefetched: STORAGE_MODEL_KEY }}
     >
       <Page.Content>

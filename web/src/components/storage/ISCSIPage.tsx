@@ -25,7 +25,6 @@ import { Grid, GridItem } from "@patternfly/react-core";
 import InitiatorSection from "~/components/storage/iscsi/InitiatorSection";
 import Page from "~/components/core/Page";
 import TargetsTable from "~/components/storage/iscsi/TargetsTable";
-import ConnectedDevicesMenu from "~/components/storage/ConnectedDevicesMenu";
 import { STORAGE } from "~/routes/paths";
 import { _ } from "~/i18n";
 
@@ -36,7 +35,6 @@ export default function ISCSIPage() {
         {
           label: _("Storage"),
           path: STORAGE.root,
-          menu: <ConnectedDevicesMenu />,
         },
         { label: _("iSCSI") },
       ]}
