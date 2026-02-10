@@ -1,4 +1,4 @@
-// Copyright (c) [2024] SUSE LLC
+// Copyright (c) [2026] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -18,15 +18,28 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-//! Implements support for handling the security settings, like SSL certificates.
+use std::sync::Arc;
 
-pub mod client;
-pub mod http_client;
-pub mod model;
-pub mod proxies;
-pub mod settings;
-pub mod store;
+use agama_utils::{actor::Message, api::Config, products::ProductSpec};
+use tokio::sync::RwLock;
 
-pub use http_client::{SecurityHTTPClient, SecurityHTTPClientError};
-pub use settings::SecuritySettings;
-pub use store::{SecurityStore, SecurityStoreError};
+pub struct Install;
+
+impl Message for Install {
+    type Reply = ();
+}
+
+pub struct SetConfig {
+    pub product: Option<Arc<RwLock<ProductSpec>>>,
+    pub config: Config,
+}
+
+impl SetConfig {
+    pub fn new(product: Option<Arc<RwLock<ProductSpec>>>, config: Config) -> Self {
+        SetConfig { config, product }
+    }
+}
+
+impl Message for SetConfig {
+    type Reply = ();
+}

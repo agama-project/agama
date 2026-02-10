@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri Feb  6 15:25:36 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Provide new D-Bus API for DASD (gh#agama-project/agama#3110).
+
+-------------------------------------------------------------------
 Wed Feb  4 14:01:15 UTC 2026 - Ancor Gonzalez Sosa <ancor@suse.com>
 
 - Identify iSCSI nodes using the combination of name and portal

@@ -27,12 +27,13 @@ use agama_software::{self as software, Resolvable, ResolvableType};
 use agama_utils::{
     actor::{self, Actor, Handler, MessageHandler},
     api::files::{
-        scripts::{self, ScriptsRepository},
+        scripts::{self, ScriptsGroup, ScriptsRepository},
         user_file, ScriptsConfig, UserFile,
     },
     progress, question,
 };
 use async_trait::async_trait;
+use strum::IntoEnumIterator;
 use tokio::sync::Mutex;
 
 use crate::{message, ScriptsRunner};
@@ -128,9 +129,15 @@ impl Service {
         Starter::new(progress, questions, software)
     }
 
+    /// Clear the scripts.
+    ///
+    /// Keep the pre-scripts because they are expected to run as soon as they are imported.
     pub async fn clear_scripts(&mut self) -> Result<(), Error> {
         let mut repo = self.scripts.lock().await;
-        repo.clear()?;
+        let groups: Vec<_> = ScriptsGroup::iter()
+            .filter(|g| g != &ScriptsGroup::Pre)
+            .collect();
+        repo.clear(groups.as_slice())?;
         Ok(())
     }
 

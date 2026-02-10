@@ -37,6 +37,9 @@ pub use agama_software as software;
 pub use agama_storage as storage;
 pub use agama_users as users;
 
+pub(crate) mod checks;
+pub(crate) mod tasks;
+
 pub mod test_utils;
 
 #[cfg(test)]
@@ -137,25 +140,6 @@ mod test {
 
     #[test_context(Context)]
     #[tokio::test]
-    async fn test_update_config_without_product(ctx: &mut Context) {
-        let input_config = Config {
-            l10n: Some(l10n::Config {
-                locale: Some("es_ES.UTF-8".to_string()),
-                keymap: Some("es".to_string()),
-                timezone: Some("Atlantic/Canary".to_string()),
-            }),
-            ..Default::default()
-        };
-
-        let error = ctx
-            .handler
-            .call(message::SetConfig::new(input_config.clone()))
-            .await;
-        assert!(matches!(error, Err(crate::service::Error::MissingProduct)));
-    }
-
-    #[test_context(Context)]
-    #[tokio::test]
     async fn test_patch_config(ctx: &mut Context) -> Result<(), Error> {
         select_product(&ctx.handler).await?;
 
@@ -181,30 +165,6 @@ mod test {
         assert!(l10n_config.locale.is_some());
         assert!(l10n_config.keymap.is_some());
         assert!(l10n_config.timezone.is_some());
-
-        Ok(())
-    }
-
-    #[test_context(Context)]
-    #[tokio::test]
-    async fn test_patch_config_without_product(ctx: &mut Context) -> Result<(), Error> {
-        let input_config = Config {
-            l10n: Some(l10n::Config {
-                keymap: Some("es".to_string()),
-                ..Default::default()
-            }),
-            ..Default::default()
-        };
-
-        let result = ctx
-            .handler
-            .call(message::UpdateConfig::new(input_config.clone()))
-            .await;
-        assert!(matches!(result, Err(crate::service::Error::MissingProduct)));
-
-        let extended_config = ctx.handler.call(message::GetExtendedConfig).await?;
-        let l10n_config = extended_config.l10n.unwrap();
-        assert_eq!(l10n_config.keymap, Some("us".to_string()));
 
         Ok(())
     }

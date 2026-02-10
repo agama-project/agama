@@ -641,14 +641,52 @@ impl ZyppServer {
         Ok(())
     }
 
-    fn patterns(&self, product: &ProductSpec, zypp: &zypp_agama::Zypp) -> ZyppResult<Vec<Pattern>> {
-        let pattern_names: Vec<_> = product
+    fn user_patterns<'a>(
+        &self,
+        product: &'a ProductSpec,
+        zypp: &zypp_agama::Zypp,
+    ) -> ZyppResult<impl Iterator<Item = zypp_agama::Pattern> + use<'a, '_>> {
+        let product_pattern_names: Vec<_> = product
             .software
             .user_patterns
             .iter()
             .map(|p| p.name())
             .collect();
+        let repositories = zypp.list_repositories()?;
+        let zypp_patterns = zypp.list_patterns()?;
 
+        Ok(zypp_patterns.into_iter().filter(move |p| {
+            // lets explain here logic for user selectable patterns
+            // if pattern is listed in product pattern names then use it
+            // else include only patterns coming from repository that is
+            // NOT predefined as agama-* one neither from repository
+            // added by base product registration
+            if product_pattern_names.contains(&p.name.as_str()) {
+                return true;
+            }
+
+            let repository = repositories.iter().find(|r| r.alias == p.repo_alias);
+            let Some(repository) = repository else {
+                tracing::error!(
+                    "Unknown alias {} found in pattern selectable.",
+                    p.repo_alias
+                );
+                return false;
+            };
+            if repository.alias.starts_with("agama-") {
+                return false;
+            }
+
+            if let RegistrationStatus::Registered(registration) = &self.registration {
+                repository.service.is_some()
+                    && repository.service != registration.base_product_service_name()
+            } else {
+                false
+            }
+        }))
+    }
+
+    fn patterns(&self, product: &ProductSpec, zypp: &zypp_agama::Zypp) -> ZyppResult<Vec<Pattern>> {
         let preselected_patterns: Vec<_> = product
             .software
             .user_patterns
@@ -657,10 +695,8 @@ impl ZyppServer {
             .map(|p| p.name())
             .collect();
 
-        let patterns = zypp.patterns_info(pattern_names)?;
-
-        let patterns = patterns
-            .into_iter()
+        let patterns = self
+            .user_patterns(product, zypp)?
             .map(|p| {
                 let preselected = preselected_patterns.contains(&p.name.as_str());
                 Pattern {
@@ -765,18 +801,12 @@ impl ZyppServer {
         product: &ProductSpec,
         zypp: &zypp_agama::Zypp,
     ) -> Result<HashMap<String, SelectedBy>, ZyppServerError> {
-        let pattern_names = product
-            .software
-            .user_patterns
-            .iter()
-            .map(|p| p.name())
-            .collect();
-        let patterns_info = zypp.patterns_info(pattern_names);
-        patterns_info
+        self.user_patterns(product, zypp)
             .map(|patterns| {
                 patterns
-                    .iter()
                     .map(|pattern| {
+                        // NOTE: cannot be implemented From as one lives in agama-utils which does not depend on zypp-agama and should not
+                        // and other way it also does not make sense
                         let tag = match pattern.selected {
                             zypp_agama::ResolvableSelected::Installation => SelectedBy::Auto,
                             zypp_agama::ResolvableSelected::Not => SelectedBy::None,

@@ -44,7 +44,6 @@
 //! As said, those modules might implement additional stuff, like specific types, clients, etc.
 
 pub mod auth;
-pub mod bootloader;
 pub mod context;
 pub mod error;
 pub mod hostname;
@@ -60,10 +59,8 @@ pub mod profile;
 pub mod progress;
 pub mod proxies;
 pub mod questions;
-pub mod security;
 pub mod storage;
 mod store;
-pub mod users;
 pub use store::Store;
 pub mod utils;
 pub use agama_utils::{dbus, openapi};

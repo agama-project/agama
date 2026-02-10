@@ -24,6 +24,7 @@ use agama_utils::api::users::Config;
 use std::fs;
 use std::fs::{OpenOptions, Permissions};
 use std::io::Write;
+use std::ops::{Deref, DerefMut};
 use std::os::unix::fs::{OpenOptionsExt, PermissionsExt};
 use std::path::{Path, PathBuf};
 use std::process::{Command, Stdio};
@@ -34,6 +35,62 @@ pub trait ModelAdapter: Send + 'static {
     /// at the end of the installation.
     fn install(&self, _config: &Config) -> Result<(), service::Error> {
         Ok(())
+    }
+}
+
+/// A wrapper for common std::process::Command for use in chroot
+///
+/// It basically creates Command for chroot and command to be run
+/// in chrooted environment is passed as an argument.
+///
+/// Example use:
+/// ```
+/// # use agama_users::ChrootCommand;
+/// # use agama_users::service;
+/// # fn main() -> Result<(), service::Error> {
+/// let cmd = ChrootCommand::new("/tmp".into())?
+///   .cmd("echo")
+///   .args(["Hello world!"]);
+/// # Ok(())
+/// # }
+/// ```
+pub struct ChrootCommand {
+    command: Command,
+}
+
+impl ChrootCommand {
+    pub fn new(chroot: PathBuf) -> Result<Self, service::Error> {
+        if !chroot.is_dir() {
+            return Err(service::Error::CommandFailed(String::from(
+                "Failed to chroot",
+            )));
+        }
+
+        let mut cmd = Command::new("chroot");
+
+        cmd.arg(chroot);
+
+        Ok(Self { command: cmd })
+    }
+
+    pub fn cmd(mut self, command: &str) -> Self {
+        self.command.arg(command);
+
+        self
+    }
+}
+
+impl Deref for ChrootCommand {
+    type Target = Command;
+
+    fn deref(&self) -> &Self::Target {
+        &self.command
+    }
+}
+
+impl DerefMut for ChrootCommand {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.command
     }
 }
 
@@ -49,15 +106,6 @@ impl Model {
         }
     }
 
-    /// Wrapper for creating Command which works in installation chroot
-    fn chroot_command(&self) -> Command {
-        let mut cmd = Command::new("chroot");
-
-        cmd.arg(&self.install_dir);
-
-        cmd
-    }
-
     /// Reads first user's data from given config and updates its setup accordingly
     fn add_first_user(&self, user: &FirstUserConfig) -> Result<(), service::Error> {
         let Some(ref user_name) = user.user_name else {
@@ -67,9 +115,9 @@ impl Model {
             return Err(service::Error::MissingUserData);
         };
 
-        let useradd = self
-            .chroot_command()
-            .args(["useradd", "-G", "wheel", &user_name])
+        let useradd = ChrootCommand::new(self.install_dir.clone())?
+            .cmd("useradd")
+            .args(["-G", "wheel", &user_name])
             .output()?;
 
         if !useradd.status.success() {
@@ -113,8 +161,7 @@ impl Model {
         user_name: &str,
         user_password: &UserPassword,
     ) -> Result<(), service::Error> {
-        let mut passwd_cmd = self.chroot_command();
-        passwd_cmd.arg("chpasswd");
+        let mut passwd_cmd = ChrootCommand::new(self.install_dir.clone())?.cmd("chpasswd");
 
         if user_password.hashed_password {
             passwd_cmd.arg("-e");
@@ -163,9 +210,9 @@ impl Model {
 
     /// Enables sshd service in the target system
     fn enable_sshd_service(&self) -> Result<(), service::Error> {
-        let systemctl = self
-            .chroot_command()
-            .args(["systemctl", "enable", "sshd.service"])
+        let systemctl = ChrootCommand::new(self.install_dir.clone())?
+            .cmd("systemctl")
+            .args(["enable", "sshd.service"])
             .output()?;
 
         if !systemctl.status.success() {
@@ -183,9 +230,9 @@ impl Model {
 
     /// Opens the SSH port in firewall in the target system
     fn open_ssh_port(&self) -> Result<(), service::Error> {
-        let firewall_cmd = self
-            .chroot_command()
-            .args(["firewall-offline-cmd", "--add-service=ssh"])
+        let firewall_cmd = ChrootCommand::new(self.install_dir.clone())?
+            .cmd("firewall-offline-cmd")
+            .args(["-add-service=ssh"])
             .output()?;
 
         // ignore error if the firewall is not installed, in that case we do need to open the port,
@@ -220,9 +267,9 @@ impl Model {
             return Ok(());
         };
 
-        let chfn = self
-            .chroot_command()
-            .args(["chfn", "-f", &full_name, &user_name])
+        let chfn = ChrootCommand::new(self.install_dir.clone())?
+            .cmd("chfn")
+            .args(["-f", &full_name, &user_name])
             .output()?;
 
         if !chfn.status.success() {

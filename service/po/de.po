@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-01-29 03:54+0000\n"
+"POT-Creation-Date: 2026-02-09 04:10+0000\n"
 "PO-Revision-Date: 2026-01-28 23:04+0000\n"
 "Last-Translator: Ettore Atalan <atalanttore@googlemail.com>\n"
 "Language-Team: German <https://l10n.opensuse.org/projects/agama/agama-"
@@ -26,6 +26,25 @@ msgstr ""
 #, perl-brace-format
 msgid "Found unsupported elements in the AutoYaST profile: %{keys}."
 msgstr "Nicht unterstützte Elemente im AutoYaST-Profil gefunden: %{keys}."
+
+#. Implementation for the API method #Probe.
+#: service/lib/agama/dbus/storage/dasd.rb:64
+#, fuzzy
+msgid "Probing DASD devices"
+msgstr "Speichergeräte werden untersucht"
+
+#. Performs the configuration process in a separate thread.
+#.
+#. The configuration could take long time  (e.g., formatting devices). It is important to not
+#. block the service in order to make possible to attend other requests.
+#.
+#. @raise if there is an unfinished configuration.
+#.
+#. @param config_json [Hash]
+#: service/lib/agama/dbus/storage/dasd.rb:121
+#, fuzzy
+msgid "Configuring DASD"
+msgstr "iSCSI wird konfiguriert"
 
 #. Do not configure if there is nothing to change.
 #: service/lib/agama/dbus/storage/iscsi.rb:98
