@@ -48,6 +48,8 @@ pub enum Scope {
     Storage,
     Files,
     ISCSI,
+    #[strum(serialize = "dasd")]
+    #[serde(rename = "dasd")]
     DASD,
     Users,
 }
