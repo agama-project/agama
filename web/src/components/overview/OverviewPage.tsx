@@ -52,6 +52,8 @@ import type { Product } from "~/types/software";
 
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import { useProgressTracking } from "~/hooks/use-progress-tracking";
+import InstallerOptionsMenu from "../core/InstallerOptionsMenu";
+import { InstallerL10nOptions } from "../core";
 
 type ConfirmationPopupProps = {
   product: Product;
@@ -132,7 +134,8 @@ const OverviewPageContent = ({ product }) => {
           <ProductLogo product={product} width="40px" /> {product.name}
         </>
       }
-      showInstallerOptions
+      centerSlot={<InstallerOptionsMenu showChangeProductOption />}
+      endSlot={<InstallerL10nOptions />}
     >
       <Page.Content>
         <Flex gap={{ default: "gapMd" }} direction={{ default: "column" }}>

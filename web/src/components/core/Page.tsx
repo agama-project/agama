@@ -45,15 +45,18 @@ import {
   Title,
   TitleProps,
 } from "@patternfly/react-core";
-import flexStyles from "@patternfly/react-styles/css/utilities/Flex/flex";
-import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import { isEmpty, isObject } from "radashi";
-import { _, TranslatedString } from "~/i18n";
 import type { ProgressBackdropProps } from "~/components/core/ProgressBackdrop";
 import ProgressBackdrop from "~/components/core/ProgressBackdrop";
 import Header, { HeaderProps } from "~/components/layout/Header";
 import Loading from "~/components/layout/Loading";
-import { Questions } from "../questions";
+import ReviewAndInstallButton from "~/components/core/ReviewAndInstallButton";
+import ProgressStatusMonitor from "~/components/core/ProgressStatusMonitor";
+import Questions from "~/components/questions/Questions";
+import { _, TranslatedString } from "~/i18n";
+
+import flexStyles from "@patternfly/react-styles/css/utilities/Flex/flex";
+import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 
 /**
  * Props accepted by Page.Section
@@ -333,9 +336,31 @@ interface MinimalPageProps extends BasePageProps {
 }
 
 /**
- * All possible Page component props.
+ * Props for the `Page` component.
+ *
+ * Combines the standard and minimal variants with additional slot controls.
  */
-type PageProps = StandardPageProps | MinimalPageProps;
+type PageProps = (StandardPageProps | MinimalPageProps) & {
+  /**
+   * If true, the default component in the start slot
+   * (`<ProgressStatusMonitor />`) will not be rendered.
+   *
+   * Pass a custom `startSlot` to render custom content instead.
+   *
+   * Default: `false` (renders default ProgressStatusMonitor if no `startSlot` provided)
+   */
+  noDefaultStartSlot?: boolean;
+
+  /**
+   * If true, the default component in the end slot
+   * (`<ReviewAndInstallButton />`) will not be rendered.
+   *
+   * Pass a custom `endSlot` to render custom content instead.
+   *
+   * Default: `false` (renders default ReviewAndInstallButton if no `endSlot` provided)
+   */
+  noDefaultEndSlot?: boolean;
+};
 
 /**
  * Minimal page layout with empty masthead.
@@ -351,34 +376,17 @@ const MinimalLayout = ({ children }: Omit<MinimalPageProps, "variant">) => {
 };
 
 /**
- * Standard page layout with header, breadcrumbs, and optional progress
- * tracking.
+ * Standard page layout with header, optional progress tracking, and optional
+ * qestions rendering.
  */
 const StandardLayout = ({
   progress,
   children,
-  breadcrumbs,
-  menu,
-  title,
-  showSkipToContent,
   showQuestions = true,
-  showInstallerOptions = false,
-  hideProgressMonitor = false,
+  ...headerProps
 }: Omit<StandardPageProps, "variant">) => {
   return (
-    <PFPage
-      isContentFilled
-      masthead={
-        <Header
-          title={title}
-          breadcrumbs={breadcrumbs}
-          menu={menu}
-          showSkipToContent={showSkipToContent}
-          showInstallerOptions={showInstallerOptions}
-          hideProgressMonitor={hideProgressMonitor}
-        />
-      }
-    >
+    <PFPage isContentFilled masthead={<Header {...headerProps} />}>
       <Suspense fallback={<Loading />}>
         <PageGroup tabIndex={-1} id="main-content">
           {children || <Outlet />}
@@ -444,32 +452,23 @@ const StandardLayout = ({
  * ```
  */
 const Page = ({
-  title,
-  breadcrumbs,
-  menu,
-  progress,
   variant = "standard",
-  showQuestions = true,
-  showSkipToContent = true,
-  showInstallerOptions = false,
-  hideProgressMonitor = false,
+  startSlot,
+  endSlot,
+  noDefaultStartSlot,
+  noDefaultEndSlot,
   children,
+  ...props
 }: PageProps): React.ReactNode => {
   if (variant === "minimal") {
     return <MinimalLayout>{children}</MinimalLayout>;
   }
 
+  const startSlotContent = startSlot ?? (noDefaultStartSlot ? null : <ProgressStatusMonitor />);
+  const endSlotContent = endSlot ?? (noDefaultEndSlot ? null : <ReviewAndInstallButton />);
+
   return (
-    <StandardLayout
-      progress={progress}
-      breadcrumbs={breadcrumbs}
-      menu={menu}
-      title={title}
-      showQuestions={showQuestions}
-      showInstallerOptions={showInstallerOptions}
-      showSkipToContent={showSkipToContent}
-      hideProgressMonitor={hideProgressMonitor}
-    >
+    <StandardLayout {...props} startSlot={startSlotContent} endSlot={endSlotContent}>
       {children || <Outlet />}
     </StandardLayout>
   );

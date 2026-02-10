@@ -22,9 +22,8 @@
 
 import React from "react";
 import { DropdownItem, DropdownItemProps } from "@patternfly/react-core";
-import { useHref, useLocation } from "react-router";
-// import { useRegistration } from "~/queries/software";
-import { PRODUCT as PATHS, SIDE_PATHS } from "~/routes/paths";
+import { useHref } from "react-router";
+import { PRODUCT as PATHS } from "~/routes/paths";
 import { _ } from "~/i18n";
 import { useSystem } from "~/hooks/model/system";
 import { useStatus } from "~/hooks/model/status";
@@ -36,13 +35,11 @@ import { isEmpty } from "radashi";
 export default function ChangeProductOption({ children, ...props }: Omit<DropdownItemProps, "to">) {
   const { products, software } = useSystem();
   const { stage } = useStatus();
-  const currentLocation = useLocation();
   const to = useHref(PATHS.changeProduct);
   const hasModes = products.find((p) => !isEmpty(p.modes));
 
   if (products.length <= 1 && !hasModes) return null;
   if (software?.registration) return null;
-  if (SIDE_PATHS.includes(currentLocation.pathname)) return null;
   if (stage !== "configuring") return null;
 
   const getLabel = () => {

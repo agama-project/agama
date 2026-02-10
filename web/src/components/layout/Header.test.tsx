@@ -21,12 +21,10 @@
  */
 
 import React from "react";
-import { screen, within } from "@testing-library/react";
-import { plainRender, installerRender } from "~/test-utils";
-import { System } from "~/model/system/network";
+import { screen } from "@testing-library/react";
+import { plainRender } from "~/test-utils";
+import type { Product } from "~/model/system";
 import Header from "./Header";
-import { useSystem } from "~/hooks/model/system";
-import { Product } from "~/model/system";
 
 const tumbleweed: Product = {
   id: "Tumbleweed",
@@ -35,38 +33,6 @@ const tumbleweed: Product = {
   registration: false,
   modes: [],
 };
-
-const microos: Product = {
-  id: "MicroOS",
-  name: "openSUSE MicroOS",
-  description: "MicroOS description",
-  registration: false,
-  modes: [],
-};
-
-const network: System = {
-  connections: [],
-  devices: [],
-  state: {
-    connectivity: true,
-    copyNetwork: true,
-    networkingEnabled: true,
-    wirelessEnabled: true,
-  },
-  accessPoints: [],
-};
-
-jest.mock("~/components/core/InstallerL10nOptions", () => () => (
-  <div>Installer L10n Options Mock</div>
-));
-jest.mock("~/components/core/ReviewAndInstallButton", () => () => (
-  <div>ReviewAndInstall Button Mock</div>
-));
-
-jest.mock("~/hooks/model/system", () => ({
-  ...jest.requireActual("~/hooks/model/system"),
-  useSystem: (): ReturnType<typeof useSystem> => ({ products: [tumbleweed, microos], network }),
-}));
 
 jest.mock("~/hooks/model/config/product", () => ({
   ...jest.requireActual("~/hooks/model/config/product"),
@@ -84,56 +50,30 @@ describe("Header", () => {
     screen.getByRole("link", { name: "Skip to content" });
   });
 
-  it("does not render skip to content link when showSkipToContent is false", async () => {
-    plainRender(<Header showSkipToContent={false} />);
+  it("does not render skip to content link when hideSkipToContent is truthy", async () => {
+    const { rerender } = plainRender(<Header hideSkipToContent />);
     expect(screen.queryByRole("link", { name: "Skip to content" })).toBeNull();
+    rerender(<Header hideSkipToContent={false} />);
+    screen.queryByRole("link", { name: "Skip to content" });
   });
 
-  it("mounts the Install button", () => {
-    plainRender(<Header />);
-    screen.getByText("ReviewAndInstall Button Mock");
-  });
-
-  it("mounts installer options by default", () => {
-    plainRender(<Header showInstallerOptions />);
-    screen.getByText("Installer L10n Options Mock");
-  });
-
-  it("mounts installer options when showInstallerOptions=true", () => {
-    plainRender(<Header showInstallerOptions />);
-    screen.getByText("Installer L10n Options Mock");
-  });
-
-  it("does not mount installer options when showInstallerOptions=false", () => {
-    plainRender(<Header showInstallerOptions={false} />);
-    expect(screen.queryByText("Installer L10n Options Mock")).toBeNull();
-  });
-
-  it("renders an options dropdown by default", async () => {
-    const { user } = installerRender(<Header />);
-    expect(screen.queryByRole("menu")).toBeNull();
-    const toggler = screen.getByRole("button", { name: "Options toggle" });
-    await user.click(toggler);
-    const menu = await screen.findByRole("menu");
-    within(menu).getByRole("menuitem", { name: "Change product" });
-    within(menu).getByRole("menuitem", { name: "Download logs" });
-  });
-
-  it("renders given menu", () => {
+  it("renders given content for slots", () => {
     plainRender(
       <Header
         title="Storage"
-        menu={
+        startSlot={<div role="progressbar" aria-label="Installation progress" />}
+        centerSlot={
           <div role="menu" aria-label="Page actions">
             <button role="menuitem">Export configuration</button>
             <button role="menuitem">Advanced settings</button>
           </div>
         }
+        endSlot={<button>Install</button>}
       />,
     );
 
-    const menu = screen.getByRole("menu", { name: "Page actions" });
-    within(menu).getByRole("menuitem", { name: "Export configuration" });
-    within(menu).getByRole("menuitem", { name: "Advanced settings" });
+    screen.getByRole("progressbar", { name: "Installation progress" });
+    screen.getByRole("menu", { name: "Page actions" });
+    screen.getByRole("button", { name: "Install" });
   });
 });
