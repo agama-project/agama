@@ -51,11 +51,9 @@ import { isEmpty, isObject } from "radashi";
 import { _, TranslatedString } from "~/i18n";
 import type { ProgressBackdropProps } from "~/components/core/ProgressBackdrop";
 import ProgressBackdrop from "~/components/core/ProgressBackdrop";
-import Header from "~/components/layout/Header";
+import Header, { HeaderProps } from "~/components/layout/Header";
 import Loading from "~/components/layout/Loading";
 import { Questions } from "../questions";
-
-import type { BreadcrumbProps } from "~/components/core/Breadcrumbs";
 
 /**
  * Props accepted by Page.Section
@@ -301,17 +299,48 @@ const Content = ({ children, ...pageSectionProps }: PageSectionProps) => {
 };
 
 /**
- * Props for the minimal page layout.
+ * Common props shared by all page variants.
  */
-interface MinimalLayoutProps {
+interface BasePageProps extends HeaderProps {
+  /** Optional progress tracking configuration */
+  progress?: ProgressBackdropProps;
+  /** Whether to show the Questions component at the bottom of the page */
+  showQuestions?: boolean;
   /** Page content */
-  children: React.ReactNode;
+  children?: React.ReactNode;
 }
+
+/**
+ * Props for standard page variant.
+ */
+interface StandardPageProps extends BasePageProps {
+  /** Layout variant to use */
+  variant?: "standard";
+}
+
+/**
+ * Props for minimal page variant.
+ */
+interface MinimalPageProps extends BasePageProps {
+  /** Layout variant - minimal layout with empty masthead (e.g., for login pages) */
+  variant: "minimal";
+  /** Title not available in minimal variant */
+  title?: never;
+  /** Installer options not available in minimal variant */
+  showInstallerOptions?: never;
+  /** Whether the progress monitor must not be mounted */
+  hideProgressMonitor?: never;
+}
+
+/**
+ * All possible Page component props.
+ */
+type PageProps = StandardPageProps | MinimalPageProps;
 
 /**
  * Minimal page layout with empty masthead.
  */
-const MinimalLayout = ({ children }: MinimalLayoutProps) => {
+const MinimalLayout = ({ children }: Omit<MinimalPageProps, "variant">) => {
   return (
     <PFPage isContentFilled masthead={<Masthead />}>
       <PageGroup tabIndex={-1} id="main-content">
@@ -322,37 +351,20 @@ const MinimalLayout = ({ children }: MinimalLayoutProps) => {
 };
 
 /**
- * Props for the standard page layout.
- */
-interface StandardLayoutProps {
-  /** Page title shown in header */
-  title?: React.ReactNode;
-  /** Breadcrumb navigation items */
-  breadcrumbs?: BreadcrumbProps[];
-  /** Optional progress tracking configuration */
-  progress?: ProgressBackdropProps;
-  /** Whether to show the Questions component */
-  showQuestions?: boolean;
-  /** Whether to show installer options in the header */
-  showInstallerOptions?: boolean;
-  /** Whether the progress monitor must not be mounted */
-  hideProgressMonitor?: boolean;
-  /** Page content */
-  children?: React.ReactNode;
-}
-
-/**
- * Standard page layout with header, breadcrumbs, and optional progress tracking.
+ * Standard page layout with header, breadcrumbs, and optional progress
+ * tracking.
  */
 const StandardLayout = ({
   progress,
   children,
   breadcrumbs,
+  menu,
   title,
+  showSkipToContent,
   showQuestions = true,
   showInstallerOptions = false,
   hideProgressMonitor = false,
-}: StandardLayoutProps) => {
+}: Omit<StandardPageProps, "variant">) => {
   return (
     <PFPage
       isContentFilled
@@ -360,6 +372,8 @@ const StandardLayout = ({
         <Header
           title={title}
           breadcrumbs={breadcrumbs}
+          menu={menu}
+          showSkipToContent={showSkipToContent}
           showInstallerOptions={showInstallerOptions}
           hideProgressMonitor={hideProgressMonitor}
         />
@@ -375,55 +389,6 @@ const StandardLayout = ({
     </PFPage>
   );
 };
-
-/**
- * Common props shared by all page variants.
- */
-interface BasePageProps {
-  /** Optional progress tracking configuration */
-  progress?: ProgressBackdropProps;
-  /** Whether to show the Questions component at the bottom of the page */
-  showQuestions?: boolean;
-  /** Whether the progress monitor must not be mounted */
-  hideProgressMonitor?: boolean;
-  /** Page content */
-  children?: React.ReactNode;
-}
-
-/**
- * Props for standard page variant.
- */
-interface StandardPageProps extends BasePageProps {
-  /** Layout variant to use */
-  variant?: "standard";
-  /** Page title shown in header */
-  title?: React.ReactNode;
-  /** Breadcrumb navigation items */
-  breadcrumbs?: BreadcrumbProps[];
-  /** Whether to show installer options in the header */
-  showInstallerOptions?: boolean;
-}
-
-/**
- * Props for minimal page variant.
- */
-interface MinimalPageProps extends BasePageProps {
-  /** Layout variant - minimal layout with empty masthead (e.g., for login pages) */
-  variant: "minimal";
-  /** Title not available in minimal variant */
-  title?: never;
-  /** Breadcrumbs not available in minimal variant */
-  breadcrumbs?: never;
-  /** Installer options not available in minimal variant */
-  showInstallerOptions?: never;
-  /** Whether the progress monitor must not be mounted */
-  hideProgressMonitor?: never;
-}
-
-/**
- * All possible Page component props.
- */
-type PageProps = StandardPageProps | MinimalPageProps;
 
 /**
  * Root container for Agama pages.
@@ -481,9 +446,11 @@ type PageProps = StandardPageProps | MinimalPageProps;
 const Page = ({
   title,
   breadcrumbs,
+  menu,
   progress,
   variant = "standard",
   showQuestions = true,
+  showSkipToContent = true,
   showInstallerOptions = false,
   hideProgressMonitor = false,
   children,
@@ -496,9 +463,11 @@ const Page = ({
     <StandardLayout
       progress={progress}
       breadcrumbs={breadcrumbs}
+      menu={menu}
       title={title}
       showQuestions={showQuestions}
       showInstallerOptions={showInstallerOptions}
+      showSkipToContent={showSkipToContent}
       hideProgressMonitor={hideProgressMonitor}
     >
       {children || <Outlet />}

@@ -116,4 +116,22 @@ describe("Header", () => {
     within(menu).getByRole("menuitem", { name: "Change product" });
     within(menu).getByRole("menuitem", { name: "Download logs" });
   });
+
+  it("renders given menu", () => {
+    plainRender(
+      <Header
+        title="Storage"
+        menu={
+          <div role="menu" aria-label="Page actions">
+            <button role="menuitem">Export configuration</button>
+            <button role="menuitem">Advanced settings</button>
+          </div>
+        }
+      />,
+    );
+
+    const menu = screen.getByRole("menu", { name: "Page actions" });
+    within(menu).getByRole("menuitem", { name: "Export configuration" });
+    within(menu).getByRole("menuitem", { name: "Advanced settings" });
+  });
 });

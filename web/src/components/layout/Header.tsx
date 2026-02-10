@@ -57,18 +57,40 @@ export type HeaderProps = {
   /**
    * Page title rendered as the main heading (h1).
    *
-   * When provided, the title is shown instead of breadcrumb navigation.
-   * When omitted, breadcrumbs are rendered and the last breadcrumb
-   * represents the current page.
+   * When provided, the title is shown instead of breadcrumb navigation. When
+   * omitted, breadcrumbs are rendered and the last breadcrumb represents the
+   * current page and it's rendered as the main heading.
    */
   title?: React.ReactNode;
-  /** Whether the "Skip to content" link should be mounted */
-  showSkipToContent?: boolean;
-  /** Whether the installer options link should be mounted */
-  showInstallerOptions?: boolean;
-  /** Breadcrumb navigation items */
+  /** Breadcrumb navigation items shown when title is not provided */
   breadcrumbs?: BreadcrumbProps[];
-  /** Whether the progress monitor must not be mounted */
+  /**
+   * Custom menu/dropdown component for page-specific actions in the header toolbar.
+   *
+   * Initially intended to be used as contextual actions related to the current
+   * page or secondary navigation. The menu appears in the header toolbar
+   * between the progress monitor and either, the installer options or the call
+   * to action button.
+   *
+   * @example
+   * ```tsx
+   * <Header
+   *   title="Storage"
+   *   menu={
+   *     <Dropdown>
+   *       <DropdownItem>Advanced settings</DropdownItem>
+   *       <DropdownItem>Export configuration</DropdownItem>
+   *     </Dropdown>
+   *   }
+   * />
+   * ```
+   */
+  menu?: React.ReactNode;
+  /** Whether to show the "Skip to content" accessibility link */
+  showSkipToContent?: boolean;
+  /** Whether to show installer options dropdown in the header toolbar */
+  showInstallerOptions?: boolean;
+  /** Whether to hide the progress status monitor in the header toolbar */
   hideProgressMonitor?: boolean;
 };
 
@@ -114,6 +136,7 @@ const OptionsDropdown = () => {
 export default function Header({
   title,
   breadcrumbs,
+  menu,
   showSkipToContent = true,
   showInstallerOptions = true,
   hideProgressMonitor = false,
@@ -164,6 +187,7 @@ export default function Header({
                   <ProgressStatusMonitor />
                 </ToolbarItem>
               )}
+              {menu && <ToolbarItem>{menu}</ToolbarItem>}
               {showInstallerOptions && (
                 <ToolbarItem>
                   <InstallerOptions />
