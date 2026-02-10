@@ -41,7 +41,7 @@ export { default as PasswordInput } from "./PasswordInput";
 export { default as TreeTable } from "./TreeTable";
 export { default as Link } from "./Link";
 export { default as EmptyState } from "./EmptyState";
-export { default as InstallerOptions } from "./InstallerOptions";
+export { default as InstallerL10nOptions } from "./InstallerL10nOptions";
 export { default as IssuesDrawer } from "./IssuesDrawer";
 export { default as SelectWrapper } from "./SelectWrapper";
 export { default as NestedContent } from "./NestedContent";

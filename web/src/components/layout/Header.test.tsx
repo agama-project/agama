@@ -56,7 +56,9 @@ const network: System = {
   accessPoints: [],
 };
 
-jest.mock("~/components/core/InstallerOptions", () => () => <div>Installer Options Mock</div>);
+jest.mock("~/components/core/InstallerL10nOptions", () => () => (
+  <div>Installer L10n Options Mock</div>
+));
 jest.mock("~/components/core/ReviewAndInstallButton", () => () => (
   <div>ReviewAndInstall Button Mock</div>
 ));
@@ -94,17 +96,17 @@ describe("Header", () => {
 
   it("mounts installer options by default", () => {
     plainRender(<Header showInstallerOptions />);
-    screen.getByText("Installer Options Mock");
+    screen.getByText("Installer L10n Options Mock");
   });
 
   it("mounts installer options when showInstallerOptions=true", () => {
     plainRender(<Header showInstallerOptions />);
-    screen.getByText("Installer Options Mock");
+    screen.getByText("Installer L10n Options Mock");
   });
 
   it("does not mount installer options when showInstallerOptions=false", () => {
     plainRender(<Header showInstallerOptions={false} />);
-    expect(screen.queryByText("Installer Options Mock")).toBeNull();
+    expect(screen.queryByText("Installer L10n Options Mock")).toBeNull();
   });
 
   it("renders an options dropdown by default", async () => {

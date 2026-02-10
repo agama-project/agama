@@ -39,7 +39,7 @@ import {
 import { Icon } from "~/components/layout";
 import {
   ChangeProductOption,
-  InstallerOptions,
+  InstallerL10nOptions,
   ReviewAndInstallButton,
   SkipTo,
 } from "~/components/core";
@@ -190,7 +190,7 @@ export default function Header({
               {menu && <ToolbarItem>{menu}</ToolbarItem>}
               {showInstallerOptions && (
                 <ToolbarItem>
-                  <InstallerOptions />
+                  <InstallerL10nOptions />
                 </ToolbarItem>
               )}
               <ToolbarItem>

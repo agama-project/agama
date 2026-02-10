@@ -21,7 +21,7 @@
  */
 
 /**
- * This module defines the InstallerOptions component, which allows users to
+ * This module defines the InstallerL10nOptions component, which allows users to
  * configure installer localization settings, with the option to copy them, when
  * applicable, to the product's localization settings.
  *
@@ -223,12 +223,12 @@ type DialogProps = {
 };
 
 /**
- * Defines the available installer options modes:
+ * Defines the available installer l10n options modes:
  *   "all": Allow settings both language and keyboard layout.
  *   "language": Allow setting only language.
  *   "keyboard": Allow settings only keyboard layout.
  */
-type InstallerOptionsVariant = "all" | "language" | "keyboard";
+type InstallerL10nOptionsVariants = "all" | "language" | "keyboard";
 
 /**
  * Props passed to each toggle variant.
@@ -507,7 +507,7 @@ const AllSettingsToggle = ({ onClick, language, keymap }: ToggleProps) => {
 /**
  * Maps each dialog variant to its corresponding React component.
  */
-const dialogs: { [key in InstallerOptionsVariant]: React.FC<DialogProps> } = {
+const dialogs: { [key in InstallerL10nOptionsVariants]: React.FC<DialogProps> } = {
   all: AllSettingsDialog,
   language: LanguageOnlyDialog,
   keyboard: KeyboardOnlyDialog,
@@ -516,18 +516,18 @@ const dialogs: { [key in InstallerOptionsVariant]: React.FC<DialogProps> } = {
 /**
  * Maps each toggle variant to its corresponding React component.
  */
-const toggles: { [key in InstallerOptionsVariant]: React.FC<ToggleProps> } = {
+const toggles: { [key in InstallerL10nOptionsVariants]: React.FC<ToggleProps> } = {
   all: AllSettingsToggle,
   language: LanguageOnlyToggle,
   keyboard: KeyboardOnlyToggle,
 };
 
 /**
- * Props for the main InstallerOptions component.
+ * Props for the main InstallerL10nOptions component.
  */
-export type InstallerOptionsProps = {
+export type InstallerL10nOptionsProps = {
   /** Determines which dialog variant to render. */
-  variant?: InstallerOptionsVariant;
+  variant?: InstallerL10nOptionsVariants;
   /**
    * Optional render function for a custom button or UI element that opens the
    * dialog. If not provided, a default toggle button will be rendered based on
@@ -545,11 +545,11 @@ export type InstallerOptionsProps = {
  * keyboard-only, or both.
  *
  */
-export default function InstallerOptions({
+export default function InstallerL10nOptions({
   variant = "all",
   toggle,
   onClose,
-}: InstallerOptionsProps) {
+}: InstallerL10nOptionsProps) {
   const location = useLocation();
   const {
     l10n: { locales },

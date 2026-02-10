@@ -23,7 +23,7 @@
 import React, { useState } from "react";
 import { Content, Form, FormGroup, Stack } from "@patternfly/react-core";
 import { Icon } from "~/components/layout";
-import { InstallerOptions, PasswordInput, Popup } from "~/components/core";
+import { InstallerL10nOptions, PasswordInput, Popup } from "~/components/core";
 import QuestionActions from "~/components/questions/QuestionActions";
 import { _ } from "~/i18n";
 import type { AnswerCallback, Question } from "~/model/question";
@@ -54,7 +54,7 @@ export default function QuestionWithPassword({
       isOpen
       title={_("Password Required")}
       titleIconVariant={() => <Icon name="lock" />}
-      titleAddon={<InstallerOptions variant="keyboard" />}
+      titleAddon={<InstallerL10nOptions variant="keyboard" />}
     >
       <Stack hasGutter>
         <Content>{question.text}</Content>
