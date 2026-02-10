@@ -47,6 +47,8 @@ pub enum Scope {
     Software,
     Storage,
     Files,
+    #[strum(serialize = "iscsi")]
+    #[serde(rename = "iscsi")]
     ISCSI,
     Users,
 }
