@@ -22,12 +22,11 @@
 
 import React from "react";
 import { useNavigate } from "react-router";
-import { _ } from "~/i18n";
 import { activateStorageAction } from "~/api";
-import { STORAGE as PATHS } from "~/routes/paths";
-import { Icon } from "~/components/layout";
-import MenuButton from "../core/MenuButton";
-import spacingStyles from "@patternfly/react-styles/css/utilities/Spacing/spacing";
+import { STORAGE } from "~/routes/paths";
+import Icon from "~/components/layout/Icon";
+import MenuButton from "~/components/core/MenuButton";
+import { _ } from "~/i18n";
 
 export default function ConnectedDevicesMenu() {
   const navigate = useNavigate();
@@ -38,20 +37,19 @@ export default function ConnectedDevicesMenu() {
     <MenuButton
       menuProps={{
         popperProps: {
-          position: "start",
+          position: "end",
         },
       }}
       toggleProps={{
         variant: "plain",
         style: { minWidth: "24px" },
-        className: spacingStyles.p_0,
         // TRANSLATORS: this is an ARIA (accesibility) description of an UI element
         "aria-label": _("More storage options"),
       }}
       items={[
         <MenuButton.Item
           key="iscsi-link"
-          onClick={() => navigate(PATHS.iscsi.root)}
+          onClick={() => navigate(STORAGE.iscsi.root)}
           description={_("Discover and connect to iSCSI targets")}
         >
           {_("Configure iSCSI")}
@@ -59,7 +57,7 @@ export default function ConnectedDevicesMenu() {
         isZFCPSupported && (
           <MenuButton.Item
             key="zfcp-link"
-            onClick={() => navigate(PATHS.zfcp.root)}
+            onClick={() => navigate(STORAGE.zfcp.root)}
             description={_("Activate zFCP disks")}
           >
             {_("Configure zFCP")}
@@ -68,7 +66,7 @@ export default function ConnectedDevicesMenu() {
         isDASDSupported && (
           <MenuButton.Item
             key="dasd-link"
-            onClick={() => navigate(PATHS.dasd)}
+            onClick={() => navigate(STORAGE.dasd)}
             description={_("Activate and format DASD devices")}
           >
             {_("Configure DASD")}
@@ -83,7 +81,7 @@ export default function ConnectedDevicesMenu() {
         </MenuButton.Item>,
       ]}
     >
-      <Icon name="more_horiz" className="agm-three-dots-icon" />
+      {_("Options")} <Icon name="expand_circle_down" className="agm-three-dots-icon" />
     </MenuButton>
   );
 }

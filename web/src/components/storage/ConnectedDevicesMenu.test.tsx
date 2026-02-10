@@ -62,8 +62,9 @@ async function openMenu() {
 
 it("renders the menu", () => {
   const { container } = installerRender(<ConnectedDevicesMenu />);
+  screen.getByText("Options");
   const icon = container.querySelector("svg");
-  expect(icon).toHaveAttribute("data-icon-name", "more_horiz");
+  expect(icon).toHaveAttribute("data-icon-name", "expand_circle_down");
 });
 
 it("allows users to rescan devices", async () => {
