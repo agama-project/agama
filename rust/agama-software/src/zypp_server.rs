@@ -652,9 +652,7 @@ impl ZyppServer {
             .iter()
             .map(|p| p.name())
             .collect();
-
         let repositories = zypp.list_repositories()?;
-
         let zypp_patterns = zypp.list_patterns()?;
 
         Ok(zypp_patterns.into_iter().filter(move |p| {
@@ -664,26 +662,26 @@ impl ZyppServer {
             // NOT predefined as agama-* one neither from repository
             // added by base product registration
             if product_pattern_names.contains(&p.name.as_str()) {
-                true
+                return true;
+            }
+
+            let repository = repositories.iter().find(|r| r.alias == p.repo_alias);
+            let Some(repository) = repository else {
+                tracing::error!(
+                    "Unknown alias {} found in pattern selectable.",
+                    p.repo_alias
+                );
+                return false;
+            };
+            if repository.alias.starts_with("agama-") {
+                return false;
+            }
+
+            if let RegistrationStatus::Registered(registration) = &self.registration {
+                repository.service.is_some()
+                    && repository.service != registration.base_product_service_name()
             } else {
-                let repository = repositories.iter().find(|r| r.alias == p.repo_alias);
-                let Some(repository) = repository else {
-                    tracing::error!(
-                        "Unknown alias {} found in pattern selectable.",
-                        p.repo_alias
-                    );
-                    return false;
-                };
-                if repository.alias.starts_with("agama-") {
-                    false
-                } else {
-                    if let RegistrationStatus::Registered(registration) = &self.registration {
-                        repository.service.is_some()
-                            && repository.service != registration.base_product_service_name()
-                    } else {
-                        false
-                    }
-                }
+                false
             }
         }))
     }
