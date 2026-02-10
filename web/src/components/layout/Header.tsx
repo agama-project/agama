@@ -144,13 +144,12 @@ export default function Header({
               />
             )}
             {breadcrumbs &&
-              breadcrumbs.map(({ label, path }, i) => (
+              breadcrumbs.map((props, i) => (
                 <Breadcrumbs.Item
                   isEditorial={i === 0}
                   key={i}
-                  label={label}
-                  path={path}
                   isCurrent={i === breadcrumbs.length - 1}
+                  {...props}
                 />
               ))}
           </Breadcrumbs>
