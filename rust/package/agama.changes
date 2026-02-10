@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon Feb  9 14:24:29 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Prevent set config and install actions to run at the same time (bsc#1257935).
+
+-------------------------------------------------------------------
 Fri Feb  6 13:59:11 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Fix parsing of the answers file (bsc#1257400).
