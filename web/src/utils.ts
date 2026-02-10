@@ -160,8 +160,8 @@ const mask = (value: string, visible: number = 4, maskChar: string = "*"): strin
   return maskChar.repeat(maskedLength) + visiblePart;
 };
 
-// list of sensitive object properties replaced by the sanitize() function
-const default_sensitive_keys = [
+// list of sensitive object properties replaced by the maskSecrets() function
+const defaultSensitiveKeys = [
   // storage
   "encryptionPassword",
   // users
@@ -181,36 +181,51 @@ const default_sensitive_keys = [
  * @example
  * ```ts
  * const data = { user: "John", password: "123" };
- * // logs { user: "John", password: "[FILTERED]" }
- * console.log(sanitize(data));
+ * // logs '{ "user": "John", "password": "[FILTERED]" }'
+ * console.log(maskSecrets(data));
  * ```
  *
  * @param obj - The object or array to sanitize
- * @param sensitive_keys - Custom keys to replace
+ * @param options - Options object { sensitiveKeys, stringify }
  * @returns Sanitized copy of the input
  */
-const sanitize = (obj: unknown, sensitive_keys: string[] = default_sensitive_keys): unknown => {
-  if (obj === null || typeof obj !== "object") {
-    return obj;
-  }
+const maskSecrets = (
+  obj: unknown,
+  {
+    sensitiveKeys = defaultSensitiveKeys,
+    stringify = true,
+  }: { sensitiveKeys?: string[]; stringify?: boolean } = {},
+): unknown => {
+  const mask = (currentObj: unknown): unknown => {
+    if (currentObj === null || typeof currentObj !== "object") {
+      return currentObj;
+    }
 
-  if (Array.isArray(obj)) {
-    return obj.map((item) => sanitize(item, sensitive_keys));
-  }
+    if (Array.isArray(currentObj)) {
+      return currentObj.map((item) => mask(item));
+    }
 
-  const newObj: { [key: string]: unknown } = {};
+    const newObj: { [key: string]: unknown } = {};
 
-  for (const key in obj) {
-    if (Object.prototype.hasOwnProperty.call(obj, key)) {
-      if (sensitive_keys.includes(key)) {
-        newObj[key] = "[FILTERED]";
-      } else {
-        newObj[key] = sanitize(obj[key]);
+    for (const key in currentObj) {
+      if (Object.prototype.hasOwnProperty.call(currentObj, key)) {
+        if (sensitiveKeys.includes(key)) {
+          newObj[key] = "[FILTERED]";
+        } else {
+          newObj[key] = mask(currentObj[key]);
+        }
       }
     }
+    return newObj;
+  };
+
+  const result = mask(obj);
+
+  if (stringify) {
+    return JSON.stringify(result, null, 2);
   }
 
-  return newObj;
+  return result;
 };
 
 /**
@@ -267,6 +282,6 @@ export {
   timezoneTime,
   mask,
   generateEncodedPath,
-  sanitize,
+  maskSecrets,
   sortCollection,
 };

@@ -26,7 +26,7 @@ import {
   hex,
   mask,
   timezoneTime,
-  sanitize,
+  maskSecrets,
   sortCollection,
 } from "./utils";
 
@@ -270,16 +270,16 @@ describe("simpleFastSort", () => {
   });
 });
 
-describe("sanitize", () => {
+describe("maskSecrets", () => {
   it("should filter sensitive keys from an object", () => {
     const obj = { user: "test", password: "123" };
-    const sanitized = sanitize(obj);
+    const sanitized = maskSecrets(obj, { stringify: false });
     expect(sanitized).toEqual({ user: "test", password: "[FILTERED]" });
   });
 
   it("should not modify an object without sensitive keys", () => {
     const obj = { user: "test", id: 1 };
-    const sanitized = sanitize(obj);
+    const sanitized = maskSecrets(obj, { stringify: false });
     expect(sanitized).toEqual({ user: "test", id: 1 });
   });
 
@@ -290,7 +290,7 @@ describe("sanitize", () => {
         password: "123",
       },
     };
-    const sanitized = sanitize(obj);
+    const sanitized = maskSecrets(obj, { stringify: false });
     expect(sanitized).toEqual({
       user: "test",
       credentials: {
@@ -304,7 +304,7 @@ describe("sanitize", () => {
       { user: "one", password: "123" },
       { user: "two", id: 2 },
     ];
-    const sanitized = sanitize(arr);
+    const sanitized = maskSecrets(arr, { stringify: false });
     expect(sanitized).toEqual([
       { user: "one", password: "[FILTERED]" },
       { user: "two", id: 2 },
@@ -314,31 +314,31 @@ describe("sanitize", () => {
   it("should not mutate the original object", () => {
     const originalObj = { user: "test", password: "123" };
     const originalObjCopy = JSON.parse(JSON.stringify(originalObj));
-    sanitize(originalObj);
+    maskSecrets(originalObj, { stringify: false });
     expect(originalObj).toEqual(originalObjCopy);
   });
 
   it("should handle null and undefined values correctly", () => {
     const obj = { user: "test", password: "123", data: null, extra: undefined };
-    const sanitized = sanitize(obj);
+    const sanitized = maskSecrets(obj, { stringify: false });
     // Note: `undefined` properties are omitted when creating a new object from an existing one.
     expect(sanitized).toEqual({ user: "test", password: "[FILTERED]", data: null });
   });
 
   it("should return primitive values unmodified", () => {
-    expect(sanitize("string")).toBe("string");
-    expect(sanitize(123)).toBe(123);
-    expect(sanitize(true)).toBe(true);
-    expect(sanitize(null)).toBe(null);
-    expect(sanitize(undefined)).toBe(undefined);
+    expect(maskSecrets("string", { stringify: false })).toBe("string");
+    expect(maskSecrets(123, { stringify: false })).toBe(123);
+    expect(maskSecrets(true, { stringify: false })).toBe(true);
+    expect(maskSecrets(null, { stringify: false })).toBe(null);
+    expect(maskSecrets(undefined, { stringify: false })).toBe(undefined);
   });
 
   it("should handle an empty object", () => {
-    expect(sanitize({})).toEqual({});
+    expect(maskSecrets({}, { stringify: false })).toEqual({});
   });
 
   it("should handle an empty array", () => {
-    expect(sanitize([])).toEqual([]);
+    expect(maskSecrets([], { stringify: false })).toEqual([]);
   });
 
   it("should filter all defined sensitive keys", () => {
@@ -348,7 +348,7 @@ describe("sanitize", () => {
       hashedPassword: false,
       registrationCode: "xyz",
     };
-    expect(sanitize(obj)).toEqual({
+    expect(maskSecrets(obj, { stringify: false })).toEqual({
       user: "test",
       password: "[FILTERED]",
       hashedPassword: false,
@@ -358,7 +358,15 @@ describe("sanitize", () => {
 
   it("should handle custom sensitive keys", () => {
     const obj = { user: "test", password: "123", sensitive: "abc" };
-    const sanitized = sanitize(obj, ["sensitive"]);
+    const sanitized = maskSecrets(obj, { sensitiveKeys: ["sensitive"], stringify: false });
     expect(sanitized).toEqual({ user: "test", password: "123", sensitive: "[FILTERED]" });
+  });
+
+  it("can optionally stringify the output", () => {
+    expect(maskSecrets([], { stringify: true })).toEqual("[]");
+    expect(maskSecrets({}, { stringify: true })).toEqual("{}");
+    expect(maskSecrets({ user: "test", password: "123" }, { stringify: true })).toEqual(
+      '{\n  "user": "test",\n  "password": "[FILTERED]"\n}',
+    );
   });
 });
