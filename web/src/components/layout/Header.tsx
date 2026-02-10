@@ -40,6 +40,8 @@ import { ROOT } from "~/routes/paths";
 import type { BreadcrumbProps } from "~/components/core/Breadcrumbs";
 
 import spacingStyles from "@patternfly/react-styles/css/utilities/Spacing/spacing";
+import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
+
 /**
  * Props for the Header component.
  *
@@ -136,7 +138,9 @@ export default function Header({
       <MastheadMain className={spacingStyles.pXs}>
         {!hideSkipToContent && <SkipTo />}
         {title ? (
-          <Title headingLevel="h1">{title}</Title>
+          <Title headingLevel="h1" className={textStyles.fontSizeXl}>
+            {title}
+          </Title>
         ) : (
           <Breadcrumbs>
             {product && breadcrumbs && (

@@ -21,6 +21,8 @@
  */
 
 import React, { useDeferredValue, useState } from "react";
+import { isEmpty } from "radashi";
+import { sprintf } from "sprintf-js";
 import { Navigate } from "react-router";
 import {
   Button,
@@ -36,6 +38,8 @@ import Page from "~/components/core/Page";
 import Text from "~/components/core/Text";
 import Popup from "~/components/core/Popup";
 import PotentialDataLossAlert from "~/components/storage/PotentialDataLossAlert";
+import InstallerOptionsMenu from "~/components/core/InstallerOptionsMenu";
+import InstallerL10nOptions from "~/components/core/InstallerL10nOptions";
 import InstallationSettings from "~/components/overview/InstallationSettings";
 import SystemInformationSection from "~/components/overview/SystemInformationSection";
 import ProductLogo from "~/components/product/ProductLogo";
@@ -44,16 +48,12 @@ import { useProductInfo } from "~/hooks/model/config/product";
 import { useIssues } from "~/hooks/model/issue";
 import { PRODUCT } from "~/routes/paths";
 import { useDestructiveActions } from "~/hooks/use-destructive-actions";
-import { isEmpty } from "radashi";
-import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
 
 import type { Product } from "~/types/software";
 
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import { useProgressTracking } from "~/hooks/use-progress-tracking";
-import InstallerOptionsMenu from "../core/InstallerOptionsMenu";
-import { InstallerL10nOptions } from "../core";
 
 type ConfirmationPopupProps = {
   product: Product;
