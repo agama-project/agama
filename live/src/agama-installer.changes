@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Feb 10 07:36:57 UTC 2026 - Dominique Leuenberger <dimstar@opensuse.org>
+
+- Installer: configure libzypp through drop-in config snippet when
+  supported (jsc#PED-14658).
+
+-------------------------------------------------------------------
 Fri Jan 30 15:49:09 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
 
 - Do display a message if "UEFI Firmware Settings" boot menu entry
