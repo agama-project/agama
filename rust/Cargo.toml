@@ -11,6 +11,7 @@ members = [
     "agama-manager",
     "agama-proxy",
     "agama-network",
+    "agama-s390",
     "agama-security",
     "agama-server",
     "agama-software",
@@ -22,9 +23,8 @@ members = [
     "suseconnect-agama/suseconnect-agama-sys",
     "xtask",
     "zypp-agama",
-    "zypp-agama/zypp-agama-sys", 
     "zypp-agama/zypp-agama-sys"
-]
+    ]
 resolver = "2"
 
 [workspace.package]

@@ -1,4 +1,4 @@
-// Copyright (c) [2025-2026] SUSE LLC
+// Copyright (c) [2026] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -18,36 +18,23 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-//! This module includes the struct that represent a service progress step.
+//! This module define types related to the progress report.
 
 use serde::{Deserialize, Serialize};
 
-/// Scope to distinguish each service.
-#[derive(
-    Copy,
-    Clone,
-    Debug,
-    Eq,
-    Hash,
-    strum::EnumString,
-    strum::Display,
-    Deserialize,
-    Serialize,
-    utoipa::ToSchema,
-    PartialEq,
-)]
-#[strum(serialize_all = "camelCase")]
+#[derive(Clone, Debug, Deserialize, Serialize, utoipa::ToSchema)]
+#[serde(transparent)]
+pub struct FormatSummary(Vec<FormatInfo>);
+
+#[derive(Clone, Debug, Deserialize, Serialize, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
-pub enum Scope {
-    Manager,
-    Network,
-    Hostname,
-    L10n,
-    Product,
-    Software,
-    Storage,
-    Files,
-    ISCSI,
-    DASD,
-    Users,
+struct FormatInfo {
+    /// DASD channel.
+    channel: String,
+    /// Total number of cylinders to format.
+    total_cylinders: usize,
+    /// Number of formatted cylinders.
+    formatted_cylinders: usize,
+    /// Whether the format has finished.
+    finished: bool,
 }

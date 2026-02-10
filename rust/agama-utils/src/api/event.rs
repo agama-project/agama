@@ -18,8 +18,7 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::api::scope::Scope;
-use crate::api::{progress::Progress, status::Stage};
+use crate::api::{progress::Progress, s390::dasd, scope::Scope, status::Stage};
 use serde::{Deserialize, Serialize};
 use tokio::sync::broadcast;
 
@@ -63,6 +62,10 @@ pub enum Event {
     QuestionAnswered {
         id: u32,
     },
+    /// DASD format changed.
+    DASDFormatChanged(dasd::FormatSummary),
+    /// DASD format finished (contains exit status of the format operation).
+    DASDFormatFinished,
 }
 
 pub type Sender = broadcast::Sender<Event>;

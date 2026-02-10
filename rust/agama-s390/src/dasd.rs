@@ -1,4 +1,4 @@
-// Copyright (c) [2025-2026] SUSE LLC
+// Copyright (c) [2026] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -18,36 +18,10 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-//! This module includes the struct that represent a service progress step.
+pub mod client;
+pub use client::Client;
 
-use serde::{Deserialize, Serialize};
+pub mod monitor;
+pub use monitor::Monitor;
 
-/// Scope to distinguish each service.
-#[derive(
-    Copy,
-    Clone,
-    Debug,
-    Eq,
-    Hash,
-    strum::EnumString,
-    strum::Display,
-    Deserialize,
-    Serialize,
-    utoipa::ToSchema,
-    PartialEq,
-)]
-#[strum(serialize_all = "camelCase")]
-#[serde(rename_all = "camelCase")]
-pub enum Scope {
-    Manager,
-    Network,
-    Hostname,
-    L10n,
-    Product,
-    Software,
-    Storage,
-    Files,
-    ISCSI,
-    DASD,
-    Users,
-}
+mod dbus;

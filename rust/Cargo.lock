@@ -275,6 +275,24 @@ dependencies = [
 ]
 
 [[package]]
+name = "agama-s390"
+version = "0.1.0"
+dependencies = [
+ "agama-storage",
+ "agama-utils",
+ "async-trait",
+ "serde",
+ "serde_json",
+ "test-context",
+ "thiserror 2.0.18",
+ "tokio",
+ "tokio-stream",
+ "tokio-test",
+ "tracing",
+ "zbus",
+]
+
+[[package]]
 name = "agama-security"
 version = "0.1.0"
 dependencies = [
