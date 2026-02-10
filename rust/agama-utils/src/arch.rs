@@ -127,7 +127,7 @@ mod tests {
         assert!(Arch::is_s390());
     }
 
-    #[cfg(target_arch = "x86_64")]
+    #[cfg(not(target_arch = "s390x"))]
     #[test]
     fn test_arch_is_not_s390() {
         assert!(!Arch::is_s390());

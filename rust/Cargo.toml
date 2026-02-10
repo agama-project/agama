@@ -24,7 +24,7 @@ members = [
     "xtask",
     "zypp-agama",
     "zypp-agama/zypp-agama-sys"
-    ]
+]
 resolver = "2"
 
 [workspace.package]
