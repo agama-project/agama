@@ -310,9 +310,6 @@ impl SetConfigAction {
         //
         // Set the configuration for each service
         //
-        self.progress
-            .call(progress::message::Next::new(Scope::Manager))
-            .await?;
         self.security
             .call(security::message::SetConfig::new(config.security.clone()))
             .await?;
