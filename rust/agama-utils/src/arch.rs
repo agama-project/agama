@@ -1,4 +1,4 @@
-// Copyright (c) [2025] SUSE LLC
+// Copyright (c) [2025-2026] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -58,6 +58,15 @@ impl Arch {
             Arch::X86_64 => "x86_64".to_string(),
         }
     }
+
+    /// Whether the current architecture is s390.
+    pub fn is_s390() -> bool {
+        let Ok(arch) = Self::current() else {
+            tracing::error!("Failed to determine the architecture");
+            return false;
+        };
+        arch == Self::S390X
+    }
 }
 
 #[cfg(test)]
@@ -110,5 +119,17 @@ mod tests {
     #[test]
     fn test_current_arch_x86_64() {
         assert_eq!(Arch::current().unwrap(), Arch::X86_64);
+    }
+
+    #[cfg(target_arch = "s390x")]
+    #[test]
+    fn test_arch_is_s390() {
+        assert!(Arch::is_s390());
+    }
+
+    #[cfg(target_arch = "x86_64")]
+    #[test]
+    fn test_arch_is_not_s390() {
+        assert!(!Arch::is_s390());
     }
 }

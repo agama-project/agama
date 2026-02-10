@@ -208,6 +208,7 @@ dependencies = [
  "agama-l10n",
  "agama-network",
  "agama-proxy",
+ "agama-s390",
  "agama-security",
  "agama-software",
  "agama-storage",

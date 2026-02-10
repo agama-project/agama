@@ -1,4 +1,4 @@
-// Copyright (c) [2025] SUSE LLC
+// Copyright (c) [2025-2026] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -19,7 +19,7 @@
 // find current contact information at www.suse.com.
 
 use crate::{
-    bootloader, files, hardware, hostname, iscsi, l10n, message, network, proxy, security,
+    bootloader, files, hardware, hostname, iscsi, l10n, message, network, proxy, s390, security,
     software, storage, users,
 };
 use agama_utils::{
@@ -31,6 +31,7 @@ use agama_utils::{
         status::Stage,
         Action, Config, Event, FinishMethod, Issue, IssueMap, Proposal, Scope, Status, SystemInfo,
     },
+    arch::Arch,
     issue, licenses,
     products::{self, ProductSpec},
     progress, question,
@@ -95,6 +96,8 @@ pub enum Error {
     PendingIssues { issues: HashMap<Scope, Vec<Issue>> },
     #[error(transparent)]
     Users(#[from] users::service::Error),
+    #[error(transparent)]
+    S390(#[from] s390::service::Error),
 }
 
 pub struct Starter {
@@ -115,6 +118,7 @@ pub struct Starter {
     progress: Option<Handler<progress::Service>>,
     hardware: Option<hardware::Registry>,
     users: Option<Handler<users::Service>>,
+    s390: Option<Handler<s390::Service>>,
 }
 
 impl Starter {
@@ -141,6 +145,7 @@ impl Starter {
             progress: None,
             hardware: None,
             users: None,
+            s390: None,
         }
     }
 
@@ -148,14 +153,17 @@ impl Starter {
         self.bootloader = Some(bootloader);
         self
     }
+
     pub fn with_hostname(mut self, hostname: Handler<hostname::Service>) -> Self {
         self.hostname = Some(hostname);
         self
     }
+
     pub fn with_iscsi(mut self, iscsi: Handler<iscsi::Service>) -> Self {
         self.iscsi = Some(iscsi);
         self
     }
+
     pub fn with_network(mut self, network: NetworkSystemClient) -> Self {
         self.network = Some(network);
         self
@@ -195,6 +203,7 @@ impl Starter {
         self.proxy = Some(proxy);
         self
     }
+
     pub fn with_progress(mut self, progress: Handler<progress::Service>) -> Self {
         self.progress = Some(progress);
         self
@@ -207,6 +216,11 @@ impl Starter {
 
     pub fn with_users(mut self, users: Handler<users::Service>) -> Self {
         self.users = Some(users);
+        self
+    }
+
+    pub fn with_s390(mut self, s390: Handler<s390::Service>) -> Self {
+        self.s390 = Some(s390);
         self
     }
 
@@ -335,6 +349,25 @@ impl Starter {
             }
         };
 
+        let s390 = match self.s390 {
+            Some(s390) => Some(s390),
+            None => {
+                if !Arch::is_s390() {
+                    None
+                } else {
+                    let s390 = s390::Service::starter(
+                        storage.clone(),
+                        self.events.clone(),
+                        progress.clone(),
+                        self.dbus.clone(),
+                    )
+                    .start()
+                    .await?;
+                    Some(s390)
+                }
+            }
+        };
+
         let mut service = Service {
             questions: self.questions,
             progress,
@@ -356,6 +389,7 @@ impl Starter {
             system: manager::SystemInfo::default(),
             product: None,
             users: users,
+            s390,
         };
 
         service.setup().await?;
@@ -384,6 +418,7 @@ pub struct Service {
     config: Config,
     system: manager::SystemInfo,
     users: Handler<users::Service>,
+    s390: Option<Handler<s390::Service>>,
 }
 
 impl Service {
@@ -449,6 +484,7 @@ impl Service {
             software: self.software.clone(),
             storage: self.storage.clone(),
             users: self.users.clone(),
+            s390: self.s390.clone(),
         };
 
         action.run(self.product.clone(), &self.config).await;
@@ -481,6 +517,13 @@ impl Service {
 
     async fn probe_storage(&self) -> Result<(), Error> {
         self.storage.call(storage::message::Probe).await?;
+        Ok(())
+    }
+
+    async fn probe_dasd(&self) -> Result<(), Error> {
+        if let Some(s390) = &self.s390 {
+            s390.call(s390::message::ProbeDASD).await?;
+        }
         Ok(())
     }
 
@@ -602,6 +645,12 @@ impl MessageHandler<message::GetSystem> for Service {
         let iscsi = self.iscsi.call(iscsi::message::GetSystem).await?;
         let network = self.network.get_system().await?;
 
+        let s390 = if let Some(s390) = &self.s390 {
+            Some(s390.call(s390::message::GetSystem).await?)
+        } else {
+            None
+        };
+
         // If the software service is busy, it will not answer.
         let software = if self.is_software_available().await? {
             self.software.call(software::message::GetSystem).await?
@@ -617,6 +666,7 @@ impl MessageHandler<message::GetSystem> for Service {
             network,
             storage,
             iscsi,
+            s390,
             software,
         })
     }
@@ -646,6 +696,12 @@ impl MessageHandler<message::GetExtendedConfig> for Service {
         let storage = self.storage.call(storage::message::GetConfig).await?;
         let users = self.users.call(users::message::GetConfig).await?;
 
+        let s390 = if let Some(s390) = &self.s390 {
+            Some(s390.call(s390::message::GetConfig).await?)
+        } else {
+            None
+        };
+
         // If the software service is busy, it will not answer.
         let software = if self.is_software_available().await? {
             Some(self.software.call(software::message::GetConfig).await?)
@@ -666,6 +722,7 @@ impl MessageHandler<message::GetExtendedConfig> for Service {
             storage,
             files: None,
             users: Some(users),
+            s390,
         })
     }
 }
@@ -769,6 +826,10 @@ impl MessageHandler<message::RunAction> for Service {
             Action::ProbeStorage => {
                 self.check_stage(Stage::Configuring).await?;
                 self.probe_storage().await?;
+            }
+            Action::ProbeDASD => {
+                self.check_stage(Stage::Configuring).await?;
+                self.probe_dasd().await?;
             }
             Action::Install => {
                 self.check_stage(Stage::Configuring).await?;
@@ -1006,6 +1067,7 @@ struct SetConfigAction {
     software: Handler<software::Service>,
     storage: Handler<storage::Service>,
     users: Handler<users::Service>,
+    s390: Option<Handler<s390::Service>>,
 }
 
 impl SetConfigAction {
@@ -1060,6 +1122,11 @@ impl SetConfigAction {
         self.iscsi
             .call(iscsi::message::SetConfig::new(config.iscsi.clone()))
             .await?;
+
+        if let Some(s390) = &self.s390 {
+            s390.call(s390::message::SetConfig::new(config.s390))
+                .await?;
+        }
 
         if let Some(network) = config.network.clone() {
             self.network.update_config(network).await?;

@@ -116,7 +116,7 @@ impl ISCSIClient for TestClient {
     }
 }
 
-/// Starts a testing storage service.
+/// Starts a testing iSCSI service.
 pub async fn start_service(
     storage: Handler<storage::Service>,
     events: event::Sender,
