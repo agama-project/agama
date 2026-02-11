@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Feb 11 16:00:34 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Do not show warnings about password strength
+  (gh#agama-project/agama#3156).
+
+-------------------------------------------------------------------
 Wed Feb 11 13:35:13 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
 
 - Show translated product mode name and description
