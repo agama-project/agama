@@ -27,6 +27,7 @@ require "agama/storage/bootloader"
 require "agama/storage/callbacks"
 require "agama/storage/configurator"
 require "agama/storage/finisher"
+require "agama/storage/finalize"
 require "agama/storage/iscsi/manager"
 require "agama/storage/proposal"
 require "agama/with_locale"
@@ -144,6 +145,11 @@ module Agama
       # Performs the final steps on the target file system(s).
       def finish
         Finisher.new(logger, product_config).run
+      end
+
+      # Performs the final umount of system before reboot.
+      def umount
+        Finalizer.new(logger, product_config).run
       end
 
       # Storage proposal manager

@@ -42,9 +42,8 @@ module Agama
       # Constructor
       # @param logger [Logger]
       # @param config [Config]
-      def initialize(logger, config)
+      def initialize(logger)
         @logger = logger
-        @config = config
       end
 
       # Execute the final storage actions.

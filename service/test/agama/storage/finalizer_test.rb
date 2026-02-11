@@ -29,10 +29,9 @@ require "yaml"
 describe Agama::Storage::Finalizer do
   include Agama::RSpec::StorageHelpers
 
-  subject(:finalizer) { described_class.new(logger, config) }
+  subject(:finalizer) { described_class.new(logger) }
 
   let(:logger) { Logger.new($stdout, level: :warn) }
-  let(:config) { Agama::Config.new }
   let(:copy_logs) { Agama::Storage::Finalizer::CopyLogsStep.new(logger) }
   let(:unmount) { Agama::Storage::Finalizer::UnmountStep.new(logger) }
 
