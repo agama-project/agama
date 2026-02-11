@@ -149,7 +149,7 @@ module Agama
 
       # Performs the final umount of system before reboot.
       def umount
-        Finalizer.new(logger, product_config).run
+        Finalizer.new(logger).run
       end
 
       # Storage proposal manager
