@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-02-09 04:10+0000\n"
-"PO-Revision-Date: 2025-09-17 09:59+0000\n"
-"Last-Translator: Athmane MOKRAOUI <butterflyoffire+opensuse@protonmail.com>\n"
+"PO-Revision-Date: 2026-02-10 22:04+0000\n"
+"Last-Translator: Agurzil usaka <massi90.anzar@gmail.com>\n"
 "Language-Team: Kabyle <https://l10n.opensuse.org/projects/agama/agama-"
 "service-master/kab/>\n"
 "Language: kab\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 5.13.3\n"
+"X-Generator: Weblate 5.15.2\n"
 
 #. Reports the problems and decide whether to continue or not.
 #.
@@ -25,7 +25,7 @@ msgstr ""
 #: service/lib/agama/autoyast/profile_reporter.rb:51
 #, perl-brace-format
 msgid "Found unsupported elements in the AutoYaST profile: %{keys}."
-msgstr ""
+msgstr "Nufa-d iferdisen ur nettwasefrak ara deg umaɣnu AutoYaST: %{keys}."
 
 #. Implementation for the API method #Probe.
 #: service/lib/agama/dbus/storage/dasd.rb:64
@@ -42,12 +42,12 @@ msgstr ""
 #. @param config_json [Hash]
 #: service/lib/agama/dbus/storage/dasd.rb:121
 msgid "Configuring DASD"
-msgstr ""
+msgstr "Aswel n DASD"
 
 #. Do not configure if there is nothing to change.
 #: service/lib/agama/dbus/storage/iscsi.rb:98
 msgid "Configuring iSCSI"
-msgstr ""
+msgstr "Aswel n iSCSI"
 
 #. Performs an iSCSI discovery.
 #.
@@ -55,7 +55,7 @@ msgstr ""
 #. @return [Number] 0 success; 1 failure.
 #: service/lib/agama/dbus/storage/iscsi.rb:122
 msgid "Performing iSCSI discovery"
-msgstr ""
+msgstr "Aseqdec n tifin n iSCSI"
 
 #. Implementation for the API method #Install.
 #: service/lib/agama/dbus/storage/manager.rb:111
@@ -64,7 +64,7 @@ msgstr ""
 
 #: service/lib/agama/dbus/storage/manager.rb:114
 msgid "Preparing the storage devices"
-msgstr ""
+msgstr "Aheggi n yibenkan n usekles"
 
 #: service/lib/agama/dbus/storage/manager.rb:117
 msgid "Writing bootloader sysconfig"
