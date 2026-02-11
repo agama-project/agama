@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Wed Feb 11 13:58:01 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Add standard and immutable modes to SLES for SAP (bsc#1258042).
+
+-------------------------------------------------------------------
 Mon Feb  2 15:48:07 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
 
 - Prepare the spec file for the %suse_version 1610 in Leap 16.1
