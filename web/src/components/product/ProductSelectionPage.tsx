@@ -159,19 +159,26 @@ const ProductFormProductOption = ({
                     </ExpandableSection>
                     {isChecked && availableModes && (
                       <Split hasGutter>
-                        {availableModes.map((mode) => (
-                          <FlexItem key={mode.id}>
-                            <Radio
-                              key={mode.id}
-                              id={mode.id}
-                              name="mode"
-                              isChecked={mode.id === selectedModeId}
-                              onChange={() => onModeChange(mode)}
-                              label={<Text isBold>{mode.name}</Text>}
-                              description={mode.description}
-                            />
-                          </FlexItem>
-                        ))}
+                        {availableModes.map((mode) => {
+                          const translatedModeName =
+                            product.translations?.mode?.[mode.id]?.name[currentLocale] || mode.name;
+                          const translatedModeDescription =
+                            product.translations?.mode?.[mode.id]?.description[currentLocale] ||
+                            mode.description;
+                          return (
+                            <FlexItem key={mode.id}>
+                              <Radio
+                                key={mode.id}
+                                id={mode.id}
+                                name="mode"
+                                isChecked={mode.id === selectedModeId}
+                                onChange={() => onModeChange(mode)}
+                                label={<Text isBold>{translatedModeName}</Text>}
+                                description={translatedModeDescription}
+                              />
+                            </FlexItem>
+                          );
+                        })}
                       </Split>
                     )}
                   </Stack>
@@ -565,8 +572,15 @@ const CurrentProductInfo = ({ product, modeId }: CurrentProductInfoProps) => {
   if (!product) return;
 
   let mode;
+  let translatedModeName;
+  let translatedModeDescription;
   if (modeId) {
     mode = product.modes.find((m) => m.id === modeId);
+    translatedModeName =
+      product.translations?.mode?.[modeId]?.name[agama.language.replace("-", "_")] || mode?.name;
+    translatedModeDescription =
+      product.translations?.mode?.[modeId]?.description[agama.language.replace("-", "_")] ||
+      mode?.description;
   }
 
   return (
@@ -582,10 +596,10 @@ const CurrentProductInfo = ({ product, modeId }: CurrentProductInfoProps) => {
 
           {mode && (
             <>
-              <Title headingLevel="h3">{mode.name}</Title>
+              <Title headingLevel="h3">{translatedModeName}</Title>
 
               <Divider />
-              <SubtleContent>{mode.description}</SubtleContent>
+              <SubtleContent>{translatedModeDescription}</SubtleContent>
             </>
           )}
 
