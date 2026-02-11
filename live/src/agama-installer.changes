@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Feb 11 14:45:20 UTC 2026 - Eugenio Paolantonio <eugenio.paolantonio@suse.com>
+
+- live: update license.final content with the January 2026 EULA delivery
+  (gh#agama-project/agama#3150)
+
+-------------------------------------------------------------------
 Tue Feb 10 07:36:57 UTC 2026 - Dominique Leuenberger <dimstar@opensuse.org>
 
 - Installer: configure libzypp through drop-in config snippet when
