@@ -113,7 +113,7 @@ function InstallationFinished() {
   const mountTpmAlert = usingTpm(storageConfig);
 
   return (
-    <Page showQuestions={false} noDefaultStartSlot noDefaultEndSlot>
+    <Page variant="minimal">
       <Page.Content>
         <Grid hasGutter style={{ height: "100%", placeContent: "center" }}>
           <GridItem sm={12} md={6} style={{ alignSelf: "center" }}>
