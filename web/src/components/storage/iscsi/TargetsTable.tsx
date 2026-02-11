@@ -179,7 +179,7 @@ const filterTargets = (targets: MergedTarget[], filters: ISCSITargetsFilters): M
   const conditions: ISCSITargetCondition[] = [];
 
   if (!isEmpty(name)) {
-    conditions.push((t) => t.name.includes(name));
+    conditions.push((t) => t.name.toLowerCase().includes(name.toLowerCase()));
   }
 
   if (!isEmpty(portal)) {
@@ -219,11 +219,17 @@ const buildActions = (
   if (target.locked) return [];
 
   return [
-    statusMatches.connected(target) && {
-      title: _("Disconnect"),
-      onClick: onDisconnect,
-      isDanger: true,
-    },
+    statusMatches.connected(target) && [
+      {
+        title: _("Edit connection"),
+        onClick: onConnect,
+      },
+      {
+        title: _("Disconnect"),
+        onClick: onDisconnect,
+        isDanger: true,
+      },
+    ],
 
     statusMatches.connection_failed(target) && [
       {
