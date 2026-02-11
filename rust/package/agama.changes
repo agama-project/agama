@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Feb 11 15:47:38 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Use "/run/agama/zypp" as directory for libzypp
+  (gh#agama-project/agama#3154).
+
+-------------------------------------------------------------------
 Wed Feb 11 13:48:37 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Sort the list of products alphabetically (gh#agama-project/agama#3145).

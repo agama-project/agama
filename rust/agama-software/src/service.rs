@@ -109,7 +109,7 @@ impl Starter {
         self
     }
 
-    const TARGET_DIR: &str = "/run/agama/software_ng_zypp";
+    const TARGET_DIR: &str = "/run/agama/zypp";
     // FIXME: it should be defined in a single place and injected where needed.
     const INSTALL_DIR: &str = "/mnt";
 
