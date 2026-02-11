@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-02-09 04:10+0000\n"
-"PO-Revision-Date: 2026-01-27 10:04+0000\n"
+"PO-Revision-Date: 2026-02-09 10:04+0000\n"
 "Last-Translator: David Medina <medipas@gmail.com>\n"
 "Language-Team: Catalan <https://l10n.opensuse.org/projects/agama/agama-"
 "service-master/ca/>\n"
@@ -29,9 +29,8 @@ msgstr "S'han trobat elements no compatibles al perfil d'AutoYaST: %{keys}."
 
 #. Implementation for the API method #Probe.
 #: service/lib/agama/dbus/storage/dasd.rb:64
-#, fuzzy
 msgid "Probing DASD devices"
-msgstr "Sondant els dispositius d'emmagatzematge"
+msgstr "Sondant dispositius DASD"
 
 #. Performs the configuration process in a separate thread.
 #.
@@ -42,9 +41,8 @@ msgstr "Sondant els dispositius d'emmagatzematge"
 #.
 #. @param config_json [Hash]
 #: service/lib/agama/dbus/storage/dasd.rb:121
-#, fuzzy
 msgid "Configuring DASD"
-msgstr "Configuració d'iSCSI"
+msgstr "Configurant DASD"
 
 #. Do not configure if there is nothing to change.
 #: service/lib/agama/dbus/storage/iscsi.rb:98
