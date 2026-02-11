@@ -1,8 +1,14 @@
 -------------------------------------------------------------------
-Wed Feb 11 14:45:05 UTC 2026 - José Iván López González <jlopez@suse.com>
+Wed Feb 11 15:49:05 UTC 2026 - José Iván López González <jlopez@suse.com>
 
 - Add agama-s390 service and integrate DASD into the new HTTP API
   (gh#agama-project/agama#3128).
+
+-------------------------------------------------------------------
+Wed Feb 11 15:47:38 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Use "/run/agama/zypp" as directory for libzypp
+  (gh#agama-project/agama#3154).
 
 -------------------------------------------------------------------
 Wed Feb 11 13:48:37 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
