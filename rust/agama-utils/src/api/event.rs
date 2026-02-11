@@ -63,7 +63,9 @@ pub enum Event {
         id: u32,
     },
     /// DASD format changed.
-    DASDFormatChanged(dasd::FormatSummary),
+    DASDFormatChanged {
+        summary: dasd::FormatSummary,
+    },
     /// DASD format finished (contains exit status of the format operation).
     DASDFormatFinished,
 }

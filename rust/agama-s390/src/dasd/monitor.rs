@@ -157,8 +157,8 @@ impl Monitor {
 
     fn handle_format_changed(&self, signal: FormatChanged) -> Result<(), Error> {
         let args = signal.args()?;
-        let format_summary = serde_json::from_str::<FormatSummary>(args.summary)?;
-        self.events.send(Event::DASDFormatChanged(format_summary))?;
+        let summary = serde_json::from_str::<FormatSummary>(args.summary)?;
+        self.events.send(Event::DASDFormatChanged { summary })?;
         Ok(())
     }
 
