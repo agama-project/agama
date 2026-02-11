@@ -21,16 +21,13 @@
 //! This module implements a set of utilities for tests.
 
 use crate::{
-    client::{DiscoverResult, Error, ISCSIClient},
+    dasd::client::{DASDClient, Error},
     service::{Service, Starter},
     storage,
 };
 use agama_utils::{
     actor::Handler,
-    api::{
-        event,
-        iscsi::{Config, DiscoverConfig},
-    },
+    api::{event, RawConfig},
     progress,
 };
 use async_trait::async_trait;
@@ -39,56 +36,70 @@ use std::sync::Arc;
 use tokio::sync::Mutex;
 
 #[derive(Default, Clone)]
-pub struct TestClientState {
-    pub discovered: bool,
-    pub config: Option<Config>,
+pub struct TestDASDClientState {
+    pub probed: bool,
+    pub config: Option<RawConfig>,
 }
 
-/// iSCSI test client.
+/// Test client for DASD.
 ///
-/// This client implements a dummy client to replace the original [ISCSIClient].
+/// This client implements a dummy client to replace the original [DASDClient].
 ///
 /// ```
-/// use agama_iscsi::{test_utils::TestClient, client::ISCSIClient};
-/// use agama_utils::{api::iscsi::DiscoverConfig};
+/// use agama_s390::{test_utils::TestDASDClient, dasd::client::DASDClient};
 ///
 /// # tokio_test::block_on(async {
 ///
 /// // Assert whether the main methods were called.
-/// let client = TestClient::new();
-/// assert_eq!(client.state().await.discovered, false);
+/// let client = TestDASDClient::new();
+/// assert_eq!(client.state().await.probed, false);
 ///
-/// let config = DiscoverConfig::new("192.168.100.10", 3260);
-/// client.discover(config).await.unwrap();
-/// assert_eq!(client.state().await.discovered, true);
+/// client.probe().await.unwrap();
+/// assert_eq!(client.state().await.probed, true);
 /// # });
 /// ```
 #[derive(Clone)]
-pub struct TestClient {
-    state: Arc<Mutex<TestClientState>>,
+pub struct TestDASDClient {
+    state: Arc<Mutex<TestDASDClientState>>,
 }
 
-impl TestClient {
+impl TestDASDClient {
     pub fn new() -> Self {
-        let state = TestClientState::default();
+        let state = TestDASDClientState::default();
         Self {
             state: Arc::new(Mutex::new(state)),
         }
     }
 
-    pub async fn state(&self) -> TestClientState {
+    pub async fn state(&self) -> TestDASDClientState {
         self.state.lock().await.clone()
     }
 }
 
 #[async_trait]
-impl ISCSIClient for TestClient {
+impl DASDClient for TestDASDClient {
+    async fn probe(&self) -> Result<(), Error> {
+        let mut state = self.state.lock().await;
+        state.probed = true;
+        Ok(())
+    }
+
     async fn get_system(&self) -> Result<Option<Value>, Error> {
         let system: Value = serde_json::from_str(
             r#"
             {
-                "targets": [
-                    { "name": "target.test" }
+                "devices": [
+                    {
+                        "channel": "0.0.0100",
+                        "deviceName": "dasda",
+                        "type": "ECKD",
+                        "diag": false,
+                        "accessType": "diag",
+                        "partitionInfo": "1",
+                        "status": "active",
+                        "active": true,
+                        "formatted": true
+                    }
                  ]
             }
             "#,
@@ -98,35 +109,29 @@ impl ISCSIClient for TestClient {
         Ok(Some(system))
     }
 
-    async fn get_config(&self) -> Result<Option<Config>, Error> {
+    async fn get_config(&self) -> Result<Option<RawConfig>, Error> {
         let state = self.state.lock().await;
         Ok(state.config.clone())
     }
 
-    async fn set_config(&self, config: Option<Config>) -> Result<(), Error> {
+    async fn set_config(&self, config: Option<RawConfig>) -> Result<(), Error> {
         let mut state = self.state.lock().await;
         state.config = config;
         Ok(())
     }
-
-    async fn discover(&self, _config: DiscoverConfig) -> Result<DiscoverResult, Error> {
-        let mut state = self.state.lock().await;
-        state.discovered = true;
-        Ok(DiscoverResult::Success)
-    }
 }
 
-/// Starts a testing iSCSI service.
+/// Starts a testing DASD service.
 pub async fn start_service(
     storage: Handler<storage::Service>,
     events: event::Sender,
     progress: Handler<progress::Service>,
     connection: zbus::Connection,
 ) -> Handler<Service> {
-    let client = TestClient::new();
+    let dasd = TestDASDClient::new();
     Starter::new(storage, events, progress, connection)
-        .with_client(client)
+        .with_dasd(dasd)
         .start()
         .await
-        .expect("Could not start a testing iSCSI service")
+        .expect("Could not start a testing s390 service")
 }

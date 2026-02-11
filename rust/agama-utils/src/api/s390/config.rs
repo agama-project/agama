@@ -1,4 +1,4 @@
-// Copyright (c) [2025-2026] SUSE LLC
+// Copyright (c) [2026] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -18,24 +18,17 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::api::{hostname, l10n, manager, network, proxy, s390, software};
-use serde::Serialize;
-use serde_json::Value;
+use crate::api::raw_config::RawConfig;
+use merge::Merge;
+use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 
 #[skip_serializing_none]
-#[derive(Clone, Debug, Serialize, utoipa::ToSchema)]
+#[derive(Clone, Debug, Default, Deserialize, Serialize, Merge, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
-pub struct SystemInfo {
-    #[serde(flatten)]
-    pub manager: manager::SystemInfo,
-    pub hostname: hostname::SystemInfo,
-    pub proxy: Option<proxy::Config>,
-    pub l10n: l10n::SystemInfo,
-    pub software: software::SystemInfo,
-    pub storage: Option<Value>,
-    pub iscsi: Option<Value>,
-    pub network: network::SystemInfo,
-    #[serde(flatten)]
-    pub s390: Option<s390::SystemInfo>,
+#[merge(strategy = merge::option::recurse)]
+/// s390 configuration.
+pub struct Config {
+    /// Configuration of the DASD devices.
+    pub dasd: Option<RawConfig>,
 }

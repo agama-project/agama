@@ -21,8 +21,8 @@
 use std::sync::Arc;
 
 use crate::{
-    bootloader, checks, files, hostname, iscsi, l10n, proxy, security, service, software, storage,
-    tasks::message, users,
+    bootloader, checks, files, hostname, iscsi, l10n, proxy, s390, security, service, software,
+    storage, tasks::message, users,
 };
 use agama_network::NetworkSystemClient;
 use agama_utils::{
@@ -57,6 +57,7 @@ pub struct TasksRunner {
     pub software: Handler<software::Service>,
     pub storage: Handler<storage::Service>,
     pub users: Handler<users::Service>,
+    pub s390: Option<Handler<s390::Service>>,
 }
 
 impl Actor for TasksRunner {
@@ -116,6 +117,7 @@ impl MessageHandler<message::SetConfig> for TasksRunner {
             software: self.software.clone(),
             storage: self.storage.clone(),
             users: self.users.clone(),
+            s390: self.s390.clone(),
         };
 
         if let Err(error) = action.run(message.product, message.config).await {
@@ -263,6 +265,7 @@ struct SetConfigAction {
     software: Handler<software::Service>,
     storage: Handler<storage::Service>,
     users: Handler<users::Service>,
+    s390: Option<Handler<s390::Service>>,
 }
 
 impl SetConfigAction {
@@ -287,6 +290,10 @@ impl SetConfigAction {
             gettext("Storing users settings"),
             gettext("Configuring iSCSI devices"),
         ];
+
+        if self.s390.is_some() {
+            steps.push(gettext("Configuring DASD devices"));
+        }
 
         if config.network.is_some() {
             steps.push(gettext("Setting up the network"));
@@ -369,6 +376,14 @@ impl SetConfigAction {
         self.iscsi
             .call(iscsi::message::SetConfig::new(config.iscsi.clone()))
             .await?;
+
+        if let Some(s390) = &self.s390 {
+            self.progress
+                .call(progress::message::Next::new(Scope::Manager))
+                .await?;
+            s390.call(s390::message::SetConfig::new(config.s390.clone()))
+                .await?;
+        }
 
         if let Some(network) = config.network.clone() {
             self.progress

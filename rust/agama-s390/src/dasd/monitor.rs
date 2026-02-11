@@ -19,13 +19,16 @@
 // find current contact information at www.suse.com.
 
 use crate::{
-    dbus::{ISCSIProxy, ProgressChanged, ProgressFinished, SystemChanged},
+    dasd::dbus::{
+        DASDProxy, FormatChanged, FormatFinished, ProgressChanged, ProgressFinished, SystemChanged,
+    },
     storage,
 };
 use agama_utils::{
     actor::Handler,
     api::{
         event::{self, Event},
+        s390::dasd::FormatSummary,
         Progress, Scope,
     },
     progress,
@@ -61,7 +64,7 @@ struct ProgressData {
 impl From<ProgressData> for Progress {
     fn from(data: ProgressData) -> Self {
         Progress {
-            scope: Scope::ISCSI,
+            scope: Scope::DASD,
             size: data.size,
             steps: data.steps,
             step: data.step,
@@ -93,7 +96,7 @@ impl Monitor {
     }
 
     async fn run(&self) -> Result<(), Error> {
-        let proxy = ISCSIProxy::new(&self.connection).await?;
+        let proxy = DASDProxy::new(&self.connection).await?;
         let rule = MatchRule::builder()
             .msg_type(message::Type::Signal)
             .sender(proxy.inner().destination())?
@@ -115,16 +118,23 @@ impl Monitor {
                 self.handle_progress_finished(signal).await?;
                 continue;
             }
-            tracing::warn!("Unmanaged iSCSI signal: {message:?}");
+            if let Some(signal) = FormatChanged::from_message(message.clone()) {
+                self.handle_format_changed(signal)?;
+                continue;
+            }
+            if let Some(signal) = FormatFinished::from_message(message.clone()) {
+                self.handle_format_finished(signal)?;
+                continue;
+            }
+            tracing::warn!("Unmanaged DASD signal: {message:?}");
         }
 
         Ok(())
     }
 
     fn handle_system_changed(&self, _signal: SystemChanged) -> Result<(), Error> {
-        self.events.send(Event::SystemChanged {
-            scope: Scope::ISCSI,
-        })?;
+        self.events
+            .send(Event::SystemChanged { scope: Scope::DASD })?;
         self.storage.cast(storage::message::Probe)?;
         Ok(())
     }
@@ -140,8 +150,20 @@ impl Monitor {
 
     async fn handle_progress_finished(&self, _signal: ProgressFinished) -> Result<(), Error> {
         self.progress
-            .call(progress::message::Finish::new(Scope::ISCSI))
+            .call(progress::message::Finish::new(Scope::DASD))
             .await?;
+        Ok(())
+    }
+
+    fn handle_format_changed(&self, signal: FormatChanged) -> Result<(), Error> {
+        let args = signal.args()?;
+        let summary = serde_json::from_str::<FormatSummary>(args.summary)?;
+        self.events.send(Event::DASDFormatChanged { summary })?;
+        Ok(())
+    }
+
+    fn handle_format_finished(&self, _signal: FormatFinished) -> Result<(), Error> {
+        self.events.send(Event::DASDFormatFinished)?;
         Ok(())
     }
 }
@@ -152,7 +174,7 @@ impl Monitor {
 pub fn spawn(monitor: Monitor) -> Result<(), Error> {
     tokio::spawn(async move {
         if let Err(e) = monitor.run().await {
-            tracing::error!("Error running the iSCSI monitor: {e:?}");
+            tracing::error!("Error running the DASD monitor: {e:?}");
         }
     });
     Ok(())

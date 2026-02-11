@@ -153,8 +153,8 @@ impl Monitor {
         match signal {
             Signal::SystemChanged(signal) => self.handle_system_changed(signal)?,
             Signal::ProposalChanged(signal) => self.handle_proposal_changed(signal).await?,
-            Signal::ProgressChanged(signal) => self.handle_progress_changed(signal)?,
-            Signal::ProgressFinished(signal) => self.handle_progress_finished(signal)?,
+            Signal::ProgressChanged(signal) => self.handle_progress_changed(signal).await?,
+            Signal::ProgressFinished(signal) => self.handle_progress_finished(signal).await?,
         }
         Ok(())
     }
@@ -175,7 +175,7 @@ impl Monitor {
         self.update_issues().await
     }
 
-    fn handle_progress_changed(&self, signal: ProgressChanged) -> Result<(), Error> {
+    async fn handle_progress_changed(&self, signal: ProgressChanged) -> Result<(), Error> {
         let Ok(args) = signal.args() else {
             return Err(Error::ProgressChangedArgs);
         };
@@ -183,14 +183,16 @@ impl Monitor {
             return Err(Error::ProgressChangedData);
         };
         self.progress
-            .cast(progress::message::SetProgress::new(progress_data.into()))?;
+            .call(progress::message::SetProgress::new(progress_data.into()))
+            .await?;
 
         Ok(())
     }
 
-    fn handle_progress_finished(&self, _signal: ProgressFinished) -> Result<(), Error> {
+    async fn handle_progress_finished(&self, _signal: ProgressFinished) -> Result<(), Error> {
         self.progress
-            .cast(progress::message::Finish::new(Scope::Storage))?;
+            .call(progress::message::Finish::new(Scope::Storage))
+            .await?;
         Ok(())
     }
 
