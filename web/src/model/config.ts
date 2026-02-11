@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2025] SUSE LLC
+ * Copyright (c) [2025-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -28,6 +28,7 @@ import type * as Software from "~/model/config/software";
 import type * as User from "~/model/config/user";
 import type * as Root from "~/model/config/root";
 import type * as Storage from "~/openapi/config/storage";
+import type * as DASD from "~/openapi/config/dasd";
 
 type Config = {
   hostname?: Hostname.Config;
@@ -35,9 +36,10 @@ type Config = {
   network?: Network.Config;
   product?: Product.Config;
   storage?: Storage.Config;
+  dasd?: DASD.Config;
   software?: Software.Config;
   user?: User.Config;
   root?: Root.Config;
 };
 
-export type { Config, Hostname, Product, L10n, Network, Storage, User, Root };
+export type { Config, Hostname, Product, L10n, Network, Storage, User, Root, DASD };
