@@ -575,12 +575,12 @@ const CurrentProductInfo = ({ product, modeId }: CurrentProductInfoProps) => {
   let translatedModeName;
   let translatedModeDescription;
   if (modeId) {
+    const currentLocale = agama.language.replace("-", "_");
+
     mode = product.modes.find((m) => m.id === modeId);
-    translatedModeName =
-      product.translations?.mode?.[modeId]?.name[agama.language.replace("-", "_")] || mode?.name;
+    translatedModeName = product.translations?.mode?.[modeId]?.name[currentLocale] || mode?.name;
     translatedModeDescription =
-      product.translations?.mode?.[modeId]?.description[agama.language.replace("-", "_")] ||
-      mode?.description;
+      product.translations?.mode?.[modeId]?.description[currentLocale] || mode?.description;
   }
 
   return (
