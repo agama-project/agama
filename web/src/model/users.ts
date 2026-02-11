@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024] SUSE LLC
+ * Copyright (c) [2024-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -22,9 +22,8 @@
 
 // @todo Move to the new API.
 
-import { AxiosResponse } from "axios";
-import { del, get, patch, post, put } from "~/http";
-import { FirstUser, PasswordCheckResult, RootUser } from "~/types/users";
+import { del, get, patch, put } from "~/http";
+import { FirstUser, RootUser } from "~/types/users";
 
 /**
  * Returns the first user's definition
@@ -55,16 +54,4 @@ const fetchRoot = (): Promise<RootUser> => get("/api/users/root");
  */
 const updateRoot = (changes: Partial<RootUser>) => patch("/api/users/root", changes);
 
-/**
- * Checks the strength of the given password.
- *
- * @param password - Password to check.
- */
-const checkPassword = async (password: string): Promise<PasswordCheckResult> => {
-  const response: AxiosResponse<PasswordCheckResult> = await post("/api/users/password_check", {
-    password,
-  });
-  return response.data;
-};
-
-export { fetchFirstUser, updateFirstUser, removeFirstUser, fetchRoot, updateRoot, checkPassword };
+export { fetchFirstUser, updateFirstUser, removeFirstUser, fetchRoot, updateRoot };

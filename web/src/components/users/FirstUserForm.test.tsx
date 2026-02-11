@@ -31,8 +31,6 @@ let mockPassword: string;
 let mockHashedPassword: boolean;
 const mockPatchConfig = jest.fn().mockResolvedValue(true);
 
-jest.mock("~/components/users/PasswordCheck", () => () => <div>PasswordCheck Mock</div>);
-
 jest.mock("~/hooks/model/config", () => ({
   ...jest.requireActual("~/hooks/model/config"),
   useConfig: () => ({

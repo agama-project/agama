@@ -36,7 +36,6 @@ import {
 } from "@patternfly/react-core";
 import { useNavigate } from "react-router";
 import { PasswordAndConfirmationInput, Page } from "~/components/core";
-import PasswordCheck from "~/components/users/PasswordCheck";
 import { suggestUsernames } from "~/components/users/utils";
 import { useConfig } from "~/hooks/model/config";
 import { patchConfig } from "~/api";
@@ -242,7 +241,6 @@ export default function FirstUserForm() {
                 showErrors={false}
                 onChange={(_, value) => setPassword(value)}
               />
-              <PasswordCheck password={password} />
             </>
           )}
           <ActionGroup>

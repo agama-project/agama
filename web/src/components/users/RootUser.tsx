@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2023-2025] SUSE LLC
+ * Copyright (c) [2023-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -32,7 +32,6 @@ import {
   Stack,
 } from "@patternfly/react-core";
 import { Link, Page } from "~/components/core";
-import PasswordCheck from "~/components/users/PasswordCheck";
 import { useConfig } from "~/hooks/model/config";
 import { USER } from "~/routes/paths";
 import { isEmpty } from "radashi";
@@ -73,7 +72,6 @@ export default function RootUser() {
                 </DescriptionListDescription>
               </DescriptionListGroup>
             </DescriptionList>
-            {password && <PasswordCheck password={password} />}
           </Stack>
         </CardBody>
       </Card>

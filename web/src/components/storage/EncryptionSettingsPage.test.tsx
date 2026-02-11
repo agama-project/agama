@@ -26,8 +26,6 @@ import { installerRender } from "~/test-utils";
 import EncryptionSettingsPage from "./EncryptionSettingsPage";
 import type { ConfigModel } from "~/model/storage/config-model";
 
-jest.mock("~/components/users/PasswordCheck", () => () => <div>PasswordCheck Mock</div>);
-
 const mockLuks2Config: ConfigModel.Config = {
   encryption: {
     method: "luks2",

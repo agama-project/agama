@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024-2025] SUSE LLC
+ * Copyright (c) [2024-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -28,7 +28,6 @@ import Icon from "~/components/layout/Icon";
 import { useConfigModel } from "~/hooks/model/storage/config-model";
 import { STORAGE } from "~/routes/paths";
 import { _ } from "~/i18n";
-import PasswordCheck from "~/components/users/PasswordCheck";
 import type { ConfigModel } from "~/model/storage/config-model";
 
 function encryptionLabel(method?: ConfigModel.EncryptionMethod) {
@@ -42,7 +41,6 @@ export default function EncryptionSection() {
   const configModel = useConfigModel();
   const encryption = configModel?.encryption;
   const method = encryption?.method;
-  const password = encryption?.password;
 
   return (
     <Stack hasGutter>
@@ -53,7 +51,6 @@ export default function EncryptionSection() {
         )}
       </div>
       <Content isEditorial>{encryptionLabel(method)}</Content>
-      {password && <PasswordCheck password={password} />}
       <Split hasGutter>
         <Link to={STORAGE.editEncryption} keepQuery variant="plain">
           <Flex alignItems={{ default: "alignItemsCenter" }} gap={{ default: "gapSm" }}>

@@ -24,7 +24,6 @@ import React, { useEffect, useState, useRef } from "react";
 import { useLocation, useNavigate } from "react-router";
 import { ActionGroup, Alert, Checkbox, Form } from "@patternfly/react-core";
 import { NestedContent, Page, PasswordAndConfirmationInput } from "~/components/core";
-import PasswordCheck from "~/components/users/PasswordCheck";
 import { useEncryptionMethods } from "~/hooks/model/system/storage";
 import { useConfigModel, useSetEncryption } from "~/hooks/model/storage/config-model";
 import { isEmpty } from "radashi";
@@ -137,7 +136,6 @@ at the new file systems, including data, programs, and system files.",
                 isDisabled={!isEnabled}
                 showErrors={false}
               />
-              <PasswordCheck password={password} />
               {isTpmAvailable && (
                 <Checkbox
                   id="tpmEncryptionMethod"

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2025] SUSE LLC
+ * Copyright (c) [2022-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -32,7 +32,6 @@ import {
   Stack,
 } from "@patternfly/react-core";
 import { Link, Page, SplitButton } from "~/components/core";
-import PasswordCheck from "~/components/users/PasswordCheck";
 // This should be based on the config, not on the proposal. As a temporary hack (introduced in a
 // separate commit that should be easy to revert), we are using the proposal because the config
 // does not emit an event on every change.
@@ -95,7 +94,6 @@ const UserData = () => {
               </DescriptionListDescription>
             </DescriptionListGroup>
           </DescriptionList>
-          <PasswordCheck password={user.password} />
         </Stack>
       </CardBody>
     </Card>

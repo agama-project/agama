@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024] SUSE LLC
+ * Copyright (c) [2024-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -20,8 +20,6 @@
  * find current contact information at www.suse.com.
  */
 
-import { TranslatedString } from "~/i18n";
-
 type FirstUser = {
   fullName: string;
   userName: string;
@@ -35,9 +33,4 @@ type RootUser = {
   sshPublicKey: string;
 };
 
-type PasswordCheckResult = {
-  success?: number;
-  failure?: TranslatedString;
-};
-
-export type { FirstUser, RootUser, PasswordCheckResult };
+export type { FirstUser, RootUser };

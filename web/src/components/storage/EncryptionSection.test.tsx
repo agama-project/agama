@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024-2025] SUSE LLC
+ * Copyright (c) [2024-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -30,8 +30,6 @@ const mockUseConfigModel = jest.fn();
 jest.mock("~/hooks/model/storage/config-model", () => ({
   useConfigModel: () => mockUseConfigModel(),
 }));
-
-jest.mock("~/components/users/PasswordCheck", () => () => <div>PasswordCheck Mock</div>);
 
 describe("EncryptionSection", () => {
   describe("if encryption is enabled", () => {

@@ -38,7 +38,6 @@ import { patchConfig } from "~/api";
 import type { Root } from "~/model/config";
 import { isEmpty } from "radashi";
 import { _ } from "~/i18n";
-import PasswordCheck from "~/components/users/PasswordCheck";
 import { USER } from "~/routes/paths";
 
 const AVAILABLE_METHODS = ["password", "sshPublicKey"] as const;
@@ -169,7 +168,6 @@ const RootUserForm = () => {
                     onChange={onPasswordChange}
                     showErrors={false}
                   />
-                  <PasswordCheck password={password} />
                 </>
               )}
             </NestedContent>
