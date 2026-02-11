@@ -192,7 +192,7 @@ function DiscoverForm() {
       <SwitchEnhanced
         id="useAuth"
         label={_("Provide authentication")}
-        description={_("Lorem ipsum dolor")}
+        description={_("CHAP authentication performed by the target")}
         isChecked={showAuth}
         onChange={() => setShowAuth(!showAuth)}
       />
@@ -220,7 +220,7 @@ function DiscoverForm() {
           <SwitchEnhanced
             id="useMutualAuth"
             label={_("Enable mutual verification")}
-            description={_("Allow both sides verify each other's identity")}
+            description={_("Additional CHAP authentication performed by the initiator")}
             isChecked={showMutualAuth}
             onChange={() => setShowMutualAuth(!showMutualAuth)}
           />
