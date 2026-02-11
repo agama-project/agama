@@ -5,6 +5,11 @@ Wed Feb 11 14:45:05 UTC 2026 - José Iván López González <jlopez@suse.com>
   (gh#agama-project/agama#3128).
 
 -------------------------------------------------------------------
+Wed Feb 11 13:48:37 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Sort the list of products alphabetically (gh#agama-project/agama#3145).
+
+-------------------------------------------------------------------
 Wed Feb 11 13:34:36 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
 
 - Return also the product mode translations

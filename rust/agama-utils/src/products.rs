@@ -153,7 +153,8 @@ impl Registry {
 
     /// Returns a vector with available the products
     pub fn products(&self) -> Vec<Product> {
-        self.products
+        let mut products: Vec<_> = self
+            .products
             .iter()
             .map(|p| {
                 let modes = p
@@ -176,7 +177,10 @@ impl Registry {
                     modes,
                 }
             })
-            .collect()
+            .collect();
+
+        products.sort_by(|a, b| a.name.to_lowercase().cmp(&b.name.to_lowercase()));
+        products
     }
 }
 

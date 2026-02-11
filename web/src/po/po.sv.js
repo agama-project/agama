@@ -3,9 +3,6 @@ export default {
     "plural-forms": (n) => n != 1,
     "language": "sv"
   },
-  " Timezone selection": [
-    " Tidszon val"
-  ],
   "\"%s\"": [
     "\"%s\""
   ],
@@ -18,11 +15,17 @@ export default {
   "%1$s - %2$s": [
     "%1$s - %2$s"
   ],
+  "%1$s and %2$s": [
+    "%1$s och %2$s"
+  ],
+  "%1$s and [%2$d more]": [
+    "%1$s och [%2$d mer]"
+  ],
   "%1$s at %2$s": [
     "%1$s på %2$s"
   ],
   "%1$s keyboard - %2$s timezone": [
-    ""
+    "%1$s tangentbord - %2$s tidszon"
   ],
   "%1$s will be created as a partition at %2$s": [
     "%1$s kommer att skapas som en partition på %2$s",
@@ -31,17 +34,20 @@ export default {
   "%1$s will still contain the LVM group '%2$s' and any partition needed to boot": [
     "%1$s kommer fortfarande att innehålla LVM-gruppen '%2$s' och eventuell partition som behövs för att starta systemet"
   ],
+  "%1$s, %2$s and [%3$d more]": [
+    "%1$s, %2$s och [%3$d mer]"
+  ],
   "%d of %d": [
     "%d av %d"
   ],
   "%s - %s": [
     "%s - %s"
   ],
-  "%s [must be registered].": [
-    "%s [måste registreras]."
-  ],
   "%s and %d others": [
-    ""
+    "%s och %d andra"
+  ],
+  "%s and %s": [
+    "%s och %s"
   ],
   "%s disk": [
     "%s disk"
@@ -49,11 +55,12 @@ export default {
   "%s has been registered with below information.": [
     "%s har registrerats med uppgifterna nedan."
   ],
-  "%s is an immutable system with atomic updates. It uses a read-only Btrfs file system updated via snapshots.": [
-    "%s är ett oföränderligt system med atomära uppdateringar. Det använder ett skrivskyddat Btrfs filsystem som uppdateras via ögonblicksavbilder."
-  ],
   "%s logo": [
     "%s logotyp"
+  ],
+  "%s task active": [
+    "%s uppgift aktiv",
+    "%s uppgifter aktiva"
   ],
   "%s will be created as a logical volume": [
     "%s kommer att skapas som en logisk volym",
@@ -64,6 +71,9 @@ export default {
   ],
   "%s with %d partitions": [
     "%s med %d partitioner"
+  ],
+  "(step %s of %s)": [
+    "(steg %s av %s)"
   ],
   "A %1$s of %2$s will be created for %3$s if possible": [
     "En %1$s av %2$s kommer att skapas för %3$s om möjligt"
@@ -228,12 +238,6 @@ export default {
   "At least one partition will be deleted": [
     "Minst en partition kommer att tas bort"
   ],
-  "At this point you can power off the machine.": [
-    "Vid det här laget kan du stänga av maskinen."
-  ],
-  "At this point you can reboot the machine to log in to the new system.": [
-    "Vid det här laget kan du starta om maskinen för att logga in till det nya systemet."
-  ],
   "Authentication": [
     "Autentisering"
   ],
@@ -250,7 +254,7 @@ export default {
     "Automatisk LUN-skanning"
   ],
   "Auto and manual": [
-    ""
+    "Automatisk och manuell"
   ],
   "Automatic": [
     "Automatisk"
@@ -263,9 +267,6 @@ export default {
   ],
   "Automatic LUN scan is [enabled]. Activating a controller which is running in NPIV mode will automatically configures all its LUNs.": [
     "Automatisk LUN-skanning är [aktiverad]. Aktiverar en styrenhet som är körande i NPIV läge kommer att automatiskt konfigurera alla dess LUN."
-  ],
-  "Available products": [
-    "Tillgängliga produkter"
   ],
   "Back": [
     "Bakåt"
@@ -306,8 +307,8 @@ export default {
   "Binding": [
     "Bindning"
   ],
-  "Binding settings for '%s'": [
-    "Bindningsinställningar för '%s'"
+  "Binding settings": [
+    "Bindningsinställningar"
   ],
   "BitLocker": [
     "BitLocker"
@@ -315,23 +316,26 @@ export default {
   "Boot options": [
     "Uppstartsalternativ"
   ],
+  "Breadcrumbs": [
+    "Brödsmulor"
+  ],
   "Btrfs": [
     "Btrfs"
   ],
   "Btrfs with snapshots": [
     "Btrfs med ögonblicksavbilder"
   ],
+  "By proceeding, the installation will begin with defined settings.": [
+    "Genom att fortsätta startar installationen med definierade inställningar."
+  ],
   "CPU": [
-    ""
+    "Processor"
   ],
   "Cancel": [
     "Avbryt"
   ],
   "Cannot be changed in remote installation": [
     "Kan inte ändras i fjärrinstallation"
-  ],
-  "Cannot connect to Agama server": [
-    "Kan inte ansluta till Agama server"
   ],
   "Cannot format %s": [
     "Kan inte formatera %s"
@@ -429,14 +433,14 @@ export default {
   "Configuration unreachable or invalid": [
     "Konfigurationen är oåtkomlig eller ogiltig"
   ],
+  "Configure": [
+    "Konfigurera"
+  ],
   "Configure DASD": [
     "Konfigurera DASD"
   ],
-  "Configure LVM Volume Group": [
-    "Konfigurera LVM volymgrupp"
-  ],
-  "Configure LVM logical volume at %s volume group": [
-    "Konfigurera LVM logisk volym på %s volymgrupp"
+  "Configure Volume Group": [
+    "Konfigurera volymgrupp"
   ],
   "Configure device %s": [
     "Konfigurera enhet %s"
@@ -447,6 +451,12 @@ export default {
   "Configure iSCSI": [
     "Konfigurera iSCSI"
   ],
+  "Configure logical volume": [
+    "Konfigurera logisk volym"
+  ],
+  "Configure partition": [
+    "Konfigurera partition"
+  ],
   "Configure partition at %s": [
     "Konfigurera partition på %s"
   ],
@@ -456,23 +466,30 @@ export default {
   "Configured for installation only": [
     "Endast konfigurerad för installation"
   ],
-  "Configuring the product, please wait ...": [
-    "Konfigurerar produkten, vänta..."
+  "Configured for root and user %s": [
+    "Konfigurerat för root och användare %s"
+  ],
+  "Configured for the root user": [
+    "Konfigurerat för root-användaren"
+  ],
+  "Configured for user %s": [
+    "Konfigurerat för användare %s"
+  ],
+  "Configured with %d connection": [
+    "Konfigurerad med %d anslutning",
+    "Konfigurerad med %d anslutningar"
   ],
   "Confirm": [
     "Bekräfta"
   ],
+  "Confirm and install": [
+    "Bekräfta och installera"
+  ],
   "Confirm that you really want to continue.": [
     "Bekräfta att du verkligen vill fortsätta."
   ],
-  "Congratulations!": [
-    "Grattis!"
-  ],
   "Connect": [
     "Anslut"
-  ],
-  "Connect to %s": [
-    "Anslut till %s"
   ],
   "Connect to iSCSI targets": [
     "Anslut till iSCSI mål"
@@ -519,14 +536,14 @@ export default {
   "Controllers": [
     "Styrenheter"
   ],
-  "Could not authenticate against the server, please check it.": [
-    "Kunde inte autentisera mot servern, vänligen kontrollera det."
+  "Could not authenticate against the server.": [
+    "Kunde inte autentisera mot servern."
   ],
   "Could not connect to %s": [
     "Kan inte ansluta till %s"
   ],
-  "Could not log in. Please, make sure that the password is correct.": [
-    "Kunde inte logga in. Kontrollera att lösenordet är korrekt."
+  "Could not log in": [
+    "Kunde inte logga in"
   ],
   "Create LVM volume group %s": [
     "Skapa LVM volymgrupp %s"
@@ -561,8 +578,11 @@ export default {
   "DASD %s": [
     "DASD %s"
   ],
+  "DHCP and %s": [
+    "DHCP och %s"
+  ],
   "DHCP, %s": [
-    ""
+    "DHCP, %s"
   ],
   "DIAG": [
     "DIAG"
@@ -612,6 +632,9 @@ export default {
   "Delete current content": [
     "Radera nuvarande innehåll"
   ],
+  "Delete existing data and install %s?": [
+    "Radera existerande data och installera %s?"
+  ],
   "Delete volume group": [
     "Ta bort volymgrupp"
   ],
@@ -635,9 +658,6 @@ export default {
   ],
   "Device %s menu": [
     "Enhets %s-meny"
-  ],
-  "Device Selection": [
-    "Val av enhet"
   ],
   "Device details": [
     "Enhetsdetaljer"
@@ -666,6 +686,9 @@ export default {
   "Disk": [
     "Disk"
   ],
+  "Disk Activation": [
+    "Diskaktivering"
+  ],
   "Disks": [
     "Diskar"
   ],
@@ -689,9 +712,6 @@ export default {
   ],
   "Edit binding settings": [
     "Redigera bindningsinställningar"
-  ],
-  "Edit connection %s": [
-    "Redigera anslutning %s"
   ],
   "Edit connection settings": [
     "Redigera anslutningsinställningar"
@@ -770,6 +790,9 @@ export default {
     "Utöka installationen bortom den valda disken",
     "Utöka installationen bortom det nuvarande valda %d diskarna"
   ],
+  "Extensions": [
+    "Tillägg"
+  ],
   "F2FS": [
     "F2FS"
   ],
@@ -808,9 +831,6 @@ export default {
   ],
   "Find space in %s": [
     "Hitta utrymme på %s"
-  ],
-  "Finish": [
-    "Slutför"
   ],
   "Finished": [
     "Slutförd"
@@ -872,9 +892,6 @@ export default {
   "GiB": [
     "GiB"
   ],
-  "Go back": [
-    ""
-  ],
   "Go to network page": [
     "Gå till nätverkssidan"
   ],
@@ -890,9 +907,6 @@ export default {
   "Hide %d subvolume action": [
     "Dölj %d undervolym åtgärd",
     "Dölj %d undervolymer åtgärder"
-  ],
-  "Hide details": [
-    "Dölj detaljer"
   ],
   "Hostname": [
     "Värdnamn"
@@ -922,7 +936,7 @@ export default {
     "IP inställningar"
   ],
   "IPs": [
-    ""
+    "IP-adresser"
   ],
   "IPv4": [
     "IPv4"
@@ -933,8 +947,14 @@ export default {
   "If a local media was used to run this installer, remove it before the next boot.": [
     "Om ett lokalt media användes för att köra det här installationsprogrammet, ta bort det före nästa uppstart."
   ],
-  "In progress": [
-    "Pågår"
+  "If unsure, cancel and review storage settings.": [
+    "Om du är osäker, avbryt och granska lagringsinställningarna."
+  ],
+  "If you are unsure, check and adjust the storage settings.": [
+    "Om du är osäker, kontrollera och justera lagringsinställningarna."
+  ],
+  "If you want to disable this check, please specify \"inst.ay_check=0\" at kernels command-line": [
+    "Om du vill inaktivera den här kontrollen, ange \"inst.ay_check=0\" på kärnans kommandorad"
   ],
   "Incorrect IP address": [
     "Felaktig IP adress"
@@ -966,11 +986,29 @@ export default {
   "Install": [
     "Installera"
   ],
+  "Install %s?": [
+    "Installera %s?"
+  ],
+  "Install now": [
+    "Installera nu"
+  ],
   "Install now with potential data loss": [
-    ""
+    "Installera nu med potentiell dataförlust"
   ],
   "Installation devices": [
     "Installations enheter"
+  ],
+  "Installation in progress": [
+    "Installation pågår"
+  ],
+  "Installation only": [
+    "Installation endast"
+  ],
+  "Installation settings": [
+    "Installationsinställningar"
+  ],
+  "Installation settings will automatically update to match the new product's defaults.": [
+    ""
   ],
   "Installation will take %s.": [
     "Installationen kommer att ta %s."
@@ -981,11 +1019,11 @@ export default {
   "Installing a broken package affects system stability and is a big security risk!": [
     "Att installera ett trasigt paket påverkar systemets stabilitet och är en stor säkerhetsrisk!"
   ],
-  "Installing the system, please wait...": [
-    "Installerar systemet, vänligen vänta ..."
-  ],
   "Interface": [
     "Gränssnitt"
+  ],
+  "Invalid settings": [
+    "Ogiltiga inställningar"
   ],
   "Invalid storage settings": [
     "Ogiltiga lagringsinställningar"
@@ -1041,14 +1079,14 @@ export default {
   "Keyboard layout": [
     "Tangentbordslayout"
   ],
-  "Keyboard selection": [
-    "Tangentbordsval"
-  ],
   "KiB": [
     "KiB"
   ],
   "LUN": [
     "LUN"
+  ],
+  "LVM": [
+    "LVM"
   ],
   "Label": [
     "Etikett"
@@ -1059,8 +1097,14 @@ export default {
   "Language and keyboard": [
     "Språk och tangentbordslayout"
   ],
+  "Language and region": [
+    "Språk och region"
+  ],
   "Let the installer propose a sensible size": [
     "Låt installationsprogrammet föreslå en vettig storlek"
+  ],
+  "License acceptance is required to continue.": [
+    ""
   ],
   "Loading": [
     "Laddar"
@@ -1073,9 +1117,6 @@ export default {
   ],
   "Loading the installation repositories...": [
     "Laddar installationsförråd..."
-  ],
-  "Locale selection": [
-    "Lokal val"
   ],
   "Localization": [
     "Lokalisering"
@@ -1107,8 +1148,8 @@ export default {
   "MAC": [
     "MAC"
   ],
-  "Main navigation": [
-    "Huvudnavigering"
+  "Make sure that the passsword is correct and try again.": [
+    "Kontrollera att lösenordet är korrekt och försök igen."
   ],
   "Make sure you provide the correct values": [
     "Se till att du anger rätt värden"
@@ -1123,7 +1164,7 @@ export default {
     "Maximal kanal"
   ],
   "Memory": [
-    ""
+    "Minne"
   ],
   "MiB": [
     "MiB"
@@ -1133,6 +1174,9 @@ export default {
   ],
   "Mode": [
     "Läge"
+  ],
+  "Model": [
+    "Modell"
   ],
   "Modify settings and physical volumes": [
     "Modifiera inställningar och fysiska volymer"
@@ -1211,6 +1255,9 @@ export default {
   "Name": [
     "Namn"
   ],
+  "Needs about %s": [
+    "Behöver runt %s"
+  ],
   "Network": [
     "Nätverk"
   ],
@@ -1245,7 +1292,7 @@ export default {
     "Inget innehåll hittades"
   ],
   "No data loss is expected": [
-    ""
+    "Ingen dataförlust förväntas"
   ],
   "No device is currently using this connection.": [
     "Ingen enhet använder för närvarande den här anslutningen."
@@ -1313,6 +1360,9 @@ export default {
   "Not available": [
     "Inte tillgänglig"
   ],
+  "Not configured": [
+    "Inte konfigurerad"
+  ],
   "Not configured yet": [
     "Inte konfigurerad ännu"
   ],
@@ -1322,11 +1372,11 @@ export default {
   "Not implemented yet (%s)": [
     "Inte implementerat ännu (%s)"
   ],
-  "Not possible with the current setup. Click to know more.": [
-    "Inte möjligt med den aktuella konfigurationen. Klicka för att veta mer."
-  ],
   "Not protected network": [
     "Inte skyddat nätverk"
+  ],
+  "Not registered yet": [
+    "Inte registrerad ännu"
   ],
   "Not supported (%s)": [
     "Stöds inte (%s)"
@@ -1348,9 +1398,6 @@ export default {
   ],
   "Options toggle": [
     "Växla mellan alternativ"
-  ],
-  "Overview": [
-    "Översikt"
   ],
   "Package installation failed": [
     "Paket installation misslyckades"
@@ -1424,14 +1471,8 @@ export default {
   "PiB": [
     "PiB"
   ],
-  "Please, check whether it is running.": [
-    "Vänligen kontrollera om den är igång."
-  ],
   "Please, perform an iSCSI discovery in order to find available iSCSI targets.": [
     "Vänligen utför en iSCSI-upptäckt för att hitta tillgängliga iSCSI-mål."
-  ],
-  "Please, provide its password to log in to the system.": [
-    "Vänligen ange lösenordet för att logga in på systemet."
   ],
   "Please, try to activate a zFCP controller.": [
     "Snälla, försök att aktivera en zFCP-kontroller."
@@ -1446,10 +1487,10 @@ export default {
     "Portal"
   ],
   "Potential data loss": [
-    ""
+    "Potentiell dataförlust"
   ],
   "Potential data loss affecting at least %s": [
-    ""
+    "Potentiell dataförlust som påverkar minst %s"
   ],
   "Pre-installation checks": [
     "Förinstallationskontroller"
@@ -1458,10 +1499,10 @@ export default {
     "Prefix längd eller nätmask"
   ],
   "Proceeding may result in data loss": [
-    ""
+    "Att fortsätta kan leda till dataförlust"
   ],
-  "Proceeding may result in data loss affecting at least %s": [
-    ""
+  "Proceeding will delete existing data, including %s": [
+    "Om du fortsätter raderas befintlig data, inklusive %s"
   ],
   "Product is already registered": [
     "Produkten är redan registrerad"
@@ -1471,6 +1512,9 @@ export default {
   ],
   "Provide email address": [
     "Ange en e-postadress"
+  ],
+  "Provide its password to log in to the system.": [
+    "Ange dess lösenord för att logga in på systemet."
   ],
   "Provide registration code": [
     "Ange registreringskod"
@@ -1496,6 +1540,9 @@ export default {
   "Recommended": [
     "Rekommenderad"
   ],
+  "Refreshing data...": [
+    "Uppdaterar data..."
+  ],
   "Register": [
     "Registrera"
   ],
@@ -1504,6 +1551,9 @@ export default {
   ],
   "Register using a custom registration server": [
     "Registrera dig med en anpassad registreringsserver"
+  ],
+  "Registered": [
+    "Registrerad"
   ],
   "Registration": [
     "Registrering"
@@ -1533,11 +1583,11 @@ export default {
     "Det gick inte att ladda förråd"
   ],
   "Required packages": [
-    ""
+    "Obligatoriska paket"
   ],
   "Required packages and %s pattern": [
-    "",
-    ""
+    "Obligatoriskt paket och %s mönster",
+    "Obligatoriska paket och flera %s mönster"
   ],
   "Rescan devices": [
     "Skanna om enheter"
@@ -1563,11 +1613,14 @@ export default {
   "Review and fix": [
     "Granska och åtgärda"
   ],
-  "Review the summary below. If anything seems incorrect or you have doubts, go back and adjust the settings before proceeding.": [
-    ""
+  "Root login with SSH key": [
+    "Root-inloggning med SSH-nyckel"
   ],
-  "Root authentication methods": [
-    "Rotautentiseringsmetoder"
+  "Root login with password": [
+    "Root-inloggning med lösenord"
+  ],
+  "Root login with password and SSH key": [
+    "Root-inloggning med lösenord och SSH-nyckel"
   ],
   "Root user": [
     "Root användare"
@@ -1608,9 +1661,6 @@ export default {
   "Security": [
     "Säkerhet"
   ],
-  "See more details": [
-    "Se mer detaljer"
-  ],
   "Select": [
     "Välj"
   ],
@@ -1637,6 +1687,9 @@ export default {
   ],
   "Select at least one disk.": [
     "Välj åtminstone en disk."
+  ],
+  "Select device": [
+    "Välj enhet"
   ],
   "Select devices to enable bulk actions.": [
     "Välj enheter för att aktivera massåtgärder."
@@ -1699,8 +1752,14 @@ export default {
   "Show information about %s": [
     "Visa information om %s"
   ],
+  "Show less": [
+    "Visa mindre"
+  ],
   "Show less actions": [
     "Visa mindre åtgärder"
+  ],
+  "Show more": [
+    "Visa mer"
   ],
   "Show more actions": [
     "Visa mer åtgärder"
@@ -1744,9 +1803,6 @@ export default {
   "Software conflicts resolution": [
     "Lösning av programvarukonflikter"
   ],
-  "Software selection": [
-    "Val av programvara"
-  ],
   "Some existing partitions may be shrunk": [
     "Vissa befintliga partitioner kan krympas"
   ],
@@ -1780,6 +1836,9 @@ export default {
   "Status": [
     "Status"
   ],
+  "Step %1$d of %2$d": [
+    "Steg %1$d av %2$d"
+  ],
   "Storage": [
     "Lagring"
   ],
@@ -1792,8 +1851,20 @@ export default {
   "Swap": [
     "Swap"
   ],
+  "Switch to a different mode": [
+    ""
+  ],
+  "System Information": [
+    "Systeminformation"
+  ],
+  "System will have no network connections": [
+    "Systemet kommer inte att ha några nätverksanslutningar"
+  ],
   "TPM sealing requires the new system to be booted directly.": [
     "TPM-försegling kräver att det nya systemet startas upp direkt."
+  ],
+  "Take a moment to review the installation settings below and adjust them as needed.": [
+    "Ta en stund för att granska installationsinställningarna nedan och justera dem efter behov."
   ],
   "Target Password": [
     "Mål lösenord"
@@ -1802,7 +1873,7 @@ export default {
     "Mål"
   ],
   "Temporary name that may change after reboot or network changes": [
-    ""
+    "Temporärt namn som kan ändras efter omstart eller nätverksändringar"
   ],
   "The LVM group '%1$s' will remain at %2$s": [
     "LVM-gruppen '%1$s' kommer att vara kvar på %2$s"
@@ -1908,12 +1979,6 @@ export default {
   "The initiator name cannot be blank": [
     "Initiatornamnet kan inte vara tomt"
   ],
-  "The installation on your machine is complete.": [
-    "Installationen på din maskin har slutförts."
-  ],
-  "The installer interface is no longer available, so you can safely close this window.": [
-    "Installationsgränssnittet är inte längre tillgängligt, så du kan säkert stänga det här fönstret."
-  ],
   "The installer requires [root] user privileges.": [
     "Installationsprogrammet kräver [root] användarrättigheter."
   ],
@@ -2002,6 +2067,9 @@ export default {
   "The zFCP disk was not activated.": [
     "zFCP disken var inte aktiverad."
   ],
+  "There are no disks available for the installation": [
+    "Det finns inga tillgängliga diskar för installation"
+  ],
   "There are not disks available for the installation. You may need to configure some device.": [
     "Det finns inga diskar tillgängliga för installationen. Du kan behöva konfigurera någon enhet."
   ],
@@ -2073,17 +2141,11 @@ export default {
   "To ensure the new system is able to boot, the installer may need to create or configure some partitions in the appropriate disk.": [
     "För att säkerställa att det nya systemet kan starta kan installationsprogrammet behöva skapa eller konfigurera vissa partitioner på lämplig disk."
   ],
-  "Transactional root file system": [
-    "Transaktionellt root filsystem"
-  ],
   "Try again": [
     "Försök igen"
   ],
   "Type": [
     "Typ"
-  ],
-  "URL": [
-    "URL"
   ],
   "Unable to modify the settings": [
     "Det går inte att ändra inställningarna"
@@ -2166,6 +2228,9 @@ export default {
   "Use available space": [
     "Använd tillgängligt utrymme"
   ],
+  "Use device %s": [
+    "Använd enhet %s"
+  ],
   "Use disk %s": [
     "Använd disk %s"
   ],
@@ -2214,6 +2279,9 @@ export default {
   "Use public SSH Key": [
     "Använd publik SSH nyckel"
   ],
+  "Use several devices": [
+    "Använd flera enheter"
+  ],
   "Use static hostname": [
     "Använd statiskt värdnamn"
   ],
@@ -2244,20 +2312,32 @@ export default {
   "Username suggestion dropdown": [
     "Rullgardinsmeny för användarnamnsförslag"
   ],
+  "Using %d connections with %s": [
+    "Använder %d anslutningar med %s"
+  ],
   "Using [%s] keyboard": [
     "Använder [%s] tangentbordslayout"
   ],
   "Using a hashed password.": [
     "Använder ett hashat lösenord."
   ],
+  "Using an advanced storage configuration": [
+    "Använder en avancerad konfiguration"
+  ],
   "Using an existing partition": [
     "Använd en befintlig partition"
+  ],
+  "Using code ending in %s": [
+    "Använder kod som slutar på %s"
   ],
   "Using partition %s": [
     "Använder partition %s"
   ],
   "Using transient hostname: %s": [
     "Använder transient värdnamn: %s"
+  ],
+  "View license": [
+    ""
   ],
   "Volume group %s": [
     "Volymgrupp %s"
@@ -2274,14 +2354,26 @@ export default {
   "WWPN": [
     "WWPN"
   ],
+  "Wait until current operations are completed.": [
+    "Vänta tills de aktuella operationerna är slutförda."
+  ],
   "Waiting for a mount point": [
     "Väntar på en monteringspunkt"
   ],
   "Waiting for information about storage configuration": [
     "Väntar på information om lagringskonfiguration"
   ],
+  "Waiting for proposal": [
+    "Väntar på förslag"
+  ],
   "Weak signal": [
     "Svag signal"
+  ],
+  "When ready, click on the [install] button at the end of the page.": [
+    "När du är redo, klicka på [installera] knappen längst ner på sidan."
+  ],
+  "Wi-Fi": [
+    "Wi-Fi"
   ],
   "Wi-Fi connection form": [
     "WiFi anslutningsformulär"
@@ -2298,6 +2390,9 @@ export default {
   "Wired connections": [
     "Trådanslutna anslutningar"
   ],
+  "Wrong selection": [
+    "Fel val"
+  ],
   "XFS": [
     "XFS"
   ],
@@ -2306,6 +2401,9 @@ export default {
   ],
   "You can proceed to install with the current settings or you may want to discard the configuration and start from scratch with a simple one.": [
     "Du kan fortsätta att installera med de aktuella inställningarna eller så kanske du vill kasta konfigurationen och börja från början med en enkel konfiguration."
+  ],
+  "You can safely close this window.": [
+    ""
   ],
   "You cannot change it later. Go to the %s section if you want to modify it before proceeding with registration.": [
     "Du kan inte ändra den senare. Gå till avsnittet %s om du vill ändra den innan du fortsätter med registreringen."
@@ -2316,11 +2414,11 @@ export default {
   "You may want to discard those settings and start from scratch with a simple configuration.": [
     "Du kanske vill slänga dessa inställningar och börja från början med en enkel konfiguration."
   ],
+  "You need to fix any invalid settings before proceeding with the installation.": [
+    "Du måste korrigera eventuella ogiltiga inställningar innan du fortsätter med installationen."
+  ],
   "You will connect to a public network without encryption. Your data may not be secure.": [
     "Du kommer att ansluta till ett offentligt nätverk utan kryptering. Dina data kanske inte är säkra."
-  ],
-  "Your system is rebooting": [
-    "Ditt system startar om"
   ],
   "ZFCP": [
     "ZFCP"
@@ -2355,6 +2453,9 @@ export default {
   "iSCSI": [
     "iSCSI"
   ],
+  "immutable Btrfs": [
+    ""
+  ],
   "logical volume": [
     "logisk volym"
   ],
@@ -2367,20 +2468,23 @@ export default {
   "partition": [
     "partition"
   ],
+  "proposal.Device": [
+    "förslag.Enhet"
+  ],
   "read_only": [
     "läs_endast"
   ],
   "reset to defaults": [
     "återställ till standard"
   ],
+  "root": [
+    "root"
+  ],
   "yes": [
     "ja"
   ],
   "zFCP": [
     "zFCP"
-  ],
-  "zFCP Disk Activation": [
-    "zFCP-diskaktivering"
   ],
   "zFCP Disk activation form": [
     "zFCP-diskaktiveringsformulär"

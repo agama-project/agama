@@ -1,5 +1,5 @@
 id: SLES
-name: SUSE Linux Enterprise Server 16.1
+name: SUSE Linux Enterprise Server 16.1 Beta
 registration: true
 version: "16.1"
 license: "license.final"
@@ -137,7 +137,6 @@ software:
   optional_patterns: [] # no optional pattern shared
   user_patterns:
     - cockpit
-    - sles_sap_minimal_sap
     - fips
     - name: selinux
       selected: true
@@ -189,6 +188,8 @@ modes:
     software:
       mandatory_patterns:
         - enhanced_base
+      user_patterns:
+        - sles_sap_minimal_sap
 
     storage:
       space_policy: delete
