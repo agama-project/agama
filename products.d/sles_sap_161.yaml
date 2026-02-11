@@ -113,12 +113,10 @@ software:
   mandatory_patterns:
     - base
     - bootloader
-    - sles_sap_base_sap_server
   optional_patterns: [] # no optional pattern shared
   user_patterns:
     # First all patterns from file sles_160.yaml
     - cockpit
-    - sles_sap_minimal_sap
     - fips
     - name: selinux
       selected: true
@@ -140,16 +138,6 @@ software:
     - devel_kernel
     - oracle_server
     - print_server
-    # Second, all patterns for SAP only
-    - sles_sap_DB
-    - sles_sap_HADB
-    - sles_sap_APP
-    - sles_sap_HAAPP
-    - sles_sap_trento_server
-    - sles_sap_trento_agent
-    - sles_sap_automation
-    - sles_sap_monitoring
-    - sles_sap_gui
   mandatory_packages:
     - NetworkManager
     # bsc#1241224, bsc#1224868 avoid probe DHCP over all ethernet devices and ignore carrier
@@ -180,6 +168,18 @@ modes:
     software:
       mandatory_patterns:
         - enhanced_base
+        - sles_sap_base_sap_server
+      user_patterns:
+        - sles_sap_DB
+        - sles_sap_HADB
+        - sles_sap_APP
+        - sles_sap_HAAPP
+        - sles_sap_trento_server
+        - sles_sap_trento_agent
+        - sles_sap_automation
+        - sles_sap_monitoring
+        - sles_sap_gui
+        - sles_sap_addons
 
     storage:
       space_policy: delete
