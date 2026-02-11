@@ -52,6 +52,13 @@ impl Message for Finish {
 }
 
 #[derive(Clone)]
+pub struct Umount;
+
+impl Message for Umount {
+    type Reply = ();
+}
+
+#[derive(Clone)]
 pub struct GetSystem;
 
 impl Message for GetSystem {
