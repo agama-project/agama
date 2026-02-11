@@ -35,7 +35,7 @@ import { _ } from "~/i18n";
 
 type StatusFilterProps = {
   value: string;
-  options: Record<string, string>;
+  options: { [key: string]: string };
   onChange: SelectProps["onSelect"];
 };
 
@@ -52,9 +52,10 @@ const ID = "iscsi-status-filter";
  * @privateRemarks There is an issue with a11y label for the PF/MenuToggle,
  * check https://github.com/patternfly/patternfly-react/issues/11805
  */
-export default function StatusFilter({ value, options, onChange }: StatusFilterProps) {
+export default function StatusFilter({ value = "all", options, onChange }: StatusFilterProps) {
   const [isOpen, setIsOpen] = useState(false);
   const onToggle = () => setIsOpen(!isOpen);
+  const opts = { all: _("All"), ...options };
 
   const toggle = (toggleRef: React.Ref<MenuToggleElement>) => (
     <MenuToggle
@@ -65,7 +66,7 @@ export default function StatusFilter({ value, options, onChange }: StatusFilterP
       aria-label={_("Status filter toggle")}
     >
       {/* eslint-disable agama-i18n/string-literals */}
-      {_(options[value])}
+      {_(opts[value])}
     </MenuToggle>
   );
 
@@ -88,10 +89,10 @@ export default function StatusFilter({ value, options, onChange }: StatusFilterP
         toggle={toggle}
       >
         <SelectList>
-          {Object.keys(options).map((key) => (
+          {Object.keys(opts).map((key) => (
             <SelectOption key={key} value={key}>
               {/* eslint-disable agama-i18n/string-literals */}
-              {_(options[key])}
+              {_(opts[key])}
             </SelectOption>
           ))}
         </SelectList>
