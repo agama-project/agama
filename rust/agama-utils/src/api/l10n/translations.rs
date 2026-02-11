@@ -28,4 +28,8 @@ pub struct Translations {
     /// Translated descriptions, by locale.
     #[serde(default)]
     pub description: HashMap<String, String>,
+    /// Translated mode names and descriptions, by locale.
+    /// mode_id -> "name"/"description" -> locale -> translated text
+    #[serde(default)]
+    pub mode: HashMap<String, HashMap<String, HashMap<String, String>>>,
 }

@@ -5,6 +5,12 @@ Wed Feb 11 14:45:05 UTC 2026 - José Iván López González <jlopez@suse.com>
   (gh#agama-project/agama#3128).
 
 -------------------------------------------------------------------
+Wed Feb 11 13:34:36 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+
+- Return also the product mode translations
+  (gh#agama-project/agama#3144)
+
+-------------------------------------------------------------------
 Mon Feb  9 14:24:29 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Prevent set config and install actions to run at the same time (bsc#1257935).
