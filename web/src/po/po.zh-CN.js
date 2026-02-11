@@ -3,9 +3,6 @@ export default {
     "plural-forms": (n) => 0,
     "language": "zh-CN"
   },
-  " Timezone selection": [
-    " 时区选择"
-  ],
   "\"%s\"": [
     ""
   ],
@@ -36,9 +33,6 @@ export default {
   "%s - %s": [
     "%s - %s"
   ],
-  "%s [must be registered].": [
-    "[必须注册] %s。"
-  ],
   "%s and %d others": [
     ""
   ],
@@ -47,9 +41,6 @@ export default {
   ],
   "%s has been registered with below information.": [
     "%s 已注册，信息如下。"
-  ],
-  "%s is an immutable system with atomic updates. It uses a read-only Btrfs file system updated via snapshots.": [
-    "%s 是具备原子更新特性的不可变系统。它使用只读的 Btrfs 文件系统并通过快照保持更新。"
   ],
   "%s logo": [
     "%s 徽标"
@@ -222,12 +213,6 @@ export default {
   "At least one partition will be deleted": [
     "至少将删除一个分区"
   ],
-  "At this point you can power off the machine.": [
-    "现在您可以关闭机器电源了。"
-  ],
-  "At this point you can reboot the machine to log in to the new system.": [
-    "现在您可以重启机器并登录到新系统。"
-  ],
   "Authentication": [
     "身份验证"
   ],
@@ -257,9 +242,6 @@ export default {
   ],
   "Automatic LUN scan is [enabled]. Activating a controller which is running in NPIV mode will automatically configures all its LUNs.": [
     "自动扫描 LUN 功能[已启用]。如果激活在 NPIV 模式下 运行的控制器，将自动配置其所有 LUN。"
-  ],
-  "Available products": [
-    "可用产品"
   ],
   "Back": [
     "返回"
@@ -300,20 +282,23 @@ export default {
   "Binding": [
     "正在绑定"
   ],
-  "Binding settings for '%s'": [
-    "'%s' 的绑定设置"
-  ],
   "BitLocker": [
     "BitLocker"
   ],
   "Boot options": [
     "引导选项"
   ],
+  "Breadcrumbs": [
+    ""
+  ],
   "Btrfs": [
     "Btrfs"
   ],
   "Btrfs with snapshots": [
     "带快照的 Btrfs"
+  ],
+  "By proceeding, the installation will begin with defined settings.": [
+    ""
   ],
   "CPU": [
     ""
@@ -323,9 +308,6 @@ export default {
   ],
   "Cannot be changed in remote installation": [
     "无法在远程安装中更改"
-  ],
-  "Cannot connect to Agama server": [
-    "无法连接到 Agama 服务器"
   ],
   "Cannot format %s": [
     "无法格式化 %s"
@@ -414,12 +396,6 @@ export default {
   "Configure DASD": [
     "配置 DASD"
   ],
-  "Configure LVM Volume Group": [
-    "配置 LVM 卷组"
-  ],
-  "Configure LVM logical volume at %s volume group": [
-    "在 %s 卷组上配置 LVM 逻辑卷"
-  ],
   "Configure device %s": [
     "配置设备 %s"
   ],
@@ -438,23 +414,14 @@ export default {
   "Configured for installation only": [
     "仅为安装配置"
   ],
-  "Configuring the product, please wait ...": [
-    "正在配置产品，请稍候……"
-  ],
   "Confirm": [
     "确认"
   ],
   "Confirm that you really want to continue.": [
     "请确认您确实要继续。"
   ],
-  "Congratulations!": [
-    "恭喜！"
-  ],
   "Connect": [
     "连接"
-  ],
-  "Connect to %s": [
-    "连接到 %s"
   ],
   "Connect to iSCSI targets": [
     "连接到 iSCSI 目标"
@@ -501,14 +468,8 @@ export default {
   "Controllers": [
     "控制器"
   ],
-  "Could not authenticate against the server, please check it.": [
-    "无法对服务器进行身份验证，请检查。"
-  ],
   "Could not connect to %s": [
     "无法连接到 %s"
-  ],
-  "Could not log in. Please, make sure that the password is correct.": [
-    "无法登录。请确保密码输入正确。"
   ],
   "Create LVM volume group %s": [
     "创建 LVM 卷组 %s"
@@ -594,6 +555,9 @@ export default {
   "Delete current content": [
     "删除当前内容"
   ],
+  "Delete existing data and install %s?": [
+    ""
+  ],
   "Delete volume group": [
     "删除卷组"
   ],
@@ -617,9 +581,6 @@ export default {
   ],
   "Device %s menu": [
     "设备 %s 菜单"
-  ],
-  "Device Selection": [
-    "选择设备"
   ],
   "Device details": [
     "设备详细信息"
@@ -671,9 +632,6 @@ export default {
   ],
   "Edit binding settings": [
     "编辑绑定设置"
-  ],
-  "Edit connection %s": [
-    "编辑连接 %s"
   ],
   "Edit connection settings": [
     "编辑连接设置"
@@ -750,6 +708,9 @@ export default {
   "Extend the installation beyond the currently selected disk": [
     "将安装扩展至超过目前 %d 磁盘的容量"
   ],
+  "Extensions": [
+    "扩展"
+  ],
   "F2FS": [
     "F2FS"
   ],
@@ -785,9 +746,6 @@ export default {
   ],
   "Find space in %s": [
     "在 %s 中查找可用空间"
-  ],
-  "Finish": [
-    "完成"
   ],
   "Finished": [
     "已完成"
@@ -849,9 +807,6 @@ export default {
   "GiB": [
     "GiB"
   ],
-  "Go back": [
-    ""
-  ],
   "Go to network page": [
     "前往网络页面"
   ],
@@ -866,9 +821,6 @@ export default {
   ],
   "Hide %d subvolume action": [
     "隐藏 %d 个子卷操作"
-  ],
-  "Hide details": [
-    "隐藏细节"
   ],
   "Hostname": [
     "主机名"
@@ -909,11 +861,11 @@ export default {
   "If a local media was used to run this installer, remove it before the next boot.": [
     "如果运行此次安装时使用了本地介质，请在下次启动前移除。"
   ],
-  "If you want to disable this check, please specify \"inst.ay_check=0\" at kernels command-line": [
+  "If you are unsure, check and adjust the storage settings.": [
     ""
   ],
-  "In progress": [
-    "进行中"
+  "If you want to disable this check, please specify \"inst.ay_check=0\" at kernels command-line": [
+    ""
   ],
   "Incorrect IP address": [
     "不正确的 IP 地址"
@@ -948,6 +900,9 @@ export default {
   "Install now with potential data loss": [
     ""
   ],
+  "Installation settings will automatically update to match the new product's defaults.": [
+    ""
+  ],
   "Installation will take %s.": [
     "安装将会占用 %s。"
   ],
@@ -956,9 +911,6 @@ export default {
   ],
   "Installing a broken package affects system stability and is a big security risk!": [
     "安装已损坏的软件包会影响系统稳定性，并会产生严重的安全隐患！"
-  ],
-  "Installing the system, please wait...": [
-    "正在安装系统，请稍候..."
   ],
   "Interface": [
     "界面"
@@ -1017,14 +969,14 @@ export default {
   "Keyboard layout": [
     "键盘布局"
   ],
-  "Keyboard selection": [
-    "键盘选择"
-  ],
   "KiB": [
     "KiB"
   ],
   "LUN": [
     "LUN"
+  ],
+  "LVM": [
+    ""
   ],
   "Label": [
     "标签"
@@ -1038,6 +990,9 @@ export default {
   "Let the installer propose a sensible size": [
     "让安装程序建议适当的大小"
   ],
+  "License acceptance is required to continue.": [
+    ""
+  ],
   "Loading": [
     "正在加载"
   ],
@@ -1049,9 +1004,6 @@ export default {
   ],
   "Loading the installation repositories...": [
     "正在加载安装储存库..."
-  ],
-  "Locale selection": [
-    "区域选择"
   ],
   "Localization": [
     "本地化"
@@ -1082,9 +1034,6 @@ export default {
   ],
   "MAC": [
     "MAC"
-  ],
-  "Main navigation": [
-    "主导航区"
   ],
   "Make sure you provide the correct values": [
     "确保提供了正确的值"
@@ -1293,9 +1242,6 @@ export default {
   "Not implemented yet (%s)": [
     "尚未实现 (%s)"
   ],
-  "Not possible with the current setup. Click to know more.": [
-    "当前设置不支持此操作。请单击了解更多详情。"
-  ],
   "Not protected network": [
     "不受保护的网络"
   ],
@@ -1316,9 +1262,6 @@ export default {
   ],
   "Options toggle": [
     "选项切换开关"
-  ],
-  "Overview": [
-    "概览"
   ],
   "Package installation failed": [
     "安装软件包失败"
@@ -1377,14 +1320,8 @@ export default {
   "PiB": [
     "PiB"
   ],
-  "Please, check whether it is running.": [
-    "请检查它是否在运行。"
-  ],
   "Please, perform an iSCSI discovery in order to find available iSCSI targets.": [
     "请执行 iSCSI 发现以查找可用的 iSCSI 目标。"
-  ],
-  "Please, provide its password to log in to the system.": [
-    "请提供其密码以登录系统。"
   ],
   "Please, try to activate a zFCP controller.": [
     "请尝试激活 zFCP 控制器。"
@@ -1413,7 +1350,7 @@ export default {
   "Proceeding may result in data loss": [
     ""
   ],
-  "Proceeding may result in data loss affecting at least %s": [
+  "Proceeding will delete existing data, including %s": [
     ""
   ],
   "Product is already registered": [
@@ -1512,11 +1449,8 @@ export default {
   "Review and fix": [
     "检查并修复"
   ],
-  "Review the summary below. If anything seems incorrect or you have doubts, go back and adjust the settings before proceeding.": [
+  "Root login with SSH key": [
     ""
-  ],
-  "Root authentication methods": [
-    "root 身份验证方法"
   ],
   "Root user": [
     "root 用户"
@@ -1556,9 +1490,6 @@ export default {
   ],
   "Security": [
     "安全性"
-  ],
-  "See more details": [
-    "查看更多细节"
   ],
   "Select": [
     "选择"
@@ -1692,9 +1623,6 @@ export default {
   "Software conflicts resolution": [
     "软件冲突解决情况"
   ],
-  "Software selection": [
-    "软件选择"
-  ],
   "Some existing partitions may be shrunk": [
     "可能会收缩部分现有分区"
   ],
@@ -1740,8 +1668,14 @@ export default {
   "Swap": [
     "Swap"
   ],
+  "Switch to a different mode": [
+    ""
+  ],
   "TPM sealing requires the new system to be booted directly.": [
     "TPM 密封过程要求新系统直接启动。"
+  ],
+  "Take a moment to review the installation settings below and adjust them as needed.": [
+    ""
   ],
   "Target Password": [
     "目标密码"
@@ -1847,12 +1781,6 @@ export default {
   ],
   "The initiator name cannot be blank": [
     "发起端名称不能为空"
-  ],
-  "The installation on your machine is complete.": [
-    "在您机器上的安装过程已完成。"
-  ],
-  "The installer interface is no longer available, so you can safely close this window.": [
-    "安装程序界面已不再可用，因此您可以安全关闭此窗口。"
   ],
   "The installer requires [root] user privileges.": [
     "安装程序要求 [root] 用户权限。"
@@ -2010,17 +1938,11 @@ export default {
   "To ensure the new system is able to boot, the installer may need to create or configure some partitions in the appropriate disk.": [
     "为确保新系统能够启动，安装程序将需要在适当的磁盘中创建或配置一些分区。"
   ],
-  "Transactional root file system": [
-    "事务性根文件系统"
-  ],
   "Try again": [
     "重试"
   ],
   "Type": [
     "类型"
-  ],
-  "URL": [
-    "URL"
   ],
   "Unable to modify the settings": [
     "无法修改设置"
@@ -2196,6 +2118,9 @@ export default {
   "Using transient hostname: %s": [
     "正在使用临时主机名 %s"
   ],
+  "View license": [
+    ""
+  ],
   "Volume group '%s' already exists. Enter a different name.": [
     "卷组 '%s' 已存在。请输入其他名称。"
   ],
@@ -2208,6 +2133,9 @@ export default {
   "WWPN": [
     "WWPN"
   ],
+  "Wait until current operations are completed.": [
+    ""
+  ],
   "Waiting for a mount point": [
     "正在等待挂载点"
   ],
@@ -2216,6 +2144,12 @@ export default {
   ],
   "Weak signal": [
     "信号微弱"
+  ],
+  "When ready, click on the [install] button at the end of the page.": [
+    ""
+  ],
+  "Wi-Fi": [
+    "Wi-Fi"
   ],
   "Wi-Fi connection form": [
     "Wi-Fi 连接表单"
@@ -2241,6 +2175,9 @@ export default {
   "You can proceed to install with the current settings or you may want to discard the configuration and start from scratch with a simple one.": [
     "您可以采用当前设置继续安装，也可以舍弃该配置，并采用简单的配置从头开始。"
   ],
+  "You can safely close this window.": [
+    ""
+  ],
   "You cannot change it later. Go to the %s section if you want to modify it before proceeding with registration.": [
     "以后将无法更改此信息。如果您要在继续注册前修改，请前往 %s 部分。"
   ],
@@ -2252,9 +2189,6 @@ export default {
   ],
   "You will connect to a public network without encryption. Your data may not be secure.": [
     "您将连接到未加密的公共网络。数据可能存在安全风险。"
-  ],
-  "Your system is rebooting": [
-    "系统正在重新引导"
   ],
   "ZFCP": [
     "ZFCP"
@@ -2289,6 +2223,9 @@ export default {
   "iSCSI": [
     "iSCSI"
   ],
+  "immutable Btrfs": [
+    ""
+  ],
   "logical volume": [
     "逻辑卷"
   ],
@@ -2307,14 +2244,14 @@ export default {
   "reset to defaults": [
     "重置为默认值"
   ],
+  "root": [
+    ""
+  ],
   "yes": [
     "是"
   ],
   "zFCP": [
     "zFCP"
-  ],
-  "zFCP Disk Activation": [
-    "zFCP 磁盘激活"
   ],
   "zFCP Disk activation form": [
     "zFCP 磁盘激活表单"
