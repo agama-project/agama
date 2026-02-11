@@ -3,9 +3,6 @@ export default {
     "plural-forms": (n) => 0,
     "language": "ja"
   },
-  " Timezone selection": [
-    " タイムゾーンの選択"
-  ],
   "\"%s\"": [
     "\"%s\""
   ],
@@ -18,11 +15,17 @@ export default {
   "%1$s - %2$s": [
     "%1$s - %2$s"
   ],
+  "%1$s and %2$s": [
+    "%1$s, %2$s"
+  ],
+  "%1$s and [%2$d more]": [
+    "%1$s [さらに %2$d 個のアドレスがあります]"
+  ],
   "%1$s at %2$s": [
     "%2$s にある %1$s"
   ],
   "%1$s keyboard - %2$s timezone": [
-    ""
+    "%1$s キーボード - %2$s タイムゾーン"
   ],
   "%1$s will be created as a partition at %2$s": [
     "%1$s を %2$s 内のパーティションとして作成します"
@@ -30,17 +33,20 @@ export default {
   "%1$s will still contain the LVM group '%2$s' and any partition needed to boot": [
     "%1$s には起動に必要な設定済み LVM グループ '%2$s' とパーティションが含まれています"
   ],
+  "%1$s, %2$s and [%3$d more]": [
+    "%1$s, %2$s [さらに %3$d 個のアドレスがあります]"
+  ],
   "%d of %d": [
     "%d ／ %d"
   ],
   "%s - %s": [
     "%s - %s"
   ],
-  "%s [must be registered].": [
-    "%s [登録しなければなりません] 。"
-  ],
   "%s and %d others": [
-    ""
+    "%s とその他 %d 個のアドレス"
+  ],
+  "%s and %s": [
+    "%s, %s"
   ],
   "%s disk": [
     "%s ディスク"
@@ -48,11 +54,11 @@ export default {
   "%s has been registered with below information.": [
     "%s を下記の情報で登録しました。"
   ],
-  "%s is an immutable system with atomic updates. It uses a read-only Btrfs file system updated via snapshots.": [
-    "%s は一括更新のできる不可変なシステムです。読み込み専用の btrfs ルートファイルシステムを利用して更新を適用します。"
-  ],
   "%s logo": [
     "%s ロゴ"
+  ],
+  "%s task active": [
+    "%s 個の処理が動作中です"
   ],
   "%s will be created as a logical volume": [
     "%s を論理ボリューム内に作成します"
@@ -62,6 +68,9 @@ export default {
   ],
   "%s with %d partitions": [
     "%s (%d 個のパーティション)"
+  ],
+  "(step %s of %s)": [
+    "(ステップ %s / %s)"
   ],
   "A %1$s of %2$s will be created for %3$s if possible": [
     "可能であれば、 %2$s の %1$s を %3$s 向けに作成します"
@@ -222,12 +231,6 @@ export default {
   "At least one partition will be deleted": [
     "少なくとも 1 つのパーティションを削除する"
   ],
-  "At this point you can power off the machine.": [
-    "マシンの電源を切って問題ありません。"
-  ],
-  "At this point you can reboot the machine to log in to the new system.": [
-    "あとはマシンを再起動して新しいシステムにログインするだけです。"
-  ],
   "Authentication": [
     "認証"
   ],
@@ -244,7 +247,7 @@ export default {
     "自動 LUN 検出"
   ],
   "Auto and manual": [
-    ""
+    "自動および手動"
   ],
   "Automatic": [
     "自動"
@@ -257,9 +260,6 @@ export default {
   ],
   "Automatic LUN scan is [enabled]. Activating a controller which is running in NPIV mode will automatically configures all its LUNs.": [
     "自動 LUN スキャンが [有効化] されています。 NPIV モードで動作しているコントローラを有効化した場合、その LUN は全て自動的に設定されます。"
-  ],
-  "Available products": [
-    "利用可能な製品"
   ],
   "Back": [
     "戻る"
@@ -300,8 +300,8 @@ export default {
   "Binding": [
     "結びつけ方式"
   ],
-  "Binding settings for '%s'": [
-    "'%s' に対するバインディング設定"
+  "Binding settings": [
+    "バインディング設定"
   ],
   "BitLocker": [
     "BitLocker"
@@ -309,14 +309,20 @@ export default {
   "Boot options": [
     "起動オプション"
   ],
+  "Breadcrumbs": [
+    "パンくず"
+  ],
   "Btrfs": [
     "btrfs"
   ],
   "Btrfs with snapshots": [
     "スナップショット有りの btrfs"
   ],
+  "By proceeding, the installation will begin with defined settings.": [
+    "続行すると、指定の設定でインストールが開始されます。"
+  ],
   "CPU": [
-    ""
+    "CPU"
   ],
   "Cancel": [
     "キャンセル"
@@ -324,8 +330,8 @@ export default {
   "Cannot be changed in remote installation": [
     "リモートインストールの場合は変更できません"
   ],
-  "Cannot connect to Agama server": [
-    "Agama サーバに接続できません"
+  "Cannot connect": [
+    "接続できません"
   ],
   "Cannot format %s": [
     "%s をフォーマットできません"
@@ -357,8 +363,14 @@ export default {
   "Change keyboard layout": [
     "キーボードレイアウトの変更"
   ],
+  "Change mode": [
+    "モードの変更"
+  ],
   "Change product": [
     "製品の変更"
+  ],
+  "Change product or mode": [
+    "製品またはモードの変更"
   ],
   "Change selection": [
     "選択の変更"
@@ -378,6 +390,9 @@ export default {
   "Change the file system or mount point": [
     "ファイルシステムまたはマウントポイントの変更"
   ],
+  "Change to %s": [
+    "%s に変更"
+  ],
   "Changes in these settings will immediately update the 'Result' section below.": [
     "これらの設定を変更すると、下記の '結果' セクションに即時に反映されます。"
   ],
@@ -389,6 +404,9 @@ export default {
   ],
   "Check the following before continuing": [
     "続行する前に下記をご確認ください"
+  ],
+  "Check whether Agama server is running.": [
+    "Agama サーバが動作しているかどうかをご確認ください。"
   ],
   "Choose a disk for placing the boot loader": [
     "ブートローダを配置するディスクを選択してください"
@@ -423,14 +441,14 @@ export default {
   "Configuration unreachable or invalid": [
     "設定に到達できないか、正しくありません"
   ],
+  "Configure": [
+    "設定"
+  ],
   "Configure DASD": [
     "DASD の設定"
   ],
-  "Configure LVM Volume Group": [
-    "LVM ボリュームグループの設定"
-  ],
-  "Configure LVM logical volume at %s volume group": [
-    "ボリュームグループ %s に対する LVM 論理ボリュームの設定"
+  "Configure Volume Group": [
+    "ボリュームグループの設定"
   ],
   "Configure device %s": [
     "デバイス %s の設定"
@@ -441,6 +459,12 @@ export default {
   "Configure iSCSI": [
     "iSCSI の設定"
   ],
+  "Configure logical volume": [
+    "論理ボリュームの設定"
+  ],
+  "Configure partition": [
+    "パーティションの設定"
+  ],
   "Configure partition at %s": [
     "%s でのパーティションの設定"
   ],
@@ -450,23 +474,29 @@ export default {
   "Configured for installation only": [
     "インストール専用に設定されています"
   ],
-  "Configuring the product, please wait ...": [
-    "製品を設定しています。しばらくお待ちください..."
+  "Configured for root and user %s": [
+    "root ユーザと一般ユーザ %s を設定済み"
+  ],
+  "Configured for the root user": [
+    "root ユーザのみ設定済み"
+  ],
+  "Configured for user %s": [
+    "ユーザ %s のみ設定済み"
+  ],
+  "Configured with %d connection": [
+    "%d 個の接続を設定済み"
   ],
   "Confirm": [
     "確認"
   ],
+  "Confirm and install": [
+    "了承してインストールする"
+  ],
   "Confirm that you really want to continue.": [
     "続行して問題がないかどうか、ご確認ください。"
   ],
-  "Congratulations!": [
-    "おめでとうございます！"
-  ],
   "Connect": [
     "接続"
-  ],
-  "Connect to %s": [
-    "%s に接続"
   ],
   "Connect to iSCSI targets": [
     "iSCSI ターゲットへの接続"
@@ -513,14 +543,14 @@ export default {
   "Controllers": [
     "コントローラ"
   ],
-  "Could not authenticate against the server, please check it.": [
-    "サーバに対して認証できませんでした。ご確認ください。"
+  "Could not authenticate against the server.": [
+    "サーバに対して認証できませんでした。"
   ],
   "Could not connect to %s": [
     "%s に接続できませんでした"
   ],
-  "Could not log in. Please, make sure that the password is correct.": [
-    "ログインできませんでした。入力したパスワードが正しいかどうか、もう一度ご確認ください。"
+  "Could not log in": [
+    "ログインできませんでした"
   ],
   "Create LVM volume group %s": [
     "LVM ボリュームグループ %s の作成"
@@ -546,6 +576,9 @@ export default {
   "Current partitions will be kept": [
     "現在のパーティションを維持する"
   ],
+  "Current selection": [
+    "現在の選択"
+  ],
   "Custom": [
     "独自設定"
   ],
@@ -555,8 +588,11 @@ export default {
   "DASD %s": [
     "DASD %s"
   ],
+  "DHCP and %s": [
+    "DHCP および %s"
+  ],
   "DHCP, %s": [
-    ""
+    "DHCP, %s"
   ],
   "DIAG": [
     "DIAG"
@@ -606,6 +642,9 @@ export default {
   "Delete current content": [
     "現在の内容を全て削除する"
   ],
+  "Delete existing data and install %s?": [
+    "既存のデータを削除して %s をインストールしてよろしいですか？"
+  ],
   "Delete volume group": [
     "ボリュームグループの削除"
   ],
@@ -629,9 +668,6 @@ export default {
   ],
   "Device %s menu": [
     "デバイス %s メニュー"
-  ],
-  "Device Selection": [
-    "デバイス選択"
   ],
   "Device details": [
     "デバイスの詳細"
@@ -660,6 +696,9 @@ export default {
   "Disk": [
     "ディスク"
   ],
+  "Disk Activation": [
+    "ディスクの有効化"
+  ],
   "Disks": [
     "ディスク"
   ],
@@ -683,9 +722,6 @@ export default {
   ],
   "Edit binding settings": [
     "バインディング設定の編集"
-  ],
-  "Edit connection %s": [
-    "接続 %s の編集"
   ],
   "Edit connection settings": [
     "接続設定の編集"
@@ -762,6 +798,9 @@ export default {
   "Extend the installation beyond the currently selected disk": [
     "現在選択されている %d 個のディスクからさらにインストールを拡張する"
   ],
+  "Extensions": [
+    "拡張"
+  ],
   "F2FS": [
     "f2fs"
   ],
@@ -800,9 +839,6 @@ export default {
   ],
   "Find space in %s": [
     "%s 内での領域検出"
-  ],
-  "Finish": [
-    "完了"
   ],
   "Finished": [
     "完了"
@@ -864,9 +900,6 @@ export default {
   "GiB": [
     "GiB"
   ],
-  "Go back": [
-    ""
-  ],
   "Go to network page": [
     "ネットワークページに移動"
   ],
@@ -881,9 +914,6 @@ export default {
   ],
   "Hide %d subvolume action": [
     "%d 個のサブボリューム処理を隠す"
-  ],
-  "Hide details": [
-    "詳細を隠す"
   ],
   "Hostname": [
     "ホスト名"
@@ -913,7 +943,7 @@ export default {
     "IP 設定"
   ],
   "IPs": [
-    ""
+    "IP アドレス"
   ],
   "IPv4": [
     "IPv4"
@@ -924,8 +954,14 @@ export default {
   "If a local media was used to run this installer, remove it before the next boot.": [
     "このインストーラの起動に際してローカルメディアを使用している場合は、次回の再起動までの間にメディアを取り出しておいてください。"
   ],
-  "In progress": [
-    "処理中"
+  "If unsure, cancel and review storage settings.": [
+    "不安な場合はいったんキャンセルして、ストレージ設定をご確認ください。"
+  ],
+  "If you are unsure, check and adjust the storage settings.": [
+    "不安な場合はストレージ設定をご確認のうえ、必要であれば変更してください。"
+  ],
+  "If you want to disable this check, please specify \"inst.ay_check=0\" at kernels command-line": [
+    "このチェックを無効化したい場合は、カーネルのコマンドラインに \"inst.ay_check=0\" を指定してください"
   ],
   "Incorrect IP address": [
     "IP アドレスが正しくありません"
@@ -957,11 +993,32 @@ export default {
   "Install": [
     "インストール"
   ],
+  "Install %s?": [
+    "%s をインストールしてよろしいですか？"
+  ],
+  "Install now": [
+    "インストールを開始する"
+  ],
   "Install now with potential data loss": [
-    ""
+    "データ削除を了承してインストールを開始する"
+  ],
+  "Installation complete": [
+    "インストール完了"
   ],
   "Installation devices": [
     "インストール先のデバイス"
+  ],
+  "Installation in progress": [
+    "インストールを行っています"
+  ],
+  "Installation only": [
+    "インストール時のみ"
+  ],
+  "Installation settings": [
+    "インストール設定"
+  ],
+  "Installation settings will automatically update to match the new product's defaults.": [
+    "インストール設定は新たに選択した製品の既定値にあわせて自動調整されます。"
   ],
   "Installation will take %s.": [
     "インストールするには %s が必要です。"
@@ -972,11 +1029,14 @@ export default {
   "Installing a broken package affects system stability and is a big security risk!": [
     "壊れたパッケージをインストールしてしまうと、システムの安定性が損なわれるほか、セキュリティ上のリスクにもなります！"
   ],
-  "Installing the system, please wait...": [
-    "システムをインストールしています。しばらくお待ちください..."
-  ],
   "Interface": [
     "インターフェイス"
+  ],
+  "Invalid settings": [
+    "正しくない設定です"
+  ],
+  "Invalid software selection": [
+    "ソフトウエア選択が正しくありません"
   ],
   "Invalid storage settings": [
     "正しくないストレージ設定です"
@@ -1032,14 +1092,14 @@ export default {
   "Keyboard layout": [
     "キーボードレイアウト"
   ],
-  "Keyboard selection": [
-    "キーボードの選択"
-  ],
   "KiB": [
     "KiB"
   ],
   "LUN": [
     "LUN"
+  ],
+  "LVM": [
+    "LVM"
   ],
   "Label": [
     "ラベル"
@@ -1050,8 +1110,17 @@ export default {
   "Language and keyboard": [
     "言語とキーボード"
   ],
+  "Language and region": [
+    "言語と地域"
+  ],
   "Let the installer propose a sensible size": [
     "インストーラに適切なサイズを提案させる"
+  ],
+  "License acceptance is required to continue.": [
+    "続行するにはライセンスの受け入れが必要です。"
+  ],
+  "License acceptance required": [
+    "ライセンスの受け入れが必要です"
   ],
   "Loading": [
     "読み込んでいます"
@@ -1064,9 +1133,6 @@ export default {
   ],
   "Loading the installation repositories...": [
     "インストール用リポジトリを読み込んでいます..."
-  ],
-  "Locale selection": [
-    "ロケールの選択"
   ],
   "Localization": [
     "ローカライゼーション"
@@ -1098,8 +1164,8 @@ export default {
   "MAC": [
     "MAC"
   ],
-  "Main navigation": [
-    "メインナビゲーション"
+  "Make sure that the passsword is correct and try again.": [
+    "パスワードが正しいことをご確認のうえ、やり直してください。"
   ],
   "Make sure you provide the correct values": [
     "正しい値を設定しているかどうかご確認ください"
@@ -1114,7 +1180,7 @@ export default {
     "最大チャネル"
   ],
   "Memory": [
-    ""
+    "メモリ"
   ],
   "MiB": [
     "MiB"
@@ -1124,6 +1190,9 @@ export default {
   ],
   "Mode": [
     "モード"
+  ],
+  "Model": [
+    "モデル"
   ],
   "Modify settings and physical volumes": [
     "設定と物理ボリュームの変更"
@@ -1200,6 +1269,9 @@ export default {
   "Name": [
     "名前"
   ],
+  "Needs about %s": [
+    "おおよそ %s が必要"
+  ],
   "Network": [
     "ネットワーク"
   ],
@@ -1234,7 +1306,7 @@ export default {
     "ストレージには何も記録されていないようです"
   ],
   "No data loss is expected": [
-    ""
+    "データ削除は予定されていません"
   ],
   "No device is currently using this connection.": [
     "この接続ではデバイスを使用していません。"
@@ -1302,6 +1374,9 @@ export default {
   "Not available": [
     "利用不可"
   ],
+  "Not configured": [
+    "未設定"
+  ],
   "Not configured yet": [
     "まだ設定していません"
   ],
@@ -1311,11 +1386,11 @@ export default {
   "Not implemented yet (%s)": [
     "実装されていません (%s)"
   ],
-  "Not possible with the current setup. Click to know more.": [
-    "現在の設定ではインストールできません。詳しく表示したい場合は、ここを押してください。"
-  ],
   "Not protected network": [
     "保護されていないネットワーク"
+  ],
+  "Not registered yet": [
+    "まだ登録していません"
   ],
   "Not supported (%s)": [
     "サポート対象外です (%s)"
@@ -1337,9 +1412,6 @@ export default {
   ],
   "Options toggle": [
     "オプションの切り替え"
-  ],
-  "Overview": [
-    "概要"
   ],
   "Package installation failed": [
     "インストールのインストール失敗"
@@ -1413,14 +1485,8 @@ export default {
   "PiB": [
     "PiB"
   ],
-  "Please, check whether it is running.": [
-    "問題なく動作しているかどうかご確認ください。"
-  ],
   "Please, perform an iSCSI discovery in order to find available iSCSI targets.": [
     "利用可能な iSCSI ターゲットを検出するため、 iSCSI 検索を実施してください。"
-  ],
-  "Please, provide its password to log in to the system.": [
-    "システムにログインするためのパスワードを入力してください。"
   ],
   "Please, try to activate a zFCP controller.": [
     "zFCP コントローラの有効化をお試しください。"
@@ -1435,10 +1501,10 @@ export default {
     "ポータル"
   ],
   "Potential data loss": [
-    ""
+    "潜在的なデータ削除"
   ],
   "Potential data loss affecting at least %s": [
-    ""
+    "少なくとも %s に影響する潜在的なデータ削除が発生します"
   ],
   "Pre-installation checks": [
     "インストール前チェック"
@@ -1447,10 +1513,10 @@ export default {
     "プレフィクス長またはサブネットマスク"
   ],
   "Proceeding may result in data loss": [
-    ""
+    "続行することによりデータ削除が発生する可能性があります"
   ],
-  "Proceeding may result in data loss affecting at least %s": [
-    ""
+  "Proceeding will delete existing data, including %s": [
+    "続行することにより、 %s を含む既存のデータが削除されます"
   ],
   "Product is already registered": [
     "製品は既に登録済みです"
@@ -1460,6 +1526,9 @@ export default {
   ],
   "Provide email address": [
     "電子メールアドレスを入力する"
+  ],
+  "Provide its password to log in to the system.": [
+    "システムにログインするためのパスワードを入力してください。"
   ],
   "Provide registration code": [
     "登録コードを入力する"
@@ -1485,6 +1554,9 @@ export default {
   "Recommended": [
     "推奨"
   ],
+  "Refreshing data...": [
+    "データを更新しています..."
+  ],
   "Register": [
     "登録"
   ],
@@ -1493,6 +1565,9 @@ export default {
   ],
   "Register using a custom registration server": [
     "独自の登録サーバを利用して登録"
+  ],
+  "Registered": [
+    "登録済み"
   ],
   "Registration": [
     "登録"
@@ -1522,10 +1597,10 @@ export default {
     "リポジトリ読み込み失敗"
   ],
   "Required packages": [
-    ""
+    "必要なパッケージ"
   ],
   "Required packages and %s pattern": [
-    ""
+    "%s 個のパターンと必要なパッケージ"
   ],
   "Rescan devices": [
     "デバイスの再検出"
@@ -1551,11 +1626,17 @@ export default {
   "Review and fix": [
     "確認と修正"
   ],
-  "Review the summary below. If anything seems incorrect or you have doubts, go back and adjust the settings before proceeding.": [
-    ""
+  "Review and install": [
+    "確認してインストール"
   ],
-  "Root authentication methods": [
-    "root の認証方式"
+  "Root login with SSH key": [
+    "SSH 鍵による root ログイン"
+  ],
+  "Root login with password": [
+    "パスワードによる root ログイン"
+  ],
+  "Root login with password and SSH key": [
+    "パスワードと SSH 鍵の両方による root ログイン"
   ],
   "Root user": [
     "root ユーザ"
@@ -1596,11 +1677,11 @@ export default {
   "Security": [
     "セキュリティ"
   ],
-  "See more details": [
-    "さらに詳細を表示する"
-  ],
   "Select": [
     "選択"
+  ],
+  "Select %s": [
+    "%s を選択"
   ],
   "Select a device to define partitions or to mount": [
     "パーティションの設定またはマウントを行うデバイスを選択してください"
@@ -1614,6 +1695,12 @@ export default {
   "Select a product": [
     "製品の選択"
   ],
+  "Select a product and confirm your choice.": [
+    "製品を選択したあと、末尾で選択を確認してください。"
+  ],
+  "Select a product to continue.": [
+    "続行するには製品を選択してください。"
+  ],
   "Select a solution to continue": [
     "続行するにはソリューションを選択してください"
   ],
@@ -1625,6 +1712,9 @@ export default {
   ],
   "Select at least one disk.": [
     "少なくとも 1 つのディスクを選択してください。"
+  ],
+  "Select device": [
+    "デバイスの選択"
   ],
   "Select devices to enable bulk actions.": [
     "一括処理を有効にするデバイスを選択してください。"
@@ -1686,8 +1776,14 @@ export default {
   "Show information about %s": [
     "%s に関する情報を表示"
   ],
+  "Show less": [
+    "表示を減らす"
+  ],
   "Show less actions": [
     "表示する処理を減らす"
+  ],
+  "Show more": [
+    "表示を増やす"
   ],
   "Show more actions": [
     "表示する処理を増やす"
@@ -1731,9 +1827,6 @@ export default {
   "Software conflicts resolution": [
     "ソフトウエアの競合の解決"
   ],
-  "Software selection": [
-    "ソフトウエア選択"
-  ],
   "Some existing partitions may be shrunk": [
     "いくつかの既存パーティションを縮小する"
   ],
@@ -1767,6 +1860,9 @@ export default {
   "Status": [
     "状態"
   ],
+  "Step %1$d of %2$d": [
+    "ステップ %1$d / %2$d"
+  ],
   "Storage": [
     "ストレージ"
   ],
@@ -1779,8 +1875,20 @@ export default {
   "Swap": [
     "スワップ"
   ],
+  "Switch to a different mode": [
+    ""
+  ],
+  "System Information": [
+    "システム情報"
+  ],
+  "System will have no network connections": [
+    "システムにはネットワーク接続は設定されません"
+  ],
   "TPM sealing requires the new system to be booted directly.": [
     "TPM シーリングを使用するには、新しいシステムを直接起動する必要があります。"
+  ],
+  "Take a moment to review the installation settings below and adjust them as needed.": [
+    "下記に示すインストール設定をご確認のうえ、必要であれば調整してください。"
   ],
   "Target Password": [
     "ターゲットのパスワード"
@@ -1789,7 +1897,7 @@ export default {
     "ターゲット"
   ],
   "Temporary name that may change after reboot or network changes": [
-    ""
+    "システムの再起動やネットワーク側の変更により変わりうる一時的な名前です"
   ],
   "The LVM group '%1$s' will remain at %2$s": [
     "LVM グループ '%1$s' が %2$s に残されます"
@@ -1890,11 +1998,8 @@ export default {
   "The initiator name cannot be blank": [
     "何らかのイニシエータ名を指定する必要があります"
   ],
-  "The installation on your machine is complete.": [
-    "お使いのマシンへのインストールが完了しました。"
-  ],
-  "The installer interface is no longer available, so you can safely close this window.": [
-    "インストーラの処理は完了しています。このウインドウは閉じてかまいません。"
+  "The installer interface is no longer available.": [
+    "インストーラの処理は完了しています。"
   ],
   "The installer requires [root] user privileges.": [
     "インストーラを使用するには [root] 権限が必要です。"
@@ -1977,11 +2082,17 @@ export default {
   "The system does not support Wi-Fi connections, probably because of missing or disabled hardware.": [
     "このシステムは WiFi 接続には対応していません。無線ハードウエアが存在していないか、無効化されているものと思われます。"
   ],
+  "The system is rebooting": [
+    "システムを再起動しています"
+  ],
   "The whole device will be used for %s": [
     "デバイス全体を %s 向けに使用する"
   ],
   "The zFCP disk was not activated.": [
     "zFCP ディスクは有効化されませんでした。"
+  ],
+  "There are no disks available for the installation": [
+    "インストールに使用できるディスクがありません"
   ],
   "There are not disks available for the installation. You may need to configure some device.": [
     "インストールに利用できるディスクがありません。デバイスの設定を行う必要があるかもしれません。"
@@ -2050,19 +2161,13 @@ export default {
     "tmpfs"
   ],
   "To ensure the new system is able to boot, the installer may need to create or configure some partitions in the appropriate disk.": [
-    "システムを起動できるようにするため、インストーラはディスク内にいくつかの追加パーティションを作成もしくは設定する必要があるかもしれません。"
-  ],
-  "Transactional root file system": [
-    "トランザクション型のルートファイルシステム"
+    "システムを起動できるようにするため、インストーラは適切なディスク内にいくつかの追加パーティションを作成もしくは設定する必要があるかもしれません。"
   ],
   "Try again": [
     "再試行"
   ],
   "Type": [
     "種類"
-  ],
-  "URL": [
-    "URL"
   ],
   "Unable to modify the settings": [
     "設定を変更できませんでした"
@@ -2145,6 +2250,9 @@ export default {
   "Use available space": [
     "利用可能な領域を使用する"
   ],
+  "Use device %s": [
+    "デバイス %s を使用する"
+  ],
   "Use disk %s": [
     "ディスク %s を使用する"
   ],
@@ -2193,6 +2301,9 @@ export default {
   "Use public SSH Key": [
     "公開 SSH 鍵の使用"
   ],
+  "Use several devices": [
+    "複数のデバイスを使用する"
+  ],
   "Use static hostname": [
     "固定のホスト名を使用する"
   ],
@@ -2223,20 +2334,32 @@ export default {
   "Username suggestion dropdown": [
     "ユーザ名の提案ドロップダウン"
   ],
+  "Using %d connections with %s": [
+    "%d 個の接続 (%s) を使用"
+  ],
   "Using [%s] keyboard": [
     "[%s] キーボードを使用しています"
   ],
   "Using a hashed password.": [
     "ハッシュ化されたパスワードを使用します。"
   ],
+  "Using an advanced storage configuration": [
+    "高度なストレージ設定を使用します"
+  ],
   "Using an existing partition": [
     "既存パーティションの使用"
+  ],
+  "Using code ending in %s": [
+    "末尾 %s のコードを使用"
   ],
   "Using partition %s": [
     "パーティション %s の使用"
   ],
   "Using transient hostname: %s": [
     "暫定的なホスト名を使用しています: %s"
+  ],
+  "View license": [
+    "ライセンスの表示"
   ],
   "Volume group %s": [
     "ボリュームグループ %s"
@@ -2253,14 +2376,26 @@ export default {
   "WWPN": [
     "WWPN"
   ],
+  "Wait until current operations are completed.": [
+    "処理が完了するまでお待ちください。"
+  ],
   "Waiting for a mount point": [
     "マウントポイントを待機しています"
   ],
   "Waiting for information about storage configuration": [
     "ストレージ設定に関する情報を待機しています"
   ],
+  "Waiting for proposal": [
+    "提案内容を作成しています"
+  ],
   "Weak signal": [
     "弱い信号強度"
+  ],
+  "When ready, click on the [install] button at the end of the page.": [
+    "準備ができたら、ページ末尾にある [インストール] ボタンを押してください。"
+  ],
+  "Wi-Fi": [
+    "Wi-Fi"
   ],
   "Wi-Fi connection form": [
     "WiFi 接続フォーム"
@@ -2277,6 +2412,9 @@ export default {
   "Wired connections": [
     "有線接続"
   ],
+  "Wrong selection": [
+    "誤った選択"
+  ],
   "XFS": [
     "XFS"
   ],
@@ -2285,6 +2423,12 @@ export default {
   ],
   "You can proceed to install with the current settings or you may want to discard the configuration and start from scratch with a simple one.": [
     "現在の設定のまま進めることもできますし、設定を破棄してシンプルな設定で最初からやり直すこともできます。"
+  ],
+  "You can reboot the machine to log in to the new system.": [
+    "あとはマシンを再起動して新しいシステムにログインするだけです。"
+  ],
+  "You can safely close this window.": [
+    "このウインドウは閉じてかまいません。"
   ],
   "You cannot change it later. Go to the %s section if you want to modify it before proceeding with registration.": [
     "登録内容は後から変更することができません。登録に際して変更しておきたい項目がある場合は、 %s セクションに移動してください。"
@@ -2295,11 +2439,11 @@ export default {
   "You may want to discard those settings and start from scratch with a simple configuration.": [
     "これらの設定を破棄してシンプルな設定からやり直すこともできます。"
   ],
+  "You need to fix any invalid settings before proceeding with the installation.": [
+    "インストールを続行する前に、正しくない設定を修正する必要があります。"
+  ],
   "You will connect to a public network without encryption. Your data may not be secure.": [
     "暗号化されていない公衆ネットワークに接続しようとしています。通信の安全性が保てないかもしれません。"
-  ],
-  "Your system is rebooting": [
-    "システムを再起動しています"
   ],
   "ZFCP": [
     "ZFCP"
@@ -2334,6 +2478,9 @@ export default {
   "iSCSI": [
     "iSCSI"
   ],
+  "immutable Btrfs": [
+    ""
+  ],
   "logical volume": [
     "論理ボリューム"
   ],
@@ -2346,20 +2493,23 @@ export default {
   "partition": [
     "パーティション"
   ],
+  "proposal.Device": [
+    "提案.デバイス"
+  ],
   "read_only": [
     "読み込み専用"
   ],
   "reset to defaults": [
     "既定値に戻す"
   ],
+  "root": [
+    "root"
+  ],
   "yes": [
     "はい"
   ],
   "zFCP": [
     "zFCP"
-  ],
-  "zFCP Disk Activation": [
-    "zFCP ディスク有効化"
   ],
   "zFCP Disk activation form": [
     "zFCP ディスク有効化フォーム"
