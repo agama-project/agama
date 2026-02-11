@@ -110,7 +110,7 @@ describe("LicenseDialog", () => {
       await waitFor(() => {
         expect(mockFetchLicense).toHaveBeenCalledWith(sle.license, mockUILanguage);
         screen.getByText("El contenido de la licencia");
-        screen.getByText("This license is not available in Deutsch.");
+        screen.getByText("Diese Lizenz ist in Deutsch nicht verfügbar.");
       });
     });
   });
@@ -119,7 +119,7 @@ describe("LicenseDialog", () => {
     const { user } = installerRender(<LicenseDialog product={product} onClose={onCloseFn} />, {
       withL10n: true,
     });
-    const closeButton = screen.getByRole("button", { name: "Close" });
+    const closeButton = screen.getByRole("button", { name: "Schließen" });
     await user.click(closeButton);
     expect(onCloseFn).toHaveBeenCalled();
   });

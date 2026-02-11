@@ -20,8 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useCallback, useEffect, useState } from "react";
-import { locationReload, setLocationSearch } from "~/utils";
+import React, { useCallback, useEffect } from "react";
 import agama from "~/agama";
 import supportedLanguages from "~/languages.json";
 import { useSystem } from "~/hooks/model/system";
@@ -62,41 +61,6 @@ function agamaLanguage(): string | undefined {
   return decodeURIComponent(
     document.cookie.replace(/(?:(?:^|.*;\s*)agamaLang\s*=\s*([^;]*).*$)|^.*$/, "$1"),
   );
-}
-
-/**
- * Helper function for storing the Agama language.
- *
- * Automatically converts the language from xx_XX to xx-xx, as it is the one used by Agama.
- *
- * @param language - The new locale (e.g., "cs", "cs_CZ").
- * @return True if the locale was changed.
- */
-function storeAgamaLanguage(language: string): boolean {
-  const current = agamaLanguage();
-  if (current === language) return false;
-
-  // Code taken from Cockpit.
-  const cookie =
-    "agamaLang=" + encodeURIComponent(language) + "; path=/; expires=Sun, 16 Jul 3567 06:23:41 GMT";
-  document.cookie = cookie;
-
-  return true;
-}
-
-/**
- * Returns the language tag from the query string.
- *
- * Query supports 'xx-xx', 'xx_xx', 'xx-XX' and 'xx_XX' formats.
- *
- * @return Undefined if not set.
- */
-function languageFromQuery(): string | undefined {
-  const lang = new URLSearchParams(window.location.search).get("lang");
-  if (!lang) return undefined;
-
-  const [language, country] = lang.split(/[-_]/);
-  return country ? `${language.toLowerCase()}-${country.toUpperCase()}` : language;
 }
 
 /**
@@ -157,25 +121,6 @@ function findSupportedLanguage(languages: Array<string>): string | undefined {
 }
 
 /**
- * Reloads the page.
- *
- * It uses the window.location.replace instead of the reload function synchronizing the "lang"
- * argument from the URL if present.
- *
- * @param newLanguage - new language to use.
- */
-function reload(newLanguage: string) {
-  const query = new URLSearchParams(window.location.search);
-  if (query.has("lang") && query.get("lang") !== newLanguage) {
-    query.set("lang", newLanguage);
-    // Setting location search with a different value makes the browser to navigate to the new URL.
-    setLocationSearch(query.toString());
-  } else {
-    locationReload();
-  }
-}
-
-/**
  * Load the web frontend translations from the server.
  *
  * @param locale requested locale
@@ -229,76 +174,37 @@ function InstallerL10nProvider({
   children?: React.ReactNode;
 }) {
   const { l10n } = useSystem();
-  const [language, setLanguage] = useState(initialLanguage);
-  const [keymap, setKeymap] = useState(undefined);
 
   const locale = l10n?.locale;
-  const backendLanguage = locale ? languageFromLocale(locale) : null;
-
-  const syncBackendLanguage = useCallback(async () => {
-    if (backendLanguage === language) return;
-
-    // FIXME: fallback to en-US if the language is not supported.
-    await configureL10nAction({ locale: languageToLocale(language) });
-  }, [language, backendLanguage]);
+  const language = locale ? languageFromLocale(locale) : initialLanguage;
+  const keymap = l10n?.keymap;
 
   const changeLanguage = useCallback(
-    async (lang?: string) => {
-      const wanted = lang || languageFromQuery();
-
-      // Just for development purposes
-      if (wanted === "xx" || wanted === "xx-XX") {
-        agama.language = wanted;
-        setLanguage(wanted);
-        return;
-      }
-
+    async (lang: string) => {
       const candidateLanguages = [
-        wanted,
-        wanted?.split("-")[0], // fallback to the language (e.g., "es" for "es-AR")
+        lang,
+        lang?.split("-")[0], // fallback to the language (e.g., "es" for "es-AR")
         agamaLanguage(),
-        backendLanguage,
+        language,
       ].filter((l) => l);
       const newLanguage = findSupportedLanguage(candidateLanguages) || "en-US";
-      const mustReload = storeAgamaLanguage(newLanguage);
-
       document.documentElement.lang = newLanguage.split("-")[0];
-
-      if (mustReload) {
-        reload(newLanguage);
-      } else {
-        setLanguage(newLanguage);
-
-        await loadTranslations(newLanguage);
-      }
+      await configureL10nAction({ locale: languageToLocale(newLanguage) });
     },
-    [backendLanguage, setLanguage],
+    [language],
   );
 
-  const changeKeymap = useCallback(
-    async (id: string) => {
-      setKeymap(id);
-      await configureL10nAction({ keymap: id });
-    },
-    [setKeymap],
-  );
-
-  useEffect(() => {
-    if (!language) changeLanguage();
-  }, [changeLanguage, language]);
+  const changeKeymap = useCallback(async (id: string) => {
+    await configureL10nAction({ keymap: id });
+  }, []);
 
   useEffect(() => {
     if (!language) return;
-    syncBackendLanguage();
-  }, [language, syncBackendLanguage]);
 
-  useEffect(() => {
-    setKeymap(l10n?.keymap);
-  }, [setKeymap, l10n]);
+    loadTranslations(language);
+  }, [language]);
 
   const value = { language, changeLanguage, keymap, changeKeymap };
-
-  if (!language) return null;
 
   return <L10nContext.Provider value={value}>{children}</L10nContext.Provider>;
 }
