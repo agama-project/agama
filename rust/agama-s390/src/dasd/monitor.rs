@@ -111,11 +111,11 @@ impl Monitor {
                 continue;
             }
             if let Some(signal) = ProgressChanged::from_message(message.clone()) {
-                self.handle_progress_changed(signal)?;
+                self.handle_progress_changed(signal).await?;
                 continue;
             }
             if let Some(signal) = ProgressFinished::from_message(message.clone()) {
-                self.handle_progress_finished(signal)?;
+                self.handle_progress_finished(signal).await?;
                 continue;
             }
             if let Some(signal) = FormatChanged::from_message(message.clone()) {
@@ -139,17 +139,19 @@ impl Monitor {
         Ok(())
     }
 
-    fn handle_progress_changed(&self, signal: ProgressChanged) -> Result<(), Error> {
+    async fn handle_progress_changed(&self, signal: ProgressChanged) -> Result<(), Error> {
         let args = signal.args()?;
         let progress_data = serde_json::from_str::<ProgressData>(args.progress)?;
         self.progress
-            .cast(progress::message::SetProgress::new(progress_data.into()))?;
+            .call(progress::message::SetProgress::new(progress_data.into()))
+            .await?;
         Ok(())
     }
 
-    fn handle_progress_finished(&self, _signal: ProgressFinished) -> Result<(), Error> {
+    async fn handle_progress_finished(&self, _signal: ProgressFinished) -> Result<(), Error> {
         self.progress
-            .cast(progress::message::Finish::new(Scope::DASD))?;
+            .call(progress::message::Finish::new(Scope::DASD))
+            .await?;
         Ok(())
     }
 
