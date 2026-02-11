@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Feb 11 14:45:05 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Add agama-s390 service and integrate DASD into the new HTTP API
+  (gh#agama-project/agama#3128).
+
+-------------------------------------------------------------------
 Mon Feb  9 14:24:29 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Prevent set config and install actions to run at the same time (bsc#1257935).
@@ -54,7 +60,7 @@ Fri Jan 30 16:27:35 UTC 2026 - Ancor Gonzalez Sosa <ancor@suse.com>
 -------------------------------------------------------------------
 Fri Jan 30 11:00:08 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
 
-- Added proxy service allowing to configure the proxy through the 
+- Added proxy service allowing to configure the proxy through the
   kernel cmdline proxy argument and with HTTP API
   (gh#agama-project/agama#3069).
 
