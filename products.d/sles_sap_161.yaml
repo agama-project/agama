@@ -75,6 +75,33 @@ translations:
       Applications经SAP部署认可，能够为SAP项目提供未来保障，确保业务持续运行，同时最大限度降低运营风险和成本。
     zh_TW: 為安全可靠的 SAP 平台所打造的領先作業系統。SUSE Linux Enterprise Server for SAP Applications
       獲 SAP 推薦部署，能為您的 SAP 專案奠定成功基石，確保業務營運不中斷，並將營運風險與成本降至最低。
+  mode:
+    standard:
+      name:
+        ca: Estàndard
+        cs: Standardní
+        de: Standard
+        id: Standar
+        ja: 標準
+      description:
+        ca: Sistema estàndard
+        cs: Standardní systém
+        de: Standardsystem
+        id: Sistem standar
+        ja: 標準システム
+    immutable:
+      name:
+        ca: Immutable
+        cs: Neměnitelný
+        de: Unveränderlich
+        id: Immutable
+        ja: 不変型
+      description:
+        ca: Sistema immutable amb actualitzacions atòmiques
+        cs: Neměnitelný systém s atomickými aktualizacemi
+        de: Unveränderliches System mit atomaren Aktualisierungen
+        id: Sistem immutable dengan pembaruan atomik
+        ja: 不可分な更新機能を持つ不変型システム
 software:
   installation_repositories: []
   installation_labels:
