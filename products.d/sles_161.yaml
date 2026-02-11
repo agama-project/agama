@@ -1,5 +1,5 @@
 id: SLES
-name: SUSE Linux Enterprise Server 16.1
+name: SUSE Linux Enterprise Server 16.1 Beta
 registration: true
 version: "16.1"
 license: "license.final"

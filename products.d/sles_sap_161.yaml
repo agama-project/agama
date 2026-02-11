@@ -1,5 +1,5 @@
 id: SLES_SAP
-name: SUSE Linux Enterprise Server for SAP applications 16.1
+name: SUSE Linux Enterprise Server for SAP applications 16.1 Beta
 archs: x86_64,ppc
 registration: true
 version: "16.1"

@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Feb 11 14:53:05 UTC 2026 - Eugenio Paolantonio <eugenio.paolantonio@suse.com>
+
+- Add Beta tag to the SLES and SLES4SAP product names
+  (gh#agama-project/agama#3151)
+
+-------------------------------------------------------------------
 Wed Feb 11 13:58:01 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Add standard and immutable modes to SLES for SAP (bsc#1258042).
