@@ -81,7 +81,7 @@ export default function ConnectedDevicesMenu() {
         </MenuButton.Item>,
       ]}
     >
-      {_("Options")} <Icon name="expand_circle_down" className="agm-three-dots-icon" />
+      {_("Options")} <Icon name="arrow_drop_down" className="agm-three-dots-icon" />
     </MenuButton>
   );
 }

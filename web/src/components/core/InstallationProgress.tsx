@@ -37,7 +37,7 @@ export default function InstallationProgress() {
   const product = useProductInfo();
 
   return (
-    <Page noDefaultStartSlot endSlot={<InstallerOptionsMenu />}>
+    <Page noDefaultStartSlot endSlot={<InstallerOptionsMenu hideLabel />}>
       <Page.Content>
         <Grid hasGutter style={{ height: "100%", placeContent: "center" }}>
           <GridItem sm={12} md={5} style={{ alignSelf: "center" }}>

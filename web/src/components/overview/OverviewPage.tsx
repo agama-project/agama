@@ -41,9 +41,9 @@ import Text from "~/components/core/Text";
 import Popup from "~/components/core/Popup";
 import PotentialDataLossAlert from "~/components/storage/PotentialDataLossAlert";
 import InstallerL10nOptions from "~/components/core/InstallerL10nOptions";
+import InstallerOptionsMenu from "~/components/core/InstallerOptionsMenu";
 import InstallationSettings from "~/components/overview/InstallationSettings";
 import SystemInformationSection from "~/components/overview/SystemInformationSection";
-import InstallerOptionsSection from "~/components/overview/InstallerOptionsSection";
 import ProductLogo from "~/components/product/ProductLogo";
 import { startInstallation } from "~/model/manager";
 import { useProductInfo } from "~/hooks/model/config/product";
@@ -136,7 +136,12 @@ const OverviewPageContent = ({ product }) => {
           <ProductLogo product={product} width="40px" /> {product.name}
         </>
       }
-      endSlot={<InstallerL10nOptions />}
+      endSlot={
+        <>
+          <InstallerL10nOptions />
+          <InstallerOptionsMenu hideLabel showChangeProductOption />
+        </>
+      }
     >
       <Page.Content>
         <Flex gap={{ default: "gapMd" }} direction={{ default: "column" }}>
@@ -201,10 +206,7 @@ const OverviewPageContent = ({ product }) => {
               </Stack>
             </GridItem>
             <GridItem sm={12} md={4}>
-              <Stack hasGutter>
-                <SystemInformationSection />
-                <InstallerOptionsSection />
-              </Stack>
+              <SystemInformationSection />
             </GridItem>
           </Grid>
         </Flex>
