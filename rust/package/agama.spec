@@ -255,6 +255,7 @@ echo $PATH
 %dir %{_datadir}/agama/jsonnet
 %{_datadir}/agama/jsonnet/agama.libsonnet
 %dir %{_datadir}/agama/schema
+%{_datadir}/agama/schema/dasd.schema.json
 %{_datadir}/agama/schema/iscsi.schema.json
 %{_datadir}/agama/schema/profile.schema.json
 %{_datadir}/agama/schema/software.schema.json
