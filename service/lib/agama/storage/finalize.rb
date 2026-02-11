@@ -35,8 +35,8 @@ Yast.import "Installation"
 
 module Agama
   module Storage
-    # Auxiliary class to handle the last storage-related steps of the installation
-    class Finisher
+    # Auxiliary class to handle the end of the installation including final copy of logs and umount of devices
+    class Finalizer
       include Helpers
 
       # Constructor
@@ -67,11 +67,8 @@ module Agama
       # All possible steps, that may or not need to be executed
       def possible_steps
         [
-          CopyFilesStep.new(logger),
-          StorageStep.new(logger),
-          IscsiStep.new(logger),
-          BootloaderStep.new(logger),
-          SnapshotsStep.new(logger)
+          CopyLogsStep.new(logger),
+          UnmountStep.new(logger)
         ]
       end
 
@@ -109,104 +106,50 @@ module Agama
         end
       end
 
-      # Step to copy files from the inst-sys to the target system
-      class CopyFilesStep < Step
-        UDEV_RULES_DIR = "/etc/udev/rules.d"
-        ROOT_PATH = "/"
-        FILES = [
-          { dir: "/etc/udev/rules.d", file: "40-*" },
-          { dir: "/etc/udev/rules.d", file: "41-*" },
-          { dir: "/etc/udev/rules.d", file: "70-persistent-net.rules" },
-          # Copy /etc/nvme/host* to keep NVMe working after installation, bsc#1238038
-          { dir: "/etc/nvme", file: "hostnqn" },
-          { dir: "/etc/nvme", file: "hostid" }
-        ].freeze
+      # Step to copy the installation logs
+      class CopyLogsStep < Step
+        SCRIPTS_DIR = "/run/agama/scripts"
 
         def label
-          _("Copying important installation files to the target system")
-        end
-
-        def run?
-          glob_files.any?
+          _("Copying logs")
         end
 
         def run
-          glob_files.each do |file|
-            relative_path = File.dirname(file).delete_prefix(root_dir)
-            target = File.join(dest_dir, relative_path)
-
-            FileUtils.mkdir_p(target)
-            FileUtils.cp(file, target)
-          end
+          FileUtils.mkdir_p(logs_dir, mode: 0o700)
+          collect_logs
+          copy_scripts
         end
 
       private
 
-        def root_dir
-          ROOT_PATH
+        def copy_scripts
+          return unless Dir.exist?(SCRIPTS_DIR)
+
+          FileUtils.cp_r(SCRIPTS_DIR, logs_dir)
         end
 
-        def dest_dir
-          Yast::Installation.destdir
+        def collect_logs
+          path = File.join(logs_dir, "logs")
+          Yast::Execute.locally(
+            "agama", "logs", "store", "--destination", path
+          )
         end
 
-        def glob_files
-          Dir.glob(FILES.map { |f| File.join(root_dir, f[:dir], f[:file]) })
-        end
-      end
-
-      # Step to write the bootloader configuration
-      class BootloaderStep < Step
-        def label
-          _("Installing bootloader")
-        end
-
-        def run
-          cio_ignore_finish if Yast::Arch.s390
-          ::Bootloader::FinishClient.new.write
-        end
-
-        def cio_ignore_finish
-          require "installation/cio_ignore"
-          wfm_write("cio_ignore_finish")
+        def logs_dir
+          @logs_dir ||= File.join(
+            Yast::Installation.destdir, "var", "log", "agama-installation"
+          )
         end
       end
 
-      # Step to finish the Y2Storage configuration
-      class StorageStep < Step
+      # Step to unmount the target file-systems
+      class UnmountStep < Step
         def label
-          _("Adjusting storage configuration")
+          _("Unmounting storage devices")
         end
 
         def run
-          wfm_write("storage_finish")
-        end
-      end
-
-      # Step to finish the iSCSI configuration
-      class IscsiStep < Step
-        def label
-          _("Adjusting iSCSI configuration")
-        end
-
-        def run
-          wfm_write("iscsi-client_finish")
-        end
-      end
-
-      # Step to configure the file-system snapshots
-      class SnapshotsStep < Step
-        def label
-          _("Configuring file systems snapshots")
-        end
-
-        def run?
-          Yast2::FsSnapshot.configure_on_install?
-        end
-
-        def run
-          logger.info("Finishing Snapper configuration")
-          Yast2::FsSnapshot.configure_snapper
+          wfm_write("umount_finish")
         end
       end
     end

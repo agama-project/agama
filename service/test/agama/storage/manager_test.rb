@@ -411,17 +411,13 @@ describe Agama::Storage::Manager do
     let(:scenario) { "staging-plain-partitions.yaml" }
 
     it "copy needed files, installs the bootloader, sets up the snapshots, " \
-       "copy logs, symlink resolv.conf, runs the post-installation scripts, " \
-       "unlink resolv.conf, and umounts the file systems" do
+       "symlink resolv.conf, runs the post-installation scripts and " \
+       "unlink resolv.conf" do
       expect(copy_files).to receive(:run)
       expect(bootloader_finish).to receive(:write)
       expect(Yast::WFM).to receive(:CallFunction).with("storage_finish", ["Write"])
       expect(Yast::WFM).to receive(:CallFunction).with("iscsi-client_finish", ["Write"])
       expect(Yast2::FsSnapshot).to receive(:configure_snapper)
-      expect(Yast::WFM).to receive(:CallFunction).with("umount_finish", ["Write"])
-      expect(Yast::Execute).to receive(:locally).with(
-        "agama", "logs", "store", "--destination", /\/var\/log\/agama-installation\/logs/
-      )
       storage.finish
     end
   end
