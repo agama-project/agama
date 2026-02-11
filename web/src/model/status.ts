@@ -44,7 +44,7 @@ type Scope =
   | "software"
   | "storage"
   | "network"
-  | "iSCSI"
+  | "iscsi"
   | "users";
 type Progress = {
   index: number;

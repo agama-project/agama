@@ -38,7 +38,7 @@ export default function ISCSIPage() {
         },
         { label: _("iSCSI") },
       ]}
-      progress={{ scope: "iSCSI" }}
+      progress={{ scope: "iscsi" }}
     >
       <Page.Content>
         <Grid hasGutter>
