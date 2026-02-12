@@ -60,6 +60,7 @@ module Agama
           dbus_method(:Probe) { probe }
           dbus_method(:Install) { install }
           dbus_method(:Finish) { finish }
+          dbus_method(:Umount) { umount }
           dbus_method(:SetLocale, "in locale:s") { |locale| backend.configure_locale(locale) }
           dbus_method(:GetSystem, "out system:s") { recover_system }
           dbus_method(:GetConfig, "out config:s") { recover_config }
@@ -124,6 +125,12 @@ module Agama
         def finish
           start_progress(1, _("Finishing installation"))
           backend.finish
+          finish_progress
+        end
+
+        def umount
+          start_progress(1, _("Unmounting devices"))
+          backend.umount
           finish_progress
         end
 

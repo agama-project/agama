@@ -44,6 +44,7 @@ pub struct TestClientState {
     pub probed: bool,
     pub installed: bool,
     pub finished: bool,
+    pub umounted: bool,
     pub config: Option<Config>,
 }
 
@@ -103,6 +104,12 @@ impl StorageClient for TestClient {
     async fn finish(&self) -> Result<(), Error> {
         let mut state = self.state.lock().await;
         state.finished = true;
+        Ok(())
+    }
+
+    async fn umount(&self) -> Result<(), Error> {
+        let mut state = self.state.lock().await;
+        state.umounted = true;
         Ok(())
     }
 
