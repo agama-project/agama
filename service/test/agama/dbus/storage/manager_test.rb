@@ -967,6 +967,36 @@ describe Agama::DBus::Storage::Manager do
     end
   end
 
+  describe "#convert_config_model" do
+    let(:model) do
+      serialize({
+        drives: [
+          { name: "/dev/vda" }
+        ]
+      })
+    end
+
+    it "returns the serialized config" do
+      expect(subject.convert_config_model(model)).to eq(
+        serialize({
+          storage: {
+            boot:         { configure: true },
+            drives:       [
+              {
+                search: {
+                  condition:  { name: "/dev/vda" },
+                  ifNotFound: "error"
+                }
+              }
+            ],
+            volumeGroups: [],
+            mdRaids:      []
+          }
+        })
+      )
+    end
+  end
+
   describe "#recover_config_model" do
     context "if a proposal has not been calculated" do
       it "returns 'null'" do

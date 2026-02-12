@@ -65,6 +65,9 @@ module Agama
           dbus_method(:GetSystem, "out system:s") { recover_system }
           dbus_method(:GetConfig, "out config:s") { recover_config }
           dbus_method(:SetConfig, "in product:s, in config:s") { |p, c| configure(p, c) }
+          dbus_method(
+            :GetConfigFromModel, "in model:s, out config:s"
+          ) { |m| convert_config_model(m) }
           dbus_method(:GetConfigModel, "out model:s") { recover_config_model }
           dbus_method(:SetConfigModel, "in model:s") { |m| configure_with_model(m) }
           dbus_method(:SolveConfigModel, "in model:s, out result:s") { |m| solve_config_model(m) }
@@ -222,17 +225,18 @@ module Agama
         # @param serialized_model [String] Serialized storage config model.
         def configure_with_model(serialized_model)
           start_progress(1, CONFIGURING_STEP)
-
-          model_json = JSON.parse(serialized_model, symbolize_names: true)
-          config = Agama::Storage::ConfigConversions::FromModel.new(
-            model_json,
-            product_config: product_config,
-            storage_system: proposal.storage_system
-          ).convert
-          config_json = { storage: Agama::Storage::ConfigConversions::ToJSON.new(config).convert }
+          config_json = config_from_model(serialized_model)
           calculate_proposal(config_json)
-
           finish_progress
+        end
+
+        # Converts the given serialized config model according to the JSON schema.
+        #
+        # @param serialized_model [String] Serialized config model.
+        # @return [String] Serialized config according to JSON schema.
+        def convert_config_model(serialized_model)
+          config_json = config_from_model(serialized_model)
+          JSON.pretty_generate(config_json)
         end
 
         # Solves the given serialized config model.
@@ -336,6 +340,21 @@ module Agama
           backend.add_packages if backend.proposal.success?
 
           self.ProposalChanged(recover_proposal)
+        end
+
+        # Generates a config JSON from a serialized config model.
+        #
+        # @param serialized_model [String] Serialized config model.
+        # @return [Hash] Config according to JSON schema.
+        def config_from_model(serialized_model)
+          model_json = JSON.parse(serialized_model, symbolize_names: true)
+          config = Agama::Storage::ConfigConversions::FromModel.new(
+            model_json,
+            product_config: product_config,
+            storage_system: proposal.storage_system
+          ).convert
+
+          { storage: Agama::Storage::ConfigConversions::ToJSON.new(config).convert }
         end
 
         # JSON representation of the given devicegraph from StorageManager
