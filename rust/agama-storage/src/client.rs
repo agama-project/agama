@@ -64,7 +64,6 @@ pub trait StorageClient {
         product: Arc<RwLock<ProductSpec>>,
         config: Option<Config>,
     ) -> Result<(), Error>;
-    async fn set_config_model(&self, model: Value) -> Result<(), Error>;
     async fn solve_config_model(&self, model: Value) -> Result<Option<Value>, Error>;
     async fn set_locale(&self, locale: String) -> Result<(), Error>;
 }
@@ -163,11 +162,6 @@ impl StorageClient for Client {
         let config = config.filter(|c| c.has_value());
         let config_json = serde_json::to_string(&config)?;
         self.call("SetConfig", &(product_json, config_json)).await?;
-        Ok(())
-    }
-
-    async fn set_config_model(&self, model: Value) -> Result<(), Error> {
-        self.call("SetConfigModel", &(model.to_string())).await?;
         Ok(())
     }
 

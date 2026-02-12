@@ -125,21 +125,6 @@ impl Message for SetConfig {
 }
 
 #[derive(Clone)]
-pub struct SetConfigModel {
-    pub model: Value,
-}
-
-impl SetConfigModel {
-    pub fn new(model: Value) -> Self {
-        Self { model }
-    }
-}
-
-impl Message for SetConfigModel {
-    type Reply = ();
-}
-
-#[derive(Clone)]
 pub struct SolveConfigModel {
     pub model: Value,
 }

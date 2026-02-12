@@ -149,10 +149,6 @@ impl StorageClient for TestClient {
         Ok(())
     }
 
-    async fn set_config_model(&self, _model: Value) -> Result<(), Error> {
-        Ok(())
-    }
-
     async fn solve_config_model(&self, _model: Value) -> Result<Option<Value>, Error> {
         Ok(None)
     }

@@ -69,7 +69,6 @@ module Agama
             :GetConfigFromModel, "in model:s, out config:s"
           ) { |m| convert_config_model(m) }
           dbus_method(:GetConfigModel, "out model:s") { recover_config_model }
-          dbus_method(:SetConfigModel, "in model:s") { |m| configure_with_model(m) }
           dbus_method(:SolveConfigModel, "in model:s, out result:s") { |m| solve_config_model(m) }
           dbus_method(:GetProposal, "out proposal:s") { recover_proposal }
           dbus_method(:GetIssues, "out issues:s") { recover_issues }
@@ -220,16 +219,6 @@ module Agama
           finish_progress
         end
 
-        # Applies the given serialized config model according to the JSON schema.
-        #
-        # @param serialized_model [String] Serialized storage config model.
-        def configure_with_model(serialized_model)
-          start_progress(1, CONFIGURING_STEP)
-          config_json = config_from_model(serialized_model)
-          calculate_proposal(config_json)
-          finish_progress
-        end
-
         # Converts the given serialized config model according to the JSON schema.
         #
         # @param serialized_model [String] Serialized config model.
@@ -332,7 +321,6 @@ module Agama
         end
 
         # @see #configure
-        # @see #configure_with_model
         #
         # @param config_json [Hash, nil] see Agama::Storage::Manager#configure
         def calculate_proposal(config_json = nil)

@@ -199,13 +199,6 @@ impl MessageHandler<message::SetConfig> for Service {
 }
 
 #[async_trait]
-impl MessageHandler<message::SetConfigModel> for Service {
-    async fn handle(&mut self, message: message::SetConfigModel) -> Result<(), Error> {
-        self.client.set_config_model(message.model).await?;
-        Ok(())
-    }
-}
-#[async_trait]
 impl MessageHandler<message::SolveConfigModel> for Service {
     async fn handle(&mut self, message: message::SolveConfigModel) -> Result<Option<Value>, Error> {
         self.client

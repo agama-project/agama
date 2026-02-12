@@ -868,53 +868,6 @@ describe Agama::DBus::Storage::Manager do
     end
   end
 
-  describe "#configure_with_model" do
-    before do
-      allow(subject).to receive(:ProposalChanged)
-      allow(subject).to receive(:ProgressChanged)
-      allow(subject).to receive(:ProgressFinished)
-    end
-
-    let(:serialized_model) { model_json.to_json }
-
-    let(:model_json) do
-      {
-        drives: [
-          name:       "/dev/vda",
-          partitions: [
-            { mountPath: "/" }
-          ]
-        ]
-      }
-    end
-
-    it "calculates an agama proposal with the given config" do
-      expect(proposal).to receive(:calculate_agama) do |config|
-        expect(config).to be_a(Agama::Storage::Config)
-        expect(config.drives.size).to eq(1)
-
-        drive = config.drives.first
-        expect(drive.search.name).to eq("/dev/vda")
-        expect(drive.partitions.size).to eq(1)
-
-        partition = drive.partitions.first
-        expect(partition.filesystem.path).to eq("/")
-      end
-
-      subject.configure_with_model(serialized_model)
-    end
-
-    it "emits signals for ProposalChanged, ProgressChanged and ProgressFinished" do
-      allow(proposal).to receive(:calculate_agama)
-
-      expect(subject).to receive(:ProposalChanged)
-      expect(subject).to receive(:ProgressChanged).with(/storage configuration/i)
-      expect(subject).to receive(:ProgressFinished)
-
-      subject.configure_with_model(serialized_model)
-    end
-  end
-
   describe "#recover_config" do
     context "if a proposal has not been calculated" do
       it "returns 'null'" do
