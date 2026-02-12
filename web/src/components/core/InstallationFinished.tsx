@@ -23,7 +23,6 @@
 import React from "react";
 import {
   Alert,
-  Button,
   Content,
   Divider,
   Flex,
@@ -34,12 +33,10 @@ import {
   Stack,
   Title,
 } from "@patternfly/react-core";
-import { useNavigate } from "react-router";
 import Icon from "~/components/layout/Icon";
 import Page from "~/components/core/Page";
+import RebootButton from "~/components/core/RebootButton";
 import { useExtendedConfig } from "~/hooks/model/config";
-import { finishInstallation } from "~/api";
-import { ROOT as PATHS } from "~/routes/paths";
 import { _ } from "~/i18n";
 
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
@@ -93,21 +90,6 @@ function usingTpm(config): boolean {
   return root?.encryption?.tpmFde !== undefined;
 }
 
-const RebootButton = () => {
-  const navigate = useNavigate();
-
-  const onReboot = () => {
-    finishInstallation();
-    navigate(PATHS.installationExit, { replace: true });
-  };
-
-  return (
-    <Button variant="primary" size="lg" style={{ minInlineSize: "25dvw" }} onClick={onReboot}>
-      {_("Reboot")}
-    </Button>
-  );
-};
-
 function InstallationFinished() {
   const { storage: storageConfig } = useExtendedConfig();
   const mountTpmAlert = usingTpm(storageConfig);
@@ -141,7 +123,7 @@ function InstallationFinished() {
                   {_("You can reboot the machine to log in to the new system.")}
                 </HelperTextItem>
               </HelperText>
-              {mountTpmAlert && <RebootButton />}
+              {mountTpmAlert && <RebootButton style={{ minInlineSize: "25dvw" }} />}
             </Flex>
           </GridItem>
           <GridItem sm={12} md={6}>
@@ -156,7 +138,7 @@ function InstallationFinished() {
                 marginBlockStart: "var(--pf-t--global--spacer--xl)",
               }}
             >
-              {mountTpmAlert ? <TpmAlert /> : <RebootButton />}
+              {mountTpmAlert ? <TpmAlert /> : <RebootButton style={{ minInlineSize: "25dvw" }} />}
             </Flex>
           </GridItem>
         </Grid>
