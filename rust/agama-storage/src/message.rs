@@ -73,6 +73,21 @@ impl Message for GetConfig {
 }
 
 #[derive(Clone)]
+pub struct GetConfigFromModel {
+    pub model: Value,
+}
+
+impl GetConfigFromModel {
+    pub fn new(model: Value) -> Self {
+        Self { model }
+    }
+}
+
+impl Message for GetConfigFromModel {
+    type Reply = Option<Config>;
+}
+
+#[derive(Clone)]
 pub struct GetConfigModel;
 
 impl Message for GetConfigModel {

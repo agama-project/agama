@@ -482,6 +482,14 @@ impl Service {
         Ok(())
     }
 
+    /// It merges the current config with the given one. If some scope is missing in the given
+    /// config, then it keeps the values from the current config.
+    async fn update_config(&mut self, config: Config) -> Result<(), Error> {
+        let mut config = config.clone();
+        config.merge(self.config.clone());
+        self.set_config(config).await
+    }
+
     async fn set_config(&mut self, config: Config) -> Result<(), Error> {
         self.set_product(&config)?;
         self.config = config;
@@ -721,14 +729,9 @@ impl MessageHandler<message::SetConfig> for Service {
 #[async_trait]
 impl MessageHandler<message::UpdateConfig> for Service {
     /// Patches the config.
-    ///
-    /// It merges the current config with the given one. If some scope is missing in the given
-    /// config, then it keeps the values from the current config.
     async fn handle(&mut self, message: message::UpdateConfig) -> Result<(), Error> {
         checks::check_stage(&self.progress, Stage::Configuring).await?;
-        let mut new_config = message.config;
-        new_config.merge(self.config.clone());
-        self.set_config(new_config).await
+        self.update_config(message.config).await
     }
 }
 
@@ -827,24 +830,15 @@ impl MessageHandler<message::GetStorageModel> for Service {
 #[async_trait]
 impl MessageHandler<message::SetStorageModel> for Service {
     /// Sets the storage model.
-    ///
-    // FIXME: Apply a config model by calling to [`Service::set_config`]. Note that set_config
-    // contains logic about what has to be called and in which order. For example, calling to
-    // bootloader after storage.
-    // The D-Bus service could extend its API to translate a model into a config, and that config
-    // can be used as user config for storage.
     async fn handle(&mut self, message: message::SetStorageModel) -> Result<(), Error> {
         checks::check_stage(&self.progress, Stage::Configuring).await?;
-        self.storage
-            .call(storage::message::SetConfigModel::new(message.model))
+        let storage = self
+            .storage
+            .call(storage::message::GetConfigFromModel::new(message.model))
             .await?;
-        // Bootloader must be recalculated.
-        self.bootloader
-            .call(bootloader::message::SetConfig::new(
-                self.config.bootloader.clone(),
-            ))
-            .await?;
-        Ok(())
+        let mut config = Config::default();
+        config.storage = storage;
+        self.update_config(config).await
     }
 }
 

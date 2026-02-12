@@ -169,6 +169,19 @@ impl MessageHandler<message::GetConfigModel> for Service {
 }
 
 #[async_trait]
+impl MessageHandler<message::GetConfigFromModel> for Service {
+    async fn handle(
+        &mut self,
+        message: message::GetConfigFromModel,
+    ) -> Result<Option<Config>, Error> {
+        self.client
+            .get_config_from_model(message.model)
+            .await
+            .map_err(|e| e.into())
+    }
+}
+
+#[async_trait]
 impl MessageHandler<message::GetProposal> for Service {
     async fn handle(&mut self, _message: message::GetProposal) -> Result<Option<Value>, Error> {
         self.client.get_proposal().await.map_err(|e| e.into())

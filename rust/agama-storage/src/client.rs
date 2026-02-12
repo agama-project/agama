@@ -1,4 +1,4 @@
-// Copyright (c) [2025] SUSE LLC
+// Copyright (c) [2025-2026] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -55,6 +55,7 @@ pub trait StorageClient {
     async fn umount(&self) -> Result<(), Error>;
     async fn get_system(&self) -> Result<Option<Value>, Error>;
     async fn get_config(&self) -> Result<Option<Config>, Error>;
+    async fn get_config_from_model(&self, model: Value) -> Result<Option<Config>, Error>;
     async fn get_config_model(&self) -> Result<Option<Value>, Error>;
     async fn get_proposal(&self) -> Result<Option<Value>, Error>;
     async fn get_issues(&self) -> Result<Vec<Issue>, Error>;
@@ -127,6 +128,13 @@ impl StorageClient for Client {
 
     async fn get_config(&self) -> Result<Option<Config>, Error> {
         let message = self.call("GetConfig", &()).await?;
+        try_from_message(message)
+    }
+
+    async fn get_config_from_model(&self, model: Value) -> Result<Option<Config>, Error> {
+        let message = self
+            .call("GetConfigFromModel", &(model.to_string()))
+            .await?;
         try_from_message(message)
     }
 
