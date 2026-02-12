@@ -5,9 +5,36 @@ permissions:
   contents: write
 
 on:
-  schedule:
-    # run every working day (Monday-Friday) at 1:42AM UTC
-    - cron: "42 1 * * Mon-Fri"
+  push:
+    branches:
+      # run on every change in master, the action actually checks if there is
+      # any change in the translations, if there is no change it does not upload
+      # the files to Weblate so it should be OK to run it quite often
+      - master
+
+    paths:
+      # run only if any file which can contain translatable strings is modified,
+      # changing documentation, unit tests, configuration files, etc... cannot
+      # change translations so do not run it in that case
+
+      # any change in the web Typescript files
+      - web/**.ts
+      - web/**.tsx
+      # except tests
+      - "!web/**.test.*"
+
+      # any change in the Ruby service files
+      - service/**.rb
+      # except tests
+      - "!service/test/**"
+
+      # any change in the Rust server files, the unit tests are embedded so we
+      # cannot skip it when only tests are updated
+      - rust/**.rs
+
+      # any change in the product files
+      - products.d/**.yaml
+      - products.d/**.yml
 
   # allow running manually
   workflow_dispatch:
