@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Feb 12 14:37:55 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Add the password strength check to the API (gh#agama-project/agama#3159).
+
+-------------------------------------------------------------------
 Thu Feb 12 08:35:38 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
 
 - Run post scripts after all agama configuration is written down
@@ -579,7 +584,7 @@ Fri Jun 27 10:02:43 UTC 2025 - José Iván López González <jlopez@suse.com>
 -------------------------------------------------------------------
 Fri Jun 27 06:29:46 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
-- Add an end-point to check passwords strenght (bsc#1237480).
+- Add an end-point to check passwords strength (bsc#1237480).
 
 -------------------------------------------------------------------
 Fri Jun 27 05:29:26 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
