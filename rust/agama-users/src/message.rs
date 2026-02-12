@@ -23,6 +23,8 @@ use agama_utils::{
     api::{self},
 };
 
+use crate::PasswordCheckResult;
+
 #[derive(Clone)]
 pub struct SetSystem<T> {
     pub system: Option<T>,
@@ -62,4 +64,18 @@ pub struct Install;
 
 impl Message for Install {
     type Reply = ();
+}
+
+pub struct CheckPassword {
+    pub password: String,
+}
+
+impl CheckPassword {
+    pub fn new(password: String) -> Self {
+        CheckPassword { password }
+    }
+}
+
+impl Message for CheckPassword {
+    type Reply = PasswordCheckResult;
 }

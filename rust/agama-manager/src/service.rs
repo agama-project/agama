@@ -22,6 +22,7 @@ use crate::{
     bootloader, checks, files, hardware, hostname, iscsi, l10n, message, network, proxy, s390,
     security, software, storage, tasks, users,
 };
+use agama_users::PasswordCheckResult;
 use agama_utils::{
     actor::{self, Actor, Handler, MessageHandler},
     api::{
@@ -858,6 +859,16 @@ impl MessageHandler<software::message::SetResolvables> for Service {
         checks::check_stage(&self.progress, Stage::Configuring).await?;
         self.software.call(message).await?;
         Ok(())
+    }
+}
+
+#[async_trait]
+impl MessageHandler<users::message::CheckPassword> for Service {
+    async fn handle(
+        &mut self,
+        message: users::message::CheckPassword,
+    ) -> Result<PasswordCheckResult, Error> {
+        Ok(self.users.call(message).await?)
     }
 }
 

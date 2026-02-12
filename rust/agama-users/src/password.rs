@@ -1,4 +1,4 @@
-// Copyright (c) [2025] SUSE LLC
+// Copyright (c) [2025-2026] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -99,7 +99,7 @@ impl PasswordChecker {
 
 #[cfg(test)]
 mod test {
-    use crate::users::password::{PasswordCheckResult, PasswordChecker};
+    use super::{PasswordCheckResult, PasswordChecker};
 
     #[test]
     #[cfg(not(ci))]

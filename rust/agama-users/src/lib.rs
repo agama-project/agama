@@ -26,7 +26,5 @@ pub mod message;
 mod model;
 pub use model::{ChrootCommand, Model, ModelAdapter};
 
-#[cfg(test)]
-mod tests {
-    use super::*;
-}
+mod password;
+pub use password::{PasswordCheckResult, PasswordChecker, PasswordCheckerError};
