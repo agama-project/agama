@@ -26,16 +26,13 @@ import {
   Content,
   Divider,
   Flex,
-  Grid,
-  GridItem,
   HelperText,
   HelperTextItem,
   Stack,
-  Title,
 } from "@patternfly/react-core";
-import Icon from "~/components/layout/Icon";
 import Page from "~/components/core/Page";
 import RebootButton from "~/components/core/RebootButton";
+import SplitInfoLayout from "~/components/layout/SplitInfoLayout";
 import { useExtendedConfig } from "~/hooks/model/config";
 import { _ } from "~/i18n";
 
@@ -97,24 +94,18 @@ function InstallationFinished() {
   return (
     <Page showQuestions={false}>
       <Page.Content>
-        <Grid hasGutter style={{ height: "100%", placeContent: "center" }}>
-          <GridItem sm={12} md={6} style={{ alignSelf: "center" }}>
-            <Flex
-              gap={{ default: "gapMd" }}
-              direction={{ default: "column" }}
-              alignItems={{ default: "alignItemsCenter", md: "alignItemsFlexEnd" }}
-              alignContent={{ default: "alignContentCenter", md: "alignContentFlexEnd" }}
-              alignSelf={{ default: "alignSelfCenter" }}
-            >
-              <Icon name="done_all" width="3rem" height="3rem" />
-              <Title
-                headingLevel="h1"
-                style={{ textWrap: "balance" }}
-                className={[textStyles.fontSize_3xl, alignmentStyles.textAlignEndOnMd].join(" ")}
-              >
-                {_("Installation complete")}
-              </Title>
-
+        <SplitInfoLayout
+          icon="done_all"
+          firstRowStart={_("Installation complete")}
+          firstRowEnd={
+            mountTpmAlert ? (
+              <TpmAlert />
+            ) : (
+              <RebootButton size="default" style={{ minInlineSize: "25dvw" }} />
+            )
+          }
+          secondRowStart={
+            <Stack hasGutter>
               <HelperText>
                 <HelperTextItem
                   className={alignmentStyles.textAlignEnd}
@@ -123,25 +114,16 @@ function InstallationFinished() {
                   {_("You can reboot the machine to log in to the new system.")}
                 </HelperTextItem>
               </HelperText>
-              {mountTpmAlert && <RebootButton style={{ minInlineSize: "25dvw" }} />}
-            </Flex>
-          </GridItem>
-          <GridItem sm={12} md={6}>
-            <Flex
-              gap={{ default: "gapMd" }}
-              alignItems={{ md: "alignItemsCenter" }}
-              justifyContent={{ default: "justifyContentCenter", md: "justifyContentFlexStart" }}
-              style={{
-                minBlockSize: "30dvh",
-                boxShadow: "-1px 0 0 var(--pf-t--global--border--color--default)",
-                paddingInlineStart: "var(--pf-t--global--spacer--md)",
-                marginBlockStart: "var(--pf-t--global--spacer--xl)",
-              }}
-            >
-              {mountTpmAlert ? <TpmAlert /> : <RebootButton style={{ minInlineSize: "25dvw" }} />}
-            </Flex>
-          </GridItem>
-        </Grid>
+              {mountTpmAlert && (
+                <Flex
+                  justifyContent={{ default: "justifyContentCenter", md: "justifyContentFlexEnd" }}
+                >
+                  <RebootButton size="default" style={{ minInlineSize: "25dvw" }} />
+                </Flex>
+              )}
+            </Stack>
+          }
+        />
       </Page.Content>
     </Page>
   );
