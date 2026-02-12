@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Wed Feb 11 14:24:03 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Honor the language from the backend (gh#agama-project/agama#3142).
+
+-------------------------------------------------------------------
 Wed Feb 11 13:35:13 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
 
 - Show translated product mode name and description
