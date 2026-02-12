@@ -1,4 +1,5 @@
 import React from "react";
+import { isEmpty } from "radashi";
 import { Grid, GridItem, Title } from "@patternfly/react-core";
 import Icon, { IconProps } from "./Icon";
 
@@ -116,7 +117,7 @@ export default function SplitInfoLayout({
           {secondRowStart}
         </GridItem>
 
-        <GridItem sm={6} order={{ md: "4" }}>
+        <GridItem sm={6} order={{ md: "4" }} rowSpan={isEmpty(secondRowEnd) ? 4 : 1}>
           {firstRowEnd}
         </GridItem>
 
