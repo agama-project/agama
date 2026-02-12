@@ -53,21 +53,6 @@ function useInstallerL10n(): L10nContext {
 }
 
 /**
- * Current language (in xx_XX format).
- *
- * It takes the language from the agamaLang cookie.
- *
- * @return Undefined if language is not set.
- */
-function agamaLanguage(): string | undefined {
-  // language from cookie, empty string if not set (regexp taken from Cockpit)
-  // https://github.com/cockpit-project/cockpit/blob/98a2e093c42ea8cd2431cf15c7ca0e44bb4ce3f1/pkg/shell/shell-modals.jsx#L91
-  return decodeURIComponent(
-    document.cookie.replace(/(?:(?:^|.*;\s*)agamaLang\s*=\s*([^;]*).*$)|^.*$/, "$1"),
-  );
-}
-
-/**
  * Generates a RFC 5646 (or BCP 78) language tag from a locale.
  *
  * @param locale
@@ -178,7 +163,7 @@ function InstallerL10nProvider({
   children?: React.ReactNode;
 }) {
   const { l10n } = useSystem();
-  const [loadedLanguage, setLoadedLanguage] = useState("en");
+  const [loadedLanguage, setLoadedLanguage] = useState(initialLanguage);
 
   const locale = l10n?.locale;
   const language = locale ? languageFromLocale(locale) : initialLanguage;
@@ -189,7 +174,6 @@ function InstallerL10nProvider({
       const candidateLanguages = [
         lang,
         lang?.split("-")[0], // fallback to the language (e.g., "es" for "es-AR")
-        agamaLanguage(),
         language,
       ].filter((l) => l);
       const newLanguage = findSupportedLanguage(candidateLanguages) || "en-US";
@@ -208,6 +192,8 @@ function InstallerL10nProvider({
 
     loadTranslations(language).then(() => setLoadedLanguage(agama.language.replace("-", "_")));
   }, [language, setLoadedLanguage]);
+
+  if (!loadedLanguage) return null;
 
   const value = { loadedLanguage, language, changeLanguage, keymap, changeKeymap };
 
