@@ -173,7 +173,7 @@ module Agama
             {
               channel:            format_status.dasd.id,
               totalCylinders:     format_status.cylinders,
-              FormattedCylinders: format_status.progress,
+              formattedCylinders: format_status.progress,
               finished:           format_status.done?
             }
           end

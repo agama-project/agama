@@ -3,9 +3,6 @@ export default {
     "plural-forms": (n) => n > 1,
     "language": "pt-BR"
   },
-  " Timezone selection": [
-    " Seleção de fuso horário"
-  ],
   "\"%s\"": [
     "\"%s\""
   ],
@@ -37,9 +34,6 @@ export default {
   "%s - %s": [
     "%s - %s"
   ],
-  "%s [must be registered].": [
-    "%s [deve ser registrado]."
-  ],
   "%s and %d others": [
     ""
   ],
@@ -48,9 +42,6 @@ export default {
   ],
   "%s has been registered with below information.": [
     "%s foi registrado com as informações a seguir."
-  ],
-  "%s is an immutable system with atomic updates. It uses a read-only Btrfs file system updated via snapshots.": [
-    "%s é um sistema imutável com atualizações atômicas. Ele usa um sistema de arquivos Btrfs somente leitura atualizado via instantâneos."
   ],
   "%s logo": [
     "logo %s"
@@ -228,12 +219,6 @@ export default {
   "At least one partition will be deleted": [
     "Pelo menos uma partição será excluída"
   ],
-  "At this point you can power off the machine.": [
-    "Neste ponto você pode desligar a máquina."
-  ],
-  "At this point you can reboot the machine to log in to the new system.": [
-    "Neste ponto você pode reiniciar a máquina para entrar no novo sistema."
-  ],
   "Authentication": [
     "Autenticação"
   ],
@@ -263,9 +248,6 @@ export default {
   ],
   "Automatic LUN scan is [enabled]. Activating a controller which is running in NPIV mode will automatically configures all its LUNs.": [
     "A varredura automática de LUN está [habilitada]. A ativação de um controlador que está sendo executado no modo NPIV configurará automaticamente todos os seus LUNs."
-  ],
-  "Available products": [
-    "Produtos disponíveis"
   ],
   "Back": [
     "Voltar"
@@ -306,20 +288,23 @@ export default {
   "Binding": [
     "Vinculando"
   ],
-  "Binding settings for '%s'": [
-    "Configurações de vinculação para '%s'"
-  ],
   "BitLocker": [
     "BitLocker"
   ],
   "Boot options": [
     "Opções de inicialização"
   ],
+  "Breadcrumbs": [
+    ""
+  ],
   "Btrfs": [
     "Btrfs"
   ],
   "Btrfs with snapshots": [
     "Btrfs com instantâneos"
+  ],
+  "By proceeding, the installation will begin with defined settings.": [
+    ""
   ],
   "CPU": [
     ""
@@ -329,9 +314,6 @@ export default {
   ],
   "Cannot be changed in remote installation": [
     "Não pode ser alterado na instalação remota"
-  ],
-  "Cannot connect to Agama server": [
-    "Não é possível conectar-se ao servidor Agama"
   ],
   "Cannot format %s": [
     "Não foi possível formatar %s"
@@ -432,12 +414,6 @@ export default {
   "Configure DASD": [
     "Configurar DASD"
   ],
-  "Configure LVM Volume Group": [
-    "Configurar grupo de volumes LVM"
-  ],
-  "Configure LVM logical volume at %s volume group": [
-    "Configurar volume lógico LVM no grupo de volumes %s"
-  ],
   "Configure device %s": [
     "Configurar o dispositivo %s"
   ],
@@ -456,23 +432,14 @@ export default {
   "Configured for installation only": [
     "Configurado apenas para instalação"
   ],
-  "Configuring the product, please wait ...": [
-    "Configurando o produto, aguarde..."
-  ],
   "Confirm": [
     "Confirmar"
   ],
   "Confirm that you really want to continue.": [
     "Confirme que você realmente deseja continuar."
   ],
-  "Congratulations!": [
-    "Parabéns!"
-  ],
   "Connect": [
     "Conectar"
-  ],
-  "Connect to %s": [
-    "Conectar a %s"
   ],
   "Connect to iSCSI targets": [
     "Conectar-se a alvos iSCSI"
@@ -519,14 +486,8 @@ export default {
   "Controllers": [
     "Controladores"
   ],
-  "Could not authenticate against the server, please check it.": [
-    "Não foi possível autenticar no servidor, verifique."
-  ],
   "Could not connect to %s": [
     "Não foi possível conectar a %s"
-  ],
-  "Could not log in. Please, make sure that the password is correct.": [
-    "Não foi possível fazer login. Verifique se a senha está correta."
   ],
   "Create LVM volume group %s": [
     "Criar grupo de volumes LVM %s"
@@ -612,6 +573,9 @@ export default {
   "Delete current content": [
     "Excluir conteúdo atual"
   ],
+  "Delete existing data and install %s?": [
+    ""
+  ],
   "Delete volume group": [
     "Excluir grupo de volumes"
   ],
@@ -635,9 +599,6 @@ export default {
   ],
   "Device %s menu": [
     "Menu do dispositivo %s"
-  ],
-  "Device Selection": [
-    "Seleção de dispositivo"
   ],
   "Device details": [
     "Detalhes do dispositivo"
@@ -689,9 +650,6 @@ export default {
   ],
   "Edit binding settings": [
     "Editar configurações de vinculação"
-  ],
-  "Edit connection %s": [
-    "Editar conexão %s"
   ],
   "Edit connection settings": [
     "Editar configurações da conexão"
@@ -770,6 +728,9 @@ export default {
     "Estender a instalação além do disco selecionado",
     "Estender a instalação além dos %d discos atuais"
   ],
+  "Extensions": [
+    "Extensões"
+  ],
   "F2FS": [
     "F2FS"
   ],
@@ -808,9 +769,6 @@ export default {
   ],
   "Find space in %s": [
     "Encontrar espaço em %s"
-  ],
-  "Finish": [
-    "Concluir"
   ],
   "Finished": [
     "Concluído"
@@ -872,9 +830,6 @@ export default {
   "GiB": [
     "GiB"
   ],
-  "Go back": [
-    ""
-  ],
   "Go to network page": [
     "Ir para página da rede"
   ],
@@ -890,9 +845,6 @@ export default {
   "Hide %d subvolume action": [
     "Ocultar %d ação do subvolume",
     "Ocultar %d ações de subvolume"
-  ],
-  "Hide details": [
-    "Ocultar Detalhes"
   ],
   "Hostname": [
     "Nome de host"
@@ -933,11 +885,11 @@ export default {
   "If a local media was used to run this installer, remove it before the next boot.": [
     "Se uma mídia local foi usada para executar este instalador, remova-a antes da próxima inicialização."
   ],
-  "If you want to disable this check, please specify \"inst.ay_check=0\" at kernels command-line": [
+  "If you are unsure, check and adjust the storage settings.": [
     ""
   ],
-  "In progress": [
-    "Em progresso"
+  "If you want to disable this check, please specify \"inst.ay_check=0\" at kernels command-line": [
+    ""
   ],
   "Incorrect IP address": [
     "Endereço IP incorreto"
@@ -975,6 +927,9 @@ export default {
   "Installation devices": [
     "Dispositivos de instalação"
   ],
+  "Installation settings will automatically update to match the new product's defaults.": [
+    ""
+  ],
   "Installation will take %s.": [
     "A instalação levará %s."
   ],
@@ -983,9 +938,6 @@ export default {
   ],
   "Installing a broken package affects system stability and is a big security risk!": [
     "A instalação de um pacote corrompido afeta a estabilidade do sistema e é um grande risco à segurança!"
-  ],
-  "Installing the system, please wait...": [
-    "Instalando o sistema, aguarde..."
   ],
   "Interface": [
     "Interface"
@@ -1044,14 +996,14 @@ export default {
   "Keyboard layout": [
     "Layout do teclado"
   ],
-  "Keyboard selection": [
-    "Seleção de teclado"
-  ],
   "KiB": [
     "KiB"
   ],
   "LUN": [
     "LUN"
+  ],
+  "LVM": [
+    ""
   ],
   "Label": [
     "Rótulo"
@@ -1065,6 +1017,9 @@ export default {
   "Let the installer propose a sensible size": [
     "Permitir que o instalador sugira um tamanho adequado"
   ],
+  "License acceptance is required to continue.": [
+    ""
+  ],
   "Loading": [
     "Carregando"
   ],
@@ -1076,9 +1031,6 @@ export default {
   ],
   "Loading the installation repositories...": [
     "Carregando repositórios de instalação..."
-  ],
-  "Locale selection": [
-    "Seleção local"
   ],
   "Localization": [
     "Localização"
@@ -1109,9 +1061,6 @@ export default {
   ],
   "MAC": [
     "MAC"
-  ],
-  "Main navigation": [
-    "Navegação principal"
   ],
   "Make sure you provide the correct values": [
     "Certifique-se de fornecer os valores corretos"
@@ -1325,9 +1274,6 @@ export default {
   "Not implemented yet (%s)": [
     "Ainda não implementado (%s)"
   ],
-  "Not possible with the current setup. Click to know more.": [
-    "Não é possível com a configuração atual. Clique para saber mais."
-  ],
   "Not protected network": [
     "Rede não protegida"
   ],
@@ -1351,9 +1297,6 @@ export default {
   ],
   "Options toggle": [
     "Alternar opções"
-  ],
-  "Overview": [
-    "Visão geral"
   ],
   "Package installation failed": [
     "Falha na instalação do pacote"
@@ -1421,14 +1364,8 @@ export default {
   "PiB": [
     "PiB"
   ],
-  "Please, check whether it is running.": [
-    "Verifique se ele está em execução."
-  ],
   "Please, perform an iSCSI discovery in order to find available iSCSI targets.": [
     "Execute uma descoberta iSCSI para encontrar os alvos iSCSI disponíveis."
-  ],
-  "Please, provide its password to log in to the system.": [
-    "Forneça sua senha para fazer login no sistema."
   ],
   "Please, try to activate a zFCP controller.": [
     "Tente ativar um controlador zFCP."
@@ -1457,7 +1394,7 @@ export default {
   "Proceeding may result in data loss": [
     ""
   ],
-  "Proceeding may result in data loss affecting at least %s": [
+  "Proceeding will delete existing data, including %s": [
     ""
   ],
   "Product is already registered": [
@@ -1560,11 +1497,8 @@ export default {
   "Review and fix": [
     "Revisar e corrigir"
   ],
-  "Review the summary below. If anything seems incorrect or you have doubts, go back and adjust the settings before proceeding.": [
+  "Root login with SSH key": [
     ""
-  ],
-  "Root authentication methods": [
-    "Métodos de autenticação de root"
   ],
   "Root user": [
     "Usuário root"
@@ -1604,9 +1538,6 @@ export default {
   ],
   "Security": [
     "Segurança"
-  ],
-  "See more details": [
-    "Ver mais detalhes"
   ],
   "Select": [
     "Selecionar"
@@ -1741,9 +1672,6 @@ export default {
   "Software conflicts resolution": [
     "Resolução de conflitos de software"
   ],
-  "Software selection": [
-    "Seleção de software"
-  ],
   "Some existing partitions may be shrunk": [
     "Algumas partições existentes pode ser reduzidas"
   ],
@@ -1789,8 +1717,14 @@ export default {
   "Swap": [
     "Swap"
   ],
+  "Switch to a different mode": [
+    ""
+  ],
   "TPM sealing requires the new system to be booted directly.": [
     "A vedação TPM exige que o novo sistema seja inicializado diretamente."
+  ],
+  "Take a moment to review the installation settings below and adjust them as needed.": [
+    ""
   ],
   "Target Password": [
     "Senha de destino"
@@ -1904,12 +1838,6 @@ export default {
   ],
   "The initiator name cannot be blank": [
     "O nome do iniciador não pode ficar em branco"
-  ],
-  "The installation on your machine is complete.": [
-    "A instalação em sua máquina está concluída."
-  ],
-  "The installer interface is no longer available, so you can safely close this window.": [
-    "A interface do instalador não está mais disponível, portanto, você pode fechar esta janela com segurança."
   ],
   "The installer requires [root] user privileges.": [
     "O instalador requer privilégios de usuário [root]."
@@ -2070,17 +1998,11 @@ export default {
   "To ensure the new system is able to boot, the installer may need to create or configure some partitions in the appropriate disk.": [
     "Para garantir que o novo sistema possa inicializar, o instalador pode precisar criar ou configurar algumas partições no disco apropriado."
   ],
-  "Transactional root file system": [
-    "Sistema de arquivo raiz transacional"
-  ],
   "Try again": [
     "Tentar novamente"
   ],
   "Type": [
     "Tipo"
-  ],
-  "URL": [
-    "URL"
   ],
   "Unable to modify the settings": [
     "Impossível modificar as configurações"
@@ -2256,6 +2178,9 @@ export default {
   "Using transient hostname: %s": [
     "Usando nome de host temporário: %s"
   ],
+  "View license": [
+    ""
+  ],
   "Volume group %s": [
     "Grupo de volume %s"
   ],
@@ -2271,6 +2196,9 @@ export default {
   "WWPN": [
     "WWPN"
   ],
+  "Wait until current operations are completed.": [
+    ""
+  ],
   "Waiting for a mount point": [
     "Aguardando um ponto de montagem"
   ],
@@ -2279,6 +2207,12 @@ export default {
   ],
   "Weak signal": [
     "Sinal fraco"
+  ],
+  "When ready, click on the [install] button at the end of the page.": [
+    ""
+  ],
+  "Wi-Fi": [
+    "Wi-Fi"
   ],
   "Wi-Fi connection form": [
     "Formulário de conexão Wi-Fi"
@@ -2304,6 +2238,9 @@ export default {
   "You can proceed to install with the current settings or you may want to discard the configuration and start from scratch with a simple one.": [
     "Você pode continuar a instalação com as configurações atuais ou descartar a configuração e começar do zero com uma simples."
   ],
+  "You can safely close this window.": [
+    ""
+  ],
   "You cannot change it later. Go to the %s section if you want to modify it before proceeding with registration.": [
     "Não é possível alterá-lo mais tarde. Vá para a seção %s para modificá-lo antes de prosseguir para o registro."
   ],
@@ -2315,9 +2252,6 @@ export default {
   ],
   "You will connect to a public network without encryption. Your data may not be secure.": [
     "Você se conectará a uma rede pública sem criptografia. Seus dados talvez não fiquem seguros."
-  ],
-  "Your system is rebooting": [
-    "O sistema está sendo reinicializado"
   ],
   "ZFCP": [
     "ZFCP"
@@ -2352,6 +2286,9 @@ export default {
   "iSCSI": [
     "iSCSI"
   ],
+  "immutable Btrfs": [
+    ""
+  ],
   "logical volume": [
     "volume lógico"
   ],
@@ -2370,14 +2307,14 @@ export default {
   "reset to defaults": [
     "redefinir aos padrões"
   ],
+  "root": [
+    ""
+  ],
   "yes": [
     "sim"
   ],
   "zFCP": [
     "zFCP"
-  ],
-  "zFCP Disk Activation": [
-    "Ativação do Disco zFCP"
   ],
   "zFCP Disk activation form": [
     "Formulário de ativação do disco zFCP"

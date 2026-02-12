@@ -3,9 +3,6 @@ export default {
     "plural-forms": (n) => n != 1,
     "language": "ka"
   },
-  " Timezone selection": [
-    " დროის სარტყლის არჩევანი"
-  ],
   "\"%s\"": [
     "\"%s\""
   ],
@@ -17,6 +14,12 @@ export default {
   ],
   "%1$s - %2$s": [
     "%1$s - %2$s"
+  ],
+  "%1$s and %2$s": [
+    "%1$s და %2$s"
+  ],
+  "%1$s and [%2$d more]": [
+    "%1$s და [კიდევ %2$d]"
   ],
   "%1$s at %2$s": [
     "%1$s %2$s-ზე"
@@ -31,17 +34,20 @@ export default {
   "%1$s will still contain the LVM group '%2$s' and any partition needed to boot": [
     ""
   ],
+  "%1$s, %2$s and [%3$d more]": [
+    "%1$s, %2$s და [კიდევ %3$d]"
+  ],
   "%d of %d": [
     "%d %d-დან"
   ],
   "%s - %s": [
     "%s - %s"
   ],
-  "%s [must be registered].": [
-    "%s [დარეგისტრირებული უნდა იყოს]."
-  ],
   "%s and %d others": [
     ""
+  ],
+  "%s and %s": [
+    "%s და %s"
   ],
   "%s disk": [
     "%s დისკი"
@@ -49,11 +55,12 @@ export default {
   "%s has been registered with below information.": [
     "%s დარეგისტრირებულია შემდეგი ინფორმაციით ქვემოთ."
   ],
-  "%s is an immutable system with atomic updates. It uses a read-only Btrfs file system updated via snapshots.": [
-    ""
-  ],
   "%s logo": [
     "%s-ის ლოგო"
+  ],
+  "%s task active": [
+    "აქტიურია %s ამოცანა",
+    "აქტიურია %s ამოცანა"
   ],
   "%s will be created as a logical volume": [
     "%s შეიქმნება ლოგიკური ტომის სახით",
@@ -64,6 +71,9 @@ export default {
   ],
   "%s with %d partitions": [
     "%s %d დანაყოფით"
+  ],
+  "(step %s of %s)": [
+    "(ნაბიჯი %s %s-დან)"
   ],
   "A %1$s of %2$s will be created for %3$s if possible": [
     "%1$s ზომით %2$s შეიქმნება %3$s-სთვის, თუ ეს შესაძლებელია"
@@ -228,12 +238,6 @@ export default {
   "At least one partition will be deleted": [
     "წაიშლება, სულ ცოტა, ერთი დანაყოფი"
   ],
-  "At this point you can power off the machine.": [
-    "ახლა შეგიძლიათ, გამორთოთ მანქანა."
-  ],
-  "At this point you can reboot the machine to log in to the new system.": [
-    ""
-  ],
   "Authentication": [
     "ავთენტიკაცია"
   ],
@@ -263,9 +267,6 @@ export default {
   ],
   "Automatic LUN scan is [enabled]. Activating a controller which is running in NPIV mode will automatically configures all its LUNs.": [
     ""
-  ],
-  "Available products": [
-    "ხელმისაწვდომი პროდუქტები"
   ],
   "Back": [
     "უკან"
@@ -306,8 +307,8 @@ export default {
   "Binding": [
     "მიმაგრება"
   ],
-  "Binding settings for '%s'": [
-    "მიბმის პარამეტრები '%s'-სთვის"
+  "Binding settings": [
+    "მიბმის პარამეტრები"
   ],
   "BitLocker": [
     "BitLocker"
@@ -315,11 +316,17 @@ export default {
   "Boot options": [
     "ჩატვირთვის პარამეტრები"
   ],
+  "Breadcrumbs": [
+    ""
+  ],
   "Btrfs": [
     "Btrfs"
   ],
   "Btrfs with snapshots": [
     "Btrfs სწრაფი ასლებით"
+  ],
+  "By proceeding, the installation will begin with defined settings.": [
+    ""
   ],
   "CPU": [
     ""
@@ -330,8 +337,8 @@ export default {
   "Cannot be changed in remote installation": [
     "ვერ შეიცვლება დაშორებული დაყენებისას"
   ],
-  "Cannot connect to Agama server": [
-    "Agama-ის სერვერთან მიერთება შეუძლებელია"
+  "Cannot connect": [
+    "დაკავშირება შეუძლებელია"
   ],
   "Cannot format %s": [
     "%s-ის დაფორმატება შეუძლებელია"
@@ -363,8 +370,14 @@ export default {
   "Change keyboard layout": [
     "კლავიატურის განლაგების შეცვლა"
   ],
+  "Change mode": [
+    "რეჟიმის შეცვლა"
+  ],
   "Change product": [
     "პროდუქტის შეცვლა"
+  ],
+  "Change product or mode": [
+    "პროდუქტის, ან რეჟიმის შეცვლა"
   ],
   "Change selection": [
     "მონიშნულის შეცვლა"
@@ -384,6 +397,9 @@ export default {
   "Change the file system or mount point": [
     "ფილური სისტემის ან მიმაგრების წერტილის შეცვლა"
   ],
+  "Change to %s": [
+    "%s-ზე შეცვლა"
+  ],
   "Changes in these settings will immediately update the 'Result' section below.": [
     "ამ პარამეტრის შეცვლა დაუყოვნებლივ განაახლებს ქვემორე სექციას 'შედეგი'."
   ],
@@ -395,6 +411,9 @@ export default {
   ],
   "Check the following before continuing": [
     "შეამოწმეთ შემდეგი ელემენტები გაგრძელებამდე"
+  ],
+  "Check whether Agama server is running.": [
+    "შეამოწმეთ, გაშვებულია თუ არა Agama server."
   ],
   "Choose a disk for placing the boot loader": [
     "აირჩიეთ დისკის ჩამტვირთავის განსათავსებლად"
@@ -429,14 +448,14 @@ export default {
   "Configuration unreachable or invalid": [
     "კონფიგურაცია ხელმიუწვდომელია, ან არასწორია"
   ],
+  "Configure": [
+    "მორგება"
+  ],
   "Configure DASD": [
     "DASD-ის მორგება"
   ],
-  "Configure LVM Volume Group": [
-    "LVM ტომების ჯგუფის მორგება"
-  ],
-  "Configure LVM logical volume at %s volume group": [
-    "LVM ლოგიკური ტომის გააქტიურება %s ტომების ჯგუფში"
+  "Configure Volume Group": [
+    "ტომების ჯგუფის მორგება"
   ],
   "Configure device %s": [
     "მორგება მოწყობილობისთვის %s"
@@ -447,6 +466,12 @@ export default {
   "Configure iSCSI": [
     "iSCSI-ის მორგება"
   ],
+  "Configure logical volume": [
+    "ლოგიკური ტომის მორგება"
+  ],
+  "Configure partition": [
+    "დანაყოფის მორგება"
+  ],
   "Configure partition at %s": [
     "დანაყოფის აღწერა %s-ზე"
   ],
@@ -456,23 +481,30 @@ export default {
   "Configured for installation only": [
     "მორგებულია მხოლოდ დასაყენებლად"
   ],
-  "Configuring the product, please wait ...": [
-    "მიმდინარეობს პროდუქტის მორგება. მოითმინეთ ..."
+  "Configured for root and user %s": [
+    "მორგებულია მომხმარებლებისთვის root და %s"
+  ],
+  "Configured for the root user": [
+    "მორგებულია მომხმარებლისთვის root"
+  ],
+  "Configured for user %s": [
+    "მორგებულია მომხმარებლისთვის %s"
+  ],
+  "Configured with %d connection": [
+    "მორგებულია %d კავშირი",
+    "მორგებულია %d კავშირი"
   ],
   "Confirm": [
     "დადასტურება"
   ],
+  "Confirm and install": [
+    "დადასტურება და დაყენება"
+  ],
   "Confirm that you really want to continue.": [
     "დაადასტურეთ, რომ მართლა გნებავთ, გააგრძელოთ."
   ],
-  "Congratulations!": [
-    "გილოცავთ!"
-  ],
   "Connect": [
     "დაკავშირება"
-  ],
-  "Connect to %s": [
-    "%s-სთან დაკავშირება"
   ],
   "Connect to iSCSI targets": [
     "iSCSI სამიზნეებთან მიერთება"
@@ -519,14 +551,14 @@ export default {
   "Controllers": [
     "კონტროლერები"
   ],
-  "Could not authenticate against the server, please check it.": [
-    "სერვერთან ავთენტიკაცია შეუძლებელია. გადაამოწმეთ."
+  "Could not authenticate against the server.": [
+    "სერვერთან ავთენტიკაცია შეუძლებელია."
   ],
   "Could not connect to %s": [
     "%s-სთან მიერთების შეცდომა"
   ],
-  "Could not log in. Please, make sure that the password is correct.": [
-    "ვერ შევედი. დარწმუნდით, რომ პაროლი სწორია."
+  "Could not log in": [
+    "შესვლის შეცდომა"
   ],
   "Create LVM volume group %s": [
     "შეიქმნება LVM-ის ტომების ჯგუფი %s"
@@ -552,6 +584,9 @@ export default {
   "Current partitions will be kept": [
     "არსებული დანაყოფები შენარჩუნდება"
   ],
+  "Current selection": [
+    "მიმდინარე არჩევანი"
+  ],
   "Custom": [
     "მორგებული"
   ],
@@ -560,6 +595,9 @@ export default {
   ],
   "DASD %s": [
     "DASD %s"
+  ],
+  "DHCP and %s": [
+    "DHCP და %s"
   ],
   "DHCP, %s": [
     ""
@@ -612,6 +650,9 @@ export default {
   "Delete current content": [
     "მიმდინარე შემცველობის წაშლა"
   ],
+  "Delete existing data and install %s?": [
+    ""
+  ],
   "Delete volume group": [
     "ტომების ჯგუფის წაშლა"
   ],
@@ -635,9 +676,6 @@ export default {
   ],
   "Device %s menu": [
     "მოწყობილობის მენიუ %s"
-  ],
-  "Device Selection": [
-    "მოწყობილობის არჩევანი"
   ],
   "Device details": [
     "მოწყობილობის დეტალები"
@@ -666,6 +704,9 @@ export default {
   "Disk": [
     "დისკი"
   ],
+  "Disk Activation": [
+    "დისკის გააქტიურება"
+  ],
   "Disks": [
     "დისკები"
   ],
@@ -689,9 +730,6 @@ export default {
   ],
   "Edit binding settings": [
     "მიბმის პარამეტრების ჩასწორება"
-  ],
-  "Edit connection %s": [
-    "%s მიერთების ჩასწორება"
   ],
   "Edit connection settings": [
     "კავშირის პარამეტრების ჩასწორება"
@@ -770,6 +808,9 @@ export default {
     "დაყენების გაფართოება ამჟამად არჩეული დისკის მიღმა",
     "დაყენების გაფართოება ამჟამად არჩეული %d დისკის მიღმა"
   ],
+  "Extensions": [
+    "გაფართოებები"
+  ],
   "F2FS": [
     "F2FS"
   ],
@@ -808,9 +849,6 @@ export default {
   ],
   "Find space in %s": [
     "ადგილის პოვნა %s-ში"
-  ],
-  "Finish": [
-    "დასრულება"
   ],
   "Finished": [
     "დასრულებულია"
@@ -872,9 +910,6 @@ export default {
   "GiB": [
     "გიბ"
   ],
-  "Go back": [
-    ""
-  ],
   "Go to network page": [
     "ქსელის გვერდზე გადასვლა"
   ],
@@ -890,9 +925,6 @@ export default {
   "Hide %d subvolume action": [
     "%d ქვეტომის ქმედების დამალვა",
     "%d ქვეტომის ქმედების დამალვა"
-  ],
-  "Hide details": [
-    "დეტალების დამალვა"
   ],
   "Hostname": [
     "ჰოსტის სახელი"
@@ -933,11 +965,14 @@ export default {
   "If a local media was used to run this installer, remove it before the next boot.": [
     ""
   ],
-  "If you want to disable this check, please specify \"inst.ay_check=0\" at kernels command-line": [
+  "If unsure, cancel and review storage settings.": [
+    "თუ დარწმუნებული არ ბრძანდებით, გააუქმეთ ეს და გადახედეთ საცავის პარამეტრებს."
+  ],
+  "If you are unsure, check and adjust the storage settings.": [
     ""
   ],
-  "In progress": [
-    "მიმდინარეობს"
+  "If you want to disable this check, please specify \"inst.ay_check=0\" at kernels command-line": [
+    ""
   ],
   "Incorrect IP address": [
     "არასწორი IP მისამართი"
@@ -969,11 +1004,32 @@ export default {
   "Install": [
     "დაყენება"
   ],
+  "Install %s?": [
+    "დავაყენო %s?"
+  ],
+  "Install now": [
+    "დაყენება ახლავე"
+  ],
   "Install now with potential data loss": [
     ""
   ],
+  "Installation complete": [
+    "დაყენება დასრულდა"
+  ],
   "Installation devices": [
     "დაყენების მოწყობილობები"
+  ],
+  "Installation in progress": [
+    "მიმდინარეობს დაყენება"
+  ],
+  "Installation only": [
+    "მხოლოდ დაყენება"
+  ],
+  "Installation settings": [
+    "დაყენების მორგება"
+  ],
+  "Installation settings will automatically update to match the new product's defaults.": [
+    ""
   ],
   "Installation will take %s.": [
     "დაყენებას დასჭირდება %s."
@@ -984,11 +1040,14 @@ export default {
   "Installing a broken package affects system stability and is a big security risk!": [
     "გაფუჭებული პაკეტის დაყენებას გავლენა აქვს სისტემის სტაბილურობაზე და შეიცავს უსაფრთხოების დიდ რისკს!"
   ],
-  "Installing the system, please wait...": [
-    "მიმდინარეობს სისტემის დაყენება. მოითმინეთ..."
-  ],
   "Interface": [
     "ინტერფეისი"
+  ],
+  "Invalid settings": [
+    "არასწორი პარამეტრები"
+  ],
+  "Invalid software selection": [
+    "არასწორი პროგრამების არჩევანი"
   ],
   "Invalid storage settings": [
     "არასწორი საცავის პარამეტრები"
@@ -1044,14 +1103,14 @@ export default {
   "Keyboard layout": [
     "კლავიატურის განლაგება"
   ],
-  "Keyboard selection": [
-    "კლავიატურის არჩევანი"
-  ],
   "KiB": [
     "კიბ"
   ],
   "LUN": [
     "LUN"
+  ],
+  "LVM": [
+    ""
   ],
   "Label": [
     "ჭდე"
@@ -1062,8 +1121,17 @@ export default {
   "Language and keyboard": [
     "ენა და კლავიატურა"
   ],
+  "Language and region": [
+    "ენა და რეგიონი"
+  ],
   "Let the installer propose a sensible size": [
     "დაყენების პროგრამისთვის ზომის შეთავაზების უფლების დართვა"
+  ],
+  "License acceptance is required to continue.": [
+    ""
+  ],
+  "License acceptance required": [
+    "აუცილებელია ლიცენზიაზე დათანხმება"
   ],
   "Loading": [
     "იტვირთება"
@@ -1076,9 +1144,6 @@ export default {
   ],
   "Loading the installation repositories...": [
     "დაყენების რეპოზიტორიების ჩატვირთვა..."
-  ],
-  "Locale selection": [
-    "ლოკალის არჩევანი"
   ],
   "Localization": [
     "ლოკალიზაცია"
@@ -1110,8 +1175,8 @@ export default {
   "MAC": [
     "MAC"
   ],
-  "Main navigation": [
-    "მთავარი ნავიგაცია"
+  "Make sure that the passsword is correct and try again.": [
+    "დარწმუნდით, რომ პაროლი სწორია და თავიდან სცადეთ."
   ],
   "Make sure you provide the correct values": [
     "დარწმუნდით, რომ შეყვანილი მნიშვნელობები სწორია"
@@ -1136,6 +1201,9 @@ export default {
   ],
   "Mode": [
     "რეჟიმი"
+  ],
+  "Model": [
+    "მოდელი"
   ],
   "Modify settings and physical volumes": [
     "პარამეტრების და ფიზიკური ტომების შეცვლა"
@@ -1319,6 +1387,9 @@ export default {
   "Not available": [
     "ხელმისაწვდომი არაა"
   ],
+  "Not configured": [
+    "მორგებული არაა"
+  ],
   "Not configured yet": [
     "ჯერ მორგებული არაა"
   ],
@@ -1328,11 +1399,11 @@ export default {
   "Not implemented yet (%s)": [
     "ჯერ განხორციელებული არაა (%s)"
   ],
-  "Not possible with the current setup. Click to know more.": [
-    "შეუძლებელია მიმდინარე კონფიგურაციით. დააწკაპუნეთ მეტის გასაგებად."
-  ],
   "Not protected network": [
     "ქსელი დაცვის გარეშე"
+  ],
+  "Not registered yet": [
+    "ჯერ დარეგისტრირებული არაა"
   ],
   "Not supported (%s)": [
     "მხარდაჭერილი არაა (%s)"
@@ -1354,9 +1425,6 @@ export default {
   ],
   "Options toggle": [
     "პარამეტრის გადართვა"
-  ],
-  "Overview": [
-    "გადახედვა"
   ],
   "Package installation failed": [
     "პაკეტის დაყენება ჩავარდა"
@@ -1430,14 +1498,8 @@ export default {
   "PiB": [
     "პიბ"
   ],
-  "Please, check whether it is running.": [
-    "შეამოწმეთ, გაშვებულია თუ არა ის."
-  ],
   "Please, perform an iSCSI discovery in order to find available iSCSI targets.": [
     "განახორციელეთ iSCSI აღმოჩენა, რომ იპოვოთ ხელმისაწვდომი iSCSI სამიზნეები."
-  ],
-  "Please, provide its password to log in to the system.": [
-    "შეიყვანეთ პაროლი სისტემაში შესასვლელად."
   ],
   "Please, try to activate a zFCP controller.": [
     "სცადეთ, გაააქტიუროთ zFCP კონტროლერი."
@@ -1466,7 +1528,7 @@ export default {
   "Proceeding may result in data loss": [
     ""
   ],
-  "Proceeding may result in data loss affecting at least %s": [
+  "Proceeding will delete existing data, including %s": [
     ""
   ],
   "Product is already registered": [
@@ -1477,6 +1539,9 @@ export default {
   ],
   "Provide email address": [
     "შეიყვანეთ ელფოსტის მისამართი"
+  ],
+  "Provide its password to log in to the system.": [
+    "შეიყვანეთ მისი პაროლი სისტემაში შესასვლელად."
   ],
   "Provide registration code": [
     "შეიყვანეთ რეგისტრაციის კოდი"
@@ -1502,6 +1567,9 @@ export default {
   "Recommended": [
     "რეკომენდებულია"
   ],
+  "Refreshing data...": [
+    "მონაცემების განახლება..."
+  ],
   "Register": [
     "რესგისტრაცია"
   ],
@@ -1510,6 +1578,9 @@ export default {
   ],
   "Register using a custom registration server": [
     "რეგისტრაცია მორგებული რეგისტრაციის სერვერით"
+  ],
+  "Registered": [
+    "დარეგისტრირებულია"
   ],
   "Registration": [
     "რეგისტრაცია"
@@ -1569,11 +1640,17 @@ export default {
   "Review and fix": [
     "გადახედვა და გასწორება"
   ],
-  "Review the summary below. If anything seems incorrect or you have doubts, go back and adjust the settings before proceeding.": [
+  "Review and install": [
+    "გადახედვა და დაყენება"
+  ],
+  "Root login with SSH key": [
     ""
   ],
-  "Root authentication methods": [
-    "Root-ით ავთენტიკაციის მეთოდები"
+  "Root login with password": [
+    "Root-ით შესვლა პაროლით"
+  ],
+  "Root login with password and SSH key": [
+    ""
   ],
   "Root user": [
     "Root მომხმარებელი"
@@ -1614,11 +1691,11 @@ export default {
   "Security": [
     "უსაფრთხოება"
   ],
-  "See more details": [
-    "მეტი დეტალების ნახვა"
-  ],
   "Select": [
     "არჩევა"
+  ],
+  "Select %s": [
+    "%s-ის არჩევა"
   ],
   "Select a device to define partitions or to mount": [
     "აირჩიეთ დისკი დანაყოფების აღწერისთვის, ან მისამაგრებლად"
@@ -1632,6 +1709,13 @@ export default {
   "Select a product": [
     "აირჩიეთ პროდუქტი"
   ],
+  "Select a product and confirm your choice.": [
+    "აირჩიეთ პროდუქტი და დაადასტურეთ თქვენი არჩევანი.",
+    "აირჩიეთ პროდუქტი და დაადასტურეთ თქვენი არჩევანი სიის ბოლოში."
+  ],
+  "Select a product to continue.": [
+    "გასაგრძელებლად აირჩიეთ პროდუქტი."
+  ],
   "Select a solution to continue": [
     "გასაგრძელებლად აირჩიეთ გადაწყვეტილება"
   ],
@@ -1643,6 +1727,9 @@ export default {
   ],
   "Select at least one disk.": [
     "აირჩიეთ, სულ ცოტა, ერთი დისკი."
+  ],
+  "Select device": [
+    "აირჩიეთ მოწყობილობა"
   ],
   "Select devices to enable bulk actions.": [
     "აირჩიეთ მოწყობილობები ერთზე მეტი ქმედებისთვის."
@@ -1705,8 +1792,14 @@ export default {
   "Show information about %s": [
     "ინფორმაციის ჩვენება %s-ის შესახებ"
   ],
+  "Show less": [
+    "ნაკლების ჩვენება"
+  ],
   "Show less actions": [
     "ნაკლები ქმედების ჩვენება"
+  ],
+  "Show more": [
+    "მეტის ჩვენება"
   ],
   "Show more actions": [
     "მეტი ქმედების ჩვენება"
@@ -1750,9 +1843,6 @@ export default {
   "Software conflicts resolution": [
     "პროგრამების კონფლიქტის გადაწყვეტილება"
   ],
-  "Software selection": [
-    "პროგრამების არჩევანი"
-  ],
   "Some existing partitions may be shrunk": [
     "ზოგიერთი არსებული დანაყოფი, შეიძლება, დაპატარავდეს"
   ],
@@ -1786,6 +1876,9 @@ export default {
   "Status": [
     "სტატუსი"
   ],
+  "Step %1$d of %2$d": [
+    "ნაბიჯი %1$d %2$d-დან"
+  ],
   "Storage": [
     "საცავი"
   ],
@@ -1798,8 +1891,20 @@ export default {
   "Swap": [
     "Swap"
   ],
+  "Switch to a different mode": [
+    ""
+  ],
+  "System Information": [
+    "ინფორმაცია სისტემის შესახებ"
+  ],
+  "System will have no network connections": [
+    "სისტემას ქსელი არ ექნება"
+  ],
   "TPM sealing requires the new system to be booted directly.": [
     "TPM-ის დაბეჭდვას ახალი სისტემის პირდაპირ ჩატვირთვა სჭირდება."
+  ],
+  "Take a moment to review the installation settings below and adjust them as needed.": [
+    ""
   ],
   "Target Password": [
     "სამიზნე პაროლი"
@@ -1914,11 +2019,8 @@ export default {
   "The initiator name cannot be blank": [
     "ინიციატორის სახელი არ შეიძლება, ცარიელი იყოს"
   ],
-  "The installation on your machine is complete.": [
-    "თქვენს მანქანაზე დაყენება დასრულდა."
-  ],
-  "The installer interface is no longer available, so you can safely close this window.": [
-    ""
+  "The installer interface is no longer available.": [
+    "დაყენების ინტერფეისი ხელმისაწვდომი აღარაა."
   ],
   "The installer requires [root] user privileges.": [
     "დაყენების პროგრამას [root] მომხმარებლის პრივილეგიები სჭირდება."
@@ -2002,11 +2104,17 @@ export default {
   "The system does not support Wi-Fi connections, probably because of missing or disabled hardware.": [
     ""
   ],
+  "The system is rebooting": [
+    "მიმდინარეობს სისტემის გადატვირთვა"
+  ],
   "The whole device will be used for %s": [
     "%s-სთვის გამოყენებული იქნება მთლიანი მოწყობილობა"
   ],
   "The zFCP disk was not activated.": [
     "zFCP დისკის გააქტიურება შეუძლებელია."
+  ],
+  "There are no disks available for the installation": [
+    "დაყენებისთვის დისკები ხელმისაწვდომი არაა"
   ],
   "There are not disks available for the installation. You may need to configure some device.": [
     ""
@@ -2079,17 +2187,11 @@ export default {
   "To ensure the new system is able to boot, the installer may need to create or configure some partitions in the appropriate disk.": [
     ""
   ],
-  "Transactional root file system": [
-    "ტრანზაქციული საწყისი ფაილური სისტემა"
-  ],
   "Try again": [
     "თავიდან სცადეთ"
   ],
   "Type": [
     "ტიპი"
-  ],
-  "URL": [
-    "URL"
   ],
   "Unable to modify the settings": [
     "პარამეტრების შეცვლა შეუძლებელია"
@@ -2172,6 +2274,9 @@ export default {
   "Use available space": [
     "ხელმისაწვდომი ადგილის გამოყენება"
   ],
+  "Use device %s": [
+    "მოწყობილობის %s გამოყენება"
+  ],
   "Use disk %s": [
     "%s-ის გამოყენება"
   ],
@@ -2220,6 +2325,9 @@ export default {
   "Use public SSH Key": [
     "საჯარო SSH გასაღების გამოყენება"
   ],
+  "Use several devices": [
+    "რამდენიმე მოწყობილობის გამოყენება"
+  ],
   "Use static hostname": [
     "სტატიკური ჰოსტის სახელის გამოყენება"
   ],
@@ -2250,20 +2358,32 @@ export default {
   "Username suggestion dropdown": [
     "მომხმარებლის სახელის მინიშნების ჩამოსაშლელი მენიუ"
   ],
+  "Using %d connections with %s": [
+    "გამოიყენება %d კავშირი %s-ით"
+  ],
   "Using [%s] keyboard": [
     "გამოიყენება [%s] კლავიატურა"
   ],
   "Using a hashed password.": [
     "დაჰეშილი პაროლის გამოყენება."
   ],
+  "Using an advanced storage configuration": [
+    "საცავის დამატებითი კონფიგურაცია"
+  ],
   "Using an existing partition": [
     "არსებული დანაყოფის გამოყენება"
+  ],
+  "Using code ending in %s": [
+    "გამოიყენება კოდი, რომელიც სრულდება %s-ით"
   ],
   "Using partition %s": [
     "გამოიყენება დანაყოფი %s"
   ],
   "Using transient hostname: %s": [
     "გამოიყენება გარდამავლი ჰოსტის სახელი: %s"
+  ],
+  "View license": [
+    ""
   ],
   "Volume group %s": [
     "ტომების ჯგუფი %s"
@@ -2280,14 +2400,26 @@ export default {
   "WWPN": [
     "WWPN"
   ],
+  "Wait until current operations are completed.": [
+    ""
+  ],
   "Waiting for a mount point": [
     "მიმაგრების წერტილის მოლოდინი"
   ],
   "Waiting for information about storage configuration": [
     "ინფორმაციის მოლოდინი საცავის კონფიგურაციის შესახებ"
   ],
+  "Waiting for proposal": [
+    "შეთავაზების მოლოდინი"
+  ],
   "Weak signal": [
     "სუსტი სიგნალი"
+  ],
+  "When ready, click on the [install] button at the end of the page.": [
+    ""
+  ],
+  "Wi-Fi": [
+    "Wi-Fi"
   ],
   "Wi-Fi connection form": [
     "WiFi მიერთება წყაროდან"
@@ -2304,6 +2436,9 @@ export default {
   "Wired connections": [
     "მავთულიანი კავშირები"
   ],
+  "Wrong selection": [
+    "არასწორი არჩევანი"
+  ],
   "XFS": [
     "XFS"
   ],
@@ -2311,6 +2446,12 @@ export default {
     "დიახ"
   ],
   "You can proceed to install with the current settings or you may want to discard the configuration and start from scratch with a simple one.": [
+    ""
+  ],
+  "You can reboot the machine to log in to the new system.": [
+    "შეგიძლიათ, გადატვირთოთ მანაქანა და შეხვიდეთ ახალ სისტემაში."
+  ],
+  "You can safely close this window.": [
     ""
   ],
   "You cannot change it later. Go to the %s section if you want to modify it before proceeding with registration.": [
@@ -2322,11 +2463,11 @@ export default {
   "You may want to discard those settings and start from scratch with a simple configuration.": [
     ""
   ],
-  "You will connect to a public network without encryption. Your data may not be secure.": [
+  "You need to fix any invalid settings before proceeding with the installation.": [
     ""
   ],
-  "Your system is rebooting": [
-    "მიმდინარეობს თქენი სისტემის გადატვირთვა"
+  "You will connect to a public network without encryption. Your data may not be secure.": [
+    ""
   ],
   "ZFCP": [
     "ZFCP"
@@ -2361,6 +2502,9 @@ export default {
   "iSCSI": [
     "iSCSI"
   ],
+  "immutable Btrfs": [
+    ""
+  ],
   "logical volume": [
     "ლოგიკური ტომი"
   ],
@@ -2373,20 +2517,23 @@ export default {
   "partition": [
     "დანაყოფი"
   ],
+  "proposal.Device": [
+    "proposal.Device"
+  ],
   "read_only": [
     "მხოლოდ_წაკითხვადი"
   ],
   "reset to defaults": [
     "ჩამოყრა ნაგულისხმევზე"
   ],
+  "root": [
+    ""
+  ],
   "yes": [
     "დიახ"
   ],
   "zFCP": [
     "zFCP"
-  ],
-  "zFCP Disk Activation": [
-    "zFCP დისკის გააქტიურება"
   ],
   "zFCP Disk activation form": [
     "zFCP დისკის გააქტიურების ფორმა"

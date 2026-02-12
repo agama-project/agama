@@ -1,4 +1,4 @@
-// Copyright (c) [2025] SUSE LLC
+// Copyright (c) [2025-2026] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -50,5 +50,8 @@ pub enum Scope {
     #[strum(serialize = "iscsi")]
     #[serde(rename = "iscsi")]
     ISCSI,
+    #[strum(serialize = "dasd")]
+    #[serde(rename = "dasd")]
+    DASD,
     Users,
 }

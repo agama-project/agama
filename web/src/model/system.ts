@@ -56,6 +56,9 @@ type Product = {
   translations?: {
     /** The key is the locale (e.g., "en", "pt_BR") */
     description: Record<string, string>;
+    /** Translation mapping: mode ID ("immutable") -> "name"/"description" ->
+     * locale -> translated text */
+    mode: Record<string, Record<string, Record<string, string>>>;
   };
   modes: Mode[];
 };
