@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Feb 12 14:43:48 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Recalulate bootloader proposal after applying a storage config
+  model (gh#agama-project/agama#3158, bsc#1258134).
+
+-------------------------------------------------------------------
 Thu Feb 12 14:37:55 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Add the password strength check to the API (gh#agama-project/agama#3159).

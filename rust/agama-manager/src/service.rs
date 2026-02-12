@@ -826,13 +826,25 @@ impl MessageHandler<message::GetStorageModel> for Service {
 
 #[async_trait]
 impl MessageHandler<message::SetStorageModel> for Service {
-    /// It sets the storage model.
+    /// Sets the storage model.
+    ///
+    // FIXME: Apply a config model by calling to [`Service::set_config`]. Note that set_config
+    // contains logic about what has to be called and in which order. For example, calling to
+    // bootloader after storage.
+    // The D-Bus service could extend its API to translate a model into a config, and that config
+    // can be used as user config for storage.
     async fn handle(&mut self, message: message::SetStorageModel) -> Result<(), Error> {
         checks::check_stage(&self.progress, Stage::Configuring).await?;
-        Ok(self
-            .storage
+        self.storage
             .call(storage::message::SetConfigModel::new(message.model))
-            .await?)
+            .await?;
+        // Bootloader must be recalculated.
+        self.bootloader
+            .call(bootloader::message::SetConfig::new(
+                self.config.bootloader.clone(),
+            ))
+            .await?;
+        Ok(())
     }
 }
 
