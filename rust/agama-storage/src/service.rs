@@ -140,6 +140,14 @@ impl MessageHandler<message::Finish> for Service {
 }
 
 #[async_trait]
+impl MessageHandler<message::Umount> for Service {
+    async fn handle(&mut self, _message: message::Umount) -> Result<(), Error> {
+        self.client.umount().await?;
+        Ok(())
+    }
+}
+
+#[async_trait]
 impl MessageHandler<message::GetSystem> for Service {
     async fn handle(&mut self, _message: message::GetSystem) -> Result<Option<Value>, Error> {
         self.client.get_system().await.map_err(|e| e.into())

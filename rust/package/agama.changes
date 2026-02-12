@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Feb 12 08:35:38 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- Run post scripts after all agama configuration is written down
+  (bsc#1257791)
+
+-------------------------------------------------------------------
 Wed Feb 11 15:49:05 UTC 2026 - José Iván López González <jlopez@suse.com>
 
 - Add agama-s390 service and integrate DASD into the new HTTP API
