@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Feb 12 15:36:23 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 19
+
+-------------------------------------------------------------------
 Thu Feb 12 15:22:50 UTC 2026 - Ancor Gonzalez Sosa <ancor@suse.com>
 
 - Fix reading the startup mode in iSCSI

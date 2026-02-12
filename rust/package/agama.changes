@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Feb 12 15:36:24 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 19
+
+-------------------------------------------------------------------
 Thu Feb 12 14:43:48 UTC 2026 - José Iván López González <jlopez@suse.com>
 
 - Recalulate bootloader proposal after applying a storage config
