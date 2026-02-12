@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Feb 12 08:33:58 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- Split storage writting config and final unmount action
+  (bsc#1257791)
+
+-------------------------------------------------------------------
 Wed Feb 11 14:48:58 UTC 2026 - José Iván López González <jlopez@suse.com>
 
 - Fix JSON of DASD format summary (gh#agama-project/agama#3128).
