@@ -36,7 +36,7 @@ const fetchInstallerStatus = async (): Promise<InstallerStatus> => {
 // TODO: remove
 export { fetchInstallerStatus };
 
-type Stage = "installing" | "configuring" | "finished";
+type Stage = "installing" | "configuring" | "finished" | "failed";
 type Scope =
   | "manager"
   | "l10n"

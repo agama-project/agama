@@ -58,6 +58,7 @@ import MoreVert from "@bolderIcons/more_vert.svg?component";
 import NetworkWifi from "@icons/network_wifi.svg?component";
 import NetworkWifi1Bar from "@icons/network_wifi_1_bar.svg?component";
 import NetworkWifi3Bar from "@icons/network_wifi_3_bar.svg?component";
+import Report from "@icons/report.svg?component";
 import RestartAlt from "@icons/restart_alt.svg?component";
 import SearchOff from "@icons/search_off.svg?component";
 import SettingsEthernet from "@icons/settings_ethernet.svg?component";
@@ -104,6 +105,7 @@ const icons = {
   network_wifi: NetworkWifi,
   network_wifi_1_bar: NetworkWifi1Bar,
   network_wifi_3_bar: NetworkWifi3Bar,
+  report: Report,
   restart_alt: RestartAlt,
   search_off: SearchOff,
   settings_ethernet: SettingsEthernet,
