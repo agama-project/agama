@@ -23,17 +23,17 @@ require_relative "../../test_helper"
 require_relative "storage_helpers"
 require "agama/helpers"
 require "agama/config"
-require "agama/storage/finalize"
+require "agama/storage/umounter"
 require "yaml"
 
-describe Agama::Storage::Finalizer do
+describe Agama::Storage::Umounter do
   include Agama::RSpec::StorageHelpers
 
   subject(:finalizer) { described_class.new(logger) }
 
   let(:logger) { Logger.new($stdout, level: :warn) }
-  let(:copy_logs) { Agama::Storage::Finalizer::CopyLogsStep.new(logger) }
-  let(:unmount) { Agama::Storage::Finalizer::UnmountStep.new(logger) }
+  let(:copy_logs) { Agama::Storage::Umounter::CopyLogsStep.new(logger) }
+  let(:unmount) { Agama::Storage::Umounter::UnmountStep.new(logger) }
 
   describe "#run" do
     before do
@@ -62,7 +62,7 @@ describe Agama::Storage::Finalizer do
     before do
       allow(Yast::Installation).to receive(:destdir).and_return(File.join(tmp_dir, "mnt"))
       allow(Yast::Execute).to receive(:locally)
-      stub_const("Agama::Storage::Finalizer::CopyLogsStep::SCRIPTS_DIR",
+      stub_const("Agama::Storage::Umounter::CopyLogsStep::SCRIPTS_DIR",
         File.join(tmp_dir, "run", "agama", "scripts"))
     end
 

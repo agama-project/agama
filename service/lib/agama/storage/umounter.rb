@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2023-2025] SUSE LLC
+# Copyright (c) [2023-2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -30,14 +30,13 @@ require "agama/helpers"
 require "abstract_method"
 require "fileutils"
 
-Yast.import "Arch"
 Yast.import "Installation"
 
 module Agama
   module Storage
     # Auxiliary class to handle the end of the installation including final
     # copy of logs and umount of devices
-    class Finalizer
+    class Umounter
       include Helpers
 
       # Constructor
