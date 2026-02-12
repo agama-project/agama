@@ -65,7 +65,9 @@ const mockUseSystemFn: jest.Mock<ReturnType<typeof useSystem>> = jest.fn();
 const mockUseSystemSoftwareFn: jest.Mock<ReturnType<typeof useSystemSoftware>> = jest.fn();
 
 // FIXME: add ad use a mockSystem from test-utils instead
-jest.mock("~/components/core/InstallerOptions", () => () => <div>InstallerOptions Mock</div>);
+jest.mock("~/components/core/InstallerL10nOptions", () => () => (
+  <div>InstallerL10nOptions Mock</div>
+));
 
 jest.mock("~/components/product/LicenseDialog", () => () => <div>LicenseDialog Mock</div>);
 

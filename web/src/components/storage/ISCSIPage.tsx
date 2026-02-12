@@ -22,29 +22,34 @@
 
 import React from "react";
 import { Grid, GridItem } from "@patternfly/react-core";
-import { Page } from "~/components/core";
-import { InitiatorSection, TargetsSection } from "~/components/storage/iscsi";
+import InitiatorSection from "~/components/storage/iscsi/InitiatorSection";
+import Page from "~/components/core/Page";
+import TargetsTable from "~/components/storage/iscsi/TargetsTable";
 import { STORAGE } from "~/routes/paths";
 import { _ } from "~/i18n";
 
 export default function ISCSIPage() {
   return (
-    <Page breadcrumbs={[{ label: _("Storage"), path: STORAGE.root }, { label: _("iSCSI") }]}>
+    <Page
+      breadcrumbs={[
+        {
+          label: _("Storage"),
+          path: STORAGE.root,
+        },
+        { label: _("iSCSI") },
+      ]}
+      progress={{ scope: "iscsi" }}
+    >
       <Page.Content>
         <Grid hasGutter>
           <GridItem sm={12}>
             <InitiatorSection />
           </GridItem>
           <GridItem sm={12}>
-            <TargetsSection />
+            <TargetsTable />
           </GridItem>
         </Grid>
       </Page.Content>
-      <Page.Actions>
-        <Page.Action variant="secondary" navigateTo={STORAGE.root}>
-          {_("Back")}
-        </Page.Action>
-      </Page.Actions>
     </Page>
   );
 }

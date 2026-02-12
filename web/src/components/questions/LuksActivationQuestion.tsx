@@ -22,7 +22,7 @@
 
 import React, { useState } from "react";
 import { Alert as PFAlert, Content, Form, FormGroup, Stack } from "@patternfly/react-core";
-import { InstallerOptions, PasswordInput, Popup } from "~/components/core";
+import { InstallerL10nOptions, PasswordInput, Popup } from "~/components/core";
 import QuestionActions from "~/components/questions/QuestionActions";
 import { _ } from "~/i18n";
 
@@ -68,7 +68,7 @@ export default function LuksActivationQuestion({ question, answerCallback }) {
       title={_("Encrypted Device")}
       aria-label={_("Question")}
       elementToFocus="#luks-password"
-      titleAddon={<InstallerOptions variant="keyboard" />}
+      titleAddon={<InstallerL10nOptions variant="keyboard" />}
     >
       <Stack hasGutter>
         <Alert attempt={question.data.attempt} />

@@ -30,7 +30,7 @@ import { _ } from "~/i18n";
 describe("ResourceNotFound", () => {
   it("renders the default title when none is given", () => {
     installerRender(<ResourceNotFound linkText={_("Go to homepage")} linkPath={ROOT.root} />);
-    screen.getByRole("heading", { name: "Resource not found or lost", level: 3 });
+    screen.getByRole("heading", { name: "Resource not found or lost", level: 2 });
   });
 
   it("renders the given title", () => {
@@ -41,7 +41,7 @@ describe("ResourceNotFound", () => {
         linkPath={ROOT.root}
       />,
     );
-    screen.getByRole("heading", { name: "Not found", level: 3 });
+    screen.getByRole("heading", { name: "Not found", level: 2 });
   });
 
   it("renders the default body when none is given", () => {

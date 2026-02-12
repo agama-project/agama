@@ -20,7 +20,17 @@
  * find current contact information at www.suse.com.
  */
 
-import { compact, localConnection, hex, mask, timezoneTime, sortCollection } from "./utils";
+import {
+  compact,
+  localConnection,
+  hex,
+  mask,
+  timezoneTime,
+  sortCollection,
+  mergeSources,
+} from "./utils";
+import type { Target as ConfigTarget } from "~/openapi/config/iscsi";
+import type { Target as SystemTarget } from "~/openapi/system/iscsi";
 
 describe("compact", () => {
   it("removes null and undefined values", () => {
@@ -259,5 +269,249 @@ describe("simpleFastSort", () => {
     const original = [...fakeDevices];
     sortCollection(fakeDevices, "asc", "size");
     expect(fakeDevices).toEqual(original);
+  });
+});
+
+describe("mergeSources", () => {
+  it("merges collections honoring precedence when primary key is based on single attribute", () => {
+    const result = mergeSources({
+      collections: {
+        system: [
+          {
+            name: "iqn.2023-01.com.example:12ac588",
+            address: "192.168.100.102",
+            port: 3262,
+            interface: "default",
+            ibft: false,
+            startup: "onboot",
+            connected: true,
+            locked: false,
+          },
+        ],
+        config: [
+          {
+            name: "iqn.2023-01.com.example:12ac588",
+            address: "192.168.100.102",
+            port: 3262,
+            interface: "default",
+            startup: "onboot",
+          },
+          {
+            name: "iqn.2023-01.com.example:12ac788",
+            address: "192.168.100.106",
+            port: 3264,
+            interface: "default",
+            startup: "onboot",
+          },
+        ],
+      },
+      precedence: ["system", "config"],
+      primaryKey: "name",
+    });
+
+    expect(result).toHaveLength(2);
+
+    expect(result[0]).toMatchObject({
+      name: "iqn.2023-01.com.example:12ac588",
+      address: "192.168.100.102",
+      port: 3262,
+      interface: "default",
+      ibft: false,
+      startup: "onboot",
+      connected: true,
+      locked: false,
+      sources: ["system", "config"],
+    });
+
+    expect(result[1]).toMatchObject({
+      name: "iqn.2023-01.com.example:12ac788",
+      address: "192.168.100.106",
+      port: 3264,
+      sources: ["config"],
+    });
+  });
+
+  it("merges collections honoring precedence when primary key is based on mulitple attribute", () => {
+    type MergedTarget = Partial<SystemTarget> & Partial<ConfigTarget>;
+    const result = mergeSources<MergedTarget, keyof MergedTarget>({
+      collections: {
+        system: [
+          {
+            name: "iqn.2023-01.com.example:storage",
+            address: "192.168.100.102",
+            port: 3260,
+            interface: "default",
+            ibft: false,
+            startup: "onboot",
+            connected: true,
+            locked: false,
+          },
+          {
+            name: "iqn.2023-01.com.example:storage",
+            address: "192.168.100.102",
+            port: 3261,
+            interface: "default",
+            ibft: false,
+            startup: "manual",
+            connected: false,
+            locked: false,
+          },
+        ],
+        config: [
+          {
+            name: "iqn.2023-01.com.example:storage",
+            address: "192.168.100.102",
+            port: 3260,
+            interface: "default",
+            startup: "onboot",
+          },
+          {
+            name: "iqn.2023-01.com.example:storage",
+            address: "192.168.100.102",
+            port: 3261,
+            interface: "default",
+            startup: "manual",
+          },
+          {
+            name: "iqn.2023-01.com.example:storage",
+            address: "192.168.100.103",
+            port: 3260,
+            interface: "default",
+            startup: "onboot",
+          },
+        ],
+      },
+      precedence: ["system", "config"],
+      primaryKey: ["name", "address", "port"],
+    });
+
+    expect(result).toHaveLength(3);
+    expect(result[0]).toMatchObject({
+      name: "iqn.2023-01.com.example:storage",
+      address: "192.168.100.102",
+      port: 3260,
+      connected: true,
+      sources: ["system", "config"],
+    });
+    expect(result[1]).toMatchObject({
+      name: "iqn.2023-01.com.example:storage",
+      address: "192.168.100.102",
+      port: 3261,
+      connected: false,
+      sources: ["system", "config"],
+    });
+    expect(result[2]).toMatchObject({
+      name: "iqn.2023-01.com.example:storage",
+      address: "192.168.100.103",
+      port: 3260,
+      sources: ["config"],
+    });
+    expect(result[2]).not.toHaveProperty("connected");
+  });
+
+  it('uses "id" as default primary key when not specified', () => {
+    const result = mergeSources({
+      collections: {
+        source1: [
+          { id: 1, value: "first" },
+          { id: 2, value: "second" },
+        ],
+        source2: [
+          { id: 1, value: "duplicate" },
+          { id: 3, value: "third" },
+        ],
+      },
+      precedence: ["source1", "source2"],
+    });
+
+    expect(result).toHaveLength(3);
+    expect(result[0]).toEqual({ id: 1, value: "first", sources: ["source1", "source2"] });
+    expect(result[1]).toEqual({ id: 2, value: "second", sources: ["source1"] });
+    expect(result[2]).toEqual({ id: 3, value: "third", sources: ["source2"] });
+  });
+
+  it("returns empty array when all collections are empty", () => {
+    const result = mergeSources({
+      collections: {
+        system: [],
+        config: [],
+      },
+      precedence: ["system", "config"],
+      primaryKey: "name",
+    });
+
+    expect(result).toEqual([]);
+  });
+
+  it("handles single collection with multiple items", () => {
+    const result = mergeSources({
+      collections: {
+        config: [
+          {
+            name: "iqn.2023-01.com.example:target1",
+            address: "192.168.100.1",
+            port: 3260,
+            interface: "default",
+            startup: "onboot",
+          },
+          {
+            name: "iqn.2023-01.com.example:target2",
+            address: "192.168.100.2",
+            port: 3260,
+            interface: "default",
+            startup: "manual",
+          },
+        ],
+      },
+      precedence: ["config"],
+      primaryKey: "name",
+    });
+
+    expect(result).toHaveLength(2);
+    expect(result[0].sources).toEqual(["config"]);
+    expect(result[1].sources).toEqual(["config"]);
+  });
+
+  it("supports more than two collections", () => {
+    const result = mergeSources({
+      collections: {
+        system: [
+          {
+            name: "iqn.2023-01.com.example:shared",
+            address: "192.168.100.1",
+            port: 3260,
+            interface: "default",
+            ibft: false,
+            startup: "onboot",
+            connected: true,
+            locked: false,
+          },
+        ],
+        config: [
+          {
+            name: "iqn.2023-01.com.example:shared",
+            address: "192.168.100.1",
+            port: 3260,
+            interface: "default",
+            startup: "onboot",
+          },
+        ],
+        extended: [
+          {
+            name: "iqn.2023-01.com.example:shared",
+            address: "192.168.100.1",
+            port: 3260,
+            interface: "default",
+            startup: "onboot",
+          },
+        ],
+      },
+      precedence: ["system", "config", "extended"],
+      primaryKey: "name",
+    });
+
+    expect(result).toHaveLength(1);
+    expect(result[0].sources).toEqual(["system", "config", "extended"]);
+    expect(result[0].connected).toBe(true);
   });
 });

@@ -51,7 +51,7 @@ import {
   Title,
 } from "@patternfly/react-core";
 import { Navigate, useNavigate } from "react-router";
-import { Link, Page, SubtleContent } from "~/components/core";
+import { InstallerL10nOptions, Link, Page, SubtleContent } from "~/components/core";
 import ProductLogo from "~/components/product/ProductLogo";
 import LicenseDialog from "~/components/product/LicenseDialog";
 import Text from "~/components/core/Text";
@@ -710,7 +710,7 @@ const ProductSelectionContent = () => {
       breadcrumbs={[
         { label: <ProductSelectionTitle products={products} currentProduct={currentProduct} /> },
       ]}
-      showInstallerOptions
+      endSlot={<InstallerL10nOptions />}
     >
       <Page.Content>
         <Flex gap={{ default: "gapXs" }} direction={{ default: "column" }}>

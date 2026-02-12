@@ -22,11 +22,11 @@
 
 import React from "react";
 import { screen } from "@testing-library/react";
-import { installerRender } from "~/test-utils";
+import { installerRender, mockStage } from "~/test-utils";
 import { useSystem } from "~/hooks/model/system";
+import { Product } from "~/model/system";
 import { PRODUCT as PATHS } from "~/routes/paths";
 import ChangeProductOption from "./ChangeProductOption";
-import { Product } from "~/model/system";
 
 const tumbleweed: Product = {
   id: "Tumbleweed",
@@ -46,38 +46,74 @@ const microos: Product = {
   modes: [],
 };
 
-// let registrationInfoMock: RegistrationInfo;
+const tumbleweedWithModes: Product = {
+  ...tumbleweed,
+  modes: [
+    { id: "mode1", name: "Mode 1", description: "Mode 1 desc" },
+    { id: "mode2", name: "Mode 2", description: "Mode 2 desc" },
+  ],
+};
+
 const mockSystemProducts: jest.Mock<Product[]> = jest.fn();
+const mockSoftware: jest.Mock = jest.fn();
 
 jest.mock("~/hooks/model/system", () => ({
   ...jest.requireActual("~/hooks/model/system"),
   useSystem: (): ReturnType<typeof useSystem> => ({
     products: mockSystemProducts(),
+    software: mockSoftware(),
   }),
 }));
 
 describe("ChangeProductOption", () => {
+  beforeEach(() => {
+    mockSoftware.mockReturnValue(null);
+    mockStage("configuring");
+  });
+
   describe("when there is more than one product available", () => {
     beforeEach(() => {
       mockSystemProducts.mockReturnValue([tumbleweed, microos]);
     });
 
-    it("renders a menu item for navigating to product selection page", () => {
+    it("renders a link by default for navigating to product selection page", () => {
       installerRender(<ChangeProductOption />);
-      const link = screen.getByRole("menuitem", { name: "Change product" });
+      const link = screen.getByRole("link", { name: "Change product" });
       expect(link).toHaveAttribute("href", PATHS.changeProduct);
     });
 
-    // FIXME: activate it again when registration is ready in api v2
-    describe.skip("but a product is registered", () => {
-      // beforeEach(() => {
-      //   registrationInfoMock = {
-      //     registered: true,
-      //     key: "INTERNAL-USE-ONLY-1234-5678",
-      //     email: "",
-      //     url: "",
-      //   };
-      // });
+    it("renders a menu item when component prop is 'dropdownitem'", () => {
+      installerRender(<ChangeProductOption component="dropdownitem" />);
+      screen.getByRole("menuitem", { name: "Change product" });
+    });
+
+    it("renders with an icon when showIcon is true", () => {
+      const { container } = installerRender(<ChangeProductOption showIcon />);
+      const icon = container.querySelector("svg");
+      expect(icon).toHaveAttribute("data-icon-name", "edit_square");
+    });
+
+    it("does not render an icon by default", () => {
+      installerRender(<ChangeProductOption />);
+      const link = screen.getByRole("link", { name: "Change product" });
+      expect(link.querySelector("svg")).toBeNull();
+    });
+
+    describe("but a product is registered", () => {
+      beforeEach(() => {
+        mockSoftware.mockReturnValue({ registration: true });
+      });
+
+      it("renders nothing", () => {
+        const { container } = installerRender(<ChangeProductOption />);
+        expect(container).toBeEmptyDOMElement();
+      });
+    });
+
+    describe("but the stage is not 'configuring'", () => {
+      beforeEach(() => {
+        mockStage("installing");
+      });
 
       it("renders nothing", () => {
         const { container } = installerRender(<ChangeProductOption />);
@@ -87,13 +123,42 @@ describe("ChangeProductOption", () => {
   });
 
   describe("when there is only one product available", () => {
-    beforeEach(() => {
-      mockSystemProducts.mockReturnValue([tumbleweed]);
+    describe("without modes", () => {
+      beforeEach(() => {
+        mockSystemProducts.mockReturnValue([tumbleweed]);
+      });
+
+      it("renders nothing", () => {
+        const { container } = installerRender(<ChangeProductOption />);
+        expect(container).toBeEmptyDOMElement();
+      });
     });
 
-    it("renders nothing", () => {
-      const { container } = installerRender(<ChangeProductOption />);
-      expect(container).toBeEmptyDOMElement();
+    describe("with modes", () => {
+      beforeEach(() => {
+        mockSystemProducts.mockReturnValue([tumbleweedWithModes]);
+      });
+
+      it("renders with 'Change mode' label", () => {
+        installerRender(<ChangeProductOption />);
+        screen.getByRole("link", { name: "Change mode" });
+      });
+    });
+  });
+
+  describe("when there are multiple products and at least one has modes", () => {
+    beforeEach(() => {
+      mockSystemProducts.mockReturnValue([tumbleweedWithModes, microos]);
+    });
+
+    it("renders with 'Change product or mode' label", () => {
+      installerRender(<ChangeProductOption />);
+      screen.getByRole("link", { name: "Change product or mode" });
+    });
+
+    it("renders with icon when showIcon is true", () => {
+      installerRender(<ChangeProductOption showIcon component="dropdownitem" />);
+      screen.getByRole("menuitem", { name: /Change product or mode/ });
     });
   });
 });

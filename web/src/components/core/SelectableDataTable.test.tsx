@@ -287,6 +287,9 @@ describe("SelectableDataTable", () => {
     expect(sdaChild).not.toBeNull();
   });
 
+  it.todo("allows selectionMode#none");
+  it.todo("renders nothing for actions column if actions is an empty collection");
+
   describe("when not providing a custom item equality function", () => {
     const onSelectionChange = jest.fn();
 

@@ -46,7 +46,9 @@ const timezones: Timezone[] = [
   { id: "Europe/Madrid", parts: ["Europe", "Madrid"], country: "Spain", utcOffset: 120 },
 ];
 
-jest.mock("~/components/core/InstallerOptions", () => () => <div>InstallerOptions Mock</div>);
+jest.mock("~/components/core/InstallerL10nOptions", () => () => (
+  <div>InstallerL10nOptions Mock</div>
+));
 
 jest.mock("~/hooks/model/system/l10n", () => ({
   ...jest.requireActual("~/hooks/model/system/l10n"),
@@ -76,7 +78,7 @@ it("renders an clarification about settings", () => {
   installerRender(<L10nPage />);
   screen.getByText(/These are the settings for the product to install/);
   screen.getByText(/The installer language and keyboard layout can be adjusted via/);
-  screen.getByText("InstallerOptions Mock");
+  screen.getByText("InstallerL10nOptions Mock");
 });
 
 it("renders a section for configuring the language", () => {

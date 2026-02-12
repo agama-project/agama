@@ -31,12 +31,13 @@ import { _ } from "~/i18n";
 
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import alignmentStyles from "@patternfly/react-styles/css/utilities/Alignment/alignment";
+import InstallerOptionsMenu from "./InstallerOptionsMenu";
 
 export default function InstallationProgress() {
   const product = useProductInfo();
 
   return (
-    <Page showInstallerOptions={false} hideProgressMonitor>
+    <Page noDefaultStartSlot endSlot={<InstallerOptionsMenu hideLabel />}>
       <Page.Content>
         <Grid hasGutter style={{ height: "100%", placeContent: "center" }}>
           <GridItem sm={12} md={5} style={{ alignSelf: "center" }}>
