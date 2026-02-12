@@ -569,3 +569,43 @@ span.in-quotes {
   background-color: rgb(0 0 0 / 30%);
   backdrop-filter: grayscale(100%) blur(4px);
 }
+
+.agm-split-info-layout-container {
+  height: 100%;
+  place-content: center;
+}
+
+.agm-split-info-layout {
+  gap: var(--pf-t--global--spacer--sm) var(--pf-t--global--spacer--md);
+  position: relative;
+}
+
+.agm-split-info-layout > .pf-v6-l-grid__item {
+  text-align: center;
+  justify-self: center;
+}
+
+@media (width >= 768px) {
+  .agm-split-info-layout::before {
+    content: "";
+    position: absolute;
+    top: -1em;
+    bottom: -1.5em;
+    left: 50%;
+    width: 1px;
+    background: #ccc;
+  }
+
+  .agm-split-info-layout > .pf-v6-l-grid__item[style*="Order-on-md: 1"],
+  .agm-split-info-layout > .pf-v6-l-grid__item[style*="Order-on-md: 3"],
+  .agm-split-info-layout > .pf-v6-l-grid__item[style*="Order-on-md: 5"] {
+    justify-self: end;
+    text-align: end;
+  }
+
+  .agm-split-info-layout > .pf-v6-l-grid__item[style*="Order-on-md: 4"],
+  .agm-split-info-layout > .pf-v6-l-grid__item[style*="Order-on-md: 6"] {
+    justify-self: start;
+    text-align: start;
+  }
+}
