@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useCallback, useEffect } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import agama from "~/agama";
 import supportedLanguages from "~/languages.json";
 import { useSystem } from "~/hooks/model/system";
@@ -32,8 +32,12 @@ const L10nContext = React.createContext(null);
  * Installer localization context.
  */
 interface L10nContext {
-  language: string | undefined;
-  keymap: string | undefined;
+  // Current language in RFC 5646 format (e.g., "en-US").
+  language: string;
+  // Current keymap (e.g., "en")
+  keymap: string;
+  // Loaded language matching <lang> in the po.<lang>.js file (e.g., "en", "pt_BR").
+  loadedLanguage: string;
   changeLanguage: (language: string) => Promise<void>;
   changeKeymap: (keymap: string) => Promise<void>;
 }
@@ -174,6 +178,7 @@ function InstallerL10nProvider({
   children?: React.ReactNode;
 }) {
   const { l10n } = useSystem();
+  const [loadedLanguage, setLoadedLanguage] = useState("en");
 
   const locale = l10n?.locale;
   const language = locale ? languageFromLocale(locale) : initialLanguage;
@@ -201,10 +206,10 @@ function InstallerL10nProvider({
   useEffect(() => {
     if (!language) return;
 
-    loadTranslations(language);
-  }, [language]);
+    loadTranslations(language).then(() => setLoadedLanguage(agama.language.replace("-", "_")));
+  }, [language, setLoadedLanguage]);
 
-  const value = { language, changeLanguage, keymap, changeKeymap };
+  const value = { loadedLanguage, language, changeLanguage, keymap, changeKeymap };
 
   return <L10nContext.Provider value={value}>{children}</L10nContext.Provider>;
 }
