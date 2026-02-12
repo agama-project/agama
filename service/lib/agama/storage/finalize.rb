@@ -35,13 +35,13 @@ Yast.import "Installation"
 
 module Agama
   module Storage
-    # Auxiliary class to handle the end of the installation including final copy of logs and umount of devices
+    # Auxiliary class to handle the end of the installation including final
+    # copy of logs and umount of devices
     class Finalizer
       include Helpers
 
       # Constructor
       # @param logger [Logger]
-      # @param config [Config]
       def initialize(logger)
         @logger = logger
       end
