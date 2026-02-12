@@ -42,6 +42,9 @@ pub use system_info::SystemInfo;
 pub mod config;
 pub use config::Config;
 
+mod raw_config;
+pub use raw_config::RawConfig;
+
 pub mod patch;
 pub use patch::Patch;
 
@@ -61,6 +64,7 @@ pub mod network;
 pub mod proxy;
 pub mod query;
 pub mod question;
+pub mod s390;
 pub mod security;
 pub mod software;
 pub mod storage;

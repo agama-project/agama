@@ -3,9 +3,6 @@ export default {
     "plural-forms": (n) => n != 1,
     "language": "tr"
   },
-  " Timezone selection": [
-    " Zaman dilimi seçimi"
-  ],
   "\"%s\"": [
     ""
   ],
@@ -37,9 +34,6 @@ export default {
   "%s - %s": [
     "%s - %s"
   ],
-  "%s [must be registered].": [
-    "%s [kayıtlı olmalı]."
-  ],
   "%s and %d others": [
     ""
   ],
@@ -48,9 +42,6 @@ export default {
   ],
   "%s has been registered with below information.": [
     "%s aşağıdaki bilgilerle kayıt edildi."
-  ],
-  "%s is an immutable system with atomic updates. It uses a read-only Btrfs file system updated via snapshots.": [
-    "%s atomik güncellemelere sahip değişmez bir sistemdir. Anlık imajlar aracılığıyla güncellenen salt okunur bir Btrfs dosya sistemi kullanır."
   ],
   "%s logo": [
     "%s logosu"
@@ -228,12 +219,6 @@ export default {
   "At least one partition will be deleted": [
     "En az bir bölüm silinecek"
   ],
-  "At this point you can power off the machine.": [
-    "Bu noktada makineyi kapatabilirsiniz."
-  ],
-  "At this point you can reboot the machine to log in to the new system.": [
-    "Bu noktada yeni sisteme giriş yapmak için makineyi yeniden başlatabilirsiniz."
-  ],
   "Authentication": [
     "Kimlik doğrulama"
   ],
@@ -263,9 +248,6 @@ export default {
   ],
   "Automatic LUN scan is [enabled]. Activating a controller which is running in NPIV mode will automatically configures all its LUNs.": [
     "Otomatik LUN taraması [etkin]. Bir denetleyiciyi etkinleştirme NPIV modunda çalıştırıldığında tüm LUN'lar otomatik olarak yapılandırılır."
-  ],
-  "Available products": [
-    "Mevcut ürünler"
   ],
   "Back": [
     "Geri"
@@ -306,20 +288,23 @@ export default {
   "Binding": [
     "Bağlayıcı"
   ],
-  "Binding settings for '%s'": [
-    "'%s' için bağlama ayarları"
-  ],
   "BitLocker": [
     "BitLocker"
   ],
   "Boot options": [
     "Önyükleme seçenekleri"
   ],
+  "Breadcrumbs": [
+    ""
+  ],
   "Btrfs": [
     "Btrfs"
   ],
   "Btrfs with snapshots": [
     "Anlık imajlarla Btrfs"
+  ],
+  "By proceeding, the installation will begin with defined settings.": [
+    ""
   ],
   "CPU": [
     ""
@@ -329,9 +314,6 @@ export default {
   ],
   "Cannot be changed in remote installation": [
     "Uzaktan kurulumda değiştirilemez"
-  ],
-  "Cannot connect to Agama server": [
-    "Agama sunucusuna bağlanılamıyor"
   ],
   "Cannot format %s": [
     "%s biçimlendirilemiyor"
@@ -420,12 +402,6 @@ export default {
   "Configure DASD": [
     "DASD'yi yapılandırın"
   ],
-  "Configure LVM Volume Group": [
-    "LVM Birim Grubunu Yapılandırın"
-  ],
-  "Configure LVM logical volume at %s volume group": [
-    "LVM mantıksal birimini %s birim grubunda yapılandırın"
-  ],
   "Configure device %s": [
     "%s aygıtını yapılandır"
   ],
@@ -444,23 +420,14 @@ export default {
   "Configured for installation only": [
     "Yalnızca kurulum için yapılandırıldı"
   ],
-  "Configuring the product, please wait ...": [
-    "Ürün yapılandırılıyor, lütfen bekleyin..."
-  ],
   "Confirm": [
     "Onayla"
   ],
   "Confirm that you really want to continue.": [
     "Gerçekten devam etmek istediğinizi onaylayın."
   ],
-  "Congratulations!": [
-    "Tebrikler!"
-  ],
   "Connect": [
     "Bağlan"
-  ],
-  "Connect to %s": [
-    "%s'ye bağlan"
   ],
   "Connect to iSCSI targets": [
     "iSCSI hedeflerine bağlanın"
@@ -507,14 +474,8 @@ export default {
   "Controllers": [
     "Kontrolörler"
   ],
-  "Could not authenticate against the server, please check it.": [
-    "Sunucuya karşı kimlik doğrulaması yapılamadı, lütfen kontrol edin."
-  ],
   "Could not connect to %s": [
     "%s'ye bağlanılamadı"
-  ],
-  "Could not log in. Please, make sure that the password is correct.": [
-    "Giriş yapılamadı. Lütfen şifrenin doğru olduğundan emin olun."
   ],
   "Create LVM volume group %s": [
     "LVM birim grubu %s'yi oluştur"
@@ -600,6 +561,9 @@ export default {
   "Delete current content": [
     "Mevcut içeriği sil"
   ],
+  "Delete existing data and install %s?": [
+    ""
+  ],
   "Delete volume group": [
     "Birim grubunu sil"
   ],
@@ -623,9 +587,6 @@ export default {
   ],
   "Device %s menu": [
     "Cihaz %s menüsü"
-  ],
-  "Device Selection": [
-    "Cihaz Seçimi"
   ],
   "Device details": [
     "Aygıt ayrıntıları"
@@ -677,9 +638,6 @@ export default {
   ],
   "Edit binding settings": [
     "Bağlama ayarlarını düzenle"
-  ],
-  "Edit connection %s": [
-    "Bağlantıyı düzenle %s"
   ],
   "Edit connection settings": [
     "Bağlantı ayarlarını düzenle"
@@ -758,6 +716,9 @@ export default {
     "Kurulumu şu anda seçili olan diskin ötesine geçirin",
     "Kurulumu şu anda seçili olan %d disklerin ötesine geçirin"
   ],
+  "Extensions": [
+    "Uzantılar"
+  ],
   "F2FS": [
     "F2FS"
   ],
@@ -793,9 +754,6 @@ export default {
   ],
   "Find space in %s": [
     "%s'de boşluk bul"
-  ],
-  "Finish": [
-    "Bitti"
   ],
   "Finished": [
     "Bitti"
@@ -857,9 +815,6 @@ export default {
   "GiB": [
     "GB"
   ],
-  "Go back": [
-    ""
-  ],
   "Go to network page": [
     "Ağ sayfasına git"
   ],
@@ -875,9 +830,6 @@ export default {
   "Hide %d subvolume action": [
     "%d alt birim eylemini gizle",
     "%d alt birim eylemlerini gizle"
-  ],
-  "Hide details": [
-    "Ayrıntıları gizle"
   ],
   "Hostname": [
     "Ana bilgisayar adı"
@@ -918,11 +870,11 @@ export default {
   "If a local media was used to run this installer, remove it before the next boot.": [
     "Bu yükleyiciyi çalıştırmak için yerel medya kullanıldıysa bir sonraki önyüklemeden önce bunu kaldırın."
   ],
-  "If you want to disable this check, please specify \"inst.ay_check=0\" at kernels command-line": [
+  "If you are unsure, check and adjust the storage settings.": [
     ""
   ],
-  "In progress": [
-    "Devam ediyor"
+  "If you want to disable this check, please specify \"inst.ay_check=0\" at kernels command-line": [
+    ""
   ],
   "Incorrect IP address": [
     "Yanlış IP adresi"
@@ -957,6 +909,9 @@ export default {
   "Install now with potential data loss": [
     ""
   ],
+  "Installation settings will automatically update to match the new product's defaults.": [
+    ""
+  ],
   "Installation will take %s.": [
     "Kurulum %s kadar olacak."
   ],
@@ -965,9 +920,6 @@ export default {
   ],
   "Installing a broken package affects system stability and is a big security risk!": [
     "Bozuk bir paketin kurulumu sistem kararlılığını etkiler ve büyük bir güvenlik riski oluşturur!"
-  ],
-  "Installing the system, please wait...": [
-    "Sistem kuruluyor, lütfen bekleyin..."
   ],
   "Interface": [
     "Arayüz"
@@ -1026,14 +978,14 @@ export default {
   "Keyboard layout": [
     "Klavye düzeni"
   ],
-  "Keyboard selection": [
-    "Klavye seçimi"
-  ],
   "KiB": [
     "KB"
   ],
   "LUN": [
     "LUN"
+  ],
+  "LVM": [
+    ""
   ],
   "Label": [
     "Etiket"
@@ -1047,6 +999,9 @@ export default {
   "Let the installer propose a sensible size": [
     "Kurulumcunun makul bir boyut önermesine izin verin"
   ],
+  "License acceptance is required to continue.": [
+    ""
+  ],
   "Loading": [
     "Yükleniyor"
   ],
@@ -1058,9 +1013,6 @@ export default {
   ],
   "Loading the installation repositories...": [
     "Kurulum depoları yükleniyor..."
-  ],
-  "Locale selection": [
-    "Yerelleştirme seçimi"
   ],
   "Localization": [
     "Yerelleştirme"
@@ -1091,9 +1043,6 @@ export default {
   ],
   "MAC": [
     "MAC"
-  ],
-  "Main navigation": [
-    "Ana gezinme"
   ],
   "Make sure you provide the correct values": [
     "Doğru değerleri sağladığınızdan emin olun"
@@ -1304,9 +1253,6 @@ export default {
   "Not implemented yet (%s)": [
     "Henüz uygulanmadı (%s)"
   ],
-  "Not possible with the current setup. Click to know more.": [
-    "Şu anki kurulum olanaksız. Daha çoğunu öğrenmek için tıklayın."
-  ],
   "Not protected network": [
     "Korunmayan ağ"
   ],
@@ -1327,9 +1273,6 @@ export default {
   ],
   "Options toggle": [
     "Seçenekler geçişi"
-  ],
-  "Overview": [
-    "Genel bakış"
   ],
   "Package installation failed": [
     "Paket kurulumu başarısız oldu"
@@ -1388,14 +1331,8 @@ export default {
   "PiB": [
     "PB"
   ],
-  "Please, check whether it is running.": [
-    "Çalışıp çalışmadığını kontrol edin lütfen."
-  ],
   "Please, perform an iSCSI discovery in order to find available iSCSI targets.": [
     "Lütfen kullanılabilir iSCSI hedeflerini bulmak için bir iSCSI keşfi gerçekleştirin."
-  ],
-  "Please, provide its password to log in to the system.": [
-    "Lütfen sisteme giriş yapabilmek için şifrenizi giriniz."
   ],
   "Please, try to activate a zFCP controller.": [
     "Lütfen bir zFCP denetleyicisi etkinleştirmeyi deneyin."
@@ -1424,7 +1361,7 @@ export default {
   "Proceeding may result in data loss": [
     ""
   ],
-  "Proceeding may result in data loss affecting at least %s": [
+  "Proceeding will delete existing data, including %s": [
     ""
   ],
   "Product is already registered": [
@@ -1524,11 +1461,11 @@ export default {
   "Review and fix": [
     "Gözden geçir ve düzelt"
   ],
-  "Review the summary below. If anything seems incorrect or you have doubts, go back and adjust the settings before proceeding.": [
+  "Root login with SSH key": [
     ""
   ],
-  "Root authentication methods": [
-    "Root kimlik doğrulama yöntemleri"
+  "Root login with password and SSH key": [
+    ""
   ],
   "Root user": [
     "Root kullanıcısı"
@@ -1568,9 +1505,6 @@ export default {
   ],
   "Security": [
     "Güvenlik"
-  ],
-  "See more details": [
-    "Daha çok ayrıntı gör"
   ],
   "Select": [
     "Seç"
@@ -1705,9 +1639,6 @@ export default {
   "Software conflicts resolution": [
     "Yazılım çatışmalarının çözümü"
   ],
-  "Software selection": [
-    "Yazılım seçimi"
-  ],
   "Some existing partitions may be shrunk": [
     "Mevcut bazı bölümler küçültülebilir"
   ],
@@ -1753,8 +1684,14 @@ export default {
   "Swap": [
     "Swap"
   ],
+  "Switch to a different mode": [
+    ""
+  ],
   "TPM sealing requires the new system to be booted directly.": [
     "TPM yalıtımıyla yeni sistemin doğrudan başlatılması gerekir."
+  ],
+  "Take a moment to review the installation settings below and adjust them as needed.": [
+    ""
   ],
   "Target Password": [
     "Hedef Şifre"
@@ -1865,12 +1802,6 @@ export default {
   ],
   "The initiator name cannot be blank": [
     "Başlatıcı adı boş olamaz"
-  ],
-  "The installation on your machine is complete.": [
-    "Makinenize kurulum tamamlanmıştır."
-  ],
-  "The installer interface is no longer available, so you can safely close this window.": [
-    "Kurulum arayüzü artık kullanılamıyor, bu nedenle bu pencereyi güvenle kapatabilirsiniz."
   ],
   "The installer requires [root] user privileges.": [
     "Yükleyici [root] kullanıcı ayrıcalıklarını gerektirir."
@@ -2031,17 +1962,11 @@ export default {
   "To ensure the new system is able to boot, the installer may need to create or configure some partitions in the appropriate disk.": [
     "Yeni sistemin önyükleme yapabilmesini sağlamak için yükleyicinin uygun diskte bazı bölümler oluşturması veya yapılandırması gerekebilir."
   ],
-  "Transactional root file system": [
-    "İşlemsel kök dosya sistemi"
-  ],
   "Try again": [
     "Tekrar deneyin"
   ],
   "Type": [
     "Tip"
-  ],
-  "URL": [
-    "URL"
   ],
   "Unable to modify the settings": [
     "Ayarlar değiştirilemiyor"
@@ -2217,6 +2142,9 @@ export default {
   "Using transient hostname: %s": [
     "Geçici ana bilgisayar adı kullanılıyor: %s"
   ],
+  "View license": [
+    ""
+  ],
   "Volume group '%s' already exists. Enter a different name.": [
     "'%s' birim grubu zaten mevcut. Farklı bir ad girin."
   ],
@@ -2229,6 +2157,9 @@ export default {
   "WWPN": [
     "WWPN"
   ],
+  "Wait until current operations are completed.": [
+    ""
+  ],
   "Waiting for a mount point": [
     "Bir bağlama noktası bekleniyor"
   ],
@@ -2237,6 +2168,12 @@ export default {
   ],
   "Weak signal": [
     "Zayıf sinyal"
+  ],
+  "When ready, click on the [install] button at the end of the page.": [
+    ""
+  ],
+  "Wi-Fi": [
+    "Wi-Fi"
   ],
   "Wi-Fi connection form": [
     "Wi-Fi bağlantı formu"
@@ -2262,6 +2199,9 @@ export default {
   "You can proceed to install with the current settings or you may want to discard the configuration and start from scratch with a simple one.": [
     "Mevcut ayarlarla kuruluma devam edebilir veya yapılandırmayı iptal edip daha basit bir yapılandırmayla sıfırdan kuruluma başlayabilirsiniz."
   ],
+  "You can safely close this window.": [
+    ""
+  ],
   "You cannot change it later. Go to the %s section if you want to modify it before proceeding with registration.": [
     "Daha sonra değiştiremezsiniz. Kayıt işlemine devam etmeden önce değiştirmek istiyorsanız %s bölümüne gidin."
   ],
@@ -2273,9 +2213,6 @@ export default {
   ],
   "You will connect to a public network without encryption. Your data may not be secure.": [
     "Şifreleme olmadan halka açık bir ağa bağlanacaksınız. Verileriniz güvenli olmayabilir."
-  ],
-  "Your system is rebooting": [
-    "Sisteminiz yeniden başlatılıyor"
   ],
   "ZFCP": [
     "ZFCP"
@@ -2310,6 +2247,9 @@ export default {
   "iSCSI": [
     "iSCSI"
   ],
+  "immutable Btrfs": [
+    ""
+  ],
   "logical volume": [
     "mantıksal alan"
   ],
@@ -2331,14 +2271,14 @@ export default {
   "reset to defaults": [
     "öntanımlılara sıfırla"
   ],
+  "root": [
+    ""
+  ],
   "yes": [
     "evet"
   ],
   "zFCP": [
     "zFCP"
-  ],
-  "zFCP Disk Activation": [
-    "zFCP Disk Etkinleştirme"
   ],
   "zFCP Disk activation form": [
     "zFCP Disk aktivasyon formu"

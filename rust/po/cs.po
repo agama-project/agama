@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-02-07 18:02+0000\n"
+"POT-Creation-Date: 2026-02-10 16:22+0000\n"
 "PO-Revision-Date: 2026-01-19 15:36+0000\n"
 "Last-Translator: Ladislav Slezák <lslezak@suse.com>\n"
 "Language-Team: Czech <https://l10n.opensuse.org/projects/agama/agama-rust-"
@@ -29,17 +29,71 @@ msgstr "Ne"
 msgid "Yes"
 msgstr "Ano"
 
-#: agama-manager/src/service.rs:897
+#: agama-manager/src/tasks/runner.rs:183
 msgid "Prepare the system"
 msgstr "Nachystat systém"
 
-#: agama-manager/src/service.rs:898
+#: agama-manager/src/tasks/runner.rs:184
 msgid "Install software"
 msgstr "Instalovat software"
 
-#: agama-manager/src/service.rs:899
+#: agama-manager/src/tasks/runner.rs:185
 msgid "Configure the system"
 msgstr "Nakonfigurovat systém"
+
+#: agama-manager/src/tasks/runner.rs:280
+msgid "Storing security settings"
+msgstr ""
+
+#: agama-manager/src/tasks/runner.rs:281
+msgid "Setting up the hostname"
+msgstr ""
+
+#: agama-manager/src/tasks/runner.rs:282
+msgid "Setting up the network proxy"
+msgstr ""
+
+#: agama-manager/src/tasks/runner.rs:283
+msgid "Importing user files"
+msgstr ""
+
+#: agama-manager/src/tasks/runner.rs:284
+msgid "Running user pre-installation scripts"
+msgstr ""
+
+#: agama-manager/src/tasks/runner.rs:285
+msgid "Storing questions settings"
+msgstr ""
+
+#: agama-manager/src/tasks/runner.rs:286
+msgid "Storing localization settings"
+msgstr ""
+
+#: agama-manager/src/tasks/runner.rs:287
+msgid "Storing users settings"
+msgstr ""
+
+#: agama-manager/src/tasks/runner.rs:288
+msgid "Configuring iSCSI devices"
+msgstr ""
+
+#: agama-manager/src/tasks/runner.rs:292
+msgid "Setting up the network"
+msgstr ""
+
+#: agama-manager/src/tasks/runner.rs:297
+#, fuzzy
+msgid "Preparing the software proposal"
+msgstr "Vyhodnocuje se návrh softwaru"
+
+#: agama-manager/src/tasks/runner.rs:298
+#, fuzzy
+msgid "Preparing the storage proposal"
+msgstr "Vyhodnocuje se návrh softwaru"
+
+#: agama-manager/src/tasks/runner.rs:299
+msgid "Storing bootloader settings"
+msgstr ""
 
 #: agama-network/src/service.rs:518
 msgid "Writing configuration"
@@ -85,7 +139,6 @@ msgstr "Pokračovat"
 
 #. TRANSLATORS: substituting: key ID, (key name), fingerprint
 #: agama-software/src/callbacks/security.rs:102
-#, rust-format
 msgid ""
 "The key {0} ({1}) with fingerprint {2} is unknown. Do you want to trust this "
 "key?"

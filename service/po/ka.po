@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-02-09 04:10+0000\n"
-"PO-Revision-Date: 2026-01-27 06:04+0000\n"
+"PO-Revision-Date: 2026-02-09 10:04+0000\n"
 "Last-Translator: Temuri Doghonadze <temuri.doghonadze@gmail.com>\n"
 "Language-Team: Georgian <https://l10n.opensuse.org/projects/agama/agama-"
 "service-master/ka/>\n"
@@ -29,9 +29,8 @@ msgstr "აღმოჩენილია მხარდაუწერელ�
 
 #. Implementation for the API method #Probe.
 #: service/lib/agama/dbus/storage/dasd.rb:64
-#, fuzzy
 msgid "Probing DASD devices"
-msgstr "საცავის მოწყობილობების აღმოჩენა"
+msgstr "DASD მოწყობილობების აღმოჩენა"
 
 #. Performs the configuration process in a separate thread.
 #.
@@ -42,9 +41,8 @@ msgstr "საცავის მოწყობილობების აღ�
 #.
 #. @param config_json [Hash]
 #: service/lib/agama/dbus/storage/dasd.rb:121
-#, fuzzy
 msgid "Configuring DASD"
-msgstr "მიმდინარეობს iSCSI-ის მორგება"
+msgstr "მიმდინარეობს DASD-ის მორგება"
 
 #. Do not configure if there is nothing to change.
 #: service/lib/agama/dbus/storage/iscsi.rb:98

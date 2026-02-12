@@ -1,4 +1,4 @@
-// Copyright (c) [2025] SUSE LLC
+// Copyright (c) [2025-2026] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -27,6 +27,7 @@ use agama_iscsi::test_utils::start_service as start_iscsi_service;
 use agama_l10n::test_utils::start_service as start_l10n_service;
 use agama_network::test_utils::start_service as start_network_service;
 use agama_proxy::test_utils::start_service as start_proxy_service;
+use agama_s390::test_utils::start_service as start_s390_service;
 use agama_security::test_utils::start_service as start_security_service;
 use agama_software::test_utils::start_service as start_software_service;
 use agama_storage::test_utils::start_service as start_storage_service;
@@ -54,12 +55,20 @@ pub async fn start_service(events: event::Sender, dbus: zbus::Connection) -> Han
         dbus.clone(),
     )
     .await;
+    let s390 = start_s390_service(
+        storage.clone(),
+        events.clone(),
+        progress.clone(),
+        dbus.clone(),
+    )
+    .await;
 
     Service::starter(questions.clone(), events.clone(), dbus.clone())
         .with_hostname(start_hostname_service(events.clone(), issues.clone()).await)
         .with_l10n(start_l10n_service(events.clone(), issues.clone()).await)
         .with_storage(storage)
         .with_iscsi(iscsi)
+        .with_s390(s390)
         .with_bootloader(start_bootloader_service(issues.clone(), dbus.clone()).await)
         .with_network(start_network_service(events.clone(), progress.clone()).await)
         .with_proxy(start_proxy_service(events.clone()).await)

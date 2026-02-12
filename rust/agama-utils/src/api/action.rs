@@ -30,6 +30,9 @@ pub enum Action {
     ActivateStorage,
     #[serde(rename = "probeStorage")]
     ProbeStorage,
+    /// Performs a DASD probing on demand.
+    #[serde(rename = "probeDASD")]
+    ProbeDASD,
     #[serde(rename = "configureL10n")]
     ConfigureL10n(l10n::SystemConfig),
     #[serde(rename = "install")]

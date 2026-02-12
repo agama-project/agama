@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-02-09 04:10+0000\n"
-"PO-Revision-Date: 2026-01-27 10:04+0000\n"
+"PO-Revision-Date: 2026-02-10 06:04+0000\n"
 "Last-Translator: Yasuhiko Kamata <belphegor@belbel.or.jp>\n"
 "Language-Team: Japanese <https://l10n.opensuse.org/projects/agama/agama-"
 "service-master/ja/>\n"
@@ -30,9 +30,8 @@ msgstr ""
 
 #. Implementation for the API method #Probe.
 #: service/lib/agama/dbus/storage/dasd.rb:64
-#, fuzzy
 msgid "Probing DASD devices"
-msgstr "ストレージデバイスを検出しています"
+msgstr "DASD デバイスを検出しています"
 
 #. Performs the configuration process in a separate thread.
 #.
@@ -43,9 +42,8 @@ msgstr "ストレージデバイスを検出しています"
 #.
 #. @param config_json [Hash]
 #: service/lib/agama/dbus/storage/dasd.rb:121
-#, fuzzy
 msgid "Configuring DASD"
-msgstr "iSCSI を設定しています"
+msgstr "DASD を設定しています"
 
 #. Do not configure if there is nothing to change.
 #: service/lib/agama/dbus/storage/iscsi.rb:98

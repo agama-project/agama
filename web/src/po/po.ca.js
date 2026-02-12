@@ -3,9 +3,6 @@ export default {
     "plural-forms": (n) => n != 1,
     "language": "ca"
   },
-  " Timezone selection": [
-    " Selecció de la zona horària"
-  ],
   "\"%s\"": [
     "%s"
   ],
@@ -18,11 +15,17 @@ export default {
   "%1$s - %2$s": [
     "%1$s - %2$s"
   ],
+  "%1$s and %2$s": [
+    "%1$s i %2$s"
+  ],
+  "%1$s and [%2$d more]": [
+    "%1$s i [%2$d més]"
+  ],
   "%1$s at %2$s": [
     "%1$s a %2$s"
   ],
   "%1$s keyboard - %2$s timezone": [
-    ""
+    "Teclat: %1$s - Zona horària: %2$s"
   ],
   "%1$s will be created as a partition at %2$s": [
     "%1$s es crearà com a partició a %2$s",
@@ -31,17 +34,20 @@ export default {
   "%1$s will still contain the LVM group '%2$s' and any partition needed to boot": [
     "%1$s encara contindrà el grup d'LVM %2$s i qualsevol partició necessària per a arrencar"
   ],
+  "%1$s, %2$s and [%3$d more]": [
+    "%1$s, %2$s i [%3$d més]"
+  ],
   "%d of %d": [
     "%d de %d"
   ],
   "%s - %s": [
     "%s - %s"
   ],
-  "%s [must be registered].": [
-    "%s [ha d'estar registrat]."
-  ],
   "%s and %d others": [
-    ""
+    "%s i %d altres"
+  ],
+  "%s and %s": [
+    "%s i %s"
   ],
   "%s disk": [
     "Disc %s"
@@ -49,11 +55,12 @@ export default {
   "%s has been registered with below information.": [
     "%s s'ha registrat amb la informació següent."
   ],
-  "%s is an immutable system with atomic updates. It uses a read-only Btrfs file system updated via snapshots.": [
-    "%s és un sistema immutable amb actualitzacions atòmiques. Usa un sistema de fitxers Btrfs només de lectura actualitzat a través d'instantànies."
-  ],
   "%s logo": [
     "Logotip per a %s"
+  ],
+  "%s task active": [
+    "%s tasca activa",
+    "%s tasques actives"
   ],
   "%s will be created as a logical volume": [
     "%s es crearà com a volum lògic",
@@ -64,6 +71,9 @@ export default {
   ],
   "%s with %d partitions": [
     "%s amb %d particions"
+  ],
+  "(step %s of %s)": [
+    "(pas %s de %s)"
   ],
   "A %1$s of %2$s will be created for %3$s if possible": [
     "Si és possible, es crearà una %1$s de %2$s per a %3$s"
@@ -228,12 +238,6 @@ export default {
   "At least one partition will be deleted": [
     "Se suprimirà almenys una partició"
   ],
-  "At this point you can power off the machine.": [
-    "En aquest punt, podeu aturar la màquina."
-  ],
-  "At this point you can reboot the machine to log in to the new system.": [
-    "En aquest punt, podeu reiniciar la màquina per iniciar sessió al sistema nou."
-  ],
   "Authentication": [
     "Autenticació"
   ],
@@ -250,7 +254,7 @@ export default {
     "Escaneig automàtic de LUN"
   ],
   "Auto and manual": [
-    ""
+    "Automàtica i manual"
   ],
   "Automatic": [
     "Automàtica"
@@ -264,11 +268,8 @@ export default {
   "Automatic LUN scan is [enabled]. Activating a controller which is running in NPIV mode will automatically configures all its LUNs.": [
     "L'exploració automàtica de LUN està [activada]. L'activació d'un controlador que s'executa en mode NPIV configurarà automàticament tots els seus LUN."
   ],
-  "Available products": [
-    "Productes disponibles"
-  ],
   "Back": [
-    "Enrere"
+    "Ves enrere"
   ],
   "Based on the amount of RAM in the system, a %1$s of %2$s will be planned for %3$s": [
     "Segons la quantitat de memòria RAM del sistema, es planificarà una %1$s de %2$s per a %3$s"
@@ -306,8 +307,8 @@ export default {
   "Binding": [
     "Vinculació"
   ],
-  "Binding settings for '%s'": [
-    "Configuració del vincle per a %s"
+  "Binding settings": [
+    "Paràmetres de vinculació"
   ],
   "BitLocker": [
     "BitLocker"
@@ -315,14 +316,20 @@ export default {
   "Boot options": [
     "Opcions d'arrencada"
   ],
+  "Breadcrumbs": [
+    "Ruta de navegació"
+  ],
   "Btrfs": [
     "Btrfs"
   ],
   "Btrfs with snapshots": [
     "Btrfs amb instantànies"
   ],
+  "By proceeding, the installation will begin with defined settings.": [
+    "En continuar, la instal·lació començarà amb els paràmetres definits."
+  ],
   "CPU": [
-    ""
+    "CPU"
   ],
   "Cancel": [
     "Cancel·la"
@@ -330,8 +337,8 @@ export default {
   "Cannot be changed in remote installation": [
     "No es pot canviar a la instal·lació remota."
   ],
-  "Cannot connect to Agama server": [
-    "No es pot connectar amb el servidor d'Agama."
+  "Cannot connect": [
+    "No es pot connectar."
   ],
   "Cannot format %s": [
     "No es pot formatar %s"
@@ -363,8 +370,14 @@ export default {
   "Change keyboard layout": [
     "Canvia la disposició del teclat"
   ],
+  "Change mode": [
+    "Canvia'n el mode"
+  ],
   "Change product": [
     "Canvia el producte"
+  ],
+  "Change product or mode": [
+    "Canvieu el producte o el mode"
   ],
   "Change selection": [
     "Canvia la selecció"
@@ -384,6 +397,9 @@ export default {
   "Change the file system or mount point": [
     "Canvia'n el sistema de fitxers o el punt de muntatge"
   ],
+  "Change to %s": [
+    "Canvia a %s"
+  ],
   "Changes in these settings will immediately update the 'Result' section below.": [
     "Els canvis en aquesta configuració actualitzaran immediatament la secció de Resultat que hi ha a continuació."
   ],
@@ -395,6 +411,9 @@ export default {
   ],
   "Check the following before continuing": [
     "Comproveu el següent abans de continuar:"
+  ],
+  "Check whether Agama server is running.": [
+    "Comproveu si el servidor Agama s'executa."
   ],
   "Choose a disk for placing the boot loader": [
     "Trieu un disc per posar-hi el carregador d'arrencada"
@@ -429,14 +448,14 @@ export default {
   "Configuration unreachable or invalid": [
     "Configuració inaccessible o no vàlida"
   ],
+  "Configure": [
+    "Configura"
+  ],
   "Configure DASD": [
     "Configuració de DASD"
   ],
-  "Configure LVM Volume Group": [
-    "Configura un grup de volums d'LVM"
-  ],
-  "Configure LVM logical volume at %s volume group": [
-    "Configura el volum lògic d'LVM al grup de volums %s"
+  "Configure Volume Group": [
+    "Configura un grup de volums"
   ],
   "Configure device %s": [
     "Configura el dispositiu %s"
@@ -447,6 +466,12 @@ export default {
   "Configure iSCSI": [
     "Configuració d'iSCSI"
   ],
+  "Configure logical volume": [
+    "Configura un volum lògic"
+  ],
+  "Configure partition": [
+    "Configura la partició"
+  ],
   "Configure partition at %s": [
     "Configura la partició a %s"
   ],
@@ -456,23 +481,30 @@ export default {
   "Configured for installation only": [
     "Configuració només per a la instal·lació"
   ],
-  "Configuring the product, please wait ...": [
-    "Configurant el producte. Espereu, si us plau..."
+  "Configured for root and user %s": [
+    "Configurat per a l'arrel i l'usuari %s"
+  ],
+  "Configured for the root user": [
+    "Configurat per a l'usuari d'arrel"
+  ],
+  "Configured for user %s": [
+    "Configurat per a l'usuari %s"
+  ],
+  "Configured with %d connection": [
+    "Configurat amb %d connexió",
+    "Configurat amb %d connexions"
   ],
   "Confirm": [
     "Confirmeu-ho"
   ],
+  "Confirm and install": [
+    "Confirmació i instal·lació"
+  ],
   "Confirm that you really want to continue.": [
     "Confirmeu que realment voleu continuar."
   ],
-  "Congratulations!": [
-    "Enhorabona!"
-  ],
   "Connect": [
     "Connecta't"
-  ],
-  "Connect to %s": [
-    "Connecta amb %s"
   ],
   "Connect to iSCSI targets": [
     "Connecta amb objectius iSCSI"
@@ -519,14 +551,14 @@ export default {
   "Controllers": [
     "Controladors"
   ],
-  "Could not authenticate against the server, please check it.": [
-    "No s'ha pogut autenticar amb el servidor. Si us plau, reviseu-ho."
+  "Could not authenticate against the server.": [
+    "No s'ha pogut autenticar amb el servidor."
   ],
   "Could not connect to %s": [
     "No s'ha pogut connectar amb %s"
   ],
-  "Could not log in. Please, make sure that the password is correct.": [
-    "No s'ha pogut iniciar la sessió. Si us plau, assegureu-vos que la contrasenya sigui correcta."
+  "Could not log in": [
+    "No s'ha pogut iniciar la sessió."
   ],
   "Create LVM volume group %s": [
     "Crea el grup de volums d'LVM %s"
@@ -552,6 +584,9 @@ export default {
   "Current partitions will be kept": [
     "Es conservaran les particions actuals"
   ],
+  "Current selection": [
+    "Selecció actual"
+  ],
   "Custom": [
     "Personalitzat"
   ],
@@ -561,8 +596,11 @@ export default {
   "DASD %s": [
     "DASD %s"
   ],
+  "DHCP and %s": [
+    "DHCP i %s"
+  ],
   "DHCP, %s": [
-    ""
+    "DHCP, %s"
   ],
   "DIAG": [
     "DIAG"
@@ -612,6 +650,9 @@ export default {
   "Delete current content": [
     "Suprimeix el contingut actual"
   ],
+  "Delete existing data and install %s?": [
+    "Voleu suprimir-ne les dades existents i instal·lar-hi %s?"
+  ],
   "Delete volume group": [
     "Suprimeix el grup de volums"
   ],
@@ -635,9 +676,6 @@ export default {
   ],
   "Device %s menu": [
     "Menú del dispositiu %s"
-  ],
-  "Device Selection": [
-    "Selecció de dispositiu"
   ],
   "Device details": [
     "Detalls del dispositiu"
@@ -666,6 +704,9 @@ export default {
   "Disk": [
     "Disc"
   ],
+  "Disk Activation": [
+    "Activació del disc"
+  ],
   "Disks": [
     "Discs"
   ],
@@ -689,9 +730,6 @@ export default {
   ],
   "Edit binding settings": [
     "Edita la configuració de la vinculació"
-  ],
-  "Edit connection %s": [
-    "Edita la connexió %s"
   ],
   "Edit connection settings": [
     "Edita la configuració de la connexió"
@@ -770,6 +808,9 @@ export default {
     "Ampliar la instal·lació més enllà del disc seleccionat actualment",
     "Amplia la instal·lació més enllà dels %d discs actuals"
   ],
+  "Extensions": [
+    "Extensions"
+  ],
   "F2FS": [
     "F2FS"
   ],
@@ -808,9 +849,6 @@ export default {
   ],
   "Find space in %s": [
     "Cerca espai a %s"
-  ],
-  "Finish": [
-    "Acaba"
   ],
   "Finished": [
     "Acabada"
@@ -872,9 +910,6 @@ export default {
   "GiB": [
     "GiB"
   ],
-  "Go back": [
-    ""
-  ],
   "Go to network page": [
     "Ves a la pàgina de la xarxa"
   ],
@@ -890,9 +925,6 @@ export default {
   "Hide %d subvolume action": [
     "Amaga %d acció de subvolum",
     "Amaga %d accions de subvolum"
-  ],
-  "Hide details": [
-    "Amaga els detalls"
   ],
   "Hostname": [
     "Nom d'amfitrió"
@@ -922,7 +954,7 @@ export default {
     "Paràmetres d'IP"
   ],
   "IPs": [
-    ""
+    "IPs"
   ],
   "IPv4": [
     "IPv4"
@@ -933,8 +965,14 @@ export default {
   "If a local media was used to run this installer, remove it before the next boot.": [
     "Si s'ha usat un mitjà local per executar aquest instal·lador, traieu-lo abans de la propera arrencada."
   ],
-  "In progress": [
-    "En curs"
+  "If unsure, cancel and review storage settings.": [
+    "Si no ho teniu clar, cancel·leu-ho i reviseu la configuració d'emmagatzematge."
+  ],
+  "If you are unsure, check and adjust the storage settings.": [
+    "Si no ho teniu clar, comproveu i ajusteu la configuració de l'emmagatzematge."
+  ],
+  "If you want to disable this check, please specify \"inst.ay_check=0\" at kernels command-line": [
+    "Si voleu desactivar aquesta comprovació, especifiqueu \"inst.ay_check=0\" a la línia d'ordres del nucli."
   ],
   "Incorrect IP address": [
     "Adreça IP incorrecta"
@@ -966,11 +1004,32 @@ export default {
   "Install": [
     "Instal·la"
   ],
+  "Install %s?": [
+    "Voleu instal·lar %s?"
+  ],
+  "Install now": [
+    "Instal·la ara"
+  ],
   "Install now with potential data loss": [
-    ""
+    "Instal·la ara amb possible pèrdua de dades"
+  ],
+  "Installation complete": [
+    "Instal·lació completa"
   ],
   "Installation devices": [
     "Dispositius per a la instal·lació"
+  ],
+  "Installation in progress": [
+    "Instal·lació en curs"
+  ],
+  "Installation only": [
+    "Només instal·lació"
+  ],
+  "Installation settings": [
+    "Paràmetres per a la instal·lació"
+  ],
+  "Installation settings will automatically update to match the new product's defaults.": [
+    "La configuració d'instal·lació s'actualitzarà automàticament per coincidir amb els valors predeterminats del producte nou."
   ],
   "Installation will take %s.": [
     "La instal·lació necessitarà %s."
@@ -981,11 +1040,14 @@ export default {
   "Installing a broken package affects system stability and is a big security risk!": [
     "Instal·lar un paquet trencat afecta l'estabilitat del sistema i és un risc important de seguretat!"
   ],
-  "Installing the system, please wait...": [
-    "Instal·lant el sistema. Espereu, si us plau..."
-  ],
   "Interface": [
     "Interfície"
+  ],
+  "Invalid settings": [
+    "Configuració no vàlida"
+  ],
+  "Invalid software selection": [
+    "Selecció de programari no vàlida"
   ],
   "Invalid storage settings": [
     "Configuració d'emmagatzematge no vàlida"
@@ -1041,14 +1103,14 @@ export default {
   "Keyboard layout": [
     "Disposició del teclat"
   ],
-  "Keyboard selection": [
-    "Selecció del teclat"
-  ],
   "KiB": [
     "KiB"
   ],
   "LUN": [
     "LUN"
+  ],
+  "LVM": [
+    "LVM"
   ],
   "Label": [
     "Etiqueta"
@@ -1059,8 +1121,17 @@ export default {
   "Language and keyboard": [
     "Llengua i teclat"
   ],
+  "Language and region": [
+    "Llengua i regió"
+  ],
   "Let the installer propose a sensible size": [
     "Permet que l'instal·lador proposi una mida raonable"
+  ],
+  "License acceptance is required to continue.": [
+    "Cal acceptar la llicència per continuar."
+  ],
+  "License acceptance required": [
+    "Cal l'acceptació de la llicència"
   ],
   "Loading": [
     "Carregant"
@@ -1073,9 +1144,6 @@ export default {
   ],
   "Loading the installation repositories...": [
     "Carregant els repositoris d'instal·lació..."
-  ],
-  "Locale selection": [
-    "Selecció de la llengua"
   ],
   "Localization": [
     "Localització"
@@ -1107,8 +1175,8 @@ export default {
   "MAC": [
     "MAC"
   ],
-  "Main navigation": [
-    "Navegació principal"
+  "Make sure that the passsword is correct and try again.": [
+    "Assegureu-vos que la contrasenya sigui correcta i torneu-ho a intentar."
   ],
   "Make sure you provide the correct values": [
     "Assegureu-vos que proporcioneu els valors correctes"
@@ -1123,7 +1191,7 @@ export default {
     "Canal màxim"
   ],
   "Memory": [
-    ""
+    "Memòria"
   ],
   "MiB": [
     "MiB"
@@ -1133,6 +1201,9 @@ export default {
   ],
   "Mode": [
     "Mode"
+  ],
+  "Model": [
+    "Model"
   ],
   "Modify settings and physical volumes": [
     "Modifica la configuració i els volums físics"
@@ -1212,7 +1283,7 @@ export default {
     "Nom"
   ],
   "Needs about %s": [
-    ""
+    "Necessita aproximadament %s"
   ],
   "Network": [
     "Xarxa"
@@ -1248,7 +1319,7 @@ export default {
     "No s'ha trobat contingut."
   ],
   "No data loss is expected": [
-    ""
+    "No s'espera cap pèrdua de dades."
   ],
   "No device is currently using this connection.": [
     "Cap dispositiu usa actualment aquesta connexió."
@@ -1316,6 +1387,9 @@ export default {
   "Not available": [
     "No disponible"
   ],
+  "Not configured": [
+    "Sense configurar"
+  ],
   "Not configured yet": [
     "Encara no s'ha configurat"
   ],
@@ -1325,11 +1399,11 @@ export default {
   "Not implemented yet (%s)": [
     "Encara no s'ha implementat (%s)"
   ],
-  "Not possible with the current setup. Click to know more.": [
-    "No és possible amb la configuració actual. Feu clic per saber-ne més."
-  ],
   "Not protected network": [
     "Xarxa no protegida"
+  ],
+  "Not registered yet": [
+    "Encara no s'ha registrat."
   ],
   "Not supported (%s)": [
     "No compatible (%s)"
@@ -1351,9 +1425,6 @@ export default {
   ],
   "Options toggle": [
     "Canvi d'opcions"
-  ],
-  "Overview": [
-    "Resum"
   ],
   "Package installation failed": [
     "Ha fallat la instal·lació del paquet."
@@ -1427,14 +1498,8 @@ export default {
   "PiB": [
     "PiB"
   ],
-  "Please, check whether it is running.": [
-    "Si us plau, comproveu si s'executa."
-  ],
   "Please, perform an iSCSI discovery in order to find available iSCSI targets.": [
     "Si us plau, executeu un descobriment d'iSCSI per trobar destinacions iSCSI disponibles."
-  ],
-  "Please, provide its password to log in to the system.": [
-    "Si us plau, proporcioneu-ne la contrasenya per iniciar sessió al sistema."
   ],
   "Please, try to activate a zFCP controller.": [
     "Si us plau, proveu d'activar un controlador de zFCP."
@@ -1449,10 +1514,10 @@ export default {
     "Portal"
   ],
   "Potential data loss": [
-    ""
+    "Pèrdua potencial de dades"
   ],
   "Potential data loss affecting at least %s": [
-    ""
+    "Pèrdua potencial de dades que afecta com a mínim els sistemes següents: %s"
   ],
   "Pre-installation checks": [
     "Comprovacions prèvies a la instal·lació"
@@ -1461,10 +1526,10 @@ export default {
     "Longitud del prefix o màscara de xarxa"
   ],
   "Proceeding may result in data loss": [
-    ""
+    "Si continueu, és possible que es perdin dades."
   ],
-  "Proceeding may result in data loss affecting at least %s": [
-    ""
+  "Proceeding will delete existing data, including %s": [
+    "Si procediu, se'n suprimiran les dades existents, inclòs %s"
   ],
   "Product is already registered": [
     "El producte ja està registrat."
@@ -1474,6 +1539,9 @@ export default {
   ],
   "Provide email address": [
     "Proporcioneu una adreça de correu electrònic."
+  ],
+  "Provide its password to log in to the system.": [
+    "Proporcioneu-ne la contrasenya per iniciar sessió al sistema."
   ],
   "Provide registration code": [
     "Proporcioneu el codi de registre"
@@ -1499,6 +1567,9 @@ export default {
   "Recommended": [
     "Recomanat"
   ],
+  "Refreshing data...": [
+    "Actualitzant les dades..."
+  ],
   "Register": [
     "Registra"
   ],
@@ -1507,6 +1578,9 @@ export default {
   ],
   "Register using a custom registration server": [
     "Registreu-vos amb un servidor de registre personalitzat"
+  ],
+  "Registered": [
+    "Registrat"
   ],
   "Registration": [
     "Registre"
@@ -1536,11 +1610,11 @@ export default {
     "Ha fallat carregar el repositori."
   ],
   "Required packages": [
-    ""
+    "Paquets requerits"
   ],
   "Required packages and %s pattern": [
-    "",
-    ""
+    "Paquets necessaris i %s patró",
+    "Paquets necessaris i %s patrons"
   ],
   "Rescan devices": [
     "Torna a escanejar els dispositius"
@@ -1566,11 +1640,17 @@ export default {
   "Review and fix": [
     "Revisa i corregeix"
   ],
-  "Review the summary below. If anything seems incorrect or you have doubts, go back and adjust the settings before proceeding.": [
-    ""
+  "Review and install": [
+    "Revisa i instal·la"
   ],
-  "Root authentication methods": [
-    "Mètodes d'autenticació d'arrel"
+  "Root login with SSH key": [
+    "Inici de sessió d'arrel amb clau SSH"
+  ],
+  "Root login with password": [
+    "Inici de sessió d'arrel amb contrasenya"
+  ],
+  "Root login with password and SSH key": [
+    "Inici de sessió d'arrel amb contrasenya i clau SSH"
   ],
   "Root user": [
     "Usuari d'arrel"
@@ -1611,11 +1691,11 @@ export default {
   "Security": [
     "Seguretat"
   ],
-  "See more details": [
-    "Mostra'n més detalls"
-  ],
   "Select": [
     "Selecciona"
+  ],
+  "Select %s": [
+    "Selecciona %s"
   ],
   "Select a device to define partitions or to mount": [
     "Seleccioneu un dispositiu per definir-ne les particions o per muntar-lo"
@@ -1629,6 +1709,13 @@ export default {
   "Select a product": [
     "Seleccioneu un producte"
   ],
+  "Select a product and confirm your choice.": [
+    "Seleccioneu un producte i confirmeu la tria.",
+    "Seleccioneu un producte i confirmeu la tria al final de la llista."
+  ],
+  "Select a product to continue.": [
+    "Seleccioneu un producte per continuar."
+  ],
   "Select a solution to continue": [
     "Seleccioneu una solució per continuar"
   ],
@@ -1640,6 +1727,9 @@ export default {
   ],
   "Select at least one disk.": [
     "Seleccioneu almenys un disc."
+  ],
+  "Select device": [
+    "Seleccioneu un dispositiu"
   ],
   "Select devices to enable bulk actions.": [
     "Seleccioneu els dispositius per habilitar accions massives."
@@ -1702,8 +1792,14 @@ export default {
   "Show information about %s": [
     "Mostra informació quant a %s"
   ],
+  "Show less": [
+    "Mostra'n menys"
+  ],
   "Show less actions": [
     "Mostra menys accions"
+  ],
+  "Show more": [
+    "Mostra'n més"
   ],
   "Show more actions": [
     "Mostra més accions"
@@ -1747,9 +1843,6 @@ export default {
   "Software conflicts resolution": [
     "Resolució de conflictes de programari"
   ],
-  "Software selection": [
-    "Selecció de programari"
-  ],
   "Some existing partitions may be shrunk": [
     "Algunes particions existents es poden encongir"
   ],
@@ -1783,6 +1876,9 @@ export default {
   "Status": [
     "Estat"
   ],
+  "Step %1$d of %2$d": [
+    "Pas %1$d de %2$d"
+  ],
   "Storage": [
     "Emmagatzematge"
   ],
@@ -1795,8 +1891,20 @@ export default {
   "Swap": [
     "Intercanvi"
   ],
+  "Switch to a different mode": [
+    ""
+  ],
+  "System Information": [
+    "Informació del sistema"
+  ],
+  "System will have no network connections": [
+    "El sistema no tindrà connexions de xarxa."
+  ],
   "TPM sealing requires the new system to be booted directly.": [
     "El segellament TPM requereix que el sistema nou s'iniciï directament."
+  ],
+  "Take a moment to review the installation settings below and adjust them as needed.": [
+    "Dediqueu un moment a revisar els paràmetres d'instal·lació següents i ajusteu-los segons calgui."
   ],
   "Target Password": [
     "Contrasenya de destinació"
@@ -1805,7 +1913,7 @@ export default {
     "Destinacions"
   ],
   "Temporary name that may change after reboot or network changes": [
-    ""
+    "Nom temporal que pot canviar després d'un reinici o canvis de xarxa"
   ],
   "The LVM group '%1$s' will remain at %2$s": [
     "El grup d'LVM %1$s es mantindrà a %2$s"
@@ -1911,11 +2019,8 @@ export default {
   "The initiator name cannot be blank": [
     "El nom de l'iniciador no pot estar en blanc"
   ],
-  "The installation on your machine is complete.": [
-    "La instal·lació a la màquina s'ha completat."
-  ],
-  "The installer interface is no longer available, so you can safely close this window.": [
-    "La interfície de l'instal·lador ja no està disponible, així que podeu tancar aquesta finestra de manera segura."
+  "The installer interface is no longer available.": [
+    "La interfície de l'instal·lador ja no està disponible."
   ],
   "The installer requires [root] user privileges.": [
     "L'instal·lador requereix privilegis de l'usuari [root]."
@@ -1999,11 +2104,17 @@ export default {
   "The system does not support Wi-Fi connections, probably because of missing or disabled hardware.": [
     "El sistema no admet connexions de wifi, probablement a causa de maquinari que manca o que està inhabilitat."
   ],
+  "The system is rebooting": [
+    "El sistema es reinicia"
+  ],
   "The whole device will be used for %s": [
     "S'usarà el dispositiu sencer per a %s"
   ],
   "The zFCP disk was not activated.": [
     "El disc zFCP no s'ha activat."
+  ],
+  "There are no disks available for the installation": [
+    "No hi ha discs disponibles per a la instal·lació."
   ],
   "There are not disks available for the installation. You may need to configure some device.": [
     "No hi ha discs disponibles per a la instal·lació. És possible que hàgiu de configurar algun dispositiu."
@@ -2076,17 +2187,11 @@ export default {
   "To ensure the new system is able to boot, the installer may need to create or configure some partitions in the appropriate disk.": [
     "Per garantir que el sistema nou pugui arrencar, és possible que l'instal·lador hagi de crear o configurar algunes particions al disc adequat."
   ],
-  "Transactional root file system": [
-    "Sistema de fitxers d'arrel transaccional"
-  ],
   "Try again": [
     "Torna-ho a provar"
   ],
   "Type": [
     "Tipus"
-  ],
-  "URL": [
-    "URL"
   ],
   "Unable to modify the settings": [
     "No es pot modificar la configuració"
@@ -2169,6 +2274,9 @@ export default {
   "Use available space": [
     "Usa l'espai disponible"
   ],
+  "Use device %s": [
+    "Usa el dispositiu %s"
+  ],
   "Use disk %s": [
     "Usa el disc %s"
   ],
@@ -2217,6 +2325,9 @@ export default {
   "Use public SSH Key": [
     "Usa una clau pública SSH"
   ],
+  "Use several devices": [
+    "Usa diversos dispositius"
+  ],
   "Use static hostname": [
     "Usa un nom d'amfitrió estàtic"
   ],
@@ -2247,20 +2358,32 @@ export default {
   "Username suggestion dropdown": [
     "Menú desplegable de suggeriments de nom d'usuari"
   ],
+  "Using %d connections with %s": [
+    "S'usen %d connexions amb %s"
+  ],
   "Using [%s] keyboard": [
     "S'usa el teclat per a [%s]"
   ],
   "Using a hashed password.": [
     "S'usa una contrasenya amb funció resum."
   ],
+  "Using an advanced storage configuration": [
+    "S'usa una configuració d'emmagatzematge avançada."
+  ],
   "Using an existing partition": [
     "S'usa una partició existent"
+  ],
+  "Using code ending in %s": [
+    "S'usa el codi que acaba en %s"
   ],
   "Using partition %s": [
     "S'usa la partició %s"
   ],
   "Using transient hostname: %s": [
     "S'usa un nom d'amfitrió transitori: %s"
+  ],
+  "View license": [
+    "Mostra la llicència"
   ],
   "Volume group %s": [
     "Grup de volums %s"
@@ -2277,14 +2400,26 @@ export default {
   "WWPN": [
     "WWPN"
   ],
+  "Wait until current operations are completed.": [
+    "Espereu fins que s'hagin completat les operacions actuals."
+  ],
   "Waiting for a mount point": [
     "S'espera un punt de muntatge"
   ],
   "Waiting for information about storage configuration": [
     "Esperant informació sobre la configuració de l'emmagatzematge"
   ],
+  "Waiting for proposal": [
+    "Esperant la proposta"
+  ],
   "Weak signal": [
     "Senyal dèbil"
+  ],
+  "When ready, click on the [install] button at the end of the page.": [
+    "Quan estigueu a punt, feu clic al botó [Instal·la] al final de la pàgina."
+  ],
+  "Wi-Fi": [
+    "Wifi"
   ],
   "Wi-Fi connection form": [
     "Formulari de connexió per WiFi"
@@ -2301,6 +2436,9 @@ export default {
   "Wired connections": [
     "Connexions amb fil"
   ],
+  "Wrong selection": [
+    "Selecció incorrecta"
+  ],
   "XFS": [
     "XFS"
   ],
@@ -2309,6 +2447,12 @@ export default {
   ],
   "You can proceed to install with the current settings or you may want to discard the configuration and start from scratch with a simple one.": [
     "Podeu procedir a la instal·lació amb la configuració actual o potser voleu descartar-la i començar des de zero amb una de simple."
+  ],
+  "You can reboot the machine to log in to the new system.": [
+    "Podeu reiniciar la màquina per iniciar la sessió al sistema nou."
+  ],
+  "You can safely close this window.": [
+    "Podeu tancar aquesta finestra amb seguretat."
   ],
   "You cannot change it later. Go to the %s section if you want to modify it before proceeding with registration.": [
     "No ho podeu canviar més tard. Aneu a la secció %s si voleu modificar-la abans de procedir al registre."
@@ -2319,11 +2463,11 @@ export default {
   "You may want to discard those settings and start from scratch with a simple configuration.": [
     "És possible que vulgueu descartar aquests paràmetres i començar des de zero amb una configuració simple."
   ],
+  "You need to fix any invalid settings before proceeding with the installation.": [
+    "Cal que corregiu qualsevol configuració no vàlida abans de continuar la instal·lació."
+  ],
   "You will connect to a public network without encryption. Your data may not be secure.": [
     "Us connectareu a una xarxa pública sense encriptació. És possible que les vostres dades no estiguin segures."
-  ],
-  "Your system is rebooting": [
-    "El sistema es reinicia"
   ],
   "ZFCP": [
     "ZFCP"
@@ -2358,6 +2502,9 @@ export default {
   "iSCSI": [
     "iSCSI"
   ],
+  "immutable Btrfs": [
+    "Btrfs immutable"
+  ],
   "logical volume": [
     "volum lògic"
   ],
@@ -2370,20 +2517,23 @@ export default {
   "partition": [
     "partició"
   ],
+  "proposal.Device": [
+    "proposta.Dispositiu"
+  ],
   "read_only": [
     "només de lectura"
   ],
   "reset to defaults": [
     "restableix els valors predeterminats"
   ],
+  "root": [
+    "arrel"
+  ],
   "yes": [
     "sí"
   ],
   "zFCP": [
     "zFCP"
-  ],
-  "zFCP Disk Activation": [
-    "Activació del disc zFCP"
   ],
   "zFCP Disk activation form": [
     "Formulari d'activació del disc zFCP"
