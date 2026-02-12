@@ -584,7 +584,7 @@ Fri Jun 27 10:02:43 UTC 2025 - José Iván López González <jlopez@suse.com>
 -------------------------------------------------------------------
 Fri Jun 27 06:29:46 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
-- Add an end-point to check passwords strenght (bsc#1237480).
+- Add an end-point to check passwords strength (bsc#1237480).
 
 -------------------------------------------------------------------
 Fri Jun 27 05:29:26 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
