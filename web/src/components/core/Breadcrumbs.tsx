@@ -28,12 +28,47 @@ import Icon from "~/components/layout/Icon";
 import { TranslatedString, _ } from "~/i18n";
 
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
+import displayStyles from "@patternfly/react-styles/css/utilities/Display/display";
 
 export type BreadcrumbProps = {
   /** The label to display for the breadcrumb item */
   label: React.ReactNode | TranslatedString;
   /** The URL path the breadcrumb item links to */
   path?: string;
+  /**
+   * Optional menu providing contextual navigation for the breadcrumb item.
+   *
+   * When provided, it appears adjacent to the breadcrumb label and is intended
+   * to contain navigation options related to the area or section represented by
+   * the breadcrumb.
+   *
+   * @remarks
+   *
+   * **Accessibility requirement**
+   *
+   * The menu trigger must be fully accessible.
+   * Missing or incorrect ARIA attributes may result in an inaccessible breadcrumb.
+   *
+   * At a minimum, the trigger is expected to define:
+   *   - aria-label="[Descriptive label]"
+   *   - aria-haspopup="true"
+   *   - aria-expanded="true | false"
+   *
+   * @example
+   * ```tsx
+   * <Breadcrumbs.Item
+   *   label="Storage"
+   *   path="/storage"
+   *   menu={
+   *     <Dropdown>
+   *       <DropdownItem to="/storage/settings">Advanced settings</DropdownItem>
+   *       <DropdownItem to="/storage/iscsi">iSCSI configuration</DropdownItem>
+   *     </Dropdown>
+   *   }
+   * />
+   * ```
+   */
+  menu?: React.ReactNode;
   /** Option to hide the divider (e.g., chevron icon) between breadcrumb items */
   hideDivider?: boolean;
   /** Flag to indicate if the breadcrumb item should have special editorial
@@ -51,6 +86,7 @@ export type BreadcrumbProps = {
 const Breadcrumb = ({
   label,
   path,
+  menu,
   isCurrent = false,
   hideDivider = false,
   isEditorial = false,
@@ -70,12 +106,13 @@ const Breadcrumb = ({
     >
       {!hideDivider && <Icon name="chevron_right" aria-hidden />}
       {isCurrent ? (
-        <h1>{content}</h1>
+        <h1 className={displayStyles.displayInline}>{content}</h1>
       ) : (
         <Link to={path} variant="link" isInline>
           {content}
         </Link>
       )}
+      {menu}
     </Flex>
   );
 };
@@ -92,10 +129,10 @@ const Breadcrumb = ({
  */
 const Breadcrumbs = ({ a11yName = _("Breadcrumbs"), children }) => {
   return (
-    <nav aria-label={a11yName}>
+    <nav aria-label={a11yName} className="agm-breadcrumb">
       <Flex
         component="ol"
-        gap={{ default: "gapXs" }}
+        gap={{ default: "gapNone" }}
         alignItems={{ default: "alignItemsCenter" }}
         alignContent={{ default: "alignContentCenter" }}
       >

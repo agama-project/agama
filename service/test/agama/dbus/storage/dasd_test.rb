@@ -215,7 +215,7 @@ RSpec.describe Agama::DBus::Storage::DASD do
         {
           channel:            "0.0.0100",
           totalCylinders:     100,
-          FormattedCylinders: 10,
+          formattedCylinders: 10,
           finished:           false
         }
       ]

@@ -26,8 +26,6 @@ import { installerRender, mockStage } from "~/test-utils";
 import type { Storage } from "~/model/config";
 import InstallationFinished from "~/components/core/InstallationFinished";
 
-jest.mock("~/components/core/InstallerOptions", () => () => <div>Installer Options</div>);
-
 type storageConfigType = "guided" | "raw";
 type guidedEncryption = {
   password: string;

@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Wed Feb 11 14:48:58 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Fix JSON of DASD format summary (gh#agama-project/agama#3128).
+
+-------------------------------------------------------------------
 Fri Feb  6 15:25:36 UTC 2026 - José Iván López González <jlopez@suse.com>
 
 - Provide new D-Bus API for DASD (gh#agama-project/agama#3110).

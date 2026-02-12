@@ -92,7 +92,7 @@ function InstallationFinished() {
   const mountTpmAlert = usingTpm(storageConfig);
 
   return (
-    <Page showQuestions={false}>
+    <Page variant="minimal">
       <Page.Content>
         <SplitInfoLayout
           icon="done_all"

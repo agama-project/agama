@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-type Action = ConfigureL10n | ActivateStorage | ProbeStorage | Finish;
+type Action = ConfigureL10n | ActivateStorage | ProbeStorage | DiscoverISCSI | Finish;
 
 type ConfigureL10n = {
   configureL10n: L10nSystemConfig;
@@ -39,8 +39,21 @@ type ProbeStorage = {
   probeStorage: null;
 };
 
+type DiscoverISCSI = {
+  discoverISCSI: DiscoverISCSIConfig;
+};
+
+type DiscoverISCSIConfig = {
+  address: string;
+  port: number;
+  username?: string;
+  password?: string;
+  initiatorUsername?: string;
+  initiatorPassword?: string;
+};
+
 type Finish = {
   finish: "halt" | "reboot" | "stop" | "poweroff";
 };
 
-export type { Action, L10nSystemConfig };
+export type { Action, L10nSystemConfig, DiscoverISCSIConfig };

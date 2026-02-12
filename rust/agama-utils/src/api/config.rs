@@ -1,4 +1,4 @@
-// Copyright (c) [2025] SUSE LLC
+// Copyright (c) [2025-2026] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -19,43 +19,39 @@
 // find current contact information at www.suse.com.
 
 use crate::api::{
-    bootloader, files, hostname, iscsi, l10n, network, proxy, question, security,
+    bootloader, files, hostname, iscsi, l10n, network, proxy, question, s390, security,
     software::{self, ProductConfig},
     storage, users,
 };
 use merge::Merge;
 use serde::{Deserialize, Serialize};
+use serde_with::skip_serializing_none;
 
+#[skip_serializing_none]
 #[derive(Clone, Debug, Default, Deserialize, Serialize, Merge, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
 #[merge(strategy = merge::option::recurse)]
 pub struct Config {
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub bootloader: Option<bootloader::Config>,
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub hostname: Option<hostname::Config>,
-    #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(alias = "localization")]
     pub l10n: Option<l10n::Config>,
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub proxy: Option<proxy::Config>,
-    #[serde(flatten, skip_serializing_if = "Option::is_none")]
+    #[serde(flatten)]
     pub security: Option<security::Config>,
-    #[serde(flatten, skip_serializing_if = "Option::is_none")]
+    #[serde(flatten)]
     pub software: Option<software::Config>,
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub network: Option<network::Config>,
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub questions: Option<question::Config>,
-    #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(flatten)]
     pub storage: Option<storage::Config>,
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub iscsi: Option<iscsi::Config>,
-    #[serde(flatten, skip_serializing_if = "Option::is_none")]
+    #[serde(flatten)]
     pub files: Option<files::Config>,
-    #[serde(flatten, skip_serializing_if = "Option::is_none")]
+    #[serde(flatten)]
     pub users: Option<users::Config>,
+    #[serde(flatten)]
+    pub s390: Option<s390::Config>,
 }
 
 impl Config {

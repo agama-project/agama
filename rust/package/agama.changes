@@ -1,4 +1,16 @@
 -------------------------------------------------------------------
+Wed Feb 11 15:49:05 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Add agama-s390 service and integrate DASD into the new HTTP API
+  (gh#agama-project/agama#3128).
+
+-------------------------------------------------------------------
+Wed Feb 11 15:47:38 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Use "/run/agama/zypp" as directory for libzypp
+  (gh#agama-project/agama#3154).
+
+-------------------------------------------------------------------
 Wed Feb 11 13:48:37 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Sort the list of products alphabetically (gh#agama-project/agama#3145).
@@ -65,7 +77,7 @@ Fri Jan 30 16:27:35 UTC 2026 - Ancor Gonzalez Sosa <ancor@suse.com>
 -------------------------------------------------------------------
 Fri Jan 30 11:00:08 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
 
-- Added proxy service allowing to configure the proxy through the 
+- Added proxy service allowing to configure the proxy through the
   kernel cmdline proxy argument and with HTTP API
   (gh#agama-project/agama#3069).
 

@@ -26,6 +26,7 @@ import type * as L10n from "~/model/system/l10n";
 import type * as Network from "~/model/system/network";
 import type * as Software from "~/model/system/software";
 import type * as Storage from "~/model/system/storage";
+import type * as ISCSI from "~/model/system/iscsi";
 
 type System = {
   hardware?: Hardware.System;
@@ -35,6 +36,7 @@ type System = {
   products?: Product[];
   software?: Software.System;
   storage?: Storage.System;
+  iscsi?: ISCSI.System;
 };
 
 type Product = {
@@ -70,4 +72,4 @@ type Mode = {
   description: string;
 };
 
-export type { System, Product, L10n, Hardware, Hostname, Mode, Network, Software, Storage };
+export type { System, Product, L10n, Hardware, Hostname, Mode, Network, Software, Storage, ISCSI };

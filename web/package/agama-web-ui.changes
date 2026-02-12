@@ -1,4 +1,16 @@
 -------------------------------------------------------------------
+Thu Feb 12 11:56:57 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Restore the interface for managing iSCSI in the web client
+  (gh#agama-project/agama#3092).
+- Restore the "Rescan devices" storage option (bsc#1258089).
+
+-------------------------------------------------------------------
+Wed Feb 11 14:24:03 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Honor the language from the backend (gh#agama-project/agama#3142).
+
+-------------------------------------------------------------------
 Wed Feb 11 13:35:13 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
 
 - Show translated product mode name and description

@@ -22,39 +22,12 @@
 
 import React from "react";
 import { screen } from "@testing-library/react";
-import { installerRender, mockRoutes } from "~/test-utils";
-import { PRODUCT, ROOT, STORAGE } from "~/routes/paths";
+import { installerRender } from "~/test-utils";
 import ReviewAndInstallButton from "./ReviewAndInstallButton";
 
-describe("InstallButton", () => {
-  describe("when not in an extended side paths", () => {
-    beforeEach(() => {
-      mockRoutes(STORAGE.addPartition);
-    });
-
-    it("renders the button with 'Review and install' label ", () => {
-      installerRender(<ReviewAndInstallButton />);
-      screen.getByRole("button", { name: "Review and install" });
-    });
-  });
-
-  describe.each([
-    ["overview", ROOT.root],
-    ["overview (full route)", ROOT.overview],
-    ["login", ROOT.login],
-    ["product selection", PRODUCT.changeProduct],
-    ["installation progress", ROOT.installationProgress],
-    ["installation finished", ROOT.installationFinished],
-    ["installation exit", ROOT.installationExit],
-    ["storage progress", STORAGE.progress],
-  ])(`when rendering %s screen`, (_, path) => {
-    beforeEach(() => {
-      mockRoutes(path);
-    });
-
-    it("renders nothing", () => {
-      const { container } = installerRender(<ReviewAndInstallButton />);
-      expect(container).toBeEmptyDOMElement();
-    });
+describe("ReviewAndInstallButton", () => {
+  it("renders the button with 'Review and install' label ", () => {
+    installerRender(<ReviewAndInstallButton />);
+    screen.getByRole("button", { name: "Review and install" });
   });
 });
