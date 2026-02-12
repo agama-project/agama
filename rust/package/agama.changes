@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Feb 12 14:37:55 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Add the password strength check to the API (gh#agama-project/agama#3159).
+
+-------------------------------------------------------------------
 Wed Feb 11 15:49:05 UTC 2026 - José Iván López González <jlopez@suse.com>
 
 - Add agama-s390 service and integrate DASD into the new HTTP API
