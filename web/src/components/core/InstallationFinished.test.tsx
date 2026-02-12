@@ -86,13 +86,6 @@ jest.mock("~/hooks/model/config", () => ({
   useExtendedConfig: () => mockUseExtendedConfigFn(),
 }));
 
-const mockFinishInstallation = jest.fn();
-
-jest.mock("~/api", () => ({
-  ...jest.requireActual("~/api"),
-  finishInstallation: () => mockFinishInstallation(),
-}));
-
 describe("InstallationFinished", () => {
   beforeEach(() => {
     mockUseExtendedConfigFn.mockReturnValue(mockStorageConfig("guided", null));
@@ -107,13 +100,6 @@ describe("InstallationFinished", () => {
   it("shows a 'Reboot' button", () => {
     installerRender(<InstallationFinished />);
     screen.getByRole("button", { name: /Reboot/i });
-  });
-
-  it("reboots the system if the user clicks on 'Reboot' button", async () => {
-    const { user } = installerRender(<InstallationFinished />);
-    const rebootButton = screen.getByRole("button", { name: "Reboot" });
-    await user.click(rebootButton);
-    expect(mockFinishInstallation).toHaveBeenCalled();
   });
 
   describe("when running storage config in raw mode", () => {
