@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Feb 12 15:22:50 UTC 2026 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Fix reading the startup mode in iSCSI
+  (gh#agama-project/agama#3161).
+
+-------------------------------------------------------------------
 Thu Feb 12 08:33:58 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
 
 - Split storage writting config and final unmount action
