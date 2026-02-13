@@ -28,7 +28,6 @@ use std::{
 
 use agama_lib::{
     auth::AuthToken,
-    context::InstallationContext,
     error::ServiceError,
     http::{BaseHTTPClient, WebSocketClient},
     manager::ManagerHTTPClient,
@@ -54,11 +53,14 @@ mod cli_input;
 mod cli_output;
 mod commands;
 mod config;
+mod context;
 mod error;
 mod events;
 mod logs;
 mod progress;
 mod questions;
+
+use context::InstallationContext;
 
 /// Agama's CLI global options
 #[derive(Args, Clone)]
