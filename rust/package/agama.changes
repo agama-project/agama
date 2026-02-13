@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri Feb 13 12:49:15 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Do not leak the registration codes (gh#agama-project/agama#3167).
+
+-------------------------------------------------------------------
 Fri Feb 13 09:21:12 UTC 2026 - José Iván López González <jlopez@suse.com>
 
 - Update storage user config with config from the storage model
