@@ -238,7 +238,9 @@ impl MessageHandler<message::RunScripts> for Service {
 impl MessageHandler<message::WriteFiles> for Service {
     async fn handle(&mut self, _message: message::WriteFiles) -> Result<(), Error> {
         for file in &self.files {
-            file.write(&self.install_dir).await?;
+            if let Err(error) = file.write(&self.install_dir).await {
+                tracing::error!("Failed to write file {}: {error}", file.destination);
+            }
         }
         Ok(())
     }
