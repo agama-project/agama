@@ -211,8 +211,14 @@ impl MessageHandler<message::RunScripts> for Service {
         let to_run = scripts.by_group(message.group).clone();
 
         if to_run.is_empty() {
+            tracing::info!("No scripts to run in group {}", message.group.to_string());
             return Ok(false);
         } else {
+            tracing::info!(
+                "{} scripts to run in group {}",
+                to_run.len(),
+                message.group.to_string()
+            );
             let runner = ScriptsRunner::new(
                 &self.root_dir,
                 &self.install_dir,
