@@ -62,7 +62,7 @@ async function openMenu() {
 
 it("renders the menu", () => {
   const { container } = installerRender(<ConnectedDevicesMenu />);
-  screen.getByText("Options");
+  screen.getByText("More");
   const icon = container.querySelector("svg");
   expect(icon).toHaveAttribute("data-icon-name", "arrow_drop_down");
 });
