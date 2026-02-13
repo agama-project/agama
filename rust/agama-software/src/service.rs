@@ -240,7 +240,6 @@ impl Service {
             SoftwareState::build_from(&product, &state.config, &state.system, &self.selection)
         };
 
-        tracing::info!("Wanted software state: {new_state:?}");
         self.update_selinux(&new_state);
 
         let model = self.model.clone();
