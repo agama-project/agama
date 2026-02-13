@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Feb 13 09:21:12 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Update storage user config with config from the storage model
+  (bsc#1257798).
+
+-------------------------------------------------------------------
 Fri Feb 13 08:47:07 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Resolve the relative URLs (bsc#1258118).

@@ -1,4 +1,4 @@
-// Copyright (c) [2025] SUSE LLC
+// Copyright (c) [2025-2026] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -122,6 +122,11 @@ impl StorageClient for TestClient {
         Ok(state.config.clone())
     }
 
+    async fn get_config_from_model(&self, _model: Value) -> Result<Option<Config>, Error> {
+        let state = self.state.lock().await;
+        Ok(state.config.clone())
+    }
+
     async fn get_config_model(&self) -> Result<Option<Value>, Error> {
         Ok(None)
     }
@@ -141,10 +146,6 @@ impl StorageClient for TestClient {
     ) -> Result<(), Error> {
         let mut state = self.state.lock().await;
         state.config = config;
-        Ok(())
-    }
-
-    async fn set_config_model(&self, _model: Value) -> Result<(), Error> {
         Ok(())
     }
 

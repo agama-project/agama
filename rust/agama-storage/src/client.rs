@@ -1,4 +1,4 @@
-// Copyright (c) [2025] SUSE LLC
+// Copyright (c) [2025-2026] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -55,6 +55,7 @@ pub trait StorageClient {
     async fn umount(&self) -> Result<(), Error>;
     async fn get_system(&self) -> Result<Option<Value>, Error>;
     async fn get_config(&self) -> Result<Option<Config>, Error>;
+    async fn get_config_from_model(&self, model: Value) -> Result<Option<Config>, Error>;
     async fn get_config_model(&self) -> Result<Option<Value>, Error>;
     async fn get_proposal(&self) -> Result<Option<Value>, Error>;
     async fn get_issues(&self) -> Result<Vec<Issue>, Error>;
@@ -63,7 +64,6 @@ pub trait StorageClient {
         product: Arc<RwLock<ProductSpec>>,
         config: Option<Config>,
     ) -> Result<(), Error>;
-    async fn set_config_model(&self, model: Value) -> Result<(), Error>;
     async fn solve_config_model(&self, model: Value) -> Result<Option<Value>, Error>;
     async fn set_locale(&self, locale: String) -> Result<(), Error>;
 }
@@ -130,6 +130,13 @@ impl StorageClient for Client {
         try_from_message(message)
     }
 
+    async fn get_config_from_model(&self, model: Value) -> Result<Option<Config>, Error> {
+        let message = self
+            .call("GetConfigFromModel", &(model.to_string()))
+            .await?;
+        try_from_message(message)
+    }
+
     async fn get_config_model(&self) -> Result<Option<Value>, Error> {
         let message = self.call("GetConfigModel", &()).await?;
         try_from_message(message)
@@ -155,11 +162,6 @@ impl StorageClient for Client {
         let config = config.filter(|c| c.has_value());
         let config_json = serde_json::to_string(&config)?;
         self.call("SetConfig", &(product_json, config_json)).await?;
-        Ok(())
-    }
-
-    async fn set_config_model(&self, model: Value) -> Result<(), Error> {
-        self.call("SetConfigModel", &(model.to_string())).await?;
         Ok(())
     }
 
