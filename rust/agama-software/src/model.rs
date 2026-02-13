@@ -18,6 +18,7 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
+use agama_security as security;
 use agama_utils::{
     actor::Handler,
     api::{
@@ -39,7 +40,7 @@ pub mod software_selection;
 pub mod state;
 
 pub use packages::{Resolvable, ResolvableType};
-pub use registration::{Registration, RegistrationBuilder};
+pub use registration::Registration;
 
 /// Abstract the software-related configuration from the underlying system.
 ///
@@ -82,6 +83,7 @@ pub struct Model {
     selected_product: Option<ProductSpec>,
     progress: Handler<progress::Service>,
     question: Handler<question::Service>,
+    security: Handler<security::Service>,
     /// Predefined repositories (from the off-line media and Driver Update Disks).
     /// They cannot be altered through user configuration.
     predefined_repositories: Vec<Repository>,
@@ -94,12 +96,14 @@ impl Model {
         predefined_repositories: Vec<Repository>,
         progress: Handler<progress::Service>,
         question: Handler<question::Service>,
+        security: Handler<security::Service>,
     ) -> Result<Self, service::Error> {
         Ok(Self {
             zypp_sender,
             selected_product: None,
             progress,
             question,
+            security,
             predefined_repositories,
         })
     }
@@ -120,6 +124,7 @@ impl ModelAdapter for Model {
         self.zypp_sender.send(SoftwareAction::Write {
             state: software,
             progress,
+            security: self.security.clone(),
             question: self.question.clone(),
             tx,
         })?;
@@ -144,9 +149,20 @@ impl ModelAdapter for Model {
             .iter()
             .map(|r| r.url.as_str())
             .collect();
+        let mut missing_predefined_repos = self.predefined_repositories.clone();
+
         for repo in system_info.repositories.iter_mut() {
             repo.predefined = predefined_urls.contains(&repo.url.as_str());
+            if repo.predefined {
+                missing_predefined_repos.retain(|r| r.url != repo.url);
+            }
         }
+
+        // Add all predefined repositories that are missing in libzypp.
+        // As a result, they will be added to libzypp when writing the new
+        // software state.
+        system_info.repositories.extend(missing_predefined_repos);
+        tracing::info!("System info: {:?}", system_info);
 
         Ok(system_info)
     }

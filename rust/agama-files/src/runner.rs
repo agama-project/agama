@@ -52,11 +52,12 @@ const NM_RESOLV_CONF_PATH: &str = "run/NetworkManager/resolv.conf";
 
 /// Implements the logic to run a script.
 ///
-/// It takes care of running the script, reporting errors (and asking whether to retry) and write
+/// It takes care of running the script, reporting errors (and asking whether to retry) and writing
 /// the logs.
 pub struct ScriptsRunner {
     progress: Handler<progress::Service>,
     questions: Handler<question::Service>,
+    root_dir: PathBuf,
     install_dir: PathBuf,
     workdir: PathBuf,
 }
@@ -64,12 +65,14 @@ pub struct ScriptsRunner {
 impl ScriptsRunner {
     /// Creates a new runner.
     ///
+    /// * `root_dir`: root directory of the system.
     /// * `install_dir`: directory where the system is being installed. It is relevant for
     ///   chrooted scripts.
     /// * `workdir`: scripts work directory.
     /// * `progress`: handler to report the progress.
     /// * `questions`: handler to interact with the user.
     pub fn new<P: AsRef<Path>>(
+        root_dir: P,
         install_dir: P,
         workdir: P,
         progress: Handler<progress::Service>,
@@ -78,6 +81,7 @@ impl ScriptsRunner {
         Self {
             progress,
             questions,
+            root_dir: root_dir.as_ref().to_path_buf(),
             install_dir: install_dir.as_ref().to_path_buf(),
             workdir: workdir.as_ref().to_path_buf(),
         }
@@ -90,7 +94,8 @@ impl ScriptsRunner {
     ///
     /// * `scripts`: scripts to run.
     pub async fn run(&self, scripts: &[&Script]) -> Result<(), Error> {
-        self.start_progress(scripts);
+        let scripts: Vec<_> = self.find_scripts_to_run(&scripts);
+        self.start_progress(&scripts);
 
         let mut resolv_linked = false;
         if scripts.iter().any(|s| s.chroot()) {
@@ -118,12 +123,9 @@ impl ScriptsRunner {
     ///
     /// If the script fails, it asks the user whether it should try again.
     async fn run_script(&self, script: &Script) -> Result<(), Error> {
-        loop {
-            let path = self
-                .workdir
-                .join(script.group().to_string())
-                .join(script.name());
+        let path = self.workdir.join(script.relative_script_path());
 
+        loop {
             let Err(error) = self.run_command(&path, script.chroot()).await else {
                 return Ok(());
             };
@@ -211,6 +213,23 @@ impl ScriptsRunner {
         _ = self.progress.cast(progress_action);
     }
 
+    /// Returns the scripts to run from the given collection
+    ///
+    /// It exclues any script that already ran.
+    fn find_scripts_to_run<'a>(&self, scripts: &[&'a Script]) -> Vec<&'a Script> {
+        scripts
+            .into_iter()
+            .filter(|s| {
+                let stdout_file = self
+                    .workdir
+                    .join(s.relative_script_path())
+                    .with_extension("stdout");
+                !std::fs::exists(stdout_file).unwrap_or(false)
+            })
+            .cloned()
+            .collect()
+    }
+
     /// Reads the last n bytes of the file and returns them as a string.
     fn read_n_last_bytes(path: &Path, n_bytes: u64) -> io::Result<String> {
         let mut file = File::open(path)?;
@@ -228,7 +247,7 @@ impl ScriptsRunner {
     ///
     /// It returns false if the resolv.conf was already linked and no action was required.
     fn link_resolv(&self) -> Result<bool, std::io::Error> {
-        let original = self.install_dir.join(NM_RESOLV_CONF_PATH);
+        let original = self.root_dir.join(NM_RESOLV_CONF_PATH);
         let link = self.resolv_link_path();
 
         if fs::exists(&link)? || !fs::exists(&original)? {
@@ -291,7 +310,7 @@ mod tests {
 
             let (events_tx, events_rx) = broadcast::channel::<Event>(16);
             let install_dir = tmp_dir.path().join("mnt");
-            let workdir = tmp_dir.path().join("scripts");
+            let workdir = tmp_dir.path().to_path_buf();
             let questions = question::start(events_tx.clone()).await.unwrap();
             let progress = progress::Service::starter(events_tx.clone()).start();
 
@@ -310,11 +329,16 @@ mod tests {
     impl Context {
         pub fn runner(&self) -> ScriptsRunner {
             ScriptsRunner::new(
-                self.install_dir.clone(),
                 self.workdir.clone(),
+                self.install_dir.clone(),
+                self.scripts_dir(),
                 self.progress.clone(),
                 self.questions.clone(),
             )
+        }
+
+        pub fn scripts_dir(&self) -> PathBuf {
+            self.workdir.join("run/agama/scripts")
         }
 
         pub fn setup_script(&self, content: &str, chroot: bool) -> Script {
@@ -329,14 +353,14 @@ mod tests {
                 chroot: Some(chroot),
             });
             script
-                .write(&self.workdir)
+                .write(&self.scripts_dir())
                 .expect("Could not write the script");
             script
         }
 
         // Set up a fake chroot.
         pub fn setup_chroot(&self) -> std::io::Result<()> {
-            let nm_dir = self.install_dir.join("run/NetworkManager");
+            let nm_dir = self.workdir.join("run/NetworkManager");
             fs::create_dir_all(&nm_dir)?;
             fs::create_dir_all(self.install_dir.join("etc"))?;
 
@@ -348,7 +372,7 @@ mod tests {
 
         // Return the content of a script result file.
         pub fn result_content(&self, script_type: &str, name: &str) -> String {
-            let path = &self.workdir.join(script_type).join(name);
+            let path = &self.scripts_dir().join(script_type).join(name);
             let body: Vec<u8> = std::fs::read(path).unwrap();
             String::from_utf8(body).unwrap()
         }
@@ -448,7 +472,7 @@ mod tests {
         });
 
         // Check the generated files
-        let path = &ctx.workdir.join("post").join("test.stderr");
+        let path = &ctx.scripts_dir().join("post").join("test.stderr");
         let body: Vec<u8> = std::fs::read(path).unwrap();
         let body = String::from_utf8(body).unwrap();
         assert!(body.contains("agama-unknown"));

@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "$id": "https://github.com/openSUSE/agama/blob/master/rust/share/system.storage.schema.json",
+  "title": "System",
+  "description": "API description of the iSCSI system",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["initiator", "targets"],
+  "properties": {
+    "initiator": {
+      "title": "Initiator",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "ibft"],
+      "properties": {
+        "name": { "type": "string" },
+        "ibft": { "type": "boolean" }
+      }
+    },
+    "targets": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/target" }
+    }
+  },
+  "$defs": {
+    "target": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "address", "port", "interface", "ibtf", "startup", "connected", "locked"],
+      "properties": {
+        "name": { "type": "string" },
+        "address": { "type": "string" },
+        "port": { "type": "number" },
+        "interface": { "type": "string" },
+        "ibft": {
+          "description": "Whether the target was initiated by iBFT.",
+          "type": "boolean"
+        },
+        "startup": {
+          "enum": ["onboot", "manual", "automatic"]
+        },
+        "connected": {
+          "description": "Whether the node is connected (there is a session).",
+          "type": "boolean"
+        },
+        "locked": {
+          "description": "Whether the node is locked (cannot be deactivated)",
+          "type": "boolean"
+        }
+      }
+    }
+  }
+}

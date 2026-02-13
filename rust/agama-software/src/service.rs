@@ -22,8 +22,10 @@ use crate::{
     message,
     model::{software_selection::SoftwareSelection, state::SoftwareState, ModelAdapter},
     zypp_server::{self, SoftwareAction, ZyppServer},
-    Model,
+    Model, ResolvableType,
 };
+use agama_bootloader;
+use agama_security as security;
 use agama_utils::{
     actor::{self, Actor, Handler, MessageHandler},
     api::{
@@ -32,6 +34,7 @@ use agama_utils::{
         Issue, Scope,
     },
     issue,
+    kernel_cmdline::KernelCmdline,
     products::ProductSpec,
     progress, question,
 };
@@ -71,6 +74,8 @@ pub struct Starter {
     issues: Handler<issue::Service>,
     progress: Handler<progress::Service>,
     questions: Handler<question::Service>,
+    security: Handler<security::Service>,
+    bootloader: Handler<agama_bootloader::Service>,
 }
 
 impl Starter {
@@ -79,6 +84,8 @@ impl Starter {
         issues: Handler<issue::Service>,
         progress: Handler<progress::Service>,
         questions: Handler<question::Service>,
+        security: Handler<security::Service>,
+        bootloader: Handler<agama_bootloader::Service>,
     ) -> Self {
         Self {
             model: None,
@@ -86,6 +93,8 @@ impl Starter {
             issues,
             progress,
             questions,
+            security,
+            bootloader,
         }
     }
 
@@ -100,19 +109,22 @@ impl Starter {
         self
     }
 
-    const TARGET_DIR: &str = "/run/agama/software_ng_zypp";
+    const TARGET_DIR: &str = "/run/agama/zypp";
+    // FIXME: it should be defined in a single place and injected where needed.
+    const INSTALL_DIR: &str = "/mnt";
 
     /// Starts the service and returns a handler to communicate with it.
     pub async fn start(self) -> Result<Handler<Service>, Error> {
         let model = match self.model {
             Some(model) => model,
             None => {
-                let zypp_sender = ZyppServer::start(Self::TARGET_DIR)?;
+                let zypp_sender = ZyppServer::start(Self::TARGET_DIR, Self::INSTALL_DIR)?;
                 Arc::new(Mutex::new(Model::new(
                     zypp_sender,
                     find_mandatory_repositories("/"),
                     self.progress.clone(),
                     self.questions.clone(),
+                    self.security.clone(),
                 )?))
             }
         };
@@ -126,6 +138,8 @@ impl Starter {
             issues: self.issues,
             progress: self.progress,
             product: None,
+            kernel_cmdline: KernelCmdline::parse().unwrap_or_default(),
+            bootloader: self.bootloader,
         };
         service.setup().await?;
         Ok(actor::spawn(service))
@@ -147,6 +161,8 @@ pub struct Service {
     state: Arc<RwLock<ServiceState>>,
     product: Option<Arc<RwLock<ProductSpec>>>,
     selection: SoftwareSelection,
+    kernel_cmdline: KernelCmdline,
+    bootloader: Handler<agama_bootloader::Service>,
 }
 
 #[derive(Default)]
@@ -162,8 +178,10 @@ impl Service {
         issues: Handler<issue::Service>,
         progress: Handler<progress::Service>,
         questions: Handler<question::Service>,
+        security: Handler<security::Service>,
+        bootloader: Handler<agama_bootloader::Service>,
     ) -> Starter {
-        Starter::new(events, issues, progress, questions)
+        Starter::new(events, issues, progress, questions, security, bootloader)
     }
 
     pub async fn setup(&mut self) -> Result<(), Error> {
@@ -177,6 +195,26 @@ impl Service {
         })?;
 
         Ok(())
+    }
+
+    fn update_selinux(&self, state: &SoftwareState) {
+        let selinux_selected = state.resolvables.to_vec().iter().any(|(name, typ, state)| {
+            typ == &ResolvableType::Pattern && name == "selinux" && state.selected()
+        });
+
+        let value = if selinux_selected {
+            "security=selinux"
+        } else {
+            "security="
+        };
+        let message = agama_bootloader::message::SetKernelArg {
+            id: "selinux".to_string(),
+            value: value.to_string(),
+        };
+        let res = self.bootloader.cast(message);
+        if res.is_err() {
+            tracing::warn!("Failed to send to bootloader new selinux state: {:?}", res);
+        }
     }
 
     /// Updates the proposal and the service state.
@@ -203,6 +241,8 @@ impl Service {
         };
 
         tracing::info!("Wanted software state: {new_state:?}");
+        self.update_selinux(&new_state);
+
         let model = self.model.clone();
         let progress = self.progress.clone();
         let issues = self.issues.clone();
@@ -264,6 +304,45 @@ impl Service {
             }
         }
     }
+
+    /// Completes the configuration with data from the kernel command-line.
+    ///
+    /// - Use `inst.register_url` as default value for `product.registration_url`.
+    fn add_kernel_cmdline_defaults(&mut self, config: &mut Config) {
+        let Some(product) = &mut config.product else {
+            return;
+        };
+
+        if product.registration_url.is_some() {
+            return;
+        }
+
+        product.registration_url = self
+            .kernel_cmdline
+            .get_last("inst.register_url")
+            .map(|url| Url::parse(&url).ok())
+            .flatten();
+    }
+
+    /// Completes the configuration with the product mode if it is missing.
+    ///
+    /// Agama uses the first available mode (if any) in case the user does not set one.
+    async fn add_product_mode(&mut self, config: &mut Config) {
+        let Some(product_config) = &mut config.product else {
+            return;
+        };
+
+        if product_config.mode.is_some() {
+            return;
+        }
+
+        let Some(selected_product) = &self.product else {
+            return;
+        };
+
+        let selected_product = selected_product.read().await;
+        product_config.mode = selected_product.mode.clone();
+    }
 }
 
 impl Actor for Service {
@@ -291,9 +370,13 @@ impl MessageHandler<message::SetConfig<Config>> for Service {
     async fn handle(&mut self, message: message::SetConfig<Config>) -> Result<(), Error> {
         self.product = Some(message.product.clone());
 
+        let mut config = message.config.clone().unwrap_or_default();
+        self.add_kernel_cmdline_defaults(&mut config);
+        self.add_product_mode(&mut config).await;
+
         {
             let mut state = self.state.write().await;
-            state.config = message.config.clone().unwrap_or_default();
+            state.config = config;
         }
 
         self.events.send(Event::ConfigChanged {
@@ -375,6 +458,8 @@ fn find_mandatory_repositories<P: Into<PathBuf>>(root: P) -> Vec<Repository> {
     if let Some(dud) = find_repository(&dud_repo_dir, "AgamaDriverUpdate") {
         repos.push(dud)
     }
+
+    tracing::info!("Using mandatory repositories: {:?}", repos);
 
     repos
 }

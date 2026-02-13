@@ -126,7 +126,7 @@ if [ "\${grub_platform}" = "efi" ]; then
     }
     menuentry "UEFI Firmware Settings" {
         fwsetup --is-supported
-        if [ "$?" = 0 ]; then
+        if [ "\$?" = 0 ]; then
             fwsetup
         else
             echo "Your firmware doesn't support setup menu entry from a boot loader"

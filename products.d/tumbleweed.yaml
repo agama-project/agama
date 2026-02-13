@@ -121,7 +121,7 @@ software:
       archs: ppc
   mandatory_patterns:
     - enhanced_base # only pattern that is shared among all roles on TW
-  optional_patterns: null # no optional pattern shared
+  optional_patterns: [] # no optional pattern shared
   user_patterns:
     - basic_desktop
     - xfce
@@ -136,7 +136,7 @@ software:
     - NetworkManager
     - openSUSE-repos-Tumbleweed
     - sudo-policy-wheel-auth-self # explicit wheel group policy to conform new auth model
-  optional_packages: null
+  optional_packages: []
   base_product: openSUSE
 
 security:

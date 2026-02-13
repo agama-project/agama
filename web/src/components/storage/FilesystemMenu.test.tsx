@@ -45,7 +45,7 @@ describe("FilesystemMenu", () => {
     const deviceModel: ConfigModel.Drive = {
       name: "/dev/vda",
       mountPath: "/home",
-      filesystem: { type: "btrfs", default: false, snapshots: true },
+      filesystem: { type: "btrfsSnapshots", default: false },
     };
     mockPartitionable.mockReturnValue(deviceModel);
 
@@ -67,7 +67,7 @@ describe("FilesystemMenu", () => {
     const deviceModel: ConfigModel.Drive = {
       name: "/dev/vda",
       mountPath: "/home",
-      filesystem: { type: "btrfs", default: false, snapshots: true },
+      filesystem: { type: "btrfsSnapshots", default: false },
     };
     mockPartitionable.mockReturnValue(deviceModel);
 

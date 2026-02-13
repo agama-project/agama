@@ -15,7 +15,7 @@
     Requires:       autoyast2-installation
     # ArchFilter
     Requires:       yast2 >= 4.5.20
-    Requires:       yast2-bootloader
+    Requires:       yast2-bootloader >= 5.0.30
     Requires:       yast2-country
     Requires:       yast2-hardware-detection
     Requires:       yast2-installation
@@ -32,7 +32,6 @@
     Requires:       bcache-tools
     Requires:       btrfsprogs
     Requires:       cryptsetup
-    Requires:       dmraid
     Requires:       dosfstools
     Requires:       e2fsprogs
     Requires:       exfatprogs

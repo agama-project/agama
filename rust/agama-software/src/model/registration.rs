@@ -24,11 +24,14 @@
 //! the system and its add-ons and with libzypp (through [zypp_agama]) to add the
 //! corresponding services to `libzypp`.
 
+use agama_security as security;
 use agama_utils::{
-    api::software::{AddonInfo, AddonStatus, RegistrationInfo},
+    actor::Handler,
+    api::software::{AddonInfo, AddonRegistration, RegistrationInfo},
     arch::Arch,
 };
 use camino::Utf8PathBuf;
+use openssl::x509::X509;
 use suseconnect_agama::{self, ConnectParams, Credentials};
 use url::Url;
 
@@ -42,6 +45,10 @@ pub enum RegistrationError {
     AddService(String, #[source] zypp_agama::ZyppError),
     #[error("Failed to refresh the service {0}: {1}")]
     RefreshService(String, #[source] zypp_agama::ZyppError),
+    #[error("Failed to copy file {0}: {1}")]
+    IO(String, #[source] std::io::Error),
+    #[error(transparent)]
+    Security(#[from] security::service::Error),
 }
 
 type RegistrationResult<T> = Result<T, RegistrationError>;
@@ -55,14 +62,19 @@ pub struct Registration {
     root_dir: Utf8PathBuf,
     product: String,
     version: String,
+    arch: Arch,
     // The connection parameters are kept because they are needed by the
     // `to_registration_info` function.
     connect_params: ConnectParams,
     creds: Credentials,
+    /// list of services for each registered product
+    /// the first service is always the one for base product registration
     services: Vec<suseconnect_agama::Service>,
     // Holds the addons information because the status cannot be obtained from SCC yet
     // (e.g., whether and add-on is register or its registration code).
     addons: Vec<Addon>,
+    // Holds all config files it created, later it will be copied to target system
+    config_files: Vec<Utf8PathBuf>,
 }
 
 impl Registration {
@@ -104,7 +116,7 @@ impl Registration {
         version: &str,
         code: Option<&str>,
     ) -> RegistrationResult<()> {
-        let product = Self::product_specification(name, version);
+        let product = Self::product_specification(name, version, self.arch);
         let mut params = self.connect_params.clone();
         params.token = code.map(ToString::to_string);
 
@@ -133,6 +145,7 @@ impl Registration {
                 &self.creds.password,
                 path.as_str(),
             )?;
+            self.config_files.push(path);
         }
 
         // Add the libzypp service
@@ -155,11 +168,11 @@ impl Registration {
                 .extensions
                 .into_iter()
                 .map(|e| {
-                    let status = match self.find_registered_addon(&e.identifier) {
-                        Some(addon) => AddonStatus::Registered {
+                    let registration = match self.find_registered_addon(&e.identifier) {
+                        Some(addon) => AddonRegistration::Registered {
                             code: addon.code.clone(),
                         },
-                        None => AddonStatus::NotRegistered,
+                        None => AddonRegistration::NotRegistered,
                     };
 
                     AddonInfo {
@@ -171,7 +184,7 @@ impl Registration {
                         recommended: e.recommended,
                         description: e.description,
                         release: e.release_stage,
-                        status,
+                        registration,
                     }
                 })
                 .collect(),
@@ -189,6 +202,35 @@ impl Registration {
         }
     }
 
+    /// Writes to the target system all the registration configuration that is needed
+    ///
+    /// Beware that, if a certificate was imported, it is copied by the agama-security service.
+    pub fn finish(&mut self, install_dir: &Utf8PathBuf) -> Result<(), RegistrationError> {
+        suseconnect_agama::write_config(self.connect_params.clone())?;
+        self.config_files
+            .push(suseconnect_agama::DEFAULT_CONFIG_FILE.into());
+        self.copy_files(install_dir)?;
+
+        Ok(())
+    }
+
+    fn copy_files(&self, target_dir: &Utf8PathBuf) -> Result<(), RegistrationError> {
+        for path in &self.config_files {
+            let target_path = match path.strip_prefix(&self.root_dir) {
+                Ok(relative_path) => target_dir.join(&relative_path),
+                Err(_) => {
+                    let relative_path = path.strip_prefix("/").unwrap_or(path);
+                    target_dir.join(relative_path)
+                }
+            };
+            tracing::info!("Copying credentials file {path} to {target_path}");
+            std::fs::copy(path, target_path)
+                .map_err(|e| RegistrationError::IO(path.to_string(), e))?;
+        }
+
+        Ok(())
+    }
+
     fn base_product(&self) -> RegistrationResult<suseconnect_agama::Product> {
         let product = suseconnect_agama::show_product(
             self.base_product_specification(),
@@ -198,12 +240,15 @@ impl Registration {
     }
 
     fn base_product_specification(&self) -> suseconnect_agama::ProductSpecification {
-        Self::product_specification(&self.product, &self.version)
+        Self::product_specification(&self.product, &self.version, self.arch)
     }
 
-    fn product_specification(id: &str, version: &str) -> suseconnect_agama::ProductSpecification {
+    fn product_specification(
+        id: &str,
+        version: &str,
+        arch: Arch,
+    ) -> suseconnect_agama::ProductSpecification {
         // We do not expect this to happen.
-        let arch = Arch::current().expect("Failed to determine the architecture");
         suseconnect_agama::ProductSpecification {
             identifier: id.to_string(),
             arch: arch.to_string(),
@@ -222,6 +267,10 @@ impl Registration {
 
     fn find_registered_addon(&self, id: &str) -> Option<&Addon> {
         self.addons.iter().find(|a| a.id == id)
+    }
+
+    pub fn base_product_service_name(&self) -> Option<String> {
+        self.services.first().map(|s| s.name.clone())
     }
 }
 
@@ -289,7 +338,11 @@ impl RegistrationBuilder {
     /// It announces the system, gets the credentials and registers the base product.
     ///
     /// * `zypp`: zypp instance.
-    pub fn register(self, zypp: &zypp_agama::Zypp) -> RegistrationResult<Registration> {
+    pub fn register(
+        &self,
+        zypp: &zypp_agama::Zypp,
+        security_srv: &Handler<security::Service>,
+    ) -> RegistrationResult<Registration> {
         let params = suseconnect_agama::ConnectParams {
             token: self.code.clone(),
             email: self.email.clone(),
@@ -299,9 +352,15 @@ impl RegistrationBuilder {
         };
         // https://github.com/agama-project/agama/blob/master/service/lib/agama/registration.rb#L294
         let version = self.version.split(".").next().unwrap_or("1");
-        let target_distro = format!("{}-{}-{}", &self.product, version, std::env::consts::ARCH);
+        let arch = Arch::current().expect("Failed to determine the architecture");
+        let target_distro = format!("{}-{}-{}", &self.product, version, arch.to_string());
         tracing::debug!("Announcing system {target_distro}");
-        let creds = suseconnect_agama::announce_system(params.clone(), &target_distro)?;
+        let creds = handle_registration_error(
+            || suseconnect_agama::announce_system(params.clone(), &target_distro),
+            security_srv,
+        )?;
+
+        // suseconnect_agama::announce_system(params.clone(), &target_distro)?;
 
         tracing::debug!(
             "Creating the base credentials file at {}",
@@ -314,16 +373,84 @@ impl RegistrationBuilder {
         )?;
 
         let mut registration = Registration {
-            root_dir: self.root_dir,
+            root_dir: self.root_dir.clone(),
             connect_params: params,
             product: self.product.clone(),
             version: self.version.clone(),
+            arch,
             creds,
             services: vec![],
             addons: vec![],
+            config_files: vec![suseconnect_agama::GLOBAL_CREDENTIALS_FILE.into()],
         };
 
         registration.activate_product(zypp, &self.product, &self.version, None)?;
         Ok(registration)
     }
+}
+
+/// Ancillary function to handle registration errors.
+///
+/// Runs the given function and handles potential SSL errors. If there is an SSL
+/// error and it can be solved by importing the certificate, it asks the security
+/// service whether to trust the certificate.
+///
+/// It returns the result if the given function runs successfully or return any
+/// other kind of error.
+fn handle_registration_error<T, F>(
+    func: F,
+    security_srv: &Handler<security::Service>,
+) -> Result<T, RegistrationError>
+where
+    F: Fn() -> Result<T, suseconnect_agama::Error>,
+{
+    loop {
+        let result = func();
+
+        if let Err(suseconnect_agama::Error::SSL {
+            code,
+            message: _,
+            current_certificate,
+        }) = &result
+        {
+            if code.is_fixable_by_import() {
+                let x509 = X509::from_pem(&current_certificate.as_bytes()).unwrap();
+                match should_trust_certificate(&x509, security_srv) {
+                    Ok(true) => {
+                        if let Err(error) = suseconnect_agama::reload_certificates() {
+                            tracing::error!("Could not reload the certificates: {error}");
+                        }
+                        continue;
+                    }
+                    Ok(false) => tracing::warn!("Do not trust the certificate"),
+                    Err(error) => tracing::error!("Error processing the certificate: {error}"),
+                }
+            }
+        }
+
+        return Ok(result?);
+    }
+}
+
+pub fn should_trust_certificate(
+    certificate: &X509,
+    security_srv: &Handler<security::Service>,
+) -> Result<bool, security::service::Error> {
+    // unwrap OK: unwrap is fine because, if we eat all I/O resources, there is not solution
+    let rt = tokio::runtime::Builder::new_current_thread()
+        .enable_all()
+        .build()
+        .unwrap();
+
+    let security_srv = security_srv.clone();
+    let certificate = certificate.clone();
+    let handle = rt.spawn(async move {
+        security_srv
+            .call(security::message::CheckCertificate::new(
+                certificate,
+                "registration_server",
+            ))
+            .await
+    });
+    rt.block_on(handle).unwrap()
 }

@@ -22,74 +22,97 @@
 
 import React from "react";
 import { screen, within } from "@testing-library/react";
-import { installerRender } from "~/test-utils";
+import { installerRender, mockProduct, mockProductConfig } from "~/test-utils";
 import ProductRegistrationPage from "./ProductRegistrationPage";
-import { AddonInfo, Product, RegisteredAddonInfo, RegistrationInfo } from "~/types/software";
-import { useAddons, useProduct, useRegisteredAddons, useRegistration } from "~/queries/software";
+import { Product } from "~/model/system";
+import { RegistrationInfo } from "~/model/system/software";
+import { Config } from "~/model/config";
+import { putConfig } from "~/api";
+import { Issue } from "~/model/issue";
+import { cloneDeep } from "radashi";
 
 const tw: Product = {
   id: "Tumbleweed",
   name: "openSUSE Tumbleweed",
   registration: false,
+  modes: [],
 };
 
 const sle: Product = {
   id: "sle",
   name: "SLE",
   registration: true,
+  modes: [],
 };
 
-let selectedProduct: Product;
-let staticHostnameMock: string;
-let registrationInfoMock: RegistrationInfo;
-let addonInfoMock: AddonInfo[] = [];
-let registeredAddonInfoMock: RegisteredAddonInfo[] = [];
-const registerMutationMock = jest.fn();
+let mockSelectedProduct: Product | undefined;
+let mockStaticHostname: string;
+let mockRegistrationInfo: RegistrationInfo | undefined;
+let mockConfig: Config;
+let mockIssues: Issue[] = [];
 
-jest.mock("~/queries/software", () => ({
-  ...jest.requireActual("~/queries/software"),
-  useRegisterMutation: () => ({ mutate: registerMutationMock }),
-  useRegistration: (): ReturnType<typeof useRegistration> => registrationInfoMock,
-  useAddons: (): ReturnType<typeof useAddons> => addonInfoMock,
-  useRegisteredAddons: (): ReturnType<typeof useRegisteredAddons> => registeredAddonInfoMock,
-  useProduct: (): ReturnType<typeof useProduct> => {
-    return {
-      products: [tw, sle],
-      selectedProduct,
-    };
-  },
+jest.mock("~/hooks/model/system", () => ({
+  useSystem: () => ({ l10n: { locale: "en_US" } }),
 }));
 
-jest.mock("~/hooks/model/proposal/hostname", () => ({
-  ...jest.requireActual("~/hooks/model/proposal"),
-  useHostname: () => ({ transient: "testing-node", static: staticHostnameMock }),
+jest.mock("~/hooks/model/system/software", () => ({
+  useSystem: () => ({ registration: mockRegistrationInfo }),
 }));
 
-it.todo("Adapt test to new hooks");
-describe.skip("ProductRegistrationPage", () => {
+jest.mock("~/hooks/model/config", () => ({
+  useConfig: () => mockConfig,
+}));
+
+jest.mock("~/hooks/model/issue", () => ({
+  useIssues: () => mockIssues,
+}));
+
+jest.mock("~/api", () => ({
+  putConfig: jest.fn(),
+  patchConfig: jest.fn(),
+}));
+
+jest.mock("~/hooks/model/proposal", () => ({
+  useProposal: () => ({
+    hostname: { hostname: "testing-node", static: mockStaticHostname },
+  }),
+}));
+
+describe("ProductRegistrationPage", () => {
+  beforeEach(() => {
+    mockConfig = { product: { id: "sle", mode: "standard", registrationCode: "" } };
+    mockIssues = [];
+    mockProductConfig(mockConfig.product);
+    // @ts-ignore
+    mockProduct(mockSelectedProduct);
+  });
+
   describe("when the selected product is not registrable", () => {
     beforeEach(() => {
-      selectedProduct = tw;
-      registrationInfoMock = { registered: false, key: "", email: "", url: "" };
+      mockSelectedProduct = tw;
+      // @ts-ignore
+      mockProduct(mockSelectedProduct);
+      mockRegistrationInfo = undefined;
     });
 
-    it("renders nothing", () => {
-      const { container } = installerRender(<ProductRegistrationPage />, { withL10n: true });
-      expect(container).toBeEmptyDOMElement();
+    it("renders the registration page", () => {
+      installerRender(<ProductRegistrationPage />, { withL10n: true });
+      screen.getByText("Registration");
     });
   });
 
   describe("when the selected product is registrable and not yet registered", () => {
     beforeEach(() => {
-      selectedProduct = sle;
-      registrationInfoMock = { registered: false, key: "", email: "", url: "" };
+      mockSelectedProduct = sle;
+      // @ts-ignore
+      mockProduct(mockSelectedProduct);
+      mockRegistrationInfo = undefined;
     });
 
     describe("and the static hostname is not set", () => {
       it("renders a custom alert using the transient hostname", () => {
         installerRender(<ProductRegistrationPage />, { withL10n: true });
 
-        screen.getByText("Custom alert:");
         screen.getByText('The product will be registered with "testing-node" hostname');
         screen.getByRole("link", { name: "hostname" });
       });
@@ -97,13 +120,12 @@ describe.skip("ProductRegistrationPage", () => {
 
     describe("and the static hostname is set", () => {
       beforeEach(() => {
-        staticHostnameMock = "testing-server";
+        mockStaticHostname = "testing-server";
       });
 
       it("renders a custom alert using the static hostname", () => {
         installerRender(<ProductRegistrationPage />, { withL10n: true });
 
-        screen.getByText("Custom alert:");
         screen.getByText('The product will be registered with "testing-server" hostname');
         screen.getByRole("link", { name: "hostname" });
       });
@@ -118,14 +140,16 @@ describe.skip("ProductRegistrationPage", () => {
 
       await user.click(submitButton);
 
-      expect(registerMutationMock).toHaveBeenCalledWith(
-        {
-          url: "",
-          key: "INTERNAL-USE-ONLY-1234-5678",
-          email: "",
+      expect(putConfig).toHaveBeenCalledWith({
+        ...mockConfig,
+        product: {
+          id: "sle",
+          mode: "standard",
+          registrationCode: "INTERNAL-USE-ONLY-1234-5678",
+          registrationEmail: undefined,
+          registrationUrl: undefined,
         },
-        expect.anything(),
-      );
+      });
     });
 
     it("allows registering the product with an email address", async () => {
@@ -145,14 +169,16 @@ describe.skip("ProductRegistrationPage", () => {
 
       await user.click(submitButton);
 
-      expect(registerMutationMock).toHaveBeenCalledWith(
-        {
-          url: "",
-          email: "example@company.test",
-          key: "INTERNAL-USE-ONLY-1234-5678",
+      expect(putConfig).toHaveBeenCalledWith({
+        ...mockConfig,
+        product: {
+          id: "sle",
+          mode: "standard",
+          registrationCode: "INTERNAL-USE-ONLY-1234-5678",
+          registrationEmail: "example@company.test",
+          registrationUrl: undefined,
         },
-        expect.anything(),
-      );
+      });
     });
 
     it("renders an error when email input is enabled but left empty", async () => {
@@ -167,7 +193,7 @@ describe.skip("ProductRegistrationPage", () => {
       await user.click(provideEmailCheckbox);
       await user.click(submitButton);
 
-      expect(registerMutationMock).not.toHaveBeenCalled();
+      expect(putConfig).not.toHaveBeenCalled();
       screen.getByText("Warning alert:");
       screen.getByText("Enter an email");
     });
@@ -183,14 +209,16 @@ describe.skip("ProductRegistrationPage", () => {
       const submitButton = screen.getByRole("button", { name: "Register" });
 
       await user.click(submitButton);
-      expect(registerMutationMock).toHaveBeenCalledWith(
-        {
-          url: "https://custom-server.test",
-          key: "",
-          email: "",
+      expect(putConfig).toHaveBeenCalledWith({
+        ...mockConfig,
+        product: {
+          id: "sle",
+          mode: "standard",
+          registrationUrl: "https://custom-server.test",
+          registrationCode: undefined,
+          registrationEmail: undefined,
         },
-        expect.anything(),
-      );
+      });
     });
 
     describe("if registering with the default server", () => {
@@ -200,7 +228,7 @@ describe.skip("ProductRegistrationPage", () => {
 
         await user.click(submitButton);
 
-        expect(registerMutationMock).not.toHaveBeenCalled();
+        expect(putConfig).not.toHaveBeenCalled();
         screen.getByText("Warning alert:");
         screen.getByText("Enter a registration code");
       });
@@ -218,7 +246,7 @@ describe.skip("ProductRegistrationPage", () => {
         const submitButton = screen.getByRole("button", { name: "Register" });
         await user.click(submitButton);
 
-        expect(registerMutationMock).not.toHaveBeenCalled();
+        expect(putConfig).not.toHaveBeenCalled();
         screen.getByText("Warning alert:");
         screen.getByText("Enter a server URL");
       });
@@ -243,14 +271,16 @@ describe.skip("ProductRegistrationPage", () => {
           const submitButton = screen.getByRole("button", { name: "Register" });
           await user.click(submitButton);
 
-          expect(registerMutationMock).toHaveBeenCalledWith(
-            {
-              url: "https://custom-server.test",
-              key: "INTERNAL-USE-ONLY-1234-5678",
-              email: "",
+          expect(putConfig).toHaveBeenCalledWith({
+            ...mockConfig,
+            product: {
+              id: "sle",
+              mode: "standard",
+              registrationUrl: "https://custom-server.test",
+              registrationCode: "INTERNAL-USE-ONLY-1234-5678",
+              registrationEmail: undefined,
             },
-            expect.anything(),
-          );
+          });
           expect(screen.queryByText("Enter a registration code")).toBeNull();
         });
 
@@ -271,33 +301,23 @@ describe.skip("ProductRegistrationPage", () => {
           const submitButton = screen.getByRole("button", { name: "Register" });
           await user.click(submitButton);
 
-          expect(registerMutationMock).not.toHaveBeenCalled();
+          expect(putConfig).not.toHaveBeenCalled();
           screen.getByText("Warning alert:");
           screen.queryByText("Enter a registration code.");
         });
       });
     });
 
-    // Marked as pending until know how to properly trigger the mutation#onError
-    xit("handles and renders errors returned by the registration server", async () => {
-      registerMutationMock.mockRejectedValue({
-        response: { data: { message: "Unauthorized code" } },
-      });
-
-      const { user } = installerRender(<ProductRegistrationPage />, { withL10n: true });
-      const registrationCodeInput = screen.getByLabelText("Registration code");
-      const submitButton = screen.getByRole("button", { name: "Register" });
-      await user.type(registrationCodeInput, "INTERNAL-USE-ONLY-1234-5678");
-      await user.click(submitButton);
-
-      expect(registerMutationMock).toHaveBeenCalledWith(
+    it("handles and renders errors returned by the registration server", async () => {
+      mockIssues = [
         {
-          url: "",
-          email: "",
-          key: "INTERNAL-USE-ONLY-1234-5678",
+          scope: "software",
+          class: "system_registration_failed",
+          description: "Unauthorized code",
         },
-        expect.anything(),
-      );
+      ];
+
+      installerRender(<ProductRegistrationPage />, { withL10n: true });
 
       screen.getByText("Warning alert:");
       screen.getByText("Unauthorized code");
@@ -306,12 +326,13 @@ describe.skip("ProductRegistrationPage", () => {
 
   describe("when selected product is registrable and already registered", () => {
     beforeEach(() => {
-      selectedProduct = sle;
-      registrationInfoMock = {
-        registered: true,
-        key: "INTERNAL-USE-ONLY-1234-5678",
+      mockSelectedProduct = sle;
+      // @ts-ignore
+      mockProduct(mockSelectedProduct);
+      mockRegistrationInfo = {
+        code: "INTERNAL-USE-ONLY-1234-5678",
         email: "example@company.test",
-        url: "",
+        addons: [],
       };
     });
 
@@ -333,11 +354,11 @@ describe.skip("ProductRegistrationPage", () => {
 
     describe("if registered with a custom server", () => {
       beforeEach(() => {
-        registrationInfoMock = {
-          registered: true,
-          key: "INTERNAL-USE-ONLY-1234-5678",
+        mockRegistrationInfo = {
+          code: "INTERNAL-USE-ONLY-1234-5678",
           email: "example@company.test",
           url: "https://custom-server.test",
+          addons: [],
         };
       });
 
@@ -366,11 +387,10 @@ describe.skip("ProductRegistrationPage", () => {
 
     describe("if not using a resgistration code", () => {
       beforeEach(() => {
-        registrationInfoMock = {
-          registered: true,
-          key: "",
+        mockRegistrationInfo = {
+          code: "",
           email: "",
-          url: "",
+          addons: [],
         };
       });
 
@@ -390,11 +410,10 @@ describe.skip("ProductRegistrationPage", () => {
 
     describe("if no email address is provided", () => {
       beforeEach(() => {
-        registrationInfoMock = {
-          registered: true,
-          key: "",
+        mockRegistrationInfo = {
+          code: "",
           email: "",
-          url: "",
+          addons: [],
         };
       });
 
@@ -407,19 +426,26 @@ describe.skip("ProductRegistrationPage", () => {
 
     describe("when extensions are available", () => {
       beforeEach(() => {
-        addonInfoMock = [
-          {
-            id: "sle-ha",
-            version: "16.0",
-            label: "SUSE Linux Enterprise High Availability Extension 16.0 x86_64 (BETA)",
-            available: true,
-            free: false,
-            recommended: false,
-            description: "SUSE Linux High Availability Extension provides ...",
-            type: "extension",
-            release: "beta",
-          },
-        ];
+        mockRegistrationInfo = {
+          code: "INTERNAL-USE-ONLY-1234-5678",
+          email: "example@company.test",
+          addons: [
+            {
+              id: "sle-ha",
+              version: "16.0",
+              status: "available",
+              label: "SUSE Linux Enterprise High Availability Extension 16.0 x86_64 (BETA)",
+              available: true,
+              free: false,
+              recommended: false,
+              description: "SUSE Linux High Availability Extension provides...",
+              release: "beta",
+              registration: {
+                status: "notRegistered",
+              },
+            },
+          ],
+        };
       });
 
       it("renders them", async () => {
@@ -430,10 +456,10 @@ describe.skip("ProductRegistrationPage", () => {
           name: /SUSE Linux Enterprise High Availability Extension 16.0 x86_64/,
           level: 4,
         });
-        const extensionNode = title.parentElement;
+        const extensionNode = title.parentElement!;
 
         // description is displayed
-        within(extensionNode).getByText(addonInfoMock[0].description);
+        within(extensionNode).getByText(mockRegistrationInfo!.addons[0].description);
 
         // registration input field is displayed
         within(extensionNode).getByLabelText("Registration code");
@@ -444,13 +470,9 @@ describe.skip("ProductRegistrationPage", () => {
 
       describe("and they are registered", () => {
         beforeEach(() => {
-          registeredAddonInfoMock = [
-            {
-              id: "sle-ha",
-              version: "16.0",
-              registrationCode: "INTERNAL-USE-ONLY-1234-ad42",
-            },
-          ];
+          const addons = cloneDeep(mockRegistrationInfo!.addons);
+          addons[0].registration = { status: "registered", code: "INTERNAL-USE-ONLY-1234-ad42" };
+          mockRegistrationInfo!.addons = addons;
         });
 
         it("renders them with its registration code partially hidden", async () => {
@@ -463,12 +485,12 @@ describe.skip("ProductRegistrationPage", () => {
           // only the end of the code is displayed
           screen.getByText(/\*+ad42/);
           // not the full code
-          expect(screen.queryByText(registeredAddonInfoMock[0].registrationCode)).toBeNull();
+          expect(screen.queryByText("INTERNAL-USE-ONLY-1234-ad42")).toBeNull();
 
           // after pressing the "Show" button
           await user.click(visibilityCodeToggler);
           // the full code is visible
-          screen.getByText(registeredAddonInfoMock[0].registrationCode);
+          screen.getByText("INTERNAL-USE-ONLY-1234-ad42");
         });
       });
     });

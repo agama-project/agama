@@ -122,3 +122,11 @@ impl MessageHandler<message::SetConfig<Config>> for Service {
         Ok(())
     }
 }
+
+#[async_trait]
+impl MessageHandler<message::SetKernelArg> for Service {
+    async fn handle(&mut self, message: message::SetKernelArg) -> Result<(), Error> {
+        self.client.set_kernel_arg(message.id, message.value).await;
+        Ok(())
+    }
+}

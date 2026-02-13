@@ -1,0 +1,189 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR SuSE Linux Products GmbH, Nuernberg
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-02-10 16:22+0000\n"
+"PO-Revision-Date: 2026-02-03 04:00+0000\n"
+"Last-Translator: Arif Budiman <arifpedia@gmail.com>\n"
+"Language-Team: Indonesian <https://l10n.opensuse.org/projects/agama/agama-"
+"rust-master/id/>\n"
+"Language: id\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 5.15.2\n"
+
+#: agama-autoinstall/src/questions.rs:41 agama-utils/src/api/question.rs:282
+#: agama-utils/src/question/start.rs:54
+msgid "No"
+msgstr "Tidak"
+
+#: agama-autoinstall/src/questions.rs:41 agama-utils/src/api/question.rs:282
+#: agama-utils/src/question/start.rs:54
+msgid "Yes"
+msgstr "Ya"
+
+#: agama-manager/src/tasks/runner.rs:183
+msgid "Prepare the system"
+msgstr "Siapkan sistem"
+
+#: agama-manager/src/tasks/runner.rs:184
+msgid "Install software"
+msgstr "Instal perangkat lunak"
+
+#: agama-manager/src/tasks/runner.rs:185
+msgid "Configure the system"
+msgstr "Konfigurasikan sistem"
+
+#: agama-manager/src/tasks/runner.rs:280
+msgid "Storing security settings"
+msgstr ""
+
+#: agama-manager/src/tasks/runner.rs:281
+msgid "Setting up the hostname"
+msgstr ""
+
+#: agama-manager/src/tasks/runner.rs:282
+msgid "Setting up the network proxy"
+msgstr ""
+
+#: agama-manager/src/tasks/runner.rs:283
+msgid "Importing user files"
+msgstr ""
+
+#: agama-manager/src/tasks/runner.rs:284
+msgid "Running user pre-installation scripts"
+msgstr ""
+
+#: agama-manager/src/tasks/runner.rs:285
+msgid "Storing questions settings"
+msgstr ""
+
+#: agama-manager/src/tasks/runner.rs:286
+msgid "Storing localization settings"
+msgstr ""
+
+#: agama-manager/src/tasks/runner.rs:287
+msgid "Storing users settings"
+msgstr ""
+
+#: agama-manager/src/tasks/runner.rs:288
+msgid "Configuring iSCSI devices"
+msgstr ""
+
+#: agama-manager/src/tasks/runner.rs:292
+msgid "Setting up the network"
+msgstr ""
+
+#: agama-manager/src/tasks/runner.rs:297
+#, fuzzy
+msgid "Preparing the software proposal"
+msgstr "Menghitung usulan perangkat lunak"
+
+#: agama-manager/src/tasks/runner.rs:298
+#, fuzzy
+msgid "Preparing the storage proposal"
+msgstr "Menghitung usulan perangkat lunak"
+
+#: agama-manager/src/tasks/runner.rs:299
+msgid "Storing bootloader settings"
+msgstr ""
+
+#: agama-network/src/service.rs:518
+msgid "Writing configuration"
+msgstr "Menulis konfigurasi"
+
+#: agama-network/src/service.rs:519
+msgid "Reading configuration"
+msgstr "Membaca konfigurasi"
+
+#: agama-security/src/service.rs:228
+msgid "Reject"
+msgstr "Tolak"
+
+#: agama-security/src/service.rs:228
+#: agama-software/src/callbacks/security.rs:109
+msgid "Trust"
+msgstr "Percayai"
+
+#: agama-security/src/service.rs:229
+msgid ""
+"Trying to import a self-signed certificate. Do you want to trust it and "
+"register the product?"
+msgstr ""
+"Mencoba mengimpor sertifikat yang ditandatangani sendiri. Apakah Anda ingin "
+"mempercayainya dan mendaftarkan produk?"
+
+#: agama-software/src/callbacks/commit_download.rs:48
+#: agama-software/src/callbacks/install.rs:56
+msgid "Ignore"
+msgstr "Abaikan"
+
+#: agama-software/src/callbacks/commit_download.rs:48
+#: agama-software/src/callbacks/install.rs:56
+#: agama-software/src/callbacks/install.rs:81
+msgid "Retry"
+msgstr "Coba lagi"
+
+#: agama-software/src/callbacks/install.rs:78
+msgid "There was a problem running a package script."
+msgstr "Terjadi masalah saat menjalankan skrip paket."
+
+#: agama-software/src/callbacks/install.rs:81
+msgid "Continue"
+msgstr "Lanjutkan"
+
+#. TRANSLATORS: substituting: key ID, (key name), fingerprint
+#: agama-software/src/callbacks/security.rs:102
+msgid ""
+"The key {0} ({1}) with fingerprint {2} is unknown. Do you want to trust this "
+"key?"
+msgstr ""
+"Kunci {0} ({1}) dengan sidik jari {2} tidak dikenal. Apakah Anda ingin "
+"mempercayai kunci ini?"
+
+#: agama-software/src/callbacks/security.rs:109
+msgid "Skip"
+msgstr "Lewati"
+
+#: agama-software/src/zypp_server.rs:304
+msgid "Updating the list of repositories"
+msgstr "Memperbarui daftar repositori"
+
+#: agama-software/src/zypp_server.rs:305
+msgid "Refreshing metadata from the repositories"
+msgstr "Menyegarkan metadata dari repositori"
+
+#: agama-software/src/zypp_server.rs:306
+msgid "Calculating the software proposal"
+msgstr "Menghitung usulan perangkat lunak"
+
+#: agama-software/src/zypp_server.rs:309
+msgid "Registering the system"
+msgstr "Mendaftarkan sistem"
+
+#: agama-software/src/zypp_server.rs:409
+msgid "The product must be registered"
+msgstr "Produk harus didaftarkan"
+
+#: agama-users/src/service.rs:138
+msgid ""
+"Defining a user, setting the root password or a SSH public key is required"
+msgstr ""
+"Diperlukan penetapan pengguna, pengaturan kata sandi root, atau kunci publik "
+"SSH"
+
+#: agama-users/src/service.rs:151
+msgid "First user information is incomplete"
+msgstr "Informasi pengguna pertama tidak lengkap"
+
+#, fuzzy
+#~| msgid "Registering the system"
+#~ msgid "Failed to register the system"
+#~ msgstr "Mendaftarkan sistem"

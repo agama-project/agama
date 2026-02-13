@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2023-2025] SUSE LLC
+# Copyright (c) [2023-2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -28,9 +28,6 @@ require "agama/storage/manager"
 require "agama/storage/proposal"
 require "agama/storage/proposal_settings"
 require "agama/storage/volume"
-require "agama/storage/iscsi/manager"
-require "agama/storage/dasd/manager"
-require "agama/dbus/storage/dasds_tree"
 require "y2storage"
 require "dbus"
 
@@ -57,14 +54,6 @@ describe Agama::DBus::Storage::Manager do
 
   let(:config_data) { {} }
 
-  let(:iscsi) do
-    instance_double(Agama::Storage::ISCSI::Manager,
-      on_activate:        nil,
-      on_probe:           nil,
-      on_sessions_change: nil,
-      configured?:        true)
-  end
-
   before do
     # Speed up tests by avoiding real check of TPM presence.
     allow(Y2Storage::EncryptionMethod::TPM_FDE).to receive(:possible?).and_return(true)
@@ -77,7 +66,6 @@ describe Agama::DBus::Storage::Manager do
     allow(backend).to receive(:on_configure)
     allow(backend).to receive(:on_issues_change)
     allow(backend).to receive(:actions).and_return([])
-    allow(backend).to receive(:iscsi).and_return(iscsi)
     allow(backend).to receive(:proposal).and_return(proposal)
     mock_storage(devicegraph: "empty-hd-50GiB.yaml")
   end
@@ -335,7 +323,7 @@ describe Agama::DBus::Storage::Manager do
 
     describe "recover_system[:productMountPoints]" do
       before do
-        backend.product_config = product_config
+        backend.update_product_config(product_config)
       end
 
       let(:config_data) do
@@ -369,7 +357,7 @@ describe Agama::DBus::Storage::Manager do
 
     describe "recover_system[:volumeTemplates]" do
       before do
-        backend.product_config = product_config
+        backend.update_product_config(product_config)
       end
 
       let(:config_data) do
@@ -469,7 +457,7 @@ describe Agama::DBus::Storage::Manager do
 
       allow(proposal).to receive(:success?).and_return true
 
-      backend.product_config = product_config
+      backend.update_product_config(product_config)
     end
 
     # Set some known initial product configuration for the backend
@@ -497,22 +485,41 @@ describe Agama::DBus::Storage::Manager do
       end
     end
 
+    RSpec.shared_examples "emit ProposalChanged" do
+      it "emits the signal ProposalChanged" do
+        expect(subject).to receive(:ProposalChanged)
+        subject.configure(serialized_product, serialized_config)
+      end
+    end
+
+    RSpec.shared_examples "do not emit ProposalChanged" do
+      it "does not emit the signal ProposalChanged" do
+        expect(subject).to_not receive(:ProposalChanged)
+        subject.configure(serialized_product, serialized_config)
+      end
+    end
+
+    RSpec.shared_examples "emit ProgressChanged and ProgressFinished" do
+      it "emits signals ProgressChanged and ProgressFinished" do
+        expect(subject).to receive(:ProgressChanged).with(/storage configuration/i)
+        expect(subject).to receive(:ProgressFinished)
+        subject.configure(serialized_product, serialized_config)
+      end
+    end
+
+    RSpec.shared_examples "do not emit ProgressChanged and ProgressFinished" do
+      it "does not emit signals ProgressChanged or ProgressFinished" do
+        expect(subject).to_not receive(:ProgressChanged).with(/storage configuration/i)
+        expect(subject).to_not receive(:ProgressFinished)
+        subject.configure(serialized_product, serialized_config)
+      end
+    end
+
     RSpec.shared_examples "update product configuration" do |mount_paths|
       it "updates the backend product configuration" do
         expect(backend.product_config.default_paths).to_not contain_exactly(*mount_paths)
         subject.configure(serialized_product, serialized_config)
         expect(backend.product_config.default_paths).to contain_exactly(*mount_paths)
-      end
-
-      it "emits signals for SystemChanged, ProgressChanged and ProgressFinished" do
-        expect(subject).to receive(:SystemChanged) do |system_str|
-          system = parse(system_str)
-          expect(system[:productMountPoints]).to contain_exactly(*mount_paths)
-        end
-        expect(subject).to receive(:ProgressChanged).with(/storage configuration/i)
-        expect(subject).to receive(:ProgressFinished)
-
-        subject.configure(serialized_product, serialized_config)
       end
     end
 
@@ -521,12 +528,6 @@ describe Agama::DBus::Storage::Manager do
         data = backend.product_config.data.dup
         subject.configure(serialized_product, serialized_config)
         expect(backend.product_config.data).to eq data
-      end
-
-      it "emits signals for ProgressChanged and ProgressFinished" do
-        expect(subject).to receive(:ProgressChanged).with(/storage configuration/i)
-        expect(subject).to receive(:ProgressFinished)
-        subject.configure(serialized_product, serialized_config)
       end
     end
 
@@ -548,20 +549,8 @@ describe Agama::DBus::Storage::Manager do
         subject.configure(serialized_product, serialized_config)
       end
 
-      it "does not run a probbing process" do
+      it "does not run a probing process" do
         expect(backend).to_not receive(:probe)
-        subject.configure(serialized_product, serialized_config)
-      end
-    end
-
-    RSpec.shared_examples "re-calculate proposal" do
-      it "re-calculates the proposal with the previous configuration" do
-        expect(backend).to receive(:configure).with(nil)
-        subject.configure(serialized_product, serialized_config)
-      end
-
-      it "emits the signal ProposalChanged" do
-        expect(subject).to receive(:ProposalChanged)
         subject.configure(serialized_product, serialized_config)
       end
     end
@@ -571,6 +560,27 @@ describe Agama::DBus::Storage::Manager do
         expect(backend).to receive(:add_packages)
         subject.configure(serialized_product, serialized_config)
       end
+    end
+
+    RSpec.shared_examples "calculate proposal" do
+      it "calculates the proposal" do
+        expect(backend).to receive(:configure)
+        subject.configure(serialized_product, serialized_config)
+      end
+
+      include_examples "emit ProgressChanged and ProgressFinished"
+      include_examples "emit ProposalChanged"
+      include_examples "adjust software"
+    end
+
+    RSpec.shared_examples "do not calculate proposal" do
+      it "does not calculate the proposal" do
+        expect(backend).to_not receive(:configure)
+        subject.configure(serialized_product, serialized_config)
+      end
+
+      include_examples "do not emit ProgressChanged and ProgressFinished"
+      include_examples "do not emit ProposalChanged"
     end
 
     context "if no storage configuration is given" do
@@ -597,17 +607,43 @@ describe Agama::DBus::Storage::Manager do
             }
           end
 
-          include_examples "do not activate or probe"
-          include_examples "update product configuration", ["/", "swap"]
-          include_examples "re-calculate proposal"
-          include_examples "emit SystemChanged"
-          include_examples "adjust software"
+          context "and the storage configuration has not changed" do
+            include_examples "do not activate or probe"
+            include_examples "update product configuration", ["/", "swap"]
+            include_examples "emit SystemChanged"
+            include_examples "calculate proposal"
+          end
+
+          context "and the storage configuration has changed" do
+            before do
+              allow(backend).to receive(:config_json).and_return({})
+            end
+
+            include_examples "do not activate or probe"
+            include_examples "update product configuration", ["/", "swap"]
+            include_examples "emit SystemChanged"
+            include_examples "calculate proposal"
+          end
         end
 
         context "if the product configuration is equal to the current one" do
-          include_examples "do not activate or probe"
-          include_examples "do not update product configuration"
-          include_examples "do not emit SystemChanged"
+          context "and the storage configuration has not changed" do
+            include_examples "do not activate or probe"
+            include_examples "do not update product configuration"
+            include_examples "do not emit SystemChanged"
+            include_examples "do not calculate proposal"
+          end
+
+          context "and the storage configuration has changed" do
+            before do
+              allow(backend).to receive(:config_json).and_return({})
+            end
+
+            include_examples "do not activate or probe"
+            include_examples "do not update product configuration"
+            include_examples "do not emit SystemChanged"
+            include_examples "calculate proposal"
+          end
         end
       end
 
@@ -628,19 +664,43 @@ describe Agama::DBus::Storage::Manager do
             }
           end
 
-          include_examples "activate and probe"
-          include_examples "update product configuration", ["/", "swap"]
-          include_examples "emit SystemChanged"
-          include_examples "re-calculate proposal"
-          include_examples "adjust software"
+          context "and the storage configuration has not changed" do
+            include_examples "activate and probe"
+            include_examples "update product configuration", ["/", "swap"]
+            include_examples "emit SystemChanged"
+            include_examples "calculate proposal"
+          end
+
+          context "and the storage configuration has changed" do
+            before do
+              allow(backend).to receive(:config_json).and_return({})
+            end
+
+            include_examples "activate and probe"
+            include_examples "update product configuration", ["/", "swap"]
+            include_examples "emit SystemChanged"
+            include_examples "calculate proposal"
+          end
         end
 
         context "if the product configuration is equal to the current one" do
-          include_examples "activate and probe"
-          include_examples "do not update product configuration"
-          include_examples "emit SystemChanged"
-          include_examples "re-calculate proposal"
-          include_examples "adjust software"
+          context "and the storage configuration has not changed" do
+            include_examples "do not activate or probe"
+            include_examples "do not update product configuration"
+            include_examples "do not emit SystemChanged"
+            include_examples "do not calculate proposal"
+          end
+
+          context "and the storage configuration has changed" do
+            before do
+              allow(backend).to receive(:config_json).and_return({})
+            end
+
+            include_examples "activate and probe"
+            include_examples "do not update product configuration"
+            include_examples "emit SystemChanged"
+            include_examples "calculate proposal"
+          end
         end
       end
     end
@@ -683,11 +743,9 @@ describe Agama::DBus::Storage::Manager do
           subject.configure(serialized_product, serialized_config)
         end
 
-        it "emits the signal ProposalChanged" do
-          allow(proposal).to receive(:calculate_agama)
-          expect(subject).to receive(:ProposalChanged)
-          subject.configure(serialized_product, serialized_config)
-        end
+        include_examples "emit ProgressChanged and ProgressFinished"
+        include_examples "emit ProposalChanged"
+        include_examples "adjust software"
 
         context "if the serialized config contains legacy AutoYaST settings" do
           let(:config_hash) do
@@ -706,11 +764,9 @@ describe Agama::DBus::Storage::Manager do
             subject.configure(serialized_product, serialized_config)
           end
 
-          it "emits the signal ProposalChanged" do
-            allow(proposal).to receive(:calculate_agama)
-            expect(subject).to receive(:ProposalChanged)
-            subject.configure(serialized_product, serialized_config)
-          end
+          include_examples "emit ProgressChanged and ProgressFinished"
+          include_examples "emit ProposalChanged"
+          include_examples "adjust software"
         end
       end
 
@@ -735,22 +791,37 @@ describe Agama::DBus::Storage::Manager do
           include_examples "update product configuration", ["/", "swap"]
           include_examples "emit SystemChanged"
           include_examples "calculate new proposal"
-          include_examples "adjust software"
         end
 
         context "if the product configuration is equal to the current one" do
-          include_examples "do not activate or probe"
-          include_examples "do not update product configuration"
-          include_examples "do not emit SystemChanged"
-          include_examples "calculate new proposal"
-          include_examples "adjust software"
+          context "and the storage configuration has not changed" do
+            before do
+              allow(backend).to receive(:config_json).and_return(config_hash)
+            end
+
+            include_examples "do not activate or probe"
+            include_examples "do not update product configuration"
+            include_examples "do not emit SystemChanged"
+            include_examples "do not calculate proposal"
+          end
+
+          context "and the storage configuration has changed" do
+            before do
+              allow(backend).to receive(:config_json).and_return({})
+            end
+
+            include_examples "do not activate or probe"
+            include_examples "do not update product configuration"
+            include_examples "do not emit SystemChanged"
+            include_examples "calculate new proposal"
+          end
         end
       end
 
       context "when storage devices are not activated and probed" do
         before do
-          allow(backend).to receive(:activated?).and_return(false, true)
-          allow(backend).to receive(:probed?).and_return(false, true)
+          allow(backend).to receive(:activated?).and_return(false)
+          allow(backend).to receive(:probed?).and_return(false)
         end
 
         context "if the product configuration has changed" do
@@ -768,15 +839,30 @@ describe Agama::DBus::Storage::Manager do
           include_examples "update product configuration", ["/", "swap"]
           include_examples "emit SystemChanged"
           include_examples "calculate new proposal"
-          include_examples "adjust software"
         end
 
         context "if the product configuration is equal to the current one" do
-          include_examples "activate and probe"
-          include_examples "do not update product configuration"
-          include_examples "emit SystemChanged"
-          include_examples "calculate new proposal"
-          include_examples "adjust software"
+          context "and the storage configuration has not changed" do
+            before do
+              allow(backend).to receive(:config_json).and_return(config_hash)
+            end
+
+            include_examples "do not activate or probe"
+            include_examples "do not update product configuration"
+            include_examples "do not emit SystemChanged"
+            include_examples "do not calculate proposal"
+          end
+
+          context "and the storage configuration has changed" do
+            before do
+              allow(backend).to receive(:config_json).and_return({})
+            end
+
+            include_examples "activate and probe"
+            include_examples "do not update product configuration"
+            include_examples "emit SystemChanged"
+            include_examples "calculate new proposal"
+          end
         end
       end
     end
@@ -1100,8 +1186,8 @@ describe Agama::DBus::Storage::Manager do
     context "when a storage configuration was previously set" do
       before do
         allow(proposal).to receive(:storage_json).and_return config_json
+        allow(backend).to receive(:config_json).and_return config_json
         allow(subject).to receive(:ProposalChanged)
-        allow(proposal).to receive(:success?).and_return true
       end
 
       let(:config_json) do
@@ -1213,316 +1299,13 @@ describe Agama::DBus::Storage::Manager do
     end
   end
 
-  describe "#iscsi_discover" do
-    it "performs an iSCSI discovery" do
-      expect(iscsi).to receive(:discover).with("192.168.100.90", 3260, anything)
-
-      subject.iscsi_discover("192.168.100.90", 3260)
-    end
-
-    context "when no authentication options are given" do
-      it "uses empty credentials" do
-        expect(iscsi).to receive(:discover) do |_, _, discover_options|
-          expect(discover_options[:credentials]).to eq({
-            username:           nil,
-            password:           nil,
-            initiator_username: nil,
-            initiator_password: nil
-          })
-        end
-
-        subject.iscsi_discover("192.168.100.90", 3260)
-      end
-    end
-
-    context "when authentication options are given" do
-      let(:options) do
-        {
-          "Username"        => "target",
-          "Password"        => "12345",
-          "ReverseUsername" => "initiator",
-          "ReversePassword" => "54321"
-        }
-      end
-
-      it "uses the expected crendentials" do
-        expect(iscsi).to receive(:discover) do |_, _, discover_options|
-          expect(discover_options[:credentials]).to eq({
-            username:           "target",
-            password:           "12345",
-            initiator_username: "initiator",
-            initiator_password: "54321"
-          })
-        end
-
-        subject.iscsi_discover("192.168.100.90", 3260, options)
-      end
-    end
-
-    context "when the action successes" do
-      before do
-        allow(iscsi).to receive(:discover).and_return(true)
-      end
-
-      it "returns 0" do
-        result = subject.iscsi_discover("192.168.100.90", 3260)
-
-        expect(result).to eq(0)
-      end
-    end
-
-    context "when the action fails" do
-      before do
-        allow(iscsi).to receive(:discover).and_return(false)
-      end
-
-      it "returns 1" do
-        result = subject.iscsi_discover("192.168.100.90", 3260)
-
-        expect(result).to eq(1)
-      end
-    end
-  end
-
-  describe "#iscsi_delete" do
-    before do
-      allow(Agama::DBus::Storage::ISCSINodesTree)
-        .to receive(:new).and_return(iscsi_nodes_tree)
-    end
-
-    let(:iscsi_nodes_tree) { instance_double(Agama::DBus::Storage::ISCSINodesTree) }
-
-    let(:path) { "/org/opensuse/Agama/Storage1/iscsi_nodes/1" }
-
-    context "when the requested path for deleting is not exported yet" do
-      before do
-        allow(iscsi_nodes_tree).to receive(:find).with(path).and_return(nil)
-      end
-
-      it "does not delete the iSCSI node" do
-        expect(iscsi).to_not receive(:delete)
-
-        subject.iscsi_delete(path)
-      end
-
-      it "returns 1" do
-        result = subject.iscsi_delete(path)
-
-        expect(result).to eq(1)
-      end
-    end
-
-    context "when the requested path for deleting is exported" do
-      before do
-        allow(iscsi_nodes_tree).to receive(:find).with(path).and_return(dbus_node)
-      end
-
-      let(:dbus_node) { Agama::DBus::Storage::ISCSINode.new(iscsi, node, path) }
-
-      let(:node) { Agama::Storage::ISCSI::Node.new }
-
-      it "deletes the iSCSI node" do
-        expect(iscsi).to receive(:delete).with(node)
-
-        subject.iscsi_delete(path)
-      end
-
-      context "and the action successes" do
-        before do
-          allow(iscsi).to receive(:delete).with(node).and_return(true)
-        end
-
-        it "returns 0" do
-          result = subject.iscsi_delete(path)
-
-          expect(result).to eq(0)
-        end
-      end
-
-      context "and the action fails" do
-        before do
-          allow(iscsi).to receive(:delete).with(node).and_return(false)
-        end
-
-        it "returns 2" do
-          result = subject.iscsi_delete(path)
-
-          expect(result).to eq(2)
-        end
-      end
-    end
-  end
-
   context "in an s390 system" do
     before do
       allow(Yast::Arch).to receive(:s390).and_return true
-      allow(Agama::Storage::DASD::Manager).to receive(:new).and_return(dasd_backend)
-    end
-
-    let(:dasd_backend) do
-      instance_double(Agama::Storage::DASD::Manager,
-        on_probe:   nil,
-        on_refresh: nil)
-    end
-
-    it "includes interface for managing DASD devices" do
-      expect(subject.intfs.keys).to include("org.opensuse.Agama.Storage1.DASD.Manager")
     end
 
     it "includes interface for managing zFCP devices" do
       expect(subject.intfs.keys).to include("org.opensuse.Agama.Storage1.ZFCP.Manager")
-    end
-
-    describe "#dasd_enable" do
-      before do
-        allow(Agama::DBus::Storage::DasdsTree).to receive(:new).and_return(dasds_tree)
-        allow(dasds_tree).to receive(:find_paths).and_return [dbus_dasd1, dbus_dasd2]
-      end
-
-      let(:dasds_tree) { instance_double(Agama::DBus::Storage::DasdsTree) }
-
-      let(:dasd1) { instance_double("Y2S390::Dasd") }
-      let(:path1) { "/org/opensuse/Agama/Storage1/dasds/1" }
-      let(:dbus_dasd1) { Agama::DBus::Storage::Dasd.new(dasd1, path1) }
-
-      let(:dasd2) { instance_double("Y2S390::Dasd") }
-      let(:path2) { "/org/opensuse/Agama/Storage1/dasds/2" }
-      let(:dbus_dasd2) { Agama::DBus::Storage::Dasd.new(dasd2, path2) }
-
-      let(:path3) { "/org/opensuse/Agama/Storage1/dasds/3" }
-
-      context "when some of the paths do not correspond to an exported DASD" do
-        let(:paths) { [path1, path2, path3] }
-
-        it "does not try enable any DASD" do
-          expect(dasd_backend).to_not receive(:enable)
-          subject.dasd_enable(paths)
-        end
-
-        it "returns 1" do
-          result = subject.dasd_enable(paths)
-          expect(result).to eq(1)
-        end
-      end
-
-      context "when all the paths correspond to exported DASDs" do
-        let(:paths) { [path1, path2] }
-
-        it "tries to enable all the DASDs" do
-          expect(dasd_backend).to receive(:enable).with([dasd1, dasd2])
-          subject.dasd_enable(paths)
-        end
-
-        context "and the action successes" do
-          before do
-            allow(dasd_backend).to receive(:enable).with([dasd1, dasd2]).and_return true
-          end
-
-          it "returns 0" do
-            result = subject.dasd_enable(paths)
-            expect(result).to eq 0
-          end
-        end
-
-        context "and the action fails" do
-          before do
-            allow(dasd_backend).to receive(:enable).with([dasd1, dasd2]).and_return false
-          end
-
-          it "returns 2" do
-            result = subject.dasd_enable(paths)
-            expect(result).to eq 2
-          end
-        end
-      end
-    end
-
-    describe "#dasd_format" do
-      before do
-        allow(Agama::DBus::Storage::DasdsTree).to receive(:new).and_return(dasds_tree)
-        allow(dasds_tree).to receive(:find_paths).and_return [dbus_dasd1, dbus_dasd2]
-      end
-
-      let(:dasds_tree) { instance_double(Agama::DBus::Storage::DasdsTree) }
-
-      let(:dasd1) { instance_double("Y2S390::Dasd") }
-      let(:path1) { "/org/opensuse/Agama/Storage1/dasds/1" }
-      let(:dbus_dasd1) { Agama::DBus::Storage::Dasd.new(dasd1, path1) }
-
-      let(:dasd2) { instance_double("Y2S390::Dasd") }
-      let(:path2) { "/org/opensuse/Agama/Storage1/dasds/2" }
-      let(:dbus_dasd2) { Agama::DBus::Storage::Dasd.new(dasd2, path2) }
-
-      let(:path3) { "/org/opensuse/Agama/Storage1/dasds/3" }
-
-      context "when some of the paths do not correspond to an exported DASD" do
-        let(:paths) { [path1, path2, path3] }
-
-        it "does not try to format" do
-          expect(dasd_backend).to_not receive(:format)
-          subject.dasd_format(paths)
-        end
-
-        it "returns 1 as code and '/' as path" do
-          result = subject.dasd_format(paths)
-          expect(result).to eq [1, "/"]
-        end
-      end
-
-      context "when all the paths correspond to exported DASDs" do
-        let(:paths) { [path1, path2] }
-
-        it "tries to format all the DASDs" do
-          expect(dasd_backend).to receive(:format).with([dasd1, dasd2], any_args)
-          subject.dasd_format(paths)
-        end
-
-        context "and the action successes" do
-          before do
-            allow(dasd_backend).to receive(:format).and_return initial_status
-
-            allow(Agama::DBus::Storage::JobsTree).to receive(:new).and_return(jobs_tree)
-            allow(jobs_tree).to receive(:add_dasds_format).and_return format_job
-          end
-
-          let(:initial_status) { [double("FormatStatus"), double("FormatStatus")] }
-          let(:jobs_tree) { instance_double(Agama::DBus::Storage::JobsTree) }
-          let(:format_job) do
-            instance_double(Agama::DBus::Storage::DasdsFormatJob, path: job_path)
-          end
-          let(:job_path) { "/some/path" }
-
-          it "returns 0 and the path to the new Job object" do
-            result = subject.dasd_format(paths)
-            expect(result).to eq [0, job_path]
-          end
-        end
-
-        context "and the action fails" do
-          before do
-            allow(dasd_backend).to receive(:format).and_return nil
-          end
-
-          it "returns 2 as code and '/' as path" do
-            result = subject.dasd_format(paths)
-            expect(result).to eq [2, "/"]
-          end
-        end
-      end
-    end
-  end
-
-  context "in a system that is not s390" do
-    before do
-      allow(Yast::Arch).to receive(:s390).and_return false
-    end
-
-    it "does not respond to #dasd_enable" do
-      expect { subject.dasd_enable }.to raise_error NoMethodError
-    end
-
-    it "does not respond to #dasd_format" do
-      expect { subject.dasd_format }.to raise_error NoMethodError
     end
   end
 end

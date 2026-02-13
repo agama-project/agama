@@ -27,12 +27,13 @@ use agama_software::{self as software, Resolvable, ResolvableType};
 use agama_utils::{
     actor::{self, Actor, Handler, MessageHandler},
     api::files::{
-        scripts::{self, ScriptsRepository},
+        scripts::{self, ScriptsGroup, ScriptsRepository},
         user_file, ScriptsConfig, UserFile,
     },
     progress, question,
 };
 use async_trait::async_trait;
+use strum::IntoEnumIterator;
 use tokio::sync::Mutex;
 
 use crate::{message, ScriptsRunner};
@@ -49,14 +50,15 @@ pub enum Error {
     Actor(#[from] actor::Error),
 }
 
-const DEFAULT_SCRIPTS_DIR: &str = "/run/agama/scripts";
+const DEFAULT_SCRIPTS_DIR: &str = "run/agama/scripts";
+const DEFAULT_WORK_DIR: &str = "/";
 const DEFAULT_INSTALL_DIR: &str = "/mnt";
 
 /// Builds and spawns the files service.
 ///
 /// This structs allows to build a files service.
 pub struct Starter {
-    scripts_workdir: PathBuf,
+    workdir: PathBuf,
     install_dir: PathBuf,
     software: Handler<software::Service>,
     progress: Handler<progress::Service>,
@@ -76,14 +78,14 @@ impl Starter {
             software,
             progress,
             questions,
-            scripts_workdir: PathBuf::from(DEFAULT_SCRIPTS_DIR),
+            workdir: PathBuf::from(DEFAULT_WORK_DIR),
             install_dir: PathBuf::from(DEFAULT_INSTALL_DIR),
         }
     }
 
     /// Starts the service and returns the handler to communicate with it.
     pub async fn start(self) -> Result<Handler<Service>, Error> {
-        let scripts = ScriptsRepository::new(self.scripts_workdir);
+        let scripts = ScriptsRepository::new(self.workdir.join(DEFAULT_SCRIPTS_DIR));
         let service = Service {
             progress: self.progress,
             questions: self.questions,
@@ -91,13 +93,14 @@ impl Starter {
             scripts: Arc::new(Mutex::new(scripts)),
             files: vec![],
             install_dir: self.install_dir,
+            root_dir: self.workdir,
         };
         let handler = actor::spawn(service);
         Ok(handler)
     }
 
-    pub fn with_scripts_workdir<P: AsRef<Path>>(mut self, workdir: P) -> Self {
-        self.scripts_workdir = PathBuf::from(workdir.as_ref());
+    pub fn with_workdir<P: AsRef<Path>>(mut self, workdir: P) -> Self {
+        self.workdir = PathBuf::from(workdir.as_ref());
         self
     }
 
@@ -114,6 +117,7 @@ pub struct Service {
     scripts: Arc<Mutex<ScriptsRepository>>,
     files: Vec<UserFile>,
     install_dir: PathBuf,
+    root_dir: PathBuf,
 }
 
 impl Service {
@@ -125,9 +129,15 @@ impl Service {
         Starter::new(progress, questions, software)
     }
 
+    /// Clear the scripts.
+    ///
+    /// Keep the pre-scripts because they are expected to run as soon as they are imported.
     pub async fn clear_scripts(&mut self) -> Result<(), Error> {
         let mut repo = self.scripts.lock().await;
-        repo.clear()?;
+        let groups: Vec<_> = ScriptsGroup::iter()
+            .filter(|g| g != &ScriptsGroup::Pre)
+            .collect();
+        repo.clear(groups.as_slice())?;
         Ok(())
     }
 
@@ -195,20 +205,32 @@ impl MessageHandler<message::SetConfig> for Service {
 
 #[async_trait]
 impl MessageHandler<message::RunScripts> for Service {
-    async fn handle(&mut self, message: message::RunScripts) -> Result<(), Error> {
-        let scripts = self.scripts.clone();
-        let install_dir = self.install_dir.clone();
-        let progress = self.progress.clone();
-        let questions = self.questions.clone();
+    async fn handle(&mut self, message: message::RunScripts) -> Result<bool, Error> {
+        let scripts = self.scripts.lock().await;
+        let workdir = scripts.workdir.clone();
+        let to_run = scripts.by_group(message.group).clone();
 
-        tokio::task::spawn(async move {
-            let scripts = scripts.lock().await;
-            let workdir = scripts.workdir.clone();
-            let to_run = scripts.by_group(message.group).clone();
-            let runner = ScriptsRunner::new(install_dir, workdir, progress, questions);
-            runner.run(&to_run).await.unwrap();
-        });
-        Ok(())
+        if to_run.is_empty() {
+            tracing::info!("No scripts to run in group {}", message.group.to_string());
+            return Ok(false);
+        } else {
+            tracing::info!(
+                "{} scripts to run in group {}",
+                to_run.len(),
+                message.group.to_string()
+            );
+            let runner = ScriptsRunner::new(
+                &self.root_dir,
+                &self.install_dir,
+                &workdir,
+                self.progress.clone(),
+                self.questions.clone(),
+            );
+            if let Err(error) = runner.run(&to_run).await {
+                tracing::error!("Error running scripts: {error}");
+            }
+            Ok(true)
+        }
     }
 }
 
@@ -216,7 +238,9 @@ impl MessageHandler<message::RunScripts> for Service {
 impl MessageHandler<message::WriteFiles> for Service {
     async fn handle(&mut self, _message: message::WriteFiles) -> Result<(), Error> {
         for file in &self.files {
-            file.write(&self.install_dir).await?;
+            if let Err(error) = file.write(&self.install_dir).await {
+                tracing::error!("Failed to write file {}: {error}", file.destination);
+            }
         }
         Ok(())
     }

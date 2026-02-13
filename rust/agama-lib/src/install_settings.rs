@@ -21,16 +21,12 @@
 //! Configuration settings handling
 //!
 //! This module implements the mechanisms to load and store the installation settings.
-use crate::bootloader::model::BootloaderSettings;
-use crate::context::InstallationContext;
 use crate::hostname::model::HostnameSettings;
-use crate::security::settings::SecuritySettings;
 use crate::storage::settings::zfcp::ZFCPConfig;
-use crate::{network::NetworkSettings, storage::settings::dasd::DASDConfig, users::UserSettings};
+use crate::{network::NetworkSettings, storage::settings::dasd::DASDConfig};
 use serde::{Deserialize, Serialize};
 use serde_json::value::RawValue;
 use std::default::Default;
-use std::path::Path;
 
 #[derive(Debug, thiserror::Error)]
 pub enum InstallSettingsError {
@@ -43,12 +39,10 @@ pub enum InstallSettingsError {
 /// Installation settings
 ///
 /// This struct represents installation settings. It serves as an entry point and it is composed of
-/// other structs which hold the settings for each area ("users", "software", etc.).
+/// other structs which hold the settings for each area ("software", etc.).
 #[derive(Clone, Debug, Default, Serialize, Deserialize, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct InstallSettings {
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub bootloader: Option<BootloaderSettings>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub dasd: Option<DASDConfig>,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -56,10 +50,6 @@ pub struct InstallSettings {
     #[serde(skip_serializing_if = "Option::is_none")]
     #[schema(value_type = Object)]
     pub iscsi: Option<Box<RawValue>>,
-    #[serde(flatten)]
-    pub user: Option<UserSettings>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub security: Option<SecuritySettings>,
     #[serde(skip_serializing_if = "Option::is_none")]
     #[schema(value_type = Object)]
     pub storage: Option<Box<RawValue>>,
@@ -71,28 +61,4 @@ pub struct InstallSettings {
     pub network: Option<NetworkSettings>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub zfcp: Option<ZFCPConfig>,
-}
-
-impl InstallSettings {
-    /// Returns install settings from a file.
-    pub fn from_file<P: AsRef<Path>>(
-        path: P,
-        context: &InstallationContext,
-    ) -> Result<Self, InstallSettingsError> {
-        let content = std::fs::read_to_string(path)?;
-        Ok(Self::from_json(&content, context)?)
-    }
-
-    /// Reads install settings from a JSON string,
-    /// also resolving relative URLs in the contents.
-    ///
-    /// - `json`: JSON string.
-    /// - `context`: Store context.
-    pub fn from_json(
-        json: &str,
-        _context: &InstallationContext,
-    ) -> Result<Self, InstallSettingsError> {
-        let settings: InstallSettings = serde_json::from_str(json)?;
-        Ok(settings)
-    }
 }

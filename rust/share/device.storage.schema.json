@@ -115,6 +115,8 @@
       "enum": [
         "bcachefs",
         "btrfs",
+        "btrfsSnapshots",
+        "btrfsImmutable",
         "exfat",
         "ext2",
         "ext3",

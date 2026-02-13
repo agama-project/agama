@@ -1,4 +1,4 @@
-// Copyright (c) [2025] SUSE LLC
+// Copyright (c) [2025-2026] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -19,33 +19,32 @@
 // find current contact information at www.suse.com.
 
 use crate::{
-    bootloader, files, hardware, hostname, l10n, message, network, software, storage, users,
+    bootloader, checks, files, hardware, hostname, iscsi, l10n, message, network, proxy, s390,
+    security, software, storage, tasks, users,
 };
+use agama_users::PasswordCheckResult;
 use agama_utils::{
     actor::{self, Actor, Handler, MessageHandler},
     api::{
         self, event,
-        files::scripts::ScriptsGroup,
         manager::{self, LicenseContent},
         status::Stage,
         Action, Config, Event, FinishMethod, Issue, IssueMap, Proposal, Scope, Status, SystemInfo,
     },
+    arch::Arch,
     issue, licenses,
     products::{self, ProductSpec},
     progress, question,
 };
 use async_trait::async_trait;
-use gettextrs::gettext;
 use merge::Merge;
 use network::NetworkSystemClient;
 use serde_json::Value;
-use std::{process::Command, sync::Arc};
+use std::{collections::HashMap, process::Command, sync::Arc};
 use tokio::sync::{broadcast, RwLock};
 
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
-    #[error("Missing product")]
-    MissingProduct,
     #[error(transparent)]
     Event(#[from] broadcast::error::SendError<Event>),
     #[error(transparent)]
@@ -55,7 +54,11 @@ pub enum Error {
     #[error(transparent)]
     Hostname(#[from] hostname::service::Error),
     #[error(transparent)]
+    ISCSI(#[from] iscsi::service::Error),
+    #[error(transparent)]
     L10n(#[from] l10n::service::Error),
+    #[error(transparent)]
+    Security(#[from] security::service::Error),
     #[error(transparent)]
     Software(#[from] software::service::Error),
     #[error(transparent)]
@@ -79,11 +82,21 @@ pub enum Error {
     #[error(transparent)]
     NetworkSystem(#[from] network::NetworkSystemError),
     #[error(transparent)]
+    Proxy(#[from] proxy::service::Error),
+    #[error(transparent)]
     Hardware(#[from] hardware::Error),
     #[error("Cannot dispatch this action in {current} stage (expected {expected}).")]
     UnexpectedStage { current: Stage, expected: Stage },
+    #[error("Failed to perform the action because the system is busy: {scopes:?}.")]
+    Busy { scopes: Vec<Scope> },
+    #[error(
+        "It is not possible to install the system because there are some pending issues: {issues:?}."
+    )]
+    PendingIssues { issues: HashMap<Scope, Vec<Issue>> },
     #[error(transparent)]
     Users(#[from] users::service::Error),
+    #[error(transparent)]
+    S390(#[from] s390::service::Error),
 }
 
 pub struct Starter {
@@ -92,8 +105,11 @@ pub struct Starter {
     dbus: zbus::Connection,
     bootloader: Option<Handler<bootloader::Service>>,
     hostname: Option<Handler<hostname::Service>>,
+    iscsi: Option<Handler<iscsi::Service>>,
     l10n: Option<Handler<l10n::Service>>,
     network: Option<NetworkSystemClient>,
+    proxy: Option<Handler<proxy::Service>>,
+    security: Option<Handler<security::Service>>,
     software: Option<Handler<software::Service>>,
     storage: Option<Handler<storage::Service>>,
     files: Option<Handler<files::Service>>,
@@ -101,6 +117,7 @@ pub struct Starter {
     progress: Option<Handler<progress::Service>>,
     hardware: Option<hardware::Registry>,
     users: Option<Handler<users::Service>>,
+    s390: Option<Handler<s390::Service>>,
 }
 
 impl Starter {
@@ -115,8 +132,11 @@ impl Starter {
             questions,
             bootloader: None,
             hostname: None,
+            iscsi: None,
             l10n: None,
             network: None,
+            proxy: None,
+            security: None,
             software: None,
             storage: None,
             files: None,
@@ -124,6 +144,7 @@ impl Starter {
             progress: None,
             hardware: None,
             users: None,
+            s390: None,
         }
     }
 
@@ -131,12 +152,24 @@ impl Starter {
         self.bootloader = Some(bootloader);
         self
     }
+
     pub fn with_hostname(mut self, hostname: Handler<hostname::Service>) -> Self {
         self.hostname = Some(hostname);
         self
     }
+
+    pub fn with_iscsi(mut self, iscsi: Handler<iscsi::Service>) -> Self {
+        self.iscsi = Some(iscsi);
+        self
+    }
+
     pub fn with_network(mut self, network: NetworkSystemClient) -> Self {
         self.network = Some(network);
+        self
+    }
+
+    pub fn with_security(mut self, security: Handler<security::Service>) -> Self {
+        self.security = Some(security);
         self
     }
 
@@ -165,6 +198,11 @@ impl Starter {
         self
     }
 
+    pub fn with_proxy(mut self, proxy: Handler<proxy::Service>) -> Self {
+        self.proxy = Some(proxy);
+        self
+    }
+
     pub fn with_progress(mut self, progress: Handler<progress::Service>) -> Self {
         self.progress = Some(progress);
         self
@@ -177,6 +215,11 @@ impl Starter {
 
     pub fn with_users(mut self, users: Handler<users::Service>) -> Self {
         self.users = Some(users);
+        self
+    }
+
+    pub fn with_s390(mut self, s390: Handler<s390::Service>) -> Self {
+        self.s390 = Some(s390);
         self
     }
 
@@ -200,6 +243,7 @@ impl Starter {
                     .await?
             }
         };
+
         let hostname = match self.hostname {
             Some(hostname) => hostname,
             None => {
@@ -208,6 +252,12 @@ impl Starter {
                     .await?
             }
         };
+
+        let proxy = match self.proxy {
+            Some(proxy) => proxy,
+            None => proxy::Service::starter(self.events.clone()).start()?,
+        };
+
         let l10n = match self.l10n {
             Some(l10n) => l10n,
             None => {
@@ -215,6 +265,11 @@ impl Starter {
                     .start()
                     .await?
             }
+        };
+
+        let security = match self.security {
+            Some(security) => security,
+            None => security::Service::starter(self.questions.clone()).start()?,
         };
 
         let software = match self.software {
@@ -225,6 +280,8 @@ impl Starter {
                     issues.clone(),
                     progress.clone(),
                     self.questions.clone(),
+                    security.clone(),
+                    bootloader.clone(),
                 )
                 .start()
                 .await?
@@ -237,6 +294,20 @@ impl Starter {
                 storage::Service::starter(
                     self.events.clone(),
                     issues.clone(),
+                    progress.clone(),
+                    self.dbus.clone(),
+                )
+                .start()
+                .await?
+            }
+        };
+
+        let iscsi = match self.iscsi {
+            Some(iscsi) => iscsi,
+            None => {
+                iscsi::Service::starter(
+                    storage.clone(),
+                    self.events.clone(),
                     progress.clone(),
                     self.dbus.clone(),
                 )
@@ -277,24 +348,65 @@ impl Starter {
             }
         };
 
+        let s390 = match self.s390 {
+            Some(s390) => Some(s390),
+            None => {
+                if !Arch::is_s390() {
+                    None
+                } else {
+                    let s390 = s390::Service::starter(
+                        storage.clone(),
+                        self.events.clone(),
+                        progress.clone(),
+                        self.dbus.clone(),
+                    )
+                    .start()
+                    .await?;
+                    Some(s390)
+                }
+            }
+        };
+
+        let runner = tasks::TasksRunner {
+            bootloader: bootloader.clone(),
+            files: files.clone(),
+            hostname: hostname.clone(),
+            iscsi: iscsi.clone(),
+            issues: issues.clone(),
+            l10n: l10n.clone(),
+            network: network.clone(),
+            progress: progress.clone(),
+            proxy: proxy.clone(),
+            questions: self.questions.clone(),
+            security: security.clone(),
+            software: software.clone(),
+            storage: storage.clone(),
+            users: users.clone(),
+            s390: s390.clone(),
+        };
+        let tasks = actor::spawn(runner);
+
         let mut service = Service {
             questions: self.questions,
             progress,
             issues,
             bootloader,
             hostname,
+            iscsi,
             l10n,
             network,
+            proxy,
             software,
             storage,
-            files,
             products: products::Registry::default(),
             licenses: licenses::Registry::default(),
             hardware,
             config: Config::default(),
             system: manager::SystemInfo::default(),
             product: None,
-            users: users,
+            users,
+            tasks,
+            s390,
         };
 
         service.setup().await?;
@@ -305,11 +417,12 @@ impl Starter {
 pub struct Service {
     bootloader: Handler<bootloader::Service>,
     hostname: Handler<hostname::Service>,
+    iscsi: Handler<iscsi::Service>,
+    proxy: Handler<proxy::Service>,
     l10n: Handler<l10n::Service>,
     software: Handler<software::Service>,
     network: NetworkSystemClient,
     storage: Handler<storage::Service>,
-    files: Handler<files::Service>,
     issues: Handler<issue::Service>,
     progress: Handler<progress::Service>,
     questions: Handler<question::Service>,
@@ -320,6 +433,8 @@ pub struct Service {
     config: Config,
     system: manager::SystemInfo,
     users: Handler<users::Service>,
+    s390: Option<Handler<s390::Service>>,
+    tasks: Handler<tasks::TasksRunner>,
 }
 
 impl Service {
@@ -369,62 +484,11 @@ impl Service {
 
     async fn set_config(&mut self, config: Config) -> Result<(), Error> {
         self.set_product(&config)?;
-
-        let Some(product) = &self.product else {
-            return Err(Error::MissingProduct);
-        };
-
-        self.hostname
-            .call(hostname::message::SetConfig::new(config.hostname.clone()))
-            .await?;
-
-        self.files
-            .call(files::message::SetConfig::new(config.files.clone()))
-            .await?;
-
-        self.files
-            .call(files::message::RunScripts::new(ScriptsGroup::Pre))
-            .await?;
-
-        self.questions
-            .call(question::message::SetConfig::new(config.questions.clone()))
-            .await?;
-
-        self.software
-            .call(software::message::SetConfig::new(
-                Arc::clone(product),
-                config.software.clone(),
-            ))
-            .await?;
-
-        self.l10n
-            .call(l10n::message::SetConfig::new(config.l10n.clone()))
-            .await?;
-
-        self.users
-            .call(users::message::SetConfig::new(config.users.clone()))
-            .await?;
-
-        self.storage
-            .call(storage::message::SetConfig::new(
-                Arc::clone(product),
-                config.storage.clone(),
-            ))
-            .await?;
-
-        // call bootloader always after storage to ensure that bootloader reflect new storage settings
-        self.bootloader
-            .call(bootloader::message::SetConfig::new(
-                config.bootloader.clone(),
-            ))
-            .await?;
-
-        if let Some(network) = config.network.clone() {
-            self.network.update_config(network).await?;
-            self.network.apply().await?;
-        }
-
         self.config = config;
+
+        let set_config = tasks::message::SetConfig::new(self.product.clone(), self.config.clone());
+        self.tasks.cast(set_config)?;
+
         Ok(())
     }
 
@@ -439,6 +503,13 @@ impl Service {
         Ok(())
     }
 
+    async fn discover_iscsi(&self, config: api::iscsi::DiscoverConfig) -> Result<(), Error> {
+        self.iscsi
+            .call(iscsi::message::Discover::new(config))
+            .await?;
+        Ok(())
+    }
+
     async fn activate_storage(&self) -> Result<(), Error> {
         self.storage.call(storage::message::Activate).await?;
         Ok(())
@@ -449,25 +520,28 @@ impl Service {
         Ok(())
     }
 
+    async fn probe_dasd(&self) -> Result<(), Error> {
+        if let Some(s390) = &self.s390 {
+            s390.call(s390::message::ProbeDASD).await?;
+        }
+        Ok(())
+    }
+
     fn set_product(&mut self, config: &Config) -> Result<(), Error> {
         self.product = None;
         self.update_product(config)
     }
 
     fn update_product(&mut self, config: &Config) -> Result<(), Error> {
-        let product_id = config
-            .software
-            .as_ref()
-            .and_then(|s| s.product.as_ref())
-            .and_then(|p| p.id.as_ref());
+        let product = config.software.as_ref().and_then(|s| s.product.as_ref());
 
-        if let Some(id) = product_id {
-            if let Some(product_spec) = self.products.find(&id) {
+        if let Some(product) = product {
+            if let Some(id) = &product.id {
+                let mode = product.mode.as_ref().map(|m| m.as_str());
+                tracing::debug!("Setting product and mode to {} and {:?}", id, mode);
+                let product_spec = self.products.find(&id, mode)?;
                 let product = RwLock::new(product_spec.clone());
                 self.product = Some(Arc::new(product));
-            } else {
-                self.product = None;
-                tracing::warn!("Unknown product '{id}'");
             }
         }
 
@@ -487,12 +561,34 @@ impl Service {
         Ok(())
     }
 
-    async fn check_stage(&self, expected: Stage) -> Result<(), Error> {
-        let current = self.progress.call(progress::message::GetStage).await?;
-        if current != expected {
-            return Err(Error::UnexpectedStage { expected, current });
-        }
-        Ok(())
+    /// Determines whether the software service is available.
+    ///
+    /// Consider the service as available if there is no pending progress.
+    async fn is_software_available(&self) -> Result<bool, Error> {
+        let is_empty = self
+            .progress
+            .call(progress::message::IsEmpty::with_scope(Scope::Software))
+            .await?;
+        Ok(is_empty)
+    }
+
+    /// Returns the product configuration.
+    ///
+    /// When the software is busy, the configuration will not include the product
+    /// information. However, most of that information is already available in the
+    /// manager service.
+    async fn product_software_config(&self) -> Result<Option<api::software::Config>, Error> {
+        let Some(product) = &self.product else {
+            return Ok(None);
+        };
+
+        let mut software_config = self.config.software.clone().unwrap_or_default();
+        let product_config = software_config.product.get_or_insert_default();
+        let product = product.read().await;
+        product_config.id = Some(product.id.clone());
+        product_config.mode = product.mode.clone();
+
+        Ok(Some(software_config))
     }
 }
 
@@ -514,14 +610,21 @@ impl MessageHandler<message::GetSystem> for Service {
     /// It returns the information of the underlying system.
     async fn handle(&mut self, _message: message::GetSystem) -> Result<SystemInfo, Error> {
         let hostname = self.hostname.call(hostname::message::GetSystem).await?;
+        let proxy = self.proxy.call(proxy::message::GetSystem).await?;
         let l10n = self.l10n.call(l10n::message::GetSystem).await?;
         let manager = self.system.clone();
         let storage = self.storage.call(storage::message::GetSystem).await?;
+        let iscsi = self.iscsi.call(iscsi::message::GetSystem).await?;
         let network = self.network.get_system().await?;
 
-        let stage = self.progress.call(progress::message::GetStage).await?;
-        // During installation, the software service will not answer.
-        let software = if stage != Stage::Installing {
+        let s390 = if let Some(s390) = &self.s390 {
+            Some(s390.call(s390::message::GetSystem).await?)
+        } else {
+            None
+        };
+
+        // If the software service is busy, it will not answer.
+        let software = if self.is_software_available().await? {
             self.software.call(software::message::GetSystem).await?
         } else {
             Default::default()
@@ -529,10 +632,13 @@ impl MessageHandler<message::GetSystem> for Service {
 
         Ok(SystemInfo {
             hostname,
+            proxy,
             l10n,
             manager,
             network,
             storage,
+            iscsi,
+            s390,
             software,
         })
     }
@@ -550,30 +656,45 @@ impl MessageHandler<message::GetExtendedConfig> for Service {
             .await?
             .to_option();
         let hostname = self.hostname.call(hostname::message::GetConfig).await?;
+        let iscsi = self.iscsi.call(iscsi::message::GetConfig).await?;
         let l10n = self.l10n.call(l10n::message::GetConfig).await?;
+        // FIXME: the security service might be busy asking some question, so it cannot answer.
+        // By now, let's consider that the whole security configuration is set by the user
+        // (ignoring imported certificates by questions).
+        let security = self.config.security.clone();
+        let proxy = self.proxy.call(proxy::message::GetConfig).await?;
         let questions = self.questions.call(question::message::GetConfig).await?;
         let network = self.network.get_config().await?;
         let storage = self.storage.call(storage::message::GetConfig).await?;
         let users = self.users.call(users::message::GetConfig).await?;
 
-        let stage = self.progress.call(progress::message::GetStage).await?;
-        // During installation, the software service will not answer.
-        let software = if stage != Stage::Installing {
-            Some(self.software.call(software::message::GetConfig).await?)
+        let s390 = if let Some(s390) = &self.s390 {
+            Some(s390.call(s390::message::GetConfig).await?)
         } else {
             None
+        };
+
+        // If the software service is busy, it will not answer.
+        let software = if self.is_software_available().await? {
+            Some(self.software.call(software::message::GetConfig).await?)
+        } else {
+            self.product_software_config().await?
         };
 
         Ok(Config {
             bootloader,
             hostname: Some(hostname),
+            iscsi,
             l10n: Some(l10n),
+            proxy,
             questions,
             network: Some(network),
+            security,
             software,
             storage,
             files: None,
             users: Some(users),
+            s390,
         })
     }
 }
@@ -592,7 +713,7 @@ impl MessageHandler<message::GetConfig> for Service {
 impl MessageHandler<message::SetConfig> for Service {
     /// Sets the user configuration with the given values.
     async fn handle(&mut self, message: message::SetConfig) -> Result<(), Error> {
-        self.check_stage(Stage::Configuring).await?;
+        checks::check_stage(&self.progress, Stage::Configuring).await?;
         self.set_config(message.config).await
     }
 }
@@ -604,7 +725,7 @@ impl MessageHandler<message::UpdateConfig> for Service {
     /// It merges the current config with the given one. If some scope is missing in the given
     /// config, then it keeps the values from the current config.
     async fn handle(&mut self, message: message::UpdateConfig) -> Result<(), Error> {
-        self.check_stage(Stage::Configuring).await?;
+        checks::check_stage(&self.progress, Stage::Configuring).await?;
         let mut new_config = message.config;
         new_config.merge(self.config.clone());
         self.set_config(new_config).await
@@ -621,9 +742,8 @@ impl MessageHandler<message::GetProposal> for Service {
         let network = self.network.get_proposal().await?;
         let users = self.users.call(users::message::GetProposal).await?;
 
-        let stage = self.progress.call(progress::message::GetStage).await?;
-        // During installation, the software service will not answer.
-        let software = if stage != Stage::Installing {
+        // If the software service is busy, it will not answer.
+        let software = if self.is_software_available().await? {
             self.software.call(software::message::GetProposal).await?
         } else {
             None
@@ -664,33 +784,30 @@ impl MessageHandler<message::RunAction> for Service {
     async fn handle(&mut self, message: message::RunAction) -> Result<(), Error> {
         match message.action {
             Action::ConfigureL10n(config) => {
-                self.check_stage(Stage::Configuring).await?;
+                checks::check_stage(&self.progress, Stage::Configuring).await?;
                 self.configure_l10n(config).await?;
             }
+            Action::DiscoverISCSI(config) => {
+                checks::check_stage(&self.progress, Stage::Configuring).await?;
+                self.discover_iscsi(config).await?;
+            }
             Action::ActivateStorage => {
-                self.check_stage(Stage::Configuring).await?;
+                checks::check_stage(&self.progress, Stage::Configuring).await?;
                 self.activate_storage().await?;
             }
             Action::ProbeStorage => {
-                self.check_stage(Stage::Configuring).await?;
+                checks::check_stage(&self.progress, Stage::Configuring).await?;
                 self.probe_storage().await?;
             }
+            Action::ProbeDASD => {
+                checks::check_stage(&self.progress, Stage::Configuring).await?;
+                self.probe_dasd().await?;
+            }
             Action::Install => {
-                self.check_stage(Stage::Configuring).await?;
-                let action = InstallAction {
-                    hostname: self.hostname.clone(),
-                    l10n: self.l10n.clone(),
-                    network: self.network.clone(),
-                    software: self.software.clone(),
-                    storage: self.storage.clone(),
-                    files: self.files.clone(),
-                    progress: self.progress.clone(),
-                    users: self.users.clone(),
-                };
-                action.run();
+                self.tasks.cast(tasks::message::Install)?;
             }
             Action::Finish(method) => {
-                // TODO: check the stage
+                checks::check_stage(&self.progress, Stage::Finished).await?;
                 let action = FinishAction::new(method);
                 action.run();
             }
@@ -709,13 +826,25 @@ impl MessageHandler<message::GetStorageModel> for Service {
 
 #[async_trait]
 impl MessageHandler<message::SetStorageModel> for Service {
-    /// It sets the storage model.
+    /// Sets the storage model.
+    ///
+    // FIXME: Apply a config model by calling to [`Service::set_config`]. Note that set_config
+    // contains logic about what has to be called and in which order. For example, calling to
+    // bootloader after storage.
+    // The D-Bus service could extend its API to translate a model into a config, and that config
+    // can be used as user config for storage.
     async fn handle(&mut self, message: message::SetStorageModel) -> Result<(), Error> {
-        self.check_stage(Stage::Configuring).await?;
-        Ok(self
-            .storage
+        checks::check_stage(&self.progress, Stage::Configuring).await?;
+        self.storage
             .call(storage::message::SetConfigModel::new(message.model))
-            .await?)
+            .await?;
+        // Bootloader must be recalculated.
+        self.bootloader
+            .call(bootloader::message::SetConfig::new(
+                self.config.bootloader.clone(),
+            ))
+            .await?;
+        Ok(())
     }
 }
 
@@ -726,7 +855,7 @@ impl MessageHandler<message::SolveStorageModel> for Service {
         &mut self,
         message: message::SolveStorageModel,
     ) -> Result<Option<Value>, Error> {
-        self.check_stage(Stage::Configuring).await?;
+        checks::check_stage(&self.progress, Stage::Configuring).await?;
         Ok(self
             .storage
             .call(storage::message::SolveConfigModel::new(message.model))
@@ -739,111 +868,19 @@ impl MessageHandler<message::SolveStorageModel> for Service {
 impl MessageHandler<software::message::SetResolvables> for Service {
     /// It sets the software resolvables.
     async fn handle(&mut self, message: software::message::SetResolvables) -> Result<(), Error> {
-        self.check_stage(Stage::Configuring).await?;
+        checks::check_stage(&self.progress, Stage::Configuring).await?;
         self.software.call(message).await?;
         Ok(())
     }
 }
 
-/// Implements the installation process.
-///
-/// This action runs on a separate Tokio task to prevent the manager from blocking.
-struct InstallAction {
-    hostname: Handler<hostname::Service>,
-    l10n: Handler<l10n::Service>,
-    network: NetworkSystemClient,
-    software: Handler<software::Service>,
-    storage: Handler<storage::Service>,
-    files: Handler<files::Service>,
-    progress: Handler<progress::Service>,
-    users: Handler<users::Service>,
-}
-
-impl InstallAction {
-    /// Runs the installation process on a separate Tokio task.
-    pub fn run(mut self) {
-        tokio::spawn(async move {
-            if let Err(error) = self.install().await {
-                tracing::error!("Installation failed: {error}");
-                if let Err(error) = self
-                    .progress
-                    .call(progress::message::SetStage::new(Stage::Failed))
-                    .await
-                {
-                    tracing::error!(
-                        "It was not possible to set the stage to {}: {error}",
-                        Stage::Failed
-                    );
-                }
-            }
-        });
-    }
-
-    async fn install(&mut self) -> Result<(), Error> {
-        // NOTE: consider a NextState message?
-        self.progress
-            .call(progress::message::SetStage::new(Stage::Installing))
-            .await?;
-
-        //
-        // Preparation
-        //
-        self.progress
-            .call(progress::message::StartWithSteps::new(
-                Scope::Manager,
-                vec![
-                    gettext("Prepare the system"),
-                    gettext("Install software"),
-                    gettext("Configure the system"),
-                ],
-            ))
-            .await?;
-
-        self.storage.call(storage::message::Install).await?;
-        self.files
-            .call(files::message::RunScripts::new(
-                ScriptsGroup::PostPartitioning,
-            ))
-            .await?;
-
-        //
-        // Installation
-        //
-        self.progress
-            .call(progress::message::Next::new(Scope::Manager))
-            .await?;
-        self.software.call(software::message::Install).await?;
-
-        //
-        // Configuration
-        //
-        self.progress
-            .call(progress::message::Next::new(Scope::Manager))
-            .await?;
-        self.l10n.call(l10n::message::Install).await?;
-        self.software.call(software::message::Finish).await?;
-        self.files.call(files::message::WriteFiles).await?;
-        self.network.install().await?;
-        self.hostname.call(hostname::message::Install).await?;
-        self.users.call(users::message::Install).await?;
-
-        // call files before storage finish as it unmount /mnt/run which is important for chrooted scripts
-        self.files
-            .call(files::message::RunScripts::new(ScriptsGroup::Post))
-            .await?;
-        self.storage.call(storage::message::Finish).await?;
-
-        //
-        // Finish progress and changes
-        //
-        self.progress
-            .call(progress::message::Finish::new(Scope::Manager))
-            .await?;
-
-        self.progress
-            .call(progress::message::SetStage::new(Stage::Finished))
-            .await?;
-        Ok(())
+#[async_trait]
+impl MessageHandler<users::message::CheckPassword> for Service {
+    async fn handle(
+        &mut self,
+        message: users::message::CheckPassword,
+    ) -> Result<PasswordCheckResult, Error> {
+        Ok(self.users.call(message).await?)
     }
 }
 
@@ -868,6 +905,9 @@ impl FinishAction {
 
         if let Some(switch) = option {
             command.arg(switch);
+        } else {
+            tracing::info!("Stopped as requested");
+            return;
         }
 
         command.arg("now");

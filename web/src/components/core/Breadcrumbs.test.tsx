@@ -56,6 +56,28 @@ describe("Breadcrumbs.Item", () => {
     expect(screen.queryByRole("link")).toBeNull();
   });
 
+  it("renders as heading when isCurrent is true", () => {
+    installerRender(<Breadcrumbs.Item label="Current Page" isCurrent />);
+
+    const heading = screen.getByRole("heading", { level: 1, name: "Current Page" });
+    expect(heading).toBeInTheDocument();
+    expect(screen.queryByRole("link")).toBeNull();
+  });
+
+  it("sets aria-current='page' when isCurrent is true", () => {
+    installerRender(<Breadcrumbs.Item label="Current Page" isCurrent />);
+
+    const listItem = screen.getByRole("listitem");
+    expect(listItem).toHaveAttribute("aria-current", "page");
+  });
+
+  it("does not set aria-current when isCurrent is false", () => {
+    installerRender(<Breadcrumbs.Item label="Software" path="/software" />);
+
+    const listItem = screen.getByRole("listitem");
+    expect(listItem).not.toHaveAttribute("aria-current");
+  });
+
   it("renders divider if hideDivider is false", () => {
     const { container } = installerRender(
       <Breadcrumbs.Item label="Software" path="/software" hideDivider={false} />,
@@ -86,5 +108,17 @@ describe("Breadcrumbs.Item", () => {
     const label = screen.getByText("Software");
     expect(label).not.toHaveClass(textStyles.fontSizeLg);
     expect(label).not.toHaveClass(textStyles.fontWeightBold);
+  });
+
+  it("renders menu when provided", () => {
+    installerRender(
+      <Breadcrumbs.Item
+        label="Software"
+        path="/software"
+        menu={<div role="menu" aria-label="Software menu" />}
+      />,
+    );
+
+    screen.getByRole("menu", { name: "Software menu" });
   });
 });

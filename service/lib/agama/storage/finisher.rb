@@ -26,7 +26,6 @@ require "yast2/systemd/service"
 require "yast2/fs_snapshot"
 require "bootloader/finish_client"
 require "y2storage/storage_manager"
-require "agama/with_progress_manager"
 require "agama/helpers"
 require "abstract_method"
 require "fileutils"
@@ -38,7 +37,6 @@ module Agama
   module Storage
     # Auxiliary class to handle the last storage-related steps of the installation
     class Finisher
-      include WithProgressManager
       include Helpers
 
       # Constructor
@@ -49,17 +47,12 @@ module Agama
         @config = config
       end
 
-      # Execute the final storage actions, reporting the progress
+      # Execute the final storage actions.
       def run
-        # FIXME: This progress is not emitting changes in D-Bus because its callbacks are not
-        #   configured. Is that expected? If so, why a progress?
         steps = possible_steps.select(&:run?)
-        start_progress_with_size(steps.size)
 
         on_target do
-          steps.each do |step|
-            progress.step(step.label) { step.run }
-          end
+          steps.each(&:run)
         end
       end
 
@@ -78,9 +71,7 @@ module Agama
           StorageStep.new(logger),
           IscsiStep.new(logger),
           BootloaderStep.new(logger),
-          SnapshotsStep.new(logger),
-          CopyLogsStep.new(logger),
-          UnmountStep.new(logger)
+          SnapshotsStep.new(logger)
         ]
       end
 
@@ -216,53 +207,6 @@ module Agama
         def run
           logger.info("Finishing Snapper configuration")
           Yast2::FsSnapshot.configure_snapper
-        end
-      end
-
-      # Step to copy the installation logs
-      class CopyLogsStep < Step
-        SCRIPTS_DIR = "/run/agama/scripts"
-
-        def label
-          _("Copying logs")
-        end
-
-        def run
-          FileUtils.mkdir_p(logs_dir, mode: 0o700)
-          collect_logs
-          copy_scripts
-        end
-
-      private
-
-        def copy_scripts
-          return unless Dir.exist?(SCRIPTS_DIR)
-
-          FileUtils.cp_r(SCRIPTS_DIR, logs_dir)
-        end
-
-        def collect_logs
-          path = File.join(logs_dir, "logs")
-          Yast::Execute.locally(
-            "agama", "logs", "store", "--destination", path
-          )
-        end
-
-        def logs_dir
-          @logs_dir ||= File.join(
-            Yast::Installation.destdir, "var", "log", "agama-installation"
-          )
-        end
-      end
-
-      # Step to unmount the target file-systems
-      class UnmountStep < Step
-        def label
-          _("Unmounting storage devices")
-        end
-
-        def run
-          wfm_write("umount_finish")
         end
       end
     end

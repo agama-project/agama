@@ -18,6 +18,7 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
+use agama_security as security;
 use agama_software::state::{Repository as StateRepository, SoftwareState};
 use agama_software::zypp_server::{SoftwareAction, ZyppServer, ZyppServerResult};
 use agama_utils::{
@@ -29,7 +30,7 @@ use agama_utils::{
     },
     progress, question,
 };
-use camino::Utf8Path;
+use camino::{Utf8Path, Utf8PathBuf};
 use glob::glob;
 use std::fs;
 use std::path::Path;
@@ -71,7 +72,8 @@ async fn test_start_zypp_server() {
     let zypp_root =
         Utf8Path::new(env!("CARGO_MANIFEST_DIR")).join("../zypp-agama/fixtures/zypp_root_tmp");
 
-    let client = ZyppServer::start(&zypp_root).expect("starting zypp server failed");
+    let install_dir = Utf8PathBuf::from("/mnt");
+    let client = ZyppServer::start(&zypp_root, &install_dir).expect("starting zypp server failed");
 
     // Setup event broadcast channel
     let (event_tx, _event_rx) = broadcast::channel::<Event>(100); // Buffer size 100
@@ -83,6 +85,10 @@ async fn test_start_zypp_server() {
     // Spawn question service
     let question_service = question::service::Service::new(event_tx.clone());
     let question_handler = actor::spawn(question_service);
+
+    // Spawn the security service
+    let security_service_starter = security::service::Starter::new(question_handler.clone());
+    let security_handler = security_service_starter.start().unwrap();
 
     // Pre-configure the answer to the GPG key question
     let answer = Answer {
@@ -121,6 +127,7 @@ async fn test_start_zypp_server() {
             state: software_state,
             progress: progress_handler,
             question: question_handler.clone(),
+            security: security_handler,
             tx,
         })
         .expect("Failed to send SoftwareAction::Write");

@@ -255,6 +255,7 @@ void free_repository(struct Repository *repo) {
   free(repo->url);
   free(repo->alias);
   free(repo->userName);
+  free(repo->serviceName);
 }
 
 void free_repository_list(struct RepositoryList *list) noexcept {
@@ -298,6 +299,9 @@ transactby_from(enum RESOLVABLE_SELECTED who) {
     return zypp::ResStatus::USER;
   case RESOLVABLE_SELECTED::NOT_SELECTED: {
     PANIC("Unexpected value RESOLVABLE_SELECTED::NOT_SELECTED.");
+  }
+  case RESOLVABLE_SELECTED::USER_REMOVED: {
+    PANIC("Unexpected value RESOLVABLE_SELECTED::USER_REMOVED.");
   }
   }
 
@@ -353,71 +357,76 @@ void resolvable_reset_all(struct Zypp *_zypp) noexcept {
     item.statusReset();
 }
 
-struct PatternInfos get_patterns_info(struct Zypp *_zypp,
-                                      struct PatternNames names,
-                                      struct Status *status) noexcept {
-  PatternInfos result = {
-      (struct PatternInfo *)malloc(names.size * sizeof(PatternInfo)),
+static RESOLVABLE_SELECTED convert_selected(zypp::ResStatus status) {
+  if (status.isToBeInstalled()) {
+    switch (status.getTransactByValue()) {
+    case zypp::ResStatus::TransactByValue::USER:
+      return RESOLVABLE_SELECTED::USER_SELECTED;
+    case zypp::ResStatus::TransactByValue::APPL_HIGH:
+    case zypp::ResStatus::TransactByValue::APPL_LOW:
+      return RESOLVABLE_SELECTED::APPLICATION_SELECTED;
+    case zypp::ResStatus::TransactByValue::SOLVER:
+      return RESOLVABLE_SELECTED::SOLVER_SELECTED;
+    }
+  } else {
+    // distinguish between the "not selected" and "explicitly removed by user"
+    // states
+    if (status.getTransactByValue() == zypp::ResStatus::TransactByValue::USER)
+      return RESOLVABLE_SELECTED::USER_REMOVED;
+    else
+      return RESOLVABLE_SELECTED::NOT_SELECTED;
+  }
+
+  return RESOLVABLE_SELECTED::NOT_SELECTED;
+}
+
+struct Patterns get_patterns(struct Zypp *zypp,
+                             struct Status *status) noexcept {
+  auto iterator =
+      zypp->zypp_pointer->pool().proxy().byKind(zypp::ResKind::pattern);
+
+  Patterns result = {
+      (struct Pattern *)malloc(iterator.size() * sizeof(Pattern)),
       0 // initialize with zero and increase after each successful add of
         // pattern info
   };
 
-  for (unsigned j = 0; j < names.size; ++j) {
-    zypp::ui::Selectable::constPtr selectable =
-        zypp::ui::Selectable::get(zypp::ResKind::pattern, names.names[j]);
-    // we do not find any pattern
-    if (!selectable.get())
-      continue;
-
-    // we know here that we get only patterns
-    zypp::Pattern::constPtr pattern =
-        zypp::asKind<zypp::Pattern>(selectable->theObj().resolvable());
-    unsigned i = result.size;
-    result.infos[i].name = strdup(pattern->name().c_str());
-    result.infos[i].category = strdup(pattern->category().c_str());
-    result.infos[i].description = strdup(pattern->description().c_str());
-    result.infos[i].icon = strdup(pattern->icon().c_str());
-    result.infos[i].summary = strdup(pattern->summary().c_str());
-    result.infos[i].order = strdup(pattern->order().c_str());
-    auto &status = selectable->theObj().status();
-    if (status.isToBeInstalled()) {
-      switch (status.getTransactByValue()) {
-      case zypp::ResStatus::TransactByValue::USER:
-        result.infos[i].selected = RESOLVABLE_SELECTED::USER_SELECTED;
-        break;
-      case zypp::ResStatus::TransactByValue::APPL_HIGH:
-      case zypp::ResStatus::TransactByValue::APPL_LOW:
-        result.infos[i].selected = RESOLVABLE_SELECTED::APPLICATION_SELECTED;
-        break;
-      case zypp::ResStatus::TransactByValue::SOLVER:
-        result.infos[i].selected = RESOLVABLE_SELECTED::SOLVER_SELECTED;
-        break;
-      }
-    } else {
-      result.infos[i].selected = RESOLVABLE_SELECTED::NOT_SELECTED;
-    }
+  for (const auto iter : iterator) {
+    Pattern &pattern = result.list[result.size];
+    auto zypp_pattern = iter->candidateAsKind<zypp::Pattern>();
+    pattern.name = strdup(iter->name().c_str());
+    pattern.category = strdup(zypp_pattern->category().c_str());
+    pattern.description = strdup(zypp_pattern->description().c_str());
+    pattern.icon = strdup(zypp_pattern->icon().c_str());
+    pattern.summary = strdup(zypp_pattern->summary().c_str());
+    pattern.order = strdup(zypp_pattern->order().c_str());
+    pattern.repo_alias = strdup(zypp_pattern->repoInfo().alias().c_str());
+    pattern.selected = convert_selected(iter->theObj().status());
     result.size++;
-  };
+  }
 
   STATUS_OK(status);
   return result;
 }
 
-void free_pattern_infos(const struct PatternInfos *infos) noexcept {
-  for (unsigned i = 0; i < infos->size; ++i) {
-    free(infos->infos[i].name);
-    free(infos->infos[i].category);
-    free(infos->infos[i].icon);
-    free(infos->infos[i].description);
-    free(infos->infos[i].summary);
-    free(infos->infos[i].order);
+void free_patterns(const struct Patterns *patterns) noexcept {
+  for (unsigned i = 0; i < patterns->size; ++i) {
+    free((void *)patterns->list[i].name);
+    free((void *)patterns->list[i].category);
+    free((void *)patterns->list[i].description);
+    free((void *)patterns->list[i].icon);
+    free((void *)patterns->list[i].summary);
+    free((void *)patterns->list[i].order);
+    free((void *)patterns->list[i].repo_alias);
   }
-  free(infos->infos);
+  free((void *)patterns->list);
 }
 
-bool run_solver(struct Zypp *zypp, struct Status *status) noexcept {
+bool run_solver(struct Zypp *zypp, bool only_required,
+                struct Status *status) noexcept {
   try {
     STATUS_OK(status);
+    zypp->zypp_pointer->resolver()->setOnlyRequires(only_required);
     return zypp->zypp_pointer->resolver()->resolvePool();
   } catch (zypp::Exception &excpt) {
     STATUS_EXCEPT(status, excpt);
@@ -646,6 +655,7 @@ struct RepositoryList list_repositories(struct Zypp *zypp,
     new_repo->url = strdup(iter->url().asString().c_str());
     new_repo->alias = strdup(iter->alias().c_str());
     new_repo->userName = strdup(iter->asUserString().c_str());
+    new_repo->serviceName = strdup(iter->service().c_str());
   }
 
   struct RepositoryList result = {static_cast<unsigned>(size), repos};

@@ -74,6 +74,8 @@ Requires:       python-langtable-data
 # dependency on the YaST part of Agama
 Requires:       agama-yast
 Requires:       agama-common
+# required for importing SSL certificates
+Requires:       ca-certificates
 
 %description
 Agama is a service-based Linux installer. It is composed of an HTTP-based API,
@@ -192,6 +194,7 @@ env \
   libexecdir=%{_libexecdir} \
   mandir=%{_mandir} \
   %{_builddir}/agama/install.sh
+%find_lang agama
 
 %check
 PATH=$PWD/share/bin:$PATH
@@ -203,7 +206,7 @@ echo $PATH
 %endif
 
 %pre
-%service_add_pre agama-web-server.service
+%service_add_pre agama-web-server.service agama-proxy-setup.service
 
 %pre -n agama-autoinstall
 %service_add_pre agama-autoinstall.service
@@ -212,7 +215,7 @@ echo $PATH
 %service_add_pre agama-scripts.service
 
 %post
-%service_add_post agama-web-server.service
+%service_add_post agama-web-server.service agama-proxy-setup.service
 
 %post -n agama-autoinstall
 %service_add_post agama-autoinstall.service
@@ -221,7 +224,7 @@ echo $PATH
 %service_add_post agama-scripts.service
 
 %preun
-%service_del_preun agama-web-server.service
+%service_del_preun agama-web-server.service agama-proxy-setup.service
 
 %preun -n agama-autoinstall
 %service_del_preun agama-autoinstall.service
@@ -230,7 +233,7 @@ echo $PATH
 %service_del_preun agama-scripts.service
 
 %postun
-%service_del_postun_with_restart agama-web-server.service
+%service_del_postun_with_restart agama-web-server.service agama-proxy-setup.service
 
 %postun -n agama-autoinstall
 %service_del_postun_with_restart agama-autoinstall.service
@@ -238,15 +241,15 @@ echo $PATH
 %postun -n agama-scripts
 %service_del_postun_with_restart agama-scripts.service
 
-%files
+%files -f agama.lang
 %doc README.md
 %license LICENSE
 %{_bindir}/agama-web-server
+%{_bindir}/agama-proxy-setup
 %{_pam_vendordir}/agama
 %{_unitdir}/agama-web-server.service
+%{_unitdir}/agama-proxy-setup.service
 %dir %{_datadir}/agama/eula
-%dir %{_datadir}/locale
-%{_datadir}/locale/*/LC_MESSAGES/agama.mo
 
 %files -n agama-common
 %dir %{_datadir}/agama/jsonnet

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2025] SUSE LLC
+ * Copyright (c) [2025-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -62,8 +62,9 @@ async function openMenu() {
 
 it("renders the menu", () => {
   const { container } = installerRender(<ConnectedDevicesMenu />);
+  screen.getByText("More");
   const icon = container.querySelector("svg");
-  expect(icon).toHaveAttribute("data-icon-name", "more_horiz");
+  expect(icon).toHaveAttribute("data-icon-name", "arrow_drop_down");
 });
 
 it("allows users to rescan devices", async () => {
@@ -77,7 +78,7 @@ it("allows users to configure iSCSI", async () => {
   const { user, menu } = await openMenu();
   const iscsiItem = within(menu).getByRole("menuitem", { name: /Configure iSCSI/ });
   await user.click(iscsiItem);
-  expect(mockNavigateFn).toHaveBeenCalledWith(PATHS.iscsi);
+  expect(mockNavigateFn).toHaveBeenCalledWith(PATHS.iscsi.root);
 });
 
 describe("if zFCP is not supported", () => {

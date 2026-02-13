@@ -31,7 +31,7 @@ module Agama
           def convert_partitions
             config.partitions
               .reject(&:skipped?)
-              .map { |p| ToModelConversions::Partition.new(p).convert }
+              .map { |p| ToModelConversions::Partition.new(p, volumes).convert }
               .compact
           end
         end

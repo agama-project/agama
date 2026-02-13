@@ -7,67 +7,180 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-01-06 09:22+0000\n"
-"PO-Revision-Date: 2026-01-13 10:00:00+0100\n"
-"Last-Translator: Martin Vidner <mvidner@suse.com>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"POT-Creation-Date: 2026-02-10 16:22+0000\n"
+"PO-Revision-Date: 2026-01-19 15:36+0000\n"
+"Last-Translator: Ladislav Slezák <lslezak@suse.com>\n"
+"Language-Team: Czech <https://l10n.opensuse.org/projects/agama/agama-rust-"
+"master/cs/>\n"
 "Language: cs\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
+"X-Generator: Weblate 5.15.2\n"
 
-#: agama-manager/src/service.rs:731
+#: agama-autoinstall/src/questions.rs:41 agama-utils/src/api/question.rs:282
+#: agama-utils/src/question/start.rs:54
+msgid "No"
+msgstr "Ne"
+
+#: agama-autoinstall/src/questions.rs:41 agama-utils/src/api/question.rs:282
+#: agama-utils/src/question/start.rs:54
+msgid "Yes"
+msgstr "Ano"
+
+#: agama-manager/src/tasks/runner.rs:183
 msgid "Prepare the system"
-msgstr ""
+msgstr "Nachystat systém"
 
-#: agama-manager/src/service.rs:732
+#: agama-manager/src/tasks/runner.rs:184
 msgid "Install software"
-msgstr ""
+msgstr "Instalovat software"
 
-#: agama-manager/src/service.rs:733
+#: agama-manager/src/tasks/runner.rs:185
 msgid "Configure the system"
+msgstr "Nakonfigurovat systém"
+
+#: agama-manager/src/tasks/runner.rs:280
+msgid "Storing security settings"
 msgstr ""
 
-#: agama-software/src/callbacks/commit_download.rs:44
-#: agama-software/src/callbacks/install.rs:50
-msgid "Ignore"
+#: agama-manager/src/tasks/runner.rs:281
+msgid "Setting up the hostname"
 msgstr ""
 
-#: agama-software/src/callbacks/commit_download.rs:44
-#: agama-software/src/callbacks/install.rs:50
-#: agama-software/src/callbacks/install.rs:78
-msgid "Retry"
+#: agama-manager/src/tasks/runner.rs:282
+msgid "Setting up the network proxy"
 msgstr ""
 
-#: agama-software/src/callbacks/install.rs:78
-msgid "Continue"
+#: agama-manager/src/tasks/runner.rs:283
+msgid "Importing user files"
 msgstr ""
 
-#: agama-software/src/callbacks/install.rs:83
-msgid "There was a problem running a package script."
+#: agama-manager/src/tasks/runner.rs:284
+msgid "Running user pre-installation scripts"
 msgstr ""
 
-#: agama-software/src/callbacks/security.rs:69
-msgid "Skip"
+#: agama-manager/src/tasks/runner.rs:285
+msgid "Storing questions settings"
 msgstr ""
 
-#: agama-software/src/callbacks/security.rs:69
+#: agama-manager/src/tasks/runner.rs:286
+msgid "Storing localization settings"
+msgstr ""
+
+#: agama-manager/src/tasks/runner.rs:287
+msgid "Storing users settings"
+msgstr ""
+
+#: agama-manager/src/tasks/runner.rs:288
+msgid "Configuring iSCSI devices"
+msgstr ""
+
+#: agama-manager/src/tasks/runner.rs:292
+msgid "Setting up the network"
+msgstr ""
+
+#: agama-manager/src/tasks/runner.rs:297
+#, fuzzy
+msgid "Preparing the software proposal"
+msgstr "Vyhodnocuje se návrh softwaru"
+
+#: agama-manager/src/tasks/runner.rs:298
+#, fuzzy
+msgid "Preparing the storage proposal"
+msgstr "Vyhodnocuje se návrh softwaru"
+
+#: agama-manager/src/tasks/runner.rs:299
+msgid "Storing bootloader settings"
+msgstr ""
+
+#: agama-network/src/service.rs:518
+msgid "Writing configuration"
+msgstr "Zapisuji konfiguraci"
+
+#: agama-network/src/service.rs:519
+msgid "Reading configuration"
+msgstr "Načítám konfiguraci"
+
+#: agama-security/src/service.rs:228
+msgid "Reject"
+msgstr ""
+
+#: agama-security/src/service.rs:228
+#: agama-software/src/callbacks/security.rs:109
 msgid "Trust"
+msgstr "Důvěřovat"
+
+#: agama-security/src/service.rs:229
+msgid ""
+"Trying to import a self-signed certificate. Do you want to trust it and "
+"register the product?"
 msgstr ""
 
-#: agama-software/src/zypp_server.rs:254
+#: agama-software/src/callbacks/commit_download.rs:48
+#: agama-software/src/callbacks/install.rs:56
+msgid "Ignore"
+msgstr "Ignorovat"
+
+#: agama-software/src/callbacks/commit_download.rs:48
+#: agama-software/src/callbacks/install.rs:56
+#: agama-software/src/callbacks/install.rs:81
+msgid "Retry"
+msgstr "Opakovat"
+
+#: agama-software/src/callbacks/install.rs:78
+msgid "There was a problem running a package script."
+msgstr "Vyskytla se chyba při běhu skriptu balíku."
+
+#: agama-software/src/callbacks/install.rs:81
+msgid "Continue"
+msgstr "Pokračovat"
+
+#. TRANSLATORS: substituting: key ID, (key name), fingerprint
+#: agama-software/src/callbacks/security.rs:102
+msgid ""
+"The key {0} ({1}) with fingerprint {2} is unknown. Do you want to trust this "
+"key?"
+msgstr ""
+"Klíč {0} ({1}) s otiskem {2} není známý. Chcete důvěřovat tomuto klíči?"
+
+#: agama-software/src/callbacks/security.rs:109
+msgid "Skip"
+msgstr "Přeskočit"
+
+#: agama-software/src/zypp_server.rs:304
 msgid "Updating the list of repositories"
-msgstr ""
+msgstr "Aktualizuji seznam repozitářů"
 
-#: agama-software/src/zypp_server.rs:255
+#: agama-software/src/zypp_server.rs:305
 msgid "Refreshing metadata from the repositories"
-msgstr ""
+msgstr "Obnovuji metadata repozitářů"
 
-#: agama-software/src/zypp_server.rs:256
+#: agama-software/src/zypp_server.rs:306
 msgid "Calculating the software proposal"
-msgstr ""
+msgstr "Vyhodnocuje se návrh softwaru"
 
-#: agama-software/src/zypp_server.rs:486
-msgid "Pattern summary"
-msgstr "Shrnutí vzoru"
+#: agama-software/src/zypp_server.rs:309
+msgid "Registering the system"
+msgstr "Systém se registruje"
+
+#: agama-software/src/zypp_server.rs:409
+msgid "The product must be registered"
+msgstr "Produkt musí být zaregistrovaný"
+
+#: agama-users/src/service.rs:138
+msgid ""
+"Defining a user, setting the root password or a SSH public key is required"
+msgstr ""
+"Je vyžadováno definování uživatele a nastavení rootovského hesla nebo SSH "
+"klíče"
+
+#: agama-users/src/service.rs:151
+msgid "First user information is incomplete"
+msgstr "Nastavení prvního uživatele není kompletní"
+
+#, fuzzy
+#~| msgid "Registering the system"
+#~ msgid "Failed to register the system"
+#~ msgstr "Systém se registruje"

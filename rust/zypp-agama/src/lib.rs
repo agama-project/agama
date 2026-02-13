@@ -5,9 +5,7 @@ use std::{
 };
 
 use errors::ZyppResult;
-use zypp_agama_sys::{
-    get_patterns_info, PatternNames, ProgressCallback, ProgressData, Status, ZyppProgressCallback,
-};
+use zypp_agama_sys::{get_patterns, ProgressCallback, ProgressData, Status, ZyppProgressCallback};
 
 pub mod errors;
 pub use errors::ZyppError;
@@ -23,6 +21,7 @@ pub struct Repository {
     pub url: String,
     pub alias: String,
     pub user_name: String,
+    pub service: Option<String>,
 }
 
 impl Repository {
@@ -56,6 +55,19 @@ pub struct PatternInfo {
     pub description: String,
     pub summary: String,
     pub order: String,
+    pub selected: ResolvableSelected,
+}
+
+// TODO: should we add also e.g. serd serializers here?
+#[derive(Debug)]
+pub struct Pattern {
+    pub name: String,
+    pub category: String,
+    pub icon: String,
+    pub description: String,
+    pub summary: String,
+    pub order: String,
+    pub repo_alias: String,
     pub selected: ResolvableSelected,
 }
 
@@ -242,11 +254,18 @@ impl Zypp {
             let size_usize: usize = repos.size.try_into().unwrap();
             for i in 0..size_usize {
                 let c_repo = *(repos.repos.add(i));
+                let service = string_from_ptr(c_repo.serviceName);
+                let service_opt = if service.is_empty() {
+                    None
+                } else {
+                    Some(service)
+                };
                 let r_repo = Repository {
                     enabled: c_repo.enabled,
                     url: string_from_ptr(c_repo.url),
                     alias: string_from_ptr(c_repo.alias),
                     user_name: string_from_ptr(c_repo.userName),
+                    service: service_opt,
                 };
                 repos_v.push(r_repo);
             }
@@ -257,39 +276,31 @@ impl Zypp {
         }
     }
 
-    pub fn patterns_info(&self, names: Vec<&str>) -> ZyppResult<Vec<PatternInfo>> {
+    pub fn list_patterns(&self) -> ZyppResult<Vec<Pattern>> {
         unsafe {
             let mut status: Status = Status::default();
             let status_ptr = &mut status as *mut _;
-            let c_names: Vec<CString> = names
-                .iter()
-                .map(|s| CString::new(*s).expect("CString must not contain internal NUL"))
-                .collect();
-            let c_ptr_names: Vec<*const c_char> =
-                c_names.iter().map(|c| c.as_c_str().as_ptr()).collect();
-            let pattern_names = PatternNames {
-                size: names.len() as u32,
-                names: c_ptr_names.as_ptr(),
-            };
-            let infos = get_patterns_info(self.ptr, pattern_names, status_ptr);
+
+            let patterns = get_patterns(self.ptr, status_ptr);
             helpers::status_to_result_void(status)?;
 
-            let mut r_infos = Vec::with_capacity(infos.size as usize);
-            for i in 0..infos.size as usize {
-                let c_info = *(infos.infos.add(i));
-                let r_info = PatternInfo {
-                    name: string_from_ptr(c_info.name),
-                    category: string_from_ptr(c_info.category),
-                    icon: string_from_ptr(c_info.icon),
-                    description: string_from_ptr(c_info.description),
-                    summary: string_from_ptr(c_info.summary),
-                    order: string_from_ptr(c_info.order),
-                    selected: c_info.selected.into(),
+            let mut r_patterns = Vec::with_capacity(patterns.size as usize);
+            for i in 0..patterns.size as usize {
+                let c_pattern = *(patterns.list.add(i));
+                let r_pattern = Pattern {
+                    name: string_from_ptr(c_pattern.name),
+                    category: string_from_ptr(c_pattern.category),
+                    icon: string_from_ptr(c_pattern.icon),
+                    description: string_from_ptr(c_pattern.description),
+                    summary: string_from_ptr(c_pattern.summary),
+                    order: string_from_ptr(c_pattern.order),
+                    repo_alias: string_from_ptr(c_pattern.repo_alias),
+                    selected: c_pattern.selected.into(),
                 };
-                r_infos.push(r_info);
+                r_patterns.push(r_pattern);
             }
-            zypp_agama_sys::free_pattern_infos(&infos);
-            Ok(r_infos)
+            zypp_agama_sys::free_patterns(&patterns);
+            Ok(r_patterns)
         }
     }
 
@@ -534,11 +545,11 @@ impl Zypp {
         }
     }
 
-    pub fn run_solver(&self) -> ZyppResult<bool> {
+    pub fn run_solver(&self, only_required: bool) -> ZyppResult<bool> {
         unsafe {
             let mut status: Status = Status::default();
             let status_ptr = &mut status as *mut _;
-            let r_res = zypp_agama_sys::run_solver(self.ptr, status_ptr);
+            let r_res = zypp_agama_sys::run_solver(self.ptr, only_required, status_ptr);
             helpers::status_to_result(status, r_res)
         }
     }
@@ -637,6 +648,7 @@ pub enum ResolvableSelected {
     User,
     Installation,
     Solver,
+    Removed,
 }
 
 impl From<zypp_agama_sys::RESOLVABLE_SELECTED> for ResolvableSelected {
@@ -646,6 +658,8 @@ impl From<zypp_agama_sys::RESOLVABLE_SELECTED> for ResolvableSelected {
             zypp_agama_sys::RESOLVABLE_SELECTED_USER_SELECTED => Self::User,
             zypp_agama_sys::RESOLVABLE_SELECTED_APPLICATION_SELECTED => Self::Installation,
             zypp_agama_sys::RESOLVABLE_SELECTED_SOLVER_SELECTED => Self::Solver,
+            zypp_agama_sys::RESOLVABLE_SELECTED_USER_REMOVED => Self::Removed,
+
             _ => panic!("Unknown value for resolvable_selected {}", value),
         }
     }
@@ -656,6 +670,7 @@ impl From<ResolvableSelected> for zypp_agama_sys::RESOLVABLE_SELECTED {
         match val {
             ResolvableSelected::Not => zypp_agama_sys::RESOLVABLE_SELECTED_NOT_SELECTED,
             ResolvableSelected::User => zypp_agama_sys::RESOLVABLE_SELECTED_USER_SELECTED,
+            ResolvableSelected::Removed => zypp_agama_sys::RESOLVABLE_SELECTED_USER_REMOVED,
             ResolvableSelected::Installation => {
                 zypp_agama_sys::RESOLVABLE_SELECTED_APPLICATION_SELECTED
             }

@@ -20,8 +20,6 @@
 # find current contact information at www.suse.com.
 
 require_relative "../../test_helper"
-require_relative "../with_progress_examples"
-require_relative "../with_issues_examples"
 require_relative "storage_helpers"
 require "agama/http/clients"
 require "agama/config"
@@ -79,15 +77,10 @@ describe Agama::Storage::Manager do
 
   describe "#activate" do
     before do
-      allow(Agama::Storage::ISCSI::Manager).to receive(:new).and_return(iscsi)
-      allow(iscsi).to receive(:activate)
       allow(y2storage_manager).to receive(:activate)
     end
 
-    let(:iscsi) { Agama::Storage::ISCSI::Manager.new }
-
-    it "activates iSCSI and devices managed by Y2Storage" do
-      expect(iscsi).to receive(:activate)
+    it "activates devices managed by Y2Storage" do
       expect(y2storage_manager).to receive(:activate) do |callbacks|
         expect(callbacks).to be_a(Agama::Storage::Callbacks::Activate)
       end
@@ -109,7 +102,6 @@ describe Agama::Storage::Manager do
 
   describe "#probe" do
     before do
-      allow(Agama::Storage::ISCSI::Manager).to receive(:new).and_return(iscsi)
       allow(proposal).to receive(:calculate_from_json).and_return(true)
       allow(proposal).to receive(:success?).and_return(true)
     end
@@ -117,7 +109,6 @@ describe Agama::Storage::Manager do
     let(:iscsi) { Agama::Storage::ISCSI::Manager.new }
 
     it "probes the storage devices" do
-      expect(iscsi).to receive(:probe)
       expect(y2storage_manager).to receive(:probe) do |callbacks|
         expect(callbacks).to be_a(Y2Storage::Callbacks::UserProbe)
       end
@@ -241,9 +232,9 @@ describe Agama::Storage::Manager do
     end
   end
 
-  describe "#product_config=" do
+  describe "#update_product_config" do
     it "sets the product config" do
-      storage.product_config = config
+      storage.update_product_config(config)
       expect(storage.product_config).to eq(config)
       expect(storage.proposal.product_config).to eq(config)
     end
@@ -257,7 +248,7 @@ describe Agama::Storage::Manager do
 
       it "sets env YAST_NO_BLS_BOOT to yes " do
         expect(ENV).to receive(:[]=).with("YAST_NO_BLS_BOOT", "1")
-        storage.product_config = config
+        storage.update_product_config(config)
       end
     end
 
@@ -277,7 +268,60 @@ describe Agama::Storage::Manager do
 
       it "keeps initial env YAST_NO_BLS_BOOT" do
         expect(ENV).to receive(:[]=).with("YAST_NO_BLS_BOOT", "0")
-        storage.product_config = config
+        storage.update_product_config(config)
+      end
+    end
+  end
+
+  describe "#configured?" do
+    before do
+      allow(subject).to receive(:product_config).and_return(product_config)
+      allow(subject).to receive(:config_json).and_return(config_json)
+    end
+
+    let(:product_config) { Agama::Config.new(product_config_json) }
+
+    let(:product_config_json) do
+      {
+        id: "SLES"
+      }
+    end
+
+    let(:config_json) do
+      {
+        storage: {
+          drives: []
+        }
+      }
+    end
+
+    context "if the product config and the config have not changed" do
+      let(:new_product_config_json) { product_config_json.dup }
+      let(:new_config_json) { config_json.dup }
+
+      it "returns true" do
+        result = subject.configured?(new_product_config_json, new_config_json)
+        expect(result).to eq(true)
+      end
+    end
+
+    context "if the product config has changed" do
+      let(:new_product_config_json) { {} }
+      let(:new_config_json) { config_json.dup }
+
+      it "returns false" do
+        result = subject.configured?(new_product_config_json, new_config_json)
+        expect(result).to eq(false)
+      end
+    end
+
+    context "if the config has changed" do
+      let(:new_product_config_json) { product_config_json.dup }
+      let(:new_config_json) { {} }
+
+      it "returns false" do
+        result = subject.configured?(new_product_config_json, new_config_json)
+        expect(result).to eq(false)
       end
     end
   end
@@ -286,12 +330,9 @@ describe Agama::Storage::Manager do
     before do
       allow(Yast::WFM).to receive(:CallFunction).with("inst_prepdisk", [])
       allow(Yast::WFM).to receive(:CallFunction).with("inst_bootloader", [])
-      allow(Bootloader::ProposalClient).to receive(:new)
-        .and_return(bootloader_proposal)
       allow(Y2Storage::Clients::InstPrepdisk).to receive(:new).and_return(client)
     end
 
-    let(:bootloader_proposal) { instance_double(Bootloader::ProposalClient, make_proposal: nil) }
     let(:client) { instance_double(Y2Storage::Clients::InstPrepdisk, run: nil) }
 
     it "runs the inst_prepdisk client" do
@@ -328,20 +369,6 @@ describe Agama::Storage::Manager do
         .with("storage_proposal", :package, match(include("btrfsprogs", "snapper")))
 
       storage.add_packages
-    end
-
-    context "if iSCSI was configured" do
-      before do
-        allow_any_instance_of(Agama::Storage::ISCSI::Manager)
-          .to receive(:configured?).and_return(true)
-      end
-
-      it "adds the iSCSI software to install" do
-        expect(http_client).to receive(:set_resolvables)
-          .with("storage_proposal", :package, match(include("iscsiuio")))
-
-        storage.add_packages
-      end
     end
 
     context "if iSCSI was used" do
@@ -384,17 +411,13 @@ describe Agama::Storage::Manager do
     let(:scenario) { "staging-plain-partitions.yaml" }
 
     it "copy needed files, installs the bootloader, sets up the snapshots, " \
-       "copy logs, symlink resolv.conf, runs the post-installation scripts, " \
-       "unlink resolv.conf, and umounts the file systems" do
+       "symlink resolv.conf, runs the post-installation scripts and " \
+       "unlink resolv.conf" do
       expect(copy_files).to receive(:run)
       expect(bootloader_finish).to receive(:write)
       expect(Yast::WFM).to receive(:CallFunction).with("storage_finish", ["Write"])
       expect(Yast::WFM).to receive(:CallFunction).with("iscsi-client_finish", ["Write"])
       expect(Yast2::FsSnapshot).to receive(:configure_snapper)
-      expect(Yast::WFM).to receive(:CallFunction).with("umount_finish", ["Write"])
-      expect(Yast::Execute).to receive(:locally).with(
-        "agama", "logs", "store", "--destination", /\/var\/log\/agama-installation\/logs/
-      )
       storage.finish
     end
   end
@@ -434,8 +457,4 @@ describe Agama::Storage::Manager do
       end
     end
   end
-
-  include_examples "progress"
-
-  include_examples "issues"
 end

@@ -1,4 +1,240 @@
 -------------------------------------------------------------------
+Fri Feb 13 08:47:07 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Resolve the relative URLs (bsc#1258118).
+- Do not finish the installation as "failed" if it was not possible
+  to fetch the user files (bsc#1258118).
+
+-------------------------------------------------------------------
+Thu Feb 12 14:43:48 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Recalulate bootloader proposal after applying a storage config
+  model (gh#agama-project/agama#3158, bsc#1258134).
+
+-------------------------------------------------------------------
+Thu Feb 12 14:37:55 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Add the password strength check to the API (gh#agama-project/agama#3159).
+
+-------------------------------------------------------------------
+Thu Feb 12 08:35:38 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- Run post scripts after all agama configuration is written down
+  (bsc#1257791)
+
+-------------------------------------------------------------------
+Wed Feb 11 15:49:05 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Add agama-s390 service and integrate DASD into the new HTTP API
+  (gh#agama-project/agama#3128).
+
+-------------------------------------------------------------------
+Wed Feb 11 15:47:38 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Use "/run/agama/zypp" as directory for libzypp
+  (gh#agama-project/agama#3154).
+
+-------------------------------------------------------------------
+Wed Feb 11 13:48:37 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Sort the list of products alphabetically (gh#agama-project/agama#3145).
+
+-------------------------------------------------------------------
+Wed Feb 11 13:34:36 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+
+- Return also the product mode translations
+  (gh#agama-project/agama#3144)
+
+-------------------------------------------------------------------
+Mon Feb  9 14:24:29 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Prevent set config and install actions to run at the same time (bsc#1257935).
+
+-------------------------------------------------------------------
+Fri Feb  6 13:59:11 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Fix parsing of the answers file (bsc#1257400).
+
+-------------------------------------------------------------------
+Fri Feb  6 07:38:38 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Allow loading a profile with no product (bsc#1257067 and bsc#1257082).
+- Make the bootloader proposal after the storage one is ready (bsc#1257530).
+- Run pre-scripts only once to prevent potential infinite loops.
+
+-------------------------------------------------------------------
+Thu Feb  5 06:46:46 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Sort the list of languages, keymaps and timezones (bsc#1257497).
+
+-------------------------------------------------------------------
+Wed Feb  4 11:37:18 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- Fix usage of local repositories on full medium
+  (bsc#1257475)
+
+-------------------------------------------------------------------
+Tue Feb  3 07:23:18 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- Correct the /etc/resolv.conf link in the chroot to
+  /run/NetworkManager/resolv.conf (bsc#257468).
+
+-------------------------------------------------------------------
+Mon Feb  2 11:56:24 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+
+- Fixed opening the SSH firewall port when the firewall is not
+  installed because of the set "onlyRequires" flag in the software
+  configuration (bsc#1257212)
+
+-------------------------------------------------------------------
+Mon Feb  2 08:13:10 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- Implement modification of kernel parameters when SELinux pattern
+  is selected (gh#agama-project/agama#3103)
+
+-------------------------------------------------------------------
+Fri Jan 30 16:27:35 UTC 2026 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Update schemas for storage model and volume templates (related to
+  jsc#PED-14307).
+
+-------------------------------------------------------------------
+Fri Jan 30 11:00:08 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- Added proxy service allowing to configure the proxy through the
+  kernel cmdline proxy argument and with HTTP API
+  (gh#agama-project/agama#3069).
+
+-------------------------------------------------------------------
+Thu Jan 29 22:30:05 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Do not export neither network/connections nor network/state when
+  they are None (related to bsc#1257230).
+
+-------------------------------------------------------------------
+Thu Jan 29 21:10:18 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- Add support for "onlyRequired" key in "software" section
+  using new libzypp zypp.conf.d directory.
+  (gh#agama-project/agama#3100)
+
+-------------------------------------------------------------------
+Thu Jan 29 14:56:50 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Fix "agama config edit" subcommand to update the configuration
+  (bsc#1257198).
+
+-------------------------------------------------------------------
+Thu Jan 29 09:56:05 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Do not wait for the storage service when setting the configuration
+  (gh#agama-project/agama#3096, related to bsc#1257067).
+
+-------------------------------------------------------------------
+Thu Jan 29 07:04:09 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Expose the product configuration even in the software service is busy
+  (bsc#1257443).
+
+-------------------------------------------------------------------
+Thu Jan 29 06:24:00 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Fix answers validation (gh#agama-project/agama#3094).
+
+-------------------------------------------------------------------
+Wed Jan 28 17:07:32 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Import the security settings correctly (bsc#1257290).
+
+-------------------------------------------------------------------
+Wed Jan 28 16:14:52 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Use the first product mode if none is given (related to jsc#PED-14307).
+
+-------------------------------------------------------------------
+Wed Jan 28 12:59:50 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Add agama-iscsi service and integrate iSCSI into the new HTTP API
+  (gh#agama-project/agama#3064).
+
+-------------------------------------------------------------------
+Wed Jan 28 12:43:05 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Fix the handling of HTTP actions (gh#agama-project/agama#3088).
+- Add more details when a request fails because there are pending issues
+  or the installer is busy.
+- Include in the logs markers for the start and the end of the
+  installation.
+
+-------------------------------------------------------------------
+Wed Jan 28 10:59:29 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Add support to define product modes (jsc#PED-14307).
+
+-------------------------------------------------------------------
+Wed Jan 28 09:59:43 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- Support "gpgFingerprints" and "allowUnsigned" keys in
+  "software/extraRepositories" section of profile
+  (gh#agama-project/agama#3087)
+
+-------------------------------------------------------------------
+Tue Jan 27 18:35:59 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+
+- Enable the SSH service and open the SSH port in firewall when
+  an SSH key for the root user is set (bsc#1257212)
+
+-------------------------------------------------------------------
+Fri Jan 23 15:36:12 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+
+- Fixed removing automatically selected recommended patterns
+  (gh#agama-project/agama#3072)
+
+-------------------------------------------------------------------
+Fri Jan 23 14:10:16 UTC 2026 - Martin Vidner <mvidner@suse.com>
+
+- Follow suit, do not package /usr/share/locale itself
+  (gh#agama-project/agama#3071).
+
+-------------------------------------------------------------------
+Fri Jan 23 13:47:29 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- Copy the SCC credentials and the libzypp services
+  (gh#agama-project/agama#3053).
+
+-------------------------------------------------------------------
+Fri Jan 23 09:53:37 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Use the right architecture when regisrering a system in ppc64le
+  (gh#agama-project/agama#3068).
+
+-------------------------------------------------------------------
+Thu Jan 22 16:16:55 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Consider inst.register_url as part of the "extended configuration"
+  (bsc#1256907).
+- Try to register the system even if only a registration URL was
+  specified (without a code).
+- When the registration fails, retry it on the next SetConfig call.
+
+-------------------------------------------------------------------
+Wed Jan 21 11:07:34 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Allow importing SSL certificates from registration servers
+  (gh#agama-project/agama#3055).
+
+-------------------------------------------------------------------
+Wed Jan 21 10:59:15 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- Fix enabling NetworkManager service in the target system
+  (gh#agama-project/agama#3056).
+
+-------------------------------------------------------------------
+Mon Jan 19 20:31:26 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- Fix inst.finish=stop option (gh#agama-project/agama#3047)
+
+-------------------------------------------------------------------
 Fri Jan 16 15:01:32 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
 
 - Fix unattended installation (bsc#1256898).
@@ -361,7 +597,7 @@ Fri Jun 27 10:02:43 UTC 2025 - José Iván López González <jlopez@suse.com>
 -------------------------------------------------------------------
 Fri Jun 27 06:29:46 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
-- Add an end-point to check passwords strenght (bsc#1237480).
+- Add an end-point to check passwords strength (bsc#1237480).
 
 -------------------------------------------------------------------
 Fri Jun 27 05:29:26 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>

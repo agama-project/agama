@@ -22,7 +22,7 @@
 require "yast"
 require "json"
 require "bootloader/bootloader_factory"
-require "bootloader/proposal_client"
+require "bootloader/os_prober"
 
 require "agama/http/clients"
 
@@ -50,6 +50,11 @@ module Agama
         #
         # @return [String]
         attr_accessor :extra_kernel_params
+
+        # Bootloader extra kernel parameters needed for other parts of agama
+        #
+        # @return [Hash<String, String>]
+        attr_accessor :scoped_kernel_params
 
         # Keys to export to JSON.
         #
@@ -109,6 +114,8 @@ module Agama
             end
           end
 
+          self.scoped_kernel_params = hsh[:kernelArgs]
+
           self
         end
       end
@@ -127,8 +134,12 @@ module Agama
       # It proposes the bootloader configuration based on the current system and storage
       # configuration. It also applies the user configuration and installs the needed packages.
       def configure
+        # TODO: get value from product ( probably for TW and maybe Leap?)
+        ::Bootloader::OsProber.package_available = false
         # reset disk to always read the recent storage configuration
         ::Yast::BootStorage.reset_disks
+        # reset bootloader factory cache as we want here to reapply config from scratch
+        ::Bootloader::BootloaderFactory.clear_cache
         # propose values first. Propose bootloader from factory and do not use
         # current as agama has /etc/sysconfig/bootloader with efi, so it
         # will lead to wrong one.
@@ -139,9 +150,10 @@ module Agama
         write_config
         # and set packages needed for given config
         install_packages
-        # TODO: error handling (including catching exceptions like Bootloader::NoRoot)
-        # and filling issues
+        # TODO: error handling (including catching exceptions and filling issues)
         @logger.info "Bootloader config #{bootloader.inspect}"
+      rescue ::Bootloader::NoRoot
+        @logger.info "Bootloader configure aborted - there is no storage proposal"
       end
 
       # Installs bootloader.
@@ -166,19 +178,24 @@ module Agama
         bootloader = ::Bootloader::BootloaderFactory.current
         write_stop_on_boot(bootloader) if @config.keys_to_export.include?(:stop_on_boot_menu)
         write_timeout(bootloader) if @config.keys_to_export.include?(:timeout)
+        kernel_params = @config.scoped_kernel_params.values.join(" ")
+        @logger.info "scoped kernel params: #{kernel_params}"
+
         if @config.keys_to_export.include?(:extra_kernel_params)
-          write_extra_kernel_params(bootloader)
+          kernel_params += " " + @config.extra_kernel_params
         end
+        @logger.info "full kernel params: #{kernel_params}"
+        write_extra_kernel_params(bootloader, kernel_params)
 
         bootloader
       end
 
-      def write_extra_kernel_params(bootloader)
+      def write_extra_kernel_params(bootloader, kernel_params)
         # no systemd boot support for now
         return unless bootloader.respond_to?(:grub_default)
 
         new_bl = bootloader.class.new
-        new_bl.grub_default.kernel_params.replace(@config.extra_kernel_params)
+        new_bl.grub_default.kernel_params.replace(kernel_params)
         # and now just merge extra kernel params with all merge logic
         bootloader.merge(new_bl)
       end

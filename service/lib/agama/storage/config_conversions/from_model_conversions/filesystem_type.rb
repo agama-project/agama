@@ -55,14 +55,16 @@ module Agama
             value = filesystem_model[:type]
             return unless value
 
+            value = "btrfs" if value.start_with?("btrfs")
             Y2Storage::Filesystems::Type.find(value.to_sym)
           end
 
           # @return [Configs::Btrfs, nil]
           def convert_btrfs
-            return unless filesystem_model[:type] == "btrfs"
+            type = filesystem_model[:type]
+            return unless type&.start_with?("btrfs")
 
-            Configs::Btrfs.new.tap { |c| c.snapshots = filesystem_model[:snapshots] }
+            Configs::Btrfs.new.tap { |c| c.snapshots = type != "btrfs" }
           end
         end
       end

@@ -44,6 +44,7 @@ impl SetConfig {
     }
 }
 
+/// Run scripts of the given group.
 #[derive(Clone)]
 pub struct RunScripts {
     pub group: ScriptsGroup,
@@ -55,8 +56,9 @@ impl RunScripts {
     }
 }
 
+/// It returns true if any script ran; false otherwise.
 impl Message for RunScripts {
-    type Reply = ();
+    type Reply = bool;
 }
 
 #[derive(Clone)]

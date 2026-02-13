@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022-2025] SUSE LLC
+# Copyright (c) [2022-2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -21,7 +21,6 @@
 
 require "y2storage/storage_manager"
 require "agama/dbus/base_object"
-require "agama/dbus/storage/iscsi_nodes_tree"
 require "agama/storage/config_conversions"
 require "agama/storage/encryption_settings"
 require "agama/storage/volume_templates_builder"
@@ -38,11 +37,10 @@ module Agama
   module DBus
     module Storage
       # D-Bus object to manage storage installation
-      class Manager < BaseObject # rubocop:disable Metrics/ClassLength
+      class Manager < BaseObject
         extend Yast::I18n
         include Yast::I18n
         include Agama::WithProgress
-        include ::DBus::ObjectManager
 
         PATH = "/org/opensuse/Agama/Storage1"
         private_constant :PATH
@@ -51,13 +49,9 @@ module Agama
         # @param logger [Logger, nil]
         def initialize(backend, logger: nil)
           textdomain "agama"
-
           super(PATH, logger: logger)
           @backend = backend
-
           register_progress_callbacks
-          register_iscsi_callbacks
-
           add_s390_interfaces if Yast::Arch.s390
         end
 
@@ -66,6 +60,7 @@ module Agama
           dbus_method(:Probe) { probe }
           dbus_method(:Install) { install }
           dbus_method(:Finish) { finish }
+          dbus_method(:Umount) { umount }
           dbus_method(:SetLocale, "in locale:s") { |locale| backend.configure_locale(locale) }
           dbus_method(:GetSystem, "out system:s") { recover_system }
           dbus_method(:GetConfig, "out config:s") { recover_config }
@@ -130,7 +125,12 @@ module Agama
         def finish
           start_progress(1, _("Finishing installation"))
           backend.finish
+          finish_progress
+        end
 
+        def umount
+          start_progress(1, _("Unmounting devices"))
+          backend.umount
           finish_progress
         end
 
@@ -176,15 +176,23 @@ module Agama
         #
         # @raise If the config is not valid.
         #
-        # @param serialized_product [String] Serialized product config.
+        # @param serialized_product_config [String] Serialized product config.
         # @param serialized_config [String] Serialized storage config.
-        def configure(serialized_product, serialized_config)
-          system_changed = false
-          new_product_config = Agama::Config.new(JSON.parse(serialized_product))
+        def configure(serialized_product_config, serialized_config)
+          product_config_json = JSON.parse(serialized_product_config)
+          config_json = JSON.parse(serialized_config, symbolize_names: true)
 
-          if product_config != new_product_config
+          # Do not configure if there is nothing to change.
+          return if backend.configured?(product_config_json, config_json)
+
+          logger.info("Configuring storage")
+
+          system_changed = false
+          product_config = Agama::Config.new(product_config_json)
+
+          if backend.product_config != product_config
             system_changed = true
-            backend.product_config = new_product_config
+            backend.update_product_config(product_config)
           end
 
           start_progress(3, ACTIVATING_STEP)
@@ -204,8 +212,6 @@ module Agama
           emit_system_changed if system_changed
 
           next_progress_step(CONFIGURING_STEP)
-          config_json = JSON.parse(serialized_config, symbolize_names: true)
-
           calculate_proposal(config_json)
 
           finish_progress
@@ -293,85 +299,6 @@ module Agama
           backend.bootloader.config.to_json
         end
 
-        # Gets the iSCSI initiator name
-        #
-        # @return [String]
-        def initiator_name
-          backend.iscsi.initiator.name || ""
-        end
-
-        # Sets the iSCSI initiator name
-        #
-        # @param value [String]
-        def initiator_name=(value)
-          backend.iscsi.update_initiator(name: value)
-        end
-
-        # Whether the initiator name was set via iBFT
-        #
-        # @return [Boolean]
-        def ibft
-          backend.iscsi.initiator.ibft_name?
-        end
-
-        ISCSI_INITIATOR_INTERFACE = "org.opensuse.Agama.Storage1.ISCSI.Initiator"
-        private_constant :ISCSI_INITIATOR_INTERFACE
-
-        dbus_interface ISCSI_INITIATOR_INTERFACE do
-          dbus_accessor :initiator_name, "s"
-
-          dbus_reader :ibft, "b", dbus_name: "IBFT"
-
-          dbus_method :Discover,
-            "in address:s, in port:u, in options:a{sv}, out result:u" do |address, port, options|
-            iscsi_discover(address, port, options)
-          end
-
-          dbus_method(:Delete, "in node:o, out result:u") { |n| iscsi_delete(n) }
-        end
-
-        # Performs an iSCSI discovery
-        #
-        # @param address [String] IP address of the iSCSI server
-        # @param port [Integer] Port of the iSCSI server
-        # @param options [Hash<String, String>] Options from a D-Bus call:
-        #   @option Username [String] Username for authentication by target
-        #   @option Password [String] Password for authentication by target
-        #   @option ReverseUsername [String] Username for authentication by initiator
-        #   @option ReversePassword [String] Password for authentication by inititator
-        #
-        # @return [Integer] 0 on success, 1 on failure
-        def iscsi_discover(address, port, options = {})
-          credentials = {
-            username:           options["Username"],
-            password:           options["Password"],
-            initiator_username: options["ReverseUsername"],
-            initiator_password: options["ReversePassword"]
-          }
-
-          success = backend.iscsi.discover(address, port, credentials: credentials)
-          success ? 0 : 1
-        end
-
-        # Deletes an iSCSI node from the database
-        #
-        # @param path [::DBus::ObjectPath]
-        # @return [Integer] 0 on success, 1 on failure if the given node is not exported, 2 on
-        #   failure because any other reason.
-        def iscsi_delete(path)
-          dbus_node = iscsi_nodes_tree.find(path)
-          if !dbus_node
-            logger.info("iSCSI delete error: iSCSI node #{path} is not exported")
-            return 1
-          end
-
-          success = backend.iscsi.delete(dbus_node.iscsi_node)
-          return 0 if success
-
-          logger.info("iSCSI delete error: fail to delete iSCSI node #{path}")
-          2 # Error code
-        end
-
       private
 
         ACTIVATING_STEP = N_("Activating storage devices")
@@ -393,12 +320,11 @@ module Agama
 
         # Configures storage using the current config.
         #
-        # @note The proposal is not calculated if there is not a config yet.
+        # @note Skips if no proposal has been calculated yet.
         def configure_with_current
-          config_json = proposal.storage_json
-          return unless config_json
+          return unless proposal.storage_json
 
-          calculate_proposal(config_json)
+          calculate_proposal(backend.config_json)
         end
 
         # @see #configure
@@ -523,40 +449,14 @@ module Agama
         end
 
         def add_s390_interfaces
-          require "agama/dbus/storage/interfaces/dasd_manager"
           require "agama/dbus/storage/interfaces/zfcp_manager"
-
-          singleton_class.include Interfaces::DasdManager
           singleton_class.include Interfaces::ZFCPManager
-
-          register_dasd_callbacks
           register_zfcp_callbacks
         end
 
         # @return [Agama::Storage::Proposal]
         def proposal
           backend.proposal
-        end
-
-        def register_iscsi_callbacks
-          backend.iscsi.on_probe do
-            iscsi_initiator_properties_changed
-            refresh_iscsi_nodes
-          end
-        end
-
-        def iscsi_initiator_properties_changed
-          properties = interfaces_and_properties[ISCSI_INITIATOR_INTERFACE]
-          dbus_properties_changed(ISCSI_INITIATOR_INTERFACE, properties, [])
-        end
-
-        def refresh_iscsi_nodes
-          nodes = backend.iscsi.nodes
-          iscsi_nodes_tree.update(nodes)
-        end
-
-        def iscsi_nodes_tree
-          @iscsi_nodes_tree ||= ISCSINodesTree.new(@service, backend.iscsi, logger: logger)
         end
 
         # @return [Agama::Config]

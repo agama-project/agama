@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2025] SUSE LLC
+ * Copyright (c) [2025-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -21,45 +21,34 @@
  */
 
 import React from "react";
-import {
-  Bullseye,
-  Card,
-  CardBody,
-  Content,
-  EmptyState,
-  EmptyStateBody,
-  Grid,
-  GridItem,
-} from "@patternfly/react-core";
+import { Content, HelperText, HelperTextItem } from "@patternfly/react-core";
+import Page from "~/components/core/Page";
+import SplitInfoLayout from "~/components/layout/SplitInfoLayout";
 import { _ } from "~/i18n";
-import Page from "./Page";
+
+import spacingStyles from "@patternfly/react-styles/css/utilities/Spacing/spacing";
 
 export default function InstallationExit() {
   return (
     <Page variant="minimal">
-      <Bullseye>
-        <Grid hasGutter>
-          <GridItem sm={8} smOffset={2}>
-            <Card>
-              <CardBody>
-                <EmptyState
-                  variant="xl"
-                  titleText={_("Your system is rebooting")}
-                  headingLevel="h1"
-                >
-                  <EmptyStateBody>
-                    <Content component="p">
-                      {_(
-                        "The installer interface is no longer available, so you can safely close this window.",
-                      )}
-                    </Content>
-                  </EmptyStateBody>
-                </EmptyState>
-              </CardBody>
-            </Card>
-          </GridItem>
-        </Grid>
-      </Bullseye>
+      <Page.Content>
+        <SplitInfoLayout
+          icon="restart_alt"
+          firstRowStart={_("The system is rebooting")}
+          firstRowEnd={
+            <Content isEditorial className={spacingStyles.mtSm}>
+              {_("You can safely close this window.")}
+            </Content>
+          }
+          secondRowStart={
+            <HelperText>
+              <HelperTextItem>
+                {_("The installer interface is no longer available.")}
+              </HelperTextItem>
+            </HelperText>
+          }
+        />
+      </Page.Content>
     </Page>
   );
 }

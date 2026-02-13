@@ -30,6 +30,7 @@
 *other times they need advertisement and explanation.*
 
 *Look for relevant sections and adjust:*
+- The `*.changes` files. For ALL affected packages.
 - The description parts of the [JSON schema][profile.schema.json]
 - Is the CLI affected? See [cli.md][] for a complete overview,
   change the `///` comments (rust doc)

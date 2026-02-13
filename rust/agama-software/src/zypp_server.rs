@@ -18,6 +18,7 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
+use agama_security as security;
 use agama_utils::{
     actor::Handler,
     api::{
@@ -25,6 +26,7 @@ use agama_utils::{
         software::{Pattern, SelectedBy, SoftwareProposal, SystemInfo},
         Issue, Scope,
     },
+    helpers::copy_dir_all,
     products::ProductSpec,
     progress, question,
 };
@@ -39,8 +41,11 @@ use zypp_agama::{errors::ZyppResult, ZyppError};
 
 use crate::{
     callbacks,
-    model::state::{self, SoftwareState},
-    state::{Addon, RegistrationState, ResolvableSelection},
+    model::{
+        registration::RegistrationError,
+        state::{self, SoftwareState},
+    },
+    state::{Addon, RegistrationState, RepoKey, ResolvableSelection},
     Registration, ResolvableType,
 };
 
@@ -76,6 +81,12 @@ pub enum ZyppServerError {
 
     #[error("Could not find a mount point to calculate the used space")]
     MissingMountPoint,
+
+    #[error("SSL error: {0}")]
+    SSL(#[from] openssl::error::ErrorStack),
+
+    #[error("Failed to copy to target system: {0}")]
+    IO(#[from] std::io::Error),
 }
 
 pub type ZyppServerResult<R> = Result<R, ZyppServerError>;
@@ -96,15 +107,29 @@ pub enum SoftwareAction {
         state: SoftwareState,
         progress: Handler<progress::Service>,
         question: Handler<question::Service>,
+        security: Handler<security::Service>,
         tx: oneshot::Sender<ZyppServerResult<Vec<Issue>>>,
     },
+}
+
+/// Registration status.
+#[derive(Default)]
+pub enum RegistrationStatus {
+    #[default]
+    NotRegistered,
+    Registered(Registration),
+    Failed(RegistrationError),
 }
 
 /// Software service server.
 pub struct ZyppServer {
     receiver: mpsc::UnboundedReceiver<SoftwareAction>,
-    registration: Option<Registration>,
+    registration: RegistrationStatus,
     root_dir: Utf8PathBuf,
+    install_dir: Utf8PathBuf,
+    trusted_keys: Vec<RepoKey>,
+    unsigned_repos: Vec<String>,
+    only_required: bool,
 }
 
 impl ZyppServer {
@@ -113,13 +138,18 @@ impl ZyppServer {
     /// The service runs on a separate thread and gets the client requests using a channel.
     pub fn start<P: AsRef<Utf8Path>>(
         root_dir: P,
+        install_dir: P,
     ) -> ZyppServerResult<UnboundedSender<SoftwareAction>> {
         let (sender, receiver) = mpsc::unbounded_channel();
 
         let server = Self {
             receiver,
             root_dir: root_dir.as_ref().to_path_buf(),
-            registration: None,
+            install_dir: install_dir.as_ref().to_path_buf(),
+            registration: Default::default(),
+            trusted_keys: vec![],
+            unsigned_repos: vec![],
+            only_required: false,
         };
 
         // drop the returned JoinHandle: the thread will be detached
@@ -172,10 +202,19 @@ impl ZyppServer {
                 state,
                 progress,
                 question,
+                security: security_srv,
                 tx,
             } => {
-                let mut security_callback = callbacks::Security::new(question);
-                self.write(state, progress, &mut security_callback, tx, zypp)?;
+                let mut security_callback = callbacks::Security::new(question.clone());
+                self.write(
+                    state,
+                    progress,
+                    question,
+                    security_srv,
+                    &mut security_callback,
+                    tx,
+                    zypp,
+                )?;
             }
             SoftwareAction::GetSystemInfo(product_spec, tx) => {
                 self.system_info(product_spec, tx, zypp)?;
@@ -205,6 +244,8 @@ impl ZyppServer {
             callbacks::CommitDownload::new(progress.clone(), question.clone());
         let mut install_callback = callbacks::Install::new(progress.clone(), question.clone());
         let mut security_callback = callbacks::Security::new(question);
+        security_callback.set_trusted_gpg_keys(self.trusted_keys.clone());
+        security_callback.set_unsigned_repos(self.unsigned_repos.clone());
 
         let packages_count = zypp.packages_count();
         // use packages count *2 as we need to download package and also install it
@@ -215,8 +256,7 @@ impl ZyppServer {
             "Starting packages installation",
         ));
 
-        let target = "/mnt";
-        zypp.switch_target(target)?;
+        zypp.switch_target(&self.install_dir.to_string())?;
         let result = zypp.commit(
             &mut download_callback,
             &mut install_callback,
@@ -232,6 +272,8 @@ impl ZyppServer {
         let repositories = zypp
             .list_repositories()?
             .into_iter()
+            // filter out service managed repositories
+            .filter(|repo| repo.service.is_none())
             .map(|repo| state::Repository {
                 name: repo.user_name,
                 alias: repo.alias,
@@ -251,6 +293,8 @@ impl ZyppServer {
         &mut self,
         state: SoftwareState,
         progress: Handler<progress::Service>,
+        questions: Handler<question::Service>,
+        security_srv: Handler<security::Service>,
         security: &mut callbacks::Security,
         tx: oneshot::Sender<ZyppServerResult<Vec<Issue>>>,
         zypp: &zypp_agama::Zypp,
@@ -273,10 +317,14 @@ impl ZyppServer {
         // TODO: add information about the current registration state
         let old_state = self.read(zypp)?;
 
-        // how to check whether the system is registered
         if let Some(registration_config) = &state.registration {
-            self.update_registration(registration_config, &zypp, &mut issues);
+            self.update_registration(registration_config, &zypp, &security_srv, &mut issues);
         }
+
+        self.trusted_keys = state.trusted_gpg_keys;
+        security.set_trusted_gpg_keys(self.trusted_keys.clone());
+        self.unsigned_repos = state.unsigned_repos;
+        security.set_unsigned_repos(self.unsigned_repos.clone());
 
         progress.cast(progress::message::Next::new(Scope::Software))?;
         let old_aliases: Vec<_> = old_state
@@ -386,12 +434,27 @@ impl ZyppServer {
                         false,
                     ));
                 }
+                // the removal is handled in a separate iteration to unselect resolvables selected
+                // by dependencies
+                ResolvableSelection::Removed => {}
+            };
+        }
+
+        self.only_required = state.options.only_required;
+        tracing::info!("Install only required packages: {}", self.only_required);
+        // run the solver to select the dependencies, ignore the errors, the solver runs again later
+        let _ = zypp.run_solver(self.only_required);
+
+        // unselect packages including the autoselected dependencies
+        for (name, r#type, selection) in &state.resolvables.to_vec() {
+            match selection {
                 ResolvableSelection::Removed => self.unselect_resolvable(&zypp, name, *r#type),
+                _ => {}
             };
         }
 
         _ = progress.cast(progress::message::Finish::new(Scope::Software));
-        match zypp.run_solver() {
+        match zypp.run_solver(self.only_required) {
             Ok(result) => println!("Solver result: {result}"),
             Err(error) => println!("Solver failed: {error}"),
         };
@@ -454,7 +517,8 @@ impl ZyppServer {
             return Ok(());
         }
         let _ = self.registration_finish(); // TODO: move it outside of zypp server as it do not need zypp lock
-        let _ = self.modify_zypp_conf(); // TODO: move it outside of zypp server as it do not need zypp lock
+
+        self.modify_zypp_conf();
 
         if let Err(error) = self.modify_full_repo(zypp) {
             tracing::warn!("Failed to modify the full repository: {error}");
@@ -462,8 +526,32 @@ impl ZyppServer {
                 .map_err(|_| ZyppDispatchError::ResponseChannelClosed)?;
             return Ok(());
         }
+        if let Err(error) = self.copy_files() {
+            tracing::warn!("Failed to copy zypp files: {error}");
+            tx.send(Err(error.into()))
+                .map_err(|_| ZyppDispatchError::ResponseChannelClosed)?;
+            return Ok(());
+        }
+
         // if we fail to send ok, lets just ignore it
         let _ = tx.send(Ok(()));
+        Ok(())
+    }
+
+    const ZYPP_DIRS: [&str; 4] = [
+        "etc/zypp/services.d",
+        "etc/zypp/repos.d",
+        "etc/zypp/credentials.d",
+        "var/cache/zypp",
+    ];
+    fn copy_files(&self) -> ZyppServerResult<()> {
+        for path in Self::ZYPP_DIRS {
+            let source_path = self.root_dir.join(path);
+            let target_path = self.install_dir.join(path);
+            if source_path.exists() {
+                copy_dir_all(&source_path, &target_path)?;
+            }
+        }
         Ok(())
     }
 
@@ -499,14 +587,31 @@ impl ZyppServer {
         Ok(())
     }
 
-    fn registration_finish(&self) -> ZyppServerResult<()> {
-        // TODO: implement when registration is ready
+    fn registration_finish(&mut self) -> ZyppServerResult<()> {
+        let RegistrationStatus::Registered(registration) = &mut self.registration else {
+            tracing::info!(
+                "Skipping the copy of registration files because the system was not registered"
+            );
+            return Ok(());
+        };
+
+        if let Err(error) = registration.finish(&self.install_dir) {
+            // just log error and continue as registration config is recoverable
+            tracing::error!("Failed to finish the registration: {error}");
+        };
         Ok(())
     }
 
-    fn modify_zypp_conf(&self) -> ZyppServerResult<()> {
-        // TODO: implement when requireOnly is implemented
-        Ok(())
+    fn modify_zypp_conf(&self) {
+        // write only if different from default
+        if self.only_required {
+            let contents = "# Use only hard dependencies as configured in installer\nsolver.onlyRequires = true\n";
+            let path = self.install_dir.join("etc/zypp/zypp.conf.d/installer.conf");
+            let write_result = std::fs::write(path.as_path(), contents);
+            if write_result.is_err() {
+                tracing::error!("Failed to write {path}: {write_result:?}");
+            }
+        }
     }
 
     fn system_info(
@@ -517,7 +622,13 @@ impl ZyppServer {
     ) -> Result<(), ZyppDispatchError> {
         let patterns = self.patterns(&product, zypp)?;
         let repositories = self.repositories(zypp)?;
-        let registration = self.registration.as_ref().map(|r| r.to_registration_info());
+        // let registration = self.registration.as_ref().map(|r| r.to_registration_info());
+        let registration = match &self.registration {
+            RegistrationStatus::Registered(registration) => {
+                Some(registration.to_registration_info())
+            }
+            _ => None,
+        };
 
         let system_info = SystemInfo {
             patterns,
@@ -530,14 +641,52 @@ impl ZyppServer {
         Ok(())
     }
 
-    fn patterns(&self, product: &ProductSpec, zypp: &zypp_agama::Zypp) -> ZyppResult<Vec<Pattern>> {
-        let pattern_names: Vec<_> = product
+    fn user_patterns<'a>(
+        &self,
+        product: &'a ProductSpec,
+        zypp: &zypp_agama::Zypp,
+    ) -> ZyppResult<impl Iterator<Item = zypp_agama::Pattern> + use<'a, '_>> {
+        let product_pattern_names: Vec<_> = product
             .software
             .user_patterns
             .iter()
             .map(|p| p.name())
             .collect();
+        let repositories = zypp.list_repositories()?;
+        let zypp_patterns = zypp.list_patterns()?;
 
+        Ok(zypp_patterns.into_iter().filter(move |p| {
+            // lets explain here logic for user selectable patterns
+            // if pattern is listed in product pattern names then use it
+            // else include only patterns coming from repository that is
+            // NOT predefined as agama-* one neither from repository
+            // added by base product registration
+            if product_pattern_names.contains(&p.name.as_str()) {
+                return true;
+            }
+
+            let repository = repositories.iter().find(|r| r.alias == p.repo_alias);
+            let Some(repository) = repository else {
+                tracing::error!(
+                    "Unknown alias {} found in pattern selectable.",
+                    p.repo_alias
+                );
+                return false;
+            };
+            if repository.alias.starts_with("agama-") {
+                return false;
+            }
+
+            if let RegistrationStatus::Registered(registration) = &self.registration {
+                repository.service.is_some()
+                    && repository.service != registration.base_product_service_name()
+            } else {
+                false
+            }
+        }))
+    }
+
+    fn patterns(&self, product: &ProductSpec, zypp: &zypp_agama::Zypp) -> ZyppResult<Vec<Pattern>> {
         let preselected_patterns: Vec<_> = product
             .software
             .user_patterns
@@ -546,10 +695,8 @@ impl ZyppServer {
             .map(|p| p.name())
             .collect();
 
-        let patterns = zypp.patterns_info(pattern_names)?;
-
-        let patterns = patterns
-            .into_iter()
+        let patterns = self
+            .user_patterns(product, zypp)?
             .map(|p| {
                 let preselected = preselected_patterns.contains(&p.name.as_str());
                 Pattern {
@@ -654,23 +801,18 @@ impl ZyppServer {
         product: &ProductSpec,
         zypp: &zypp_agama::Zypp,
     ) -> Result<HashMap<String, SelectedBy>, ZyppServerError> {
-        let pattern_names = product
-            .software
-            .user_patterns
-            .iter()
-            .map(|p| p.name())
-            .collect();
-        let patterns_info = zypp.patterns_info(pattern_names);
-        patterns_info
+        self.user_patterns(product, zypp)
             .map(|patterns| {
                 patterns
-                    .iter()
                     .map(|pattern| {
+                        // NOTE: cannot be implemented From as one lives in agama-utils which does not depend on zypp-agama and should not
+                        // and other way it also does not make sense
                         let tag = match pattern.selected {
                             zypp_agama::ResolvableSelected::Installation => SelectedBy::Auto,
                             zypp_agama::ResolvableSelected::Not => SelectedBy::None,
                             zypp_agama::ResolvableSelected::Solver => SelectedBy::Auto,
                             zypp_agama::ResolvableSelected::User => SelectedBy::User,
+                            zypp_agama::ResolvableSelected::Removed => SelectedBy::Removed,
                         };
                         (pattern.name.clone(), tag)
                     })
@@ -679,15 +821,28 @@ impl ZyppServer {
             .map_err(|e| e.into())
     }
 
+    /// Update the registration status.
+    ///
+    /// Register the system and the add-ons. If it was not possible to register the system
+    /// on a previous call to this function, do not try again. Otherwise, it might fail
+    /// again.
+    ///
+    /// - `state`: wanted registration state.
+    /// - `zypp`: zypp instance.
+    /// - `issues`: list of issues to update.
     fn update_registration(
         &mut self,
         state: &RegistrationState,
         zypp: &zypp_agama::Zypp,
+        security_srv: &Handler<security::Service>,
         issues: &mut Vec<Issue>,
     ) {
-        if self.registration.is_none() {
-            self.register_base_system(state, zypp, issues);
-        }
+        match &self.registration {
+            RegistrationStatus::Failed(_) | RegistrationStatus::NotRegistered => {
+                self.register_base_system(state, zypp, security_srv, issues);
+            }
+            RegistrationStatus::Registered(_) => {}
+        };
 
         if !state.addons.is_empty() {
             self.register_addons(&state.addons, zypp, issues);
@@ -698,11 +853,15 @@ impl ZyppServer {
         &mut self,
         state: &RegistrationState,
         zypp: &zypp_agama::Zypp,
+        security_srv: &Handler<security::Service>,
         issues: &mut Vec<Issue>,
     ) {
         let mut registration =
-            Registration::builder(self.root_dir.clone(), &state.product, &state.version)
-                .with_code(&state.code);
+            Registration::builder(self.root_dir.clone(), &state.product, &state.version);
+
+        if let Some(code) = &state.code {
+            registration = registration.with_code(code);
+        }
 
         if let Some(email) = &state.email {
             registration = registration.with_email(email);
@@ -712,15 +871,19 @@ impl ZyppServer {
             registration = registration.with_url(url);
         }
 
-        match registration.register(&zypp) {
+        match registration.register(&zypp, security_srv) {
             Ok(registration) => {
-                self.registration = Some(registration);
+                self.registration = RegistrationStatus::Registered(registration);
             }
             Err(error) => {
                 issues.push(
-                    Issue::new("software.register_system", "Failed to register the system")
-                        .with_details(&error.to_string()),
+                    Issue::new(
+                        "system_registration_failed",
+                        "Failed to register the system",
+                    )
+                    .with_details(&error.to_string()),
                 );
+                self.registration = RegistrationStatus::Failed(error);
             }
         }
     }
@@ -731,7 +894,7 @@ impl ZyppServer {
         zypp: &zypp_agama::Zypp,
         issues: &mut Vec<Issue>,
     ) {
-        let Some(registration) = &mut self.registration else {
+        let RegistrationStatus::Registered(registration) = &mut self.registration else {
             tracing::error!("Could not register addons because the base system is not registered");
             return;
         };
@@ -743,7 +906,8 @@ impl ZyppServer {
             }
             if let Err(error) = registration.register_addon(zypp, addon) {
                 let message = format!("Failed to register the add-on {}", addon.id);
-                let issue = Issue::new("software.addon", &message).with_details(&error.to_string());
+                let issue_id = format!("addon_registration_failed[{}]", &addon.id);
+                let issue = Issue::new(&issue_id, &message).with_details(&error.to_string());
                 issues.push(issue);
             }
         }

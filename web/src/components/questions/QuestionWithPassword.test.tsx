@@ -24,12 +24,12 @@ import React from "react";
 import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import { Question, FieldType } from "~/model/question";
-import { Product } from "~/types/software";
 import { useSystem } from "~/hooks/model/system";
 import { useProductInfo } from "~/hooks/model/config/product";
 import { useStatus } from "~/hooks/model/status";
 import { Locale, Keymap } from "~/model/system/l10n";
 import QuestionWithPassword from "~/components/questions/QuestionWithPassword";
+import { Product } from "~/model/system";
 
 const answerFn = jest.fn();
 const question: Question = {
@@ -50,6 +50,7 @@ const tumbleweed: Product = {
   icon: "tumbleweed.svg",
   description: "Tumbleweed description...",
   registration: false,
+  modes: [],
 };
 
 const locales: Locale[] = [

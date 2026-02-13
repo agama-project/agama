@@ -32,16 +32,21 @@ module Agama
 
           # @param config [Configs::VolumeGroup]
           # @param storage_config [Storage::Config]
-          def initialize(config, storage_config)
+          # @param volumes [VolumeTemplatesBuilder]
+          def initialize(config, storage_config, volumes)
             super()
             @config = config
             @storage_config = storage_config
+            @volumes = volumes
           end
 
         private
 
           # @return [Storage::Config]
           attr_reader :storage_config
+
+          # @return [VolumeTemplatesBuilder]
+          attr_reader :volumes
 
           # @see Base#conversions
           def conversions
@@ -65,7 +70,7 @@ module Agama
           # @return [Array<Hash>]
           def convert_logical_volumes
             config.logical_volumes.map do |logical_volume|
-              ToModelConversions::LogicalVolume.new(logical_volume).convert
+              ToModelConversions::LogicalVolume.new(logical_volume, volumes).convert
             end
           end
         end

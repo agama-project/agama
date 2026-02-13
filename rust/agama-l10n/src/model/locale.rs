@@ -41,10 +41,10 @@ impl LocalesDatabase {
     }
 
     pub fn with_entries(data: &[LocaleEntry]) -> Self {
-        Self {
-            known_locales: data.iter().map(|l| l.id.clone()).collect(),
-            locales: data.to_vec(),
-        }
+        let mut database = Self::new();
+        database.set_entries(data.to_vec());
+        database.known_locales = database.locales.iter().map(|l| l.id.clone()).collect();
+        database
     }
 
     /// Loads the list of locales.
@@ -55,7 +55,7 @@ impl LocalesDatabase {
     /// * `ui_language`: language to translate the descriptions (e.g., "en").
     pub fn read(&mut self, ui_language: &str) -> anyhow::Result<()> {
         self.known_locales = Self::get_locales_list()?;
-        self.locales = self.get_locales(ui_language)?;
+        self.set_entries(self.get_locales(ui_language)?);
         Ok(())
     }
 
@@ -123,6 +123,12 @@ impl LocalesDatabase {
 
         tracing::info!("Read {} locales", result.len());
         Ok(result)
+    }
+
+    // Set the locales entries.
+    fn set_entries(&mut self, locales: Vec<LocaleEntry>) {
+        self.locales = locales;
+        self.locales.sort();
     }
 
     fn get_locales_list() -> anyhow::Result<Vec<LocaleId>> {
@@ -197,5 +203,46 @@ mod tests {
         let unknown = "unknown_UNKNOWN".parse::<LocaleId>().unwrap();
         assert!(db.exists(&en_us));
         assert!(!db.exists(&unknown));
+    }
+
+    #[test]
+    fn test_sorting_locales() {
+        use agama_utils::api::l10n::LocaleEntry;
+        let entries = vec![
+            LocaleEntry {
+                id: "es_ES".parse().unwrap(),
+                language: "Spanish".to_string(),
+                territory: "Spain".to_string(),
+                consolefont: None,
+            },
+            LocaleEntry {
+                id: "en_GB".parse().unwrap(),
+                language: "English".to_string(),
+                territory: "United Kingdom".to_string(),
+                consolefont: None,
+            },
+            LocaleEntry {
+                id: "en_US".parse().unwrap(),
+                language: "English".to_string(),
+                territory: "United States".to_string(),
+                consolefont: None,
+            },
+            LocaleEntry {
+                id: "de_DE".parse().unwrap(),
+                language: "German".to_string(),
+                territory: "Germany".to_string(),
+                consolefont: None,
+            },
+        ];
+
+        let db = LocalesDatabase::with_entries(&entries);
+        let locales = db.entries();
+
+        assert_eq!(locales[0].language, "English");
+        assert_eq!(locales[0].territory, "United Kingdom");
+        assert_eq!(locales[1].language, "English");
+        assert_eq!(locales[1].territory, "United States");
+        assert_eq!(locales[2].language, "German");
+        assert_eq!(locales[3].language, "Spanish");
     }
 }

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-01-18 03:25+0000\n"
+"POT-Creation-Date: 2026-02-09 04:10+0000\n"
 "PO-Revision-Date: 2025-08-01 13:59+0000\n"
 "Last-Translator: Davide Aiello <davide.aiello@novilingulists.com>\n"
 "Language-Team: Italian <https://l10n.opensuse.org/projects/agama/agama-"
@@ -27,35 +27,68 @@ msgstr ""
 msgid "Found unsupported elements in the AutoYaST profile: %{keys}."
 msgstr "Trovati elementi non supportati nel profilo AutoYaST: %{keys}."
 
+#. Implementation for the API method #Probe.
+#: service/lib/agama/dbus/storage/dasd.rb:64
+#, fuzzy
+msgid "Probing DASD devices"
+msgstr "Rilevamento dei dispositivi di memorizzazione"
+
+#. Performs the configuration process in a separate thread.
+#.
+#. The configuration could take long time  (e.g., formatting devices). It is important to not
+#. block the service in order to make possible to attend other requests.
+#.
+#. @raise if there is an unfinished configuration.
+#.
+#. @param config_json [Hash]
+#: service/lib/agama/dbus/storage/dasd.rb:121
+msgid "Configuring DASD"
+msgstr ""
+
+#. Do not configure if there is nothing to change.
+#: service/lib/agama/dbus/storage/iscsi.rb:98
+msgid "Configuring iSCSI"
+msgstr ""
+
+#. Performs an iSCSI discovery.
+#.
+#. @param serialized_options [String] Serialized dicovery options.
+#. @return [Number] 0 success; 1 failure.
+#: service/lib/agama/dbus/storage/iscsi.rb:122
+msgid "Performing iSCSI discovery"
+msgstr ""
+
 #. Implementation for the API method #Install.
-#: service/lib/agama/dbus/storage/manager.rb:117
+#: service/lib/agama/dbus/storage/manager.rb:111
 msgid "Preparing bootloader proposal"
 msgstr "Preparazione della proposta del boot loader"
 
-#: service/lib/agama/dbus/storage/manager.rb:120
+#: service/lib/agama/dbus/storage/manager.rb:114
 msgid "Preparing the storage devices"
 msgstr "Preparazione dei dispositivi di memorizzazione"
 
-#: service/lib/agama/dbus/storage/manager.rb:123
+#: service/lib/agama/dbus/storage/manager.rb:117
 msgid "Writing bootloader sysconfig"
 msgstr "Scrittura di sysconfig del boot loader"
 
 #. Implementation for the API method #Finish.
-#: service/lib/agama/dbus/storage/manager.rb:131
+#: service/lib/agama/dbus/storage/manager.rb:125
 #, fuzzy
 msgid "Finishing installation"
 msgstr "Interrompi installazione"
 
-#. Error code
-#: service/lib/agama/dbus/storage/manager.rb:377
+#. Gets and serializes the storage config used to calculate the current proposal.
+#.
+#. @return [String] Serialized config according to the JSON schema.
+#: service/lib/agama/dbus/storage/manager.rb:297
 msgid "Activating storage devices"
 msgstr "Attivazione dei dispositivi di memorizzazione"
 
-#: service/lib/agama/dbus/storage/manager.rb:380
+#: service/lib/agama/dbus/storage/manager.rb:300
 msgid "Probing storage devices"
 msgstr "Rilevamento dei dispositivi di memorizzazione"
 
-#: service/lib/agama/dbus/storage/manager.rb:383
+#: service/lib/agama/dbus/storage/manager.rb:303
 #, fuzzy
 msgid "Applying storage configuration"
 msgstr "Regolazione della configurazione di memorizzazione"
@@ -386,63 +419,39 @@ msgid "Shrinking is not supported by this device"
 msgstr "La riduzione non è supportata da questo dispositivo"
 
 #. Copy /etc/nvme/host* to keep NVMe working after installation, bsc#1238038
-#: service/lib/agama/storage/finisher.rb:135
+#: service/lib/agama/storage/finisher.rb:128
 msgid "Copying important installation files to the target system"
 msgstr "Copia di importanti file di installazione nel sistema di destinazione"
 
 #. Step to write the bootloader configuration
-#: service/lib/agama/storage/finisher.rb:170
+#: service/lib/agama/storage/finisher.rb:163
 msgid "Installing bootloader"
 msgstr "Installazione del bootloader"
 
 #. Step to finish the Y2Storage configuration
-#: service/lib/agama/storage/finisher.rb:187
+#: service/lib/agama/storage/finisher.rb:180
 msgid "Adjusting storage configuration"
 msgstr "Regolazione della configurazione di memorizzazione"
 
 #. Step to finish the iSCSI configuration
-#: service/lib/agama/storage/finisher.rb:198
+#: service/lib/agama/storage/finisher.rb:191
 msgid "Adjusting iSCSI configuration"
 msgstr "Regolazione della configurazione iSCSI"
 
 #. Step to configure the file-system snapshots
-#: service/lib/agama/storage/finisher.rb:209
+#: service/lib/agama/storage/finisher.rb:202
 msgid "Configuring file systems snapshots"
 msgstr "Configurazione delle istantanee dei file system"
 
 #. Step to copy the installation logs
-#: service/lib/agama/storage/finisher.rb:227
+#: service/lib/agama/storage/finisher.rb:220
 msgid "Copying logs"
 msgstr "Copia dei log"
 
 #. Step to unmount the target file-systems
-#: service/lib/agama/storage/finisher.rb:261
+#: service/lib/agama/storage/finisher.rb:254
 msgid "Unmounting storage devices"
 msgstr "Smontaggio dei dispositivi di memorizzazione"
-
-#. Applies the target configs.
-#.
-#. @param config [ISCSI::Config]
-#: service/lib/agama/storage/iscsi/manager.rb:300
-msgid "Logout iSCSI targets"
-msgstr "Chiudi destinazioni iSCSI"
-
-#: service/lib/agama/storage/iscsi/manager.rb:301
-msgid "Discover iSCSI targets"
-msgstr "Rileva destinazioni iSCSI"
-
-#: service/lib/agama/storage/iscsi/manager.rb:302
-msgid "Login iSCSI targets"
-msgstr "Accedi a destinazioni iSCSI"
-
-#. Login issue.
-#.
-#. @param target [ISCSI::Configs::Target]
-#. @return [Issue]
-#: service/lib/agama/storage/iscsi/manager.rb:366
-#, c-format
-msgid "Cannot login to iSCSI target %s"
-msgstr "Impossibile accedere a destinazione iSCSI %s"
 
 #. Issue representing the proposal is not valid.
 #.
@@ -461,6 +470,19 @@ msgid "A problem ocurred while calculating the storage setup"
 msgstr ""
 "Si è verificato un problema durante il calcolo della configurazione della "
 "memorizzazione"
+
+#~ msgid "Logout iSCSI targets"
+#~ msgstr "Chiudi destinazioni iSCSI"
+
+#~ msgid "Discover iSCSI targets"
+#~ msgstr "Rileva destinazioni iSCSI"
+
+#~ msgid "Login iSCSI targets"
+#~ msgstr "Accedi a destinazioni iSCSI"
+
+#, c-format
+#~ msgid "Cannot login to iSCSI target %s"
+#~ msgstr "Impossibile accedere a destinazione iSCSI %s"
 
 #~ msgid "Analyze disks"
 #~ msgstr "Analizza dischi"

@@ -102,12 +102,13 @@ pub struct AddonInfo {
     /// Release status of the addon, e.g. "beta"
     pub release: String,
     /// Whether the addon is registered
-    pub status: AddonStatus,
+    pub registration: AddonRegistration,
 }
 
 #[derive(Clone, Debug, Serialize, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
-pub enum AddonStatus {
+#[serde(tag = "status")]
+pub enum AddonRegistration {
     Registered { code: Option<String> },
     NotRegistered,
 }

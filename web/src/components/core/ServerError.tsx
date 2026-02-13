@@ -21,42 +21,31 @@
  */
 
 import React from "react";
-import {
-  Bullseye,
-  Button,
-  EmptyState,
-  EmptyStateBody,
-  EmptyStateFooter,
-} from "@patternfly/react-core";
-import { Icon } from "~/components/layout";
-import { Page } from "~/components/core";
+import { Button, HelperText, HelperTextItem } from "@patternfly/react-core";
+import Page from "~/components/core/Page";
+import SplitInfoLayout from "~/components/layout/SplitInfoLayout";
 import { locationReload } from "~/utils";
-import shadowUtils from "@patternfly/react-styles/css/utilities/BoxShadow/box-shadow";
 import { _ } from "~/i18n";
-
-const ErrorIcon = () => <Icon name="error" />;
 
 function ServerError() {
   return (
     <Page variant="minimal">
-      <Bullseye>
-        <Page.Section pfCardProps={{ isFullHeight: false, className: shadowUtils.boxShadowMd }}>
-          <EmptyState
-            variant="xl"
-            titleText={_("Cannot connect to Agama server")}
-            headingLevel="h1"
-            icon={ErrorIcon}
-            status="warning"
-          >
-            <EmptyStateBody>{_("Please, check whether it is running.")}</EmptyStateBody>
-            <EmptyStateFooter>
-              <Button variant="primary" size="lg" onClick={locationReload}>
-                {_("Reload")}
-              </Button>
-            </EmptyStateFooter>
-          </EmptyState>
-        </Page.Section>
-      </Bullseye>
+      <Page.Content>
+        <SplitInfoLayout
+          icon="error"
+          firstRowStart={_("Cannot connect")}
+          firstRowEnd={
+            <Button variant="primary" style={{ minInlineSize: "25dvw" }} onClick={locationReload}>
+              {_("Reload")}
+            </Button>
+          }
+          secondRowStart={
+            <HelperText>
+              <HelperTextItem>{_("Check whether Agama server is running.")}</HelperTextItem>
+            </HelperText>
+          }
+        />
+      </Page.Content>
     </Page>
   );
 }

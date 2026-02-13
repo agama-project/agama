@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-01-18 03:25+0000\n"
-"PO-Revision-Date: 2025-07-10 16:59+0000\n"
+"POT-Creation-Date: 2026-02-09 04:10+0000\n"
+"PO-Revision-Date: 2026-01-29 21:04+0000\n"
 "Last-Translator: Eugene Krater <lachend@gmail.com>\n"
 "Language-Team: Ukrainian <https://l10n.opensuse.org/projects/agama/agama-"
 "service-master/uk/>\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 5.12.2\n"
+"X-Generator: Weblate 5.15.2\n"
 
 #. Reports the problems and decide whether to continue or not.
 #.
@@ -28,38 +28,70 @@ msgstr ""
 msgid "Found unsupported elements in the AutoYaST profile: %{keys}."
 msgstr "Знайдено непідтримувані елементи у профілі AutoYaST: %{keys}."
 
+#. Implementation for the API method #Probe.
+#: service/lib/agama/dbus/storage/dasd.rb:64
+#, fuzzy
+msgid "Probing DASD devices"
+msgstr "Пошук пристроїв зберігання"
+
+#. Performs the configuration process in a separate thread.
+#.
+#. The configuration could take long time  (e.g., formatting devices). It is important to not
+#. block the service in order to make possible to attend other requests.
+#.
+#. @raise if there is an unfinished configuration.
+#.
+#. @param config_json [Hash]
+#: service/lib/agama/dbus/storage/dasd.rb:121
+#, fuzzy
+msgid "Configuring DASD"
+msgstr "Налаштування iSCSI"
+
+#. Do not configure if there is nothing to change.
+#: service/lib/agama/dbus/storage/iscsi.rb:98
+msgid "Configuring iSCSI"
+msgstr "Налаштування iSCSI"
+
+#. Performs an iSCSI discovery.
+#.
+#. @param serialized_options [String] Serialized dicovery options.
+#. @return [Number] 0 success; 1 failure.
+#: service/lib/agama/dbus/storage/iscsi.rb:122
+msgid "Performing iSCSI discovery"
+msgstr "Відбувається виявлення iSCSI"
+
 #. Implementation for the API method #Install.
-#: service/lib/agama/dbus/storage/manager.rb:117
+#: service/lib/agama/dbus/storage/manager.rb:111
 msgid "Preparing bootloader proposal"
 msgstr "Підготовка пропозиції щодо завантажувача"
 
-#: service/lib/agama/dbus/storage/manager.rb:120
+#: service/lib/agama/dbus/storage/manager.rb:114
 msgid "Preparing the storage devices"
 msgstr "Підготовка пристроїв зберігання"
 
-#: service/lib/agama/dbus/storage/manager.rb:123
+#: service/lib/agama/dbus/storage/manager.rb:117
 msgid "Writing bootloader sysconfig"
 msgstr "Запис системної конфігурації завантажувача"
 
 #. Implementation for the API method #Finish.
-#: service/lib/agama/dbus/storage/manager.rb:131
-#, fuzzy
+#: service/lib/agama/dbus/storage/manager.rb:125
 msgid "Finishing installation"
-msgstr "Перервати встановлення"
+msgstr "Завершення встановлення"
 
-#. Error code
-#: service/lib/agama/dbus/storage/manager.rb:377
+#. Gets and serializes the storage config used to calculate the current proposal.
+#.
+#. @return [String] Serialized config according to the JSON schema.
+#: service/lib/agama/dbus/storage/manager.rb:297
 msgid "Activating storage devices"
 msgstr "Активація пристроїв зберігання"
 
-#: service/lib/agama/dbus/storage/manager.rb:380
+#: service/lib/agama/dbus/storage/manager.rb:300
 msgid "Probing storage devices"
 msgstr "Пошук пристроїв зберігання"
 
-#: service/lib/agama/dbus/storage/manager.rb:383
-#, fuzzy
+#: service/lib/agama/dbus/storage/manager.rb:303
 msgid "Applying storage configuration"
-msgstr "Налаштування конфігурації сховища"
+msgstr "Застосування конфігурації сховища"
 
 #. TRANSLATORS: SSL certificate details
 #: service/lib/agama/ssl/certificate_details.rb:31
@@ -386,63 +418,39 @@ msgid "Shrinking is not supported by this device"
 msgstr "Цей пристрій не підтримує стискання"
 
 #. Copy /etc/nvme/host* to keep NVMe working after installation, bsc#1238038
-#: service/lib/agama/storage/finisher.rb:135
+#: service/lib/agama/storage/finisher.rb:128
 msgid "Copying important installation files to the target system"
 msgstr "Копіювання важливих інсталяційних файлів до цільової системи"
 
 #. Step to write the bootloader configuration
-#: service/lib/agama/storage/finisher.rb:170
+#: service/lib/agama/storage/finisher.rb:163
 msgid "Installing bootloader"
 msgstr "Встановлення завантажувача"
 
 #. Step to finish the Y2Storage configuration
-#: service/lib/agama/storage/finisher.rb:187
+#: service/lib/agama/storage/finisher.rb:180
 msgid "Adjusting storage configuration"
 msgstr "Налаштування конфігурації сховища"
 
 #. Step to finish the iSCSI configuration
-#: service/lib/agama/storage/finisher.rb:198
+#: service/lib/agama/storage/finisher.rb:191
 msgid "Adjusting iSCSI configuration"
 msgstr "Налаштування конфігурації iSCSI"
 
 #. Step to configure the file-system snapshots
-#: service/lib/agama/storage/finisher.rb:209
+#: service/lib/agama/storage/finisher.rb:202
 msgid "Configuring file systems snapshots"
 msgstr "Налаштування моментальних знімків файлових систем"
 
 #. Step to copy the installation logs
-#: service/lib/agama/storage/finisher.rb:227
+#: service/lib/agama/storage/finisher.rb:220
 msgid "Copying logs"
 msgstr "Копіювання журналів"
 
 #. Step to unmount the target file-systems
-#: service/lib/agama/storage/finisher.rb:261
+#: service/lib/agama/storage/finisher.rb:254
 msgid "Unmounting storage devices"
 msgstr "Розмонтування пристроїв зберігання"
-
-#. Applies the target configs.
-#.
-#. @param config [ISCSI::Config]
-#: service/lib/agama/storage/iscsi/manager.rb:300
-msgid "Logout iSCSI targets"
-msgstr "Вихід із iSCSI-цілей"
-
-#: service/lib/agama/storage/iscsi/manager.rb:301
-msgid "Discover iSCSI targets"
-msgstr "Виявлення цілей iSCSI"
-
-#: service/lib/agama/storage/iscsi/manager.rb:302
-msgid "Login iSCSI targets"
-msgstr "Вхід в систему iSCSI-цілей"
-
-#. Login issue.
-#.
-#. @param target [ISCSI::Configs::Target]
-#. @return [Issue]
-#: service/lib/agama/storage/iscsi/manager.rb:366
-#, c-format
-msgid "Cannot login to iSCSI target %s"
-msgstr "Неможливо увійти в систему iSCSI-цілі %s"
 
 #. Issue representing the proposal is not valid.
 #.
@@ -458,6 +466,19 @@ msgstr ""
 #: service/lib/agama/storage/proposal.rb:315
 msgid "A problem ocurred while calculating the storage setup"
 msgstr "Виникла проблема при розрахунку конфігурації накопичувачів"
+
+#~ msgid "Logout iSCSI targets"
+#~ msgstr "Вихід із iSCSI-цілей"
+
+#~ msgid "Discover iSCSI targets"
+#~ msgstr "Виявлення цілей iSCSI"
+
+#~ msgid "Login iSCSI targets"
+#~ msgstr "Вхід в систему iSCSI-цілей"
+
+#, c-format
+#~ msgid "Cannot login to iSCSI target %s"
+#~ msgstr "Неможливо увійти в систему iSCSI-цілі %s"
 
 #~ msgid "Analyze disks"
 #~ msgstr "Аналіз дисків"
@@ -675,9 +696,6 @@ msgstr "Виникла проблема при розрахунку конфіг
 
 #~ msgid "Selecting Linux Security Modules"
 #~ msgstr "Вибір модулів безпеки Linux"
-
-#~ msgid "Configuring Iguana"
-#~ msgstr "Налаштування Iguana"
 
 #, perl-brace-format
 #~ msgid "The file %{filename} from repository %{repo_name} (%{repo_url})"

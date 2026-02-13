@@ -20,45 +20,37 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useState } from "react";
+import React from "react";
 import {
   Alert,
-  Bullseye,
-  Button,
-  Card,
-  CardBody,
   Content,
-  EmptyState,
-  EmptyStateActions,
-  EmptyStateBody,
-  EmptyStateFooter,
-  ExpandableSection,
-  Grid,
-  GridItem,
+  Divider,
+  Flex,
+  HelperText,
+  HelperTextItem,
   Stack,
 } from "@patternfly/react-core";
-import { useNavigate } from "react-router";
-import { Icon } from "~/components/layout";
-import alignmentStyles from "@patternfly/react-styles/css/utilities/Alignment/alignment";
+import Page from "~/components/core/Page";
+import RebootButton from "~/components/core/RebootButton";
+import SplitInfoLayout from "~/components/layout/SplitInfoLayout";
 import { useExtendedConfig } from "~/hooks/model/config";
-import { finishInstallation } from "~/api";
-import { ROOT as PATHS } from "~/routes/paths";
 import { _ } from "~/i18n";
-import Page from "./Page";
 
-const TpmHint = () => {
-  const [isExpanded, setIsExpanded] = useState(false);
+import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
+import alignmentStyles from "@patternfly/react-styles/css/utilities/Alignment/alignment";
+
+const TpmAlert = () => {
   const title = _("TPM sealing requires the new system to be booted directly.");
 
   return (
-    <Alert isInline className={alignmentStyles.textAlignStart} title={<strong>{title}</strong>}>
+    <Alert title={title} variant="danger">
       <Stack hasGutter>
-        {_("If a local media was used to run this installer, remove it before the next boot.")}
-        <ExpandableSection
-          isExpanded={isExpanded}
-          onToggle={() => setIsExpanded(!isExpanded)}
-          toggleText={isExpanded ? _("Hide details") : _("See more details")}
-        >
+        <Divider />
+        <Content isEditorial className={textStyles.fontSizeXl}>
+          {_("If a local media was used to run this installer, remove it before the next boot.")}
+        </Content>
+        <Divider />
+        <Content>
           {
             // TRANSLATORS: "Trusted Platform Module" is the name of the technology and "TPM" its abbreviation
             _(
@@ -67,13 +59,11 @@ open encrypted devices will take place during the first boot of the new system. 
 the machine needs to boot directly to the new boot loader.",
             )
           }
-        </ExpandableSection>
+        </Content>
       </Stack>
     </Alert>
   );
 };
-
-const SuccessIcon = () => <Icon name="check_circle" className="icon-xxxl color-success" />;
 
 // TODO: define some utility method to get the device used as root (drive, partition, logical volume).
 // TODO: use type checking for config.
@@ -99,48 +89,42 @@ function usingTpm(config): boolean {
 
 function InstallationFinished() {
   const { storage: storageConfig } = useExtendedConfig();
-  const navigate = useNavigate();
-
-  const onReboot = () => {
-    finishInstallation();
-    navigate(PATHS.installationExit, { replace: true });
-  };
+  const mountTpmAlert = usingTpm(storageConfig);
 
   return (
-    <Page showQuestions={false}>
-      <Bullseye>
-        <Grid hasGutter>
-          <GridItem sm={8} smOffset={2}>
-            <Card>
-              <CardBody>
-                <EmptyState
-                  variant="xl"
-                  titleText={_("Congratulations!")}
-                  headingLevel="h1"
-                  icon={SuccessIcon}
+    <Page variant="minimal">
+      <Page.Content>
+        <SplitInfoLayout
+          icon="done_all"
+          firstRowStart={_("Installation complete")}
+          firstRowEnd={
+            mountTpmAlert ? (
+              <TpmAlert />
+            ) : (
+              <RebootButton size="default" style={{ minInlineSize: "25dvw" }} />
+            )
+          }
+          secondRowStart={
+            <Stack hasGutter>
+              <HelperText>
+                <HelperTextItem
+                  className={alignmentStyles.textAlignEnd}
+                  style={{ textWrap: "balance" }}
                 >
-                  <EmptyStateBody>
-                    <Content component="p">
-                      {_("The installation on your machine is complete.")}
-                    </Content>
-                    <Content component="p">
-                      {_("At this point you can reboot the machine to log in to the new system.")}
-                    </Content>
-                    {usingTpm(storageConfig) && <TpmHint />}
-                  </EmptyStateBody>
-                  <EmptyStateFooter>
-                    <EmptyStateActions>
-                      <Button variant="primary" onClick={onReboot}>
-                        {_("Reboot")}
-                      </Button>
-                    </EmptyStateActions>
-                  </EmptyStateFooter>
-                </EmptyState>
-              </CardBody>
-            </Card>
-          </GridItem>
-        </Grid>
-      </Bullseye>
+                  {_("You can reboot the machine to log in to the new system.")}
+                </HelperTextItem>
+              </HelperText>
+              {mountTpmAlert && (
+                <Flex
+                  justifyContent={{ default: "justifyContentCenter", md: "justifyContentFlexEnd" }}
+                >
+                  <RebootButton size="default" style={{ minInlineSize: "25dvw" }} />
+                </Flex>
+              )}
+            </Stack>
+          }
+        />
+      </Page.Content>
     </Page>
   );
 }

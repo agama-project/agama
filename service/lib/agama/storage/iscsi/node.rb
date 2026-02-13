@@ -19,6 +19,8 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
+require "yast2/equatable"
+
 module Agama
   module Storage
     module ISCSI
@@ -28,6 +30,8 @@ module Agama
       # is a single iSCSI initiator or target. Open-iscsi uses the term node to refer to a portal on
       # a target
       class Node
+        include Yast2::Equatable
+
         # Target IP address
         #
         # @return [String]
@@ -48,10 +52,10 @@ module Agama
         # @return [String]
         attr_accessor :interface
 
-        # Whether the node was initiated by iBTF
+        # Whether the node was initiated by iBFT
         #
         # @return [Boolean]
-        attr_accessor :ibtf
+        attr_accessor :ibft
 
         # Whether the node is connected (there is a session)
         #
@@ -63,8 +67,19 @@ module Agama
         # @return [String]
         attr_accessor :startup
 
+        # Whether the node is locked (cannot be deactivated)
+        #
+        # @return [Boolean]
+        attr_accessor :locked
+
+        eql_attr :address, :port, :target, :interface, :ibft, :connected, :startup, :locked
+
+        def locked?
+          !!locked
+        end
+
         def ibft?
-          !!ibtf
+          !!ibft
         end
 
         def connected?

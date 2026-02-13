@@ -1,4 +1,48 @@
 -------------------------------------------------------------------
+Wed Feb 11 14:53:05 UTC 2026 - Eugenio Paolantonio <eugenio.paolantonio@suse.com>
+
+- Add Beta tag to the SLES and SLES4SAP product names
+  (gh#agama-project/agama#3151)
+
+-------------------------------------------------------------------
+Wed Feb 11 13:58:01 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Add standard and immutable modes to SLES for SAP (bsc#1258042).
+
+-------------------------------------------------------------------
+Mon Feb  2 15:48:07 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+
+- Prepare the spec file for the %suse_version 1610 in Leap 16.1
+  (gh#agama-project/agama#3120)
+
+-------------------------------------------------------------------
+Fri Jan 30 12:44:21 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Fix packaging after the inclusion of Leap 16.1 specification
+  (gh#agama-project/agama#3098).
+
+-------------------------------------------------------------------
+Fri Jan 30 11:36:18 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Rename "transactional_base" to "immutable_base" (related to jsc#PED-14307).
+
+-------------------------------------------------------------------
+Thu Jan 29 11:00:00 UTC 2026 - Lubos Kocman <Lubos.Kocman@suse.com>
+
+- Add Leap 16.1 product definition
+- Drop Leap 16.0 product definition
+-------------------------------------------------------------------
+Wed Jan 28 13:01:02 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Fix the optional_patterns attribute in the product definitions
+  (jsc#PED-14307).
+
+-------------------------------------------------------------------
+Wed Jan 28 11:01:02 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Define "standard" and "immutable" modes for SLES (jsc#PED-14307).
+
+-------------------------------------------------------------------
 Fri Jan  9 14:44:00 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Version 19.pre

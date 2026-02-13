@@ -150,3 +150,24 @@ pub struct GetStage;
 impl Message for GetStage {
     type Reply = Stage;
 }
+
+/// Determines whether the progress is empty.
+///
+/// It can specify a scope to limit the query.
+pub struct IsEmpty {
+    pub scope: Option<Scope>,
+}
+
+impl IsEmpty {
+    pub fn new() -> Self {
+        IsEmpty { scope: None }
+    }
+
+    pub fn with_scope(scope: Scope) -> Self {
+        IsEmpty { scope: Some(scope) }
+    }
+}
+
+impl Message for IsEmpty {
+    type Reply = bool;
+}

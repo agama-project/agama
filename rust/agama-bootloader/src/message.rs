@@ -45,3 +45,18 @@ impl<T> SetConfig<T> {
         }
     }
 }
+
+pub struct SetKernelArg {
+    pub id: String,
+    pub value: String,
+}
+
+impl Message for SetKernelArg {
+    type Reply = ();
+}
+
+impl SetKernelArg {
+    pub fn new(id: String, value: String) -> Self {
+        Self { id, value }
+    }
+}

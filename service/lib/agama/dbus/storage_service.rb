@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022-2025] SUSE LLC
+# Copyright (c) [2022-2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -23,7 +23,9 @@ require "dbus"
 require "agama/dbus/bus"
 require "agama/dbus/storage/iscsi"
 require "agama/dbus/storage/manager"
-require "agama/storage"
+require "agama/storage/manager"
+require "agama/storage/iscsi/adapter"
+require "yast"
 require "y2storage/inhibitors"
 
 module Agama
@@ -53,6 +55,7 @@ module Agama
         # Inhibits various storage subsystem (udisk, systemd mounts, raid auto-assembly) that
         # interfere with the operation of yast-storage-ng and libstorage-ng.
         Y2Storage::Inhibitors.new.inhibit
+        Agama::Storage::ISCSI::Adapter.new.activate
         check_multipath
         export
       end
@@ -104,7 +107,7 @@ module Agama
 
       # @return [Array<::DBus::Object>]
       def dbus_objects
-        @dbus_objects ||= [manager_object, iscsi_object]
+        @dbus_objects ||= [manager_object, iscsi_object, dasd_object].compact
       end
 
       # @return [Agama::DBus::Storage::Manager]
@@ -115,6 +118,18 @@ module Agama
       # @return [Agama::DBus::Storage::ISCSI]
       def iscsi_object
         @iscsi_object ||= Agama::DBus::Storage::ISCSI.new(manager.iscsi, logger: logger)
+      end
+
+      # @return [Agama::DBus::Storage::DASD, nil]
+      def dasd_object
+        return unless Yast::Arch.s390
+
+        return @dasd_object unless @dasd_object.nil?
+
+        require "agama/storage/dasd/manager"
+        require "agama/dbus/storage/dasd"
+        manager = Agama::Storage::DASD::Manager.new(logger: logger)
+        @dasd_object = Agama::DBus::Storage::DASD.new(manager, logger: logger)
       end
 
       # @return [Agama::Storage::Manager]

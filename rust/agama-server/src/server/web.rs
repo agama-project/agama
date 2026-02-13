@@ -22,7 +22,9 @@
 
 use crate::server::config_schema;
 use agama_lib::{error::ServiceError, logs};
-use agama_manager::{self as manager, message};
+use agama_manager::service::Error as ManagerError;
+use agama_manager::users::PasswordCheckResult;
+use agama_manager::{self as manager, message, users};
 use agama_software::Resolvable;
 use agama_utils::{
     actor::Handler,
@@ -66,7 +68,18 @@ impl IntoResponse for Error {
         let body = json!({
             "error": self.to_string()
         });
-        (StatusCode::BAD_REQUEST, Json(body)).into_response()
+
+        let mut status = StatusCode::BAD_REQUEST;
+
+        if let Error::Manager(error) = &self {
+            if matches!(error, ManagerError::PendingIssues { issues: _ })
+                || matches!(error, ManagerError::Busy { scopes })
+            {
+                status = StatusCode::UNPROCESSABLE_ENTITY;
+            }
+        }
+
+        (status, Json(body)).into_response()
     }
 }
 
@@ -127,6 +140,7 @@ pub fn server_with_state(state: ServerState) -> Result<Router, ServiceError> {
         .route("/private/solve_storage_model", get(solve_storage_model))
         .route("/private/resolvables/:id", put(set_resolvables))
         .route("/private/download_logs", get(download_logs))
+        .route("/private/password_check", post(check_password))
         .with_state(state))
 }
 
@@ -397,8 +411,9 @@ async fn get_license(
     path = "/action",
     context_path = "/api/v2",
     responses(
-        (status = 200, description = "Action successfully run."),
-        (status = 400, description = "Not possible to run the action.", body = Object)
+        (status = 200, description = "Action successfully ran."),
+        (status = 400, description = "Not possible to run the action.", body = Object),
+        (status = 422, description = "Action blocked by backend state", body = Object)
     ),
     params(
         ("action" = Action, description = "Description of the action to run."),
@@ -550,4 +565,30 @@ async fn download_logs() -> impl IntoResponse {
         }
         Err(_) => (StatusCode::INTERNAL_SERVER_ERROR, err_response),
     }
+}
+
+#[derive(Deserialize, utoipa::ToSchema)]
+pub struct PasswordParams {
+    password: String,
+}
+
+#[utoipa::path(
+    post,
+    path = "/private/password_check",
+    context_path = "/api/v2",
+    description = "Performs a quality check on a given password",
+    responses(
+        (status = 200, description = "The password was checked", body = String),
+        (status = 400, description = "Could not check the password")
+    )
+)]
+async fn check_password(
+    State(state): State<ServerState>,
+    Json(password): Json<PasswordParams>,
+) -> Result<Json<PasswordCheckResult>, Error> {
+    let result = state
+        .manager
+        .call(users::message::CheckPassword::new(password.password))
+        .await?;
+    Ok(Json(result))
 }

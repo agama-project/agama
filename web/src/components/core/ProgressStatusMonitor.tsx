@@ -23,11 +23,11 @@
 import React from "react";
 import { Button, Divider, Flex, Popover, Stack } from "@patternfly/react-core";
 import Text from "~/components/core/Text";
-import type { Progress as StatusProgress } from "~/model/status";
 import { useStatus } from "~/hooks/model/status";
-import displayStyles from "@patternfly/react-styles/css/utilities/Display/display";
 import { sprintf } from "sprintf-js";
 import { _, N_, n_ } from "~/i18n";
+import type { Progress as StatusProgress } from "~/model/status";
+import displayStyles from "@patternfly/react-styles/css/utilities/Display/display";
 
 type DetailProps = {
   tasks: StatusProgress[];

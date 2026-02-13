@@ -132,6 +132,14 @@ impl Script {
         self.base().write(&path)
     }
 
+    /// Returns the relative script path.
+    ///
+    /// The full script path depends on the workdir. This method returns
+    /// the relative path (e.g., "pre/my-script.sh").
+    pub fn relative_script_path(&self) -> PathBuf {
+        PathBuf::from(self.group().to_string()).join(&self.base().name)
+    }
+
     /// Script's group.
     ///
     /// It determines whether the script runs.
@@ -289,8 +297,10 @@ impl ScriptsRepository {
     }
 
     /// Removes all the scripts from the repository.
-    pub fn clear(&mut self) -> Result<(), Error> {
-        for group in ScriptsGroup::iter() {
+    ///
+    /// * `groups`: groups of scripts to clear.
+    pub fn clear(&mut self, groups: &[ScriptsGroup]) -> Result<(), Error> {
+        for group in ScriptsGroup::iter().filter(|g| groups.contains(&g)) {
             let path = self.workdir.join(group.to_string());
             if path.exists() {
                 std::fs::remove_dir_all(path)?;
@@ -319,14 +329,18 @@ impl Default for ScriptsRepository {
 
 #[cfg(test)]
 mod test {
-    use tempfile::TempDir;
-    use tokio::test;
+    use std::path::PathBuf;
 
-    use crate::api::files::{BaseScript, FileSource, PreScript, Script};
+    use tempfile::TempDir;
+
+    use crate::api::files::{
+        scripts::ScriptsGroup, BaseScript, FileSource, InitScript, PostPartitioningScript,
+        PostScript, PreScript, Script,
+    };
 
     use super::ScriptsRepository;
 
-    #[test]
+    #[tokio::test]
     async fn test_add_script() {
         let tmp_dir = TempDir::with_prefix("scripts-").expect("a temporary directory");
         let mut repo = ScriptsRepository::new(&tmp_dir);
@@ -347,7 +361,7 @@ mod test {
         assert!(script_path.exists());
     }
 
-    #[test]
+    #[tokio::test]
     async fn test_clear_scripts() {
         let tmp_dir = TempDir::with_prefix("scripts-").expect("a temporary directory");
         let mut repo = ScriptsRepository::new(&tmp_dir);
@@ -365,10 +379,34 @@ mod test {
 
         let script_path = tmp_dir.path().join("pre").join("test");
         assert!(script_path.exists());
-        _ = repo.clear();
+        _ = repo.clear(&[ScriptsGroup::Pre]);
         assert!(!script_path.exists());
 
         // the directory for AutoYaST scripts is not removed
         assert!(autoyast_path.exists())
+    }
+
+    #[test]
+    fn test_relative_script_path() {
+        let base = BaseScript {
+            name: "test".to_string(),
+            source: FileSource::Text {
+                content: "".to_string(),
+            },
+        };
+        let script = Script::Pre(PreScript { base: base.clone() });
+        assert_eq!(script.relative_script_path(), PathBuf::from("pre/test"));
+        let script = Script::PostPartitioning(PostPartitioningScript { base: base.clone() });
+        assert_eq!(
+            script.relative_script_path(),
+            PathBuf::from("postPartitioning/test")
+        );
+        let script = Script::Post(PostScript {
+            base: base.clone(),
+            chroot: Some(false),
+        });
+        assert_eq!(script.relative_script_path(), PathBuf::from("post/test"));
+        let script = Script::Init(InitScript { base: base.clone() });
+        assert_eq!(script.relative_script_path(), PathBuf::from("init/test"));
     }
 }

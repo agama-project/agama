@@ -8,8 +8,11 @@ edition.workspace = true
 agama-bootloader = { path = "../agama-bootloader" }
 agama-files = { path = "../agama-files" }
 agama-hostname = { path = "../agama-hostname" }
+agama-iscsi = { path = "../agama-iscsi" }
 agama-l10n = { path = "../agama-l10n" }
 agama-network = { path = "../agama-network" }
+agama-s390 = { path = "../agama-s390" }
+agama-security = { path = "../agama-security" }
 agama-software = { path = "../agama-software" }
 agama-storage = { path = "../agama-storage" }
 agama-utils = { path = "../agama-utils" }
@@ -24,6 +27,7 @@ serde = { version = "1.0.228", features = ["derive"] }
 serde_with = "3.16.1"
 gettext-rs = { version = "0.7.7", features = ["gettext-system"] }
 merge = "0.2.0"
+agama-proxy = { version = "0.1.0", path = "../agama-proxy" }
 
 [dev-dependencies]
 test-context = "0.4.1"

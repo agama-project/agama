@@ -19,24 +19,15 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "agama/issue"
 require "agama/storage/iscsi/adapter"
 require "agama/storage/iscsi/config_importer"
 require "agama/storage/iscsi/node"
-require "agama/with_issues"
-require "agama/with_progress_manager"
-require "yast/i18n"
 
 module Agama
   module Storage
     module ISCSI
       # Manager for iSCSI.
       class Manager
-        include WithIssues
-        include WithProgressManager
-        include Yast::I18n
-
-        STARTUP_OPTIONS = ["onboot", "manual", "automatic"].freeze
         PACKAGES = ["open-iscsi", "iscsiuio"].freeze
 
         # Config according to the JSON schema.
@@ -54,33 +45,24 @@ module Agama
         # @return [Array<Node>]
         attr_reader :nodes
 
-        # @param progress_manager [ProgressManager, nil]
         # @param logger [Logger, nil]
-        def initialize(progress_manager: nil, logger: nil)
-          @progress_manager = progress_manager
+        def initialize(logger: nil)
           @logger = logger || ::Logger.new($stdout)
           @nodes = []
-          @on_activate_callbacks = []
-          @on_probe_callbacks = []
-          # Sets iSCSI as configured after any change on the sessions.
-          @on_sessions_change_callbacks = [proc { @configured = true }]
         end
 
-        # Whether iSCSI was configured.
+        # Whether probing has been already performed.
         #
         # @return [Boolean]
-        def configured?
-          !!@configured
+        def probed?
+          !!@probed
         end
 
-        # Performs actions for activating iSCSI.
-        #
-        # Callbacks are called at the end, see {#on_probe}.
-        def activate
-          logger.info "Activating iSCSI"
-          @activated = true
-          adapter.activate
-          @on_activate_callbacks.each(&:call)
+        # Probes iSCSI.
+        def probe
+          probe_initiator
+          probe_nodes
+          @probed = true
         end
 
         # Performs an iSCSI discovery.
@@ -96,114 +78,37 @@ module Agama
         #
         # @return [Boolean] Whether the action successes
         def discover(host, port, credentials: {})
-          ensure_activated
           probe_after { adapter.discover(host, port, credentials: credentials) }
-        end
-
-        # Probes iSCSI.
-        #
-        # Callbacks are called at the end, see {#on_probe}.
-        def probe
-          logger.info "Probing iSCSI"
-          @probed = true
-          probe_initiator
-          probe_nodes
-          @on_probe_callbacks.each(&:call)
         end
 
         # Applies the given iSCSI config.
         #
         # @param config_json [Hash{Symbol=>Object}] Config according to the JSON schema.
-        # @return [Boolean] Whether the config was correctly applied.
-        def apply_config_json(config_json)
-          @config_json = config_json
+        # @return [Boolean] Whether the iSCSI system was changed.
+        def configure(config_json)
+          probe unless probed?
+          config = assign_config(config_json)
+
+          initiator = self.initiator
+          nodes = self.nodes
+
+          probe_after do
+            configure_initiator(config)
+            discover_from_portals(config)
+            disconnect_missing_targets(config)
+            configure_targets(config)
+          end
+
+          system_changed?(initiator, nodes)
+        end
+
+        # Whether the system is already configured for the given config.
+        #
+        # @param config_json [Hash]
+        # @return [Boolean]
+        def configured?(config_json)
           config = ConfigImporter.new(config_json).import
-
-          success = probe_after { apply_config(config) }
-          run_on_sessions_change_callbacks if config.targets
-
-          success
-        end
-
-        # Updates the initiator info.
-        #
-        # @param name [String, nil]
-        def update_initiator(name: nil)
-          return unless initiator
-
-          adapter.update_initiator(initiator, name: name)
-          probe_initiator
-        end
-
-        # Creates a new iSCSI session.
-        # @note iSCSI nodes are probed again, see {#probe_after}.
-        #
-        # @param node [Node]
-        # @param credentials [Hash<Symbol, String>]
-        #   @option username [String]
-        #   @option password [String]
-        #   @option initiator_username [String]
-        #   @option initiator_password [String]
-        # @param startup [String, nil] Startup status
-        #
-        # @return [Boolean] Whether the action successes
-        def login(node, credentials: {}, startup: nil)
-          ensure_activated
-          result = probe_after { adapter.login(node, credentials: credentials, startup: startup) }
-          run_on_sessions_change_callbacks
-          result
-        end
-
-        # Closes an iSCSI session.
-        # @note iSCSI nodes are probed again, see {#probe_after}.
-        #
-        # @param node [Node]
-        # @return [Boolean] Whether the action successes
-        def logout(node)
-          ensure_activated
-          result = probe_after { adapter.logout(node) }
-          run_on_sessions_change_callbacks
-          result
-        end
-
-        # Deletes an iSCSI node from the database.
-        # @note iSCSI nodes are probed again, see {#probe_after}.
-        #
-        # @param node [Node]
-        # @return [Boolean] Whether the action successes
-        def delete(node)
-          probe_after { adapter.delete_node(node) }
-        end
-
-        # Updates an iSCSI node.
-        #
-        # @param node [Node]
-        # @param startup [String] New startup mode value
-        #
-        # @return [Boolean] Whether the action successes
-        def update(node, startup:)
-          probe_after { adapter.update_node(node, startup: startup) }
-        end
-
-        # Registers a callback to be called after performing iSCSI activation
-        #
-        # @param block [Proc]
-        def on_activate(&block)
-          @on_activate_callbacks << block
-        end
-
-        # Registers a callback to be called when the nodes are probed
-        #
-        # @param block [Proc]
-        def on_probe(&block)
-          @on_probe_callbacks << block
-        end
-
-        # Registers a callback to be called when a session changes
-        #
-        # @param block [Proc]
-        def on_sessions_change(&block)
-          @on_sessions_change_callbacks << block
+          initiator_configured?(config) && nodes_configured?(config)
         end
 
       private
@@ -211,34 +116,30 @@ module Agama
         # @return [Logger]
         attr_reader :logger
 
+        # @return [Config, nil]
+        attr_reader :previous_config
+
         # @return [Adapter]
         def adapter
           @adapter ||= Adapter.new
         end
 
-        # Whether activation has been already performed
+        # Sets the new config and keeps the previous one.
         #
-        # @return [Boolean]
-        def activated?
-          !!@activated
+        # @param config_json [Hash{Symbol=>Object}] Config according to the JSON schema.
+        # @return [Config]
+        def assign_config(config_json)
+          @previous_config = @config
+          @config_json = config_json
+          @config = ConfigImporter.new(config_json).import
         end
 
-        # Whether probing has been already performed.
+        # Calls the given block and performs iSCSI probing afterwards
         #
-        # @return [Boolean]
-        def probed?
-          !!@probed
-        end
-
-        # Calls activation if needed
-        def ensure_activated
-          activate unless activated?
-        end
-
-        # Calls probing (and activation) if needed.
-        def ensure_probed
-          activate unless activated?
-          probe unless probed?
+        # @note Returns the result of the block.
+        # @param block [Proc]
+        def probe_after(&block)
+          block.call.tap { probe }
         end
 
         # Probes the initiator.
@@ -253,58 +154,65 @@ module Agama
         # @return [Array<ISCSI::Node>]
         def probe_nodes
           @nodes = adapter.read_nodes
+          # Nodes are set as locked if they are already connected at the time of probing for first
+          # time. This usually happens when there is iBFT activation or the targets are manually
+          # connected (e.g., by using a script).
+          init_locked_nodes(@nodes.select(&:connected)) unless probed?
+          locked_nodes.each { |n| n.locked = true }
+          @nodes
         end
 
-        # Calls the given block and performs iSCSI probing afterwards
+        # Whether the initiator is already configured for the given config.
         #
-        # @note Returns the result of the block.
-        # @param block [Proc]
-        def probe_after(&block)
-          block.call.tap { probe }
+        # @param config [Config]
+        # @return [Boolean]
+        def initiator_configured?(config)
+          return true unless config.initiator
+
+          initiator&.name == config.initiator
         end
 
-        # Runs callbacks when a session changes
-        def run_on_sessions_change_callbacks
-          @on_sessions_change_callbacks.each(&:call)
+        # Whether all the nodes are already configured for the given config.
+        #
+        # @param config [Config]
+        # @return [Boolean]
+        def nodes_configured?(config)
+          nodes.all? { |n| node_configured?(n, config) }
         end
 
-        # Applies the given iSCSI config.
+        # Whether the node is already configured for the given config.
+        #
+        # @param node [Node]
+        # @param config [Config]
+        #
+        # @return [Boolean]
+        def node_configured?(node, config)
+          target_config = config.find_target(node.target, node.portal)
+
+          if target_config
+            node.connected? &&
+              !credentials_changed?(target_config) &&
+              !startup_changed?(target_config)
+          else
+            !node.connected || node.locked?
+          end
+        end
+
+        # Whether the system has changed.
+        #
+        # @param initiator [Initiator]
+        # @param nodes [Array<Node>]
+        def system_changed?(initiator, nodes)
+          self.initiator != initiator || self.nodes != nodes
+        end
+
+        # Configures the initiator.
         #
         # @param config [ISCSI::Config]
-        # @return [Boolean] Whether the config was correctly applied.
-        def apply_config(config)
-          ensure_probed
-          apply_initiator_config(config)
-          apply_targets_config(config)
-
-          issues.none?
-        end
-
-        # Applies the inititator config.
-        #
-        # @param config [ISCSI::Config]
-        def apply_initiator_config(config)
-          return unless initiator && config.initiator
-          return if initiator.name == config.initiator
+        def configure_initiator(config)
+          return if initiator_configured?(config)
 
           adapter.update_initiator(initiator, name: config.initiator)
-        end
-
-        # Applies the target configs.
-        #
-        # @param config [ISCSI::Config]
-        def apply_targets_config(config)
-          return unless config.targets
-
-          start_progress_with_size(3)
-          progress.step(_("Logout iSCSI targets")) { logout_targets }
-          progress.step(_("Discover iSCSI targets")) { discover_from_portals(config) }
-          progress.step(_("Login iSCSI targets")) { login_targets(config) }
-        end
-
-        # Tries to logout from all targets (nodes).
-        def logout_targets
-          nodes.select(&:connected?).each { |n| adapter.logout(n) }
         end
 
         # Discovers iSCSI targets from all the portals.
@@ -315,55 +223,169 @@ module Agama
             interfaces = config.interfaces(portal)
             adapter.discover_from_portal(portal, interfaces: interfaces)
           end
+          probe_nodes
         end
 
-        # Tries to login to all targets.
-        #
-        # @note If the login of a target fails, then an issue is generated. The process stops on
-        #   the first failing login.
+        # Disconnects the targets that are not configured, preventing to disconnect locked targets.
         #
         # @param config [ISCSI::Config]
-        def login_targets(config)
-          issues = []
+        def disconnect_missing_targets(config)
+          nodes
+            .select(&:connected?)
+            .reject(&:locked?)
+            .reject { |n| config.include_target?(n.target, n.portal) }
+            .each { |n| disconnect_node(n) }
+        end
 
-          config.targets.each do |target|
-            success = apply_target_config(target)
-            if !success
-              issues << login_issue(target)
-              break
-            end
+        # Configures the targets.
+        #
+        # @param config [ISCSI::Config]
+        def configure_targets(config)
+          config.targets.each { |t| configure_target(t) }
+        end
+
+        # Configures a target.
+        #
+        # @param target_config [ISCSI::Configs::Target]
+        def configure_target(target_config)
+          node = find_node(target_config)
+          return unless node
+
+          if node.connected?
+            configure_connected_node(node, target_config)
+          else
+            connect_node(node, target_config)
           end
-
-          self.issues = issues
         end
 
-        # Applies the given target config.
+        # Configures a node that is already connected.
         #
-        # @param target [ISCSI::Configs::Target]
-        # @return [Boolean] Whether the config was correctly applied.
-        def apply_target_config(target)
-          node = ISCSI::Node.new
-          node.address = target.address
-          node.port = target.port
-          node.target = target.name
-          node.interface = target.interface
-
-          credentials = {
-            username:           target.username,
-            password:           target.password,
-            initiator_username: target.initiator_username,
-            initiator_password: target.initiator_password
-          }
-
-          adapter.login(node, credentials: credentials, startup: target.startup)
+        # @param node [Node]
+        # @param target_config [ISCSI::Configs::Target]
+        def configure_connected_node(node, target_config)
+          if credentials_changed?(target_config)
+            reconnect_node(node, target_config)
+          elsif startup_changed?(target_config)
+            update_node(node, target_config)
+          end
         end
 
-        # Login issue.
+        # Tries to connect a node.
         #
-        # @param target [ISCSI::Configs::Target]
-        # @return [Issue]
-        def login_issue(target)
-          Issue.new(format(_("Cannot login to iSCSI target %s"), target.name))
+        # @param node [Node]
+        # @param target_config [ISCSI::Configs::Target]
+        #
+        # @return [Boolean] Whether the node was connected.
+        def connect_node(node, target_config)
+          logger.info("Connecting iSCSI node: #{node.inspect}")
+          adapter.login(
+            node,
+            credentials: target_config.credentials || {},
+            startup:     target_config.startup
+          )
+        end
+
+        # Tries to disconnect a node.
+        #
+        # @param node [Node]
+        # @return [Boolean] Whether the node was disconnected.
+        def disconnect_node(node)
+          logger.info("Disconnecting iSCSI node: #{node.inspect}")
+          adapter.logout(node).tap do |success|
+            # Unlock the node if it was correctly disconnected.
+            unregister_locked_node(node) if success
+          end
+        end
+
+        # Tries to reconnect a node.
+        #
+        # @param node [Node]
+        # @param target_config [ISCSI::Configs::Target]
+        #
+        # @return [Boolean] Whether the node was reconnected.
+        def reconnect_node(node, target_config)
+          disconnect_node(node) && connect_node(node, target_config)
+        end
+
+        # Tries to update a node.
+        #
+        # @param node [Node]
+        # @param target_config [ISCSI::Configs::Target]
+        #
+        # @return [Boolean] Whether the node was updated.
+        def update_node(node, target_config)
+          logger.info("Updating iSCSI node: #{node.inspect}")
+          adapter.update_node(node, startup: target_config.startup)
+        end
+
+        # Whether the credentials has changed.
+        #
+        # @param target_config [ISCSI::Configs::Target]
+        # @return [Boolean]
+        def credentials_changed?(target_config)
+          previous_credentials = find_previous_target(target_config)&.credentials
+          previous_credentials != target_config.credentials
+        end
+
+        # Whether the startup mode has changed.
+        #
+        # @param target_config [ISCSI::Configs::Target]
+        # @return [Boolean]
+        def startup_changed?(target_config)
+          previous_startup = find_node(target_config)&.startup
+          previous_startup != target_config.startup
+        end
+
+        # Finds the equivalent target in the previous configuration, if any.
+        #
+        # @param target_config [ISCSI::Configs::Target]
+        # @return [ISCSI::Configs::Target, nil]
+        def find_previous_target(target_config)
+          previous_config&.find_target(target_config.name, target_config.portal)
+        end
+
+        # Finds the node corresponding to the given target configuration.
+        #
+        # @param target_config [ISCSI::Configs::Target]
+        # @return [Node, nil]
+        def find_node(target_config)
+          nodes.find { |n| n.target == target_config.name && n.portal == target_config.portal }
+        end
+
+        # Nodes that should be marked as locked according to the status of the system in the first
+        # probe, no matter the value of their Node#locked attribute
+        #
+        # @return [Array<Node>]
+        def locked_nodes
+          @locked_node_ids.map do |i|
+            nodes.find { |n| n.target == i[:target] && n.portal == i[:portal] }
+          end.compact
+        end
+
+        # Method to be called during the initial probing in order to identify the nodes that
+        # should be marked as locked.
+        #
+        # @param nodes [Array<Node>]
+        def init_locked_nodes(nodes)
+          @locked_node_ids = []
+          nodes.each { |n| register_locked_node(n) }
+        end
+
+        # @see #locked_nodes
+        #
+        # @param node [Node]
+        def register_locked_node(node)
+          @locked_node_ids ||= []
+          @locked_node_ids << { target: node.target, portal: node.portal }
+        end
+
+        # @see #locked_nodes
+        #
+        # @param node [Node]
+        def unregister_locked_node(node)
+          return unless @locked_node_ids
+
+          @locked_node_ids.delete({ target: node.target, portal: node.portal })
         end
       end
     end

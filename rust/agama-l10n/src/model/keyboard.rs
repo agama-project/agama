@@ -40,14 +40,14 @@ impl KeymapsDatabase {
     }
 
     pub fn with_entries(data: &[Keymap]) -> Self {
-        Self {
-            keymaps: data.to_vec(),
-        }
+        let mut database = Self::new();
+        database.set_entries(data.to_vec());
+        database
     }
 
     /// Reads the list of keymaps.
     pub fn read(&mut self) -> anyhow::Result<()> {
-        self.keymaps = get_keymaps()?;
+        self.set_entries(get_keymaps()?);
         Ok(())
     }
 
@@ -58,6 +58,33 @@ impl KeymapsDatabase {
     /// Returns the list of keymaps.
     pub fn entries(&self) -> &Vec<Keymap> {
         &self.keymaps
+    }
+
+    // Set the locales entries.
+    fn set_entries(&mut self, keymaps: Vec<Keymap>) {
+        self.keymaps = keymaps;
+        self.keymaps.sort();
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_sorting_keymaps() {
+        let entries = vec![
+            Keymap::new("es".parse().unwrap(), "Spanish"),
+            Keymap::new("us".parse().unwrap(), "English (US)"),
+            Keymap::new("de".parse().unwrap(), "German"),
+        ];
+
+        let db = KeymapsDatabase::with_entries(&entries);
+        let keymaps = db.entries();
+
+        assert_eq!(keymaps[0].description.to_string(), "English (US)");
+        assert_eq!(keymaps[1].description.to_string(), "German");
+        assert_eq!(keymaps[2].description.to_string(), "Spanish");
     }
 }
 

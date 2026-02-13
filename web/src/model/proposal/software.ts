@@ -36,6 +36,8 @@ enum SelectedBy {
   AUTO = "auto",
   /** No selected */
   NONE = "none",
+  /** Explicitly removed by user */
+  REMOVED = "removed",
 }
 
 export type { Proposal, PatternsSelection };

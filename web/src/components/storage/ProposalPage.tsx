@@ -41,15 +41,15 @@ import {
 } from "@patternfly/react-core";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import { Page, Link, NestedContent } from "~/components/core/";
-import { Icon } from "~/components/layout";
+import Icon from "~/components/layout/Icon";
+import MenuButton from "~/components/core/MenuButton";
 import ConfigEditor from "./ConfigEditor";
-// import ConnectedDevicesMenu from "./ConnectedDevicesMenu";
+import ConnectedDevicesMenu from "./ConnectedDevicesMenu";
 import EncryptionSection from "./EncryptionSection";
 import BootSection from "./BootSection";
 import FixableConfigInfo from "./FixableConfigInfo";
 import ProposalFailedInfo from "./ProposalFailedInfo";
 import ProposalResultSection from "./ProposalResultSection";
-import ProposalTransactionalInfo from "./ProposalTransactionalInfo";
 import UnsupportedModelInfo from "./UnsupportedModelInfo";
 import { useAvailableDevices } from "~/hooks/model/system/storage";
 import { useIssues } from "~/hooks/model/issue";
@@ -61,9 +61,10 @@ import { _, n_ } from "~/i18n";
 import { useProgress, useProgressChanges } from "~/queries/progress";
 import { useNavigate, useLocation } from "react-router";
 import { useStorageUiState } from "~/context/storage-ui-state";
-import MenuButton from "../core/MenuButton";
-import spacingStyles from "@patternfly/react-styles/css/utilities/Spacing/spacing";
+
 import type { Issue } from "~/model/issue";
+
+import spacingStyles from "@patternfly/react-styles/css/utilities/Spacing/spacing";
 
 type InvalidConfigEmptyStateProps = {
   issues: Issue[];
@@ -152,7 +153,7 @@ function UnavailableDevicesEmptyState(): React.ReactNode {
       <EmptyStateFooter>
         <Split hasGutter>
           <SplitItem>
-            <Link to={PATHS.iscsi} variant="link">
+            <Link to={PATHS.iscsi.root} variant="link">
               {_("Connect to iSCSI targets")}
             </Link>
           </SplitItem>
@@ -288,7 +289,6 @@ function ProposalPageContent(): React.ReactNode {
 
   return (
     <Grid hasGutter>
-      <ProposalTransactionalInfo />
       {!configIssues.length && !proposal && <ProposalFailedInfo />}
       {!!configIssues.length && <FixableConfigInfo issues={configIssues} />}
       {!model && <UnsupportedModelInfo />}
@@ -325,11 +325,10 @@ export default function ProposalPage(): React.ReactNode {
 
   if (resetNeeded) return;
 
-  // FIXME: relocate devices menu
-  //   <ConnectedDevicesMenu /> */
   return (
     <Page
       breadcrumbs={[{ label: _("Storage") }]}
+      centerSlot={<ConnectedDevicesMenu />}
       progress={{ scope: "storage", ensureRefetched: STORAGE_MODEL_KEY }}
     >
       <Page.Content>

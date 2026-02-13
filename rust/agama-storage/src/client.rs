@@ -52,6 +52,7 @@ pub trait StorageClient {
     async fn probe(&self) -> Result<(), Error>;
     async fn install(&self) -> Result<(), Error>;
     async fn finish(&self) -> Result<(), Error>;
+    async fn umount(&self) -> Result<(), Error>;
     async fn get_system(&self) -> Result<Option<Value>, Error>;
     async fn get_config(&self) -> Result<Option<Config>, Error>;
     async fn get_config_model(&self) -> Result<Option<Value>, Error>;
@@ -111,6 +112,11 @@ impl StorageClient for Client {
 
     async fn finish(&self) -> Result<(), Error> {
         self.call("Finish", &()).await?;
+        Ok(())
+    }
+
+    async fn umount(&self) -> Result<(), Error> {
+        self.call("Umount", &()).await?;
         Ok(())
     }
 

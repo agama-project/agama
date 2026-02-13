@@ -1,4 +1,97 @@
 -------------------------------------------------------------------
+Fri Feb 13 08:12:01 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- Fix clearing bootloader cache to ensure that proper storage
+  configuration is used (bsc#1258134)
+
+-------------------------------------------------------------------
+Thu Feb 12 15:22:50 UTC 2026 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Fix reading the startup mode in iSCSI
+  (gh#agama-project/agama#3161).
+
+-------------------------------------------------------------------
+Thu Feb 12 08:33:58 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- Split storage writting config and final unmount action
+  (bsc#1257791)
+
+-------------------------------------------------------------------
+Wed Feb 11 14:48:58 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Fix JSON of DASD format summary (gh#agama-project/agama#3128).
+
+-------------------------------------------------------------------
+Fri Feb  6 15:25:36 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Provide new D-Bus API for DASD (gh#agama-project/agama#3110).
+
+-------------------------------------------------------------------
+Wed Feb  4 14:01:15 UTC 2026 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Identify iSCSI nodes using the combination of name and portal
+  (gh#agama-project/agama#3123).
+
+-------------------------------------------------------------------
+Mon Feb  2 08:13:48 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- Allow other parts to define in bootloader its proposed kernel
+  parameters (gh#agama-project/agama#3103)
+
+-------------------------------------------------------------------
+Fri Jan 30 16:21:23 UTC 2026 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Change how Btrfs information (snapshots and immutable) is
+  represented in the storage model and in the volume templates
+  (related to jsc#PED-14307).
+
+-------------------------------------------------------------------
+Thu Jan 29 09:55:38 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Retry requests to the web server if the connection failed
+  (gh#agama-project/agama#3096, related to bsc#1257067).
+
+-------------------------------------------------------------------
+Wed Jan 28 09:51:16 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Configure storage and iSCSI only if needed
+  (gh#agama-project/agama#3064).
+
+-------------------------------------------------------------------
+Mon Jan 26 06:49:56 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Provide new D-Bus API for iSCSI (gh#agama-project/agama#3008).
+
+-------------------------------------------------------------------
+Fri Jan 23 13:47:45 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- Temporarily disable the check of os-prober to avoid
+  trying to access libzypp (gh#agama-project/agama#3053).
+
+-------------------------------------------------------------------
+Fri Jan 23 10:28:20 UTC 2026 - Martin Wilck <mwilck@suse.com>
+
+- Drop dependency on dmraid (jsc#PED-15368)
+
+-------------------------------------------------------------------
+Thu Jan 22 12:50:32 UTC 2026 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Stop reporting a bootloader error when there is no valid storage
+  proposal (bsc#1257013).
+
+-------------------------------------------------------------------
+Wed Jan 21 10:24:50 UTC 2026 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Honor the read_only flag for volumes coming from the product
+  configuration (bsc#1253616).
+
+-------------------------------------------------------------------
+Tue Jan 20 12:36:32 UTC 2026 - Martin Vidner <mvidner@suse.com>
+
+- refactor install_translations.sh for readability and testability
+  (part of Rust translations enablement, gh#agama-project/agama#2949).
+
+-------------------------------------------------------------------
 Wed Jan 14 08:54:50 UTC 2026 - José Iván López González <jlopez@suse.com>
 
 - Properly disable BLS according to the selected product
@@ -17,7 +110,7 @@ Fri Dec 12 06:21:47 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Fix systemd target import from AutoYaST profiles
   (gh#agama-project/agama#2826).
-  
+
 -------------------------------------------------------------------
 Thu Nov 13 13:30:58 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
 

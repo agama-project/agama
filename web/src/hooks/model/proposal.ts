@@ -29,7 +29,7 @@ import { CONFIG_KEY, EXTENDED_CONFIG_KEY } from "~/hooks/model/config";
 import { STORAGE_MODEL_KEY } from "~/hooks/model/storage/config-model";
 
 const PROPOSAL_KEY = "proposal" as const;
-const COMMON_PROPOSAL_KEYS = [PROPOSAL_KEY, CONFIG_KEY, EXTENDED_CONFIG_KEY] as const;
+const COMMON_PROPOSAL_KEYS = [PROPOSAL_KEY, EXTENDED_CONFIG_KEY] as const;
 
 const proposalQuery = {
   queryKey: [PROPOSAL_KEY],
@@ -50,7 +50,7 @@ function useProposalChanges() {
     // TODO: replace the scope instead of invalidating the query.
     return client.onEvent((event) => {
       if (event.type === "ProposalChanged") {
-        [...COMMON_PROPOSAL_KEYS, STORAGE_MODEL_KEY].forEach((queryKey) => {
+        [...COMMON_PROPOSAL_KEYS, CONFIG_KEY, STORAGE_MODEL_KEY].forEach((queryKey) => {
           queryClient.invalidateQueries({ queryKey: [queryKey] });
         });
       }

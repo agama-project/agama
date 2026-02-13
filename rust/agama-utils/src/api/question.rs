@@ -293,6 +293,11 @@ impl QuestionSpec {
             .collect::<HashMap<String, String>>();
         self
     }
+
+    pub fn with_owned_data(mut self, data: HashMap<String, String>) -> Self {
+        self.data = data;
+        self
+    }
 }
 
 /// Question field.
@@ -359,7 +364,7 @@ impl Action {
 pub struct Answer {
     #[serde(alias = "answer")]
     pub action: String,
-    #[serde(alias = "password")]
+    #[serde(alias = "password", skip_serializing_if = "Option::is_none")]
     pub value: Option<String>,
 }
 

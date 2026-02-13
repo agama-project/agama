@@ -35,6 +35,12 @@ use url::Url;
 
 use crate::{model::software_selection::SoftwareSelection, Resolvable, ResolvableType};
 
+#[derive(Clone, Debug)]
+pub struct RepoKey {
+    pub alias: String,
+    pub fingerprint: String,
+}
+
 /// Represents the wanted software configuration.
 ///
 /// It includes the list of repositories, selected resolvables, configuration
@@ -50,6 +56,8 @@ pub struct SoftwareState {
     pub options: SoftwareOptions,
     pub registration: Option<RegistrationState>,
     pub allow_registration: bool,
+    pub trusted_gpg_keys: Vec<RepoKey>,
+    pub unsigned_repos: Vec<String>,
 }
 
 impl SoftwareState {
@@ -62,6 +70,8 @@ impl SoftwareState {
             options: Default::default(),
             registration: None,
             allow_registration: false,
+            trusted_gpg_keys: vec![],
+            unsigned_repos: vec![],
         }
     }
 }
@@ -187,9 +197,9 @@ impl<'a> SoftwareStateBuilder<'a> {
             return;
         }
 
-        let Some(code) = &config.registration_code else {
+        if config.registration_code.is_none() && config.registration_url.is_none() {
             return;
-        };
+        }
 
         let product = self.product.id.clone();
         let version = self.product.version.clone().unwrap_or("1".to_string());
@@ -203,21 +213,12 @@ impl<'a> SoftwareStateBuilder<'a> {
             vec![]
         };
 
-        let url = match &config.registration_url {
-            Some(registration_url) => Some(registration_url.clone()),
-            None => self
-                .kernel_cmdline
-                .get_last("inst.register_url")
-                .map(|url| Url::parse(&url).ok())
-                .flatten(),
-        };
-
         state.registration = Some(RegistrationState {
             product,
             version,
-            code: code.to_string(),
+            code: config.registration_code.clone(),
             email: config.registration_email.clone(),
-            url,
+            url: config.registration_url.clone(),
             addons,
         });
     }
@@ -227,6 +228,23 @@ impl<'a> SoftwareStateBuilder<'a> {
         if let Some(repositories) = &config.extra_repositories {
             let extra = repositories.iter().map(Repository::from);
             state.repositories.extend(extra);
+
+            // create map for gpg signatures
+            for repo in repositories {
+                if let Some(gpg_fingerprints) = &repo.gpg_fingerprints {
+                    for fingerprint in gpg_fingerprints {
+                        state.trusted_gpg_keys.push(RepoKey {
+                            alias: repo.alias.clone(),
+                            // remove all whitespaces to sanitize input
+                            fingerprint: fingerprint.replace(" ", ""),
+                        });
+                    }
+                }
+
+                if repo.allow_unsigned == Some(true) {
+                    state.unsigned_repos.push(repo.alias.clone());
+                }
+            }
         }
 
         if let Some(patterns) = &config.patterns {
@@ -374,12 +392,17 @@ impl<'a> SoftwareStateBuilder<'a> {
         }
 
         SoftwareState {
-            product: software.base_product.clone(),
+            product: software
+                .base_product
+                .clone()
+                .expect("Expected a base product to be defined"),
             repositories,
             resolvables,
             registration: None,
             options: Default::default(),
             allow_registration: self.product.registration,
+            trusted_gpg_keys: vec![],
+            unsigned_repos: vec![],
         }
     }
 }
@@ -524,6 +547,14 @@ impl ResolvableSelection {
 
         false
     }
+
+    pub fn selected(&self) -> bool {
+        match self {
+            ResolvableSelection::Selected => true,
+            ResolvableSelection::AutoSelected { optional: _ } => true,
+            _ => false,
+        }
+    }
 }
 
 impl From<ResolvableSelection> for zypp_agama::ResolvableSelected {
@@ -542,7 +573,7 @@ impl From<ResolvableSelection> for zypp_agama::ResolvableSelected {
 #[derive(Default, Debug)]
 pub struct SoftwareOptions {
     /// Install only required packages (not recommended ones).
-    only_required: bool,
+    pub only_required: bool,
 }
 
 #[derive(Clone, Debug)]
@@ -550,7 +581,7 @@ pub struct RegistrationState {
     pub product: String,
     pub version: String,
     // FIXME: the code should be optional.
-    pub code: String,
+    pub code: Option<String>,
     pub email: Option<String>,
     pub url: Option<Url>,
     pub addons: Vec<Addon>,
@@ -583,7 +614,7 @@ mod tests {
             RepositoryConfig, SoftwareConfig, SystemInfo,
         },
         kernel_cmdline::KernelCmdline,
-        products::ProductSpec,
+        products::{ProductSpec, ProductTemplate},
     };
     use url::Url;
 
@@ -616,16 +647,17 @@ mod tests {
         }
     }
 
-    fn build_product_spec(name: &str) -> ProductSpec {
+    fn build_product_spec(name: &str, mode: Option<&str>) -> ProductSpec {
         let path = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
             .join(format!("../test/share/products.d/{}.yaml", name));
-        let product = std::fs::read_to_string(&path).unwrap();
-        serde_yaml::from_str(&product).unwrap()
+        let template = std::fs::read_to_string(&path).unwrap();
+        let template: ProductTemplate = serde_yaml::from_str(&template).unwrap();
+        template.to_product_spec(mode).unwrap()
     }
 
     #[test]
     fn test_build_state() {
-        let product = build_product_spec("tumbleweed");
+        let product = build_product_spec("tumbleweed", None);
         let config = Config::default();
         let state = SoftwareStateBuilder::for_product(&product)
             .with_config(&config)
@@ -676,7 +708,7 @@ mod tests {
 
     #[test]
     fn test_add_user_repositories() {
-        let product = build_product_spec("tumbleweed");
+        let product = build_product_spec("tumbleweed", None);
         let config = build_user_config(None);
         let state = SoftwareStateBuilder::for_product(&product)
             .with_config(&config)
@@ -695,7 +727,7 @@ mod tests {
 
     #[test]
     fn test_add_patterns() {
-        let product = build_product_spec("tumbleweed");
+        let product = build_product_spec("tumbleweed", None);
         let patterns = PatternsConfig::PatternsMap(PatternsMap {
             add: Some(vec!["gnome".to_string()]),
             remove: None,
@@ -735,10 +767,11 @@ mod tests {
 
     #[test]
     fn test_add_registration() {
-        let product = build_product_spec("sles_160");
+        let product = build_product_spec("sles_161", Some("standard"));
         let mut config = build_user_config(None);
         config.product = ProductConfig {
             id: Some("SLES".to_string()),
+            mode: Some("standard".to_string()),
             registration_code: Some("123456".to_string()),
             registration_url: Some(Url::parse("https://scc.suse.com").unwrap()),
             registration_email: Some("jane.doe@example.net".to_string()),
@@ -754,7 +787,7 @@ mod tests {
             .build();
 
         let registration = state.registration.unwrap();
-        assert_eq!(registration.code, "123456".to_string());
+        assert_eq!(registration.code, Some("123456".to_string()));
         assert_eq!(
             registration.url,
             Some(Url::parse("https://scc.suse.com").unwrap())
@@ -768,32 +801,8 @@ mod tests {
     }
 
     #[test]
-    fn test_add_register_url() {
-        let product = build_product_spec("sles_160");
-        let mut config = build_user_config(None);
-        config.product = ProductConfig {
-            id: Some("SLES".to_string()),
-            registration_code: Some("123456".to_string()),
-            ..Default::default()
-        }
-        .into();
-
-        let kernel_cmdline = KernelCmdline::parse_str("inst.register_url=http://example.net");
-        let state = SoftwareStateBuilder::for_product(&product)
-            .with_config(&config)
-            .with_kernel_cmdline(kernel_cmdline)
-            .build();
-
-        let registration = state.registration.unwrap();
-        assert_eq!(
-            registration.url,
-            Some(Url::parse("http://example.net").unwrap())
-        );
-    }
-
-    #[test]
     fn test_remove_patterns() {
-        let product = build_product_spec("tumbleweed");
+        let product = build_product_spec("tumbleweed", None);
         let patterns = PatternsConfig::PatternsMap(PatternsMap {
             add: None,
             remove: Some(vec!["selinux".to_string()]),
@@ -828,7 +837,7 @@ mod tests {
 
     #[test]
     fn test_remove_mandatory_patterns() {
-        let product = build_product_spec("tumbleweed");
+        let product = build_product_spec("tumbleweed", None);
         let patterns = PatternsConfig::PatternsMap(PatternsMap {
             add: None,
             remove: Some(vec!["enhanced_base".to_string()]),
@@ -863,7 +872,7 @@ mod tests {
 
     #[test]
     fn test_replace_patterns_list() {
-        let product = build_product_spec("tumbleweed");
+        let product = build_product_spec("tumbleweed", None);
         let patterns = PatternsConfig::PatternsList(vec!["gnome".to_string()]);
         let config = build_user_config(Some(patterns));
 
@@ -895,7 +904,7 @@ mod tests {
 
     #[test]
     fn test_use_base_repositories() {
-        let product = build_product_spec("tumbleweed");
+        let product = build_product_spec("tumbleweed", None);
         let patterns = PatternsConfig::PatternsList(vec!["gnome".to_string()]);
         let config = build_user_config(Some(patterns));
 
@@ -938,7 +947,7 @@ mod tests {
 
     #[test]
     fn test_mandatory_packages() {
-        let product = build_product_spec("tumbleweed");
+        let product = build_product_spec("tumbleweed", None);
         let config = Config::default();
         let state = SoftwareStateBuilder::for_product(&product)
             .with_config(&config)
@@ -975,7 +984,7 @@ mod tests {
 
     #[test]
     fn test_system_adds_kernel() {
-        let product = build_product_spec("tumbleweed");
+        let product = build_product_spec("tumbleweed", None);
         let system = SystemInfo::default();
 
         let state = SoftwareStateBuilder::for_product(&product)
@@ -1002,7 +1011,7 @@ mod tests {
 
     #[test]
     fn test_repositories_from_kernel_cmdline() {
-        let product = build_product_spec("tumbleweed");
+        let product = build_product_spec("tumbleweed", None);
         let kernel_cmdline = KernelCmdline::parse_str(
             "inst.install_url=http://example.com/repo1,http://example.com/repo2",
         );
@@ -1020,7 +1029,7 @@ mod tests {
 
     #[test]
     fn test_single_repository_from_kernel_cmdline() {
-        let product = build_product_spec("tumbleweed");
+        let product = build_product_spec("tumbleweed", None);
         let kernel_cmdline = KernelCmdline::parse_str("inst.install_url=http://example.com/repo1");
 
         let state = SoftwareStateBuilder::for_product(&product)
@@ -1034,7 +1043,7 @@ mod tests {
 
     #[test]
     fn test_repositories_fallback_to_product() {
-        let product = build_product_spec("tumbleweed");
+        let product = build_product_spec("tumbleweed", None);
         let kernel_cmdline = KernelCmdline::default();
 
         let state = SoftwareStateBuilder::for_product(&product)

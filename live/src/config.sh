@@ -49,8 +49,16 @@ if stat -t /usr/lib/rpm/gnupg/keys/*.asc 2>/dev/null 1>/dev/null; then
   rpm --import /usr/lib/rpm/gnupg/keys/*.asc
 fi
 
+if [ $(rpm -q --provides libzypp | grep -q 'libzypp(econf)'; echo $?) -eq 0 ]; then
+# A new enough version of libzypp is in use which supports UAPI configuration. Configure a drop-in conf
+cat <<EOF > /etc/zypp/zypp.conf.d/90-agama.conf
+[main]
+download.connect_timeout = 20
+EOF
+else
 # decrease the libzypp timeout to 20 seconds (the default is 60 seconds)
 sed -i -e "s/^\s*#\s*download.connect_timeout\s*=\s*.*$/download.connect_timeout = 20/" /etc/zypp/zypp.conf
+fi
 
 # activate services
 systemctl enable sshd.service
@@ -61,6 +69,7 @@ systemctl enable agama-web-server.service
 systemctl enable agama-dbus-monitor.service
 systemctl enable agama-autoinstall.service
 systemctl enable agama-hostname.service
+systemctl enable agama-proxy-setup.service
 systemctl enable agama-certificate-issue.path
 systemctl enable agama-certificate-wait.service
 systemctl enable agama-cmdline-process.service
@@ -196,10 +205,10 @@ if [[ "$kiwi_profiles" == *MINI* ]]; then
   rm -rf /usr/lib/modules/*/kernel/net/bluetooth
 fi
 
-# Remove the SUSEConnect CLI tool from the openSUSE images and the mini PXE image,
-# keep it in the SLE images, it might be useful for testing/debugging
-# (Agama uses libsuseconnect.so directly via the Ruby bindings and does not need the CLI,
-# registration in theory would be still possible even in the openSUSE images)
+# Remove the SUSEConnect CLI tool from the openSUSE images and the mini PXE
+# image, keep it in the SLE images, it might be useful for testing/debugging
+# (Agama uses libsuseconnect.so directly and does not need the CLI, registration
+# in theory would be still possible even in the openSUSE images)
 if [[ "$kiwi_profiles" == *MINI* ]] || [[ "$kiwi_profiles" == *Leap* ]] || [[ "$kiwi_profiles" == *openSUSE* ]]; then
   rm -f /usr/bin/suseconnect
 fi
@@ -210,10 +219,10 @@ fi
 # Clean-up logs
 rm /var/log/zypper.log /var/log/zypp/history
 
-# reduce the "vim-data" content, this package is huge (37MB unpacked!), keep only
-# support for JSON (for "agama config edit") and Ruby (fixing/debugging the Ruby
-# service)
-rpm -ql vim-data | grep -v -e '/ruby.vim$' -e '/json.vim$' -e colors | xargs rm 2>/dev/null || true
+# reduce the "vim-data" content, this package is huge (37MB unpacked!), keep
+# only support for JSON (for "agama config edit"), YAML (the product definition
+# files) and Ruby (fixing/debugging the Ruby service)
+rpm -ql vim-data | grep -v -e '/ruby.vim$' -e '/json.vim$' -e '/yaml.vim$' -e '/bash.vim$' -e colors | xargs rm 2>/dev/null || true
 
 du -h -s /usr/{share,lib}/locale/
 

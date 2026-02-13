@@ -45,7 +45,7 @@ export default function ResourceNotFound({
   linkPath,
 }: ResourceNotFoundProps) {
   return (
-    <EmptyState headingLevel="h3" titleText={title} icon={() => <Icon name="error" />}>
+    <EmptyState headingLevel="h2" titleText={title} icon={() => <Icon name="error" />}>
       <EmptyStateBody>{body}</EmptyStateBody>
       {linkText && linkPath && (
         <EmptyStateFooter>

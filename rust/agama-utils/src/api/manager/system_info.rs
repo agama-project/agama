@@ -51,6 +51,16 @@ pub struct Product {
     /// Translations
     #[serde(skip_serializing_if = "Option::is_none")]
     pub translations: Option<Translations>,
+    /// Product modes
+    #[serde(default)]
+    pub modes: Vec<ProductMode>,
+}
+
+#[derive(Clone, Default, Debug, Serialize, utoipa::ToSchema)]
+pub struct ProductMode {
+    pub id: String,
+    pub name: String,
+    pub description: String,
 }
 
 /// Represents the hardware information of the underlying system.

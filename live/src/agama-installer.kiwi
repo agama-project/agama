@@ -12,10 +12,10 @@
     <profiles>
         <!-- use at most 16 characters for the profile name, it is used in the ISO Volume ID -->
         <!-- which is limited to max. 32 characters -->
-        <profile name="Leap_16.0" description="openSUSE Leap image" import="true" />
+        <profile name="Leap_16.1" description="openSUSE Leap image" import="true" />
         <profile name="openSUSE" description="openSUSE multiproduct image" import="true" />
         <!-- TODO: add SPx in the future -->
-        <profile name="SUSE_SLE_16" description="SLE-based image" import="true" />
+        <profile name="SUSE_SLE_16.1" description="SLE-based image" import="true" />
     </profiles>
     <preferences>
         <version>19.pre.0.0</version>
@@ -30,24 +30,24 @@
     ignored as the fix_bootconfig script automatically checks which theme is
     present, but keep the option here otherwise a text mode boot menu is
     displayed -->
-    <preferences profiles="openSUSE,Leap_16.0">
+    <preferences profiles="openSUSE,Leap_16.1">
         <bootloader-theme>openSUSE</bootloader-theme>
     </preferences>
-    <preferences profiles="SUSE_SLE_16">
+    <preferences profiles="SUSE_SLE_16.1">
         <bootloader-theme>SLE</bootloader-theme>
     </preferences>
     <!-- the ISO Volume ID is set by the fix_bootconfig script -->
-    <preferences arch="ppc64le" profiles="openSUSE,SUSE_SLE_16,Leap_16.0">
+    <preferences arch="ppc64le" profiles="openSUSE,SUSE_SLE_16.1,Leap_16.1">
         <type image="iso" flags="dmsquash"  firmware="ofw" mediacheck="true" publisher="SUSE LLC" editbootconfig="fix_bootconfig">
             <bootloader name="grub2" console="serial" timeout="10"/>
         </type>
     </preferences>
-    <preferences arch="aarch64,x86_64" profiles="openSUSE,SUSE_SLE_16,Leap_16.0">
+    <preferences arch="aarch64,x86_64" profiles="openSUSE,SUSE_SLE_16.1,Leap_16.1">
         <type image="iso" flags="dmsquash" firmware="uefi" mediacheck="true" publisher="SUSE LLC" editbootconfig="fix_bootconfig">
             <bootloader name="grub2" timeout="10"/>
         </type>
     </preferences>
-    <preferences arch="s390x" profiles="openSUSE,SUSE_SLE_16,Leap_16.0">
+    <preferences arch="s390x" profiles="openSUSE,SUSE_SLE_16.1,Leap_16.1">
         <type image="iso" flags="dmsquash" mediacheck="true" publisher="SUSE LLC" editbootconfig="fix_bootconfig">
             <bootloader name="custom" />
         </type>
@@ -131,7 +131,7 @@
     </packages>
 
     <!-- packages for local installation (desktop, browser, etc.) -->
-    <packages type="image" profiles="Leap_16.0,openSUSE,SUSE_SLE_16">
+    <packages type="image" profiles="Leap_16.1,openSUSE,SUSE_SLE_16.1">
         <package name="bluez-firmware"/>
         <package name="agama-integration-tests"/>
         <package name="fontconfig"/>
@@ -146,7 +146,7 @@
     </packages>
 
     <!-- common packages for openSUSE Tumbleweed and Leap distributions -->
-    <packages type="image" profiles="Leap_16.0,openSUSE">
+    <packages type="image" profiles="Leap_16.1,openSUSE">
         <package name="agama-products-opensuse"/>
         <package name="grub2-branding-openSUSE" arch="aarch64,x86_64"/>
         <package name="MozillaFirefox-branding-openSUSE"/>
@@ -156,7 +156,7 @@
         <package name="plymouth-branding-openSUSE" />
     </packages>
     <!-- additional packages for the Leap distributions -->
-    <packages type="image" profiles="Leap_16.0">
+    <packages type="image" profiles="Leap_16.1">
         <package name="openSUSE-repos-Leap"/>
         <package name="kernel-default-extra"/>
         <package name="kernel-default-optional"/>
@@ -166,13 +166,13 @@
         <package name="openSUSE-repos-Tumbleweed"/>
     </packages>
     <!-- additional packages for the SLE distributions -->
-    <packages type="image" profiles="SUSE_SLE_16">
+    <packages type="image" profiles="SUSE_SLE_16.1">
         <package name="agama-products-sle"/>
         <package name="grub2-branding-SLE" arch="aarch64,x86_64"/>
         <package name="patterns-base-base"/>
         <package name="suse-build-key"/>
     </packages>
-    <packages type="image" profiles="SUSE_SLE_16">
+    <packages type="image" profiles="SUSE_SLE_16.1">
         <package name="MozillaFirefox-branding-SLE"/>
     </packages>
     <packages type="bootstrap">
@@ -182,14 +182,14 @@
         <package name="ca-certificates"/>
         <package name="ca-certificates-mozilla"/>
     </packages>
-    <packages type="bootstrap" profiles="Leap_16.0">
+    <packages type="bootstrap" profiles="Leap_16.1">
         <package name="Leap-release"/>
     </packages>
     <packages type="bootstrap" profiles="openSUSE">
         <package name="openSUSE-release"/>
         <package name="openSUSE-release-ftp"/>
     </packages>
-    <packages type="bootstrap" profiles="SUSE_SLE_16">
+    <packages type="bootstrap" profiles="SUSE_SLE_16.1">
         <package name="SLES-release"/>
     </packages>
 </image>

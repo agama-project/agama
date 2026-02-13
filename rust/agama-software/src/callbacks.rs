@@ -10,7 +10,7 @@ pub use security::Security;
 mod install;
 pub use install::Install;
 
-fn ask_software_question(
+pub fn ask_software_question(
     handler: &Handler<question::Service>,
     question: QuestionSpec,
 ) -> Result<Answer, AskError> {

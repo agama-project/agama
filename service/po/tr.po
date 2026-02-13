@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-01-18 03:25+0000\n"
+"POT-Creation-Date: 2026-02-09 04:10+0000\n"
 "PO-Revision-Date: 2025-10-05 22:59+0000\n"
 "Last-Translator: Emin Tufan Çetin <cetin@users.noreply.l10n.opensuse.org>\n"
 "Language-Team: Turkish <https://l10n.opensuse.org/projects/agama/agama-"
@@ -27,35 +27,68 @@ msgstr ""
 msgid "Found unsupported elements in the AutoYaST profile: %{keys}."
 msgstr "AutoYaST Profilinde desteklenmeyen elemanlar bulundu: %{keys}."
 
+#. Implementation for the API method #Probe.
+#: service/lib/agama/dbus/storage/dasd.rb:64
+#, fuzzy
+msgid "Probing DASD devices"
+msgstr "Depolama aygıtları araştırılıyor"
+
+#. Performs the configuration process in a separate thread.
+#.
+#. The configuration could take long time  (e.g., formatting devices). It is important to not
+#. block the service in order to make possible to attend other requests.
+#.
+#. @raise if there is an unfinished configuration.
+#.
+#. @param config_json [Hash]
+#: service/lib/agama/dbus/storage/dasd.rb:121
+msgid "Configuring DASD"
+msgstr ""
+
+#. Do not configure if there is nothing to change.
+#: service/lib/agama/dbus/storage/iscsi.rb:98
+msgid "Configuring iSCSI"
+msgstr ""
+
+#. Performs an iSCSI discovery.
+#.
+#. @param serialized_options [String] Serialized dicovery options.
+#. @return [Number] 0 success; 1 failure.
+#: service/lib/agama/dbus/storage/iscsi.rb:122
+msgid "Performing iSCSI discovery"
+msgstr ""
+
 #. Implementation for the API method #Install.
-#: service/lib/agama/dbus/storage/manager.rb:117
+#: service/lib/agama/dbus/storage/manager.rb:111
 msgid "Preparing bootloader proposal"
 msgstr "Bootloader bölümü hazırlanıyor"
 
-#: service/lib/agama/dbus/storage/manager.rb:120
+#: service/lib/agama/dbus/storage/manager.rb:114
 msgid "Preparing the storage devices"
 msgstr "Depolama cihazları hazırlanıyor"
 
-#: service/lib/agama/dbus/storage/manager.rb:123
+#: service/lib/agama/dbus/storage/manager.rb:117
 msgid "Writing bootloader sysconfig"
 msgstr "bootloader sysconfig yazılıyor"
 
 #. Implementation for the API method #Finish.
-#: service/lib/agama/dbus/storage/manager.rb:131
+#: service/lib/agama/dbus/storage/manager.rb:125
 #, fuzzy
 msgid "Finishing installation"
 msgstr "Kurulumu iptal et"
 
-#. Error code
-#: service/lib/agama/dbus/storage/manager.rb:377
+#. Gets and serializes the storage config used to calculate the current proposal.
+#.
+#. @return [String] Serialized config according to the JSON schema.
+#: service/lib/agama/dbus/storage/manager.rb:297
 msgid "Activating storage devices"
 msgstr "Depolama aygıtlarını etkinleştiriliyor"
 
-#: service/lib/agama/dbus/storage/manager.rb:380
+#: service/lib/agama/dbus/storage/manager.rb:300
 msgid "Probing storage devices"
 msgstr "Depolama aygıtları araştırılıyor"
 
-#: service/lib/agama/dbus/storage/manager.rb:383
+#: service/lib/agama/dbus/storage/manager.rb:303
 #, fuzzy
 msgid "Applying storage configuration"
 msgstr "Depolama yapılandırmasını ayarlama"
@@ -383,63 +416,39 @@ msgid "Shrinking is not supported by this device"
 msgstr "Bu cihaz küçültmeyi desteklemiyor"
 
 #. Copy /etc/nvme/host* to keep NVMe working after installation, bsc#1238038
-#: service/lib/agama/storage/finisher.rb:135
+#: service/lib/agama/storage/finisher.rb:128
 msgid "Copying important installation files to the target system"
 msgstr "Önemli kurulum dosyalarının hedef sisteme kopyalanması"
 
 #. Step to write the bootloader configuration
-#: service/lib/agama/storage/finisher.rb:170
+#: service/lib/agama/storage/finisher.rb:163
 msgid "Installing bootloader"
 msgstr "Önyükleyiciyi yükleme"
 
 #. Step to finish the Y2Storage configuration
-#: service/lib/agama/storage/finisher.rb:187
+#: service/lib/agama/storage/finisher.rb:180
 msgid "Adjusting storage configuration"
 msgstr "Depolama yapılandırmasını ayarlama"
 
 #. Step to finish the iSCSI configuration
-#: service/lib/agama/storage/finisher.rb:198
+#: service/lib/agama/storage/finisher.rb:191
 msgid "Adjusting iSCSI configuration"
 msgstr "iSCSI yapılandırmasını ayarlama"
 
 #. Step to configure the file-system snapshots
-#: service/lib/agama/storage/finisher.rb:209
+#: service/lib/agama/storage/finisher.rb:202
 msgid "Configuring file systems snapshots"
 msgstr "Dosya sistemi anlık görüntülerini yapılandırma"
 
 #. Step to copy the installation logs
-#: service/lib/agama/storage/finisher.rb:227
+#: service/lib/agama/storage/finisher.rb:220
 msgid "Copying logs"
 msgstr "Günlükleri kopyalama"
 
 #. Step to unmount the target file-systems
-#: service/lib/agama/storage/finisher.rb:261
+#: service/lib/agama/storage/finisher.rb:254
 msgid "Unmounting storage devices"
 msgstr "Depolama aygıtlarının bağlantısını kesme"
-
-#. Applies the target configs.
-#.
-#. @param config [ISCSI::Config]
-#: service/lib/agama/storage/iscsi/manager.rb:300
-msgid "Logout iSCSI targets"
-msgstr "iSCSI hedeflerinden çıkış yapın"
-
-#: service/lib/agama/storage/iscsi/manager.rb:301
-msgid "Discover iSCSI targets"
-msgstr "iSCSI hedeflerini keşfedin"
-
-#: service/lib/agama/storage/iscsi/manager.rb:302
-msgid "Login iSCSI targets"
-msgstr "iSCSI hedeflerine giriş"
-
-#. Login issue.
-#.
-#. @param target [ISCSI::Configs::Target]
-#. @return [Issue]
-#: service/lib/agama/storage/iscsi/manager.rb:366
-#, c-format
-msgid "Cannot login to iSCSI target %s"
-msgstr "iSCSI hedefine %s giriş yapılamıyor"
 
 #. Issue representing the proposal is not valid.
 #.
@@ -454,6 +463,19 @@ msgstr "Mevcut yapılandırmayla geçerli bir depolama kurulumu hesaplanamıyor"
 #: service/lib/agama/storage/proposal.rb:315
 msgid "A problem ocurred while calculating the storage setup"
 msgstr "Depolama kurulumu hesaplanırken bir sorun oluştu"
+
+#~ msgid "Logout iSCSI targets"
+#~ msgstr "iSCSI hedeflerinden çıkış yapın"
+
+#~ msgid "Discover iSCSI targets"
+#~ msgstr "iSCSI hedeflerini keşfedin"
+
+#~ msgid "Login iSCSI targets"
+#~ msgstr "iSCSI hedeflerine giriş"
+
+#, c-format
+#~ msgid "Cannot login to iSCSI target %s"
+#~ msgstr "iSCSI hedefine %s giriş yapılamıyor"
 
 #~ msgid "Analyze disks"
 #~ msgstr "Diskleri incele"

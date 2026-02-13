@@ -21,7 +21,6 @@
 
 require_relative "../../test_helper"
 require_relative "storage_helpers"
-require_relative "../with_progress_examples"
 require "agama/helpers"
 require "agama/config"
 require "agama/storage/finisher"
@@ -40,7 +39,6 @@ describe Agama::Storage::Finisher do
   let(:destdir) { File.join(FIXTURES_PATH, "target_dir") }
   let(:config) { Agama::Config.new(YAML.load_file(config_path)) }
   let(:copy_files) { Agama::Storage::Finisher::CopyFilesStep.new(logger) }
-  let(:progress) { instance_double(Agama::OldProgress, step: nil) }
 
   describe "#run" do
     before do
@@ -48,17 +46,10 @@ describe Agama::Storage::Finisher do
       allow(described_class::Step).to receive(:run?).and_return(false)
       allow(copy_files.class).to receive(:new).and_return(copy_files)
       allow(copy_files).to receive(:run?).and_return(true)
-      allow(subject).to receive(:progress).and_return(progress)
     end
 
     it "runs the possible steps that must be run" do
-      expect(subject).to receive(:start_progress_with_size).with(1)
-      expect(subject.progress).to receive(:step) do |label, &block|
-        expect(label).to eql(copy_files.label)
-        expect(copy_files).to receive(:run)
-        block.call
-      end
-
+      expect(copy_files).to receive(:run)
       subject.run
     end
   end
@@ -147,40 +138,6 @@ describe Agama::Storage::Finisher do
     it "runs the Bootloader Finish Client" do
       expect_any_instance_of(::Bootloader::FinishClient).to receive(:write)
       subject.run
-    end
-  end
-
-  include_examples "progress"
-end
-
-describe Agama::Storage::Finisher::CopyLogsStep do
-  let(:logger) { Logger.new($stdout, level: :warn) }
-  let(:scripts_dir) { File.join(tmp_dir, "run", "agama", "scripts") }
-  let(:tmp_dir) { Dir.mktmpdir }
-
-  subject { Agama::Storage::Finisher::CopyLogsStep.new(logger) }
-
-  before do
-    allow(Yast::Installation).to receive(:destdir).and_return(File.join(tmp_dir, "mnt"))
-    allow(Yast::Execute).to receive(:locally)
-    stub_const("Agama::Storage::Finisher::CopyLogsStep::SCRIPTS_DIR",
-      File.join(tmp_dir, "run", "agama", "scripts"))
-  end
-
-  after do
-    FileUtils.remove_entry(tmp_dir)
-  end
-
-  context "when scripts artifacts exist" do
-    before do
-      FileUtils.mkdir_p(scripts_dir)
-      FileUtils.touch(File.join(scripts_dir, "test.sh"))
-    end
-
-    it "copies the artifacts to the installed system" do
-      subject.run
-      expect(File).to exist(File.join(tmp_dir, "mnt", "var", "log", "agama-installation",
-        "scripts"))
     end
   end
 end

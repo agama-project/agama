@@ -26,6 +26,7 @@ import type * as L10n from "~/model/system/l10n";
 import type * as Network from "~/model/system/network";
 import type * as Software from "~/model/system/software";
 import type * as Storage from "~/model/system/storage";
+import type * as ISCSI from "~/model/system/iscsi";
 
 type System = {
   hardware?: Hardware.System;
@@ -35,6 +36,7 @@ type System = {
   products?: Product[];
   software?: Software.System;
   storage?: Storage.System;
+  iscsi?: ISCSI.System;
 };
 
 type Product = {
@@ -54,7 +56,20 @@ type Product = {
   translations?: {
     /** The key is the locale (e.g., "en", "pt_BR") */
     description: Record<string, string>;
+    /** Translation mapping: mode ID ("immutable") -> "name"/"description" ->
+     * locale -> translated text */
+    mode: Record<string, Record<string, Record<string, string>>>;
   };
+  modes: Mode[];
 };
 
-export type { System, Product, L10n, Hardware, Hostname, Network, Software, Storage };
+type Mode = {
+  /** Mode ID (e.g., "traditional") */
+  id: string;
+  /** Mode name (e.g., "Traditional") */
+  name: string;
+  /** Mode description (e.g., "Traditional system") */
+  description: string;
+};
+
+export type { System, Product, L10n, Hardware, Hostname, Mode, Network, Software, Storage, ISCSI };
