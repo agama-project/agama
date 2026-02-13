@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Feb 13 09:25:56 UTC 2026 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Change the label of the button for extra storage options (related
+  to gh#agama-project/agama#3092 and bsc#1258089).
+
+-------------------------------------------------------------------
 Thu Feb 12 14:38:38 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Use the new URL of the password strenght check (gh#agama-project/agama#3159).

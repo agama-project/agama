@@ -73,13 +73,14 @@ export default function InstallerOptionsMenu({
         <MenuToggle
           ref={toggleRef}
           onClick={toggle}
-          aria-label={_("Options toggle")}
+          // TRANSLATORS: this is an ARIA (accesibility) description of an UI element
+          aria-label={_("More installer options")}
           isExpanded={isOpen}
           isFullHeight
           variant="plain"
         >
           <Flex gap={{ default: "gapXs" }} alignItems={{ default: "alignItemsCenter" }}>
-            {!hideLabel && _("Options")} <Icon name="expand_circle_down" />
+            {!hideLabel && _("More")} <Icon name="expand_circle_down" />
           </Flex>
         </MenuToggle>
       )}
