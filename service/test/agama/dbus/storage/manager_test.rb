@@ -54,6 +54,8 @@ describe Agama::DBus::Storage::Manager do
 
   let(:config_data) { {} }
 
+  let(:bootloader) { instance_double(Agama::Storage::Bootloader) }
+
   before do
     # Speed up tests by avoiding real check of TPM presence.
     allow(Y2Storage::EncryptionMethod::TPM_FDE).to receive(:possible?).and_return(true)
@@ -67,6 +69,7 @@ describe Agama::DBus::Storage::Manager do
     allow(backend).to receive(:on_issues_change)
     allow(backend).to receive(:actions).and_return([])
     allow(backend).to receive(:proposal).and_return(proposal)
+    allow(backend).to receive(:bootloader).and_return(bootloader)
     mock_storage(devicegraph: "empty-hd-50GiB.yaml")
   end
 
@@ -1116,6 +1119,7 @@ describe Agama::DBus::Storage::Manager do
       allow(backend).to receive(:activated?).and_return activated
       allow(backend).to receive(:probe)
       allow(backend).to receive(:add_packages)
+      allow(bootloader).to receive(:configure)
     end
 
     let(:activated) { true }
@@ -1144,6 +1148,11 @@ describe Agama::DBus::Storage::Manager do
     context "when no storage configuration has been set" do
       it "does not calculate a new proposal" do
         expect(backend).to_not receive(:configure)
+        subject.probe
+      end
+
+      it "does not configure bootloader" do
+        expect(bootloader).to_not receive(:configure)
         subject.probe
       end
 
@@ -1190,6 +1199,11 @@ describe Agama::DBus::Storage::Manager do
 
       it "re-calculates the proposal" do
         expect(backend).to receive(:configure).with(config_json)
+        subject.probe
+      end
+
+      it "configures bootloader" do
+        expect(bootloader).to receive(:configure)
         subject.probe
       end
 

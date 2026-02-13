@@ -80,6 +80,8 @@ module Agama
 
         # Implementation for the API method #Activate.
         def activate
+          logger.info("Activating storage")
+
           start_progress(3, ACTIVATING_STEP)
           backend.reset_activation if backend.activated?
           backend.activate
@@ -96,6 +98,8 @@ module Agama
 
         # Implementation for the API method #Probe.
         def probe
+          logger.info("Probing storage")
+
           start_progress(3, ACTIVATING_STEP)
           backend.activate unless backend.activated?
 
@@ -260,35 +264,32 @@ module Agama
 
         dbus_interface "org.opensuse.Agama.Storage1.Bootloader" do
           dbus_method(:SetConfig, "in serialized_config:s, out result:u") do |serialized_config|
-            load_bootloader_config_from_json(serialized_config)
+            configure_bootloader(serialized_config)
           end
           dbus_method(:GetConfig, "out serialized_config:s") do
-            bootloader_config_as_json
+            recover_bootloader_config
           end
         end
 
         # Applies the given serialized config according to the JSON schema.
         #
-        #
         # @raise If the config is not valid.
         #
-        # @param serialized_config [String] Serialized storage config.
+        # @param serialized_config [String] Serialized bootloader config.
         # @return [Integer] 0 success; 1 error
-        def load_bootloader_config_from_json(serialized_config)
-          logger.info("Setting bootloader config from D-Bus: #{serialized_config}")
-
+        def configure_bootloader(serialized_config)
+          logger.info("Setting bootloader config: #{serialized_config}")
           backend.bootloader.config.load_json(serialized_config)
           # after loading config try to apply it, so proper packages can be requested
           # TODO: generate also new issue from configuration
-          backend.bootloader.configure
-
+          calculate_bootloader
           0
         end
 
         # Gets and serializes the storage config used to calculate the current proposal.
         #
         # @return [String] Serialized config according to the JSON schema.
-        def bootloader_config_as_json
+        def recover_bootloader_config
           backend.bootloader.config.to_json
         end
 
@@ -318,6 +319,16 @@ module Agama
           return unless proposal.storage_json
 
           calculate_proposal(backend.config_json)
+          # The storage proposal with the current settings is not explicitly requested. It is
+          # automatically calculated as side effect of calling to probe or activate. All the
+          # dependant steps has to be automatically done too, for example, reconfiguring bootloader.
+          calculate_bootloader
+        end
+
+        # Performs the bootloader configuration applying the current config.
+        def calculate_bootloader
+          logger.info("Configuring bootloader")
+          backend.bootloader.configure
         end
 
         # @see #configure
