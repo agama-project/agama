@@ -38,6 +38,18 @@ pub struct Config {
     pub scripts: Option<ScriptsConfig>,
 }
 
+impl Config {
+    pub fn resolve_urls(&mut self, base_uri: &Uri<String>) -> Result<(), FileSourceError> {
+        resolve_urls_for(&mut self.files, base_uri)?;
+
+        if let Some(scripts) = &mut self.scripts {
+            scripts.resolve_urls(base_uri)?;
+        }
+
+        Ok(())
+    }
+}
+
 #[derive(Clone, Debug, Default, Serialize, Deserialize, Merge, utoipa::ToSchema, PartialEq)]
 #[serde(rename_all = "camelCase")]
 #[merge(strategy = merge::option::overwrite_none)]
@@ -73,24 +85,24 @@ impl ScriptsConfig {
     ///
     /// * `base_uri`: The base URI to resolve relative URLs against.
     pub fn resolve_urls(&mut self, base_uri: &Uri<String>) -> Result<(), FileSourceError> {
-        Self::resolve_urls_for(&mut self.pre, base_uri)?;
-        Self::resolve_urls_for(&mut self.post_partitioning, base_uri)?;
-        Self::resolve_urls_for(&mut self.post, base_uri)?;
-        Self::resolve_urls_for(&mut self.init, base_uri)?;
+        resolve_urls_for(&mut self.pre, base_uri)?;
+        resolve_urls_for(&mut self.post_partitioning, base_uri)?;
+        resolve_urls_for(&mut self.post, base_uri)?;
+        resolve_urls_for(&mut self.init, base_uri)?;
         Ok(())
     }
+}
 
-    fn resolve_urls_for<T: WithFileSource>(
-        scripts: &mut Option<Vec<T>>,
-        base_uri: &Uri<String>,
-    ) -> Result<(), FileSourceError> {
-        if let Some(ref mut scripts) = scripts {
-            for script in scripts {
-                script.resolve_url(&base_uri)?;
-            }
+fn resolve_urls_for<T: WithFileSource>(
+    files: &mut Option<Vec<T>>,
+    base_uri: &Uri<String>,
+) -> Result<(), FileSourceError> {
+    if let Some(ref mut files) = files {
+        for file in files {
+            file.resolve_url(&base_uri)?;
         }
-        Ok(())
     }
+    Ok(())
 }
 
 #[cfg(test)]

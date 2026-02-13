@@ -21,14 +21,12 @@
 //! Configuration settings handling
 //!
 //! This module implements the mechanisms to load and store the installation settings.
-use crate::context::InstallationContext;
 use crate::hostname::model::HostnameSettings;
 use crate::storage::settings::zfcp::ZFCPConfig;
 use crate::{network::NetworkSettings, storage::settings::dasd::DASDConfig};
 use serde::{Deserialize, Serialize};
 use serde_json::value::RawValue;
 use std::default::Default;
-use std::path::Path;
 
 #[derive(Debug, thiserror::Error)]
 pub enum InstallSettingsError {
@@ -63,28 +61,4 @@ pub struct InstallSettings {
     pub network: Option<NetworkSettings>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub zfcp: Option<ZFCPConfig>,
-}
-
-impl InstallSettings {
-    /// Returns install settings from a file.
-    pub fn from_file<P: AsRef<Path>>(
-        path: P,
-        context: &InstallationContext,
-    ) -> Result<Self, InstallSettingsError> {
-        let content = std::fs::read_to_string(path)?;
-        Ok(Self::from_json(&content, context)?)
-    }
-
-    /// Reads install settings from a JSON string,
-    /// also resolving relative URLs in the contents.
-    ///
-    /// - `json`: JSON string.
-    /// - `context`: Store context.
-    pub fn from_json(
-        json: &str,
-        _context: &InstallationContext,
-    ) -> Result<Self, InstallSettingsError> {
-        let settings: InstallSettings = serde_json::from_str(json)?;
-        Ok(settings)
-    }
 }
