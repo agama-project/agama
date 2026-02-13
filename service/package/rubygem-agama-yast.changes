@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Feb 13 09:22:48 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Calculate bootloader after calling to probe or activate storage
+  (related to bsc#1258134).
+
+-------------------------------------------------------------------
 Fri Feb 13 08:12:01 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
 
 - Fix clearing bootloader cache to ensure that proper storage
