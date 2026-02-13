@@ -37,7 +37,7 @@ const agama = {
   // set the current translations, called from po.<lang>.js
   locale: (po) => {
     if (po) {
-      Object.assign(translations, po);
+      translations = po;
 
       const header = po[""];
       if (header) {
