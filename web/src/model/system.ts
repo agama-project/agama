@@ -74,4 +74,16 @@ type Mode = {
   description: string;
 };
 
-export type { System, Product, L10n, Hardware, Hostname, Mode, Network, Software, Storage, ISCSI, DASD };
+export type {
+  System,
+  Product,
+  L10n,
+  Hardware,
+  Hostname,
+  Mode,
+  Network,
+  Software,
+  Storage,
+  ISCSI,
+  DASD,
+};
