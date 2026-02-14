@@ -20,24 +20,22 @@
  * find current contact information at www.suse.com.
  */
 
+import { concat } from "radashi";
 import { Config, Device } from "~/openapi/config/dasd";
 
-function findDeviceIndex(config: Config, channel: string): number | undefined {
-  return config.devices?.findIndex((d) => d.channel === channel);
-}
-
-function findDevice(config: Config, channel: string): Device | undefined {
-  return config.devices?.find((d) => d.channel === channel);
-}
-
 function addDevice(config: Config, device: Device): Config {
-  return { devices: [...(config.devices || []), device] };
+  return {
+    ...config,
+    devices: concat(config.devices, device),
+  };
 }
 
 function removeDevice(config: Config, channel: string): Config {
-  const devices = config.devices.filter((d) => d.channel !== channel);
-  return { ...config, devices };
+  return {
+    ...config,
+    devices: config.devices.filter((d) => d.channel !== channel),
+  };
 }
 
-export default { findDeviceIndex, findDevice, addDevice, removeDevice };
+export default { addDevice, removeDevice };
 export type * from "~/openapi/config/dasd";
