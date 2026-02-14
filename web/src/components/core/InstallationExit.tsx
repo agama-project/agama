@@ -21,62 +21,33 @@
  */
 
 import React from "react";
-import { Flex, Grid, GridItem, HelperText, HelperTextItem, Title } from "@patternfly/react-core";
-import Icon from "~/components/layout/Icon";
+import { Content, HelperText, HelperTextItem } from "@patternfly/react-core";
 import Page from "~/components/core/Page";
+import SplitInfoLayout from "~/components/layout/SplitInfoLayout";
 import { _ } from "~/i18n";
 
-import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
-import alignmentStyles from "@patternfly/react-styles/css/utilities/Alignment/alignment";
+import spacingStyles from "@patternfly/react-styles/css/utilities/Spacing/spacing";
 
 export default function InstallationExit() {
   return (
     <Page variant="minimal">
       <Page.Content>
-        <Grid hasGutter style={{ height: "100%", placeContent: "center" }}>
-          <GridItem sm={12} md={6} style={{ alignSelf: "center" }}>
-            <Flex
-              gap={{ default: "gapMd" }}
-              direction={{ default: "column" }}
-              alignItems={{ default: "alignItemsCenter", md: "alignItemsFlexEnd" }}
-              alignContent={{ default: "alignContentCenter", md: "alignContentFlexEnd" }}
-              alignSelf={{ default: "alignSelfCenter" }}
-            >
-              <Icon name="restart_alt" width="3rem" height="3rem" />
-              <Title
-                headingLevel="h1"
-                style={{ textWrap: "balance" }}
-                className={[textStyles.fontSize_3xl, alignmentStyles.textAlignEndOnMd].join(" ")}
-              >
-                {_("The system is rebooting")}
-              </Title>
-              <HelperText>
-                <HelperTextItem>
-                  {_("The installer interface is no longer available.")}
-                </HelperTextItem>
-              </HelperText>
-            </Flex>
-          </GridItem>
-          <GridItem sm={12} md={6}>
-            <Flex
-              gap={{ default: "gapMd" }}
-              alignItems={{ md: "alignItemsCenter" }}
-              justifyContent={{ default: "justifyContentCenter", md: "justifyContentFlexStart" }}
-              style={{
-                minBlockSize: "30dvh",
-                boxShadow: "-1px 0 0 var(--pf-t--global--border--color--default)",
-                paddingInlineStart: "var(--pf-t--global--spacer--md)",
-                marginBlockStart: "var(--pf-t--global--spacer--xl)",
-              }}
-            >
-              <HelperText>
-                <HelperTextItem className={textStyles.fontSizeLg}>
-                  {_("You can safely close this window.")}
-                </HelperTextItem>
-              </HelperText>
-            </Flex>
-          </GridItem>
-        </Grid>
+        <SplitInfoLayout
+          icon="restart_alt"
+          firstRowStart={_("The system is rebooting")}
+          firstRowEnd={
+            <Content isEditorial className={spacingStyles.mtSm}>
+              {_("You can safely close this window.")}
+            </Content>
+          }
+          secondRowStart={
+            <HelperText>
+              <HelperTextItem>
+                {_("The installer interface is no longer available.")}
+              </HelperTextItem>
+            </HelperText>
+          }
+        />
       </Page.Content>
     </Page>
   );

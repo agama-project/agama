@@ -29,6 +29,7 @@ import { useIssuesChanges } from "~/hooks/model/issue";
 import { useProductInfo } from "~/hooks/model/config/product";
 import { useQueryClient } from "@tanstack/react-query";
 import { InstallationFinished, InstallationProgress } from "./components/core";
+import InstallationFailed from "./components/core/InstallationFailed";
 
 /**
  * Content guard and flow control component.
@@ -54,6 +55,10 @@ const Content = () => {
     product,
     location: location.pathname,
   });
+
+  if (stage === "failed") {
+    return <InstallationFailed />;
+  }
 
   if (stage === "installing") {
     return <InstallationProgress />;

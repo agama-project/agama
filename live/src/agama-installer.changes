@@ -1,4 +1,17 @@
 -------------------------------------------------------------------
+Thu Feb 12 14:57:21 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+
+- Fixed failing self-update, the self-update repository is not
+  ready yet. If SCC returns empty response then do not try using
+  the fallback URL and skip the self-update process. (bsc#1258142)
+
+-------------------------------------------------------------------
+Wed Feb 11 14:45:20 UTC 2026 - Eugenio Paolantonio <eugenio.paolantonio@suse.com>
+
+- live: update license.final content with the January 2026 EULA delivery
+  (gh#agama-project/agama#3150)
+
+-------------------------------------------------------------------
 Tue Feb 10 07:36:57 UTC 2026 - Dominique Leuenberger <dimstar@opensuse.org>
 
 - Installer: configure libzypp through drop-in config snippet when

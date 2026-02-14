@@ -1,4 +1,32 @@
 -------------------------------------------------------------------
+Fri Feb 13 09:25:56 UTC 2026 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Change the label of the button for extra storage options (related
+  to gh#agama-project/agama#3092 and bsc#1258089).
+
+-------------------------------------------------------------------
+Thu Feb 12 14:38:38 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Use the new URL of the password strenght check (gh#agama-project/agama#3159).
+
+-------------------------------------------------------------------
+Thu Feb 12 12:54:31 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Notify users when installation fails (bsc#1257753).
+
+-------------------------------------------------------------------
+Thu Feb 12 11:56:57 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Restore the interface for managing iSCSI in the web client
+  (gh#agama-project/agama#3092).
+- Restore the "Rescan devices" storage option (bsc#1258089).
+
+-------------------------------------------------------------------
+Wed Feb 11 14:24:03 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Honor the language from the backend (gh#agama-project/agama#3142).
+
+-------------------------------------------------------------------
 Wed Feb 11 13:35:13 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
 
 - Show translated product mode name and description

@@ -22,7 +22,7 @@
 
 import React from "react";
 import { Button, Content, Grid, GridItem } from "@patternfly/react-core";
-import { InstallerOptions, Link, Page } from "~/components/core";
+import { InstallerL10nOptions, Link, Page } from "~/components/core";
 import { L10N as PATHS } from "~/routes/paths";
 import { localConnection } from "~/utils";
 import { useProposal } from "~/hooks/model/proposal/l10n";
@@ -49,7 +49,7 @@ const InstallerL10nSettingsInfo = () => {
   return (
     <small>
       {infoStart}{" "}
-      <InstallerOptions
+      <InstallerL10nOptions
         toggle={({ onClick }) => (
           <Button variant="link" isInline onClick={onClick}>
             {infoLink}

@@ -22,6 +22,7 @@ use crate::{
     bootloader, checks, files, hardware, hostname, iscsi, l10n, message, network, proxy, s390,
     security, software, storage, tasks, users,
 };
+use agama_users::PasswordCheckResult;
 use agama_utils::{
     actor::{self, Actor, Handler, MessageHandler},
     api::{
@@ -481,6 +482,14 @@ impl Service {
         Ok(())
     }
 
+    /// It merges the current config with the given one. If some scope is missing in the given
+    /// config, then it keeps the values from the current config.
+    async fn update_config(&mut self, config: Config) -> Result<(), Error> {
+        let mut config = config.clone();
+        config.merge(self.config.clone());
+        self.set_config(config).await
+    }
+
     async fn set_config(&mut self, config: Config) -> Result<(), Error> {
         self.set_product(&config)?;
         self.config = config;
@@ -720,14 +729,9 @@ impl MessageHandler<message::SetConfig> for Service {
 #[async_trait]
 impl MessageHandler<message::UpdateConfig> for Service {
     /// Patches the config.
-    ///
-    /// It merges the current config with the given one. If some scope is missing in the given
-    /// config, then it keeps the values from the current config.
     async fn handle(&mut self, message: message::UpdateConfig) -> Result<(), Error> {
         checks::check_stage(&self.progress, Stage::Configuring).await?;
-        let mut new_config = message.config;
-        new_config.merge(self.config.clone());
-        self.set_config(new_config).await
+        self.update_config(message.config).await
     }
 }
 
@@ -825,13 +829,16 @@ impl MessageHandler<message::GetStorageModel> for Service {
 
 #[async_trait]
 impl MessageHandler<message::SetStorageModel> for Service {
-    /// It sets the storage model.
+    /// Sets the storage model.
     async fn handle(&mut self, message: message::SetStorageModel) -> Result<(), Error> {
         checks::check_stage(&self.progress, Stage::Configuring).await?;
-        Ok(self
+        let storage = self
             .storage
-            .call(storage::message::SetConfigModel::new(message.model))
-            .await?)
+            .call(storage::message::GetConfigFromModel::new(message.model))
+            .await?;
+        let mut config = Config::default();
+        config.storage = storage;
+        self.update_config(config).await
     }
 }
 
@@ -858,6 +865,16 @@ impl MessageHandler<software::message::SetResolvables> for Service {
         checks::check_stage(&self.progress, Stage::Configuring).await?;
         self.software.call(message).await?;
         Ok(())
+    }
+}
+
+#[async_trait]
+impl MessageHandler<users::message::CheckPassword> for Service {
+    async fn handle(
+        &mut self,
+        message: users::message::CheckPassword,
+    ) -> Result<PasswordCheckResult, Error> {
+        Ok(self.users.call(message).await?)
     }
 }
 

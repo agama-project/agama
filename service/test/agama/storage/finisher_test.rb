@@ -141,35 +141,3 @@ describe Agama::Storage::Finisher do
     end
   end
 end
-
-describe Agama::Storage::Finisher::CopyLogsStep do
-  let(:logger) { Logger.new($stdout, level: :warn) }
-  let(:scripts_dir) { File.join(tmp_dir, "run", "agama", "scripts") }
-  let(:tmp_dir) { Dir.mktmpdir }
-
-  subject { Agama::Storage::Finisher::CopyLogsStep.new(logger) }
-
-  before do
-    allow(Yast::Installation).to receive(:destdir).and_return(File.join(tmp_dir, "mnt"))
-    allow(Yast::Execute).to receive(:locally)
-    stub_const("Agama::Storage::Finisher::CopyLogsStep::SCRIPTS_DIR",
-      File.join(tmp_dir, "run", "agama", "scripts"))
-  end
-
-  after do
-    FileUtils.remove_entry(tmp_dir)
-  end
-
-  context "when scripts artifacts exist" do
-    before do
-      FileUtils.mkdir_p(scripts_dir)
-      FileUtils.touch(File.join(scripts_dir, "test.sh"))
-    end
-
-    it "copies the artifacts to the installed system" do
-      subject.run
-      expect(File).to exist(File.join(tmp_dir, "mnt", "var", "log", "agama-installation",
-        "scripts"))
-    end
-  end
-end

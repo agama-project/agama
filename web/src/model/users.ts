@@ -61,9 +61,12 @@ const updateRoot = (changes: Partial<RootUser>) => patch("/api/users/root", chan
  * @param password - Password to check.
  */
 const checkPassword = async (password: string): Promise<PasswordCheckResult> => {
-  const response: AxiosResponse<PasswordCheckResult> = await post("/api/users/password_check", {
-    password,
-  });
+  const response: AxiosResponse<PasswordCheckResult> = await post(
+    "/api/v2/private/password_check",
+    {
+      password,
+    },
+  );
   return response.data;
 };
 

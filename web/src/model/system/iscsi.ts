@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2023] SUSE LLC
+ * Copyright (c) [2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -20,12 +20,4 @@
  * find current contact information at www.suse.com.
  */
 
-import { N_ } from "~/i18n";
-
-const NodeStartupOptions = Object.freeze({
-  MANUAL: { label: N_("Manual"), value: "manual" },
-  ONBOOT: { label: N_("On boot"), value: "onboot" },
-  AUTOMATIC: { label: N_("Automatic"), value: "automatic" },
-});
-
-export default NodeStartupOptions;
+export type * from "~/openapi/system/iscsi";

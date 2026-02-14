@@ -332,7 +332,7 @@ module Agama
         # @param target_config [ISCSI::Configs::Target]
         # @return [Boolean]
         def startup_changed?(target_config)
-          previous_startup = find_previous_target(target_config)&.startup
+          previous_startup = find_node(target_config)&.startup
           previous_startup != target_config.startup
         end
 

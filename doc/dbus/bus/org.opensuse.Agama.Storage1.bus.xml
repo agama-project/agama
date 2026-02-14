@@ -96,6 +96,8 @@
     </method>
     <method name="Finish">
     </method>
+    <method name="Umount">
+    </method>
     <property type="b" name="DeprecatedSystem" access="read"/>
   </interface>
   <interface name="org.opensuse.Agama.Storage1.Bootloader">

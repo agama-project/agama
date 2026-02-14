@@ -26,8 +26,6 @@ import { installerRender, mockStage } from "~/test-utils";
 import type { Storage } from "~/model/config";
 import InstallationFinished from "~/components/core/InstallationFinished";
 
-jest.mock("~/components/core/InstallerOptions", () => () => <div>Installer Options</div>);
-
 type storageConfigType = "guided" | "raw";
 type guidedEncryption = {
   password: string;
@@ -88,13 +86,6 @@ jest.mock("~/hooks/model/config", () => ({
   useExtendedConfig: () => mockUseExtendedConfigFn(),
 }));
 
-const mockFinishInstallation = jest.fn();
-
-jest.mock("~/api", () => ({
-  ...jest.requireActual("~/api"),
-  finishInstallation: () => mockFinishInstallation(),
-}));
-
 describe("InstallationFinished", () => {
   beforeEach(() => {
     mockUseExtendedConfigFn.mockReturnValue(mockStorageConfig("guided", null));
@@ -109,13 +100,6 @@ describe("InstallationFinished", () => {
   it("shows a 'Reboot' button", () => {
     installerRender(<InstallationFinished />);
     screen.getByRole("button", { name: /Reboot/i });
-  });
-
-  it("reboots the system if the user clicks on 'Reboot' button", async () => {
-    const { user } = installerRender(<InstallationFinished />);
-    const rebootButton = screen.getByRole("button", { name: "Reboot" });
-    await user.click(rebootButton);
-    expect(mockFinishInstallation).toHaveBeenCalled();
   });
 
   describe("when running storage config in raw mode", () => {

@@ -1,4 +1,28 @@
 -------------------------------------------------------------------
+Fri Feb 13 09:22:48 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Calculate bootloader after calling to probe or activate storage
+  (related to bsc#1258134).
+
+-------------------------------------------------------------------
+Fri Feb 13 08:12:01 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- Fix clearing bootloader cache to ensure that proper storage
+  configuration is used (bsc#1258134)
+
+-------------------------------------------------------------------
+Thu Feb 12 15:22:50 UTC 2026 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Fix reading the startup mode in iSCSI
+  (gh#agama-project/agama#3161).
+
+-------------------------------------------------------------------
+Thu Feb 12 08:33:58 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- Split storage writting config and final unmount action
+  (bsc#1257791)
+
+-------------------------------------------------------------------
 Wed Feb 11 14:48:58 UTC 2026 - José Iván López González <jlopez@suse.com>
 
 - Fix JSON of DASD format summary (gh#agama-project/agama#3128).

@@ -30,7 +30,7 @@ import { Progress, Stage } from "~/model/status";
 import { System } from "~/model/system/network";
 import * as utils from "~/utils";
 import { ROOT } from "~/routes/paths";
-import InstallerOptions, { InstallerOptionsProps } from "./InstallerOptions";
+import InstallerL10nOptions, { InstallerL10nOptionsProps } from "./InstallerL10nOptions";
 import { useStatus } from "~/hooks/model/status";
 
 const locales: Locale[] = [
@@ -102,14 +102,14 @@ jest.mock("~/context/installerL10n", () => ({
   }),
 }));
 
-const renderAndOpen = async (props: InstallerOptionsProps = {}) => {
-  const { user } = installerRender(<InstallerOptions {...props} />, { withL10n: true });
+const renderAndOpen = async (props: InstallerL10nOptionsProps = {}) => {
+  const { user } = installerRender(<InstallerL10nOptions {...props} />, { withL10n: true });
   const toggle = screen.getByRole("button");
   await user.click(toggle);
   return { user };
 };
 
-describe("InstallerOptions", () => {
+describe("InstallerL10nOptions", () => {
   beforeEach(() => {
     jest.spyOn(utils, "localConnection").mockReturnValue(true);
     mockProgressesFn.mockReturnValue([]);
@@ -119,7 +119,7 @@ describe("InstallerOptions", () => {
 
   it("allows custom toggle", async () => {
     const { user } = installerRender(
-      <InstallerOptions
+      <InstallerL10nOptions
         toggle={({ onClick, language, keymap }) => (
           <button onClick={onClick}>{`Change installer settings (${language}-${keymap})`}</button>
         )}
@@ -143,14 +143,14 @@ describe("InstallerOptions", () => {
     });
 
     it("renders nothing", () => {
-      const { container } = installerRender(<InstallerOptions />);
+      const { container } = installerRender(<InstallerL10nOptions />);
       expect(container).toBeEmptyDOMElement();
     });
   });
 
   describe("when using variant=all", () => {
     it("renders a button with current language and keymap values", () => {
-      installerRender(<InstallerOptions />, { withL10n: true });
+      installerRender(<InstallerL10nOptions />, { withL10n: true });
       const toggle = screen.getByRole("button", {
         name: "Change display language and keyboard layout",
       });
@@ -251,7 +251,7 @@ describe("InstallerOptions", () => {
       });
 
       it("does not render keymap value in the toggle button", () => {
-        installerRender(<InstallerOptions />, { withL10n: true });
+        installerRender(<InstallerL10nOptions />, { withL10n: true });
         const toggle = screen.getByRole("button", {
           name: "Change display language",
         });
@@ -276,7 +276,7 @@ describe("InstallerOptions", () => {
 
   describe("when using variant=language", () => {
     it("renders a button only with current language value", () => {
-      installerRender(<InstallerOptions variant="language" />, { withL10n: true });
+      installerRender(<InstallerL10nOptions variant="language" />, { withL10n: true });
       const toggle = screen.getByRole("button", {
         name: "Change display language",
       });
@@ -364,7 +364,7 @@ describe("InstallerOptions", () => {
 
   describe("when using variant=keyboard", () => {
     it("renders a button only with current keymap value", () => {
-      installerRender(<InstallerOptions variant="keyboard" />, { withL10n: true });
+      installerRender(<InstallerL10nOptions variant="keyboard" />, { withL10n: true });
       const toggle = screen.getByRole("button", {
         name: "Change keyboard layout",
       });
@@ -442,7 +442,7 @@ describe("InstallerOptions", () => {
       });
 
       it("renders nothing", () => {
-        const { container } = installerRender(<InstallerOptions variant="keyboard" />, {
+        const { container } = installerRender(<InstallerL10nOptions variant="keyboard" />, {
           withL10n: true,
         });
         expect(container).toBeEmptyDOMElement();

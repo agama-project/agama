@@ -22,8 +22,8 @@
 
 import React from "react";
 import { Button, ButtonProps } from "@patternfly/react-core";
-import { useLocation, useNavigate } from "react-router";
-import { EXTENDED_SIDE_PATHS, ROOT } from "~/routes/paths";
+import { useNavigate } from "react-router";
+import { ROOT } from "~/routes/paths";
 import { _ } from "~/i18n";
 
 /**
@@ -35,18 +35,11 @@ import { _ } from "~/i18n";
  * review installation details before proceeding. The label "Review and Install"
  * is intentional, indicating that users will first be presented with a summary
  * screen before they can proceed with the installation.
- *
- * @todo Refactor component behavior
- * - Replace route-based visibility logic with explicit prop-based control now
- *   that pages manage their own layouts
  */
 export default function ReviewAndInstallButton(
   props: Omit<ButtonProps, "onClick"> & { onClickWithIssues?: () => void },
 ) {
   const navigate = useNavigate();
-  const location = useLocation();
-
-  if (EXTENDED_SIDE_PATHS.includes(location.pathname)) return;
 
   const navigateToConfirmation = () => navigate(ROOT.overview);
 

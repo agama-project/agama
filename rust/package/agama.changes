@@ -1,4 +1,39 @@
 -------------------------------------------------------------------
+Fri Feb 13 12:49:15 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Do not leak the registration codes (gh#agama-project/agama#3167).
+
+-------------------------------------------------------------------
+Fri Feb 13 09:21:12 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Update storage user config with config from the storage model
+  (bsc#1257798).
+
+-------------------------------------------------------------------
+Fri Feb 13 08:47:07 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Resolve the relative URLs (bsc#1258118).
+- Do not finish the installation as "failed" if it was not possible
+  to fetch the user files (bsc#1258118).
+
+-------------------------------------------------------------------
+Thu Feb 12 14:43:48 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Recalulate bootloader proposal after applying a storage config
+  model (gh#agama-project/agama#3158, bsc#1258134).
+
+-------------------------------------------------------------------
+Thu Feb 12 14:37:55 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Add the password strength check to the API (gh#agama-project/agama#3159).
+
+-------------------------------------------------------------------
+Thu Feb 12 08:35:38 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- Run post scripts after all agama configuration is written down
+  (bsc#1257791)
+
+-------------------------------------------------------------------
 Wed Feb 11 15:49:05 UTC 2026 - José Iván López González <jlopez@suse.com>
 
 - Add agama-s390 service and integrate DASD into the new HTTP API
@@ -573,7 +608,7 @@ Fri Jun 27 10:02:43 UTC 2025 - José Iván López González <jlopez@suse.com>
 -------------------------------------------------------------------
 Fri Jun 27 06:29:46 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
-- Add an end-point to check passwords strenght (bsc#1237480).
+- Add an end-point to check passwords strength (bsc#1237480).
 
 -------------------------------------------------------------------
 Fri Jun 27 05:29:26 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>

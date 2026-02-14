@@ -21,7 +21,6 @@
 use std::{io::Write, path::PathBuf, process::Command, time::Duration};
 
 use agama_lib::{
-    context::InstallationContext,
     http::BaseHTTPClient,
     monitor::MonitorClient,
     profile::{ProfileHTTPClient, ProfileValidator, ValidationOutcome},
@@ -38,7 +37,7 @@ use tokio::time::sleep;
 
 use crate::{
     api_url, build_clients, build_http_client, cli_input::CliInput, cli_output::CliOutput,
-    show_progress, GlobalOpts,
+    context::InstallationContext, show_progress, GlobalOpts,
 };
 
 const DEFAULT_EDITOR: &str = "/usr/bin/vi";
@@ -253,7 +252,7 @@ async fn generate(
     url_or_path: CliInput,
     insecure: bool,
 ) -> anyhow::Result<()> {
-    let _context = match &url_or_path {
+    let context = match &url_or_path {
         CliInput::Stdin | CliInput::Full(_) => InstallationContext::from_env()?,
         CliInput::Url(url_str) => InstallationContext::from_url_str(url_str)?,
         CliInput::Path(pathbuf) => InstallationContext::from_file(pathbuf.as_path())?,
@@ -266,7 +265,7 @@ async fn generate(
         // AutoYaST specific download and convert to JSON
         let config_string = match url_or_path {
             CliInput::Url(url_string) => {
-                let url = Uri::parse(url_string)?;
+                let url = Uri::parse(url_string).map_err(|(e, _)| e)?;
 
                 ProfileHTTPClient::new(client.clone())
                     .from_autoyast(&url)
@@ -275,7 +274,7 @@ async fn generate(
             CliInput::Path(pathbuf) => {
                 let canon_path = pathbuf.canonicalize()?;
                 let url_string = format!("file://{}", canon_path.display());
-                let url = Uri::parse(url_string)?;
+                let url = Uri::parse(url_string).map_err(|(e, _)| e)?;
 
                 ProfileHTTPClient::new(client.clone())
                     .from_autoyast(&url)
@@ -297,9 +296,8 @@ async fn generate(
         return Ok(());
     }
 
-    // TODO: resolves relative URL references
-    let model: api::Config = serde_json::from_str(&profile_json)?;
-    let config_json = serde_json::to_string_pretty(&model)?;
+    let config = api::Config::from_json(&profile_json, &context.source)?;
+    let config_json = serde_json::to_string_pretty(&config)?;
 
     println!("{}", &config_json);
     let validity = validate(client, CliInput::Full(config_json.clone()), false).await?;

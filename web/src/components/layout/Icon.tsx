@@ -37,6 +37,7 @@ import ChevronRight from "@icons/chevron_right.svg?component";
 import Delete from "@icons/delete.svg?component";
 import DoneAll from "@icons/done_all.svg?component";
 import DeployedCodeUpdate from "@icons/deployed_code_update.svg?component";
+import Download from "@icons/download.svg?component";
 import EditSquare from "@icons/edit_square.svg?component";
 import Emergency from "@icons/emergency.svg?component";
 import Error from "@icons/error.svg?component";
@@ -58,6 +59,7 @@ import MoreVert from "@bolderIcons/more_vert.svg?component";
 import NetworkWifi from "@icons/network_wifi.svg?component";
 import NetworkWifi1Bar from "@icons/network_wifi_1_bar.svg?component";
 import NetworkWifi3Bar from "@icons/network_wifi_3_bar.svg?component";
+import Report from "@icons/report.svg?component";
 import RestartAlt from "@icons/restart_alt.svg?component";
 import SearchOff from "@icons/search_off.svg?component";
 import SettingsEthernet from "@icons/settings_ethernet.svg?component";
@@ -83,6 +85,7 @@ const icons = {
   delete: Delete,
   done_all: DoneAll,
   deployed_code_update: DeployedCodeUpdate,
+  download: Download,
   edit_square: EditSquare,
   emergency: Emergency,
   error: Error,
@@ -104,6 +107,7 @@ const icons = {
   network_wifi: NetworkWifi,
   network_wifi_1_bar: NetworkWifi1Bar,
   network_wifi_3_bar: NetworkWifi3Bar,
+  report: Report,
   restart_alt: RestartAlt,
   search_off: SearchOff,
   settings_ethernet: SettingsEthernet,

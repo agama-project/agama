@@ -18,9 +18,9 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::message;
 use crate::model::ModelAdapter;
-use crate::Model;
+use crate::{message, PasswordCheckResult, PasswordChecker};
+use crate::{Model, PasswordCheckerError};
 use agama_utils::{
     actor::{self, Actor, Handler, MessageHandler},
     api::{
@@ -51,6 +51,8 @@ pub enum Error {
     IO(#[from] std::io::Error),
     #[error(transparent)]
     Actor(#[from] actor::Error),
+    #[error(transparent)]
+    PasswordChecker(#[from] PasswordCheckerError),
 }
 
 /// Builds and spawns the users service.
@@ -230,5 +232,16 @@ impl MessageHandler<message::Install> for Service {
         };
 
         Ok(())
+    }
+}
+
+#[async_trait]
+impl MessageHandler<message::CheckPassword> for Service {
+    async fn handle(
+        &mut self,
+        message: message::CheckPassword,
+    ) -> Result<PasswordCheckResult, Error> {
+        let checker = PasswordChecker::default();
+        Ok(checker.check(&message.password)?)
     }
 }

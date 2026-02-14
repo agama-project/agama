@@ -60,12 +60,15 @@ module Agama
           dbus_method(:Probe) { probe }
           dbus_method(:Install) { install }
           dbus_method(:Finish) { finish }
+          dbus_method(:Umount) { umount }
           dbus_method(:SetLocale, "in locale:s") { |locale| backend.configure_locale(locale) }
           dbus_method(:GetSystem, "out system:s") { recover_system }
           dbus_method(:GetConfig, "out config:s") { recover_config }
           dbus_method(:SetConfig, "in product:s, in config:s") { |p, c| configure(p, c) }
+          dbus_method(
+            :GetConfigFromModel, "in model:s, out config:s"
+          ) { |m| convert_config_model(m) }
           dbus_method(:GetConfigModel, "out model:s") { recover_config_model }
-          dbus_method(:SetConfigModel, "in model:s") { |m| configure_with_model(m) }
           dbus_method(:SolveConfigModel, "in model:s, out result:s") { |m| solve_config_model(m) }
           dbus_method(:GetProposal, "out proposal:s") { recover_proposal }
           dbus_method(:GetIssues, "out issues:s") { recover_issues }
@@ -77,6 +80,8 @@ module Agama
 
         # Implementation for the API method #Activate.
         def activate
+          logger.info("Activating storage")
+
           start_progress(3, ACTIVATING_STEP)
           backend.reset_activation if backend.activated?
           backend.activate
@@ -93,6 +98,8 @@ module Agama
 
         # Implementation for the API method #Probe.
         def probe
+          logger.info("Probing storage")
+
           start_progress(3, ACTIVATING_STEP)
           backend.activate unless backend.activated?
 
@@ -124,6 +131,12 @@ module Agama
         def finish
           start_progress(1, _("Finishing installation"))
           backend.finish
+          finish_progress
+        end
+
+        def umount
+          start_progress(1, _("Unmounting devices"))
+          backend.umount
           finish_progress
         end
 
@@ -210,22 +223,13 @@ module Agama
           finish_progress
         end
 
-        # Applies the given serialized config model according to the JSON schema.
+        # Converts the given serialized config model according to the JSON schema.
         #
-        # @param serialized_model [String] Serialized storage config model.
-        def configure_with_model(serialized_model)
-          start_progress(1, CONFIGURING_STEP)
-
-          model_json = JSON.parse(serialized_model, symbolize_names: true)
-          config = Agama::Storage::ConfigConversions::FromModel.new(
-            model_json,
-            product_config: product_config,
-            storage_system: proposal.storage_system
-          ).convert
-          config_json = { storage: Agama::Storage::ConfigConversions::ToJSON.new(config).convert }
-          calculate_proposal(config_json)
-
-          finish_progress
+        # @param serialized_model [String] Serialized config model.
+        # @return [String] Serialized config according to JSON schema.
+        def convert_config_model(serialized_model)
+          config_json = config_from_model(serialized_model)
+          JSON.pretty_generate(config_json)
         end
 
         # Solves the given serialized config model.
@@ -260,35 +264,32 @@ module Agama
 
         dbus_interface "org.opensuse.Agama.Storage1.Bootloader" do
           dbus_method(:SetConfig, "in serialized_config:s, out result:u") do |serialized_config|
-            load_bootloader_config_from_json(serialized_config)
+            configure_bootloader(serialized_config)
           end
           dbus_method(:GetConfig, "out serialized_config:s") do
-            bootloader_config_as_json
+            recover_bootloader_config
           end
         end
 
         # Applies the given serialized config according to the JSON schema.
         #
-        #
         # @raise If the config is not valid.
         #
-        # @param serialized_config [String] Serialized storage config.
+        # @param serialized_config [String] Serialized bootloader config.
         # @return [Integer] 0 success; 1 error
-        def load_bootloader_config_from_json(serialized_config)
-          logger.info("Setting bootloader config from D-Bus: #{serialized_config}")
-
+        def configure_bootloader(serialized_config)
+          logger.info("Setting bootloader config: #{serialized_config}")
           backend.bootloader.config.load_json(serialized_config)
           # after loading config try to apply it, so proper packages can be requested
           # TODO: generate also new issue from configuration
-          backend.bootloader.configure
-
+          calculate_bootloader
           0
         end
 
         # Gets and serializes the storage config used to calculate the current proposal.
         #
         # @return [String] Serialized config according to the JSON schema.
-        def bootloader_config_as_json
+        def recover_bootloader_config
           backend.bootloader.config.to_json
         end
 
@@ -318,10 +319,19 @@ module Agama
           return unless proposal.storage_json
 
           calculate_proposal(backend.config_json)
+          # The storage proposal with the current settings is not explicitly requested. It is
+          # automatically calculated as side effect of calling to probe or activate. All the
+          # dependant steps has to be automatically done too, for example, reconfiguring bootloader.
+          calculate_bootloader
+        end
+
+        # Performs the bootloader configuration applying the current config.
+        def calculate_bootloader
+          logger.info("Configuring bootloader")
+          backend.bootloader.configure
         end
 
         # @see #configure
-        # @see #configure_with_model
         #
         # @param config_json [Hash, nil] see Agama::Storage::Manager#configure
         def calculate_proposal(config_json = nil)
@@ -329,6 +339,21 @@ module Agama
           backend.add_packages if backend.proposal.success?
 
           self.ProposalChanged(recover_proposal)
+        end
+
+        # Generates a config JSON from a serialized config model.
+        #
+        # @param serialized_model [String] Serialized config model.
+        # @return [Hash] Config according to JSON schema.
+        def config_from_model(serialized_model)
+          model_json = JSON.parse(serialized_model, symbolize_names: true)
+          config = Agama::Storage::ConfigConversions::FromModel.new(
+            model_json,
+            product_config: product_config,
+            storage_system: proposal.storage_system
+          ).convert
+
+          { storage: Agama::Storage::ConfigConversions::ToJSON.new(config).convert }
         end
 
         # JSON representation of the given devicegraph from StorageManager

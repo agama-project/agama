@@ -1,4 +1,4 @@
-// Copyright (c) [2025] SUSE LLC
+// Copyright (c) [2025-2026] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -18,7 +18,7 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-//! Implements a mechanism to check for the strenght of a password.
+//! Implements a mechanism to check for the strength of a password.
 //!
 //! It relies on the pwscore tool included in the libpwquality-tools package.
 //!
@@ -54,12 +54,12 @@ pub enum PasswordCheckResult {
     Failure(String),
 }
 
-/// Allow to check the strenght of passwords.
+/// Allow to check the strength of passwords.
 #[derive(Default)]
 pub struct PasswordChecker;
 
 impl PasswordChecker {
-    /// Check the strenght of the given password.
+    /// Check the strength of the given password.
     ///
     /// It returns a PasswordCheckResult struct which includes result of the check.
     ///
@@ -99,7 +99,7 @@ impl PasswordChecker {
 
 #[cfg(test)]
 mod test {
-    use crate::users::password::{PasswordCheckResult, PasswordChecker};
+    use super::{PasswordCheckResult, PasswordChecker};
 
     #[test]
     #[cfg(not(ci))]

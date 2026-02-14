@@ -55,7 +55,7 @@ dependencies = [
  "chrono",
  "clap",
  "console",
- "fluent-uri 0.3.2",
+ "fluent-uri 0.4.1",
  "home",
  "indicatif",
  "inquire",
@@ -154,7 +154,7 @@ dependencies = [
  "chrono",
  "curl",
  "env_logger",
- "fluent-uri 0.3.2",
+ "fluent-uri 0.4.1",
  "fs_extra",
  "futures-util",
  "home",
@@ -435,12 +435,14 @@ dependencies = [
  "async-trait",
  "gettext-rs",
  "regex",
+ "serde",
  "test-context",
  "thiserror 2.0.18",
  "tokio",
  "tokio-stream",
  "tokio-test",
  "tracing",
+ "utoipa",
  "zbus",
 ]
 
@@ -1030,7 +1032,7 @@ dependencies = [
  "bitflags 2.9.0",
  "cexpr",
  "clang-sys",
- "itertools 0.12.1",
+ "itertools 0.13.0",
  "log",
  "prettyplease",
  "proc-macro2",
@@ -5358,9 +5360,9 @@ checksum = "06abde3611657adf66d383f00b093d7faecc7fa57071cce2578660c9f1010821"
 
 [[package]]
 name = "utoipa"
-version = "5.3.1"
+version = "5.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "435c6f69ef38c9017b4b4eea965dfb91e71e53d869e896db40d1cf2441dd75c0"
+checksum = "2fcc29c80c21c31608227e0912b2d7fddba57ad76b606890627ba8ee7964e993"
 dependencies = [
  "indexmap 2.9.0",
  "serde",
@@ -5370,9 +5372,9 @@ dependencies = [
 
 [[package]]
 name = "utoipa-gen"
-version = "5.3.1"
+version = "5.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a77d306bc75294fd52f3e99b13ece67c02c1a2789190a6f31d32f736624326f7"
+checksum = "6d79d08d92ab8af4c5e8a6da20c47ae3f61a0f1dabc1997cdf2d082b757ca08b"
 dependencies = [
  "proc-macro2",
  "quote",

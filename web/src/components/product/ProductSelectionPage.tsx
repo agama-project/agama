@@ -51,11 +51,10 @@ import {
   Title,
 } from "@patternfly/react-core";
 import { Navigate, useNavigate } from "react-router";
-import { Link, Page, SubtleContent } from "~/components/core";
+import { InstallerL10nOptions, Link, Page, SubtleContent } from "~/components/core";
 import ProductLogo from "~/components/product/ProductLogo";
 import LicenseDialog from "~/components/product/LicenseDialog";
 import Text from "~/components/core/Text";
-import agama from "~/agama";
 import { putConfig } from "~/api";
 import { useProduct, useProductInfo } from "~/hooks/model/config/product";
 import { useSystem } from "~/hooks/model/system";
@@ -65,6 +64,7 @@ import { Mode, Product } from "~/model/system";
 import { n_, _ } from "~/i18n";
 
 import pfTextStyles from "@patternfly/react-styles/css/utilities/Text/text";
+import { useInstallerL10n } from "~/context/installerL10n";
 
 /**
  * Props for ProductFormProductOption component
@@ -98,8 +98,8 @@ const ProductFormProductOption = ({
   onChange,
   onModeChange,
 }: ProductFormProductOptionProps) => {
+  const { loadedLanguage: currentLocale } = useInstallerL10n();
   const detailsId = `${product.id}-details`;
-  const currentLocale = agama.language.replace("-", "_");
 
   const translatedDescription =
     product.translations?.description[currentLocale] || product.description;
@@ -569,14 +569,16 @@ type CurrentProductInfoProps = {
  * Shows product name, description, and a link to view the license if applicable.
  */
 const CurrentProductInfo = ({ product, modeId }: CurrentProductInfoProps) => {
+  const { loadedLanguage: currentLocale } = useInstallerL10n();
   if (!product) return;
 
-  let mode;
-  let translatedModeName;
-  let translatedModeDescription;
-  if (modeId) {
-    const currentLocale = agama.language.replace("-", "_");
+  const translatedDescription =
+    product.translations?.description[currentLocale] || product.description;
 
+  let mode: Mode;
+  let translatedModeName: string;
+  let translatedModeDescription: string;
+  if (modeId) {
     mode = product.modes.find((m) => m.id === modeId);
     translatedModeName = product.translations?.mode?.[modeId]?.name[currentLocale] || mode?.name;
     translatedModeDescription =
@@ -592,7 +594,7 @@ const CurrentProductInfo = ({ product, modeId }: CurrentProductInfoProps) => {
             <ProductLogo product={product} width="2em" /> {product.name}
           </Title>
           <Divider />
-          <SubtleContent>{product.description}</SubtleContent>
+          <SubtleContent>{translatedDescription}</SubtleContent>
 
           {mode && (
             <>
@@ -708,7 +710,7 @@ const ProductSelectionContent = () => {
       breadcrumbs={[
         { label: <ProductSelectionTitle products={products} currentProduct={currentProduct} /> },
       ]}
-      showInstallerOptions
+      endSlot={<InstallerL10nOptions />}
     >
       <Page.Content>
         <Flex gap={{ default: "gapXs" }} direction={{ default: "column" }}>
