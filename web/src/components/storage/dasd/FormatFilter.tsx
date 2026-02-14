@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2025] SUSE LLC
+ * Copyright (c) [2025-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -35,7 +35,7 @@ import { DASDDevicesFilters } from "~/components/storage/dasd/DASDTable";
 import { N_, _ } from "~/i18n";
 
 type FormatFilterProps = {
-  value: DASDDevicesFilters["formatted"];
+  value: DASDDevicesFilters["format"];
   onChange: SelectProps["onSelect"];
 };
 

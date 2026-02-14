@@ -20,15 +20,4 @@
  * find current contact information at www.suse.com.
  */
 
-import { System, Device } from "~/openapi/system/dasd";
-
-function findDeviceIndex(system: System, channel: string): number | undefined {
-  return system.devices?.findIndex((t) => t.channel === channel);
-}
-
-function findDevice(system: System, channel: string): Device | undefined {
-  return system.devices?.find((t) => t.channel === channel);
-}
-
-export default { findDeviceIndex, findDevice };
 export type * from "~/openapi/system/dasd";

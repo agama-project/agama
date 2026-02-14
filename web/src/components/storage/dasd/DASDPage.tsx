@@ -24,13 +24,13 @@ import React from "react";
 import { Page } from "~/components/core";
 import DASDTable from "./DASDTable";
 import DASDFormatProgress from "./DASDFormatProgress";
-import { useDASDDevicesChanges, useDASDFormatJobChanges } from "~/queries/storage/dasd";
 import { STORAGE as PATHS, STORAGE } from "~/routes/paths";
 import { _ } from "~/i18n";
 
 export default function DASDPage() {
-  useDASDDevicesChanges();
-  useDASDFormatJobChanges();
+  // FIXME: use the API v2 equivalent
+  // useDASDDevicesChanges();
+  // useDASDFormatJobChanges();
 
   return (
     <Page breadcrumbs={[{ label: _("Storage"), path: STORAGE.root }, { label: _("DASD") }]}>
