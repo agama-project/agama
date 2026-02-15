@@ -108,6 +108,19 @@ function mockConfigQuery(data: unknown) {
   mockQuery(["config"], data);
 }
 
+/**
+ * Mock data for system query
+ *
+ * @example
+ *   mockSystemQuery({
+ *    l10n: { locales, keymaps, locale: "us_US.UTF-8", keymap: "us" },
+ *    dasd: { devices: [] } }
+ *   });
+ */
+function mockSystemQuery(data: unknown) {
+  mockQuery(["system"], data);
+}
+
 // Set up the mock implementation
 mockUseSuspenseQuery.mockImplementation((options: UseSuspenseQueryOptions) => {
   const match = mockedQueries.find((mock) => queryKeysEqual(mock.queryKey, options.queryKey));
@@ -125,4 +138,4 @@ jest.mock("@tanstack/react-query", () => ({
   useSuspenseQuery: (options: UseSuspenseQueryOptions) => mockUseSuspenseQuery(options),
 }));
 
-export { mockQuery, mockConfigQuery, clearMockedQueries };
+export { mockQuery, mockConfigQuery, mockSystemQuery, clearMockedQueries };

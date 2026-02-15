@@ -61,6 +61,24 @@ describe("hooks/model/storage/dasd", () => {
       expect(result.current).toEqual({ devices: [mockDeviceActive] });
       expect(result.current).not.toHaveProperty("product");
     });
+
+    it("returns undefined when config data is undefined", () => {
+      mockConfigQuery(undefined);
+
+      const { result } = renderHook(() => useConfig());
+
+      expect(result.current).toBeUndefined();
+    });
+
+    it("returns undefined when dasd property is not present", () => {
+      mockConfigQuery({
+        product: { id: "sle", mode: "standard", registrationCode: "" },
+      });
+
+      const { result } = renderHook(() => useConfig());
+
+      expect(result.current).toBeUndefined();
+    });
   });
 
   describe("useAddDevice", () => {
