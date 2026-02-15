@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import { concat } from "radashi";
+import { concat, isEmpty } from "radashi";
 import { Config, Device } from "~/openapi/config/dasd";
 
 function addDevice(config: Config, device: Device): Config {
@@ -31,10 +31,12 @@ function addDevice(config: Config, device: Device): Config {
 }
 
 function removeDevice(config: Config, channel: string): Config {
-  return {
-    ...config,
-    devices: config.devices.filter((d) => d.channel !== channel),
-  };
+  return isEmpty(config.devices)
+    ? { ...config }
+    : {
+        ...config,
+        devices: config.devices.filter((d) => d.channel !== channel),
+      };
 }
 
 export default { addDevice, removeDevice };

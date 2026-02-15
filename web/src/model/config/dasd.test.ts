@@ -27,24 +27,17 @@ type ConfigStructurePreservationTest = Config & {
   futureProperty: "must_be_preserved";
 };
 
-const mockDASDDevice: Device = {
-  channel: "0.0.0160",
-  state: "offline",
-  format: false,
-  diag: true,
-};
+const mockDeviceOffline: Device = { channel: "0.0.0150", state: "offline" as const };
+const mockDeviceActive: Device = { channel: "0.0.0160", state: "active" as const };
+const mockInitialConfig: Config = { devices: [mockDeviceActive] };
 
-const mockInitialDASDConfig: Config = {
-  devices: [mockDASDDevice],
-};
-
-describe("model/storage/dasd", () => {
+describe("model/config/dasd", () => {
   describe("#addDevice", () => {
     it("preserves existing config properties while adding the device", () => {
       const deviceToAdd = { channel: "0.0.0150", state: "active" as const };
 
       const initialConfig = {
-        ...mockInitialDASDConfig,
+        ...mockInitialConfig,
         futureProperty: "must_be_preserved",
       } as ConfigStructurePreservationTest;
 
@@ -59,33 +52,29 @@ describe("model/storage/dasd", () => {
 
     describe("when config already has devices", () => {
       it("appends the new device to the existing list", () => {
-        const deviceToAdd = { channel: "0.0.0150", state: "active" as const };
-
-        const newConfig = dasdModel.addDevice(mockInitialDASDConfig, deviceToAdd);
-        expect(newConfig).not.toBe(mockInitialDASDConfig);
-        expect(newConfig.devices).toContain(mockDASDDevice);
-        expect(newConfig.devices).toContain(deviceToAdd);
+        const newConfig = dasdModel.addDevice(mockInitialConfig, mockDeviceOffline);
+        expect(newConfig).not.toBe(mockInitialConfig);
+        expect(newConfig.devices).toContain(mockDeviceActive);
+        expect(newConfig.devices).toContain(mockDeviceOffline);
       });
     });
 
     describe("when config devices are empty or undefined", () => {
       it("returns a config containing only the new device", () => {
-        const deviceToAdd = { channel: "0.0.0150", state: "active" as const };
-
-        expect(dasdModel.addDevice({}, deviceToAdd)).toEqual({
-          devices: [deviceToAdd],
+        expect(dasdModel.addDevice({}, mockDeviceOffline)).toEqual({
+          devices: [mockDeviceOffline],
         });
 
-        expect(dasdModel.addDevice({ devices: [] }, deviceToAdd)).toEqual({
-          devices: [deviceToAdd],
+        expect(dasdModel.addDevice({ devices: [] }, mockDeviceOffline)).toEqual({
+          devices: [mockDeviceOffline],
         });
 
-        expect(dasdModel.addDevice({ devices: undefined }, deviceToAdd)).toEqual({
-          devices: [deviceToAdd],
+        expect(dasdModel.addDevice({ devices: undefined }, mockDeviceOffline)).toEqual({
+          devices: [mockDeviceOffline],
         });
 
-        expect(dasdModel.addDevice({ devices: null }, deviceToAdd)).toEqual({
-          devices: [deviceToAdd],
+        expect(dasdModel.addDevice({ devices: null }, mockDeviceOffline)).toEqual({
+          devices: [mockDeviceOffline],
         });
       });
     });
@@ -94,13 +83,13 @@ describe("model/storage/dasd", () => {
   describe("#removeDevice", () => {
     it("preserves existing config properties while removing the device", () => {
       const initialConfig = {
-        ...mockInitialDASDConfig,
+        ...mockInitialConfig,
         futureProperty: "must_be_preserved",
       } as ConfigStructurePreservationTest;
 
       const newConfig = dasdModel.removeDevice(
         initialConfig,
-        mockDASDDevice.channel,
+        mockDeviceActive.channel,
       ) as ConfigStructurePreservationTest;
 
       expect(newConfig).not.toBe(initialConfig);
@@ -108,9 +97,10 @@ describe("model/storage/dasd", () => {
     });
 
     it("returns a new config with the specified device removed", () => {
-      const newConfig = dasdModel.removeDevice(mockInitialDASDConfig, mockDASDDevice.channel);
-      expect(newConfig).not.toBe(mockInitialDASDConfig);
-      expect(newConfig.devices).not.toContain(mockDASDDevice);
+      const toRemove = mockInitialConfig.devices[0];
+      const newConfig = dasdModel.removeDevice(mockInitialConfig, toRemove.channel);
+      expect(newConfig).not.toBe(mockInitialConfig);
+      expect(newConfig.devices).not.toContain(toRemove);
     });
   });
 });

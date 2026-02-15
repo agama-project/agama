@@ -23,37 +23,44 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { configQuery } from "~/hooks/model/config";
 import { patchConfig, Response } from "~/api";
-import dasd from "~/model/config/dasd";
+import dasdConfig from "~/model/config/dasd";
+
 import type { Config, DASD } from "~/model/config";
 
-const selectConfig = (data: Config | null): DASD.Config => data?.dasd;
+type addDeviceFn = (device: DASD.Device) => Response;
+type removeDeviceFn = (name: DASD.Device["channel"]) => Response;
+
+const configSelector = (data: Config | null): DASD.Config => data?.dasd;
 
 function useConfig(): DASD.Config | null {
   const { data } = useSuspenseQuery({
     ...configQuery,
-    select: selectConfig,
+    select: configSelector,
   });
   return data;
 }
 
-const addDevice = (config: DASD.Config | null, device: DASD.Device): DASD.Config =>
-  config ? dasd.addDevice(config, device) : { devices: [device] };
-
-type addDeviceFn = (device: DASD.Device) => Response;
-
 function useAddDevice(): addDeviceFn {
   const config = useConfig();
-  return (device: DASD.Device) => patchConfig({ dasd: addDevice(config, device) });
+
+  return (device: DASD.Device) => {
+    return patchConfig({
+      // FIXME: useConfig should return an empty object instead of falling back
+      // to an empty object all the time
+      dasd: dasdConfig.addDevice(config || {}, device),
+    });
+  };
 }
-
-const removeDevice = (config: DASD.Config | null, channel: string): DASD.Config =>
-  config ? dasd.removeDevice(config, channel) : {};
-
-type removeDeviceFn = (name: string) => Response;
 
 function useRemoveDevice(): removeDeviceFn {
   const config = useConfig();
-  return (channel: string) => patchConfig({ dasd: removeDevice(config, channel) });
+
+  return (channel: string) =>
+    patchConfig({
+      // FIXME: useConfig should return an empty object instead of falling back
+      // to an empty object all the time
+      dasd: dasdConfig.removeDevice(config || {}, channel),
+    });
 }
 
 export { useConfig, useAddDevice, useRemoveDevice };
