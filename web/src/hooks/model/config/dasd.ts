@@ -30,16 +30,49 @@ import type { Config, DASD } from "~/model/config";
 type addDeviceFn = (device: DASD.Device) => Response;
 type removeDeviceFn = (name: DASD.Device["channel"]) => Response;
 
-const configSelector = (data: Config | null): DASD.Config => data?.dasd;
+/**
+ * Extract DASD config from a config object.
+ *
+ * @remarks
+ * Used by useSuspenseQuery's select option to transform the query result.
+ * Returns undefined when data is undefined or when dasd property is not present.
+ *
+ * @see {@link https://tanstack.com/query/latest/docs/framework/react/guides/render-optimizations#select TanStack Query Select}
+ * @see {@link https://tkdodo.eu/blog/react-query-selectors-supercharged#what-is-select Query Selectors Supercharged}
+ *
+ * FIXME: Read todo note below.
+ * @todo Consider returning an empty object ({}) instead of undefined to simplify
+ * consuming code and eliminate the need for fallback checks throughout the codebase.
+ */
+const dasdSelector = (data: Config | undefined): DASD.Config => data?.dasd;
 
-function useConfig(): DASD.Config | null {
+/**
+ * Hook to retrieve DASD configuration object.
+ *
+ * @example
+ * ```typescript
+ * function MyComponent() {
+ *   const dasdConfig = useConfig();
+ *   return <div>{dasdConfig?.devices.length} devices</div>;
+ * }
+ * ```
+ */
+function useConfig(): DASD.Config | undefined {
   const { data } = useSuspenseQuery({
     ...configQuery,
-    select: configSelector,
+    select: dasdSelector,
   });
   return data;
 }
 
+/**
+ * Add a device to DASD configuration.
+ *
+ * @remarks
+ * Falls back to empty config when useConfig returns undefined.
+ *
+ * @todo Remove fallback once useConfig returns empty object by default
+ */
 function useAddDevice(): addDeviceFn {
   const config = useConfig();
 
@@ -52,6 +85,14 @@ function useAddDevice(): addDeviceFn {
   };
 }
 
+/**
+ * Remove a device from DASD configuration by channel.
+ *
+ * @remarks
+ * Falls back to empty config when useConfig returns undefined.
+ *
+ * @todo Remove fallback once useConfig returns empty object by default
+ */
 function useRemoveDevice(): removeDeviceFn {
   const config = useConfig();
 

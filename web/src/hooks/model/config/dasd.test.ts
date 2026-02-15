@@ -23,7 +23,8 @@
 import { act, renderHook } from "@testing-library/react";
 // NOTE: check notes about mockConfigQuery in its documentation
 import { clearMockedQueries, mockConfigQuery } from "~/test-utils/tanstack-query";
-import { useAddDevice, useRemoveDevice } from "~/hooks/model/config/dasd";
+import { patchConfig } from "~/api";
+import { useConfig, useAddDevice, useRemoveDevice } from "~/hooks/model/config/dasd";
 import type { Device } from "~/model/config/dasd";
 
 const mockDeviceOffline: Device = { channel: "0.0.0150", state: "offline" as const };
@@ -39,13 +40,27 @@ const mockPatchConfig = jest.fn();
 // Mock the API
 jest.mock("~/api", () => ({
   ...jest.requireActual("~/api"),
-  patchConfig: (config: any) => mockPatchConfig(config),
+  patchConfig: (config: Parameters<typeof patchConfig>) => mockPatchConfig(config),
 }));
 
 describe("hooks/model/storage/dasd", () => {
   beforeEach(() => {
     jest.clearAllMocks();
     clearMockedQueries();
+  });
+
+  describe("useConfig", () => {
+    it("returns only dasd config data", () => {
+      mockConfigQuery({
+        product: { id: "sle", mode: "standard", registrationCode: "" },
+        dasd: { devices: [mockDeviceActive] },
+      });
+
+      const { result } = renderHook(() => useConfig());
+
+      expect(result.current).toEqual({ devices: [mockDeviceActive] });
+      expect(result.current).not.toHaveProperty("product");
+    });
   });
 
   describe("useAddDevice", () => {

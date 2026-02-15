@@ -104,7 +104,7 @@ function mockQuery(queryKey: QueryKey, data: unknown) {
  * @example
  *   mockConfigQuery({ dasd: { devices: [] } });
  */
-function mockConfigQuery(data: any) {
+function mockConfigQuery(data: unknown) {
   mockQuery(["config"], data);
 }
 
