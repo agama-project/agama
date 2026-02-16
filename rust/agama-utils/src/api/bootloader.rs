@@ -22,17 +22,23 @@
 use merge::Merge;
 use serde::{Deserialize, Serialize};
 
-/// Represents a Bootloader
+/// Bootloader configuration.
 #[derive(Clone, Debug, Serialize, Deserialize, Default, Merge, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
 #[merge(strategy = merge::option::overwrite_none)]
 pub struct Config {
+    /// Whether bootloader should stop on boot menu.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub stop_on_boot_menu: Option<bool>,
+    /// Bootloader timeout.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub timeout: Option<u32>,
+    /// Bootloader extra kernel parameters.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub extra_kernel_params: Option<String>,
+    /// Whether bootloader should update persistent RAM.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub update_nvram: Option<bool>,
 }
 
 impl Config {
