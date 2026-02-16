@@ -45,7 +45,7 @@ fi
 if [ -n "\${iso_path}" ]; then
     isoboot="iso-scan/filename=\${iso_path}"
 fi
-set timeout=10
+set timeout=60
 set timeout_style=menu
 if [ "\${grub_platform}" = "efi" ]; then
     echo "Please press 't' to show the boot menu on this console"
