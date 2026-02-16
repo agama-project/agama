@@ -216,12 +216,6 @@ export default {
   "Authentication": [
     "身份验证"
   ],
-  "Authentication by initiator": [
-    "发起者身份认证"
-  ],
-  "Authentication by target": [
-    "目标身份认证"
-  ],
   "Auto": [
     "自动"
   ],
@@ -387,9 +381,6 @@ export default {
   "Close": [
     "关闭"
   ],
-  "Configuration read from the iSCSI Boot Firmware Table (iBFT).": [
-    "已从 iSCSI 引导固件表 (iBFT) 读取配置。"
-  ],
   "Configuration unreachable or invalid": [
     "配置无效或无法访问"
   ],
@@ -428,9 +419,6 @@ export default {
   ],
   "Connected": [
     "已连接"
-  ],
-  "Connected (%s)": [
-    "已连接（%s）"
   ],
   "Connected device": [
     "已连接设备"
@@ -591,20 +579,14 @@ export default {
   "Discard the maximum size and continue with simplified configuration": [
     "请忽略大小上限，继续使用简化配置"
   ],
+  "Disconnect": [
+    "断开连接"
+  ],
   "Disconnected": [
     "已断开连接"
   ],
-  "Discover": [
-    "发现"
-  ],
   "Discover and connect to iSCSI targets": [
     "发现并连接到 iSCSI 目标"
-  ],
-  "Discover iSCSI Targets": [
-    "发现 iSCSI 目标"
-  ],
-  "Discover iSCSI targets": [
-    "发现 iSCSI 目标"
   ],
   "Disk": [
     "磁盘"
@@ -624,11 +606,11 @@ export default {
   "Download logs": [
     "下载日志"
   ],
+  "Download logs to troubleshoot or share with support.": [
+    ""
+  ],
   "Edit": [
     "编辑"
-  ],
-  "Edit %s": [
-    "编辑 %s"
   ],
   "Edit binding settings": [
     "编辑绑定设置"
@@ -647,6 +629,9 @@ export default {
   ],
   "Empty LVM volume group %s": [
     "清空 LVM 卷组 %s"
+  ],
+  "Enable mutual verification": [
+    ""
   ],
   "Encrypt the system": [
     "加密系统"
@@ -840,9 +825,6 @@ export default {
   "IP Addresses": [
     "IP 地址"
   ],
-  "IP address": [
-    "IP 地址"
-  ],
   "IP addresses": [
     "IP 地址"
   ],
@@ -867,32 +849,11 @@ export default {
   "If you want to disable this check, please specify \"inst.ay_check=0\" at kernels command-line": [
     ""
   ],
-  "Incorrect IP address": [
-    "不正确的 IP 地址"
-  ],
-  "Incorrect password": [
-    "密码不正确"
-  ],
-  "Incorrect port": [
-    "不正确的端口"
-  ],
-  "Incorrect user name": [
-    "用户名不正确"
-  ],
   "Initiator": [
     "发起者"
   ],
-  "Initiator details": [
-    "发起端详细信息"
-  ],
   "Initiator name": [
     "发起者名称"
-  ],
-  "Initiator name could not be updated": [
-    "无法更新发起端名称"
-  ],
-  "Initiator name successfully updated": [
-    "已成功更新发起端名称"
   ],
   "Install": [
     "安装"
@@ -1008,6 +969,9 @@ export default {
   "Localization": [
     "本地化"
   ],
+  "Locked targets cannot be managed from here and do not offer any actions.": [
+    ""
+  ],
   "Log in": [
     "登录"
   ],
@@ -1023,20 +987,11 @@ export default {
   "Login": [
     "登录"
   ],
-  "Login %s": [
-    "登录 %s"
-  ],
   "Login form": [
     "登录表单"
   ],
-  "Logout": [
-    "登出"
-  ],
   "MAC": [
     "MAC"
-  ],
-  "Make sure you provide the correct values": [
-    "确保提供了正确的值"
   ],
   "Manage DASD devices": [
     "管理 DASD 设备"
@@ -1056,11 +1011,17 @@ export default {
   "Min channel": [
     "最小通道"
   ],
+  "Missing": [
+    ""
+  ],
   "Mode": [
     "模式"
   ],
   "Modify settings and physical volumes": [
     "修改设置和物理卷"
+  ],
+  "More": [
+    ""
   ],
   "More actions": [
     "更多操作"
@@ -1185,12 +1146,6 @@ export default {
   "No devices found": [
     "未找到设备"
   ],
-  "No iSCSI Boot Firmware Table (iBFT) found. The initiator can be configured manually.": [
-    "未找到 iSCSI 引导固件表 (iBFT)。可以手动配置发起端。"
-  ],
-  "No iSCSI targets found.": [
-    "未找到 iSCSI 目标。"
-  ],
   "No logical volumes are defined yet": [
     "尚未定义逻辑卷"
   ],
@@ -1200,8 +1155,14 @@ export default {
   "No support is planned.": [
     "暂无支持计划。"
   ],
+  "No targets have been discovered or configured.": [
+    ""
+  ],
   "No user defined yet.": [
     "尚未设定用户。"
+  ],
+  "No valid port.": [
+    ""
   ],
   "No wired connections were found": [
     "未找到有线连接"
@@ -1251,17 +1212,11 @@ export default {
   "On boot": [
     "开机时"
   ],
-  "Only available if authentication by target is provided": [
-    "仅当目标提供身份认证时可用"
-  ],
   "Only reused partitions and space not assigned to any partition will be used.": [
     "将会仅使用重复使用的分区及未分配给任何分区的空间。"
   ],
   "Only reused partitions will be used.": [
     "将会仅使用重复使用的分区。"
-  ],
-  "Options toggle": [
-    "选项切换开关"
   ],
   "Package installation failed": [
     "安装软件包失败"
@@ -1319,9 +1274,6 @@ export default {
   ],
   "PiB": [
     "PiB"
-  ],
-  "Please, perform an iSCSI discovery in order to find available iSCSI targets.": [
-    "请执行 iSCSI 发现以查找可用的 iSCSI 目标。"
   ],
   "Please, try to activate a zFCP controller.": [
     "请尝试激活 zFCP 控制器。"
@@ -1656,6 +1608,9 @@ export default {
   "Status": [
     "状态"
   ],
+  "Status filter toggle": [
+    ""
+  ],
   "Storage": [
     "存储"
   ],
@@ -1677,11 +1632,8 @@ export default {
   "Take a moment to review the installation settings below and adjust them as needed.": [
     ""
   ],
-  "Target Password": [
-    "目标密码"
-  ],
-  "Targets": [
-    "目标"
+  "Target not found": [
+    ""
   ],
   "Temporary name that may change after reboot or network changes": [
     ""
@@ -1971,9 +1923,6 @@ export default {
   "Updating the hostname now or later will not change the currently registered hostname.": [
     "现在或以后更新主机名不会更改当前注册的主机名。"
   ],
-  "Updating the initiator name": [
-    "正在更新发起端名称"
-  ],
   "Upload": [
     "上传"
   ],
@@ -2195,9 +2144,6 @@ export default {
   ],
   "[CAPS LOCK] is on": [
     "大写锁定已开启"
-  ],
-  "[FIXME]": [
-    "[请修复]"
   ],
   "active": [
     "已激活"
