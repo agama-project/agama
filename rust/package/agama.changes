@@ -1,4 +1,22 @@
 -------------------------------------------------------------------
+Fri Feb 13 12:49:15 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Do not leak the registration codes (gh#agama-project/agama#3167).
+
+-------------------------------------------------------------------
+Fri Feb 13 09:21:12 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Update storage user config with config from the storage model
+  (bsc#1257798).
+
+-------------------------------------------------------------------
+Fri Feb 13 08:47:07 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Resolve the relative URLs (bsc#1258118).
+- Do not finish the installation as "failed" if it was not possible
+  to fetch the user files (bsc#1258118).
+
+-------------------------------------------------------------------
 Thu Feb 12 14:43:48 UTC 2026 - José Iván López González <jlopez@suse.com>
 
 - Recalulate bootloader proposal after applying a storage config

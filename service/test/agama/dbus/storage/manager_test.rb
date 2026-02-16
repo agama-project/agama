@@ -54,6 +54,8 @@ describe Agama::DBus::Storage::Manager do
 
   let(:config_data) { {} }
 
+  let(:bootloader) { instance_double(Agama::Storage::Bootloader) }
+
   before do
     # Speed up tests by avoiding real check of TPM presence.
     allow(Y2Storage::EncryptionMethod::TPM_FDE).to receive(:possible?).and_return(true)
@@ -67,6 +69,7 @@ describe Agama::DBus::Storage::Manager do
     allow(backend).to receive(:on_issues_change)
     allow(backend).to receive(:actions).and_return([])
     allow(backend).to receive(:proposal).and_return(proposal)
+    allow(backend).to receive(:bootloader).and_return(bootloader)
     mock_storage(devicegraph: "empty-hd-50GiB.yaml")
   end
 
@@ -868,53 +871,6 @@ describe Agama::DBus::Storage::Manager do
     end
   end
 
-  describe "#configure_with_model" do
-    before do
-      allow(subject).to receive(:ProposalChanged)
-      allow(subject).to receive(:ProgressChanged)
-      allow(subject).to receive(:ProgressFinished)
-    end
-
-    let(:serialized_model) { model_json.to_json }
-
-    let(:model_json) do
-      {
-        drives: [
-          name:       "/dev/vda",
-          partitions: [
-            { mountPath: "/" }
-          ]
-        ]
-      }
-    end
-
-    it "calculates an agama proposal with the given config" do
-      expect(proposal).to receive(:calculate_agama) do |config|
-        expect(config).to be_a(Agama::Storage::Config)
-        expect(config.drives.size).to eq(1)
-
-        drive = config.drives.first
-        expect(drive.search.name).to eq("/dev/vda")
-        expect(drive.partitions.size).to eq(1)
-
-        partition = drive.partitions.first
-        expect(partition.filesystem.path).to eq("/")
-      end
-
-      subject.configure_with_model(serialized_model)
-    end
-
-    it "emits signals for ProposalChanged, ProgressChanged and ProgressFinished" do
-      allow(proposal).to receive(:calculate_agama)
-
-      expect(subject).to receive(:ProposalChanged)
-      expect(subject).to receive(:ProgressChanged).with(/storage configuration/i)
-      expect(subject).to receive(:ProgressFinished)
-
-      subject.configure_with_model(serialized_model)
-    end
-  end
-
   describe "#recover_config" do
     context "if a proposal has not been calculated" do
       it "returns 'null'" do
@@ -964,6 +920,36 @@ describe Agama::DBus::Storage::Manager do
       it "returns the serialized AutoYaST config" do
         expect(subject.recover_config).to eq(serialize(autoyast_json))
       end
+    end
+  end
+
+  describe "#convert_config_model" do
+    let(:model) do
+      serialize({
+        drives: [
+          { name: "/dev/vda" }
+        ]
+      })
+    end
+
+    it "returns the serialized config" do
+      expect(subject.convert_config_model(model)).to eq(
+        serialize({
+          storage: {
+            boot:         { configure: true },
+            drives:       [
+              {
+                search: {
+                  condition:  { name: "/dev/vda" },
+                  ifNotFound: "error"
+                }
+              }
+            ],
+            volumeGroups: [],
+            mdRaids:      []
+          }
+        })
+      )
     end
   end
 
@@ -1133,6 +1119,7 @@ describe Agama::DBus::Storage::Manager do
       allow(backend).to receive(:activated?).and_return activated
       allow(backend).to receive(:probe)
       allow(backend).to receive(:add_packages)
+      allow(bootloader).to receive(:configure)
     end
 
     let(:activated) { true }
@@ -1161,6 +1148,11 @@ describe Agama::DBus::Storage::Manager do
     context "when no storage configuration has been set" do
       it "does not calculate a new proposal" do
         expect(backend).to_not receive(:configure)
+        subject.probe
+      end
+
+      it "does not configure bootloader" do
+        expect(bootloader).to_not receive(:configure)
         subject.probe
       end
 
@@ -1207,6 +1199,11 @@ describe Agama::DBus::Storage::Manager do
 
       it "re-calculates the proposal" do
         expect(backend).to receive(:configure).with(config_json)
+        subject.probe
+      end
+
+      it "configures bootloader" do
+        expect(bootloader).to receive(:configure)
         subject.probe
       end
 
