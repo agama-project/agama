@@ -23,6 +23,7 @@
 //! definition, the user configuration, etc.
 
 use std::collections::HashMap;
+use std::fmt;
 
 use agama_utils::{
     api::software::{
@@ -576,7 +577,7 @@ pub struct SoftwareOptions {
     pub only_required: bool,
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone)]
 pub struct RegistrationState {
     pub product: String,
     pub version: String,
@@ -585,6 +586,19 @@ pub struct RegistrationState {
     pub email: Option<String>,
     pub url: Option<Url>,
     pub addons: Vec<Addon>,
+}
+
+impl fmt::Debug for RegistrationState {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.debug_struct("RegistrationState")
+            .field("product", &self.product)
+            .field("version", &self.version)
+            .field("code", &self.code.as_ref().map(|_| "[FILTERED]"))
+            .field("email", &self.email)
+            .field("url", &self.url)
+            .field("addons", &self.addons)
+            .finish()
+    }
 }
 
 #[derive(Clone, Debug)]
@@ -620,7 +634,7 @@ mod tests {
 
     use crate::model::{
         packages::ResolvableType,
-        state::{ResolvableSelection, SoftwareStateBuilder},
+        state::{RegistrationState, ResolvableSelection, SoftwareStateBuilder},
     };
 
     fn build_user_config(patterns: Option<PatternsConfig>) -> Config {
@@ -1051,5 +1065,32 @@ mod tests {
             .build();
 
         assert_eq!(state.repositories.len(), 3);
+    }
+
+    #[test]
+    fn test_registration_state_debug() {
+        let state = RegistrationState {
+            product: "SLES".to_string(),
+            version: "16.1".to_string(),
+            code: Some("secret_code".to_string()),
+            email: None,
+            url: None,
+            addons: vec![],
+        };
+
+        let debug_output = format!("{:?}", state);
+        assert!(debug_output.contains("code: Some(\"[FILTERED]\")"));
+        assert!(!debug_output.contains("secret_code"));
+
+        let state_no_code = RegistrationState {
+            product: "SLES".to_string(),
+            version: "16.1".to_string(),
+            code: None,
+            email: None,
+            url: None,
+            addons: vec![],
+        };
+        let debug_output_no_code = format!("{:?}", state_no_code);
+        assert!(debug_output_no_code.contains("code: None"));
     }
 }
