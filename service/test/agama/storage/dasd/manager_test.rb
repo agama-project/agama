@@ -101,33 +101,6 @@ describe Agama::Storage::DASD::Manager do
       expect(dasd2).to receive(:diag_wanted=).with(false)
       subject.probe
     end
-
-    it "locks devices that are not offline" do
-      subject.probe
-      expect(subject.send(:device_locked?, dasd1)).to be(true)
-      expect(subject.send(:device_locked?, dasd2)).to be(false)
-    end
-
-    context "when a configuration is already present" do
-      let(:config_json) { { devices: [{ channel: "0.0.0100" }] } }
-
-      before do
-        allow(subject).to receive(:config_json).and_return(config_json)
-      end
-
-      context "if a device is part of the configuration" do
-        before do
-          allow(dasd1).to receive(:offline?).and_return(false)
-          allow(dasd2).to receive(:offline?).and_return(false)
-        end
-
-        it "does not lock active devices that are part of the configuration" do
-          subject.probe
-          expect(subject.send(:device_locked?, dasd1)).to be(false)
-          expect(subject.send(:device_locked?, dasd2)).to be(true)
-        end
-      end
-    end
   end
 
   describe "#configured?" do
@@ -207,7 +180,6 @@ describe Agama::Storage::DASD::Manager do
     before do
       devices.each { |d| allow(d).to receive(:diag_wanted=) }
       allow(reader).to receive(:update_info)
-      allow(subject).to receive(:device_locked?).and_return(false)
 
       # Mock all operations
       allow(Agama::Storage::DASD::EnableOperation).to receive(:new).and_return(enable_operation)
@@ -338,26 +310,9 @@ describe Agama::Storage::DASD::Manager do
         allow(dasd4).to receive(:active?).and_return(false)
       end
 
-      it "deactivates the unlisted device if active" do
-        expect(Agama::Storage::DASD::DisableOperation).to receive(:new) do |devices, _|
-          expect(devices).to contain_exactly(dasd1, dasd3)
-          disable_operation
-        end
+      it "does not deactivate the unlisted devices" do
+        expect(Agama::Storage::DASD::DisableOperation).to_not receive(:new)
         subject.configure(config_json)
-      end
-
-      context "and some unlisted device is locked" do
-        before do
-          allow(subject).to receive(:device_locked?).with(dasd1).and_return(true)
-        end
-
-        it "does not deactivate the locked devices" do
-          expect(Agama::Storage::DASD::DisableOperation).to receive(:new) do |devices, _|
-            expect(devices).to contain_exactly(dasd3)
-            disable_operation
-          end
-          subject.configure(config_json)
-        end
       end
     end
 
@@ -588,42 +543,6 @@ describe Agama::Storage::DASD::Manager do
         expect(reader).to receive(:update_info).with(dasd3, extended: true)
         expect(reader).to_not receive(:update_info).with(dasd4, extended: true)
         subject.configure(config_json)
-      end
-    end
-
-    context "if a device is configured" do
-      let(:config_json) do
-        {
-          devices: [
-            {
-              channel: "0.0.0002",
-              state:   "active",
-              format:  false
-            },
-            {
-              channel: "0.0.0003",
-              state:   "active",
-              format:  false
-            }
-          ]
-        }
-      end
-
-      before do
-        allow(dasd1).to receive(:offline?).and_return(true)
-        allow(dasd2).to receive(:offline?).and_return(false)
-        allow(dasd2).to receive(:active?).and_return(true)
-        allow(dasd3).to receive(:offline?).and_return(false)
-        allow(dasd4).to receive(:offline?).and_return(false)
-        allow(subject).to receive(:device_locked?).and_call_original
-      end
-
-      it "removes configured devices from locked devices" do
-        subject.configure(config_json)
-        expect(subject.send(:device_locked?, dasd1)).to eq(false)
-        expect(subject.send(:device_locked?, dasd2)).to eq(false)
-        expect(subject.send(:device_locked?, dasd3)).to eq(false)
-        expect(subject.send(:device_locked?, dasd4)).to eq(true)
       end
     end
   end
