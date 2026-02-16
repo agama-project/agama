@@ -46,6 +46,7 @@ impl Config {
         if self.stop_on_boot_menu.is_none()
             && self.timeout.is_none()
             && self.extra_kernel_params.is_none()
+            && self.update_nvram.is_none()
         {
             None
         } else {
