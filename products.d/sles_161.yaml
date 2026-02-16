@@ -101,12 +101,16 @@ translations:
         de: Standard
         id: Standar
         ja: 標準
+        kab: Tizeɣt
+        uk: Стандартна
       description:
         ca: Sistema estàndard
         cs: Standardní systém
         de: Standardsystem
         id: Sistem standar
         ja: 標準システム
+        kab: Anagraw n tizeɣt
+        uk: Стандартна система
     immutable:
       name:
         ca: Immutable
@@ -114,12 +118,14 @@ translations:
         de: Unveränderlich
         id: Immutable
         ja: 不変型
+        uk: Незмінний
       description:
         ca: Sistema immutable amb actualitzacions atòmiques
         cs: Neměnitelný systém s atomickými aktualizacemi
         de: Unveränderliches System mit atomaren Aktualisierungen
         id: Sistem immutable dengan pembaruan atomik
         ja: 不可分な更新機能を持つ不変型システム
+        uk: Незмінна система з атомарними оновленнями
 software:
   installation_repositories: []
   installation_labels:
