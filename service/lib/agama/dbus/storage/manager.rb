@@ -31,8 +31,6 @@ require "dbus"
 require "json"
 require "yast"
 
-Yast.import "Arch"
-
 module Agama
   module DBus
     module Storage
@@ -52,7 +50,6 @@ module Agama
           super(PATH, logger: logger)
           @backend = backend
           register_progress_callbacks
-          add_s390_interfaces if Yast::Arch.s390
         end
 
         dbus_interface "org.opensuse.Agama.Storage1" do
@@ -464,12 +461,6 @@ module Agama
         # Emits the SystemChanged signal
         def emit_system_changed
           self.SystemChanged(recover_system)
-        end
-
-        def add_s390_interfaces
-          require "agama/dbus/storage/interfaces/zfcp_manager"
-          singleton_class.include Interfaces::ZFCPManager
-          register_zfcp_callbacks
         end
 
         # @return [Agama::Storage::Proposal]
