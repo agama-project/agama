@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2023] SUSE LLC
+# Copyright (c) [2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -19,48 +19,40 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "yast2/equatable"
-
 module Agama
   module Storage
     module ZFCP
-      # zFCP disk
-      class Disk
-        include Yast2::Equatable
-
-        # Device name
+      # zFCP config.
+      class Config
+        # List of devices.
         #
-        # @return [String] e.g., "/dev/sda"
-        attr_reader :name
+        # @return [Array<Configs::Device>]
+        attr_accessor :devices
 
-        # zFCP controller channel id
+        def initialize
+          @devices = []
+        end
+
+        # Whether the config includes a device with the given channel, WWPN and LUN.
         #
-        # @return [String]
-        attr_reader :channel
-
-        # zFCP WWPN
-        #
-        # @return [String]
-        attr_reader :wwpn
-
-        # zFCP LUN
-        #
-        # @return [String]
-        attr_reader :lun
-
-        eql_attr :name, :channel, :wwpn, :lun
-
-        # Constructor
-        #
-        # @param name [String]
         # @param channel [String]
         # @param wwpn [String]
         # @param lun [String]
-        def initialize(name, channel, wwpn, lun)
-          @name = name
-          @channel = channel
-          @wwpn = wwpn
-          @lun = lun
+        #
+        # @return [Boolean]
+        def include_device?(channel, wwpn, lun)
+          !find_device(channel, wwpn, lun).nil?
+        end
+
+        # Searchs for a device with the given channel, WWPN and LUN.
+        #
+        # @param channel [String]
+        # @param wwpn [String]
+        # @param lun [String]
+        #
+        # @return [Configs::Device, nil]
+        def find_device(channel, wwpn, lun)
+          devices.find { |d| d.channel == channel && d.wwpn == wwpn && d.lun == lun }
         end
       end
     end

@@ -94,8 +94,8 @@ module Agama
 
           logger.info("Configuring zFCP")
           start_progress(1, _("Configuring zFCP"))
-          system_changed = manager.configure(config_json)
-          emit_system_changed if system_changed
+          manager.configure(config_json)
+          emit_system_changed
           finish_progress
         end
 
@@ -104,6 +104,58 @@ module Agama
         # @return [Agama::Storage::ZFCP::Manager]
         attr_reader :manager
 
+        # @return [Hash]
+        def system_json
+          {
+            lunScan: manager.allow_lun_scan?,
+            controllers: controllers_json,
+            devices: devices_json
+          }
+        end
+
+        # @return [Hash]
+        def controllers_json
+          manager.controllers.map { |c| controller_json(c) }
+        end
+
+        # @param controller [Agama::Storage::ZFCP::Controller]
+        # @return [Hash]
+        def controller_json(controller)
+          {
+            channel: controller.channel,
+            wwpns: controller.wwpns,
+            lunScan: controller.lun_scan?,
+            active: controller.active?
+          }
+        end
+
+        # @return [Hash]
+        def devices_json
+          manager.devices.map { |d| device_json(d) }
+        end
+
+        # @param device [Agama::Storage::ZFCP::Device]
+        # @return [Hash]
+        def device_json(device)
+          json = {
+            channel: device.channel,
+            wwpn: device.wwpn,
+            lun: device.lun,
+            active: device.active?
+          }
+          json[:deviceName] = device.device_name if device.active?
+          json
+        end
+
+        # Emits the SystemChanged signal
+        def emit_system_changed
+          self.SystemChanged(recover_system)
+        end
+
+        def register_callbacks
+          on_progress_change { self.ProgressChanged(progress.to_json) }
+          on_progress_finish { self.ProgressFinished }
+        end
       end
     end
   end

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2023] SUSE LLC
+# Copyright (c) [2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -19,14 +19,34 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
+require "agama/json_importer"
+require "agama/storage/zfcp/config"
+require "agama/storage/zfcp/config_importers/device"
+
 module Agama
   module Storage
-    # Module for zFCP
     module ZFCP
+      # Class for generating a zFCP config object from a JSON.
+      class ConfigImporter < JSONImporter
+        # @return [Config]
+        def target
+          Config.new
+        end
+
+        # @see Agama::JSONImporter#imports
+        def imports
+          {
+            devices: import_devices
+          }
+        end
+
+        def import_devices
+          devices_json = json[:devices]
+          return unless devices_json
+
+          devices_json.map { |d| ConfigImporters::Device.new(d).import }
+        end
+      end
     end
   end
 end
-
-require "agama/storage/zfcp/manager"
-require "agama/storage/zfcp/controller"
-require "agama/storage/zfcp/device"

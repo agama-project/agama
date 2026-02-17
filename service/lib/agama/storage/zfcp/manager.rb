@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2023] SUSE LLC
+# Copyright (c) [2023-2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -19,70 +19,72 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "yast"
 require "y2s390/zfcp"
-require "y2storage/storage_manager"
+require "agama/storage/zfcp/config_importer"
 require "agama/storage/zfcp/controller"
-require "agama/storage/zfcp/disk"
+require "agama/storage/zfcp/device"
 
 module Agama
   module Storage
     module ZFCP
       # Manager for zFCP
       class Manager
-        # Constructor
+        # @return [Array<Controller>]
+        attr_reader :controllers
+
+        # @return [Array<Device>]
+        attr_reader :devices
+
+        # Config according to the JSON schema.
         #
+        # @return [Hash, nil] nil if not configured yet.
+        attr_reader :config_json
+
         # @param logger [Logger, nil]
         def initialize(logger: nil)
           @logger = logger || ::Logger.new($stdout)
+          @controllers = []
+          @devices = []
         end
 
-        # Registers a callback to be called when the zFCP is probed
+        # Whether probing has been already performed.
         #
-        # @param block [Proc]
-        def on_probe(&block)
-          @on_probe_callbacks ||= []
-          @on_probe_callbacks << block
-        end
-
-        # Registers a callback to be called when the zFCP disks change
-        #
-        # @param block [Proc]
-        def on_disks_change(&block)
-          @on_disks_change_callbacks ||= []
-          @on_disks_change_callbacks << block
+        # @return [Boolean]
+        def probed?
+          !!@probed
         end
 
         # Probes zFCP
-        #
-        # Callbacks {#on_probe} are called after probing, and callbacks {#on_disks_change} are
-        # called if there is any change in the disks.
         def probe
-          logger.info "Probing zFCP"
-
-          previous_disks = disks
-          yast_zfcp.probe_controllers
-          yast_zfcp.probe_disks
-
-          @on_probe_callbacks&.each { |c| c.call(controllers, disks) }
-
-          return unless disks_changed?(previous_disks)
-
-          @on_disks_change_callbacks&.each { |c| c.call(disks) }
+          @probed = true
+          # Considering as not configured in order to make possible to reapply the same config after
+          # probing. This is useful when the config contains some unknown device, and such a device
+          # appears after a reprobing.
+          @configured = false
+          probe_controllers
+          probe_devices
         end
 
-        # zFCP controllers
+        # Applies the given zFCP config.
         #
-        # @return [Array<Controller>]
-        def controllers
-          yast_zfcp.controllers.map { |c| controller_from(c) }
+        # @param config_json [Hash{Symbol=>Object}] Config according to the JSON schema.
+        def configure(config_json)
+          probe unless probed?
+
+          @configured = true
+          @config_json = config_json
+          config = ConfigImporter.new(config_json).import
+
+          configure_controllers(config)
+          configure_devices(config)
         end
 
-        # Current active zFCP disks
+        # Whether the system is already configured for the given config.
         #
-        # @return [Array<Disk>]
-        def disks
-          yast_zfcp.disks.map { |d| disk_from(d) }
+        # @param config_json [Hash]
+        # @return [Boolean]
+        def configured?(config_json)
+          @configured && self.config_json == config_json
         end
 
         # Whether the option for allowing automatic LUN scan (allow_lun_scan) is active
@@ -96,15 +98,55 @@ module Agama
           yast_zfcp.allow_lun_scan?
         end
 
-        # Activates the controller with the given channel id
-        #
-        # @note: If "allow_lun_scan" is active, then all its LUNs are automatically activated.
-        #
+      private
+
+        # @return [Logger]
+        attr_reader :logger
+
         # @param channel [String]
-        # @return [Integer] Exit code of the chzdev command (0 on success)
-        def activate_controller(channel)
-          output = yast_zfcp.activate_controller(channel)
-          if output["exit"] == 0
+        # @return [Controller, nil]
+        def find_controller(channel)
+          controllers.find { |c| c.channel == channel }
+        end
+
+        # @param channel [String]
+        # @param wwpn [String]
+        # @param lun [String]
+        # @return [Device, nil]
+        def find_device(channel, wwpn, lun)
+          devices.find { |d| d.channel == channel && d.wwpn == wwpn && d.lun == lun }
+        end
+
+        # @return [Array<Controller>]
+        def probe_controllers
+          yast_zfcp.probe_controllers
+          @controllers = yast_zfcp.controllers.map { |c| create_controller_from_record(c) }
+        end
+
+        # Probes the zFCP devices from all channels and WWPNs.
+        #
+        # Includes both active and inactive LUNs.
+        #
+        # @return [Array<Device>]
+        def probe_devices
+          @devices = find_all_luns.map { |channel, wwpn, lun| Device.new(channel, wwpn, lun) }
+          yast_zfcp.probe_disks
+          yast_zfcp.disks.each do |record|
+            device = find_device_from_record(record)
+            device&.active = true
+            device&.device_name = record["dev_name"]
+          end
+        end
+
+        # @param config [Config]
+        def configure_controllers(config)
+          any_activation_done = config.controllers
+            .select(&:active?)
+            .reject { |c| find_controller(c.channel)&.active? }
+            .map { |c| activate_controller(c.channel) }
+            .any?(0)
+
+          if any_activation_done
             # LUNs activation could delay after activating the controller. This usually happens when
             # activating a controller for first time because some SCSI initialization. Probing the
             # disks should be done after all disks are activated.
@@ -114,38 +156,98 @@ module Agama
             sleep(2)
             probe
           end
-          output["exit"]
         end
 
-        # Activates a zFCP disk
+        # @param config [Config]
+        def configure_devices(config)
+          any_activation_done = config.devices
+            .select(&:active?)
+            .reject { |d| find_device(d.channel, d.wwpn, d.lun)&.active? }
+            .map { |d| activate_device(d.channel, d.wwpn, d.lun) }
+            .any?(0)
+
+          any_deactivation_done = config.devices
+            .reject(&:active?)
+            .reject do |device_config|
+              device = find_device(device_config.channel, device_config.wwpn, device_config.lun)
+              device && !device.active?
+            end
+            .map { |d| deactivate_device(d.channel, d.wwpn, d.lun) }
+            .any?(0)
+
+          probe if any_activation_done || any_deactivation_done
+        end
+
+        # Activates the controller with the given channel id.
+        #
+        # @note: If "allow_lun_scan" is active, then all its LUNs are automatically activated.
+        #
+        # @param channel [String]
+        # @return [Integer] Exit code of the chzdev command (0 on success)
+        def activate_controller(channel)
+          logger.info("Activating zFCP controller #{channel}")
+          output = yast_zfcp.activate_controller(channel)
+          exit = output["exit"]
+          logger.warn("zFCP controller #{channel} could not be activated") unless exit == 0
+          exit
+        end
+
+        # Activates a zFCP disk.
         #
         # @param channel [String]
         # @param wwpn [String]
         # @param lun [String]
-        #
         # @return [Integer] Exit code of the chzdev command (0 on success)
-        def activate_disk(channel, wwpn, lun)
+        def activate_device(channel, wwpn, lun)
+          logger.info("Activating zFCP device #{[channel, wwpn, lun]}")
           output = yast_zfcp.activate_disk(channel, wwpn, lun)
-          probe if output["exit"] == 0
-          output["exit"]
+          exit = output["exit"]
+          logger.warn("zFCP device #{[channel, wwpn, lun]} could not be activated") unless exit == 0
+          exit
         end
 
-        # Deactivates a zFCP disk
+        # Deactivates a zFCP disk.
         #
         # @note: If "allow_lun_scan" is active, then the disk cannot be deactivated.
         #
         # @param channel [String]
         # @param wwpn [String]
         # @param lun [String]
-        #
         # @return [Integer] Exit code of the chzdev command (0 on success)
-        def deactivate_disk(channel, wwpn, lun)
+        def deactivate_device(channel, wwpn, lun)
+          logger.info("Deactivating zFCP device #{[channel, wwpn, lun]}")
           output = yast_zfcp.deactivate_disk(channel, wwpn, lun)
-          probe if output["exit"] == 0
-          output["exit"]
+          exit = output["exit"]
+          if exit != 0
+            logger.warn("zFCP device #{[channel, wwpn, lun]} could not be deactivated")
+          end
+          exit
         end
 
-        # Finds the WWPNs for the given channel
+        # Creates a zFCP controller from a YaST record.
+        #
+        # @param record [Hash]
+        # @return [Controller]
+        def create_controller_from_record(record)
+          Controller.new(record["sysfs_bus_id"]).tap do |controller|
+            controller.active = yast_zfcp.activated_controller?(controller.channel)
+            controller.lun_scan = yast_zfcp.lun_scan_controller?(controller.channel)
+            controller.wwpns = find_wwpns(controller.channel)
+          end
+        end
+
+        # Finds a zFCP device from a YaST record.
+        #
+        # @param record [Hash]
+        # @return [Device, nil]
+        def find_device_from_record(record)
+          channel = record.dig("detail", "controller_id")
+          wwpn = record.dig("detail", "wwpn")
+          lun = record.dig("detail", "fcp_lun")
+          find_device(channel, wwpn, lun)
+        end
+
+        # Finds the WWPNs for the given channel.
         #
         # @param channel [String]
         # @return [Array<String>]
@@ -154,7 +256,22 @@ module Agama
           output["stdout"]
         end
 
-        # Finds the LUNs for the given channel and WWPN
+        # Finds the LUNs from all channels and WWPNs.
+        #
+        # @return [Array<Array<String, String, String>] List of [channel, WWPN, LUN].
+        def find_all_luns
+          controllers.flat_map { |c| find_controller_luns(c) }
+        end
+
+        # Finds the LUNs from all the WWPNs of given controller.
+        #
+        # @return [Array<Array<String, String, String>] List of [channel, WWPN, LUN].
+        def find_controller_luns(controller)
+          channel = controller.channel
+          controller.wwpns.flat_map { |w| find_luns(channel, w).map { |l| [channel, w, l] } }
+        end
+
+        # Finds the LUNs for the given channel and WWPN.
         #
         # @param channel [String]
         # @param wwpn [String]
@@ -163,59 +280,6 @@ module Agama
         def find_luns(channel, wwpn)
           output = yast_zfcp.find_luns(channel, wwpn)
           output["stdout"]
-        end
-
-      private
-
-        # @return [Logger]
-        attr_reader :logger
-
-        # Whether threre is any change in the disks
-        #
-        # Checks whether any of the removed disks is still probed or whether any of the current
-        # disks is not probed yet.
-        #
-        # @param previous_disks [Array<Disk>] Previously activated disks (before zFCP (re)probing)
-        # @return [Booelan]
-        def disks_changed?(previous_disks)
-          removed_disks = previous_disks - disks
-
-          return true if removed_disks.any? { |d| exist_disk?(d) }
-          return true if disks.any? { |d| !exist_disk?(d) }
-
-          false
-        end
-
-        # Whether the given disk is probed
-        #
-        # @param disk [Disk]
-        # @return [Booelan]
-        def exist_disk?(disk)
-          !Y2Storage::StorageManager.instance.probed.find_by_name(disk.name).nil?
-        end
-
-        # Creates a zFCP controller from YaST data
-        #
-        # @param record [Hash]
-        # @return [Controller]
-        def controller_from(record)
-          Controller.new(record["sysfs_bus_id"]).tap do |controller|
-            controller.active = yast_zfcp.activated_controller?(controller.channel)
-            controller.lun_scan = yast_zfcp.lun_scan_controller?(controller.channel)
-          end
-        end
-
-        # Creates a zFCP disk from YaST data
-        #
-        # @param record [Hash]
-        # @return [Disk]
-        def disk_from(record)
-          device = record["dev_name"]
-          channel = record.dig("detail", "controller_id")
-          wwpn = record.dig("detail", "wwpn")
-          lun = record.dig("detail", "fcp_lun")
-
-          Disk.new(device, channel, wwpn, lun)
         end
 
         # YaST object to manage zFCP devices

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2023] SUSE LLC
+# Copyright (c) [2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -21,12 +21,36 @@
 
 module Agama
   module Storage
-    # Module for zFCP
     module ZFCP
+      module Configs
+        # zFCP device config.
+        class Device
+          # zFCP controller channel id
+          #
+          # @return [String, nil]
+          attr_accessor :channel
+
+          # zFCP WWPN
+          #
+          # @return [String, nil]
+          attr_accessor :wwpn
+
+          # zFCP LUN
+          #
+          # @return [String, nil]
+          attr_accessor :lun
+
+          # Whether the LUN should be active.
+          #
+          # @return [Boolean]
+          attr_writer :active
+
+          # @return [Boolean]
+          def active?
+            !!@active
+          end
+        end
+      end
     end
   end
 end
-
-require "agama/storage/zfcp/manager"
-require "agama/storage/zfcp/controller"
-require "agama/storage/zfcp/device"
