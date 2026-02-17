@@ -195,10 +195,10 @@ module Agama
       end
 
       def write_nvram(bootloader)
-        return if update_nvram.nil?
+        return if @config.update_nvram.nil?
 
         if bootloader.respond_to?(:update_nvram=)
-          bootloader.update_nvram = @config.update_nvram unless @config.update_nvram.nil?
+          bootloader.update_nvram = @config.update_nvram
         else
           @logger.info "bootloader #{bootloader.name} does not support NVRAM update"
         end
