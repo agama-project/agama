@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import { mapEntries } from "radashi";
+import { isArray, isPlainObject, mapEntries } from "radashi";
 import { generatePath } from "react-router";
 import { ISortBy, sort } from "fast-sort";
 
@@ -197,26 +197,13 @@ const maskSecrets = (
   }: { sensitiveKeys?: string[]; stringify?: boolean } = {},
 ): unknown => {
   const mask = (currentObj: unknown): unknown => {
-    if (currentObj === null || typeof currentObj !== "object") {
-      return currentObj;
+    if (isArray(currentObj)) {
+      return currentObj.map(mask);
     }
 
-    if (Array.isArray(currentObj)) {
-      return currentObj.map((item) => mask(item));
-    }
-
-    const newObj: { [key: string]: unknown } = {};
-
-    for (const key in currentObj) {
-      if (Object.prototype.hasOwnProperty.call(currentObj, key)) {
-        if (sensitiveKeys.includes(key)) {
-          newObj[key] = "[FILTERED]";
-        } else {
-          newObj[key] = mask(currentObj[key]);
-        }
-      }
-    }
-    return newObj;
+    return isPlainObject(currentObj)
+      ? mapEntries(currentObj, (k, v) => [k, sensitiveKeys.includes(k) ? "[FILTERED]" : mask(v)])
+      : currentObj;
   };
 
   const result = mask(obj);
