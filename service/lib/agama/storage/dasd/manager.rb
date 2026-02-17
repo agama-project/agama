@@ -61,10 +61,6 @@ module Agama
           # Keeps whether a configuration was already applied. In some cases it is necessary to
           # consider that the config has not being applied yet, see {#probe}.
           @configured = false
-          # Keeps the list of locked devices. A device is considered as locked if it is active at
-          # the time of probing. Those devices should not be deactivated when applying a config that
-          # does not include such devices.
-          @locked_devices = []
           # Keeps the list of formatted devices. A device is added to the list when it was formatted
           # as effect of applying a config. Those devices should not be formatted anymore when
           # applying a new config.
@@ -88,7 +84,6 @@ module Agama
           @devices = reader.list(force_probing: true)
           # Initialize the attribute just in case the reader doesn't do it (see bsc#1209162)
           @devices.each { |d| d.diag_wanted = d.use_diag }
-          assign_locked_devices(@devices)
         end
 
         # Applies the given DASD config.
@@ -106,7 +101,6 @@ module Agama
           format_devices(config)
           enable_diag(config)
           disable_diag(config)
-          remove_locked_devices(config)
         end
 
         # Whether the system is already configured for the given config.
@@ -169,20 +163,10 @@ module Agama
         # @param config [Config]
         # @return [Array<Y2S390::Dasd>] Deactivated devices.
         def deactivate_devices(config)
-          # Explictly deactivated devices.
-          deactivated_devices = config.devices
+          devices = config.devices
             .reject(&:active?)
             .map { |d| find_device(d.channel) }
             .compact
-
-          # Devices that are not included in the config and are not locked.
-          missing_devices = devices
-            .reject { |d| device_locked?(d) }
-            .reject { |d| config.include_device?(d.id) }
-
-          devices = deactivated_devices
-            .concat(missing_devices)
-            .uniq
             .select(&:active?)
 
           return [] if devices.empty?
@@ -265,34 +249,6 @@ module Agama
         # @param devices [Array<Y2S390::Dasd>] Devices to update.
         def refresh_devices(devices)
           devices.each { |d| reader.update_info(d, extended: true) }
-        end
-
-        # Sets the list of locked devices.
-        #
-        # A device is considered as locked if it is active and not configured yet.
-        #
-        # @param devices [Array<Y2S390::Dasd>]
-        def assign_locked_devices(devices)
-          config = ConfigImporter.new(config_json || {}).import
-          @locked_devices = devices
-            .reject(&:offline?)
-            .reject { |d| config.include_device?(d.id) }
-            .map(&:id)
-        end
-
-        # Removes the given devices from the list of locked devices.
-        #
-        # @param config [Config]
-        def remove_locked_devices(config)
-          config.devices.each { |d| @locked_devices.delete(d.channel) }
-        end
-
-        # Whether the given device is locked.
-        #
-        # @param device [Y2S390::Dasd]
-        # @return [Boolean]
-        def device_locked?(device)
-          @locked_devices.include?(device.id)
         end
 
         # Whether the given device was formatted.

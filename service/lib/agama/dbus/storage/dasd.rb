@@ -101,7 +101,7 @@ module Agama
 
       private
 
-        # @return [Agama::Storage::ISCSI::Manager]
+        # @return [Agama::Storage::DASD::Manager]
         attr_reader :manager
 
         # Performs the configuration process in a separate thread.
