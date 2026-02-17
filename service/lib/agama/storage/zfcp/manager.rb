@@ -57,10 +57,6 @@ module Agama
         # Probes zFCP
         def probe
           @probed = true
-          # Considering as not configured in order to make possible to reapply the same config after
-          # probing. This is useful when the config contains some unknown device, and such a device
-          # appears after a reprobing.
-          @configured = false
           probe_controllers
           probe_devices
         end
@@ -72,21 +68,12 @@ module Agama
         def configure(config_json)
           probe unless probed?
 
-          @configured = true
           @config_json = config_json
           config = ConfigImporter.new(config_json).import
 
           system_changed = configure_controllers(config)
           system_changed ||= configure_devices(config)
           system_changed
-        end
-
-        # Whether the system is already configured for the given config.
-        #
-        # @param config_json [Hash]
-        # @return [Boolean]
-        def configured?(config_json)
-          @configured && self.config_json == config_json
         end
 
         # Whether the option for allowing automatic LUN scan (allow_lun_scan) is active

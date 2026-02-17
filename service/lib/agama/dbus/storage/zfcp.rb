@@ -19,15 +19,19 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
+require "agama/dbus/base_object"
 require "agama/storage/zfcp/manager"
+require "agama/with_progress"
 require "dbus"
 require "json"
+require "yast"
 
 module Agama
   module DBus
     module Storage
       # D-Bus object to manage zFCP.
-      class ZFCP
+      class ZFCP < BaseObject
+        extend Yast::I18n
         include Yast::I18n
         include Agama::WithProgress
 
@@ -55,19 +59,12 @@ module Agama
           dbus_signal(:ProgressFinished)
         end
 
-        # Implementation for the API method #Probe.
-        def probe
-          start_progress(1, _("Probing zFCP devices"))
-          manager.probe
-          emit_system_changed
-          finish_progress
-        end
-
         # Gets the serialized system information.
         #
         # @return [String]
         def recover_system
           manager.probe unless manager.probed?
+
           JSON.pretty_generate(system_json)
         end
 
@@ -76,6 +73,20 @@ module Agama
         # @return [String]
         def recover_config
           JSON.pretty_generate(manager.config_json)
+        end
+
+        # Implementation for the API method #Probe.
+        def probe
+          logger.info("Probing zFCP")
+
+          start_progress(2, PROBING_STEP)
+          manager.probe
+
+          next_progress_step(CONFIGURING_STEP)
+          configure_with_current
+
+          emit_system_changed
+          finish_progress
         end
 
         # Applies the given serialized zFCP config.
@@ -89,20 +100,35 @@ module Agama
           # Do not configure if there is no config
           return unless config_json
 
-          # Do not configure if there is nothing to change.
-          return if manager.configured?(config_json)
+          # Do not configure if the config has not changed.
+          return if manager.config_json == config_json
 
           logger.info("Configuring zFCP")
-          start_progress(1, _("Configuring zFCP"))
+
+          start_progress(1, CONFIGURING_STEP)
           system_changed = manager.configure(config_json)
+
           emit_system_changed if system_changed
           finish_progress
         end
 
       private
 
+        PROBING_STEP = N_("Probing zFCP")
+        private_constant :PROBING_STEP
+
+        CONFIGURING_STEP = N_("Configuring zFCP")
+        private_constant :CONFIGURING_STEP
+
         # @return [Agama::Storage::ZFCP::Manager]
         attr_reader :manager
+
+        # Applies the current config, if any.
+        def configure_with_current
+          return unless manager.config_json
+
+          manager.configure(manager.config_json)
+        end
 
         # @return [Hash]
         def system_json
