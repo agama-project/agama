@@ -517,7 +517,6 @@ describe("mergeSources", () => {
   });
 });
 
-
 describe("maskSecrets", () => {
   it("should filter sensitive keys from an object", () => {
     const obj = { user: "test", password: "123" };
