@@ -94,8 +94,8 @@ module Agama
 
           logger.info("Configuring zFCP")
           start_progress(1, _("Configuring zFCP"))
-          manager.configure(config_json)
-          emit_system_changed
+          system_changed = manager.configure(config_json)
+          emit_system_changed if system_changed
           finish_progress
         end
 
@@ -107,9 +107,9 @@ module Agama
         # @return [Hash]
         def system_json
           {
-            lunScan: manager.allow_lun_scan?,
+            lunScan:     manager.allow_lun_scan?,
             controllers: controllers_json,
-            devices: devices_json
+            devices:     devices_json
           }
         end
 
@@ -123,9 +123,9 @@ module Agama
         def controller_json(controller)
           {
             channel: controller.channel,
-            wwpns: controller.wwpns,
+            wwpns:   controller.wwpns,
             lunScan: controller.lun_scan?,
-            active: controller.active?
+            active:  controller.active?
           }
         end
 
@@ -139,9 +139,9 @@ module Agama
         def device_json(device)
           json = {
             channel: device.channel,
-            wwpn: device.wwpn,
-            lun: device.lun,
-            active: device.active?
+            wwpn:    device.wwpn,
+            lun:     device.lun,
+            active:  device.active?
           }
           json[:deviceName] = device.device_name if device.active?
           json

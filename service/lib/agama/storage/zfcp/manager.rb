@@ -68,6 +68,7 @@ module Agama
         # Applies the given zFCP config.
         #
         # @param config_json [Hash{Symbol=>Object}] Config according to the JSON schema.
+        # @return [boolean] Whether the system has changed.
         def configure(config_json)
           probe unless probed?
 
@@ -75,8 +76,9 @@ module Agama
           @config_json = config_json
           config = ConfigImporter.new(config_json).import
 
-          configure_controllers(config)
-          configure_devices(config)
+          system_changed = configure_controllers(config)
+          system_changed ||= configure_devices(config)
+          system_changed
         end
 
         # Whether the system is already configured for the given config.
@@ -139,43 +141,60 @@ module Agama
         end
 
         # @param config [Config]
+        # @return [Booelan] Whether any controller was activated.
         def configure_controllers(config)
-          any_activation_done = config.controllers
-            .select(&:active?)
-            .reject { |c| find_controller(c.channel)&.active? }
-            .map { |c| activate_controller(c.channel) }
-            .any?(0)
+          controllers_changed = activate_controllers(config)
 
-          if any_activation_done
-            # LUNs activation could delay after activating the controller. This usually happens when
-            # activating a controller for first time because some SCSI initialization. Probing the
-            # disks should be done after all disks are activated.
-            #
-            # FIXME: waiting 2 seconds should be enough, but there is no guarantee that all the
-            # disks are actually activated.
-            sleep(2)
-            probe
-          end
+          return false unless controllers_changed
+
+          # LUNs activation could delay after activating the controller. This usually happens when
+          # activating a controller for first time because some SCSI initialization. Probing the
+          # disks should be done after all disks are activated.
+          #
+          # FIXME: waiting 2 seconds should be enough, but there is no guarantee that all the
+          # disks are actually activated.
+          sleep(2)
+          probe
+          true
         end
 
         # @param config [Config]
-        def configure_devices(config)
-          any_activation_done = config.devices
+        # @return [Booelan] Whether any controller was activated.
+        def activate_controllers(config)
+          config.controllers
             .select(&:active?)
-            .reject { |d| find_device(d.channel, d.wwpn, d.lun)&.active? }
+            .reject { |c| activated_controller?(c.channel) }
+            .map { |c| activate_controller(c.channel) }
+            .any?(0)
+        end
+
+        # @param config [Config]
+        # @return [Boolean] Whether any device was activated or deactivated.
+        def configure_devices(config)
+          devices_changed = activate_devices(config)
+          devices_chaged ||= deactivate_devices(config)
+          probe if devices_changed
+          devices_changed
+        end
+
+        # @param config [Config]
+        # @return [Booelan] Whether any device was activated.
+        def activate_devices(config)
+          config.devices
+            .select(&:active?)
+            .reject { |d| activated_device?(d.channel, d.wwpn, d.lun) }
             .map { |d| activate_device(d.channel, d.wwpn, d.lun) }
             .any?(0)
+        end
 
-          any_deactivation_done = config.devices
+        # @param config [Config]
+        # @return [Booelan] Whether any device was deactivated.
+        def deactivate_devices(config)
+          config.devices
             .reject(&:active?)
-            .reject do |device_config|
-              device = find_device(device_config.channel, device_config.wwpn, device_config.lun)
-              device && !device.active?
-            end
+            .reject { |d| deactivated_device?(d.channel, d.wwpn, d.lun) }
             .map { |d| deactivate_device(d.channel, d.wwpn, d.lun) }
             .any?(0)
-
-          probe if any_activation_done || any_deactivation_done
         end
 
         # Activates the controller with the given channel id.
@@ -218,9 +237,7 @@ module Agama
           logger.info("Deactivating zFCP device #{[channel, wwpn, lun]}")
           output = yast_zfcp.deactivate_disk(channel, wwpn, lun)
           exit = output["exit"]
-          if exit != 0
-            logger.warn("zFCP device #{[channel, wwpn, lun]} could not be deactivated")
-          end
+          logger.warn("zFCP device #{[channel, wwpn, lun]} could not be deactivated") if exit != 0
           exit
         end
 
@@ -245,6 +262,37 @@ module Agama
           wwpn = record.dig("detail", "wwpn")
           lun = record.dig("detail", "fcp_lun")
           find_device(channel, wwpn, lun)
+        end
+
+        # Whether there is an active probed controller with the given channel.
+        #
+        # @param channel [String]
+        # @return [Boolean]
+        def activated_controller?(channel)
+          controller = find_controller(channel)
+          !controller.nil && controller.active?
+        end
+
+        # Whether there is an active probed device.
+        #
+        # @param channel [String]
+        # @param wwpn [String]
+        # @param lun [String]
+        # @return [Boolean]
+        def activated_device?(channel, wwpn, lun)
+          device = find_device(channel, wwpn, lun)
+          !device.nil && device.active?
+        end
+
+        # Whether there is a deactivated probed device.
+        #
+        # @param channel [String]
+        # @param wwpn [String]
+        # @param lun [String]
+        # @return [Boolean]
+        def deactivated_device?(channel, wwpn, lun)
+          device = find_device(channel, wwpn, lun)
+          !device.nil? && !device.active?
         end
 
         # Finds the WWPNs for the given channel.

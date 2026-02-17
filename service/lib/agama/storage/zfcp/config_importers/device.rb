@@ -36,10 +36,10 @@ module Agama
           # @see Agama::JSONImporter#imports
           def imports
             {
-              channel:       json[:channel],
-              wwpn:       json[:wwpn],
-              lun:       json[:lun],
-              active:        import_active,
+              channel: json[:channel],
+              wwpn:    json[:wwpn],
+              lun:     json[:lun],
+              active:  import_active
             }
           end
 
