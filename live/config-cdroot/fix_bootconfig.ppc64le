@@ -31,8 +31,9 @@
 # │   │   └── powerpc-ieee1275
 # │   │       └── *.mod
 # │   └── ppc64le
-# │       ├── initrd
-# │       └── linux
+# │       └── loader
+# │           ├── initrd
+# │           └── linux
 # └── ppc
 #     └── bootinfo.txt
 #
@@ -63,16 +64,10 @@ test -f $dst/.profile && . $dst/.profile
 # files. It also moves kernel and initrd to the usual location (in boot/s390x).
 #
 
-boot_dir=$dst/boot/ppc64le
+boot_dir=$dst/boot/ppc64le/loader
 grub_dir=$dst/boot/grub2
 
 mkdir -p $boot_dir $grub_dir $dst/ppc
-
-# if files are in a 'loader' subdir, move them out
-if [ -d $boot_dir/loader ] ; then
-  mv $boot_dir/loader/{initrd,linux} $boot_dir
-  rm -r $boot_dir/loader
-fi
 
 chmod 644 $boot_dir/{initrd,linux}
 
@@ -101,23 +96,23 @@ menuentry "Boot from Hard Disk" --class opensuse --class gnu-linux --class gnu -
 
 menuentry "Install $label" --class os --unrestricted {
   echo 'Loading kernel...'
-  linux /boot/ppc64le/linux splash=silent
+  linux /boot/ppc64le/loader/linux splash=silent
   echo 'Loading initrd...'
-  initrd /boot/ppc64le/initrd
+  initrd /boot/ppc64le/loader/initrd
 }
 
 menuentry "Check Installation Medium" --class os --unrestricted {
   echo 'Loading kernel...'
-  linux /boot/ppc64le/linux mediacheck=1 plymouth.enable=0
+  linux /boot/ppc64le/loader/linux mediacheck=1 plymouth.enable=0
   echo 'Loading initrd...'
-  initrd /boot/ppc64le/initrd
+  initrd /boot/ppc64le/loader/initrd
 }
 
 menuentry "Rescue System" --class os --unrestricted {
   echo 'Loading kernel...'
-  linux /boot/ppc64le/linux $RESCUE_SYSTEM_BOOT_SETTINGS
+  linux /boot/ppc64le/loader/linux $RESCUE_SYSTEM_BOOT_SETTINGS
   echo 'Loading initrd...'
-  initrd /boot/ppc64le/initrd
+  initrd /boot/ppc64le/loader/initrd
 }
 XXX
 
