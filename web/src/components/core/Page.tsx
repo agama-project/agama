@@ -45,17 +45,18 @@ import {
   Title,
   TitleProps,
 } from "@patternfly/react-core";
-import flexStyles from "@patternfly/react-styles/css/utilities/Flex/flex";
-import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import { isEmpty, isObject } from "radashi";
-import { _, TranslatedString } from "~/i18n";
 import type { ProgressBackdropProps } from "~/components/core/ProgressBackdrop";
 import ProgressBackdrop from "~/components/core/ProgressBackdrop";
-import Header from "~/components/layout/Header";
+import Header, { HeaderProps } from "~/components/layout/Header";
 import Loading from "~/components/layout/Loading";
-import { Questions } from "../questions";
+import ReviewAndInstallButton from "~/components/core/ReviewAndInstallButton";
+import ProgressStatusMonitor from "~/components/core/ProgressStatusMonitor";
+import Questions from "~/components/questions/Questions";
+import { _, TranslatedString } from "~/i18n";
 
-import type { BreadcrumbProps } from "~/components/core/Breadcrumbs";
+import flexStyles from "@patternfly/react-styles/css/utilities/Flex/flex";
+import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 
 /**
  * Props accepted by Page.Section
@@ -90,7 +91,7 @@ type ActionProps = {
 
 type SubmitActionProps = {
   /** The id of a <form> the submit button is associated with */
-  form: string;
+  form?: string;
 } & ButtonProps;
 
 const defaultCardProps: CardProps = {
@@ -301,91 +302,13 @@ const Content = ({ children, ...pageSectionProps }: PageSectionProps) => {
 };
 
 /**
- * Props for the minimal page layout.
- */
-interface MinimalLayoutProps {
-  /** Page content */
-  children: React.ReactNode;
-}
-
-/**
- * Minimal page layout with empty masthead.
- */
-const MinimalLayout = ({ children }: MinimalLayoutProps) => {
-  return (
-    <PFPage isContentFilled masthead={<Masthead />}>
-      <PageGroup tabIndex={-1} id="main-content">
-        {children}
-      </PageGroup>
-    </PFPage>
-  );
-};
-
-/**
- * Props for the standard page layout.
- */
-interface StandardLayoutProps {
-  /** Page title shown in header */
-  title?: React.ReactNode;
-  /** Breadcrumb navigation items */
-  breadcrumbs?: BreadcrumbProps[];
-  /** Optional progress tracking configuration */
-  progress?: ProgressBackdropProps;
-  /** Whether to show the Questions component */
-  showQuestions?: boolean;
-  /** Whether to show installer options in the header */
-  showInstallerOptions?: boolean;
-  /** Whether the progress monitor must not be mounted */
-  hideProgressMonitor?: boolean;
-  /** Page content */
-  children?: React.ReactNode;
-}
-
-/**
- * Standard page layout with header, breadcrumbs, and optional progress tracking.
- */
-const StandardLayout = ({
-  progress,
-  children,
-  breadcrumbs,
-  title,
-  showQuestions = true,
-  showInstallerOptions = false,
-  hideProgressMonitor = false,
-}: StandardLayoutProps) => {
-  return (
-    <PFPage
-      isContentFilled
-      masthead={
-        <Header
-          title={title}
-          breadcrumbs={breadcrumbs}
-          showInstallerOptions={showInstallerOptions}
-          hideProgressMonitor={hideProgressMonitor}
-        />
-      }
-    >
-      <Suspense fallback={<Loading />}>
-        <PageGroup tabIndex={-1} id="main-content">
-          {children || <Outlet />}
-          {progress && <ProgressBackdrop {...progress} />}
-        </PageGroup>
-      </Suspense>
-      {showQuestions && <Questions />}
-    </PFPage>
-  );
-};
-
-/**
  * Common props shared by all page variants.
  */
-interface BasePageProps {
+interface BasePageProps extends HeaderProps {
   /** Optional progress tracking configuration */
   progress?: ProgressBackdropProps;
   /** Whether to show the Questions component at the bottom of the page */
   showQuestions?: boolean;
-  /** Whether the progress monitor must not be mounted */
-  hideProgressMonitor?: boolean;
   /** Page content */
   children?: React.ReactNode;
 }
@@ -396,12 +319,6 @@ interface BasePageProps {
 interface StandardPageProps extends BasePageProps {
   /** Layout variant to use */
   variant?: "standard";
-  /** Page title shown in header */
-  title?: React.ReactNode;
-  /** Breadcrumb navigation items */
-  breadcrumbs?: BreadcrumbProps[];
-  /** Whether to show installer options in the header */
-  showInstallerOptions?: boolean;
 }
 
 /**
@@ -412,8 +329,6 @@ interface MinimalPageProps extends BasePageProps {
   variant: "minimal";
   /** Title not available in minimal variant */
   title?: never;
-  /** Breadcrumbs not available in minimal variant */
-  breadcrumbs?: never;
   /** Installer options not available in minimal variant */
   showInstallerOptions?: never;
   /** Whether the progress monitor must not be mounted */
@@ -421,9 +336,67 @@ interface MinimalPageProps extends BasePageProps {
 }
 
 /**
- * All possible Page component props.
+ * Props for the `Page` component.
+ *
+ * Combines the standard and minimal variants with additional slot controls.
  */
-type PageProps = StandardPageProps | MinimalPageProps;
+type PageProps = (StandardPageProps | MinimalPageProps) & {
+  /**
+   * If true, the default component in the start slot
+   * (`<ProgressStatusMonitor />`) will not be rendered.
+   *
+   * Pass a custom `startSlot` to render custom content instead.
+   *
+   * Default: `false` (renders default ProgressStatusMonitor if no `startSlot` provided)
+   */
+  noDefaultStartSlot?: boolean;
+
+  /**
+   * If true, the default component in the end slot
+   * (`<ReviewAndInstallButton />`) will not be rendered.
+   *
+   * Pass a custom `endSlot` to render custom content instead.
+   *
+   * Default: `false` (renders default ReviewAndInstallButton if no `endSlot` provided)
+   */
+  noDefaultEndSlot?: boolean;
+};
+
+/**
+ * Minimal page layout with empty masthead.
+ */
+const MinimalLayout = ({ children }: Omit<MinimalPageProps, "variant">) => {
+  return (
+    <PFPage isContentFilled masthead={<Masthead />}>
+      <PageGroup tabIndex={-1} id="main-content">
+        {children}
+      </PageGroup>
+    </PFPage>
+  );
+};
+
+/**
+ * Standard page layout with header, optional progress tracking, and optional
+ * qestions rendering.
+ */
+const StandardLayout = ({
+  progress,
+  children,
+  showQuestions = true,
+  ...headerProps
+}: Omit<StandardPageProps, "variant">) => {
+  return (
+    <PFPage isContentFilled masthead={<Header {...headerProps} />}>
+      <Suspense fallback={<Loading />}>
+        <PageGroup tabIndex={-1} id="main-content">
+          {children || <Outlet />}
+          {progress && <ProgressBackdrop {...progress} />}
+        </PageGroup>
+      </Suspense>
+      {showQuestions && <Questions />}
+    </PFPage>
+  );
+};
 
 /**
  * Root container for Agama pages.
@@ -479,28 +452,23 @@ type PageProps = StandardPageProps | MinimalPageProps;
  * ```
  */
 const Page = ({
-  title,
-  breadcrumbs,
-  progress,
   variant = "standard",
-  showQuestions = true,
-  showInstallerOptions = false,
-  hideProgressMonitor = false,
+  startSlot,
+  endSlot,
+  noDefaultStartSlot,
+  noDefaultEndSlot,
   children,
+  ...props
 }: PageProps): React.ReactNode => {
   if (variant === "minimal") {
     return <MinimalLayout>{children}</MinimalLayout>;
   }
 
+  const startSlotContent = startSlot ?? (noDefaultStartSlot ? null : <ProgressStatusMonitor />);
+  const endSlotContent = endSlot ?? (noDefaultEndSlot ? null : <ReviewAndInstallButton />);
+
   return (
-    <StandardLayout
-      progress={progress}
-      breadcrumbs={breadcrumbs}
-      title={title}
-      showQuestions={showQuestions}
-      showInstallerOptions={showInstallerOptions}
-      hideProgressMonitor={hideProgressMonitor}
-    >
+    <StandardLayout {...props} startSlot={startSlotContent} endSlot={endSlotContent}>
       {children || <Outlet />}
     </StandardLayout>
   );

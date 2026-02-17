@@ -27,7 +27,7 @@ import { sprintf } from "sprintf-js";
 import Link from "~/components/core/Link";
 import { NETWORK } from "~/routes/paths";
 import { useIpAddresses } from "~/hooks/model/system/network";
-import { _ } from "~/i18n";
+import { _, n_ } from "~/i18n";
 
 /**
  * Displays a formatted list of IP addresses from connected devices.
@@ -71,7 +71,7 @@ export default function FormattedIPsList() {
       // is the number of remaining IPs. The text wrapped in square brackets []
       // is displayed as a link. Keep the brackets to ensure the link works
       // correctly.
-      text = _("%1$s, %2$s and [%3$d more]");
+      text = n_("%1$s, %2$s and [%3$d more]", "%1$s, %2$s and [%3$d more]", rest.length);
       params = [firstIPv4, firstIPv6, rest.length];
     } else {
       // TRANSLATORS: Displays a single IP address (either IPv4 or IPv6) with
@@ -79,7 +79,7 @@ export default function FormattedIPsList() {
       // the IP address and %2$d is the number of remaining IPs. The text
       // wrapped in square brackets [] is displayed as a link. Keep the brackets
       // to ensure the link works correctly.
-      text = _("%1$s and [%2$d more]");
+      text = n_("%1$s and [%2$d more]", "%1$s and [%2$d more]", rest.length);
       params = [firstIPv4 || firstIPv6, rest.length];
     }
 

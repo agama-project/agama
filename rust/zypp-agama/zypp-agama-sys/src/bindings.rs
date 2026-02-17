@@ -473,68 +473,53 @@ pub const RESOLVABLE_SELECTED_USER_SELECTED: RESOLVABLE_SELECTED = 3;
 #[doc = " explicitly removed by user"]
 pub const RESOLVABLE_SELECTED_USER_REMOVED: RESOLVABLE_SELECTED = 4;
 pub type RESOLVABLE_SELECTED = ::std::os::raw::c_uint;
+#[doc = " Representation of zypp::Pattern.\n https://doc.opensuse.org/projects/libzypp/HEAD/classzypp_1_1Pattern.html"]
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
-pub struct PatternNames {
-    #[doc = " names of patterns"]
-    pub names: *const *const ::std::os::raw::c_char,
-    #[doc = " size of names array"]
-    pub size: ::std::os::raw::c_uint,
-}
-#[allow(clippy::unnecessary_operation, clippy::identity_op)]
-const _: () = {
-    ["Size of PatternNames"][::std::mem::size_of::<PatternNames>() - 16usize];
-    ["Alignment of PatternNames"][::std::mem::align_of::<PatternNames>() - 8usize];
-    ["Offset of field: PatternNames::names"][::std::mem::offset_of!(PatternNames, names) - 0usize];
-    ["Offset of field: PatternNames::size"][::std::mem::offset_of!(PatternNames, size) - 8usize];
-};
-#[doc = " Info from zypp::Pattern.\n https://doc.opensuse.org/projects/libzypp/HEAD/classzypp_1_1Pattern.html"]
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct PatternInfo {
+pub struct Pattern {
     #[doc = "< owned"]
-    pub name: *mut ::std::os::raw::c_char,
+    pub name: *const ::std::os::raw::c_char,
     #[doc = "< owned"]
-    pub category: *mut ::std::os::raw::c_char,
+    pub category: *const ::std::os::raw::c_char,
     #[doc = "< owned"]
-    pub icon: *mut ::std::os::raw::c_char,
+    pub icon: *const ::std::os::raw::c_char,
     #[doc = "< owned"]
-    pub description: *mut ::std::os::raw::c_char,
+    pub description: *const ::std::os::raw::c_char,
     #[doc = "< owned"]
-    pub summary: *mut ::std::os::raw::c_char,
+    pub summary: *const ::std::os::raw::c_char,
     #[doc = "< owned"]
-    pub order: *mut ::std::os::raw::c_char,
+    pub order: *const ::std::os::raw::c_char,
+    #[doc = "< owned"]
+    pub repo_alias: *const ::std::os::raw::c_char,
     pub selected: RESOLVABLE_SELECTED,
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of PatternInfo"][::std::mem::size_of::<PatternInfo>() - 56usize];
-    ["Alignment of PatternInfo"][::std::mem::align_of::<PatternInfo>() - 8usize];
-    ["Offset of field: PatternInfo::name"][::std::mem::offset_of!(PatternInfo, name) - 0usize];
-    ["Offset of field: PatternInfo::category"]
-        [::std::mem::offset_of!(PatternInfo, category) - 8usize];
-    ["Offset of field: PatternInfo::icon"][::std::mem::offset_of!(PatternInfo, icon) - 16usize];
-    ["Offset of field: PatternInfo::description"]
-        [::std::mem::offset_of!(PatternInfo, description) - 24usize];
-    ["Offset of field: PatternInfo::summary"]
-        [::std::mem::offset_of!(PatternInfo, summary) - 32usize];
-    ["Offset of field: PatternInfo::order"][::std::mem::offset_of!(PatternInfo, order) - 40usize];
-    ["Offset of field: PatternInfo::selected"]
-        [::std::mem::offset_of!(PatternInfo, selected) - 48usize];
+    ["Size of Pattern"][::std::mem::size_of::<Pattern>() - 64usize];
+    ["Alignment of Pattern"][::std::mem::align_of::<Pattern>() - 8usize];
+    ["Offset of field: Pattern::name"][::std::mem::offset_of!(Pattern, name) - 0usize];
+    ["Offset of field: Pattern::category"][::std::mem::offset_of!(Pattern, category) - 8usize];
+    ["Offset of field: Pattern::icon"][::std::mem::offset_of!(Pattern, icon) - 16usize];
+    ["Offset of field: Pattern::description"]
+        [::std::mem::offset_of!(Pattern, description) - 24usize];
+    ["Offset of field: Pattern::summary"][::std::mem::offset_of!(Pattern, summary) - 32usize];
+    ["Offset of field: Pattern::order"][::std::mem::offset_of!(Pattern, order) - 40usize];
+    ["Offset of field: Pattern::repo_alias"][::std::mem::offset_of!(Pattern, repo_alias) - 48usize];
+    ["Offset of field: Pattern::selected"][::std::mem::offset_of!(Pattern, selected) - 56usize];
 };
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
-pub struct PatternInfos {
+pub struct Patterns {
     #[doc = "< owned, *size* items"]
-    pub infos: *mut PatternInfo,
+    pub list: *mut Pattern,
     pub size: ::std::os::raw::c_uint,
 }
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
-    ["Size of PatternInfos"][::std::mem::size_of::<PatternInfos>() - 16usize];
-    ["Alignment of PatternInfos"][::std::mem::align_of::<PatternInfos>() - 8usize];
-    ["Offset of field: PatternInfos::infos"][::std::mem::offset_of!(PatternInfos, infos) - 0usize];
-    ["Offset of field: PatternInfos::size"][::std::mem::offset_of!(PatternInfos, size) - 8usize];
+    ["Size of Patterns"][::std::mem::size_of::<Patterns>() - 16usize];
+    ["Alignment of Patterns"][::std::mem::align_of::<Patterns>() - 8usize];
+    ["Offset of field: Patterns::list"][::std::mem::offset_of!(Patterns, list) - 0usize];
+    ["Offset of field: Patterns::size"][::std::mem::offset_of!(Patterns, size) - 8usize];
 };
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
@@ -629,12 +614,8 @@ unsafe extern "C" {
     #[doc = " @brief Amount of packages selected for installation\n @param _zypp see \\ref init_target\n @return count of packages"]
     pub fn packages_to_install(_zypp: *mut Zypp) -> ::std::os::raw::c_uint;
     #[doc = " Get Pattern details.\n Unknown patterns are simply omitted from the result. Match by\n PatternInfo.name, not by index."]
-    pub fn get_patterns_info(
-        _zypp: *mut Zypp,
-        names: PatternNames,
-        status: *mut Status,
-    ) -> PatternInfos;
-    pub fn free_pattern_infos(infos: *const PatternInfos);
+    pub fn get_patterns(_zypp: *mut Zypp, status: *mut Status) -> Patterns;
+    pub fn free_patterns(patterns: *const Patterns);
     pub fn import_gpg_key(
         zypp: *mut Zypp,
         pathname: *const ::std::os::raw::c_char,
@@ -654,7 +635,7 @@ unsafe extern "C" {
         tag: *const ::std::os::raw::c_char,
         status: *mut Status,
     ) -> bool;
-    #[doc = " Runs solver\n @param zypp see \\ref init_target\n @param only_required if true, only required packages are installed (ignoring recommended packages)\n @param[out] status (will overwrite existing contents)\n @return true if solver pass and false if it found some dependency issues"]
+    #[doc = " Runs solver\n @param zypp see \\ref init_target\n @param only_required if true, only required packages are installed (ignoring\n recommended packages)\n @param[out] status (will overwrite existing contents)\n @return true if solver pass and false if it found some dependency issues"]
     pub fn run_solver(zypp: *mut Zypp, only_required: bool, status: *mut Status) -> bool;
     #[doc = " the last call that will free all pointers to zypp holded by agama"]
     pub fn free_zypp(zypp: *mut Zypp);

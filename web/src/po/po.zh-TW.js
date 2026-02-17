@@ -3,9 +3,6 @@ export default {
     "plural-forms": (n) => 0,
     "language": "zh-TW"
   },
-  " Timezone selection": [
-    " 時區選擇"
-  ],
   "\"%s\"": [
     ""
   ],
@@ -39,9 +36,6 @@ export default {
   "%s - %s": [
     "%s - %s"
   ],
-  "%s [must be registered].": [
-    "[必須註冊] %s。"
-  ],
   "%s and %d others": [
     ""
   ],
@@ -53,9 +47,6 @@ export default {
   ],
   "%s has been registered with below information.": [
     "已註冊 %s，相關資訊如下。"
-  ],
-  "%s is an immutable system with atomic updates. It uses a read-only Btrfs file system updated via snapshots.": [
-    "%s 是具備原子更新特性的不可變系統。它使用唯讀的 Btrfs 檔案系統，而該檔案系統透過快照保持更新。"
   ],
   "%s logo": [
     "%s 標誌"
@@ -228,12 +219,6 @@ export default {
   "At least one partition will be deleted": [
     "至少將刪除一個分割區"
   ],
-  "At this point you can power off the machine.": [
-    "現在您可以將機器關機了。"
-  ],
-  "At this point you can reboot the machine to log in to the new system.": [
-    "現在您可以將機器重新開機並登入新系統。"
-  ],
   "Authentication": [
     "驗證"
   ],
@@ -260,9 +245,6 @@ export default {
   ],
   "Automatic LUN scan is [enabled]. Activating a controller which is running in NPIV mode will automatically configures all its LUNs.": [
     "自動掃描 LUN 功能 [已啟用]。如果啟用在 NPIV 模式下 執行的控制器，將自動設定其所有 LUN。"
-  ],
-  "Available products": [
-    "可用產品"
   ],
   "Back": [
     "後退"
@@ -303,20 +285,23 @@ export default {
   "Binding": [
     "正在結合"
   ],
-  "Binding settings for '%s'": [
-    "'%s' 的結合設定"
-  ],
   "BitLocker": [
     "BitLocker"
   ],
   "Boot options": [
     "開機選項"
   ],
+  "Breadcrumbs": [
+    ""
+  ],
   "Btrfs": [
     "Btrfs"
   ],
   "Btrfs with snapshots": [
     "含快照的 Btrfs"
+  ],
+  "By proceeding, the installation will begin with defined settings.": [
+    ""
   ],
   "CPU": [
     ""
@@ -326,9 +311,6 @@ export default {
   ],
   "Cannot be changed in remote installation": [
     "無法在遠端安裝中變更"
-  ],
-  "Cannot connect to Agama server": [
-    "無法連接至 Agama 伺服器"
   ],
   "Cannot format %s": [
     "無法格式化 %s"
@@ -417,12 +399,6 @@ export default {
   "Configure DASD": [
     "設定 DASD"
   ],
-  "Configure LVM Volume Group": [
-    "設定 LVM 磁碟區群組"
-  ],
-  "Configure LVM logical volume at %s volume group": [
-    "在 %s 磁碟區群組上設定 LVM 邏輯磁碟區"
-  ],
   "Configure device %s": [
     "設定裝置 %s"
   ],
@@ -441,23 +417,14 @@ export default {
   "Configured for installation only": [
     "僅為安裝設定"
   ],
-  "Configuring the product, please wait ...": [
-    "正在設定產品，請稍候..."
-  ],
   "Confirm": [
     "確認"
   ],
   "Confirm that you really want to continue.": [
     "請確認您確實要繼續。"
   ],
-  "Congratulations!": [
-    "恭喜！"
-  ],
   "Connect": [
     "連接"
-  ],
-  "Connect to %s": [
-    "連接至 %s"
   ],
   "Connect to iSCSI targets": [
     "連接至 iSCSI 目標"
@@ -504,14 +471,8 @@ export default {
   "Controllers": [
     "控制器"
   ],
-  "Could not authenticate against the server, please check it.": [
-    "無法通過伺服器驗證，請檢查相關設定。"
-  ],
   "Could not connect to %s": [
     "無法連接至 %s"
-  ],
-  "Could not log in. Please, make sure that the password is correct.": [
-    "無法登入。請確定密碼正確無誤。"
   ],
   "Create LVM volume group %s": [
     "建立 LVM 磁碟區群組 %s"
@@ -600,6 +561,9 @@ export default {
   "Delete current content": [
     "刪除目前內容"
   ],
+  "Delete existing data and install %s?": [
+    ""
+  ],
   "Delete volume group": [
     "刪除磁碟區群組"
   ],
@@ -623,9 +587,6 @@ export default {
   ],
   "Device %s menu": [
     "裝置 %s 功能表"
-  ],
-  "Device Selection": [
-    "選取裝置"
   ],
   "Device details": [
     "裝置詳細資料"
@@ -677,9 +638,6 @@ export default {
   ],
   "Edit binding settings": [
     "編輯結合設定"
-  ],
-  "Edit connection %s": [
-    "編輯連接 %s"
   ],
   "Edit connection settings": [
     "編輯連接設定"
@@ -756,6 +714,9 @@ export default {
   "Extend the installation beyond the currently selected disk": [
     "將安裝擴充至超過目前 %d 個磁碟的容量"
   ],
+  "Extensions": [
+    "延伸"
+  ],
   "F2FS": [
     "F2FS"
   ],
@@ -794,9 +755,6 @@ export default {
   ],
   "Find space in %s": [
     "在 %s 中尋找可用空間"
-  ],
-  "Finish": [
-    "完成"
   ],
   "Finished": [
     "已完成"
@@ -858,9 +816,6 @@ export default {
   "GiB": [
     "GiB"
   ],
-  "Go back": [
-    ""
-  ],
   "Go to network page": [
     "前往網路頁面"
   ],
@@ -875,9 +830,6 @@ export default {
   ],
   "Hide %d subvolume action": [
     "隱藏 %d 個子磁碟區動作"
-  ],
-  "Hide details": [
-    "隱藏詳細資料"
   ],
   "Hostname": [
     "主機名稱"
@@ -918,11 +870,11 @@ export default {
   "If a local media was used to run this installer, remove it before the next boot.": [
     "如果執行此次安裝時使用了本地媒體，請在下次開機前移除。"
   ],
-  "If you want to disable this check, please specify \"inst.ay_check=0\" at kernels command-line": [
+  "If you are unsure, check and adjust the storage settings.": [
     ""
   ],
-  "In progress": [
-    "進行中"
+  "If you want to disable this check, please specify \"inst.ay_check=0\" at kernels command-line": [
+    ""
   ],
   "Incorrect IP address": [
     "IP 位址不正確"
@@ -957,6 +909,9 @@ export default {
   "Install now with potential data loss": [
     ""
   ],
+  "Installation settings will automatically update to match the new product's defaults.": [
+    ""
+  ],
   "Installation will take %s.": [
     "安裝將會佔用 %s。"
   ],
@@ -965,9 +920,6 @@ export default {
   ],
   "Installing a broken package affects system stability and is a big security risk!": [
     "安裝已損毀的套件會影響系統穩定性，並會產生嚴重的安全性隱患！"
-  ],
-  "Installing the system, please wait...": [
-    "正在安裝系統，請稍候..."
   ],
   "Interface": [
     "介面"
@@ -1026,14 +978,14 @@ export default {
   "Keyboard layout": [
     "鍵盤配置"
   ],
-  "Keyboard selection": [
-    "鍵盤選擇"
-  ],
   "KiB": [
     "KiB"
   ],
   "LUN": [
     "LUN"
+  ],
+  "LVM": [
+    ""
   ],
   "Label": [
     "標籤"
@@ -1047,6 +999,9 @@ export default {
   "Let the installer propose a sensible size": [
     "讓安裝程式建議適當的大小"
   ],
+  "License acceptance is required to continue.": [
+    ""
+  ],
   "Loading": [
     "正在載入"
   ],
@@ -1058,9 +1013,6 @@ export default {
   ],
   "Loading the installation repositories...": [
     "正在載入安裝儲存庫..."
-  ],
-  "Locale selection": [
-    "地區設定選擇"
   ],
   "Localization": [
     "本土化"
@@ -1091,9 +1043,6 @@ export default {
   ],
   "MAC": [
     "MAC"
-  ],
-  "Main navigation": [
-    "主導覽區"
   ],
   "Make sure you provide the correct values": [
     "請確定提供了正確的值"
@@ -1302,9 +1251,6 @@ export default {
   "Not implemented yet (%s)": [
     "尚未實作 (%s)"
   ],
-  "Not possible with the current setup. Click to know more.": [
-    "目前的設定不支援此操作。請按一下以瞭解詳情。"
-  ],
   "Not protected network": [
     "不受保護的網路"
   ],
@@ -1325,9 +1271,6 @@ export default {
   ],
   "Options toggle": [
     "選項切換鈕"
-  ],
-  "Overview": [
-    "綜覽"
   ],
   "Package installation failed": [
     "安裝套件失敗"
@@ -1386,14 +1329,8 @@ export default {
   "PiB": [
     "PiB"
   ],
-  "Please, check whether it is running.": [
-    "請檢查它是否在執行中。"
-  ],
   "Please, perform an iSCSI discovery in order to find available iSCSI targets.": [
     "請執行 iSCSI 探查以尋找可用的 iSCSI 目標。"
-  ],
-  "Please, provide its password to log in to the system.": [
-    "請提供其密碼以登入系統。"
   ],
   "Please, try to activate a zFCP controller.": [
     "請嘗試啟用 zFCP 控制器。"
@@ -1422,7 +1359,7 @@ export default {
   "Proceeding may result in data loss": [
     ""
   ],
-  "Proceeding may result in data loss affecting at least %s": [
+  "Proceeding will delete existing data, including %s": [
     ""
   ],
   "Product is already registered": [
@@ -1521,11 +1458,14 @@ export default {
   "Review and fix": [
     "檢查並修復"
   ],
-  "Review the summary below. If anything seems incorrect or you have doubts, go back and adjust the settings before proceeding.": [
+  "Root login with SSH key": [
     ""
   ],
-  "Root authentication methods": [
-    "Root 驗證方法"
+  "Root login with password": [
+    ""
+  ],
+  "Root login with password and SSH key": [
+    ""
   ],
   "Root user": [
     "Root 使用者"
@@ -1565,9 +1505,6 @@ export default {
   ],
   "Security": [
     "安全性"
-  ],
-  "See more details": [
-    "檢視更多詳細資料"
   ],
   "Select": [
     "選取"
@@ -1701,9 +1638,6 @@ export default {
   "Software conflicts resolution": [
     "軟體衝突解決情況"
   ],
-  "Software selection": [
-    "軟體選擇"
-  ],
   "Some existing partitions may be shrunk": [
     "可能會縮小部分現有分割區"
   ],
@@ -1749,8 +1683,14 @@ export default {
   "Swap": [
     "Swap"
   ],
+  "Switch to a different mode": [
+    ""
+  ],
   "TPM sealing requires the new system to be booted directly.": [
     "TPM 封存需要直接將新系統開機才能進行。"
+  ],
+  "Take a moment to review the installation settings below and adjust them as needed.": [
+    ""
   ],
   "Target Password": [
     "目標密碼"
@@ -1856,12 +1796,6 @@ export default {
   ],
   "The initiator name cannot be blank": [
     "發起者名稱不能為空白"
-  ],
-  "The installation on your machine is complete.": [
-    "機器上的安裝過程已完成。"
-  ],
-  "The installer interface is no longer available, so you can safely close this window.": [
-    "安裝程式介面已不再可用，因此您可以安全關閉此視窗。"
   ],
   "The installer requires [root] user privileges.": [
     "安裝程式要求您具有 [root] 使用者權限。"
@@ -2019,17 +1953,11 @@ export default {
   "To ensure the new system is able to boot, the installer may need to create or configure some partitions in the appropriate disk.": [
     "為確保新系統能夠開機，安裝程式可能需要在適當的磁碟中建立或設定一些分割區。"
   ],
-  "Transactional root file system": [
-    "交易性根檔案系統"
-  ],
   "Try again": [
     "再試一次"
   ],
   "Type": [
     "類型"
-  ],
-  "URL": [
-    "URL"
   ],
   "Unable to modify the settings": [
     "無法修改設定"
@@ -2205,6 +2133,9 @@ export default {
   "Using transient hostname: %s": [
     "正在使用暫時的主機名稱 %s"
   ],
+  "View license": [
+    ""
+  ],
   "Volume group '%s' already exists. Enter a different name.": [
     "磁碟區群組 '%s' 已存在。請輸入其他名稱。"
   ],
@@ -2217,6 +2148,9 @@ export default {
   "WWPN": [
     "WWPN"
   ],
+  "Wait until current operations are completed.": [
+    ""
+  ],
   "Waiting for a mount point": [
     "正在等待掛接點"
   ],
@@ -2225,6 +2159,12 @@ export default {
   ],
   "Weak signal": [
     "訊號微弱"
+  ],
+  "When ready, click on the [install] button at the end of the page.": [
+    ""
+  ],
+  "Wi-Fi": [
+    ""
   ],
   "Wi-Fi connection form": [
     "Wi-Fi 連接表單"
@@ -2250,6 +2190,9 @@ export default {
   "You can proceed to install with the current settings or you may want to discard the configuration and start from scratch with a simple one.": [
     "您可以採用目前設定繼續安裝，也可以捨棄該組態，並採用簡單的組態從頭開始。"
   ],
+  "You can safely close this window.": [
+    ""
+  ],
   "You cannot change it later. Go to the %s section if you want to modify it before proceeding with registration.": [
     "以後將無法變更此資訊。如果您要在繼續註冊前修改，請前往 %s 區段。"
   ],
@@ -2259,11 +2202,11 @@ export default {
   "You may want to discard those settings and start from scratch with a simple configuration.": [
     "您可能需要捨棄這些設定，並採用簡單的組態從頭開始。"
   ],
+  "You need to fix any invalid settings before proceeding with the installation.": [
+    ""
+  ],
   "You will connect to a public network without encryption. Your data may not be secure.": [
     "您將連接至未加密的公用網路。資料可能存在安全風險。"
-  ],
-  "Your system is rebooting": [
-    "系統正在重新開機"
   ],
   "ZFCP": [
     "ZFCP"
@@ -2298,6 +2241,9 @@ export default {
   "iSCSI": [
     "iSCSI"
   ],
+  "immutable Btrfs": [
+    ""
+  ],
   "logical volume": [
     "邏輯磁碟區"
   ],
@@ -2319,14 +2265,14 @@ export default {
   "reset to defaults": [
     "重設為預設值"
   ],
+  "root": [
+    ""
+  ],
   "yes": [
     "是"
   ],
   "zFCP": [
     "zFCP"
-  ],
-  "zFCP Disk Activation": [
-    "zFCP 磁碟啟用"
   ],
   "zFCP Disk activation form": [
     "zFCP 磁碟啟用表單"

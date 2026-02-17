@@ -250,9 +250,14 @@ install_updates() {
     query_reg_server
 
     # repo from the registration server
-    if [ -s "$REG_REPO_FILE" ]; then
-      prepare_chroot
-      add_update_repos "$REG_REPO_FILE"
+    if [ -f "$REG_REPO_FILE" ]; then
+      if [ -s "$REG_REPO_FILE" ]; then
+        prepare_chroot
+        add_update_repos "$REG_REPO_FILE"
+      else
+        milestone "No repository found in the registration server, skipping self-update"
+        exit 0
+      fi
     # use a fallback URL
     elif [ -s "$CONFIG_FALLBACK_FILE" ]; then
       milestone "Using fallback repository"

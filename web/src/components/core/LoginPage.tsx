@@ -21,24 +21,13 @@
  */
 
 import React, { useState } from "react";
-import { Navigate } from "react-router";
-import {
-  Alert,
-  Button,
-  Flex,
-  Form,
-  FormGroup,
-  Grid,
-  GridItem,
-  HelperText,
-  HelperTextItem,
-  Title,
-  Bullseye,
-} from "@patternfly/react-core";
-import { Page, PasswordInput } from "~/components/core";
-import { AuthErrors, useAuth } from "~/context/auth";
-import { Icon } from "../layout";
 import { sprintf } from "sprintf-js";
+import { Navigate } from "react-router";
+import { Alert, Button, Content, Flex, Form, FormGroup } from "@patternfly/react-core";
+import { Page, PasswordInput } from "~/components/core";
+import Text from "~/components/core/Text";
+import { AuthErrors, useAuth } from "~/context/auth";
+import SplitInfoLayout from "~/components/layout/SplitInfoLayout";
 import { _ } from "~/i18n";
 
 const getError = (authError) => {
@@ -81,7 +70,7 @@ export default function LoginPage() {
 
   // TRANSLATORS: Title for a form to provide the password for the root user. %s
   // will be replaced by "root"
-  const sectionTitle = sprintf(_("Log in as %s"), "root");
+  const title = sprintf(_("Log in as %s"), "root");
 
   // TRANSLATORS: description why root password is needed. The text in the
   // square brackets [] is displayed in bold, use only please, do not translate
@@ -94,71 +83,47 @@ user privileges.",
   return (
     <Page variant="minimal" showQuestions={false}>
       <Page.Content>
-        <Bullseye>
-          <Grid hasGutter>
-            <GridItem sm={12} md={6} style={{ alignSelf: "center" }}>
-              <Flex
-                direction={{ default: "column" }}
-                alignItems={{ default: "alignItemsCenter", md: "alignItemsFlexEnd" }}
-                alignContent={{ default: "alignContentCenter", md: "alignContentFlexEnd" }}
-                alignSelf={{ default: "alignSelfCenter" }}
-              >
-                <Icon name="lock" width="3rem" height="3rem" />
-                <Title headingLevel="h1">{sectionTitle}</Title>
-                <HelperText>
-                  <HelperTextItem>
-                    {rootExplanationStart} <b>{rootUser}</b> {rootExplanationEnd}
-                  </HelperTextItem>
-                </HelperText>
-                <HelperText>
-                  <HelperTextItem>
-                    {_("Provide its password to log in to the system.")}
-                  </HelperTextItem>
-                </HelperText>
+        <SplitInfoLayout
+          icon="lock"
+          firstRowStart={title}
+          firstRowEnd={
+            <Form id="login" onSubmit={login} aria-label={_("Login form")}>
+              <FormGroup fieldId="password" label={_("Password")}>
+                <PasswordInput
+                  id="password"
+                  name="password"
+                  value={password}
+                  aria-label={_("Password input")}
+                  onChange={(_, v) => setPassword(v)}
+                  reminders={["capslock"]}
+                />
+              </FormGroup>
+              {authError && (
+                <Alert component="div" variant="danger" title={error.title}>
+                  {error.description}
+                </Alert>
+              )}
+              <Flex>
+                <Button
+                  type="submit"
+                  variant={loading ? "secondary" : "primary"}
+                  isLoading={loading}
+                  isDisabled={loading}
+                >
+                  {_("Log in")}
+                </Button>
               </Flex>
-            </GridItem>
-            <GridItem sm={12} md={6}>
-              <Flex
-                gap={{ default: "gapMd" }}
-                alignItems={{ default: "alignItemsCenter" }}
-                style={{
-                  minBlockSize: "30dvh",
-                  boxShadow: "-1px 0 0 var(--pf-t--global--border--color--default)",
-                  paddingInlineStart: "var(--pf-t--global--spacer--md)",
-                  marginBlockStart: "var(--pf-t--global--spacer--xl)",
-                }}
-              >
-                <Form id="login" onSubmit={login} aria-label={_("Login form")}>
-                  <FormGroup fieldId="password" label={_("Password")}>
-                    <PasswordInput
-                      id="password"
-                      name="password"
-                      value={password}
-                      aria-label={_("Password input")}
-                      onChange={(_, v) => setPassword(v)}
-                      reminders={["capslock"]}
-                    />
-                  </FormGroup>
-                  {authError && (
-                    <Alert component="div" variant="danger" title={error.title}>
-                      {error.description}
-                    </Alert>
-                  )}
-                  <Flex>
-                    <Button
-                      type="submit"
-                      variant={loading ? "secondary" : "primary"}
-                      isLoading={loading}
-                      isDisabled={loading}
-                    >
-                      {_("Log in")}
-                    </Button>
-                  </Flex>
-                </Form>
-              </Flex>
-            </GridItem>
-          </Grid>
-        </Bullseye>
+            </Form>
+          }
+          secondRowStart={
+            <>
+              <Content>
+                {rootExplanationStart} <Text isBold>{rootUser}</Text> {rootExplanationEnd}
+              </Content>
+              <Content>{_("Provide its password to log in to the system.")}</Content>
+            </>
+          }
+        />
       </Page.Content>
     </Page>
   );

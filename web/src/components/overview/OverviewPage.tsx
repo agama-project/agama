@@ -21,21 +21,27 @@
  */
 
 import React, { useDeferredValue, useState } from "react";
+import { isEmpty } from "radashi";
+import { sprintf } from "sprintf-js";
 import { Navigate } from "react-router";
 import {
   Button,
   Content,
   Divider,
   Flex,
+  FlexItem,
   Grid,
   GridItem,
   HelperText,
   HelperTextItem,
+  Stack,
 } from "@patternfly/react-core";
 import Page from "~/components/core/Page";
 import Text from "~/components/core/Text";
 import Popup from "~/components/core/Popup";
 import PotentialDataLossAlert from "~/components/storage/PotentialDataLossAlert";
+import InstallerL10nOptions from "~/components/core/InstallerL10nOptions";
+import InstallerOptionsMenu from "~/components/core/InstallerOptionsMenu";
 import InstallationSettings from "~/components/overview/InstallationSettings";
 import SystemInformationSection from "~/components/overview/SystemInformationSection";
 import ProductLogo from "~/components/product/ProductLogo";
@@ -44,8 +50,6 @@ import { useProductInfo } from "~/hooks/model/config/product";
 import { useIssues } from "~/hooks/model/issue";
 import { PRODUCT } from "~/routes/paths";
 import { useDestructiveActions } from "~/hooks/use-destructive-actions";
-import { isEmpty } from "radashi";
-import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
 
 import type { Product } from "~/types/software";
@@ -132,7 +136,12 @@ const OverviewPageContent = ({ product }) => {
           <ProductLogo product={product} width="40px" /> {product.name}
         </>
       }
-      showInstallerOptions
+      endSlot={
+        <>
+          <InstallerL10nOptions />
+          <InstallerOptionsMenu hideLabel showChangeProductOption />
+        </>
+      }
     >
       <Page.Content>
         <Flex gap={{ default: "gapMd" }} direction={{ default: "column" }}>
@@ -152,40 +161,54 @@ const OverviewPageContent = ({ product }) => {
           <Divider />
           <Grid hasGutter>
             <GridItem sm={12} md={8}>
-              <InstallationSettings />
+              <Stack hasGutter>
+                <div style={{ flex: 1 }}>
+                  <InstallationSettings />
+                </div>
+                <Flex
+                  direction={{ default: "column" }}
+                  alignItems={{ default: "alignItemsFlexStart" }}
+                >
+                  <FlexItem grow={{ default: "grow" }} />
+                  <FlexItem>
+                    <Button
+                      size="lg"
+                      variant={hasDestructiveActions ? "danger" : "primary"}
+                      onClick={onInstallClick}
+                      isDisabled={hasIssues || !isReady}
+                    >
+                      <Text isBold>{getInstallButtonText()}</Text>
+                    </Button>
+                  </FlexItem>
+
+                  {!isReady && (
+                    <FlexItem>
+                      <HelperText>
+                        <HelperTextItem variant="indeterminate">
+                          {_("Wait until current operations are completed.")}
+                        </HelperTextItem>
+                      </HelperText>
+                    </FlexItem>
+                  )}
+
+                  {hasIssues && isReady && (
+                    <FlexItem>
+                      <HelperText>
+                        <HelperTextItem variant="warning">
+                          {_(
+                            "You need to fix any invalid settings before proceeding with the installation.",
+                          )}
+                        </HelperTextItem>
+                      </HelperText>
+                    </FlexItem>
+                  )}
+                </Flex>
+              </Stack>
             </GridItem>
             <GridItem sm={12} md={4}>
               <SystemInformationSection />
             </GridItem>
           </Grid>
-          <Flex direction={{ default: "column" }} alignItems={{ default: "alignItemsFlexStart" }}>
-            <Button
-              size="lg"
-              variant={hasDestructiveActions ? "danger" : "primary"}
-              onClick={onInstallClick}
-              isDisabled={hasIssues || !isReady}
-            >
-              <Text isBold>{getInstallButtonText()}</Text>
-            </Button>
-
-            {!isReady && (
-              <HelperText>
-                <HelperTextItem variant="indeterminate">
-                  {_("Wait until current operations are completed.")}
-                </HelperTextItem>
-              </HelperText>
-            )}
-
-            {hasIssues && isReady && (
-              <HelperText>
-                <HelperTextItem variant="warning">
-                  {_(
-                    "You need to fix any invalid settings before proceeding with the installation.",
-                  )}
-                </HelperTextItem>
-              </HelperText>
-            )}
-          </Flex>
         </Flex>
       </Page.Content>
       {showConfirmation && (

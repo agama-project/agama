@@ -23,7 +23,6 @@ pub mod dbus;
 pub mod error;
 pub mod logs;
 pub mod profile;
-pub mod users;
 pub mod web;
 pub use web::service;
 pub mod server;

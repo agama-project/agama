@@ -260,6 +260,216 @@ const generateEncodedPath = (...args: Parameters<typeof generatePath>) => {
 const sortCollection = <T>(collection: T[], direction: "asc" | "desc", key: string | ISortBy<T>) =>
   sort(collection)[direction](key as ISortBy<T>);
 
+/** Options for mergeSources */
+export type MergeSourcesOptions<T, K extends keyof T> = {
+  /** Object mapping source names to their arrays */
+  collections: Record<string, T[]>;
+  /** Order of precedence of where to take the object from if it is in more than
+   * one collection */
+  precedence: string[];
+  /** The property name(s) to use as the unique identifier */
+  primaryKey?: K | K[];
+};
+
+/** Item augmented with sources array */
+type ItemWithSources<T> = Omit<T, "sources"> & {
+  /** Array of source names where this item was found */
+  sources: string[];
+};
+
+/**
+ * Merges multiple collections of objects, tracking which sources each item
+ * appears in.
+ *
+ * When the same item (identified by the specified primaryKey(s)) appears in multiple
+ * collections, it will appear only once in the output with a `sources` array
+ * listing all collections where it was found. The object data is taken from
+ * the first source in the precedence order where it appears.
+ *
+ * @template T - The type of objects in the collections
+ * @template K - The key type used for identifying unique items
+ *
+ * @param options - Configuration object
+ * @param options.collections - Object mapping source names to arrays of items
+ * @param options.precedence - Array of source names in priority order (first = highest)
+ * @param options.primaryKey - Property name(s) to use as unique identifier (default: "id").
+ *                              Can be a single key or array of keys for composite primary keys.
+ *
+ * @returns Array of merged items, each with a `sources` property
+ *
+ * @example
+ * ```typescript
+ * // Single primary key example - iSCSI targets identified by name only
+ * const result = mergeSources({
+ *   collections: {
+ *     system: [
+ *       {
+ *         name: "iqn.2023-01.com.example:12ac588",
+ *         address: "192.168.100.102",
+ *         port: 3262,
+ *         interface: "default",
+ *         ibtf: false,
+ *         startup: "onboot",
+ *         connected: true,
+ *         locked: false
+ *       }
+ *     ],
+ *     config: [
+ *       {
+ *         name: "iqn.2023-01.com.example:12ac588",
+ *         address: "192.168.100.102",
+ *         port: 3262,
+ *         interface: "default",
+ *         startup: "onboot"
+ *       },
+ *       {
+ *         name: "iqn.2023-01.com.example:12ac788",
+ *         address: "192.168.100.106",
+ *         port: 3264,
+ *         interface: "default",
+ *         startup: "onboot"
+ *       }
+ *     ]
+ *   },
+ *   precedence: ['system', 'config'],
+ *   primaryKey: 'name'
+ * });
+ * // Returns:
+ * // [
+ * //   {
+ * //     name: "iqn.2023-01.com.example:12ac588",
+ * //     address: "192.168.100.102",
+ * //     port: 3262,
+ * //     interface: "default",
+ * //     ibtf: false,
+ * //     startup: "onboot",
+ * //     connected: true,
+ * //     locked: false,
+ * //     sources: ['system', 'config']
+ * //   },
+ * //   {
+ * //     name: "iqn.2023-01.com.example:12ac788",
+ * //     address: "192.168.100.106",
+ * //     port: 3264,
+ * //     interface: "default",
+ * //     startup: "onboot",
+ * //     sources: ['config']
+ * //   }
+ * // ]
+ *
+ * // Multiple primary key example - iSCSI targets identified by name + address + port
+ * // This is necessary because the same target name can have multiple portals
+ * const result2 = mergeSources({
+ *   collections: {
+ *     system: [
+ *       {
+ *         name: "iqn.2023-01.com.example:storage",
+ *         address: "192.168.100.102",
+ *         port: 3260,
+ *         interface: "default",
+ *         ibtf: false,
+ *         startup: "onboot",
+ *         connected: true,
+ *         locked: false
+ *       },
+ *       {
+ *         name: "iqn.2023-01.com.example:storage",
+ *         address: "192.168.100.102",
+ *         port: 3261,
+ *         interface: "default",
+ *         ibtf: false,
+ *         startup: "manual",
+ *         connected: false,
+ *         locked: false
+ *       }
+ *     ],
+ *     config: [
+ *       {
+ *         name: "iqn.2023-01.com.example:storage",
+ *         address: "192.168.100.102",
+ *         port: 3260,
+ *         interface: "default",
+ *         startup: "onboot"
+ *       },
+ *       {
+ *         name: "iqn.2023-01.com.example:storage",
+ *         address: "192.168.100.102",
+ *         port: 3261,
+ *         interface: "default",
+ *         startup: "manual"
+ *       },
+ *       {
+ *         name: "iqn.2023-01.com.example:storage",
+ *         address: "192.168.100.103",
+ *         port: 3260,
+ *         interface: "default",
+ *         startup: "onboot"
+ *       }
+ *     ]
+ *   },
+ *   precedence: ['system', 'config'],
+ *   primaryKey: ['name', 'address', 'port']
+ * });
+ * // Returns:
+ * // [
+ * //   {
+ * //     name: "iqn.2023-01.com.example:storage",
+ * //     address: "192.168.100.102",
+ * //     port: 3260,
+ * //     interface: "default",
+ * //     ibtf: false,
+ * //     startup: "onboot",
+ * //     connected: true,
+ * //     locked: false,
+ * //     sources: ['system', 'config']
+ * //   },
+ * //   {
+ * //     name: "iqn.2023-01.com.example:storage",
+ * //     address: "192.168.100.102",
+ * //     port: 3261,
+ * //     interface: "default",
+ * //     ibtf: false,
+ * //     startup: "manual",
+ * //     connected: false,
+ * //     locked: false,
+ * //     sources: ['system', 'config']
+ * //   },
+ * //   {
+ * //     name: "iqn.2023-01.com.example:storage",
+ * //     address: "192.168.100.103",
+ * //     port: 3260,
+ * //     interface: "default",
+ * //     startup: "onboot",
+ * //     sources: ['config']
+ * //   }
+ * // ]
+ * ```
+ */
+function mergeSources<T, K extends keyof T>({
+  collections,
+  precedence,
+  primaryKey = "id" as K,
+}: MergeSourcesOptions<T, K>): ItemWithSources<T>[] {
+  const map = new Map<string, ItemWithSources<T>>();
+
+  for (const name of precedence) {
+    const items = collections[name];
+    for (const obj of items) {
+      const key = Array.isArray(primaryKey)
+        ? primaryKey.map((k) => String(obj[k])).join("|")
+        : String(obj[primaryKey]);
+
+      if (map.has(key)) {
+        map.get(key)!.sources.push(name);
+      } else {
+        map.set(key, { ...obj, sources: [name] });
+      }
+    }
+  }
+
+  return Array.from(map.values());
+}
+
 export {
   compact,
   hex,
@@ -271,4 +481,5 @@ export {
   generateEncodedPath,
   maskSecrets,
   sortCollection,
+  mergeSources,
 };

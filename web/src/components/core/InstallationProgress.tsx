@@ -21,60 +21,35 @@
  */
 
 import React from "react";
-import { Flex, Grid, GridItem, HelperText, HelperTextItem, Title } from "@patternfly/react-core";
+import { HelperText, HelperTextItem } from "@patternfly/react-core";
 import Page from "~/components/core/Page";
 import ProgressReport from "~/components/core/ProgressReport";
-import Icon from "~/components/layout/Icon";
-import ProductLogo from "../product/ProductLogo";
+import InstallerOptionsMenu from "~/components/core/InstallerOptionsMenu";
+import ProductLogo from "~/components/product/ProductLogo";
+import SplitInfoLayout from "~/components/layout/SplitInfoLayout";
 import { useProductInfo } from "~/hooks/model/config/product";
 import { _ } from "~/i18n";
-
-import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
-import alignmentStyles from "@patternfly/react-styles/css/utilities/Alignment/alignment";
 
 export default function InstallationProgress() {
   const product = useProductInfo();
 
   return (
-    <Page showInstallerOptions={false} hideProgressMonitor>
+    <Page noDefaultStartSlot endSlot={<InstallerOptionsMenu hideLabel />}>
       <Page.Content>
-        <Grid hasGutter style={{ height: "100%", placeContent: "center" }}>
-          <GridItem sm={12} md={5} style={{ alignSelf: "center" }}>
-            <Flex
-              direction={{ default: "column" }}
-              alignItems={{ default: "alignItemsCenter", md: "alignItemsFlexEnd" }}
-              alignContent={{ default: "alignContentCenter", md: "alignContentFlexEnd" }}
-              alignSelf={{ default: "alignSelfCenter" }}
-            >
-              <Icon name="deployed_code_update" width="3rem" height="3rem" />
-              <Title
-                headingLevel="h1"
-                style={{ textWrap: "balance" }}
-                className={[textStyles.fontSize_3xl, alignmentStyles.textAlignEndOnMd].join(" ")}
-              >
-                <ProductLogo product={product} width="1.25em" /> {product?.name}
-              </Title>
-
-              <HelperText>
-                <HelperTextItem>{_("Installation in progress")}</HelperTextItem>
-              </HelperText>
-            </Flex>
-          </GridItem>
-          <GridItem sm={12} md={7}>
-            <Flex
-              gap={{ default: "gapMd" }}
-              alignItems={{ default: "alignItemsCenter" }}
-              style={{
-                minBlockSize: "30dvh",
-                boxShadow: "-1px 0 0 var(--pf-t--global--border--color--default)",
-                paddingInlineStart: "var(--pf-t--global--spacer--md)",
-                marginBlockStart: "var(--pf-t--global--spacer--xl)",
-              }}
-            >
-              <ProgressReport />
-            </Flex>
-          </GridItem>
-        </Grid>
+        <SplitInfoLayout
+          icon="deployed_code_update"
+          firstRowStart={
+            <>
+              <ProductLogo product={product} width="1.25em" /> {product?.name}
+            </>
+          }
+          firstRowEnd={<ProgressReport />}
+          secondRowStart={
+            <HelperText>
+              <HelperTextItem>{_("Installation in progress")}</HelperTextItem>
+            </HelperText>
+          }
+        />
       </Page.Content>
     </Page>
   );

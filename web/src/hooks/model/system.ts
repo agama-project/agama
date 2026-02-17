@@ -57,3 +57,4 @@ export { systemQuery, useSystem, useSystemChanges };
 export * as l10n from "~/hooks/model/system/l10n";
 export * as storage from "~/hooks/model/system/storage";
 export * as software from "~/hooks/model/system/software";
+export * as iscsi from "~/hooks/model/system/iscsi";

@@ -140,6 +140,14 @@ impl MessageHandler<message::Finish> for Service {
 }
 
 #[async_trait]
+impl MessageHandler<message::Umount> for Service {
+    async fn handle(&mut self, _message: message::Umount) -> Result<(), Error> {
+        self.client.umount().await?;
+        Ok(())
+    }
+}
+
+#[async_trait]
 impl MessageHandler<message::GetSystem> for Service {
     async fn handle(&mut self, _message: message::GetSystem) -> Result<Option<Value>, Error> {
         self.client.get_system().await.map_err(|e| e.into())
@@ -161,6 +169,19 @@ impl MessageHandler<message::GetConfigModel> for Service {
 }
 
 #[async_trait]
+impl MessageHandler<message::GetConfigFromModel> for Service {
+    async fn handle(
+        &mut self,
+        message: message::GetConfigFromModel,
+    ) -> Result<Option<Config>, Error> {
+        self.client
+            .get_config_from_model(message.model)
+            .await
+            .map_err(|e| e.into())
+    }
+}
+
+#[async_trait]
 impl MessageHandler<message::GetProposal> for Service {
     async fn handle(&mut self, _message: message::GetProposal) -> Result<Option<Value>, Error> {
         self.client.get_proposal().await.map_err(|e| e.into())
@@ -177,13 +198,6 @@ impl MessageHandler<message::SetConfig> for Service {
     }
 }
 
-#[async_trait]
-impl MessageHandler<message::SetConfigModel> for Service {
-    async fn handle(&mut self, message: message::SetConfigModel) -> Result<(), Error> {
-        self.client.set_config_model(message.model).await?;
-        Ok(())
-    }
-}
 #[async_trait]
 impl MessageHandler<message::SolveConfigModel> for Service {
     async fn handle(&mut self, message: message::SolveConfigModel) -> Result<Option<Value>, Error> {

@@ -1,4 +1,4 @@
-// Copyright (c) [2025] SUSE LLC
+// Copyright (c) [2025-2026] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -32,10 +32,14 @@ pub use agama_iscsi as iscsi;
 pub use agama_l10n as l10n;
 pub use agama_network as network;
 pub use agama_proxy as proxy;
+pub use agama_s390 as s390;
 pub use agama_security as security;
 pub use agama_software as software;
 pub use agama_storage as storage;
 pub use agama_users as users;
+
+pub(crate) mod checks;
+pub(crate) mod tasks;
 
 pub mod test_utils;
 

@@ -138,6 +138,8 @@ module Agama
         ::Bootloader::OsProber.package_available = false
         # reset disk to always read the recent storage configuration
         ::Yast::BootStorage.reset_disks
+        # reset bootloader factory cache as we want here to reapply config from scratch
+        ::Bootloader::BootloaderFactory.clear_cache
         # propose values first. Propose bootloader from factory and do not use
         # current as agama has /etc/sysconfig/bootloader with efi, so it
         # will lead to wrong one.

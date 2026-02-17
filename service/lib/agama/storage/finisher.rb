@@ -71,9 +71,7 @@ module Agama
           StorageStep.new(logger),
           IscsiStep.new(logger),
           BootloaderStep.new(logger),
-          SnapshotsStep.new(logger),
-          CopyLogsStep.new(logger),
-          UnmountStep.new(logger)
+          SnapshotsStep.new(logger)
         ]
       end
 
@@ -209,53 +207,6 @@ module Agama
         def run
           logger.info("Finishing Snapper configuration")
           Yast2::FsSnapshot.configure_snapper
-        end
-      end
-
-      # Step to copy the installation logs
-      class CopyLogsStep < Step
-        SCRIPTS_DIR = "/run/agama/scripts"
-
-        def label
-          _("Copying logs")
-        end
-
-        def run
-          FileUtils.mkdir_p(logs_dir, mode: 0o700)
-          collect_logs
-          copy_scripts
-        end
-
-      private
-
-        def copy_scripts
-          return unless Dir.exist?(SCRIPTS_DIR)
-
-          FileUtils.cp_r(SCRIPTS_DIR, logs_dir)
-        end
-
-        def collect_logs
-          path = File.join(logs_dir, "logs")
-          Yast::Execute.locally(
-            "agama", "logs", "store", "--destination", path
-          )
-        end
-
-        def logs_dir
-          @logs_dir ||= File.join(
-            Yast::Installation.destdir, "var", "log", "agama-installation"
-          )
-        end
-      end
-
-      # Step to unmount the target file-systems
-      class UnmountStep < Step
-        def label
-          _("Unmounting storage devices")
-        end
-
-        def run
-          wfm_write("umount_finish")
         end
       end
     end

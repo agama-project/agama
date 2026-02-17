@@ -109,4 +109,16 @@ describe("Breadcrumbs.Item", () => {
     expect(label).not.toHaveClass(textStyles.fontSizeLg);
     expect(label).not.toHaveClass(textStyles.fontWeightBold);
   });
+
+  it("renders menu when provided", () => {
+    installerRender(
+      <Breadcrumbs.Item
+        label="Software"
+        path="/software"
+        menu={<div role="menu" aria-label="Software menu" />}
+      />,
+    );
+
+    screen.getByRole("menu", { name: "Software menu" });
+  });
 });

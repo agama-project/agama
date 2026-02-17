@@ -51,11 +51,10 @@ import {
   Title,
 } from "@patternfly/react-core";
 import { Navigate, useNavigate } from "react-router";
-import { Link, Page, SubtleContent } from "~/components/core";
+import { InstallerL10nOptions, Link, Page, SubtleContent } from "~/components/core";
 import ProductLogo from "~/components/product/ProductLogo";
 import LicenseDialog from "~/components/product/LicenseDialog";
 import Text from "~/components/core/Text";
-import agama from "~/agama";
 import { putConfig } from "~/api";
 import { useProduct, useProductInfo } from "~/hooks/model/config/product";
 import { useSystem } from "~/hooks/model/system";
@@ -65,6 +64,7 @@ import { Mode, Product } from "~/model/system";
 import { n_, _ } from "~/i18n";
 
 import pfTextStyles from "@patternfly/react-styles/css/utilities/Text/text";
+import { useInstallerL10n } from "~/context/installerL10n";
 
 /**
  * Props for ProductFormProductOption component
@@ -98,8 +98,8 @@ const ProductFormProductOption = ({
   onChange,
   onModeChange,
 }: ProductFormProductOptionProps) => {
+  const { loadedLanguage: currentLocale } = useInstallerL10n();
   const detailsId = `${product.id}-details`;
-  const currentLocale = agama.language.replace("-", "_");
 
   const translatedDescription =
     product.translations?.description[currentLocale] || product.description;
@@ -159,19 +159,26 @@ const ProductFormProductOption = ({
                     </ExpandableSection>
                     {isChecked && availableModes && (
                       <Split hasGutter>
-                        {availableModes.map((mode) => (
-                          <FlexItem key={mode.id}>
-                            <Radio
-                              key={mode.id}
-                              id={mode.id}
-                              name="mode"
-                              isChecked={mode.id === selectedModeId}
-                              onChange={() => onModeChange(mode)}
-                              label={<Text isBold>{mode.name}</Text>}
-                              description={mode.description}
-                            />
-                          </FlexItem>
-                        ))}
+                        {availableModes.map((mode) => {
+                          const translatedModeName =
+                            product.translations?.mode?.[mode.id]?.name[currentLocale] || mode.name;
+                          const translatedModeDescription =
+                            product.translations?.mode?.[mode.id]?.description[currentLocale] ||
+                            mode.description;
+                          return (
+                            <FlexItem key={mode.id}>
+                              <Radio
+                                key={mode.id}
+                                id={mode.id}
+                                name="mode"
+                                isChecked={mode.id === selectedModeId}
+                                onChange={() => onModeChange(mode)}
+                                label={<Text isBold>{translatedModeName}</Text>}
+                                description={translatedModeDescription}
+                              />
+                            </FlexItem>
+                          );
+                        })}
                       </Split>
                     )}
                   </Stack>
@@ -562,11 +569,20 @@ type CurrentProductInfoProps = {
  * Shows product name, description, and a link to view the license if applicable.
  */
 const CurrentProductInfo = ({ product, modeId }: CurrentProductInfoProps) => {
+  const { loadedLanguage: currentLocale } = useInstallerL10n();
   if (!product) return;
 
-  let mode;
+  const translatedDescription =
+    product.translations?.description[currentLocale] || product.description;
+
+  let mode: Mode;
+  let translatedModeName: string;
+  let translatedModeDescription: string;
   if (modeId) {
     mode = product.modes.find((m) => m.id === modeId);
+    translatedModeName = product.translations?.mode?.[modeId]?.name[currentLocale] || mode?.name;
+    translatedModeDescription =
+      product.translations?.mode?.[modeId]?.description[currentLocale] || mode?.description;
   }
 
   return (
@@ -578,14 +594,14 @@ const CurrentProductInfo = ({ product, modeId }: CurrentProductInfoProps) => {
             <ProductLogo product={product} width="2em" /> {product.name}
           </Title>
           <Divider />
-          <SubtleContent>{product.description}</SubtleContent>
+          <SubtleContent>{translatedDescription}</SubtleContent>
 
           {mode && (
             <>
-              <Title headingLevel="h3">{mode.name}</Title>
+              <Title headingLevel="h3">{translatedModeName}</Title>
 
               <Divider />
-              <SubtleContent>{mode.description}</SubtleContent>
+              <SubtleContent>{translatedModeDescription}</SubtleContent>
             </>
           )}
 
@@ -694,7 +710,7 @@ const ProductSelectionContent = () => {
       breadcrumbs={[
         { label: <ProductSelectionTitle products={products} currentProduct={currentProduct} /> },
       ]}
-      showInstallerOptions
+      endSlot={<InstallerL10nOptions />}
     >
       <Page.Content>
         <Flex gap={{ default: "gapXs" }} direction={{ default: "column" }}>

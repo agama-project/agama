@@ -20,90 +20,102 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useState } from "react";
+import React from "react";
 import {
-  Dropdown,
-  DropdownItem,
-  DropdownList,
   Masthead,
   MastheadContent,
   MastheadMain,
-  MenuToggle,
-  MenuToggleElement,
   Title,
   Toolbar,
   ToolbarContent,
   ToolbarGroup,
   ToolbarItem,
 } from "@patternfly/react-core";
-import { Icon } from "~/components/layout";
-import {
-  ChangeProductOption,
-  InstallerOptions,
-  ReviewAndInstallButton,
-  SkipTo,
-} from "~/components/core";
-import ProgressStatusMonitor from "~/components/core/ProgressStatusMonitor";
+import Icon from "~/components/layout/Icon";
 import Breadcrumbs from "~/components/core/Breadcrumbs";
+import { SkipTo } from "~/components/core";
 import { useProductInfo } from "~/hooks/model/config/product";
 import { ROOT } from "~/routes/paths";
-import { _ } from "~/i18n";
 
 import type { BreadcrumbProps } from "~/components/core/Breadcrumbs";
 
 import spacingStyles from "@patternfly/react-styles/css/utilities/Spacing/spacing";
+import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 
+/**
+ * Props for the Header component.
+ *
+ * The layout follows a flexible horizontal structure where the primary content
+ * (Title/Breadcrumbs) is on the left, and up to three slots are grouped at the
+ * end of the toolbar:
+ *
+ * [Title | Breadcrumbs]...........[startSlot] [centerSlot] [endSlot]
+ *
+ * openSUSE Tumbleweed..........................Option v | English/US
+ */
 export type HeaderProps = {
   /**
    * Page title rendered as the main heading (h1).
    *
-   * When provided, the title is shown instead of breadcrumb navigation.
-   * When omitted, breadcrumbs are rendered and the last breadcrumb
-   * represents the current page.
+   * If provided, the title takes precedence over breadcrumbs.
+   * If omitted, breadcrumbs are rendered instead, and the final
+   * item acts as the main heading (h1).
    */
   title?: React.ReactNode;
-  /** Whether the "Skip to content" link should be mounted */
-  showSkipToContent?: boolean;
-  /** Whether the installer options link should be mounted */
-  showInstallerOptions?: boolean;
-  /** Breadcrumb navigation items */
+
+  /** Breadcrumb navigation items shown when 'title' is not provided. */
   breadcrumbs?: BreadcrumbProps[];
-  /** Whether the progress monitor must not be mounted */
-  hideProgressMonitor?: boolean;
-};
 
-const OptionsDropdown = () => {
-  const [isOpen, setIsOpen] = useState(false);
-  const toggle = () => setIsOpen(!isOpen);
+  /**
+   * The first slot in the trailing actions group.
+   *
+   * While intended for status indicators like the progress monitor,
+   * it is a flexible container for any page-specific utility.
+   */
+  startSlot?: React.ReactNode;
 
-  return (
-    <Dropdown
-      popperProps={{ position: "right", appendTo: () => document.body }}
-      isOpen={isOpen}
-      onOpenChange={toggle}
-      onSelect={toggle}
-      onActionClick={toggle}
-      toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
-        <MenuToggle
-          ref={toggleRef}
-          onClick={toggle}
-          aria-label={_("Options toggle")}
-          isExpanded={isOpen}
-          isFullHeight
-          variant="plain"
-        >
-          <Icon name="expand_circle_down" />
-        </MenuToggle>
-      )}
-    >
-      <DropdownList>
-        <ChangeProductOption />
-        <DropdownItem key="download-logs" to={ROOT.logs} download="agama-logs.tar.gz">
-          {_("Download logs")}
-        </DropdownItem>
-      </DropdownList>
-    </Dropdown>
-  );
+  /**
+   * The middle slot in the trailing actions group, positioned between
+   * the start and end slots.
+   *
+   * This area is typically used for contextual actions, such as secondary
+   * navigation or configuration menus. Like its sibling slots, it accepts any
+   * React node to provide enough flexibility to fulfill page requirements.
+   *
+   * @example
+   * ```tsx
+   * <Header
+   *   title="Storage"
+   *   centerSlot={
+   *     <Dropdown>
+   *       <DropdownItem>Advanced settings</DropdownItem>
+   *       <DropdownItem>Export configuration</DropdownItem>
+   *     </Dropdown>
+   *   }
+   * />
+   * ```
+   */
+  centerSlot?: React.ReactNode;
+
+  /**
+   * The final slot at the very edge of the header.
+   *
+   * This is intended for content that requires maximum discoverability.
+   * Like the other slots, it accepts any React node to accommodate various
+   * interaction patterns, though it is often a button or a link.
+   *
+   * **Common Use Cases:**
+   * - Global navigation links (e.g., "Install").
+   * - Button triggers for high-priority settings (e.g., L10n settings).
+   * - Primary call-to-action buttons for the current workflow.
+   *
+   * @example
+   * <Header endSlot={<Link to="/overview">Review and Install</Link>} />
+   */
+  endSlot?: React.ReactNode;
+
+  /** Whether to hide the "Skip to content" accessibility link. */
+  hideSkipToContent?: boolean;
 };
 
 /**
@@ -114,18 +126,21 @@ const OptionsDropdown = () => {
 export default function Header({
   title,
   breadcrumbs,
-  showSkipToContent = true,
-  showInstallerOptions = true,
-  hideProgressMonitor = false,
+  startSlot,
+  centerSlot,
+  endSlot,
+  hideSkipToContent = false,
 }: HeaderProps): React.ReactNode {
   const product = useProductInfo();
 
   return (
     <Masthead>
       <MastheadMain className={spacingStyles.pXs}>
-        {showSkipToContent && <SkipTo />}
+        {!hideSkipToContent && <SkipTo />}
         {title ? (
-          <Title headingLevel="h1">{title}</Title>
+          <Title headingLevel="h1" className={textStyles.fontSizeXl}>
+            {title}
+          </Title>
         ) : (
           <Breadcrumbs>
             {product && breadcrumbs && (
@@ -144,13 +159,12 @@ export default function Header({
               />
             )}
             {breadcrumbs &&
-              breadcrumbs.map(({ label, path }, i) => (
+              breadcrumbs.map((props, i) => (
                 <Breadcrumbs.Item
                   isEditorial={i === 0}
                   key={i}
-                  label={label}
-                  path={path}
                   isCurrent={i === breadcrumbs.length - 1}
+                  {...props}
                 />
               ))}
           </Breadcrumbs>
@@ -160,22 +174,9 @@ export default function Header({
         <Toolbar isFullHeight>
           <ToolbarContent>
             <ToolbarGroup align={{ default: "alignEnd" }} columnGap={{ default: "columnGapXs" }}>
-              {!hideProgressMonitor && (
-                <ToolbarItem>
-                  <ProgressStatusMonitor />
-                </ToolbarItem>
-              )}
-              {showInstallerOptions && (
-                <ToolbarItem>
-                  <InstallerOptions />
-                </ToolbarItem>
-              )}
-              <ToolbarItem>
-                <ReviewAndInstallButton />
-              </ToolbarItem>
-              <ToolbarItem>
-                <OptionsDropdown />
-              </ToolbarItem>
+              {startSlot && <ToolbarItem>{startSlot}</ToolbarItem>}
+              {centerSlot && <ToolbarItem>{centerSlot}</ToolbarItem>}
+              {endSlot && <ToolbarItem>{endSlot}</ToolbarItem>}
             </ToolbarGroup>
           </ToolbarContent>
         </Toolbar>
