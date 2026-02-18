@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Wed Feb 18 20:32:00 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- Add support for bootloader config updateNvram (jsc#PED-14224) 
+
+-------------------------------------------------------------------
 Wed Feb 18 12:09:15 UTC 2026 - Stefan Hundhammer <shundhammer@suse.com>
 
 - Add /var/log/zypp/history to agama-logs tarball

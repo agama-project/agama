@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Feb 18 20:28:02 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- Add support for updateNvram bootloader key (jsc#PED-14224)
+- Add support for autoyast key bootloader->update_nvram conversion
+
+-------------------------------------------------------------------
 Mon Feb 16 16:31:50 UTC 2026 - José Iván López González <jlopez@suse.com>
 
 - Avoid automatic deactivation of unlisted DASD devices
