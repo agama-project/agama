@@ -49,6 +49,7 @@ const DEFAULT_PATHS: [&str; 16] = [
     "/var/log/messages",
     "/var/log/boot.msg",
     "/var/log/udev.log",
+    "/var/log/zypp/history",
     "/run/agama/dbus.log",
     "/run/agama/inst-scripts",
     // config
