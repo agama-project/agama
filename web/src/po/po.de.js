@@ -19,6 +19,7 @@ export default {
     "%1$s und %2$s"
   ],
   "%1$s and [%2$d more]": [
+    "%1$s und [%2$d weitere]",
     "%1$s und [%2$d weitere]"
   ],
   "%1$s at %2$s": [
@@ -32,10 +33,19 @@ export default {
     "%1$s wird weiterhin die LVM-Gruppe ‚%2$s‘ und alle zum Booten benötigten Partitionen enthalten"
   ],
   "%1$s, %2$s and [%3$d more]": [
+    "%1$s, %2$s und [%3$d weitere]",
     "%1$s, %2$s und [%3$d weitere]"
+  ],
+  "%d mode available": [
+    "%d Modus verfügbar",
+    "%d Modi verfügbar"
   ],
   "%d of %d": [
     "%d von %d"
+  ],
+  "%d other mode available": [
+    "%d weiterer Modus verfügbar",
+    "%d weitere Modi verfügbar"
   ],
   "%s - %s": [
     "%s - %s"
@@ -45,6 +55,9 @@ export default {
   ],
   "%s and %s": [
     "%s und %s"
+  ],
+  "%s at portal %s does not exist or cannot be reached.": [
+    "%s auf dem Portal %s existiert nicht oder kann nicht erreicht werden."
   ],
   "%s disk": [
     "Festplatte %s"
@@ -119,6 +132,9 @@ export default {
   "Actions": [
     "Aktionen"
   ],
+  "Actions for %s at portal %s": [
+    "Aktionen für %s im Portal %s"
+  ],
   "Activate": [
     "Aktivieren"
   ],
@@ -167,6 +183,9 @@ export default {
   "Add or use partition": [
     "Partition hinzufügen oder verwenden"
   ],
+  "Additional CHAP authentication performed by the initiator": [
+    "Vom Initiator durchgeführte zusätzliche CHAP-Authentifizierung"
+  ],
   "Address": [
     "Adresse"
   ],
@@ -179,6 +198,9 @@ export default {
   "Adjust the settings below to make the new system fit into the available space.": [
     "Passen Sie die Einstellungen unten an, damit das neue System in den verfügbaren Speicherplatz passt."
   ],
+  "All": [
+    "Alle"
+  ],
   "All conflicts have been resolved, or none were detected. You can safely continue with your setup.": [
     "Alle Konflikte wurden gelöst, oder es wurden keine erkannt. Sie können gefahrlos mit Ihrer Einrichtung fortfahren."
   ],
@@ -190,6 +212,9 @@ export default {
   ],
   "All fields are required": [
     "Alle Felder sind erforderlich"
+  ],
+  "All fields are required.": [
+    "Alle Felder sind erforderlich."
   ],
   "All network connections managed through this interface are currently set to be used only during installation and will not be copied to the installed system": [
     "Alle über diese Schnittstelle verwalteten Netzwerkverbindungen sind derzeit so eingestellt, dass sie nur während der Installation verwendet und nicht auf das installierte System kopiert werden"
@@ -237,12 +262,6 @@ export default {
   ],
   "Authentication": [
     "Authentifizierung"
-  ],
-  "Authentication by initiator": [
-    "Authentifizierung durch den Initiator"
-  ],
-  "Authentication by target": [
-    "Authentifizierung durch das Ziel"
   ],
   "Auto": [
     "Automatisch"
@@ -325,11 +344,17 @@ export default {
   "By proceeding, the installation will begin with defined settings.": [
     "Wenn Sie fortfahren, wird die Installation mit den festgelegten Einstellungen gestartet."
   ],
+  "CHAP authentication performed by the target": [
+    "Vom Ziel durchgeführte CHAP-Authentifizierung"
+  ],
   "CPU": [
     "CPU"
   ],
   "Cancel": [
     "Abbrechen"
+  ],
+  "Cancel connection": [
+    "Verbindung abbrechen"
   ],
   "Cannot be changed in remote installation": [
     "Kann bei der Ferninstallation nicht geändert werden"
@@ -415,6 +440,13 @@ export default {
   "Choose a disk for placing the boot loader": [
     "Wählen Sie eine Festplatte für den Bootloader aus"
   ],
+  "Choose a mode": [
+    "Wählen Sie einen Modus aus"
+  ],
+  "Choose a product": [
+    "Wählen Sie ein Produkt aus",
+    "Wählen Sie aus %d verfügbaren Produkten aus"
+  ],
   "Choose device to bind by MAC": [
     "Zu verknüpfendes Gerät nach MAC auswählen"
   ],
@@ -439,8 +471,8 @@ export default {
   "Close": [
     "Schließen"
   ],
-  "Configuration read from the iSCSI Boot Firmware Table (iBFT).": [
-    "Konfiguration aus der iSCSI Boot-Firmware-Tabelle (iBFT) gelesen."
+  "Configuration read from the iSCSI Boot Firmware Table (iBFT). Initiator cannot be changed.": [
+    "Konfiguration aus der iSCSI-Boot-Firmware-Tabelle (iBFT) gelesen. Initiator kann nicht geändert werden."
   ],
   "Configuration unreachable or invalid": [
     "Konfiguration nicht erreichbar oder ungültig"
@@ -500,6 +532,9 @@ export default {
   "Confirm that you really want to continue.": [
     "Bestätigen Sie, dass Sie wirklich fortfahren möchten."
   ],
+  "Confirm the product selection.": [
+    "Bestätigen Sie die Produktauswahl."
+  ],
   "Connect": [
     "Verbinden"
   ],
@@ -509,8 +544,8 @@ export default {
   "Connected": [
     "Verbunden"
   ],
-  "Connected (%s)": [
-    "Verbunden (%s)"
+  "Connected by the system": [
+    "Durch das System verbunden"
   ],
   "Connected device": [
     "Verbundenes Gerät"
@@ -526,6 +561,9 @@ export default {
   ],
   "Connection details": [
     "Verbindungsdetails"
+  ],
+  "Connection failed": [
+    "Verbindung fehlgeschlagen"
   ],
   "Connection is available to all devices.": [
     "Die Verbindung ist für alle Geräte verfügbar."
@@ -683,20 +721,23 @@ export default {
   "Discard the maximum size and continue with simplified configuration": [
     "Die maximale Größe verwerfen und mit der vereinfachten Konfiguration fortfahren"
   ],
+  "Disconnect": [
+    "Trennen"
+  ],
   "Disconnected": [
     "Getrennt"
   ],
-  "Discover": [
-    "Erkennen"
+  "Disconnected by the system": [
+    "Durch das System getrennt"
+  ],
+  "Disconnection failed": [
+    "Trennung fehlgeschlagen"
   ],
   "Discover and connect to iSCSI targets": [
     "iSCSI-Ziele erkennen und mit ihnen verbinden"
   ],
-  "Discover iSCSI Targets": [
-    "iSCSI-Ziele erkennen"
-  ],
-  "Discover iSCSI targets": [
-    "iSCSI-Ziele entdecken"
+  "Discover targets": [
+    "Ziele entdecken"
   ],
   "Disk": [
     "Festplatte"
@@ -719,14 +760,17 @@ export default {
   "Download logs": [
     "Protokolle herunterladen"
   ],
+  "Download logs to troubleshoot or share with support.": [
+    "Protokolle herunterladen, um Fehler zu beheben oder sie mit dem Kundendienst zu teilen."
+  ],
   "Edit": [
     "Bearbeiten"
   ],
-  "Edit %s": [
-    "%s bearbeiten"
-  ],
   "Edit binding settings": [
     "Verknüpfungseinstellungen bearbeiten"
+  ],
+  "Edit connection": [
+    "Verbindung bearbeiten"
   ],
   "Edit connection settings": [
     "Verbindungseinstellungen bearbeiten"
@@ -742,6 +786,9 @@ export default {
   ],
   "Empty LVM volume group %s": [
     "LVM-Volume-Gruppe %s löschen"
+  ],
+  "Enable mutual verification": [
+    "Gegenseitige Verifizierung aktivieren"
   ],
   "Encrypt the system": [
     "System verschlüsseln"
@@ -907,6 +954,9 @@ export default {
   "GiB": [
     "GiB"
   ],
+  "Go to iSCSI": [
+    "Zu iSCSI gehen"
+  ],
   "Go to network page": [
     "Zur Netzwerkseite gehen"
   ],
@@ -941,9 +991,6 @@ export default {
   "IP Addresses": [
     "IP-Adressen"
   ],
-  "IP address": [
-    "IP-Adresse"
-  ],
   "IP addresses": [
     "IP-Adressen"
   ],
@@ -971,32 +1018,17 @@ export default {
   "If you want to disable this check, please specify \"inst.ay_check=0\" at kernels command-line": [
     "Wenn Sie diese Überprüfung deaktivieren möchten, geben Sie bitte „inst.ay_check=0” in der Befehlszeile des Kernels an"
   ],
-  "Incorrect IP address": [
-    "Falsche IP-Adresse"
-  ],
-  "Incorrect password": [
-    "Falsches Passwort"
-  ],
-  "Incorrect port": [
-    "Falscher Port"
-  ],
-  "Incorrect user name": [
-    "Falscher Benutzername"
-  ],
   "Initiator": [
     "Initiator"
-  ],
-  "Initiator details": [
-    "Initiatordetails"
   ],
   "Initiator name": [
     "Name des Initiators"
   ],
-  "Initiator name could not be updated": [
-    "Initiatorname konnte nicht aktualisiert werden"
+  "Initiator password": [
+    "Initiator-Passwort"
   ],
-  "Initiator name successfully updated": [
-    "Initiatorname erfolgreich aktualisiert"
+  "Initiator user name": [
+    "Benutzername des Initiators"
   ],
   "Install": [
     "Installieren"
@@ -1015,6 +1047,9 @@ export default {
   ],
   "Installation devices": [
     "Installationsgeräte"
+  ],
+  "Installation failed": [
+    "Installation fehlgeschlagen"
   ],
   "Installation in progress": [
     "Installation läuft"
@@ -1145,6 +1180,9 @@ export default {
   "Localization": [
     "Lokalisierung"
   ],
+  "Locked targets cannot be managed from here and do not offer any actions.": [
+    "Gesperrte Ziele können von hier aus nicht verwaltet werden und bieten keine Aktionen an."
+  ],
   "Log in": [
     "Anmelden"
   ],
@@ -1160,23 +1198,14 @@ export default {
   "Login": [
     "Anmelden"
   ],
-  "Login %s": [
-    "%s anmelden"
-  ],
   "Login form": [
     "Anmeldeformular"
-  ],
-  "Logout": [
-    "Abmelden"
   ],
   "MAC": [
     "MAC"
   ],
   "Make sure that the passsword is correct and try again.": [
     "Vergewissern Sie sich, dass das Passwort korrekt ist, und versuchen Sie es erneut."
-  ],
-  "Make sure you provide the correct values": [
-    "Stellen Sie sicher, dass Sie die richtigen Werte angeben"
   ],
   "Manage DASD devices": [
     "DASD-Geräte verwalten"
@@ -1196,6 +1225,9 @@ export default {
   "Min channel": [
     "Minimaler Kanal"
   ],
+  "Missing": [
+    "Fehlend"
+  ],
   "Mode": [
     "Modus"
   ],
@@ -1205,11 +1237,17 @@ export default {
   "Modify settings and physical volumes": [
     "Einstellungen und physikalische Volumes ändern"
   ],
+  "More": [
+    "Mehr"
+  ],
   "More actions": [
     "Weitere Aktionen"
   ],
   "More devices": [
     "Weitere Geräte"
+  ],
+  "More installer options": [
+    "Mehr Installationsprogrammoptionen"
   ],
   "More keymap layout might be available for the selected product at [Localization] page": [
     "Weitere Tastaturbelegungen für das ausgewählte Produkt sind unter Umständen auf der Seite [Localization] verfügbar"
@@ -1333,11 +1371,8 @@ export default {
   "No devices found": [
     "Keine Geräte gefunden"
   ],
-  "No iSCSI Boot Firmware Table (iBFT) found. The initiator can be configured manually.": [
-    "Keine iSCSI Boot-Firmware-Tabelle (iBFT) gefunden. Der Initiator kann manuell konfiguriert werden."
-  ],
-  "No iSCSI targets found.": [
-    "Keine iSCSI-Ziele gefunden."
+  "No iSCSI Boot Firmware Table (iBFT) found. The initiator can be [configured manually.]": [
+    "Keine iSCSI-Boot-Firmware-Tabelle (iBFT) gefunden. Der Initiator kann [manuell konfiguriert werden]."
   ],
   "No logical volumes are defined yet": [
     "Es sind noch keine logischen Volumes definiert"
@@ -1351,8 +1386,23 @@ export default {
   "No support is planned.": [
     "Es ist keine Unterstützung geplant."
   ],
+  "No targets available": [
+    "Keine Ziele verfügbar"
+  ],
+  "No targets have been discovered or configured.": [
+    "Es wurden keine Ziele entdeckt oder konfiguriert."
+  ],
+  "No targets matches filters": [
+    "Keine Ziele entsprechen den Filtern"
+  ],
   "No user defined yet.": [
     "Noch kein Benutzer definiert."
+  ],
+  "No valid address.": [
+    "Keine gültige Adresse."
+  ],
+  "No valid port.": [
+    "Kein gültiger Port."
   ],
   "No wired connections were found": [
     "Keine kabelgebundenen Verbindungen gefunden"
@@ -1408,9 +1458,6 @@ export default {
   "On boot": [
     "Beim Booten"
   ],
-  "Only available if authentication by target is provided": [
-    "Nur verfügbar, wenn Authentifizierung durch das Ziel angeboten wird"
-  ],
   "Only reused partitions and space not assigned to any partition will be used.": [
     "Es werden nur wiederverwendete Partitionen und Speicherplatz, der keiner Partition zugewiesen ist, verwendet."
   ],
@@ -1419,9 +1466,6 @@ export default {
   ],
   "Options for partition %s": [
     "Optionen für Partition %s"
-  ],
-  "Options toggle": [
-    "Optionen umschalten"
   ],
   "Package installation failed": [
     "Paketinstallation fehlgeschlagen"
@@ -1492,11 +1536,11 @@ export default {
   "Pending": [
     "Ausstehend"
   ],
+  "Perform a discovery to find available iSCSI targets.": [
+    "Führe eine Erkennung durch, um verfügbare iSCSI-Ziele zu finden."
+  ],
   "PiB": [
     "PiB"
-  ],
-  "Please, perform an iSCSI discovery in order to find available iSCSI targets.": [
-    "Bitte führen Sie eine iSCSI-Erkennung durch, um verfügbare iSCSI-Ziele zu finden."
   ],
   "Please, try to activate a zFCP controller.": [
     "Bitte versuchen Sie, einen zFCP-Controller zu aktivieren."
@@ -1534,6 +1578,9 @@ export default {
   "Protection for the information stored at the new file systems, including data, programs, and system files.": [
     "Schutz für die in den neuen Dateisystemen gespeicherten Informationen, einschließlich Daten, Programme und Systemdateien."
   ],
+  "Provide authentication": [
+    "Authentifizierung bereitstellen"
+  ],
   "Provide email address": [
     "E-Mail-Adresse angeben"
   ],
@@ -1560,6 +1607,9 @@ export default {
   ],
   "Reboot": [
     "Neustart"
+  ],
+  "Reboot to try again.": [
+    "Neu starten, um es erneut zu versuchen."
   ],
   "Recommended": [
     "Empfohlen"
@@ -1703,12 +1753,21 @@ export default {
   "Select a disk to define partitions or to mount": [
     "Wählen Sie eine Festplatte aus, um Partitionen zu definieren oder einzuhängen"
   ],
+  "Select a mode": [
+    "Wählen Sie einen Modus aus"
+  ],
+  "Select a mode and confirm your choice.": [
+    "Wählen Sie einen Modus aus und bestätigen Sie Ihre Auswahl."
+  ],
   "Select a product": [
     "Wählen Sie ein Produkt aus"
   ],
   "Select a product and confirm your choice.": [
     "Wählen Sie ein Produkt aus und bestätigen Sie Ihre Auswahl.",
     "Wählen Sie ein Produkt aus und bestätigen Sie Ihre Auswahl am Ende der Liste."
+  ],
+  "Select a product mode to continue.": [
+    "Wählen Sie einen Produktmodus aus, um fortzufahren."
   ],
   "Select a product to continue.": [
     "Wählen Sie ein Produkt aus, um fortzufahren."
@@ -1873,6 +1932,9 @@ export default {
   "Status": [
     "Status"
   ],
+  "Status filter toggle": [
+    "Statusfilter umschalten"
+  ],
   "Step %1$d of %2$d": [
     "Schritt %1$d von %2$d"
   ],
@@ -1889,7 +1951,15 @@ export default {
     "Auslagerung"
   ],
   "Switch to a different mode": [
-    ""
+    "Wechseln Sie zu einem anderen Modus"
+  ],
+  "Switch to a different mode or another product": [
+    "Wechseln Sie zu einem anderen Modus oder einem anderen Produkt",
+    "Wechseln Sie zu einem anderen Modus oder zu einem der %d verfügbaren Produkte"
+  ],
+  "Switch to another product": [
+    "Wechseln Sie zu einem anderen Produkt",
+    "Wechseln Sie zu einem der %d verfügbaren Produkte"
   ],
   "System Information": [
     "Systeminformationen"
@@ -1903,11 +1973,11 @@ export default {
   "Take a moment to review the installation settings below and adjust them as needed.": [
     "Nehmen Sie sich einen Moment Zeit, um die folgenden Installationseinstellungen zu überprüfen und gegebenenfalls anzupassen."
   ],
-  "Target Password": [
-    "Ziel-Passwort"
+  "Target": [
+    "Ziel"
   ],
-  "Targets": [
-    "Ziele"
+  "Target not found": [
+    "Ziel nicht gefunden"
   ],
   "Temporary name that may change after reboot or network changes": [
     "Temporärer Name, der sich nach einem Neustart oder Netzwerkänderungen ändern kann"
@@ -2217,9 +2287,6 @@ export default {
   "Updating the hostname now or later will not change the currently registered hostname.": [
     "Wenn Sie den Hostnamen jetzt oder später aktualisieren, wird der aktuell registrierte Hostname nicht geändert."
   ],
-  "Updating the initiator name": [
-    "Aktualisieren des Initiatornamens"
-  ],
   "Upload": [
     "Hochladen"
   ],
@@ -2471,9 +2538,6 @@ export default {
   ],
   "[CAPS LOCK] is on": [
     "[CAPS LOCK] ist eingeschaltet"
-  ],
-  "[FIXME]": [
-    "[REPARIERMICH]"
   ],
   "active": [
     "aktiv"

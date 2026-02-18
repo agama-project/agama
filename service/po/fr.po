@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-02-09 04:10+0000\n"
+"POT-Creation-Date: 2026-02-13 10:41+0000\n"
 "PO-Revision-Date: 2025-08-04 09:59+0000\n"
 "Last-Translator: Sophie Leroy <sophie@stoquart.com>\n"
 "Language-Team: French <https://l10n.opensuse.org/projects/agama/agama-"
@@ -59,36 +59,41 @@ msgid "Performing iSCSI discovery"
 msgstr ""
 
 #. Implementation for the API method #Install.
-#: service/lib/agama/dbus/storage/manager.rb:111
+#: service/lib/agama/dbus/storage/manager.rb:118
 msgid "Preparing bootloader proposal"
 msgstr "Préparation du chargeur d'amorçage envisagé"
 
-#: service/lib/agama/dbus/storage/manager.rb:114
+#: service/lib/agama/dbus/storage/manager.rb:121
 msgid "Preparing the storage devices"
 msgstr "Préparation des périphériques de stockage"
 
-#: service/lib/agama/dbus/storage/manager.rb:117
+#: service/lib/agama/dbus/storage/manager.rb:124
 msgid "Writing bootloader sysconfig"
 msgstr "Écriture du sysconfig du chargeur d'amorçage"
 
 #. Implementation for the API method #Finish.
-#: service/lib/agama/dbus/storage/manager.rb:125
+#: service/lib/agama/dbus/storage/manager.rb:132
 #, fuzzy
 msgid "Finishing installation"
 msgstr "Abandonner l'installation"
 
+#: service/lib/agama/dbus/storage/manager.rb:138
+#, fuzzy
+msgid "Unmounting devices"
+msgstr "Les périphériques de stockage sont en cours de démontage"
+
 #. Gets and serializes the storage config used to calculate the current proposal.
 #.
 #. @return [String] Serialized config according to the JSON schema.
-#: service/lib/agama/dbus/storage/manager.rb:297
+#: service/lib/agama/dbus/storage/manager.rb:298
 msgid "Activating storage devices"
 msgstr "Activation des périphériques de stockage"
 
-#: service/lib/agama/dbus/storage/manager.rb:300
+#: service/lib/agama/dbus/storage/manager.rb:301
 msgid "Probing storage devices"
 msgstr "Sonde les périphériques de stockage"
 
-#: service/lib/agama/dbus/storage/manager.rb:303
+#: service/lib/agama/dbus/storage/manager.rb:304
 #, fuzzy
 msgid "Applying storage configuration"
 msgstr "La configuration de stockage est en cours d'ajustement"
@@ -430,42 +435,32 @@ msgid "Shrinking is not supported by this device"
 msgstr "Ce périphérique ne prend pas en charge la réduction"
 
 #. Copy /etc/nvme/host* to keep NVMe working after installation, bsc#1238038
-#: service/lib/agama/storage/finisher.rb:128
+#: service/lib/agama/storage/finisher.rb:126
 msgid "Copying important installation files to the target system"
 msgstr ""
 "Les fichiers d'installation importants sont en cours de copie vers le "
 "système cible"
 
 #. Step to write the bootloader configuration
-#: service/lib/agama/storage/finisher.rb:163
+#: service/lib/agama/storage/finisher.rb:161
 msgid "Installing bootloader"
 msgstr "Le chargeur d'amorçage est en cours d'installation"
 
 #. Step to finish the Y2Storage configuration
-#: service/lib/agama/storage/finisher.rb:180
+#: service/lib/agama/storage/finisher.rb:178
 msgid "Adjusting storage configuration"
 msgstr "La configuration de stockage est en cours d'ajustement"
 
 #. Step to finish the iSCSI configuration
-#: service/lib/agama/storage/finisher.rb:191
+#: service/lib/agama/storage/finisher.rb:189
 msgid "Adjusting iSCSI configuration"
 msgstr "La configuration iSCSI est en cours d'ajustement"
 
 #. Step to configure the file-system snapshots
-#: service/lib/agama/storage/finisher.rb:202
+#: service/lib/agama/storage/finisher.rb:200
 msgid "Configuring file systems snapshots"
 msgstr ""
 "Les instantanés des systèmes de fichiers sont en cours de configuration"
-
-#. Step to copy the installation logs
-#: service/lib/agama/storage/finisher.rb:220
-msgid "Copying logs"
-msgstr "Les journaux sont en cours de copie"
-
-#. Step to unmount the target file-systems
-#: service/lib/agama/storage/finisher.rb:254
-msgid "Unmounting storage devices"
-msgstr "Les périphériques de stockage sont en cours de démontage"
 
 #. Issue representing the proposal is not valid.
 #.
@@ -482,6 +477,16 @@ msgstr ""
 #: service/lib/agama/storage/proposal.rb:315
 msgid "A problem ocurred while calculating the storage setup"
 msgstr "Un problème est survenu lors du calcul de la configuration du stockage"
+
+#. Step to copy the installation logs
+#: service/lib/agama/storage/umounter.rb:112
+msgid "Copying logs"
+msgstr "Les journaux sont en cours de copie"
+
+#. Step to unmount the target file-systems
+#: service/lib/agama/storage/umounter.rb:146
+msgid "Unmounting storage devices"
+msgstr "Les périphériques de stockage sont en cours de démontage"
 
 #~ msgid "Logout iSCSI targets"
 #~ msgstr "Déconnecter les cibles iSCSI"

@@ -18,9 +18,6 @@ export default {
   "%1$s and %2$s": [
     "%1$s і %2$s"
   ],
-  "%1$s and [%2$d more]": [
-    "%1$s та [ще %2$d]"
-  ],
   "%1$s at %2$s": [
     "%1$s на %2$s"
   ],
@@ -35,11 +32,18 @@ export default {
   "%1$s will still contain the LVM group '%2$s' and any partition needed to boot": [
     "%1$s, як і раніше, міститиме групу LVM '%2$s' і будь-який розділ, необхідний для завантаження"
   ],
-  "%1$s, %2$s and [%3$d more]": [
-    "%1$s, %2$s та [ще %3$d]"
+  "%d mode available": [
+    "Доступний %d режим",
+    "Доступно %d режими",
+    "Доступно %d режимів"
   ],
   "%d of %d": [
     "%d з %d"
+  ],
+  "%d other mode available": [
+    "Доступно %d інший режим",
+    "Доступно %d інші режими",
+    "Доступно %d інших режимів"
   ],
   "%s - %s": [
     "%s - %s"
@@ -248,12 +252,6 @@ export default {
   "Authentication": [
     "Аутентифікація"
   ],
-  "Authentication by initiator": [
-    "Аутентифікація ініціатором"
-  ],
-  "Authentication by target": [
-    "Аутентифікація за ціллю"
-  ],
   "Auto": [
     "Автоматично"
   ],
@@ -425,6 +423,14 @@ export default {
   "Choose a disk for placing the boot loader": [
     "Оберіть диск для розміщення завантажувача"
   ],
+  "Choose a mode": [
+    "Виберіть режим"
+  ],
+  "Choose a product": [
+    "Виберіть продукт",
+    "Виберіть із %d доступних продуктів",
+    "Виберіть із %d доступних продуктів"
+  ],
   "Choose device to bind by MAC": [
     "Виберіть пристрій для прив'язки за MAC-адресою"
   ],
@@ -448,9 +454,6 @@ export default {
   ],
   "Close": [
     "Закрити"
-  ],
-  "Configuration read from the iSCSI Boot Firmware Table (iBFT).": [
-    "Конфігурація, зчитана з таблиці iSCSI Boot Firmware Table (iBFT)."
   ],
   "Configuration unreachable or invalid": [
     "Конфігурація недоступна або не синхронізована"
@@ -511,6 +514,9 @@ export default {
   "Confirm that you really want to continue.": [
     "Підтвердьте, що Ви дійсно хочете продовжити."
   ],
+  "Confirm the product selection.": [
+    "Підтвердіть вибір продукту."
+  ],
   "Connect": [
     "З'єднати"
   ],
@@ -519,9 +525,6 @@ export default {
   ],
   "Connected": [
     "З'єднано"
-  ],
-  "Connected (%s)": [
-    "З'єднано (%s)"
   ],
   "Connected device": [
     "Підключений пристрій"
@@ -694,20 +697,14 @@ export default {
   "Discard the maximum size and continue with simplified configuration": [
     "Відмовтеся від максимального розміру і продовжте роботу зі спрощеною конфігурацією"
   ],
+  "Disconnect": [
+    "Роз'єднати"
+  ],
   "Disconnected": [
     "Роз'єднано"
   ],
-  "Discover": [
-    "Виявити"
-  ],
   "Discover and connect to iSCSI targets": [
     "Виявлення та підключення до iSCSI-об'єктів"
-  ],
-  "Discover iSCSI Targets": [
-    "Знайомство з цільовими пристроями iSCSI"
-  ],
-  "Discover iSCSI targets": [
-    "Виявлення цілей iSCSI"
   ],
   "Disk": [
     "Диск"
@@ -730,11 +727,11 @@ export default {
   "Download logs": [
     "Завантажити журнали"
   ],
+  "Download logs to troubleshoot or share with support.": [
+    ""
+  ],
   "Edit": [
     "Редагувати"
-  ],
-  "Edit %s": [
-    "Змінити %s"
   ],
   "Edit binding settings": [
     "Змінити налаштування прив'язки"
@@ -753,6 +750,9 @@ export default {
   ],
   "Empty LVM volume group %s": [
     "Очистити групу томів LVM %s"
+  ],
+  "Enable mutual verification": [
+    ""
   ],
   "Encrypt the system": [
     "Зашифрувати систему"
@@ -955,9 +955,6 @@ export default {
   "IP Addresses": [
     "IP-адреси"
   ],
-  "IP address": [
-    "IP-адреса"
-  ],
   "IP addresses": [
     "IP адреси"
   ],
@@ -985,32 +982,11 @@ export default {
   "If you want to disable this check, please specify \"inst.ay_check=0\" at kernels command-line": [
     "Якщо Ви хочете вимкнути цю перевірку, вкажіть \"inst.ay_check=0\" у командному рядку ядра"
   ],
-  "Incorrect IP address": [
-    "Некоректна IP-адреса"
-  ],
-  "Incorrect password": [
-    "Некоректний пароль"
-  ],
-  "Incorrect port": [
-    "Некоректний порт"
-  ],
-  "Incorrect user name": [
-    "Некоректне Ім'я користувача"
-  ],
   "Initiator": [
     "Ініціатор"
   ],
-  "Initiator details": [
-    "Відомості про ініціатора"
-  ],
   "Initiator name": [
     "Ім'я ініціатора"
-  ],
-  "Initiator name could not be updated": [
-    "Не вдалося оновити ім'я ініціатора"
-  ],
-  "Initiator name successfully updated": [
-    "Ім'я ініціатора успішно оновлено"
   ],
   "Install": [
     "Встановити"
@@ -1159,6 +1135,9 @@ export default {
   "Localization": [
     "Локалізація"
   ],
+  "Locked targets cannot be managed from here and do not offer any actions.": [
+    ""
+  ],
   "Log in": [
     "Вхід"
   ],
@@ -1174,23 +1153,14 @@ export default {
   "Login": [
     "Вхід"
   ],
-  "Login %s": [
-    "Логін %s"
-  ],
   "Login form": [
     "Форма входу"
-  ],
-  "Logout": [
-    "Вихід"
   ],
   "MAC": [
     "MAC-адреса"
   ],
   "Make sure that the passsword is correct and try again.": [
     "Переконайтеся, що Ви ввели правильний пароль і спробуйте знову."
-  ],
-  "Make sure you provide the correct values": [
-    "Переконайтеся, що Ви вказали правильні значення"
   ],
   "Manage DASD devices": [
     "Керування DASD-пристроями"
@@ -1210,6 +1180,9 @@ export default {
   "Min channel": [
     "Мін. канал"
   ],
+  "Missing": [
+    ""
+  ],
   "Mode": [
     "Режим"
   ],
@@ -1218,6 +1191,9 @@ export default {
   ],
   "Modify settings and physical volumes": [
     "Зміна налаштувань та фізичних томів"
+  ],
+  "More": [
+    ""
   ],
   "More actions": [
     "Більше дій"
@@ -1349,12 +1325,6 @@ export default {
   "No devices found": [
     "Пристроїв не знайдено"
   ],
-  "No iSCSI Boot Firmware Table (iBFT) found. The initiator can be configured manually.": [
-    "Не знайдено таблиці завантажувальних мікропрограм iSCSI (iBFT). Ініціатор можна налаштувати вручну."
-  ],
-  "No iSCSI targets found.": [
-    "Цілі iSCSI не знайдені."
-  ],
   "No logical volumes are defined yet": [
     "Логічні томи ще не задано"
   ],
@@ -1367,8 +1337,14 @@ export default {
   "No support is planned.": [
     "Підтримки немає у планах."
   ],
+  "No targets have been discovered or configured.": [
+    ""
+  ],
   "No user defined yet.": [
     "Користувача ще не вказано."
+  ],
+  "No valid port.": [
+    ""
   ],
   "No wired connections were found": [
     "Дротові з'єднання не знайдено"
@@ -1424,9 +1400,6 @@ export default {
   "On boot": [
     "При завантаженні"
   ],
-  "Only available if authentication by target is provided": [
-    "Доступно тільки за умови аутентифікації за ціллю"
-  ],
   "Only reused partitions and space not assigned to any partition will be used.": [
     "Будуть використовуватися тільки повторно використовувані розділи і простір, не призначений жодному розділу."
   ],
@@ -1435,9 +1408,6 @@ export default {
   ],
   "Options for partition %s": [
     "Параметри розділу %s"
-  ],
-  "Options toggle": [
-    "Показ налаштувань"
   ],
   "Package installation failed": [
     "Не вдалося встановити пакунок"
@@ -1511,9 +1481,6 @@ export default {
   "PiB": [
     "ПіБ"
   ],
-  "Please, perform an iSCSI discovery in order to find available iSCSI targets.": [
-    "Виконайте виявлення iSCSI, щоб знайти доступні цілі iSCSI."
-  ],
   "Please, try to activate a zFCP controller.": [
     "Будь ласка, спробуйте активувати контролер zFCP."
   ],
@@ -1576,6 +1543,9 @@ export default {
   ],
   "Reboot": [
     "Перезавантажити"
+  ],
+  "Reboot to try again.": [
+    ""
   ],
   "Recommended": [
     "Рекомендовано"
@@ -1720,6 +1690,12 @@ export default {
   "Select a disk to define partitions or to mount": [
     "Виберіть диск для визначення розділів або монтування"
   ],
+  "Select a mode": [
+    "Оберіть режим"
+  ],
+  "Select a mode and confirm your choice.": [
+    "Виберіть режим і підтвердіть свій вибір."
+  ],
   "Select a product": [
     "Оберіть продукт"
   ],
@@ -1727,6 +1703,9 @@ export default {
     "Виберіть продукт і підтвердіть свій вибір.",
     "Виберіть продукт і підтвердіть свій вибір у кінці списку.",
     "Виберіть продукт і підтвердіть свій вибір у кінці списку."
+  ],
+  "Select a product mode to continue.": [
+    "Виберіть режим продукту для продовження."
   ],
   "Select a product to continue.": [
     "Виберіть продукт для продовження."
@@ -1892,6 +1871,9 @@ export default {
   "Status": [
     "Стан"
   ],
+  "Status filter toggle": [
+    ""
+  ],
   "Step %1$d of %2$d": [
     "Крок %1$d з %2$d"
   ],
@@ -1908,7 +1890,17 @@ export default {
     "Swap"
   ],
   "Switch to a different mode": [
-    ""
+    "Перейти в інший режим"
+  ],
+  "Switch to a different mode or another product": [
+    "Перейти до іншого режиму або іншого продукту",
+    "Перейти в інший режим або до одного з %d доступних продуктів",
+    "Перейти в інший режим або до одного з %d доступних продуктів"
+  ],
+  "Switch to another product": [
+    "Перейти до іншого продукту",
+    "Перейти до одного з %d доступних продуктів",
+    "Перейти до одного з %d доступних продуктів"
   ],
   "System Information": [
     "Інформація про систему"
@@ -1922,11 +1914,8 @@ export default {
   "Take a moment to review the installation settings below and adjust them as needed.": [
     "Приділіть хвилинку, щоб переглянути налаштування інсталяції нижче та відкоригуйте їх за необхідності."
   ],
-  "Target Password": [
-    "Пароль цілі"
-  ],
-  "Targets": [
-    "Цілі"
+  "Target not found": [
+    ""
   ],
   "Temporary name that may change after reboot or network changes": [
     "Тимчасове ім'я, яке може змінитися після перезавантаження або змін у мережі"
@@ -2244,9 +2233,6 @@ export default {
   "Updating the hostname now or later will not change the currently registered hostname.": [
     "Оновлення імені хоста зараз або пізніше не змінить поточне зареєстроване ім'я хоста."
   ],
-  "Updating the initiator name": [
-    "Оновлення імені ініціатора"
-  ],
   "Upload": [
     "Завантажити"
   ],
@@ -2499,9 +2485,6 @@ export default {
   "[CAPS LOCK] is on": [
     "[CAPS LOCK] увімкнений"
   ],
-  "[FIXME]": [
-    "[FIXME]"
-  ],
   "active": [
     "активно"
   ],
@@ -2527,7 +2510,7 @@ export default {
     "iSCSI"
   ],
   "immutable Btrfs": [
-    ""
+    "незмінна Btrfs"
   ],
   "logical volume": [
     "логічний том"

@@ -18,9 +18,6 @@ export default {
   "%1$s and %2$s": [
     "%1$s ja %2$s"
   ],
-  "%1$s and [%2$d more]": [
-    "%1$s ja [%2$d muuta]"
-  ],
   "%1$s at %2$s": [
     "%1$s laitteella %2$s"
   ],
@@ -33,9 +30,6 @@ export default {
   ],
   "%1$s will still contain the LVM group '%2$s' and any partition needed to boot": [
     "%1$s sisältää edelleen LVM-ryhmän ”%2$s” sekä käynnistämiseen tarvittavat osiot"
-  ],
-  "%1$s, %2$s and [%3$d more]": [
-    "%1$s, %2$s ja [%3$d muuta]"
   ],
   "%d of %d": [
     "%d / %d"
@@ -241,12 +235,6 @@ export default {
   "Authentication": [
     "Tunnistautuminen"
   ],
-  "Authentication by initiator": [
-    "Alullepanijan mukaan tunnistautuminen"
-  ],
-  "Authentication by target": [
-    "Kohteen mukaan tunnistautuminen"
-  ],
   "Auto": [
     "Automaattinen"
   ],
@@ -424,9 +412,6 @@ export default {
   "Close": [
     "Sulje"
   ],
-  "Configuration read from the iSCSI Boot Firmware Table (iBFT).": [
-    "Asetukset luettu kohteesta iSCSI Boot Firmware Table (iBFT)."
-  ],
   "Configuration unreachable or invalid": [
     "Asetuksia ei voida ladata tai ne eivät ole kelvollisia"
   ],
@@ -469,9 +454,6 @@ export default {
   ],
   "Connected": [
     "Yhdistetty"
-  ],
-  "Connected (%s)": [
-    "Yhdistetty (%s)"
   ],
   "Connected device": [
     "Yhdistetty laite"
@@ -638,17 +620,8 @@ export default {
   "Disconnected": [
     "Yhteys katkaistu"
   ],
-  "Discover": [
-    "Havaitse"
-  ],
   "Discover and connect to iSCSI targets": [
     "Löydä ja yhdistä iSCSI-kohteita"
-  ],
-  "Discover iSCSI Targets": [
-    "Havaitse iSCSI-kohteita"
-  ],
-  "Discover iSCSI targets": [
-    "Havaitaan iSCSI-kohteita"
   ],
   "Disk": [
     "Levy"
@@ -668,11 +641,11 @@ export default {
   "Download logs": [
     "Lataa lokit"
   ],
+  "Download logs to troubleshoot or share with support.": [
+    ""
+  ],
   "Edit": [
     "Muokkaa"
-  ],
-  "Edit %s": [
-    "Muokkaa kohdetta %s"
   ],
   "Edit binding settings": [
     "Muokkaa sidosasetuksia"
@@ -691,6 +664,9 @@ export default {
   ],
   "Empty LVM volume group %s": [
     "Tyhjennä LVM-taltioryhmä %s"
+  ],
+  "Enable mutual verification": [
+    ""
   ],
   "Encrypt the system": [
     "Salaa järjestelmä"
@@ -890,9 +866,6 @@ export default {
   "IP Addresses": [
     "IP-osoitteet"
   ],
-  "IP address": [
-    "IP-osoite"
-  ],
   "IP addresses": [
     "IP-osoitteet"
   ],
@@ -917,32 +890,11 @@ export default {
   "If you want to disable this check, please specify \"inst.ay_check=0\" at kernels command-line": [
     "Jos haluat poistaa tarkistuksen, aseta Linux-ytimen komentoriville ”inst.ay_check=0”"
   ],
-  "Incorrect IP address": [
-    "Virheellinen IP-osoite"
-  ],
-  "Incorrect password": [
-    "Virheellinen salasana"
-  ],
-  "Incorrect port": [
-    "Virheellinen portti"
-  ],
-  "Incorrect user name": [
-    "Virheellinen käyttäjänimi"
-  ],
   "Initiator": [
     "Alullepanija (initiator)"
   ],
-  "Initiator details": [
-    "Alullepanijan tiedot"
-  ],
   "Initiator name": [
     "Alullepanijan nimi"
-  ],
-  "Initiator name could not be updated": [
-    "Alullepanijan nimeä ei voi päivittää"
-  ],
-  "Initiator name successfully updated": [
-    "Alullepanijan nimi päivitettty"
   ],
   "Install": [
     "Asenna"
@@ -1073,6 +1025,9 @@ export default {
   "Localization": [
     "Kotoistaminen"
   ],
+  "Locked targets cannot be managed from here and do not offer any actions.": [
+    ""
+  ],
   "Log in": [
     "Kirjaudu sisään"
   ],
@@ -1088,20 +1043,11 @@ export default {
   "Login": [
     "Kirjaudu"
   ],
-  "Login %s": [
-    "Kirjautuminen %s"
-  ],
   "Login form": [
     "Kirjautuminen"
   ],
-  "Logout": [
-    "Kirjaudu ulos"
-  ],
   "MAC": [
     "MAC"
-  ],
-  "Make sure you provide the correct values": [
-    "Varmista että tarjoat oikeita arvoja"
   ],
   "Manage DASD devices": [
     "Hallitse DASD-laitteita"
@@ -1121,6 +1067,9 @@ export default {
   "Min channel": [
     "Minimikanava"
   ],
+  "Missing": [
+    ""
+  ],
   "Mode": [
     "Tapa"
   ],
@@ -1129,6 +1078,9 @@ export default {
   ],
   "Modify settings and physical volumes": [
     "Muuta asetuksia ja fyysisiä taltioita"
+  ],
+  "More": [
+    ""
   ],
   "More actions": [
     "Lisää toimintoja"
@@ -1258,12 +1210,6 @@ export default {
   "No devices found": [
     "Laitteita ei löydy"
   ],
-  "No iSCSI Boot Firmware Table (iBFT) found. The initiator can be configured manually.": [
-    "iSCSI Boot Firmware Table (iBFT):tä ei löydy. Alullepanija (initiator) voidaan määrittää käsin."
-  ],
-  "No iSCSI targets found.": [
-    "iSCSI-kohteita ei löydy."
-  ],
   "No logical volumes are defined yet": [
     "Loogisia taltioita ei ole vielä määritetty"
   ],
@@ -1276,8 +1222,14 @@ export default {
   "No support is planned.": [
     "Tukea ei ole suunniteltu."
   ],
+  "No targets have been discovered or configured.": [
+    ""
+  ],
   "No user defined yet.": [
     "Käyttäjää ei ole vielä määritetty."
+  ],
+  "No valid port.": [
+    ""
   ],
   "No wired connections were found": [
     "Kiinteitä yhteyksiä ei löydy"
@@ -1330,9 +1282,6 @@ export default {
   "On boot": [
     "Käynnistyksessä"
   ],
-  "Only available if authentication by target is provided": [
-    "Käytettävissä vain kohteen mukaan tunnistautumisen kanssa"
-  ],
   "Only reused partitions and space not assigned to any partition will be used.": [
     "Vain uudelleenkäytettyjä osioita sekä varaamatonta tilaa tullaan käyttämään."
   ],
@@ -1341,9 +1290,6 @@ export default {
   ],
   "Options for partition %s": [
     "Osion %s valinnat"
-  ],
-  "Options toggle": [
-    "Valinnat-tila"
   ],
   "Package installation failed": [
     "Paketin asennus epäonnistui"
@@ -1417,9 +1363,6 @@ export default {
   "PiB": [
     "PiB"
   ],
-  "Please, perform an iSCSI discovery in order to find available iSCSI targets.": [
-    "Käytä iSCSI-havaitsemistoimintoa saatavilla olevien iSCSI-kohteiden löytämiseksi."
-  ],
   "Please, try to activate a zFCP controller.": [
     "Yritä aktivoida zFCP-ohjain."
   ],
@@ -1476,6 +1419,9 @@ export default {
   ],
   "Reboot": [
     "Käynnistä uudelleen"
+  ],
+  "Reboot to try again.": [
+    ""
   ],
   "Recommended": [
     "Suositeltu"
@@ -1764,6 +1710,9 @@ export default {
   "Status": [
     "Tila"
   ],
+  "Status filter toggle": [
+    ""
+  ],
   "Storage": [
     "Tallennustila"
   ],
@@ -1788,11 +1737,8 @@ export default {
   "Take a moment to review the installation settings below and adjust them as needed.": [
     ""
   ],
-  "Target Password": [
-    "Kohteen salasana"
-  ],
-  "Targets": [
-    "Kohteet"
+  "Target not found": [
+    ""
   ],
   "Temporary name that may change after reboot or network changes": [
     "Väliaikaisnimi voi muuttua uudelleenkäynnistyksen jälkeen tai verkon muuttuessa"
@@ -2096,9 +2042,6 @@ export default {
   "Updating the hostname now or later will not change the currently registered hostname.": [
     "Isäntänimen päivittäminen nyt tai myöhemmin ei muuta tällä hetkellä rekisteröityä isäntänimeä."
   ],
-  "Updating the initiator name": [
-    "Päivitetään alullepanijan nimeä"
-  ],
   "Upload": [
     "Lataa"
   ],
@@ -2344,9 +2287,6 @@ export default {
   ],
   "[CAPS LOCK] is on": [
     "[CAPS LOCK] on päällä"
-  ],
-  "[FIXME]": [
-    "[FIXME]"
   ],
   "active": [
     "aktiivinen"
