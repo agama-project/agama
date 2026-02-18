@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-02-10 16:22+0000\n"
-"PO-Revision-Date: 2026-02-03 04:00+0000\n"
+"POT-Creation-Date: 2026-02-13 08:59+0000\n"
+"PO-Revision-Date: 2026-02-11 18:04+0000\n"
 "Last-Translator: Arif Budiman <arifpedia@gmail.com>\n"
 "Language-Team: Indonesian <https://l10n.opensuse.org/projects/agama/agama-"
 "rust-master/id/>\n"
@@ -29,71 +29,74 @@ msgstr "Tidak"
 msgid "Yes"
 msgstr "Ya"
 
-#: agama-manager/src/tasks/runner.rs:183
+#: agama-manager/src/tasks/runner.rs:185
 msgid "Prepare the system"
 msgstr "Siapkan sistem"
 
-#: agama-manager/src/tasks/runner.rs:184
+#: agama-manager/src/tasks/runner.rs:186
 msgid "Install software"
 msgstr "Instal perangkat lunak"
 
-#: agama-manager/src/tasks/runner.rs:185
+#: agama-manager/src/tasks/runner.rs:187
 msgid "Configure the system"
 msgstr "Konfigurasikan sistem"
 
-#: agama-manager/src/tasks/runner.rs:280
-msgid "Storing security settings"
-msgstr ""
-
-#: agama-manager/src/tasks/runner.rs:281
-msgid "Setting up the hostname"
-msgstr ""
-
-#: agama-manager/src/tasks/runner.rs:282
-msgid "Setting up the network proxy"
-msgstr ""
-
-#: agama-manager/src/tasks/runner.rs:283
-msgid "Importing user files"
-msgstr ""
-
-#: agama-manager/src/tasks/runner.rs:284
-msgid "Running user pre-installation scripts"
-msgstr ""
-
 #: agama-manager/src/tasks/runner.rs:285
-msgid "Storing questions settings"
-msgstr ""
+msgid "Storing security settings"
+msgstr "Menyimpan pengaturan keamanan"
 
 #: agama-manager/src/tasks/runner.rs:286
-msgid "Storing localization settings"
-msgstr ""
+msgid "Setting up the hostname"
+msgstr "Menyiapkan nama host"
 
 #: agama-manager/src/tasks/runner.rs:287
-msgid "Storing users settings"
-msgstr ""
+msgid "Setting up the network proxy"
+msgstr "Menyiapkan proksi jaringan"
 
 #: agama-manager/src/tasks/runner.rs:288
-msgid "Configuring iSCSI devices"
-msgstr ""
+msgid "Importing user files"
+msgstr "Mengimpor berkas pengguna"
+
+#: agama-manager/src/tasks/runner.rs:289
+msgid "Running user pre-installation scripts"
+msgstr "Menjalankan skrip pra-instalasi pengguna"
+
+#: agama-manager/src/tasks/runner.rs:290
+msgid "Storing questions settings"
+msgstr "Menyimpan pengaturan pertanyaan"
+
+#: agama-manager/src/tasks/runner.rs:291
+msgid "Storing localization settings"
+msgstr "Menyimpan pengaturan lokalisasi"
 
 #: agama-manager/src/tasks/runner.rs:292
-msgid "Setting up the network"
-msgstr ""
+msgid "Storing users settings"
+msgstr "Menyimpan pengaturan pengguna"
+
+#: agama-manager/src/tasks/runner.rs:293
+msgid "Configuring iSCSI devices"
+msgstr "Mengonfigurasi perangkat iSCSI"
 
 #: agama-manager/src/tasks/runner.rs:297
 #, fuzzy
+msgid "Configuring DASD devices"
+msgstr "Mengonfigurasi perangkat iSCSI"
+
+#: agama-manager/src/tasks/runner.rs:301
+msgid "Setting up the network"
+msgstr "Menyiapkan jaringan"
+
+#: agama-manager/src/tasks/runner.rs:306
 msgid "Preparing the software proposal"
-msgstr "Menghitung usulan perangkat lunak"
+msgstr "Menyiapkan usulan perangkat lunak"
 
-#: agama-manager/src/tasks/runner.rs:298
-#, fuzzy
+#: agama-manager/src/tasks/runner.rs:307
 msgid "Preparing the storage proposal"
-msgstr "Menghitung usulan perangkat lunak"
+msgstr "Menyiapkan usulan penyimpanan"
 
-#: agama-manager/src/tasks/runner.rs:299
+#: agama-manager/src/tasks/runner.rs:308
 msgid "Storing bootloader settings"
-msgstr ""
+msgstr "Menyimpan pengaturan bootloader"
 
 #: agama-network/src/service.rs:518
 msgid "Writing configuration"
@@ -172,14 +175,14 @@ msgstr "Mendaftarkan sistem"
 msgid "The product must be registered"
 msgstr "Produk harus didaftarkan"
 
-#: agama-users/src/service.rs:138
+#: agama-users/src/service.rs:140
 msgid ""
 "Defining a user, setting the root password or a SSH public key is required"
 msgstr ""
 "Diperlukan penetapan pengguna, pengaturan kata sandi root, atau kunci publik "
 "SSH"
 
-#: agama-users/src/service.rs:151
+#: agama-users/src/service.rs:153
 msgid "First user information is incomplete"
 msgstr "Informasi pengguna pertama tidak lengkap"
 

@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-02-10 16:22+0000\n"
-"PO-Revision-Date: 2026-01-28 23:04+0000\n"
+"POT-Creation-Date: 2026-02-13 08:59+0000\n"
+"PO-Revision-Date: 2026-02-12 21:04+0000\n"
 "Last-Translator: Ettore Atalan <atalanttore@googlemail.com>\n"
 "Language-Team: German <https://l10n.opensuse.org/projects/agama/agama-rust-"
 "master/de/>\n"
@@ -29,79 +29,81 @@ msgstr "Nein"
 msgid "Yes"
 msgstr "Ja"
 
-#: agama-manager/src/tasks/runner.rs:183
+#: agama-manager/src/tasks/runner.rs:185
 msgid "Prepare the system"
-msgstr ""
+msgstr "System vorbereiten"
 
-#: agama-manager/src/tasks/runner.rs:184
+#: agama-manager/src/tasks/runner.rs:186
 msgid "Install software"
 msgstr "Software installieren"
 
-#: agama-manager/src/tasks/runner.rs:185
+#: agama-manager/src/tasks/runner.rs:187
 msgid "Configure the system"
 msgstr "System konfigurieren"
 
-#: agama-manager/src/tasks/runner.rs:280
-msgid "Storing security settings"
-msgstr ""
-
-#: agama-manager/src/tasks/runner.rs:281
-msgid "Setting up the hostname"
-msgstr ""
-
-#: agama-manager/src/tasks/runner.rs:282
-msgid "Setting up the network proxy"
-msgstr ""
-
-#: agama-manager/src/tasks/runner.rs:283
-msgid "Importing user files"
-msgstr ""
-
-#: agama-manager/src/tasks/runner.rs:284
-msgid "Running user pre-installation scripts"
-msgstr ""
-
 #: agama-manager/src/tasks/runner.rs:285
-msgid "Storing questions settings"
-msgstr ""
+msgid "Storing security settings"
+msgstr "Sicherheitseinstellungen speichern"
 
 #: agama-manager/src/tasks/runner.rs:286
-msgid "Storing localization settings"
-msgstr ""
+msgid "Setting up the hostname"
+msgstr "Hostname einrichten"
 
 #: agama-manager/src/tasks/runner.rs:287
-msgid "Storing users settings"
-msgstr ""
+msgid "Setting up the network proxy"
+msgstr "Netzwerkproxy einrichten"
 
 #: agama-manager/src/tasks/runner.rs:288
-msgid "Configuring iSCSI devices"
-msgstr ""
+msgid "Importing user files"
+msgstr "Benutzerdateien importieren"
+
+#: agama-manager/src/tasks/runner.rs:289
+msgid "Running user pre-installation scripts"
+msgstr "Ausführen von Benutzer-Skripten vor der Installation"
+
+#: agama-manager/src/tasks/runner.rs:290
+msgid "Storing questions settings"
+msgstr "Frageeinstellungen speichern"
+
+#: agama-manager/src/tasks/runner.rs:291
+msgid "Storing localization settings"
+msgstr "Lokalisierungseinstellungen speichern"
 
 #: agama-manager/src/tasks/runner.rs:292
-msgid "Setting up the network"
-msgstr ""
+msgid "Storing users settings"
+msgstr "Benutzereinstellungen speichern"
+
+#: agama-manager/src/tasks/runner.rs:293
+msgid "Configuring iSCSI devices"
+msgstr "iSCSI-Geräte konfigurieren"
 
 #: agama-manager/src/tasks/runner.rs:297
-#, fuzzy
+msgid "Configuring DASD devices"
+msgstr "DASD-Geräte konfigurieren"
+
+#: agama-manager/src/tasks/runner.rs:301
+msgid "Setting up the network"
+msgstr "Netzwerk einrichten"
+
+#: agama-manager/src/tasks/runner.rs:306
 msgid "Preparing the software proposal"
-msgstr "Software-Vorschlag wird berechnet"
+msgstr "Software-Vorschlag vorbereiten"
 
-#: agama-manager/src/tasks/runner.rs:298
-#, fuzzy
+#: agama-manager/src/tasks/runner.rs:307
 msgid "Preparing the storage proposal"
-msgstr "Software-Vorschlag wird berechnet"
+msgstr "Speicherungsvorschlag vorbereiten"
 
-#: agama-manager/src/tasks/runner.rs:299
+#: agama-manager/src/tasks/runner.rs:308
 msgid "Storing bootloader settings"
-msgstr ""
+msgstr "Bootloader-Einstellungen speichern"
 
 #: agama-network/src/service.rs:518
 msgid "Writing configuration"
-msgstr "Konfiguration wird geschrieben"
+msgstr "Konfiguration schreiben"
 
 #: agama-network/src/service.rs:519
 msgid "Reading configuration"
-msgstr "Konfiguration wird gelesen"
+msgstr "Konfiguration lesen"
 
 #: agama-security/src/service.rs:228
 msgid "Reject"
@@ -172,13 +174,13 @@ msgstr "System wird registriert"
 msgid "The product must be registered"
 msgstr "Das Produkt muss registriert werden"
 
-#: agama-users/src/service.rs:138
+#: agama-users/src/service.rs:140
 msgid ""
 "Defining a user, setting the root password or a SSH public key is required"
 msgstr ""
 "Die Definition eines Benutzers, das Festlegen des Root-Passworts oder eines "
 "öffentlichen SSH-Schlüssels ist erforderlich"
 
-#: agama-users/src/service.rs:151
+#: agama-users/src/service.rs:153
 msgid "First user information is incomplete"
 msgstr "Die Informationen zum ersten Benutzer sind unvollständig"
