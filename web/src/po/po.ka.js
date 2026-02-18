@@ -19,6 +19,7 @@ export default {
     "%1$s და %2$s"
   ],
   "%1$s and [%2$d more]": [
+    "%1$s და [კიდევ %2$d]",
     "%1$s და [კიდევ %2$d]"
   ],
   "%1$s at %2$s": [
@@ -35,10 +36,19 @@ export default {
     ""
   ],
   "%1$s, %2$s and [%3$d more]": [
+    "%1$s, %2$s და [კიდევ %3$d]",
     "%1$s, %2$s და [კიდევ %3$d]"
+  ],
+  "%d mode available": [
+    "ხელმისაწვდომია %d რეჟიმი",
+    "ხელმისაწვდომია %d რეჟიმი"
   ],
   "%d of %d": [
     "%d %d-დან"
+  ],
+  "%d other mode available": [
+    "ხელმისაწვდომია კიდევ %d რეჟიმი",
+    "ხელმისაწვდომია კიდევ %d რეჟიმი"
   ],
   "%s - %s": [
     "%s - %s"
@@ -48,6 +58,9 @@ export default {
   ],
   "%s and %s": [
     "%s და %s"
+  ],
+  "%s at portal %s does not exist or cannot be reached.": [
+    "%s პორტალზე %s არსებობს, ან ხელმიუწვდომელია."
   ],
   "%s disk": [
     "%s დისკი"
@@ -122,6 +135,9 @@ export default {
   "Actions": [
     "ქმედებები"
   ],
+  "Actions for %s at portal %s": [
+    "ქმედებები %s-ისთვის პორტალზე %s"
+  ],
   "Activate": [
     "აქტივაცია"
   ],
@@ -170,6 +186,9 @@ export default {
   "Add or use partition": [
     "დანაყოფის დამატება ან გამოყენება"
   ],
+  "Additional CHAP authentication performed by the initiator": [
+    "ინიციატორის მიერ შესრულებული დამატებითი CHAP ავთენტიკაცია"
+  ],
   "Address": [
     "მისამართი"
   ],
@@ -182,6 +201,9 @@ export default {
   "Adjust the settings below to make the new system fit into the available space.": [
     ""
   ],
+  "All": [
+    "ყველა"
+  ],
   "All conflicts have been resolved, or none were detected. You can safely continue with your setup.": [
     ""
   ],
@@ -193,6 +215,9 @@ export default {
   ],
   "All fields are required": [
     "ყველა ველი აუცილებელია"
+  ],
+  "All fields are required.": [
+    "ყველა ველი აუცილებელია."
   ],
   "All network connections managed through this interface are currently set to be used only during installation and will not be copied to the installed system": [
     ""
@@ -240,12 +265,6 @@ export default {
   ],
   "Authentication": [
     "ავთენტიკაცია"
-  ],
-  "Authentication by initiator": [
-    "ავთენტიკაცია ინიციატორით"
-  ],
-  "Authentication by target": [
-    "ავთენტიკაცია სამიზნით"
   ],
   "Auto": [
     "ავტო"
@@ -328,11 +347,17 @@ export default {
   "By proceeding, the installation will begin with defined settings.": [
     ""
   ],
+  "CHAP authentication performed by the target": [
+    "სამიზნის მიერ შესრულებული CHAP ავთენტიკაცია"
+  ],
   "CPU": [
     ""
   ],
   "Cancel": [
     "გაუქმება"
+  ],
+  "Cancel connection": [
+    "დაკავშირების გაუქმება"
   ],
   "Cannot be changed in remote installation": [
     "ვერ შეიცვლება დაშორებული დაყენებისას"
@@ -418,6 +443,13 @@ export default {
   "Choose a disk for placing the boot loader": [
     "აირჩიეთ დისკის ჩამტვირთავის განსათავსებლად"
   ],
+  "Choose a mode": [
+    "რეჟიმის არჩევა"
+  ],
+  "Choose a product": [
+    "პროდუქტის არჩევა",
+    "არჩევა %d ხელმისაწვდომი პროდუქტიდან"
+  ],
   "Choose device to bind by MAC": [
     "აირჩიეთ მოწყობილობა MAC-ით მისაბმელად"
   ],
@@ -442,8 +474,8 @@ export default {
   "Close": [
     "დახურვა"
   ],
-  "Configuration read from the iSCSI Boot Firmware Table (iBFT).": [
-    "iSCSI-დან ჩამტვირთავი მიკროკოდიდან (iBFT) წაკითხული კონფიგურაცია."
+  "Configuration read from the iSCSI Boot Firmware Table (iBFT). Initiator cannot be changed.": [
+    "iSCSI-დან ჩამტვირთავი მიკროკოდიდან (iBFT) წაკითხული კონფიგურაცია. ინიციატორის შეცვლა შეუძლებელია."
   ],
   "Configuration unreachable or invalid": [
     "კონფიგურაცია ხელმიუწვდომელია, ან არასწორია"
@@ -503,6 +535,9 @@ export default {
   "Confirm that you really want to continue.": [
     "დაადასტურეთ, რომ მართლა გნებავთ, გააგრძელოთ."
   ],
+  "Confirm the product selection.": [
+    "პროდუქტის არჩევნის დადასტურება."
+  ],
   "Connect": [
     "დაკავშირება"
   ],
@@ -512,8 +547,8 @@ export default {
   "Connected": [
     "დაკავშირებულია"
   ],
-  "Connected (%s)": [
-    "მიერთებულია (%s)"
+  "Connected by the system": [
+    "დაკავშირებული სისტემის მიერ"
   ],
   "Connected device": [
     "დაკავშირებული მოწყობილობა"
@@ -529,6 +564,9 @@ export default {
   ],
   "Connection details": [
     "კავშირის დეტალები"
+  ],
+  "Connection failed": [
+    "კავშირი ჩავარდა"
   ],
   "Connection is available to all devices.": [
     "კავშირი ხელმისაწვდომია ყველა მოწყობილობისთვის."
@@ -686,20 +724,23 @@ export default {
   "Discard the maximum size and continue with simplified configuration": [
     "მაქსიმალური ზომის მოცილება და გამარტივებული კონფიგურაციით გაგრძელება"
   ],
+  "Disconnect": [
+    "გამოერთება"
+  ],
   "Disconnected": [
     "გამოერთებული"
   ],
-  "Discover": [
-    "აღმოაჩინეთ"
+  "Disconnected by the system": [
+    "გათიშული სისტემის მიერ"
+  ],
+  "Disconnection failed": [
+    "გათიშვა ჩავარდა"
   ],
   "Discover and connect to iSCSI targets": [
     "iSCSI სამიზნეების აღმოჩენა და მიერთება"
   ],
-  "Discover iSCSI Targets": [
-    "iSCSI სამიზნეების აღმოჩენა"
-  ],
-  "Discover iSCSI targets": [
-    "iSCSI სამიზნეების აღმოჩენა"
+  "Discover targets": [
+    "სამიზნეების აღმოჩენა"
   ],
   "Disk": [
     "დისკი"
@@ -722,14 +763,17 @@ export default {
   "Download logs": [
     "ჟურნალის გადმოწერა"
   ],
+  "Download logs to troubleshoot or share with support.": [
+    ""
+  ],
   "Edit": [
     "ჩასწორება"
   ],
-  "Edit %s": [
-    "%s-ის ჩასწორება"
-  ],
   "Edit binding settings": [
     "მიბმის პარამეტრების ჩასწორება"
+  ],
+  "Edit connection": [
+    "კავშირის ჩასწორება"
   ],
   "Edit connection settings": [
     "კავშირის პარამეტრების ჩასწორება"
@@ -745,6 +789,9 @@ export default {
   ],
   "Empty LVM volume group %s": [
     "ცარიელი LVM ტომების ჯგუფი %s"
+  ],
+  "Enable mutual verification": [
+    ""
   ],
   "Encrypt the system": [
     "სისტემის დაშიფვრა"
@@ -910,6 +957,9 @@ export default {
   "GiB": [
     "გიბ"
   ],
+  "Go to iSCSI": [
+    "iSCSI-ზე გადასვლა"
+  ],
   "Go to network page": [
     "ქსელის გვერდზე გადასვლა"
   ],
@@ -944,9 +994,6 @@ export default {
   "IP Addresses": [
     "IP მისამართები"
   ],
-  "IP address": [
-    "IP-მისამართი"
-  ],
   "IP addresses": [
     "IP მისამართები"
   ],
@@ -974,32 +1021,17 @@ export default {
   "If you want to disable this check, please specify \"inst.ay_check=0\" at kernels command-line": [
     ""
   ],
-  "Incorrect IP address": [
-    "არასწორი IP მისამართი"
-  ],
-  "Incorrect password": [
-    "არასწორი პაროლი"
-  ],
-  "Incorrect port": [
-    "არასწორი პორტი"
-  ],
-  "Incorrect user name": [
-    "არასწორი მომხმარებლის სახელი"
-  ],
   "Initiator": [
     "ინიციატორი"
-  ],
-  "Initiator details": [
-    "ინიციატორის დეტალები"
   ],
   "Initiator name": [
     "ინიციატორის სახელი"
   ],
-  "Initiator name could not be updated": [
-    "ინიციატორის სახელის განახლება შეუძლებელია"
+  "Initiator password": [
+    "ინიციატორის პაროლი"
   ],
-  "Initiator name successfully updated": [
-    "ინიციატორის სახელი წარმატებით განახლდა"
+  "Initiator user name": [
+    "ინიციატორის მომხმარებლის სახელი"
   ],
   "Install": [
     "დაყენება"
@@ -1018,6 +1050,9 @@ export default {
   ],
   "Installation devices": [
     "დაყენების მოწყობილობები"
+  ],
+  "Installation failed": [
+    "დაყენება ჩავარდა"
   ],
   "Installation in progress": [
     "მიმდინარეობს დაყენება"
@@ -1148,6 +1183,9 @@ export default {
   "Localization": [
     "ლოკალიზაცია"
   ],
+  "Locked targets cannot be managed from here and do not offer any actions.": [
+    ""
+  ],
   "Log in": [
     "შესვლა"
   ],
@@ -1163,23 +1201,14 @@ export default {
   "Login": [
     "შესვლა"
   ],
-  "Login %s": [
-    "%s-ზე შესვლა"
-  ],
   "Login form": [
     "შესვლის ფორმა"
-  ],
-  "Logout": [
-    "გასვლა"
   ],
   "MAC": [
     "MAC"
   ],
   "Make sure that the passsword is correct and try again.": [
     "დარწმუნდით, რომ პაროლი სწორია და თავიდან სცადეთ."
-  ],
-  "Make sure you provide the correct values": [
-    "დარწმუნდით, რომ შეყვანილი მნიშვნელობები სწორია"
   ],
   "Manage DASD devices": [
     "DASD მოწყობილობების მართვა"
@@ -1199,6 +1228,9 @@ export default {
   "Min channel": [
     "მინ. არხი"
   ],
+  "Missing": [
+    ""
+  ],
   "Mode": [
     "რეჟიმი"
   ],
@@ -1208,11 +1240,17 @@ export default {
   "Modify settings and physical volumes": [
     "პარამეტრების და ფიზიკური ტომების შეცვლა"
   ],
+  "More": [
+    ""
+  ],
   "More actions": [
     "მეტი ქმედება"
   ],
   "More devices": [
     "მეტი მოწყობილობა"
+  ],
+  "More installer options": [
+    "დაყენების პროგრამის მეტი პარამეტრები"
   ],
   "More keymap layout might be available for the selected product at [Localization] page": [
     ""
@@ -1336,11 +1374,8 @@ export default {
   "No devices found": [
     "მოწყობილობები აღმოჩენილი არაა"
   ],
-  "No iSCSI Boot Firmware Table (iBFT) found. The initiator can be configured manually.": [
-    "iSCSI-ის ჩატვირთვის მიკროკოდის ცხრილი (iBFT) აღმოჩენილი არაა. ინიციატორი შეგიძლიათ, ხელით მოირგოთ."
-  ],
-  "No iSCSI targets found.": [
-    "პრობლემა iSCSI სამიზნეების აღმოჩენისას."
+  "No iSCSI Boot Firmware Table (iBFT) found. The initiator can be [configured manually.]": [
+    "iSCSI-ის ჩატვირთვის მიკროკოდის ცხრილი (iBFT) აღმოჩენილი არაა. ინიციატორი შეგიძლიათ, [ხელით მოირგოთ.]"
   ],
   "No logical volumes are defined yet": [
     "ლოგიკური ტომები ჯერ აღწერილი არაა"
@@ -1354,8 +1389,23 @@ export default {
   "No support is planned.": [
     "მხარდაჭერა დაგეგმილი არაა."
   ],
+  "No targets available": [
+    "სამიზნეები ხელმისაწვდომი არაა"
+  ],
+  "No targets have been discovered or configured.": [
+    ""
+  ],
+  "No targets matches filters": [
+    "ფილტრს სამიზნე არ ემთხვევა"
+  ],
   "No user defined yet.": [
     "მომხმარებელი ჯერ აღწერილი არაა."
+  ],
+  "No valid address.": [
+    "სწორი მისამართის გარეშე."
+  ],
+  "No valid port.": [
+    ""
   ],
   "No wired connections were found": [
     "მავთულიანი მიერთება აღმოჩენილი არაა"
@@ -1411,9 +1461,6 @@ export default {
   "On boot": [
     "ჩატვირთვისას"
   ],
-  "Only available if authentication by target is provided": [
-    "ხელმისაწვდომია, მხოლოდ, მაშინ, თუ მითითებულია ავთენტიკაცია სამიზნით"
-  ],
   "Only reused partitions and space not assigned to any partition will be used.": [
     ""
   ],
@@ -1422,9 +1469,6 @@ export default {
   ],
   "Options for partition %s": [
     "პარამეტრები დანაყოფისთვის %s"
-  ],
-  "Options toggle": [
-    "პარამეტრის გადართვა"
   ],
   "Package installation failed": [
     "პაკეტის დაყენება ჩავარდა"
@@ -1495,11 +1539,11 @@ export default {
   "Pending": [
     "დარჩენილია"
   ],
+  "Perform a discovery to find available iSCSI targets.": [
+    "განახორციელეთ აღმოჩენა, რომ იპოვოთ ხელმისაწვდომი iSCSI სამიზნეები."
+  ],
   "PiB": [
     "პიბ"
-  ],
-  "Please, perform an iSCSI discovery in order to find available iSCSI targets.": [
-    "განახორციელეთ iSCSI აღმოჩენა, რომ იპოვოთ ხელმისაწვდომი iSCSI სამიზნეები."
   ],
   "Please, try to activate a zFCP controller.": [
     "სცადეთ, გაააქტიუროთ zFCP კონტროლერი."
@@ -1537,6 +1581,9 @@ export default {
   "Protection for the information stored at the new file systems, including data, programs, and system files.": [
     ""
   ],
+  "Provide authentication": [
+    "ავთენტიკაციის მიწოდება"
+  ],
   "Provide email address": [
     "შეიყვანეთ ელფოსტის მისამართი"
   ],
@@ -1563,6 +1610,9 @@ export default {
   ],
   "Reboot": [
     "გადატვირთვა"
+  ],
+  "Reboot to try again.": [
+    ""
   ],
   "Recommended": [
     "რეკომენდებულია"
@@ -1706,12 +1756,21 @@ export default {
   "Select a disk to define partitions or to mount": [
     "აირჩიეთ დისკი დანაყოფების აღწერისთვის, ან მიმაგრებისთვის"
   ],
+  "Select a mode": [
+    "აირჩიეთ რეჟიმი"
+  ],
+  "Select a mode and confirm your choice.": [
+    "აირჩიეთ რეჟიმი და დაადასტურეთ თქვენი არჩევანი."
+  ],
   "Select a product": [
     "აირჩიეთ პროდუქტი"
   ],
   "Select a product and confirm your choice.": [
     "აირჩიეთ პროდუქტი და დაადასტურეთ თქვენი არჩევანი.",
     "აირჩიეთ პროდუქტი და დაადასტურეთ თქვენი არჩევანი სიის ბოლოში."
+  ],
+  "Select a product mode to continue.": [
+    "გასაგრძელებლად აირჩიეთ პროდუქტის რეჟიმი."
   ],
   "Select a product to continue.": [
     "გასაგრძელებლად აირჩიეთ პროდუქტი."
@@ -1876,6 +1935,9 @@ export default {
   "Status": [
     "სტატუსი"
   ],
+  "Status filter toggle": [
+    ""
+  ],
   "Step %1$d of %2$d": [
     "ნაბიჯი %1$d %2$d-დან"
   ],
@@ -1894,6 +1956,14 @@ export default {
   "Switch to a different mode": [
     ""
   ],
+  "Switch to a different mode or another product": [
+    "გადართვა სხვა პროდუქტზე, ან რეჟიმზე",
+    "გადართვა სხვა რეჟიმზე, ან %d ხელმისაწვდომი პროდუქტიდან ერთ-ერთზე"
+  ],
+  "Switch to another product": [
+    "გადართვა სხვა პროდუქტზე",
+    "გადართვა ერთ-ერთზე %d ხელმისაწვდომი პროდუქტიდან"
+  ],
   "System Information": [
     "ინფორმაცია სისტემის შესახებ"
   ],
@@ -1906,11 +1976,11 @@ export default {
   "Take a moment to review the installation settings below and adjust them as needed.": [
     ""
   ],
-  "Target Password": [
-    "სამიზნე პაროლი"
+  "Target": [
+    "სამიზნე"
   ],
-  "Targets": [
-    "სამიზნეები"
+  "Target not found": [
+    ""
   ],
   "Temporary name that may change after reboot or network changes": [
     ""
@@ -2220,9 +2290,6 @@ export default {
   "Updating the hostname now or later will not change the currently registered hostname.": [
     "ჰოსტის სახელის შეცვლა ახლა, ან მოგვიანებით არ შეცვლის ამჟამად დარეგისტრირებულ ჰოსტის სახელს."
   ],
-  "Updating the initiator name": [
-    "ინიციატორის სახელის განახლება"
-  ],
   "Upload": [
     "ატვირთვა"
   ],
@@ -2474,9 +2541,6 @@ export default {
   ],
   "[CAPS LOCK] is on": [
     "[CAPS LOCK] ჩართულია"
-  ],
-  "[FIXME]": [
-    "[გამასწორე]"
   ],
   "active": [
     "აქტიური"

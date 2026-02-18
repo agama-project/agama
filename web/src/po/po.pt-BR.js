@@ -222,12 +222,6 @@ export default {
   "Authentication": [
     "Autenticação"
   ],
-  "Authentication by initiator": [
-    "Autenticação pelo iniciador"
-  ],
-  "Authentication by target": [
-    "Autenticação pelo alvo"
-  ],
   "Auto": [
     "Automático"
   ],
@@ -405,9 +399,6 @@ export default {
   "Close": [
     "Fechar"
   ],
-  "Configuration read from the iSCSI Boot Firmware Table (iBFT).": [
-    "Configuração lida da Tabela de Firmware de Inicialização iSCSI (iBFT)."
-  ],
   "Configuration unreachable or invalid": [
     "Configuração indisponível ou inválida"
   ],
@@ -446,9 +437,6 @@ export default {
   ],
   "Connected": [
     "Conectado"
-  ],
-  "Connected (%s)": [
-    "Conectado (%s)"
   ],
   "Connected device": [
     "Dispositivo conectado"
@@ -609,20 +597,14 @@ export default {
   "Discard the maximum size and continue with simplified configuration": [
     "Descartar o tamanho máximo e continuar com a configuração simplificada"
   ],
+  "Disconnect": [
+    "Desconectar"
+  ],
   "Disconnected": [
     "Desconectado"
   ],
-  "Discover": [
-    "Descobrir"
-  ],
   "Discover and connect to iSCSI targets": [
     "Descobrir e conectar aos destinos iSCSI"
-  ],
-  "Discover iSCSI Targets": [
-    "Descubra os alvos iSCSI"
-  ],
-  "Discover iSCSI targets": [
-    "Descobrir destinos iSCSI"
   ],
   "Disk": [
     "Disco"
@@ -642,11 +624,11 @@ export default {
   "Download logs": [
     "Baixar logs"
   ],
+  "Download logs to troubleshoot or share with support.": [
+    ""
+  ],
   "Edit": [
     "Editar"
-  ],
-  "Edit %s": [
-    "Editar %s"
   ],
   "Edit binding settings": [
     "Editar configurações de vinculação"
@@ -665,6 +647,9 @@ export default {
   ],
   "Empty LVM volume group %s": [
     "Esvaziar grupo de volume LVM %s"
+  ],
+  "Enable mutual verification": [
+    ""
   ],
   "Encrypt the system": [
     "Criptografar o sistema"
@@ -864,9 +849,6 @@ export default {
   "IP Addresses": [
     "Endereços IP"
   ],
-  "IP address": [
-    "Endereço IP"
-  ],
   "IP addresses": [
     "Endereços IP"
   ],
@@ -891,32 +873,11 @@ export default {
   "If you want to disable this check, please specify \"inst.ay_check=0\" at kernels command-line": [
     ""
   ],
-  "Incorrect IP address": [
-    "Endereço IP incorreto"
-  ],
-  "Incorrect password": [
-    "Senha incorreta"
-  ],
-  "Incorrect port": [
-    "Porta incorreta"
-  ],
-  "Incorrect user name": [
-    "Nome de usuário incorreto"
-  ],
   "Initiator": [
     "Iniciador"
   ],
-  "Initiator details": [
-    "Detalhes do iniciador"
-  ],
   "Initiator name": [
     "Nome do iniciador"
-  ],
-  "Initiator name could not be updated": [
-    "Não foi possível atualizar o nome do iniciador"
-  ],
-  "Initiator name successfully updated": [
-    "Nome do iniciador atualizado com êxito"
   ],
   "Install": [
     "Instalar"
@@ -1035,6 +996,9 @@ export default {
   "Localization": [
     "Localização"
   ],
+  "Locked targets cannot be managed from here and do not offer any actions.": [
+    ""
+  ],
   "Log in": [
     "Faça login"
   ],
@@ -1050,20 +1014,11 @@ export default {
   "Login": [
     "Entrar"
   ],
-  "Login %s": [
-    "Entrar %s"
-  ],
   "Login form": [
     "Formulário de login"
   ],
-  "Logout": [
-    "Encerrar sessão"
-  ],
   "MAC": [
     "MAC"
-  ],
-  "Make sure you provide the correct values": [
-    "Certifique-se de fornecer os valores corretos"
   ],
   "Manage DASD devices": [
     "Gerenciar dispositivos DASD"
@@ -1083,11 +1038,17 @@ export default {
   "Min channel": [
     "Canal mínimo"
   ],
+  "Missing": [
+    ""
+  ],
   "Mode": [
     "Modo"
   ],
   "Modify settings and physical volumes": [
     "Modificar configurações e volumes físicos"
+  ],
+  "More": [
+    ""
   ],
   "More actions": [
     "Mais ações"
@@ -1214,12 +1175,6 @@ export default {
   "No devices found": [
     "Nenhum dispositivo encontrado"
   ],
-  "No iSCSI Boot Firmware Table (iBFT) found. The initiator can be configured manually.": [
-    "Nenhuma Tabela de Firmware de Inicialização iSCSI (iBFT) encontrada. É possível configurar o iniciador manualmente."
-  ],
-  "No iSCSI targets found.": [
-    "Nenhum destino iSCSI encontrado."
-  ],
   "No logical volumes are defined yet": [
     "Nenhum volume lógico ainda foi definido"
   ],
@@ -1232,8 +1187,14 @@ export default {
   "No support is planned.": [
     "Não há suporte planejado."
   ],
+  "No targets have been discovered or configured.": [
+    ""
+  ],
   "No user defined yet.": [
     "Nenhum usuário definido ainda."
+  ],
+  "No valid port.": [
+    ""
   ],
   "No wired connections were found": [
     "Nenhuma conexão com fio encontrada"
@@ -1283,9 +1244,6 @@ export default {
   "On boot": [
     "Na inicialização"
   ],
-  "Only available if authentication by target is provided": [
-    "Disponível somente se a autenticação por destino for fornecida"
-  ],
   "Only reused partitions and space not assigned to any partition will be used.": [
     "Apenas as partições reutilizadas e o espaço não atribuído a nenhuma partição serão usados."
   ],
@@ -1294,9 +1252,6 @@ export default {
   ],
   "Options for partition %s": [
     "Opções para a partição %s"
-  ],
-  "Options toggle": [
-    "Alternar opções"
   ],
   "Package installation failed": [
     "Falha na instalação do pacote"
@@ -1363,9 +1318,6 @@ export default {
   ],
   "PiB": [
     "PiB"
-  ],
-  "Please, perform an iSCSI discovery in order to find available iSCSI targets.": [
-    "Execute uma descoberta iSCSI para encontrar os alvos iSCSI disponíveis."
   ],
   "Please, try to activate a zFCP controller.": [
     "Tente ativar um controlador zFCP."
@@ -1705,6 +1657,9 @@ export default {
   "Status": [
     "Status"
   ],
+  "Status filter toggle": [
+    ""
+  ],
   "Storage": [
     "Armazenamento"
   ],
@@ -1726,11 +1681,8 @@ export default {
   "Take a moment to review the installation settings below and adjust them as needed.": [
     ""
   ],
-  "Target Password": [
-    "Senha de destino"
-  ],
-  "Targets": [
-    "Destinos"
+  "Target not found": [
+    ""
   ],
   "Temporary name that may change after reboot or network changes": [
     ""
@@ -2031,9 +1983,6 @@ export default {
   "Updating the hostname now or later will not change the currently registered hostname.": [
     "A atualização do nome de host agora ou no futuro não altera o nome de host que já está registrado."
   ],
-  "Updating the initiator name": [
-    "Atualizando o nome do iniciador"
-  ],
   "Upload": [
     "Enviar"
   ],
@@ -2258,9 +2207,6 @@ export default {
   ],
   "[CAPS LOCK] is on": [
     "[CAPS LOCK] ativado"
-  ],
-  "[FIXME]": [
-    "[FIXME]"
   ],
   "active": [
     "ativo"

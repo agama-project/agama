@@ -18,9 +18,6 @@ export default {
   "%1$s and %2$s": [
     "%1$s och %2$s"
   ],
-  "%1$s and [%2$d more]": [
-    "%1$s och [%2$d mer]"
-  ],
   "%1$s at %2$s": [
     "%1$s på %2$s"
   ],
@@ -33,9 +30,6 @@ export default {
   ],
   "%1$s will still contain the LVM group '%2$s' and any partition needed to boot": [
     "%1$s kommer fortfarande att innehålla LVM-gruppen '%2$s' och eventuell partition som behövs för att starta systemet"
-  ],
-  "%1$s, %2$s and [%3$d more]": [
-    "%1$s, %2$s och [%3$d mer]"
   ],
   "%d of %d": [
     "%d av %d"
@@ -241,12 +235,6 @@ export default {
   "Authentication": [
     "Autentisering"
   ],
-  "Authentication by initiator": [
-    "Autentisering av initiativtagare"
-  ],
-  "Authentication by target": [
-    "Autentisering av mål"
-  ],
   "Auto": [
     "Auto"
   ],
@@ -427,9 +415,6 @@ export default {
   "Close": [
     "Stäng"
   ],
-  "Configuration read from the iSCSI Boot Firmware Table (iBFT).": [
-    "Konfiguration läst från iSCSI Boot Firmware Table (iBFT)."
-  ],
   "Configuration unreachable or invalid": [
     "Konfigurationen är oåtkomlig eller ogiltig"
   ],
@@ -496,9 +481,6 @@ export default {
   ],
   "Connected": [
     "Ansluten"
-  ],
-  "Connected (%s)": [
-    "Ansluten (%s)"
   ],
   "Connected device": [
     "Ansluten enhet"
@@ -668,20 +650,14 @@ export default {
   "Discard the maximum size and continue with simplified configuration": [
     "Kassera den maximala storleken och fortsätt med förenklad konfiguration"
   ],
+  "Disconnect": [
+    "Koppla ifrån"
+  ],
   "Disconnected": [
     "Frånkopplad"
   ],
-  "Discover": [
-    "Upptäck"
-  ],
   "Discover and connect to iSCSI targets": [
     "Upptäck och anslut till iSCSI mål"
-  ],
-  "Discover iSCSI Targets": [
-    "Upptäck iSCSI mål"
-  ],
-  "Discover iSCSI targets": [
-    "Upptäck iSCSI-mål"
   ],
   "Disk": [
     "Disk"
@@ -704,11 +680,11 @@ export default {
   "Download logs": [
     "Ladda ner loggar"
   ],
+  "Download logs to troubleshoot or share with support.": [
+    ""
+  ],
   "Edit": [
     "Redigera"
-  ],
-  "Edit %s": [
-    "Redigera %s"
   ],
   "Edit binding settings": [
     "Redigera bindningsinställningar"
@@ -727,6 +703,9 @@ export default {
   ],
   "Empty LVM volume group %s": [
     "Tom LVM volymgrupp %s"
+  ],
+  "Enable mutual verification": [
+    ""
   ],
   "Encrypt the system": [
     "Kryptera systemet"
@@ -926,9 +905,6 @@ export default {
   "IP Addresses": [
     "IP-adresser"
   ],
-  "IP address": [
-    "IP address"
-  ],
   "IP addresses": [
     "IP adresser"
   ],
@@ -956,32 +932,11 @@ export default {
   "If you want to disable this check, please specify \"inst.ay_check=0\" at kernels command-line": [
     "Om du vill inaktivera den här kontrollen, ange \"inst.ay_check=0\" på kärnans kommandorad"
   ],
-  "Incorrect IP address": [
-    "Felaktig IP adress"
-  ],
-  "Incorrect password": [
-    "Felaktigt lösenord"
-  ],
-  "Incorrect port": [
-    "Felaktig port"
-  ],
-  "Incorrect user name": [
-    "Felaktigt användarnamn"
-  ],
   "Initiator": [
     "Initiativtagare"
   ],
-  "Initiator details": [
-    "Initiator detaljer"
-  ],
   "Initiator name": [
     "Initiativtagarens namn"
-  ],
-  "Initiator name could not be updated": [
-    "Initiatornamnet kunde inte uppdateras"
-  ],
-  "Initiator name successfully updated": [
-    "Initiatornamnet har uppdaterats"
   ],
   "Install": [
     "Installera"
@@ -1121,6 +1076,9 @@ export default {
   "Localization": [
     "Lokalisering"
   ],
+  "Locked targets cannot be managed from here and do not offer any actions.": [
+    ""
+  ],
   "Log in": [
     "Logga in"
   ],
@@ -1136,23 +1094,14 @@ export default {
   "Login": [
     "Logga in"
   ],
-  "Login %s": [
-    "Inloggning %s"
-  ],
   "Login form": [
     "Inloggningsformulär"
-  ],
-  "Logout": [
-    "Logga ut"
   ],
   "MAC": [
     "MAC"
   ],
   "Make sure that the passsword is correct and try again.": [
     "Kontrollera att lösenordet är korrekt och försök igen."
-  ],
-  "Make sure you provide the correct values": [
-    "Se till att du anger rätt värden"
   ],
   "Manage DASD devices": [
     "Hantera DASD-enheter"
@@ -1172,6 +1121,9 @@ export default {
   "Min channel": [
     "Minimum kanal"
   ],
+  "Missing": [
+    ""
+  ],
   "Mode": [
     "Läge"
   ],
@@ -1180,6 +1132,9 @@ export default {
   ],
   "Modify settings and physical volumes": [
     "Modifiera inställningar och fysiska volymer"
+  ],
+  "More": [
+    ""
   ],
   "More actions": [
     "Mer åtgärder"
@@ -1309,12 +1264,6 @@ export default {
   "No devices found": [
     "Inga enheter hittades"
   ],
-  "No iSCSI Boot Firmware Table (iBFT) found. The initiator can be configured manually.": [
-    "Ingen iSCSI Boot Firmware Table (iBFT) hittades. Initieraren kan konfigureras manuellt."
-  ],
-  "No iSCSI targets found.": [
-    "Inga iSCSI mål hittades."
-  ],
   "No logical volumes are defined yet": [
     "Inga logiska volymer är definierade ännu"
   ],
@@ -1327,8 +1276,14 @@ export default {
   "No support is planned.": [
     "Inget stöd är planerat."
   ],
+  "No targets have been discovered or configured.": [
+    ""
+  ],
   "No user defined yet.": [
     "Ingen användare definierad ännu."
+  ],
+  "No valid port.": [
+    ""
   ],
   "No wired connections were found": [
     "Inga trådbundna anslutningar hittades"
@@ -1384,9 +1339,6 @@ export default {
   "On boot": [
     "Vid uppstart"
   ],
-  "Only available if authentication by target is provided": [
-    "Endast tillgängligt om autentisering via mål tillhandahålls"
-  ],
   "Only reused partitions and space not assigned to any partition will be used.": [
     "Endast återanvända partitioner och utrymme som inte är tilldelat någon partition kommer att användas."
   ],
@@ -1395,9 +1347,6 @@ export default {
   ],
   "Options for partition %s": [
     "Alternativ för partition %s"
-  ],
-  "Options toggle": [
-    "Växla mellan alternativ"
   ],
   "Package installation failed": [
     "Paket installation misslyckades"
@@ -1470,9 +1419,6 @@ export default {
   ],
   "PiB": [
     "PiB"
-  ],
-  "Please, perform an iSCSI discovery in order to find available iSCSI targets.": [
-    "Vänligen utför en iSCSI-upptäckt för att hitta tillgängliga iSCSI-mål."
   ],
   "Please, try to activate a zFCP controller.": [
     "Snälla, försök att aktivera en zFCP-kontroller."
@@ -1836,6 +1782,9 @@ export default {
   "Status": [
     "Status"
   ],
+  "Status filter toggle": [
+    ""
+  ],
   "Step %1$d of %2$d": [
     "Steg %1$d av %2$d"
   ],
@@ -1866,11 +1815,8 @@ export default {
   "Take a moment to review the installation settings below and adjust them as needed.": [
     "Ta en stund för att granska installationsinställningarna nedan och justera dem efter behov."
   ],
-  "Target Password": [
-    "Mål lösenord"
-  ],
-  "Targets": [
-    "Mål"
+  "Target not found": [
+    ""
   ],
   "Temporary name that may change after reboot or network changes": [
     "Temporärt namn som kan ändras efter omstart eller nätverksändringar"
@@ -2174,9 +2120,6 @@ export default {
   "Updating the hostname now or later will not change the currently registered hostname.": [
     "Att uppdatera värdnamnet nu eller senare kommer inte att ändra det för närvarande registrerade värdnamnet."
   ],
-  "Updating the initiator name": [
-    "Uppdaterar initiatornamnet"
-  ],
   "Upload": [
     "Ladda upp"
   ],
@@ -2425,9 +2368,6 @@ export default {
   ],
   "[CAPS LOCK] is on": [
     "[CAPS LOCK] är på"
-  ],
-  "[FIXME]": [
-    "[FIXA MIG]"
   ],
   "active": [
     "aktiv"

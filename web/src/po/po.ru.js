@@ -228,12 +228,6 @@ export default {
   "Authentication": [
     "Аутентификация"
   ],
-  "Authentication by initiator": [
-    "Аутентификация инициатором"
-  ],
-  "Authentication by target": [
-    "Аутентификация по цели"
-  ],
   "Auto": [
     "Автоматически"
   ],
@@ -411,9 +405,6 @@ export default {
   "Close": [
     "Закрыть"
   ],
-  "Configuration read from the iSCSI Boot Firmware Table (iBFT).": [
-    "Конфигурация, считанная из таблицы iSCSI Boot Firmware Table (iBFT)."
-  ],
   "Configuration unreachable or invalid": [
     "Конфигурация недоступна или недействительна"
   ],
@@ -452,9 +443,6 @@ export default {
   ],
   "Connected": [
     "Подключено"
-  ],
-  "Connected (%s)": [
-    "Подключено (%s)"
   ],
   "Connected device": [
     "Подключенное устройство"
@@ -615,20 +603,14 @@ export default {
   "Discard the maximum size and continue with simplified configuration": [
     "Откажитесь от максимального размера и продолжите работу с упрощенной конфигурацией"
   ],
+  "Disconnect": [
+    "Отключить"
+  ],
   "Disconnected": [
     "Отключено"
   ],
-  "Discover": [
-    "Обнаружить"
-  ],
   "Discover and connect to iSCSI targets": [
     "Обнаружение и подключение к целям iSCSI"
-  ],
-  "Discover iSCSI Targets": [
-    "Знакомство с целевыми устройствами iSCSI"
-  ],
-  "Discover iSCSI targets": [
-    "Обнаружение целей iSCSI"
   ],
   "Disk": [
     "Диск"
@@ -648,11 +630,11 @@ export default {
   "Download logs": [
     "Скачать журналы"
   ],
+  "Download logs to troubleshoot or share with support.": [
+    ""
+  ],
   "Edit": [
     "Изменить"
-  ],
-  "Edit %s": [
-    "Изменить %s"
   ],
   "Edit binding settings": [
     "Изменить настройки привязки"
@@ -671,6 +653,9 @@ export default {
   ],
   "Empty LVM volume group %s": [
     "Очистить группу томов LVM %s"
+  ],
+  "Enable mutual verification": [
+    ""
   ],
   "Encrypt the system": [
     "Зашифровать систему"
@@ -873,9 +858,6 @@ export default {
   "IP Addresses": [
     "IP-адреса"
   ],
-  "IP address": [
-    "IP-адрес"
-  ],
   "IP addresses": [
     "IP-адреса"
   ],
@@ -897,32 +879,11 @@ export default {
   "If you are unsure, check and adjust the storage settings.": [
     ""
   ],
-  "Incorrect IP address": [
-    "Некорректный IP-адрес"
-  ],
-  "Incorrect password": [
-    "Некорректный пароль"
-  ],
-  "Incorrect port": [
-    "Некорректный порт"
-  ],
-  "Incorrect user name": [
-    "Некорректное имя пользователя"
-  ],
   "Initiator": [
     "Инициатор"
   ],
-  "Initiator details": [
-    "Сведения об инициаторе"
-  ],
   "Initiator name": [
     "Имя инициатора"
-  ],
-  "Initiator name could not be updated": [
-    "Не удалось обновить имя инициатора"
-  ],
-  "Initiator name successfully updated": [
-    "Имя инициатора успешно обновлено"
   ],
   "Install": [
     "Установить"
@@ -1041,6 +1002,9 @@ export default {
   "Localization": [
     "Локализация"
   ],
+  "Locked targets cannot be managed from here and do not offer any actions.": [
+    ""
+  ],
   "Log in": [
     "Вход"
   ],
@@ -1056,20 +1020,11 @@ export default {
   "Login": [
     "Вход"
   ],
-  "Login %s": [
-    "Логин %s"
-  ],
   "Login form": [
     "Форма входа"
   ],
-  "Logout": [
-    "Выход"
-  ],
   "MAC": [
     "MAC-адрес"
-  ],
-  "Make sure you provide the correct values": [
-    "Убедитесь, что вы указали правильные значения"
   ],
   "Manage DASD devices": [
     "Управление устройствами DASD"
@@ -1089,11 +1044,17 @@ export default {
   "Min channel": [
     "Мин. канал"
   ],
+  "Missing": [
+    ""
+  ],
   "Mode": [
     "Режим"
   ],
   "Modify settings and physical volumes": [
     "Изменение настроек и физических томов"
+  ],
+  "More": [
+    ""
   ],
   "More actions": [
     "Доп. действия"
@@ -1222,12 +1183,6 @@ export default {
   "No devices found": [
     "Устройства не найдены"
   ],
-  "No iSCSI Boot Firmware Table (iBFT) found. The initiator can be configured manually.": [
-    "Не найдена таблица загрузочных микропрограмм iSCSI (iBFT). Инициатор может быть настроен вручную."
-  ],
-  "No iSCSI targets found.": [
-    "Цели iSCSI не найдены."
-  ],
   "No logical volumes are defined yet": [
     "Логические тома еще не определены"
   ],
@@ -1240,8 +1195,14 @@ export default {
   "No support is planned.": [
     "Поддержка не планируется."
   ],
+  "No targets have been discovered or configured.": [
+    ""
+  ],
   "No user defined yet.": [
     "Пользователь еще не определен."
+  ],
+  "No valid port.": [
+    ""
   ],
   "No wired connections were found": [
     "Проводные соединения не обнаружены"
@@ -1291,9 +1252,6 @@ export default {
   "On boot": [
     "При загрузке"
   ],
-  "Only available if authentication by target is provided": [
-    "Доступно только при условии аутентификации по цели"
-  ],
   "Only reused partitions and space not assigned to any partition will be used.": [
     "Будут использоваться только повторно используемые разделы и пространство, не назначенное ни одному разделу."
   ],
@@ -1302,9 +1260,6 @@ export default {
   ],
   "Options for partition %s": [
     "Параметры для раздела %s"
-  ],
-  "Options toggle": [
-    "Показ настроек"
   ],
   "Package installation failed": [
     "Не удалось установить пакет"
@@ -1377,9 +1332,6 @@ export default {
   ],
   "PiB": [
     "ПиБ"
-  ],
-  "Please, perform an iSCSI discovery in order to find available iSCSI targets.": [
-    "Выполните обнаружение iSCSI, чтобы найти доступные цели iSCSI."
   ],
   "Please, try to activate a zFCP controller.": [
     "Пожалуйста, попробуйте активировать контроллер zFCP."
@@ -1721,6 +1673,9 @@ export default {
   "Status": [
     "Состояние"
   ],
+  "Status filter toggle": [
+    ""
+  ],
   "Storage": [
     "Хранилище"
   ],
@@ -1742,11 +1697,8 @@ export default {
   "Take a moment to review the installation settings below and adjust them as needed.": [
     ""
   ],
-  "Target Password": [
-    "Пароль цели"
-  ],
-  "Targets": [
-    "Цели"
+  "Target not found": [
+    ""
   ],
   "Temporary name that may change after reboot or network changes": [
     ""
@@ -2055,9 +2007,6 @@ export default {
   "Updating the hostname now or later will not change the currently registered hostname.": [
     "Обновление имени узла сейчас или позже не приведет к изменению текущего зарегистрированного имени узла."
   ],
-  "Updating the initiator name": [
-    "Обновление имени инициатора"
-  ],
   "Upload": [
     "Загрузить"
   ],
@@ -2282,9 +2231,6 @@ export default {
   ],
   "[CAPS LOCK] is on": [
     "[CAPS LOCK] включён"
-  ],
-  "[FIXME]": [
-    "[FIXME]"
   ],
   "active": [
     "активно"

@@ -222,12 +222,6 @@ export default {
   "Authentication": [
     "Kimlik doğrulama"
   ],
-  "Authentication by initiator": [
-    "Başlatıcıya göre kimlik doğrulama"
-  ],
-  "Authentication by target": [
-    "Hedefe göre kimlik doğrulama"
-  ],
   "Auto": [
     "Otomatik"
   ],
@@ -393,9 +387,6 @@ export default {
   "Close": [
     "Kapat"
   ],
-  "Configuration read from the iSCSI Boot Firmware Table (iBFT).": [
-    "Yapılandırma iSCSI Önyükleme Ürün Yazılımı Tablosu'ndan (iBFT) okundu."
-  ],
   "Configuration unreachable or invalid": [
     "Konfigürasyon ulaşılamaz veya geçersiz"
   ],
@@ -434,9 +425,6 @@ export default {
   ],
   "Connected": [
     "Bağlı"
-  ],
-  "Connected (%s)": [
-    "Bağlandı (%s)"
   ],
   "Connected device": [
     "Bağlı cihaz"
@@ -597,20 +585,14 @@ export default {
   "Discard the maximum size and continue with simplified configuration": [
     "Maksimum boyutu atın ve basitleştirilmiş yapılandırmayla devam edin"
   ],
+  "Disconnect": [
+    "Bağlantıyı kes"
+  ],
   "Disconnected": [
     "Bağlantısı Kesildi"
   ],
-  "Discover": [
-    "Keşfet"
-  ],
   "Discover and connect to iSCSI targets": [
     "iSCSI hedeflerini keşfedin ve onlara bağlanın"
-  ],
-  "Discover iSCSI Targets": [
-    "iSCSI Hedeflerini Keşfedin"
-  ],
-  "Discover iSCSI targets": [
-    "iSCSI hedeflerini keşfedin"
   ],
   "Disk": [
     "Disk"
@@ -630,11 +612,11 @@ export default {
   "Download logs": [
     "Günlükleri indir"
   ],
+  "Download logs to troubleshoot or share with support.": [
+    ""
+  ],
   "Edit": [
     "Düzenle"
-  ],
-  "Edit %s": [
-    "%s'yi düzenle"
   ],
   "Edit binding settings": [
     "Bağlama ayarlarını düzenle"
@@ -653,6 +635,9 @@ export default {
   ],
   "Empty LVM volume group %s": [
     "Boş LVM birim grubu %s"
+  ],
+  "Enable mutual verification": [
+    ""
   ],
   "Encrypt the system": [
     "Sistemi şifrele"
@@ -849,9 +834,6 @@ export default {
   "IP Addresses": [
     "IP Adresleri"
   ],
-  "IP address": [
-    "IP adresi"
-  ],
   "IP addresses": [
     "IP adresleri"
   ],
@@ -876,32 +858,11 @@ export default {
   "If you want to disable this check, please specify \"inst.ay_check=0\" at kernels command-line": [
     ""
   ],
-  "Incorrect IP address": [
-    "Yanlış IP adresi"
-  ],
-  "Incorrect password": [
-    "Yanlış şifre"
-  ],
-  "Incorrect port": [
-    "Yanlış port"
-  ],
-  "Incorrect user name": [
-    "Yanlış kullanıcı adı"
-  ],
   "Initiator": [
     "Başlatıcı"
   ],
-  "Initiator details": [
-    "Başlatıcı ayrıntıları"
-  ],
   "Initiator name": [
     "Başlatıcı adı"
-  ],
-  "Initiator name could not be updated": [
-    "Başlatıcı adı güncellenemedi"
-  ],
-  "Initiator name successfully updated": [
-    "Başlatıcı adı başarıyla güncellendi"
   ],
   "Install": [
     "Yükle"
@@ -1017,6 +978,9 @@ export default {
   "Localization": [
     "Yerelleştirme"
   ],
+  "Locked targets cannot be managed from here and do not offer any actions.": [
+    ""
+  ],
   "Log in": [
     "Giriş Yap"
   ],
@@ -1032,20 +996,11 @@ export default {
   "Login": [
     "Oturum aç"
   ],
-  "Login %s": [
-    "Giriş %s"
-  ],
   "Login form": [
     "Giriş Formu"
   ],
-  "Logout": [
-    "Oturumu kapat"
-  ],
   "MAC": [
     "MAC"
-  ],
-  "Make sure you provide the correct values": [
-    "Doğru değerleri sağladığınızdan emin olun"
   ],
   "Manage DASD devices": [
     "DASD aygıtlarını yönet"
@@ -1065,11 +1020,17 @@ export default {
   "Min channel": [
     "Minimum kanal"
   ],
+  "Missing": [
+    ""
+  ],
   "Mode": [
     "Mod"
   ],
   "Modify settings and physical volumes": [
     "Ayarları ve fiziksel birimleri değiştirin"
+  ],
+  "More": [
+    ""
   ],
   "More actions": [
     "Daha çok eylem"
@@ -1196,12 +1157,6 @@ export default {
   "No devices found": [
     "Hiçbir cihaz bulunamadı"
   ],
-  "No iSCSI Boot Firmware Table (iBFT) found. The initiator can be configured manually.": [
-    "iSCSI Önyükleme Ürün Yazılımı Tablosu (iBFT) bulunamadı. Başlatıcı manuel olarak yapılandırılabilir."
-  ],
-  "No iSCSI targets found.": [
-    "Hiçbir iSCSI hedefi bulunamadı."
-  ],
   "No logical volumes are defined yet": [
     "Henüz mantıksal birimler tanımlanmadı"
   ],
@@ -1211,8 +1166,14 @@ export default {
   "No support is planned.": [
     "Herhangi bir destek planlanmamaktadır."
   ],
+  "No targets have been discovered or configured.": [
+    ""
+  ],
   "No user defined yet.": [
     "Henüz kullanıcı tanımlı değil."
+  ],
+  "No valid port.": [
+    ""
   ],
   "No wired connections were found": [
     "Kablolu bağlantı bulunamadı"
@@ -1262,17 +1223,11 @@ export default {
   "On boot": [
     "Önyüklemede"
   ],
-  "Only available if authentication by target is provided": [
-    "Yalnızca hedef tarafından kimlik doğrulaması sağlandığında kullanılabilir"
-  ],
   "Only reused partitions and space not assigned to any partition will be used.": [
     "Sadece yeniden kullanılan bölümler ve herhangi bir bölüme atanmamış alanlar kullanılacaktır."
   ],
   "Only reused partitions will be used.": [
     "Sadece yeniden kullanılan bölümler kullanılacaktır."
-  ],
-  "Options toggle": [
-    "Seçenekler geçişi"
   ],
   "Package installation failed": [
     "Paket kurulumu başarısız oldu"
@@ -1331,9 +1286,6 @@ export default {
   "PiB": [
     "PB"
   ],
-  "Please, perform an iSCSI discovery in order to find available iSCSI targets.": [
-    "Lütfen kullanılabilir iSCSI hedeflerini bulmak için bir iSCSI keşfi gerçekleştirin."
-  ],
   "Please, try to activate a zFCP controller.": [
     "Lütfen bir zFCP denetleyicisi etkinleştirmeyi deneyin."
   ],
@@ -1390,6 +1342,9 @@ export default {
   ],
   "Reboot": [
     "Yeniden Başlat"
+  ],
+  "Reboot to try again.": [
+    ""
   ],
   "Recommended": [
     "Tavsiye edilen"
@@ -1672,6 +1627,9 @@ export default {
   "Status": [
     "Durum"
   ],
+  "Status filter toggle": [
+    ""
+  ],
   "Storage": [
     "Depolama"
   ],
@@ -1693,11 +1651,8 @@ export default {
   "Take a moment to review the installation settings below and adjust them as needed.": [
     ""
   ],
-  "Target Password": [
-    "Hedef Şifre"
-  ],
-  "Targets": [
-    "Hedefler"
+  "Target not found": [
+    ""
   ],
   "Temporary name that may change after reboot or network changes": [
     ""
@@ -1995,9 +1950,6 @@ export default {
   "Updating the hostname now or later will not change the currently registered hostname.": [
     "Ana bilgisayar adını şimdi veya daha sonra güncellemeniz, şu anda kayıtlı olan ana bilgisayar adını değiştirmeyecektir."
   ],
-  "Updating the initiator name": [
-    "Başlatıcı adının güncellenmesi"
-  ],
   "Upload": [
     "Yükle"
   ],
@@ -2219,9 +2171,6 @@ export default {
   ],
   "[CAPS LOCK] is on": [
     "[CAPS LOCK] açık"
-  ],
-  "[FIXME]": [
-    "[FIXME]"
   ],
   "active": [
     "aktif et"

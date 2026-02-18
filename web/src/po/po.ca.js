@@ -19,6 +19,7 @@ export default {
     "%1$s i %2$s"
   ],
   "%1$s and [%2$d more]": [
+    "%1$s i [%2$d més]",
     "%1$s i [%2$d més]"
   ],
   "%1$s at %2$s": [
@@ -35,10 +36,19 @@ export default {
     "%1$s encara contindrà el grup d'LVM %2$s i qualsevol partició necessària per a arrencar"
   ],
   "%1$s, %2$s and [%3$d more]": [
+    "%1$s, %2$s i [%3$d més]",
     "%1$s, %2$s i [%3$d més]"
+  ],
+  "%d mode available": [
+    "%d mode disponible",
+    "%d modes disponibles"
   ],
   "%d of %d": [
     "%d de %d"
+  ],
+  "%d other mode available": [
+    "%d altre mode disponible",
+    "%d altres modes disponibles"
   ],
   "%s - %s": [
     "%s - %s"
@@ -48,6 +58,9 @@ export default {
   ],
   "%s and %s": [
     "%s i %s"
+  ],
+  "%s at portal %s does not exist or cannot be reached.": [
+    "%s al portal %s no existeix o no s'hi pot contactar."
   ],
   "%s disk": [
     "Disc %s"
@@ -122,6 +135,9 @@ export default {
   "Actions": [
     "Accions"
   ],
+  "Actions for %s at portal %s": [
+    "Accions per a %s al portal %s"
+  ],
   "Activate": [
     "Activa"
   ],
@@ -170,6 +186,9 @@ export default {
   "Add or use partition": [
     "Afegiu o useu una partició"
   ],
+  "Additional CHAP authentication performed by the initiator": [
+    "Autenticació de CHAP addicional feta per l'iniciador"
+  ],
   "Address": [
     "Adreça"
   ],
@@ -182,6 +201,9 @@ export default {
   "Adjust the settings below to make the new system fit into the available space.": [
     "Ajusteu la configuració següent perquè el sistema nou s'adapti a l'espai disponible."
   ],
+  "All": [
+    "Tot"
+  ],
   "All conflicts have been resolved, or none were detected. You can safely continue with your setup.": [
     "S'han resolt tots els conflictes o no se n'ha detectat cap. Podeu continuar la configuració de manera segura."
   ],
@@ -192,6 +214,9 @@ export default {
     "Se'n suprimirà tot el contingut"
   ],
   "All fields are required": [
+    "Tots els camps són obligatoris."
+  ],
+  "All fields are required.": [
     "Tots els camps són obligatoris."
   ],
   "All network connections managed through this interface are currently set to be used only during installation and will not be copied to the installed system": [
@@ -240,12 +265,6 @@ export default {
   ],
   "Authentication": [
     "Autenticació"
-  ],
-  "Authentication by initiator": [
-    "Autenticació per iniciador"
-  ],
-  "Authentication by target": [
-    "Autenticació per destinació"
   ],
   "Auto": [
     "Automàtica"
@@ -328,11 +347,17 @@ export default {
   "By proceeding, the installation will begin with defined settings.": [
     "En continuar, la instal·lació començarà amb els paràmetres definits."
   ],
+  "CHAP authentication performed by the target": [
+    "Autenticació de CHAP feta per la destinació"
+  ],
   "CPU": [
     "CPU"
   ],
   "Cancel": [
     "Cancel·la"
+  ],
+  "Cancel connection": [
+    "Cancel·la la connexió"
   ],
   "Cannot be changed in remote installation": [
     "No es pot canviar a la instal·lació remota."
@@ -418,6 +443,13 @@ export default {
   "Choose a disk for placing the boot loader": [
     "Trieu un disc per posar-hi el carregador d'arrencada"
   ],
+  "Choose a mode": [
+    "Trieu-ne el mode"
+  ],
+  "Choose a product": [
+    "Trieu el producte",
+    "Trieu entre %d productes disponibles"
+  ],
   "Choose device to bind by MAC": [
     "Trieu el dispositiu per vincular per MAC"
   ],
@@ -442,8 +474,8 @@ export default {
   "Close": [
     "Tanca"
   ],
-  "Configuration read from the iSCSI Boot Firmware Table (iBFT).": [
-    "Configuració llegida a la taula del microprogramari d'arrencada iSCSI (iBFT)."
+  "Configuration read from the iSCSI Boot Firmware Table (iBFT). Initiator cannot be changed.": [
+    "Configuració llegida de la taula del microprogramari d'arrencada d'iSCSI (iBFT). L'iniciador no es pot canviar."
   ],
   "Configuration unreachable or invalid": [
     "Configuració inaccessible o no vàlida"
@@ -503,17 +535,20 @@ export default {
   "Confirm that you really want to continue.": [
     "Confirmeu que realment voleu continuar."
   ],
+  "Confirm the product selection.": [
+    "Confirmeu la selecció del producte."
+  ],
   "Connect": [
     "Connecta't"
   ],
   "Connect to iSCSI targets": [
-    "Connecta amb objectius iSCSI"
+    "Connecta amb destinacions iSCSI"
   ],
   "Connected": [
     "Connectat"
   ],
-  "Connected (%s)": [
-    "Connectat (%s)"
+  "Connected by the system": [
+    "Connectat pel sistema"
   ],
   "Connected device": [
     "Dispositiu connectat"
@@ -529,6 +564,9 @@ export default {
   ],
   "Connection details": [
     "Detalls de la connexió"
+  ],
+  "Connection failed": [
+    "Ha fallat la connexió"
   ],
   "Connection is available to all devices.": [
     "La connexió està disponible per a tots els dispositius."
@@ -686,20 +724,23 @@ export default {
   "Discard the maximum size and continue with simplified configuration": [
     "Descarta la mida màxima i continua la configuració simplificada"
   ],
+  "Disconnect": [
+    "Desconnecta"
+  ],
   "Disconnected": [
     "Desconnectat"
   ],
-  "Discover": [
-    "Descobreix"
+  "Disconnected by the system": [
+    "Desconnectat pel sistema"
+  ],
+  "Disconnection failed": [
+    "Ha fallat la desconnexió"
   ],
   "Discover and connect to iSCSI targets": [
-    "Descobriu objectius iSCSI i connecteu-vos-hi"
+    "Descobreix destinacions iSCSI i connecta-hi"
   ],
-  "Discover iSCSI Targets": [
-    "Descobreix les destinacions iSCSI"
-  ],
-  "Discover iSCSI targets": [
-    "Descobreix objectius iSCSI"
+  "Discover targets": [
+    "Descobreix destinacions"
   ],
   "Disk": [
     "Disc"
@@ -722,14 +763,17 @@ export default {
   "Download logs": [
     "Baixa els registres"
   ],
+  "Download logs to troubleshoot or share with support.": [
+    "Baixeu registres per solucionar problemes o compartir-los amb el suport tècnic."
+  ],
   "Edit": [
     "Edita"
   ],
-  "Edit %s": [
-    "Edita %s"
-  ],
   "Edit binding settings": [
     "Edita la configuració de la vinculació"
+  ],
+  "Edit connection": [
+    "Edita la connexió"
   ],
   "Edit connection settings": [
     "Edita la configuració de la connexió"
@@ -745,6 +789,9 @@ export default {
   ],
   "Empty LVM volume group %s": [
     "Buida el grup de volums d'LVM %s"
+  ],
+  "Enable mutual verification": [
+    "Activa la verificació mútua"
   ],
   "Encrypt the system": [
     "Encripta el sistema"
@@ -910,6 +957,9 @@ export default {
   "GiB": [
     "GiB"
   ],
+  "Go to iSCSI": [
+    "Ves a iSCSI"
+  ],
   "Go to network page": [
     "Ves a la pàgina de la xarxa"
   ],
@@ -944,9 +994,6 @@ export default {
   "IP Addresses": [
     "Adreces IP"
   ],
-  "IP address": [
-    "Adreça IP"
-  ],
   "IP addresses": [
     "Adreces IP"
   ],
@@ -974,32 +1021,17 @@ export default {
   "If you want to disable this check, please specify \"inst.ay_check=0\" at kernels command-line": [
     "Si voleu desactivar aquesta comprovació, especifiqueu \"inst.ay_check=0\" a la línia d'ordres del nucli."
   ],
-  "Incorrect IP address": [
-    "Adreça IP incorrecta"
-  ],
-  "Incorrect password": [
-    "Contrasenya incorrecta"
-  ],
-  "Incorrect port": [
-    "Port incorrecte"
-  ],
-  "Incorrect user name": [
-    "Nom d'usuari incorrecte"
-  ],
   "Initiator": [
     "Iniciador"
-  ],
-  "Initiator details": [
-    "Detalls de l'iniciador"
   ],
   "Initiator name": [
     "Nom de l'iniciador"
   ],
-  "Initiator name could not be updated": [
-    "El nom de l'iniciador s'ha actualitzat correctament"
+  "Initiator password": [
+    "Contrasenya de l'iniciador"
   ],
-  "Initiator name successfully updated": [
-    "El nom de l'iniciador s'ha actualitzat correctament"
+  "Initiator user name": [
+    "Nom d'usuari de l'iniciador"
   ],
   "Install": [
     "Instal·la"
@@ -1018,6 +1050,9 @@ export default {
   ],
   "Installation devices": [
     "Dispositius per a la instal·lació"
+  ],
+  "Installation failed": [
+    "Ha fallat la instal·lació"
   ],
   "Installation in progress": [
     "Instal·lació en curs"
@@ -1148,6 +1183,9 @@ export default {
   "Localization": [
     "Localització"
   ],
+  "Locked targets cannot be managed from here and do not offer any actions.": [
+    "Les destinacions blocades no es poden gestionar des d'aquí i no ofereixen cap acció."
+  ],
   "Log in": [
     "Inicia la sessió"
   ],
@@ -1163,23 +1201,14 @@ export default {
   "Login": [
     "Entrada"
   ],
-  "Login %s": [
-    "Entrada per a %s"
-  ],
   "Login form": [
     "Forma d'entrada"
-  ],
-  "Logout": [
-    "Sortida"
   ],
   "MAC": [
     "MAC"
   ],
   "Make sure that the passsword is correct and try again.": [
     "Assegureu-vos que la contrasenya sigui correcta i torneu-ho a intentar."
-  ],
-  "Make sure you provide the correct values": [
-    "Assegureu-vos que proporcioneu els valors correctes"
   ],
   "Manage DASD devices": [
     "Gestioneu els dispositius DASD"
@@ -1199,6 +1228,9 @@ export default {
   "Min channel": [
     "Canal mínim"
   ],
+  "Missing": [
+    "Manca"
+  ],
   "Mode": [
     "Mode"
   ],
@@ -1208,11 +1240,17 @@ export default {
   "Modify settings and physical volumes": [
     "Modifica la configuració i els volums físics"
   ],
+  "More": [
+    "Més"
+  ],
   "More actions": [
     "Més accions"
   ],
   "More devices": [
     "Més dispositius"
+  ],
+  "More installer options": [
+    "Més opcions de l'instal·lador"
   ],
   "More keymap layout might be available for the selected product at [Localization] page": [
     "Pot ser que hi hagi més disposicions de teclat disponibles per al producte seleccionat a la pàgina [Localitzation]"
@@ -1336,11 +1374,8 @@ export default {
   "No devices found": [
     "No s'ha trobat cap dispositiu"
   ],
-  "No iSCSI Boot Firmware Table (iBFT) found. The initiator can be configured manually.": [
-    "No s'ha trobat cap taula de microprogramari d'arrencada iSCSI (iBFT). L'iniciador es pot configurar manualment."
-  ],
-  "No iSCSI targets found.": [
-    "No s'ha trobat cap destinació iSCSI."
+  "No iSCSI Boot Firmware Table (iBFT) found. The initiator can be [configured manually.]": [
+    "No s'ha trobat cap taula de microprogramari d'arrencada d'iSCSI (iBFT). L'iniciador es pot [configurar manualment.]"
   ],
   "No logical volumes are defined yet": [
     "Encara no s'ha definit cap volum lògic"
@@ -1354,8 +1389,23 @@ export default {
   "No support is planned.": [
     "No té compatibilitat prevista."
   ],
+  "No targets available": [
+    "No hi ha destinacions disponibles."
+  ],
+  "No targets have been discovered or configured.": [
+    "No s'ha descobert ni configurat cap destinació."
+  ],
+  "No targets matches filters": [
+    "Cap destinació no coincideix amb els filtres"
+  ],
   "No user defined yet.": [
     "Encara no s'ha definit cap usuari."
+  ],
+  "No valid address.": [
+    "Adreça no vàlida."
+  ],
+  "No valid port.": [
+    "Port no vàlid."
   ],
   "No wired connections were found": [
     "No s'ha trobat cap connexió amb fil"
@@ -1411,9 +1461,6 @@ export default {
   "On boot": [
     "A l'arrencada"
   ],
-  "Only available if authentication by target is provided": [
-    "Només està disponible si es proporciona l'autenticació per destinació."
-  ],
   "Only reused partitions and space not assigned to any partition will be used.": [
     "Només s'usaran les particions reutilitzades i l'espai no assignat a cap partició."
   ],
@@ -1422,9 +1469,6 @@ export default {
   ],
   "Options for partition %s": [
     "Opcions per a la partició %s"
-  ],
-  "Options toggle": [
-    "Canvi d'opcions"
   ],
   "Package installation failed": [
     "Ha fallat la instal·lació del paquet."
@@ -1495,11 +1539,11 @@ export default {
   "Pending": [
     "Pendent"
   ],
+  "Perform a discovery to find available iSCSI targets.": [
+    "Fa una descoberta per trobar destinacions d'iSCSI disponibles."
+  ],
   "PiB": [
     "PiB"
-  ],
-  "Please, perform an iSCSI discovery in order to find available iSCSI targets.": [
-    "Si us plau, executeu un descobriment d'iSCSI per trobar destinacions iSCSI disponibles."
   ],
   "Please, try to activate a zFCP controller.": [
     "Si us plau, proveu d'activar un controlador de zFCP."
@@ -1537,6 +1581,9 @@ export default {
   "Protection for the information stored at the new file systems, including data, programs, and system files.": [
     "Protecció de la informació desada als sistemes de fitxers nous, incloses dades, programes i fitxers del sistema."
   ],
+  "Provide authentication": [
+    "Proporcioneu l'autenticació"
+  ],
   "Provide email address": [
     "Proporcioneu una adreça de correu electrònic."
   ],
@@ -1563,6 +1610,9 @@ export default {
   ],
   "Reboot": [
     "Reinicia"
+  ],
+  "Reboot to try again.": [
+    "Reinicia per tornar-ho a provar."
   ],
   "Recommended": [
     "Recomanat"
@@ -1706,12 +1756,21 @@ export default {
   "Select a disk to define partitions or to mount": [
     "Seleccioneu un disc per definir-ne les particions o per muntar-lo"
   ],
+  "Select a mode": [
+    "Seleccioneu un mode"
+  ],
+  "Select a mode and confirm your choice.": [
+    "Seleccioneu un mode i confirmeu-ne la tria."
+  ],
   "Select a product": [
     "Seleccioneu un producte"
   ],
   "Select a product and confirm your choice.": [
     "Seleccioneu un producte i confirmeu la tria.",
     "Seleccioneu un producte i confirmeu la tria al final de la llista."
+  ],
+  "Select a product mode to continue.": [
+    "Seleccioneu un mode de producte per continuar."
   ],
   "Select a product to continue.": [
     "Seleccioneu un producte per continuar."
@@ -1876,6 +1935,9 @@ export default {
   "Status": [
     "Estat"
   ],
+  "Status filter toggle": [
+    "Commuta l'estat del filtre"
+  ],
   "Step %1$d of %2$d": [
     "Pas %1$d de %2$d"
   ],
@@ -1892,7 +1954,15 @@ export default {
     "Intercanvi"
   ],
   "Switch to a different mode": [
-    ""
+    "Canvieu a un mode diferent"
+  ],
+  "Switch to a different mode or another product": [
+    "Canvieu a mode diferent o a un altre producte",
+    "Canvieu a un mode diferent o a un dels %d productes disponibles"
+  ],
+  "Switch to another product": [
+    "Canvieu a un altre producte",
+    "Canvieu a un dels %d productes disponibles"
   ],
   "System Information": [
     "Informació del sistema"
@@ -1906,11 +1976,11 @@ export default {
   "Take a moment to review the installation settings below and adjust them as needed.": [
     "Dediqueu un moment a revisar els paràmetres d'instal·lació següents i ajusteu-los segons calgui."
   ],
-  "Target Password": [
-    "Contrasenya de destinació"
+  "Target": [
+    "Destinació"
   ],
-  "Targets": [
-    "Destinacions"
+  "Target not found": [
+    "Destinació no trobada"
   ],
   "Temporary name that may change after reboot or network changes": [
     "Nom temporal que pot canviar després d'un reinici o canvis de xarxa"
@@ -2220,9 +2290,6 @@ export default {
   "Updating the hostname now or later will not change the currently registered hostname.": [
     "Actualitzar el nom d'amfitrió ara o més tard no canviarà el nom d'amfitrió registrat actualment."
   ],
-  "Updating the initiator name": [
-    "Actualitzant el nom de l'iniciador"
-  ],
   "Upload": [
     "Carrega"
   ],
@@ -2474,9 +2541,6 @@ export default {
   ],
   "[CAPS LOCK] is on": [
     "[CAPS LOCK] activat"
-  ],
-  "[FIXME]": [
-    "[FIXME]"
   ],
   "active": [
     "actiu"
