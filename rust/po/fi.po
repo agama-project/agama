@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-02-10 16:22+0000\n"
+"POT-Creation-Date: 2026-02-13 08:59+0000\n"
 "PO-Revision-Date: 2026-01-26 20:04+0000\n"
 "Last-Translator: Timo Jyrinki <tjyrinki@suse.com>\n"
 "Language-Team: Finnish <https://l10n.opensuse.org/projects/agama/agama-rust-"
@@ -29,69 +29,73 @@ msgstr "Ei"
 msgid "Yes"
 msgstr "Kyllä"
 
-#: agama-manager/src/tasks/runner.rs:183
+#: agama-manager/src/tasks/runner.rs:185
 msgid "Prepare the system"
 msgstr "Valmistele järjestelmä"
 
-#: agama-manager/src/tasks/runner.rs:184
+#: agama-manager/src/tasks/runner.rs:186
 msgid "Install software"
 msgstr "Asenna ohjelmistoja"
 
-#: agama-manager/src/tasks/runner.rs:185
+#: agama-manager/src/tasks/runner.rs:187
 msgid "Configure the system"
 msgstr "Tee järjestelmän asetukset"
 
-#: agama-manager/src/tasks/runner.rs:280
+#: agama-manager/src/tasks/runner.rs:285
 msgid "Storing security settings"
 msgstr ""
 
-#: agama-manager/src/tasks/runner.rs:281
+#: agama-manager/src/tasks/runner.rs:286
 msgid "Setting up the hostname"
 msgstr ""
 
-#: agama-manager/src/tasks/runner.rs:282
+#: agama-manager/src/tasks/runner.rs:287
 msgid "Setting up the network proxy"
 msgstr ""
 
-#: agama-manager/src/tasks/runner.rs:283
+#: agama-manager/src/tasks/runner.rs:288
 msgid "Importing user files"
 msgstr ""
 
-#: agama-manager/src/tasks/runner.rs:284
+#: agama-manager/src/tasks/runner.rs:289
 msgid "Running user pre-installation scripts"
 msgstr ""
 
-#: agama-manager/src/tasks/runner.rs:285
+#: agama-manager/src/tasks/runner.rs:290
 msgid "Storing questions settings"
 msgstr ""
 
-#: agama-manager/src/tasks/runner.rs:286
+#: agama-manager/src/tasks/runner.rs:291
 msgid "Storing localization settings"
 msgstr ""
 
-#: agama-manager/src/tasks/runner.rs:287
+#: agama-manager/src/tasks/runner.rs:292
 msgid "Storing users settings"
 msgstr ""
 
-#: agama-manager/src/tasks/runner.rs:288
+#: agama-manager/src/tasks/runner.rs:293
 msgid "Configuring iSCSI devices"
 msgstr ""
 
-#: agama-manager/src/tasks/runner.rs:292
+#: agama-manager/src/tasks/runner.rs:297
+msgid "Configuring DASD devices"
+msgstr ""
+
+#: agama-manager/src/tasks/runner.rs:301
 msgid "Setting up the network"
 msgstr ""
 
-#: agama-manager/src/tasks/runner.rs:297
+#: agama-manager/src/tasks/runner.rs:306
 #, fuzzy
 msgid "Preparing the software proposal"
 msgstr "Lasketaan ohjelmistoehdotusta"
 
-#: agama-manager/src/tasks/runner.rs:298
+#: agama-manager/src/tasks/runner.rs:307
 #, fuzzy
 msgid "Preparing the storage proposal"
 msgstr "Lasketaan ohjelmistoehdotusta"
 
-#: agama-manager/src/tasks/runner.rs:299
+#: agama-manager/src/tasks/runner.rs:308
 msgid "Storing bootloader settings"
 msgstr ""
 
@@ -172,12 +176,12 @@ msgstr "Rekisteröidään järjestelmää"
 msgid "The product must be registered"
 msgstr "Tuote tulaa olla rekisteröity"
 
-#: agama-users/src/service.rs:138
+#: agama-users/src/service.rs:140
 msgid ""
 "Defining a user, setting the root password or a SSH public key is required"
 msgstr ""
 "Määritetään käyttäjää, pääkäyttäjän salasana tai julkinen SSH-avain vaaditaan"
 
-#: agama-users/src/service.rs:151
+#: agama-users/src/service.rs:153
 msgid "First user information is incomplete"
 msgstr "Ensimmäisen käyttäjän tiedot eivät ole riittävät"

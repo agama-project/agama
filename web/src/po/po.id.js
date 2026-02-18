@@ -36,8 +36,14 @@ export default {
   "%1$s, %2$s and [%3$d more]": [
     "%1$s, %2$s dan [%3$d lainnya]"
   ],
+  "%d mode available": [
+    "%d mode tersedia"
+  ],
   "%d of %d": [
     "%d dari %d"
+  ],
+  "%d other mode available": [
+    "%d mode lain tersedia"
   ],
   "%s - %s": [
     "%s - %s"
@@ -47,6 +53,9 @@ export default {
   ],
   "%s and %s": [
     "%s dan %s"
+  ],
+  "%s at portal %s does not exist or cannot be reached.": [
+    "%s pada portal %s tidak ada atau tidak dapat dijangkau."
   ],
   "%s disk": [
     "%s diska"
@@ -117,6 +126,9 @@ export default {
   "Actions": [
     "Tindakan"
   ],
+  "Actions for %s at portal %s": [
+    "Tindakan untuk %s pada portal %s"
+  ],
   "Activate": [
     "Mengaktifkan"
   ],
@@ -165,6 +177,9 @@ export default {
   "Add or use partition": [
     "Tambahkan atau gunakan partisi"
   ],
+  "Additional CHAP authentication performed by the initiator": [
+    "Autentikasi CHAP tambahan dilakukan oleh initiator"
+  ],
   "Address": [
     "Alamat"
   ],
@@ -177,6 +192,9 @@ export default {
   "Adjust the settings below to make the new system fit into the available space.": [
     "Sesuaikan pengaturan di bawah ini agar sistem baru dapat disesuaikan dengan ruang yang tersedia."
   ],
+  "All": [
+    "Semua"
+  ],
   "All conflicts have been resolved, or none were detected. You can safely continue with your setup.": [
     "Semua konflik telah diselesaikan, atau tidak ada yang terdeteksi. Anda dapat melanjutkan pengaturan Anda dengan aman."
   ],
@@ -188,6 +206,9 @@ export default {
   ],
   "All fields are required": [
     "Semua bidang wajib diisi"
+  ],
+  "All fields are required.": [
+    "Semua bidang wajib diisi."
   ],
   "All network connections managed through this interface are currently set to be used only during installation and will not be copied to the installed system": [
     "Semua koneksi jaringan yang dikelola melalui antarmuka ini saat ini diatur untuk hanya digunakan selama pemasangan dan tidak akan disalin ke sistem yang dipasang"
@@ -233,12 +254,6 @@ export default {
   ],
   "Authentication": [
     "Autentikasi"
-  ],
-  "Authentication by initiator": [
-    "Otentikasi oleh inisiator"
-  ],
-  "Authentication by target": [
-    "Otentikasi berdasarkan target"
   ],
   "Auto": [
     "Otomatis"
@@ -321,11 +336,17 @@ export default {
   "By proceeding, the installation will begin with defined settings.": [
     "Dengan melanjutkan, instalasi akan dimulai dengan pengaturan yang telah ditentukan."
   ],
+  "CHAP authentication performed by the target": [
+    "Autentikasi CHAP dilakukan oleh target"
+  ],
   "CPU": [
     "CPU"
   ],
   "Cancel": [
     "Batal"
+  ],
+  "Cancel connection": [
+    "Batalkan koneksi"
   ],
   "Cannot be changed in remote installation": [
     "Tidak dapat diubah dalam instalasi jarak jauh"
@@ -411,6 +432,12 @@ export default {
   "Choose a disk for placing the boot loader": [
     "Pilih disk untuk menempatkan boot loader"
   ],
+  "Choose a mode": [
+    "Pilih mode"
+  ],
+  "Choose a product": [
+    "Pilih dari %d produk yang tersedia"
+  ],
   "Choose device to bind by MAC": [
     "Pilih perangkat untuk diikat berdasarkan MAC"
   ],
@@ -435,8 +462,8 @@ export default {
   "Close": [
     "Tutup"
   ],
-  "Configuration read from the iSCSI Boot Firmware Table (iBFT).": [
-    "Konfigurasi dibaca dari Tabel Firmware Boot iSCSI (iBFT)."
+  "Configuration read from the iSCSI Boot Firmware Table (iBFT). Initiator cannot be changed.": [
+    "Konfigurasi dibaca dari iSCSI Boot Firmware Table (iBFT). Initiator tidak dapat diubah."
   ],
   "Configuration unreachable or invalid": [
     "Konfigurasi tidak dapat diakses atau tidak valid"
@@ -495,6 +522,9 @@ export default {
   "Confirm that you really want to continue.": [
     "Pastikan Anda benar-benar ingin melanjutkan."
   ],
+  "Confirm the product selection.": [
+    "Konfirmasi pemilihan produk."
+  ],
   "Connect": [
     "Sambungkan"
   ],
@@ -504,8 +534,8 @@ export default {
   "Connected": [
     "Tersambung"
   ],
-  "Connected (%s)": [
-    "Tersambung (%s)"
+  "Connected by the system": [
+    "Terhubung oleh sistem"
   ],
   "Connected device": [
     "Perangkat terhubung"
@@ -521,6 +551,9 @@ export default {
   ],
   "Connection details": [
     "Rincian koneksi"
+  ],
+  "Connection failed": [
+    "Koneksi gagal"
   ],
   "Connection is available to all devices.": [
     "Koneksi tersedia untuk semua perangkat."
@@ -678,20 +711,23 @@ export default {
   "Discard the maximum size and continue with simplified configuration": [
     "Buang ukuran maksimum dan lanjutkan dengan konfigurasi sederhana"
   ],
+  "Disconnect": [
+    "Putuskan sambungan"
+  ],
   "Disconnected": [
     "Terputus"
   ],
-  "Discover": [
-    "Temukan"
+  "Disconnected by the system": [
+    "Terputus oleh sistem"
+  ],
+  "Disconnection failed": [
+    "Pemutusan gagal"
   ],
   "Discover and connect to iSCSI targets": [
     "Temukan dan hubungkan ke target iSCSI"
   ],
-  "Discover iSCSI Targets": [
-    "Menemukan Target iSCSI"
-  ],
-  "Discover iSCSI targets": [
-    "Menemukan target iSCSI"
+  "Discover targets": [
+    "Temukan target"
   ],
   "Disk": [
     "Disk"
@@ -714,14 +750,17 @@ export default {
   "Download logs": [
     "Unduh log"
   ],
+  "Download logs to troubleshoot or share with support.": [
+    "Unduh log untuk memecahkan masalah atau berbagi dengan dukungan."
+  ],
   "Edit": [
     "Edit"
   ],
-  "Edit %s": [
-    "Edit %s"
-  ],
   "Edit binding settings": [
     "Edit pengaturan ikatan"
+  ],
+  "Edit connection": [
+    "Edit koneksi"
   ],
   "Edit connection settings": [
     "Edit pengaturan koneksi"
@@ -737,6 +776,9 @@ export default {
   ],
   "Empty LVM volume group %s": [
     "Kosongkan volume grup LVM %s"
+  ],
+  "Enable mutual verification": [
+    "Aktifkan verifikasi mutual"
   ],
   "Encrypt the system": [
     "Mengenkripsi sistem"
@@ -900,6 +942,9 @@ export default {
   "GiB": [
     "GiB"
   ],
+  "Go to iSCSI": [
+    "Buka iSCSI"
+  ],
   "Go to network page": [
     "Buka halaman jaringan"
   ],
@@ -933,9 +978,6 @@ export default {
   "IP Addresses": [
     "Alamat IP"
   ],
-  "IP address": [
-    "Alamat IP"
-  ],
   "IP addresses": [
     "Alamat IP"
   ],
@@ -963,32 +1005,17 @@ export default {
   "If you want to disable this check, please specify \"inst.ay_check=0\" at kernels command-line": [
     "Jika Anda ingin menonaktifkan pemeriksaan ini, harap tentukan \"inst.ay_check=0\" pada baris perintah kernel"
   ],
-  "Incorrect IP address": [
-    "Alamat IP salah"
-  ],
-  "Incorrect password": [
-    "Kata sandi salah"
-  ],
-  "Incorrect port": [
-    "Port salah"
-  ],
-  "Incorrect user name": [
-    "Nama pengguna salah"
-  ],
   "Initiator": [
     "Inisiator"
-  ],
-  "Initiator details": [
-    "Rincian inisiator"
   ],
   "Initiator name": [
     "Nama inisiator"
   ],
-  "Initiator name could not be updated": [
-    "Nama inisiator tidak dapat diperbarui"
+  "Initiator password": [
+    "Kata sandi initiator"
   ],
-  "Initiator name successfully updated": [
-    "Nama inisiator telah berhasil diperbarui"
+  "Initiator user name": [
+    "Nama pengguna initiator"
   ],
   "Install": [
     "Instal"
@@ -1007,6 +1034,9 @@ export default {
   ],
   "Installation devices": [
     "Perangkat pemasangan"
+  ],
+  "Installation failed": [
+    "Instalasi gagal"
   ],
   "Installation in progress": [
     "Instalasi sedang berlangsung"
@@ -1137,6 +1167,9 @@ export default {
   "Localization": [
     "Pelokalan"
   ],
+  "Locked targets cannot be managed from here and do not offer any actions.": [
+    "Target yang terkunci tidak dapat dikelola dari sini dan tidak menawarkan tindakan apa pun."
+  ],
   "Log in": [
     "Masuk"
   ],
@@ -1152,23 +1185,14 @@ export default {
   "Login": [
     "Masuk"
   ],
-  "Login %s": [
-    "Login %s"
-  ],
   "Login form": [
     "Formulir masuk"
-  ],
-  "Logout": [
-    "Keluar"
   ],
   "MAC": [
     "MAC"
   ],
   "Make sure that the passsword is correct and try again.": [
     "Pastikan kata sandi benar dan coba lagi."
-  ],
-  "Make sure you provide the correct values": [
-    "Pastikan Anda memberikan nilai yang benar"
   ],
   "Manage DASD devices": [
     "Kelola perangkat DASD"
@@ -1188,6 +1212,9 @@ export default {
   "Min channel": [
     "Saluran min"
   ],
+  "Missing": [
+    "Hilang"
+  ],
   "Mode": [
     "Mode"
   ],
@@ -1197,11 +1224,17 @@ export default {
   "Modify settings and physical volumes": [
     "Ubah pengaturan dan volume fisik"
   ],
+  "More": [
+    "Lainnya"
+  ],
   "More actions": [
     "Tindakan lainnya"
   ],
   "More devices": [
     "Lebih banyak perangkat"
+  ],
+  "More installer options": [
+    "Opsi pemasang lainnya"
   ],
   "More keymap layout might be available for the selected product at [Localization] page": [
     "Mungkin ada lebih banyak tata letak keyboard yang tersedia untuk produk yang dipilih di halaman [Localization]"
@@ -1323,11 +1356,8 @@ export default {
   "No devices found": [
     "Tidak ditemukan perangkat"
   ],
-  "No iSCSI Boot Firmware Table (iBFT) found. The initiator can be configured manually.": [
-    "Tidak ditemukan Tabel Firmware Boot iSCSI (iBFT). Inisiator dapat dikonfigurasi secara manual."
-  ],
-  "No iSCSI targets found.": [
-    "Tidak ditemukan target iSCSI."
+  "No iSCSI Boot Firmware Table (iBFT) found. The initiator can be [configured manually.]": [
+    "Tidak ada iSCSI Boot Firmware Table (iBFT) yang ditemukan. Initiator dapat [dikonfigurasi secara manual.]"
   ],
   "No logical volumes are defined yet": [
     "Belum ada volume logis yang didefinisikan"
@@ -1341,8 +1371,23 @@ export default {
   "No support is planned.": [
     "Tidak ada dukungan yang direncanakan."
   ],
+  "No targets available": [
+    "Tidak ada target yang tersedia"
+  ],
+  "No targets have been discovered or configured.": [
+    "Tidak ada target yang telah ditemukan atau dikonfigurasi."
+  ],
+  "No targets matches filters": [
+    "Tidak ada target yang cocok dengan filter"
+  ],
   "No user defined yet.": [
     "Belum ada pengguna yang ditetapkan."
+  ],
+  "No valid address.": [
+    "Tidak ada alamat yang valid."
+  ],
+  "No valid port.": [
+    "Tidak ada port yang valid."
   ],
   "No wired connections were found": [
     "Tidak ditemukan koneksi kabel"
@@ -1398,9 +1443,6 @@ export default {
   "On boot": [
     "Saat boot"
   ],
-  "Only available if authentication by target is provided": [
-    "Hanya tersedia jika autentikasi berdasarkan target disediakan"
-  ],
   "Only reused partitions and space not assigned to any partition will be used.": [
     "Hanya partisi yang digunakan kembali dan ruang yang tidak dialokasikan ke partisi mana pun yang akan digunakan."
   ],
@@ -1409,9 +1451,6 @@ export default {
   ],
   "Options for partition %s": [
     "Opsi untuk partisi %s"
-  ],
-  "Options toggle": [
-    "Sakelar opsi"
   ],
   "Package installation failed": [
     "Pemasangan paket gagal"
@@ -1482,11 +1521,11 @@ export default {
   "Pending": [
     "Tertunda"
   ],
+  "Perform a discovery to find available iSCSI targets.": [
+    "Lakukan penemuan untuk menemukan target iSCSI yang tersedia."
+  ],
   "PiB": [
     "PiB"
-  ],
-  "Please, perform an iSCSI discovery in order to find available iSCSI targets.": [
-    "Lakukan penemuan iSCSI untuk menemukan target iSCSI yang tersedia."
   ],
   "Please, try to activate a zFCP controller.": [
     "Silakan coba aktifkan pengontrol zFCP."
@@ -1524,6 +1563,9 @@ export default {
   "Protection for the information stored at the new file systems, including data, programs, and system files.": [
     "Perlindungan untuk informasi yang tersimpan pada sistem berkas baru, termasuk data, program, dan berkas sistem."
   ],
+  "Provide authentication": [
+    "Berikan autentikasi"
+  ],
   "Provide email address": [
     "Berikan alamat email"
   ],
@@ -1550,6 +1592,9 @@ export default {
   ],
   "Reboot": [
     "Mulai ulang"
+  ],
+  "Reboot to try again.": [
+    "Nyalakan ulang untuk mencoba lagi."
   ],
   "Recommended": [
     "Direkomendasikan"
@@ -1692,11 +1737,20 @@ export default {
   "Select a disk to define partitions or to mount": [
     "Pilih perangkat lain untuk mendefinisikan partisi atau untuk mount"
   ],
+  "Select a mode": [
+    "Pilih mode"
+  ],
+  "Select a mode and confirm your choice.": [
+    "Pilih mode dan konfirmasi pilihan Anda."
+  ],
   "Select a product": [
     "Pilih produk"
   ],
   "Select a product and confirm your choice.": [
     "Pilih produk dan konfirmasikan pilihan Anda di akhir daftar."
+  ],
+  "Select a product mode to continue.": [
+    "Pilih mode produk untuk melanjutkan."
   ],
   "Select a product to continue.": [
     "Pilih produk untuk melanjutkan."
@@ -1860,6 +1914,9 @@ export default {
   "Status": [
     "Status"
   ],
+  "Status filter toggle": [
+    "Pengalih filter status"
+  ],
   "Step %1$d of %2$d": [
     "Langkah %1$d dari %2$d"
   ],
@@ -1876,7 +1933,13 @@ export default {
     "Swap"
   ],
   "Switch to a different mode": [
-    ""
+    "Beralih ke mode yang berbeda"
+  ],
+  "Switch to a different mode or another product": [
+    "Beralih ke mode yang berbeda atau ke salah satu dari %d produk yang tersedia"
+  ],
+  "Switch to another product": [
+    "Beralih ke salah satu dari %d produk yang tersedia"
   ],
   "System Information": [
     "Informasi sistem"
@@ -1890,11 +1953,11 @@ export default {
   "Take a moment to review the installation settings below and adjust them as needed.": [
     "Luangkan waktu untuk meninjau pengaturan instalasi di bawah ini dan sesuaikan bila diperlukan."
   ],
-  "Target Password": [
-    "Kata sandi target"
-  ],
-  "Targets": [
+  "Target": [
     "Target"
+  ],
+  "Target not found": [
+    "Target tidak ditemukan"
   ],
   "Temporary name that may change after reboot or network changes": [
     "Nama sementara yang dapat berubah setelah mulai ulang atau perubahan jaringan"
@@ -2196,9 +2259,6 @@ export default {
   "Updating the hostname now or later will not change the currently registered hostname.": [
     "Mengubah nama host sekarang atau nanti tidak akan mengubah nama host yang saat ini terdaftar."
   ],
-  "Updating the initiator name": [
-    "Memperbarui nama inisiator"
-  ],
   "Upload": [
     "Unggah"
   ],
@@ -2450,9 +2510,6 @@ export default {
   ],
   "[CAPS LOCK] is on": [
     "[CAPS LOCK] aktif"
-  ],
-  "[FIXME]": [
-    "[FIXME]"
   ],
   "active": [
     "aktif"

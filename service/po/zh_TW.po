@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-02-09 04:10+0000\n"
+"POT-Creation-Date: 2026-02-13 10:41+0000\n"
 "PO-Revision-Date: 2025-08-05 04:59+0000\n"
 "Last-Translator: Grace Yu <grace.yu@excel-gits.com>\n"
 "Language-Team: Chinese (Taiwan) <https://l10n.opensuse.org/projects/agama/"
@@ -59,36 +59,41 @@ msgid "Performing iSCSI discovery"
 msgstr ""
 
 #. Implementation for the API method #Install.
-#: service/lib/agama/dbus/storage/manager.rb:111
+#: service/lib/agama/dbus/storage/manager.rb:118
 msgid "Preparing bootloader proposal"
 msgstr "正在準備開機載入程式建議"
 
-#: service/lib/agama/dbus/storage/manager.rb:114
+#: service/lib/agama/dbus/storage/manager.rb:121
 msgid "Preparing the storage devices"
 msgstr "正在準備儲存裝置"
 
-#: service/lib/agama/dbus/storage/manager.rb:117
+#: service/lib/agama/dbus/storage/manager.rb:124
 msgid "Writing bootloader sysconfig"
 msgstr "正在寫入開機載入程式 sysconfig"
 
 #. Implementation for the API method #Finish.
-#: service/lib/agama/dbus/storage/manager.rb:125
+#: service/lib/agama/dbus/storage/manager.rb:132
 #, fuzzy
 msgid "Finishing installation"
 msgstr "中止安裝"
 
+#: service/lib/agama/dbus/storage/manager.rb:138
+#, fuzzy
+msgid "Unmounting devices"
+msgstr "正在卸載儲存裝置"
+
 #. Gets and serializes the storage config used to calculate the current proposal.
 #.
 #. @return [String] Serialized config according to the JSON schema.
-#: service/lib/agama/dbus/storage/manager.rb:297
+#: service/lib/agama/dbus/storage/manager.rb:298
 msgid "Activating storage devices"
 msgstr "正在啟用儲存裝置"
 
-#: service/lib/agama/dbus/storage/manager.rb:300
+#: service/lib/agama/dbus/storage/manager.rb:301
 msgid "Probing storage devices"
 msgstr "正在查探儲存裝置"
 
-#: service/lib/agama/dbus/storage/manager.rb:303
+#: service/lib/agama/dbus/storage/manager.rb:304
 #, fuzzy
 msgid "Applying storage configuration"
 msgstr "正在調整儲存組態"
@@ -396,39 +401,29 @@ msgid "Shrinking is not supported by this device"
 msgstr "此裝置不支援縮小操作"
 
 #. Copy /etc/nvme/host* to keep NVMe working after installation, bsc#1238038
-#: service/lib/agama/storage/finisher.rb:128
+#: service/lib/agama/storage/finisher.rb:126
 msgid "Copying important installation files to the target system"
 msgstr "正在將重要安裝檔案複製到目標系統"
 
 #. Step to write the bootloader configuration
-#: service/lib/agama/storage/finisher.rb:163
+#: service/lib/agama/storage/finisher.rb:161
 msgid "Installing bootloader"
 msgstr "正在安裝開機載入程式"
 
 #. Step to finish the Y2Storage configuration
-#: service/lib/agama/storage/finisher.rb:180
+#: service/lib/agama/storage/finisher.rb:178
 msgid "Adjusting storage configuration"
 msgstr "正在調整儲存組態"
 
 #. Step to finish the iSCSI configuration
-#: service/lib/agama/storage/finisher.rb:191
+#: service/lib/agama/storage/finisher.rb:189
 msgid "Adjusting iSCSI configuration"
 msgstr "正在調整 iSCSI 組態"
 
 #. Step to configure the file-system snapshots
-#: service/lib/agama/storage/finisher.rb:202
+#: service/lib/agama/storage/finisher.rb:200
 msgid "Configuring file systems snapshots"
 msgstr "正在設定檔案系統快照"
-
-#. Step to copy the installation logs
-#: service/lib/agama/storage/finisher.rb:220
-msgid "Copying logs"
-msgstr "正在複製記錄"
-
-#. Step to unmount the target file-systems
-#: service/lib/agama/storage/finisher.rb:254
-msgid "Unmounting storage devices"
-msgstr "正在卸載儲存裝置"
 
 #. Issue representing the proposal is not valid.
 #.
@@ -443,6 +438,16 @@ msgstr "無法使用目前組態計算有效的儲存設定"
 #: service/lib/agama/storage/proposal.rb:315
 msgid "A problem ocurred while calculating the storage setup"
 msgstr "計算儲存設定時出現問題"
+
+#. Step to copy the installation logs
+#: service/lib/agama/storage/umounter.rb:112
+msgid "Copying logs"
+msgstr "正在複製記錄"
+
+#. Step to unmount the target file-systems
+#: service/lib/agama/storage/umounter.rb:146
+msgid "Unmounting storage devices"
+msgstr "正在卸載儲存裝置"
 
 #~ msgid "Logout iSCSI targets"
 #~ msgstr "登出 iSCSI 目標"

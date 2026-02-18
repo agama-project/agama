@@ -36,8 +36,14 @@ export default {
   "%1$s, %2$s and [%3$d more]": [
     "%1$s, %2$s [さらに %3$d 個のアドレスがあります]"
   ],
+  "%d mode available": [
+    "%d 個のモードが利用可能です"
+  ],
   "%d of %d": [
     "%d ／ %d"
+  ],
+  "%d other mode available": [
+    "%d 個の他のモードが利用可能です"
   ],
   "%s - %s": [
     "%s - %s"
@@ -47,6 +53,9 @@ export default {
   ],
   "%s and %s": [
     "%s, %s"
+  ],
+  "%s at portal %s does not exist or cannot be reached.": [
+    "%s (ポータル %s 内) は存在していないか、相手に届きません。"
   ],
   "%s disk": [
     "%s ディスク"
@@ -117,6 +126,9 @@ export default {
   "Actions": [
     "処理"
   ],
+  "Actions for %s at portal %s": [
+    "%s (ポータル %s 内) に対する処理"
+  ],
   "Activate": [
     "有効化"
   ],
@@ -165,6 +177,9 @@ export default {
   "Add or use partition": [
     "パーティションの追加または使用"
   ],
+  "Additional CHAP authentication performed by the initiator": [
+    "イニシエータによる追加の CHAP 認証"
+  ],
   "Address": [
     "アドレス"
   ],
@@ -177,6 +192,9 @@ export default {
   "Adjust the settings below to make the new system fit into the available space.": [
     "新しいシステムが利用可能な領域内に収まるように設定を調整してください。"
   ],
+  "All": [
+    "全て"
+  ],
   "All conflicts have been resolved, or none were detected. You can safely continue with your setup.": [
     "すべての競合が解決されたか、競合が検出されませんでした。セットアップを安全に続行できます。"
   ],
@@ -188,6 +206,9 @@ export default {
   ],
   "All fields are required": [
     "全ての項目に入力する必要があります"
+  ],
+  "All fields are required.": [
+    "全ての項目に入力する必要があります。"
   ],
   "All network connections managed through this interface are currently set to be used only during installation and will not be copied to the installed system": [
     "このインターフェイスを通じて管理されるすべてのネットワーク接続は現在、インストール時にのみ使用されるように設定されており、インストールされたシステムにはコピーされません"
@@ -233,12 +254,6 @@ export default {
   ],
   "Authentication": [
     "認証"
-  ],
-  "Authentication by initiator": [
-    "イニシエータによる認証"
-  ],
-  "Authentication by target": [
-    "ターゲットによる認証"
   ],
   "Auto": [
     "自動"
@@ -321,11 +336,17 @@ export default {
   "By proceeding, the installation will begin with defined settings.": [
     "続行すると、指定の設定でインストールが開始されます。"
   ],
+  "CHAP authentication performed by the target": [
+    "ターゲットによる CHAP 認証"
+  ],
   "CPU": [
     "CPU"
   ],
   "Cancel": [
     "キャンセル"
+  ],
+  "Cancel connection": [
+    "接続のキャンセル"
   ],
   "Cannot be changed in remote installation": [
     "リモートインストールの場合は変更できません"
@@ -411,6 +432,12 @@ export default {
   "Choose a disk for placing the boot loader": [
     "ブートローダを配置するディスクを選択してください"
   ],
+  "Choose a mode": [
+    "モードを選択"
+  ],
+  "Choose a product": [
+    "利用可能な %d 個の製品から選択してください"
+  ],
   "Choose device to bind by MAC": [
     "MAC アドレスでデバイスを識別します"
   ],
@@ -435,8 +462,8 @@ export default {
   "Close": [
     "閉じる"
   ],
-  "Configuration read from the iSCSI Boot Firmware Table (iBFT).": [
-    "iSCSI Boot Firmware Table (iBFT) から読み込んだ設定です。"
+  "Configuration read from the iSCSI Boot Firmware Table (iBFT). Initiator cannot be changed.": [
+    "iSCSI Boot Firmware Table (iBFT) から読み込んだ設定です。イニシエータの設定は変更できません。"
   ],
   "Configuration unreachable or invalid": [
     "設定に到達できないか、正しくありません"
@@ -495,6 +522,9 @@ export default {
   "Confirm that you really want to continue.": [
     "続行して問題がないかどうか、ご確認ください。"
   ],
+  "Confirm the product selection.": [
+    "製品セクションで確認を行ってください。"
+  ],
   "Connect": [
     "接続"
   ],
@@ -504,8 +534,8 @@ export default {
   "Connected": [
     "接続済み"
   ],
-  "Connected (%s)": [
-    "接続済み (%s)"
+  "Connected by the system": [
+    "システムにより接続済み"
   ],
   "Connected device": [
     "接続済みのデバイス"
@@ -521,6 +551,9 @@ export default {
   ],
   "Connection details": [
     "接続の詳細"
+  ],
+  "Connection failed": [
+    "接続に失敗しました"
   ],
   "Connection is available to all devices.": [
     "接続時に任意のデバイスを使用するようにします。"
@@ -678,20 +711,23 @@ export default {
   "Discard the maximum size and continue with simplified configuration": [
     "最大サイズの設定を破棄してシンプルな設定にして続ける"
   ],
+  "Disconnect": [
+    "切断"
+  ],
   "Disconnected": [
     "切断済み"
   ],
-  "Discover": [
-    "検索"
+  "Disconnected by the system": [
+    "システムにより切断済み"
+  ],
+  "Disconnection failed": [
+    "切断に失敗しました"
   ],
   "Discover and connect to iSCSI targets": [
     "iSCSI ターゲットの検出と接続"
   ],
-  "Discover iSCSI Targets": [
-    "iSCSI ターゲットの検出"
-  ],
-  "Discover iSCSI targets": [
-    "iSCSI ターゲットの検出"
+  "Discover targets": [
+    "ターゲットの検出"
   ],
   "Disk": [
     "ディスク"
@@ -714,14 +750,17 @@ export default {
   "Download logs": [
     "ログのダウンロード"
   ],
+  "Download logs to troubleshoot or share with support.": [
+    "ログをダウンロードして原因を調査するか、サポートに共有してください。"
+  ],
   "Edit": [
     "編集"
   ],
-  "Edit %s": [
-    "%s の編集"
-  ],
   "Edit binding settings": [
     "バインディング設定の編集"
+  ],
+  "Edit connection": [
+    "接続の編集"
   ],
   "Edit connection settings": [
     "接続設定の編集"
@@ -737,6 +776,9 @@ export default {
   ],
   "Empty LVM volume group %s": [
     "空の LVM ボリュームグループ %s"
+  ],
+  "Enable mutual verification": [
+    "相互検証を有効にする"
   ],
   "Encrypt the system": [
     "システムの暗号化"
@@ -900,6 +942,9 @@ export default {
   "GiB": [
     "GiB"
   ],
+  "Go to iSCSI": [
+    "iSCSI に移動"
+  ],
   "Go to network page": [
     "ネットワークページに移動"
   ],
@@ -933,9 +978,6 @@ export default {
   "IP Addresses": [
     "IP アドレス"
   ],
-  "IP address": [
-    "IP アドレス"
-  ],
   "IP addresses": [
     "IP アドレス"
   ],
@@ -963,32 +1005,17 @@ export default {
   "If you want to disable this check, please specify \"inst.ay_check=0\" at kernels command-line": [
     "このチェックを無効化したい場合は、カーネルのコマンドラインに \"inst.ay_check=0\" を指定してください"
   ],
-  "Incorrect IP address": [
-    "IP アドレスが正しくありません"
-  ],
-  "Incorrect password": [
-    "パスワードが正しくありません"
-  ],
-  "Incorrect port": [
-    "ポートが正しくありません"
-  ],
-  "Incorrect user name": [
-    "ユーザ名が正しくありません"
-  ],
   "Initiator": [
     "イニシエータ"
-  ],
-  "Initiator details": [
-    "イニシエータの詳細"
   ],
   "Initiator name": [
     "イニシエータ名"
   ],
-  "Initiator name could not be updated": [
-    "イニシエータ名を更新できませんでした"
+  "Initiator password": [
+    "イニシエータ側のパスワード"
   ],
-  "Initiator name successfully updated": [
-    "イニシエータ名の更新に成功しました"
+  "Initiator user name": [
+    "イニシエータ側のユーザ名"
   ],
   "Install": [
     "インストール"
@@ -1007,6 +1034,9 @@ export default {
   ],
   "Installation devices": [
     "インストール先のデバイス"
+  ],
+  "Installation failed": [
+    "インストールが失敗しました"
   ],
   "Installation in progress": [
     "インストールを行っています"
@@ -1137,6 +1167,9 @@ export default {
   "Localization": [
     "ローカライゼーション"
   ],
+  "Locked targets cannot be managed from here and do not offer any actions.": [
+    "施錠 (ロック) されているターゲットはここでは管理できません。そのため、実行できる処理もありません。"
+  ],
   "Log in": [
     "ログイン"
   ],
@@ -1152,23 +1185,14 @@ export default {
   "Login": [
     "ログイン"
   ],
-  "Login %s": [
-    "%s にログイン"
-  ],
   "Login form": [
     "ログインフォーム"
-  ],
-  "Logout": [
-    "ログアウト"
   ],
   "MAC": [
     "MAC"
   ],
   "Make sure that the passsword is correct and try again.": [
     "パスワードが正しいことをご確認のうえ、やり直してください。"
-  ],
-  "Make sure you provide the correct values": [
-    "正しい値を設定しているかどうかご確認ください"
   ],
   "Manage DASD devices": [
     "DASD デバイスの管理"
@@ -1188,6 +1212,9 @@ export default {
   "Min channel": [
     "最小チャネル"
   ],
+  "Missing": [
+    "見つかりません"
+  ],
   "Mode": [
     "モード"
   ],
@@ -1197,11 +1224,17 @@ export default {
   "Modify settings and physical volumes": [
     "設定と物理ボリュームの変更"
   ],
+  "More": [
+    "続く"
+  ],
   "More actions": [
     "さらなる処理"
   ],
   "More devices": [
     "さらなるデバイス"
+  ],
+  "More installer options": [
+    "さらなるインストーラのオプション"
   ],
   "More keymap layout might be available for the selected product at [Localization] page": [
     "選択した製品に対するキーボードレイアウトの詳細な設定は、 [ローカライゼーション] のページにあります"
@@ -1323,11 +1356,8 @@ export default {
   "No devices found": [
     "デバイスが見つかりませんでした"
   ],
-  "No iSCSI Boot Firmware Table (iBFT) found. The initiator can be configured manually.": [
-    "iSCSI Boot Firmware Table (iBFT) が見つかりませんでした。イニシエータの設定は手作業で実施できます。"
-  ],
-  "No iSCSI targets found.": [
-    "iSCSI ターゲットが見つかりませんでした。"
+  "No iSCSI Boot Firmware Table (iBFT) found. The initiator can be [configured manually.]": [
+    "iSCSI Boot Firmware Table (iBFT) が見つかりませんでした。イニシエータの設定は [手作業で実施できます。]"
   ],
   "No logical volumes are defined yet": [
     "何も論理ボリュームを設定していません"
@@ -1341,8 +1371,23 @@ export default {
   "No support is planned.": [
     "サポートを提供する計画はありません。"
   ],
+  "No targets available": [
+    "ターゲットがありません"
+  ],
+  "No targets have been discovered or configured.": [
+    "ターゲットが検出されていないか、設定されていません。"
+  ],
+  "No targets matches filters": [
+    "フィルタに該当するターゲットがありません"
+  ],
   "No user defined yet.": [
     "ユーザを設定していません。"
+  ],
+  "No valid address.": [
+    "アドレスが正しくありません。"
+  ],
+  "No valid port.": [
+    "ポートが正しくありません。"
   ],
   "No wired connections were found": [
     "有線接続が見つかりませんでした"
@@ -1398,9 +1443,6 @@ export default {
   "On boot": [
     "システム起動時"
   ],
-  "Only available if authentication by target is provided": [
-    "ターゲットによる認証を指定した場合にのみ利用できます"
-  ],
   "Only reused partitions and space not assigned to any partition will be used.": [
     "再利用するよう設定したパーティションと、パーティションの設定されていない領域のみを使用します。"
   ],
@@ -1409,9 +1451,6 @@ export default {
   ],
   "Options for partition %s": [
     "パーティション %s のオプション"
-  ],
-  "Options toggle": [
-    "オプションの切り替え"
   ],
   "Package installation failed": [
     "インストールのインストール失敗"
@@ -1482,11 +1521,11 @@ export default {
   "Pending": [
     "保留中"
   ],
+  "Perform a discovery to find available iSCSI targets.": [
+    "利用可能な iSCSI ターゲットを検出するため、検索を実施してください。"
+  ],
   "PiB": [
     "PiB"
-  ],
-  "Please, perform an iSCSI discovery in order to find available iSCSI targets.": [
-    "利用可能な iSCSI ターゲットを検出するため、 iSCSI 検索を実施してください。"
   ],
   "Please, try to activate a zFCP controller.": [
     "zFCP コントローラの有効化をお試しください。"
@@ -1524,6 +1563,9 @@ export default {
   "Protection for the information stored at the new file systems, including data, programs, and system files.": [
     "データやプログラム、システムファイルなど、新しく作成するファイルシステム内に配置される情報への保護を行います。"
   ],
+  "Provide authentication": [
+    "認証情報を設定"
+  ],
   "Provide email address": [
     "電子メールアドレスを入力する"
   ],
@@ -1550,6 +1592,9 @@ export default {
   ],
   "Reboot": [
     "再起動"
+  ],
+  "Reboot to try again.": [
+    "再起動してやり直してください。"
   ],
   "Recommended": [
     "推奨"
@@ -1692,11 +1737,20 @@ export default {
   "Select a disk to define partitions or to mount": [
     "パーティションの設定またはマウントを行うディスクを選択してください"
   ],
+  "Select a mode": [
+    "モードの選択"
+  ],
+  "Select a mode and confirm your choice.": [
+    "モードを選択したあと、末尾で選択を確認してください。"
+  ],
   "Select a product": [
     "製品の選択"
   ],
   "Select a product and confirm your choice.": [
     "製品を選択したあと、末尾で選択を確認してください。"
+  ],
+  "Select a product mode to continue.": [
+    "続行するには製品モードを選択してください。"
   ],
   "Select a product to continue.": [
     "続行するには製品を選択してください。"
@@ -1860,6 +1914,9 @@ export default {
   "Status": [
     "状態"
   ],
+  "Status filter toggle": [
+    "状態フィルタの切り替え"
+  ],
   "Step %1$d of %2$d": [
     "ステップ %1$d / %2$d"
   ],
@@ -1876,7 +1933,13 @@ export default {
     "スワップ"
   ],
   "Switch to a different mode": [
-    ""
+    "異なるモードに切り替え"
+  ],
+  "Switch to a different mode or another product": [
+    "異なるモード、もしくは利用可能な %d 個の製品のいずれかに切り替え"
+  ],
+  "Switch to another product": [
+    "利用可能な %d 個の製品のいずれかに切り替え"
   ],
   "System Information": [
     "システム情報"
@@ -1890,11 +1953,11 @@ export default {
   "Take a moment to review the installation settings below and adjust them as needed.": [
     "下記に示すインストール設定をご確認のうえ、必要であれば調整してください。"
   ],
-  "Target Password": [
-    "ターゲットのパスワード"
-  ],
-  "Targets": [
+  "Target": [
     "ターゲット"
+  ],
+  "Target not found": [
+    "ターゲットが見つかりません"
   ],
   "Temporary name that may change after reboot or network changes": [
     "システムの再起動やネットワーク側の変更により変わりうる一時的な名前です"
@@ -2196,9 +2259,6 @@ export default {
   "Updating the hostname now or later will not change the currently registered hostname.": [
     "ここでホスト名を変更した場合も後から変更した場合も、登録済みのホスト名は変更されないことに注意してください。"
   ],
-  "Updating the initiator name": [
-    "イニシエータ名を更新しています"
-  ],
   "Upload": [
     "アップロード"
   ],
@@ -2451,9 +2511,6 @@ export default {
   "[CAPS LOCK] is on": [
     "[CAPS LOCK] が有効化されています"
   ],
-  "[FIXME]": [
-    "[FIXME]"
-  ],
   "active": [
     "有効"
   ],
@@ -2479,7 +2536,7 @@ export default {
     "iSCSI"
   ],
   "immutable Btrfs": [
-    ""
+    "不変性を持つ btrfs"
   ],
   "logical volume": [
     "論理ボリューム"

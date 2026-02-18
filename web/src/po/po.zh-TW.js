@@ -222,12 +222,6 @@ export default {
   "Authentication": [
     "驗證"
   ],
-  "Authentication by initiator": [
-    "由發起者驗證"
-  ],
-  "Authentication by target": [
-    "由目標驗證"
-  ],
   "Auto LUNs Scan": [
     "自動掃描 LUN"
   ],
@@ -390,9 +384,6 @@ export default {
   "Close": [
     "關閉"
   ],
-  "Configuration read from the iSCSI Boot Firmware Table (iBFT).": [
-    "已從 iSCSI 開機韌體表 (iBFT) 讀取組態。"
-  ],
   "Configuration unreachable or invalid": [
     "組態無法存取或無效"
   ],
@@ -431,9 +422,6 @@ export default {
   ],
   "Connected": [
     "已連接"
-  ],
-  "Connected (%s)": [
-    "已連接 (%s)"
   ],
   "Connected device": [
     "已連接裝置"
@@ -600,17 +588,8 @@ export default {
   "Disconnected": [
     "已中斷連接"
   ],
-  "Discover": [
-    "探查"
-  ],
   "Discover and connect to iSCSI targets": [
     "探查並連接至 iSCSI 目標"
-  ],
-  "Discover iSCSI Targets": [
-    "探查 iSCSI 目標"
-  ],
-  "Discover iSCSI targets": [
-    "探查 iSCSI 目標"
   ],
   "Disk": [
     "磁碟"
@@ -630,11 +609,11 @@ export default {
   "Download logs": [
     "下載記錄"
   ],
+  "Download logs to troubleshoot or share with support.": [
+    ""
+  ],
   "Edit": [
     "編輯"
-  ],
-  "Edit %s": [
-    "編輯 %s"
   ],
   "Edit binding settings": [
     "編輯結合設定"
@@ -653,6 +632,9 @@ export default {
   ],
   "Empty LVM volume group %s": [
     "清空 LVM 磁碟區群組 %s"
+  ],
+  "Enable mutual verification": [
+    ""
   ],
   "Encrypt the system": [
     "加密系統"
@@ -849,9 +831,6 @@ export default {
   "IP Addresses": [
     "IP 位址"
   ],
-  "IP address": [
-    "IP 位址"
-  ],
   "IP addresses": [
     "IP 位址"
   ],
@@ -876,32 +855,11 @@ export default {
   "If you want to disable this check, please specify \"inst.ay_check=0\" at kernels command-line": [
     ""
   ],
-  "Incorrect IP address": [
-    "IP 位址不正確"
-  ],
-  "Incorrect password": [
-    "密碼不正確"
-  ],
-  "Incorrect port": [
-    "連接埠不正確"
-  ],
-  "Incorrect user name": [
-    "使用者名稱不正確"
-  ],
   "Initiator": [
     "發起者"
   ],
-  "Initiator details": [
-    "發起者詳細資料"
-  ],
   "Initiator name": [
     "發起者名稱"
-  ],
-  "Initiator name could not be updated": [
-    "無法更新發起者名稱"
-  ],
-  "Initiator name successfully updated": [
-    "已成功更新發起者名稱"
   ],
   "Install": [
     "安裝"
@@ -1017,6 +975,9 @@ export default {
   "Localization": [
     "本土化"
   ],
+  "Locked targets cannot be managed from here and do not offer any actions.": [
+    ""
+  ],
   "Log in": [
     "登入"
   ],
@@ -1032,20 +993,11 @@ export default {
   "Login": [
     "登入"
   ],
-  "Login %s": [
-    "登入 %s"
-  ],
   "Login form": [
     "登入表單"
   ],
-  "Logout": [
-    "登出"
-  ],
   "MAC": [
     "MAC"
-  ],
-  "Make sure you provide the correct values": [
-    "請確定提供了正確的值"
   ],
   "Manage DASD devices": [
     "管理 DASD 裝置"
@@ -1065,11 +1017,17 @@ export default {
   "Min channel": [
     "最小通道"
   ],
+  "Missing": [
+    ""
+  ],
   "Mode": [
     "模式"
   ],
   "Modify settings and physical volumes": [
     "修改設定和實體磁碟區"
+  ],
+  "More": [
+    ""
   ],
   "More actions": [
     "更多動作"
@@ -1194,12 +1152,6 @@ export default {
   "No devices found": [
     "未找到裝置"
   ],
-  "No iSCSI Boot Firmware Table (iBFT) found. The initiator can be configured manually.": [
-    "未找到 iSCSI 開機韌體表 (iBFT)。可以手動設定發起者。"
-  ],
-  "No iSCSI targets found.": [
-    "未找到 iSCSI 目標。"
-  ],
   "No logical volumes are defined yet": [
     "尚未定義邏輯磁碟區"
   ],
@@ -1209,8 +1161,14 @@ export default {
   "No support is planned.": [
     "暫無支援計畫。"
   ],
+  "No targets have been discovered or configured.": [
+    ""
+  ],
   "No user defined yet.": [
     "尚未定義使用者。"
+  ],
+  "No valid port.": [
+    ""
   ],
   "No wired connections were found": [
     "未找到有線連接"
@@ -1260,17 +1218,11 @@ export default {
   "On boot": [
     "開機時"
   ],
-  "Only available if authentication by target is provided": [
-    "僅當目標提供驗證機制時可用"
-  ],
   "Only reused partitions and space not assigned to any partition will be used.": [
     "將會僅使用重複使用的分割區及未指定給任何分割區的空間。"
   ],
   "Only reused partitions will be used.": [
     "將會僅使用重複使用的分割區。"
-  ],
-  "Options toggle": [
-    "選項切換鈕"
   ],
   "Package installation failed": [
     "安裝套件失敗"
@@ -1329,9 +1281,6 @@ export default {
   "PiB": [
     "PiB"
   ],
-  "Please, perform an iSCSI discovery in order to find available iSCSI targets.": [
-    "請執行 iSCSI 探查以尋找可用的 iSCSI 目標。"
-  ],
   "Please, try to activate a zFCP controller.": [
     "請嘗試啟用 zFCP 控制器。"
   ],
@@ -1388,6 +1337,9 @@ export default {
   ],
   "Reboot": [
     "重新開機"
+  ],
+  "Reboot to try again.": [
+    ""
   ],
   "Recommended": [
     "推薦"
@@ -1671,6 +1623,9 @@ export default {
   "Status": [
     "狀態"
   ],
+  "Status filter toggle": [
+    ""
+  ],
   "Storage": [
     "儲存"
   ],
@@ -1692,11 +1647,8 @@ export default {
   "Take a moment to review the installation settings below and adjust them as needed.": [
     ""
   ],
-  "Target Password": [
-    "目標密碼"
-  ],
-  "Targets": [
-    "目標"
+  "Target not found": [
+    ""
   ],
   "Temporary name that may change after reboot or network changes": [
     ""
@@ -1986,9 +1938,6 @@ export default {
   "Updating the hostname now or later will not change the currently registered hostname.": [
     "現在或以後更新主機名稱不會變更目前註冊的主機名稱。"
   ],
-  "Updating the initiator name": [
-    "正在更新發起者名稱"
-  ],
   "Upload": [
     "上傳"
   ],
@@ -2213,9 +2162,6 @@ export default {
   ],
   "[CAPS LOCK] is on": [
     "已開啟 [大寫鎖定]"
-  ],
-  "[FIXME]": [
-    "[請修復]"
   ],
   "active": [
     "已啟用"

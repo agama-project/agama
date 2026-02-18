@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-02-09 04:10+0000\n"
+"POT-Creation-Date: 2026-02-13 10:41+0000\n"
 "PO-Revision-Date: 2024-06-29 13:46+0000\n"
 "Last-Translator: Martin Hansen <mh306602@gmail.com>\n"
 "Language-Team: Norwegian Bokmål <https://l10n.opensuse.org/projects/agama/"
@@ -59,35 +59,40 @@ msgid "Performing iSCSI discovery"
 msgstr ""
 
 #. Implementation for the API method #Install.
-#: service/lib/agama/dbus/storage/manager.rb:111
+#: service/lib/agama/dbus/storage/manager.rb:118
 msgid "Preparing bootloader proposal"
 msgstr "Forbereder forslag til oppstartslaster"
 
-#: service/lib/agama/dbus/storage/manager.rb:114
+#: service/lib/agama/dbus/storage/manager.rb:121
 msgid "Preparing the storage devices"
 msgstr "Forbereder lagringsenheter"
 
-#: service/lib/agama/dbus/storage/manager.rb:117
+#: service/lib/agama/dbus/storage/manager.rb:124
 msgid "Writing bootloader sysconfig"
 msgstr "Skriver oppstartslasterens sysconfig"
 
 #. Implementation for the API method #Finish.
-#: service/lib/agama/dbus/storage/manager.rb:125
+#: service/lib/agama/dbus/storage/manager.rb:132
 msgid "Finishing installation"
 msgstr ""
+
+#: service/lib/agama/dbus/storage/manager.rb:138
+#, fuzzy
+msgid "Unmounting devices"
+msgstr "Undersøker lagringsenheter"
 
 #. Gets and serializes the storage config used to calculate the current proposal.
 #.
 #. @return [String] Serialized config according to the JSON schema.
-#: service/lib/agama/dbus/storage/manager.rb:297
+#: service/lib/agama/dbus/storage/manager.rb:298
 msgid "Activating storage devices"
 msgstr "Aktiverer lagringsenheter"
 
-#: service/lib/agama/dbus/storage/manager.rb:300
+#: service/lib/agama/dbus/storage/manager.rb:301
 msgid "Probing storage devices"
 msgstr "Undersøker lagringsenheter"
 
-#: service/lib/agama/dbus/storage/manager.rb:303
+#: service/lib/agama/dbus/storage/manager.rb:304
 #, fuzzy
 msgid "Applying storage configuration"
 msgstr "Ferdigstiller lagring konfigurasjon"
@@ -393,45 +398,34 @@ msgid "Shrinking is not supported by this device"
 msgstr ""
 
 #. Copy /etc/nvme/host* to keep NVMe working after installation, bsc#1238038
-#: service/lib/agama/storage/finisher.rb:128
+#: service/lib/agama/storage/finisher.rb:126
 #, fuzzy
 msgid "Copying important installation files to the target system"
 msgstr "Skriver pakkebrønnene til mål systemet"
 
 #. Step to write the bootloader configuration
-#: service/lib/agama/storage/finisher.rb:163
+#: service/lib/agama/storage/finisher.rb:161
 #, fuzzy
 msgid "Installing bootloader"
 msgstr "Installer programvare"
 
 #. Step to finish the Y2Storage configuration
-#: service/lib/agama/storage/finisher.rb:180
+#: service/lib/agama/storage/finisher.rb:178
 #, fuzzy
 msgid "Adjusting storage configuration"
 msgstr "Ferdigstiller lagring konfigurasjon"
 
 #. Step to finish the iSCSI configuration
-#: service/lib/agama/storage/finisher.rb:191
+#: service/lib/agama/storage/finisher.rb:189
 #, fuzzy
 msgid "Adjusting iSCSI configuration"
 msgstr "Ferdigstiller lagring konfigurasjon"
 
 #. Step to configure the file-system snapshots
-#: service/lib/agama/storage/finisher.rb:202
+#: service/lib/agama/storage/finisher.rb:200
 #, fuzzy
 msgid "Configuring file systems snapshots"
 msgstr "Konfigurer systemet"
-
-#. Step to copy the installation logs
-#: service/lib/agama/storage/finisher.rb:220
-msgid "Copying logs"
-msgstr ""
-
-#. Step to unmount the target file-systems
-#: service/lib/agama/storage/finisher.rb:254
-#, fuzzy
-msgid "Unmounting storage devices"
-msgstr "Undersøker lagringsenheter"
 
 #. Issue representing the proposal is not valid.
 #.
@@ -446,6 +440,17 @@ msgstr ""
 #: service/lib/agama/storage/proposal.rb:315
 msgid "A problem ocurred while calculating the storage setup"
 msgstr "Ett problem oppsto under kalkulering av lagringsoppsettet"
+
+#. Step to copy the installation logs
+#: service/lib/agama/storage/umounter.rb:112
+msgid "Copying logs"
+msgstr ""
+
+#. Step to unmount the target file-systems
+#: service/lib/agama/storage/umounter.rb:146
+#, fuzzy
+msgid "Unmounting storage devices"
+msgstr "Undersøker lagringsenheter"
 
 #~ msgid "Analyze disks"
 #~ msgstr "Analyser disker"

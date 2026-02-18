@@ -125,6 +125,8 @@
         <package name="ipmitool" />
         <!-- jsc#PED-13114 -->
         <package name="tpm2.0-tools" />
+        <!-- image cleanup tool -->
+        <package name="image-janitor"/>
         <!-- plymouth bsc#1248507 -->
         <package name="plymouth" />
         <package name="plymouth-dracut" />

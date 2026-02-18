@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Feb 17 08:50:08 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+
+- Log the data sent to the backend when the request fails
+  (related to bsc#1256069)
+
+-------------------------------------------------------------------
 Fri Feb 13 09:25:56 UTC 2026 - Ancor Gonzalez Sosa <ancor@suse.com>
 
 - Change the label of the button for extra storage options (related
