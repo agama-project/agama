@@ -33,7 +33,7 @@ use zbus::zvariant::Value;
 
 /// Access Point
 #[serde_as]
-#[derive(Default, Debug, Clone, Serialize, Deserialize, utoipa::ToSchema)]
+#[derive(Default, Debug, Clone, PartialEq, Deserialize, Serialize, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct AccessPoint {
     pub device: String,

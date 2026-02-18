@@ -19,7 +19,7 @@
 // find current contact information at www.suse.com.
 
 use crate::model::{Connection, GeneralState};
-use crate::types::{AccessPoint, ConnectionState, Device, DeviceType, Proposal, SystemInfo};
+use crate::types::{AccessPoint, ConnectionState, Device, Proposal, SystemInfo};
 use agama_utils::api::network::Config;
 use tokio::sync::oneshot;
 use uuid::Uuid;
@@ -35,10 +35,8 @@ pub type ControllerConnection = (Connection, Vec<String>);
 /// and the D-Bus tree as needed.
 #[derive(Debug)]
 pub enum Action {
-    /// Add a new connection with the given name and type.
-    AddConnection(String, DeviceType, Responder<Result<(), NetworkStateError>>),
     /// Add a new connection
-    NewConnection(Box<Connection>, Responder<Result<(), NetworkStateError>>),
+    NewConnection(Box<Connection>),
     /// Gets a connection by its id
     GetConnection(String, Responder<Option<Connection>>),
     /// Gets a connection by its Uuid
@@ -54,11 +52,6 @@ pub enum Action {
     GetSystem(Responder<SystemInfo>),
     /// Gets a connection
     GetConnections(Responder<Vec<Connection>>),
-    /// Gets a controller connection
-    GetController(
-        Uuid,
-        Responder<Result<ControllerConnection, NetworkStateError>>,
-    ),
     /// Gets all scanned access points
     GetAccessPoints(Responder<Vec<AccessPoint>>),
     /// Adds a new device.
@@ -74,14 +67,7 @@ pub enum Action {
     GetGeneralState(Responder<GeneralState>),
     /// Connection state changed
     ChangeConnectionState(String, ConnectionState),
-    /// Sets a controller's ports. It uses the Uuid of the controller and the IDs or interface names
-    /// of the ports.
-    SetPorts(
-        Uuid,
-        Box<Vec<String>>,
-        Responder<Result<(), NetworkStateError>>,
-    ),
-    /// It persit existing connections if there is no one to be persisted and the copy of network
+    /// It persist existing connections if there is no one to be persisted and the copy of network
     /// is not disabled
     ProposeDefault(Responder<Result<(), NetworkStateError>>),
     // Copies persistent connections to the target system
@@ -93,7 +79,7 @@ pub enum Action {
     /// Forces a wireless networks scan refresh
     RefreshScan(Responder<Result<(), NetworkAdapterError>>),
     /// Remove the connection with the given Uuid.
-    RemoveConnection(String, Responder<Result<(), NetworkStateError>>),
+    RemoveConnection(String),
     /// Apply the current configuration.
     Apply(Responder<Result<(), NetworkAdapterError>>),
 }
