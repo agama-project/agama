@@ -60,7 +60,7 @@ const productWithModes: Product = {
   ],
 };
 
-const mockPutConfigFn = jest.fn();
+const mockPatchConfigFn = jest.fn();
 const mockUseSystemFn: jest.Mock<ReturnType<typeof useSystem>> = jest.fn();
 const mockUseSystemSoftwareFn: jest.Mock<ReturnType<typeof useSystemSoftware>> = jest.fn();
 
@@ -73,7 +73,7 @@ jest.mock("~/components/product/LicenseDialog", () => () => <div>LicenseDialog M
 
 jest.mock("~/api", () => ({
   ...jest.requireActual("~/api"),
-  putConfig: (payload) => mockPutConfigFn(payload),
+  patchConfig: (payload) => mockPatchConfigFn(payload),
 }));
 
 jest.mock("~/hooks/model/system", () => ({
@@ -222,7 +222,7 @@ describe("ProductSelectionPage", () => {
     const selectButton = screen.getByRole("button", { name: "Select" });
     await user.click(productOption);
     await user.click(selectButton);
-    expect(mockPutConfigFn).toHaveBeenCalledWith({ product: { id: tumbleweed.id } });
+    expect(mockPatchConfigFn).toHaveBeenCalledWith({ product: { id: tumbleweed.id } });
   });
 
   it("does not trigger the product selection if user selects a product but clicks o cancel button", async () => {
@@ -233,7 +233,7 @@ describe("ProductSelectionPage", () => {
     expect(cancel).toHaveAttribute("href", ROOT.overview);
     await user.click(productOption);
     await user.click(cancel);
-    expect(mockPutConfigFn).not.toHaveBeenCalled();
+    expect(mockPatchConfigFn).not.toHaveBeenCalled();
   });
 
   it.todo("make navigation test work");
@@ -315,7 +315,7 @@ describe("ProductSelectionPage", () => {
       const selectButton = screen.getByRole("button", { name: /Select/ });
       await user.click(selectButton);
 
-      expect(mockPutConfigFn).toHaveBeenCalledWith({
+      expect(mockPatchConfigFn).toHaveBeenCalledWith({
         product: { id: productWithModes.id, mode: "standard" },
       });
     });

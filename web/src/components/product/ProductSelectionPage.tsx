@@ -55,7 +55,7 @@ import { InstallerL10nOptions, Link, Page, SubtleContent } from "~/components/co
 import ProductLogo from "~/components/product/ProductLogo";
 import LicenseDialog from "~/components/product/LicenseDialog";
 import Text from "~/components/core/Text";
-import { putConfig } from "~/api";
+import { patchConfig } from "~/api";
 import { useProduct, useProductInfo } from "~/hooks/model/config/product";
 import { useSystem } from "~/hooks/model/system";
 import { useSystem as useSystemSoftware } from "~/hooks/model/system/software";
@@ -702,7 +702,7 @@ const ProductSelectionContent = () => {
   const onSubmit = async (selectedProduct: Product, selectedMode: string) => {
     setIsSubmmited(true);
     setSubmmitedSelection(selectedProduct);
-    putConfig({ product: { id: selectedProduct.id, mode: selectedMode } });
+    patchConfig({ product: { id: selectedProduct.id, mode: selectedMode } });
   };
 
   return (
