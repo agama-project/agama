@@ -18,6 +18,8 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
+use std::fmt;
+
 use serde::Serialize;
 use serde_with::skip_serializing_none;
 
@@ -69,7 +71,7 @@ pub struct Pattern {
 }
 
 #[skip_serializing_none]
-#[derive(Clone, Default, Debug, Serialize, utoipa::ToSchema)]
+#[derive(Clone, Default, Serialize, utoipa::ToSchema)]
 pub struct RegistrationInfo {
     /// Registration code.
     pub code: Option<String>,
@@ -79,6 +81,17 @@ pub struct RegistrationInfo {
     pub url: Option<url::Url>,
     /// Available add-ons.
     pub addons: Vec<AddonInfo>,
+}
+
+impl fmt::Debug for RegistrationInfo {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.debug_struct("RegistrationInfo")
+            .field("code", &self.code.as_ref().map(|_| "[FILTERED]"))
+            .field("email", &self.email)
+            .field("url", &self.url)
+            .field("addons", &self.addons)
+            .finish()
+    }
 }
 
 /// Addon registration
@@ -111,4 +124,32 @@ pub struct AddonInfo {
 pub enum AddonRegistration {
     Registered { code: Option<String> },
     NotRegistered,
+}
+
+#[cfg(test)]
+mod tests {
+    use super::RegistrationInfo;
+
+    #[test]
+    fn test_registration_info_debug() {
+        let state = RegistrationInfo {
+            code: Some("secret_code".to_string()),
+            email: Some("me@example.org".to_string()),
+            url: None,
+            addons: vec![],
+        };
+
+        let debug_output = format!("{:?}", state);
+        assert!(debug_output.contains("code: Some(\"[FILTERED]\")"));
+        assert!(!debug_output.contains("secret_code"));
+
+        let state_no_code = RegistrationInfo {
+            code: None,
+            email: None,
+            url: None,
+            addons: vec![],
+        };
+        let debug_output_no_code = format!("{:?}", state_no_code);
+        assert!(debug_output_no_code.contains("code: None"));
+    }
 }
