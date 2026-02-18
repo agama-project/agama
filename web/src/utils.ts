@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import { mapEntries } from "radashi";
+import { isArray, isPlainObject, mapEntries } from "radashi";
 import { generatePath } from "react-router";
 import { ISortBy, sort } from "fast-sort";
 
@@ -158,6 +158,61 @@ const mask = (value: string, visible: number = 4, maskChar: string = "*"): strin
   const maskedLength = Math.max(0, length - safeVisible);
   const visiblePart = safeVisible === 0 ? "" : value.slice(-safeVisible);
   return maskChar.repeat(maskedLength) + visiblePart;
+};
+
+// list of sensitive object properties replaced by the maskSecrets() function
+const defaultSensitiveKeys = [
+  // storage
+  "encryptionPassword",
+  // users
+  "password",
+  // registration
+  "registrationCode",
+  // storage (iSCSI setting)
+  "reverse_password",
+];
+
+/**
+ * Recursively filters an object by replacing sensitive values with text
+ * "[FILTERED]". Useful for logging possibly sensitive data.
+ *
+ * It returns a new object, the original input is unchanged.
+ *
+ * @example
+ * ```ts
+ * const data = { user: "John", password: "123" };
+ * // logs '{ "user": "John", "password": "[FILTERED]" }'
+ * console.log(maskSecrets(data));
+ * ```
+ *
+ * @param obj - The object or array to sanitize
+ * @param options - Options object { sensitiveKeys, stringify }
+ * @returns Sanitized copy of the input
+ */
+const maskSecrets = (
+  obj: unknown,
+  {
+    sensitiveKeys = defaultSensitiveKeys,
+    stringify = true,
+  }: { sensitiveKeys?: string[]; stringify?: boolean } = {},
+): unknown => {
+  const mask = (currentObj: unknown): unknown => {
+    if (isArray(currentObj)) {
+      return currentObj.map(mask);
+    }
+
+    return isPlainObject(currentObj)
+      ? mapEntries(currentObj, (k, v) => [k, sensitiveKeys.includes(k) ? "[FILTERED]" : mask(v)])
+      : currentObj;
+  };
+
+  const result = mask(obj);
+
+  if (stringify) {
+    return JSON.stringify(result, null, 2);
+  }
+
+  return result;
 };
 
 /**
@@ -424,6 +479,7 @@ export {
   timezoneTime,
   mask,
   generateEncodedPath,
+  maskSecrets,
   sortCollection,
   mergeSources,
 };
