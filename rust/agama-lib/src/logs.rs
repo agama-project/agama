@@ -37,7 +37,7 @@ const DEFAULT_COMMANDS: [(&str, &str); 2] = [
     ("rpm -qa", "rpm-qa"),
 ];
 
-const DEFAULT_PATHS: [&str; 16] = [
+const DEFAULT_PATHS: [&str; 17] = [
     // logs
     "/var/log/build",
     "/var/log/YaST2",
