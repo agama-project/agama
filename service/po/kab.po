@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-02-09 04:10+0000\n"
-"PO-Revision-Date: 2026-02-10 22:04+0000\n"
+"POT-Creation-Date: 2026-02-13 10:41+0000\n"
+"PO-Revision-Date: 2026-02-13 23:04+0000\n"
 "Last-Translator: Agurzil usaka <massi90.anzar@gmail.com>\n"
 "Language-Team: Kabyle <https://l10n.opensuse.org/projects/agama/agama-"
 "service-master/kab/>\n"
@@ -58,38 +58,41 @@ msgid "Performing iSCSI discovery"
 msgstr "Aseqdec n tifin n iSCSI"
 
 #. Implementation for the API method #Install.
-#: service/lib/agama/dbus/storage/manager.rb:111
+#: service/lib/agama/dbus/storage/manager.rb:118
 msgid "Preparing bootloader proposal"
 msgstr ""
 
-#: service/lib/agama/dbus/storage/manager.rb:114
+#: service/lib/agama/dbus/storage/manager.rb:121
 msgid "Preparing the storage devices"
 msgstr "Aheggi n yibenkan n usekles"
 
-#: service/lib/agama/dbus/storage/manager.rb:117
+#: service/lib/agama/dbus/storage/manager.rb:124
 msgid "Writing bootloader sysconfig"
 msgstr ""
 
 #. Implementation for the API method #Finish.
-#: service/lib/agama/dbus/storage/manager.rb:125
-#, fuzzy
+#: service/lib/agama/dbus/storage/manager.rb:132
 msgid "Finishing installation"
-msgstr "Semmet asebded"
+msgstr "Fak asbeddi"
+
+#: service/lib/agama/dbus/storage/manager.rb:138
+msgid "Unmounting devices"
+msgstr ""
 
 #. Gets and serializes the storage config used to calculate the current proposal.
 #.
 #. @return [String] Serialized config according to the JSON schema.
-#: service/lib/agama/dbus/storage/manager.rb:297
+#: service/lib/agama/dbus/storage/manager.rb:298
 msgid "Activating storage devices"
-msgstr ""
+msgstr "Armad n yibenkan n uḥraz"
 
-#: service/lib/agama/dbus/storage/manager.rb:300
+#: service/lib/agama/dbus/storage/manager.rb:301
 msgid "Probing storage devices"
 msgstr ""
 
-#: service/lib/agama/dbus/storage/manager.rb:303
+#: service/lib/agama/dbus/storage/manager.rb:304
 msgid "Applying storage configuration"
-msgstr ""
+msgstr "Asnas n twila n uḥraz"
 
 #. TRANSLATORS: SSL certificate details
 #: service/lib/agama/ssl/certificate_details.rb:31
@@ -98,15 +101,15 @@ msgstr "Aselkin:"
 
 #: service/lib/agama/ssl/certificate_details.rb:31
 msgid "Issued To"
-msgstr ""
+msgstr "Yettunefk i"
 
 #: service/lib/agama/ssl/certificate_details.rb:32
 msgid "Issued By"
-msgstr ""
+msgstr "Yettunefk sɣur"
 
 #: service/lib/agama/ssl/certificate_details.rb:32
 msgid "SHA1 Fingerprint: "
-msgstr ""
+msgstr "Adsil SHA1: "
 
 #: service/lib/agama/ssl/certificate_details.rb:34
 msgid "SHA256 Fingerprint: "
@@ -120,12 +123,12 @@ msgstr ""
 #. label followed by the SSL certificate identification
 #: service/lib/agama/ssl/certificate_details.rb:48
 msgid "Organization (O): "
-msgstr ""
+msgstr "Tuddsa (O): "
 
 #. label followed by the SSL certificate identification
 #: service/lib/agama/ssl/certificate_details.rb:50
 msgid "Organization Unit (OU): "
-msgstr ""
+msgstr "Aferdis n tuddsa (OU): "
 
 #. Issue when the device has several users.
 #.
@@ -133,7 +136,7 @@ msgstr ""
 #: service/lib/agama/storage/config_checkers/alias.rb:74
 #, c-format
 msgid "The device with alias '%s' is used by more than one device"
-msgstr ""
+msgstr "Ibenk s tzaẓlut '%s' yettwaseqdec sɣur ugar n yiwen n yibenk"
 
 #. Issue when the device has both filesystem and a user.
 #.
@@ -144,6 +147,8 @@ msgid ""
 "The device with alias '%s' cannot be formatted because it is used by other "
 "device"
 msgstr ""
+"Ibenk s tzaẓlut '%s' ur izmir ara ad yettwamsel acku yettwaseqdec sɣur "
+"ibenkan nniḍen"
 
 #. Issue when the device has both partitions and a user.
 #.
@@ -154,6 +159,8 @@ msgid ""
 "The device with alias '%s' cannot be partitioned because it is used by other "
 "device"
 msgstr ""
+"Ibenk s tzaẓlut '%s' ur izmer ara ad yeddu d iḥricen acku yella yettwaseqdec "
+"sɣur ibenkan nniḍen"
 
 #. Error if a boot device is required and unknown.
 #.
@@ -243,6 +250,8 @@ msgid ""
 "The device '%{member}' cannot be deleted because it is part of the MD RAID %"
 "{md_raid}"
 msgstr ""
+"Ibenk '%{member}' ur yezmir ara ad yettwakkes acku d aḥric seg MD RAID %"
+"{md_raid}"
 
 #. Issue if the device member is resized.
 #.
@@ -254,6 +263,8 @@ msgid ""
 "The device '%{member}' cannot be resized because it is part of the MD RAID %"
 "{md_raid}"
 msgstr ""
+"Ibenk '%{member}' ur izmer ara ad isnifel tasekta acku yella d aḥric seg MD "
+"RAID %{md_raid}"
 
 #. Issue if the device member is formatted.
 #.
@@ -265,6 +276,7 @@ msgid ""
 "The device '%{member}' cannot be formatted because it is part of the MD RAID "
 "%{md_raid}"
 msgstr ""
+"Ibenk '%{member}' ur izmer ara ad yemsel acku d aḥric seg MD RAID %{md_raid}"
 
 #. Issue if the device member is partitioned.
 #.
@@ -276,6 +288,8 @@ msgid ""
 "The device '%{member}' cannot be partitioned because it is part of the MD "
 "RAID %{md_raid}"
 msgstr ""
+"Ibenk '%{member}' ur izmer ara ad yettwabḍu d iḥricen acku atan d aḥric seg "
+"MD RAID %{md_raid}"
 
 #. Issue if the device member is used by other device (e.g., as target for physical volumes).
 #.
@@ -333,7 +347,7 @@ msgstr "aḥric"
 
 #: service/lib/agama/storage/config_checkers/search.rb:91
 msgid "LVM logical volume"
-msgstr ""
+msgstr "ableɣ ameẓẓul LVM"
 
 #: service/lib/agama/storage/config_checkers/search.rb:93
 msgid "device"
@@ -391,39 +405,29 @@ msgid "Shrinking is not supported by this device"
 msgstr ""
 
 #. Copy /etc/nvme/host* to keep NVMe working after installation, bsc#1238038
-#: service/lib/agama/storage/finisher.rb:128
+#: service/lib/agama/storage/finisher.rb:126
 msgid "Copying important installation files to the target system"
 msgstr ""
 
 #. Step to write the bootloader configuration
-#: service/lib/agama/storage/finisher.rb:163
+#: service/lib/agama/storage/finisher.rb:161
 #, fuzzy
 msgid "Installing bootloader"
 msgstr "Sebded aseɣẓan"
 
 #. Step to finish the Y2Storage configuration
-#: service/lib/agama/storage/finisher.rb:180
+#: service/lib/agama/storage/finisher.rb:178
 msgid "Adjusting storage configuration"
 msgstr ""
 
 #. Step to finish the iSCSI configuration
-#: service/lib/agama/storage/finisher.rb:191
+#: service/lib/agama/storage/finisher.rb:189
 msgid "Adjusting iSCSI configuration"
 msgstr ""
 
 #. Step to configure the file-system snapshots
-#: service/lib/agama/storage/finisher.rb:202
+#: service/lib/agama/storage/finisher.rb:200
 msgid "Configuring file systems snapshots"
-msgstr ""
-
-#. Step to copy the installation logs
-#: service/lib/agama/storage/finisher.rb:220
-msgid "Copying logs"
-msgstr ""
-
-#. Step to unmount the target file-systems
-#: service/lib/agama/storage/finisher.rb:254
-msgid "Unmounting storage devices"
 msgstr ""
 
 #. Issue representing the proposal is not valid.
@@ -438,6 +442,16 @@ msgstr ""
 #. @return [Issue]
 #: service/lib/agama/storage/proposal.rb:315
 msgid "A problem ocurred while calculating the storage setup"
+msgstr ""
+
+#. Step to copy the installation logs
+#: service/lib/agama/storage/umounter.rb:112
+msgid "Copying logs"
+msgstr ""
+
+#. Step to unmount the target file-systems
+#: service/lib/agama/storage/umounter.rb:146
+msgid "Unmounting storage devices"
 msgstr ""
 
 #~ msgid "Configure software"

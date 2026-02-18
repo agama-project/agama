@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-02-09 04:10+0000\n"
-"PO-Revision-Date: 2026-01-29 21:04+0000\n"
+"POT-Creation-Date: 2026-02-13 10:41+0000\n"
+"PO-Revision-Date: 2026-02-11 22:04+0000\n"
 "Last-Translator: Eugene Krater <lachend@gmail.com>\n"
 "Language-Team: Ukrainian <https://l10n.opensuse.org/projects/agama/agama-"
 "service-master/uk/>\n"
@@ -30,9 +30,8 @@ msgstr "Знайдено непідтримувані елементи у про
 
 #. Implementation for the API method #Probe.
 #: service/lib/agama/dbus/storage/dasd.rb:64
-#, fuzzy
 msgid "Probing DASD devices"
-msgstr "Пошук пристроїв зберігання"
+msgstr "Пошук пристроїв DASD"
 
 #. Performs the configuration process in a separate thread.
 #.
@@ -43,9 +42,8 @@ msgstr "Пошук пристроїв зберігання"
 #.
 #. @param config_json [Hash]
 #: service/lib/agama/dbus/storage/dasd.rb:121
-#, fuzzy
 msgid "Configuring DASD"
-msgstr "Налаштування iSCSI"
+msgstr "Налаштування DASD"
 
 #. Do not configure if there is nothing to change.
 #: service/lib/agama/dbus/storage/iscsi.rb:98
@@ -61,35 +59,40 @@ msgid "Performing iSCSI discovery"
 msgstr "Відбувається виявлення iSCSI"
 
 #. Implementation for the API method #Install.
-#: service/lib/agama/dbus/storage/manager.rb:111
+#: service/lib/agama/dbus/storage/manager.rb:118
 msgid "Preparing bootloader proposal"
 msgstr "Підготовка пропозиції щодо завантажувача"
 
-#: service/lib/agama/dbus/storage/manager.rb:114
+#: service/lib/agama/dbus/storage/manager.rb:121
 msgid "Preparing the storage devices"
 msgstr "Підготовка пристроїв зберігання"
 
-#: service/lib/agama/dbus/storage/manager.rb:117
+#: service/lib/agama/dbus/storage/manager.rb:124
 msgid "Writing bootloader sysconfig"
 msgstr "Запис системної конфігурації завантажувача"
 
 #. Implementation for the API method #Finish.
-#: service/lib/agama/dbus/storage/manager.rb:125
+#: service/lib/agama/dbus/storage/manager.rb:132
 msgid "Finishing installation"
 msgstr "Завершення встановлення"
+
+#: service/lib/agama/dbus/storage/manager.rb:138
+#, fuzzy
+msgid "Unmounting devices"
+msgstr "Розмонтування пристроїв зберігання"
 
 #. Gets and serializes the storage config used to calculate the current proposal.
 #.
 #. @return [String] Serialized config according to the JSON schema.
-#: service/lib/agama/dbus/storage/manager.rb:297
+#: service/lib/agama/dbus/storage/manager.rb:298
 msgid "Activating storage devices"
 msgstr "Активація пристроїв зберігання"
 
-#: service/lib/agama/dbus/storage/manager.rb:300
+#: service/lib/agama/dbus/storage/manager.rb:301
 msgid "Probing storage devices"
 msgstr "Пошук пристроїв зберігання"
 
-#: service/lib/agama/dbus/storage/manager.rb:303
+#: service/lib/agama/dbus/storage/manager.rb:304
 msgid "Applying storage configuration"
 msgstr "Застосування конфігурації сховища"
 
@@ -418,39 +421,29 @@ msgid "Shrinking is not supported by this device"
 msgstr "Цей пристрій не підтримує стискання"
 
 #. Copy /etc/nvme/host* to keep NVMe working after installation, bsc#1238038
-#: service/lib/agama/storage/finisher.rb:128
+#: service/lib/agama/storage/finisher.rb:126
 msgid "Copying important installation files to the target system"
 msgstr "Копіювання важливих інсталяційних файлів до цільової системи"
 
 #. Step to write the bootloader configuration
-#: service/lib/agama/storage/finisher.rb:163
+#: service/lib/agama/storage/finisher.rb:161
 msgid "Installing bootloader"
 msgstr "Встановлення завантажувача"
 
 #. Step to finish the Y2Storage configuration
-#: service/lib/agama/storage/finisher.rb:180
+#: service/lib/agama/storage/finisher.rb:178
 msgid "Adjusting storage configuration"
 msgstr "Налаштування конфігурації сховища"
 
 #. Step to finish the iSCSI configuration
-#: service/lib/agama/storage/finisher.rb:191
+#: service/lib/agama/storage/finisher.rb:189
 msgid "Adjusting iSCSI configuration"
 msgstr "Налаштування конфігурації iSCSI"
 
 #. Step to configure the file-system snapshots
-#: service/lib/agama/storage/finisher.rb:202
+#: service/lib/agama/storage/finisher.rb:200
 msgid "Configuring file systems snapshots"
 msgstr "Налаштування моментальних знімків файлових систем"
-
-#. Step to copy the installation logs
-#: service/lib/agama/storage/finisher.rb:220
-msgid "Copying logs"
-msgstr "Копіювання журналів"
-
-#. Step to unmount the target file-systems
-#: service/lib/agama/storage/finisher.rb:254
-msgid "Unmounting storage devices"
-msgstr "Розмонтування пристроїв зберігання"
 
 #. Issue representing the proposal is not valid.
 #.
@@ -466,6 +459,16 @@ msgstr ""
 #: service/lib/agama/storage/proposal.rb:315
 msgid "A problem ocurred while calculating the storage setup"
 msgstr "Виникла проблема при розрахунку конфігурації накопичувачів"
+
+#. Step to copy the installation logs
+#: service/lib/agama/storage/umounter.rb:112
+msgid "Copying logs"
+msgstr "Копіювання журналів"
+
+#. Step to unmount the target file-systems
+#: service/lib/agama/storage/umounter.rb:146
+msgid "Unmounting storage devices"
+msgstr "Розмонтування пристроїв зберігання"
 
 #~ msgid "Logout iSCSI targets"
 #~ msgstr "Вихід із iSCSI-цілей"
