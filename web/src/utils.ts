@@ -415,6 +415,112 @@ function mergeSources<T, K extends keyof T>({
   return Array.from(map.values());
 }
 
+/**
+ * Options for extending a base collection with matching merge items.
+ */
+interface ExtendCollectionOptions<T, U> {
+  /**
+   * Collection providing merge data to enrich base items.
+   *
+   * Items in this collection will be matched against the base collection
+   * according to the `matching` fields.
+   */
+  with: U[];
+
+  /**
+   * Field name or array of field names used to match items between the base
+   * collection and the merge collection.
+   *  - Single field: matches on that field.
+   *  - Multiple fields: all fields are combined to determine a match.
+   */
+  matching: keyof T | (keyof T)[];
+
+  /**
+   * Determines which collection's properties take priority when merging:
+   *  - `"baseWins"`: base item properties overwrite merge properties.
+   *  - `"extensionWins"`: merge properties overwrite base item properties.
+   * @default "baseWins"
+   */
+  precedence?: "baseWins" | "extensionWins";
+}
+
+/**
+ * Extends a base collection of items by merging in matching items from a
+ * secondary collection.
+ *
+ * For each item in the base collection:
+ *   1. Find a matching item in the merge collection based on the specified
+ *      fields.
+ *   2. Merge the matched item's properties into the base item according to
+ *      `precedence`.
+ *
+ * @returns A new array of items where each base item has been extended with
+ * matching merge item properties.
+ *
+ * @example
+ * // Single field matching with default precedence (initial wins)
+ * const configDevices = [
+ *   { channel: "0.0.0160", diag: false, format: true }
+ * ];
+ * const systemDevices = [
+ *   { channel: "0.0.0160", deviceName: "dasda", type: "eckd", diag: true }
+ * ];
+ * const extendedConfigDevices = extendCollection(configDevices, {
+ *   with: systemDevices,
+ *   matching: 'channel'
+ * });
+ * // Result: [
+ *     { channel: "0.0.0160", deviceName: "dasda", type: "eckd", diag: false, format: true }
+ *   ]
+ *
+ * @example
+ * // Multiple field matching with extensionWins precedence
+ * const configDevices = [
+ *   { channel: "0.0.0160", state: "offline", diag: false }
+ * ];
+ * const systemDevices = [
+ *   { channel: "0.0.0160", state: "offline", deviceName: "dasda", type: "eckd", diag: true },
+ *   { channel: "0.0.0160", state: "active", deviceName: "dasdb", type: "fba" }
+ * ];
+ * const extendedConfigDevices = extendCollection(configDevices, {
+ *   with: systemDevices,
+ *   matching: ['channel', 'state']
+ *   precedence: "extensionWins"
+ * });
+ * // Result: [
+ *    { channel: "0.0.0160", state: "offline", deviceName: "dasda", type: "eckd", diag: true,  }
+ *   ]
+ */
+function extendCollection<T extends Record<string, unknown>, U extends Record<string, unknown>>(
+  collection: T[],
+  options: ExtendCollectionOptions<T, U>,
+): (T & U)[] {
+  const { with: extension, matching, precedence = "baseWins" } = options;
+
+  // Normalize matching field(s)
+  const keys = Array.isArray(matching) ? matching : [matching];
+
+  // Create a string key for each item for lookup
+  const getKey = (item: T | U): string =>
+    keys.map((k) => String((item as Record<string, unknown>)[k as string])).join("|");
+
+  // Build a lookup map from merge items keyed by their matching fields
+  const extensionLookup = new Map(extension.map((item) => [getKey(item), item]));
+
+  // Extend each item in the base collection
+  return collection.map((item) => {
+    const match = extensionLookup.get(getKey(item));
+
+    // No match found - return item unchanged
+    if (!match) return item as T & U;
+
+    // Merge matched items based on precedence
+    return precedence === "baseWins"
+      ? { ...match, ...item } // Base item properties take priority
+      : { ...item, ...match }; // Merge item properties take priority
+  });
+}
+
 export {
   compact,
   hex,
@@ -426,4 +532,5 @@ export {
   generateEncodedPath,
   sortCollection,
   mergeSources,
+  extendCollection,
 };

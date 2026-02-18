@@ -28,9 +28,12 @@ import {
   timezoneTime,
   sortCollection,
   mergeSources,
+  extendCollection,
 } from "./utils";
 import type { Target as ConfigTarget } from "~/openapi/config/iscsi";
 import type { Target as SystemTarget } from "~/openapi/system/iscsi";
+import type { Device as ConfigDevice } from "./openapi/config/dasd";
+import type { Device as SystemDevice } from "./openapi/system/dasd";
 
 describe("compact", () => {
   it("removes null and undefined values", () => {
@@ -513,5 +516,280 @@ describe("mergeSources", () => {
     expect(result).toHaveLength(1);
     expect(result[0].sources).toEqual(["system", "config", "extended"]);
     expect(result[0].connected).toBe(true);
+  });
+});
+
+describe("extendCollection", () => {
+  describe("single key matching", () => {
+    it("extends items matching keys", () => {
+      const configDevices: ConfigDevice[] = [
+        { channel: "0.0.0160", diag: false, format: true, state: "offline" },
+      ];
+
+      const systemDevices: SystemDevice[] = [
+        {
+          channel: "0.0.0160",
+          active: false,
+          deviceName: "dasda",
+          type: "eckd",
+          formatted: false,
+          diag: true,
+          status: "active",
+          accessType: "rw",
+          partitionInfo: "1",
+        },
+      ];
+
+      const result = extendCollection(configDevices, {
+        with: systemDevices,
+        matching: "channel",
+      });
+
+      expect(result).toEqual([
+        {
+          channel: "0.0.0160",
+          diag: false, // from config (baseWins / default precedence)
+          format: true,
+          state: "offline",
+          active: false, // from system
+          deviceName: "dasda",
+          type: "eckd",
+          formatted: false,
+          status: "active",
+          accessType: "rw",
+          partitionInfo: "1",
+        },
+      ]);
+    });
+
+    it("respects 'extensionWins' precedence", () => {
+      const configDevices: ConfigDevice[] = [{ channel: "0.0.0160", diag: false, format: true }];
+
+      const systemDevices: SystemDevice[] = [
+        {
+          channel: "0.0.0160",
+          active: true,
+          deviceName: "dasda",
+          type: "eckd",
+          formatted: true,
+          diag: true,
+          status: "active",
+          accessType: "rw",
+          partitionInfo: "1",
+        },
+      ];
+
+      const result = extendCollection(configDevices, {
+        with: systemDevices,
+        matching: "channel",
+        precedence: "extensionWins",
+      });
+
+      expect(result).toEqual([
+        {
+          channel: "0.0.0160",
+          diag: true, // from system (extensionWins precedence)
+          format: true,
+          active: true,
+          deviceName: "dasda",
+          type: "eckd",
+          formatted: true,
+          status: "active",
+          accessType: "rw",
+          partitionInfo: "1",
+        },
+      ]);
+    });
+
+    it("keeps items without matches unchanged", () => {
+      const configDevices: ConfigDevice[] = [
+        { channel: "0.0.0160", diag: false },
+        { channel: "0.0.0200", format: true },
+      ];
+
+      const systemDevices: SystemDevice[] = [
+        {
+          channel: "0.0.0160",
+          active: true,
+          deviceName: "dasda",
+          type: "eckd",
+          formatted: false,
+          diag: true,
+          status: "active",
+          accessType: "rw",
+          partitionInfo: "1",
+        },
+      ];
+
+      const result = extendCollection(configDevices, {
+        with: systemDevices,
+        matching: "channel",
+      });
+
+      expect(result).toHaveLength(2);
+      expect(result[0].channel).toBe("0.0.0160");
+      expect(result[0].deviceName).toBe("dasda");
+      expect(result[1]).toEqual({ channel: "0.0.0200", format: true }); // unchanged
+    });
+
+    it("does not include items present only in extension collection", () => {
+      const configDevices: ConfigDevice[] = [{ channel: "0.0.0160", diag: false }];
+
+      const systemDevices: SystemDevice[] = [
+        {
+          channel: "0.0.0160",
+          active: true,
+          deviceName: "dasda",
+          type: "eckd",
+          formatted: false,
+          diag: true,
+          status: "active",
+          accessType: "rw",
+          partitionInfo: "1",
+        },
+        {
+          channel: "0.0.0200",
+          active: true,
+          deviceName: "dasdb",
+          type: "fba",
+          formatted: false,
+          diag: false,
+          status: "active",
+          accessType: "rw",
+          partitionInfo: "1",
+        },
+      ];
+
+      const result = extendCollection(configDevices, {
+        with: systemDevices,
+        matching: "channel",
+      });
+
+      expect(result).toHaveLength(1);
+      expect(result[0].channel).toBe("0.0.0160");
+    });
+  });
+
+  describe("multiple key matching", () => {
+    it("extends devices with matching keys", () => {
+      const configDevices: ConfigDevice[] = [
+        { channel: "0.0.0150", state: "offline", diag: false },
+        { channel: "0.0.0160", state: "active", diag: false },
+      ];
+
+      const systemDevices: SystemDevice[] = [
+        {
+          channel: "0.0.0150",
+          status: "offline",
+          active: false,
+          deviceName: "dasdc",
+          type: "eckd",
+          formatted: false,
+          diag: true,
+          accessType: "rw",
+          partitionInfo: "1",
+        },
+        {
+          channel: "0.0.0160",
+          status: "offline",
+          active: false,
+          deviceName: "dasda",
+          type: "eckd",
+          formatted: false,
+          diag: false,
+          accessType: "rw",
+          partitionInfo: "1",
+        },
+      ];
+
+      const result = extendCollection(configDevices, {
+        with: systemDevices,
+        matching: ["channel", "diag"],
+      });
+
+      expect(result).toEqual([
+        { channel: "0.0.0150", state: "offline", diag: false },
+        {
+          channel: "0.0.0160",
+          state: "active",
+          diag: false,
+          status: "offline",
+          active: false,
+          deviceName: "dasda",
+          type: "eckd",
+          formatted: false,
+          accessType: "rw",
+          partitionInfo: "1",
+        },
+      ]);
+    });
+  });
+
+  describe("edge cases", () => {
+    it("handles empty base collection", () => {
+      const result = extendCollection([], {
+        with: [{ id: 1, name: "test" }],
+        matching: "id",
+      });
+
+      expect(result).toEqual([]);
+    });
+
+    it("handles empty extension collection", () => {
+      const items = [{ channel: "0.0.0160", diag: false }];
+
+      const result = extendCollection(items, {
+        with: [],
+        matching: "channel",
+      });
+
+      expect(result).toEqual(items);
+    });
+
+    it("handles both collections empty", () => {
+      const result = extendCollection([], {
+        with: [],
+        matching: "id",
+      });
+
+      expect(result).toEqual([]);
+    });
+
+    it("does not mutate original collections", () => {
+      const original = [{ channel: "0.0.0160", diag: false }];
+      const extension: SystemDevice[] = [
+        {
+          channel: "0.0.0160",
+          active: true,
+          deviceName: "dasda",
+          type: "eckd",
+          formatted: false,
+          diag: true,
+          status: "active",
+          accessType: "rw",
+          partitionInfo: "1",
+        },
+      ];
+
+      extendCollection(original, {
+        with: extension,
+        matching: "channel",
+      });
+
+      expect(original).toEqual([{ channel: "0.0.0160", diag: false }]);
+      expect(extension[0].deviceName).toBe("dasda");
+    });
+
+    it("handles numeric and string keys", () => {
+      const items = [{ id: 1, value: "a" }];
+      const extension = [{ id: 1, extra: "b" }];
+
+      const result = extendCollection(items, {
+        with: extension,
+        matching: "id",
+      });
+
+      expect(result[0]).toEqual({ id: 1, value: "a", extra: "b" });
+    });
   });
 });
