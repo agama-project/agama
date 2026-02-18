@@ -316,15 +316,13 @@ rpm -e --nodeps alsa alsa-utils alsa-ucm-conf || true
 du -h -s /lib/modules /lib/firmware
 
 # remove the multimedia drivers
-# set DEBUG=1 to print the deleted drivers
-/tmp/driver_cleanup.rb --delete
-# remove the script and data, not needed anymore
-rm /tmp/driver_cleanup.rb /tmp/module.list*
+image-janitor -v driver-cleanup --delete 
 
-# remove the unused firmware (not referenced by kernel drivers)
-/tmp/fw_cleanup.rb --delete
-# remove the script, not needed anymore
-rm /tmp/fw_cleanup.rb
+# remove the unused firmware(not referenced by kernel drivers)
+image-janitor -v fw-cleanup --delete 
+
+# remove the tool, not needed anymore
+rpm -e image-janitor
 du -h -s /lib/modules /lib/firmware
 
 ################################################################################
