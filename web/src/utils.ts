@@ -500,33 +500,49 @@ interface ExtendCollectionOptions<T, U> {
 }
 
 /**
- * Extends a base collection of items by merging in matching items from a
- * secondary collection.
+ * Result of extending a collection.
+ */
+interface ExtendCollectionResult<T, U> {
+  /**
+   * Items from the base collection, extended with matching extension data.
+   *
+   * Items without matches are returned unchanged.
+   */
+  extended: (T & U)[];
+  /**
+   * Items from the extension collection that did not match any base item.
+   */
+  unmatched: U[];
+}
+
+/**
+ * Extends a base collection of items by merging in matching items from an
+ * extension collection.
  *
  * For each item in the base collection:
- *   1. Find a matching item in the merge collection based on the specified
- *      fields.
+ *   1. Find a matching item in the extension collection based on the specified
+ *      field(s).
  *   2. Merge the matched item's properties into the base item according to
  *      `precedence`.
  *
- * @returns A new array of items where each base item has been extended with
- * matching merge item properties.
+ * @returns Object containing `extended` items and `unmatched` extension items.
  *
  * @example
- * // Single field matching with default precedence (initial wins)
+ * // Single field matching with default precedence (base wins)
  * const configDevices = [
  *   { channel: "0.0.0160", diag: false, format: true }
  * ];
  * const systemDevices = [
  *   { channel: "0.0.0160", deviceName: "dasda", type: "eckd", diag: true }
  * ];
- * const extendedConfigDevices = extendCollection(configDevices, {
+ * const { extended, unmatched } = extendCollection(configDevices, {
  *   with: systemDevices,
  *   matching: 'channel'
  * });
- * // Result: [
- *     { channel: "0.0.0160", deviceName: "dasda", type: "eckd", diag: false, format: true }
- *   ]
+ * // extended: [
+ * //   { channel: "0.0.0160", deviceName: "dasda", type: "eckd", diag: false, format: true }
+ * // ]
+ * // unmatched: []
  *
  * @example
  * // Multiple field matching with extensionWins precedence
@@ -537,42 +553,70 @@ interface ExtendCollectionOptions<T, U> {
  *   { channel: "0.0.0160", state: "offline", deviceName: "dasda", type: "eckd", diag: true },
  *   { channel: "0.0.0160", state: "active", deviceName: "dasdb", type: "fba" }
  * ];
- * const extendedConfigDevices = extendCollection(configDevices, {
+ * const { extended, unmatched } = extendCollection(configDevices, {
  *   with: systemDevices,
- *   matching: ['channel', 'state']
+ *   matching: ['channel', 'state'],
  *   precedence: "extensionWins"
  * });
- * // Result: [
- *    { channel: "0.0.0160", state: "offline", deviceName: "dasda", type: "eckd", diag: true,  }
- *   ]
+ * // extended: [
+ * //   { channel: "0.0.0160", state: "offline", deviceName: "dasda", type: "eckd", diag: true }
+ * // ]
+ * // unmatched: [
+ * //   { channel: "0.0.0160", state: "active", deviceName: "dasdb", type: "fba" }
+ * // ]
  */
 function extendCollection<T extends object, U extends object>(
   collection: T[],
   options: ExtendCollectionOptions<T, U>,
-): (T & U)[] {
+): ExtendCollectionResult<T, U> {
   const { with: extension, matching, precedence = "baseWins" } = options;
 
-  // Normalize matching field(s)
+  // Normalize matching field(s) to array
   const keys = Array.isArray(matching) ? matching : [matching];
 
-  // Create a string key for each item for lookup
-  const getKey = (item: T | U): string => keys.map((k) => item[k as string]).join("|");
+  // Create a composite key from item values
+  // For single field: returns the value directly (e.g., "0.0.0160")
+  // For multiple fields: joins values with pipe separator (e.g., "0.0.0160|offline")
+  const getKey = (item: T | U): string =>
+    keys.map((k) => String(item[k as keyof (T | U)])).join("|");
 
-  // Build a lookup map from merge items keyed by their matching fields
+  // Build a lookup map from extension items keyed by their matching fields
   const extensionLookup = new Map(extension.map((item) => [getKey(item), item]));
 
+  // Prepare result arrays
+  const extended: (T & U)[] = [];
+  const unmatched: U[] = [];
+
   // Extend each item in the base collection
-  return collection.map((item) => {
-    const match = extensionLookup.get(getKey(item));
+  for (const item of collection) {
+    const key = getKey(item);
+    const match = extensionLookup.get(key);
 
-    // No match found - return item unchanged
-    if (!match) return item as T & U;
+    if (!match) {
+      // No match found - return item unchanged
+      extended.push(item as T & U);
+    } else {
+      // Remove from lookup for easing tracking of unmatched later
+      extensionLookup.delete(key);
 
-    // Merge matched items based on precedence
-    return precedence === "baseWins"
-      ? { ...match, ...item } // Base item properties take priority
-      : { ...item, ...match }; // Merge item properties take priority
-  });
+      // Merge matched items based on precedence
+      const merged = (
+        precedence === "baseWins"
+          ? { ...match, ...item } // Base item properties take priority
+          : { ...item, ...match }
+      ) as T & U; // Extension item properties take priority
+
+      extended.push(merged);
+    }
+  }
+
+  // Remaining items in lookup are unmatched
+  unmatched.push(...extensionLookup.values());
+
+  return {
+    extended,
+    unmatched,
+  };
 }
 
 export {

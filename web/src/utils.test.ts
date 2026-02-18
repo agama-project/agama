@@ -276,6 +276,107 @@ describe("simpleFastSort", () => {
   });
 });
 
+describe("maskSecrets", () => {
+  it("should filter sensitive keys from an object", () => {
+    const obj = { user: "test", password: "123" };
+    const sanitized = maskSecrets(obj, { stringify: false });
+    expect(sanitized).toEqual({ user: "test", password: "[FILTERED]" });
+  });
+
+  it("should not modify an object without sensitive keys", () => {
+    const obj = { user: "test", id: 1 };
+    const sanitized = maskSecrets(obj, { stringify: false });
+    expect(sanitized).toEqual({ user: "test", id: 1 });
+  });
+
+  it("should recursively filter sensitive keys in nested objects", () => {
+    const obj = {
+      user: "test",
+      credentials: {
+        password: "123",
+      },
+    };
+    const sanitized = maskSecrets(obj, { stringify: false });
+    expect(sanitized).toEqual({
+      user: "test",
+      credentials: {
+        password: "[FILTERED]",
+      },
+    });
+  });
+
+  it("should handle arrays of objects", () => {
+    const arr = [
+      { user: "one", password: "123" },
+      { user: "two", id: 2 },
+    ];
+    const sanitized = maskSecrets(arr, { stringify: false });
+    expect(sanitized).toEqual([
+      { user: "one", password: "[FILTERED]" },
+      { user: "two", id: 2 },
+    ]);
+  });
+
+  it("should not mutate the original object", () => {
+    const originalObj = { user: "test", password: "123" };
+    const originalObjCopy = JSON.parse(JSON.stringify(originalObj));
+    maskSecrets(originalObj, { stringify: false });
+    expect(originalObj).toEqual(originalObjCopy);
+  });
+
+  it("should handle null and undefined values correctly", () => {
+    const obj = { user: "test", password: "123", data: null, extra: undefined };
+    const sanitized = maskSecrets(obj, { stringify: false });
+    // Note: `undefined` properties are omitted when creating a new object from an existing one.
+    expect(sanitized).toEqual({ user: "test", password: "[FILTERED]", data: null });
+  });
+
+  it("should return primitive values unmodified", () => {
+    expect(maskSecrets("string", { stringify: false })).toBe("string");
+    expect(maskSecrets(123, { stringify: false })).toBe(123);
+    expect(maskSecrets(true, { stringify: false })).toBe(true);
+    expect(maskSecrets(null, { stringify: false })).toBe(null);
+    expect(maskSecrets(undefined, { stringify: false })).toBe(undefined);
+  });
+
+  it("should handle an empty object", () => {
+    expect(maskSecrets({}, { stringify: false })).toEqual({});
+  });
+
+  it("should handle an empty array", () => {
+    expect(maskSecrets([], { stringify: false })).toEqual([]);
+  });
+
+  it("should filter all defined sensitive keys", () => {
+    const obj = {
+      user: "test",
+      password: "123",
+      hashedPassword: false,
+      registrationCode: "xyz",
+    };
+    expect(maskSecrets(obj, { stringify: false })).toEqual({
+      user: "test",
+      password: "[FILTERED]",
+      hashedPassword: false,
+      registrationCode: "[FILTERED]",
+    });
+  });
+
+  it("should handle custom sensitive keys", () => {
+    const obj = { user: "test", password: "123", sensitive: "abc" };
+    const sanitized = maskSecrets(obj, { sensitiveKeys: ["sensitive"], stringify: false });
+    expect(sanitized).toEqual({ user: "test", password: "123", sensitive: "[FILTERED]" });
+  });
+
+  it("can optionally stringify the output", () => {
+    expect(maskSecrets([], { stringify: true })).toEqual("[]");
+    expect(maskSecrets({}, { stringify: true })).toEqual("{}");
+    expect(maskSecrets({ user: "test", password: "123" }, { stringify: true })).toEqual(
+      '{\n  "user": "test",\n  "password": "[FILTERED]"\n}',
+    );
+  });
+});
+
 describe("mergeSources", () => {
   it("merges collections honoring precedence when primary key is based on single attribute", () => {
     const result = mergeSources({
@@ -541,9 +642,12 @@ describe("extendCollection", () => {
         },
       ];
 
-      const result = extendCollection(configDevices, { with: systemDevices, matching: "channel" });
+      const { extended, unmatched } = extendCollection(configDevices, {
+        with: systemDevices,
+        matching: "channel",
+      });
 
-      expect(result).toEqual([
+      expect(extended).toEqual([
         {
           channel: "0.0.0160",
           diag: false, // from config (baseWins / default precedence)
@@ -558,6 +662,7 @@ describe("extendCollection", () => {
           partitionInfo: "1",
         },
       ]);
+      expect(unmatched).toEqual([]);
     });
 
     it("respects 'extensionWins' precedence", () => {
@@ -577,13 +682,13 @@ describe("extendCollection", () => {
         },
       ];
 
-      const result = extendCollection(configDevices, {
+      const { extended, unmatched } = extendCollection(configDevices, {
         with: systemDevices,
         matching: "channel",
         precedence: "extensionWins",
       });
 
-      expect(result).toEqual([
+      expect(extended).toEqual([
         {
           channel: "0.0.0160",
           diag: true, // from system (extensionWins precedence)
@@ -597,6 +702,7 @@ describe("extendCollection", () => {
           partitionInfo: "1",
         },
       ]);
+      expect(unmatched).toEqual([]);
     });
 
     it("keeps items without matches unchanged", () => {
@@ -619,18 +725,19 @@ describe("extendCollection", () => {
         },
       ];
 
-      const result = extendCollection(configDevices, {
+      const { extended, unmatched } = extendCollection(configDevices, {
         with: systemDevices,
         matching: "channel",
       });
 
-      expect(result).toHaveLength(2);
-      expect(result[0].channel).toBe("0.0.0160");
-      expect(result[0].deviceName).toBe("dasda");
-      expect(result[1]).toEqual({ channel: "0.0.0200", format: true }); // unchanged
+      expect(extended).toHaveLength(2);
+      expect(extended[0].channel).toBe("0.0.0160");
+      expect(extended[0].deviceName).toBe("dasda");
+      expect(extended[1]).toEqual({ channel: "0.0.0200", format: true }); // unchanged
+      expect(unmatched).toEqual([]);
     });
 
-    it("does not include items present only in extension collection", () => {
+    it("returns unmatched items from extension collection", () => {
       const configDevices: ConfigDevice[] = [{ channel: "0.0.0160", diag: false }];
 
       const systemDevices: SystemDevice[] = [
@@ -658,13 +765,25 @@ describe("extendCollection", () => {
         },
       ];
 
-      const result = extendCollection(configDevices, {
+      const { extended, unmatched } = extendCollection(configDevices, {
         with: systemDevices,
         matching: "channel",
       });
 
-      expect(result).toHaveLength(1);
-      expect(result[0].channel).toBe("0.0.0160");
+      expect(extended).toHaveLength(1);
+      expect(extended[0].channel).toBe("0.0.0160");
+      expect(unmatched).toHaveLength(1);
+      expect(unmatched[0]).toEqual({
+        channel: "0.0.0200",
+        active: true,
+        deviceName: "dasdb",
+        type: "fba",
+        formatted: false,
+        diag: false,
+        status: "active",
+        accessType: "rw",
+        partitionInfo: "1",
+      });
     });
   });
 
@@ -700,12 +819,12 @@ describe("extendCollection", () => {
         },
       ];
 
-      const result = extendCollection(configDevices, {
+      const { extended, unmatched } = extendCollection(configDevices, {
         with: systemDevices,
         matching: ["channel", "diag"],
       });
 
-      expect(result).toEqual([
+      expect(extended).toEqual([
         { channel: "0.0.0150", state: "offline", diag: false },
         {
           channel: "0.0.0160",
@@ -720,37 +839,42 @@ describe("extendCollection", () => {
           partitionInfo: "1",
         },
       ]);
+      expect(unmatched).toHaveLength(1);
+      expect(unmatched[0].channel).toBe("0.0.0150");
     });
   });
 
   describe("edge cases", () => {
     it("handles empty base collection", () => {
-      const result = extendCollection([], {
+      const { extended, unmatched } = extendCollection([], {
         with: [{ id: 1, name: "test" }],
         matching: "id",
       });
 
-      expect(result).toEqual([]);
+      expect(extended).toEqual([]);
+      expect(unmatched).toEqual([{ id: 1, name: "test" }]);
     });
 
     it("handles empty extension collection", () => {
       const items = [{ channel: "0.0.0160", diag: false }];
 
-      const result = extendCollection(items, {
+      const { extended, unmatched } = extendCollection(items, {
         with: [],
         matching: "channel",
       });
 
-      expect(result).toEqual(items);
+      expect(extended).toEqual(items);
+      expect(unmatched).toEqual([]);
     });
 
     it("handles both collections empty", () => {
-      const result = extendCollection([], {
+      const { extended, unmatched } = extendCollection([], {
         with: [],
         matching: "id",
       });
 
-      expect(result).toEqual([]);
+      expect(extended).toEqual([]);
+      expect(unmatched).toEqual([]);
     });
 
     it("does not mutate original collections", () => {
@@ -782,113 +906,12 @@ describe("extendCollection", () => {
       const items = [{ id: 1, value: "a" }];
       const extension = [{ id: 1, extra: "b" }];
 
-      const result = extendCollection(items, {
+      const { extended } = extendCollection(items, {
         with: extension,
         matching: "id",
       });
 
-      expect(result[0]).toEqual({ id: 1, value: "a", extra: "b" });
+      expect(extended[0]).toEqual({ id: 1, value: "a", extra: "b" });
     });
-  });
-});
-
-describe("maskSecrets", () => {
-  it("should filter sensitive keys from an object", () => {
-    const obj = { user: "test", password: "123" };
-    const sanitized = maskSecrets(obj, { stringify: false });
-    expect(sanitized).toEqual({ user: "test", password: "[FILTERED]" });
-  });
-
-  it("should not modify an object without sensitive keys", () => {
-    const obj = { user: "test", id: 1 };
-    const sanitized = maskSecrets(obj, { stringify: false });
-    expect(sanitized).toEqual({ user: "test", id: 1 });
-  });
-
-  it("should recursively filter sensitive keys in nested objects", () => {
-    const obj = {
-      user: "test",
-      credentials: {
-        password: "123",
-      },
-    };
-    const sanitized = maskSecrets(obj, { stringify: false });
-    expect(sanitized).toEqual({
-      user: "test",
-      credentials: {
-        password: "[FILTERED]",
-      },
-    });
-  });
-
-  it("should handle arrays of objects", () => {
-    const arr = [
-      { user: "one", password: "123" },
-      { user: "two", id: 2 },
-    ];
-    const sanitized = maskSecrets(arr, { stringify: false });
-    expect(sanitized).toEqual([
-      { user: "one", password: "[FILTERED]" },
-      { user: "two", id: 2 },
-    ]);
-  });
-
-  it("should not mutate the original object", () => {
-    const originalObj = { user: "test", password: "123" };
-    const originalObjCopy = JSON.parse(JSON.stringify(originalObj));
-    maskSecrets(originalObj, { stringify: false });
-    expect(originalObj).toEqual(originalObjCopy);
-  });
-
-  it("should handle null and undefined values correctly", () => {
-    const obj = { user: "test", password: "123", data: null, extra: undefined };
-    const sanitized = maskSecrets(obj, { stringify: false });
-    // Note: `undefined` properties are omitted when creating a new object from an existing one.
-    expect(sanitized).toEqual({ user: "test", password: "[FILTERED]", data: null });
-  });
-
-  it("should return primitive values unmodified", () => {
-    expect(maskSecrets("string", { stringify: false })).toBe("string");
-    expect(maskSecrets(123, { stringify: false })).toBe(123);
-    expect(maskSecrets(true, { stringify: false })).toBe(true);
-    expect(maskSecrets(null, { stringify: false })).toBe(null);
-    expect(maskSecrets(undefined, { stringify: false })).toBe(undefined);
-  });
-
-  it("should handle an empty object", () => {
-    expect(maskSecrets({}, { stringify: false })).toEqual({});
-  });
-
-  it("should handle an empty array", () => {
-    expect(maskSecrets([], { stringify: false })).toEqual([]);
-  });
-
-  it("should filter all defined sensitive keys", () => {
-    const obj = {
-      user: "test",
-      password: "123",
-      hashedPassword: false,
-      registrationCode: "xyz",
-    };
-    expect(maskSecrets(obj, { stringify: false })).toEqual({
-      user: "test",
-      password: "[FILTERED]",
-      hashedPassword: false,
-      registrationCode: "[FILTERED]",
-    });
-  });
-
-  it("should handle custom sensitive keys", () => {
-    const obj = { user: "test", password: "123", sensitive: "abc" };
-    const sanitized = maskSecrets(obj, { sensitiveKeys: ["sensitive"], stringify: false });
-    expect(sanitized).toEqual({ user: "test", password: "123", sensitive: "[FILTERED]" });
-  });
-
-  it("can optionally stringify the output", () => {
-    expect(maskSecrets([], { stringify: true })).toEqual("[]");
-    expect(maskSecrets({}, { stringify: true })).toEqual("{}");
-    expect(maskSecrets({ user: "test", password: "123" }, { stringify: true })).toEqual(
-      '{\n  "user": "test",\n  "password": "[FILTERED]"\n}',
-    );
   });
 });
