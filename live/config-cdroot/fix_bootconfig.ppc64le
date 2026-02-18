@@ -82,17 +82,13 @@ cat >$dst/boot/grub2/grub.cfg <<XXX
 
 gfxmode=auto
 
-set default="Boot from Hard Disk"
+set default=0
 
 insmod gettext
 
 if sleep --interruptible 0 ; then
   timeout=60
 fi
-
-menuentry "Boot from Hard Disk" --class opensuse --class gnu-linux --class gnu --class os {
-  exit
-}
 
 menuentry "Install $label" --class os --unrestricted {
   echo 'Loading kernel...'
