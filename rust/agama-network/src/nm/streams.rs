@@ -24,4 +24,5 @@ mod devices;
 
 pub use common::NmChange;
 pub use connections::ActiveConnectionChangedStream;
+pub use connections::ConnectionSettingsChangedStream;
 pub use devices::DeviceChangedStream;

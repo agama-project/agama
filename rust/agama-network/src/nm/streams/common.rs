@@ -29,6 +29,8 @@ pub enum NmChange {
     DeviceRemoved(OwnedObjectPath),
     IP4ConfigChanged(OwnedObjectPath),
     IP6ConfigChanged(OwnedObjectPath),
+    ConnectionAdded(OwnedObjectPath),
+    ConnectionRemoved(OwnedObjectPath),
     ActiveConnectionAdded(OwnedObjectPath),
     ActiveConnectionUpdated(OwnedObjectPath),
     ActiveConnectionRemoved(OwnedObjectPath),

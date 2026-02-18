@@ -52,6 +52,8 @@ pub enum NmError {
     InvalidDeviceName(String),
     #[error("Invalid network UUID")]
     InvalidNetworkUUID(#[from] uuid::Error),
+    #[error("The connection is handled externally")]
+    ConnectionHandledExternally,
     #[error("Connection type not supported for '{0}'")]
     UnsupportedConnectionType(String),
     // FIXME: including the crate::model::InvalidEAPMethod looks wrong.

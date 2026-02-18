@@ -21,21 +21,58 @@
 //! Conversion mechanism between proxies and model structs.
 
 use crate::{
+    model::Connection,
     nm::{
+        dbus::connection_from_dbus,
         model::NmDeviceType,
-        proxies::{DeviceProxy, IP4ConfigProxy, IP6ConfigProxy},
+        proxies::{ConnectionProxy, DeviceProxy, IP4ConfigProxy, IP6ConfigProxy},
     },
-    types::{Device, DeviceState, DeviceType, IpConfig, IpRoute, MacAddress},
+    types::{ConnectionFlags, Device, DeviceState, DeviceType, IpConfig, IpRoute, MacAddress},
 };
 use cidr::IpInet;
 use std::{collections::HashMap, net::IpAddr, str::FromStr};
 
 use super::{error::NmError, model::NmDeviceState};
 
+/// Builder to create a [Connection] from its corresponding NetworkManager D-Bus representation.
+pub struct ConnectionFromProxyBuilder<'a> {
+    connection: zbus::Connection,
+    proxy: &'a ConnectionProxy<'a>,
+}
 /// Builder to create a [Device] from its corresponding NetworkManager D-Bus representation.
 pub struct DeviceFromProxyBuilder<'a> {
     connection: zbus::Connection,
     proxy: &'a DeviceProxy<'a>,
+}
+
+impl<'a> ConnectionFromProxyBuilder<'a> {
+    pub fn new(connection: &zbus::Connection, proxy: &'a ConnectionProxy<'a>) -> Self {
+        Self {
+            connection: connection.clone(),
+            proxy,
+        }
+    }
+    /// Creates a [Connection] starting on the [ConnectionProxy].
+    pub async fn build(&self) -> Result<Connection, NmError> {
+        let flags = self.proxy.flags().await?;
+        // https://networkmanager.dev/docs/api/latest/nm-dbus-types.html#NMSettingsConnectionFlags
+        if flags & ConnectionFlags::External as u32 != 0 {
+            tracing::warn!("Skipped connection because of flags: {}", flags);
+            return Err(NmError::ConnectionHandledExternally);
+        }
+        let settings = self.proxy.get_settings().await?;
+        match connection_from_dbus(settings) {
+            Ok(mut connection) => {
+                connection.flags = flags;
+                connection.persistent = flags == 0;
+                return Ok(connection);
+            }
+            Err(e) => {
+                tracing::warn!("Could not process connection: {}", e);
+                return Err(e);
+            }
+        }
+    }
 }
 
 impl<'a> DeviceFromProxyBuilder<'a> {

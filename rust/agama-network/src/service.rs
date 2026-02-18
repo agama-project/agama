@@ -22,7 +22,7 @@ use crate::{
     action::Action,
     error::NetworkStateError,
     model::{Connection, GeneralState, NetworkChange, NetworkState, StateConfig},
-    types::{AccessPoint, Config, Device, DeviceType, Proposal, SystemInfo},
+    types::{AccessPoint, Config, Device, Proposal, SystemInfo},
     Adapter, NetworkAdapterError, NetworkManagerAdapter,
 };
 use agama_utils::{
@@ -37,7 +37,6 @@ use tokio::sync::{
     mpsc::{self, error::SendError, UnboundedReceiver, UnboundedSender},
     oneshot::{self, error::RecvError},
 };
-use uuid::Uuid;
 
 #[derive(thiserror::Error, Debug)]
 pub enum NetworkSystemError {
@@ -201,15 +200,6 @@ impl NetworkSystemClient {
         Ok(rx.await?)
     }
 
-    /// Adds a new connection.
-    pub async fn add_connection(&self, connection: Connection) -> Result<(), NetworkSystemError> {
-        let (tx, rx) = oneshot::channel();
-        self.actions
-            .send(Action::NewConnection(Box::new(connection.clone()), tx))?;
-        let result = rx.await?;
-        Ok(result?)
-    }
-
     /// Returns the connection with the given ID.
     ///
     /// * `id`: Connection ID.
@@ -221,44 +211,6 @@ impl NetworkSystemClient {
         Ok(result)
     }
 
-    /// Updates the connection.
-    ///
-    /// * `connection`: Updated connection.
-    pub async fn update_connection(
-        &self,
-        connection: Connection,
-    ) -> Result<(), NetworkSystemError> {
-        let (tx, rx) = oneshot::channel();
-        self.actions
-            .send(Action::UpdateConnection(Box::new(connection), tx))?;
-        let result = rx.await?;
-        Ok(result?)
-    }
-
-    /// Removes the connection with the given ID.
-    ///
-    /// * `id`: Connection ID.
-    pub async fn remove_connection(&self, id: &str) -> Result<(), NetworkSystemError> {
-        let (tx, rx) = oneshot::channel();
-        self.actions
-            .send(Action::RemoveConnection(id.to_string(), tx))?;
-        let result = rx.await?;
-        Ok(result?)
-    }
-
-    pub async fn set_ports(
-        &self,
-        uuid: Uuid,
-        ports: Vec<String>,
-    ) -> Result<(), NetworkSystemError> {
-        let (tx, rx) = oneshot::channel();
-        self.actions
-            .send(Action::SetPorts(uuid, Box::new(ports.clone()), tx))?;
-        let result = rx.await?;
-        Ok(result?)
-    }
-
-    /// Applies the network configuration.
     pub async fn apply(&self) -> Result<(), NetworkSystemError> {
         let (tx, rx) = oneshot::channel();
         self.actions.send(Action::Apply(tx))?;
@@ -334,10 +286,6 @@ impl Service {
         action: Action,
     ) -> Result<Option<NetworkChange>, Box<dyn Error>> {
         match action {
-            Action::AddConnection(name, ty, tx) => {
-                let result = self.add_connection_action(name, ty).await;
-                tx.send(result).unwrap();
-            }
             Action::RefreshScan(tx) => {
                 let state = self
                     .adapter
@@ -353,8 +301,15 @@ impl Service {
             Action::GetAccessPoints(tx) => {
                 tx.send(self.state.access_points.clone()).unwrap();
             }
-            Action::NewConnection(conn, tx) => {
-                tx.send(self.state.add_connection(*conn)).unwrap();
+            Action::NewConnection(conn) => {
+                if let Some(conn) = self.state.get_connection(&conn.id) {
+                    tracing::info!("Connection {:?} already exists, skipping it", conn);
+                    return Ok(None);
+                } else {
+                    tracing::info!("New connection to be added {:?}, forcing re-read", &conn);
+                    self.force_state_read().await?;
+                    return Ok(Some(NetworkChange::ConnectionAdded(*conn)));
+                }
             }
             Action::GetGeneralState(tx) => {
                 let config = self.state.general_state.clone();
@@ -396,10 +351,6 @@ impl Service {
                 tx.send(connections).unwrap();
             }
 
-            Action::GetController(uuid, tx) => {
-                let result = self.get_controller_action(uuid);
-                tx.send(result).unwrap()
-            }
             Action::GetDevice(name, tx) => {
                 let device = self.state.get_device(name.as_str());
                 tx.send(device.cloned()).unwrap();
@@ -424,10 +375,6 @@ impl Service {
             Action::GetDevices(tx) => {
                 tx.send(self.state.devices.clone()).unwrap();
             }
-            Action::SetPorts(uuid, ports, rx) => {
-                let result = self.set_ports_action(uuid, *ports);
-                rx.send(result).unwrap();
-            }
             Action::UpdateConnection(conn, tx) => {
                 let result = self.state.update_connection(*conn);
                 tx.send(result).unwrap();
@@ -441,10 +388,24 @@ impl Service {
             Action::UpdateGeneralState(general_state) => {
                 self.state.general_state = general_state;
             }
-            Action::RemoveConnection(id, tx) => {
-                let result = self.state.remove_connection(id.as_str());
-
-                tx.send(result).unwrap();
+            Action::RemoveConnection(id) => {
+                if let Some(conn) = self.state.get_connection(id.as_ref()) {
+                    if !conn.is_removed() {
+                        tracing::info!("Connection {:?} exists, removing it", conn);
+                        self.state.remove_connection(id.as_str())?;
+                        self.events.send(Event::ConfigChanged {
+                            scope: (Scope::Network),
+                        })?;
+                    } else {
+                        tracing::info!(
+                            "Connection {:?} is marked to be removed, skipping it",
+                            conn
+                        );
+                    }
+                } else {
+                    tracing::info!("Connection {} does not exists, skipping it", id);
+                }
+                return Ok(Some(NetworkChange::ConnectionRemoved(id)));
             }
             Action::Apply(tx) => {
                 let result = self.apply().await;
@@ -463,52 +424,27 @@ impl Service {
         Ok(None)
     }
 
-    async fn add_connection_action(
-        &mut self,
-        name: String,
-        ty: DeviceType,
-    ) -> Result<(), NetworkStateError> {
-        let conn = Connection::new(name, ty);
-        // TODO: handle tree handling problems
-        self.state.add_connection(conn.clone())?;
-        Ok(())
-    }
-
-    fn set_ports_action(
-        &mut self,
-        uuid: Uuid,
-        ports: Vec<String>,
-    ) -> Result<(), NetworkStateError> {
-        let conn = self
-            .state
-            .get_connection_by_uuid(uuid)
-            .ok_or(NetworkStateError::UnknownConnection(uuid.to_string()))?;
-        self.state.set_ports(&conn.clone(), ports)
-    }
-
-    fn get_controller_action(
-        &mut self,
-        uuid: Uuid,
-    ) -> Result<(Connection, Vec<String>), NetworkStateError> {
-        let conn = self
-            .state
-            .get_connection_by_uuid(uuid)
-            .ok_or(NetworkStateError::UnknownConnection(uuid.to_string()))?;
-        let conn = conn.clone();
-
-        let controlled = self
-            .state
-            .get_controlled_by(uuid)
-            .iter()
-            .map(|c| c.interface.as_deref().unwrap_or(&c.id).to_string())
-            .collect::<Vec<_>>();
-
-        Ok((conn, controlled))
-    }
-
     /// Reads the system network configuration.
     pub async fn read(&mut self) -> Result<NetworkState, NetworkAdapterError> {
         self.adapter.read(StateConfig::default()).await
+    }
+
+    /// Reads the system network configuration.
+    pub async fn force_state_read(&mut self) -> Result<(), NetworkAdapterError> {
+        let result = match self.adapter.read(StateConfig::default()).await {
+            Err(e) => Err(e),
+            Ok(state) => {
+                if self.state != state {
+                    self.state = state;
+                    self.events.send(Event::ConfigChanged {
+                        scope: (Scope::Network),
+                    })?;
+                }
+                Ok(())
+            }
+        };
+
+        result
     }
 
     /// Writes the network configuration based on current state and then replace the state from the
