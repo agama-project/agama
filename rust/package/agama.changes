@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Feb 18 12:09:15 UTC 2026 - Stefan Hundhammer <shundhammer@suse.com>
+
+- Add /var/log/zypp/history to agama-logs tarball
+  (gh#agama-project/agama#3187)
+
+-------------------------------------------------------------------
 Wed Feb 18 11:33:59 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Do not leak the registration codes (bsc#1258221).
