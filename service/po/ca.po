@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-24 12:57+0000\n"
-"PO-Revision-Date: 2025-09-02 12:59+0000\n"
+"POT-Creation-Date: 2026-02-02 06:12+0000\n"
+"PO-Revision-Date: 2026-02-13 21:04+0000\n"
 "Last-Translator: David Medina <medipas@gmail.com>\n"
 "Language-Team: Catalan <https://l10n.opensuse.org/projects/agama/agama-"
 "service-sle-16/ca/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.13\n"
+"X-Generator: Weblate 5.15.2\n"
 
 #. Reports the problems and decide whether to continue or not.
 #.
@@ -711,15 +711,15 @@ msgstr "Desmuntant dispositius d'emmagatzematge"
 #. @param config [ISCSI::Config]
 #: service/lib/agama/storage/iscsi/manager.rb:300
 msgid "Logout iSCSI targets"
-msgstr "Surt de la sessió dels objectius iSCSI"
+msgstr "Tanca la sessió de les destinacions iSCSI"
 
 #: service/lib/agama/storage/iscsi/manager.rb:301
 msgid "Discover iSCSI targets"
-msgstr "Descobreix objectius iSCSI"
+msgstr "Descobreix destinacions iSCSI"
 
 #: service/lib/agama/storage/iscsi/manager.rb:302
 msgid "Login iSCSI targets"
-msgstr "Inicia sessió als objectius iSCSI"
+msgstr "Inicia sessió a les destinacions iSCSI"
 
 #. Login issue.
 #.
@@ -728,7 +728,7 @@ msgstr "Inicia sessió als objectius iSCSI"
 #: service/lib/agama/storage/iscsi/manager.rb:366
 #, c-format
 msgid "Cannot login to iSCSI target %s"
-msgstr "No es pot iniciar sessió a l'objectiu iSCSI %s."
+msgstr "No es pot iniciar sessió a la destinació iSCSI %s."
 
 #. Probes storage devices and performs an initial proposal
 #.
