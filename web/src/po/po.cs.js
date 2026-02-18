@@ -10,7 +10,10 @@ export default {
     ""
   ],
   "\"%s\" does not exist or is no longer available.": [
-    ""
+    "\"%s\" neexistuje nebo už není dostupná."
+  ],
+  "%1$s (%2$s)": [
+    "%1$s (%2$s)"
   ],
   "%1$s will still contain the LVM group '%2$s' and any partition needed to boot": [
     "%1$s bude nadále obsahovat LVM skupinu '%2$s’ a nějaký oddíl potřebný pro spuštění systému"
@@ -58,6 +61,9 @@ export default {
   ],
   "A generic minimum size of %1$s will be used for the new %2$s": [
     "Pro nové %2$s bude použita obecná minimální velikost %1$s"
+  ],
+  "A generic size of %1$s will be used for the new %2$s": [
+    "Obecná velikost %1$s bude použita pro nový %2$s"
   ],
   "A generic size range between %1$s and %2$s will be used for the new %3$s": [
     "Obecná velikost v rozsahu od %1$s do %2$s pro nový %3$s"
@@ -194,6 +200,12 @@ export default {
   "Based on the amount of RAM in the system, a %1$s of %2$s will be planned for %3$s": [
     "Na základě množství paměti RAM v systému bude navržený %1$s o velikosti %2$s pro %3$s"
   ],
+  "Based on the amount of RAM in the system, a %1$s of at least %2$s will be planned for %3$s": [
+    "Na základě množství paměti RAM v systému bude naplánováno %1$s o velikosti alespoň %2$s pro %3$s"
+  ],
+  "Based on the amount of RAM in the system, a %1$s with a size between %2$s and %3$s will be planned for %4$s": [
+    "Na základě množství paměti RAM v systému bude naplánováno %1$s o velikosti mezi %2$s a %3$s pro %4$s"
+  ],
   "Bcachefs": [
     "Bcachefs"
   ],
@@ -223,6 +235,9 @@ export default {
   ],
   "BitLocker": [
     "BitLocker"
+  ],
+  "Boot options": [
+    "Možnosti pro spouštění systému"
   ],
   "Btrfs": [
     "Btrfs"
@@ -1022,6 +1037,9 @@ export default {
   "No device selected yet": [
     "Zatím nebylo vybráno žádné zařízení"
   ],
+  "No devices configured yet": [
+    "Zatím nebylo nakonfigurováno žádné zařízení"
+  ],
   "No iSCSI Boot Firmware Table (iBFT) found. The initiator can be configured manually.": [
     "Nebyla nalezena iSCSI spouštěcí firmwarová tabulka (iBFT). Iniciátor může být nakonfigurován ručně."
   ],
@@ -1066,6 +1084,9 @@ export default {
   ],
   "Not available": [
     "Není dostupné"
+  ],
+  "Not configured yet": [
+    "Zatím nenakonfigurováno"
   ],
   "Not implemented yet (%s)": [
     "Dosud nepodporováno (%s)"
@@ -1423,6 +1444,9 @@ export default {
   "Something went wrong": [
     "Něco se nezdařilo"
   ],
+  "Start configuring a basic installation": [
+    "Začít nastavovat základní instalaci"
+  ],
   "Start from scratch with the default configuration": [
     "Začít znovu s výchozí konfigurací"
   ],
@@ -1581,7 +1605,7 @@ export default {
     "Dokáže-li čip TPM ověřit integritu systému, nebude heslo pro spuštění systému a přístup k datům potřebné. Zapečetění TPM vyžaduje, aby byl nový systém spuštěn hned při prvním použití."
   ],
   "The product will be registered with \"%s\" hostname": [
-    ""
+    "Produkt bude zaregistrován se jménem hostitele \"%s\""
   ],
   "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of a separate file system for %2$s.": [
     "Velikost %1$s bude dynamicky upravena na základě množství paměti RAM v systému a přítomnosti zvláštního souborového systému pro %2$s."

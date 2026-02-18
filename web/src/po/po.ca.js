@@ -463,7 +463,7 @@ export default {
     "Connecta amb %s"
   ],
   "Connect to iSCSI targets": [
-    "Connecta amb objectius iSCSI"
+    "Connecta amb destinacions iSCSI"
   ],
   "Connected": [
     "Connectat"
@@ -646,13 +646,13 @@ export default {
     "Descobreix"
   ],
   "Discover and connect to iSCSI targets": [
-    "Descobriu objectius iSCSI i connecteu-vos-hi"
+    "Descobreix destinacions iSCSI i connecta-hi"
   ],
   "Discover iSCSI Targets": [
     "Descobreix les destinacions iSCSI"
   ],
   "Discover iSCSI targets": [
-    "Descobreix objectius iSCSI"
+    "Descobreix destinacions iSCSI"
   ],
   "Disk": [
     "Disc"
