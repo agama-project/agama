@@ -610,31 +610,18 @@ export default function SelectableDataTable({
       isSelecting ? onSelectionChange(items) : onSelectionChange([]),
   };
 
-  // TODO: extract to a separate component and inject sharedData as prop
-  const TableEmptyState = () => {
-    const columnsCount =
-      columns.length + (sharedData.allowSelectAll && 1) + (sharedData.itemActions && 1);
-
-    return (
-      <Tr>
-        <Td colSpan={columnsCount}>
-          <Bullseye>{emptyState}</Bullseye>
-        </Td>
-      </Tr>
-    );
-  };
-
   const TableBody = () => {
-    if (isEmpty(items) && emptyState) {
-      return <TableEmptyState />;
-    }
     return items?.map((item) => renderItem(item, sharedData));
   };
+
+  if (isEmpty(items) && emptyState) {
+    return emptyState;
+  }
 
   return (
     <Table data-type="agama/expandable-selector" {...tableProps}>
       <TableHeader columns={columns} sharedData={sharedData} />
-      <TableBody />
+      {items?.map((item) => renderItem(item, sharedData))}
     </Table>
   );
 }

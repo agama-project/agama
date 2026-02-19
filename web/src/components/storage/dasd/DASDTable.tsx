@@ -40,13 +40,17 @@ import FormatFilter from "~/components/storage/dasd/FormatFilter";
 import SelectableDataTable, { SortedBy } from "~/components/core/SelectableDataTable";
 import StatusFilter from "~/components/storage/dasd/StatusFilter";
 import TextinputFilter from "~/components/storage/dasd/TextinputFilter";
-import { isEmpty } from "radashi";
+import { isEmpty, omit } from "radashi";
 import { sprintf } from "sprintf-js";
 import { useInstallerClient } from "~/context/installer";
-import { hex, sortCollection } from "~/utils";
+import { extendCollection, hex, sortCollection } from "~/utils";
 import { _, n_ } from "~/i18n";
 
-import type { Device } from "~/model/config/dasd";
+import type { Device as ConfigDevice } from "~/model/config/dasd";
+import type { Device as SystemDevice } from "~/model/system/dasd";
+import { IAction } from "@patternfly/react-table";
+
+type MergedDevice = ConfigDevice & SystemDevice;
 
 /**
  * Filter options for narrowing down DASD devices shown in the table.
@@ -55,11 +59,11 @@ import type { Device } from "~/model/config/dasd";
  */
 export type DASDDevicesFilters = {
   /** Lower bound for channel ID filtering (inclusive). */
-  minChannel?: Device["channel"];
+  minChannel?: MergedDevice["channel"];
   /** Upper bound for channel ID filtering (inclusive). */
-  maxChannel?: Device["channel"];
+  maxChannel?: MergedDevice["channel"];
   /** Only show devices with this status (e.g. "active", "offline"). */
-  state?: "all" | Device["state"];
+  state?: "all" | MergedDevice["state"];
   /** Filter by formatting status: "yes" (to be formatted), "no" (not to be formatted), or
    * "all" (all devices). */
   format?: "all" | "yes" | "no";
@@ -72,14 +76,14 @@ export type DASDDevicesFilters = {
  * Used internally to compose filter logic when narrowing down the list of
  * devices shown in the DASD table.
  */
-type DASDDeviceCondition = (device: Device) => boolean;
+type DASDDeviceCondition = (device: MergedDevice) => boolean;
 
 /**
  * Props required to generate bulk actions for selected DASD devices.
  */
 type DASDActionsBuilderProps = {
   /** The list of selected DASD devices. */
-  devices: Device[];
+  devices: MergedDevice[];
   /** Mutation function used to trigger backend updates (e.g. enable, disable). */
   updater: (options: unknown) => void; // FIXME: adapt former DASDMutationFn to its API v2 equivalent;
   /** State dispatcher for triggering actions */
@@ -93,7 +97,7 @@ type DASDActionsBuilderProps = {
  * @param filters - The filters to apply.
  * @returns The filtered array of DASD Device objects matching all conditions.
  */
-const filterDevices = (devices: Device[], filters: DASDDevicesFilters): Device[] => {
+const filterDevices = (devices: MergedDevice[], filters: DASDDevicesFilters): Device[] => {
   const { minChannel, maxChannel, state, format } = filters;
 
   const conditions: DASDDeviceCondition[] = [];
@@ -204,52 +208,6 @@ const FiltersToolbar = ({ filters, onFilterChange }: FiltersToolbarProps) => (
 );
 
 /**
- * Displays a toolbar containing bulk action buttons for selected DASD devices.
- *
- * If devices are selected, shows available actions; otherwise, displays an
- * instructional message. Depends on the same props as `buildActions`.
- */
-const BulkActionsToolbar = ({ devices, updater, dispatcher }: DASDActionsBuilderProps) => {
-  const applyText = sprintf(
-    n_(
-      // TRANSLATORS: message shown in bulk action toolbar when just one device
-      // is selected
-      "Apply to the selected device",
-      // TRANSLATORS: message shown in bulk action toolbar when some devices are
-      // selected. %s is replaced with the amount of devices
-      "Apply to the %s selected devices",
-      devices.length,
-    ),
-    devices.length,
-  );
-
-  return (
-    <Toolbar>
-      <ToolbarContent>
-        <ToolbarGroup>
-          {devices.length ? (
-            <>
-              {applyText}{" "}
-              {buildActions({ devices, updater, dispatcher })
-                .filter((a) => !a.isSeparator)
-                .map(({ onClick, title }, i) => (
-                  <ToolbarItem key={i}>
-                    <Button size="sm" onClick={onClick} variant="control">
-                      {title}
-                    </Button>
-                  </ToolbarItem>
-                ))}
-            </>
-          ) : (
-            _("Select devices to enable bulk actions.")
-          )}
-        </ToolbarGroup>
-      </ToolbarContent>
-    </Toolbar>
-  );
-};
-
-/**
  * Represents the mode of the empty state shown in the DASD table.
  *
  * - "noDevices": No DASD devices are present on the system.
@@ -269,6 +227,32 @@ type DASDTableEmptyStateProps = {
    * Callback to reset filters when in "noFilterResults" mode.
    */
   resetFilters: () => void;
+};
+
+/**
+ * Builders for the two empty states the DASD table can enter.
+ *
+ * @example
+ * ```tsx
+ * emptyStates={{
+ *   noDevices: () => <NoDevicesFound onAdd={handleAddDevice} />,
+ *   noMatches: (reset) => <NoMatchesFound onReset={reset} />,
+ * }}
+ * ```
+ */
+type DASDTableEmptyStates = {
+  /**
+   * No devices exist in the current context.
+   *
+   * Close over any external actions like "Add device" in the consumer.
+   **/
+  noDevices: () => React.ReactNode;
+  /**
+   * Filters produced no results.
+   *
+   * The table injects `resetFilters` so consumers can wire a "Clear filters" action.
+   **/
+  noMatches: (resetFilters: () => void) => React.ReactNode;
 };
 
 /**
@@ -321,11 +305,11 @@ type DASDTableState = {
   /** Current active filters applied to the device list */
   filters: DASDDevicesFilters;
   /** Currently selected devices in the UI */
-  selectedDevices: Device[];
+  selectedDevices: MergedDevice[];
   /** Devices selected for formatting */
-  devicesToFormat: Device[];
+  devicesToFormat: MergedDevice[];
   /** Device IDs currently undergoing an async operation */
-  waitingFor: Device["channel"][];
+  waitingFor: MergedDevice["channel"][];
 };
 
 /**
@@ -355,9 +339,9 @@ type DASDTableAction =
   | { type: "RESET_SELECTION" }
   | { type: "REQUEST_FORMAT"; payload: DASDTableState["devicesToFormat"] }
   | { type: "CANCEL_FORMAT_REQUEST" }
-  | { type: "START_WAITING"; payload: Device["channel"][] }
-  | { type: "UPDATE_WAITING"; payload: Device["channel"] }
-  | { type: "UPDATE_DEVICE"; payload: Device };
+  | { type: "START_WAITING"; payload: MergedDevice["channel"][] }
+  | { type: "UPDATE_WAITING"; payload: MergedDevice["channel"] }
+  | { type: "UPDATE_DEVICE"; payload: MergedDevice };
 
 /**
  * Reducer function that handles all DASD table state transitions.
@@ -414,6 +398,21 @@ const reducer = (state: DASDTableState, action: DASDTableAction): DASDTableState
   }
 };
 
+type DASDColumnKey =
+  | "channel"
+  | "state"
+  | "device"
+  | "type"
+  | "diag"
+  | "format"
+  | "formatted"
+  | "partitionInfo";
+
+type DASDTableColumnsOptions = {
+  /** Column keys to exclude from the table. */
+  omitting?: DASDColumnKey[];
+};
+
 /**
  * Column definitions for the DASD devices table.
  *
@@ -422,80 +421,149 @@ const reducer = (state: DASDTableState, action: DASDTableAction): DASDTableState
  *
  * These columns are consumed by the core <SelectableDataTable> component.
  */
-const createColumns = () => [
-  {
-    // TRANSLATORS: table header for a DASD devices table
-    name: _("Channel ID"),
-    value: (d: Device) => d.channel,
-    // FIXME: Needs to be rethink with the new types. Most probably an specific type
-    // for the table should be created
-    // sortingKey: "hexId", // uses the hexadecimal representation for sorting
-  },
-
-  {
-    // TRANSLATORS: table header for a DASD devices table
-    name: _("State"),
-    value: (d: Device) => d.state,
-    sortingKey: "state",
-  },
-  // FIXME: reactivate for the DASD system devices table
-  // {
-  //   // TRANSLATORS: table header for a DASD devices table
-  //   name: _("Device"),
-  //   value: (d: DASDDevice) => d.deviceName,
-  //   sortingKey: "deviceName",
-  // },
-  //
-  // FIXME: reactivate for the DASD system devices table
-  // {
-  //   // TRANSLATORS: table header for a DASD devices table
-  //   name: _("Type"),
-  //   value: (d: Device) => d.deviceType,
-  //   sortingKey: "deviceType",
-  // },
-  // FIXME: review
-  {
-    // TRANSLATORS: table header for `DIAG access mode` on DASD devices table.
-    // It refers to an special disk access mode on IBM mainframes. Keep
-    // untranslated.
-    name: _("DIAG"),
-    value: (d: Device) => {
-      if (!d.state) return "";
-
-      return d.diag ? _("Yes") : _("No");
+const createColumns = ({ omitting = [] }: DASDTableColumnsOptions) => {
+  const allColumns = {
+    channel: {
+      // TRANSLATORS: table header for a DASD devices table
+      name: _("Channel ID"),
+      value: (d: MergedDevice) => d.channel,
+      // FIXME: Needs to be rethink with the new types. Most probably an specific type
+      // for the table should be created
+      // sortingKey: "hexId", // uses the hexadecimal representation for sorting
     },
-    sortingKey: "diag",
-  },
 
-  // FIXME: reactivate for the DASD system devices table. Most probably for
-  // system it's formatted and for config just format (to be formatted)
-  // {
-  //   // TRANSLATORS: table header for a column in a DASD devices table that
-  //   // usually contains "Yes" or "No"" values
-  //   name: _("Formatted"),
-  //   value: (d: Device) => (d.formatted ? _("Yes") : _("No")),
-  //   sortingKey: "formatted",
-  // },
-  // {
-  // FIXME: reactivate for the DASD system devices table. Most probably for
-  //   // TRANSLATORS: table header for a DASD devices table
-  //   name: _("Partition Info"),
-  //
-  //   value: (d: Device) =>
-  //     // Displays comma-separated partition info as individual lines using <div>
-  //     d.partitionInfo.split(",").map((d: string) => <div key={d}>{d}</div>),
-  //   sortingKey: "partitionInfo",
-  // },
-];
+    state: {
+      // TRANSLATORS: table header for a DASD devices table
+      name: _("State"),
+      value: (d: MergedDevice) => d.state,
+      sortingKey: "state",
+    },
+    deviceName: {
+      // TRANSLATORS: table header for a DASD devices table
+      name: _("Device"),
+      value: (d: MergedDevice) => d.deviceName,
+      sortingKey: "deviceName",
+    },
+    type: {
+      // TRANSLATORS: table header for a DASD devices table
+      name: _("Type"),
+      value: (d: MergedDevice) => d.type,
+      sortingKey: "type",
+    },
+    diag: {
+      // TRANSLATORS: table header for `DIAG access mode` on DASD devices table.
+      // It refers to an special disk access mode on IBM mainframes. Keep
+      // untranslated.
+      name: _("DIAG"),
+      value: (d: MergedDevice) => {
+        if (!d.state) return "";
 
-export default function DASDTable() {
+        return d.diag ? _("Yes") : _("No");
+      },
+      sortingKey: "diag",
+    },
+
+    format: {
+      // TRANSLATORS: table header for a column in a DASD devices table that
+      // usually contains "Yes" or "No"" values
+      name: _("To be format"),
+      value: (d: MergedDevice) => (d.format ? _("Yes") : _("No")),
+      sortingKey: "format",
+    },
+    formatted: {
+      // TRANSLATORS: table header for a column in a DASD devices table that
+      // usually contains "Yes" or "No"" values
+      name: _("Formatted"),
+      value: (d: MergedDevice) => (d.formatted ? _("Yes") : _("No")),
+      sortingKey: "formatted",
+    },
+    partitionInfo: {
+      // TRANSLATORS: table header for a DASD devices table
+      name: _("Partition Info"),
+      value: (d: MergedDevice) =>
+        // Displays comma-separated partition info as individual lines using <div>
+        d.partitionInfo.split(",").map((d: string) => <div key={d}>{d}</div>),
+      sortingKey: "partitionInfo",
+    },
+  };
+
+  return Object.values(omit(allColumns, omitting));
+};
+
+type DASDTableProps = {
+  /** List of DASD devices to display. */
+  devices: MergedDevice[];
+  /**
+   * Renders when filters produce no results. Receives `resetFilters` so
+   * consumers can wire a "Clear filters" action without accessing internal
+   * table state.
+   *
+   * @example
+   * ```tsx
+   * noMatchesState={(reset) => <NoMatchesFound onReset={reset} />}
+   * ```
+   */
+  noMatchesState?: (resetFilters: () => void) => React.ReactNode;
+  omitColumns?: DASDTableColumnsOptions["omitting"];
+  /** Overrides the default actions builder. Return an empty array to disable actions entirely. */
+  itemActions?: (device: MergedDevice) => IAction[];
+};
+
+/**
+ * Displays a filterable, sortable, and selectable table of DASD devices.
+ */
+export default function DASDTable({
+  devices,
+  itemActions,
+  omitColumns,
+  noMatchesState,
+}: DASDTableProps) {
   const client = useInstallerClient();
-  const devices = []; // FIXME: use new api useDASDDevices();
+  // FIXME: use new api useDASDDevices();
+  // const configDevices: ConfigDevice[] = [
+  //   {
+  //     channel: "0.0.0160",
+  //     diag: false,
+  //     format: true,
+  //     state: "offline",
+  //   },
+  //   {
+  //     channel: "0.0.0200",
+  //   },
+  // ];
+  //
+  // const systemDevices: SystemDevice[] = [
+  //   {
+  //     channel: "0.0.0160",
+  //     active: false,
+  //     deviceName: "",
+  //     type: "",
+  //     formatted: false,
+  //     diag: true,
+  //     status: "active",
+  //     accessType: "",
+  //     partitionInfo: "",
+  //   },
+  //   {
+  //     channel: "0.0.0200",
+  //     active: true,
+  //     deviceName: "dasda",
+  //     type: "eckd",
+  //     formatted: false,
+  //     diag: false,
+  //     status: "active",
+  //     accessType: "rw",
+  //     partitionInfo: "1",
+  //   },
+  // ];
+  //
+  // const devices = extendCollection(configDevices, { with: systemDevices, matching: "channel" });
+
   // FIXME: use te equivalent in the new API
   // const { mutate: updateDASD } = useDASDMutation();
   const [state, dispatch] = useReducer(reducer, initialState);
 
-  const columns = createColumns();
+  const columns = createColumns({ omitting: omitColumns });
 
   useEffect(() => {
     if (!client) return;
@@ -517,7 +585,7 @@ export default function DASDTable() {
     dispatch({ type: "RESET_SELECTION" });
   };
 
-  const onSelectionChange = (devices: Device[]) => {
+  const onSelectionChange = (devices: MergedDevice[]) => {
     dispatch({ type: "UPDATE_SELECTION", payload: devices });
   };
 
@@ -542,6 +610,11 @@ export default function DASDTable() {
    */
   const updater = (options) => console.log("FIXME: implement equivalente for new API", options);
 
+  const defaultActions = (device: MergedDevice) =>
+    buildActions({ devices: [device], updater, dispatcher: dispatch });
+
+  const actionsBuilder = itemActions ?? defaultActions;
+
   return (
     <Content>
       {!isEmpty(state.waitingFor) && (
@@ -555,7 +628,6 @@ export default function DASDTable() {
         </Popup>
       )}
       <FiltersToolbar filters={state.filters} onFilterChange={onFilterChange} />
-      <BulkActionsToolbar devices={state.selectedDevices} updater={updater} dispatcher={dispatch} />
 
       {!isEmpty(state.devicesToFormat) && (
         <FormatActionHandler
@@ -570,6 +642,7 @@ export default function DASDTable() {
       <SelectableDataTable
         columns={columns}
         items={sortedDevices}
+        itemIdKey="channel"
         selectionMode="multiple"
         itemsSelected={state.selectedDevices}
         variant="compact"
@@ -577,15 +650,9 @@ export default function DASDTable() {
         sortedBy={state.sortedBy}
         updateSorting={onSortingChange}
         allowSelectAll
-        itemActions={(d) =>
-          buildActions({
-            devices: [d],
-            updater, // FIXME
-            dispatcher: dispatch,
-          })
-        }
+        itemActions={actionsBuilder}
         itemActionsLabel={(d) => `Actions for ${d.id}`}
-        emptyState={<DASDTableEmptyState mode={emptyMode} resetFilters={resetFilters} />}
+        emptyState={noMatchesState?.(resetFilters)}
       />
     </Content>
   );

@@ -34,6 +34,8 @@ import Backspace from "@icons/backspace.svg?component";
 import CheckCircle from "@icons/check_circle.svg?component";
 import ChevronLeft from "@icons/chevron_left.svg?component";
 import ChevronRight from "@icons/chevron_right.svg?component";
+import DataTable from "@icons/data_table.svg?component";
+import DataArray from "@icons/data_array.svg?component";
 import Delete from "@icons/delete.svg?component";
 import DoneAll from "@icons/done_all.svg?component";
 import DeployedCodeUpdate from "@icons/deployed_code_update.svg?component";
@@ -82,6 +84,8 @@ const icons = {
   check_circle: CheckCircle,
   chevron_left: ChevronLeft,
   chevron_right: ChevronRight,
+  data_table: DataTable,
+  data_array: DataArray,
   delete: Delete,
   done_all: DoneAll,
   deployed_code_update: DeployedCodeUpdate,
