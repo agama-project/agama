@@ -159,7 +159,7 @@ module Agama
         # @return [Boolean] Whether any device was activated or deactivated.
         def configure_devices(config)
           devices_changed = activate_devices(config)
-          devices_chaged ||= deactivate_devices(config)
+          devices_changed ||= deactivate_devices(config)
           probe if devices_changed
           devices_changed
         end
@@ -257,7 +257,7 @@ module Agama
         # @return [Boolean]
         def activated_controller?(channel)
           controller = find_controller(channel)
-          !controller.nil && controller.active?
+          !controller.nil? && controller.active?
         end
 
         # Whether there is an active probed device.
@@ -268,7 +268,7 @@ module Agama
         # @return [Boolean]
         def activated_device?(channel, wwpn, lun)
           device = find_device(channel, wwpn, lun)
-          !device.nil && device.active?
+          !device.nil? && device.active?
         end
 
         # Whether there is a deactivated probed device.
