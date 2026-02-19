@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "$id": "https://github.com/agama-project/agama/blob/master/rust/agama-lib/share/zfcp.schema.json",
+  "title": "Config",
+  "description": "zFCP config.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "devices": {
+      "description": "List of zFCP devices.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["channel", "wwpn", "lun"],
+        "properties": {
+          "channel": {
+            "description": "zFCP controller channel id.",
+            "type": "string",
+            "examples": ["0.0.fa00"]
+          },
+          "wwpn": {
+            "description": "WWPN of the target port.",
+            "type": "string",
+            "examples": ["0x500507630300c562"]
+          },
+          "lun": {
+            "description": "LUN of the SCSI device.",
+            "type": "string",
+            "examples": ["0x4010403300000000"]
+          },
+          "active": {
+            "description": "Whether to activate the device.",
+            "type": "boolean",
+            "default": true
+          }
+        }
+      }
+    }
+  }
+}

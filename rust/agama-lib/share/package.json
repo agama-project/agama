@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "validate": "ajv compile --spec=draft2019 --verbose --all-errors -r storage.schema.json -r iscsi.schema.json -r software.schema.json -s profile.schema.json && ajv compile --spec=draft2019 --verbose --all-errors -s storage.model.schema.json"
+    "validate": "ajv compile --spec=draft2019 --verbose --all-errors -r storage.schema.json -r iscsi.schema.json -r software.schema.json -r zfcp.schema.json -s profile.schema.json && ajv compile --spec=draft2019 --verbose --all-errors -s storage.model.schema.json"
   },
   "dependencies": {
     "ajv-cli": "^5.0.0"
