@@ -9,7 +9,7 @@ set -e
 
 dst="$1"
 
-if [ ! -d "$dst" ] ; then
+if [ ! -d "$dst" ]; then
   echo "fix_bootconfig.x86_64: image dir \"$dst\" not found"
   exit 1
 fi
@@ -19,7 +19,7 @@ fi
 # but that's not the case.
 test -f $dst/.profile && . $dst/.profile
 
-arch=`uname -m`
+arch=$(uname -m)
 profile=$(echo "$kiwi_profiles" | tr "_" " ")
 label="$profile ($arch)"
 
@@ -34,14 +34,12 @@ fi
 #
 cat >$dst/boot/grub2/grub.cfg <<XXX
 # Agama generated grub2 config file
+insmod serial
+insmod read
+
 set btrfs_relative_path="y"
 export btrfs_relative_path
 set default=0
-if [ -n "\$extra_cmdline" ]; then
-  submenu "Bootable snapshot \$snapshot_num" {
-    menuentry "If OK, run snapper rollback and reboot." { true; }
-  }
-fi
 if [ -n "\${iso_path}" ]; then
     isoboot="iso-scan/filename=\${iso_path}"
 fi
@@ -74,58 +72,104 @@ fi
 if [ -f (\$root)/boot/grub2/themes/$theme/theme.txt ];then
     set theme=(\$root)/boot/grub2/themes/$theme/theme.txt
 fi
-terminal_input console
-terminal_output gfxterm
-if [ "\${grub_platform}" != "efi" ]; then
-  menuentry "Boot from Hard Disk" --class opensuse --class gnu-linux --class gnu --class os {
-    exit
-  }
+
+# if serial port is successfully configured allow input/output to it as well
+if serial --unit=0 --speed=9600; then
+    terminal_input console serial
+    terminal_output gfxterm serial
+    set extra_output=serial
+    # this detects that a serial port is present but that does not mean a serial
+    # console is attached there so we cannot for example disable plymouth
+else
+    terminal_input console
+    terminal_output gfxterm
 fi
+
+if [ "\${grub_platform}" != "efi" ]; then
+    # classic BIOS boot, try booting from MBR from the first disk
+    menuentry "Boot from Hard Disk" --class os --unrestricted {
+        insmod file
+
+        # check if the first disk contains a valid boot sector
+        if file --is-x86-bios-bootsector (hd0)+1; then
+            chainloader (hd0)+1
+        else
+            echo "The first disk does not seem to be bootable."
+            echo ""
+            echo "If you are sure the system can boot from hard disk"
+            echo "then remove the installation medium and reboot the machine."
+            echo ""
+            echo "Press Enter to return ..."
+            read -s
+        fi
+    }
+fi
+
 menuentry "Install $label" --class os --unrestricted {
     set gfxpayload=keep
     echo Loading kernel...
-    linux (\$root)/boot/x86_64/loader/linux \${extra_cmdline} \${isoboot} splash=silent
+    linux (\$root)/boot/x86_64/loader/linux \${isoboot} splash=silent \${plymouth} \${live_options}
     echo Loading initrd...
     initrd (\$root)/boot/x86_64/loader/initrd
 }
 menuentry "Failsafe -- Install $label" --class os --unrestricted {
     set gfxpayload=keep
     echo Loading kernel...
-    linux (\$root)/boot/x86_64/loader/linux \${extra_cmdline} \${isoboot} ide=nodma apm=off noresume edd=off nomodeset 3
+    linux (\$root)/boot/x86_64/loader/linux \${isoboot} ide=nodma apm=off noresume edd=off nomodeset 3 \${live_options}
     echo Loading initrd...
     initrd (\$root)/boot/x86_64/loader/initrd
 }
 menuentry "Check Installation Medium" --class os --unrestricted {
     set gfxpayload=keep
     echo Loading kernel...
-    linux (\$root)/boot/x86_64/loader/linux mediacheck=1 plymouth.enable=0 \${isoboot}
+    linux (\$root)/boot/x86_64/loader/linux mediacheck=1 plymouth.enable=0 \${isoboot} \${live_options}
     echo Loading initrd...
     initrd (\$root)/boot/x86_64/loader/initrd
 }
 menuentry "Rescue System" --class os --unrestricted {
     set gfxpayload=keep
     echo Loading kernel...
-    linux (\$root)/boot/x86_64/loader/linux \${extra_cmdline} \${isoboot} $RESCUE_SYSTEM_BOOT_SETTINGS
+    linux (\$root)/boot/x86_64/loader/linux \${isoboot} $RESCUE_SYSTEM_BOOT_SETTINGS
     echo Loading initrd...
     initrd (\$root)/boot/x86_64/loader/initrd
 }
 
-if [ -f "/.snapshots/grub-snapshot.cfg" ]; then
-    source "/.snapshots/grub-snapshot.cfg"
-fi
+hiddenentry "Text mode" --hotkey "t" {
+    set textmode=true
+    set plymouth="plymouth.enable=0"
+    terminal_output console \${extra_output}
+}
+
+hiddenentry "Set Live system password" --hotkey "p" {
+    echo "Enter the new root password for the installer live system:"
+    read -s live_password
+    echo "Retype the password again:"
+    read -s live_password_confirmed
+
+    if [ "\${live_password}" != "\${live_password_confirmed}" ]; then
+        echo "ERROR: The passwords do not match!"
+        echo "Press Enter to return ..."
+        read -s
+    else
+        if [ -z "\${live_password}" ]; then
+            echo "ERROR: The password cannot be empty!"
+            echo "Press Enter to return ..."
+            read -s
+        else
+            set live_options="live.password=\${live_password}"
+        fi
+    fi
+}
+
 if [ "\${grub_platform}" = "efi" ]; then
-    hiddenentry "Text mode" --hotkey "t" {
-        set textmode=true
-        terminal_output console
-    }
     menuentry "UEFI Firmware Settings" {
         fwsetup --is-supported
         if [ "\$?" = 0 ]; then
             fwsetup
         else
             echo "Your firmware doesn't support setup menu entry from a boot loader"
-            echo "Press any key to return ..."
-            read
+            echo "Press Enter to return ..."
+            read -s
         fi
     }
 fi

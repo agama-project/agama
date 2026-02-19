@@ -1,8 +1,13 @@
 -------------------------------------------------------------------
-Thu Feb 19 09:40:16 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+Thu Feb 19 16:42:12 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Add logging about questions to make debugging easier
   (gh#agama-project/agama#3190).
+
+-------------------------------------------------------------------
+Thu Feb 19 13:35:59 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Properly import the security settings (bsc#1258450).
 
 -------------------------------------------------------------------
 Wed Feb 18 20:32:00 UTC 2026 - Josef Reidinger <jreidinger@suse.com>

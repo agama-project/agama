@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Feb 18 14:05:51 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Select the correct SLES and SLES4SAP release package depending on the mode
+  (bsc#1258271).
+
+-------------------------------------------------------------------
 Wed Feb 11 14:53:05 UTC 2026 - Eugenio Paolantonio <eugenio.paolantonio@suse.com>
 
 - Add Beta tag to the SLES and SLES4SAP product names

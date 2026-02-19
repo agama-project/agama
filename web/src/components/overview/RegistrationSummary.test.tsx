@@ -92,6 +92,24 @@ describe("RegistrationSummary", () => {
       });
     });
 
+    describe("and it is already registered without a code", () => {
+      beforeEach(() => {
+        mockUseSystem.mockReturnValue({
+          addons: [],
+          patterns: [],
+          repositories: [],
+          registration: { addons: [] },
+        });
+      });
+
+      it("renders the registration summary with no issues and registered state without code", () => {
+        installerRender(<RegistrationSummary />);
+        // Check if the registration summary is displayed with the correct text
+        screen.getByText(/Registration/);
+        screen.getByText(/Registered without a code/);
+      });
+    });
+
     describe("but it is not registered yet", () => {
       beforeEach(() => {
         mockUseSystem.mockReturnValue({
