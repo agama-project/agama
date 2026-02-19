@@ -48,7 +48,6 @@ pub struct Config {
     #[serde(alias = "localization")]
     pub l10n: Option<l10n::Config>,
     pub proxy: Option<proxy::Config>,
-    #[serde(flatten)]
     pub security: Option<security::Config>,
     #[serde(flatten)]
     pub software: Option<software::Config>,
