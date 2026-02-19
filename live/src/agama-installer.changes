@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Wed Feb 18 20:32:37 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- Increase medium timeout to 60 seconds (jsc#PED-14986)
+- Unify kernel and initramfs location (jsc#PED-14303)
+- Drop “Boot from Disk” on all archs except legacy x86_64
+  (jsc#PED-13766)
+
+-------------------------------------------------------------------
 Thu Feb 12 14:57:21 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
 
 - Fixed failing self-update, the self-update repository is not
