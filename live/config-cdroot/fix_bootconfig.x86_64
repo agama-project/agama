@@ -36,7 +36,17 @@ cat >$dst/boot/grub2/grub.cfg <<XXX
 # Agama generated grub2 config file
 set btrfs_relative_path="y"
 export btrfs_relative_path
-set default=0
+
+# if any installed SUSE OS is found then boot from disk by default
+if search --no-floppy --file /etc/products.d/baseproduct --set product_device; then
+  echo "Found (\$product_device)/etc/products.d/baseproduct, preselecting boot from hard disk"
+  set default=0
+else
+  # else boot the installer
+  echo "No installed SUSE OS found, preselecting the installer"
+  set default=1
+fi
+
 if [ -n "\$extra_cmdline" ]; then
   submenu "Bootable snapshot \$snapshot_num" {
     menuentry "If OK, run snapper rollback and reboot." { true; }
