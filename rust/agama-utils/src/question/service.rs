@@ -125,6 +125,7 @@ impl MessageHandler<message::Ask> for Service {
         if let Some(answer) = self.find_answer(&question.spec) {
             _ = question.set_answer(answer);
         }
+        tracing::info!("Asking question: {:?}", question);
         self.questions.push(question.clone());
 
         self.events.send(Event::QuestionAdded {
@@ -132,6 +133,7 @@ impl MessageHandler<message::Ask> for Service {
         })?;
 
         if question.answer.is_some() {
+            tracing::info!("Question {} answered", question.id);
             self.events.send(Event::QuestionAnswered {
                 id: self.current_id,
             })?;
@@ -147,6 +149,7 @@ impl MessageHandler<message::Answer> for Service {
         match found {
             Some(question) => {
                 question.set_answer(message.answer)?;
+                tracing::info!("Question {} answered", question.id);
                 self.events
                     .send(Event::QuestionAnswered { id: message.id })?;
                 Ok(())
