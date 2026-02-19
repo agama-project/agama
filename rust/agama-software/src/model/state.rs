@@ -180,6 +180,7 @@ impl<'a> SoftwareStateBuilder<'a> {
             ResolvableSelection::AutoSelected { optional: false },
         );
 
+        tracing::info!("fips option {:?}", self.kernel_cmdline.get_last("fips"));
         // FIPS enabled, so add fips pattern
         if self.kernel_cmdline.get_last("fips") == Some("1".to_string()) {
             tracing::info!("fips detected, adding fips pattern");
