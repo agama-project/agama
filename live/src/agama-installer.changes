@@ -1,9 +1,9 @@
 -------------------------------------------------------------------
 Wed Feb 18 20:32:37 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
 
-- increase medium timeout to 60 seconds (jsc#PED-14986)
+- Increase medium timeout to 60 seconds (jsc#PED-14986)
 - Unify kernel and initramfs location (jsc#PED-14303)
-- drop “Boot from Disk” on all archs expect legacy x86_64
+- Drop “Boot from Disk” on all archs except legacy x86_64
   (jsc#PED-13766)
 
 -------------------------------------------------------------------
