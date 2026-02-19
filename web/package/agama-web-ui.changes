@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Feb 19 12:35:24 UTC 2026 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Fixed a bug when defining the size of a new logical volume
+  (bsc#1258013).
+
+-------------------------------------------------------------------
 Fri Nov 21 08:17:06 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
 
 - Fixed missing translations (error cases for software repos, iSCSI, DASD; bsc#1250059)
