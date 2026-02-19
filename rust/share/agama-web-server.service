@@ -9,7 +9,7 @@ BindsTo=agama.service
 EnvironmentFile=-/run/agama/environment.conf
 Environment="AGAMA_LOG=debug,zbus=info"
 Type=notify
-ExecStart=/usr/bin/agama-web-server serve --address :::80 --address2 :::443
+ExecStart=/usr/bin/agama-web-server serve --address :::80,0.0.0.0:80 --address2 :::443,0.0.0.0:443
 PIDFile=/run/agama/web.pid
 User=root
 TimeoutStopSec=5
