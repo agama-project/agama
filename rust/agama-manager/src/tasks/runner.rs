@@ -421,7 +421,6 @@ impl SetConfigAction {
                 self.progress
                     .call(progress::message::Next::new(Scope::Manager))
                     .await?;
-                tracing::info!("setting bootloader config {:?}", &config.bootloader);
                 self.bootloader
                     .call(bootloader::message::SetConfig::new(
                         config.bootloader.clone(),
