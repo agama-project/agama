@@ -1,4 +1,20 @@
 -------------------------------------------------------------------
+Thu Feb 19 12:55:14 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+
+- Fixes and improvements in the boot menu for x86_64 and aarch64:
+  - Fixed boot from hard disk in the legacy BIOS mode (x86_64 only)
+  - Added "p" keyboard shortcut to interactively configure the root
+    password for the installer live system
+  - Added support for serial console
+  - Disable plymouth graphical boot when the grub boot menu is
+    switched to text mode with the "t" keyboard shortcut
+
+- Fixed failed image build because of missing configuration options
+  for the "image-janitor" tool
+
+  (gh#agama-project/agama#3192)
+
+-------------------------------------------------------------------
 Wed Feb 18 20:32:37 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
 
 - Increase medium timeout to 60 seconds (jsc#PED-14986)
