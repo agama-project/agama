@@ -22,7 +22,7 @@ use crate::gettext_noop;
 use gettextrs::gettext;
 use merge::Merge;
 use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
+use std::{collections::HashMap, fmt};
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
@@ -105,7 +105,7 @@ impl AnswerRule {
 }
 
 /// Represents a question including its [specification](QuestionSpec) and [answer](QuestionAnswer).
-#[derive(Clone, Debug, Serialize, Deserialize, utoipa::ToSchema)]
+#[derive(Clone, Serialize, Deserialize, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct Question {
     /// Question ID.
@@ -116,6 +116,16 @@ pub struct Question {
     /// Question answer.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub answer: Option<Answer>,
+}
+
+impl fmt::Debug for Question {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.debug_struct("Question")
+            .field("id", &self.id)
+            .field("spec", &self.spec)
+            .field("answer", &self.answer.as_ref().map(|_| "[FILTERED]"))
+            .finish()
+    }
 }
 
 impl Question {
