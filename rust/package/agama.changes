@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Feb 19 09:40:16 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Add logging about questions to make debugging easier
+  (gh#agama-project/agama#3190).
+
+-------------------------------------------------------------------
 Wed Feb 18 20:32:00 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
 
 - Add support for bootloader config updateNvram (jsc#PED-14224) 
