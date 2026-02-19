@@ -24,7 +24,7 @@ const CMDLINE_FILE: &str = "/run/agama/cmdline.d/agama.conf";
 
 /// Implements a mechanism to read the kernel's command-line arguments.
 ///
-/// It supports multiple values for a single key.
+/// It supports multiple values for a single key. Keys are case-insensitive.
 #[derive(Default)]
 pub struct KernelCmdline(HashMap<String, Vec<String>>);
 
@@ -57,7 +57,7 @@ impl KernelCmdline {
                 .map(|(k, v)| (k, v))
                 .unwrap_or_else(|| (param, "1"));
 
-            args.entry(key.to_string())
+            args.entry(key.to_lowercase())
                 .and_modify(|v| v.push(value.to_string()))
                 .or_insert(vec![value.to_string()]);
         }
@@ -68,12 +68,12 @@ impl KernelCmdline {
     ///
     /// * `name`: argument name.
     pub fn get(&self, name: &str) -> Vec<String> {
-        self.0.get(name).cloned().unwrap_or(vec![])
+        self.0.get(&name.to_lowercase()).cloned().unwrap_or(vec![])
     }
 
     /// Returns the last value for the argument
     pub fn get_last(&self, name: &str) -> Option<String> {
-        let values = self.0.get(name)?;
+        let values = self.0.get(&name.to_lowercase())?;
         values.last().cloned()
     }
 }
@@ -101,5 +101,21 @@ mod tests {
         let args = KernelCmdline::parse_str(args_str);
 
         assert_eq!(args.get_last("inst.auto_insecure"), Some("0".to_string()));
+    }
+
+    #[test]
+    fn test_cmdline_args_case_insensitive() {
+        let args_str = r"Inst.Auto=file:///profile.json RD.NEEDNET";
+        let args = KernelCmdline::parse_str(args_str);
+
+        assert_eq!(
+            args.get_last("inst.auto"),
+            Some("file:///profile.json".to_string())
+        );
+        assert_eq!(
+            args.get_last("INST.AUTO"),
+            Some("file:///profile.json".to_string())
+        );
+        assert_eq!(args.get("rd.neednet"), vec!["1".to_string()]);
     }
 }
