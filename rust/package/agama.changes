@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Feb 19 13:35:59 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Properly import the security settings (bsc#1258450).
+
+-------------------------------------------------------------------
 Wed Feb 18 20:32:00 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
 
 - Add support for bootloader config updateNvram (jsc#PED-14224) 
