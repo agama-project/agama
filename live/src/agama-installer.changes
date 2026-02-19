@@ -12,6 +12,8 @@ Thu Feb 19 12:55:14 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
 - Fixed failed image build because of missing configuration options
   for the "image-janitor" tool
 
+  (gh#agama-project/agama#3192)
+
 -------------------------------------------------------------------
 Wed Feb 18 20:32:37 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
 
