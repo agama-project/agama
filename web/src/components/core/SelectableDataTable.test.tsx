@@ -287,8 +287,20 @@ describe("SelectableDataTable", () => {
     expect(sdaChild).not.toBeNull();
   });
 
-  it.todo("allows selectionMode#none");
-  it.todo("renders nothing for actions column if actions is an empty collection");
+  it("allows selectionMode#none", () => {
+    plainRender(<SelectableDataTable {...props} selectionMode="none" />);
+    const table = screen.getByRole("grid");
+    expect(within(table).queryAllByRole("radio")).toEqual([]);
+    expect(within(table).queryAllByRole("checkbox")).toEqual([]);
+  });
+
+  it.skip("renders nothing for actions column if actions is an empty collection", () => {
+    // TODO: requires a refactor  to correctly hide the actions column header
+    // when no items have actions. Check TODO note in the component
+    plainRender(<SelectableDataTable {...props} itemActions={() => []} />);
+    const table = screen.getByRole("grid");
+    expect(within(table).queryByRole("columnheader", { name: "Row actions" })).toBeNull();
+  });
 
   describe("when not providing a custom item equality function", () => {
     const onSelectionChange = jest.fn();

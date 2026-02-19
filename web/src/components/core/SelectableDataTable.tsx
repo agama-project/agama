@@ -382,7 +382,11 @@ const TableHeader = ({
             </Th>
           );
         })}
-        {itemActions && <Th aria-label={_("Row actions")} />}
+        {
+          // TODO: replace with itemActionsMap in SharedData to avoid calling itemActions
+          // twice per item and to correctly hide the actions column when no items have actions.
+          itemActions && <Th aria-label={_("Row actions")} />
+        }
       </Tr>
     </Thead>
   );
@@ -485,6 +489,8 @@ export default function SelectableDataTable({
   };
 
   const updateSelection = (item: object) => {
+    if (!isFunction(onSelectionChange)) return;
+
     if (!allowMultiple) {
       onSelectionChange([item]);
       return;
