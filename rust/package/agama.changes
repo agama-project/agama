@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Feb 20 09:35:01 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- Properly mark fips pattern for installation when fips kernel
+  parameter is used (bsc#1258306)
+
+-------------------------------------------------------------------
 Thu Feb 19 16:42:12 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Add logging about questions to make debugging easier
