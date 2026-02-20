@@ -479,7 +479,10 @@ impl ZyppServer {
 
         if let Err(error) = result {
             if skip_if_missing {
-                tracing::info!("Could not select '{}' but it should be skipped if missing.", name);
+                tracing::info!(
+                    "Could not select '{}' but it should be skipped if missing.",
+                    name
+                );
             } else {
                 let message = format!("Could not select '{}'", name);
                 issues.push(

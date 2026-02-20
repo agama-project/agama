@@ -177,7 +177,9 @@ impl<'a> SoftwareStateBuilder<'a> {
         state.resolvables.add_or_replace(
             "kernel-default",
             ResolvableType::Package,
-            ResolvableSelection::AutoSelected { skip_if_missing: false },
+            ResolvableSelection::AutoSelected {
+                skip_if_missing: false,
+            },
         );
 
         // FIPS enabled, so add fips pattern
@@ -186,7 +188,9 @@ impl<'a> SoftwareStateBuilder<'a> {
             state.resolvables.add_or_replace(
                 "fips",
                 ResolvableType::Pattern,
-                ResolvableSelection::AutoSelected { skip_if_missing: false },
+                ResolvableSelection::AutoSelected {
+                    skip_if_missing: false,
+                },
             );
         }
     }
@@ -318,7 +322,9 @@ impl<'a> SoftwareStateBuilder<'a> {
         for resolvable in selection.resolvables() {
             state.resolvables.add_or_replace_resolvable(
                 &resolvable,
-                ResolvableSelection::AutoSelected { skip_if_missing: false },
+                ResolvableSelection::AutoSelected {
+                    skip_if_missing: false,
+                },
             );
         }
     }
@@ -362,7 +368,9 @@ impl<'a> SoftwareStateBuilder<'a> {
             resolvables.add_or_replace(
                 pattern,
                 ResolvableType::Pattern,
-                ResolvableSelection::AutoSelected { skip_if_missing: false },
+                ResolvableSelection::AutoSelected {
+                    skip_if_missing: false,
+                },
             );
         }
 
@@ -370,7 +378,9 @@ impl<'a> SoftwareStateBuilder<'a> {
             resolvables.add_or_replace(
                 pattern,
                 ResolvableType::Pattern,
-                ResolvableSelection::AutoSelected { skip_if_missing: true },
+                ResolvableSelection::AutoSelected {
+                    skip_if_missing: true,
+                },
             );
         }
 
@@ -390,7 +400,9 @@ impl<'a> SoftwareStateBuilder<'a> {
             resolvables.add_or_replace(
                 package,
                 ResolvableType::Package,
-                ResolvableSelection::AutoSelected { skip_if_missing: false },
+                ResolvableSelection::AutoSelected {
+                    skip_if_missing: false,
+                },
             );
         }
 
@@ -398,7 +410,9 @@ impl<'a> SoftwareStateBuilder<'a> {
             resolvables.add_or_replace(
                 package,
                 ResolvableType::Package,
-                ResolvableSelection::AutoSelected { skip_if_missing: true },
+                ResolvableSelection::AutoSelected {
+                    skip_if_missing: true,
+                },
             );
         }
 
@@ -705,17 +719,23 @@ mod tests {
                 (
                     "NetworkManager".to_string(),
                     ResolvableType::Package,
-                    ResolvableSelection::AutoSelected { skip_if_missing: false }
+                    ResolvableSelection::AutoSelected {
+                        skip_if_missing: false
+                    }
                 ),
                 (
                     "enhanced_base".to_string(),
                     ResolvableType::Pattern,
-                    ResolvableSelection::AutoSelected { skip_if_missing: false }
+                    ResolvableSelection::AutoSelected {
+                        skip_if_missing: false
+                    }
                 ),
                 (
                     "openSUSE-repos-Tumbleweed".to_string(),
                     ResolvableType::Package,
-                    ResolvableSelection::AutoSelected { skip_if_missing: false }
+                    ResolvableSelection::AutoSelected {
+                        skip_if_missing: false
+                    }
                 ),
                 (
                     "selinux".to_string(),
@@ -725,7 +745,9 @@ mod tests {
                 (
                     "sudo-policy-wheel-auth-self".to_string(),
                     ResolvableType::Package,
-                    ResolvableSelection::AutoSelected { skip_if_missing: false }
+                    ResolvableSelection::AutoSelected {
+                        skip_if_missing: false
+                    }
                 )
             ]
         );
@@ -774,7 +796,9 @@ mod tests {
                 (
                     "enhanced_base".to_string(),
                     ResolvableType::Pattern,
-                    ResolvableSelection::AutoSelected { skip_if_missing: false }
+                    ResolvableSelection::AutoSelected {
+                        skip_if_missing: false
+                    }
                 ),
                 (
                     "gnome".to_string(),
@@ -849,7 +873,9 @@ mod tests {
                 (
                     "enhanced_base".to_string(),
                     ResolvableType::Pattern,
-                    ResolvableSelection::AutoSelected { skip_if_missing: false }
+                    ResolvableSelection::AutoSelected {
+                        skip_if_missing: false
+                    }
                 ),
                 (
                     "selinux".to_string(),
@@ -884,7 +910,9 @@ mod tests {
                 (
                     "enhanced_base".to_string(),
                     ResolvableType::Pattern,
-                    ResolvableSelection::AutoSelected { skip_if_missing: false }
+                    ResolvableSelection::AutoSelected {
+                        skip_if_missing: false
+                    }
                 ),
                 (
                     "selinux".to_string(),
@@ -916,7 +944,9 @@ mod tests {
                 (
                     "enhanced_base".to_string(),
                     ResolvableType::Pattern,
-                    ResolvableSelection::AutoSelected { skip_if_missing: false }
+                    ResolvableSelection::AutoSelected {
+                        skip_if_missing: false
+                    }
                 ),
                 (
                     "gnome".to_string(),
@@ -991,17 +1021,23 @@ mod tests {
                 (
                     "NetworkManager".to_string(),
                     ResolvableType::Package,
-                    ResolvableSelection::AutoSelected { skip_if_missing: false }
+                    ResolvableSelection::AutoSelected {
+                        skip_if_missing: false
+                    }
                 ),
                 (
                     "openSUSE-repos-Tumbleweed".to_string(),
                     ResolvableType::Package,
-                    ResolvableSelection::AutoSelected { skip_if_missing: false }
+                    ResolvableSelection::AutoSelected {
+                        skip_if_missing: false
+                    }
                 ),
                 (
                     "sudo-policy-wheel-auth-self".to_string(),
                     ResolvableType::Package,
-                    ResolvableSelection::AutoSelected { skip_if_missing: false }
+                    ResolvableSelection::AutoSelected {
+                        skip_if_missing: false
+                    }
                 )
             ]
         );
@@ -1029,7 +1065,9 @@ mod tests {
             Some((
                 "kernel-default".to_string(),
                 ResolvableType::Package,
-                ResolvableSelection::AutoSelected { skip_if_missing: false }
+                ResolvableSelection::AutoSelected {
+                    skip_if_missing: false
+                }
             ))
         );
     }
