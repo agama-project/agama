@@ -177,7 +177,9 @@ impl<'a> SoftwareStateBuilder<'a> {
         state.resolvables.add_or_replace(
             "kernel-default",
             ResolvableType::Package,
-            ResolvableSelection::AutoSelected { optional: false },
+            ResolvableSelection::AutoSelected {
+                skip_if_missing: false,
+            },
         );
 
         // FIPS enabled, so add fips pattern
@@ -186,7 +188,9 @@ impl<'a> SoftwareStateBuilder<'a> {
             state.resolvables.add_or_replace(
                 "fips",
                 ResolvableType::Pattern,
-                ResolvableSelection::AutoSelected { optional: false },
+                ResolvableSelection::AutoSelected {
+                    skip_if_missing: false,
+                },
             );
         }
     }
@@ -318,7 +322,9 @@ impl<'a> SoftwareStateBuilder<'a> {
         for resolvable in selection.resolvables() {
             state.resolvables.add_or_replace_resolvable(
                 &resolvable,
-                ResolvableSelection::AutoSelected { optional: false },
+                ResolvableSelection::AutoSelected {
+                    skip_if_missing: false,
+                },
             );
         }
     }
@@ -362,7 +368,9 @@ impl<'a> SoftwareStateBuilder<'a> {
             resolvables.add_or_replace(
                 pattern,
                 ResolvableType::Pattern,
-                ResolvableSelection::AutoSelected { optional: false },
+                ResolvableSelection::AutoSelected {
+                    skip_if_missing: false,
+                },
             );
         }
 
@@ -370,7 +378,9 @@ impl<'a> SoftwareStateBuilder<'a> {
             resolvables.add_or_replace(
                 pattern,
                 ResolvableType::Pattern,
-                ResolvableSelection::AutoSelected { optional: true },
+                ResolvableSelection::AutoSelected {
+                    skip_if_missing: true,
+                },
             );
         }
 
@@ -390,7 +400,9 @@ impl<'a> SoftwareStateBuilder<'a> {
             resolvables.add_or_replace(
                 package,
                 ResolvableType::Package,
-                ResolvableSelection::AutoSelected { optional: false },
+                ResolvableSelection::AutoSelected {
+                    skip_if_missing: false,
+                },
             );
         }
 
@@ -398,7 +410,9 @@ impl<'a> SoftwareStateBuilder<'a> {
             resolvables.add_or_replace(
                 package,
                 ResolvableType::Package,
-                ResolvableSelection::AutoSelected { optional: true },
+                ResolvableSelection::AutoSelected {
+                    skip_if_missing: true,
+                },
             );
         }
 
@@ -487,8 +501,8 @@ impl ResolvablesState {
         selection: ResolvableSelection,
     ) {
         if let Some(entry) = self.0.get(&(name.to_string(), r#type)) {
-            if let ResolvableSelection::AutoSelected { optional: _ } = entry {
-                tracing::debug!("Could not modify the {name} state because it is mandatory.");
+            if let ResolvableSelection::AutoSelected { .. } = entry {
+                tracing::debug!("Could not modify the {name} state because it is auto selected.");
                 return;
             }
         }
@@ -543,17 +557,18 @@ impl ResolvablesState {
 pub enum ResolvableSelection {
     /// Selected by the user.
     Selected,
-    /// Selected by the installer itself and whether it is optional or not.
-    AutoSelected { optional: bool },
+    /// Selected by the installer itself and whether it should be skipped if missing.
+    AutoSelected { skip_if_missing: bool },
     /// Removed by the user. It allows to remove resolvables that might be auto-selected
     /// by the solver (e.g., recommended patterns).
     Removed,
 }
 
 impl ResolvableSelection {
-    pub fn is_optional(&self) -> bool {
-        if let ResolvableSelection::AutoSelected { optional } = self {
-            return *optional;
+    /// Returns true if the resolvable is auto-selected and should be skipped if missing.
+    pub fn skip_if_missing(&self) -> bool {
+        if let ResolvableSelection::AutoSelected { skip_if_missing } = self {
+            return *skip_if_missing;
         }
 
         false
@@ -562,7 +577,7 @@ impl ResolvableSelection {
     pub fn selected(&self) -> bool {
         match self {
             ResolvableSelection::Selected => true,
-            ResolvableSelection::AutoSelected { optional: _ } => true,
+            ResolvableSelection::AutoSelected { skip_if_missing: _ } => true,
             _ => false,
         }
     }
@@ -572,7 +587,7 @@ impl From<ResolvableSelection> for zypp_agama::ResolvableSelected {
     fn from(value: ResolvableSelection) -> Self {
         match value {
             ResolvableSelection::Selected => zypp_agama::ResolvableSelected::User,
-            ResolvableSelection::AutoSelected { optional: _ } => {
+            ResolvableSelection::AutoSelected { skip_if_missing: _ } => {
                 zypp_agama::ResolvableSelected::Installation
             }
             ResolvableSelection::Removed => zypp_agama::ResolvableSelected::Not,
@@ -704,17 +719,23 @@ mod tests {
                 (
                     "NetworkManager".to_string(),
                     ResolvableType::Package,
-                    ResolvableSelection::AutoSelected { optional: false }
+                    ResolvableSelection::AutoSelected {
+                        skip_if_missing: false
+                    }
                 ),
                 (
                     "enhanced_base".to_string(),
                     ResolvableType::Pattern,
-                    ResolvableSelection::AutoSelected { optional: false }
+                    ResolvableSelection::AutoSelected {
+                        skip_if_missing: false
+                    }
                 ),
                 (
                     "openSUSE-repos-Tumbleweed".to_string(),
                     ResolvableType::Package,
-                    ResolvableSelection::AutoSelected { optional: false }
+                    ResolvableSelection::AutoSelected {
+                        skip_if_missing: false
+                    }
                 ),
                 (
                     "selinux".to_string(),
@@ -724,7 +745,9 @@ mod tests {
                 (
                     "sudo-policy-wheel-auth-self".to_string(),
                     ResolvableType::Package,
-                    ResolvableSelection::AutoSelected { optional: false }
+                    ResolvableSelection::AutoSelected {
+                        skip_if_missing: false
+                    }
                 )
             ]
         );
@@ -773,7 +796,9 @@ mod tests {
                 (
                     "enhanced_base".to_string(),
                     ResolvableType::Pattern,
-                    ResolvableSelection::AutoSelected { optional: false }
+                    ResolvableSelection::AutoSelected {
+                        skip_if_missing: false
+                    }
                 ),
                 (
                     "gnome".to_string(),
@@ -848,7 +873,9 @@ mod tests {
                 (
                     "enhanced_base".to_string(),
                     ResolvableType::Pattern,
-                    ResolvableSelection::AutoSelected { optional: false }
+                    ResolvableSelection::AutoSelected {
+                        skip_if_missing: false
+                    }
                 ),
                 (
                     "selinux".to_string(),
@@ -883,7 +910,9 @@ mod tests {
                 (
                     "enhanced_base".to_string(),
                     ResolvableType::Pattern,
-                    ResolvableSelection::AutoSelected { optional: false }
+                    ResolvableSelection::AutoSelected {
+                        skip_if_missing: false
+                    }
                 ),
                 (
                     "selinux".to_string(),
@@ -915,7 +944,9 @@ mod tests {
                 (
                     "enhanced_base".to_string(),
                     ResolvableType::Pattern,
-                    ResolvableSelection::AutoSelected { optional: false }
+                    ResolvableSelection::AutoSelected {
+                        skip_if_missing: false
+                    }
                 ),
                 (
                     "gnome".to_string(),
@@ -990,17 +1021,23 @@ mod tests {
                 (
                     "NetworkManager".to_string(),
                     ResolvableType::Package,
-                    ResolvableSelection::AutoSelected { optional: false }
+                    ResolvableSelection::AutoSelected {
+                        skip_if_missing: false
+                    }
                 ),
                 (
                     "openSUSE-repos-Tumbleweed".to_string(),
                     ResolvableType::Package,
-                    ResolvableSelection::AutoSelected { optional: false }
+                    ResolvableSelection::AutoSelected {
+                        skip_if_missing: false
+                    }
                 ),
                 (
                     "sudo-policy-wheel-auth-self".to_string(),
                     ResolvableType::Package,
-                    ResolvableSelection::AutoSelected { optional: false }
+                    ResolvableSelection::AutoSelected {
+                        skip_if_missing: false
+                    }
                 )
             ]
         );
@@ -1028,7 +1065,9 @@ mod tests {
             Some((
                 "kernel-default".to_string(),
                 ResolvableType::Package,
-                ResolvableSelection::AutoSelected { optional: false }
+                ResolvableSelection::AutoSelected {
+                    skip_if_missing: false
+                }
             ))
         );
     }
