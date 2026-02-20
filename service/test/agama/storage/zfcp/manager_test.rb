@@ -24,6 +24,7 @@ require "agama/storage/zfcp/manager"
 require "agama/storage/zfcp/config_importer"
 require "agama/storage/zfcp/controller"
 require "agama/storage/zfcp/device"
+require "agama/issue"
 
 # yast2-s390 is not available for all architectures. Defining Y2S390::ZFCP constant here in order to
 # make possible to mock that class independently on the architecture. Note that Y2S390 classes are
@@ -35,15 +36,13 @@ end
 describe Agama::Storage::ZFCP::Manager do
   subject { described_class.new(logger: logger) }
 
-  let(:logger) { Logger.new($stdout, level: :warn) }
-
+  let(:logger) { Logger.new($stdout, level: :fatal) }
   let(:yast_zfcp) { double(Y2S390::ZFCP) }
-
   let(:controller_records) { [] }
-
   let(:disk_records) { [] }
-
   let(:fa00_record) { { "sysfs_bus_id" => "0.0.fa00" } }
+  let(:fc00_record) { { "sysfs_bus_id" => "0.0.fc00" } }
+
   let(:sda_record) do
     {
       "detail"   => {
@@ -72,254 +71,348 @@ describe Agama::Storage::ZFCP::Manager do
     allow(yast_zfcp).to receive(:probe_disks)
     allow(yast_zfcp).to receive(:controllers).and_return(controller_records)
     allow(yast_zfcp).to receive(:disks).and_return(disk_records)
+    allow(yast_zfcp).to receive(:lun_scan_controller?).and_return(false)
+    allow(yast_zfcp).to receive(:activated_controller?).and_return(false)
+    allow(yast_zfcp).to receive(:activate_controller).and_return({ "exit" => 0 })
+    allow(yast_zfcp).to receive(:activate_disk).and_return({ "exit" => 0 })
+    allow(yast_zfcp).to receive(:find_wwpns).and_return({ "stdout" => [] })
+    allow(yast_zfcp).to receive(:find_luns).and_return({ "stdout" => [] })
+
   end
 
   describe "#probed?" do
-    it "returns false if zFCP is not probed yet" do
-      expect(subject.probed?).to eq(false)
+    it "is false initially" do
+      expect(subject).not_to be_probed
     end
 
-    it "returns true if zFCP was already probed" do
+    it "is true after probing" do
       subject.probe
-      expect(subject.probed?).to eq(true)
+      expect(subject).to be_probed
     end
   end
 
   describe "#probe" do
-    let(:controller_records) { [fa00_record] }
-    let(:disk_records) { [sda_record] }
+    let(:controller_records) { [fa00_record, fc00_record] }
 
     before do
-      allow(yast_zfcp).to receive(:activated_controller?).with("0.0.fa00").and_return(true)
-      allow(yast_zfcp).to receive(:lun_scan_controller?).with("0.0.fa00").and_return(false)
-      allow(yast_zfcp).to receive(:find_wwpns).with("0.0.fa00")
-        .and_return("stdout" => ["0x500507630708d3b3"])
-      allow(yast_zfcp).to receive(:find_luns).with("0.0.fa00", "0x500507630708d3b3")
-        .and_return("stdout" => ["0x0013000000000000", "0x0000000000000004"])
+      allow(yast_zfcp).to receive(:activated_controller?).with("0.0.fa00").and_return(false)
+      allow(yast_zfcp).to receive(:activated_controller?).with("0.0.fc00").and_return(false)
+      allow(yast_zfcp).to receive(:lun_scan_controller?).with("0.0.fa00").and_return(true)
+      allow(yast_zfcp).to receive(:lun_scan_controller?).with("0.0.fc00").and_return(false)
     end
 
-    it "reads the controllers" do
+    it "probes controllers" do
       subject.probe
       expect(subject.controllers).to contain_exactly(
         an_object_having_attributes(
-          channel:   "0.0.fa00",
-          active?:   true,
-          lun_scan?: false,
-          wwpns:     ["0x500507630708d3b3"]
-        )
-      )
-    end
-
-    it "reads devices" do
-      subject.probe
-      expect(subject.devices).to contain_exactly(
-        an_object_having_attributes(
-          channel:     "0.0.fa00",
-          wwpn:        "0x500507630708d3b3",
-          lun:         "0x0013000000000000",
-          active?:     true,
-          device_name: "/dev/sda"
+          channel: "0.0.fa00",
+          active?: false,
+          lun_scan?: true,
+          wwpns: []
         ),
         an_object_having_attributes(
-          channel:     "0.0.fa00",
-          wwpn:        "0x500507630708d3b3",
-          lun:         "0x0000000000000004",
-          active?:     false,
-          device_name: nil
+          channel: "0.0.fc00",
+          active?: false,
+          lun_scan?: false,
+          wwpns: []
         )
       )
     end
 
-    it "sets probed? to true" do
-      subject.probe
-      expect(subject).to be_probed
+    context "with an active controller" do
+      before do
+        allow(yast_zfcp).to receive(:activated_controller?).with("0.0.fa00").and_return(true)
+
+        allow(yast_zfcp).to receive(:find_wwpns)
+          .with("0.0.fa00")
+          .and_return("stdout" => ["0x500507630708d3b3"])
+
+        allow(yast_zfcp).to receive(:find_luns)
+          .with("0.0.fa00", "0x500507630708d3b3")
+          .and_return("stdout" => ["0x0013000000000000", "0x0000000000000004"])
+      end
+
+      let(:disk_records) { [sda_record] }
+
+      it "probes WWPNs and LUNs" do
+        subject.probe
+
+        expect(subject.controllers).to contain_exactly(
+          an_object_having_attributes(
+            channel: "0.0.fa00",
+            active?: true,
+            wwpns: ["0x500507630708d3b3"]
+          ),
+          an_object_having_attributes(
+            channel: "0.0.fc00",
+            active?: false,
+            wwpns: []
+          )
+        )
+
+        expect(subject.devices).to contain_exactly(
+          an_object_having_attributes(
+            channel: "0.0.fa00",
+            wwpn: "0x500507630708d3b3",
+            lun: "0x0013000000000000",
+            active?: true,
+            device_name: "/dev/sda"
+          ),
+          an_object_having_attributes(
+            channel: "0.0.fa00",
+            wwpn: "0x500507630708d3b3",
+            lun: "0x0000000000000004",
+            active?: false,
+            device_name: nil
+          )
+        )
+      end
     end
   end
 
   describe "#configure" do
-    let(:config_json) { { controllers: [], devices: [] } }
-    let(:config) do
-      double("Agama::Storage::ZFCP::Config", controllers: [], devices: [])
-    end
+    let(:controller_records) { [fa00_record] }
 
     before do
-      allow(Agama::Storage::ZFCP::ConfigImporter).to receive(:new).with(config_json).and_return(
-        instance_double(Agama::Storage::ZFCP::ConfigImporter, import: config)
-      )
+      allow(subject).to receive(:sleep)
     end
 
-    it "probes if not probed yet" do
-      expect(subject).to receive(:probe).and_call_original
-      allow(yast_zfcp).to receive(:controllers).and_return([])
-      allow(yast_zfcp).to receive(:disks).and_return([])
-      subject.configure(config_json)
-      expect(subject).to be_probed
-    end
+    context "when the config activates a controller" do
+      let(:config_json) { { controllers: ["0.0.fa00"] } }
 
-    context "with probed subject" do
-      before do
-        subject.probe
-        allow(subject).to receive(:probe)
-      end
-
-      context "activating controllers" do
-        let(:controller_to_activate) do
-          Agama::Storage::ZFCP::Controller.new("0.0.fb00").tap do |c|
-            c.active = true
-          end
-        end
-        let(:config) do
-          double("Agama::Storage::ZFCP::Config",
-            controllers: [controller_to_activate], devices: [])
-        end
-
+      context "on success" do
         before do
-          allow(yast_zfcp).to receive(:activate_controller).with("0.0.fb00").and_return("exit" => 0)
-          allow(subject).to receive(:sleep) # avoid sleeping in tests
+          allow(yast_zfcp).to receive(:activate_controller).with("0.0.fa00").and_return("exit" => 0)
         end
 
         it "activates the controller" do
-          expect(yast_zfcp).to receive(:activate_controller).with("0.0.fb00")
+          expect(yast_zfcp).to receive(:activate_controller).with("0.0.fa00")
           subject.configure(config_json)
         end
 
-        it "re-probes after activating" do
-          expect(subject).to receive(:probe)
+        it "does not generate an issue" do
           subject.configure(config_json)
+          expect(subject.issues).to eq([])
         end
 
-        it "returns true for system changed" do
-          expect(subject.configure(config_json)).to be true
-        end
-
-        context "when controller is already active" do
-          before do
-            active_controller = Agama::Storage::ZFCP::Controller.new("0.0.fb00").tap do |c|
-              c.active = true
-            end
-            subject.instance_variable_set(:@controllers, [active_controller])
-          end
-
-          it "does not activate the controller" do
-            expect(yast_zfcp).not_to receive(:activate_controller)
-            expect(subject.configure(config_json)).to be false
-          end
+        it "returns true" do
+          expect(subject.configure(config_json)).to eq(true)
         end
       end
 
-      context "activating devices" do
-        let(:device_to_activate) do
-          Agama::Storage::ZFCP::Device.new("0.0.fa00", "0x500507630708d3b3",
-            "0x0013000000000000").tap do |d|
-            d.active = true
-          end
-        end
-        let(:config) do
-          double("Agama::Storage::ZFCP::Config",
-            controllers: [], devices: [device_to_activate])
+      context "on failure" do
+        before do
+          allow(yast_zfcp).to receive(:activate_controller).with("0.0.fa00").and_return("exit" => 1)
         end
 
+        it "generates an issue" do
+          subject.configure(config_json)
+          expect(subject.issues).to include(
+            an_object_having_attributes(
+              description: /0.0.fa00 cannot be activated/
+            )
+          )
+        end
+
+        it "returns false" do
+          expect(subject.configure(config_json)).to eq(false)
+        end
+      end
+
+      context "if the controller is already active" do
         before do
-          allow(yast_zfcp).to receive(:activate_disk).and_return("exit" => 0)
+          allow(yast_zfcp).to receive(:activated_controller?).with("0.0.fa00").and_return(true)
+        end
+
+        it "does not activate the controller" do
+          expect(yast_zfcp).to_not receive(:activate_controller).with("0.0.fa00")
+          subject.configure(config_json)
+        end
+
+        it "does not generate an issue" do
+          subject.configure(config_json)
+          expect(subject.issues).to eq([])
+        end
+
+        it "returns false" do
+          expect(subject.configure(config_json)).to eq(false)
+        end
+      end
+    end
+
+    context "activating a device" do
+      let(:config_json) do
+        {
+          devices: [
+            {
+              channel: "0.0.fa00",
+              wwpn: "0x500507630708d3b3",
+              lun: "0x0013000000000000"
+            }
+          ]
+        }
+      end
+
+      before do
+        allow(yast_zfcp).to receive(:find_wwpns)
+          .with("0.0.fa00")
+          .and_return("stdout" => ["0x500507630708d3b3"])
+
+        allow(yast_zfcp).to receive(:find_luns)
+          .with("0.0.fa00", "0x500507630708d3b3")
+          .and_return("stdout" => ["0x0013000000000000"])
+      end
+
+      context "if the controller is not active yet" do
+        before do
+          allow(yast_zfcp).to receive(:activated_controller?).with("0.0.fa00").and_return(false)
+        end
+
+        it "activates the controller" do
+          expect(yast_zfcp).to receive(:activate_controller)
+            .with("0.0.fa00").and_return({ "exit" => 0 })
+
+          subject.configure(config_json)
+        end
+      end
+
+      context "if the controller is already active" do
+        before do
+          allow(yast_zfcp).to receive(:activated_controller?).with("0.0.fa00").and_return(true)
+        end
+
+        it "does not activate the controller" do
+          expect(yast_zfcp).to_not receive(:activate_controller).with("0.0.fa00")
+          subject.configure(config_json)
+        end
+      end
+
+      context "on success" do
+        before do
+          allow(yast_zfcp).to receive(:activate_disk)
+            .with("0.0.fa00", "0x500507630708d3b3", "0x0013000000000000")
+            .and_return("exit" => 0)
+
+          allow(yast_zfcp).to receive(:activated_controller?).with("0.0.fa00").and_return(true)
         end
 
         it "activates the device" do
-          expect(yast_zfcp).to receive(:activate_disk).with("0.0.fa00", "0x500507630708d3b3",
-            "0x0013000000000000")
+          expect(yast_zfcp).to receive(:activate_disk)
+            .with("0.0.fa00", "0x500507630708d3b3", "0x0013000000000000")
+            .and_return("exit" => 0)
+
           subject.configure(config_json)
         end
 
-        it "re-probes after activating" do
-          expect(subject).to receive(:probe)
+        it "does not generate an issue" do
           subject.configure(config_json)
+          expect(subject.issues).to eq([])
         end
 
-        it "returns true for system changed" do
-          expect(subject.configure(config_json)).to be true
-        end
-
-        context "when device is already active" do
-          before do
-            active_device = Agama::Storage::ZFCP::Device.new("0.0.fa00", "0x500507630708d3b3",
-              "0x0013000000000000").tap do |d|
-              d.active = true
-            end
-            subject.instance_variable_set(:@devices, [active_device])
-          end
-
-          it "does not activate the device" do
-            expect(yast_zfcp).not_to receive(:activate_disk)
-            expect(subject.configure(config_json)).to be false
-          end
+        it "returns true" do
+          expect(subject.configure(config_json)).to eq(true)
         end
       end
 
-      context "deactivating devices" do
-        let(:device_to_deactivate) do
-          Agama::Storage::ZFCP::Device.new("0.0.fa00", "0x500507630708d3b3",
-            "0x0013000000000000").tap do |d|
-            d.active = false
-          end
-        end
-        let(:config) do
-          double("Agama::Storage::ZFCP::Config",
-            controllers: [], devices: [device_to_deactivate])
-        end
-
+      context "on failure" do
         before do
-          active_device = Agama::Storage::ZFCP::Device.new("0.0.fa00", "0x500507630708d3b3",
-            "0x0013000000000000").tap do |d|
-            d.active = true
-          end
-          subject.instance_variable_set(:@devices, [active_device])
-          allow(yast_zfcp).to receive(:deactivate_disk).and_return("exit" => 0)
+          allow(yast_zfcp).to receive(:activate_disk)
+            .with("0.0.fa00", "0x500507630708d3b3", "0x0013000000000000")
+            .and_return("exit" => 1)
         end
 
-        it "deactivates the device" do
-          expect(yast_zfcp).to receive(:deactivate_disk).with("0.0.fa00", "0x500507630708d3b3",
-            "0x0013000000000000")
+        it "generates an issue" do
+          subject.configure(config_json)
+          expect(subject.issues).to include(
+            an_object_having_attributes(
+              description: /0x0013000000000000 cannot be activated/
+            )
+          )
+        end
+
+        it "returns false" do
+          expect(subject.configure(config_json)).to eq(false)
+        end
+      end
+
+      context "if the device is already active" do
+        let(:disk_records) { [sda_record] }
+
+        it "does not activate the controller" do
+          expect(yast_zfcp).to_not receive(:activate_controller).with("0.0.fa00")
           subject.configure(config_json)
         end
 
-        it "re-probes after deactivating" do
-          expect(subject).to receive(:probe)
+        it "does not generate an issue" do
           subject.configure(config_json)
+          expect(subject.issues).to eq([])
         end
 
-        it "returns true for system changed" do
-          expect(subject.configure(config_json)).to be true
+        it "returns false" do
+          expect(subject.configure(config_json)).to eq(false)
+        end
+      end
+    end
+
+
+
+    context "with probed system" do
+      let(:probed_controller) { Agama::Storage::ZFCP::Controller.new("0.0.fa00") }
+      let(:probed_device) { Agama::Storage::ZFCP::Device.new("0.0.fa00", "wwpn1", "lun1") }
+
+      before do
+        subject.instance_variable_set(:@probed, true)
+        subject.instance_variable_set(:@controllers, [probed_controller])
+        subject.instance_variable_set(:@devices, [probed_device])
+        allow(subject).to receive(:probe)
+        allow(subject).to receive(:probe_devices)
+        allow(subject).to receive(:sleep)
+      end
+
+
+
+      context "deactivating a device" do
+        let(:config_device) { double("dconf", active?: false, channel: "0.0.fa00", wwpn: "wwpn1", lun: "lun1") }
+        let(:config) do
+          double("Agama::Storage::ZFCP::Config", channels: [], controllers: [], devices: [config_device])
         end
 
-        context "when device is already inactive" do
-          before do
-            inactive_device = Agama::Storage::ZFCP::Device.new("0.0.fa00", "0x500507630708d3b3",
-              "0x0013000000000000").tap do |d|
-              d.active = false
-            end
-            subject.instance_variable_set(:@devices, [inactive_device])
+        before { probed_device.active = true }
+
+        context "on success" do
+          before { allow(yast_zfcp).to receive(:deactivate_disk).and_return("exit" => 0) }
+
+          it "deactivates, reprobes devices and returns true" do
+            expect(yast_zfcp).to receive(:deactivate_disk)
+            expect(subject).to receive(:probe_devices)
+            expect(subject.configure(config_json)).to be true
           end
+        end
 
-          it "does not deactivate the device" do
+        context "when controller has LUN scan" do
+          before { probed_controller.lun_scan = true }
+
+          it "does not deactivate and returns false" do
             expect(yast_zfcp).not_to receive(:deactivate_disk)
             expect(subject.configure(config_json)).to be false
           end
         end
       end
 
-      context "when nothing changes" do
-        it "returns false" do
-          expect(subject.configure(config_json)).to be false
+      context "generating issues for missing elements" do
+        let(:missing_controller) { "0.0.ffff" }
+        let(:missing_device) { double("dev", active?: false, channel: "0.0.ffff", wwpn: "wwpn", lun: "lun", to_s: "a") }
+        let(:config) do
+          double("Agama::Storage::ZFCP::Config", channels: [], controllers: [missing_controller], devices: [missing_device])
         end
 
-        it "does not re-probe" do
-          expect(subject).not_to receive(:probe)
+        it "adds issues for missing controllers and devices" do
           subject.configure(config_json)
+          expect(subject.issues).to contain_exactly(
+            an_object_having_attributes(kind: :missing_zfcp_controller),
+            an_object_having_attributes(kind: :missing_zfcp_lun)
+          )
         end
-      end
-
-      it "stores the config_json" do
-        subject.configure(config_json)
-        expect(subject.config_json).to eq(config_json)
       end
     end
   end

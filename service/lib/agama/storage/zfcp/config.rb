@@ -38,35 +38,6 @@ module Agama
           @controllers = []
           @devices = []
         end
-
-        # All channels involved in the configuration.
-        #
-        # @return [Array<String>]
-        def channels
-          [controllers, devices.map(&:channel)].flatten.uniq
-        end
-
-        # Whether the config includes a device with the given channel, WWPN and LUN.
-        #
-        # @param channel [String]
-        # @param wwpn [String]
-        # @param lun [String]
-        #
-        # @return [Boolean]
-        def include_device?(channel, wwpn, lun)
-          !find_device(channel, wwpn, lun).nil?
-        end
-
-        # Searchs for a device with the given channel, WWPN and LUN.
-        #
-        # @param channel [String]
-        # @param wwpn [String]
-        # @param lun [String]
-        #
-        # @return [Configs::Device, nil]
-        def find_device(channel, wwpn, lun)
-          devices.find { |d| d.channel == channel && d.wwpn == wwpn && d.lun == lun }
-        end
       end
     end
   end

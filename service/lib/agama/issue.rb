@@ -55,7 +55,7 @@ module Agama
     #
     # @param description [String]
     # @param details [String, nil]
-    def initialize(description, kind: :generic, details: "")
+    def initialize(description, kind: :generic, details: nil)
       @description = description
       @kind = kind
       @details = details
@@ -64,8 +64,8 @@ module Agama
     def to_hash
       {
         description: description,
-        class:       issue.kind&.to_s,
-        details:     issue.details
+        class:       kind.to_s,
+        details:     details
       }.compact
     end
   end

@@ -24,7 +24,7 @@ require "agama/storage/zfcp/configs/device"
 
 module Agama
   module Storage
-    module DAS
+    module ZFCP
       module ConfigImporters
         # Class for generating a zFCP device config from a JSON.
         class Device < JSONImporter

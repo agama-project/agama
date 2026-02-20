@@ -135,6 +135,45 @@ RSpec.describe Agama::DBus::Storage::ZFCP do
     end
   end
 
+  describe "#recover_issues" do
+    before do
+      allow(manager).to receive(:issues).and_return(issues)
+    end
+
+    let(:issues) do
+      [
+        Agama::Issue.new("test1", kind: :test, details: "details1"),
+        Agama::Issue.new("test2", kind: :test)
+      ]
+    end
+
+    it "returns the issues as a JSON" do
+      expected_value = JSON.pretty_generate(
+        [
+          {
+            description: "test1",
+            class:       "test",
+            details:     "details1"
+          },
+          {
+            description: "test2",
+            class:       "test"
+          }
+        ]
+      )
+
+      expect(subject.recover_issues).to eq(expected_value)
+    end
+
+    context "when there are no issues" do
+      let(:issues) { [] }
+
+      it "returns an empty JSON array" do
+        expect(subject.recover_issues).to eq(JSON.pretty_generate([]))
+      end
+    end
+  end
+
   describe "#probe" do
     before do
       allow(subject).to receive(:recover_system)

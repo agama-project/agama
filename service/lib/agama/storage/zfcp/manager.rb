@@ -80,10 +80,10 @@ module Agama
           @config_json = config_json
           config = ConfigImporter.new(config_json).import
 
-          system_changed = configure_controllers(config)
-          system_changed ||= configure_devices(config)
+          controllers_changed = configure_controllers(config)
+          devices_changed = configure_devices(config)
           add_issues(config)
-          system_changed
+          controllers_changed || devices_changed
         end
 
         # Whether the option for allowing automatic LUN scan (allow_lun_scan) is active
@@ -164,8 +164,13 @@ module Agama
         # @param config [Config]
         # @return [Booelan] Whether any controller was activated.
         def activate_controllers(config)
-          config.channels
-            .map { |c| find_controller(c.channel) }
+          channels = [
+            config.controllers,
+            config.devices.select(&:active?).map(&:channel)
+          ].flatten.uniq
+
+          channels
+            .map { |c| find_controller(c) }
             .compact
             .map { |c| activate_controller(c) }
             .any?
@@ -198,8 +203,9 @@ module Agama
         # @param config [Config]
         # @return [Booelan] Whether any devices was activated or deactivated.
         def configure_devices(config)
-          devices_changed = activate_devices(config)
-          devices_changed ||= deactivate_devices(config)
+          activated_devices = activate_devices(config)
+          deactivated_devices = deactivate_devices(config)
+          devices_changed = activated_devices || deactivated_devices
           probe_devices if devices_changed
           devices_changed
         end
