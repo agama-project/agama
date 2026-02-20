@@ -416,13 +416,13 @@ impl ZyppServer {
         }
         for (name, r#type, selection) in &state.resolvables.to_vec() {
             match selection {
-                ResolvableSelection::AutoSelected { optional } => {
+                ResolvableSelection::AutoSelected { skip_if_missing } => {
                     issues.append(&mut self.select_resolvable(
                         &zypp,
                         name,
                         *r#type,
                         zypp_agama::ResolvableSelected::Installation,
-                        *optional,
+                        *skip_if_missing,
                     ));
                 }
                 ResolvableSelection::Selected => {
@@ -472,14 +472,14 @@ impl ZyppServer {
         name: &str,
         r#type: ResolvableType,
         reason: zypp_agama::ResolvableSelected,
-        optional: bool,
+        skip_if_missing: bool,
     ) -> Vec<Issue> {
         let mut issues = vec![];
         let result = zypp.select_resolvable(name, r#type.into(), reason);
 
         if let Err(error) = result {
-            if optional {
-                tracing::info!("Could not select '{}' but it is optional.", name);
+            if skip_if_missing {
+                tracing::info!("Could not select '{}' but it should be skipped if missing.", name);
             } else {
                 let message = format!("Could not select '{}'", name);
                 issues.push(
