@@ -34,10 +34,12 @@ impl KernelCmdline {
     ///
     /// The content of the command-line is stored, by default it is combination of agama and kernel cmdline args.
     pub fn parse() -> std::io::Result<Self> {
-        let agama = Self::parse_file(AGAMA_CMDLINE_FILE)
-            .inspect_err(|e| tracing::warn!("Could not parse the agama kernel command-line: {e}"))?;
-        let kernel = Self::parse_file(KERNEL_CMDLINE_FILE)
-            .inspect_err(|e| tracing::warn!("Could not parse the filtered kernel command-line: {e}"))?;
+        let agama = Self::parse_file(AGAMA_CMDLINE_FILE).inspect_err(|e| {
+            tracing::warn!("Could not parse the agama kernel command-line: {e}")
+        })?;
+        let kernel = Self::parse_file(KERNEL_CMDLINE_FILE).inspect_err(|e| {
+            tracing::warn!("Could not parse the filtered kernel command-line: {e}")
+        })?;
 
         Ok(agama.merge(kernel))
     }
@@ -73,8 +75,8 @@ impl KernelCmdline {
         let mut args = self.0;
         for (key, value) in other.0 {
             args.entry(key)
-            // this modify is just for theoreticall correctness as in reality we are merging kernel and agama
-            // args and they are exclusive
+                // this modify is just for theoreticall correctness as in reality we are merging kernel and agama
+                // args and they are exclusive
                 .and_modify(|v| v.extend(value.clone()))
                 .or_insert(value);
         }
