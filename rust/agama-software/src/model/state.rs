@@ -487,8 +487,8 @@ impl ResolvablesState {
         selection: ResolvableSelection,
     ) {
         if let Some(entry) = self.0.get(&(name.to_string(), r#type)) {
-            if let ResolvableSelection::AutoSelected { skip_if_missing: _ } = entry {
-                tracing::debug!("Could not modify the {name} state because it is mandatory.");
+            if let ResolvableSelection::AutoSelected { .. } = entry {
+                tracing::debug!("Could not modify the {name} state because it is auto selected.");
                 return;
             }
         }
@@ -551,6 +551,7 @@ pub enum ResolvableSelection {
 }
 
 impl ResolvableSelection {
+    /// Returns true if the resolvable is auto-selected and should be skipped if missing.
     pub fn skip_if_missing(&self) -> bool {
         if let ResolvableSelection::AutoSelected { skip_if_missing } = self {
             return *skip_if_missing;
