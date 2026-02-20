@@ -75,7 +75,7 @@ impl KernelCmdline {
         let mut args = self.0;
         for (key, value) in other.0 {
             args.entry(key)
-                // this modify is just for theoreticall correctness as in reality we are merging kernel and agama
+                // this modify is just for theoretical correctness as in reality we are merging kernel and agama
                 // args and they are exclusive
                 .and_modify(|v| v.extend(value.clone()))
                 .or_insert(value);
