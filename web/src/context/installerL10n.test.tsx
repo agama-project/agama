@@ -26,6 +26,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { InstallerL10nProvider, useInstallerL10n } from "~/context/installerL10n";
 import { InstallerClientProvider } from "./installer";
 
+jest.unmock("~/context/installerL10n");
+
 const mockUseSystemFn = jest.fn();
 const mockConfigureL10nFn = jest.fn();
 

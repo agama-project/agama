@@ -11,3 +11,5 @@ if (!globalThis.TextEncoder || !globalThis.TextDecoder) {
   globalThis.TextEncoder = NodeTextEncoder as typeof TextEncoder;
   globalThis.TextDecoder = NodeTextDecoder as typeof TextDecoder;
 }
+
+jest.mock("~/context/installerL10n");

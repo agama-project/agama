@@ -119,7 +119,7 @@ describe("LicenseDialog", () => {
     const { user } = installerRender(<LicenseDialog product={product} onClose={onCloseFn} />, {
       withL10n: true,
     });
-    const closeButton = screen.getByRole("button", { name: "Schließen" });
+    const closeButton = await screen.findByRole("button", { name: "Schließen" });
     await user.click(closeButton);
     expect(onCloseFn).toHaveBeenCalled();
   });
