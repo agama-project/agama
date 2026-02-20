@@ -6,6 +6,22 @@
   "type": "object",
   "additionalProperties": false,
   "properties": {
+    "controllers": {
+      "description": "List of zFCP controllers.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["channel"],
+        "properties": {
+          "channel": {
+            "description": "zFCP controller channel id.",
+            "type": "string",
+            "examples": ["0.0.fa00"]
+          }
+        }
+      }
+    },
     "devices": {
       "description": "List of zFCP devices.",
       "type": "array",

@@ -24,13 +24,26 @@ module Agama
     module ZFCP
       # zFCP config.
       class Config
+        # List of channels to activate.
+        #
+        # @return [Array<String>]
+        attr_accessor :controllers
+
         # List of devices.
         #
         # @return [Array<Configs::Device>]
         attr_accessor :devices
 
         def initialize
+          @controllers = []
           @devices = []
+        end
+
+        # All channels involved in the configuration.
+        #
+        # @return [Array<String>]
+        def channels
+          [controllers, devices.map(&:channel)].flatten.uniq
         end
 
         # Whether the config includes a device with the given channel, WWPN and LUN.

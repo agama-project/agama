@@ -36,10 +36,20 @@ module Agama
         # @see Agama::JSONImporter#imports
         def imports
           {
-            devices: import_devices
+            controllers: import_controllers,
+            devices:     import_devices
           }
         end
 
+        # @return [Array<String>, nil]
+        def import_controllers
+          controllers_json = json[:controllers]
+          return unless controllers_json
+
+          controllers_json.map { |c| c[:wwpn] }
+        end
+
+        # @return [Array<Configs::Device>, nil]
         def import_devices
           devices_json = json[:devices]
           return unless devices_json

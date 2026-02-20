@@ -106,13 +106,15 @@ module Agama
           devices.find { |d| d.channel == channel && d.wwpn == wwpn && d.lun == lun }
         end
 
+        # Probes the zFCP controllers.
+        #
         # @return [Array<Controller>]
         def probe_controllers
           yast_zfcp.probe_controllers
           @controllers = yast_zfcp.controllers.map { |c| create_controller_from_record(c) }
         end
 
-        # Probes the zFCP devices from all channels and WWPNs.
+        # Probes the zFCP devices.
         #
         # Includes both active and inactive LUNs.
         #
