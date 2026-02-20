@@ -133,32 +133,7 @@
       }
     },
     "zfcp": {
-      "title": "zFCP device activation (s390x only)",
-      "type": "object",
-      "properties": {
-        "devices": {
-          "title": "List of zFCP devices",
-          "type": "array",
-          "items": {
-            "type": "object",
-            "properties": {
-              "channel": {
-                "title": "zFCP controller channel id (e.g., 0.0.fa00)",
-                "type": "string"
-              },
-              "wwpn": {
-                "title": "WWPN of the target port (e.g., 0x500507630300c562)",
-                "type": "string"
-              },
-              "lun": {
-                "title": "LUN of the SCSI device (e.g. 0x4010403300000000)",
-                "type": "string"
-              }
-            },
-            "required": ["channel", "wwpn", "lun"]
-          }
-        }
-      }
+      "$ref": "zfcp.schema.json"
     },
     "hostname": {
       "title": "Hostname settings",

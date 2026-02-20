@@ -43,6 +43,11 @@ module Agama
         # @return [Boolean]
         attr_writer :lun_scan
 
+        # Available WWPNs for the controller.
+        #
+        # @return [Array<String>]
+        attr_accessor :wwpns
+
         eql_attr :channel, :active?
 
         # Constructor
@@ -50,6 +55,7 @@ module Agama
         # @param channel [String]
         def initialize(channel)
           @channel = channel
+          @wwpns = []
         end
 
         # Whether the controller is active

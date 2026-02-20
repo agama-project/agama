@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2023] SUSE LLC
+# Copyright (c) [2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -21,12 +21,12 @@
 
 module Agama
   module Storage
-    # Module for zFCP
     module ZFCP
+      # Namespace for zFCP config importers.
+      module ConfigImporters
+      end
     end
   end
 end
 
-require "agama/storage/zfcp/manager"
-require "agama/storage/zfcp/controller"
-require "agama/storage/zfcp/device"
+require "agama/storage/zfcp/config_importers/device"

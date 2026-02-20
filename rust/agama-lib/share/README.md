@@ -10,6 +10,8 @@ The Agama autoinstallation profile JSON schema is defined in these files:
 - [profile.schema.json](./profile.schema.json) (the main definition)
 - [storage.schema.json](./storage.schema.json) (referenced from the main definition)
 - [iscsi.schema.json](./iscsi.schema.json) (referenced from the main definition)
+- [zfcp.schema.json](./zfcp.schema.json) (referenced from the main definition)
+- [software.schema.json](./software.schema.json) (referenced from the main definition)
 
 ## Agama REST API
 
