@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2023-2026] SUSE LLC
+ * Copyright (c) [2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -20,30 +20,24 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
-import { Page } from "~/components/core";
-import DASDTable from "./DASDTable";
-import DASDFormatProgress from "./DASDFormatProgress";
-import { STORAGE as PATHS, STORAGE } from "~/routes/paths";
-import { _ } from "~/i18n";
+import { concat, isEmpty } from "radashi";
+import { Config, Device } from "~/openapi/config/dasd";
 
-export default function DASDPage() {
-  // FIXME: use the API v2 equivalent
-  // useDASDDevicesChanges();
-  // useDASDFormatJobChanges();
-
-  return (
-    <Page breadcrumbs={[{ label: _("Storage"), path: STORAGE.root }, { label: _("DASD") }]}>
-      <Page.Content>
-        <DASDTable />
-        <DASDFormatProgress />
-      </Page.Content>
-
-      <Page.Actions>
-        <Page.Action variant="secondary" navigateTo={PATHS.root}>
-          {_("Back")}
-        </Page.Action>
-      </Page.Actions>
-    </Page>
-  );
+function addDevice(config: Config, device: Device): Config {
+  return {
+    ...config,
+    devices: concat(config.devices, device),
+  };
 }
+
+function removeDevice(config: Config, channel: string): Config {
+  return isEmpty(config.devices)
+    ? { ...config }
+    : {
+        ...config,
+        devices: config.devices.filter((d) => d.channel !== channel),
+      };
+}
+
+export default { addDevice, removeDevice };
+export type * from "~/openapi/config/dasd";

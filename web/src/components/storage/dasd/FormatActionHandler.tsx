@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2025] SUSE LLC
+ * Copyright (c) [2025-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -24,11 +24,11 @@ import React from "react";
 import { Content, List, ListItem, Stack } from "@patternfly/react-core";
 import Text from "~/components/core/Text";
 import Popup from "~/components/core/Popup";
-import { DASDDevice } from "~/types/dasd";
-import { useFormatDASDMutation } from "~/queries/storage/dasd";
 import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
 import { isEmpty } from "radashi";
+
+import type { Device } from "~/model/config/dasd";
 
 /**
  * Shared type for defining props used by all DASD format-related dialogs and
@@ -36,9 +36,9 @@ import { isEmpty } from "radashi";
  */
 type CommonFormatDASDProps = {
   /** A single DASD device, used for single-device dialogs. */
-  device: DASDDevice;
+  device: Device;
   /** An array of DASD devices selected for formatting. */
-  devices: DASDDevice[];
+  devices: Device[];
   /** Callback triggered when the user confirms the format operation. */
   onCancel?: () => void;
   /** Callback triggered when the user cancels the operation. */
@@ -50,8 +50,8 @@ type CommonFormatDASDProps = {
  */
 const DevicesList = ({ devices }: Pick<CommonFormatDASDProps, "devices">) => (
   <List>
-    {devices.map((d: DASDDevice) => (
-      <ListItem key={d.id}>{d.id}</ListItem>
+    {devices.map((d: Device) => (
+      <ListItem key={d.channel}>{d.channel}</ListItem>
     ))}
   </List>
 );
@@ -65,7 +65,7 @@ const DeviceOffline = ({
   onCancel,
 }: Pick<CommonFormatDASDProps, "device" | "onCancel">) => {
   return (
-    <Popup isOpen title={sprintf(_("Cannot format %s"), device.id)}>
+    <Popup isOpen title={sprintf(_("Cannot format %s"), device.channel)}>
       <Stack hasGutter>
         <Content>{_("It is offline and must be activated before formatting it.")}</Content>
       </Stack>
@@ -84,7 +84,7 @@ const SomeDevicesOffline = ({
   devices,
   onCancel,
 }: Pick<CommonFormatDASDProps, "devices" | "onCancel">) => {
-  const offlineDevices = devices.filter((d) => !d.enabled);
+  const offlineDevices = devices.filter((d) => d.state === "offline");
   const totalOffline = offlineDevices.length;
 
   return (
@@ -112,7 +112,7 @@ const DeviceFormatConfirmation = ({
   onCancel,
 }: Pick<CommonFormatDASDProps, "device" | "onAccept" | "onCancel">) => {
   return (
-    <Popup isOpen title={sprintf(_("Format device %s"), device.id)}>
+    <Popup isOpen title={sprintf(_("Format device %s"), device.channel)}>
       <Content>
         <Stack hasGutter>
           <Text isBold>{_("This action could destroy any data stored on the device.")}</Text>
@@ -176,9 +176,10 @@ export default function FormatActionHandler({
   onAccept,
   onCancel,
 }: Pick<CommonFormatDASDProps, "devices" | "onAccept" | "onCancel">) {
-  const { mutate: formatDASD } = useFormatDASDMutation();
+  // TODO: adapt former mutation to its API v2 counterpart
+  // const { mutate: formatDASD } = useFormatDASDMutation();
   const format = () => {
-    formatDASD(devices.map((d) => d.id));
+    // formatDASD(devices.map((d) => d.id));
     onAccept();
   };
 
@@ -190,14 +191,14 @@ export default function FormatActionHandler({
   if (devices.length === 1) {
     const device = devices[0];
 
-    if (device.enabled) {
+    if (device.state === "active") {
       return <DeviceFormatConfirmation device={device} onAccept={format} onCancel={onCancel} />;
     } else {
       return <DeviceOffline device={device} onCancel={onCancel} />;
     }
   }
 
-  if (devices.some((d) => !d.enabled)) {
+  if (devices.some((d) => d.state === "offline")) {
     return <SomeDevicesOffline devices={devices} onCancel={onCancel} />;
   } else {
     return (

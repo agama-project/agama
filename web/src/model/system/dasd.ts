@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024] SUSE LLC
+ * Copyright (c) [2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -20,28 +20,4 @@
  * find current contact information at www.suse.com.
  */
 
-type DASDDevice = {
-  id: string;
-  enabled: boolean;
-  deviceName: string;
-  formatted: boolean;
-  diag: boolean;
-  status: string; // TODO: sync with rust when it switch to enum
-  deviceType: string; // TODO: sync with rust when it switch to enum
-  accessType: string; // TODO: sync with rust when it switch to enum
-  partitionInfo: string;
-  hexId: number;
-};
-
-type FormatSummary = {
-  total: number;
-  step: number;
-  done: boolean;
-};
-
-type FormatJob = {
-  jobId: string;
-  summary?: { [key: string]: FormatSummary };
-};
-
-export type { DASDDevice, FormatSummary, FormatJob };
+export type * from "~/openapi/system/dasd";

@@ -97,10 +97,6 @@ jest.mock("~/queries/storage/zfcp", () => ({
 }));
 
 const mockUseDASDSupported = jest.fn();
-jest.mock("~/queries/storage/dasd", () => ({
-  ...jest.requireActual("~/queries/storage/dasd"),
-  useDASDSupported: () => mockUseDASDSupported(),
-}));
 
 jest.mock("./ProposalFailedInfo", () => () => <div>proposal failed info</div>);
 jest.mock("./UnsupportedModelInfo", () => () => <div>unsupported model info</div>);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2025] SUSE LLC
+ * Copyright (c) [2025-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -26,6 +26,7 @@ import type * as L10n from "~/model/system/l10n";
 import type * as Network from "~/model/system/network";
 import type * as Software from "~/model/system/software";
 import type * as Storage from "~/model/system/storage";
+import type * as DASD from "~/model/system/dasd";
 import type * as ISCSI from "~/model/system/iscsi";
 
 type System = {
@@ -36,6 +37,7 @@ type System = {
   products?: Product[];
   software?: Software.System;
   storage?: Storage.System;
+  dasd?: DASD.System;
   iscsi?: ISCSI.System;
 };
 
@@ -72,4 +74,16 @@ type Mode = {
   description: string;
 };
 
-export type { System, Product, L10n, Hardware, Hostname, Mode, Network, Software, Storage, ISCSI };
+export type {
+  System,
+  Product,
+  L10n,
+  Hardware,
+  Hostname,
+  Mode,
+  Network,
+  Software,
+  Storage,
+  ISCSI,
+  DASD,
+};

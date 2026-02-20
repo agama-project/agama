@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2023-2025] SUSE LLC
+ * Copyright (c) [2023-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -40,18 +40,13 @@ import FormatFilter from "~/components/storage/dasd/FormatFilter";
 import SelectableDataTable, { SortedBy } from "~/components/core/SelectableDataTable";
 import StatusFilter from "~/components/storage/dasd/StatusFilter";
 import TextinputFilter from "~/components/storage/dasd/TextinputFilter";
-import { DASDDevice } from "~/types/dasd";
-import {
-  DASDMutationFn,
-  DASDMutationFnProps,
-  useDASDDevices,
-  useDASDMutation,
-} from "~/queries/storage/dasd";
 import { isEmpty } from "radashi";
 import { sprintf } from "sprintf-js";
 import { useInstallerClient } from "~/context/installer";
 import { hex, sortCollection } from "~/utils";
 import { _, n_ } from "~/i18n";
+
+import type { Device } from "~/model/config/dasd";
 
 /**
  * Filter options for narrowing down DASD devices shown in the table.
@@ -60,14 +55,14 @@ import { _, n_ } from "~/i18n";
  */
 export type DASDDevicesFilters = {
   /** Lower bound for channel ID filtering (inclusive). */
-  minChannel?: DASDDevice["id"];
+  minChannel?: Device["channel"];
   /** Upper bound for channel ID filtering (inclusive). */
-  maxChannel?: DASDDevice["id"];
-  /** Only show devices with this status (e.g. "read_only", "offline"). */
-  status?: DASDDevice["status"];
-  /** Filter by formatting status: "yes" (formatted), "no" (not formatted), or
+  maxChannel?: Device["channel"];
+  /** Only show devices with this status (e.g. "active", "offline"). */
+  state?: "all" | Device["state"];
+  /** Filter by formatting status: "yes" (to be formatted), "no" (not to be formatted), or
    * "all" (all devices). */
-  formatted?: "all" | "yes" | "no";
+  format?: "all" | "yes" | "no";
 };
 
 /**
@@ -77,16 +72,16 @@ export type DASDDevicesFilters = {
  * Used internally to compose filter logic when narrowing down the list of
  * devices shown in the DASD table.
  */
-type DASDDeviceCondition = (device: DASDDevice) => boolean;
+type DASDDeviceCondition = (device: Device) => boolean;
 
 /**
  * Props required to generate bulk actions for selected DASD devices.
  */
 type DASDActionsBuilderProps = {
   /** The list of selected DASD devices. */
-  devices: DASDDevice[];
+  devices: Device[];
   /** Mutation function used to trigger backend updates (e.g. enable, disable). */
-  updater: DASDMutationFn;
+  updater: (options: unknown) => void; // FIXME: adapt former DASDMutationFn to its API v2 equivalent;
   /** State dispatcher for triggering actions */
   dispatcher: (props: DASDTableAction) => void;
 };
@@ -94,29 +89,29 @@ type DASDActionsBuilderProps = {
 /**
  * Filters an array of devices based on given filters.
  *
- * @param devices - The array of DASDDevice objects to filter.
+ * @param devices - The array of DASD Device objects to filter.
  * @param filters - The filters to apply.
- * @returns The filtered array of DASDDevice objects matching all conditions.
+ * @returns The filtered array of DASD Device objects matching all conditions.
  */
-const filterDevices = (devices: DASDDevice[], filters: DASDDevicesFilters): DASDDevice[] => {
-  const { minChannel, maxChannel, status, formatted } = filters;
+const filterDevices = (devices: Device[], filters: DASDDevicesFilters): Device[] => {
+  const { minChannel, maxChannel, state, format } = filters;
 
   const conditions: DASDDeviceCondition[] = [];
 
   if (minChannel || maxChannel) {
-    const allChannels = devices.map((d) => d.hexId);
+    const allChannels = devices.map((d) => hex(d.channel)); // FIXME: review te hexId stuff..
     const min = hex(minChannel) || Math.min(...allChannels);
     const max = hex(maxChannel) || Math.max(...allChannels);
 
-    conditions.push((d) => d.hexId >= min && d.hexId <= max);
+    conditions.push((d) => hex(d.channel) >= min && hex(d.channel) <= max);
   }
 
-  if (status && status !== "all") {
-    conditions.push((d) => d.status === status);
+  if (state && state !== "all") {
+    conditions.push((d) => d.state === state);
   }
 
-  if (formatted === "yes" || formatted === "no") {
-    conditions.push((d) => (formatted === "yes" ? d.formatted : !d.formatted));
+  if (format === "yes" || format === "no") {
+    conditions.push((d) => (format === "yes" ? d.format : !d.format));
   }
 
   return devices.filter((device) => conditions.every((conditionFn) => conditionFn(device)));
@@ -130,7 +125,7 @@ const filterDevices = (devices: DASDDevice[], filters: DASDDevicesFilters): DASD
  * others (like format) dispatch updates via `dispatcher`.
  */
 const buildActions = ({ devices, updater, dispatcher }: DASDActionsBuilderProps) => {
-  const ids = devices.map((d) => d.id);
+  const ids = devices.map((d) => d.channel);
   return [
     {
       title: _("Activate"),
@@ -182,13 +177,10 @@ const FiltersToolbar = ({ filters, onFilterChange }: FiltersToolbarProps) => (
     <ToolbarContent>
       <ToolbarGroup>
         <ToolbarItem>
-          <StatusFilter value={filters.status} onChange={(_, v) => onFilterChange("status", v)} />
+          <StatusFilter value={filters.state} onChange={(_, v) => onFilterChange("state", v)} />
         </ToolbarItem>
         <ToolbarItem>
-          <FormatFilter
-            value={filters.formatted}
-            onChange={(_, v) => onFilterChange("formatted", v)}
-          />
+          <FormatFilter value={filters.format} onChange={(_, v) => onFilterChange("format", v)} />
         </ToolbarItem>
         <ToolbarItem>
           <TextinputFilter
@@ -329,11 +321,11 @@ type DASDTableState = {
   /** Current active filters applied to the device list */
   filters: DASDDevicesFilters;
   /** Currently selected devices in the UI */
-  selectedDevices: DASDDevice[];
+  selectedDevices: Device[];
   /** Devices selected for formatting */
-  devicesToFormat: DASDDevice[];
+  devicesToFormat: Device[];
   /** Device IDs currently undergoing an async operation */
-  waitingFor: DASDDevice["id"][];
+  waitingFor: Device["channel"][];
 };
 
 /**
@@ -342,8 +334,8 @@ type DASDTableState = {
 const initialState: DASDTableState = {
   sortedBy: { index: 0, direction: "asc" },
   filters: {
-    status: "all",
-    formatted: "all",
+    state: "all",
+    format: "all",
     minChannel: "",
     maxChannel: "",
   },
@@ -363,9 +355,9 @@ type DASDTableAction =
   | { type: "RESET_SELECTION" }
   | { type: "REQUEST_FORMAT"; payload: DASDTableState["devicesToFormat"] }
   | { type: "CANCEL_FORMAT_REQUEST" }
-  | { type: "START_WAITING"; payload: DASDDevice["id"][] }
-  | { type: "UPDATE_WAITING"; payload: DASDDevice["id"] }
-  | { type: "UPDATE_DEVICE"; payload: DASDDevice };
+  | { type: "START_WAITING"; payload: Device["channel"][] }
+  | { type: "UPDATE_WAITING"; payload: Device["channel"] }
+  | { type: "UPDATE_DEVICE"; payload: Device };
 
 /**
  * Reducer function that handles all DASD table state transitions.
@@ -412,10 +404,10 @@ const reducer = (state: DASDTableState, action: DASDTableAction): DASDTableState
 
     case "UPDATE_DEVICE": {
       const selectedDevices = state.selectedDevices.map((dev) =>
-        action.payload.id === dev.id ? action.payload : dev,
+        action.payload.channel === dev.channel ? action.payload : dev,
       );
       const devicesToFormat = state.devicesToFormat.map((dev) =>
-        action.payload.id === dev.id ? action.payload : dev,
+        action.payload.channel === dev.channel ? action.payload : dev,
       );
       return { ...state, selectedDevices, devicesToFormat };
     }
@@ -434,62 +426,73 @@ const createColumns = () => [
   {
     // TRANSLATORS: table header for a DASD devices table
     name: _("Channel ID"),
-    value: (d: DASDDevice) => d.id,
-    sortingKey: "hexId", // uses the hexadecimal representation for sorting
+    value: (d: Device) => d.channel,
+    // FIXME: Needs to be rethink with the new types. Most probably an specific type
+    // for the table should be created
+    // sortingKey: "hexId", // uses the hexadecimal representation for sorting
   },
 
   {
     // TRANSLATORS: table header for a DASD devices table
-    name: _("Status"),
-    value: (d: DASDDevice) => d.status,
-    sortingKey: "status",
+    name: _("State"),
+    value: (d: Device) => d.state,
+    sortingKey: "state",
   },
-  {
-    // TRANSLATORS: table header for a DASD devices table
-    name: _("Device"),
-    value: (d: DASDDevice) => d.deviceName,
-    sortingKey: "deviceName",
-  },
-  {
-    // TRANSLATORS: table header for a DASD devices table
-    name: _("Type"),
-    value: (d: DASDDevice) => d.deviceType,
-    sortingKey: "deviceType",
-  },
+  // FIXME: reactivate for the DASD system devices table
+  // {
+  //   // TRANSLATORS: table header for a DASD devices table
+  //   name: _("Device"),
+  //   value: (d: DASDDevice) => d.deviceName,
+  //   sortingKey: "deviceName",
+  // },
+  //
+  // FIXME: reactivate for the DASD system devices table
+  // {
+  //   // TRANSLATORS: table header for a DASD devices table
+  //   name: _("Type"),
+  //   value: (d: Device) => d.deviceType,
+  //   sortingKey: "deviceType",
+  // },
+  // FIXME: review
   {
     // TRANSLATORS: table header for `DIAG access mode` on DASD devices table.
     // It refers to an special disk access mode on IBM mainframes. Keep
     // untranslated.
     name: _("DIAG"),
-    value: (d: DASDDevice) => {
-      if (!d.enabled) return "";
+    value: (d: Device) => {
+      if (!d.state) return "";
 
       return d.diag ? _("Yes") : _("No");
     },
     sortingKey: "diag",
   },
-  {
-    // TRANSLATORS: table header for a column in a DASD devices table that
-    // usually contains "Yes" or "No"" values
-    name: _("Formatted"),
-    value: (d: DASDDevice) => (d.formatted ? _("Yes") : _("No")),
-    sortingKey: "formatted",
-  },
-  {
-    // TRANSLATORS: table header for a DASD devices table
-    name: _("Partition Info"),
 
-    value: (d: DASDDevice) =>
-      // Displays comma-separated partition info as individual lines using <div>
-      d.partitionInfo.split(",").map((d: string) => <div key={d}>{d}</div>),
-    sortingKey: "partitionInfo",
-  },
+  // FIXME: reactivate for the DASD system devices table. Most probably for
+  // system it's formatted and for config just format (to be formatted)
+  // {
+  //   // TRANSLATORS: table header for a column in a DASD devices table that
+  //   // usually contains "Yes" or "No"" values
+  //   name: _("Formatted"),
+  //   value: (d: Device) => (d.formatted ? _("Yes") : _("No")),
+  //   sortingKey: "formatted",
+  // },
+  // {
+  // FIXME: reactivate for the DASD system devices table. Most probably for
+  //   // TRANSLATORS: table header for a DASD devices table
+  //   name: _("Partition Info"),
+  //
+  //   value: (d: Device) =>
+  //     // Displays comma-separated partition info as individual lines using <div>
+  //     d.partitionInfo.split(",").map((d: string) => <div key={d}>{d}</div>),
+  //   sortingKey: "partitionInfo",
+  // },
 ];
 
 export default function DASDTable() {
   const client = useInstallerClient();
-  const devices = useDASDDevices();
-  const { mutate: updateDASD } = useDASDMutation();
+  const devices = []; // FIXME: use new api useDASDDevices();
+  // FIXME: use te equivalent in the new API
+  // const { mutate: updateDASD } = useDASDMutation();
   const [state, dispatch] = useReducer(reducer, initialState);
 
   const columns = createColumns();
@@ -514,7 +517,7 @@ export default function DASDTable() {
     dispatch({ type: "RESET_SELECTION" });
   };
 
-  const onSelectionChange = (devices: DASDDevice[]) => {
+  const onSelectionChange = (devices: Device[]) => {
     dispatch({ type: "UPDATE_SELECTION", payload: devices });
   };
 
@@ -537,10 +540,7 @@ export default function DASDTable() {
    *
    * @param mutation Parameters describing the DASD update operation
    */
-  const updater = (mutation: DASDMutationFnProps) => {
-    updateDASD(mutation);
-    dispatch({ type: "START_WAITING", payload: mutation.devices });
-  };
+  const updater = (options) => console.log("FIXME: implement equivalente for new API", options);
 
   return (
     <Content>
@@ -580,7 +580,7 @@ export default function DASDTable() {
         itemActions={(d) =>
           buildActions({
             devices: [d],
-            updater: updateDASD,
+            updater, // FIXME
             dispatcher: dispatch,
           })
         }

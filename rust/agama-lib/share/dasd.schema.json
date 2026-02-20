@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "$id": "https://github.com/agama-project/agama/blob/master/rust/agama-lib/share/iscsi.schema.json",
+  "title": "Config",
+  "description": "DASD config.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "devices": {
+      "description": "List of DASD devices.",
+      "type": "array",
+      "items": { "$ref": "#/$defs/device" }
+    }
+  },
+  "$defs": {
+    "device": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["channel"],
+      "properties": {
+        "channel": {
+          "decription": "DASD device channel.",
+          "type": "string"
+        },
+        "state": {
+          "description": "Specify target state of device. Either activate it or deactivate it.",
+          "enum": ["active", "offline"],
+          "default": "active"
+        },
+        "format": {
+          "description": "If device should be formatted. If not specified then it format device only if not already formatted.",
+          "type": "boolean"
+        },
+        "diag": {
+          "description": "If device have set diag flag. If not specified then it keep what device has before.",
+          "type": "boolean"
+        }
+      }
+    }
+  }
+}

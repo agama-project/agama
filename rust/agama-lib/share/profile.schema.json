@@ -98,40 +98,7 @@
         }
       ]
     },
-    "dasd": {
-      "title": "DASD device activation (s390x only)",
-      "type": "object",
-      "properties": {
-        "devices": {
-          "title": "List of DASD devices",
-          "type": "array",
-          "items": {
-            "type": "object",
-            "properties": {
-              "channel": {
-                "title": "DASD device channel",
-                "type": "string"
-              },
-              "state": {
-                "title": "Specify target state of device. Either activate it or deactivate it.",
-                "type": "string",
-                "enum": ["active", "offline"],
-                "default": "active"
-              },
-              "format": {
-                "title": "If device should be formatted. If not specified then it format device only if not already formatted.",
-                "type": "boolean"
-              },
-              "diag": {
-                "title": "If device have set diag flag. If not specified then it keep what device has before.",
-                "type": "boolean"
-              }
-            },
-            "required": ["channel"]
-          }
-        }
-      }
-    },
+    "dasd": { "$ref": "dasd.schema.json" },
     "zfcp": {
       "title": "zFCP device activation (s390x only)",
       "type": "object",
