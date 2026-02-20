@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri Feb 20 10:20:10 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Add the URL to the transfer errors (related to bsc#1258194).
+
+-------------------------------------------------------------------
 Thu Feb 19 16:42:12 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Add logging about questions to make debugging easier
