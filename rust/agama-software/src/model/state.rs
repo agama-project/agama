@@ -179,6 +179,16 @@ impl<'a> SoftwareStateBuilder<'a> {
             ResolvableType::Package,
             ResolvableSelection::AutoSelected { optional: false },
         );
+
+        // FIPS enabled, so add fips pattern
+        if self.kernel_cmdline.get_last("fips") == Some("1".to_string()) {
+            tracing::info!("fips detected, adding fips pattern");
+            state.resolvables.add_or_replace(
+                "fips",
+                ResolvableType::Pattern,
+                ResolvableSelection::AutoSelected { optional: false },
+            );
+        }
     }
 
     /// Adds the elements from the user configuration.
