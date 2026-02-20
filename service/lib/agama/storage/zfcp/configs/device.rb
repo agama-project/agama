@@ -49,6 +49,11 @@ module Agama
           def active?
             !!@active
           end
+
+          # @return [String]
+          def to_s
+            [channel, wwpn, lun].compact.join(" ")
+          end
         end
       end
     end

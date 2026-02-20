@@ -69,6 +69,11 @@ module Agama
         def active?
           @active
         end
+
+        # @return [String]
+        def to_s
+          "#{channel} #{wwpn} #{lun}"
+        end
       end
     end
   end

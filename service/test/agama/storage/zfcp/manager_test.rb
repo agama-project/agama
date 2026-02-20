@@ -39,9 +39,9 @@ describe Agama::Storage::ZFCP::Manager do
 
   let(:yast_zfcp) { double(Y2S390::ZFCP) }
 
-  let(:controller_records) { [[]] }
+  let(:controller_records) { [] }
 
-  let(:disk_records) { [[]] }
+  let(:disk_records) { [] }
 
   let(:fa00_record) { { "sysfs_bus_id" => "0.0.fa00" } }
   let(:sda_record) do
@@ -70,8 +70,8 @@ describe Agama::Storage::ZFCP::Manager do
     allow(Y2S390::ZFCP).to receive(:new).and_return(yast_zfcp)
     allow(yast_zfcp).to receive(:probe_controllers)
     allow(yast_zfcp).to receive(:probe_disks)
-    allow(yast_zfcp).to receive(:controllers).and_return(*controller_records)
-    allow(yast_zfcp).to receive(:disks).and_return(*disk_records)
+    allow(yast_zfcp).to receive(:controllers).and_return(controller_records)
+    allow(yast_zfcp).to receive(:disks).and_return(disk_records)
   end
 
   describe "#probed?" do
@@ -86,8 +86,8 @@ describe Agama::Storage::ZFCP::Manager do
   end
 
   describe "#probe" do
-    let(:controller_records) { [[fa00_record]] }
-    let(:disk_records) { [[sda_record]] }
+    let(:controller_records) { [fa00_record] }
+    let(:disk_records) { [sda_record] }
 
     before do
       allow(yast_zfcp).to receive(:activated_controller?).with("0.0.fa00").and_return(true)
@@ -100,25 +100,34 @@ describe Agama::Storage::ZFCP::Manager do
 
     it "reads the controllers" do
       subject.probe
-      expect(subject.controllers.size).to eq(1)
-      controller = subject.controllers.first
-      expect(controller.channel).to eq("0.0.fa00")
-      expect(controller.active?).to eq(true)
-      expect(controller.wwpns).to eq(["0x500507630708d3b3"])
+      expect(subject.controllers).to contain_exactly(
+        an_object_having_attributes(
+          channel:   "0.0.fa00",
+          active?:   true,
+          lun_scan?: false,
+          wwpns:     ["0x500507630708d3b3"]
+        )
+      )
     end
 
     it "reads devices" do
       subject.probe
-      expect(subject.devices.size).to contain_exactly(
-        an_object_having_attributes(lun: "0x0013000000000000"),
-        an_object_having_attributes(lun: "0x0000000000000004")
+      expect(subject.devices).to contain_exactly(
+        an_object_having_attributes(
+          channel:     "0.0.fa00",
+          wwpn:        "0x500507630708d3b3",
+          lun:         "0x0013000000000000",
+          active?:     true,
+          device_name: "/dev/sda"
+        ),
+        an_object_having_attributes(
+          channel:     "0.0.fa00",
+          wwpn:        "0x500507630708d3b3",
+          lun:         "0x0000000000000004",
+          active?:     false,
+          device_name: nil
+        )
       )
-      # device = subject.devices.first
-      # expect(device.channel).to eq("0.0.fa00")
-      # expect(device.wwpn).to eq("0x500507630708d3b3")
-      # expect(device.lun).to eq("0x0013000000000000")
-      # expect(device).to be_active
-      # expect(device.device_name).to eq("/dev/sda")
     end
 
     it "sets probed? to true" do

@@ -31,7 +31,7 @@ require "agama/storage/umounter"
 require "agama/storage/iscsi/manager"
 require "agama/storage/proposal"
 require "agama/with_locale"
-require "yast"
+require "yast/i18n"
 require "y2storage/clients/inst_prepdisk"
 require "y2storage/luks"
 require "y2storage/storage_manager"
@@ -40,6 +40,7 @@ module Agama
   module Storage
     # Manager to handle storage configuration
     class Manager
+      include Yast::I18n
       include WithLocale
 
       # @return [Agama::Config]
@@ -248,7 +249,7 @@ module Agama
       def candidate_devices_issue
         return if proposal.storage_system.candidate_devices.any?
 
-        Issue.new("There is no suitable device for installation")
+        Issue.new(_("There is no suitable device for installation"))
       end
 
       # Returns the client to ask questions

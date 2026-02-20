@@ -20,15 +20,19 @@
 # find current contact information at www.suse.com.
 
 require "y2s390/zfcp"
+require "agama/issue"
 require "agama/storage/zfcp/config_importer"
 require "agama/storage/zfcp/controller"
 require "agama/storage/zfcp/device"
+require "yast/i18n"
 
 module Agama
   module Storage
     module ZFCP
       # Manager for zFCP
       class Manager
+        include Yast::I18n
+
         # @return [Array<Controller>]
         attr_reader :controllers
 
@@ -40,11 +44,15 @@ module Agama
         # @return [Hash, nil] nil if not configured yet.
         attr_reader :config_json
 
+        # @return [Array<Issue>]
+        attr_reader :issues
+
         # @param logger [Logger, nil]
         def initialize(logger: nil)
           @logger = logger || ::Logger.new($stdout)
           @controllers = []
           @devices = []
+          @issues = []
         end
 
         # Whether probing has been already performed.
@@ -68,11 +76,13 @@ module Agama
         def configure(config_json)
           probe unless probed?
 
+          @issues = []
           @config_json = config_json
           config = ConfigImporter.new(config_json).import
 
           system_changed = configure_controllers(config)
           system_changed ||= configure_devices(config)
+          add_issues(config)
           system_changed
         end
 
@@ -175,7 +185,11 @@ module Agama
           success = output["exit"] == 0
           return true if success
 
-          logger.warn("zFCP controller could not be activated: #{controller.inspect}")
+          @issues << Issue.new(
+            format(_("The zFCP controller %s cannot be activated"), controller.channel),
+            kind: :zfcp_controller_activation
+          )
+
           false
         end
 
@@ -215,7 +229,11 @@ module Agama
           success = output["exit"] == 0
           return true if success
 
-          logger.warn("zFCP device could not be activated: #{device.inspect}")
+          @issues << Issue.new(
+            format(_("The zFCP device %s cannot be activated"), device.to_s),
+            kind: :zfcp_lun_activation
+          )
+
           false
         end
 
@@ -249,8 +267,57 @@ module Agama
           success = output["exit"] == 0
           return true if success
 
-          logger.warn("zFCP device could not be deactivated: #{device.inspect}")
+          @issues << Issue.new(
+            format(_("The zFCP device %s cannot be deactivated"), device.to_s),
+            kind: :zfcp_lun_deactivation
+          )
+
           false
+        end
+
+        # Add issues for missing controllers and devices.
+        #
+        # @param config [Config]
+        def add_issues(config)
+          @issues += missing_controllers_issues(config)
+          @issues += missing_devices_issues(config)
+        end
+
+        # Add issues for missing controllers.
+        #
+        # @param config [Config]
+        def missing_controllers_issues(config)
+          config.controllers.map { |c| missing_controller_issue(c) }.compact
+        end
+
+        # Issue if the controller is missing.
+        #
+        # @param channel [String]
+        # @return [Issue, nil]
+        def missing_controller_issue(channel)
+          return if find_controller(channel)
+
+          Issue.new(
+            format(_("Unknown zFCP controller %s"), channel),
+            kind: :missing_zfcp_controller
+          )
+        end
+
+        # Add issues for missing devices.
+        #
+        # @param config [Config]
+        def missing_devices_issues(config)
+          config.devices.map { |c| missing_device_issue(c) }.compact
+        end
+
+        # Issue if the device is missing.
+        #
+        # @param device_config [Configs::Device]
+        # @return [Issue, nil]
+        def missing_device_issue(device_config)
+          return if find_device(device_config.channel, device_config.wwpn, device_config.lun)
+
+          Issue.new(format(_("Unknown zFCP LUN %s"), device_config.to_s), kind: :missing_zfcp_lun)
         end
 
         # Creates a zFCP controller from a YaST record.
@@ -283,7 +350,7 @@ module Agama
         def find_wwpns(controller)
           return [] unless controller.active?
 
-          output = yast_zfcp.find_wwpns(channel)
+          output = yast_zfcp.find_wwpns(controller.channel)
           output["stdout"]
         end
 

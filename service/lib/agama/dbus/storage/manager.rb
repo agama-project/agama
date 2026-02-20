@@ -255,7 +255,7 @@ module Agama
         #
         # @return [String]
         def recover_issues
-          json = backend.issues.map { |i| json_issue(i) }
+          json = backend.issues.map(&:to_hash)
           JSON.pretty_generate(json)
         end
 
@@ -362,18 +362,6 @@ module Agama
           Agama::Storage::DevicegraphConversions::ToJSON.new(devicegraph).convert
         end
 
-        # JSON representation of the given Agama issue
-        #
-        # @param issue [Array<Agama::Issue>]
-        # @return [Hash]
-        def json_issue(issue)
-          {
-            description: issue.description,
-            class:       issue.kind&.to_s,
-            details:     issue.details&.to_s
-          }.compact
-        end
-
         # List of sorted actions.
         #
         # @return [Hash<Symbol, Object>]
@@ -422,9 +410,9 @@ module Agama
         #
         # @see #recover_system
         #
-        # @return [Hash]
+        # @return [Array<Hash>]
         def system_issues
-          backend.system_issues.map { |i| json_issue(i) }
+          backend.system_issues.map(&:to_hash)
         end
 
         # Meaningful mount points for the current product.

@@ -41,12 +41,9 @@ module Agama
           }
         end
 
-        # @return [Array<String>, nil]
+        # @return [Array<String>]
         def import_controllers
-          controllers_json = json[:controllers]
-          return unless controllers_json
-
-          controllers_json.map { |c| c[:wwpn] }
+          json[:controllers] || []
         end
 
         # @return [Array<Configs::Device>, nil]

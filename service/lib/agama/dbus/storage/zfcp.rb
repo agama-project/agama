@@ -51,6 +51,7 @@ module Agama
           dbus_method(:Probe) { probe }
           dbus_method(:GetSystem, "out system:s") { recover_system }
           dbus_method(:GetConfig, "out config:s") { recover_config }
+          dbus_method(:GetIssues, "out issues:s") { recover_issues }
           dbus_method(:SetConfig, "in serialized_config:s") do |serialized_config|
             configure(serialized_config)
           end
@@ -73,6 +74,14 @@ module Agama
         # @return [String]
         def recover_config
           JSON.pretty_generate(manager.config_json)
+        end
+
+        # Gets the serialized list of issues.
+        #
+        # @return [String]
+        def recover_issues
+          json = manager.issues.map(&:to_hash)
+          JSON.pretty_generate(json)
         end
 
         # Implementation for the API method #Probe.

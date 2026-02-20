@@ -60,5 +60,13 @@ module Agama
       @kind = kind
       @details = details
     end
+
+    def to_hash
+      {
+        description: description,
+        class:       issue.kind&.to_s,
+        details:     issue.details
+      }.compact
+    end
   end
 end
