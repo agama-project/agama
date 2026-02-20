@@ -127,6 +127,8 @@ module Agama
           end
         end
 
+        # Configures the controllers.
+        #
         # @param config [Config]
         # @return [Booelan] Whether any controller was activated.
         def configure_controllers(config)
@@ -145,87 +147,108 @@ module Agama
           true
         end
 
+        # Activates the controllers according to the config.
+        #
         # @param config [Config]
         # @return [Booelan] Whether any controller was activated.
         def activate_controllers(config)
-          config.controllers
-            .select(&:active?)
-            .reject { |c| activated_controller?(c.channel) }
-            .map { |c| activate_controller(c.channel) }
-            .any?(0)
+          config.channels
+            .map { |c| find_controller(c.channel) }
+            .compact
+            .map { |c| activate_controller(c) }
+            .any?
         end
 
+        # Activates the controller if it is not active yet.
+        #
+        # @note: If "allow_lun_scan" is active, then all its LUNs are automatically activated.
+        #
+        # @param controller [Controller]
+        # @return [Boolean] Whether the controller was activated.
+        def activate_controller(controller)
+          return false if controller.active?
+
+          logger.info("Activating zFCP controller: #{controller.inspect}")
+          output = yast_zfcp.activate_controller(controller.channel)
+          success = output["exit"] == 0
+          return true if success
+
+          logger.warn("zFCP controller could not be activated: #{controller.inspect}")
+          false
+        end
+
+        # Configures the devices according to the config.
+        #
         # @param config [Config]
-        # @return [Boolean] Whether any device was activated or deactivated.
+        # @return [Booelan] Whether any devices was activated or deactivated.
         def configure_devices(config)
           devices_changed = activate_devices(config)
           devices_changed ||= deactivate_devices(config)
-          probe if devices_changed
+          probe_devices if devices_changed
           devices_changed
         end
 
+        # Activates the devices according to the config.
+        #
         # @param config [Config]
         # @return [Booelan] Whether any device was activated.
         def activate_devices(config)
           config.devices
             .select(&:active?)
-            .reject { |d| activated_device?(d.channel, d.wwpn, d.lun) }
-            .map { |d| activate_device(d.channel, d.wwpn, d.lun) }
-            .any?(0)
+            .map { |d| find_device(d.channel, d.wwpn, d.lun) }
+            .compact
+            .map { |d| activate_device(d) }
+            .any?
         end
 
+        # Activates a device if it is not active yet.
+        #
+        # @param device [Device]
+        # @return [Boolean] Whether the device was activated.
+        def activate_device(device)
+          return false if device.active?
+
+          logger.info("Activating zFCP device: #{device.inspect}")
+          output = yast_zfcp.activate_disk(device.channel, device.wwpn, device.lun)
+          success = output["exit"] == 0
+          return true if success
+
+          logger.warn("zFCP device could not be activated: #{device.inspect}")
+          false
+        end
+
+        # Deactivates the devices according to the config.
+        #
         # @param config [Config]
         # @return [Booelan] Whether any device was deactivated.
         def deactivate_devices(config)
           config.devices
             .reject(&:active?)
-            .reject { |d| deactivated_device?(d.channel, d.wwpn, d.lun) }
-            .map { |d| deactivate_device(d.channel, d.wwpn, d.lun) }
-            .any?(0)
+            .map { |d| find_device(d.channel, d.wwpn, d.lun) }
+            .compact
+            .map { |d| deactivate_device(d) }
+            .any?
         end
 
-        # Activates the controller with the given channel id.
-        #
-        # @note: If "allow_lun_scan" is active, then all its LUNs are automatically activated.
-        #
-        # @param channel [String]
-        # @return [Integer] Exit code of the chzdev command (0 on success)
-        def activate_controller(channel)
-          logger.info("Activating zFCP controller #{channel}")
-          output = yast_zfcp.activate_controller(channel)
-          exit = output["exit"]
-          logger.warn("zFCP controller #{channel} could not be activated") unless exit == 0
-          exit
-        end
-
-        # Activates a zFCP disk.
-        #
-        # @param channel [String]
-        # @param wwpn [String]
-        # @param lun [String]
-        # @return [Integer] Exit code of the chzdev command (0 on success)
-        def activate_device(channel, wwpn, lun)
-          logger.info("Activating zFCP device #{[channel, wwpn, lun]}")
-          output = yast_zfcp.activate_disk(channel, wwpn, lun)
-          exit = output["exit"]
-          logger.warn("zFCP device #{[channel, wwpn, lun]} could not be activated") unless exit == 0
-          exit
-        end
-
-        # Deactivates a zFCP disk.
+        # Deactivates a device if it is active.
         #
         # @note: If "allow_lun_scan" is active, then the disk cannot be deactivated.
         #
-        # @param channel [String]
-        # @param wwpn [String]
-        # @param lun [String]
-        # @return [Integer] Exit code of the chzdev command (0 on success)
-        def deactivate_device(channel, wwpn, lun)
-          logger.info("Deactivating zFCP device #{[channel, wwpn, lun]}")
-          output = yast_zfcp.deactivate_disk(channel, wwpn, lun)
-          exit = output["exit"]
-          logger.warn("zFCP device #{[channel, wwpn, lun]} could not be deactivated") if exit != 0
-          exit
+        # @param device [Device]
+        # @return [Boolean] Whether the device was deactivated.
+        def deactivate_device(device)
+          return false unless device.active?
+
+          controller = find_controller(device.channel)
+          return false if controller&.lun_scan?
+
+          logger.info("Deactivating zFCP device: #{device.inspect}")
+          output = yast_zfcp.deactivate_disk(device.channel, device.wwpn, device.lun)
+          success = output["exit"] == 0
+          return true if success
+
+          logger.warn("zFCP device could not be deactivated: #{device.inspect}")
+          false
         end
 
         # Creates a zFCP controller from a YaST record.
@@ -236,7 +259,7 @@ module Agama
           Controller.new(record["sysfs_bus_id"]).tap do |controller|
             controller.active = yast_zfcp.activated_controller?(controller.channel)
             controller.lun_scan = yast_zfcp.lun_scan_controller?(controller.channel)
-            controller.wwpns = find_wwpns(controller.channel)
+            controller.wwpns = find_wwpns(controller)
           end
         end
 
@@ -251,57 +274,30 @@ module Agama
           find_device(channel, wwpn, lun)
         end
 
-        # Whether there is an active probed controller with the given channel.
+        # Finds the WWPNs of the given controller.
         #
-        # @param channel [String]
-        # @return [Boolean]
-        def activated_controller?(channel)
-          controller = find_controller(channel)
-          !controller.nil? && controller.active?
-        end
-
-        # Whether there is an active probed device.
-        #
-        # @param channel [String]
-        # @param wwpn [String]
-        # @param lun [String]
-        # @return [Boolean]
-        def activated_device?(channel, wwpn, lun)
-          device = find_device(channel, wwpn, lun)
-          !device.nil? && device.active?
-        end
-
-        # Whether there is a deactivated probed device.
-        #
-        # @param channel [String]
-        # @param wwpn [String]
-        # @param lun [String]
-        # @return [Boolean]
-        def deactivated_device?(channel, wwpn, lun)
-          device = find_device(channel, wwpn, lun)
-          !device.nil? && !device.active?
-        end
-
-        # Finds the WWPNs for the given channel.
-        #
-        # @param channel [String]
+        # @param controller [Controller]
         # @return [Array<String>]
-        def find_wwpns(channel)
+        def find_wwpns(controller)
+          return [] unless controller.active?
+
           output = yast_zfcp.find_wwpns(channel)
           output["stdout"]
         end
 
-        # Finds the LUNs from all channels and WWPNs.
+        # Finds the LUNs of all active controllers.
         #
         # @return [Array<Array<String, String, String>] List of [channel, WWPN, LUN].
         def find_all_luns
-          controllers.flat_map { |c| find_controller_luns(c) }
+          controllers.select(&:active?).flat_map { |c| find_controller_luns(c) }
         end
 
-        # Finds the LUNs from all the WWPNs of given controller.
+        # Finds the LUNs of the given controller.
         #
         # @return [Array<Array<String, String, String>] List of [channel, WWPN, LUN].
         def find_controller_luns(controller)
+          return [] unless controller.active?
+
           channel = controller.channel
           controller.wwpns.flat_map { |w| find_luns(channel, w).map { |l| [channel, w, l] } }
         end

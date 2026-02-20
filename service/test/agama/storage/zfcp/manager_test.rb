@@ -111,7 +111,7 @@ describe Agama::Storage::ZFCP::Manager do
       subject.probe
       expect(subject.devices.size).to contain_exactly(
         an_object_having_attributes(lun: "0x0013000000000000"),
-        an_object_having_attributes(lun: "0x0000000000000004"),
+        an_object_having_attributes(lun: "0x0000000000000004")
       )
       # device = subject.devices.first
       # expect(device.channel).to eq("0.0.fa00")
@@ -154,10 +154,14 @@ describe Agama::Storage::ZFCP::Manager do
       end
 
       context "activating controllers" do
-        let(:controller_to_activate) { Agama::Storage::ZFCP::Controller.new("0.0.fb00").tap { |c| c.active = true } }
+        let(:controller_to_activate) do
+          Agama::Storage::ZFCP::Controller.new("0.0.fb00").tap do |c|
+            c.active = true
+          end
+        end
         let(:config) do
           double("Agama::Storage::ZFCP::Config",
-                          controllers: [controller_to_activate], devices: [])
+            controllers: [controller_to_activate], devices: [])
         end
 
         before do
@@ -181,7 +185,9 @@ describe Agama::Storage::ZFCP::Manager do
 
         context "when controller is already active" do
           before do
-            active_controller = Agama::Storage::ZFCP::Controller.new("0.0.fb00").tap { |c| c.active = true }
+            active_controller = Agama::Storage::ZFCP::Controller.new("0.0.fb00").tap do |c|
+              c.active = true
+            end
             subject.instance_variable_set(:@controllers, [active_controller])
           end
 
@@ -194,11 +200,14 @@ describe Agama::Storage::ZFCP::Manager do
 
       context "activating devices" do
         let(:device_to_activate) do
-          Agama::Storage::ZFCP::Device.new("0.0.fa00", "0x500507630708d3b3", "0x0013000000000000").tap { |d| d.active = true }
+          Agama::Storage::ZFCP::Device.new("0.0.fa00", "0x500507630708d3b3",
+            "0x0013000000000000").tap do |d|
+            d.active = true
+          end
         end
         let(:config) do
           double("Agama::Storage::ZFCP::Config",
-                          controllers: [], devices: [device_to_activate])
+            controllers: [], devices: [device_to_activate])
         end
 
         before do
@@ -206,7 +215,8 @@ describe Agama::Storage::ZFCP::Manager do
         end
 
         it "activates the device" do
-          expect(yast_zfcp).to receive(:activate_disk).with("0.0.fa00", "0x500507630708d3b3", "0x0013000000000000")
+          expect(yast_zfcp).to receive(:activate_disk).with("0.0.fa00", "0x500507630708d3b3",
+            "0x0013000000000000")
           subject.configure(config_json)
         end
 
@@ -221,7 +231,10 @@ describe Agama::Storage::ZFCP::Manager do
 
         context "when device is already active" do
           before do
-            active_device = Agama::Storage::ZFCP::Device.new("0.0.fa00", "0x500507630708d3b3", "0x0013000000000000").tap { |d| d.active = true }
+            active_device = Agama::Storage::ZFCP::Device.new("0.0.fa00", "0x500507630708d3b3",
+              "0x0013000000000000").tap do |d|
+              d.active = true
+            end
             subject.instance_variable_set(:@devices, [active_device])
           end
 
@@ -234,21 +247,28 @@ describe Agama::Storage::ZFCP::Manager do
 
       context "deactivating devices" do
         let(:device_to_deactivate) do
-          Agama::Storage::ZFCP::Device.new("0.0.fa00", "0x500507630708d3b3", "0x0013000000000000").tap { |d| d.active = false }
+          Agama::Storage::ZFCP::Device.new("0.0.fa00", "0x500507630708d3b3",
+            "0x0013000000000000").tap do |d|
+            d.active = false
+          end
         end
         let(:config) do
           double("Agama::Storage::ZFCP::Config",
-                          controllers: [], devices: [device_to_deactivate])
+            controllers: [], devices: [device_to_deactivate])
         end
 
         before do
-          active_device = Agama::Storage::ZFCP::Device.new("0.0.fa00", "0x500507630708d3b3", "0x0013000000000000").tap { |d| d.active = true }
+          active_device = Agama::Storage::ZFCP::Device.new("0.0.fa00", "0x500507630708d3b3",
+            "0x0013000000000000").tap do |d|
+            d.active = true
+          end
           subject.instance_variable_set(:@devices, [active_device])
           allow(yast_zfcp).to receive(:deactivate_disk).and_return("exit" => 0)
         end
 
         it "deactivates the device" do
-          expect(yast_zfcp).to receive(:deactivate_disk).with("0.0.fa00", "0x500507630708d3b3", "0x0013000000000000")
+          expect(yast_zfcp).to receive(:deactivate_disk).with("0.0.fa00", "0x500507630708d3b3",
+            "0x0013000000000000")
           subject.configure(config_json)
         end
 
@@ -263,7 +283,10 @@ describe Agama::Storage::ZFCP::Manager do
 
         context "when device is already inactive" do
           before do
-            inactive_device = Agama::Storage::ZFCP::Device.new("0.0.fa00", "0x500507630708d3b3", "0x0013000000000000").tap { |d| d.active = false }
+            inactive_device = Agama::Storage::ZFCP::Device.new("0.0.fa00", "0x500507630708d3b3",
+              "0x0013000000000000").tap do |d|
+              d.active = false
+            end
             subject.instance_variable_set(:@devices, [inactive_device])
           end
 
