@@ -20,10 +20,13 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
+import React, { Suspense } from "react";
 import { render, screen, waitFor } from "@testing-library/react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { InstallerL10nProvider, useInstallerL10n } from "~/context/installerL10n";
 import { InstallerClientProvider } from "./installer";
+
+jest.unmock("~/context/installerL10n");
 
 const mockUseSystemFn = jest.fn();
 const mockConfigureL10nFn = jest.fn();
@@ -81,12 +84,20 @@ describe("InstallerL10nProvider", () => {
   });
 
   it("sets the language from the backend", async () => {
+    const queryClient = new QueryClient({
+      defaultOptions: { queries: { retry: false } },
+    });
+
     render(
-      <InstallerClientProvider client={client}>
-        <InstallerL10nProvider>
-          <TranslatedContent />
-        </InstallerL10nProvider>
-      </InstallerClientProvider>,
+      <QueryClientProvider client={queryClient}>
+        <Suspense fallback="Loading...">
+          <InstallerClientProvider client={client}>
+            <InstallerL10nProvider>
+              <TranslatedContent />
+            </InstallerL10nProvider>
+          </InstallerClientProvider>
+        </Suspense>
+      </QueryClientProvider>,
     );
 
     await waitFor(() => screen.getByText("hola"));

@@ -20,7 +20,8 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback } from "react";
+import { useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import agama from "~/agama";
 import supportedLanguages from "~/languages.json";
 import { useSystem } from "~/hooks/model/system";
@@ -115,13 +116,16 @@ function findSupportedLanguage(languages: Array<string>): string | undefined {
  * @param locale requested locale
  * @returns Promise with a dynamic import
  */
-async function loadTranslations(locale: string) {
+async function loadTranslations(locale: string): Promise<string> {
   // load the translations dynamically, first try the language + territory
   return import(
     /* webpackChunkName: "[request]" */
     `../po/po.${locale}`
   )
-    .then((m) => agama.locale(m.default))
+    .then((m) => {
+      agama.locale(m.default);
+      return agama.language.replace("-", "_");
+    })
     .catch(async () => {
       // if it fails try the language only
       const po = locale.split("-")[0];
@@ -129,13 +133,17 @@ async function loadTranslations(locale: string) {
         /* webpackChunkName: "[request]" */
         `../po/po.${po}`
       )
-        .then((m) => agama.locale(m.default))
+        .then((m) => {
+          agama.locale(m.default);
+          return agama.language.replace("-", "_");
+        })
         .catch(() => {
-          if (locale !== "en-US") {
+          if (locale && locale !== "en-US") {
             console.error("Cannot load frontend translations for", locale);
           }
           // reset the current translations (use the original English texts)
           agama.locale(null);
+          return agama.language.replace("-", "_");
         });
     });
 }
@@ -162,12 +170,18 @@ function InstallerL10nProvider({
   initialLanguage?: string;
   children?: React.ReactNode;
 }) {
-  const { l10n } = useSystem();
-  const [loadedLanguage, setLoadedLanguage] = useState(initialLanguage);
+  const queryClient = useQueryClient();
+  const system = useSystem();
+  const l10n = system?.l10n;
 
   const locale = l10n?.locale;
-  const language = locale ? languageFromLocale(locale) : initialLanguage;
+  const language = locale ? languageFromLocale(locale) : initialLanguage || "en-US";
   const keymap = l10n?.keymap;
+
+  const { data: loadedLanguage } = useSuspenseQuery({
+    queryKey: ["translations", language],
+    queryFn: () => loadTranslations(language),
+  });
 
   const changeLanguage = useCallback(
     async (lang: string) => {
@@ -178,26 +192,32 @@ function InstallerL10nProvider({
       ].filter((l) => l);
       const newLanguage = findSupportedLanguage(candidateLanguages) || "en-US";
       document.documentElement.lang = newLanguage.split("-")[0];
+
       await configureL10nAction({ locale: languageToLocale(newLanguage) });
+      await queryClient.invalidateQueries({ queryKey: ["translations"] });
     },
-    [language],
+    [language, queryClient],
   );
 
   const changeKeymap = useCallback(async (id: string) => {
     await configureL10nAction({ keymap: id });
   }, []);
 
-  useEffect(() => {
-    if (!language) return;
+  const value = {
+    loadedLanguage,
+    language,
+    changeLanguage,
+    keymap,
+    changeKeymap,
+  };
 
-    loadTranslations(language).then(() => setLoadedLanguage(agama.language.replace("-", "_")));
-  }, [language, setLoadedLanguage]);
-
-  if (!loadedLanguage) return null;
-
-  const value = { loadedLanguage, language, changeLanguage, keymap, changeKeymap };
-
-  return <L10nContext.Provider value={value}>{children}</L10nContext.Provider>;
+  // Setting the key forces to reload the children when the language changes
+  // (see https://react.dev/learn/preserving-and-resetting-state).
+  return (
+    <L10nContext.Provider key={language} value={value}>
+      {children}
+    </L10nContext.Provider>
+  );
 }
 
 export { InstallerL10nProvider, useInstallerL10n };
