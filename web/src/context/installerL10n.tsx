@@ -138,7 +138,7 @@ async function loadTranslations(locale: string): Promise<string> {
           return agama.language.replace("-", "_");
         })
         .catch(() => {
-          if (locale !== "en-US" && locale) {
+          if (locale && locale !== "en-US") {
             console.error("Cannot load frontend translations for", locale);
           }
           // reset the current translations (use the original English texts)
