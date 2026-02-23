@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-02-13 08:59+0000\n"
-"PO-Revision-Date: 2026-01-19 15:36+0000\n"
+"POT-Creation-Date: 2026-02-19 16:43+0000\n"
+"PO-Revision-Date: 2026-02-16 15:38+0000\n"
 "Last-Translator: Ladislav Slezák <lslezak@suse.com>\n"
 "Language-Team: Czech <https://l10n.opensuse.org/projects/agama/agama-rust-"
 "master/cs/>\n"
@@ -19,12 +19,12 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
 "X-Generator: Weblate 5.15.2\n"
 
-#: agama-autoinstall/src/questions.rs:41 agama-utils/src/api/question.rs:282
+#: agama-autoinstall/src/questions.rs:41 agama-utils/src/api/question.rs:292
 #: agama-utils/src/question/start.rs:54
 msgid "No"
 msgstr "Ne"
 
-#: agama-autoinstall/src/questions.rs:41 agama-utils/src/api/question.rs:282
+#: agama-autoinstall/src/questions.rs:41 agama-utils/src/api/question.rs:292
 #: agama-utils/src/question/start.rs:54
 msgid "Yes"
 msgstr "Ano"
@@ -43,61 +43,59 @@ msgstr "Nakonfigurovat systém"
 
 #: agama-manager/src/tasks/runner.rs:285
 msgid "Storing security settings"
-msgstr ""
+msgstr "Ukládají se bezpečnostní nastavení"
 
 #: agama-manager/src/tasks/runner.rs:286
 msgid "Setting up the hostname"
-msgstr ""
+msgstr "Nastavuje se jméno hostitele"
 
 #: agama-manager/src/tasks/runner.rs:287
 msgid "Setting up the network proxy"
-msgstr ""
+msgstr "Nastavuje se síťová proxy"
 
 #: agama-manager/src/tasks/runner.rs:288
 msgid "Importing user files"
-msgstr ""
+msgstr "Importují se uživatelské soubory"
 
 #: agama-manager/src/tasks/runner.rs:289
 msgid "Running user pre-installation scripts"
-msgstr ""
+msgstr "Spouští se uživatelské předinstalační skripty"
 
 #: agama-manager/src/tasks/runner.rs:290
 msgid "Storing questions settings"
-msgstr ""
+msgstr "Ukládá se nastavení otázek"
 
 #: agama-manager/src/tasks/runner.rs:291
 msgid "Storing localization settings"
-msgstr ""
+msgstr "Ukládá se nastavení lokalizace"
 
 #: agama-manager/src/tasks/runner.rs:292
 msgid "Storing users settings"
-msgstr ""
+msgstr "Ukládají se uživatelská nastavení"
 
 #: agama-manager/src/tasks/runner.rs:293
 msgid "Configuring iSCSI devices"
-msgstr ""
+msgstr "Konfigurují se zařízení iSCSI"
 
 #: agama-manager/src/tasks/runner.rs:297
 msgid "Configuring DASD devices"
-msgstr ""
+msgstr "Konfigurují se zařízení DASD"
 
 #: agama-manager/src/tasks/runner.rs:301
 msgid "Setting up the network"
-msgstr ""
+msgstr "Nastavuje konfigurace sítě"
 
 #: agama-manager/src/tasks/runner.rs:306
-#, fuzzy
 msgid "Preparing the software proposal"
-msgstr "Vyhodnocuje se návrh softwaru"
+msgstr "Připravuje se návrh softwaru"
 
 #: agama-manager/src/tasks/runner.rs:307
-#, fuzzy
 msgid "Preparing the storage proposal"
-msgstr "Vyhodnocuje se návrh softwaru"
+msgstr "Připravuje se návrh úložiště"
 
 #: agama-manager/src/tasks/runner.rs:308
 msgid "Storing bootloader settings"
-msgstr ""
+msgstr "Ukládá se nastavení zavaděče"
 
 #: agama-network/src/service.rs:518
 msgid "Writing configuration"
@@ -109,7 +107,7 @@ msgstr "Načítám konfiguraci"
 
 #: agama-security/src/service.rs:228
 msgid "Reject"
-msgstr ""
+msgstr "Odmítnout"
 
 #: agama-security/src/service.rs:228
 #: agama-software/src/callbacks/security.rs:109
@@ -121,6 +119,8 @@ msgid ""
 "Trying to import a self-signed certificate. Do you want to trust it and "
 "register the product?"
 msgstr ""
+"Zkouší se naimportovat certifikát podepsaný sebou samým. Důvěřujete "
+"certifikátu a chcete zaregistrovat produkt?"
 
 #: agama-software/src/callbacks/commit_download.rs:48
 #: agama-software/src/callbacks/install.rs:56
