@@ -205,7 +205,7 @@ async fn build_http_client(
         if let Some(token) = find_client_token(&client.base_url) {
             return Ok(client.authenticated(&token)?);
         }
-        return Err(ServiceError::NotAuthenticated.into());
+        Err(ServiceError::NotAuthenticated.into())
     } else {
         Ok(client.unauthenticated()?)
     }
@@ -233,7 +233,7 @@ async fn build_ws_client(api_url: Url, insecure: bool) -> anyhow::Result<WebSock
 /// Build the API url from the host.
 ///
 /// * `host`: ip or host name. The protocol is optional, using https if omitted (e.g, "myserver",
-/// "http://myserver", "192.168.100.101").
+///   "http://myserver", "192.168.100.101").
 pub fn api_url(host: String) -> anyhow::Result<Url> {
     let sanitized_host = host.trim_end_matches('/').to_string();
 

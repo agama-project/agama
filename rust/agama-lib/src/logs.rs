@@ -148,7 +148,7 @@ impl LogItem for LogPath {
         let options = CopyOptions::new();
 
         copy_items(&[self.src_path.as_str()], dst_path, &options)
-            .map_err(|_| io::Error::new(io::ErrorKind::Other, "Copying of a file failed"))?;
+            .map_err(|_| io::Error::other("Copying of a file failed"))?;
 
         if let Some(name) = dst_file.file_name().and_then(|fname| fname.to_str()) {
             let dst_name = name.trim_start_matches(".");
@@ -256,8 +256,7 @@ fn compress_logs(tmp_dir: &TempDir, result: &String) -> io::Result<()> {
     if res.success() {
         set_archive_permissions(PathBuf::from(result))
     } else {
-        Err(io::Error::new(
-            io::ErrorKind::Other,
+        Err(io::Error::other(
             "Cannot create tar archive",
         ))
     }

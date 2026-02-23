@@ -48,7 +48,7 @@ impl ISCSIHTTPClient {
         Ok(None)
     }
 
-    pub async fn set_config(&self, config: &Box<RawValue>) -> Result<(), ISCSIHTTPClientError> {
+    pub async fn set_config(&self, config: &RawValue) -> Result<(), ISCSIHTTPClientError> {
         Ok(self.client.post_void("/iscsi/config", config).await?)
     }
 }

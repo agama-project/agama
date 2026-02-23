@@ -244,7 +244,7 @@ impl<'a> ZFCPClient<'a> {
             let id = channel_mapping
                 .get(&dev.channel)
                 .ok_or_else(|| ServiceError::ZFCPControllerNotFound(dev.channel.clone()))?;
-            self.activate_disk(&id, &dev.wwpn, &dev.lun).await?;
+            self.activate_disk(id, &dev.wwpn, &dev.lun).await?;
         }
 
         Ok(())

@@ -45,9 +45,15 @@ pub enum Error {
     #[error(transparent)]
     Scripts(#[from] scripts::Error),
     #[error(transparent)]
-    Software(#[from] software::service::Error),
+    Software(Box<software::service::Error>),
     #[error(transparent)]
     Actor(#[from] actor::Error),
+}
+
+impl From<software::service::Error> for Error {
+    fn from(error: software::service::Error) -> Self {
+        Self::Software(Box::new(error))
+    }
 }
 
 const DEFAULT_SCRIPTS_DIR: &str = "run/agama/scripts";
@@ -168,7 +174,7 @@ impl Service {
             }
             packages.push(Resolvable::new("agama-scripts", ResolvableType::Package));
         }
-        _ = self
+        self
             .software
             .call(agama_software::message::SetResolvables::new(
                 "agama-scripts".to_string(),

@@ -26,7 +26,7 @@ mod tasks {
         Ok(())
     }
 
-    const GENERATED: &'static str =
+    const GENERATED: &str =
         "---\nNOTE: This documentation is generated. Run `cargo xtask markdown` to update it.\n";
 
     /// Generate Agama's CLI documentation in markdown format.

@@ -154,7 +154,7 @@ impl BaseHTTPClient {
     pub async fn post<T>(
         &self,
         path: &str,
-        object: &impl Serialize,
+        object: &(impl Serialize + ?Sized),
     ) -> Result<T, BaseHTTPClientError>
     where
         T: DeserializeOwned,
@@ -174,7 +174,7 @@ impl BaseHTTPClient {
     pub async fn post_void(
         &self,
         path: &str,
-        object: &impl Serialize,
+        object: &(impl Serialize + ?Sized),
     ) -> Result<(), BaseHTTPClientError> {
         let response = self
             .request_response(reqwest::Method::POST, path, object)
@@ -191,7 +191,7 @@ impl BaseHTTPClient {
     pub async fn put<T>(
         &self,
         path: &str,
-        object: &impl Serialize,
+        object: &(impl Serialize + ?Sized),
     ) -> Result<T, BaseHTTPClientError>
     where
         T: DeserializeOwned,
@@ -211,7 +211,7 @@ impl BaseHTTPClient {
     pub async fn put_void(
         &self,
         path: &str,
-        object: &impl Serialize,
+        object: &(impl Serialize + ?Sized),
     ) -> Result<(), BaseHTTPClientError> {
         let response = self
             .request_response(reqwest::Method::PUT, path, object)
@@ -228,7 +228,7 @@ impl BaseHTTPClient {
     pub async fn patch<T>(
         &self,
         path: &str,
-        object: &impl Serialize,
+        object: &(impl Serialize + ?Sized),
     ) -> Result<T, BaseHTTPClientError>
     where
         T: DeserializeOwned,
@@ -242,7 +242,7 @@ impl BaseHTTPClient {
     pub async fn patch_void(
         &self,
         path: &str,
-        object: &impl Serialize,
+        object: &(impl Serialize + ?Sized),
     ) -> Result<(), BaseHTTPClientError> {
         let response = self
             .request_response(reqwest::Method::PATCH, path, object)
@@ -298,7 +298,7 @@ impl BaseHTTPClient {
         &self,
         method: reqwest::Method,
         path: &str,
-        object: &impl Serialize,
+        object: &(impl Serialize + ?Sized),
     ) -> Result<Response, BaseHTTPClientError> {
         self.client
             .request(method, self.url(path)?)

@@ -35,29 +35,3 @@ impl From<ConflictSolve> for (u32, u32) {
         (solve.conflict_id, solve.solution_id)
     }
 }
-
-/// Information about possible solution for conflict
-#[derive(Clone, Debug, Serialize, Deserialize, utoipa::ToSchema)]
-#[serde(rename_all = "camelCase")]
-pub struct Solution {
-    /// conflict id
-    pub id: u32,
-    /// localized description of solution
-    pub description: String,
-    /// localized details about solution. Can be missing
-    pub details: Option<String>,
-}
-
-/// Information about conflict when resolving software
-#[derive(Clone, Debug, Serialize, Deserialize, utoipa::ToSchema)]
-#[serde(rename_all = "camelCase")]
-pub struct Conflict {
-    /// conflict id
-    pub id: u32,
-    /// localized description of conflict
-    pub description: String,
-    /// localized details about conflict. Can be missing
-    pub details: Option<String>,
-    /// list of possible solutions
-    pub solutions: Vec<Solution>,
-}

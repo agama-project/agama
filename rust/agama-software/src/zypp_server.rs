@@ -56,13 +56,19 @@ pub enum ZyppDispatchError {
     #[error(transparent)]
     Zypp(#[from] ZyppError),
     #[error("libzypp error: {0}")]
-    ZyppServer(#[from] ZyppServerError),
+    ZyppServer(Box<ZyppServerError>),
     #[error("Response channel closed")]
     ResponseChannelClosed,
     #[error("Target creation failed: {0}")]
     TargetCreationFailed(#[source] std::io::Error),
     #[error(transparent)]
     Progress(#[from] progress::service::Error),
+}
+
+impl From<ZyppServerError> for ZyppDispatchError {
+    fn from(error: ZyppServerError) -> Self {
+        Self::ZyppServer(Box::new(error))
+    }
 }
 
 #[derive(thiserror::Error, Debug)]
@@ -74,7 +80,7 @@ pub enum ZyppServerError {
     RecvError(#[from] oneshot::error::RecvError),
 
     #[error("Sender error: {0}")]
-    SendError(#[from] mpsc::error::SendError<SoftwareAction>),
+    SendError(Box<mpsc::error::SendError<SoftwareAction>>),
 
     #[error("Error from libzypp: {0}")]
     ZyppError(#[from] zypp_agama::ZyppError),
@@ -87,6 +93,12 @@ pub enum ZyppServerError {
 
     #[error("Failed to copy to target system: {0}")]
     IO(#[from] std::io::Error),
+}
+
+impl From<mpsc::error::SendError<SoftwareAction>> for ZyppServerError {
+    fn from(error: mpsc::error::SendError<SoftwareAction>) -> Self {
+        Self::SendError(Box::new(error))
+    }
 }
 
 pub type ZyppServerResult<R> = Result<R, ZyppServerError>;
@@ -117,7 +129,7 @@ pub enum SoftwareAction {
 pub enum RegistrationStatus {
     #[default]
     NotRegistered,
-    Registered(Registration),
+    Registered(Box<Registration>),
     Failed(RegistrationError),
 }
 
@@ -289,6 +301,7 @@ impl ZyppServer {
         Ok(state)
     }
 
+    #[allow(clippy::too_many_arguments)]
     fn write(
         &mut self,
         state: SoftwareState,
@@ -418,7 +431,7 @@ impl ZyppServer {
             match selection {
                 ResolvableSelection::AutoSelected { skip_if_missing } => {
                     issues.append(&mut self.select_resolvable(
-                        &zypp,
+                        zypp,
                         name,
                         *r#type,
                         zypp_agama::ResolvableSelected::Installation,
@@ -427,7 +440,7 @@ impl ZyppServer {
                 }
                 ResolvableSelection::Selected => {
                     issues.append(&mut self.select_resolvable(
-                        &zypp,
+                        zypp,
                         name,
                         *r#type,
                         zypp_agama::ResolvableSelected::User,
@@ -875,7 +888,7 @@ impl ZyppServer {
 
         match registration.register(zypp, security_srv) {
             Ok(registration) => {
-                self.registration = RegistrationStatus::Registered(registration);
+                self.registration = RegistrationStatus::Registered(Box::new(registration));
             }
             Err(error) => {
                 issues.push(

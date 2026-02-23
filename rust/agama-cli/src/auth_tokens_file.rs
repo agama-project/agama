@@ -43,8 +43,7 @@ impl AuthTokensFile {
     /// Default path for the tokens file in user's home directory.
     pub fn default_path() -> io::Result<PathBuf> {
         let Some(path) = home::home_dir() else {
-            return Err(io::Error::new(
-                io::ErrorKind::Other,
+            return Err(io::Error::other(
                 "Cannot find the user's home directory",
             ));
         };
@@ -141,7 +140,7 @@ mod tests {
     #[test]
     fn test_remove_host() {
         let path = Path::new("tests/tokens.json");
-        let mut file = AuthTokensFile::read_from_path(&path).unwrap();
+        let mut file = AuthTokensFile::read_from_path(path).unwrap();
         assert!(file.get_token("my-server.lan").is_some());
 
         file.remove_host("my-server.lan");

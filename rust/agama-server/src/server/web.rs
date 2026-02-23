@@ -53,13 +53,19 @@ use tokio_util::io::ReaderStream;
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
     #[error(transparent)]
-    Manager(#[from] manager::service::Error),
+    Manager(Box<manager::service::Error>),
     #[error(transparent)]
     Questions(#[from] question::service::Error),
     #[error(transparent)]
     ConfigSchema(#[from] config_schema::Error),
     #[error(transparent)]
     Json(#[from] serde_json::Error),
+}
+
+impl From<manager::service::Error> for Error {
+    fn from(error: manager::service::Error) -> Self {
+        Self::Manager(Box::new(error))
+    }
 }
 
 impl IntoResponse for Error {
@@ -72,8 +78,8 @@ impl IntoResponse for Error {
         let mut status = StatusCode::BAD_REQUEST;
 
         if let Error::Manager(error) = &self {
-            if matches!(error, ManagerError::PendingIssues { issues: _ })
-                || matches!(error, ManagerError::Busy { scopes })
+            if matches!(**error, ManagerError::PendingIssues { issues: _ })
+                || matches!(**error, ManagerError::Busy { scopes: _ })
             {
                 status = StatusCode::UNPROCESSABLE_ENTITY;
             }

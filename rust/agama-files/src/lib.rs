@@ -99,7 +99,7 @@ mod tests {
             .call(message::RunScripts::new(ScriptsGroup::Pre))
             .await
             .unwrap();
-        assert_eq!(ran, false);
+        assert!(!ran);
 
         let test_file_1 = ctx.tmp_dir.path().join("file-1.txt");
         let test_file_2 = ctx.tmp_dir.path().join("file-2.txt");
@@ -130,7 +130,7 @@ mod tests {
             .call(message::RunScripts::new(ScriptsGroup::Pre))
             .await
             .unwrap();
-        assert_eq!(ran, true);
+        assert!(ran);
 
         // Wait until the scripts are executed.
         while let Ok(event) = ctx.events_rx.recv().await {
@@ -150,7 +150,7 @@ mod tests {
         let config =
             r#"{ "files": [{ "destination": "/etc/README.md", "content": "Some text" }] }"#;
 
-        let config: Config = serde_json::from_str(&config).unwrap();
+        let config: Config = serde_json::from_str(config).unwrap();
         ctx.handler
             .call(message::SetConfig::with(config))
             .await

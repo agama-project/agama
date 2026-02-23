@@ -60,11 +60,11 @@ pub enum Error {
     #[error(transparent)]
     Security(#[from] security::service::Error),
     #[error(transparent)]
-    Software(#[from] software::service::Error),
+    Software(Box<software::service::Error>),
     #[error(transparent)]
     Storage(#[from] storage::service::Error),
     #[error(transparent)]
-    Files(#[from] files::service::Error),
+    Files(Box<files::service::Error>),
     #[error(transparent)]
     Issues(#[from] issue::service::Error),
     #[error(transparent)]
@@ -97,6 +97,18 @@ pub enum Error {
     Users(#[from] users::service::Error),
     #[error(transparent)]
     S390(#[from] s390::service::Error),
+}
+
+impl From<software::service::Error> for Error {
+    fn from(error: software::service::Error) -> Self {
+        Self::Software(Box::new(error))
+    }
+}
+
+impl From<files::service::Error> for Error {
+    fn from(error: files::service::Error) -> Self {
+        Self::Files(Box::new(error))
+    }
 }
 
 pub struct Starter {
@@ -545,9 +557,9 @@ impl Service {
 
         if let Some(product) = product {
             if let Some(id) = &product.id {
-                let mode = product.mode.as_ref().map(|m| m.as_str());
+                let mode = product.mode.as_deref();
                 tracing::debug!("Setting product and mode to {} and {:?}", id, mode);
-                let product_spec = self.products.find(&id, mode)?;
+                let product_spec = self.products.find(id, mode)?;
                 let product = RwLock::new(product_spec.clone());
                 self.product = Some(Arc::new(product));
             }
@@ -591,7 +603,7 @@ impl Service {
         };
 
         let mut software_config = self.config.software.clone().unwrap_or_default();
-        let product_config = software_config.product.get_or_insert_default();
+        let product_config = software_config.product.get_or_insert_with(Default::default);
         let product = product.read().await;
         product_config.id = Some(product.id.clone());
         product_config.mode = product.mode.clone();
@@ -836,8 +848,10 @@ impl MessageHandler<message::SetStorageModel> for Service {
             .storage
             .call(storage::message::GetConfigFromModel::new(message.model))
             .await?;
-        let mut config = Config::default();
-        config.storage = storage;
+        let config = Config {
+            storage,
+            ..Default::default()
+        };
         self.update_config(config).await
     }
 }
