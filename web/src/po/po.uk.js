@@ -18,6 +18,11 @@ export default {
   "%1$s and %2$s": [
     "%1$s і %2$s"
   ],
+  "%1$s and [%2$d more]": [
+    "%1$s та [ще %2$d]",
+    "%1$s та [ще %2$d]",
+    "%1$s та [ще %2$d]"
+  ],
   "%1$s at %2$s": [
     "%1$s на %2$s"
   ],
@@ -31,6 +36,11 @@ export default {
   ],
   "%1$s will still contain the LVM group '%2$s' and any partition needed to boot": [
     "%1$s, як і раніше, міститиме групу LVM '%2$s' і будь-який розділ, необхідний для завантаження"
+  ],
+  "%1$s, %2$s and [%3$d more]": [
+    "%1$s, %2$s та [ще %3$d]",
+    "%1$s, %2$s та [ще %3$d]",
+    "%1$s, %2$s та [ще %3$d]"
   ],
   "%d mode available": [
     "Доступний %d режим",
@@ -53,6 +63,9 @@ export default {
   ],
   "%s and %s": [
     "%s та %s"
+  ],
+  "%s at portal %s does not exist or cannot be reached.": [
+    "%s на порталі %s не існує або недоступний."
   ],
   "%s disk": [
     "Диск %s"
@@ -131,6 +144,9 @@ export default {
   "Actions": [
     "Дії"
   ],
+  "Actions for %s at portal %s": [
+    "Дії для %s на порталі %s"
+  ],
   "Activate": [
     "Активувати"
   ],
@@ -179,6 +195,9 @@ export default {
   "Add or use partition": [
     "Створити або використати розділ"
   ],
+  "Additional CHAP authentication performed by the initiator": [
+    "Додаткова аутентифікація CHAP, що виконується ініціатором"
+  ],
   "Address": [
     "Адреса"
   ],
@@ -191,6 +210,9 @@ export default {
   "Adjust the settings below to make the new system fit into the available space.": [
     "Відрегулюйте наведені нижче налаштування, щоб нова система вписувалася в наявний простір."
   ],
+  "All": [
+    "Всі"
+  ],
   "All conflicts have been resolved, or none were detected. You can safely continue with your setup.": [
     "Всі конфлікти вирішено, або не виявлено жодного. Ви можете безпечно продовжити встановлення."
   ],
@@ -202,6 +224,9 @@ export default {
   ],
   "All fields are required": [
     "Всі поля обов'язкові"
+  ],
+  "All fields are required.": [
+    "Всі поля обов'язкові."
   ],
   "All network connections managed through this interface are currently set to be used only during installation and will not be copied to the installed system": [
     "Усі мережеві з'єднання, керовані через цей інтерфейс, наразі налаштовані на використання лише під час інсталяції і не будуть скопійовані до інстальованої системи"
@@ -333,11 +358,17 @@ export default {
   "By proceeding, the installation will begin with defined settings.": [
     "Після підтвердження інсталяція розпочнеться з визначених налаштувань."
   ],
+  "CHAP authentication performed by the target": [
+    "Автентифікація CHAP, що виконується ціллю"
+  ],
   "CPU": [
     "Процесор"
   ],
   "Cancel": [
     "Скасувати"
+  ],
+  "Cancel connection": [
+    "Скасувати з'єднання"
   ],
   "Cannot be changed in remote installation": [
     "Неможливо змінити під час віддаленого встановлення"
@@ -455,6 +486,9 @@ export default {
   "Close": [
     "Закрити"
   ],
+  "Configuration read from the iSCSI Boot Firmware Table (iBFT). Initiator cannot be changed.": [
+    "Конфігурація зчитана з таблиці iSCSI Boot Firmware Table (iBFT). Ініціатор не може бути змінений."
+  ],
   "Configuration unreachable or invalid": [
     "Конфігурація недоступна або не синхронізована"
   ],
@@ -526,6 +560,9 @@ export default {
   "Connected": [
     "З'єднано"
   ],
+  "Connected by the system": [
+    "Підключено системою"
+  ],
   "Connected device": [
     "Підключений пристрій"
   ],
@@ -540,6 +577,9 @@ export default {
   ],
   "Connection details": [
     "Відомості про підключення"
+  ],
+  "Connection failed": [
+    "Збій підключення"
   ],
   "Connection is available to all devices.": [
     "Підключення доступне для всіх пристроїв."
@@ -703,8 +743,17 @@ export default {
   "Disconnected": [
     "Роз'єднано"
   ],
+  "Disconnected by the system": [
+    "Відключено системою"
+  ],
+  "Disconnection failed": [
+    "Не вдалося від'єднати"
+  ],
   "Discover and connect to iSCSI targets": [
     "Виявлення та підключення до iSCSI-об'єктів"
+  ],
+  "Discover targets": [
+    "Виявлення цілей"
   ],
   "Disk": [
     "Диск"
@@ -728,13 +777,16 @@ export default {
     "Завантажити журнали"
   ],
   "Download logs to troubleshoot or share with support.": [
-    ""
+    "Завантажте журнали для усунення несправностей або надсилання до служби підтримки."
   ],
   "Edit": [
     "Редагувати"
   ],
   "Edit binding settings": [
     "Змінити налаштування прив'язки"
+  ],
+  "Edit connection": [
+    "Редагувати з'єднання"
   ],
   "Edit connection settings": [
     "Змінити налаштування з'єднання"
@@ -752,7 +804,7 @@ export default {
     "Очистити групу томів LVM %s"
   ],
   "Enable mutual verification": [
-    ""
+    "Увімкнути взаємну перевірку"
   ],
   "Encrypt the system": [
     "Зашифрувати систему"
@@ -920,6 +972,9 @@ export default {
   "GiB": [
     "ГіБ"
   ],
+  "Go to iSCSI": [
+    "Перейти до iSCSI"
+  ],
   "Go to network page": [
     "Перейти до розділу «Мережа»"
   ],
@@ -988,6 +1043,12 @@ export default {
   "Initiator name": [
     "Ім'я ініціатора"
   ],
+  "Initiator password": [
+    "Пароль ініціатора"
+  ],
+  "Initiator user name": [
+    "Ім'я користувача-ініціатора"
+  ],
   "Install": [
     "Встановити"
   ],
@@ -1005,6 +1066,9 @@ export default {
   ],
   "Installation devices": [
     "Пристрої встановлення"
+  ],
+  "Installation failed": [
+    "Помилка встановлення"
   ],
   "Installation in progress": [
     "Встановлення триває"
@@ -1136,7 +1200,7 @@ export default {
     "Локалізація"
   ],
   "Locked targets cannot be managed from here and do not offer any actions.": [
-    ""
+    "Заблоковані цілі не можуть бути оброблені звідси і не пропонують жодних дій."
   ],
   "Log in": [
     "Вхід"
@@ -1181,7 +1245,7 @@ export default {
     "Мін. канал"
   ],
   "Missing": [
-    ""
+    "Відсутня"
   ],
   "Mode": [
     "Режим"
@@ -1193,13 +1257,16 @@ export default {
     "Зміна налаштувань та фізичних томів"
   ],
   "More": [
-    ""
+    "Ще"
   ],
   "More actions": [
     "Більше дій"
   ],
   "More devices": [
     "Інші пристрої"
+  ],
+  "More installer options": [
+    "Більше параметрів встановлювача"
   ],
   "More keymap layout might be available for the selected product at [Localization] page": [
     "Більше розкладок клавіатури може бути доступно на сторінці [Локалізації]"
@@ -1325,6 +1392,9 @@ export default {
   "No devices found": [
     "Пристроїв не знайдено"
   ],
+  "No iSCSI Boot Firmware Table (iBFT) found. The initiator can be [configured manually.]": [
+    "Не знайдено таблиці iSCSI Boot Firmware Table (iBFT). Ініціатора можна [налаштувати вручну.]"
+  ],
   "No logical volumes are defined yet": [
     "Логічні томи ще не задано"
   ],
@@ -1337,14 +1407,23 @@ export default {
   "No support is planned.": [
     "Підтримки немає у планах."
   ],
+  "No targets available": [
+    "Немає доступних цілей"
+  ],
   "No targets have been discovered or configured.": [
-    ""
+    "Цілі не виявлені або не налаштовані."
+  ],
+  "No targets matches filters": [
+    "Немає цілей, що відповідають фільтрам"
   ],
   "No user defined yet.": [
     "Користувача ще не вказано."
   ],
+  "No valid address.": [
+    "Немає справжньої адреси."
+  ],
   "No valid port.": [
-    ""
+    "Немає придатного порту."
   ],
   "No wired connections were found": [
     "Дротові з'єднання не знайдено"
@@ -1478,6 +1557,9 @@ export default {
   "Pending": [
     "Очікуйте"
   ],
+  "Perform a discovery to find available iSCSI targets.": [
+    "Виконайте виявлення, щоб знайти доступні цілі iSCSI."
+  ],
   "PiB": [
     "ПіБ"
   ],
@@ -1517,6 +1599,9 @@ export default {
   "Protection for the information stored at the new file systems, including data, programs, and system files.": [
     "Захист інформації, що зберігається на нових файлових системах, включно з даними, програмами та системними файлами."
   ],
+  "Provide authentication": [
+    "Забезпечення автентифікації"
+  ],
   "Provide email address": [
     "Вкажіть адресу електронної пошти"
   ],
@@ -1545,7 +1630,7 @@ export default {
     "Перезавантажити"
   ],
   "Reboot to try again.": [
-    ""
+    "Перезавантажте, щоб спробувати ще раз."
   ],
   "Recommended": [
     "Рекомендовано"
@@ -1872,7 +1957,7 @@ export default {
     "Стан"
   ],
   "Status filter toggle": [
-    ""
+    "Вкл./вимк. фільтр статусу"
   ],
   "Step %1$d of %2$d": [
     "Крок %1$d з %2$d"
@@ -1914,8 +1999,11 @@ export default {
   "Take a moment to review the installation settings below and adjust them as needed.": [
     "Приділіть хвилинку, щоб переглянути налаштування інсталяції нижче та відкоригуйте їх за необхідності."
   ],
+  "Target": [
+    "Ціль"
+  ],
   "Target not found": [
-    ""
+    "Ціль не знайдена"
   ],
   "Temporary name that may change after reboot or network changes": [
     "Тимчасове ім'я, яке може змінитися після перезавантаження або змін у мережі"

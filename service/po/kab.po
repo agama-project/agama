@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-02-13 10:41+0000\n"
-"PO-Revision-Date: 2026-02-13 23:04+0000\n"
+"PO-Revision-Date: 2026-02-16 23:04+0000\n"
 "Last-Translator: Agurzil usaka <massi90.anzar@gmail.com>\n"
 "Language-Team: Kabyle <https://l10n.opensuse.org/projects/agama/agama-"
 "service-master/kab/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 5.15.2\n"
+"X-Generator: Weblate 5.16\n"
 
 #. Reports the problems and decide whether to continue or not.
 #.
@@ -185,52 +185,54 @@ msgstr ""
 msgid ""
 "No passphrase provided (required for using the method '%{crypt_method}')."
 msgstr ""
+"Ulac tafyirt n uɛeddi i d-ittunefken (yettwasra i useqdec n tarrayt '%"
+"{crypt_method}')."
 
 #. TRANSLATORS: 'crypt_method' is the identifier of the method to encrypt the device
 #. (e.g., 'luks1', 'random_swap').
 #: service/lib/agama/storage/config_checkers/encryption.rb:89
 #, perl-brace-format
 msgid "Encryption method '%{crypt_method}' is not available in this system."
-msgstr ""
+msgstr "Tarrayt n uwgelhen '%{crypt_method}' ulac-itt deg unagraw-agi."
 
 #. TRANSLATORS: 'crypt_method' is the identifier of the method to encrypt the device
 #. (e.g., 'luks1', 'random_swap').
 #: service/lib/agama/storage/config_checkers/encryption.rb:117
 #, perl-brace-format
 msgid "'%{crypt_method}' is not a suitable method to encrypt the device."
-msgstr ""
+msgstr "'%{crypt_method}' mačči d tarrayt iwulmen i uwgelhen n yibenk."
 
 #. TRANSLATORS: %s is replaced by a mount path (e.g., "/home").
 #: service/lib/agama/storage/config_checkers/filesystem.rb:75
 #, c-format
 msgid "Missing file system type for '%s'"
-msgstr ""
+msgstr "Anaw n unagraw n ufaylu ixuṣṣ i '%s'"
 
 #. TRANSLATORS: %{filesystem} is replaced by a file system type (e.g., "Btrfs") and
 #. %{path} is replaced by a mount path (e.g., "/home").
 #: service/lib/agama/storage/config_checkers/filesystem.rb:98
 #, perl-brace-format
 msgid "The file system type '%{filesystem}' is not suitable for '%{path}'"
-msgstr ""
+msgstr "Anaw n unagraw n ufaylu '%{filesystem}' ur iwata ara i '%{path}'"
 
 #. TRANSLATORS: %s is the replaced by a device alias (e.g., "pv1").
 #: service/lib/agama/storage/config_checkers/logical_volume.rb:82
 #, c-format
 msgid "There is no LVM thin pool volume with alias '%s'"
-msgstr ""
+msgstr "Ulac ableɣ usgrew arqaqan LVM s tazaẓlut '%s'"
 
 #. TRANSLATORS: %s is the replaced by a device alias (e.g., "md1").
 #: service/lib/agama/storage/config_checkers/md_raid.rb:98
 #, c-format
 msgid "There is no MD RAID member device with alias '%s'"
-msgstr ""
+msgstr "Ulac ibenk aɛeggal deg MD RAID s tzaẓlut '%s'"
 
 #. Issue if the MD RAID level is missing and the device is not reused.
 #.
 #. @return [Issue, nil]
 #: service/lib/agama/storage/config_checkers/md_raid.rb:111
 msgid "There is a MD RAID without level"
-msgstr ""
+msgstr "Yella yiwen n MD RAID war Aswir"
 
 #. Issue if the MD RAID does not contain enough member devices.
 #.
@@ -238,7 +240,7 @@ msgstr ""
 #: service/lib/agama/storage/config_checkers/md_raid.rb:124
 #, c-format
 msgid "At least %s devices are required for %s"
-msgstr ""
+msgstr "Ma drus %s n yibenkan ttwasran i %s"
 
 #. Issue if the device member is deleted.
 #.
@@ -386,6 +388,7 @@ msgstr ""
 msgid ""
 "The device '%s' is used several times as target device for physical volumes"
 msgstr ""
+"Ibenk '%s' yettwaseqdec aṭas n tikkal am yibenk anican i yiblaɣen uɣaran"
 
 #. Text of the reason preventing to shrink because there is no content.
 #.
@@ -402,40 +405,39 @@ msgstr ""
 #. @return [String, nil] nil if there is a minimum size or there is any other reasons.
 #: service/lib/agama/storage/device_shrinking.rb:162
 msgid "Shrinking is not supported by this device"
-msgstr ""
+msgstr "Asemẓi ur itteddu ara deg yibenk-agi"
 
 #. Copy /etc/nvme/host* to keep NVMe working after installation, bsc#1238038
 #: service/lib/agama/storage/finisher.rb:126
 msgid "Copying important installation files to the target system"
-msgstr ""
+msgstr "Anɣal n yifuyla ixataren ɣer unagraw n wammud"
 
 #. Step to write the bootloader configuration
 #: service/lib/agama/storage/finisher.rb:161
-#, fuzzy
 msgid "Installing bootloader"
-msgstr "Sebded aseɣẓan"
+msgstr "Asbeddi n umsali usenker"
 
 #. Step to finish the Y2Storage configuration
 #: service/lib/agama/storage/finisher.rb:178
 msgid "Adjusting storage configuration"
-msgstr ""
+msgstr "Ṣeggem tawila n usekles"
 
 #. Step to finish the iSCSI configuration
 #: service/lib/agama/storage/finisher.rb:189
 msgid "Adjusting iSCSI configuration"
-msgstr ""
+msgstr "Aṣeggem n twila iSCSI"
 
 #. Step to configure the file-system snapshots
 #: service/lib/agama/storage/finisher.rb:200
 msgid "Configuring file systems snapshots"
-msgstr ""
+msgstr "Aswel n tuṭṭfiwin n unagraw n yifuyla"
 
 #. Issue representing the proposal is not valid.
 #.
 #. @return [Issue]
 #: service/lib/agama/storage/proposal.rb:305
 msgid "Cannot calculate a valid storage setup with the current configuration"
-msgstr ""
+msgstr "Ur izmir ara ad isiḍen asbeddi n usekles ameɣtu s twila tamirant"
 
 #. Issue to communicate a generic Y2Storage error.
 #.

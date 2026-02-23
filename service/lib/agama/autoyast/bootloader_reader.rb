@@ -47,6 +47,7 @@ module Agama
         end
 
         bootloader["extraKernelParams"] = global["append"] unless global["append"].to_s.empty?
+        bootloader["updateNvram"] = global["update_nvram"] unless global["update_nvram"].to_s.empty?
 
         { "bootloader" => bootloader }
       end

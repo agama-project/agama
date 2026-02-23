@@ -34,6 +34,12 @@ module Agama
     class Bootloader
       # Represents bootloader settings
       class Config
+        # Whether bootloader should update persistent RAM.
+        # If kept as nil then default will be used.
+        #
+        # @return [Boolean]
+        attr_accessor :update_nvram
+
         # Whether bootloader should stop on boot menu.
         #
         # @return [Boolean]
@@ -68,6 +74,7 @@ module Agama
           @keys_to_export = []
           @stop_on_boot_menu = false # false means use proposal, which has timeout
           @timeout = 10 # just some reasonable timeout, we do not send it anywhere
+          @update_nvram = nil
           @extra_kernel_params = ""
         end
 
@@ -80,6 +87,7 @@ module Agama
           # our json use camel case
           result[:stopOnBootMenu] = stop_on_boot_menu if keys_to_export.include?(:stop_on_boot_menu)
           result[:timeout] = timeout if keys_to_export.include?(:timeout)
+          result[:updateNvram] = update_nvram if keys_to_export.include?(:update_nvram)
           if keys_to_export.include?(:extra_kernel_params)
             result[:extraKernelParams] =
               @extra_kernel_params
@@ -94,29 +102,24 @@ module Agama
         # @return [Config] self
         def load_json(serialized_config)
           hsh = JSON.parse(serialized_config, symbolize_names: true)
-          if hsh.include?(:timeout)
-            self.timeout = hsh[:timeout]
-            keys_to_export.delete(:stop_on_boot_menu)
-            keys_to_export.push(:timeout) unless keys_to_export.include?(:timeout)
-
-          end
-          if hsh.include?(:stopOnBootMenu)
-            self.stop_on_boot_menu = hsh[:stopOnBootMenu]
-            keys_to_export.delete(:timeout)
-            unless keys_to_export.include?(:stop_on_boot_menu)
-              keys_to_export.push(:stop_on_boot_menu)
-            end
-          end
-          if hsh.include?(:extraKernelParams)
-            self.extra_kernel_params = hsh[:extraKernelParams]
-            unless keys_to_export.include?(:extra_kernel_params)
-              keys_to_export.push(:extra_kernel_params)
-            end
-          end
+          update_attribute(hsh, :timeout, :timeout, conflicts: :stop_on_boot_menu)
+          update_attribute(hsh, :stopOnBootMenu, :stop_on_boot_menu, conflicts: :timeout)
+          update_attribute(hsh, :extraKernelParams, :extra_kernel_params)
+          update_attribute(hsh, :updateNvram, :update_nvram)
 
           self.scoped_kernel_params = hsh[:kernelArgs]
 
           self
+        end
+
+      private
+
+        def update_attribute(hsh, json_key, attr_key, conflicts: nil)
+          return unless hsh.key?(json_key)
+
+          public_send("#{attr_key}=", hsh[json_key])
+          keys_to_export.delete(conflicts) if conflicts
+          keys_to_export.push(attr_key) unless keys_to_export.include?(attr_key)
         end
       end
 
@@ -178,6 +181,7 @@ module Agama
         bootloader = ::Bootloader::BootloaderFactory.current
         write_stop_on_boot(bootloader) if @config.keys_to_export.include?(:stop_on_boot_menu)
         write_timeout(bootloader) if @config.keys_to_export.include?(:timeout)
+        write_nvram(bootloader) if @config.keys_to_export.include?(:update_nvram)
         kernel_params = @config.scoped_kernel_params.values.join(" ")
         @logger.info "scoped kernel params: #{kernel_params}"
 
@@ -188,6 +192,16 @@ module Agama
         write_extra_kernel_params(bootloader, kernel_params)
 
         bootloader
+      end
+
+      def write_nvram(bootloader)
+        return if @config.update_nvram.nil?
+
+        if bootloader.respond_to?(:update_nvram=)
+          bootloader.update_nvram = @config.update_nvram
+        else
+          @logger.info "bootloader #{bootloader.name} does not support NVRAM update"
+        end
       end
 
       def write_extra_kernel_params(bootloader, kernel_params)

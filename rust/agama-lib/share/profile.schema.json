@@ -79,6 +79,10 @@
         "extraKernelParams": {
           "title": "Specify additional kernel parameters that are added beside ones added by the installer.",
           "type": "string"
+        },
+        "updateNvram": {
+          "title": "Specify if bootloader should update persistent RAM (NVRAM).",
+          "type": "boolean"
         }
       },
       "oneOf": [

@@ -52,9 +52,10 @@ describe Agama::Storage::Bootloader::Config do
 
   describe "#load_json" do
     it "loads config from given json" do
-      content = "{\"stopOnBootMenu\":true}"
+      content = "{\"stopOnBootMenu\":true,\"updateNvram\":true}"
       config.load_json(content)
       expect(config.stop_on_boot_menu).to eq true
+      expect(config.update_nvram).to eq true
     end
 
     it "remembers which keys are set" do

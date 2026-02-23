@@ -84,6 +84,7 @@ translations:
         id: Standar
         ja: 標準
         kab: Tizeɣt
+        ru: Стандартный
         uk: Стандартна
       description:
         ca: Sistema estàndard
@@ -92,6 +93,7 @@ translations:
         id: Sistem standar
         ja: 標準システム
         kab: Anagraw n tizeɣt
+        ru: Стандартная система
         uk: Стандартна система
     immutable:
       name:
@@ -100,6 +102,7 @@ translations:
         de: Unveränderlich
         id: Immutable
         ja: 不変型
+        ru: Неизменяемый
         uk: Незмінний
       description:
         ca: Sistema immutable amb actualitzacions atòmiques
@@ -107,6 +110,7 @@ translations:
         de: Unveränderliches System mit atomaren Aktualisierungen
         id: Sistem immutable dengan pembaruan atomik
         ja: 不可分な更新機能を持つ不変型システム
+        ru: Неизменяемая система с атомарными обновлениями
         uk: Незмінна система з атомарними оновленнями
 software:
   installation_repositories: []
@@ -175,6 +179,8 @@ modes:
       mandatory_patterns:
         - enhanced_base
         - sles_sap_base_sap_server
+      mandatory_packages:
+        - SLES-release
       user_patterns:
         - sles_sap_DB
         - sles_sap_HADB
@@ -289,6 +295,8 @@ modes:
     software:
       mandatory_patterns:
         - immutable_base
+      mandatory_packages:
+        - SLES_immutable-release
 
     storage:
       space_policy: delete

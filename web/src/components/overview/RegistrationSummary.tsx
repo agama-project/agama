@@ -30,6 +30,26 @@ import { _ } from "~/i18n";
 import { useSystem } from "~/hooks/model/system/software";
 import { useIssues } from "~/hooks/model/issue";
 
+const RegistrationMessage = ({ code }: { code?: string }) => {
+  if (!code) {
+    return <>{_("Registered without a code")}</>;
+  }
+
+  // TRANSLATORS: Brief summary about the product registration.
+  // %s will be replaced with the last 4 digits of the registration code.
+  const [descriptionStart, descriptionEnd] = _("Using code ending in %s").split("%s");
+
+  return (
+    <>
+      {descriptionStart}{" "}
+      <Text isBold>
+        <small>{code.slice(-4)}</small>
+      </Text>{" "}
+      {descriptionEnd}
+    </>
+  );
+};
+
 /**
  * Internal component that renders the registration summary content.
  *
@@ -42,10 +62,6 @@ const Content = () => {
   const issues = useIssues("software");
   const hasIssues = issues.find((i) => i.class === "software.missing_registration") !== undefined;
 
-  // TRANSLATORS: Brief summary about the product registration.
-  // %s will be replaced with the last 4 digits of the registration code.
-  const [descriptionStart, descriptionEnd] = _("Using code ending in %s").split("%s");
-
   return (
     <Summary
       hasIssues={hasIssues}
@@ -56,17 +72,7 @@ const Content = () => {
         </Link>
       }
       value={registration ? _("Registered") : _("Not registered yet")}
-      description={
-        registration && (
-          <>
-            {descriptionStart}{" "}
-            <Text isBold>
-              <small>{registration.code.slice(-4)}</small>
-            </Text>{" "}
-            {descriptionEnd}
-          </>
-        )
-      }
+      description={registration && <RegistrationMessage code={registration.code} />}
     />
   );
 };

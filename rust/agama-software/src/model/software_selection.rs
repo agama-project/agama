@@ -24,8 +24,8 @@ use crate::Resolvable;
 
 /// A selection of resolvables to be installed.
 ///
-/// It holds a selection of patterns and packages to be installed and whether they are optional or
-/// not. This class is similar to the `PackagesProposal` YaST module.
+/// It holds a selection of patterns and packages to be installed and whether they should be
+/// skipped if missing. This class is similar to the `PackagesProposal` YaST module.
 #[derive(Default)]
 pub struct SoftwareSelection(HashMap<String, Vec<Resolvable>>);
 
@@ -33,7 +33,6 @@ impl SoftwareSelection {
     /// Updates a set of resolvables.
     ///
     /// * `id` - The id of the set.
-    /// * `optional` - Whether the selection is optional or not.
     /// * `resolvables` - The resolvables included in the set.
     pub fn set(&mut self, id: &str, resolvables: Vec<Resolvable>) {
         self.0.insert(id.to_string(), resolvables);

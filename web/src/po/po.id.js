@@ -1614,6 +1614,9 @@ export default {
   "Registered": [
     "Terdaftar"
   ],
+  "Registered without a code": [
+    "Terdaftar tanpa kode"
+  ],
   "Registration": [
     "Pendaftaran"
   ],
