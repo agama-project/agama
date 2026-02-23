@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Feb 23 15:10:58 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+
+- Do not use verbose mode in the "image-janitor" calls, logging
+  so many details significantly increases the ISO build time
+  (roughly two times)
+
+-------------------------------------------------------------------
 Thu Feb 19 12:55:14 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
 
 - Fixes and improvements in the boot menu for x86_64 and aarch64:
