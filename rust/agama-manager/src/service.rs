@@ -621,7 +621,13 @@ impl MessageHandler<message::GetSystem> for Service {
         let proxy = self.proxy.call(proxy::message::GetSystem).await?;
         let l10n = self.l10n.call(l10n::message::GetSystem).await?;
         let manager = self.system.clone();
-        let storage = self.storage.call(storage::message::GetSystem).await?;
+
+        let storage = if self.is_service_available(Scope::Storage).await? {
+            self.storage.call(storage::message::GetSystem).await?
+        } else {
+            Default::default()
+        };
+
         let iscsi = self.iscsi.call(iscsi::message::GetSystem).await?;
         let network = self.network.get_system().await?;
 
@@ -673,7 +679,13 @@ impl MessageHandler<message::GetExtendedConfig> for Service {
         let proxy = self.proxy.call(proxy::message::GetConfig).await?;
         let questions = self.questions.call(question::message::GetConfig).await?;
         let network = self.network.get_config().await?;
-        let storage = self.storage.call(storage::message::GetConfig).await?;
+
+        let storage = if self.is_service_available(Scope::Storage).await? {
+            self.storage.call(storage::message::GetConfig).await?
+        } else {
+            None
+        };
+
         let users = self.users.call(users::message::GetConfig).await?;
 
         let s390 = if let Some(s390) = &self.s390 {
@@ -741,7 +753,13 @@ impl MessageHandler<message::GetProposal> for Service {
     async fn handle(&mut self, _message: message::GetProposal) -> Result<Option<Proposal>, Error> {
         let hostname = self.hostname.call(hostname::message::GetProposal).await?;
         let l10n = self.l10n.call(l10n::message::GetProposal).await?;
-        let storage = self.storage.call(storage::message::GetProposal).await?;
+
+        let storage = if self.is_service_available(Scope::Storage).await? {
+            self.storage.call(storage::message::GetProposal).await?
+        } else {
+            None
+        };
+
         let network = self.network.get_proposal().await?;
         let users = self.users.call(users::message::GetProposal).await?;
 
