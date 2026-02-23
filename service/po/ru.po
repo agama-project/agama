@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-02-13 10:41+0000\n"
-"PO-Revision-Date: 2025-07-07 12:59+0000\n"
+"PO-Revision-Date: 2026-02-16 12:04+0000\n"
 "Last-Translator: Aleksey Fedorov <Aleksejfedorov963@gmail.com>\n"
 "Language-Team: Russian <https://l10n.opensuse.org/projects/agama/agama-"
 "service-master/ru/>\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 5.12.2\n"
+"X-Generator: Weblate 5.15.2\n"
 
 #. Reports the problems and decide whether to continue or not.
 #.
@@ -30,9 +30,8 @@ msgstr "Найдены неподдерживаемые элементы в пр
 
 #. Implementation for the API method #Probe.
 #: service/lib/agama/dbus/storage/dasd.rb:64
-#, fuzzy
 msgid "Probing DASD devices"
-msgstr "Поиск устройств хранения"
+msgstr "Поиск устройств DASD"
 
 #. Performs the configuration process in a separate thread.
 #.
@@ -43,15 +42,13 @@ msgstr "Поиск устройств хранения"
 #.
 #. @param config_json [Hash]
 #: service/lib/agama/dbus/storage/dasd.rb:121
-#, fuzzy
 msgid "Configuring DASD"
-msgstr "Настройка Iguana"
+msgstr "Настройка DASD"
 
 #. Do not configure if there is nothing to change.
 #: service/lib/agama/dbus/storage/iscsi.rb:98
-#, fuzzy
 msgid "Configuring iSCSI"
-msgstr "Настройка Iguana"
+msgstr "Настройка iSCSI"
 
 #. Performs an iSCSI discovery.
 #.
@@ -59,7 +56,7 @@ msgstr "Настройка Iguana"
 #. @return [Number] 0 success; 1 failure.
 #: service/lib/agama/dbus/storage/iscsi.rb:122
 msgid "Performing iSCSI discovery"
-msgstr ""
+msgstr "Выполнение обнаружения iSCSI"
 
 #. Implementation for the API method #Install.
 #: service/lib/agama/dbus/storage/manager.rb:118
@@ -76,14 +73,12 @@ msgstr "Запись системной конфигурации загрузч�
 
 #. Implementation for the API method #Finish.
 #: service/lib/agama/dbus/storage/manager.rb:132
-#, fuzzy
 msgid "Finishing installation"
-msgstr "Прервать установку"
+msgstr "Завершение установки"
 
 #: service/lib/agama/dbus/storage/manager.rb:138
-#, fuzzy
 msgid "Unmounting devices"
-msgstr "Размонтирование накопителей"
+msgstr "Размонтирование устройств"
 
 #. Gets and serializes the storage config used to calculate the current proposal.
 #.
@@ -97,9 +92,8 @@ msgid "Probing storage devices"
 msgstr "Поиск устройств хранения"
 
 #: service/lib/agama/dbus/storage/manager.rb:304
-#, fuzzy
 msgid "Applying storage configuration"
-msgstr "Настройка конфигурации хранилища"
+msgstr "Применение конфигурации хранилища"
 
 #. TRANSLATORS: SSL certificate details
 #: service/lib/agama/ssl/certificate_details.rb:31
