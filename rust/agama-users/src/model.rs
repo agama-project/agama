@@ -232,7 +232,7 @@ impl Model {
     fn open_ssh_port(&self) -> Result<(), service::Error> {
         let firewall_cmd = ChrootCommand::new(self.install_dir.clone())?
             .cmd("firewall-offline-cmd")
-            .args(["-add-service=ssh"])
+            .args(["--add-service=ssh"])
             .output()?;
 
         // ignore error if the firewall is not installed, in that case we do need to open the port,
