@@ -256,9 +256,7 @@ fn compress_logs(tmp_dir: &TempDir, result: &String) -> io::Result<()> {
     if res.success() {
         set_archive_permissions(PathBuf::from(result))
     } else {
-        Err(io::Error::other(
-            "Cannot create tar archive",
-        ))
+        Err(io::Error::other("Cannot create tar archive"))
     }
 }
 

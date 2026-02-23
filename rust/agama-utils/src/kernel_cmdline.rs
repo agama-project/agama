@@ -59,9 +59,7 @@ impl KernelCmdline {
     pub fn parse_str(content: &str) -> Self {
         let mut args: HashMap<String, Vec<String>> = HashMap::default();
         for param in content.split_whitespace() {
-            let (key, value) = param
-                .split_once("=")
-                .unwrap_or((param, "1"));
+            let (key, value) = param.split_once("=").unwrap_or((param, "1"));
 
             args.entry(key.to_lowercase())
                 .and_modify(|v| v.push(value.to_string()))

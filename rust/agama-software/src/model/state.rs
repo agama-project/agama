@@ -500,7 +500,9 @@ impl ResolvablesState {
         r#type: ResolvableType,
         selection: ResolvableSelection,
     ) {
-        if let Some(ResolvableSelection::AutoSelected { .. }) = self.0.get(&(name.to_string(), r#type)) {
+        if let Some(ResolvableSelection::AutoSelected { .. }) =
+            self.0.get(&(name.to_string(), r#type))
+        {
             tracing::debug!("Could not modify the {name} state because it is auto selected.");
             return;
         }

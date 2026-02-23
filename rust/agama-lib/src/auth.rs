@@ -174,9 +174,7 @@ impl AuthToken {
 
     fn user_token_path() -> io::Result<PathBuf> {
         let Some(path) = home::home_dir() else {
-            return Err(io::Error::other(
-                "Cannot find the user's home directory",
-            ));
+            return Err(io::Error::other("Cannot find the user's home directory"));
         };
 
         Ok(path.join(USER_TOKEN_PATH))

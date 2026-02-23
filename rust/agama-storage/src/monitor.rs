@@ -199,7 +199,10 @@ impl Monitor {
         &self,
     ) -> Result<Pin<Box<dyn Stream<Item = Signal> + Send>>, Error> {
         let proxy = Storage1Proxy::new(&self.connection).await?;
-        let stream = proxy.receive_system_changed().await?.map(Signal::SystemChanged);
+        let stream = proxy
+            .receive_system_changed()
+            .await?
+            .map(Signal::SystemChanged);
         Ok(Box::pin(stream))
     }
 
