@@ -637,7 +637,11 @@ impl MessageHandler<message::GetSystem> for Service {
         let network = self.network.get_system().await?;
 
         let s390 = if let Some(s390) = &self.s390 {
-            Some(s390.call(s390::message::GetSystem).await?)
+            if self.is_service_available(Scope::Storage).await? {
+                Some(s390.call(s390::message::GetSystem).await?)
+            } else {
+                None
+            }
         } else {
             None
         };
@@ -704,7 +708,11 @@ impl MessageHandler<message::GetExtendedConfig> for Service {
         let users = self.users.call(users::message::GetConfig).await?;
 
         let s390 = if let Some(s390) = &self.s390 {
-            Some(s390.call(s390::message::GetConfig).await?)
+            if self.is_service_available(Scope::Storage).await? {
+                Some(s390.call(s390::message::GetConfig).await?)
+            } else {
+                None
+            }
         } else {
             None
         };
