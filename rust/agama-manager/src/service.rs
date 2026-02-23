@@ -569,13 +569,13 @@ impl Service {
         Ok(())
     }
 
-    /// Determines whether the software service is available.
+    /// Determines whether the service is available.
     ///
     /// Consider the service as available if there is no pending progress.
-    async fn is_software_available(&self) -> Result<bool, Error> {
+    async fn is_service_available(&self, scope: Scope) -> Result<bool, Error> {
         let is_empty = self
             .progress
-            .call(progress::message::IsEmpty::with_scope(Scope::Software))
+            .call(progress::message::IsEmpty::with_scope(scope))
             .await?;
         Ok(is_empty)
     }
@@ -632,7 +632,7 @@ impl MessageHandler<message::GetSystem> for Service {
         };
 
         // If the software service is busy, it will not answer.
-        let software = if self.is_software_available().await? {
+        let software = if self.is_service_available(Scope::Software).await? {
             self.software.call(software::message::GetSystem).await?
         } else {
             Default::default()
@@ -683,7 +683,7 @@ impl MessageHandler<message::GetExtendedConfig> for Service {
         };
 
         // If the software service is busy, it will not answer.
-        let software = if self.is_software_available().await? {
+        let software = if self.is_service_available(Scope::Software).await? {
             Some(self.software.call(software::message::GetConfig).await?)
         } else {
             self.product_software_config().await?
@@ -746,7 +746,7 @@ impl MessageHandler<message::GetProposal> for Service {
         let users = self.users.call(users::message::GetProposal).await?;
 
         // If the software service is busy, it will not answer.
-        let software = if self.is_software_available().await? {
+        let software = if self.is_service_available(Scope::Software).await? {
             self.software.call(software::message::GetProposal).await?
         } else {
             None
