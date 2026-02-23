@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon Feb 23 11:56:27 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Do not reset the configuration on product selection (bsc#1258032).
+
+-------------------------------------------------------------------
 Fri Feb 20 15:00:44 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Fix the language change (gh#agama-project/agama#3197).
