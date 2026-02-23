@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Feb 23 12:31:43 UTC 2026 - Michal Filka <mfilka@suse.com>
+
+- bsc#1258466
+  - query storage service if it is available to avoid blocking in
+    cases like when disabled questions 
+
+-------------------------------------------------------------------
 Fri Feb 20 10:20:10 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Add the URL to the transfer errors (related to bsc#1258194).
