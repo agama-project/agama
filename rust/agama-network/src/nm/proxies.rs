@@ -852,6 +852,11 @@ pub trait IP4Config {
     fn wins_servers(&self) -> zbus::Result<Vec<u32>>;
 }
 
+#[allow(dead_code)]
+pub type IP6Address = (Vec<u8>, u32, Vec<u8>);
+#[allow(dead_code)]
+pub type IP6Route = (Vec<u8>, u32, Vec<u8>, u32);
+
 #[proxy(
     interface = "org.freedesktop.NetworkManager.IP6Config",
     default_service = "org.freedesktop.NetworkManager",
@@ -866,7 +871,7 @@ pub trait IP6Config {
 
     /// Addresses property
     #[zbus(property)]
-    fn addresses(&self) -> zbus::Result<Vec<(Vec<u8>, u32, Vec<u8>)>>;
+    fn addresses(&self) -> zbus::Result<Vec<IP6Address>>;
 
     /// DnsOptions property
     #[zbus(property)]
@@ -896,7 +901,7 @@ pub trait IP6Config {
 
     /// Routes property
     #[zbus(property)]
-    fn routes(&self) -> zbus::Result<Vec<(Vec<u8>, u32, Vec<u8>, u32)>>;
+    fn routes(&self) -> zbus::Result<Vec<IP6Route>>;
 
     /// Searches property
     #[zbus(property)]

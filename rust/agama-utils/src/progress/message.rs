@@ -154,13 +154,14 @@ impl Message for GetStage {
 /// Determines whether the progress is empty.
 ///
 /// It can specify a scope to limit the query.
+#[derive(Default)]
 pub struct IsEmpty {
     pub scope: Option<Scope>,
 }
 
 impl IsEmpty {
     pub fn new() -> Self {
-        IsEmpty { scope: None }
+        Self::default()
     }
 
     pub fn with_scope(scope: Scope) -> Self {

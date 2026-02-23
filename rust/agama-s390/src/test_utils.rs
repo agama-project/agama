@@ -63,12 +63,18 @@ pub struct TestDASDClient {
     state: Arc<Mutex<TestDASDClientState>>,
 }
 
-impl TestDASDClient {
-    pub fn new() -> Self {
+impl Default for TestDASDClient {
+    fn default() -> Self {
         let state = TestDASDClientState::default();
         Self {
             state: Arc::new(Mutex::new(state)),
         }
+    }
+}
+
+impl TestDASDClient {
+    pub fn new() -> Self {
+        Self::default()
     }
 
     pub async fn state(&self) -> TestDASDClientState {

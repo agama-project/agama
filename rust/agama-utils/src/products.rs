@@ -136,8 +136,7 @@ impl Registry {
     ///
     /// * `id`: product ID.
     /// * `mode`: product mode. Required only if the product has modes.
-    pub fn find(&self, id: &str, mode: Option<&str>) -> Result<ProductSpec, Error> {
-        let mut mode = mode.clone();
+    pub fn find<'a>(&'a self, id: &str, mut mode: Option<&'a str>) -> Result<ProductSpec, Error> {
         let Some(template) = self.products.iter().find(|p| p.id == id) else {
             return Err(Error::UnknownProduct(id.to_string()));
         };
@@ -508,7 +507,7 @@ mod test {
         assert_eq!(tw.id, "Tumbleweed");
         assert_eq!(tw.name, "openSUSE Tumbleweed");
         assert_eq!(tw.icon, "Tumbleweed.svg");
-        assert_eq!(tw.registration, false);
+        assert!(!tw.registration);
         assert_eq!(tw.version, None);
 
         let translations = &tw.translations;
@@ -556,7 +555,7 @@ mod test {
         let sles = ctx.registry.find("SLES", Some("standard")).unwrap();
         assert_eq!(sles.id, "SLES");
         assert_eq!(sles.name, "SUSE Linux Enterprise Server 16.1");
-        assert_eq!(sles.registration, true);
+        assert!(sles.registration);
         assert_eq!(sles.version, Some("16.1".to_string()));
 
         let translations = &sles.translations;

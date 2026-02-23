@@ -117,7 +117,7 @@ impl Model {
 
         let useradd = ChrootCommand::new(self.install_dir.clone())?
             .cmd("useradd")
-            .args(["-G", "wheel", &user_name])
+            .args(["-G", "wheel", user_name])
             .output()?;
 
         if !useradd.status.success() {
@@ -269,7 +269,7 @@ impl Model {
 
         let chfn = ChrootCommand::new(self.install_dir.clone())?
             .cmd("chfn")
-            .args(["-f", &full_name, &user_name])
+            .args(["-f", full_name, user_name])
             .output()?;
 
         if !chfn.status.success() {
@@ -291,10 +291,10 @@ impl Model {
 impl ModelAdapter for Model {
     fn install(&self, config: &Config) -> Result<(), service::Error> {
         if let Some(first_user) = &config.first_user {
-            self.add_first_user(&first_user)?;
+            self.add_first_user(first_user)?;
         }
         if let Some(root_user) = &config.root {
-            self.add_root_user(&root_user)?;
+            self.add_root_user(root_user)?;
         }
 
         Ok(())

@@ -74,9 +74,9 @@ impl SSLFingerprint {
     }
 }
 
-impl ToString for SSLFingerprint {
-    fn to_string(&self) -> String {
-        self.fingerprint.clone()
+impl std::fmt::Display for SSLFingerprint {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.fingerprint)
     }
 }
 

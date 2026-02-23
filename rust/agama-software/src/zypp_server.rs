@@ -256,7 +256,7 @@ impl ZyppServer {
             "Starting packages installation",
         ));
 
-        zypp.switch_target(&self.install_dir.to_string())?;
+        zypp.switch_target(self.install_dir.as_ref())?;
         let result = zypp.commit(
             &mut download_callback,
             &mut install_callback,
@@ -293,7 +293,7 @@ impl ZyppServer {
         &mut self,
         state: SoftwareState,
         progress: Handler<progress::Service>,
-        questions: Handler<question::Service>,
+        _questions: Handler<question::Service>,
         security_srv: Handler<security::Service>,
         security: &mut callbacks::Security,
         tx: oneshot::Sender<ZyppServerResult<Vec<Issue>>>,
@@ -318,7 +318,7 @@ impl ZyppServer {
         let old_state = self.read(zypp)?;
 
         if let Some(registration_config) = &state.registration {
-            self.update_registration(registration_config, &zypp, &security_srv, &mut issues);
+            self.update_registration(registration_config, zypp, &security_srv, &mut issues);
         }
 
         self.trusted_keys = state.trusted_gpg_keys;
@@ -386,7 +386,7 @@ impl ZyppServer {
             );
 
             if let Err(error) = result {
-                let message = format!("Could not read the repositories");
+                let message = "Could not read the repositories".to_string();
                 issues.push(
                     Issue::new("software.load_source", &message).with_details(&error.to_string()),
                 );
@@ -447,10 +447,9 @@ impl ZyppServer {
 
         // unselect packages including the autoselected dependencies
         for (name, r#type, selection) in &state.resolvables.to_vec() {
-            match selection {
-                ResolvableSelection::Removed => self.unselect_resolvable(&zypp, name, *r#type),
-                _ => {}
-            };
+            if selection == &ResolvableSelection::Removed {
+                self.unselect_resolvable(zypp, name, *r#type)
+            }
         }
 
         _ = progress.cast(progress::message::Finish::new(Scope::Software));
@@ -509,13 +508,13 @@ impl ZyppServer {
     ) -> Result<(), ZyppDispatchError> {
         if let Err(error) = self.remove_dud_repo(zypp) {
             tracing::warn!("Failed to remove the DUD repository: {error}");
-            tx.send(Err(error.into()))
+            tx.send(Err(error))
                 .map_err(|_| ZyppDispatchError::ResponseChannelClosed)?;
             return Ok(());
         }
         if let Err(error) = self.disable_local_repos(zypp) {
             tracing::warn!("Failed to disable local repositories: {error}");
-            tx.send(Err(error.into()))
+            tx.send(Err(error))
                 .map_err(|_| ZyppDispatchError::ResponseChannelClosed)?;
             return Ok(());
         }
@@ -525,13 +524,13 @@ impl ZyppServer {
 
         if let Err(error) = self.modify_full_repo(zypp) {
             tracing::warn!("Failed to modify the full repository: {error}");
-            tx.send(Err(error.into()))
+            tx.send(Err(error))
                 .map_err(|_| ZyppDispatchError::ResponseChannelClosed)?;
             return Ok(());
         }
         if let Err(error) = self.copy_files() {
             tracing::warn!("Failed to copy zypp files: {error}");
-            tx.send(Err(error.into()))
+            tx.send(Err(error))
                 .map_err(|_| ZyppDispatchError::ResponseChannelClosed)?;
             return Ok(());
         }
@@ -775,8 +774,8 @@ impl ZyppServer {
         zypp: &zypp_agama::Zypp,
     ) -> Result<(), ZyppDispatchError> {
         let proposal = SoftwareProposal {
-            used_space: self.used_space(&zypp)?,
-            patterns: self.patterns_selection(&product, &zypp)?,
+            used_space: self.used_space(zypp)?,
+            patterns: self.patterns_selection(&product, zypp)?,
         };
 
         tx.send(Ok(proposal))
@@ -874,7 +873,7 @@ impl ZyppServer {
             registration = registration.with_url(url);
         }
 
-        match registration.register(&zypp, security_srv) {
+        match registration.register(zypp, security_srv) {
             Ok(registration) => {
                 self.registration = RegistrationStatus::Registered(registration);
             }
@@ -903,7 +902,7 @@ impl ZyppServer {
         };
 
         for addon in addons {
-            if registration.is_addon_registered(&addon) {
+            if registration.is_addon_registered(addon) {
                 tracing::info!("Skipping already registered add-on {}", &addon.id);
                 continue;
             }

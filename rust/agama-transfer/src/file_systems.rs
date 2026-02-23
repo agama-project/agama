@@ -19,7 +19,10 @@
 // find current contact information at www.suse.com.
 
 /// Module to search for file systems.
-use std::{path::PathBuf, process::Command};
+use std::{
+    path::{Path, PathBuf},
+    process::Command,
+};
 
 use regex::Regex;
 
@@ -58,7 +61,7 @@ impl FileSystem {
     /// struct.
     pub fn ensure_mounted<F>(&self, func: F) -> TransferResult<()>
     where
-        F: FnOnce(&PathBuf) -> TransferResult<()>,
+        F: FnOnce(&Path) -> TransferResult<()>,
     {
         const DEFAULT_MOUNT_PATH: &str = "/run/agama/mount";
         let default_mount_point = PathBuf::from(DEFAULT_MOUNT_PATH);
@@ -83,14 +86,11 @@ impl FileSystem {
             return false;
         };
 
-        match fstype.as_str() {
-            "" | "crypto_LUKS" | "swap" => false,
-            _ => true,
-        }
+        !matches!(fstype.as_str(), "" | "crypto_LUKS" | "swap")
     }
 
     /// Mounts file system from the given mount point.
-    fn mount(&self, mount_point: &PathBuf) -> TransferResult<()> {
+    fn mount(&self, mount_point: &Path) -> TransferResult<()> {
         std::fs::create_dir_all(mount_point)?;
         let output = Command::new("mount")
             .args([
@@ -107,7 +107,7 @@ impl FileSystem {
     }
 
     /// Umounts file system from the given mount point.
-    fn umount(&self, mount_point: &PathBuf) -> TransferResult<()> {
+    fn umount(&self, mount_point: &Path) -> TransferResult<()> {
         Command::new("umount")
             .arg(mount_point.display().to_string())
             .output()?;
@@ -143,7 +143,7 @@ impl FileSystemsList {
     ///
     /// * `name`: block device name.
     pub fn find_by_name(&self, name: &str) -> Option<&FileSystem> {
-        self.file_systems.iter().find(|fs| name == &fs.block_device)
+        self.file_systems.iter().find(|fs| name == fs.block_device)
     }
 
     /// Returns the file systems with the given label name.
@@ -280,7 +280,6 @@ mod tests {
             mount_point: None,
             transport: Some("usb".to_string()),
             label: Some("OEMDRV".to_string()),
-            ..Default::default()
         };
         vec![vda1, vdb1, usb]
     }

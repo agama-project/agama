@@ -125,17 +125,8 @@ impl From<Vec<String>> for PatternsConfig {
 
 impl From<HashMap<String, Vec<String>>> for PatternsConfig {
     fn from(map: HashMap<String, Vec<String>>) -> Self {
-        let add = if let Some(to_add) = map.get("add") {
-            Some(to_add.to_owned())
-        } else {
-            None
-        };
-
-        let remove = if let Some(to_remove) = map.get("remove") {
-            Some(to_remove.to_owned())
-        } else {
-            None
-        };
+        let add = map.get("add").map(|to_add| to_add.to_owned());
+        let remove = map.get("remove").map(|to_remove| to_remove.to_owned());
 
         Self::PatternsMap(PatternsMap { add, remove })
     }

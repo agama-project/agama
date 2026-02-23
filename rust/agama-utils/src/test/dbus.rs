@@ -49,7 +49,8 @@ struct Started {
 
 impl Drop for Started {
     fn drop(&mut self) {
-        self.child.kill().unwrap();
+        let _ = self.child.kill();
+        let _ = self.child.wait();
     }
 }
 
@@ -75,7 +76,7 @@ impl DBusServer<Stopped> {
     }
 
     async fn start(self) -> Result<DBusServer<Started>, zbus::Error> {
-        let child = Command::new("/usr/bin/dbus-daemon")
+        let mut child = Command::new("/usr/bin/dbus-daemon")
             .args([
                 "--config-file",
                 "../share/dbus-test.conf",
@@ -85,7 +86,14 @@ impl DBusServer<Stopped> {
             .spawn()
             .expect("to start the testing D-Bus daemon");
 
-        let connection = async_retry(|| connection_to(&self.address)).await?;
+        let connection = match async_retry(|| connection_to(&self.address)).await {
+            Ok(c) => c,
+            Err(e) => {
+                let _ = child.kill();
+                let _ = child.wait();
+                return Err(e);
+            }
+        };
 
         Ok(DBusServer {
             address: self.address,

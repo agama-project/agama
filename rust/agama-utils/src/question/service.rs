@@ -65,7 +65,7 @@ impl Service {
             config.answers.as_ref().and_then(|answers_vec| {
                 answers_vec
                     .iter()
-                    .find(|a| a.answers_to(&spec))
+                    .find(|a| a.answers_to(spec))
                     .map(|r| r.answer.clone())
             })
         });
