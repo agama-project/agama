@@ -1632,6 +1632,9 @@ export default {
   "Registered": [
     "Registrat"
   ],
+  "Registered without a code": [
+    "Registrat sense codi"
+  ],
   "Registration": [
     "Registre"
   ],
