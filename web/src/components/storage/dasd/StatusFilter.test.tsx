@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2025] SUSE LLC
+ * Copyright (c) [2025-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -23,31 +23,41 @@
 import React from "react";
 import { screen, within } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
+import { N_ } from "~/i18n";
 import StatusFilter from "./StatusFilter";
 
 const onChangeFn = jest.fn();
 
+const selectOptions = {
+  all: N_("All"),
+  active: N_("Active"),
+  inactive: N_("Not active"),
+};
+
 describe("DASD/StatusFilter", () => {
-  it("renders a select menu with available DASD status options", async () => {
-    const { user } = plainRender(<StatusFilter value="all" onChange={onChangeFn} />);
+  it("renders a select menu with given options", async () => {
+    const { user } = plainRender(
+      <StatusFilter value="all" options={selectOptions} onChange={onChangeFn} />,
+    );
     // Not using the label name to retrieve the MenuToggle button because a bug
     // PF/MenuToggle has, check
     // https://github.com/patternfly/patternfly-react/issues/11805
     const toggle = screen.getByRole("button");
     await user.click(toggle);
     const options = screen.getByRole("listbox");
-    within(options).getByRole("option", { name: "all" });
-    within(options).getByRole("option", { name: "active" });
-    within(options).getByRole("option", { name: "read_only" });
-    within(options).getByRole("option", { name: "offline" });
+    within(options).getByRole("option", { name: "All" });
+    within(options).getByRole("option", { name: "Active" });
+    within(options).getByRole("option", { name: "Not active" });
   });
 
   it("calls onChange when a status option is selected", async () => {
-    const { user } = plainRender(<StatusFilter value="all" onChange={onChangeFn} />);
+    const { user } = plainRender(
+      <StatusFilter value="all" options={selectOptions} onChange={onChangeFn} />,
+    );
     const toggle = screen.getByRole("button");
     await user.click(toggle);
     const options = screen.getByRole("listbox");
-    const activeOption = within(options).getByRole("option", { name: "active" });
+    const activeOption = within(options).getByRole("option", { name: "Active" });
     await user.click(activeOption);
     expect(onChangeFn).toHaveBeenCalledWith(expect.anything(), "active");
   });

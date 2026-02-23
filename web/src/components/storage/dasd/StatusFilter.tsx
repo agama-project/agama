@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2025] SUSE LLC
+ * Copyright (c) [2025-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -31,18 +31,12 @@ import {
   SelectProps,
 } from "@patternfly/react-core";
 import Text from "~/components/core/Text";
-import { N_, _ } from "~/i18n";
+import { _ } from "~/i18n";
 
 type StatusFilterProps = {
   value: string;
+  options: object;
   onChange: SelectProps["onSelect"];
-};
-
-const options = {
-  all: N_("all"),
-  active: N_("active"),
-  read_only: N_("read_only"),
-  offline: N_("offline"),
 };
 
 const ID = "dasd-status-filter";
@@ -51,9 +45,8 @@ const ID = "dasd-status-filter";
  * Select component for filtering DASD devices by status.
  *
  * Renders a PF/Select input allowing users to choose one of the available DASD
- * statuses: "active", "read_only", "offline", or "all". The selected value is
- * passed to the parent via the `onChange` callback along with the event
- * originating the action.
+ * statuses. The selected value is passed to the parent via the `onChange`
+ * callback along with the event originating the action.
  *
  * Used as part of the DASD table filtering toolbar.
  *
@@ -61,7 +54,7 @@ const ID = "dasd-status-filter";
  * There is an issue with a11y label for the PF/MenuToggle, check
  * https://github.com/patternfly/patternfly-react/issues/11805
  */
-export default function StatusFilter({ value, onChange }: StatusFilterProps) {
+export default function StatusFilter({ value, options, onChange }: StatusFilterProps) {
   const [isOpen, setIsOpen] = useState(false);
   const onToggle = () => setIsOpen(!isOpen);
 

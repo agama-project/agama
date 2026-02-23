@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2025] SUSE LLC
+ * Copyright (c) [2025-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -23,30 +23,41 @@
 import React from "react";
 import { screen, within } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
+import { N_ } from "~/i18n";
 import FormatFilter from "./FormatFilter";
 
 const onChangeFn = jest.fn();
 
+const selectOptions = {
+  all: N_("All"),
+  yes: N_("Yes"),
+  no: N_("No"),
+};
+
 describe("DASD/FormatFilter", () => {
   it("renders a select menu to filter DASD devices by format status", async () => {
-    const { user } = plainRender(<FormatFilter value="all" onChange={onChangeFn} />);
+    const { user } = plainRender(
+      <FormatFilter value="all" options={selectOptions} onChange={onChangeFn} />,
+    );
     // Not using the label name to retrieve the MenuToggle button because a bug
     // PF/MenuToggle has, check
     // https://github.com/patternfly/patternfly-react/issues/11805
     const toggle = screen.getByRole("button");
     await user.click(toggle);
     const options = screen.getByRole("listbox");
-    within(options).getByRole("option", { name: "all" });
-    within(options).getByRole("option", { name: "yes" });
-    within(options).getByRole("option", { name: "no" });
+    within(options).getByRole("option", { name: "All" });
+    within(options).getByRole("option", { name: "Yes" });
+    within(options).getByRole("option", { name: "No" });
   });
 
   it("calls onChange when a format option is selected", async () => {
-    const { user } = plainRender(<FormatFilter value="all" onChange={onChangeFn} />);
+    const { user } = plainRender(
+      <FormatFilter value="all" options={selectOptions} onChange={onChangeFn} />,
+    );
     const toggle = screen.getByRole("button");
     await user.click(toggle);
     const options = screen.getByRole("listbox");
-    const activeOption = within(options).getByRole("option", { name: "yes" });
+    const activeOption = within(options).getByRole("option", { name: "Yes" });
     await user.click(activeOption);
     expect(onChangeFn).toHaveBeenCalledWith(expect.anything(), "yes");
   });

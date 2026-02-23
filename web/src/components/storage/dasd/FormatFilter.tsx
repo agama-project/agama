@@ -32,17 +32,12 @@ import {
 } from "@patternfly/react-core";
 import Text from "~/components/core/Text";
 import { DASDDevicesFilters } from "~/components/storage/dasd/DASDTable";
-import { N_, _ } from "~/i18n";
+import { _ } from "~/i18n";
 
 type FormatFilterProps = {
-  value: DASDDevicesFilters["format"];
+  value: DASDDevicesFilters["formatted"];
+  options: object;
   onChange: SelectProps["onSelect"];
-};
-
-const options = {
-  all: N_("all"),
-  yes: N_("yes"),
-  no: N_("no"),
 };
 
 const ID = "dasd-format-filter";
@@ -61,7 +56,7 @@ const ID = "dasd-format-filter";
  * There is an issue with a11y label for the PF/MenuToggle, check
  * https://github.com/patternfly/patternfly-react/issues/11805
  */
-export default function FormattedFilter({ value, onChange }: FormatFilterProps) {
+export default function FormattedFilter({ value, options, onChange }: FormatFilterProps) {
   const [isOpen, setIsOpen] = useState(false);
   const onToggle = () => setIsOpen(!isOpen);
 

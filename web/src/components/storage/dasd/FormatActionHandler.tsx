@@ -28,7 +28,7 @@ import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
 import { isEmpty } from "radashi";
 
-import type { Device } from "~/model/config/dasd";
+import type { Device } from "~/model/system/dasd";
 
 /**
  * Shared type for defining props used by all DASD format-related dialogs and
@@ -51,7 +51,9 @@ type CommonFormatDASDProps = {
 const DevicesList = ({ devices }: Pick<CommonFormatDASDProps, "devices">) => (
   <List>
     {devices.map((d: Device) => (
-      <ListItem key={d.channel}>{d.channel}</ListItem>
+      <ListItem key={d.channel}>
+        {d.channel} {d.deviceName}
+      </ListItem>
     ))}
   </List>
 );
@@ -84,7 +86,7 @@ const SomeDevicesOffline = ({
   devices,
   onCancel,
 }: Pick<CommonFormatDASDProps, "devices" | "onCancel">) => {
-  const offlineDevices = devices.filter((d) => d.state === "offline");
+  const offlineDevices = devices.filter((d) => d.status === "offline");
   const totalOffline = offlineDevices.length;
 
   return (
@@ -115,7 +117,7 @@ const DeviceFormatConfirmation = ({
     <Popup isOpen title={sprintf(_("Format device %s"), device.channel)}>
       <Content>
         <Stack hasGutter>
-          <Text isBold>{_("This action could destroy any data stored on the device.")}</Text>
+          <Text isBold>{_("This action will destroy any data stored on the device.")}</Text>
           <Text>{_("Confirm that you really want to continue.")}</Text>
         </Stack>
       </Content>
@@ -140,7 +142,7 @@ const MultipleDevicesFormatConfirmation = ({
       <Content isEditorial>
         <Stack hasGutter>
           <Text isBold>
-            {_("This action could destroy any data stored on the devices listed below.")}
+            {_("This action will destroy any data stored on the devices listed below.")}
           </Text>
           <DevicesList devices={devices} />
           <Text>{_("Confirm that you really want to continue.")}</Text>
@@ -191,14 +193,14 @@ export default function FormatActionHandler({
   if (devices.length === 1) {
     const device = devices[0];
 
-    if (device.state === "active") {
+    if (device.status === "active") {
       return <DeviceFormatConfirmation device={device} onAccept={format} onCancel={onCancel} />;
     } else {
       return <DeviceOffline device={device} onCancel={onCancel} />;
     }
   }
 
-  if (devices.some((d) => d.state === "offline")) {
+  if (devices.some((d) => d.status === "offline")) {
     return <SomeDevicesOffline devices={devices} onCancel={onCancel} />;
   } else {
     return (
