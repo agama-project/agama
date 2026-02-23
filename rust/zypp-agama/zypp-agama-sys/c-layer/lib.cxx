@@ -189,7 +189,7 @@ bool commit(struct Zypp *zypp, struct Status *status,
     unset_zypp_resolvable_download_callbacks();
     unset_zypp_security_callbacks();
     unset_zypp_install_callbacks();
-    return result.noError();
+    return result.allDone();
   } catch (zypp::Exception &excpt) {
     STATUS_EXCEPT(status, excpt);
     unset_zypp_resolvable_download_callbacks();
