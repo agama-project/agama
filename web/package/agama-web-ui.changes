@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri Feb 20 15:00:44 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Fix the language change (gh#agama-project/agama#3197).
+
+-------------------------------------------------------------------
 Thu Feb 19 13:35:30 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Do not crash when a system was registered without a code (bsc#1258450).

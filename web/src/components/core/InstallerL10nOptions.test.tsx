@@ -93,7 +93,7 @@ jest.mock("~/hooks/model/status", () => ({
 }));
 
 jest.mock("~/context/installerL10n", () => ({
-  ...jest.requireActual("~/context/installerL10n"),
+  InstallerL10nProvider: ({ children }) => <>{children}</>,
   useInstallerL10n: () => ({
     keymap: "us",
     language: "de-DE",
