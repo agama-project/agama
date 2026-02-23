@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-02-13 10:41+0000\n"
-"PO-Revision-Date: 2026-02-11 22:04+0000\n"
+"PO-Revision-Date: 2026-02-16 21:04+0000\n"
 "Last-Translator: Eugene Krater <lachend@gmail.com>\n"
 "Language-Team: Ukrainian <https://l10n.opensuse.org/projects/agama/agama-"
 "service-master/uk/>\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 5.15.2\n"
+"X-Generator: Weblate 5.16\n"
 
 #. Reports the problems and decide whether to continue or not.
 #.
@@ -77,9 +77,8 @@ msgid "Finishing installation"
 msgstr "Завершення встановлення"
 
 #: service/lib/agama/dbus/storage/manager.rb:138
-#, fuzzy
 msgid "Unmounting devices"
-msgstr "Розмонтування пристроїв зберігання"
+msgstr "Розмонтування пристроїв"
 
 #. Gets and serializes the storage config used to calculate the current proposal.
 #.
