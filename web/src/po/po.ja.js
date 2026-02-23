@@ -1614,6 +1614,9 @@ export default {
   "Registered": [
     "登録済み"
   ],
+  "Registered without a code": [
+    "コード無しで登録済み"
+  ],
   "Registration": [
     "登録"
   ],
@@ -1741,13 +1744,13 @@ export default {
     "モードの選択"
   ],
   "Select a mode and confirm your choice.": [
-    "モードを選択したあと、末尾で選択を確認してください。"
+    "モードを選択したあと、確認のためにボタンを押してください。"
   ],
   "Select a product": [
     "製品の選択"
   ],
   "Select a product and confirm your choice.": [
-    "製品を選択したあと、末尾で選択を確認してください。"
+    "製品を選択したあと、確認のためにボタンを押してください。"
   ],
   "Select a product mode to continue.": [
     "続行するには製品モードを選択してください。"
