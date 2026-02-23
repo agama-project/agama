@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon Feb 23 15:39:24 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Fix firewall-offline-cmd invocation (bsc#1258416).
+
+-------------------------------------------------------------------
 Fri Feb 20 10:20:10 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Add the URL to the transfer errors (related to bsc#1258194).
