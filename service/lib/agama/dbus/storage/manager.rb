@@ -51,27 +51,32 @@ module Agama
           textdomain "agama"
           super(PATH, logger: logger)
           @backend = backend
+          @system_json = generate_system_json
+          @config_json = generate_config_json
+          @config_model_json = generate_config_model_json
+          @proposal_json = generate_proposal_json
+          @issues_json = generate_issues_json
           register_progress_callbacks
           add_s390_interfaces if Yast::Arch.s390
         end
 
         dbus_interface "org.opensuse.Agama.Storage1" do
+          dbus_reader_attr_accessor :system_json, "s", dbus_name: "System"
+          dbus_reader_attr_accessor :config_json, "s", dbus_name: "Config"
+          dbus_reader_attr_accessor :config_model_json, "s", dbus_name: "ConfigModel"
+          dbus_reader_attr_accessor :proposal_json, "s", dbus_name: "Proposal"
+          dbus_reader_attr_accessor :issues_json, "s", dbus_name: "Issues"
           dbus_method(:Activate) { activate }
           dbus_method(:Probe) { probe }
           dbus_method(:Install) { install }
           dbus_method(:Finish) { finish }
           dbus_method(:Umount) { umount }
           dbus_method(:SetLocale, "in locale:s") { |locale| backend.configure_locale(locale) }
-          dbus_method(:GetSystem, "out system:s") { recover_system }
-          dbus_method(:GetConfig, "out config:s") { recover_config }
           dbus_method(:SetConfig, "in product:s, in config:s") { |p, c| configure(p, c) }
           dbus_method(
             :GetConfigFromModel, "in model:s, out config:s"
           ) { |m| convert_config_model(m) }
-          dbus_method(:GetConfigModel, "out model:s") { recover_config_model }
           dbus_method(:SolveConfigModel, "in model:s, out result:s") { |m| solve_config_model(m) }
-          dbus_method(:GetProposal, "out proposal:s") { recover_proposal }
-          dbus_method(:GetIssues, "out issues:s") { recover_issues }
           dbus_signal(:SystemChanged, "system:s")
           dbus_signal(:ProposalChanged, "proposal:s")
           dbus_signal(:ProgressChanged, "progress:s")
@@ -87,8 +92,7 @@ module Agama
           backend.activate
 
           next_progress_step(PROBING_STEP)
-          backend.probe
-          emit_system_changed
+          perform_probe
 
           next_progress_step(CONFIGURING_STEP)
           configure_with_current
@@ -104,13 +108,73 @@ module Agama
           backend.activate unless backend.activated?
 
           next_progress_step(PROBING_STEP)
-          backend.probe
-          emit_system_changed
+          perform_probe
 
           next_progress_step(CONFIGURING_STEP)
           configure_with_current
 
           finish_progress
+        end
+
+        # Configures storage.
+        #
+        # The JSON schema supports two different variants:
+        # { "storage": ... } or { "legacyAutoyastStorage": ... }.
+        #
+        # @raise If the config is not valid.
+        #
+        # @param serialized_product_config [String] Serialized product config.
+        # @param serialized_config [String] Serialized storage config.
+        def configure(serialized_product_config, serialized_config)
+          product_config_json = JSON.parse(serialized_product_config)
+          config_json = JSON.parse(serialized_config, symbolize_names: true)
+
+          # Do not configure if there is nothing to change.
+          return if backend.configured?(product_config_json, config_json)
+
+          logger.info("Configuring storage")
+          product_config = Agama::Config.new(product_config_json)
+          backend.update_product_config(product_config) if backend.product_config != product_config
+
+          start_progress(3, ACTIVATING_STEP)
+          backend.activate unless backend.activated?
+
+          next_progress_step(PROBING_STEP)
+          backend.probe unless backend.probed?
+
+          update_system_json
+
+          next_progress_step(CONFIGURING_STEP)
+          calculate_proposal(config_json)
+
+          finish_progress
+        end
+
+        # Converts the given serialized config model to a config.
+        #
+        # @param serialized_model [String] Serialized config model.
+        # @return [String] Serialized config according to JSON schema.
+        def convert_config_model(serialized_model)
+          model_json = JSON.parse(serialized_model, symbolize_names: true)
+
+          config = Agama::Storage::ConfigConversions::FromModel.new(
+            model_json,
+            product_config: product_config,
+            storage_system: proposal.storage_system
+          ).convert
+
+          config_json = { storage: Agama::Storage::ConfigConversions::ToJSON.new(config).convert }
+          JSON.pretty_generate(config_json)
+        end
+
+        # Solves the given serialized config model.
+        #
+        # @param serialized_model [String] Serialized storage config model.
+        # @return [String] Serialized solved model.
+        def solve_config_model(serialized_model)
+          model_json = JSON.parse(serialized_model, symbolize_names: true)
+          solved_model_json = proposal.solve_model(model_json)
+          JSON.pretty_generate(solved_model_json)
         end
 
         # Implementation for the API method #Install.
@@ -134,132 +198,11 @@ module Agama
           finish_progress
         end
 
+        # Implementation for the API method #Umount.
         def umount
           start_progress(1, _("Unmounting devices"))
           backend.umount
           finish_progress
-        end
-
-        # NOTE: memoization of the values?
-        # @return [String]
-        def recover_system
-          return nil.to_json unless backend.probed?
-
-          json = {
-            devices:            json_devices(:probed),
-            availableDrives:    available_drives,
-            availableMdRaids:   available_md_raids,
-            candidateDrives:    candidate_drives,
-            candidateMdRaids:   candidate_md_raids,
-            issues:             system_issues,
-            productMountPoints: product_mount_points,
-            encryptionMethods:  encryption_methods,
-            volumeTemplates:    volume_templates
-          }
-          JSON.pretty_generate(json)
-        end
-
-        # Gets and serializes the storage config used for calculating the current proposal.
-        #
-        # @return [String]
-        def recover_config
-          json = proposal.storage_json
-          JSON.pretty_generate(json)
-        end
-
-        # Gets and serializes the storage config model.
-        #
-        # @return [String]
-        def recover_config_model
-          json = proposal.model_json
-          JSON.pretty_generate(json)
-        end
-
-        # Applies the given serialized config according to the JSON schema.
-        #
-        # The JSON schema supports two different variants:
-        # { "storage": ... } or { "legacyAutoyastStorage": ... }.
-        #
-        # @raise If the config is not valid.
-        #
-        # @param serialized_product_config [String] Serialized product config.
-        # @param serialized_config [String] Serialized storage config.
-        def configure(serialized_product_config, serialized_config)
-          product_config_json = JSON.parse(serialized_product_config)
-          config_json = JSON.parse(serialized_config, symbolize_names: true)
-
-          # Do not configure if there is nothing to change.
-          return if backend.configured?(product_config_json, config_json)
-
-          logger.info("Configuring storage")
-
-          system_changed = false
-          product_config = Agama::Config.new(product_config_json)
-
-          if backend.product_config != product_config
-            system_changed = true
-            backend.update_product_config(product_config)
-          end
-
-          start_progress(3, ACTIVATING_STEP)
-          if !backend.activated?
-            backend.activate
-            # Potential change in system - issues
-            system_changed = true
-          end
-
-          next_progress_step(PROBING_STEP)
-          if !backend.probed?
-            backend.probe
-            # Potential change in system - devices, issues, candidateX, availableX
-            system_changed = true
-          end
-
-          emit_system_changed if system_changed
-
-          next_progress_step(CONFIGURING_STEP)
-          calculate_proposal(config_json)
-
-          finish_progress
-        end
-
-        # Converts the given serialized config model according to the JSON schema.
-        #
-        # @param serialized_model [String] Serialized config model.
-        # @return [String] Serialized config according to JSON schema.
-        def convert_config_model(serialized_model)
-          config_json = config_from_model(serialized_model)
-          JSON.pretty_generate(config_json)
-        end
-
-        # Solves the given serialized config model.
-        #
-        # @param serialized_model [String] Serialized storage config model.
-        # @return [String] Serialized solved model.
-        def solve_config_model(serialized_model)
-          model_json = JSON.parse(serialized_model, symbolize_names: true)
-          solved_model_json = proposal.solve_model(model_json)
-          JSON.pretty_generate(solved_model_json)
-        end
-
-        # NOTE: memoization of the values?
-        # @return [String]
-        def recover_proposal
-          return nil.to_json unless backend.proposal.success?
-
-          json = {
-            devices: json_devices(:staging),
-            actions: actions
-          }
-          JSON.pretty_generate(json)
-        end
-
-        # Gets and serializes the list of issues.
-        #
-        # @return [String]
-        def recover_issues
-          json = backend.issues.map { |i| json_issue(i) }
-          JSON.pretty_generate(json)
         end
 
         dbus_interface "org.opensuse.Agama.Storage1.Bootloader" do
@@ -312,6 +255,14 @@ module Agama
           on_progress_finish { self.ProgressFinished }
         end
 
+        # Probes storage and updates the associated info.
+        #
+        # @see #update_system_info
+        def perform_probe
+          backend.probe
+          update_system_json
+        end
+
         # Configures storage using the current config.
         #
         # @note Skips if no proposal has been calculated yet.
@@ -325,67 +276,157 @@ module Agama
           calculate_bootloader
         end
 
+        # Calculates a proposal with the given config and updates the associated info.
+        #
+        # @see #configure and #configure_with_current
+        #
+        # @param config_json [Hash, nil]
+        def calculate_proposal(config_json = nil)
+          backend.configure(config_json)
+          backend.add_packages if backend.proposal.success?
+
+          update_config_json
+          update_config_model_json
+          update_proposal_json
+          update_issues_json
+        end
+
         # Performs the bootloader configuration applying the current config.
         def calculate_bootloader
           logger.info("Configuring bootloader")
           backend.bootloader.configure
         end
 
-        # @see #configure
-        #
-        # @param config_json [Hash, nil] see Agama::Storage::Manager#configure
-        def calculate_proposal(config_json = nil)
-          backend.configure(config_json)
-          backend.add_packages if backend.proposal.success?
+        # Updates the system info if needed.
+        def update_system_json
+          system_json = generate_system_json
+          return if self.system_json == system_json
 
-          self.ProposalChanged(recover_proposal)
+          # This assignment emits a D-Bus PropertiesChanged.
+          self.system_json = system_json
+          self.SystemChanged(system_json)
         end
 
-        # Generates a config JSON from a serialized config model.
-        #
-        # @param serialized_model [String] Serialized config model.
-        # @return [Hash] Config according to JSON schema.
-        def config_from_model(serialized_model)
-          model_json = JSON.parse(serialized_model, symbolize_names: true)
-          config = Agama::Storage::ConfigConversions::FromModel.new(
-            model_json,
-            product_config: product_config,
-            storage_system: proposal.storage_system
-          ).convert
+        # Updates the config info if needed.
+        def update_config_json
+          config_json = generate_config_json
+          return if self.config_json == config_json
 
-          { storage: Agama::Storage::ConfigConversions::ToJSON.new(config).convert }
+          # This assignment emits a D-Bus PropertiesChanged.
+          self.config_json = config_json
         end
 
-        # JSON representation of the given devicegraph from StorageManager
+        # Updates the config model info if needed.
+        def update_config_model_json
+          config_model_json = generate_config_model_json
+          return if self.config_model_json == config_model_json
+
+          # This assignment emits a D-Bus PropertiesChanged.
+          self.config_model_json = config_model_json
+        end
+
+        # Updates the proposal info if needed.
+        def update_proposal_json
+          proposal_json = generate_proposal_json
+          return if self.proposal_json == proposal_json
+
+          # This assignment emits a D-Bus PropertiesChanged.
+          self.proposal_json = proposal_json
+          self.ProposalChanged(proposal_json)
+        end
+
+        # Updates the issues info if needed.
+        def update_issues_json
+          issues_json = generate_issues_json
+          return if self.issues_json == issues_json
+
+          # This assignment emits a D-Bus PropertiesChanged.
+          self.issues_json = issues_json
+        end
+
+        # Generates the serialized JSON of the system.
+        #
+        # @return [String]
+        def generate_system_json
+          return null_json unless backend.probed?
+
+          json = {
+            devices:            devices_hash(:probed),
+            availableDrives:    available_drives,
+            availableMdRaids:   available_md_raids,
+            candidateDrives:    candidate_drives,
+            candidateMdRaids:   candidate_md_raids,
+            issues:             system_issues_hash,
+            productMountPoints: product_mount_points,
+            encryptionMethods:  encryption_methods,
+            volumeTemplates:    volume_templates
+          }
+          JSON.pretty_generate(json)
+        end
+
+        # Generates the serialized JSON of the storage config used for calculating the current
+        # proposal.
+        #
+        # @return [String]
+        def generate_config_json
+          json = proposal.storage_json
+          JSON.pretty_generate(json)
+        end
+
+        # Generates the serialized JSON of the storage config model.
+        #
+        # @return [String]
+        def generate_config_model_json
+          json = proposal.model_json
+          JSON.pretty_generate(json)
+        end
+
+        # Generates the serialized JSON of the proposal.
+        #
+        # @return [String]
+        def generate_proposal_json
+          return null_json unless backend.proposal.success?
+
+          json = {
+            devices: devices_hash(:staging),
+            actions: actions_hash
+          }
+          JSON.pretty_generate(json)
+        end
+
+        # Generates the serialized JSON of the list of issues.
+        #
+        # @return [String]
+        def generate_issues_json
+          json = backend.issues.map { |i| issue_hash(i) }
+          JSON.pretty_generate(json)
+        end
+
+        # Representation of the null JSON.
+        #
+        # @return [String]
+        def null_json
+          nil.to_json
+        end
+
+        # Hash representation of the given devicegraph from StorageManager.
         #
         # @param meth [Symbol] method used to get the devicegraph from StorageManager
         # @return [Hash]
-        def json_devices(meth)
+        def devices_hash(meth)
           devicegraph = Y2Storage::StorageManager.instance.send(meth)
           Agama::Storage::DevicegraphConversions::ToJSON.new(devicegraph).convert
         end
 
-        # JSON representation of the given Agama issue
+        # List of hash representation of the actions.
         #
-        # @param issue [Array<Agama::Issue>]
-        # @return [Hash]
-        def json_issue(issue)
-          {
-            description: issue.description,
-            class:       issue.kind&.to_s,
-            details:     issue.details&.to_s
-          }.compact
-        end
-
-        # List of sorted actions.
-        #
-        # @return [Hash<Symbol, Object>]
+        # @return [Array<Hash>]
         #   * :device [Integer]
         #   * :text [String]
         #   * :subvol [Boolean]
         #   * :delete [Boolean]
         #   * :resize [Boolean]
-        def actions
+        def actions_hash
           backend.actions.map do |action|
             {
               device: action.device_sid,
@@ -395,6 +436,27 @@ module Agama
               resize: action.resize?
             }
           end
+        end
+
+        # List of hash representation of the problems found during system probing.
+        #
+        # @see #generate_system_json
+        #
+        # @return [Array<Hash>]
+        def system_issues_hash
+          backend.system_issues.map { |i| issue_hash(i) }
+        end
+
+        # Hash representation of the given issue.
+        #
+        # @param issue [Agama::Issue]
+        # @return [Hash]
+        def issue_hash(issue)
+          {
+            description: issue.description,
+            class:       issue.kind&.to_s,
+            details:     issue.details&.to_s
+          }.compact
         end
 
         # @see Storage::System#available_drives
@@ -419,15 +481,6 @@ module Agama
         # @return [Array<Integer>]
         def candidate_md_raids
           proposal.storage_system.candidate_md_raids.map(&:sid)
-        end
-
-        # Problems found during system probing
-        #
-        # @see #recover_system
-        #
-        # @return [Hash]
-        def system_issues
-          backend.system_issues.map { |i| json_issue(i) }
         end
 
         # Meaningful mount points for the current product.
@@ -459,11 +512,6 @@ module Agama
           volumes.map do |vol|
             Agama::Storage::VolumeConversions::ToJSON.new(vol).convert
           end
-        end
-
-        # Emits the SystemChanged signal
-        def emit_system_changed
-          self.SystemChanged(recover_system)
         end
 
         def add_s390_interfaces
