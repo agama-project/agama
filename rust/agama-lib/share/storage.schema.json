@@ -242,6 +242,7 @@
       "required": ["name"],
       "properties": {
         "name": { "$ref": "#/$defs/baseName" },
+        "search": { "$ref": "#/$defs/volumeGroupSearch" },
         "extentSize": { "$ref": "#/$defs/sizeValue" },
         "physicalVolumes": {
           "description": "Devices to use as physical volumes.",
@@ -328,6 +329,7 @@
       "additionalProperties": false,
       "properties": {
         "name": { "$ref": "#/$defs/baseName" },
+        "search": { "$ref": "#/$defs/logicalVolumeSearch" },
         "size": { "$ref": "#/$defs/size" },
         "stripes": { "$ref": "#/$defs/logicalVolumeStripes" },
         "stripeSize": { "$ref": "#/$defs/sizeValue" },
@@ -476,6 +478,57 @@
       "minProperties": 1,
       "maxProperties": 1
     },
+    "volumeGroupSearch": {
+      "anyOf": [
+        { "$ref": "#/$defs/searchAll" },
+        { "$ref": "#/$defs/searchName" },
+        { "$ref": "#/$defs/volumeGroupAdvancedSearch" }
+      ]
+    },
+    "volumeGroupAdvancedSearch": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "condition": { "$ref": "#/$defs/volumeGroupSearchCondition" },
+        "sort": { "$ref": "#/$defs/volumeGroupSearchSort" },
+        "max": { "$ref": "#/$defs/searchMax" },
+        "ifNotFound": { "$ref": "#/$defs/searchCreatableActions" }
+      }
+    },
+    "volumeGroupSearchCondition": {
+      "anyOf": [
+        { "$ref": "#/$defs/searchConditionName" },
+        { "$ref": "#/$defs/searchConditionSize" }
+      ]
+    },
+    "volumeGroupSearchSort": {
+      "anyOf": [
+        { "$ref": "#/$defs/volumeGroupSearchSortCriterion" },
+        {
+          "type": "array",
+          "items": { "$ref": "#/$defs/volumeGroupSearchSortCriterion" }
+        }
+      ]
+    },
+    "volumeGroupSearchSortCriterion": {
+      "anyOf": [
+        { "$ref": "#/$defs/volumeGroupSearchSortCriterionShort" },
+        { "$ref": "#/$defs/volumeGroupSearchSortCriterionFull" }
+      ]
+    },
+    "volumeGroupSearchSortCriterionShort": {
+      "enum": ["name", "size"]
+    },
+    "volumeGroupSearchSortCriterionFull": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "name": { "$ref": "#/$defs/searchSortCriterionOrder" },
+        "size": { "$ref": "#/$defs/searchSortCriterionOrder" }
+      },
+      "minProperties": 1,
+      "maxProperties": 1
+    },
     "partitionSearch": {
       "anyOf": [
         { "$ref": "#/$defs/searchAll" },
@@ -515,6 +568,29 @@
         { "$ref": "#/$defs/searchConditionName" },
         { "$ref": "#/$defs/searchConditionSize" },
         { "$ref": "#/$defs/searchConditionPartitionNumber" }
+      ]
+    },
+    "logicalVolumeSearch": {
+      "anyOf": [
+        { "$ref": "#/$defs/searchAll" },
+        { "$ref": "#/$defs/searchName" },
+        { "$ref": "#/$defs/logicalVolumeAdvancedSearch" }
+      ]
+    },
+    "logicalVolumeAdvancedSearch": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "condition": { "$ref": "#/$defs/logicalVolumeSearchCondition" },
+        "sort": { "$ref": "#/$defs/logicalVolumeSearchSort" },
+        "max": { "$ref": "#/$defs/searchMax" },
+        "ifNotFound": { "$ref": "#/$defs/searchCreatableActions" }
+      }
+    },
+    "logicalVolumeSearchCondition": {
+      "anyOf": [
+        { "$ref": "#/$defs/searchConditionName" },
+        { "$ref": "#/$defs/searchConditionSize" }
       ]
     },
     "searchConditionName": {
@@ -601,6 +677,34 @@
         "name": { "$ref": "#/$defs/searchSortCriterionOrder" },
         "size": { "$ref": "#/$defs/searchSortCriterionOrder" },
         "number": { "$ref": "#/$defs/searchSortCriterionOrder" }
+      },
+      "minProperties": 1,
+      "maxProperties": 1
+    },
+    "logicalVolumeSearchSort": {
+      "anyOf": [
+        { "$ref": "#/$defs/logicalVolumeSearchSortCriterion" },
+        {
+          "type": "array",
+          "items": { "$ref": "#/$defs/logicalVolumeSearchSortCriterion" }
+        }
+      ]
+    },
+    "logicalVolumeSearchSortCriterion": {
+      "anyOf": [
+        { "$ref": "#/$defs/logicalVolumeSearchSortCriterionShort" },
+        { "$ref": "#/$defs/logicalVolumeSearchSortCriterionFull" }
+      ]
+    },
+    "logicalVolumeSearchSortCriterionShort": {
+      "enum": ["name", "size", "number"]
+    },
+    "logicalVolumeSearchSortCriterionFull": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "name": { "$ref": "#/$defs/searchSortCriterionOrder" },
+        "size": { "$ref": "#/$defs/searchSortCriterionOrder" }
       },
       "minProperties": 1,
       "maxProperties": 1
