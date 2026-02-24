@@ -47,32 +47,7 @@ const NoDevicesAvailable = () => {
  * Reads the device list and renders the content based on it.
  */
 const DASDPageContent = () => {
-  // const { devices = [] } = useSystem() || {};
-  console.log(useSystem);
-  const devices = [
-    {
-      channel: "0.0.0160",
-      active: false,
-      deviceName: "",
-      type: "",
-      formatted: false,
-      diag: false,
-      status: "offline",
-      accessType: "",
-      partitionInfo: "",
-    },
-    {
-      channel: "0.0.0200",
-      active: true,
-      deviceName: "dasda",
-      type: "eckd",
-      formatted: false,
-      diag: false,
-      status: "active",
-      accessType: "rw",
-      partitionInfo: "1",
-    },
-  ];
+  const { devices = [] } = useSystem() || {};
 
   if (isEmpty(devices)) {
     return <NoDevicesAvailable />;
