@@ -611,14 +611,14 @@ export default function DASDTable({ devices }) {
         sortedBy={state.sortedBy}
         updateSorting={onSortingChange}
         allowSelectAll
-        itemActions={(d) =>
+        itemActions={(d: Device) =>
           buildActions({
             devices: [d],
             updater, // FIXME
             dispatcher: dispatch,
           })
         }
-        itemActionsLabel={(d) => `Actions for ${d.id}`}
+        itemActionsLabel={(d: Device) => `Actions for ${d.channel}`}
         emptyState={
           <EmptyState
             headingLevel="h2"
