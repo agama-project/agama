@@ -103,7 +103,7 @@ mod test {
     #[test]
     #[cfg(not(ci))]
     fn test_passwords() {
-        let checker = PasswordChecker::default();
+        let checker = PasswordChecker;
 
         let result = checker.check("nots3cr3t.").unwrap();
         assert!(matches!(result, PasswordCheckResult::Success(_)));

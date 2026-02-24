@@ -212,7 +212,7 @@ impl MessageHandler<message::Next> for Service {
         let Some(progress) = self.get_mut_progress(message.scope) else {
             return Err(Error::MissingProgress(message.scope));
         };
-        progress.next()?;
+        progress.advance()?;
         let progress = progress.clone();
         self.send_progress_changed(progress)?;
         Ok(())
@@ -225,7 +225,7 @@ impl MessageHandler<message::NextWithStep> for Service {
         let Some(progress) = self.get_mut_progress(message.scope) else {
             return Err(Error::MissingProgress(message.scope));
         };
-        progress.next_with_step(message.step)?;
+        progress.advance_with_step(message.step)?;
         let progress = progress.clone();
         self.send_progress_changed(progress)?;
         Ok(())

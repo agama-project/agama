@@ -519,7 +519,6 @@ mod tests {
     use super::*;
     use serde_json::json;
     use std::fs;
-    use tempfile;
 
     #[test]
     fn test_check_error_success() {

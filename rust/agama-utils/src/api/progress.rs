@@ -65,7 +65,7 @@ impl Progress {
         }
     }
 
-    pub fn next(&mut self) -> Result<(), Error> {
+    pub fn advance(&mut self) -> Result<(), Error> {
         if self.index >= self.size {
             return Err(Error::MissingStep(self.scope));
         }
@@ -75,8 +75,8 @@ impl Progress {
         Ok(())
     }
 
-    pub fn next_with_step(&mut self, step: String) -> Result<(), Error> {
-        self.next()?;
+    pub fn advance_with_step(&mut self, step: String) -> Result<(), Error> {
+        self.advance()?;
         self.step = step;
         Ok(())
     }

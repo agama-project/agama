@@ -353,7 +353,7 @@ mod tests {
                 chroot: Some(chroot),
             });
             script
-                .write(&self.scripts_dir())
+                .write(self.scripts_dir())
                 .expect("Could not write the script");
             script
         }

@@ -63,7 +63,7 @@ impl ConfigAutoLoader {
     ///   locations. It does not report problems for these locations.
     ///
     /// See [Self::load] for further information.
-    pub async fn load(&self, urls: &Vec<String>) -> anyhow::Result<()> {
+    pub async fn load(&self, urls: &[String]) -> anyhow::Result<()> {
         let loader = ConfigLoader::new(self.insecure);
         if urls.is_empty() {
             self.load_predefined_config(loader).await

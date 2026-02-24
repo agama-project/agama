@@ -282,7 +282,7 @@ mod tests {
     #[tokio::test]
     async fn test_to_hardware_info() -> Result<(), Box<dyn Error>> {
         let fixtures = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../test/share");
-        let mut registry = Registry::new_from_file(&fixtures.join("lshw.json"));
+        let mut registry = Registry::new_from_file(fixtures.join("lshw.json"));
         registry.read().await?;
         let node = registry.to_hardware_info();
         assert_eq!(
@@ -297,7 +297,7 @@ mod tests {
     #[tokio::test]
     async fn test_to_hardware_info_qemu() -> Result<(), Box<dyn Error>> {
         let fixtures = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../test/share");
-        let mut registry = Registry::new_from_file(&fixtures.join("lshw-qemu.json"));
+        let mut registry = Registry::new_from_file(fixtures.join("lshw-qemu.json"));
         registry.read().await?;
         let node = registry.to_hardware_info();
         assert_eq!(
@@ -326,7 +326,7 @@ mod tests {
     #[tokio::test]
     async fn test_to_hardware_incomplete() -> Result<(), Box<dyn Error>> {
         let fixtures = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../test/share");
-        let mut registry = Registry::new_from_file(&fixtures.join("lshw-incomplete.json"));
+        let mut registry = Registry::new_from_file(fixtures.join("lshw-incomplete.json"));
         registry.read().await?;
         let node = registry.to_hardware_info();
         assert_eq!(node.cpu, None);

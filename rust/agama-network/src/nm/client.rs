@@ -102,6 +102,7 @@ impl<'a> NetworkManagerClient<'a> {
                 }
             } else if let Err(error) = OpenOptions::new()
                 .create(true)
+                .truncate(true)
                 .write(true)
                 .open(not_copy_path)
             {

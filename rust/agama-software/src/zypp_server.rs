@@ -56,13 +56,19 @@ pub enum ZyppDispatchError {
     #[error(transparent)]
     Zypp(#[from] ZyppError),
     #[error("libzypp error: {0}")]
-    ZyppServer(#[from] ZyppServerError),
+    ZyppServer(#[from] Box<ZyppServerError>),
     #[error("Response channel closed")]
     ResponseChannelClosed,
     #[error("Target creation failed: {0}")]
     TargetCreationFailed(#[source] std::io::Error),
     #[error(transparent)]
     Progress(#[from] progress::service::Error),
+}
+
+impl From<ZyppServerError> for ZyppDispatchError {
+    fn from(err: ZyppServerError) -> Self {
+        Self::ZyppServer(Box::new(err))
+    }
 }
 
 #[derive(thiserror::Error, Debug)]
@@ -74,7 +80,7 @@ pub enum ZyppServerError {
     RecvError(#[from] oneshot::error::RecvError),
 
     #[error("Sender error: {0}")]
-    SendError(#[from] mpsc::error::SendError<SoftwareAction>),
+    SendError(#[from] Box<mpsc::error::SendError<SoftwareAction>>),
 
     #[error("Error from libzypp: {0}")]
     ZyppError(#[from] zypp_agama::ZyppError),
@@ -87,6 +93,12 @@ pub enum ZyppServerError {
 
     #[error("Failed to copy to target system: {0}")]
     IO(#[from] std::io::Error),
+}
+
+impl From<mpsc::error::SendError<SoftwareAction>> for ZyppServerError {
+    fn from(err: mpsc::error::SendError<SoftwareAction>) -> Self {
+        Self::SendError(Box::new(err))
+    }
 }
 
 pub type ZyppServerResult<R> = Result<R, ZyppServerError>;
@@ -117,7 +129,7 @@ pub enum SoftwareAction {
 pub enum RegistrationStatus {
     #[default]
     NotRegistered,
-    Registered(Registration),
+    Registered(Box<Registration>),
     Failed(RegistrationError),
 }
 
@@ -289,11 +301,12 @@ impl ZyppServer {
         Ok(state)
     }
 
+    #[allow(clippy::too_many_arguments)]
     fn write(
         &mut self,
         state: SoftwareState,
         progress: Handler<progress::Service>,
-        questions: Handler<question::Service>,
+        _questions: Handler<question::Service>,
         security_srv: Handler<security::Service>,
         security: &mut callbacks::Security,
         tx: oneshot::Sender<ZyppServerResult<Vec<Issue>>>,
@@ -875,7 +888,7 @@ impl ZyppServer {
 
         match registration.register(zypp, security_srv) {
             Ok(registration) => {
-                self.registration = RegistrationStatus::Registered(registration);
+                self.registration = RegistrationStatus::Registered(Box::new(registration));
             }
             Err(error) => {
                 issues.push(

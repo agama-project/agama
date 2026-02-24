@@ -153,7 +153,7 @@ mod tests {
         updated.merge(original);
         let pre_scripts = updated.pre.unwrap();
         assert_eq!(pre_scripts.len(), 1);
-        let script = pre_scripts.get(0).unwrap();
+        let script = pre_scripts.first().unwrap();
         assert_eq!(&script.base.name, "updated");
     }
 

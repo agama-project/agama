@@ -94,11 +94,11 @@ impl BootloaderClient for TestClient {
 
 /// Starts a testing storage service.
 pub async fn start_service(
-    issues: Handler<issue::Service>,
+    _issues: Handler<issue::Service>,
     dbus: zbus::Connection,
 ) -> Handler<Service> {
     let client = TestClient::new();
-    Starter::new(dbus, issues)
+    Starter::new(dbus)
         .with_client(client)
         .start()
         .await

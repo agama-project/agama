@@ -344,7 +344,6 @@ impl RegistrationBuilder {
             email: self.email.clone(),
             language: "en-us".to_string().into(),
             url: self.url.clone(),
-            ..Default::default()
         };
         // https://github.com/agama-project/agama/blob/master/service/lib/agama/registration.rb#L294
         let version = self.version.split(".").next().unwrap_or("1");

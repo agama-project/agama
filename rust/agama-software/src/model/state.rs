@@ -142,7 +142,7 @@ impl<'a> SoftwareStateBuilder<'a> {
 
     /// Builds the [SoftwareState] combining all the sources.
     pub fn build(self) -> SoftwareState {
-        let mut state = self.from_product_spec();
+        let mut state = self.to_software_state();
 
         if let Some(system) = self.system {
             self.add_system_config(&mut state, system);
@@ -329,7 +329,7 @@ impl<'a> SoftwareStateBuilder<'a> {
         }
     }
 
-    fn from_product_spec(&self) -> SoftwareState {
+    fn to_software_state(&self) -> SoftwareState {
         let software = &self.product.software;
         let kernel_repos = self.kernel_cmdline.get_last("inst.install_url");
         let repositories = if let Some(kernel_repos) = kernel_repos {
@@ -500,11 +500,11 @@ impl ResolvablesState {
         r#type: ResolvableType,
         selection: ResolvableSelection,
     ) {
-        if let Some(entry) = self.0.get(&(name.to_string(), r#type)) {
-            if let ResolvableSelection::AutoSelected { .. } = entry {
-                tracing::debug!("Could not modify the {name} state because it is auto selected.");
-                return;
-            }
+        if let Some(ResolvableSelection::AutoSelected { .. }) =
+            self.0.get(&(name.to_string(), r#type))
+        {
+            tracing::debug!("Could not modify the {name} state because it is auto selected.");
+            return;
         }
         self.0.insert((name.to_string(), r#type), selection);
     }
@@ -575,11 +575,10 @@ impl ResolvableSelection {
     }
 
     pub fn selected(&self) -> bool {
-        match self {
-            ResolvableSelection::Selected => true,
-            ResolvableSelection::AutoSelected { skip_if_missing: _ } => true,
-            _ => false,
-        }
+        matches!(
+            self,
+            ResolvableSelection::Selected | ResolvableSelection::AutoSelected { .. }
+        )
     }
 }
 

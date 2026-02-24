@@ -68,8 +68,8 @@ impl Starter {
         self
     }
 
-    pub fn with_workdir(mut self, workdir: &PathBuf) -> Self {
-        self.workdir = workdir.clone();
+    pub fn with_workdir(mut self, workdir: &Path) -> Self {
+        self.workdir = workdir.to_path_buf();
         self
     }
 

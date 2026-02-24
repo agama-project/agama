@@ -73,7 +73,7 @@ impl IntoResponse for Error {
 
         if let Error::Manager(error) = &self {
             if matches!(error, ManagerError::PendingIssues { issues: _ })
-                || matches!(error, ManagerError::Busy { scopes })
+                || matches!(error, ManagerError::Busy { scopes: _ })
             {
                 status = StatusCode::UNPROCESSABLE_ENTITY;
             }

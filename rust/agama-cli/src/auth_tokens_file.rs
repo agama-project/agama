@@ -138,7 +138,7 @@ mod tests {
     #[test]
     fn test_remove_host() {
         let path = Path::new("tests/tokens.json");
-        let mut file = AuthTokensFile::read_from_path(&path).unwrap();
+        let mut file = AuthTokensFile::read_from_path(path).unwrap();
         assert!(file.get_token("my-server.lan").is_some());
 
         file.remove_host("my-server.lan");

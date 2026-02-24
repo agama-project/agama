@@ -56,7 +56,6 @@ mod tests {
     struct Context {
         events_rx: broadcast::Receiver<Event>,
         handler: Handler<Service>,
-        issues: Handler<issue::Service>,
     }
 
     impl AsyncTestContext for Context {
@@ -69,7 +68,6 @@ mod tests {
             Self {
                 events_rx,
                 handler,
-                issues,
             }
         }
     }
