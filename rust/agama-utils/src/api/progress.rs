@@ -71,7 +71,7 @@ impl Progress {
         }
 
         self.index += 1;
-        self.step = self.get_step(self.index).unwrap_or(String::new());
+        self.step = self.get_step(self.index).unwrap_or_default();
         Ok(())
     }
 
@@ -82,6 +82,6 @@ impl Progress {
     }
 
     fn get_step(&self, index: usize) -> Option<String> {
-        self.steps.get(index - 1).map(|s| s.clone())
+        self.steps.get(index - 1).cloned()
     }
 }

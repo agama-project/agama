@@ -85,8 +85,7 @@ impl Registry {
         self.fallback.clear();
 
         let territories = get_territories().map_err(|e| {
-            std::io::Error::new(
-                std::io::ErrorKind::Other,
+            std::io::Error::other(
                 format!("Cannot read the territories list: {}", e),
             )
         })?;
@@ -109,7 +108,7 @@ impl Registry {
     /// If a translation is not found for the given language, it returns the default text.
     pub fn find(&self, id: &str, language: &LanguageTag) -> Option<LicenseContent> {
         let license = self.licenses.iter().find(|l| l.id.as_str() == id)?;
-        let license_language = self.find_language(&license, &language).unwrap_or_default();
+        let license_language = self.find_language(license, language).unwrap_or_default();
         self.read_license_content(id, &license_language).ok()
     }
 
@@ -193,7 +192,7 @@ impl Registry {
 
         candidates
             .into_iter()
-            .find(|c| license.languages.contains(&c))
+            .find(|c| license.languages.contains(c))
     }
 
     /// Returns a vector with the licenses from the repository.

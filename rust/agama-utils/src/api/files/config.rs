@@ -99,7 +99,7 @@ fn resolve_urls_for<T: WithFileSource>(
 ) -> Result<(), FileSourceError> {
     if let Some(ref mut files) = files {
         for file in files {
-            file.resolve_url(&base_uri)?;
+            file.resolve_url(base_uri)?;
         }
     }
     Ok(())

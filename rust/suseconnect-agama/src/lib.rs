@@ -302,7 +302,7 @@ impl TryFrom<Value> for Credentials {
                 "Missing credentials key".to_string(),
             ));
         };
-        let Some(login) = credentials.get(0).and_then(Value::as_str) else {
+        let Some(login) = credentials.first().and_then(Value::as_str) else {
             return Err(Error::UnexpectedResponse("Missing login key".to_string()));
         };
         let Some(password) = credentials.get(1).and_then(Value::as_str) else {

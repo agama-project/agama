@@ -155,7 +155,7 @@ impl RootUserConfig {
             return false;
         }
 
-        return true;
+        true
     }
 }
 

@@ -87,7 +87,7 @@ impl Starter {
         };
         let service = Service {
             full_config: Config::new(),
-            model: model,
+            model,
             issues: self.issues,
             events: self.events,
         };
@@ -241,7 +241,7 @@ impl MessageHandler<message::CheckPassword> for Service {
         &mut self,
         message: message::CheckPassword,
     ) -> Result<PasswordCheckResult, Error> {
-        let checker = PasswordChecker::default();
+        let checker = PasswordChecker;
         Ok(checker.check(&message.password)?)
     }
 }

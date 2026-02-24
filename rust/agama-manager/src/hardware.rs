@@ -143,7 +143,7 @@ impl HardwareNode {
     ///
     /// * `json`: JSON string reference.
     fn from_json(json: &str) -> Result<HardwareNode, Error> {
-        let node = serde_json::from_str(&json).map_err(|error| Error::Parse {
+        let node = serde_json::from_str(json).map_err(|error| Error::Parse {
             json: json.to_string(),
             source: error,
         })?;
@@ -158,7 +158,7 @@ impl HardwareNode {
     /// * `id`: id to search for (e.g., "cpu", "memory", etc.).
     pub fn find_by_id(&self, id: &str) -> Option<&HardwareNode> {
         if self.id == id {
-            return Some(&self);
+            return Some(self);
         }
 
         for children in &self.children {
@@ -184,7 +184,7 @@ impl HardwareNode {
 
     fn search_by_class<'a>(&'a self, class: &str, results: &mut Vec<&'a HardwareNode>) {
         if self.class == class {
-            results.push(&self);
+            results.push(self);
         }
 
         for children in &self.children {

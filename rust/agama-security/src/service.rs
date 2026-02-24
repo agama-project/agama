@@ -130,7 +130,7 @@ impl State {
         let path = self.workdir.join(format!("{name}.pem"));
         certificate
             .import(&path)
-            .map_err(|e| Error::CertificateIO(e))?;
+            .map_err(Error::CertificateIO)?;
         self.imported.push(name.to_string());
         Ok(())
     }
@@ -178,7 +178,7 @@ impl State {
 
         let output = process::Command::new("update-ca-certificates")
             .arg("--root")
-            .arg(&directory)
+            .arg(directory)
             .output()?;
 
         if !output.status.success() {

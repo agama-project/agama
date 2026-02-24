@@ -135,6 +135,7 @@ impl Default for BondSettings {
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize, utoipa::ToSchema, PartialEq)]
+#[derive(Default)]
 pub struct BridgeSettings {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub stp: Option<bool>,
@@ -150,18 +151,6 @@ pub struct BridgeSettings {
     pub ports: Vec<String>,
 }
 
-impl Default for BridgeSettings {
-    fn default() -> Self {
-        Self {
-            stp: None,
-            priority: None,
-            forward_delay: None,
-            hello_time: None,
-            max_age: None,
-            ports: vec![],
-        }
-    }
-}
 
 #[derive(Clone, Debug, Serialize, Deserialize, utoipa::ToSchema, PartialEq)]
 pub struct VlanSettings {

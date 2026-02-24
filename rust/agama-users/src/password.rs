@@ -31,7 +31,6 @@ use std::{
     io::Write,
     process::{Command, Stdio},
 };
-use thiserror;
 
 #[derive(thiserror::Error, Debug)]
 pub enum PasswordCheckerError {

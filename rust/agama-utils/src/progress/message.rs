@@ -158,6 +158,12 @@ pub struct IsEmpty {
     pub scope: Option<Scope>,
 }
 
+impl Default for IsEmpty {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl IsEmpty {
     pub fn new() -> Self {
         IsEmpty { scope: None }

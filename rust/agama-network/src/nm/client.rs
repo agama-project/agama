@@ -41,7 +41,6 @@ use crate::types::{AccessPoint, AddFlags, ConnectionFlags, Device, DeviceType, U
 use agama_utils::dbus::get_optional_property;
 use semver::Version;
 use uuid::Uuid;
-use zbus;
 use zbus::zvariant::{ObjectPath, OwnedObjectPath};
 
 /// Simplified NetworkManager D-Bus client.
@@ -101,14 +100,12 @@ impl<'a> NetworkManagerClient<'a> {
                 if let Err(error) = fs::remove_file(not_copy_path) {
                     tracing::error!("Cannot remove {} file {:?}", NOT_COPY_NETWORK_PATH, error);
                 }
-            } else {
-                if let Err(error) = OpenOptions::new()
-                    .create(true)
-                    .write(true)
-                    .open(not_copy_path)
-                {
-                    tracing::error!("Cannot write {} file {:?}", NOT_COPY_NETWORK_PATH, error);
-                }
+            } else if let Err(error) = OpenOptions::new()
+                .create(true)
+                .write(true)
+                .open(not_copy_path)
+            {
+                tracing::error!("Cannot write {} file {:?}", NOT_COPY_NETWORK_PATH, error);
             };
         };
 
@@ -232,7 +229,7 @@ impl<'a> NetworkManagerClient<'a> {
                 Ok(mut connection) => {
                     let state = states
                         .get(&connection.id)
-                        .map(|s| NmConnectionState(s.clone()));
+                        .map(|s| NmConnectionState(*s));
                     if let Some(state) = state {
                         connection.state = state.try_into().unwrap_or_default();
                     }
@@ -356,11 +353,9 @@ impl<'a> NetworkManagerClient<'a> {
 
             tracing::info!("Activating connection {}", &conn.id);
             self.activate_connection(path).await?;
-        } else {
-            if conn.is_down() || conn.is_removed() {
-                tracing::info!("Deactivating connection {}", &conn.id);
-                self.deactivate_connection(path).await?;
-            }
+        } else if conn.is_down() || conn.is_removed() {
+            tracing::info!("Deactivating connection {}", &conn.id);
+            self.deactivate_connection(path).await?;
         }
         Ok(())
     }
@@ -539,7 +534,7 @@ impl<'a> NetworkManagerClient<'a> {
             match proxy.get_secrets("802-11-wireless-security").await {
                 Ok(secrets) => {
                     if let Some(secret) = secrets.get("802-11-wireless-security") {
-                        wireless.password = get_optional_property(&secret, "psk")?;
+                        wireless.password = get_optional_property(secret, "psk")?;
                     }
                 }
                 Err(_) => {

@@ -252,7 +252,7 @@ impl ActionDispatcher<'_> {
     ) -> Result<(), NmError> {
         let proxy = self.proxies.find_or_add_active_connection(&path).await?;
         let id = proxy.id().await?;
-        let state = proxy.state().await.map(|s| NmConnectionState(s.clone()))?;
+        let state = proxy.state().await.map(|s| NmConnectionState(s))?;
         if let Ok(state) = state.try_into() {
             _ = self
                 .actions_tx
@@ -272,7 +272,7 @@ impl ActionDispatcher<'_> {
     ) -> Result<(), NmError> {
         if let Some(proxy) = self.proxies.remove_active_connection(&path) {
             let id = proxy.id().await?;
-            let state = proxy.state().await.map(|s| NmConnectionState(s.clone()))?;
+            let state = proxy.state().await.map(|s| NmConnectionState(s))?;
             if let Ok(state) = state.try_into() {
                 _ = self
                     .actions_tx

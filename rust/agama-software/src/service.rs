@@ -321,8 +321,7 @@ impl Service {
         product.registration_url = self
             .kernel_cmdline
             .get_last("inst.register_url")
-            .map(|url| Url::parse(&url).ok())
-            .flatten();
+            .and_then(|url| Url::parse(&url).ok());
     }
 
     /// Completes the configuration with the product mode if it is missing.
@@ -471,7 +470,7 @@ fn find_repository(dir: &PathBuf, name: &str) -> Option<Repository> {
         return None;
     }
 
-    let url_string = format!("dir:{}", dir.display().to_string());
+    let url_string = format!("dir:{}", dir.display());
     let Ok(url) = Url::parse(&url_string) else {
         tracing::warn!(
             "'{}' is not a valid URL. Ignoring the repository.",

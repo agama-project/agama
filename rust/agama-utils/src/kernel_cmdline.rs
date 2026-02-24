@@ -61,7 +61,6 @@ impl KernelCmdline {
         for param in content.split_whitespace() {
             let (key, value) = param
                 .split_once("=")
-                .map(|(k, v)| (k, v))
                 .unwrap_or_else(|| (param, "1"));
 
             args.entry(key.to_lowercase())

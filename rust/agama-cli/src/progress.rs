@@ -82,9 +82,9 @@ impl ProgressMonitor {
                 // and finish all that no longer have progress
                 let mut to_remove = vec![];
                 for (scope, bar) in &bars {
-                    if !active_scopes.contains(&scope) {
+                    if !active_scopes.contains(scope) {
                         bar.finish_with_message("done");
-                        to_remove.push(scope.clone());
+                        to_remove.push(*scope);
                     }
                 }
                 for scope in to_remove {

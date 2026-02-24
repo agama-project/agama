@@ -340,7 +340,7 @@ impl<'a> SoftwareStateBuilder<'a> {
                     let alias = format!("agama-{}", i);
                     Repository {
                         name: alias.clone(),
-                        alias: alias,
+                        alias,
                         url: url.to_string(),
                         enabled: true,
                     }
@@ -637,8 +637,8 @@ impl Addon {
     pub fn new(id: &str, version: Option<String>, code: Option<String>) -> Self {
         Addon {
             id: id.to_string(),
-            version: version,
-            code: code,
+            version,
+            code,
         }
     }
 }

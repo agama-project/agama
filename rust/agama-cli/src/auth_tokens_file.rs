@@ -43,8 +43,7 @@ impl AuthTokensFile {
     /// Default path for the tokens file in user's home directory.
     pub fn default_path() -> io::Result<PathBuf> {
         let Some(path) = home::home_dir() else {
-            return Err(io::Error::new(
-                io::ErrorKind::Other,
+            return Err(io::Error::other(
                 "Cannot find the user's home directory",
             ));
         };

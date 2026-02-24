@@ -205,7 +205,7 @@ async fn build_http_client(
         if let Some(token) = find_client_token(&client.base_url) {
             return Ok(client.authenticated(&token)?);
         }
-        return Err(ServiceError::NotAuthenticated.into());
+        Err(ServiceError::NotAuthenticated.into())
     } else {
         Ok(client.unauthenticated()?)
     }

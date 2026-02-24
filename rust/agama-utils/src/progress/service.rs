@@ -62,8 +62,8 @@ impl Starter {
             status: Status::default(),
         };
 
-        let handler = actor::spawn(service);
-        handler
+        
+        actor::spawn(service)
     }
 }
 
@@ -143,7 +143,7 @@ impl MessageHandler<message::SetStage> for Service {
     async fn handle(&mut self, message: message::SetStage) -> Result<(), Error> {
         self.status.stage = message.stage;
         self.events.send(Event::StageChanged {
-            stage: self.status.stage.clone(),
+            stage: self.status.stage,
         })?;
         Ok(())
     }

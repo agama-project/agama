@@ -67,7 +67,7 @@ impl ScriptsRunner {
     pub async fn run(&mut self, url: &str) -> anyhow::Result<()> {
         create_dir_all(&self.path)?;
 
-        let file_name = self.file_name_for(&url)?;
+        let file_name = self.file_name_for(url)?;
 
         let path = self.path.join(&file_name);
         self.save_script(url, &path).await?;
@@ -92,17 +92,17 @@ impl ScriptsRunner {
     }
 
     fn file_name_for(&mut self, url: &str) -> anyhow::Result<PathBuf> {
-        let parsed = Url::parse(&url)?;
+        let parsed = Url::parse(url)?;
 
         self.idx += 1;
         let unnamed = PathBuf::from(format!("{}-unnamed.sh", self.idx));
 
-        let Some(path) = parsed.path_segments() else {
+        let Some(mut path) = parsed.path_segments() else {
             return Ok(unnamed);
         };
 
         Ok(path
-            .last()
+            .next_back()
             .map(|p| PathBuf::from(format!("{}-{p}", self.idx)))
             .unwrap_or(unnamed))
     }
@@ -113,11 +113,11 @@ impl ScriptsRunner {
             .write(true)
             .truncate(true)
             .mode(0o700)
-            .open(&path)?;
+            .open(path)?;
 
         while let Err(error) = Transfer::get(url, &mut file, self.insecure) {
             eprintln!("Could not load the script from {url}: {error}");
-            if !self.should_retry(&url, &error.to_string()).await? {
+            if !self.should_retry(url, &error.to_string()).await? {
                 return Err(anyhow!(error));
             }
         }

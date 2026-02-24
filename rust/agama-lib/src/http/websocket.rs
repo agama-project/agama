@@ -79,7 +79,7 @@ impl WebSocketClient {
             .danger_accept_invalid_certs(insecure)
             .danger_accept_invalid_hostnames(insecure)
             .build()?;
-        let tls_connector: native_tls::TlsConnector = tls_connector.into();
+        let tls_connector: native_tls::TlsConnector = tls_connector;
 
         let connector = Connector::NativeTls(tls_connector);
         let uri: Uri = url.as_str().parse()?;

@@ -93,8 +93,8 @@ impl Registration {
     ) -> RegistrationResult<()> {
         // Use the product's version as default.
         let version = addon.version.clone().unwrap_or(self.version.clone());
-        let code = addon.code.as_ref().map(|c| c.as_str());
-        self.activate_product(&zypp, &addon.id, &version, code)?;
+        let code = addon.code.as_deref();
+        self.activate_product(zypp, &addon.id, &version, code)?;
         self.addons.push(addon.clone());
         Ok(())
     }
@@ -125,9 +125,7 @@ impl Registration {
             product,
             params,
             self.connect_params
-                .email
-                .as_ref()
-                .map(|e| e.as_str())
+                .email.as_deref()
                 .unwrap_or(""),
         )?;
 
@@ -217,7 +215,7 @@ impl Registration {
     fn copy_files(&self, target_dir: &Utf8PathBuf) -> Result<(), RegistrationError> {
         for path in &self.config_files {
             let target_path = match path.strip_prefix(&self.root_dir) {
-                Ok(relative_path) => target_dir.join(&relative_path),
+                Ok(relative_path) => target_dir.join(relative_path),
                 Err(_) => {
                     let relative_path = path.strip_prefix("/").unwrap_or(path);
                     target_dir.join(relative_path)
@@ -353,7 +351,7 @@ impl RegistrationBuilder {
         // https://github.com/agama-project/agama/blob/master/service/lib/agama/registration.rb#L294
         let version = self.version.split(".").next().unwrap_or("1");
         let arch = Arch::current().expect("Failed to determine the architecture");
-        let target_distro = format!("{}-{}-{}", &self.product, version, arch.to_string());
+        let target_distro = format!("{}-{}-{}", &self.product, version, arch);
         tracing::debug!("Announcing system {target_distro}");
         let creds = handle_registration_error(
             || suseconnect_agama::announce_system(params.clone(), &target_distro),
@@ -414,7 +412,7 @@ where
         }) = &result
         {
             if code.is_fixable_by_import() {
-                let x509 = X509::from_pem(&current_certificate.as_bytes()).unwrap();
+                let x509 = X509::from_pem(current_certificate.as_bytes()).unwrap();
                 match should_trust_certificate(&x509, security_srv) {
                     Ok(true) => {
                         if let Err(error) = suseconnect_agama::reload_certificates() {

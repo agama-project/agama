@@ -137,7 +137,7 @@ impl Registry {
     /// * `id`: product ID.
     /// * `mode`: product mode. Required only if the product has modes.
     pub fn find(&self, id: &str, mode: Option<&str>) -> Result<ProductSpec, Error> {
-        let mut mode = mode.clone();
+        let mut mode = mode;
         let Some(template) = self.products.iter().find(|p| p.id == id) else {
             return Err(Error::UnknownProduct(id.to_string()));
         };

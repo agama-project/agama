@@ -143,7 +143,7 @@ impl FileSystemsList {
     ///
     /// * `name`: block device name.
     pub fn find_by_name(&self, name: &str) -> Option<&FileSystem> {
-        self.file_systems.iter().find(|fs| name == &fs.block_device)
+        self.file_systems.iter().find(|fs| name == fs.block_device)
     }
 
     /// Returns the file systems with the given label name.

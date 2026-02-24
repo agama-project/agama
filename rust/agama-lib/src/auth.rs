@@ -174,8 +174,7 @@ impl AuthToken {
 
     fn user_token_path() -> io::Result<PathBuf> {
         let Some(path) = home::home_dir() else {
-            return Err(io::Error::new(
-                io::ErrorKind::Other,
+            return Err(io::Error::other(
                 "Cannot find the user's home directory",
             ));
         };
@@ -218,6 +217,12 @@ impl Default for TokenClaims {
 /// Identifies a client.
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
 pub struct ClientId(Uuid);
+
+impl Default for ClientId {
+    fn default() -> Self {
+        Self::new()
+    }
+}
 
 impl ClientId {
     pub fn new() -> Self {
