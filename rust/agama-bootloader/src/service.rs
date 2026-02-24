@@ -69,9 +69,7 @@ impl Starter {
             Some(client) => client,
             None => Box::new(Client::new(self.connection.clone()).await?),
         };
-        let service = Service {
-            client,
-        };
+        let service = Service { client };
         let handler = actor::spawn(service);
         Ok(handler)
     }

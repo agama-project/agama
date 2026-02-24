@@ -237,7 +237,11 @@ impl Starter {
 
         let bootloader = match self.bootloader {
             Some(bootloader) => bootloader,
-            None => bootloader::Service::starter(self.dbus.clone()).start().await?,
+            None => {
+                bootloader::Service::starter(self.dbus.clone())
+                    .start()
+                    .await?
+            }
         };
 
         let hostname = match self.hostname {

@@ -18,10 +18,7 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use std::{
-    io::Write,
-    path::Path,
-};
+use std::{io::Write, path::Path};
 
 use super::{
     file_systems::{FileSystem, FileSystemsList},

@@ -65,10 +65,7 @@ mod tests {
 
             let handler = start_service(events_tx, issues.clone()).await;
 
-            Self {
-                events_rx,
-                handler,
-            }
+            Self { events_rx, handler }
         }
     }
 
