@@ -25,6 +25,8 @@ require "agama/storage/config_solvers/encryption"
 require "agama/storage/config_solvers/filesystem"
 require "agama/storage/config_solvers/md_raids_search"
 require "agama/storage/config_solvers/partitions_search"
+require "agama/storage/config_solvers/volume_groups_search"
+require "agama/storage/config_solvers/logical_volumes_search"
 require "agama/storage/config_solvers/size"
 
 module Agama

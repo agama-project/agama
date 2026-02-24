@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024] SUSE LLC
+# Copyright (c) [2024-2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -22,6 +22,7 @@
 require "agama/storage/config_conversions/to_json_conversions/base"
 require "agama/storage/config_conversions/to_json_conversions/encryption"
 require "agama/storage/config_conversions/to_json_conversions/logical_volume"
+require "agama/storage/config_conversions/to_json_conversions/with_search"
 
 module Agama
   module Storage
@@ -29,6 +30,8 @@ module Agama
       module ToJSONConversions
         # Volume group conversion to JSON hash according to schema.
         class VolumeGroup < Base
+          include WithSearch
+
           # @param config [Configs::VolumeGroup]
           def initialize(config)
             super()
@@ -41,6 +44,7 @@ module Agama
           def conversions
             {
               name:            config.name,
+              search:          convert_search,
               extentSize:      config.extent_size&.to_i,
               physicalVolumes: convert_physical_volumes,
               logicalVolumes:  convert_logical_volumes

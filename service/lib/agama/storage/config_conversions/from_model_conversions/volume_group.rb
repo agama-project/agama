@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2025] SUSE LLC
+# Copyright (c) [2025-2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -22,6 +22,7 @@
 require "agama/storage/config_conversions/from_model_conversions/base"
 require "agama/storage/config_conversions/from_model_conversions/logical_volume"
 require "agama/storage/config_conversions/from_model_conversions/encryption"
+require "agama/storage/config_conversions/from_model_conversions/with_search"
 require "agama/storage/configs/volume_group"
 require "y2storage/disk_size"
 
@@ -31,6 +32,8 @@ module Agama
       module FromModelConversions
         # Volume group conversion from model according to the JSON schema.
         class VolumeGroup < Base
+          include WithSearch
+
           # @param model_json [Hash]
           # @param targets [Array<Configs::Drive, Configs::MdRaid>]
           # @param encryption_model [Hash, nil]
@@ -61,6 +64,7 @@ module Agama
           def conversions
             {
               name:                        volume_group_model[:vgName],
+              search:                      convert_search,
               extent_size:                 convert_extent_size,
               physical_volumes_devices:    convert_physical_volumes_devices,
               physical_volumes_encryption: convert_physical_volumes_encryption,

@@ -1,0 +1,72 @@
+- disk:
+    name: "/dev/sda"
+    size: 60 GiB
+    partition_table: gpt
+    partitions:
+    - partition:
+        size: 8 MiB
+        name: "/dev/sda1"
+        id: bios_boot
+    - partition:
+        size: 27649 MiB (27.00 GiB)
+        name: "/dev/sda2"
+        id: lvm
+    - partition:
+        size: 34592751.5 KiB (32.99 GiB)
+        name: "/dev/sda3"
+        id: lvm
+- disk:
+    name: "/dev/sdb"
+    size: 10 GiB
+    partition_table: gpt
+    partitions:
+    - partition:
+        size: 10484719.5 KiB (10.00 GiB)
+        name: "/dev/sdb1"
+        id: lvm
+- disk:
+    name: "/dev/sdc"
+    size: 80 GiB
+    partition_table: gpt
+    partitions:
+    - partition:
+        size: 5 GiB
+        name: "/dev/sdc1"
+        id: lvm
+- lvm_vg:
+    vg_name: system
+    extent_size: 4 MiB
+    lvm_lvs:
+    - lvm_lv:
+        lv_name: root
+        size: 25 GiB
+        stripes: 1
+        file_system: btrfs
+    - lvm_lv:
+        lv_name: swap
+        size: 2 GiB
+        stripes: 1
+        file_system: swap
+    lvm_pvs:
+    - lvm_pv:
+        blk_device: "/dev/sda2"
+- lvm_vg:
+    vg_name: data
+    extent_size: 4 MiB
+    lvm_lvs:
+    - lvm_lv:
+        lv_name: home
+        size: 30 GiB
+        stripes: 1
+        file_system: xfs
+    lvm_pvs:
+    - lvm_pv:
+        blk_device: "/dev/sda3"
+    - lvm_pv:
+        blk_device: "/dev/sdb1"
+- lvm_vg:
+    vg_name: extra
+    extent_size: 4 MiB
+    lvm_pvs:
+    - lvm_pv:
+        blk_device: "/dev/sdc1"

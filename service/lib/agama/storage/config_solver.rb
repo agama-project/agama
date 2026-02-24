@@ -49,6 +49,7 @@ module Agama
         ConfigSolvers::Filesystem.new(product_config).solve(config)
         ConfigSolvers::DrivesSearch.new(storage_system).solve(config)
         ConfigSolvers::MdRaidsSearch.new(storage_system).solve(config)
+        ConfigSolvers::VolumeGroupsSearch.new(storage_system).solve(config)
         # Sizes and boot must be solved once the searches are solved.
         ConfigSolvers::Boot.new(product_config, storage_system).solve(config)
         ConfigSolvers::Size.new(product_config).solve(config)

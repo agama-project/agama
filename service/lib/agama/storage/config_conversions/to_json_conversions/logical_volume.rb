@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024] SUSE LLC
+# Copyright (c) [2024-2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -23,6 +23,7 @@ require "agama/storage/config_conversions/to_json_conversions/base"
 require "agama/storage/config_conversions/to_json_conversions/with_encryption"
 require "agama/storage/config_conversions/to_json_conversions/with_filesystem"
 require "agama/storage/config_conversions/to_json_conversions/with_size"
+require "agama/storage/config_conversions/to_json_conversions/with_search"
 
 module Agama
   module Storage
@@ -33,6 +34,7 @@ module Agama
           include WithEncryption
           include WithFilesystem
           include WithSize
+          include WithSearch
 
           # @param config [Configs::LogicalVolume]
           def initialize(config)
@@ -46,6 +48,7 @@ module Agama
           def conversions
             {
               alias:      config.alias,
+              search:     convert_search,
               encryption: convert_encryption,
               filesystem: convert_filesystem,
               size:       convert_size,
