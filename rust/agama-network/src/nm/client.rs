@@ -227,9 +227,7 @@ impl<'a> NetworkManagerClient<'a> {
 
             match connection_from_dbus(settings) {
                 Ok(mut connection) => {
-                    let state = states
-                        .get(&connection.id)
-                        .map(|s| NmConnectionState(*s));
+                    let state = states.get(&connection.id).map(|s| NmConnectionState(*s));
                     if let Some(state) = state {
                         connection.state = state.try_into().unwrap_or_default();
                     }

@@ -124,9 +124,7 @@ impl Registration {
         let service = suseconnect_agama::activate_product(
             product,
             params,
-            self.connect_params
-                .email.as_deref()
-                .unwrap_or(""),
+            self.connect_params.email.as_deref().unwrap_or(""),
         )?;
 
         if let Some(file) = Self::credentials_from_url(&service.url) {

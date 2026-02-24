@@ -62,7 +62,6 @@ impl Starter {
             status: Status::default(),
         };
 
-        
         actor::spawn(service)
     }
 }

@@ -128,9 +128,7 @@ impl State {
     /// * `name`: certificate name (e.g., "registration_server")
     pub fn import(&mut self, certificate: &Certificate, name: &str) -> Result<(), Error> {
         let path = self.workdir.join(format!("{name}.pem"));
-        certificate
-            .import(&path)
-            .map_err(Error::CertificateIO)?;
+        certificate.import(&path).map_err(Error::CertificateIO)?;
         self.imported.push(name.to_string());
         Ok(())
     }

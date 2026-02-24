@@ -447,7 +447,9 @@ impl ZyppServer {
 
         // unselect packages including the autoselected dependencies
         for (name, r#type, selection) in &state.resolvables.to_vec() {
-            if selection == &ResolvableSelection::Removed { self.unselect_resolvable(zypp, name, *r#type) };
+            if selection == &ResolvableSelection::Removed {
+                self.unselect_resolvable(zypp, name, *r#type)
+            };
         }
 
         _ = progress.cast(progress::message::Finish::new(Scope::Software));

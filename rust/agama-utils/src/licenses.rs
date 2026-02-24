@@ -85,9 +85,7 @@ impl Registry {
         self.fallback.clear();
 
         let territories = get_territories().map_err(|e| {
-            std::io::Error::other(
-                format!("Cannot read the territories list: {}", e),
-            )
+            std::io::Error::other(format!("Cannot read the territories list: {}", e))
         })?;
 
         for territory in territories.territory {
