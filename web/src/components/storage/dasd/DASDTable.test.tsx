@@ -28,13 +28,19 @@ import DASDTable from "./DASDTable";
 import type { Device } from "~/model/system/dasd";
 
 let mockDASDDevices: Device[] = [];
+const mockAddOrUpdateDevices = jest.fn();
 
 jest.mock("~/components/storage/dasd/FormatActionHandler", () => () => (
   <div>FormatActionHandler Mock</div>
 ));
 
+jest.mock("~/hooks/model/config/dasd", () => ({
+  useAddOrUpdateDevices: () => mockAddOrUpdateDevices,
+}));
+
 describe("DASDTable", () => {
   beforeEach(() => {
+    mockAddOrUpdateDevices.mockClear();
     mockDASDDevices = [
       {
         channel: "0.0.0160",
@@ -234,6 +240,94 @@ describe("DASDTable", () => {
         await user.click(screen.getByLabelText("Status"));
         await user.click(screen.getByRole("option", { name: "All" }));
         expect(screen.queryByRole("button", { name: "Clear all filters" })).toBeNull();
+      });
+    });
+
+    describe("actions", () => {
+      it("calls addOrUpdateDevices with correct config on activate", async () => {
+        const { user } = installerRender(<DASDTable devices={mockDASDDevices} />);
+        await user.click(screen.getByRole("checkbox", { name: "Select row 0" }));
+        await user.click(screen.getByRole("button", { name: "Activate" }));
+        expect(mockAddOrUpdateDevices).toHaveBeenCalledWith([
+          { channel: "0.0.0160", status: "online" },
+        ]);
+      });
+
+      it("calls addOrUpdateDevices with correct config on deactivate", async () => {
+        const { user } = installerRender(<DASDTable devices={mockDASDDevices} />);
+        await user.click(screen.getByRole("checkbox", { name: "Select row 1" }));
+        await user.click(screen.getByRole("button", { name: "Deactivate" }));
+        expect(mockAddOrUpdateDevices).toHaveBeenCalledWith([
+          { channel: "0.0.0200", status: "offline" },
+        ]);
+      });
+
+      it("calls addOrUpdateDevices with correct config on DIAG on", async () => {
+        const { user } = installerRender(<DASDTable devices={mockDASDDevices} />);
+        await user.click(screen.getByRole("checkbox", { name: "Select row 0" }));
+        await user.click(screen.getByRole("button", { name: "Set DIAG on" }));
+        expect(mockAddOrUpdateDevices).toHaveBeenCalledWith([{ channel: "0.0.0160", diag: true }]);
+      });
+
+      it("calls addOrUpdateDevices with correct config on DIAG off", async () => {
+        const { user } = installerRender(<DASDTable devices={mockDASDDevices} />);
+        await user.click(screen.getByRole("checkbox", { name: "Select row 0" }));
+        await user.click(screen.getByRole("button", { name: "Set DIAG off" }));
+        expect(mockAddOrUpdateDevices).toHaveBeenCalledWith([{ channel: "0.0.0160", diag: false }]);
+      });
+    });
+
+    describe("bulk actions", () => {
+      it("calls addOrUpdateDevices for all selected devices on activate", async () => {
+        const { user } = installerRender(<DASDTable devices={mockDASDDevices} />);
+        await user.click(screen.getByRole("checkbox", { name: "Select row 0" }));
+        await user.click(screen.getByRole("checkbox", { name: "Select row 1" }));
+        await user.click(screen.getByRole("button", { name: "Activate" }));
+        expect(mockAddOrUpdateDevices).toHaveBeenCalledWith([
+          { channel: "0.0.0160", status: "online" },
+          { channel: "0.0.0200", status: "online" },
+        ]);
+      });
+
+      it("calls addOrUpdateDevices for all selected devices on deactivate", async () => {
+        const { user } = installerRender(<DASDTable devices={mockDASDDevices} />);
+        await user.click(screen.getByRole("checkbox", { name: "Select row 0" }));
+        await user.click(screen.getByRole("checkbox", { name: "Select row 1" }));
+        await user.click(screen.getByRole("button", { name: "Deactivate" }));
+        expect(mockAddOrUpdateDevices).toHaveBeenCalledWith([
+          { channel: "0.0.0160", status: "offline" },
+          { channel: "0.0.0200", status: "offline" },
+        ]);
+      });
+
+      it("calls addOrUpdateDevices for all selected devices on DIAG on", async () => {
+        const { user } = installerRender(<DASDTable devices={mockDASDDevices} />);
+        await user.click(screen.getByRole("checkbox", { name: "Select row 0" }));
+        await user.click(screen.getByRole("checkbox", { name: "Select row 1" }));
+        await user.click(screen.getByRole("button", { name: "Set DIAG on" }));
+        expect(mockAddOrUpdateDevices).toHaveBeenCalledWith([
+          { channel: "0.0.0160", diag: true },
+          { channel: "0.0.0200", diag: true },
+        ]);
+      });
+
+      it("calls addOrUpdateDevices for all selected devices on DIAG off", async () => {
+        const { user } = installerRender(<DASDTable devices={mockDASDDevices} />);
+        await user.click(screen.getByRole("checkbox", { name: "Select row 0" }));
+        await user.click(screen.getByRole("checkbox", { name: "Select row 1" }));
+        await user.click(screen.getByRole("button", { name: "Set DIAG off" }));
+        expect(mockAddOrUpdateDevices).toHaveBeenCalledWith([
+          { channel: "0.0.0160", diag: false },
+          { channel: "0.0.0200", diag: false },
+        ]);
+      });
+
+      it("mounts FormatActionHandler when Format is clicked for selected devices", async () => {
+        const { user } = installerRender(<DASDTable devices={mockDASDDevices} />);
+        await user.click(screen.getByRole("checkbox", { name: "Select row 0" }));
+        await user.click(screen.getByRole("checkbox", { name: "Select row 1" }));
+        await user.click(screen.getByRole("button", { name: "Format" }));
+        screen.getByText("FormatActionHandler Mock");
       });
     });
   });

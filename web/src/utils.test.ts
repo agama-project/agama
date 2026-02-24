@@ -651,12 +651,12 @@ describe("extendCollection", () => {
         },
       ];
 
-      const { extended, unmatched } = extendCollection(configDevices, {
+      const { extended, unmatched, all } = extendCollection(configDevices, {
         with: systemDevices,
         matching: "channel",
       });
 
-      expect(extended).toEqual([
+      const expectedExtended = [
         {
           channel: "0.0.0160",
           diag: false, // from config (baseWins / default precedence)
@@ -670,8 +670,11 @@ describe("extendCollection", () => {
           accessType: "rw",
           partitionInfo: "1",
         },
-      ]);
+      ];
+
+      expect(extended).toEqual(expectedExtended);
       expect(unmatched).toEqual([]);
+      expect(all).toEqual(expectedExtended);
     });
 
     it("respects 'extensionWins' precedence", () => {
@@ -691,13 +694,13 @@ describe("extendCollection", () => {
         },
       ];
 
-      const { extended, unmatched } = extendCollection(configDevices, {
+      const { extended, unmatched, all } = extendCollection(configDevices, {
         with: systemDevices,
         matching: "channel",
         precedence: "extensionWins",
       });
 
-      expect(extended).toEqual([
+      const expectedExtended = [
         {
           channel: "0.0.0160",
           diag: true, // from system (extensionWins precedence)
@@ -710,8 +713,11 @@ describe("extendCollection", () => {
           accessType: "rw",
           partitionInfo: "1",
         },
-      ]);
+      ];
+
+      expect(extended).toEqual(expectedExtended);
       expect(unmatched).toEqual([]);
+      expect(all).toEqual(expectedExtended);
     });
 
     it("keeps items without matches unchanged", () => {
@@ -734,7 +740,7 @@ describe("extendCollection", () => {
         },
       ];
 
-      const { extended, unmatched } = extendCollection(configDevices, {
+      const { extended, unmatched, all } = extendCollection(configDevices, {
         with: systemDevices,
         matching: "channel",
       });
@@ -744,10 +750,23 @@ describe("extendCollection", () => {
       expect(extended[0].deviceName).toBe("dasda");
       expect(extended[1]).toEqual({ channel: "0.0.0200", format: true }); // unchanged
       expect(unmatched).toEqual([]);
+      expect(all).toEqual(extended);
     });
 
     it("returns unmatched items from extension collection", () => {
       const configDevices: ConfigDevice[] = [{ channel: "0.0.0160", diag: false }];
+
+      const unmatchedDevice: SystemDevice = {
+        channel: "0.0.0200",
+        active: true,
+        deviceName: "dasdb",
+        type: "fba",
+        formatted: false,
+        diag: false,
+        status: "active",
+        accessType: "rw",
+        partitionInfo: "1",
+      };
 
       const systemDevices: SystemDevice[] = [
         {
@@ -761,20 +780,10 @@ describe("extendCollection", () => {
           accessType: "rw",
           partitionInfo: "1",
         },
-        {
-          channel: "0.0.0200",
-          active: true,
-          deviceName: "dasdb",
-          type: "fba",
-          formatted: false,
-          diag: false,
-          status: "active",
-          accessType: "rw",
-          partitionInfo: "1",
-        },
+        unmatchedDevice,
       ];
 
-      const { extended, unmatched } = extendCollection(configDevices, {
+      const { extended, unmatched, all } = extendCollection(configDevices, {
         with: systemDevices,
         matching: "channel",
       });
@@ -782,17 +791,11 @@ describe("extendCollection", () => {
       expect(extended).toHaveLength(1);
       expect(extended[0].channel).toBe("0.0.0160");
       expect(unmatched).toHaveLength(1);
-      expect(unmatched[0]).toEqual({
-        channel: "0.0.0200",
-        active: true,
-        deviceName: "dasdb",
-        type: "fba",
-        formatted: false,
-        diag: false,
-        status: "active",
-        accessType: "rw",
-        partitionInfo: "1",
-      });
+      expect(unmatched[0]).toEqual(unmatchedDevice);
+      // all: extended items first (base order), unmatched appended at the end
+      expect(all).toHaveLength(2);
+      expect(all[0].channel).toBe("0.0.0160");
+      expect(all[1]).toEqual(unmatchedDevice);
     });
   });
 
@@ -803,18 +806,20 @@ describe("extendCollection", () => {
         { channel: "0.0.0160", state: "active", diag: false },
       ];
 
+      const unmatchedDevice: SystemDevice = {
+        channel: "0.0.0150",
+        status: "offline",
+        active: false,
+        deviceName: "dasdc",
+        type: "eckd",
+        formatted: false,
+        diag: true,
+        accessType: "rw",
+        partitionInfo: "1",
+      };
+
       const systemDevices: SystemDevice[] = [
-        {
-          channel: "0.0.0150",
-          status: "offline",
-          active: false,
-          deviceName: "dasdc",
-          type: "eckd",
-          formatted: false,
-          diag: true,
-          accessType: "rw",
-          partitionInfo: "1",
-        },
+        unmatchedDevice,
         {
           channel: "0.0.0160",
           status: "offline",
@@ -828,12 +833,12 @@ describe("extendCollection", () => {
         },
       ];
 
-      const { extended, unmatched } = extendCollection(configDevices, {
+      const { extended, unmatched, all } = extendCollection(configDevices, {
         with: systemDevices,
         matching: ["channel", "diag"],
       });
 
-      expect(extended).toEqual([
+      const expectedExtended = [
         { channel: "0.0.0150", state: "offline", diag: false },
         {
           channel: "0.0.0160",
@@ -847,43 +852,56 @@ describe("extendCollection", () => {
           accessType: "rw",
           partitionInfo: "1",
         },
-      ]);
+      ];
+
+      expect(extended).toEqual(expectedExtended);
       expect(unmatched).toHaveLength(1);
       expect(unmatched[0].channel).toBe("0.0.0150");
+      // all: base order preserved, unmatched appended at the end
+      expect(all).toHaveLength(3);
+      expect(all[0]).toEqual(expectedExtended[0]);
+      expect(all[1]).toEqual(expectedExtended[1]);
+      expect(all[2]).toEqual(unmatchedDevice);
     });
   });
 
   describe("edge cases", () => {
     it("handles empty base collection", () => {
-      const { extended, unmatched } = extendCollection([], {
-        with: [{ id: 1, name: "test" }],
+      const unmatchedDevice = { id: 1, name: "test" };
+
+      const { extended, unmatched, all } = extendCollection([], {
+        with: [unmatchedDevice],
         matching: "id",
       });
 
       expect(extended).toEqual([]);
-      expect(unmatched).toEqual([{ id: 1, name: "test" }]);
+      expect(unmatched).toEqual([unmatchedDevice]);
+      // all contains unmatched items even when base collection is empty
+      expect(all).toEqual([unmatchedDevice]);
     });
 
     it("handles empty extension collection", () => {
       const items = [{ channel: "0.0.0160", diag: false }];
 
-      const { extended, unmatched } = extendCollection(items, {
+      const { extended, unmatched, all } = extendCollection(items, {
         with: [],
         matching: "channel",
       });
 
       expect(extended).toEqual(items);
       expect(unmatched).toEqual([]);
+      expect(all).toEqual(items);
     });
 
     it("handles both collections empty", () => {
-      const { extended, unmatched } = extendCollection([], {
+      const { extended, unmatched, all } = extendCollection([], {
         with: [],
         matching: "id",
       });
 
       expect(extended).toEqual([]);
       expect(unmatched).toEqual([]);
+      expect(all).toEqual([]);
     });
 
     it("does not mutate original collections", () => {
@@ -915,43 +933,81 @@ describe("extendCollection", () => {
       const items = [{ id: 1, value: "a" }];
       const extension = [{ id: 1, extra: "b" }];
 
-      const { extended } = extendCollection(items, {
+      const { extended, all } = extendCollection(items, {
         with: extension,
         matching: "id",
       });
 
       expect(extended[0]).toEqual({ id: 1, value: "a", extra: "b" });
+      expect(all).toEqual(extended);
     });
   });
 
-  describe("translateEntries", () => {
-    const OPTIONS = {
-      active: N_("Active"),
-      offline: N_("Offline"),
-      unknown: N_("Unknown"),
-    };
+  it("handles undefined base collection", () => {
+    const extension = [{ id: 1, extra: "b" }];
 
-    it("returns all entries translated when no filter is provided", () => {
-      expect(translateEntries(OPTIONS)).toEqual({
-        active: "translated(Active)",
-        offline: "translated(Offline)",
-        unknown: "translated(Unknown)",
-      });
+    const { extended, unmatched, all } = extendCollection(undefined, {
+      with: extension,
+      matching: "id",
     });
 
-    it("returns only translated entries matching the filter", () => {
-      expect(translateEntries(OPTIONS, { filter: (key) => key !== "unknown" })).toEqual({
-        active: "translated(Active)",
-        offline: "translated(Offline)",
-      });
+    expect(extended).toEqual([]);
+    expect(unmatched).toEqual(extension);
+    expect(all).toEqual(extension);
+  });
+
+  it("handles undefined extension collection", () => {
+    const items = [{ channel: "0.0.0160", diag: false }];
+
+    const { extended, unmatched, all } = extendCollection(items, {
+      matching: "channel",
     });
 
-    it("returns an empty object when filter excludes all entries", () => {
-      expect(translateEntries(OPTIONS, { filter: () => false })).toEqual({});
+    expect(extended).toEqual(items);
+    expect(unmatched).toEqual([]);
+    expect(all).toEqual(items);
+  });
+
+  it("handles missing matching field, defaulting to 'id'", () => {
+    const items = [{ id: 1, value: "a" }];
+    const extension = [{ id: 1, extra: "b" }];
+
+    const { extended, all } = extendCollection(items, {
+      with: extension,
     });
 
-    it("returns an empty object when given an empty record", () => {
-      expect(translateEntries({})).toEqual({});
+    expect(extended[0]).toEqual({ id: 1, value: "a", extra: "b" });
+    expect(all).toEqual(extended);
+  });
+});
+
+describe("translateEntries", () => {
+  const OPTIONS = {
+    active: N_("Active"),
+    offline: N_("Offline"),
+    unknown: N_("Unknown"),
+  };
+
+  it("returns all entries translated when no filter is provided", () => {
+    expect(translateEntries(OPTIONS)).toEqual({
+      active: "translated(Active)",
+      offline: "translated(Offline)",
+      unknown: "translated(Unknown)",
     });
+  });
+
+  it("returns only translated entries matching the filter", () => {
+    expect(translateEntries(OPTIONS, { filter: (key) => key !== "unknown" })).toEqual({
+      active: "translated(Active)",
+      offline: "translated(Offline)",
+    });
+  });
+
+  it("returns an empty object when filter excludes all entries", () => {
+    expect(translateEntries(OPTIONS, { filter: () => false })).toEqual({});
+  });
+
+  it("returns an empty object when given an empty record", () => {
+    expect(translateEntries({})).toEqual({});
   });
 });

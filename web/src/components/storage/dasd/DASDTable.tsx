@@ -21,6 +21,8 @@
  */
 
 import React, { useReducer } from "react";
+import { isEmpty } from "radashi";
+import { sprintf } from "sprintf-js";
 import {
   Button,
   Content,
@@ -41,12 +43,12 @@ import FormatActionHandler from "~/components/storage/dasd/FormatActionHandler";
 import SelectableDataTable, { SortedBy } from "~/components/core/SelectableDataTable";
 import TextinputFilter from "~/components/storage/dasd/TextinputFilter";
 import SimpleSelector from "~/components/core/SimpleSelector";
-import { isEmpty } from "radashi";
-import { sprintf } from "sprintf-js";
+import { useAddOrUpdateDevices } from "~/hooks/model/config/dasd";
 import { hex, sortCollection, translateEntries } from "~/utils";
 import { _, n_, N_ } from "~/i18n";
 
 import type { Device } from "~/model/system/dasd";
+import type { Device as ConfigDevice } from "~/model/config/dasd";
 
 /**
  * Filter options for narrowing down DASD devices shown in the table.
@@ -77,15 +79,21 @@ type DASDDeviceCondition = (device: Device) => boolean;
 /**
  * Props shared by `buildActions` and `BulkActionsToolbar`.
  *
- * Used for both single-device row actions and multi-device bulk actions.
+ * Covers both single-device row actions and multi-device bulk actions.
  */
 type DASDActionsProps = {
-  /** The list of DASD devices to act on. */
+  /** Devices to act on. */
   devices: Device[];
-  /** Triggers a backend operation (activate, deactivate, DIAG toggle, etc.). */
-  updater: (options: unknown) => void; // FIXME: adapt to API v2 equivalent
-  /** State dispatcher for in-component actions such as requesting a format. */
-  dispatcher: (action: DASDTableAction) => void;
+  /**
+   * Persists device config changes to the backend.
+   * Used for activate, deactivate, DIAG toggle, etc.
+   */
+  addOrUpdateDevices: ReturnType<typeof useAddOrUpdateDevices>;
+  /**
+   * Dispatcher for local UI state changes, such as opening the format
+   * confirmation dialog.
+   */
+  dispatcher: React.Dispatch<DASDTableAction>;
 };
 
 /**
@@ -98,7 +106,7 @@ type DASDActionsProps = {
  * const statusLabel = _(STATUS_OPTIONS[device.status]);
  * ```
  */
-export const STATUS_OPTIONS = {
+const STATUS_OPTIONS = {
   active: N_("Active"),
   offline: N_("Offline"),
 };
@@ -113,7 +121,7 @@ export const STATUS_OPTIONS = {
  * const formatLabel = _(FORMAT_OPTIONS[device.formatted]);
  * ```
  */
-export const FORMAT_OPTIONS = {
+const FORMAT_OPTIONS = {
   yes: N_("Yes"),
   no: N_("No"),
 };
@@ -155,27 +163,28 @@ const filterDevices = (devices: Device[], filters: DASDDevicesFilters): Device[]
  * Returns an array of action objects, each with a label and an `onClick`
  * handler.
  */
-const buildActions = ({ devices, updater, dispatcher }: DASDActionsProps) => {
-  const ids = devices.map((d) => d.channel);
+const buildActions = ({ devices, addOrUpdateDevices, dispatcher }: DASDActionsProps) => {
   return [
     {
       title: _("Activate"),
-      onClick: () => updater({ action: "enable", devices: ids }),
+      onClick: () =>
+        addOrUpdateDevices(devices.map((d) => ({ channel: d.channel, status: "online" }))),
     },
     {
       title: _("Deactivate"),
-      onClick: () => updater({ action: "disable", devices: ids }),
+      onClick: () =>
+        addOrUpdateDevices(devices.map((d) => ({ channel: d.channel, status: "offline" }))),
     },
     {
       isSeparator: true,
     },
     {
       title: _("Set DIAG on"),
-      onClick: () => updater({ action: "diagOn", devices: ids }),
+      onClick: () => addOrUpdateDevices(devices.map((d) => ({ channel: d.channel, diag: true }))),
     },
     {
       title: _("Set DIAG off"),
-      onClick: () => updater({ action: "diagOff", devices: ids }),
+      onClick: () => addOrUpdateDevices(devices.map((d) => ({ channel: d.channel, diag: false }))),
     },
     {
       isSeparator: true,
@@ -312,7 +321,7 @@ const FiltersToolbar = ({
  * When no devices are selected an instructional hint is shown instead.
  * Reuses `DASDActionsProps` since it needs the same dependencies as `buildActions`.
  */
-const BulkActionsToolbar = ({ devices, updater, dispatcher }: DASDActionsProps) => {
+const BulkActionsToolbar = ({ devices, addOrUpdateDevices, dispatcher }: DASDActionsProps) => {
   const applyText = sprintf(
     n_(
       // TRANSLATORS: message shown in bulk action toolbar when just one device
@@ -338,7 +347,7 @@ const BulkActionsToolbar = ({ devices, updater, dispatcher }: DASDActionsProps) 
             </ToolbarGroup>
 
             <ToolbarGroup gap={{ default: "gapXs" }} alignSelf="end" variant="action-group">
-              {buildActions({ devices, updater, dispatcher })
+              {buildActions({ devices, addOrUpdateDevices, dispatcher })
                 .filter((a) => !a.isSeparator)
                 .map(({ onClick, title }, i) => (
                   <ToolbarItem key={i}>
@@ -515,13 +524,6 @@ const createColumns = () => [
 ];
 
 /**
- * Dispatches a DASD config requrest
- *
- * @fixme implement equivalent for API v2
- */
-const updater = (options) => console.log("FIXME: implement equivalente for new API", options);
-
-/**
  * Displays a filterable, sortable, selectable table of DASD storage devices.
  *
  * Manages its own UI state (filters, sorting, selection, pending format
@@ -529,6 +531,7 @@ const updater = (options) => console.log("FIXME: implement equivalente for new A
  */
 export default function DASDTable({ devices }) {
   const [state, dispatch] = useReducer(reducer, initialState);
+  const addOrUpdateDevices = useAddOrUpdateDevices();
 
   const columns = createColumns();
 
@@ -584,7 +587,7 @@ export default function DASDTable({ devices }) {
           <Divider />
           <BulkActionsToolbar
             devices={state.selectedDevices}
-            updater={updater}
+            addOrUpdateDevices={addOrUpdateDevices}
             dispatcher={dispatch}
           />
           <Divider />
@@ -594,10 +597,14 @@ export default function DASDTable({ devices }) {
       {!isEmpty(state.devicesToFormat) && (
         <FormatActionHandler
           devices={state.devicesToFormat}
-          onAccept={() => {
-            dispatch({ type: "CANCEL_FORMAT_REQUEST" });
+          onFormat={() => {
+            addOrUpdateDevices(
+              state.devicesToFormat.map(
+                (d): ConfigDevice => ({ channel: d.channel, format: true }),
+              ),
+            );
           }}
-          onCancel={() => dispatch({ type: "CANCEL_FORMAT_REQUEST" })}
+          onClose={() => dispatch({ type: "CANCEL_FORMAT_REQUEST" })}
         />
       )}
 
@@ -614,7 +621,7 @@ export default function DASDTable({ devices }) {
         itemActions={(d: Device) =>
           buildActions({
             devices: [d],
-            updater, // FIXME
+            addOrUpdateDevices,
             dispatcher: dispatch,
           })
         }

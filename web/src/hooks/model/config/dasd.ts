@@ -26,8 +26,10 @@ import { patchConfig, Response } from "~/api";
 import dasdConfig from "~/model/config/dasd";
 
 import type { Config, DASD } from "~/model/config";
+import { extendCollection } from "~/utils";
 
 type addDeviceFn = (device: DASD.Device) => Response;
+type addOrUpdateDevicesFn = (devices: DASD.Device[]) => Response;
 type removeDeviceFn = (name: DASD.Device["channel"]) => Response;
 
 /**
@@ -63,6 +65,26 @@ function useConfig(): DASD.Config | undefined {
     select: dasdSelector,
   });
   return data;
+}
+
+function useAddOrUpdateDevices(): addOrUpdateDevicesFn {
+  // FIXME: useConfig should return an empty object instead of falling back
+  // to an empty object all the time
+  const config = useConfig() || {};
+
+  return (devices: DASD.Device[]) => {
+    const { all: newDevicesConfig } = extendCollection(config.devices, {
+      with: devices,
+      matching: "channel",
+      precedence: "extensionWins",
+    });
+
+    console.log("newDevicesConfig", newDevicesConfig);
+
+    return patchConfig({
+      dasd: { ...(config || {}), devices: newDevicesConfig },
+    });
+  };
 }
 
 /**
@@ -104,5 +126,5 @@ function useRemoveDevice(): removeDeviceFn {
     });
 }
 
-export { useConfig, useAddDevice, useRemoveDevice };
-export type { addDeviceFn, removeDeviceFn };
+export { useConfig, useAddDevice, useAddOrUpdateDevices, useRemoveDevice };
+export type { addDeviceFn, addOrUpdateDevicesFn, removeDeviceFn };

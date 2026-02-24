@@ -24,7 +24,12 @@ import { act, renderHook } from "@testing-library/react";
 // NOTE: check notes about mockConfigQuery in its documentation
 import { clearMockedQueries, mockConfigQuery } from "~/test-utils/tanstack-query";
 import { patchConfig } from "~/api";
-import { useConfig, useAddDevice, useRemoveDevice } from "~/hooks/model/config/dasd";
+import {
+  useConfig,
+  useAddDevice,
+  useAddOrUpdateDevices,
+  useRemoveDevice,
+} from "~/hooks/model/config/dasd";
 import type { Device } from "~/model/config/dasd";
 
 const mockDeviceOffline: Device = { channel: "0.0.0150", state: "offline" as const };
@@ -113,6 +118,96 @@ describe("hooks/model/storage/dasd", () => {
         expect(mockPatchConfig).toHaveBeenCalledWith({
           dasd: expect.objectContaining({
             devices: [mockDeviceOffline, mockDeviceActive],
+          }),
+        });
+      });
+    });
+  });
+
+  describe("useAddOrUpdateDevices", () => {
+    describe("when there is not a DASD config yet", () => {
+      it("calls API#patchConfig with a new config including the given devices", async () => {
+        mockConfigQuery(null);
+
+        const { result } = renderHook(() => useAddOrUpdateDevices());
+
+        await act(async () => {
+          result.current([mockDeviceActive]);
+        });
+
+        expect(mockPatchConfig).toHaveBeenCalledWith({
+          dasd: expect.objectContaining({ devices: [mockDeviceActive] }),
+        });
+      });
+    });
+
+    describe("when there is an existing DASD config without devices", () => {
+      it("calls API#patchConfig with the given devices added", async () => {
+        mockConfigQuery({ dasd: {} });
+
+        const { result } = renderHook(() => useAddOrUpdateDevices());
+
+        await act(async () => {
+          result.current([mockDeviceActive]);
+        });
+
+        expect(mockPatchConfig).toHaveBeenCalledWith({
+          dasd: expect.objectContaining({ devices: [mockDeviceActive] }),
+        });
+      });
+    });
+
+    describe("when there is an existing DASD config with devices", () => {
+      it("adds new devices to existing ones", async () => {
+        mockConfigQuery({ dasd: { devices: [mockDeviceOffline] } });
+
+        const { result } = renderHook(() => useAddOrUpdateDevices());
+
+        await act(async () => {
+          result.current([mockDeviceActive]);
+        });
+
+        expect(mockPatchConfig).toHaveBeenCalledWith({
+          dasd: expect.objectContaining({
+            devices: [mockDeviceOffline, mockDeviceActive],
+          }),
+        });
+      });
+
+      it("updates an existing device when channel matches", async () => {
+        mockConfigQuery({
+          dasd: { devices: [mockDeviceOffline, mockDeviceActive] },
+        });
+
+        const updatedDevice: Device = { channel: mockDeviceActive.channel, state: "offline" };
+        const { result } = renderHook(() => useAddOrUpdateDevices());
+
+        await act(async () => {
+          result.current([updatedDevice]);
+        });
+
+        expect(mockPatchConfig).toHaveBeenCalledWith({
+          dasd: expect.objectContaining({
+            devices: [mockDeviceOffline, updatedDevice],
+          }),
+        });
+      });
+
+      it("handles a mix of new and updated devices", async () => {
+        mockConfigQuery({
+          dasd: { devices: [mockDeviceOffline, mockDeviceActive] },
+        });
+
+        const updatedDevice: Device = { channel: mockDeviceActive.channel, state: "offline" };
+        const { result } = renderHook(() => useAddOrUpdateDevices());
+
+        await act(async () => {
+          result.current([updatedDevice, mockDeviceToBeFormmated]);
+        });
+
+        expect(mockPatchConfig).toHaveBeenCalledWith({
+          dasd: expect.objectContaining({
+            devices: [mockDeviceOffline, updatedDevice, mockDeviceToBeFormmated],
           }),
         });
       });

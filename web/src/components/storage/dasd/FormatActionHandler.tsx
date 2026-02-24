@@ -39,10 +39,33 @@ type CommonFormatDASDProps = {
   device: Device;
   /** An array of DASD devices selected for formatting. */
   devices: Device[];
-  /** Callback triggered when the user confirms the format operation. */
-  onCancel?: () => void;
-  /** Callback triggered when the user cancels the operation. */
+  /**
+   * Callback triggered when the user confirms the format operation.
+   */
   onAccept?: () => void;
+  /**
+   * Callback triggered when the dialog is dismissed, either after confirming
+   * or cancelling. Always called last, regardless of the outcome.
+   */
+  onClose?: () => void;
+};
+
+/**
+ * Props for the {@link FormatActionHandler} controller component.
+ */
+type FormatActionHandlerProps = {
+  /** Devices selected for formatting. */
+  devices: Device[];
+  /**
+   * Callback triggered when the user confirms the format operation.
+   * Called before onClose.
+   */
+  onFormat: () => void;
+  /**
+   * Callback triggered when the dialog is dismissed, either after confirming
+   * or cancelling. Always called last, regardless of the outcome.
+   */
+  onClose: () => void;
 };
 
 /**
@@ -62,17 +85,14 @@ const DevicesList = ({ devices }: Pick<CommonFormatDASDProps, "devices">) => (
  * Renders a popup indicating a specific device is offline.
  * Used when attempting to format a single device that is disabled.
  */
-const DeviceOffline = ({
-  device,
-  onCancel,
-}: Pick<CommonFormatDASDProps, "device" | "onCancel">) => {
+const DeviceOffline = ({ device, onClose }: Pick<CommonFormatDASDProps, "device" | "onClose">) => {
   return (
     <Popup isOpen title={sprintf(_("Cannot format %s"), device.channel)}>
       <Stack hasGutter>
         <Content>{_("It is offline and must be activated before formatting it.")}</Content>
       </Stack>
       <Popup.Actions>
-        <Popup.Confirm onClick={onCancel}>{_("Accept")}</Popup.Confirm>
+        <Popup.Confirm onClick={onClose}>{_("Accept")}</Popup.Confirm>
       </Popup.Actions>
     </Popup>
   );
@@ -84,8 +104,8 @@ const DeviceOffline = ({
  */
 const SomeDevicesOffline = ({
   devices,
-  onCancel,
-}: Pick<CommonFormatDASDProps, "devices" | "onCancel">) => {
+  onClose,
+}: Pick<CommonFormatDASDProps, "devices" | "onClose">) => {
   const offlineDevices = devices.filter((d) => d.status === "offline");
   const totalOffline = offlineDevices.length;
 
@@ -99,7 +119,7 @@ const SomeDevicesOffline = ({
         <DevicesList devices={offlineDevices} />
       </Stack>
       <Popup.Actions>
-        <Popup.Confirm onClick={onCancel}>{_("Accept")}</Popup.Confirm>
+        <Popup.Confirm onClick={onClose}>{_("Accept")}</Popup.Confirm>
       </Popup.Actions>
     </Popup>
   );
@@ -111,8 +131,8 @@ const SomeDevicesOffline = ({
 const DeviceFormatConfirmation = ({
   device,
   onAccept,
-  onCancel,
-}: Pick<CommonFormatDASDProps, "device" | "onAccept" | "onCancel">) => {
+  onClose,
+}: Pick<CommonFormatDASDProps, "device" | "onAccept" | "onClose">) => {
   return (
     <Popup isOpen title={sprintf(_("Format device %s"), device.channel)}>
       <Content>
@@ -123,7 +143,7 @@ const DeviceFormatConfirmation = ({
       </Content>
       <Popup.Actions>
         <Popup.DangerousAction onClick={onAccept}>{_("Format now")}</Popup.DangerousAction>
-        <Popup.Cancel onClick={onCancel} autoFocus />
+        <Popup.Cancel onClick={onClose} autoFocus />
       </Popup.Actions>
     </Popup>
   );
@@ -135,8 +155,8 @@ const DeviceFormatConfirmation = ({
 const MultipleDevicesFormatConfirmation = ({
   devices,
   onAccept,
-  onCancel,
-}: Pick<CommonFormatDASDProps, "devices" | "onAccept" | "onCancel">) => {
+  onClose,
+}: Pick<CommonFormatDASDProps, "devices" | "onAccept" | "onClose">) => {
   return (
     <Popup isOpen title={_("Format selected devices?")}>
       <Content isEditorial>
@@ -150,7 +170,7 @@ const MultipleDevicesFormatConfirmation = ({
       </Content>
       <Popup.Actions>
         <Popup.DangerousAction onClick={onAccept}>{_("Format now")}</Popup.DangerousAction>
-        <Popup.Cancel onClick={onCancel} autoFocus />
+        <Popup.Cancel onClick={onClose} autoFocus />
       </Popup.Actions>
     </Popup>
   );
@@ -164,47 +184,45 @@ const MultipleDevicesFormatConfirmation = ({
  *   - Whether devices are online or offline.
  *   - Whether a single or multiple devices are selected.
  *
- * On user confirmation, the component triggers the `formatDASD` mutation with
- * all selected device IDs, then calls the `onAccept` callback.
+ * On user confirmation, the component triggers the `onFormat` callback.
  *
  * @remarks
  *
  * This component assumes the format operation succeeds and calls `onAccept()`
  * immediately after triggering the mutation. It does not handle or display
- * errors.
+ * errors nor any kind of progresses, responsability of other components in the
+ * UI.
  */
 export default function FormatActionHandler({
   devices,
-  onAccept,
-  onCancel,
-}: Pick<CommonFormatDASDProps, "devices" | "onAccept" | "onCancel">) {
-  // TODO: adapt former mutation to its API v2 counterpart
-  // const { mutate: formatDASD } = useFormatDASDMutation();
-  const format = () => {
-    // formatDASD(devices.map((d) => d.id));
-    onAccept();
-  };
-
+  onFormat,
+  onClose,
+}: FormatActionHandlerProps) {
   if (isEmpty(devices)) {
-    console.error("FormatActionHnalder called without devices");
+    console.error("FormatActionHandler called without devices");
     return;
   }
+
+  const format = () => {
+    onFormat();
+    onClose();
+  };
 
   if (devices.length === 1) {
     const device = devices[0];
 
     if (device.status === "active") {
-      return <DeviceFormatConfirmation device={device} onAccept={format} onCancel={onCancel} />;
+      return <DeviceFormatConfirmation device={device} onAccept={format} onClose={onClose} />;
     } else {
-      return <DeviceOffline device={device} onCancel={onCancel} />;
+      return <DeviceOffline device={device} onClose={onClose} />;
     }
   }
 
   if (devices.some((d) => d.status === "offline")) {
-    return <SomeDevicesOffline devices={devices} onCancel={onCancel} />;
+    return <SomeDevicesOffline devices={devices} onClose={onClose} />;
   } else {
     return (
-      <MultipleDevicesFormatConfirmation devices={devices} onAccept={format} onCancel={onCancel} />
+      <MultipleDevicesFormatConfirmation devices={devices} onAccept={format} onClose={onClose} />
     );
   }
 }
