@@ -38,13 +38,12 @@ import Icon from "~/components/layout/Icon";
 import Text from "~/components/core/Text";
 import Popup from "~/components/core/Popup";
 import FormatActionHandler from "~/components/storage/dasd/FormatActionHandler";
-import FormatFilter from "~/components/storage/dasd/FormatFilter";
 import SelectableDataTable, { SortedBy } from "~/components/core/SelectableDataTable";
-import StatusFilter from "~/components/storage/dasd/StatusFilter";
 import TextinputFilter from "~/components/storage/dasd/TextinputFilter";
+import SimpleSelector from "~/components/core/SimpleSelector";
 import { isEmpty } from "radashi";
 import { sprintf } from "sprintf-js";
-import { hex, sortCollection } from "~/utils";
+import { hex, sortCollection, translateEntries } from "~/utils";
 import { _, n_, N_ } from "~/i18n";
 
 import type { Device } from "~/model/system/dasd";
@@ -196,10 +195,11 @@ type FiltersToolbarProps = {
   /** Currently active filter values. */
   filters: DASDDevicesFilters;
   /**
-   * Status options to show in the status filter, derived from the actual device
-   * list.
-   * */
-  availableStatuses: object;
+   * Unique statuses present in the current device list, used to restrict the
+   * status filter to only relevant options. Does not include the synthetic "all"
+   * option.
+   */
+  availableStatuses: Device["status"][];
   /** Whether any filter differs from its default value. */
   hasActiveFilters: boolean;
   /** Total number of devices before filtering. */
@@ -249,16 +249,23 @@ const FiltersToolbar = ({
       <ToolbarContent alignItems="center">
         <ToolbarGroup>
           <ToolbarItem>
-            <StatusFilter
+            <SimpleSelector
+              label={_("Status")}
               value={filters.status}
-              options={{ all: _("All"), ...availableStatuses }}
+              options={{
+                all: _("All"),
+                ...translateEntries(STATUS_OPTIONS, {
+                  filter: (k) => availableStatuses.includes(k),
+                }),
+              }}
               onChange={(_, v) => onFilterChange("status", v)}
             />
           </ToolbarItem>
           <ToolbarItem>
-            <FormatFilter
+            <SimpleSelector
+              label={_("Formatted")}
               value={filters.formatted}
-              options={{ all: _("All"), ...FORMAT_OPTIONS }}
+              options={{ all: _("All"), ...translateEntries(FORMAT_OPTIONS) }}
               onChange={(_, v) => onFilterChange("formatted", v)}
             />
           </ToolbarItem>
@@ -547,9 +554,9 @@ export default function DASDTable({ devices }) {
   const sortingKey = columns[state.sortedBy.index].sortingKey;
   const sortedDevices = sortCollection(filteredDevices, state.sortedBy.direction, sortingKey);
 
-  const availableStatuses = Object.fromEntries(
-    Object.entries(STATUS_OPTIONS).filter(([key]) => devices.some((d: Device) => d.status === key)),
-  );
+  const availableStatuses = [
+    ...new Set(devices.map((d: Device) => d.status)),
+  ] as Device["status"][];
 
   return (
     <Content>
