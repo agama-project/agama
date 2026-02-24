@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2025] SUSE LLC
+ * Copyright (c) [2022-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -23,6 +23,9 @@
 import { isArray, isPlainObject, mapEntries } from "radashi";
 import { generatePath } from "react-router";
 import { ISortBy, sort } from "fast-sort";
+import { _ } from "~/i18n";
+
+import type { TranslatedString } from "~/i18n";
 
 /**
  * Generates a new array without null and undefined values.
@@ -619,6 +622,43 @@ function extendCollection<T extends object, U extends object>(
   };
 }
 
+/** Options for translateEntries utility */
+type TranslateEntriesOptions = {
+  /** Optional predicate to exclude entries by key. */
+  filter?: (key: string) => boolean;
+};
+
+/**
+ * Translates the values of a string record using `_()`, optionally filtering
+ * entries by key.
+ *
+ * @example
+ * // Translate all entries
+ * const FORMAT_OPTIONS = { yes: N_("Yes"), no: N_("No") };
+ * translateEntries(FORMAT_OPTIONS)
+ *
+ * @example
+ * // Translate only entries matching a condition
+ * const STATUS_OPTIONS = { active: N_("Active"), offline: N_("Offline") };
+ * translateEntries(STATUS_OPTIONS, { filter: (status) => devices.some((d) => d.status === status) })
+ *
+ * @param entries - A record whose values are translation keys.
+ * @param options - Optional configuration.
+ * @param options.filter - Optional predicate to exclude entries by key.
+ * @returns A new record with the same keys and translated values.
+ *
+ */
+const translateEntries = (
+  entries: Record<string, string>,
+  { filter }: TranslateEntriesOptions = {},
+): Record<string, TranslatedString> =>
+  Object.fromEntries(
+    Object.entries(entries)
+      .filter(([key]) => filter?.(key) ?? true)
+      /* eslint-disable agama-i18n/string-literals */
+      .map(([key, value]) => [key, _(value)]),
+  );
+
 export {
   compact,
   hex,
@@ -632,4 +672,5 @@ export {
   sortCollection,
   mergeSources,
   extendCollection,
+  translateEntries,
 };

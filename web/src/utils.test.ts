@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2024] SUSE LLC
+ * Copyright (c) [2022-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -20,6 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
+import { N_ } from "~/i18n";
 import {
   compact,
   localConnection,
@@ -30,11 +31,19 @@ import {
   sortCollection,
   mergeSources,
   extendCollection,
+  translateEntries,
 } from "./utils";
+
 import type { Target as ConfigTarget } from "~/openapi/config/iscsi";
 import type { Target as SystemTarget } from "~/openapi/system/iscsi";
-import type { Device as ConfigDevice } from "./openapi/config/dasd";
-import type { Device as SystemDevice } from "./openapi/system/dasd";
+import type { Device as ConfigDevice } from "~/openapi/config/dasd";
+import type { Device as SystemDevice } from "~/openapi/system/dasd";
+
+// Mock _() to simulate translation
+jest.mock("~/i18n", () => ({
+  _: (s: string) => `translated(${s})`,
+  N_: (s: string) => s,
+}));
 
 describe("compact", () => {
   it("removes null and undefined values", () => {
@@ -912,6 +921,37 @@ describe("extendCollection", () => {
       });
 
       expect(extended[0]).toEqual({ id: 1, value: "a", extra: "b" });
+    });
+  });
+
+  describe("translateEntries", () => {
+    const OPTIONS = {
+      active: N_("Active"),
+      offline: N_("Offline"),
+      unknown: N_("Unknown"),
+    };
+
+    it("returns all entries translated when no filter is provided", () => {
+      expect(translateEntries(OPTIONS)).toEqual({
+        active: "translated(Active)",
+        offline: "translated(Offline)",
+        unknown: "translated(Unknown)",
+      });
+    });
+
+    it("returns only translated entries matching the filter", () => {
+      expect(translateEntries(OPTIONS, { filter: (key) => key !== "unknown" })).toEqual({
+        active: "translated(Active)",
+        offline: "translated(Offline)",
+      });
+    });
+
+    it("returns an empty object when filter excludes all entries", () => {
+      expect(translateEntries(OPTIONS, { filter: () => false })).toEqual({});
+    });
+
+    it("returns an empty object when given an empty record", () => {
+      expect(translateEntries({})).toEqual({});
     });
   });
 });
