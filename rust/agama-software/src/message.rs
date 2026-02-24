@@ -86,7 +86,7 @@ impl Message for GetProposal {
 pub struct Install;
 
 impl Message for Install {
-    type Reply = bool;
+    type Reply = ();
 }
 
 pub struct Refresh;

@@ -65,6 +65,8 @@ pub enum Error {
     ZyppServerError(#[from] zypp_server::ZyppServerError),
     #[error(transparent)]
     ZyppError(#[from] zypp_agama::errors::ZyppError),
+    #[error("Software installation failed")]
+    InstallationFailed,
 }
 
 /// Starts the software service.
@@ -409,8 +411,11 @@ impl MessageHandler<message::Refresh> for Service {
 
 #[async_trait]
 impl MessageHandler<message::Install> for Service {
-    async fn handle(&mut self, _message: message::Install) -> Result<bool, Error> {
-        self.model.lock().await.install().await
+    async fn handle(&mut self, _message: message::Install) -> Result<(), Error> {
+        if !self.model.lock().await.install().await? {
+            return Err(Error::InstallationFailed);
+        }
+        Ok(())
     }
 }
 

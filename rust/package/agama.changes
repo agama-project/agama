@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Feb 23 21:15:48 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- Report properly if rpm installation skipped some packages due to
+  unavailability as installation failure (bsc#1258359)
+
+-------------------------------------------------------------------
 Mon Feb 23 15:39:24 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Fix firewall-offline-cmd invocation (bsc#1258416).
