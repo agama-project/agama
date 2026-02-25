@@ -70,7 +70,7 @@ module Y2Storage
         return unless device
 
         planned.assign_reuse(device)
-        planned.reformat = reformat?(device, config)
+        planned.reformat = reformat?(device, config) if planned.respond_to?(:reformat=)
         planned.resize = grow?(device, config) if planned.respond_to?(:resize=)
       end
 
@@ -194,7 +194,7 @@ module Y2Storage
         vg = config.volume_groups.find { |v| v.physical_volumes.include?(device_config.alias) }
         return unless vg
 
-        planned.lvm_volume_group_name = vg.name
+        planned.lvm_volume_group_name = vg.vg_name
       end
 
       # @param planned [Planned::Disk, Planned::Partition]

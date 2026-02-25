@@ -36,7 +36,7 @@ module Agama
         # @param config [Configs::VolumeGroup]
         # @return [Configs::VolumeGroup]
         def solve(config)
-          candidate_lvs = config.found_device&.lvm_lvs || []
+          candidate_lvs = config.found_device&.all_lvm_lvs || []
           config.logical_volumes = super(config.logical_volumes, candidate_lvs)
           config
         end
@@ -50,6 +50,14 @@ module Agama
         # @return [Boolean]
         def match_condition?(lv_config, lvm_lv)
           match_name?(lv_config, lvm_lv) && match_size?(lv_config, lvm_lv)
+        end
+
+        # @see DevicesSearch#solve_with_device
+        def solve_with_device(device_config, device)
+          result = super
+          result.pool = result.found_device.lv_type.is?(:thin_pool)
+          result.name = result.found_device.lv_name
+          result
         end
       end
     end

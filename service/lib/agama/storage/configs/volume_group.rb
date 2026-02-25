@@ -30,6 +30,8 @@ module Agama
 
         # Base name.
         #
+        # @see #vg_name
+        #
         # @return [String, nil] e.g., "system".
         attr_accessor :name
 
@@ -62,6 +64,15 @@ module Agama
 
         def logical_volume?(device_alias)
           logical_volumes.find { |l| l.alias?(device_alias) }
+        end
+
+        # Name to be used for the volume group
+        #
+        # For reused devices it comes from the real device, for new devices is set by {#name}.
+        #
+        # @return [String]
+        def vg_name
+          found_device ? found_device.vg_name : name
         end
       end
     end
