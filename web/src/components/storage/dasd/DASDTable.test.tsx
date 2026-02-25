@@ -88,8 +88,8 @@ describe("DASDTable", () => {
       screen.getByText("0.0.0300");
 
       // Status values are rendered
-      expect(screen.queryAllByText("offline").length).toBe(2);
-      screen.getByText("active");
+      expect(screen.queryAllByText("Offline").length).toBe(2);
+      screen.getByText("Active");
 
       // Device name is shown for the active device
       screen.getByText("dasda");
@@ -246,34 +246,54 @@ describe("DASDTable", () => {
     describe("actions", () => {
       it("calls addOrUpdateDevices with correct config on activate", async () => {
         const { user } = installerRender(<DASDTable devices={mockDASDDevices} />);
-        await user.click(screen.getByRole("checkbox", { name: "Select row 0" }));
-        await user.click(screen.getByRole("button", { name: "Activate" }));
+        await user.click(screen.getByRole("button", { name: "Actions for 0.0.0160" }));
+        await user.click(screen.getByRole("menuitem", { name: "Activate" }));
         expect(mockAddOrUpdateDevices).toHaveBeenCalledWith([
-          { channel: "0.0.0160", status: "online" },
+          { channel: "0.0.0160", state: "active", diag: undefined },
         ]);
       });
 
       it("calls addOrUpdateDevices with correct config on deactivate", async () => {
         const { user } = installerRender(<DASDTable devices={mockDASDDevices} />);
-        await user.click(screen.getByRole("checkbox", { name: "Select row 1" }));
-        await user.click(screen.getByRole("button", { name: "Deactivate" }));
+        await user.click(screen.getByRole("button", { name: "Actions for 0.0.0200" }));
+        await user.click(screen.getByRole("menuitem", { name: "Deactivate" }));
         expect(mockAddOrUpdateDevices).toHaveBeenCalledWith([
-          { channel: "0.0.0200", status: "offline" },
+          { channel: "0.0.0200", state: "offline", diag: undefined },
         ]);
       });
 
       it("calls addOrUpdateDevices with correct config on DIAG on", async () => {
         const { user } = installerRender(<DASDTable devices={mockDASDDevices} />);
-        await user.click(screen.getByRole("checkbox", { name: "Select row 0" }));
-        await user.click(screen.getByRole("button", { name: "Set DIAG on" }));
-        expect(mockAddOrUpdateDevices).toHaveBeenCalledWith([{ channel: "0.0.0160", diag: true }]);
+        // 0.0.0160 has diag: false so "Set DIAG on" is available
+        await user.click(screen.getByRole("button", { name: "Actions for 0.0.0160" }));
+        await user.click(screen.getByRole("menuitem", { name: "Set DIAG on" }));
+        expect(mockAddOrUpdateDevices).toHaveBeenCalledWith([
+          { channel: "0.0.0160", state: "active", diag: true },
+        ]);
       });
 
       it("calls addOrUpdateDevices with correct config on DIAG off", async () => {
+        mockDASDDevices[0] = { ...mockDASDDevices[0], diag: true };
+        const { user } = installerRender(<DASDTable devices={mockDASDDevices} />);
+        await user.click(screen.getByRole("button", { name: "Actions for 0.0.0160" }));
+        await user.click(screen.getByRole("menuitem", { name: "Set DIAG off" }));
+        expect(mockAddOrUpdateDevices).toHaveBeenCalledWith([
+          { channel: "0.0.0160", state: "active", diag: false },
+        ]);
+      });
+
+      it("hides row actions when devices are selected", async () => {
         const { user } = installerRender(<DASDTable devices={mockDASDDevices} />);
         await user.click(screen.getByRole("checkbox", { name: "Select row 0" }));
-        await user.click(screen.getByRole("button", { name: "Set DIAG off" }));
-        expect(mockAddOrUpdateDevices).toHaveBeenCalledWith([{ channel: "0.0.0160", diag: false }]);
+        expect(screen.queryByRole("button", { name: "Actions for 0.0.0160" })).toBeNull();
+      });
+
+      it("filters irrelevant actions for a single device", async () => {
+        const { user } = installerRender(<DASDTable devices={mockDASDDevices} />);
+        // 0.0.0200 is already active — Activate should not appear
+        await user.click(screen.getByRole("button", { name: "Actions for 0.0.0200" }));
+        expect(screen.queryByRole("menuitem", { name: "Activate" })).toBeNull();
+        screen.getByRole("menuitem", { name: "Deactivate" });
       });
     });
 
@@ -284,8 +304,8 @@ describe("DASDTable", () => {
         await user.click(screen.getByRole("checkbox", { name: "Select row 1" }));
         await user.click(screen.getByRole("button", { name: "Activate" }));
         expect(mockAddOrUpdateDevices).toHaveBeenCalledWith([
-          { channel: "0.0.0160", status: "online" },
-          { channel: "0.0.0200", status: "online" },
+          { channel: "0.0.0160", state: "active", diag: undefined },
+          { channel: "0.0.0200", state: "active", diag: undefined },
         ]);
       });
 
@@ -295,8 +315,8 @@ describe("DASDTable", () => {
         await user.click(screen.getByRole("checkbox", { name: "Select row 1" }));
         await user.click(screen.getByRole("button", { name: "Deactivate" }));
         expect(mockAddOrUpdateDevices).toHaveBeenCalledWith([
-          { channel: "0.0.0160", status: "offline" },
-          { channel: "0.0.0200", status: "offline" },
+          { channel: "0.0.0160", state: "offline", diag: undefined },
+          { channel: "0.0.0200", state: "offline", diag: undefined },
         ]);
       });
 
@@ -306,8 +326,8 @@ describe("DASDTable", () => {
         await user.click(screen.getByRole("checkbox", { name: "Select row 1" }));
         await user.click(screen.getByRole("button", { name: "Set DIAG on" }));
         expect(mockAddOrUpdateDevices).toHaveBeenCalledWith([
-          { channel: "0.0.0160", diag: true },
-          { channel: "0.0.0200", diag: true },
+          { channel: "0.0.0160", state: "active", diag: true },
+          { channel: "0.0.0200", state: "active", diag: true },
         ]);
       });
 
@@ -317,8 +337,8 @@ describe("DASDTable", () => {
         await user.click(screen.getByRole("checkbox", { name: "Select row 1" }));
         await user.click(screen.getByRole("button", { name: "Set DIAG off" }));
         expect(mockAddOrUpdateDevices).toHaveBeenCalledWith([
-          { channel: "0.0.0160", diag: false },
-          { channel: "0.0.0200", diag: false },
+          { channel: "0.0.0160", state: "active", diag: false },
+          { channel: "0.0.0200", state: "active", diag: false },
         ]);
       });
 

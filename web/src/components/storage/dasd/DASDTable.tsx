@@ -94,6 +94,16 @@ type DASDActionsProps = {
    * confirmation dialog.
    */
   dispatcher: React.Dispatch<DASDTableAction>;
+  /**
+   * When true, filters the returned actions to only those relevant to the
+   * current state of the first device in `devices`. Intended for single-device
+   * row actions where showing irrelevant options (e.g. "Activate" for an
+   * already active device) would be noisy.
+   *
+   * If false, returns the full set of actions regardless of device state,
+   * intented for bulk operations over a mixed selection.
+   */
+  filterByDevice?: boolean;
 };
 
 /**
@@ -159,14 +169,26 @@ const filterDevices = (devices: Device[], filters: DASDDevicesFilters): Device[]
 };
 
 /**
- * Builds the list of available actions for a set of DASD devices.
+ * Builds the list of actions available for the given devices.
  *
- * Returns an array of action objects, each with a label and an `onClick`
- * handler.
+ * When `filterByDevice` is true, only actions relevant to the current state of
+ * `devices[0]` are included (e.g. "Activate" is omitted if the device is
+ * already active). This is intended for single-device row actions where showing
+ * irrelevant options would be noisy.
+ *
+ * When false (default), the full set of actions is returned regardless of
+ * device state, which is the right behavior for bulk operations where the
+ * selection may contain devices in mixed states.
  */
-const buildActions = ({ devices, addOrUpdateDevices, dispatcher }: DASDActionsProps) => {
-  return [
+const buildActions = ({
+  devices,
+  addOrUpdateDevices,
+  dispatcher,
+  filterByDevice = false,
+}: DASDActionsProps) => {
+  const actions = [
     {
+      id: "activate",
       title: _("Activate"),
       onClick: () =>
         addOrUpdateDevices(
@@ -176,6 +198,7 @@ const buildActions = ({ devices, addOrUpdateDevices, dispatcher }: DASDActionsPr
         ),
     },
     {
+      id: "deactivate",
       title: _("Deactivate"),
       onClick: () =>
         addOrUpdateDevices(
@@ -185,9 +208,7 @@ const buildActions = ({ devices, addOrUpdateDevices, dispatcher }: DASDActionsPr
         ),
     },
     {
-      isSeparator: true,
-    },
-    {
+      id: "diagOn",
       title: _("Set DIAG on"),
       onClick: () =>
         addOrUpdateDevices(
@@ -195,6 +216,7 @@ const buildActions = ({ devices, addOrUpdateDevices, dispatcher }: DASDActionsPr
         ),
     },
     {
+      id: "diagOff",
       title: _("Set DIAG off"),
       onClick: () =>
         addOrUpdateDevices(
@@ -202,9 +224,7 @@ const buildActions = ({ devices, addOrUpdateDevices, dispatcher }: DASDActionsPr
         ),
     },
     {
-      isSeparator: true,
-    },
-    {
+      id: "format",
       title: _("Format"),
       isDanger: true,
       onClick: () => {
@@ -212,6 +232,21 @@ const buildActions = ({ devices, addOrUpdateDevices, dispatcher }: DASDActionsPr
       },
     },
   ];
+
+  if (filterByDevice) {
+    const [device] = devices;
+    const keptActions = {
+      activate: !device.active,
+      deactivate: device.active,
+      diagOn: !device.diag,
+      diagOff: device.diag,
+      format: !device.formatted,
+    };
+
+    return actions.filter((a) => keptActions[a.id]);
+  }
+
+  return actions;
 };
 
 /** Props for `FiltersToolbar`. */
@@ -362,15 +397,15 @@ const BulkActionsToolbar = ({ devices, addOrUpdateDevices, dispatcher }: DASDAct
             </ToolbarGroup>
 
             <ToolbarGroup gap={{ default: "gapXs" }} alignSelf="end" variant="action-group">
-              {buildActions({ devices, addOrUpdateDevices, dispatcher })
-                .filter((a) => !a.isSeparator)
-                .map(({ onClick, title }, i) => (
+              {buildActions({ devices, addOrUpdateDevices, dispatcher }).map(
+                ({ onClick, title }, i) => (
                   <ToolbarItem key={i}>
                     <Button size="sm" onClick={onClick} variant="control">
                       {title}
                     </Button>
                   </ToolbarItem>
-                ))}
+                ),
+              )}
             </ToolbarGroup>
           </>
         ) : (
@@ -634,11 +669,14 @@ export default function DASDTable({ devices }) {
         updateSorting={onSortingChange}
         allowSelectAll
         itemActions={(d: Device) =>
-          buildActions({
-            devices: [d],
-            addOrUpdateDevices,
-            dispatcher: dispatch,
-          })
+          isEmpty(state.selectedDevices.length)
+            ? buildActions({
+                devices: [d],
+                addOrUpdateDevices,
+                dispatcher: dispatch,
+                filterByDevice: true,
+              })
+            : []
         }
         itemActionsLabel={(d: Device) => `Actions for ${d.channel}`}
         emptyState={
