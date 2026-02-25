@@ -30,7 +30,6 @@ import type { Status } from "~/model/status";
 import type { System } from "~/model/system";
 import type { Action, L10nSystemConfig, DiscoverISCSIConfig } from "~/model/action";
 import type { AxiosResponse } from "axios";
-import type { Job } from "~/types/job";
 
 type Response = Promise<AxiosResponse>;
 
@@ -82,11 +81,6 @@ const discoverISCSIAction = (config: DiscoverISCSIConfig) => postAction({ discov
 
 const finishInstallation = () => postAction({ finish: "reboot" });
 
-/**
- * @todo Adapt jobs to the new API.
- */
-const getStorageJobs = (): Promise<Job[]> => get("/api/storage/jobs");
-
 export {
   getStatus,
   getConfig,
@@ -106,7 +100,6 @@ export {
   probeStorageAction,
   discoverISCSIAction,
   finishInstallation,
-  getStorageJobs,
 };
 
 export type { Response };
