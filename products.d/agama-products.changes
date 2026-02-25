@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Wed Feb 25 16:04:52 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Fix SLES and SLES_SAP release package names (bsc#1258271).
+
+-------------------------------------------------------------------
 Wed Feb 25 10:36:54 UTC 2026 - Michal Filka <mfilka@suse.com>
 
 - bsc#1258416
