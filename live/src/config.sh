@@ -316,10 +316,10 @@ rpm -e --nodeps alsa alsa-utils alsa-ucm-conf || true
 du -h -s /lib/modules /lib/firmware
 
 # remove the multimedia drivers, use the default configuration files
-image-janitor -v driver-cleanup --delete --config-files /usr/share/image-janitor/module.list,/usr/share/image-janitor/module.list.extra
+image-janitor driver-cleanup --delete --config-files /usr/share/image-janitor/module.list,/usr/share/image-janitor/module.list.extra
 
-# remove the unused firmware(not referenced by kernel drivers)
-image-janitor -v fw-cleanup --delete 
+# remove the unused firmware (not referenced by kernel drivers)
+image-janitor fw-cleanup --delete
 
 # remove the tool, not needed anymore
 rpm -e image-janitor
