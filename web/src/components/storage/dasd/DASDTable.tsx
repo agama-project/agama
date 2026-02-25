@@ -109,6 +109,7 @@ type DASDActionsProps = {
 const STATUS_OPTIONS = {
   active: N_("Active"),
   offline: N_("Offline"),
+  read_only: N_("Read only"),
 };
 
 /**
@@ -477,7 +478,7 @@ const createColumns = () => [
   {
     // TRANSLATORS: table header for a DASD devices table
     name: _("Status"),
-    value: (d: Device) => d.status,
+    value: (d: Device) => STATUS_OPTIONS[d.status],
     sortingKey: "status",
   },
   {
