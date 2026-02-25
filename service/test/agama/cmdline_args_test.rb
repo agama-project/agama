@@ -68,4 +68,18 @@ describe Agama::CmdlineArgs do
       expect { described_class.read_from(broken_config) }.to_not raise_error
     end
   end
+
+  describe "#to_s" do
+    it "hides the password in the install_url" do
+      args = described_class.new({ "install_url" => "https://u:secret_password@example.com" })
+      expect(args.to_s).to_not include("secret_password")
+    end
+  end
+
+  describe "#inspect" do
+    it "hides the password in the install_url" do
+      args = described_class.new({ "install_url" => "https://u:secret_password@example.com" })
+      expect(args.inspect).to_not include("secret_password")
+    end
+  end
 end

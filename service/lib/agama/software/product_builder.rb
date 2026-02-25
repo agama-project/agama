@@ -22,6 +22,9 @@
 require "agama/cmdline_args"
 require "agama/software/product"
 require "logger"
+require "yast"
+
+Yast.import "URL"
 
 module Agama
   module Software
@@ -75,7 +78,7 @@ module Agama
       def set_repositories(product, data, cmdline_args)
         install_url = cmdline_args.data["install_url"]
         if install_url
-          @logger.info "agama.install_url is set to #{install_url}"
+          @logger.info "agama.install_url is set to #{Yast::URL.HidePassword(install_url)}"
           product.repositories = install_url.split(",")
         else
           product.repositories = data[:repositories]
