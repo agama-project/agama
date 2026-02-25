@@ -669,7 +669,7 @@ export default function DASDTable({ devices }) {
         updateSorting={onSortingChange}
         allowSelectAll
         itemActions={(d: Device) =>
-          isEmpty(state.selectedDevices.length)
+          isEmpty(state.selectedDevices)
             ? buildActions({
                 devices: [d],
                 addOrUpdateDevices,
