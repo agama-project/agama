@@ -25,9 +25,8 @@
 
 use std::collections::{hash_map::Entry, HashMap};
 
-use crate::{
-    adapter::Watcher, model::Device, nm::proxies::DeviceProxy, Action, NetworkAdapterError,
-};
+use crate::types::Device;
+use crate::{adapter::Watcher, nm::proxies::DeviceProxy, Action, NetworkAdapterError};
 use anyhow::anyhow;
 use async_trait::async_trait;
 use tokio::sync::mpsc::{unbounded_channel, UnboundedReceiver, UnboundedSender};
@@ -253,7 +252,7 @@ impl ActionDispatcher<'_> {
     ) -> Result<(), NmError> {
         let proxy = self.proxies.find_or_add_active_connection(&path).await?;
         let id = proxy.id().await?;
-        let state = proxy.state().await.map(|s| NmConnectionState(s.clone()))?;
+        let state = proxy.state().await.map(NmConnectionState)?;
         if let Ok(state) = state.try_into() {
             _ = self
                 .actions_tx
@@ -273,7 +272,7 @@ impl ActionDispatcher<'_> {
     ) -> Result<(), NmError> {
         if let Some(proxy) = self.proxies.remove_active_connection(&path) {
             let id = proxy.id().await?;
-            let state = proxy.state().await.map(|s| NmConnectionState(s.clone()))?;
+            let state = proxy.state().await.map(NmConnectionState)?;
             if let Ok(state) = state.try_into() {
                 _ = self
                     .actions_tx
@@ -359,14 +358,14 @@ impl<'a> ProxiesRegistry<'a> {
     pub fn remove_active_connection(
         &mut self,
         path: &OwnedObjectPath,
-    ) -> Option<ActiveConnectionProxy> {
+    ) -> Option<ActiveConnectionProxy<'_>> {
         self.active_connections.remove(path)
     }
 
     /// Removes a device from the registry.
     ///
     /// * `path`: D-Bus object path.
-    pub fn remove_device(&mut self, path: &OwnedObjectPath) -> Option<(String, DeviceProxy)> {
+    pub fn remove_device(&mut self, path: &OwnedObjectPath) -> Option<(String, DeviceProxy<'_>)> {
         self.devices.remove(path)
     }
 

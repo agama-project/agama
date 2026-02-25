@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2025] SUSE LLC
+ * Copyright (c) [2025-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -23,8 +23,7 @@
 import React, { useState } from "react";
 import { Content } from "@patternfly/react-core";
 import { SelectableDataTable, Page } from "~/components/core/";
-import { StorageDevice } from "~/types/storage";
-import { useAvailableDevices } from "~/hooks/storage/system";
+import { useAvailableDevices } from "~/hooks/model/system/storage";
 import { _ } from "~/i18n";
 import { SelectableDataTableProps } from "../core/SelectableDataTable";
 import {
@@ -32,10 +31,12 @@ import {
   contentDescription,
   filesystemLabels,
 } from "~/components/storage/utils/device";
+import type { Storage } from "~/model/system";
+import { STORAGE } from "~/routes/paths";
 
 type DeviceSelectorProps = {
-  devices: StorageDevice[];
-  selectedDevices?: StorageDevice[];
+  devices: Storage.Device[];
+  selectedDevices?: Storage.Device[];
   onSelectionChange: SelectableDataTableProps["onSelectionChange"];
   selectionMode?: SelectableDataTableProps["selectionMode"];
 };
@@ -51,7 +52,7 @@ const DeviceSelector = ({
       <SelectableDataTable
         columns={[
           { name: _("Type"), value: typeDescription, pfThProps: { width: 10 } },
-          { name: _("Name"), value: (device: StorageDevice) => device.name },
+          { name: _("Name"), value: (device: Storage.Device) => device.name },
           { name: _("Content"), value: contentDescription },
           { name: _("Filesystems"), value: filesystemLabels },
         ]}
@@ -70,10 +71,9 @@ export default function DeviceSelectorPage(): React.ReactNode {
   const [selectedDevices, setSelectedDevices] = useState([]);
 
   return (
-    <Page>
-      <Page.Header>
-        <Content component="h2">{_("Device Selection")}</Content>
-      </Page.Header>
+    <Page
+      breadcrumbs={[{ label: _("Storage"), path: STORAGE.root }, { label: _("Select device") }]}
+    >
       <Page.Content>
         <Content>
           {_(

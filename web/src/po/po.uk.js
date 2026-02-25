@@ -3,8 +3,11 @@ export default {
     "plural-forms": (n) => n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2,
     "language": "uk"
   },
-  " Timezone selection": [
-    " Вибір часового пояса"
+  "\"%s\"": [
+    "\"%s\""
+  ],
+  "\"%s\" does not exist or is no longer available.": [
+    "\"%s\" не існує або більше не доступна."
   ],
   "%1$s (%2$s)": [
     "%1$s (%2$s)"
@@ -12,8 +15,19 @@ export default {
   "%1$s - %2$s": [
     "%1$s - %2$s"
   ],
+  "%1$s and %2$s": [
+    "%1$s і %2$s"
+  ],
+  "%1$s and [%2$d more]": [
+    "%1$s та [ще %2$d]",
+    "%1$s та [ще %2$d]",
+    "%1$s та [ще %2$d]"
+  ],
   "%1$s at %2$s": [
     "%1$s на %2$s"
+  ],
+  "%1$s keyboard - %2$s timezone": [
+    "%1$s розкладка - %2$s часова зона"
   ],
   "%1$s will be created as a partition at %2$s": [
     "%1$s буде створений як розділ на %2$s",
@@ -23,14 +37,35 @@ export default {
   "%1$s will still contain the LVM group '%2$s' and any partition needed to boot": [
     "%1$s, як і раніше, міститиме групу LVM '%2$s' і будь-який розділ, необхідний для завантаження"
   ],
+  "%1$s, %2$s and [%3$d more]": [
+    "%1$s, %2$s та [ще %3$d]",
+    "%1$s, %2$s та [ще %3$d]",
+    "%1$s, %2$s та [ще %3$d]"
+  ],
+  "%d mode available": [
+    "Доступний %d режим",
+    "Доступно %d режими",
+    "Доступно %d режимів"
+  ],
   "%d of %d": [
     "%d з %d"
+  ],
+  "%d other mode available": [
+    "Доступно %d інший режим",
+    "Доступно %d інші режими",
+    "Доступно %d інших режимів"
   ],
   "%s - %s": [
     "%s - %s"
   ],
-  "%s [must be registered].": [
-    "%s [має бути зареєстровано]."
+  "%s and %d others": [
+    "%s та %d інший/х"
+  ],
+  "%s and %s": [
+    "%s та %s"
+  ],
+  "%s at portal %s does not exist or cannot be reached.": [
+    "%s на порталі %s не існує або недоступний."
   ],
   "%s disk": [
     "Диск %s"
@@ -38,11 +73,13 @@ export default {
   "%s has been registered with below information.": [
     "%s було зареєстровано з наведеною нижче інформацією."
   ],
-  "%s is an immutable system with atomic updates. It uses a read-only Btrfs file system updated via snapshots.": [
-    "%s - це незмінна система з атомарними оновленнями. Вона використовує файлову систему Btrfs, доступну тільки для читання і оновлювану за допомогою моментальних знімків."
-  ],
   "%s logo": [
     "Логотип %s"
+  ],
+  "%s task active": [
+    "%s завдання активне",
+    "%s завдання активні",
+    "%s завдань активні"
   ],
   "%s will be created as a logical volume": [
     "%s буде створено як логічний том",
@@ -54,6 +91,9 @@ export default {
   ],
   "%s with %d partitions": [
     "%s з %d розділами"
+  ],
+  "(step %s of %s)": [
+    "(крок %s з %s)"
   ],
   "A %1$s of %2$s will be created for %3$s if possible": [
     "Для %3$s буде створено розділ %1$s розміром %2$s, якщо це можливо"
@@ -76,6 +116,16 @@ export default {
   "A generic size range between %1$s and %2$s will be used for the new %3$s": [
     "Для нового розділу %3$s буде використано типовий діапазон розмірів між %1$s і %2$s"
   ],
+  "A new partition will be created for %s": [
+    "Для %s буде створено новий розділ",
+    "Для %s будуть створені нові розділи",
+    "Для %s будуть створені нові розділи"
+  ],
+  "A new volume will be created for %s": [
+    "Для %s буде створено новий том",
+    "Для %s будуть створені нові томи",
+    "Для %s будуть створені нові томи"
+  ],
   "A partition may be deleted": [
     "Розділ може бути видалений"
   ],
@@ -93,6 +143,9 @@ export default {
   ],
   "Actions": [
     "Дії"
+  ],
+  "Actions for %s at portal %s": [
+    "Дії для %s на порталі %s"
   ],
   "Activate": [
     "Активувати"
@@ -133,9 +186,6 @@ export default {
   "Add another address": [
     "Додати іншу адресу"
   ],
-  "Add another partition or mount an existing one": [
-    "Додати новий розділ або змонтувати наявний"
-  ],
   "Add device menu": [
     "Меню додавання пристроїв"
   ],
@@ -144,6 +194,9 @@ export default {
   ],
   "Add or use partition": [
     "Створити або використати розділ"
+  ],
+  "Additional CHAP authentication performed by the initiator": [
+    "Додаткова аутентифікація CHAP, що виконується ініціатором"
   ],
   "Address": [
     "Адреса"
@@ -157,6 +210,9 @@ export default {
   "Adjust the settings below to make the new system fit into the available space.": [
     "Відрегулюйте наведені нижче налаштування, щоб нова система вписувалася в наявний простір."
   ],
+  "All": [
+    "Всі"
+  ],
   "All conflicts have been resolved, or none were detected. You can safely continue with your setup.": [
     "Всі конфлікти вирішено, або не виявлено жодного. Ви можете безпечно продовжити встановлення."
   ],
@@ -168,6 +224,9 @@ export default {
   ],
   "All fields are required": [
     "Всі поля обов'язкові"
+  ],
+  "All fields are required.": [
+    "Всі поля обов'язкові."
   ],
   "All network connections managed through this interface are currently set to be used only during installation and will not be copied to the installed system": [
     "Усі мережеві з'єднання, керовані через цей інтерфейс, наразі налаштовані на використання лише під час інсталяції і не будуть скопійовані до інстальованої системи"
@@ -183,6 +242,11 @@ export default {
   ],
   "Already using all available disks": [
     "Вже використані всі наявні диски"
+  ],
+  "An existing partition will be used for %s": [
+    "Для %s буде використано наявний розділ",
+    "Для %s будуть використані наявні розділи",
+    "Для %s будуть використані наявні розділи"
   ],
   "Any existing partition will be removed and all data in the disk will be lost.": [
     "Всі розділи буде видалено, а всі дані на диску буде втрачено."
@@ -210,23 +274,17 @@ export default {
   "At least one partition will be deleted": [
     "Принаймні один розділ буде видалено"
   ],
-  "At this point you can power off the machine.": [
-    "На цьому етапі Ви можете вимкнути пристрій."
-  ],
-  "At this point you can reboot the machine to log in to the new system.": [
-    "На цьому етапі Ви можете перезавантажити пристрій, щоб увійти в нову систему."
-  ],
   "Authentication": [
     "Аутентифікація"
   ],
-  "Authentication by initiator": [
-    "Аутентифікація ініціатором"
-  ],
-  "Authentication by target": [
-    "Аутентифікація за ціллю"
+  "Auto": [
+    "Автоматично"
   ],
   "Auto LUNs Scan": [
     "Автоматичне сканування LUN"
+  ],
+  "Auto and manual": [
+    "Автоматичне та ручне"
   ],
   "Automatic": [
     "Автоматично"
@@ -234,14 +292,11 @@ export default {
   "Automatic (DHCP)": [
     "Автоматично (DHCP)"
   ],
-  "Automatic LUN scan is [disabled]. LUNs have to be manually       configured after activating a controller.": [
-    "Автоматичне сканування LUN [вимкнено]. LUN мають бути налаштовані        вручну після активації контролера."
+  "Automatic LUN scan is [disabled]. LUNs have to be manually configured after activating a controller.": [
+    "Автоматичне сканування LUN [вимкнено]. LUN мають бути налаштовані вручну після активації контролера."
   ],
-  "Automatic LUN scan is [enabled]. Activating a controller which is       running in NPIV mode will automatically configures all its LUNs.": [
-    "Автоматичне сканування LUN [увімкнено]. Активація контролера, що        працює в режимі NPIV, автоматично сконфігурує всі його LUNи."
-  ],
-  "Available products": [
-    "Доступні продукти"
+  "Automatic LUN scan is [enabled]. Activating a controller which is running in NPIV mode will automatically configures all its LUNs.": [
+    "Автоматичне сканування LUN [увімкнено]. Активація контролера, що працює в режимі NPIV, автоматично сконфігурує всі його LUNи."
   ],
   "Back": [
     "Назад"
@@ -282,8 +337,8 @@ export default {
   "Binding": [
     "Прив'язка"
   ],
-  "Binding settings for '%s'": [
-    "Налаштування прив'язки для «%s»"
+  "Binding settings": [
+    "Налаштування прив'язки"
   ],
   "BitLocker": [
     "BitLocker"
@@ -291,20 +346,35 @@ export default {
   "Boot options": [
     "Параметри завантаження"
   ],
+  "Breadcrumbs": [
+    "Навігаційна панель"
+  ],
   "Btrfs": [
     "Btrfs"
   ],
   "Btrfs with snapshots": [
     "Btrfs з моментальними знімками"
   ],
+  "By proceeding, the installation will begin with defined settings.": [
+    "Після підтвердження інсталяція розпочнеться з визначених налаштувань."
+  ],
+  "CHAP authentication performed by the target": [
+    "Автентифікація CHAP, що виконується ціллю"
+  ],
+  "CPU": [
+    "Процесор"
+  ],
   "Cancel": [
     "Скасувати"
+  ],
+  "Cancel connection": [
+    "Скасувати з'єднання"
   ],
   "Cannot be changed in remote installation": [
     "Неможливо змінити під час віддаленого встановлення"
   ],
-  "Cannot connect to Agama server": [
-    "Не вдається з'єднатися з сервером Agama"
+  "Cannot connect": [
+    "Неможливо підключитися"
   ],
   "Cannot format %s": [
     "Неможливо форматувати %s"
@@ -317,9 +387,6 @@ export default {
   ],
   "Change Language": [
     "Змінити мову"
-  ],
-  "Change boot options": [
-    "Змінити параметри завантаження"
   ],
   "Change device menu": [
     "Меню зміни пристрою"
@@ -339,20 +406,41 @@ export default {
   "Change keyboard layout": [
     "Змінити розкладку клавіатури"
   ],
+  "Change mode": [
+    "Змінити режим"
+  ],
   "Change product": [
     "Змінити продукт"
+  ],
+  "Change product or mode": [
+    "Змінити продукт або режим"
   ],
   "Change selection": [
     "Змінити вибір"
   ],
+  "Change the disk to configure": [
+    "Змініть диск для налаштування"
+  ],
+  "Change the disk to create %s": [
+    "Змініть диск для створення %s"
+  ],
+  "Change the disk to format as %s": [
+    "Змініть диск для форматування на %s"
+  ],
+  "Change the disk to install the system": [
+    "Змініть диск для встановлення системи"
+  ],
   "Change the file system or mount point": [
     "Змінити файлову систему або точку монтування"
   ],
+  "Change to %s": [
+    "Змінити на %s"
+  ],
+  "Changes in these settings will immediately update the 'Result' section below.": [
+    "Зміни в цих налаштуваннях негайно оновлять розділ «Результат» нижче."
+  ],
   "Channel ID": [
     "Ідентифікатор каналу"
-  ],
-  "Check the %d planned actions": [
-    "Перевірити %d заплановані дії"
   ],
   "Check the authentication parameters.": [
     "Перевірте параметри автентифікації."
@@ -360,8 +448,19 @@ export default {
   "Check the following before continuing": [
     "Перш ніж продовжити, перевірте наступне"
   ],
+  "Check whether Agama server is running.": [
+    "Перевірте, чи працює сервер Agama."
+  ],
   "Choose a disk for placing the boot loader": [
     "Оберіть диск для розміщення завантажувача"
+  ],
+  "Choose a mode": [
+    "Виберіть режим"
+  ],
+  "Choose a product": [
+    "Виберіть продукт",
+    "Виберіть із %d доступних продуктів",
+    "Виберіть із %d доступних продуктів"
   ],
   "Choose device to bind by MAC": [
     "Виберіть пристрій для прив'язки за MAC-адресою"
@@ -387,26 +486,20 @@ export default {
   "Close": [
     "Закрити"
   ],
-  "Collapse the list of planned actions": [
-    "Згорнути список запланованих дій"
-  ],
-  "Configuration out of sync": [
-    "Конфігурація не синхронізована"
-  ],
-  "Configuration read from the iSCSI Boot Firmware Table (iBFT).": [
-    "Конфігурація, зчитана з таблиці iSCSI Boot Firmware Table (iBFT)."
+  "Configuration read from the iSCSI Boot Firmware Table (iBFT). Initiator cannot be changed.": [
+    "Конфігурація зчитана з таблиці iSCSI Boot Firmware Table (iBFT). Ініціатор не може бути змінений."
   ],
   "Configuration unreachable or invalid": [
     "Конфігурація недоступна або не синхронізована"
   ],
+  "Configure": [
+    "Налаштувати"
+  ],
   "Configure DASD": [
     "Налаштувати DASD"
   ],
-  "Configure LVM Volume Group": [
-    "Налаштування групи томів LVM"
-  ],
-  "Configure LVM logical volume at %s volume group": [
-    "Налаштування логічного тому LVM у групі томів %s"
+  "Configure Volume Group": [
+    "Налаштувати групу томів"
   ],
   "Configure device %s": [
     "Налаштувати пристрій %s"
@@ -417,6 +510,12 @@ export default {
   "Configure iSCSI": [
     "Налаштувати iSCSI"
   ],
+  "Configure logical volume": [
+    "Налаштувати логічний том"
+  ],
+  "Configure partition": [
+    "Налаштувати розділ"
+  ],
   "Configure partition at %s": [
     "Налаштування розділу на %s"
   ],
@@ -426,26 +525,34 @@ export default {
   "Configured for installation only": [
     "Налаштовано лише для встановлення"
   ],
-  "Configuring the product, please wait ...": [
-    "Налаштування продукту; будь ласка, зачекайте…"
+  "Configured for root and user %s": [
+    "Налаштовано для root та користувача %s"
+  ],
+  "Configured for the root user": [
+    "Налаштовано для користувача root"
+  ],
+  "Configured for user %s": [
+    "Налаштовано для користувача %s"
+  ],
+  "Configured with %d connection": [
+    "Налаштовано з %d з'єднанням",
+    "Налаштовано з %d з'єднаннями",
+    "Налаштовано з %d з'єднаннями"
   ],
   "Confirm": [
     "Підтвердити"
   ],
-  "Confirm Installation": [
-    "Підтвердити встановлення"
+  "Confirm and install": [
+    "Підтвердити та встановити"
   ],
   "Confirm that you really want to continue.": [
     "Підтвердьте, що Ви дійсно хочете продовжити."
   ],
-  "Congratulations!": [
-    "Вітаємо!"
+  "Confirm the product selection.": [
+    "Підтвердіть вибір продукту."
   ],
   "Connect": [
     "З'єднати"
-  ],
-  "Connect to %s": [
-    "Під'єднати до %s"
   ],
   "Connect to iSCSI targets": [
     "Підключення до об'єктів iSCSI"
@@ -453,8 +560,8 @@ export default {
   "Connected": [
     "З'єднано"
   ],
-  "Connected (%s)": [
-    "З'єднано (%s)"
+  "Connected by the system": [
+    "Підключено системою"
   ],
   "Connected device": [
     "Підключений пристрій"
@@ -471,6 +578,9 @@ export default {
   "Connection details": [
     "Відомості про підключення"
   ],
+  "Connection failed": [
+    "Збій підключення"
+  ],
   "Connection is available to all devices.": [
     "Підключення доступне для всіх пристроїв."
   ],
@@ -486,23 +596,20 @@ export default {
   "Content": [
     "Вміст"
   ],
-  "Continue": [
-    "Продовжити"
-  ],
   "Continuing without installing the package can result in a broken system. In some cases the system might not even boot.": [
     "Продовження роботи без встановлення пакунка може призвести до поломки системи. У деяких випадках система може навіть не завантажитися."
   ],
   "Controllers": [
     "Контролери"
   ],
-  "Could not authenticate against the server, please check it.": [
-    "Не вдалося пройти аутентифікацію на сервері; будь ласка, перевірте його."
+  "Could not authenticate against the server.": [
+    "Не вдалося виконати автентифікацію на сервері."
   ],
   "Could not connect to %s": [
     "Не вдалося під'єднатися до %s"
   ],
-  "Could not log in. Please, make sure that the password is correct.": [
-    "Не вдалося увійти в систему. Будь ласка, переконайтеся, що ви ввели правильний пароль."
+  "Could not log in": [
+    "Не вдалося увійти"
   ],
   "Create LVM volume group %s": [
     "Створити групу томів LVM %s"
@@ -528,6 +635,9 @@ export default {
   "Current partitions will be kept": [
     "Поточні розділи буде збережено"
   ],
+  "Current selection": [
+    "Поточний вибір"
+  ],
   "Custom": [
     "По-своєму"
   ],
@@ -536,6 +646,12 @@ export default {
   ],
   "DASD %s": [
     "DASD %s"
+  ],
+  "DHCP and %s": [
+    "DHCP та %s"
+  ],
+  "DHCP, %s": [
+    "DHCP, %s"
   ],
   "DIAG": [
     "Режим DIAG"
@@ -585,6 +701,9 @@ export default {
   "Delete current content": [
     "Видалити поточний вміст"
   ],
+  "Delete existing data and install %s?": [
+    "Видалити наявні дані та встановити %s?"
+  ],
   "Delete volume group": [
     "Видалити групу томів"
   ],
@@ -600,9 +719,6 @@ export default {
   "Details": [
     "Подробиці"
   ],
-  "Details for %s": [
-    "Подробиці для %s"
-  ],
   "Details will appear after the connection is successfully established.": [
     "Подробиці з'являться після того як з'єднання буде успішно встановлено."
   ],
@@ -611,9 +727,6 @@ export default {
   ],
   "Device %s menu": [
     "Меню пристрою %s"
-  ],
-  "Device Selection": [
-    "Вибір пристрою"
   ],
   "Device details": [
     "Відомості про пристрій"
@@ -624,23 +737,29 @@ export default {
   "Discard the maximum size and continue with simplified configuration": [
     "Відмовтеся від максимального розміру і продовжте роботу зі спрощеною конфігурацією"
   ],
+  "Disconnect": [
+    "Роз'єднати"
+  ],
   "Disconnected": [
     "Роз'єднано"
   ],
-  "Discover": [
-    "Виявити"
+  "Disconnected by the system": [
+    "Відключено системою"
+  ],
+  "Disconnection failed": [
+    "Не вдалося від'єднати"
   ],
   "Discover and connect to iSCSI targets": [
     "Виявлення та підключення до iSCSI-об'єктів"
   ],
-  "Discover iSCSI Targets": [
-    "Знайомство з цільовими пристроями iSCSI"
-  ],
-  "Discover iSCSI targets": [
-    "Виявлення цілей iSCSI"
+  "Discover targets": [
+    "Виявлення цілей"
   ],
   "Disk": [
     "Диск"
+  ],
+  "Disk Activation": [
+    "Активація дисків"
   ],
   "Disks": [
     "Диски"
@@ -657,20 +776,17 @@ export default {
   "Download logs": [
     "Завантажити журнали"
   ],
-  "During installation, several actions will be performed to setup the layout shown at the table below.": [
-    "Під час інсталяції буде виконано кілька дій, щоб налаштувати схему, як показано в таблиці нижче."
+  "Download logs to troubleshoot or share with support.": [
+    "Завантажте журнали для усунення несправностей або надсилання до служби підтримки."
   ],
   "Edit": [
     "Редагувати"
   ],
-  "Edit %s": [
-    "Змінити %s"
-  ],
   "Edit binding settings": [
     "Змінити налаштування прив'язки"
   ],
-  "Edit connection %s": [
-    "Редагувати з'єднання %s"
+  "Edit connection": [
+    "Редагувати з'єднання"
   ],
   "Edit connection settings": [
     "Змінити налаштування з'єднання"
@@ -686,6 +802,9 @@ export default {
   ],
   "Empty LVM volume group %s": [
     "Очистити групу томів LVM %s"
+  ],
+  "Enable mutual verification": [
+    "Увімкнути взаємну перевірку"
   ],
   "Encrypt the system": [
     "Зашифрувати систему"
@@ -723,8 +842,8 @@ export default {
   "ExFAT": [
     "ExFAT"
   ],
-  "Example: https://myserver.com": [
-    "Приклад: https://myserver.com"
+  "Example: %s": [
+    "Приклад: %s"
   ],
   "Excellent signal": [
     "Відмінний сигнал"
@@ -784,14 +903,14 @@ export default {
   "Filter by territory, time zone code or UTC offset": [
     "Фільтр за територією, коду часового пояса або зміщенню UTC"
   ],
-  "Find space": [
-    "Знайти місце"
+  "Final layout": [
+    "Кінцевий варіант"
+  ],
+  "Final structure of the system after installation.": [
+    "Остаточна структура системи після встановлення."
   ],
   "Find space in %s": [
     "Знайти місце в %s"
-  ],
-  "Finish": [
-    "Закінчити"
   ],
   "Finished": [
     "Завершено"
@@ -853,6 +972,9 @@ export default {
   "GiB": [
     "ГіБ"
   ],
+  "Go to iSCSI": [
+    "Перейти до iSCSI"
+  ],
   "Go to network page": [
     "Перейти до розділу «Мережа»"
   ],
@@ -869,9 +991,6 @@ export default {
     "Приховати %d дію підтому",
     "Приховати %d дії підтому",
     "Приховати %d дій підтому"
-  ],
-  "Hide details": [
-    "Приховати подробиці"
   ],
   "Hostname": [
     "Ім'я хоста"
@@ -891,14 +1010,14 @@ export default {
   "IP Addresses": [
     "IP-адреси"
   ],
-  "IP address": [
-    "IP-адреса"
-  ],
   "IP addresses": [
     "IP адреси"
   ],
   "IP settings": [
     "Налаштування IP"
+  ],
+  "IPs": [
+    "IP"
   ],
   "IPv4": [
     "IPv4"
@@ -909,71 +1028,59 @@ export default {
   "If a local media was used to run this installer, remove it before the next boot.": [
     "Якщо для запуску цієї програми використовувався локальний носій, витягніть його перед наступним завантаженням."
   ],
-  "If you continue, partitions on your hard disk will be modified according to the provided installation settings.": [
-    "Якщо Ви продовжите, розділи на вашому жорсткому диску буде змінено відповідно до наданих налаштувань встановлення."
+  "If unsure, cancel and review storage settings.": [
+    "Якщо Ви не впевнені, скасуйте та перегляньте налаштування сховища."
   ],
-  "In progress": [
-    "В процесі"
+  "If you are unsure, check and adjust the storage settings.": [
+    "Якщо Ви не впевнені, перевірте та налаштуйте параметри сховища."
   ],
-  "Incorrect IP address": [
-    "Некоректна IP-адреса"
-  ],
-  "Incorrect password": [
-    "Некоректний пароль"
-  ],
-  "Incorrect port": [
-    "Некоректний порт"
-  ],
-  "Incorrect user name": [
-    "Некоректне Ім'я користувача"
+  "If you want to disable this check, please specify \"inst.ay_check=0\" at kernels command-line": [
+    "Якщо Ви хочете вимкнути цю перевірку, вкажіть \"inst.ay_check=0\" у командному рядку ядра"
   ],
   "Initiator": [
     "Ініціатор"
   ],
-  "Initiator details": [
-    "Відомості про ініціатора"
-  ],
   "Initiator name": [
     "Ім'я ініціатора"
   ],
-  "Initiator name could not be updated": [
-    "Не вдалося оновити ім'я ініціатора"
+  "Initiator password": [
+    "Пароль ініціатора"
   ],
-  "Initiator name successfully updated": [
-    "Ім'я ініціатора успішно оновлено"
+  "Initiator user name": [
+    "Ім'я користувача-ініціатора"
   ],
   "Install": [
     "Встановити"
   ],
-  "Install using an advanced configuration.": [
-    "Встановіть за допомогою розширеної конфігурації."
+  "Install %s?": [
+    "Встановити %s?"
   ],
-  "Install using device %s and deleting all its content.": [
-    "Встановити, використовуючи пристрій %s і видаливши весь його вміст."
+  "Install now": [
+    "Встановити зараз"
   ],
-  "Install using device %s shrinking existing partitions as needed.": [
-    "Встановлення з використанням пристрою %s зі зменшенням наявних розділів за потреби."
+  "Install now with potential data loss": [
+    "Встановити зараз із можливою втратою даних"
   ],
-  "Install using device %s with a custom strategy to find the needed space.": [
-    "Встановити, використовуючи пристрій %s з користувацькою стратегією для пошуку потрібного місця."
+  "Installation complete": [
+    "Встановлення завершено"
   ],
-  "Install using device %s without modifying existing partitions.": [
-    "Встановлення з використанням пристрою %s без зміни наявних розділів."
+  "Installation devices": [
+    "Пристрої встановлення"
   ],
-  "Install using several devices and deleting all its content.": [
-    "Встановити, використовуючи кілька пристроїв і видаливши весь їх вміст."
+  "Installation failed": [
+    "Помилка встановлення"
   ],
-  "Install using several devices shrinking existing partitions as needed.": [
-    "Встановлення з використанням кількох пристроїв зі зменшенням наявних розділів за потреби."
+  "Installation in progress": [
+    "Встановлення триває"
   ],
-  "Install using several devices with a custom strategy to find the needed space.": [
-    "Встановити, використовуючи кілька пристроїв з користувацькою стратегією для пошуку потрібного місця."
+  "Installation only": [
+    "Тільки установка"
   ],
-  "Install using several devices without modifying existing partitions.": [
-    "Встановлення з використанням кількох пристроїв без зміни наявних розділів."
+  "Installation settings": [
+    "Параметри встановлення"
   ],
-  "Installation Devices": [
-    "Пристрої для встановлення"
+  "Installation settings will automatically update to match the new product's defaults.": [
+    "Налаштування інсталяції автоматично оновляться відповідно до нових стандартних налаштувань продукту."
   ],
   "Installation will take %s.": [
     "Встановлення займе %s."
@@ -984,11 +1091,14 @@ export default {
   "Installing a broken package affects system stability and is a big security risk!": [
     "Встановлення пошкоджених пакунків впливає на стабільність системи і є великим ризиком для безпеки!"
   ],
-  "Installing the system, please wait...": [
-    "Встановлення системи, зачекайте…"
-  ],
   "Interface": [
     "Інтерфейс"
+  ],
+  "Invalid settings": [
+    "Неправильні налаштування"
+  ],
+  "Invalid software selection": [
+    "Неправильний вибір програмного забезпечення"
   ],
   "Invalid storage settings": [
     "Неправильні налаштування сховища"
@@ -1044,14 +1154,14 @@ export default {
   "Keyboard layout": [
     "Розкладка клавіатури"
   ],
-  "Keyboard selection": [
-    "Вибір клавіатури"
-  ],
   "KiB": [
     "КіБ"
   ],
   "LUN": [
     "LUN"
+  ],
+  "LVM": [
+    "LVM"
   ],
   "Label": [
     "Ярлик"
@@ -1062,8 +1172,17 @@ export default {
   "Language and keyboard": [
     "Мова і клавіатура"
   ],
+  "Language and region": [
+    "Мова і регіон"
+  ],
   "Let the installer propose a sensible size": [
     "Дозволити інсталятору запропонувати розумний розмір"
+  ],
+  "License acceptance is required to continue.": [
+    "Для продовження необхідно прийняти ліцензію."
+  ],
+  "License acceptance required": [
+    "Необхідно прийняти ліцензію"
   ],
   "Loading": [
     "Завантаження"
@@ -1077,11 +1196,11 @@ export default {
   "Loading the installation repositories...": [
     "Завантаження інсталяційних репозиторіїв..."
   ],
-  "Locale selection": [
-    "Вибір локалі"
-  ],
   "Localization": [
     "Локалізація"
+  ],
+  "Locked targets cannot be managed from here and do not offer any actions.": [
+    "Заблоковані цілі не можуть бути оброблені звідси і не пропонують жодних дій."
   ],
   "Log in": [
     "Вхід"
@@ -1098,23 +1217,14 @@ export default {
   "Login": [
     "Вхід"
   ],
-  "Login %s": [
-    "Логін %s"
-  ],
   "Login form": [
     "Форма входу"
-  ],
-  "Logout": [
-    "Вихід"
   ],
   "MAC": [
     "MAC-адреса"
   ],
-  "Main navigation": [
-    "Навігація"
-  ],
-  "Make sure you provide the correct values": [
-    "Переконайтеся, що Ви вказали правильні значення"
+  "Make sure that the passsword is correct and try again.": [
+    "Переконайтеся, що Ви ввели правильний пароль і спробуйте знову."
   ],
   "Manage DASD devices": [
     "Керування DASD-пристроями"
@@ -1125,23 +1235,38 @@ export default {
   "Max channel": [
     "Макс. канал"
   ],
+  "Memory": [
+    "Пам'ять"
+  ],
   "MiB": [
     "МіБ"
   ],
   "Min channel": [
     "Мін. канал"
   ],
+  "Missing": [
+    "Відсутня"
+  ],
   "Mode": [
     "Режим"
   ],
+  "Model": [
+    "Модель"
+  ],
   "Modify settings and physical volumes": [
     "Зміна налаштувань та фізичних томів"
+  ],
+  "More": [
+    "Ще"
   ],
   "More actions": [
     "Більше дій"
   ],
   "More devices": [
     "Інші пристрої"
+  ],
+  "More installer options": [
+    "Більше параметрів встановлювача"
   ],
   "More keymap layout might be available for the selected product at [Localization] page": [
     "Більше розкладок клавіатури може бути доступно на сторінці [Локалізації]"
@@ -1151,6 +1276,9 @@ export default {
   ],
   "More languages might be available for the selected product at [Localization] page": [
     "Більше мов може бути доступно на сторінці [Локалізації]"
+  ],
+  "More storage options": [
+    "Більше варіантів зберігання"
   ],
   "Moreover, the following partition will be created.": [
     "Крім того, буде створено такий розділ.",
@@ -1189,8 +1317,8 @@ export default {
   "Move mount points": [
     "Перемістити точки монтування"
   ],
-  "Move the mount points currently configured at the selected disks to logical                   volumes of this volume group.": [
-    "Перемістіть точки монтування, налаштовані на вибраних дисках,                    на логічні томи цієї групи томів."
+  "Move the mount points currently configured at the selected disks to logical volumes of this volume group.": [
+    "Перемістіть точки монтування, налаштовані на вибраних дисках, на логічні томи цієї групи томів."
   ],
   "Multipath": [
     "Багатошляхове"
@@ -1209,6 +1337,9 @@ export default {
   ],
   "Name": [
     "Назва"
+  ],
+  "Needs about %s": [
+    "Потрібно приблизно %s"
   ],
   "Network": [
     "Мережа"
@@ -1243,6 +1374,9 @@ export default {
   "No content found": [
     "Вміст не знайдено"
   ],
+  "No data loss is expected": [
+    "Втрати даних не передбачено"
+  ],
   "No device is currently using this connection.": [
     "Наразі жоден пристрій не використовує це з'єднання."
   ],
@@ -1258,14 +1392,14 @@ export default {
   "No devices found": [
     "Пристроїв не знайдено"
   ],
-  "No iSCSI Boot Firmware Table (iBFT) found. The initiator can be configured manually.": [
-    "Не знайдено таблиці завантажувальних мікропрограм iSCSI (iBFT). Ініціатор можна налаштувати вручну."
-  ],
-  "No iSCSI targets found.": [
-    "Цілі iSCSI не знайдені."
+  "No iSCSI Boot Firmware Table (iBFT) found. The initiator can be [configured manually.]": [
+    "Не знайдено таблиці iSCSI Boot Firmware Table (iBFT). Ініціатора можна [налаштувати вручну.]"
   ],
   "No logical volumes are defined yet": [
     "Логічні томи ще не задано"
+  ],
+  "No partitions will be automatically configured for booting.": [
+    "Для завантаження автоматично не буде налаштовано жодних розділів."
   ],
   "No partitions will be automatically configured for booting. Use with caution.": [
     "Жоден розділ не буде автоматично налаштовано для завантаження. Використовуйте з обережністю."
@@ -1273,8 +1407,23 @@ export default {
   "No support is planned.": [
     "Підтримки немає у планах."
   ],
+  "No targets available": [
+    "Немає доступних цілей"
+  ],
+  "No targets have been discovered or configured.": [
+    "Цілі не виявлені або не налаштовані."
+  ],
+  "No targets matches filters": [
+    "Немає цілей, що відповідають фільтрам"
+  ],
   "No user defined yet.": [
     "Користувача ще не вказано."
+  ],
+  "No valid address.": [
+    "Немає справжньої адреси."
+  ],
+  "No valid port.": [
+    "Немає придатного порту."
   ],
   "No wired connections were found": [
     "Дротові з'єднання не знайдено"
@@ -1306,6 +1455,9 @@ export default {
   "Not available": [
     "Недоступно"
   ],
+  "Not configured": [
+    "Не налаштовано"
+  ],
   "Not configured yet": [
     "Ще не налаштовано"
   ],
@@ -1315,14 +1467,11 @@ export default {
   "Not implemented yet (%s)": [
     "Ще не впроваджено (%s)"
   ],
-  "Not possible with the current setup. Click to know more.": [
-    "Неможливо з поточною конфігурацією. Натисніть, щоб дізнатися більше."
-  ],
   "Not protected network": [
     "Незахищена мережа"
   ],
-  "Not selected yet": [
-    "Ще не вибрано"
+  "Not registered yet": [
+    "Ще не зареєстровано"
   ],
   "Not supported (%s)": [
     "Не підтримується (%s)"
@@ -1330,32 +1479,26 @@ export default {
   "On boot": [
     "При завантаженні"
   ],
-  "Only available if authentication by target is provided": [
-    "Доступно тільки за умови аутентифікації за ціллю"
-  ],
   "Only reused partitions and space not assigned to any partition will be used.": [
     "Будуть використовуватися тільки повторно використовувані розділи і простір, не призначений жодному розділу."
   ],
   "Only reused partitions will be used.": [
     "Буде використано лише повторно використовувані розділи."
   ],
-  "Options toggle": [
-    "Показ налаштувань"
-  ],
-  "Other options": [
-    "Інші опції"
-  ],
-  "Other options toggle": [
-    "Показати інші налаштування"
-  ],
-  "Overview": [
-    "Огляд"
+  "Options for partition %s": [
+    "Параметри розділу %s"
   ],
   "Package installation failed": [
     "Не вдалося встановити пакунок"
   ],
+  "Partition %s": [
+    "Розділ %s"
+  ],
   "Partition Info": [
     "Інформація про розділ"
+  ],
+  "Partitions": [
+    "Розділи"
   ],
   "Partitions needed for booting will also be adapted": [
     "Розділи, необхідні для завантаження, також будуть адаптовані"
@@ -1372,14 +1515,20 @@ export default {
   "Partitions that are not reused would be resized if needed.": [
     "Розділи, які не використовуються повторно, за необхідності будуть змінені в розмірах."
   ],
-  "Partitions to boot will be allocated at the following device.": [
-    "Розділи для завантаження буде виділено на наступному пристрої."
+  "Partitions to boot will be set up if needed at %s.": [
+    "Розділи для завантаження будуть налаштовані за необхідності в %s."
   ],
-  "Partitions to boot will be allocated at the installation disk %s.": [
-    "Розділи для завантаження буде виділено на інсталяційному диску %s."
+  "Partitions to boot will be set up if needed at the following device.": [
+    "Розділи для завантаження будуть налаштовані за необхідності на наступному пристрої."
   ],
-  "Partitions to boot will be allocated at the installation disk.": [
-    "Розділи для завантаження буде виділено на інсталяційному диску."
+  "Partitions to boot will be set up if needed at the installation disk, based on the location of the %s file system.": [
+    "Розділи для завантаження будуть налаштовані за необхідності на інсталяційному диску, виходячи з розташування файлової системи %s."
+  ],
+  "Partitions to boot will be set up if needed at the installation disk. Currently %1$s, based on the location of the %2$s file system.": [
+    "Розділи для завантаження будуть налаштовані за необхідності на інсталяційному диску. Наразі %1$s, виходячи з розташування файлової системи %2$s."
+  ],
+  "Partitions to host \"system\" will be created if needed.": [
+    "При необхідності будуть створені розділи для розміщення «system»."
   ],
   "Partitions will be used and created for %s": [
     "Буде використано та створено розділи для %s"
@@ -1408,20 +1557,11 @@ export default {
   "Pending": [
     "Очікуйте"
   ],
+  "Perform a discovery to find available iSCSI targets.": [
+    "Виконайте виявлення, щоб знайти доступні цілі iSCSI."
+  ],
   "PiB": [
     "ПіБ"
-  ],
-  "Please, cancel and check the settings if you are unsure.": [
-    "Будь ласка, скасуйте і перевірте налаштування, якщо Ви не впевнені."
-  ],
-  "Please, check whether it is running.": [
-    "Будь ласка, перевірте, чи він запущений."
-  ],
-  "Please, perform an iSCSI discovery in order to find available iSCSI targets.": [
-    "Виконайте виявлення iSCSI, щоб знайти доступні цілі iSCSI."
-  ],
-  "Please, provide its password to log in to the system.": [
-    "Будь ласка, вкажіть його пароль для входу в систему."
   ],
   "Please, try to activate a zFCP controller.": [
     "Будь ласка, спробуйте активувати контролер zFCP."
@@ -1435,11 +1575,23 @@ export default {
   "Portal": [
     "Портал"
   ],
+  "Potential data loss": [
+    "Потенційна втрата даних"
+  ],
+  "Potential data loss affecting at least %s": [
+    "Потенційна втрата даних, що впливає щонайменше на %s"
+  ],
   "Pre-installation checks": [
     "Перевірка перед встановленням"
   ],
   "Prefix length or netmask": [
     "Довжина префікса або маска мережі"
+  ],
+  "Proceeding may result in data loss": [
+    "Процедура може призвести до втрати даних"
+  ],
+  "Proceeding will delete existing data, including %s": [
+    "Процедура видалить існуючі дані, включаючи %s"
   ],
   "Product is already registered": [
     "Продукт вже зареєстровано"
@@ -1447,8 +1599,14 @@ export default {
   "Protection for the information stored at the new file systems, including data, programs, and system files.": [
     "Захист інформації, що зберігається на нових файлових системах, включно з даними, програмами та системними файлами."
   ],
+  "Provide authentication": [
+    "Забезпечення автентифікації"
+  ],
   "Provide email address": [
     "Вкажіть адресу електронної пошти"
+  ],
+  "Provide its password to log in to the system.": [
+    "Вкажіть його пароль для входу в систему."
   ],
   "Provide registration code": [
     "Вкажіть код реєстрації"
@@ -1471,8 +1629,14 @@ export default {
   "Reboot": [
     "Перезавантажити"
   ],
+  "Reboot to try again.": [
+    "Перезавантажте, щоб спробувати ще раз."
+  ],
   "Recommended": [
     "Рекомендовано"
+  ],
+  "Refreshing data...": [
+    "Оновлюю дані..."
   ],
   "Register": [
     "Зареєструвати"
@@ -1482,6 +1646,9 @@ export default {
   ],
   "Register using a custom registration server": [
     "Реєстрація за допомогою спеціального реєстраційного сервера"
+  ],
+  "Registered": [
+    "Зареєстровано"
   ],
   "Registration": [
     "Реєстрація"
@@ -1501,15 +1668,6 @@ export default {
   "Reload": [
     "Оновити"
   ],
-  "Reload now": [
-    "Оновити зараз"
-  ],
-  "Reloading data, please wait...": [
-    "Переміщення даних; будь ласка, зачекайте…"
-  ],
-  "Reloading is required to get the latest data and avoid issues or data loss.": [
-    "Щоб отримати актуальну інформацію та уникнути проблем або втрати даних, потрібно оновити сторінку."
-  ],
   "Remove": [
     "Видалити"
   ],
@@ -1518,6 +1676,14 @@ export default {
   ],
   "Repository load failed": [
     "Не вдалося завантажити репозиторій"
+  ],
+  "Required packages": [
+    "Необхідні пакети"
+  ],
+  "Required packages and %s pattern": [
+    "Необхідні пакети та %s шаблон",
+    "Необхідні пакети та %s шаблони",
+    "Необхідні пакети та %s шаблонів"
   ],
   "Rescan devices": [
     "Пересканувати пристрої"
@@ -1534,14 +1700,26 @@ export default {
   "Result": [
     "Результат"
   ],
+  "Result of applying the configuration described at the 'Settings' section above.": [
+    "Результат застосування конфігурації, описаної у розділі «Налаштування» вище."
+  ],
   "Reused partitions will not be shrunk": [
     "Повторно використані розділи не будуть зменшені"
   ],
   "Review and fix": [
     "Переглянути та виправити"
   ],
-  "Root authentication methods": [
-    "Методи автентифікації користувача root"
+  "Review and install": [
+    "Переглянути та встановити"
+  ],
+  "Root login with SSH key": [
+    "Вхід як root за допомогою SSH-ключа"
+  ],
+  "Root login with password": [
+    "Вхід з паролем користувача Root"
+  ],
+  "Root login with password and SSH key": [
+    "Вхід з паролем та SSH-ключем"
   ],
   "Root user": [
     "Користувач root"
@@ -1582,11 +1760,11 @@ export default {
   "Security": [
     "Захист"
   ],
-  "See more details": [
-    "Див. докладніше"
-  ],
   "Select": [
     "Вибір"
+  ],
+  "Select %s": [
+    "Вибір %s"
   ],
   "Select a device to define partitions or to mount": [
     "Виберіть пристрій для визначення розділів або монтування"
@@ -1594,23 +1772,28 @@ export default {
   "Select a disk": [
     "Оберіть диск"
   ],
-  "Select a disk to configure": [
-    "Виберіть диск для налаштування"
-  ],
-  "Select a disk to create %s": [
-    "Виберіть диск для створення %s"
-  ],
   "Select a disk to define partitions or to mount": [
     "Виберіть диск для визначення розділів або монтування"
   ],
-  "Select a disk to format as %s": [
-    "Виберіть диск для форматування як %s"
+  "Select a mode": [
+    "Оберіть режим"
   ],
-  "Select a disk to install the system": [
-    "Оберіть диск для встановлення системи"
+  "Select a mode and confirm your choice.": [
+    "Виберіть режим і підтвердіть свій вибір."
   ],
   "Select a product": [
     "Оберіть продукт"
+  ],
+  "Select a product and confirm your choice.": [
+    "Виберіть продукт і підтвердіть свій вибір.",
+    "Виберіть продукт і підтвердіть свій вибір у кінці списку.",
+    "Виберіть продукт і підтвердіть свій вибір у кінці списку."
+  ],
+  "Select a product mode to continue.": [
+    "Виберіть режим продукту для продовження."
+  ],
+  "Select a product to continue.": [
+    "Виберіть продукт для продовження."
   ],
   "Select a solution to continue": [
     "Виберіть рішення для продовження"
@@ -1624,6 +1807,9 @@ export default {
   "Select at least one disk.": [
     "Оберіть хоча б один диск."
   ],
+  "Select device": [
+    "Оберіть пристрій"
+  ],
   "Select devices to enable bulk actions.": [
     "Виберіть пристрої для виконання масових дій."
   ],
@@ -1635,9 +1821,6 @@ export default {
   ],
   "Select or enter a valid mount point": [
     "Виберіть або введіть дійсну точку монтування"
-  ],
-  "Select the disk to configure partitions for booting": [
-    "Виберіть диск для налаштування розділів для завантаження"
   ],
   "Select what to do with each partition in order to find space for allocating the new system.": [
     "Виберіть, що робити з кожним розділом, щоб знайти місце для розміщення нової системи."
@@ -1689,8 +1872,14 @@ export default {
   "Show information about %s": [
     "Показати інформацію про %s"
   ],
+  "Show less": [
+    "Показати менше"
+  ],
   "Show less actions": [
     "Згорнути дії"
+  ],
+  "Show more": [
+    "Показати більше"
   ],
   "Show more actions": [
     "Показати більше дій"
@@ -1734,9 +1923,6 @@ export default {
   "Software conflicts resolution": [
     "Вирішення конфліктів ПЗ"
   ],
-  "Software selection": [
-    "Вибір програмного забезпечення"
-  ],
   "Some existing partitions may be shrunk": [
     "Деякі наявні розділи можуть бути зменшені"
   ],
@@ -1770,6 +1956,12 @@ export default {
   "Status": [
     "Стан"
   ],
+  "Status filter toggle": [
+    "Вкл./вимк. фільтр статусу"
+  ],
+  "Step %1$d of %2$d": [
+    "Крок %1$d з %2$d"
+  ],
   "Storage": [
     "Сховище"
   ],
@@ -1782,20 +1974,42 @@ export default {
   "Swap": [
     "Swap"
   ],
+  "Switch to a different mode": [
+    "Перейти в інший режим"
+  ],
+  "Switch to a different mode or another product": [
+    "Перейти до іншого режиму або іншого продукту",
+    "Перейти в інший режим або до одного з %d доступних продуктів",
+    "Перейти в інший режим або до одного з %d доступних продуктів"
+  ],
+  "Switch to another product": [
+    "Перейти до іншого продукту",
+    "Перейти до одного з %d доступних продуктів",
+    "Перейти до одного з %d доступних продуктів"
+  ],
+  "System Information": [
+    "Інформація про систему"
+  ],
+  "System will have no network connections": [
+    "Система не матиме мережевих підключень"
+  ],
   "TPM sealing requires the new system to be booted directly.": [
     "Запечатування TPM вимагає прямого завантаження нової системи."
   ],
-  "Target Password": [
-    "Пароль цілі"
+  "Take a moment to review the installation settings below and adjust them as needed.": [
+    "Приділіть хвилинку, щоб переглянути налаштування інсталяції нижче та відкоригуйте їх за необхідності."
   ],
-  "Targets": [
-    "Цілі"
+  "Target": [
+    "Ціль"
+  ],
+  "Target not found": [
+    "Ціль не знайдена"
+  ],
+  "Temporary name that may change after reboot or network changes": [
+    "Тимчасове ім'я, яке може змінитися після перезавантаження або змін у мережі"
   ],
   "The LVM group '%1$s' will remain at %2$s": [
     "Група LVM '%1$s' залишиться на %2$s"
-  ],
-  "The configuration has been updated externally.": [
-    "Конфігурація була оновлена зовні."
   ],
   "The configuration must be adapted to address the following issue:": [
     "Конфігурація повинна бути адаптована для вирішення такої проблеми:",
@@ -1810,9 +2024,6 @@ export default {
   ],
   "The connection will be used only during installation and not available in the installed system.": [
     "Це з'єднання буде використовуватися тільки під час встановлення і не буде доступним у встановленій системі."
-  ],
-  "The content may be deleted": [
-    "Вміст може бути видалений"
   ],
   "The current configuration will result in an attempt to create a %1$s of %2$s.": [
     "Поточна конфігурація призведе до спроби утворення розділу %1$s розміром %2$s."
@@ -1879,6 +2090,9 @@ export default {
   "The final step to configure the Trusted Platform Module (TPM) to automatically open encrypted devices will take place during the first boot of the new system. For that to work, the machine needs to boot directly to the new boot loader.": [
     "Останній крок з налаштування модуля довіреної платформи (TPM) для автоматичного відкриття зашифрованих пристроїв відбудеться під час першого завантаження нової системи. Щоб це спрацювало, комп'ютер повинен завантажитися безпосередньо з новим завантажувачем."
   ],
+  "The following actions will be performed in the system during installation.": [
+    "Під час інсталяції в системі будуть виконані наступні дії."
+  ],
   "The following logical volume will be created": [
     "Буде створено такий логічний том",
     "Будуть створені такі логічні томи",
@@ -1903,17 +2117,8 @@ export default {
   "The initiator name cannot be blank": [
     "Ім'я ініціатора не може бути порожнім"
   ],
-  "The installation on your machine is complete.": [
-    "Встановлення на Ваш комп'ютер завершено."
-  ],
-  "The installation will take": [
-    "Встановлення займе"
-  ],
-  "The installation will take %s including:": [
-    "Встановлення займе %s, включаючи:"
-  ],
-  "The installer interface is no longer available, so you can safely close this window.": [
-    "Інтерфейс програми встановлення більше недоступний. Це вікно можна закрити."
+  "The installer interface is no longer available.": [
+    "Інтерфейс програми встановлення більше недоступний."
   ],
   "The installer requires [root] user privileges.": [
     "Програма встановлення вимагає привілеїв користувача [root]."
@@ -1941,7 +2146,7 @@ export default {
   "The modal selector offers a simplified interface designed for quick and straightforward use, without overwhelming the user.": [
     "Модальний селектор пропонує спрощений інтерфейс, розроблений для швидкого і прямого використання, не перевантажуючи користувача."
   ],
-  "The needed LVM physical volumes will be added as partitions on the chosen disks,                 based on the sizes of the logical volumes. If you select more than one disk, the                 physical volumes may be distributed along several disks.": [
+  "The needed LVM physical volumes will be added as partitions on the chosen disks, based on the sizes of the logical volumes. If you select more than one disk, the physical volumes may be distributed along several disks.": [
     "Необхідні фізичні томи LVM будуть додані як розділи на обраних дисках, виходячи з розмірів логічних томів. Якщо Ви виберете кілька дисків, фізичні томи можуть бути розподілені по кількох дисках."
   ],
   "The password is weak": [
@@ -1949,6 +2154,9 @@ export default {
   ],
   "The password will not be needed to boot and access the data if the TPM can verify the integrity of the system. TPM sealing requires the new system to be booted directly on its first run.": [
     "Пароль не знадобиться для завантаження та доступу до даних, якщо TPM зможе перевірити цілісність системи. Запечатування TPM вимагає, щоб нова система завантажувалася безпосередньо під час першого запуску."
+  ],
+  "The product will be registered with \"%s\" hostname": [
+    "Продукт буде зареєстрований з назвою хоста «%s»"
   ],
   "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of a separate file system for %2$s.": [
     "Розмір для %1$s буде динамічно коригуватися залежно від обсягу оперативної пам'яті в системі та наявності окремої файлової системи для %2$s."
@@ -1995,8 +2203,8 @@ export default {
   "The system does not support Wi-Fi connections, probably because of missing or disabled hardware.": [
     "Система не підтримує Wi-Fi з'єднання, ймовірно, через відсутність або відключення обладнання."
   ],
-  "The system will use %s as its default language.": [
-    "Система буде використовувати %s як типову мову."
+  "The system is rebooting": [
+    "Система перезапускається"
   ],
   "The whole device will be used for %s": [
     "Весь пристрій буде використано для %s"
@@ -2004,8 +2212,8 @@ export default {
   "The zFCP disk was not activated.": [
     "Диск zFCP не було активовано."
   ],
-  "There are no disks available for the installation.": [
-    "Немає доступних дисків для встановлення."
+  "There are no disks available for the installation": [
+    "Немає доступних дисків для встановлення"
   ],
   "There are not disks available for the installation. You may need to configure some device.": [
     "Диски для встановлення не доступні. Можливо, вам потрібно налаштувати якийсь пристрій."
@@ -2022,9 +2230,6 @@ export default {
     "Планується %d руйнівна дія, що вплине на %s",
     "Планується %d руйнівні дії, що вплине на %s",
     "Планується %d руйнівних дій, що вплине на %s"
-  ],
-  "These are the most relevant installation settings. Feel free to browse the sections in the menu for further details.": [
-    "Це найактуальніші налаштування установки. Детальніші відомості наведено в розділах меню."
   ],
   "These are the settings for the product to install. The installer language and keyboard layout can be adjusted via the [settings panel] accessible from the top bar.": [
     "Це налаштування для встановлюваного продукту. Мову програми встановлення та розкладку клавіатури можна змінити через [панель налаштувань], доступну на верхній панелі."
@@ -2083,17 +2288,11 @@ export default {
   "To ensure the new system is able to boot, the installer may need to create or configure some partitions in the appropriate disk.": [
     "Щоб забезпечити можливість завантаження нової системи, програмі встановлення може знадобитися створити або налаштувати деякі розділи на відповідному диску."
   ],
-  "Transactional root file system": [
-    "Операційна коренева файлова система"
-  ],
   "Try again": [
     "Спробуйте ще раз"
   ],
   "Type": [
     "Тип"
-  ],
-  "URL": [
-    "URL-адреса"
   ],
   "Unable to modify the settings": [
     "Не вдається змінити налаштування"
@@ -2121,9 +2320,6 @@ export default {
   ],
   "Updating the hostname now or later will not change the currently registered hostname.": [
     "Оновлення імені хоста зараз або пізніше не змінить поточне зареєстроване ім'я хоста."
-  ],
-  "Updating the initiator name": [
-    "Оновлення імені ініціатора"
   ],
   "Upload": [
     "Завантажити"
@@ -2176,6 +2372,9 @@ export default {
   "Use available space": [
     "Використати вільний простір"
   ],
+  "Use device %s": [
+    "Використати пристрій %s"
+  ],
   "Use disk %s": [
     "Використати диск %s"
   ],
@@ -2224,6 +2423,9 @@ export default {
   "Use public SSH Key": [
     "Використати відкритий ключ SSH"
   ],
+  "Use several devices": [
+    "Використати кілька пристроїв"
+  ],
   "Use static hostname": [
     "Використовувати статичне ім'я хоста"
   ],
@@ -2254,20 +2456,35 @@ export default {
   "Username suggestion dropdown": [
     "Спадний список із пропозицією імені користувача"
   ],
+  "Using %d connections with %s": [
+    "Використаня %d з'єднань з %s"
+  ],
   "Using [%s] keyboard": [
     "Розкладка клавіатури [%s]"
   ],
   "Using a hashed password.": [
     "Використовуючи хешований пароль."
   ],
+  "Using an advanced storage configuration": [
+    "Використання розширеної конфігурації сховища"
+  ],
   "Using an existing partition": [
     "Використовуючи наявний розділ"
+  ],
+  "Using code ending in %s": [
+    "Використання коду, що закінчується на %s"
   ],
   "Using partition %s": [
     "Використовуючи розділ %s"
   ],
   "Using transient hostname: %s": [
     "Використання перехідного імені хоста: %s"
+  ],
+  "View license": [
+    "Переглянути ліцензію"
+  ],
+  "Volume group %s": [
+    "Група томів %s"
   ],
   "Volume group '%s' already exists. Enter a different name.": [
     "Група томів „%s“ вже існує. Введіть іншу назву."
@@ -2281,14 +2498,26 @@ export default {
   "WWPN": [
     "WWPN"
   ],
+  "Wait until current operations are completed.": [
+    "Дочекайтеся завершення поточних операцій."
+  ],
   "Waiting for a mount point": [
     "Очікуємо на точку монтування"
   ],
   "Waiting for information about storage configuration": [
     "Очікування інформації про конфігурацію сховища"
   ],
+  "Waiting for proposal": [
+    "Очікування пропозиції"
+  ],
   "Weak signal": [
     "Слабкий сигнал"
+  ],
+  "When ready, click on the [install] button at the end of the page.": [
+    "Коли все буде готово, натисніть кнопку [Встановити] внизу сторінки."
+  ],
+  "Wi-Fi": [
+    "Wi-Fi"
   ],
   "Wi-Fi connection form": [
     "Форма з'єднання Wi-Fi"
@@ -2305,6 +2534,9 @@ export default {
   "Wired connections": [
     "Дротові з'єднання"
   ],
+  "Wrong selection": [
+    "Неправильний вибір"
+  ],
   "XFS": [
     "XFS"
   ],
@@ -2313,6 +2545,12 @@ export default {
   ],
   "You can proceed to install with the current settings or you may want to discard the configuration and start from scratch with a simple one.": [
     "Ви можете продовжити інсталяцію з поточними налаштуваннями або відкинути конфігурацію і почати з чистого аркуша."
+  ],
+  "You can reboot the machine to log in to the new system.": [
+    "Ви можете перезавантажити пристрій, щоб увійти в нову систему."
+  ],
+  "You can safely close this window.": [
+    "Ви можете сміливо закривати це вікно."
   ],
   "You cannot change it later. Go to the %s section if you want to modify it before proceeding with registration.": [
     "Ви не зможете змінити його пізніше. Перейдіть до розділу %s, якщо хочете змінити це перед тим, як продовжити реєстрацію."
@@ -2323,20 +2561,17 @@ export default {
   "You may want to discard those settings and start from scratch with a simple configuration.": [
     "Можливо, Ви захочете відкинути ці налаштування і почати з чистого аркуша з простою конфігурацією."
   ],
+  "You need to fix any invalid settings before proceeding with the installation.": [
+    "Перед продовженням інсталяції необхідно виправити всі недійсні налаштування."
+  ],
   "You will connect to a public network without encryption. Your data may not be secure.": [
     "Ви підключитеся до публічної мережі без шифрування. Дані, передані через неї можуть бути незахищеними."
-  ],
-  "Your system is rebooting": [
-    "Система перезапускається"
   ],
   "ZFCP": [
     "ZFCP"
   ],
   "[CAPS LOCK] is on": [
     "[CAPS LOCK] увімкнений"
-  ],
-  "[FIXME]": [
-    "[FIXME]"
   ],
   "active": [
     "активно"
@@ -2362,6 +2597,9 @@ export default {
   "iSCSI": [
     "iSCSI"
   ],
+  "immutable Btrfs": [
+    "незмінна Btrfs"
+  ],
   "logical volume": [
     "логічний том"
   ],
@@ -2374,20 +2612,23 @@ export default {
   "partition": [
     "розділ"
   ],
+  "proposal.Device": [
+    "proposal.Device"
+  ],
   "read_only": [
     "тільки_читання"
   ],
   "reset to defaults": [
     "скинути до типових налаштувань"
   ],
+  "root": [
+    "root"
+  ],
   "yes": [
     "так"
   ],
   "zFCP": [
     "zFCP"
-  ],
-  "zFCP Disk Activation": [
-    "Активація дисків zFCP"
   ],
   "zFCP Disk activation form": [
     "Форма активації диска zFCP"

@@ -29,7 +29,7 @@ module Agama
       class Commit < ::Storage::CommitCallbacks
         # Constructor
         #
-        # @param questions_client [Agama::DBus::Clients::Questions]
+        # @param questions_client [Agama::HTTP::Clients::Questions]
         # @param logger [Logger, nil]
         def initialize(questions_client, logger: nil)
           super()
@@ -61,7 +61,7 @@ module Agama
 
       private
 
-        # @return [Agama::DBus::Clients::Questions]
+        # @return [Agama::HTTP::Clients::Questions]
         attr_reader :questions_client
 
         # @return [Logger]

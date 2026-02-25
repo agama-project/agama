@@ -23,7 +23,7 @@ use std::io;
 use thiserror::Error;
 use zbus::{self, zvariant};
 
-use crate::utils::TransferError;
+use agama_transfer::Error as TransferError;
 
 #[derive(Error, Debug)]
 pub enum ServiceError {
@@ -73,7 +73,7 @@ pub enum ProfileError {
     Unreachable(#[from] TransferError),
     #[error("Jsonnet evaluation failed:\n{0}")]
     EvaluationError(String),
-    #[error("I/O error")]
+    #[error("I/O error: {0}")]
     InputOutputError(#[from] io::Error),
     #[error("The profile is not a well-formed JSON file")]
     FormatError(#[from] serde_json::Error),

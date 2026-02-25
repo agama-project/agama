@@ -3,8 +3,11 @@ export default {
     "plural-forms": (n) => n != 1,
     "language": "fi"
   },
-  " Timezone selection": [
-    " Aikavyöhykkeen valinta"
+  "\"%s\"": [
+    "\"%s\""
+  ],
+  "\"%s\" does not exist or is no longer available.": [
+    "”%s” ei ole enää olemassa tai saatavilla."
   ],
   "%1$s (%2$s)": [
     "%1$s (koko %2$s)"
@@ -12,8 +15,14 @@ export default {
   "%1$s - %2$s": [
     "%1$s - %2$s"
   ],
+  "%1$s and %2$s": [
+    "%1$s ja %2$s"
+  ],
   "%1$s at %2$s": [
     "%1$s laitteella %2$s"
+  ],
+  "%1$s keyboard - %2$s timezone": [
+    "Näppäimistö %1$s – aikavyöhyke %2$s"
   ],
   "%1$s will be created as a partition at %2$s": [
     "%1$s luodaan osiona levylle %2$s",
@@ -28,8 +37,11 @@ export default {
   "%s - %s": [
     "%s - %s"
   ],
-  "%s [must be registered].": [
-    "%s [tulee olla rekisteröity]."
+  "%s and %d others": [
+    "%s ja %d muuta"
+  ],
+  "%s and %s": [
+    "%s ja %s"
   ],
   "%s disk": [
     "%s-levy"
@@ -37,11 +49,12 @@ export default {
   "%s has been registered with below information.": [
     "%s on rekisteröity alla olevilla tiedoilla."
   ],
-  "%s is an immutable system with atomic updates. It uses a read-only Btrfs file system updated via snapshots.": [
-    "%s on muuttumaton, atomisilla päivityksillä varustettu järjestelmä. Se käyttää kirjoitussuojattua, tilannevedoksilla päivitettävää Btrfs-tiedostojärjestelmää."
-  ],
   "%s logo": [
     "%s -logo"
+  ],
+  "%s task active": [
+    "%s aktiivinen tehtävä",
+    "%s aktiivista tehtävää"
   ],
   "%s will be created as a logical volume": [
     "%s luodaan loogisena taltiona",
@@ -52,6 +65,9 @@ export default {
   ],
   "%s with %d partitions": [
     "%s-osiotaulu, %d osiota"
+  ],
+  "(step %s of %s)": [
+    "(vaihe %s/%s)"
   ],
   "A %1$s of %2$s will be created for %3$s if possible": [
     "%1$s / %2$s tullaan luomaan kohteelle %3$s jos mahdollista"
@@ -139,9 +155,6 @@ export default {
   "Add another address": [
     "Lisää toinen osoite"
   ],
-  "Add another partition or mount an existing one": [
-    "Lisää ylimääräinen osio tai liitä olemassa oleva"
-  ],
   "Add device menu": [
     "Lisää laitevalikko"
   ],
@@ -219,23 +232,17 @@ export default {
   "At least one partition will be deleted": [
     "Ainakin yksi osio poistetaan"
   ],
-  "At this point you can power off the machine.": [
-    "Laite voidaan nyt sammuttaa."
-  ],
-  "At this point you can reboot the machine to log in to the new system.": [
-    "Laite voidaan nyt käynnistää uudelleen uuteen järjestelmään kirjautumiseksi."
-  ],
   "Authentication": [
     "Tunnistautuminen"
   ],
-  "Authentication by initiator": [
-    ""
-  ],
-  "Authentication by target": [
-    ""
+  "Auto": [
+    "Automaattinen"
   ],
   "Auto LUNs Scan": [
-    ""
+    "Automaattinen LUN-skannaus"
+  ],
+  "Auto and manual": [
+    "Automaattinen ja käyttäjän määrittämä"
   ],
   "Automatic": [
     "Automaattinen"
@@ -243,14 +250,11 @@ export default {
   "Automatic (DHCP)": [
     "Automaattinen (DHCP)"
   ],
-  "Automatic LUN scan is [disabled]. LUNs have to be manually       configured after activating a controller.": [
-    ""
+  "Automatic LUN scan is [disabled]. LUNs have to be manually configured after activating a controller.": [
+    "Automaattinen LUN-skannaus on [pois käytöstä]. LUNien asetukset tulee määrittää käsin ohjaimen aktivoinnin jälkeen."
   ],
-  "Automatic LUN scan is [enabled]. Activating a controller which is       running in NPIV mode will automatically configures all its LUNs.": [
-    ""
-  ],
-  "Available products": [
-    "Saatavilla olevat tuotteet"
+  "Automatic LUN scan is [enabled]. Activating a controller which is running in NPIV mode will automatically configures all its LUNs.": [
+    "Automaattinen LUN-skannaus on [käytössä]. NPIV-tilassa toimivan ohjaimen aktivoiminen määrittää automaattisesti kaikkien LUNien asetukset."
   ],
   "Back": [
     "Takaisin"
@@ -291,14 +295,14 @@ export default {
   "Binding": [
     "Sidotaan"
   ],
-  "Binding settings for '%s'": [
-    "Sidotaan setuksia kohteelle ”%s”"
-  ],
   "BitLocker": [
     "BitLocker"
   ],
   "Boot options": [
     "Käynnistysvalinnat"
+  ],
+  "Breadcrumbs": [
+    ""
   ],
   "Btrfs": [
     "Btrfs"
@@ -306,14 +310,17 @@ export default {
   "Btrfs with snapshots": [
     "Btrfs tilannevedoksilla"
   ],
+  "By proceeding, the installation will begin with defined settings.": [
+    ""
+  ],
+  "CPU": [
+    "Suoritin"
+  ],
   "Cancel": [
     "Peru"
   ],
   "Cannot be changed in remote installation": [
     "Ei voi muuttaa etäasennuksessa"
-  ],
-  "Cannot connect to Agama server": [
-    "Agama-palvelimeen ei yhteyttä"
   ],
   "Cannot format %s": [
     "%s ei voida alustaa"
@@ -326,9 +333,6 @@ export default {
   ],
   "Change Language": [
     "Vaihda kieltä"
-  ],
-  "Change boot options": [
-    "Muuta käynnistysvalintoja"
   ],
   "Change device menu": [
     "Laitteen valintavalikko"
@@ -354,14 +358,26 @@ export default {
   "Change selection": [
     "Muuta valintoja"
   ],
+  "Change the disk to configure": [
+    "Valitse levy jolle tehdään asetukset"
+  ],
+  "Change the disk to create %s": [
+    "Valitse levy jolle luodaan \"%s\""
+  ],
+  "Change the disk to format as %s": [
+    "Valitse levy joka alustetaan liitoskohtaan ”%s”"
+  ],
+  "Change the disk to install the system": [
+    "Valitse levy jolle järjestelmän asennus tehdään"
+  ],
   "Change the file system or mount point": [
     "Vaihda tiedostojärjestelmää tai liitoskohtaa"
   ],
+  "Changes in these settings will immediately update the 'Result' section below.": [
+    "Muutokset näissä asetuksissa näkyvät välittömästi alla olevassa ”Tulos”-osiossa."
+  ],
   "Channel ID": [
     "Kanavatunniste"
-  ],
-  "Check the %d planned actions": [
-    "Tarkista %d suunniteltua toimintoa"
   ],
   "Check the authentication parameters.": [
     "Tarkista tunnistautumisasetukset."
@@ -396,26 +412,11 @@ export default {
   "Close": [
     "Sulje"
   ],
-  "Collapse the list of planned actions": [
-    "Supista suunniteltujen toimintojen luettelo"
-  ],
-  "Configuration out of sync": [
-    "Asetukset eivät ajan tasalla"
-  ],
-  "Configuration read from the iSCSI Boot Firmware Table (iBFT).": [
-    ""
-  ],
   "Configuration unreachable or invalid": [
     "Asetuksia ei voida ladata tai ne eivät ole kelvollisia"
   ],
   "Configure DASD": [
     "Tee DASD-asetukset"
-  ],
-  "Configure LVM Volume Group": [
-    "Tee LVM-taltioryhmän asetukset"
-  ],
-  "Configure LVM logical volume at %s volume group": [
-    "Tee asetukset loogiselle LVM-taltiolle taltioryhmässä %s"
   ],
   "Configure device %s": [
     "Tee laitteen %s asetukset"
@@ -435,35 +436,24 @@ export default {
   "Configured for installation only": [
     "Asetukset tehty vain asennuksen ajaksi"
   ],
-  "Configuring the product, please wait ...": [
-    "Tehdään tuotteen asetuksia, odota hetki ..."
+  "Configured with %d connection": [
+    "Määritettiin %d yhteys",
+    "Määritettiin %d yhteyttä"
   ],
   "Confirm": [
     "Vahvista"
   ],
-  "Confirm Installation": [
-    "Vahvista asentaminen"
-  ],
   "Confirm that you really want to continue.": [
     "Vahvista että haluat todella jatkaa."
   ],
-  "Congratulations!": [
-    "Onnittelut!"
-  ],
   "Connect": [
     "Yhdistä"
-  ],
-  "Connect to %s": [
-    "Yhdistä verkkoon %s"
   ],
   "Connect to iSCSI targets": [
     "Yhdistä iSCSI-kohteisiin"
   ],
   "Connected": [
     "Yhdistetty"
-  ],
-  "Connected (%s)": [
-    "Yhdistetty (%s)"
   ],
   "Connected device": [
     "Yhdistetty laite"
@@ -495,23 +485,14 @@ export default {
   "Content": [
     "Sisältö"
   ],
-  "Continue": [
-    "Jatka"
-  ],
   "Continuing without installing the package can result in a broken system. In some cases the system might not even boot.": [
     "Jatkaminen asentamatta pakettia voi johtaa rikkinäiseen järjestelmään. Joissain tapauksissa järjestelmä ei välttämättä edes käynnisty."
   ],
   "Controllers": [
-    ""
-  ],
-  "Could not authenticate against the server, please check it.": [
-    "Palvelimelle ei voitu tunnistautua, ole hyvä ja tarkista."
+    "Ohjaimet"
   ],
   "Could not connect to %s": [
     "Kohteeseen %s ei voi yhdistää"
-  ],
-  "Could not log in. Please, make sure that the password is correct.": [
-    "Kirjautuminen ei onnistunut. Tarkista, että salasana on oikea."
   ],
   "Create LVM volume group %s": [
     "Luo LVM-taltioryhmä %s"
@@ -545,6 +526,12 @@ export default {
   ],
   "DASD %s": [
     "DASD %s"
+  ],
+  "DHCP and %s": [
+    "DHCP ja %s"
+  ],
+  "DHCP, %s": [
+    "DHCP, %s"
   ],
   "DIAG": [
     "DIAG"
@@ -594,6 +581,9 @@ export default {
   "Delete current content": [
     "Poista nykyinen sisältö"
   ],
+  "Delete existing data and install %s?": [
+    ""
+  ],
   "Delete volume group": [
     "Poista taltioryhmä"
   ],
@@ -609,9 +599,6 @@ export default {
   "Details": [
     "Tiedot"
   ],
-  "Details for %s": [
-    "Tiedot kohteelle %s"
-  ],
   "Details will appear after the connection is successfully established.": [
     "Kun yhteys on muodostettu, näet lisätietoja."
   ],
@@ -620,9 +607,6 @@ export default {
   ],
   "Device %s menu": [
     "Laitteen %s valikko"
-  ],
-  "Device Selection": [
-    "Laitteen valinta"
   ],
   "Device details": [
     "Laitteen tiedot"
@@ -636,17 +620,8 @@ export default {
   "Disconnected": [
     "Yhteys katkaistu"
   ],
-  "Discover": [
-    ""
-  ],
   "Discover and connect to iSCSI targets": [
     "Löydä ja yhdistä iSCSI-kohteita"
-  ],
-  "Discover iSCSI Targets": [
-    ""
-  ],
-  "Discover iSCSI targets": [
-    "Havaitaan iSCSI-kohteita"
   ],
   "Disk": [
     "Levy"
@@ -666,20 +641,14 @@ export default {
   "Download logs": [
     "Lataa lokit"
   ],
-  "During installation, several actions will be performed to setup the layout shown at the table below.": [
-    "Useita toimintoja tullaan suorittamaan asennuksen aikana alla olevan taulukon mukaisesti."
+  "Download logs to troubleshoot or share with support.": [
+    ""
   ],
   "Edit": [
     "Muokkaa"
   ],
-  "Edit %s": [
-    "Muokkaa kohdetta %s"
-  ],
   "Edit binding settings": [
     "Muokkaa sidosasetuksia"
-  ],
-  "Edit connection %s": [
-    "Muokkaa yhteyttä %s"
   ],
   "Edit connection settings": [
     "Muokkaa yhteysasetuksia"
@@ -695,6 +664,9 @@ export default {
   ],
   "Empty LVM volume group %s": [
     "Tyhjennä LVM-taltioryhmä %s"
+  ],
+  "Enable mutual verification": [
+    ""
   ],
   "Encrypt the system": [
     "Salaa järjestelmä"
@@ -732,8 +704,8 @@ export default {
   "ExFAT": [
     "ExFAT"
   ],
-  "Example: https://myserver.com": [
-    "Esimerkki: https://minunpalvelin.fi"
+  "Example: %s": [
+    "Esimerkki: %s"
   ],
   "Excellent signal": [
     "Erinomainen signaali"
@@ -791,14 +763,14 @@ export default {
   "Filter by territory, time zone code or UTC offset": [
     "Suodata alueen, aikavyöhykoodin tai UTC-aikaeron mukaan"
   ],
-  "Find space": [
-    "Vapauta tilaa"
+  "Final layout": [
+    "Lopullinen asettelu"
+  ],
+  "Final structure of the system after installation.": [
+    "Järjestelmän lopullinen rakenne asennuksen jälkeen."
   ],
   "Find space in %s": [
     "Vapauta tilaa kohteessa %s"
-  ],
-  "Finish": [
-    "Valmis"
   ],
   "Finished": [
     "Valmistunut"
@@ -858,7 +830,7 @@ export default {
     "Yhdyskäytävän voi määrittää vain tilassa ”Manuaalinen”"
   ],
   "GiB": [
-    ""
+    "GiB"
   ],
   "Go to network page": [
     "Mene verkko-sivulle"
@@ -875,9 +847,6 @@ export default {
   "Hide %d subvolume action": [
     "Piilota %d alitaltion toiminto",
     "Piilota %d alitaltion toimintoa"
-  ],
-  "Hide details": [
-    "Piilota yksityiskohdat"
   ],
   "Hostname": [
     "Verkkonimi"
@@ -897,14 +866,14 @@ export default {
   "IP Addresses": [
     "IP-osoitteet"
   ],
-  "IP address": [
-    "IP-osoite"
-  ],
   "IP addresses": [
     "IP-osoitteet"
   ],
   "IP settings": [
     "IP-asetukset"
+  ],
+  "IPs": [
+    "IP-osoitteet"
   ],
   "IPv4": [
     "IPv4"
@@ -915,71 +884,35 @@ export default {
   "If a local media was used to run this installer, remove it before the next boot.": [
     "Jos paikallista mediaa käytettiin tämän asennusohjelman suorittamiseen, irrota media ennen seuraavaa uudelleenkäynnistystä."
   ],
-  "If you continue, partitions on your hard disk will be modified according to the provided installation settings.": [
-    "Jos jatkat, kiintolevyn osioita muokataan asennusasetusten mukaisesti."
+  "If you are unsure, check and adjust the storage settings.": [
+    ""
   ],
-  "In progress": [
-    "Käynnissä"
-  ],
-  "Incorrect IP address": [
-    "Virheellinen IP-osoite"
-  ],
-  "Incorrect password": [
-    "Virheellinen salasana"
-  ],
-  "Incorrect port": [
-    "Virheellinen portti"
-  ],
-  "Incorrect user name": [
-    "Virheellinen käyttäjänimi"
+  "If you want to disable this check, please specify \"inst.ay_check=0\" at kernels command-line": [
+    "Jos haluat poistaa tarkistuksen, aseta Linux-ytimen komentoriville ”inst.ay_check=0”"
   ],
   "Initiator": [
-    ""
-  ],
-  "Initiator details": [
-    ""
+    "Alullepanija (initiator)"
   ],
   "Initiator name": [
-    ""
-  ],
-  "Initiator name could not be updated": [
-    ""
-  ],
-  "Initiator name successfully updated": [
-    ""
+    "Alullepanijan nimi"
   ],
   "Install": [
     "Asenna"
   ],
-  "Install using an advanced configuration.": [
-    "Asenna käyttäen edistyneitä asetuksia."
+  "Install now": [
+    "Asenna nyt"
   ],
-  "Install using device %s and deleting all its content.": [
-    "Asenna käyttäen laitetta %s, poistaen kaiken sen nykyisen sisällön."
+  "Install now with potential data loss": [
+    "Asenna nyt, vaikka tietoja menetettäisiin"
   ],
-  "Install using device %s shrinking existing partitions as needed.": [
-    "Asenna käyttäen laitetta %s, pienentäen olemassa olevia osioita tarvittaessa."
-  ],
-  "Install using device %s with a custom strategy to find the needed space.": [
-    "Asenna käyttäen laitetta %s, löytäen tarvittavan tilan mukautetulla tavalla."
-  ],
-  "Install using device %s without modifying existing partitions.": [
-    "Asenna käyttäen laitetta %s, muuttamatta olevia osioita."
-  ],
-  "Install using several devices and deleting all its content.": [
-    "Asenna käyttäen useita laitteita, poistaen kaiken nykyisen sisällön."
-  ],
-  "Install using several devices shrinking existing partitions as needed.": [
-    "Asenna käyttäen useita laitteita, pienentäen olemassa olevia osioita tarvittaessa."
-  ],
-  "Install using several devices with a custom strategy to find the needed space.": [
-    "Asenna käyttäen useita laitteita, löytäen tarvittavan tilan mukautetulla tavalla."
-  ],
-  "Install using several devices without modifying existing partitions.": [
-    "Asenna käyttäen useita laitteita, muuttamatta olevia osioita."
-  ],
-  "Installation Devices": [
+  "Installation devices": [
     "Asennuslaitteet"
+  ],
+  "Installation only": [
+    "Vain asennus"
+  ],
+  "Installation settings will automatically update to match the new product's defaults.": [
+    ""
   ],
   "Installation will take %s.": [
     "Asennus vie tilaa %s."
@@ -990,11 +923,11 @@ export default {
   "Installing a broken package affects system stability and is a big security risk!": [
     "Rikkinäisen paketin asentaminen vaikuttaa järjestelmän vakauteen ja on iso tietoturvariski!"
   ],
-  "Installing the system, please wait...": [
-    "Asennetaan järjestelmää, ole hyvä ja odota..."
-  ],
   "Interface": [
     "Käyttöliittymä"
+  ],
+  "Invalid settings": [
+    "Virheellisiä asetuksia"
   ],
   "Invalid storage settings": [
     "Virheelliset tallennustilan asetukset"
@@ -1050,14 +983,14 @@ export default {
   "Keyboard layout": [
     "Näppäimistön asettelu"
   ],
-  "Keyboard selection": [
-    "Näppäimistön valinta"
-  ],
   "KiB": [
     "KiB"
   ],
   "LUN": [
     "LUN"
+  ],
+  "LVM": [
+    ""
   ],
   "Label": [
     "Nimike"
@@ -1068,8 +1001,14 @@ export default {
   "Language and keyboard": [
     "Kieli ja näppäimistö"
   ],
+  "Language and region": [
+    "Kieli ja alue"
+  ],
   "Let the installer propose a sensible size": [
     "Anna asennusohjelman suositella sopivaa kokoa"
+  ],
+  "License acceptance is required to continue.": [
+    ""
   ],
   "Loading": [
     "Ladataan"
@@ -1083,11 +1022,11 @@ export default {
   "Loading the installation repositories...": [
     "Ladataan asennuslähteitä..."
   ],
-  "Locale selection": [
-    "Maa-asetusten valinnat"
-  ],
   "Localization": [
     "Kotoistaminen"
+  ],
+  "Locked targets cannot be managed from here and do not offer any actions.": [
+    ""
   ],
   "Log in": [
     "Kirjaudu sisään"
@@ -1104,23 +1043,11 @@ export default {
   "Login": [
     "Kirjaudu"
   ],
-  "Login %s": [
-    "Kirjautuminen %s"
-  ],
   "Login form": [
     "Kirjautuminen"
   ],
-  "Logout": [
-    "Kirjaudu ulos"
-  ],
   "MAC": [
     "MAC"
-  ],
-  "Main navigation": [
-    "Päänavigointi"
-  ],
-  "Make sure you provide the correct values": [
-    ""
   ],
   "Manage DASD devices": [
     "Hallitse DASD-laitteita"
@@ -1131,17 +1058,29 @@ export default {
   "Max channel": [
     "Maksimikanava"
   ],
+  "Memory": [
+    "Muisti"
+  ],
   "MiB": [
     "MiB"
   ],
   "Min channel": [
     "Minimikanava"
   ],
+  "Missing": [
+    ""
+  ],
   "Mode": [
     "Tapa"
   ],
+  "Model": [
+    "Malli"
+  ],
   "Modify settings and physical volumes": [
     "Muuta asetuksia ja fyysisiä taltioita"
+  ],
+  "More": [
+    ""
   ],
   "More actions": [
     "Lisää toimintoja"
@@ -1157,6 +1096,9 @@ export default {
   ],
   "More languages might be available for the selected product at [Localization] page": [
     "Lisää kieliä valitulle tuotteelle saattaa olla tarjolla [Kotoistaminen]-sivulla"
+  ],
+  "More storage options": [
+    "Lisää tallenustilavalintoja"
   ],
   "Moreover, the following partition will be created.": [
     "Lisäksi seuraava osio luodaan.",
@@ -1193,8 +1135,8 @@ export default {
   "Move mount points": [
     "Siirrä liitoskohtia"
   ],
-  "Move the mount points currently configured at the selected disks to logical                   volumes of this volume group.": [
-    "Siirrä nykyisten valittujen levyjen asetettuja liitoskohtia tämän                   taltioryhmän loogisille taltioille."
+  "Move the mount points currently configured at the selected disks to logical volumes of this volume group.": [
+    "Siirrä nykyisten valittujen levyjen asetettuja liitoskohtia tämän taltioryhmän loogisille taltioille."
   ],
   "Multipath": [
     "Multipath"
@@ -1213,6 +1155,9 @@ export default {
   ],
   "Name": [
     "Nimi"
+  ],
+  "Needs about %s": [
+    "Vaatii noin %s"
   ],
   "Network": [
     "Verkko"
@@ -1247,6 +1192,9 @@ export default {
   "No content found": [
     "Sisältöä ei löytynyt"
   ],
+  "No data loss is expected": [
+    "Tietoja ei odoteta menetettävän"
+  ],
   "No device is currently using this connection.": [
     "Mikään laite ei käytä tätä yhteyttä."
   ],
@@ -1262,14 +1210,11 @@ export default {
   "No devices found": [
     "Laitteita ei löydy"
   ],
-  "No iSCSI Boot Firmware Table (iBFT) found. The initiator can be configured manually.": [
-    ""
-  ],
-  "No iSCSI targets found.": [
-    ""
-  ],
   "No logical volumes are defined yet": [
     "Loogisia taltioita ei ole vielä määritetty"
+  ],
+  "No partitions will be automatically configured for booting.": [
+    "Käynnistämiseen käytettäviä osioita ei ole automaattisesti otettu käyttöön."
   ],
   "No partitions will be automatically configured for booting. Use with caution.": [
     "Käynnistämiseen käytettäviä osioita ei ole automaattisesti otettu käyttöön. Käytä tällaisia asetuksia varoen."
@@ -1277,17 +1222,23 @@ export default {
   "No support is planned.": [
     "Tukea ei ole suunniteltu."
   ],
+  "No targets have been discovered or configured.": [
+    ""
+  ],
   "No user defined yet.": [
     "Käyttäjää ei ole vielä määritetty."
+  ],
+  "No valid port.": [
+    ""
   ],
   "No wired connections were found": [
     "Kiinteitä yhteyksiä ei löydy"
   ],
   "No zFCP controllers found.": [
-    ""
+    "zFCP-ohjaimia ei löydy."
   ],
   "No zFCP disks found.": [
-    ""
+    "zFCP-levyjä ei löydy."
   ],
   "None": [
     "Ei mitään"
@@ -1310,6 +1261,9 @@ export default {
   "Not available": [
     "Ei saatavilla"
   ],
+  "Not configured": [
+    "Ei määritetty"
+  ],
   "Not configured yet": [
     "Asetuksia ei ole vielä tehty"
   ],
@@ -1319,14 +1273,8 @@ export default {
   "Not implemented yet (%s)": [
     "Ei vielä toteutettu (%s)"
   ],
-  "Not possible with the current setup. Click to know more.": [
-    "Tämä ei ole mahdollista tällä kokoonpanolla. Napsauta oppiaksesi lisää aiheesta."
-  ],
   "Not protected network": [
     "Ei suojattu verkko"
-  ],
-  "Not selected yet": [
-    "Ei valittu vielä"
   ],
   "Not supported (%s)": [
     "Ei tuettu (%s)"
@@ -1334,32 +1282,26 @@ export default {
   "On boot": [
     "Käynnistyksessä"
   ],
-  "Only available if authentication by target is provided": [
-    ""
-  ],
   "Only reused partitions and space not assigned to any partition will be used.": [
     "Vain uudelleenkäytettyjä osioita sekä varaamatonta tilaa tullaan käyttämään."
   ],
   "Only reused partitions will be used.": [
     "Vain uudelleenkäytettyjä osioita tullaan käyttämään."
   ],
-  "Options toggle": [
-    "Valinnat-tila"
-  ],
-  "Other options": [
-    "Muut valinnat"
-  ],
-  "Other options toggle": [
-    "Muiden valintojen tila"
-  ],
-  "Overview": [
-    "Yleiskuva"
+  "Options for partition %s": [
+    "Osion %s valinnat"
   ],
   "Package installation failed": [
     "Paketin asennus epäonnistui"
   ],
+  "Partition %s": [
+    "Osio %s"
+  ],
   "Partition Info": [
     "Osion tiedot"
+  ],
+  "Partitions": [
+    "Osiot"
   ],
   "Partitions needed for booting will also be adapted": [
     "Myös käynnistämiseen tarvittavia osioita mukautetaan"
@@ -1376,14 +1318,20 @@ export default {
   "Partitions that are not reused would be resized if needed.": [
     "Osioiden, joita ei uudelleenkäytetä, kokoja muutetaan tarpeen mukaan."
   ],
-  "Partitions to boot will be allocated at the following device.": [
-    "Käynnistämiseen tarvittavat osiot otetaan käyttöön seuraavalta laitteelta."
+  "Partitions to boot will be set up if needed at %s.": [
+    "Käynnistämiseen tarvittavat osiot otetaan käyttöön tarvittaessa kohteessa %s."
   ],
-  "Partitions to boot will be allocated at the installation disk %s.": [
-    "Käynnistämiseen tarvittavat osiot otetaan käyttöön asennuslevyltä %s."
+  "Partitions to boot will be set up if needed at the following device.": [
+    "Käynnistämiseen tarvittavat osiot otetaan tarvittaessa käyttöön seuraavalta laitteelta."
   ],
-  "Partitions to boot will be allocated at the installation disk.": [
-    "Käynnistämiseen tarvittavat osiot otetaan käyttöön asennuslevyltä."
+  "Partitions to boot will be set up if needed at the installation disk, based on the location of the %s file system.": [
+    "Käynnistämiseen tarvittavat osiot otetaan käyttöön tarvittaessa asennuslevyltä, perustuen %s-tiedostojärjestelmän sijaintiin."
+  ],
+  "Partitions to boot will be set up if needed at the installation disk. Currently %1$s, based on the location of the %2$s file system.": [
+    "Käynnistämiseen tarvittavat osiot otetaan tarvittaessa käyttöön asennuslevyltä. Tällä hetkellä kyseessä on %1$s, perustuen %2$s-tiedostojärjestelmän sijaintiin."
+  ],
+  "Partitions to host \"system\" will be created if needed.": [
+    "Järjestelmätiedostojen tarvitsemat osiot luodaan tarvittaessa."
   ],
   "Partitions will be used and created for %s": [
     "Osioita tullaan luomaan ja käyttämään liitoskohdalle %s"
@@ -1415,35 +1363,32 @@ export default {
   "PiB": [
     "PiB"
   ],
-  "Please, cancel and check the settings if you are unsure.": [
-    "Jos et ole varma, peru ja tarkista asetukset."
-  ],
-  "Please, check whether it is running.": [
-    "Tarkista onko se käynnissä."
-  ],
-  "Please, perform an iSCSI discovery in order to find available iSCSI targets.": [
-    ""
-  ],
-  "Please, provide its password to log in to the system.": [
-    "Kirjoita salasana jota käytetään järjestelmään kirjautumiseen."
-  ],
   "Please, try to activate a zFCP controller.": [
-    ""
+    "Yritä aktivoida zFCP-ohjain."
   ],
   "Please, try to activate a zFCP disk.": [
-    ""
+    "Yritä aktivoida zFCP-levy."
   ],
   "Port": [
     "Portti"
   ],
   "Portal": [
-    ""
+    "Portaali"
+  ],
+  "Potential data loss": [
+    "Tietoja voidaan menettää"
+  ],
+  "Potential data loss affecting at least %s": [
+    "Tietoja voidaan menettää ainakin: %s"
   ],
   "Pre-installation checks": [
     "Ennen asennusta tehtävät tarkistukset"
   ],
   "Prefix length or netmask": [
     "Etuliitteen pituus tai verkkomaski"
+  ],
+  "Proceeding may result in data loss": [
+    "Jatkaminen voi johtaa tiedon menettämiseen"
   ],
   "Product is already registered": [
     "Tuote on jo rekisteröity"
@@ -1470,13 +1415,19 @@ export default {
     "Kysmys"
   ],
   "Read zFCP devices": [
-    ""
+    "Lue zFCP-laitteita"
   ],
   "Reboot": [
     "Käynnistä uudelleen"
   ],
+  "Reboot to try again.": [
+    ""
+  ],
   "Recommended": [
     "Suositeltu"
+  ],
+  "Refreshing data...": [
+    "Virkistetään tietoja…"
   ],
   "Register": [
     "Rekisteröi"
@@ -1505,15 +1456,6 @@ export default {
   "Reload": [
     "Lataa uudelleen"
   ],
-  "Reload now": [
-    "Lataa uudelleen nyt"
-  ],
-  "Reloading data, please wait...": [
-    "Ladataan tietoja uudelleen, odota..."
-  ],
-  "Reloading is required to get the latest data and avoid issues or data loss.": [
-    "Uusimpien tietojen saamiseksi sekä ongelmien tai tietojen menettämisen välttämiseksi tiedot tulee ladata uudelleen."
-  ],
   "Remove": [
     "Poista"
   ],
@@ -1522,6 +1464,13 @@ export default {
   ],
   "Repository load failed": [
     "Asennuslähteen lataaminen epäonnistui"
+  ],
+  "Required packages": [
+    "Vaaditut paketit"
+  ],
+  "Required packages and %s pattern": [
+    "Vaaditut paketit ja %s kuvio",
+    "Vaaditut paketit ja %s kuviota"
   ],
   "Rescan devices": [
     "Tutki laitteet uudelleen"
@@ -1538,14 +1487,23 @@ export default {
   "Result": [
     "Tulos"
   ],
+  "Result of applying the configuration described at the 'Settings' section above.": [
+    "Yllä olevassa ”Asetukset”-osiossa määritellyt asetukset johtaisivat tällaiseen tulokseen."
+  ],
   "Reused partitions will not be shrunk": [
     "Uudelleenkäytettyjä osioita ei tulla pienentämään"
   ],
   "Review and fix": [
     "Tutki ja korjaa"
   ],
-  "Root authentication methods": [
-    "Pääkäyttäjän tunnistautumistavat"
+  "Root login with SSH key": [
+    ""
+  ],
+  "Root login with password": [
+    ""
+  ],
+  "Root login with password and SSH key": [
+    ""
   ],
   "Root user": [
     "Pääkäyttäjä"
@@ -1586,9 +1544,6 @@ export default {
   "Security": [
     "Tietoturva"
   ],
-  "See more details": [
-    "Lisää yksityiskohtia"
-  ],
   "Select": [
     "Valitse"
   ],
@@ -1598,20 +1553,8 @@ export default {
   "Select a disk": [
     "Valitse levy"
   ],
-  "Select a disk to configure": [
-    "Valitse levy jonka asetukset tehdään"
-  ],
-  "Select a disk to create %s": [
-    "Valitse levy jolle luodaan liitoskohta %s"
-  ],
   "Select a disk to define partitions or to mount": [
     "Valitse levy osioiden määrittämiseen tai liittämiseen"
-  ],
-  "Select a disk to format as %s": [
-    "Valitse levy joka alustetaan liitoskohtaan %s"
-  ],
-  "Select a disk to install the system": [
-    "Valitse levy jolle järjestelmä asennetaan"
   ],
   "Select a product": [
     "Valitse tuote"
@@ -1639,9 +1582,6 @@ export default {
   ],
   "Select or enter a valid mount point": [
     "Valitse tai syötä kelvollinen liitoskohtaa"
-  ],
-  "Select the disk to configure partitions for booting": [
-    "Valitse levy käynnistysosioiden määrittämiseksi"
   ],
   "Select what to do with each partition in order to find space for allocating the new system.": [
     "Valitse mitä jokaiselle osiolle tehdään, jotta uuden järjestelmän käyttöön vapautuisi tilaa."
@@ -1671,7 +1611,7 @@ export default {
     "Aseta DIAG päälle"
   ],
   "Set a permanent hostname that won’t change with network updates.": [
-    ""
+    "Aseta pysyvä isäntänimi joka ei muuta verkkopäivityksissä."
   ],
   "Setting up connection": [
     "Muodostetaan yhteyttä"
@@ -1737,9 +1677,6 @@ export default {
   "Software conflicts resolution": [
     "Ohjelmistojen konfliktien ratkaiseminen"
   ],
-  "Software selection": [
-    "Ohjelmistojen valinta"
-  ],
   "Some existing partitions may be shrunk": [
     "Joitain olemassa olevia osioita tullaan pienentämään"
   ],
@@ -1773,6 +1710,9 @@ export default {
   "Status": [
     "Tila"
   ],
+  "Status filter toggle": [
+    ""
+  ],
   "Storage": [
     "Tallennustila"
   ],
@@ -1785,20 +1725,26 @@ export default {
   "Swap": [
     "Sivutustila"
   ],
+  "Switch to a different mode": [
+    ""
+  ],
+  "System will have no network connections": [
+    "Järjestelmään ei tule verkkoyhteyksiä"
+  ],
   "TPM sealing requires the new system to be booted directly.": [
     "TPM-sinetöinti vaatii uuden järjestelmän suoran käynnistämisen."
   ],
-  "Target Password": [
+  "Take a moment to review the installation settings below and adjust them as needed.": [
     ""
   ],
-  "Targets": [
+  "Target not found": [
     ""
+  ],
+  "Temporary name that may change after reboot or network changes": [
+    "Väliaikaisnimi voi muuttua uudelleenkäynnistyksen jälkeen tai verkon muuttuessa"
   ],
   "The LVM group '%1$s' will remain at %2$s": [
     "LVM-ryhmä ”%1$s” säilyy levyllä %2$s"
-  ],
-  "The configuration has been updated externally.": [
-    "Asetuksia on muutettu ulkoisesti."
   ],
   "The configuration must be adapted to address the following issue:": [
     "Asetuksia tulee muuttaa seuraavan ongelman ratkaisemiseksi:",
@@ -1812,9 +1758,6 @@ export default {
   ],
   "The connection will be used only during installation and not available in the installed system.": [
     "Yhteyttä käytetään vain asennuksen aikana, eikä se ole saatavilla asennetussa järjestelmässä."
-  ],
-  "The content may be deleted": [
-    "Sisältöä saatetaan poistaa"
   ],
   "The current configuration will result in an attempt to create a %1$s of %2$s.": [
     "Nykyisillä asetuksilla %1$s / %2$s tullaan yrittämään luoda."
@@ -1880,6 +1823,9 @@ export default {
   "The final step to configure the Trusted Platform Module (TPM) to automatically open encrypted devices will take place during the first boot of the new system. For that to work, the machine needs to boot directly to the new boot loader.": [
     "Viimeinen kohta on tehdä Trusted Platform Module (TPM) -asetukset, jotta salattujen laitteiden aukaisu automaattisesti tapahtuu uuteen järjestelmään ensimmäistä kertaa käytettäessä. Jotta tämä toimisi, laite tulee käynnistää suoraan uudeen käynnistyslataimeen."
   ],
+  "The following actions will be performed in the system during installation.": [
+    "Seuraavat toiminnot tehdään järjestelmään asennuksen aikana."
+  ],
   "The following logical volume will be created": [
     "Seuraava looginen taltio luodaan",
     "Seuraavat loogiset taltiot luodaan"
@@ -1899,19 +1845,7 @@ export default {
     "Seuraavat ohjelmistoryhmät on valittu asennukseen:"
   ],
   "The initiator name cannot be blank": [
-    ""
-  ],
-  "The installation on your machine is complete.": [
-    "Asennus laitteelle on valmis."
-  ],
-  "The installation will take": [
-    "Asennuksessa tulee kestämään"
-  ],
-  "The installation will take %s including:": [
-    "Asennuksessa tulee kestämään %s, mukaan lukien:"
-  ],
-  "The installer interface is no longer available, so you can safely close this window.": [
-    "Asennuksen käyttöliittymä ei ole enää käytettävissä, joten tämän ikkunan voi sulkea turvallisesti."
+    "Alullepanijan nimi ei voi olla tyhjä"
   ],
   "The installer requires [root] user privileges.": [
     "Asennusohjelma vaatii [root]-käyttäjäoikeudet."
@@ -1938,14 +1872,17 @@ export default {
   "The modal selector offers a simplified interface designed for quick and straightforward use, without overwhelming the user.": [
     "Valitsin tarjoaa yksinkertaistetun käyttöliittymän nopeaan ja suoraviivaiseen käyttöön kuormittamatta käyttäjää liikaa."
   ],
-  "The needed LVM physical volumes will be added as partitions on the chosen disks,                 based on the sizes of the logical volumes. If you select more than one disk, the                 physical volumes may be distributed along several disks.": [
-    "Vaaditut fyysiset LVM-taltiot lisätään osioina valituille levyille,                 perustuen loogisten taltioiden kokoihin. Jos valitse useamman kuin yhden levyn                 fyysiset taltiot saatetaan jakaa usean levyn välille."
+  "The needed LVM physical volumes will be added as partitions on the chosen disks, based on the sizes of the logical volumes. If you select more than one disk, the physical volumes may be distributed along several disks.": [
+    "Vaaditut fyysiset LVM-taltiot lisätään osioina valituille levyille, perustuen loogisten taltioiden kokoihin. Jos valitse useamman kuin yhden levyn fyysiset taltiot saatetaan jakaa usean levyn välille."
   ],
   "The password is weak": [
     "Salasana on heikko"
   ],
   "The password will not be needed to boot and access the data if the TPM can verify the integrity of the system. TPM sealing requires the new system to be booted directly on its first run.": [
     "Salasanaa ei tarvita käynnistämiseen ja tietoihin pääsyyn, jos TPM onnistuu varmistamaan järjestelmän eheyden. TPM-sinetöinti vaatii, että uuteen järjestelmään käynnistetään suoraan ensimmäisellä kerralla."
+  ],
+  "The product will be registered with \"%s\" hostname": [
+    "Tuote rekisteröidään isäntänimellä ”%s”"
   ],
   "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of a separate file system for %2$s.": [
     "Kohteen %1$s koko määritellään dynaamisesti järjestelmä RAM-muistin ja kohteen %2$s erillisen tiedostojärjestelmän olemassa olon perusteella."
@@ -1992,17 +1929,14 @@ export default {
   "The system does not support Wi-Fi connections, probably because of missing or disabled hardware.": [
     "Järjestelmä ei tue Wi-Fi-yhteyksiä, luultavasti puuttuvan tai käytöstä poistetun laitteiston takia."
   ],
-  "The system will use %s as its default language.": [
-    "Järjestelmä käyttää kieltä %s oletuskielenä."
-  ],
   "The whole device will be used for %s": [
     "Koko laitetta tullaan käyttämään kohteelle %s"
   ],
   "The zFCP disk was not activated.": [
-    ""
+    "zFCP-levyä ei aktivoitu."
   ],
-  "There are no disks available for the installation.": [
-    "Asennusta varten ei ole saatavilla levyjä."
+  "There are no disks available for the installation": [
+    "Asennukseen käytettävissä olevia levyjä ei ole"
   ],
   "There are not disks available for the installation. You may need to configure some device.": [
     "Asennukseen ei ole käytettävissä levyjä. Jonkin laitteen asetukset tulee tehdä."
@@ -2018,9 +1952,6 @@ export default {
     "%d tietoja tuhoava toiminto suunniteltu kohteeseen %s",
     "%d tietoja tuhoavaa toimintoa suunniteltu kohteeseen %s"
   ],
-  "These are the most relevant installation settings. Feel free to browse the sections in the menu for further details.": [
-    "Nämä ovat oleellisimmat asennuksen asetukset. Tutki valikon muita osioita vapaasti."
-  ],
   "These are the settings for the product to install. The installer language and keyboard layout can be adjusted via the [settings panel] accessible from the top bar.": [
     "Nämä ovat asennettavan tuotteen asetukset. Asennusohjelman kieltä ja näppäimistön asettelua voi muuttaa yläpalkin [asetuspaneelista]."
   ],
@@ -2028,16 +1959,16 @@ export default {
     "Nämä ovat asennettavan tuotteen asetukset. Asennusohjelman kieltä voi muuttaa yläpalkin [asetuspaneelista]."
   ],
   "This action could destroy any data stored on the device.": [
-    ""
+    "Tämä toiminto voi tuhota kaikki laitteelle tallennetut tiedot."
   ],
   "This action could destroy any data stored on the devices listed below.": [
-    ""
+    "Tämä toiminto voi tuhota kaikki alla luetelluille laitteille tallennetut tiedot."
   ],
   "This extension is not available on the server. Ask the server administrator to mirror the extension.": [
     "Tämä laajennus ei ole saatavilla palvelimella. Pyydä palvelimen ylläpitoa peilaamaan laajennus."
   ],
   "This hostname is dynamic and may change after a reboot or network update, as configured by the local network administrator.": [
-    ""
+    "Isäntänimi on dynaaminen ja voi muuttua uudelleenkäynnistyksen tai verkkopäivityksen myötä, siten kuten paikallinen verkkoylläpitäjä on määritellyt."
   ],
   "This license is not available in %s.": [
     "Lisenssiä ei ole saatavilla tuotteelle %s."
@@ -2078,17 +2009,11 @@ export default {
   "To ensure the new system is able to boot, the installer may need to create or configure some partitions in the appropriate disk.": [
     "Jotta järjestelmä käynnistyisi, asennusohjelman saattaa täytyä luoda tai tehdä osioiden asetusmuutoksia soveltuvalla levyllä."
   ],
-  "Transactional root file system": [
-    "Transaktionaalinen juuritiedostojärjestelmä"
-  ],
   "Try again": [
     "Yritä uudelleen"
   ],
   "Type": [
     "Tyyppi"
-  ],
-  "URL": [
-    "URL"
   ],
   "Unable to modify the settings": [
     "Asetusten muuttaminen ei onnistu"
@@ -2115,10 +2040,7 @@ export default {
     "Päivitä saatavilla olevia laitteita ja aktivoi salatut laitteet"
   ],
   "Updating the hostname now or later will not change the currently registered hostname.": [
-    ""
-  ],
-  "Updating the initiator name": [
-    ""
+    "Isäntänimen päivittäminen nyt tai myöhemmin ei muuta tällä hetkellä rekisteröityä isäntänimeä."
   ],
   "Upload": [
     "Lataa"
@@ -2171,6 +2093,9 @@ export default {
   "Use available space": [
     "Käytä käytettävissä olevaa tilaa"
   ],
+  "Use device %s": [
+    "Käytä laitetta %s"
+  ],
   "Use disk %s": [
     "Käytä levyä %s"
   ],
@@ -2219,6 +2144,9 @@ export default {
   "Use public SSH Key": [
     "Käytä julkista SSH-avainta"
   ],
+  "Use several devices": [
+    "Käytä useita laitteita"
+  ],
   "Use static hostname": [
     "Käytä kiinteää verkkonimeä"
   ],
@@ -2249,11 +2177,17 @@ export default {
   "Username suggestion dropdown": [
     "Ehdotetun käyttäjänimen pudotusvalikko"
   ],
+  "Using %d connections with %s": [
+    "Käytetään %d yhteyttä: %s"
+  ],
   "Using [%s] keyboard": [
     "Käytetään [%s]-näppämistöä"
   ],
   "Using a hashed password.": [
-    ""
+    "Käytetään tiivisteellistä salasanaa."
+  ],
+  "Using an advanced storage configuration": [
+    "Käytetään tarkkaa talletustilamääritystä"
   ],
   "Using an existing partition": [
     "Käytä olemassa olevaa osioita"
@@ -2263,6 +2197,12 @@ export default {
   ],
   "Using transient hostname: %s": [
     "Käytetään tilapäistä verkkonimeä: %s"
+  ],
+  "View license": [
+    ""
+  ],
+  "Volume group %s": [
+    "Taltioryhmä %s"
   ],
   "Volume group '%s' already exists. Enter a different name.": [
     "Taltioryhmä ”%s” on jo olemassa, syötä toinen nimi."
@@ -2276,14 +2216,26 @@ export default {
   "WWPN": [
     "WWPN"
   ],
+  "Wait until current operations are completed.": [
+    ""
+  ],
   "Waiting for a mount point": [
     "Odotetaan liitoskohtaa"
   ],
   "Waiting for information about storage configuration": [
     "Odotetaan tietoja tallennustilan asetuksista"
   ],
+  "Waiting for proposal": [
+    "Odotetaan ehdotusta"
+  ],
   "Weak signal": [
     "Heikko signaali"
+  ],
+  "When ready, click on the [install] button at the end of the page.": [
+    ""
+  ],
+  "Wi-Fi": [
+    ""
   ],
   "Wi-Fi connection form": [
     "Wi-Fi-yhteyden lomake"
@@ -2300,6 +2252,9 @@ export default {
   "Wired connections": [
     "Kiinteät yhteydet"
   ],
+  "Wrong selection": [
+    "Väärä valinta"
+  ],
   "XFS": [
     "XFS"
   ],
@@ -2308,6 +2263,9 @@ export default {
   ],
   "You can proceed to install with the current settings or you may want to discard the configuration and start from scratch with a simple one.": [
     "Voit jatkaa asennusta nykyisillä asetuksilla tai saatat haluta hylätä asetukset ja aloittaa alusta yksinkertaisilla asetuksilla."
+  ],
+  "You can safely close this window.": [
+    ""
   ],
   "You cannot change it later. Go to the %s section if you want to modify it before proceeding with registration.": [
     "Et voi muuttaa sitä myöhemmin. Mene %s-osioon, jos haluat muokata sitä ennen rekisteröinnin jatkamista."
@@ -2318,20 +2276,17 @@ export default {
   "You may want to discard those settings and start from scratch with a simple configuration.": [
     "Saatat haluta hylätä nykyiset asetukset ja aloittaa alusta yksinkertaisilla asetuksilla."
   ],
+  "You need to fix any invalid settings before proceeding with the installation.": [
+    ""
+  ],
   "You will connect to a public network without encryption. Your data may not be secure.": [
     "Yhdistetään julkiseen verkkoon ilman salausta. Tietosi eivät välttämättä ole turvassa."
-  ],
-  "Your system is rebooting": [
-    "Järjestelmä käynnistyy uudelleen"
   ],
   "ZFCP": [
     "ZFCP"
   ],
   "[CAPS LOCK] is on": [
     "[CAPS LOCK] on päällä"
-  ],
-  "[FIXME]": [
-    "[FIXME]"
   ],
   "active": [
     "aktiivinen"
@@ -2357,6 +2312,9 @@ export default {
   "iSCSI": [
     "iSCSI"
   ],
+  "immutable Btrfs": [
+    ""
+  ],
   "logical volume": [
     "looginen taltio"
   ],
@@ -2369,11 +2327,17 @@ export default {
   "partition": [
     "osio"
   ],
+  "proposal.Device": [
+    "ehdotus.Laite"
+  ],
   "read_only": [
     "vain_luku"
   ],
   "reset to defaults": [
     "palauta oletuksiin"
+  ],
+  "root": [
+    ""
   ],
   "yes": [
     "kyllä"
@@ -2381,10 +2345,7 @@ export default {
   "zFCP": [
     "zFCP"
   ],
-  "zFCP Disk Activation": [
-    ""
-  ],
   "zFCP Disk activation form": [
-    ""
+    "zFCP-levyaktivoinnin lomake"
   ]
 };

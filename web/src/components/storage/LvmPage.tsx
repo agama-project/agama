@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2025] SUSE LLC
+ * Copyright (c) [2025-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -21,7 +21,7 @@
  */
 
 import React, { useState, useEffect, useMemo } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate } from "react-router";
 import {
   ActionGroup,
   Alert,
@@ -35,53 +35,56 @@ import {
   TextInput,
 } from "@patternfly/react-core";
 import { Page, SubtleContent } from "~/components/core";
-import { useAvailableDevices } from "~/hooks/storage/system";
-import { StorageDevice, model, data } from "~/types/storage";
-import { useModel } from "~/hooks/storage/model";
+import { useAvailableDevices } from "~/hooks/model/system/storage";
+import { deviceLabel } from "./utils";
+import { contentDescription, filesystemLabels, typeDescription } from "./utils/device";
+import { STORAGE } from "~/routes/paths";
+import { sprintf } from "sprintf-js";
+import { _ } from "~/i18n";
+import { deviceSystems, isDrive } from "~/model/storage/device";
+import configModel from "~/model/storage/config-model";
 import {
+  useConfigModel,
   useVolumeGroup,
   useAddVolumeGroup,
   useEditVolumeGroup,
-} from "~/hooks/storage/volume-group";
-import { deviceLabel } from "./utils";
-import { contentDescription, filesystemLabels, typeDescription } from "./utils/device";
-import { STORAGE as PATHS } from "~/routes/paths";
-import { sprintf } from "sprintf-js";
-import { _ } from "~/i18n";
+} from "~/hooks/model/storage/config-model";
+import type { ConfigModel, Data } from "~/model/storage/config-model";
+import type { Storage } from "~/model/system";
 
 /**
  * Hook that returns the devices that can be selected as target to automatically create LVM PVs.
  *
  * Filters out devices that are going to be directly formatted.
  */
-function useLvmTargetDevices(): StorageDevice[] {
+function useLvmTargetDevices(): Storage.Device[] {
   const availableDevices = useAvailableDevices();
-  const model = useModel({ suspense: true });
+  const config = useConfigModel();
 
   const targetDevices = useMemo(() => {
     return availableDevices.filter((candidate) => {
-      const collection = candidate.isDrive ? model.drives : model.mdRaids;
+      const collection = isDrive(candidate) ? config.drives : config.mdRaids;
       const device = collection.find((d) => d.name === candidate.name);
       return !device || !device.filesystem;
     });
-  }, [availableDevices, model]);
+  }, [availableDevices, config]);
 
   return targetDevices;
 }
 
 function vgNameError(
   vgName: string,
-  model: model.Model,
-  volumeGroup?: model.VolumeGroup,
+  config: ConfigModel.Config,
+  volumeGroup?: ConfigModel.VolumeGroup,
 ): string | undefined {
   if (!vgName.length) return _("Enter a name for the volume group.");
 
-  const exist = model.volumeGroups.some((v) => v.vgName === vgName);
+  const exist = config.volumeGroups.some((v) => v.vgName === vgName);
   if (exist && vgName !== volumeGroup?.vgName)
     return sprintf(_("Volume group '%s' already exists. Enter a different name."), vgName);
 }
 
-function targetDevicesError(targetDevices: StorageDevice[]): string | undefined {
+function targetDevicesError(targetDevices: Storage.Device[]): string | undefined {
   if (!targetDevices.length) return _("Select at least one disk.");
 }
 
@@ -94,30 +97,34 @@ function targetDevicesError(targetDevices: StorageDevice[]): string | undefined 
 export default function LvmPage() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const model = useModel();
+  const config = useConfigModel();
   const volumeGroup = useVolumeGroup(id);
   const addVolumeGroup = useAddVolumeGroup();
   const editVolumeGroup = useEditVolumeGroup();
   const allDevices = useLvmTargetDevices();
   const [name, setName] = useState("");
-  const [selectedDevices, setSelectedDevices] = useState<StorageDevice[]>([]);
+  const [selectedDevices, setSelectedDevices] = useState<Storage.Device[]>([]);
   const [moveMountPoints, setMoveMountPoints] = useState(true);
   const [errors, setErrors] = useState<string[]>([]);
 
   useEffect(() => {
     if (volumeGroup) {
       setName(volumeGroup.vgName);
-      const targetNames = volumeGroup.getTargetDevices().map((d) => d.name);
+      const targetNames = configModel.volumeGroup
+        .filterTargetDevices(config, volumeGroup)
+        .map((d) => d.name);
       const targetDevices = allDevices.filter((d) => targetNames.includes(d.name));
       setSelectedDevices(targetDevices);
-    } else if (model && !model.volumeGroups.length) {
+    } else if (config && !config.volumeGroups.length) {
       setName("system");
-      const potentialTargets = model.drives.concat(model.mdRaids);
-      const targetNames = potentialTargets.filter((d) => d.isAddingPartitions).map((d) => d.name);
+      const potentialTargets = config.drives.concat(config.mdRaids);
+      const targetNames = potentialTargets
+        .filter(configModel.partitionable.isAddingPartitions)
+        .map((d) => d.name);
       const targetDevices = allDevices.filter((d) => targetNames.includes(d.name));
       setSelectedDevices(targetDevices);
     }
-  }, [model, volumeGroup, allDevices]);
+  }, [config, volumeGroup, allDevices]);
 
   const updateName = (_, value) => setName(value);
 
@@ -130,7 +137,7 @@ export default function LvmPage() {
   };
 
   const checkErrors = (): string[] => {
-    return [vgNameError(name, model, volumeGroup), targetDevicesError(selectedDevices)].filter(
+    return [vgNameError(name, config, volumeGroup), targetDevicesError(selectedDevices)].filter(
       (e) => e,
     );
   };
@@ -143,7 +150,7 @@ export default function LvmPage() {
 
     if (errors.length) return;
 
-    const data: data.VolumeGroup = {
+    const data: Data.VolumeGroup = {
       vgName: name,
       targetDevices: selectedDevices.map((d) => d.name),
     };
@@ -154,15 +161,17 @@ export default function LvmPage() {
       editVolumeGroup(volumeGroup.vgName, data);
     }
 
-    navigate(PATHS.root);
+    navigate(STORAGE.root);
   };
 
   return (
-    <Page>
-      <Page.Header>
-        <Content component="h2">{_("Configure LVM Volume Group")}</Content>
-      </Page.Header>
-
+    <Page
+      breadcrumbs={[
+        { label: _("Storage"), path: STORAGE.root },
+        { label: _("LVM") },
+        { label: _("Configure Volume Group") },
+      ]}
+    >
       <Page.Content>
         <Form id="lvmForm" onSubmit={onSubmit}>
           {errors.length > 0 && (
@@ -178,9 +187,9 @@ export default function LvmPage() {
           <FormGroup label={_("Disks")} role="group" style={{ justifySelf: "stretch" }} isStack>
             <Content component="small">
               {_(
-                "The needed LVM physical volumes will be added as partitions on the chosen disks, \
-                based on the sizes of the logical volumes. If you select more than one disk, the \
-                physical volumes may be distributed along several disks.",
+                "The needed LVM physical volumes will be added as partitions on the chosen disks, " +
+                  "based on the sizes of the logical volumes. If you select more than one disk, the " +
+                  "physical volumes may be distributed along several disks.",
               )}
             </Content>
             <Gallery hasGutter>
@@ -199,7 +208,7 @@ export default function LvmPage() {
                           {s}
                         </Label>
                       ))}
-                      {device.systems.map((s, i) => (
+                      {deviceSystems(device).map((s, i) => (
                         <Label key={i} isCompact>
                           {s}
                         </Label>
@@ -217,8 +226,8 @@ export default function LvmPage() {
               <Checkbox
                 id="moveMountPoints"
                 label={_(
-                  "Move the mount points currently configured at the selected disks to logical \
-                  volumes of this volume group.",
+                  "Move the mount points currently configured at the selected disks to logical " +
+                    "volumes of this volume group.",
                 )}
                 isChecked={moveMountPoints}
                 onChange={(_, v) => setMoveMountPoints(v)}

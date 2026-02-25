@@ -19,12 +19,21 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
+require "agama/answer"
+
 module Agama
   # This class represents a question to be created
   #
   # Questions are used when some information needs to be asked. For example, a question could be
   # created for asking whether to continue or not when an error is detected.
   class Question
+    # Question ID.
+    #
+    # It is set only when it comes from the API.
+    #
+    # @return [Integer, nil] Question ID
+    attr_reader :id
+
     # Class of the question
     # Helps with identification of same type of questions
     #
@@ -50,7 +59,7 @@ module Agama
 
     # Answer of the question
     #
-    # @return [Symbol, nil] nil if the question is not answered yet
+    # @return [Answer, nil] nil if the question is not answered yet
     attr_reader :answer
 
     # Additional data to hold identify question or improve UI to display it
@@ -59,12 +68,56 @@ module Agama
     # @return [Hash<String,String>]
     attr_reader :data
 
-    def initialize(qclass:, text:, options:, default_option: nil, data: {})
+    class << self
+      # Builds a question object from the HTTP API.
+      #
+      # @param hash [Hash] question data from the HTTTP API.
+      def from_api(hash)
+        answer = Answer.from_api(hash["answer"]) if hash["answer"]
+        question = new(
+          qclass:         hash["class"],
+          text:           hash["text"],
+          options:        hash["actions"].map { |a| a["id"].to_sym },
+          default_option: hash["defaultAction"]&.to_sym,
+          data:           hash["data"] || {},
+          answer:         answer
+        )
+        question.send(:id=, hash["id"])
+        question
+      end
+    end
+
+    def initialize(qclass:, text:, options:, default_option: nil, data: {}, answer: nil)
+      @id = nil
       @qclass = qclass
       @text = text
       @options = options
       @default_option = default_option
       @data = data
+      @answer = answer
     end
+
+    # Converts a question into a hash to be consumed by the HTTP API.
+    def to_api
+      actions = @options.map do |option|
+        if option.is_a?(Hash)
+          option
+        else
+          { "id" => option.to_s, "label" => option.to_s.capitalize }
+        end
+      end
+
+      question = {
+        "text"          => @text,
+        "class"         => @qclass,
+        "actions"       => actions,
+        "defaultAction" => @default_option.to_s,
+        "data"          => @data
+      }
+    end
+
+  private
+
+    attr_writer :id
   end
 end

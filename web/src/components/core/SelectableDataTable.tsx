@@ -39,7 +39,7 @@ import {
 } from "@patternfly/react-table";
 import { isEmpty, isFunction } from "radashi";
 import Icon from "~/components/layout/Icon";
-import { _ } from "~/i18n";
+import { _, TranslatedString } from "~/i18n";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -70,7 +70,7 @@ export type SelectableDataTableColumn = {
    *
    * @example "Name", "Status", "Created At"
    */
-  name: string;
+  name: TranslatedString;
 
   /**
    * A function that takes a data item and returns the content to display in the
@@ -90,8 +90,7 @@ export type SelectableDataTableColumn = {
    * If defined, marks the column as sortable and specifies the key used for
    * sorting.
    */
-  sortingKey?: string;
-
+  sortingKey?: string | ((item: object) => string | number);
   /**
    * A space-separated string of additional CSS class names to apply to the column's cells.
    * Useful for custom styling or conditional formatting.
@@ -137,10 +136,11 @@ export type SelectableDataTableProps<T = any> = {
   /**
    * Determines the selection behavior of the table.
    *
+   * - `"single"`: Does not allow selection.
    * - `"single"`: Allows selecting only one item at a time (radio buttons).
    * - `"multiple"`: Allows selecting multiple items (checkboxes).
    */
-  selectionMode?: "single" | "multiple";
+  selectionMode?: "none" | "single" | "multiple";
 
   /**
    * Data items to be rendered as rows in the table.
@@ -466,6 +466,7 @@ export default function SelectableDataTable({
 }: SelectableDataTableProps) {
   const [expandedItemsKeys, setExpandedItemsKeys] = useState(initialExpandedKeys);
   const selection = sanitizeSelection(itemsSelected, selectionMode);
+  const allowSelection = selectionMode !== "none";
   const allowMultiple = selectionMode === "multiple";
   const isItemSelected = (item: object) => {
     const selected = selection.find((selectionItem) => {
@@ -516,7 +517,7 @@ export default function SelectableDataTable({
     return (
       <Tr key={rowIndex} isExpanded={isExpanded} className={itemClassNames(item)}>
         <Td />
-        <Td select={itemSelectable(item) ? selectProps : undefined} />
+        <Td select={allowSelection && (itemSelectable(item) ? selectProps : undefined)} />
         {columns?.map((c, index) => (
           <Td key={index} dataLabel={c.name} className={c.classNames} {...c.pfTdProps}>
             <ExpandableRowContent>{c.value(item)}</ExpandableRowContent>
@@ -542,6 +543,7 @@ export default function SelectableDataTable({
       isExpanded: isItemExpanded(itemKey),
       onToggle: () => toggleExpanded(itemKey),
     };
+    const actions = itemActions?.(item);
 
     const selectProps = {
       rowIndex,
@@ -561,16 +563,16 @@ export default function SelectableDataTable({
       <Tbody key={rowIndex} isExpanded={isItemExpanded(itemKey)}>
         <Tr className={itemClassNames(item)}>
           <Td expand={expandProps} />
-          <Td select={itemSelectable(item) ? selectProps : undefined} />
+          <Td select={allowSelection && (itemSelectable(item) ? selectProps : undefined)} />
           {columns?.map((c, index) => (
             <Td key={index} dataLabel={c.name} className={c.classNames} {...c.pfTdProps}>
               {c.value(item)}
             </Td>
           ))}
-          {itemActions && (
+          {!isEmpty(actions) && (
             <Td isActionCell>
               <ActionsColumn
-                items={itemActions(item)}
+                items={actions}
                 actionsToggle={({ toggleRef, onToggle }) => (
                   <MenuToggle
                     ref={toggleRef}

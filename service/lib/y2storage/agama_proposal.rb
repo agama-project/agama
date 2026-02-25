@@ -80,11 +80,11 @@ module Y2Storage
     # @return [Proposal::AgamaSpaceMaker]
     attr_reader :space_maker
 
-    # Whether the list of issues generated so far already includes any serious error
+    # Whether there is any issue.
     #
     # @return [Boolean]
-    def fatal_error?
-      issues_list.any?(&:error?)
+    def issues?
+      issues_list.any?
     end
 
     # Calculates the proposal
@@ -101,7 +101,7 @@ module Y2Storage
 
       issues_list.concat(issues)
 
-      if fatal_error?
+      if issues?
         @devices = nil
         return @devices
       end
@@ -118,12 +118,12 @@ module Y2Storage
       devicegraph = initial_devicegraph.dup
 
       calculate_initial_planned(devicegraph)
-      return if fatal_error?
+      return if issues?
 
       configure_ptable_types(devicegraph)
       devicegraph = clean_graph(devicegraph)
       complete_planned(devicegraph)
-      return if fatal_error?
+      return if issues?
 
       result = create_devices(devicegraph)
       result.devicegraph

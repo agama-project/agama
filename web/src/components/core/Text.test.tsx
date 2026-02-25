@@ -33,6 +33,18 @@ describe("Text", () => {
     expect(screen.getByText("Installer")).toBeInTheDocument();
   });
 
+  it("renders a 'span' HTML element when component is not given", () => {
+    plainRender(<Text>Installer</Text>);
+    const element = screen.getByText("Installer");
+    expect(element.tagName).toBe("SPAN");
+  });
+
+  it("renders a 'small' HTML element when component='small'", () => {
+    plainRender(<Text component="small">Installer</Text>);
+    const element = screen.getByText("Installer");
+    expect(element.tagName).toBe("SMALL");
+  });
+
   it("applies bold style when isBold is true", () => {
     plainRender(<Text isBold>Installer</Text>);
     expect(screen.getByText("Installer")).toHaveClass(textStyles.fontWeightBold);

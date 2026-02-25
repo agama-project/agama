@@ -31,8 +31,30 @@ module Agama
 
         # List of targets.
         #
-        # @return [Array<Configs::Target>, nil] If nil, then targets are not configured.
+        # @return [Array<Configs::Target>]
         attr_accessor :targets
+
+        def initialize
+          @targets = []
+        end
+
+        # Whether the config includes a target with the given name and portal.
+        #
+        # @param name [String]
+        # @param portal [String]
+        # @return [Boolean]
+        def include_target?(name, portal)
+          !find_target(name, portal).nil?
+        end
+
+        # Searchs for a target with the given name and portal.
+        #
+        # @param name [String]
+        # @param portal [String]
+        # @return [Configs::Target, nil]
+        def find_target(name, portal)
+          targets.find { |t| t.name == name && t.portal?(portal) }
+        end
 
         # All portals.
         #

@@ -20,19 +20,20 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
-import { Flex } from "@patternfly/react-core";
-import MenuButton from "~/components/core/MenuButton";
+import React, { forwardRef } from "react";
+import { Button, Flex, FlexItem } from "@patternfly/react-core";
+import MenuButton, { CustomToggleProps } from "~/components/core/MenuButton";
 import Text from "~/components/core/Text";
-import { useNavigate } from "react-router-dom";
-import { useSetSpacePolicy } from "~/hooks/storage/space-policy";
+import Icon from "~/components/layout/Icon";
+import { useNavigate } from "react-router";
 import { SPACE_POLICIES } from "~/components/storage/utils";
-import { apiModel } from "~/api/storage/types";
 import { STORAGE as PATHS } from "~/routes/paths";
 import * as driveUtils from "~/components/storage/utils/drive";
 import { generateEncodedPath } from "~/utils";
 import { isEmpty } from "radashi";
-import { _ } from "~/i18n";
+import { usePartitionable, useSetSpacePolicy } from "~/hooks/model/storage/config-model";
+import { useDevice } from "~/hooks/model/system/storage";
+import type { ConfigModel } from "~/model/storage/config-model";
 
 const PolicyItem = ({ policy, modelDevice, isSelected, onClick }) => {
   return (
@@ -47,43 +48,67 @@ const PolicyItem = ({ policy, modelDevice, isSelected, onClick }) => {
   );
 };
 
-export default function SpacePolicyMenu({ modelDevice, device }) {
+type SpacePolicyMenuToggleProps = CustomToggleProps & {
+  drive: ConfigModel.Drive;
+};
+
+const SpacePolicyMenuToggle = forwardRef(({ drive, ...props }: SpacePolicyMenuToggleProps, ref) => {
+  return (
+    <Button variant="link" ref={ref} style={{ display: "inline", width: "fit-content" }} {...props}>
+      <Flex
+        alignItems={{ default: "alignItemsCenter" }}
+        gap={{ default: "gapSm" }}
+        flexWrap={{ default: "nowrap" }}
+        style={{ whiteSpace: "normal", textAlign: "start" }}
+      >
+        <FlexItem>{driveUtils.contentActionsSummary(drive)}</FlexItem>
+        <FlexItem>
+          <Icon name="keyboard_arrow_down" style={{ verticalAlign: "middle" }} />
+        </FlexItem>
+      </Flex>
+    </Button>
+  );
+});
+
+type SpacePolicyMenuProps = {
+  collection: "drives" | "mdRaids";
+  index: number;
+};
+
+export default function SpacePolicyMenu({ collection, index }: SpacePolicyMenuProps) {
   const navigate = useNavigate();
   const setSpacePolicy = useSetSpacePolicy();
-  const { list, listIndex } = modelDevice;
-  const existingPartitions = device.partitionTable?.partitions.length;
+  const deviceModel = usePartitionable(collection, index);
+  const device = useDevice(deviceModel.name);
+  const existingPartitions = device.partitions?.length;
 
   if (isEmpty(existingPartitions)) return;
 
-  const onSpacePolicyChange = (spacePolicy: apiModel.SpacePolicy) => {
+  const onSpacePolicyChange = (spacePolicy: ConfigModel.SpacePolicy) => {
     if (spacePolicy === "custom") {
-      return navigate(generateEncodedPath(PATHS.editSpacePolicy, { list, listIndex }));
+      return navigate(generateEncodedPath(PATHS.editSpacePolicy, { collection, index }));
     } else {
-      setSpacePolicy(list, listIndex, { type: spacePolicy });
+      setSpacePolicy(collection, index, { type: spacePolicy });
     }
   };
 
-  const currentPolicy = driveUtils.spacePolicyEntry(modelDevice);
+  const currentPolicy = driveUtils.spacePolicyEntry(deviceModel);
 
   return (
-    <Flex gap={{ default: "gapXs" }}>
-      <strong>{_("Find space")}</strong>
-      <MenuButton
-        toggleProps={{
-          variant: "plainText",
-        }}
-        items={SPACE_POLICIES.map((policy) => (
-          <PolicyItem
-            key={policy.id}
-            policy={policy}
-            modelDevice={modelDevice}
-            isSelected={policy.id === currentPolicy.id}
-            onClick={onSpacePolicyChange}
-          />
-        ))}
-      >
-        {driveUtils.contentActionsSummary(modelDevice)}
-      </MenuButton>
-    </Flex>
+    <MenuButton
+      toggleProps={{
+        variant: "plainText",
+      }}
+      items={SPACE_POLICIES.map((policy) => (
+        <PolicyItem
+          key={policy.id}
+          policy={policy}
+          modelDevice={deviceModel}
+          isSelected={policy.id === currentPolicy.id}
+          onClick={onSpacePolicyChange}
+        />
+      ))}
+      customToggle={<SpacePolicyMenuToggle drive={deviceModel} />}
+    />
   );
 }

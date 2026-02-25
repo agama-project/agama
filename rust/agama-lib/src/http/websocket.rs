@@ -21,6 +21,7 @@
 //! This module implements a WSClient to connect to Agama's WebSocket and
 //! listen for events.
 
+use agama_utils::api::Event;
 use tokio::{net::TcpStream, sync::broadcast};
 use tokio_native_tls::native_tls;
 use tokio_stream::StreamExt;
@@ -34,7 +35,6 @@ use tokio_tungstenite::{
 };
 use url::Url;
 
-use super::Event;
 use crate::auth::AuthToken;
 
 #[derive(Debug, thiserror::Error)]
@@ -79,7 +79,7 @@ impl WebSocketClient {
             .danger_accept_invalid_certs(insecure)
             .danger_accept_invalid_hostnames(insecure)
             .build()?;
-        let tls_connector: native_tls::TlsConnector = tls_connector.into();
+        let tls_connector: native_tls::TlsConnector = tls_connector;
 
         let connector = Connector::NativeTls(tls_connector);
         let uri: Uri = url.as_str().parse()?;

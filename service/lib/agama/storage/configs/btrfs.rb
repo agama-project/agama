@@ -29,6 +29,12 @@ module Agama
         # @return [Boolean, nil]
         attr_accessor :snapshots
 
+        # Used for the "/" filesystem to indicate the system is immutable (transactional).
+        #
+        # Note this flag can only be set due to a Storage::Volume from the product configuration.
+        # There is no mechanism for the user to influence this value (eg. is not part of the
+        # JSON schema).
+        #
         # @return [Boolean, nil]
         attr_accessor :read_only
 

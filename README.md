@@ -21,7 +21,7 @@ interfaces over it.
 
 ---
 
-| ![Software page](https://raw.githubusercontent.com/agama-project/agama-project.github.io/refs/heads/main/static/img/user/software.png) | ![Storage settings](https://raw.githubusercontent.com/agama-project/agama-project.github.io/refs/heads/main/static/img/storage.png) |
+| ![Software page](https://raw.githubusercontent.com/agama-project/agama-project.github.io/refs/heads/main/static/img/user/software.png) | ![Storage settings](https://raw.githubusercontent.com/agama-project/agama-project.github.io/refs/heads/main/static/img/user/storage-overview.png) |
 | --- | --- |
 | ![Installing](./doc/images/screenshots/installing.png) | ![Installation finished](./doc/images/screenshots/finished.png) |
 <!-- TODO: move these ^^^ screenshots to the web repository as well -->

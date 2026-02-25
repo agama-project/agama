@@ -27,15 +27,16 @@ import { installerRender } from "~/test-utils";
 
 import { Popup } from "~/components/core";
 import { PopupProps } from "./Popup";
+import { _ } from "~/i18n";
 
 let isOpen: boolean;
 let isLoading: boolean;
 const confirmFn = jest.fn();
 const cancelFn = jest.fn();
-const loadingText = "Loading text";
 
 const TestingPopup = (props: PopupProps) => {
   const [isMounted, setIsMounted] = useState(true);
+  const loadingText = _("Loading text");
 
   if (!isMounted) return null;
 
@@ -58,6 +59,8 @@ const TestingPopup = (props: PopupProps) => {
 };
 
 describe("Popup", () => {
+  const loadingText = _("Loading text");
+
   describe("when it is not open", () => {
     beforeEach(() => {
       isOpen = false;

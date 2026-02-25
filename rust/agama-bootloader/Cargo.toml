@@ -1,0 +1,23 @@
+[package]
+name = "agama-bootloader"
+version = "0.1.0"
+rust-version.workspace = true
+edition.workspace = true
+
+[dependencies]
+agama-utils = { path = "../agama-utils" }
+anyhow = "1.0.99"
+async-trait = "0.1.89"
+gettext-rs = { version = "0.7.2", features = ["gettext-system"] }
+regex = "1.11.2"
+serde = { version = "1.0.228", features = ["derive"] }
+serde_json = { version = "1.0.128", features = ["raw_value"] }
+thiserror = "2.0.16"
+tokio = { version = "1.47.1", features = ["macros", "rt-multi-thread", "sync"] }
+tokio-stream = "0.1.17"
+tracing = "0.1.41"
+zbus = "5.11.0"
+
+[dev-dependencies]
+test-context = "0.4.1"
+tokio-test = "0.4.4"

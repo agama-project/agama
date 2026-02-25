@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2025] SUSE LLC
+ * Copyright (c) [2025-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -29,24 +29,35 @@ let mockFullName: string;
 let mockUserName: string;
 let mockPassword: string;
 let mockHashedPassword: boolean;
-const mockFirstUserMutation = jest.fn().mockResolvedValue(true);
-
-jest.mock("~/components/product/ProductRegistrationAlert", () => () => (
-  <div>ProductRegistrationAlert Mock</div>
-));
+const mockPatchConfig = jest.fn().mockResolvedValue(true);
 
 jest.mock("~/components/users/PasswordCheck", () => () => <div>PasswordCheck Mock</div>);
 
-jest.mock("~/queries/users", () => ({
-  ...jest.requireActual("~/queries/users"),
-  useFirstUser: () => ({
-    userName: mockUserName,
-    fullName: mockFullName,
-    password: mockPassword,
-    hashedPassword: mockHashedPassword,
+jest.mock("~/hooks/model/config", () => ({
+  ...jest.requireActual("~/hooks/model/config"),
+  useConfig: () => ({
+    user: {
+      userName: mockUserName,
+      fullName: mockFullName,
+      password: mockPassword,
+      hashedPassword: mockHashedPassword,
+    },
   }),
-  useFirstUserMutation: () => ({
-    mutateAsync: mockFirstUserMutation,
+}));
+
+jest.mock("~/api", () => ({
+  ...jest.requireActual("~/api"),
+  patchConfig: (config) => mockPatchConfig(config),
+}));
+
+// Needed by withL10n
+jest.mock("~/hooks/model/system", () => ({
+  useSystem: () => ({
+    l10n: {
+      keymap: "us",
+      timezone: "Europe/Berlin",
+      locale: "en_US",
+    },
   }),
 }));
 
@@ -81,7 +92,7 @@ describe("FirstUserForm", () => {
     it("renders the form in 'create' mode", () => {
       installerRender(<FirstUserForm />, { withL10n: true });
 
-      screen.getByRole("heading", { name: "Create user" });
+      screen.getByText("Create user");
       screen.getByRole("textbox", { name: "Full name" });
       screen.getByRole("textbox", { name: "Username" });
       // NOTE: Password inputs don't have an implicit role, so they must be
@@ -107,12 +118,14 @@ describe("FirstUserForm", () => {
       await user.type(passwordConfirmation, "n0ts3cr3t");
       await user.click(acceptButton);
 
-      expect(mockFirstUserMutation).toHaveBeenCalledWith(
+      expect(mockPatchConfig).toHaveBeenCalledWith(
         expect.objectContaining({
-          fullName: "Gecko Migo",
-          userName: "gmigo",
-          password: "n0ts3cr3t",
-          hashedPassword: false,
+          user: expect.objectContaining({
+            fullName: "Gecko Migo",
+            userName: "gmigo",
+            password: "n0ts3cr3t",
+            hashedPassword: false,
+          }),
         }),
       );
     });
@@ -125,13 +138,13 @@ describe("FirstUserForm", () => {
       await user.type(fullname, "Gecko Migo");
       await user.click(acceptButton);
 
-      expect(mockFirstUserMutation).not.toHaveBeenCalled();
+      expect(mockPatchConfig).not.toHaveBeenCalled();
       screen.getByText("Warning alert:");
       screen.getByText("All fields are required");
     });
 
     it("renders errors from the server, if any", async () => {
-      mockFirstUserMutation.mockRejectedValue({ response: { data: "Username not valid" } });
+      mockPatchConfig.mockRejectedValue({ response: { data: "Username not valid" } });
       const { user } = installerRender(<FirstUserForm />, { withL10n: true });
 
       const fullname = screen.getByRole("textbox", { name: "Full name" });
@@ -162,7 +175,7 @@ describe("FirstUserForm", () => {
     it("renders the form in 'edit' mode", () => {
       installerRender(<FirstUserForm />, { withL10n: true });
 
-      screen.getByRole("heading", { name: "Edit user" });
+      screen.getByText("Edit user");
       const fullNameInput = screen.getByRole("textbox", { name: "Full name" });
       expect(fullNameInput).toHaveValue("Gecko Migo");
       const userNameInput = screen.getByRole("textbox", { name: "Username" });
@@ -187,10 +200,12 @@ describe("FirstUserForm", () => {
       await user.type(username, "gloco");
       await user.click(acceptButton);
 
-      expect(mockFirstUserMutation).toHaveBeenCalledWith(
+      expect(mockPatchConfig).toHaveBeenCalledWith(
         expect.objectContaining({
-          fullName: "Gecko Loco",
-          userName: "gloco",
+          user: expect.objectContaining({
+            fullName: "Gecko Loco",
+            userName: "gloco",
+          }),
         }),
       );
     });
@@ -213,12 +228,14 @@ describe("FirstUserForm", () => {
       await user.type(passwordConfirmation, "m0r3s3cr3t");
       await user.click(acceptButton);
 
-      expect(mockFirstUserMutation).toHaveBeenCalledWith(
+      expect(mockPatchConfig).toHaveBeenCalledWith(
         expect.objectContaining({
-          fullName: "Gecko Loco",
-          userName: "gloco",
-          password: "m0r3s3cr3t",
-          hashedPassword: false,
+          user: expect.objectContaining({
+            fullName: "Gecko Loco",
+            userName: "gloco",
+            password: "m0r3s3cr3t",
+            hashedPassword: false,
+          }),
         }),
       );
     });
@@ -234,8 +251,10 @@ describe("FirstUserForm", () => {
         const acceptButton = screen.getByRole("button", { name: "Accept" });
         screen.getByText("Using a hashed password.");
         await user.click(acceptButton);
-        expect(mockFirstUserMutation).toHaveBeenCalledWith(
-          expect.not.objectContaining({ hashedPassword: false }),
+        expect(mockPatchConfig).toHaveBeenCalledWith(
+          expect.objectContaining({
+            user: expect.not.objectContaining({ hashedPassword: false }),
+          }),
         );
       });
 
@@ -253,8 +272,10 @@ describe("FirstUserForm", () => {
         await user.type(passwordInput, "n0tS3cr3t");
         await user.type(passwordConfirmationInput, "n0tS3cr3t");
         await user.click(acceptButton);
-        expect(mockFirstUserMutation).toHaveBeenCalledWith(
-          expect.objectContaining({ hashedPassword: false, password: "n0tS3cr3t" }),
+        expect(mockPatchConfig).toHaveBeenCalledWith(
+          expect.objectContaining({
+            user: expect.objectContaining({ hashedPassword: false, password: "n0tS3cr3t" }),
+          }),
         );
       });
     });

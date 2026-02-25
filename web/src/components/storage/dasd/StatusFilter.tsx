@@ -31,7 +31,7 @@ import {
   SelectProps,
 } from "@patternfly/react-core";
 import Text from "~/components/core/Text";
-import { _ } from "~/i18n";
+import { N_, _ } from "~/i18n";
 
 type StatusFilterProps = {
   value: string;
@@ -39,10 +39,10 @@ type StatusFilterProps = {
 };
 
 const options = {
-  all: _("all"),
-  active: _("active"),
-  read_only: _("read_only"),
-  offline: _("offline"),
+  all: N_("all"),
+  active: N_("active"),
+  read_only: N_("read_only"),
+  offline: N_("offline"),
 };
 
 const ID = "dasd-status-filter";
@@ -67,7 +67,8 @@ export default function StatusFilter({ value, onChange }: StatusFilterProps) {
 
   const toggle = (toggleRef: React.Ref<MenuToggleElement>) => (
     <MenuToggle id={ID} ref={toggleRef} onClick={onToggle} isExpanded={isOpen}>
-      {options[value]}
+      {/* eslint-disable agama-i18n/string-literals */}
+      {_(options[value])}
     </MenuToggle>
   );
 
@@ -92,7 +93,8 @@ export default function StatusFilter({ value, onChange }: StatusFilterProps) {
         <SelectList>
           {Object.keys(options).map((key) => (
             <SelectOption key={key} value={key}>
-              {options[key]}
+              {/* eslint-disable agama-i18n/string-literals */}
+              {_(options[key])}
             </SelectOption>
           ))}
         </SelectList>

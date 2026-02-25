@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024] SUSE LLC
+ * Copyright (c) [2024-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -22,7 +22,8 @@
 
 import React from "react";
 import { Button, ButtonProps } from "@patternfly/react-core";
-import { To, useHref, useLinkClickHandler } from "react-router-dom";
+import { To, useHref, useLinkClickHandler, useLocation } from "react-router";
+import { isUndefined } from "radashi";
 
 export type LinkProps = Omit<ButtonProps, "component"> & {
   /** The target route */
@@ -31,26 +32,27 @@ export type LinkProps = Omit<ButtonProps, "component"> & {
   replace?: boolean;
   /** Whether use PF/Button primary variant */
   isPrimary?: boolean;
+  /** Whether preserve the URL query string or not */
+  keepQuery?: boolean;
 };
 
-/**
- * Returns an HTML `<a>` tag built on top of PF/Button and useHref ReactRouter hook
- *
- * @note when isPrimary not given or false and props does not contain a variant prop,
- * it will default to "secondary" variant
- */
-export default function Link({
+function LinkWithHooks({
   to,
   replace = false,
   isPrimary,
   variant,
   children,
+  state,
+  keepQuery = false,
   onClick,
   ...props
 }: LinkProps) {
+  const location = useLocation();
   const href = useHref(to);
   const linkVariant = isPrimary ? "primary" : variant || "secondary";
-  const handleClick = useLinkClickHandler(to, { replace });
+  const destination = keepQuery ? ({ pathname: to, search: location.search } as To) : to;
+  const handleClick = useLinkClickHandler(destination, { replace });
+
   return (
     <Button
       component="a"
@@ -64,5 +66,21 @@ export default function Link({
     >
       {children}
     </Button>
+  );
+}
+
+/**
+ * Returns an HTML `<a>` tag built on top of PF/Button and useHref ReactRouter hook
+ *
+ * @note when isPrimary not given or false and props does not contain a variant prop,
+ * it will default to "secondary" variant
+ */
+export default function Link({ to, children, ...props }: LinkProps) {
+  if (isUndefined(to)) return children;
+
+  return (
+    <LinkWithHooks to={to} {...props}>
+      {children}
+    </LinkWithHooks>
   );
 }

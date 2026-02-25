@@ -21,7 +21,6 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-# TEMPORARY overwrite of Y2DIR to use DBus for communication with dependent yast modules
 $LOAD_PATH.unshift File.expand_path("../lib", __dir__)
 
 # Set the PATH to a known value
@@ -55,16 +54,12 @@ end
 # @param name [Symbol] Service name
 # @see ORDERED_SERVICES
 def start_service(name)
-  general_y2dir = File.expand_path("../lib/agama/dbus/y2dir", __dir__)
-  module_y2dir = File.expand_path("../lib/agama/dbus/y2dir/#{name}", __dir__)
-  ENV["Y2DIR"] = [ENV.fetch("Y2DIR", nil), module_y2dir, general_y2dir].compact.join(":")
-
   logger = logger_for(name)
   service_runner = Agama::DBus::ServiceRunner.new(name, logger: logger)
   service_runner.run
 end
 
-ORDERED_SERVICES = [:software, :storage, :users, :manager].freeze
+ORDERED_SERVICES = [:storage, :users, :manager].freeze
 
 dbus_server_manager = Agama::DBus::ServerManager.new
 

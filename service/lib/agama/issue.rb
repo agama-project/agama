@@ -45,53 +45,20 @@ module Agama
     # @return [String, nil]
     attr_reader :details
 
-    # Source of the issue, see {Source}
-    #
-    # @return [Symbol, nil]
-    attr_reader :source
-
-    # Severity of the issue, see {Severity}
-    #
-    # @return [Symbol]
-    attr_reader :severity
-
     # Kind of error
     #
     # It helps to identify the error without having to rely on the message
     # @return [Symbol]
     attr_reader :kind
 
-    # Defines possible sources
-    module Source
-      SYSTEM = :system
-      CONFIG = :config
-    end
-
-    # Defines different severity levels
-    module Severity
-      WARN = :warn
-      ERROR = :error
-    end
-
     # Constructor
     #
     # @param description [String]
     # @param details [String, nil]
-    # @param source [symbol, nil]
-    # @param severity [symbol]
-    def initialize(description, kind: :generic, details: "", source: nil, severity: Severity::WARN)
+    def initialize(description, kind: :generic, details: "")
       @description = description
       @kind = kind
       @details = details
-      @source = source
-      @severity = severity
-    end
-
-    # Whether the issue has error severity
-    #
-    # @return [Boolean]
-    def error?
-      severity == Severity::ERROR
     end
   end
 end

@@ -1,194 +1,187 @@
-Acuerdo de licencia de usuario final
-del software de SUSE
+Contrato de licencia para el usuario final
+del Software de SUSE
 
 
-Acuerdo de licencia de usuario final del software de SUSE
+Contrato de licencia para el usuario final del software de SUSE
+
 AL DESCARGAR, INSTALAR, ADQUIRIR O USAR DE CUALQUIER OTRO MODO EL 
 SOFTWARE (COMO SE DEFINE A CONTINUACIÓN), EL USUARIO ESTARÁ 
-ACEPTANDO LOS TÉRMINOS DE ESTE ACUERDO. SI NO ESTÁ CONFORME CON 
+ACEPTANDO LOS TÉRMINOS DE ESTE CONTRATO. SI NO ESTÁ CONFORME CON 
 ESTOS TÉRMINOS, NO TENDRÁ AUTORIZACIÓN PARA DESCARGAR, INSTALAR NI 
 UTILIZAR EL SOFTWARE. SI UNA PERSONA ACTÚA EN NOMBRE DE UNA ENTIDAD, 
 SE DETERMINA QUE ESA PERSONA TIENE LA AUTORIDAD PARA ACEPTAR ESTE 
-ACUERDO EN NOMBRE DE DICHA ENTIDAD.  SI ACEPTA EL ACUERDO EN NOMBRE 
+CONTRATO EN NOMBRE DE DICHA ENTIDAD. SI ACEPTA EL CONTRATO EN NOMBRE 
 DE UNA ENTIDAD, LOS TÉRMINOS "USTED", EL "USUARIO" Y LOS POSESIVOS 
 CORRESPONDIENTES HARÁN REFERENCIA EN ADELANTE A DICHA ENTIDAD.
-
-SUSE LLC (el "Licenciador" o "SUSE") ofrece productos de software, 
-que pueden incluir: (i) programas de software desarrollados por SUSE 
-o sus filiales; (ii) programas de software desarrollados por 
-terceros; (iii) compilaciones de programas de software; y (iv) 
-marcas comerciales propiedad de SUSE y/o sus filiales ("Marcas de 
-SUSE"), así como la documentación que acompaña a dichos programas de 
-software (tales programas de software, compilaciones de programas de 
-software, marcas comerciales y documentación conforman el 
-"Software").
-
-Este Acuerdo de licencia de usuario final ("EULA") es un acuerdo 
-legal entre el Usuario (persona jurídica o persona física) y SUSE y 
-rige el uso que haga del Software. Cualquier complemento, extensión, 
+SUSE Software Solutions Ireland Limited (el "Licenciador" o "SUSE") 
+o sus filiales ponen a disposición productos de software, que pueden 
+incluir: (i) software desarrollado por SUSE o sus filiales; (ii) 
+software desarrollado por terceros; (iii) compilaciones de software; 
+y (iv) marcas comerciales propiedad de SUSE o sus filiales ("Marcas 
+de SUSE"), así como la documentación que acompaña a dicho software y 
+materiales de configuración, compilación y empaquetado (dicho 
+software, compilaciones de programas de software, marcas comerciales 
+y documentación son, junto con cualquier material de configuración, 
+compilación y empaquetado asociado, el "Software"). Este Contrato de 
+licencia para el usuario final ("CLUF") es un contrato legal entre 
+el Usuario (persona jurídica o persona física) y SUSE y rige el uso 
+que el Usuario haga del Software. Cualquier complemento, extensión, 
 actualización, aplicación móvil, módulo, adaptador o versión de 
 asistencia del Software que pueda descargar o recibir el Usuario y 
-no esté acompañado por otro acuerdo de licencia se considerará como 
-Software regido por este EULA. Si la legislación del lugar de 
-trabajo principal del Usuario requiere que los contratos estén en el 
-idioma local para ser aplicables, puede obtener una versión en el 
-idioma local escribiendo al Licenciador, y la versión en el idioma 
-local regirá su uso del Software.      
- 
+no esté acompañado por otro contrato de licencia se considerará que 
+se rige por este CLUF. 
+Definiciones e interpretación
+Si la legislación del lugar de trabajo principal del Usuario 
+requiere que los contratos estén en el idioma local para ser 
+aplicables, el Usuario puede solicitar una versión en el idioma 
+local y, en la medida en que lo exija la ley, la versión en el 
+idioma local tendrá prioridad.
+Los "Componentes de código abierto" son los componentes de software 
+distribuidos junto con o como parte del Software que están 
+licenciados por terceros bajo licencias reconocidas como licencias 
+de código abierto (cada una de ellas una "Licencia OSS"). 
+Las referencias al "uso" incluyen la instalación, la ejecución y el 
+funcionamiento interno.
 Términos de la licencia
 Código abierto
-El Software contiene muchos componentes individuales que son 
-software de código abierto. La licencia de código abierto para cada 
-componente, que, según el programa de software, puede ser la 
-Licencia Pública General de GNU versión 2 
-(https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html), la 
-Licencia de Apache versión 2.0 
-(https://www.apache.org/licenses/LICENSE-2.0) u otra licencia de 
-código abierto (cada una de estas licencias se considera como 
-"Licencia de código abierto"), se encuentra en la documentación de 
-licencias o en el código fuente del componente.
- 
-Este EULA rige el uso del Software, incluidas las Marcas de SUSE, 
-pero no limita, sustituye ni modifica los derechos del Usuario 
-expresados en la Licencia de código abierto aplicable al uso de 
-cualquier código de código abierto incluido en el Software sin las 
-Marcas de SUSE.
- 
+El Software incluye Componentes de código abierto. La Licencia OSS 
+aplicable a cada Componente de código abierto se incluye en la 
+documentación de licencia adjunta o en el código fuente o archivo de 
+aviso del componente. Para evitar cualquier duda, nada en este CLUF 
+limita, sustituye o modifica los derechos del Usuario bajo cualquier 
+Licencia OSS. Los derechos de uso, copia, modificación y 
+redistribución de los Componentes de código abierto del Usuario se 
+rigen exclusivamente por las Licencias OSS aplicables. Si el Usuario 
+redistribuye Componentes de código abierto, será responsable de 
+cumplir con las Licencias OSS aplicables, incluidas las obligaciones 
+de notificación y disponibilidad del código fuente descritas en el 
+archivo de aviso de OSS que acompaña al Software o que SUSE pone a 
+disposición del Usuario previa solicitud.
 El Software se puede proporcionar con programas de terceros que no 
 forman parte del Software. Estos programas de terceros no son 
 necesarios para ejecutar el Software, se proporcionan para comodidad 
 del Usuario y están sujetos a sus propios términos de licencia. Los 
-términos de licencia acompañan a los programas de terceros o se 
-pueden consultar en https://www.suse.com/licensing/eula/. Si el 
-Usuario no está de acuerdo con los términos de licencia aplicables 
-para los programas de otros fabricantes, no debe instalarlos. Si el 
-Usuario desea instalar los programas de otros fabricantes en más de 
-un sistema o transferir los programas de otros fabricantes a un 
-tercero, debe ponerse en contacto con el licenciador de los 
-programas de otros fabricantes correspondientes.
-
+términos de licencia acompañarán a los programas de terceros o se 
+podrán consultar donde indique el Licenciador. Si el Usuario no está 
+de acuerdo con los términos de licencia aplicables para los 
+programas de terceros, no debe instalarlos ni usarlos. 
 Licencia para utilizar el Software
-Siempre que se cumplan los términos y condiciones de este EULA y de 
-la Licencia de código abierto aplicable, se otorga al Usuario una 
-licencia mundial perpetua, no exclusiva, intransferible y revocable 
-para reproducir y utilizar copias del Software para uso interno de 
-su entidad legal. 
- 
-Este EULA no permite distribuir el Software o sus componentes 
-utilizando las Marcas de SUSE, excepto que el Usuario puede 
-redistribuir fuera de Su entidad legal lo siguiente: (a) copias del 
-Software, pero solo si se permite en virtud de un acuerdo por 
-escrito independiente con el Licenciador que autorice dicha 
-redistribución, o (b) los componentes que constituyen el Software, 
-solo si se eliminan y reemplazan todas las apariciones de cualquier 
-Marca de SUSE.
-
+Siempre que se cumplan los términos y condiciones de este CLUF y de 
+las Licencias OSS aplicables, se otorga al Usuario una licencia 
+mundial perpetua, no exclusiva, intransferible e irrevocable para 
+reproducir y utilizar copias del Software para uso interno de su 
+entidad legal. Esta concesión de licencia no se aplica a los 
+Componentes de código abierto dentro del Software, que están 
+licenciados bajo sus respectivas Licencias OSS. Puede redistribuir 
+Componentes de código abierto del Software, sin las Marcas de SUSE, 
+con sujeción a las Licencias OSS aplicables. 
 Propiedad
-El Software se proporciona bajo licencia, no se vende.  No se 
+El Software se proporciona bajo licencia, no se vende. No se 
 transfiere al Usuario ningún título o propiedad del Software.  El 
 Licenciador o los licenciadores terceros mantienen íntegramente el 
 derecho, la titularidad y el interés sobre todos los derechos de 
-propiedad intelectual especificados en el Software.      
-
+propiedad intelectual especificados en el Software.
 Marcas de SUSE
-En el presente EULA no se otorga ningún derecho ni licencia, ya sea 
+En el presente CLUF no se otorga ningún derecho ni licencia, ya sea 
 expreso o implícito, para usar cualquier Marca de SUSE, nombre 
 comercial o marca de servicio del Licenciador ni de sus filiales u 
-otorgantes de licencia.
-
+otorgantes de licencia. El Usuario deberá eliminar las Marcas de 
+SUSE de cualquier redistribución, salvo autorización expresa.
 Servicios de suscripciones y Asistencia técnica
 El Licenciador no está obligado a prestar mantenimiento o asistencia 
-a menos que se acuerde lo contrario mediante un acuerdo adicional 
-que incluya explícitamente dichos servicios.
-
+a menos que se acuerde lo contrario mediante un contrato adicional 
+que incluya explícitamente dichos servicios. Dichos servicios se 
+prestan en virtud de condiciones distintas y no modifican el 
+presente CLUF.
 Garantía y responsabilidad
 Garantía limitada
 EL SOFTWARE SE PROPORCIONA "TAL CUAL", SIN NINGÚN TIPO DE GARANTÍA. 
-CON LA EXCEPCIÓN DE LAS RESTRICCIONES LEGALES, EL LICENCIADOR 
-RECHAZA Y EXCLUYE TODAS LAS GARANTÍAS IMPLÍCITAS, INCLUIDAS LAS 
-GARANTÍAS DE COMERCIALIZACIÓN, IDONEIDAD PARA UN PROPÓSITO 
-PARTICULAR, TÍTULO O NO INFRACCIÓN. TAMPOCO EXISTEN GARANTÍAS 
-CREADAS EN EL TRASCURSO DE LA NEGOCIACIÓN, EL FUNCIONAMIENTO O EL 
-USO COMERCIAL.  EL LICENCIADOR NO GARANTIZA QUE EL SOFTWARE O LOS 
-SERVICIOS SATISFAGAN LAS NECESIDADES DEL USUARIO, SEAN COMPATIBLES 
-CON TODOS LOS SISTEMAS OPERATIVOS O QUE EL FUNCIONAMIENTO DEL 
-SOFTWARE SEA ININTERRUMPIDO O ESTÉ LIBRE DE ERRORES. LAS EXCLUSIONES 
-Y RENUNCIAS ANTERIORES SON UNA PARTE ESENCIAL DE ESTE ACUERDO. 
-Algunas jurisdicciones no admiten determinadas cláusulas de renuncia 
-de responsabilidad o limitaciones de garantía, por lo que es posible 
-que algunas de las limitaciones antes mencionadas no se apliquen en 
-el caso del Usuario. Esta garantía limitada le otorga al Usuario 
-derechos específicos. Además, es posible que le asistan otros 
-derechos, que pueden variar en función del estado o la jurisdicción.
-
-Limitación de responsabilidad.
+CON LA EXCEPCIÓN DE LAS RESTRICCIONES LEGALES QUE PUDIERAN EXISTIR, 
+SUSE RECHAZA TODAS LAS GARANTÍAS IMPLÍCITAS, INCLUIDAS LAS DE 
+COMERCIABILIDAD, IDONEIDAD PARA UN DETERMINADO FIN, TITULARIDAD Y NO 
+INFRACCIÓN. SUSE NO GARANTIZA QUE EL SOFTWARE SATISFAGA LOS 
+REQUISITOS DEL USUARIO, SEA COMPATIBLE CON SUS SISTEMAS O FUNCIONE 
+SIN INTERRUPCIONES NI ERRORES. ALGUNAS JURISDICCIONES NO PERMITEN 
+DETERMINADOS RECHAZOS O LIMITACIONES DE GARANTÍAS, DE MODO QUE ES 
+POSIBLE QUE ALGUNOS DE LOS AQUÍ ESPECIFICADOS NO SEAN APLICABLES AL 
+USUARIO. LA PRESENTE CLÁUSULA NO LIMITA LOS DERECHOS QUE EL USUARIO 
+PUEDA TENER EN VIRTUD DE LAS LICENCIAS OSS APLICABLES O DE LA 
+LEGISLACIÓN VIGENTE.
+Limitación de responsabilidad
 NI EL LICENCIADOR, NI SUS FILIALES, ACCIONISTAS, DIRECTORES O 
 EMPLEADOS SERÁN RESPONSABLES EN FORMA ALGUNA DE NINGÚN DAÑO 
 CONSECUENTE O INDIRECTO, YA SE BASEN EN UN CONTRATO, NEGLIGENCIA, 
 ELEMENTO EXTRACONTRACTUAL U OTRA TEORÍA DE RESPONSABILIDAD, NI DE 
 NINGUNA PÉRDIDA DE BENEFICIOS, NEGOCIO O PÉRDIDA DE DATOS, INCLUSO 
-AUNQUE SE LES ADVIERTA DE LA POSIBILIDAD DE DICHOS DAÑOS.
-
-EN NINGÚN CASO LA RESPONSABILIDAD TOTAL DEL LICENCIADOR BAJO O EN 
-RELACIÓN CON ESTE EULA (YA SEA EN UNA INSTANCIA O EN UNA SERIE DE 
-INSTANCIAS) EXCEDERÁ 50 DÓLARES ESTADOUNIDENSES.
-
-Las exclusiones y limitaciones anteriores no serán de aplicación a 
-las reclamaciones relacionadas con la muerte o daños personales 
-causados por la negligencia del Licenciador o de sus empleados, 
-agentes o contratistas.  En las jurisdicciones donde no se permita 
-la exclusión o limitación de daños y perjuicios, incluyendo, sin 
-limitación, daños por incumplimiento de cualquiera de las 
-condiciones implícitas en cuanto al título o disfrute pacífico de 
-cualquier software obtenido de conformidad con el presente EULA o 
-por mala interpretación fraudulenta, la responsabilidad del 
-Licenciador se limitará o excluirá hasta el máximo permitido en 
-dichas jurisdicciones.
- 
+AUNQUE SE LES ADVIERTA DE LA POSIBILIDAD DE DICHOS DAÑOS. Sin 
+perjuicio de las responsabilidades que no puedan excluirse por ley, 
+la responsabilidad total de cada una de las partes derivada de este 
+CLUF o relacionada con el mismo (ya sea en un solo caso o en una 
+serie de casos) se limita a 50 USD. Nada de lo dispuesto en este 
+CLUF limita la responsabilidad por muerte o lesiones personales 
+causadas por negligencia, por fraude o tergiversación fraudulenta, o 
+por cualquier otra responsabilidad que no pueda excluirse por ley.
 Condiciones generales
 Legislación
-Todas las cuestiones que surjan o estén relacionadas con el EULA se 
-regirán por las leyes de Estados Unidos y el estado de Nueva York, 
-excluyendo cualquier disposición de selección de fuero. Cualquier 
-pleito, acción o procedimiento que surja de este EULA o que esté 
-relacionado con él solo podrá ser llevado ante un tribunal federal 
-de Estados Unidos o estatal de jurisdicción competente del estado de 
-Nueva York. Sin embargo, si la ubicación principal del negocio del 
-Usuario se encuentra en un Estado miembro de la Unión Europea o de 
-la Asociación Europea de Libre Comercio, (1) los tribunales de 
-Inglaterra y Gales tendrán jurisdicción exclusiva sobre cualquier 
-acción legal relacionada con este EULA y (2) se aplicarán las leyes 
-de Inglaterra excepto cuando sea obligatorio que las leyes del país 
-de dicha ubicación principal del negocio se apliquen a cualquier 
-acción legal, en cuyo caso se aplicarán las leyes de ese país. Ni la 
-Uniform Computer Information Transaction Act, ni la Convención de 
-las Naciones Unidas sobre los Contratos para la Venta Internacional 
-de Mercaderías, ni las reglas de conflicto de leyes de Nueva York o 
-Inglaterra y Gales se aplican a este EULA o su contenido.
-
-Acuerdo completo
-Este EULA, junto con cualquier otro documento de compra u otro 
-acuerdo escrito entre el Usuario y el Licenciador o sus filiales, 
+Si su sede principal se encuentra en el Reino Unido o en el Espacio 
+Económico Europeo, este CLUF se rige por las leyes de Irlanda y los 
+tribunales de Irlanda tendrán jurisdicción exclusiva sobre cualquier 
+procedimiento que surja o esté relacionado con el mismo. Para todos 
+los demás clientes, este CLUF se rige por las leyes del estado de 
+Nueva York (Estados Unidos) y los tribunales federales y estatales 
+ubicados en Nueva York tienen jurisdicción exclusiva. Este CLUF está 
+destinado a usuarios empresariales y nada de lo contenido en él 
+afecta a la aplicación de ninguna ley de obligado cumplimiento de la 
+que no se pueda prescindir por contrato. Ni la Uniform Computer 
+Information Transaction Act, ni la Convención de las Naciones Unidas 
+sobre los Contratos para la Venta Internacional de Mercaderías, ni 
+las reglas de conflicto de leyes de Nueva York, Irlanda, Inglaterra 
+y Gales se aplican a este CLUF o su contenido.
+Control de las exportaciones y sanciones
+Aunque la mayoría de los materiales de SUSE están a disposición del 
+público, parte del Software puede estar sujeto a leyes y reglamentos 
+de control y sanciones a la exportación de los Estados Unidos, la 
+Unión Europea y otras jurisdicciones. 
+El Usuario declara que: (a) no tiene su sede física ni su sede 
+social en ningún país o región sujetos a sanciones y no accederá a 
+los materiales de SUSE desde ninguno ellos; (b) no figura en ninguna 
+lista gubernamental de partes restringidas, no es propiedad ni está 
+bajo el control de ninguna parte restringida ni actúa en nombre de 
+ninguna de ellas; y (c) no utilizará los materiales de SUSE para 
+ningún uso final prohibido. El Usuario cumplirá todas las leyes 
+aplicables de control y sanciones a la exportación y obtendrá todas 
+las autorizaciones necesarias antes de exportar, reexportar o 
+transferir los materiales de SUSE, o proporcionar acceso a ellos.
+SUSE podrá suspender, retener o cancelar el acceso a los materiales 
+de SUSE cuando sea necesario para cumplir las leyes aplicables de 
+control de exportaciones o sanciones. 
+Contrato completo
+Este CLUF, junto con cualquier otro documento de compra u otro 
+contrato escrito entre el Usuario y el Licenciador o sus filiales, 
 constituye la totalidad del entendimiento y acuerdo entre el Usuario 
 y el Licenciador y solo puede ser enmendado o modificado mediante un 
-acuerdo por escrito firmado por el Usuario y un representante 
+contrato por escrito firmado por el Usuario y un representante 
 autorizado del Licenciador. NINGÚN LICENCIADOR EXTERNO, 
 DISTRIBUIDOR, PROVEEDOR, MINORISTA, REVENDEDOR, COMERCIAL NI 
-EMPLEADO ESTÁ AUTORIZADO A MODIFICAR ESTE ACUERDO NI A REALIZAR 
+EMPLEADO ESTÁ AUTORIZADO A MODIFICAR ESTE CONTRATO NI A REALIZAR 
 NINGUNA DECLARACIÓN NI PROMESA QUE CONTRADIGA O AMPLÍE LOS TÉRMINOS 
-DE ESTE ACUERDO.
-
+DE ESTE CONTRATO. En caso de conflicto entre este CLUF y una 
+Licencia OSS aplicable a un Componente de código abierto, la 
+Licencia OSS regirá en lo que respecta a dicho Componente de código 
+abierto.
 Omisión
-Si cualquier disposición de este EULA no es válida o no es 
+Si cualquier disposición de este CLUF no es válida o no es 
 aplicable, se interpretará, limitará, modificará o, si es necesario, 
 recortará en la medida en que sea necesario para eliminar su falta 
 de validez o imposibilidad de aplicación. El resto de disposiciones 
-del EULA no se verán afectadas. 
+del CLUF no se verán afectadas.
+Avisos y oferta de código fuente
+Las Licencias OSS y las atribuciones de los componentes de código 
+abierto se identifican en el archivo de aviso de OSS que acompaña al 
+Software. Cuando SUSE distribuya binarios de componentes que 
+requieran una oferta del código fuente correspondiente, SUSE pondrá 
+a disposición el código fuente correspondiente tal como se describe 
+en el archivo de aviso o previa solicitud.
 
-:versión:2024-06-01:001
-SUSE.com
 
-Copyright (c) SUSE 2025
-
-SUSE Legal		
-Junio de 2024
+Enero de 2026

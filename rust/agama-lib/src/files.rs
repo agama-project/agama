@@ -20,8 +20,4 @@
 
 //! Implements support for handling the file deployment
 
-pub mod client;
 pub mod error;
-pub mod model;
-pub mod settings;
-pub mod store;

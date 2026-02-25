@@ -25,6 +25,7 @@ require "agama/config"
 require "agama/storage/proposal"
 require "agama/issue"
 require "y2storage"
+require "yaml"
 
 describe Agama::Storage::Proposal do
   include Agama::RSpec::StorageHelpers
@@ -37,6 +38,8 @@ describe Agama::Storage::Proposal do
   before do
     mock_storage(devicegraph: scenario)
     allow(Y2Storage::Arch).to receive(:new).and_return(arch)
+    # This environment is enforced by Agama
+    allow(Y2Storage::StorageEnv.instance).to receive(:no_bls_bootloader).and_return true
   end
 
   let(:scenario) { "windows-linux-pc.yml" }
@@ -48,7 +51,7 @@ describe Agama::Storage::Proposal do
   let(:config_path) do
     File.join(FIXTURES_PATH, "storage.yaml")
   end
-  let(:config) { Agama::Config.from_file(config_path) }
+  let(:config) { Agama::Config.new(YAML.load_file(config_path)) }
 
   ROOT_PART = {
     "filesystem" => :ext4, "mount" => "/", "size" => "25%", "label" => "new_root"
@@ -166,9 +169,7 @@ describe Agama::Storage::Proposal do
         it "registers a fatal issue due to the lack of root" do
           subject.calculate_autoyast(partitioning)
           expect(subject.issues).to include(
-            an_object_having_attributes(
-              description: /No root/, severity: Agama::Issue::Severity::ERROR
-            )
+            an_object_having_attributes(description: /No root/)
           )
         end
       end
@@ -188,7 +189,7 @@ describe Agama::Storage::Proposal do
         subject.calculate_autoyast(partitioning)
         expect(subject.issues).to include(
           an_object_having_attributes(
-            description: /Missing element 'use'/, severity: Agama::Issue::Severity::ERROR
+            description: /Missing element 'use'/
           )
         )
       end
@@ -221,7 +222,7 @@ describe Agama::Storage::Proposal do
           subject.calculate_autoyast(partitioning)
           expect(subject.issues).to include(
             an_object_having_attributes(
-              description: /Cannot calculate/, severity: Agama::Issue::Severity::ERROR
+              description: /Cannot calculate/
             )
           )
         end
@@ -291,14 +292,21 @@ describe Agama::Storage::Proposal do
           expect(partitions.map(&:id)).to_not include Y2Storage::PartitionId::ESP
         end
 
-        it "register a non-fatal issue" do
+        it "does not register an issue" do
           subject.calculate_autoyast(partitioning)
-          expect(subject.issues).to include(
+          expect(subject.issues).to_not include(
             an_object_having_attributes(
-              description: /partitions recommended for booting/,
-              severity:    Agama::Issue::Severity::WARN
+              description: /partitions recommended for booting/
             )
           )
+        end
+
+        it "logs a warning" do
+          allow(logger).to receive(:info)
+          expect(logger).to receive(:warn) do |issue|
+            expect(issue.message).to match(/partitions recommended for booting/)
+          end
+          subject.calculate_autoyast(partitioning)
         end
       end
     end
@@ -349,7 +357,7 @@ describe Agama::Storage::Proposal do
           subject.calculate_autoyast(partitioning)
           expect(subject.issues).to include(
             an_object_having_attributes(
-              description: /Cannot calculate/, severity: Agama::Issue::Severity::ERROR
+              description: /Cannot calculate/
             )
           )
         end

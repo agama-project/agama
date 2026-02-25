@@ -25,6 +25,7 @@ import { screen, within } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
 import { SelectableDataTable } from "~/components/core";
 import { SelectableDataTableColumn } from "./SelectableDataTable";
+import { _ } from "~/i18n";
 
 let consoleErrorSpy: jest.SpyInstance;
 
@@ -117,27 +118,29 @@ const vg = {
   lvs: [lv1],
 };
 
-const columns: SelectableDataTableColumn[] = [
-  // FIXME: do not use any but the right types once storage part is rewritten.
-  // Or even better, write a test not coupled to storage
-  { name: "Device", value: (item: any) => item.name, sortingKey: "name" },
-  {
-    name: "Content",
-    value: (item: any) => {
-      if (item.isDrive) return item.systems.map((s, i) => <p key={i}>{s}</p>);
-      if (item.type === "vg") return `${item.lvs.length} logical volume(s)`;
+function columns(): SelectableDataTableColumn[] {
+  return [
+    // FIXME: do not use any but the right types once storage part is rewritten.
+    // Or even better, write a test not coupled to storage
+    { name: _("Device"), value: (item: any) => item.name, sortingKey: "name" },
+    {
+      name: _("Content"),
+      value: (item: any) => {
+        if (item.isDrive) return item.systems.map((s, i) => <p key={i}>{s}</p>);
+        if (item.type === "vg") return `${item.lvs.length} logical volume(s)`;
 
-      return item.content;
+        return item.content;
+      },
     },
-  },
-  { name: "Size", value: (item: any) => item.size, sortingKey: "size" },
-];
+    { name: _("Size"), value: (item: any) => item.size, sortingKey: "size" },
+  ];
+}
 
 const onChangeFn = jest.fn();
 
 let props;
 const commonProps = {
-  columns,
+  columns: columns(),
   items: [sda, sdb, vg],
   itemIdKey: "sid",
   initialExpandedKeys: [sda.sid, vg.sid],
@@ -283,6 +286,9 @@ describe("SelectableDataTable", () => {
     const sdaChild = within(table).queryByRole("row", { name: /dev\/sda1 512/ });
     expect(sdaChild).not.toBeNull();
   });
+
+  it.todo("allows selectionMode#none");
+  it.todo("renders nothing for actions column if actions is an empty collection");
 
   describe("when not providing a custom item equality function", () => {
     const onSelectionChange = jest.fn();

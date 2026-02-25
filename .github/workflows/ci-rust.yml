@@ -72,27 +72,42 @@ jobs:
     timeout-minutes: 20
     runs-on: ubuntu-latest
 
-    defaults:
-      run:
-        working-directory: ./rust
+    container:
+      image: registry.opensuse.org/opensuse/tumbleweed:latest
+      options: --security-opt seccomp=unconfined
 
     steps:
 
+    - name: Configure and refresh repositories
+      # disable unused repositories to have faster refresh
+      run: zypper modifyrepo -d repo-non-oss repo-openh264 repo-update && ( zypper ref || zypper ref || zypper ref )
+
+    - name: Install required packages
+      run: zypper --non-interactive install --allow-downgrade
+        clang-devel
+        gcc-c++
+        git
+        libopenssl-3-devel
+        libsuseconnect
+        libzypp-devel
+        make
+        openssl-3
+        pam-devel
+        rustup
+
+    - name: Configure git
+      run:  git config --global --add safe.directory "$GITHUB_WORKSPACE"
+
     - name: Git Checkout
       uses: actions/checkout@v4
+
+    - name: Install Rust toolchains
+      run: rustup toolchain install stable
 
     - name: Rust toolchain
       run: |
         rustup show
         cargo --version
-
-    - name: Install packages
-      run: |
-        sudo apt-get update
-        sudo apt-get -y install libclang-18-dev libpam0g-dev
-
-    - name: Installed packages
-      run: apt list --installed
 
     - name: Rust cache
       uses: actions/cache@v4
@@ -104,44 +119,70 @@ jobs:
 
     - name: Run clippy linter
       run: cargo clippy
+      working-directory: ./rust
 
   tests:
     # the default timeout is 6 hours, that's too much if the job gets stuck
     timeout-minutes: 30
     runs-on: ubuntu-latest
+
+    container:
+      image: registry.opensuse.org/opensuse/tumbleweed:latest
+      options: --security-opt seccomp=unconfined
+
     env:
       COVERAGE: 1
 
-    defaults:
-      run:
-        working-directory: ./rust
-
     steps:
+
+    - name: Configure and refresh repositories
+      # disable unused repositories to have faster refresh
+      run: zypper modifyrepo -d repo-non-oss repo-openh264 repo-update && ( zypper ref || zypper ref || zypper ref )
+
+    - name: Install required packages
+      run: zypper --non-interactive install --allow-downgrade
+        clang-devel
+        dbus-1-daemon
+        gcc-c++
+        git
+        glibc-locale
+        golang-github-google-jsonnet
+        jq
+        libopenssl-3-devel
+        libsuseconnect
+        libzypp-devel
+        make
+        openssl-3
+        pam-devel
+        python-langtable-data
+        python3-openapi_spec_validator
+        rustup
+        timezone
+        util-linux-systemd
+        xkeyboard-config
+
+    - name: Configure git
+      run:  git config --global --add safe.directory "$GITHUB_WORKSPACE"
 
     - name: Git Checkout
       uses: actions/checkout@v4
+
+    - name: Install Rust toolchains
+      run: rustup toolchain install stable
 
     - name: Rust toolchain
       run: |
         rustup show
         cargo --version
 
-    - name: Install packages
-      run: |
-        sudo apt-get update
-        sudo apt-get -y install libclang-18-dev libpam0g-dev python3-langtable jsonnet
-
     - name: Prepare for tests
       run: |
-        # the langtable data location is different in SUSE/openSUSE, create a symlink
-        sudo mkdir -p /usr/share/langtable
-        sudo ln -s /usr/lib/python3/dist-packages/langtable/data /usr/share/langtable/data
         # create the /etc/agama.d/locales file with list of locales
-        sudo mkdir /etc/agama.d
-        sudo bash -c 'ls -1 -d /usr/share/i18n/locales/* | sed -e "s#/usr/share/i18n/locales/##" >/etc/agama.d/locales'
+        mkdir -p /etc/agama.d
+        ls -1 -d /usr/lib/locale/*.utf8 | sed -e "s#/usr/lib/locale/##" -e "s#utf8#UTF-8#" >/etc/agama.d/locales
 
     - name: Installed packages
-      run: apt list --installed
+      run: rpm -qa
 
     - name: Rust cache
       id: cache-tests
@@ -157,6 +198,7 @@ jobs:
       # this avoids refreshing the crates index and saves few seconds
       if: steps.cache-tests.outputs.cache-hit != 'true'
       run: cargo install cargo-tarpaulin
+      working-directory: ./rust
 
     - name: Run the tests
       # Compile into the ./target-coverage directory because tarpaulin uses special compilation
@@ -164,11 +206,12 @@ jobs:
       # The --skip-clean skips the cleanup and allows using the cached results.
       # See https://github.com/xd009642/tarpaulin/discussions/772
       run: cargo tarpaulin --workspace --all-targets --doc --engine llvm --out xml --target-dir target-coverage --skip-clean -- --nocapture
+      working-directory: ./rust
       env:
         # use the "stable" tool chain (installed by default) instead of the "nightly" default in tarpaulin
         RUSTC_BOOTSTRAP: 1
         RUSTUP_TOOLCHAIN: stable
-        RUST_BACKTRACE: 1
+        RUST_BACKTRACE: full
         RUSTFLAGS: --cfg ci
 
     # send the code coverage for the Rust part to the coveralls.io
@@ -198,38 +241,42 @@ jobs:
     timeout-minutes: 30
     runs-on: ubuntu-latest
 
-    defaults:
-      run:
-        working-directory: ./rust
+    container:
+      image: registry.opensuse.org/opensuse/tumbleweed:latest
 
     steps:
 
+    - name: Configure and refresh repositories
+      # disable unused repositories to have faster refresh
+      run: zypper modifyrepo -d repo-non-oss repo-openh264 repo-update && ( zypper ref || zypper ref || zypper ref )
+
+    - name: Install required packages
+      run: zypper --non-interactive install --allow-downgrade
+        clang-devel
+        gcc-c++
+        git
+        libopenssl-3-devel
+        libsuseconnect
+        libzypp-devel
+        make
+        openssl-3
+        pam-devel
+        python3-openapi_spec_validator
+        rustup
+
     - name: Git Checkout
       uses: actions/checkout@v4
+
+    - name: Install Rust toolchains
+      run: rustup toolchain install stable
 
     - name: Rust toolchain
       run: |
         rustup show
         cargo --version
 
-    - name: Configure system
-      # disable updating initramfs (the system is not booted again)
-      # disable updating man db (to save some time)
-      run: |
-        sudo sed -i "s/yes/no/g" /etc/initramfs-tools/update-initramfs.conf
-        sudo rm -f /var/lib/man-db/auto-update
-
-    - name: Install packages
-      run: |
-        sudo apt-get update
-        sudo apt-get -y install libclang-18-dev libpam0g-dev
-        # uninstall the python3-jsonschema package, openapi-spec-validator wants
-        # to install a newer version which would conflict with that
-        sudo apt-get purge python3-jsonschema
-        sudo pip install openapi-spec-validator
-
     - name: Installed packages
-      run: apt list --installed
+      run: rpm -qa
 
     - name: Rust cache
       uses: actions/cache@v4
@@ -241,6 +288,8 @@ jobs:
 
     - name: Generate the OpenAPI specification
       run: cargo xtask openapi
+      working-directory: ./rust
 
     - name: Validate the OpenAPI specification
       run: openapi-spec-validator out/openapi/*
+      working-directory: ./rust

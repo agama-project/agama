@@ -22,7 +22,7 @@
 
 import React, { useState } from "react";
 import { Alert as PFAlert, Content, Form, FormGroup, Stack } from "@patternfly/react-core";
-import { InstallerOptions, PasswordInput, Popup } from "~/components/core";
+import { InstallerL10nOptions, PasswordInput, Popup } from "~/components/core";
 import QuestionActions from "~/components/questions/QuestionActions";
 import { _ } from "~/i18n";
 
@@ -49,9 +49,9 @@ export default function LuksActivationQuestion({ question, answerCallback }) {
   const conditions = { disable: { decrypt: password === "" } };
   const defaultAction = "decrypt";
 
-  const actionCallback = (option: string) => {
-    question.password = password;
-    question.answer = option;
+  const actionCallback = (action: string) => {
+    const answer = { action, value: password };
+    question.answer = answer;
     answerCallback(question);
   };
 
@@ -68,7 +68,7 @@ export default function LuksActivationQuestion({ question, answerCallback }) {
       title={_("Encrypted Device")}
       aria-label={_("Question")}
       elementToFocus="#luks-password"
-      titleAddon={<InstallerOptions variant="keyboard" />}
+      titleAddon={<InstallerL10nOptions variant="keyboard" />}
     >
       <Stack hasGutter>
         <Alert attempt={question.data.attempt} />
@@ -87,8 +87,8 @@ export default function LuksActivationQuestion({ question, answerCallback }) {
 
       <Popup.Actions>
         <QuestionActions
-          actions={question.options}
-          defaultAction={defaultAction}
+          actions={question.actions}
+          defaultAction={question.defaultAction}
           actionCallback={actionCallback}
           conditions={conditions}
         />

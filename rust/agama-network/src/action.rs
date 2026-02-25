@@ -18,12 +18,13 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::model::{AccessPoint, Connection, Device};
-use crate::types::{ConnectionState, DeviceType};
+use crate::model::{Connection, GeneralState};
+use crate::types::{AccessPoint, ConnectionState, Device, DeviceType, Proposal, SystemInfo};
+use agama_utils::api::network::Config;
 use tokio::sync::oneshot;
 use uuid::Uuid;
 
-use super::{error::NetworkStateError, model::GeneralState, NetworkAdapterError};
+use super::{error::NetworkStateError, NetworkAdapterError};
 
 pub type Responder<T> = oneshot::Sender<T>;
 pub type ControllerConnection = (Connection, Vec<String>);
@@ -42,6 +43,15 @@ pub enum Action {
     GetConnection(String, Responder<Option<Connection>>),
     /// Gets a connection by its Uuid
     GetConnectionByUuid(Uuid, Responder<Option<Connection>>),
+    /// Gets the internal state of the network configuration
+    GetConfig(Responder<Config>),
+    /// Gets the internal state of the network configuration proposal
+    GetProposal(Responder<Proposal>),
+    /// Updates the internal state of the network configuration applying the changes to the system
+    UpdateConfig(Box<Config>, Responder<Result<(), NetworkStateError>>),
+    /// Gets the current network system configuration containing connections, devices, access_points and
+    /// also the general state
+    GetSystem(Responder<SystemInfo>),
     /// Gets a connection
     GetConnections(Responder<Vec<Connection>>),
     /// Gets a controller connection
@@ -71,6 +81,11 @@ pub enum Action {
         Box<Vec<String>>,
         Responder<Result<(), NetworkStateError>>,
     ),
+    /// It persit existing connections if there is no one to be persisted and the copy of network
+    /// is not disabled
+    ProposeDefault(Responder<Result<(), NetworkStateError>>),
+    // Copies persistent connections to the target system
+    Install(Responder<Result<(), NetworkStateError>>),
     /// Updates a connection (replacing the old one).
     UpdateConnection(Box<Connection>, Responder<Result<(), NetworkStateError>>),
     /// Updates the general network configuration

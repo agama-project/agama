@@ -30,6 +30,8 @@ type PageBreakPoints = ReturnType<NonNullable<typeof Page.defaultProps.getBreakp
 
 type TextProps = React.HTMLProps<HTMLSpanElement> &
   React.PropsWithChildren<{
+    /** The HTML element to use for wrapping given children */
+    component?: "small" | "span";
     /** Whether apply bold font weight */
     isBold?: boolean;
     /**
@@ -52,6 +54,7 @@ type TextProps = React.HTMLProps<HTMLSpanElement> &
  * taking precedence.
  */
 export default function Text({
+  component = "span",
   isBold = false,
   srOnly = false,
   srOn,
@@ -59,8 +62,10 @@ export default function Text({
   children,
   ...props
 }: TextProps) {
+  const Wrapper = component;
+
   return (
-    <span
+    <Wrapper
       {...props}
       className={[
         className,
@@ -72,6 +77,6 @@ export default function Text({
         .join(" ")}
     >
       {children}
-    </span>
+    </Wrapper>
   );
 }

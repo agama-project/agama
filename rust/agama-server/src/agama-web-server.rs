@@ -24,13 +24,14 @@ use std::{
     process::{ExitCode, Termination},
 };
 
+use agama_l10n::helpers as l10n_helpers;
 use agama_lib::{auth::AuthToken, connection_to};
 use agama_server::{
     cert::Certificate,
-    l10n::helpers,
     logs::init_logging,
-    web::{self, run_monitor},
+    web::{self},
 };
+use agama_utils::api::event::Receiver;
 use anyhow::Context;
 use axum::{
     extract::Request as AxumRequest,
@@ -316,11 +317,11 @@ async fn start_server(address: String, service: Router, ssl_acceptor: SslAccepto
 /// Start serving the API.
 /// `options`: command-line arguments.
 async fn serve_command(args: ServeArgs) -> anyhow::Result<()> {
-    _ = helpers::init_locale();
+    _ = l10n_helpers::init_locale();
     init_logging().context("Could not initialize the logger")?;
 
-    let (tx, _) = channel(16);
-    run_monitor(tx.clone()).await?;
+    let (events_tx, events_rx) = channel(16);
+    monitor_events_channel(events_rx);
 
     let config = web::ServiceConfig::load()?;
 
@@ -331,7 +332,7 @@ async fn serve_command(args: ServeArgs) -> anyhow::Result<()> {
         .web_ui_dir
         .clone()
         .unwrap_or_else(|| PathBuf::from(DEFAULT_WEB_UI_DIR));
-    let service = web::service(config, tx, dbus, web_ui_dir).await?;
+    let service = web::service(config, events_tx, dbus, web_ui_dir).await?;
     // TODO: Move elsewhere? Use a singleton? (It would be nice to use the same
     // generated self-signed certificate on both ports.)
     let ssl_acceptor = if let Ok(ssl_acceptor) = ssl_acceptor(&args.to_certificate()?) {
@@ -377,6 +378,18 @@ async fn run_command(cli: Cli) -> anyhow::Result<()> {
 fn write_token(path: &str, secret: &str) -> anyhow::Result<()> {
     let token = AuthToken::generate(secret)?;
     Ok(token.write(path)?)
+}
+
+// Keep the receiver running to avoid the channel being closed.
+fn monitor_events_channel(mut events_rx: Receiver) {
+    tokio::spawn(async move {
+        loop {
+            if let Err(error) = events_rx.recv().await {
+                eprintln!("Error receiving events: {error}");
+                break;
+            }
+        }
+    });
 }
 
 /// Represents the result of execution.

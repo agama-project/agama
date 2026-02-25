@@ -18,19 +18,13 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use agama_lib::{error::ServiceError, questions::QuestionsError};
+use agama_lib::error::ServiceError;
 use axum::{
     http::StatusCode,
     response::{IntoResponse, Response},
     Json,
 };
 use serde_json::json;
-
-use crate::{
-    l10n::LocaleError,
-    users::password::PasswordCheckerError,
-    web::common::{IssuesServiceError, ProgressServiceError},
-};
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
@@ -40,16 +34,6 @@ pub enum Error {
     Anyhow(String),
     #[error("Agama service error: {0}")]
     Service(#[from] ServiceError),
-    #[error("Questions service error: {0}")]
-    Questions(QuestionsError),
-    #[error("Software service error: {0}")]
-    Locale(#[from] LocaleError),
-    #[error("Issues service error: {0}")]
-    Issues(#[from] IssuesServiceError),
-    #[error("Progress service error: {0}")]
-    Progress(#[from] ProgressServiceError),
-    #[error("Could not check the password")]
-    PasswordCheck(#[from] PasswordCheckerError),
 }
 
 // This would be nice, but using it for a return type

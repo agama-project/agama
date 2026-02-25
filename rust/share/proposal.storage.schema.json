@@ -1,0 +1,34 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "$id": "https://github.com/openSUSE/agama/blob/master/rust/share/proposal.storage.schema.json",
+  "title": "Proposal",
+  "description": "API description of the storage proposal.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "devices": {
+      "description": "Expected layout of the system after the commit phase.",
+      "type": "array",
+      "items": { "$ref": "device.storage.schema.json" }
+    },
+    "actions": {
+      "description": "Sorted list of actions to execute during the commit phase.",
+      "type": "array",
+      "items": { "$ref": "#/$defs/action" }
+    }
+  },
+  "$defs": {
+    "action": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["device", "text"],
+      "properties": {
+        "device": { "type": "integer" },
+        "text": { "type": "string" },
+        "subvol": { "type": "boolean" },
+        "delete": { "type": "boolean" },
+        "resize": { "type": "boolean" }
+      }
+    }
+  }
+}

@@ -24,15 +24,16 @@ import React from "react";
 import { screen } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
 import { ProgressText } from "~/components/core";
+import { _ } from "~/i18n";
 
 describe("ProgressText", () => {
   it("displays the message and the steps counting", () => {
-    plainRender(<ProgressText message="Reading repositories" current={1} total={2} />);
+    plainRender(<ProgressText message={_("Reading repositories")} current={1} total={2} />);
     expect(screen.getByText("Reading repositories (1/2)")).toBeInTheDocument();
   });
 
   it("does not display the steps counting if the current step is zero", () => {
-    plainRender(<ProgressText message="Reading repositories" current={0} total={2} />);
+    plainRender(<ProgressText message={_("Reading repositories")} current={0} total={2} />);
     expect(screen.getByText("Reading repositories")).toBeInTheDocument();
   });
 });

@@ -100,7 +100,7 @@ impl<'a> DASDClient<'a> {
         let pairs = self.config_pairs(config).await?;
         let to_activate: Vec<&str> = pairs
             .iter()
-            .filter(|(system, _config)| system.enabled == false)
+            .filter(|(system, _config)| !system.enabled)
             .filter(|(_system, config)| config.state.unwrap_or_default() == DASDDeviceState::Active)
             .map(|(system, _config)| system.id.as_str())
             .collect();
@@ -108,7 +108,7 @@ impl<'a> DASDClient<'a> {
 
         let to_deactivate: Vec<&str> = pairs
             .iter()
-            .filter(|(system, _config)| system.enabled == true)
+            .filter(|(system, _config)| system.enabled)
             .filter(|(_system, config)| config.state == Some(DASDDeviceState::Offline))
             .map(|(system, _config)| system.id.as_str())
             .collect();
@@ -129,7 +129,7 @@ impl<'a> DASDClient<'a> {
             .filter(|(system, config)| {
                 if config.format == Some(true) {
                     true
-                } else if config.format == None {
+                } else if config.format.is_none() {
                     !system.formatted
                 } else {
                     false

@@ -33,12 +33,16 @@ module Agama
           include WithSize
 
           # @param config [Configs::Partition]
-          def initialize(config)
+          def initialize(config, volumes)
             super()
             @config = config
+            @volumes = volumes
           end
 
         private
+
+          # @return [VolumeTemplatesBuilder]
+          attr_reader :volumes
 
           # @see Base#conversions
           def conversions

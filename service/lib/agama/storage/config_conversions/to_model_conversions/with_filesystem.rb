@@ -32,7 +32,7 @@ module Agama
             filesystem = config.filesystem
             return unless filesystem
 
-            ToModelConversions::Filesystem.new(filesystem).convert
+            ToModelConversions::Filesystem.new(filesystem, volumes).convert
           end
         end
       end

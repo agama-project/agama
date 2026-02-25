@@ -6,7 +6,6 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-anyhow = "1.0"
 serde = { version = "1.0.210", features = ["derive"] }
 quick-xml = { version = "0.37.5", features = ["serialize"] }
 flate2 = "1.0.34"

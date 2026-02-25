@@ -152,8 +152,7 @@ module Agama
         outline_data = fetch(data, "outline", {})
         VolumeOutline.new.tap do |outline|
           outline.required = fetch(outline_data, "required", false)
-          outline.filesystems = fetch(outline_data, "filesystems", [])
-          outline.filesystems.map! { |fs| fs_type(fs) }
+          outline.filesystems = fetch(outline_data, "filesystems", []).map { |f| fs_type(f) }
           outline.snapshots_configurable = fetch(outline_data, "snapshots_configurable", false)
 
           size = fetch(outline_data, "auto_size", {})
@@ -163,9 +162,9 @@ module Agama
           outline.base_max_size = max if max
           outline.adjust_by_ram = fetch(size, :adjust_by_ram, false)
           outline.min_size_fallback_for = Array(fetch(size, :min_fallback_for))
-          outline.min_size_fallback_for.map! { |p| cleanpath(p) }
+            .map { |p| cleanpath(p) }
           outline.max_size_fallback_for = Array(fetch(size, :max_fallback_for))
-          outline.max_size_fallback_for.map! { |p| cleanpath(p) }
+            .map { |p| cleanpath(p) }
 
           assign_snapshots_increment(outline, fetch(size, :snapshots_increment))
         end

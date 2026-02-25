@@ -22,68 +22,63 @@
 
 import React from "react";
 import { screen, within } from "@testing-library/react";
-import { mockNavigateFn, plainRender } from "~/test-utils";
+import { mockNavigateFn, installerRender } from "~/test-utils";
+import type { Storage } from "~/model/proposal";
+import type { ConfigModel } from "~/model/storage/config-model";
 import ConfigureDeviceMenu from "./ConfigureDeviceMenu";
-import { StorageDevice } from "~/types/storage";
-import { apiModel } from "~/api/storage/types";
 
-const vda: StorageDevice = {
+const vda: Storage.Device = {
   sid: 59,
-  type: "disk",
-  isDrive: true,
-  description: "",
-  vendor: "Micron",
-  model: "Micron 1100 SATA",
-  driver: ["ahci", "mmcblk"],
-  bus: "IDE",
+  class: "drive",
   name: "/dev/vda",
-  size: 1e12,
-  systems: ["Windows 11", "openSUSE Leap 15.2"],
+  drive: { type: "disk", info: { sdCard: false, dellBoss: false } },
+  block: {
+    start: 1,
+    size: 1e12,
+    systems: ["Windows 11", "openSUSE Leap 15.2"],
+    shrinking: { supported: false },
+  },
 };
 
-const vdb: StorageDevice = {
+const vdb: Storage.Device = {
   sid: 60,
-  type: "disk",
-  isDrive: true,
-  description: "",
-  vendor: "Seagate",
-  model: "Unknown",
-  driver: ["ahci", "mmcblk"],
-  bus: "IDE",
+  class: "drive",
   name: "/dev/vdb",
-  size: 1e6,
-  systems: [],
+  drive: { type: "disk", info: { sdCard: false, dellBoss: false } },
+  block: {
+    start: 1,
+    size: 1e6,
+    systems: [],
+    shrinking: { supported: false },
+  },
 };
 
-const vdaDrive: apiModel.Drive = {
+const vdaDrive: ConfigModel.Drive = {
   name: "/dev/vda",
   spacePolicy: "delete",
   partitions: [],
 };
 
-const vdbDrive: apiModel.Drive = {
+const vdbDrive: ConfigModel.Drive = {
   name: "/dev/vdb",
   spacePolicy: "delete",
   partitions: [],
 };
 
 const mockAddDrive = jest.fn();
+const mockAddReusedMdRaid = jest.fn();
 const mockUseModel = jest.fn();
 
-jest.mock("~/hooks/storage/system", () => ({
-  ...jest.requireActual("~/hooks/storage/system"),
+jest.mock("~/hooks/model/system/storage", () => ({
+  ...jest.requireActual("~/hooks/model/system/storage"),
   useAvailableDevices: () => [vda, vdb],
 }));
 
-jest.mock("~/hooks/storage/model", () => ({
-  ...jest.requireActual("~/hooks/storage/model"),
-  useModel: () => mockUseModel(),
-}));
-
-jest.mock("~/hooks/storage/drive", () => ({
-  ...jest.requireActual("~/hooks/storage/drive"),
-  __esModule: true,
+jest.mock("~/hooks/model/storage/config-model", () => ({
+  ...jest.requireActual("~/hooks/model/storage/config-model"),
+  useConfigModel: () => mockUseModel(),
   useAddDrive: () => mockAddDrive,
+  useAddMdRaid: () => mockAddReusedMdRaid,
 }));
 
 describe("ConfigureDeviceMenu", () => {
@@ -92,7 +87,7 @@ describe("ConfigureDeviceMenu", () => {
   });
 
   it("renders an initially closed menu ", async () => {
-    const { user } = plainRender(<ConfigureDeviceMenu />);
+    const { user } = installerRender(<ConfigureDeviceMenu />);
     const toggler = screen.getByRole("button", { name: "More devices", expanded: false });
     expect(screen.queryAllByRole("menu").length).toBe(0);
     await user.click(toggler);
@@ -101,7 +96,7 @@ describe("ConfigureDeviceMenu", () => {
   });
 
   it("allows users to add a new LVM volume group", async () => {
-    const { user } = plainRender(<ConfigureDeviceMenu />);
+    const { user } = installerRender(<ConfigureDeviceMenu />);
     const toggler = screen.getByRole("button", { name: "More devices", expanded: false });
     await user.click(toggler);
     const lvmMenuItem = screen.getByRole("menuitem", { name: /LVM/ });
@@ -112,7 +107,7 @@ describe("ConfigureDeviceMenu", () => {
   describe("when there are unused disks", () => {
     describe("and no disks have been configured yet", () => {
       it("allows users to add a new drive", async () => {
-        const { user } = plainRender(<ConfigureDeviceMenu />);
+        const { user } = installerRender(<ConfigureDeviceMenu />);
         const toggler = screen.getByRole("button", { name: /More devices/ });
         await user.click(toggler);
         const disksMenuItem = screen.getByRole("menuitem", { name: "Add device menu" });
@@ -133,7 +128,7 @@ describe("ConfigureDeviceMenu", () => {
       });
 
       it("allows users to add a new drive to an unused disk", async () => {
-        const { user } = plainRender(<ConfigureDeviceMenu />);
+        const { user } = installerRender(<ConfigureDeviceMenu />);
         const toggler = screen.getByRole("button", { name: /More devices/ });
         await user.click(toggler);
         const disksMenuItem = screen.getByRole("menuitem", { name: "Add device menu" });
@@ -156,7 +151,7 @@ describe("ConfigureDeviceMenu", () => {
     });
 
     it("renders the disks menu as disabled with an informative label", async () => {
-      const { user } = plainRender(<ConfigureDeviceMenu />);
+      const { user } = installerRender(<ConfigureDeviceMenu />);
       const toggler = screen.getByRole("button", { name: /More devices/ });
       await user.click(toggler);
       const disksMenuItem = screen.getByRole("menuitem", { name: "Add device menu" });

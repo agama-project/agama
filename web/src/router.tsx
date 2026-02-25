@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024] SUSE LLC
+ * Copyright (c) [2024-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -21,10 +21,9 @@
  */
 
 import React from "react";
-import { createHashRouter, Outlet } from "react-router-dom";
+import { createHashRouter, Outlet } from "react-router";
 import App from "~/App";
 import Protected from "~/Protected";
-import { FullLayout, PlainLayout } from "~/components/layout";
 import {
   InstallationExit,
   InstallationFinished,
@@ -32,7 +31,8 @@ import {
   LoginPage,
 } from "~/components/core";
 import StorageProgress from "~/components/storage/Progress";
-import { OverviewPage } from "~/components/overview";
+import HostnamePage from "~/components/system/HostnamePage";
+import OverviewPage from "~/components/overview/OverviewPage";
 import l10nRoutes from "~/routes/l10n";
 import networkRoutes from "~/routes/network";
 import productsRoutes from "~/routes/products";
@@ -42,13 +42,11 @@ import softwareRoutes from "~/routes/software";
 import usersRoutes from "~/routes/users";
 import { HOSTNAME, ROOT as PATHS, STORAGE } from "./routes/paths";
 import { N_ } from "~/i18n";
-import HostnamePage from "./components/system/HostnamePage";
 
 const rootRoutes = () => [
   {
     path: "/overview",
     element: <OverviewPage />,
-    handle: { name: N_("Overview"), icon: "list_alt", alsoActiveOn: ["/"] },
   },
   {
     path: HOSTNAME.root,
@@ -69,7 +67,6 @@ const protectedRoutes = () => [
     element: <App />,
     children: [
       {
-        element: <FullLayout />,
         children: [
           {
             index: true,
@@ -79,17 +76,12 @@ const protectedRoutes = () => [
         ],
       },
       {
-        element: <PlainLayout />,
         children: [productsRoutes()],
       },
     ],
   },
   {
-    element: (
-      <PlainLayout>
-        <Outlet />
-      </PlainLayout>
-    ),
+    element: <Outlet />,
     children: [
       {
         path: PATHS.installationProgress,
@@ -111,24 +103,11 @@ const router = () =>
   createHashRouter([
     {
       path: PATHS.login,
-      element: (
-        <PlainLayout mountHeader={false} mountSkipToContent={false}>
-          <LoginPage />
-        </PlainLayout>
-      ),
+      element: <LoginPage />,
     },
     {
-      element: (
-        <PlainLayout mountHeader={false} mountSkipToContent={false}>
-          <Outlet />
-        </PlainLayout>
-      ),
-      children: [
-        {
-          path: PATHS.installationExit,
-          element: <InstallationExit />,
-        },
-      ],
+      path: PATHS.installationExit,
+      element: <InstallationExit />,
     },
     {
       path: PATHS.root,

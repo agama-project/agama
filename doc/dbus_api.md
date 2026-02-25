@@ -44,15 +44,6 @@ We use these resources to get more familiar with D-Bus API designing.
 - network manager design https://people.freedesktop.org/~lkundrak/nm-docs/spec.html
 - anakonda D-Bus API ( spread in `*_interface.py` files https://github.com/rhinstaller/anaconda/tree/master/pyanaconda/modules
 
-## Base Product
-
-Iface: o.o.Agama.Software1
-
-See the new-style [reference][lang-ref] ([source][lang-src]).
-
-[lang-ref]: https://opensuse.github.io/agama/dbus/ref-org.opensuse.Agama.Software1.html
-[lang-src]: dbus/org.opensuse.Agama.Software1.doc.xml
-
 ## `org.opensuse.Agama.Storage1` Service
 
 Service for managing storage devices.
@@ -594,17 +585,3 @@ Summary readable a{s(uub)}
 ##### Signals
 
 * `PropertiesChanged`, as standard from `org.freedesktop.DBus.Properties`.
-
-## Users
-
-See the new-style [reference][usr-ref] ([source][usr-src]).
-
-[usr-ref]: https://opensuse.github.io/agama/dbus/ref-org.opensuse.Agama.Users1.html
-[usr-src]: dbus/org.opensuse.Agama.Users1.doc.xml
-
-## Manager
-
-See the new-style [reference][mgr-ref] ([source][mgr-src]).
-
-[mgr-ref]: https://opensuse.github.io/agama/dbus/ref-org.opensuse.Agama1.Manager.html
-[mgr-src]: dbus/org.opensuse.Agama1.Manager.doc.xml

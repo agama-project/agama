@@ -1,1 +1,0 @@
-../../manager/modules/Package.rb

@@ -21,22 +21,20 @@
 
 require_relative "../../../test_helper"
 require "agama/storage/callbacks/commit_error"
-require "agama/dbus/clients/questions"
-require "agama/dbus/clients/question"
+require "agama/http/clients"
 
 describe Agama::Storage::Callbacks::CommitError do
   subject { described_class.new(questions_client, logger: logger) }
 
-  let(:questions_client) { instance_double(Agama::DBus::Clients::Questions) }
+  let(:questions_client) { instance_double(Agama::HTTP::Clients::Questions) }
+  let(:answer) { nil }
 
   let(:logger) { Logger.new($stdout, level: :warn) }
 
   describe "#call" do
     before do
-      allow(questions_client).to receive(:ask).and_yield(question_client)
+      allow(questions_client).to receive(:ask).and_yield(answer)
     end
-
-    let(:question_client) { instance_double(Agama::DBus::Clients::Question) }
 
     it "reports the error and ask whether to continue" do
       expect(questions_client).to receive(:ask) do |question|
@@ -48,9 +46,7 @@ describe Agama::Storage::Callbacks::CommitError do
     end
 
     context "and the question is answered as :yes" do
-      before do
-        allow(question_client).to receive(:answer).and_return(:yes)
-      end
+      let(:answer) { Agama::Answer.new(:yes) }
 
       it "returns true" do
         expect(subject.call("test", "details")).to eq(true)
@@ -58,9 +54,7 @@ describe Agama::Storage::Callbacks::CommitError do
     end
 
     context "and the question is answered as :no" do
-      before do
-        allow(question_client).to receive(:answer).and_return(:no)
-      end
+      let(:answer) { Agama::Answer.new(:no) }
 
       it "returns false" do
         expect(subject.call("test", "details")).to eq(false)

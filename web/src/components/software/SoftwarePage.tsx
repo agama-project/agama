@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2023-2024] SUSE LLC
+ * Copyright (c) [2023-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -24,7 +24,6 @@ import React, { useState } from "react";
 import {
   Alert,
   Button,
-  Content,
   DescriptionList,
   DescriptionListDescription,
   DescriptionListGroup,
@@ -36,23 +35,27 @@ import {
 } from "@patternfly/react-core";
 import { Link, Page, IssuesAlert } from "~/components/core";
 import UsedSize from "./UsedSize";
-import { useIssues } from "~/queries/issues";
-import {
-  usePatterns,
-  useProposal,
-  useProposalChanges,
-  useRepositories,
-  useRepositoryMutation,
-} from "~/queries/software";
-import { Pattern, SelectedBy } from "~/types/software";
-import { _ } from "~/i18n";
+import { useIssues } from "~/hooks/model/issue";
+import { useProposal } from "~/hooks/model/proposal/software";
+import { useSystem } from "~/hooks/model/system/software";
+import { N_, _ } from "~/i18n";
 import { SOFTWARE as PATHS } from "~/routes/paths";
+import xbytes from "xbytes";
+import { PatternsSelection, SelectedBy } from "~/model/proposal/software";
+import { Pattern } from "~/model/system/software";
+import { isEmpty } from "radashi";
 
 /**
  * List of selected patterns.
  */
-const SelectedPatternsList = ({ patterns }: { patterns: Pattern[] }): React.ReactNode => {
-  const selected = patterns.filter((p) => p.selectedBy !== SelectedBy.NONE);
+const SelectedPatternsList = ({
+  patterns,
+  selection,
+}: {
+  patterns: Pattern[];
+  selection: PatternsSelection;
+}): React.ReactNode => {
+  const selected = patterns.filter((p) => selection[p.name] !== SelectedBy.NONE);
 
   if (selected.length === 0) {
     return <>{_("No additional software was selected.")}</>;
@@ -73,7 +76,7 @@ const SelectedPatternsList = ({ patterns }: { patterns: Pattern[] }): React.Reac
   );
 };
 
-const SelectedPatterns = ({ patterns }): React.ReactNode => (
+const SelectedPatterns = ({ patterns, selection }): React.ReactNode => (
   <Page.Section
     title={_("Selected patterns")}
     actions={
@@ -82,7 +85,7 @@ const SelectedPatterns = ({ patterns }): React.ReactNode => (
       </Link>
     }
   >
-    <SelectedPatternsList patterns={patterns} />
+    <SelectedPatternsList patterns={patterns} selection={selection} />
   </Page.Section>
 );
 
@@ -96,7 +99,7 @@ const NoPatterns = (): React.ReactNode => (
   </Page.Section>
 );
 
-const errorMsg = _(
+const errorMsg = N_(
   /* TRANSLATORS: error details followed by a "Try again" link*/
   "Some installation repositories could not be loaded. \
 The system cannot be installed without them.",
@@ -119,7 +122,7 @@ const ReloadSection = ({
       </>
     ) : (
       <>
-        {errorMsg}{" "}
+        {_(errorMsg)}{" "}
         <Button variant="link" isInline onClick={action}>
           {/* TRANSLATORS: link for retrying failed repository load */}
           {_("Try again")}
@@ -129,56 +132,69 @@ const ReloadSection = ({
   </Alert>
 );
 
-/**
- * Software page component
- */
-function SoftwarePage(): React.ReactNode {
-  const issues = useIssues("software");
+const Content = () => {
+  const { patterns } = useSystem();
   const proposal = useProposal();
-  const patterns = usePatterns();
-  const repos = useRepositories();
-
+  const issues = useIssues("software");
   const [loading, setLoading] = useState(false);
-  const { mutate: probe } = useRepositoryMutation(() => setLoading(false));
 
-  useProposalChanges();
+  if (!proposal) {
+    return null;
+  }
+
+  // FIXME: temporarily disabled, the API end point is not implemented yet
+  const repos = []; // useRepositories();
+  const usedSpace = proposal.usedSpace
+    ? xbytes(proposal.usedSpace * 1024, { iec: true })
+    : undefined;
 
   // Selected patterns section should fill the full width in big screen too when
   // there is no information for rendering the Proposal Size section.
-  const selectedPatternsXlSize = proposal.size ? 6 : 12;
+  const selectedPatternsXlSize = usedSpace ? 6 : 12;
 
   const startProbing = () => {
     setLoading(true);
-    probe();
+    // TODO: probe();
   };
 
   const showReposAlert = repos.some((r) => !r.loaded);
 
   return (
-    <Page>
-      <Page.Header>
-        <Content component="h2">{_("Software")}</Content>
-      </Page.Header>
-
-      <Page.Content>
-        <IssuesAlert issues={issues} />
-        <Grid hasGutter>
-          {showReposAlert && (
-            <GridItem sm={12}>
-              <ReloadSection loading={loading} action={startProbing} />
-            </GridItem>
-          )}
-          <GridItem sm={12} xl={selectedPatternsXlSize}>
-            {patterns.length === 0 ? <NoPatterns /> : <SelectedPatterns patterns={patterns} />}
+    <>
+      <IssuesAlert issues={issues} />
+      <Grid hasGutter>
+        {showReposAlert && (
+          <GridItem sm={12}>
+            <ReloadSection loading={loading} action={startProbing} />
           </GridItem>
-          {proposal.size && (
-            <GridItem sm={12} xl={6}>
-              <Page.Section aria-label={_("Used space")}>
-                <UsedSize size={proposal.size} />
-              </Page.Section>
-            </GridItem>
+        )}
+        <GridItem sm={12} xl={selectedPatternsXlSize}>
+          {isEmpty(proposal.patterns) ? (
+            <NoPatterns />
+          ) : (
+            <SelectedPatterns patterns={patterns} selection={proposal.patterns} />
           )}
-        </Grid>
+        </GridItem>
+        {usedSpace && (
+          <GridItem sm={12} xl={6}>
+            <Page.Section aria-label={_("Used space")}>
+              <UsedSize size={usedSpace} />
+            </Page.Section>
+          </GridItem>
+        )}
+      </Grid>
+    </>
+  );
+};
+
+/**
+ * Software page component
+ */
+function SoftwarePage(): React.ReactNode {
+  return (
+    <Page breadcrumbs={[{ label: _("Software") }]} progress={{ scope: "software" }}>
+      <Page.Content>
+        <Content />
       </Page.Content>
     </Page>
   );

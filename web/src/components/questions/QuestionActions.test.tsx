@@ -23,16 +23,21 @@
 import React from "react";
 import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
-import { Question } from "~/types/questions";
+import { Question, FieldType } from "~/model/question";
 import QuestionActions from "~/components/questions/QuestionActions";
 
-let defaultOption = "sure";
+let defaultAction = "sure";
 
-let question: Question = {
+const question: Question = {
   id: 1,
+  class: "none",
   text: "Should we use a component for rendering actions?",
-  options: ["no", "maybe", "sure"],
-  defaultOption,
+  field: { type: FieldType.None },
+  actions: [
+    { id: "no", label: "No" },
+    { id: "maybe", label: "Maybe" },
+    { id: "sure", label: "Sure" },
+  ],
 };
 
 const actionCallback = jest.fn();
@@ -40,14 +45,18 @@ const actionCallback = jest.fn();
 const renderQuestionActions = () =>
   installerRender(
     <QuestionActions
-      actions={question.options}
-      defaultAction={question.defaultOption}
+      actions={question.actions}
+      defaultAction={defaultAction}
       actionCallback={actionCallback}
       conditions={{ disable: { no: true } }}
     />,
   );
 
 describe("QuestionActions", () => {
+  beforeEach(() => {
+    defaultAction = "sure";
+  });
+
   describe("when question has a default option", () => {
     it("renders the default option as primary action", async () => {
       renderQuestionActions();
@@ -69,9 +78,7 @@ describe("QuestionActions", () => {
 
   describe("when question does not have a default option", () => {
     beforeEach(() => {
-      // Using destructuring for partially clone the object.
-      // See "Gotcha if there's no let" at https://javascript.info/destructuring-assignment#the-rest-pattern
-      ({ defaultOption, ...question } = question);
+      defaultAction = undefined;
     });
 
     it("renders the first option  as primary action", async () => {

@@ -21,24 +21,24 @@
  */
 
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import MenuButton, { MenuButtonItem } from "~/components/core/MenuButton";
-import { Divider, MenuItemProps } from "@patternfly/react-core";
-import { useAvailableDevices } from "~/hooks/storage/system";
-import { useModel } from "~/hooks/storage/model";
-import { useAddDrive } from "~/hooks/storage/drive";
-import { useAddReusedMdRaid } from "~/hooks/storage/md-raid";
+import { Divider, Flex, MenuItemProps } from "@patternfly/react-core";
+import { useAvailableDevices } from "~/hooks/model/system/storage";
+import { useConfigModel, useAddDrive, useAddMdRaid } from "~/hooks/model/storage/config-model";
 import { STORAGE as PATHS } from "~/routes/paths";
 import { sprintf } from "sprintf-js";
 import { _, n_ } from "~/i18n";
-import { StorageDevice } from "~/types/storage";
 import DeviceSelectorModal from "./DeviceSelectorModal";
+import { isDrive } from "~/model/storage/device";
+import { Icon } from "../layout";
+import type { Storage } from "~/model/system";
 
 type AddDeviceMenuItemProps = {
   /** Whether some of the available devices is an MD RAID */
   withRaids: boolean;
   /** Available devices to be chosen */
-  devices: StorageDevice[];
+  devices: Storage.Device[];
   /** The total amount of drives and RAIDs already configured */
   usedCount: number;
 } & MenuItemProps;
@@ -124,18 +124,18 @@ export default function ConfigureDeviceMenu(): React.ReactNode {
 
   const navigate = useNavigate();
 
-  const model = useModel({ suspense: true });
+  const config = useConfigModel();
   const addDrive = useAddDrive();
-  const addReusedMdRaid = useAddReusedMdRaid();
+  const addReusedMdRaid = useAddMdRaid();
   const allDevices = useAvailableDevices();
 
-  const usedDevicesNames = model.drives.concat(model.mdRaids).map((d) => d.name);
+  const usedDevicesNames = config.drives.concat(config.mdRaids).map((d) => d.name);
   const usedDevicesCount = usedDevicesNames.length;
   const devices = allDevices.filter((d) => !usedDevicesNames.includes(d.name));
-  const withRaids = !!allDevices.filter((d) => !d.isDrive).length;
+  const withRaids = !!allDevices.filter((d) => !isDrive(d)).length;
 
-  const addDevice = (device: StorageDevice) => {
-    const hook = device.isDrive ? addDrive : addReusedMdRaid;
+  const addDevice = (device: Storage.Device) => {
+    const hook = isDrive(device) ? addDrive : addReusedMdRaid;
     hook({ name: device.name, spacePolicy: "keep" });
   };
 
@@ -148,7 +148,11 @@ export default function ConfigureDeviceMenu(): React.ReactNode {
       <MenuButton
         menuProps={{
           "aria-label": _("Configure device menu"),
+          popperProps: {
+            position: "left",
+          },
         }}
+        toggleProps={{ variant: "plain" }}
         items={[
           <AddDeviceMenuItem
             key="select-disk-option"
@@ -167,7 +171,10 @@ export default function ConfigureDeviceMenu(): React.ReactNode {
           </MenuButtonItem>,
         ]}
       >
-        {_("More devices")}
+        <Flex alignItems={{ default: "alignItemsCenter" }} gap={{ default: "gapSm" }}>
+          {/** TODO: choose one, "add" or "add_circle", and remove the other at Icon.tsx */}
+          <Icon name="add_circle" /> {_("More devices")}
+        </Flex>
       </MenuButton>
       {deviceSelectorOpen && (
         <DeviceSelectorModal

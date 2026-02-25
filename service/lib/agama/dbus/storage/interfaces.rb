@@ -29,6 +29,4 @@ module Agama
   end
 end
 
-require "agama/dbus/storage/interfaces/dasd_manager"
-require "agama/dbus/storage/interfaces/device"
 require "agama/dbus/storage/interfaces/zfcp_manager"

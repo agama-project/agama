@@ -35,26 +35,27 @@ import { sprintf } from "sprintf-js";
 
 import { _ } from "~/i18n";
 import { deviceSize, formattedPath } from "~/components/storage/utils";
-import {
-  DeviceName,
-  DeviceDetails,
-  DeviceSize,
-  toStorageDevice,
-} from "~/components/storage/device-utils";
+import { DeviceName, DeviceDetails, DeviceSize, toDevice } from "~/components/storage/device-utils";
 import { Icon } from "~/components/layout";
-import { PartitionSlot, SpacePolicyAction, StorageDevice } from "~/types/storage";
-import { apiModel } from "~/api/storage/types";
 import { TreeTableColumn } from "~/components/core/TreeTable";
 import { Table, Td, Th, Tr, Thead, Tbody } from "@patternfly/react-table";
-import { useConfigModel } from "~/queries/storage/config-model";
+import { useConfigModel } from "~/hooks/model/storage/config-model";
+import { supportShrink } from "~/model/storage/device";
+import type { Storage as Proposal } from "~/model/proposal";
+import type { ConfigModel } from "~/model/storage/config-model";
 
-const isUsedPartition = (partition: apiModel.Partition): boolean => {
+export type SpacePolicyAction = {
+  deviceName: string;
+  value: "delete" | "resizeIfNeeded";
+};
+
+const isUsedPartition = (partition: ConfigModel.Partition): boolean => {
   return partition.filesystem !== undefined;
 };
 
 // FIXME: there is too much logic here. This is one of those cases that should be considered
 // when restructuring the hooks and queries.
-const useReusedPartition = (name: string): apiModel.Partition | undefined => {
+const useReusedPartition = (name: string): ConfigModel.Partition | undefined => {
   const model = useConfigModel();
 
   if (!model || !name) return;
@@ -67,8 +68,8 @@ const useReusedPartition = (name: string): apiModel.Partition | undefined => {
  * Info about the device.
  * @component
  */
-const DeviceInfoContent = ({ device }: { device: StorageDevice }) => {
-  const minSize = device.shrinking?.supported;
+const DeviceInfoContent = ({ device }: { device: Proposal.Device }) => {
+  const minSize = device.block?.shrinking?.minSize;
 
   const reused = useReusedPartition(device.name);
   if (reused) {
@@ -79,20 +80,20 @@ const DeviceInfoContent = ({ device }: { device: StorageDevice }) => {
   }
 
   if (minSize) {
-    const recoverable = device.size - minSize;
+    const recoverable = device.block.size - minSize;
     return sprintf(
       _("Up to %s can be recovered by shrinking the device."),
       deviceSize(recoverable),
     );
   }
 
-  const reasons = device.shrinking.unsupported;
+  const reasons = device.block?.shrinking?.reasons || [];
 
   return (
     <>
       {_("The device cannot be shrunk:")}
       <List>
-        {reasons.map((reason, idx) => (
+        {reasons.map((reason: string, idx: number) => (
           <ListItem key={idx}>{reason}</ListItem>
         ))}
       </List>
@@ -105,9 +106,9 @@ const DeviceInfoContent = ({ device }: { device: StorageDevice }) => {
  * @component
  *
  * @param {object} props
- * @param {StorageDevice} props.device
+ * @param {Proposal.Device} props.device
  */
-const DeviceInfo = ({ device }: { device: StorageDevice }) => {
+const DeviceInfo = ({ device }: { device: Proposal.Device }) => {
   return (
     <Popover headerContent={device.name} bodyContent={<DeviceInfoContent device={device} />}>
       <Button
@@ -133,16 +134,17 @@ const DeviceActionSelector = ({
   action,
   onChange,
 }: {
-  device: StorageDevice;
+  device: Proposal.Device;
   action: string;
   onChange?: (action: SpacePolicyAction) => void;
 }) => {
   const changeAction = (value) => onChange({ deviceName: device.name, value });
 
   const forceKeep = !!useReusedPartition(device.name);
-  const isResizeDisabled = forceKeep || device.shrinking?.supported === undefined;
+  // FIXME
+  const isResizeDisabled = forceKeep || !supportShrink(device);
   const isDeleteDisabled = forceKeep;
-  const hasInfo = forceKeep || device.shrinking !== undefined;
+  const hasInfo = forceKeep || device.block?.shrinking !== undefined;
   const adjustedAction = forceKeep ? "keep" : action;
 
   return (
@@ -194,28 +196,19 @@ const DeviceAction = ({
   action,
   onChange,
 }: {
-  item: PartitionSlot | StorageDevice;
+  item: Proposal.UnusedSlot | Proposal.Device;
   action: string;
   onChange?: (action: SpacePolicyAction) => void;
 }) => {
-  const device = toStorageDevice(item);
+  const device = toDevice(item);
   if (!device) return null;
 
-  if (device.type === "partition") {
-    return <DeviceActionSelector device={device} action={action} onChange={onChange} />;
-  }
-
-  if (device.filesystem || device.component) return _("The content may be deleted");
-
-  if (!device.partitionTable || device.partitionTable.partitions.length === 0)
-    return _("No content found");
-
-  return null;
+  return <DeviceActionSelector device={device} action={action} onChange={onChange} />;
 };
 
 export type SpaceActionsTableProps = {
-  devices: (PartitionSlot | StorageDevice)[];
-  deviceAction: (item: PartitionSlot | StorageDevice) => string;
+  devices: (Proposal.UnusedSlot | Proposal.Device)[];
+  deviceAction: (item: Proposal.UnusedSlot | Proposal.Device) => string;
   onActionChange: (action: SpacePolicyAction) => void;
 };
 
@@ -230,17 +223,20 @@ export default function SpaceActionsTable({
 }: SpaceActionsTableProps) {
   const columns: TreeTableColumn[] = [
     {
-      name: _("Device"),
-      value: (item: PartitionSlot | StorageDevice) => <DeviceName item={item} />,
+      name: _("proposal.Device"),
+      value: (item: Proposal.UnusedSlot | Proposal.Device) => <DeviceName item={item} />,
     },
     {
       name: _("Details"),
-      value: (item: PartitionSlot | StorageDevice) => <DeviceDetails item={item} />,
+      value: (item: Proposal.UnusedSlot | Proposal.Device) => <DeviceDetails item={item} />,
     },
-    { name: _("Size"), value: (item: PartitionSlot | StorageDevice) => <DeviceSize item={item} /> },
+    {
+      name: _("Size"),
+      value: (item: Proposal.UnusedSlot | Proposal.Device) => <DeviceSize item={item} />,
+    },
     {
       name: _("Action"),
-      value: (item: PartitionSlot | StorageDevice) => (
+      value: (item: Proposal.UnusedSlot | Proposal.Device) => (
         <DeviceAction item={item} action={deviceAction(item)} onChange={onActionChange} />
       ),
     },

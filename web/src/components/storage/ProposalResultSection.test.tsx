@@ -21,105 +21,107 @@
  */
 
 import React from "react";
-import { screen, within } from "@testing-library/react";
-import { plainRender } from "~/test-utils";
+import { screen } from "@testing-library/react";
+import { installerRender } from "~/test-utils";
 import { ProposalResultSection } from "~/components/storage";
-import { devices, actions } from "./test-data/full-result-example";
+import type { Storage as System } from "~/model/system";
+import type { Storage as Proposal } from "~/model/proposal";
 
-const mockUseActionsFn = jest.fn();
-const mockConfig = { drives: [] };
+jest.mock("~/components/storage/ProposalResultTable", () => () => <div>result table</div>);
 
-jest.mock("~/queries/storage", () => ({
-  ...jest.requireActual("~/queries/storage"),
-  useDevices: () => devices.staging,
-  useActions: () => mockUseActionsFn(),
+const mockFlattenDevices = jest.fn();
+
+jest.mock("~/hooks/model/system/storage", () => ({
+  ...jest.requireActual("~/hooks/model/system/storage"),
+  useFlattenDevices: () => mockFlattenDevices(),
 }));
 
-jest.mock("~/queries/storage/config-model", () => ({
-  ...jest.requireActual("~/queries/storage/config-model"),
-  useConfigModel: () => mockConfig,
+const mockActions = jest.fn();
+
+jest.mock("~/hooks/model/proposal/storage", () => ({
+  ...jest.requireActual("~/hooks/model/proposal/storage"),
+  useFlattenDevices: () => [],
+  useActions: () => mockActions(),
 }));
+
+const systemDevices: System.Device[] = [
+  {
+    sid: 83,
+    name: "/dev/vda",
+    class: "drive",
+  },
+];
+
+const actions: Proposal.Action[] = [
+  {
+    device: 78,
+    text: "",
+    delete: true,
+  },
+  {
+    device: 79,
+    text: "",
+    delete: false,
+  },
+  {
+    device: 80,
+    text: "",
+    delete: true,
+  },
+];
 
 describe("ProposalResultSection", () => {
   beforeEach(() => {
-    mockUseActionsFn.mockReturnValue(actions);
+    mockFlattenDevices.mockReturnValue(systemDevices);
+    mockActions.mockReturnValue(actions);
   });
 
   describe("when there are no delete actions", () => {
     beforeEach(() => {
-      mockUseActionsFn.mockReturnValue(actions.filter((a) => !a.delete));
+      mockActions.mockReturnValue(actions.filter((a) => !a.delete));
     });
 
     it("does not render a warning when there are not delete actions", () => {
-      plainRender(<ProposalResultSection />);
-      expect(screen.queryByText(/Warning alert:/)).toBeNull();
+      installerRender(<ProposalResultSection />);
+      expect(screen.queryByText(/destructive/)).not.toBeInTheDocument();
     });
   });
 
   describe("when there are delete actions affecting a previous system", () => {
     beforeEach(() => {
-      // NOTE: simulate the deletion of vdc2 (sid: 79) for checking that
-      // affected systems are rendered in the warning summary
-      mockUseActionsFn.mockReturnValue([
-        { device: 79, subvol: false, delete: true, resize: false, text: "" },
+      // NOTE: simulate the deletion of vdc2 for checking that affected systems are rendered in the
+      //  warning summary.
+      mockFlattenDevices.mockReturnValue([
+        {
+          sid: 79,
+          name: "/dev/vda1",
+          class: "partition",
+          block: {
+            start: 0,
+            size: 1024,
+            systems: ["openSUSE"],
+          },
+        } as System.Device,
       ]);
+      mockActions.mockReturnValue([{ device: 79, delete: true, text: "" }]);
     });
 
     it("renders the affected systems in the deletion reminder, if any", () => {
-      plainRender(<ProposalResultSection />);
+      installerRender(<ProposalResultSection />);
       expect(screen.queryByText(/affecting openSUSE/)).toBeInTheDocument();
     });
   });
 
   it("renders a reminder about the delete actions", () => {
-    plainRender(<ProposalResultSection />);
-    expect(screen.queryByText(/Warning alert:/)).toBeInTheDocument();
-    expect(screen.queryByText(/4 destructive/)).toBeInTheDocument();
+    installerRender(<ProposalResultSection />);
+    expect(screen.queryByText(/2 destructive/)).toBeInTheDocument();
   });
 
-  it("renders a treegrid including all relevant information about final result", () => {
-    plainRender(<ProposalResultSection />);
-    const treegrid = screen.getByRole("treegrid");
-    /**
-     * Expected rows for full-result-example
-     * --------------------------------------------------
-     * "/dev/vdc Disk GPT 30 GiB"
-     * "vdc1 BIOS Boot Partition 8 MiB"
-     * "vdc3 swap Swap Partition 1.5 GiB"
-     * "Unused space 3.49 GiB"
-     * "vdc2 openSUSE Leap 15.2, Fedora 10.30 5 GiB"
-     * "Unused space 1 GiB"
-     * "vdc4 Linux Before 2 GiB 1.5 GiB"
-     * "vdc5 / New Btrfs Partition 17.5 GiB"
-     *
-     * Device      Mount point      Details                                 Size
-     * -------------------------------------------------------------------------
-     * /dev/vdc                     Disk GPT                              30 GiB
-     *     vdc1                     BIOS Boot Partition                    8 MiB
-     *     vdc3    swap             Swap Partition                       1.5 GiB
-     *                              Unused space                        3.49 GiB
-     *     vdc2                     openSUSE Leap 15.2, Fedora 10.30       5 GiB
-     *                              Unused space                           1 GiB
-     *     vdc4                     Linux                                1.5 GiB
-     *     vdc5    /                Btrfs Partition                     17.5 GiB
-     * -------------------------------------------------------------------------
-     */
-    within(treegrid).getByRole("row", { name: "/dev/vdc Disk GPT 30 GiB" });
-    within(treegrid).getByRole("row", { name: "vdc1 BIOS Boot Partition 8 MiB" });
-    within(treegrid).getByRole("row", { name: "vdc3 swap Swap Partition 1.5 GiB" });
-    within(treegrid).getByRole("row", { name: "Unused space 3.49 GiB" });
-    within(treegrid).getByRole("row", { name: "vdc2 openSUSE Leap 15.2, Fedora 10.30 5 GiB" });
-    within(treegrid).getByRole("row", { name: "Unused space 1 GiB" });
-    within(treegrid).getByRole("row", { name: "vdc4 Linux 1.5 GiB" });
-    within(treegrid).getByRole("row", { name: "vdc5 / Btrfs Partition 17.5 GiB" });
-  });
+  it("renders the final layout", async () => {
+    const { user } = installerRender(<ProposalResultSection />);
+    const tab = screen.getByRole("tab", { name: /Final layout/ });
 
-  it("allows toggling the planned actions", async () => {
-    const { user } = plainRender(<ProposalResultSection />);
-    const button = screen.getByRole("button", { name: /planned actions/ });
-
-    await user.click(button);
-
-    screen.getByRole("button", { name: "Collapse the list of planned actions" });
+    await user.click(tab);
+    expect(screen.queryByText(/result table/)).toBeInTheDocument();
   });
 });

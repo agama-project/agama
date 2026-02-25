@@ -22,24 +22,18 @@
 
 import React, { ReactNode } from "react";
 import {
-  DataListAction,
   DataListCell,
   DataListItem,
   DataListItemCells,
   DataListItemRow,
   Flex,
-  Title,
 } from "@patternfly/react-core";
 import NestedContent from "~/components/core/NestedContent";
 
-type ConfigEditorItemProps = {
-  /** Content to be rendered as an <h4> heading */
+type ConfigEditorItemProps = React.PropsWithChildren<{
+  /** Content to be rendered as "header" */
   header: ReactNode;
-  /** Main content displayed below the header */
-  content: ReactNode;
-  /** Action elements (e.g., buttons or menus) shown in the item's action area */
-  actions: ReactNode;
-};
+}>;
 
 /**
  * Layout component for rendering an item in the storage/ConfigEditor data
@@ -49,22 +43,20 @@ type ConfigEditorItemProps = {
  * (i.e., not used as ConfigEditor.Item) to avoid circular dependencies in components
  * that use ConfigEditor and are used by it (e.g., DriveEditor, VolumeGroupEditor).
  */
-export default function ConfigEditorItem({ header, content, actions }: ConfigEditorItemProps) {
+export default function ConfigEditorItem({ header, children }: ConfigEditorItemProps) {
   return (
     <DataListItem>
       <DataListItemRow>
         <DataListItemCells
           dataListCells={[
-            <DataListCell key="content" isFilled={false}>
-              <Flex direction={{ default: "column" }}>
-                <Title headingLevel="h4">{header}</Title>
-                <NestedContent>{content}</NestedContent>
+            <DataListCell key="content">
+              <Flex direction={{ default: "column" }} gap={{ default: "gapNone" }}>
+                {header}
+                <NestedContent>{children}</NestedContent>
               </Flex>
             </DataListCell>,
           ]}
         />
-        {/** @ts-expect-error: props required but not used, see https://github.com/patternfly/patternfly-react/issues/9823 **/}
-        <DataListAction>{actions}</DataListAction>
       </DataListItemRow>
     </DataListItem>
   );

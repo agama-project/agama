@@ -24,9 +24,9 @@ import React from "react";
 import { Content, Stack } from "@patternfly/react-core";
 import { Popup } from "~/components/core";
 import { Icon } from "~/components/layout";
-import { AnswerCallback, Question } from "~/types/questions";
 import QuestionActions from "~/components/questions/QuestionActions";
 import { _ } from "~/i18n";
+import type { AnswerCallback, Question } from "~/model/question";
 
 /**
  * Component for rendering libzypp error callbacks
@@ -41,8 +41,8 @@ export default function PackageErrorQuestion({
   question: Question;
   answerCallback: AnswerCallback;
 }): React.ReactNode {
-  const actionCallback = (option: string) => {
-    question.answer = option;
+  const actionCallback = (action: string) => {
+    question.answer = { action };
     answerCallback(question);
   };
 
@@ -68,8 +68,8 @@ export default function PackageErrorQuestion({
       </Stack>
       <Popup.Actions>
         <QuestionActions
-          actions={question.options}
-          defaultAction={question.defaultOption}
+          actions={question.actions}
+          defaultAction={question.defaultAction}
           actionCallback={actionCallback}
         />
       </Popup.Actions>

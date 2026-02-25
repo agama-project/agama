@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2023-2025] SUSE LLC
+ * Copyright (c) [2023-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -20,7 +20,9 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useId } from "react";
+import React, { Suspense, useId } from "react";
+import { Outlet, useNavigate } from "react-router";
+import Link, { LinkProps } from "~/components/core/Link";
 import {
   Button,
   ButtonProps,
@@ -32,22 +34,29 @@ import {
   CardHeaderProps,
   CardProps,
   Divider,
+  Flex,
+  FlexItem,
+  Masthead,
+  Page as PFPage,
   PageGroup,
-  PageGroupProps,
   PageSection,
   PageSectionProps,
   Split,
   Title,
   TitleProps,
 } from "@patternfly/react-core";
-import { ProductRegistrationAlert } from "~/components/product";
-import Link, { LinkProps } from "~/components/core/Link";
-import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
-import flexStyles from "@patternfly/react-styles/css/utilities/Flex/flex";
-import { useLocation, useNavigate } from "react-router-dom";
 import { isEmpty, isObject } from "radashi";
-import { SIDE_PATHS } from "~/routes/paths";
-import { _ } from "~/i18n";
+import type { ProgressBackdropProps } from "~/components/core/ProgressBackdrop";
+import ProgressBackdrop from "~/components/core/ProgressBackdrop";
+import Header, { HeaderProps } from "~/components/layout/Header";
+import Loading from "~/components/layout/Loading";
+import ReviewAndInstallButton from "~/components/core/ReviewAndInstallButton";
+import ProgressStatusMonitor from "~/components/core/ProgressStatusMonitor";
+import Questions from "~/components/questions/Questions";
+import { _, TranslatedString } from "~/i18n";
+
+import flexStyles from "@patternfly/react-styles/css/utilities/Flex/flex";
+import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 
 /**
  * Props accepted by Page.Section
@@ -55,8 +64,10 @@ import { _ } from "~/i18n";
 type SectionProps = {
   /** The section title */
   title?: React.ReactNode;
+  /** Actions to display next to the title */
+  titleActions?: React.ReactNode;
   /** The value used for accessible label */
-  "aria-label"?: string;
+  "aria-label"?: TranslatedString;
   /** Elements to be rendered in the section footer */
   actions?: React.ReactNode;
   /** A React node with a brief description of what the section is for */
@@ -80,7 +91,7 @@ type ActionProps = {
 
 type SubmitActionProps = {
   /** The id of a <form> the submit button is associated with */
-  form: string;
+  form?: string;
 } & ButtonProps;
 
 const defaultCardProps: CardProps = {
@@ -93,7 +104,7 @@ const STICK_TO_TOP = Object.freeze({ default: "top" });
 const STICK_TO_BOTTOM = Object.freeze({ default: "bottom" });
 
 // TODO: check if it should have the banner role
-const Header = ({ children, ...props }) => {
+const StickyHeaderContent = ({ children, ...props }) => {
   return (
     <PageSection component="div" stickyOnBreakpoint={STICK_TO_TOP} {...props}>
       {children}
@@ -122,6 +133,7 @@ const Header = ({ children, ...props }) => {
  */
 const Section = ({
   title,
+  titleActions,
   "aria-label": ariaLabel,
   description,
   actions,
@@ -151,9 +163,17 @@ const Section = ({
       {hasHeader && (
         <CardHeader {...pfCardHeaderProps}>
           {hasTitle && (
-            <Title id={titleId} headingLevel={headingLevel}>
-              {title}
-            </Title>
+            <Flex>
+              <Title id={titleId} headingLevel={headingLevel}>
+                {title}
+              </Title>
+              {titleActions && (
+                <>
+                  <FlexItem grow={{ default: "grow" }} />
+                  {titleActions}
+                </>
+              )}
+            </Flex>
           )}
           {hasDescription && <div className={textStyles.textColorPlaceholder}>{description}</div>}
         </CardHeader>
@@ -230,7 +250,7 @@ const Action = ({ navigateTo, children, ...props }: ActionProps) => {
  */
 const Cancel = ({ navigateTo = "..", children, ...props }: ActionProps) => {
   return (
-    <Link to={navigateTo} variant="link" {...props}>
+    <Link to={navigateTo} variant="link" keepQuery {...props}>
       {children || _("Cancel")}
     </Link>
   );
@@ -273,62 +293,189 @@ const Submit = ({ children, ...props }: SubmitActionProps) => {
  *
  * @see [Patternfly Page/PageSection](https://www.patternfly.org/components/page#pagesection)
  */
-const Content = ({ children, ...pageSectionProps }: React.PropsWithChildren<PageSectionProps>) => {
-  const location = useLocation();
-  const mountRegistrationAlert = !SIDE_PATHS.includes(location.pathname);
-
+const Content = ({ children, ...pageSectionProps }: PageSectionProps) => {
   return (
-    <>
-      <PageSection hasBodyWrapper={false} isFilled component="div" {...pageSectionProps}>
-        {mountRegistrationAlert && <ProductRegistrationAlert />}
-        {children}
-      </PageSection>
-    </>
+    <PageSection hasBodyWrapper={false} isFilled component="div" {...pageSectionProps}>
+      {children}
+    </PageSection>
   );
 };
 
 /**
- * Component for structuring an Agama page, built on top of PF/Page/PageGroup.
- *
- * @see [Patternfly Page/PageGroup](https://www.patternfly.org/components/page#pagegroup)
- *
- * @example
- *   <Page>
- *     <Page.Header>
- *       <h2>{_("Software")}</h2>
- *     </Page.Header>
- *
- *     <Page.Content>
- *       <Stack hasGutter>
- *         <IssuesHint issues={issues} />
- *
- *         <Page.Section title="Selected patterns" >
- *           {patterns.length === 0 ? <NoPatterns /> : <SelectedPatterns patterns={patterns} />}
- *         </Page.Section>
- *
- *         <Page.Section aria-label="Used size">
- *           <UsedSize size={proposal.size} />
- *         </Page.Section>
- *       </Stack>
- *       <Page.Actions>
- *         <Page.Back />
- *       </Page.Actions>
- *     </Page.Content>
- *   </Page>
+ * Common props shared by all page variants.
  */
-const Page = ({
-  children,
-  ...pageGroupProps
-}: React.PropsWithChildren<PageGroupProps>): React.ReactNode => {
+interface BasePageProps extends HeaderProps {
+  /** Optional progress tracking configuration */
+  progress?: ProgressBackdropProps;
+  /** Whether to show the Questions component at the bottom of the page */
+  showQuestions?: boolean;
+  /** Page content */
+  children?: React.ReactNode;
+}
+
+/**
+ * Props for standard page variant.
+ */
+interface StandardPageProps extends BasePageProps {
+  /** Layout variant to use */
+  variant?: "standard";
+}
+
+/**
+ * Props for minimal page variant.
+ */
+interface MinimalPageProps extends BasePageProps {
+  /** Layout variant - minimal layout with empty masthead (e.g., for login pages) */
+  variant: "minimal";
+  /** Title not available in minimal variant */
+  title?: never;
+  /** Installer options not available in minimal variant */
+  showInstallerOptions?: never;
+  /** Whether the progress monitor must not be mounted */
+  hideProgressMonitor?: never;
+}
+
+/**
+ * Props for the `Page` component.
+ *
+ * Combines the standard and minimal variants with additional slot controls.
+ */
+type PageProps = (StandardPageProps | MinimalPageProps) & {
+  /**
+   * If true, the default component in the start slot
+   * (`<ProgressStatusMonitor />`) will not be rendered.
+   *
+   * Pass a custom `startSlot` to render custom content instead.
+   *
+   * Default: `false` (renders default ProgressStatusMonitor if no `startSlot` provided)
+   */
+  noDefaultStartSlot?: boolean;
+
+  /**
+   * If true, the default component in the end slot
+   * (`<ReviewAndInstallButton />`) will not be rendered.
+   *
+   * Pass a custom `endSlot` to render custom content instead.
+   *
+   * Default: `false` (renders default ReviewAndInstallButton if no `endSlot` provided)
+   */
+  noDefaultEndSlot?: boolean;
+};
+
+/**
+ * Minimal page layout with empty masthead.
+ */
+const MinimalLayout = ({ children }: Omit<MinimalPageProps, "variant">) => {
   return (
-    <PageGroup {...pageGroupProps} tabIndex={-1} id="main-content">
-      {children}
-    </PageGroup>
+    <PFPage isContentFilled masthead={<Masthead />}>
+      <PageGroup tabIndex={-1} id="main-content">
+        {children}
+      </PageGroup>
+    </PFPage>
   );
 };
 
-Page.displayName = "agama/core/Page";
-Page.Header = Header;
+/**
+ * Standard page layout with header, optional progress tracking, and optional
+ * qestions rendering.
+ */
+const StandardLayout = ({
+  progress,
+  children,
+  showQuestions = true,
+  ...headerProps
+}: Omit<StandardPageProps, "variant">) => {
+  return (
+    <PFPage isContentFilled masthead={<Header {...headerProps} />}>
+      <Suspense fallback={<Loading />}>
+        <PageGroup tabIndex={-1} id="main-content">
+          {children || <Outlet />}
+          {progress && <ProgressBackdrop {...progress} />}
+        </PageGroup>
+      </Suspense>
+      {showQuestions && <Questions />}
+    </PFPage>
+  );
+};
+
+/**
+ * Root container for Agama pages.
+ *
+ * Built on top of PatternFly's Page/PageGroup components, it provides a
+ * consistent layout structure with optional header, breadcrumbs, and progress
+ * tracking capabilities.
+ *
+ * @see {@link https://www.patternfly.org/components/page | PatternFly Page}
+ *
+ * @example
+ * Standard page with header and breadcrumbs
+ * ```tsx
+ * <Page title="Software" breadcrumbs={<Breadcrumbs />}>
+ *   <Page.Section>
+ *     <SoftwareContent />
+ *   </Page.Section>
+ * </Page>
+ * ```
+ *
+ * @example
+ * Page with progress tracking
+ * ```tsx
+ * <Page title="Software" progress={{ scope: "software" }}>
+ *   <Page.Section>
+ *     <PatternSelector />
+ *   </Page.Section>
+ * </Page>
+ * ```
+ *
+ * @example
+ * Page with installer options in header
+ * ```tsx
+ * <Page title="Overview" showInstallerOptions>
+ *   <OverviewContent />
+ * </Page>
+ * ```
+ *
+ * @example
+ * Page without Questions component (e.g., login or exit pages)
+ * ```tsx
+ * <Page title="Login" showQuestions={false}>
+ *   <LoginForm />
+ * </Page>
+ * ```
+ *
+ * @example
+ * Minimal layout without header (e.g., for login)
+ * ```tsx
+ * <Page variant="minimal">
+ *   <LoginForm />
+ * </Page>
+ * ```
+ */
+const Page = ({
+  variant = "standard",
+  startSlot,
+  endSlot,
+  noDefaultStartSlot,
+  noDefaultEndSlot,
+  children,
+  ...props
+}: PageProps): React.ReactNode => {
+  if (variant === "minimal") {
+    return <MinimalLayout>{children}</MinimalLayout>;
+  }
+
+  const startSlotContent = startSlot ?? (noDefaultStartSlot ? null : <ProgressStatusMonitor />);
+  const endSlotContent = endSlot ?? (noDefaultEndSlot ? null : <ReviewAndInstallButton />);
+
+  return (
+    <StandardLayout {...props} startSlot={startSlotContent} endSlot={endSlotContent}>
+      {children || <Outlet />}
+    </StandardLayout>
+  );
+};
+
+Page.displayName = "agama/core/PageNext";
+Page.StickOnTop = StickyHeaderContent;
 Page.Content = Content;
 Page.Actions = Actions;
 Page.Back = Back;

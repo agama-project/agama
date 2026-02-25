@@ -14,7 +14,7 @@ const fs = require("fs");
 const process = require("process");
 const path = require("path");
 
-const { parseDocument } = require("yaml");
+const { parseDocument, isCollection } = require("yaml");
 const { globSync } = require("glob");
 const gettextParser = require("gettext-parser");
 
@@ -48,8 +48,8 @@ class Translation {
     // sort the files so the translations in the YAML files are also sorted
     const files = globSync(dir + "/*.po").sort();
 
-    files.forEach(f => {
-      console.log(`Reading ${path.basename(f)}`);
+    files.forEach((f) => {
+      console.log(`Reading ${f}`);
 
       const locale = path.basename(f, ".po");
       const input = fs.readFileSync(f, "utf-8");
@@ -58,7 +58,7 @@ class Translation {
       // translations for the default (empty) context
       const translations = po.translations[""];
 
-      Object.values(translations).forEach(t => {
+      Object.values(translations).forEach((t) => {
         if (t.msgid !== "") {
           ret.push(new Translation(t.msgid, t.msgstr[0], locale));
         }
@@ -95,8 +95,8 @@ class YamlProduct {
   static read(dir) {
     const ret = [];
     const files = globSync(dir + "/*.y{a,}ml");
-    return files.map(f => {
-      console.log(`Reading ${path.basename(f)}`);
+    return files.map((f) => {
+      console.log(`Reading ${f}`);
       return new YamlProduct(f);
     });
   }
@@ -109,22 +109,51 @@ class YamlProduct {
     const description = this.document.get("description");
     const newTranslations = {};
 
-    translations.forEach(t => {
+    translations.forEach((t) => {
       if (t.msgid === description && t.msgstr?.length > 0) {
         newTranslations[t.locale] = t.msgstr;
       }
     });
 
     // add or update the translations depending on whether they already exist
-    if (!this.document.has("translations")) {
-       this.document.add({key: "translations", value: { description: newTranslations}});
-    } else {
-      const trans = this.document.get("translations");
-      if (!trans) {
-        this.document.set("translations", { description: newTranslations});
-      } else {
-        trans.set("description", newTranslations);
-      }
+    if (Object.keys(newTranslations).length > 0) {
+      this.document.setIn(["translations", "description"], newTranslations);
+    }
+
+    const modes = this.document.get("modes");
+    if (modes && isCollection(modes)) {
+      modes.items.forEach((mode) => {
+        const modeId = mode.get("id");
+        const modeName = mode.get("name");
+        const modeDescription = mode.get("description");
+
+        const nameTranslations = {};
+        const descTranslations = {};
+
+        translations.forEach((t) => {
+          if (t.msgstr?.length > 0) {
+            if (t.msgid === modeName) {
+              nameTranslations[t.locale] = t.msgstr;
+            }
+            if (t.msgid === modeDescription) {
+              descTranslations[t.locale] = t.msgstr;
+            }
+          }
+        });
+
+        if (Object.keys(nameTranslations).length > 0) {
+          this.document.setIn(
+            ["translations", "mode", modeId, "name"],
+            nameTranslations,
+          );
+        }
+        if (Object.keys(descTranslations).length > 0) {
+          this.document.setIn(
+            ["translations", "mode", modeId, "description"],
+            descTranslations,
+          );
+        }
+      });
     }
   }
 
@@ -141,7 +170,7 @@ class YamlProduct {
    * overwritten.
    */
   save() {
-    console.log(`Writing ${path.basename(this.file)}`);
+    console.log(`Writing ${this.file}`);
     fs.writeFileSync(this.file, this.dump(), "utf-8");
   }
 }
@@ -160,7 +189,7 @@ const translations = Translation.read(translations_dir);
 const products = YamlProduct.read(products_dir);
 
 // inject the translations to the products and save the changes
-products.forEach(p => {
+products.forEach((p) => {
   p.addTranslations(translations);
   p.save();
 });

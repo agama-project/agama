@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2025] SUSE LLC
+ * Copyright (c) [2025-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -28,16 +28,16 @@ import InstallationExit from "./InstallationExit";
 describe("InstallationExit", () => {
   it("makes users aware system is rebooting", () => {
     plainRender(<InstallationExit />);
-    screen.getByRole("heading", { name: "Your system is rebooting", level: 1 });
+    screen.getByRole("heading", { name: "The system is rebooting", level: 1 });
   });
 
   it("makes users aware installer is no longer useful", () => {
     plainRender(<InstallationExit />);
-    screen.getByText(/The installer interface is no longer available/);
+    screen.getByText("The installer interface is no longer available.");
   });
 
   it("invites users to close the installer", () => {
     plainRender(<InstallationExit />);
-    screen.getByText(/you can safely close this window/);
+    screen.getByText("You can safely close this window.");
   });
 });

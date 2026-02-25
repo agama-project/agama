@@ -23,14 +23,20 @@
 import React from "react";
 import { screen } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
-import { Question } from "~/types/questions";
+import { Question, FieldType } from "~/model/question";
 import GenericQuestion from "~/components/questions/GenericQuestion";
 
 const question: Question = {
   id: 1,
   text: "Do you write unit tests?",
-  options: ["always", "sometimes", "never"],
-  defaultOption: "sometimes",
+  class: "unit-test",
+  field: { type: FieldType.None },
+  actions: [
+    { id: "always", label: "Always" },
+    { id: "sometimes", label: "Sometimes" },
+    { id: "never", label: "Never" },
+  ],
+  defaultAction: "sometimes",
 };
 
 const answerFn = jest.fn();
@@ -50,17 +56,17 @@ describe("GenericQuestion", () => {
 
     let button = await screen.findByRole("button", { name: /Sometimes/ });
     await user.click(button);
-    expect(question).toEqual(expect.objectContaining({ answer: "sometimes" }));
+    expect(question.answer).toEqual(expect.objectContaining({ action: "sometimes" }));
     expect(answerFn).toHaveBeenCalledWith(question);
 
     button = await screen.findByRole("button", { name: /Always/ });
     await user.click(button);
-    expect(question).toEqual(expect.objectContaining({ answer: "always" }));
+    expect(question.answer).toEqual(expect.objectContaining({ action: "always" }));
     expect(answerFn).toHaveBeenCalledWith(question);
 
     button = await screen.findByRole("button", { name: /Never/ });
     await user.click(button);
-    expect(question).toEqual(expect.objectContaining({ answer: "never" }));
+    expect(question.answer).toEqual(expect.objectContaining({ action: "never" }));
     expect(answerFn).toHaveBeenCalledWith(question);
   });
 });

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024] SUSE LLC
+ * Copyright (c) [2024-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import { RouteObject } from "react-router-dom";
+import { RouteObject } from "react-router";
 
 type RouteHandle = {
   /** Text to be used as label when building a link from route information */
@@ -31,12 +31,6 @@ type RouteHandle = {
   icon?: string;
   /** Whether the route link will be rendered for registrable products only */
   needsRegistrableProduct?: boolean;
-  /**
-   * Alternative paths where the navigation menu item should be highlighted as active.
-   * This is useful when multiple routes lead to the same component or section,
-   * allowing the menu item to remain highlighted across those paths.
-   */
-  alsoActiveOn?: string[];
 };
 
 type Route = RouteObject & { handle?: RouteHandle };

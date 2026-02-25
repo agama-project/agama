@@ -160,11 +160,10 @@ end
 shared_examples "with filesystem" do |config_proc|
   let(:filesystem) do
     {
-      reuse:     reuse,
-      default:   default,
-      type:      type,
-      snapshots: true,
-      label:     label
+      reuse:   reuse,
+      default: default,
+      type:    type,
+      label:   label
     }
   end
 
@@ -176,10 +175,8 @@ shared_examples "with filesystem" do |config_proc|
   context "if the filesystem is default" do
     let(:default) { true }
 
-    context "and the type is 'btrfs'" do
-      let(:type) { "btrfs" }
-
-      it "sets #filesystem to the expected value" do
+    RSpec.shared_examples "#filesystem set to default btrfs" do
+      it "sets #filesystem to the expected btrfs-related values" do
         config = config_proc.call(subject.convert)
         filesystem = config.filesystem
         expect(filesystem).to be_a(Agama::Storage::Configs::Filesystem)
@@ -187,12 +184,47 @@ shared_examples "with filesystem" do |config_proc|
         expect(filesystem.type.default?).to eq(true)
         expect(filesystem.type.fs_type).to eq(Y2Storage::Filesystems::Type::BTRFS)
         expect(filesystem.type.btrfs).to be_a(Agama::Storage::Configs::Btrfs)
-        expect(filesystem.type.btrfs.snapshots?).to eq(true)
         expect(filesystem.label).to eq("test")
         expect(filesystem.path).to be_nil
         expect(filesystem.mount_by).to be_nil
         expect(filesystem.mkfs_options).to be_empty
         expect(filesystem.mount_options).to be_empty
+      end
+    end
+
+    context "and the type is 'btrfs'" do
+      let(:type) { "btrfs" }
+
+      include_examples "#filesystem set to default btrfs"
+
+      it "sets Btrfs snapshots to false" do
+        config = config_proc.call(subject.convert)
+        filesystem = config.filesystem
+        expect(filesystem.type.btrfs.snapshots?).to eq(false)
+      end
+    end
+
+    context "and the type is 'btrfsSnapshots'" do
+      let(:type) { "btrfsSnapshots" }
+
+      include_examples "#filesystem set to default btrfs"
+
+      it "sets Btrfs snapshots to true" do
+        config = config_proc.call(subject.convert)
+        filesystem = config.filesystem
+        expect(filesystem.type.btrfs.snapshots?).to eq(true)
+      end
+    end
+
+    context "and the type is 'btrfsImmutable'" do
+      let(:type) { "btrfsSnapshots" }
+
+      include_examples "#filesystem set to default btrfs"
+
+      it "sets Btrfs snapshots to true" do
+        config = config_proc.call(subject.convert)
+        filesystem = config.filesystem
+        expect(filesystem.type.btrfs.snapshots?).to eq(true)
       end
     end
 
@@ -219,10 +251,8 @@ shared_examples "with filesystem" do |config_proc|
   context "if the filesystem is not default" do
     let(:default) { false }
 
-    context "and the type is 'btrfs'" do
-      let(:type) { "btrfs" }
-
-      it "sets #filesystem to the expected value" do
+    RSpec.shared_examples "#filesystem set to non-default btrfs" do
+      it "sets #filesystem to the expected btrfs-related values" do
         config = config_proc.call(subject.convert)
         filesystem = config.filesystem
         expect(filesystem).to be_a(Agama::Storage::Configs::Filesystem)
@@ -230,12 +260,47 @@ shared_examples "with filesystem" do |config_proc|
         expect(filesystem.type.default?).to eq(false)
         expect(filesystem.type.fs_type).to eq(Y2Storage::Filesystems::Type::BTRFS)
         expect(filesystem.type.btrfs).to be_a(Agama::Storage::Configs::Btrfs)
-        expect(filesystem.type.btrfs.snapshots?).to eq(true)
         expect(filesystem.label).to eq("test")
         expect(filesystem.path).to be_nil
         expect(filesystem.mount_by).to be_nil
         expect(filesystem.mkfs_options).to be_empty
         expect(filesystem.mount_options).to be_empty
+      end
+    end
+
+    context "and the type is 'btrfs'" do
+      let(:type) { "btrfs" }
+
+      include_examples "#filesystem set to non-default btrfs"
+
+      it "sets Btrfs snapshots to false" do
+        config = config_proc.call(subject.convert)
+        filesystem = config.filesystem
+        expect(filesystem.type.btrfs.snapshots?).to eq(false)
+      end
+    end
+
+    context "and the type is 'btrfsSnapshots'" do
+      let(:type) { "btrfsSnapshots" }
+
+      include_examples "#filesystem set to non-default btrfs"
+
+      it "sets Btrfs snapshots to true" do
+        config = config_proc.call(subject.convert)
+        filesystem = config.filesystem
+        expect(filesystem.type.btrfs.snapshots?).to eq(true)
+      end
+    end
+
+    context "and the type is 'btrfsImmutable'" do
+      let(:type) { "btrfsImmutable" }
+
+      include_examples "#filesystem set to non-default btrfs"
+
+      it "sets Btrfs snapshots to true" do
+        config = config_proc.call(subject.convert)
+        filesystem = config.filesystem
+        expect(filesystem.type.btrfs.snapshots?).to eq(true)
       end
     end
 
@@ -322,10 +387,9 @@ shared_examples "with mountPath and filesystem" do |config_proc|
 
   let(:filesystem) do
     {
-      default:   false,
-      type:      "btrfs",
-      snapshots: true,
-      label:     "test"
+      default: false,
+      type:    "btrfs",
+      label:   "test"
     }
   end
 
@@ -337,7 +401,6 @@ shared_examples "with mountPath and filesystem" do |config_proc|
     expect(filesystem.type.default?).to eq(false)
     expect(filesystem.type.fs_type).to eq(Y2Storage::Filesystems::Type::BTRFS)
     expect(filesystem.type.btrfs).to be_a(Agama::Storage::Configs::Btrfs)
-    expect(filesystem.type.btrfs.snapshots?).to eq(true)
     expect(filesystem.label).to eq("test")
     expect(filesystem.path).to eq("/test")
     expect(filesystem.mount_by).to be_nil

@@ -25,7 +25,7 @@
 //!
 //! * `/usr/etc/agama.d/server.{json/yaml}`
 //! * `/etc/agama.d/server.{json/yaml}`
-//! * `./agama-dbus-server/share/server.{json/yaml}`
+//! * `etc/agama.d/server.{json/yaml}`
 //!
 //! All the settings are merged into a single configuration. The values in the latter locations
 //! take precedence.

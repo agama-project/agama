@@ -40,8 +40,8 @@ fn public_dir() -> PathBuf {
 #[test]
 async fn test_ping() -> Result<(), Box<dyn Error>> {
     let config = ServiceConfig::default();
-    let (tx, _) = channel(16);
-    let web_service = MainServiceBuilder::new(tx, public_dir())
+    let (events_tx, _) = channel(16);
+    let web_service = MainServiceBuilder::new(events_tx, public_dir())
         .add_service("/protected", get(protected))
         .with_config(config)
         .build();
@@ -67,8 +67,8 @@ async fn access_protected_route(token: &str, jwt_secret: &str) -> Response {
     let config = ServiceConfig {
         jwt_secret: jwt_secret.to_string(),
     };
-    let (tx, _) = channel(16);
-    let web_service = MainServiceBuilder::new(tx, public_dir())
+    let (events_tx, _) = channel(16);
+    let web_service = MainServiceBuilder::new(events_tx, public_dir())
         .add_service("/protected", get(protected))
         .with_config(config)
         .build();

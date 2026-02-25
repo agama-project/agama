@@ -21,6 +21,7 @@
 //! This module implements the web API for the manager module.
 
 pub mod http_client;
+use agama_utils::api::FinishMethod;
 pub use http_client::ManagerHTTPClient;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
@@ -86,38 +87,6 @@ impl TryFrom<u32> for InstallationPhase {
             3 => Ok(Self::Finish),
             _ => Err(ServiceError::UnknownInstallationPhase(value)),
         }
-    }
-}
-
-/// Finish method
-#[derive(
-    Serialize,
-    Deserialize,
-    Debug,
-    PartialEq,
-    Eq,
-    Clone,
-    Copy,
-    strum::Display,
-    strum::EnumString,
-    utoipa::ToSchema,
-)]
-#[strum(serialize_all = "camelCase")]
-#[serde(rename_all = "camelCase")]
-pub enum FinishMethod {
-    // Halt the system
-    Halt,
-    // Reboots the system
-    Reboot,
-    // Do nothing at the end of the installation
-    Stop,
-    // Poweroff the system
-    Poweroff,
-}
-
-impl Default for FinishMethod {
-    fn default() -> Self {
-        Self::Reboot
     }
 }
 

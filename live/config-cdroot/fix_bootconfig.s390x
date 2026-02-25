@@ -27,15 +27,16 @@
 # │   └── squashfs.img
 # ├── boot
 # │   └── s390x
-# │       ├── cd.ikr
-# │       ├── initrd
-# │       ├── initrd.off
-# │       ├── initrd.siz
-# │       ├── linux
-# │       ├── parmfile
-# │       ├── parmfile.hmc
-# │       ├── sles.exec
-# │       └── suse.ins
+# │       └── loader
+# │           ├── cd.ikr
+# │           ├── initrd
+# │           ├── initrd.off
+# │           ├── initrd.siz
+# │           ├── linux
+# │           ├── parmfile
+# │           ├── parmfile.hmc
+# │           ├── sles.exec
+# │           └── suse.ins
 # ├── suse.ins
 # └── susehmc.ins
 #
@@ -61,14 +62,8 @@ fi
 # files. It also moves kernel and initrd to the usual location (in boot/s390x).
 #
 
-boot_dir=$dst/boot/s390x
+boot_dir=$dst/boot/s390x/loader
 grub_dir=$dst/boot/grub2
-
-# if files are in a 'loader' subdir, move them out
-if [ -d $boot_dir/loader ] ; then
-  mv $boot_dir/loader/{initrd,linux} $boot_dir
-  rm -r $boot_dir/loader
-fi
 
 # Create parmfile.
 #
@@ -118,21 +113,21 @@ XXX
 # A suse.ins copy at media root dir - note the different paths.
 cat >$dst/suse.ins <<XXX
 * SUSE Linux for IBM z Systems Installation System
-boot/s390x/linux 0x00000000
-boot/s390x/initrd.off $initrd_ofs_ofs
-boot/s390x/initrd.siz $initrd_siz_ofs
-boot/s390x/initrd $initrd_ofs
-boot/s390x/parmfile $parmfile_ofs
+boot/s390x/loader/linux 0x00000000
+boot/s390x/loader/initrd.off $initrd_ofs_ofs
+boot/s390x/loader/initrd.siz $initrd_siz_ofs
+boot/s390x/loader/initrd $initrd_ofs
+boot/s390x/loader/parmfile $parmfile_ofs
 XXX
 
 # Another suse.ins copy at media root dir - note the different paths and the hmc stuff.
 cat >$dst/susehmc.ins <<XXX
 * SUSE Linux for IBM z Systems Installation System via HMC
-boot/s390x/linux 0x00000000
-boot/s390x/initrd.off $initrd_ofs_ofs
-boot/s390x/initrd.siz $initrd_siz_ofs
-boot/s390x/initrd $initrd_ofs
-boot/s390x/parmfile.hmc $parmfile_ofs
+boot/s390x/loader/linux 0x00000000
+boot/s390x/loader/initrd.off $initrd_ofs_ofs
+boot/s390x/loader/initrd.siz $initrd_siz_ofs
+boot/s390x/loader/initrd $initrd_ofs
+boot/s390x/loader/parmfile.hmc $parmfile_ofs
 XXX
 echo "$parmfile_content console=ttyS1" >$boot_dir/parmfile.hmc
 

@@ -23,9 +23,9 @@
 import React from "react";
 import { Content } from "@patternfly/react-core";
 import { Popup } from "~/components/core";
-import { AnswerCallback, Question } from "~/types/questions";
 import QuestionActions from "~/components/questions/QuestionActions";
 import { _ } from "~/i18n";
+import type { AnswerCallback, Question } from "~/model/question";
 
 /**
  * Component for rendering generic questions
@@ -40,8 +40,8 @@ export default function GenericQuestion({
   question: Question;
   answerCallback: AnswerCallback;
 }): React.ReactNode {
-  const actionCallback = (option: string) => {
-    question.answer = option;
+  const actionCallback = (action: string) => {
+    question.answer = { action };
     answerCallback(question);
   };
 
@@ -50,8 +50,8 @@ export default function GenericQuestion({
       <Content>{question.text}</Content>
       <Popup.Actions>
         <QuestionActions
-          actions={question.options}
-          defaultAction={question.defaultOption}
+          actions={question.actions}
+          defaultAction={question.defaultAction}
           actionCallback={actionCallback}
         />
       </Popup.Actions>

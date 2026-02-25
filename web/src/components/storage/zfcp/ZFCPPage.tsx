@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2023-2025] SUSE LLC
+ * Copyright (c) [2023-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -23,7 +23,6 @@
 import React from "react";
 import {
   Button,
-  Content,
   Grid,
   GridItem,
   Toolbar,
@@ -41,22 +40,22 @@ import {
 } from "~/queries/storage/zfcp";
 import ZFCPDisksTable from "./ZFCPDisksTable";
 import ZFCPControllersTable from "./ZFCPControllersTable";
-import { probeZFCP } from "~/api/storage/zfcp";
-import { STORAGE as PATHS } from "~/routes/paths";
-import { useNavigate } from "react-router-dom";
+import { probeZFCP } from "~/model/storage/zfcp";
+import { STORAGE as PATHS, STORAGE } from "~/routes/paths";
+import { useNavigate } from "react-router";
 import { inactiveLuns } from "~/utils/zfcp";
 
 const LUNScanInfo = () => {
   const { allowLunScan } = useZFCPConfig();
   // TRANSLATORS: the text in the square brackets [] will be displayed in bold
   const lunScanEnabled = _(
-    "Automatic LUN scan is [enabled]. Activating a controller which is \
-      running in NPIV mode will automatically configures all its LUNs.",
+    "Automatic LUN scan is [enabled]. Activating a controller which is " +
+      "running in NPIV mode will automatically configures all its LUNs.",
   );
   // TRANSLATORS: the text in the square brackets [] will be displayed in bold
   const lunScanDisabled = _(
-    "Automatic LUN scan is [disabled]. LUNs have to be manually \
-      configured after activating a controller.",
+    "Automatic LUN scan is [disabled]. LUNs have to be manually " +
+      "configured after activating a controller.",
   );
 
   const msg = allowLunScan ? lunScanEnabled : lunScanDisabled;
@@ -184,11 +183,7 @@ export default function ZFCPPage() {
   useZFCPDisksChanges();
 
   return (
-    <Page>
-      <Page.Header>
-        <Content component="h2">{_("zFCP")}</Content>
-      </Page.Header>
-
+    <Page breadcrumbs={[{ label: _("Storage"), path: STORAGE.root }, { label: _("zFCP") }]}>
       <Page.Content>
         <PageContent />
       </Page.Content>

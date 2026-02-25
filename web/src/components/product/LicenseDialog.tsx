@@ -24,7 +24,7 @@ import React, { useEffect, useState } from "react";
 import { Alert, ModalProps, Stack } from "@patternfly/react-core";
 import { Popup } from "~/components/core";
 import { Product } from "~/types/software";
-import { fetchLicense } from "~/api/software";
+import { fetchLicense } from "~/model/software";
 import { useInstallerL10n } from "~/context/installerL10n";
 import { sprintf } from "sprintf-js";
 import supportedLanguages from "~/languages.json";

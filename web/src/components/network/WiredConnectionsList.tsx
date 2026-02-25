@@ -21,7 +21,7 @@
  */
 
 import React, { useId } from "react";
-import { useNavigate } from "react-router-dom";
+import { generatePath, useNavigate } from "react-router";
 import {
   Content,
   DataList,
@@ -35,18 +35,18 @@ import {
 import a11yStyles from "@patternfly/react-styles/css/utilities/Accessibility/accessibility";
 import { Annotation, EmptyState } from "~/components/core";
 import { Connection } from "~/types/network";
-import { useConnections, useNetworkDevices } from "~/queries/network";
+import { useConnections } from "~/hooks/model/proposal/network";
+import { useDevices } from "~/hooks/model/system/network";
 import { NETWORK as PATHS } from "~/routes/paths";
 import { formatIp } from "~/utils/network";
 import { _ } from "~/i18n";
-import { generateEncodedPath } from "~/utils";
 
 type ConnectionListItemProps = { connection: Connection };
 
 const ConnectionListItem = ({ connection }: ConnectionListItemProps) => {
   const nameId = useId();
   const ipId = useId();
-  const devices = useNetworkDevices();
+  const devices = useDevices();
 
   const device = devices.find(
     ({ connection: deviceConnectionId }) => deviceConnectionId === connection.id,
@@ -93,7 +93,7 @@ function WiredConnectionsList(props: DataListProps) {
 
   return (
     <DataList
-      onSelectDataListItem={(_, id) => navigate(generateEncodedPath(PATHS.wiredConnection, { id }))}
+      onSelectDataListItem={(_, id) => navigate(generatePath(PATHS.wiredConnection, { id }))}
       {...props}
     >
       {wiredConnections.map((c: Connection) => (

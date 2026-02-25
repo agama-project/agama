@@ -186,6 +186,8 @@
     </method>
     <method name="Finish">
     </method>
+    <method name="Umount">
+    </method>
     <!--
       Whether the system is in a deprecated status.
 

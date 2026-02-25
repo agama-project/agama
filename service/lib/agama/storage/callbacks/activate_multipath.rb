@@ -29,7 +29,7 @@ module Agama
       class ActivateMultipath
         # Constructor
         #
-        # @param questions_client [Agama::DBus::Clients::Questions]
+        # @param questions_client [Agama::HTTP::Clients::Questions]
         # @param logger [Logger]
         def initialize(questions_client, logger)
           @questions_client = questions_client
@@ -46,14 +46,14 @@ module Agama
           return true if Y2Storage::StorageEnv.instance.forced_multipath?
           return false unless looks_like_real_multipath
 
-          questions_client.ask(question) do |question_client|
-            question_client.answer == :yes
+          questions_client.ask(question) do |answer|
+            answer.action == :yes
           end
         end
 
       private
 
-        # @return [Agama::DBus::Clients::Questions]
+        # @return [Agama::HTTP::Clients::Questions]
         attr_reader :questions_client
 
         # @return [Logger]

@@ -1,11 +1,20 @@
 {
   "$schema": "https://json-schema.org/draft/2019-09/schema",
-  "$id": "https://github.com/openSUSE/agama/blob/master/rust/agama-lib/share/profile.schema.json",
+  "$id": "https://github.com/agama-project/agama/blob/master/rust/agama-lib/share/profile.schema.json",
   "title": "Profile",
   "description": "Profile definition for automated installation",
   "type": "object",
   "additionalProperties": false,
   "properties": {
+    "$schema": {
+      "title": "URL of the JSON validation schema",
+      "description": "The schema location is ignored by the installer, it always uses the built-in schema, but it can be useful for automatic validation and code completion in some editors",
+      "type": "string",
+      "examples": [
+        "https://raw.githubusercontent.com/agama-project/agama/refs/heads/SLE-16/rust/agama-lib/share/profile.schema.json",
+        "https://raw.githubusercontent.com/agama-project/agama/refs/heads/master/rust/agama-lib/share/profile.schema.json"
+      ]
+    },
     "files": {
       "title": "User-defined files to deploy",
       "description": "User-defined files to deploy after installation just before post install scripts",
@@ -70,6 +79,10 @@
         "extraKernelParams": {
           "title": "Specify additional kernel parameters that are added beside ones added by the installer.",
           "type": "string"
+        },
+        "updateNvram": {
+          "title": "Specify if bootloader should update persistent RAM (NVRAM).",
+          "type": "boolean"
         }
       },
       "oneOf": [
@@ -161,6 +174,45 @@
         }
       }
     },
+    "proxy": {
+      "title": "Proxy settings",
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "title": "Whether the proxy is enabled or not.",
+          "type": "boolean"
+        },
+        "httpProxy": {
+          "description": "URL to be used for the HTTP proxy.",
+          "type": "string",
+          "examples": ["http://proxy.provider.de:3128/"]
+        },
+        "httpsProxy": {
+          "description": "URL to be used for the HTTPS proxy.",
+          "type": "string"
+        },
+        "ftpProxy": {
+          "type": "string"
+        },
+        "gopherProxy": {
+          "description": "URL to be used for the Gopher proxy.",
+          "type": "string"
+        },
+        "socksProxy": {
+          "description": "URL to be used for the SOCKS proxy.",
+          "type": "string"
+        },
+        "socks5Server": {
+          "description": "SOCKS5 server address",
+          "type": "string",
+          "examples": ["office-proxy.example.com:8881"]
+        },
+        "noProxy": {
+          "title": "Hosts that do not need a proxy for being reach",
+          "type": "string"
+        }
+      }
+    },
     "security": {
       "title": "Security settings",
       "type": "object",
@@ -191,74 +243,7 @@
       }
     },
     "software": {
-      "title": "Software settings",
-      "type": "object",
-      "properties": {
-        "patterns": {
-          "anyOf": [
-            { "$ref": "#/$defs/patternsArray" },
-            { "$ref": "#/$defs/patternsObject" }
-          ]
-        },
-        "packages": {
-          "title": "List of packages to install",
-          "type": "array",
-          "items": {
-            "type": "string",
-            "examples": ["vim"]
-          }
-        },
-        "onlyRequired": {
-          "title": "Flag if only minimal hard dependencies should be used in solver",
-          "type": "boolean"
-        },
-        "extraRepositories": {
-          "title": "List of user specified repositories that will be used on top of default ones",
-          "type": "array",
-          "items": {
-            "type": "object",
-            "required": ["alias", "url"],
-            "properties": {
-              "alias": {
-                "title": "alias used for repository. Acting as identifier",
-                "type": "string"
-              },
-              "url": {
-                "title": "URL pointing to repository",
-                "type": "string"
-              },
-              "priority": {
-                "title": "Repository priority",
-                "type": "integer"
-              },
-              "name": {
-                "title": "User visible name. Defaults to alias",
-                "type": "string"
-              },
-              "productDir": {
-                "title": "product directory on multi repo DVD. Usually not needed",
-                "type": "string"
-              },
-              "enabled": {
-                "title": "If repository should be enabled. Defaults to true. Useful when adding additional repo that should not be immediately use.",
-                "type": "boolean"
-              },
-              "allowUnsigned": {
-                "title": "If unsigned repositories are allowed. Mainly useful for repositories that is hand crafted without GPG signature.",
-                "type": "boolean"
-              },
-              "gpgFingerprints": {
-                "title": "List of GPG fingerprints that is accepted for this repository. Useful for own repositories with proper GPG signature.",
-                "type": "array",
-                "items": {
-                  "type": "string",
-                  "pattern": "^[0-9a-fA-F ]+"
-                }
-              }
-            }
-          }
-        }
-      }
+      "$ref": "software.schema.json"
     },
     "questions": {
       "title": "How to handle Agama questions",
@@ -290,18 +275,32 @@
         "id": {
           "title": "Product identifier",
           "description": "The id field from a products.d/foo.yaml file",
+          "type": "string",
+          "examples": [
+            "Kalpa",
+            "MicroOS",
+            "openSUSE_Leap_Micro",
+            "openSUSE_Leap",
+            "SLES_SAP",
+            "SLES",
+            "Slowroll",
+            "Tumbleweed"
+          ]
+        },
+        "mode": {
+          "description": "The mode from the products.d/foo.yaml file",
           "type": "string"
         },
         "registrationCode": {
-          "title": "Product registration code",
+          "description": "Product registration code",
           "type": "string"
         },
         "registrationEmail": {
-          "title": "Product registration email",
+          "description": "Product registration email",
           "type": "string"
         },
         "registrationUrl": {
-          "title": "URL of the registration server",
+          "description": "URL of the registration server",
           "type": "string"
         },
         "addons": {
@@ -336,6 +335,29 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
+        "state": {
+          "title": "Network general settings",
+          "type": "object",
+          "properties": {
+            "connectivity": {
+              "title": "Whether the user is able to access the Internet",
+              "type": "boolean",
+              "readOnly": true
+            },
+            "copyNetwork": {
+              "title": "Whether the network configuration should be copied to the target system",
+              "type": "boolean"
+            },
+            "networkingEnabled": {
+              "title": "Whether the network should be enabled",
+              "type": "boolean"
+            },
+            "wirelessEnabled": {
+              "title": "Whether the wireless should be enabled",
+              "type": "boolean"
+            }
+          }
+        },
         "connections": {
           "title": "Network connections to be defined",
           "type": "array",
@@ -766,9 +788,33 @@
         }
       }
     },
-    "localization": {
+    "l10n": {
       "title": "Localization settings",
       "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "locale": {
+          "title": "Locale ID",
+          "type": "string",
+          "examples": ["en_US.UTF-8", "en_US"]
+        },
+        "keymap": {
+          "title": "Keymap ID",
+          "type": "string",
+          "examples": ["us", "en", "es"]
+        },
+        "timezone": {
+          "title": "Time zone ID",
+          "type": "string",
+          "examples": ["Europe/Berlin"]
+        }
+      }
+    },
+    "localization": {
+      "deprecated": true,
+      "title": "Localization settings (old schema)",
+      "type": "object",
+      "additionalProperties": false,
       "properties": {
         "language": {
           "title": "System language ID",
@@ -988,11 +1034,6 @@
           "description": "Question full text",
           "type": "string"
         },
-        "answer": {
-          "title": "Question answer",
-          "description": "Answer to use for the question.",
-          "type": "string"
-        },
         "password": {
           "title": "Password provided as response to a password-based question",
           "type": "string"
@@ -1001,32 +1042,26 @@
           "title": "Additional data for matching questions",
           "description": "Additional data for matching questions and answers",
           "type": "object",
-          "examples": [{ "device": "/dev/sda" }]
-        }
-      }
-    },
-    "patternsArray": {
-      "title": "List of user-selected patterns to install",
-      "type": "array",
-      "items": {
-        "type": "string",
-        "examples": ["minimal_base"]
-      }
-    },
-    "patternsObject": {
-      "title": "Modifications for the list of user-selected patterns to install",
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "add": {
-          "title": "List of user-selected patterns to add to the list",
-          "type": "array",
-          "items": { "type": "string" }
+          "examples": [
+            {
+              "device": "/dev/sda"
+            }
+          ]
         },
-        "remove": {
-          "title": "List of user-selected patterns to remove from the list",
-          "type": "array",
-          "items": { "type": "string" }
+        "action": {
+          "title": "Predefined question action",
+          "description": "Action to use for the question.",
+          "type": "string"
+        },
+        "answer": {
+          "description": "Action to use for the question. Prefer using \"action\" instead.",
+          "type": "string",
+          "deprecated": true
+        },
+        "value": {
+          "title": "Predefined question value",
+          "description": "Value to use for the question (depending on the type of the question).",
+          "type": "string"
         }
       }
     }

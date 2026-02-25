@@ -28,8 +28,5 @@ module Agama
 end
 
 require "agama/http/clients/base"
-require "agama/http/clients/files"
-require "agama/http/clients/localization"
-require "agama/http/clients/network"
-require "agama/http/clients/scripts"
-require "agama/http/clients/software"
+require "agama/http/clients/main"
+require "agama/http/clients/questions"

@@ -5,7 +5,7 @@
     "outDir": "dist/",
     "isolatedModules": true,
     "target": "esnext",
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "esModuleInterop": true,
     "allowJs": true,

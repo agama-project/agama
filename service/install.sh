@@ -27,6 +27,5 @@ install6 -D -t "${DESTDIR}${datadir}"/dbus-1/agama-services "${SRCDIR}"/share/or
 
 install6 -D -t "${DESTDIR}${unitdir}" "${SRCDIR}"/share/agama.service 
 install6 -D -t "${DESTDIR}${unitdir}" "${SRCDIR}"/share/agama-dbus-monitor.service
-install6 -D -t "${DESTDIR}${unitdir}" "${SRCDIR}"/share/agama-proxy-setup.service
 
 install6 -D -t "${DESTDIR}${datadir}"/agama/conf.d/ "${SRCDIR}"/conf.d/*.yaml

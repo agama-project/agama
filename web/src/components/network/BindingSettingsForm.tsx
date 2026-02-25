@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2025] SUSE LLC
+ * Copyright (c) [2025-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -21,7 +21,7 @@
  */
 
 import React, { useReducer } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { generatePath, useNavigate, useParams } from "react-router";
 import {
   ActionGroup,
   Content,
@@ -33,12 +33,15 @@ import {
   Stack,
 } from "@patternfly/react-core";
 import { Page, SubtleContent } from "~/components/core";
-import { useConnection, useConnectionMutation, useNetworkDevices } from "~/queries/network";
 import { Connection, ConnectionBindingMode, Device } from "~/types/network";
 import Radio from "~/components/core/RadioEnhanced";
 import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
 import { connectionBindingMode } from "~/utils/network";
+import { useConnection } from "~/hooks/model/proposal/network";
+import { useConnectionMutation } from "~/hooks/model/config/network";
+import { useDevices } from "~/hooks/model/system/network";
+import { NETWORK } from "~/routes/paths";
 
 type DevicesSelectProps = Omit<FormSelectProps, "children" | "ref"> & {
   /**
@@ -60,7 +63,7 @@ function DevicesSelect({
   valueKey,
   ...formSelectProps
 }: DevicesSelectProps): React.ReactNode {
-  const devices = useNetworkDevices();
+  const devices = useDevices();
 
   const labelAttrs = valueKey === "macAddress" ? ["macAddress", "name"] : ["name", "macAddress"];
 
@@ -129,7 +132,7 @@ export default function BindingSettingsForm() {
   const { id } = useParams();
   const { mutateAsync: updateConnection } = useConnectionMutation();
   const connection = useConnection(id);
-  const devices = useNetworkDevices();
+  const devices = useDevices();
   const navigate = useNavigate();
   const [state, dispatch] = useReducer(formReducer, {
     mode: connectionBindingMode(connection),
@@ -153,22 +156,20 @@ export default function BindingSettingsForm() {
       .catch(console.error);
   };
 
-  // TRANSLATORS: The title of the page. %s will be replaced with the connection
-  // name. I.e., "Binding settings for 'Wired connection 1'"
-  const title = sprintf(_("Binding settings for '%s'"), connection.id);
+  const breadcrumbs = [
+    { label: _("Network"), path: NETWORK.root },
+    { label: connection.id, path: generatePath(NETWORK.wiredConnection, { id: connection.id }) },
+    { label: _("Binding settings") },
+  ];
 
   return (
-    <Page>
-      <Page.Header>
-        <Content component="h2">{title}</Content>
-        <SubtleContent>
+    <Page breadcrumbs={breadcrumbs}>
+      <Page.Content>
+        <Content isEditorial>
           {_(
             "Choose how the connection should be associated with a network device. This helps control which device the connection uses.",
           )}
-        </SubtleContent>
-      </Page.Header>
-
-      <Page.Content>
+        </Content>
         <Form id="editDeviceConnectionForm" onSubmit={onSubmitForm}>
           <FormGroup fieldId="macAddress" isStack>
             <Radio

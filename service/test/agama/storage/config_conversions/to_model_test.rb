@@ -117,10 +117,9 @@ describe Agama::Storage::ConfigConversions::ToModel do
               logicalVolumes: [
                 {
                   filesystem: {
-                    reuse:     false,
-                    default:   true,
-                    type:      "btrfs",
-                    snapshots: false
+                    reuse:   false,
+                    default: true,
+                    type:    "btrfs"
                   },
                   mountPath:  "/",
                   size:       {

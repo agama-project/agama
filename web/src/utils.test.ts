@@ -25,10 +25,13 @@ import {
   localConnection,
   hex,
   mask,
+  maskSecrets,
   timezoneTime,
-  generateEncodedPath,
   sortCollection,
+  mergeSources,
 } from "./utils";
+import type { Target as ConfigTarget } from "~/openapi/config/iscsi";
+import type { Target as SystemTarget } from "~/openapi/system/iscsi";
 
 describe("compact", () => {
   it("removes null and undefined values", () => {
@@ -197,49 +200,6 @@ describe("localConnection", () => {
   });
 });
 
-describe("generateEncodedPath", () => {
-  it("encodes special characters in parameters", () => {
-    const path = "/network/:id";
-    const params = { id: "Wired #1" };
-
-    const result = generateEncodedPath(path, params);
-
-    expect(result).toBe("/network/Wired%20%231");
-  });
-
-  it("handles multiple parameters", () => {
-    const path = "/network/:id/bridge/:bridge";
-    const params = { id: "Wired #1", bridge: "br $0" };
-
-    const result = generateEncodedPath(path, params);
-
-    expect(result).toBe("/network/Wired%20%231/bridge/br%20%240");
-  });
-
-  it("leaves safe characters unchanged", () => {
-    const path = "/product/:id";
-    const params = { id: "12345" };
-
-    const result = generateEncodedPath(path, params);
-
-    expect(result).toBe("/product/12345");
-  });
-
-  it("works with empty params", () => {
-    const path = "/static/path";
-
-    const result = generateEncodedPath(path, {});
-
-    expect(result).toBe("/static/path");
-  });
-
-  it("throws if a param is missing", () => {
-    const path = "/network/:id";
-
-    expect(() => generateEncodedPath(path, {})).toThrow();
-  });
-});
-
 describe("simpleFastSort", () => {
   const fakeDevices = [
     { sid: 100, name: "/dev/sdz", size: 5 },
@@ -310,5 +270,350 @@ describe("simpleFastSort", () => {
     const original = [...fakeDevices];
     sortCollection(fakeDevices, "asc", "size");
     expect(fakeDevices).toEqual(original);
+  });
+});
+
+describe("mergeSources", () => {
+  it("merges collections honoring precedence when primary key is based on single attribute", () => {
+    const result = mergeSources({
+      collections: {
+        system: [
+          {
+            name: "iqn.2023-01.com.example:12ac588",
+            address: "192.168.100.102",
+            port: 3262,
+            interface: "default",
+            ibft: false,
+            startup: "onboot",
+            connected: true,
+            locked: false,
+          },
+        ],
+        config: [
+          {
+            name: "iqn.2023-01.com.example:12ac588",
+            address: "192.168.100.102",
+            port: 3262,
+            interface: "default",
+            startup: "onboot",
+          },
+          {
+            name: "iqn.2023-01.com.example:12ac788",
+            address: "192.168.100.106",
+            port: 3264,
+            interface: "default",
+            startup: "onboot",
+          },
+        ],
+      },
+      precedence: ["system", "config"],
+      primaryKey: "name",
+    });
+
+    expect(result).toHaveLength(2);
+
+    expect(result[0]).toMatchObject({
+      name: "iqn.2023-01.com.example:12ac588",
+      address: "192.168.100.102",
+      port: 3262,
+      interface: "default",
+      ibft: false,
+      startup: "onboot",
+      connected: true,
+      locked: false,
+      sources: ["system", "config"],
+    });
+
+    expect(result[1]).toMatchObject({
+      name: "iqn.2023-01.com.example:12ac788",
+      address: "192.168.100.106",
+      port: 3264,
+      sources: ["config"],
+    });
+  });
+
+  it("merges collections honoring precedence when primary key is based on mulitple attribute", () => {
+    type MergedTarget = Partial<SystemTarget> & Partial<ConfigTarget>;
+    const result = mergeSources<MergedTarget, keyof MergedTarget>({
+      collections: {
+        system: [
+          {
+            name: "iqn.2023-01.com.example:storage",
+            address: "192.168.100.102",
+            port: 3260,
+            interface: "default",
+            ibft: false,
+            startup: "onboot",
+            connected: true,
+            locked: false,
+          },
+          {
+            name: "iqn.2023-01.com.example:storage",
+            address: "192.168.100.102",
+            port: 3261,
+            interface: "default",
+            ibft: false,
+            startup: "manual",
+            connected: false,
+            locked: false,
+          },
+        ],
+        config: [
+          {
+            name: "iqn.2023-01.com.example:storage",
+            address: "192.168.100.102",
+            port: 3260,
+            interface: "default",
+            startup: "onboot",
+          },
+          {
+            name: "iqn.2023-01.com.example:storage",
+            address: "192.168.100.102",
+            port: 3261,
+            interface: "default",
+            startup: "manual",
+          },
+          {
+            name: "iqn.2023-01.com.example:storage",
+            address: "192.168.100.103",
+            port: 3260,
+            interface: "default",
+            startup: "onboot",
+          },
+        ],
+      },
+      precedence: ["system", "config"],
+      primaryKey: ["name", "address", "port"],
+    });
+
+    expect(result).toHaveLength(3);
+    expect(result[0]).toMatchObject({
+      name: "iqn.2023-01.com.example:storage",
+      address: "192.168.100.102",
+      port: 3260,
+      connected: true,
+      sources: ["system", "config"],
+    });
+    expect(result[1]).toMatchObject({
+      name: "iqn.2023-01.com.example:storage",
+      address: "192.168.100.102",
+      port: 3261,
+      connected: false,
+      sources: ["system", "config"],
+    });
+    expect(result[2]).toMatchObject({
+      name: "iqn.2023-01.com.example:storage",
+      address: "192.168.100.103",
+      port: 3260,
+      sources: ["config"],
+    });
+    expect(result[2]).not.toHaveProperty("connected");
+  });
+
+  it('uses "id" as default primary key when not specified', () => {
+    const result = mergeSources({
+      collections: {
+        source1: [
+          { id: 1, value: "first" },
+          { id: 2, value: "second" },
+        ],
+        source2: [
+          { id: 1, value: "duplicate" },
+          { id: 3, value: "third" },
+        ],
+      },
+      precedence: ["source1", "source2"],
+    });
+
+    expect(result).toHaveLength(3);
+    expect(result[0]).toEqual({ id: 1, value: "first", sources: ["source1", "source2"] });
+    expect(result[1]).toEqual({ id: 2, value: "second", sources: ["source1"] });
+    expect(result[2]).toEqual({ id: 3, value: "third", sources: ["source2"] });
+  });
+
+  it("returns empty array when all collections are empty", () => {
+    const result = mergeSources({
+      collections: {
+        system: [],
+        config: [],
+      },
+      precedence: ["system", "config"],
+      primaryKey: "name",
+    });
+
+    expect(result).toEqual([]);
+  });
+
+  it("handles single collection with multiple items", () => {
+    const result = mergeSources({
+      collections: {
+        config: [
+          {
+            name: "iqn.2023-01.com.example:target1",
+            address: "192.168.100.1",
+            port: 3260,
+            interface: "default",
+            startup: "onboot",
+          },
+          {
+            name: "iqn.2023-01.com.example:target2",
+            address: "192.168.100.2",
+            port: 3260,
+            interface: "default",
+            startup: "manual",
+          },
+        ],
+      },
+      precedence: ["config"],
+      primaryKey: "name",
+    });
+
+    expect(result).toHaveLength(2);
+    expect(result[0].sources).toEqual(["config"]);
+    expect(result[1].sources).toEqual(["config"]);
+  });
+
+  it("supports more than two collections", () => {
+    const result = mergeSources({
+      collections: {
+        system: [
+          {
+            name: "iqn.2023-01.com.example:shared",
+            address: "192.168.100.1",
+            port: 3260,
+            interface: "default",
+            ibft: false,
+            startup: "onboot",
+            connected: true,
+            locked: false,
+          },
+        ],
+        config: [
+          {
+            name: "iqn.2023-01.com.example:shared",
+            address: "192.168.100.1",
+            port: 3260,
+            interface: "default",
+            startup: "onboot",
+          },
+        ],
+        extended: [
+          {
+            name: "iqn.2023-01.com.example:shared",
+            address: "192.168.100.1",
+            port: 3260,
+            interface: "default",
+            startup: "onboot",
+          },
+        ],
+      },
+      precedence: ["system", "config", "extended"],
+      primaryKey: "name",
+    });
+
+    expect(result).toHaveLength(1);
+    expect(result[0].sources).toEqual(["system", "config", "extended"]);
+    expect(result[0].connected).toBe(true);
+  });
+});
+
+describe("maskSecrets", () => {
+  it("should filter sensitive keys from an object", () => {
+    const obj = { user: "test", password: "123" };
+    const sanitized = maskSecrets(obj, { stringify: false });
+    expect(sanitized).toEqual({ user: "test", password: "[FILTERED]" });
+  });
+
+  it("should not modify an object without sensitive keys", () => {
+    const obj = { user: "test", id: 1 };
+    const sanitized = maskSecrets(obj, { stringify: false });
+    expect(sanitized).toEqual({ user: "test", id: 1 });
+  });
+
+  it("should recursively filter sensitive keys in nested objects", () => {
+    const obj = {
+      user: "test",
+      credentials: {
+        password: "123",
+      },
+    };
+    const sanitized = maskSecrets(obj, { stringify: false });
+    expect(sanitized).toEqual({
+      user: "test",
+      credentials: {
+        password: "[FILTERED]",
+      },
+    });
+  });
+
+  it("should handle arrays of objects", () => {
+    const arr = [
+      { user: "one", password: "123" },
+      { user: "two", id: 2 },
+    ];
+    const sanitized = maskSecrets(arr, { stringify: false });
+    expect(sanitized).toEqual([
+      { user: "one", password: "[FILTERED]" },
+      { user: "two", id: 2 },
+    ]);
+  });
+
+  it("should not mutate the original object", () => {
+    const originalObj = { user: "test", password: "123" };
+    const originalObjCopy = JSON.parse(JSON.stringify(originalObj));
+    maskSecrets(originalObj, { stringify: false });
+    expect(originalObj).toEqual(originalObjCopy);
+  });
+
+  it("should handle null and undefined values correctly", () => {
+    const obj = { user: "test", password: "123", data: null, extra: undefined };
+    const sanitized = maskSecrets(obj, { stringify: false });
+    // Note: `undefined` properties are omitted when creating a new object from an existing one.
+    expect(sanitized).toEqual({ user: "test", password: "[FILTERED]", data: null });
+  });
+
+  it("should return primitive values unmodified", () => {
+    expect(maskSecrets("string", { stringify: false })).toBe("string");
+    expect(maskSecrets(123, { stringify: false })).toBe(123);
+    expect(maskSecrets(true, { stringify: false })).toBe(true);
+    expect(maskSecrets(null, { stringify: false })).toBe(null);
+    expect(maskSecrets(undefined, { stringify: false })).toBe(undefined);
+  });
+
+  it("should handle an empty object", () => {
+    expect(maskSecrets({}, { stringify: false })).toEqual({});
+  });
+
+  it("should handle an empty array", () => {
+    expect(maskSecrets([], { stringify: false })).toEqual([]);
+  });
+
+  it("should filter all defined sensitive keys", () => {
+    const obj = {
+      user: "test",
+      password: "123",
+      hashedPassword: false,
+      registrationCode: "xyz",
+    };
+    expect(maskSecrets(obj, { stringify: false })).toEqual({
+      user: "test",
+      password: "[FILTERED]",
+      hashedPassword: false,
+      registrationCode: "[FILTERED]",
+    });
+  });
+
+  it("should handle custom sensitive keys", () => {
+    const obj = { user: "test", password: "123", sensitive: "abc" };
+    const sanitized = maskSecrets(obj, { sensitiveKeys: ["sensitive"], stringify: false });
+    expect(sanitized).toEqual({ user: "test", password: "123", sensitive: "[FILTERED]" });
+  });
+
+  it("can optionally stringify the output", () => {
+    expect(maskSecrets([], { stringify: true })).toEqual("[]");
+    expect(maskSecrets({}, { stringify: true })).toEqual("{}");
+    expect(maskSecrets({ user: "test", password: "123" }, { stringify: true })).toEqual(
+      '{\n  "user": "test",\n  "password": "[FILTERED]"\n}',
+    );
   });
 });

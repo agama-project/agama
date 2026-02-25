@@ -20,7 +20,7 @@ translations:
       Pro doručování aplikací používá Flatpak, dále má základ systému pouze pro
       čtení s atomickými aktualizacemi, které probíhají automaticky
     de: Ein rollierend veröffentlichtes unveränderliches Desktop-Produkt, welches
-      den Plasma Desktop und Flatpak für die Anwendungsbereitstellung nutzt,
+      den Plasma-Desktop und Flatpak für die Anwendungsbereitstellung nutzt,
       eine Basis mit ausschließlich Lesezugriff besitzt und atomare
       Aktualisierungen durchführt.
     es: Un producto inmutable de escritorio de actualización continua, utilizando el
@@ -86,13 +86,14 @@ software:
     - microos_hardware
     - microos_kde_desktop
     - microos_selinux
-  optional_patterns: null
+  optional_patterns: []
   user_patterns:
     - container_runtime
   mandatory_packages:
     - NetworkManager
     - openSUSE-repos-MicroOS
-  optional_packages: null
+    - sudo-policy-wheel-auth-self # explicit wheel group policy to conform new auth model
+  optional_packages: []
   base_product: Kalpa
 
 security:

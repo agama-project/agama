@@ -33,7 +33,7 @@ import {
 } from "@patternfly/react-core";
 import { Link, Page } from "~/components/core";
 import PasswordCheck from "~/components/users/PasswordCheck";
-import { useRootUser, useRootUserChanges } from "~/queries/users";
+import { useConfig } from "~/hooks/model/config";
 import { USER } from "~/routes/paths";
 import { isEmpty } from "radashi";
 import { _ } from "~/i18n";
@@ -45,8 +45,8 @@ const SSHKeyLabel = ({ sshKey }) => {
 };
 
 export default function RootUser() {
-  const { password, sshPublicKey } = useRootUser();
-  useRootUserChanges();
+  const root = useConfig().root || {};
+  const { password, sshPublicKey } = root;
 
   return (
     <Page.Section

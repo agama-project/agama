@@ -1,0 +1,25 @@
+[package]
+name = "agama-l10n"
+version = "0.1.0"
+rust-version.workspace = true
+edition.workspace = true
+
+[dependencies]
+anyhow = "1.0.99"
+thiserror = "2.0.16"
+agama-locale-data = { path = "../agama-locale-data" }
+agama-utils = { path = "../agama-utils" }
+regex = "1.11.2"
+tracing = "0.1.41"
+gettext-rs = { version = "0.7.2", features = ["gettext-system"] }
+tokio = { version = "1.47.1", features = ["macros", "rt-multi-thread", "sync"] }
+tokio-stream = "0.1.17"
+zbus = "5.11.0"
+async-trait = "0.1.89"
+
+[dev-dependencies]
+test-context = "0.4.1"
+tokio-test = "0.4.4"
+
+[lints.rust]
+unexpected_cfgs = { level = "warn", check-cfg = ['cfg(ci)'] }

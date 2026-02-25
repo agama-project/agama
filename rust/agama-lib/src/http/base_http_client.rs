@@ -46,7 +46,7 @@ pub enum BaseHTTPClientError {
 /// Usage should be just thin layer in domain specific client.
 ///
 /// ```no_run
-///   use agama_lib::questions::model::Question;
+///   use agama_utils::api::question::Question;
 ///   use agama_lib::http::{BaseHTTPClient, BaseHTTPClientError};
 ///
 ///   async fn get_questions() -> Result<Vec<Question>, BaseHTTPClientError> {
@@ -333,7 +333,7 @@ impl BaseHTTPClient {
             // let text = String::from_utf8_lossy(&bytes);
             // eprintln!("Response body: {}", text);
 
-            serde_json::from_slice(&bytes).map_err(|e| e.into())
+            Ok(serde_json::from_slice(&bytes)?)
         } else {
             Err(self.build_backend_error(response).await)
         }

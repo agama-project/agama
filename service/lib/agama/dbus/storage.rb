@@ -29,4 +29,3 @@ end
 
 require "agama/dbus/storage/iscsi"
 require "agama/dbus/storage/manager"
-require "agama/dbus/storage/proposal"

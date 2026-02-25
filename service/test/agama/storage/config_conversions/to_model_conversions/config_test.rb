@@ -25,7 +25,7 @@ require "agama/storage/config_conversions/to_model_conversions/config"
 describe Agama::Storage::ConfigConversions::ToModelConversions::Config do
   include_context "config"
 
-  subject { described_class.new(config) }
+  subject { described_class.new(config, product_config) }
 
   let(:config_json) do
     {
@@ -97,10 +97,9 @@ describe Agama::Storage::ConfigConversions::ToModelConversions::Config do
                   resize:         false,
                   resizeIfNeeded: false,
                   filesystem:     {
-                    reuse:     false,
-                    default:   true,
-                    type:      "btrfs",
-                    snapshots: false
+                    reuse:   false,
+                    default: true,
+                    type:    "btrfs"
                   },
                   mountPath:      "/",
                   size:           {
@@ -154,10 +153,9 @@ describe Agama::Storage::ConfigConversions::ToModelConversions::Config do
                   resize:         false,
                   resizeIfNeeded: false,
                   filesystem:     {
-                    reuse:     false,
-                    default:   true,
-                    type:      "btrfs",
-                    snapshots: false
+                    reuse:   false,
+                    default: true,
+                    type:    "btrfs"
                   },
                   mountPath:      "/",
                   size:           {
@@ -195,7 +193,9 @@ describe Agama::Storage::ConfigConversions::ToModelConversions::Config do
               targetDevices:  [],
               logicalVolumes: [
                 {
-                  filesystem: { reuse: false },
+                  filesystem: {
+                    reuse: false
+                  },
                   mountPath:  "/",
                   size:       {
                     default: true,

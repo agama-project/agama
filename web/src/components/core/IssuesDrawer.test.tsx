@@ -24,16 +24,16 @@ import React from "react";
 import { screen, within } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import { InstallationPhase } from "~/types/status";
-import { IssuesList } from "~/types/issues";
 import IssuesDrawer from "./IssuesDrawer";
+import type { Issue } from "~/model/issue";
 
 let phase = InstallationPhase.Config;
-let mockIssuesList: IssuesList;
+const mockIssues = jest.fn();
 const onCloseFn = jest.fn();
 
-jest.mock("~/queries/issues", () => ({
-  ...jest.requireActual("~/queries/issues"),
-  useAllIssues: () => mockIssuesList,
+jest.mock("~/hooks/model/issue", () => ({
+  ...jest.requireActual("~/hooks/model/issue"),
+  useIssues: (): Issue[] => mockIssues(),
 }));
 
 jest.mock("~/queries/status", () => ({
@@ -51,80 +51,46 @@ const itRendersNothing = () =>
 describe("IssuesDrawer", () => {
   describe("when there are no installation issues", () => {
     beforeEach(() => {
-      mockIssuesList = new IssuesList([], [], [], []);
+      mockIssues.mockReturnValue([]);
     });
 
     itRendersNothing();
   });
 
-  describe("when there are non-critical issues", () => {
+  describe("when there are issues", () => {
     beforeEach(() => {
-      mockIssuesList = new IssuesList(
-        [
-          {
-            description: "Registration Fake Warning",
-            kind: "generic",
-            source: 0,
-            severity: 0,
-            details: "Registration Fake Issue details",
-          },
-        ],
-        [],
-        [],
-        [],
-      );
-    });
-
-    itRendersNothing();
-  });
-
-  describe("when there are installation issues", () => {
-    beforeEach(() => {
-      mockIssuesList = new IssuesList(
-        [
-          {
-            description: "Registration Fake Issue",
-            kind: "generic",
-            source: 0,
-            severity: 1,
-            details: "Registration Fake Issue details",
-          },
-        ],
-        [
-          {
-            description: "Software Fake Issue",
-            kind: "generic",
-            source: 0,
-            severity: 1,
-            details: "Software Fake Issue details",
-          },
-        ],
-        [
-          {
-            description: "Storage Fake Issue 1",
-            kind: "generic",
-            source: 0,
-            severity: 1,
-            details: "Storage Fake Issue 1 details",
-          },
-          {
-            description: "Storage Fake Issue 2",
-            kind: "generic",
-            source: 0,
-            severity: 1,
-            details: "Storage Fake Issue 2 details",
-          },
-        ],
-        [
-          {
-            description: "Users Fake Issue",
-            kind: "generic",
-            source: 0,
-            severity: 1,
-            details: "Users Fake Issue details",
-          },
-        ],
-      );
+      mockIssues.mockReturnValue([
+        {
+          description: "Registration Fake Issue",
+          class: "generic",
+          details: "Registration Fake Issue details",
+          scope: "product",
+        },
+        {
+          description: "Software Fake Issue",
+          class: "generic",
+          details: "Software Fake Issue details",
+          scope: "software",
+        },
+        {
+          description: "Storage Fake Issue 1",
+          class: "generic",
+          details: "Storage Fake Issue 1 details",
+          scope: "storage",
+        },
+        {
+          description: "Storage Fake Issue 2",
+          class: "generic",
+          details: "Storage Fake Issue 2 details",
+          scope: "storage",
+        },
+        {
+          description: "Users Fake Issue",
+          class: "generic",
+          details: "Users Fake Issue details",
+          scope: "users",
+        },
+      ] as Issue[]);
     });
 
     it("renders the drawer with categorized issues linking to their scope", async () => {

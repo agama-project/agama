@@ -21,12 +21,12 @@
 
 require_relative "../../../test_helper"
 require "agama/storage/callbacks/activate"
-require "agama/dbus/clients/questions"
+require "agama/http/clients"
 
 describe Agama::Storage::Callbacks::Activate do
   subject { described_class.new(questions_client, logger) }
 
-  let(:questions_client) { instance_double(Agama::DBus::Clients::Questions) }
+  let(:questions_client) { instance_double(Agama::HTTP::Clients::Questions) }
 
   let(:logger) { Logger.new($stdout, level: :warn) }
 

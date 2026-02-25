@@ -27,6 +27,9 @@ BuildRequires:  gettext-runtime
 Requires:       dbus-1-common
 Requires:       rubygem(agama-yast)
 
+# do not build on 32bits, the dependant libsuseconnect is 64bit only
+ExcludeArch:    %ix86 s390 ppc64
+
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
 BuildRequires:  ruby-macros >= 5
 
@@ -80,7 +83,6 @@ sh "%{SOURCE2}" "%{SOURCE1}"
 %{_datadir}/dbus-1/agama-services/org.opensuse.Agama*.service
 %{_unitdir}/agama.service
 %{_unitdir}/agama-dbus-monitor.service
-%{_unitdir}/agama-proxy-setup.service
 %dir %{_datadir}/agama
 %dir %{_datadir}/agama/conf.d
 %{_datadir}/agama/conf.d

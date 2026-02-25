@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022-2025] SUSE LLC
+# Copyright (c) [2022-2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -21,10 +21,11 @@
 
 require "dbus"
 require "agama/dbus/bus"
-require "agama/dbus/service_status"
 require "agama/dbus/storage/iscsi"
 require "agama/dbus/storage/manager"
-require "agama/storage"
+require "agama/storage/manager"
+require "agama/storage/iscsi/adapter"
+require "yast"
 require "y2storage/inhibitors"
 
 module Agama
@@ -37,10 +38,8 @@ module Agama
       SERVICE_NAME = "org.opensuse.Agama.Storage1"
       private_constant :SERVICE_NAME
 
-      # @param config [Config] Configuration object
       # @param logger [Logger]
-      def initialize(config, logger = nil)
-        @config = config
+      def initialize(logger = nil)
         @logger = logger || Logger.new($stdout)
       end
 
@@ -56,6 +55,8 @@ module Agama
         # Inhibits various storage subsystem (udisk, systemd mounts, raid auto-assembly) that
         # interfere with the operation of yast-storage-ng and libstorage-ng.
         Y2Storage::Inhibitors.new.inhibit
+        Agama::Storage::ISCSI::Adapter.new.activate
+        check_multipath
         export
       end
 
@@ -78,11 +79,26 @@ module Agama
 
     private
 
-      # @return [Config]
-      attr_reader :config
-
       # @return [Logger]
       attr_reader :logger
+
+      MULTIPATH_CONFIG = "/etc/multipath.conf"
+      private_constant :MULTIPATH_CONFIG
+
+      # Checks if all requirement for multipath probing is correct and if not then log it.
+      def check_multipath
+        # check if kernel module is loaded
+        mods = `lsmod`.lines.grep(/dm_multipath/)
+        logger.warn("dm_multipath modules is not loaded") if mods.empty?
+
+        binary = system("which multipath")
+        if binary
+          conf = `multipath -t`.lines.grep(/find_multipaths "smart"/)
+          logger.warn("multipath: find_multipaths is not set to 'smart'") if conf.empty?
+        else
+          logger.warn("multipath is not installed.")
+        end
+      end
 
       # @return [::DBus::ObjectServer]
       def service
@@ -91,36 +107,34 @@ module Agama
 
       # @return [Array<::DBus::Object>]
       def dbus_objects
-        @dbus_objects ||= [manager_object, iscsi_object]
+        @dbus_objects ||= [manager_object, iscsi_object, dasd_object].compact
       end
 
       # @return [Agama::DBus::Storage::Manager]
       def manager_object
-        @manager_object ||= Agama::DBus::Storage::Manager.new(
-          manager,
-          service_status: service_status,
-          logger:         logger
-        )
+        @manager_object ||= Agama::DBus::Storage::Manager.new(manager, logger: logger)
       end
 
       # @return [Agama::DBus::Storage::ISCSI]
       def iscsi_object
-        # Uses the same service status as the manager D-Bus object.
-        @iscsi_object ||= Agama::DBus::Storage::ISCSI.new(
-          manager.iscsi,
-          service_status: service_status,
-          logger:         logger
-        )
+        @iscsi_object ||= Agama::DBus::Storage::ISCSI.new(manager.iscsi, logger: logger)
+      end
+
+      # @return [Agama::DBus::Storage::DASD, nil]
+      def dasd_object
+        return unless Yast::Arch.s390
+
+        return @dasd_object unless @dasd_object.nil?
+
+        require "agama/storage/dasd/manager"
+        require "agama/dbus/storage/dasd"
+        manager = Agama::Storage::DASD::Manager.new(logger: logger)
+        @dasd_object = Agama::DBus::Storage::DASD.new(manager, logger: logger)
       end
 
       # @return [Agama::Storage::Manager]
       def manager
-        @manager ||= Agama::Storage::Manager.new(config, logger: logger)
-      end
-
-      # @return [Agama::DBus::ServiceStatus]
-      def service_status
-        @service_status ||= Agama::DBus::ServiceStatus.new
+        @manager ||= Agama::Storage::Manager.new(logger: logger)
       end
     end
   end

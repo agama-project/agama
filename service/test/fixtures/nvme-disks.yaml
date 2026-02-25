@@ -1,0 +1,16 @@
+---
+- disk:
+    name: "/dev/nvme0n1"
+    size: 750 GiB
+
+- disk:
+    name: "/dev/nvme1n1"
+    size: 750 GiB
+
+- disk:
+    name: "/dev/nvme2n1"
+    size: 750 GiB
+
+- disk:
+    name: "/dev/nvme3n1"
+    size: 750 GiB

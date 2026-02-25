@@ -20,12 +20,12 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useCallback, useEffect, useState } from "react";
-import { locationReload, setLocationSearch } from "~/utils";
+import React, { useCallback } from "react";
+import { useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import agama from "~/agama";
 import supportedLanguages from "~/languages.json";
-import { fetchConfig as defaultFetchConfig, updateConfig } from "~/api/l10n";
-import { LocaleConfig } from "~/types/l10n";
+import { useSystem } from "~/hooks/model/system";
+import { configureL10nAction } from "~/api";
 
 const L10nContext = React.createContext(null);
 
@@ -33,8 +33,12 @@ const L10nContext = React.createContext(null);
  * Installer localization context.
  */
 interface L10nContext {
-  language: string | undefined;
-  keymap: string | undefined;
+  // Current language in RFC 5646 format (e.g., "en-US").
+  language: string;
+  // Current keymap (e.g., "en")
+  keymap: string;
+  // Loaded language matching <lang> in the po.<lang>.js file (e.g., "en", "pt_BR").
+  loadedLanguage: string;
   changeLanguage: (language: string) => Promise<void>;
   changeKeymap: (keymap: string) => Promise<void>;
 }
@@ -47,56 +51,6 @@ function useInstallerL10n(): L10nContext {
   }
 
   return context;
-}
-
-/**
- * Current language (in xx_XX format).
- *
- * It takes the language from the agamaLang cookie.
- *
- * @return Undefined if language is not set.
- */
-function agamaLanguage(): string | undefined {
-  // language from cookie, empty string if not set (regexp taken from Cockpit)
-  // https://github.com/cockpit-project/cockpit/blob/98a2e093c42ea8cd2431cf15c7ca0e44bb4ce3f1/pkg/shell/shell-modals.jsx#L91
-  return decodeURIComponent(
-    document.cookie.replace(/(?:(?:^|.*;\s*)agamaLang\s*=\s*([^;]*).*$)|^.*$/, "$1"),
-  );
-}
-
-/**
- * Helper function for storing the Agama language.
- *
- * Automatically converts the language from xx_XX to xx-xx, as it is the one used by Agama.
- *
- * @param language - The new locale (e.g., "cs", "cs_CZ").
- * @return True if the locale was changed.
- */
-function storeAgamaLanguage(language: string): boolean {
-  const current = agamaLanguage();
-  if (current === language) return false;
-
-  // Code taken from Cockpit.
-  const cookie =
-    "agamaLang=" + encodeURIComponent(language) + "; path=/; expires=Sun, 16 Jul 3567 06:23:41 GMT";
-  document.cookie = cookie;
-
-  return true;
-}
-
-/**
- * Returns the language tag from the query string.
- *
- * Query supports 'xx-xx', 'xx_xx', 'xx-XX' and 'xx_XX' formats.
- *
- * @return Undefined if not set.
- */
-function languageFromQuery(): string | undefined {
-  const lang = new URLSearchParams(window.location.search).get("lang");
-  if (!lang) return undefined;
-
-  const [language, country] = lang.split(/[-_]/);
-  return country ? `${language.toLowerCase()}-${country.toUpperCase()}` : language;
 }
 
 /**
@@ -133,16 +87,6 @@ function languageToLocale(language: string): string {
 }
 
 /**
- * Returns the language tag from the backend.
- *
- * @return Language tag from the backend locale.
- */
-async function languageFromBackend(fetchConfig: () => Promise<LocaleConfig>): Promise<string> {
-  const config = await fetchConfig();
-  return languageFromLocale(config.uiLocale);
-}
-
-/**
  * Returns the first supported language from the given list.
  *
  * @param languages - list of RFC 5646 language tags (e.g., ["en-US", "en"]) to check
@@ -167,37 +111,21 @@ function findSupportedLanguage(languages: Array<string>): string | undefined {
 }
 
 /**
- * Reloads the page.
- *
- * It uses the window.location.replace instead of the reload function synchronizing the "lang"
- * argument from the URL if present.
- *
- * @param newLanguage - new language to use.
- */
-function reload(newLanguage: string) {
-  const query = new URLSearchParams(window.location.search);
-  if (query.has("lang") && query.get("lang") !== newLanguage) {
-    query.set("lang", newLanguage);
-    // Setting location search with a different value makes the browser to navigate to the new URL.
-    setLocationSearch(query.toString());
-  } else {
-    locationReload();
-  }
-}
-
-/**
  * Load the web frontend translations from the server.
  *
  * @param locale requested locale
  * @returns Promise with a dynamic import
  */
-async function loadTranslations(locale: string) {
+async function loadTranslations(locale: string): Promise<string> {
   // load the translations dynamically, first try the language + territory
   return import(
     /* webpackChunkName: "[request]" */
     `../po/po.${locale}`
   )
-    .then((m) => agama.locale(m.default))
+    .then((m) => {
+      agama.locale(m.default);
+      return agama.language.replace("-", "_");
+    })
     .catch(async () => {
       // if it fails try the language only
       const po = locale.split("-")[0];
@@ -205,13 +133,17 @@ async function loadTranslations(locale: string) {
         /* webpackChunkName: "[request]" */
         `../po/po.${po}`
       )
-        .then((m) => agama.locale(m.default))
+        .then((m) => {
+          agama.locale(m.default);
+          return agama.language.replace("-", "_");
+        })
         .catch(() => {
-          if (locale !== "en-US") {
+          if (locale && locale !== "en-US") {
             console.error("Cannot load frontend translations for", locale);
           }
           // reset the current translations (use the original English texts)
           agama.locale(null);
+          return agama.language.replace("-", "_");
         });
     });
 }
@@ -228,91 +160,64 @@ async function loadTranslations(locale: string) {
  *
  * @param props
  * @param [props.children] - Content to display within the wrapper.
- * @param [props.fetchConfigFn] - Function to retrieve l10n settings.
  *
  * @see useInstallerL10n
  */
 function InstallerL10nProvider({
   initialLanguage,
-  fetchConfigFn,
   children,
 }: {
   initialLanguage?: string;
-  fetchConfigFn?: () => Promise<LocaleConfig>;
   children?: React.ReactNode;
 }) {
-  const fetchConfig = fetchConfigFn || defaultFetchConfig;
-  const [language, setLanguage] = useState(initialLanguage);
-  const [keymap, setKeymap] = useState(undefined);
+  const queryClient = useQueryClient();
+  const system = useSystem();
+  const l10n = system?.l10n;
 
-  const syncBackendLanguage = useCallback(async () => {
-    const backendLanguage = await languageFromBackend(fetchConfig);
-    if (backendLanguage === language) return;
+  const locale = l10n?.locale;
+  const language = locale ? languageFromLocale(locale) : initialLanguage || "en-US";
+  const keymap = l10n?.keymap;
 
-    // FIXME: fallback to en-US if the language is not supported.
-    await updateConfig({ uiLocale: languageToLocale(language) });
-  }, [fetchConfig, language]);
+  const { data: loadedLanguage } = useSuspenseQuery({
+    queryKey: ["translations", language],
+    queryFn: () => loadTranslations(language),
+  });
 
   const changeLanguage = useCallback(
-    async (lang?: string) => {
-      const wanted = lang || languageFromQuery();
-
-      // Just for development purposes
-      if (wanted === "xx" || wanted === "xx-XX") {
-        agama.language = wanted;
-        setLanguage(wanted);
-        return;
-      }
-
+    async (lang: string) => {
       const candidateLanguages = [
-        wanted,
-        wanted?.split("-")[0], // fallback to the language (e.g., "es" for "es-AR")
-        agamaLanguage(),
-        await languageFromBackend(fetchConfig),
+        lang,
+        lang?.split("-")[0], // fallback to the language (e.g., "es" for "es-AR")
+        language,
       ].filter((l) => l);
       const newLanguage = findSupportedLanguage(candidateLanguages) || "en-US";
-      const mustReload = storeAgamaLanguage(newLanguage);
-
       document.documentElement.lang = newLanguage.split("-")[0];
 
-      if (mustReload) {
-        reload(newLanguage);
-      } else {
-        setLanguage(newLanguage);
-
-        await loadTranslations(newLanguage);
-      }
+      await configureL10nAction({ locale: languageToLocale(newLanguage) });
+      await queryClient.invalidateQueries({ queryKey: ["translations"] });
     },
-    [fetchConfig, setLanguage],
+    [language, queryClient],
   );
 
-  const changeKeymap = useCallback(
-    async (id: string) => {
-      setKeymap(id);
-      await updateConfig({ uiKeymap: id });
-    },
-    [setKeymap],
+  const changeKeymap = useCallback(async (id: string) => {
+    await configureL10nAction({ keymap: id });
+  }, []);
+
+  const value = {
+    loadedLanguage,
+    language,
+    changeLanguage,
+    keymap,
+    changeKeymap,
+  };
+
+  // Setting the key forces to reload the children when the language changes
+  // (see https://react.dev/learn/preserving-and-resetting-state).
+  return (
+    <L10nContext.Provider key={language} value={value}>
+      {children}
+    </L10nContext.Provider>
   );
-
-  useEffect(() => {
-    if (!language) changeLanguage();
-  }, [changeLanguage, language]);
-
-  useEffect(() => {
-    if (!language) return;
-
-    syncBackendLanguage();
-  }, [language, syncBackendLanguage]);
-
-  useEffect(() => {
-    fetchConfig().then((c) => setKeymap(c.uiKeymap));
-  }, [setKeymap, fetchConfig]);
-
-  const value = { language, changeLanguage, keymap, changeKeymap };
-
-  if (!language) return null;
-
-  return <L10nContext.Provider value={value}>{children}</L10nContext.Provider>;
 }
 
 export { InstallerL10nProvider, useInstallerL10n };

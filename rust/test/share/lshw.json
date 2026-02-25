@@ -1,0 +1,1812 @@
+{
+  "id" : "localhost.localdomain",
+  "class" : "system",
+  "claimed" : true,
+  "handle" : "DMI:000F",
+  "description" : "Notebook",
+  "product" : "20XF009AUK (LENOVO_MT_20XF_BU_Think_FM_ThinkPad T14s Gen 2a)",
+  "vendor" : "LENOVO",
+  "version" : "ThinkPad T14s Gen 2a",
+  "serial" : "PC2G11QC",
+  "width" : 64,
+  "configuration" : {
+    "administrator_password" : "disabled",
+    "chassis" : "notebook",
+    "family" : "ThinkPad T14s Gen 2a",
+    "power-on_password" : "disabled",
+    "sku" : "LENOVO_MT_20XF_BU_Think_FM_ThinkPad T14s Gen 2a",
+    "uuid" : "b63bbacc-1f95-11b2-a85c-e0c3a8567de0"
+  },
+  "capabilities" : {
+    "smbios-3.3.0" : "SMBIOS version 3.3.0",
+    "dmi-3.3.0" : "DMI version 3.3.0",
+    "smp" : "Symmetric Multi-Processing",
+    "vsyscall32" : "32-bit processes"
+  },
+  "children" : [    {
+      "id" : "core",
+      "class" : "bus",
+      "claimed" : true,
+      "handle" : "DMI:0010",
+      "description" : "Motherboard",
+      "product" : "20XF009AUK",
+      "vendor" : "LENOVO",
+      "physid" : "0",
+      "version" : "SDK0T76538 WIN",
+      "serial" : "L1HF25E0VY6",
+      "slot" : "Not Available",
+      "children" : [        {
+          "id" : "memory",
+          "class" : "memory",
+          "claimed" : true,
+          "handle" : "DMI:0001",
+          "description" : "System Memory",
+          "physid" : "1",
+          "slot" : "System board or motherboard",
+          "units" : "bytes",
+          "size" : 17179869184,
+          "children" : [            {
+              "id" : "bank:0",
+              "class" : "memory",
+              "claimed" : true,
+              "handle" : "DMI:0008",
+              "description" : "LPDDR4 Synchronous Unbuffered (Unregistered) 4266 MHz (0.2 ns)",
+              "product" : "MT53E1G32D2NP-046",
+              "vendor" : "Micron Technology",
+              "physid" : "0",
+              "serial" : "00000000",
+              "slot" : "DIMM 0",
+              "units" : "bytes",
+              "size" : 8589934592,
+              "width" : 32,
+              "clock" : 4266000000
+            },
+            {
+              "id" : "bank:1",
+              "class" : "memory",
+              "claimed" : true,
+              "handle" : "DMI:000B",
+              "description" : "LPDDR4 Synchronous Unbuffered (Unregistered) 4266 MHz (0.2 ns)",
+              "product" : "MT53E1G32D2NP-046",
+              "vendor" : "Micron Technology",
+              "physid" : "1",
+              "serial" : "00000000",
+              "slot" : "DIMM 0",
+              "units" : "bytes",
+              "size" : 8589934592,
+              "width" : 32,
+              "clock" : 4266000000
+            }]
+        },
+        {
+          "id" : "cache:0",
+          "class" : "memory",
+          "claimed" : true,
+          "handle" : "DMI:0003",
+          "description" : "L1 cache",
+          "physid" : "3",
+          "slot" : "L1 - Cache",
+          "units" : "bytes",
+          "size" : 393216,
+          "capacity" : 393216,
+          "clock" : 1000000000,
+          "configuration" : {
+            "level" : "1"
+          },
+          "capabilities" : {
+            "pipeline-burst" : "Pipeline burst",
+            "internal" : "Internal",
+            "write-back" : "Write-back",
+            "unified" : "Unified cache"
+          }
+        },
+        {
+          "id" : "cache:1",
+          "class" : "memory",
+          "claimed" : true,
+          "handle" : "DMI:0004",
+          "description" : "L2 cache",
+          "physid" : "4",
+          "slot" : "L2 - Cache",
+          "units" : "bytes",
+          "size" : 3145728,
+          "capacity" : 3145728,
+          "clock" : 1000000000,
+          "configuration" : {
+            "level" : "2"
+          },
+          "capabilities" : {
+            "pipeline-burst" : "Pipeline burst",
+            "internal" : "Internal",
+            "write-back" : "Write-back",
+            "unified" : "Unified cache"
+          }
+        },
+        {
+          "id" : "cache:2",
+          "class" : "memory",
+          "claimed" : true,
+          "handle" : "DMI:0005",
+          "description" : "L3 cache",
+          "physid" : "5",
+          "slot" : "L3 - Cache",
+          "units" : "bytes",
+          "size" : 16777216,
+          "capacity" : 16777216,
+          "clock" : 1000000000,
+          "configuration" : {
+            "level" : "3"
+          },
+          "capabilities" : {
+            "pipeline-burst" : "Pipeline burst",
+            "internal" : "Internal",
+            "write-back" : "Write-back",
+            "unified" : "Unified cache"
+          }
+        },
+        {
+          "id" : "cpu",
+          "class" : "processor",
+          "claimed" : true,
+          "handle" : "DMI:0006",
+          "description" : "CPU",
+          "product" : "AMD Ryzen 5 PRO 5650U with Radeon Graphics",
+          "vendor" : "Advanced Micro Devices [AMD]",
+          "physid" : "6",
+          "businfo" : "cpu@0",
+          "version" : "25.80.0",
+          "serial" : "None",
+          "slot" : "FP6",
+          "units" : "Hz",
+          "size" : 3352781000,
+          "capacity" : 4291753000,
+          "width" : 64,
+          "clock" : 100000000,
+          "configuration" : {
+            "cores" : "6",
+            "enabledcores" : "6",
+            "microcode" : "173015058",
+            "threads" : "12"
+          },
+          "capabilities" : {
+            "lm" : "64bits extensions (x86-64)",
+            "fpu" : "mathematical co-processor",
+            "fpu_exception" : "FPU exceptions reporting",
+            "wp" : true,
+            "vme" : "virtual mode extensions",
+            "de" : "debugging extensions",
+            "pse" : "page size extensions",
+            "tsc" : "time stamp counter",
+            "msr" : "model-specific registers",
+            "pae" : "4GB+ memory addressing (Physical Address Extension)",
+            "mce" : "machine check exceptions",
+            "cx8" : "compare and exchange 8-byte",
+            "apic" : "on-chip advanced programmable interrupt controller (APIC)",
+            "sep" : "fast system calls",
+            "mtrr" : "memory type range registers",
+            "pge" : "page global enable",
+            "mca" : "machine check architecture",
+            "cmov" : "conditional move instruction",
+            "pat" : "page attribute table",
+            "pse36" : "36-bit page size extensions",
+            "clflush" : true,
+            "mmx" : "multimedia extensions (MMX)",
+            "fxsr" : "fast floating point save/restore",
+            "sse" : "streaming SIMD extensions (SSE)",
+            "sse2" : "streaming SIMD extensions (SSE2)",
+            "ht" : "HyperThreading",
+            "syscall" : "fast system calls",
+            "nx" : "no-execute bit (NX)",
+            "mmxext" : "multimedia extensions (MMXExt)",
+            "fxsr_opt" : true,
+            "pdpe1gb" : true,
+            "rdtscp" : true,
+            "x86-64" : "64bits extensions (x86-64)",
+            "constant_tsc" : true,
+            "rep_good" : true,
+            "nopl" : true,
+            "xtopology" : true,
+            "nonstop_tsc" : true,
+            "cpuid" : true,
+            "extd_apicid" : true,
+            "aperfmperf" : true,
+            "rapl" : true,
+            "pni" : true,
+            "pclmulqdq" : true,
+            "monitor" : true,
+            "ssse3" : true,
+            "fma" : true,
+            "cx16" : true,
+            "sse4_1" : true,
+            "sse4_2" : true,
+            "movbe" : true,
+            "popcnt" : true,
+            "aes" : true,
+            "xsave" : true,
+            "avx" : true,
+            "f16c" : true,
+            "rdrand" : true,
+            "lahf_lm" : true,
+            "cmp_legacy" : true,
+            "svm" : true,
+            "extapic" : true,
+            "cr8_legacy" : true,
+            "abm" : true,
+            "sse4a" : true,
+            "misalignsse" : true,
+            "3dnowprefetch" : true,
+            "osvw" : true,
+            "ibs" : true,
+            "skinit" : true,
+            "wdt" : true,
+            "tce" : true,
+            "topoext" : true,
+            "perfctr_core" : true,
+            "perfctr_nb" : true,
+            "bpext" : true,
+            "perfctr_llc" : true,
+            "mwaitx" : true,
+            "cpb" : true,
+            "cat_l3" : true,
+            "cdp_l3" : true,
+            "hw_pstate" : true,
+            "ssbd" : true,
+            "mba" : true,
+            "ibrs" : true,
+            "ibpb" : true,
+            "stibp" : true,
+            "vmmcall" : true,
+            "fsgsbase" : true,
+            "bmi1" : true,
+            "avx2" : true,
+            "smep" : true,
+            "bmi2" : true,
+            "erms" : true,
+            "invpcid" : true,
+            "cqm" : true,
+            "rdt_a" : true,
+            "rdseed" : true,
+            "adx" : true,
+            "smap" : true,
+            "clflushopt" : true,
+            "clwb" : true,
+            "sha_ni" : true,
+            "xsaveopt" : true,
+            "xsavec" : true,
+            "xgetbv1" : true,
+            "xsaves" : true,
+            "cqm_llc" : true,
+            "cqm_occup_llc" : true,
+            "cqm_mbm_total" : true,
+            "cqm_mbm_local" : true,
+            "user_shstk" : true,
+            "clzero" : true,
+            "irperf" : true,
+            "xsaveerptr" : true,
+            "rdpru" : true,
+            "wbnoinvd" : true,
+            "cppc" : true,
+            "arat" : true,
+            "npt" : true,
+            "lbrv" : true,
+            "svm_lock" : true,
+            "nrip_save" : true,
+            "tsc_scale" : true,
+            "vmcb_clean" : true,
+            "flushbyasid" : true,
+            "decodeassists" : true,
+            "pausefilter" : true,
+            "pfthreshold" : true,
+            "avic" : true,
+            "v_vmsave_vmload" : true,
+            "vgif" : true,
+            "v_spec_ctrl" : true,
+            "umip" : true,
+            "pku" : true,
+            "ospke" : true,
+            "vaes" : true,
+            "vpclmulqdq" : true,
+            "rdpid" : true,
+            "overflow_recov" : true,
+            "succor" : true,
+            "smca" : true,
+            "fsrm" : true,
+            "debug_swap" : true,
+            "cpufreq" : "CPU Frequency scaling"
+          }
+        },
+        {
+          "id" : "firmware",
+          "class" : "memory",
+          "claimed" : true,
+          "description" : "BIOS",
+          "vendor" : "LENOVO",
+          "physid" : "e",
+          "version" : "R1NET63W (1.33)",
+          "date" : "12/17/2024",
+          "units" : "bytes",
+          "size" : 131072,
+          "capacity" : 33554432,
+          "capabilities" : {
+            "pci" : "PCI bus",
+            "pnp" : "Plug-and-Play",
+            "upgrade" : "BIOS EEPROM can be upgraded",
+            "shadowing" : "BIOS shadowing",
+            "cdboot" : "Booting from CD-ROM/DVD",
+            "bootselect" : "Selectable boot path",
+            "edd" : "Enhanced Disk Drive extensions",
+            "int13floppy720" : "3.5\" 720KB floppy",
+            "int5printscreen" : "Print Screen key",
+            "int9keyboard" : "i8042 keyboard controller",
+            "int14serial" : "INT14 serial line control",
+            "int17printer" : "INT17 printer control",
+            "int10video" : "INT10 CGA/Mono video",
+            "acpi" : "ACPI",
+            "usb" : "USB legacy emulation",
+            "biosbootspecification" : "BIOS boot specification",
+            "uefi" : "UEFI specification is supported"
+          }
+        },
+        {
+          "id" : "pci:0",
+          "class" : "bridge",
+          "claimed" : true,
+          "handle" : "PCIBUS:0000:00",
+          "description" : "Host bridge",
+          "product" : "Renoir/Cezanne Root Complex",
+          "vendor" : "Advanced Micro Devices, Inc. [AMD]",
+          "physid" : "100",
+          "businfo" : "pci@0000:00:00.0",
+          "version" : "00",
+          "width" : 32,
+          "clock" : 33000000,
+          "children" : [            {
+              "id" : "generic",
+              "class" : "generic",
+              "handle" : "PCI:0000:00:00.2",
+              "description" : "IOMMU",
+              "product" : "Renoir/Cezanne IOMMU",
+              "vendor" : "Advanced Micro Devices, Inc. [AMD]",
+              "physid" : "0.2",
+              "businfo" : "pci@0000:00:00.2",
+              "version" : "00",
+              "width" : 32,
+              "clock" : 33000000,
+              "configuration" : {
+                "latency" : "0"
+              },
+              "capabilities" : {
+                "msi" : "Message Signalled Interrupts",
+                "ht" : "HyperTransport",
+                "cap_list" : "PCI capabilities listing"
+              }
+            },
+            {
+              "id" : "pci:0",
+              "class" : "bridge",
+              "claimed" : true,
+              "handle" : "PCIBUS:0000:01",
+              "description" : "PCI bridge",
+              "product" : "Renoir/Cezanne PCIe GPP Bridge",
+              "vendor" : "Advanced Micro Devices, Inc. [AMD]",
+              "physid" : "2.1",
+              "businfo" : "pci@0000:00:02.1",
+              "version" : "00",
+              "width" : 32,
+              "clock" : 33000000,
+              "configuration" : {
+                "driver" : "pcieport"
+              },
+              "capabilities" : {
+                "pci" : true,
+                "pm" : "Power Management",
+                "pciexpress" : "PCI Express",
+                "msi" : "Message Signalled Interrupts",
+                "ht" : "HyperTransport",
+                "normal_decode" : true,
+                "bus_master" : "bus mastering",
+                "cap_list" : "PCI capabilities listing"
+              },
+              "children" : [                {
+                  "id" : "nvme",
+                  "class" : "storage",
+                  "claimed" : true,
+                  "handle" : "PCI:0000:01:00.0",
+                  "description" : "NVMe device",
+                  "product" : "UMIS RPETJ512MGE2QDQ",
+                  "vendor" : "Shenzhen Unionmemory Information System Ltd.",
+                  "physid" : "0",
+                  "businfo" : "pci@0000:01:00.0",
+                  "logicalname" : "/dev/nvme0",
+                  "version" : "1.5Q0630",
+                  "serial" : "SS0L25217X8LC2560T0V",
+                  "width" : 64,
+                  "clock" : 33000000,
+                  "configuration" : {
+                    "driver" : "nvme",
+                    "latency" : "0",
+                    "nqn" : "nqn.2022-05.com.Ramaxel:nvm-subsystem-sn-SS0L25217X8LC2560T0V",
+                    "state" : "live"
+                  },
+                  "capabilities" : {
+                    "nvme" : true,
+                    "pm" : "Power Management",
+                    "msi" : "Message Signalled Interrupts",
+                    "pciexpress" : "PCI Express",
+                    "msix" : "MSI-X",
+                    "nvm_express" : true,
+                    "bus_master" : "bus mastering",
+                    "cap_list" : "PCI capabilities listing"
+                  },
+                  "children" : [                    {
+                      "id" : "namespace:0",
+                      "class" : "disk",
+                      "claimed" : true,
+                      "description" : "NVMe disk",
+                      "physid" : "0",
+                      "logicalname" : "hwmon1"
+                    },
+                    {
+                      "id" : "namespace:1",
+                      "class" : "disk",
+                      "claimed" : true,
+                      "description" : "NVMe disk",
+                      "physid" : "2",
+                      "logicalname" : "/dev/ng0n1"
+                    },
+                    {
+                      "id" : "namespace:2",
+                      "class" : "disk",
+                      "claimed" : true,
+                      "handle" : "GUID:c1c7e130-8782-48a6-8494-765106e2c764",
+                      "description" : "NVMe disk",
+                      "physid" : "1",
+                      "businfo" : "nvme@0:1",
+                      "logicalname" : "/dev/nvme0n1",
+                      "units" : "bytes",
+                      "size" : 512110190592,
+                      "configuration" : {
+                        "guid" : "c1c7e130-8782-48a6-8494-765106e2c764",
+                        "logicalsectorsize" : "512",
+                        "sectorsize" : "512",
+                        "wwid" : "eui.044a5012509d57e0"
+                      },
+                      "capabilities" : {
+                        "gpt-1.00" : "GUID Partition Table version 1.00",
+                        "partitioned" : "Partitioned disk",
+                        "partitioned:gpt" : "GUID partition table"
+                      },
+                      "children" : [                        {
+                          "id" : "volume:0",
+                          "class" : "volume",
+                          "claimed" : true,
+                          "handle" : "GUID:5d4ea142-f9d0-4a26-8ab1-d691b04e6f7f",
+                          "description" : "Windows FAT volume",
+                          "vendor" : "mkfs.fat",
+                          "physid" : "1",
+                          "businfo" : "nvme@0:1,1",
+                          "logicalname" : ["/dev/nvme0n1p1", "/boot/efi"],
+                          "dev" : "259:1",
+                          "version" : "FAT32",
+                          "serial" : "56fd-87c7",
+                          "size" : 1072676864,
+                          "capacity" : 1073741312,
+                          "configuration" : {
+                            "FATs" : "2",
+                            "filesystem" : "fat",
+                            "mount.fstype" : "vfat",
+                            "mount.options" : "rw,relatime,fmask=0022,dmask=0022,codepage=437,iocharset=iso8859-1,shortname=mixed,utf8,errors=remount-ro",
+                            "state" : "mounted"
+                          },
+                          "capabilities" : {
+                            "boot" : "Contains boot code",
+                            "fat" : "Windows FAT volume",
+                            "initialized" : "initialized volume"
+                          }
+                        },
+                        {
+                          "id" : "volume:1",
+                          "class" : "volume",
+                          "claimed" : true,
+                          "handle" : "GUID:f83b5eda-32f8-4751-ba4c-89db5ba6e52d",
+                          "description" : "EFI partition",
+                          "physid" : "2",
+                          "businfo" : "nvme@0:1,2",
+                          "logicalname" : "/dev/nvme0n1p2",
+                          "dev" : "259:2",
+                          "serial" : "d8b292d9-57dc-402b-8195-aacbacde68aa",
+                          "size" : 493855178240,
+                          "capacity" : 493855178240,
+                          "width" : 2784342592,
+                          "configuration" : {
+                            "bits" : "11374277184",
+                            "filesystem" : "luks",
+                            "hash" : "sha256",
+                            "version" : "2"
+                          },
+                          "capabilities" : {
+                            "encrypted" : "Encrypted volume",
+                            "luks" : "Linux Unified Key Setup volume",
+                            "initialized" : "initialized volume"
+                          }
+                        },
+                        {
+                          "id" : "volume:2",
+                          "class" : "volume",
+                          "claimed" : true,
+                          "handle" : "GUID:95b40e7b-ba42-47c2-8526-e82da564273d",
+                          "description" : "swap partition",
+                          "vendor" : "Linux",
+                          "physid" : "3",
+                          "businfo" : "nvme@0:1,3",
+                          "logicalname" : "/dev/nvme0n1p3",
+                          "dev" : "259:3",
+                          "serial" : "7acf44d0-bfde-46bf-bdde-81ca3f8beac0",
+                          "size" : 17180204032,
+                          "capacity" : 17180204032,
+                          "width" : 2534398576,
+                          "configuration" : {
+                            "bits" : "19714267760",
+                            "filesystem" : "luks",
+                            "hash" : "sha256",
+                            "version" : "2"
+                          },
+                          "capabilities" : {
+                            "nofs" : "No filesystem",
+                            "encrypted" : "Encrypted volume",
+                            "luks" : "Linux Unified Key Setup volume",
+                            "initialized" : "initialized volume"
+                          }
+                        }]
+                    }]
+                }]
+            },
+            {
+              "id" : "pci:1",
+              "class" : "bridge",
+              "claimed" : true,
+              "handle" : "PCIBUS:0000:02",
+              "description" : "PCI bridge",
+              "product" : "Renoir/Cezanne PCIe GPP Bridge",
+              "vendor" : "Advanced Micro Devices, Inc. [AMD]",
+              "physid" : "2.2",
+              "businfo" : "pci@0000:00:02.2",
+              "version" : "00",
+              "width" : 32,
+              "clock" : 33000000,
+              "configuration" : {
+                "driver" : "pcieport"
+              },
+              "capabilities" : {
+                "pci" : true,
+                "pm" : "Power Management",
+                "pciexpress" : "PCI Express",
+                "msi" : "Message Signalled Interrupts",
+                "ht" : "HyperTransport",
+                "normal_decode" : true,
+                "bus_master" : "bus mastering",
+                "cap_list" : "PCI capabilities listing"
+              },
+              "children" : [                {
+                  "id" : "network",
+                  "class" : "network",
+                  "claimed" : true,
+                  "handle" : "PCI:0000:02:00.0",
+                  "description" : "Ethernet interface",
+                  "product" : "RTL8111/8168/8211/8411 PCI Express Gigabit Ethernet Controller",
+                  "vendor" : "Realtek Semiconductor Co., Ltd.",
+                  "physid" : "0",
+                  "businfo" : "pci@0000:02:00.0",
+                  "logicalname" : "enp2s0f0",
+                  "version" : "0e",
+                  "serial" : "6c:24:08:6e:98:f2",
+                  "units" : "bit/s",
+                  "capacity" : 1000000000,
+                  "width" : 64,
+                  "clock" : 33000000,
+                  "configuration" : {
+                    "autonegotiation" : "on",
+                    "broadcast" : "yes",
+                    "driver" : "r8169",
+                    "driverversion" : "6.17.9-1-default",
+                    "latency" : "0",
+                    "link" : "no",
+                    "multicast" : "yes",
+                    "port" : "twisted pair"
+                  },
+                  "capabilities" : {
+                    "pm" : "Power Management",
+                    "msi" : "Message Signalled Interrupts",
+                    "pciexpress" : "PCI Express",
+                    "msix" : "MSI-X",
+                    "vpd" : "Vital Product Data",
+                    "bus_master" : "bus mastering",
+                    "cap_list" : "PCI capabilities listing",
+                    "ethernet" : true,
+                    "physical" : "Physical interface",
+                    "tp" : "twisted pair",
+                    "mii" : "Media Independent Interface",
+                    "10bt" : "10Mbit/s",
+                    "10bt-fd" : "10Mbit/s (full duplex)",
+                    "100bt" : "100Mbit/s",
+                    "100bt-fd" : "100Mbit/s (full duplex)",
+                    "1000bt-fd" : "1Gbit/s (full duplex)",
+                    "autonegotiation" : "Auto-negotiation"
+                  }
+                },
+                {
+                  "id" : "communication:0",
+                  "class" : "communication",
+                  "claimed" : true,
+                  "handle" : "PCI:0000:02:00.1",
+                  "description" : "Serial controller",
+                  "product" : "RTL8111xP UART #1",
+                  "vendor" : "Realtek Semiconductor Co., Ltd.",
+                  "physid" : "0.1",
+                  "businfo" : "pci@0000:02:00.1",
+                  "version" : "0e",
+                  "width" : 64,
+                  "clock" : 33000000,
+                  "configuration" : {
+                    "driver" : "serial",
+                    "latency" : "0"
+                  },
+                  "capabilities" : {
+                    "pm" : "Power Management",
+                    "msi" : "Message Signalled Interrupts",
+                    "pciexpress" : "PCI Express",
+                    "msix" : "MSI-X",
+                    "vpd" : "Vital Product Data",
+                    "16550" : true,
+                    "cap_list" : "PCI capabilities listing"
+                  }
+                },
+                {
+                  "id" : "communication:1",
+                  "class" : "communication",
+                  "claimed" : true,
+                  "handle" : "PCI:0000:02:00.2",
+                  "description" : "Serial controller",
+                  "product" : "RTL8111xP UART #2",
+                  "vendor" : "Realtek Semiconductor Co., Ltd.",
+                  "physid" : "0.2",
+                  "businfo" : "pci@0000:02:00.2",
+                  "version" : "0e",
+                  "width" : 64,
+                  "clock" : 33000000,
+                  "configuration" : {
+                    "driver" : "serial",
+                    "latency" : "0"
+                  },
+                  "capabilities" : {
+                    "pm" : "Power Management",
+                    "msi" : "Message Signalled Interrupts",
+                    "pciexpress" : "PCI Express",
+                    "msix" : "MSI-X",
+                    "vpd" : "Vital Product Data",
+                    "16550" : true,
+                    "cap_list" : "PCI capabilities listing"
+                  }
+                },
+                {
+                  "id" : "serial",
+                  "class" : "bus",
+                  "handle" : "PCI:0000:02:00.3",
+                  "description" : "IPMI Interface",
+                  "product" : "RTL8111xP IPMI interface",
+                  "vendor" : "Realtek Semiconductor Co., Ltd.",
+                  "physid" : "0.3",
+                  "businfo" : "pci@0000:02:00.3",
+                  "version" : "0e",
+                  "width" : 64,
+                  "clock" : 33000000,
+                  "configuration" : {
+                    "latency" : "0"
+                  },
+                  "capabilities" : {
+                    "pm" : "Power Management",
+                    "msi" : "Message Signalled Interrupts",
+                    "pciexpress" : "PCI Express",
+                    "msix" : "MSI-X",
+                    "vpd" : "Vital Product Data",
+                    "kcs" : true,
+                    "cap_list" : "PCI capabilities listing"
+                  }
+                },
+                {
+                  "id" : "usb",
+                  "class" : "bus",
+                  "claimed" : true,
+                  "handle" : "PCI:0000:02:00.4",
+                  "description" : "USB controller",
+                  "product" : "RTL811x EHCI host controller",
+                  "vendor" : "Realtek Semiconductor Co., Ltd.",
+                  "physid" : "0.4",
+                  "businfo" : "pci@0000:02:00.4",
+                  "version" : "0e",
+                  "width" : 64,
+                  "clock" : 33000000,
+                  "configuration" : {
+                    "driver" : "ehci-pci",
+                    "latency" : "0"
+                  },
+                  "capabilities" : {
+                    "pm" : "Power Management",
+                    "msi" : "Message Signalled Interrupts",
+                    "pciexpress" : "PCI Express",
+                    "msix" : "MSI-X",
+                    "vpd" : "Vital Product Data",
+                    "ehci" : "Enhanced Host Controller Interface (USB2)",
+                    "bus_master" : "bus mastering",
+                    "cap_list" : "PCI capabilities listing"
+                  },
+                  "children" : [                    {
+                      "id" : "usbhost",
+                      "class" : "bus",
+                      "claimed" : true,
+                      "handle" : "USB:7:1",
+                      "product" : "EHCI Host Controller",
+                      "vendor" : "Linux 6.17.9-1-default ehci_hcd",
+                      "physid" : "1",
+                      "businfo" : "usb@7",
+                      "logicalname" : "usb7",
+                      "version" : "6.17",
+                      "configuration" : {
+                        "driver" : "hub",
+                        "slots" : "1",
+                        "speed" : "480Mbit/s"
+                      },
+                      "capabilities" : {
+                        "usb-2.00" : "USB 2.0"
+                      }
+                    }]
+                }]
+            },
+            {
+              "id" : "pci:2",
+              "class" : "bridge",
+              "claimed" : true,
+              "handle" : "PCIBUS:0000:03",
+              "description" : "PCI bridge",
+              "product" : "Renoir/Cezanne PCIe GPP Bridge",
+              "vendor" : "Advanced Micro Devices, Inc. [AMD]",
+              "physid" : "2.3",
+              "businfo" : "pci@0000:00:02.3",
+              "version" : "00",
+              "width" : 32,
+              "clock" : 33000000,
+              "configuration" : {
+                "driver" : "pcieport"
+              },
+              "capabilities" : {
+                "pci" : true,
+                "pm" : "Power Management",
+                "pciexpress" : "PCI Express",
+                "msi" : "Message Signalled Interrupts",
+                "ht" : "HyperTransport",
+                "normal_decode" : true,
+                "bus_master" : "bus mastering",
+                "cap_list" : "PCI capabilities listing"
+              },
+              "children" : [                {
+                  "id" : "network",
+                  "class" : "network",
+                  "claimed" : true,
+                  "handle" : "PCI:0000:03:00.0",
+                  "description" : "Wireless interface",
+                  "product" : "MT7921 802.11ax PCI Express Wireless Network Adapter",
+                  "vendor" : "MEDIATEK Corp.",
+                  "physid" : "0",
+                  "businfo" : "pci@0000:03:00.0",
+                  "logicalname" : "wlp3s0",
+                  "version" : "00",
+                  "serial" : "d8:80:83:a5:d0:79",
+                  "width" : 64,
+                  "clock" : 33000000,
+                  "configuration" : {
+                    "broadcast" : "yes",
+                    "driver" : "mt7921e",
+                    "driverversion" : "6.17.9-1-default",
+                    "firmware" : "____010000-20250625153703",
+                    "ip" : "192.168.1.42",
+                    "latency" : "0",
+                    "link" : "yes",
+                    "multicast" : "yes",
+                    "wireless" : "IEEE 802.11"
+                  },
+                  "capabilities" : {
+                    "pciexpress" : "PCI Express",
+                    "msi" : "Message Signalled Interrupts",
+                    "pm" : "Power Management",
+                    "bus_master" : "bus mastering",
+                    "cap_list" : "PCI capabilities listing",
+                    "ethernet" : true,
+                    "physical" : "Physical interface",
+                    "wireless" : "Wireless-LAN"
+                  }
+                }]
+            },
+            {
+              "id" : "pci:3",
+              "class" : "bridge",
+              "claimed" : true,
+              "handle" : "PCIBUS:0000:04",
+              "description" : "PCI bridge",
+              "product" : "Renoir/Cezanne PCIe GPP Bridge",
+              "vendor" : "Advanced Micro Devices, Inc. [AMD]",
+              "physid" : "2.7",
+              "businfo" : "pci@0000:00:02.7",
+              "version" : "00",
+              "width" : 32,
+              "clock" : 33000000,
+              "configuration" : {
+                "driver" : "pcieport"
+              },
+              "capabilities" : {
+                "pci" : true,
+                "pm" : "Power Management",
+                "pciexpress" : "PCI Express",
+                "msi" : "Message Signalled Interrupts",
+                "ht" : "HyperTransport",
+                "normal_decode" : true,
+                "bus_master" : "bus mastering",
+                "cap_list" : "PCI capabilities listing"
+              },
+              "children" : [                {
+                  "id" : "usb",
+                  "class" : "bus",
+                  "claimed" : true,
+                  "handle" : "PCI:0000:04:00.0",
+                  "description" : "USB controller",
+                  "product" : "uPD720202 USB 3.0 Host Controller",
+                  "vendor" : "Renesas Electronics Corp.",
+                  "physid" : "0",
+                  "businfo" : "pci@0000:04:00.0",
+                  "version" : "02",
+                  "width" : 64,
+                  "clock" : 33000000,
+                  "configuration" : {
+                    "driver" : "xhci-pci-renesas",
+                    "latency" : "0"
+                  },
+                  "capabilities" : {
+                    "pm" : "Power Management",
+                    "msi" : "Message Signalled Interrupts",
+                    "msix" : "MSI-X",
+                    "pciexpress" : "PCI Express",
+                    "xhci" : true,
+                    "bus_master" : "bus mastering",
+                    "cap_list" : "PCI capabilities listing"
+                  },
+                  "children" : [                    {
+                      "id" : "usbhost:0",
+                      "class" : "bus",
+                      "claimed" : true,
+                      "handle" : "USB:5:1",
+                      "product" : "xHCI Host Controller",
+                      "vendor" : "Linux 6.17.9-1-default xhci-hcd",
+                      "physid" : "0",
+                      "businfo" : "usb@5",
+                      "logicalname" : "usb5",
+                      "version" : "6.17",
+                      "configuration" : {
+                        "driver" : "hub",
+                        "slots" : "2",
+                        "speed" : "480Mbit/s"
+                      },
+                      "capabilities" : {
+                        "usb-2.00" : "USB 2.0"
+                      },
+                      "children" : [                        {
+                          "id" : "usb",
+                          "class" : "multimedia",
+                          "claimed" : true,
+                          "handle" : "USB:5:2",
+                          "description" : "Video",
+                          "product" : "Integrated RGB Camera",
+                          "vendor" : "SunplusIT Inc",
+                          "physid" : "2",
+                          "businfo" : "usb@5:2",
+                          "version" : "60.06",
+                          "serial" : "01.00.00",
+                          "configuration" : {
+                            "driver" : "uvcvideo",
+                            "maxpower" : "500mA",
+                            "speed" : "480Mbit/s"
+                          },
+                          "capabilities" : {
+                            "usb-2.01" : true
+                          }
+                        }]
+                    },
+                    {
+                      "id" : "usbhost:1",
+                      "class" : "bus",
+                      "claimed" : true,
+                      "handle" : "USB:6:1",
+                      "product" : "xHCI Host Controller",
+                      "vendor" : "Linux 6.17.9-1-default xhci-hcd",
+                      "physid" : "1",
+                      "businfo" : "usb@6",
+                      "logicalname" : "usb6",
+                      "version" : "6.17",
+                      "configuration" : {
+                        "driver" : "hub",
+                        "slots" : "2",
+                        "speed" : "5000Mbit/s"
+                      },
+                      "capabilities" : {
+                        "usb-3.00" : true
+                      }
+                    }]
+                }]
+            },
+            {
+              "id" : "pci:4",
+              "class" : "bridge",
+              "claimed" : true,
+              "handle" : "PCIBUS:0000:05",
+              "description" : "PCI bridge",
+              "product" : "Renoir Internal PCIe GPP Bridge to Bus",
+              "vendor" : "Advanced Micro Devices, Inc. [AMD]",
+              "physid" : "8.1",
+              "businfo" : "pci@0000:00:08.1",
+              "version" : "00",
+              "width" : 32,
+              "clock" : 33000000,
+              "configuration" : {
+                "driver" : "pcieport"
+              },
+              "capabilities" : {
+                "pci" : true,
+                "pm" : "Power Management",
+                "pciexpress" : "PCI Express",
+                "msi" : "Message Signalled Interrupts",
+                "normal_decode" : true,
+                "bus_master" : "bus mastering",
+                "cap_list" : "PCI capabilities listing"
+              },
+              "children" : [                {
+                  "id" : "display",
+                  "class" : "display",
+                  "claimed" : true,
+                  "handle" : "PCI:0000:05:00.0",
+                  "description" : "VGA compatible controller",
+                  "product" : "Cezanne [Radeon Vega Series / Radeon Vega Mobile Series]",
+                  "vendor" : "Advanced Micro Devices, Inc. [AMD/ATI]",
+                  "physid" : "0",
+                  "businfo" : "pci@0000:05:00.0",
+                  "version" : "d2",
+                  "width" : 64,
+                  "clock" : 33000000,
+                  "configuration" : {
+                    "driver" : "amdgpu",
+                    "latency" : "0"
+                  },
+                  "capabilities" : {
+                    "pm" : "Power Management",
+                    "pciexpress" : "PCI Express",
+                    "msi" : "Message Signalled Interrupts",
+                    "msix" : "MSI-X",
+                    "vga_controller" : true,
+                    "bus_master" : "bus mastering",
+                    "cap_list" : "PCI capabilities listing"
+                  }
+                },
+                {
+                  "id" : "multimedia:0",
+                  "class" : "multimedia",
+                  "claimed" : true,
+                  "handle" : "PCI:0000:05:00.1",
+                  "description" : "Audio device",
+                  "product" : "Renoir Radeon High Definition Audio Controller",
+                  "vendor" : "Advanced Micro Devices, Inc. [AMD/ATI]",
+                  "physid" : "0.1",
+                  "businfo" : "pci@0000:05:00.1",
+                  "logicalname" : ["card1", "/dev/snd/controlC1", "/dev/snd/hwC1D0", "/dev/snd/pcmC1D3p", "/dev/snd/pcmC1D7p", "/dev/snd/pcmC1D8p", "/dev/snd/pcmC1D9p"],
+                  "version" : "00",
+                  "width" : 32,
+                  "clock" : 33000000,
+                  "configuration" : {
+                    "driver" : "snd_hda_intel",
+                    "latency" : "0"
+                  },
+                  "capabilities" : {
+                    "pm" : "Power Management",
+                    "pciexpress" : "PCI Express",
+                    "msi" : "Message Signalled Interrupts",
+                    "bus_master" : "bus mastering",
+                    "cap_list" : "PCI capabilities listing"
+                  },
+                  "children" : [                    {
+                      "id" : "input:0",
+                      "class" : "input",
+                      "claimed" : true,
+                      "product" : "HD-Audio Generic HDMI/DP,pcm=3",
+                      "physid" : "0",
+                      "logicalname" : ["input24", "/dev/input/event19"]
+                    },
+                    {
+                      "id" : "input:1",
+                      "class" : "input",
+                      "claimed" : true,
+                      "product" : "HD-Audio Generic HDMI/DP,pcm=7",
+                      "physid" : "1",
+                      "logicalname" : ["input25", "/dev/input/event20"]
+                    },
+                    {
+                      "id" : "input:2",
+                      "class" : "input",
+                      "claimed" : true,
+                      "product" : "HD-Audio Generic HDMI/DP,pcm=8",
+                      "physid" : "2",
+                      "logicalname" : ["input26", "/dev/input/event21"]
+                    },
+                    {
+                      "id" : "input:3",
+                      "class" : "input",
+                      "claimed" : true,
+                      "product" : "HD-Audio Generic HDMI/DP,pcm=9",
+                      "physid" : "3",
+                      "logicalname" : ["input27", "/dev/input/event22"]
+                    }]
+                },
+                {
+                  "id" : "generic",
+                  "class" : "generic",
+                  "claimed" : true,
+                  "handle" : "PCI:0000:05:00.2",
+                  "description" : "Encryption controller",
+                  "product" : "Family 17h (Models 10h-1fh) Platform Security Processor",
+                  "vendor" : "Advanced Micro Devices, Inc. [AMD]",
+                  "physid" : "0.2",
+                  "businfo" : "pci@0000:05:00.2",
+                  "version" : "00",
+                  "width" : 32,
+                  "clock" : 33000000,
+                  "configuration" : {
+                    "driver" : "ccp",
+                    "latency" : "0"
+                  },
+                  "capabilities" : {
+                    "pm" : "Power Management",
+                    "pciexpress" : "PCI Express",
+                    "msi" : "Message Signalled Interrupts",
+                    "msix" : "MSI-X",
+                    "bus_master" : "bus mastering",
+                    "cap_list" : "PCI capabilities listing"
+                  }
+                },
+                {
+                  "id" : "usb:0",
+                  "class" : "bus",
+                  "claimed" : true,
+                  "handle" : "PCI:0000:05:00.3",
+                  "description" : "USB controller",
+                  "product" : "Renoir/Cezanne USB 3.1",
+                  "vendor" : "Advanced Micro Devices, Inc. [AMD]",
+                  "physid" : "0.3",
+                  "businfo" : "pci@0000:05:00.3",
+                  "version" : "00",
+                  "width" : 64,
+                  "clock" : 33000000,
+                  "configuration" : {
+                    "driver" : "xhci_hcd",
+                    "latency" : "0"
+                  },
+                  "capabilities" : {
+                    "pm" : "Power Management",
+                    "pciexpress" : "PCI Express",
+                    "msi" : "Message Signalled Interrupts",
+                    "msix" : "MSI-X",
+                    "xhci" : true,
+                    "bus_master" : "bus mastering",
+                    "cap_list" : "PCI capabilities listing"
+                  },
+                  "children" : [                    {
+                      "id" : "usbhost:0",
+                      "class" : "bus",
+                      "claimed" : true,
+                      "handle" : "USB:1:1",
+                      "product" : "xHCI Host Controller",
+                      "vendor" : "Linux 6.17.9-1-default xhci-hcd",
+                      "physid" : "0",
+                      "businfo" : "usb@1",
+                      "logicalname" : "usb1",
+                      "version" : "6.17",
+                      "configuration" : {
+                        "driver" : "hub",
+                        "slots" : "4",
+                        "speed" : "480Mbit/s"
+                      },
+                      "capabilities" : {
+                        "usb-2.00" : "USB 2.0"
+                      },
+                      "children" : [                        {
+                          "id" : "usb:0",
+                          "class" : "input",
+                          "claimed" : true,
+                          "handle" : "USB:1:3",
+                          "description" : "Mouse",
+                          "product" : "Logitech Wireless Receiver Mouse",
+                          "vendor" : "Logitech",
+                          "physid" : "2",
+                          "businfo" : "usb@1:2",
+                          "logicalname" : ["input14", "/dev/input/event9", "/dev/input/mouse3"],
+                          "version" : "3.03",
+                          "configuration" : {
+                            "driver" : "usbhid",
+                            "maxpower" : "50mA",
+                            "speed" : "12Mbit/s"
+                          },
+                          "capabilities" : {
+                            "usb-1.10" : "USB 1.1",
+                            "usb" : "USB"
+                          }
+                        },
+                        {
+                          "id" : "usb:1",
+                          "class" : "generic",
+                          "handle" : "USB:1:5",
+                          "description" : "Smart card reader",
+                          "product" : "EMV Smartcard Reader",
+                          "vendor" : "Generic",
+                          "physid" : "3",
+                          "businfo" : "usb@1:3",
+                          "version" : "1.20",
+                          "configuration" : {
+                            "maxpower" : "50mA",
+                            "speed" : "12Mbit/s"
+                          },
+                          "capabilities" : {
+                            "usb-2.01" : true
+                          }
+                        }]
+                    },
+                    {
+                      "id" : "usbhost:1",
+                      "class" : "bus",
+                      "claimed" : true,
+                      "handle" : "USB:2:1",
+                      "product" : "xHCI Host Controller",
+                      "vendor" : "Linux 6.17.9-1-default xhci-hcd",
+                      "physid" : "1",
+                      "businfo" : "usb@2",
+                      "logicalname" : "usb2",
+                      "version" : "6.17",
+                      "configuration" : {
+                        "driver" : "hub",
+                        "slots" : "2",
+                        "speed" : "10000Mbit/s"
+                      },
+                      "capabilities" : {
+                        "usb-3.10" : true
+                      }
+                    }]
+                },
+                {
+                  "id" : "usb:1",
+                  "class" : "bus",
+                  "claimed" : true,
+                  "handle" : "PCI:0000:05:00.4",
+                  "description" : "USB controller",
+                  "product" : "Renoir/Cezanne USB 3.1",
+                  "vendor" : "Advanced Micro Devices, Inc. [AMD]",
+                  "physid" : "0.4",
+                  "businfo" : "pci@0000:05:00.4",
+                  "version" : "00",
+                  "width" : 64,
+                  "clock" : 33000000,
+                  "configuration" : {
+                    "driver" : "xhci_hcd",
+                    "latency" : "0"
+                  },
+                  "capabilities" : {
+                    "pm" : "Power Management",
+                    "pciexpress" : "PCI Express",
+                    "msi" : "Message Signalled Interrupts",
+                    "msix" : "MSI-X",
+                    "xhci" : true,
+                    "bus_master" : "bus mastering",
+                    "cap_list" : "PCI capabilities listing"
+                  },
+                  "children" : [                    {
+                      "id" : "usbhost:0",
+                      "class" : "bus",
+                      "claimed" : true,
+                      "handle" : "USB:3:1",
+                      "product" : "xHCI Host Controller",
+                      "vendor" : "Linux 6.17.9-1-default xhci-hcd",
+                      "physid" : "0",
+                      "businfo" : "usb@3",
+                      "logicalname" : "usb3",
+                      "version" : "6.17",
+                      "configuration" : {
+                        "driver" : "hub",
+                        "slots" : "4",
+                        "speed" : "480Mbit/s"
+                      },
+                      "capabilities" : {
+                        "usb-2.00" : "USB 2.0"
+                      },
+                      "children" : [                        {
+                          "id" : "usb:0",
+                          "class" : "multimedia",
+                          "claimed" : true,
+                          "handle" : "USB:3:8",
+                          "description" : "Audio device",
+                          "product" : "Kingston Technology Company HyperX Cloud Flight Wireless",
+                          "vendor" : "Kingston Technology Company",
+                          "physid" : "2",
+                          "businfo" : "usb@3:2",
+                          "logicalname" : ["card0", "/dev/snd/controlC0", "/dev/snd/pcmC0D0c", "/dev/snd/pcmC0D0p", "input81", "/dev/input/event5", "input82", "/dev/input/event6", "input83", "/dev/input/event7", "input84", "/dev/input/event8"],
+                          "version" : "41.01",
+                          "configuration" : {
+                            "driver" : "usbhid",
+                            "maxpower" : "100mA",
+                            "speed" : "12Mbit/s"
+                          },
+                          "capabilities" : {
+                            "usb-1.10" : "USB 1.1",
+                            "audio-control" : "Control device",
+                            "usb" : "USB"
+                          }
+                        },
+                        {
+                          "id" : "usb:1",
+                          "class" : "generic",
+                          "handle" : "USB:3:3",
+                          "description" : "Generic USB device",
+                          "product" : "Goodix USB2.0 MISC",
+                          "vendor" : "Goodix Technology Co., Ltd.",
+                          "physid" : "3",
+                          "businfo" : "usb@3:3",
+                          "version" : "1.00",
+                          "serial" : "UID73DCE868_XXXX_MOC_B0",
+                          "configuration" : {
+                            "maxpower" : "100mA",
+                            "speed" : "12Mbit/s"
+                          },
+                          "capabilities" : {
+                            "usb-2.00" : "USB 2.0"
+                          }
+                        },
+                        {
+                          "id" : "usb:2",
+                          "class" : "communication",
+                          "claimed" : true,
+                          "handle" : "USB:3:4",
+                          "description" : "Bluetooth wireless interface",
+                          "product" : "Wireless_Device",
+                          "vendor" : "MediaTek Inc.",
+                          "physid" : "4",
+                          "businfo" : "usb@3:4",
+                          "version" : "1.00",
+                          "serial" : "000000000",
+                          "configuration" : {
+                            "driver" : "btusb",
+                            "maxpower" : "100mA",
+                            "speed" : "480Mbit/s"
+                          },
+                          "capabilities" : {
+                            "usb-2.10" : true,
+                            "bluetooth" : "Bluetooth wireless radio"
+                          }
+                        }]
+                    },
+                    {
+                      "id" : "usbhost:1",
+                      "class" : "bus",
+                      "claimed" : true,
+                      "handle" : "USB:4:1",
+                      "product" : "xHCI Host Controller",
+                      "vendor" : "Linux 6.17.9-1-default xhci-hcd",
+                      "physid" : "1",
+                      "businfo" : "usb@4",
+                      "logicalname" : "usb4",
+                      "version" : "6.17",
+                      "configuration" : {
+                        "driver" : "hub",
+                        "slots" : "2",
+                        "speed" : "10000Mbit/s"
+                      },
+                      "capabilities" : {
+                        "usb-3.10" : true
+                      }
+                    }]
+                },
+                {
+                  "id" : "multimedia:1",
+                  "class" : "multimedia",
+                  "claimed" : true,
+                  "handle" : "PCI:0000:05:00.5",
+                  "description" : "Multimedia controller",
+                  "product" : "Audio Coprocessor",
+                  "vendor" : "Advanced Micro Devices, Inc. [AMD]",
+                  "physid" : "0.5",
+                  "businfo" : "pci@0000:05:00.5",
+                  "logicalname" : ["card3", "/dev/snd/controlC3", "/dev/snd/pcmC3D0c"],
+                  "version" : "01",
+                  "width" : 32,
+                  "clock" : 33000000,
+                  "configuration" : {
+                    "driver" : "snd_rn_pci_acp3x",
+                    "latency" : "0"
+                  },
+                  "capabilities" : {
+                    "pm" : "Power Management",
+                    "pciexpress" : "PCI Express",
+                    "msi" : "Message Signalled Interrupts",
+                    "bus_master" : "bus mastering",
+                    "cap_list" : "PCI capabilities listing"
+                  }
+                },
+                {
+                  "id" : "multimedia:2",
+                  "class" : "multimedia",
+                  "claimed" : true,
+                  "handle" : "PCI:0000:05:00.6",
+                  "description" : "Audio device",
+                  "product" : "Family 17h/19h/1ah HD Audio Controller",
+                  "vendor" : "Advanced Micro Devices, Inc. [AMD]",
+                  "physid" : "0.6",
+                  "businfo" : "pci@0000:05:00.6",
+                  "logicalname" : ["card2", "/dev/snd/controlC2", "/dev/snd/hwC2D0", "/dev/snd/pcmC2D0c", "/dev/snd/pcmC2D0p"],
+                  "version" : "00",
+                  "width" : 32,
+                  "clock" : 33000000,
+                  "configuration" : {
+                    "driver" : "snd_hda_intel",
+                    "latency" : "0"
+                  },
+                  "capabilities" : {
+                    "pm" : "Power Management",
+                    "pciexpress" : "PCI Express",
+                    "msi" : "Message Signalled Interrupts",
+                    "bus_master" : "bus mastering",
+                    "cap_list" : "PCI capabilities listing"
+                  },
+                  "children" : [                    {
+                      "id" : "input:0",
+                      "class" : "input",
+                      "claimed" : true,
+                      "product" : "HDA Digital PCBeep",
+                      "physid" : "0",
+                      "logicalname" : ["input28", "/dev/input/event23"],
+                      "capabilities" : {
+                        "pci" : "PCI"
+                      }
+                    },
+                    {
+                      "id" : "input:1",
+                      "class" : "input",
+                      "claimed" : true,
+                      "product" : "HD-Audio Generic Mic",
+                      "physid" : "1",
+                      "logicalname" : ["input29", "/dev/input/event24"]
+                    },
+                    {
+                      "id" : "input:2",
+                      "class" : "input",
+                      "claimed" : true,
+                      "product" : "HD-Audio Generic Headphone",
+                      "physid" : "2",
+                      "logicalname" : ["input30", "/dev/input/event25"]
+                    }]
+                }]
+            },
+            {
+              "id" : "serial",
+              "class" : "bus",
+              "claimed" : true,
+              "handle" : "PCI:0000:00:14.0",
+              "description" : "SMBus",
+              "product" : "FCH SMBus Controller",
+              "vendor" : "Advanced Micro Devices, Inc. [AMD]",
+              "physid" : "14",
+              "businfo" : "pci@0000:00:14.0",
+              "version" : "51",
+              "width" : 32,
+              "clock" : 66000000,
+              "configuration" : {
+                "driver" : "piix4_smbus",
+                "latency" : "0"
+              }
+            },
+            {
+              "id" : "isa",
+              "class" : "bridge",
+              "claimed" : true,
+              "handle" : "PCI:0000:00:14.3",
+              "description" : "ISA bridge",
+              "product" : "FCH LPC Bridge",
+              "vendor" : "Advanced Micro Devices, Inc. [AMD]",
+              "physid" : "14.3",
+              "businfo" : "pci@0000:00:14.3",
+              "version" : "51",
+              "width" : 32,
+              "clock" : 66000000,
+              "configuration" : {
+                "latency" : "0"
+              },
+              "capabilities" : {
+                "isa" : true,
+                "bus_master" : "bus mastering"
+              },
+              "children" : [                {
+                  "id" : "pnp00:00",
+                  "class" : "system",
+                  "claimed" : true,
+                  "product" : "PnP device PNP0c02",
+                  "physid" : "0",
+                  "configuration" : {
+                    "driver" : "system"
+                  },
+                  "capabilities" : {
+                    "pnp" : true
+                  }
+                },
+                {
+                  "id" : "pnp00:01",
+                  "class" : "system",
+                  "claimed" : true,
+                  "product" : "PnP device PNP0b00",
+                  "physid" : "1",
+                  "configuration" : {
+                    "driver" : "rtc_cmos"
+                  },
+                  "capabilities" : {
+                    "pnp" : true
+                  }
+                },
+                {
+                  "id" : "pnp00:02",
+                  "class" : "system",
+                  "claimed" : true,
+                  "product" : "PnP device PNP0c02",
+                  "physid" : "2",
+                  "configuration" : {
+                    "driver" : "system"
+                  },
+                  "capabilities" : {
+                    "pnp" : true
+                  }
+                },
+                {
+                  "id" : "pnp00:03",
+                  "class" : "system",
+                  "claimed" : true,
+                  "product" : "PnP device PNP0c01",
+                  "physid" : "3",
+                  "configuration" : {
+                    "driver" : "system"
+                  },
+                  "capabilities" : {
+                    "pnp" : true
+                  }
+                },
+                {
+                  "id" : "pnp00:04",
+                  "class" : "generic",
+                  "claimed" : true,
+                  "product" : "PnP device LEN0071",
+                  "vendor" : "Lenovo Group Limited",
+                  "physid" : "4",
+                  "configuration" : {
+                    "driver" : "i8042 kbd"
+                  },
+                  "capabilities" : {
+                    "pnp" : true
+                  }
+                },
+                {
+                  "id" : "pnp00:05",
+                  "class" : "generic",
+                  "claimed" : true,
+                  "product" : "PnP device LEN0307",
+                  "vendor" : "Lenovo Group Limited",
+                  "physid" : "5",
+                  "configuration" : {
+                    "driver" : "i8042 aux"
+                  },
+                  "capabilities" : {
+                    "pnp" : true
+                  }
+                }]
+            }]
+        },
+        {
+          "id" : "pci:1",
+          "class" : "bridge",
+          "claimed" : true,
+          "handle" : "PCIBUS:0000:00",
+          "description" : "Host bridge",
+          "product" : "Renoir PCIe Dummy Host Bridge",
+          "vendor" : "Advanced Micro Devices, Inc. [AMD]",
+          "physid" : "101",
+          "businfo" : "pci@0000:00:01.0",
+          "version" : "00",
+          "width" : 32,
+          "clock" : 33000000
+        },
+        {
+          "id" : "pci:2",
+          "class" : "bridge",
+          "claimed" : true,
+          "handle" : "PCIBUS:0000:00",
+          "description" : "Host bridge",
+          "product" : "Renoir PCIe Dummy Host Bridge",
+          "vendor" : "Advanced Micro Devices, Inc. [AMD]",
+          "physid" : "102",
+          "businfo" : "pci@0000:00:02.0",
+          "version" : "00",
+          "width" : 32,
+          "clock" : 33000000
+        },
+        {
+          "id" : "pci:3",
+          "class" : "bridge",
+          "claimed" : true,
+          "handle" : "PCIBUS:0000:00",
+          "description" : "Host bridge",
+          "product" : "Renoir PCIe Dummy Host Bridge",
+          "vendor" : "Advanced Micro Devices, Inc. [AMD]",
+          "physid" : "103",
+          "businfo" : "pci@0000:00:08.0",
+          "version" : "00",
+          "width" : 32,
+          "clock" : 33000000
+        },
+        {
+          "id" : "pci:4",
+          "class" : "bridge",
+          "claimed" : true,
+          "handle" : "PCIBUS:0000:00",
+          "description" : "Host bridge",
+          "product" : "Cezanne Data Fabric; Function 0",
+          "vendor" : "Advanced Micro Devices, Inc. [AMD]",
+          "physid" : "104",
+          "businfo" : "pci@0000:00:18.0",
+          "version" : "00",
+          "width" : 32,
+          "clock" : 33000000
+        },
+        {
+          "id" : "pci:5",
+          "class" : "bridge",
+          "claimed" : true,
+          "handle" : "PCIBUS:0000:00",
+          "description" : "Host bridge",
+          "product" : "Cezanne Data Fabric; Function 1",
+          "vendor" : "Advanced Micro Devices, Inc. [AMD]",
+          "physid" : "105",
+          "businfo" : "pci@0000:00:18.1",
+          "version" : "00",
+          "width" : 32,
+          "clock" : 33000000
+        },
+        {
+          "id" : "pci:6",
+          "class" : "bridge",
+          "claimed" : true,
+          "handle" : "PCIBUS:0000:00",
+          "description" : "Host bridge",
+          "product" : "Cezanne Data Fabric; Function 2",
+          "vendor" : "Advanced Micro Devices, Inc. [AMD]",
+          "physid" : "106",
+          "businfo" : "pci@0000:00:18.2",
+          "version" : "00",
+          "width" : 32,
+          "clock" : 33000000
+        },
+        {
+          "id" : "pci:7",
+          "class" : "bridge",
+          "claimed" : true,
+          "handle" : "PCIBUS:0000:00",
+          "description" : "Host bridge",
+          "product" : "Cezanne Data Fabric; Function 3",
+          "vendor" : "Advanced Micro Devices, Inc. [AMD]",
+          "physid" : "107",
+          "businfo" : "pci@0000:00:18.3",
+          "version" : "00",
+          "width" : 32,
+          "clock" : 33000000,
+          "configuration" : {
+            "driver" : "k10temp"
+          }
+        },
+        {
+          "id" : "pci:8",
+          "class" : "bridge",
+          "claimed" : true,
+          "handle" : "PCIBUS:0000:00",
+          "description" : "Host bridge",
+          "product" : "Cezanne Data Fabric; Function 4",
+          "vendor" : "Advanced Micro Devices, Inc. [AMD]",
+          "physid" : "108",
+          "businfo" : "pci@0000:00:18.4",
+          "version" : "00",
+          "width" : 32,
+          "clock" : 33000000
+        },
+        {
+          "id" : "pci:9",
+          "class" : "bridge",
+          "claimed" : true,
+          "handle" : "PCIBUS:0000:00",
+          "description" : "Host bridge",
+          "product" : "Cezanne Data Fabric; Function 5",
+          "vendor" : "Advanced Micro Devices, Inc. [AMD]",
+          "physid" : "109",
+          "businfo" : "pci@0000:00:18.5",
+          "version" : "00",
+          "width" : 32,
+          "clock" : 33000000
+        },
+        {
+          "id" : "pci:10",
+          "class" : "bridge",
+          "claimed" : true,
+          "handle" : "PCIBUS:0000:00",
+          "description" : "Host bridge",
+          "product" : "Cezanne Data Fabric; Function 6",
+          "vendor" : "Advanced Micro Devices, Inc. [AMD]",
+          "physid" : "10a",
+          "businfo" : "pci@0000:00:18.6",
+          "version" : "00",
+          "width" : 32,
+          "clock" : 33000000
+        },
+        {
+          "id" : "pci:11",
+          "class" : "bridge",
+          "claimed" : true,
+          "handle" : "PCIBUS:0000:00",
+          "description" : "Host bridge",
+          "product" : "Cezanne Data Fabric; Function 7",
+          "vendor" : "Advanced Micro Devices, Inc. [AMD]",
+          "physid" : "10b",
+          "businfo" : "pci@0000:00:18.7",
+          "version" : "00",
+          "width" : 32,
+          "clock" : 33000000
+        }]
+    },
+    {
+      "id" : "battery",
+      "class" : "power",
+      "claimed" : true,
+      "handle" : "DMI:002C",
+      "product" : "5B10W518",
+      "vendor" : "Sunwoda",
+      "physid" : "1",
+      "slot" : "Front",
+      "units" : "mWh",
+      "capacity" : 57000,
+      "configuration" : {
+        "voltage" : "15.4V"
+      }
+    },
+    {
+      "id" : "input:0",
+      "class" : "input",
+      "claimed" : true,
+      "product" : "AT Translated Set 2 keyboard",
+      "physid" : "2",
+      "logicalname" : ["input0", "/dev/input/event0", "input0::capslock", "input0::numlock", "input0::scrolllock"],
+      "capabilities" : {
+        "i8042" : "i8042 PC AT keyboard controller"
+      }
+    },
+    {
+      "id" : "input:1",
+      "class" : "input",
+      "claimed" : true,
+      "product" : "Power Button",
+      "physid" : "3",
+      "logicalname" : ["input18", "/dev/input/event13"],
+      "capabilities" : {
+        "platform" : true
+      }
+    },
+    {
+      "id" : "input:2",
+      "class" : "input",
+      "claimed" : true,
+      "product" : "Lid Switch",
+      "physid" : "4",
+      "logicalname" : ["input19", "/dev/input/event14"],
+      "capabilities" : {
+        "platform" : true
+      }
+    },
+    {
+      "id" : "input:3",
+      "class" : "input",
+      "claimed" : true,
+      "product" : "TPPS/2 Elan TrackPoint",
+      "physid" : "5",
+      "logicalname" : ["input2", "/dev/input/event1", "/dev/input/mouse0"],
+      "capabilities" : {
+        "i8042" : "i8042 PC AT keyboard controller"
+      }
+    },
+    {
+      "id" : "input:4",
+      "class" : "input",
+      "claimed" : true,
+      "product" : "Sleep Button",
+      "physid" : "6",
+      "logicalname" : ["input20", "/dev/input/event15"],
+      "capabilities" : {
+        "platform" : true
+      }
+    },
+    {
+      "id" : "input:5",
+      "class" : "input",
+      "claimed" : true,
+      "product" : "Power Button",
+      "physid" : "7",
+      "logicalname" : ["input21", "/dev/input/event16"],
+      "capabilities" : {
+        "platform" : true
+      }
+    },
+    {
+      "id" : "input:6",
+      "class" : "input",
+      "claimed" : true,
+      "product" : "ThinkPad Extra Buttons",
+      "physid" : "8",
+      "logicalname" : ["input22", "/dev/input/event18"],
+      "capabilities" : {
+        "platform" : true
+      }
+    },
+    {
+      "id" : "input:7",
+      "class" : "input",
+      "claimed" : true,
+      "product" : "PC Speaker",
+      "physid" : "9",
+      "logicalname" : ["input23", "/dev/input/event17"],
+      "capabilities" : {
+        "isa" : "ISA bus"
+      }
+    },
+    {
+      "id" : "input:8",
+      "class" : "input",
+      "claimed" : true,
+      "product" : "Video Bus",
+      "physid" : "a",
+      "logicalname" : ["input3", "/dev/input/event2"],
+      "capabilities" : {
+        "platform" : true
+      }
+    },
+    {
+      "id" : "input:9",
+      "class" : "input",
+      "claimed" : true,
+      "product" : "SYNA0001:00 06CB:CE67 Mouse",
+      "physid" : "b",
+      "logicalname" : ["input7", "/dev/input/event3", "/dev/input/mouse1"],
+      "capabilities" : {
+        "i2c" : "I²C bus"
+      }
+    },
+    {
+      "id" : "input:10",
+      "class" : "input",
+      "claimed" : true,
+      "product" : "SYNA0001:00 06CB:CE67 Touchpad",
+      "physid" : "c",
+      "logicalname" : ["input8", "/dev/input/event4", "/dev/input/mouse2"],
+      "capabilities" : {
+        "i2c" : "I²C bus"
+      }
+    }]
+}

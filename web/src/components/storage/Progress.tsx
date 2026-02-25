@@ -33,7 +33,7 @@ import { _ } from "~/i18n";
 import { useProgress, useProgressChanges, useResetProgress } from "~/queries/progress";
 import sizingStyles from "@patternfly/react-styles/css/utilities/Sizing/sizing";
 import { STORAGE } from "~/routes/paths";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 
 type StepProps = {
   id: string;
