@@ -23,14 +23,11 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { configQuery } from "~/hooks/model/config";
 import { patchConfig, Response } from "~/api";
-import dasdConfig from "~/model/config/dasd";
 
 import type { Config, DASD } from "~/model/config";
 import { extendCollection } from "~/utils";
 
-type addDeviceFn = (device: DASD.Device) => Response;
 type addOrUpdateDevicesFn = (devices: DASD.Device[]) => Response;
-type removeDeviceFn = (name: DASD.Device["channel"]) => Response;
 
 /**
  * Extract DASD config from a config object.
@@ -67,6 +64,14 @@ function useConfig(): DASD.Config | undefined {
   return data;
 }
 
+/**
+ * Update or add if does not exist yet given devices to DASD configuration.
+ *
+ * @remarks
+ * Falls back to empty config when useConfig returns undefined.
+ *
+ * @todo Remove fallback once useConfig returns empty object by default
+ */
 function useAddOrUpdateDevices(): addOrUpdateDevicesFn {
   // FIXME: useConfig should return an empty object instead of falling back
   // to an empty object all the time
@@ -79,52 +84,11 @@ function useAddOrUpdateDevices(): addOrUpdateDevicesFn {
       precedence: "extensionWins",
     });
 
-    console.log("newDevicesConfig", newDevicesConfig);
-
     return patchConfig({
       dasd: { ...(config || {}), devices: newDevicesConfig },
     });
   };
 }
 
-/**
- * Add a device to DASD configuration.
- *
- * @remarks
- * Falls back to empty config when useConfig returns undefined.
- *
- * @todo Remove fallback once useConfig returns empty object by default
- */
-function useAddDevice(): addDeviceFn {
-  const config = useConfig();
-
-  return (device: DASD.Device) => {
-    return patchConfig({
-      // FIXME: useConfig should return an empty object instead of falling back
-      // to an empty object all the time
-      dasd: dasdConfig.addDevice(config || {}, device),
-    });
-  };
-}
-
-/**
- * Remove a device from DASD configuration by channel.
- *
- * @remarks
- * Falls back to empty config when useConfig returns undefined.
- *
- * @todo Remove fallback once useConfig returns empty object by default
- */
-function useRemoveDevice(): removeDeviceFn {
-  const config = useConfig();
-
-  return (channel: string) =>
-    patchConfig({
-      // FIXME: useConfig should return an empty object instead of falling back
-      // to an empty object all the time
-      dasd: dasdConfig.removeDevice(config || {}, channel),
-    });
-}
-
-export { useConfig, useAddDevice, useAddOrUpdateDevices, useRemoveDevice };
-export type { addDeviceFn, addOrUpdateDevicesFn, removeDeviceFn };
+export type { addOrUpdateDevicesFn };
+export { useConfig, useAddOrUpdateDevices };

@@ -24,12 +24,7 @@ import { act, renderHook } from "@testing-library/react";
 // NOTE: check notes about mockConfigQuery in its documentation
 import { clearMockedQueries, mockConfigQuery } from "~/test-utils/tanstack-query";
 import { patchConfig } from "~/api";
-import {
-  useConfig,
-  useAddDevice,
-  useAddOrUpdateDevices,
-  useRemoveDevice,
-} from "~/hooks/model/config/dasd";
+import { useConfig, useAddOrUpdateDevices } from "~/hooks/model/config/dasd";
 import type { Device } from "~/model/config/dasd";
 
 const mockDeviceOffline: Device = { channel: "0.0.0150", state: "offline" as const };
@@ -83,44 +78,6 @@ describe("hooks/model/storage/dasd", () => {
       const { result } = renderHook(() => useConfig());
 
       expect(result.current).toBeUndefined();
-    });
-  });
-
-  describe("useAddDevice", () => {
-    describe("when there is not a DASD config yet", () => {
-      it("calls API#patchConfig with a new config for DASD including added device", async () => {
-        mockConfigQuery(null);
-
-        const { result } = renderHook(() => useAddDevice());
-
-        await act(async () => {
-          result.current(mockDeviceActive);
-        });
-
-        expect(mockPatchConfig).toHaveBeenCalledWith({
-          dasd: expect.objectContaining({ devices: [mockDeviceActive] }),
-        });
-      });
-    });
-
-    describe("when there is an existing DASD config", () => {
-      it("calls API#patchConfig with updated config including added device", async () => {
-        mockConfigQuery({
-          dasd: { devices: [mockDeviceOffline] },
-        });
-
-        const { result } = renderHook(() => useAddDevice());
-
-        await act(async () => {
-          result.current(mockDeviceActive);
-        });
-
-        expect(mockPatchConfig).toHaveBeenCalledWith({
-          dasd: expect.objectContaining({
-            devices: [mockDeviceOffline, mockDeviceActive],
-          }),
-        });
-      });
     });
   });
 
@@ -210,78 +167,6 @@ describe("hooks/model/storage/dasd", () => {
             devices: [mockDeviceOffline, updatedDevice, mockDeviceToBeFormmated],
           }),
         });
-      });
-    });
-  });
-
-  describe("useRemoveDevice", () => {
-    describe("when there is not a DASD config yet", () => {
-      it("calls API#patchConfig with an empty config for DASD", async () => {
-        mockConfigQuery(null);
-
-        const channelToRemove = "0.0.0190";
-        const { result } = renderHook(() => useRemoveDevice());
-
-        await act(async () => {
-          result.current(channelToRemove);
-        });
-
-        expect(mockPatchConfig).toHaveBeenCalledWith({
-          dasd: {},
-        });
-      });
-    });
-
-    describe("when there is an existing DASD config without devices", () => {
-      it("calls API#patchConfig with the same config", async () => {
-        const initialConfig = { dasd: {} };
-        mockConfigQuery(initialConfig);
-
-        const { result } = renderHook(() => useRemoveDevice());
-
-        await act(async () => {
-          result.current(mockDeviceActive.channel);
-        });
-
-        expect(mockPatchConfig).toHaveBeenCalledWith(initialConfig);
-      });
-    });
-
-    describe("when there is an existing DASD config with devices", () => {
-      it("calls API#patchConfig with device removed from config", async () => {
-        mockConfigQuery({
-          dasd: { devices: [mockDeviceOffline, mockDeviceActive, mockDeviceToBeFormmated] },
-        });
-
-        const { result } = renderHook(() => useRemoveDevice());
-
-        await act(async () => {
-          result.current(mockDeviceActive.channel);
-        });
-
-        expect(mockPatchConfig).toHaveBeenCalledWith({
-          dasd: expect.objectContaining({
-            devices: [mockDeviceOffline, mockDeviceToBeFormmated],
-          }),
-        });
-      });
-
-      it("calls API#patchConfig with unchanged config when removing non-existent device", async () => {
-        const initialConfig = {
-          dasd: {
-            devices: [mockDeviceOffline, mockDeviceActive, mockDeviceToBeFormmated],
-          },
-        };
-        mockConfigQuery(initialConfig);
-
-        const nonExistentChannel = "0.0.9999";
-        const { result } = renderHook(() => useRemoveDevice());
-
-        await act(async () => {
-          result.current(nonExistentChannel);
-        });
-
-        expect(mockPatchConfig).toHaveBeenCalledWith(initialConfig);
       });
     });
   });
