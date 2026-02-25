@@ -169,23 +169,37 @@ const buildActions = ({ devices, addOrUpdateDevices, dispatcher }: DASDActionsPr
     {
       title: _("Activate"),
       onClick: () =>
-        addOrUpdateDevices(devices.map((d) => ({ channel: d.channel, status: "online" }))),
+        addOrUpdateDevices(
+          devices.map(
+            (d): ConfigDevice => ({ channel: d.channel, state: "active", diag: undefined }),
+          ),
+        ),
     },
     {
       title: _("Deactivate"),
       onClick: () =>
-        addOrUpdateDevices(devices.map((d) => ({ channel: d.channel, status: "offline" }))),
+        addOrUpdateDevices(
+          devices.map(
+            (d): ConfigDevice => ({ channel: d.channel, state: "offline", diag: undefined }),
+          ),
+        ),
     },
     {
       isSeparator: true,
     },
     {
       title: _("Set DIAG on"),
-      onClick: () => addOrUpdateDevices(devices.map((d) => ({ channel: d.channel, diag: true }))),
+      onClick: () =>
+        addOrUpdateDevices(
+          devices.map((d): ConfigDevice => ({ channel: d.channel, state: "active", diag: true })),
+        ),
     },
     {
       title: _("Set DIAG off"),
-      onClick: () => addOrUpdateDevices(devices.map((d) => ({ channel: d.channel, diag: false }))),
+      onClick: () =>
+        addOrUpdateDevices(
+          devices.map((d): ConfigDevice => ({ channel: d.channel, state: "active", diag: false })),
+        ),
     },
     {
       isSeparator: true,
