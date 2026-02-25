@@ -19,7 +19,7 @@
       "required": ["channel"],
       "properties": {
         "channel": {
-          "decription": "DASD device channel.",
+          "description": "DASD device channel.",
           "type": "string"
         },
         "state": {
