@@ -31,7 +31,6 @@ use agama_utils::{
     progress,
 };
 use serde::Deserialize;
-use serde_json;
 use tokio::sync::broadcast;
 use tokio_stream::StreamExt;
 use zbus::{message, Connection, MatchRule, MessageStream};

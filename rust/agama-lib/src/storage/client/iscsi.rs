@@ -163,7 +163,7 @@ impl<'a> ISCSIClient<'a> {
     /// * `address`: target address in string-like form.
     /// * `port`: target port.
     /// * `auth`: authentication options.
-    pub async fn discover<'b>(
+    pub async fn discover(
         &self,
         address: &str,
         port: u32,

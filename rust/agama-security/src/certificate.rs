@@ -120,9 +120,7 @@ impl Certificate {
     /// * `name`: X509 names.
     /// * `nid`: entry identifier.
     fn extract_entry(name: &X509NameRef, nid: Nid) -> Option<String> {
-        let Some(entry) = name.entries_by_nid(nid).next() else {
-            return None;
-        };
+        let entry = name.entries_by_nid(nid).next()?;
 
         entry.data().as_utf8().map(|l| l.to_string()).ok()
     }

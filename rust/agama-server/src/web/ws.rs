@@ -32,17 +32,6 @@ use axum::{
     Extension,
 };
 use std::sync::Arc;
-use tokio::sync::broadcast;
-
-#[derive(Debug, thiserror::Error)]
-pub enum Error {
-    #[error("Error serializing WebSocket message")]
-    Serialize(#[from] serde_json::Error),
-    #[error("Could not receive the event")]
-    RecvEvent(#[from] broadcast::error::RecvError),
-    #[error("Websocket closed")]
-    WebSocketClosed(#[from] axum::Error),
-}
 
 pub async fn ws_handler(
     State(state): State<ServiceState>,
@@ -52,7 +41,7 @@ pub async fn ws_handler(
     ws.on_upgrade(move |socket| handle_socket(socket, state.events, client_id))
 }
 
-async fn handle_socket(mut socket: WebSocket, events: event::Sender, client_id: Arc<ClientId>) {
+async fn handle_socket(mut socket: WebSocket, events: event::Sender, _client_id: Arc<ClientId>) {
     let mut events_rx = events.subscribe();
 
     loop {

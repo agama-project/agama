@@ -56,13 +56,19 @@ pub enum ZyppDispatchError {
     #[error(transparent)]
     Zypp(#[from] ZyppError),
     #[error("libzypp error: {0}")]
-    ZyppServer(#[from] ZyppServerError),
+    ZyppServer(#[from] Box<ZyppServerError>),
     #[error("Response channel closed")]
     ResponseChannelClosed,
     #[error("Target creation failed: {0}")]
     TargetCreationFailed(#[source] std::io::Error),
     #[error(transparent)]
     Progress(#[from] progress::service::Error),
+}
+
+impl From<ZyppServerError> for ZyppDispatchError {
+    fn from(err: ZyppServerError) -> Self {
+        Self::ZyppServer(Box::new(err))
+    }
 }
 
 #[derive(thiserror::Error, Debug)]
@@ -74,7 +80,7 @@ pub enum ZyppServerError {
     RecvError(#[from] oneshot::error::RecvError),
 
     #[error("Sender error: {0}")]
-    SendError(#[from] mpsc::error::SendError<SoftwareAction>),
+    SendError(#[from] Box<mpsc::error::SendError<SoftwareAction>>),
 
     #[error("Error from libzypp: {0}")]
     ZyppError(#[from] zypp_agama::ZyppError),
@@ -87,6 +93,12 @@ pub enum ZyppServerError {
 
     #[error("Failed to copy to target system: {0}")]
     IO(#[from] std::io::Error),
+}
+
+impl From<mpsc::error::SendError<SoftwareAction>> for ZyppServerError {
+    fn from(err: mpsc::error::SendError<SoftwareAction>) -> Self {
+        Self::SendError(Box::new(err))
+    }
 }
 
 pub type ZyppServerResult<R> = Result<R, ZyppServerError>;
@@ -117,7 +129,7 @@ pub enum SoftwareAction {
 pub enum RegistrationStatus {
     #[default]
     NotRegistered,
-    Registered(Registration),
+    Registered(Box<Registration>),
     Failed(RegistrationError),
 }
 
@@ -256,7 +268,7 @@ impl ZyppServer {
             "Starting packages installation",
         ));
 
-        zypp.switch_target(&self.install_dir.to_string())?;
+        zypp.switch_target(self.install_dir.as_ref())?;
         let result = zypp.commit(
             &mut download_callback,
             &mut install_callback,
@@ -289,11 +301,12 @@ impl ZyppServer {
         Ok(state)
     }
 
+    #[allow(clippy::too_many_arguments)]
     fn write(
         &mut self,
         state: SoftwareState,
         progress: Handler<progress::Service>,
-        questions: Handler<question::Service>,
+        _questions: Handler<question::Service>,
         security_srv: Handler<security::Service>,
         security: &mut callbacks::Security,
         tx: oneshot::Sender<ZyppServerResult<Vec<Issue>>>,
@@ -318,7 +331,7 @@ impl ZyppServer {
         let old_state = self.read(zypp)?;
 
         if let Some(registration_config) = &state.registration {
-            self.update_registration(registration_config, &zypp, &security_srv, &mut issues);
+            self.update_registration(registration_config, zypp, &security_srv, &mut issues);
         }
 
         self.trusted_keys = state.trusted_gpg_keys;
@@ -386,7 +399,7 @@ impl ZyppServer {
             );
 
             if let Err(error) = result {
-                let message = format!("Could not read the repositories");
+                let message = "Could not read the repositories".to_string();
                 issues.push(
                     Issue::new("software.load_source", &message).with_details(&error.to_string()),
                 );
@@ -418,7 +431,7 @@ impl ZyppServer {
             match selection {
                 ResolvableSelection::AutoSelected { skip_if_missing } => {
                     issues.append(&mut self.select_resolvable(
-                        &zypp,
+                        zypp,
                         name,
                         *r#type,
                         zypp_agama::ResolvableSelected::Installation,
@@ -427,7 +440,7 @@ impl ZyppServer {
                 }
                 ResolvableSelection::Selected => {
                     issues.append(&mut self.select_resolvable(
-                        &zypp,
+                        zypp,
                         name,
                         *r#type,
                         zypp_agama::ResolvableSelected::User,
@@ -447,9 +460,8 @@ impl ZyppServer {
 
         // unselect packages including the autoselected dependencies
         for (name, r#type, selection) in &state.resolvables.to_vec() {
-            match selection {
-                ResolvableSelection::Removed => self.unselect_resolvable(&zypp, name, *r#type),
-                _ => {}
+            if selection == &ResolvableSelection::Removed {
+                self.unselect_resolvable(zypp, name, *r#type)
             };
         }
 
@@ -509,13 +521,13 @@ impl ZyppServer {
     ) -> Result<(), ZyppDispatchError> {
         if let Err(error) = self.remove_dud_repo(zypp) {
             tracing::warn!("Failed to remove the DUD repository: {error}");
-            tx.send(Err(error.into()))
+            tx.send(Err(error))
                 .map_err(|_| ZyppDispatchError::ResponseChannelClosed)?;
             return Ok(());
         }
         if let Err(error) = self.disable_local_repos(zypp) {
             tracing::warn!("Failed to disable local repositories: {error}");
-            tx.send(Err(error.into()))
+            tx.send(Err(error))
                 .map_err(|_| ZyppDispatchError::ResponseChannelClosed)?;
             return Ok(());
         }
@@ -525,13 +537,13 @@ impl ZyppServer {
 
         if let Err(error) = self.modify_full_repo(zypp) {
             tracing::warn!("Failed to modify the full repository: {error}");
-            tx.send(Err(error.into()))
+            tx.send(Err(error))
                 .map_err(|_| ZyppDispatchError::ResponseChannelClosed)?;
             return Ok(());
         }
         if let Err(error) = self.copy_files() {
             tracing::warn!("Failed to copy zypp files: {error}");
-            tx.send(Err(error.into()))
+            tx.send(Err(error))
                 .map_err(|_| ZyppDispatchError::ResponseChannelClosed)?;
             return Ok(());
         }
@@ -775,8 +787,8 @@ impl ZyppServer {
         zypp: &zypp_agama::Zypp,
     ) -> Result<(), ZyppDispatchError> {
         let proposal = SoftwareProposal {
-            used_space: self.used_space(&zypp)?,
-            patterns: self.patterns_selection(&product, &zypp)?,
+            used_space: self.used_space(zypp)?,
+            patterns: self.patterns_selection(&product, zypp)?,
         };
 
         tx.send(Ok(proposal))
@@ -874,9 +886,9 @@ impl ZyppServer {
             registration = registration.with_url(url);
         }
 
-        match registration.register(&zypp, security_srv) {
+        match registration.register(zypp, security_srv) {
             Ok(registration) => {
-                self.registration = RegistrationStatus::Registered(registration);
+                self.registration = RegistrationStatus::Registered(Box::new(registration));
             }
             Err(error) => {
                 issues.push(
@@ -903,7 +915,7 @@ impl ZyppServer {
         };
 
         for addon in addons {
-            if registration.is_addon_registered(&addon) {
+            if registration.is_addon_registered(addon) {
                 tracing::info!("Skipping already registered add-on {}", &addon.id);
                 continue;
             }
