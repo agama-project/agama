@@ -28,7 +28,6 @@ use agama_utils::{
     issue, progress,
 };
 use serde::Deserialize;
-use serde_json;
 use std::pin::Pin;
 use tokio::sync::broadcast;
 use tokio_stream::{Stream, StreamExt, StreamMap};
@@ -203,7 +202,7 @@ impl Monitor {
         let stream = proxy
             .receive_system_changed()
             .await?
-            .map(|signal| Signal::SystemChanged(signal));
+            .map(Signal::SystemChanged);
         Ok(Box::pin(stream))
     }
 
@@ -214,7 +213,7 @@ impl Monitor {
         let stream = proxy
             .receive_proposal_changed()
             .await?
-            .map(|signal| Signal::ProposalChanged(signal));
+            .map(Signal::ProposalChanged);
         Ok(Box::pin(stream))
     }
 
@@ -225,7 +224,7 @@ impl Monitor {
         let stream = proxy
             .receive_progress_changed()
             .await?
-            .map(|signal| Signal::ProgressChanged(signal));
+            .map(Signal::ProgressChanged);
         Ok(Box::pin(stream))
     }
 
@@ -236,7 +235,7 @@ impl Monitor {
         let stream = proxy
             .receive_progress_finished()
             .await?
-            .map(|signal| Signal::ProgressFinished(signal));
+            .map(Signal::ProgressFinished);
         Ok(Box::pin(stream))
     }
 }

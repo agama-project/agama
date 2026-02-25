@@ -168,8 +168,7 @@ impl Service {
             }
             packages.push(Resolvable::new("agama-scripts", ResolvableType::Package));
         }
-        _ = self
-            .software
+        self.software
             .call(agama_software::message::SetResolvables::new(
                 "agama-scripts".to_string(),
                 packages,

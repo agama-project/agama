@@ -56,7 +56,6 @@ mod tests {
     struct Context {
         events_rx: broadcast::Receiver<Event>,
         handler: Handler<Service>,
-        issues: Handler<issue::Service>,
     }
 
     impl AsyncTestContext for Context {
@@ -66,11 +65,7 @@ mod tests {
 
             let handler = start_service(events_tx, issues.clone()).await;
 
-            Self {
-                events_rx,
-                handler,
-                issues,
-            }
+            Self { events_rx, handler }
         }
     }
 

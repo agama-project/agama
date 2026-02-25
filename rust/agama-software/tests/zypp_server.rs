@@ -36,7 +36,6 @@ use std::fs;
 use std::path::Path;
 use std::result::Result;
 use tokio::sync::{broadcast, oneshot};
-use tracing_subscriber;
 
 fn cleanup_past_leftovers(root_dir: &Path) {
     remove_repos(root_dir);
@@ -68,7 +67,7 @@ async fn test_start_zypp_server() {
 
     let root_dir =
         Utf8Path::new(env!("CARGO_MANIFEST_DIR")).join("../zypp-agama/fixtures/zypp_repos_root");
-    cleanup_past_leftovers(&root_dir.as_std_path());
+    cleanup_past_leftovers(root_dir.as_std_path());
     let zypp_root =
         Utf8Path::new(env!("CARGO_MANIFEST_DIR")).join("../zypp-agama/fixtures/zypp_root_tmp");
 
@@ -134,9 +133,8 @@ async fn test_start_zypp_server() {
 
     let result: ZyppServerResult<Vec<Issue>> =
         rx.await.expect("Failed to receive response from server");
-    assert_eq!(
+    assert!(
         result.is_ok(),
-        true,
         "SoftwareAction::Write failed: {:?}",
         result.unwrap_err()
     );

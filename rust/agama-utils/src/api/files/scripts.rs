@@ -300,7 +300,7 @@ impl ScriptsRepository {
     ///
     /// * `groups`: groups of scripts to clear.
     pub fn clear(&mut self, groups: &[ScriptsGroup]) -> Result<(), Error> {
-        for group in ScriptsGroup::iter().filter(|g| groups.contains(&g)) {
+        for group in ScriptsGroup::iter().filter(|g| groups.contains(g)) {
             let path = self.workdir.join(group.to_string());
             if path.exists() {
                 std::fs::remove_dir_all(path)?;

@@ -54,7 +54,7 @@ pub mod helpers {
     ///
     /// Symlinks are recreated pointing to the same target as the original one.
     pub fn copy_dir_all(source: &Utf8Path, target: &Utf8Path) -> Result<(), std::io::Error> {
-        fs::create_dir_all(&target)?;
+        fs::create_dir_all(target)?;
         for entry in source.read_dir_utf8()? {
             let entry = entry?;
             let ty = fs::symlink_metadata(entry.path())?;

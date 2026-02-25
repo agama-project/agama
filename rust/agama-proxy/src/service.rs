@@ -183,7 +183,7 @@ impl State {
             std::fs::create_dir_all(parent)?;
         }
 
-        proxy_config.write_to(&path)?;
+        proxy_config.write_to(path)?;
         self.load(true);
         Ok(())
     }

@@ -157,7 +157,7 @@ async fn validate(body: String) -> Result<Json<ValidationOutcome>, ProfileServic
     let validator = ProfileValidator::default_schema().context("Setting up profile validator")?;
     let result = validator
         .validate_str(&profile_string)
-        .context(format!("Could not validate the profile"))
+        .context("Could not validate the profile".to_string())
         .map_err(make_internal)?;
 
     Ok(Json(result))

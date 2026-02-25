@@ -53,7 +53,7 @@ impl CheckCertificate {
     ///
     /// * `certificate`: X509 certificate.
     /// * `name`: certificate name. It is used as the filename (without the extension) when
-    ///    importing the certificate.
+    ///   importing the certificate.
     pub fn new(certificate: X509, name: &str) -> Self {
         Self {
             certificate,

@@ -423,7 +423,7 @@ impl Zypp {
             let mut closure = progress;
             let cb = get_zypp_progress_callback(&closure);
             let mut status: Status = Status::default();
-            let status_ptr = &mut status as *mut _ as *mut Status;
+            let status_ptr = &mut status as *mut _;
             let c_alias = CString::new(alias).unwrap();
             let c_url = CString::new(url).unwrap();
             zypp_agama_sys::add_repository(

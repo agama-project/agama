@@ -68,8 +68,8 @@ impl Starter {
         self
     }
 
-    pub fn with_workdir(mut self, workdir: &PathBuf) -> Self {
-        self.workdir = workdir.clone();
+    pub fn with_workdir(mut self, workdir: &Path) -> Self {
+        self.workdir = workdir.to_path_buf();
         self
     }
 
@@ -128,9 +128,7 @@ impl State {
     /// * `name`: certificate name (e.g., "registration_server")
     pub fn import(&mut self, certificate: &Certificate, name: &str) -> Result<(), Error> {
         let path = self.workdir.join(format!("{name}.pem"));
-        certificate
-            .import(&path)
-            .map_err(|e| Error::CertificateIO(e))?;
+        certificate.import(&path).map_err(Error::CertificateIO)?;
         self.imported.push(name.to_string());
         Ok(())
     }
@@ -178,7 +176,7 @@ impl State {
 
         let output = process::Command::new("update-ca-certificates")
             .arg("--root")
-            .arg(&directory)
+            .arg(directory)
             .output()?;
 
         if !output.status.success() {

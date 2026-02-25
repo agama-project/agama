@@ -92,6 +92,7 @@ software:
   mandatory_packages:
     - NetworkManager
     - openSUSE-repos-MicroOS
+    - sudo-policy-wheel-auth-self # explicit wheel group policy to conform new auth model
   optional_packages: []
   base_product: Kalpa
 

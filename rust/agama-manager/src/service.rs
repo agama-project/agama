@@ -238,7 +238,7 @@ impl Starter {
         let bootloader = match self.bootloader {
             Some(bootloader) => bootloader,
             None => {
-                bootloader::Service::starter(self.dbus.clone(), issues.clone())
+                bootloader::Service::starter(self.dbus.clone())
                     .start()
                     .await?
             }
@@ -545,9 +545,9 @@ impl Service {
 
         if let Some(product) = product {
             if let Some(id) = &product.id {
-                let mode = product.mode.as_ref().map(|m| m.as_str());
+                let mode = product.mode.as_deref();
                 tracing::debug!("Setting product and mode to {} and {:?}", id, mode);
-                let product_spec = self.products.find(&id, mode)?;
+                let product_spec = self.products.find(id, mode)?;
                 let product = RwLock::new(product_spec.clone());
                 self.product = Some(Arc::new(product));
             }
@@ -836,8 +836,10 @@ impl MessageHandler<message::SetStorageModel> for Service {
             .storage
             .call(storage::message::GetConfigFromModel::new(message.model))
             .await?;
-        let mut config = Config::default();
-        config.storage = storage;
+        let config = Config {
+            storage,
+            ..Default::default()
+        };
         self.update_config(config).await
     }
 }

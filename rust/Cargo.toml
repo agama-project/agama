@@ -28,6 +28,5 @@ members = [
 resolver = "2"
 
 [workspace.package]
-# required by zbus 5
-rust-version = "1.81"
+rust-version = "1.88"
 edition = "2021"

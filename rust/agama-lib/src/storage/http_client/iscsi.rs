@@ -48,6 +48,7 @@ impl ISCSIHTTPClient {
         Ok(None)
     }
 
+    #[allow(clippy::borrowed_box)]
     pub async fn set_config(&self, config: &Box<RawValue>) -> Result<(), ISCSIHTTPClientError> {
         Ok(self.client.post_void("/iscsi/config", config).await?)
     }
