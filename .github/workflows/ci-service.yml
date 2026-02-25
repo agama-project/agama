@@ -57,6 +57,7 @@ jobs:
         distro: [ "tumbleweed" ]
 
     container:
+      # FIXME: use some 16.0 based image (with Ruby 3.4, TW contains Ruby 4.0...)
       image: registry.opensuse.org/yast/head/containers_${{matrix.distro}}/yast-ruby
 
     steps:
@@ -104,7 +105,9 @@ jobs:
         which
 
     - name: Install RubyGems dependencies
-      run: bundle config set --local with 'development' && bundle install
+      # install gems not included in Ruby 4.0
+      run: bundle config set --local with 'development' && bundle install && bundle add ostruct &&
+        bundle add cgi && bundle add fiddle
 
     - name: Check collecting translatable strings
       run: |
