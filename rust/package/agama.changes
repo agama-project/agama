@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Feb 25 08:13:55 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- Optimize writing software state to reduce time spend when
+  selecting pattern (bsc#1257794)
+- report properly when software selection contain conflict
+
+-------------------------------------------------------------------
 Mon Feb 23 21:15:48 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
 
 - Report properly if rpm installation skipped some packages due to
