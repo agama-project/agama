@@ -72,8 +72,8 @@ impl IntoResponse for Error {
         let mut status = StatusCode::BAD_REQUEST;
 
         if let Error::Manager(error) = &self {
-            if matches!(error, ManagerError::PendingIssues { issues: _ })
-                || matches!(error, ManagerError::Busy { scopes: _ })
+            if matches!(error, ManagerError::PendingIssues { .. })
+                || matches!(error, ManagerError::Busy { .. })
             {
                 status = StatusCode::UNPROCESSABLE_ENTITY;
             }
