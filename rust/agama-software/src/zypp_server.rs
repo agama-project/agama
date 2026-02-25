@@ -442,7 +442,7 @@ impl ZyppServer {
         tracing::info!("Install only required packages: {}", self.only_required);
         // run the solver to select the dependencies, ignore the errors, the solver runs again later
         if let Ok(false) = zypp.run_solver(self.only_required) {
-            let message = gettext("There are software conflict in software selection");
+            let message = gettext("There are conflicts in software selection");
             issues.push(Issue::new("software.conflict", &message));
         }
 
