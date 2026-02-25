@@ -65,7 +65,10 @@ const DASDPageContent = () => {
  */
 export default function DASDPage() {
   return (
-    <Page breadcrumbs={[{ label: _("Storage"), path: STORAGE.root }, { label: _("DASD") }]}>
+    <Page
+      breadcrumbs={[{ label: _("Storage"), path: STORAGE.root }, { label: _("DASD") }]}
+      progress={{ scope: "dasd" }}
+    >
       <Page.Content>
         <DASDPageContent />
       </Page.Content>
