@@ -21,6 +21,9 @@
 
 require "agama/software/repository"
 require "singleton"
+require "yast"
+
+Yast.import "URL"
 
 module Agama
   module Software
@@ -52,8 +55,8 @@ module Agama
       # @param priority    [Integer] Repository priority, the lower number the higher (!)
       #                              priority, the default libzypp priority is 99
       def add(url, name: nil, repo_alias: "", autorefresh: true, priority: 99)
-        repositories << Repository.create(name: name || url, url: url, repo_alias: repo_alias,
-          autorefresh: autorefresh, priority: priority)
+        repositories << Repository.create(name: name || Yast::URL.HidePassword(url), url: url,
+          repo_alias: repo_alias, autorefresh: autorefresh, priority: priority)
       end
 
       # returns user repositories as it was previously specified

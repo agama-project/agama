@@ -20,6 +20,9 @@
 # find current contact information at www.suse.com.
 
 require "logger"
+require "yast"
+
+Yast.import "URL"
 
 module Agama
   # This class is responsible for reading Agama kernel cmdline options
@@ -36,6 +39,20 @@ module Agama
     def initialize(data = {})
       @data = data
     end
+
+    def to_s
+      data_log = data
+
+      # optimization, hide the password only if it could be there
+      if data && data["install_url"] && data["install_url"].include?("@")
+        data_log = data.clone
+        data_log["install_url"] = Yast::URL.HidePassword(data["install_url"])
+      end
+
+      "#<#{self.class.name}:0x#{object_id.to_s(16).rjust(16, "0")} @data=#{data_log.inspect}>"
+    end
+
+    alias_method :inspect, :to_s
 
     def self.read
       read_from("/run/agama/cmdline.d/agama.conf")
