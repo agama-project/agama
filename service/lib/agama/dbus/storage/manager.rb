@@ -56,6 +56,7 @@ module Agama
           @config_model_json = generate_config_model_json
           @proposal_json = generate_proposal_json
           @issues_json = generate_issues_json
+          @bootloader_config_json = generate_bootloader_config_json
           register_progress_callbacks
           add_s390_interfaces if Yast::Arch.s390
         end
@@ -206,11 +207,9 @@ module Agama
         end
 
         dbus_interface "org.opensuse.Agama.Storage1.Bootloader" do
+          dbus_reader_attr_accessor :bootloader_config_json, "s", dbus_name: "Config"
           dbus_method(:SetConfig, "in serialized_config:s, out result:u") do |serialized_config|
             configure_bootloader(serialized_config)
-          end
-          dbus_method(:GetConfig, "out serialized_config:s") do
-            recover_bootloader_config
           end
         end
 
@@ -227,13 +226,6 @@ module Agama
           # TODO: generate also new issue from configuration
           calculate_bootloader
           0
-        end
-
-        # Gets and serializes the storage config used to calculate the current proposal.
-        #
-        # @return [String] Serialized config according to the JSON schema.
-        def recover_bootloader_config
-          backend.bootloader.config.to_json
         end
 
       private
@@ -295,6 +287,7 @@ module Agama
         def calculate_bootloader
           logger.info("Configuring bootloader")
           backend.bootloader.configure
+          update_bootloader_config_json
         end
 
         # Updates the system info if needed.
@@ -342,6 +335,15 @@ module Agama
 
           # This assignment emits a D-Bus PropertiesChanged.
           self.issues_json = issues_json
+        end
+
+        # Updates the bootloader config if needed.
+        def update_bootloader_config_json
+          bootloader_config_json = generate_bootloader_config_json
+          return if self.bootloader_config_json == bootloader_config_json
+
+          # This assignment emits a D-Bus PropertiesChanged.
+          self.bootloader_config_json = bootloader_config_json
         end
 
         # Generates the serialized JSON of the system.
@@ -400,6 +402,13 @@ module Agama
         def generate_issues_json
           json = backend.issues.map { |i| issue_hash(i) }
           JSON.pretty_generate(json)
+        end
+
+        # Generates the serialized JSON of the bootloader config.
+        #
+        # @return [String]
+        def generate_bootloader_config_json
+          backend.bootloader.config.to_json
         end
 
         # Representation of the null JSON.
