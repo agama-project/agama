@@ -31,7 +31,7 @@ use agama_utils::{
 };
 use async_trait::async_trait;
 use serde_json::Value;
-use tokio::sync::{Mutex, RwLock};
+use tokio::sync::{oneshot, Mutex, RwLock};
 
 use crate::{
     client::{Error, StorageClient},
@@ -149,10 +149,14 @@ impl StorageClient for TestClient {
         &self,
         _product: Arc<RwLock<ProductSpec>>,
         config: Option<Config>,
-    ) -> Result<(), Error> {
+    ) -> oneshot::Receiver<Result<(), Error>> {
         let mut state = self.state.lock().await;
         state.config = config;
-        Ok(())
+        let (tx, rx) = oneshot::channel::<Result<(), Error>>();
+        tokio::spawn(async move {
+            _ = tx.send(Ok(()));
+        });
+        rx
     }
 
     async fn solve_config_model(&self, _model: Value) -> Result<Option<Value>, Error> {

@@ -25,6 +25,8 @@ pub mod client;
 pub mod message;
 mod monitor;
 
+mod proxies;
+
 pub mod test_utils;
 
 #[cfg(test)]

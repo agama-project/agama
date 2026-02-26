@@ -30,6 +30,7 @@ use agama_utils::{
 };
 use async_trait::async_trait;
 use serde_json::Value;
+use tokio::sync::oneshot;
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
@@ -75,13 +76,13 @@ impl Starter {
     pub async fn start(self) -> Result<Handler<Service>, Error> {
         let client = match self.client {
             Some(client) => client,
-            None => Box::new(Client::new(self.dbus.clone())),
+            None => Box::new(Client::new(self.dbus.clone()).await),
         };
 
         let service = Service { client };
         let handler = actor::spawn(service);
 
-        let monitor = Monitor::new(self.progress, self.issues, self.events, self.dbus);
+        let monitor = Monitor::new(self.progress, self.issues, self.events, self.dbus).await;
         monitor::spawn(monitor)?;
         Ok(handler)
     }
@@ -190,11 +191,15 @@ impl MessageHandler<message::GetProposal> for Service {
 
 #[async_trait]
 impl MessageHandler<message::SetConfig> for Service {
-    async fn handle(&mut self, message: message::SetConfig) -> Result<(), Error> {
-        self.client
+    async fn handle(
+        &mut self,
+        message: message::SetConfig,
+    ) -> Result<oneshot::Receiver<Result<(), client::Error>>, Error> {
+        let rx = self
+            .client
             .set_config(message.product, message.config)
-            .await?;
-        Ok(())
+            .await;
+        Ok(rx)
     }
 }
 

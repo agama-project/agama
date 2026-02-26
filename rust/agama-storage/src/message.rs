@@ -21,7 +21,9 @@
 use agama_utils::{actor::Message, api::storage::Config, products::ProductSpec};
 use serde_json::Value;
 use std::sync::Arc;
-use tokio::sync::RwLock;
+use tokio::sync::{oneshot, RwLock};
+
+use crate::client;
 
 #[derive(Clone)]
 pub struct Activate;
@@ -121,7 +123,7 @@ impl SetConfig {
 }
 
 impl Message for SetConfig {
-    type Reply = ();
+    type Reply = oneshot::Receiver<Result<(), client::Error>>;
 }
 
 #[derive(Clone)]
