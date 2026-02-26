@@ -661,6 +661,7 @@ export default function DASDTable({ devices }) {
       <SelectableDataTable
         columns={columns}
         items={sortedDevices}
+        itemIdKey="channel"
         selectionMode="multiple"
         itemsSelected={state.selectedDevices}
         variant="compact"
