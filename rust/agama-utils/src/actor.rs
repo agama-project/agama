@@ -253,6 +253,26 @@ impl<A: Actor> Handler<A> {
             .map_err(|_| Error::Send(A::name()))?;
         Ok(())
     }
+
+    /// Sends a message and returns a channel to get the answer later.
+    ///
+    /// TODO: return a future instead of a oneshot channel.
+    ///
+    /// * `msg`: message to send to the actor.
+    pub fn call_future<M: Message>(
+        &self,
+        msg: M,
+    ) -> Result<oneshot::Receiver<Result<M::Reply, A::Error>>, A::Error>
+    where
+        A: MessageHandler<M>,
+    {
+        let (tx, rx) = oneshot::channel();
+        let message = Envelope::new(msg, Some(tx));
+        self.sender
+            .send(Box::new(message))
+            .map_err(|_| Error::Send(A::name()))?;
+        Ok(rx)
+    }
 }
 
 /// Spawns a Tokio task and process the messages coming from the action handler.
