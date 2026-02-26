@@ -36,7 +36,7 @@ import { _ } from "~/i18n";
 const NoDevicesAvailable = () => {
   return (
     <EmptyState headingLevel="h2" titleText={_("No devices available")} variant="sm">
-      <EmptyStateBody>{_("No DASD devices were found in this machine.")}</EmptyStateBody>
+      <EmptyStateBody>{_("No DASD devices found in this machine.")}</EmptyStateBody>
     </EmptyState>
   );
 };
