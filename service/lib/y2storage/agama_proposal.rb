@@ -27,7 +27,7 @@ require "y2storage/planned"
 require "y2storage/proposal"
 require "y2storage/proposal/agama_devices_creator"
 require "y2storage/proposal/agama_devices_planner"
-require "y2storage/proposal/agama_space_maker"
+require "y2storage/proposal/space_settings_builder"
 require "y2storage/proposal/planned_devices_handler"
 
 module Y2Storage
@@ -106,7 +106,8 @@ module Y2Storage
         return @devices
       end
 
-      @space_maker = Proposal::AgamaSpaceMaker.new(disk_analyzer, config)
+      space_settings = Proposal::SpaceSettingsBuilder.new(config).space_settings
+      @space_maker = Proposal::SpaceMaker.new(disk_analyzer, space_settings)
       @devices = propose_devicegraph
     end
 

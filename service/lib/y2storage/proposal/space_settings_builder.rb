@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024] SUSE LLC
+# Copyright (c) [2024-2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -19,34 +19,31 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "y2storage/proposal/space_maker"
 require "y2storage/proposal_settings"
 
 module Y2Storage
   module Proposal
-    # Space maker for Agama.
-    #
-    # FIXME: this class must dissappear. It does not implement any own logic compared to the
-    # original SpaceMaker. It simply encapsulates the conversion from Agama config to
-    # ProposalSpaceSettings.
-    class AgamaSpaceMaker < SpaceMaker
-      # @param disk_analyzer [DiskAnalyzer]
+    # Class to encapsulate the conversion from Agama config to ProposalSpaceSettings
+    class SpaceSettingsBuilder
       # @param config [Agama::Storage::Config]
-      def initialize(disk_analyzer, config)
-        super(disk_analyzer, space_settings(config))
+      def initialize(config)
+        @config = config
       end
 
-    private
-
-      # Method used by the constructor to convert the Agama config to ProposalSpaceSettings
+      # ProposalSpaceSettings corresponding to the Agama configuration
       #
-      # @param config [Agama::Storage::Config]
-      def space_settings(config)
+      # @return [ProposalSpaceSettings]
+      def space_settings
         Y2Storage::ProposalSpaceSettings.new.tap do |target|
           target.strategy = :bigger_resize
           target.actions = space_actions(config)
         end
       end
+
+    private
+
+      # @return [Agama::Storage::Config]
+      attr_reader :config
 
       # Space actions from the given config.
       #
