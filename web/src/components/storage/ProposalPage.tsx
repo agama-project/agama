@@ -61,6 +61,7 @@ import { _, n_ } from "~/i18n";
 import { useProgress, useProgressChanges } from "~/queries/progress";
 import { useNavigate, useLocation } from "react-router";
 import { useStorageUiState } from "~/context/storage-ui-state";
+import { useSystem as useDASDSystem } from "~/hooks/model/system/dasd";
 
 import type { Issue } from "~/model/issue";
 
@@ -137,7 +138,7 @@ function UnknownConfigEmptyState(): React.ReactNode {
 
 function UnavailableDevicesEmptyState(): React.ReactNode {
   const isZFCPSupported = false;
-  const isDASDSupported = false;
+  const dasdSystem = useDASDSystem();
 
   const description = _(
     "There are not disks available for the installation. You may need to configure some device.",
@@ -164,7 +165,7 @@ function UnavailableDevicesEmptyState(): React.ReactNode {
               </Link>
             </SplitItem>
           )}
-          {isDASDSupported && (
+          {dasdSystem && (
             <SplitItem>
               <Link to={PATHS.dasd} variant="link">
                 {_("Manage DASD devices")}
