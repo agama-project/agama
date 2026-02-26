@@ -210,6 +210,15 @@ export type SelectableDataTableProps<T = any> = {
   itemActionsLabel?: (d: T) => string | string;
 
   /**
+   * Custom component to use for rendering the actions cell. When not provided,
+   * falls back to PatternFly's ActionsColumn.
+   *
+   * The component will receive the actions for the row and the resolved
+   * accessible label from `itemActionsLabel`.
+   */
+  itemActionsComponent?: React.ComponentType<{ items: IAction[]; label: string }>;
+
+  /**
    * Array of currently selected items.
    */
   itemsSelected?: T[];
@@ -307,7 +316,12 @@ type SharedData = {
 } & Readonly<
   Pick<
     SelectableDataTableProps,
-    "sortedBy" | "updateSorting" | "allowSelectAll" | "itemActions" | "itemActionsLabel"
+    | "sortedBy"
+    | "updateSorting"
+    | "allowSelectAll"
+    | "itemActions"
+    | "itemActionsLabel"
+    | "itemActionsComponent"
   >
 >;
 
@@ -465,6 +479,7 @@ export default function SelectableDataTable({
   allowSelectAll = false,
   itemActions,
   itemActionsLabel,
+  itemActionsComponent,
   emptyState,
   ...tableProps
 }: SelectableDataTableProps) {
@@ -564,6 +579,9 @@ export default function SelectableDataTable({
       return children.map((item) => renderItemChild(item, isItemExpanded(itemKey), sharedData));
     };
 
+    const label = isFunction(itemActionsLabel) ? itemActionsLabel(item) : itemActionsLabel;
+    const ItemActionsComponent = itemActionsComponent;
+
     // TODO: Add label to Tbody?
     return (
       <Tbody key={rowIndex} isExpanded={isItemExpanded(itemKey)}>
@@ -577,21 +595,23 @@ export default function SelectableDataTable({
           ))}
           {!isEmpty(actions) && (
             <Td isActionCell>
-              <ActionsColumn
-                items={actions}
-                actionsToggle={({ toggleRef, onToggle }) => (
-                  <MenuToggle
-                    ref={toggleRef}
-                    onClick={onToggle}
-                    variant="plain"
-                    aria-label={
-                      isFunction(itemActionsLabel) ? itemActionsLabel(item) : itemActionsLabel
-                    }
-                  >
-                    <Icon name="more_horiz" />
-                  </MenuToggle>
-                )}
-              />
+              {ItemActionsComponent ? (
+                <ItemActionsComponent items={actions} label={label} />
+              ) : (
+                <ActionsColumn
+                  items={actions}
+                  actionsToggle={({ toggleRef, onToggle }) => (
+                    <MenuToggle
+                      ref={toggleRef}
+                      onClick={onToggle}
+                      variant="plain"
+                      aria-label={label}
+                    >
+                      <Icon name="more_horiz" />
+                    </MenuToggle>
+                  )}
+                />
+              )}
             </Td>
           )}
         </Tr>
@@ -609,6 +629,7 @@ export default function SelectableDataTable({
     allowSelectAll,
     itemActions,
     itemActionsLabel,
+    itemActionsComponent,
     // FIXME: drop showSelectAll once items is part of SharedData
     showSelectAll: allowSelectAll && items.length > 0,
     isAllSelected: items.length > 0 && items.length === itemsSelected.length,

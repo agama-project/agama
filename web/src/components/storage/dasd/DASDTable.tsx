@@ -43,6 +43,7 @@ import FormatActionHandler from "~/components/storage/dasd/FormatActionHandler";
 import SelectableDataTable, { SortedBy } from "~/components/core/SelectableDataTable";
 import TextinputFilter from "~/components/storage/dasd/TextinputFilter";
 import SimpleSelector from "~/components/core/SimpleSelector";
+import SimpleDropdown from "~/components/core/SimpleDropdown";
 import { useAddOrUpdateDevices } from "~/hooks/model/config/dasd";
 import { hex, sortCollection, translateEntries } from "~/utils";
 import { _, n_, N_ } from "~/i18n";
@@ -698,6 +699,7 @@ export default function DASDTable({ devices }) {
           })
         }
         itemActionsLabel={(d: Device) => `Actions for ${d.channel}`}
+        itemActionsComponent={SimpleDropdown}
         emptyState={
           <EmptyState
             headingLevel="h2"

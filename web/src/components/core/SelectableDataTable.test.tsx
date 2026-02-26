@@ -220,6 +220,21 @@ describe("SelectableDataTable", () => {
     expect(editFn).toHaveBeenCalled();
   });
 
+  it("uses itemActionsComponent when provided instead of the default ActionsColumn", async () => {
+    const CustomActions = ({ label }) => <span>Custom actions: {label}</span>;
+
+    plainRender(
+      <SelectableDataTable
+        {...props}
+        itemActions={(d) => [{ title: `Edit ${d.name}`, onClick: jest.fn() }]}
+        itemActionsLabel={(d) => `Actions for ${d.name}`}
+        itemActionsComponent={CustomActions}
+      />,
+    );
+
+    screen.getByText("Custom actions: Actions for /dev/sda");
+  });
+
   it("renders a expand toggler in items with children", () => {
     plainRender(<SelectableDataTable {...props} />);
     const table = screen.getByRole("grid");
