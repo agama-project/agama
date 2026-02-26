@@ -622,7 +622,7 @@ impl MessageHandler<message::GetSystem> for Service {
         let l10n = self.l10n.call(l10n::message::GetSystem).await?;
         let manager = self.system.clone();
         let storage = self.storage.call(storage::message::GetSystem).await?;
-        let iscsi = self.iscsi.call(iscsi::message::GetSystem).await?;
+        // let iscsi = self.iscsi.call(iscsi::message::GetSystem).await?;
         let network = self.network.get_system().await?;
 
         let s390 = if let Some(s390) = &self.s390 {
@@ -645,7 +645,7 @@ impl MessageHandler<message::GetSystem> for Service {
             manager,
             network,
             storage,
-            iscsi,
+            iscsi: Default::default(),
             s390,
             software,
         })
@@ -658,13 +658,15 @@ impl MessageHandler<message::GetExtendedConfig> for Service {
     ///
     /// It includes user and default values.
     async fn handle(&mut self, _message: message::GetExtendedConfig) -> Result<Config, Error> {
-        let bootloader = self
-            .bootloader
-            .call(bootloader::message::GetConfig)
-            .await?
-            .to_option();
+        let bootloader = None;
+        // let bootloader = self
+        //     .bootloader
+        //     .call(bootloader::message::GetConfig)
+        //     .await?
+        //     .to_option();
         let hostname = self.hostname.call(hostname::message::GetConfig).await?;
-        let iscsi = self.iscsi.call(iscsi::message::GetConfig).await?;
+        // let iscsi = self.iscsi.call(iscsi::message::GetConfig).await?;
+        let iscsi = Default::default();
         let l10n = self.l10n.call(l10n::message::GetConfig).await?;
         // FIXME: the security service might be busy asking some question, so it cannot answer.
         // By now, let's consider that the whole security configuration is set by the user
@@ -722,6 +724,7 @@ impl MessageHandler<message::SetConfig> for Service {
     /// Sets the user configuration with the given values.
     async fn handle(&mut self, message: message::SetConfig) -> Result<(), Error> {
         checks::check_stage(&self.progress, Stage::Configuring).await?;
+        tracing::debug!("DEBUG: SetConfig handler (calling set_config)");
         self.set_config(message.config).await
     }
 }

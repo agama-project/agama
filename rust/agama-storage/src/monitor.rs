@@ -104,11 +104,11 @@ pub struct Monitor {
     issues: Handler<issue::Service>,
     events: event::Sender,
     connection: Connection,
-    client: Client,
+    // client: Client<'a>,
 }
 
 impl Monitor {
-    pub fn new(
+    pub async fn new(
         progress: Handler<progress::Service>,
         issues: Handler<issue::Service>,
         events: event::Sender,
@@ -119,7 +119,7 @@ impl Monitor {
             issues,
             events,
             connection: connection.clone(),
-            client: Client::new(connection),
+            // client: Client::new(connection).await,
         }
     }
 
@@ -142,7 +142,8 @@ impl Monitor {
     }
 
     async fn update_issues(&self) -> Result<(), Error> {
-        let issues = self.client.get_issues().await?;
+        // let issues = self.client.get_issues().await?;
+        let issues = vec![];
         self.issues
             .cast(issue::message::Set::new(Scope::Storage, issues))?;
         Ok(())
