@@ -94,7 +94,7 @@ impl ScriptsRunner {
     ///
     /// * `scripts`: scripts to run.
     pub async fn run(&self, scripts: &[&Script]) -> Result<(), Error> {
-        let scripts: Vec<_> = self.find_scripts_to_run(&scripts);
+        let scripts: Vec<_> = self.find_scripts_to_run(scripts);
         self.start_progress(&scripts);
 
         let mut resolv_linked = false;
@@ -130,7 +130,7 @@ impl ScriptsRunner {
                 return Ok(());
             };
 
-            if !self.should_retry(&script, error).await? {
+            if !self.should_retry(script, error).await? {
                 return Ok(());
             }
         }
@@ -157,7 +157,7 @@ impl ScriptsRunner {
         }
 
         let answer = ask_question(&self.questions, question).await?;
-        return Ok(answer.action == "Yes");
+        Ok(answer.action == "Yes")
     }
 
     /// Runs the script at the given path.
@@ -218,7 +218,7 @@ impl ScriptsRunner {
     /// It exclues any script that already ran.
     fn find_scripts_to_run<'a>(&self, scripts: &[&'a Script]) -> Vec<&'a Script> {
         scripts
-            .into_iter()
+            .iter()
             .filter(|s| {
                 let stdout_file = self
                     .workdir
@@ -353,7 +353,7 @@ mod tests {
                 chroot: Some(chroot),
             });
             script
-                .write(&self.scripts_dir())
+                .write(self.scripts_dir())
                 .expect("Could not write the script");
             script
         }

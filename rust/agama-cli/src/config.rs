@@ -367,7 +367,7 @@ async fn edit(
         // FIXME: invalid profile still gets loaded
         let updated =
             std::fs::read_to_string(&path).context(format!("Reading from file {:?}", path))?;
-        validate(&http_client, CliInput::Full(updated.clone()), false).await?;
+        validate(http_client, CliInput::Full(updated.clone()), false).await?;
         return Ok(serde_json::from_str(&updated)?);
     }
 
@@ -397,7 +397,7 @@ async fn monitor_progress(monitor: MonitorClient) -> anyhow::Result<()> {
     let task = tokio::spawn(async move {
         show_progress(monitor, true).await;
     });
-    let _ = task.await?;
+    task.await?;
 
     Ok(())
 }

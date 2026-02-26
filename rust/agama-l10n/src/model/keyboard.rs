@@ -67,27 +67,6 @@ impl KeymapsDatabase {
     }
 }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn test_sorting_keymaps() {
-        let entries = vec![
-            Keymap::new("es".parse().unwrap(), "Spanish"),
-            Keymap::new("us".parse().unwrap(), "English (US)"),
-            Keymap::new("de".parse().unwrap(), "German"),
-        ];
-
-        let db = KeymapsDatabase::with_entries(&entries);
-        let keymaps = db.entries();
-
-        assert_eq!(keymaps[0].description.to_string(), "English (US)");
-        assert_eq!(keymaps[1].description.to_string(), "German");
-        assert_eq!(keymaps[2].description.to_string(), "Spanish");
-    }
-}
-
 /// Returns the list of keymaps to offer.
 ///
 /// It only includes the keyboards supported by `localectl` but getting
@@ -125,4 +104,25 @@ fn get_keymap_descriptions() -> HashMap<String, String> {
     }
 
     keymaps
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_sorting_keymaps() {
+        let entries = vec![
+            Keymap::new("es".parse().unwrap(), "Spanish"),
+            Keymap::new("us".parse().unwrap(), "English (US)"),
+            Keymap::new("de".parse().unwrap(), "German"),
+        ];
+
+        let db = KeymapsDatabase::with_entries(&entries);
+        let keymaps = db.entries();
+
+        assert_eq!(keymaps[0].description.to_string(), "English (US)");
+        assert_eq!(keymaps[1].description.to_string(), "German");
+        assert_eq!(keymaps[2].description.to_string(), "Spanish");
+    }
 }

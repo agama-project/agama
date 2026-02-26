@@ -42,7 +42,7 @@ use crate::{
 #[derive(Debug, thiserror::Error)]
 pub enum StoreError {
     #[error(transparent)]
-    DASD(#[from] DASDStoreError),
+    Dasd(#[from] DASDStoreError),
     #[error(transparent)]
     Hostname(#[from] HostnameStoreError),
     #[error(transparent)]
@@ -50,9 +50,9 @@ pub enum StoreError {
     #[error(transparent)]
     Storage(#[from] StorageStoreError),
     #[error(transparent)]
-    ISCSI(#[from] ISCSIHTTPClientError),
+    Iscsi(#[from] ISCSIHTTPClientError),
     #[error(transparent)]
-    ZFCP(#[from] ZFCPStoreError),
+    Zfcp(#[from] ZFCPStoreError),
     #[error("Could not calculate the context")]
     InvalidStoreContext,
 }

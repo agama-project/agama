@@ -1,4 +1,4 @@
-// Copyright (c) [2025] SUSE LLC
+// Copyright (c) [2026] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -19,15 +19,14 @@
 // find current contact information at www.suse.com.
 
 use agama_security as security;
-use agama_software::state::{Repository as StateRepository, SoftwareState};
+use agama_software::state::SoftwareStateBuilder;
 use agama_software::zypp_server::{SoftwareAction, ZyppServer, ZyppServerResult};
+use agama_utils::api::question::{Answer, AnswerRule, Config};
+use agama_utils::api::software::SoftwareConfig;
+use agama_utils::products::Registry;
 use agama_utils::{
     actor,
-    api::{
-        event::Event,
-        question::{Answer, AnswerRule, Config},
-        Issue,
-    },
+    api::{event::Event, Issue},
     progress, question,
 };
 use camino::{Utf8Path, Utf8PathBuf};
@@ -35,6 +34,7 @@ use glob::glob;
 use std::fs;
 use std::path::Path;
 use std::result::Result;
+use std::time::SystemTime;
 use tokio::sync::{broadcast, oneshot};
 
 fn cleanup_past_leftovers(root_dir: &Path) {
@@ -61,9 +61,10 @@ fn remove_rpmdb(root_dir: &Path) {
     }
 }
 
-#[tokio::test]
-async fn test_start_zypp_server() {
-    let _ = tracing_subscriber::fmt::try_init();
+#[tokio::main]
+async fn main() {
+    let now = SystemTime::now();
+    println!("now: {:?}", now);
 
     let root_dir =
         Utf8Path::new(env!("CARGO_MANIFEST_DIR")).join("../zypp-agama/fixtures/zypp_repos_root");
@@ -85,10 +86,6 @@ async fn test_start_zypp_server() {
     let question_service = question::service::Service::new(event_tx.clone());
     let question_handler = actor::spawn(question_service);
 
-    // Spawn the security service
-    let security_service_starter = security::service::Starter::new(question_handler.clone());
-    let security_handler = security_service_starter.start().unwrap();
-
     // Pre-configure the answer to the GPG key question
     let answer = Answer {
         action: "Trust".to_string(),
@@ -109,48 +106,103 @@ async fn test_start_zypp_server() {
         .await
         .unwrap();
 
+    // Spawn the security service
+    let security_service_starter = security::service::Starter::new(question_handler.clone());
+    let security_handler = security_service_starter.start().unwrap();
+
     let (tx, rx) = oneshot::channel();
 
-    let repo_s = StateRepository {
-        name: "signed_repo".to_string(),
-        alias: "signed_repo".to_string(),
-        url: root_dir.join("usr/share/signed_repo").to_string(),
-        enabled: true,
-    };
+    let product_dir = Utf8Path::new(env!("CARGO_MANIFEST_DIR")).join("../../products.d");
+    let mut registry = Registry::new(product_dir);
+    registry.read().unwrap();
+    let product = registry.find("Tumbleweed", None).unwrap();
+    let software_state = SoftwareStateBuilder::for_product(&product).build();
 
-    let mut software_state = SoftwareState::new("test_product");
-    software_state.repositories = vec![repo_s];
-
+    println!(
+        "before first write: {:?}ms",
+        now.elapsed().unwrap().as_millis()
+    );
+    let now = SystemTime::now();
     client
         .send(SoftwareAction::Write {
             state: software_state,
-            progress: progress_handler,
+            progress: progress_handler.clone(),
             question: question_handler.clone(),
-            security: security_handler,
+            security: security_handler.clone(),
             tx,
         })
         .expect("Failed to send SoftwareAction::Write");
 
     let result: ZyppServerResult<Vec<Issue>> =
         rx.await.expect("Failed to receive response from server");
-    assert!(
-        result.is_ok(),
-        "SoftwareAction::Write failed: {:?}",
-        result.unwrap_err()
+    if let Err(err) = result {
+        panic!("SoftwareAction::Write failed: {:?}", err);
+    }
+    println!(
+        "after first write: {:?}ms",
+        now.elapsed().unwrap().as_millis()
     );
-    let issues = result.unwrap();
-    assert_eq!(
-        issues.len(),
-        1,
-        "There are unexpected issues size {issues:#?}"
+
+    let config = agama_utils::api::software::Config {
+        software: Some(SoftwareConfig {
+            patterns: Some(agama_utils::api::software::PatternsConfig::PatternsMap(
+                agama_utils::api::software::PatternsMap {
+                    add: Some(vec!["gnome".to_string()]),
+                    remove: None,
+                },
+            )),
+            ..Default::default()
+        }),
+        ..Default::default()
+    };
+    let software_state = SoftwareStateBuilder::for_product(&product)
+        .with_config(&config)
+        .build();
+    let (tx, rx) = oneshot::channel();
+
+    let now = SystemTime::now();
+    client
+        .send(SoftwareAction::Write {
+            state: software_state,
+            progress: progress_handler.clone(),
+            question: question_handler.clone(),
+            security: security_handler.clone(),
+            tx,
+        })
+        .expect("Failed to send SoftwareAction::Write");
+
+    let result: ZyppServerResult<Vec<Issue>> =
+        rx.await.expect("Failed to receive response from server");
+    if let Err(err) = result {
+        panic!("SoftwareAction::Write failed: {:?}", err);
+    }
+    println!(
+        "after second write: {:?}ms",
+        now.elapsed().unwrap().as_millis()
     );
-    assert_eq!(issues[0].class, "software.missing_product");
 
-    let questions = question_handler
-        .call(question::message::Get)
-        .await
-        .expect("Failed to get questions");
-    assert!(questions.is_empty());
+    let software_state = SoftwareStateBuilder::for_product(&product).build();
+    let (tx, rx) = oneshot::channel();
 
+    let now = SystemTime::now();
+    client
+        .send(SoftwareAction::Write {
+            state: software_state,
+            progress: progress_handler.clone(),
+            question: question_handler.clone(),
+            security: security_handler.clone(),
+            tx,
+        })
+        .expect("Failed to send SoftwareAction::Write");
+
+    let result: ZyppServerResult<Vec<Issue>> =
+        rx.await.expect("Failed to receive response from server");
+    if let Err(err) = result {
+        panic!("SoftwareAction::Write failed: {:?}", err);
+    }
+    println!(
+        "after third write: {:?}ms",
+        now.elapsed().unwrap().as_millis()
+    );
     // NOTE: here we drop sender channel, which result in exit of zypp thread due to closed channel
 }

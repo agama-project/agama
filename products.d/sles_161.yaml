@@ -199,7 +199,7 @@ modes:
       mandatory_patterns:
         - enhanced_base
       mandatory_packages:
-        - SLES_SAP-release
+        - SLES-release
       user_patterns:
         - sles_sap_minimal_sap
 
@@ -306,7 +306,7 @@ modes:
       mandatory_patterns:
         - immutable_base
       mandatory_packages:
-        - SLES_SAP_immutable-release
+        - SLES_immutable-release
 
     storage:
       space_policy: delete

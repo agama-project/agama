@@ -33,7 +33,7 @@ pub trait ModelAdapter: Send + 'static {
         let name = self.static_hostname()?;
 
         Ok(SystemInfo {
-            r#static: (!name.is_empty()).then(|| name),
+            r#static: (!name.is_empty()).then_some(name),
             hostname: self.hostname()?,
         })
     }

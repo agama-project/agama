@@ -62,8 +62,7 @@ impl Starter {
             status: Status::default(),
         };
 
-        let handler = actor::spawn(service);
-        handler
+        actor::spawn(service)
     }
 }
 
@@ -143,7 +142,7 @@ impl MessageHandler<message::SetStage> for Service {
     async fn handle(&mut self, message: message::SetStage) -> Result<(), Error> {
         self.status.stage = message.stage;
         self.events.send(Event::StageChanged {
-            stage: self.status.stage.clone(),
+            stage: self.status.stage,
         })?;
         Ok(())
     }
@@ -213,7 +212,7 @@ impl MessageHandler<message::Next> for Service {
         let Some(progress) = self.get_mut_progress(message.scope) else {
             return Err(Error::MissingProgress(message.scope));
         };
-        progress.next()?;
+        progress.advance()?;
         let progress = progress.clone();
         self.send_progress_changed(progress)?;
         Ok(())
@@ -226,7 +225,7 @@ impl MessageHandler<message::NextWithStep> for Service {
         let Some(progress) = self.get_mut_progress(message.scope) else {
             return Err(Error::MissingProgress(message.scope));
         };
-        progress.next_with_step(message.step)?;
+        progress.advance_with_step(message.step)?;
         let progress = progress.clone();
         self.send_progress_changed(progress)?;
         Ok(())
