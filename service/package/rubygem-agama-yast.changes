@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Feb 26 16:47:39 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Allow reactivating a DASD if enabling DIAG failed
+  (gh#agama-project/agama#3143).
+
+-------------------------------------------------------------------
 Wed Feb 18 20:28:02 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
 
 - Add support for updateNvram bootloader key (jsc#PED-14224)
