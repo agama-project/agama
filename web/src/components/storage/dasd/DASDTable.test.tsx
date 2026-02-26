@@ -282,10 +282,11 @@ describe("DASDTable", () => {
         ]);
       });
 
-      it("hides row actions when devices are selected", async () => {
+      // Test for a rollback change, see commit message
+      it("does not hide row actions when devices are selected", async () => {
         const { user } = installerRender(<DASDTable devices={mockDASDDevices} />);
         await user.click(screen.getByRole("checkbox", { name: "Select row 0" }));
-        expect(screen.queryByRole("button", { name: "Actions for 0.0.0160" })).toBeNull();
+        screen.queryByRole("button", { name: "Actions for 0.0.0160" });
       });
 
       it("filters irrelevant actions for a single device", async () => {

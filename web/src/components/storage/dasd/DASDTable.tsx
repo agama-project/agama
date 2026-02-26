@@ -670,14 +670,12 @@ export default function DASDTable({ devices }) {
         updateSorting={onSortingChange}
         allowSelectAll
         itemActions={(d: Device) =>
-          isEmpty(state.selectedDevices)
-            ? buildActions({
-                devices: [d],
-                addOrUpdateDevices,
-                dispatcher: dispatch,
-                filterByDevice: true,
-              })
-            : []
+          buildActions({
+            devices: [d],
+            addOrUpdateDevices,
+            dispatcher: dispatch,
+            filterByDevice: true,
+          })
         }
         itemActionsLabel={(d: Device) => `Actions for ${d.channel}`}
         emptyState={
