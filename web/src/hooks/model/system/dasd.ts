@@ -33,22 +33,13 @@ import type { System, DASD } from "~/model/system";
  *
  * @see {@link https://tanstack.com/query/latest/docs/framework/react/guides/render-optimizations#select TanStack Query Select}
  * @see {@link https://tkdodo.eu/blog/react-query-selectors-supercharged#what-is-select Query Selectors Supercharged}
- *
- * FIXME: Read todo note below.
- * @todo Consider returning an empty object ({}) instead of undefined to
- * simplify consuming code and eliminate the need for fallback checks throughout
- * the codebase.
  */
-const dasdSelector = (data: System | undefined): DASD.System => data?.dasd;
+const dasdSelector = (data: System | null): DASD.System => data?.dasd;
 
 /**
  * Retrieve DASD system information.
- *
- * @todo Returning an empty object by default would eliminate null checks and
- * simplify all consuming code. This pattern would be more consistent with having
- * a "no system data" state represented as an empty object rather than undefined.
  */
-function useSystem(): DASD.System | undefined {
+function useSystem(): DASD.System | null {
   const { data } = useSuspenseQuery({
     ...systemQuery,
     select: dasdSelector,

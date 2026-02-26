@@ -38,10 +38,6 @@ type addOrUpdateDevicesFn = (devices: DASD.Device[]) => Response;
  *
  * @see {@link https://tanstack.com/query/latest/docs/framework/react/guides/render-optimizations#select TanStack Query Select}
  * @see {@link https://tkdodo.eu/blog/react-query-selectors-supercharged#what-is-select Query Selectors Supercharged}
- *
- * FIXME: Read todo note below.
- * @todo Consider returning an empty object ({}) instead of undefined to simplify
- * consuming code and eliminate the need for fallback checks throughout the codebase.
  */
 const dasdSelector = (data: Config | undefined): DASD.Config => data?.dasd;
 
@@ -73,8 +69,6 @@ function useConfig(): DASD.Config | undefined {
  * @todo Remove fallback once useConfig returns empty object by default
  */
 function useAddOrUpdateDevices(): addOrUpdateDevicesFn {
-  // FIXME: useConfig should return an empty object instead of falling back
-  // to an empty object all the time
   const config = useConfig() || {};
 
   return (devices: DASD.Device[]) => {
@@ -85,7 +79,7 @@ function useAddOrUpdateDevices(): addOrUpdateDevicesFn {
     });
 
     return patchConfig({
-      dasd: { ...(config || {}), devices: newDevicesConfig },
+      dasd: { ...config, devices: newDevicesConfig },
     });
   };
 }
