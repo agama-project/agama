@@ -372,44 +372,64 @@ const FiltersToolbar = ({
  * Reuses `DASDActionsProps` since it needs the same dependencies as `buildActions`.
  */
 const BulkActionsToolbar = ({ devices, addOrUpdateDevices, dispatcher }: DASDActionsProps) => {
-  const applyText = sprintf(
-    n_(
-      // TRANSLATORS: message shown in bulk action toolbar when just one device
-      // is selected
-      "Actions for the selected device:",
-      // TRANSLATORS: message shown in bulk action toolbar when some devices are
-      // selected. %s is replaced with the amount of devices
-      "Actions for %s selected devices:",
-      devices.length,
-    ),
-    devices.length,
-  );
+  const devicesQty = devices.length;
+  const applyText =
+    devicesQty > 0
+      ? sprintf(
+          n_(
+            // TRANSLATORS: message shown in bulk action toolbar when just one device
+            // is selected
+            "Actions for the selected device:",
+            // TRANSLATORS: message shown in bulk action toolbar when some devices are
+            // selected. %s is replaced with the amount of devices
+            "Actions for %s selected devices:",
+            devicesQty,
+          ),
+          devicesQty,
+        )
+      : // TRANSLATORS: hint shown in the bulk actions toolbar when no devices are selected.
+        _("Select devices to perform bulk actions");
+
+  const screenReadersText =
+    devicesQty > 0
+      ? sprintf(
+          n_(
+            // TRANSLATORS: message announced to screen reader users when just one
+            // device is selected.
+            "1 device selected. Use the actions toolbar to apply changes.",
+            // TRANSLATORS: message announced to screen reader users when some
+            // devices are selected. %s is replaced with the amount of devices.
+            "%s devices selected. Use the actions toolbar to apply changes.",
+            devicesQty,
+          ),
+          devicesQty,
+        )
+      : // TRANSLATORS: message announced to screen reader users when no devices
+        // are selected.
+        _("No devices selected. Select one or more devices to perform bulk actions.");
 
   return (
     <Toolbar inset={{ default: "insetSm" }}>
       <ToolbarContent alignItems="center">
-        {devices.length ? (
-          <>
-            <ToolbarGroup>
-              <ToolbarItem>
-                <Content>{applyText}</Content>
-              </ToolbarItem>
-            </ToolbarGroup>
+        <ToolbarGroup aria-live="polite" aria-atomic="true">
+          <ToolbarItem>
+            <Text srOnly>{screenReadersText}</Text>
+            <Text aria-hidden>{applyText}</Text>
+          </ToolbarItem>
+        </ToolbarGroup>
 
-            <ToolbarGroup gap={{ default: "gapXs" }} alignSelf="end" variant="action-group">
-              {buildActions({ devices, addOrUpdateDevices, dispatcher }).map(
-                ({ onClick, title }, i) => (
-                  <ToolbarItem key={i}>
-                    <Button size="sm" onClick={onClick} variant="control">
-                      {title}
-                    </Button>
-                  </ToolbarItem>
-                ),
-              )}
-            </ToolbarGroup>
-          </>
-        ) : (
-          <Text textStyle={"textColorSubtle"}>{_("Select devices to perform bulk actions")}</Text>
+        {devicesQty > 0 && (
+          <ToolbarGroup gap={{ default: "gapXs" }} alignSelf="end" variant="action-group">
+            {buildActions({ devices, addOrUpdateDevices, dispatcher }).map(
+              ({ onClick, title }, i) => (
+                <ToolbarItem key={i}>
+                  <Button size="sm" onClick={onClick} variant="control">
+                    {title}
+                  </Button>
+                </ToolbarItem>
+              ),
+            )}
+          </ToolbarGroup>
         )}
       </ToolbarContent>
     </Toolbar>

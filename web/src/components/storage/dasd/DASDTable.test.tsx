@@ -106,6 +106,24 @@ describe("DASDTable", () => {
       screen.getByRole("button", { name: "Activate" });
     });
 
+    it("announces selection state changes to screen readers", async () => {
+      const { user } = installerRender(<DASDTable devices={mockDASDDevices} />);
+      screen.getByText("No devices selected. Select one or more devices to perform bulk actions.");
+
+      // Select one device
+      await user.click(screen.getByRole("checkbox", { name: "Select row 0" }));
+      screen.getByText("1 device selected. Use the actions toolbar to apply changes.");
+
+      // Select another device
+      await user.click(screen.getByRole("checkbox", { name: "Select row 1" }));
+      screen.getByText("2 devices selected. Use the actions toolbar to apply changes.");
+
+      // Deselect all
+      await user.click(screen.getByRole("checkbox", { name: "Select row 0" }));
+      await user.click(screen.getByRole("checkbox", { name: "Select row 1" }));
+      screen.getByText("No devices selected. Select one or more devices to perform bulk actions.");
+    });
+
     it("mounts FormatActionHandler on format action request", async () => {
       const { user } = installerRender(<DASDTable devices={mockDASDDevices} />);
       const selection = screen.getByRole("checkbox", { name: "Select row 1" });
