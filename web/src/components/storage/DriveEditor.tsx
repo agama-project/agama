@@ -104,7 +104,7 @@ export default function DriveEditor({ index }: DriveEditorProps) {
    * @fixme Make DriveEditor to work when the device is not found (e.g., after disabling
    * a iSCSI device).
    */
-  if (drive === undefined) return null;
+  if (!drive) return null;
 
   return (
     <ConfigEditorItem header={<DriveDeviceMenu index={index} />}>

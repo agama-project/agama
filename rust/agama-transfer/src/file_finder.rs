@@ -18,10 +18,7 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use std::{
-    io::Write,
-    path::{Path, PathBuf},
-};
+use std::{io::Write, path::Path};
 
 use super::{
     file_systems::{FileSystem, FileSystemsList},
@@ -65,7 +62,7 @@ impl FileFinder {
     ) -> TransferResult<()> {
         eprintln!("Searching {} in {}", &file_name, &file_system.block_device);
 
-        file_system.ensure_mounted(|mount_point: &PathBuf| {
+        file_system.ensure_mounted(|mount_point: &Path| {
             let file_name = file_name.strip_prefix("/").unwrap_or(file_name);
             let source = mount_point.join(file_name);
             Self::copy_file(source, writer)

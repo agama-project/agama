@@ -58,9 +58,9 @@ import { useProposal } from "~/hooks/model/proposal/storage";
 import { STORAGE_MODEL_KEY, useConfigModel } from "~/hooks/model/storage/config-model";
 import { STORAGE as PATHS } from "~/routes/paths";
 import { _, n_ } from "~/i18n";
-import { useProgress, useProgressChanges } from "~/queries/progress";
-import { useNavigate, useLocation } from "react-router";
+import { useLocation } from "react-router";
 import { useStorageUiState } from "~/context/storage-ui-state";
+import { useSystem as useDASDSystem } from "~/hooks/model/system/dasd";
 
 import type { Issue } from "~/model/issue";
 
@@ -137,7 +137,7 @@ function UnknownConfigEmptyState(): React.ReactNode {
 
 function UnavailableDevicesEmptyState(): React.ReactNode {
   const isZFCPSupported = false;
-  const isDASDSupported = false;
+  const dasdSystem = useDASDSystem();
 
   const description = _(
     "There are not disks available for the installation. You may need to configure some device.",
@@ -164,7 +164,7 @@ function UnavailableDevicesEmptyState(): React.ReactNode {
               </Link>
             </SplitItem>
           )}
-          {isDASDSupported && (
+          {dasdSystem && (
             <SplitItem>
               <Link to={PATHS.dasd} variant="link">
                 {_("Manage DASD devices")}
@@ -303,18 +303,10 @@ function ProposalPageContent(): React.ReactNode {
  *  and test them individually. The proposal page should simply mount all those components.
  */
 export default function ProposalPage(): React.ReactNode {
-  const progress = useProgress("storage");
-  const navigate = useNavigate();
   const location = useLocation();
   // Hopefully this could be removed in the future. See rationale at UseStorageUiState
   const [resetNeeded, setResetNeeded] = useState(location.state?.resetStorageUiState);
   const { setUiState } = useStorageUiState();
-
-  useProgressChanges();
-
-  React.useEffect(() => {
-    if (progress && !progress.finished) navigate(PATHS.progress);
-  }, [progress, navigate]);
 
   React.useEffect(() => {
     if (resetNeeded) {

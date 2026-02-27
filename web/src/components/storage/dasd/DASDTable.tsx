@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2023-2025] SUSE LLC
+ * Copyright (c) [2023-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -20,10 +20,13 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useEffect, useReducer } from "react";
+import React, { useReducer } from "react";
+import { isEmpty } from "radashi";
+import { sprintf } from "sprintf-js";
 import {
   Button,
   Content,
+  Divider,
   EmptyState,
   EmptyStateActions,
   EmptyStateBody,
@@ -34,24 +37,19 @@ import {
   ToolbarItem,
 } from "@patternfly/react-core";
 import Icon from "~/components/layout/Icon";
+import Text from "~/components/core/Text";
 import Popup from "~/components/core/Popup";
 import FormatActionHandler from "~/components/storage/dasd/FormatActionHandler";
-import FormatFilter from "~/components/storage/dasd/FormatFilter";
 import SelectableDataTable, { SortedBy } from "~/components/core/SelectableDataTable";
-import StatusFilter from "~/components/storage/dasd/StatusFilter";
 import TextinputFilter from "~/components/storage/dasd/TextinputFilter";
-import { DASDDevice } from "~/types/dasd";
-import {
-  DASDMutationFn,
-  DASDMutationFnProps,
-  useDASDDevices,
-  useDASDMutation,
-} from "~/queries/storage/dasd";
-import { isEmpty } from "radashi";
-import { sprintf } from "sprintf-js";
-import { useInstallerClient } from "~/context/installer";
-import { hex, sortCollection } from "~/utils";
-import { _, n_ } from "~/i18n";
+import SimpleSelector from "~/components/core/SimpleSelector";
+import SimpleDropdown from "~/components/core/SimpleDropdown";
+import { useAddOrUpdateDevices } from "~/hooks/model/config/dasd";
+import { hex, sortCollection, translateEntries } from "~/utils";
+import { _, n_, N_ } from "~/i18n";
+
+import type { Device } from "~/model/system/dasd";
+import type { Device as ConfigDevice } from "~/model/config/dasd";
 
 /**
  * Filter options for narrowing down DASD devices shown in the table.
@@ -60,11 +58,11 @@ import { _, n_ } from "~/i18n";
  */
 export type DASDDevicesFilters = {
   /** Lower bound for channel ID filtering (inclusive). */
-  minChannel?: DASDDevice["id"];
+  minChannel?: Device["channel"];
   /** Upper bound for channel ID filtering (inclusive). */
-  maxChannel?: DASDDevice["id"];
-  /** Only show devices with this status (e.g. "read_only", "offline"). */
-  status?: DASDDevice["status"];
+  maxChannel?: Device["channel"];
+  /** Only show devices with this status (e.g. "active", "offline"). */
+  status?: "all" | Device["status"];
   /** Filter by formatting status: "yes" (formatted), "no" (not formatted), or
    * "all" (all devices). */
   formatted?: "all" | "yes" | "no";
@@ -77,38 +75,87 @@ export type DASDDevicesFilters = {
  * Used internally to compose filter logic when narrowing down the list of
  * devices shown in the DASD table.
  */
-type DASDDeviceCondition = (device: DASDDevice) => boolean;
+type DASDDeviceCondition = (device: Device) => boolean;
 
 /**
- * Props required to generate bulk actions for selected DASD devices.
+ * Props shared by `buildActions` and `BulkActionsToolbar`.
+ *
+ * Covers both single-device row actions and multi-device bulk actions.
  */
-type DASDActionsBuilderProps = {
-  /** The list of selected DASD devices. */
-  devices: DASDDevice[];
-  /** Mutation function used to trigger backend updates (e.g. enable, disable). */
-  updater: DASDMutationFn;
-  /** State dispatcher for triggering actions */
-  dispatcher: (props: DASDTableAction) => void;
+type DASDActionsProps = {
+  /** Devices to act on. */
+  devices: Device[];
+  /**
+   * Persists device config changes to the backend.
+   * Used for activate, deactivate, DIAG toggle, etc.
+   */
+  addOrUpdateDevices: ReturnType<typeof useAddOrUpdateDevices>;
+  /**
+   * Dispatcher for local UI state changes, such as opening the format
+   * confirmation dialog.
+   */
+  dispatcher: React.Dispatch<DASDTableAction>;
+  /**
+   * When true, filters the returned actions to only those relevant to the
+   * current state of the first device in `devices`. Intended for single-device
+   * row actions where showing irrelevant options (e.g. "Activate" for an
+   * already active device) would be noisy.
+   *
+   * If false, returns the full set of actions regardless of device state,
+   * intented for bulk operations over a mixed selection.
+   */
+  filterByDevice?: boolean;
+};
+
+/**
+ * Possible DASD devices statuses.
+ *
+ * Values use `N_()` for translation extraction. Translate with `_()` at render time.
+ *
+ * @example
+ * ```ts
+ * const statusLabel = _(STATUS_OPTIONS[device.status]);
+ * ```
+ */
+const STATUS_OPTIONS = {
+  active: N_("Active"),
+  offline: N_("Offline"),
+  read_only: N_("Read only"),
+};
+
+/**
+ * Possible DASD format state.
+ *
+ * Values use `N_()` for translation extraction. Translate with `_()` at render time.
+ *
+ * @example
+ * ```ts
+ * const formatLabel = _(FORMAT_OPTIONS[device.formatted]);
+ * ```
+ */
+const FORMAT_OPTIONS = {
+  yes: N_("Yes"),
+  no: N_("No"),
 };
 
 /**
  * Filters an array of devices based on given filters.
  *
- * @param devices - The array of DASDDevice objects to filter.
+ * @param devices - The array of DASD Device objects to filter.
  * @param filters - The filters to apply.
- * @returns The filtered array of DASDDevice objects matching all conditions.
+ * @returns The filtered array of DASD Device objects matching all conditions.
  */
-const filterDevices = (devices: DASDDevice[], filters: DASDDevicesFilters): DASDDevice[] => {
+const filterDevices = (devices: Device[], filters: DASDDevicesFilters): Device[] => {
   const { minChannel, maxChannel, status, formatted } = filters;
 
   const conditions: DASDDeviceCondition[] = [];
 
   if (minChannel || maxChannel) {
-    const allChannels = devices.map((d) => d.hexId);
+    const allChannels = devices.map((d) => hex(d.channel));
     const min = hex(minChannel) || Math.min(...allChannels);
     const max = hex(maxChannel) || Math.max(...allChannels);
 
-    conditions.push((d) => d.hexId >= min && d.hexId <= max);
+    conditions.push((d) => hex(d.channel) >= min && hex(d.channel) <= max);
   }
 
   if (status && status !== "all") {
@@ -123,38 +170,62 @@ const filterDevices = (devices: DASDDevice[], filters: DASDDevicesFilters): DASD
 };
 
 /**
- * Builds the list of available actions for given DASD devices.
+ * Builds the list of actions available for the given devices.
  *
- * Returns an array of action objects, each with a label and an `onClick`
- * handler. Some actions mutate device state directly (via `updater`), while
- * others (like format) dispatch updates via `dispatcher`.
+ * When `filterByDevice` is true, only actions relevant to the current state of
+ * `devices[0]` are included (e.g. "Activate" is omitted if the device is
+ * already active). This is intended for single-device row actions where showing
+ * irrelevant options would be noisy.
+ *
+ * When false (default), the full set of actions is returned regardless of
+ * device state, which is the right behavior for bulk operations where the
+ * selection may contain devices in mixed states.
  */
-const buildActions = ({ devices, updater, dispatcher }: DASDActionsBuilderProps) => {
-  const ids = devices.map((d) => d.id);
-  return [
+const buildActions = ({
+  devices,
+  addOrUpdateDevices,
+  dispatcher,
+  filterByDevice = false,
+}: DASDActionsProps) => {
+  const actions = [
     {
+      id: "activate",
       title: _("Activate"),
-      onClick: () => updater({ action: "enable", devices: ids }),
+      onClick: () =>
+        addOrUpdateDevices(
+          devices.map(
+            (d): ConfigDevice => ({ channel: d.channel, state: "active", diag: undefined }),
+          ),
+        ),
     },
     {
+      id: "deactivate",
       title: _("Deactivate"),
-      onClick: () => updater({ action: "disable", devices: ids }),
+      onClick: () =>
+        addOrUpdateDevices(
+          devices.map(
+            (d): ConfigDevice => ({ channel: d.channel, state: "offline", diag: undefined }),
+          ),
+        ),
     },
     {
-      isSeparator: true,
-    },
-    {
+      id: "diagOn",
       title: _("Set DIAG on"),
-      onClick: () => updater({ action: "diagOn", devices: ids }),
+      onClick: () =>
+        addOrUpdateDevices(
+          devices.map((d): ConfigDevice => ({ channel: d.channel, state: "active", diag: true })),
+        ),
     },
     {
+      id: "diagOff",
       title: _("Set DIAG off"),
-      onClick: () => updater({ action: "diagOff", devices: ids }),
+      onClick: () =>
+        addOrUpdateDevices(
+          devices.map((d): ConfigDevice => ({ channel: d.channel, state: "active", diag: false })),
+        ),
     },
     {
-      isSeparator: true,
-    },
-    {
+      id: "format",
       title: _("Format"),
       isDanger: true,
       onClick: () => {
@@ -162,94 +233,131 @@ const buildActions = ({ devices, updater, dispatcher }: DASDActionsBuilderProps)
       },
     },
   ];
+
+  if (filterByDevice) {
+    const [device] = devices;
+    const keptActions = {
+      activate: !device.active,
+      deactivate: device.active,
+      diagOn: !device.diag,
+      diagOff: device.diag,
+      format: !device.formatted,
+    };
+
+    return actions.filter((a) => keptActions[a.id]);
+  }
+
+  return actions;
 };
 
-/**
- * Props for the FiltersToolbar component used in the DASD table.
- */
+/** Props for `FiltersToolbar`. */
 type FiltersToolbarProps = {
-  /** Current filter state */
+  /** Currently active filter values. */
   filters: DASDDevicesFilters;
-  /** Callback invoked when a filter value changes. */
+  /**
+   * Unique statuses present in the current device list, used to restrict the
+   * status filter to only relevant options. Does not include the synthetic "all"
+   * option.
+   */
+  availableStatuses: Device["status"][];
+  /** Whether any filter differs from its default value. */
+  hasActiveFilters: boolean;
+  /** Total number of devices before filtering. */
+  totalDevices: number;
+  /** Number of devices that pass the current filters. */
+  matchingDevices: number;
+  /** Callback invoked when a single filter value changes. */
   onFilterChange: (filter: keyof DASDDevicesFilters, value: string | number) => void;
+  /** Callback invoked when all filters should be reset to their defaults. */
+  onReset: () => void;
 };
 
 /**
- * Renders the toolbar used to filter DASD devices.
- */
-const FiltersToolbar = ({ filters, onFilterChange }: FiltersToolbarProps) => (
-  <Toolbar>
-    <ToolbarContent>
-      <ToolbarGroup>
-        <ToolbarItem>
-          <StatusFilter value={filters.status} onChange={(_, v) => onFilterChange("status", v)} />
-        </ToolbarItem>
-        <ToolbarItem>
-          <FormatFilter
-            value={filters.formatted}
-            onChange={(_, v) => onFilterChange("formatted", v)}
-          />
-        </ToolbarItem>
-        <ToolbarItem>
-          <TextinputFilter
-            id="dasd-minchannel-filter"
-            label={_("Min channel")}
-            value={filters.minChannel}
-            onChange={(_, v) => onFilterChange("minChannel", v)}
-          />
-        </ToolbarItem>
-        <ToolbarItem>
-          <TextinputFilter
-            id="dasd-maxchannel-filter"
-            label={_("Max channel")}
-            value={filters.maxChannel}
-            onChange={(_, v) => onFilterChange("maxChannel", v)}
-          />
-        </ToolbarItem>
-      </ToolbarGroup>
-    </ToolbarContent>
-  </Toolbar>
-);
-
-/**
- * Displays a toolbar containing bulk action buttons for selected DASD devices.
+ * Renders the filter controls toolbar for the DASD table.
  *
- * If devices are selected, shows available actions; otherwise, displays an
- * instructional message. Depends on the same props as `buildActions`.
+ * Displays status, format, and channel range filters alongside a device count
+ * summary. When any filter is active the count switches from "N devices
+ * available" to "M of N devices match filters" and a "Clear all filters" link
+ * appears.
  */
-const BulkActionsToolbar = ({ devices, updater, dispatcher }: DASDActionsBuilderProps) => {
-  const applyText = sprintf(
-    n_(
-      // TRANSLATORS: message shown in bulk action toolbar when just one device
-      // is selected
-      "Apply to the selected device",
-      // TRANSLATORS: message shown in bulk action toolbar when some devices are
-      // selected. %s is replaced with the amount of devices
-      "Apply to the %s selected devices",
-      devices.length,
-    ),
-    devices.length,
-  );
+const FiltersToolbar = ({
+  filters,
+  availableStatuses,
+  hasActiveFilters,
+  totalDevices,
+  matchingDevices,
+  onFilterChange,
+  onReset,
+}: FiltersToolbarProps) => {
+  const countText = hasActiveFilters
+    ? sprintf(
+        // TRANSLATORS: shown in the filter toolbar when filters are active.
+        // %1$s is the number of matching devices, %2$s is the total number.
+        _("%1$d of %2$d devices match filters"),
+        matchingDevices,
+        totalDevices,
+      )
+    : sprintf(
+        // TRANSLATORS: shown in the filter toolbar when no filters are active.
+        // %s is the total number of devices.
+        _("%d devices available"),
+        totalDevices,
+      );
 
   return (
     <Toolbar>
-      <ToolbarContent>
+      <ToolbarContent alignItems="center">
         <ToolbarGroup>
-          {devices.length ? (
-            <>
-              {applyText}{" "}
-              {buildActions({ devices, updater, dispatcher })
-                .filter((a) => !a.isSeparator)
-                .map(({ onClick, title }, i) => (
-                  <ToolbarItem key={i}>
-                    <Button size="sm" onClick={onClick} variant="control">
-                      {title}
-                    </Button>
-                  </ToolbarItem>
-                ))}
-            </>
-          ) : (
-            _("Select devices to enable bulk actions.")
+          <ToolbarItem>
+            <SimpleSelector
+              label={_("Status")}
+              value={filters.status}
+              options={{
+                all: _("All"),
+                ...translateEntries(STATUS_OPTIONS, {
+                  filter: (k) => availableStatuses.includes(k),
+                }),
+              }}
+              onChange={(_, v) => onFilterChange("status", v)}
+            />
+          </ToolbarItem>
+          <ToolbarItem>
+            <SimpleSelector
+              label={_("Formatted")}
+              value={filters.formatted}
+              options={{ all: _("All"), ...translateEntries(FORMAT_OPTIONS) }}
+              onChange={(_, v) => onFilterChange("formatted", v)}
+            />
+          </ToolbarItem>
+          <ToolbarItem>
+            <TextinputFilter
+              id="dasd-minchannel-filter"
+              label={_("Min channel")}
+              value={filters.minChannel}
+              width="120px"
+              onChange={(_, v) => onFilterChange("minChannel", v)}
+            />
+          </ToolbarItem>
+          <ToolbarItem>
+            <TextinputFilter
+              id="dasd-maxchannel-filter"
+              label={_("Max channel")}
+              value={filters.maxChannel}
+              width="120px"
+              onChange={(_, v) => onFilterChange("maxChannel", v)}
+            />
+          </ToolbarItem>
+        </ToolbarGroup>
+        <ToolbarGroup align={{ default: "alignEnd" }}>
+          <ToolbarItem>
+            <Text textStyle="textColorSubtle">{countText}</Text>
+          </ToolbarItem>
+          {hasActiveFilters && (
+            <ToolbarItem>
+              <Button variant="link" isInline onClick={onReset}>
+                {_("Clear all filters")}
+              </Button>
+            </ToolbarItem>
           )}
         </ToolbarGroup>
       </ToolbarContent>
@@ -258,86 +366,98 @@ const BulkActionsToolbar = ({ devices, updater, dispatcher }: DASDActionsBuilder
 };
 
 /**
- * Represents the mode of the empty state shown in the DASD table.
+ * Displays a toolbar containing bulk action buttons for selected DASD devices.
  *
- * - "noDevices": No DASD devices are present on the system.
- * - "noFilterResults": No matching results after appluing filters.
+ * @remarks
+ * When no devices are selected an instructional hint is shown instead.
+ * Reuses `DASDActionsProps` since it needs the same dependencies as `buildActions`.
  */
-type DASDEmptyStateMode = "noDevices" | "noFilterResults";
+const BulkActionsToolbar = ({ devices, addOrUpdateDevices, dispatcher }: DASDActionsProps) => {
+  const devicesQty = devices.length;
+  const applyText =
+    devicesQty > 0
+      ? sprintf(
+          n_(
+            // TRANSLATORS: message shown in bulk action toolbar when just one device
+            // is selected
+            "Actions for the selected device:",
+            // TRANSLATORS: message shown in bulk action toolbar when some devices are
+            // selected. %s is replaced with the amount of devices
+            "Actions for %s selected devices:",
+            devicesQty,
+          ),
+          devicesQty,
+        )
+      : // TRANSLATORS: hint shown in the bulk actions toolbar when no devices are selected.
+        _("Select devices to perform bulk actions");
 
-/**
- * Props for the DASDTableEmptyState component.
- */
-type DASDTableEmptyStateProps = {
-  /**
-   * Determines the type of empty state to display.
-   */
-  mode: DASDEmptyStateMode;
-  /**
-   * Callback to reset filters when in "noFilterResults" mode.
-   */
-  resetFilters: () => void;
+  const screenReadersText =
+    devicesQty > 0
+      ? sprintf(
+          n_(
+            // TRANSLATORS: message announced to screen reader users when just one
+            // device is selected.
+            "1 device selected. Use the actions toolbar to apply changes.",
+            // TRANSLATORS: message announced to screen reader users when some
+            // devices are selected. %s is replaced with the amount of devices.
+            "%s devices selected. Use the actions toolbar to apply changes.",
+            devicesQty,
+          ),
+          devicesQty,
+        )
+      : // TRANSLATORS: message announced to screen reader users when no devices
+        // are selected.
+        _("No devices selected. Select one or more devices to perform bulk actions.");
+
+  return (
+    <Toolbar inset={{ default: "insetSm" }}>
+      <ToolbarContent alignItems="center">
+        <ToolbarGroup aria-live="polite" aria-atomic="true">
+          <ToolbarItem>
+            <Text srOnly>{screenReadersText}</Text>
+            <Text aria-hidden>{applyText}</Text>
+          </ToolbarItem>
+        </ToolbarGroup>
+
+        {devicesQty > 0 && (
+          <ToolbarGroup gap={{ default: "gapXs" }} alignSelf="end" variant="action-group">
+            {buildActions({ devices, addOrUpdateDevices, dispatcher }).map(
+              ({ onClick, title }, i) => (
+                <ToolbarItem key={i}>
+                  <Button size="sm" onClick={onClick} variant="control">
+                    {title}
+                  </Button>
+                </ToolbarItem>
+              ),
+            )}
+          </ToolbarGroup>
+        )}
+      </ToolbarContent>
+    </Toolbar>
+  );
 };
 
-/**
- * Displays an appropriate empty state interface for the DASD table,
- * depending on the mode.
- */
-const DASDTableEmptyState = ({ mode, resetFilters }: DASDTableEmptyStateProps) => {
-  switch (mode) {
-    case "noDevices": {
-      return (
-        <EmptyState
-          headingLevel="h2"
-          titleText={_("No devices available")}
-          icon={() => <Icon name="search_off" />}
-          variant="sm"
-        >
-          <EmptyStateBody>{_("No DASD devices were found in this machine.")}</EmptyStateBody>
-        </EmptyState>
-      );
-    }
-    case "noFilterResults": {
-      return (
-        <EmptyState
-          headingLevel="h2"
-          titleText={_("No devices found")}
-          icon={() => <Icon name="search_off" />}
-          variant="sm"
-        >
-          <EmptyStateBody>{_("Change filters and try again.")}</EmptyStateBody>
-          <EmptyStateFooter>
-            <EmptyStateActions>
-              <Button variant="secondary" onClick={resetFilters}>
-                {_("Clear all filters")}
-              </Button>
-            </EmptyStateActions>
-          </EmptyStateFooter>
-        </EmptyState>
-      );
-    }
-  }
-};
-
-/**
- * Encapsulates all state used by the DASD table component, including filters,
- * sorting configuration, current selection, and devices to be format.
- */
+/** Internal state shape for the DASD table component. */
 type DASDTableState = {
   /** Current sorting state */
   sortedBy: SortedBy;
   /** Current active filters applied to the device list */
   filters: DASDDevicesFilters;
   /** Currently selected devices in the UI */
-  selectedDevices: DASDDevice[];
+  selectedDevices: Device[];
   /** Devices selected for formatting */
-  devicesToFormat: DASDDevice[];
+  devicesToFormat: Device[];
   /** Device IDs currently undergoing an async operation */
-  waitingFor: DASDDevice["id"][];
+  waitingFor: Device["channel"][];
 };
 
 /**
- * Defines the initial state used by the DASD table reducer.
+ * Initial state for `reducer`.
+ *
+ * @remarks
+ * Also serves as the canonical "no filters active" reference: filter changes
+ * are detected by comparing the current filters against this object via
+ * `JSON.stringify`.
  */
 const initialState: DASDTableState = {
   sortedBy: { index: 0, direction: "asc" },
@@ -353,8 +473,8 @@ const initialState: DASDTableState = {
 };
 
 /**
- * Action types for updating the DASD table state via the reducer.
- */
+ * Union of all actions that can be dispatched to update the DASD table state.
+ **/
 type DASDTableAction =
   | { type: "UPDATE_SORTING"; payload: DASDTableState["sortedBy"] }
   | { type: "UPDATE_FILTERS"; payload: DASDTableState["filters"] }
@@ -363,12 +483,12 @@ type DASDTableAction =
   | { type: "RESET_SELECTION" }
   | { type: "REQUEST_FORMAT"; payload: DASDTableState["devicesToFormat"] }
   | { type: "CANCEL_FORMAT_REQUEST" }
-  | { type: "START_WAITING"; payload: DASDDevice["id"][] }
-  | { type: "UPDATE_WAITING"; payload: DASDDevice["id"] }
-  | { type: "UPDATE_DEVICE"; payload: DASDDevice };
+  | { type: "UPDATE_DEVICE"; payload: Device };
 
 /**
- * Reducer function that handles all DASD table state transitions.
+ * Reducer for the DASD table.
+ *
+ * Handles all state transitions driven by `DASDTableAction` dispatches.
  */
 const reducer = (state: DASDTableState, action: DASDTableAction): DASDTableState => {
   switch (action.type) {
@@ -400,22 +520,12 @@ const reducer = (state: DASDTableState, action: DASDTableAction): DASDTableState
       return { ...state, devicesToFormat: [] };
     }
 
-    case "START_WAITING": {
-      return { ...state, waitingFor: action.payload };
-    }
-
-    case "UPDATE_WAITING": {
-      const prev = state.waitingFor;
-      const waitingFor = prev.filter((id) => action.payload !== id);
-      return { ...state, waitingFor };
-    }
-
     case "UPDATE_DEVICE": {
       const selectedDevices = state.selectedDevices.map((dev) =>
-        action.payload.id === dev.id ? action.payload : dev,
+        action.payload.channel === dev.channel ? action.payload : dev,
       );
       const devicesToFormat = state.devicesToFormat.map((dev) =>
-        action.payload.id === dev.id ? action.payload : dev,
+        action.payload.channel === dev.channel ? action.payload : dev,
       );
       return { ...state, selectedDevices, devicesToFormat };
     }
@@ -425,44 +535,42 @@ const reducer = (state: DASDTableState, action: DASDTableAction): DASDTableState
 /**
  * Column definitions for the DASD devices table.
  *
- * Each entry defines how a column is labeled, how its value is derived from a
- * DASDDevice object, and which field is used for sorting.
- *
- * These columns are consumed by the core <SelectableDataTable> component.
+ * Each entry defines the column header label, how its value is derived from a
+ * `Device`, and which field drives sorting. Consumed by `SelectableDataTable`.
  */
 const createColumns = () => [
   {
     // TRANSLATORS: table header for a DASD devices table
-    name: _("Channel ID"),
-    value: (d: DASDDevice) => d.id,
-    sortingKey: "hexId", // uses the hexadecimal representation for sorting
+    name: _("Channel"),
+    value: (d: Device) => d.channel,
+    sortingKey: (d: Device) => hex(d.channel),
   },
-
   {
     // TRANSLATORS: table header for a DASD devices table
     name: _("Status"),
-    value: (d: DASDDevice) => d.status,
+    value: (d: Device) => STATUS_OPTIONS[d.status],
     sortingKey: "status",
   },
   {
     // TRANSLATORS: table header for a DASD devices table
     name: _("Device"),
-    value: (d: DASDDevice) => d.deviceName,
+    value: (d: Device) => d.deviceName,
     sortingKey: "deviceName",
   },
+
   {
     // TRANSLATORS: table header for a DASD devices table
     name: _("Type"),
-    value: (d: DASDDevice) => d.deviceType,
-    sortingKey: "deviceType",
+    value: (d: Device) => d.type,
+    sortingKey: "type",
   },
   {
     // TRANSLATORS: table header for `DIAG access mode` on DASD devices table.
     // It refers to an special disk access mode on IBM mainframes. Keep
     // untranslated.
     name: _("DIAG"),
-    value: (d: DASDDevice) => {
-      if (!d.enabled) return "";
+    value: (d: Device) => {
+      if (!d.status) return "";
 
       return d.diag ? _("Yes") : _("No");
     },
@@ -472,38 +580,31 @@ const createColumns = () => [
     // TRANSLATORS: table header for a column in a DASD devices table that
     // usually contains "Yes" or "No"" values
     name: _("Formatted"),
-    value: (d: DASDDevice) => (d.formatted ? _("Yes") : _("No")),
+    value: (d: Device) => (d.formatted ? _("Yes") : _("No")),
     sortingKey: "formatted",
   },
   {
     // TRANSLATORS: table header for a DASD devices table
     name: _("Partition Info"),
 
-    value: (d: DASDDevice) =>
+    value: (d: Device) =>
       // Displays comma-separated partition info as individual lines using <div>
       d.partitionInfo.split(",").map((d: string) => <div key={d}>{d}</div>),
     sortingKey: "partitionInfo",
   },
 ];
 
-export default function DASDTable() {
-  const client = useInstallerClient();
-  const devices = useDASDDevices();
-  const { mutate: updateDASD } = useDASDMutation();
+/**
+ * Displays a filterable, sortable, selectable table of DASD storage devices.
+ *
+ * Manages its own UI state (filters, sorting, selection, pending format
+ * requests) via a reducer.
+ */
+export default function DASDTable({ devices }) {
   const [state, dispatch] = useReducer(reducer, initialState);
+  const addOrUpdateDevices = useAddOrUpdateDevices();
 
   const columns = createColumns();
-
-  useEffect(() => {
-    if (!client) return;
-
-    return client.onEvent((event) => {
-      if (event.type === "DASDDeviceChanged") {
-        dispatch({ type: "UPDATE_DEVICE", payload: event.device });
-        dispatch({ type: "UPDATE_WAITING", payload: event.device.id });
-      }
-    });
-  }, [client, dispatch]);
 
   const onSortingChange = (sortedBy: SortedBy) => {
     dispatch({ type: "UPDATE_SORTING", payload: sortedBy });
@@ -514,7 +615,7 @@ export default function DASDTable() {
     dispatch({ type: "RESET_SELECTION" });
   };
 
-  const onSelectionChange = (devices: DASDDevice[]) => {
+  const onSelectionChange = (devices: Device[]) => {
     dispatch({ type: "UPDATE_SELECTION", payload: devices });
   };
 
@@ -527,20 +628,9 @@ export default function DASDTable() {
   const sortingKey = columns[state.sortedBy.index].sortingKey;
   const sortedDevices = sortCollection(filteredDevices, state.sortedBy.direction, sortingKey);
 
-  // Determine the appropriate empty state mode, if needed
-  let emptyMode: DASDEmptyStateMode;
-  if (isEmpty(filteredDevices)) {
-    emptyMode = state.filters === initialState.filters ? "noDevices" : "noFilterResults";
-  }
-  /**
-   * Dispatches a DASD mutation and marks devices as waiting.
-   *
-   * @param mutation Parameters describing the DASD update operation
-   */
-  const updater = (mutation: DASDMutationFnProps) => {
-    updateDASD(mutation);
-    dispatch({ type: "START_WAITING", payload: mutation.devices });
-  };
+  const availableStatuses = [
+    ...new Set(devices.map((d: Device) => d.status)),
+  ] as Device["status"][];
 
   return (
     <Content>
@@ -554,22 +644,45 @@ export default function DASDTable() {
           </Content>
         </Popup>
       )}
-      <FiltersToolbar filters={state.filters} onFilterChange={onFilterChange} />
-      <BulkActionsToolbar devices={state.selectedDevices} updater={updater} dispatcher={dispatch} />
+      <FiltersToolbar
+        filters={state.filters}
+        availableStatuses={availableStatuses}
+        hasActiveFilters={JSON.stringify(state.filters) !== JSON.stringify(initialState.filters)}
+        totalDevices={devices.length}
+        matchingDevices={filteredDevices.length}
+        onFilterChange={onFilterChange}
+        onReset={resetFilters}
+      />
+      {!isEmpty(filteredDevices) && (
+        <>
+          <Divider />
+          <BulkActionsToolbar
+            devices={state.selectedDevices}
+            addOrUpdateDevices={addOrUpdateDevices}
+            dispatcher={dispatch}
+          />
+          <Divider />
+        </>
+      )}
 
       {!isEmpty(state.devicesToFormat) && (
         <FormatActionHandler
           devices={state.devicesToFormat}
-          onAccept={() => {
-            dispatch({ type: "CANCEL_FORMAT_REQUEST" });
+          onFormat={() => {
+            addOrUpdateDevices(
+              state.devicesToFormat.map(
+                (d): ConfigDevice => ({ channel: d.channel, format: true }),
+              ),
+            );
           }}
-          onCancel={() => dispatch({ type: "CANCEL_FORMAT_REQUEST" })}
+          onClose={() => dispatch({ type: "CANCEL_FORMAT_REQUEST" })}
         />
       )}
 
       <SelectableDataTable
         columns={columns}
         items={sortedDevices}
+        itemIdKey="channel"
         selectionMode="multiple"
         itemsSelected={state.selectedDevices}
         variant="compact"
@@ -577,15 +690,33 @@ export default function DASDTable() {
         sortedBy={state.sortedBy}
         updateSorting={onSortingChange}
         allowSelectAll
-        itemActions={(d) =>
+        itemActions={(d: Device) =>
           buildActions({
             devices: [d],
-            updater: updateDASD,
+            addOrUpdateDevices,
             dispatcher: dispatch,
+            filterByDevice: true,
           })
         }
-        itemActionsLabel={(d) => `Actions for ${d.id}`}
-        emptyState={<DASDTableEmptyState mode={emptyMode} resetFilters={resetFilters} />}
+        itemActionsLabel={(d: Device) => `Actions for ${d.channel}`}
+        itemActionsComponent={SimpleDropdown}
+        emptyState={
+          <EmptyState
+            headingLevel="h2"
+            titleText={_("No devices match filters")}
+            icon={() => <Icon name="search_off" />}
+            variant="sm"
+          >
+            <EmptyStateBody>{_("Change filters and try again.")}</EmptyStateBody>
+            <EmptyStateFooter>
+              <EmptyStateActions>
+                <Button variant="secondary" onClick={resetFilters}>
+                  {_("Clear all filters")}
+                </Button>
+              </EmptyStateActions>
+            </EmptyStateFooter>
+          </EmptyState>
+        }
       />
     </Content>
   );

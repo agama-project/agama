@@ -50,7 +50,7 @@ pub enum Error {
     #[error(transparent)]
     Actor(#[from] actor::Error),
     #[error("Failed to send message to libzypp thread: {0}")]
-    ZyppSender(#[from] tokio::sync::mpsc::error::SendError<SoftwareAction>),
+    ZyppSender(#[from] Box<tokio::sync::mpsc::error::SendError<SoftwareAction>>),
     #[error("Failed to receive result from libzypp thread: {0}")]
     ZyppReceiver(#[from] tokio::sync::oneshot::error::RecvError),
     #[error(transparent)]
@@ -62,9 +62,23 @@ pub enum Error {
     #[error("There is no {0} product")]
     WrongProduct(String),
     #[error(transparent)]
-    ZyppServerError(#[from] zypp_server::ZyppServerError),
+    ZyppServerError(#[from] Box<zypp_server::ZyppServerError>),
     #[error(transparent)]
     ZyppError(#[from] zypp_agama::errors::ZyppError),
+    #[error("Software installation failed")]
+    InstallationFailed,
+}
+
+impl From<tokio::sync::mpsc::error::SendError<SoftwareAction>> for Error {
+    fn from(err: tokio::sync::mpsc::error::SendError<SoftwareAction>) -> Self {
+        Self::ZyppSender(Box::new(err))
+    }
+}
+
+impl From<zypp_server::ZyppServerError> for Error {
+    fn from(err: zypp_server::ZyppServerError) -> Self {
+        Self::ZyppServerError(Box::new(err))
+    }
 }
 
 /// Starts the software service.
@@ -321,8 +335,7 @@ impl Service {
         product.registration_url = self
             .kernel_cmdline
             .get_last("inst.register_url")
-            .map(|url| Url::parse(&url).ok())
-            .flatten();
+            .and_then(|url| Url::parse(&url).ok());
     }
 
     /// Completes the configuration with the product mode if it is missing.
@@ -409,8 +422,11 @@ impl MessageHandler<message::Refresh> for Service {
 
 #[async_trait]
 impl MessageHandler<message::Install> for Service {
-    async fn handle(&mut self, _message: message::Install) -> Result<bool, Error> {
-        self.model.lock().await.install().await
+    async fn handle(&mut self, _message: message::Install) -> Result<(), Error> {
+        if !self.model.lock().await.install().await? {
+            return Err(Error::InstallationFailed);
+        }
+        Ok(())
     }
 }
 
@@ -471,7 +487,7 @@ fn find_repository(dir: &PathBuf, name: &str) -> Option<Repository> {
         return None;
     }
 
-    let url_string = format!("dir:{}", dir.display().to_string());
+    let url_string = format!("dir:{}", dir.display());
     let Ok(url) = Url::parse(&url_string) else {
         tracing::warn!(
             "'{}' is not a valid URL. Ignoring the repository.",
@@ -526,8 +542,8 @@ mod tests {
     #[test]
     fn test_find_mandatory_repositories() -> Result<(), Box<dyn std::error::Error>> {
         let tmp_dir = TempDir::with_prefix("test")?;
-        std::fs::create_dir_all(&tmp_dir.path().join(LIVE_REPO_DIR))?;
-        std::fs::create_dir_all(&tmp_dir.path().join(DUD_REPO_DIR))?;
+        std::fs::create_dir_all(tmp_dir.path().join(LIVE_REPO_DIR))?;
+        std::fs::create_dir_all(tmp_dir.path().join(DUD_REPO_DIR))?;
 
         let tmp_dir_str = tmp_dir.as_ref().to_str().unwrap();
         let repositories = find_mandatory_repositories(tmp_dir.as_ref());

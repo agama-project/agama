@@ -26,31 +26,17 @@ import { installerRender, mockNavigateFn } from "~/test-utils";
 import ConnectedDevicesMenu from "./ConnectedDevicesMenu";
 import { STORAGE as PATHS } from "~/routes/paths";
 
-/*const mockUseZFCPSupported = jest.fn();
-jest.mock("~/queries/storage/zfcp", () => ({
-  ...jest.requireActual("~/queries/storage/zfcp"),
-  useZFCPSupported: () => mockUseZFCPSupported(),
-}));
-
-const mockUseDASDSupported = jest.fn();
-jest.mock("~/queries/storage/dasd", () => ({
-  ...jest.requireActual("~/queries/storage/dasd"),
-  useDASDSupported: () => mockUseDASDSupported(),
-}));
-*/
-
 const mockReactivateSystem = jest.fn();
 jest.mock("~/api", () => ({
   ...jest.requireActual("~/api"),
   activateStorageAction: () => mockReactivateSystem(),
 }));
 
-/*
-beforeEach(() => {
-  mockUseZFCPSupported.mockReturnValue(false);
-  mockUseDASDSupported.mockReturnValue(false);
-});
-*/
+const mockUseDASDSystem = jest.fn();
+jest.mock("~/hooks/model/system/dasd", () => ({
+  ...jest.requireActual("~/hooks/model/system/dasd"),
+  useSystem: () => mockUseDASDSystem(),
+}));
 
 async function openMenu() {
   const { user } = installerRender(<ConnectedDevicesMenu />);
@@ -111,11 +97,9 @@ describe.skip("if zFCP is supported", () => {
 });
 
 describe("if DASD is not supported", () => {
-  /*
   beforeEach(() => {
-    mockUseDASDSupported.mockReturnValue(false);
+    mockUseDASDSystem.mockReturnValue(undefined);
   });
-  */
 
   it("does not allow users to configure DASD", async () => {
     const { menu } = await openMenu();
@@ -124,12 +108,10 @@ describe("if DASD is not supported", () => {
   });
 });
 
-describe.skip("if DASD is supported", () => {
-  /*
+describe("if DASD is supported", () => {
   beforeEach(() => {
-    mockUseDASDSupported.mockReturnValue(true);
+    mockUseDASDSystem.mockReturnValue({});
   });
-  */
 
   it("allows users to configure DASD", async () => {
     const { user, menu } = await openMenu();

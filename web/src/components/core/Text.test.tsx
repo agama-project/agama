@@ -85,4 +85,18 @@ describe("Text", () => {
     );
     expect(screen.getByText("Installer")).toHaveClass("custom-class", a11yStyles.screenReader);
   });
+
+  describe("when textStyle is given", () => {
+    it("applies the style when a single key is given", () => {
+      plainRender(<Text textStyle="fontSizeLg">Installer</Text>);
+      expect(screen.getByText("Installer")).toHaveClass(textStyles.fontSizeLg);
+    });
+
+    it("applies all styles when an array of keys is given", () => {
+      plainRender(<Text textStyle={["fontSizeLg", "fontWeightBold"]}>Installer</Text>);
+      const element = screen.getByText("Installer");
+      expect(element).toHaveClass(textStyles.fontSizeLg);
+      expect(element).toHaveClass(textStyles.fontWeightBold);
+    });
+  });
 });

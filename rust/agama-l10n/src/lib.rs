@@ -207,7 +207,7 @@ mod tests {
             locale: Some("xx_XX.UTF-8".to_string()),
             timezone: Some("Unknown/Unknown".to_string()),
         };
-        let _ = ctx.handler.call(message::SetConfig::with(config)).await?;
+        ctx.handler.call(message::SetConfig::with(config)).await?;
 
         let found_issues = ctx.issues.call(issue::message::Get).await?;
         let l10n_issues = found_issues.get(&Scope::L10n).unwrap();

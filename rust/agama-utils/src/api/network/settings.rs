@@ -134,7 +134,7 @@ impl Default for BondSettings {
     }
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize, utoipa::ToSchema, PartialEq)]
+#[derive(Clone, Debug, Serialize, Deserialize, utoipa::ToSchema, PartialEq, Default)]
 pub struct BridgeSettings {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub stp: Option<bool>,
@@ -148,19 +148,6 @@ pub struct BridgeSettings {
     pub max_age: Option<u32>,
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
     pub ports: Vec<String>,
-}
-
-impl Default for BridgeSettings {
-    fn default() -> Self {
-        Self {
-            stp: None,
-            priority: None,
-            forward_delay: None,
-            hello_time: None,
-            max_age: None,
-            ports: vec![],
-        }
-    }
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize, utoipa::ToSchema, PartialEq)]

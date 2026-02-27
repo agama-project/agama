@@ -70,6 +70,12 @@ pub struct TestClient {
     state: Arc<Mutex<TestClientState>>,
 }
 
+impl Default for TestClient {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl TestClient {
     pub fn new() -> Self {
         let state = TestClientState::default();

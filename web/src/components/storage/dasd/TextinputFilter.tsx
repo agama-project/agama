@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2025] SUSE LLC
+ * Copyright (c) [2025-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -24,8 +24,8 @@ import React from "react";
 import {
   Button,
   Flex,
+  TextInput,
   TextInputGroup,
-  TextInputGroupMain,
   TextInputGroupUtilities,
   TextInputProps,
 } from "@patternfly/react-core";
@@ -33,7 +33,9 @@ import Icon from "~/components/layout/Icon";
 import Text from "~/components/core/Text";
 import { _ } from "~/i18n";
 
-type TextinputFilterProps = Required<Pick<TextInputProps, "id" | "label" | "value" | "onChange">>;
+type TextinputFilterProps = Required<
+  Pick<TextInputProps, "id" | "label" | "value" | "onChange">
+> & { width?: TextInputProps["width"] };
 
 /**
  * TextinputFilter Component
@@ -52,7 +54,13 @@ type TextinputFilterProps = Required<Pick<TextInputProps, "id" | "label" | "valu
  * component currently does. Consider refactoring when a more robust filtering
  * strategy is adopted.
  */
-export default function TextinputFilter({ id, label, value, onChange }: TextinputFilterProps) {
+export default function TextinputFilter({
+  id,
+  label,
+  value,
+  width,
+  onChange,
+}: TextinputFilterProps) {
   const handleClear = () => {
     // @ts-expect-error: passing an empty object as a fake event to satisfy
     // onChange signature. For a fully correct native input event, see
@@ -68,13 +76,14 @@ export default function TextinputFilter({ id, label, value, onChange }: Textinpu
         </Text>
       </label>
 
-      <TextInputGroup>
-        <TextInputGroupMain
-          inputId={id}
+      <TextInputGroup width={width}>
+        <TextInput
+          id={id}
           type="text"
           value={value}
           onChange={onChange}
           aria-label={label}
+          style={{ width }}
         />
         {value !== "" && (
           <TextInputGroupUtilities>

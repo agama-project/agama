@@ -80,7 +80,7 @@ struct AnswersWrapper {
 }
 
 async fn set_answers(client: HTTPClient, path: &str) -> anyhow::Result<()> {
-    let file = File::open(&path)?;
+    let file = File::open(path)?;
     let reader = BufReader::new(file);
     let wrapper: AnswersWrapper = serde_json::from_reader(reader)?;
     client.set_answers(wrapper.answers).await?;

@@ -1,4 +1,16 @@
 -------------------------------------------------------------------
+Wed Feb 25 16:04:52 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Fix SLES and SLES_SAP release package names (bsc#1258271).
+
+-------------------------------------------------------------------
+Wed Feb 25 10:36:54 UTC 2026 - Michal Filka <mfilka@suse.com>
+
+- bsc#1258416
+  - made sudo-policy-wheel-auth-self for MicroOS 
+  - missed in original implementation of jsc#PM-2128
+
+-------------------------------------------------------------------
 Wed Feb 18 14:05:51 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Select the correct SLES and SLES4SAP release package depending on the mode

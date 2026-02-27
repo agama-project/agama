@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024] SUSE LLC
+ * Copyright (c) [2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -20,10 +20,4 @@
  * find current contact information at www.suse.com.
  */
 
-type Job = {
-  id: string;
-  running: boolean;
-  exitCode: number;
-};
-
-export type { Job };
+export type * from "~/openapi/config/dasd";

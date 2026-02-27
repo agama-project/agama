@@ -155,7 +155,7 @@ impl RootUserConfig {
             return false;
         }
 
-        return true;
+        true
     }
 }
 
@@ -166,31 +166,31 @@ mod test {
     #[test]
     fn test_parse_user_password() {
         let password_str = r#"{ "password": "$a$b123", "hashedPassword": true }"#;
-        let password: UserPassword = serde_json::from_str(&password_str).unwrap();
+        let password: UserPassword = serde_json::from_str(password_str).unwrap();
         assert_eq!(&password.password, "$a$b123");
-        assert_eq!(password.hashed_password, true);
+        assert!(password.hashed_password);
 
         let password_str = r#"{ "password": "$a$b123" }"#;
-        let password: UserPassword = serde_json::from_str(&password_str).unwrap();
+        let password: UserPassword = serde_json::from_str(password_str).unwrap();
         assert_eq!(&password.password, "$a$b123");
-        assert_eq!(password.hashed_password, false);
+        assert!(!password.hashed_password);
     }
 
     #[test]
     fn test_is_empty() {
-        assert_eq!(Config::default().is_empty(), true);
+        assert!(Config::default().is_empty());
 
         let empty_user_config = Config {
             first_user: Some(FirstUserConfig::default()),
             ..Default::default()
         };
-        assert_eq!(empty_user_config.is_empty(), true);
+        assert!(empty_user_config.is_empty());
 
         let empty_root_config = Config {
             root: Some(RootUserConfig::default()),
             ..Default::default()
         };
-        assert_eq!(empty_root_config.is_empty(), true);
+        assert!(empty_root_config.is_empty());
 
         let password = UserPassword {
             password: "secret".to_string(),
@@ -210,7 +210,7 @@ mod test {
             first_user: Some(user_with_password),
             ..Default::default()
         };
-        assert_eq!(user_with_password_config.is_empty(), false);
+        assert!(!user_with_password_config.is_empty());
 
         let root_with_password = RootUserConfig {
             password: Some(password.clone()),
@@ -220,7 +220,7 @@ mod test {
             root: Some(root_with_password),
             ..Default::default()
         };
-        assert_eq!(root_with_password_config.is_empty(), false);
+        assert!(!root_with_password_config.is_empty());
 
         let root_with_empty_password = RootUserConfig {
             password: Some(empty_password.clone()),
@@ -230,7 +230,7 @@ mod test {
             root: Some(root_with_empty_password),
             ..Default::default()
         };
-        assert_eq!(root_with_empty_password_config.is_empty(), true);
+        assert!(root_with_empty_password_config.is_empty());
 
         let root_with_ssh_key = RootUserConfig {
             ssh_public_key: Some("12345678".to_string()),
@@ -240,12 +240,12 @@ mod test {
             root: Some(root_with_ssh_key),
             ..Default::default()
         };
-        assert_eq!(root_with_ssh_key_config.is_empty(), false);
+        assert!(!root_with_ssh_key_config.is_empty());
     }
 
     #[test]
     fn test_user_is_valid() {
-        assert_eq!(FirstUserConfig::default().is_valid(), false);
+        assert!(!FirstUserConfig::default().is_valid());
 
         let valid_user = FirstUserConfig {
             user_name: Some("firstuser".to_string()),
@@ -255,7 +255,7 @@ mod test {
                 hashed_password: false,
             }),
         };
-        assert_eq!(valid_user.is_valid(), true);
+        assert!(valid_user.is_valid());
 
         let empty_user_name = FirstUserConfig {
             user_name: Some("".to_string()),
@@ -265,7 +265,7 @@ mod test {
                 hashed_password: false,
             }),
         };
-        assert_eq!(empty_user_name.is_valid(), false);
+        assert!(!empty_user_name.is_valid());
 
         let empty_full_name = FirstUserConfig {
             user_name: Some("firstuser".to_string()),
@@ -275,7 +275,7 @@ mod test {
                 hashed_password: false,
             }),
         };
-        assert_eq!(empty_full_name.is_valid(), false);
+        assert!(!empty_full_name.is_valid());
 
         let empty_password = FirstUserConfig {
             user_name: Some("firstuser".to_string()),
@@ -285,6 +285,6 @@ mod test {
                 hashed_password: false,
             }),
         };
-        assert_eq!(empty_password.is_valid(), false);
+        assert!(!empty_password.is_valid());
     }
 }

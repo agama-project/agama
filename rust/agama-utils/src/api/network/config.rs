@@ -133,7 +133,7 @@ mod tests {
         updated1.merge(original1);
         assert_eq!(updated1.connections.as_ref().unwrap().0.len(), 1); // use the updated1 list
         let connections = updated1.connections.unwrap();
-        let connection = connections.0.get(0).unwrap();
+        let connection = connections.0.first().unwrap();
         assert_eq!(&connection.id, "eth1");
 
         // Test without a list of connections

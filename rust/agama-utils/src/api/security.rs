@@ -19,6 +19,8 @@
 // find current contact information at www.suse.com.
 //! Implements a data model for Bootloader configuration.
 
+use std::fmt;
+
 use merge::Merge;
 use serde::{Deserialize, Deserializer, Serialize};
 
@@ -74,9 +76,9 @@ impl SSLFingerprint {
     }
 }
 
-impl ToString for SSLFingerprint {
-    fn to_string(&self) -> String {
-        self.fingerprint.clone()
+impl fmt::Display for SSLFingerprint {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", self.fingerprint)
     }
 }
 

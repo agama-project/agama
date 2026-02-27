@@ -20,8 +20,7 @@
 
 use agama_utils::{
     actor::{self, Actor, Handler, MessageHandler},
-    api::{bootloader::Config, Issue},
-    issue,
+    api::bootloader::Config,
 };
 use async_trait::async_trait;
 
@@ -45,19 +44,16 @@ pub enum Error {
 pub struct Starter {
     connection: zbus::Connection,
     client: Option<Box<dyn client::BootloaderClient + Send + 'static>>,
-    issues: Handler<issue::Service>,
 }
 
 impl Starter {
     /// Creates a new starter.
     ///
     /// * `connection`: connection to the D-Bus.
-    /// * `issues`: handler to the issues service.
-    pub fn new(connection: zbus::Connection, issues: Handler<issue::Service>) -> Self {
+    pub fn new(connection: zbus::Connection) -> Self {
         Self {
             connection,
             client: None,
-            issues,
         }
     }
 
@@ -73,10 +69,7 @@ impl Starter {
             Some(client) => client,
             None => Box::new(Client::new(self.connection.clone()).await?),
         };
-        let service = Service {
-            client: client,
-            issues: self.issues,
-        };
+        let service = Service { client };
         let handler = actor::spawn(service);
         Ok(handler)
     }
@@ -87,18 +80,11 @@ impl Starter {
 /// It is responsible for handling the bootloader configuration.
 pub struct Service {
     client: Box<dyn client::BootloaderClient + Send + 'static>,
-    issues: Handler<issue::Service>,
 }
 
 impl Service {
-    pub fn starter(connection: zbus::Connection, issues: Handler<issue::Service>) -> Starter {
-        Starter::new(connection, issues)
-    }
-
-    /// Returns configuration issues.
-    fn find_issues(&self) -> Vec<Issue> {
-        // TODO: get issues from bootloader proposal
-        vec![]
+    pub fn starter(connection: zbus::Connection) -> Starter {
+        Starter::new(connection)
     }
 }
 
