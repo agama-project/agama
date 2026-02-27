@@ -410,12 +410,14 @@ impl SetConfigAction {
                 self.progress
                     .call(progress::message::Next::new(Scope::Manager))
                     .await?;
-                self.storage
+                let future = self
+                    .storage
                     .call(storage::message::SetConfig::new(
                         Arc::clone(product),
                         config.storage.clone(),
                     ))
                     .await?;
+                let _ = future.await;
 
                 // call bootloader always after storage to ensure that bootloader reflect new storage settings
                 self.progress
