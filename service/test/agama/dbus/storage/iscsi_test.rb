@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2025] SUSE LLC
+# Copyright (c) [2025-2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -73,7 +73,11 @@ describe Agama::DBus::Storage::ISCSI do
     end
   end
 
-  describe "#recover_system" do
+  before do
+    allow_any_instance_of(DBus::Object).to receive(:emit)
+  end
+
+  describe "#serialized_system" do
     before do
       allow(manager).to receive(:initiator).and_return(initiator)
     end
@@ -85,7 +89,7 @@ describe Agama::DBus::Storage::ISCSI do
 
       it "probes the system" do
         expect(manager).to receive(:probe)
-        subject.recover_system
+        subject.serialized_system
       end
     end
 
@@ -96,13 +100,13 @@ describe Agama::DBus::Storage::ISCSI do
 
       it "does not probe the system" do
         expect(manager).to_not receive(:probe)
-        subject.recover_system
+        subject.serialized_system
       end
     end
 
-    describe "#recover_system[:initiator]" do
+    describe "#serialized_system[:initiator]" do
       it "returns a hash with the intitiator info" do
-        result = parse(subject.recover_system)[:initiator]
+        result = parse(subject.serialized_system)[:initiator]
         expect(result).to eq({
           name: "iqn.1996-04.de.suse:01:351e6d6249",
           ibft: true
@@ -110,14 +114,14 @@ describe Agama::DBus::Storage::ISCSI do
       end
     end
 
-    describe "#recover_system[:targets]" do
+    describe "#serialized_system[:targets]" do
       context "if there are not nodes" do
         before do
           allow(manager).to receive(:nodes).and_return([])
         end
 
         it "returns an empty list" do
-          result = parse(subject.recover_system)[:targets]
+          result = parse(subject.serialized_system)[:targets]
           expect(result).to eq([])
         end
       end
@@ -128,7 +132,7 @@ describe Agama::DBus::Storage::ISCSI do
         end
 
         it "returns a list with a hash for each node" do
-          result = parse(subject.recover_system)[:targets]
+          result = parse(subject.serialized_system)[:targets]
           expect(result).to eq(
             [
               {
@@ -158,14 +162,14 @@ describe Agama::DBus::Storage::ISCSI do
     end
   end
 
-  describe "#recover_config" do
+  describe "#serialized_config" do
     context "if the config has not been set" do
       before do
         expect(manager).to receive(:config_json).and_return(nil)
       end
 
       it "returns 'null'" do
-        expect(subject.recover_config).to eq("null")
+        expect(subject.serialized_config).to eq("null")
       end
     end
 
@@ -189,7 +193,7 @@ describe Agama::DBus::Storage::ISCSI do
       end
 
       it "returns a hash with the config" do
-        result = parse(subject.recover_config)
+        result = parse(subject.serialized_config)
         expect(result).to eq(config_json)
       end
     end
@@ -261,6 +265,9 @@ describe Agama::DBus::Storage::ISCSI do
       context "and the system is modified" do
         before do
           expect(manager).to receive(:configure).with(config_json).and_return(true)
+          # Set serialized system to null in order to check if the signal is emitted when the system
+          # changes.
+          subject.serialized_system = nil.to_json
         end
 
         it "emits SystemChanged signal" do
@@ -287,6 +294,9 @@ describe Agama::DBus::Storage::ISCSI do
       allow(subject).to receive(:SystemChanged)
       allow(subject).to receive(:ProgressChanged)
       allow(subject).to receive(:ProgressFinished)
+      # Set serialized system to null in order to check if the signal is emitted when the system
+      # changes.
+      subject.serialized_system = nil.to_json
     end
 
     let(:options_json) do
