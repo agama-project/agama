@@ -42,20 +42,22 @@ module Agama
           textdomain "agama"
           super(PATH, logger: logger)
           @manager = manager
+          @serialized_system = serialize_system
+          @serialized_config = serialize_config
           register_callbacks
         end
 
         dbus_interface "org.opensuse.Agama.Storage1.DASD" do
+          dbus_reader_attr_accessor :serialized_system, "s", dbus_name: "System"
+          dbus_reader_attr_accessor :serialized_config, "s", dbus_name: "Config"
           dbus_method(:Probe) { probe }
-          dbus_method(:GetSystem, "out system:s") { recover_system }
-          dbus_method(:GetConfig, "out config:s") { recover_config }
           dbus_method(:SetConfig, "in serialized_config:s") do |serialized_config|
             configure(serialized_config)
           end
-          dbus_signal(:SystemChanged, "system:s")
-          dbus_signal(:ProgressChanged, "progress:s")
+          dbus_signal(:SystemChanged, "serialized_system:s")
+          dbus_signal(:ProgressChanged, "serialized_progress:s")
           dbus_signal(:ProgressFinished)
-          dbus_signal(:FormatChanged, "summary:s")
+          dbus_signal(:FormatChanged, "serialized_summary:s")
           dbus_signal(:FormatFinished, "status:s")
         end
 
@@ -63,23 +65,8 @@ module Agama
         def probe
           start_progress(1, _("Probing DASD devices"))
           manager.probe
-          emit_system_changed
+          update_serialized_system
           finish_progress
-        end
-
-        # Gets the serialized system information.
-        #
-        # @return [String]
-        def recover_system
-          manager.probe unless manager.probed?
-          JSON.pretty_generate(system_json)
-        end
-
-        # Gets the serialized config.
-        #
-        # @return [String]
-        def recover_config
-          JSON.pretty_generate(manager.config_json)
         end
 
         # Applies the given serialized DASD config.
@@ -104,6 +91,17 @@ module Agama
         # @return [Agama::Storage::DASD::Manager]
         attr_reader :manager
 
+        def register_callbacks
+          on_progress_change { self.ProgressChanged(progress.to_json) }
+          on_progress_finish { self.ProgressFinished }
+          manager.on_format_change do |format_statuses|
+            summary_json = format_summary_json(format_statuses)
+            serialized_summary = JSON.pretty_generate(summary_json)
+            self.FormatChanged(serialized_summary)
+          end
+          manager.on_format_finish { |process_status| self.FormatFinished(process_status.to_s) }
+        end
+
         # Performs the configuration process in a separate thread.
         #
         # The configuration could take long time  (e.g., formatting devices). It is important to not
@@ -120,14 +118,46 @@ module Agama
           @configuration_thread = Thread.new do
             start_progress(1, _("Configuring DASD"))
             manager.configure(config_json)
-            emit_system_changed
+            update_serialized_system
+            update_serialized_config
             finish_progress
           end
         end
 
-        # @return [Hash]
-        def system_json
-          { devices: devices_json }
+        # Updates the system info if needed.
+        def update_serialized_system
+          serialized_system = serialize_system
+          return if self.serialized_system == serialized_system
+
+          # This assignment emits a D-Bus PropertiesChanged.
+          self.serialized_system = serialized_system
+          self.SystemChanged(serialized_system)
+        end
+
+        # Updates the config info if needed.
+        def update_serialized_config
+          serialized_config = serialize_config
+          return if self.serialized_config == serialized_config
+
+          # This assignment emits a D-Bus PropertiesChanged.
+          self.serialized_config = serialized_config
+        end
+
+        # Generates the serialized JSON of the system.
+        #
+        # @return [String]
+        def serialize_system
+          manager.probe unless manager.probed?
+
+          json = { devices: devices_json }
+          JSON.pretty_generate(json)
+        end
+
+        # Generates the serialized JSON of the config.
+        #
+        # @return [String]
+        def serialize_config
+          JSON.pretty_generate(manager.config_json)
         end
 
         # @return [Hash]
@@ -149,22 +179,6 @@ module Agama
             active:        !dasd.offline?,
             formatted:     dasd.formatted?
           }
-        end
-
-        # Emits the SystemChanged signal
-        def emit_system_changed
-          self.SystemChanged(recover_system)
-        end
-
-        def register_callbacks
-          on_progress_change { self.ProgressChanged(progress.to_json) }
-          on_progress_finish { self.ProgressFinished }
-          manager.on_format_change do |format_statuses|
-            summary_json = format_summary_json(format_statuses)
-            serialized_summary = JSON.pretty_generate(summary_json)
-            self.FormatChanged(serialized_summary)
-          end
-          manager.on_format_finish { |process_status| self.FormatFinished(process_status.to_s) }
         end
 
         # @return [Array<Hash>]
