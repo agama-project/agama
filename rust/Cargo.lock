@@ -403,6 +403,7 @@ dependencies = [
 name = "agama-storage"
 version = "0.1.0"
 dependencies = [
+ "agama-storage-client",
  "agama-utils",
  "async-trait",
  "serde",
@@ -412,6 +413,7 @@ dependencies = [
  "tokio",
  "tokio-stream",
  "tokio-test",
+ "tracing",
  "zbus",
 ]
 

@@ -26,11 +26,10 @@ use crate::{
 use agama_utils::{
     actor::{self, Actor, Handler, MessageHandler},
     api::{event, storage::Config},
-    issue, progress,
+    issue, progress, BoxFuture,
 };
 use async_trait::async_trait;
 use serde_json::Value;
-use tokio::sync::oneshot;
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
@@ -76,7 +75,13 @@ impl Starter {
     pub async fn start(self) -> Result<Handler<Service>, Error> {
         let client = match self.client {
             Some(client) => client,
-            None => Box::new(Client::new(self.dbus.clone()).await),
+            None => {
+                let storage_dbus = agama_storage_client::service::Starter::new(self.dbus.clone())
+                    .start()
+                    .await
+                    .map_err(client::Error::from)?;
+                Box::new(Client::new(storage_dbus))
+            }
         };
 
         let service = Service { client };
@@ -194,11 +199,11 @@ impl MessageHandler<message::SetConfig> for Service {
     async fn handle(
         &mut self,
         message: message::SetConfig,
-    ) -> Result<oneshot::Receiver<Result<(), client::Error>>, Error> {
+    ) -> Result<BoxFuture<Result<(), client::Error>>, Error> {
         let rx = self
             .client
             .set_config(message.product, message.config)
-            .await;
+            .await?;
         Ok(rx)
     }
 }

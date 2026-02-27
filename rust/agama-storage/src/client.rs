@@ -20,17 +20,18 @@
 
 //! Implements a client to access Agama's storage service.
 
+use agama_storage_client::message;
 use agama_utils::{
+    actor::{self, Handler},
     api::{storage::Config, Issue},
     products::ProductSpec,
+    BoxFuture,
 };
 use async_trait::async_trait;
 use serde_json::Value;
-use std::{future::Future, sync::Arc};
-use tokio::sync::{oneshot, RwLock};
+use std::sync::Arc;
+use tokio::sync::RwLock;
 use zbus::{names::BusName, zvariant::OwnedObjectPath, Connection, Message};
-
-use crate::proxies::Storage1Proxy;
 
 const SERVICE_NAME: &str = "org.opensuse.Agama.Storage1";
 const OBJECT_PATH: &str = "/org/opensuse/Agama/Storage1";
@@ -46,6 +47,10 @@ pub enum Error {
     DBusVariant(#[from] zbus::zvariant::Error),
     #[error(transparent)]
     Json(#[from] serde_json::Error),
+    #[error(transparent)]
+    Actor(#[from] actor::Error),
+    #[error("Storage D-Bus server error: {0}")]
+    DBusClient(#[from] agama_storage_client::Error),
 }
 
 #[async_trait]
@@ -65,161 +70,105 @@ pub trait StorageClient {
         &self,
         product: Arc<RwLock<ProductSpec>>,
         config: Option<Config>,
-    ) -> oneshot::Receiver<Result<(), Error>>;
+    ) -> Result<BoxFuture<Result<(), Error>>, Error>;
     async fn solve_config_model(&self, model: Value) -> Result<Option<Value>, Error>;
     async fn set_locale(&self, locale: String) -> Result<(), Error>;
 }
 
 /// D-Bus client for the storage service
 #[derive(Clone)]
-pub struct Client<'a> {
-    connection: Connection,
-    proxy: Storage1Proxy<'a>,
+pub struct Client {
+    storage_dbus: Handler<agama_storage_client::Service>,
 }
 
-impl<'a> Client<'a> {
-    pub async fn new(connection: Connection) -> Self {
-        let proxy = Storage1Proxy::new(&connection).await.unwrap();
-        proxy
-            .config()
-            .await
-            .expect("Failed to read the storage D-Bus interface.");
-        Self { connection, proxy }
+impl Client {
+    pub fn new(storage_dbus: Handler<agama_storage_client::Service>) -> Self {
+        Self { storage_dbus }
     }
 
-    async fn call<T: serde::ser::Serialize + zbus::zvariant::DynamicType>(
-        &self,
-        method: &str,
-        body: &T,
-    ) -> Result<Message, Error> {
-        let bus = BusName::try_from(SERVICE_NAME.to_string())?;
-        let path = OwnedObjectPath::try_from(OBJECT_PATH)?;
-        self.connection
-            .call_method(Some(&bus), &path, Some(INTERFACE), method, body)
-            .await
-            .map_err(|e| e.into())
+    async fn call_action(&self, action: &str) -> Result<(), Error> {
+        self.storage_dbus
+            .call(message::CallAction::new(action))
+            .await?;
+        Ok(())
     }
 }
 
 #[async_trait]
-impl<'a> StorageClient for Client<'a> {
+impl StorageClient for Client {
     async fn activate(&self) -> Result<(), Error> {
-        self.call("Activate", &()).await?;
-        Ok(())
+        self.call_action("Activate").await
     }
 
     async fn probe(&self) -> Result<(), Error> {
-        self.call("Probe", &()).await?;
-        Ok(())
+        self.call_action("Probe").await
     }
 
     async fn install(&self) -> Result<(), Error> {
-        self.call("Install", &()).await?;
-        Ok(())
+        self.call_action("Install").await
     }
 
     async fn finish(&self) -> Result<(), Error> {
-        self.call("Finish", &()).await?;
-        Ok(())
+        self.call_action("Finish").await
     }
 
     async fn umount(&self) -> Result<(), Error> {
-        self.call("Umount", &()).await?;
-        Ok(())
+        self.call_action("Umount").await
     }
 
     async fn get_system(&self) -> Result<Option<Value>, Error> {
-        let raw_json = self.proxy.system().await?;
-        try_from_string(&raw_json)
+        let value = self.storage_dbus.call(message::GetSystem).await?;
+        Ok(value)
     }
 
     async fn get_config(&self) -> Result<Option<Config>, Error> {
-        let raw_json = self.proxy.config().await?;
-        try_from_string(&raw_json)
+        let value = self.storage_dbus.call(message::GetStorageConfig).await?;
+        Ok(value)
     }
 
     async fn get_config_from_model(&self, model: Value) -> Result<Option<Config>, Error> {
-        let raw_json = self.proxy.get_config_from_model(&model.to_string()).await?;
-        try_from_string(&raw_json)
+        let message = message::GetConfigFromModel::new(model);
+        let value = self.storage_dbus.call(message).await?;
+        Ok(value)
     }
 
     async fn get_config_model(&self) -> Result<Option<Value>, Error> {
-        let raw_json = self.proxy.config_model().await?;
-        try_from_string(&raw_json)
+        let value = self.storage_dbus.call(message::GetConfigModel).await?;
+        Ok(value)
     }
 
     async fn get_proposal(&self) -> Result<Option<Value>, Error> {
-        let raw_json = self.proxy.proposal().await?;
-        try_from_string(&raw_json)
+        let value = self.storage_dbus.call(message::GetProposal).await?;
+        Ok(value)
     }
 
     async fn get_issues(&self) -> Result<Vec<Issue>, Error> {
-        let raw_json = self.proxy.issues().await?;
-        try_from_string(&raw_json)
+        let value = self.storage_dbus.call(message::GetIssues).await?;
+        Ok(value)
     }
 
     async fn set_config(
         &self,
         product: Arc<RwLock<ProductSpec>>,
         config: Option<Config>,
-    ) -> oneshot::Receiver<Result<(), Error>> {
-        let product = product.clone();
-        let client = DBusClient::new(self.connection.clone());
-        run_in_background(async move {
-            let product_guard = product.read().await;
-            let product_json = serde_json::to_string(&*product_guard)?;
-            let config = config.filter(|c| c.has_value());
-            let config_json = serde_json::to_string(&config)?;
-            let result: Result<(), Error> = client
-                .call("SetConfig", &(product_json, config_json))
-                .await
-                .map(|_| ());
-            result
-        })
+    ) -> Result<BoxFuture<Result<(), Error>>, Error> {
+        let message = message::SetStorageConfig::new(product.clone(), config);
+        let rx = self.storage_dbus.call(message).await?;
+        Ok(Box::pin(async move { rx.await.map_err(Error::from) }))
     }
 
     async fn solve_config_model(&self, model: Value) -> Result<Option<Value>, Error> {
-        let message = self.call("SolveConfigModel", &(model.to_string())).await?;
-        try_from_message(message)
+        let message = message::SolveConfigModel::new(model);
+        let value = self.storage_dbus.call(message).await?;
+        Ok(value)
     }
 
     async fn set_locale(&self, locale: String) -> Result<(), Error> {
-        self.call("SetLocale", &(locale)).await?;
+        self.storage_dbus
+            .call(message::SetLocale::new(locale))
+            .await?;
         Ok(())
     }
-}
-
-fn run_in_background<F>(func: F) -> oneshot::Receiver<Result<(), Error>>
-where
-    F: Future<Output = Result<(), Error>> + Send + 'static,
-{
-    let (tx, rx) = oneshot::channel::<Result<(), Error>>();
-    tokio::spawn(async move {
-        let result = func.await;
-        _ = tx.send(result);
-    });
-    rx
-}
-
-fn try_from_string<T: serde::de::DeserializeOwned + Default>(raw_json: &str) -> Result<T, Error> {
-    let json: Value = serde_json::from_str(&raw_json)?;
-    if json.is_null() {
-        return Ok(T::default());
-    }
-    let value = serde_json::from_value(json)?;
-    Ok(value)
-}
-
-fn try_from_message<T: serde::de::DeserializeOwned + Default>(
-    message: Message,
-) -> Result<T, Error> {
-    let raw_json: String = message.body().deserialize()?;
-    let json: Value = serde_json::from_str(&raw_json)?;
-    if json.is_null() {
-        return Ok(T::default());
-    }
-    let value = serde_json::from_value(json)?;
-    Ok(value)
 }
 
 #[derive(Clone)]
@@ -231,7 +180,8 @@ impl DBusClient {
     pub fn new(connection: Connection) -> Self {
         Self { connection }
     }
-    async fn call<T: serde::ser::Serialize + zbus::zvariant::DynamicType>(
+
+    pub async fn call<T: serde::ser::Serialize + zbus::zvariant::DynamicType>(
         &self,
         method: &str,
         body: &T,

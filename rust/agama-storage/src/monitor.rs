@@ -18,7 +18,7 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::client::{self, Client, StorageClient};
+use crate::client;
 use agama_utils::{
     actor::Handler,
     api::{

@@ -18,10 +18,15 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use agama_utils::{actor::Message, api::storage::Config, products::ProductSpec};
+use agama_utils::{
+    actor::Message,
+    api::{storage::Config, Issue},
+    products::ProductSpec,
+    BoxFuture,
+};
 use serde_json::Value;
 use std::sync::Arc;
-use tokio::sync::{oneshot, RwLock};
+use tokio::sync::RwLock;
 
 use crate::client;
 
@@ -104,6 +109,13 @@ impl Message for GetProposal {
 }
 
 #[derive(Clone)]
+pub struct GetIssues;
+
+impl Message for GetIssues {
+    type Reply = Vec<Issue>;
+}
+
+#[derive(Clone)]
 pub struct SetConfig {
     pub product: Arc<RwLock<ProductSpec>>,
     pub config: Option<Config>,
@@ -123,7 +135,7 @@ impl SetConfig {
 }
 
 impl Message for SetConfig {
-    type Reply = oneshot::Receiver<Result<(), client::Error>>;
+    type Reply = BoxFuture<Result<(), client::Error>>;
 }
 
 #[derive(Clone)]
