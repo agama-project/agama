@@ -16,6 +16,7 @@ members = [
     "agama-server",
     "agama-software",
     "agama-storage",
+    "agama-storage-client",
     "agama-transfer",
     "agama-utils",
     "agama-users",

@@ -416,6 +416,21 @@ dependencies = [
 ]
 
 [[package]]
+name = "agama-storage-client"
+version = "0.1.0"
+dependencies = [
+ "agama-utils",
+ "async-trait",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.18",
+ "tokio",
+ "tokio-stream",
+ "tracing",
+ "zbus",
+]
+
+[[package]]
 name = "agama-transfer"
 version = "0.1.0"
 dependencies = [

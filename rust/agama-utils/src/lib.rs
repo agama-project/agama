@@ -35,6 +35,15 @@ pub mod progress;
 pub mod question;
 pub mod test;
 
+use std::future::Future;
+use std::pin::Pin;
+
+/// A pinned, boxed, and sendable future.
+pub type BoxFuture<T> = Pin<Box<dyn Future<Output = T> + Send + 'static>>;
+
+/// A pinned, boxed, and sendable future with a custom lifetime.
+pub type BoxFutureWithLifetime<'a, T> = Pin<Box<dyn Future<Output = T> + Send + 'a>>;
+
 /// Does nothing at runtime, marking the text for translation.
 ///
 /// This is useful when you need both the untranslated id
