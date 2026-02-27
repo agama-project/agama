@@ -28,6 +28,7 @@ import {
   DescriptionListDescription,
   DescriptionListGroup,
   DescriptionListTerm,
+  EmptyState,
   Grid,
   GridItem,
   Spinner,
@@ -139,7 +140,7 @@ const Content = () => {
   const [loading, setLoading] = useState(false);
 
   if (!proposal) {
-    return null;
+    return <EmptyState headingLevel="h2" titleText={_("No information available yet")} />;
   }
 
   // FIXME: temporarily disabled, the API end point is not implemented yet
