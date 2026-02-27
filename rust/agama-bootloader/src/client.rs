@@ -22,12 +22,10 @@
 
 use std::collections::HashMap;
 
-use agama_utils::api::bootloader::Config;
+use agama_storage_client::message;
+use agama_utils::{actor::Handler, api::bootloader::Config};
 use async_trait::async_trait;
 use serde::{Deserialize, Serialize};
-use zbus::Connection;
-
-use crate::dbus::BootloaderProxy;
 
 /// Errors that can occur when using the Bootloader client.
 #[derive(thiserror::Error, Debug)]
@@ -38,6 +36,8 @@ pub enum Error {
     /// Error parsing or generating JSON data.
     #[error("Passed json data is not correct: {0}")]
     InvalidJson(#[from] serde_json::Error),
+    #[error("Storage D-Bus server error: {0}")]
+    DBusClient(#[from] agama_storage_client::Error),
 }
 
 /// Trait defining the interface for the Bootloader client.
@@ -71,28 +71,24 @@ pub type ClientResult<T> = Result<T, Error>;
 
 /// Client to connect to Agama's D-Bus API for Bootloader management.
 #[derive(Clone)]
-pub struct Client<'a> {
-    bootloader_proxy: BootloaderProxy<'a>,
+pub struct Client {
+    storage_dbus: Handler<agama_storage_client::Service>,
     kernel_args: HashMap<String, String>,
 }
 
-impl<'a> Client<'a> {
-    pub async fn new(connection: Connection) -> ClientResult<Client<'a>> {
-        let bootloader_proxy = BootloaderProxy::new(&connection).await?;
-
+impl Client {
+    pub async fn new(storage_dbus: Handler<agama_storage_client::Service>) -> ClientResult<Client> {
         Ok(Self {
-            bootloader_proxy,
+            storage_dbus,
             kernel_args: HashMap::new(),
         })
     }
 }
 
 #[async_trait]
-impl<'a> BootloaderClient for Client<'a> {
+impl BootloaderClient for Client {
     async fn get_config(&self) -> ClientResult<Config> {
-        let serialized_string = self.bootloader_proxy.get_config().await?;
-        let settings = serde_json::from_str(serialized_string.as_str())?;
-        Ok(settings)
+        Ok(self.storage_dbus.call(message::GetBootloaderConfig).await?)
     }
 
     async fn set_config(&self, config: &Config) -> ClientResult<()> {
@@ -103,9 +99,11 @@ impl<'a> BootloaderClient for Client<'a> {
         tracing::info!("sending bootloader config {:?}", full_config);
         // ignore return value as currently it does not fail and who knows what future brings
         // but it should not be part of result and instead transformed to Issue
-        self.bootloader_proxy
-            .set_config(serde_json::to_string(&full_config)?.as_str())
-            .await?;
+        let value = serde_json::to_value(&full_config)?;
+        _ = self
+            .storage_dbus
+            .call(message::SetBootloaderConfig::new(value))
+            .await;
         Ok(())
     }
 

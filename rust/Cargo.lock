@@ -27,6 +27,7 @@ dependencies = [
 name = "agama-bootloader"
 version = "0.1.0"
 dependencies = [
+ "agama-storage-client",
  "agama-utils",
  "anyhow",
  "async-trait",

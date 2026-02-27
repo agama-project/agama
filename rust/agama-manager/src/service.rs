@@ -658,12 +658,11 @@ impl MessageHandler<message::GetExtendedConfig> for Service {
     ///
     /// It includes user and default values.
     async fn handle(&mut self, _message: message::GetExtendedConfig) -> Result<Config, Error> {
-        let bootloader = None;
-        // let bootloader = self
-        //     .bootloader
-        //     .call(bootloader::message::GetConfig)
-        //     .await?
-        //     .to_option();
+        let bootloader = self
+            .bootloader
+            .call(bootloader::message::GetConfig)
+            .await?
+            .to_option();
         let hostname = self.hostname.call(hostname::message::GetConfig).await?;
         // let iscsi = self.iscsi.call(iscsi::message::GetConfig).await?;
         let iscsi = Default::default();

@@ -35,6 +35,8 @@ pub enum Error {
     Actor(#[from] actor::Error),
     #[error(transparent)]
     Client(#[from] client::Error),
+    #[error("Storage D-Bus server error: {0}")]
+    DBusClient(#[from] agama_storage_client::Error),
 }
 
 /// Builds and spawns the bootloader service.
@@ -67,9 +69,15 @@ impl Starter {
     pub async fn start(self) -> Result<Handler<Service>, Error> {
         let client = match self.client {
             Some(client) => client,
-            None => Box::new(Client::new(self.connection.clone()).await?),
+            None => {
+                let storage_dbus =
+                    agama_storage_client::service::Starter::new(self.connection.clone())
+                        .start()
+                        .await?;
+                Box::new(Client::new(storage_dbus).await?)
+            }
         };
-        let service = Service { client };
+        let service = Service { client: client };
         let handler = actor::spawn(service);
         Ok(handler)
     }
