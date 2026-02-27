@@ -21,15 +21,17 @@
  */
 
 import React from "react";
-import { Alert, Backdrop, Flex, FlexItem, Spinner } from "@patternfly/react-core";
 import { concat } from "radashi";
 import { sprintf } from "sprintf-js";
+import { Alert, Backdrop, Flex, FlexItem, Spinner } from "@patternfly/react-core";
+import NestedContent from "~/components/core/NestedContent";
 import { COMMON_PROPOSAL_KEYS } from "~/hooks/model/proposal";
-import type { Scope } from "~/model/status";
-import { _ } from "~/i18n";
-import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import { useProgressTracking } from "~/hooks/use-progress-tracking";
+import { _ } from "~/i18n";
 
+import type { Scope } from "~/model/status";
+
+import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 /**
  * Props for the ProgressBackdrop component.
  */
@@ -64,6 +66,16 @@ export type ProgressBackdropProps = {
    * >
    */
   ensureRefetched?: string | string[];
+  /**
+   * Additional content to render below the progress information.
+   *
+   * Use this to display extra UI within the backdrop overlay, such as
+   * per-device progress details for long-running operations.
+   *
+   * @example
+   * <ProgressBackdrop scope="dasd" extraContent={<DASDFormatProgress />} />
+   */
+  extraContent?: React.ReactNode;
 };
 
 /**
@@ -84,6 +96,7 @@ export type ProgressBackdropProps = {
 export default function ProgressBackdrop({
   scope,
   ensureRefetched,
+  extraContent,
 }: ProgressBackdropProps): React.ReactNode {
   const { loading: isBlocked, progress } = useProgressTracking(
     scope,
@@ -118,6 +131,7 @@ export default function ProgressBackdrop({
           </Flex>
         }
       />
+      {extraContent && <NestedContent margin="mLg">{extraContent}</NestedContent>}
     </Backdrop>
   );
 }

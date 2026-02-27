@@ -21,7 +21,7 @@
  */
 
 import React from "react";
-import { screen, waitFor, within } from "@testing-library/react";
+import { act, screen, waitFor, within } from "@testing-library/react";
 import { installerRender, mockProgresses } from "~/test-utils";
 import useTrackQueriesRefetch from "~/hooks/use-track-queries-refetch";
 import { COMMON_PROPOSAL_KEYS } from "~/hooks/model/proposal";
@@ -143,7 +143,9 @@ describe("ProgressBackdrop", () => {
 
       // Simulate queries completing by calling the callback
       const startedAt = Date.now();
-      mockCallback(startedAt, startedAt + 100);
+      act(() => {
+        mockCallback(startedAt, startedAt + 100);
+      });
 
       // Backdrop should be hidden
       await waitFor(() => {
@@ -287,6 +289,26 @@ describe("ProgressBackdrop", () => {
       await waitFor(() => {
         expect(mockStartTracking).toHaveBeenCalled();
       });
+    });
+  });
+  describe("when extraContent is provided", () => {
+    it("renders the extra content below the progress information", () => {
+      mockProgresses([
+        {
+          scope: "software",
+          step: "Installing packages",
+          steps: [],
+          index: 1,
+          size: 3,
+        },
+      ]);
+
+      installerRender(
+        <ProgressBackdrop scope="software" extraContent={<div>Extra content</div>} />,
+      );
+
+      const backdrop = screen.getByRole("alert", { name: /Installing packages/ });
+      within(backdrop).getByText("Extra content");
     });
   });
 });
