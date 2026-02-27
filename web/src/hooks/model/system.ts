@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2025] SUSE LLC
+ * Copyright (c) [2025-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -57,4 +57,5 @@ export { systemQuery, useSystem, useSystemChanges };
 export * as l10n from "~/hooks/model/system/l10n";
 export * as storage from "~/hooks/model/system/storage";
 export * as software from "~/hooks/model/system/software";
+export * as dasd from "~/hooks/model/system/dasd";
 export * as iscsi from "~/hooks/model/system/iscsi";

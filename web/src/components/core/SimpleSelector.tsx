@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2025] SUSE LLC
+ * Copyright (c) [2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useState } from "react";
+import React, { useId, useState } from "react";
 import {
   Flex,
   MenuToggle,
@@ -30,53 +30,45 @@ import {
   SelectOption,
   SelectProps,
 } from "@patternfly/react-core";
-import Text from "~/components/core/Text";
-import { N_, _ } from "~/i18n";
 
-type StatusFilterProps = {
+import Text from "~/components/core/Text";
+
+import type { TranslatedString } from "~/i18n";
+
+type SimpleSelectorProps = {
+  label: TranslatedString;
   value: string;
+  options: Record<string, TranslatedString>;
   onChange: SelectProps["onSelect"];
 };
 
-const options = {
-  all: N_("all"),
-  active: N_("active"),
-  read_only: N_("read_only"),
-  offline: N_("offline"),
-};
-
-const ID = "dasd-status-filter";
-
 /**
- * Select component for filtering DASD devices by status.
+ * Wrapper component for simplifying PF/Select usage for simple dropdowns.
  *
- * Renders a PF/Select input allowing users to choose one of the available DASD
- * statuses: "active", "read_only", "offline", or "all". The selected value is
- * passed to the parent via the `onChange` callback along with the event
- * originating the action.
- *
- * Used as part of the DASD table filtering toolbar.
+ * Renders a PF/Select input allowing users to choose one of the available
+ * options. The selected value is passed to the parent via the `onChange`
+ * callback along with the event originating the action.
  *
  * @privateRemarks
  * There is an issue with a11y label for the PF/MenuToggle, check
  * https://github.com/patternfly/patternfly-react/issues/11805
  */
-export default function StatusFilter({ value, onChange }: StatusFilterProps) {
+export default function SimpleSelector({ label, value, options, onChange }: SimpleSelectorProps) {
+  const id = useId();
   const [isOpen, setIsOpen] = useState(false);
   const onToggle = () => setIsOpen(!isOpen);
 
   const toggle = (toggleRef: React.Ref<MenuToggleElement>) => (
-    <MenuToggle id={ID} ref={toggleRef} onClick={onToggle} isExpanded={isOpen}>
-      {/* eslint-disable agama-i18n/string-literals */}
-      {_(options[value])}
+    <MenuToggle id={id} ref={toggleRef} onClick={onToggle} isExpanded={isOpen}>
+      {options[value]}
     </MenuToggle>
   );
 
   return (
     <Flex direction={{ default: "column" }} columnGap={{ default: "columnGapXs" }}>
-      <label htmlFor={ID}>
+      <label htmlFor={id}>
         <Text isBold aria-hidden>
-          {_("Status")}
+          {label}
         </Text>
       </label>
 
@@ -85,7 +77,7 @@ export default function StatusFilter({ value, onChange }: StatusFilterProps) {
         selected={value}
         onSelect={(e, v) => {
           onChange(e, v);
-          onToggle();
+          setIsOpen(false);
         }}
         onOpenChange={(isOpen) => setIsOpen(isOpen)}
         toggle={toggle}
@@ -93,8 +85,7 @@ export default function StatusFilter({ value, onChange }: StatusFilterProps) {
         <SelectList>
           {Object.keys(options).map((key) => (
             <SelectOption key={key} value={key}>
-              {/* eslint-disable agama-i18n/string-literals */}
-              {_(options[key])}
+              {options[key]}
             </SelectOption>
           ))}
         </SelectList>

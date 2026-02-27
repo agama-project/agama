@@ -40,8 +40,8 @@ function findDevices(system: System, sids: number[]): Device[] {
   return sids.map((sid) => findDevice(system, sid)).filter((d) => d);
 }
 
-function findDeviceByName(system: System, name: string): Device | null {
-  return flatDevices(system).find((d) => d.name === name) || null;
+function findDeviceByName(system: System, name: string): Device | undefined {
+  return flatDevices(system).find((d) => d.name === name);
 }
 
 export { flatDevices, findDevice, findDevices, findDeviceByName };

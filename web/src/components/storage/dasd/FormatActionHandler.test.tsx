@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2025] SUSE LLC
+ * Copyright (c) [2025-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -23,54 +23,46 @@
 import React from "react";
 import { screen } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
+
+import type { Device } from "~/model/system/dasd";
+
 import FormatActionHandler from "./FormatActionHandler";
 
-const formatDASDMutationMock = jest.fn();
-
-jest.mock("~/queries/storage/dasd", () => ({
-  useFormatDASDMutation: () => ({
-    mutate: formatDASDMutationMock,
-  }),
-}));
-
-const offlineDasdMock = {
-  id: "0.0.0191",
-  enabled: false,
+const offlineDasdMock: Device = {
+  channel: "0.0.0191",
+  active: false,
   deviceName: "",
   formatted: false,
   diag: false,
   status: "offline",
-  deviceType: "ECKD",
+  type: "ECKD",
   accessType: "rw",
   partitionInfo: "1",
-  hexId: 401,
 };
 
-const onlineDasdMock = {
-  id: "0.0.0160",
-  enabled: true,
+const onlineDasdMock: Device = {
+  channel: "0.0.0160",
+  active: true,
   deviceName: "dasda",
   formatted: true,
   diag: false,
   status: "active",
-  deviceType: "ECKD",
+  type: "ECKD",
   accessType: "rw",
   partitionInfo:
     "/dev/dasda1 (Linux native), /dev/dasda2 (Linux native), /dev/dasda3 (Linux native)",
-  hexId: 352,
 };
 
-const anotherOnlineDasdMock = {
-  id: "0.0.0592",
-  enabled: true,
+const anotherOnlineDasdMock: Device = {
+  channel: "0.0.0592",
+  active: true,
   deviceName: "dasdk",
   formatted: true,
   diag: false,
-  status: "read_only",
-  deviceType: "ECKD",
+  status: "active", // former "read_only"
+  type: "ECKD",
   accessType: "rw",
   partitionInfo: "",
-  hexId: 1426,
 };
 
 let consoleErrorSpy: jest.SpyInstance;
@@ -86,55 +78,74 @@ describe("DASD/FormatActionHandler", () => {
   });
 
   it("does nothing and logs an error when devices is empty", () => {
-    const { container } = plainRender(<FormatActionHandler devices={[]} />);
+    const { container } = plainRender(
+      <FormatActionHandler devices={[]} onFormat={jest.fn()} onClose={jest.fn()} />,
+    );
     expect(container).toBeEmptyDOMElement();
-    expect(consoleErrorSpy).toHaveBeenCalledWith("FormatActionHnalder called without devices");
+    expect(consoleErrorSpy).toHaveBeenCalledWith("FormatActionHandler called without devices");
   });
 
-  it("shows confirmation for a single online device", () => {
-    plainRender(<FormatActionHandler devices={[onlineDasdMock]} />);
+  it("renders confirmation for a single online device", () => {
+    plainRender(
+      <FormatActionHandler devices={[onlineDasdMock]} onFormat={jest.fn()} onClose={jest.fn()} />,
+    );
     screen.getByRole("heading", { name: "Format device 0.0.0160", level: 1 });
   });
 
-  it("shows offline warning for a single offline device", () => {
-    plainRender(<FormatActionHandler devices={[offlineDasdMock]} />);
+  it("renders offline warning for a single offline device", () => {
+    plainRender(
+      <FormatActionHandler devices={[offlineDasdMock]} onFormat={jest.fn()} onClose={jest.fn()} />,
+    );
     screen.getByRole("heading", { name: "Cannot format 0.0.0191", level: 1 });
     screen.getByText(/It is offline/i);
   });
 
-  it("shows offline list warning for multiple devices with one offline", () => {
-    plainRender(<FormatActionHandler devices={[onlineDasdMock, offlineDasdMock]} />);
+  it("renders offline list warning for multiple devices with one offline", () => {
+    plainRender(
+      <FormatActionHandler
+        devices={[onlineDasdMock, offlineDasdMock]}
+        onFormat={jest.fn()}
+        onClose={jest.fn()}
+      />,
+    );
     screen.getByRole("heading", { name: /Cannot format all the selected devices/, level: 1 });
     screen.getByText(/devices are offline/i);
     screen.getByText(/191/i);
   });
 
-  it("shows bulk confirmation for multiple online devices", () => {
-    plainRender(<FormatActionHandler devices={[onlineDasdMock, anotherOnlineDasdMock]} />);
+  it("renders bulk confirmation for multiple online devices", () => {
+    plainRender(
+      <FormatActionHandler
+        devices={[onlineDasdMock, anotherOnlineDasdMock]}
+        onFormat={jest.fn()}
+        onClose={jest.fn()}
+      />,
+    );
     screen.getByText("Format selected devices?");
     screen.getByText(/destroy any data stored on the devices/);
-    screen.getByText(onlineDasdMock.id);
-    screen.getByText(anotherOnlineDasdMock.id);
+    screen.getByText(/0\.0\.0160/);
+    screen.getByText(/0\.0\.0592/);
   });
 
-  it("calls formatDASD and onAccept on user confirmation", async () => {
-    const onAccept = jest.fn();
+  it("calls onFormat and onClose on user confirmation", async () => {
+    const onFormat = jest.fn();
+    const onClose = jest.fn();
     const { user } = plainRender(
-      <FormatActionHandler devices={[onlineDasdMock]} onAccept={onAccept} />,
+      <FormatActionHandler devices={[onlineDasdMock]} onFormat={onFormat} onClose={onClose} />,
     );
-    const confirmButton = screen.getByRole("button", { name: "Format now" });
-    await user.click(confirmButton);
-    expect(formatDASDMutationMock).toHaveBeenCalledWith([onlineDasdMock.id]);
-    expect(onAccept).toHaveBeenCalled();
+    await user.click(screen.getByRole("button", { name: "Format now" }));
+    expect(onFormat).toHaveBeenCalled();
+    expect(onClose).toHaveBeenCalled();
   });
 
-  it("calls onCancel if user cancels", async () => {
-    const onCancel = jest.fn();
+  it("calls onClose when user cancels", async () => {
+    const onFormat = jest.fn();
+    const onClose = jest.fn();
     const { user } = plainRender(
-      <FormatActionHandler devices={[onlineDasdMock]} onCancel={onCancel} />,
+      <FormatActionHandler devices={[onlineDasdMock]} onFormat={onFormat} onClose={onClose} />,
     );
-    const cancelButton = screen.getByRole("button", { name: "Cancel" });
-    await user.click(cancelButton);
-    expect(onCancel).toHaveBeenCalled();
+    await user.click(screen.getByRole("button", { name: "Cancel" }));
+    expect(onFormat).not.toHaveBeenCalled();
+    expect(onClose).toHaveBeenCalled();
   });
 });

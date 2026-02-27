@@ -25,7 +25,7 @@ import { Outlet, useLocation } from "react-router";
 import { useStatusChanges, useStatus } from "~/hooks/model/status";
 import { useSystemChanges } from "~/hooks/model/system";
 import { useProposal, useProposalChanges } from "~/hooks/model/proposal";
-import { useIssuesChanges } from "~/hooks/model/issue";
+import { useIssues, useIssuesChanges } from "~/hooks/model/issue";
 import { useProductInfo } from "~/hooks/model/config/product";
 import { useQueryClient } from "@tanstack/react-query";
 import { InstallationFinished, InstallationProgress } from "./components/core";
@@ -44,6 +44,7 @@ const Content = () => {
   //
   // https://tanstack.com/query/latest/docs/framework/react/guides/query-invalidation
   useProposal();
+  useIssues();
 
   const location = useLocation();
   const product = useProductInfo();

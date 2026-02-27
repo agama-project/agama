@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2023] SUSE LLC
+ * Copyright (c) [2023-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -24,26 +24,36 @@ import React from "react";
 import { Progress, Stack } from "@patternfly/react-core";
 import { Popup } from "~/components/core";
 import { _ } from "~/i18n";
-import { useDASDDevices, useDASDRunningFormatJobs } from "~/queries/storage/dasd";
-import { DASDDevice, FormatSummary } from "~/types/dasd";
 
-const DeviceProgress = ({ device, progress }: { device: DASDDevice; progress: FormatSummary }) => (
+import type { Device } from "~/model/system/dasd";
+
+// FIXME: adapt to new API
+type FormatSummary = {
+  total: number;
+  step: number;
+  done: boolean;
+};
+
+type FormatJob = {
+  jobId: string;
+  summary?: { [key: string]: FormatSummary };
+};
+
+const DeviceProgress = ({ device, progress }: { device: Device; progress: FormatSummary }) => (
   <Progress
-    key={`progress_${device.id}`}
+    key={`progress_${device.channel}`}
     size="sm"
     max={progress.total}
     value={progress.step}
-    title={`${device.id} - ${device.deviceName}`}
+    title={`${device.channel} - ${device.deviceName}`}
     measureLocation="none"
     variant={progress.done ? "success" : undefined}
   />
 );
 
 export default function DASDFormatProgress() {
-  const devices = useDASDDevices();
-  const runningJobs = useDASDRunningFormatJobs().filter(
-    (job) => Object.keys(job.summary || {}).length > 0,
-  );
+  const devices = []; // FIXME: use APIv2 equivalent to useDASDDevices();
+  const runningJobs: FormatJob[] = []; // FIXME use APIv2 equivalent to useDASDRunningFormatJobs()
 
   return (
     <Popup title={_("Formatting DASD devices")} isOpen={runningJobs.length > 0} disableFocusTrap>

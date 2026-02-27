@@ -170,7 +170,8 @@ function useDevice(name: string): Storage.Device | null {
     ...systemQuery,
     select: useCallback(
       (data: System | null): Storage.Device | null => {
-        return data?.storage ? findDeviceByName(data.storage, name) : null;
+        if (data?.storage) return findDeviceByName(data.storage, name) || null;
+        return null;
       },
       [name],
     ),

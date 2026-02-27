@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Feb 26 16:44:32 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Add schema for DASD config (gh#agama-project/agama#3143).
+
+-------------------------------------------------------------------
 Wed Feb 25 08:13:55 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
 
 - Optimize writing software state to reduce time spend when
