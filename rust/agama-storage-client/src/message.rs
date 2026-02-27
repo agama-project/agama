@@ -195,3 +195,35 @@ impl ISCSISetConfig {
 impl Message for ISCSISetConfig {
     type Reply = ();
 }
+
+pub struct DASDProbe;
+
+impl Message for DASDProbe {
+    type Reply = ();
+}
+
+pub struct DASDGetSystem;
+
+impl Message for DASDGetSystem {
+    type Reply = Option<serde_json::Value>;
+}
+
+pub struct DASDGetConfig;
+
+impl Message for DASDGetConfig {
+    type Reply = Option<agama_utils::api::RawConfig>;
+}
+
+pub struct DASDSetConfig {
+    pub config: Option<agama_utils::api::RawConfig>,
+}
+
+impl DASDSetConfig {
+    pub fn new(config: Option<agama_utils::api::RawConfig>) -> Self {
+        Self { config }
+    }
+}
+
+impl Message for DASDSetConfig {
+    type Reply = ();
+}

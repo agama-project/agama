@@ -23,5 +23,3 @@ pub use client::Client;
 
 pub mod monitor;
 pub use monitor::Monitor;
-
-mod dbus;

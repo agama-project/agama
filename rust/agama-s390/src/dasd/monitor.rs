@@ -18,11 +18,10 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::{
-    dasd::dbus::{
-        DASDProxy, FormatChanged, FormatFinished, ProgressChanged, ProgressFinished, SystemChanged,
-    },
-    storage,
+use crate::storage;
+use agama_storage_client::proxies::{
+    DASDProgressChanged as ProgressChanged, DASDProgressFinished as ProgressFinished, DASDProxy,
+    DASDSystemChanged as SystemChanged, FormatChanged, FormatFinished,
 };
 use agama_utils::{
     actor::Handler,

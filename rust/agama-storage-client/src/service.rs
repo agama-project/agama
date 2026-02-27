@@ -31,7 +31,7 @@ use tokio::sync::oneshot;
 use crate::{
     dbus::{try_from_string, StorageDBusClient},
     message,
-    proxies::{self, BootloaderProxy, ISCSIProxy, Storage1Proxy},
+    proxies::{self, BootloaderProxy, DASDProxy, ISCSIProxy, Storage1Proxy},
 };
 
 #[derive(thiserror::Error, Debug)]
@@ -68,12 +68,14 @@ impl Starter {
         bootloader_proxy.config().await?;
 
         let iscsi_proxy = proxies::ISCSIProxy::new(&self.dbus).await?;
+        let dasd_proxy = proxies::DASDProxy::new(&self.dbus).await?;
 
         let service = Service {
             storage_dbus: StorageDBusClient::new(self.dbus),
             storage_proxy,
             bootloader_proxy,
             iscsi_proxy,
+            dasd_proxy,
         };
         let handler = actor::spawn(service);
         Ok(handler)
@@ -85,6 +87,7 @@ pub struct Service {
     storage_proxy: Storage1Proxy<'static>,
     bootloader_proxy: BootloaderProxy<'static>,
     iscsi_proxy: ISCSIProxy<'static>,
+    dasd_proxy: DASDProxy<'static>,
 }
 
 impl Actor for Service {
@@ -257,6 +260,43 @@ impl MessageHandler<message::ISCSISetConfig> for Service {
     async fn handle(&mut self, message: message::ISCSISetConfig) -> Result<(), Error> {
         let config = serde_json::to_string(&message.config)?;
         Ok(self.iscsi_proxy.set_config(&config).await?)
+    }
+}
+
+#[async_trait]
+impl MessageHandler<message::DASDProbe> for Service {
+    async fn handle(&mut self, _message: message::DASDProbe) -> Result<(), Error> {
+        Ok(self.dasd_proxy.probe().await?)
+    }
+}
+
+#[async_trait]
+impl MessageHandler<message::DASDGetSystem> for Service {
+    async fn handle(
+        &mut self,
+        _message: message::DASDGetSystem,
+    ) -> Result<Option<serde_json::Value>, Error> {
+        let raw_json = self.dasd_proxy.dasd_system().await?;
+        Ok(try_from_string(&raw_json)?)
+    }
+}
+
+#[async_trait]
+impl MessageHandler<message::DASDGetConfig> for Service {
+    async fn handle(
+        &mut self,
+        _message: message::DASDGetConfig,
+    ) -> Result<Option<agama_utils::api::RawConfig>, Error> {
+        let raw_json = self.dasd_proxy.config().await?;
+        Ok(try_from_string(&raw_json)?)
+    }
+}
+
+#[async_trait]
+impl MessageHandler<message::DASDSetConfig> for Service {
+    async fn handle(&mut self, message: message::DASDSetConfig) -> Result<(), Error> {
+        let config = serde_json::to_string(&message.config)?;
+        Ok(self.dasd_proxy.set_config(&config).await?)
     }
 }
 

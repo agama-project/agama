@@ -18,13 +18,13 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-//! Implements a client to access Agama's D-Bus API related to Bootloader management.
+//! Implements a client to access Agama's D-Bus API related to DASD management.
 
-use crate::dasd::dbus::DASDProxy;
+use agama_storage_client::message;
+use agama_utils::actor::Handler;
 use agama_utils::api::RawConfig;
 use async_trait::async_trait;
 use serde_json::Value;
-use zbus::Connection;
 
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
@@ -32,6 +32,8 @@ pub enum Error {
     DBus(#[from] zbus::Error),
     #[error(transparent)]
     Json(#[from] serde_json::Error),
+    #[error("Storage D-Bus server error: {0}")]
+    DBusClient(#[from] agama_storage_client::Error),
 }
 
 #[async_trait]
@@ -43,45 +45,35 @@ pub trait DASDClient {
 }
 
 #[derive(Clone)]
-pub struct Client<'a> {
-    proxy: DASDProxy<'a>,
+pub struct Client {
+    storage_dbus: Handler<agama_storage_client::Service>,
 }
 
-impl<'a> Client<'a> {
-    pub async fn new(connection: Connection) -> Result<Client<'a>, Error> {
-        let proxy = DASDProxy::new(&connection).await?;
-        Ok(Self { proxy })
+impl Client {
+    pub async fn new(
+        storage_dbus: Handler<agama_storage_client::Service>,
+    ) -> Result<Client, Error> {
+        Ok(Self { storage_dbus })
     }
 }
 
 #[async_trait]
-impl<'a> DASDClient for Client<'a> {
+impl DASDClient for Client {
     async fn probe(&self) -> Result<(), Error> {
-        self.proxy.probe().await?;
-        Ok(())
+        Ok(self.storage_dbus.call(message::DASDProbe).await?)
     }
 
     async fn get_system(&self) -> Result<Option<Value>, Error> {
-        let serialized_system = self.proxy.get_system().await?;
-        let system: Value = serde_json::from_str(serialized_system.as_str())?;
-        match system {
-            Value::Null => Ok(None),
-            _ => Ok(Some(system)),
-        }
+        Ok(self.storage_dbus.call(message::DASDGetSystem).await?)
     }
 
     async fn get_config(&self) -> Result<Option<RawConfig>, Error> {
-        let serialized_config = self.proxy.get_config().await?;
-        let value: Value = serde_json::from_str(serialized_config.as_str())?;
-        match value {
-            Value::Null => Ok(None),
-            _ => Ok(Some(RawConfig(value))),
-        }
+        Ok(self.storage_dbus.call(message::DASDGetConfig).await?)
     }
 
     async fn set_config(&self, config: Option<RawConfig>) -> Result<(), Error> {
-        self.proxy
-            .set_config(serde_json::to_string(&config)?.as_str())
+        self.storage_dbus
+            .call(message::DASDSetConfig::new(config))
             .await?;
         Ok(())
     }
