@@ -37,7 +37,7 @@ module Agama
   module DBus
     module Storage
       # D-Bus object to manage storage installation
-      class Manager < BaseObject
+      class Manager < BaseObject # rubocop:disable Metrics/ClassLength
         extend Yast::I18n
         include Yast::I18n
         include Agama::WithProgress
@@ -51,36 +51,40 @@ module Agama
           textdomain "agama"
           super(PATH, logger: logger)
           @backend = backend
-          @system_json = generate_system_json
-          @config_json = generate_config_json
-          @config_model_json = generate_config_model_json
-          @proposal_json = generate_proposal_json
-          @issues_json = generate_issues_json
-          @bootloader_config_json = generate_bootloader_config_json
+          @serialized_system = serialize_system
+          @serialized_config = serialize_config
+          @serialized_config_model = serialize_config_model
+          @serialized_proposal = serialize_proposal
+          @serialized_issues = serialize_issues
+          @serialized_bootloader_config = serialize_bootloader_config
           register_progress_callbacks
           add_s390_interfaces if Yast::Arch.s390
         end
 
         dbus_interface "org.opensuse.Agama.Storage1" do
-          dbus_reader_attr_accessor :system_json, "s", dbus_name: "System"
-          dbus_reader_attr_accessor :config_json, "s", dbus_name: "Config"
-          dbus_reader_attr_accessor :config_model_json, "s", dbus_name: "ConfigModel"
-          dbus_reader_attr_accessor :proposal_json, "s", dbus_name: "Proposal"
-          dbus_reader_attr_accessor :issues_json, "s", dbus_name: "Issues"
+          dbus_reader_attr_accessor :serialized_system, "s", dbus_name: "System"
+          dbus_reader_attr_accessor :serialized_config, "s", dbus_name: "Config"
+          dbus_reader_attr_accessor :serialized_config_model, "s", dbus_name: "ConfigModel"
+          dbus_reader_attr_accessor :serialized_proposal, "s", dbus_name: "Proposal"
+          dbus_reader_attr_accessor :serialized_issues, "s", dbus_name: "Issues"
           dbus_method(:Activate) { activate }
           dbus_method(:Probe) { probe }
           dbus_method(:Install) { install }
           dbus_method(:Finish) { finish }
           dbus_method(:Umount) { umount }
           dbus_method(:SetLocale, "in locale:s") { |locale| backend.configure_locale(locale) }
-          dbus_method(:SetConfig, "in product:s, in config:s") { |p, c| configure(p, c) }
           dbus_method(
-            :GetConfigFromModel, "in model:s, out config:s"
+            :SetConfig, "in serialized_product_config:s, in serialized_config:s"
+          ) { |p, c| configure(p, c) }
+          dbus_method(
+            :GetConfigFromModel, "in serialized_model:s, out result:s"
           ) { |m| convert_config_model(m) }
-          dbus_method(:SolveConfigModel, "in model:s, out result:s") { |m| solve_config_model(m) }
-          dbus_signal(:SystemChanged, "system:s")
-          dbus_signal(:ProposalChanged, "proposal:s")
-          dbus_signal(:ProgressChanged, "progress:s")
+          dbus_method(
+            :SolveConfigModel, "in serialized_model:s, out result:s"
+          ) { |m| solve_config_model(m) }
+          dbus_signal(:SystemChanged, "serialized_system:s")
+          dbus_signal(:ProposalChanged, "serialized_proposal:s")
+          dbus_signal(:ProgressChanged, "serialized_progress:s")
           dbus_signal(:ProgressFinished)
         end
 
@@ -143,7 +147,7 @@ module Agama
           next_progress_step(PROBING_STEP)
           backend.probe unless backend.probed?
 
-          update_system_json
+          update_serialized_system
 
           next_progress_step(CONFIGURING_STEP)
           calculate_proposal(config_json)
@@ -207,7 +211,7 @@ module Agama
         end
 
         dbus_interface "org.opensuse.Agama.Storage1.Bootloader" do
-          dbus_reader_attr_accessor :bootloader_config_json, "s", dbus_name: "Config"
+          dbus_reader_attr_accessor :serialized_bootloader_config, "s", dbus_name: "Config"
           dbus_method(:SetConfig, "in serialized_config:s, out result:u") do |serialized_config|
             configure_bootloader(serialized_config)
           end
@@ -252,7 +256,7 @@ module Agama
         # @see #update_system_info
         def perform_probe
           backend.probe
-          update_system_json
+          update_serialized_system
         end
 
         # Configures storage using the current config.
@@ -277,88 +281,88 @@ module Agama
           backend.configure(config_json)
           backend.add_packages if backend.proposal.success?
 
-          update_config_json
-          update_config_model_json
-          update_proposal_json
-          update_issues_json
+          update_serialized_config
+          update_serialized_config_model
+          update_serialized_proposal
+          update_serialized_issues
         end
 
         # Performs the bootloader configuration applying the current config.
         def calculate_bootloader
           logger.info("Configuring bootloader")
           backend.bootloader.configure
-          update_bootloader_config_json
+          update_serialized_bootloader_config
         end
 
         # Updates the system info if needed.
-        def update_system_json
-          system_json = generate_system_json
-          return if self.system_json == system_json
+        def update_serialized_system
+          serialized_system = serialize_system
+          return if self.serialized_system == serialized_system
 
           # This assignment emits a D-Bus PropertiesChanged.
-          self.system_json = system_json
-          self.SystemChanged(system_json)
+          self.serialized_system = serialized_system
+          self.SystemChanged(serialized_system)
         end
 
         # Updates the config info if needed.
-        def update_config_json
-          config_json = generate_config_json
-          return if self.config_json == config_json
+        def update_serialized_config
+          serialized_config = serialize_config
+          return if self.serialized_config == serialized_config
 
           # This assignment emits a D-Bus PropertiesChanged.
-          self.config_json = config_json
+          self.serialized_config = serialized_config
         end
 
         # Updates the config model info if needed.
-        def update_config_model_json
-          config_model_json = generate_config_model_json
-          return if self.config_model_json == config_model_json
+        def update_serialized_config_model
+          serialized_config_model = serialize_config_model
+          return if self.serialized_config_model == serialized_config_model
 
           # This assignment emits a D-Bus PropertiesChanged.
-          self.config_model_json = config_model_json
+          self.serialized_config_model = serialized_config_model
         end
 
         # Updates the proposal info if needed.
-        def update_proposal_json
-          proposal_json = generate_proposal_json
-          return if self.proposal_json == proposal_json
+        def update_serialized_proposal
+          serialized_proposal = serialize_proposal
+          return if self.serialized_proposal == serialized_proposal
 
           # This assignment emits a D-Bus PropertiesChanged.
-          self.proposal_json = proposal_json
-          self.ProposalChanged(proposal_json)
+          self.serialized_proposal = serialized_proposal
+          self.ProposalChanged(serialized_proposal)
         end
 
         # Updates the issues info if needed.
-        def update_issues_json
-          issues_json = generate_issues_json
-          return if self.issues_json == issues_json
+        def update_serialized_issues
+          serialized_issues = serialize_issues
+          return if self.serialized_issues == serialized_issues
 
           # This assignment emits a D-Bus PropertiesChanged.
-          self.issues_json = issues_json
+          self.serialized_issues = serialized_issues
         end
 
         # Updates the bootloader config if needed.
-        def update_bootloader_config_json
-          bootloader_config_json = generate_bootloader_config_json
-          return if self.bootloader_config_json == bootloader_config_json
+        def update_serialized_bootloader_config
+          serialized_bootloader_config = serialize_bootloader_config
+          return if self.serialized_bootloader_config == serialized_bootloader_config
 
           # This assignment emits a D-Bus PropertiesChanged.
-          self.bootloader_config_json = bootloader_config_json
+          self.serialized_bootloader_config = serialized_bootloader_config
         end
 
         # Generates the serialized JSON of the system.
         #
         # @return [String]
-        def generate_system_json
-          return null_json unless backend.probed?
+        def serialize_system
+          return serialize_nil unless backend.probed?
 
           json = {
-            devices:            devices_hash(:probed),
+            devices:            devices_json(:probed),
             availableDrives:    available_drives,
             availableMdRaids:   available_md_raids,
             candidateDrives:    candidate_drives,
             candidateMdRaids:   candidate_md_raids,
-            issues:             system_issues_hash,
+            issues:             system_issues_json,
             productMountPoints: product_mount_points,
             encryptionMethods:  encryption_methods,
             volumeTemplates:    volume_templates
@@ -370,7 +374,7 @@ module Agama
         # proposal.
         #
         # @return [String]
-        def generate_config_json
+        def serialize_config
           json = proposal.storage_json
           JSON.pretty_generate(json)
         end
@@ -378,7 +382,7 @@ module Agama
         # Generates the serialized JSON of the storage config model.
         #
         # @return [String]
-        def generate_config_model_json
+        def serialize_config_model
           json = proposal.model_json
           JSON.pretty_generate(json)
         end
@@ -386,12 +390,12 @@ module Agama
         # Generates the serialized JSON of the proposal.
         #
         # @return [String]
-        def generate_proposal_json
-          return null_json unless backend.proposal.success?
+        def serialize_proposal
+          return serialize_nil unless backend.proposal.success?
 
           json = {
-            devices: devices_hash(:staging),
-            actions: actions_hash
+            devices: devices_json(:staging),
+            actions: actions_json
           }
           JSON.pretty_generate(json)
         end
@@ -399,22 +403,22 @@ module Agama
         # Generates the serialized JSON of the list of issues.
         #
         # @return [String]
-        def generate_issues_json
-          json = backend.issues.map { |i| issue_hash(i) }
+        def serialize_issues
+          json = backend.issues.map { |i| issue_json(i) }
           JSON.pretty_generate(json)
         end
 
         # Generates the serialized JSON of the bootloader config.
         #
         # @return [String]
-        def generate_bootloader_config_json
+        def serialize_bootloader_config
           backend.bootloader.config.to_json
         end
 
         # Representation of the null JSON.
         #
         # @return [String]
-        def null_json
+        def serialize_nil
           nil.to_json
         end
 
@@ -422,7 +426,7 @@ module Agama
         #
         # @param meth [Symbol] method used to get the devicegraph from StorageManager
         # @return [Hash]
-        def devices_hash(meth)
+        def devices_json(meth)
           devicegraph = Y2Storage::StorageManager.instance.send(meth)
           Agama::Storage::DevicegraphConversions::ToJSON.new(devicegraph).convert
         end
@@ -435,7 +439,7 @@ module Agama
         #   * :subvol [Boolean]
         #   * :delete [Boolean]
         #   * :resize [Boolean]
-        def actions_hash
+        def actions_json
           backend.actions.map do |action|
             {
               device: action.device_sid,
@@ -449,18 +453,18 @@ module Agama
 
         # List of hash representation of the problems found during system probing.
         #
-        # @see #generate_system_json
+        # @see #serialize_system
         #
         # @return [Array<Hash>]
-        def system_issues_hash
-          backend.system_issues.map { |i| issue_hash(i) }
+        def system_issues_json
+          backend.system_issues.map { |i| issue_json(i) }
         end
 
         # Hash representation of the given issue.
         #
         # @param issue [Agama::Issue]
         # @return [Hash]
-        def issue_hash(issue)
+        def issue_json(issue)
           {
             description: issue.description,
             class:       issue.kind&.to_s,
