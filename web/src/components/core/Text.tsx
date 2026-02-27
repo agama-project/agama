@@ -21,12 +21,13 @@
  */
 
 import React from "react";
+import { capitalize, isArray, isString } from "radashi";
 import { Page } from "@patternfly/react-core";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import a11yStyles from "@patternfly/react-styles/css/utilities/Accessibility/accessibility";
-import { capitalize } from "radashi";
 
 type PageBreakPoints = ReturnType<NonNullable<typeof Page.defaultProps.getBreakpoint>>;
+type TextStyleKey = keyof typeof textStyles;
 
 type TextProps = React.HTMLProps<HTMLSpanElement> &
   React.PropsWithChildren<{
@@ -44,6 +45,22 @@ type TextProps = React.HTMLProps<HTMLSpanElement> &
      * Ignored if `srOnly` is true.
      */
     srOn?: PageBreakPoints;
+    /**
+     * One or more PatternFly text utility class keys to apply to the element.
+     * These map directly to keys of the `textStyles` utility object, e.g.
+     * `"textColorDisabled"` or `["textColorDisabled", "fontSizeSm"]`.
+     *
+     * @see https://www.patternfly.org/utility-classes/text
+     *
+     * @example
+     * // Single style
+     * <Text textStyle="textColorDisabled" />
+     *
+     * @example
+     * // Multiple styles
+     * <Text textStyle={["textColorDisabled", "fontSizeSm"]} />
+     */
+    textStyle?: TextStyleKey | TextStyleKey[];
   }>;
 
 /**
@@ -58,8 +75,9 @@ export default function Text({
   isBold = false,
   srOnly = false,
   srOn,
-  className,
   children,
+  textStyle,
+  className,
   ...props
 }: TextProps) {
   const Wrapper = component;
@@ -69,11 +87,17 @@ export default function Text({
       {...props}
       className={[
         className,
+        isString(textStyle) && textStyles[textStyle],
+        isArray(textStyle) && textStyle.map((s) => textStyles[s]),
         isBold && textStyles.fontWeightBold,
         (srOnly || srOn === "default") && a11yStyles.screenReader,
         !srOnly && srOn && srOn !== "default" && a11yStyles[`screenReaderOn${capitalize(srOn)}`],
       ]
         .filter(Boolean)
+        // flat() is needed because join() only applies the separator at the top level,
+        // using commas for nested arrays instead.
+        // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/join#description
+        .flat()
         .join(" ")}
     >
       {children}

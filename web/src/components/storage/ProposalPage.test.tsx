@@ -64,6 +64,7 @@ const mockUseReset = jest.fn();
 const mockUseConfigModel = jest.fn();
 const mockUseProposal = jest.fn();
 const mockUseIssues = jest.fn();
+const mockUseDASDSystem = jest.fn();
 
 jest.mock("~/hooks/model/system/storage", () => ({
   ...jest.requireActual("~/hooks/model/system/storage"),
@@ -90,16 +91,9 @@ jest.mock("~/hooks/model/issue", () => ({
   useIssues: () => mockUseIssues(),
 }));
 
-const mockUseZFCPSupported = jest.fn();
-jest.mock("~/queries/storage/zfcp", () => ({
-  ...jest.requireActual("~/queries/storage/zfcp"),
-  useZFCPSupported: () => mockUseZFCPSupported(),
-}));
-
-const mockUseDASDSupported = jest.fn();
-jest.mock("~/queries/storage/dasd", () => ({
-  ...jest.requireActual("~/queries/storage/dasd"),
-  useDASDSupported: () => mockUseDASDSupported(),
+jest.mock("~/hooks/model/system/dasd", () => ({
+  ...jest.requireActual("~/hooks/model/system/dasd"),
+  useSystem: () => mockUseDASDSystem(),
 }));
 
 jest.mock("./ProposalFailedInfo", () => () => <div>proposal failed info</div>);
@@ -109,6 +103,7 @@ jest.mock("./ProposalResultSection", () => () => <div>result</div>);
 jest.mock("./ConfigEditor", () => () => <div>installation devices</div>);
 jest.mock("./EncryptionSection", () => () => <div>encryption section</div>);
 jest.mock("./BootSection", () => () => <div>boot section</div>);
+jest.mock("./ConnectedDevicesMenu", () => () => <div>connected devices menu</div>);
 
 beforeEach(() => {
   mockUseReset.mockReturnValue(jest.fn());
@@ -138,9 +133,9 @@ describe("if there are no devices", () => {
   });
 
   describe("if zFCP is not supported", () => {
-    beforeEach(() => {
-      mockUseZFCPSupported.mockReturnValue(false);
-    });
+    // beforeEach(() => {
+    //   mockUseZFCPSupported.mockReturnValue(false);
+    // });
 
     it("does not render an option for activating zFCP", () => {
       installerRender(<ProposalPage />);
@@ -150,7 +145,7 @@ describe("if there are no devices", () => {
 
   describe("if DASD is not supported", () => {
     beforeEach(() => {
-      mockUseDASDSupported.mockReturnValue(false);
+      mockUseDASDSystem.mockReturnValue(undefined);
     });
 
     it("does not render an option for activating DASD", () => {
@@ -159,12 +154,12 @@ describe("if there are no devices", () => {
     });
   });
 
-  describe("if zFCP is supported", () => {
-    beforeEach(() => {
-      mockUseZFCPSupported.mockReturnValue(true);
-    });
+  describe.skip("if zFCP is supported", () => {
+    // beforeEach(() => {
+    //   mockUseZFCPSupported.mockReturnValue(true);
+    // });
 
-    xit("renders an option for activating zFCP", () => {
+    it("renders an option for activating zFCP", () => {
       installerRender(<ProposalPage />);
       expect(screen.queryByRole("link", { name: /zFCP/ })).toBeInTheDocument();
     });
@@ -172,10 +167,10 @@ describe("if there are no devices", () => {
 
   describe("if DASD is supported", () => {
     beforeEach(() => {
-      mockUseDASDSupported.mockReturnValue(true);
+      mockUseDASDSystem.mockReturnValue({});
     });
 
-    xit("renders an option for activating DASD", () => {
+    it("renders an option for activating DASD", () => {
       installerRender(<ProposalPage />);
       expect(screen.queryByRole("link", { name: /DASD/ })).toBeInTheDocument();
     });

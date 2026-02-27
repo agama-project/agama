@@ -42,9 +42,10 @@ type Scope =
   | "l10n"
   | "product"
   | "software"
-  | "storage"
   | "network"
+  | "storage"
   | "iscsi"
+  | "dasd"
   | "users";
 type Progress = {
   index: number;

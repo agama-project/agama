@@ -144,7 +144,7 @@ module Agama
             type:          manager.device_type(dasd),
             diag:          dasd.use_diag,
             accessType:    dasd.access_type || "",
-            partitionInfo: dasd.partition_info || "",
+            partitionInfo: dasd.offline? ? "" : dasd.partition_info.to_s,
             status:        dasd.status.to_s,
             active:        !dasd.offline?,
             formatted:     dasd.formatted?

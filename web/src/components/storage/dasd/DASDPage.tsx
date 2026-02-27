@@ -21,29 +21,57 @@
  */
 
 import React from "react";
-import { Page } from "~/components/core";
+import { isEmpty } from "radashi";
+import { EmptyState, EmptyStateBody } from "@patternfly/react-core";
+import Page from "~/components/core/Page";
 import DASDTable from "./DASDTable";
-import DASDFormatProgress from "./DASDFormatProgress";
-import { useDASDDevicesChanges, useDASDFormatJobChanges } from "~/queries/storage/dasd";
-import { STORAGE as PATHS, STORAGE } from "~/routes/paths";
+import { useSystem } from "~/hooks/model/system/dasd";
+import { STORAGE } from "~/routes/paths";
 import { _ } from "~/i18n";
 
-export default function DASDPage() {
-  useDASDDevicesChanges();
-  useDASDFormatJobChanges();
-
+/**
+ * Renders a PatternFly `EmptyState` block used when no DASD devices are detected
+ * on the host machine.
+ */
+const NoDevicesAvailable = () => {
   return (
-    <Page breadcrumbs={[{ label: _("Storage"), path: STORAGE.root }, { label: _("DASD") }]}>
-      <Page.Content>
-        <DASDTable />
-        <DASDFormatProgress />
-      </Page.Content>
+    <EmptyState headingLevel="h2" titleText={_("No devices available")} variant="sm">
+      <EmptyStateBody>{_("No DASD devices found in this machine.")}</EmptyStateBody>
+    </EmptyState>
+  );
+};
 
-      <Page.Actions>
-        <Page.Action variant="secondary" navigateTo={PATHS.root}>
-          {_("Back")}
-        </Page.Action>
-      </Page.Actions>
+/**
+ * Data-aware content switcher for the DASD page.
+ *
+ * Reads the device list and renders the content based on it.
+ */
+const DASDPageContent = () => {
+  const { devices = [] } = useSystem() || {};
+
+  if (isEmpty(devices)) {
+    return <NoDevicesAvailable />;
+  }
+
+  return <DASDTable devices={devices} />;
+};
+
+/**
+ * Top-level page component for the DASD storage section.
+ *
+ * Wraps content in the shared `Page` shell which provides breadcrumb navigation
+ * (Storage > DASD) and a standardised content layout. All data concerns are
+ * delegated to internal `DASDPageContent` component.
+ */
+export default function DASDPage() {
+  return (
+    <Page
+      breadcrumbs={[{ label: _("Storage"), path: STORAGE.root }, { label: _("DASD") }]}
+      progress={{ scope: "dasd" }}
+    >
+      <Page.Content>
+        <DASDPageContent />
+      </Page.Content>
     </Page>
   );
 }

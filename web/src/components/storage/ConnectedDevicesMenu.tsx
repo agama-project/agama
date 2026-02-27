@@ -26,12 +26,13 @@ import { activateStorageAction } from "~/api";
 import { STORAGE } from "~/routes/paths";
 import Icon from "~/components/layout/Icon";
 import MenuButton from "~/components/core/MenuButton";
+import { useSystem as useDASDSystem } from "~/hooks/model/system/dasd";
 import { _ } from "~/i18n";
 
 export default function ConnectedDevicesMenu() {
   const navigate = useNavigate();
   const isZFCPSupported = false;
-  const isDASDSupported = false;
+  const dasdSystem = useDASDSystem();
 
   return (
     <MenuButton
@@ -63,7 +64,7 @@ export default function ConnectedDevicesMenu() {
             {_("Configure zFCP")}
           </MenuButton.Item>
         ),
-        isDASDSupported && (
+        dasdSystem && (
           <MenuButton.Item
             key="dasd-link"
             onClick={() => navigate(STORAGE.dasd)}
