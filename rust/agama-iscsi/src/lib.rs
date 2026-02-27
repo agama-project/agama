@@ -25,7 +25,6 @@ pub mod client;
 pub mod message;
 pub mod test_utils;
 
-mod dbus;
 mod monitor;
 
 use agama_storage as storage;

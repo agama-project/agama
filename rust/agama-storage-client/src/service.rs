@@ -22,7 +22,7 @@ use std::future::Future;
 
 use agama_utils::{
     actor::{self, Actor, Handler, MessageHandler},
-    api::{bootloader, storage::Config, Issue},
+    api::{bootloader, iscsi, storage::Config, Issue},
     BoxFuture,
 };
 use async_trait::async_trait;
@@ -31,7 +31,7 @@ use tokio::sync::oneshot;
 use crate::{
     dbus::{try_from_string, StorageDBusClient},
     message,
-    proxies::{self, BootloaderProxy, Storage1Proxy},
+    proxies::{self, BootloaderProxy, ISCSIProxy, Storage1Proxy},
 };
 
 #[derive(thiserror::Error, Debug)]
@@ -67,10 +67,13 @@ impl Starter {
         let bootloader_proxy = proxies::BootloaderProxy::new(&self.dbus).await?;
         bootloader_proxy.config().await?;
 
+        let iscsi_proxy = proxies::ISCSIProxy::new(&self.dbus).await?;
+
         let service = Service {
             storage_dbus: StorageDBusClient::new(self.dbus),
             storage_proxy,
             bootloader_proxy,
+            iscsi_proxy,
         };
         let handler = actor::spawn(service);
         Ok(handler)
@@ -81,6 +84,7 @@ pub struct Service {
     storage_dbus: StorageDBusClient,
     storage_proxy: Storage1Proxy<'static>,
     bootloader_proxy: BootloaderProxy<'static>,
+    iscsi_proxy: ISCSIProxy<'static>,
 }
 
 impl Actor for Service {
@@ -215,6 +219,44 @@ impl MessageHandler<message::SetBootloaderConfig> for Service {
             .set_bootloader_config(message.config)
             .await?;
         Ok(())
+    }
+}
+
+#[async_trait]
+impl MessageHandler<message::ISCSIDiscover> for Service {
+    async fn handle(&mut self, message: message::ISCSIDiscover) -> Result<u32, Error> {
+        let options = serde_json::to_string(&message.config)?;
+        Ok(self.iscsi_proxy.discover(&options).await?)
+    }
+}
+
+#[async_trait]
+impl MessageHandler<message::ISCSIGetSystem> for Service {
+    async fn handle(
+        &mut self,
+        _message: message::ISCSIGetSystem,
+    ) -> Result<Option<serde_json::Value>, Error> {
+        let raw_json = self.iscsi_proxy.iscsi_system().await?;
+        Ok(try_from_string(&raw_json)?)
+    }
+}
+
+#[async_trait]
+impl MessageHandler<message::ISCSIGetConfig> for Service {
+    async fn handle(
+        &mut self,
+        _message: message::ISCSIGetConfig,
+    ) -> Result<Option<iscsi::Config>, Error> {
+        let raw_json = self.iscsi_proxy.config().await?;
+        Ok(try_from_string(&raw_json)?)
+    }
+}
+
+#[async_trait]
+impl MessageHandler<message::ISCSISetConfig> for Service {
+    async fn handle(&mut self, message: message::ISCSISetConfig) -> Result<(), Error> {
+        let config = serde_json::to_string(&message.config)?;
+        Ok(self.iscsi_proxy.set_config(&config).await?)
     }
 }
 

@@ -375,9 +375,9 @@ impl SetConfigAction {
         self.progress
             .call(progress::message::Next::new(Scope::Manager))
             .await?;
-        // self.iscsi
-        //     .call(iscsi::message::SetConfig::new(config.iscsi.clone()))
-        //     .await?;
+        self.iscsi
+            .call(iscsi::message::SetConfig::new(config.iscsi.clone()))
+            .await?;
 
         if let Some(s390) = &self.s390 {
             self.progress

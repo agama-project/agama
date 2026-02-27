@@ -22,7 +22,7 @@ use std::sync::Arc;
 
 use agama_utils::{
     actor::Message,
-    api::{bootloader, storage::Config, Issue},
+    api::{bootloader, iscsi, storage::Config, Issue},
     products::ProductSpec,
     BoxFuture,
 };
@@ -153,5 +153,45 @@ impl SetLocale {
 }
 
 impl Message for SetLocale {
+    type Reply = ();
+}
+
+pub struct ISCSIDiscover {
+    pub config: iscsi::DiscoverConfig,
+}
+
+impl ISCSIDiscover {
+    pub fn new(config: iscsi::DiscoverConfig) -> Self {
+        Self { config }
+    }
+}
+
+impl Message for ISCSIDiscover {
+    type Reply = u32;
+}
+
+pub struct ISCSIGetSystem;
+
+impl Message for ISCSIGetSystem {
+    type Reply = Option<serde_json::Value>;
+}
+
+pub struct ISCSIGetConfig;
+
+impl Message for ISCSIGetConfig {
+    type Reply = Option<iscsi::Config>;
+}
+
+pub struct ISCSISetConfig {
+    pub config: Option<iscsi::Config>,
+}
+
+impl ISCSISetConfig {
+    pub fn new(config: Option<iscsi::Config>) -> Self {
+        Self { config }
+    }
+}
+
+impl Message for ISCSISetConfig {
     type Reply = ();
 }

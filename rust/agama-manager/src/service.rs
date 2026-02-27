@@ -622,7 +622,7 @@ impl MessageHandler<message::GetSystem> for Service {
         let l10n = self.l10n.call(l10n::message::GetSystem).await?;
         let manager = self.system.clone();
         let storage = self.storage.call(storage::message::GetSystem).await?;
-        // let iscsi = self.iscsi.call(iscsi::message::GetSystem).await?;
+        let iscsi = self.iscsi.call(iscsi::message::GetSystem).await?;
         let network = self.network.get_system().await?;
 
         let s390 = if let Some(s390) = &self.s390 {
@@ -645,7 +645,7 @@ impl MessageHandler<message::GetSystem> for Service {
             manager,
             network,
             storage,
-            iscsi: Default::default(),
+            iscsi,
             s390,
             software,
         })
@@ -664,8 +664,7 @@ impl MessageHandler<message::GetExtendedConfig> for Service {
             .await?
             .to_option();
         let hostname = self.hostname.call(hostname::message::GetConfig).await?;
-        // let iscsi = self.iscsi.call(iscsi::message::GetConfig).await?;
-        let iscsi = Default::default();
+        let iscsi = self.iscsi.call(iscsi::message::GetConfig).await?;
         let l10n = self.l10n.call(l10n::message::GetConfig).await?;
         // FIXME: the security service might be busy asking some question, so it cannot answer.
         // By now, let's consider that the whole security configuration is set by the user
