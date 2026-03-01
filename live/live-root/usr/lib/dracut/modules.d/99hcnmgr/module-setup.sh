@@ -6,7 +6,7 @@ check() {
   local _arch
   _arch=$(uname -m)
   [ "$_arch" = "ppc64" ] || [ "$_arch" = "ppc64le" ] || return 1
-  require_binaries hexdump ofpathname || return 1
+  require_binaries hexdump ofpathname pseries_platform || return 1
   return 0
 }
 
@@ -17,7 +17,7 @@ depends() {
 
 # called by dracut
 install() {
-  inst_multiple hexdump ofpathname
+  inst_multiple hexdump ofpathname pseries_platform
   #    inst_hook initqueue/settled 30 "$moddir/parse-hcnmgr.sh"
   inst_hook cmdline 30 "$moddir/parse-hcnmgr.sh"
 }
