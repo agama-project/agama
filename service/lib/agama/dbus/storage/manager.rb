@@ -21,26 +21,26 @@
 
 require "y2storage/storage_manager"
 require "agama/dbus/base_object"
+require "agama/dbus/with_issues"
+require "agama/dbus/with_progress"
 require "agama/storage/config_conversions"
 require "agama/storage/encryption_settings"
 require "agama/storage/volume_templates_builder"
 require "agama/storage/devicegraph_conversions"
 require "agama/storage/volume_conversions"
-require "agama/with_progress"
 require "dbus"
 require "json"
 require "yast"
-
-Yast.import "Arch"
 
 module Agama
   module DBus
     module Storage
       # D-Bus object to manage storage installation
-      class Manager < BaseObject # rubocop:disable Metrics/ClassLength
+      class Manager < BaseObject
         extend Yast::I18n
         include Yast::I18n
-        include Agama::WithProgress
+        include WithIssues
+        include WithProgress
 
         PATH = "/org/opensuse/Agama/Storage1"
         private_constant :PATH
@@ -247,7 +247,7 @@ module Agama
         attr_reader :backend
 
         def register_progress_callbacks
-          on_progress_change { self.ProgressChanged(progress.to_json) }
+          on_progress_change { self.ProgressChanged(serialize_progress) }
           on_progress_finish { self.ProgressFinished }
         end
 
@@ -404,8 +404,7 @@ module Agama
         #
         # @return [String]
         def serialize_issues
-          json = backend.issues.map { |i| issue_json(i) }
-          JSON.pretty_generate(json)
+          super(backend.issues)
         end
 
         # Generates the serialized JSON of the bootloader config.
@@ -458,18 +457,6 @@ module Agama
         # @return [Array<Hash>]
         def system_issues_json
           backend.system_issues.map { |i| issue_json(i) }
-        end
-
-        # Hash representation of the given issue.
-        #
-        # @param issue [Agama::Issue]
-        # @return [Hash]
-        def issue_json(issue)
-          {
-            description: issue.description,
-            class:       issue.kind&.to_s,
-            details:     issue.details&.to_s
-          }.compact
         end
 
         # @see Storage::System#available_drives
