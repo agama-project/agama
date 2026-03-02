@@ -528,9 +528,9 @@ fn normalize_repository_url(mount_point: &str, path: &str) -> Option<String> {
 
     let device = by_id_devices.next().unwrap_or_default();
     if device.is_empty() {
-        Some(format!("hd:{mount_point}?device={live_device}"))
+        Some(format!("hd:{path}?device={live_device}"))
     } else {
-        Some(format!("hd:{mount_point}?device={device}"))
+        Some(format!("hd:{path}?device={device}"))
     }
 }
 
@@ -545,13 +545,12 @@ mod tests {
         std::fs::create_dir_all(tmp_dir.path().join(LIVE_REPO_DIR))?;
         std::fs::create_dir_all(tmp_dir.path().join(DUD_REPO_DIR))?;
 
-        let tmp_dir_str = tmp_dir.as_ref().to_str().unwrap();
         let repositories = find_mandatory_repositories(tmp_dir.as_ref());
+        assert!(repositories.len() == 2);
+
         let install = repositories.first().unwrap();
         assert_eq!(&install.alias, "Installation");
-        assert!(install
-            .url
-            .contains(&format!("hd:{}/{}", tmp_dir_str, LIVE_REPO_DIR)));
+        assert!(install.url.contains(&format!("hd:/install")));
         assert!(install.predefined);
 
         let dud = repositories.last().unwrap();

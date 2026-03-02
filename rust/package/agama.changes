@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Feb 27 11:39:31 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+
+- Fixed using packages from the Full (offline) installation medium
+  when booted from harddisk or USB flash (bsc#1258828)
+
+-------------------------------------------------------------------
 Thu Feb 26 16:44:32 UTC 2026 - David Diaz <dgonzalez@suse.com>
 
 - Add schema for DASD config (gh#agama-project/agama#3143).
