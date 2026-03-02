@@ -9,6 +9,9 @@ export default {
   "\"%s\" does not exist or is no longer available.": [
     "„%s“ existiert nicht oder ist nicht mehr verfügbar."
   ],
+  "%1$d of %2$d devices match filters": [
+    "%1$d von %2$d Geräten entsprechen den Filtern"
+  ],
   "%1$s (%2$s)": [
     "%1$s (%2$s)"
   ],
@@ -35,6 +38,9 @@ export default {
   "%1$s, %2$s and [%3$d more]": [
     "%1$s, %2$s und [%3$d weitere]",
     "%1$s, %2$s und [%3$d weitere]"
+  ],
+  "%d devices available": [
+    "%d Geräte verfügbar"
   ],
   "%d mode available": [
     "%d Modus verfügbar",
@@ -84,6 +90,10 @@ export default {
   ],
   "(step %s of %s)": [
     "(Schritt %s von %s)"
+  ],
+  "1 device selected. Use the actions toolbar to apply changes.": [
+    "1 Gerät ausgewählt. Verwenden Sie die Aktionssymbolleiste, um Änderungen anzuwenden.",
+    "%s Geräte ausgewählt. Verwenden Sie die Aktionensymbolleiste, um Änderungen anzuwenden."
   ],
   "A %1$s of %2$s will be created for %3$s if possible": [
     "Eine %1$s mit %2$s wird nach Möglichkeit für %3$s erstellt"
@@ -135,6 +145,10 @@ export default {
   "Actions for %s at portal %s": [
     "Aktionen für %s im Portal %s"
   ],
+  "Actions for the selected device:": [
+    "Aktionen für das ausgewählte Gerät:",
+    "Aktionen für %s ausgewählte Geräte:"
+  ],
   "Activate": [
     "Aktivieren"
   ],
@@ -152,6 +166,9 @@ export default {
   ],
   "Activated": [
     "Aktiviert"
+  ],
+  "Active": [
+    "Aktiv"
   ],
   "Add": [
     "Hinzufügen"
@@ -243,10 +260,6 @@ export default {
   ],
   "Apply selected solution": [
     "Ausgewählte Lösung anwenden"
-  ],
-  "Apply to the selected device": [
-    "Auf das ausgewählte Gerät anwenden",
-    "Auf die ausgewählten %s-Geräte anwenden"
   ],
   "Applying changes": [
     "Änderungen werden angewendet"
@@ -424,6 +437,9 @@ export default {
   ],
   "Changes in these settings will immediately update the 'Result' section below.": [
     "Änderungen an diesen Einstellungen werden sofort im Abschnitt ‚Ergebnis‘ unten aktualisiert."
+  ],
+  "Channel": [
+    "Kanal"
   ],
   "Channel ID": [
     "Kanalkennung"
@@ -1335,7 +1351,7 @@ export default {
   "No": [
     "Nein"
   ],
-  "No DASD devices were found in this machine.": [
+  "No DASD devices found in this machine.": [
     "In dieser Maschine wurden keine DASD-Geräte gefunden."
   ],
   "No Wi-Fi networks were found": [
@@ -1371,8 +1387,17 @@ export default {
   "No devices found": [
     "Keine Geräte gefunden"
   ],
+  "No devices match filters": [
+    "Keine Geräte entsprechen den Filtern"
+  ],
+  "No devices selected. Select one or more devices to perform bulk actions.": [
+    "Keine Geräte ausgewählt. Wählen Sie ein oder mehrere Geräte zum Ausführen von Massenaktionen aus."
+  ],
   "No iSCSI Boot Firmware Table (iBFT) found. The initiator can be [configured manually.]": [
     "Keine iSCSI-Boot-Firmware-Tabelle (iBFT) gefunden. Der Initiator kann [manuell konfiguriert werden]."
+  ],
+  "No information available yet": [
+    "Noch keine Informationen verfügbar"
   ],
   "No logical volumes are defined yet": [
     "Es sind noch keine logischen Volumes definiert"
@@ -1629,6 +1654,9 @@ export default {
   "Registered": [
     "Registriert"
   ],
+  "Registered without a code": [
+    "Ohne Code registriert"
+  ],
   "Registration": [
     "Registrierung"
   ],
@@ -1787,8 +1815,8 @@ export default {
   "Select device": [
     "Gerät auswählen"
   ],
-  "Select devices to enable bulk actions.": [
-    "Wählen Sie Geräte aus, um Massenaktionen zu aktivieren."
+  "Select devices to perform bulk actions": [
+    "Geräte zum Ausführen von Massenaktionen auswählen"
   ],
   "Select or enter a mount point": [
     "Einhängepunkt auswählen oder eingeben"
@@ -2203,11 +2231,11 @@ export default {
   "These are the settings for the product to install. The installer language can be adjusted via the [settings panel] accessible from the top bar.": [
     "Dies sind die Einstellungen für das zu installierende Produkt. Die Sprache des Installationsprogramms kann über das [settings panel] in der oberen Leiste angepasst werden."
   ],
-  "This action could destroy any data stored on the device.": [
-    "Diese Aktion kann alle auf dem Gerät gespeicherten Daten zerstören."
+  "This action will destroy any data stored on the device.": [
+    "Diese Aktion wird alle auf dem Gerät gespeicherten Daten zerstören."
   ],
-  "This action could destroy any data stored on the devices listed below.": [
-    "Diese Aktion kann alle auf den unten aufgeführten Geräten gespeicherten Daten zerstören."
+  "This action will destroy any data stored on the devices listed below.": [
+    "Diese Aktion wird alle auf den unten aufgeführten Geräten gespeicherten Daten zerstören."
   ],
   "This extension is not available on the server. Ask the server administrator to mirror the extension.": [
     "Diese Erweiterung ist auf dem Server nicht verfügbar. Bitten Sie den Serveradministrator, die Erweiterung zu spiegeln."
@@ -2539,12 +2567,6 @@ export default {
   "[CAPS LOCK] is on": [
     "[CAPS LOCK] ist eingeschaltet"
   ],
-  "active": [
-    "aktiv"
-  ],
-  "all": [
-    "alle"
-  ],
   "approx. %s": [
     "ca. %s"
   ],
@@ -2569,26 +2591,14 @@ export default {
   "logical volume": [
     "logisches Volume"
   ],
-  "no": [
-    "nein"
-  ],
-  "offline": [
-    "offline"
-  ],
   "partition": [
     "Partition"
-  ],
-  "read_only": [
-    "schreibgeschützt"
   ],
   "reset to defaults": [
     "Auf Standardeinstellungen zurücksetzen"
   ],
   "root": [
     "root"
-  ],
-  "yes": [
-    "ja"
   ],
   "zFCP": [
     "zFCP"

@@ -9,6 +9,9 @@ export default {
   "\"%s\" does not exist or is no longer available.": [
     "\"%s\" არ არსებობს, ან ხელმისაწვდომი აღარაა."
   ],
+  "%1$d of %2$d devices match filters": [
+    "ფილტრს ემთხვევა %1$d მოწყობილობა %2$d-დან"
+  ],
   "%1$s (%2$s)": [
     "%1$s (%2$s)"
   ],
@@ -38,6 +41,9 @@ export default {
   "%1$s, %2$s and [%3$d more]": [
     "%1$s, %2$s და [კიდევ %3$d]",
     "%1$s, %2$s და [კიდევ %3$d]"
+  ],
+  "%d devices available": [
+    "ხელმისაწვდომია %d მოწყობილობა"
   ],
   "%d mode available": [
     "ხელმისაწვდომია %d რეჟიმი",
@@ -87,6 +93,10 @@ export default {
   ],
   "(step %s of %s)": [
     "(ნაბიჯი %s %s-დან)"
+  ],
+  "1 device selected. Use the actions toolbar to apply changes.": [
+    "",
+    ""
   ],
   "A %1$s of %2$s will be created for %3$s if possible": [
     "%1$s ზომით %2$s შეიქმნება %3$s-სთვის, თუ ეს შესაძლებელია"
@@ -138,6 +148,10 @@ export default {
   "Actions for %s at portal %s": [
     "ქმედებები %s-ისთვის პორტალზე %s"
   ],
+  "Actions for the selected device:": [
+    "ქმედებები მონიშნული მოწყობილობისთვის:",
+    "ქმედებები მონიშნული %s მოწყობილობისთვის:"
+  ],
   "Activate": [
     "აქტივაცია"
   ],
@@ -155,6 +169,9 @@ export default {
   ],
   "Activated": [
     "აქტივირებულია"
+  ],
+  "Active": [
+    "აქტიური"
   ],
   "Add": [
     "დამატება"
@@ -246,10 +263,6 @@ export default {
   ],
   "Apply selected solution": [
     "არჩეული გადაწყვეტის გადატარება"
-  ],
-  "Apply to the selected device": [
-    "გადატარება მონიშნულ მოწყობილობაზე",
-    "გადატარება %s მონიშნულ მოწყობილობაზე"
   ],
   "Applying changes": [
     "მიმდინარეობს ცვლილებების გადატარება"
@@ -427,6 +440,9 @@ export default {
   ],
   "Changes in these settings will immediately update the 'Result' section below.": [
     "ამ პარამეტრის შეცვლა დაუყოვნებლივ განაახლებს ქვემორე სექციას 'შედეგი'."
+  ],
+  "Channel": [
+    "არხი"
   ],
   "Channel ID": [
     "არხის ID"
@@ -1338,7 +1354,7 @@ export default {
   "No": [
     "არა"
   ],
-  "No DASD devices were found in this machine.": [
+  "No DASD devices found in this machine.": [
     "ამ მანქანაში DASD მოწყობილობები აღმოჩენილი არაა."
   ],
   "No Wi-Fi networks were found": [
@@ -1374,8 +1390,17 @@ export default {
   "No devices found": [
     "მოწყობილობები აღმოჩენილი არაა"
   ],
+  "No devices match filters": [
+    "ფილტრს მოწყობილობა არ ემთხვევა"
+  ],
+  "No devices selected. Select one or more devices to perform bulk actions.": [
+    "მოწყობილობები მონიშნული არაა. ქმედებებისთვის მონიშნეთ ერთი, ან მეტი მოწყობილობა."
+  ],
   "No iSCSI Boot Firmware Table (iBFT) found. The initiator can be [configured manually.]": [
     "iSCSI-ის ჩატვირთვის მიკროკოდის ცხრილი (iBFT) აღმოჩენილი არაა. ინიციატორი შეგიძლიათ, [ხელით მოირგოთ.]"
+  ],
+  "No information available yet": [
+    "ჯერ ინფორმაცია ხელმისაწვდომი არაა"
   ],
   "No logical volumes are defined yet": [
     "ლოგიკური ტომები ჯერ აღწერილი არაა"
@@ -1457,6 +1482,9 @@ export default {
   ],
   "Not supported (%s)": [
     "მხარდაჭერილი არაა (%s)"
+  ],
+  "Offline": [
+    "გათიშულია"
   ],
   "On boot": [
     "ჩატვირთვისას"
@@ -1605,6 +1633,9 @@ export default {
   "Question": [
     "კითხვა"
   ],
+  "Read only": [
+    "მხოლოდ-წაკითხვადი"
+  ],
   "Read zFCP devices": [
     "zFCP მოწყობილობების წაკითხვა"
   ],
@@ -1631,6 +1662,9 @@ export default {
   ],
   "Registered": [
     "დარეგისტრირებულია"
+  ],
+  "Registered without a code": [
+    "რეგისტრირებულია კოდის გარეშე"
   ],
   "Registration": [
     "რეგისტრაცია"
@@ -1790,8 +1824,8 @@ export default {
   "Select device": [
     "აირჩიეთ მოწყობილობა"
   ],
-  "Select devices to enable bulk actions.": [
-    "აირჩიეთ მოწყობილობები ერთზე მეტი ქმედებისთვის."
+  "Select devices to perform bulk actions": [
+    "აირჩიეთ მოწყობილობები ერთზე მეტი ქმედებისთვის"
   ],
   "Select or enter a mount point": [
     "აირჩიეთ, ან შეიყვანეთ მიმაგრების წერტილი"
@@ -2206,10 +2240,10 @@ export default {
   "These are the settings for the product to install. The installer language can be adjusted via the [settings panel] accessible from the top bar.": [
     "ეს დასაყენებელი პროდუქტის პარამეტრებია. დაყენების პროგრამის ენის მორგება [მორგების პანელიდან] ზედა ზოლიდანაა ხელმისაწვდომი."
   ],
-  "This action could destroy any data stored on the device.": [
+  "This action will destroy any data stored on the device.": [
     "ეს ქმედება მოწყობილობაზე დამახსოვრებულ მონაცემებს გაანადგურებს."
   ],
-  "This action could destroy any data stored on the devices listed below.": [
+  "This action will destroy any data stored on the devices listed below.": [
     "ეს ქმედება გაანადგურებს მონაცემებს, რომლებიც დამახსოვრებულია ქვემოთ ჩამოთვლილ მოწყობილობებზე."
   ],
   "This extension is not available on the server. Ask the server administrator to mirror the extension.": [
@@ -2542,12 +2576,6 @@ export default {
   "[CAPS LOCK] is on": [
     "[CAPS LOCK] ჩართულია"
   ],
-  "active": [
-    "აქტიური"
-  ],
-  "all": [
-    "ყველა"
-  ],
   "approx. %s": [
     "დაახლ. %s"
   ],
@@ -2572,29 +2600,17 @@ export default {
   "logical volume": [
     "ლოგიკური ტომი"
   ],
-  "no": [
-    "არა"
-  ],
-  "offline": [
-    "გათიშულია"
-  ],
   "partition": [
     "დანაყოფი"
   ],
   "proposal.Device": [
     "proposal.Device"
   ],
-  "read_only": [
-    "მხოლოდ_წაკითხვადი"
-  ],
   "reset to defaults": [
     "ჩამოყრა ნაგულისხმევზე"
   ],
   "root": [
     ""
-  ],
-  "yes": [
-    "დიახ"
   ],
   "zFCP": [
     "zFCP"

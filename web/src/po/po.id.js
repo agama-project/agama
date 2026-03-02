@@ -81,6 +81,9 @@ export default {
   "(step %s of %s)": [
     "(langkah %s dari %s)"
   ],
+  "1 device selected. Use the actions toolbar to apply changes.": [
+    ""
+  ],
   "A %1$s of %2$s will be created for %3$s if possible": [
     "%1$s dari %2$s akan dibuat untuk %3$s jika memungkinkan"
   ],
@@ -236,9 +239,6 @@ export default {
   ],
   "Apply selected solution": [
     "Pilih solusi untuk melanjutkan"
-  ],
-  "Apply to the selected device": [
-    "Terapkan ke perangkat %s yang dipilih"
   ],
   "Applying changes": [
     "Menerapkan perubahan"
@@ -1320,9 +1320,6 @@ export default {
   "No": [
     "Tidak"
   ],
-  "No DASD devices were found in this machine.": [
-    "Tidak ditemukan perangkat DASD pada mesin ini."
-  ],
   "No Wi-Fi networks were found": [
     "Tidak ditemukan jaringan Wi-Fi"
   ],
@@ -1773,9 +1770,6 @@ export default {
   "Select device": [
     "Pilih perangkat"
   ],
-  "Select devices to enable bulk actions.": [
-    "Pilih perangkat untuk mengaktifkan tindakan massal."
-  ],
   "Select or enter a mount point": [
     "Pilih atau masukkan titik mount"
   ],
@@ -2178,12 +2172,6 @@ export default {
   "These are the settings for the product to install. The installer language can be adjusted via the [settings panel] accessible from the top bar.": [
     "Pengaturan untuk menginstal produk. Bahasa penginstal dan tata letak keyboard dapat disesuaikan melalui [panel pengaturan] yang dapat diakses dari bilah atas."
   ],
-  "This action could destroy any data stored on the device.": [
-    "Tindakan ini dapat menghapus semua data yang tersimpan di perangkat."
-  ],
-  "This action could destroy any data stored on the devices listed below.": [
-    "Tindakan ini dapat menghapus semua data yang disimpan pada perangkat-perangkat yang tercantum di bawah ini."
-  ],
   "This extension is not available on the server. Ask the server administrator to mirror the extension.": [
     "Ekstensi ini tidak tersedia di server. Mintalah administrator server untuk menyalin ekstensi tersebut."
   ],
@@ -2514,12 +2502,6 @@ export default {
   "[CAPS LOCK] is on": [
     "[CAPS LOCK] aktif"
   ],
-  "active": [
-    "aktif"
-  ],
-  "all": [
-    "semua"
-  ],
   "approx. %s": [
     "sekitar %s"
   ],
@@ -2544,29 +2526,17 @@ export default {
   "logical volume": [
     "volume logis"
   ],
-  "no": [
-    "tidak"
-  ],
-  "offline": [
-    "luring"
-  ],
   "partition": [
     "partisi"
   ],
   "proposal.Device": [
     "proposal.Device"
   ],
-  "read_only": [
-    "hanya_baca"
-  ],
   "reset to defaults": [
     "kembalikan ke default"
   ],
   "root": [
     "root"
-  ],
-  "yes": [
-    "ya"
   ],
   "zFCP": [
     "zFCP"

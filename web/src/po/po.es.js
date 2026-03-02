@@ -56,6 +56,10 @@ export default {
   "%s with %d partitions": [
     "%s con %d particiones"
   ],
+  "1 device selected. Use the actions toolbar to apply changes.": [
+    "",
+    ""
+  ],
   "A %1$s of %2$s will be created for %3$s if possible": [
     "Si fuera posible, se creará una %1$s de %2$s para %3$s"
   ],
@@ -202,10 +206,6 @@ export default {
   ],
   "Apply selected solution": [
     "Aplicar solución seleccionada"
-  ],
-  "Apply to the selected device": [
-    "Aplicar al dispositivo seleccionado",
-    "Aplicar a los %s dispositivos seleccionados"
   ],
   "Applying changes": [
     "Aplicando cambios"
@@ -1136,9 +1136,6 @@ export default {
   "No": [
     "No"
   ],
-  "No DASD devices were found in this machine.": [
-    "No se encuentra ningún dispositivo DASD en este equipo."
-  ],
   "No Wi-Fi networks were found": [
     "No se han encontrado redes Wi-Fi"
   ],
@@ -1521,9 +1518,6 @@ export default {
   "Select at least one disk.": [
     "Seleccione al menos un disco."
   ],
-  "Select devices to enable bulk actions.": [
-    "Seleccione dispositivos para habilitar acciones en bloque."
-  ],
   "Select or enter a mount point": [
     "Seleccionar o introducir un punto de montaje"
   ],
@@ -1902,12 +1896,6 @@ export default {
   "These are the settings for the product to install. The installer language can be adjusted via the [settings panel] accessible from the top bar.": [
     "Parámetros de instalación del producto. El idioma del instalador puede ser ajustado mediante el [panel de configuraciones], accesible en la barra superior."
   ],
-  "This action could destroy any data stored on the device.": [
-    "Esta acción podría destruir todos los datos almacenados en el dispositivo."
-  ],
-  "This action could destroy any data stored on the devices listed below.": [
-    "Esta acción podría destruir todos los datos almacenados en los dispositivos que aparecen a continuación."
-  ],
   "This extension is not available on the server. Ask the server administrator to mirror the extension.": [
     "Esta extensión no está disponible en el servidor. Pida al administrador del servidor que replique la extensión."
   ],
@@ -2211,12 +2199,6 @@ export default {
   "[CAPS LOCK] is on": [
     "[BLOQ MAYÚS] está activado"
   ],
-  "active": [
-    "activo"
-  ],
-  "all": [
-    "todo"
-  ],
   "approx. %s": [
     "aprox. %s"
   ],
@@ -2241,26 +2223,14 @@ export default {
   "logical volume": [
     "volúmen lógico"
   ],
-  "no": [
-    "no"
-  ],
-  "offline": [
-    "sin_conexión"
-  ],
   "partition": [
     "partición"
-  ],
-  "read_only": [
-    "solo_lectura"
   ],
   "reset to defaults": [
     "restablecer valores predeterminados"
   ],
   "root": [
     ""
-  ],
-  "yes": [
-    "sí"
   ],
   "zFCP": [
     "zFCP"

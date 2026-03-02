@@ -63,6 +63,10 @@ export default {
   "%s with %d partitions": [
     "%s con %d partizioni"
   ],
+  "1 device selected. Use the actions toolbar to apply changes.": [
+    "",
+    ""
+  ],
   "A %1$s of %2$s will be created for %3$s if possible": [
     "Una %1$s di %2$s verrà creata per %3$s se possibile"
   ],
@@ -209,10 +213,6 @@ export default {
   ],
   "Apply selected solution": [
     "Applica la soluzione selezionata"
-  ],
-  "Apply to the selected device": [
-    "Applica al dispositivo selezionato",
-    "Applica a %s dispositivi selezionati"
   ],
   "Applying changes": [
     "Applicazione delle modifiche"
@@ -1131,9 +1131,6 @@ export default {
   "No": [
     "No"
   ],
-  "No DASD devices were found in this machine.": [
-    "Nessun dispositivo DASD trovato in questa macchina."
-  ],
   "No Wi-Fi networks were found": [
     "Non è stata trovata nessuna rete Wi-Fi"
   ],
@@ -1500,9 +1497,6 @@ export default {
   ],
   "Select at least one disk.": [
     "Selezionare almeno un disco."
-  ],
-  "Select devices to enable bulk actions.": [
-    "Selezionare dispositivi per abilitare le azioni in lotto."
   ],
   "Select or enter a mount point": [
     "Selezionare o immettere un punto di montaggio"
@@ -1879,12 +1873,6 @@ export default {
   "These are the settings for the product to install. The installer language can be adjusted via the [settings panel] accessible from the top bar.": [
     "Queste sono le impostazioni per il prodotto da installare. È possibile modificare l lingua del programma di installazione tramite il [pannello delle impostazioni], accessibile dalla barra superiore."
   ],
-  "This action could destroy any data stored on the device.": [
-    "Questa azione potrebbe distruggere i dati memorizzati sul dispositivo."
-  ],
-  "This action could destroy any data stored on the devices listed below.": [
-    "Questa azione potrebbe distruggere i dati memorizzati nei dispositivi elencati sotto."
-  ],
   "This extension is not available on the server. Ask the server administrator to mirror the extension.": [
     "Questa estensione non è disponibile sul server. Chiedere all'amministratore del server di eseguire il mirroring dell'estensione."
   ],
@@ -2188,12 +2176,6 @@ export default {
   "[CAPS LOCK] is on": [
     "[BLOC MAIUSC] attivo"
   ],
-  "active": [
-    "attiva"
-  ],
-  "all": [
-    "tutti"
-  ],
   "approx. %s": [
     "circa %s"
   ],
@@ -2218,29 +2200,17 @@ export default {
   "logical volume": [
     "Volume LVM"
   ],
-  "no": [
-    "no"
-  ],
-  "offline": [
-    "offline"
-  ],
   "partition": [
     "partizione"
   ],
   "proposal.Device": [
     ""
   ],
-  "read_only": [
-    "solo_lettura"
-  ],
   "reset to defaults": [
     "ripristina le impostazioni predefinite"
   ],
   "root": [
     ""
-  ],
-  "yes": [
-    "sì"
   ],
   "zFCP": [
     "zFCP"
