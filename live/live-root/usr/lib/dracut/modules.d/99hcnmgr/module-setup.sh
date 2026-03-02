@@ -17,7 +17,7 @@ depends() {
 
 # called by dracut
 install() {
-  inst_multiple hexdump ofpathname pseries_platform
+  inst_multiple hcnmgr hexdump ofpathname pseries_platform
   #    inst_hook initqueue/settled 30 "$moddir/parse-hcnmgr.sh"
-  inst_hook cmdline 30 "$moddir/parse-hcnmgr.sh"
+  inst_hook initqueue/settled 30 "$moddir/parse-hcnmgr.sh"
 }
