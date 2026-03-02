@@ -24,7 +24,8 @@ import React from "react";
 import { isEmpty } from "radashi";
 import { EmptyState, EmptyStateBody } from "@patternfly/react-core";
 import Page from "~/components/core/Page";
-import DASDTable from "./DASDTable";
+import DASDTable from "~/components/storage/dasd/DASDTable";
+import DASDFormatProgress from "~/components/storage/dasd/DASDFormatProgress";
 import { useSystem } from "~/hooks/model/system/dasd";
 import { STORAGE } from "~/routes/paths";
 import { _ } from "~/i18n";
@@ -67,7 +68,10 @@ export default function DASDPage() {
   return (
     <Page
       breadcrumbs={[{ label: _("Storage"), path: STORAGE.root }, { label: _("DASD") }]}
-      progress={{ scope: "dasd" }}
+      progress={{
+        scope: "dasd",
+        extraContent: <DASDFormatProgress />,
+      }}
     >
       <Page.Content>
         <DASDPageContent />
