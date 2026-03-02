@@ -121,12 +121,16 @@ storage:
           - btrfs
 translations:
   description:
+    bg: Leap Micro е свръхнадежна, лека операционна система направена за задачи
+      свързани с контейнерализация и виртуализация.
     ca: El Leap Micro és un sistema operatiu ultrafiable i lleuger creat per a
       càrregues de treball en contenidors i virtualitzades.
     cs: Leap Micro je velmi spolehlivý odlehčený operační systém postavený pro
       kontejnerizované a virtualizované úlohy.
     de: Leap Micro ist ein ultra-zuverlässiges und leichtgewichtiges Betriebssystem
       für containerisierte und visuelle Arbeitsabläufe.
+    el: Το Leap Micro είναι ένα εξαιρετικά αξιόπιστο, ελαφρύ λειτουργικό σύστημα
+      κατασκευασμένο για containerized και virtualized φορτία εργασίας.
     es: Leap Micro es un sistema operativo ultrafiable y ligero hecho para cargas de
       trabajo virtualizadas y en contenedores.
     fi: Leap Micro on todella luotettava ja kevyt käyttöjärjestelmä konttien ja
