@@ -11,12 +11,16 @@ description: 'The latest version of a community distribution based on the latest
 icon: Leap16.svg
 translations:
   description:
+    bg: Последната версия на обществената дистрибуция базирана на най-новия SUSE
+      Linux Enterprise Server.
     ca: La darrera versió d'una distribució comunitària basada en l'últim SUSE Linux
       Enterprise Server.
     cs: Nejnovější verze komunitní distribuce založené na nejnovějším SUSE Linux
       Enterprise Serveru.
     de: Die neueste Version einer Community-Distribution, die auf dem aktuellen SUSE
       Linux Enterprise Server basiert.
+    el: Η τελευταία έκδοση μιας κοινοτικής διανομής που βασίζεται στο πιο πρόσφατο
+      SUSE Linux Enterprise Server.
     es: La última versión de una distribución de la comunidad basada en la última
       versión de SUSE Linux Enterprise Server.
     fi: Uusin versio yhteisöjakelusta, joka perustaa viimeisimään SUSE Linux

@@ -9,6 +9,9 @@ export default {
   "\"%s\" does not exist or is no longer available.": [
     "La xarxa %s no existeix o ja no està disponible."
   ],
+  "%1$d of %2$d devices match filters": [
+    "%1$d de %2$d dispositius coincideixen amb els filtres"
+  ],
   "%1$s (%2$s)": [
     "%1$s (%2$s)"
   ],
@@ -38,6 +41,9 @@ export default {
   "%1$s, %2$s and [%3$d more]": [
     "%1$s, %2$s i [%3$d més]",
     "%1$s, %2$s i [%3$d més]"
+  ],
+  "%d devices available": [
+    "%d dispositius disponibles"
   ],
   "%d mode available": [
     "%d mode disponible",
@@ -87,6 +93,10 @@ export default {
   ],
   "(step %s of %s)": [
     "(pas %s de %s)"
+  ],
+  "1 device selected. Use the actions toolbar to apply changes.": [
+    "1 dispositiu seleccionat. Useu la barra d'eines d'accions per aplicar els canvis.",
+    "%s dispositius seleccionats. Useu la barra d'eines d'accions per aplicar els canvis."
   ],
   "A %1$s of %2$s will be created for %3$s if possible": [
     "Si és possible, es crearà una %1$s de %2$s per a %3$s"
@@ -138,6 +148,10 @@ export default {
   "Actions for %s at portal %s": [
     "Accions per a %s al portal %s"
   ],
+  "Actions for the selected device:": [
+    "Accions per al dispositiu seleccionat:",
+    "Accions per a %s dispositius seleccionats:"
+  ],
   "Activate": [
     "Activa"
   ],
@@ -155,6 +169,9 @@ export default {
   ],
   "Activated": [
     "Activat"
+  ],
+  "Active": [
+    "Actiu"
   ],
   "Add": [
     "Afegeix"
@@ -246,10 +263,6 @@ export default {
   ],
   "Apply selected solution": [
     "Aplica la solució seleccionada"
-  ],
-  "Apply to the selected device": [
-    "Aplica-ho al dispositiu seleccionat",
-    "Aplica-ho als %s dispositius seleccionats"
   ],
   "Applying changes": [
     "S'apliquen els canvis"
@@ -427,6 +440,9 @@ export default {
   ],
   "Changes in these settings will immediately update the 'Result' section below.": [
     "Els canvis en aquesta configuració actualitzaran immediatament la secció de Resultat que hi ha a continuació."
+  ],
+  "Channel": [
+    "Canal"
   ],
   "Channel ID": [
     "Identificador del canal"
@@ -1338,8 +1354,8 @@ export default {
   "No": [
     "No"
   ],
-  "No DASD devices were found in this machine.": [
-    "No s'ha trobat cap dispositiu DASD en aquesta màquina."
+  "No DASD devices found in this machine.": [
+    "No s'han trobat dispositius DASD en aquesta màquina."
   ],
   "No Wi-Fi networks were found": [
     "No s'ha trobat cap xarxa sense fil"
@@ -1374,8 +1390,17 @@ export default {
   "No devices found": [
     "No s'ha trobat cap dispositiu"
   ],
+  "No devices match filters": [
+    "Cap dispositiu coincideix amb els filtres"
+  ],
+  "No devices selected. Select one or more devices to perform bulk actions.": [
+    "No s'ha seleccionat cap dispositiu. Seleccioneu un o més dispositius per fer-hi accions massives."
+  ],
   "No iSCSI Boot Firmware Table (iBFT) found. The initiator can be [configured manually.]": [
     "No s'ha trobat cap taula de microprogramari d'arrencada d'iSCSI (iBFT). L'iniciador es pot [configurar manualment.]"
+  ],
+  "No information available yet": [
+    "Encara no hi ha informació disponible"
   ],
   "No logical volumes are defined yet": [
     "Encara no s'ha definit cap volum lògic"
@@ -1457,6 +1482,9 @@ export default {
   ],
   "Not supported (%s)": [
     "No compatible (%s)"
+  ],
+  "Offline": [
+    "Fora de línia"
   ],
   "On boot": [
     "A l'arrencada"
@@ -1604,6 +1632,9 @@ export default {
   ],
   "Question": [
     "Pregunta"
+  ],
+  "Read only": [
+    "Només de lectura"
   ],
   "Read zFCP devices": [
     "Llegeix els dispositius zFCP"
@@ -1793,8 +1824,8 @@ export default {
   "Select device": [
     "Seleccioneu un dispositiu"
   ],
-  "Select devices to enable bulk actions.": [
-    "Seleccioneu els dispositius per habilitar accions massives."
+  "Select devices to perform bulk actions": [
+    "Seleccioneu els dispositius per fer-hi accions massives"
   ],
   "Select or enter a mount point": [
     "Seleccioneu o introduïu un punt de muntatge"
@@ -2209,11 +2240,11 @@ export default {
   "These are the settings for the product to install. The installer language can be adjusted via the [settings panel] accessible from the top bar.": [
     "Aquests són els paràmetres per instal·lar el producte. La llengua de l'instal·lador es pot ajustar a [settings panel] accessible des de la barra superior."
   ],
-  "This action could destroy any data stored on the device.": [
-    "Aquesta acció podria destruir qualsevol dada emmagatzemada al dispositiu."
+  "This action will destroy any data stored on the device.": [
+    "Aquesta acció destruirà totes les dades emmagatzemades al dispositiu."
   ],
-  "This action could destroy any data stored on the devices listed below.": [
-    "Aquesta acció podria destruir qualsevol dada emmagatzemada als dispositius que s'enumeren a continuació."
+  "This action will destroy any data stored on the devices listed below.": [
+    "Aquesta acció destruirà totes les dades emmagatzemades als dispositius que s'enumeren a continuació."
   ],
   "This extension is not available on the server. Ask the server administrator to mirror the extension.": [
     "Aquesta extensió no està disponible al servidor. Demaneu a l'administrador del servidor que repliqui l'extensió."
@@ -2545,12 +2576,6 @@ export default {
   "[CAPS LOCK] is on": [
     "[CAPS LOCK] activat"
   ],
-  "active": [
-    "actiu"
-  ],
-  "all": [
-    "tots"
-  ],
   "approx. %s": [
     "aprox. %s"
   ],
@@ -2575,29 +2600,17 @@ export default {
   "logical volume": [
     "volum lògic"
   ],
-  "no": [
-    "no"
-  ],
-  "offline": [
-    "fora de línia"
-  ],
   "partition": [
     "partició"
   ],
   "proposal.Device": [
     "proposta.Dispositiu"
   ],
-  "read_only": [
-    "només de lectura"
-  ],
   "reset to defaults": [
     "restableix els valors predeterminats"
   ],
   "root": [
     "arrel"
-  ],
-  "yes": [
-    "sí"
   ],
   "zFCP": [
     "zFCP"

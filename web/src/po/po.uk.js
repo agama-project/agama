@@ -95,6 +95,11 @@ export default {
   "(step %s of %s)": [
     "(крок %s з %s)"
   ],
+  "1 device selected. Use the actions toolbar to apply changes.": [
+    "",
+    "",
+    ""
+  ],
   "A %1$s of %2$s will be created for %3$s if possible": [
     "Для %3$s буде створено розділ %1$s розміром %2$s, якщо це можливо"
   ],
@@ -256,11 +261,6 @@ export default {
   ],
   "Apply selected solution": [
     "Застосувати обране рішення"
-  ],
-  "Apply to the selected device": [
-    "Застосувати до %s обраного пристрою",
-    "Застосувати до %s обраних пристроїв",
-    "Застосувати до %s обраних пристроїв"
   ],
   "Applying changes": [
     "Застосування змін"
@@ -1356,9 +1356,6 @@ export default {
   "No": [
     "Ні"
   ],
-  "No DASD devices were found in this machine.": [
-    "На цій машині не виявлено жодних пристроїв DASD."
-  ],
   "No Wi-Fi networks were found": [
     "Мережі Wi-Fi не знайдені"
   ],
@@ -1650,6 +1647,9 @@ export default {
   "Registered": [
     "Зареєстровано"
   ],
+  "Registered without a code": [
+    "Зареєстровано без коду"
+  ],
   "Registration": [
     "Реєстрація"
   ],
@@ -1809,9 +1809,6 @@ export default {
   ],
   "Select device": [
     "Оберіть пристрій"
-  ],
-  "Select devices to enable bulk actions.": [
-    "Виберіть пристрої для виконання масових дій."
   ],
   "Select or enter a mount point": [
     "Виберіть або введіть точку монтування"
@@ -2237,12 +2234,6 @@ export default {
   "These are the settings for the product to install. The installer language can be adjusted via the [settings panel] accessible from the top bar.": [
     "Це налаштування для встановлюваного продукту. Мову програми встановлення можна змінити через [панель налаштувань], доступну на верхній панелі."
   ],
-  "This action could destroy any data stored on the device.": [
-    "Ця дія може знищити всі дані, що зберігаються на цьому пристрої."
-  ],
-  "This action could destroy any data stored on the devices listed below.": [
-    "Ця дія може призвести до знищення всіх даних, що зберігаються на перелічених нижче пристроях."
-  ],
   "This extension is not available on the server. Ask the server administrator to mirror the extension.": [
     "Це розширення недоступне на сервері. Попросіть адміністратора сервера віддзеркалити розширення."
   ],
@@ -2573,12 +2564,6 @@ export default {
   "[CAPS LOCK] is on": [
     "[CAPS LOCK] увімкнений"
   ],
-  "active": [
-    "активно"
-  ],
-  "all": [
-    "все"
-  ],
   "approx. %s": [
     "прибл. %s"
   ],
@@ -2603,29 +2588,17 @@ export default {
   "logical volume": [
     "логічний том"
   ],
-  "no": [
-    "ні"
-  ],
-  "offline": [
-    "офлайн"
-  ],
   "partition": [
     "розділ"
   ],
   "proposal.Device": [
     "proposal.Device"
   ],
-  "read_only": [
-    "тільки_читання"
-  ],
   "reset to defaults": [
     "скинути до типових налаштувань"
   ],
   "root": [
     "root"
-  ],
-  "yes": [
-    "так"
   ],
   "zFCP": [
     "zFCP"

@@ -56,6 +56,10 @@ export default {
   "%s with %d partitions": [
     "%s com %d partições"
   ],
+  "1 device selected. Use the actions toolbar to apply changes.": [
+    "",
+    ""
+  ],
   "A %1$s of %2$s will be created for %3$s if possible": [
     "Se possível, %1$s de %2$s será criado(a) para %3$s"
   ],
@@ -202,10 +206,6 @@ export default {
   ],
   "Apply selected solution": [
     "Aplicar a solução selecionada"
-  ],
-  "Apply to the selected device": [
-    "Aplicar ao dispositivo selecionado",
-    "Aplicar aos %s dispositivos selecionados"
   ],
   "Applying changes": [
     "Aplicando as alterações"
@@ -1139,9 +1139,6 @@ export default {
   "No": [
     "Não"
   ],
-  "No DASD devices were found in this machine.": [
-    "Nenhum dispositivo DASD encontrado nesta máquina."
-  ],
   "No Wi-Fi networks were found": [
     "Nenhuma rede Wi-Fi encontrada"
   ],
@@ -1517,9 +1514,6 @@ export default {
   ],
   "Select at least one disk.": [
     "Selecione pelo menos um disco."
-  ],
-  "Select devices to enable bulk actions.": [
-    "Selecionar dispositivos para habilitar ações em massa."
   ],
   "Select or enter a mount point": [
     "Selecionar ou inserir um ponto de montagem"
@@ -1899,12 +1893,6 @@ export default {
   "These are the settings for the product to install. The installer language can be adjusted via the [settings panel] accessible from the top bar.": [
     "Estas são as configurações do produto que será instalado. É possível ajustar o idioma do instalador no [painel de configurações] acessível na barra superior."
   ],
-  "This action could destroy any data stored on the device.": [
-    "Esta ação pode destruir quaisquer dados armazenados no dispositivo."
-  ],
-  "This action could destroy any data stored on the devices listed below.": [
-    "Esta ação pode destruir quaisquer dados armazenados nos dispositivos listados abaixo."
-  ],
   "This extension is not available on the server. Ask the server administrator to mirror the extension.": [
     "Esta extensão não está disponível no servidor. Peça que o administrador do sistema espelhe a extensão."
   ],
@@ -2208,12 +2196,6 @@ export default {
   "[CAPS LOCK] is on": [
     "[CAPS LOCK] ativado"
   ],
-  "active": [
-    "ativo"
-  ],
-  "all": [
-    "tudo"
-  ],
   "approx. %s": [
     "aprox. %s"
   ],
@@ -2238,26 +2220,14 @@ export default {
   "logical volume": [
     "volume lógico"
   ],
-  "no": [
-    "não"
-  ],
-  "offline": [
-    "offline"
-  ],
   "partition": [
     "partição"
-  ],
-  "read_only": [
-    "somente_leitura"
   ],
   "reset to defaults": [
     "redefinir aos padrões"
   ],
   "root": [
     ""
-  ],
-  "yes": [
-    "sim"
   ],
   "zFCP": [
     "zFCP"
