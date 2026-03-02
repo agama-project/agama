@@ -213,7 +213,9 @@ if [ $CHANGED -eq 1 ] || [ -n "$NEW_ARGS" ]; then
   for generator in /usr/lib/NetworkManager/nm-initrd-generator /usr/libexec/nm-initrd-generator; do
     if [ -x "$generator" ]; then
       $generator -- $CMDLINE
+      : >/run/NetworkManager/initrd/neednet
       break
     fi
   done
+
 fi

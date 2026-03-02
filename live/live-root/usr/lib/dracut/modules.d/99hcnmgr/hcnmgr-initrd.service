@@ -1,13 +1,14 @@
 [Unit]
 Description=Hybrid Cloud Network Manager
 DefaultDependencies=no
-After=systemd-udev-settle.service
+Wants=nm-initrd.service systemd-udev-trigger.service
+After=systemd-udev-trigger.service
 Before=dracut-initqueue.service nm-initrd.service
 ConditionPathExists=/proc/device-tree
 
 [Service]
 Type=oneshot
-ExecStart=/usr/bin/parse-hcnmgr.sh
+ExecStart=/bin/sh -c "/usr/bin/parse-hcnmgr.sh"
 SyslogIdentifier=hcnmgr-initrd
 StandardOutput=journal+console
 StandardError=journal+console
