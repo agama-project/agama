@@ -29,7 +29,6 @@ use async_trait::async_trait;
 use tokio::sync::oneshot;
 
 use crate::{
-    dbus::{try_from_string, StorageDBusClient},
     message,
     proxies::{self, BootloaderProxy, DASDProxy, ISCSIProxy, Storage1Proxy},
 };
@@ -41,9 +40,9 @@ pub enum Error {
     #[error(transparent)]
     DBus(#[from] zbus::Error),
     #[error(transparent)]
-    DBusClient(#[from] crate::dbus::Error),
-    #[error(transparent)]
     JSON(#[from] serde_json::Error),
+    #[error("Method not found: {0}")]
+    MethodNotFound(String),
 }
 
 /// Builds and starts the service.
@@ -71,7 +70,6 @@ impl Starter {
         let dasd_proxy = proxies::DASDProxy::new(&self.dbus).await?;
 
         let service = Service {
-            storage_dbus: StorageDBusClient::new(self.dbus),
             storage_proxy,
             bootloader_proxy,
             iscsi_proxy,
@@ -83,7 +81,6 @@ impl Starter {
 }
 
 pub struct Service {
-    storage_dbus: StorageDBusClient,
     storage_proxy: Storage1Proxy<'static>,
     bootloader_proxy: BootloaderProxy<'static>,
     iscsi_proxy: ISCSIProxy<'static>,
@@ -97,7 +94,17 @@ impl Actor for Service {
 #[async_trait]
 impl MessageHandler<message::CallAction> for Service {
     async fn handle(&mut self, message: message::CallAction) -> Result<(), Error> {
-        Ok(self.storage_dbus.call_action(message.action).await?)
+        match message.action.as_str() {
+            "Activate" => self.storage_proxy.activate().await?,
+            "Probe" => self.storage_proxy.probe().await?,
+            "Install" => self.storage_proxy.install().await?,
+            "Finish" => self.storage_proxy.finish().await?,
+            "Umount" => self.storage_proxy.umount().await?,
+            _ => {
+                return Err(Error::MethodNotFound(message.action));
+            }
+        }
+        Ok(())
     }
 }
 
@@ -173,14 +180,18 @@ impl MessageHandler<message::SolveConfigModel> for Service {
         &mut self,
         message: message::SolveConfigModel,
     ) -> Result<Option<serde_json::Value>, Error> {
-        Ok(self.storage_dbus.solve_config_model(message.model).await?)
+        let raw_json = self
+            .storage_proxy
+            .solve_config_model(&message.model.to_string())
+            .await?;
+        Ok(try_from_string(&raw_json)?)
     }
 }
 
 #[async_trait]
 impl MessageHandler<message::SetLocale> for Service {
     async fn handle(&mut self, message: message::SetLocale) -> Result<(), Error> {
-        Ok(self.storage_dbus.set_locale(message.locale).await?)
+        Ok(self.storage_proxy.set_locale(&message.locale).await?)
     }
 }
 
@@ -190,10 +201,13 @@ impl MessageHandler<message::SetStorageConfig> for Service {
         &mut self,
         message: message::SetStorageConfig,
     ) -> Result<BoxFuture<Result<(), Error>>, Error> {
-        let client = self.storage_dbus.clone();
+        let proxy = self.storage_proxy.clone();
         let result = run_in_background(async move {
             let product = message.product.read().await;
-            client.set_storage_config(&product, message.config).await?;
+            let product_json = serde_json::to_string(&*product)?;
+            let config = message.config.filter(|c| c.has_value());
+            let config_json = serde_json::to_string(&config)?;
+            proxy.set_config(&product_json, &config_json).await?;
             Ok(())
         });
         Ok(Box::pin(async move {
@@ -218,8 +232,8 @@ impl MessageHandler<message::GetBootloaderConfig> for Service {
 #[async_trait]
 impl MessageHandler<message::SetBootloaderConfig> for Service {
     async fn handle(&mut self, message: message::SetBootloaderConfig) -> Result<(), Error> {
-        self.storage_dbus
-            .set_bootloader_config(message.config)
+        self.bootloader_proxy
+            .set_config(&message.config.to_string())
             .await?;
         Ok(())
     }
@@ -310,4 +324,16 @@ where
         _ = tx.send(result);
     });
     rx
+}
+
+/// Converts a string into a Value.
+///
+/// If the string is "null", return the default value.
+fn try_from_string<T: serde::de::DeserializeOwned + Default>(raw_json: &str) -> Result<T, Error> {
+    let json: serde_json::Value = serde_json::from_str(raw_json)?;
+    if json.is_null() {
+        return Ok(T::default());
+    }
+    let value = serde_json::from_value(json)?;
+    Ok(value)
 }

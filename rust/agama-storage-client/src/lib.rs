@@ -28,5 +28,4 @@ pub use service::{Error, Service};
 
 pub mod message;
 
-mod dbus;
 pub mod proxies;
