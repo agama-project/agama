@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Mar  2 23:06:08 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Add visual feedback on table row hover and focues
+  (gh#agama-project/agama#3233).
+
+-------------------------------------------------------------------
 Fri Feb 27 23:00:35 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Do not reset the configuration on product selection (bsc#1258032).
