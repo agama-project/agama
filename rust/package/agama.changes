@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Mar  2 12:20:15 UTC 2026 - Michal Filka <mfilka@suse.com>
+
+- bsc#1258416
+  - when user cannot be added into wheel group after creation
+    ignore that and do not end with an error 
+
+-------------------------------------------------------------------
 Thu Feb 26 16:44:32 UTC 2026 - David Diaz <dgonzalez@suse.com>
 
 - Add schema for DASD config (gh#agama-project/agama#3143).
