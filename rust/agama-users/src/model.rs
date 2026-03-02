@@ -190,8 +190,8 @@ impl Model {
         Ok(())
     }
 
-    /// Add user into the wheel group on best efford basis.
-    /// If the group doesn't exist, ignore it.
+    /// Add user into the wheel group on best effort basis.
+    /// If the group doesn't exist, log the error and continue.
     fn set_user_group(&self, user_name: &str) -> Result<(), service::Error> {
         let usermod = ChrootCommand::new(self.install_dir.clone())?
             .cmd("usermod")

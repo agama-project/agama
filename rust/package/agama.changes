@@ -3,8 +3,8 @@ Mon Mar  2 12:20:15 UTC 2026 - Michal Filka <mfilka@suse.com>
 
 - bsc#1258416
   - when user cannot be added into wheel group after creation
-    ignore that so the rest of user configuration, e.g. setting
-    password is done.
+    just log the error so the rest of user configuration, e.g.
+    setting password is done.
 
 -------------------------------------------------------------------
 Thu Feb 26 16:44:32 UTC 2026 - David Diaz <dgonzalez@suse.com>
