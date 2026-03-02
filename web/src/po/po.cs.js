@@ -81,6 +81,11 @@ export default {
   "(step %s of %s)": [
     "(krok %s z %s)"
   ],
+  "1 device selected. Use the actions toolbar to apply changes.": [
+    "",
+    "",
+    ""
+  ],
   "A %1$s of %2$s will be created for %3$s if possible": [
     "Pokud to je možné, bude vytvořeno %1$s o velikosti %2$s pro %3$s"
   ],
@@ -2042,17 +2047,8 @@ export default {
   "logical volume": [
     "logický svazek"
   ],
-  "no": [
-    "ne"
-  ],
-  "offline": [
-    "offline"
-  ],
   "partition": [
     "oddíl"
-  ],
-  "read_only": [
-    "pouze_čtení"
   ],
   "reset to defaults": [
     "Obnovit výchozí nastavení"

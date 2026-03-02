@@ -69,6 +69,10 @@ export default {
   "(step %s of %s)": [
     "(vaihe %s/%s)"
   ],
+  "1 device selected. Use the actions toolbar to apply changes.": [
+    "",
+    ""
+  ],
   "A %1$s of %2$s will be created for %3$s if possible": [
     "%1$s / %2$s tullaan luomaan kohteelle %3$s jos mahdollista"
   ],
@@ -215,10 +219,6 @@ export default {
   ],
   "Apply selected solution": [
     "Toteuta valittu ratkaisu"
-  ],
-  "Apply to the selected device": [
-    "Toteuta valitulle laitteelle",
-    "Toteuta valituille %s laitteelle"
   ],
   "Applying changes": [
     "Toteutetaan muutoksia"
@@ -1174,9 +1174,6 @@ export default {
   "No": [
     "Ei"
   ],
-  "No DASD devices were found in this machine.": [
-    "DASD-laitteita ei löydy tältä koneelta."
-  ],
   "No Wi-Fi networks were found": [
     "Wi-Fi-verkkoja ei löydy"
   ],
@@ -1571,9 +1568,6 @@ export default {
   "Select at least one disk.": [
     "Valitse vähintään yksi levy."
   ],
-  "Select devices to enable bulk actions.": [
-    "Valitse laitteita massatoimintojen toteuttamiseen."
-  ],
   "Select or enter a mount point": [
     "Valitse tai syötä liitoskohta"
   ],
@@ -1958,12 +1952,6 @@ export default {
   "These are the settings for the product to install. The installer language can be adjusted via the [settings panel] accessible from the top bar.": [
     "Nämä ovat asennettavan tuotteen asetukset. Asennusohjelman kieltä voi muuttaa yläpalkin [asetuspaneelista]."
   ],
-  "This action could destroy any data stored on the device.": [
-    "Tämä toiminto voi tuhota kaikki laitteelle tallennetut tiedot."
-  ],
-  "This action could destroy any data stored on the devices listed below.": [
-    "Tämä toiminto voi tuhota kaikki alla luetelluille laitteille tallennetut tiedot."
-  ],
   "This extension is not available on the server. Ask the server administrator to mirror the extension.": [
     "Tämä laajennus ei ole saatavilla palvelimella. Pyydä palvelimen ylläpitoa peilaamaan laajennus."
   ],
@@ -2288,12 +2276,6 @@ export default {
   "[CAPS LOCK] is on": [
     "[CAPS LOCK] on päällä"
   ],
-  "active": [
-    "aktiivinen"
-  ],
-  "all": [
-    "kaikki"
-  ],
   "approx. %s": [
     "noin %s"
   ],
@@ -2318,29 +2300,17 @@ export default {
   "logical volume": [
     "looginen taltio"
   ],
-  "no": [
-    "ei"
-  ],
-  "offline": [
-    "poiskytketty"
-  ],
   "partition": [
     "osio"
   ],
   "proposal.Device": [
     "ehdotus.Laite"
   ],
-  "read_only": [
-    "vain_luku"
-  ],
   "reset to defaults": [
     "palauta oletuksiin"
   ],
   "root": [
     ""
-  ],
-  "yes": [
-    "kyllä"
   ],
   "zFCP": [
     "zFCP"
