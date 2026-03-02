@@ -117,7 +117,7 @@ impl Model {
 
         let useradd = ChrootCommand::new(self.install_dir.clone())?
             .cmd("useradd")
-            .args(["-G", "wheel", user_name])
+            .args([user_name])
             .output()?;
 
         if !useradd.status.success() {
@@ -128,8 +128,9 @@ impl Model {
             )));
         }
 
+        self.set_user_group(user_name);
         self.set_user_password(user_name, user_password)?;
-        self.update_user_fullname(user)
+        self.update_user_fullname(user);
     }
 
     /// Reads root's data from given config and updates root setup accordingly
@@ -184,6 +185,24 @@ impl Model {
                 "Cannot set password for user {}: {}",
                 user_name, passwd.status
             )));
+        }
+
+        Ok(())
+    }
+
+    /// Add user into the wheel group on best efford basis.
+    /// If the group doesn't exist, ignore it.
+    fn set_user_group(&self, user_name: &str) -> Result<()> {
+        let usermod = ChrootCommand::new(self.install_dir.clone())?
+            .cmd("usermod")
+            .args(["-a", "-G", "wheel", user_name]);
+
+        if !usermod.status.success() {
+            tracing::warning!(
+                "Adding user {} into the \"wheel\" group failed, code={}",
+                user_name,
+                usermod.status
+            );
         }
 
         Ok(())
