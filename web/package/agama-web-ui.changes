@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Mon Mar  2 15:59:09 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Restores DASD format progress with API v2 event model
+  (gh#agama-project/agama#3143).
+- Improves progress backdrop layout and readbility
+  (gh#agama-project/agama#2947).
+
+-------------------------------------------------------------------
 Fri Feb 27 14:39:08 UTC 2026 - David Diaz <dgonzalez@suse.com>
 
 - Do not show empty software page (related to bsc#1258922).
