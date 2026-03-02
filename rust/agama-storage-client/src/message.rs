@@ -22,13 +22,16 @@ use std::sync::Arc;
 
 use agama_utils::{
     actor::Message,
-    api::{bootloader, iscsi, storage::Config, Issue},
+    api::{bootloader, storage::Config, Issue},
     products::ProductSpec,
     BoxFuture,
 };
 use tokio::sync::RwLock;
 
 use crate::service;
+
+pub mod dasd;
+pub mod iscsi;
 
 pub struct CallAction {
     pub action: String,
@@ -153,77 +156,5 @@ impl SetLocale {
 }
 
 impl Message for SetLocale {
-    type Reply = ();
-}
-
-pub struct ISCSIDiscover {
-    pub config: iscsi::DiscoverConfig,
-}
-
-impl ISCSIDiscover {
-    pub fn new(config: iscsi::DiscoverConfig) -> Self {
-        Self { config }
-    }
-}
-
-impl Message for ISCSIDiscover {
-    type Reply = u32;
-}
-
-pub struct ISCSIGetSystem;
-
-impl Message for ISCSIGetSystem {
-    type Reply = Option<serde_json::Value>;
-}
-
-pub struct ISCSIGetConfig;
-
-impl Message for ISCSIGetConfig {
-    type Reply = Option<iscsi::Config>;
-}
-
-pub struct ISCSISetConfig {
-    pub config: Option<iscsi::Config>,
-}
-
-impl ISCSISetConfig {
-    pub fn new(config: Option<iscsi::Config>) -> Self {
-        Self { config }
-    }
-}
-
-impl Message for ISCSISetConfig {
-    type Reply = ();
-}
-
-pub struct DASDProbe;
-
-impl Message for DASDProbe {
-    type Reply = ();
-}
-
-pub struct DASDGetSystem;
-
-impl Message for DASDGetSystem {
-    type Reply = Option<serde_json::Value>;
-}
-
-pub struct DASDGetConfig;
-
-impl Message for DASDGetConfig {
-    type Reply = Option<agama_utils::api::RawConfig>;
-}
-
-pub struct DASDSetConfig {
-    pub config: Option<agama_utils::api::RawConfig>,
-}
-
-impl DASDSetConfig {
-    pub fn new(config: Option<agama_utils::api::RawConfig>) -> Self {
-        Self { config }
-    }
-}
-
-impl Message for DASDSetConfig {
     type Reply = ();
 }

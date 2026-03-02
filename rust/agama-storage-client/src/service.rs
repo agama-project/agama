@@ -226,18 +226,18 @@ impl MessageHandler<message::SetBootloaderConfig> for Service {
 }
 
 #[async_trait]
-impl MessageHandler<message::ISCSIDiscover> for Service {
-    async fn handle(&mut self, message: message::ISCSIDiscover) -> Result<u32, Error> {
+impl MessageHandler<message::iscsi::Discover> for Service {
+    async fn handle(&mut self, message: message::iscsi::Discover) -> Result<u32, Error> {
         let options = serde_json::to_string(&message.config)?;
         Ok(self.iscsi_proxy.discover(&options).await?)
     }
 }
 
 #[async_trait]
-impl MessageHandler<message::ISCSIGetSystem> for Service {
+impl MessageHandler<message::iscsi::GetSystem> for Service {
     async fn handle(
         &mut self,
-        _message: message::ISCSIGetSystem,
+        _message: message::iscsi::GetSystem,
     ) -> Result<Option<serde_json::Value>, Error> {
         let raw_json = self.iscsi_proxy.iscsi_system().await?;
         Ok(try_from_string(&raw_json)?)
@@ -245,10 +245,10 @@ impl MessageHandler<message::ISCSIGetSystem> for Service {
 }
 
 #[async_trait]
-impl MessageHandler<message::ISCSIGetConfig> for Service {
+impl MessageHandler<message::iscsi::GetConfig> for Service {
     async fn handle(
         &mut self,
-        _message: message::ISCSIGetConfig,
+        _message: message::iscsi::GetConfig,
     ) -> Result<Option<iscsi::Config>, Error> {
         let raw_json = self.iscsi_proxy.config().await?;
         Ok(try_from_string(&raw_json)?)
@@ -256,25 +256,25 @@ impl MessageHandler<message::ISCSIGetConfig> for Service {
 }
 
 #[async_trait]
-impl MessageHandler<message::ISCSISetConfig> for Service {
-    async fn handle(&mut self, message: message::ISCSISetConfig) -> Result<(), Error> {
+impl MessageHandler<message::iscsi::SetConfig> for Service {
+    async fn handle(&mut self, message: message::iscsi::SetConfig) -> Result<(), Error> {
         let config = serde_json::to_string(&message.config)?;
         Ok(self.iscsi_proxy.set_config(&config).await?)
     }
 }
 
 #[async_trait]
-impl MessageHandler<message::DASDProbe> for Service {
-    async fn handle(&mut self, _message: message::DASDProbe) -> Result<(), Error> {
+impl MessageHandler<message::dasd::Probe> for Service {
+    async fn handle(&mut self, _message: message::dasd::Probe) -> Result<(), Error> {
         Ok(self.dasd_proxy.probe().await?)
     }
 }
 
 #[async_trait]
-impl MessageHandler<message::DASDGetSystem> for Service {
+impl MessageHandler<message::dasd::GetSystem> for Service {
     async fn handle(
         &mut self,
-        _message: message::DASDGetSystem,
+        _message: message::dasd::GetSystem,
     ) -> Result<Option<serde_json::Value>, Error> {
         let raw_json = self.dasd_proxy.dasd_system().await?;
         Ok(try_from_string(&raw_json)?)
@@ -282,10 +282,10 @@ impl MessageHandler<message::DASDGetSystem> for Service {
 }
 
 #[async_trait]
-impl MessageHandler<message::DASDGetConfig> for Service {
+impl MessageHandler<message::dasd::GetConfig> for Service {
     async fn handle(
         &mut self,
-        _message: message::DASDGetConfig,
+        _message: message::dasd::GetConfig,
     ) -> Result<Option<agama_utils::api::RawConfig>, Error> {
         let raw_json = self.dasd_proxy.config().await?;
         Ok(try_from_string(&raw_json)?)
@@ -293,8 +293,8 @@ impl MessageHandler<message::DASDGetConfig> for Service {
 }
 
 #[async_trait]
-impl MessageHandler<message::DASDSetConfig> for Service {
-    async fn handle(&mut self, message: message::DASDSetConfig) -> Result<(), Error> {
+impl MessageHandler<message::dasd::SetConfig> for Service {
+    async fn handle(&mut self, message: message::dasd::SetConfig) -> Result<(), Error> {
         let config = serde_json::to_string(&message.config)?;
         Ok(self.dasd_proxy.set_config(&config).await?)
     }

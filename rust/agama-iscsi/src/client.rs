@@ -68,7 +68,7 @@ impl ISCSIClient for Client {
     async fn discover(&self, config: DiscoverConfig) -> Result<DiscoverResult, Error> {
         let result = self
             .storage_dbus
-            .call(message::ISCSIDiscover::new(config))
+            .call(message::iscsi::Discover::new(config))
             .await?;
         match result {
             0 => Ok(DiscoverResult::Success),
@@ -77,16 +77,16 @@ impl ISCSIClient for Client {
     }
 
     async fn get_system(&self) -> Result<Option<Value>, Error> {
-        Ok(self.storage_dbus.call(message::ISCSIGetSystem).await?)
+        Ok(self.storage_dbus.call(message::iscsi::GetSystem).await?)
     }
 
     async fn get_config(&self) -> Result<Option<Config>, Error> {
-        Ok(self.storage_dbus.call(message::ISCSIGetConfig).await?)
+        Ok(self.storage_dbus.call(message::iscsi::GetConfig).await?)
     }
 
     async fn set_config(&self, config: Option<Config>) -> Result<(), Error> {
         self.storage_dbus
-            .call(message::ISCSISetConfig::new(config))
+            .call(message::iscsi::SetConfig::new(config))
             .await?;
         Ok(())
     }

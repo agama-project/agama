@@ -60,20 +60,20 @@ impl Client {
 #[async_trait]
 impl DASDClient for Client {
     async fn probe(&self) -> Result<(), Error> {
-        Ok(self.storage_dbus.call(message::DASDProbe).await?)
+        Ok(self.storage_dbus.call(message::dasd::Probe).await?)
     }
 
     async fn get_system(&self) -> Result<Option<Value>, Error> {
-        Ok(self.storage_dbus.call(message::DASDGetSystem).await?)
+        Ok(self.storage_dbus.call(message::dasd::GetSystem).await?)
     }
 
     async fn get_config(&self) -> Result<Option<RawConfig>, Error> {
-        Ok(self.storage_dbus.call(message::DASDGetConfig).await?)
+        Ok(self.storage_dbus.call(message::dasd::GetConfig).await?)
     }
 
     async fn set_config(&self, config: Option<RawConfig>) -> Result<(), Error> {
         self.storage_dbus
-            .call(message::DASDSetConfig::new(config))
+            .call(message::dasd::SetConfig::new(config))
             .await?;
         Ok(())
     }
