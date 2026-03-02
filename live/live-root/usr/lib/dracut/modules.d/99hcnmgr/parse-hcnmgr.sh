@@ -2,6 +2,8 @@
 
 type getargs >/dev/null 2>&1 || . /lib/dracut-lib.sh
 
+info "parse-hcnmgr: starting"
+
 xdump4() {
   hexdump -n 4 -ve '/1 "%02x"' "$1"
 }
@@ -55,9 +57,12 @@ if [ -d /proc/device-tree ]; then
 fi
 
 if [ -z "$MAPPINGS" ]; then
+  info "parse-hcnmgr: no mappings found"
   # Use return if sourced (like in a dracut hook), or exit if executed directly
   [ "$0" = "/init" ] || [ "$0" = "/lib/dracut/dracut-initqueue.sh" ] && return 0 || exit 0
 fi
+
+info "parse-hcnmgr: mappings found:$MAPPINGS"
 
 # We might not have CMDLINE variable exported if it's an older dracut, so let's check
 if [ -z "$CMDLINE" ]; then
@@ -69,6 +74,8 @@ HNV_IP=$(getargs hnv.ip)
 
 HNV_ROUTE=$(getargs hnv.route)
 [ -z "$HNV_ROUTE" ] && HNV_ROUTE=$(getargs hvn.route)
+
+info "parse-hcnmgr: HNV_IP=$HNV_IP HNV_ROUTE=$HNV_ROUTE"
 
 NEW_ARGS=""
 MOD_CMDLINE="$CMDLINE"
@@ -203,6 +210,7 @@ for BONDNAME in $BOND_NAMES; do
 done
 
 if [ $CHANGED -eq 1 ] || [ -n "$NEW_ARGS" ]; then
+  info "parse-hcnmgr: writing /etc/cmdline.d/99-hcnmgr.conf with $NEW_ARGS"
   # Write to cmdline.d
   echo "$NEW_ARGS" >/etc/cmdline.d/99-hcnmgr.conf
 
@@ -212,7 +220,9 @@ if [ $CHANGED -eq 1 ] || [ -n "$NEW_ARGS" ]; then
   # Call nm-initrd-generator
   for generator in /usr/lib/NetworkManager/nm-initrd-generator /usr/libexec/nm-initrd-generator; do
     if [ -x "$generator" ]; then
+      info "parse-hcnmgr: calling $generator"
       $generator -- $CMDLINE
+      mkdir -p /run/NetworkManager/initrd
       : >/run/NetworkManager/initrd/neednet
       break
     fi
