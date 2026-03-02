@@ -1,4 +1,14 @@
 -------------------------------------------------------------------
+Fri Feb 27 23:00:35 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Do not reset the configuration on product selection (bsc#1258032).
+
+-------------------------------------------------------------------
+Fri Feb 27 14:39:08 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Do not show empty software page (related to bsc#1258922).
+
+-------------------------------------------------------------------
 Thu Feb 26 16:43:44 UTC 2026 - David Diaz <dgonzalez@suse.com>
 
 - Restore the interface for managing DASD in the web client
