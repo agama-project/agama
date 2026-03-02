@@ -13,6 +13,11 @@ icon: MicroOS.svg
 # Do not manually change any translations! See README.md for more details.
 translations:
   description:
+    bg: Бърза, лека дистрибуция проектирана за хостинг на контейнери с
+      автоматизирана администрация и коригиране. openSUSE MicroOS предоставя
+      транзакционни (атомични) обновления върху btrf root файлова система, която
+      е само за четене. Като дистрибуция с непрекъснато актуализиране, софтуерът
+      е винаги актуален.
     ca: Una distribució ràpida i petita dissenyada per allotjar càrregues de treball
       de contenidors amb administració i pedaços automatitzats. L'openSUSE
       MicroSO proporciona actualitzacions transaccionals (atòmiques) en un
@@ -29,6 +34,11 @@ translations:
       (atomare) Aktualisierungen auf einem schreibgeschützten
       btrfs-Wurzeldateisystem. Als Distribution mit rollierenden
       Veröffentlichungen ist die Software immer auf dem neuesten Stand.
+    el: Μια γρήγορη, μικρή διανομή σχεδιασμένη για τη φιλοξενία φορτίων εργασίας
+      container με αυτοματοποιημένη διαχείριση και διόρθωση σφαλμάτων. Το
+      openSUSE MicroOS παρέχει δοσοληπτικές (ατομικές) ενημερώσεις πάνω σε ένα
+      root σύστημα αρχείων btrfs μόνο για ανάγνωση. Ως rolling release διανομή,
+      το λογισμικό είναι πάντα ενημερωμένο.
     es: Una distribución pequeña y rápida diseñada para alojar cargas de trabajo de
       contenedores con administración y parches automatizados. openSUSE MicroOS
       proporciona actualizaciones transaccionales (atómicas) en un sistema de

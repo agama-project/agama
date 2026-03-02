@@ -29,6 +29,11 @@ translations:
       Abgestimmt auf SAP-Bereitstellungen, ist SUSE Linux Enterprise Server for
       SAP applications zukunftssicher, bietet unterbrechungsfreien
       Geschäftsbetrieb und minimiert betriebliche Risiken und Kosten.
+    el: Το κορυφαίο ΛΣ για μια ασφαλή και αξιόπιστη πλατφόρμα SAP. Εγκεκριμένο για
+      υλοποιήσεις SAP, το SUSE Linux Enterprise Server για εφαρμογές SAP
+      θωρακίζει μελλοντικά το έργο SAP, προσφέρει αδιάλειπτη επιχειρηματική
+      δραστηριότητα και ελαχιστοποιεί τους λειτουργικούς κινδύνους και το
+      κόστος.
     es: El sistema operativo líder para una plataforma SAP segura y fiable. SUSE
       Linux Enterprise Server for SAP applications está recomendado para
       implantaciones SAP, ya que prepara el proyecto SAP para el futuro, ofrece
@@ -78,18 +83,22 @@ translations:
   mode:
     standard:
       name:
+        bg: Стандартен
         ca: Estàndard
         cs: Standardní
         de: Standard
+        el: Τυπικό
         id: Standar
         ja: 標準
         kab: Tizeɣt
         ru: Стандартный
         uk: Стандартна
       description:
+        bg: Стандартна система
         ca: Sistema estàndard
         cs: Standardní systém
         de: Standardsystem
+        el: Τυπικό σύστημα
         id: Sistem standar
         ja: 標準システム
         kab: Anagraw n tizeɣt
@@ -97,17 +106,21 @@ translations:
         uk: Стандартна система
     immutable:
       name:
+        bg: Неизменен
         ca: Immutable
         cs: Neměnitelný
         de: Unveränderlich
+        el: Αμετάβλητο
         id: Immutable
         ja: 不変型
         ru: Неизменяемый
         uk: Незмінний
       description:
+        bg: Неизменима система със атомични обновления
         ca: Sistema immutable amb actualitzacions atòmiques
         cs: Neměnitelný systém s atomickými aktualizacemi
         de: Unveränderliches System mit atomaren Aktualisierungen
+        el: Αμετάβλητο σύστημα με ατομικές ενημερώσεις
         id: Sistem immutable dengan pembaruan atomik
         ja: 不可分な更新機能を持つ不変型システム
         ru: Неизменяемая система с атомарными обновлениями
