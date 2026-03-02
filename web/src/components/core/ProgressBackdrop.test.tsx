@@ -85,7 +85,7 @@ describe("ProgressBackdrop", () => {
       });
     });
 
-    it("shows 'Refreshing data...' message temporarily", async () => {
+    it("shows 'Refreshing data...' message temporarily by default", async () => {
       // Start with active progress
       mockProgresses([
         {
@@ -113,6 +113,33 @@ describe("ProgressBackdrop", () => {
 
       // Should start tracking queries
       expect(mockStartTracking).toHaveBeenCalled();
+    });
+
+    it("shows custom `waitingLabel` when provided", async () => {
+      mockProgresses([
+        {
+          scope: "storage",
+          step: "Calculating proposal",
+          steps: ["Calculating proposal"],
+          index: 1,
+          size: 1,
+        },
+      ]);
+
+      const { rerender } = installerRender(
+        <ProgressBackdrop scope="storage" waitingLabel="Applying storage settings..." />,
+      );
+
+      const backdrop = screen.getByRole("alert", { name: /Calculating proposal/ });
+
+      mockProgresses([]);
+      rerender(<ProgressBackdrop scope="storage" waitingLabel="Applying storage settings..." />);
+
+      await waitFor(() => {
+        within(backdrop).getByText(/Applying storage settings/);
+      });
+
+      expect(within(backdrop).queryByText(/Refreshing data/)).toBeNull();
     });
 
     it("hides backdrop after queries are refetched", async () => {

@@ -88,6 +88,16 @@ export type ProgressBackdropProps = {
    * <ProgressBackdrop scope="dasd" extraContent={<DASDFormatProgress />} />
    */
   extraContent?: React.ReactNode;
+  /**
+   * Label displayed when no active progress step is available but the backdrop
+   * is still visible because queries have not finished refetching yet.
+   *
+   * Defaults to `"Refreshing data..."` if not provided.
+   *
+   * @example
+   * <ProgressBackdrop scope="storage" waitingLabel={_("Applying changes...")} />
+   */
+  waitingLabel?: string;
 };
 
 /**
@@ -109,6 +119,9 @@ export default function ProgressBackdrop({
   scope,
   ensureRefetched,
   extraContent,
+  // TRANSLATORS: Message shown next to a spinner while the UI is being updated
+  // after an operation has completed.
+  waitingLabel = _("Refreshing data..."),
 }: ProgressBackdropProps): React.ReactNode {
   const { loading: isBlocked, progress } = useProgressTracking(
     scope,
@@ -163,7 +176,7 @@ export default function ProgressBackdrop({
                         </small>
                       </>
                     ) : (
-                      <>{_("Refreshing data...")}</>
+                      <>{waitingLabel}</>
                     )}
                   </FlexItem>
                 </Flex>
