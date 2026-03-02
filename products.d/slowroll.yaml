@@ -13,6 +13,10 @@ icon: Slowroll.svg
 # Do not manually change any translations! See README.md for more details.
 translations:
   description:
+    bg: Експериментална и малко по-бавна версия с непрекъснато обновяване на
+      openSUSE проектирана за по-редки актуализации от Tumbleweed, но по-често
+      от Leap, без нуждата потребителите да избират между "стабилност" и по-нови
+      пакети.
     ca: Una versió experimental d'openSUSE però lleugerament més lenta quant a la
       continuïtat, dissenyada per actualitzar-se amb menys freqüència que el
       Tumbleweed però més sovint que el Leap, sense obligar els usuaris a triar
@@ -25,6 +29,10 @@ translations:
       darauf ausgelegt ist, weniger häufig als Tumbleweed, aber häufiger als
       Leap zu aktualisieren, ohne die Benutzer zu zwingen, zwischen „stabilen“
       und neueren Paketen zu wählen.
+    el: Μια πειραματική και ελαφρώς πιο αργή rolling release έκδοση του openSUSE,
+      σχεδιασμένη να ενημερώνεται λιγότερο συχνά από το Tumbleweed αλλά
+      συχνότερα από το Leap, χωρίς να αναγκάζει τους χρήστες να επιλέξουν μεταξύ
+      «σταθερών» και νεότερων πακέτων.
     es: Una versión experimental y de actualización contínua ligeramente más lenta
       de openSUSE, diseñada para actualizarse con menos frecuencia que
       Tumbleweed pero más a menudo que Leap, sin obligar a los usuarios a elegir

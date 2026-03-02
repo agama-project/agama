@@ -12,6 +12,9 @@ icon: Kalpa.svg
 # Do not manually change any translations! See README.md for more details.
 translations:
   description:
+    bg: Неизменим софтуерен продукт с непрекъснато обновяване, използващ Plasma
+      Desktop, Flatpak за предоставяне на приложения, база от тип "само четене"
+      и автоматични и атомични актуализации на вашата система
     ca: Un producte d'escriptori immutable amb llançament continu, que usa
       l'escriptori Plasma, aprofita Flatpak per al lliurament d'aplicacions, una
       base de només lectura i actualitzacions automàtiques i atòmiques del
@@ -23,6 +26,10 @@ translations:
       den Plasma-Desktop und Flatpak für die Anwendungsbereitstellung nutzt,
       eine Basis mit ausschließlich Lesezugriff besitzt und atomare
       Aktualisierungen durchführt.
+    el: Ένα αμετάβλητο desktop προϊόν rolling release, που χρησιμοποιεί το Plasma
+      Desktop, αξιοποιεί το Flatpak για τη διάθεση εφαρμογών, διαθέτει μια βάση
+      μόνο για ανάγνωση, καθώς και αυτόματες και ατομικές ενημερώσεις του
+      συστήματός σας
     es: Un producto inmutable de escritorio de actualización continua, utilizando el
       Escritorio de Plasma, aprovechándose de Flatpak para la entrega de
       aplicaciones, una base de sólo lectura y actualizaciones automáticas y
