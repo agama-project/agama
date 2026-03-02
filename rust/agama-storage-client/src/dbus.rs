@@ -60,7 +60,7 @@ impl StorageDBusClient {
         product: &ProductSpec,
         config: Option<Config>,
     ) -> Result<(), Error> {
-        let product_json = serde_json::to_string(&*product)?;
+        let product_json = serde_json::to_string(&product)?;
         let config = config.filter(|c| c.has_value());
         let config_json = serde_json::to_string(&config)?;
         self.call("SetConfig", &(product_json, config_json)).await?;
@@ -102,7 +102,7 @@ fn try_from_message<T: serde::de::DeserializeOwned + Default>(
     message: Message,
 ) -> Result<T, Error> {
     let raw_json: String = message.body().deserialize()?;
-    Ok(try_from_string(&raw_json)?)
+    try_from_string(&raw_json)
 }
 
 /// Converts a string into a Value.
@@ -111,7 +111,7 @@ fn try_from_message<T: serde::de::DeserializeOwned + Default>(
 pub fn try_from_string<T: serde::de::DeserializeOwned + Default>(
     raw_json: &str,
 ) -> Result<T, Error> {
-    let json: serde_json::Value = serde_json::from_str(&raw_json)?;
+    let json: serde_json::Value = serde_json::from_str(raw_json)?;
     if json.is_null() {
         return Ok(T::default());
     }

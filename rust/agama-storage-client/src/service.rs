@@ -193,7 +193,7 @@ impl MessageHandler<message::SetStorageConfig> for Service {
         let client = self.storage_dbus.clone();
         let result = run_in_background(async move {
             let product = message.product.read().await;
-            client.set_storage_config(&*product, message.config).await?;
+            client.set_storage_config(&product, message.config).await?;
             Ok(())
         });
         Ok(Box::pin(async move {

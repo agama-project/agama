@@ -77,7 +77,7 @@ impl Starter {
                 Box::new(Client::new(storage_dbus).await?)
             }
         };
-        let service = Service { client: client };
+        let service = Service { client };
         let handler = actor::spawn(service);
         Ok(handler)
     }
