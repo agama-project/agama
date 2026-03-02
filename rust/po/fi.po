@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-02-19 16:43+0000\n"
+"POT-Creation-Date: 2026-02-25 13:04+0000\n"
 "PO-Revision-Date: 2026-01-26 20:04+0000\n"
 "Last-Translator: Timo Jyrinki <tjyrinki@suse.com>\n"
 "Language-Team: Finnish <https://l10n.opensuse.org/projects/agama/agama-rust-"
@@ -107,16 +107,16 @@ msgstr "Kirjoitetaan asetuksia"
 msgid "Reading configuration"
 msgstr "Luetaan asetuksia"
 
-#: agama-security/src/service.rs:228
+#: agama-security/src/service.rs:226
 msgid "Reject"
 msgstr "Hylkää"
 
-#: agama-security/src/service.rs:228
+#: agama-security/src/service.rs:226
 #: agama-software/src/callbacks/security.rs:109
 msgid "Trust"
 msgstr "Luota"
 
-#: agama-security/src/service.rs:229
+#: agama-security/src/service.rs:227
 msgid ""
 "Trying to import a self-signed certificate. Do you want to trust it and "
 "register the product?"
@@ -156,25 +156,33 @@ msgstr ""
 msgid "Skip"
 msgstr "Ohita tämä kohta"
 
-#: agama-software/src/zypp_server.rs:304
+#: agama-software/src/zypp_server.rs:317
 msgid "Updating the list of repositories"
 msgstr "Päivitetään ohjelmalähteiden luetteloa"
 
-#: agama-software/src/zypp_server.rs:305
+#: agama-software/src/zypp_server.rs:318
 msgid "Refreshing metadata from the repositories"
 msgstr "Päivitetään metatietoja ohjelmalähteistä"
 
-#: agama-software/src/zypp_server.rs:306
+#: agama-software/src/zypp_server.rs:319
 msgid "Calculating the software proposal"
 msgstr "Lasketaan ohjelmistoehdotusta"
 
-#: agama-software/src/zypp_server.rs:309
+#: agama-software/src/zypp_server.rs:322
 msgid "Registering the system"
 msgstr "Rekisteröidään järjestelmää"
 
-#: agama-software/src/zypp_server.rs:409
+#: agama-software/src/zypp_server.rs:420
 msgid "The product must be registered"
 msgstr "Tuote tulaa olla rekisteröity"
+
+#: agama-software/src/zypp_server.rs:458
+msgid "There are conflicts in software selection"
+msgstr ""
+
+#: agama-software/src/zypp_server.rs:471
+msgid "There are software conflict in software selection"
+msgstr ""
 
 #: agama-users/src/service.rs:140
 msgid ""
