@@ -58,7 +58,6 @@ module Agama
           @serialized_issues = serialize_issues
           @serialized_bootloader_config = serialize_bootloader_config
           register_progress_callbacks
-          add_s390_interfaces if Yast::Arch.s390
         end
 
         dbus_interface "org.opensuse.Agama.Storage1" do
@@ -512,12 +511,6 @@ module Agama
           volumes.map do |vol|
             Agama::Storage::VolumeConversions::ToJSON.new(vol).convert
           end
-        end
-
-        def add_s390_interfaces
-          require "agama/dbus/storage/interfaces/zfcp_manager"
-          singleton_class.include Interfaces::ZFCPManager
-          register_zfcp_callbacks
         end
 
         # @return [Agama::Storage::Proposal]

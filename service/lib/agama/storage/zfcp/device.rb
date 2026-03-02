@@ -19,53 +19,54 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "yast2/equatable"
-
 module Agama
   module Storage
     module ZFCP
-      # zFCP controller
-      class Controller
+      # zFCP device.
+      class Device
         # zFCP controller channel id
         #
         # @return [String]
         attr_reader :channel
 
-        # @see #active?
+        # zFCP WWPN
+        #
+        # @return [String]
+        attr_reader :wwpn
+
+        # zFCP LUN
+        #
+        # @return [String]
+        attr_reader :lun
+
+        # Device name.
+        #
+        # @return [String, nil] e.g., "/dev/sda", nil if no active yet.
+        attr_accessor :device_name
+
+        # Whether the LUN is active.
         #
         # @return [Boolean]
         attr_writer :active
 
-        # @see #lun_scan?
-        #
-        # @return [Boolean]
-        attr_writer :lun_scan
-
-        # Available WWPNs for the controller.
-        #
-        # @return [Array<String>]
-        attr_accessor :wwpns
-
-        # Constructor
-        #
         # @param channel [String]
-        def initialize(channel)
+        # @param wwpn [String]
+        # @param lun [String]
+        def initialize(channel, wwpn, lun)
           @channel = channel
-          @wwpns = []
+          @wwpn = wwpn
+          @lun = lun
+          @active = false
         end
 
-        # Whether the controller is active
-        #
         # @return [Boolean]
         def active?
-          !!@active
+          @active
         end
 
-        # Whether the controller is automatically scanning LUNs
-        #
-        # @return [Booelan]
-        def lun_scan?
-          !!@lun_scan
+        # @return [String]
+        def to_s
+          "#{channel} #{wwpn} #{lun}"
         end
       end
     end

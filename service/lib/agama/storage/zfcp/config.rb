@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2023] SUSE LLC
+# Copyright (c) [2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -19,48 +19,24 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "yast2/equatable"
-
 module Agama
   module Storage
     module ZFCP
-      # zFCP disk
-      class Disk
-        include Yast2::Equatable
-
-        # Device name
+      # zFCP config.
+      class Config
+        # List of channels to activate.
         #
-        # @return [String] e.g., "/dev/sda"
-        attr_reader :name
+        # @return [Array<String>]
+        attr_accessor :controllers
 
-        # zFCP controller channel id
+        # List of devices.
         #
-        # @return [String]
-        attr_reader :channel
+        # @return [Array<Configs::Device>]
+        attr_accessor :devices
 
-        # zFCP WWPN
-        #
-        # @return [String]
-        attr_reader :wwpn
-
-        # zFCP LUN
-        #
-        # @return [String]
-        attr_reader :lun
-
-        eql_attr :name, :channel, :wwpn, :lun
-
-        # Constructor
-        #
-        # @param name [String]
-        # @param channel [String]
-        # @param wwpn [String]
-        # @param lun [String]
-        def initialize(name, channel, wwpn, lun)
-          @name = name
-          @channel = channel
-          @wwpn = wwpn
-          @lun = lun
+        def initialize
+          @controllers = []
+          @devices = []
         end
       end
     end

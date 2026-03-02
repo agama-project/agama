@@ -65,7 +65,6 @@ describe Agama::DBus::Storage::Manager do
     allow(Y2Storage::BootRequirementsStrategies::Analyzer)
       .to receive(:bls_bootloader_proposed?).and_return(false)
 
-    allow(Yast::Arch).to receive(:s390).and_return false
     allow(backend).to receive(:on_configure)
     allow(backend).to receive(:on_issues_change)
     allow(backend).to receive(:actions).and_return([])
@@ -1301,16 +1300,6 @@ describe Agama::DBus::Storage::Manager do
           )
         )
       end
-    end
-  end
-
-  context "in an s390 system" do
-    before do
-      allow(Yast::Arch).to receive(:s390).and_return true
-    end
-
-    it "includes interface for managing zFCP devices" do
-      expect(subject.intfs.keys).to include("org.opensuse.Agama.Storage1.ZFCP.Manager")
     end
   end
 end
