@@ -93,9 +93,9 @@
   "dependencies": {
     "@material-symbols/svg-400": "^0.40.2",
     "@material-symbols/svg-700": "^0.40.2",
-    "@patternfly/patternfly": "^6.3.1",
-    "@patternfly/react-core": "^6.3.1",
-    "@patternfly/react-table": "^6.3.1",
+    "@patternfly/patternfly": "^6.4.0",
+    "@patternfly/react-core": "^6.4.1",
+    "@patternfly/react-table": "^6.4.1",
     "@tanstack/react-query": "^5.90.21",
     "axios": "^1.13.6",
     "fast-sort": "^3.4.1",
