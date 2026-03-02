@@ -55,7 +55,8 @@ if [ -d /proc/device-tree ]; then
 fi
 
 if [ -z "$MAPPINGS" ]; then
-  return 0
+  # Use return if sourced (like in a dracut hook), or exit if executed directly
+  [ "$0" = "/init" ] || [ "$0" = "/lib/dracut/dracut-initqueue.sh" ] && return 0 || exit 0
 fi
 
 # We might not have CMDLINE variable exported if it's an older dracut, so let's check
