@@ -7,9 +7,10 @@ ConditionPathExists=/proc/device-tree
 
 [Service]
 Type=oneshot
-ExecStart=/bin/sh -c "/usr/bin/parse-hcnmgr.sh"
-SyslogIdentifier=hcngmr-initrd
+ExecStart=/usr/bin/parse-hcnmgr.sh
+SyslogIdentifier=hcnmgr-initrd
 StandardOutput=journal+console
+StandardError=journal+console
 RemainAfterExit=yes
 
 [Install]
