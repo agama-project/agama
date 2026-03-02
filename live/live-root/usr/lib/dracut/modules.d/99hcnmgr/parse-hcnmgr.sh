@@ -67,6 +67,9 @@ fi
 HNV_IP=$(getargs hnv.ip)
 [ -z "$HNV_IP" ] && HNV_IP=$(getargs hvn.ip)
 
+HNV_ROUTE=$(getargs hnv.route)
+[ -z "$HNV_ROUTE" ] && HNV_ROUTE=$(getargs hvn.route)
+
 NEW_ARGS=""
 MOD_CMDLINE="$CMDLINE"
 CHANGED=0
@@ -135,10 +138,52 @@ for BONDNAME in $BOND_NAMES; do
     fi
   fi
 
-  # Replace slaves in existing ip= arguments
+  if [ -n "$HNV_ROUTE" ]; then
+    MATCHED=0
+    CURRENT_HNV_ROUTE="$HNV_ROUTE"
+
+    # Check if HNV_ROUTE matches any slave of THIS bond (name or MAC)
+    for s in $SLAVE_NAMES $SLAVE_MACS; do
+      [ -z "$s" ] && continue
+      s_dash=$(echo "$s" | tr ':' '-')
+      if [ "$HNV_ROUTE" = "$s" ] || [ "$HNV_ROUTE" = "$s_dash" ]; then
+        CURRENT_HNV_ROUTE="$BONDNAME"
+        MATCHED=1
+        break
+      elif echo "$HNV_ROUTE" | grep -q ":$s\(:\|$\)"; then
+        CURRENT_HNV_ROUTE=$(echo "$HNV_ROUTE" | sed "s/:$s\(:\|$\)/:$BONDNAME\1/")
+        MATCHED=1
+        break
+      elif echo "$HNV_ROUTE" | grep -q ":$s_dash\(:\|$\)"; then
+        CURRENT_HNV_ROUTE=$(echo "$HNV_ROUTE" | sed "s/:$s_dash\(:\|$\)/:$BONDNAME\1/")
+        MATCHED=1
+        break
+      fi
+    done
+
+    if [ $MATCHED -eq 1 ]; then
+      NEW_ARGS="$NEW_ARGS rd.route=$CURRENT_HNV_ROUTE"
+      CHANGED=1
+    else
+      # Fallback if it doesn't match any specific bond but is just a route spec without interface
+      if ! echo "$HNV_ROUTE" | grep -q ":bond[0-9]"; then
+        COLONS=$(echo "$HNV_ROUTE" | tr -dc ':' | wc -c)
+        if [ "$COLONS" -eq 0 ]; then
+          NEW_ARGS="$NEW_ARGS rd.route=$HNV_ROUTE::$BONDNAME"
+          CHANGED=1
+        elif [ "$COLONS" -eq 1 ]; then
+          NEW_ARGS="$NEW_ARGS rd.route=$HNV_ROUTE:$BONDNAME"
+          CHANGED=1
+        fi
+      fi
+    fi
+  fi
+
+  # Replace slaves in existing ip= and rd.route= arguments
   for slave in $SLAVE_NAMES; do
     if echo "$MOD_CMDLINE" | grep -q "$slave"; then
       MOD_CMDLINE=$(echo "$MOD_CMDLINE" | sed "s/\(ip=[^ ]*[:=]\)$slave\([: ]\|$\)/\1$BONDNAME\2/g")
+      MOD_CMDLINE=$(echo "$MOD_CMDLINE" | sed "s/\(rd.route=[^ ]*[:=]\)$slave\([: ]\|$\)/\1$BONDNAME\2/g")
       CHANGED=1
     fi
   done
@@ -146,10 +191,12 @@ for BONDNAME in $BOND_NAMES; do
     mac_dash=$(echo "$mac" | tr ':' '-')
     if echo "$MOD_CMDLINE" | grep -q "$mac"; then
       MOD_CMDLINE=$(echo "$MOD_CMDLINE" | sed "s/\(ip=[^ ]*[:=]\)$mac\([: ]\|$\)/\1$BONDNAME\2/g")
+      MOD_CMDLINE=$(echo "$MOD_CMDLINE" | sed "s/\(rd.route=[^ ]*[:=]\)$mac\([: ]\|$\)/\1$BONDNAME\2/g")
       CHANGED=1
     fi
     if echo "$MOD_CMDLINE" | grep -q "$mac_dash"; then
       MOD_CMDLINE=$(echo "$MOD_CMDLINE" | sed "s/\(ip=[^ ]*[:=]\)$mac_dash\([: ]\|$\)/\1$BONDNAME\2/g")
+      MOD_CMDLINE=$(echo "$MOD_CMDLINE" | sed "s/\(rd.route=[^ ]*[:=]\)$mac_dash\([: ]\|$\)/\1$BONDNAME\2/g")
       CHANGED=1
     fi
   done
