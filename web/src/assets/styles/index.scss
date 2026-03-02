@@ -188,14 +188,18 @@ strong {
   overflow: hidden;
 }
 
+// ProgressBackdrop overlay styles
 .pf-v6-c-page__main-container:has(.agm-main-content-overlay) {
   position: relative;
 
   .agm-main-content-overlay {
     position: absolute;
-    padding-block-start: 2.2rem;
     backdrop-filter: blur(2px);
-    background-color: color-mix(in srgb, var(--agm-t--color--fog) 50%, transparent);
+    background-color: color-mix(
+      in srgb,
+      var(--pf-t--global--background--color--backdrop--default) 80%,
+      transparent
+    );
   }
 }
 

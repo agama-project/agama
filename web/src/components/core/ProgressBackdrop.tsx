@@ -23,7 +23,16 @@
 import React from "react";
 import { concat } from "radashi";
 import { sprintf } from "sprintf-js";
-import { Alert, Backdrop, Flex, FlexItem, Spinner } from "@patternfly/react-core";
+import {
+  Alert,
+  Backdrop,
+  Card,
+  CardBody,
+  CardTitle,
+  Flex,
+  FlexItem,
+  Spinner,
+} from "@patternfly/react-core";
 import NestedContent from "~/components/core/NestedContent";
 import { COMMON_PROPOSAL_KEYS } from "~/hooks/model/proposal";
 import { useProgressTracking } from "~/hooks/use-progress-tracking";
@@ -32,6 +41,10 @@ import { _ } from "~/i18n";
 import type { Scope } from "~/model/status";
 
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
+import sizingStyles from "@patternfly/react-styles/css/utilities/Sizing/sizing";
+import spacingStyles from "@patternfly/react-styles/css/utilities/Spacing/spacing";
+import shadowStyles from "@patternfly/react-styles/css/utilities/BoxShadow/box-shadow";
+
 /**
  * Props for the ProgressBackdrop component.
  */
@@ -42,7 +55,6 @@ export type ProgressBackdropProps = {
    * displayed.
    */
   scope: Scope;
-
   /**
    * Additional query keys to track during progress operations.
    *
@@ -106,32 +118,63 @@ export default function ProgressBackdrop({
   if (!isBlocked) return null;
 
   return (
-    <Backdrop className="agm-main-content-overlay" role="alert" aria-labelledby="progressStatus">
-      <Alert
-        isPlain
-        customIcon={<></>}
-        title={
-          <Flex
-            id="progressStatus"
-            gap={{ default: "gapMd" }}
-            alignItems={{ default: "alignItemsCenter" }}
-            className={textStyles.fontSizeXl}
-          >
-            <Spinner size="lg" aria-hidden />
-            <FlexItem>
-              {progress ? (
-                <>
-                  {progress.step}{" "}
-                  <small>{sprintf(_("(step %s of %s)"), progress.index, progress.size)}</small>
-                </>
-              ) : (
-                <>{_("Refreshing data...")}</>
-              )}
-            </FlexItem>
-          </Flex>
-        }
-      />
-      {extraContent && <NestedContent margin="mLg">{extraContent}</NestedContent>}
+    <Backdrop
+      role="alert"
+      aria-labelledby="progressStatus"
+      className={["agm-main-content-overlay", spacingStyles.pt_4xl, spacingStyles.pt_0OnMd].join(
+        " ",
+      )}
+    >
+      <Flex
+        alignContent={{ default: "alignContentFlexStart", md: "alignContentCenter" }}
+        justifyContent={{ default: "justifyContentCenter" }}
+        className={sizingStyles.h_100}
+      >
+        <Card
+          isCompact
+          className={[
+            sizingStyles.w_100,
+            sizingStyles.w_75OnMd,
+            sizingStyles.w_50OnLg,
+            spacingStyles.mxMd,
+            spacingStyles.mx_0OnMd,
+            shadowStyles.boxShadowMdBottom,
+          ].join(" ")}
+          style={{ maxHeight: "90%", overflow: "hidden" }}
+        >
+          <CardTitle>
+            <Alert
+              isPlain
+              customIcon={<></>}
+              title={
+                <Flex
+                  id="progressStatus"
+                  gap={{ default: "gapMd" }}
+                  alignItems={{ default: "alignItemsCenter" }}
+                  className={textStyles.fontSizeLg}
+                >
+                  <Spinner size="md" aria-hidden />
+                  <FlexItem>
+                    {progress ? (
+                      <>
+                        {progress.step}{" "}
+                        <small>
+                          {sprintf(_("(step %s of %s)"), progress.index, progress.size)}
+                        </small>
+                      </>
+                    ) : (
+                      <>{_("Refreshing data...")}</>
+                    )}
+                  </FlexItem>
+                </Flex>
+              }
+            />
+          </CardTitle>
+          <CardBody style={{ overflow: "scroll" }}>
+            {extraContent && <NestedContent margin="mxXl">{extraContent}</NestedContent>}
+          </CardBody>
+        </Card>
+      </Flex>
     </Backdrop>
   );
 }
