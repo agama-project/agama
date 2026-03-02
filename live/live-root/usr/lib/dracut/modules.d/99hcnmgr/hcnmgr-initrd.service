@@ -7,7 +7,7 @@ ConditionPathExists=/proc/device-tree
 
 [Service]
 Type=oneshot
-ExecStart=/usr/bin/parse-hcnmgr.sh
+ExecStart=/bin/sh -c "/usr/bin/parse-hcnmgr.sh"
 RemainAfterExit=yes
 
 [Install]
