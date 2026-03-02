@@ -54,6 +54,9 @@ export default {
   "%s with %d partitions": [
     "%s （包含 %d 个分区）"
   ],
+  "1 device selected. Use the actions toolbar to apply changes.": [
+    ""
+  ],
   "A %1$s of %2$s will be created for %3$s if possible": [
     "将创建一个 %1$s (%2$s)，以用于 %3$s（如果可能）"
   ],
@@ -197,9 +200,6 @@ export default {
   ],
   "Apply selected solution": [
     "应用所选的解决方案"
-  ],
-  "Apply to the selected device": [
-    "应用于 %s 个所选设备"
   ],
   "Applying changes": [
     "正在应用更改"
@@ -1110,9 +1110,6 @@ export default {
   "No": [
     "否"
   ],
-  "No DASD devices were found in this machine.": [
-    "在此计算机上未找到任何 DASD 设备。"
-  ],
   "No Wi-Fi networks were found": [
     "未找到 WiFi 网络"
   ],
@@ -1469,9 +1466,6 @@ export default {
   ],
   "Select at least one disk.": [
     "请至少选择一个磁盘。"
-  ],
-  "Select devices to enable bulk actions.": [
-    "选择设备以启用批量操作。"
   ],
   "Select or enter a mount point": [
     "选择或输入挂载点"
@@ -1839,12 +1833,6 @@ export default {
   "These are the settings for the product to install. The installer language can be adjusted via the [settings panel] accessible from the top bar.": [
     "以下是待安装产品的相关设置。安装程序语言可通过顶部栏的[设置面板]进行调整。"
   ],
-  "This action could destroy any data stored on the device.": [
-    "此操作无法销毁该设备上存储的任何数据。"
-  ],
-  "This action could destroy any data stored on the devices listed below.": [
-    "此操作无法销毁下列设备上存储的任何数据。"
-  ],
   "This extension is not available on the server. Ask the server administrator to mirror the extension.": [
     "无法在该服务器上使用此扩展。您可以请求服务器管理员镜像该扩展。"
   ],
@@ -2145,12 +2133,6 @@ export default {
   "[CAPS LOCK] is on": [
     "大写锁定已开启"
   ],
-  "active": [
-    "已激活"
-  ],
-  "all": [
-    "全部"
-  ],
   "approx. %s": [
     "大约为 %s"
   ],
@@ -2175,26 +2157,14 @@ export default {
   "logical volume": [
     "逻辑卷"
   ],
-  "no": [
-    "否"
-  ],
-  "offline": [
-    "脱机"
-  ],
   "partition": [
     "分区"
-  ],
-  "read_only": [
-    "只读"
   ],
   "reset to defaults": [
     "重置为默认值"
   ],
   "root": [
     ""
-  ],
-  "yes": [
-    "是"
   ],
   "zFCP": [
     "zFCP"

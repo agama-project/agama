@@ -95,6 +95,11 @@ export default {
   "(step %s of %s)": [
     "(шаг %s из %s)"
   ],
+  "1 device selected. Use the actions toolbar to apply changes.": [
+    "",
+    "",
+    ""
+  ],
   "A %1$s of %2$s will be created for %3$s if possible": [
     "Для %3$s будет создан раздел %1$s размером %2$s, если это возможно"
   ],
@@ -256,11 +261,6 @@ export default {
   ],
   "Apply selected solution": [
     "Применить выбранное решение"
-  ],
-  "Apply to the selected device": [
-    "Применить к %s выбранному устройству",
-    "Применить к %s выбранным устройствам",
-    "Применить к %s выбранным устройствам"
   ],
   "Applying changes": [
     "Применение изменений"
@@ -1356,9 +1356,6 @@ export default {
   "No": [
     "Нет"
   ],
-  "No DASD devices were found in this machine.": [
-    "На этой машине не обнаружено ни одного устройства DASD."
-  ],
   "No Wi-Fi networks were found": [
     "Сети WiFi не найдены"
   ],
@@ -1650,6 +1647,9 @@ export default {
   "Registered": [
     "Зарегистрировано"
   ],
+  "Registered without a code": [
+    "Зарегистрировано без кода"
+  ],
   "Registration": [
     "Регистрация"
   ],
@@ -1809,9 +1809,6 @@ export default {
   ],
   "Select device": [
     "Выберите устройство"
-  ],
-  "Select devices to enable bulk actions.": [
-    "Выберите устройства для выполнения массовых действий."
   ],
   "Select or enter a mount point": [
     "Выберите или введите точку монтирования"
@@ -2237,12 +2234,6 @@ export default {
   "These are the settings for the product to install. The installer language can be adjusted via the [settings panel] accessible from the top bar.": [
     "Это настройки для устанавливаемого продукта. Язык программы установки можно изменить через [панель настроек], доступную на верхней панели."
   ],
-  "This action could destroy any data stored on the device.": [
-    "Это действие может уничтожить все данные, хранящиеся на этом устройстве."
-  ],
-  "This action could destroy any data stored on the devices listed below.": [
-    "Это действие может уничтожить все данные, хранящиеся на перечисленных ниже устройствах."
-  ],
   "This extension is not available on the server. Ask the server administrator to mirror the extension.": [
     "Это расширение недоступно на сервере. Попросите администратора сервера \"отзеркалить\" расширение."
   ],
@@ -2573,12 +2564,6 @@ export default {
   "[CAPS LOCK] is on": [
     "[CAPS LOCK] включён"
   ],
-  "active": [
-    "активно"
-  ],
-  "all": [
-    "все"
-  ],
   "approx. %s": [
     "прибл. %s"
   ],
@@ -2603,29 +2588,17 @@ export default {
   "logical volume": [
     "логический том"
   ],
-  "no": [
-    "нет"
-  ],
-  "offline": [
-    "офлайн"
-  ],
   "partition": [
     "раздел"
   ],
   "proposal.Device": [
     "предложение.Устройство"
   ],
-  "read_only": [
-    "только_чтение"
-  ],
   "reset to defaults": [
     "сброс настроек по умолчанию"
   ],
   "root": [
     "root"
-  ],
-  "yes": [
-    "да"
   ],
   "zFCP": [
     "zFCP"

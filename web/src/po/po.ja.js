@@ -9,6 +9,9 @@ export default {
   "\"%s\" does not exist or is no longer available.": [
     "\"%s\" は存在していないか、利用できなくなっています。"
   ],
+  "%1$d of %2$d devices match filters": [
+    "%2$d 個のデバイスのうち %1$d 個が条件に該当しています"
+  ],
   "%1$s (%2$s)": [
     "%1$s (%2$s)"
   ],
@@ -35,6 +38,9 @@ export default {
   ],
   "%1$s, %2$s and [%3$d more]": [
     "%1$s, %2$s [さらに %3$d 個のアドレスがあります]"
+  ],
+  "%d devices available": [
+    "%d 個のデバイスが利用可能です"
   ],
   "%d mode available": [
     "%d 個のモードが利用可能です"
@@ -80,6 +86,9 @@ export default {
   ],
   "(step %s of %s)": [
     "(ステップ %s / %s)"
+  ],
+  "1 device selected. Use the actions toolbar to apply changes.": [
+    "%s 個のデバイスを選択しています。変更を適用するには処理ツールバーをお使いください。"
   ],
   "A %1$s of %2$s will be created for %3$s if possible": [
     "可能であれば、 %2$s の %1$s を %3$s 向けに作成します"
@@ -129,6 +138,9 @@ export default {
   "Actions for %s at portal %s": [
     "%s (ポータル %s 内) に対する処理"
   ],
+  "Actions for the selected device:": [
+    "選択した %s 個のデバイスに対する処理:"
+  ],
   "Activate": [
     "有効化"
   ],
@@ -145,6 +157,9 @@ export default {
     "zFCP ディスクの有効化"
   ],
   "Activated": [
+    "有効"
+  ],
+  "Active": [
     "有効"
   ],
   "Add": [
@@ -236,9 +251,6 @@ export default {
   ],
   "Apply selected solution": [
     "選択したソリューションを適用する"
-  ],
-  "Apply to the selected device": [
-    "選択した %s 個のデバイスに適用"
   ],
   "Applying changes": [
     "変更を適用しています"
@@ -416,6 +428,9 @@ export default {
   ],
   "Changes in these settings will immediately update the 'Result' section below.": [
     "これらの設定を変更すると、下記の '結果' セクションに即時に反映されます。"
+  ],
+  "Channel": [
+    "チャネル"
   ],
   "Channel ID": [
     "チャネル ID"
@@ -1320,7 +1335,7 @@ export default {
   "No": [
     "いいえ"
   ],
-  "No DASD devices were found in this machine.": [
+  "No DASD devices found in this machine.": [
     "このマシンには DASD デバイスが見つかりませんでした。"
   ],
   "No Wi-Fi networks were found": [
@@ -1356,8 +1371,17 @@ export default {
   "No devices found": [
     "デバイスが見つかりませんでした"
   ],
+  "No devices match filters": [
+    "フィルタに該当するデバイスがありません"
+  ],
+  "No devices selected. Select one or more devices to perform bulk actions.": [
+    "何もデバイスを選択していません。一括処理を実施する 1 つ以上のデバイスを選択してください。"
+  ],
   "No iSCSI Boot Firmware Table (iBFT) found. The initiator can be [configured manually.]": [
     "iSCSI Boot Firmware Table (iBFT) が見つかりませんでした。イニシエータの設定は [手作業で実施できます。]"
+  ],
+  "No information available yet": [
+    "まだ情報はありません"
   ],
   "No logical volumes are defined yet": [
     "何も論理ボリュームを設定していません"
@@ -1439,6 +1463,9 @@ export default {
   ],
   "Not supported (%s)": [
     "サポート対象外です (%s)"
+  ],
+  "Offline": [
+    "オフライン"
   ],
   "On boot": [
     "システム起動時"
@@ -1586,6 +1613,9 @@ export default {
   ],
   "Question": [
     "質問"
+  ],
+  "Read only": [
+    "読み込み専用"
   ],
   "Read zFCP devices": [
     "zFCP デバイスの読み込み"
@@ -1773,8 +1803,8 @@ export default {
   "Select device": [
     "デバイスの選択"
   ],
-  "Select devices to enable bulk actions.": [
-    "一括処理を有効にするデバイスを選択してください。"
+  "Select devices to perform bulk actions": [
+    "一括処理を実施するデバイスを選択してください"
   ],
   "Select or enter a mount point": [
     "マウントポイントの選択または入力"
@@ -2178,11 +2208,11 @@ export default {
   "These are the settings for the product to install. The installer language can be adjusted via the [settings panel] accessible from the top bar.": [
     "こちらはインストールする製品に対する設定です。インストーラの言語の設定は、上部バーの [設定パネル] から変更できます。"
   ],
-  "This action could destroy any data stored on the device.": [
-    "この処理によりデバイス内のデータが全て消去されます。"
+  "This action will destroy any data stored on the device.": [
+    "この処理により、デバイス内に書き込まれている全てのデータが消去されます。"
   ],
-  "This action could destroy any data stored on the devices listed below.": [
-    "この処理により、下記に示したデバイス内のデータが全て消去されます。"
+  "This action will destroy any data stored on the devices listed below.": [
+    "この処理により、下記のデバイス内に書き込まれている全てのデータが消去されます。"
   ],
   "This extension is not available on the server. Ask the server administrator to mirror the extension.": [
     "この拡張はサーバ内にはありません。拡張の追加についてはサーバ管理者にお尋ねください。"
@@ -2514,12 +2544,6 @@ export default {
   "[CAPS LOCK] is on": [
     "[CAPS LOCK] が有効化されています"
   ],
-  "active": [
-    "有効"
-  ],
-  "all": [
-    "全て"
-  ],
   "approx. %s": [
     "おおよそ %s"
   ],
@@ -2544,29 +2568,17 @@ export default {
   "logical volume": [
     "論理ボリューム"
   ],
-  "no": [
-    "いいえ"
-  ],
-  "offline": [
-    "オフライン"
-  ],
   "partition": [
     "パーティション"
   ],
   "proposal.Device": [
     "提案.デバイス"
   ],
-  "read_only": [
-    "読み込み専用"
-  ],
   "reset to defaults": [
     "既定値に戻す"
   ],
   "root": [
     "root"
-  ],
-  "yes": [
-    "はい"
   ],
   "zFCP": [
     "zFCP"
