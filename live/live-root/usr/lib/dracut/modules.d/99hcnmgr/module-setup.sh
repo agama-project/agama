@@ -17,7 +17,13 @@ depends() {
 
 # called by dracut
 install() {
-  inst_multiple hcnmgr hexdump ofpathname pseries_platform
-  #    inst_hook initqueue/settled 30 "$moddir/parse-hcnmgr.sh"
-  inst_hook initqueue/settled 30 "$moddir/parse-hcnmgr.sh"
+  inst_multiple hcnmgr hexdump ofpathname pseries_platform awk sort wc tr sed grep cat
+  if dracut_module_included "systemd"; then
+    inst_simple "$moddir/parse-hcnmgr.sh" "/usr/bin/parse-hcnmgr.sh"
+    inst_simple "$moddir/hcnmgr-initrd.service" "${systemdsystemunitdir}/hcnmgr-initrd.service"
+    mkdir -p "${initdir}${systemdsystemunitdir}/initrd.target.wants"
+    ln_s "../hcnmgr-initrd.service" "${systemdsystemunitdir}/initrd.target.wants/hcnmgr-initrd.service"
+  else
+    inst_hook initqueue 01 "$moddir/parse-hcnmgr.sh"
+  fi
 }

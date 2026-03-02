@@ -1,0 +1,14 @@
+[Unit]
+Description=Hybrid Cloud Network Manager
+DefaultDependencies=no
+After=systemd-udev-settle.service
+Before=dracut-initqueue.service nm-initrd.service
+ConditionPathExists=/proc/device-tree
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/parse-hcnmgr.sh
+RemainAfterExit=yes
+
+[Install]
+WantedBy=initrd.target
