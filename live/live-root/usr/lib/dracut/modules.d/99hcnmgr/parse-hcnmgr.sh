@@ -1,81 +1,171 @@
 #!/bin/sh
 
+type getargs >/dev/null 2>&1 || . /lib/dracut-lib.sh
+
 xdump4() {
-    hexdump -n 4 -ve '/1 "%02x"' "$1"
+  hexdump -n 4 -ve '/1 "%02x"' "$1"
+}
+
+get_mac() {
+  local _dev=$1
+  local _mac
+  if [ -f "$_dev/local-mac-address" ]; then
+    _mac=$(hexdump -ve '/1 "%02x:"' "$_dev/local-mac-address")
+    echo "${_mac%:}"
+  fi
 }
 
 get_dev_hcn() {
-    local dev=$1
-    local HCNID
-    local DEVNAME
-    
-    HCNID=$(xdump4 "$dev"/ibm,hcn-id)
-    if [ -z "$HCNID" ]; then
-        return 1
-    fi
-    
-    # Get the device name using ofpathname
-    DEVNAME=$(ofpathname -l "$(echo "$dev" | sed -e "s/\/proc\/device-tree//")" 2>/dev/null)
-    if [ -n "$DEVNAME" ]; then
-        echo "bond$HCNID $DEVNAME"
-        return 0
-    fi
+  local _dev=$1
+  local _hcnid
+  local _devname
+  local _mac
+
+  _hcnid=$(xdump4 "$_dev"/ibm,hcn-id)
+  if [ -z "$_hcnid" ]; then
     return 1
+  fi
+
+  # Get the device name using ofpathname
+  _devname=$(ofpathname -l "$(echo "$_dev" | sed -e "s/\/proc\/device-tree//")" 2>/dev/null)
+  _mac=$(get_mac "$_dev")
+
+  if [ -n "$_devname" ]; then
+    echo "bond$_hcnid $_devname $_mac"
+    return 0
+  fi
+  return 1
 }
 
 # Collect all mappings
 MAPPINGS=""
 if [ -d /proc/device-tree ]; then
-    for pci_dev in /proc/device-tree/pci*; do
-        [ -d "$pci_dev" ] || continue
-        for dev in "$pci_dev"/ethernet*; do
-            [ -d "$dev" ] || continue
-            if [ -e "$dev"/ibm,hcn-id ]; then
-                res=$(get_dev_hcn "$dev")
-                if [ -n "$res" ]; then
-                    MAPPINGS="$MAPPINGS $res"
-                fi
-            fi
-        done
+  for pci_dev in /proc/device-tree/pci*; do
+    [ -d "$pci_dev" ] || continue
+    for dev in "$pci_dev"/ethernet*; do
+      [ -d "$dev" ] || continue
+      if [ -e "$dev"/ibm,hcn-id ]; then
+        res=$(get_dev_hcn "$dev")
+        if [ -n "$res" ]; then
+          MAPPINGS="$MAPPINGS $res"
+        fi
+      fi
     done
+  done
 fi
 
 if [ -z "$MAPPINGS" ]; then
-    return 0
+  return 0
 fi
 
 # We might not have CMDLINE variable exported if it's an older dracut, so let's check
 if [ -z "$CMDLINE" ]; then
-    CMDLINE=$(cat /proc/cmdline)
+  [ -r /proc/cmdline ] && CMDLINE=$(cat /proc/cmdline)
 fi
 
-NEW_CMDLINE="$CMDLINE"
-REPLACED=0
+HNV_IP=$(getargs hnv.ip)
+[ -z "$HNV_IP" ] && HNV_IP=$(getargs hvn.ip)
 
-set -- $MAPPINGS
-while [ $# -ge 2 ]; do
-    BONDNAME="$1"
-    DEVNAME="$2"
-    shift 2
-    
-    # Check if DEVNAME is in the cmdline
-    if echo "$NEW_CMDLINE" | grep -q "$DEVNAME"; then
-        # Replace DEVNAME with BONDNAME for ip=... arguments
-        NEW_CMDLINE=$(echo "$NEW_CMDLINE" | sed "s/\(ip=[^ ]*[:=]\)$DEVNAME\([: ]\|$\)/\1$BONDNAME\2/g")
-        
-        # Check if replacement occurred to add bond options
-        if [ "$NEW_CMDLINE" != "$CMDLINE" ] || [ $REPLACED -eq 1 ]; then
-            # We don't want to add multiple bond= arguments for the same bond, 
-            # but Dracut can handle it, or we just append it once.
-            if ! echo "$NEW_CMDLINE" | grep -q "bond=$BONDNAME:"; then
-                NEW_CMDLINE="$NEW_CMDLINE bond=$BONDNAME:$DEVNAME:mode=1,miimon=100,fail_over_mac=2"
-            fi
-            REPLACED=1
-        fi
+NEW_ARGS=""
+MOD_CMDLINE="$CMDLINE"
+CHANGED=0
+
+# Unique bond names
+BOND_NAMES=$(echo "$MAPPINGS" | awk '{print $1}' | sort -u)
+
+for BONDNAME in $BOND_NAMES; do
+  SLAVES=""
+  SLAVE_NAMES=""
+  SLAVE_MACS=""
+
+  # Extract slaves for this bond
+  set -- $MAPPINGS
+  while [ $# -ge 3 ]; do
+    if [ "$1" = "$BONDNAME" ]; then
+      SLAVE_NAMES="$SLAVE_NAMES $2"
+      [ -n "$3" ] && SLAVE_MACS="$SLAVE_MACS $3"
+      if [ -z "$SLAVES" ]; then
+        SLAVES="$2"
+      else
+        SLAVES="$SLAVES,$2"
+      fi
     fi
+    shift 3
+  done
+
+  # Add bond definition
+  NEW_ARGS="$NEW_ARGS bond=$BONDNAME:$SLAVES:mode=1,miimon=100,fail_over_mac=2"
+
+  if [ -n "$HNV_IP" ]; then
+    MATCHED=0
+    CURRENT_HNV_IP="$HNV_IP"
+
+    # Check if HNV_IP matches any slave of THIS bond (name or MAC)
+    for s in $SLAVE_NAMES $SLAVE_MACS; do
+      [ -z "$s" ] && continue
+      s_dash=$(echo "$s" | tr ':' '-')
+      if [ "$HNV_IP" = "$s" ] || [ "$HNV_IP" = "$s_dash" ]; then
+        CURRENT_HNV_IP="$BONDNAME"
+        MATCHED=1
+        break
+      elif echo "$HNV_IP" | grep -q ":$s\(:\|$\)"; then
+        CURRENT_HNV_IP=$(echo "$HNV_IP" | sed "s/:$s\(:\|$\)/:$BONDNAME\1/")
+        MATCHED=1
+        break
+      elif echo "$HNV_IP" | grep -q ":$s_dash\(:\|$\)"; then
+        CURRENT_HNV_IP=$(echo "$HNV_IP" | sed "s/:$s_dash\(:\|$\)/:$BONDNAME\1/")
+        MATCHED=1
+        break
+      fi
+    done
+
+    if [ $MATCHED -eq 1 ]; then
+      NEW_ARGS="$NEW_ARGS ip=$CURRENT_HNV_IP"
+      CHANGED=1
+    else
+      # Fallback if it doesn't match any specific bond but is just an IP
+      if ! echo "$HNV_IP" | grep -q ":bond[0-9]"; then
+        COLONS=$(echo "$HNV_IP" | tr -dc ':' | wc -c)
+        if [ "$COLONS" -eq 0 ]; then
+          NEW_ARGS="$NEW_ARGS ip=$HNV_IP:::::$BONDNAME:none"
+          CHANGED=1
+        fi
+      fi
+    fi
+  fi
+
+  # Replace slaves in existing ip= arguments
+  for slave in $SLAVE_NAMES; do
+    if echo "$MOD_CMDLINE" | grep -q "$slave"; then
+      MOD_CMDLINE=$(echo "$MOD_CMDLINE" | sed "s/\(ip=[^ ]*[:=]\)$slave\([: ]\|$\)/\1$BONDNAME\2/g")
+      CHANGED=1
+    fi
+  done
+  for mac in $SLAVE_MACS; do
+    mac_dash=$(echo "$mac" | tr ':' '-')
+    if echo "$MOD_CMDLINE" | grep -q "$mac"; then
+      MOD_CMDLINE=$(echo "$MOD_CMDLINE" | sed "s/\(ip=[^ ]*[:=]\)$mac\([: ]\|$\)/\1$BONDNAME\2/g")
+      CHANGED=1
+    fi
+    if echo "$MOD_CMDLINE" | grep -q "$mac_dash"; then
+      MOD_CMDLINE=$(echo "$MOD_CMDLINE" | sed "s/\(ip=[^ ]*[:=]\)$mac_dash\([: ]\|$\)/\1$BONDNAME\2/g")
+      CHANGED=1
+    fi
+  done
 done
 
-if [ $REPLACED -eq 1 ]; then
-    export CMDLINE="$NEW_CMDLINE"
-    echo "$NEW_CMDLINE" > /etc/cmdline.d/99-hcnmgr.conf
+if [ $CHANGED -eq 1 ] || [ -n "$NEW_ARGS" ]; then
+  # Write to cmdline.d
+  echo "$NEW_ARGS" >/etc/cmdline.d/99-hcnmgr.conf
+
+  # Update global CMDLINE
+  export CMDLINE="$MOD_CMDLINE $NEW_ARGS"
+
+  # Call nm-initrd-generator
+  for generator in /usr/lib/NetworkManager/nm-initrd-generator /usr/libexec/nm-initrd-generator; do
+    if [ -x "$generator" ]; then
+      $generator -- $CMDLINE
+      break
+    fi
+  done
 fi
