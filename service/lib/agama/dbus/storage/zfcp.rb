@@ -147,7 +147,6 @@ module Agama
 
           # This assignment emits a D-Bus PropertiesChanged.
           self.serialized_system = serialized_system
-          self.SystemChanged(serialized_system)
         end
 
         # Updates the config info if needed.
