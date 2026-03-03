@@ -73,21 +73,26 @@ impl Starter {
 
     /// Starts the service and returns a handler to communicate with it.
     pub async fn start(self) -> Result<Handler<Service>, Error> {
+        let storage_dbus = agama_storage_client::service::Starter::new(self.dbus.clone())
+            .start()
+            .await
+            .map_err(client::Error::from)?;
         let client = match self.client {
             Some(client) => client,
-            None => {
-                let storage_dbus = agama_storage_client::service::Starter::new(self.dbus.clone())
-                    .start()
-                    .await
-                    .map_err(client::Error::from)?;
-                Box::new(Client::new(storage_dbus))
-            }
+            None => Box::new(Client::new(storage_dbus.clone())),
         };
 
         let service = Service { client };
         let handler = actor::spawn(service);
 
-        let monitor = Monitor::new(self.progress, self.issues, self.events, self.dbus).await;
+        let monitor = Monitor::new(
+            self.progress,
+            self.issues,
+            self.events,
+            self.dbus,
+            storage_dbus,
+        )
+        .await;
         monitor::spawn(monitor)?;
         Ok(handler)
     }
