@@ -219,10 +219,10 @@ impl MessageHandler<message::SetStorageConfig> for Service {
 }
 
 #[async_trait]
-impl MessageHandler<message::GetBootloaderConfig> for Service {
+impl MessageHandler<message::bootloader::GetConfig> for Service {
     async fn handle(
         &mut self,
-        _message: message::GetBootloaderConfig,
+        _message: message::bootloader::GetConfig,
     ) -> Result<bootloader::Config, Error> {
         let raw_json = self.bootloader_proxy.config().await?;
         Ok(try_from_string(&raw_json)?)
@@ -230,8 +230,8 @@ impl MessageHandler<message::GetBootloaderConfig> for Service {
 }
 
 #[async_trait]
-impl MessageHandler<message::SetBootloaderConfig> for Service {
-    async fn handle(&mut self, message: message::SetBootloaderConfig) -> Result<(), Error> {
+impl MessageHandler<message::bootloader::SetConfig> for Service {
+    async fn handle(&mut self, message: message::bootloader::SetConfig) -> Result<(), Error> {
         self.bootloader_proxy
             .set_config(&message.config.to_string())
             .await?;

@@ -22,7 +22,7 @@ use std::sync::Arc;
 
 use agama_utils::{
     actor::Message,
-    api::{bootloader, storage::Config, Issue},
+    api::{storage::Config, Issue},
     products::ProductSpec,
     BoxFuture,
 };
@@ -30,6 +30,7 @@ use tokio::sync::RwLock;
 
 use crate::service;
 
+pub mod bootloader;
 pub mod dasd;
 pub mod iscsi;
 
@@ -120,29 +121,6 @@ impl SolveConfigModel {
 
 impl Message for SolveConfigModel {
     type Reply = Option<serde_json::Value>;
-}
-
-pub struct GetBootloaderConfig;
-
-impl Message for GetBootloaderConfig {
-    type Reply = bootloader::Config;
-}
-
-pub struct SetBootloaderConfig {
-    pub config: serde_json::Value,
-}
-
-impl SetBootloaderConfig {
-    // FIXME: To be consistent, this action should receive
-    // the bootloader configuration. However, it uses an internal
-    // FullConfig struct defined in the agama-bootloader::client module.
-    pub fn new(config: serde_json::Value) -> Self {
-        Self { config }
-    }
-}
-
-impl Message for SetBootloaderConfig {
-    type Reply = ();
 }
 
 pub struct SetLocale {

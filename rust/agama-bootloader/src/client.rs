@@ -88,7 +88,10 @@ impl Client {
 #[async_trait]
 impl BootloaderClient for Client {
     async fn get_config(&self) -> ClientResult<Config> {
-        Ok(self.storage_dbus.call(message::GetBootloaderConfig).await?)
+        Ok(self
+            .storage_dbus
+            .call(message::bootloader::GetConfig)
+            .await?)
     }
 
     async fn set_config(&self, config: &Config) -> ClientResult<()> {
@@ -102,7 +105,7 @@ impl BootloaderClient for Client {
         let value = serde_json::to_value(&full_config)?;
         _ = self
             .storage_dbus
-            .call(message::SetBootloaderConfig::new(value))
+            .call(message::bootloader::SetConfig::new(value))
             .await;
         Ok(())
     }
