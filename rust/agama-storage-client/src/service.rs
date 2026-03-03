@@ -70,7 +70,6 @@ impl Starter {
         iscsi_proxy.config().await?;
 
         let dasd_proxy = proxies::DASDProxy::new(&self.dbus).await?;
-        dasd_proxy.config().await?;
 
         let service = Service {
             storage_proxy,
