@@ -722,6 +722,7 @@ impl MessageHandler<message::SetConfig> for Service {
     /// Sets the user configuration with the given values.
     async fn handle(&mut self, message: message::SetConfig) -> Result<(), Error> {
         checks::check_stage(&self.progress, Stage::Configuring).await?;
+        tracing::debug!("DEBUG: SetConfig handler (calling set_config)");
         self.set_config(message.config).await
     }
 }

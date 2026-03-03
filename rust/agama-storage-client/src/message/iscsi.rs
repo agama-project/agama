@@ -18,8 +18,44 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-pub mod client;
-pub use client::Client;
+use agama_utils::{actor::Message, api::iscsi};
 
-pub mod monitor;
-pub use monitor::Monitor;
+pub struct Discover {
+    pub config: iscsi::DiscoverConfig,
+}
+
+impl Discover {
+    pub fn new(config: iscsi::DiscoverConfig) -> Self {
+        Self { config }
+    }
+}
+
+impl Message for Discover {
+    type Reply = u32;
+}
+
+pub struct GetSystem;
+
+impl Message for GetSystem {
+    type Reply = Option<serde_json::Value>;
+}
+
+pub struct GetConfig;
+
+impl Message for GetConfig {
+    type Reply = Option<iscsi::Config>;
+}
+
+pub struct SetConfig {
+    pub config: Option<iscsi::Config>,
+}
+
+impl SetConfig {
+    pub fn new(config: Option<iscsi::Config>) -> Self {
+        Self { config }
+    }
+}
+
+impl Message for SetConfig {
+    type Reply = ();
+}

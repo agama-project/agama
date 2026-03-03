@@ -27,7 +27,7 @@ use agama_utils::{
     api::{event, storage::Config, Issue},
     issue,
     products::ProductSpec,
-    progress,
+    progress, BoxFuture,
 };
 use async_trait::async_trait;
 use serde_json::Value;
@@ -149,10 +149,13 @@ impl StorageClient for TestClient {
         &self,
         _product: Arc<RwLock<ProductSpec>>,
         config: Option<Config>,
-    ) -> Result<(), Error> {
-        let mut state = self.state.lock().await;
-        state.config = config;
-        Ok(())
+    ) -> Result<BoxFuture<Result<(), Error>>, Error> {
+        let state = self.state.clone();
+        Ok(Box::pin(async move {
+            let mut state = state.lock().await;
+            state.config = config;
+            Ok(())
+        }))
     }
 
     async fn solve_config_model(&self, _model: Value) -> Result<Option<Value>, Error> {

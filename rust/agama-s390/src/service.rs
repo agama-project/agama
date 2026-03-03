@@ -40,6 +40,8 @@ pub enum Error {
     DASDClient(#[from] dasd::client::Error),
     #[error(transparent)]
     DASDMonitor(#[from] dasd::monitor::Error),
+    #[error("Storage D-Bus server error: {0}")]
+    DBusClient(#[from] agama_storage_client::Error),
 }
 
 pub struct Starter {
@@ -74,7 +76,13 @@ impl Starter {
     pub async fn start(self) -> Result<Handler<Service>, Error> {
         let dasd_client = match self.dasd {
             Some(client) => client,
-            None => Box::new(dasd::Client::new(self.connection.clone()).await?),
+            None => {
+                let storage_dbus =
+                    agama_storage_client::service::Starter::new(self.connection.clone())
+                        .start()
+                        .await?;
+                Box::new(dasd::Client::new(storage_dbus).await?)
+            }
         };
         let service = Service { dasd: dasd_client };
         let handler = actor::spawn(service);

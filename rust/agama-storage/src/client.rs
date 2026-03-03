@@ -20,19 +20,17 @@
 
 //! Implements a client to access Agama's storage service.
 
+use agama_storage_client::message;
 use agama_utils::{
+    actor::{self, Handler},
     api::{storage::Config, Issue},
     products::ProductSpec,
+    BoxFuture,
 };
 use async_trait::async_trait;
 use serde_json::Value;
 use std::sync::Arc;
 use tokio::sync::RwLock;
-use zbus::{names::BusName, zvariant::OwnedObjectPath, Connection, Message};
-
-const SERVICE_NAME: &str = "org.opensuse.Agama.Storage1";
-const OBJECT_PATH: &str = "/org/opensuse/Agama/Storage1";
-const INTERFACE: &str = "org.opensuse.Agama.Storage1";
 
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
@@ -44,6 +42,10 @@ pub enum Error {
     DBusVariant(#[from] zbus::zvariant::Error),
     #[error(transparent)]
     Json(#[from] serde_json::Error),
+    #[error(transparent)]
+    Actor(#[from] actor::Error),
+    #[error("Storage D-Bus server error: {0}")]
+    DBusClient(#[from] agama_storage_client::Error),
 }
 
 #[async_trait]
@@ -63,7 +65,7 @@ pub trait StorageClient {
         &self,
         product: Arc<RwLock<ProductSpec>>,
         config: Option<Config>,
-    ) -> Result<(), Error>;
+    ) -> Result<BoxFuture<Result<(), Error>>, Error>;
     async fn solve_config_model(&self, model: Value) -> Result<Option<Value>, Error>;
     async fn set_locale(&self, locale: String) -> Result<(), Error>;
 }
@@ -71,119 +73,95 @@ pub trait StorageClient {
 /// D-Bus client for the storage service
 #[derive(Clone)]
 pub struct Client {
-    connection: Connection,
+    storage_dbus: Handler<agama_storage_client::Service>,
 }
 
 impl Client {
-    pub fn new(connection: Connection) -> Self {
-        Self { connection }
+    pub fn new(storage_dbus: Handler<agama_storage_client::Service>) -> Self {
+        Self { storage_dbus }
     }
 
-    async fn call<T: serde::ser::Serialize + zbus::zvariant::DynamicType>(
-        &self,
-        method: &str,
-        body: &T,
-    ) -> Result<Message, Error> {
-        let bus = BusName::try_from(SERVICE_NAME.to_string())?;
-        let path = OwnedObjectPath::try_from(OBJECT_PATH)?;
-        self.connection
-            .call_method(Some(&bus), &path, Some(INTERFACE), method, body)
-            .await
-            .map_err(|e| e.into())
+    async fn call_action(&self, action: &str) -> Result<(), Error> {
+        self.storage_dbus
+            .call(message::CallAction::new(action))
+            .await?;
+        Ok(())
     }
 }
 
 #[async_trait]
 impl StorageClient for Client {
     async fn activate(&self) -> Result<(), Error> {
-        self.call("Activate", &()).await?;
-        Ok(())
+        self.call_action("Activate").await
     }
 
     async fn probe(&self) -> Result<(), Error> {
-        self.call("Probe", &()).await?;
-        Ok(())
+        self.call_action("Probe").await
     }
 
     async fn install(&self) -> Result<(), Error> {
-        self.call("Install", &()).await?;
-        Ok(())
+        self.call_action("Install").await
     }
 
     async fn finish(&self) -> Result<(), Error> {
-        self.call("Finish", &()).await?;
-        Ok(())
+        self.call_action("Finish").await
     }
 
     async fn umount(&self) -> Result<(), Error> {
-        self.call("Umount", &()).await?;
-        Ok(())
+        self.call_action("Umount").await
     }
 
     async fn get_system(&self) -> Result<Option<Value>, Error> {
-        let message = self.call("GetSystem", &()).await?;
-        try_from_message(message)
+        let value = self.storage_dbus.call(message::GetSystem).await?;
+        Ok(value)
     }
 
     async fn get_config(&self) -> Result<Option<Config>, Error> {
-        let message = self.call("GetConfig", &()).await?;
-        try_from_message(message)
+        let value = self.storage_dbus.call(message::GetStorageConfig).await?;
+        Ok(value)
     }
 
     async fn get_config_from_model(&self, model: Value) -> Result<Option<Config>, Error> {
-        let message = self
-            .call("GetConfigFromModel", &(model.to_string()))
-            .await?;
-        try_from_message(message)
+        let message = message::GetConfigFromModel::new(model);
+        let value = self.storage_dbus.call(message).await?;
+        Ok(value)
     }
 
     async fn get_config_model(&self) -> Result<Option<Value>, Error> {
-        let message = self.call("GetConfigModel", &()).await?;
-        try_from_message(message)
+        let value = self.storage_dbus.call(message::GetConfigModel).await?;
+        Ok(value)
     }
 
     async fn get_proposal(&self) -> Result<Option<Value>, Error> {
-        let message = self.call("GetProposal", &()).await?;
-        try_from_message(message)
+        let value = self.storage_dbus.call(message::GetProposal).await?;
+        Ok(value)
     }
 
     async fn get_issues(&self) -> Result<Vec<Issue>, Error> {
-        let message = self.call("GetIssues", &()).await?;
-        try_from_message(message)
+        let value = self.storage_dbus.call(message::GetIssues).await?;
+        Ok(value)
     }
 
     async fn set_config(
         &self,
         product: Arc<RwLock<ProductSpec>>,
         config: Option<Config>,
-    ) -> Result<(), Error> {
-        let product_guard = product.read().await;
-        let product_json = serde_json::to_string(&*product_guard)?;
-        let config = config.filter(|c| c.has_value());
-        let config_json = serde_json::to_string(&config)?;
-        self.call("SetConfig", &(product_json, config_json)).await?;
-        Ok(())
+    ) -> Result<BoxFuture<Result<(), Error>>, Error> {
+        let message = message::SetStorageConfig::new(product.clone(), config);
+        let rx = self.storage_dbus.call(message).await?;
+        Ok(Box::pin(async move { rx.await.map_err(Error::from) }))
     }
 
     async fn solve_config_model(&self, model: Value) -> Result<Option<Value>, Error> {
-        let message = self.call("SolveConfigModel", &(model.to_string())).await?;
-        try_from_message(message)
+        let message = message::SolveConfigModel::new(model);
+        let value = self.storage_dbus.call(message).await?;
+        Ok(value)
     }
 
     async fn set_locale(&self, locale: String) -> Result<(), Error> {
-        self.call("SetLocale", &(locale)).await?;
+        self.storage_dbus
+            .call(message::SetLocale::new(locale))
+            .await?;
         Ok(())
     }
-}
-
-fn try_from_message<T: serde::de::DeserializeOwned + Default>(
-    message: Message,
-) -> Result<T, Error> {
-    let raw_json: String = message.body().deserialize()?;
-    let json: Value = serde_json::from_str(&raw_json)?;
-    if json.is_null() {
-        return Ok(T::default());
-    }
-    let value = serde_json::from_value(json)?;
-    Ok(value)
 }

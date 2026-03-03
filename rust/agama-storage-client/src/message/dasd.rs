@@ -18,8 +18,36 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-pub mod client;
-pub use client::Client;
+use agama_utils::actor::Message;
 
-pub mod monitor;
-pub use monitor::Monitor;
+pub struct Probe;
+
+impl Message for Probe {
+    type Reply = ();
+}
+
+pub struct GetSystem;
+
+impl Message for GetSystem {
+    type Reply = Option<serde_json::Value>;
+}
+
+pub struct GetConfig;
+
+impl Message for GetConfig {
+    type Reply = Option<agama_utils::api::RawConfig>;
+}
+
+pub struct SetConfig {
+    pub config: Option<agama_utils::api::RawConfig>,
+}
+
+impl SetConfig {
+    pub fn new(config: Option<agama_utils::api::RawConfig>) -> Self {
+        Self { config }
+    }
+}
+
+impl Message for SetConfig {
+    type Reply = ();
+}

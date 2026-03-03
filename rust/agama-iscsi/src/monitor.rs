@@ -18,10 +18,8 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::{
-    dbus::{ISCSIProxy, ProgressChanged, ProgressFinished, SystemChanged},
-    storage,
-};
+use crate::storage;
+use agama_storage_client::proxies::{ISCSIProxy, ProgressChanged, ProgressFinished, SystemChanged};
 use agama_utils::{
     actor::Handler,
     api::{
@@ -130,7 +128,7 @@ impl Monitor {
 
     async fn handle_progress_changed(&self, signal: ProgressChanged) -> Result<(), Error> {
         let args = signal.args()?;
-        let progress_data = serde_json::from_str::<ProgressData>(args.progress)?;
+        let progress_data = serde_json::from_str::<ProgressData>(args.serialized_progress)?;
         self.progress
             .call(progress::message::SetProgress::new(progress_data.into()))
             .await?;

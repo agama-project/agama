@@ -18,8 +18,17 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-pub mod client;
-pub use client::Client;
+mod storage1;
+pub use storage1::Storage1Proxy;
 
-pub mod monitor;
-pub use monitor::Monitor;
+mod bootloader;
+pub use bootloader::BootloaderProxy;
+
+mod iscsi;
+pub use iscsi::{ISCSIProxy, ProgressChanged, ProgressFinished, SystemChanged};
+
+mod dasd;
+pub use dasd::{
+    DASDProxy, FormatChanged, FormatFinished, ProgressChanged as DASDProgressChanged,
+    ProgressFinished as DASDProgressFinished, SystemChanged as DASDSystemChanged,
+};

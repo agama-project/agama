@@ -26,7 +26,7 @@ use crate::{
 use agama_utils::{
     actor::{self, Actor, Handler, MessageHandler},
     api::{event, storage::Config},
-    issue, progress,
+    issue, progress, BoxFuture,
 };
 use async_trait::async_trait;
 use serde_json::Value;
@@ -73,16 +73,35 @@ impl Starter {
 
     /// Starts the service and returns a handler to communicate with it.
     pub async fn start(self) -> Result<Handler<Service>, Error> {
-        let client = match self.client {
-            Some(client) => client,
-            None => Box::new(Client::new(self.dbus.clone())),
+        let (client, storage_dbus) = match self.client {
+            Some(client) => (client, None),
+            None => {
+                let storage_dbus = agama_storage_client::service::Starter::new(self.dbus.clone())
+                    .start()
+                    .await
+                    .map_err(client::Error::from)?;
+                (
+                    Box::new(Client::new(storage_dbus.clone()))
+                        as Box<dyn StorageClient + Send + 'static>,
+                    Some(storage_dbus),
+                )
+            }
         };
 
         let service = Service { client };
         let handler = actor::spawn(service);
 
-        let monitor = Monitor::new(self.progress, self.issues, self.events, self.dbus);
-        monitor::spawn(monitor)?;
+        if let Some(storage_dbus) = storage_dbus {
+            let monitor = Monitor::new(
+                self.progress,
+                self.issues,
+                self.events,
+                self.dbus,
+                storage_dbus,
+            )
+            .await;
+            monitor::spawn(monitor)?;
+        }
         Ok(handler)
     }
 }
@@ -190,11 +209,15 @@ impl MessageHandler<message::GetProposal> for Service {
 
 #[async_trait]
 impl MessageHandler<message::SetConfig> for Service {
-    async fn handle(&mut self, message: message::SetConfig) -> Result<(), Error> {
-        self.client
+    async fn handle(
+        &mut self,
+        message: message::SetConfig,
+    ) -> Result<BoxFuture<Result<(), client::Error>>, Error> {
+        let rx = self
+            .client
             .set_config(message.product, message.config)
             .await?;
-        Ok(())
+        Ok(rx)
     }
 }
 

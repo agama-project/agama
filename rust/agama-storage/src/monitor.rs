@@ -18,7 +18,6 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::client::{self, Client, StorageClient};
 use agama_utils::{
     actor::Handler,
     api::{
@@ -47,8 +46,8 @@ pub enum Error {
     DBus(#[from] zbus::Error),
     #[error(transparent)]
     Event(#[from] broadcast::error::SendError<Event>),
-    #[error(transparent)]
-    Client(#[from] client::Error),
+    #[error("Storage D-Bus server error: {0}")]
+    DBusClient(#[from] agama_storage_client::Error),
 }
 
 #[proxy(
@@ -104,22 +103,23 @@ pub struct Monitor {
     issues: Handler<issue::Service>,
     events: event::Sender,
     connection: Connection,
-    client: Client,
+    storage_dbus: Handler<agama_storage_client::Service>,
 }
 
 impl Monitor {
-    pub fn new(
+    pub async fn new(
         progress: Handler<progress::Service>,
         issues: Handler<issue::Service>,
         events: event::Sender,
         connection: Connection,
+        storage_dbus: Handler<agama_storage_client::Service>,
     ) -> Self {
         Self {
             progress,
             issues,
             events,
             connection: connection.clone(),
-            client: Client::new(connection),
+            storage_dbus,
         }
     }
 
@@ -142,7 +142,10 @@ impl Monitor {
     }
 
     async fn update_issues(&self) -> Result<(), Error> {
-        let issues = self.client.get_issues().await?;
+        let issues = self
+            .storage_dbus
+            .call(agama_storage_client::message::GetIssues)
+            .await?;
         self.issues
             .cast(issue::message::Set::new(Scope::Storage, issues))?;
         Ok(())

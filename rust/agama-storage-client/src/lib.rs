@@ -18,8 +18,14 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-pub mod client;
-pub use client::Client;
+//! Service to interact with the storage D-Bus interface.
+//!
+//! This service tries to simplify the interaction with the storage D-Bus service. It implements an
+//! actor that offers a set of operations to read and set the configuration.
 
-pub mod monitor;
-pub use monitor::Monitor;
+pub mod service;
+pub use service::{Error, Service};
+
+pub mod message;
+
+pub mod proxies;

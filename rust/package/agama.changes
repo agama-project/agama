@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Tue Mar  3 10:08:58 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Cache storage data using the new attributes-based API (bsc#1258466).
+
+-------------------------------------------------------------------
 Mon Mar  2 12:20:15 UTC 2026 - Michal Filka <mfilka@suse.com>
 
 - bsc#1258416

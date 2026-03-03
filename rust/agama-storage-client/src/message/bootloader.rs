@@ -18,8 +18,27 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-pub mod client;
-pub use client::Client;
+use agama_utils::{actor::Message, api::bootloader};
 
-pub mod monitor;
-pub use monitor::Monitor;
+pub struct GetConfig;
+
+impl Message for GetConfig {
+    type Reply = bootloader::Config;
+}
+
+pub struct SetConfig {
+    pub config: serde_json::Value,
+}
+
+impl SetConfig {
+    // FIXME: To be consistent, this action should receive
+    // the bootloader configuration. However, it uses an internal
+    // FullConfig struct defined in the agama-bootloader::client module.
+    pub fn new(config: serde_json::Value) -> Self {
+        Self { config }
+    }
+}
+
+impl Message for SetConfig {
+    type Reply = ();
+}
