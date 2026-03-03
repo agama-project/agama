@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2023-2024] SUSE LLC
+# Copyright (c) [2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -20,13 +20,25 @@
 # find current contact information at www.suse.com.
 
 module Agama
-  module DBus
-    module Storage
-      # Module for D-Bus interfaces of storage.
-      module Interfaces
+  module Storage
+    module ZFCP
+      # zFCP config.
+      class Config
+        # List of channels to activate.
+        #
+        # @return [Array<String>]
+        attr_accessor :controllers
+
+        # List of devices.
+        #
+        # @return [Array<Configs::Device>]
+        attr_accessor :devices
+
+        def initialize
+          @controllers = []
+          @devices = []
+        end
       end
     end
   end
 end
-
-require "agama/dbus/storage/interfaces/zfcp_manager"

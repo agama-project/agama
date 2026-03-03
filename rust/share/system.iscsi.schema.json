@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2019-09/schema",
-  "$id": "https://github.com/openSUSE/agama/blob/master/rust/share/system.storage.schema.json",
+  "$id": "https://github.com/openSUSE/agama/blob/master/rust/share/system.iscsi.schema.json",
   "title": "System",
   "description": "API description of the iSCSI system",
   "type": "object",

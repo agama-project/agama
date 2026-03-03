@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2023] SUSE LLC
+# Copyright (c) [2023-2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -26,8 +26,6 @@ module Agama
     module ZFCP
       # zFCP controller
       class Controller
-        include Yast2::Equatable
-
         # zFCP controller channel id
         #
         # @return [String]
@@ -43,13 +41,17 @@ module Agama
         # @return [Boolean]
         attr_writer :lun_scan
 
-        eql_attr :channel, :active?
+        # Available WWPNs for the controller.
+        #
+        # @return [Array<String>]
+        attr_accessor :wwpns
 
         # Constructor
         #
         # @param channel [String]
         def initialize(channel)
           @channel = channel
+          @wwpns = []
         end
 
         # Whether the controller is active

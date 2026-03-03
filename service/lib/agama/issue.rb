@@ -55,7 +55,7 @@ module Agama
     #
     # @param description [String]
     # @param details [String, nil]
-    def initialize(description, kind: :generic, details: "")
+    def initialize(description, kind: :generic, details: nil)
       @description = description
       @kind = kind
       @details = details

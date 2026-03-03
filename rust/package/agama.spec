@@ -261,6 +261,7 @@ echo $PATH
 %{_datadir}/agama/schema/software.schema.json
 %{_datadir}/agama/schema/storage.schema.json
 %{_datadir}/agama/schema/storage.model.schema.json
+%{_datadir}/agama/schema/zfcp.schema.json
 
 %files -n agama-autoinstall
 %{_bindir}/agama-autoinstall
