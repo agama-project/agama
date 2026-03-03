@@ -17,31 +17,61 @@ get_mac() {
   fi
 }
 
+#
+# function get_dev_hcn
+#	Given device path, Search for device-tree, get HCNID,
+#	device name, and mode to configure/delete/query device
+#	or active-backup bonding
+#
+# $1 path to device-tree device
+#
 get_dev_hcn() {
   local _dev=$1
   local _hcnid
   local _devname
+  local _mode
   local _mac
+  local _wait=12
 
   _hcnid=$(xdump4 "$_dev"/ibm,hcn-id)
   if [ -z "$_hcnid" ]; then
     return 1
   fi
 
-  # Get the device name using ofpathname
-  _devname=$(ofpathname -l "$(echo "$_dev" | sed -e "s/\/proc\/device-tree//")" 2>/dev/null)
-  _mac=$(get_mac "$_dev")
+  _mode=$(tr -d '\0' <"$_dev"/ibm,hcn-mode 2>/dev/null)
 
-  if [ -n "$_devname" ]; then
-    echo "bond$_hcnid $_devname $_mac"
-    return 0
+  # Get the device name. After migration, it may take some time for
+  # sysfs interface up or OFPATHENAME command to translate to device name.
+  # Let's retry a few times.
+  while [ $_wait -ne 0 ]; do
+    local _ofpath=$(echo "$_dev" | sed -e "s/^\/proc\/device-tree//")
+    if _devname=$(ofpathname -l "$_ofpath" 2>/dev/null); then
+      if [ -e "/sys/class/net/$_devname" ]; then
+        info "ofpathname waiting for /sys/class/net device $_devname ready"
+        _mac=$(get_mac "$_dev")
+        break
+      fi
+    fi
+
+    info "ofpathname return $?, devname is $_devname, and the retry counter $_wait"
+    sleep 15
+    _wait=$((_wait - 1))
+  done
+
+  if [ -z "$_devname" ]; then
+    warn "get_dev_hcn: couldn't get dev name for $_dev"
+    return 1
   fi
-  return 1
+
+  # Output the bond mapping: bondname devname mac mode
+  echo "bond$_hcnid $_devname ${_mac:-none} ${_mode:-none}"
+  return 0
 }
 
 # Collect all mappings
 MAPPINGS=""
 if [ -d /proc/device-tree ]; then
+  # PCI devices (SR-IOV)
   for pci_dev in /proc/device-tree/pci*; do
     [ -d "$pci_dev" ] || continue
     for dev in "$pci_dev"/ethernet*; do
@@ -54,6 +84,19 @@ if [ -d /proc/device-tree ]; then
       fi
     done
   done
+
+  # vdevices (VNIC and Virtual Ethernet)
+  if [ -d /proc/device-tree/vdevice ]; then
+    for dev in /proc/device-tree/vdevice/vnic* /proc/device-tree/vdevice/l-lan*; do
+      [ -d "$dev" ] || continue
+      if [ -e "$dev"/ibm,hcn-id ]; then
+        res=$(get_dev_hcn "$dev")
+        if [ -n "$res" ]; then
+          MAPPINGS="$MAPPINGS $res"
+        fi
+      fi
+    done
+  fi
 fi
 
 if [ -z "$MAPPINGS" ]; then
@@ -88,24 +131,34 @@ for BONDNAME in $BOND_NAMES; do
   SLAVES=""
   SLAVE_NAMES=""
   SLAVE_MACS=""
+  PRIMARY=""
 
   # Extract slaves for this bond
   set -- $MAPPINGS
-  while [ $# -ge 3 ]; do
+  while [ $# -ge 4 ]; do
     if [ "$1" = "$BONDNAME" ]; then
-      SLAVE_NAMES="$SLAVE_NAMES $2"
-      [ -n "$3" ] && SLAVE_MACS="$SLAVE_MACS $3"
+      _s_name=$2
+      _s_mac=$3
+      _s_mode=$4
+
+      SLAVE_NAMES="$SLAVE_NAMES $_s_name"
+      [ "$_s_mac" != "none" ] && SLAVE_MACS="$SLAVE_MACS $_s_mac"
+      [ "$_s_mode" = "primary" ] && PRIMARY="$_s_name"
+
       if [ -z "$SLAVES" ]; then
-        SLAVES="$2"
+        SLAVES="$_s_name"
       else
-        SLAVES="$SLAVES,$2"
+        SLAVES="$SLAVES,$_s_name"
       fi
     fi
-    shift 3
+    shift 4
   done
 
   # Add bond definition
-  NEW_ARGS="$NEW_ARGS bond=$BONDNAME:$SLAVES:mode=1,miimon=100,fail_over_mac=2"
+  BOND_OPTS="mode=1,miimon=100,fail_over_mac=2"
+  [ -n "$PRIMARY" ] && BOND_OPTS="$BOND_OPTS,primary=$PRIMARY"
+
+  NEW_ARGS="$NEW_ARGS bond=$BONDNAME:$SLAVES:$BOND_OPTS"
 
   if [ -n "$HNV_IP" ]; then
     MATCHED=0
@@ -212,6 +265,7 @@ done
 if [ $CHANGED -eq 1 ] || [ -n "$NEW_ARGS" ]; then
   info "parse-hcnmgr: writing /etc/cmdline.d/99-hcnmgr.conf with $NEW_ARGS"
   # Write to cmdline.d
+  mkdir -p /etc/cmdline.d
   echo "$NEW_ARGS" >/etc/cmdline.d/99-hcnmgr.conf
 
   # Update global CMDLINE
