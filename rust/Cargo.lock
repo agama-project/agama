@@ -299,6 +299,7 @@ dependencies = [
  "agama-lib",
  "agama-locale-data",
  "agama-manager",
+ "agama-network",
  "agama-software",
  "agama-transfer",
  "agama-utils",
