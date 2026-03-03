@@ -27,6 +27,8 @@ import testingPatterns from "./patterns.test.json";
 import testingProposal from "./proposal.test.json";
 import SoftwarePage from "./SoftwarePage";
 
+const mockProposal = jest.fn();
+
 jest.mock("~/components/layout/Header", () => () => <div>Header Mock</div>);
 jest.mock("~/components/questions/Questions", () => () => <div>Questions Mock</div>);
 
@@ -35,7 +37,7 @@ jest.mock("~/hooks/model/issue", () => ({
 }));
 
 jest.mock("~/hooks/model/proposal/software", () => ({
-  useProposal: () => testingProposal,
+  useProposal: () => mockProposal(),
 }));
 
 jest.mock("~/hooks/model/system/software", () => ({
@@ -43,6 +45,10 @@ jest.mock("~/hooks/model/system/software", () => ({
 }));
 
 describe("SoftwarePage", () => {
+  beforeEach(() => {
+    mockProposal.mockReturnValue(testingProposal);
+  });
+
   it("renders a list of selected patterns", () => {
     installerRender(<SoftwarePage />);
     screen.getAllByText(/GNOME/);
@@ -63,5 +69,16 @@ describe("SoftwarePage", () => {
   it("renders a button for navigating to patterns selection", () => {
     installerRender(<SoftwarePage />);
     screen.getByRole("link", { name: "Change selection" });
+  });
+
+  describe("when there is no proposal yet", () => {
+    beforeEach(() => {
+      mockProposal.mockReturnValue(null);
+    });
+
+    it("renders an informative messsage", () => {
+      installerRender(<SoftwarePage />);
+      screen.getByText("No information available yet");
+    });
   });
 });

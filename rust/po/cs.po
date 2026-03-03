@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-02-19 16:43+0000\n"
+"POT-Creation-Date: 2026-02-25 13:04+0000\n"
 "PO-Revision-Date: 2026-02-16 15:38+0000\n"
 "Last-Translator: Ladislav Slezák <lslezak@suse.com>\n"
 "Language-Team: Czech <https://l10n.opensuse.org/projects/agama/agama-rust-"
@@ -105,16 +105,16 @@ msgstr "Zapisuji konfiguraci"
 msgid "Reading configuration"
 msgstr "Načítám konfiguraci"
 
-#: agama-security/src/service.rs:228
+#: agama-security/src/service.rs:226
 msgid "Reject"
 msgstr "Odmítnout"
 
-#: agama-security/src/service.rs:228
+#: agama-security/src/service.rs:226
 #: agama-software/src/callbacks/security.rs:109
 msgid "Trust"
 msgstr "Důvěřovat"
 
-#: agama-security/src/service.rs:229
+#: agama-security/src/service.rs:227
 msgid ""
 "Trying to import a self-signed certificate. Do you want to trust it and "
 "register the product?"
@@ -153,25 +153,33 @@ msgstr ""
 msgid "Skip"
 msgstr "Přeskočit"
 
-#: agama-software/src/zypp_server.rs:304
+#: agama-software/src/zypp_server.rs:317
 msgid "Updating the list of repositories"
 msgstr "Aktualizuji seznam repozitářů"
 
-#: agama-software/src/zypp_server.rs:305
+#: agama-software/src/zypp_server.rs:318
 msgid "Refreshing metadata from the repositories"
 msgstr "Obnovuji metadata repozitářů"
 
-#: agama-software/src/zypp_server.rs:306
+#: agama-software/src/zypp_server.rs:319
 msgid "Calculating the software proposal"
 msgstr "Vyhodnocuje se návrh softwaru"
 
-#: agama-software/src/zypp_server.rs:309
+#: agama-software/src/zypp_server.rs:322
 msgid "Registering the system"
 msgstr "Systém se registruje"
 
-#: agama-software/src/zypp_server.rs:409
+#: agama-software/src/zypp_server.rs:420
 msgid "The product must be registered"
 msgstr "Produkt musí být zaregistrovaný"
+
+#: agama-software/src/zypp_server.rs:458
+msgid "There are conflicts in software selection"
+msgstr ""
+
+#: agama-software/src/zypp_server.rs:471
+msgid "There are software conflict in software selection"
+msgstr ""
 
 #: agama-users/src/service.rs:140
 msgid ""

@@ -56,6 +56,10 @@ export default {
   "%s with %d partitions": [
     "%s avec %d partitions"
   ],
+  "1 device selected. Use the actions toolbar to apply changes.": [
+    "",
+    ""
+  ],
   "A %1$s of %2$s will be created for %3$s if possible": [
     "Un élément de type %1$s de %2$s sera créé pour %3$s si possible"
   ],
@@ -202,10 +206,6 @@ export default {
   ],
   "Apply selected solution": [
     "Appliquer la solution sélectionnée"
-  ],
-  "Apply to the selected device": [
-    "Appliquer à l’appareil sélectionné",
-    "Appliquer aux %s appareils sélectionnés"
   ],
   "Applying changes": [
     "Appliquer changements"
@@ -1118,9 +1118,6 @@ export default {
   "No": [
     "Non"
   ],
-  "No DASD devices were found in this machine.": [
-    "Aucun dispositif DASD n’a été trouvé dans cette machine."
-  ],
   "No Wi-Fi networks were found": [
     "Aucun réseau Wi-Fi n'a été trouvé"
   ],
@@ -1481,9 +1478,6 @@ export default {
   ],
   "Select at least one disk.": [
     "Sélectionnez au moins un disque."
-  ],
-  "Select devices to enable bulk actions.": [
-    "Sélectionner appareils pour activer les actions en masse."
   ],
   "Select or enter a mount point": [
     "Sélectionner ou saisir un point de montage"
@@ -1860,12 +1854,6 @@ export default {
   "These are the settings for the product to install. The installer language can be adjusted via the [settings panel] accessible from the top bar.": [
     "Il s'agit des paramètres du produit à installer. La langue du programme d'installation peut être modifiée via le [panneau des paramètres] accessible depuis la barre supérieure."
   ],
-  "This action could destroy any data stored on the device.": [
-    "Cette action pourrait détruire toutes les données stockées sur l'appareil."
-  ],
-  "This action could destroy any data stored on the devices listed below.": [
-    "Cette action pourrait détruire toute donnée stockée sur les appareils listés ci-dessous."
-  ],
   "This extension is not available on the server. Ask the server administrator to mirror the extension.": [
     "Cette extension n'est pas disponible sur le serveur. Demandez à l'administrateur du serveur de mettre en miroir l'extension."
   ],
@@ -2166,12 +2154,6 @@ export default {
   "[CAPS LOCK] is on": [
     "La fonction [VERR MAJ] est activée"
   ],
-  "active": [
-    "actif"
-  ],
-  "all": [
-    "tout"
-  ],
   "approx. %s": [
     "env. %s"
   ],
@@ -2196,29 +2178,17 @@ export default {
   "logical volume": [
     "volume logique"
   ],
-  "no": [
-    "non"
-  ],
-  "offline": [
-    "hors ligne"
-  ],
   "partition": [
     "partition"
   ],
   "proposal.Device": [
     ""
   ],
-  "read_only": [
-    "lecture_seulement"
-  ],
   "reset to defaults": [
     "rétablir les valeurs par défaut"
   ],
   "root": [
     ""
-  ],
-  "yes": [
-    "oui"
   ],
   "zFCP": [
     "zFCP"

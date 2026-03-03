@@ -56,6 +56,10 @@ export default {
   "%s with %d partitions": [
     "%s ile %d bölümler"
   ],
+  "1 device selected. Use the actions toolbar to apply changes.": [
+    "",
+    ""
+  ],
   "A %1$s of %2$s will be created for %3$s if possible": [
     "Mümkünse %3$s için %2$s'den %1$s oluşturulacak"
   ],
@@ -203,10 +207,6 @@ export default {
   "Apply selected solution": [
     "Seçilen çözümü uygula"
   ],
-  "Apply to the selected device": [
-    "Seçili cihaz biçimlendirilsin mi?",
-    "Seçili %s aygıt biçimlendirilsin mi?"
-  ],
   "Applying changes": [
     "Değişiklikleri uygula"
   ],
@@ -229,7 +229,7 @@ export default {
     "Kendiliğinden LUN Taraması"
   ],
   "Auto and manual": [
-    ""
+    "Otomatik ve Manuel"
   ],
   "Automatic": [
     "Kendiliğinden"
@@ -298,7 +298,7 @@ export default {
     "Anlık imajlarla Btrfs"
   ],
   "By proceeding, the installation will begin with defined settings.": [
-    ""
+    "İlerlerseniz, kurulum tanımladığınız ayarlarla başlayacak."
   ],
   "CPU": [
     ""
@@ -411,8 +411,15 @@ export default {
   "Configured for installation only": [
     "Yalnızca kurulum için yapılandırıldı"
   ],
+  "Configured with %d connection": [
+    "bağlantı %d ile ayarlandı",
+    "bağlantılar %d ile ayarlandı"
+  ],
   "Confirm": [
     "Onayla"
+  ],
+  "Confirm and install": [
+    "Onayla ve Kur"
   ],
   "Confirm that you really want to continue.": [
     "Gerçekten devam etmek istediğinizi onaylayın."
@@ -498,8 +505,11 @@ export default {
   "DASD %s": [
     "DASD %s"
   ],
+  "DHCP and %s": [
+    "DHCP ve %s"
+  ],
   "DHCP, %s": [
-    ""
+    "DHCP, %s"
   ],
   "DIAG": [
     "DIAG"
@@ -550,7 +560,7 @@ export default {
     "Mevcut içeriği sil"
   ],
   "Delete existing data and install %s?": [
-    ""
+    "Var olan veriyi silip %s'i kur?"
   ],
   "Delete volume group": [
     "Birim grubunu sil"
@@ -852,6 +862,9 @@ export default {
   "If a local media was used to run this installer, remove it before the next boot.": [
     "Bu yükleyiciyi çalıştırmak için yerel medya kullanıldıysa bir sonraki önyüklemeden önce bunu kaldırın."
   ],
+  "If unsure, cancel and review storage settings.": [
+    "Eğer emin değilseniz, geri dönüp bölümlendirme ayarlarınızı gözden geçirin."
+  ],
   "If you are unsure, check and adjust the storage settings.": [
     ""
   ],
@@ -867,8 +880,14 @@ export default {
   "Install": [
     "Yükle"
   ],
+  "Install %s?": [
+    "%s yüklensin mi?"
+  ],
   "Install now with potential data loss": [
     ""
+  ],
+  "Installation only": [
+    "Sadece kurulum"
   ],
   "Installation settings will automatically update to match the new product's defaults.": [
     ""
@@ -1120,9 +1139,6 @@ export default {
   ],
   "No": [
     "Hayır"
-  ],
-  "No DASD devices were found in this machine.": [
-    "Bu makinede DASD aygıtı bulunamadı."
   ],
   "No Wi-Fi networks were found": [
     "Hiçbir Wi-Fi ağı bulunamadı"
@@ -1487,9 +1503,6 @@ export default {
   ],
   "Select at least one disk.": [
     "En az bir disk seç."
-  ],
-  "Select devices to enable bulk actions.": [
-    "Toplu işlemleri etkinleştirmek için aygıtları seç."
   ],
   "Select or enter a mount point": [
     "Bir bağlama noktası seçin veya girin"
@@ -1866,12 +1879,6 @@ export default {
   "These are the settings for the product to install. The installer language can be adjusted via the [settings panel] accessible from the top bar.": [
     "Bunlar, yüklenecek ürün için ayarlardır. Yükleyici dili, üst çubuktan erişilebilen [ayarlar paneli] aracılığıyla ayarlanabilir."
   ],
-  "This action could destroy any data stored on the device.": [
-    "Bu eylem cihazda saklanan tüm verileri yok edebilir."
-  ],
-  "This action could destroy any data stored on the devices listed below.": [
-    "Bu işlem aşağıda listelenen cihazlarda saklanan tüm verileri yok edebilir."
-  ],
   "This extension is not available on the server. Ask the server administrator to mirror the extension.": [
     "Bu uzantı sunucuda mevcut değil. Sunucu yöneticisinden uzantıyı yansıtmasını isteyin."
   ],
@@ -2122,7 +2129,7 @@ export default {
     "Zayıf sinyal"
   ],
   "When ready, click on the [install] button at the end of the page.": [
-    ""
+    "Hazır olduğunzda sayfanın sonundaki [install] butonuna basın."
   ],
   "Wi-Fi": [
     "Wi-Fi"
@@ -2172,12 +2179,6 @@ export default {
   "[CAPS LOCK] is on": [
     "[CAPS LOCK] açık"
   ],
-  "active": [
-    "aktif et"
-  ],
-  "all": [
-    "tümü"
-  ],
   "approx. %s": [
     "yaklaşık %s"
   ],
@@ -2202,29 +2203,17 @@ export default {
   "logical volume": [
     "mantıksal alan"
   ],
-  "no": [
-    "hayır"
-  ],
-  "offline": [
-    "çevrimdışı"
-  ],
   "partition": [
     "bölüm"
   ],
   "proposal.Device": [
     ""
   ],
-  "read_only": [
-    "salt_okunur"
-  ],
   "reset to defaults": [
     "öntanımlılara sıfırla"
   ],
   "root": [
     ""
-  ],
-  "yes": [
-    "evet"
   ],
   "zFCP": [
     "zFCP"

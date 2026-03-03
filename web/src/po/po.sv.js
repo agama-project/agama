@@ -69,6 +69,10 @@ export default {
   "(step %s of %s)": [
     "(steg %s av %s)"
   ],
+  "1 device selected. Use the actions toolbar to apply changes.": [
+    "",
+    ""
+  ],
   "A %1$s of %2$s will be created for %3$s if possible": [
     "En %1$s av %2$s kommer att skapas för %3$s om möjligt"
   ],
@@ -215,10 +219,6 @@ export default {
   ],
   "Apply selected solution": [
     "Använd den valda lösningen"
-  ],
-  "Apply to the selected device": [
-    "Tillämpa på den valda enheten",
-    "Tillämpa på det %s valda enheterna"
   ],
   "Applying changes": [
     "Tillämpar ändringar"
@@ -1228,9 +1228,6 @@ export default {
   "No": [
     "Nej"
   ],
-  "No DASD devices were found in this machine.": [
-    "Inga DASD-enheter hittades i den här maskinen."
-  ],
   "No Wi-Fi networks were found": [
     "Inga Wi-Fi-nätverk hittades"
   ],
@@ -1637,9 +1634,6 @@ export default {
   "Select device": [
     "Välj enhet"
   ],
-  "Select devices to enable bulk actions.": [
-    "Välj enheter för att aktivera massåtgärder."
-  ],
   "Select or enter a mount point": [
     "Välj eller ange en monteringspunkt"
   ],
@@ -2036,12 +2030,6 @@ export default {
   "These are the settings for the product to install. The installer language can be adjusted via the [settings panel] accessible from the top bar.": [
     "Det här är inställningarna för produkten som ska installeras. Installationsspråket kan justeras via [inställningspanelen] som är tillgänglig från det övre fältet."
   ],
-  "This action could destroy any data stored on the device.": [
-    "Denna åtgärd kan förstöra all data som lagras på enheten."
-  ],
-  "This action could destroy any data stored on the devices listed below.": [
-    "Denna åtgärd kan förstöra all data som lagras på enheterna som listas nedan."
-  ],
   "This extension is not available on the server. Ask the server administrator to mirror the extension.": [
     "Det här tillägget är inte tillgängligt på servern. Be serveradministratören att spegla tillägget."
   ],
@@ -2369,12 +2357,6 @@ export default {
   "[CAPS LOCK] is on": [
     "[CAPS LOCK] är på"
   ],
-  "active": [
-    "aktiv"
-  ],
-  "all": [
-    "alla"
-  ],
   "approx. %s": [
     "cirka. %s"
   ],
@@ -2399,29 +2381,17 @@ export default {
   "logical volume": [
     "logisk volym"
   ],
-  "no": [
-    "nej"
-  ],
-  "offline": [
-    "offline"
-  ],
   "partition": [
     "partition"
   ],
   "proposal.Device": [
     "förslag.Enhet"
   ],
-  "read_only": [
-    "läs_endast"
-  ],
   "reset to defaults": [
     "återställ till standard"
   ],
   "root": [
     "root"
-  ],
-  "yes": [
-    "ja"
   ],
   "zFCP": [
     "zFCP"

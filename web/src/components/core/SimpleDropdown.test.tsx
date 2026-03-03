@@ -50,7 +50,10 @@ describe("SimpleDropdown", () => {
     const { user } = installerRender(
       <SimpleDropdown items={mockItems} label="Actions for 0.0.0160" />,
     );
-    await user.click(screen.getByRole("button", { name: "Actions for 0.0.0160" }));
+
+    const toggle = screen.getByRole("button", { name: "Actions for 0.0.0160" });
+    await user.click(toggle);
+    expect(toggle).toHaveAttribute("aria-expanded", "true");
     screen.getByRole("menuitem", { name: "Activate" });
     screen.getByRole("menuitem", { name: "Deactivate" });
     screen.getByRole("menuitem", { name: "Format" });

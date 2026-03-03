@@ -8,187 +8,181 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-02-25 13:04+0000\n"
-"PO-Revision-Date: 2026-02-26 15:21+0000\n"
-"Last-Translator: Ettore Atalan <atalanttore@googlemail.com>\n"
-"Language-Team: German <https://l10n.opensuse.org/projects/agama/agama-rust-"
-"master/de/>\n"
-"Language: de\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: none\n"
+"Language: ro\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.16.1\n"
+"Plural-Forms: nplurals=3; plural=n==1 ? 0 : (n==0 || (n%100 > 0 && n%100 < "
+"20)) ? 1 : 2;\n"
 
 #: agama-autoinstall/src/questions.rs:41 agama-utils/src/api/question.rs:292
 #: agama-utils/src/question/start.rs:54
 msgid "No"
-msgstr "Nein"
+msgstr ""
 
 #: agama-autoinstall/src/questions.rs:41 agama-utils/src/api/question.rs:292
 #: agama-utils/src/question/start.rs:54
 msgid "Yes"
-msgstr "Ja"
+msgstr ""
 
 #: agama-manager/src/tasks/runner.rs:185
 msgid "Prepare the system"
-msgstr "System vorbereiten"
+msgstr ""
 
 #: agama-manager/src/tasks/runner.rs:186
 msgid "Install software"
-msgstr "Software installieren"
+msgstr ""
 
 #: agama-manager/src/tasks/runner.rs:187
 msgid "Configure the system"
-msgstr "System konfigurieren"
+msgstr ""
 
 #: agama-manager/src/tasks/runner.rs:285
 msgid "Storing security settings"
-msgstr "Sicherheitseinstellungen speichern"
+msgstr ""
 
 #: agama-manager/src/tasks/runner.rs:286
 msgid "Setting up the hostname"
-msgstr "Hostname einrichten"
+msgstr ""
 
 #: agama-manager/src/tasks/runner.rs:287
 msgid "Setting up the network proxy"
-msgstr "Netzwerkproxy einrichten"
+msgstr ""
 
 #: agama-manager/src/tasks/runner.rs:288
 msgid "Importing user files"
-msgstr "Benutzerdateien importieren"
+msgstr ""
 
 #: agama-manager/src/tasks/runner.rs:289
 msgid "Running user pre-installation scripts"
-msgstr "Ausführen von Benutzer-Skripten vor der Installation"
+msgstr ""
 
 #: agama-manager/src/tasks/runner.rs:290
 msgid "Storing questions settings"
-msgstr "Frageeinstellungen speichern"
+msgstr ""
 
 #: agama-manager/src/tasks/runner.rs:291
 msgid "Storing localization settings"
-msgstr "Lokalisierungseinstellungen speichern"
+msgstr ""
 
 #: agama-manager/src/tasks/runner.rs:292
 msgid "Storing users settings"
-msgstr "Benutzereinstellungen speichern"
+msgstr ""
 
 #: agama-manager/src/tasks/runner.rs:293
 msgid "Configuring iSCSI devices"
-msgstr "iSCSI-Geräte konfigurieren"
+msgstr ""
 
 #: agama-manager/src/tasks/runner.rs:297
 msgid "Configuring DASD devices"
-msgstr "DASD-Geräte konfigurieren"
+msgstr ""
 
 #: agama-manager/src/tasks/runner.rs:301
 msgid "Setting up the network"
-msgstr "Netzwerk einrichten"
+msgstr ""
 
 #: agama-manager/src/tasks/runner.rs:306
 msgid "Preparing the software proposal"
-msgstr "Software-Vorschlag vorbereiten"
+msgstr ""
 
 #: agama-manager/src/tasks/runner.rs:307
 msgid "Preparing the storage proposal"
-msgstr "Speicherungsvorschlag vorbereiten"
+msgstr ""
 
 #: agama-manager/src/tasks/runner.rs:308
 msgid "Storing bootloader settings"
-msgstr "Bootloader-Einstellungen speichern"
+msgstr ""
 
 #: agama-network/src/service.rs:518
 msgid "Writing configuration"
-msgstr "Konfiguration schreiben"
+msgstr ""
 
 #: agama-network/src/service.rs:519
 msgid "Reading configuration"
-msgstr "Konfiguration lesen"
+msgstr ""
 
 #: agama-security/src/service.rs:226
 msgid "Reject"
-msgstr "Ablehnen"
+msgstr ""
 
 #: agama-security/src/service.rs:226
 #: agama-software/src/callbacks/security.rs:109
 msgid "Trust"
-msgstr "Vertrauen"
+msgstr ""
 
 #: agama-security/src/service.rs:227
 msgid ""
 "Trying to import a self-signed certificate. Do you want to trust it and "
 "register the product?"
 msgstr ""
-"Es wird versucht, ein selbstsigniertes Zertifikat zu importieren. Möchten "
-"Sie diesem Zertifikat vertrauen und das Produkt registrieren?"
 
 #: agama-software/src/callbacks/commit_download.rs:48
 #: agama-software/src/callbacks/install.rs:56
 msgid "Ignore"
-msgstr "Ignorieren"
+msgstr ""
 
 #: agama-software/src/callbacks/commit_download.rs:48
 #: agama-software/src/callbacks/install.rs:56
 #: agama-software/src/callbacks/install.rs:81
 msgid "Retry"
-msgstr "Wiederholen"
+msgstr ""
 
 #: agama-software/src/callbacks/install.rs:78
 msgid "There was a problem running a package script."
-msgstr "Es gab ein Problem bei der Ausführung eines Paketskripts."
+msgstr ""
 
 #: agama-software/src/callbacks/install.rs:81
 msgid "Continue"
-msgstr "Fortsetzen"
+msgstr ""
 
 #. TRANSLATORS: substituting: key ID, (key name), fingerprint
 #: agama-software/src/callbacks/security.rs:102
+#, rust-format
 msgid ""
 "The key {0} ({1}) with fingerprint {2} is unknown. Do you want to trust this "
 "key?"
 msgstr ""
-"Der Schlüssel {0} ({1}) mit dem Fingerabdruck {2} ist unbekannt. Möchten Sie "
-"diesem Schlüssel vertrauen?"
 
 #: agama-software/src/callbacks/security.rs:109
 msgid "Skip"
-msgstr "Überspringen"
+msgstr ""
 
 #: agama-software/src/zypp_server.rs:317
 msgid "Updating the list of repositories"
-msgstr "Liste der Repositorien wird aktualisiert"
+msgstr ""
 
 #: agama-software/src/zypp_server.rs:318
 msgid "Refreshing metadata from the repositories"
-msgstr "Metadaten aus den Repositorien wird aktualisiert"
+msgstr ""
 
 #: agama-software/src/zypp_server.rs:319
 msgid "Calculating the software proposal"
-msgstr "Software-Vorschlag wird berechnet"
+msgstr ""
 
 #: agama-software/src/zypp_server.rs:322
 msgid "Registering the system"
-msgstr "System wird registriert"
+msgstr ""
 
 #: agama-software/src/zypp_server.rs:420
 msgid "The product must be registered"
-msgstr "Das Produkt muss registriert werden"
+msgstr ""
 
 #: agama-software/src/zypp_server.rs:458
 msgid "There are conflicts in software selection"
-msgstr "Es gibt Konflikte bei der Softwareauswahl"
+msgstr ""
 
 #: agama-software/src/zypp_server.rs:471
 msgid "There are software conflict in software selection"
-msgstr "Es gibt einen Softwarekonflikt bei der Softwareauswahl"
+msgstr ""
 
 #: agama-users/src/service.rs:140
 msgid ""
 "Defining a user, setting the root password or a SSH public key is required"
 msgstr ""
-"Die Definition eines Benutzers, das Festlegen des Root-Passworts oder eines "
-"öffentlichen SSH-Schlüssels ist erforderlich"
 
 #: agama-users/src/service.rs:153
 msgid "First user information is incomplete"
-msgstr "Die Informationen zum ersten Benutzer sind unvollständig"
+msgstr ""

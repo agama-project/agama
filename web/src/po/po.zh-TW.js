@@ -60,6 +60,9 @@ export default {
   "%s with %d partitions": [
     "%s (包含 %d 個分割區)"
   ],
+  "1 device selected. Use the actions toolbar to apply changes.": [
+    ""
+  ],
   "A %1$s of %2$s will be created for %3$s if possible": [
     "將建立一個 %1$s (%2$s)，以用於 %3$s (如果可能)"
   ],
@@ -203,9 +206,6 @@ export default {
   ],
   "Apply selected solution": [
     "套用所選的解決方案"
-  ],
-  "Apply to the selected device": [
-    "套用於 %s 個所選裝置"
   ],
   "Applying changes": [
     "正在套用變更"
@@ -1116,9 +1116,6 @@ export default {
   "No": [
     "否"
   ],
-  "No DASD devices were found in this machine.": [
-    "未在此機器上找到任何 DASD 裝置。"
-  ],
   "No Wi-Fi networks were found": [
     "未找到 WiFi 網路"
   ],
@@ -1484,9 +1481,6 @@ export default {
   ],
   "Select at least one disk.": [
     "請至少選取一個磁碟。"
-  ],
-  "Select devices to enable bulk actions.": [
-    "選取裝置以啟用大量動作。"
   ],
   "Select or enter a mount point": [
     "選取或輸入掛接點"
@@ -1854,12 +1848,6 @@ export default {
   "These are the settings for the product to install. The installer language can be adjusted via the [settings panel] accessible from the top bar.": [
     "以下是待安裝產品的相關設定。您可以透過頂部列存取 [設定面板]，並從中調整安裝程式語言。"
   ],
-  "This action could destroy any data stored on the device.": [
-    "此動作無法刪除該裝置上儲存的任何資料。"
-  ],
-  "This action could destroy any data stored on the devices listed below.": [
-    "此動作無法刪除下列裝置上儲存的任何資料。"
-  ],
   "This extension is not available on the server. Ask the server administrator to mirror the extension.": [
     "無法在該伺服器上使用此延伸。您可以讓伺服器管理員鏡像該延伸。"
   ],
@@ -2163,12 +2151,6 @@ export default {
   "[CAPS LOCK] is on": [
     "已開啟 [大寫鎖定]"
   ],
-  "active": [
-    "已啟用"
-  ],
-  "all": [
-    "全部"
-  ],
   "approx. %s": [
     "大約為 %s"
   ],
@@ -2193,29 +2175,17 @@ export default {
   "logical volume": [
     "邏輯磁碟區"
   ],
-  "no": [
-    "否"
-  ],
-  "offline": [
-    "離線"
-  ],
   "partition": [
     "分割區"
   ],
   "proposal.Device": [
     ""
   ],
-  "read_only": [
-    "唯讀"
-  ],
   "reset to defaults": [
     "重設為預設值"
   ],
   "root": [
     ""
-  ],
-  "yes": [
-    "是"
   ],
   "zFCP": [
     "zFCP"
