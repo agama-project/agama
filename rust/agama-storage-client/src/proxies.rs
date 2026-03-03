@@ -32,3 +32,5 @@ pub use dasd::{
     DASDProxy, FormatChanged, FormatFinished, ProgressChanged as DASDProgressChanged,
     ProgressFinished as DASDProgressFinished, SystemChanged as DASDSystemChanged,
 };
+
+pub mod zfcp;
