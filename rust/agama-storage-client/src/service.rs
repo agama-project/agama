@@ -71,7 +71,9 @@ impl Starter {
         iscsi_proxy.config().await?;
 
         let dasd_proxy = if Arch::is_s390() {
-            Some(proxies::DASDProxy::new(&self.dbus).await?)
+            let proxy = proxies::DASDProxy::new(&self.dbus).await?;
+            proxy.config().await?;
+            Some(proxy)
         } else {
             None
         };
