@@ -98,7 +98,7 @@ export default function DASDFormatProgress() {
 
   return (
     <Card isPlain>
-      <CardTitle>{_("Formatting devices progress")}</CardTitle>
+      <CardTitle>{_("Formatting devices")}</CardTitle>
       <CardBody>
         <Stack hasGutter>
           {progress.map((p) => {
