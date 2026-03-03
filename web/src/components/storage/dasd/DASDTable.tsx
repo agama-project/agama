@@ -241,7 +241,7 @@ const buildActions = ({
       deactivate: device.active,
       diagOn: !device.diag,
       diagOff: device.diag,
-      format: !device.formatted,
+      format: device.active,
     };
 
     return actions.filter((a) => keptActions[a.id]);
