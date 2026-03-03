@@ -21,89 +21,112 @@
  */
 
 import React from "react";
-import { screen } from "@testing-library/react";
+import { screen, act } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
-import type { Device } from "~/model/system/dasd";
-
 import DASDFormatProgress from "./DASDFormatProgress";
 
-// FIXME: adapt to new API
-type FormatSummary = {
-  total: number;
-  step: number;
-  done: boolean;
-};
+const mockOnEvent = jest.fn();
 
-type FormatJob = {
-  jobId: string;
-  summary?: { [key: string]: FormatSummary };
-};
+jest.mock("~/context/installer", () => ({
+  useInstallerClient: () => ({
+    onEvent: mockOnEvent,
+  }),
+}));
 
-/* eslint-disable @typescript-eslint/no-unused-vars */
-let mockDASDFormatJobs: FormatJob[];
-let mockDASDDevices: Device[];
+describe("DASDFormatProgress", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
 
-// Skipped during migration to v2
-describe.skip("DASDFormatProgress", () => {
-  describe("when there is already some progress", () => {
-    beforeEach(() => {
-      mockDASDFormatJobs = [
-        {
-          jobId: "0.0.0200",
-          summary: {
-            "0.0.0200": {
-              total: 5,
-              step: 1,
-              done: false,
-            },
-          },
-        },
-      ];
+  describe("when there are no signal progress events", () => {
+    it("renders nothing", () => {
+      mockOnEvent.mockImplementation(() => jest.fn());
 
-      mockDASDDevices = [
-        {
-          channel: "0.0.0200",
-          active: false,
-          deviceName: "dasda",
-          type: "eckd",
-          formatted: false,
-          diag: false,
-          status: "active",
-          accessType: "rw",
-          partitionInfo: "1",
-        },
-      ];
-    });
+      const { container } = installerRender(<DASDFormatProgress />);
 
-    it("renders the progress", () => {
-      installerRender(<DASDFormatProgress />);
-      expect(screen.queryByRole("progressbar")).toBeInTheDocument();
-      screen.getByText("0.0.0200 - dasda");
+      expect(container).toBeEmptyDOMElement();
     });
   });
 
-  describe("when there are no running jobs", () => {
-    beforeEach(() => {
-      mockDASDFormatJobs = [];
+  describe("when signal contains empty summary", () => {
+    it("renders nothing", () => {
+      let eventCallback: (event: unknown) => void;
 
-      mockDASDDevices = [
-        {
-          channel: "0.0.0200",
-          active: false,
-          deviceName: "dasda",
-          type: "eckd",
-          formatted: false,
-          diag: false,
-          status: "active",
-          accessType: "rw",
-          partitionInfo: "1",
-        },
-      ];
+      mockOnEvent.mockImplementation((cb) => {
+        eventCallback = cb;
+        return jest.fn();
+      });
+
+      const { container } = installerRender(<DASDFormatProgress />);
+
+      act(() => {
+        eventCallback({
+          type: "DASDFormatChanged",
+          summary: [],
+        });
+      });
+
+      expect(container).toBeEmptyDOMElement();
     });
+  });
 
-    it("does not render any progress", () => {
+  describe("when there is progress", () => {
+    it("renders progress bars sorted by channel after DASDFormatChanged event", () => {
+      let eventCallback: (event: unknown) => void;
+
+      mockOnEvent.mockImplementation((cb) => {
+        eventCallback = cb;
+        return jest.fn();
+      });
+
       installerRender(<DASDFormatProgress />);
-      expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
+
+      act(() => {
+        eventCallback({
+          type: "DASDFormatChanged",
+          summary: [
+            { channel: "0.0.0500", totalCylinders: 5, formattedCylinders: 1, finished: false },
+            { channel: "0.0.0160", totalCylinders: 5, formattedCylinders: 5, finished: true },
+            { channel: "0.0.0200", totalCylinders: 5, formattedCylinders: 1, finished: false },
+          ],
+        });
+      });
+
+      const progresses = screen.getAllByRole("progressbar");
+      expect(progresses[0]).toHaveAccessibleName("0.0.0160");
+      expect(progresses[1]).toHaveAccessibleName("0.0.0200");
+      expect(progresses[2]).toHaveAccessibleName("0.0.0500");
+      // Finished progress should use success variant
+      expect(progresses[0].closest(".pf-v6-c-progress")).toHaveClass("pf-m-success");
+    });
+  });
+
+  describe("when a DASDFormatFinished event is received", () => {
+    it("clears the progress", () => {
+      let eventCallback: (event: unknown) => void;
+      mockOnEvent.mockImplementation((cb) => {
+        eventCallback = cb;
+        return jest.fn();
+      });
+
+      const { container } = installerRender(<DASDFormatProgress />);
+
+      act(() => {
+        eventCallback({
+          type: "DASDFormatChanged",
+          summary: [
+            { channel: "0.0.0200", totalCylinders: 5, formattedCylinders: 5, finished: true },
+          ],
+        });
+      });
+
+      screen.getByRole("progressbar");
+
+      act(() => {
+        eventCallback({ type: "DASDFormatFinished" });
+      });
+
+      expect(container).toBeEmptyDOMElement();
     });
   });
 });
