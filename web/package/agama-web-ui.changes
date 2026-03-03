@@ -1,11 +1,23 @@
 -------------------------------------------------------------------
-Mon Mar  2 15:59:09 UTC 2026 - David Diaz <dgonzalez@suse.com>
+Tue Mar  3 10:59:09 UTC 2026 - David Diaz <dgonzalez@suse.com>
 
 - Restores DASD format progress with API v2 event model
   (gh#agama-project/agama#3143).
 - Improves progress backdrop layout and readbility
   (gh#agama-project/agama#2947).
-  
+
+-------------------------------------------------------------------
+Mon Mar  2 23:06:08 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Add visual feedback on table row hover and focus
+  (gh#agama-project/agama#3233).
+
+-------------------------------------------------------------------
+Mon Mar  2 18:01:05 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Update web dependencies to their latest available versions
+  as of 2026-03-02 (gh#agama-project/agama#3232).
+
 -------------------------------------------------------------------
 Fri Feb 27 23:00:35 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
