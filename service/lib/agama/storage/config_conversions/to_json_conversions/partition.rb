@@ -24,6 +24,7 @@ require "agama/storage/config_conversions/to_json_conversions/with_encryption"
 require "agama/storage/config_conversions/to_json_conversions/with_filesystem"
 require "agama/storage/config_conversions/to_json_conversions/with_search"
 require "agama/storage/config_conversions/to_json_conversions/with_size"
+require "agama/storage/config_conversions/to_json_conversions/with_delete"
 
 module Agama
   module Storage
@@ -35,6 +36,7 @@ module Agama
           include WithEncryption
           include WithFilesystem
           include WithSize
+          include WithDelete
 
           # @param config [Configs::Partition]
           def initialize(config)
@@ -46,9 +48,7 @@ module Agama
 
           # @see Base#conversions
           def conversions
-            return convert_delete if config.delete?
-
-            return convert_delete_if_needed if config.delete_if_needed?
+            return convert_delete if convert_delete?
 
             {
               search:     convert_search,
@@ -57,23 +57,6 @@ module Agama
               filesystem: convert_filesystem,
               size:       convert_size,
               id:         config.id&.to_s
-            }
-          end
-
-          # @return [Hash]
-          def convert_delete
-            {
-              search: convert_search,
-              delete: true
-            }
-          end
-
-          # @return [Hash]
-          def convert_delete_if_needed
-            {
-              search:         convert_search,
-              size:           convert_size,
-              deleteIfNeeded: true
             }
           end
         end

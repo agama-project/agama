@@ -55,9 +55,19 @@ module Agama
         # @return [Encryption, nil]
         attr_accessor :encryption
 
+        # @return [Boolean]
+        attr_accessor :delete
+        alias_method :delete?, :delete
+
+        # @return [Boolean]
+        attr_accessor :delete_if_needed
+        alias_method :delete_if_needed?, :delete_if_needed
+
         def initialize
           @size = Size.new
           @pool = false
+          @delete = false
+          @delete_if_needed = false
         end
 
         # Whether the config represents a thin logical volume.

@@ -501,27 +501,32 @@ describe Y2Storage::AgamaProposal do
           volumeGroups: [
             {
               search:         "/dev/data",
-              logicalVolumes: [
-                {
-                  name:       "root",
-                  size:       "5 GiB",
-                  filesystem: {
-                    path: "/",
-                    type: "btrfs"
-                  }
-                },
-                {
-                  name:       "home",
-                  size:       { min: home_min },
-                  filesystem: {
-                    path: "/home",
-                    type: "xfs"
-                  }
-                }
-              ]
+              logicalVolumes: previous_lvs + new_lvs
             }
           ]
         }
+      end
+
+      let(:previous_lvs) { [] }
+      let(:new_lvs) do
+        [
+          {
+            name:       "root",
+            size:       "5 GiB",
+            filesystem: {
+              path: "/",
+              type: "btrfs"
+            }
+          },
+          {
+            name:       "home",
+            size:       { min: home_min },
+            filesystem: {
+              path: "/home",
+              type: "xfs"
+            }
+          }
+        ]
       end
 
       context "if the LVs fit into the available space at the VG" do
@@ -543,16 +548,51 @@ describe Y2Storage::AgamaProposal do
       context "if the LVs fit into the total size of the VG but not in the available space" do
         let(:home_min) { "15 GiB" }
 
-        it "raises an error" do
-          expect { proposal.propose }.to raise_error(Y2Storage::NoDiskSpaceError)
+        context "and nothing is configured to make space in the VG" do
+          it "raises an error" do
+            expect { proposal.propose }.to raise_error(Y2Storage::NoDiskSpaceError)
+          end
+        end
+
+        context "and all previous LVs should be deleted " do
+          let(:previous_lvs) do
+            [
+              { search: "*", delete: true }
+            ]
+          end
+
+          it "adds the new volumes to the volume group deleting the previous ones" do
+            vg_sid = Y2Storage::StorageManager.instance.probed.find_by_name("/dev/data").sid
+            proposal.propose
+
+            vg = proposal.devices.find_by_name("/dev/data")
+            expect(vg.sid).to eq vg_sid
+            expect(vg.lvm_lvs.size).to eq 2
+            paths = vg.lvm_lvs.map(&:filesystem).map(&:mount_path)
+            expect(paths).to contain_exactly("/", "/home")
+          end
         end
       end
 
       context "if the LVs do not fit into the total size of the VG" do
         let(:home_min) { "150 GiB" }
 
-        it "raises an error" do
-          expect { proposal.propose }.to raise_error(Y2Storage::NoDiskSpaceError)
+        context "and nothing is configured to make space in the VG" do
+          it "raises an error" do
+            expect { proposal.propose }.to raise_error(Y2Storage::NoDiskSpaceError)
+          end
+        end
+
+        context "and all previous LVs should be deleted " do
+          let(:previous_lvs) do
+            [
+              { search: "*", delete: true }
+            ]
+          end
+
+          it "raises an error" do
+            expect { proposal.propose }.to raise_error(Y2Storage::NoDiskSpaceError)
+          end
         end
       end
     end
@@ -569,7 +609,7 @@ describe Y2Storage::AgamaProposal do
               logicalVolumes: [
                 {
                   name:       "root",
-                  size:       "5 GiB",
+                  size:       { min: "5 GiB" },
                   filesystem: {
                     path: "/",
                     type: "btrfs"
@@ -580,13 +620,16 @@ describe Y2Storage::AgamaProposal do
                   filesystem: {
                     path:            "/home",
                     reuseIfPossible: true
-                  }
+                  },
+                  size:       home_size
                 }
               ]
             }
           ]
         }
       end
+
+      let(:home_size) { nil }
 
       it "uses the volume group and the logical volume" do
         initial_vg = Y2Storage::StorageManager.instance.probed.find_by_name("/dev/data")
@@ -600,6 +643,33 @@ describe Y2Storage::AgamaProposal do
         filesystems = vg.lvm_lvs.map(&:filesystem)
         expect(filesystems.map(&:mount_path)).to contain_exactly("/", "/home")
         expect(filesystems.map(&:sid)).to include fs_sid
+      end
+
+      it "correctly distributes the available space" do
+        proposal.propose
+
+        vg = proposal.devices.find_by_name("/dev/data")
+        root = vg.lvm_lvs.find { |v| v.filesystem.mount_path == "/" }
+        home = vg.lvm_lvs.find { |v| v.filesystem.mount_path == "/home" }
+        expect(vg.available_space).to be_zero
+        expect(root.size).to be > 12.GiB
+        expect(home.size).to eq 30.GiB
+      end
+
+      context "if some existing logical volume is chosen for growing" do
+        let(:home_size) { { min: "30 GiB", max: "35 GiB" } }
+
+        it "grows the LV and distributes the remaining space" do
+          proposal.propose
+
+          vg = proposal.devices.find_by_name("/dev/data")
+          root = vg.lvm_lvs.find { |v| v.filesystem.mount_path == "/" }
+          home = vg.lvm_lvs.find { |v| v.filesystem.mount_path == "/home" }
+          expect(vg.available_space).to be_zero
+          expect(home.size).to eq 35.GiB
+          expect(root.size).to be > 7.GiB
+          expect(root.size).to be < 8.GiB
+        end
       end
     end
 

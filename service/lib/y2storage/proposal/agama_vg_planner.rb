@@ -50,7 +50,6 @@ module Y2Storage
           planned.extent_size = vg_config.extent_size
           planned.lvs = planned_lvs(vg_config)
           planned.size_strategy = :use_needed
-          planned.make_space_policy = :keep
           planned.pvs_candidate_devices = devices_for_pvs(vg_config)
           configure_pvs_encryption(planned, vg_config)
           configure_reuse(planned, vg_config)

@@ -35,6 +35,7 @@ module Agama
           include WithFilesystem
           include WithSize
           include WithSearch
+          include WithDelete
 
           # @param config [Configs::LogicalVolume]
           def initialize(config)
@@ -46,6 +47,8 @@ module Agama
 
           # @see Base#conversions
           def conversions
+            return convert_delete if convert_delete?
+
             {
               alias:      config.alias,
               search:     convert_search,

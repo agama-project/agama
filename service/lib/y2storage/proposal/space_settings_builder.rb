@@ -60,10 +60,10 @@ module Y2Storage
       # @param config [Agama::Storage::Config]
       # @return [Array<Y2Storage::SpaceActions::Delete>]
       def force_delete_actions(config)
-        partition_configs = partitions(config).select(&:delete?)
-        partition_names = device_names(partition_configs)
+        configs = config_devices(config).select(&:delete?)
+        names = device_names(configs)
 
-        partition_names.map { |p| Y2Storage::SpaceActions::Delete.new(p, mandatory: true) }
+        names.map { |d| Y2Storage::SpaceActions::Delete.new(d, mandatory: true) }
       end
 
       # Space actions for devices that might be deleted.
@@ -73,10 +73,10 @@ module Y2Storage
       # @param config [Agama::Storage::Config]
       # @return [Array<Y2Storage::SpaceActions::Delete>]
       def delete_actions(config)
-        partition_configs = partitions(config).select(&:delete_if_needed?).reject(&:delete?)
-        partition_names = device_names(partition_configs)
+        configs = config_devices(config).select(&:delete_if_needed?).reject(&:delete?)
+        names = device_names(configs)
 
-        partition_names.map { |p| Y2Storage::SpaceActions::Delete.new(p) }
+        names.map { |d| Y2Storage::SpaceActions::Delete.new(d) }
       end
 
       # Space actions for devices that might be resized
@@ -84,36 +84,36 @@ module Y2Storage
       # @param config [Agama::Storage::Config]
       # @return [Array<Y2Storage::SpaceActions::Resize>]
       def resize_actions(config)
-        partition_configs = partitions(config).select(&:found_device).select(&:size)
+        configs = config_devices(config).select(&:found_device).select(&:size)
         # Resize actions contain information that is potentially useful for the SpaceMaker even
         # when they are only about growing and not shrinking
-        partition_configs.map { |p| resize_action(p) }.compact
+        configs.map { |c| resize_action(c) }.compact
       end
 
       # @see #resize_actions
       #
-      # @param part [Agama::Storage::Configs::Partition]
+      # @param dev [Agama::Storage::Configs::Partition, Agama::Storage::Configs::LogicalVolume]
       # @return [Y2Storage::SpaceActions::Resize, nil]
-      def resize_action(part)
-        min = current_size?(part, :min) ? nil : part.size.min
-        max = current_size?(part, :max) ? nil : part.size.max
+      def resize_action(dev)
+        min = current_size?(dev, :min) ? nil : dev.size.min
+        max = current_size?(dev, :max) ? nil : dev.size.max
         # If both min and max are equal to the current device size, there is nothing to do
         return unless min || max
 
-        Y2Storage::SpaceActions::Resize.new(part.found_device.name, min_size: min, max_size: max)
+        Y2Storage::SpaceActions::Resize.new(dev.found_device.name, min_size: min, max_size: max)
       end
 
       # @see #resize_actions
-      def current_size?(part, attr)
-        part.found_device.size == part.size.public_send(attr)
+      def current_size?(dev, attr)
+        dev.found_device.size == dev.size.public_send(attr)
       end
 
-      # All partition configs from the given config.
+      # All partition and logical volume configs from the given config.
       #
       # @param config [Agama::Storage::Config]
-      # @return [Array<Agama::Storage::Configs::Partition>]
-      def partitions(config)
-        config.partitions
+      # @return [Array<Agama::Storage::Configs::Partition | Agama::Storage::Configs::LogicalVolume>]
+      def config_devices(config)
+        config.partitions + config.logical_volumes
       end
 
       # Device names from the given configs.

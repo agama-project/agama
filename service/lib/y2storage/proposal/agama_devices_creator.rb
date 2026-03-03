@@ -203,7 +203,7 @@ module Y2Storage
         # TODO: Generate issue if there are no physical volumes for a new VG.
         return if pv_names.empty? && !planned.reuse?
 
-        creator = Proposal::LvmCreator.new(creator_result.devicegraph)
+        creator = Proposal::LvmCreator.new(creator_result.devicegraph, space_maker.settings)
         new_result = creator.create_volumes(planned, pv_names)
         self.creator_result = creator_result.merge(new_result)
       end

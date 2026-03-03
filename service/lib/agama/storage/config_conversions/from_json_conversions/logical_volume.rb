@@ -52,16 +52,18 @@ module Agama
           # @return [Hash]
           def conversions
             {
-              alias:       logical_volume_json[:alias],
-              search:      convert_search,
-              encryption:  convert_encryption,
-              filesystem:  convert_filesystem,
-              size:        convert_size,
-              name:        logical_volume_json[:name],
-              stripes:     logical_volume_json[:stripes],
-              stripe_size: convert_stripe_size,
-              pool:        logical_volume_json[:pool],
-              used_pool:   logical_volume_json[:usedPool]
+              alias:            logical_volume_json[:alias],
+              search:           convert_search,
+              encryption:       convert_encryption,
+              filesystem:       convert_filesystem,
+              size:             convert_size,
+              name:             logical_volume_json[:name],
+              stripes:          logical_volume_json[:stripes],
+              stripe_size:      convert_stripe_size,
+              pool:             logical_volume_json[:pool],
+              used_pool:        logical_volume_json[:usedPool],
+              delete:           logical_volume_json[:delete],
+              delete_if_needed: logical_volume_json[:deleteIfNeeded]
             }
           end
 
