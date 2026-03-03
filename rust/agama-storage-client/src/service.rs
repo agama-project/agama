@@ -23,6 +23,7 @@ use std::future::Future;
 use agama_utils::{
     actor::{self, Actor, Handler, MessageHandler},
     api::{bootloader, iscsi, storage::Config, Issue},
+    arch::Arch,
     BoxFuture,
 };
 use async_trait::async_trait;
@@ -69,7 +70,11 @@ impl Starter {
         let iscsi_proxy = proxies::ISCSIProxy::new(&self.dbus).await?;
         iscsi_proxy.config().await?;
 
-        let dasd_proxy = proxies::DASDProxy::new(&self.dbus).await?;
+        let dasd_proxy = if Arch::is_s390() {
+            Some(proxies::DASDProxy::new(&self.dbus).await?)
+        } else {
+            None
+        };
 
         let service = Service {
             storage_proxy,
@@ -86,7 +91,7 @@ pub struct Service {
     storage_proxy: Storage1Proxy<'static>,
     bootloader_proxy: BootloaderProxy<'static>,
     iscsi_proxy: ISCSIProxy<'static>,
-    dasd_proxy: DASDProxy<'static>,
+    dasd_proxy: Option<DASDProxy<'static>>,
 }
 
 impl Actor for Service {
@@ -282,7 +287,10 @@ impl MessageHandler<message::iscsi::SetConfig> for Service {
 #[async_trait]
 impl MessageHandler<message::dasd::Probe> for Service {
     async fn handle(&mut self, _message: message::dasd::Probe) -> Result<(), Error> {
-        Ok(self.dasd_proxy.probe().await?)
+        if let Some(proxy) = &self.dasd_proxy {
+            proxy.probe().await?;
+        }
+        Ok(())
     }
 }
 
@@ -292,8 +300,12 @@ impl MessageHandler<message::dasd::GetSystem> for Service {
         &mut self,
         _message: message::dasd::GetSystem,
     ) -> Result<Option<serde_json::Value>, Error> {
-        let raw_json = self.dasd_proxy.dasd_system().await?;
-        Ok(try_from_string(&raw_json)?)
+        if let Some(proxy) = &self.dasd_proxy {
+            let raw_json = proxy.dasd_system().await?;
+            Ok(try_from_string(&raw_json)?)
+        } else {
+            Ok(None)
+        }
     }
 }
 
@@ -303,16 +315,23 @@ impl MessageHandler<message::dasd::GetConfig> for Service {
         &mut self,
         _message: message::dasd::GetConfig,
     ) -> Result<Option<agama_utils::api::RawConfig>, Error> {
-        let raw_json = self.dasd_proxy.config().await?;
-        Ok(try_from_string(&raw_json)?)
+        if let Some(proxy) = &self.dasd_proxy {
+            let raw_json = proxy.config().await?;
+            Ok(try_from_string(&raw_json)?)
+        } else {
+            Ok(None)
+        }
     }
 }
 
 #[async_trait]
 impl MessageHandler<message::dasd::SetConfig> for Service {
     async fn handle(&mut self, message: message::dasd::SetConfig) -> Result<(), Error> {
-        let config = serde_json::to_string(&message.config)?;
-        Ok(self.dasd_proxy.set_config(&config).await?)
+        if let Some(proxy) = &self.dasd_proxy {
+            let config = serde_json::to_string(&message.config)?;
+            proxy.set_config(&config).await?;
+        }
+        Ok(())
     }
 }
 
