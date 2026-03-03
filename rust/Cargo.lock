@@ -18,7 +18,6 @@ dependencies = [
  "agama-utils",
  "anyhow",
  "tempfile",
- "thiserror 2.0.18",
  "tokio",
  "url",
 ]
@@ -29,16 +28,13 @@ version = "0.1.0"
 dependencies = [
  "agama-storage-client",
  "agama-utils",
- "anyhow",
  "async-trait",
  "gettext-rs",
- "regex",
  "serde",
  "serde_json",
  "test-context",
  "thiserror 2.0.18",
  "tokio",
- "tokio-stream",
  "tokio-test",
  "tracing",
  "zbus",
@@ -52,7 +48,6 @@ dependencies = [
  "agama-transfer",
  "agama-utils",
  "anyhow",
- "async-trait",
  "chrono",
  "clap",
  "console",
@@ -61,7 +56,6 @@ dependencies = [
  "indicatif",
  "inquire",
  "regex",
- "reqwest",
  "serde",
  "serde_json",
  "tempfile",
@@ -99,7 +93,6 @@ dependencies = [
  "thiserror 2.0.18",
  "tokio",
  "tokio-stream",
- "tokio-test",
  "tracing",
  "zbus",
 ]
@@ -146,15 +139,11 @@ dependencies = [
 name = "agama-lib"
 version = "1.0.0"
 dependencies = [
- "agama-l10n",
- "agama-locale-data",
  "agama-network",
  "agama-transfer",
  "agama-utils",
  "anyhow",
- "async-trait",
  "chrono",
- "curl",
  "env_logger",
  "fluent-uri 0.4.1",
  "fs_extra",
@@ -165,13 +154,10 @@ dependencies = [
  "jsonwebtoken",
  "log",
  "percent-encoding",
- "regex",
  "reqwest",
  "serde",
  "serde_json",
  "serde_repr",
- "serde_with",
- "strum",
  "tempfile",
  "thiserror 2.0.18",
  "tokio",
@@ -183,7 +169,6 @@ dependencies = [
  "utoipa",
  "uuid",
  "zbus",
- "zypp-agama",
 ]
 
 [[package]]
@@ -244,13 +229,10 @@ dependencies = [
  "pin-project",
  "semver",
  "serde",
- "serde_json",
  "serde_with",
- "strum",
  "thiserror 2.0.18",
  "tokio",
  "tokio-stream",
- "tokio-test",
  "tracing",
  "utoipa",
  "uuid",
@@ -264,7 +246,6 @@ dependencies = [
  "agama-utils",
  "anyhow",
  "async-trait",
- "env_filter",
  "gettext-rs",
  "libsystemd",
  "strum",
@@ -274,7 +255,6 @@ dependencies = [
  "tracing",
  "tracing-journald",
  "tracing-subscriber",
- "url",
 ]
 
 [[package]]
@@ -319,7 +299,6 @@ dependencies = [
  "agama-lib",
  "agama-locale-data",
  "agama-manager",
- "agama-network",
  "agama-software",
  "agama-transfer",
  "agama-utils",
@@ -332,8 +311,6 @@ dependencies = [
  "config",
  "futures-util",
  "gethostname",
- "gettext-rs",
- "glob",
  "http-body-util",
  "hyper 1.6.0",
  "hyper-util",
@@ -342,15 +319,9 @@ dependencies = [
  "pam",
  "pin-project",
  "rand 0.9.1",
- "regex",
  "sd-notify",
  "serde",
  "serde_json",
- "serde_with",
- "serde_yaml",
- "strum",
- "subprocess",
- "tempfile",
  "test-context",
  "thiserror 2.0.18",
  "tokio",
@@ -365,9 +336,7 @@ dependencies = [
  "tracing-subscriber",
  "url",
  "utoipa",
- "uuid",
  "zbus",
- "zypp-agama",
 ]
 
 [[package]]
@@ -376,7 +345,6 @@ version = "0.1.0"
 dependencies = [
  "agama-bootloader",
  "agama-l10n",
- "agama-locale-data",
  "agama-security",
  "agama-utils",
  "async-trait",
@@ -385,16 +353,13 @@ dependencies = [
  "glob",
  "i18n-format",
  "openssl",
- "regex",
  "serde",
- "serde_with",
  "serde_yaml",
  "strum",
  "suseconnect-agama",
  "tempfile",
  "thiserror 2.0.18",
  "tokio",
- "tokio-stream",
  "tracing",
  "tracing-subscriber",
  "url",
@@ -416,7 +381,6 @@ dependencies = [
  "tokio",
  "tokio-stream",
  "tokio-test",
- "tracing",
  "zbus",
 ]
 
@@ -430,8 +394,6 @@ dependencies = [
  "serde_json",
  "thiserror 2.0.18",
  "tokio",
- "tokio-stream",
- "tracing",
  "zbus",
 ]
 
@@ -449,21 +411,16 @@ dependencies = [
 name = "agama-users"
 version = "0.1.0"
 dependencies = [
- "agama-locale-data",
  "agama-utils",
- "anyhow",
  "async-trait",
  "gettext-rs",
- "regex",
  "serde",
  "test-context",
  "thiserror 2.0.18",
  "tokio",
- "tokio-stream",
  "tokio-test",
  "tracing",
  "utoipa",
- "zbus",
 ]
 
 [[package]]
@@ -490,7 +447,6 @@ dependencies = [
  "test-context",
  "thiserror 2.0.18",
  "tokio",
- "tokio-stream",
  "tokio-test",
  "tracing",
  "url",
@@ -4667,16 +4623,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "subprocess"
-version = "0.2.9"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0c2e86926081dda636c546d8c5e641661049d7562a68f5488be4a1f7f66f6086"
-dependencies = [
- "libc",
- "winapi",
-]
-
-[[package]]
 name = "subtle"
 version = "2.6.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -6223,7 +6169,6 @@ dependencies = [
  "criterion",
  "glob",
  "tracing",
- "url",
  "zypp-agama-sys",
 ]
 
@@ -6232,5 +6177,4 @@ name = "zypp-agama-sys"
 version = "0.1.0"
 dependencies = [
  "bindgen 0.72.1",
- "tracing",
 ]

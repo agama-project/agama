@@ -13,17 +13,13 @@ agama-utils = { path = "../agama-utils" }
 agama-l10n = { path = "../agama-l10n" }
 agama-locale-data = { path = "../agama-locale-data" }
 agama-manager = { path = "../agama-manager" }
-agama-network = { path = "../agama-network" }
 agama-software = { path = "../agama-software" }
 agama-transfer = { path = "../agama-transfer" }
 zbus = { version = "5", default-features = false, features = ["tokio"] }
-uuid = { version = "1.10.0", features = ["v4"] }
 thiserror = "2.0.12"
 serde = { version = "1.0.210", features = ["derive"] }
 tokio = { version = "1.40.0", features = ["macros", "rt-multi-thread", "sync"] }
 tokio-stream = "0.1.16"
-gettext-rs = { version = "0.7.1", features = ["gettext-system"] }
-regex = "1.11.0"
 async-trait = "0.1.83"
 axum = { version = "0.7.7", features = ["ws", "macros"] }
 serde_json = "1.0.128"
@@ -45,7 +41,6 @@ axum-extra = { version = "0.9.4", features = ["cookie", "typed-header"] }
 # pam 0.8.0 (2023-11) plus an unreleased commit from 2023-12
 # that switches from users to uzers, fixing CVE-2025-5791
 pam = { git = "https://github.com/1wilkens/pam.git", rev = "daf26ae" }
-serde_with = "3.10.0"
 pin-project = "1.1.5"
 openssl = "0.10.66"
 sd-notify = "0.4.2"
@@ -56,15 +51,9 @@ futures-util = { version = "0.3.30", default-features = false, features = [
     "alloc",
 ] }
 libsystemd = "0.7.0"
-subprocess = "0.2.9"
 gethostname = "1.0.0"
 tokio-util = "0.7.12"
-zypp-agama = { path = "../zypp-agama" }
-glob = "0.3.1"
-tempfile = "3.13.0"
 url = "2.5.2"
-serde_yaml = "0.9.34"
-strum = { version = "0.27.2", features = ["derive"] }
 
 [[bin]]
 name = "agama-web-server"
