@@ -23,6 +23,7 @@
 import React, { useEffect, useState } from "react";
 import { Card, CardBody, CardTitle, Progress, Stack } from "@patternfly/react-core";
 import { useInstallerClient } from "~/context/installer";
+import { sortCollection } from "~/utils";
 import { _ } from "~/i18n";
 
 import type { Device } from "~/model/system/dasd";
@@ -87,7 +88,7 @@ export default function DASDFormatProgress() {
 
     return client.onEvent((event) => {
       if (event.type === "DASDFormatChanged") {
-        setProgress(event.summary);
+        setProgress(sortCollection(event.summary, "asc", (p) => p.channel));
       }
     });
   }, [client]);

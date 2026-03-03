@@ -71,7 +71,7 @@ describe("DASDFormatProgress", () => {
   });
 
   describe("when there is progress", () => {
-    it("renders progress bars after DASDFormatChanged event", () => {
+    it("renders progress bars sorted by channel after DASDFormatChanged event", () => {
       let eventCallback: (event: unknown) => void;
 
       mockOnEvent.mockImplementation((cb) => {
@@ -85,18 +85,19 @@ describe("DASDFormatProgress", () => {
         eventCallback({
           type: "DASDFormatChanged",
           summary: [
-            {
-              channel: "0.0.0200",
-              totalCylinders: 5,
-              formattedCylinders: 1,
-              finished: false,
-            },
+            { channel: "0.0.0500", totalCylinders: 5, formattedCylinders: 1, finished: false },
+            { channel: "0.0.0160", totalCylinders: 5, formattedCylinders: 5, finished: true },
+            { channel: "0.0.0200", totalCylinders: 5, formattedCylinders: 1, finished: false },
           ],
         });
       });
 
-      screen.getByRole("progressbar");
-      screen.getByText("0.0.0200");
+      const progresses = screen.getAllByRole("progressbar");
+      expect(progresses[0]).toHaveAccessibleName("0.0.0160");
+      expect(progresses[1]).toHaveAccessibleName("0.0.0200");
+      expect(progresses[2]).toHaveAccessibleName("0.0.0500");
+      // Finished progress should use success variant
+      expect(progresses[0].closest(".pf-v6-c-progress")).toHaveClass("pf-m-success");
     });
   });
 
