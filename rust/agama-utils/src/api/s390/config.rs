@@ -32,4 +32,6 @@ use serde_with::skip_serializing_none;
 pub struct Config {
     /// Configuration of the DASD devices.
     pub dasd: Option<RawConfig>,
+    /// Configuration of the zFCP devices.
+    pub zfcp: Option<RawConfig>,
 }

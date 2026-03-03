@@ -24,6 +24,7 @@ pub use service::{Service, Starter};
 pub mod dasd;
 pub mod message;
 pub mod test_utils;
+pub mod zfcp;
 
 use agama_storage as storage;
 

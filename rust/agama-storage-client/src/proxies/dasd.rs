@@ -62,5 +62,5 @@ pub trait DASD {
 
     /// ProgressFinished signal
     #[zbus(signal)]
-    fn progress_finished(&self, status: &str) -> zbus::Result<()>;
+    fn progress_finished(&self) -> zbus::Result<()>;
 }

@@ -21,6 +21,7 @@
 use crate::{
     dasd::{self, client::DASDClient},
     message, storage,
+    zfcp::{self, client::ZFCPClient},
 };
 use agama_utils::{
     actor::{self, Actor, Handler, MessageHandler},
@@ -39,8 +40,12 @@ pub enum Error {
     #[error(transparent)]
     DASDClient(#[from] dasd::client::Error),
     #[error(transparent)]
+    ZFCPClient(#[from] zfcp::client::Error),
+    #[error(transparent)]
     DASDMonitor(#[from] dasd::monitor::Error),
-    #[error("Storage D-Bus server error: {0}")]
+    #[error(transparent)]
+    ZFCPMonitor(#[from] zfcp::monitor::Error),
+    #[error(transparent)]
     DBusClient(#[from] agama_storage_client::Error),
 }
 
@@ -50,6 +55,7 @@ pub struct Starter {
     progress: Handler<progress::Service>,
     connection: zbus::Connection,
     dasd: Option<Box<dyn DASDClient + Send + 'static>>,
+    zfcp: Option<Box<dyn ZFCPClient + Send + 'static>>,
 }
 
 impl Starter {
@@ -65,6 +71,7 @@ impl Starter {
             progress,
             connection,
             dasd: None,
+            zfcp: None,
         }
     }
 
@@ -73,23 +80,43 @@ impl Starter {
         self
     }
 
+    pub fn with_zfcp(mut self, client: impl ZFCPClient + Send + 'static) -> Self {
+        self.zfcp = Some(Box::new(client));
+        self
+    }
+
     pub async fn start(self) -> Result<Handler<Service>, Error> {
+        let storage_dbus = agama_storage_client::service::Starter::new(self.connection.clone())
+            .start()
+            .await?;
+
         let dasd_client = match self.dasd {
             Some(client) => client,
-            None => {
-                let storage_dbus =
-                    agama_storage_client::service::Starter::new(self.connection.clone())
-                        .start()
-                        .await?;
-                Box::new(dasd::Client::new(storage_dbus).await?)
-            }
+            None => Box::new(dasd::Client::new(storage_dbus.clone())),
         };
-        let service = Service { dasd: dasd_client };
+
+        let zfcp_client = match self.zfcp {
+            Some(client) => client,
+            None => Box::new(zfcp::Client::new(storage_dbus)),
+        };
+
+        let service = Service {
+            dasd: dasd_client,
+            zfcp: zfcp_client,
+        };
         let handler = actor::spawn(service);
 
-        let dasd_monitor =
-            dasd::Monitor::new(self.storage, self.progress, self.events, self.connection);
+        let dasd_monitor = dasd::Monitor::new(
+            self.storage.clone(),
+            self.progress.clone(),
+            self.events.clone(),
+            self.connection.clone(),
+        );
         dasd::monitor::spawn(dasd_monitor)?;
+
+        let zfcp_monitor =
+            zfcp::Monitor::new(self.storage, self.progress, self.events, self.connection);
+        zfcp::monitor::spawn(zfcp_monitor)?;
 
         Ok(handler)
     }
@@ -97,6 +124,7 @@ impl Starter {
 
 pub struct Service {
     dasd: Box<dyn DASDClient + Send + 'static>,
+    zfcp: Box<dyn ZFCPClient + Send + 'static>,
 }
 
 impl Service {
@@ -123,10 +151,19 @@ impl MessageHandler<message::ProbeDASD> for Service {
 }
 
 #[async_trait]
+impl MessageHandler<message::ProbeZFCP> for Service {
+    async fn handle(&mut self, _message: message::ProbeZFCP) -> Result<(), Error> {
+        self.zfcp.probe().await?;
+        Ok(())
+    }
+}
+
+#[async_trait]
 impl MessageHandler<message::GetSystem> for Service {
     async fn handle(&mut self, _message: message::GetSystem) -> Result<SystemInfo, Error> {
         let dasd = self.dasd.get_system().await?;
-        Ok(SystemInfo { dasd })
+        let zfcp = self.zfcp.get_system().await?;
+        Ok(SystemInfo { dasd, zfcp })
     }
 }
 
@@ -134,15 +171,21 @@ impl MessageHandler<message::GetSystem> for Service {
 impl MessageHandler<message::GetConfig> for Service {
     async fn handle(&mut self, _message: message::GetConfig) -> Result<Config, Error> {
         let dasd = self.dasd.get_config().await?;
-        Ok(Config { dasd })
+        let zfcp = self.zfcp.get_config().await?;
+        Ok(Config { dasd, zfcp })
     }
 }
 
 #[async_trait]
 impl MessageHandler<message::SetConfig> for Service {
     async fn handle(&mut self, message: message::SetConfig) -> Result<(), Error> {
-        let config = message.config.and_then(|c| c.dasd);
-        self.dasd.set_config(config).await?;
+        if let Some(config) = message.config {
+            self.dasd.set_config(config.dasd).await?;
+            self.zfcp.set_config(config.zfcp).await?;
+        } else {
+            self.dasd.set_config(None).await?;
+            self.zfcp.set_config(None).await?;
+        }
         Ok(())
     }
 }

@@ -18,7 +18,7 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-//! Implements a client to access Agama's D-Bus API related to DASD management.
+//! Implements a client to access Agama's D-Bus API related to zFCP management.
 
 use agama_storage_client::message;
 use agama_utils::actor::Handler;
@@ -32,12 +32,12 @@ pub enum Error {
     DBus(#[from] zbus::Error),
     #[error(transparent)]
     Json(#[from] serde_json::Error),
-    #[error("Storage D-Bus server error: {0}")]
+    #[error(transparent)]
     DBusClient(#[from] agama_storage_client::Error),
 }
 
 #[async_trait]
-pub trait DASDClient {
+pub trait ZFCPClient {
     async fn probe(&self) -> Result<(), Error>;
     async fn get_system(&self) -> Result<Option<Value>, Error>;
     async fn get_config(&self) -> Result<Option<RawConfig>, Error>;
@@ -56,22 +56,22 @@ impl Client {
 }
 
 #[async_trait]
-impl DASDClient for Client {
+impl ZFCPClient for Client {
     async fn probe(&self) -> Result<(), Error> {
-        Ok(self.storage_dbus.call(message::dasd::Probe).await?)
+        Ok(self.storage_dbus.call(message::zfcp::Probe).await?)
     }
 
     async fn get_system(&self) -> Result<Option<Value>, Error> {
-        Ok(self.storage_dbus.call(message::dasd::GetSystem).await?)
+        Ok(self.storage_dbus.call(message::zfcp::GetSystem).await?)
     }
 
     async fn get_config(&self) -> Result<Option<RawConfig>, Error> {
-        Ok(self.storage_dbus.call(message::dasd::GetConfig).await?)
+        Ok(self.storage_dbus.call(message::zfcp::GetConfig).await?)
     }
 
     async fn set_config(&self, config: Option<RawConfig>) -> Result<(), Error> {
         self.storage_dbus
-            .call(message::dasd::SetConfig::new(config))
+            .call(message::zfcp::SetConfig::new(config))
             .await?;
         Ok(())
     }

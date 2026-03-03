@@ -18,45 +18,8 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use agama_utils::{
-    actor::Message,
-    api::s390::{Config, SystemInfo},
-};
+pub mod client;
+pub use client::Client;
 
-pub struct ProbeDASD;
-
-impl Message for ProbeDASD {
-    type Reply = ();
-}
-
-pub struct ProbeZFCP;
-
-impl Message for ProbeZFCP {
-    type Reply = ();
-}
-
-pub struct GetSystem;
-
-impl Message for GetSystem {
-    type Reply = SystemInfo;
-}
-
-pub struct GetConfig;
-
-impl Message for GetConfig {
-    type Reply = Config;
-}
-
-pub struct SetConfig {
-    pub config: Option<Config>,
-}
-
-impl SetConfig {
-    pub fn new(config: Option<Config>) -> Self {
-        Self { config }
-    }
-}
-
-impl Message for SetConfig {
-    type Reply = ();
-}
+pub mod monitor;
+pub use monitor::Monitor;
