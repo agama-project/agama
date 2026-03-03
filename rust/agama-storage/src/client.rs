@@ -31,11 +31,6 @@ use async_trait::async_trait;
 use serde_json::Value;
 use std::sync::Arc;
 use tokio::sync::RwLock;
-use zbus::{names::BusName, zvariant::OwnedObjectPath, Connection, Message};
-
-const SERVICE_NAME: &str = "org.opensuse.Agama.Storage1";
-const OBJECT_PATH: &str = "/org/opensuse/Agama/Storage1";
-const INTERFACE: &str = "org.opensuse.Agama.Storage1";
 
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
@@ -168,29 +163,5 @@ impl StorageClient for Client {
             .call(message::SetLocale::new(locale))
             .await?;
         Ok(())
-    }
-}
-
-#[derive(Clone)]
-pub struct DBusClient {
-    connection: Connection,
-}
-
-impl DBusClient {
-    pub fn new(connection: Connection) -> Self {
-        Self { connection }
-    }
-
-    pub async fn call<T: serde::ser::Serialize + zbus::zvariant::DynamicType>(
-        &self,
-        method: &str,
-        body: &T,
-    ) -> Result<Message, Error> {
-        let bus = BusName::try_from(SERVICE_NAME.to_string())?;
-        let path = OwnedObjectPath::try_from(OBJECT_PATH)?;
-        self.connection
-            .call_method(Some(&bus), &path, Some(INTERFACE), method, body)
-            .await
-            .map_err(|e| e.into())
     }
 }
