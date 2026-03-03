@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Mar  3 12:34:09 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Extract schema for zFCP config and add schema for zFCP system
+  (gh#agama-project/agama#3184).
+
+-------------------------------------------------------------------
 Tue Mar  3 10:08:58 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Cache storage data using the new attributes-based API (bsc#1258466).
@@ -65,7 +71,7 @@ Thu Feb 19 13:35:59 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 -------------------------------------------------------------------
 Wed Feb 18 20:32:00 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
 
-- Add support for bootloader config updateNvram (jsc#PED-14224) 
+- Add support for bootloader config updateNvram (jsc#PED-14224)
 
 -------------------------------------------------------------------
 Wed Feb 18 12:09:15 UTC 2026 - Stefan Hundhammer <shundhammer@suse.com>
