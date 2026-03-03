@@ -487,6 +487,27 @@ label.pf-m-disabled + .pf-v6-c-check__description {
   --pf-v6-c-table__sort-indicator--MarginInlineStart: var(--pf-t--global--spacer--xs);
 }
 
+// Highlight table rows on interaction, covering three cases:
+// 1. Mouse hover.
+// 2. Keyboard navigation via :focus-within, which is intentionally broad and
+//    covers all focusable elements including checkboxes. This way, keyboard
+//    users always know which row they are on. The downside: if a mouse user
+//    clicks a checkbox and moves away, the row stays highlighted until focus
+//    moves elsewhere. This is an acceptable edge case since most users will
+//    naturally move on after checking a box and in any case the benefit for
+//    keyboard users outweighs the minor annoyance for mouse users.
+// 3. Action menu open via aria-expanded attribute.
+//
+// Note: PF's isClickable prop on Tr would provide the hover highlight out of
+// the box, but it also adds a pointer cursor and implies the row is clickable,
+// which is not the case for Agama tables. Hence this custom CSS to get the
+// visual feedback without the misleading affordance.
+.pf-v6-c-table tbody tr:hover,
+.pf-v6-c-table tbody tr:focus-within,
+.pf-v6-c-table tbody tr:has(.pf-v6-c-menu-toggle[aria-expanded="true"]) {
+  background-color: var(--agm-t--action--background--color--hover);
+}
+
 // Some utilities not found at PF
 .w-14ch {
   inline-size: 14ch;

@@ -113,6 +113,7 @@ export default function SimpleDropdown({
           onClick={() => setIsOpen(!isOpen)}
           variant="plain"
           aria-label={label}
+          isExpanded={isOpen}
         >
           <Icon name="more_horiz" />
         </MenuToggle>
