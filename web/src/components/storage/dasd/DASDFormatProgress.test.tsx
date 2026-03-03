@@ -101,33 +101,32 @@ describe("DASDFormatProgress", () => {
     });
   });
 
-  describe("when progress is finished", () => {
-    it("renders progress bar with success variant", () => {
+  describe("when a DASDFormatFinished event is received", () => {
+    it("clears the progress", () => {
       let eventCallback: (event: unknown) => void;
-
       mockOnEvent.mockImplementation((cb) => {
         eventCallback = cb;
         return jest.fn();
       });
 
-      installerRender(<DASDFormatProgress />);
+      const { container } = installerRender(<DASDFormatProgress />);
 
       act(() => {
         eventCallback({
           type: "DASDFormatChanged",
           summary: [
-            {
-              channel: "0.0.0200",
-              totalCylinders: 5,
-              formattedCylinders: 5,
-              finished: true,
-            },
+            { channel: "0.0.0200", totalCylinders: 5, formattedCylinders: 5, finished: true },
           ],
         });
       });
 
-      const progressbar = screen.getByRole("progressbar");
-      expect(progressbar.closest(".pf-v6-c-progress")).toHaveClass("pf-m-success");
+      screen.getByRole("progressbar");
+
+      act(() => {
+        eventCallback({ type: "DASDFormatFinished" });
+      });
+
+      expect(container).toBeEmptyDOMElement();
     });
   });
 });

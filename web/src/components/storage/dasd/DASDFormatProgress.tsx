@@ -90,6 +90,10 @@ export default function DASDFormatProgress() {
       if (event.type === "DASDFormatChanged") {
         setProgress(sortCollection(event.summary, "asc", (p) => p.channel));
       }
+
+      if (event.type === "DASDFormatFinished") {
+        setProgress([]);
+      }
     });
   }, [client]);
 
