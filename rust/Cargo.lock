@@ -139,7 +139,6 @@ dependencies = [
 name = "agama-lib"
 version = "1.0.0"
 dependencies = [
- "agama-network",
  "agama-transfer",
  "agama-utils",
  "anyhow",
@@ -147,7 +146,6 @@ dependencies = [
  "env_logger",
  "fluent-uri 0.4.1",
  "fs_extra",
- "futures-util",
  "home",
  "httpmock",
  "jsonschema",
@@ -157,7 +155,6 @@ dependencies = [
  "reqwest",
  "serde",
  "serde_json",
- "serde_repr",
  "tempfile",
  "thiserror 2.0.18",
  "tokio",
