@@ -185,7 +185,7 @@ export default function ProgressBackdrop({
               }
             />
           </CardTitle>
-          <CardBody style={{ overflow: "scroll" }}>
+          <CardBody style={{ overflow: "auto" }}>
             {extraContent && <NestedContent margin="mxXl">{extraContent}</NestedContent>}
           </CardBody>
         </Card>
