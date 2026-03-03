@@ -52,7 +52,7 @@ module Agama
           register_callbacks
         end
 
-        dbus_interface "org.opensuse.Agama.Storage1.DASD" do
+        dbus_interface "org.opensuse.Agama.Storage1.ZFCP" do
           dbus_reader_attr_accessor :serialized_system, "s", dbus_name: "System"
           dbus_reader_attr_accessor :serialized_config, "s", dbus_name: "Config"
           dbus_reader_attr_accessor :serialized_issues, "s", dbus_name: "Issues"
