@@ -1,5 +1,5 @@
 -------------------------------------------------------------------
-Tue Mar  3 10:59:09 UTC 2026 - David Diaz <dgonzalez@suse.com>
+Tue Mar  3 10:09:09 UTC 2026 - David Diaz <dgonzalez@suse.com>
 
 - Restores DASD format progress with API v2 event model
   (gh#agama-project/agama#3143).
