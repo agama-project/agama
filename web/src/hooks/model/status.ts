@@ -21,10 +21,11 @@
  */
 
 import { useEffect } from "react";
+import { isArrayEqual, remove, replaceOrAppend } from "radashi";
 import { useSuspenseQuery, useQueryClient } from "@tanstack/react-query";
 import { useInstallerClient } from "~/context/installer";
 import { getStatus } from "~/api";
-import { isEqual, remove, replaceOrAppend } from "radashi";
+
 import type { Status, Progress } from "~/model/status";
 
 const statusQuery = {
@@ -34,21 +35,6 @@ const statusQuery = {
 
 function useStatus(): Status | null {
   return useSuspenseQuery(statusQuery)?.data;
-}
-
-// FIXME: Borrowed from radashi 12.7. Simply import it after updating the dependency.
-function isArrayEqual<T>(array1: T[], array2: T[]): boolean {
-  if (array1 !== array2) {
-    if (array1.length !== array2.length) {
-      return false;
-    }
-    for (let i = 0; i < array1.length; i++) {
-      if (!isEqual(array1[i], array2[i])) {
-        return false;
-      }
-    }
-  }
-  return true;
 }
 
 function useStatusChanges() {

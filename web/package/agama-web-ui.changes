@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Mar  2 18:01:05 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Update web dependencies to their latest available versions
+  as of 2026-03-02 (gh#agama-project/agama#3232).
+
+-------------------------------------------------------------------
 Fri Feb 27 23:00:35 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Do not reset the configuration on product selection (bsc#1258032).
