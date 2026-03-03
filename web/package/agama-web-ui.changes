@@ -1,7 +1,7 @@
 -------------------------------------------------------------------
 Mon Mar  2 23:06:08 UTC 2026 - David Diaz <dgonzalez@suse.com>
 
-- Add visual feedback on table row hover and focues
+- Add visual feedback on table row hover and focus
   (gh#agama-project/agama#3233).
 
 -------------------------------------------------------------------
