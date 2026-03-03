@@ -67,7 +67,10 @@ impl Starter {
         bootloader_proxy.config().await?;
 
         let iscsi_proxy = proxies::ISCSIProxy::new(&self.dbus).await?;
+        iscsi_proxy.config().await?;
+
         let dasd_proxy = proxies::DASDProxy::new(&self.dbus).await?;
+        dasd_proxy.config().await?;
 
         let service = Service {
             storage_proxy,

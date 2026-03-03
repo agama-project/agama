@@ -103,10 +103,9 @@ impl BootloaderClient for Client {
         // ignore return value as currently it does not fail and who knows what future brings
         // but it should not be part of result and instead transformed to Issue
         let value = serde_json::to_value(&full_config)?;
-        _ = self
-            .storage_dbus
+        self.storage_dbus
             .call(message::bootloader::SetConfig::new(value))
-            .await;
+            .await?;
         Ok(())
     }
 
