@@ -337,6 +337,34 @@ impl Zypp {
         }
     }
 
+    pub fn select_products_from_service(&self, service: &String) -> ZyppResult<()> {
+        unsafe {
+            let mut status: Status = Status::default();
+            let status_ptr = &mut status as *mut _;
+
+            // find the repository matching the requested service
+            let products = zypp_agama_sys::get_products(self.ptr, status_ptr);
+
+            for i in 0..products.size as usize {
+                let c_product = *(products.list.add(i));
+
+                if string_from_ptr(c_product.service_alias) == *service {
+                    zypp_agama_sys::resolvable_select(
+                        self.ptr,
+                        c_product.name,
+                        zypp_agama_sys::RESOLVABLE_KIND_RESOLVABLE_PRODUCT,
+                        ResolvableSelected::Installation.into(),
+                        status_ptr,
+                    );
+                }
+            }
+
+            zypp_agama_sys::free_products(&products);
+
+            helpers::status_to_result_void(status)
+        }
+    }
+
     pub fn unselect_resolvable(
         &self,
         name: &str,

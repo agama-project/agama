@@ -45,6 +45,8 @@ pub enum RegistrationError {
     AddService(String, #[source] zypp_agama::ZyppError),
     #[error("Failed to refresh the service {0}: {1}")]
     RefreshService(String, #[source] zypp_agama::ZyppError),
+    #[error("Failed to select product from service {0}: {1}")]
+    SelectProduct(String, #[source] zypp_agama::ZyppError),
     #[error("Failed to copy file {0}: {1}")]
     IO(String, #[source] std::io::Error),
     #[error(transparent)]
@@ -148,9 +150,14 @@ impl Registration {
         zypp.add_service(&service.name, &service.url)
             .map_err(|e| RegistrationError::AddService(service.name.clone(), e))?;
         let name = service.name.clone();
-        self.services.push(service);
+        self.services.push(service.clone());
         zypp.refresh_service(&name)
             .map_err(|e| RegistrationError::RefreshService(name, e))?;
+        // skip for the first service (base product), the base product is selected differently
+        if self.services.len() > 1 {
+            zypp.select_products_from_service(&service.name)
+                .map_err(|e| RegistrationError::SelectProduct(service.name.clone(), e))?;
+        }
         Ok(())
     }
 
@@ -267,6 +274,15 @@ impl Registration {
 
     pub fn base_product_service_name(&self) -> Option<String> {
         self.services.first().map(|s| s.name.clone())
+    }
+
+    pub fn addon_product_service_names(&self) -> Vec<String> {
+        self.services
+            .iter()
+            // skip the first service (base product)
+            .skip(1)
+            .map(|s| s.name.clone())
+            .collect()
     }
 }
 
