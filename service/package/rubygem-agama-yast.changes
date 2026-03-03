@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Feb 27 10:40:40 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Replace D-Bus methods by attributes in order to allow caching
+  data (related to bsc#1258466).
+
+-------------------------------------------------------------------
 Thu Feb 26 16:47:39 UTC 2026 - David Diaz <dgonzalez@suse.com>
 
 - Allow reactivating a DASD if enabling DIAG failed

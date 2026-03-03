@@ -57,6 +57,7 @@ describe Agama::DBus::Storage::Manager do
   let(:bootloader) { instance_double(Agama::Storage::Bootloader) }
 
   before do
+    allow_any_instance_of(DBus::Object).to receive(:emit)
     # Speed up tests by avoiding real check of TPM presence.
     allow(Y2Storage::EncryptionMethod::TPM_FDE).to receive(:possible?).and_return(true)
     # Speed up tests by avoiding looking up by name in the system
@@ -70,17 +71,18 @@ describe Agama::DBus::Storage::Manager do
     allow(backend).to receive(:actions).and_return([])
     allow(backend).to receive(:proposal).and_return(proposal)
     allow(backend).to receive(:bootloader).and_return(bootloader)
+    allow(bootloader).to receive(:config)
     mock_storage(devicegraph: "empty-hd-50GiB.yaml")
   end
 
-  describe "#recover_proposal" do
+  describe "#serialized_proposal" do
     context "if no proposal has been successfully calculated" do
       before do
         allow(proposal).to receive(:success?).and_return false
       end
 
       it "returns 'null'" do
-        expect(subject.recover_proposal).to eq("null")
+        expect(subject.serialized_proposal).to eq("null")
       end
     end
 
@@ -89,7 +91,7 @@ describe Agama::DBus::Storage::Manager do
         allow(proposal).to receive(:success?).and_return true
       end
 
-      describe "recover_proposal[:actions]" do
+      describe "proposal[:actions]" do
         before do
           allow(backend).to receive(:actions).and_return(actions)
         end
@@ -98,7 +100,7 @@ describe Agama::DBus::Storage::Manager do
           let(:actions) { [] }
 
           it "returns an empty list" do
-            expect(parse(subject.recover_proposal)[:actions]).to eq([])
+            expect(parse(subject.serialized_proposal)[:actions]).to eq([])
           end
         end
 
@@ -142,7 +144,7 @@ describe Agama::DBus::Storage::Manager do
           end
 
           it "returns a list with a hash for each action" do
-            all_actions = parse(subject.recover_proposal)[:actions]
+            all_actions = parse(subject.serialized_proposal)[:actions]
             expect(all_actions.size).to eq(4)
             expect(all_actions).to all(be_a(Hash))
 
@@ -184,14 +186,14 @@ describe Agama::DBus::Storage::Manager do
     end
   end
 
-  describe "#recover_system" do
+  describe "#serialized_system" do
     context "if the system has not been probed yet" do
       before do
         allow(Y2Storage::StorageManager.instance).to receive(:probed?).and_return(false)
       end
 
       it "returns 'null'" do
-        expect(subject.recover_system).to eq("null")
+        expect(subject.serialized_system).to eq("null")
       end
     end
 
@@ -210,12 +212,12 @@ describe Agama::DBus::Storage::Manager do
     let(:available_raids) { [] }
     let(:candidate_raids) { [] }
 
-    describe "recover_system[:availableDrives]" do
+    describe "serialized_system[:availableDrives]" do
       context "if there is no available drives" do
         let(:available_drives) { [] }
 
         it "returns an empty list" do
-          expect(parse(subject.recover_system)[:availableDrives]).to eq([])
+          expect(parse(subject.serialized_system)[:availableDrives]).to eq([])
         end
       end
 
@@ -227,18 +229,18 @@ describe Agama::DBus::Storage::Manager do
         let(:drive3) { instance_double(Y2Storage::Disk, name: "/dev/vdb", sid: 97) }
 
         it "retuns the id of each drive" do
-          result = parse(subject.recover_system)[:availableDrives]
+          result = parse(subject.serialized_system)[:availableDrives]
           expect(result).to contain_exactly(95, 96, 97)
         end
       end
     end
 
-    describe "recover_system[:candidateDrives]" do
+    describe "serialized_system[:candidateDrives]" do
       context "if there is no candidate drives" do
         let(:candidate_drives) { [] }
 
         it "returns an empty list" do
-          expect(parse(subject.recover_system)[:candidateDrives]).to eq([])
+          expect(parse(subject.serialized_system)[:candidateDrives]).to eq([])
         end
       end
 
@@ -249,18 +251,18 @@ describe Agama::DBus::Storage::Manager do
         let(:drive2) { instance_double(Y2Storage::Disk, name: "/dev/vdb", sid: 96) }
 
         it "retuns the id of each drive" do
-          result = parse(subject.recover_system)[:candidateDrives]
+          result = parse(subject.serialized_system)[:candidateDrives]
           expect(result).to contain_exactly(95, 96)
         end
       end
     end
 
-    describe "recover_system[:availableMdRaids]" do
+    describe "serialized_system[:availableMdRaids]" do
       context "if there is no available MD RAIDs" do
         let(:available_raids) { [] }
 
         it "returns an empty list" do
-          expect(parse(subject.recover_system)[:availableMdRaids]).to eq([])
+          expect(parse(subject.serialized_system)[:availableMdRaids]).to eq([])
         end
       end
 
@@ -272,18 +274,18 @@ describe Agama::DBus::Storage::Manager do
         let(:md_raid3) { instance_double(Y2Storage::Md, name: "/dev/md2", sid: 102) }
 
         it "returns the id of each MD RAID" do
-          result = parse(subject.recover_system)[:availableMdRaids]
+          result = parse(subject.serialized_system)[:availableMdRaids]
           expect(result).to contain_exactly(100, 101, 102)
         end
       end
     end
 
-    describe "recover_system[:candidateMdRaids]" do
+    describe "serialized_system[:candidateMdRaids]" do
       context "if there is no candidate MD RAIDs" do
         let(:candidate_raids) { [] }
 
         it "returns an empty list" do
-          expect(parse(subject.recover_system)[:candidateMdRaids]).to eq([])
+          expect(parse(subject.serialized_system)[:candidateMdRaids]).to eq([])
         end
       end
 
@@ -294,18 +296,18 @@ describe Agama::DBus::Storage::Manager do
         let(:md_raid2) { instance_double(Y2Storage::Md, name: "/dev/md1", sid: 101) }
 
         it "retuns the path of each MD RAID" do
-          result = parse(subject.recover_system)[:candidateMdRaids]
+          result = parse(subject.serialized_system)[:candidateMdRaids]
           expect(result).to contain_exactly(100, 101)
         end
       end
     end
 
-    describe "recover_system[:issues]" do
+    describe "serialized_system[:issues]" do
       context "if there is no candidate drives" do
         let(:candidate_drives) { [] }
 
         it "contains a issue about the absence of disks" do
-          result = parse(subject.recover_system)[:issues]
+          result = parse(subject.serialized_system)[:issues]
           expect(result).to contain_exactly(
             a_hash_including(description: /no suitable device for installation/i)
           )
@@ -318,13 +320,13 @@ describe Agama::DBus::Storage::Manager do
         let(:drive) { instance_double(Y2Storage::Disk, name: "/dev/vda", sid: 95) }
 
         it "retuns an empty array" do
-          result = parse(subject.recover_system)[:issues]
+          result = parse(subject.serialized_system)[:issues]
           expect(result).to eq []
         end
       end
     end
 
-    describe "recover_system[:productMountPoints]" do
+    describe "serialized_system[:productMountPoints]" do
       before do
         backend.update_product_config(product_config)
       end
@@ -337,7 +339,7 @@ describe Agama::DBus::Storage::Manager do
         let(:cfg_templates) { [] }
 
         it "contains an empty list" do
-          expect(parse(subject.recover_system)[:productMountPoints]).to eq([])
+          expect(parse(subject.serialized_system)[:productMountPoints]).to eq([])
         end
       end
 
@@ -352,13 +354,13 @@ describe Agama::DBus::Storage::Manager do
         end
 
         it "contains the mount points of each volume template" do
-          result = parse(subject.recover_system)
+          result = parse(subject.serialized_system)
           expect(result[:productMountPoints]).to contain_exactly("/", "swap", "/home")
         end
       end
     end
 
-    describe "recover_system[:volumeTemplates]" do
+    describe "serialized_system[:volumeTemplates]" do
       before do
         backend.update_product_config(product_config)
       end
@@ -374,7 +376,7 @@ describe Agama::DBus::Storage::Manager do
           generic = { fsType: "ext4", mountOptions: [], minSize: 0, autoSize: false }
           generic_outline = { required: false, fsTypes: [], supportAutoSize: false }
 
-          templates = parse(subject.recover_system)[:volumeTemplates]
+          templates = parse(subject.serialized_system)[:volumeTemplates]
           expect(templates.size).to eq 1
 
           expect(templates.first).to include(generic)
@@ -413,7 +415,7 @@ describe Agama::DBus::Storage::Manager do
         end
 
         it "contains a template for every relevant mount path" do
-          templates = parse(subject.recover_system)[:volumeTemplates]
+          templates = parse(subject.serialized_system)[:volumeTemplates]
 
           root = templates.find { |v| v[:mountPath] == "/" }
           expect(root).to include(fsType: "btrfs", autoSize: true)
@@ -435,7 +437,7 @@ describe Agama::DBus::Storage::Manager do
           default = { fsType: "ext4", autoSize: false, minSize: 10 * (1024**3) }
           default_outline = { fsTypes: ["ext3", "ext4", "xfs"], supportAutoSize: false }
 
-          templates = parse(subject.recover_system)[:volumeTemplates]
+          templates = parse(subject.serialized_system)[:volumeTemplates]
           template = templates.find { |v| v[:mountPath] == "" }
           expect(template).to include(default)
           expect(template[:outline]).to include(default_outline)
@@ -597,6 +599,8 @@ describe Agama::DBus::Storage::Manager do
         before do
           allow(backend).to receive(:activated?).and_return true
           allow(backend).to receive(:probed?).and_return true
+          # Set serialized system according to the current product config.
+          subject.serialized_system = subject.send(:serialize_system)
         end
 
         context "if the product configuration has changed" do
@@ -777,6 +781,8 @@ describe Agama::DBus::Storage::Manager do
         before do
           allow(backend).to receive(:activated?).and_return true
           allow(backend).to receive(:probed?).and_return true
+          # Set serialized system according to the current product config.
+          subject.serialized_system = subject.send(:serialize_system)
         end
 
         context "if the product configuration has changed" do
@@ -871,10 +877,10 @@ describe Agama::DBus::Storage::Manager do
     end
   end
 
-  describe "#recover_config" do
+  describe "#serialized_config" do
     context "if a proposal has not been calculated" do
       it "returns 'null'" do
-        expect(subject.recover_config).to eq("null")
+        expect(subject.serialized_config).to eq("null")
       end
     end
 
@@ -900,7 +906,7 @@ describe Agama::DBus::Storage::Manager do
       end
 
       it "returns serialized storage config" do
-        expect(subject.recover_config).to eq(serialize(config_json))
+        expect(subject.serialized_config).to eq(serialize(config_json))
       end
     end
 
@@ -918,7 +924,7 @@ describe Agama::DBus::Storage::Manager do
       end
 
       it "returns the serialized AutoYaST config" do
-        expect(subject.recover_config).to eq(serialize(autoyast_json))
+        expect(subject.serialized_config).to eq(serialize(autoyast_json))
       end
     end
   end
@@ -953,10 +959,10 @@ describe Agama::DBus::Storage::Manager do
     end
   end
 
-  describe "#recover_config_model" do
+  describe "#serialized_config_model" do
     context "if a proposal has not been calculated" do
       it "returns 'null'" do
-        expect(subject.recover_config_model).to eq("null")
+        expect(subject.serialized_config_model).to eq("null")
       end
     end
 
@@ -983,7 +989,7 @@ describe Agama::DBus::Storage::Manager do
       end
 
       it "returns the serialized config model" do
-        expect(subject.recover_config_model).to eq(
+        expect(subject.serialized_config_model).to eq(
           serialize({
             boot:         {
               configure: true,
@@ -1037,7 +1043,7 @@ describe Agama::DBus::Storage::Manager do
       end
 
       it "returns 'null'" do
-        expect(subject.recover_config_model).to eq("null")
+        expect(subject.serialized_config_model).to eq("null")
       end
     end
   end
@@ -1120,6 +1126,8 @@ describe Agama::DBus::Storage::Manager do
       allow(backend).to receive(:probe)
       allow(backend).to receive(:add_packages)
       allow(bootloader).to receive(:configure)
+      # Initializes serialized_system to mimic the system is not probed yet.
+      subject.serialized_system = "null"
     end
 
     let(:activated) { true }
@@ -1232,10 +1240,10 @@ describe Agama::DBus::Storage::Manager do
     end
   end
 
-  describe "#recover_issues" do
+  describe "#serialized_issues" do
     context "if no proposal has been calculated" do
       it "returns an empty array" do
-        expect(subject.recover_issues).to eq "[]"
+        expect(subject.serialized_issues).to eq "[]"
       end
     end
 
@@ -1259,7 +1267,7 @@ describe Agama::DBus::Storage::Manager do
       end
 
       it "returns an empty array" do
-        expect(subject.recover_issues).to eq "[]"
+        expect(subject.serialized_issues).to eq "[]"
       end
     end
 
@@ -1283,7 +1291,7 @@ describe Agama::DBus::Storage::Manager do
       end
 
       it "returns the list of proposal issues" do
-        result = parse(subject.recover_issues)
+        result = parse(subject.serialized_issues)
         expect(result).to include(
           a_hash_including(
             description: /cannot calculate a valid storage setup/i

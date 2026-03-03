@@ -30,24 +30,32 @@ RSpec.describe Agama::DBus::Storage::DASD do
   let(:manager) { instance_double(Agama::Storage::DASD::Manager) }
 
   before do
+    allow_any_instance_of(DBus::Object).to receive(:emit)
     allow(manager).to receive(:on_format_change)
     allow(manager).to receive(:on_format_finish)
+    allow(manager).to receive(:probe)
+    allow(manager).to receive(:devices).and_return([])
+    allow(manager).to receive(:config_json).and_return(nil.to_json)
+    allow(manager).to receive(:probed?).and_return(true)
   end
 
   describe "#probe" do
     before do
-      allow(subject).to receive(:recover_system).and_return("{}")
+      # Set serialized system to null in order to check if the signal is emitted when the system
+      # changes.
+      subject.serialized_system = nil.to_json
     end
+
     it "probes for devices" do
       expect(subject).to receive(:ProgressChanged).ordered
       expect(manager).to receive(:probe).ordered
-      expect(subject).to receive(:SystemChanged).with("{}").ordered
+      expect(subject).to receive(:SystemChanged).ordered
       expect(subject).to receive(:ProgressFinished).ordered
       subject.probe
     end
   end
 
-  describe "#recover_system" do
+  describe "#serialized_system" do
     before do
       allow(manager).to receive(:devices).and_return([dasd])
       allow(manager).to receive(:device_type).with(dasd).and_return("ECKD")
@@ -83,32 +91,14 @@ RSpec.describe Agama::DBus::Storage::DASD do
       }
     end
 
-    context "when already probed" do
-      before do
-        allow(manager).to receive(:probed?).and_return(true)
-      end
-
-      it "returns system information as JSON" do
-        expected_value = JSON.pretty_generate(system_json)
-        expect(manager).to_not receive(:probe)
-        expect(subject.recover_system).to eq(expected_value)
-      end
-    end
-
-    context "when not probed yet" do
-      before do
-        allow(manager).to receive(:probed?).and_return(false)
-      end
-
-      it "probes first" do
-        expected_value = JSON.pretty_generate(system_json)
-        expect(manager).to receive(:probe)
-        expect(subject.recover_system).to eq(expected_value)
-      end
+    it "returns system information as JSON" do
+      expected_value = JSON.pretty_generate(system_json)
+      expect(manager).to_not receive(:probe)
+      expect(subject.serialized_system).to eq(expected_value)
     end
   end
 
-  describe "#recover_config" do
+  describe "#serialized_config" do
     before do
       allow(manager).to receive(:config_json).and_return(config_json)
     end
@@ -123,14 +113,14 @@ RSpec.describe Agama::DBus::Storage::DASD do
 
     it "returns the config as JSON" do
       expected_value = JSON.pretty_generate(config_json)
-      expect(subject.recover_config).to eq(expected_value)
+      expect(subject.serialized_config).to eq(expected_value)
     end
 
     context "if there is not config yet" do
       let(:config_json) { nil }
 
       it "returns 'null'" do
-        expect(subject.recover_config).to eq("null")
+        expect(subject.serialized_config).to eq("null")
       end
     end
   end
@@ -167,7 +157,7 @@ RSpec.describe Agama::DBus::Storage::DASD do
     context "when config has changed" do
       before do
         allow(manager).to receive(:configured?).with(config_json).and_return(false)
-        allow(subject).to receive(:recover_system).and_return("{}")
+        allow(subject).to receive(:serialized_system).and_return("{}")
       end
 
       it "performs configuration in a thread" do
@@ -181,7 +171,7 @@ RSpec.describe Agama::DBus::Storage::DASD do
       end
     end
 
-    context "when already configuring" do
+    context "when already configured" do
       let(:thread) { instance_double(Thread, alive?: true) }
 
       before do
