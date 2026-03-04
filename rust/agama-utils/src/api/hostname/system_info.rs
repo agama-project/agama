@@ -22,6 +22,7 @@ use serde::{Deserialize, Serialize};
 
 /// Describes the current system hostname information
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize, utoipa::ToSchema)]
+#[schema(as = hostname::SystemInfo)]
 pub struct SystemInfo {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub r#static: Option<String>,

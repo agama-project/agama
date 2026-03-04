@@ -27,6 +27,7 @@ use serde_with::skip_serializing_none;
 #[derive(Clone, Debug, Default, Deserialize, Serialize, Merge, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
 #[merge(strategy = merge::option::recurse)]
+#[schema(as = s390::Config)]
 /// s390 configuration.
 pub struct Config {
     /// Configuration of the DASD devices.
