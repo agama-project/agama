@@ -33,6 +33,7 @@ use agama_utils::{
 use camino::Utf8PathBuf;
 use openssl::x509::X509;
 use suseconnect_agama::{self, ConnectParams, Credentials};
+use tracing::info;
 use url::Url;
 
 use crate::state::Addon;
@@ -152,7 +153,13 @@ impl Registration {
         let name = service.name.clone();
         self.services.push(service.clone());
         zypp.refresh_service(&name)
-            .map_err(|e| RegistrationError::RefreshService(name, e))?;
+            .map_err(|e| RegistrationError::RefreshService(name.clone(), e))?;
+        zypp.load_source(
+            zypp_agama::callbacks::empty_progress,
+            &mut zypp_agama::callbacks::security::EmptyCallback,
+        )
+        .map_err(|e| RegistrationError::RefreshService(name, e))?;
+
         // skip for the first service (base product), the base product is selected differently
         if self.services.len() > 1 {
             zypp.select_products_from_service(&service.name)
