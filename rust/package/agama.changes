@@ -1,7 +1,7 @@
 -------------------------------------------------------------------
 Wed Mar  4 06:55:12 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
-- Fix packageing of dasd and zfcp schemas (gh#agama-project/agama#3236).
+- Fix packaging of dasd and zfcp schemas (gh#agama-project/agama#3236).
 
 -------------------------------------------------------------------
 Tue Mar  3 12:34:09 UTC 2026 - José Iván López González <jlopez@suse.com>
