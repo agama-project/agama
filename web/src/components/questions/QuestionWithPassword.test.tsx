@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024] SUSE LLC
+ * Copyright (c) [2024-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -23,11 +23,13 @@
 import React from "react";
 import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
-import { Question, FieldType } from "~/types/questions";
-import { Product } from "~/types/software";
-import { InstallationPhase } from "~/types/status";
+import { Question, FieldType } from "~/model/question";
+import { useSystem } from "~/hooks/model/system";
+import { useProductInfo } from "~/hooks/model/config/product";
+import { useStatus } from "~/hooks/model/status";
+import { Locale, Keymap } from "~/model/system/l10n";
 import QuestionWithPassword from "~/components/questions/QuestionWithPassword";
-import { Locale, Keymap } from "~/types/l10n";
+import { Product } from "~/model/system";
 
 const answerFn = jest.fn();
 const question: Question = {
@@ -48,38 +50,39 @@ const tumbleweed: Product = {
   icon: "tumbleweed.svg",
   description: "Tumbleweed description...",
   registration: false,
+  modes: [],
 };
 
 const locales: Locale[] = [
-  { id: "en_US.UTF-8", name: "English", territory: "United States" },
-  { id: "es_ES.UTF-8", name: "Spanish", territory: "Spain" },
+  { id: "en_US.UTF-8", language: "English", territory: "United States" },
+  { id: "es_ES.UTF-8", language: "Spanish", territory: "Spain" },
 ];
 
 const keymaps: Keymap[] = [
-  { id: "us", name: "English" },
-  { id: "es", name: "Spanish" },
+  { id: "us", description: "English" },
+  { id: "es", description: "Spanish" },
 ];
 
-jest.mock("~/queries/status", () => ({
-  useInstallerStatus: () => ({
-    phase: InstallationPhase.Config,
-    isBusy: false,
+jest.mock("~/hooks/model/system", () => ({
+  ...jest.requireActual("~/hooks/model/system"),
+  useSystem: (): ReturnType<typeof useSystem> => ({
+    l10n: {
+      locale: "de-DE",
+      locales,
+      keymaps,
+      keymap: "us",
+    },
   }),
 }));
 
-jest.mock("~/queries/system", () => ({
-  ...jest.requireActual("~/queries/l10n"),
-  useSystem: () => ({ l10n: { locales, keymaps, keymap: "us", language: "de-DE" } }),
+jest.mock("~/hooks/model/status", () => ({
+  ...jest.requireActual("~/hooks/model/status"),
+  useStatus: (): ReturnType<typeof useStatus> => ({ stage: "configuring", progresses: [] }),
 }));
 
-jest.mock("~/queries/software", () => ({
-  ...jest.requireActual("~/queries/software"),
-  useProduct: () => {
-    return {
-      products: [tumbleweed],
-      selectedProduct: tumbleweed,
-    };
-  },
+jest.mock("~/hooks/model/config/product", () => ({
+  ...jest.requireActual("~/hooks/model/config/product"),
+  useProductInfo: (): ReturnType<typeof useProductInfo> => tumbleweed,
 }));
 
 jest.mock("~/context/installerL10n", () => ({
@@ -91,22 +94,20 @@ jest.mock("~/context/installerL10n", () => ({
 }));
 
 const renderQuestion = () =>
-  installerRender(<QuestionWithPassword question={question} answerCallback={answerFn} />, {
-    withL10n: true,
-  });
+  installerRender(<QuestionWithPassword question={question} answerCallback={answerFn} />);
 
 describe("QuestionWithPassword", () => {
+  it("renders the question text", () => {
+    renderQuestion();
+
+    screen.getByText(question.text);
+  });
+
   it("allows opening the installer keymap settings", async () => {
     const { user } = renderQuestion();
     const changeKeymapButton = screen.getByRole("button", { name: "Change keyboard layout" });
     await user.click(changeKeymapButton);
     screen.getByRole("dialog", { name: "Change keyboard" });
-  });
-
-  it("renders the question text", () => {
-    renderQuestion();
-
-    screen.queryByText(question.text);
   });
 
   describe("when the user enters the password", () => {

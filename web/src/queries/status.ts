@@ -22,7 +22,7 @@
 
 import { useQuery, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import React from "react";
-import { fetchInstallerStatus } from "~/api/status";
+import { fetchInstallerStatus } from "~/model/status";
 import { useInstallerClient } from "~/context/installer";
 import { InstallerStatus } from "~/types/status";
 import { QueryHookOptions } from "~/types/queries";

@@ -12,6 +12,9 @@ icon: Kalpa.svg
 # Do not manually change any translations! See README.md for more details.
 translations:
   description:
+    bg: Неизменим софтуерен продукт с непрекъснато обновяване, използващ Plasma
+      Desktop, Flatpak за предоставяне на приложения, база от тип "само четене"
+      и автоматични и атомични актуализации на вашата система
     ca: Un producte d'escriptori immutable amb llançament continu, que usa
       l'escriptori Plasma, aprofita Flatpak per al lliurament d'aplicacions, una
       base de només lectura i actualitzacions automàtiques i atòmiques del
@@ -20,9 +23,13 @@ translations:
       Pro doručování aplikací používá Flatpak, dále má základ systému pouze pro
       čtení s atomickými aktualizacemi, které probíhají automaticky
     de: Ein rollierend veröffentlichtes unveränderliches Desktop-Produkt, welches
-      den Plasma Desktop und Flatpak für die Anwendungsbereitstellung nutzt,
+      den Plasma-Desktop und Flatpak für die Anwendungsbereitstellung nutzt,
       eine Basis mit ausschließlich Lesezugriff besitzt und atomare
       Aktualisierungen durchführt.
+    el: Ένα αμετάβλητο desktop προϊόν rolling release, που χρησιμοποιεί το Plasma
+      Desktop, αξιοποιεί το Flatpak για τη διάθεση εφαρμογών, διαθέτει μια βάση
+      μόνο για ανάγνωση, καθώς και αυτόματες και ατομικές ενημερώσεις του
+      συστήματός σας
     es: Un producto inmutable de escritorio de actualización continua, utilizando el
       Escritorio de Plasma, aprovechándose de Flatpak para la entrega de
       aplicaciones, una base de sólo lectura y actualizaciones automáticas y
@@ -86,13 +93,14 @@ software:
     - microos_hardware
     - microos_kde_desktop
     - microos_selinux
-  optional_patterns: null
+  optional_patterns: []
   user_patterns:
     - container_runtime
   mandatory_packages:
     - NetworkManager
     - openSUSE-repos-MicroOS
-  optional_packages: null
+    - sudo-policy-wheel-auth-self # explicit wheel group policy to conform new auth model
+  optional_packages: []
   base_product: Kalpa
 
 security:

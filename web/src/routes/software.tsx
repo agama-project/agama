@@ -23,10 +23,10 @@
 import React from "react";
 import SoftwarePage from "~/components/software/SoftwarePage";
 import SoftwarePatternsSelection from "~/components/software/SoftwarePatternsSelection";
+import SoftwareConflictsPage from "~/components/software/SoftwareConflictsPage";
 import { Route } from "~/types/routes";
 import { SOFTWARE as PATHS } from "~/routes/paths";
 import { N_ } from "~/i18n";
-import SoftwareConflicts from "~/components/software/SoftwareConflicts";
 
 const routes = (): Route => ({
   path: PATHS.root,
@@ -45,7 +45,7 @@ const routes = (): Route => ({
     },
     {
       path: PATHS.conflicts,
-      element: <SoftwareConflicts />,
+      element: <SoftwareConflictsPage />,
     },
   ],
 });

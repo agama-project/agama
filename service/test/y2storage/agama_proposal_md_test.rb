@@ -372,5 +372,75 @@ describe Y2Storage::AgamaProposal do
         expect(md.partitions.first.id).to eq Y2Storage::PartitionId::BIOS_BOOT
       end
     end
+
+    context "when creating several MD Raids with several partitions each" do
+      let(:scenario) { "nvme-disks.yaml" }
+
+      let(:config_json) do
+        {
+          drives:  [
+            {
+              search:     "/dev/nvme0n1",
+              partitions: [
+                { alias: "nvme0n1-p0", id: "raid", size: { min: "1 MiB" } }
+              ]
+            },
+            {
+              search:     "/dev/nvme1n1",
+              partitions: [
+                { alias: "nvme1n1-p0", id: "raid", size: { min: "1 MiB" } }
+              ]
+            },
+            {
+              search:     "/dev/nvme2n1",
+              partitions: [
+                { alias: "nvme2n1-p0", id: "raid", size: { min: "1 MiB" } }
+              ]
+            },
+            {
+              search:     "/dev/nvme3n1",
+              partitions: [
+                { alias: "nvme3n1-p0", id: "raid", size: { min: "1 MiB" } }
+              ]
+            }
+          ],
+          mdRaids: [
+            {
+              level:      "raid0",
+              devices:    ["nvme0n1-p0", "nvme1n1-p0"],
+              partitions: [
+                { size: "512 MiB", filesystem: { path: "/boot/efi" } },
+                { size: "512 MiB", filesystem: { path: "/boot" } },
+                { size: "93 GiB", filesystem: { path: "/" } },
+                { size: { min: "1 MiB" }, filesystem: { path: "/data0" } }
+              ]
+            },
+            {
+              level:      "raid1",
+              devices:    ["nvme2n1-p0", "nvme3n1-p0"],
+              partitions: [
+                { size: { min: "1 MiB" }, filesystem: { path: "/data1" } }
+              ]
+            }
+          ],
+          boot:    { configure: false }
+        }
+      end
+
+      # Regression test for bsc#1253145
+      # The small partitions /boot and /boot/efi were located to the second RAID to optimize space
+      # distribution. Something that should obviously not happen.
+      it "locates each partition into its corresponding RAID device" do
+        devicegraph = proposal.propose
+
+        raid0 = devicegraph.md_raids.find { |i| i.md_level.is?(:raid0) }
+        expect(raid0.partitions.map(&:filesystem).map(&:mount_path)).to contain_exactly(
+          "/boot", "/boot/efi", "/", "/data0"
+        )
+
+        raid1 = devicegraph.md_raids.find { |i| i.md_level.is?(:raid1) }
+        expect(raid1.partitions.map(&:filesystem).map(&:mount_path)).to eq ["/data1"]
+      end
+    end
   end
 end

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2023-2025] SUSE LLC
+ * Copyright (c) [2023-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -20,26 +20,30 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
+import React, { Suspense } from "react";
 import { render, screen, waitFor } from "@testing-library/react";
-
-import { InstallerL10nProvider } from "~/context/installerL10n";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { InstallerL10nProvider, useInstallerL10n } from "~/context/installerL10n";
 import { InstallerClientProvider } from "./installer";
-import * as utils from "~/utils";
-import { noop } from "radashi";
 
-const mockFetchConfigFn = jest.fn();
-const mockUpdateConfigFn = jest.fn();
+jest.unmock("~/context/installerL10n");
+
+const mockUseSystemFn = jest.fn();
+const mockConfigureL10nFn = jest.fn();
 
 jest.mock("~/context/installer", () => ({
   ...jest.requireActual("~/context/installer"),
   useInstallerClientStatus: () => ({ connected: true, error: false }),
 }));
 
-jest.mock("~/api/api", () => ({
-  ...jest.requireActual("~/api/api"),
-  fetchSystem: () => mockFetchConfigFn(),
-  trigger: (config) => mockUpdateConfigFn(config),
+jest.mock("~/api", () => ({
+  ...jest.requireActual("~/api"),
+  configureL10nAction: (config) => mockConfigureL10nFn(config),
+}));
+
+jest.mock("~/hooks/model/system", () => ({
+  ...jest.requireActual("~/hooks/model/system"),
+  useSystem: () => mockUseSystemFn(),
 }));
 
 const client = {
@@ -61,6 +65,7 @@ jest.mock("~/languages.json", () => ({
 // Helper component that displays a translated message depending on the
 // agamaLang value.
 const TranslatedContent = () => {
+  const { language } = useInstallerL10n();
   const text = {
     "cs-CZ": "ahoj",
     "en-US": "hello",
@@ -68,177 +73,33 @@ const TranslatedContent = () => {
     "es-AR": "hola!",
   };
 
-  const regexp = /agamaLang=([^;]+)/;
-  const found = document.cookie.match(regexp);
-  if (!found) return <>{text["en-US"]}</>;
-
-  const [, lang] = found;
-  return <>{text[lang]}</>;
+  return <>{text[language]}</>;
 };
 
 describe("InstallerL10nProvider", () => {
   beforeAll(() => {
-    jest.spyOn(utils, "locationReload").mockImplementation(noop);
-    jest.spyOn(utils, "setLocationSearch");
-
-    mockUpdateConfigFn.mockResolvedValue(true);
+    mockConfigureL10nFn.mockResolvedValue(true);
+    mockUseSystemFn.mockReturnValue({ l10n: { locale: "es_ES.UTF-8" } });
     jest.spyOn(window.navigator, "languages", "get").mockReturnValue(["es-ES", "cs-CZ"]);
   });
 
-  // remove the language cookie after each test
-  afterEach(() => {
-    // setting a cookie with already expired date removes it
-    document.cookie = "agamaLang=; path=/; expires=" + new Date(0).toUTCString();
-  });
-
-  describe("when no URL query parameter is set", () => {
-    beforeEach(() => {
-      window.location.search = "";
+  it("sets the language from the backend", async () => {
+    const queryClient = new QueryClient({
+      defaultOptions: { queries: { retry: false } },
     });
 
-    describe("when the language is already set", () => {
-      beforeEach(() => {
-        document.cookie = "agamaLang=en-US; path=/;";
-        mockFetchConfigFn.mockResolvedValue({ l10n: { locale: "en_US.UTF-8" } });
-      });
-
-      it("displays the children content and does not reload", async () => {
-        render(
+    render(
+      <QueryClientProvider client={queryClient}>
+        <Suspense fallback="Loading...">
           <InstallerClientProvider client={client}>
             <InstallerL10nProvider>
               <TranslatedContent />
             </InstallerL10nProvider>
-          </InstallerClientProvider>,
-        );
+          </InstallerClientProvider>
+        </Suspense>
+      </QueryClientProvider>,
+    );
 
-        // children are displayed
-        await screen.findByText("hello");
-
-        expect(utils.locationReload).not.toHaveBeenCalled();
-      });
-    });
-
-    describe("when the language is not set", () => {
-      beforeEach(() => {
-        // Ensure both, UI and backend mock languages, are in sync since
-        // client.setUILocale is mocked too.
-        // See navigator.language in the beforeAll at the top of the file.
-        mockFetchConfigFn.mockResolvedValue({ l10n: { locale: "es_ES.UTF-8" } });
-      });
-
-      it("sets the language from backend", async () => {
-        render(
-          <InstallerClientProvider client={client}>
-            <InstallerL10nProvider>
-              <TranslatedContent />
-            </InstallerL10nProvider>
-          </InstallerClientProvider>,
-        );
-
-        await waitFor(() => expect(utils.locationReload).toHaveBeenCalled());
-
-        // renders again after reloading
-        render(
-          <InstallerClientProvider client={client}>
-            <InstallerL10nProvider>
-              <TranslatedContent />
-            </InstallerL10nProvider>
-          </InstallerClientProvider>,
-        );
-        await waitFor(() => screen.getByText("hola"));
-      });
-    });
-  });
-
-  describe("when the URL query parameter is set to '?lang=cs-CZ'", () => {
-    beforeEach(() => {
-      history.replaceState(history.state, null, `http://localhost/?lang=cs-CZ`);
-    });
-
-    describe("when the language is already set to 'cs-CZ'", () => {
-      beforeEach(() => {
-        document.cookie = "agamaLang=cs-CZ; path=/;";
-        mockFetchConfigFn.mockResolvedValue({ l10n: { locale: "cs_CZ.UTF-8" } });
-      });
-
-      it("displays the children content and does not reload", async () => {
-        render(
-          <InstallerClientProvider client={client}>
-            <InstallerL10nProvider>
-              <TranslatedContent />
-            </InstallerL10nProvider>
-          </InstallerClientProvider>,
-        );
-
-        // children are displayed
-        await screen.findByText("ahoj");
-        expect(mockUpdateConfigFn).not.toHaveBeenCalled();
-
-        expect(document.cookie).toMatch(/agamaLang=cs-CZ/);
-        expect(utils.locationReload).not.toHaveBeenCalled();
-        expect(utils.setLocationSearch).not.toHaveBeenCalled();
-      });
-    });
-
-    describe("when the language is set to 'en-US'", () => {
-      beforeEach(() => {
-        document.cookie = "agamaLang=en-US; path=/;";
-        mockFetchConfigFn.mockResolvedValue({ l10n: { locale: "en_US" } });
-      });
-
-      it.skip("sets the 'cs-CZ' language and reloads", async () => {
-        render(
-          <InstallerClientProvider client={client}>
-            <InstallerL10nProvider>
-              <TranslatedContent />
-            </InstallerL10nProvider>
-          </InstallerClientProvider>,
-        );
-
-        // renders again after reloading
-        render(
-          <InstallerClientProvider client={client}>
-            <InstallerL10nProvider>
-              <TranslatedContent />
-            </InstallerL10nProvider>
-          </InstallerClientProvider>,
-        );
-
-        await waitFor(() => screen.getByText("ahoj"));
-        expect(mockUpdateConfigFn).toHaveBeenCalledWith({
-          l10n: { locale: "cs_CZ.UTF-8" },
-        });
-      });
-    });
-
-    describe("when the language is not set", () => {
-      beforeEach(() => {
-        mockFetchConfigFn.mockResolvedValue({ uiLocale: "en_US.UTF-8" });
-      });
-
-      it.skip("sets the 'cs-CZ' language and reloads", async () => {
-        render(
-          <InstallerClientProvider client={client}>
-            <InstallerL10nProvider>
-              <TranslatedContent />
-            </InstallerL10nProvider>
-          </InstallerClientProvider>,
-        );
-
-        // reload the component
-        render(
-          <InstallerClientProvider client={client}>
-            <InstallerL10nProvider>
-              <TranslatedContent />
-            </InstallerL10nProvider>
-          </InstallerClientProvider>,
-        );
-
-        await waitFor(() => screen.getByText("ahoj"));
-        expect(mockUpdateConfigFn).toHaveBeenCalledWith({
-          l10n: { locale: "cs_CZ.UTF-8" },
-        });
-      });
-    });
+    await waitFor(() => screen.getByText("hola"));
   });
 });

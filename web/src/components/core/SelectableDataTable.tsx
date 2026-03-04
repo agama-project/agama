@@ -21,7 +21,7 @@
  */
 
 import React, { useState } from "react";
-import { Bullseye, MenuToggle } from "@patternfly/react-core";
+import { MenuToggle } from "@patternfly/react-core";
 import {
   Table,
   TableProps,
@@ -39,7 +39,7 @@ import {
 } from "@patternfly/react-table";
 import { isEmpty, isFunction } from "radashi";
 import Icon from "~/components/layout/Icon";
-import { _ } from "~/i18n";
+import { _, TranslatedString } from "~/i18n";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -70,7 +70,7 @@ export type SelectableDataTableColumn = {
    *
    * @example "Name", "Status", "Created At"
    */
-  name: string;
+  name: TranslatedString;
 
   /**
    * A function that takes a data item and returns the content to display in the
@@ -90,8 +90,7 @@ export type SelectableDataTableColumn = {
    * If defined, marks the column as sortable and specifies the key used for
    * sorting.
    */
-  sortingKey?: string;
-
+  sortingKey?: string | ((item: object) => string | number);
   /**
    * A space-separated string of additional CSS class names to apply to the column's cells.
    * Useful for custom styling or conditional formatting.
@@ -137,10 +136,11 @@ export type SelectableDataTableProps<T = any> = {
   /**
    * Determines the selection behavior of the table.
    *
+   * - `"none"`: Does not allow selection.
    * - `"single"`: Allows selecting only one item at a time (radio buttons).
    * - `"multiple"`: Allows selecting multiple items (checkboxes).
    */
-  selectionMode?: "single" | "multiple";
+  selectionMode?: "none" | "single" | "multiple";
 
   /**
    * Data items to be rendered as rows in the table.
@@ -208,6 +208,15 @@ export type SelectableDataTableProps<T = any> = {
    * accessibility.
    */
   itemActionsLabel?: (d: T) => string | string;
+
+  /**
+   * Custom component to use for rendering the actions cell. When not provided,
+   * falls back to PatternFly's ActionsColumn.
+   *
+   * The component will receive the actions for the row and the resolved
+   * accessible label from `itemActionsLabel`.
+   */
+  itemActionsComponent?: React.ComponentType<{ items: IAction[]; label: string }>;
 
   /**
    * Array of currently selected items.
@@ -307,7 +316,12 @@ type SharedData = {
 } & Readonly<
   Pick<
     SelectableDataTableProps,
-    "sortedBy" | "updateSorting" | "allowSelectAll" | "itemActions" | "itemActionsLabel"
+    | "sortedBy"
+    | "updateSorting"
+    | "allowSelectAll"
+    | "itemActions"
+    | "itemActionsLabel"
+    | "itemActionsComponent"
   >
 >;
 
@@ -382,7 +396,11 @@ const TableHeader = ({
             </Th>
           );
         })}
-        {itemActions && <Th aria-label={_("Row actions")} />}
+        {
+          // TODO: replace with itemActionsMap in SharedData to avoid calling itemActions
+          // twice per item and to correctly hide the actions column when no items have actions.
+          itemActions && <Th aria-label={_("Row actions")} />
+        }
       </Tr>
     </Thead>
   );
@@ -461,11 +479,13 @@ export default function SelectableDataTable({
   allowSelectAll = false,
   itemActions,
   itemActionsLabel,
+  itemActionsComponent,
   emptyState,
   ...tableProps
 }: SelectableDataTableProps) {
   const [expandedItemsKeys, setExpandedItemsKeys] = useState(initialExpandedKeys);
   const selection = sanitizeSelection(itemsSelected, selectionMode);
+  const allowSelection = selectionMode !== "none";
   const allowMultiple = selectionMode === "multiple";
   const isItemSelected = (item: object) => {
     const selected = selection.find((selectionItem) => {
@@ -484,6 +504,8 @@ export default function SelectableDataTable({
   };
 
   const updateSelection = (item: object) => {
+    if (!isFunction(onSelectionChange)) return;
+
     if (!allowMultiple) {
       onSelectionChange([item]);
       return;
@@ -516,7 +538,7 @@ export default function SelectableDataTable({
     return (
       <Tr key={rowIndex} isExpanded={isExpanded} className={itemClassNames(item)}>
         <Td />
-        <Td select={itemSelectable(item) ? selectProps : undefined} />
+        <Td select={allowSelection && (itemSelectable(item) ? selectProps : undefined)} />
         {columns?.map((c, index) => (
           <Td key={index} dataLabel={c.name} className={c.classNames} {...c.pfTdProps}>
             <ExpandableRowContent>{c.value(item)}</ExpandableRowContent>
@@ -542,6 +564,7 @@ export default function SelectableDataTable({
       isExpanded: isItemExpanded(itemKey),
       onToggle: () => toggleExpanded(itemKey),
     };
+    const actions = itemActions?.(item);
 
     const selectProps = {
       rowIndex,
@@ -556,34 +579,39 @@ export default function SelectableDataTable({
       return children.map((item) => renderItemChild(item, isItemExpanded(itemKey), sharedData));
     };
 
+    const label = isFunction(itemActionsLabel) ? itemActionsLabel(item) : itemActionsLabel;
+    const ItemActionsComponent = itemActionsComponent;
+
     // TODO: Add label to Tbody?
     return (
       <Tbody key={rowIndex} isExpanded={isItemExpanded(itemKey)}>
         <Tr className={itemClassNames(item)}>
           <Td expand={expandProps} />
-          <Td select={itemSelectable(item) ? selectProps : undefined} />
+          <Td select={allowSelection && (itemSelectable(item) ? selectProps : undefined)} />
           {columns?.map((c, index) => (
             <Td key={index} dataLabel={c.name} className={c.classNames} {...c.pfTdProps}>
               {c.value(item)}
             </Td>
           ))}
-          {itemActions && (
+          {!isEmpty(actions) && (
             <Td isActionCell>
-              <ActionsColumn
-                items={itemActions(item)}
-                actionsToggle={({ toggleRef, onToggle }) => (
-                  <MenuToggle
-                    ref={toggleRef}
-                    onClick={onToggle}
-                    variant="plain"
-                    aria-label={
-                      isFunction(itemActionsLabel) ? itemActionsLabel(item) : itemActionsLabel
-                    }
-                  >
-                    <Icon name="more_horiz" />
-                  </MenuToggle>
-                )}
-              />
+              {ItemActionsComponent ? (
+                <ItemActionsComponent items={actions} label={label} />
+              ) : (
+                <ActionsColumn
+                  items={actions}
+                  actionsToggle={({ toggleRef, onToggle }) => (
+                    <MenuToggle
+                      ref={toggleRef}
+                      onClick={onToggle}
+                      variant="plain"
+                      aria-label={label}
+                    >
+                      <Icon name="more_horiz" />
+                    </MenuToggle>
+                  )}
+                />
+              )}
             </Td>
           )}
         </Tr>
@@ -601,6 +629,7 @@ export default function SelectableDataTable({
     allowSelectAll,
     itemActions,
     itemActionsLabel,
+    itemActionsComponent,
     // FIXME: drop showSelectAll once items is part of SharedData
     showSelectAll: allowSelectAll && items.length > 0,
     isAllSelected: items.length > 0 && items.length === itemsSelected.length,
@@ -608,31 +637,14 @@ export default function SelectableDataTable({
       isSelecting ? onSelectionChange(items) : onSelectionChange([]),
   };
 
-  // TODO: extract to a separate component and inject sharedData as prop
-  const TableEmptyState = () => {
-    const columnsCount =
-      columns.length + (sharedData.allowSelectAll && 1) + (sharedData.itemActions && 1);
-
-    return (
-      <Tr>
-        <Td colSpan={columnsCount}>
-          <Bullseye>{emptyState}</Bullseye>
-        </Td>
-      </Tr>
-    );
-  };
-
-  const TableBody = () => {
-    if (isEmpty(items) && emptyState) {
-      return <TableEmptyState />;
-    }
-    return items?.map((item) => renderItem(item, sharedData));
-  };
+  if (isEmpty(items) && emptyState) {
+    return emptyState;
+  }
 
   return (
     <Table data-type="agama/expandable-selector" {...tableProps}>
       <TableHeader columns={columns} sharedData={sharedData} />
-      <TableBody />
+      {items?.map((item) => renderItem(item, sharedData))}
     </Table>
   );
 }

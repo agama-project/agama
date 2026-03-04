@@ -65,18 +65,16 @@ module Agama
           config.filesystem
         end
 
-        # @see Base
-        def error(message)
-          super(message, kind: :filesystem)
-        end
-
         # @return [Issue, nil]
         def missing_filesystem_issue
           return if filesystem.reuse?
           return if filesystem.type&.fs_type
 
           # TRANSLATORS: %s is replaced by a mount path (e.g., "/home").
-          error(format(_("Missing file system type for '%s'"), filesystem.path))
+          error(
+            format(_("Missing file system type for '%s'"), filesystem.path),
+            kind: IssueClasses::Config::NO_FILESYSTEM_TYPE
+          )
         end
 
         # @return [Issue, nil]
@@ -100,7 +98,8 @@ module Agama
               _("The file system type '%{filesystem}' is not suitable for '%{path}'"),
               filesystem: type.to_human_string,
               path:       path
-            )
+            ),
+            kind: IssueClasses::Config::WRONG_FILESYSTEM_TYPE
           )
         end
 

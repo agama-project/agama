@@ -21,7 +21,7 @@
  */
 
 import React, { useState } from "react";
-import { deactivateZFCPDisk } from "~/api/storage/zfcp";
+import { deactivateZFCPDisk } from "~/model/storage/zfcp";
 import { useZFCPControllers, useZFCPDisks } from "~/queries/storage/zfcp";
 import { ZFCPDisk } from "~/types/zfcp";
 import { useCancellablePromise } from "~/hooks/use-cancellable-promise";

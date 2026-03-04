@@ -21,26 +21,34 @@
 //! This module implements Agama's HTTP API.
 
 use crate::server::config_schema;
-use agama_lib::error::ServiceError;
-use agama_manager::{self as manager, message};
+use agama_lib::{error::ServiceError, logs};
+use agama_manager::service::Error as ManagerError;
+use agama_manager::users::PasswordCheckResult;
+use agama_manager::{self as manager, message, users};
+use agama_software::Resolvable;
 use agama_utils::{
     actor::Handler,
     api::{
         event,
+        manager::LicenseContent,
+        query,
         question::{Question, QuestionSpec, UpdateQuestion},
-        Action, Config, IssueMap, Patch, Status, SystemInfo,
+        Action, Config, IssueWithScope, Patch, Status, SystemInfo,
     },
-    question,
+    progress, question,
 };
 use axum::{
-    extract::State,
+    body::Body,
+    extract::{Path, Query, State},
+    http::HeaderValue,
     response::{IntoResponse, Response},
-    routing::{get, post},
+    routing::{get, post, put},
     Json, Router,
 };
-use hyper::StatusCode;
-use serde::Serialize;
+use hyper::{header, HeaderMap, StatusCode};
+use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
+use tokio_util::io::ReaderStream;
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
@@ -60,7 +68,18 @@ impl IntoResponse for Error {
         let body = json!({
             "error": self.to_string()
         });
-        (StatusCode::BAD_REQUEST, Json(body)).into_response()
+
+        let mut status = StatusCode::BAD_REQUEST;
+
+        if let Error::Manager(error) = &self {
+            if matches!(error, ManagerError::PendingIssues { .. })
+                || matches!(error, ManagerError::Busy { .. })
+            {
+                status = StatusCode::UNPROCESSABLE_ENTITY;
+            }
+        }
+
+        (status, Json(body)).into_response()
     }
 }
 
@@ -68,6 +87,12 @@ impl IntoResponse for Error {
 pub struct ServerState {
     manager: Handler<manager::Service>,
     questions: Handler<question::Service>,
+}
+
+impl ServerState {
+    pub fn new(manager: Handler<manager::Service>, questions: Handler<question::Service>) -> Self {
+        Self { manager, questions }
+    }
 }
 
 type ServerResult<T> = Result<T, Error>;
@@ -84,12 +109,14 @@ pub async fn server_service(
     let questions = question::start(events.clone())
         .await
         .map_err(anyhow::Error::msg)?;
-    let manager = manager::start(questions.clone(), events, dbus)
+    let manager = manager::Service::starter(questions.clone(), events, dbus)
+        .start()
         .await
         .map_err(anyhow::Error::msg)?;
-
-    let state = ServerState { manager, questions };
-
+    let state = ServerState::new(manager, questions);
+    server_with_state(state)
+}
+pub fn server_with_state(state: ServerState) -> Result<Router, ServiceError> {
     Ok(Router::new()
         .route("/status", get(get_status))
         .route("/system", get(get_system))
@@ -105,14 +132,18 @@ pub async fn server_service(
             "/questions",
             get(get_questions).post(ask_question).patch(update_question),
         )
+        .route("/licenses/:id", get(get_license))
         .route(
             "/private/storage_model",
             get(get_storage_model).put(set_storage_model),
         )
+        .route("/private/solve_storage_model", get(solve_storage_model))
+        .route("/private/resolvables/:id", put(set_resolvables))
+        .route("/private/download_logs", get(download_logs))
+        .route("/private/password_check", post(check_password))
         .with_state(state))
 }
 
-/// Returns the status of the installation.
 #[utoipa::path(
     get,
     path = "/status",
@@ -123,7 +154,7 @@ pub async fn server_service(
     )
 )]
 async fn get_status(State(state): State<ServerState>) -> ServerResult<Json<Status>> {
-    let status = state.manager.call(message::GetStatus).await?;
+    let status = state.manager.call(progress::message::GetStatus).await?;
     Ok(Json(status))
 }
 
@@ -239,18 +270,29 @@ async fn get_proposal(State(state): State<ServerState>) -> ServerResult<Response
     Ok(to_option_response(proposal))
 }
 
-/// Returns the issues for each scope.
+/// Returns the list of issues.
 #[utoipa::path(
     get,
     path = "/issues",
     context_path = "/api/v2",
     responses(
-        (status = 200, description = "Agama issues", body = IssueMap),
+        (status = 200, description = "Agama issues", body = Vec<IssueWithScope>),
         (status = 400, description = "Not possible to retrieve the issues")
     )
 )]
-async fn get_issues(State(state): State<ServerState>) -> ServerResult<Json<IssueMap>> {
-    let issues = state.manager.call(message::GetIssues).await?;
+async fn get_issues(State(state): State<ServerState>) -> ServerResult<Json<Vec<IssueWithScope>>> {
+    let issue_groups = state.manager.call(message::GetIssues).await?;
+
+    let issues = issue_groups
+        .into_iter()
+        .flat_map(|(scope, issues)| -> Vec<IssueWithScope> {
+            issues
+                .into_iter()
+                .map(|issue| IssueWithScope { scope, issue })
+                .collect()
+        })
+        .collect();
+
     Ok(Json(issues))
 }
 
@@ -322,13 +364,56 @@ async fn update_question(
     Ok(())
 }
 
+#[derive(Deserialize, utoipa::IntoParams)]
+struct LicenseQuery {
+    lang: Option<String>,
+}
+
+/// Returns the license content.
+///
+/// Optionally it can receive a language tag (RFC 5646). Otherwise, it returns
+/// the license in English.
+#[utoipa::path(
+    get,
+    path = "/licenses/:id",
+    context_path = "/api/software",
+    params(LicenseQuery),
+    responses(
+        (status = 200, description = "License with the given ID", body = LicenseContent),
+        (status = 400, description = "The specified language tag is not valid"),
+        (status = 404, description = "There is not license with the given ID")
+    )
+)]
+async fn get_license(
+    State(state): State<ServerState>,
+    Path(id): Path<String>,
+    Query(query): Query<LicenseQuery>,
+) -> Result<Response, Error> {
+    let lang = query.lang.unwrap_or("en".to_string());
+
+    let Ok(lang) = lang.as_str().try_into() else {
+        return Ok(StatusCode::BAD_REQUEST.into_response());
+    };
+
+    let license = state
+        .manager
+        .call(message::GetLicense::new(id.to_string(), lang))
+        .await?;
+    if let Some(license) = license {
+        Ok(Json(license).into_response())
+    } else {
+        Ok(StatusCode::NOT_FOUND.into_response())
+    }
+}
+
 #[utoipa::path(
     post,
-    path = "/actions",
+    path = "/action",
     context_path = "/api/v2",
     responses(
-        (status = 200, description = "Action successfully run."),
-        (status = 400, description = "Not possible to run the action.", body = Object)
+        (status = 200, description = "Action successfully ran."),
+        (status = 400, description = "Not possible to run the action.", body = Object),
+        (status = 422, description = "Action blocked by backend state", body = Object)
     ),
     params(
         ("action" = Action, description = "Description of the action to run."),
@@ -378,9 +463,132 @@ async fn set_storage_model(
     Ok(())
 }
 
+/// Solves a storage config model.
+#[utoipa::path(
+    get,
+    path = "/private/solve_storage_model",
+    context_path = "/api/v2",
+    params(query::SolveStorageModel),
+    responses(
+        (status = 200, description = "Solve the storage model", body = String),
+        (status = 400, description = "Not possible to solve the storage model")
+    )
+)]
+async fn solve_storage_model(
+    State(state): State<ServerState>,
+    Query(params): Query<query::SolveStorageModel>,
+) -> Result<Json<Option<Value>>, Error> {
+    let solved_model = state
+        .manager
+        .call(message::SolveStorageModel::new(params.model))
+        .await?;
+    Ok(Json(solved_model))
+}
+
+#[utoipa::path(
+    put,
+    path = "/resolvables/:id",
+    context_path = "/api/v2",
+    responses(
+        (status = 200, description = "The resolvables list was updated.")
+    )
+)]
+async fn set_resolvables(
+    State(state): State<ServerState>,
+    Path(id): Path<String>,
+    Json(resolvables): Json<Vec<Resolvable>>,
+) -> ServerResult<()> {
+    state
+        .manager
+        .cast(agama_software::message::SetResolvables::new(
+            id,
+            resolvables,
+        ))?;
+    Ok(())
+}
+
 fn to_option_response<T: Serialize>(value: Option<T>) -> Response {
     match value {
         Some(inner) => Json(inner).into_response(),
         None => StatusCode::NOT_FOUND.into_response(),
     }
+}
+
+/// Solves a storage config model.
+#[utoipa::path(
+    get,
+    path = "/private/download_logs",
+    context_path = "/api/v2",
+    params(query::SolveStorageModel),
+    responses(
+        (status = 200, description = "Compressed Agama logs", content_type="application/octet-stream", body = String),
+        (status = 500, description = "Cannot collect the logs"),
+        (status = 507, description = "Server is probably out of space"),
+    )
+)]
+async fn download_logs() -> impl IntoResponse {
+    let mut headers = HeaderMap::new();
+    let err_response = (headers.clone(), Body::empty());
+
+    match logs::store() {
+        Ok(path) => {
+            if let Ok(file) = tokio::fs::File::open(path.clone()).await {
+                let stream = ReaderStream::new(file);
+                let body = Body::from_stream(stream);
+                let _ = std::fs::remove_file(path.clone());
+
+                // See RFC2046, RFC2616 and
+                // https://www.iana.org/assignments/media-types/media-types.xhtml
+                // or /etc/mime.types
+                headers.insert(
+                    header::CONTENT_TYPE,
+                    HeaderValue::from_static("application/x-compressed-tar"),
+                );
+                if let Some(file_name) = path.file_name() {
+                    let disposition =
+                        format!("attachment; filename=\"{}\"", &file_name.to_string_lossy());
+                    headers.insert(
+                        header::CONTENT_DISPOSITION,
+                        HeaderValue::from_str(&disposition)
+                            .unwrap_or_else(|_| HeaderValue::from_static("attachment")),
+                    );
+                }
+                headers.insert(
+                    header::CONTENT_ENCODING,
+                    HeaderValue::from_static(logs::DEFAULT_COMPRESSION.1),
+                );
+
+                (StatusCode::OK, (headers, body))
+            } else {
+                (StatusCode::INSUFFICIENT_STORAGE, err_response)
+            }
+        }
+        Err(_) => (StatusCode::INTERNAL_SERVER_ERROR, err_response),
+    }
+}
+
+#[derive(Deserialize, utoipa::ToSchema)]
+pub struct PasswordParams {
+    password: String,
+}
+
+#[utoipa::path(
+    post,
+    path = "/private/password_check",
+    context_path = "/api/v2",
+    description = "Performs a quality check on a given password",
+    responses(
+        (status = 200, description = "The password was checked", body = String),
+        (status = 400, description = "Could not check the password")
+    )
+)]
+async fn check_password(
+    State(state): State<ServerState>,
+    Json(password): Json<PasswordParams>,
+) -> Result<Json<PasswordCheckResult>, Error> {
+    let result = state
+        .manager
+        .call(users::message::CheckPassword::new(password.password))
+        .await?;
+    Ok(Json(result))
 }

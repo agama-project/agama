@@ -434,12 +434,21 @@ fn ip_config_to_ipv4_dbus<'a>(
         .collect::<Vec<_>>()
         .into();
 
+    let link_local = if ip_config.link_local4 == LinkLocal::Fallback
+        && VersionReq::parse("<1.52.0").unwrap().matches(nm_version)
+    {
+        LinkLocal::Enabled
+    } else {
+        ip_config.link_local4
+    };
+
     let mut ipv4_dbus = HashMap::from([
         ("address-data", address_data),
         ("dns-data", dns_data),
         ("dns-search", ip_config.dns_searchlist.clone().into()),
         ("ignore-auto-dns", ip_config.ignore_auto_dns.into()),
         ("method", ip_config.method4.to_string().into()),
+        ("link-local", (link_local as i32).into()),
     ]);
 
     if !ip_config.routes4.is_empty() {
@@ -1081,6 +1090,10 @@ fn ip_config_from_dbus(conn: &OwnedNestedHash) -> Result<IpConfig, NmError> {
 
         if let Some(dns_priority4) = get_optional_property(ipv4, "dns-priority")? {
             ip_config.dns_priority4 = Some(dns_priority4);
+        }
+
+        if let Some(link_local4) = get_optional_property::<i32>(ipv4, "link-local")? {
+            ip_config.link_local4 = link_local4.try_into().unwrap_or_default();
         }
 
         let mut dhcp4_settings = Dhcp4Settings::default();

@@ -19,11 +19,15 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
+require "yast2/equatable"
+
 module Agama
   module Storage
     module ISCSI
       # Class representing an open-iscsi initiator
       class Initiator
+        include Yast2::Equatable
+
         # Initiator name
         #
         # @return [String]
@@ -34,6 +38,8 @@ module Agama
         # @return [Boolean]
         attr_accessor :ibft_name
         alias_method :ibft_name?, :ibft_name
+
+        eql_attr :name, :ibft_name
       end
     end
   end

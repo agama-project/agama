@@ -62,11 +62,6 @@ module Agama
           config.encryption
         end
 
-        # @see Base
-        def error(message)
-          super(message, kind: :encryption)
-        end
-
         # @return [Issue, nil]
         def missing_password_issue
           return unless encryption.missing_password?
@@ -77,7 +72,8 @@ module Agama
               #   (e.g., 'luks1', 'random_swap').
               _("No passphrase provided (required for using the method '%{crypt_method}')."),
               crypt_method: encryption.method.to_human_string
-            )
+            ),
+            kind: IssueClasses::Config::NO_ENCRYPTION_PASSPHRASE
           )
         end
 
@@ -92,7 +88,8 @@ module Agama
               #   (e.g., 'luks1', 'random_swap').
               _("Encryption method '%{crypt_method}' is not available in this system."),
               crypt_method: method.to_human_string
-            )
+            ),
+            kind: IssueClasses::Config::WRONG_ENCRYPTION_METHOD
           )
         end
 
@@ -119,7 +116,8 @@ module Agama
               #   (e.g., 'luks1', 'random_swap').
               _("'%{crypt_method}' is not a suitable method to encrypt the device."),
               crypt_method: method.to_human_string
-            )
+            ),
+            kind: IssueClasses::Config::WRONG_ENCRYPTION_METHOD
           )
         end
       end

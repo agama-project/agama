@@ -34,6 +34,12 @@ describe Agama::Storage::ProposalSettingsConversions::ToY2Storage do
 
   let(:config) { Agama::Config.new }
 
+  before do
+    # To speed-up the tests
+    allow(Y2Storage::BootRequirementsStrategies::Analyzer)
+      .to receive(:bls_bootloader_proposed?).and_return(false)
+  end
+
   describe "#convert" do
     let(:settings) do
       Agama::Storage::ProposalSettings.new.tap do |settings|

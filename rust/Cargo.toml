@@ -2,18 +2,32 @@
 members = [
     "agama-autoinstall",
     "agama-cli",
+    "agama-files",
+    "agama-hostname",
+    "agama-iscsi",
     "agama-l10n",
     "agama-lib",
     "agama-locale-data",
     "agama-manager",
+    "agama-proxy",
     "agama-network",
-    "agama-server", "agama-storage",
+    "agama-s390",
+    "agama-security",
+    "agama-server",
+    "agama-software",
+    "agama-storage",
+    "agama-storage-client",
+    "agama-transfer",
     "agama-utils",
+    "agama-users",
+    "suseconnect-agama",
+    "suseconnect-agama/suseconnect-agama-sys",
     "xtask",
+    "zypp-agama",
+    "zypp-agama/zypp-agama-sys"
 ]
 resolver = "2"
 
 [workspace.package]
-# required by zbus 5
-rust-version = "1.81"
+rust-version = "1.88"
 edition = "2021"

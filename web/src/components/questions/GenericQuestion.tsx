@@ -23,9 +23,9 @@
 import React from "react";
 import { Content } from "@patternfly/react-core";
 import { Popup } from "~/components/core";
-import { AnswerCallback, Question } from "~/types/questions";
 import QuestionActions from "~/components/questions/QuestionActions";
 import { _ } from "~/i18n";
+import type { AnswerCallback, Question } from "~/model/question";
 
 /**
  * Component for rendering generic questions

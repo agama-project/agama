@@ -26,19 +26,25 @@ import { installerRender } from "~/test-utils";
 import FirstUser from "./FirstUser";
 import { USER } from "~/routes/paths";
 
-const mockFirstUser = jest.fn();
-const mockRemoveFirstUserMutation = jest.fn();
+const mockProposal = jest.fn();
+const mockRemoveUser = jest.fn();
 
-jest.mock("~/queries/users", () => ({
-  ...jest.requireActual("~/queries/users"),
-  useFirstUser: () => mockFirstUser(),
-  useRemoveFirstUserMutation: () => ({
-    mutate: mockRemoveFirstUserMutation,
-  }),
+jest.mock("~/hooks/model/proposal", () => ({
+  ...jest.requireActual("~/hooks/model/proposal"),
+  useProposal: () => mockProposal(),
+}));
+
+jest.mock("~/hooks/model/config/user", () => ({
+  ...jest.requireActual("~/hooks/model/config/user"),
+  useRemoveUser: () => mockRemoveUser,
 }));
 
 describe("FirstUser", () => {
   describe("when the user is not defined yet", () => {
+    beforeEach(() => {
+      mockProposal.mockReturnValue({});
+    });
+
     it("renders a link to define it", () => {
       installerRender(<FirstUser />);
       const createLink = screen.getByRole("link", { name: "Define a user now" });
@@ -48,7 +54,9 @@ describe("FirstUser", () => {
 
   describe("when the user is already defined", () => {
     beforeEach(() => {
-      mockFirstUser.mockReturnValue({ fullName: "Gecko Migo", userName: "gmigo" });
+      mockProposal.mockReturnValue({
+        users: { user: { fullName: "Gecko Migo", userName: "gmigo" } },
+      });
     });
 
     it("renders the fullname and username", () => {
@@ -69,7 +77,7 @@ describe("FirstUser", () => {
       await user.click(moreActionsToggle);
       const discardAction = screen.getByRole("menuitem", { name: "Discard" });
       await user.click(discardAction);
-      expect(mockRemoveFirstUserMutation).toHaveBeenCalled();
+      expect(mockRemoveUser).toHaveBeenCalled();
     });
   });
 });

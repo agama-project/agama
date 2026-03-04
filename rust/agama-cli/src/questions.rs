@@ -24,6 +24,7 @@ use agama_lib::{http::BaseHTTPClient, questions::http_client::HTTPClient};
 use agama_utils::api::question::{AnswerRule, Policy, QuestionSpec};
 use anyhow::anyhow;
 use clap::{Args, Subcommand, ValueEnum};
+use serde::Deserialize;
 
 // TODO: use for answers also JSON to be consistent
 #[derive(Subcommand, Debug)]
@@ -37,7 +38,7 @@ pub enum QuestionsCommands {
     /// mode or change the answer in automatic mode.
     ///
     /// Please check Agama documentation for more details and examples:
-    /// https://github.com/openSUSE/agama/blob/master/doc/questions.md
+    /// https://github.com/openSUSE/agama/blob/master/doc/questions.
     Answers {
         /// Path to a file containing the answers in JSON format.
         path: String,
@@ -63,21 +64,26 @@ pub enum Modes {
 }
 
 async fn set_mode(client: HTTPClient, value: Modes) -> anyhow::Result<()> {
-    let policy = if value == Modes::Interactive {
-        Policy::User
-    } else {
-        Policy::Auto
+    let policy = match value {
+        Modes::Interactive => Policy::User,
+        Modes::NonInteractive => Policy::Auto,
     };
 
     client.set_mode(policy).await?;
     Ok(())
 }
 
+#[derive(Deserialize)]
+struct AnswersWrapper {
+    #[serde(default)]
+    answers: Vec<AnswerRule>,
+}
+
 async fn set_answers(client: HTTPClient, path: &str) -> anyhow::Result<()> {
-    let file = File::open(&path)?;
+    let file = File::open(path)?;
     let reader = BufReader::new(file);
-    let rules: Vec<AnswerRule> = serde_json::from_reader(reader)?;
-    client.set_answers(rules).await?;
+    let wrapper: AnswersWrapper = serde_json::from_reader(reader)?;
+    client.set_answers(wrapper.answers).await?;
     Ok(())
 }
 

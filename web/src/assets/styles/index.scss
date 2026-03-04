@@ -183,47 +183,39 @@ strong {
   font-weight: var(--pf-t--global--font--weight--400);
 }
 
-// Temporary CSS rules written during migration to PFv6
+// Freeze scrolling when Agama overlay is visible
+.pf-v6-c-page__main:has(.agm-main-content-overlay) {
+  overflow: hidden;
+}
 
-// Reserve the sidebar space also for "lg" breakpoint
-@media (width >= 64rem) {
-  .pf-v6-c-page__main-container {
-    --pf-v6-c-page__main-container--MarginInlineStart: var(--pf-v6-c-page--inset);
-  }
+// ProgressBackdrop overlay styles
+.pf-v6-c-page__main-container:has(.agm-main-content-overlay) {
+  position: relative;
 
-  .pf-v6-c-page.agm-full-layout {
-    --pf-v6-c-page__sidebar--Width: 12rem; // var(--pf-v6-c-page__sidebar--xl--Width);
-    grid-template-areas:
-      "header  header"
-      "sidebar main  ";
-    grid-template-columns: var(--pf-v6-c-page__sidebar--Width) 1fr;
-  }
-
-  .pf-v6-c-page__sidebar.pf-m-collapsed + .pf-v6-c-page__drawer {
-    --pf-v6-c-page__main-container--GridArea: var(
-      --pf-v6-c-page--masthead--main-container--GridArea
+  .agm-main-content-overlay {
+    position: absolute;
+    backdrop-filter: blur(2px);
+    background-color: color-mix(
+      in srgb,
+      var(--pf-t--global--background--color--backdrop--default) 80%,
+      transparent
     );
+  }
+}
+
+.installation-settings-summary {
+  display: grid;
+  gap: 0.5em;
+}
+
+@media (width >= 64rem) {
+  .installation-settings-summary {
+    grid-template-columns: repeat(2, minmax(250px, 1fr));
   }
 }
 
 #productSelectionForm img {
   max-inline-size: 100px;
-}
-
-.agm-install-button {
-  background: var(--agm-t--install--button--background);
-  color: var(--agm-t--install--button--color);
-  font-weight: 600;
-  font-size: var(--pf-t--global--font--size--md);
-  align-items: center;
-
-  svg {
-    fill: var(--agm-t--install--button--color);
-  }
-
-  &:hover {
-    background: var(--agm-t--install--button--background--hover);
-  }
 }
 
 .agm-inline-toggle {
@@ -268,12 +260,16 @@ strong {
   }
 }
 
+.sticky-top {
+  position: sticky;
+  top: 1em;
+}
+
 #productSelectionForm {
   input[type="radio"] {
     align-self: center;
-    flex-shrink: 0;
-    inline-size: 20px;
-    block-size: 20px;
+    inline-size: 1.2em;
+    block-size: 1.2em;
   }
 
   .pf-v6-c-card {
@@ -284,17 +280,10 @@ strong {
     label {
       cursor: pointer;
     }
+  }
 
-    label::after {
-      content: "";
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      top: 0;
-      right: 0;
-      bottom: 0;
-      left: 0;
-    }
+  .pf-v6-c-radio {
+    row-gap: 0;
   }
 }
 
@@ -502,6 +491,27 @@ label.pf-m-disabled + .pf-v6-c-check__description {
   --pf-v6-c-table__sort-indicator--MarginInlineStart: var(--pf-t--global--spacer--xs);
 }
 
+// Highlight table rows on interaction, covering three cases:
+// 1. Mouse hover.
+// 2. Keyboard navigation via :focus-within, which is intentionally broad and
+//    covers all focusable elements including checkboxes. This way, keyboard
+//    users always know which row they are on. The downside: if a mouse user
+//    clicks a checkbox and moves away, the row stays highlighted until focus
+//    moves elsewhere. This is an acceptable edge case since most users will
+//    naturally move on after checking a box and in any case the benefit for
+//    keyboard users outweighs the minor annoyance for mouse users.
+// 3. Action menu open via aria-expanded attribute.
+//
+// Note: PF's isClickable prop on Tr would provide the hover highlight out of
+// the box, but it also adds a pointer cursor and implies the row is clickable,
+// which is not the case for Agama tables. Hence this custom CSS to get the
+// visual feedback without the misleading affordance.
+.pf-v6-c-table tbody tr:hover,
+.pf-v6-c-table tbody tr:focus-within,
+.pf-v6-c-table tbody tr:has(.pf-v6-c-menu-toggle[aria-expanded="true"]) {
+  background-color: var(--agm-t--action--background--color--hover);
+}
+
 // Some utilities not found at PF
 .w-14ch {
   inline-size: 14ch;
@@ -527,9 +537,35 @@ button:focus-visible {
   outline-offset: 3px;
 }
 
+.agm-three-dots-icon {
+  font-size: 1.1rem;
+  vertical-align: text-top;
+}
+
 .agm-strong-icon {
   font-size: 1.6rem;
   vertical-align: middle;
+}
+
+.no-default-icon {
+  .pf-v6-c-button__icon {
+    display: none;
+  }
+}
+
+span.in-quotes {
+  &::before {
+    content: open-quote;
+  }
+
+  &::after {
+    content: close-quote;
+  }
+}
+
+nav.agm-breadcrumb h1 {
+  // Allow heading in breadcrumb use fontSize from its parent
+  font-size: inherit;
 }
 
 // FIXME: make ir more generic, if possible, or even without CSS but not
@@ -541,4 +577,44 @@ button:focus-visible {
 .agm-backdrop-gray-and-blur {
   background-color: rgb(0 0 0 / 30%);
   backdrop-filter: grayscale(100%) blur(4px);
+}
+
+.agm-split-info-layout-container {
+  height: 100%;
+  place-content: center;
+}
+
+.agm-split-info-layout {
+  gap: var(--pf-t--global--spacer--sm) var(--pf-t--global--spacer--md);
+  position: relative;
+}
+
+.agm-split-info-layout > .pf-v6-l-grid__item {
+  text-align: center;
+  justify-self: center;
+}
+
+@media (width >= 768px) {
+  .agm-split-info-layout::before {
+    content: "";
+    position: absolute;
+    top: -1em;
+    bottom: -1.5em;
+    left: 50%;
+    width: 1px;
+    background: #ccc;
+  }
+
+  .agm-split-info-layout > .pf-v6-l-grid__item[style*="Order-on-md: 1"],
+  .agm-split-info-layout > .pf-v6-l-grid__item[style*="Order-on-md: 3"],
+  .agm-split-info-layout > .pf-v6-l-grid__item[style*="Order-on-md: 5"] {
+    justify-self: end;
+    text-align: end;
+  }
+
+  .agm-split-info-layout > .pf-v6-l-grid__item[style*="Order-on-md: 4"],
+  .agm-split-info-layout > .pf-v6-l-grid__item[style*="Order-on-md: 6"] {
+    justify-self: start;
+    text-align: start;
+  }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024-2025] SUSE LLC
+ * Copyright (c) [2024-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -20,141 +20,163 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useState } from "react";
+import React from "react";
 import {
-  Content,
-  Dropdown,
-  DropdownItem,
-  DropdownList,
   Masthead,
   MastheadContent,
-  MastheadLogo,
   MastheadMain,
-  MastheadToggle,
-  MenuToggle,
-  MenuToggleElement,
-  PageToggleButton,
+  Title,
   Toolbar,
   ToolbarContent,
   ToolbarGroup,
   ToolbarItem,
 } from "@patternfly/react-core";
-import { useMatches } from "react-router";
-import { Icon } from "~/components/layout";
-import { useProduct } from "~/queries/software";
-import { Route } from "~/types/routes";
-import { ChangeProductOption, InstallButton, InstallerOptions, SkipTo } from "~/components/core";
+import Icon from "~/components/layout/Icon";
+import Breadcrumbs from "~/components/core/Breadcrumbs";
+import { SkipTo } from "~/components/core";
+import { useProductInfo } from "~/hooks/model/config/product";
 import { ROOT } from "~/routes/paths";
-import { _ } from "~/i18n";
 
+import type { BreadcrumbProps } from "~/components/core/Breadcrumbs";
+
+import spacingStyles from "@patternfly/react-styles/css/utilities/Spacing/spacing";
+import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
+
+/**
+ * Props for the Header component.
+ *
+ * The layout follows a flexible horizontal structure where the primary content
+ * (Title/Breadcrumbs) is on the left, and up to three slots are grouped at the
+ * end of the toolbar:
+ *
+ * [Title | Breadcrumbs]...........[startSlot] [centerSlot] [endSlot]
+ *
+ * openSUSE Tumbleweed..........................Option v | English/US
+ */
 export type HeaderProps = {
-  /** Whether the application sidebar should be mounted or not */
-  showSidebarToggle?: boolean;
-  /** Whether the selected product name should be shown */
-  showProductName?: boolean;
-  /** Whether the "Skip to content" link should be mounted */
-  showSkipToContent?: boolean;
-  /** Whether the installer options link should be mounted */
-  showInstallerOptions?: boolean;
-  /** Callback to be triggered for toggling the IssuesDrawer visibility */
-  toggleIssuesDrawer?: () => void;
-  isSidebarOpen?: boolean;
-  toggleSidebar?: () => void;
-};
+  /**
+   * Page title rendered as the main heading (h1).
+   *
+   * If provided, the title takes precedence over breadcrumbs.
+   * If omitted, breadcrumbs are rendered instead, and the final
+   * item acts as the main heading (h1).
+   */
+  title?: React.ReactNode;
 
-const OptionsDropdown = () => {
-  const [isOpen, setIsOpen] = useState(false);
-  const toggle = () => setIsOpen(!isOpen);
+  /** Breadcrumb navigation items shown when 'title' is not provided. */
+  breadcrumbs?: BreadcrumbProps[];
 
-  return (
-    <Dropdown
-      popperProps={{ position: "right", appendTo: () => document.body }}
-      isOpen={isOpen}
-      onOpenChange={toggle}
-      onSelect={toggle}
-      onActionClick={toggle}
-      toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
-        <MenuToggle
-          ref={toggleRef}
-          onClick={toggle}
-          aria-label={_("Options toggle")}
-          isExpanded={isOpen}
-          isFullHeight
-          variant="plain"
-        >
-          <Icon name="expand_circle_down" />
-        </MenuToggle>
-      )}
-    >
-      <DropdownList>
-        <ChangeProductOption />
-        <DropdownItem key="download-logs" to={ROOT.logs} download="agama-logs.tar.gz">
-          {_("Download logs")}
-        </DropdownItem>
-      </DropdownList>
-    </Dropdown>
-  );
+  /**
+   * The first slot in the trailing actions group.
+   *
+   * While intended for status indicators like the progress monitor,
+   * it is a flexible container for any page-specific utility.
+   */
+  startSlot?: React.ReactNode;
+
+  /**
+   * The middle slot in the trailing actions group, positioned between
+   * the start and end slots.
+   *
+   * This area is typically used for contextual actions, such as secondary
+   * navigation or configuration menus. Like its sibling slots, it accepts any
+   * React node to provide enough flexibility to fulfill page requirements.
+   *
+   * @example
+   * ```tsx
+   * <Header
+   *   title="Storage"
+   *   centerSlot={
+   *     <Dropdown>
+   *       <DropdownItem>Advanced settings</DropdownItem>
+   *       <DropdownItem>Export configuration</DropdownItem>
+   *     </Dropdown>
+   *   }
+   * />
+   * ```
+   */
+  centerSlot?: React.ReactNode;
+
+  /**
+   * The final slot at the very edge of the header.
+   *
+   * This is intended for content that requires maximum discoverability.
+   * Like the other slots, it accepts any React node to accommodate various
+   * interaction patterns, though it is often a button or a link.
+   *
+   * **Common Use Cases:**
+   * - Global navigation links (e.g., "Install").
+   * - Button triggers for high-priority settings (e.g., L10n settings).
+   * - Primary call-to-action buttons for the current workflow.
+   *
+   * @example
+   * <Header endSlot={<Link to="/overview">Review and Install</Link>} />
+   */
+  endSlot?: React.ReactNode;
+
+  /** Whether to hide the "Skip to content" accessibility link. */
+  hideSkipToContent?: boolean;
 };
 
 /**
- * Internal component for building the layout header
+ * Internal component for building the page header
  *
- * It's just a wrapper for {@link https://www.patternfly.org/components/masthead | PF/Masthead} and
- * its expected children components.
+ * Built on top of {@link https://www.patternfly.org/components/masthead | PF/Masthead}
  */
 export default function Header({
-  showSidebarToggle = true,
-  showProductName = true,
-  showSkipToContent = true,
-  showInstallerOptions = true,
-  toggleIssuesDrawer,
-  isSidebarOpen,
-  toggleSidebar,
+  title,
+  breadcrumbs,
+  startSlot,
+  centerSlot,
+  endSlot,
+  hideSkipToContent = false,
 }: HeaderProps): React.ReactNode {
-  const { selectedProduct } = useProduct();
-  const routeMatches = useMatches() as Route[];
-  const currentRoute = routeMatches.at(-1);
-  // TODO: translate title
-  const title = (showProductName && selectedProduct?.name) || currentRoute?.handle?.title;
+  const product = useProductInfo();
 
   return (
     <Masthead>
-      <MastheadMain>
-        {showSkipToContent && <SkipTo />}
-        {showSidebarToggle && (
-          <MastheadToggle>
-            <PageToggleButton
-              isSidebarOpen={isSidebarOpen}
-              onSidebarToggle={toggleSidebar}
-              id="uncontrolled-nav-toggle"
-              variant="plain"
-              aria-label={_("Main navigation")}
-            >
-              <Icon name="menu" color="color-light-100" />
-            </PageToggleButton>
-          </MastheadToggle>
-        )}
-        {title && (
-          <MastheadLogo>
-            <Content component="h1">{title}</Content>
-          </MastheadLogo>
+      <MastheadMain className={spacingStyles.pXs}>
+        {!hideSkipToContent && <SkipTo />}
+        {title ? (
+          <Title headingLevel="h1" className={textStyles.fontSizeXl}>
+            {title}
+          </Title>
+        ) : (
+          <Breadcrumbs>
+            {product && breadcrumbs && (
+              <Breadcrumbs.Item
+                hideDivider
+                isEditorial
+                path={ROOT.overview}
+                label={
+                  <Icon
+                    name="list_alt"
+                    width="1.4em"
+                    height="1.4em"
+                    style={{ verticalAlign: "middle" }}
+                  />
+                }
+              />
+            )}
+            {breadcrumbs &&
+              breadcrumbs.map((props, i) => (
+                <Breadcrumbs.Item
+                  isEditorial={i === 0}
+                  key={i}
+                  isCurrent={i === breadcrumbs.length - 1}
+                  {...props}
+                />
+              ))}
+          </Breadcrumbs>
         )}
       </MastheadMain>
       <MastheadContent>
         <Toolbar isFullHeight>
           <ToolbarContent>
             <ToolbarGroup align={{ default: "alignEnd" }} columnGap={{ default: "columnGapXs" }}>
-              <ToolbarItem>
-                <InstallerOptions />
-              </ToolbarItem>
-              <ToolbarItem>
-                <InstallButton onClickWithIssues={toggleIssuesDrawer} />
-              </ToolbarItem>
-              {showInstallerOptions && (
-                <ToolbarItem>
-                  <OptionsDropdown />
-                </ToolbarItem>
-              )}
+              {startSlot && <ToolbarItem>{startSlot}</ToolbarItem>}
+              {centerSlot && <ToolbarItem>{centerSlot}</ToolbarItem>}
+              {endSlot && <ToolbarItem>{endSlot}</ToolbarItem>}
             </ToolbarGroup>
           </ToolbarContent>
         </Toolbar>

@@ -1,4 +1,163 @@
 -------------------------------------------------------------------
+Mon Feb 23 15:10:58 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+
+- Do not use verbose mode in the "image-janitor" calls, logging
+  so many details significantly increases the ISO build time
+  (roughly two times) (gh#agama-project/agama#3206)
+
+-------------------------------------------------------------------
+Thu Feb 19 12:55:14 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+
+- Fixes and improvements in the boot menu for x86_64 and aarch64:
+  - Fixed boot from hard disk in the legacy BIOS mode (x86_64 only)
+  - Added "p" keyboard shortcut to interactively configure the root
+    password for the installer live system
+  - Added support for serial console
+  - Disable plymouth graphical boot when the grub boot menu is
+    switched to text mode with the "t" keyboard shortcut
+
+- Fixed failed image build because of missing configuration options
+  for the "image-janitor" tool
+
+  (gh#agama-project/agama#3192)
+
+-------------------------------------------------------------------
+Wed Feb 18 20:32:37 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- Increase medium timeout to 60 seconds (jsc#PED-14986)
+- Unify kernel and initramfs location (jsc#PED-14303)
+- Drop “Boot from Disk” on all archs except legacy x86_64
+  (jsc#PED-13766)
+
+-------------------------------------------------------------------
+Thu Feb 12 14:57:21 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+
+- Fixed failing self-update, the self-update repository is not
+  ready yet. If SCC returns empty response then do not try using
+  the fallback URL and skip the self-update process. (bsc#1258142)
+
+-------------------------------------------------------------------
+Wed Feb 11 14:45:20 UTC 2026 - Eugenio Paolantonio <eugenio.paolantonio@suse.com>
+
+- live: update license.final content with the January 2026 EULA delivery
+  (gh#agama-project/agama#3150)
+
+-------------------------------------------------------------------
+Tue Feb 10 07:36:57 UTC 2026 - Dominique Leuenberger <dimstar@opensuse.org>
+
+- Installer: configure libzypp through drop-in config snippet when
+  supported (jsc#PED-14658).
+
+-------------------------------------------------------------------
+Fri Jan 30 15:49:09 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+
+- Do display a message if "UEFI Firmware Settings" boot menu entry
+  fails  (gh#agama-project/agama#3109)
+
+-------------------------------------------------------------------
+Wed Jan 28 14:26:37 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- Enable agama-proxy-setup service for configuring the proxy if
+  given through the kernel cmdline (gh#agama-project/agama#3069).
+
+-------------------------------------------------------------------
+Wed Jan 28 13:59:00 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+
+- Display version "16.1" in the Live ISO boot menu
+  (gh#agama-project/agama#3089)
+
+-------------------------------------------------------------------
+Fri Jan  9 14:44:01 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 19.pre
+
+-------------------------------------------------------------------
+Tue Jan  6 16:21:35 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+
+- Hide the data sharing notification in the Firefox browser
+  (bsc#1252961)
+
+-------------------------------------------------------------------
+Mon Dec  1 20:49:41 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Added new boot option "live.net_config=1" to interactively
+  configure network settings (gh#agama-project/agama#2923)
+
+-------------------------------------------------------------------
+Wed Nov 12 15:42:29 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 18
+
+-------------------------------------------------------------------
+Wed Nov  5 09:17:43 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Include the AMD GPU firmware files (bsc#1250952)
+
+-------------------------------------------------------------------
+Mon Nov  3 07:54:50 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Improved installer self-update (jsc#PED-12506):
+  - Enable using an HTTP proxy for the self-update process
+    (specified via the "proxy=" boot parameter or configured
+    interactively using the "rd.cmdline=menu")
+  - Fixed fallback to the default self-update URL when contacting
+    the registration server (SCC/RMT) fails
+
+-------------------------------------------------------------------
+Fri Oct 31 10:17:41 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Added installer self-update support (jsc#PED-12506)
+  - Supports SCC/RMT server (SCC is the default, RMT via
+    inst.register_url=<URL> option)
+  - Custom repository is supported (inst.self_update=<URL>)
+  - Can be skipped optionally (inst.self_update=0)
+
+-------------------------------------------------------------------
+Fri Oct 24 11:09:56 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Dump some Live ISO root image data directly to the ISO image,
+  added files:
+  /LiveOS/.info - a copy of the /var/log/build/info file from
+    the root image
+  /LiveOS/.packages.gz - list of installed package (plain text,
+    basically a `rpm -qa` dump)
+  /LiveOS/.packages.json.gz - list of installed packages (JSON
+    format, better suitable for processing by scripts or tools)
+  (gh#agama-project/agama#2717)
+
+-------------------------------------------------------------------
+Wed Oct 22 05:34:43 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Remove kernel-default-extra and kernel-default-optional from
+  SLES 16 images (bsc#1249690).
+
+-------------------------------------------------------------------
+Tue Oct 21 20:10:44 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
+
+- Enable plymouth bootsplash for agama and also propose it for
+  target systems if user keep it for agama on kernel command line
+  (bsc#1248507)
+
+-------------------------------------------------------------------
+Tue Oct 14 08:19:36 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Properly unload files in module.order file (bsc#1251898).
+- Append modules name to /etc/modules-load.d/99-agama.conf instead
+  of overwriting the file.
+
+-------------------------------------------------------------------
+Fri Oct  3 08:19:08 UTC 2025 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Backport of a fix when deleting repofiles for disabled
+  repositories (see gh#agama-project/agama#2771).
+
+-------------------------------------------------------------------
+Tue Sep 30 14:54:18 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Fixed creating the /LiveOS/.packages.json.gz file in SLE builds
+  (gh#agama-project/agama#2771)
+
+-------------------------------------------------------------------
 Tue Sep 16 07:21:28 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
 
 - Do not have on SLES media internal agama staging repository

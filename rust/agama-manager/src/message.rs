@@ -20,16 +20,12 @@
 
 use agama_utils::{
     actor::Message,
-    api::{Action, Config, IssueMap, Proposal, Status, SystemInfo},
+    api::{
+        manager::{LanguageTag, LicenseContent},
+        Action, Config, IssueMap, Proposal, SystemInfo,
+    },
 };
 use serde_json::Value;
-
-/// Gets the installation status.
-pub struct GetStatus;
-
-impl Message for GetStatus {
-    type Reply = Status;
-}
 
 /// Gets the information of the underlying system.
 #[derive(Debug)]
@@ -104,6 +100,21 @@ impl Message for GetIssues {
     type Reply = IssueMap;
 }
 
+pub struct GetLicense {
+    pub id: String,
+    pub lang: LanguageTag,
+}
+
+impl Message for GetLicense {
+    type Reply = Option<LicenseContent>;
+}
+
+impl GetLicense {
+    pub fn new(id: String, lang: LanguageTag) -> Self {
+        Self { id, lang }
+    }
+}
+
 /// Runs the given action.
 #[derive(Debug)]
 pub struct RunAction {
@@ -140,4 +151,19 @@ impl SetStorageModel {
 
 impl Message for SetStorageModel {
     type Reply = ();
+}
+
+#[derive(Clone)]
+pub struct SolveStorageModel {
+    pub model: Value,
+}
+
+impl SolveStorageModel {
+    pub fn new(model: Value) -> Self {
+        Self { model }
+    }
+}
+
+impl Message for SolveStorageModel {
+    type Reply = Option<Value>;
 }

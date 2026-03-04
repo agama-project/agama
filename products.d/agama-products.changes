@@ -1,4 +1,106 @@
 -------------------------------------------------------------------
+Wed Feb 25 16:04:52 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Fix SLES and SLES_SAP release package names (bsc#1258271).
+
+-------------------------------------------------------------------
+Wed Feb 25 10:36:54 UTC 2026 - Michal Filka <mfilka@suse.com>
+
+- bsc#1258416
+  - made sudo-policy-wheel-auth-self for MicroOS 
+  - missed in original implementation of jsc#PM-2128
+
+-------------------------------------------------------------------
+Wed Feb 18 14:05:51 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Select the correct SLES and SLES4SAP release package depending on the mode
+  (bsc#1258271).
+
+-------------------------------------------------------------------
+Wed Feb 11 14:53:05 UTC 2026 - Eugenio Paolantonio <eugenio.paolantonio@suse.com>
+
+- Add Beta tag to the SLES and SLES4SAP product names
+  (gh#agama-project/agama#3151)
+
+-------------------------------------------------------------------
+Wed Feb 11 13:58:01 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Add standard and immutable modes to SLES for SAP (bsc#1258042).
+
+-------------------------------------------------------------------
+Mon Feb  2 15:48:07 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+
+- Prepare the spec file for the %suse_version 1610 in Leap 16.1
+  (gh#agama-project/agama#3120)
+
+-------------------------------------------------------------------
+Fri Jan 30 12:44:21 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Fix packaging after the inclusion of Leap 16.1 specification
+  (gh#agama-project/agama#3098).
+
+-------------------------------------------------------------------
+Fri Jan 30 11:36:18 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Rename "transactional_base" to "immutable_base" (related to jsc#PED-14307).
+
+-------------------------------------------------------------------
+Thu Jan 29 11:00:00 UTC 2026 - Lubos Kocman <Lubos.Kocman@suse.com>
+
+- Add Leap 16.1 product definition
+- Drop Leap 16.0 product definition
+-------------------------------------------------------------------
+Wed Jan 28 13:01:02 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Fix the optional_patterns attribute in the product definitions
+  (jsc#PED-14307).
+
+-------------------------------------------------------------------
+Wed Jan 28 11:01:02 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Define "standard" and "immutable" modes for SLES (jsc#PED-14307).
+
+-------------------------------------------------------------------
+Fri Jan  9 14:44:00 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 19.pre
+- Do not offer or pre-install YaST2.
+
+-------------------------------------------------------------------
+Tue Dec  2 12:40:33 UTC 2025 - Dominique Leuenberger <dimstar@opensuse.org>
+
+- Do not list yast2 patterns and do not pre-install yast
+  (boo#1254414).
+
+-------------------------------------------------------------------
+Thu Nov 13 13:30:58 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Do not build on 32bit arches (like i586) and PPC64-BE,
+  the dependant libsuseconnect is 64bit only (bsc#1251846)
+
+-------------------------------------------------------------------
+Thu Nov 13 09:39:58 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
+
+- Fix removal of kalpa to work also in SLE
+
+-------------------------------------------------------------------
+Wed Nov 12 15:42:28 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 18
+
+-------------------------------------------------------------------
+Fri Oct 17 19:50:58 UTC 2025 - Shawn Dunn <sfalken@opensuse.org>
+
+- Remove Kalpa from multi-distribution installation image.
+
+-------------------------------------------------------------------
+Mon Sep 29 04:56:47 UTC 2025 - Lubos Kocman <lubos.kocman@suse.com>
+
+- Update patterns and packages Leap Micro 6.2
+  Fixes install issues of Leap Micro 6.2 (boo#1250435)
+- Explicitly add opensuse-migration-tool
+
+-------------------------------------------------------------------
 Fri Sep 12 14:30:16 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
 
 - Change the openSUSE Leap autoinstallation ID from "Leap_16.0"

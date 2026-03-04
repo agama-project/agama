@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2023-2024] SUSE LLC
+ * Copyright (c) [2023-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -24,16 +24,25 @@ import React from "react";
 import { screen, within } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import testingPatterns from "./patterns.test.json";
+import testingProposal from "./proposal.test.json";
 import SoftwarePatternsSelection from "./SoftwarePatternsSelection";
+import { patchConfig } from "~/api";
 
 const onConfigMutationMock = { mutate: jest.fn() };
 
-jest.mock("~/components/product/ProductRegistrationAlert", () => () => (
-  <div>ProductRegistrationAlert Mock</div>
-));
+jest.mock("~/hooks/model/system/software", () => ({
+  useSystem: () => ({ patterns: testingPatterns }),
+}));
+
+jest.mock("~/hooks/model/proposal/software", () => ({
+  useProposal: () => ({ patterns: testingProposal.patterns }),
+}));
+
+jest.mock("~/api", () => ({
+  patchConfig: jest.fn(),
+}));
 
 jest.mock("~/queries/software", () => ({
-  usePatterns: () => testingPatterns,
   useConfigMutation: () => onConfigMutationMock,
 }));
 
@@ -43,6 +52,7 @@ describe("SoftwarePatternsSelection", () => {
     const headings = screen.getAllByRole("heading", { level: 3 });
     const headingsText = headings.map((node) => node.textContent);
     expect(headingsText).toEqual([
+      "Patterns",
       "Graphical Environments",
       "Base Technologies",
       "Desktop Functions",
@@ -66,7 +76,7 @@ describe("SoftwarePatternsSelection", () => {
 
     const headings = screen.getAllByRole("heading", { level: 3 });
     const headingsText = headings.map((node) => node.textContent);
-    expect(headingsText).toEqual(["Desktop Functions"]);
+    expect(headingsText).toEqual(["Patterns", "Desktop Functions"]);
 
     const desktopGroup = screen.getByRole("list", { name: "Desktop Functions" });
     expect(within(desktopGroup).queryByText(/Multimedia$/)).toBeInTheDocument();
@@ -100,8 +110,6 @@ describe("SoftwarePatternsSelection", () => {
     expect(basisCheckbox).toBeChecked();
 
     await user.click(basisCheckbox);
-    expect(onConfigMutationMock.mutate).toHaveBeenCalledWith({
-      patterns: expect.objectContaining({ yast2_basis: false }),
-    });
+    expect(patchConfig).toHaveBeenCalled();
   });
 });

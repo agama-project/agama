@@ -33,9 +33,11 @@ use std::{
     collections::HashMap,
     default::Default,
     fmt,
+    path::{Path, PathBuf},
     str::{self, FromStr},
 };
 use thiserror::Error;
+use tokio::process;
 use uuid::Uuid;
 
 #[derive(PartialEq)]
@@ -139,7 +141,7 @@ impl NetworkState {
         self.devices.iter_mut().find(|c| c.name == name)
     }
 
-    /// Returns the controller's connection for the givne connection Uuid.
+    /// Returns the controller's connection for the given connection Uuid.
     pub fn get_controlled_by(&mut self, uuid: Uuid) -> Vec<&Connection> {
         let uuid = Some(uuid);
         self.connections
@@ -158,6 +160,86 @@ impl NetworkState {
         self.connections.push(conn);
 
         Ok(())
+    }
+
+    // Persist the existing connections if there is no one to be persisted and the copy of the
+    // network is not disabled
+    pub fn propose_default(&mut self) -> Result<(), NetworkStateError> {
+        if !self.general_state.copy_network {
+            return Ok(());
+        }
+        if self.connections.is_empty() {
+            return Ok(());
+        }
+
+        let to_persist: Vec<&Connection> =
+            self.connections.iter().filter(|c| c.persistent).collect();
+        if !to_persist.is_empty() {
+            return Ok(());
+        }
+
+        for conn in self.connections.iter_mut() {
+            conn.persistent = true;
+            conn.keep_status();
+        }
+
+        Ok(())
+    }
+
+    pub async fn install(&self) -> Result<(), NetworkStateError> {
+        const CONNECTIONS_PATH: &str = "/etc/NetworkManager/system-connections";
+        let from = PathBuf::from(CONNECTIONS_PATH);
+        let to = PathBuf::from(self.target_dir()).join(CONNECTIONS_PATH.trim_start_matches('/'));
+
+        self.copy_connections(&from, &to)?;
+        self.enable_service(self.target_dir()).await
+    }
+
+    pub async fn enable_service(&self, path: &str) -> Result<(), NetworkStateError> {
+        let mut command = process::Command::new("chroot");
+        command.args([path, "systemctl", "enable", "NetworkManager.service"]);
+
+        match command.output().await {
+            Ok(output) => {
+                if !output.status.success() {
+                    tracing::error!("Failed to enable the NetworkManager service: {output:?}")
+                }
+            }
+            Err(error) => {
+                tracing::error!("Failed to run the command to enable the NetworkManager service command: {error}");
+            }
+        }
+
+        Ok(())
+    }
+
+    fn copy_connections(&self, from: &Path, to: &Path) -> Result<(), NetworkStateError> {
+        if !to.exists() {
+            std::fs::create_dir_all(to).map_err(|e| NetworkStateError::IoError(e.to_string()))?;
+        }
+
+        for entry in
+            std::fs::read_dir(from).map_err(|e| NetworkStateError::IoError(e.to_string()))?
+        {
+            let entry = entry.map_err(|e| NetworkStateError::IoError(e.to_string()))?;
+            let path = entry.path();
+            if path.is_file() {
+                if let Some(file_name) = path.file_name() {
+                    let dest = to.join(file_name);
+                    if let Err(e) = std::fs::copy(&path, &dest) {
+                        tracing::error!("It was not possible to copy {:?}: {:?}", &file_name, e);
+                    }
+                } else {
+                    tracing::error!("The path {:?} looks wrong, skipping it.", &path);
+                }
+            }
+        }
+
+        Ok(())
+    }
+
+    fn target_dir(&self) -> &str {
+        "/mnt"
     }
 
     /// Updates the current [NetworkState] with the configuration provided.
@@ -453,6 +535,37 @@ mod tests {
             NetworkStateError::NotControllerConnection(_),
         ));
     }
+
+    #[test]
+    fn test_copy_connections() {
+        use std::fs;
+
+        let tmp_dir = std::env::temp_dir().join(format!("test_agama_network_{}", Uuid::new_v4()));
+        let source = tmp_dir.join("source");
+        let dest = tmp_dir.join("dest");
+
+        fs::create_dir_all(&source).unwrap();
+        fs::write(source.join("conn1.nmconnection"), "content1").unwrap();
+        fs::write(source.join("conn2.nmconnection"), "content2").unwrap();
+        fs::create_dir(source.join("ignored_dir")).unwrap();
+
+        let state = NetworkState::default();
+        state.copy_connections(&source, &dest).unwrap();
+
+        assert!(dest.join("conn1.nmconnection").exists());
+        assert_eq!(
+            fs::read_to_string(dest.join("conn1.nmconnection")).unwrap(),
+            "content1"
+        );
+        assert!(dest.join("conn2.nmconnection").exists());
+        assert_eq!(
+            fs::read_to_string(dest.join("conn2.nmconnection")).unwrap(),
+            "content2"
+        );
+        assert!(!dest.join("ignored_dir").exists());
+
+        fs::remove_dir_all(tmp_dir).unwrap();
+    }
 }
 
 pub const NOT_COPY_NETWORK_PATH: &str = "/run/agama/not_copy_network";
@@ -637,10 +750,7 @@ impl TryFrom<NetworkConnection> for Connection {
         }
 
         if let Some(mac) = conn.mac_address {
-            connection.mac_address = match MacAddr6::from_str(mac.as_str()) {
-                Ok(mac) => Some(mac),
-                Err(_) => None,
-            }
+            connection.mac_address = MacAddr6::from_str(mac.as_str()).ok()
         }
 
         connection.ip_config.addresses = conn.addresses;
@@ -663,7 +773,7 @@ impl TryFrom<Connection> for NetworkConnection {
         let custom_mac = conn.custom_mac_address.to_string();
         let method4 = Some(conn.ip_config.method4.to_string());
         let method6 = Some(conn.ip_config.method6.to_string());
-        let mac_address = conn.mac_address.and_then(|mac| Some(mac.to_string()));
+        let mac_address = conn.mac_address.map(|mac| mac.to_string());
         let custom_mac_address = (!custom_mac.is_empty()).then_some(custom_mac);
         let nameservers = conn.ip_config.nameservers;
         let dns_searchlist = conn.ip_config.dns_searchlist;

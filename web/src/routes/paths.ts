@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024] SUSE LLC
+ * Copyright (c) [2024-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -38,7 +38,6 @@ const NETWORK = {
 const PRODUCT = {
   root: "/products",
   changeProduct: "/products",
-  progress: "/products/progress",
 };
 
 const REGISTRATION = {
@@ -53,7 +52,7 @@ const ROOT = {
   installationProgress: "/installation/progress",
   installationFinished: "/installation/finished",
   installationExit: "/installation/exit",
-  logs: "/api/manager/logs/store",
+  logs: "/api/v2/private/download_logs",
 };
 
 const USER = {
@@ -78,10 +77,10 @@ const STORAGE = {
   progress: "/storage/progress",
   editBootDevice: "/storage/boot-device/edit",
   editEncryption: "/storage/encryption/edit",
-  editSpacePolicy: "/storage/:list/:listIndex/space-policy/edit",
-  formatDevice: "/storage/:list/:listIndex/format",
-  addPartition: "/storage/:list/:listIndex/partitions/add",
-  editPartition: "/storage/:list/:listIndex/partitions/:partitionId/edit",
+  editSpacePolicy: "/storage/:collection/:index/space-policy/edit",
+  formatDevice: "/storage/:collection/:index/format",
+  addPartition: "/storage/:collection/:index/partitions/add",
+  editPartition: "/storage/:collection/:index/partitions/:partitionId/edit",
   selectDevice: "/storage/devices/select",
   volumeGroup: {
     add: "/storage/volume-groups/add",
@@ -91,7 +90,12 @@ const STORAGE = {
       edit: "/storage/volume-groups/:id/logical-volumes/:logicalVolumeId/edit",
     },
   },
-  iscsi: "/storage/iscsi",
+  iscsi: {
+    root: "/storage/iscsi",
+    initiator: "/storage/iscsi/initiator",
+    discover: "/storage/iscsi/targets/discover",
+    login: "/storage/iscsi/targets/:name/:address/:port/login",
+  },
   dasd: "/storage/dasd",
   zfcp: {
     root: "/storage/zfcp",
@@ -103,35 +107,4 @@ const HOSTNAME = {
   root: "/hostname",
 };
 
-/**
- * A set of routes that do not directly allow fine-tuning the installation
- * settings for the selected product, but rather serve special purposes, such
- * as authentication (e.g., login), product selection change, or transitions
- * between states (e.g., progress, error, success).
- *
- * These routes are defined separately to adjust the UI accordingly, ensuring
- * that certain core elements, like the Install button, are not displayed when
- * visiting them.
- */
-const SIDE_PATHS = [
-  ROOT.login,
-  PRODUCT.changeProduct,
-  PRODUCT.progress,
-  ROOT.installationProgress,
-  ROOT.installationFinished,
-  ROOT.installationExit,
-  STORAGE.progress,
-];
-
-export {
-  HOSTNAME,
-  L10N,
-  NETWORK,
-  PRODUCT,
-  REGISTRATION,
-  ROOT,
-  SIDE_PATHS,
-  SOFTWARE,
-  STORAGE,
-  USER,
-};
+export { HOSTNAME, L10N, NETWORK, PRODUCT, REGISTRATION, ROOT, SOFTWARE, STORAGE, USER };

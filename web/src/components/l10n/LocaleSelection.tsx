@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2023-2025] SUSE LLC
+ * Copyright (c) [2023-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -24,22 +24,19 @@ import React, { useState } from "react";
 import { Content, Flex, Form, FormGroup, Radio } from "@patternfly/react-core";
 import { useNavigate } from "react-router";
 import { ListSearch, Page } from "~/components/core";
-import { updateConfig } from "~/api/api";
-import { useSystem } from "~/queries/system";
-import { useProposal } from "~/queries/proposal";
+import { patchConfig } from "~/api";
+import { useProposal } from "~/hooks/model/proposal/l10n";
+import { useSystem } from "~/hooks/model/system/l10n";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import { _ } from "~/i18n";
+import { L10N } from "~/routes/paths";
 
 // TODO: Add documentation
 // TODO: Evaluate if worth it extracting the selector
 export default function LocaleSelection() {
   const navigate = useNavigate();
-  const {
-    l10n: { locales },
-  } = useSystem();
-  const {
-    l10n: { locale: currentLocale },
-  } = useProposal();
+  const locales = useSystem()?.locales;
+  const currentLocale = useProposal()?.locale;
   const [selected, setSelected] = useState(currentLocale);
   const [filteredLocales, setFilteredLocales] = useState(locales);
 
@@ -47,11 +44,11 @@ export default function LocaleSelection() {
 
   const onSubmit = async (e: React.SyntheticEvent) => {
     e.preventDefault();
-    updateConfig({ l10n: { locale: selected } });
+    patchConfig({ l10n: { locale: selected } });
     navigate(-1);
   };
 
-  let localesList = filteredLocales.map(({ id, name, territory }) => {
+  let localesList = filteredLocales.map(({ id, language, territory }) => {
     return (
       <Radio
         id={id}
@@ -60,7 +57,7 @@ export default function LocaleSelection() {
         onChange={() => setSelected(id)}
         label={
           <Flex gap={{ default: "gapSm" }}>
-            <Content isEditorial>{name}</Content>
+            <Content isEditorial>{language}</Content>
             <Content className={`${textStyles.textColorPlaceholder}`}>{territory}</Content>
             <Content className={`${textStyles.textColorSubtle}`}>{id}</Content>
           </Flex>
@@ -76,12 +73,15 @@ export default function LocaleSelection() {
   }
 
   return (
-    <Page>
-      <Page.Header>
-        <Content component="h2">{_("Locale selection")}</Content>
+    <Page
+      breadcrumbs={[
+        { label: "Language and region", path: L10N.root },
+        { label: "Change language" },
+      ]}
+    >
+      <Page.StickOnTop>
         <ListSearch placeholder={searchHelp} elements={locales} onChange={setFilteredLocales} />
-      </Page.Header>
-
+      </Page.StickOnTop>
       <Page.Content>
         <Form id="localeSelection" onSubmit={onSubmit}>
           <FormGroup isStack>{localesList}</FormGroup>

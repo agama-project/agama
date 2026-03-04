@@ -25,25 +25,23 @@ import { screen } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
 import UnsupportedModelInfo from "./UnsupportedModelInfo";
 
-const mockUseResetConfigMutation = jest.fn();
-jest.mock("~/queries/storage", () => ({
-  ...jest.requireActual("~/queries/storage"),
-  useResetConfigMutation: () => mockUseResetConfigMutation(),
+const mockConfigModel = jest.fn();
+
+jest.mock("~/hooks/model/storage/config-model", () => ({
+  ...jest.requireActual("~/hooks/model/storage/config-model"),
+  useConfigModel: () => mockConfigModel(),
 }));
 
-const mockUseConfigModel = jest.fn();
-jest.mock("~/queries/storage/config-model", () => ({
-  ...jest.requireActual("~/queries/storage/config-model"),
-  useConfigModel: () => mockUseConfigModel(),
+const mockReset = jest.fn();
+
+jest.mock("~/hooks/model/config/storage", () => ({
+  ...jest.requireActual("~/hooks/model/config/storage"),
+  useReset: () => mockReset,
 }));
 
-beforeEach(() => {
-  mockUseResetConfigMutation.mockReturnValue({ mutate: jest.fn() });
-});
-
-describe("if there is not a model", () => {
+describe("if there is not config model", () => {
   beforeEach(() => {
-    mockUseConfigModel.mockReturnValue(null);
+    mockConfigModel.mockReturnValue(null);
   });
 
   it("renders an alert", () => {
@@ -57,9 +55,9 @@ describe("if there is not a model", () => {
   });
 });
 
-describe("if there is a model", () => {
+describe("if there is config model", () => {
   beforeEach(() => {
-    mockUseConfigModel.mockReturnValue({ drives: [] });
+    mockConfigModel.mockReturnValue({ drives: [] });
   });
 
   it("does not renders an alert", () => {

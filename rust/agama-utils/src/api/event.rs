@@ -18,16 +18,17 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::api::progress::Progress;
-use crate::api::scope::Scope;
+use crate::api::{progress::Progress, s390::dasd, scope::Scope, status::Stage};
 use serde::{Deserialize, Serialize};
 use tokio::sync::broadcast;
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(tag = "type")]
 pub enum Event {
-    // The state of the installation changed.
-    StateChanged,
+    // The stage of the installation changed.
+    StageChanged {
+        stage: Stage,
+    },
     /// Progress changed.
     ProgressChanged {
         progress: Progress,
@@ -44,6 +45,11 @@ pub enum Event {
     SystemChanged {
         scope: Scope,
     },
+    /// The configuration changed.
+    // TODO: do we need this event?
+    ConfigChanged {
+        scope: Scope,
+    },
     /// Proposal changed.
     ProposalChanged {
         scope: Scope,
@@ -56,6 +62,12 @@ pub enum Event {
     QuestionAnswered {
         id: u32,
     },
+    /// DASD format changed.
+    DASDFormatChanged {
+        summary: dasd::FormatSummary,
+    },
+    /// DASD format finished (contains exit status of the format operation).
+    DASDFormatFinished,
 }
 
 pub type Sender = broadcast::Sender<Event>;

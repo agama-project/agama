@@ -22,15 +22,20 @@
 
 import React from "react";
 import { screen } from "@testing-library/react";
-import { installerRender } from "~/test-utils";
+import { plainRender } from "~/test-utils";
 import PasswordAndConfirmationInput from "./PasswordAndConfirmationInput";
+
+jest.mock("~/context/installerL10n", () => ({
+  ...jest.requireActual("~/context/installerL10n"),
+  useInstallerL10n: () => ({
+    keymap: "us",
+    language: "de-DE",
+  }),
+}));
 
 describe("when the passwords do not match", () => {
   it("displays a warning", async () => {
-    const password = "";
-    const { user } = installerRender(<PasswordAndConfirmationInput value={password} />, {
-      withL10n: true,
-    });
+    const { user } = plainRender(<PasswordAndConfirmationInput />);
 
     const passwordInput = screen.getByLabelText("Password");
     user.type(passwordInput, "123456");
@@ -39,7 +44,7 @@ describe("when the passwords do not match", () => {
 });
 
 it("uses the given password value for confirmation too", async () => {
-  installerRender(<PasswordAndConfirmationInput value="12345" />, { withL10n: true });
+  plainRender(<PasswordAndConfirmationInput value="12345" />);
 
   const passwordInput = screen.getByLabelText("Password") as HTMLInputElement;
   const confirmationInput = screen.getByLabelText("Password confirmation") as HTMLInputElement;
@@ -50,7 +55,7 @@ it("uses the given password value for confirmation too", async () => {
 
 describe("when isDisabled", () => {
   it("disables both, password and confirmation", async () => {
-    installerRender(<PasswordAndConfirmationInput value="12345" isDisabled />, { withL10n: true });
+    plainRender(<PasswordAndConfirmationInput value="12345" isDisabled />);
 
     const passwordInput = screen.getByLabelText("Password");
     const confirmationInput = screen.getByLabelText("Password confirmation");
@@ -71,7 +76,7 @@ describe("when isDisabled", () => {
       );
     };
 
-    const { user } = installerRender(<CleanErrorTest />, { withL10n: true });
+    const { user } = plainRender(<CleanErrorTest />);
     const passwordInput = screen.getByLabelText("Password");
     user.type(passwordInput, "123456");
     await screen.findByText("Passwords do not match");

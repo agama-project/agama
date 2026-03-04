@@ -1,0 +1,4 @@
+<repoindex>
+  <repo url="http://foo.com/repo1" alias="a repository 1"/>
+  <repo url="http://foo.com/repo2" alias="a repository 2"/>
+</repoindex>

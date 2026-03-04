@@ -3,176 +3,168 @@ for SUSE Software
 
 
 End User License Agreement for SUSE Software
+
 BY PURCHASING, INSTALLING, DOWNLOADING OR OTHERWISE USING THE 
 SOFTWARE (AS DEFINED BELOW), YOU AGREE TO THE TERMS OF THIS 
 AGREEMENT. IF YOU DO NOT AGREE WITH THESE TERMS, YOU ARE NOT 
 PERMITTED TO DOWNLOAD, INSTALL OR USE THE SOFTWARE. AN INDIVIDUAL 
 ACTING ON BEHALF OF AN ENTITY REPRESENTS THAT HE OR SHE HAS THE 
-AUTHORITY TO ENTER INTO THIS AGREEMENT ON BEHALF OF THAT ENTITY.  IF 
+AUTHORITY TO ENTER INTO THIS AGREEMENT ON BEHALF OF THAT ENTITY. IF 
 YOU ARE ACCEPTING THE AGREEMENT ON BEHALF OF AN ENTITY, THEN THE 
 TERMS "YOU" AND "YOUR" REFER TO THAT ENTITY WHENEVER USED BELOW.
-
-SUSE LLC ("Licensor" or "SUSE") makes available software products, 
-which may include: (i) software programs developed by SUSE and/or 
-its affiliates; (ii) software programs developed by third parties; 
-(iii) compilations of software programs; and (iv) trade marks owned 
-by SUSE and/or its affiliates ("SUSE Marks"), as well as 
-documentation accompanying such software programs (such software 
-programs, compilations of software programs, trade marks and 
-documentation being the "Software").
-
-This End User License Agreement ("EULA") is a legal agreement 
-between You (a legal entity or a person) and SUSE and governs Your 
-use of the Software. Any add-on, extension, update, mobile 
-application, module, adapter or support release to the Software that 
-You may download or receive that is not accompanied by another 
-license agreement is Software governed by this EULA. If the laws of 
-Your principal place of business require contracts to be in the 
-local language to be enforceable, You can obtain a local language 
-version by writing to Licensor and the local language version shall 
-govern Your use of the Software.      
- 
+SUSE Software Solutions Ireland Limited ("Licensor" or "SUSE") or 
+its affiliates make available software products, which may include: 
+(i) software developed by SUSE and/or its affiliates; (ii) software 
+developed by third parties; (iii) compilations of software; and (iv) 
+trade marks owned by SUSE and/or its affiliates ("SUSE Marks"), as 
+well as documentation accompanying such software and configuration, 
+compilation and packaging materials (such software, compilations of 
+software programs, trade marks and documentation are, together with 
+any associated configuration, compilation and packaging materials, 
+the "Software"). This End User License Agreement ("EULA") is a legal 
+agreement between You (a legal entity or a person) and SUSE and 
+governs Your use of the Software. Any add-on, extension, update, 
+mobile application, module, adapter or support release to the 
+Software that You may download or receive that is not accompanied by 
+another license agreement is licensed under this EULA. 
+Definitions and interpretation
+If the laws of Your principal place of business require contracts to 
+be in the local language to be enforceable, You may request a local 
+language version and, to the extent required by mandatory law, that 
+local language version will prevail.
+"Open Source Components" means software components distributed with 
+or as part of the Software that are licensed by third parties under 
+licences recognized as open source licences (each an "OSS License"). 
+References to "use" include installation, execution and internal 
+operation.
 License Terms
 Open Source
-The Software contains many individual components that are open 
-source software. The open source license for each component, which, 
-depending on the software program, may be the GNU General Public 
-License v.2(     
-https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html), the 
-Apache License version 2.0 
-(https://www.apache.org/licenses/LICENSE-2.0), or other open source 
-license (each such license being the "OSS License"), is located in 
-the licensing documentation and/or in the component's source code.
- 
-This EULA governs Your use of the Software, including SUSE Marks, 
-but does not limit, supersede or modify your rights under the OSS 
-License applicable to Your use of any open source code contained in 
-the Software without the SUSE Marks.
- 
+Software includes Open Source Components. The applicable OSS License 
+for each Open Source Component is included in the accompanying 
+licensing documentation and/or in the component's source code or 
+notice file. For the avoidance of doubt, nothing in this EULA 
+limits, supersedes or modifies Your rights under any OSS License. 
+Your rights to use, copy, modify and redistribute Open Source 
+Components are governed solely by the applicable OSS Licenses. If 
+You redistribute Open Source Components, You are responsible for 
+complying with the applicable OSS Licenses, including any notice and 
+source code availability obligations described in the OSS notice 
+file that accompanies the Software or is otherwise made available by 
+SUSE on request.
 The Software may be provided with third party programs that are not 
 part of the Software. These third party programs are not required to 
 run the Software, are provided as a convenience to you, and are 
 subject to their own license terms. The license terms either 
-accompany the third party programs or can be viewed at 
-https://www.suse.com/licensing/eula/. If you do not agree to abide 
-by the applicable license terms for the third party programs, then 
-you should not install them. If you wish to install the third party 
-programs on more than one system or transfer the third party 
-programs to another party, then you must contact the licensor of the 
-applicable third party programs.
-
+accompany the third party programs or can be viewed at the location 
+specified by their licensors. If you do not agree to abide by the 
+applicable license terms for the third party programs, then you 
+should not install or use them. 
 License to use the Software
 Subject to compliance with the terms and conditions of this EULA and 
-of the applicable OSS License, you are granted a perpetual, non- 
-exclusive, non-transferable, revocable, worldwide license to 
-reproduce and use copies of the Software for Your legal entity's 
-internal use. 
- 
-This EULA does not permit you to distribute the Software or its 
-components using the SUSE Marks except that You may redistribute 
-outside of Your legal entity: (a) copies of the Software, but only 
-if permitted under a separate written agreement with Licensor 
-authorizing such redistribution, or (b) the constituent components 
-of the Software, but only if You remove and replace all occurrences 
-of any SUSE Mark.
-
+of the applicable OSS Licenses, you are granted a perpetual, 
+non-exclusive, non-transferable, irrevocable, worldwide license to 
+reproduce and use copies of theSoftware for Your legal entity's 
+internal use. This license grant does not apply to Open Source 
+Components within the Software, which are licensed under their 
+respective OSS Licenses. You may redistribute Open Source Components 
+of the Software, without SUSE Marks, subject to their applicable OSS 
+Licenses. 
 Ownership
-The Software is licensed, not sold.  No title to or ownership of the 
+The Software is licensed, not sold. No title to or ownership of the 
 Software is transferred to You. Licensor and/or the third party 
 licensors retain all right, title and interest in and to all 
-intellectual property rights in the Software.      
-
+intellectual property rights in the Software.
 SUSE Marks
 No right or license, express or implied, is granted under this EULA 
 to use any SUSE Mark, trade name or service mark of Licensor or its 
-affiliates or licensors.
-
+affiliates or licensors. You must remove SUSE Marks from any 
+redistribution unless expressly authorised.
 Subscription Services and Support
 Licensor has no obligation to provide maintenance or support unless 
-otherwise agreed pursuant to an additional  agreement that expressly 
-includes such services.
-
+otherwise agreed pursuant to an additional agreement that expressly 
+includes such services. Any such services are provided under 
+separate terms and do not modify this EULA.
 Warranty and Liability
 Limited Warranty
 THE SOFTWARE IS PROVIDED "AS IS" WITHOUT ANY WARRANTIES OF ANY KIND. 
-EXCEPT AS OTHERWISE RESTRICTED BY LAW, LICENSOR DISCLAIMS AND 
-EXCLUDES ANY AND ALL IMPLIED WARRANTIES, INCLUDING ANY WARRANTIES OF 
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, OR 
-NON-INFRINGEMENT, NOR ARE THERE ANY WARRANTIES CREATED BY COURSE OF 
-DEALING, COURSE OF PERFORMANCE OR TRADE USAGE.  LICENSOR DOES NOT 
-WARRANT THAT THE SOFTWARE OR SERVICES WILL SATISFY YOUR 
-REQUIREMENTS, BE COMPATIBLE WITH  YOUR OPERATING SYSTEMS, OR THAT 
-THE OPERATION OF THE SOFTWARE WILL BE UNINTERRUPTED OR ERROR-FREE. 
-THE FOREGOING EXCLUSIONS AND DISCLAIMERS ARE AN ESSENTIAL PART OF 
-THIS AGREEMENT. Some jurisdictions do not allow certain disclaimers 
-and limitations of warranties, so portions of the above limitations 
-may not apply to You. This limited warranty gives You specific 
-rights and You may also have other rights which vary by state or 
-jurisdiction.
-
+EXCEPT AS RESTRICTED BY LAW, SUSE DISCLAIMS ALL IMPLIED WARRANTIES, 
+INCLUDING MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE 
+AND NON-INFRINGEMENT. SUSE DOES NOT WARRANT THAT THE SOFTWARE WILL 
+MEET YOUR REQUIREMENTS, BE COMPATIBLE WITH YOUR SYSTEMS, OR OPERATE 
+UNINTERRUPTED OR ERROR-FREE. SOME JURISDICTIONS DO NOT ALLOW CERTAIN 
+DISCLAIMERS AND LIMITATIONS OF WARRANTIES, SO THE ABOVE MAY NOT 
+FULLY APPLY. THIS CLAUSE DOES NOT LIMIT ANY RIGHTS YOU MAY HAVE 
+UNDER APPLICABLE OSS LICENSES OR UNDER MANDATORY LAW.
 Limitation of Liability
 NEITHER LICENSOR NOR ANY OF ITS AFFILIATES, SHAREHOLDERS, DIRECTORS, 
 OR EMPLOYEES WILL IN ANY CASE BE LIABLE FOR ANY CONSEQUENTIAL OR 
 INDIRECT DAMAGES, WHETHER BASED ON CONTRACT, NEGLIGENCE, TORT OR 
 OTHER THEORY OF LIABILITY, OR FOR ANY LOSS OF PROFITS, BUSINESS OR 
 LOSS OR CORRUPTION OF DATA, IN EACH CASE, EVEN IF ADVISED OF THE 
-POSSIBILITY OF THOSE DAMAGES.
-
-IN NO EVENT WILL LICENSOR'S AGGREGATE LIABILITY UNDER OR IN 
-CONNECTION WITH THIS EULA (WHETHER IN ONE INSTANCE OR A SERIES OF 
-INSTANCES) EXCEED $50 (U.S.).
-
-The above exclusions and limitations will not apply to claims 
-relating to death or personal injury caused by the negligence of 
-Licensor or its employees, agents or contractors. In those 
-jurisdictions that do not allow the exclusion or limitation of 
-damages, including, without limitation, damages for breach of any 
-implied terms as to title or quiet enjoyment of any Software 
-obtained pursuant to this EULA or for fraudulent misrepresentation, 
-Licensor's liability shall be limited or excluded to the maximum 
-extent allowed within those jurisdictions.
- 
+POSSIBILITY OF THOSE DAMAGES. Subject to liabilities that cannot be 
+excluded by law, each party's total aggregate liability arising out 
+of or in connection with this EULA (whether in one instance or a 
+series of instances) is limited to USD 50. Nothing in this EULA 
+limits liability for death or personal injury caused by negligence, 
+for fraud or fraudulent misrepresentation, or for any other 
+liability that cannot be excluded by law.
 General Terms
 Law
-All matters arising out of or relating to this EULA will be governed 
-by the substantive laws of the United States and the State of New 
-York without regard to its choice of law provisions. Any suit, 
-action or proceeding arising out of or relating to this EULA may 
-only be brought before a federal or state court of appropriate 
-jurisdiction in New York. If, however, Your principal place of 
-business is a member state of the European Union or the European 
-Free Trade Association, (1) the courts of England and Wales shall 
-have exclusive jurisdiction over any action of law relating to this 
-EULA; and (2) the laws of England shall apply except where the laws 
-of such country of Your principal place of business are required to 
-be applied to any such action of law, in which case the laws of that 
-country shall apply. Neither the Uniform Computer Information 
-Transaction Act, the United Nations Convention of Contracts for the 
-International Sale of Goods, nor the New York or England and Wales 
-conflict of law rules apply to this EULA or its subject matter.
-
+If Your principal place of business is in the United Kingdom or the 
+European Economic Area, this EULA is governed by the laws of Ireland 
+and the courts of Ireland shall have exclusive jurisdiction over any 
+proceedings arising out of or relating to it. For all other 
+customers, this EULA is governed by the laws of the State of New 
+York and the federal and state courts located in New York have 
+exclusive jurisdiction. This EULA is intended for business users and 
+nothing in it affects the application of any mandatory laws that 
+cannot be contracted out of. Neither the Uniform Computer 
+Information Transaction Act, the United Nations Convention of 
+Contracts for the International Sale of Goods, nor the New York, 
+Irish or England and Wales conflict of law rules apply to this EULA 
+or its subject matter.
+Export Control and Sanctions
+While the majority of SUSE's Materials are made publicly available, 
+some Software may be subject to export control and sanctions laws 
+and regulations of the United States, the European Union and other 
+jurisdictions. 
+You represent that you: (a) are not located in, organized in, and 
+will not access SUSE Materials from, any country or region subject 
+to comprehensive sanctions; (b) are not listed on, owned or 
+controlled by, or acting for or on behalf of any party on any 
+applicable government restricted party list; and (c) will not use 
+SUSE Materials for any prohibited end use. You will comply with all 
+applicable export control and sanctions laws and obtain any required 
+authorizations before exporting, reexporting, transferring, or 
+providing access to SUSE Materials.
+SUSE may suspend, withhold, or terminate access to SUSE Materials 
+where necessary to comply with applicable export control or 
+sanctions laws. 
 Entire Agreement
 This EULA, together with any other purchase documents or other 
-written agreement between You and Licensor or its Affiliates, sets 
+written agreement between You and Licensor or its affiliates, sets 
 forth the entire understanding and agreement between You and 
 Licensor and may be amended or modified only by a written agreement 
 agreed to by You and an authorized representative of Licensor. NO 
 THIRD PARTY LICENSOR, DISTRIBUTOR, DEALER, RETAILER, RESELLER, SALES 
 PERSON, OR EMPLOYEE IS AUTHORIZED TO MODIFY THIS AGREEMENT OR TO 
 MAKE ANY REPRESENTATION OR PROMISE THAT IS DIFFERENT FROM, OR IN 
-ADDITION TO, THE TERMS OF THIS AGREEMENT.
-
+ADDITION TO, THE TERMS OF THIS AGREEMENT. In the event of conflict 
+between this EULA and an OSS License applicable to an Open Source 
+Component, the OSS License will govern as to that Open Source 
+Component.
 Severability
 If any provision in this EULA is invalid or unenforceable, that 
 provision will be construed, limited, modified or, if necessary, 
 severed, to the extent necessary, to eliminate its invalidity or 
 unenforceability, and the other provisions of this EULA will remain 
-unaffected. 
+unaffected.
+Notices and Source Code Offer
+OSS Licenses and attributions for Open Source Components are 
+identified in the OSS notice file accompanying the Software. Where 
+SUSE distributes binaries of components that require an offer for 
+corresponding source code, SUSE will make the corresponding source 
+available as described in the notice file or upon request.
 
-:version:2024-06-01:001
-SUSE.com
 
-Copyright (c) SUSE 2025
-
-SUSE Legal		
-June 2024
+January 2026

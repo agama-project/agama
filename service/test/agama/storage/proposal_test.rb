@@ -70,6 +70,9 @@ describe Agama::Storage::Proposal do
 
   before do
     mock_storage(devicegraph: "empty-hd-50GiB.yaml")
+    # To speed-up the tests
+    allow(Y2Storage::BootRequirementsStrategies::Analyzer)
+      .to receive(:bls_bootloader_proposed?).and_return(false)
   end
 
   let(:achivable_config) do

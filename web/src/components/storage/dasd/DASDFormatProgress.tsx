@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2023] SUSE LLC
+ * Copyright (c) [2023-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -20,43 +20,97 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
-import { Progress, Stack } from "@patternfly/react-core";
-import { Popup } from "~/components/core";
+import React, { useEffect, useState } from "react";
+import { Card, CardBody, CardTitle, Progress, Stack } from "@patternfly/react-core";
+import { useInstallerClient } from "~/context/installer";
+import { sortCollection } from "~/utils";
 import { _ } from "~/i18n";
-import { useDASDDevices, useDASDRunningFormatJobs } from "~/queries/storage/dasd";
-import { DASDDevice, FormatSummary } from "~/types/dasd";
 
-const DeviceProgress = ({ device, progress }: { device: DASDDevice; progress: FormatSummary }) => (
+import type { Device } from "~/model/system/dasd";
+
+/**
+ * Summary of an ongoing DASD formatting operation for a single device.
+ *
+ * It is received from the installer client via the `DASDFormatChanged` event
+ * and represents the current formatting state of one DASD device.
+ */
+type FormatSummary = {
+  /**
+   * The channel identifier of the DASD device (e.g. "0.0.0200").
+   */
+  channel: Device["channel"];
+  /**
+   * Total number of cylinders to be formatted.
+   */
+  totalCylinders: number;
+  /**
+   * Number of cylinders that have already been formatted.
+   */
+  formattedCylinders: number;
+  /**
+   * Whether the formatting operation has completed.
+   */
+  finished: boolean;
+};
+
+/**
+ * Renders a small progress bar for a single DASD formatting operation.
+ */
+const DeviceProgress = ({ progress }: { progress: FormatSummary }) => (
   <Progress
-    key={`progress_${device.id}`}
     size="sm"
-    max={progress.total}
-    value={progress.step}
-    title={`${device.id} - ${device.deviceName}`}
     measureLocation="none"
-    variant={progress.done ? "success" : undefined}
+    max={progress.totalCylinders}
+    value={progress.formattedCylinders}
+    title={progress.channel}
+    variant={progress.finished ? "success" : undefined}
   />
 );
 
+/**
+ * Displays progress information for currently running DASD format operations.
+ *
+ * The component subscribes to the installer client's `DASDFormatChanged` events
+ * and updates its internal state accordingly.
+ *
+ * Rendering behavior:
+ * - If no formatting operations are running, nothing is rendered.
+ * - If at least one formatting summary is present, a progress card is shown.
+ *
+ * The component automatically unsubscribes from installer events when unmounted.
+ */
 export default function DASDFormatProgress() {
-  const devices = useDASDDevices();
-  const runningJobs = useDASDRunningFormatJobs().filter(
-    (job) => Object.keys(job.summary || {}).length > 0,
-  );
+  const client = useInstallerClient();
+  const [progress, setProgress] = useState<FormatSummary[]>([]);
+
+  useEffect(() => {
+    if (!client) return;
+
+    return client.onEvent((event) => {
+      if (event.type === "DASDFormatChanged") {
+        setProgress(sortCollection(event.summary, "asc", (p) => p.channel));
+      }
+
+      if (event.type === "DASDFormatFinished") {
+        setProgress([]);
+      }
+    });
+  }, [client]);
+
+  if (progress.length === 0) {
+    return null;
+  }
 
   return (
-    <Popup title={_("Formatting DASD devices")} isOpen={runningJobs.length > 0} disableFocusTrap>
-      <Stack hasGutter className="dasd-format-progress">
-        {runningJobs.map((job) =>
-          Object.entries(job.summary).map(([id, progress]) => {
-            const device = devices.find((d) => d.id === id);
-            return (
-              <DeviceProgress key={`${id}-format-progress`} device={device} progress={progress} />
-            );
-          }),
-        )}
-      </Stack>
-    </Popup>
+    <Card isPlain>
+      <CardTitle>{_("Formatting devices")}</CardTitle>
+      <CardBody>
+        <Stack hasGutter>
+          {progress.map((p) => {
+            return <DeviceProgress key={`${p.channel}-format-progress`} progress={p} />;
+          })}
+        </Stack>
+      </CardBody>
+    </Card>
   );
 }

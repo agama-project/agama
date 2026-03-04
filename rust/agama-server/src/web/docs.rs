@@ -22,23 +22,10 @@ use utoipa::openapi::{Components, Info, InfoBuilder, OpenApi, OpenApiBuilder, Pa
 
 mod config;
 pub use config::ConfigApiDocBuilder;
-mod hostname;
-pub use hostname::HostnameApiDocBuilder;
-mod storage;
-pub use storage::StorageApiDocBuilder;
-mod bootloader;
-pub use bootloader::BootloaderApiDocBuilder;
 mod profile;
 pub use profile::ProfileApiDocBuilder;
-mod manager;
-pub use manager::ManagerApiDocBuilder;
-mod users;
-pub use users::UsersApiDocBuilder;
 mod misc;
 pub use misc::MiscApiDocBuilder;
-mod scripts;
-pub use scripts::ScriptsApiDocBuilder;
-pub mod common;
 
 pub trait ApiDocBuilder {
     fn title(&self) -> String {

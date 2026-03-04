@@ -27,16 +27,30 @@ Url:            https://github.com/agama-project/agama
 Source0:        agama.tar
 Source1:        vendor.tar.zst
 
+# zypp-c-api dependencies
+BuildRequires: gcc
+BuildRequires: gcc-c++
+BuildRequires: make
+BuildRequires: libzypp-devel
+BuildRequires: libsuseconnect
+# do not build on 32bits, the dependant libsuseconnect is 64bit only
+ExcludeArch:    %ix86 s390 ppc64
+
 # defines the "limit_build" macro used in the "build" section below
 BuildRequires:  memory-constraints
 BuildRequires:  cargo-packaging
 BuildRequires:  pkgconfig(openssl)
+# for msgfmt
+BuildRequires:  gettext-runtime
 # used in tests for dbus service
 BuildRequires:  dbus-1-common
 Requires:       dbus-1-common
 BuildRequires:  dbus-1-daemon
 BuildRequires:  clang-devel
 BuildRequires:  pkgconfig(pam)
+# includes findmnt
+BuildRequires:  util-linux-systemd
+Requires:       util-linux-systemd
 # required by autoinstallation
 BuildRequires:  jsonnet
 Requires:       jsonnet
@@ -59,6 +73,9 @@ BuildRequires:  python-langtable-data
 Requires:       python-langtable-data
 # dependency on the YaST part of Agama
 Requires:       agama-yast
+Requires:       agama-common
+# required for importing SSL certificates
+Requires:       ca-certificates
 
 %description
 Agama is a service-based Linux installer. It is composed of an HTTP-based API,
@@ -76,6 +93,18 @@ Url:            https://github.com/agama-project/agama
 Agama is a service-based Linux installer. This package contains the
 auto-installation service.
 
+%package -n agama-common
+#               This will be set by osc services, that will run after this.
+Version:        0
+Release:        0
+Summary:        Common files for Agama server and CLI.
+License:        GPL-2.0-only
+Url:            https://github.com/agama-project/agama
+
+%description -n agama-common
+Files that are needed by the Agama server and the command-line interface, like
+the JSON schemas or the Jsonnet libraries.
+
 %package -n agama-cli
 #               This will be set by osc services, that will run after this.
 Version:        0
@@ -83,6 +112,7 @@ Release:        0
 Summary:        Agama command-line interface
 License:        GPL-2.0-only
 Url:            https://github.com/agama-project/agama
+Requires:       agama-common
 
 %description -n agama-cli
 Command line program to interact with the Agama installer.
@@ -150,6 +180,7 @@ cargo run --package xtask -- manpages
 gzip out/man/*
 cargo run --package xtask -- completions
 cargo run --package xtask -- openapi
+make -C po
 
 %install
 env \
@@ -163,6 +194,7 @@ env \
   libexecdir=%{_libexecdir} \
   mandir=%{_mandir} \
   %{_builddir}/agama/install.sh
+%find_lang agama
 
 %check
 PATH=$PWD/share/bin:$PATH
@@ -174,7 +206,7 @@ echo $PATH
 %endif
 
 %pre
-%service_add_pre agama-web-server.service
+%service_add_pre agama-web-server.service agama-proxy-setup.service
 
 %pre -n agama-autoinstall
 %service_add_pre agama-autoinstall.service
@@ -183,7 +215,7 @@ echo $PATH
 %service_add_pre agama-scripts.service
 
 %post
-%service_add_post agama-web-server.service
+%service_add_post agama-web-server.service agama-proxy-setup.service
 
 %post -n agama-autoinstall
 %service_add_post agama-autoinstall.service
@@ -192,7 +224,7 @@ echo $PATH
 %service_add_post agama-scripts.service
 
 %preun
-%service_del_preun agama-web-server.service
+%service_del_preun agama-web-server.service agama-proxy-setup.service
 
 %preun -n agama-autoinstall
 %service_del_preun agama-autoinstall.service
@@ -201,7 +233,7 @@ echo $PATH
 %service_del_preun agama-scripts.service
 
 %postun
-%service_del_postun_with_restart agama-web-server.service
+%service_del_postun_with_restart agama-web-server.service agama-proxy-setup.service
 
 %postun -n agama-autoinstall
 %service_del_postun_with_restart agama-autoinstall.service
@@ -209,12 +241,27 @@ echo $PATH
 %postun -n agama-scripts
 %service_del_postun_with_restart agama-scripts.service
 
-%files
+%files -f agama.lang
 %doc README.md
 %license LICENSE
 %{_bindir}/agama-web-server
+%{_bindir}/agama-proxy-setup
 %{_pam_vendordir}/agama
 %{_unitdir}/agama-web-server.service
+%{_unitdir}/agama-proxy-setup.service
+%dir %{_datadir}/agama/eula
+
+%files -n agama-common
+%dir %{_datadir}/agama/jsonnet
+%{_datadir}/agama/jsonnet/agama.libsonnet
+%dir %{_datadir}/agama/schema
+%{_datadir}/agama/schema/dasd.schema.json
+%{_datadir}/agama/schema/iscsi.schema.json
+%{_datadir}/agama/schema/profile.schema.json
+%{_datadir}/agama/schema/software.schema.json
+%{_datadir}/agama/schema/storage.schema.json
+%{_datadir}/agama/schema/storage.model.schema.json
+%{_datadir}/agama/schema/zfcp.schema.json
 
 %files -n agama-autoinstall
 %{_bindir}/agama-autoinstall
@@ -222,12 +269,6 @@ echo $PATH
 
 %files -n agama-cli
 %{_bindir}/agama
-%dir %{_datadir}/agama-cli
-%{_datadir}/agama-cli/agama.libsonnet
-%{_datadir}/agama-cli/iscsi.schema.json
-%{_datadir}/agama-cli/profile.schema.json
-%{_datadir}/agama-cli/storage.schema.json
-%{_datadir}/agama-cli/storage.model.schema.json
 %{_mandir}/man1/agama*1%{?ext_man}
 
 %files -n agama-cli-bash-completion

@@ -19,27 +19,31 @@
 // find current contact information at www.suse.com.
 
 use crate::api::progress::Progress;
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 
 // Information about the status of the installation.
-#[derive(Serialize, utoipa::ToSchema)]
+#[derive(Clone, Debug, Default, Deserialize, Serialize, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct Status {
-    /// State of the installation
-    pub state: State,
-    #[serde(skip_serializing_if = "Vec::is_empty")]
+    /// Stage of the installation
+    pub stage: Stage,
     /// Active progresses
     pub progresses: Vec<Progress>,
 }
 
 /// Represents the current state of the installation process.
-#[derive(Clone, Serialize, utoipa::ToSchema)]
+#[derive(
+    Clone, Copy, Debug, Default, Deserialize, Serialize, PartialEq, strum::Display, utoipa::ToSchema,
+)]
 #[serde(rename_all = "camelCase")]
-pub enum State {
+pub enum Stage {
+    #[default]
     /// Configuring the installation
     Configuring,
     /// Installing the system
     Installing,
     /// Installation finished
     Finished,
+    /// Installation failed
+    Failed,
 }

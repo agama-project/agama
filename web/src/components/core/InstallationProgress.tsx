@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2024] SUSE LLC
+ * Copyright (c) [2022-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -21,22 +21,36 @@
  */
 
 import React from "react";
+import { HelperText, HelperTextItem } from "@patternfly/react-core";
+import Page from "~/components/core/Page";
+import ProgressReport from "~/components/core/ProgressReport";
+import InstallerOptionsMenu from "~/components/core/InstallerOptionsMenu";
+import ProductLogo from "~/components/product/ProductLogo";
+import SplitInfoLayout from "~/components/layout/SplitInfoLayout";
+import { useProductInfo } from "~/hooks/model/config/product";
 import { _ } from "~/i18n";
-import ProgressReport from "./ProgressReport";
-import { InstallationPhase } from "~/types/status";
-import { ROOT as PATHS } from "~/routes/paths";
-import { Navigate } from "react-router";
-import { useInstallerStatus, useInstallerStatusChanges } from "~/queries/status";
 
-function InstallationProgress() {
-  const { phase } = useInstallerStatus({ suspense: true });
-  useInstallerStatusChanges();
+export default function InstallationProgress() {
+  const product = useProductInfo();
 
-  if (phase !== InstallationPhase.Install) {
-    return <Navigate to={PATHS.root} replace />;
-  }
-
-  return <ProgressReport title={_("Installing the system, please wait...")} />;
+  return (
+    <Page noDefaultStartSlot endSlot={<InstallerOptionsMenu hideLabel />}>
+      <Page.Content>
+        <SplitInfoLayout
+          icon="deployed_code_update"
+          firstRowStart={
+            <>
+              <ProductLogo product={product} width="1.25em" /> {product?.name}
+            </>
+          }
+          firstRowEnd={<ProgressReport />}
+          secondRowStart={
+            <HelperText>
+              <HelperTextItem>{_("Installation in progress")}</HelperTextItem>
+            </HelperText>
+          }
+        />
+      </Page.Content>
+    </Page>
+  );
 }
-
-export default InstallationProgress;

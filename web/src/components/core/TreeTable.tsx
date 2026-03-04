@@ -32,9 +32,10 @@ import {
   TdProps,
   TreeRowWrapper,
 } from "@patternfly/react-table";
+import { TranslatedString } from "~/i18n";
 
 export type TreeTableColumn = {
-  name: string;
+  name: TranslatedString;
   value: (item: object) => React.ReactNode;
   classNames?: string;
 };

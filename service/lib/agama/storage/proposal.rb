@@ -27,6 +27,7 @@ require "agama/storage/config_json_generator"
 require "agama/storage/config_solver"
 require "agama/storage/model_support_checker"
 require "agama/storage/proposal_strategies"
+require "agama/storage/issue_classes"
 require "agama/storage/system"
 require "json"
 require "yast"
@@ -37,6 +38,9 @@ module Agama
     # Class used for calculating a storage proposal.
     class Proposal
       include Yast::I18n
+
+      # @return [Agama::Config]
+      attr_accessor :product_config
 
       # @param product_config [Agama::Config] Agama config
       # @param logger [Logger]
@@ -58,7 +62,7 @@ module Agama
       #
       # @return [Boolean]
       def success?
-        calculated? && !proposal.failed? && issues.none?(&:error?)
+        calculated? && !proposal.failed? && issues.none?
       end
 
       # Default storage config according to the JSON schema.
@@ -96,7 +100,7 @@ module Agama
         config = config(solved: true)
         return unless config && model_supported?(config)
 
-        ConfigConversions::ToModel.new(config).convert
+        ConfigConversions::ToModel.new(config, product_config).convert
       end
 
       # Solves a given model.
@@ -111,7 +115,7 @@ module Agama
           .convert
 
         ConfigSolver.new(product_config, storage_system).solve(config)
-        ConfigConversions::ToModel.new(config).convert
+        ConfigConversions::ToModel.new(config, product_config).convert
       end
 
       # Calculates a new proposal using the given JSON.
@@ -210,9 +214,6 @@ module Agama
 
     private
 
-      # @return [Agama::Config]
-      attr_reader :product_config
-
       # @return [Logger]
       attr_reader :logger
 
@@ -302,8 +303,7 @@ module Agama
       def failed_issue
         Issue.new(
           _("Cannot calculate a valid storage setup with the current configuration"),
-          source:   Issue::Source::SYSTEM,
-          severity: Issue::Severity::ERROR
+          kind: IssueClasses::PROPOSAL
         )
       end
 
@@ -313,9 +313,8 @@ module Agama
       def exception_issue(error)
         Issue.new(
           _("A problem ocurred while calculating the storage setup"),
-          details:  error.message,
-          source:   Issue::Source::SYSTEM,
-          severity: Issue::Severity::ERROR
+          kind:    IssueClasses::PROPOSAL,
+          details: error.message
         )
       end
     end

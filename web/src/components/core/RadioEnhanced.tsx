@@ -23,8 +23,9 @@
 import React from "react";
 import { Content, Radio, RadioProps } from "@patternfly/react-core";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
+import { TranslatedString } from "~/i18n";
 
-type RadioEnhancedProps = Omit<RadioProps, "ref">;
+type RadioEnhancedProps = Omit<RadioProps, "ref"> & { label: TranslatedString };
 
 /**
  * A wrapper around PF/Radio component, intended to ensure a consistent

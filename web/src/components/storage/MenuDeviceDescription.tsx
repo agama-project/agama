@@ -27,7 +27,7 @@ import {
   contentDescription,
   filesystemLabels,
 } from "~/components/storage/utils/device";
-import { StorageDevice } from "~/types/storage";
+import type { Storage } from "~/model/system";
 
 /**
  * Renders the content to be used at a menu entry describing a device.
@@ -35,7 +35,7 @@ import { StorageDevice } from "~/types/storage";
  *
  * @param device - Device to represent
  */
-export default function MenuDeviceDescription({ device }: { device: StorageDevice }) {
+export default function MenuDeviceDescription({ device }: { device: Storage.Device }) {
   return (
     <Stack>
       <Split hasGutter>

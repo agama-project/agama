@@ -18,10 +18,6 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::{
-    message,
-    service::{self, Service},
-};
 use agama_utils::{
     actor::Handler,
     api::{
@@ -31,7 +27,6 @@ use agama_utils::{
     issue, progress,
 };
 use serde::Deserialize;
-use serde_json;
 use std::pin::Pin;
 use tokio::sync::broadcast;
 use tokio_stream::{Stream, StreamExt, StreamMap};
@@ -44,8 +39,6 @@ pub enum Error {
     #[error("Wrong signal data")]
     ProgressChangedData,
     #[error(transparent)]
-    Service(#[from] service::Error),
-    #[error(transparent)]
     Issue(#[from] issue::service::Error),
     #[error(transparent)]
     Progress(#[from] progress::service::Error),
@@ -53,6 +46,8 @@ pub enum Error {
     DBus(#[from] zbus::Error),
     #[error(transparent)]
     Event(#[from] broadcast::error::SendError<Event>),
+    #[error("Storage D-Bus server error: {0}")]
+    DBusClient(#[from] agama_storage_client::Error),
 }
 
 #[proxy(
@@ -104,27 +99,27 @@ impl From<ProgressData> for Progress {
 }
 
 pub struct Monitor {
-    storage: Handler<Service>,
     progress: Handler<progress::Service>,
     issues: Handler<issue::Service>,
     events: event::Sender,
     connection: Connection,
+    storage_dbus: Handler<agama_storage_client::Service>,
 }
 
 impl Monitor {
-    pub fn new(
-        storage: Handler<Service>,
+    pub async fn new(
         progress: Handler<progress::Service>,
         issues: Handler<issue::Service>,
         events: event::Sender,
         connection: Connection,
+        storage_dbus: Handler<agama_storage_client::Service>,
     ) -> Self {
         Self {
-            storage,
             progress,
             issues,
             events,
-            connection,
+            connection: connection.clone(),
+            storage_dbus,
         }
     }
 
@@ -137,6 +132,8 @@ impl Monitor {
 
         tokio::pin!(streams);
 
+        self.update_issues().await?;
+
         while let Some((_, signal)) = streams.next().await {
             self.handle_signal(signal).await?;
         }
@@ -144,12 +141,22 @@ impl Monitor {
         Ok(())
     }
 
+    async fn update_issues(&self) -> Result<(), Error> {
+        let issues = self
+            .storage_dbus
+            .call(agama_storage_client::message::GetIssues)
+            .await?;
+        self.issues
+            .cast(issue::message::Set::new(Scope::Storage, issues))?;
+        Ok(())
+    }
+
     async fn handle_signal(&self, signal: Signal) -> Result<(), Error> {
         match signal {
             Signal::SystemChanged(signal) => self.handle_system_changed(signal)?,
             Signal::ProposalChanged(signal) => self.handle_proposal_changed(signal).await?,
-            Signal::ProgressChanged(signal) => self.handle_progress_changed(signal)?,
-            Signal::ProgressFinished(signal) => self.handle_progress_finished(signal)?,
+            Signal::ProgressChanged(signal) => self.handle_progress_changed(signal).await?,
+            Signal::ProgressFinished(signal) => self.handle_progress_finished(signal).await?,
         }
         Ok(())
     }
@@ -162,21 +169,15 @@ impl Monitor {
         Ok(())
     }
 
-    // TODO: add proposal to the event.
     async fn handle_proposal_changed(&self, _signal: ProposalChanged) -> Result<(), Error> {
         self.events.send(Event::ProposalChanged {
             scope: Scope::Storage,
         })?;
 
-        let issues = self.storage.call(message::GetIssues).await?;
-        self.issues
-            .call(issue::message::Set::new(Scope::Storage, issues))
-            .await?;
-
-        Ok(())
+        self.update_issues().await
     }
 
-    fn handle_progress_changed(&self, signal: ProgressChanged) -> Result<(), Error> {
+    async fn handle_progress_changed(&self, signal: ProgressChanged) -> Result<(), Error> {
         let Ok(args) = signal.args() else {
             return Err(Error::ProgressChangedArgs);
         };
@@ -184,14 +185,16 @@ impl Monitor {
             return Err(Error::ProgressChangedData);
         };
         self.progress
-            .cast(progress::message::Set::new(progress_data.into()))?;
+            .call(progress::message::SetProgress::new(progress_data.into()))
+            .await?;
 
         Ok(())
     }
 
-    fn handle_progress_finished(&self, _signal: ProgressFinished) -> Result<(), Error> {
+    async fn handle_progress_finished(&self, _signal: ProgressFinished) -> Result<(), Error> {
         self.progress
-            .cast(progress::message::Finish::new(Scope::Storage))?;
+            .call(progress::message::Finish::new(Scope::Storage))
+            .await?;
         Ok(())
     }
 
@@ -202,7 +205,7 @@ impl Monitor {
         let stream = proxy
             .receive_system_changed()
             .await?
-            .map(|signal| Signal::SystemChanged(signal));
+            .map(Signal::SystemChanged);
         Ok(Box::pin(stream))
     }
 
@@ -213,7 +216,7 @@ impl Monitor {
         let stream = proxy
             .receive_proposal_changed()
             .await?
-            .map(|signal| Signal::ProposalChanged(signal));
+            .map(Signal::ProposalChanged);
         Ok(Box::pin(stream))
     }
 
@@ -224,7 +227,7 @@ impl Monitor {
         let stream = proxy
             .receive_progress_changed()
             .await?
-            .map(|signal| Signal::ProgressChanged(signal));
+            .map(Signal::ProgressChanged);
         Ok(Box::pin(stream))
     }
 
@@ -235,7 +238,7 @@ impl Monitor {
         let stream = proxy
             .receive_progress_finished()
             .await?
-            .map(|signal| Signal::ProgressFinished(signal));
+            .map(Signal::ProgressFinished);
         Ok(Box::pin(stream))
     }
 }

@@ -12,6 +12,10 @@ icon: Tumbleweed.svg
 # Do not manually change any translations! See README.md for more details.
 translations:
   description:
+    bg: Версия на openSUSE с чисто непрекъснато обновяване, съдържаща най-новите
+      "стабилни" версии на целия софтуер, вместо да разчита на строги периодични
+      цикли на актуализация. Проектът предоставя това на потребителите, искащи
+      най-новия сабилен софтуер.
     ca: Una versió de llançament continuada d'openSUSE que conté les darreres
       versions estables de tot el programari en lloc de dependre de cicles de
       llançament periòdics rígids. El projecte fa això per als usuaris que volen
@@ -24,6 +28,10 @@ translations:
       Versionen der gesamten Software enthält, anstatt sich auf starre
       periodische Veröffentlichungszyklen zu verlassen. Das Projekt tut dies für
       Benutzer, die die neueste, stabile Software wünschen.
+    el: Μια αμιγώς rolling release έκδοση του openSUSE που περιλαμβάνει τις
+      τελευταίες «σταθερές» εκδόσεις όλου του λογισμικού, αντί να βασίζεται σε
+      άκαμπτους περιοδικούς κύκλους κυκλοφορίας. Το έργο το κάνει αυτό για
+      χρήστες που επιθυμούν το πιο πρόσφατο σταθερό λογισμικό.
     es: Una versión de actualización continua pura de openSUSE que contiene las
       últimas versiones "estables" de todo el software en lugar de depender de
       rígidos ciclos de publicaciones periódicas. El proyecto hace esto para
@@ -121,15 +129,12 @@ software:
       archs: ppc
   mandatory_patterns:
     - enhanced_base # only pattern that is shared among all roles on TW
-  optional_patterns: null # no optional pattern shared
+  optional_patterns: [] # no optional pattern shared
   user_patterns:
     - basic_desktop
     - xfce
     - kde
     - gnome
-    - yast2_basis
-    - yast2_desktop
-    - yast2_server
     - multimedia
     - office
     - name: selinux
@@ -139,7 +144,7 @@ software:
     - NetworkManager
     - openSUSE-repos-Tumbleweed
     - sudo-policy-wheel-auth-self # explicit wheel group policy to conform new auth model
-  optional_packages: null
+  optional_packages: []
   base_product: openSUSE
 
 security:

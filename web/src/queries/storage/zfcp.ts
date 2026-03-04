@@ -26,7 +26,7 @@ import {
   fetchZFCPConfig,
   fetchZFCPControllers,
   fetchZFCPDisks,
-} from "~/api/storage/zfcp";
+} from "~/model/storage/zfcp";
 import { useInstallerClient } from "~/context/installer";
 import React from "react";
 import { ZFCPConfig, ZFCPController, ZFCPDisk } from "~/types/zfcp";

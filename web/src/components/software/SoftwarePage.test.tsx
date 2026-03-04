@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2023] SUSE LLC
+ * Copyright (c) [2023-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -21,30 +21,34 @@
  */
 
 import React from "react";
-
 import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import testingPatterns from "./patterns.test.json";
 import testingProposal from "./proposal.test.json";
 import SoftwarePage from "./SoftwarePage";
 
-jest.mock("~/components/product/ProductRegistrationAlert", () => () => (
-  <div>ProductRegistrationAlert Mock</div>
-));
+const mockProposal = jest.fn();
 
-jest.mock("~/queries/issues", () => ({
+jest.mock("~/components/layout/Header", () => () => <div>Header Mock</div>);
+jest.mock("~/components/questions/Questions", () => () => <div>Questions Mock</div>);
+
+jest.mock("~/hooks/model/issue", () => ({
   useIssues: () => [],
 }));
 
-jest.mock("~/queries/software", () => ({
-  usePatterns: () => testingPatterns,
-  useSoftwareProposal: () => testingProposal,
-  useSoftwareProposalChanges: jest.fn(),
-  useRepositories: () => [],
-  useRepositoryMutation: () => ({ mutate: jest.fn() }),
+jest.mock("~/hooks/model/proposal/software", () => ({
+  useProposal: () => mockProposal(),
+}));
+
+jest.mock("~/hooks/model/system/software", () => ({
+  useSystem: () => ({ patterns: testingPatterns }),
 }));
 
 describe("SoftwarePage", () => {
+  beforeEach(() => {
+    mockProposal.mockReturnValue(testingProposal);
+  });
+
   it("renders a list of selected patterns", () => {
     installerRender(<SoftwarePage />);
     screen.getAllByText(/GNOME/);
@@ -52,18 +56,29 @@ describe("SoftwarePage", () => {
     screen.getByText("YaST Desktop Utilities");
     screen.getByText("Multimedia");
     screen.getAllByText(/Office software/);
-    expect(screen.queryByText("KDE")).toBeNull();
-    expect(screen.queryByText("XFCE")).toBeNull();
+    expect(screen.queryByText(/KDE/)).toBeNull();
+    expect(screen.queryByText(/XFCE/)).toBeNull();
     expect(screen.queryByText("YaST Server Utilities")).toBeNull();
   });
 
   it("renders amount of size selected product and patterns will need", () => {
     installerRender(<SoftwarePage />);
-    screen.getByText("Installation will take 4.6 GiB.");
+    screen.getByText("Installation will take 4.60 GiB.");
   });
 
   it("renders a button for navigating to patterns selection", () => {
     installerRender(<SoftwarePage />);
     screen.getByRole("link", { name: "Change selection" });
+  });
+
+  describe("when there is no proposal yet", () => {
+    beforeEach(() => {
+      mockProposal.mockReturnValue(null);
+    });
+
+    it("renders an informative messsage", () => {
+      installerRender(<SoftwarePage />);
+      screen.getByText("No information available yet");
+    });
   });
 });

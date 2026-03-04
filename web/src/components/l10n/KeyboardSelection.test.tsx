@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024] SUSE LLC
+ * Copyright (c) [2024-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -21,41 +21,37 @@
  */
 
 import React from "react";
-import KeyboardSelection from "./KeyboardSelection";
 import userEvent from "@testing-library/user-event";
 import { screen } from "@testing-library/react";
 import { mockNavigateFn, installerRender } from "~/test-utils";
-import { Keymap } from "~/types/l10n";
+import { Keymap } from "~/model/system/l10n";
+import KeyboardSelection from "./KeyboardSelection";
+
+const mockPatchConfigFn = jest.fn();
 
 const keymaps: Keymap[] = [
-  { id: "us", name: "English" },
-  { id: "es", name: "Spanish" },
+  { id: "us", description: "English" },
+  { id: "es", description: "Spanish" },
 ];
-
-const mockUpdateConfigFn = jest.fn();
-
-jest.mock("~/components/product/ProductRegistrationAlert", () => () => (
-  <div>ProductRegistrationAlert Mock</div>
-));
-
-jest.mock("~/queries/system", () => ({
-  ...jest.requireActual("~/queries/system"),
-  useSystem: () => ({ l10n: { keymaps } }),
-}));
-
-jest.mock("~/queries/proposal", () => ({
-  ...jest.requireActual("~/queries/proposal"),
-  useProposal: () => ({ l10n: { keymap: "us" } }),
-}));
-
-jest.mock("~/api/api", () => ({
-  ...jest.requireActual("~/api/api"),
-  updateConfig: (config) => mockUpdateConfigFn(config),
-}));
 
 jest.mock("react-router", () => ({
   ...jest.requireActual("react-router"),
   useNavigate: () => mockNavigateFn,
+}));
+
+jest.mock("~/api", () => ({
+  ...jest.requireActual("~/api"),
+  patchConfig: (config) => mockPatchConfigFn(config),
+}));
+
+jest.mock("~/hooks/model/system/l10n", () => ({
+  ...jest.requireActual("~/hooks/model/system/l10n"),
+  useSystem: () => ({ keymaps }),
+}));
+
+jest.mock("~/hooks/model/proposal/l10n", () => ({
+  ...jest.requireActual("~/hooks/model/proposal/l10n"),
+  useProposal: () => ({ keymap: "us" }),
 }));
 
 it("allows changing the keyboard", async () => {
@@ -65,6 +61,6 @@ it("allows changing the keyboard", async () => {
   await userEvent.click(option);
   const button = await screen.findByRole("button", { name: "Select" });
   await userEvent.click(button);
-  expect(mockUpdateConfigFn).toHaveBeenCalledWith({ l10n: { keymap: "es" } });
+  expect(mockPatchConfigFn).toHaveBeenCalledWith({ l10n: { keymap: "es" } });
   expect(mockNavigateFn).toHaveBeenCalledWith(-1);
 });

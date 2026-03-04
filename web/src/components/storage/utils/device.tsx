@@ -20,45 +20,47 @@
  * find current contact information at www.suse.com.
  */
 
-// @ts-check
-
 import { _ } from "~/i18n";
 import { sprintf } from "sprintf-js";
-import { StorageDevice } from "~/types/storage";
 import { compact } from "~/utils";
+import type { Storage as System } from "~/model/system";
+
+const driveTypeDescription = (device: System.Device): string => {
+  if (device.drive.type === "multipath") {
+    // TRANSLATORS: multipath device type
+    return _("Multipath");
+  }
+
+  if (device.drive.type === "dasd") {
+    // TRANSLATORS: %s is replaced by the device bus ID
+    return sprintf(_("DASD %s"), device.drive.busId);
+  }
+
+  if (device.drive.info.sdCard) {
+    return _("SD Card");
+  }
+
+  const technology = device.drive.transport || device.drive.bus;
+  return technology
+    ? // TRANSLATORS: %s is substituted by the type of disk like "iSCSI" or "SATA"
+      sprintf(_("%s disk"), technology)
+    : _("Disk");
+};
 
 /*
  * Description of the device type.
  */
-const typeDescription = (device: StorageDevice): string | undefined => {
+const typeDescription = (device: System.Device): string | undefined => {
   let type: string;
 
-  switch (device.type) {
-    case "multipath": {
-      // TRANSLATORS: multipath device type
-      type = _("Multipath");
-      break;
-    }
-    case "dasd": {
-      // TRANSLATORS: %s is replaced by the device bus ID
-      type = sprintf(_("DASD %s"), device.busId);
-      break;
-    }
-    case "md": {
+  switch (device.class) {
+    case "mdRaid": {
       // TRANSLATORS: software RAID device, %s is replaced by the RAID level, e.g. RAID-1
-      type = sprintf(_("Software %s"), device.level.toUpperCase());
+      type = sprintf(_("Software %s"), device.md.level.toUpperCase());
       break;
     }
-    case "disk": {
-      if (device.sdCard) {
-        type = _("SD Card");
-      } else {
-        const technology = device.transport || device.bus;
-        type = technology
-          ? // TRANSLATORS: %s is substituted by the type of disk like "iSCSI" or "SATA"
-            sprintf(_("%s disk"), technology)
-          : _("Disk");
-      }
+    case "drive": {
+      type = driveTypeDescription(device);
     }
   }
 
@@ -71,17 +73,18 @@ const typeDescription = (device: StorageDevice): string | undefined => {
  * TODO: there is a lot of room for improvement here, but first we would need
  * device.description (comes from YaST) to be way more granular
  */
-const contentDescription = (device: StorageDevice): string => {
+const contentDescription = (device: System.Device): string => {
   if (device.partitionTable) {
     const type = device.partitionTable.type.toUpperCase();
-    const numPartitions = device.partitionTable.partitions.length;
+    const numPartitions = device.partitions.length;
 
     // TRANSLATORS: disk partition info, %s is replaced by partition table
     // type (MS-DOS or GPT), %d is the number of the partitions
     return sprintf(_("%s with %d partitions"), type, numPartitions);
   }
 
-  if (!!device.model && device.model === device.description) {
+  const model = device.drive?.model;
+  if (!!model && model === device.description) {
     // TRANSLATORS: status message, no existing content was found on the disk,
     // i.e. the disk is completely empty
     return _("No content found");
@@ -95,9 +98,9 @@ const contentDescription = (device: StorageDevice): string => {
 /*
  * Labels of the filesystems included at the device
  */
-const filesystemLabels = (device: StorageDevice): string[] => {
+const filesystemLabels = (device: System.Device): string[] => {
   if (device.partitionTable) {
-    return compact(device.partitionTable.partitions.map((p) => p.filesystem?.label));
+    return compact(device.partitions.map((p) => p.filesystem?.label));
   }
 
   const label = device.filesystem?.label;

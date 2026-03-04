@@ -29,4 +29,4 @@ end
 
 require "agama/storage/zfcp/manager"
 require "agama/storage/zfcp/controller"
-require "agama/storage/zfcp/disk"
+require "agama/storage/zfcp/device"

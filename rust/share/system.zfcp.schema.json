@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "$id": "https://github.com/openSUSE/agama/blob/master/rust/share/system.zfcp.schema.json",
+  "title": "System",
+  "description": "API description of the zFCP system",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["lunScan", "controllers", "devices"],
+  "properties": {
+    "lunScan": {
+      "description": "Whether automatic LUN scan is active in the system.",
+      "type": "boolean"
+    },
+    "controllers": {
+      "description": "zFCP controllers",
+      "type": "array",
+      "items": { "$ref": "#/$defs/controller" }
+    },
+    "devices": {
+      "description": "zFCP devices",
+      "type": "array",
+      "items": { "$ref": "#/$defs/device" }
+    }
+  },
+  "$defs": {
+    "controller": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["channel", "wwpns", "lunScan", "active"],
+      "properties": {
+        "channel": { "type": "string" },
+        "wwpns": {
+          "description": "All available WWPNs.",
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "lunScan": {
+          "description": "Whether the controller automatically scans LUNs.",
+          "type": "boolean"
+        },
+        "active": { "type": "boolean" }
+      }
+    },
+    "device": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["channel", "wwpn", "lun", "active"],
+      "properties": {
+        "channel": { "type": "string" },
+        "wwpn": { "type": "string" },
+        "lun": { "type": "string" },
+        "active": { "type": "boolean" },
+        "deviceName": {
+          "description": "Device name assigned by the kernel once it is active.",
+          "type": "string"
+        }
+      }
+    }
+  }
+}

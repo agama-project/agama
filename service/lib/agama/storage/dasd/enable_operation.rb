@@ -30,6 +30,9 @@ module Agama
       private
 
         def process_dasd(dasd)
+          # Reset #diag_wanted, otherwise the device cannot be enabled again if a {DiagOperation}
+          # for enabling diag failed.
+          dasd.diag_wanted = dasd.use_diag
           # We considered to stop using dasd_configure in favor of directly calling "chzdev -e".
           # That would allow us, for example, to enable all the devices with a single command.
           # But dasd_configure does a couple of extra things we still find valuable:

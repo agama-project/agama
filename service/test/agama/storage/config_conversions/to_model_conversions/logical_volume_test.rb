@@ -23,12 +23,13 @@ require_relative "../../storage_helpers"
 require_relative "./examples"
 require "agama/storage/config_conversions/from_json_conversions/logical_volume"
 require "agama/storage/config_conversions/to_model_conversions/logical_volume"
+require "agama/storage/volume_templates_builder"
 require "y2storage/refinements"
 
 using Y2Storage::Refinements::SizeCasts
 
 describe Agama::Storage::ConfigConversions::ToModelConversions::LogicalVolume do
-  subject { described_class.new(config) }
+  subject { described_class.new(config, volumes) }
 
   let(:config) do
     Agama::Storage::ConfigConversions::FromJSONConversions::LogicalVolume
@@ -45,6 +46,8 @@ describe Agama::Storage::ConfigConversions::ToModelConversions::LogicalVolume do
       stripeSize: stripe_size
     }
   end
+
+  let(:volumes) { Agama::Storage::VolumeTemplatesBuilder.new([]) }
 
   let(:filesystem) { nil }
   let(:size) { nil }

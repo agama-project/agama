@@ -128,6 +128,36 @@ impl From<InvalidMacAddress> for zbus::fdo::Error {
     }
 }
 
+#[derive(Debug, Default, Copy, Clone, PartialEq, Deserialize, Serialize, utoipa::ToSchema)]
+#[serde(rename_all = "camelCase")]
+pub enum LinkLocal {
+    #[default]
+    Default = 0,
+    Auto = 1,
+    Disabled = 2,
+    Enabled = 3,
+    Fallback = 4,
+}
+
+#[derive(Debug, Error)]
+#[error("Invalid link-local value: {0}")]
+pub struct InvalidLinkLocalValue(i32);
+
+impl TryFrom<i32> for LinkLocal {
+    type Error = InvalidLinkLocalValue;
+
+    fn try_from(value: i32) -> Result<Self, Self::Error> {
+        match value {
+            0 => Ok(LinkLocal::Default),
+            1 => Ok(LinkLocal::Auto),
+            2 => Ok(LinkLocal::Disabled),
+            3 => Ok(LinkLocal::Enabled),
+            4 => Ok(LinkLocal::Fallback),
+            _ => Err(InvalidLinkLocalValue(value)),
+        }
+    }
+}
+
 #[skip_serializing_none]
 #[derive(Default, Debug, PartialEq, Clone, Deserialize, Serialize, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
@@ -156,6 +186,7 @@ pub struct IpConfig {
     pub ip6_privacy: Option<i32>,
     pub dns_priority4: Option<i32>,
     pub dns_priority6: Option<i32>,
+    pub link_local4: LinkLocal,
 }
 
 #[skip_serializing_none]

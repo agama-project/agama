@@ -1,0 +1,41 @@
+[Unit]
+Description=Interactive network configuration in initrd
+DefaultDependencies=no
+
+# see https://man7.org/linux/man-pages/man7/dracut.bootup.7.html
+# for the dependency order of the dracut services
+
+# after NetworkManager is started and network configured
+After=network-online.target
+# after the console is initialized
+After=systemd-vconsole-setup.service
+# before running the pre-pivot dracut hooks (before the driver update),
+# before the self-update and before displaying the Plymouth splash screen
+Before=dracut-pre-pivot.service live-self-update.service plymouth-start.service
+
+ConditionKernelCommandLine=live.net_config_tui=1
+
+[Service]
+Type=oneshot
+
+# disable the kernel output on the console
+ExecStartPre=dmesg --console-off
+# disable the systemd status messages on the console
+ExecStartPre=kill -SIGRTMIN+21 1
+
+ExecStart=initrd-network-setup.sh
+
+# enable back the kernel output on the console
+ExecStartPost=dmesg --console-on
+# enable back the systemd status messages on the console
+ExecStartPost=kill -SIGRTMIN+20 1
+
+Environment=TERM=linux
+
+StandardInput=tty
+StandardOutput=tty
+TimeoutStartSec=infinity
+RemainAfterExit=true
+
+[Install]
+WantedBy=initrd.target

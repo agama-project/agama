@@ -21,7 +21,6 @@
 //! Implements the web service state.
 
 use super::config::ServiceConfig;
-use agama_lib::http;
 use agama_utils::api::event;
 use std::path::PathBuf;
 
@@ -32,6 +31,5 @@ use std::path::PathBuf;
 pub struct ServiceState {
     pub config: ServiceConfig,
     pub events: event::Sender,
-    pub old_events: http::event::OldSender,
     pub public_dir: PathBuf,
 }

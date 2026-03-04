@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2023-2025] SUSE LLC
+ * Copyright (c) [2023-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -21,34 +21,61 @@
  */
 
 import React from "react";
-import { Content } from "@patternfly/react-core";
-import { Page } from "~/components/core";
-import DASDTable from "./DASDTable";
-import DASDFormatProgress from "./DASDFormatProgress";
-import { useDASDDevicesChanges, useDASDFormatJobChanges } from "~/queries/storage/dasd";
-import { STORAGE as PATHS } from "~/routes/paths";
+import { isEmpty } from "radashi";
+import { EmptyState, EmptyStateBody } from "@patternfly/react-core";
+import Page from "~/components/core/Page";
+import DASDTable from "~/components/storage/dasd/DASDTable";
+import DASDFormatProgress from "~/components/storage/dasd/DASDFormatProgress";
+import { useSystem } from "~/hooks/model/system/dasd";
+import { STORAGE } from "~/routes/paths";
 import { _ } from "~/i18n";
 
-export default function DASDPage() {
-  useDASDDevicesChanges();
-  useDASDFormatJobChanges();
-
+/**
+ * Renders a PatternFly `EmptyState` block used when no DASD devices are detected
+ * on the host machine.
+ */
+const NoDevicesAvailable = () => {
   return (
-    <Page>
-      <Page.Header>
-        <Content component="h2">{_("DASD")}</Content>
-      </Page.Header>
+    <EmptyState headingLevel="h2" titleText={_("No devices available")} variant="sm">
+      <EmptyStateBody>{_("No DASD devices found in this machine.")}</EmptyStateBody>
+    </EmptyState>
+  );
+};
 
+/**
+ * Data-aware content switcher for the DASD page.
+ *
+ * Reads the device list and renders the content based on it.
+ */
+const DASDPageContent = () => {
+  const { devices = [] } = useSystem() || {};
+
+  if (isEmpty(devices)) {
+    return <NoDevicesAvailable />;
+  }
+
+  return <DASDTable devices={devices} />;
+};
+
+/**
+ * Top-level page component for the DASD storage section.
+ *
+ * Wraps content in the shared `Page` shell which provides breadcrumb navigation
+ * (Storage > DASD) and a standardised content layout. All data concerns are
+ * delegated to internal `DASDPageContent` component.
+ */
+export default function DASDPage() {
+  return (
+    <Page
+      breadcrumbs={[{ label: _("Storage"), path: STORAGE.root }, { label: _("DASD") }]}
+      progress={{
+        scope: "dasd",
+        extraContent: <DASDFormatProgress />,
+      }}
+    >
       <Page.Content>
-        <DASDTable />
-        <DASDFormatProgress />
+        <DASDPageContent />
       </Page.Content>
-
-      <Page.Actions>
-        <Page.Action variant="secondary" navigateTo={PATHS.root}>
-          {_("Back")}
-        </Page.Action>
-      </Page.Actions>
     </Page>
   );
 }

@@ -47,7 +47,7 @@ module Y2Storage
       #
       # @param devicegraph [Devicegraph] see {#devicegraph}
       # @param issues_list [Array<Agama::Issue>] see {#issues_list}
-      # @param partitionables [Array<Agama::Issue>] see {#partitionables}
+      # @param partitionables [Hash{String => Array<Planned::Device>}] see {#partitionables}
       def initialize(devicegraph, issues_list, partitionables)
         @devicegraph = devicegraph
         @issues_list = issues_list
@@ -125,9 +125,9 @@ module Y2Storage
       # @param planned [Planned::Disk, Planned::Partition, Planned::LvmLv]
       # @param config [Agama::Storage::Configs::Btrfs]
       def configure_btrfs(planned, config)
-        # TODO: we need to discuss what to do with transactional systems and the read_only
-        # property. We are not sure whether those things should be configurable by the user.
-        # planned.read_only = config.read_only?
+        # The read_only flag can only be set by the product configuration.
+        # See Agama::Storage::Configs::Btrfs#read_only
+        planned.read_only = config.read_only?
         planned.snapshots = config.snapshots?
         planned.default_subvolume = config.default_subvolume
         planned.subvolumes = config.subvolumes

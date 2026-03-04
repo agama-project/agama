@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2025] SUSE LLC
+ * Copyright (c) [2022-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -23,21 +23,22 @@
 import React from "react";
 import { screen, within } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
-import L10nPage from "~/components/l10n/L10nPage";
-import { Keymap, Locale, Timezone } from "~/types/l10n";
-import { System } from "~/types/system";
-import { Proposal } from "~/types/proposal";
+import { useSystem } from "~/hooks/model/system/l10n";
+import { useProposal } from "~/hooks/model/proposal/l10n";
+import { Keymap, Locale, Timezone } from "~/model/system/l10n";
+import L10nPage from "./L10nPage";
 
-let mockSystemData: System;
-let mockProposedData: Proposal;
+let mockSystemData: ReturnType<typeof useSystem>;
+let mockProposedData: ReturnType<typeof useProposal>;
+
 const locales: Locale[] = [
-  { id: "en_US.UTF-8", name: "English", territory: "United States" },
-  { id: "es_ES.UTF-8", name: "Spanish", territory: "Spain" },
+  { id: "en_US.UTF-8", language: "English", territory: "United States" },
+  { id: "es_ES.UTF-8", language: "Spanish", territory: "Spain" },
 ];
 
 const keymaps: Keymap[] = [
-  { id: "us", name: "English" },
-  { id: "es", name: "Spanish" },
+  { id: "us", description: "English" },
+  { id: "es", description: "Spanish" },
 ];
 
 const timezones: Timezone[] = [
@@ -45,38 +46,31 @@ const timezones: Timezone[] = [
   { id: "Europe/Madrid", parts: ["Europe", "Madrid"], country: "Spain", utcOffset: 120 },
 ];
 
-jest.mock("~/components/product/ProductRegistrationAlert", () => () => (
-  <div>ProductRegistrationAlert Mock</div>
+jest.mock("~/components/core/InstallerL10nOptions", () => () => (
+  <div>InstallerL10nOptions Mock</div>
 ));
 
-jest.mock("~/components/core/InstallerOptions", () => () => <div>InstallerOptions Mock</div>);
-
-jest.mock("~/queries/system", () => ({
+jest.mock("~/hooks/model/system/l10n", () => ({
+  ...jest.requireActual("~/hooks/model/system/l10n"),
   useSystem: () => mockSystemData,
 }));
 
-jest.mock("~/queries/proposal", () => ({
+jest.mock("~/hooks/model/proposal/l10n", () => ({
+  ...jest.requireActual("~/hooks/model/proposal/l10n"),
   useProposal: () => mockProposedData,
 }));
 
 beforeEach(() => {
   mockSystemData = {
-    l10n: {
-      locales,
-      keymaps,
-      timezones,
-    },
+    locales,
+    keymaps,
+    timezones,
   };
 
   mockProposedData = {
-    l10n: {
-      locales,
-      keymaps,
-      timezones,
-      locale: "en_US.UTF-8",
-      keymap: "us",
-      timezone: "Europe/Berlin",
-    },
+    locale: "en_US.UTF-8",
+    keymap: "us",
+    timezone: "Europe/Berlin",
   };
 });
 
@@ -84,7 +78,7 @@ it("renders an clarification about settings", () => {
   installerRender(<L10nPage />);
   screen.getByText(/These are the settings for the product to install/);
   screen.getByText(/The installer language and keyboard layout can be adjusted via/);
-  screen.getByText("InstallerOptions Mock");
+  screen.getByText("InstallerL10nOptions Mock");
 });
 
 it("renders a section for configuring the language", () => {
@@ -96,7 +90,7 @@ it("renders a section for configuring the language", () => {
 
 describe("if the language selected is wrong", () => {
   beforeEach(() => {
-    mockProposedData.l10n.locale = "us_US.UTF-8";
+    mockProposedData.locale = "us_US.UTF-8";
   });
 
   it("renders a button for selecting a language", () => {
@@ -116,7 +110,7 @@ it("renders a section for configuring the keyboard", () => {
 
 describe("if the keyboard selected is wrong", () => {
   beforeEach(() => {
-    mockProposedData.l10n.keymap = "ess";
+    mockProposedData.keymap = "ess";
   });
 
   it("renders a button for selecting a keyboard", () => {
@@ -136,7 +130,7 @@ it("renders a section for configuring the time zone", () => {
 
 describe("if the time zone selected is wrong", () => {
   beforeEach(() => {
-    mockProposedData.l10n.timezone = "Europee/Beeerlin";
+    mockProposedData.timezone = "Europee/Beeerlin";
   });
 
   it("renders a button for selecting a time zone", () => {

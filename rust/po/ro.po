@@ -1,0 +1,188 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR SuSE Linux Products GmbH, Nuernberg
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-02-25 13:04+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: none\n"
+"Language: ro\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=n==1 ? 0 : (n==0 || (n%100 > 0 && n%100 < "
+"20)) ? 1 : 2;\n"
+
+#: agama-autoinstall/src/questions.rs:41 agama-utils/src/api/question.rs:292
+#: agama-utils/src/question/start.rs:54
+msgid "No"
+msgstr ""
+
+#: agama-autoinstall/src/questions.rs:41 agama-utils/src/api/question.rs:292
+#: agama-utils/src/question/start.rs:54
+msgid "Yes"
+msgstr ""
+
+#: agama-manager/src/tasks/runner.rs:185
+msgid "Prepare the system"
+msgstr ""
+
+#: agama-manager/src/tasks/runner.rs:186
+msgid "Install software"
+msgstr ""
+
+#: agama-manager/src/tasks/runner.rs:187
+msgid "Configure the system"
+msgstr ""
+
+#: agama-manager/src/tasks/runner.rs:285
+msgid "Storing security settings"
+msgstr ""
+
+#: agama-manager/src/tasks/runner.rs:286
+msgid "Setting up the hostname"
+msgstr ""
+
+#: agama-manager/src/tasks/runner.rs:287
+msgid "Setting up the network proxy"
+msgstr ""
+
+#: agama-manager/src/tasks/runner.rs:288
+msgid "Importing user files"
+msgstr ""
+
+#: agama-manager/src/tasks/runner.rs:289
+msgid "Running user pre-installation scripts"
+msgstr ""
+
+#: agama-manager/src/tasks/runner.rs:290
+msgid "Storing questions settings"
+msgstr ""
+
+#: agama-manager/src/tasks/runner.rs:291
+msgid "Storing localization settings"
+msgstr ""
+
+#: agama-manager/src/tasks/runner.rs:292
+msgid "Storing users settings"
+msgstr ""
+
+#: agama-manager/src/tasks/runner.rs:293
+msgid "Configuring iSCSI devices"
+msgstr ""
+
+#: agama-manager/src/tasks/runner.rs:297
+msgid "Configuring DASD devices"
+msgstr ""
+
+#: agama-manager/src/tasks/runner.rs:301
+msgid "Setting up the network"
+msgstr ""
+
+#: agama-manager/src/tasks/runner.rs:306
+msgid "Preparing the software proposal"
+msgstr ""
+
+#: agama-manager/src/tasks/runner.rs:307
+msgid "Preparing the storage proposal"
+msgstr ""
+
+#: agama-manager/src/tasks/runner.rs:308
+msgid "Storing bootloader settings"
+msgstr ""
+
+#: agama-network/src/service.rs:518
+msgid "Writing configuration"
+msgstr ""
+
+#: agama-network/src/service.rs:519
+msgid "Reading configuration"
+msgstr ""
+
+#: agama-security/src/service.rs:226
+msgid "Reject"
+msgstr ""
+
+#: agama-security/src/service.rs:226
+#: agama-software/src/callbacks/security.rs:109
+msgid "Trust"
+msgstr ""
+
+#: agama-security/src/service.rs:227
+msgid ""
+"Trying to import a self-signed certificate. Do you want to trust it and "
+"register the product?"
+msgstr ""
+
+#: agama-software/src/callbacks/commit_download.rs:48
+#: agama-software/src/callbacks/install.rs:56
+msgid "Ignore"
+msgstr ""
+
+#: agama-software/src/callbacks/commit_download.rs:48
+#: agama-software/src/callbacks/install.rs:56
+#: agama-software/src/callbacks/install.rs:81
+msgid "Retry"
+msgstr ""
+
+#: agama-software/src/callbacks/install.rs:78
+msgid "There was a problem running a package script."
+msgstr ""
+
+#: agama-software/src/callbacks/install.rs:81
+msgid "Continue"
+msgstr ""
+
+#. TRANSLATORS: substituting: key ID, (key name), fingerprint
+#: agama-software/src/callbacks/security.rs:102
+#, rust-format
+msgid ""
+"The key {0} ({1}) with fingerprint {2} is unknown. Do you want to trust this "
+"key?"
+msgstr ""
+
+#: agama-software/src/callbacks/security.rs:109
+msgid "Skip"
+msgstr ""
+
+#: agama-software/src/zypp_server.rs:317
+msgid "Updating the list of repositories"
+msgstr ""
+
+#: agama-software/src/zypp_server.rs:318
+msgid "Refreshing metadata from the repositories"
+msgstr ""
+
+#: agama-software/src/zypp_server.rs:319
+msgid "Calculating the software proposal"
+msgstr ""
+
+#: agama-software/src/zypp_server.rs:322
+msgid "Registering the system"
+msgstr ""
+
+#: agama-software/src/zypp_server.rs:420
+msgid "The product must be registered"
+msgstr ""
+
+#: agama-software/src/zypp_server.rs:458
+msgid "There are conflicts in software selection"
+msgstr ""
+
+#: agama-software/src/zypp_server.rs:471
+msgid "There are software conflict in software selection"
+msgstr ""
+
+#: agama-users/src/service.rs:140
+msgid ""
+"Defining a user, setting the root password or a SSH public key is required"
+msgstr ""
+
+#: agama-users/src/service.rs:153
+msgid "First user information is incomplete"
+msgstr ""

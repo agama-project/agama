@@ -30,7 +30,7 @@ import {
   removeFirstUser,
   updateFirstUser,
   updateRoot,
-} from "~/api/users";
+} from "~/model/users";
 
 /**
  * Returns a query for retrieving the first user configuration

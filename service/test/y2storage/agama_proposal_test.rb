@@ -189,6 +189,12 @@ describe Y2Storage::AgamaProposal do
 
   let(:scenario) { "empty-hd-50GiB.yaml" }
 
+  before do
+    # To speed-up the tests
+    allow(Y2Storage::BootRequirementsStrategies::Analyzer)
+      .to receive(:bls_bootloader_proposed?).and_return(false)
+  end
+
   describe "#propose" do
     context "when only the root partition is specified" do
       let(:config) { default_config }
@@ -412,8 +418,7 @@ describe Y2Storage::AgamaProposal do
         it "reports the corresponding error" do
           proposal.propose
           expect(proposal.issues_list).to include an_object_having_attributes(
-            description: /method 'Regular LUKS2' is not available/,
-            severity:    Agama::Issue::Severity::ERROR
+            description: /method 'Regular LUKS2' is not available/
           )
         end
       end
@@ -429,8 +434,7 @@ describe Y2Storage::AgamaProposal do
         it "reports the corresponding error" do
           proposal.propose
           expect(proposal.issues_list).to include an_object_having_attributes(
-            description: /'Encryption with Volatile Random Key' is not a suitable method/,
-            severity:    Agama::Issue::Severity::ERROR
+            description: /'Encryption with Volatile Random Key' is not a suitable method/
           )
         end
       end
@@ -450,8 +454,7 @@ describe Y2Storage::AgamaProposal do
         it "reports the corresponding error" do
           proposal.propose
           expect(proposal.issues_list).to include an_object_having_attributes(
-            description: /No passphrase provided/,
-            severity:    Agama::Issue::Severity::ERROR
+            description: /No passphrase provided/
           )
         end
       end
@@ -494,8 +497,7 @@ describe Y2Storage::AgamaProposal do
         it "registers a critical issue" do
           proposal.propose
           expect(proposal.issues_list).to include an_object_having_attributes(
-            description: "Mandatory drive not found",
-            severity:    Agama::Issue::Severity::ERROR
+            description: "Mandatory drive not found"
           )
         end
       end
@@ -588,8 +590,7 @@ describe Y2Storage::AgamaProposal do
         it "registers a critical issue" do
           proposal.propose
           expect(proposal.issues_list).to include an_object_having_attributes(
-            description: "Mandatory partition not found",
-            severity:    Agama::Issue::Severity::ERROR
+            description: "Mandatory partition not found"
           )
         end
       end

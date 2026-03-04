@@ -44,7 +44,7 @@ describe Agama::Storage::ISCSI::ConfigImporter do
 
       it "sets #targets to the expected value" do
         config = subject.import
-        expect(config.targets).to be_nil
+        expect(config.targets).to eq([])
       end
     end
 

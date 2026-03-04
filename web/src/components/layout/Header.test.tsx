@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024-2025] SUSE LLC
+ * Copyright (c) [2024-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -21,9 +21,9 @@
  */
 
 import React from "react";
-import { screen, within } from "@testing-library/react";
-import { plainRender, installerRender } from "~/test-utils";
-import { Product } from "~/types/software";
+import { screen } from "@testing-library/react";
+import { plainRender } from "~/test-utils";
+import type { Product } from "~/model/system";
 import Header from "./Header";
 
 const tumbleweed: Product = {
@@ -31,44 +31,18 @@ const tumbleweed: Product = {
   name: "openSUSE Tumbleweed",
   description: "Tumbleweed description...",
   registration: false,
+  modes: [],
 };
 
-const microos: Product = {
-  id: "MicroOS",
-  name: "openSUSE MicroOS",
-  description: "MicroOS description",
-  registration: false,
-};
-
-jest.mock("~/components/core/InstallerOptions", () => () => <div>Installer Options Mock</div>);
-jest.mock("~/components/core/InstallButton", () => () => <div>Install Button Mock</div>);
-
-jest.mock("~/queries/software", () => ({
-  useProduct: () => ({
-    products: [tumbleweed, microos],
-    selectedProduct: tumbleweed,
-  }),
-  useRegistration: () => undefined,
+jest.mock("~/hooks/model/config/product", () => ({
+  ...jest.requireActual("~/hooks/model/config/product"),
+  useProductInfo: (): Product => tumbleweed,
 }));
 
 describe("Header", () => {
-  it("renders the product name unless showProductName is set to false", () => {
-    const { rerender } = plainRender(<Header />);
+  it("renders given title as heading level 1", () => {
+    plainRender(<Header title={tumbleweed.name} />);
     screen.getByRole("heading", { name: tumbleweed.name, level: 1 });
-    rerender(<Header />);
-    screen.getByRole("heading", { name: tumbleweed.name, level: 1 });
-    rerender(<Header showProductName={false} />);
-    expect(screen.queryByRole("heading", { name: tumbleweed.name, level: 1 })).toBeNull();
-  });
-
-  it("mounts the Install button", () => {
-    plainRender(<Header />);
-    screen.getByText("Install Button Mock");
-  });
-
-  it("mounts InstallerOptions", () => {
-    plainRender(<Header />);
-    screen.getByText("Installer Options Mock");
   });
 
   it("renders skip to content link", async () => {
@@ -76,25 +50,30 @@ describe("Header", () => {
     screen.getByRole("link", { name: "Skip to content" });
   });
 
-  it("does not render skip to content link when showSkipToContent is false", async () => {
-    plainRender(<Header showSkipToContent={false} />);
+  it("does not render skip to content link when hideSkipToContent is truthy", async () => {
+    const { rerender } = plainRender(<Header hideSkipToContent />);
     expect(screen.queryByRole("link", { name: "Skip to content" })).toBeNull();
+    rerender(<Header hideSkipToContent={false} />);
+    screen.queryByRole("link", { name: "Skip to content" });
   });
 
-  it("renders an options dropdown by default", async () => {
-    const { user } = installerRender(<Header />);
-    expect(screen.queryByRole("menu")).toBeNull();
-    const toggler = screen.getByRole("button", { name: "Options toggle" });
-    await user.click(toggler);
-    const menu = screen.getByRole("menu");
-    within(menu).getByRole("menuitem", { name: "Change product" });
-    within(menu).getByRole("menuitem", { name: "Download logs" });
-  });
+  it("renders given content for slots", () => {
+    plainRender(
+      <Header
+        title="Storage"
+        startSlot={<div role="progressbar" aria-label="Installation progress" />}
+        centerSlot={
+          <div role="menu" aria-label="Page actions">
+            <button role="menuitem">Export configuration</button>
+            <button role="menuitem">Advanced settings</button>
+          </div>
+        }
+        endSlot={<button>Install</button>}
+      />,
+    );
 
-  it("does not render an options dropdown when showInstallerOptions is false", async () => {
-    installerRender(<Header showInstallerOptions={false} />);
-    expect(screen.queryByRole("button", { name: "Options toggle" })).toBeNull();
+    screen.getByRole("progressbar", { name: "Installation progress" });
+    screen.getByRole("menu", { name: "Page actions" });
+    screen.getByRole("button", { name: "Install" });
   });
-
-  it.todo("allows downloading the logs");
 });

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024-2025] SUSE LLC
+ * Copyright (c) [2024-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -24,9 +24,9 @@ import React from "react";
 import { redirect } from "react-router";
 import { N_ } from "~/i18n";
 import { Route } from "~/types/routes";
-import BootSelection from "~/components/storage/BootSelection";
+import BootSelectionPage from "~/components/storage/BootSelectionPage";
 import EncryptionSettingsPage from "~/components/storage/EncryptionSettingsPage";
-import SpacePolicySelection from "~/components/storage/SpacePolicySelection";
+import SpacePolicySelectionPage from "~/components/storage/SpacePolicySelectionPage";
 import ProposalPage from "~/components/storage/ProposalPage";
 import ISCSIPage from "~/components/storage/ISCSIPage";
 import FormattableDevicePage from "~/components/storage/FormattableDevicePage";
@@ -36,10 +36,14 @@ import LogicalVolumePage from "~/components/storage/LogicalVolumePage";
 import ZFCPPage from "~/components/storage/zfcp/ZFCPPage";
 import ZFCPDiskActivationPage from "~/components/storage/zfcp/ZFCPDiskActivationPage";
 import DASDPage from "~/components/storage/dasd/DASDPage";
+import TargetLoginPage from "~/components/storage/iscsi/TargetLoginPage";
+import DiscoverFormPage from "~/components/storage/iscsi/DiscoverFormPage";
 import DeviceSelectorPage from "~/components/storage/DeviceSelectorPage";
-import { supportedDASD, probeDASD } from "~/api/storage/dasd";
-import { probeZFCP, supportedZFCP } from "~/api/storage/zfcp";
+// FIXME: adapt to new API
+// import { supportedDASD, probeDASD } from "~/model/storage/dasd";
+import { probeZFCP, supportedZFCP } from "~/model/storage/zfcp";
 import { STORAGE as PATHS } from "~/routes/paths";
+import InitiatorFormPage from "~/components/storage/iscsi/InitiatorFormPage";
 
 const routes = (): Route => ({
   path: PATHS.root,
@@ -51,7 +55,7 @@ const routes = (): Route => ({
     },
     {
       path: PATHS.editBootDevice,
-      element: <BootSelection />,
+      element: <BootSelectionPage />,
     },
     {
       path: PATHS.selectDevice,
@@ -63,7 +67,7 @@ const routes = (): Route => ({
     },
     {
       path: PATHS.editSpacePolicy,
-      element: <SpacePolicySelection />,
+      element: <SpacePolicySelectionPage />,
     },
     {
       path: PATHS.formatDevice,
@@ -94,18 +98,30 @@ const routes = (): Route => ({
       element: <LogicalVolumePage />,
     },
     {
-      path: PATHS.iscsi,
+      path: PATHS.iscsi.root,
       element: <ISCSIPage />,
-      handle: { name: N_("iSCSI") },
+    },
+    {
+      path: PATHS.iscsi.initiator,
+      element: <InitiatorFormPage />,
+    },
+    {
+      path: PATHS.iscsi.discover,
+      element: <DiscoverFormPage />,
+    },
+    {
+      path: PATHS.iscsi.login,
+      element: <TargetLoginPage />,
     },
     {
       path: PATHS.dasd,
       element: <DASDPage />,
       handle: { name: N_("DASD") },
-      loader: async () => {
-        if (!supportedDASD()) return redirect(PATHS.root);
-        return probeDASD();
-      },
+      // FIXME: adapt to new API
+      // loader: async () => {
+      //   if (!supportedDASD()) return redirect(PATHS.root);
+      //   return probeDASD();
+      // },
     },
     {
       path: PATHS.zfcp.root,

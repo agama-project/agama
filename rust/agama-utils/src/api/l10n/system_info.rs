@@ -19,7 +19,7 @@
 // find current contact information at www.suse.com.
 
 use agama_locale_data::{KeymapId, LocaleId, TimezoneId};
-use gettextrs::*;
+use gettextrs::dgettext;
 use serde::ser::SerializeStruct;
 use serde::Serialize;
 use serde_with::{serde_as, DisplayFromStr};
@@ -48,7 +48,7 @@ pub struct SystemInfo {
 
 /// Represents a locale, including the localized language and territory.
 #[serde_as]
-#[derive(Debug, Serialize, Clone, utoipa::ToSchema)]
+#[derive(Debug, Serialize, Clone, utoipa::ToSchema, PartialEq, Eq)]
 pub struct LocaleEntry {
     /// The locale code (e.g., "es_ES.UTF-8").
     #[serde_as(as = "DisplayFromStr")]
@@ -61,8 +61,24 @@ pub struct LocaleEntry {
     pub consolefont: Option<String>,
 }
 
+impl Ord for LocaleEntry {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        self.language
+            .cmp(&other.language)
+            .then_with(|| self.territory.cmp(&other.territory))
+            .then_with(|| self.id.cmp(&other.id))
+            .then_with(|| self.consolefont.cmp(&other.consolefont))
+    }
+}
+
+impl PartialOrd for LocaleEntry {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
 /// Represents a timezone, including each part as localized.
-#[derive(Clone, Debug, Serialize, utoipa::ToSchema)]
+#[derive(Clone, Debug, Serialize, utoipa::ToSchema, PartialEq, Eq)]
 pub struct TimezoneEntry {
     /// Timezone identifier (e.g. "Atlantic/Canary").
     pub id: TimezoneId,
@@ -72,13 +88,42 @@ pub struct TimezoneEntry {
     pub country: Option<String>,
 }
 
+impl Ord for TimezoneEntry {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        self.parts
+            .cmp(&other.parts)
+            .then_with(|| self.country.cmp(&other.country))
+            .then_with(|| self.id.cmp(&other.id))
+    }
+}
+
+impl PartialOrd for TimezoneEntry {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
 // Minimal representation of a keymap
-#[derive(Clone, Debug, utoipa::ToSchema)]
+#[derive(Clone, Debug, utoipa::ToSchema, PartialEq, Eq)]
 pub struct Keymap {
     /// Keymap identifier (e.g., "us")
     pub id: KeymapId,
     /// Keymap description
-    description: String,
+    pub description: String,
+}
+
+impl Ord for Keymap {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        self.localized_description()
+            .cmp(&other.localized_description())
+            .then_with(|| self.id.cmp(&other.id))
+    }
+}
+
+impl PartialOrd for Keymap {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        Some(self.cmp(other))
+    }
 }
 
 impl Keymap {
@@ -90,7 +135,7 @@ impl Keymap {
     }
 
     pub fn localized_description(&self) -> String {
-        gettext(&self.description)
+        dgettext("xkeyboard-config", &self.description)
     }
 }
 

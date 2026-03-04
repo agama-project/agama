@@ -24,21 +24,22 @@ import React, { useState } from "react";
 import { screen } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
 import SwitchEnhanced from "./SwitchEnhanced";
+import { _ } from "~/i18n";
 
 describe("SwitchEnhanced", () => {
   it("renders a switch with label and description", () => {
     plainRender(
       <SwitchEnhanced
         id="installation-only-connection"
-        label="Use for installation only"
+        label={_("Use for installation only")}
         description="Not persisted to the installed system."
         isChecked={false}
       />,
     );
 
-    const switchElement = screen.getByRole("switch");
-    const label = screen.getByText(/Use for installation only/);
-    const description = screen.getByText(/Not persisted to the installed system/);
+    const switchElement = screen.getByRole("switch", { name: "Use for installation only" });
+    const label = screen.getByText("Use for installation only");
+    const description = screen.getByText("Not persisted to the installed system.");
 
     // Ensure aria-labelledby and aria-describedby point to the correct elements
     expect(switchElement).toHaveAttribute("aria-labelledby", label.id);
@@ -51,7 +52,7 @@ describe("SwitchEnhanced", () => {
       return (
         <SwitchEnhanced
           id="installation-only-connection"
-          label="Use for installation only"
+          label={_("Use for installation only")}
           description="Not persisted to the installed system."
           isChecked={isChecked}
           onChange={() => setIsChecked(!isChecked)}
@@ -61,9 +62,16 @@ describe("SwitchEnhanced", () => {
 
     const { user } = plainRender(<SwitchEnhancedTestWrapper />);
 
-    const switchElement = screen.getByRole("switch");
+    const switchElement = screen.getByRole("switch", { name: "Use for installation only" });
     expect(switchElement).not.toBeChecked();
     await user.click(switchElement);
+    expect(switchElement).toBeChecked();
+
+    // Clicking on label should work too
+    const label = screen.getByText("Use for installation only");
+    await user.click(label);
+    expect(switchElement).not.toBeChecked();
+    await user.click(label);
     expect(switchElement).toBeChecked();
   });
 });

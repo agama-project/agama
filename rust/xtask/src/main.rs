@@ -5,9 +5,7 @@ mod tasks {
 
     use agama_cli::Cli;
     use agama_server::web::docs::{
-        ApiDocBuilder, ConfigApiDocBuilder, HostnameApiDocBuilder, ManagerApiDocBuilder,
-        MiscApiDocBuilder, ProfileApiDocBuilder, ScriptsApiDocBuilder, StorageApiDocBuilder,
-        UsersApiDocBuilder,
+        ApiDocBuilder, ConfigApiDocBuilder, MiscApiDocBuilder, ProfileApiDocBuilder,
     };
     use clap::CommandFactory;
     use clap_complete::aot;
@@ -28,7 +26,7 @@ mod tasks {
         Ok(())
     }
 
-    const GENERATED: &'static str =
+    const GENERATED: &str =
         "---\nNOTE: This documentation is generated. Run `cargo xtask markdown` to update it.\n";
 
     /// Generate Agama's CLI documentation in markdown format.
@@ -65,13 +63,8 @@ mod tasks {
         let out_dir = create_output_dir("openapi")?;
 
         write_openapi(ConfigApiDocBuilder {}, out_dir.join("config.json"))?;
-        write_openapi(HostnameApiDocBuilder {}, out_dir.join("hostname.json"))?;
-        write_openapi(ManagerApiDocBuilder {}, out_dir.join("manager.json"))?;
         write_openapi(MiscApiDocBuilder {}, out_dir.join("misc.json"))?;
         write_openapi(ProfileApiDocBuilder {}, out_dir.join("profile.json"))?;
-        write_openapi(ScriptsApiDocBuilder {}, out_dir.join("scripts.json"))?;
-        write_openapi(StorageApiDocBuilder {}, out_dir.join("storage.json"))?;
-        write_openapi(UsersApiDocBuilder {}, out_dir.join("users.json"))?;
         println!(
             "Generate the OpenAPI specification at {}.",
             out_dir.display()

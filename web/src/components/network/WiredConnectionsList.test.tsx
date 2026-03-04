@@ -50,11 +50,14 @@ const mockDevice: Device = {
 
 let mockConnections: Connection[];
 
-jest.mock("~/queries/network", () => ({
-  ...jest.requireActual("~/queries/network"),
-  useNetworkChanges: jest.fn(),
-  useNetworkDevices: () => [mockDevice],
+jest.mock("~/hooks/model/proposal/network", () => ({
+  ...jest.requireActual("~/hooks/model/proposal/network"),
   useConnections: () => mockConnections,
+}));
+
+jest.mock("~/hooks/model/system/network", () => ({
+  ...jest.requireActual("~/hooks/model/system/network"),
+  useDevices: () => [mockDevice],
 }));
 
 describe("WiredConnectionsList", () => {

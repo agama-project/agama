@@ -28,81 +28,89 @@ import {
   DeviceName,
   DeviceSize,
   FilesystemLabel,
-  toStorageDevice,
+  toDevice,
 } from "~/components/storage/device-utils";
-import { PartitionSlot, StorageDevice } from "~/types/storage";
+import { UnusedSlot } from "~/model/system/storage";
+import type { Storage } from "~/model/system";
 
-const slot: PartitionSlot = { start: 1234, size: 256 };
-
-const vda: StorageDevice = {
+const vda: Storage.Device = {
   sid: 59,
-  isDrive: true,
-  type: "disk",
-  vendor: "Micron",
-  model: "Micron 1100 SATA",
-  driver: ["ahci", "mmcblk"],
-  bus: "IDE",
-  transport: "usb",
-  dellBOSS: false,
-  sdCard: true,
-  active: true,
+  class: "drive",
   name: "/dev/vda",
-  description: "",
-  size: 1024,
-  systems: ["Windows 11", "openSUSE Leap 15.2"],
-  udevIds: ["ata-Micron_1100_SATA_512GB_12563", "scsi-0ATA_Micron_1100_SATA_512GB"],
-  udevPaths: ["pci-0000:00-12", "pci-0000:00-12-ata"],
+  drive: {
+    vendor: "Micron",
+    model: "Micron 1100 SATA",
+    driver: ["ahci", "mmcblk"],
+    bus: "IDE",
+    transport: "usb",
+    info: {
+      dellBoss: false,
+      sdCard: true,
+    },
+  },
+  block: {
+    active: true,
+    start: 10,
+    size: 1024,
+    shrinking: { supported: false },
+    // systems: ["Windows 11", "openSUSE Leap 15.2"],
+    udevIds: ["ata-Micron_1100_SATA_512GB_12563", "scsi-0ATA_Micron_1100_SATA_512GB"],
+    udevPaths: ["pci-0000:00-12", "pci-0000:00-12-ata"],
+  },
+  partitions: [
+    {
+      sid: 60,
+      class: "partition",
+      name: "/dev/vda1",
+      block: {
+        active: true,
+        start: 123,
+        size: 512,
+        shrinking: { supported: true },
+        encrypted: false,
+      },
+      partition: { efi: false },
+      filesystem: {
+        sid: 100,
+        type: "ext4",
+        mountPath: "/test",
+        label: "system",
+      },
+    },
+  ],
 };
 
-const vda1: StorageDevice = {
-  sid: 60,
-  isDrive: false,
-  type: "partition",
-  active: true,
-  name: "/dev/vda1",
-  description: "",
-  size: 512,
-  start: 123,
-  encrypted: false,
-  shrinking: { supported: 128 },
-  systems: [],
-  udevIds: [],
-  udevPaths: [],
-  isEFI: false,
-  filesystem: { sid: 100, type: "ext4", mountPath: "/test", label: "system" },
-};
-
-const lvmLv1: StorageDevice = {
+const lv: Storage.Device = {
   sid: 73,
-  isDrive: false,
-  type: "lvmLv",
-  active: true,
+  class: "logicalVolume",
   name: "/dev/vg0/lv1",
-  description: "",
-  size: 512,
-  start: 0,
-  encrypted: false,
-  shrinking: { unsupported: ["Resizing is not supported"] },
-  systems: [],
-  udevIds: [],
-  udevPaths: [],
+  block: {
+    active: true,
+    size: 512,
+    start: 0,
+    encrypted: false,
+    shrinking: {
+      supported: false,
+      reasons: ["Resizing is not supported"],
+    },
+  },
 };
 
 describe("FilesystemLabel", () => {
   it("renders the label of the file system", () => {
-    plainRender(<FilesystemLabel item={vda1} />);
+    plainRender(<FilesystemLabel item={vda.partitions[0]} />);
     screen.getByText("system");
   });
 });
 
 describe("DeviceName", () => {
   it("renders the base name if the device is a partition", () => {
-    plainRender(<DeviceName item={vda1} />);
+    plainRender(<DeviceName item={vda.partitions[0]} />);
     screen.getByText(/^vda1/);
   });
 
   it("renders the base name if the device is a logical volume", () => {
-    plainRender(<DeviceName item={lvmLv1} />);
+    plainRender(<DeviceName item={lv} />);
     screen.getByText(/^lv1/);
   });
 
@@ -113,11 +121,11 @@ describe("DeviceName", () => {
 });
 
 describe("DeviceDetails", () => {
-  let item: PartitionSlot | StorageDevice;
+  let item: UnusedSlot | Storage.Device;
 
   describe("if the item is a partition slot", () => {
     beforeEach(() => {
-      item = slot;
+      item = { start: 1234, size: 256 };
     });
 
     it("renders 'Unused space'", () => {
@@ -128,13 +136,20 @@ describe("DeviceDetails", () => {
 
   describe("if the item is a storage device", () => {
     beforeEach(() => {
-      item = { ...vda };
+      item = vda;
     });
 
     describe("and it has a file system", () => {
       beforeEach(() => {
-        item = toStorageDevice(item);
-        item.filesystem = { sid: 100, type: "ext4", mountPath: "/test", label: "data" };
+        item = {
+          ...toDevice(item),
+          filesystem: {
+            sid: 100,
+            type: "ext4",
+            mountPath: "/test",
+            label: "data",
+          },
+        };
       });
 
       it("renders the file system label", () => {
@@ -145,12 +160,13 @@ describe("DeviceDetails", () => {
 
     describe("and it has a partition table", () => {
       beforeEach(() => {
-        item = toStorageDevice(item);
-        item.partitionTable = {
-          type: "gpt",
+        item = {
+          ...toDevice(item),
+          partitionTable: {
+            type: "gpt",
+            unusedSlots: [],
+          },
           partitions: [],
-          unpartitionedSize: 0,
-          unusedSlots: [],
         };
       });
 
@@ -162,15 +178,13 @@ describe("DeviceDetails", () => {
 
     describe("and it has no partition table", () => {
       beforeEach(() => {
-        item = toStorageDevice(item);
-        item.partitionTable = undefined;
-        item.description = "Ext4 disk";
+        item = { ...toDevice(item), description: "Ext4 disk" };
       });
 
       describe("and it has systems", () => {
         beforeEach(() => {
-          item = toStorageDevice(item);
-          item.systems = ["Tumbleweed", "Leap"];
+          item = toDevice(item);
+          item.block.systems = ["Tumbleweed", "Leap"];
         });
 
         it("renders the systems", () => {
@@ -182,8 +196,8 @@ describe("DeviceDetails", () => {
 
       describe("and it has no systems", () => {
         beforeEach(() => {
-          item = toStorageDevice(item);
-          item.systems = [];
+          item = toDevice(item);
+          item.block.systems = [];
         });
 
         it("renders the description", () => {

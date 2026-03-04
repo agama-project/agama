@@ -1,0 +1,22 @@
+[package]
+name = "agama-users"
+version = "0.1.0"
+rust-version.workspace = true
+edition.workspace = true
+
+[dependencies]
+thiserror = "2.0.16"
+agama-utils = { path = "../agama-utils" }
+tracing = "0.1.41"
+gettext-rs = { version = "0.7.2", features = ["gettext-system"] }
+tokio = { version = "1.47.1", features = ["macros", "rt-multi-thread", "sync"] }
+async-trait = "0.1.89"
+serde = { version = "1.0.228", features = ["derive"] }
+utoipa = "5.4.0"
+
+[dev-dependencies]
+test-context = "0.4.1"
+tokio-test = "0.4.4"
+
+[lints.rust]
+unexpected_cfgs = { level = "warn", check-cfg = ['cfg(ci)'] }

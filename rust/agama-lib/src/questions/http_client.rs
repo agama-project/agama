@@ -103,7 +103,7 @@ impl HTTPClient {
 
         let patch = Patch::with_update(&config)?;
 
-        _ = self.client.patch_void("/v2/config", &patch).await?;
+        self.client.patch_void("/v2/config", &patch).await?;
         Ok(())
     }
 
@@ -112,7 +112,7 @@ impl HTTPClient {
         answers: Vec<AnswerRule>,
     ) -> Result<(), QuestionsHTTPClientError> {
         let questions = QuestionsConfig {
-            answers,
+            answers: Some(answers),
             ..Default::default()
         };
         let config = Config {

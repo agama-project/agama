@@ -18,17 +18,53 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::api::l10n;
-use serde::Deserialize;
+use crate::api::{iscsi, l10n};
+use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Deserialize, utoipa::ToSchema)]
+#[derive(Debug, Serialize, Deserialize, utoipa::ToSchema)]
 pub enum Action {
+    /// Performs an iSCSI discovery, finding nodes from the given portal.
+    #[serde(rename = "discoverISCSI")]
+    DiscoverISCSI(iscsi::DiscoverConfig),
     #[serde(rename = "activateStorage")]
     ActivateStorage,
     #[serde(rename = "probeStorage")]
     ProbeStorage,
+    /// Performs a DASD probing on demand.
+    #[serde(rename = "probeDASD")]
+    ProbeDASD,
     #[serde(rename = "configureL10n")]
     ConfigureL10n(l10n::SystemConfig),
     #[serde(rename = "install")]
     Install,
+    #[serde(rename = "finish")]
+    Finish(FinishMethod),
+}
+
+/// Finish method
+#[derive(
+    Default,
+    Serialize,
+    Deserialize,
+    Debug,
+    PartialEq,
+    Eq,
+    Clone,
+    Copy,
+    strum::Display,
+    strum::EnumString,
+    utoipa::ToSchema,
+)]
+#[strum(serialize_all = "camelCase")]
+#[serde(rename_all = "camelCase")]
+pub enum FinishMethod {
+    // Halt the system
+    Halt,
+    // Reboots the system
+    #[default]
+    Reboot,
+    // Do nothing at the end of the installation
+    Stop,
+    // Poweroff the system
+    Poweroff,
 }

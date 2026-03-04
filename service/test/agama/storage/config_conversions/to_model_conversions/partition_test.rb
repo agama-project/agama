@@ -23,9 +23,10 @@ require_relative "../../storage_helpers"
 require_relative "./examples"
 require "agama/storage/config_conversions/from_json_conversions/partition"
 require "agama/storage/config_conversions/to_model_conversions/partition"
+require "agama/storage/volume_templates_builder"
 
 describe Agama::Storage::ConfigConversions::ToModelConversions::Partition do
-  subject { described_class.new(config) }
+  subject { described_class.new(config, volumes) }
 
   let(:config) do
     Agama::Storage::ConfigConversions::FromJSONConversions::Partition
@@ -43,6 +44,8 @@ describe Agama::Storage::ConfigConversions::ToModelConversions::Partition do
       deleteIfNeeded: delete_if_needed
     }
   end
+
+  let(:volumes) { Agama::Storage::VolumeTemplatesBuilder.new([]) }
 
   let(:search) { nil }
   let(:filesystem) { nil }

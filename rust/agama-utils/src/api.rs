@@ -34,13 +34,16 @@ pub mod status;
 pub use status::Status;
 
 pub mod issue;
-pub use issue::{Issue, IssueMap, IssueSeverity, IssueSource};
+pub use issue::{Issue, IssueMap, IssueWithScope};
 
 mod system_info;
 pub use system_info::SystemInfo;
 
 pub mod config;
 pub use config::Config;
+
+mod raw_config;
+pub use raw_config::RawConfig;
 
 pub mod patch;
 pub use patch::Patch;
@@ -49,9 +52,20 @@ mod proposal;
 pub use proposal::Proposal;
 
 mod action;
-pub use action::Action;
+pub use {action::Action, action::FinishMethod};
 
+pub mod bootloader;
+pub mod files;
+pub mod hostname;
+pub mod iscsi;
 pub mod l10n;
+pub mod manager;
 pub mod network;
+pub mod proxy;
+pub mod query;
 pub mod question;
+pub mod s390;
+pub mod security;
+pub mod software;
 pub mod storage;
+pub mod users;

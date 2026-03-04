@@ -1,4 +1,4 @@
-// Copyright (c) [2025] SUSE LLC
+// Copyright (c) [2025-2026] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -40,10 +40,18 @@ use serde::{Deserialize, Serialize};
 #[serde(rename_all = "camelCase")]
 pub enum Scope {
     Manager,
+    Network,
+    Hostname,
     L10n,
     Product,
     Software,
     Storage,
-    Iscsi,
+    Files,
+    #[strum(serialize = "iscsi")]
+    #[serde(rename = "iscsi")]
+    ISCSI,
+    #[strum(serialize = "dasd")]
+    #[serde(rename = "dasd")]
+    DASD,
     Users,
 }

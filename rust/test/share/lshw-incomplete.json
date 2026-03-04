@@ -1,0 +1,24 @@
+{
+  "id" : "localhost.localdomain",
+  "class" : "system",
+  "claimed" : true,
+  "handle" : "DMI:000F",
+  "description" : "Notebook",
+  "product" : "20XF009AUK (LENOVO_MT_20XF_BU_Think_FM_ThinkPad T14s Gen 2a)",
+  "serial" : "PC2G11QC",
+  "width" : 64,
+  "configuration" : {
+    "administrator_password" : "disabled",
+    "chassis" : "notebook",
+    "family" : "ThinkPad T14s Gen 2a",
+    "power-on_password" : "disabled",
+    "sku" : "LENOVO_MT_20XF_BU_Think_FM_ThinkPad T14s Gen 2a",
+    "uuid" : "b63bbacc-1f95-11b2-a85c-e0c3a8567de0"
+  },
+  "capabilities" : {
+    "smbios-3.3.0" : "SMBIOS version 3.3.0",
+    "dmi-3.3.0" : "DMI version 3.3.0",
+    "smp" : "Symmetric Multi-Processing",
+    "vsyscall32" : "32-bit processes"
+  }
+}

@@ -27,13 +27,4 @@ look() {
       >$DD.$1.bus.xml
 }
 
-look Manager1
-look Software1
-look Software1.Proposal
 look Storage1
-
-abusctl introspect --xml-interface \
-  ${DD}.Manager1 \
-  ${SS}/Users1 |
-  cleanup \
-    >${DD}.Users1.bus.xml

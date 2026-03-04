@@ -21,6 +21,7 @@
 
 require "y2storage/blk_device"
 require "y2storage/refinements"
+require "agama/config"
 
 using Y2Storage::Refinements::SizeCasts
 
@@ -102,6 +103,81 @@ shared_examples "with filesystem" do
       )
     end
   end
+
+  context "if btrfs with snapshots is configured" do
+    let(:filesystem) do
+      {
+        type:  {
+          btrfs: {
+            snapshots: true
+          }
+        },
+        label: "test",
+        path:  "/"
+      }
+    end
+
+    it "generates the expected JSON" do
+      model_json = subject.convert
+      expect(model_json[:mountPath]).to eq("/")
+      expect(model_json[:filesystem]).to eq(
+        {
+          reuse:   false,
+          default: false,
+          type:    "btrfsSnapshots",
+          label:   "test"
+        }
+      )
+    end
+  end
+
+  context "if btrfs with no snapshots is configured" do
+    let(:filesystem) do
+      {
+        type:  "btrfs",
+        label: "test",
+        path:  "/"
+      }
+    end
+
+    it "generates the expected JSON" do
+      model_json = subject.convert
+      expect(model_json[:mountPath]).to eq("/")
+      expect(model_json[:filesystem]).to eq(
+        {
+          reuse:   false,
+          default: false,
+          type:    "btrfs",
+          label:   "test"
+        }
+      )
+    end
+
+    context "if the root product volume is configured as read-only" do
+      let(:volumes) { Agama::Storage::VolumeTemplatesBuilder.new_from_config(product_config) }
+      let(:product_config) { Agama::Config.new(product_config_data) }
+      let(:product_config_data) { { "storage" => { "volume_templates" => [root_template] } } }
+      let(:root_template) do
+        {
+          "mount_path" => "/", "filesystem" => "btrfs",
+          "btrfs" => { "read_only" => true, "snapshots" => true }
+        }
+      end
+
+      it "generates the expected JSON" do
+        model_json = subject.convert
+        expect(model_json[:mountPath]).to eq("/")
+        expect(model_json[:filesystem]).to eq(
+          {
+            reuse:   false,
+            default: false,
+            type:    "btrfsImmutable",
+            label:   "test"
+          }
+        )
+      end
+    end
+  end
 end
 
 shared_examples "with size" do
@@ -161,7 +237,9 @@ shared_examples "with partitions" do
             deleteIfNeeded: false,
             resize:         false,
             resizeIfNeeded: false,
-            filesystem:     { reuse: false },
+            filesystem:     {
+              reuse: false
+            },
             mountPath:      "/",
             size:           {
               default: true,

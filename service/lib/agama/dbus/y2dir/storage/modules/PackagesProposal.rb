@@ -1,1 +1,0 @@
-../../manager/modules/PackagesProposal.rb

@@ -62,11 +62,12 @@ impl Service {
 
     pub fn find_answer(&self, spec: &QuestionSpec) -> Option<Answer> {
         let answer = self.config.as_ref().and_then(|config| {
-            config
-                .answers
-                .iter()
-                .find(|a| a.answers_to(&spec))
-                .map(|r| r.answer.clone())
+            config.answers.as_ref().and_then(|answers_vec| {
+                answers_vec
+                    .iter()
+                    .find(|a| a.answers_to(spec))
+                    .map(|r| r.answer.clone())
+            })
         });
 
         if answer.is_some() {
@@ -124,6 +125,7 @@ impl MessageHandler<message::Ask> for Service {
         if let Some(answer) = self.find_answer(&question.spec) {
             _ = question.set_answer(answer);
         }
+        tracing::info!("Asking question: {:?}", question);
         self.questions.push(question.clone());
 
         self.events.send(Event::QuestionAdded {
@@ -131,6 +133,7 @@ impl MessageHandler<message::Ask> for Service {
         })?;
 
         if question.answer.is_some() {
+            tracing::info!("Question {} answered", question.id);
             self.events.send(Event::QuestionAnswered {
                 id: self.current_id,
             })?;
@@ -146,6 +149,7 @@ impl MessageHandler<message::Answer> for Service {
         match found {
             Some(question) => {
                 question.set_answer(message.answer)?;
+                tracing::info!("Question {} answered", question.id);
                 self.events
                     .send(Event::QuestionAnswered { id: message.id })?;
                 Ok(())

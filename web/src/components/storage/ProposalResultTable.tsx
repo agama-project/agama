@@ -26,25 +26,25 @@ import {
   DeviceName,
   DeviceDetails,
   DeviceSize,
-  toStorageDevice,
+  toDevice,
+  toPartitionSlot,
 } from "~/components/storage/device-utils";
-import DevicesManager from "~/components/storage/DevicesManager";
+import DevicesManager from "~/model/storage/devices-manager";
 import { TreeTable } from "~/components/core";
 import { _ } from "~/i18n";
 import { sprintf } from "sprintf-js";
 import { deviceChildren, deviceSize } from "~/components/storage/utils";
-import { PartitionSlot, StorageDevice } from "~/types/storage";
 import { TreeTableColumn } from "~/components/core/TreeTable";
-import { DeviceInfo } from "~/api/storage/types";
-import { useConfigModel } from "~/queries/storage/config-model";
+import { useConfigModel } from "~/hooks/model/storage/config-model";
+import type { Storage as Proposal } from "~/model/proposal";
 
-type TableItem = StorageDevice | PartitionSlot;
+type TableItem = Proposal.Device | Proposal.UnusedSlot;
 
 /**
  * @component
  */
 const MountPoint = ({ item }: { item: TableItem }) => {
-  const device = toStorageDevice(item);
+  const device = toDevice(item);
 
   if (!(device && device.filesystem?.mountPath)) return null;
 
@@ -62,7 +62,7 @@ const DeviceCustomDetails = ({
   devicesManager: DevicesManager;
 }) => {
   const isNew = () => {
-    const device = toStorageDevice(item);
+    const device = toDevice(item);
     if (!device) return false;
 
     // FIXME New PVs over a disk is not detected as new.
@@ -91,9 +91,11 @@ const DeviceCustomSize = ({
   item: TableItem;
   devicesManager: DevicesManager;
 }) => {
-  const device = toStorageDevice(item);
+  const device = toDevice(item);
   const isResized = device && devicesManager.isShrunk(device);
-  const sizeBefore = isResized ? devicesManager.systemDevice(device.sid).size : item.size;
+  const sizeBefore = isResized
+    ? devicesManager.systemDevice(device.sid).block.size
+    : toPartitionSlot(item)?.size;
 
   return (
     <Flex direction={{ default: "row" }} gap={{ default: "gapXs" }}>
@@ -145,8 +147,8 @@ type ProposalResultTableProps = {
  * @component
  */
 export default function ProposalResultTable({ devicesManager }: ProposalResultTableProps) {
-  const model = useConfigModel({ suspense: true });
-  const devices = devicesManager.usedDevices(model?.drives.map((d) => d.name) || []);
+  const model = useConfigModel();
+  const devices = devicesManager.usedDevices(model?.drives?.map((d) => d.name) || []);
 
   return (
     <TreeTable
@@ -154,8 +156,8 @@ export default function ProposalResultTable({ devicesManager }: ProposalResultTa
       items={devices}
       expandedItems={devices}
       itemChildren={deviceChildren}
-      rowClassNames={(item: DeviceInfo) => {
-        if (!item.sid) return "dimmed-row";
+      rowClassNames={(item: TableItem) => {
+        if (!toDevice(item)) return "dimmed-row";
       }}
       className="proposal-result"
     />

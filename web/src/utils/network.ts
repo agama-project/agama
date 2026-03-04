@@ -21,6 +21,7 @@
  */
 
 import ipaddr from "ipaddr.js";
+import { isUndefined } from "radashi";
 import {
   APIRoute,
   ApFlags,
@@ -121,13 +122,15 @@ const stringToIPInt = (text: string): number => {
 /**
  * Returns given IP address in the X.X.X.X/YY format
  */
-const formatIp = (addr: IPAddress): string => {
-  if (addr.prefix === undefined) {
-    return `${addr.address}`;
-  } else {
-    return `${addr.address}/${ipPrefixFor(addr.prefix)}`;
+function formatIp(addr: IPAddress): string;
+function formatIp(addr: IPAddress, options: { removePrefix: boolean }): string;
+function formatIp(addr: IPAddress, options = { removePrefix: false }) {
+  if (isUndefined(addr.prefix) || options.removePrefix) {
+    return addr.address;
   }
-};
+
+  return `${addr.address}/${ipPrefixFor(addr.prefix)}`;
+}
 
 const buildAddress = (address: string): IPAddress => {
   const [ip, netmask] = address.split("/");

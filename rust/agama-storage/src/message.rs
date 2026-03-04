@@ -21,8 +21,14 @@
 use agama_utils::{
     actor::Message,
     api::{storage::Config, Issue},
+    products::ProductSpec,
+    BoxFuture,
 };
 use serde_json::Value;
+use std::sync::Arc;
+use tokio::sync::RwLock;
+
+use crate::client;
 
 #[derive(Clone)]
 pub struct Activate;
@@ -53,6 +59,13 @@ impl Message for Finish {
 }
 
 #[derive(Clone)]
+pub struct Umount;
+
+impl Message for Umount {
+    type Reply = ();
+}
+
+#[derive(Clone)]
 pub struct GetSystem;
 
 impl Message for GetSystem {
@@ -63,6 +76,21 @@ impl Message for GetSystem {
 pub struct GetConfig;
 
 impl Message for GetConfig {
+    type Reply = Option<Config>;
+}
+
+#[derive(Clone)]
+pub struct GetConfigFromModel {
+    pub model: Value,
+}
+
+impl GetConfigFromModel {
+    pub fn new(model: Value) -> Self {
+        Self { model }
+    }
+}
+
+impl Message for GetConfigFromModel {
     type Reply = Option<Config>;
 }
 
@@ -88,54 +116,26 @@ impl Message for GetIssues {
 }
 
 #[derive(Clone)]
-pub struct SetProduct {
-    pub id: String,
-}
-
-impl SetProduct {
-    pub fn new(id: &str) -> Self {
-        Self { id: id.to_string() }
-    }
-}
-
-impl Message for SetProduct {
-    type Reply = ();
-}
-
-#[derive(Clone)]
 pub struct SetConfig {
+    pub product: Arc<RwLock<ProductSpec>>,
     pub config: Option<Config>,
 }
 
 impl SetConfig {
-    pub fn new(config: Option<Config>) -> Self {
-        Self { config }
+    pub fn new(product: Arc<RwLock<ProductSpec>>, config: Option<Config>) -> Self {
+        Self { product, config }
     }
 
-    pub fn with(config: Config) -> Self {
+    pub fn with(product: Arc<RwLock<ProductSpec>>, config: Config) -> Self {
         Self {
+            product,
             config: Some(config),
         }
     }
 }
 
 impl Message for SetConfig {
-    type Reply = ();
-}
-
-#[derive(Clone)]
-pub struct SetConfigModel {
-    pub model: Value,
-}
-
-impl SetConfigModel {
-    pub fn new(model: Value) -> Self {
-        Self { model }
-    }
-}
-
-impl Message for SetConfigModel {
-    type Reply = ();
+    type Reply = BoxFuture<Result<(), client::Error>>;
 }
 
 #[derive(Clone)]

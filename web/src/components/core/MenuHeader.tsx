@@ -24,6 +24,7 @@ import React from "react";
 import { Flex, Content } from "@patternfly/react-core";
 import spacingStyles from "@patternfly/react-styles/css/utilities/Spacing/spacing";
 import { RequireAtLeastOne } from "~/types/helpers";
+import { TranslatedString } from "~/i18n";
 
 /**
  * Props for the `MenuHeader` component.
@@ -35,7 +36,7 @@ export type MenuHeaderProps = {
    *
    * Example: "Appearance Settings"
    */
-  title?: string;
+  title?: TranslatedString;
 
   /**
    * Additional context or explanation displayed under the title if it was

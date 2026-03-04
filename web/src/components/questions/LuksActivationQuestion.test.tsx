@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2024] SUSE LLC
+ * Copyright (c) [2022-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -22,12 +22,14 @@
 
 import React from "react";
 import { screen } from "@testing-library/react";
+import { useStatus } from "~/hooks/model/status";
+import { useSystem } from "~/hooks/model/system";
+import { useProductInfo } from "~/hooks/model/config/product";
 import { installerRender } from "~/test-utils";
-import { AnswerCallback, Question, FieldType } from "~/types/questions";
-import { InstallationPhase } from "~/types/status";
-import { Product } from "~/types/software";
+import { AnswerCallback, Question, FieldType } from "~/model/question";
+import type { Locale, Keymap } from "~/model/system/l10n";
 import LuksActivationQuestion from "~/components/questions/LuksActivationQuestion";
-import { Locale, Keymap } from "~/types/l10n";
+import { Product } from "~/model/system";
 
 let question: Question;
 const questionMock: Question = {
@@ -48,43 +50,44 @@ const tumbleweed: Product = {
   icon: "tumbleweed.svg",
   description: "Tumbleweed description...",
   registration: false,
+  modes: [],
 };
 
 const locales: Locale[] = [
-  { id: "en_US.UTF-8", name: "English", territory: "United States" },
-  { id: "es_ES.UTF-8", name: "Spanish", territory: "Spain" },
+  { id: "en_US.UTF-8", language: "English", territory: "United States" },
+  { id: "es_ES.UTF-8", language: "Spanish", territory: "Spain" },
 ];
 const keymaps: Keymap[] = [
-  { id: "us", name: "English" },
-  { id: "es", name: "Spanish" },
+  { id: "us", description: "English" },
+  { id: "es", description: "Spanish" },
 ];
-
-jest.mock("~/queries/system", () => ({
-  ...jest.requireActual("~/queries/l10n"),
-  useSystem: () => ({ l10n: { locales, keymaps, keymap: "us", language: "de-DE" } }),
-}));
 
 const answerFn: AnswerCallback = jest.fn();
 
-jest.mock("~/queries/status", () => ({
-  useInstallerStatus: () => ({
-    phase: InstallationPhase.Config,
-    isBusy: false,
+jest.mock("~/hooks/model/system", () => ({
+  ...jest.requireActual("~/hooks/model/system"),
+  useSystem: (): ReturnType<typeof useSystem> => ({
+    l10n: {
+      locale: "en_US.UTF-8",
+      locales,
+      keymaps,
+      keymap: "us",
+    },
   }),
 }));
 
-jest.mock("~/queries/software", () => ({
-  ...jest.requireActual("~/queries/software"),
-  useProduct: () => {
-    return {
-      products: [tumbleweed],
-      selectedProduct: tumbleweed,
-    };
-  },
+jest.mock("~/hooks/model/status", () => ({
+  ...jest.requireActual("~/hooks/model/status"),
+  useStatus: (): ReturnType<typeof useStatus> => ({ stage: "configuring", progresses: [] }),
+}));
+
+jest.mock("~/hooks/model/config/product", () => ({
+  ...jest.requireActual("~/hooks/model/config/product"),
+  useProductInfo: (): ReturnType<typeof useProductInfo> => tumbleweed,
 }));
 
 jest.mock("~/context/installerL10n", () => ({
-  ...jest.requireActual("~/context/installerL10n"),
+  InstallerL10nProvider: ({ children }) => <>{children}</>,
   useInstallerL10n: () => ({
     keymap: "us",
     language: "de-DE",

@@ -53,8 +53,7 @@ describe Agama::Storage::ConfigChecker do
       it "includes the boot issues" do
         issues = subject.issues
         expect(issues).to include an_object_having_attributes(
-          error?:      true,
-          kind:        :no_root,
+          kind:        Agama::Storage::IssueClasses::Config::NO_ROOT,
           description: "The boot device cannot be automatically selected"
         )
       end
@@ -75,8 +74,7 @@ describe Agama::Storage::ConfigChecker do
       it "includes the drive issues" do
         issues = subject.issues
         expect(issues).to include an_object_having_attributes(
-          error?:      true,
-          kind:        :search,
+          kind:        Agama::Storage::IssueClasses::Config::SEARCH_NOT_FOUND,
           description: "Mandatory device /dev/vda not found"
         )
       end
@@ -96,8 +94,7 @@ describe Agama::Storage::ConfigChecker do
       it "includes the partition issues" do
         issues = subject.issues
         expect(issues).to include an_object_having_attributes(
-          error?:      true,
-          kind:        :filesystem,
+          kind:        Agama::Storage::IssueClasses::Config::NO_FILESYSTEM_TYPE,
           description: "Missing file system type for '/'"
         )
       end
@@ -113,8 +110,7 @@ describe Agama::Storage::ConfigChecker do
       it "includes the MD RAID issues" do
         issues = subject.issues
         expect(issues).to include an_object_having_attributes(
-          error?:      true,
-          kind:        :no_such_alias,
+          kind:        Agama::Storage::IssueClasses::Config::NO_SUCH_ALIAS,
           description: /no MD RAID member device with alias 'disk1'/
         )
       end
@@ -134,8 +130,7 @@ describe Agama::Storage::ConfigChecker do
       it "includes the partition issues" do
         issues = subject.issues
         expect(issues).to include an_object_having_attributes(
-          error?:      true,
-          kind:        :filesystem,
+          kind:        Agama::Storage::IssueClasses::Config::NO_FILESYSTEM_TYPE,
           description: "Missing file system type for '/'"
         )
       end
@@ -151,7 +146,6 @@ describe Agama::Storage::ConfigChecker do
       it "includes the volume group issues" do
         issues = subject.issues
         expect(issues).to include an_object_having_attributes(
-          error?:      true,
           description: /without name/
         )
       end
@@ -171,8 +165,7 @@ describe Agama::Storage::ConfigChecker do
       it "includes the logical volume issues" do
         issues = subject.issues
         expect(issues).to include an_object_having_attributes(
-          error?:      true,
-          kind:        :filesystem,
+          kind:        Agama::Storage::IssueClasses::Config::NO_FILESYSTEM_TYPE,
           description: "Missing file system type for '/'"
         )
       end
@@ -210,8 +203,7 @@ describe Agama::Storage::ConfigChecker do
         it "includes an issue for the missing mount path" do
           issues = subject.issues
           expect(issues).to include an_object_having_attributes(
-            error?:      true,
-            kind:        :required_filesystems,
+            kind:        Agama::Storage::IssueClasses::Config::MISSING_PATHS,
             description: /file system for \/ is/
           )
         end
@@ -219,7 +211,7 @@ describe Agama::Storage::ConfigChecker do
         it "does not include an issue for the present mount path" do
           issues = subject.issues
           expect(issues).to_not include an_object_having_attributes(
-            kind:        :required_filesystems,
+            kind:        Agama::Storage::IssueClasses::Config::MISSING_PATHS,
             description: /file system for swap/
           )
         end
@@ -273,8 +265,7 @@ describe Agama::Storage::ConfigChecker do
       it "includes the expected issues" do
         issues = subject.issues
         expect(issues).to include an_object_having_attributes(
-          error?:      true,
-          kind:        :vg_target_devices,
+          kind:        Agama::Storage::IssueClasses::Config::OVERUSED_PV_TARGET,
           description: /The device 'disk1' is used several times/
         )
       end

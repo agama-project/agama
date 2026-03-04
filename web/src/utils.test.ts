@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2024] SUSE LLC
+ * Copyright (c) [2022-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -20,7 +20,30 @@
  * find current contact information at www.suse.com.
  */
 
-import { compact, localConnection, hex, mask, timezoneTime, sortCollection } from "./utils";
+import { N_ } from "~/i18n";
+import {
+  compact,
+  localConnection,
+  hex,
+  mask,
+  maskSecrets,
+  timezoneTime,
+  sortCollection,
+  mergeSources,
+  extendCollection,
+  translateEntries,
+} from "./utils";
+
+import type { Target as ConfigTarget } from "~/openapi/config/iscsi";
+import type { Target as SystemTarget } from "~/openapi/system/iscsi";
+import type { Device as ConfigDevice } from "~/openapi/config/dasd";
+import type { Device as SystemDevice } from "~/openapi/system/dasd";
+
+// Mock _() to simulate translation
+jest.mock("~/i18n", () => ({
+  _: (s: string) => `translated(${s})`,
+  N_: (s: string) => s,
+}));
 
 describe("compact", () => {
   it("removes null and undefined values", () => {
@@ -259,5 +282,732 @@ describe("simpleFastSort", () => {
     const original = [...fakeDevices];
     sortCollection(fakeDevices, "asc", "size");
     expect(fakeDevices).toEqual(original);
+  });
+});
+
+describe("maskSecrets", () => {
+  it("should filter sensitive keys from an object", () => {
+    const obj = { user: "test", password: "123" };
+    const sanitized = maskSecrets(obj, { stringify: false });
+    expect(sanitized).toEqual({ user: "test", password: "[FILTERED]" });
+  });
+
+  it("should not modify an object without sensitive keys", () => {
+    const obj = { user: "test", id: 1 };
+    const sanitized = maskSecrets(obj, { stringify: false });
+    expect(sanitized).toEqual({ user: "test", id: 1 });
+  });
+
+  it("should recursively filter sensitive keys in nested objects", () => {
+    const obj = {
+      user: "test",
+      credentials: {
+        password: "123",
+      },
+    };
+    const sanitized = maskSecrets(obj, { stringify: false });
+    expect(sanitized).toEqual({
+      user: "test",
+      credentials: {
+        password: "[FILTERED]",
+      },
+    });
+  });
+
+  it("should handle arrays of objects", () => {
+    const arr = [
+      { user: "one", password: "123" },
+      { user: "two", id: 2 },
+    ];
+    const sanitized = maskSecrets(arr, { stringify: false });
+    expect(sanitized).toEqual([
+      { user: "one", password: "[FILTERED]" },
+      { user: "two", id: 2 },
+    ]);
+  });
+
+  it("should not mutate the original object", () => {
+    const originalObj = { user: "test", password: "123" };
+    const originalObjCopy = JSON.parse(JSON.stringify(originalObj));
+    maskSecrets(originalObj, { stringify: false });
+    expect(originalObj).toEqual(originalObjCopy);
+  });
+
+  it("should handle null and undefined values correctly", () => {
+    const obj = { user: "test", password: "123", data: null, extra: undefined };
+    const sanitized = maskSecrets(obj, { stringify: false });
+    // Note: `undefined` properties are omitted when creating a new object from an existing one.
+    expect(sanitized).toEqual({ user: "test", password: "[FILTERED]", data: null });
+  });
+
+  it("should return primitive values unmodified", () => {
+    expect(maskSecrets("string", { stringify: false })).toBe("string");
+    expect(maskSecrets(123, { stringify: false })).toBe(123);
+    expect(maskSecrets(true, { stringify: false })).toBe(true);
+    expect(maskSecrets(null, { stringify: false })).toBe(null);
+    expect(maskSecrets(undefined, { stringify: false })).toBe(undefined);
+  });
+
+  it("should handle an empty object", () => {
+    expect(maskSecrets({}, { stringify: false })).toEqual({});
+  });
+
+  it("should handle an empty array", () => {
+    expect(maskSecrets([], { stringify: false })).toEqual([]);
+  });
+
+  it("should filter all defined sensitive keys", () => {
+    const obj = {
+      user: "test",
+      password: "123",
+      hashedPassword: false,
+      registrationCode: "xyz",
+    };
+    expect(maskSecrets(obj, { stringify: false })).toEqual({
+      user: "test",
+      password: "[FILTERED]",
+      hashedPassword: false,
+      registrationCode: "[FILTERED]",
+    });
+  });
+
+  it("should handle custom sensitive keys", () => {
+    const obj = { user: "test", password: "123", sensitive: "abc" };
+    const sanitized = maskSecrets(obj, { sensitiveKeys: ["sensitive"], stringify: false });
+    expect(sanitized).toEqual({ user: "test", password: "123", sensitive: "[FILTERED]" });
+  });
+
+  it("can optionally stringify the output", () => {
+    expect(maskSecrets([], { stringify: true })).toEqual("[]");
+    expect(maskSecrets({}, { stringify: true })).toEqual("{}");
+    expect(maskSecrets({ user: "test", password: "123" }, { stringify: true })).toEqual(
+      '{\n  "user": "test",\n  "password": "[FILTERED]"\n}',
+    );
+  });
+});
+
+describe("mergeSources", () => {
+  it("merges collections honoring precedence when primary key is based on single attribute", () => {
+    const result = mergeSources({
+      collections: {
+        system: [
+          {
+            name: "iqn.2023-01.com.example:12ac588",
+            address: "192.168.100.102",
+            port: 3262,
+            interface: "default",
+            ibft: false,
+            startup: "onboot",
+            connected: true,
+            locked: false,
+          },
+        ],
+        config: [
+          {
+            name: "iqn.2023-01.com.example:12ac588",
+            address: "192.168.100.102",
+            port: 3262,
+            interface: "default",
+            startup: "onboot",
+          },
+          {
+            name: "iqn.2023-01.com.example:12ac788",
+            address: "192.168.100.106",
+            port: 3264,
+            interface: "default",
+            startup: "onboot",
+          },
+        ],
+      },
+      precedence: ["system", "config"],
+      primaryKey: "name",
+    });
+
+    expect(result).toHaveLength(2);
+
+    expect(result[0]).toMatchObject({
+      name: "iqn.2023-01.com.example:12ac588",
+      address: "192.168.100.102",
+      port: 3262,
+      interface: "default",
+      ibft: false,
+      startup: "onboot",
+      connected: true,
+      locked: false,
+      sources: ["system", "config"],
+    });
+
+    expect(result[1]).toMatchObject({
+      name: "iqn.2023-01.com.example:12ac788",
+      address: "192.168.100.106",
+      port: 3264,
+      sources: ["config"],
+    });
+  });
+
+  it("merges collections honoring precedence when primary key is based on mulitple attribute", () => {
+    type MergedTarget = Partial<SystemTarget> & Partial<ConfigTarget>;
+    const result = mergeSources<MergedTarget, keyof MergedTarget>({
+      collections: {
+        system: [
+          {
+            name: "iqn.2023-01.com.example:storage",
+            address: "192.168.100.102",
+            port: 3260,
+            interface: "default",
+            ibft: false,
+            startup: "onboot",
+            connected: true,
+            locked: false,
+          },
+          {
+            name: "iqn.2023-01.com.example:storage",
+            address: "192.168.100.102",
+            port: 3261,
+            interface: "default",
+            ibft: false,
+            startup: "manual",
+            connected: false,
+            locked: false,
+          },
+        ],
+        config: [
+          {
+            name: "iqn.2023-01.com.example:storage",
+            address: "192.168.100.102",
+            port: 3260,
+            interface: "default",
+            startup: "onboot",
+          },
+          {
+            name: "iqn.2023-01.com.example:storage",
+            address: "192.168.100.102",
+            port: 3261,
+            interface: "default",
+            startup: "manual",
+          },
+          {
+            name: "iqn.2023-01.com.example:storage",
+            address: "192.168.100.103",
+            port: 3260,
+            interface: "default",
+            startup: "onboot",
+          },
+        ],
+      },
+      precedence: ["system", "config"],
+      primaryKey: ["name", "address", "port"],
+    });
+
+    expect(result).toHaveLength(3);
+    expect(result[0]).toMatchObject({
+      name: "iqn.2023-01.com.example:storage",
+      address: "192.168.100.102",
+      port: 3260,
+      connected: true,
+      sources: ["system", "config"],
+    });
+    expect(result[1]).toMatchObject({
+      name: "iqn.2023-01.com.example:storage",
+      address: "192.168.100.102",
+      port: 3261,
+      connected: false,
+      sources: ["system", "config"],
+    });
+    expect(result[2]).toMatchObject({
+      name: "iqn.2023-01.com.example:storage",
+      address: "192.168.100.103",
+      port: 3260,
+      sources: ["config"],
+    });
+    expect(result[2]).not.toHaveProperty("connected");
+  });
+
+  it('uses "id" as default primary key when not specified', () => {
+    const result = mergeSources({
+      collections: {
+        source1: [
+          { id: 1, value: "first" },
+          { id: 2, value: "second" },
+        ],
+        source2: [
+          { id: 1, value: "duplicate" },
+          { id: 3, value: "third" },
+        ],
+      },
+      precedence: ["source1", "source2"],
+    });
+
+    expect(result).toHaveLength(3);
+    expect(result[0]).toEqual({ id: 1, value: "first", sources: ["source1", "source2"] });
+    expect(result[1]).toEqual({ id: 2, value: "second", sources: ["source1"] });
+    expect(result[2]).toEqual({ id: 3, value: "third", sources: ["source2"] });
+  });
+
+  it("returns empty array when all collections are empty", () => {
+    const result = mergeSources({
+      collections: {
+        system: [],
+        config: [],
+      },
+      precedence: ["system", "config"],
+      primaryKey: "name",
+    });
+
+    expect(result).toEqual([]);
+  });
+
+  it("handles single collection with multiple items", () => {
+    const result = mergeSources({
+      collections: {
+        config: [
+          {
+            name: "iqn.2023-01.com.example:target1",
+            address: "192.168.100.1",
+            port: 3260,
+            interface: "default",
+            startup: "onboot",
+          },
+          {
+            name: "iqn.2023-01.com.example:target2",
+            address: "192.168.100.2",
+            port: 3260,
+            interface: "default",
+            startup: "manual",
+          },
+        ],
+      },
+      precedence: ["config"],
+      primaryKey: "name",
+    });
+
+    expect(result).toHaveLength(2);
+    expect(result[0].sources).toEqual(["config"]);
+    expect(result[1].sources).toEqual(["config"]);
+  });
+
+  it("supports more than two collections", () => {
+    const result = mergeSources({
+      collections: {
+        system: [
+          {
+            name: "iqn.2023-01.com.example:shared",
+            address: "192.168.100.1",
+            port: 3260,
+            interface: "default",
+            ibft: false,
+            startup: "onboot",
+            connected: true,
+            locked: false,
+          },
+        ],
+        config: [
+          {
+            name: "iqn.2023-01.com.example:shared",
+            address: "192.168.100.1",
+            port: 3260,
+            interface: "default",
+            startup: "onboot",
+          },
+        ],
+        extended: [
+          {
+            name: "iqn.2023-01.com.example:shared",
+            address: "192.168.100.1",
+            port: 3260,
+            interface: "default",
+            startup: "onboot",
+          },
+        ],
+      },
+      precedence: ["system", "config", "extended"],
+      primaryKey: "name",
+    });
+
+    expect(result).toHaveLength(1);
+    expect(result[0].sources).toEqual(["system", "config", "extended"]);
+    expect(result[0].connected).toBe(true);
+  });
+});
+
+describe("extendCollection", () => {
+  describe("single key matching", () => {
+    it("extends items matching keys", () => {
+      const configDevices: ConfigDevice[] = [
+        { channel: "0.0.0160", diag: false, format: true, state: "offline" },
+      ];
+
+      const systemDevices: SystemDevice[] = [
+        {
+          channel: "0.0.0160",
+          active: false,
+          deviceName: "dasda",
+          type: "eckd",
+          formatted: false,
+          diag: true,
+          status: "active",
+          accessType: "rw",
+          partitionInfo: "1",
+        },
+      ];
+
+      const { extended, unmatched, all } = extendCollection(configDevices, {
+        with: systemDevices,
+        matching: "channel",
+      });
+
+      const expectedExtended = [
+        {
+          channel: "0.0.0160",
+          diag: false, // from config (baseWins / default precedence)
+          format: true,
+          state: "offline",
+          active: false, // from system
+          deviceName: "dasda",
+          type: "eckd",
+          formatted: false,
+          status: "active",
+          accessType: "rw",
+          partitionInfo: "1",
+        },
+      ];
+
+      expect(extended).toEqual(expectedExtended);
+      expect(unmatched).toEqual([]);
+      expect(all).toEqual(expectedExtended);
+    });
+
+    it("respects 'extensionWins' precedence", () => {
+      const configDevices: ConfigDevice[] = [{ channel: "0.0.0160", diag: false, format: true }];
+
+      const systemDevices: SystemDevice[] = [
+        {
+          channel: "0.0.0160",
+          active: true,
+          deviceName: "dasda",
+          type: "eckd",
+          formatted: true,
+          diag: true,
+          status: "active",
+          accessType: "rw",
+          partitionInfo: "1",
+        },
+      ];
+
+      const { extended, unmatched, all } = extendCollection(configDevices, {
+        with: systemDevices,
+        matching: "channel",
+        precedence: "extensionWins",
+      });
+
+      const expectedExtended = [
+        {
+          channel: "0.0.0160",
+          diag: true, // from system (extensionWins precedence)
+          format: true,
+          active: true,
+          deviceName: "dasda",
+          type: "eckd",
+          formatted: true,
+          status: "active",
+          accessType: "rw",
+          partitionInfo: "1",
+        },
+      ];
+
+      expect(extended).toEqual(expectedExtended);
+      expect(unmatched).toEqual([]);
+      expect(all).toEqual(expectedExtended);
+    });
+
+    it("keeps items without matches unchanged", () => {
+      const configDevices: ConfigDevice[] = [
+        { channel: "0.0.0160", diag: false },
+        { channel: "0.0.0200", format: true },
+      ];
+
+      const systemDevices: SystemDevice[] = [
+        {
+          channel: "0.0.0160",
+          active: true,
+          deviceName: "dasda",
+          type: "eckd",
+          formatted: false,
+          diag: true,
+          status: "active",
+          accessType: "rw",
+          partitionInfo: "1",
+        },
+      ];
+
+      const { extended, unmatched, all } = extendCollection(configDevices, {
+        with: systemDevices,
+        matching: "channel",
+      });
+
+      expect(extended).toHaveLength(2);
+      expect(extended[0].channel).toBe("0.0.0160");
+      expect(extended[0].deviceName).toBe("dasda");
+      expect(extended[1]).toEqual({ channel: "0.0.0200", format: true }); // unchanged
+      expect(unmatched).toEqual([]);
+      expect(all).toEqual(extended);
+    });
+
+    it("returns unmatched items from extension collection", () => {
+      const configDevices: ConfigDevice[] = [{ channel: "0.0.0160", diag: false }];
+
+      const unmatchedDevice: SystemDevice = {
+        channel: "0.0.0200",
+        active: true,
+        deviceName: "dasdb",
+        type: "fba",
+        formatted: false,
+        diag: false,
+        status: "active",
+        accessType: "rw",
+        partitionInfo: "1",
+      };
+
+      const systemDevices: SystemDevice[] = [
+        {
+          channel: "0.0.0160",
+          active: true,
+          deviceName: "dasda",
+          type: "eckd",
+          formatted: false,
+          diag: true,
+          status: "active",
+          accessType: "rw",
+          partitionInfo: "1",
+        },
+        unmatchedDevice,
+      ];
+
+      const { extended, unmatched, all } = extendCollection(configDevices, {
+        with: systemDevices,
+        matching: "channel",
+      });
+
+      expect(extended).toHaveLength(1);
+      expect(extended[0].channel).toBe("0.0.0160");
+      expect(unmatched).toHaveLength(1);
+      expect(unmatched[0]).toEqual(unmatchedDevice);
+      // all: extended items first (base order), unmatched appended at the end
+      expect(all).toHaveLength(2);
+      expect(all[0].channel).toBe("0.0.0160");
+      expect(all[1]).toEqual(unmatchedDevice);
+    });
+  });
+
+  describe("multiple key matching", () => {
+    it("extends devices with matching keys", () => {
+      const configDevices: ConfigDevice[] = [
+        { channel: "0.0.0150", state: "offline", diag: false },
+        { channel: "0.0.0160", state: "active", diag: false },
+      ];
+
+      const unmatchedDevice: SystemDevice = {
+        channel: "0.0.0150",
+        status: "offline",
+        active: false,
+        deviceName: "dasdc",
+        type: "eckd",
+        formatted: false,
+        diag: true,
+        accessType: "rw",
+        partitionInfo: "1",
+      };
+
+      const systemDevices: SystemDevice[] = [
+        unmatchedDevice,
+        {
+          channel: "0.0.0160",
+          status: "offline",
+          active: false,
+          deviceName: "dasda",
+          type: "eckd",
+          formatted: false,
+          diag: false,
+          accessType: "rw",
+          partitionInfo: "1",
+        },
+      ];
+
+      const { extended, unmatched, all } = extendCollection(configDevices, {
+        with: systemDevices,
+        matching: ["channel", "diag"],
+      });
+
+      const expectedExtended = [
+        { channel: "0.0.0150", state: "offline", diag: false },
+        {
+          channel: "0.0.0160",
+          state: "active",
+          diag: false,
+          status: "offline",
+          active: false,
+          deviceName: "dasda",
+          type: "eckd",
+          formatted: false,
+          accessType: "rw",
+          partitionInfo: "1",
+        },
+      ];
+
+      expect(extended).toEqual(expectedExtended);
+      expect(unmatched).toHaveLength(1);
+      expect(unmatched[0].channel).toBe("0.0.0150");
+      // all: base order preserved, unmatched appended at the end
+      expect(all).toHaveLength(3);
+      expect(all[0]).toEqual(expectedExtended[0]);
+      expect(all[1]).toEqual(expectedExtended[1]);
+      expect(all[2]).toEqual(unmatchedDevice);
+    });
+  });
+
+  describe("edge cases", () => {
+    it("handles empty base collection", () => {
+      const unmatchedDevice = { id: 1, name: "test" };
+
+      const { extended, unmatched, all } = extendCollection([], {
+        with: [unmatchedDevice],
+        matching: "id",
+      });
+
+      expect(extended).toEqual([]);
+      expect(unmatched).toEqual([unmatchedDevice]);
+      // all contains unmatched items even when base collection is empty
+      expect(all).toEqual([unmatchedDevice]);
+    });
+
+    it("handles empty extension collection", () => {
+      const items = [{ channel: "0.0.0160", diag: false }];
+
+      const { extended, unmatched, all } = extendCollection(items, {
+        with: [],
+        matching: "channel",
+      });
+
+      expect(extended).toEqual(items);
+      expect(unmatched).toEqual([]);
+      expect(all).toEqual(items);
+    });
+
+    it("handles both collections empty", () => {
+      const { extended, unmatched, all } = extendCollection([], {
+        with: [],
+        matching: "id",
+      });
+
+      expect(extended).toEqual([]);
+      expect(unmatched).toEqual([]);
+      expect(all).toEqual([]);
+    });
+
+    it("does not mutate original collections", () => {
+      const original = [{ channel: "0.0.0160", diag: false }];
+      const extension: SystemDevice[] = [
+        {
+          channel: "0.0.0160",
+          active: true,
+          deviceName: "dasda",
+          type: "eckd",
+          formatted: false,
+          diag: true,
+          status: "active",
+          accessType: "rw",
+          partitionInfo: "1",
+        },
+      ];
+
+      extendCollection(original, {
+        with: extension,
+        matching: "channel",
+      });
+
+      expect(original).toEqual([{ channel: "0.0.0160", diag: false }]);
+      expect(extension[0].deviceName).toBe("dasda");
+    });
+
+    it("handles numeric and string keys", () => {
+      const items = [{ id: 1, value: "a" }];
+      const extension = [{ id: 1, extra: "b" }];
+
+      const { extended, all } = extendCollection(items, {
+        with: extension,
+        matching: "id",
+      });
+
+      expect(extended[0]).toEqual({ id: 1, value: "a", extra: "b" });
+      expect(all).toEqual(extended);
+    });
+  });
+
+  it("handles undefined base collection", () => {
+    const extension = [{ id: 1, extra: "b" }];
+
+    const { extended, unmatched, all } = extendCollection(undefined, {
+      with: extension,
+      matching: "id",
+    });
+
+    expect(extended).toEqual([]);
+    expect(unmatched).toEqual(extension);
+    expect(all).toEqual(extension);
+  });
+
+  it("handles undefined extension collection", () => {
+    const items = [{ channel: "0.0.0160", diag: false }];
+
+    const { extended, unmatched, all } = extendCollection(items, {
+      matching: "channel",
+    });
+
+    expect(extended).toEqual(items);
+    expect(unmatched).toEqual([]);
+    expect(all).toEqual(items);
+  });
+
+  it("handles missing matching field, defaulting to 'id'", () => {
+    const items = [{ id: 1, value: "a" }];
+    const extension = [{ id: 1, extra: "b" }];
+
+    const { extended, all } = extendCollection(items, {
+      with: extension,
+    });
+
+    expect(extended[0]).toEqual({ id: 1, value: "a", extra: "b" });
+    expect(all).toEqual(extended);
+  });
+});
+
+describe("translateEntries", () => {
+  const OPTIONS = {
+    active: N_("Active"),
+    offline: N_("Offline"),
+    unknown: N_("Unknown"),
+  };
+
+  it("returns all entries translated when no filter is provided", () => {
+    expect(translateEntries(OPTIONS)).toEqual({
+      active: "translated(Active)",
+      offline: "translated(Offline)",
+      unknown: "translated(Unknown)",
+    });
+  });
+
+  it("returns only translated entries matching the filter", () => {
+    expect(translateEntries(OPTIONS, { filter: (key) => key !== "unknown" })).toEqual({
+      active: "translated(Active)",
+      offline: "translated(Offline)",
+    });
+  });
+
+  it("returns an empty object when filter excludes all entries", () => {
+    expect(translateEntries(OPTIONS, { filter: () => false })).toEqual({});
+  });
+
+  it("returns an empty object when given an empty record", () => {
+    expect(translateEntries({})).toEqual({});
   });
 });

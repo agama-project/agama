@@ -18,9 +18,41 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use axum::body::{to_bytes, Body};
+use axum::{
+    body::{to_bytes, Body},
+    extract::Request,
+    response::Response,
+    Router,
+};
+use tower::ServiceExt;
 
+/// Turns a request or response body into a string.
 pub async fn body_to_string(body: Body) -> String {
     let bytes = to_bytes(body, usize::MAX).await.unwrap();
     String::from_utf8(bytes.to_vec()).unwrap()
+}
+
+/// Wrapper around a router to send request.
+///
+/// It hides the details of the communication with the server.
+pub struct Client {
+    router: Router,
+}
+
+impl Client {
+    /// Creates a new client.
+    ///
+    /// * `router`: service router.
+    pub fn new(router: Router) -> Self {
+        Self { router }
+    }
+
+    /// Sends a message.
+    pub async fn send_request(&self, request: Request<String>) -> Response<Body> {
+        self.router
+            .clone()
+            .oneshot(request)
+            .await
+            .expect("Could not send the request: {request:?}")
+    }
 }

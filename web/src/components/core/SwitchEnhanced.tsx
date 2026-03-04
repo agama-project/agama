@@ -22,13 +22,14 @@
 
 import React, { useId } from "react";
 import { Content, Flex, FlexItem, Switch, SwitchProps } from "@patternfly/react-core";
+import { TranslatedString } from "~/i18n";
 
 type SwitchEnhancedProps = Omit<
   SwitchProps,
   "ref" | "label" | "aria-labelledby" | "aria-describedby"
 > & {
   /** Must describe the isChecked="true" state. */
-  label: React.ReactNode;
+  label: TranslatedString;
   /** Description or helper text displayed below the label. */
   description: React.ReactNode;
 };
@@ -55,17 +56,29 @@ type SwitchEnhancedProps = Omit<
  * ```
  */
 export default function SwitchEnhanced({ description, label, ...props }: SwitchEnhancedProps) {
+  const switchId = useId();
+  // NOTE: `labelId` isn't actually needed because the usage of `label#htmlFor`.
+  // It remains to satisfy PatternFly/Switch component, which requires at least
+  // one of `label`, `aria-labelledby`, or `aria-label` props, None of them
+  // strictly needed with the approach followed here.
   const labelId = useId();
   const descriptionId = useId();
 
   return (
-    <Flex flexWrap={{ default: "nowrap" }}>
+    <Flex flexWrap={{ default: "nowrap" }} alignItems={{ default: "alignItemsFlexStart" }}>
       <FlexItem>
-        <Switch {...props} aria-labelledby={labelId} aria-describedby={descriptionId} />
+        <Switch
+          {...props}
+          id={switchId}
+          aria-labelledby={labelId}
+          aria-describedby={descriptionId}
+        />
       </FlexItem>
       <FlexItem>
-        <Content isEditorial id={labelId}>
-          {label}
+        <Content isEditorial>
+          <label id={labelId} htmlFor={switchId}>
+            {label}
+          </label>
         </Content>
         <Content component="small" id={descriptionId}>
           {description}

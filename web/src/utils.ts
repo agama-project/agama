@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2025] SUSE LLC
+ * Copyright (c) [2022-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -20,7 +20,12 @@
  * find current contact information at www.suse.com.
  */
 
+import { isArray, isPlainObject, mapEntries } from "radashi";
+import { generatePath } from "react-router";
 import { ISortBy, sort } from "fast-sort";
+import { _ } from "~/i18n";
+
+import type { TranslatedString } from "~/i18n";
 
 /**
  * Generates a new array without null and undefined values.
@@ -158,6 +163,80 @@ const mask = (value: string, visible: number = 4, maskChar: string = "*"): strin
   return maskChar.repeat(maskedLength) + visiblePart;
 };
 
+// list of sensitive object properties replaced by the maskSecrets() function
+const defaultSensitiveKeys = [
+  // storage
+  "encryptionPassword",
+  // users
+  "password",
+  // registration
+  "registrationCode",
+  // storage (iSCSI setting)
+  "reverse_password",
+];
+
+/**
+ * Recursively filters an object by replacing sensitive values with text
+ * "[FILTERED]". Useful for logging possibly sensitive data.
+ *
+ * It returns a new object, the original input is unchanged.
+ *
+ * @example
+ * ```ts
+ * const data = { user: "John", password: "123" };
+ * // logs '{ "user": "John", "password": "[FILTERED]" }'
+ * console.log(maskSecrets(data));
+ * ```
+ *
+ * @param obj - The object or array to sanitize
+ * @param options - Options object { sensitiveKeys, stringify }
+ * @returns Sanitized copy of the input
+ */
+const maskSecrets = (
+  obj: unknown,
+  {
+    sensitiveKeys = defaultSensitiveKeys,
+    stringify = true,
+  }: { sensitiveKeys?: string[]; stringify?: boolean } = {},
+): unknown => {
+  const mask = (currentObj: unknown): unknown => {
+    if (isArray(currentObj)) {
+      return currentObj.map(mask);
+    }
+
+    return isPlainObject(currentObj)
+      ? mapEntries(currentObj, (k, v) => [k, sensitiveKeys.includes(k) ? "[FILTERED]" : mask(v)])
+      : currentObj;
+  };
+
+  const result = mask(obj);
+
+  if (stringify) {
+    return JSON.stringify(result, null, 2);
+  }
+
+  return result;
+};
+
+/**
+ * A wrapper around React Router's `generatePath` that ensures all path parameters
+ * are URI-encoded using `encodeURIComponent`. This prevents broken URLs caused by
+ * special characters such as spaces, `#`, `$`, and others.
+ *
+ * @example
+ * ```ts
+ *   // Returns "/network/Wired%20%231"
+ *   generateEncodedPath("/network/:id", { id: "Wired #1" });
+ * ```
+ */
+const generateEncodedPath = (...args: Parameters<typeof generatePath>) => {
+  const [path, params] = args;
+  return generatePath(
+    path,
+    mapEntries(params, (key, value) => [key, encodeURIComponent(value)]),
+  );
+};
+
 /**
  * A lightweight wrapper around `fast-sort`.
  *
@@ -184,6 +263,415 @@ const mask = (value: string, visible: number = 4, maskChar: string = "*"): strin
 const sortCollection = <T>(collection: T[], direction: "asc" | "desc", key: string | ISortBy<T>) =>
   sort(collection)[direction](key as ISortBy<T>);
 
+/** Options for mergeSources */
+export type MergeSourcesOptions<T, K extends keyof T> = {
+  /** Object mapping source names to their arrays */
+  collections: Record<string, T[]>;
+  /** Order of precedence of where to take the object from if it is in more than
+   * one collection */
+  precedence: string[];
+  /** The property name(s) to use as the unique identifier */
+  primaryKey?: K | K[];
+};
+
+/** Item augmented with sources array */
+type ItemWithSources<T> = Omit<T, "sources"> & {
+  /** Array of source names where this item was found */
+  sources: string[];
+};
+
+/**
+ * Merges multiple collections of objects, tracking which sources each item
+ * appears in.
+ *
+ * When the same item (identified by the specified primaryKey(s)) appears in multiple
+ * collections, it will appear only once in the output with a `sources` array
+ * listing all collections where it was found. The object data is taken from
+ * the first source in the precedence order where it appears.
+ *
+ * @template T - The type of objects in the collections
+ * @template K - The key type used for identifying unique items
+ *
+ * @param options - Configuration object
+ * @param options.collections - Object mapping source names to arrays of items
+ * @param options.precedence - Array of source names in priority order (first = highest)
+ * @param options.primaryKey - Property name(s) to use as unique identifier (default: "id").
+ *                              Can be a single key or array of keys for composite primary keys.
+ *
+ * @returns Array of merged items, each with a `sources` property
+ *
+ * @example
+ * ```typescript
+ * // Single primary key example - iSCSI targets identified by name only
+ * const result = mergeSources({
+ *   collections: {
+ *     system: [
+ *       {
+ *         name: "iqn.2023-01.com.example:12ac588",
+ *         address: "192.168.100.102",
+ *         port: 3262,
+ *         interface: "default",
+ *         ibtf: false,
+ *         startup: "onboot",
+ *         connected: true,
+ *         locked: false
+ *       }
+ *     ],
+ *     config: [
+ *       {
+ *         name: "iqn.2023-01.com.example:12ac588",
+ *         address: "192.168.100.102",
+ *         port: 3262,
+ *         interface: "default",
+ *         startup: "onboot"
+ *       },
+ *       {
+ *         name: "iqn.2023-01.com.example:12ac788",
+ *         address: "192.168.100.106",
+ *         port: 3264,
+ *         interface: "default",
+ *         startup: "onboot"
+ *       }
+ *     ]
+ *   },
+ *   precedence: ['system', 'config'],
+ *   primaryKey: 'name'
+ * });
+ * // Returns:
+ * // [
+ * //   {
+ * //     name: "iqn.2023-01.com.example:12ac588",
+ * //     address: "192.168.100.102",
+ * //     port: 3262,
+ * //     interface: "default",
+ * //     ibtf: false,
+ * //     startup: "onboot",
+ * //     connected: true,
+ * //     locked: false,
+ * //     sources: ['system', 'config']
+ * //   },
+ * //   {
+ * //     name: "iqn.2023-01.com.example:12ac788",
+ * //     address: "192.168.100.106",
+ * //     port: 3264,
+ * //     interface: "default",
+ * //     startup: "onboot",
+ * //     sources: ['config']
+ * //   }
+ * // ]
+ *
+ * // Multiple primary key example - iSCSI targets identified by name + address + port
+ * // This is necessary because the same target name can have multiple portals
+ * const result2 = mergeSources({
+ *   collections: {
+ *     system: [
+ *       {
+ *         name: "iqn.2023-01.com.example:storage",
+ *         address: "192.168.100.102",
+ *         port: 3260,
+ *         interface: "default",
+ *         ibtf: false,
+ *         startup: "onboot",
+ *         connected: true,
+ *         locked: false
+ *       },
+ *       {
+ *         name: "iqn.2023-01.com.example:storage",
+ *         address: "192.168.100.102",
+ *         port: 3261,
+ *         interface: "default",
+ *         ibtf: false,
+ *         startup: "manual",
+ *         connected: false,
+ *         locked: false
+ *       }
+ *     ],
+ *     config: [
+ *       {
+ *         name: "iqn.2023-01.com.example:storage",
+ *         address: "192.168.100.102",
+ *         port: 3260,
+ *         interface: "default",
+ *         startup: "onboot"
+ *       },
+ *       {
+ *         name: "iqn.2023-01.com.example:storage",
+ *         address: "192.168.100.102",
+ *         port: 3261,
+ *         interface: "default",
+ *         startup: "manual"
+ *       },
+ *       {
+ *         name: "iqn.2023-01.com.example:storage",
+ *         address: "192.168.100.103",
+ *         port: 3260,
+ *         interface: "default",
+ *         startup: "onboot"
+ *       }
+ *     ]
+ *   },
+ *   precedence: ['system', 'config'],
+ *   primaryKey: ['name', 'address', 'port']
+ * });
+ * // Returns:
+ * // [
+ * //   {
+ * //     name: "iqn.2023-01.com.example:storage",
+ * //     address: "192.168.100.102",
+ * //     port: 3260,
+ * //     interface: "default",
+ * //     ibtf: false,
+ * //     startup: "onboot",
+ * //     connected: true,
+ * //     locked: false,
+ * //     sources: ['system', 'config']
+ * //   },
+ * //   {
+ * //     name: "iqn.2023-01.com.example:storage",
+ * //     address: "192.168.100.102",
+ * //     port: 3261,
+ * //     interface: "default",
+ * //     ibtf: false,
+ * //     startup: "manual",
+ * //     connected: false,
+ * //     locked: false,
+ * //     sources: ['system', 'config']
+ * //   },
+ * //   {
+ * //     name: "iqn.2023-01.com.example:storage",
+ * //     address: "192.168.100.103",
+ * //     port: 3260,
+ * //     interface: "default",
+ * //     startup: "onboot",
+ * //     sources: ['config']
+ * //   }
+ * // ]
+ * ```
+ */
+function mergeSources<T, K extends keyof T>({
+  collections,
+  precedence,
+  primaryKey = "id" as K,
+}: MergeSourcesOptions<T, K>): ItemWithSources<T>[] {
+  const map = new Map<string, ItemWithSources<T>>();
+
+  for (const name of precedence) {
+    const items = collections[name];
+    for (const obj of items) {
+      const key = Array.isArray(primaryKey)
+        ? primaryKey.map((k) => String(obj[k])).join("|")
+        : String(obj[primaryKey]);
+
+      if (map.has(key)) {
+        map.get(key)!.sources.push(name);
+      } else {
+        map.set(key, { ...obj, sources: [name] });
+      }
+    }
+  }
+
+  return Array.from(map.values());
+}
+
+/**
+ * Options for extending a base collection with matching merge items.
+ */
+interface ExtendCollectionOptions<T, U> {
+  /**
+   * Collection providing merge data to enrich base items.
+   *
+   * Items in this collection will be matched against the base collection
+   * according to the `matching` fields.
+   */
+  with?: U[];
+
+  /**
+   * Field name or array of field names used to match items between the base
+   * collection and the merge collection.
+   *  - Single field: matches on that field.
+   *  - Multiple fields: all fields are combined to determine a match.
+   */
+  matching?: keyof T | (keyof T)[];
+
+  /**
+   * Determines which collection's properties take priority when merging:
+   *  - `"baseWins"`: base item properties overwrite merge properties.
+   *  - `"extensionWins"`: merge properties overwrite base item properties.
+   * @default "baseWins"
+   */
+  precedence?: "baseWins" | "extensionWins";
+}
+
+/**
+ * Result of extending a collection.
+ */
+interface ExtendCollectionResult<T, U> {
+  /**
+   * Items from the base collection, extended with matching extension data.
+   *
+   * Items without matches are returned unchanged.
+   */
+  extended: (T & U)[];
+  /**
+   * Items from the extension collection that did not match any base item.
+   */
+  unmatched: U[];
+  /**
+   * All items: base collection (extended where matched) + unmatched extension
+   * items appended at the end, preserving base collection order.
+   */
+  all: (T & U)[];
+}
+
+/**
+ * Extends a base collection of items by merging in matching items from an
+ * extension collection.
+ *
+ * For each item in the base collection:
+ *   1. Find a matching item in the extension collection based on the specified
+ *      field(s).
+ *   2. Merge the matched item's properties into the base item according to
+ *      `precedence`.
+ *
+ * @returns Object containing:
+ *   - `extended`: base collection items, merged where a match was found.
+ *   - `unmatched`: extension items that had no matching base item.
+ *   - `all`: `extended` items followed by `unmatched` items, preserving base
+ *     collection order with unmatched extension items appended at the end.
+ *
+ * @example
+ * // Single field matching with default precedence (base wins)
+ * const configDevices = [
+ *   { channel: "0.0.0160", diag: false, format: true }
+ * ];
+ * const systemDevices = [
+ *   { channel: "0.0.0160", deviceName: "dasda", type: "eckd", diag: true },
+ *   { channel: "0.0.0999", deviceName: "extra", type: "fba" }
+ * ];
+ * const { extended, unmatched, all } = extendCollection(configDevices, {
+ *   with: systemDevices,
+ *   matching: 'channel'
+ * });
+ * // extended: [
+ * //   { channel: "0.0.0160", deviceName: "dasda", type: "eckd", diag: false, format: true }
+ * // ]
+ * // unmatched: [
+ * //   { channel: "0.0.0999", deviceName: "extra", type: "fba" }
+ * // ]
+ * // all: [
+ * //   { channel: "0.0.0160", deviceName: "dasda", type: "eckd", diag: false, format: true },
+ * //   { channel: "0.0.0999", deviceName: "extra", type: "fba" }
+ * // ]
+ *
+ * @example
+ * // Multiple field matching with extensionWins precedence
+ * const configDevices = [
+ *   { channel: "0.0.0160", state: "offline", diag: false }
+ * ];
+ * const systemDevices = [
+ *   { channel: "0.0.0160", state: "offline", deviceName: "dasda", type: "eckd", diag: true },
+ *   { channel: "0.0.0160", state: "active", deviceName: "dasdb", type: "fba" }
+ * ];
+ * const { extended, unmatched, all } = extendCollection(configDevices, {
+ *   with: systemDevices,
+ *   matching: ['channel', 'state'],
+ *   precedence: "extensionWins"
+ * });
+ * // extended: [
+ * //   { channel: "0.0.0160", state: "offline", deviceName: "dasda", type: "eckd", diag: true }
+ * // ]
+ * // unmatched: [
+ * //   { channel: "0.0.0160", state: "active", deviceName: "dasdb", type: "fba" }
+ * // ]
+ * // all: [
+ * //   { channel: "0.0.0160", state: "offline", deviceName: "dasda", type: "eckd", diag: true },
+ * //   { channel: "0.0.0160", state: "active", deviceName: "dasdb", type: "fba" }
+ * // ]
+ */
+function extendCollection<T extends object, U extends object>(
+  collection: T[] = [],
+  options: ExtendCollectionOptions<T, U>,
+): ExtendCollectionResult<T, U> {
+  const { with: extension = [], matching = "id", precedence = "baseWins" } = options;
+
+  // Normalize matching field(s) to array
+  const keys = Array.isArray(matching) ? matching : [matching];
+  // Create a composite key from item values
+  // For single field: returns the value directly (e.g., "0.0.0160")
+  // For multiple fields: joins values with pipe separator (e.g., "0.0.0160|offline")
+  const getKey = (item: T | U): string =>
+    keys.map((k) => String(item[k as keyof (T | U)])).join("|");
+
+  // Build a lookup map from extension items keyed by their matching fields
+  const extensionLookup = new Map(extension.map((item) => [getKey(item), item]));
+
+  const extended: (T & U)[] = [];
+  const unmatched: U[] = [];
+  const all: (T & U)[] = [];
+
+  // Extend each item in the base collection
+  for (const item of collection) {
+    const key = getKey(item);
+    const match = extensionLookup.get(key);
+
+    const resolved = (
+      !match
+        ? item
+        : (extensionLookup.delete(key),
+          precedence === "baseWins" ? { ...match, ...item } : { ...item, ...match })
+    ) as T & U;
+
+    extended.push(resolved);
+    all.push(resolved);
+  }
+
+  // Remaining items in lookup are unmatched — append to all to preserve
+  // base collection order with unmatched extension items at the end
+  for (const item of extensionLookup.values()) {
+    unmatched.push(item);
+    all.push(item as unknown as T & U);
+  }
+
+  return { all, extended, unmatched };
+}
+
+/** Options for translateEntries utility */
+type TranslateEntriesOptions = {
+  /** Optional predicate to exclude entries by key. */
+  filter?: (key: string) => boolean;
+};
+
+/**
+ * Translates the values of a string record using `_()`, optionally filtering
+ * entries by key.
+ *
+ * @example
+ * // Translate all entries
+ * const FORMAT_OPTIONS = { yes: N_("Yes"), no: N_("No") };
+ * translateEntries(FORMAT_OPTIONS)
+ *
+ * @example
+ * // Translate only entries matching a condition
+ * const STATUS_OPTIONS = { active: N_("Active"), offline: N_("Offline") };
+ * translateEntries(STATUS_OPTIONS, { filter: (status) => devices.some((d) => d.status === status) })
+ *
+ * @param entries - A record whose values are translation keys.
+ * @param options - Optional configuration.
+ * @param options.filter - Optional predicate to exclude entries by key.
+ * @returns A new record with the same keys and translated values.
+ *
+ */
+const translateEntries = (
+  entries: Record<string, string>,
+  { filter }: TranslateEntriesOptions = {},
+): Record<string, TranslatedString> =>
+  Object.fromEntries(
+    Object.entries(entries)
+      .filter(([key]) => filter?.(key) ?? true)
+      /* eslint-disable agama-i18n/string-literals */
+      .map(([key, value]) => [key, _(value)]),
+  );
+
 export {
   compact,
   hex,
@@ -192,5 +680,10 @@ export {
   localConnection,
   timezoneTime,
   mask,
+  generateEncodedPath,
+  maskSecrets,
   sortCollection,
+  mergeSources,
+  extendCollection,
+  translateEntries,
 };

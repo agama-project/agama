@@ -1,0 +1,195 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR SuSE Linux Products GmbH, Nuernberg
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-02-25 13:04+0000\n"
+"PO-Revision-Date: 2026-02-23 21:04+0000\n"
+"Last-Translator: Efstathios Iosifidis <eiosifidis@yandex.com>\n"
+"Language-Team: Greek <https://l10n.opensuse.org/projects/agama/agama-rust-"
+"master/el/>\n"
+"Language: el\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 5.16\n"
+
+#: agama-autoinstall/src/questions.rs:41 agama-utils/src/api/question.rs:292
+#: agama-utils/src/question/start.rs:54
+msgid "No"
+msgstr "Όχι"
+
+#: agama-autoinstall/src/questions.rs:41 agama-utils/src/api/question.rs:292
+#: agama-utils/src/question/start.rs:54
+msgid "Yes"
+msgstr "Ναι"
+
+#: agama-manager/src/tasks/runner.rs:185
+msgid "Prepare the system"
+msgstr "Προετοιμασία του συστήματος"
+
+#: agama-manager/src/tasks/runner.rs:186
+msgid "Install software"
+msgstr "Εγκατάσταση λογισμικού"
+
+#: agama-manager/src/tasks/runner.rs:187
+msgid "Configure the system"
+msgstr "Ρύθμιση του συστήματος"
+
+#: agama-manager/src/tasks/runner.rs:285
+msgid "Storing security settings"
+msgstr "Αποθήκευση ρυθμίσεων ασφαλείας"
+
+#: agama-manager/src/tasks/runner.rs:286
+msgid "Setting up the hostname"
+msgstr "Ρύθμιση του ονόματος συστήματος (hostname)"
+
+#: agama-manager/src/tasks/runner.rs:287
+msgid "Setting up the network proxy"
+msgstr "Ρύθμιση του διαμεσολαβητή δικτύου (proxy)"
+
+#: agama-manager/src/tasks/runner.rs:288
+msgid "Importing user files"
+msgstr "Εισαγωγή αρχείων χρήστη"
+
+#: agama-manager/src/tasks/runner.rs:289
+msgid "Running user pre-installation scripts"
+msgstr "Εκτέλεση σεναρίων (scripts) προ-εγκατάστασης του χρήστη"
+
+#: agama-manager/src/tasks/runner.rs:290
+msgid "Storing questions settings"
+msgstr "Αποθήκευση ρυθμίσεων ερωτήσεων"
+
+#: agama-manager/src/tasks/runner.rs:291
+msgid "Storing localization settings"
+msgstr "Αποθήκευση ρυθμίσεων τοπικοποίησης"
+
+#: agama-manager/src/tasks/runner.rs:292
+msgid "Storing users settings"
+msgstr "Αποθήκευση ρυθμίσεων χρηστών"
+
+#: agama-manager/src/tasks/runner.rs:293
+msgid "Configuring iSCSI devices"
+msgstr "Ρύθμιση παραμέτρων συσκευών iSCSI"
+
+#: agama-manager/src/tasks/runner.rs:297
+msgid "Configuring DASD devices"
+msgstr "Ρύθμιση παραμέτρων συσκευών DASD"
+
+#: agama-manager/src/tasks/runner.rs:301
+msgid "Setting up the network"
+msgstr "Ρύθμιση του δικτύου"
+
+#: agama-manager/src/tasks/runner.rs:306
+msgid "Preparing the software proposal"
+msgstr "Προετοιμασία της πρότασης λογισμικού"
+
+#: agama-manager/src/tasks/runner.rs:307
+msgid "Preparing the storage proposal"
+msgstr "Προετοιμασία της πρότασης αποθηκευτικού χώρου"
+
+#: agama-manager/src/tasks/runner.rs:308
+msgid "Storing bootloader settings"
+msgstr "Αποθήκευση ρυθμίσεων του διαχειριστή εκκίνησης (bootloader)"
+
+#: agama-network/src/service.rs:518
+msgid "Writing configuration"
+msgstr "Εγγραφή ρυθμίσεων"
+
+#: agama-network/src/service.rs:519
+msgid "Reading configuration"
+msgstr "Ανάγνωση ρυθμίσεων"
+
+#: agama-security/src/service.rs:226
+msgid "Reject"
+msgstr "Απόρριψη"
+
+#: agama-security/src/service.rs:226
+#: agama-software/src/callbacks/security.rs:109
+msgid "Trust"
+msgstr "Εμπιστοσύνη"
+
+#: agama-security/src/service.rs:227
+msgid ""
+"Trying to import a self-signed certificate. Do you want to trust it and "
+"register the product?"
+msgstr ""
+"Γίνεται προσπάθεια εισαγωγής ενός αυτο-υπογεγραμμένου πιστοποιητικού. Θέλετε "
+"να το εμπιστευτείτε και να προχωρήσετε στην εγγραφή του προϊόντος;"
+
+#: agama-software/src/callbacks/commit_download.rs:48
+#: agama-software/src/callbacks/install.rs:56
+msgid "Ignore"
+msgstr "Παράβλεψη"
+
+#: agama-software/src/callbacks/commit_download.rs:48
+#: agama-software/src/callbacks/install.rs:56
+#: agama-software/src/callbacks/install.rs:81
+msgid "Retry"
+msgstr "Επανάληψη"
+
+#: agama-software/src/callbacks/install.rs:78
+msgid "There was a problem running a package script."
+msgstr ""
+"Παρουσιάστηκε πρόβλημα κατά την εκτέλεση ενός σεναρίου (script) πακέτου."
+
+#: agama-software/src/callbacks/install.rs:81
+msgid "Continue"
+msgstr "Συνέχεια"
+
+#. TRANSLATORS: substituting: key ID, (key name), fingerprint
+#: agama-software/src/callbacks/security.rs:102
+msgid ""
+"The key {0} ({1}) with fingerprint {2} is unknown. Do you want to trust this "
+"key?"
+msgstr ""
+"Το κλειδί {0} ({1}) με αποτύπωμα {2} είναι άγνωστο. Θέλετε να εμπιστευτείτε "
+"αυτό το κλειδί;"
+
+#: agama-software/src/callbacks/security.rs:109
+msgid "Skip"
+msgstr "Παράλειψη"
+
+#: agama-software/src/zypp_server.rs:317
+msgid "Updating the list of repositories"
+msgstr "Ενημέρωση της λίστας αποθετηρίων"
+
+#: agama-software/src/zypp_server.rs:318
+msgid "Refreshing metadata from the repositories"
+msgstr "Ανανέωση μεταδεδομένων από τα αποθετήρια"
+
+#: agama-software/src/zypp_server.rs:319
+msgid "Calculating the software proposal"
+msgstr "Υπολογισμός της πρότασης λογισμικού"
+
+#: agama-software/src/zypp_server.rs:322
+msgid "Registering the system"
+msgstr "Εγγραφή του συστήματος"
+
+#: agama-software/src/zypp_server.rs:420
+msgid "The product must be registered"
+msgstr "Το προϊόν πρέπει να εγγραφεί"
+
+#: agama-software/src/zypp_server.rs:458
+msgid "There are conflicts in software selection"
+msgstr ""
+
+#: agama-software/src/zypp_server.rs:471
+msgid "There are software conflict in software selection"
+msgstr ""
+
+#: agama-users/src/service.rs:140
+msgid ""
+"Defining a user, setting the root password or a SSH public key is required"
+msgstr ""
+"Απαιτείται ο ορισμός ενός χρήστη, ο ορισμός συνθηματικού root ή ενός "
+"δημόσιου κλειδιού SSH"
+
+#: agama-users/src/service.rs:153
+msgid "First user information is incomplete"
+msgstr "Οι πληροφορίες του πρώτου χρήστη είναι ελλιπείς"

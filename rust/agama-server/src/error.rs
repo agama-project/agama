@@ -26,8 +26,6 @@ use axum::{
 };
 use serde_json::json;
 
-use crate::{users::password::PasswordCheckerError, web::common::ProgressServiceError};
-
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
     #[error("D-Bus error: {0}")]
@@ -36,10 +34,6 @@ pub enum Error {
     Anyhow(String),
     #[error("Agama service error: {0}")]
     Service(#[from] ServiceError),
-    #[error("Progress service error: {0}")]
-    Progress(#[from] ProgressServiceError),
-    #[error("Could not check the password")]
-    PasswordCheck(#[from] PasswordCheckerError),
 }
 
 // This would be nice, but using it for a return type

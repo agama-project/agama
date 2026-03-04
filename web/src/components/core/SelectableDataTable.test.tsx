@@ -25,6 +25,7 @@ import { screen, within } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
 import { SelectableDataTable } from "~/components/core";
 import { SelectableDataTableColumn } from "./SelectableDataTable";
+import { _ } from "~/i18n";
 
 let consoleErrorSpy: jest.SpyInstance;
 
@@ -117,27 +118,29 @@ const vg = {
   lvs: [lv1],
 };
 
-const columns: SelectableDataTableColumn[] = [
-  // FIXME: do not use any but the right types once storage part is rewritten.
-  // Or even better, write a test not coupled to storage
-  { name: "Device", value: (item: any) => item.name, sortingKey: "name" },
-  {
-    name: "Content",
-    value: (item: any) => {
-      if (item.isDrive) return item.systems.map((s, i) => <p key={i}>{s}</p>);
-      if (item.type === "vg") return `${item.lvs.length} logical volume(s)`;
+function columns(): SelectableDataTableColumn[] {
+  return [
+    // FIXME: do not use any but the right types once storage part is rewritten.
+    // Or even better, write a test not coupled to storage
+    { name: _("Device"), value: (item: any) => item.name, sortingKey: "name" },
+    {
+      name: _("Content"),
+      value: (item: any) => {
+        if (item.isDrive) return item.systems.map((s, i) => <p key={i}>{s}</p>);
+        if (item.type === "vg") return `${item.lvs.length} logical volume(s)`;
 
-      return item.content;
+        return item.content;
+      },
     },
-  },
-  { name: "Size", value: (item: any) => item.size, sortingKey: "size" },
-];
+    { name: _("Size"), value: (item: any) => item.size, sortingKey: "size" },
+  ];
+}
 
 const onChangeFn = jest.fn();
 
 let props;
 const commonProps = {
-  columns,
+  columns: columns(),
   items: [sda, sdb, vg],
   itemIdKey: "sid",
   initialExpandedKeys: [sda.sid, vg.sid],
@@ -217,6 +220,21 @@ describe("SelectableDataTable", () => {
     expect(editFn).toHaveBeenCalled();
   });
 
+  it("uses itemActionsComponent when provided instead of the default ActionsColumn", async () => {
+    const CustomActions = ({ label }) => <span>Custom actions: {label}</span>;
+
+    plainRender(
+      <SelectableDataTable
+        {...props}
+        itemActions={(d) => [{ title: `Edit ${d.name}`, onClick: jest.fn() }]}
+        itemActionsLabel={(d) => `Actions for ${d.name}`}
+        itemActionsComponent={CustomActions}
+      />,
+    );
+
+    screen.getByText("Custom actions: Actions for /dev/sda");
+  });
+
   it("renders a expand toggler in items with children", () => {
     plainRender(<SelectableDataTable {...props} />);
     const table = screen.getByRole("grid");
@@ -282,6 +300,21 @@ describe("SelectableDataTable", () => {
     // children must be visible
     const sdaChild = within(table).queryByRole("row", { name: /dev\/sda1 512/ });
     expect(sdaChild).not.toBeNull();
+  });
+
+  it("allows selectionMode#none", () => {
+    plainRender(<SelectableDataTable {...props} selectionMode="none" />);
+    const table = screen.getByRole("grid");
+    expect(within(table).queryAllByRole("radio")).toEqual([]);
+    expect(within(table).queryAllByRole("checkbox")).toEqual([]);
+  });
+
+  it.skip("renders nothing for actions column if actions is an empty collection", () => {
+    // TODO: requires a refactor  to correctly hide the actions column header
+    // when no items have actions. Check TODO note in the component
+    plainRender(<SelectableDataTable {...props} itemActions={() => []} />);
+    const table = screen.getByRole("grid");
+    expect(within(table).queryByRole("columnheader", { name: "Row actions" })).toBeNull();
   });
 
   describe("when not providing a custom item equality function", () => {

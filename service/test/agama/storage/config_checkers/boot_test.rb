@@ -51,8 +51,7 @@ describe Agama::Storage::ConfigCheckers::Boot do
     it "includes the expected issue" do
       issues = subject.issues
       expect(issues).to include an_object_having_attributes(
-        error?:      true,
-        kind:        :no_such_alias,
+        kind:        Agama::Storage::IssueClasses::Config::NO_SUCH_ALIAS,
         description: /There is no boot device with alias '.*'/
       )
     end
@@ -68,8 +67,7 @@ describe Agama::Storage::ConfigCheckers::Boot do
         it "includes the expected issue" do
           issues = subject.issues
           expect(issues).to include an_object_having_attributes(
-            error?:      true,
-            kind:        :no_root,
+            kind:        Agama::Storage::IssueClasses::Config::NO_ROOT,
             description: /The boot device cannot be automatically selected/
           )
         end

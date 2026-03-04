@@ -76,14 +76,6 @@ module Agama
         exit
       end
 
-      # Configuration
-      def config
-        # TODO: do not require "yast" until it is needed
-        require "agama/config"
-        Config.load(logger) unless Config.current
-        Config.current
-      end
-
       # Set up a service
       #
       # @param name [Symbol] Service name (ie, :users)
@@ -92,7 +84,7 @@ module Agama
       def build_service(name, logger)
         require "agama/dbus/#{name}_service"
         klass = Agama::DBus.const_get("#{name.capitalize}Service")
-        klass.new(config, logger)
+        klass.new(logger)
       rescue LoadError, NameError
         raise "Service '#{name}' not found"
       end

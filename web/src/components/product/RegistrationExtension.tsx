@@ -31,11 +31,13 @@ import {
   Label,
   Title,
 } from "@patternfly/react-core";
-import { AddonInfo, RegisteredAddonInfo } from "~/types/software";
-import { useRegisteredAddons, useRegisterAddonMutation } from "~/queries/software";
+import { AddonInfo } from "~/types/software";
 import { mask } from "~/utils";
 import { _ } from "~/i18n";
 import RegistrationCodeInput from "./RegistrationCodeInput";
+import type { Issue } from "~/model/issue";
+import type { Addon } from "~/model/config/product";
+import { isEmpty } from "radashi";
 
 /**
  * Display registered status of the extension.
@@ -50,7 +52,7 @@ const RegisteredExtensionStatus = ({ registrationCode }: { registrationCode: str
   const [msg1, msg2] = _("The extension has been registered with key %s.").split("%s");
 
   // free extension or registered via RMT
-  if (registrationCode === null) {
+  if (registrationCode === null || isEmpty(registrationCode)) {
     return <span>{_("The extension was registered without any registration code.")}</span>;
   }
 
@@ -75,26 +77,22 @@ const RegisteredExtensionStatus = ({ registrationCode }: { registrationCode: str
  */
 export default function RegistrationExtension({
   extension,
+  config,
   isUnique,
+  registrationCallback,
+  issue,
 }: {
   extension: AddonInfo;
+  config: Addon;
   isUnique: boolean;
+  registrationCallback: Function;
+  issue: Issue | undefined;
 }) {
-  const { mutate: registerAddon } = useRegisterAddonMutation();
-  const registeredExtensions = useRegisteredAddons();
-  const [regCode, setRegCode] = useState("");
-  const [error, setError] = useState<string | null>(null);
+  const [regCode, setRegCode] = useState(config?.registrationCode || "");
   const [loading, setLoading] = useState(false);
 
-  const onRegisterError = ({ response }) => {
-    setError(response.data.message);
-  };
-
-  const registrationData = registeredExtensions.find(
-    (e) => e.id === extension.id && (e.version === extension.version || e.version === null),
-  );
-
-  const isRegistered = !!registrationData;
+  const registration = extension.registration;
+  const isRegistered = registration.status === "registered";
 
   const id = `${extension.id}-${extension.version}`;
   const formId = `register-form-${id}`;
@@ -103,21 +101,12 @@ export default function RegistrationExtension({
 
   const submit = async (e: React.SyntheticEvent | undefined) => {
     e?.preventDefault();
-    setLoading(true);
-
-    const data: RegisteredAddonInfo = {
+    registrationCallback({
       id: extension.id,
       registrationCode: regCode,
-      // omit the version if only one version of the extension exists
-      version: isUnique ? null : extension.version,
-    };
-
-    registerAddon(data, {
-      // @ts-expect-error
-      onError: onRegisterError,
-      onSuccess: () => setError(null),
-      onSettled: () => setLoading(false),
+      version: isUnique ? undefined : extension.version,
     });
+    setLoading(true);
   };
 
   return (
@@ -139,11 +128,13 @@ export default function RegistrationExtension({
         )}
       </Title>
       <Content component="p">{extension.description}</Content>
-      {error && <Alert variant="warning" isInline title={error} />}
+      {issue && (
+        <Alert variant="warning" isInline title={issue.description}>
+          {issue.details}
+        </Alert>
+      )}
       <Content>
-        {isRegistered && (
-          <RegisteredExtensionStatus registrationCode={registrationData.registrationCode} />
-        )}
+        {isRegistered && <RegisteredExtensionStatus registrationCode={registration.code} />}
         {!isRegistered && extension.available && !extension.free && (
           <Form id={formId} onSubmit={submit}>
             {/* // TRANSLATORS: input field label */}

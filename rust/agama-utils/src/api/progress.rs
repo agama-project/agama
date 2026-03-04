@@ -65,23 +65,23 @@ impl Progress {
         }
     }
 
-    pub fn next(&mut self) -> Result<(), Error> {
+    pub fn advance(&mut self) -> Result<(), Error> {
         if self.index >= self.size {
             return Err(Error::MissingStep(self.scope));
         }
 
         self.index += 1;
-        self.step = self.get_step(self.index).unwrap_or(String::new());
+        self.step = self.get_step(self.index).unwrap_or_default();
         Ok(())
     }
 
-    pub fn next_with_step(&mut self, step: String) -> Result<(), Error> {
-        self.next()?;
+    pub fn advance_with_step(&mut self, step: String) -> Result<(), Error> {
+        self.advance()?;
         self.step = step;
         Ok(())
     }
 
     fn get_step(&self, index: usize) -> Option<String> {
-        self.steps.get(index - 1).map(|s| s.clone())
+        self.steps.get(index - 1).cloned()
     }
 }

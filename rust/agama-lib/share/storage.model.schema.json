@@ -135,7 +135,6 @@
         "reuse": { "type": "boolean" },
         "default": { "type": "boolean" },
         "type": { "$ref": "#/$defs/filesystemType" },
-        "snapshots": { "type": "boolean" },
         "label": { "type": "string" }
       }
     },
@@ -143,6 +142,8 @@
       "enum": [
         "bcachefs",
         "btrfs",
+        "btrfsImmutable",
+        "btrfsSnapshots",
         "exfat",
         "ext2",
         "ext3",
