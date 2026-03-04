@@ -44,6 +44,7 @@ use crate::{
     model::{
         registration::RegistrationError,
         state::{self, SoftwareState},
+        WriteIssues,
     },
     state::{Addon, RegistrationState, RepoKey, ResolvableSelection},
     Registration, ResolvableType,
@@ -120,7 +121,7 @@ pub enum SoftwareAction {
         progress: Handler<progress::Service>,
         question: Handler<question::Service>,
         security: Handler<security::Service>,
-        tx: oneshot::Sender<ZyppServerResult<Vec<Issue>>>,
+        tx: oneshot::Sender<ZyppServerResult<WriteIssues>>,
     },
 }
 
@@ -309,10 +310,10 @@ impl ZyppServer {
         _questions: Handler<question::Service>,
         security_srv: Handler<security::Service>,
         security: &mut callbacks::Security,
-        tx: oneshot::Sender<ZyppServerResult<Vec<Issue>>>,
+        tx: oneshot::Sender<ZyppServerResult<WriteIssues>>,
         zypp: &zypp_agama::Zypp,
     ) -> Result<(), ZyppDispatchError> {
-        let mut issues: Vec<Issue> = vec![];
+        let mut issues = WriteIssues::default();
         let mut steps = vec![
             gettext("Updating the list of repositories"),
             gettext("Refreshing metadata from the repositories"),
@@ -331,6 +332,10 @@ impl ZyppServer {
         let old_state = self.read(zypp)?;
         if let Some(registration_config) = &state.registration {
             self.update_registration(registration_config, zypp, &security_srv, &mut issues);
+
+            if !issues.is_empty() {
+                return Self::send_issues_and_finish(issues, tx, progress);
+            }
         }
 
         self.trusted_keys = state.trusted_gpg_keys;
@@ -365,11 +370,10 @@ impl ZyppServer {
 
             if let Err(error) = result {
                 let message = format!("Could not add the repository {}", repo.alias);
-                issues.push(
+                issues.software.push(
                     Issue::new("software.add_repo", &message).with_details(&error.to_string()),
                 );
             }
-            // Add an issue if it was not possible to add the repository.
         }
 
         for repo in &to_remove {
@@ -380,7 +384,7 @@ impl ZyppServer {
 
             if let Err(error) = result {
                 let message = format!("Could not remove the repository {}", repo.alias);
-                issues.push(
+                issues.software.push(
                     Issue::new("software.remove_repo", &message).with_details(&error.to_string()),
                 );
             }
@@ -398,7 +402,7 @@ impl ZyppServer {
 
             if let Err(error) = result {
                 let message = "Could not read the repositories".to_string();
-                issues.push(
+                issues.software.push(
                     Issue::new("software.load_source", &message).with_details(&error.to_string()),
                 );
             }
@@ -414,21 +418,29 @@ impl ZyppServer {
             zypp_agama::ResolvableSelected::Installation,
         );
         if let Err(error) = result {
-            let issue = if state.allow_registration {
-                Issue::new(
-                    "software.missing_registration",
-                    &gettext("The product must be registered"),
+            if state.allow_registration && !self.is_registered() {
+                let message = gettext(
+                    "Failed to find the {} product in the repositories. You might need to register the system.",
                 )
+                .replace("{}", &state.product);
+                issues
+                    .product
+                    .push(Issue::new("missing_registration", &message));
             } else {
-                let message = format!("Could not select the product '{}'", &state.product);
-                Issue::new("software.missing_product", &message).with_details(&error.to_string())
+                let message = gettext("Failed to find the {} product in the repositories.")
+                    .replace("{}", &state.product);
+                let issue =
+                    Issue::new("missing_product", &message).with_details(&error.to_string());
+                issues.software.push(issue);
             };
-            issues.push(issue);
+
+            return Self::send_issues_and_finish(issues, tx, progress);
         }
+
         for (name, r#type, selection) in &state.resolvables.to_vec() {
             match selection {
                 ResolvableSelection::AutoSelected { skip_if_missing } => {
-                    issues.append(&mut self.select_resolvable(
+                    issues.software.append(&mut self.select_resolvable(
                         zypp,
                         name,
                         *r#type,
@@ -437,7 +449,7 @@ impl ZyppServer {
                     ));
                 }
                 ResolvableSelection::Selected => {
-                    issues.append(&mut self.select_resolvable(
+                    issues.software.append(&mut self.select_resolvable(
                         zypp,
                         name,
                         *r#type,
@@ -461,11 +473,9 @@ impl ZyppServer {
 
         self.only_required = state.options.only_required;
         tracing::info!("Install only required packages: {}", self.only_required);
+
         // run the solver to select the dependencies, ignore the errors, the solver runs again later
-        if let Ok(false) = zypp.run_solver(self.only_required) {
-            let message = gettext("There are conflicts in software selection");
-            issues.push(Issue::new("software.conflict", &message));
-        }
+        _ = zypp.run_solver(self.only_required);
 
         // unselect packages including the autoselected dependencies
         for (name, r#type, selection) in &state.resolvables.to_vec() {
@@ -474,17 +484,14 @@ impl ZyppServer {
             };
         }
 
-        _ = progress.cast(progress::message::Finish::new(Scope::Software));
         if let Ok(false) = zypp.run_solver(self.only_required) {
-            let message = gettext("There are software conflict in software selection");
-            issues.push(Issue::new("software.conflict", &message));
+            let message = gettext("There are conflicts in the software selection");
+            issues
+                .software
+                .push(Issue::new("software.conflict", &message));
         }
 
-        if let Err(e) = tx.send(Ok(issues)) {
-            tracing::error!("failed to send list of issues after write: {:?}", e);
-            // It is OK to return ok, when tx is closed, we have no other way to indicate issue.
-        }
-        Ok(())
+        Self::send_issues_and_finish(issues, tx, progress)
     }
 
     fn select_resolvable(
@@ -624,6 +631,10 @@ impl ZyppServer {
             tracing::error!("Failed to finish the registration: {error}");
         };
         Ok(())
+    }
+
+    fn is_registered(&self) -> bool {
+        matches!(self.registration, RegistrationStatus::Registered(_))
     }
 
     fn modify_zypp_conf(&self) {
@@ -859,7 +870,7 @@ impl ZyppServer {
         state: &RegistrationState,
         zypp: &zypp_agama::Zypp,
         security_srv: &Handler<security::Service>,
-        issues: &mut Vec<Issue>,
+        issues: &mut WriteIssues,
     ) {
         match &self.registration {
             RegistrationStatus::Failed(_) | RegistrationStatus::NotRegistered => {
@@ -878,7 +889,7 @@ impl ZyppServer {
         state: &RegistrationState,
         zypp: &zypp_agama::Zypp,
         security_srv: &Handler<security::Service>,
-        issues: &mut Vec<Issue>,
+        issues: &mut WriteIssues,
     ) {
         let mut registration =
             Registration::builder(self.root_dir.clone(), &state.product, &state.version);
@@ -900,7 +911,7 @@ impl ZyppServer {
                 self.registration = RegistrationStatus::Registered(Box::new(registration));
             }
             Err(error) => {
-                issues.push(
+                issues.product.push(
                     Issue::new(
                         "system_registration_failed",
                         "Failed to register the system",
@@ -916,7 +927,7 @@ impl ZyppServer {
         &mut self,
         addons: &Vec<Addon>,
         zypp: &zypp_agama::Zypp,
-        issues: &mut Vec<Issue>,
+        issues: &mut WriteIssues,
     ) {
         let RegistrationStatus::Registered(registration) = &mut self.registration else {
             tracing::error!("Could not register addons because the base system is not registered");
@@ -932,8 +943,22 @@ impl ZyppServer {
                 let message = format!("Failed to register the add-on {}", addon.id);
                 let issue_id = format!("addon_registration_failed[{}]", &addon.id);
                 let issue = Issue::new(&issue_id, &message).with_details(&error.to_string());
-                issues.push(issue);
+                issues.product.push(issue);
             }
         }
+    }
+
+    /// Ancillary function to send the issues and finish the progress early.
+    fn send_issues_and_finish(
+        issues: WriteIssues,
+        tx: oneshot::Sender<ZyppServerResult<WriteIssues>>,
+        progress: Handler<progress::Service>,
+    ) -> Result<(), ZyppDispatchError> {
+        if let Err(e) = tx.send(Ok(issues)) {
+            tracing::error!("failed to send list of issues after write: {:?}", e);
+            // It is OK to return ok, when tx is closed, we have no other way to indicate issue.
+        }
+        _ = progress.cast(progress::message::Finish::new(Scope::Software));
+        Ok(())
     }
 }

@@ -24,7 +24,6 @@ use agama_utils::{
     api::{
         event,
         software::{SoftwareProposal, SystemInfo},
-        Issue,
     },
     issue,
     products::ProductSpec,
@@ -33,7 +32,7 @@ use agama_utils::{
 use async_trait::async_trait;
 
 use crate::{
-    model::state::SoftwareState,
+    model::{state::SoftwareState, WriteIssues},
     service::{self},
     ModelAdapter, Service,
 };
@@ -78,8 +77,8 @@ impl ModelAdapter for TestModel {
         &mut self,
         _software: SoftwareState,
         _progress: Handler<progress::Service>,
-    ) -> Result<Vec<Issue>, service::Error> {
-        Ok(vec![])
+    ) -> Result<WriteIssues, service::Error> {
+        Ok(Default::default())
     }
 }
 

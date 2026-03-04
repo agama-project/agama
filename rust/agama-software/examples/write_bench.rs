@@ -21,14 +21,11 @@
 use agama_security as security;
 use agama_software::state::SoftwareStateBuilder;
 use agama_software::zypp_server::{SoftwareAction, ZyppServer, ZyppServerResult};
+use agama_software::WriteIssues;
 use agama_utils::api::question::{Answer, AnswerRule, Config};
 use agama_utils::api::software::SoftwareConfig;
 use agama_utils::products::Registry;
-use agama_utils::{
-    actor,
-    api::{event::Event, Issue},
-    progress, question,
-};
+use agama_utils::{actor, api::event::Event, progress, question};
 use camino::{Utf8Path, Utf8PathBuf};
 use glob::glob;
 use std::fs;
@@ -133,7 +130,7 @@ async fn main() {
         })
         .expect("Failed to send SoftwareAction::Write");
 
-    let result: ZyppServerResult<Vec<Issue>> =
+    let result: ZyppServerResult<WriteIssues> =
         rx.await.expect("Failed to receive response from server");
     if let Err(err) = result {
         panic!("SoftwareAction::Write failed: {:?}", err);
@@ -171,7 +168,7 @@ async fn main() {
         })
         .expect("Failed to send SoftwareAction::Write");
 
-    let result: ZyppServerResult<Vec<Issue>> =
+    let result: ZyppServerResult<WriteIssues> =
         rx.await.expect("Failed to receive response from server");
     if let Err(err) = result {
         panic!("SoftwareAction::Write failed: {:?}", err);
@@ -195,7 +192,7 @@ async fn main() {
         })
         .expect("Failed to send SoftwareAction::Write");
 
-    let result: ZyppServerResult<Vec<Issue>> =
+    let result: ZyppServerResult<WriteIssues> =
         rx.await.expect("Failed to receive response from server");
     if let Err(err) = result {
         panic!("SoftwareAction::Write failed: {:?}", err);

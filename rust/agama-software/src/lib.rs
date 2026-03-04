@@ -39,7 +39,9 @@ pub mod service;
 pub use service::Service;
 
 mod model;
-pub use model::{state, Model, ModelAdapter, Registration, Resolvable, ResolvableType};
+pub use model::{
+    state, Model, ModelAdapter, Registration, Resolvable, ResolvableType, WriteIssues,
+};
 
 mod callbacks;
 pub mod message;

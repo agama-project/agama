@@ -21,12 +21,12 @@
 use agama_security as security;
 use agama_software::state::{Repository as StateRepository, SoftwareState};
 use agama_software::zypp_server::{SoftwareAction, ZyppServer, ZyppServerResult};
+use agama_software::WriteIssues;
 use agama_utils::{
     actor,
     api::{
         event::Event,
         question::{Answer, AnswerRule, Config},
-        Issue,
     },
     progress, question,
 };
@@ -131,7 +131,7 @@ async fn test_start_zypp_server() {
         })
         .expect("Failed to send SoftwareAction::Write");
 
-    let result: ZyppServerResult<Vec<Issue>> =
+    let result: ZyppServerResult<WriteIssues> =
         rx.await.expect("Failed to receive response from server");
     assert!(
         result.is_ok(),
@@ -140,11 +140,11 @@ async fn test_start_zypp_server() {
     );
     let issues = result.unwrap();
     assert_eq!(
-        issues.len(),
+        issues.software.len(),
         1,
         "There are unexpected issues size {issues:#?}"
     );
-    assert_eq!(issues[0].class, "software.missing_product");
+    assert_eq!(issues.software[0].class, "missing_product");
 
     let questions = question_handler
         .call(question::message::Get)
