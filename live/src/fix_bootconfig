@@ -117,7 +117,7 @@ rm -f $dst/fix_bootconfig.* $dst/.profile
 
 case $arch in
   s390x)
-    /usr/bin/xorriso "\$@" -volid "\$volid" -boot_image any bin_path=boot/s390x/cd.ikr -boot_image any boot_info_table=off -boot_image any load_size=512
+    /usr/bin/xorriso "\$@" -volid "\$volid" -boot_image any bin_path=boot/s390x/loader/cd.ikr -boot_image any boot_info_table=off -boot_image any load_size=512
     err=\$?
     [ -x /usr/bin/isozipl ] && isozipl "\$iso"
     ;;
