@@ -388,6 +388,18 @@ impl MessageHandler<message::zfcp::GetConfig> for Service {
 }
 
 #[async_trait]
+impl MessageHandler<message::zfcp::GetIssues> for Service {
+    async fn handle(&mut self, _message: message::zfcp::GetIssues) -> Result<Vec<Issue>, Error> {
+        if let Some(proxy) = &self.zfcp_proxy {
+            let raw_json = proxy.issues().await?;
+            Ok(try_from_string(&raw_json)?)
+        } else {
+            Ok(vec![])
+        }
+    }
+}
+
+#[async_trait]
 impl MessageHandler<message::zfcp::SetConfig> for Service {
     async fn handle(&mut self, message: message::zfcp::SetConfig) -> Result<(), Error> {
         if let Some(proxy) = &self.zfcp_proxy {

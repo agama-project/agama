@@ -26,7 +26,7 @@ use agama_utils::{
         event::{self, Event},
         Progress, Scope,
     },
-    progress,
+    issue, progress,
 };
 use serde::Deserialize;
 use serde_json;
@@ -41,11 +41,15 @@ pub enum Error {
     #[error(transparent)]
     Event(#[from] broadcast::error::SendError<Event>),
     #[error(transparent)]
+    Issue(#[from] issue::service::Error),
+    #[error(transparent)]
     DBus(#[from] zbus::Error),
     #[error(transparent)]
     Json(#[from] serde_json::Error),
     #[error(transparent)]
     Storage(#[from] storage::service::Error),
+    #[error(transparent)]
+    DBusClient(#[from] agama_storage_client::Error),
 }
 
 #[derive(Debug, Deserialize)]
@@ -71,22 +75,28 @@ impl From<ProgressData> for Progress {
 pub struct Monitor {
     storage: Handler<storage::Service>,
     progress: Handler<progress::Service>,
+    issues: Handler<issue::Service>,
     events: event::Sender,
     connection: Connection,
+    storage_dbus: Handler<agama_storage_client::Service>,
 }
 
 impl Monitor {
     pub fn new(
         storage: Handler<storage::Service>,
         progress: Handler<progress::Service>,
+        issues: Handler<issue::Service>,
         events: event::Sender,
         connection: Connection,
+        storage_dbus: Handler<agama_storage_client::Service>,
     ) -> Self {
         Self {
             storage,
             progress,
+            issues,
             events,
             connection,
+            storage_dbus,
         }
     }
 
@@ -98,6 +108,8 @@ impl Monitor {
             .path(proxy.inner().path())?
             .build();
         let mut stream = MessageStream::for_match_rule(rule, &self.connection, None).await?;
+
+        self.update_issues().await?;
 
         while let Some(message) = stream.next().await {
             let message = message?;
@@ -120,12 +132,25 @@ impl Monitor {
         Ok(())
     }
 
+    async fn update_issues(&self) -> Result<(), Error> {
+        let issues = self
+            .storage_dbus
+            .call(agama_storage_client::message::zfcp::GetIssues)
+            .await?;
+        self.issues
+            .cast(issue::message::Set::new(Scope::ZFCP, issues))?;
+        Ok(())
+    }
+
     async fn handle_properties_changed(&self, signal: PropertiesChanged) -> Result<(), Error> {
         let args = signal.args()?;
         if args.changed_properties().get("System").is_some() {
             self.events
                 .send(Event::SystemChanged { scope: Scope::ZFCP })?;
             self.storage.cast(storage::message::Probe)?;
+        }
+        if args.changed_properties().get("Issues").is_some() {
+            self.update_issues().await?;
         }
         Ok(())
     }

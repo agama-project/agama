@@ -29,7 +29,7 @@ use crate::{
 use agama_utils::{
     actor::Handler,
     api::{event, RawConfig},
-    progress,
+    issue, progress,
 };
 use async_trait::async_trait;
 use serde_json::Value;
@@ -206,11 +206,12 @@ pub async fn start_service(
     storage: Handler<storage::Service>,
     events: event::Sender,
     progress: Handler<progress::Service>,
+    issues: Handler<issue::Service>,
     connection: zbus::Connection,
 ) -> Handler<Service> {
     let dasd = TestDASDClient::new();
     let zfcp = TestZFCPClient::new();
-    Starter::new(storage, events, progress, connection)
+    Starter::new(storage, events, progress, issues, connection)
         .with_dasd(dasd)
         .with_zfcp(zfcp)
         .start()

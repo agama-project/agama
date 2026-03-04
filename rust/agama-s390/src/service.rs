@@ -29,7 +29,7 @@ use agama_utils::{
         event,
         s390::{Config, SystemInfo},
     },
-    progress,
+    issue, progress,
 };
 use async_trait::async_trait;
 
@@ -53,6 +53,7 @@ pub struct Starter {
     storage: Handler<storage::Service>,
     events: event::Sender,
     progress: Handler<progress::Service>,
+    issues: Handler<issue::Service>,
     connection: zbus::Connection,
     dasd: Option<Box<dyn DASDClient + Send + 'static>>,
     zfcp: Option<Box<dyn ZFCPClient + Send + 'static>>,
@@ -63,12 +64,14 @@ impl Starter {
         storage: Handler<storage::Service>,
         events: event::Sender,
         progress: Handler<progress::Service>,
+        issues: Handler<issue::Service>,
         connection: zbus::Connection,
     ) -> Self {
         Self {
             storage,
             events,
             progress,
+            issues,
             connection,
             dasd: None,
             zfcp: None,
@@ -86,25 +89,31 @@ impl Starter {
     }
 
     pub async fn start(self) -> Result<Handler<Service>, Error> {
-        let mut dasd_client = self.dasd;
-        let mut zfcp_client = self.zfcp;
-
-        if dasd_client.is_none() || zfcp_client.is_none() {
+        // Create agama_storage_client only if needed.
+        let (service, storage_dbus) = if self.dasd.is_none() || self.zfcp.is_none() {
             let storage_dbus = agama_storage_client::service::Starter::new(self.connection.clone())
                 .start()
                 .await?;
-            if dasd_client.is_none() {
-                dasd_client = Some(Box::new(dasd::Client::new(storage_dbus.clone())));
-            }
-            if zfcp_client.is_none() {
-                zfcp_client = Some(Box::new(zfcp::Client::new(storage_dbus)));
-            }
-        }
 
-        let service = Service {
-            dasd: dasd_client.unwrap(),
-            zfcp: zfcp_client.unwrap(),
+            let dasd = self
+                .dasd
+                .unwrap_or(Box::new(dasd::Client::new(storage_dbus.clone())));
+
+            let zfcp = self
+                .zfcp
+                .unwrap_or(Box::new(zfcp::Client::new(storage_dbus.clone())));
+
+            let service = Service { dasd, zfcp };
+
+            (service, Some(storage_dbus))
+        } else {
+            let service = Service {
+                dasd: self.dasd.unwrap(),
+                zfcp: self.zfcp.unwrap(),
+            };
+            (service, None)
         };
+
         let handler = actor::spawn(service);
 
         let dasd_monitor = dasd::Monitor::new(
@@ -115,9 +124,19 @@ impl Starter {
         );
         dasd::monitor::spawn(dasd_monitor)?;
 
-        let zfcp_monitor =
-            zfcp::Monitor::new(self.storage, self.progress, self.events, self.connection);
-        zfcp::monitor::spawn(zfcp_monitor)?;
+        // FIXME: allow mocking agama_storage_client instead of preventing its creation during
+        // tests.
+        if let Some(storage_dbus) = storage_dbus {
+            let zfcp_monitor = zfcp::Monitor::new(
+                self.storage,
+                self.progress,
+                self.issues,
+                self.events,
+                self.connection,
+                storage_dbus.clone(),
+            );
+            zfcp::monitor::spawn(zfcp_monitor)?;
+        }
 
         Ok(handler)
     }
@@ -133,9 +152,10 @@ impl Service {
         storage: Handler<storage::Service>,
         events: event::Sender,
         progress: Handler<progress::Service>,
+        issues: Handler<issue::Service>,
         connection: zbus::Connection,
     ) -> Starter {
-        Starter::new(storage, events, progress, connection)
+        Starter::new(storage, events, progress, issues, connection)
     }
 }
 

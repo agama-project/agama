@@ -18,7 +18,10 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use agama_utils::{actor::Message, api::RawConfig};
+use agama_utils::{
+    actor::Message,
+    api::{Issue, RawConfig},
+};
 
 pub struct Probe;
 
@@ -36,6 +39,12 @@ pub struct GetConfig;
 
 impl Message for GetConfig {
     type Reply = Option<RawConfig>;
+}
+
+pub struct GetIssues;
+
+impl Message for GetIssues {
+    type Reply = Vec<Issue>;
 }
 
 pub struct SetConfig {

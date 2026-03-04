@@ -61,7 +61,7 @@ mod tests {
             .await;
             let dasd = TestDASDClient::new();
             let zfcp = TestZFCPClient::new();
-            let handler = Service::starter(storage, events, progress, connection)
+            let handler = Service::starter(storage, events, progress, issues, connection)
                 .with_dasd(dasd.clone())
                 .with_zfcp(zfcp.clone())
                 .start()
