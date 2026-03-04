@@ -1,4 +1,13 @@
 -------------------------------------------------------------------
+Wed Mar  4 09:00:43 UTC 2026 - Lubos Kocman <lubos.kocman@suse.com>
+
+- Add wayland ready patterns to Leap 16.1 and TW
+  - lxqt_wayland
+  - openSUSEway
+  - hyprland (Tumbleweed exclusive for now)
+  - Leap 16.0 retrospective action item
+
+-------------------------------------------------------------------
 Wed Feb 25 16:04:52 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Fix SLES and SLES_SAP release package names (bsc#1258271).
