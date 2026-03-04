@@ -22,12 +22,10 @@ use crate::{
     http::{BaseHTTPClient, BaseHTTPClientError},
     logs::LogsLists,
 };
-use agama_utils::api::{self, Status};
+use agama_utils::api::{self, FinishMethod, Status};
 use reqwest::header::CONTENT_ENCODING;
 use std::path::{Path, PathBuf};
 use std::{fs, io::Cursor, os::unix::fs::OpenOptionsExt};
-
-use super::FinishMethod;
 
 #[derive(Debug, thiserror::Error)]
 pub enum ManagerHTTPClientError {

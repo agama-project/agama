@@ -12,7 +12,6 @@ tempfile = "3.23.0"
 thiserror = "2.0.17"
 tokio = { version = "1.48.0", features = ["macros", "rt-multi-thread", "sync"] }
 tokio-stream = "0.1.17"
-tokio-test = "0.4.4"
 tracing = "0.1.43"
 zbus = "5.12.0"
 

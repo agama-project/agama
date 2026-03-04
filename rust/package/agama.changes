@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Mar  4 07:03:28 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Update and clean-up dependencies (gh#agama-project/agama#3234).
+- Drop unused code from agama-lib (gh#agama-project/agama#3234).
+
+-------------------------------------------------------------------
 Wed Mar  4 06:55:12 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Fix packaging of dasd and zfcp schemas (gh#agama-project/agama#3236).

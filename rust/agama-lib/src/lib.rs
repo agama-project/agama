@@ -45,22 +45,13 @@
 
 pub mod auth;
 pub mod error;
-pub mod hostname;
 pub mod http;
-pub mod install_settings;
 pub use agama_utils::issue;
-pub mod jobs;
 pub mod logs;
 pub mod manager;
 pub mod monitor;
-pub mod network;
 pub mod profile;
-pub mod progress;
-pub mod proxies;
 pub mod questions;
-pub mod storage;
-mod store;
-pub use store::Store;
 pub mod utils;
 pub use agama_utils::{dbus, openapi};
 
