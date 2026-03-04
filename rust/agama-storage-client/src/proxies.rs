@@ -34,6 +34,4 @@ pub use dasd::{
 };
 
 pub mod zfcp;
-pub use zfcp::{
-    ProgressChanged as ZFCPProgressChanged, ProgressFinished as ZFCPProgressFinished, ZFCPProxy,
-};
+pub use zfcp::ZFCPProxy;

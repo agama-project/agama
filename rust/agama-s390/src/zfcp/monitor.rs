@@ -19,9 +19,7 @@
 // find current contact information at www.suse.com.
 
 use crate::storage;
-use agama_storage_client::proxies::{
-    ZFCPProgressChanged as ProgressChanged, ZFCPProgressFinished as ProgressFinished, ZFCPProxy,
-};
+use agama_storage_client::proxies::{zfcp, ZFCPProxy};
 use agama_utils::{
     actor::Handler,
     api::{
@@ -34,7 +32,7 @@ use serde::Deserialize;
 use serde_json;
 use tokio::sync::broadcast;
 use tokio_stream::StreamExt;
-use zbus::{message, Connection, MatchRule, MessageStream};
+use zbus::{fdo::PropertiesChanged, message, Connection, MatchRule, MessageStream};
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
@@ -98,26 +96,41 @@ impl Monitor {
             .msg_type(message::Type::Signal)
             .sender(proxy.inner().destination())?
             .path(proxy.inner().path())?
-            .interface(proxy.inner().interface())?
             .build();
         let mut stream = MessageStream::for_match_rule(rule, &self.connection, None).await?;
 
-        while let Some(Ok(message)) = stream.next().await {
-            if let Some(signal) = ProgressChanged::from_message(message.clone()) {
+        while let Some(message) = stream.next().await {
+            let message = message?;
+
+            if let Some(signal) = PropertiesChanged::from_message(message.clone()) {
+                self.handle_properties_changed(signal).await?;
+                continue;
+            }
+            if let Some(signal) = zfcp::ProgressChanged::from_message(message.clone()) {
                 self.handle_progress_changed(signal).await?;
                 continue;
             }
-            if let Some(signal) = ProgressFinished::from_message(message.clone()) {
+            if let Some(signal) = zfcp::ProgressFinished::from_message(message.clone()) {
                 self.handle_progress_finished(signal).await?;
                 continue;
             }
-            tracing::warn!("Unmanaged ZFCP signal: {message:?}");
+            tracing::warn!("Unmanaged zFCP signal: {message:?}");
         }
 
         Ok(())
     }
 
-    async fn handle_progress_changed(&self, signal: ProgressChanged) -> Result<(), Error> {
+    async fn handle_properties_changed(&self, signal: PropertiesChanged) -> Result<(), Error> {
+        let args = signal.args()?;
+        if args.changed_properties().get("System").is_some() {
+            self.events
+                .send(Event::SystemChanged { scope: Scope::ZFCP })?;
+            self.storage.cast(storage::message::Probe)?;
+        }
+        Ok(())
+    }
+
+    async fn handle_progress_changed(&self, signal: zfcp::ProgressChanged) -> Result<(), Error> {
         let args = signal.args()?;
         let progress_data = serde_json::from_str::<ProgressData>(args.progress)?;
         self.progress
@@ -126,7 +139,7 @@ impl Monitor {
         Ok(())
     }
 
-    async fn handle_progress_finished(&self, _signal: ProgressFinished) -> Result<(), Error> {
+    async fn handle_progress_finished(&self, _signal: zfcp::ProgressFinished) -> Result<(), Error> {
         self.progress
             .call(progress::message::Finish::new(Scope::ZFCP))
             .await?;
@@ -140,7 +153,7 @@ impl Monitor {
 pub fn spawn(monitor: Monitor) -> Result<(), Error> {
     tokio::spawn(async move {
         if let Err(e) = monitor.run().await {
-            tracing::error!("Error running the ZFCP monitor: {e:?}");
+            tracing::error!("Error running the zFCP monitor: {e:?}");
         }
     });
     Ok(())
