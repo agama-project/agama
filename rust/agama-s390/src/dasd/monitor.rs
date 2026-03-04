@@ -19,10 +19,7 @@
 // find current contact information at www.suse.com.
 
 use crate::storage;
-use agama_storage_client::proxies::{
-    DASDProgressChanged as ProgressChanged, DASDProgressFinished as ProgressFinished, DASDProxy,
-    DASDSystemChanged as SystemChanged, FormatChanged, FormatFinished,
-};
+use agama_storage_client::proxies::{dasd, DASDProxy};
 use agama_utils::{
     actor::Handler,
     api::{
@@ -104,24 +101,26 @@ impl Monitor {
             .build();
         let mut stream = MessageStream::for_match_rule(rule, &self.connection, None).await?;
 
-        while let Some(Ok(message)) = stream.next().await {
-            if let Some(signal) = SystemChanged::from_message(message.clone()) {
+        while let Some(message) = stream.next().await {
+            let message = message?;
+
+            if let Some(signal) = dasd::SystemChanged::from_message(message.clone()) {
                 self.handle_system_changed(signal)?;
                 continue;
             }
-            if let Some(signal) = ProgressChanged::from_message(message.clone()) {
+            if let Some(signal) = dasd::ProgressChanged::from_message(message.clone()) {
                 self.handle_progress_changed(signal).await?;
                 continue;
             }
-            if let Some(signal) = ProgressFinished::from_message(message.clone()) {
+            if let Some(signal) = dasd::ProgressFinished::from_message(message.clone()) {
                 self.handle_progress_finished(signal).await?;
                 continue;
             }
-            if let Some(signal) = FormatChanged::from_message(message.clone()) {
+            if let Some(signal) = dasd::FormatChanged::from_message(message.clone()) {
                 self.handle_format_changed(signal)?;
                 continue;
             }
-            if let Some(signal) = FormatFinished::from_message(message.clone()) {
+            if let Some(signal) = dasd::FormatFinished::from_message(message.clone()) {
                 self.handle_format_finished(signal)?;
                 continue;
             }
@@ -131,14 +130,14 @@ impl Monitor {
         Ok(())
     }
 
-    fn handle_system_changed(&self, _signal: SystemChanged) -> Result<(), Error> {
+    fn handle_system_changed(&self, _signal: dasd::SystemChanged) -> Result<(), Error> {
         self.events
             .send(Event::SystemChanged { scope: Scope::DASD })?;
         self.storage.cast(storage::message::Probe)?;
         Ok(())
     }
 
-    async fn handle_progress_changed(&self, signal: ProgressChanged) -> Result<(), Error> {
+    async fn handle_progress_changed(&self, signal: dasd::ProgressChanged) -> Result<(), Error> {
         let args = signal.args()?;
         let progress_data = serde_json::from_str::<ProgressData>(args.progress)?;
         self.progress
@@ -147,21 +146,21 @@ impl Monitor {
         Ok(())
     }
 
-    async fn handle_progress_finished(&self, _signal: ProgressFinished) -> Result<(), Error> {
+    async fn handle_progress_finished(&self, _signal: dasd::ProgressFinished) -> Result<(), Error> {
         self.progress
             .call(progress::message::Finish::new(Scope::DASD))
             .await?;
         Ok(())
     }
 
-    fn handle_format_changed(&self, signal: FormatChanged) -> Result<(), Error> {
+    fn handle_format_changed(&self, signal: dasd::FormatChanged) -> Result<(), Error> {
         let args = signal.args()?;
         let summary = serde_json::from_str::<FormatSummary>(args.summary)?;
         self.events.send(Event::DASDFormatChanged { summary })?;
         Ok(())
     }
 
-    fn handle_format_finished(&self, _signal: FormatFinished) -> Result<(), Error> {
+    fn handle_format_finished(&self, _signal: dasd::FormatFinished) -> Result<(), Error> {
         self.events.send(Event::DASDFormatFinished)?;
         Ok(())
     }
