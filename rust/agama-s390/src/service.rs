@@ -86,23 +86,24 @@ impl Starter {
     }
 
     pub async fn start(self) -> Result<Handler<Service>, Error> {
-        let storage_dbus = agama_storage_client::service::Starter::new(self.connection.clone())
-            .start()
-            .await?;
+        let mut dasd_client = self.dasd;
+        let mut zfcp_client = self.zfcp;
 
-        let dasd_client = match self.dasd {
-            Some(client) => client,
-            None => Box::new(dasd::Client::new(storage_dbus.clone())),
-        };
-
-        let zfcp_client = match self.zfcp {
-            Some(client) => client,
-            None => Box::new(zfcp::Client::new(storage_dbus)),
-        };
+        if dasd_client.is_none() || zfcp_client.is_none() {
+            let storage_dbus = agama_storage_client::service::Starter::new(self.connection.clone())
+                .start()
+                .await?;
+            if dasd_client.is_none() {
+                dasd_client = Some(Box::new(dasd::Client::new(storage_dbus.clone())));
+            }
+            if zfcp_client.is_none() {
+                zfcp_client = Some(Box::new(zfcp::Client::new(storage_dbus)));
+            }
+        }
 
         let service = Service {
-            dasd: dasd_client,
-            zfcp: zfcp_client,
+            dasd: dasd_client.unwrap(),
+            zfcp: zfcp_client.unwrap(),
         };
         let handler = actor::spawn(service);
 

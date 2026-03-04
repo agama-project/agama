@@ -24,6 +24,7 @@ use crate::{
     dasd::client::{DASDClient, Error},
     service::{Service, Starter},
     storage,
+    zfcp::{self, client::ZFCPClient},
 };
 use agama_utils::{
     actor::Handler,
@@ -127,7 +128,80 @@ impl DASDClient for TestDASDClient {
     }
 }
 
-/// Starts a testing DASD service.
+#[derive(Default, Clone)]
+pub struct TestZFCPClientState {
+    pub probed: bool,
+    pub config: Option<RawConfig>,
+}
+
+/// Test client for zFCP.
+///
+/// This client implements a dummy client to replace the original [ZFCPClient].
+#[derive(Clone)]
+pub struct TestZFCPClient {
+    state: Arc<Mutex<TestZFCPClientState>>,
+}
+
+impl Default for TestZFCPClient {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
+impl TestZFCPClient {
+    pub fn new() -> Self {
+        let state = TestZFCPClientState::default();
+        Self {
+            state: Arc::new(Mutex::new(state)),
+        }
+    }
+
+    pub async fn state(&self) -> TestZFCPClientState {
+        self.state.lock().await.clone()
+    }
+}
+
+#[async_trait]
+impl ZFCPClient for TestZFCPClient {
+    async fn probe(&self) -> Result<(), zfcp::client::Error> {
+        let mut state = self.state.lock().await;
+        state.probed = true;
+        Ok(())
+    }
+
+    async fn get_system(&self) -> Result<Option<Value>, zfcp::client::Error> {
+        let system: Value = serde_json::from_str(
+            r#"
+            {
+                "devices": [
+                    {
+                        "channel": "0.0.1a00",
+                        "wwpn": "0x5005076300c20b8e",
+                        "lun": "0x0001000000000000",
+                        "active": true
+                    }
+                ]
+            }
+            "#,
+        )
+        .unwrap();
+
+        Ok(Some(system))
+    }
+
+    async fn get_config(&self) -> Result<Option<RawConfig>, zfcp::client::Error> {
+        let state = self.state.lock().await;
+        Ok(state.config.clone())
+    }
+
+    async fn set_config(&self, config: Option<RawConfig>) -> Result<(), zfcp::client::Error> {
+        let mut state = self.state.lock().await;
+        state.config = config;
+        Ok(())
+    }
+}
+
+/// Starts a testing s390 service.
 pub async fn start_service(
     storage: Handler<storage::Service>,
     events: event::Sender,
@@ -135,8 +209,10 @@ pub async fn start_service(
     connection: zbus::Connection,
 ) -> Handler<Service> {
     let dasd = TestDASDClient::new();
+    let zfcp = TestZFCPClient::new();
     Starter::new(storage, events, progress, connection)
         .with_dasd(dasd)
+        .with_zfcp(zfcp)
         .start()
         .await
         .expect("Could not start a testing s390 service")
