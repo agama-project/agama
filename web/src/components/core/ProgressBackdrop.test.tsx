@@ -21,7 +21,7 @@
  */
 
 import React from "react";
-import { screen, waitFor, within } from "@testing-library/react";
+import { act, screen, waitFor, within } from "@testing-library/react";
 import { installerRender, mockProgresses } from "~/test-utils";
 import useTrackQueriesRefetch from "~/hooks/use-track-queries-refetch";
 import { COMMON_PROPOSAL_KEYS } from "~/hooks/model/proposal";
@@ -85,7 +85,7 @@ describe("ProgressBackdrop", () => {
       });
     });
 
-    it("shows 'Refreshing data...' message temporarily", async () => {
+    it("shows 'Refreshing data...' message temporarily by default", async () => {
       // Start with active progress
       mockProgresses([
         {
@@ -113,6 +113,33 @@ describe("ProgressBackdrop", () => {
 
       // Should start tracking queries
       expect(mockStartTracking).toHaveBeenCalled();
+    });
+
+    it("shows custom `waitingLabel` when provided", async () => {
+      mockProgresses([
+        {
+          scope: "storage",
+          step: "Calculating proposal",
+          steps: ["Calculating proposal"],
+          index: 1,
+          size: 1,
+        },
+      ]);
+
+      const { rerender } = installerRender(
+        <ProgressBackdrop scope="storage" waitingLabel="Applying storage settings..." />,
+      );
+
+      const backdrop = screen.getByRole("alert", { name: /Calculating proposal/ });
+
+      mockProgresses([]);
+      rerender(<ProgressBackdrop scope="storage" waitingLabel="Applying storage settings..." />);
+
+      await waitFor(() => {
+        within(backdrop).getByText(/Applying storage settings/);
+      });
+
+      expect(within(backdrop).queryByText(/Refreshing data/)).toBeNull();
     });
 
     it("hides backdrop after queries are refetched", async () => {
@@ -143,7 +170,9 @@ describe("ProgressBackdrop", () => {
 
       // Simulate queries completing by calling the callback
       const startedAt = Date.now();
-      mockCallback(startedAt, startedAt + 100);
+      act(() => {
+        mockCallback(startedAt, startedAt + 100);
+      });
 
       // Backdrop should be hidden
       await waitFor(() => {
@@ -287,6 +316,26 @@ describe("ProgressBackdrop", () => {
       await waitFor(() => {
         expect(mockStartTracking).toHaveBeenCalled();
       });
+    });
+  });
+  describe("when extraContent is provided", () => {
+    it("renders the extra content below the progress information", () => {
+      mockProgresses([
+        {
+          scope: "software",
+          step: "Installing packages",
+          steps: [],
+          index: 1,
+          size: 3,
+        },
+      ]);
+
+      installerRender(
+        <ProgressBackdrop scope="software" extraContent={<div>Extra content</div>} />,
+      );
+
+      const backdrop = screen.getByRole("alert", { name: /Installing packages/ });
+      within(backdrop).getByText("Extra content");
     });
   });
 });

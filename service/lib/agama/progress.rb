@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2025] SUSE LLC
+# Copyright (c) [2025-2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -18,8 +18,6 @@
 #
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
-
-require "json"
 
 module Agama
   # Class to keep track of a process divided in a set of steps.
@@ -68,15 +66,6 @@ module Agama
     def next_with_step(step)
       self.next
       @step = step
-    end
-
-    def to_json(*args)
-      {
-        "size"  => @size,
-        "steps" => @steps,
-        "step"  => @step || "",
-        "index" => @index
-      }.to_json(*args)
     end
   end
 end

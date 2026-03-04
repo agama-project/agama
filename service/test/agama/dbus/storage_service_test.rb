@@ -21,9 +21,12 @@
 
 require_relative "../../test_helper"
 require "agama/dbus/storage/dasd"
+require "agama/dbus/storage/iscsi"
+require "agama/dbus/storage/zfcp"
 require "agama/dbus/storage_service"
 require "agama/storage/dasd/manager"
 require "agama/storage/iscsi/adapter"
+require "agama/storage/zfcp/manager"
 require "yast"
 
 describe Agama::DBus::StorageService do
@@ -48,7 +51,12 @@ describe Agama::DBus::StorageService do
     instance_double(Agama::DBus::Storage::DASD, path: "/org/opensuse/Agama/Storage1/DASD")
   end
 
+  let(:zfcp_obj) do
+    instance_double(Agama::DBus::Storage::ZFCP, path: "/org/opensuse/Agama/Storage1/ZFCP")
+  end
+
   let(:dasd) { instance_double(Agama::Storage::DASD::Manager) }
+  let(:zfcp) { instance_double(Agama::Storage::ZFCP::Manager) }
 
   before do
     allow(Agama::DBus::Bus).to receive(:current).and_return(bus)
@@ -62,6 +70,8 @@ describe Agama::DBus::StorageService do
     allow(Agama::DBus::Storage::ISCSI).to receive(:new).and_return(iscsi_obj)
     allow(Agama::DBus::Storage::DASD).to receive(:new).and_return(dasd_obj)
     allow(Agama::Storage::DASD::Manager).to receive(:new).and_return(dasd)
+    allow(Agama::DBus::Storage::ZFCP).to receive(:new).and_return(zfcp_obj)
+    allow(Agama::Storage::ZFCP::Manager).to receive(:new).and_return(zfcp)
     allow_any_instance_of(Agama::Storage::ISCSI::Adapter).to receive(:activate)
   end
 
@@ -93,8 +103,13 @@ describe Agama::DBus::StorageService do
         allow(Yast::Arch).to receive(:s390).and_return(true)
       end
 
-      it "exports the ISCSI manager" do
+      it "exports the DASD object" do
         expect(object_server).to receive(:export).with(dasd_obj)
+        service.export
+      end
+
+      it "exports the ZFCP object" do
+        expect(object_server).to receive(:export).with(zfcp_obj)
         service.export
       end
     end
@@ -104,8 +119,13 @@ describe Agama::DBus::StorageService do
         allow(Yast::Arch).to receive(:s390).and_return(false)
       end
 
-      it "does not export the ISCSI manager" do
+      it "does not export the DASD object" do
         expect(object_server).to_not receive(:export).with(dasd_obj)
+        service.export
+      end
+
+      it "does not export the ZFCP object" do
+        expect(object_server).to_not receive(:export).with(zfcp_obj)
         service.export
       end
     end

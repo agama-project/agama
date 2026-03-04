@@ -107,7 +107,7 @@ module Agama
 
       # @return [Array<::DBus::Object>]
       def dbus_objects
-        @dbus_objects ||= [manager_object, iscsi_object, dasd_object].compact
+        @dbus_objects ||= [manager_object, iscsi_object, dasd_object, zfcp_object].compact
       end
 
       # @return [Agama::DBus::Storage::Manager]
@@ -130,6 +130,18 @@ module Agama
         require "agama/dbus/storage/dasd"
         manager = Agama::Storage::DASD::Manager.new(logger: logger)
         @dasd_object = Agama::DBus::Storage::DASD.new(manager, logger: logger)
+      end
+
+      # @return [Agama::DBus::Storage::ZFCP, nil]
+      def zfcp_object
+        return unless Yast::Arch.s390
+
+        return @zfcp_object unless @zfcp_object.nil?
+
+        require "agama/storage/zfcp/manager"
+        require "agama/dbus/storage/zfcp"
+        manager = Agama::Storage::ZFCP::Manager.new(logger: logger)
+        @zfcp_object = Agama::DBus::Storage::ZFCP.new(manager, logger: logger)
       end
 
       # @return [Agama::Storage::Manager]

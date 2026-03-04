@@ -20,7 +20,7 @@
 # find current contact information at www.suse.com.
 
 require "agama/dbus/base_object"
-require "agama/with_progress"
+require "agama/dbus/with_progress"
 require "dbus"
 require "json"
 require "yast"
@@ -31,7 +31,7 @@ module Agama
       # D-Bus object to manage iSCSI.
       class ISCSI < BaseObject
         include Yast::I18n
-        include Agama::WithProgress
+        include WithProgress
 
         PATH = "/org/opensuse/Agama/Storage1/ISCSI"
         private_constant :PATH
@@ -116,7 +116,7 @@ module Agama
         attr_reader :manager
 
         def register_progress_callbacks
-          on_progress_change { self.ProgressChanged(progress.to_json) }
+          on_progress_change { self.ProgressChanged(serialize_progress) }
           on_progress_finish { self.ProgressFinished }
         end
 

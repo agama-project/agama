@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2023] SUSE LLC
+# Copyright (c) [2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -19,14 +19,32 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
+require "json"
+
 module Agama
-  module Storage
-    # Module for zFCP
-    module ZFCP
+  module DBus
+    # Mixin to manage issues.
+    module WithIssues
+      # Generates the serialized JSON of the given issues.
+      #
+      # @param issues [Array<Agama::Issue>]
+      # @return [String]
+      def serialize_issues(issues)
+        json = issues.map { |i| issue_json(i) }
+        JSON.pretty_generate(json)
+      end
+
+      # JSON representation of the given issue.
+      #
+      # @param issue [Agama::Issue]
+      # @return [Hash]
+      def issue_json(issue)
+        {
+          description: issue.description,
+          class:       issue.kind.to_s,
+          details:     issue.details
+        }.compact
+      end
     end
   end
 end
-
-require "agama/storage/zfcp/manager"
-require "agama/storage/zfcp/controller"
-require "agama/storage/zfcp/device"
