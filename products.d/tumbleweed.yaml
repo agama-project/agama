@@ -132,9 +132,12 @@ software:
   optional_patterns: [] # no optional pattern shared
   user_patterns:
     - basic_desktop
-    - xfce
+    - xfce_wayland
     - kde
     - gnome
+    - lxqt_wayland
+    - openSUSEway
+    - hyprland
     - multimedia
     - office
     - name: selinux
