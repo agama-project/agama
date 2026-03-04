@@ -20,7 +20,7 @@
 
 //! Implements a client to access Agama's D-Bus API related to DASD management.
 
-use agama_storage_client::message;
+use crate::storage_client::{self, message};
 use agama_utils::actor::Handler;
 use agama_utils::api::RawConfig;
 use async_trait::async_trait;
@@ -32,8 +32,8 @@ pub enum Error {
     DBus(#[from] zbus::Error),
     #[error(transparent)]
     Json(#[from] serde_json::Error),
-    #[error("Storage D-Bus server error: {0}")]
-    DBusClient(#[from] agama_storage_client::Error),
+    #[error(transparent)]
+    StorageClient(#[from] storage_client::Error),
 }
 
 #[async_trait]
@@ -46,31 +46,31 @@ pub trait DASDClient {
 
 #[derive(Clone)]
 pub struct Client {
-    storage_dbus: Handler<agama_storage_client::Service>,
+    storage_client: Handler<storage_client::Service>,
 }
 
 impl Client {
-    pub fn new(storage_dbus: Handler<agama_storage_client::Service>) -> Self {
-        Self { storage_dbus }
+    pub fn new(storage_client: Handler<storage_client::Service>) -> Self {
+        Self { storage_client }
     }
 }
 
 #[async_trait]
 impl DASDClient for Client {
     async fn probe(&self) -> Result<(), Error> {
-        Ok(self.storage_dbus.call(message::dasd::Probe).await?)
+        Ok(self.storage_client.call(message::dasd::Probe).await?)
     }
 
     async fn get_system(&self) -> Result<Option<Value>, Error> {
-        Ok(self.storage_dbus.call(message::dasd::GetSystem).await?)
+        Ok(self.storage_client.call(message::dasd::GetSystem).await?)
     }
 
     async fn get_config(&self) -> Result<Option<RawConfig>, Error> {
-        Ok(self.storage_dbus.call(message::dasd::GetConfig).await?)
+        Ok(self.storage_client.call(message::dasd::GetConfig).await?)
     }
 
     async fn set_config(&self, config: Option<RawConfig>) -> Result<(), Error> {
-        self.storage_dbus
+        self.storage_client
             .call(message::dasd::SetConfig::new(config))
             .await?;
         Ok(())

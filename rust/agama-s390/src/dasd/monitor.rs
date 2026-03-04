@@ -18,8 +18,10 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::storage;
-use agama_storage_client::proxies::{dasd, DASDProxy};
+use crate::{
+    storage,
+    storage_client::proxies::{dasd, DASDProxy},
+};
 use agama_utils::{
     actor::Handler,
     api::{

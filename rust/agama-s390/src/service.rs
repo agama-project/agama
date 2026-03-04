@@ -20,7 +20,7 @@
 
 use crate::{
     dasd::{self, client::DASDClient},
-    message, storage,
+    message, storage, storage_client,
     zfcp::{self, client::ZFCPClient},
 };
 use agama_utils::{
@@ -46,7 +46,7 @@ pub enum Error {
     #[error(transparent)]
     ZFCPMonitor(#[from] zfcp::monitor::Error),
     #[error(transparent)]
-    DBusClient(#[from] agama_storage_client::Error),
+    StorageClient(#[from] storage_client::Error),
 }
 
 pub struct Starter {
@@ -89,23 +89,23 @@ impl Starter {
     }
 
     pub async fn start(self) -> Result<Handler<Service>, Error> {
-        // Create agama_storage_client only if needed.
-        let (service, storage_dbus) = if self.dasd.is_none() || self.zfcp.is_none() {
-            let storage_dbus = agama_storage_client::service::Starter::new(self.connection.clone())
+        // Create storage_client only if needed.
+        let (service, storage_client) = if self.dasd.is_none() || self.zfcp.is_none() {
+            let storage_client = storage_client::service::Starter::new(self.connection.clone())
                 .start()
                 .await?;
 
             let dasd = self
                 .dasd
-                .unwrap_or(Box::new(dasd::Client::new(storage_dbus.clone())));
+                .unwrap_or(Box::new(dasd::Client::new(storage_client.clone())));
 
             let zfcp = self
                 .zfcp
-                .unwrap_or(Box::new(zfcp::Client::new(storage_dbus.clone())));
+                .unwrap_or(Box::new(zfcp::Client::new(storage_client.clone())));
 
             let service = Service { dasd, zfcp };
 
-            (service, Some(storage_dbus))
+            (service, Some(storage_client))
         } else {
             let service = Service {
                 dasd: self.dasd.unwrap(),
@@ -124,16 +124,15 @@ impl Starter {
         );
         dasd::monitor::spawn(dasd_monitor)?;
 
-        // FIXME: allow mocking agama_storage_client instead of preventing its creation during
-        // tests.
-        if let Some(storage_dbus) = storage_dbus {
+        // FIXME: allow mocking storage_client instead of preventing its creation during tests.
+        if let Some(storage_client) = storage_client {
             let zfcp_monitor = zfcp::Monitor::new(
                 self.storage,
                 self.progress,
                 self.issues,
                 self.events,
                 self.connection,
-                storage_dbus.clone(),
+                storage_client.clone(),
             );
             zfcp::monitor::spawn(zfcp_monitor)?;
         }

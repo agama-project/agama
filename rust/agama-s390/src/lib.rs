@@ -27,6 +27,7 @@ pub mod test_utils;
 pub mod zfcp;
 
 use agama_storage as storage;
+use agama_storage_client as storage_client;
 
 #[cfg(test)]
 mod tests {

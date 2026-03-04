@@ -20,7 +20,7 @@
 
 //! Implements a client to access Agama's D-Bus API related to iSCSI management.
 
-use agama_storage_client::message;
+use crate::storage_client::{self, message};
 use agama_utils::actor::Handler;
 use agama_utils::api::iscsi::Config;
 use agama_utils::api::iscsi::DiscoverConfig;
@@ -33,8 +33,8 @@ pub enum Error {
     DBus(#[from] zbus::Error),
     #[error(transparent)]
     Json(#[from] serde_json::Error),
-    #[error("Storage D-Bus server error: {0}")]
-    DBusClient(#[from] agama_storage_client::Error),
+    #[error(transparent)]
+    StorageClient(#[from] storage_client::Error),
 }
 
 pub enum DiscoverResult {
@@ -52,14 +52,12 @@ pub trait ISCSIClient {
 
 #[derive(Clone)]
 pub struct Client {
-    storage_dbus: Handler<agama_storage_client::Service>,
+    storage_client: Handler<storage_client::Service>,
 }
 
 impl Client {
-    pub async fn new(
-        storage_dbus: Handler<agama_storage_client::Service>,
-    ) -> Result<Client, Error> {
-        Ok(Self { storage_dbus })
+    pub async fn new(storage_client: Handler<storage_client::Service>) -> Result<Client, Error> {
+        Ok(Self { storage_client })
     }
 }
 
@@ -67,7 +65,7 @@ impl Client {
 impl ISCSIClient for Client {
     async fn discover(&self, config: DiscoverConfig) -> Result<DiscoverResult, Error> {
         let result = self
-            .storage_dbus
+            .storage_client
             .call(message::iscsi::Discover::new(config))
             .await?;
         match result {
@@ -77,15 +75,15 @@ impl ISCSIClient for Client {
     }
 
     async fn get_system(&self) -> Result<Option<Value>, Error> {
-        Ok(self.storage_dbus.call(message::iscsi::GetSystem).await?)
+        Ok(self.storage_client.call(message::iscsi::GetSystem).await?)
     }
 
     async fn get_config(&self) -> Result<Option<Config>, Error> {
-        Ok(self.storage_dbus.call(message::iscsi::GetConfig).await?)
+        Ok(self.storage_client.call(message::iscsi::GetConfig).await?)
     }
 
     async fn set_config(&self, config: Option<Config>) -> Result<(), Error> {
-        self.storage_dbus
+        self.storage_client
             .call(message::iscsi::SetConfig::new(config))
             .await?;
         Ok(())

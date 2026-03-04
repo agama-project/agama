@@ -20,7 +20,7 @@
 
 //! Implements a client to access Agama's storage service.
 
-use agama_storage_client::message;
+use crate::storage_client::{self, message};
 use agama_utils::{
     actor::{self, Handler},
     api::{storage::Config, Issue},
@@ -44,8 +44,8 @@ pub enum Error {
     Json(#[from] serde_json::Error),
     #[error(transparent)]
     Actor(#[from] actor::Error),
-    #[error("Storage D-Bus server error: {0}")]
-    DBusClient(#[from] agama_storage_client::Error),
+    #[error(transparent)]
+    StorageClient(#[from] storage_client::Error),
 }
 
 #[async_trait]
@@ -73,16 +73,16 @@ pub trait StorageClient {
 /// D-Bus client for the storage service
 #[derive(Clone)]
 pub struct Client {
-    storage_dbus: Handler<agama_storage_client::Service>,
+    storage_client: Handler<storage_client::Service>,
 }
 
 impl Client {
-    pub fn new(storage_dbus: Handler<agama_storage_client::Service>) -> Self {
-        Self { storage_dbus }
+    pub fn new(storage_client: Handler<storage_client::Service>) -> Self {
+        Self { storage_client }
     }
 
     async fn call_action(&self, action: &str) -> Result<(), Error> {
-        self.storage_dbus
+        self.storage_client
             .call(message::CallAction::new(action))
             .await?;
         Ok(())
@@ -112,33 +112,33 @@ impl StorageClient for Client {
     }
 
     async fn get_system(&self) -> Result<Option<Value>, Error> {
-        let value = self.storage_dbus.call(message::GetSystem).await?;
+        let value = self.storage_client.call(message::GetSystem).await?;
         Ok(value)
     }
 
     async fn get_config(&self) -> Result<Option<Config>, Error> {
-        let value = self.storage_dbus.call(message::GetStorageConfig).await?;
+        let value = self.storage_client.call(message::GetStorageConfig).await?;
         Ok(value)
     }
 
     async fn get_config_from_model(&self, model: Value) -> Result<Option<Config>, Error> {
         let message = message::GetConfigFromModel::new(model);
-        let value = self.storage_dbus.call(message).await?;
+        let value = self.storage_client.call(message).await?;
         Ok(value)
     }
 
     async fn get_config_model(&self) -> Result<Option<Value>, Error> {
-        let value = self.storage_dbus.call(message::GetConfigModel).await?;
+        let value = self.storage_client.call(message::GetConfigModel).await?;
         Ok(value)
     }
 
     async fn get_proposal(&self) -> Result<Option<Value>, Error> {
-        let value = self.storage_dbus.call(message::GetProposal).await?;
+        let value = self.storage_client.call(message::GetProposal).await?;
         Ok(value)
     }
 
     async fn get_issues(&self) -> Result<Vec<Issue>, Error> {
-        let value = self.storage_dbus.call(message::GetIssues).await?;
+        let value = self.storage_client.call(message::GetIssues).await?;
         Ok(value)
     }
 
@@ -148,18 +148,18 @@ impl StorageClient for Client {
         config: Option<Config>,
     ) -> Result<BoxFuture<Result<(), Error>>, Error> {
         let message = message::SetStorageConfig::new(product.clone(), config);
-        let rx = self.storage_dbus.call(message).await?;
+        let rx = self.storage_client.call(message).await?;
         Ok(Box::pin(async move { rx.await.map_err(Error::from) }))
     }
 
     async fn solve_config_model(&self, model: Value) -> Result<Option<Value>, Error> {
         let message = message::SolveConfigModel::new(model);
-        let value = self.storage_dbus.call(message).await?;
+        let value = self.storage_client.call(message).await?;
         Ok(value)
     }
 
     async fn set_locale(&self, locale: String) -> Result<(), Error> {
-        self.storage_dbus
+        self.storage_client
             .call(message::SetLocale::new(locale))
             .await?;
         Ok(())

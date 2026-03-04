@@ -18,8 +18,13 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::storage;
-use agama_storage_client::proxies::{zfcp, ZFCPProxy};
+use crate::{
+    storage,
+    storage_client::{
+        self,
+        proxies::{zfcp, ZFCPProxy},
+    },
+};
 use agama_utils::{
     actor::Handler,
     api::{
@@ -49,7 +54,7 @@ pub enum Error {
     #[error(transparent)]
     Storage(#[from] storage::service::Error),
     #[error(transparent)]
-    DBusClient(#[from] agama_storage_client::Error),
+    StorageClient(#[from] storage_client::Error),
 }
 
 #[derive(Debug, Deserialize)]
@@ -78,7 +83,7 @@ pub struct Monitor {
     issues: Handler<issue::Service>,
     events: event::Sender,
     connection: Connection,
-    storage_dbus: Handler<agama_storage_client::Service>,
+    storage_client: Handler<storage_client::Service>,
 }
 
 impl Monitor {
@@ -88,7 +93,7 @@ impl Monitor {
         issues: Handler<issue::Service>,
         events: event::Sender,
         connection: Connection,
-        storage_dbus: Handler<agama_storage_client::Service>,
+        storage_client: Handler<storage_client::Service>,
     ) -> Self {
         Self {
             storage,
@@ -96,7 +101,7 @@ impl Monitor {
             issues,
             events,
             connection,
-            storage_dbus,
+            storage_client,
         }
     }
 
@@ -134,8 +139,8 @@ impl Monitor {
 
     async fn update_issues(&self) -> Result<(), Error> {
         let issues = self
-            .storage_dbus
-            .call(agama_storage_client::message::zfcp::GetIssues)
+            .storage_client
+            .call(storage_client::message::zfcp::GetIssues)
             .await?;
         self.issues
             .cast(issue::message::Set::new(Scope::ZFCP, issues))?;

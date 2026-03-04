@@ -20,7 +20,7 @@
 
 //! Implements a client to access Agama's D-Bus API related to zFCP management.
 
-use agama_storage_client::message;
+use crate::storage_client::{self, message};
 use agama_utils::actor::Handler;
 use agama_utils::api::RawConfig;
 use async_trait::async_trait;
@@ -33,7 +33,7 @@ pub enum Error {
     #[error(transparent)]
     Json(#[from] serde_json::Error),
     #[error(transparent)]
-    DBusClient(#[from] agama_storage_client::Error),
+    StorageClient(#[from] storage_client::Error),
 }
 
 #[async_trait]
@@ -46,31 +46,31 @@ pub trait ZFCPClient {
 
 #[derive(Clone)]
 pub struct Client {
-    storage_dbus: Handler<agama_storage_client::Service>,
+    storage_client: Handler<storage_client::Service>,
 }
 
 impl Client {
-    pub fn new(storage_dbus: Handler<agama_storage_client::Service>) -> Self {
-        Self { storage_dbus }
+    pub fn new(storage_client: Handler<storage_client::Service>) -> Self {
+        Self { storage_client }
     }
 }
 
 #[async_trait]
 impl ZFCPClient for Client {
     async fn probe(&self) -> Result<(), Error> {
-        Ok(self.storage_dbus.call(message::zfcp::Probe).await?)
+        Ok(self.storage_client.call(message::zfcp::Probe).await?)
     }
 
     async fn get_system(&self) -> Result<Option<Value>, Error> {
-        Ok(self.storage_dbus.call(message::zfcp::GetSystem).await?)
+        Ok(self.storage_client.call(message::zfcp::GetSystem).await?)
     }
 
     async fn get_config(&self) -> Result<Option<RawConfig>, Error> {
-        Ok(self.storage_dbus.call(message::zfcp::GetConfig).await?)
+        Ok(self.storage_client.call(message::zfcp::GetConfig).await?)
     }
 
     async fn set_config(&self, config: Option<RawConfig>) -> Result<(), Error> {
-        self.storage_dbus
+        self.storage_client
             .call(message::zfcp::SetConfig::new(config))
             .await?;
         Ok(())
