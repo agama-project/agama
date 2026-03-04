@@ -28,6 +28,8 @@ import {
   Button,
   Content,
   Divider,
+  EmptyState,
+  EmptyStateBody,
   Flex,
   FlexItem,
   Grid,
@@ -97,6 +99,22 @@ const ConfirmationPopup = ({
   );
 };
 
+/**
+ * Renders a PatternFly `EmptyState` block used when no DASD devices are detected
+ * on the host machine.
+ */
+const NoProductFound = () => {
+  return (
+    <EmptyState headingLevel="h2" titleText={_("Product not found")} variant="sm">
+      <EmptyStateBody>
+        {_(
+          "The product was not found in the repositories so it is not possible to proceed with the installation.",
+        )}
+      </EmptyStateBody>
+    </EmptyState>
+  );
+};
+
 const OverviewPageContent = ({ product }) => {
   const issues = useIssues();
   const { loading } = useProgressTracking();
@@ -105,6 +123,7 @@ const OverviewPageContent = ({ product }) => {
   const [showConfirmation, setShowConfirmation] = useState(false);
   const hasIssues = !isEmpty(issues);
   const hasDestructiveActions = actions.length > 0;
+  const missingProduct = issues.find((i) => i.class === "missing_product");
 
   const [buttonLocationStart, buttonLocationLabel, buttonLocationEnd] = _(
     // TRANSLATORS: This hint helps users locate the install button. Text inside
@@ -163,7 +182,7 @@ const OverviewPageContent = ({ product }) => {
             <GridItem sm={12} md={8}>
               <Stack hasGutter>
                 <div style={{ flex: 1 }}>
-                  <InstallationSettings />
+                  {missingProduct ? <NoProductFound /> : <InstallationSettings />}
                 </div>
                 <Flex
                   direction={{ default: "column" }}
@@ -191,7 +210,7 @@ const OverviewPageContent = ({ product }) => {
                     </FlexItem>
                   )}
 
-                  {hasIssues && isReady && (
+                  {hasIssues && !missingProduct && isReady && (
                     <FlexItem>
                       <HelperText>
                         <HelperTextItem variant="warning">
