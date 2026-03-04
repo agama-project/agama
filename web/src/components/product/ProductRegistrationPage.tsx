@@ -43,6 +43,7 @@ import {
   Title,
 } from "@patternfly/react-core";
 import {
+  IssuesAlert,
   Link,
   NestedContent,
   Page,
@@ -474,14 +475,18 @@ const RegistrationIssueAlert = ({ issue }: { issue: Issue }) => {
 
 export default function ProductRegistrationPage() {
   const { registration } = useSystem();
-  const issues = useIssues("software");
+  const issues = useIssues("product");
   const registrationIssue = issues.find((i) => i.class === "system_registration_failed");
 
   return (
     <Page breadcrumbs={[{ label: _("Registration") }]} progress={{ scope: "software" }}>
       <Page.Content>
         {!registration && <HostnameAlert />}
-        {registrationIssue && <RegistrationIssueAlert issue={registrationIssue} />}
+        {registrationIssue ? (
+          <RegistrationIssueAlert issue={registrationIssue} />
+        ) : (
+          <IssuesAlert issues={issues} />
+        )}
         {!registration ? <RegistrationFormSection /> : <RegisteredProductSection />}
         {registration && <Extensions />}
       </Page.Content>
