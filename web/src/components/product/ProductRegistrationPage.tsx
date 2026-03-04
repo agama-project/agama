@@ -281,6 +281,17 @@ const RegistrationFormSection = () => {
   const [loading] = useState(false);
   const config = useConfig();
   const product = useProduct();
+  const issues = useIssues("product");
+  const registrationIssue = issues.find((i) => i.class === "system_registration_failed");
+
+  const resetForm = useCallback(() => {
+    setServer("default");
+    setUrl("");
+    setKey("");
+    setEmail("");
+    setProvideKey(false);
+    setProvideEmail(false);
+  }, [setServer, setUrl, setKey, setEmail, setProvideKey, setProvideEmail]);
 
   useEffect(() => {
     if (product) {
@@ -337,6 +348,19 @@ const RegistrationFormSection = () => {
     });
   };
 
+  const submitNoRegister = async (e: React.SyntheticEvent) => {
+    e.preventDefault();
+    setRequestError(null);
+    resetForm();
+    putConfig({
+      ...config,
+      product: {
+        id: product.id,
+        mode: product.mode,
+      },
+    });
+  };
+
   // TODO: adjust texts based of registration "type", mandatory or optional
 
   return (
@@ -373,9 +397,16 @@ const RegistrationFormSection = () => {
       />
 
       <ActionGroup>
-        <Button variant="primary" type="submit" form={FORM_ID} isInline isLoading={loading}>
-          {_("Register")}
-        </Button>
+        <Flex alignItems={{ default: "alignItemsCenter" }}>
+          <Button variant="primary" type="submit" form={FORM_ID} isInline isLoading={loading}>
+            {_("Register")}
+          </Button>
+          {registrationIssue && (
+            <Button variant="link" type="submit" isInline onClick={submitNoRegister}>
+              {_("Do not register")}
+            </Button>
+          )}
+        </Flex>
       </ActionGroup>
     </Form>
   );
@@ -411,7 +442,7 @@ const Extensions = () => {
   const { registration } = useSystem();
   const { product } = useConfig();
   const extensions = registration?.addons;
-  const issues = useIssues("software");
+  const issues = useIssues("product");
 
   const registrationCallback = useCallback(
     (addon: Addon) => {
@@ -434,6 +465,20 @@ const Extensions = () => {
     [product],
   );
 
+  const noRegistrationCallback = useCallback(
+    (id: string) => {
+      const addons = product?.addons || [];
+      const updatedAddons = addons.filter((a) => a.id !== id);
+      patchConfig({
+        product: {
+          ...product,
+          addons: updatedAddons,
+        },
+      });
+    },
+    [product],
+  );
+
   if (!extensions || extensions.length === 0) return null;
 
   const extensionComponents = extensions.map((ext) => {
@@ -448,6 +493,7 @@ const Extensions = () => {
         issue={issue}
         isUnique={extensions.filter((e) => e.id === ext.id).length === 1}
         registrationCallback={registrationCallback}
+        noRegistrationCallback={noRegistrationCallback}
       />
     );
   });

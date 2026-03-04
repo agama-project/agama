@@ -25,9 +25,9 @@ import { screen, within } from "@testing-library/react";
 import { installerRender, mockProduct, mockProductConfig } from "~/test-utils";
 import ProductRegistrationPage from "./ProductRegistrationPage";
 import { Product } from "~/model/system";
-import { RegistrationInfo } from "~/model/system/software";
+import { RegistrationInfo, AddonInfo } from "~/model/system/software";
 import { Config } from "~/model/config";
-import { putConfig } from "~/api";
+import { patchConfig, putConfig } from "~/api";
 import { Issue } from "~/model/issue";
 import { cloneDeep } from "radashi";
 
@@ -43,6 +43,20 @@ const sle: Product = {
   name: "SLE",
   registration: true,
   modes: [],
+};
+
+const addon: AddonInfo = {
+  id: "sle-ha",
+  version: "16.0",
+  label: "SUSE Linux Enterprise High Availability Extension 16.0 x86_64 (BETA)",
+  available: true,
+  free: false,
+  recommended: false,
+  description: "SUSE Linux High Availability Extension provides...",
+  release: "beta",
+  registration: {
+    status: "notRegistered",
+  },
 };
 
 let mockSelectedProduct: Product | undefined;
@@ -307,8 +321,10 @@ describe("ProductRegistrationPage", () => {
         });
       });
     });
+  });
 
-    it("handles and renders errors returned by the registration server", async () => {
+  describe("when the registration failed", () => {
+    beforeEach(() => {
       mockIssues = [
         {
           scope: "software",
@@ -316,11 +332,27 @@ describe("ProductRegistrationPage", () => {
           description: "Unauthorized code",
         },
       ];
+    });
 
+    it("renders errors returned by the registration server", async () => {
       installerRender(<ProductRegistrationPage />, { withL10n: true });
 
       screen.getByText("Warning alert:");
       screen.getByText("Unauthorized code");
+    });
+
+    it("allows forgetting the registration information", async () => {
+      const { user } = installerRender(<ProductRegistrationPage />, { withL10n: true });
+
+      const button = screen.getByRole("button", { name: "Do not register" });
+      await user.click(button);
+      expect(putConfig).toHaveBeenCalledWith({
+        ...mockConfig,
+        product: {
+          id: "sle",
+          mode: "standard",
+        },
+      });
     });
   });
 
@@ -385,7 +417,7 @@ describe("ProductRegistrationPage", () => {
       });
     });
 
-    describe("if not using a resgistration code", () => {
+    describe("if not using a registration code", () => {
       beforeEach(() => {
         mockRegistrationInfo = {
           code: "",
@@ -429,22 +461,7 @@ describe("ProductRegistrationPage", () => {
         mockRegistrationInfo = {
           code: "INTERNAL-USE-ONLY-1234-5678",
           email: "example@company.test",
-          addons: [
-            {
-              id: "sle-ha",
-              version: "16.0",
-              status: "available",
-              label: "SUSE Linux Enterprise High Availability Extension 16.0 x86_64 (BETA)",
-              available: true,
-              free: false,
-              recommended: false,
-              description: "SUSE Linux High Availability Extension provides...",
-              release: "beta",
-              registration: {
-                status: "notRegistered",
-              },
-            },
-          ],
+          addons: [addon],
         };
       });
 
@@ -491,6 +508,50 @@ describe("ProductRegistrationPage", () => {
           await user.click(visibilityCodeToggler);
           // the full code is visible
           screen.getByText("INTERNAL-USE-ONLY-1234-ad42");
+        });
+      });
+
+      describe("and one of them is registered with an error", () => {
+        beforeEach(() => {
+          mockConfig = {
+            product: {
+              id: "sle",
+              mode: "standard",
+              registrationCode: "INTERNAL-USE-ONLY-1234-5678",
+              addons: [
+                {
+                  id: "sle-ha",
+                },
+              ],
+            },
+          };
+
+          mockIssues = [
+            {
+              scope: "product",
+              class: "addon_registration_failed[sle-ha]",
+              description: "Failed to register the add-on sle-ha",
+              details: "No subscription with registration code 'jkljkljkl' found",
+            },
+          ];
+        });
+
+        it("allows forgetting the registration information", async () => {
+          const { user } = installerRender(<ProductRegistrationPage />, { withL10n: true });
+
+          const button = screen.getByRole("button", { name: "Do not register" });
+          await user.click(button);
+          expect(patchConfig).toHaveBeenCalledWith({
+            ...mockConfig,
+            product: {
+              id: "sle",
+              mode: "standard",
+              registrationCode: "INTERNAL-USE-ONLY-1234-5678",
+              registrationEmail: undefined,
+              registrationUrl: undefined,
+              addons: [],
+            },
+          });
         });
       });
     });

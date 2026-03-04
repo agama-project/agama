@@ -26,6 +26,7 @@ import {
   Alert,
   Button,
   Content,
+  Flex,
   Form,
   FormGroup,
   Label,
@@ -80,12 +81,14 @@ export default function RegistrationExtension({
   config,
   isUnique,
   registrationCallback,
+  noRegistrationCallback,
   issue,
 }: {
   extension: AddonInfo;
   config: Addon;
   isUnique: boolean;
   registrationCallback: Function;
+  noRegistrationCallback: Function;
   issue: Issue | undefined;
 }) {
   const [regCode, setRegCode] = useState(config?.registrationCode || "");
@@ -103,10 +106,15 @@ export default function RegistrationExtension({
     e?.preventDefault();
     registrationCallback({
       id: extension.id,
-      registrationCode: regCode,
+      registrationCode: isEmpty(regCode) ? undefined : regCode,
       version: isUnique ? undefined : extension.version,
     });
     setLoading(true);
+  };
+
+  const submitNoRegister = async (e: React.SyntheticEvent | undefined) => {
+    e?.preventDefault();
+    noRegistrationCallback(extension.id);
   };
 
   return (
@@ -135,37 +143,38 @@ export default function RegistrationExtension({
       )}
       <Content>
         {isRegistered && <RegisteredExtensionStatus registrationCode={registration.code} />}
-        {!isRegistered && extension.available && !extension.free && (
+        {!isRegistered && extension.available && (
           <Form id={formId} onSubmit={submit}>
             {/* // TRANSLATORS: input field label */}
-            <FormGroup fieldId={inputId} label={_("Registration code")}>
-              <RegistrationCodeInput
-                isDisabled={loading}
-                id={inputId}
-                value={regCode}
-                onChange={(_, v) => setRegCode(v)}
-              />
-            </FormGroup>
+            {!extension.free && (
+              <FormGroup fieldId={inputId} label={_("Registration code")}>
+                <RegistrationCodeInput
+                  isDisabled={loading}
+                  id={inputId}
+                  value={regCode}
+                  onChange={(_, v) => setRegCode(v)}
+                />
+              </FormGroup>
+            )}
             <ActionGroup>
-              <Button id={buttonId} variant="primary" type="submit" isInline isLoading={loading}>
-                {/* TRANSLATORS: button label */}
-                {_("Register")}
-              </Button>
+              <Flex alignItems={{ default: "alignItemsCenter" }}>
+                <Button id={buttonId} variant="primary" type="submit" isInline isLoading={loading}>
+                  {/* TRANSLATORS: button label */}
+                  {_("Register")}
+                </Button>
+                {issue && (
+                  <Button
+                    id={`do-not-register-button-${extension.id}-${extension.version}`}
+                    variant="link"
+                    isInline
+                    onClick={submitNoRegister}
+                  >
+                    {_("Do not register")}
+                  </Button>
+                )}
+              </Flex>
             </ActionGroup>
           </Form>
-        )}
-        {!isRegistered && extension.available && extension.free && (
-          // for free extensions display just the button without any form
-          <Button
-            id={`register-button-${extension.id}-${extension.version}`}
-            variant="primary"
-            isInline
-            isLoading={loading}
-            onClick={submit}
-          >
-            {/* TRANSLATORS: button label */}
-            {_("Register")}
-          </Button>
         )}
 
         {!isRegistered && !extension.available && (

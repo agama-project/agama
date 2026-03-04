@@ -64,7 +64,6 @@ type RegistrationInfo = {
 
 type AddonInfo = {
   id: string;
-  status: string;
   version: string;
   label: string;
   available: boolean;
@@ -84,4 +83,4 @@ type AddonUnregistered = {
   status: "notRegistered";
 };
 
-export type { System, Pattern, RegistrationInfo, Repository };
+export type { System, Pattern, AddonInfo, RegistrationInfo, Repository };
