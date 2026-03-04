@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Wed Mar  4 10:25:15 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Fix cd.ikr path when building the s390x ISO (gh#agama-project/agama#3239).
+
+-------------------------------------------------------------------
 Mon Feb 23 15:10:58 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
 
 - Do not use verbose mode in the "image-janitor" calls, logging
